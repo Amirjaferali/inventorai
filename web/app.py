@@ -11,6 +11,8 @@ import secrets
 import tempfile
 import uuid
 from urllib.parse import urlparse as _urlparse
+from urllib.parse import urlsplit as _urlsplit
+from urllib.parse import urlunsplit as _urlunsplit
 from flask import (
     Flask, request, redirect, url_for, render_template, make_response,
     g, has_request_context, session as flask_session,
@@ -215,7 +217,12 @@ from engine.account_store import (
 )
 from engine import account_credentials as _acct
 from engine import auth_session as _auth
-from engine.email_sender import DevMemoryEmailSender, UnconfiguredEmailSender
+from engine.email_sender import (
+    DevMemoryEmailSender,
+    EmailDeliveryFailed,
+    ResendEmailSender,
+    UnconfiguredEmailSender,
+)
 # P4-2 Level-1: the exact supported reconstruction/engine-contract version stamp
 # persisted at project creation (read-only reconstruction lives entirely in the
 # engine; web only persists these additive envelope inputs).
@@ -521,6 +528,80 @@ _ACCOUNT_STORE = None
 # Development-only email sink (in-memory). A production provider adapter is a
 # separate, later concern; the raw verification token appears ONLY in a sink
 # message body and never in the application logs.
+def _normalize_public_base_url(value):
+    """THE one configuration owner for the application's public base URL.
+
+    Returns the normalized absolute origin (scheme + host [+ port] [+ path], with
+    every trailing slash removed) or ``None`` when the value is absent or in any
+    way malformed. Fail closed: an unusable value yields ``None``, never a guess.
+
+    Accepted ONLY: an absolute `https://` URL with a host. Rejected: any other
+    scheme (including `http`), a missing host, embedded credentials, a query
+    string, a fragment, and whitespace inside the value.
+
+    This value is NEVER derived from a request. Not `request.host`, not
+    `request.url_root`, and not any proxy-supplied forwarded host/proto header
+    (deliberately not named here: an existing repository guard scans this file
+    for those literals, and this application trusts none of them - OD-INFRA-3).
+    A caller-supplied host would let an attacker mint a verification or reset
+    link pointing at their own origin, so the configured value is the only
+    authority for an externally reachable link.
+    """
+    if not isinstance(value, str):
+        return None
+    candidate = value.strip()
+    if not candidate:
+        return None
+    # Reject whitespace AND control characters. A NUL or newline inside the
+    # configured origin would be carried straight into an emailed link (and,
+    # with a newline, into the message body), so it fails closed here rather
+    # than producing a link nobody can use.
+    if any(ch.isspace() or ord(ch) < 0x20 or ord(ch) == 0x7F
+           for ch in candidate):
+        return None
+    try:
+        parts = _urlsplit(candidate)
+    except ValueError:
+        return None
+    if parts.scheme != "https":
+        return None
+    try:
+        host = parts.hostname
+    except ValueError:                    # malformed port / bracketed host
+        return None
+    if not host:
+        return None
+    if parts.username or parts.password or parts.query or parts.fragment:
+        return None
+    try:
+        parts.port                        # validates a present port
+    except ValueError:
+        return None
+    path = parts.path.rstrip("/")
+    if path and not path.startswith("/"):
+        return None
+    return _urlunsplit(("https", parts.netloc, path, "", ""))
+
+
+def _resolve_public_base_url():
+    """Read and validate `INVENTORAI_PUBLIC_BASE_URL`. Cannot raise."""
+    return _normalize_public_base_url(
+        os.environ.get("INVENTORAI_PUBLIC_BASE_URL", ""))
+
+
+# Resolved once at import, in the same style as the DB path and the secret. A
+# development/test runtime normally has none, and then emailed links keep their
+# existing relative form — dev behaviour is unchanged by this tranche.
+_PUBLIC_BASE_URL = _resolve_public_base_url()
+
+
+def _public_link(path):
+    """An externally usable link for `path` when a public base URL is configured;
+    the existing relative path otherwise. The token lives in `path` and is placed
+    in the message body only — never logged and never put in a response."""
+    return (_PUBLIC_BASE_URL + path) if _PUBLIC_BASE_URL else path
+
+
 def _resolve_email_sender():
     """Select the email sender for this runtime.
 
@@ -528,19 +609,35 @@ def _resolve_email_sender():
     seam (`webapp._EMAIL_SENDER` with `.sent` / `.last_for()` / `.clear()`) is
     unchanged.
 
-    Production NEVER receives that sink. Until a transactional-email provider is
-    selected and configured, production gets `UnconfiguredEmailSender`, which
-    refuses every send. That is deliberate: an in-memory sink in production would
+    Production NEVER receives that sink. An in-memory sink in production would
     accept every message and deliver nothing, so the application would tell users
     that verification instructions had been sent when nothing could send them.
 
-    Selection happens at import time and startup is NEVER blocked by it — the
-    application boots without email configuration, and only the email-dependent
-    account actions fail, at their point of use.
+    Production gets `ResendEmailSender` (OD-INFRA-6) only when the provider
+    configuration is COMPLETE and valid: the provider name, a non-empty key, a
+    non-empty sender identity, and a usable public base URL. A base URL is part
+    of that bar because a verification message whose link is relative is not a
+    usable message. Anything missing or malformed — including a partial
+    configuration — falls back to `UnconfiguredEmailSender`, which refuses every
+    send. There is no path from production to the development sink.
+
+    Selection happens at import time and startup is NEVER blocked by it: this
+    function cannot raise, the application boots without email configuration, and
+    only the email-dependent account actions fail, at their point of use.
     """
-    if _is_production():
+    if not _is_production():
+        return DevMemoryEmailSender()
+    provider = os.environ.get("INVENTORAI_EMAIL_PROVIDER", "").strip().lower()
+    if provider != "resend":
         return UnconfiguredEmailSender()
-    return DevMemoryEmailSender()
+    provider_key = os.environ.get("INVENTORAI_RESEND_API_KEY", "").strip()
+    sender_identity = os.environ.get("INVENTORAI_EMAIL_FROM", "").strip()
+    if not provider_key or not sender_identity or not _resolve_public_base_url():
+        return UnconfiguredEmailSender()
+    try:
+        return ResendEmailSender(api_key=provider_key, sender=sender_identity)
+    except ValueError:
+        return UnconfiguredEmailSender()
 
 
 _EMAIL_SENDER = _resolve_email_sender()
@@ -582,10 +679,21 @@ _REGISTER_RATE_WINDOW_SECONDS = 60 * 60
 # One generic, non-enumerating registration response (contract §7): it never
 # reveals whether the email was newly registered, already in use, or belongs to a
 # disabled/deleted account, nor whether an email was actually sent.
+# ATTEMPT-TRUTHFUL, not delivery-asserting. The previous wording ("verification
+# instructions have been sent") stated a completed external fact the application
+# cannot know: a configured provider can reject or be unreachable, and that
+# failure is deliberately swallowed here to keep the response byte-identical for
+# every submitted address. Asserting delivery therefore made the product lie
+# whenever the provider failed. The wording below is true in EVERY case — unknown
+# address (the conditional does not apply), known address with provider
+# acceptance, provider rejection, provider outage — while remaining one constant
+# string, so the non-enumeration property is preserved rather than traded away.
 REGISTER_GENERIC_MESSAGE_EN = (
-    "If the address can be used, verification instructions have been sent.")
+    "If the address can be used, we have tried to send verification "
+    "instructions to it. If nothing arrives shortly, request a new message.")
 REGISTER_GENERIC_MESSAGE_AR = (
-    "إذا كان بالإمكان استخدام هذا العنوان، فسيتم إرسال تعليمات التحقق.")
+    "إذا كان بالإمكان استخدام هذا العنوان، فقد حاولنا إرسال تعليمات التحقق "
+    "إليه. إذا لم تصل أي رسالة قريبًا، فاطلب رسالة جديدة.")
 
 
 def _get_account_store():
@@ -678,14 +786,34 @@ _AUTH_SESSION_KEY = "auth"                        # namespaced slot inside flask
 # email exists, a password was wrong, or an account is disabled/deleted/unverified).
 LOGIN_FAILED_MESSAGE_EN = "Those sign-in details did not match. Please try again."
 LOGIN_FAILED_MESSAGE_AR = "بيانات تسجيل الدخول غير متطابقة. يرجى المحاولة مرة أخرى."
+# Attempt-truthful for the same reason as REGISTER_GENERIC_MESSAGE_EN above:
+# ONE constant string (no enumeration oracle) that is true under an unknown
+# address, a known address, provider acceptance, provider rejection and provider
+# outage alike.
 RECOVER_GENERIC_MESSAGE_EN = (
-    "If that address matches an account, password-reset instructions have been sent.")
+    "If that address matches an account, we have tried to send password-reset "
+    "instructions to it. If nothing arrives shortly, request a new message.")
 RECOVER_GENERIC_MESSAGE_AR = (
-    "إذا كان هذا العنوان مطابقًا لحساب، فقد أُرسلت تعليمات إعادة تعيين كلمة المرور.")
+    "إذا كان هذا العنوان مطابقًا لحساب، فقد حاولنا إرسال تعليمات إعادة تعيين "
+    "كلمة المرور إليه. إذا لم تصل أي رسالة قريبًا، فاطلب رسالة جديدة.")
+# The authenticated resend surface is DIFFERENT: the signed-in account identity
+# is already known to the caller, so a truthful outcome here reveals nothing
+# about any other address and is not an enumeration oracle. It therefore keeps
+# its conditional success wording (true when a message was accepted, and
+# vacuously true when verification was no longer needed) and gains a separate
+# bounded failure message for the cases where no message went out — a provider
+# rejection/outage, or a rate limit. Neither message names a provider, a reason
+# or a token.
 RESEND_GENERIC_MESSAGE_EN = (
     "If verification is still needed, a new verification message has been sent.")
 RESEND_GENERIC_MESSAGE_AR = (
     "إذا كان التحقق لا يزال مطلوبًا، فقد أُرسلت رسالة تحقق جديدة.")
+RESEND_FAILED_MESSAGE_EN = (
+    "A new verification message could not be sent just now. "
+    "Please try again in a few minutes.")
+RESEND_FAILED_MESSAGE_AR = (
+    "لم يتمكن النظام من إرسال رسالة تحقق جديدة الآن. "
+    "يرجى المحاولة مرة أخرى بعد بضع دقائق.")
 
 
 def _cleanup_rate_limits(now):
@@ -2651,12 +2779,19 @@ def register_submit():
             created_at=_iso(now))
         _EMAIL_SENDER.send(
             to=email_normalized,
-            subject="Verify your InventorAI email",
-            body=("Use this code to verify your email (valid 24 hours): "
-                  + raw_token))
+            subject=VERIFICATION_SUBJECT,
+            # The SAME body as the resend path. It previously carried the raw
+            # token as a bare "code", but no surface anywhere accepts a pasted
+            # code — `/verify/<token>` is the only way to complete verification —
+            # so a code-only message was unusable in a real inbox.
+            body=_verification_body(raw_token))
     except Exception:
-        # A token/email-sink failure does not change the generic response and does
+        # A token/delivery failure does not change the generic response and does
         # not sign anyone in; the account row already committed atomically above.
+        # The response wording is attempt-truthful precisely so that swallowing
+        # this exception cannot turn into a false claim of delivery — see
+        # REGISTER_GENERIC_MESSAGE_EN. Nothing about the failure is logged or
+        # surfaced, so the response stays byte-identical for every address.
         pass
     return _register_generic_response()
 
@@ -2704,9 +2839,25 @@ def _csrf_reject():
     return response
 
 
+VERIFICATION_SUBJECT = "Verify your InventorAI email"
+RESET_SUBJECT = "Reset your InventorAI password"
+
+
+def _verification_body(raw_token):
+    """ONE verification body for both issue paths (registration and resend), so
+    the two can never drift into different link forms."""
+    return ("Use this link to verify your email (valid 24 hours): "
+            + _public_link("/verify/" + raw_token))
+
+
+def _reset_body(raw_token):
+    return ("Use this link to reset your password (valid 1 hour): "
+            + _public_link("/reset/" + raw_token))
+
+
 def _issue_verification(account, now):
-    """Issue (and dev-sink send) a fresh verification token; only its hash is
-    stored, the raw token goes solely into the sink body."""
+    """Issue (and send) a fresh verification token; only its hash is stored, the
+    raw token goes solely into the message body."""
     raw = _acct.new_raw_token()
     _get_account_store().create_email_token(
         token_id=_acct.new_token_id(), account_id=account["account_id"],
@@ -2714,9 +2865,8 @@ def _issue_verification(account, now):
         expires_at=_iso(now + _timedelta_seconds(_VERIFICATION_TTL_SECONDS)),
         created_at=_iso(now))
     _EMAIL_SENDER.send(
-        to=account["email_normalized"], subject="Verify your InventorAI email",
-        body=("Use this link to verify your email (valid 24 hours): "
-              "/verify/" + raw))
+        to=account["email_normalized"], subject=VERIFICATION_SUBJECT,
+        body=_verification_body(raw))
 
 
 def _issue_reset(account, now):
@@ -2729,9 +2879,8 @@ def _issue_reset(account, now):
         expires_at=_iso(now + _timedelta_seconds(_RESET_TTL_SECONDS)),
         created_at=_iso(now))
     _EMAIL_SENDER.send(
-        to=account["email_normalized"], subject="Reset your InventorAI password",
-        body=("Use this link to reset your password (valid 1 hour): "
-              "/reset/" + raw))
+        to=account["email_normalized"], subject=RESET_SUBJECT,
+        body=_reset_body(raw))
 
 
 def _render_login(error=False, status=200, deactivated=False):
@@ -3023,13 +3172,29 @@ def resend_verification():
     _cleanup_rate_limits(now)
     allowed = _rate_ok(_acct.email_digest(account["email_normalized"]), "resend",
                        now, _RESEND_RATE_LIMIT, _RESEND_RATE_WINDOW_SECONDS)
+    # Truthful outcome, bounded. `notice="resend"` is shown ONLY when a message
+    # was actually accepted by the sender, or when verification was no longer
+    # needed (the notice is conditional, so it is vacuously true then). Every
+    # other case — a provider rejection or outage, a rate limit, a non-active
+    # account — shows the failure notice instead. The previous code always showed
+    # the success notice, so a swallowed delivery failure AND a rate-limited
+    # request both told a signed-in user a message had gone out when none had.
+    # `EmailDeliveryFailed` is caught by name to document the expected failure;
+    # the broad clause keeps any other fault equally non-disclosing.
+    delivered = False
     if allowed and account["status"] == "active" and not account["email_verified"]:
         try:
             _issue_verification(account, now)
+            delivered = True
+        except EmailDeliveryFailed:
+            delivered = False
         except Exception:
-            pass
+            delivered = False
+    elif allowed and account["status"] == "active" and account["email_verified"]:
+        delivered = True                  # nothing to send; notice is vacuous
     return render_template("account.html", account=account,
-                           csrf_token=_session_csrf(), notice="resend")
+                           csrf_token=_session_csrf(),
+                           notice="resend" if delivered else "resend_failed")
 
 
 @app.route("/verify/<token>", methods=["GET", "POST"])

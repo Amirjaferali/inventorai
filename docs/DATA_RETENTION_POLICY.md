@@ -43,7 +43,13 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
   `TTL_MS = 7 days`) — a client mechanism, not a server retention rule.
 * Self-service export is project-scoped only (P10-D3a); account-wide export DEFERRED (OD-DR2).
 * Local backups (P10-BR1) are byte-consistent copies of the durable database: they inherit all
-  data above, have NO retention/rotation schedule, and NO offsite/production backup exists.
+  data above and have NO retention/rotation schedule. SUPERSEDED IN PART (was: "NO offsite/
+  production backup exists"): an off-provider upload CAPABILITY to Cloudflare R2 now exists
+  (OD-INFRA-5, `scripts/inventorai_offsite_backup.py`). It is not activated by the repository,
+  it inherits exactly the same data, and it has NO retention, expiry or deletion path — so an
+  uploaded copy persists until a retention decision exists. That decision is still OPEN in this
+  lane; nothing here decides it. Any future erasure obligation would have to reach these copies
+  too, which is an additional reason the substance below remains adviser-open.
 
 ## What does NOT exist — CURRENT
 
@@ -63,8 +69,13 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
 2. HISTORICAL — SUPERSEDED: "Anthropic API receives descriptions." NO live external transfer
    exists: AI advisory transfer is disabled in code (`engine/ai_advisor.py`,
    `AI_ADVISORY_ENABLED = False`; the dormant call path is unreachable without a source change),
-   email runs to an in-memory development sink only, and no payment/webhook/analytics/telemetry
-   transfer exists.
+   and no payment/webhook/analytics/telemetry transfer exists. Email: SUPERSEDED IN PART (was:
+   "email runs to an in-memory development sink only") — development/test still use that sink,
+   and production now uses either a sender that cannot deliver at all or, when OD-INFRA-6 is
+   fully configured, the Resend HTTPS API. When configured, a transactional message (recipient
+   address, subject, and a verification/reset link) IS transferred to that provider; the
+   conclusion above is unchanged for every other data class, and no invention/project content
+   is ever included in such a message.
 3. HISTORICAL — SUPERSEDED: "No PII collected in MVP." Accounts exist and store personal data
    (normalized email + identity). The condition in "GDPR/PDPL review required before adding
    accounts" has therefore FIRED: that review is commissioned as external questions LQ-04…LQ-11

@@ -67,10 +67,17 @@ def _acct_store():
 
 
 def _captured_raw_token(email_normalized):
-    """Pull the raw verification token out of the dev email sink message body."""
+    """Pull the raw verification token out of the dev email sink message body.
+
+    Marker is the path prefix: under OD-INFRA-6 registration mails the same
+    verification LINK as the resend path (a bare code was unusable, since
+    `/verify/<token>` is the only surface that completes verification). This
+    changes extraction only — the assertions below are unchanged, and the raw
+    token is still read from the message body and nowhere else.
+    """
     msg = webapp._EMAIL_SENDER.last_for(email_normalized)
     assert msg is not None, "expected a dev-sink verification message"
-    return msg["body"].rsplit(": ", 1)[-1].strip()
+    return msg["body"].rsplit("/verify/", 1)[-1].strip()
 
 
 def _parse_iso(value):

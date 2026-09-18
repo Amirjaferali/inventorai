@@ -93,8 +93,9 @@ deployment and makes no production-readiness claim. The governing records remain
 | `INVENTORAI_DB_PATH` | `<persistent-disk mount>/inventorai.sqlite` | **must** resolve inside the mounted persistent disk |
 | `PORT` | supplied by the platform | read by `gunicorn.conf.py`; the operator does not set it |
 
-No email variable is required to boot. Production email is a separate, not yet
-taken decision; see "Email" below.
+No email variable is required to boot: the application starts, serves and stays
+healthy with no email provider configured. Configuring one is optional at boot
+and required before public use — see "Email" below.
 
 ### Runtime
 
@@ -131,12 +132,40 @@ dependencies are usable and `503` on a real local dependency failure.
 ### Email
 
 Production selects the sender by environment. Development and test use the
-in-memory sink; production never does. Until a transactional-email provider is
-selected and configured, production uses a sender that cannot deliver, and the
-email-dependent account actions (registration, verification resend, password
-recovery) **refuse with `503` rather than claiming that a message was sent**.
-Everything else, including the whole anonymous journey, is unaffected. The
-provider variables will be defined by that provider's adapter when it is chosen.
+in-memory sink; production never does, under any configuration.
+
+Production email is **Resend over its HTTPS API** (OD-INFRA-6), reached through
+the standard library only — there is no provider SDK and no extra runtime
+dependency. All four variables below are required together:
+
+| Variable | Value | Notes |
+|---|---|---|
+| `INVENTORAI_EMAIL_PROVIDER` | `resend` | any other value selects no provider |
+| `INVENTORAI_RESEND_API_KEY` | provider API key | platform secret store only — never in the repository, never in a log, never on a command line |
+| `INVENTORAI_EMAIL_FROM` | verified sender identity, e.g. `InventorAI <no-reply@your-domain>` | must be a sender the provider has verified for your domain |
+| `INVENTORAI_PUBLIC_BASE_URL` | absolute `https://` origin of the public service | the ONLY source of the links in verification and reset messages |
+
+`INVENTORAI_PUBLIC_BASE_URL` is a required part of the email configuration
+because a verification message whose link is relative is not a usable message.
+It must be an absolute `https://` origin; a trailing slash is normalized away.
+It is never derived from a request: no request host and no proxy-supplied
+forwarded header can influence an emailed link, because a caller-controlled host
+would let an attacker mint a verification link pointing at their own origin.
+
+**Partial configuration fails closed.** If any of the four is missing, blank or
+malformed, production uses a sender that cannot deliver, and the email-dependent
+account actions (registration, verification resend, password recovery) refuse
+with `503` rather than claiming a message was sent. There is no fallback to the
+development sink. Everything else, including the whole anonymous journey, is
+unaffected.
+
+**A configured provider that fails is different.** Delivery is available, so the
+request proceeds and the account is still created — a provider outage must not
+cost a user their registration. The anonymous surfaces then say only that an
+attempt was made, never that a message was delivered, and their response stays
+byte-identical for every address so it reveals nothing about whether an account
+exists. The signed-in resend surface reports the outcome truthfully, because the
+caller's own identity is already known there.
 
 ### Backup and restore
 
@@ -156,4 +185,67 @@ without an explicit `--overwrite`. Repointing `INVENTORAI_DB_PATH` at a verified
 restore is a deliberate, separate step — see `docs/DISASTER_RECOVERY_PLAN.md`
 Scenario 7 for the full procedure. A backup produced this way is a portable
 SQLite file and is independent of any hosting provider's own snapshots.
+
+### Off-provider backup (Cloudflare R2)
+
+A backup that lives only on the hosting provider's disk does not survive losing
+that provider or that account. `scripts/inventorai_offsite_backup.py` copies one
+off, composed from the same backup service plus an HTTPS uploader — no second
+backup engine, and the standard library only (no `boto3`):
+
+```
+python scripts/inventorai_offsite_backup.py daily  <live-database>
+python scripts/inventorai_offsite_backup.py upload <existing-backup> [--key KEY]
+```
+
+`daily` is the schedulable command: it takes a consistent backup of the live
+database (read-only), validates it, uploads it, and removes the temporary local
+copy in every outcome, including failure — so a repeating schedule cannot fill
+the disk. It exits `0` only when the provider accepted the object; `3` on a
+backup failure and `4` on a configuration or upload failure.
+
+| Variable | Value |
+|---|---|
+| `INVENTORAI_R2_ACCOUNT_ID` | Cloudflare account id (forms the endpoint host) |
+| `INVENTORAI_R2_BUCKET` | destination bucket |
+| `INVENTORAI_R2_ACCESS_KEY_ID` | R2 access key id |
+| `INVENTORAI_R2_SECRET_ACCESS_KEY` | R2 secret access key |
+| `INVENTORAI_R2_PREFIX` | optional object-key prefix |
+
+Credentials come from the environment only — never a file, never an argument, so
+none reaches shell history or the process list. Absent configuration fails closed
+and names only the missing variable.
+
+**No retention, and no deletion.** There is no code path anywhere in this tool
+that can remove, expire or overwrite a stored object: retention duration is an
+unresolved policy question, and inventing one here would be a policy decision
+this repository has no authority to make. Objects therefore accumulate until a
+retention decision exists. **A provider snapshot is also not this**: a persistent
+disk snapshot is provider-local and proves nothing about surviving loss of the
+provider or the account.
+
+Not activated by this repository: no schedule, cron job, bucket or credential is
+created here. Turning the daily run on is a separate operator action.
+
+### Auditing the dependencies actually installed in the image
+
+`scripts/run_dependency_audit.py` audits `requirements.txt`. That resolves the
+latest versions compatible with the pins, which are not necessarily the
+transitive versions baked into a built image. To audit the deployed artifact
+itself, capture its installed set from the running container and audit that:
+
+```
+# 1. capture the exact installed set from the image/container
+docker exec <container> python -m pip freeze > image-requirements.txt
+
+# 2. audit that captured set (pip-audit is TOOLING, never a runtime dependency)
+python -m pip install pip-audit           # in a throwaway environment
+python -m pip_audit -r image-requirements.txt
+```
+
+Two limitations, stated rather than implied: the captured file is evidence of
+one point in time, because advisory databases change; and this covers Python
+packages only — the image's operating-system packages (the Pango/HarfBuzz/
+Fontconfig stack and the base image itself) are outside its scope and are not
+audited by it.
 

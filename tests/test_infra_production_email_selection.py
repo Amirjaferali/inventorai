@@ -24,12 +24,14 @@ been selected; weakening the existing non-enumeration property to pass.
 from tests.csrf_client import csrf_client
 import logging
 import os
+import sqlite3
 import subprocess
 import sys
 
 import pytest
 
 import web.app as webapp
+import web.ui_text as ui_text
 from engine.email_sender import (
     DevMemoryEmailSender,
     EmailNotConfigured,
@@ -258,3 +260,594 @@ def test_refusal_response_carries_no_token_recipient_or_internal_detail(
     assert "provider" not in body.lower()
     assert "configur" not in body.lower()
     assert "Traceback" not in body
+
+
+# =============================================================================
+# OD-INFRA-6 — the production Resend adapter, the public base URL, and the
+# failure semantics this tranche was authorized to fix.
+#
+# Nothing below performs a network request: the adapter takes a `transport`
+# seam and every test supplies a local deterministic callable. No provider
+# account, key or domain exists, and none is needed to run this file.
+# =============================================================================
+import json as _json
+
+from engine.email_sender import (
+    DEFAULT_TIMEOUT_SECONDS,
+    EmailDeliveryFailed,
+    RESEND_ENDPOINT,
+    ResendEmailSender,
+)
+
+PROVIDER_KEY = "test-only-not-a-real-provider-key"
+SENDER = "InventorAI <no-reply@example.test>"
+BASE_URL = "https://app.example.test"
+
+
+_ACCEPTED = {"id": "prov-msg-1"}
+_UNSET = object()
+
+
+class _RecordingTransport:
+    """A local stand-in for the provider. Records the call, returns a scripted
+    answer. Never opens a socket.
+
+    `document` uses an explicit sentinel so that `document=None` means a real
+    "the provider returned no JSON document" case rather than "use the default".
+    """
+
+    def __init__(self, status=200, document=_UNSET, raises=None):
+        self.status = status
+        self.document = _ACCEPTED if document is _UNSET else document
+        self.raises = raises
+        self.calls = []
+
+    def __call__(self, url, headers, payload, timeout_seconds):
+        self.calls.append({"url": url, "headers": dict(headers),
+                           "payload": payload, "timeout": timeout_seconds})
+        if self.raises is not None:
+            raise self.raises
+        return self.status, self.document
+
+
+def _sender(transport=None, **kwargs):
+    options = {"api_key": PROVIDER_KEY, "sender": SENDER,
+               "transport": transport or _RecordingTransport()}
+    options.update(kwargs)
+    return ResendEmailSender(**options)
+
+
+def _production_env(tmp_path, **overrides):
+    env = {"INVENTORAI_ENV": "production",
+           "INVENTORAI_EMAIL_PROVIDER": "resend",
+           "INVENTORAI_RESEND_API_KEY": PROVIDER_KEY,
+           "INVENTORAI_EMAIL_FROM": SENDER,
+           "INVENTORAI_PUBLIC_BASE_URL": BASE_URL}
+    env.update(overrides)
+    return env
+
+
+def _apply(monkeypatch, env):
+    for name in ("INVENTORAI_ENV", "INVENTORAI_EMAIL_PROVIDER",
+                 "INVENTORAI_RESEND_API_KEY", "INVENTORAI_EMAIL_FROM",
+                 "INVENTORAI_PUBLIC_BASE_URL"):
+        monkeypatch.delenv(name, raising=False)
+    for name, value in env.items():
+        monkeypatch.setenv(name, value)
+
+
+# --- selection: complete configuration only -----------------------------------
+
+def test_production_selects_resend_only_when_configuration_is_complete(
+        monkeypatch, tmp_path):
+    _apply(monkeypatch, _production_env(tmp_path))
+    assert isinstance(webapp._resolve_email_sender(), ResendEmailSender)
+
+
+@pytest.mark.parametrize("missing", [
+    "INVENTORAI_EMAIL_PROVIDER", "INVENTORAI_RESEND_API_KEY",
+    "INVENTORAI_EMAIL_FROM", "INVENTORAI_PUBLIC_BASE_URL"])
+def test_partial_configuration_fails_closed_to_the_unconfigured_sender(
+        monkeypatch, tmp_path, missing):
+    """A PARTIAL configuration is the dangerous case: it must never be treated
+    as "nearly configured" and it must never reach the development sink."""
+    env = _production_env(tmp_path)
+    env.pop(missing)
+    _apply(monkeypatch, env)
+    selected = webapp._resolve_email_sender()
+    assert isinstance(selected, UnconfiguredEmailSender)
+    assert not isinstance(selected, DevMemoryEmailSender)
+
+
+@pytest.mark.parametrize("value", ["   ", "", "\t"])
+def test_blank_provider_key_fails_closed(monkeypatch, tmp_path, value):
+    _apply(monkeypatch, _production_env(tmp_path,
+                                        INVENTORAI_RESEND_API_KEY=value))
+    assert isinstance(webapp._resolve_email_sender(), UnconfiguredEmailSender)
+
+
+@pytest.mark.parametrize("value", [
+    "http://app.example.test",        # not HTTPS
+    "app.example.test",               # not absolute
+    "https://",                       # no host
+    "https://u:p@app.example.test",   # embedded credentials
+    "https://app.example.test?x=1",   # query
+    "https://app.example.test#f",     # fragment
+    "javascript:alert(1)",            # not a URL at all
+])
+def test_malformed_public_base_url_fails_closed(monkeypatch, tmp_path, value):
+    _apply(monkeypatch, _production_env(tmp_path,
+                                        INVENTORAI_PUBLIC_BASE_URL=value))
+    assert isinstance(webapp._resolve_email_sender(), UnconfiguredEmailSender)
+
+
+def test_unknown_provider_name_is_not_silently_accepted(monkeypatch, tmp_path):
+    _apply(monkeypatch, _production_env(
+        tmp_path, INVENTORAI_EMAIL_PROVIDER="some-other-provider"))
+    assert isinstance(webapp._resolve_email_sender(), UnconfiguredEmailSender)
+
+
+def test_development_is_unaffected_by_provider_configuration(monkeypatch,
+                                                             tmp_path):
+    """The dev/test sink is chosen by RUNTIME, not by the presence of provider
+    configuration: a stray production variable must not change dev behaviour."""
+    env = _production_env(tmp_path)
+    env.pop("INVENTORAI_ENV")
+    _apply(monkeypatch, env)
+    assert isinstance(webapp._resolve_email_sender(), DevMemoryEmailSender)
+
+
+def test_selection_never_raises_on_any_configuration_shape(monkeypatch,
+                                                           tmp_path):
+    """No startup deadlock: selection is import-time, so it must not raise for
+    ANY value, however malformed."""
+    for value in ("", "   ", "://", "https://[", "not a url", "%"):
+        _apply(monkeypatch, _production_env(
+            tmp_path, INVENTORAI_PUBLIC_BASE_URL=value))
+        assert webapp._resolve_email_sender() is not None
+
+
+# --- public base URL validation (the configuration owner) ---------------------
+
+@pytest.mark.parametrize("value,expected", [
+    ("https://app.example.test", "https://app.example.test"),
+    ("https://app.example.test/", "https://app.example.test"),
+    ("https://app.example.test///", "https://app.example.test"),
+    ("  https://app.example.test  ", "https://app.example.test"),
+    ("https://app.example.test/base/", "https://app.example.test/base"),
+    ("https://app.example.test:8443", "https://app.example.test:8443"),
+])
+def test_public_base_url_normalizes_trailing_slash_safely(value, expected):
+    assert webapp._normalize_public_base_url(value) == expected
+
+
+@pytest.mark.parametrize("value", [
+    None, "", "   ", "http://app.example.test", "//app.example.test",
+    "https://", "ftp://app.example.test", "https://u:p@app.example.test",
+    "https://app.example.test?x=1", "https://app.example.test#f",
+    "https://app example.test", "https://app.example.test:notaport",
+    "\x00", "https://app.example.test\x00", 7, b"https://app.example.test",
+])
+def test_public_base_url_rejects_anything_unusable(value):
+    assert webapp._normalize_public_base_url(value) is None
+
+
+def test_public_base_url_is_never_derived_from_request_headers(client,
+                                                              monkeypatch):
+    """The whole point of a CONFIGURED base URL: a caller-supplied Host or
+    forwarded header must not be able to mint a link at an attacker origin."""
+    monkeypatch.setattr(webapp, "_PUBLIC_BASE_URL", BASE_URL)
+    sink = DevMemoryEmailSender()
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER", sink)
+    address = "host-spoof-probe@example.com"
+    # Only the forwarded headers are spoofed here. Overriding `Host` as well is
+    # already rejected with 403 by the pre-existing request-integrity guard, so
+    # it cannot reach the link-building code through this client at all — a
+    # stronger outcome than this test needs, and unchanged by this tranche.
+    client.post("/register",
+                data={"email": address, "password": PASSWORD,
+                      "password_confirm": PASSWORD},
+                headers={"X-Forwarded-Host": "attacker.example",
+                         "X-Forwarded-Proto": "http",
+                         "X-Forwarded-For": "203.0.113.1"})
+    captured = sink.last_for(address)
+    assert captured is not None, "registration did not reach the sender"
+    body = captured["body"]
+    assert body.startswith("Use this link")
+    assert BASE_URL + "/verify/" in body
+    assert "attacker.example" not in body
+
+
+# Source-text forwarded-header/ProxyFix absence is NOT re-asserted here: it is
+# already owned by `test_no_proxyfix_or_forwarded_header_trust_introduced` in
+# tests/test_infra_render_production_serving.py. The behavioural spoofing test
+# above is this module's contribution and is the stronger guarantee.
+
+
+# --- absolute links -----------------------------------------------------------
+
+def test_verification_link_is_absolute_https_when_configured(monkeypatch):
+    monkeypatch.setattr(webapp, "_PUBLIC_BASE_URL", BASE_URL)
+    body = webapp._verification_body("raw-token-value")
+    assert BASE_URL + "/verify/raw-token-value" in body
+    assert "https://" in body
+
+
+def test_reset_link_is_absolute_https_when_configured(monkeypatch):
+    monkeypatch.setattr(webapp, "_PUBLIC_BASE_URL", BASE_URL)
+    body = webapp._reset_body("raw-token-value")
+    assert BASE_URL + "/reset/raw-token-value" in body
+
+
+def test_links_stay_relative_in_development(monkeypatch):
+    """Development behaviour is unchanged: no base URL, no absolute link."""
+    monkeypatch.setattr(webapp, "_PUBLIC_BASE_URL", None)
+    assert webapp._verification_body("t").endswith("/verify/t")
+    assert webapp._reset_body("t").endswith("/reset/t")
+
+
+def test_registration_and_resend_use_the_same_verification_body(monkeypatch):
+    """They previously diverged: registration mailed a bare "code" that no
+    surface accepts, while resend mailed a link. One body now serves both."""
+    monkeypatch.setattr(webapp, "_PUBLIC_BASE_URL", BASE_URL)
+    source = open(os.path.join(ROOT, "web", "app.py"), encoding="utf-8").read()
+    assert "Use this code to verify" not in source
+    assert source.count("Use this link to verify your email") == 1
+
+
+# --- the adapter --------------------------------------------------------------
+
+def test_adapter_posts_to_the_constant_https_provider_endpoint():
+    transport = _RecordingTransport()
+    _sender(transport).send(to=EMAIL, subject="s", body="b")
+    assert transport.calls[0]["url"] == RESEND_ENDPOINT
+    assert RESEND_ENDPOINT.startswith("https://")
+
+
+@pytest.mark.parametrize("endpoint", [
+    "http://api.resend.com/emails", "ftp://x", "api.resend.com", ""])
+def test_adapter_refuses_a_non_https_endpoint(endpoint):
+    with pytest.raises(ValueError):
+        _sender(endpoint=endpoint)
+
+
+def test_adapter_timeout_is_bounded_and_passed_to_the_transport():
+    transport = _RecordingTransport()
+    sender = _sender(transport)
+    sender.send(to=EMAIL, subject="s", body="b")
+    assert 0 < sender.timeout_seconds <= 60
+    assert sender.timeout_seconds == DEFAULT_TIMEOUT_SECONDS
+    assert transport.calls[0]["timeout"] == sender.timeout_seconds
+
+
+@pytest.mark.parametrize("timeout", [0, -1, 61, 1000, "soon", None])
+def test_adapter_refuses_an_unbounded_or_invalid_timeout(timeout):
+    with pytest.raises(ValueError):
+        _sender(timeout_seconds=timeout)
+
+
+@pytest.mark.parametrize("status", [200, 201, 202, 299])
+def test_provider_2xx_with_a_message_id_is_accepted(status):
+    transport = _RecordingTransport(status=status)
+    assert _sender(transport).send(to=EMAIL, subject="s", body="b") is True
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 404, 422, 429, 500, 502, 503])
+def test_provider_4xx_and_5xx_are_rejected(status):
+    transport = _RecordingTransport(status=status)
+    with pytest.raises(EmailDeliveryFailed) as raised:
+        _sender(transport).send(to=EMAIL, subject="s", body="b")
+    assert raised.value.reason_code == "provider_rejected"
+
+
+@pytest.mark.parametrize("document", [None, {}, {"id": ""}, {"id": "   "},
+                                      [], "ok", 7, {"error": "nope"}])
+def test_malformed_or_id_less_provider_response_is_not_success(document):
+    """A 2xx with no message id is NOT confirmed acceptance."""
+    transport = _RecordingTransport(status=200, document=document)
+    with pytest.raises(EmailDeliveryFailed) as raised:
+        _sender(transport).send(to=EMAIL, subject="s", body="b")
+    assert raised.value.reason_code == "provider_response_invalid"
+
+
+@pytest.mark.parametrize("error", [
+    TimeoutError("timed out"), OSError("connection reset"),
+    ValueError("bad"), Exception("unknown")])
+def test_transport_failure_becomes_a_bounded_delivery_failure(error):
+    transport = _RecordingTransport(raises=error)
+    with pytest.raises(EmailDeliveryFailed) as raised:
+        _sender(transport).send(to=EMAIL, subject="s", body="b")
+    assert raised.value.reason_code == "provider_unreachable"
+    assert raised.value.__cause__ is None      # cause chain severed on purpose
+
+
+def test_delivery_failure_carries_no_recipient_token_body_or_key():
+    transport = _RecordingTransport(status=500)
+    try:
+        _sender(transport).send(to=EMAIL, subject="Verify",
+                                body="token-abc /verify/token-abc")
+    except EmailDeliveryFailed as exc:
+        text = "%r %s" % (exc, exc)
+        assert EMAIL not in text
+        assert "token-abc" not in text
+        assert PROVIDER_KEY not in text
+    else:                                       # pragma: no cover
+        raise AssertionError("a 500 must not be treated as delivered")
+
+
+def test_adapter_repr_and_attributes_never_expose_the_provider_key():
+    """`repr()` is what lands in a traceback or a debug log line, so it is the
+    surface that matters. The key is held privately and never rendered."""
+    sender = _sender()
+    exposed = "%r %s %s %s" % (sender, sender, sender.endpoint, sender.sender)
+    assert PROVIDER_KEY not in exposed
+    assert "Bearer" not in exposed
+    assert "api_key" not in repr(sender)
+
+
+def test_authorization_header_is_sent_but_never_logged(caplog):
+    transport = _RecordingTransport()
+    with caplog.at_level(logging.DEBUG):
+        _sender(transport).send(to=EMAIL, subject="s", body="b")
+    assert transport.calls[0]["headers"]["Authorization"].startswith("Bearer ")
+    assert PROVIDER_KEY not in caplog.text
+    assert "Authorization" not in caplog.text
+    assert EMAIL not in caplog.text
+
+
+def test_adapter_emits_no_log_records_at_all(caplog):
+    """The quietest guarantee: the production adapter writes nothing anywhere,
+    on success or on failure, so no future log configuration can expose it."""
+    with caplog.at_level(logging.DEBUG):
+        _sender(_RecordingTransport()).send(to=EMAIL, subject="s", body="b")
+        try:
+            _sender(_RecordingTransport(status=500)).send(
+                to=EMAIL, subject="s", body="b")
+        except EmailDeliveryFailed:
+            pass
+    assert [r for r in caplog.records
+            if "email_sender" in r.name] == []
+
+
+def test_adapter_request_body_is_one_json_message_with_no_bulk_fields():
+    transport = _RecordingTransport()
+    _sender(transport).send(to=EMAIL, subject="Verify", body="link")
+    payload = transport.calls[0]["payload"]
+    assert payload["to"] == [EMAIL]           # exactly one recipient
+    assert payload["from"] == SENDER
+    assert payload["subject"] == "Verify"
+    assert payload["text"] == "link"
+    for absent in ("bcc", "cc", "attachments", "tags", "template",
+                   "batch", "schedule"):
+        assert absent not in payload
+    assert _json.dumps(payload)               # serializable as one document
+    assert transport.calls[0]["headers"]["Content-Type"] == "application/json"
+
+
+def test_adapter_makes_exactly_one_attempt_with_no_retry():
+    transport = _RecordingTransport(status=503)
+    with pytest.raises(EmailDeliveryFailed):
+        _sender(transport).send(to=EMAIL, subject="s", body="b")
+    assert len(transport.calls) == 1
+
+
+def test_adapter_declares_itself_capable_of_delivery():
+    assert ResendEmailSender.can_deliver is True
+    assert webapp._email_delivery_available() in (True, False)
+
+
+# --- FALSE-SENT semantics + NON-ENUMERATION (both, simultaneously) ------------
+
+def _register_body(client, email):
+    return client.post("/register",
+                       data={"email": email, "password": PASSWORD,
+                             "password_confirm": PASSWORD}).get_data()
+
+
+def test_no_user_visible_claim_of_completed_delivery_anywhere(monkeypatch):
+    """The defect this section exists for: the product must not state as fact
+    that a message was sent, because a configured provider can fail and that
+    failure is deliberately invisible to the caller."""
+    for message in (webapp.REGISTER_GENERIC_MESSAGE_EN,
+                    webapp.RECOVER_GENERIC_MESSAGE_EN):
+        lowered = message.lower()
+        assert "have been sent" not in lowered, message
+        assert "has been sent" not in lowered, message
+        assert "we have tried to send" in lowered, message
+
+
+def test_localized_surfaces_carry_the_same_attempt_truthful_claim():
+    """The rendered surface lives in ui_text, so fixing only web/app.py would
+    have left the false claim on screen."""
+    for key in ("UI_A_MSG_REGISTER", "UI_A_MSG_RECOVER"):
+        english = ui_text.text(key, "en").lower()
+        assert "have been sent" not in english, key
+        assert "has been sent" not in english, key
+        assert "tried to send" in english, key
+        assert ui_text.text(key, "ar") != ui_text.text(key, "en")
+        assert "حاولنا" in ui_text.text(key, "ar"), key
+
+
+@pytest.mark.parametrize("path,data", [
+    ("/register", {"email": "fresh@example.com", "password": PASSWORD,
+                   "password_confirm": PASSWORD}),
+    ("/recover", {"email": "fresh@example.com"}),
+])
+def test_provider_failure_produces_no_false_sent_claim(client, monkeypatch,
+                                                       path, data):
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER",
+                        _sender(_RecordingTransport(status=500)))
+    response = client.post(path, data=data)
+    assert response.status_code == 200
+    body = response.get_data(as_text=True).lower()
+    assert "have been sent" not in body
+    assert "has been sent" not in body
+    assert "tried to send" in body
+
+
+def test_registration_response_is_identical_whether_delivery_succeeds_or_fails(
+        client, monkeypatch):
+    """A. no false delivery claim, achieved WITHOUT B. an oracle: the response
+    must not differ by provider outcome either, or the difference would leak
+    whether a message was actually attempted for that address."""
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER",
+                        _sender(_RecordingTransport(status=200)))
+    accepted = _register_body(client, "accepted@example.com")
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER",
+                        _sender(_RecordingTransport(status=500)))
+    rejected = _register_body(client, "rejected@example.com")
+    assert accepted == rejected
+
+
+def test_recovery_response_is_identical_across_existence_and_provider_outcome(
+        client, monkeypatch):
+    """The full cross-product: known/unknown address x accepted/rejected/outage.
+    All four responses must be byte-identical."""
+    sink = DevMemoryEmailSender()
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER", sink)
+    _register_body(client, "known-oracle@example.com")
+
+    bodies = []
+    for transport in (_RecordingTransport(status=200),
+                      _RecordingTransport(status=500),
+                      _RecordingTransport(raises=TimeoutError("t"))):
+        monkeypatch.setattr(webapp, "_EMAIL_SENDER", _sender(transport))
+        for address in ("known-oracle@example.com", "never-seen@example.com"):
+            response = client.post("/recover", data={"email": address})
+            bodies.append((response.status_code, response.get_data()))
+    assert len(set(bodies)) == 1, "recovery response varies by outcome"
+
+
+def test_registration_still_commits_the_account_when_the_provider_fails(
+        client, monkeypatch):
+    """Fail-closed must not become fail-destructive: a provider outage may not
+    cost the user their registration, because they can request a new message."""
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER",
+                        _sender(_RecordingTransport(status=500)))
+    assert client.post("/register",
+                       data={"email": "committed@example.com",
+                             "password": PASSWORD,
+                             "password_confirm": PASSWORD}).status_code == 200
+    store = webapp._get_account_store()
+    assert store.get_account_by_normalized_email("committed@example.com")
+
+
+def test_no_delivery_capability_still_refuses_before_any_mutation(client,
+                                                                  monkeypatch):
+    """The UnconfiguredEmailSender path is untouched by this tranche."""
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER", UnconfiguredEmailSender())
+    assert client.post("/register",
+                       data={"email": "never@example.com",
+                             "password": PASSWORD,
+                             "password_confirm": PASSWORD}).status_code == 503
+    store = webapp._get_account_store()
+    assert store.get_account_by_normalized_email("never@example.com") is None
+
+
+# --- authenticated resend: truthful, bounded ----------------------------------
+
+def _signed_in(client, monkeypatch, email):
+    sink = DevMemoryEmailSender()
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER", sink)
+    assert client.post("/register", data={"email": email, "password": PASSWORD,
+                                          "password_confirm": PASSWORD}
+                       ).status_code == 200
+    assert client.post("/login", data={"email": email, "password": PASSWORD}
+                       ).status_code in (200, 302)
+    return sink
+
+
+def test_authenticated_resend_is_truthful_when_the_provider_fails(client,
+                                                                  monkeypatch):
+    """A signed-in caller already knows their own address, so a truthful
+    outcome here is not an enumeration oracle — and silence would be a lie."""
+    _signed_in(client, monkeypatch, "resend-fail@example.com")
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER",
+                        _sender(_RecordingTransport(status=500)))
+    response = client.post("/account/resend-verification", data={})
+    assert response.status_code == 200
+    body = response.get_data(as_text=True)
+    assert ui_text.text("UI_A_MSG_RESEND_FAILED", "en") in body
+    assert ui_text.text("UI_A_MSG_RESEND", "en") not in body
+
+
+def test_authenticated_resend_reports_success_only_on_acceptance(client,
+                                                                 monkeypatch):
+    _signed_in(client, monkeypatch, "resend-ok@example.com")
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER",
+                        _sender(_RecordingTransport(status=200)))
+    body = client.post("/account/resend-verification",
+                       data={}).get_data(as_text=True)
+    assert ui_text.text("UI_A_MSG_RESEND", "en") in body
+    assert ui_text.text("UI_A_MSG_RESEND_FAILED", "en") not in body
+
+
+def test_authenticated_resend_failure_names_no_provider_or_reason(client,
+                                                                  monkeypatch):
+    _signed_in(client, monkeypatch, "resend-quiet@example.com")
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER",
+                        _sender(_RecordingTransport(status=403)))
+    body = client.post("/account/resend-verification",
+                       data={}).get_data(as_text=True)
+    for forbidden in ("api.resend.com", "403", "Traceback",
+                      "provider_rejected", "provider_unreachable",
+                      "EmailDeliveryFailed", PROVIDER_KEY):
+        assert forbidden.lower() not in body.lower(), forbidden
+
+
+def test_authenticated_resend_does_not_claim_a_message_it_never_attempted(
+        client, monkeypatch):
+    """A rate-limited resend sent nothing. The old code still showed the success
+    notice, which was the same false claim in a different place."""
+    _signed_in(client, monkeypatch, "resend-throttle@example.com")
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER",
+                        _sender(_RecordingTransport(status=200)))
+    monkeypatch.setattr(webapp, "_rate_ok", lambda *a, **k: False)
+    body = client.post("/account/resend-verification",
+                       data={}).get_data(as_text=True)
+    assert ui_text.text("UI_A_MSG_RESEND_FAILED", "en") in body
+    assert ui_text.text("UI_A_MSG_RESEND", "en") not in body
+
+
+# --- token secrecy across the new paths ---------------------------------------
+
+def test_raw_token_never_reaches_a_log_on_any_provider_outcome(client,
+                                                               monkeypatch,
+                                                               caplog):
+    monkeypatch.setattr(webapp, "_PUBLIC_BASE_URL", BASE_URL)
+    with caplog.at_level(logging.DEBUG):
+        for transport in (_RecordingTransport(status=200),
+                          _RecordingTransport(status=500),
+                          _RecordingTransport(raises=OSError("down"))):
+            sender = _sender(transport)
+            monkeypatch.setattr(webapp, "_EMAIL_SENDER", sender)
+            client.post("/register",
+                        data={"email": "log-probe@example.com",
+                              "password": PASSWORD,
+                              "password_confirm": PASSWORD})
+            client.post("/recover", data={"email": "log-probe@example.com"})
+            for call in transport.calls:
+                token = call["payload"]["text"].rsplit("/", 1)[-1]
+                assert token and token not in caplog.text
+    assert "log-probe@example.com" not in caplog.text
+    assert PROVIDER_KEY not in caplog.text
+
+
+def test_tokens_remain_hash_only_at_rest(client, monkeypatch):
+    """The raw token goes into the message body and nowhere else — the store
+    keeps only its hash. Unchanged by this tranche, asserted because the body
+    construction moved."""
+    monkeypatch.setattr(webapp, "_PUBLIC_BASE_URL", BASE_URL)
+    transport = _RecordingTransport(status=200)
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER", _sender(transport))
+    client.post("/register", data={"email": "hash-only@example.com",
+                                   "password": PASSWORD,
+                                   "password_confirm": PASSWORD})
+    assert transport.calls, "no message was attempted"
+    raw = transport.calls[0]["payload"]["text"].rsplit("/", 1)[-1]
+    with sqlite3.connect(webapp._resolve_db_path()) as connection:
+        rows = connection.execute("SELECT * FROM email_tokens").fetchall()
+    assert rows, "no token row was written"
+    flat = " ".join(str(value) for row in rows for value in row)
+    assert raw not in flat
+    assert "hash-only@example.com" not in flat
