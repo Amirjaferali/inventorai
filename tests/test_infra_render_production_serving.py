@@ -510,17 +510,47 @@ def _dockerignore_patterns():
             if ln.strip() and not ln.strip().startswith("#")]
 
 
+# Metacharacters this translator does NOT model. Go's `filepath.Match`, which
+# Docker uses, gives `[`/`]` character-class meaning and `\\` escape meaning, so
+# `d[o]cs` matches `docs`. Modelling them correctly is more surface than this
+# guard needs; encountering one therefore FAILS CLOSED instead (see below).
+_UNMODELLED_PATTERN_CHARS = frozenset("[]{}\\")
+
+
+def _normalize_pattern(pattern):
+    """Apply the part of Go `filepath.Clean` that changes whether a pattern
+    matches: drop `.` segments and collapse duplicate separators.
+
+    Docker cleans every pattern before matching, so `./docs/`, `docs//` and
+    `docs` are the SAME pattern to Docker. Without this, `./docs/` translated to
+    a regex that could never match a walked path (`docs/...`), and the guard
+    called a genuinely dangerous pattern safe.
+
+    A leading `/` is also normalized away, which is the conservative direction:
+    Docker would not match a walked path with `/docs`, so treating it as an
+    exclusion can only raise a false alarm here, never grant a false pass.
+    Returns "" for a pattern that cleans to nothing, and None for `..`, which is
+    not modelled.
+    """
+    segments = [seg for seg in pattern.strip().split("/") if seg not in ("", ".")]
+    if any(seg == ".." for seg in segments):
+        return None
+    return "/".join(segments)
+
+
 def _pattern_to_regex(pattern):
     """Translate one Docker ignore pattern to a regex over a relative path.
 
-    Docker matches a pattern against the WHOLE relative path and `*` does not
-    cross `/`; `**` does. Returns None for any form this translator does not
-    model, which callers treat CONSERVATIVELY (as if it matched) so an
+    Docker matches a pattern against the WHOLE cleaned relative path and `*` does
+    not cross `/`; `**` does. Returns None for any form this translator does not
+    model, which callers treat CONSERVATIVELY (as if it matched everything) so an
     unmodelled pattern can never produce a false "included" verdict.
     """
-    pattern = pattern.rstrip("/")
-    if not pattern or pattern.startswith("/"):
+    pattern = _normalize_pattern(pattern)
+    if pattern is None or not pattern:
         return None
+    if any(char in _UNMODELLED_PATTERN_CHARS for char in pattern):
+        return None                               # fail closed, never optimistic
     out, i = [], 0
     while i < len(pattern):
         char = pattern[i]
@@ -535,7 +565,7 @@ def _pattern_to_regex(pattern):
             out.append("[^/]*")
         elif char == "?":
             out.append("[^/]")
-        elif char in ".^$+{}[]|()\\":
+        elif char in ".^$+|()":
             out.append(re.escape(char))
         else:
             out.append(char)
@@ -543,21 +573,27 @@ def _pattern_to_regex(pattern):
     return re.compile("^" + "".join(out) + "$")
 
 
-def _excluded_from_build_context(rel_path):
+def _excluded_from_build_context(rel_path, patterns=None):
     """Whether Docker would drop `rel_path` from the build context.
 
     Applies Docker's documented rules: every pattern is tested against the path
     AND against each of its ancestor directories (an excluded directory takes its
     contents with it), and the LAST matching pattern decides — a `!` pattern
-    re-includes. Deliberately conservative: an unmodelled pattern counts as a
-    match, so a "not excluded" result is a sound proof, never an optimistic one.
+    re-includes. Deliberately conservative: an unmodelled pattern counts as
+    matching everything, so a "not excluded" result is a sound proof, never an
+    optimistic one.
+
+    `patterns` lets a negative control pass a hypothetical `.dockerignore`
+    without mutating module state; it defaults to the real file.
     """
+    if patterns is None:
+        patterns = _dockerignore_patterns()
     candidates = [rel_path]
     parts = rel_path.split("/")
     for index in range(1, len(parts)):
         candidates.append("/".join(parts[:index]))
     excluded = False
-    for pattern in _dockerignore_patterns():
+    for pattern in patterns:
         negated = pattern.startswith("!")
         regex = _pattern_to_regex(pattern[1:] if negated else pattern)
         if regex is None:                         # unmodelled → assume it matches
@@ -598,22 +634,75 @@ def test_runtime_required_artifacts_survive_the_build_context():
         assert not _excluded_from_build_context(rel), rel
 
 
-def test_a_broad_docs_exclusion_would_be_caught():
-    """Proves the assertion above has teeth: with `docs` excluded, the same
-    matcher must report the artifacts as dropped."""
-    patterns = _dockerignore_patterns()
-    assert "docs" not in patterns and "docs/" not in patterns
-    original = _dockerignore_patterns
+# Every spelling of "exclude the docs tree" that Docker honours. Docker cleans a
+# pattern before matching and gives `[`/`]` character-class meaning, so all of
+# these drop `docs/` — and an earlier version of this guard called three of them
+# safe while every other assertion still passed. Each must now be caught.
+DANGEROUS_DOCS_EXCLUSION_FORMS = (
+    "docs",
+    "docs/",
+    "./docs",
+    "./docs/",
+    "docs//",
+    "d[o]cs/",
+    "doc?/",
+    "do*/",
+    "**/path_n_content_config",
+    "docs/governance/path_n_content_config",
+)
 
-    def _with_docs_excluded():
-        return patterns + ["docs"]
 
-    globals()["_dockerignore_patterns"] = _with_docs_excluded
-    try:
-        for rel in RUNTIME_REQUIRED_CONTEXT_FILES:
-            assert _excluded_from_build_context(rel), rel
-    finally:
-        globals()["_dockerignore_patterns"] = original
+@pytest.mark.parametrize("form", DANGEROUS_DOCS_EXCLUSION_FORMS)
+def test_a_docs_exclusion_in_any_spelling_would_be_caught(form):
+    """Proves the build-context assertion has teeth against every spelling —
+    including the cleaned (`./docs/`) and character-class (`d[o]cs/`) forms.
+
+    A form the matcher does not model must FAIL CLOSED (reported as excluded),
+    never be interpreted as safe. Hypothetical patterns are passed in rather than
+    written to the real file, so nothing mutates module or repository state."""
+    hypothetical = _dockerignore_patterns() + [form]
+    for rel in RUNTIME_REQUIRED_CONTEXT_FILES:
+        assert _excluded_from_build_context(rel, patterns=hypothetical), (form, rel)
+
+
+def test_no_docs_exclusion_in_any_spelling_is_present_today():
+    """The live file must contain none of those forms, in any spelling."""
+    present = _dockerignore_patterns()
+    for form in DANGEROUS_DOCS_EXCLUSION_FORMS:
+        assert form not in present, form
+    # Normalized comparison, so a future `./docs/` cannot slip past the literal
+    # membership check above.
+    normalized = {_normalize_pattern(p) for p in present}
+    assert "docs" not in normalized
+    assert "docs/governance" not in normalized
+    assert "docs/governance/path_n_content_config" not in normalized
+
+
+def test_pattern_normalization_matches_docker_cleaning():
+    """`./docs/`, `docs//` and `docs` are ONE pattern to Docker; the matcher must
+    agree, because that equivalence is what the false negative hinged on."""
+    for form in ("docs", "docs/", "./docs", "./docs/", "docs//", "./docs//"):
+        assert _normalize_pattern(form) == "docs", form
+    assert _normalize_pattern("**/*.pyc") == "**/*.pyc"
+    assert _normalize_pattern("../escape") is None        # not modelled
+    assert _normalize_pattern("./") == ""                  # cleans to nothing
+
+
+@pytest.mark.parametrize("unmodelled", ("d[o]cs", "docs/[a-z]*", "doc\\s",
+                                        "{docs,web}", "../docs"))
+def test_unmodelled_pattern_forms_fail_closed(unmodelled):
+    """A form this translator does not model must never yield a regex, and must
+    make every path report as excluded — the fail-closed direction."""
+    assert _pattern_to_regex(unmodelled) is None, unmodelled
+    hypothetical = _dockerignore_patterns() + [unmodelled]
+    for rel in RUNTIME_REQUIRED_CONTEXT_FILES:
+        assert _excluded_from_build_context(rel, patterns=hypothetical), unmodelled
+
+
+def test_an_unmodelled_pattern_also_breaks_the_form_guard():
+    """Belt and braces: the same addition must fail the explicit form guard, so
+    the failure is legible instead of appearing only as a context regression."""
+    assert _pattern_to_regex("d[o]cs") is None
 
 
 def test_the_application_packages_survive_the_build_context():
