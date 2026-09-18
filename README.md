@@ -169,25 +169,27 @@ attempt was made, never that a message was delivered, and their response stays
 byte-identical for every address. The signed-in resend surface reports the
 outcome truthfully, because the caller's own identity is already known there.
 
-**Known limitation — response TIMING is not yet constant.** The byte-identical
-response above hides account existence from the response *content*, but not from
-how long the request takes: the provider is contacted only on the branch where a
-message is actually due, so a request for an address that exists takes about one
-provider round trip longer than one for an address that does not. Measured with
-a 200 ms simulated provider: `/recover` answers in ~205 ms for a known active
-address and ~2 ms for an unknown one. Treat the anonymous surfaces as protecting
-account existence against response *inspection*, not against *timing analysis*.
+**Delivery is deferred, so response timing reveals nothing.** The request
+itself never contacts the provider: it records the message in a durable outbox
+table inside the one canonical SQLite database (the same file as every other
+durable table — not a second datastore) and returns. A single bounded dispatcher
+thread inside the one Gunicorn worker delivers pending messages later, from its
+own database connection, with a bounded poll interval, a bounded provider
+timeout and a small fixed retry budget with backoff. Because every branch of an
+anonymous request does the same work, a request for an address that exists takes
+no longer than one for an address that does not, and the provider's latency,
+success or failure cannot be observed through it. (Before this, the provider was
+contacted only on the eligible branch, and `/recover` measured ~205 ms for a
+known address against ~2 ms for an unknown one.)
 
-Closing it is an architectural decision, not a small fix, and is open rather than
-silently accepted. Padding every anonymous response to a fixed deadline is the
-only purely synchronous option, and it is self-defeating here: `gunicorn.conf.py`
-pins `workers = 1` and `threads = 1`, so a deadline long enough to mask a
-provider round trip (let alone a timeout) would hold the single request thread
-for that whole period on an unauthenticated route — trading an information leak
-for an availability one. The alternatives (moving delivery off the request path,
-or contacting the provider on every branch) need their own decision: the first
-introduces asynchronous delivery, and the second would send mail to addresses
-that have no account.
+Outbox rows are security-sensitive while they exist, because a verification or
+reset body necessarily carries its raw token: they are never logged, never
+exposed through any page or export, deleted the moment the provider confirms
+acceptance, and scrubbed of recipient, subject and body if the retry budget is
+exhausted. That is operational message cleanup, not a user-data retention rule.
+With no provider configured, production still boots and starts no delivery loop
+at all; the email-dependent actions refuse with `503` before writing anything,
+exactly as before.
 
 ### Backup and restore
 

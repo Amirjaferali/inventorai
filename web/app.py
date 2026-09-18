@@ -219,10 +219,10 @@ from engine import account_credentials as _acct
 from engine import auth_session as _auth
 from engine.email_sender import (
     DevMemoryEmailSender,
-    EmailDeliveryFailed,
     ResendEmailSender,
     UnconfiguredEmailSender,
 )
+from engine.email_dispatcher import EmailDispatcher
 # P4-2 Level-1: the exact supported reconstruction/engine-contract version stamp
 # persisted at project creation (read-only reconstruction lives entirely in the
 # engine; web only persists these additive envelope inputs).
@@ -674,6 +674,64 @@ def _email_delivery_available():
     return bool(getattr(_EMAIL_SENDER, "can_deliver", False))
 
 
+# --- OD-INFRA-6: durable outbox + ONE bounded in-process dispatcher ---------
+#
+# The anonymous registration and recovery requests RECORD the outbound message
+# in the outbox (same canonical SQLite file) and return. They perform no
+# provider network call, so their latency cannot depend on whether an account
+# exists - the timing oracle that inline delivery created. Delivery happens on
+# the dispatcher's own thread, from its own store instance.
+#
+# Development and test stay deterministic: with `_EMAIL_INLINE_DISPATCH` true
+# (every non-production runtime) the pending messages are dispatched
+# synchronously at the end of the request, in the request's own thread, through
+# a temporary store opened for that call - so `webapp._EMAIL_SENDER.last_for()`
+# still holds the message the moment the response returns, and no background
+# thread runs under the test suite. Tests that want explicit control set it
+# False and call `_EMAIL_DISPATCHER.dispatch_pending()` / `dispatch_one()`.
+
+def _open_dispatcher_store():
+    """A store instance for the dispatcher ONLY - never the request-scoped
+    `_ACCOUNT_STORE`. Opened in whichever thread runs the dispatch and closed by
+    it, so no SQLite connection is ever shared across threads."""
+    path = _resolve_db_path()
+    directory = os.path.dirname(path)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+    return SqliteAccountStore(path)
+
+
+_EMAIL_DISPATCHER = EmailDispatcher(
+    open_store=_open_dispatcher_store,
+    # Resolved at dispatch time, so a test that substitutes `_EMAIL_SENDER` is
+    # honoured and production always uses the selected sender.
+    resolve_sender=lambda: _EMAIL_SENDER)
+
+_EMAIL_INLINE_DISPATCH = not _is_production()
+
+
+def _dispatch_outbox_inline_if_enabled():
+    """Development/test determinism seam. A no-op in production."""
+    if _EMAIL_INLINE_DISPATCH:
+        try:
+            _EMAIL_DISPATCHER.dispatch_pending()
+        except Exception:
+            pass
+
+
+def _start_email_dispatcher_if_production():
+    """Start the ONE dispatcher thread - in production only, and only when a
+    sender capable of delivery is configured. Production still boots with no
+    provider configured; it then starts no delivery loop at all, so nothing can
+    send without valid configuration. Idempotent within the process."""
+    if _is_production() and _email_delivery_available():
+        return _EMAIL_DISPATCHER.start()
+    return False
+
+
+_EMAIL_DISPATCHER_STARTED = _start_email_dispatcher_if_production()
+
+
 def _email_unavailable_response():
     """One bounded, localized, non-disclosing refusal for an account action that
     cannot proceed without email delivery.
@@ -713,11 +771,15 @@ _REGISTER_RATE_WINDOW_SECONDS = 60 * 60
 # address (the conditional does not apply), known address with provider
 # acceptance, provider rejection, provider outage — while remaining one constant
 # string, so the non-enumeration property is preserved rather than traded away.
+# Under the durable outbox (OD-INFRA-6) the request itself sends nothing: it
+# records the message for delivery. "Queued for delivery" is therefore the exact
+# truth at response time - not "sent", not "tried" - and it is still ONE
+# constant string for every address.
 REGISTER_GENERIC_MESSAGE_EN = (
-    "If the address can be used, we have tried to send verification "
-    "instructions to it. If nothing arrives shortly, request a new message.")
+    "If the address can be used, a verification message has been queued for "
+    "delivery to it. If nothing arrives shortly, request a new message.")
 REGISTER_GENERIC_MESSAGE_AR = (
-    "إذا كان بالإمكان استخدام هذا العنوان، فقد حاولنا إرسال تعليمات التحقق "
+    "إذا كان بالإمكان استخدام هذا العنوان، فقد تمت جدولة رسالة تحقق للإرسال "
     "إليه. إذا لم تصل أي رسالة قريبًا، فاطلب رسالة جديدة.")
 
 
@@ -816,11 +878,12 @@ LOGIN_FAILED_MESSAGE_AR = "بيانات تسجيل الدخول غير متطا�
 # address, a known address, provider acceptance, provider rejection and provider
 # outage alike.
 RECOVER_GENERIC_MESSAGE_EN = (
-    "If that address matches an account, we have tried to send password-reset "
-    "instructions to it. If nothing arrives shortly, request a new message.")
+    "If that address matches an account, a password-reset message has been "
+    "queued for delivery to it. If nothing arrives shortly, request a new "
+    "message.")
 RECOVER_GENERIC_MESSAGE_AR = (
-    "إذا كان هذا العنوان مطابقًا لحساب، فقد حاولنا إرسال تعليمات إعادة تعيين "
-    "كلمة المرور إليه. إذا لم تصل أي رسالة قريبًا، فاطلب رسالة جديدة.")
+    "إذا كان هذا العنوان مطابقًا لحساب، فقد تمت جدولة رسالة إعادة تعيين كلمة "
+    "المرور للإرسال إليه. إذا لم تصل أي رسالة قريبًا، فاطلب رسالة جديدة.")
 # The authenticated resend surface is DIFFERENT: the signed-in account identity
 # is already known to the caller, so a truthful outcome here reveals nothing
 # about any other address and is not an enumeration oracle. It therefore keeps
@@ -830,9 +893,10 @@ RECOVER_GENERIC_MESSAGE_AR = (
 # rejection/outage, or a rate limit. Neither message names a provider, a reason
 # or a token.
 RESEND_GENERIC_MESSAGE_EN = (
-    "If verification is still needed, a new verification message has been sent.")
+    "If verification is still needed, a new verification message has been "
+    "queued for delivery.")
 RESEND_GENERIC_MESSAGE_AR = (
-    "إذا كان التحقق لا يزال مطلوبًا، فقد أُرسلت رسالة تحقق جديدة.")
+    "إذا كان التحقق لا يزال مطلوبًا، فقد تمت جدولة رسالة تحقق جديدة للإرسال.")
 RESEND_FAILED_MESSAGE_EN = (
     "A new verification message could not be sent just now. "
     "Please try again in a few minutes.")
@@ -2793,31 +2857,29 @@ def register_submit():
     except Exception:
         return _register_generic_response()          # generic; no internal detail leaked
 
-    # Issue a verification token: store only its hash; the RAW token goes solely
-    # into the dev email sink message body (never logged, never in the response).
+    # Issue a verification token and RECORD its message in the durable outbox in
+    # ONE transaction: only the token's hash is stored; the raw token exists in
+    # the queued body (never logged, never in the response). NO provider call
+    # happens here - the dispatcher delivers later, so this request's latency
+    # is the same whether or not an account was created (OD-INFRA-6).
     try:
         raw_token = _acct.new_raw_token()
-        store.create_email_token(
+        store.create_email_token_and_enqueue(
             token_id=_acct.new_token_id(), account_id=account_id,
             token_type=VERIFICATION, token_hash=_acct.hash_token(raw_token),
             expires_at=_iso(now + _timedelta_seconds(_VERIFICATION_TTL_SECONDS)),
-            created_at=_iso(now))
-        _EMAIL_SENDER.send(
-            to=email_normalized,
+            created_at=_iso(now),
+            message_id=_acct.new_token_id(), recipient=email_normalized,
             subject=VERIFICATION_SUBJECT,
-            # The SAME body as the resend path. It previously carried the raw
-            # token as a bare "code", but no surface anywhere accepts a pasted
-            # code — `/verify/<token>` is the only way to complete verification —
-            # so a code-only message was unusable in a real inbox.
+            # The SAME body as the resend path (a bare "code" was unusable: only
+            # `/verify/<token>` completes verification).
             body=_verification_body(raw_token))
     except Exception:
-        # A token/delivery failure does not change the generic response and does
+        # A token/outbox failure does not change the generic response and does
         # not sign anyone in; the account row already committed atomically above.
-        # The response wording is attempt-truthful precisely so that swallowing
-        # this exception cannot turn into a false claim of delivery — see
-        # REGISTER_GENERIC_MESSAGE_EN. Nothing about the failure is logged or
-        # surfaced, so the response stays byte-identical for every address.
+        # Nothing is logged or surfaced, so the response stays byte-identical.
         pass
+    _dispatch_outbox_inline_if_enabled()
     return _register_generic_response()
 
 
@@ -2881,31 +2943,31 @@ def _reset_body(raw_token):
 
 
 def _issue_verification(account, now):
-    """Issue (and send) a fresh verification token; only its hash is stored, the
-    raw token goes solely into the message body."""
+    """Issue a fresh verification token and QUEUE its message atomically; only
+    the hash is stored, the raw token goes solely into the queued body. No
+    provider call happens here (OD-INFRA-6)."""
     raw = _acct.new_raw_token()
-    _get_account_store().create_email_token(
+    _get_account_store().create_email_token_and_enqueue(
         token_id=_acct.new_token_id(), account_id=account["account_id"],
         token_type=VERIFICATION, token_hash=_acct.hash_token(raw),
         expires_at=_iso(now + _timedelta_seconds(_VERIFICATION_TTL_SECONDS)),
-        created_at=_iso(now))
-    _EMAIL_SENDER.send(
-        to=account["email_normalized"], subject=VERIFICATION_SUBJECT,
-        body=_verification_body(raw))
+        created_at=_iso(now),
+        message_id=_acct.new_token_id(), recipient=account["email_normalized"],
+        subject=VERIFICATION_SUBJECT, body=_verification_body(raw))
 
 
 def _issue_reset(account, now):
-    """Issue (and dev-sink send) a fresh 1-hour password-reset token; hash-only
-    at rest; the raw token appears solely in the sink body, never in logs."""
+    """Issue a fresh 1-hour password-reset token and QUEUE its message
+    atomically; hash-only at rest; the raw token appears solely in the queued
+    body, never in logs. No provider call happens here (OD-INFRA-6)."""
     raw = _acct.new_raw_token()
-    _get_account_store().create_email_token(
+    _get_account_store().create_email_token_and_enqueue(
         token_id=_acct.new_token_id(), account_id=account["account_id"],
         token_type=RESET, token_hash=_acct.hash_token(raw),
         expires_at=_iso(now + _timedelta_seconds(_RESET_TTL_SECONDS)),
-        created_at=_iso(now))
-    _EMAIL_SENDER.send(
-        to=account["email_normalized"], subject=RESET_SUBJECT,
-        body=_reset_body(raw))
+        created_at=_iso(now),
+        message_id=_acct.new_token_id(), recipient=account["email_normalized"],
+        subject=RESET_SUBJECT, body=_reset_body(raw))
 
 
 def _render_login(error=False, status=200, deactivated=False):
@@ -3197,29 +3259,28 @@ def resend_verification():
     _cleanup_rate_limits(now)
     allowed = _rate_ok(_acct.email_digest(account["email_normalized"]), "resend",
                        now, _RESEND_RATE_LIMIT, _RESEND_RATE_WINDOW_SECONDS)
-    # Truthful outcome, bounded. `notice="resend"` is shown ONLY when a message
-    # was actually accepted by the sender, or when verification was no longer
-    # needed (the notice is conditional, so it is vacuously true then). Every
-    # other case — a provider rejection or outage, a rate limit, a non-active
-    # account — shows the failure notice instead. The previous code always showed
-    # the success notice, so a swallowed delivery failure AND a rate-limited
-    # request both told a signed-in user a message had gone out when none had.
-    # `EmailDeliveryFailed` is caught by name to document the expected failure;
-    # the broad clause keeps any other fault equally non-disclosing.
-    delivered = False
+    # Truthful outcome, bounded. Historically this route always showed the
+    # success notice, so a swallowed delivery failure AND a rate-limited request
+    # both told a signed-in user a message had gone out when none had.
+    # Under the outbox (OD-INFRA-6) the truth at response time is "queued":
+    # `notice="resend"` is shown only when a message was actually recorded for
+    # delivery (or verification was no longer needed - the notice is
+    # conditional, so vacuously true). A rate limit, a non-active account or an
+    # outbox write failure shows the bounded failure notice instead. Provider
+    # outcome is NOT known here and is not claimed; it is the dispatcher's.
+    queued = False
     if allowed and account["status"] == "active" and not account["email_verified"]:
         try:
             _issue_verification(account, now)
-            delivered = True
-        except EmailDeliveryFailed:
-            delivered = False
+            queued = True
         except Exception:
-            delivered = False
+            queued = False
     elif allowed and account["status"] == "active" and account["email_verified"]:
-        delivered = True                  # nothing to send; notice is vacuous
+        queued = True                     # nothing to send; notice is vacuous
+    _dispatch_outbox_inline_if_enabled()
     return render_template("account.html", account=account,
                            csrf_token=_session_csrf(),
-                           notice="resend" if delivered else "resend_failed")
+                           notice="resend" if queued else "resend_failed")
 
 
 @app.route("/verify/<token>", methods=["GET", "POST"])
@@ -3273,6 +3334,7 @@ def recover_submit():
                 _issue_reset(account, now)
         except Exception:
             pass
+    _dispatch_outbox_inline_if_enabled()
     return render_template("recover.html", submitted=True,
                            generic_en=RECOVER_GENERIC_MESSAGE_EN,
                            generic_ar=RECOVER_GENERIC_MESSAGE_AR)

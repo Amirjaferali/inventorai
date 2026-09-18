@@ -781,11 +781,13 @@ UI_STRINGS = {
     # for every address. This wording is true under every outcome and remains ONE
     # constant string, so non-enumeration is preserved.
     "UI_A_MSG_REGISTER": {
-        "en": ("If the address can be used, we have tried to send verification "
-               "instructions to it. If nothing arrives shortly, request a new "
-               "message."),
-        "ar": ("إذا كان بالإمكان استخدام هذا العنوان، فقد حاولنا إرسال تعليمات "
-               "التحقق إليه. إذا لم تصل أي رسالة قريبًا، فاطلب رسالة جديدة."),
+        # OD-INFRA-6 outbox: the request records the message and sends nothing,
+        # so "queued for delivery" is the exact truth at response time.
+        "en": ("If the address can be used, a verification message has been "
+               "queued for delivery to it. If nothing arrives shortly, request "
+               "a new message."),
+        "ar": ("إذا كان بالإمكان استخدام هذا العنوان، فقد تمت جدولة رسالة تحقق "
+               "للإرسال إليه. إذا لم تصل أي رسالة قريبًا، فاطلب رسالة جديدة."),
     },
 
     # --- reset.html (Category A) ----------------------------------------------
@@ -827,11 +829,11 @@ UI_STRINGS = {
     # ATTEMPT-TRUTHFUL (OD-INFRA-6), same reasoning as UI_A_MSG_REGISTER.
     # Was: "password-reset instructions have been sent." / "فقد أُرسلت ...".
     "UI_A_MSG_RECOVER": {
-        "en": ("If that address matches an account, we have tried to send "
-               "password-reset instructions to it. If nothing arrives shortly, "
+        "en": ("If that address matches an account, a password-reset message "
+               "has been queued for delivery to it. If nothing arrives shortly, "
                "request a new message."),
-        "ar": ("إذا كان هذا العنوان مطابقًا لحساب، فقد حاولنا إرسال تعليمات "
-               "إعادة تعيين كلمة المرور إليه. إذا لم تصل أي رسالة قريبًا، "
+        "ar": ("إذا كان هذا العنوان مطابقًا لحساب، فقد تمت جدولة رسالة إعادة "
+               "تعيين كلمة المرور للإرسال إليه. إذا لم تصل أي رسالة قريبًا، "
                "فاطلب رسالة جديدة."),
     },
 
@@ -906,8 +908,9 @@ UI_STRINGS = {
     # signed-in identity is already known to the caller, so a truthful outcome
     # here is not an account-existence oracle.
     "UI_A_MSG_RESEND": {
-        "en": "If verification is still needed, a new verification message has been sent.",
-        "ar": "إذا كان التحقق لا يزال مطلوبًا، فقد أُرسلت رسالة تحقق جديدة.",
+        "en": ("If verification is still needed, a new verification message has "
+               "been queued for delivery."),
+        "ar": "إذا كان التحقق لا يزال مطلوبًا، فقد تمت جدولة رسالة تحقق جديدة للإرسال.",
     },
     # Shown when nothing went out: a provider rejection or outage, a rate limit,
     # or a non-active account. It names no provider, no reason and no token.

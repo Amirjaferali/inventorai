@@ -663,7 +663,9 @@ def test_no_user_visible_claim_of_completed_delivery_anywhere(monkeypatch):
         lowered = message.lower()
         assert "have been sent" not in lowered, message
         assert "has been sent" not in lowered, message
-        assert "we have tried to send" in lowered, message
+        # Under the outbox the request sends nothing; "queued for delivery" is
+        # the exact truth at response time - neither "sent" nor "tried".
+        assert "queued for delivery" in lowered, message
 
 
 def test_localized_surfaces_carry_the_same_attempt_truthful_claim():
@@ -673,9 +675,9 @@ def test_localized_surfaces_carry_the_same_attempt_truthful_claim():
         english = ui_text.text(key, "en").lower()
         assert "have been sent" not in english, key
         assert "has been sent" not in english, key
-        assert "tried to send" in english, key
+        assert "queued for delivery" in english, key
         assert ui_text.text(key, "ar") != ui_text.text(key, "en")
-        assert "حاولنا" in ui_text.text(key, "ar"), key
+        assert "جدولة" in ui_text.text(key, "ar"), key
 
 
 @pytest.mark.parametrize("path,data", [
@@ -692,7 +694,7 @@ def test_provider_failure_produces_no_false_sent_claim(client, monkeypatch,
     body = response.get_data(as_text=True).lower()
     assert "have been sent" not in body
     assert "has been sent" not in body
-    assert "tried to send" in body
+    assert "queued for delivery" in body
 
 
 def test_registration_response_is_identical_whether_delivery_succeeds_or_fails(
@@ -769,16 +771,26 @@ def _signed_in(client, monkeypatch, email):
 
 def test_authenticated_resend_is_truthful_when_the_provider_fails(client,
                                                                   monkeypatch):
-    """A signed-in caller already knows their own address, so a truthful
-    outcome here is not an enumeration oracle — and silence would be a lie."""
+    """Under the outbox the truth at response time is "queued": the request
+    records the message and does not contact the provider. A provider failure
+    is then the dispatcher's, recorded as a counted attempt on a row that stays
+    pending - never a delivered claim, and never a 500. The signed-in caller
+    already knows their own address, so nothing here is an enumeration oracle."""
     _signed_in(client, monkeypatch, "resend-fail@example.com")
     monkeypatch.setattr(webapp, "_EMAIL_SENDER",
                         _sender(_RecordingTransport(status=500)))
     response = client.post("/account/resend-verification", data={})
     assert response.status_code == 200
     body = response.get_data(as_text=True)
-    assert ui_text.text("UI_A_MSG_RESEND_FAILED", "en") in body
-    assert ui_text.text("UI_A_MSG_RESEND", "en") not in body
+    assert ui_text.text("UI_A_MSG_RESEND", "en") in body
+    assert "queued for delivery" in body
+    assert "has been sent" not in body.lower()
+    # The inline (dev/test) dispatch ran and the provider refused: the message
+    # is still pending with one failed attempt, and nothing was claimed.
+    store = webapp._get_account_store()
+    pending = store.pending_emails()
+    assert [m["attempt_count"] for m in pending] == [1]
+    assert pending[0]["recipient"] == "resend-fail@example.com"
 
 
 def test_authenticated_resend_reports_success_only_on_acceptance(client,

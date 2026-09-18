@@ -86,10 +86,18 @@ def test_no_prescriptive_retention_duration():
     assert "no such rule is in force" in text
 
 
+# The two automatic deletions the retention document names. Both are operational
+# cleanups of non-user-content rows; the document must keep naming BOTH, and
+# engine/ must contain no DELETE FROM for any other table. OD-INFRA-6 added the
+# second (delivered outbox message removal); the guard's purpose - doc/source
+# parity on automatic deletion - is unchanged, only its enumerated set grew.
+_AUTOMATIC_DELETION_TABLES = ("auth_rate_limits", "email_outbox")
+
+
 def test_retention_doc_matches_source_truth():
-    # the "only automatic deletion is expired rate-limit cleanup" claim must
-    # keep matching source: DELETE FROM appears in engine/ ONLY for
-    # auth_rate_limits
+    # the "only automatic deletions" claim must keep matching source: DELETE
+    # FROM appears in engine/ ONLY for the enumerated tables, and the document
+    # names each of them.
     deletes = []
     for path in glob.glob(os.path.join("engine", "*.py")):
         with open(path, encoding="utf-8") as fh:
@@ -98,7 +106,14 @@ def test_retention_doc_matches_source_truth():
                     deletes.append((path, line.strip()))
     assert deletes, "expected the bounded rate-limit cleanup to exist"
     for path, line in deletes:
-        assert "auth_rate_limits" in line, (path, line)
+        assert any(table in line for table in _AUTOMATIC_DELETION_TABLES), (path, line)
+    seen_tables = {table for table in _AUTOMATIC_DELETION_TABLES
+                   if any(table in line for _p, line in deletes)}
+    assert seen_tables == set(_AUTOMATIC_DELETION_TABLES), seen_tables
+    with open(os.path.join("docs", "DATA_RETENTION_POLICY.md"), encoding="utf-8") as fh:
+        doc = fh.read()
+    assert "cleanup_expired_rate_limits" in doc
+    assert "mark_email_delivered" in doc and "email_outbox" in doc
     # the 7-day client TTL claim must keep matching the real script
     with open(os.path.join("web", "static", "js", "local_draft.js"),
               encoding="utf-8") as fh:

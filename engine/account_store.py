@@ -329,7 +329,32 @@ _SCHEMA = (
         FOREIGN KEY (account_id) REFERENCES accounts(account_id)
     )
     """,
+    # OD-INFRA-6 outbox: durable, minimal, in the SAME canonical database (not a
+    # second datastore). A row is SECURITY-SENSITIVE while it holds a raw
+    # token-bearing body; delivered rows are deleted, exhausted rows are scrubbed.
+    """
+    CREATE TABLE IF NOT EXISTS email_outbox (
+        message_id       TEXT PRIMARY KEY,
+        message_type     TEXT NOT NULL,
+        recipient        TEXT,
+        subject          TEXT,
+        body             TEXT,
+        status           TEXT NOT NULL,
+        created_at       TEXT NOT NULL,
+        attempt_count    INTEGER NOT NULL DEFAULT 0,
+        last_attempt_at  TEXT
+    )
+    """,
+    """
+    CREATE INDEX IF NOT EXISTS ix_email_outbox_status_created
+        ON email_outbox (status, created_at)
+    """,
 )
+
+# Outbox statuses. A delivered message has NO status: its row is deleted.
+OUTBOX_PENDING = "pending"
+OUTBOX_FAILED = "failed"
+_OUTBOX_STATUSES = frozenset({OUTBOX_PENDING, OUTBOX_FAILED})
 
 
 class SqliteAccountStore:
@@ -1161,6 +1186,137 @@ class SqliteAccountStore:
                 (token_id, account_id, token_type, token_hash, expires_at, created_at),
             )
         return token_id
+
+    # --- OD-INFRA-6: durable email outbox -----------------------------------
+    #
+    # Why an outbox exists: the anonymous registration and recovery requests must
+    # return WITHOUT any provider network call, so their latency cannot depend
+    # on whether an account exists (a timing oracle). The request records what
+    # must be sent; a separate dispatcher sends it later.
+    #
+    # Rows are read and mutated ONLY through these methods. Nothing here logs,
+    # and no method returns a body except the explicit inspection read used by
+    # the dispatcher and tests - there is no UI or export surface over this table.
+
+    def _outbox_insert(self, c, message_id, message_type, recipient, subject,
+                       body, created_at):
+        c.execute(
+            "INSERT INTO email_outbox (message_id, message_type, recipient, "
+            "subject, body, status, created_at, attempt_count, last_attempt_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, 0, NULL)",
+            (message_id, message_type, recipient, subject, body,
+             OUTBOX_PENDING, created_at))
+
+    def enqueue_email(self, message_id: str, message_type: str, recipient: str,
+                      subject: str, body: str, created_at: str) -> str:
+        """Durably record one outbound message as pending. No network."""
+        with self._write() as c:
+            self._outbox_insert(c, message_id, message_type, recipient, subject,
+                                body, created_at)
+        return message_id
+
+    def create_email_token_and_enqueue(self, token_id: str, account_id: str,
+                                       token_type: str, token_hash: str,
+                                       expires_at: str, created_at: str,
+                                       message_id: str, recipient: str,
+                                       subject: str, body: str) -> str:
+        """ATOMIC (one ``BEGIN IMMEDIATE``): supersede the account's active token
+        of this type, store the new token's HASH, and record the outbound
+        message that carries the raw token. Either both exist or neither does -
+        a token can never be issued whose message was lost, and a message can
+        never be queued whose token was never stored.
+
+        The same supersession and hash-only semantics as ``create_email_token``;
+        that method is unchanged and remains valid for callers that send nothing.
+        """
+        if token_type not in _TOKEN_TYPES:
+            raise AccountStoreError("invalid token_type: %r" % (token_type,))
+        with self._write() as c:
+            c.execute(
+                "UPDATE email_tokens SET used_at = ? "
+                "WHERE account_id = ? AND token_type = ? AND used_at IS NULL",
+                (created_at, account_id, token_type),
+            )
+            c.execute(
+                "INSERT INTO email_tokens (token_id, account_id, token_type, "
+                "token_hash, expires_at, used_at, created_at) "
+                "VALUES (?, ?, ?, ?, ?, NULL, ?)",
+                (token_id, account_id, token_type, token_hash, expires_at,
+                 created_at),
+            )
+            self._outbox_insert(c, message_id, token_type, recipient, subject,
+                                body, created_at)
+        return token_id
+
+    def pending_emails(self, limit: int = 20):
+        """Oldest-first pending messages, bounded. Returns full rows (including
+        the token-bearing body) because the dispatcher needs them to send; the
+        caller must never log or expose them."""
+        with self._read() as c:
+            rows = c.execute(
+                "SELECT message_id, message_type, recipient, subject, body, "
+                "status, created_at, attempt_count, last_attempt_at "
+                "FROM email_outbox WHERE status = ? "
+                "ORDER BY created_at, message_id LIMIT ?",
+                (OUTBOX_PENDING, int(limit))).fetchall()
+        return [self._outbox_row(r) for r in rows]
+
+    def get_outbox_message(self, message_id: str):
+        with self._read() as c:
+            row = c.execute(
+                "SELECT message_id, message_type, recipient, subject, body, "
+                "status, created_at, attempt_count, last_attempt_at "
+                "FROM email_outbox WHERE message_id = ?",
+                (message_id,)).fetchone()
+        return None if row is None else self._outbox_row(row)
+
+    @staticmethod
+    def _outbox_row(row):
+        return {"message_id": row[0], "message_type": row[1],
+                "recipient": row[2], "subject": row[3], "body": row[4],
+                "status": row[5], "created_at": row[6],
+                "attempt_count": row[7], "last_attempt_at": row[8]}
+
+    def mark_email_delivered(self, message_id: str) -> int:
+        """Confirmed provider acceptance: the row is DELETED. Operational
+        cleanup of a token-bearing message, not a user-data retention rule -
+        nothing about the account or its token is touched."""
+        with self._write() as c:
+            return c.execute("DELETE FROM email_outbox WHERE message_id = ?",
+                             (message_id,)).rowcount
+
+    def mark_email_attempt_failed(self, message_id: str, now_iso: str,
+                                  max_attempts: int) -> str:
+        """Record one failed delivery attempt. Stays ``pending`` while attempts
+        remain; on exhaustion becomes ``failed`` and the recipient, subject and
+        body are SCRUBBED so a raw token never persists past its retry budget.
+        Returns the resulting status."""
+        with self._write() as c:
+            row = c.execute(
+                "SELECT attempt_count FROM email_outbox WHERE message_id = ? "
+                "AND status = ?", (message_id, OUTBOX_PENDING)).fetchone()
+            if row is None:
+                return OUTBOX_FAILED
+            attempts = int(row[0]) + 1
+            if attempts >= int(max_attempts):
+                c.execute(
+                    "UPDATE email_outbox SET attempt_count = ?, "
+                    "last_attempt_at = ?, status = ?, recipient = NULL, "
+                    "subject = NULL, body = NULL WHERE message_id = ?",
+                    (attempts, now_iso, OUTBOX_FAILED, message_id))
+                return OUTBOX_FAILED
+            c.execute(
+                "UPDATE email_outbox SET attempt_count = ?, last_attempt_at = ? "
+                "WHERE message_id = ?", (attempts, now_iso, message_id))
+            return OUTBOX_PENDING
+
+    def count_outbox(self, status=None) -> int:
+        """Counts only - never contents."""
+        with self._read() as c:
+            if status is None:
+                return c.execute("SELECT COUNT(*) FROM email_outbox").fetchone()[0]
+            return c.execute("SELECT COUNT(*) FROM email_outbox WHERE status = ?",
+                             (status,)).fetchone()[0]
 
     def get_email_token_by_hash(self, token_hash: str):
         """Read-only lookup by token hash."""

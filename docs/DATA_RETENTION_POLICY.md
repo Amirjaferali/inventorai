@@ -21,6 +21,7 @@ notably LQ-09/LQ-10/TQ-07) and separate Owner acceptance.
 | Projects / records (user invention content) | Durable SQLite (`projects`, `records`) | YES |
 | Audit / commercial scaffolding (`access_audit`, `commercial_audit`, lifecycle, dedupe, usage) | Durable SQLite, append-only; NO live billing data | Partly |
 | Auth rate-limit counters | Durable SQLite (`auth_rate_limits`) — privacy-digest keys, no raw email | NO |
+| Outbound email outbox (OD-INFRA-6) | Durable SQLite (`email_outbox`) — recipient address + token-bearing verification/reset body, TRANSIENT: deleted on confirmed provider acceptance, scrubbed (recipient/subject/body nulled) when the bounded retry budget is exhausted; never logged, never exported | YES (while pending) |
 | Live progression-session working state | In-memory `SESSION_STORE` (web/app.py) — ephemeral; durable evidence appended to `records` | YES |
 | Browser draft text | Client-side `localStorage` ONLY (never server-held) | YES (client-only) |
 | Operational logs (P10-OB1) | Process stderr stream, bounded no-PII events; NOT retained as files | NO |
@@ -37,8 +38,13 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
   external legal determination + separate Owner authorization).
 * Account exit is **Deactivation only** (P10-D3b): a status tombstone that blocks all use but
   removes no row. DEACTIVATION ≠ PHYSICAL DELETION.
-* The ONLY automatic deletion anywhere is bounded cleanup of **expired auth rate-limit rows**
-  (`cleanup_expired_rate_limits` — operational counters, not user content).
+* The ONLY automatic deletions anywhere are two operational cleanups, neither of which touches
+  user content or account data: bounded cleanup of **expired auth rate-limit rows**
+  (`cleanup_expired_rate_limits` — operational counters), and — SUPERSEDED IN PART (was: the
+  rate-limit cleanup alone) under OD-INFRA-6 — removal of a **delivered outbound email message**
+  from the `email_outbox` table the moment the provider confirms acceptance
+  (`mark_email_delivered`). The outbox row is a transient carrier for a token-bearing message;
+  deleting it promptly is operational message cleanup and decides no user-data retention rule.
 * Browser drafts expire client-side after a 7-day lazy TTL (`web/static/js/local_draft.js`,
   `TTL_MS = 7 days`) — a client mechanism, not a server retention rule.
 * Self-service export is project-scoped only (P10-D3a); account-wide export DEFERRED (OD-DR2).
