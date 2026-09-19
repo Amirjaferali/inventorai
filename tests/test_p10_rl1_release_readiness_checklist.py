@@ -18,6 +18,8 @@ import glob
 import os
 import re
 
+from tests import current_truth_contract as contract
+
 CHECKLIST = os.path.join("docs", "governance",
                          "PHASE_10_RELEASE_READINESS_CHECKLIST.md")
 
@@ -151,16 +153,19 @@ def test_dep1_point_in_time_and_test_only_dependency_visible():
 
 
 # --------------------------------------------------------------------------
-# PROVIDER-DEPENDENT rows: current state is read from the row's own marker.
+# PROVIDER-DEPENDENT rows: a bounded current-state machine, anchored by
+# IMMUTABLE row IDs and read only from the CURRENT-TRUTH region.
 #
-# REPAIRED (v1.32). The earlier guard scanned the whole row for tokens. Once
-# rows began carrying preserved historical quotations, a "NOT COMPLETE" or a
-# "NOT PROVISIONED" surviving anywhere in the row could satisfy a check while
-# the row's live claim said something else entirely — history standing in for
-# current truth. Each provider-dependent row now opens its current-truth cell
-# with exactly one `CURRENT STATE:` marker drawn from a bounded vocabulary.
-# The state is parsed from that marker alone. No completion state exists in
-# the vocabulary, so completion cannot be claimed at all on such a row.
+# REPAIRED AGAIN (v1.32 contract hardening). Two earlier designs failed.
+# The first scanned whole rows for tokens, so a preserved "NOT COMPLETE"
+# anywhere in a row could satisfy a check while the row's live claim said
+# otherwise. The second stripped particular Markdown shapes to separate
+# history, which only moved the leak to shapes it did not anticipate. Now:
+# history lives OUTSIDE an explicitly delimited region and is never read;
+# rows are located by their immutable RL- identifier, so relabelling a row's
+# status or category cannot make it drop out of validation; and each row's
+# state comes from one marker with a bounded vocabulary that contains no
+# completion state at all.
 # --------------------------------------------------------------------------
 _PD_CURRENT_STATES = (
     "NOT SELECTED",
@@ -170,31 +175,40 @@ _PD_CURRENT_STATES = (
     "DEPLOYED / NOT COMPLETE",
 )
 
+# The provider-dependent inventory this guard owns, by IMMUTABLE row ID.
+# Enumerated on purpose: a row may not escape validation by having its
+# dependency label, status text or category text edited.
+_PROVIDER_ROW_IDS = (
+    "RL-B2", "RL-B3", "RL-B4", "RL-B6",
+    "RL-C2", "RL-C3", "RL-C5",
+    "RL-E4", "RL-E5", "RL-E7",
+    "RL-F1", "RL-F2", "RL-F3", "RL-F4", "RL-F5", "RL-F6",
+)
+
 _CURRENT_STATE = re.compile(r"CURRENT STATE: ([A-Z][A-Z /]*[A-Z])\.")
-# a preserved quotation of prior wording: **SUPERSEDED …** (was: "…").
-_SUPERSEDED_SPAN = re.compile(
-    r"\*\*SUPERSEDED[^*]*\*\*\s*\(was:.*?\)\.", re.S)
+_GATE = re.compile(r"(INFRA-G1-R1|OD-INFRA-\d|OD-CJ1|P8-I4|OD-J2|OD-DR1|P10-BR1)")
+
+
+def _release_current_truth():
+    """The explicit CURRENT-TRUTH:RELEASE-READINESS region."""
+    return contract.region(_text(), "RELEASE-READINESS")
+
+
+def _row(row_id):
+    """Locate a row by its IMMUTABLE ID, inside the current-truth region."""
+    prefix = "| %s |" % row_id
+    matches = [line for line in _release_current_truth().splitlines()
+               if line.startswith(prefix)]
+    assert len(matches) == 1, (
+        "row %s must appear exactly once inside the CURRENT-TRUTH region, "
+        "found %d" % (row_id, len(matches)))
+    return matches[0]
 
 
 def _cells(row):
-    """`| ID | Item | Status | Source | Current truth | …` → cell list."""
     cells = row.split("|")
     assert len(cells) >= 7, row
     return cells
-
-
-def _provider_rows():
-    """Rows whose STATUS column carries the provider dependency.
-
-    Read from the status cell, not the whole line: RL-B9 mentions
-    PROVIDER-DEPENDENT in its Blocks column as a downstream note, and is not
-    itself a provider row.
-    """
-    rows = [line for line in _text().splitlines()
-            if line.startswith("| RL-")
-            and "PROVIDER-DEPENDENT" in _cells(line)[3]]
-    assert len(rows) >= 10, "expected the provider-dependent inventory"
-    return rows
 
 
 def _row_truth(row):
@@ -202,86 +216,127 @@ def _row_truth(row):
     return _cells(row)[5]
 
 
-def _row_state(row):
+def _row_state(row_id):
     """The row's CURRENT STATE marker — exactly one, or the row fails."""
-    states = _CURRENT_STATE.findall(_row_truth(row))
+    states = _CURRENT_STATE.findall(_row_truth(_row(row_id)))
     assert len(states) == 1, (
-        "every PROVIDER-DEPENDENT row needs exactly one CURRENT STATE marker "
-        "in its current-truth cell, found %d: %s" % (len(states), row))
+        "%s needs exactly one CURRENT STATE marker in its current-truth cell, "
+        "found %d" % (row_id, len(states)))
     return states[0]
 
 
-def _row_prose(row):
-    """The current-truth cell minus its marker and its preserved quotations.
+def _row_prose(row_id):
+    """The current-truth cell with the marker removed: the row's live prose."""
+    return _CURRENT_STATE.sub("", _row_truth(_row(row_id)))
 
-    What remains is the row's own live prose, which is what the wording rules
-    below are allowed to see. History is excluded on purpose: a quotation of a
-    prior claim must never satisfy — or violate — a check about today.
+
+def test_release_current_truth_region_is_well_formed():
+    """Missing, duplicated or malformed region = failure, never a silent pass."""
+    assert _release_current_truth().strip()
+
+
+def test_every_owned_row_declares_one_bounded_current_state():
+    for row_id in _PROVIDER_ROW_IDS:
+        state = _row_state(row_id)
+        assert state in _PD_CURRENT_STATES, (row_id, state)
+
+
+def test_owned_rows_are_found_by_immutable_id_not_by_label():
+    """Relabelling a row must not remove it from this guard's inventory.
+
+    The rows are enumerated by ID above. This test states the contract
+    explicitly: every enumerated ID resolves to exactly one row inside the
+    region, whatever its status or category column happens to say.
     """
-    return _CURRENT_STATE.sub("", _SUPERSEDED_SPAN.sub("", _row_truth(row)))
+    for row_id in _PROVIDER_ROW_IDS:
+        assert _row(row_id).startswith("| %s |" % row_id)
 
 
-def test_every_provider_row_declares_one_bounded_current_state():
-    for row in _provider_rows():
-        state = _row_state(row)
-        assert state in _PD_CURRENT_STATES, (state, row)
-
-
-def test_no_provider_row_can_claim_completion():
-    """Completion is absent from the state vocabulary, and forbidden in prose.
-
-    This is the check that makes a false "COMPLETE"/"COMPLETED" fail even when
-    a correct "NOT COMPLETE" survives elsewhere in the same row.
-    """
-    for row in _provider_rows():
-        state = _row_state(row)
+def test_no_owned_row_can_claim_completion():
+    """Completion is absent from the vocabulary, and forbidden in prose."""
+    for row_id in _PROVIDER_ROW_IDS:
+        state = _row_state(row_id)
         for word in ("COMPLETE", "COMPLETED", "DONE", "FINISHED"):
-            assert not re.search(r"(?<!NOT )\b%s\b" % word, state), (state, row)
-        assert not re.search(r"(?<!NOT )\bCOMPLETED?\b", _row_prose(row)), row
+            assert not re.search(r"(?<!NOT )\b%s\b" % word, state), (row_id, state)
+        assert not re.search(r"(?<!NOT )\bCOMPLETED?\b", _row_prose(row_id)), row_id
 
 
-def test_provider_row_states_beyond_selection_cite_their_gate():
-    """A row may only claim provisioning/implementation/deployment under a gate.
-
-    Dependency labels cannot neutralize this: the state comes from the marker,
-    and anything past NOT SELECTED must name the decision that authorized it.
-    """
-    for row in _provider_rows():
-        state = _row_state(row)
-        if state == "NOT SELECTED":
+def test_states_beyond_selection_cite_their_gate():
+    """Anything past NOT SELECTED must name the decision that authorized it."""
+    for row_id in _PROVIDER_ROW_IDS:
+        if _row_state(row_id) == "NOT SELECTED":
             continue
-        assert re.search(r"(INFRA-G1-R1|OD-INFRA-\d|OD-CJ1|P8-I4)", row), row
+        assert _GATE.search(_row(row_id)), row_id
 
 
-def test_provider_row_prose_matches_its_declared_state():
-    """The live prose may not contradict the marker.
-
-    Selection, provisioning and completion stay separate: a row declaring
-    SELECTED / NOT PROVISIONED may not also assert provisioning as fact, and a
-    row declaring NOT SELECTED may not name a provider as chosen.
-    """
-    for row in _provider_rows():
-        state = _row_state(row)
-        prose = _row_prose(row)
+def test_row_prose_never_contradicts_its_state():
+    """The state machine's contradiction rules, enforced per state."""
+    for row_id in _PROVIDER_ROW_IDS:
+        state = _row_state(row_id)
+        prose = _row_prose(row_id)
         bare_selected = re.search(r"(?<!NOT )(?<!Owner-)\bSELECTED\b", prose)
         provisioned = re.search(r"(?<!NOT )\bPROVISIONED\b", prose)
-        configured = re.search(r"(?<!NOT )\bCONFIGURED\b", prose)
-        assert not bare_selected, row
+        deployed = re.search(r"(?<!NOT )\bDEPLOYED\b", prose)
+        # the inner (?<![-A-Z]) stops "NOT LIVE-ACTIVATED" matching on its own
+        # "ACTIVATED" tail, where the NOT lookbehind cannot reach
+        activated = re.search(
+            r"(?<!NOT )(?<![-A-Z])(LIVE-ACTIVATED|ACTIVATED|LIVE)\b", prose)
+        assert not bare_selected, row_id
+
         if state == "NOT SELECTED":
-            assert "Owner-SELECTED" not in prose, row
-            assert not provisioned, row
-            assert not configured, row
+            # must not name an adopted provider or decision
+            assert "Owner-SELECTED" not in prose, row_id
+            assert not provisioned, row_id
+            assert not deployed, row_id
+            assert "DECISION: SATISFIED" not in prose, row_id
+
         if state == "SELECTED / NOT PROVISIONED":
-            assert "NOT PROVISIONED" in prose, row
-            assert not provisioned, row
-        if "Owner-SELECTED" in prose:
-            assert re.search(r"(INFRA-G1-R1|OD-INFRA-\d)", row), row
+            # may name the selection; must not claim it is live
+            assert "NOT PROVISIONED" in prose, row_id
+            assert not provisioned, row_id
+            assert not deployed, row_id
+            assert not activated, row_id
+
+        if state == "PROVISIONED / NOT COMPLETE":
+            # provisioning evidence required; must not deny provisioning
+            assert provisioned, row_id
+            assert "NOT PROVISIONED" not in prose, row_id
+            assert _GATE.search(_row(row_id)), row_id
+            assert not deployed, row_id
+
+        if state == "IMPLEMENTED / NOT DEPLOYED":
+            assert "NOT DEPLOYED" in prose, row_id
+            assert not deployed, row_id
+            assert not activated, row_id
+
+        if state == "DEPLOYED / NOT COMPLETE":
+            assert deployed, row_id
+            assert "NOT COMPLETE" in prose, row_id
 
 
-def test_current_state_marker_never_lives_inside_preserved_history():
-    """Stripping the historical quotations must leave the marker standing."""
-    for row in _provider_rows():
-        assert "CURRENT STATE:" in _SUPERSEDED_SPAN.sub("", _row_truth(row)), row
+def test_owned_row_history_lives_outside_the_region():
+    """Superseded row wording is preserved — and never inside current truth."""
+    region = _release_current_truth()
+    outside = contract.outside(_text(), "RELEASE-READINESS")
+    assert "## Superseded row wording" in outside
+    assert "SUPERSEDED v1.32" not in region, (
+        "a preserved quotation must not sit inside the current-truth region")
+    # and the history is genuinely retained, not deleted
+    for row_id in ("RL-F1", "RL-F5", "RL-F6", "RL-G3"):
+        assert "**%s**" % row_id in outside, row_id
+
+
+def test_od_infra_4_recorded_as_decided_not_open():
+    """A settled selection decision must not be reported as still open."""
+    region = re.sub(r"\s+", " ", _release_current_truth())
+    assert "OD-INFRA-4 DECISION: SATISFIED AS A SELECTION DECISION" in region
+    assert "no dedicated third-party monitoring provider was adopted" in region
+    # the remaining operations work must stay visible and separate
+    assert "Nobody is notified when something breaks" in region
+    # and OD-INFRA-4 must not be described as open anywhere current
+    for stale in ("OD-INFRA-4 OPEN", "OD-INFRA-4 stays OPEN",
+                  "OD-INFRA-4 remains OPEN"):
+        assert stale not in region, stale
 
 
 def test_adviser_items_not_marked_done():

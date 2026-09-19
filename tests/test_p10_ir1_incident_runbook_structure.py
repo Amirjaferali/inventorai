@@ -24,6 +24,8 @@ anything outside the repository.
 import os
 import re
 
+from tests import current_truth_contract as contract
+
 RUNBOOK = os.path.join(
     "docs", "governance",
     "PHASE_10_INTERNAL_TECHNICAL_INCIDENT_RESPONSE_RUNBOOK.md")
@@ -126,49 +128,43 @@ def test_no_fictional_capability_claims():
         assert provider not in text.lower(), provider
 
 
-# A preserved quotation of prior wording: italicised, in quotes. History is
-# stripped from the current region before any positive check runs — a quoted
-# past claim must never stand in for a present one.
-_QUOTED_HISTORY = re.compile(r"\*\"[^\"]*\"\*")
-
-
 def _current_backup_truth():
-    """The §7 CURRENT truth block, with preserved historical quotations removed.
+    """The explicit CURRENT-TRUTH:INCIDENT-BACKUP region.
 
-    Two separate things must hold and are checked separately: the region has to
-    exist and be found by its own marker, and every positive assertion about
-    today has to survive the removal of every quoted historical claim.
+    REPAIRED AGAIN (v1.32 contract hardening). Earlier versions tried to tell
+    current truth from history by stripping particular Markdown shapes, and a
+    preserved claim in a shape the guard had not anticipated could satisfy a
+    check about the present. The runbook now delimits its current operational
+    truth explicitly and this guard reads nothing else. History may sit
+    anywhere outside the region, in any format, and may contradict it.
     """
-    text = re.sub(r"\s+", " ", _text())
-    start = text.find("**Current truth.**")
-    assert start != -1, (
-        "the §7 backup section must carry an explicit '**Current truth.**' "
-        "block — a runbook an operator reads mid-incident may not leave its "
-        "backup reality implicit")
-    end = text.find("## §8", start)
-    assert end != -1, "the current-truth block must end before §8"
-    return _QUOTED_HISTORY.sub(" ", text[start:end])
+    return re.sub(r"\s+", " ", contract.region(_text(), "INCIDENT-BACKUP"))
+
+
+def _backup_history():
+    """Everything outside the region — preserved, never a current claim."""
+    return re.sub(r"\s+", " ",
+                  contract.outside(_text(), "INCIDENT-BACKUP"))
+
+
+def test_incident_backup_region_is_well_formed():
+    """Missing, duplicated or malformed region = failure, never a silent pass."""
+    assert contract.region(_text(), "INCIDENT-BACKUP").strip()
 
 
 def test_backup_reality_asserted_as_current_truth():
-    """The runbook must state the CURRENT backup reality, not merely retain the
-    old absence claim.
+    """The runbook must state the CURRENT backup reality.
 
-    REPAIRED (v1.32 truth-guard repair). The previous guard asserted only that
-    the phrase "no production/offsite/scheduled backup exists" was present
-    somewhere in the file. Once an off-provider backup actually existed, that
-    phrase survived as a correctly-labeled historical quotation and the guard
-    kept passing while the runbook's live claim had changed underneath it —
-    phrase presence, not truth. It now reads the explicit current-truth block
-    and checks the facts an operator needs mid-incident, and the stale phrase is
-    separately confined to superseded context by the test below.
+    An operator reading this mid-incident must not plan a recovery believing
+    there is no off-provider copy. Every fact here is read from the delimited
+    region only.
     """
     current = _current_backup_truth()
-    # what EXISTS — so nobody plans a recovery believing there is no copy
     assert "off-provider backup destination exists" in current
     assert "OD-INFRA-5" in current
-    assert "live off-provider backup object exists" in current
-    assert "full-loss disaster-recovery drill has passed" in current
+    assert "real manual off-provider backup object was evidenced" in current
+    assert "full-loss disaster-recovery drill" in current and "passed" in current
+    assert "temporary DR service used for that drill was decommissioned" in current
     # the operator's entry point to that copy must be named
     assert "scripts/inventorai_offsite_backup.py" in current
 
@@ -176,53 +172,64 @@ def test_backup_reality_asserted_as_current_truth():
 def test_scheduler_never_presented_as_running():
     """Merged is not deployed; implemented is not activated.
 
-    The dangerous failure here is the mirror of the old one: an operator
-    assuming a recent automatic copy exists because scheduler code was merged.
-    The runbook must say, in its current-truth region, that no scheduled run has
-    occurred and that recency must be checked before anything is relied on.
+    The mirror-image danger: an operator assuming a recent automatic copy
+    exists because scheduler code was merged.
     """
     current = _current_backup_truth()
-    assert "MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED" in current
-    assert "no scheduled run evidence exists" in current
-    assert "never assume a recent automatic copy exists" in current
-    # and the restore authorization boundary is not softened by any of this
-    assert "separate explicit Owner operational authorization" in current
+    assert "scheduler code is **MERGED**" in current
+    assert "scheduler is **NOT DEPLOYED**" in current
+    assert "scheduler is **NOT LIVE-ACTIVATED**" in current
+    assert "no scheduled-run evidence exists" in current
+    assert "Never assume a recent automatic copy exists" in current
 
 
 def test_backup_recency_comes_from_the_object_not_the_scheduler():
     """Scheduler state may never be presented as proof of a recent backup.
 
     A manual backup leaves no trace in scheduler state, and scheduler state
-    could in principle record a success whose object is gone. An operator
-    reading this mid-incident must be sent to the object's own evidence.
+    could in principle record a success whose object is gone.
     """
     current = _current_backup_truth()
     assert "Scheduler state is not recency evidence" in current
-    assert "reports **scheduler state only**" in current
+    assert "proves scheduler state only" in current
     assert ("must never be treated as proof that a recent backup object exists"
             in current)
-    # the evidence an operator IS sent to must be named concretely
     for source in ("object key", "object metadata", "recorded backup evidence",
                    "SHA-256"):
         assert source in current, source
-    # and the status subcommand must not be offered as a recency check
-    assert not re.search(
-        r"check `?status`? for the real last-success", current)
+    assert not re.search(r"check `?status`? for the real last-success", current)
 
 
-def test_old_absence_claim_only_survives_as_labeled_history():
+def test_restore_authorization_boundary_restated_in_the_region():
+    current = _current_backup_truth()
+    assert "separate explicit Owner operational authorization" in current
+    assert "no retention rule of any kind" in current
+
+
+def test_region_never_claims_local_only_backup():
+    """The region may not carry the contradiction it exists to correct."""
+    current = _current_backup_truth().lower()
+    for contradiction in ("only local backup capability exists",
+                          "no production/offsite/scheduled backup exists",
+                          "no off-provider copy",
+                          "no offsite backup exists"):
+        assert contradiction not in current, contradiction
+
+
+def test_old_absence_claim_only_survives_outside_the_region():
     """The superseded phrase stays visible — but never as a live claim."""
-    text = re.sub(r"\s+", " ", _text())
-    occurrences = list(re.finditer(
-        r"no production/offsite/scheduled backup exists", text))
-    assert occurrences, (
+    claim = "no production/offsite/scheduled backup exists"
+    assert claim in _backup_history(), (
         "the superseded claim must stay visible as labeled history — deleting "
         "it would hide that the runbook once told operators otherwise")
-    for match in occurrences:
+    assert claim not in _current_backup_truth()
+    text = re.sub(r"\s+", " ", _text())
+    for match in re.finditer(re.escape(claim), text):
         window = text[max(0, match.start() - 400):match.start()]
         assert "SUPERSEDED" in window, (
             "this phrase may appear ONLY inside preserved superseded text: %s"
             % text[max(0, match.start() - 200):match.end() + 80])
+
 
 
 def test_incident_id_format_and_no_new_schema():

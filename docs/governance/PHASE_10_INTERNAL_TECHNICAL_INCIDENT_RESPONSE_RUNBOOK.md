@@ -160,36 +160,46 @@ For suspected durable-DB corruption/loss (`INVENTORAI_DB_PATH` SQLite):
    AND separate explicit Owner operational authorization, recorded in the evidence record.
 6. Record exact backup/restore evidence (paths, validation output, parity result) in the record.
 
-Truth boundaries — **SUPERSEDED IN PART, v1.32 (2026-09-19); read the correction before acting in an
-incident.** The prior boundary read, verbatim: *"only LOCAL backup capability exists (P10-BR1); no
-production/offsite/scheduled backup exists"*. **That is no longer true, and an operator must not plan a
-recovery around it.**
+Truth boundaries. **Only the delimited region below states current operational truth.** Anything
+outside it — anywhere in this runbook, in any format — is history and states nothing about today.
 
-**Current truth.** An **off-provider backup destination exists** under OD-INFRA-5 — a private
+<!-- CURRENT-TRUTH:INCIDENT-BACKUP:BEGIN -->
+**What exists.** An **off-provider backup destination exists** under OD-INFRA-5 — a private
 Cloudflare R2 bucket, create-only writes, scoped token — reachable through
 `scripts/inventorai_offsite_backup.py` (`daily` / `upload`, and read-only `status`). **At least one
-live off-provider backup object exists**, and a **full-loss disaster-recovery drill has passed end to
-end**; the temporary DR service used for that drill was decommissioned. Production hosting exists
-(Render, Frankfurt, one persistent disk at `/var/data` carrying the canonical SQLite), so the live
-database is no longer a local-only artifact.
+real manual off-provider backup object was evidenced.** A **full-loss disaster-recovery drill
+passed** end to end, and the **temporary DR service used for that drill was decommissioned**.
+Production hosting exists (Render, Frankfurt, one persistent disk at `/var/data` carrying the
+canonical SQLite), so the live database is no longer a local-only artifact.
 
-**Still true, and load-bearing:** **scheduled** backup is **NOT running**. The bounded daily
-in-process scheduler is **MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED** — **no scheduled run evidence
-exists**, so **never assume a recent automatic copy exists**.
+**What is NOT running.** **Scheduled** backup is **NOT running**. The bounded daily in-process
+scheduler code is **MERGED**, the scheduler is **NOT DEPLOYED**, the scheduler is **NOT
+LIVE-ACTIVATED**, and **no scheduled-run evidence exists**. **Never assume a recent automatic copy
+exists.**
 
 **How to establish backup recency — read the object, not the scheduler.** Verify recency from the
-**stored backup object's own evidence**: the object key and its embedded timestamp, the provider-side
-object metadata where available, the locally recorded backup evidence for that run, and the recorded
-SHA-256 and byte count. **Scheduler state is not recency evidence.** `scripts/inventorai_offsite_backup.py
-status` reports **scheduler state only** — what the scheduler last recorded about its own runs — and
-**must never be treated as proof that a recent backup object exists**. A manual backup taken outside
-the scheduler leaves no trace in scheduler state at all, so scheduler state can be empty while a usable
-object exists, and could in principle report a success whose object is missing. **Confirm the object.**
+**stored backup object's own evidence**: the object key and its embedded timestamp, the
+provider-side object metadata where available, the locally recorded backup evidence for that run,
+and the recorded SHA-256 and byte count. **Scheduler state is not recency evidence.**
+`scripts/inventorai_offsite_backup.py status` **proves scheduler state only** — it reports
+**scheduler state only**, what the scheduler last recorded about its own runs — and **must never be
+treated as proof that a recent backup object exists**. A manual backup taken outside the scheduler
+leaves no trace in scheduler state at all, so scheduler state can be empty while a usable object
+exists, and could in principle report a success whose object is missing. **Confirm the object.**
 
-P10-BR1's own capability remains local, this runbook still creates **no retention rule of any kind**,
-and nothing here authorizes a restore: §5 above still governs, and repointing `INVENTORAI_DB_PATH`
-still requires separate explicit Owner operational authorization. Deep recovery procedures live in
-`docs/DISASTER_RECOVERY_PLAN.md` Scenario 7 — this runbook coordinates, DR recovers (§16).
+**What restoring still requires.** Nothing above authorizes a restore. §5 of this section still
+governs, and repointing `INVENTORAI_DB_PATH` at a restored file still requires verification AND
+**separate explicit Owner operational authorization**, recorded in the evidence record. P10-BR1's
+own capability remains local and this runbook still creates **no retention rule of any kind**.
+<!-- CURRENT-TRUTH:INCIDENT-BACKUP:END -->
+
+**SUPERSEDED IN PART, v1.32 (2026-09-19) — history, not current truth.** The prior boundary read,
+verbatim: *"only LOCAL backup capability exists (P10-BR1); no production/offsite/scheduled backup
+exists"*. **That is no longer true, and an operator must not plan a recovery around it.** It is kept
+here so the change is visible rather than silent.
+
+Deep recovery procedures live in `docs/DISASTER_RECOVERY_PLAN.md` Scenario 7 — this runbook
+coordinates, DR recovers (§16).
 
 ## §8. Availability / outage path (uses authoritative P10-OB1)
 

@@ -22,13 +22,19 @@ import glob
 import os
 import re
 
+from tests import current_truth_contract as contract
+
 RETENTION = os.path.join("docs", "DATA_RETENTION_POLICY.md")
 COST = os.path.join("docs", "COST_GOVERNANCE_PLAN.md")
 
 
-def _norm(path):
+def _raw(path):
     with open(path, encoding="utf-8") as fh:
-        return re.sub(r"\s+", " ", fh.read())
+        return fh.read()
+
+
+def _norm(path):
+    return re.sub(r"\s+", " ", _raw(path))
 
 
 # ==========================================================================
@@ -126,102 +132,96 @@ def test_retention_doc_matches_source_truth():
 # ==========================================================================
 # COST_GOVERNANCE_PLAN.md
 # ==========================================================================
-def _current_cost_section_lines():
-    """Raw lines of the 'Current cost reality' section."""
-    with open(COST, encoding="utf-8") as fh:
-        lines = fh.read().splitlines()
-    start = next((i for i, l in enumerate(lines)
-                  if l.startswith("## Current cost reality")), None)
-    assert start is not None, "the plan must carry a current-cost-reality section"
-    end = next((i for i, l in enumerate(lines[start + 1:], start + 1)
-                if l.startswith("## ")), len(lines))
-    assert end > start, "the current section must end before the next heading"
-    return lines[start:end]
+def _cost_current_truth():
+    """The explicit CURRENT-TRUTH:COST region — the only current-truth source.
 
-
-def _current_cost_reality():
-    """The current section with every SUPERSEDED bullet removed.
-
-    This is the whole point of the repair. The section deliberately preserves
-    the prior zero-cost claim verbatim, and that quotation contains the very
-    tokens the positive checks look for — `AI_ADVISORY_ENABLED = False` among
-    them. Scanning the section as a whole therefore let a correct-sounding
-    history satisfy a check about the present while the live bullets said
-    something else. A bullet that opens `* **SUPERSEDED` is dropped along with
-    its continuation lines, and only what remains may satisfy a current claim.
+    REPAIRED AGAIN (v1.32 contract hardening). Two earlier attempts tried to
+    separate current truth from history by recognising Markdown shapes, and
+    both leaked: a preserved claim in a shape the guard had not anticipated
+    could satisfy a check about the present. The document now delimits its
+    current truth explicitly and this guard reads nothing else. History may sit
+    anywhere outside the region, in any format, and may contradict it freely.
     """
-    kept, skipping = [], False
-    for line in _current_cost_section_lines():
-        if line.startswith("* "):
-            skipping = line.startswith("* **SUPERSEDED")
-        if not skipping:
-            kept.append(line)
-    return re.sub(r"\s+", " ", "\n".join(kept))
+    return re.sub(r"\s+", " ", contract.region(_raw(COST), "COST"))
 
 
-def _superseded_cost_bullets():
-    """The dropped history, so its preservation can be checked separately."""
-    kept, skipping = [], False
-    for line in _current_cost_section_lines():
-        if line.startswith("* "):
-            skipping = line.startswith("* **SUPERSEDED")
-        if skipping:
-            kept.append(line)
-    return re.sub(r"\s+", " ", "\n".join(kept))
+def _cost_history():
+    """Everything outside the region — preserved, and never a current claim."""
+    return re.sub(r"\s+", " ", contract.outside(_raw(COST), "COST"))
 
 
-def test_cost_plan_current_reality_is_explicit():
-    """The plan must state the CURRENT cost reality, not merely retain the old
-    zero-cost claim.
+def test_cost_current_truth_region_is_well_formed():
+    """Missing, duplicated or malformed region = failure, never a silent pass."""
+    assert contract.region(_raw(COST), "COST").strip()
 
-    REPAIRED (v1.32 truth-guard repair). The previous guard asserted only that
-    the phrase "There is NO live paid usage of any kind" appeared somewhere in
-    the document. Once hosting and off-provider storage were actually
-    provisioned, that phrase survived as a correctly-labeled historical
-    quotation and the guard kept passing while the document's live claim had
-    changed underneath it — it was checking phrase presence, not truth. It now
-    reads the current section and checks both halves of the real position: what
-    still costs nothing, and what now costs something.
+
+def test_cost_current_truth_states_the_provider_costs_that_exist():
+    """The region must name every provider cost that is actually incurred.
+
+    REPAIRED AGAIN (v1.32 contract hardening). Only the delimited region is
+    read. A correct-sounding historical claim elsewhere in the file — bullet,
+    blockquote, table, italic aside or prose — cannot satisfy any of this.
     """
-    current = _current_cost_reality()
-    # --- still true: no metered AI spend, no billing of users, no monitoring
-    assert "AI_ADVISORY_ENABLED = False" in current
-    assert "AI token spend is zero" in current
-    assert "no payment provider" in current
-    assert "no live billing of users" in current
-    # monitoring: the platform stack exists and is free; no PAID service does.
-    # "no hosted monitoring" was the old wording and became misleading once the
-    # platform's own metrics and logs were in use.
-    assert "no paid third-party" in current and "monitoring service" in current
-    assert "provides no alerting" in current
-    # --- newly true: provider costs exist and must not be described as absent
+    current = _cost_current_truth()
     assert "Production hosting exists" in current
     assert "off-provider backup destination exists" in current
-    assert "OD-INFRA-5" in current
+    assert "email provider and adapter direction exists" in current
+    assert "OD-INFRA-1" in current and "OD-INFRA-5" in current
     assert "OD-INFRA-6" in current
-    assert "no longer runs only to a development sink" in current
-    # --- unchanged and load-bearing: none of it is controlled by runtime code
-    assert ("No usage of them is metered, budgeted, capped or alerted on by "
-            "this repository's runtime code" in current)
+
+
+def test_cost_current_truth_states_what_costs_nothing():
+    current = _cost_current_truth()
+    assert "AI token spend is zero" in current
+    assert "AI_ADVISORY_ENABLED = False" in current
+    assert "Live production email sending remains DEFERRED" in current
+    assert "No payment provider is live" in current
+    assert "no live user billing exists" in current
+    assert "No paid third-party monitoring service" in current
+
+
+def test_cost_current_truth_denies_a_runtime_cost_control_system():
+    """The plan must not imply that runtime code governs provider spend."""
+    current = _cost_current_truth()
+    assert ("Runtime code does not provide a complete provider-cost budgeting, "
+            "capping or alerting system" in current)
     assert "no kill switch, no spending ceiling, no cost accumulator" in current
 
 
-def test_old_zero_cost_claim_only_survives_as_labeled_history():
-    """The superseded claim stays visible — but never as a live claim."""
-    text = _norm(COST)
-    occurrences = list(re.finditer(
-        r"There is NO live paid usage of any kind", text))
-    assert occurrences, (
+def test_cost_current_truth_records_od_infra_4_as_decided():
+    """A settled selection is not operational readiness, and vice versa."""
+    current = _cost_current_truth()
+    assert "OD-INFRA-4 DECISION: SATISFIED AS A SELECTION DECISION" in current
+    assert "no dedicated third-party monitoring provider was adopted" in current
+    assert "remain OPEN operations work" in current
+    assert "Nobody is notified when something breaks" in current
+    # the decision must not be recorded as still open anywhere current
+    assert "OD-INFRA-4 OPEN" not in current
+    assert "OD-INFRA-4 remains OPEN" not in current
+
+
+def test_cost_current_truth_never_claims_zero_paid_usage():
+    """The vague old formulation may not reappear as a current claim."""
+    current = _cost_current_truth()
+    for vague in ("no live paid usage of any kind",
+                  "no provider cost", "no cloud/provider billing",
+                  "do not exist today"):
+        assert vague.lower() not in current.lower(), vague
+
+
+def test_old_zero_cost_claim_only_survives_outside_the_region():
+    """The superseded claim stays visible — and stays out of current truth."""
+    claim = "There is NO live paid usage of any kind"
+    assert claim in _cost_history(), (
         "the superseded claim must stay visible as labeled history — deleting "
         "it would hide that the plan once asserted zero provider cost")
-    for match in occurrences:
+    assert claim not in _cost_current_truth()
+    text = _norm(COST)
+    for match in re.finditer(re.escape(claim), text):
         window = text[max(0, match.start() - 400):match.start()]
         assert "SUPERSEDED" in window, (
             "this claim may appear ONLY inside preserved superseded text: %s"
             % text[max(0, match.start() - 200):match.end() + 80])
-    # …and it must live in the dropped history, never in the live bullets
-    assert "There is NO live paid usage of any kind" in _superseded_cost_bullets()
-    assert "There is NO live paid usage of any kind" not in _current_cost_reality()
 
 
 def test_cost_plan_never_claims_active_controls():
