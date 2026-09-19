@@ -44,12 +44,16 @@ from engine.offsite_backup_scheduler import (
     EVENT_SUCCESS,
     FAILURE,
     NOT_DUE,
+    EVENT_STALE,
     OffsiteBackupScheduler,
     SCHEDULE_NAME,
     SKIPPED,
+    STALE,
     SUCCESS,
     THREAD_NAME,
     configuration_complete,
+    live_instance,
+    new_claim_id,
     perform_offsite_backup,
     resolve_settings,
 )
@@ -286,10 +290,12 @@ def test_eligibility_is_decided_from_persisted_state_not_memory(live_database):
     another process wrote - the exact restart/redeploy case."""
     store = SqliteAccountStore(live_database)
     try:
+        claim = new_claim_id()
         assert store.claim_offsite_backup_run(
-            SCHEDULE_NAME, "2026-09-20T02:30:00.000000Z", "9", "9") is True
-        store.record_offsite_backup_success(SCHEDULE_NAME, "2026-09-20T02:30:00.000000Z",
-                                            "daily/x.sqlite", 1, "0" * 64)
+            SCHEDULE_NAME, claim, "2026-09-20T02:30:00.000000Z", "9", "9") is True
+        assert store.record_offsite_backup_success(
+            SCHEDULE_NAME, claim, "2026-09-20T02:30:00.000000Z",
+            "daily/x.sqlite", 1, "0" * 64) is True
     finally:
         store.close()
     transport = _RecordingTransport()
@@ -312,8 +318,9 @@ def test_the_claim_is_atomic_so_overlapping_processes_cannot_both_run(live_datab
         # Both computed "due"; the claims are serialised by BEGIN IMMEDIATE.
         now = "2026-09-20T03:00:00.000000Z"
         threshold = "2026-09-19T21:00:00.000000Z"
-        assert store_a.claim_offsite_backup_run(SCHEDULE_NAME, now, threshold, threshold) is True
-        assert store_b.claim_offsite_backup_run(SCHEDULE_NAME, now, threshold, threshold) is False
+        assert store_a.claim_offsite_backup_run(SCHEDULE_NAME, "claim-a", now, threshold, threshold) is True
+        assert store_b.claim_offsite_backup_run(SCHEDULE_NAME, "claim-b", now, threshold, threshold) is False
+        assert store_a.get_offsite_backup_state(SCHEDULE_NAME)["active_claim_id"] == "claim-a"
     finally:
         store_a.close(); store_b.close()
     # Through the full seam, in sequence: the loser sees NOT_DUE.
@@ -685,7 +692,8 @@ def test_status_is_read_only_operational_fact(live_database):
     clock.advance(6 * HOUR)
     s.run_if_due()
     status = s.status()
-    assert set(status) == {"name", "last_attempt_at", "last_success_at",
+    assert set(status) == {"name", "active_claim_id", "claimed_at",
+                           "last_attempt_at", "last_success_at",
                            "last_success_object_key", "last_success_bytes",
                            "last_success_sha256", "last_failure_at",
                            "last_failure_code", "consecutive_failures"}
@@ -741,12 +749,20 @@ def test_the_state_row_lives_in_the_canonical_database_and_is_upserted(live_data
         assert {"offsite_backup_state", "accounts", "email_outbox"} <= tables
         assert store.get_offsite_backup_state(SCHEDULE_NAME) is None
         assert store.claim_offsite_backup_run(
-            SCHEDULE_NAME, "2026-01-01T00:00:00.000000Z", "0", "0") is True
-        assert store.record_offsite_backup_failure(SCHEDULE_NAME, "2026-01-01T00:00:01.000000Z", "x") == 1
-        assert store.record_offsite_backup_failure(SCHEDULE_NAME, "2026-01-01T00:00:02.000000Z", "y") == 2
-        store.record_offsite_backup_success(SCHEDULE_NAME, "2026-01-01T00:00:03.000000Z", "k", 7, "h")
+            SCHEDULE_NAME, "c1", "2026-01-01T00:00:00.000000Z", "9", "9") is True
+        assert store.record_offsite_backup_failure(
+            SCHEDULE_NAME, "c1", "2026-01-01T00:00:01.000000Z", "x") == 1
+        assert store.claim_offsite_backup_run(
+            SCHEDULE_NAME, "c2", "2026-01-01T00:00:02.000000Z", "9", "9") is True
+        assert store.record_offsite_backup_failure(
+            SCHEDULE_NAME, "c2", "2026-01-01T00:00:02.000000Z", "y") == 2
+        assert store.claim_offsite_backup_run(
+            SCHEDULE_NAME, "c3", "2026-01-01T00:00:03.000000Z", "9", "9") is True
+        assert store.record_offsite_backup_success(
+            SCHEDULE_NAME, "c3", "2026-01-01T00:00:03.000000Z", "k", 7, "h") is True
         row = store.get_offsite_backup_state(SCHEDULE_NAME)
         assert row["consecutive_failures"] == 0 and row["last_failure_code"] == "y"
+        assert row["active_claim_id"] is None and row["claimed_at"] is None
         assert store._conn.execute(
             "SELECT COUNT(*) FROM offsite_backup_state").fetchone()[0] == 1
     finally:
@@ -754,6 +770,7 @@ def test_the_state_row_lives_in_the_canonical_database_and_is_upserted(live_data
     import inspect
     for method in (SqliteAccountStore.get_offsite_backup_state,
                    SqliteAccountStore.claim_offsite_backup_run,
+                   SqliteAccountStore._offsite_state_row,
                    SqliteAccountStore.read_offsite_backup_state,
                    SqliteAccountStore.record_offsite_backup_success,
                    SqliteAccountStore.record_offsite_backup_failure,
@@ -892,3 +909,317 @@ def test_gunicorn_stays_one_worker_one_thread():
     assert re.search(r"^workers\s*=\s*1\s*$", conf, re.M)
     assert re.search(r"^threads\s*=\s*1\s*$", conf, re.M)
     assert re.search(r"^preload_app\s*=\s*False\s*$", conf, re.M)
+
+
+# =============================================================================
+# B1 — claim ownership: stale completion can never overwrite newer state
+# =============================================================================
+
+class _GatedTransport(_RecordingTransport):
+    """A transport whose PUT blocks until released - a run that outlives its
+    claim, or a stop() that must wait on a run in progress."""
+
+    def __init__(self, status=200):
+        super().__init__(status=status)
+        self.entered = threading.Event()
+        self.release = threading.Event()
+
+    def __call__(self, url, headers, path, size, timeout_seconds):
+        self.entered.set()
+        assert self.release.wait(30), "gated transport was never released"
+        return super().__call__(url, headers, path, size, timeout_seconds)
+
+
+def _claim(store, claim_id, now_iso, window_iso="9"):
+    return store.claim_offsite_backup_run(SCHEDULE_NAME, claim_id, now_iso,
+                                          window_iso, window_iso)
+
+
+def test_every_won_claim_has_a_unique_persisted_owner(live_database):
+    ids = {new_claim_id() for _ in range(1000)}
+    assert len(ids) == 1000
+    assert all(re.fullmatch(r"[0-9a-f]{32}", i) for i in ids)
+    store = SqliteAccountStore(live_database)
+    try:
+        assert _claim(store, "owner-1", "2026-09-20T03:00:00.000000Z") is True
+        row = store.get_offsite_backup_state(SCHEDULE_NAME)
+        assert row["active_claim_id"] == "owner-1"
+        assert row["claimed_at"] == row["last_attempt_at"] == "2026-09-20T03:00:00.000000Z"
+    finally:
+        store.close()
+
+
+def test_scenario_1_a_second_claim_before_expiry_is_rejected(live_database):
+    store = SqliteAccountStore(live_database)
+    try:
+        assert _claim(store, "run-a", "2026-09-20T03:00:00.000000Z",
+                      "2026-09-19T21:00:00.000000Z") is True
+        # B tries 5h59m later: A's claim is younger than the 6h window.
+        assert _claim(store, "run-b", "2026-09-20T08:59:00.000000Z",
+                      "2026-09-20T02:59:00.000000Z") is False
+        assert store.get_offsite_backup_state(SCHEDULE_NAME)["active_claim_id"] == "run-a"
+    finally:
+        store.close()
+
+
+def test_scenario_2_stale_success_after_reclaim_is_rejected_and_b_state_stands(
+        live_database):
+    store = SqliteAccountStore(live_database)
+    try:
+        assert _claim(store, "run-a", "2026-09-20T03:00:00.000000Z",
+                      "2026-09-19T21:00:00.000000Z") is True
+        # A is abandoned: 6h+ later B reclaims, which replaces the owner.
+        assert _claim(store, "run-b", "2026-09-20T09:30:00.000000Z",
+                      "2026-09-20T03:30:00.000000Z") is True
+        assert store.get_offsite_backup_state(SCHEDULE_NAME)["active_claim_id"] == "run-b"
+        assert store.record_offsite_backup_success(
+            SCHEDULE_NAME, "run-b", "2026-09-20T09:31:00.000000Z",
+            "daily/b.sqlite", 222, "b" * 64) is True
+        # A finally completes: rejected, nothing of B's is altered.
+        before = store.get_offsite_backup_state(SCHEDULE_NAME)
+        assert store.record_offsite_backup_success(
+            SCHEDULE_NAME, "run-a", "2026-09-20T09:45:00.000000Z",
+            "daily/a.sqlite", 111, "a" * 64) is False
+        assert store.record_offsite_backup_failure(
+            SCHEDULE_NAME, "run-a", "2026-09-20T09:45:00.000000Z", "provider_rejected") is None
+        assert store.get_offsite_backup_state(SCHEDULE_NAME) == before
+        assert before["last_success_at"] == "2026-09-20T09:31:00.000000Z"
+        assert before["last_success_object_key"] == "daily/b.sqlite"
+        assert before["consecutive_failures"] == 0
+        assert before["active_claim_id"] is None
+    finally:
+        store.close()
+
+
+def test_scenario_2b_stale_failure_cannot_touch_a_newer_failure_counter(live_database):
+    store = SqliteAccountStore(live_database)
+    try:
+        assert _claim(store, "run-a", "2026-09-20T03:00:00.000000Z") is True
+        assert _claim(store, "run-b", "2026-09-20T09:30:00.000000Z") is True   # reclaim
+        assert store.record_offsite_backup_failure(
+            SCHEDULE_NAME, "run-b", "2026-09-20T09:31:00.000000Z", "provider_rejected") == 1
+        before = store.get_offsite_backup_state(SCHEDULE_NAME)
+        assert store.record_offsite_backup_failure(
+            SCHEDULE_NAME, "run-a", "2026-09-20T09:40:00.000000Z", "provider_unreachable") is None
+        assert store.record_offsite_backup_success(
+            SCHEDULE_NAME, "run-a", "2026-09-20T09:40:00.000000Z", "k", 1, "a" * 64) is False
+        assert store.get_offsite_backup_state(SCHEDULE_NAME) == before
+        assert before["consecutive_failures"] == 1
+        assert before["last_failure_code"] == "provider_rejected"
+    finally:
+        store.close()
+
+
+def test_scenarios_2_3_4_end_to_end_through_the_scheduler(live_database):
+    """Run A's upload hangs past the claim window; run B reclaims and succeeds
+    at 09:30; A then finishes and is STALE. Next eligibility is computed from
+    B's success only: nothing at 18h after B, a backup at 24h after B."""
+    gated = _GatedTransport()
+    clock_a = _Clock(T0)
+    a = _scheduler(live_database, gated, clock_a)
+    worker = threading.Thread(target=lambda: results.append(a.run_if_due()),
+                              daemon=True)
+    results = []
+    worker.start()
+    assert gated.entered.wait(10)                          # A owns the claim, upload hung
+    row = _state(live_database)
+    assert row["active_claim_id"] is not None and row["last_success_at"] is None
+
+    clock_b = _Clock(T0 + 6 * HOUR + datetime.timedelta(minutes=30))
+    b_transport = _RecordingTransport()
+    b = _scheduler(live_database, b_transport, clock_b)
+    assert b.run_if_due() == SUCCESS                        # reclaim + success at 09:30
+    b_state = _state(live_database)
+    assert b_state["last_success_at"] == "2026-09-20T09:30:00.000000Z"
+    assert b_state["active_claim_id"] is None
+
+    clock_a.advance(7 * HOUR)                              # A completes at 10:00
+    gated.release.set()
+    worker.join(10)
+    assert results == [STALE]
+    assert a.stale_completions == 1
+    assert _state(live_database) == b_state                # B's state untouched
+
+    # Scenario 4: 18h after B's success nothing is eligible, for anyone.
+    clock_b.advance(18 * HOUR)
+    assert b.run_if_due() == NOT_DUE
+    clock_a.moment = clock_b.moment
+    assert a.run_if_due() == NOT_DUE
+    assert len(b_transport.calls) == 1 and len(gated.calls) == 1
+    # Scenario 3: 24h after B's success (not A's completion) it is eligible.
+    clock_b.advance(6 * HOUR)
+    assert b.run_if_due() == SUCCESS
+    assert _state(live_database)["last_success_at"] == "2026-09-21T09:30:00.000000Z"
+
+
+def test_stale_completion_emits_a_bounded_event_and_no_success(live_database):
+    emitted = _Emitted()
+    gated = _GatedTransport()
+    a = _scheduler(live_database, gated, _Clock(T0), emitted)
+    results = []
+    worker = threading.Thread(target=lambda: results.append(a.run_if_due()), daemon=True)
+    worker.start()
+    assert gated.entered.wait(10)
+    # Another run reclaims after the window and fails; A then completes.
+    b = _scheduler(live_database, _RecordingTransport(status=500),
+                   _Clock(T0 + 7 * HOUR), emitted)
+    assert b.run_if_due() == FAILURE
+    gated.release.set()
+    worker.join(10)
+    assert results == [STALE]
+    assert [e["event"] for e in emitted.events] == [EVENT_FAILURE, EVENT_STALE]
+    assert emitted.events[1]["fields"] == {"component": "offsite_backup", "outcome": "stale"}
+    state = _state(live_database)
+    assert state["last_success_at"] is None and state["consecutive_failures"] == 1
+    assert state["last_failure_code"] == "provider_rejected"
+
+
+def test_reclaim_is_only_possible_after_the_bounded_window(live_database):
+    """The abandoned-claim rule is exactly the failure-retry window: not one
+    second earlier, and a reclaim invalidates the prior claim id."""
+    store = SqliteAccountStore(live_database)
+    try:
+        assert _claim(store, "run-a", "2026-09-20T03:00:00.000000Z") is True
+    finally:
+        store.close()
+    clock = _Clock(T0 + datetime.timedelta(seconds=DEFAULT_FAILURE_RETRY_SECONDS - 1))
+    b = _scheduler(live_database, _RecordingTransport(), clock)
+    assert b.run_if_due() == NOT_DUE
+    clock.advance(datetime.timedelta(seconds=1))
+    assert b.run_if_due() == SUCCESS
+    store = SqliteAccountStore(live_database)
+    try:
+        assert store.record_offsite_backup_success(
+            SCHEDULE_NAME, "run-a", "2026-09-20T09:01:00.000000Z", "k", 1, "a" * 64) is False
+    finally:
+        store.close()
+
+
+def test_a_completed_claim_is_released_and_cannot_complete_twice(live_database):
+    s = _scheduler(live_database, _RecordingTransport(), _Clock())
+    assert s.run_if_due() == SUCCESS
+    row = _state(live_database)
+    assert row["active_claim_id"] is None and row["claimed_at"] is None
+    store = SqliteAccountStore(live_database)
+    try:
+        # No owner at all: a completion with any id is stale.
+        assert store.record_offsite_backup_success(
+            SCHEDULE_NAME, "anything", "2026-09-20T03:05:00.000000Z", "k", 1, "a" * 64) is False
+        assert store.record_offsite_backup_failure(
+            SCHEDULE_NAME, "anything", "2026-09-20T03:05:00.000000Z", "x") is None
+        assert store.get_offsite_backup_state(SCHEDULE_NAME) == row
+    finally:
+        store.close()
+
+
+def test_completion_time_is_the_finish_time_not_the_claim_time(live_database):
+    """A long run's next eligibility is measured from when it finished."""
+    clock = _Clock(T0)
+    transport = _RecordingTransport()
+    s = _scheduler(live_database, transport, clock)
+    original = transport.__call__
+
+    def slow(*args, **kwargs):
+        clock.advance(2 * HOUR)                      # the upload "took" 2h
+        return original(*args, **kwargs)
+    s._transport = slow
+    assert s.run_if_due() == SUCCESS
+    row = _state(live_database)
+    assert row["last_attempt_at"] == "2026-09-20T03:00:00.000000Z"
+    assert row["last_success_at"] == "2026-09-20T05:00:00.000000Z"
+    clock.advance(23 * HOUR)                          # 25h after claim, 23h after finish
+    assert s.run_if_due() == NOT_DUE
+    clock.advance(HOUR)
+    assert s.run_if_due() == SUCCESS
+
+
+# =============================================================================
+# N1 — stop()/start() lifecycle: never two threads
+# =============================================================================
+
+def test_stop_timeout_keeps_the_thread_reference_and_start_refuses_a_second(
+        live_database):
+    gated = _GatedTransport()
+    s = _scheduler(live_database, gated, poll_interval_seconds=0.05)
+    try:
+        assert s.start() is True
+        assert gated.entered.wait(10)                   # a run is in progress
+        assert s.stop(timeout_seconds=0.2) is False     # still alive after the wait
+        assert s.running and s.stopping
+        assert s._thread is not None
+        assert s.start() is False                       # refused: prior thread alive
+        assert len(_scheduler_threads()) == 1
+        gated.release.set()
+        deadline = time.time() + 10
+        while s.running and time.time() < deadline:
+            time.sleep(0.02)
+        assert not s.running
+        assert s.stop() is True                         # releases the dead reference
+        assert s._thread is None
+        # Only now may a start create exactly one new thread.
+        assert s.start() is True
+        assert len(_scheduler_threads()) == 1
+    finally:
+        s.stop()
+    assert len(_scheduler_threads()) == 0
+
+
+def test_restart_after_actual_thread_death_creates_exactly_one_thread(live_database):
+    s = _scheduler(live_database, poll_interval_seconds=0.05)
+    for _ in range(3):
+        assert s.start() is True
+        assert s.stop() is True
+        assert not s.running
+    assert len(_scheduler_threads()) == 0
+
+
+# =============================================================================
+# N2 — one live scheduler per process, across instances and module reloads
+# =============================================================================
+
+def test_only_one_scheduler_instance_may_run_per_process(live_database):
+    a = _scheduler(live_database, poll_interval_seconds=0.05)
+    b = _scheduler(live_database, poll_interval_seconds=0.05)
+    try:
+        assert a.start() is True
+        assert live_instance() is a
+        assert b.start() is False                       # another instance is live
+        assert len(_scheduler_threads()) == 1
+        assert a.stop() is True
+        assert live_instance() is None
+        assert b.start() is True                        # prior thread actually dead
+        assert live_instance() is b
+        assert len(_scheduler_threads()) == 1
+    finally:
+        a.stop(); b.stop()
+    assert len(_scheduler_threads()) == 0
+
+
+def test_module_reload_reuses_the_live_scheduler_and_adds_no_thread(tmp_path):
+    """Production cold boot with a complete configuration, then the application
+    module is reloaded twice in-process: the live instance is reused and the
+    thread count stays at one. (Production never reloads - `reload = False` -
+    this pins the invariant regardless.)"""
+    env = dict(SETTINGS, INVENTORAI_DB_PATH=str(tmp_path / "boot.sqlite"))
+    result = _cold_boot(
+        env,
+        "import importlib, threading, web.app as w;"
+        "first = w._OFFSITE_BACKUP_SCHEDULER;"
+        "assert w._OFFSITE_BACKUP_SCHEDULER_STARTED is True and first.running;"
+        "importlib.reload(w); importlib.reload(w);"
+        "assert w._OFFSITE_BACKUP_SCHEDULER is first, 'a second instance was built';"
+        "assert w._OFFSITE_BACKUP_SCHEDULER_STARTED is False;"   # reused, not restarted
+        "names=[t.name for t in threading.enumerate() if t.name=='%s'];"
+        "assert names==['%s'], names;"
+        "print(w.app.test_client().get('/health').status_code)"
+        % (THREAD_NAME, THREAD_NAME))
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert result.stdout.strip() == "200"
+
+
+def test_dev_reload_builds_a_fresh_instance_when_none_is_live():
+    """Outside production nothing runs, so a reload simply rebuilds the
+    (never started) instance - and still starts no thread."""
+    assert live_instance() is None
+    assert not webapp._OFFSITE_BACKUP_SCHEDULER.running
+    assert _scheduler_threads() == []

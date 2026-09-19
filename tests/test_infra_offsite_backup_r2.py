@@ -518,13 +518,15 @@ def test_the_web_application_never_imports_the_uploader():
                 and node.module == "engine.offsite_backup_scheduler"
                 for alias in node.names}
     assert imported == {"_OffsiteBackupScheduler", "_offsite_backup_configured",
+                        "_live_offsite_backup_scheduler",
                         "_offsite_backup_resolve_settings"}, imported
     routes = list(_route_functions(tree))
     assert routes, "no routes found - the guard would be vacuous"
     forbidden = {"_OFFSITE_BACKUP_SCHEDULER", "_open_offsite_backup_store",
                  "_resolve_offsite_backup_settings", "_OffsiteBackupScheduler",
                  "_offsite_backup_configured", "_offsite_backup_resolve_settings",
-                 "perform_offsite_backup", "run_if_due"}
+                 "_live_offsite_backup_scheduler", "perform_offsite_backup",
+                 "run_if_due"}
     for function in routes:
         names = {n.id for n in ast.walk(function) if isinstance(n, ast.Name)}
         attrs = {n.attr for n in ast.walk(function) if isinstance(n, ast.Attribute)}

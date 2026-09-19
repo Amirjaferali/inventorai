@@ -41,6 +41,16 @@ two briefly overlapping processes (a redeploy) cannot both win the same run,
 and a process killed mid-upload does not re-run the moment it comes back - it
 waits the bounded failure-retry interval.
 
+Claim ownership (bounded claim-expiry model; SQLite is the only coordinator):
+every won claim carries a unique ``claim_id`` persisted on the row. A claim is
+ABANDONED, and therefore reclaimable, only once it is older than the
+failure-retry window; reclaiming REPLACES the owner. Both completion writes
+(success and failure) are conditional on the claim that performed the run
+still owning the row, so a run that outlives its claim - however long its
+backup or upload took - can never overwrite the newer owner's state: its
+completion is a bounded STALE no-op. The provider timeout bounds one PUT, not
+the whole run; this rule is what bounds the run's effect.
+
 Failure model: a failed run is recorded (counted, categorised by a stable
 reason code) and the next eligible moment is one failure-retry interval later,
 measured in HOURS. A provider outage therefore costs a handful of attempts per
@@ -58,6 +68,7 @@ import os
 import shutil
 import tempfile
 import threading
+import uuid
 
 from engine.backup_service import BackupError, backup_database
 from engine.r2_object_upload import R2UploadError, put_object
@@ -82,9 +93,11 @@ SUCCESS = "success"
 FAILURE = "failure"
 NOT_DUE = "not_due"
 SKIPPED = "skipped"            # no complete configuration: fail closed, touch nothing
+STALE = "stale"                # the run finished but no longer owned the claim
 
 EVENT_SUCCESS = "offsite_backup.scheduled_success"
 EVENT_FAILURE = "offsite_backup.scheduled_failure"
+EVENT_STALE = "offsite_backup.stale_completion"
 
 # Stable failure categories that are not a provider reason code.
 FAILURE_BACKUP = "backup_error"
@@ -106,6 +119,30 @@ def _iso(moment):
 def _parse_iso(value):
     return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ").replace(
         tzinfo=datetime.timezone.utc)
+
+
+def new_claim_id():
+    """A unique identifier for one claimed run; persisted on the state row so
+    completion can be checked against the owner. Not a secret and not a
+    credential - it names a run, nothing else."""
+    return uuid.uuid4().hex
+
+
+# --- process-wide singleton -------------------------------------------------
+# At most ONE live scheduler thread per process, whatever constructed it. The
+# registry lives in THIS module, which a reload of `web.app` does not
+# re-execute, so a reloaded application module finds and reuses the running
+# instance instead of creating a second one.
+_PROCESS_LOCK = threading.Lock()
+_LIVE_INSTANCE = None
+
+
+def live_instance():
+    """The scheduler whose thread is currently alive in this process, or
+    None."""
+    with _PROCESS_LOCK:
+        instance = _LIVE_INSTANCE
+        return instance if instance is not None and instance.running else None
 
 
 # --- configuration (shared with the operator CLI) ----------------------------
@@ -229,6 +266,7 @@ class OffsiteBackupScheduler:
         self._start_lock = threading.Lock()
         self.cycles = 0                    # completed poll cycles (evidence only)
         self.loop_faults = 0               # exceptions swallowed by the loop
+        self.stale_completions = 0         # runs that finished after losing the claim
 
     # --- eligibility ---------------------------------------------------------
 
@@ -295,8 +333,9 @@ class OffsiteBackupScheduler:
             # briefly overlapping processes cannot both win, and an interrupted
             # run waits out the bounded retry interval instead of re-running
             # at the next boot.
+            claim_id = new_claim_id()
             claimed = active.claim_offsite_backup_run(
-                SCHEDULE_NAME, _iso(moment),
+                SCHEDULE_NAME, claim_id, _iso(moment),
                 _iso(moment - datetime.timedelta(seconds=self._retry)),
                 _iso(moment - datetime.timedelta(seconds=self._interval)))
             if not claimed:
@@ -313,14 +352,20 @@ class OffsiteBackupScheduler:
                 code = FAILURE_UNEXPECTED
             else:
                 upload = report["upload"]
-                active.record_offsite_backup_success(
-                    SCHEDULE_NAME, _iso(moment), report["key"],
-                    int(upload["bytes"]), upload["sha256"])
+                # Completion time is read from the clock NOW, not from the
+                # claim moment: the next eligibility is measured from when the
+                # backup actually finished.
+                if not active.record_offsite_backup_success(
+                        SCHEDULE_NAME, claim_id, _iso(self._clock()),
+                        report["key"], int(upload["bytes"]), upload["sha256"]):
+                    return self._stale(claim_id)
                 self._report(EVENT_SUCCESS, "info", component="offsite_backup",
                              outcome="success", count=int(upload["bytes"]))
                 return SUCCESS
             failures = active.record_offsite_backup_failure(
-                SCHEDULE_NAME, _iso(moment), code)
+                SCHEDULE_NAME, claim_id, _iso(self._clock()), code)
+            if failures is None:
+                return self._stale(claim_id)
             self._report(EVENT_FAILURE, "warning", component="offsite_backup",
                          outcome="failure", detail_code=code, count=failures)
             return FAILURE
@@ -330,6 +375,15 @@ class OffsiteBackupScheduler:
                     active.close()
                 except Exception:
                     pass
+
+    def _stale(self, claim_id):
+        """The run finished after its claim was replaced (it outlived the
+        bounded window and another run took over). Nothing was written; the
+        newer owner's state stands. Reported as its own bounded event."""
+        self.stale_completions += 1
+        self._report(EVENT_STALE, "warning", component="offsite_backup",
+                     outcome="stale")
+        return STALE
 
     def status(self, store=None):
         """Read-only operational status: the persisted state row (timestamps,
@@ -378,30 +432,53 @@ class OffsiteBackupScheduler:
                     pass
 
     def start(self):
-        """Start the ONE scheduler thread. Idempotent: a second call while the
-        thread is alive returns False and creates nothing."""
-        with self._start_lock:
-            if self._thread is not None and self._thread.is_alive():
-                return False
-            self._stop.clear()
-            self._thread = threading.Thread(
-                target=self._run, name=THREAD_NAME, daemon=True)
-            self._thread.start()
-            return True
+        """Start the ONE scheduler thread. Idempotent and process-exclusive:
+        returns False and creates nothing while THIS instance's thread is
+        alive (including a thread that `stop()` asked to finish but which is
+        still completing a run) or while ANY other instance's thread is alive
+        in this process. Only once the prior thread is actually dead may a
+        start create exactly one new thread."""
+        global _LIVE_INSTANCE
+        with _PROCESS_LOCK:
+            with self._start_lock:
+                if self._thread is not None and self._thread.is_alive():
+                    return False
+                other = _LIVE_INSTANCE
+                if other is not None and other is not self and other.running:
+                    return False
+                self._stop.clear()
+                self._thread = threading.Thread(
+                    target=self._run, name=THREAD_NAME, daemon=True)
+                self._thread.start()
+                _LIVE_INSTANCE = self
+                return True
 
     def stop(self, timeout_seconds=5.0):
+        """Ask the thread to finish and wait a bounded time. If it is still
+        alive after the wait (a run in progress), the thread reference is
+        KEPT and the stop request stays set, so `running` stays truthful and
+        `start()` cannot create a second thread beside it; the reference is
+        released only once the thread has actually died."""
         with self._start_lock:
             thread = self._thread
             if thread is None:
-                return
+                return False
             self._stop.set()
             thread.join(timeout_seconds)
+            if thread.is_alive():
+                return False
             self._thread = None
+            return True
 
     @property
     def running(self):
         thread = self._thread
         return bool(thread is not None and thread.is_alive())
+
+    @property
+    def stopping(self):
+        """True while a stop has been requested but the thread is still alive."""
+        return self.running and self._stop.is_set()
 
     @property
     def thread_name(self):

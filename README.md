@@ -259,9 +259,13 @@ approximately once per 24 hours whenever all four `INVENTORAI_R2_*` variables
 are set. Eligibility is decided from a state row (`offsite_backup_state`) in
 the canonical database, never from memory alone, so restarts and redeploys do
 not produce duplicate backups and downtime yields one catch-up run, not one per
-missed day. A failed run is recorded under a stable category and retried after
-six hours, not seconds, so a provider outage costs a handful of attempts per
-day. Each run emits one bounded operational event (success or failure); the
+missed day. Each run first claims that row under a unique claim id in one
+atomic write; a claim older than six hours counts as abandoned and may be
+reclaimed by a later run, and a run that finishes after losing its claim
+writes nothing (its completion is recorded only as a bounded "stale" event),
+so an old run can never overwrite a newer run's state. A failed run is
+recorded under a stable category and retried after six hours, not seconds, so
+a provider outage costs a handful of attempts per day. Each run emits one bounded operational event (success or failure); the
 state row keeps the last success time, the stored object's key, byte count and
 SHA-256, the last failure time and code, and a consecutive-failure counter.
 Read it, read-only and without any credential, from a shell inside the

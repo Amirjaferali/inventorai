@@ -229,6 +229,7 @@ from engine.email_dispatcher import EmailDispatcher
 from engine.offsite_backup_scheduler import (
     OffsiteBackupScheduler as _OffsiteBackupScheduler,
     configuration_complete as _offsite_backup_configured,
+    live_instance as _live_offsite_backup_scheduler,
     resolve_settings as _offsite_backup_resolve_settings,
 )
 # P4-2 Level-1: the exact supported reconstruction/engine-contract version stamp
@@ -772,7 +773,10 @@ def _resolve_offsite_backup_settings():
     return _offsite_backup_resolve_settings(os.environ)
 
 
-_OFFSITE_BACKUP_SCHEDULER = _OffsiteBackupScheduler(
+# A reload of this module (never in production: `reload = False`) must not
+# construct a second scheduler beside a running one. The engine module keeps
+# the process-wide live instance across such a reload; reuse it when present.
+_OFFSITE_BACKUP_SCHEDULER = _live_offsite_backup_scheduler() or _OffsiteBackupScheduler(
     open_store=_open_offsite_backup_store,
     # Resolved at run time from the same variable every store uses.
     source_path=_resolve_db_path,
@@ -786,7 +790,8 @@ def _start_offsite_backup_scheduler_if_production():
     """Start the ONE scheduler thread - in production only, and only when the
     R2 configuration is complete. Production still boots with no configuration;
     it then starts no scheduler at all, so nothing can upload without it.
-    Idempotent within the process."""
+    Idempotent within the process: a live thread (this instance's or a reused
+    one's) makes this a no-op that returns False."""
     if _is_production() and _offsite_backup_configured(os.environ):
         return _OFFSITE_BACKUP_SCHEDULER.start()
     return False

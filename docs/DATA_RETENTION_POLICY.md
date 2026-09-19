@@ -22,7 +22,7 @@ notably LQ-09/LQ-10/TQ-07) and separate Owner acceptance.
 | Audit / commercial scaffolding (`access_audit`, `commercial_audit`, lifecycle, dedupe, usage) | Durable SQLite, append-only; NO live billing data | Partly |
 | Auth rate-limit counters | Durable SQLite (`auth_rate_limits`) — privacy-digest keys, no raw email | NO |
 | Outbound email outbox (OD-INFRA-6) | Durable SQLite (`email_outbox`) — recipient address + token-bearing verification/reset body, TRANSIENT: deleted on confirmed provider acceptance, scrubbed (recipient/subject/body nulled) when the bounded retry budget is exhausted; never logged, never exported | YES (while pending) |
-| Off-provider backup scheduler state (OD-INFRA-5) | Durable SQLite (`offsite_backup_state`) — one row: timestamps, a consecutive-failure counter, a stable failure code, and the last stored object's key, byte count and SHA-256; no credential, no user data | NO |
+| Off-provider backup scheduler state (OD-INFRA-5) | Durable SQLite (`offsite_backup_state`) — one row: timestamps, the owning run's claim id, a consecutive-failure counter, a stable failure code, and the last stored object's key, byte count and SHA-256; no credential, no user data | NO |
 | Live progression-session working state | In-memory `SESSION_STORE` (web/app.py) — ephemeral; durable evidence appended to `records` | YES |
 | Browser draft text | Client-side `localStorage` ONLY (never server-held) | YES (client-only) |
 | Operational logs (P10-OB1) | Process stderr stream, bounded no-PII events; NOT retained as files | NO |

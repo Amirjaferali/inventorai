@@ -351,12 +351,15 @@ _SCHEMA = (
     """,
     # OD-INFRA-5 scheduler state: ONE row per named schedule, in the SAME
     # canonical database (not a second datastore). Timestamps, a counter, a
-    # stable failure code and the last stored object's key/size/digest only -
-    # never a credential, never database content. Read and written ONLY by the
-    # offsite-backup scheduler's own thread-confined store instance.
+    # stable failure code, the last stored object's key/size/digest and the
+    # identity of the run that currently OWNS the row (`active_claim_id`,
+    # `claimed_at`) - never a credential, never database content. Read and
+    # written ONLY by the offsite-backup scheduler's own thread-confined store.
     """
     CREATE TABLE IF NOT EXISTS offsite_backup_state (
         name                     TEXT PRIMARY KEY,
+        active_claim_id          TEXT,
+        claimed_at               TEXT,
         last_attempt_at          TEXT,
         last_success_at          TEXT,
         last_success_object_key  TEXT,
@@ -1337,15 +1340,27 @@ class SqliteAccountStore:
                              (status,)).fetchone()[0]
 
     # --- OD-INFRA-5: off-provider backup scheduler state --------------------
-    # One row per named schedule. The scheduler decides eligibility from THIS
-    # persisted row (never from memory alone), so a restart or redeploy cannot
-    # produce a duplicate daily backup. There is no delete path: the row is
-    # upserted in place and carries operational facts only.
+    # One row per named schedule, OWNED by at most one run at a time. The
+    # scheduler decides eligibility from THIS persisted row (never from memory
+    # alone) and claims a run in one atomic check-and-write, so a restart or
+    # redeploy cannot produce a duplicate daily backup. Every completion write
+    # is conditional on the claim that performed the run still owning the row,
+    # so a run that outlived its claim can never overwrite newer state. There
+    # is no delete path: the row is upserted in place, operational facts only.
 
-    _OFFSITE_STATE_COLS = ("name, last_attempt_at, last_success_at, "
-                           "last_success_object_key, last_success_bytes, "
-                           "last_success_sha256, last_failure_at, "
-                           "last_failure_code, consecutive_failures")
+    _OFFSITE_STATE_COLS = ("name, active_claim_id, claimed_at, last_attempt_at, "
+                           "last_success_at, last_success_object_key, "
+                           "last_success_bytes, last_success_sha256, "
+                           "last_failure_at, last_failure_code, "
+                           "consecutive_failures")
+
+    @staticmethod
+    def _offsite_state_row(row):
+        return {"name": row[0], "active_claim_id": row[1], "claimed_at": row[2],
+                "last_attempt_at": row[3], "last_success_at": row[4],
+                "last_success_object_key": row[5], "last_success_bytes": row[6],
+                "last_success_sha256": row[7], "last_failure_at": row[8],
+                "last_failure_code": row[9], "consecutive_failures": row[10]}
 
     def _ensure_offsite_backup_row(self, c, name):
         c.execute(
@@ -1359,65 +1374,79 @@ class SqliteAccountStore:
             row = c.execute(
                 "SELECT " + self._OFFSITE_STATE_COLS +
                 " FROM offsite_backup_state WHERE name = ?", (name,)).fetchone()
-        if row is None:
-            return None
-        return {"name": row[0], "last_attempt_at": row[1],
-                "last_success_at": row[2], "last_success_object_key": row[3],
-                "last_success_bytes": row[4], "last_success_sha256": row[5],
-                "last_failure_at": row[6], "last_failure_code": row[7],
-                "consecutive_failures": row[8]}
+        return None if row is None else self._offsite_state_row(row)
 
-    def claim_offsite_backup_run(self, name: str, now_iso: str,
+    def claim_offsite_backup_run(self, name: str, claim_id: str, now_iso: str,
                                  attempt_not_after_iso: str,
                                  success_not_after_iso: str) -> bool:
-        """ATOMICALLY claim one run: inside ONE ``BEGIN IMMEDIATE`` the row is
-        checked and, only if the last attempt and the last success are both
-        absent or no later than the given thresholds, ``last_attempt_at`` is
-        set to ``now_iso``. Returns True when THIS caller won the claim.
+        """ATOMICALLY claim one run for ``claim_id``. Inside ONE ``BEGIN
+        IMMEDIATE`` the row is checked and, only if (a) no live claim holds it -
+        no ``active_claim_id``, or one whose ``claimed_at`` is no later than
+        ``attempt_not_after_iso`` (an ABANDONED claim, reclaimable under that
+        one bounded rule) - and (b) the last attempt and the last success are
+        both absent or no later than the given thresholds, the row is written:
+        ``active_claim_id`` = this claim (invalidating any prior one),
+        ``claimed_at`` = ``last_attempt_at`` = ``now_iso``. Returns True when
+        THIS caller won.
 
-        The check-and-write is one transaction, so two processes that overlap
-        briefly (a redeploy) cannot both claim the same run; and because the
-        claim is written BEFORE any upload, a run interrupted mid-upload is
-        visible as an attempt and waits out the bounded retry interval rather
-        than re-running the moment the process comes back. Timestamps are the
-        store-wide fixed-width ISO-8601 UTC strings, so ``<=`` is monotonic."""
+        Because check-and-write is one transaction, two processes that overlap
+        (a redeploy) cannot both win; because the claim is written BEFORE any
+        upload, an interrupted run stays visible as an attempt and waits out
+        the bounded window; and because a reclaim REPLACES the owner, a run
+        that outlives its claim finds its completion rejected (see the two
+        ``record_*`` methods). Timestamps are the store-wide fixed-width
+        ISO-8601 UTC strings, so ``<=`` is monotonic."""
         with self._write() as c:
             self._ensure_offsite_backup_row(c, name)
             cur = c.execute(
-                "UPDATE offsite_backup_state SET last_attempt_at = ? "
+                "UPDATE offsite_backup_state SET active_claim_id = ?, "
+                "claimed_at = ?, last_attempt_at = ? "
                 "WHERE name = ? "
+                "AND (active_claim_id IS NULL OR claimed_at IS NULL "
+                "     OR claimed_at <= ?) "
                 "AND (last_attempt_at IS NULL OR last_attempt_at <= ?) "
                 "AND (last_success_at IS NULL OR last_success_at <= ?)",
-                (now_iso, name, attempt_not_after_iso, success_not_after_iso))
+                (claim_id, now_iso, now_iso, name, attempt_not_after_iso,
+                 attempt_not_after_iso, success_not_after_iso))
             return cur.rowcount == 1
 
-    def record_offsite_backup_success(self, name: str, now_iso: str,
-                                      object_key: str, byte_count: int,
-                                      sha256: str) -> None:
-        """Confirmed provider acceptance: the last-success facts are replaced
-        and the consecutive-failure counter resets. The last failure stamp and
-        code are kept as history for operators."""
+    def record_offsite_backup_success(self, name: str, claim_id: str,
+                                      now_iso: str, object_key: str,
+                                      byte_count: int, sha256: str) -> bool:
+        """Confirmed provider acceptance, written ONLY if ``claim_id`` still
+        owns the row: the last-success facts are replaced, the
+        consecutive-failure counter resets and the claim is released. The last
+        failure stamp and code are kept as history. Returns False - a bounded
+        STALE result, touching nothing - when a newer claim has taken the row
+        or it was already released."""
         with self._write() as c:
-            self._ensure_offsite_backup_row(c, name)
-            c.execute(
+            cur = c.execute(
                 "UPDATE offsite_backup_state SET last_success_at = ?, "
                 "last_success_object_key = ?, last_success_bytes = ?, "
-                "last_success_sha256 = ?, consecutive_failures = 0 "
-                "WHERE name = ?",
-                (now_iso, object_key, int(byte_count), sha256, name))
+                "last_success_sha256 = ?, consecutive_failures = 0, "
+                "active_claim_id = NULL, claimed_at = NULL "
+                "WHERE name = ? AND active_claim_id = ?",
+                (now_iso, object_key, int(byte_count), sha256, name, claim_id))
+            return cur.rowcount == 1
 
-    def record_offsite_backup_failure(self, name: str, now_iso: str,
-                                      failure_code: str) -> int:
-        """Record one failed run under a stable category code. Returns the new
-        consecutive-failure count. Nothing else changes: the last success and
-        every remote object stay exactly as they were."""
+    def record_offsite_backup_failure(self, name: str, claim_id: str,
+                                      now_iso: str, failure_code: str):
+        """One failed run under a stable category code, written ONLY if
+        ``claim_id`` still owns the row: the counter increments and the claim
+        is released (the next attempt is then bounded by ``last_attempt_at``).
+        Returns the new consecutive-failure count, or None - a bounded STALE
+        result, touching nothing - when the row is owned by a newer claim or
+        was already released. The last success and every remote object stay
+        exactly as they were in every case."""
         with self._write() as c:
-            self._ensure_offsite_backup_row(c, name)
-            c.execute(
+            cur = c.execute(
                 "UPDATE offsite_backup_state SET last_failure_at = ?, "
                 "last_failure_code = ?, consecutive_failures = "
-                "consecutive_failures + 1 WHERE name = ?",
-                (now_iso, failure_code, name))
+                "consecutive_failures + 1, active_claim_id = NULL, "
+                "claimed_at = NULL WHERE name = ? AND active_claim_id = ?",
+                (now_iso, failure_code, name, claim_id))
+            if cur.rowcount != 1:
+                return None
             return int(c.execute(
                 "SELECT consecutive_failures FROM offsite_backup_state "
                 "WHERE name = ?", (name,)).fetchone()[0])
@@ -1446,13 +1475,7 @@ class SqliteAccountStore:
                 " FROM offsite_backup_state WHERE name = ?", (name,)).fetchone()
         finally:
             conn.close()
-        if row is None:
-            return None
-        return {"name": row[0], "last_attempt_at": row[1],
-                "last_success_at": row[2], "last_success_object_key": row[3],
-                "last_success_bytes": row[4], "last_success_sha256": row[5],
-                "last_failure_at": row[6], "last_failure_code": row[7],
-                "consecutive_failures": row[8]}
+        return None if row is None else SqliteAccountStore._offsite_state_row(row)
 
     def get_email_token_by_hash(self, token_hash: str):
         """Read-only lookup by token hash."""
