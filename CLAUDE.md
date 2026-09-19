@@ -2,10 +2,17 @@
 
 ## Current authority
 
-ASTRA MILESTONE 2 / A1 is the current bounded saved-project and recovery mandate
-under ASTRA-M2-A1-PRODUCT-FIRST-SAVED-JOURNEY-DELIVER-01. Milestone 1 and R-05
-integration are complete. ACTIVE_INCREMENT_CONTRACT.md owns A1's scope, delivery
-safeguards and ending; A2/new human activity and successor implementation are deferred.
+**ACTIVE CONTRACT: NONE.** No new implementation mandate is currently active; any
+further product, readiness, governance or automation work requires a new explicit Owner
+authorization. ACTIVE_INCREMENT_CONTRACT.md owns that declaration and is the file to
+read for the live mandate — this paragraph routes, it does not authorize.
+
+*(Superseded wording, preserved so the change is visible rather than silent: "ASTRA
+MILESTONE 2 / A1 is the current bounded saved-project and recovery mandate under
+ASTRA-M2-A1-PRODUCT-FIRST-SAVED-JOURNEY-DELIVER-01." **A1 is COMPLETED work, not the
+current mandate.** Milestone 1, R-05 integration and A1's saved-journey and
+safe-recovery delivery are all complete; A2, new human activity and successor
+implementation remain deferred and separately authorized.)*
 
 docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md §2 owns milestone
 authority and its precedence; §§3–5B own risk, tests and review. The
@@ -48,6 +55,19 @@ Product direction and capability navigation: consult
 and the [Capability Enrichment Register](docs/governance/INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md)
 for materially relevant product work. These links create no second boot order,
 current-state source or implementation authority.
+
+Stage-by-stage product routing and the anti-drift operating practice live in the
+[Master Execution Roadmap](docs/governance/INVENTORAI_MASTER_EXECUTION_ROADMAP.md)
+(v1.32) and its
+[Operating Checklist](docs/governance/INVENTORAI_MASTER_ROADMAP_EXECUTION_CHECKLIST.md).
+**Both are DERIVED NAVIGATION and neither is execution authority**; conflicts resolve
+upward — Git, then Owner decisions, then the authoritative governance/current-state
+documents above, then merged PR evidence, then the roadmap, then the checklist. They add
+no boot step, no current-state source and no approval stage. Two distinctions they carry
+bind every agent regardless: **merged is not deployed, implemented is not activated, and
+evidence captured is not a validated conclusion.** In particular the daily off-provider
+backup scheduler is **MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED**, and public release,
+deployment and paid activation all remain **NOT AUTHORIZED**.
 
 ## Historical material and substantive boundaries
 

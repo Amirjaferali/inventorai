@@ -160,9 +160,27 @@ For suspected durable-DB corruption/loss (`INVENTORAI_DB_PATH` SQLite):
    AND separate explicit Owner operational authorization, recorded in the evidence record.
 6. Record exact backup/restore evidence (paths, validation output, parity result) in the record.
 
-Truth boundaries: only LOCAL backup capability exists (P10-BR1); no production/offsite/scheduled backup
-exists; this runbook creates no retention rule of any kind. Deep recovery procedures live in
-`docs/DISASTER_RECOVERY_PLAN.md` Scenario 7 — this runbook coordinates, DR recovers (§16).
+Truth boundaries — **SUPERSEDED IN PART, v1.32 (2026-09-19); read the correction before acting in an
+incident.** The prior boundary read, verbatim: *"only LOCAL backup capability exists (P10-BR1); no
+production/offsite/scheduled backup exists"*. **That is no longer true, and an operator must not plan a
+recovery around it.**
+
+**Current truth.** An **off-provider backup destination exists** under OD-INFRA-5 — a private
+Cloudflare R2 bucket, create-only writes, scoped token — reachable through
+`scripts/inventorai_offsite_backup.py` (`daily` / `upload`, and read-only `status`). **At least one
+live off-provider backup object exists**, and a **full-loss disaster-recovery drill has passed end to
+end**; the temporary DR service used for that drill was decommissioned. Production hosting exists
+(Render, Frankfurt, one persistent disk at `/var/data` carrying the canonical SQLite), so the live
+database is no longer a local-only artifact.
+
+**Still true, and load-bearing:** **scheduled** backup is **NOT running**. The bounded daily
+in-process scheduler is **MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED** — no scheduled run has ever
+occurred, so **never assume a recent automatic copy exists**; check `status` for the real last-success
+timestamp before relying on any off-provider object. P10-BR1's own capability remains local, this
+runbook still creates **no retention rule of any kind**, and nothing here authorizes a restore: §5
+above still governs, and repointing `INVENTORAI_DB_PATH` still requires separate explicit Owner
+operational authorization. Deep recovery procedures live in `docs/DISASTER_RECOVERY_PLAN.md`
+Scenario 7 — this runbook coordinates, DR recovers (§16).
 
 ## §8. Availability / outage path (uses authoritative P10-OB1)
 

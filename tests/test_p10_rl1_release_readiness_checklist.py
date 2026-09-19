@@ -124,7 +124,27 @@ def test_dep1_point_in_time_and_test_only_dependency_visible():
 
 def test_adviser_and_provider_items_not_marked_done():
     """No row carrying an adviser/provider dependency may simultaneously be
-    marked as a completed implementation or selection."""
+    marked as a completed implementation or selection.
+
+    DISCLOSED AMENDMENT (v1.32 current-state synchronization, documentation-only):
+    the original guard also forbade every un-negated PROVISIONED/CONFIGURED token
+    and the literal substring "COMPLETE" on a PROVIDER-DEPENDENT row. That pinned a
+    fact that has since stopped being true: hosting and the off-provider backup
+    destination are now actually provisioned and configured in production, and a
+    guard that forces the truth surface to keep saying "NOT PROVISIONED" would make
+    this file lie. The amendment is narrow and the load-bearing invariant is
+    preserved intact:
+
+        selection  is never  provisioning  is never  completion.
+
+    Still forbidden, unchanged: any bare "SELECTED" that is neither "NOT SELECTED"
+    nor "Owner-SELECTED"; any Owner selection without its governing-gate citation;
+    any UN-NEGATED completion claim. Newly permitted, and only under conditions: a
+    row may state provisioning/configuration as fact when it cites its governing
+    gate AND states the non-completion boundary explicitly as "NOT COMPLETE". The
+    negated forms ("NOT PROVISIONED", "NOT COMPLETE") are what the lookbehinds
+    admit; an un-negated "COMPLETE" still fails.
+    """
     for line in _text().splitlines():
         if "DEFERRED — EXTERNAL ADVISER REQUIRED" in line:
             assert not re.search(
@@ -132,15 +152,20 @@ def test_adviser_and_provider_items_not_marked_done():
         if "PROVIDER-DEPENDENT" in line and "| RL-" in line:
             # A provider-dependent row may state EITHER "NOT SELECTED" or an
             # Owner selection recorded under a governing gate ("Owner-SELECTED"
-            # + an INFRA-/OD- citation). Any other bare "SELECTED", any
-            # completion claim, and any un-negated provisioning claim remain
+            # + an INFRA-/OD- citation). Any other bare "SELECTED" remains
             # forbidden — selection is never provisioning or completion.
             for match in re.finditer(r"(?<!NOT )(?<!Owner-)\bSELECTED\b", line):
                 raise AssertionError(line)
+            provisioned = re.search(r"(?<!NOT )\bPROVISIONED\b", line)
+            configured = re.search(r"(?<!NOT )\bCONFIGURED\b", line)
             if "Owner-SELECTED" in line:
                 assert re.search(r"(INFRA-G1-R1|OD-INFRA-\d)", line), line
-                assert "NOT PROVISIONED" in line, line
-            assert "COMPLETE" not in line, line
-            assert not re.search(r"(?<!NOT )\bPROVISIONED\b", line), line
-            assert not re.search(r"(?<!NOT )\bCONFIGURED\b", line), line
+                if not provisioned:
+                    assert "NOT PROVISIONED" in line, line
+            if provisioned or configured:
+                # Provisioning/configuration is never completion, so a row that
+                # claims either must cite its gate and say so in the same breath.
+                assert re.search(r"(INFRA-G1-R1|OD-INFRA-\d)", line), line
+                assert "NOT COMPLETE" in line, line
+            assert not re.search(r"(?<!NOT )\bCOMPLETE\b", line), line
     assert "NOT SELECTED" in _text()          # provider truth stated plainly
