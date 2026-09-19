@@ -25,10 +25,15 @@ What this is NOT:
     privacy/legal lane, and inventing one here would be a policy decision this
     script has no authority to make. Old objects accumulate until a governed
     retention decision exists.
-  * NOT a scheduler. It is schedulable — one command, explicit exit codes, no
-    interactive input — but no cron job, Render Cron Job or timer is created by
-    this repository. Activating the daily schedule is a separate Owner-side
-    provider action.
+  * NOT the scheduler. SUPERSEDED IN PART (was: "NOT a scheduler ... no
+    cron job, Render Cron Job or timer is created by this repository") — the
+    daily run is now performed automatically by the ONE bounded in-process
+    scheduler in ``engine/offsite_backup_scheduler.py``, inside the production
+    web-service process, whenever the R2 configuration is complete. This CLI
+    remains the manual operator command over the SAME shared pipeline
+    (``perform_offsite_backup``) — one command, explicit exit codes, no
+    interactive input — and it still creates no cron job, Render Cron Job or
+    timer of its own.
   * NOT a raw-file uploader. BOTH commands run the backup engine first, so no
     operator-supplied file is ever PUT as-is. A live WAL database's main file
     can pass validation while its committed rows sit in the `-wal` sidecar, and
@@ -46,13 +51,23 @@ credential cannot reach a shell history, a process list, or this repository):
     INVENTORAI_R2_PREFIX              optional object-key prefix (default none)
 Absent or blank configuration FAILS CLOSED with a named, value-free message.
 
+Pipeline ownership: ``engine/offsite_backup_scheduler.perform_offsite_backup``
+is the ONE composition of backup engine + transport + temporary-copy cleanup;
+both commands below delegate to it, so the scheduler and the operator can
+never diverge in what they ship.
+
 Output: a deterministic evidence header plus the uploader's report as sorted
 JSON — object key, byte count, SHA-256 of the artifact, provider status. No
 credential, signature, authorization header, table name, row or user content is
 printed, because none of it is returned to this layer.
 
+``status <database>`` is the read-only operator view of the scheduler's
+persisted state row (last success/failure, counter, last stored object's
+key/size/digest); it needs no credential and opens the database ``mode=ro``.
+
 Exit codes:
     0  the provider ACCEPTED the object (2xx). Nothing weaker is success.
+       (``status``: 0 whenever the database could be read.)
     2  usage error (argparse)
     3  BackupError    — any fail-closed condition of the backup service
     4  R2UploadError  — missing configuration, rejection, or transport failure
@@ -61,28 +76,27 @@ import argparse
 import datetime
 import json
 import os
-import shutil
 import sys
-import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from engine.backup_service import (  # noqa: E402  (path set above)
+from engine.account_store import SqliteAccountStore  # noqa: E402  (path set above)
+from engine.backup_service import (  # noqa: E402
     BackupError,
-    backup_database,
     validate_sqlite_database,
 )
-from engine.r2_object_upload import (  # noqa: E402
-    R2UploadError,
-    put_object,
+from engine.offsite_backup_scheduler import (  # noqa: E402
+    artifact_filename,
+    object_key,
+    perform_offsite_backup,
+    resolve_settings,
 )
+from engine.r2_object_upload import R2UploadError  # noqa: E402
+
+__all__ = ["main", "build_parser", "resolve_settings", "object_key"]
 
 _EXIT_BACKUP_ERROR = 3
 _EXIT_UPLOAD_ERROR = 4
-
-_REQUIRED_SETTINGS = ("INVENTORAI_R2_ACCOUNT_ID", "INVENTORAI_R2_BUCKET",
-                      "INVENTORAI_R2_ACCESS_KEY_ID",
-                      "INVENTORAI_R2_SECRET_ACCESS_KEY")
 
 
 def _utc_now():
@@ -91,30 +105,6 @@ def _utc_now():
 
 def _stamp(moment):
     return moment.strftime("%Y%m%dT%H%M%SZ")
-
-
-def resolve_settings(environ=None):
-    """Read the provider configuration from the environment. Fail closed.
-
-    Raises ``R2UploadError('missing_configuration', <NAME>)`` naming only the
-    VARIABLE that is absent — never a value, and never a partial value.
-    """
-    source = environ if environ is not None else os.environ
-    resolved = {}
-    for name in _REQUIRED_SETTINGS:
-        value = (source.get(name) or "").strip()
-        if not value:
-            raise R2UploadError("missing_configuration", name)
-        resolved[name] = value
-    resolved["INVENTORAI_R2_PREFIX"] = (
-        source.get("INVENTORAI_R2_PREFIX") or "").strip().strip("/")
-    return resolved
-
-
-def object_key(prefix, filename):
-    """Compose the destination object key. No timestamp parsing, no collision
-    handling that could overwrite silently — the caller supplies a unique name."""
-    return "%s/%s" % (prefix, filename) if prefix else filename
 
 
 def _emit(operation, report, **facts):
@@ -126,15 +116,6 @@ def _emit(operation, report, **facts):
         lines.append("%s: %s" % (name, facts[name]))
     print("\n".join(lines))
     print(json.dumps(report, sort_keys=True, indent=2, default=list))
-
-
-def _upload(settings, path, key, timeout_seconds, transport=None):
-    return put_object(
-        source_path=path, bucket=settings["INVENTORAI_R2_BUCKET"],
-        object_key=key, account_id=settings["INVENTORAI_R2_ACCOUNT_ID"],
-        access_key_id=settings["INVENTORAI_R2_ACCESS_KEY_ID"],
-        secret_access_key=settings["INVENTORAI_R2_SECRET_ACCESS_KEY"],
-        timeout_seconds=timeout_seconds, transport=transport)
 
 
 def _cmd_upload(args, environ=None, transport=None):
@@ -161,18 +142,14 @@ def _cmd_upload(args, environ=None, transport=None):
     source = os.path.abspath(os.path.expanduser(args.source))
     validate_sqlite_database(source)
     moment = _utc_now()
-    filename = args.name or ("inventorai-%s.sqlite" % _stamp(moment))
-    workspace = tempfile.mkdtemp(prefix="inventorai-offsite-")
-    try:
-        staged = os.path.join(workspace, filename)
-        backup_report = backup_database(source, staged)
-        key = args.key or object_key(settings["INVENTORAI_R2_PREFIX"], filename)
-        upload_report = _upload(settings, staged, key, args.timeout, transport)
-        _emit("upload", {"backup": backup_report, "upload": upload_report},
-              source=source, key=key)
-        return 0
-    finally:
-        shutil.rmtree(workspace, ignore_errors=True)
+    filename = args.name or artifact_filename(moment)
+    key = args.key or object_key(settings["INVENTORAI_R2_PREFIX"], filename)
+    report = perform_offsite_backup(
+        source, settings, filename=filename, key=key,
+        timeout_seconds=args.timeout, transport=transport, now=moment)
+    _emit("upload", {"backup": report["backup"], "upload": report["upload"]},
+          source=source, key=key)
+    return 0
 
 
 def _cmd_daily(args, environ=None, transport=None):
@@ -183,22 +160,35 @@ def _cmd_daily(args, environ=None, transport=None):
     and uses the SQLite online-backup API), so this is safe to run against the
     serving database. The temporary backup is removed in every outcome,
     including failure, so a daily schedule cannot fill the persistent disk.
+    This is the SAME pipeline the in-process scheduler runs automatically; the
+    command exists so an operator can run it by hand and see its evidence.
     """
     settings = resolve_settings(environ)
     source = os.path.abspath(os.path.expanduser(args.database))
     moment = _utc_now()
-    filename = "inventorai-%s.sqlite" % _stamp(moment)
-    workspace = tempfile.mkdtemp(prefix="inventorai-offsite-")
-    try:
-        staged = os.path.join(workspace, filename)
-        backup_report = backup_database(source, staged)
-        key = object_key(settings["INVENTORAI_R2_PREFIX"], filename)
-        upload_report = _upload(settings, staged, key, args.timeout, transport)
-        _emit("daily", {"backup": backup_report, "upload": upload_report},
-              database=source, key=key)
-        return 0
-    finally:
-        shutil.rmtree(workspace, ignore_errors=True)
+    report = perform_offsite_backup(
+        source, settings, timeout_seconds=args.timeout, transport=transport,
+        now=moment)
+    _emit("daily", {"backup": report["backup"], "upload": report["upload"]},
+          database=source, key=report["key"])
+    return 0
+
+
+def _cmd_status(args, environ=None, transport=None):
+    """Print the scheduler's persisted state row as JSON - READ-ONLY.
+
+    Opens the database strictly read-only (it can create nothing and write
+    nothing), so this is safe against the live file and is the operator's way
+    to answer "when did the last off-provider backup succeed, what was stored,
+    and is it failing?" without importing the application. The row carries
+    timestamps, a stable failure code, a counter and the last stored object's
+    key/size/digest only - never a credential and never database content.
+    Exit 0 whether or not a row exists yet (``null`` means never attempted).
+    """
+    database = os.path.abspath(os.path.expanduser(args.database))
+    state = SqliteAccountStore.read_offsite_backup_state(database, "daily")
+    _emit("status", state, database=database)
+    return 0
 
 
 def build_parser():
@@ -212,7 +202,8 @@ def build_parser():
     daily = subparsers.add_parser(
         "daily",
         help=("consistent backup of the live database, then upload, then "
-              "remove the temporary local copy (the schedulable command)"))
+              "remove the temporary local copy (the same pipeline the "
+              "in-process scheduler runs daily; here run by hand)"))
     daily.add_argument("database", help="path to the live database (read-only)")
     daily.add_argument("--timeout", type=float, default=120.0,
                        help="bounded upload timeout in seconds")
@@ -230,6 +221,14 @@ def build_parser():
     upload.add_argument("--timeout", type=float, default=120.0,
                         help="bounded upload timeout in seconds")
     upload.set_defaults(func=_cmd_upload)
+
+    status = subparsers.add_parser(
+        "status",
+        help=("print the in-process scheduler's persisted state row (last "
+              "success, last failure, counter) - read-only, no credential "
+              "needed"))
+    status.add_argument("database", help="path to the live database (read-only)")
+    status.set_defaults(func=_cmd_status)
 
     return parser
 

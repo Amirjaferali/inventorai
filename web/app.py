@@ -223,6 +223,14 @@ from engine.email_sender import (
     UnconfiguredEmailSender,
 )
 from engine.email_dispatcher import EmailDispatcher
+# OD-INFRA-5: the ONE bounded in-process daily off-provider backup scheduler.
+# Imported for its lifecycle only - no route, request handler or template
+# reaches it, and the web layer never imports the transport it composes.
+from engine.offsite_backup_scheduler import (
+    OffsiteBackupScheduler as _OffsiteBackupScheduler,
+    configuration_complete as _offsite_backup_configured,
+    resolve_settings as _offsite_backup_resolve_settings,
+)
 # P4-2 Level-1: the exact supported reconstruction/engine-contract version stamp
 # persisted at project creation (read-only reconstruction lives entirely in the
 # engine; web only persists these additive envelope inputs).
@@ -730,6 +738,61 @@ def _start_email_dispatcher_if_production():
 
 
 _EMAIL_DISPATCHER_STARTED = _start_email_dispatcher_if_production()
+
+
+# --- OD-INFRA-5: ONE bounded in-process daily off-provider backup scheduler --
+#
+# The canonical SQLite file lives on the persistent disk mounted into THIS
+# process, so the daily off-provider backup runs from here: one daemon thread
+# inside the one Gunicorn worker, paced by a bounded wait, deciding eligibility
+# from state persisted in the canonical database (never from memory alone), so
+# a restart or redeploy cannot produce a duplicate daily backup. It is
+# independent of the email dispatcher - separate thread, separate store
+# instance, separate state - and it shares nothing with the request path.
+#
+# Production starts it ONLY when the R2 configuration is complete; with any
+# variable absent the application still boots, `/health` still answers, and no
+# upload can happen. Development and test never start it: the scheduler is
+# driven synchronously there through its own seam (`run_if_due`).
+
+def _open_offsite_backup_store():
+    """A store instance for the scheduler ONLY - never the request-scoped
+    `_ACCOUNT_STORE`. Opened in whichever thread runs the check and closed by
+    it, so no SQLite connection is ever shared across threads."""
+    path = _resolve_db_path()
+    directory = os.path.dirname(path)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+    return SqliteAccountStore(path)
+
+
+def _resolve_offsite_backup_settings():
+    """Read the complete R2 configuration from the process environment at run
+    time (fail closed by name; the scheduler treats a failure as 'skip')."""
+    return _offsite_backup_resolve_settings(os.environ)
+
+
+_OFFSITE_BACKUP_SCHEDULER = _OffsiteBackupScheduler(
+    open_store=_open_offsite_backup_store,
+    # Resolved at run time from the same variable every store uses.
+    source_path=_resolve_db_path,
+    resolve_settings=_resolve_offsite_backup_settings,
+    # The bounded P10-OB1 seam: event name, component/outcome tokens, a stable
+    # failure code and a byte count. Nothing else can pass through it.
+    emit=_obs.emit)
+
+
+def _start_offsite_backup_scheduler_if_production():
+    """Start the ONE scheduler thread - in production only, and only when the
+    R2 configuration is complete. Production still boots with no configuration;
+    it then starts no scheduler at all, so nothing can upload without it.
+    Idempotent within the process."""
+    if _is_production() and _offsite_backup_configured(os.environ):
+        return _OFFSITE_BACKUP_SCHEDULER.start()
+    return False
+
+
+_OFFSITE_BACKUP_SCHEDULER_STARTED = _start_offsite_backup_scheduler_if_production()
 
 
 def _email_unavailable_response():

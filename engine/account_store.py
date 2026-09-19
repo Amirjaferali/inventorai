@@ -349,6 +349,24 @@ _SCHEMA = (
     CREATE INDEX IF NOT EXISTS ix_email_outbox_status_created
         ON email_outbox (status, created_at)
     """,
+    # OD-INFRA-5 scheduler state: ONE row per named schedule, in the SAME
+    # canonical database (not a second datastore). Timestamps, a counter, a
+    # stable failure code and the last stored object's key/size/digest only -
+    # never a credential, never database content. Read and written ONLY by the
+    # offsite-backup scheduler's own thread-confined store instance.
+    """
+    CREATE TABLE IF NOT EXISTS offsite_backup_state (
+        name                     TEXT PRIMARY KEY,
+        last_attempt_at          TEXT,
+        last_success_at          TEXT,
+        last_success_object_key  TEXT,
+        last_success_bytes       INTEGER,
+        last_success_sha256      TEXT,
+        last_failure_at          TEXT,
+        last_failure_code        TEXT,
+        consecutive_failures     INTEGER NOT NULL DEFAULT 0
+    )
+    """,
 )
 
 # Outbox statuses. A delivered message has NO status: its row is deleted.
@@ -1317,6 +1335,124 @@ class SqliteAccountStore:
                 return c.execute("SELECT COUNT(*) FROM email_outbox").fetchone()[0]
             return c.execute("SELECT COUNT(*) FROM email_outbox WHERE status = ?",
                              (status,)).fetchone()[0]
+
+    # --- OD-INFRA-5: off-provider backup scheduler state --------------------
+    # One row per named schedule. The scheduler decides eligibility from THIS
+    # persisted row (never from memory alone), so a restart or redeploy cannot
+    # produce a duplicate daily backup. There is no delete path: the row is
+    # upserted in place and carries operational facts only.
+
+    _OFFSITE_STATE_COLS = ("name, last_attempt_at, last_success_at, "
+                           "last_success_object_key, last_success_bytes, "
+                           "last_success_sha256, last_failure_at, "
+                           "last_failure_code, consecutive_failures")
+
+    def _ensure_offsite_backup_row(self, c, name):
+        c.execute(
+            "INSERT OR IGNORE INTO offsite_backup_state (name, "
+            "consecutive_failures) VALUES (?, 0)", (name,))
+
+    def get_offsite_backup_state(self, name: str):
+        """The persisted schedule row as a dict, or None when never attempted.
+        Operational facts only - no credential, no database content."""
+        with self._read() as c:
+            row = c.execute(
+                "SELECT " + self._OFFSITE_STATE_COLS +
+                " FROM offsite_backup_state WHERE name = ?", (name,)).fetchone()
+        if row is None:
+            return None
+        return {"name": row[0], "last_attempt_at": row[1],
+                "last_success_at": row[2], "last_success_object_key": row[3],
+                "last_success_bytes": row[4], "last_success_sha256": row[5],
+                "last_failure_at": row[6], "last_failure_code": row[7],
+                "consecutive_failures": row[8]}
+
+    def claim_offsite_backup_run(self, name: str, now_iso: str,
+                                 attempt_not_after_iso: str,
+                                 success_not_after_iso: str) -> bool:
+        """ATOMICALLY claim one run: inside ONE ``BEGIN IMMEDIATE`` the row is
+        checked and, only if the last attempt and the last success are both
+        absent or no later than the given thresholds, ``last_attempt_at`` is
+        set to ``now_iso``. Returns True when THIS caller won the claim.
+
+        The check-and-write is one transaction, so two processes that overlap
+        briefly (a redeploy) cannot both claim the same run; and because the
+        claim is written BEFORE any upload, a run interrupted mid-upload is
+        visible as an attempt and waits out the bounded retry interval rather
+        than re-running the moment the process comes back. Timestamps are the
+        store-wide fixed-width ISO-8601 UTC strings, so ``<=`` is monotonic."""
+        with self._write() as c:
+            self._ensure_offsite_backup_row(c, name)
+            cur = c.execute(
+                "UPDATE offsite_backup_state SET last_attempt_at = ? "
+                "WHERE name = ? "
+                "AND (last_attempt_at IS NULL OR last_attempt_at <= ?) "
+                "AND (last_success_at IS NULL OR last_success_at <= ?)",
+                (now_iso, name, attempt_not_after_iso, success_not_after_iso))
+            return cur.rowcount == 1
+
+    def record_offsite_backup_success(self, name: str, now_iso: str,
+                                      object_key: str, byte_count: int,
+                                      sha256: str) -> None:
+        """Confirmed provider acceptance: the last-success facts are replaced
+        and the consecutive-failure counter resets. The last failure stamp and
+        code are kept as history for operators."""
+        with self._write() as c:
+            self._ensure_offsite_backup_row(c, name)
+            c.execute(
+                "UPDATE offsite_backup_state SET last_success_at = ?, "
+                "last_success_object_key = ?, last_success_bytes = ?, "
+                "last_success_sha256 = ?, consecutive_failures = 0 "
+                "WHERE name = ?",
+                (now_iso, object_key, int(byte_count), sha256, name))
+
+    def record_offsite_backup_failure(self, name: str, now_iso: str,
+                                      failure_code: str) -> int:
+        """Record one failed run under a stable category code. Returns the new
+        consecutive-failure count. Nothing else changes: the last success and
+        every remote object stay exactly as they were."""
+        with self._write() as c:
+            self._ensure_offsite_backup_row(c, name)
+            c.execute(
+                "UPDATE offsite_backup_state SET last_failure_at = ?, "
+                "last_failure_code = ?, consecutive_failures = "
+                "consecutive_failures + 1 WHERE name = ?",
+                (now_iso, failure_code, name))
+            return int(c.execute(
+                "SELECT consecutive_failures FROM offsite_backup_state "
+                "WHERE name = ?", (name,)).fetchone()[0])
+
+    @staticmethod
+    def read_offsite_backup_state(path: str, name: str):
+        """Operator/read-only variant of ``get_offsite_backup_state`` that opens
+        an EXISTING database strictly read-only (URI ``mode=ro``): it can create
+        nothing, write nothing, and never touches the schema. For a status
+        check from a shell without constructing a full store (whose constructor
+        takes a write lock to ensure the schema). Returns the row dict, or None
+        when the table or row is absent. Raises ``sqlite3.Error`` when the file
+        is missing or not a database."""
+        from urllib.request import pathname2url
+        import os as _os
+        uri = "file:%s?mode=ro" % pathname2url(_os.path.abspath(path))
+        conn = sqlite3.connect(uri, uri=True, timeout=_BUSY_TIMEOUT_SECONDS)
+        try:
+            present = conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
+                ("offsite_backup_state",)).fetchone()
+            if present is None:
+                return None
+            row = conn.execute(
+                "SELECT " + SqliteAccountStore._OFFSITE_STATE_COLS +
+                " FROM offsite_backup_state WHERE name = ?", (name,)).fetchone()
+        finally:
+            conn.close()
+        if row is None:
+            return None
+        return {"name": row[0], "last_attempt_at": row[1],
+                "last_success_at": row[2], "last_success_object_key": row[3],
+                "last_success_bytes": row[4], "last_success_sha256": row[5],
+                "last_failure_at": row[6], "last_failure_code": row[7],
+                "consecutive_failures": row[8]}
 
     def get_email_token_by_hash(self, token_hash: str):
         """Read-only lookup by token hash."""

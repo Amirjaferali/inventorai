@@ -53,6 +53,9 @@ from engine.r2_object_upload import (
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLI_PATH = os.path.join(ROOT, "scripts", "inventorai_offsite_backup.py")
 UPLOADER_SOURCE = os.path.join(ROOT, "engine", "r2_object_upload.py")
+# The in-process daily scheduler owns the ONE pipeline composition the CLI
+# delegates to; it is held to the same remote-boundary guards as the CLI.
+SCHEDULER_SOURCE = os.path.join(ROOT, "engine", "offsite_backup_scheduler.py")
 
 # Test-only values. Not credentials: nothing here reaches any provider.
 ACCOUNT_ID = "testaccount"
@@ -410,7 +413,8 @@ def _operative(path):
 
 
 def _imported_modules(path):
-    """Module names actually imported by executable code."""
+    """Module names actually imported by executable code: the top-level name
+    of every import, plus the full dotted module of every `from` import."""
     tree = ast.parse(io.open(path, encoding="utf-8").read())
     names = set()
     for node in ast.walk(tree):
@@ -418,14 +422,15 @@ def _imported_modules(path):
             names.update(alias.name.split(".")[0] for alias in node.names)
         elif isinstance(node, ast.ImportFrom) and node.module:
             names.add(node.module.split(".")[0])
+            names.add(node.module)
     return names
 
 
 def test_no_remote_delete_expiry_or_retention_path_exists():
     """Retention is unresolved in the privacy/legal lane. There is therefore no
-    EXECUTABLE code able to remove or expire a remote object, in either new
-    file — asserted against operative code, not against prose."""
-    for path in (UPLOADER_SOURCE, CLI_PATH):
+    EXECUTABLE code able to remove or expire a remote object, in any of the
+    three files — asserted against operative code, not against prose."""
+    for path in (UPLOADER_SOURCE, CLI_PATH, SCHEDULER_SOURCE):
         strings, identifiers = _operative(path)
         for value in strings:
             lowered = value.lower()
@@ -462,25 +467,69 @@ def test_the_only_http_method_the_uploader_can_issue_is_put():
 
 
 def test_the_temporary_workspace_cleanup_is_local_only():
-    """The CLI removes its own temporary directories — LOCAL artifacts, one per
-    command, both staged under `tempfile.mkdtemp`. Those are the only removals
-    anywhere, asserted explicitly so the operative guard above stays absolute
-    about REMOTE objects."""
-    source = io.open(CLI_PATH, encoding="utf-8").read()
-    assert source.count("shutil.rmtree(workspace") == 2      # daily + upload
-    assert source.count("tempfile.mkdtemp") == 2
+    """ONE temporary workspace lifecycle exists, in the shared pipeline
+    (`perform_offsite_backup`): a LOCAL directory staged under
+    `tempfile.mkdtemp` and removed in every outcome. The CLI delegates to it
+    and stages nothing of its own. That is the only removal anywhere, asserted
+    explicitly so the operative guard above stays absolute about REMOTE
+    objects. (Before the scheduler, the CLI held two copies of this lifecycle,
+    one per command; they were unified rather than triplicated.)"""
+    scheduler = io.open(SCHEDULER_SOURCE, encoding="utf-8").read()
+    assert scheduler.count("shutil.rmtree(workspace") == 1
+    assert scheduler.count("tempfile.mkdtemp") == 1
+    cli = io.open(CLI_PATH, encoding="utf-8").read()
+    assert "rmtree" not in cli and "mkdtemp" not in cli
     strings, identifiers = _operative(UPLOADER_SOURCE)
     assert not any("rmtree" in value for value in strings)
     assert not any("rmtree" in name for name in identifiers)
 
 
+def _route_functions(tree):
+    """Every function decorated as a Flask route or blueprint route."""
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        for decorator in node.decorator_list:
+            target = decorator.func if isinstance(decorator, ast.Call) else decorator
+            if isinstance(target, ast.Attribute) and target.attr in (
+                    "route", "get", "post", "before_request", "after_request",
+                    "errorhandler"):
+                yield node
+                break
+
+
 def test_the_web_application_never_imports_the_uploader():
-    """The off-provider path is operator tooling. Nothing in the request path
-    may reach it, so R2 can never become runtime persistence."""
+    """Nothing in the request path may reach the off-provider transport, so R2
+    can never become runtime persistence. The web layer never imports the
+    uploader at all; the ONE thing it imports from the off-provider path is
+    the scheduler's lifecycle (start it in production, once), and no route,
+    request hook or error handler references the scheduler, its store opener
+    or its settings resolver. (Superseded: the earlier absolute ban on the
+    word "offsite" in `web/app.py`, written when no in-process schedule
+    existed; the boundary it protected - request path vs. transport - is now
+    asserted directly.)"""
     source = io.open(os.path.join(ROOT, "web", "app.py"),
                      encoding="utf-8").read()
     assert "r2_object_upload" not in source
-    assert "offsite" not in source.lower()
+    assert "put_object" not in source
+    tree = ast.parse(source)
+    imported = {alias.asname or alias.name
+                for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)
+                and node.module == "engine.offsite_backup_scheduler"
+                for alias in node.names}
+    assert imported == {"_OffsiteBackupScheduler", "_offsite_backup_configured",
+                        "_offsite_backup_resolve_settings"}, imported
+    routes = list(_route_functions(tree))
+    assert routes, "no routes found - the guard would be vacuous"
+    forbidden = {"_OFFSITE_BACKUP_SCHEDULER", "_open_offsite_backup_store",
+                 "_resolve_offsite_backup_settings", "_OffsiteBackupScheduler",
+                 "_offsite_backup_configured", "_offsite_backup_resolve_settings",
+                 "perform_offsite_backup", "run_if_due"}
+    for function in routes:
+        names = {n.id for n in ast.walk(function) if isinstance(n, ast.Name)}
+        attrs = {n.attr for n in ast.walk(function) if isinstance(n, ast.Attribute)}
+        assert not (names | attrs) & forbidden, (function.name,
+                                                 (names | attrs) & forbidden)
 
 
 # --- the operator CLI ---------------------------------------------------------
@@ -634,9 +683,17 @@ def test_the_cli_is_not_a_second_backup_engine():
             assert forbidden not in upper, value
     for name in identifiers:
         assert name not in ("copyfile", "copy", "copy2", "connect"), name
-    source = io.open(CLI_PATH, encoding="utf-8").read()
-    assert "from engine.backup_service import" in source
-    assert "backup_database" in source
+    # The CLI can only DELEGATE: its backup comes from the shared pipeline,
+    # whose backup comes from the existing service. Asserted on the executable
+    # import graph, not on prose.
+    assert "engine.offsite_backup_scheduler" in _imported_modules(CLI_PATH)
+    _strings, identifiers = _operative(CLI_PATH)
+    assert "perform_offsite_backup" in identifiers
+    assert "backup_database" not in identifiers          # not re-implemented
+    assert "sqlite3" not in _imported_modules(SCHEDULER_SOURCE)
+    scheduler = io.open(SCHEDULER_SOURCE, encoding="utf-8").read()
+    assert "from engine.backup_service import BackupError, backup_database" in scheduler
+    assert "from engine.r2_object_upload import R2UploadError, put_object" in scheduler
 
 
 def test_the_existing_backup_cli_is_unchanged_by_this_tranche():
