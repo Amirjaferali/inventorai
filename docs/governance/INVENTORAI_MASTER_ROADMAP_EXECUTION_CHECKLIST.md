@@ -84,6 +84,13 @@ If the live tip has advanced, that is normal. Apply Lean §10 / AHAEP §5 to a b
 advance; do **not** treat a moved tip as a defect, and do **not** rewrite history to
 make prose match Git.
 
+**Repository identity is not provider identity — they are separate evidence classes.**
+A merge SHA is read from Git; a **deployed** SHA is read from the provider surface, at
+the time it is needed. Never infer one from the other, and never widen an abbreviated
+SHA into a full one — a full SHA relayed that way once proved to be a transcription
+splice existing nowhere in Git. **No exact full provider-side deployed SHA is currently
+verified**; cite it only after re-reading it from the provider.
+
 ## D. Structure — Groups 1–9 / Stages 1–45
 
 The roadmap has exactly **9 Groups**, **45 Stage IDs** and **28 tracking IDs**. This

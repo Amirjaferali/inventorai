@@ -14,7 +14,10 @@ Output contract: every severity level carries its full structure; the three
 authoritative foundations (P10-BR1 / P10-OB1 / P10-SEC1) are referenced; the
 mandatory legal-escalation and customer-communication boundary language is
 verbatim-present; no SLA/response-time/compensation/notification-deadline
-promise pattern exists; no production-monitoring/offsite-backup claim exists.
+promise pattern exists; no production-monitoring provider is named; and the §7
+backup reality is asserted as CURRENT truth — an off-provider copy exists, the
+daily scheduler is merged but neither deployed nor live-activated, and the
+superseded "no offsite backup" claim survives only as labeled history.
 Prohibited behaviors: MUST NOT weaken to pass; MUST NOT read chat history or
 anything outside the repository.
 """
@@ -121,10 +124,73 @@ def test_no_fictional_capability_claims():
     for provider in ("pagerduty", "datadog", "sentry", "opsgenie",
                      "grafana", "cloudwatch"):
         assert provider not in text.lower(), provider
-    # no offsite/production backup claim; P10-BR1 stays local-only
-    # (whitespace-normalized: the source line wraps)
-    assert ("no production/offsite/scheduled backup exists"
-            in re.sub(r"\s+", " ", text))
+
+
+def _current_backup_truth():
+    """The §7 CURRENT truth block, excluding preserved historical quotations."""
+    text = re.sub(r"\s+", " ", _text())
+    start = text.find("**Current truth.**")
+    assert start != -1, (
+        "the §7 backup section must carry an explicit '**Current truth.**' "
+        "block — a runbook an operator reads mid-incident may not leave its "
+        "backup reality implicit")
+    end = text.find("## §8", start)
+    assert end != -1, "the current-truth block must end before §8"
+    return text[start:end]
+
+
+def test_backup_reality_asserted_as_current_truth():
+    """The runbook must state the CURRENT backup reality, not merely retain the
+    old absence claim.
+
+    REPAIRED (v1.32 truth-guard repair). The previous guard asserted only that
+    the phrase "no production/offsite/scheduled backup exists" was present
+    somewhere in the file. Once an off-provider backup actually existed, that
+    phrase survived as a correctly-labeled historical quotation and the guard
+    kept passing while the runbook's live claim had changed underneath it —
+    phrase presence, not truth. It now reads the explicit current-truth block
+    and checks the facts an operator needs mid-incident, and the stale phrase is
+    separately confined to superseded context by the test below.
+    """
+    current = _current_backup_truth()
+    # what EXISTS — so nobody plans a recovery believing there is no copy
+    assert "off-provider backup destination exists" in current
+    assert "OD-INFRA-5" in current
+    assert "live off-provider backup object exists" in current
+    assert "full-loss disaster-recovery drill has passed" in current
+    # the operator's entry point to that copy must be named
+    assert "scripts/inventorai_offsite_backup.py" in current
+
+
+def test_scheduler_never_presented_as_running():
+    """Merged is not deployed; implemented is not activated.
+
+    The dangerous failure here is the mirror of the old one: an operator
+    assuming a recent automatic copy exists because scheduler code was merged.
+    The runbook must say, in its current-truth region, that no scheduled run has
+    occurred and that recency must be checked before anything is relied on.
+    """
+    current = _current_backup_truth()
+    assert "MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED" in current
+    assert "no scheduled run has ever occurred" in current
+    assert "never assume a recent automatic copy exists" in current
+    # and the restore authorization boundary is not softened by any of this
+    assert "separate explicit Owner operational authorization" in current
+
+
+def test_old_absence_claim_only_survives_as_labeled_history():
+    """The superseded phrase stays visible — but never as a live claim."""
+    text = re.sub(r"\s+", " ", _text())
+    occurrences = list(re.finditer(
+        r"no production/offsite/scheduled backup exists", text))
+    assert occurrences, (
+        "the superseded claim must stay visible as labeled history — deleting "
+        "it would hide that the runbook once told operators otherwise")
+    for match in occurrences:
+        window = text[max(0, match.start() - 400):match.start()]
+        assert "SUPERSEDED" in window, (
+            "this phrase may appear ONLY inside preserved superseded text: %s"
+            % text[max(0, match.start() - 200):match.end() + 80])
 
 
 def test_incident_id_format_and_no_new_schema():

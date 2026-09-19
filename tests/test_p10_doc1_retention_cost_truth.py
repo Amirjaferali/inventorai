@@ -9,9 +9,12 @@ documents stale without failing here. P10-DOC1 changes NO runtime code —
 these are repository doc-invariant checks in the established convention.
 Input contract: run under pytest from the repository root; reads the two
 documents plus the source files their claims cite.
-Output contract: superseded claims stay labeled; no prescriptive retention
-duration exists; retention substance stays OPEN; disabled/absent controls are
-never claimed active; cited source truth still matches.
+Output contract: superseded claims stay labeled AND stay out of the current
+sections; no prescriptive retention duration exists; retention substance stays
+OPEN; disabled/absent controls are never claimed active; the cost plan's CURRENT
+section states both halves of the real position (zero AI/billing spend, and the
+provider costs that now exist uncontrolled by runtime code); cited source truth
+still matches in both directions.
 Prohibited behaviors: MUST NOT weaken to pass; MUST NOT decide any retention
 rule or legal conclusion.
 """
@@ -123,11 +126,61 @@ def test_retention_doc_matches_source_truth():
 # ==========================================================================
 # COST_GOVERNANCE_PLAN.md
 # ==========================================================================
-def test_cost_plan_states_no_live_paid_usage():
+def _current_cost_reality():
+    """The 'Current cost reality' section, up to the HISTORICAL section."""
     text = _norm(COST)
-    assert "There is NO live paid usage of any kind" in text
-    assert "AI_ADVISORY_ENABLED = False" in text
-    assert "no kill switch, no spending ceiling, no cost accumulator" in text
+    start = text.find("## Current cost reality")
+    assert start != -1, "the plan must carry a current-cost-reality section"
+    end = text.find("## HISTORICAL", start)
+    assert end != -1, "the current section must end before the historical one"
+    return text[start:end]
+
+
+def test_cost_plan_current_reality_is_explicit():
+    """The plan must state the CURRENT cost reality, not merely retain the old
+    zero-cost claim.
+
+    REPAIRED (v1.32 truth-guard repair). The previous guard asserted only that
+    the phrase "There is NO live paid usage of any kind" appeared somewhere in
+    the document. Once hosting and off-provider storage were actually
+    provisioned, that phrase survived as a correctly-labeled historical
+    quotation and the guard kept passing while the document's live claim had
+    changed underneath it — it was checking phrase presence, not truth. It now
+    reads the current section and checks both halves of the real position: what
+    still costs nothing, and what now costs something.
+    """
+    current = _current_cost_reality()
+    # --- still true: no metered AI spend, no billing of users, no monitoring
+    assert "AI_ADVISORY_ENABLED = False" in current
+    assert "AI token spend is zero" in current
+    assert "no payment provider" in current
+    assert "no live billing of users" in current
+    assert "no hosted monitoring" in current
+    # --- newly true: provider costs exist and must not be described as absent
+    assert "Production hosting exists" in current
+    assert "off-provider backup destination exists" in current
+    assert "OD-INFRA-5" in current
+    assert "OD-INFRA-6" in current
+    assert "no longer runs only to a development sink" in current
+    # --- unchanged and load-bearing: none of it is controlled by runtime code
+    assert ("No usage of them is metered, budgeted, capped or alerted on by "
+            "this repository's runtime code" in current)
+    assert "no kill switch, no spending ceiling, no cost accumulator" in current
+
+
+def test_old_zero_cost_claim_only_survives_as_labeled_history():
+    """The superseded claim stays visible — but never as a live claim."""
+    text = _norm(COST)
+    occurrences = list(re.finditer(
+        r"There is NO live paid usage of any kind", text))
+    assert occurrences, (
+        "the superseded claim must stay visible as labeled history — deleting "
+        "it would hide that the plan once asserted zero provider cost")
+    for match in occurrences:
+        window = text[max(0, match.start() - 400):match.start()]
+        assert "SUPERSEDED" in window, (
+            "this claim may appear ONLY inside preserved superseded text: %s"
+            % text[max(0, match.start() - 200):match.end() + 80])
 
 
 def test_cost_plan_never_claims_active_controls():
@@ -152,6 +205,28 @@ def test_cost_plan_matches_source_truth():
         source = fh.read()
     assert "AI_ADVISORY_ENABLED = False" in source
     assert '"max_tokens": 150' in source
+
+
+def test_provider_cost_claims_tied_to_source_truth():
+    """The document's "these providers now cost money" claims must keep
+    matching the source that makes them true, in both directions.
+
+    Added with the v1.32 repair: the current section names an off-provider
+    backup path and a production email adapter. If either is ever removed the
+    document's cost reality changes, and this test makes that change loud
+    instead of leaving a stale claim of cost where none is incurred.
+    """
+    assert os.path.isfile(os.path.join("engine", "r2_object_upload.py"))
+    assert os.path.isfile(os.path.join("engine", "offsite_backup_scheduler.py"))
+    assert os.path.isfile(
+        os.path.join("scripts", "inventorai_offsite_backup.py"))
+    with open(os.path.join("engine", "email_sender.py"), encoding="utf-8") as fh:
+        assert "class ResendEmailSender" in fh.read()
+    # the scheduler exists in the tree but must not be described as running:
+    # nothing in web/ may start it outside the production gate.
+    with open(os.path.join("web", "app.py"), encoding="utf-8") as fh:
+        app_source = fh.read()
+    assert "_start_offsite_backup_scheduler_if_production" in app_source
 
 
 def test_paid_activation_block_referenced():

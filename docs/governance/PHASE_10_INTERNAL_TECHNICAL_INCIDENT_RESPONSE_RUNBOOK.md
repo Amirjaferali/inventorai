@@ -252,7 +252,10 @@ Detecting signal:               (§5 source)
 Severity:                       (SEV-1..SEV-4, with reclassifications logged)
 Incident type:                  (availability / database / security / other)
 Affected component(s):
-Repository SHA in use:          (and deployed SHA if a deployment ever exists)
+Repository SHA in use:          (repository evidence)
+Deployed SHA (provider-read):   (v1.32: a non-public deployment EXISTS — read this from the
+                                 provider surface at incident time and record it as its own
+                                 evidence class; never infer it from a repository merge SHA)
 Symptoms (bounded, factual):
 Containment actions taken:
 Evidence references:            (isolated copies, log lines, audit rows, test output)

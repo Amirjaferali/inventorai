@@ -27,6 +27,16 @@ PRs #647–#652; they are not wrong about what they recorded, only incomplete.
   transactional email — a Resend adapter under OD-INFRA-6, a durable SQLite outbox, ONE
   bounded dispatcher and a trusted public base URL — together with the off-provider
   Cloudflare R2 backup transport and operator path under OD-INFRA-5.
+- **Evidence-class boundary — repository identity is not provider identity.**
+  `06bf3632ae9914732e945f00f5ff9f130aea57a0` above is the **authoritative repository merge
+  SHA** for PR #663, read from Git. It is **not** a claim about what the provider is
+  running. Prior Render evidence showed an **abbreviated** deployment identity consistent
+  with `06bf363…`, and an earlier relayed full SHA for it
+  (`06bf3632ae9914732e9455965f551955c5d4a8c1`) proved to be a transcription splice that
+  exists nowhere in Git — it is **withdrawn and must not be cited**. **The exact full
+  provider-side deployed SHA has NOT been re-read in this session and must be
+  re-verified from the provider surface before it is cited as exact.** Never infer a
+  deployed SHA from a merge SHA, and never widen an abbreviation into a full one.
 - **PR #664 (MERGED, `61b482820cd2a2bb37ab73f017f2c840331707f3`)** delivered ONE bounded
   in-process daily off-provider backup scheduler. **It is MERGED, NOT DEPLOYED and NOT
   LIVE-ACTIVATED. No scheduled run has occurred.** Deploying the merged code would
