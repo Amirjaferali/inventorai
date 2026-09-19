@@ -8,6 +8,7 @@
 .ok{background:#eef7ee;border-color:#bcdcbc;color:#2b542b}
 .warn{background:#fbf3e6;border-color:#e6d2a8;color:#7a5b16}
 .notice{background:#eef7ee;border:1px solid #bcdcbc;border-radius:4px;padding:10px 14px;margin:12px 0;color:#2b542b;font-size:14px}
+.notice.warn-notice{background:#fdf6e3;border-color:#e0cf9a;color:#6b5320}
 button{margin-top:8px;padding:8px 18px;background:#2c3e50;color:#fff;border:none;border-radius:4px;font-size:15px;cursor:pointer}
 form{display:inline-block;margin:6px 8px 0 0}
 .truthful{font-size:13px;color:#555;margin-top:18px;line-height:1.5}
@@ -34,6 +35,8 @@ form{display:inline-block;margin:6px 8px 0 0}
 
 {% if notice == 'resend' %}
   <p class="notice" role="status" aria-live="polite">{{ t('UI_A_MSG_RESEND') }}</p>
+{% elif notice == 'resend_failed' %}
+  <p class="notice warn-notice" role="status" aria-live="polite">{{ t('UI_A_MSG_RESEND_FAILED') }}</p>
 {% endif %}
 
 {% if account.email_verified %}

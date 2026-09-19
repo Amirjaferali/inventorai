@@ -74,8 +74,21 @@ Procedure:
 Verified by: automated suite `tests/test_p10_br1_backup_restore.py` and the
 evidenced local restore drill
 `docs/governance/evidence/phase10_p10_br1/P10_BR1_RESTORE_DRILL_EVIDENCE.md`.
-Boundaries: LOCAL, provider-neutral capability + drill ONLY. No production
+Off-provider copy (OD-INFRA-5): `scripts/inventorai_offsite_backup.py daily
+<live-database>` performs the SAME service-produced backup, then uploads it to
+Cloudflare R2 over HTTPS and removes the temporary local copy. It exits non-zero
+unless the provider accepted the object. Configuration is environment-only
+(`INVENTORAI_R2_*`); absent configuration fails closed. See README,
+"Off-provider backup (Cloudflare R2)".
+Boundaries: SUPERSEDED IN PART — the previous boundary line read "No production
 backup scheduling, no offsite/cloud backup, no retention policy, no
-encryption-at-rest redesign — those remain future, separately governed
-infrastructure/legal-gated work. A verified local drill is NOT a production
-backup posture.
+encryption-at-rest redesign", which was the truth of P10-BR1 at its own gate.
+Now accurate: an off-provider upload CAPABILITY exists and is runnable. Still
+absent, unchanged: no schedule is activated by this repository (no cron job, no
+Render Cron Job, no bucket and no credential is created here — the daily run is
+a separate operator action); NO retention policy and NO deletion/expiry path of
+any kind, locally or remotely; no client-side encryption (the upload relies on
+HTTPS in transit and the provider's at-rest encryption); and a provider disk
+snapshot remains provider-local and is NOT a backup posture. A verified local
+drill is still NOT a production backup posture, and a full provider-loss restore
+drill has not been performed.

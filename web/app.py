@@ -11,6 +11,8 @@ import secrets
 import tempfile
 import uuid
 from urllib.parse import urlparse as _urlparse
+from urllib.parse import urlsplit as _urlsplit
+from urllib.parse import urlunsplit as _urlunsplit
 from flask import (
     Flask, request, redirect, url_for, render_template, make_response,
     g, has_request_context, session as flask_session,
@@ -215,7 +217,12 @@ from engine.account_store import (
 )
 from engine import account_credentials as _acct
 from engine import auth_session as _auth
-from engine.email_sender import DevMemoryEmailSender, UnconfiguredEmailSender
+from engine.email_sender import (
+    DevMemoryEmailSender,
+    ResendEmailSender,
+    UnconfiguredEmailSender,
+)
+from engine.email_dispatcher import EmailDispatcher
 # P4-2 Level-1: the exact supported reconstruction/engine-contract version stamp
 # persisted at project creation (read-only reconstruction lives entirely in the
 # engine; web only persists these additive envelope inputs).
@@ -521,6 +528,105 @@ _ACCOUNT_STORE = None
 # Development-only email sink (in-memory). A production provider adapter is a
 # separate, later concern; the raw verification token appears ONLY in a sink
 # message body and never in the application logs.
+# N-1: the accepted host shape for the public base URL (see below).
+_PUBLIC_HOST_PATTERN = re.compile(r"\A[a-z0-9]([a-z0-9-]*[a-z0-9])?"
+                                 r"(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+\Z")
+
+
+def _normalize_public_base_url(value):
+    """THE one configuration owner for the application's public base URL.
+
+    Returns the normalized absolute origin (scheme + host [+ port] [+ path], with
+    every trailing slash removed) or ``None`` when the value is absent or in any
+    way malformed. Fail closed: an unusable value yields ``None``, never a guess.
+
+    Accepted ONLY: an absolute `https://` ORIGIN with a host — scheme, host and
+    optional port, nothing more. Rejected: any other scheme (including `http`),
+    a missing host, embedded credentials, a query string, a fragment, whitespace
+    or control characters, and a path prefix. A path is rejected rather than
+    kept because this application is served at the root and supports no URL
+    prefix: a value like `https://host/app` would silently generate
+    `https://host/app/verify/<token>`, which is a 404 for every user.
+
+    This value is NEVER derived from a request. Not `request.host`, not
+    `request.url_root`, and not any proxy-supplied forwarded host/proto header
+    (deliberately not named here: an existing repository guard scans this file
+    for those literals, and this application trusts none of them - OD-INFRA-3).
+    A caller-supplied host would let an attacker mint a verification or reset
+    link pointing at their own origin, so the configured value is the only
+    authority for an externally reachable link.
+    """
+    if not isinstance(value, str):
+        return None
+    candidate = value.strip()
+    if not candidate:
+        return None
+    # Reject whitespace AND control characters. A NUL or newline inside the
+    # configured origin would be carried straight into an emailed link (and,
+    # with a newline, into the message body), so it fails closed here rather
+    # than producing a link nobody can use.
+    if any(ch.isspace() or ord(ch) < 0x20 or ord(ch) == 0x7F
+           for ch in candidate):
+        return None
+    # N-1: sequences whose only purpose is to confuse an authority/path parse.
+    # A backslash is treated as a path separator by browsers but not by
+    # `urlsplit`, so `https://good.example\@evil.example` can parse one way here
+    # and resolve another way in a mail client. A percent-encoded slash or
+    # backslash in the authority plays the same trick, and `%23`/`%40` smuggle a
+    # fragment or userinfo past the checks below.
+    lowered = candidate.lower()
+    if "\\" in candidate or any(token in lowered for token in
+                                ("%2f", "%5c", "%23", "%40", "%00")):
+        return None
+    try:
+        parts = _urlsplit(candidate)
+    except ValueError:
+        return None
+    if parts.scheme != "https":
+        return None
+    try:
+        host = parts.hostname
+    except ValueError:                    # malformed port / bracketed host
+        return None
+    if not host:
+        return None
+    if parts.username or parts.password or parts.query or parts.fragment:
+        return None
+    try:
+        parts.port                        # validates a present port
+    except ValueError:
+        return None
+    # A conservative ASCII DNS host: labels of letters/digits/hyphen, at least
+    # two of them. Unicode/IDN forms are refused rather than normalized, because
+    # a host that needs normalizing to become an origin is not a STABLE trusted
+    # origin - the whole point of this value.
+    if not _PUBLIC_HOST_PATTERN.match(host):
+        return None
+    # Trailing slashes normalize away; anything else in the path is refused.
+    if parts.path.rstrip("/"):
+        return None
+    return _urlunsplit(("https", parts.netloc, "", "", ""))
+
+
+def _resolve_public_base_url():
+    """Read and validate `INVENTORAI_PUBLIC_BASE_URL`. Cannot raise."""
+    return _normalize_public_base_url(
+        os.environ.get("INVENTORAI_PUBLIC_BASE_URL", ""))
+
+
+# Resolved once at import, in the same style as the DB path and the secret. A
+# development/test runtime normally has none, and then emailed links keep their
+# existing relative form — dev behaviour is unchanged by this tranche.
+_PUBLIC_BASE_URL = _resolve_public_base_url()
+
+
+def _public_link(path):
+    """An externally usable link for `path` when a public base URL is configured;
+    the existing relative path otherwise. The token lives in `path` and is placed
+    in the message body only — never logged and never put in a response."""
+    return (_PUBLIC_BASE_URL + path) if _PUBLIC_BASE_URL else path
+
+
 def _resolve_email_sender():
     """Select the email sender for this runtime.
 
@@ -528,19 +634,35 @@ def _resolve_email_sender():
     seam (`webapp._EMAIL_SENDER` with `.sent` / `.last_for()` / `.clear()`) is
     unchanged.
 
-    Production NEVER receives that sink. Until a transactional-email provider is
-    selected and configured, production gets `UnconfiguredEmailSender`, which
-    refuses every send. That is deliberate: an in-memory sink in production would
+    Production NEVER receives that sink. An in-memory sink in production would
     accept every message and deliver nothing, so the application would tell users
     that verification instructions had been sent when nothing could send them.
 
-    Selection happens at import time and startup is NEVER blocked by it — the
-    application boots without email configuration, and only the email-dependent
-    account actions fail, at their point of use.
+    Production gets `ResendEmailSender` (OD-INFRA-6) only when the provider
+    configuration is COMPLETE and valid: the provider name, a non-empty key, a
+    non-empty sender identity, and a usable public base URL. A base URL is part
+    of that bar because a verification message whose link is relative is not a
+    usable message. Anything missing or malformed — including a partial
+    configuration — falls back to `UnconfiguredEmailSender`, which refuses every
+    send. There is no path from production to the development sink.
+
+    Selection happens at import time and startup is NEVER blocked by it: this
+    function cannot raise, the application boots without email configuration, and
+    only the email-dependent account actions fail, at their point of use.
     """
-    if _is_production():
+    if not _is_production():
+        return DevMemoryEmailSender()
+    provider = os.environ.get("INVENTORAI_EMAIL_PROVIDER", "").strip().lower()
+    if provider != "resend":
         return UnconfiguredEmailSender()
-    return DevMemoryEmailSender()
+    provider_key = os.environ.get("INVENTORAI_RESEND_API_KEY", "").strip()
+    sender_identity = os.environ.get("INVENTORAI_EMAIL_FROM", "").strip()
+    if not provider_key or not sender_identity or not _resolve_public_base_url():
+        return UnconfiguredEmailSender()
+    try:
+        return ResendEmailSender(api_key=provider_key, sender=sender_identity)
+    except ValueError:
+        return UnconfiguredEmailSender()
 
 
 _EMAIL_SENDER = _resolve_email_sender()
@@ -550,6 +672,64 @@ def _email_delivery_available():
     """Whether the selected sender can deliver at all. A configured provider may
     still fail per-message; that is a different, bounded failure."""
     return bool(getattr(_EMAIL_SENDER, "can_deliver", False))
+
+
+# --- OD-INFRA-6: durable outbox + ONE bounded in-process dispatcher ---------
+#
+# The anonymous registration and recovery requests RECORD the outbound message
+# in the outbox (same canonical SQLite file) and return. They perform no
+# provider network call, so their latency cannot depend on whether an account
+# exists - the timing oracle that inline delivery created. Delivery happens on
+# the dispatcher's own thread, from its own store instance.
+#
+# Development and test stay deterministic: with `_EMAIL_INLINE_DISPATCH` true
+# (every non-production runtime) the pending messages are dispatched
+# synchronously at the end of the request, in the request's own thread, through
+# a temporary store opened for that call - so `webapp._EMAIL_SENDER.last_for()`
+# still holds the message the moment the response returns, and no background
+# thread runs under the test suite. Tests that want explicit control set it
+# False and call `_EMAIL_DISPATCHER.dispatch_pending()` / `dispatch_one()`.
+
+def _open_dispatcher_store():
+    """A store instance for the dispatcher ONLY - never the request-scoped
+    `_ACCOUNT_STORE`. Opened in whichever thread runs the dispatch and closed by
+    it, so no SQLite connection is ever shared across threads."""
+    path = _resolve_db_path()
+    directory = os.path.dirname(path)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+    return SqliteAccountStore(path)
+
+
+_EMAIL_DISPATCHER = EmailDispatcher(
+    open_store=_open_dispatcher_store,
+    # Resolved at dispatch time, so a test that substitutes `_EMAIL_SENDER` is
+    # honoured and production always uses the selected sender.
+    resolve_sender=lambda: _EMAIL_SENDER)
+
+_EMAIL_INLINE_DISPATCH = not _is_production()
+
+
+def _dispatch_outbox_inline_if_enabled():
+    """Development/test determinism seam. A no-op in production."""
+    if _EMAIL_INLINE_DISPATCH:
+        try:
+            _EMAIL_DISPATCHER.dispatch_pending()
+        except Exception:
+            pass
+
+
+def _start_email_dispatcher_if_production():
+    """Start the ONE dispatcher thread - in production only, and only when a
+    sender capable of delivery is configured. Production still boots with no
+    provider configured; it then starts no delivery loop at all, so nothing can
+    send without valid configuration. Idempotent within the process."""
+    if _is_production() and _email_delivery_available():
+        return _EMAIL_DISPATCHER.start()
+    return False
+
+
+_EMAIL_DISPATCHER_STARTED = _start_email_dispatcher_if_production()
 
 
 def _email_unavailable_response():
@@ -582,10 +762,25 @@ _REGISTER_RATE_WINDOW_SECONDS = 60 * 60
 # One generic, non-enumerating registration response (contract §7): it never
 # reveals whether the email was newly registered, already in use, or belongs to a
 # disabled/deleted account, nor whether an email was actually sent.
+# ATTEMPT-TRUTHFUL, not delivery-asserting. The previous wording ("verification
+# instructions have been sent") stated a completed external fact the application
+# cannot know: a configured provider can reject or be unreachable, and that
+# failure is deliberately swallowed here to keep the response byte-identical for
+# every submitted address. Asserting delivery therefore made the product lie
+# whenever the provider failed. The wording below is true in EVERY case — unknown
+# address (the conditional does not apply), known address with provider
+# acceptance, provider rejection, provider outage — while remaining one constant
+# string, so the non-enumeration property is preserved rather than traded away.
+# Under the durable outbox (OD-INFRA-6) the request itself sends nothing: it
+# records the message for delivery. "Queued for delivery" is therefore the exact
+# truth at response time - not "sent", not "tried" - and it is still ONE
+# constant string for every address.
 REGISTER_GENERIC_MESSAGE_EN = (
-    "If the address can be used, verification instructions have been sent.")
+    "If the address can be used, a verification message has been queued for "
+    "delivery to it. If nothing arrives shortly, request a new message.")
 REGISTER_GENERIC_MESSAGE_AR = (
-    "إذا كان بالإمكان استخدام هذا العنوان، فسيتم إرسال تعليمات التحقق.")
+    "إذا كان بالإمكان استخدام هذا العنوان، فقد تمت جدولة رسالة تحقق للإرسال "
+    "إليه. إذا لم تصل أي رسالة قريبًا، فاطلب رسالة جديدة.")
 
 
 def _get_account_store():
@@ -678,14 +873,36 @@ _AUTH_SESSION_KEY = "auth"                        # namespaced slot inside flask
 # email exists, a password was wrong, or an account is disabled/deleted/unverified).
 LOGIN_FAILED_MESSAGE_EN = "Those sign-in details did not match. Please try again."
 LOGIN_FAILED_MESSAGE_AR = "بيانات تسجيل الدخول غير متطابقة. يرجى المحاولة مرة أخرى."
+# Attempt-truthful for the same reason as REGISTER_GENERIC_MESSAGE_EN above:
+# ONE constant string (no enumeration oracle) that is true under an unknown
+# address, a known address, provider acceptance, provider rejection and provider
+# outage alike.
 RECOVER_GENERIC_MESSAGE_EN = (
-    "If that address matches an account, password-reset instructions have been sent.")
+    "If that address matches an account, a password-reset message has been "
+    "queued for delivery to it. If nothing arrives shortly, request a new "
+    "message.")
 RECOVER_GENERIC_MESSAGE_AR = (
-    "إذا كان هذا العنوان مطابقًا لحساب، فقد أُرسلت تعليمات إعادة تعيين كلمة المرور.")
+    "إذا كان هذا العنوان مطابقًا لحساب، فقد تمت جدولة رسالة إعادة تعيين كلمة "
+    "المرور للإرسال إليه. إذا لم تصل أي رسالة قريبًا، فاطلب رسالة جديدة.")
+# The authenticated resend surface is DIFFERENT: the signed-in account identity
+# is already known to the caller, so a truthful outcome here reveals nothing
+# about any other address and is not an enumeration oracle. It therefore keeps
+# its conditional success wording (true when a message was accepted, and
+# vacuously true when verification was no longer needed) and gains a separate
+# bounded failure message for the cases where no message went out — a provider
+# rejection/outage, or a rate limit. Neither message names a provider, a reason
+# or a token.
 RESEND_GENERIC_MESSAGE_EN = (
-    "If verification is still needed, a new verification message has been sent.")
+    "If verification is still needed, a new verification message has been "
+    "queued for delivery.")
 RESEND_GENERIC_MESSAGE_AR = (
-    "إذا كان التحقق لا يزال مطلوبًا، فقد أُرسلت رسالة تحقق جديدة.")
+    "إذا كان التحقق لا يزال مطلوبًا، فقد تمت جدولة رسالة تحقق جديدة للإرسال.")
+RESEND_FAILED_MESSAGE_EN = (
+    "A new verification message could not be sent just now. "
+    "Please try again in a few minutes.")
+RESEND_FAILED_MESSAGE_AR = (
+    "لم يتمكن النظام من إرسال رسالة تحقق جديدة الآن. "
+    "يرجى المحاولة مرة أخرى بعد بضع دقائق.")
 
 
 def _cleanup_rate_limits(now):
@@ -2640,24 +2857,29 @@ def register_submit():
     except Exception:
         return _register_generic_response()          # generic; no internal detail leaked
 
-    # Issue a verification token: store only its hash; the RAW token goes solely
-    # into the dev email sink message body (never logged, never in the response).
+    # Issue a verification token and RECORD its message in the durable outbox in
+    # ONE transaction: only the token's hash is stored; the raw token exists in
+    # the queued body (never logged, never in the response). NO provider call
+    # happens here - the dispatcher delivers later, so this request's latency
+    # is the same whether or not an account was created (OD-INFRA-6).
     try:
         raw_token = _acct.new_raw_token()
-        store.create_email_token(
+        store.create_email_token_and_enqueue(
             token_id=_acct.new_token_id(), account_id=account_id,
             token_type=VERIFICATION, token_hash=_acct.hash_token(raw_token),
             expires_at=_iso(now + _timedelta_seconds(_VERIFICATION_TTL_SECONDS)),
-            created_at=_iso(now))
-        _EMAIL_SENDER.send(
-            to=email_normalized,
-            subject="Verify your InventorAI email",
-            body=("Use this code to verify your email (valid 24 hours): "
-                  + raw_token))
+            created_at=_iso(now),
+            message_id=_acct.new_token_id(), recipient=email_normalized,
+            subject=VERIFICATION_SUBJECT,
+            # The SAME body as the resend path (a bare "code" was unusable: only
+            # `/verify/<token>` completes verification).
+            body=_verification_body(raw_token))
     except Exception:
-        # A token/email-sink failure does not change the generic response and does
+        # A token/outbox failure does not change the generic response and does
         # not sign anyone in; the account row already committed atomically above.
+        # Nothing is logged or surfaced, so the response stays byte-identical.
         pass
+    _dispatch_outbox_inline_if_enabled()
     return _register_generic_response()
 
 
@@ -2704,34 +2926,48 @@ def _csrf_reject():
     return response
 
 
+VERIFICATION_SUBJECT = "Verify your InventorAI email"
+RESET_SUBJECT = "Reset your InventorAI password"
+
+
+def _verification_body(raw_token):
+    """ONE verification body for both issue paths (registration and resend), so
+    the two can never drift into different link forms."""
+    return ("Use this link to verify your email (valid 24 hours): "
+            + _public_link("/verify/" + raw_token))
+
+
+def _reset_body(raw_token):
+    return ("Use this link to reset your password (valid 1 hour): "
+            + _public_link("/reset/" + raw_token))
+
+
 def _issue_verification(account, now):
-    """Issue (and dev-sink send) a fresh verification token; only its hash is
-    stored, the raw token goes solely into the sink body."""
+    """Issue a fresh verification token and QUEUE its message atomically; only
+    the hash is stored, the raw token goes solely into the queued body. No
+    provider call happens here (OD-INFRA-6)."""
     raw = _acct.new_raw_token()
-    _get_account_store().create_email_token(
+    _get_account_store().create_email_token_and_enqueue(
         token_id=_acct.new_token_id(), account_id=account["account_id"],
         token_type=VERIFICATION, token_hash=_acct.hash_token(raw),
         expires_at=_iso(now + _timedelta_seconds(_VERIFICATION_TTL_SECONDS)),
-        created_at=_iso(now))
-    _EMAIL_SENDER.send(
-        to=account["email_normalized"], subject="Verify your InventorAI email",
-        body=("Use this link to verify your email (valid 24 hours): "
-              "/verify/" + raw))
+        created_at=_iso(now),
+        message_id=_acct.new_token_id(), recipient=account["email_normalized"],
+        subject=VERIFICATION_SUBJECT, body=_verification_body(raw))
 
 
 def _issue_reset(account, now):
-    """Issue (and dev-sink send) a fresh 1-hour password-reset token; hash-only
-    at rest; the raw token appears solely in the sink body, never in logs."""
+    """Issue a fresh 1-hour password-reset token and QUEUE its message
+    atomically; hash-only at rest; the raw token appears solely in the queued
+    body, never in logs. No provider call happens here (OD-INFRA-6)."""
     raw = _acct.new_raw_token()
-    _get_account_store().create_email_token(
+    _get_account_store().create_email_token_and_enqueue(
         token_id=_acct.new_token_id(), account_id=account["account_id"],
         token_type=RESET, token_hash=_acct.hash_token(raw),
         expires_at=_iso(now + _timedelta_seconds(_RESET_TTL_SECONDS)),
-        created_at=_iso(now))
-    _EMAIL_SENDER.send(
-        to=account["email_normalized"], subject="Reset your InventorAI password",
-        body=("Use this link to reset your password (valid 1 hour): "
-              "/reset/" + raw))
+        created_at=_iso(now),
+        message_id=_acct.new_token_id(), recipient=account["email_normalized"],
+        subject=RESET_SUBJECT, body=_reset_body(raw))
 
 
 def _render_login(error=False, status=200, deactivated=False):
@@ -3023,13 +3259,28 @@ def resend_verification():
     _cleanup_rate_limits(now)
     allowed = _rate_ok(_acct.email_digest(account["email_normalized"]), "resend",
                        now, _RESEND_RATE_LIMIT, _RESEND_RATE_WINDOW_SECONDS)
+    # Truthful outcome, bounded. Historically this route always showed the
+    # success notice, so a swallowed delivery failure AND a rate-limited request
+    # both told a signed-in user a message had gone out when none had.
+    # Under the outbox (OD-INFRA-6) the truth at response time is "queued":
+    # `notice="resend"` is shown only when a message was actually recorded for
+    # delivery (or verification was no longer needed - the notice is
+    # conditional, so vacuously true). A rate limit, a non-active account or an
+    # outbox write failure shows the bounded failure notice instead. Provider
+    # outcome is NOT known here and is not claimed; it is the dispatcher's.
+    queued = False
     if allowed and account["status"] == "active" and not account["email_verified"]:
         try:
             _issue_verification(account, now)
+            queued = True
         except Exception:
-            pass
+            queued = False
+    elif allowed and account["status"] == "active" and account["email_verified"]:
+        queued = True                     # nothing to send; notice is vacuous
+    _dispatch_outbox_inline_if_enabled()
     return render_template("account.html", account=account,
-                           csrf_token=_session_csrf(), notice="resend")
+                           csrf_token=_session_csrf(),
+                           notice="resend" if queued else "resend_failed")
 
 
 @app.route("/verify/<token>", methods=["GET", "POST"])
@@ -3083,6 +3334,7 @@ def recover_submit():
                 _issue_reset(account, now)
         except Exception:
             pass
+    _dispatch_outbox_inline_if_enabled()
     return render_template("recover.html", submitted=True,
                            generic_en=RECOVER_GENERIC_MESSAGE_EN,
                            generic_ar=RECOVER_GENERIC_MESSAGE_AR)

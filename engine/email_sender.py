@@ -8,6 +8,12 @@ retry worker, and no bulk sending, and it adds NO runtime dependency.
 
 The raw verification token appears ONLY inside a captured/sink message body — it
 is never written to the application logs.
+
+SUPERSEDED IN PART (not rewritten): "P5-1 ships ONLY a development sink" is the
+truth of P5-1 at its own gate. Under OD-INFRA-6 this module now ALSO carries the
+production adapter (`ResendEmailSender`, bottom of this file). The boundary,
+call sites and the no-runtime-dependency property are unchanged — the adapter is
+exactly the drop-in the first paragraph anticipated.
 """
 
 
@@ -76,3 +82,213 @@ class UnconfiguredEmailSender(EmailSender):
     def send(self, to, subject, body):
         raise EmailNotConfigured(
             "no production email provider is configured")
+
+
+# ---------------------------------------------------------------------------
+# OD-INFRA-6 — production transactional email (Resend, HTTPS API, stdlib only).
+#
+# This is the "future production adapter" the module docstring above anticipated.
+# It drops in behind the SAME `EmailSender` boundary and changes no call site:
+# `DevMemoryEmailSender` still serves development and test, and
+# `UnconfiguredEmailSender` still serves production whenever the provider
+# configuration is absent or invalid. No SDK is introduced — the transport is
+# `urllib.request` from the standard library, so `requirements.txt` is unchanged
+# and the existing dependency-family guard (which forbids a `resend` package)
+# keeps holding.
+# ---------------------------------------------------------------------------
+
+import json as _json
+import urllib.error as _urllib_error
+import urllib.request as _urllib_request
+
+# The provider endpoint is a CONSTANT, not configuration: an operator cannot
+# redirect transactional mail (with its raw tokens) to another host by setting an
+# environment variable. `send` additionally refuses any non-HTTPS endpoint.
+RESEND_ENDPOINT = "https://api.resend.com/emails"
+
+# One bounded request timeout. A hung provider must never hold a request thread
+# open indefinitely — this process runs ONE worker and ONE thread.
+DEFAULT_TIMEOUT_SECONDS = 10.0
+
+# The provider response is read up to a bound; a pathological body can neither
+# exhaust memory nor be echoed anywhere.
+_MAX_RESPONSE_BYTES = 64 * 1024
+
+
+class EmailDeliveryFailed(Exception):
+    """A CONFIGURED provider was asked to deliver ONE message and did not.
+
+    Deliberately distinct from ``EmailNotConfigured`` (no provider exists at
+    all): that one means the capability is absent, this one means the capability
+    exists and this single delivery did not happen.
+
+    It carries ONLY a short stable reason code. No recipient address, raw token,
+    message body, API key, authorization header, endpoint or provider response
+    text is stored on it, so neither a log line nor a traceback can leak one
+    through this class.
+    """
+
+    def __init__(self, reason_code="delivery_failed"):
+        super().__init__(reason_code)
+        self.reason_code = reason_code
+
+
+class _NoRedirectHandler(_urllib_request.HTTPRedirectHandler):
+    """Refuse EVERY redirect, same-origin included.
+
+    Returning ``None`` from ``redirect_request`` makes urllib surface the 3xx as
+    an ``HTTPError`` instead of following it, so the caller sees a non-2xx status
+    and treats it as a delivery failure.
+
+    Why this is not optional: urllib's default handler follows redirects AND
+    copies the request headers to the new target, so a 302 from (or in front of)
+    the provider would transmit the ``Authorization`` bearer key to whatever
+    origin the redirect named - including a plaintext ``http://`` one - and
+    would then accept that origin's response body as proof of delivery. Checking
+    only the initial URL does not prevent either half of that.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def _build_https_only_opener():
+    """An opener that can ONLY perform direct HTTPS requests.
+
+    `HTTPHandler` is deliberately absent, so an `http://` URL cannot be opened
+    at all rather than merely being rejected by a string check - there is no
+    downgrade path even if a URL reached here unvalidated. `FileHandler`,
+    `FTPHandler` and `DataHandler` are absent for the same reason. The redirect
+    handler above refuses every redirect.
+    """
+    opener = _urllib_request.OpenerDirector()
+    for handler in (_urllib_request.ProxyHandler(),
+                    _urllib_request.HTTPSHandler(),
+                    # Turns any scheme this opener cannot serve into a clean
+                    # URLError instead of an AttributeError from deep inside
+                    # urllib's response processing.
+                    _urllib_request.UnknownHandler(),
+                    _NoRedirectHandler(),
+                    _urllib_request.HTTPDefaultErrorHandler(),
+                    _urllib_request.HTTPErrorProcessor()):
+        opener.add_handler(handler)
+    return opener
+
+
+_OPENER = _build_https_only_opener()
+
+
+def _https_json_post(url, headers, payload, timeout_seconds):
+    """POST one JSON document over HTTPS and return ``(status, parsed-or-None)``.
+
+    The seam the adapter calls. Tests substitute a deterministic local callable
+    for it, so no test ever performs a network request. A provider 4xx/5xx is a
+    real answer and is returned with its status; a transport failure raises.
+
+    No redirect is ever followed, and the opener has no HTTP handler at all, so
+    the request boundary itself cannot leave HTTPS.
+    """
+    if not url.startswith("https://"):
+        raise ValueError("refusing a non-HTTPS request")
+    request = _urllib_request.Request(
+        url, data=_json.dumps(payload).encode("utf-8"), headers=headers,
+        method="POST")
+    try:
+        with _OPENER.open(request, timeout=timeout_seconds) as response:
+            status, raw = response.getcode(), response.read(_MAX_RESPONSE_BYTES)
+    except _urllib_error.HTTPError as error:
+        # A rejection IS a provider answer: keep its status so the caller can
+        # distinguish "rejected" from "unreachable". A refused redirect arrives
+        # here too, as its own 3xx status, and is non-2xx - a delivery failure.
+        status, raw = error.code, error.read(_MAX_RESPONSE_BYTES) or b""
+    try:
+        document = _json.loads(raw.decode("utf-8"))
+    except Exception:
+        document = None
+    return status, document
+
+
+class ResendEmailSender(EmailSender):
+    """The production sender: one transactional message per call, over HTTPS.
+
+    Success is CONFIRMED PROVIDER ACCEPTANCE and nothing weaker — a 2xx status
+    AND a JSON object carrying the provider's message id. Anything else (non-2xx,
+    unparseable or id-less body, timeout, DNS/TLS/socket failure) raises
+    ``EmailDeliveryFailed`` so the caller cannot report a delivery that did not
+    happen.
+
+    Deliberately absent: retries, queues, workers, bulk sending, templates,
+    attachments, and any logging whatsoever. One message, one attempt, one
+    bounded answer.
+    """
+
+    can_deliver = True
+
+    def __init__(self, api_key, sender, endpoint=RESEND_ENDPOINT,
+                 timeout_seconds=DEFAULT_TIMEOUT_SECONDS, transport=None):
+        if not isinstance(api_key, str) or not api_key.strip():
+            raise ValueError("a non-empty provider key is required")
+        if not isinstance(sender, str) or not sender.strip():
+            raise ValueError("a non-empty sender identity is required")
+        if not isinstance(endpoint, str) or not endpoint.startswith("https://"):
+            raise ValueError("the provider endpoint must be an https:// URL")
+        try:
+            timeout = float(timeout_seconds)
+        except (TypeError, ValueError):
+            raise ValueError("the timeout must be a number") from None
+        if not 0 < timeout <= 60:
+            raise ValueError("the timeout must be bounded and positive")
+        self._api_key = api_key.strip()
+        self._sender = sender.strip()
+        self._endpoint = endpoint
+        self._timeout_seconds = timeout
+        self._transport = transport or _https_json_post
+
+    @property
+    def endpoint(self):
+        """The endpoint in use (for configuration assertions). Not the key."""
+        return self._endpoint
+
+    @property
+    def timeout_seconds(self):
+        return self._timeout_seconds
+
+    @property
+    def sender(self):
+        """The configured sender identity — the FROM address, never a secret."""
+        return self._sender
+
+    def __repr__(self):
+        """A representation that cannot carry the key into a log or traceback."""
+        return "<ResendEmailSender endpoint=%s>" % self._endpoint
+
+    def send(self, to, subject, body):
+        payload = {"from": self._sender, "to": [to], "subject": subject,
+                   "text": body}
+        headers = {"Authorization": "Bearer " + self._api_key,
+                   "Content-Type": "application/json"}
+        try:
+            status, document = self._transport(
+                self._endpoint, headers, payload, self._timeout_seconds)
+        except Exception:
+            # `from None` severs the cause chain deliberately: a propagating
+            # urllib error would otherwise carry the endpoint (and, in some
+            # failure shapes, request detail) into any traceback that is logged.
+            raise EmailDeliveryFailed("provider_unreachable") from None
+        try:
+            code = int(status)
+        except (TypeError, ValueError):
+            raise EmailDeliveryFailed("provider_response_invalid") from None
+        if not 200 <= code < 300:
+            raise EmailDeliveryFailed("provider_rejected")
+        if not isinstance(document, dict):
+            raise EmailDeliveryFailed("provider_response_invalid")
+        # The id must be a genuine non-empty STRING. The previous
+        # `str(... or "")` coerced `true`, `123`, `[1]` and `{"a": 1}` into
+        # truthy text and accepted them as confirmed acceptance, so a provider
+        # (or anything answering in its place) could satisfy the success bar
+        # with a value that is not a message identifier at all.
+        identifier = document.get("id")
+        if not isinstance(identifier, str) or not identifier.strip():
+            raise EmailDeliveryFailed("provider_response_invalid")
+        return True

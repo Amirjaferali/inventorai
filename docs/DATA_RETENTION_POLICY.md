@@ -21,6 +21,7 @@ notably LQ-09/LQ-10/TQ-07) and separate Owner acceptance.
 | Projects / records (user invention content) | Durable SQLite (`projects`, `records`) | YES |
 | Audit / commercial scaffolding (`access_audit`, `commercial_audit`, lifecycle, dedupe, usage) | Durable SQLite, append-only; NO live billing data | Partly |
 | Auth rate-limit counters | Durable SQLite (`auth_rate_limits`) — privacy-digest keys, no raw email | NO |
+| Outbound email outbox (OD-INFRA-6) | Durable SQLite (`email_outbox`) — recipient address + token-bearing verification/reset body, TRANSIENT: deleted on confirmed provider acceptance, scrubbed (recipient/subject/body nulled) when the bounded retry budget is exhausted; never logged, never exported | YES (while pending) |
 | Live progression-session working state | In-memory `SESSION_STORE` (web/app.py) — ephemeral; durable evidence appended to `records` | YES |
 | Browser draft text | Client-side `localStorage` ONLY (never server-held) | YES (client-only) |
 | Operational logs (P10-OB1) | Process stderr stream, bounded no-PII events; NOT retained as files | NO |
@@ -37,13 +38,24 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
   external legal determination + separate Owner authorization).
 * Account exit is **Deactivation only** (P10-D3b): a status tombstone that blocks all use but
   removes no row. DEACTIVATION ≠ PHYSICAL DELETION.
-* The ONLY automatic deletion anywhere is bounded cleanup of **expired auth rate-limit rows**
-  (`cleanup_expired_rate_limits` — operational counters, not user content).
+* The ONLY automatic deletions anywhere are two operational cleanups, neither of which touches
+  user content or account data: bounded cleanup of **expired auth rate-limit rows**
+  (`cleanup_expired_rate_limits` — operational counters), and — SUPERSEDED IN PART (was: the
+  rate-limit cleanup alone) under OD-INFRA-6 — removal of a **delivered outbound email message**
+  from the `email_outbox` table the moment the provider confirms acceptance
+  (`mark_email_delivered`). The outbox row is a transient carrier for a token-bearing message;
+  deleting it promptly is operational message cleanup and decides no user-data retention rule.
 * Browser drafts expire client-side after a 7-day lazy TTL (`web/static/js/local_draft.js`,
   `TTL_MS = 7 days`) — a client mechanism, not a server retention rule.
 * Self-service export is project-scoped only (P10-D3a); account-wide export DEFERRED (OD-DR2).
 * Local backups (P10-BR1) are byte-consistent copies of the durable database: they inherit all
-  data above, have NO retention/rotation schedule, and NO offsite/production backup exists.
+  data above and have NO retention/rotation schedule. SUPERSEDED IN PART (was: "NO offsite/
+  production backup exists"): an off-provider upload CAPABILITY to Cloudflare R2 now exists
+  (OD-INFRA-5, `scripts/inventorai_offsite_backup.py`). It is not activated by the repository,
+  it inherits exactly the same data, and it has NO retention, expiry or deletion path — so an
+  uploaded copy persists until a retention decision exists. That decision is still OPEN in this
+  lane; nothing here decides it. Any future erasure obligation would have to reach these copies
+  too, which is an additional reason the substance below remains adviser-open.
 
 ## What does NOT exist — CURRENT
 
@@ -63,8 +75,13 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
 2. HISTORICAL — SUPERSEDED: "Anthropic API receives descriptions." NO live external transfer
    exists: AI advisory transfer is disabled in code (`engine/ai_advisor.py`,
    `AI_ADVISORY_ENABLED = False`; the dormant call path is unreachable without a source change),
-   email runs to an in-memory development sink only, and no payment/webhook/analytics/telemetry
-   transfer exists.
+   and no payment/webhook/analytics/telemetry transfer exists. Email: SUPERSEDED IN PART (was:
+   "email runs to an in-memory development sink only") — development/test still use that sink,
+   and production now uses either a sender that cannot deliver at all or, when OD-INFRA-6 is
+   fully configured, the Resend HTTPS API. When configured, a transactional message (recipient
+   address, subject, and a verification/reset link) IS transferred to that provider; the
+   conclusion above is unchanged for every other data class, and no invention/project content
+   is ever included in such a message.
 3. HISTORICAL — SUPERSEDED: "No PII collected in MVP." Accounts exist and store personal data
    (normalized email + identity). The condition in "GDPR/PDPL review required before adding
    accounts" has therefore FIRED: that review is commissioned as external questions LQ-04…LQ-11

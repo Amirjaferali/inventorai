@@ -774,9 +774,20 @@ UI_STRINGS = {
     },
     "UI_A_REG_008": {"en": "Confirm password", "ar": "تأكيد كلمة المرور"},
     "UI_A_REG_009": {"en": "Create account", "ar": "إنشاء حساب"},
+    # ATTEMPT-TRUTHFUL (OD-INFRA-6). Was: "verification instructions have been
+    # sent." / "فسيتم إرسال تعليمات التحقق." Those asserted an external delivery
+    # the application cannot know: a configured provider can reject or be
+    # unreachable, and that failure is swallowed so the response stays identical
+    # for every address. This wording is true under every outcome and remains ONE
+    # constant string, so non-enumeration is preserved.
     "UI_A_MSG_REGISTER": {
-        "en": "If the address can be used, verification instructions have been sent.",
-        "ar": "إذا كان بالإمكان استخدام هذا العنوان، فسيتم إرسال تعليمات التحقق.",
+        # OD-INFRA-6 outbox: the request records the message and sends nothing,
+        # so "queued for delivery" is the exact truth at response time.
+        "en": ("If the address can be used, a verification message has been "
+               "queued for delivery to it. If nothing arrives shortly, request "
+               "a new message."),
+        "ar": ("إذا كان بالإمكان استخدام هذا العنوان، فقد تمت جدولة رسالة تحقق "
+               "للإرسال إليه. إذا لم تصل أي رسالة قريبًا، فاطلب رسالة جديدة."),
     },
 
     # --- reset.html (Category A) ----------------------------------------------
@@ -815,11 +826,15 @@ UI_STRINGS = {
         "en": "Send reset instructions",
         "ar": "إرسال تعليمات إعادة التعيين",
     },
+    # ATTEMPT-TRUTHFUL (OD-INFRA-6), same reasoning as UI_A_MSG_REGISTER.
+    # Was: "password-reset instructions have been sent." / "فقد أُرسلت ...".
     "UI_A_MSG_RECOVER": {
-        "en": ("If that address matches an account, password-reset instructions "
-               "have been sent."),
-        "ar": ("إذا كان هذا العنوان مطابقًا لحساب، فقد أُرسلت تعليمات إعادة تعيين "
-               "كلمة المرور."),
+        "en": ("If that address matches an account, a password-reset message "
+               "has been queued for delivery to it. If nothing arrives shortly, "
+               "request a new message."),
+        "ar": ("إذا كان هذا العنوان مطابقًا لحساب، فقد تمت جدولة رسالة إعادة "
+               "تعيين كلمة المرور للإرسال إليه. إذا لم تصل أي رسالة قريبًا، "
+               "فاطلب رسالة جديدة."),
     },
 
     # --- verify_result.html (Category A) --------------------------------------
@@ -887,9 +902,23 @@ UI_STRINGS = {
         "ar": ("تسجيل الدخول يدير حسابك فقط. لا يحفظ أي مشروع في حسابك ولا يملكه "
                "ولا ينقله؛ تبقى المشاريع متاحة عبر رابط الجلسة على هذا الجهاز."),
     },
+    # The AUTHENTICATED resend surface keeps its conditional success wording: it
+    # is now shown only when a message was actually accepted, or when
+    # verification was no longer needed (then the conditional is vacuous). The
+    # signed-in identity is already known to the caller, so a truthful outcome
+    # here is not an account-existence oracle.
     "UI_A_MSG_RESEND": {
-        "en": "If verification is still needed, a new verification message has been sent.",
-        "ar": "إذا كان التحقق لا يزال مطلوبًا، فقد أُرسلت رسالة تحقق جديدة.",
+        "en": ("If verification is still needed, a new verification message has "
+               "been queued for delivery."),
+        "ar": "إذا كان التحقق لا يزال مطلوبًا، فقد تمت جدولة رسالة تحقق جديدة للإرسال.",
+    },
+    # Shown when nothing went out: a provider rejection or outage, a rate limit,
+    # or a non-active account. It names no provider, no reason and no token.
+    "UI_A_MSG_RESEND_FAILED": {
+        "en": ("A new verification message could not be sent just now. "
+               "Please try again in a few minutes."),
+        "ar": ("لم يتمكن النظام من إرسال رسالة تحقق جديدة الآن. "
+               "يرجى المحاولة مرة أخرى بعد بضع دقائق."),
     },
     "UI_A_SESSION_BANNER": {
         "en": "Project saved to your account.",

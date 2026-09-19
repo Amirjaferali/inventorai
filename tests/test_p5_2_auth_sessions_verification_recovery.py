@@ -72,8 +72,12 @@ def _last_token(email, marker=": "):
 
 
 def _reg_verification_token(email):
-    # P5-1 registration body: "...: <raw>"
-    return _last_token(email, ": ")
+    # Registration body marker. It was "...: <raw>" while registration mailed a
+    # bare code; under OD-INFRA-6 it mails the same verification LINK the resend
+    # path mails, so the marker is the path prefix — exactly like `_reset_token`
+    # below already does. Extraction only; every assertion on the token is
+    # unchanged, and the token is still taken from the message body alone.
+    return _last_token(email, "/verify/")
 
 
 def _reset_token(email):
