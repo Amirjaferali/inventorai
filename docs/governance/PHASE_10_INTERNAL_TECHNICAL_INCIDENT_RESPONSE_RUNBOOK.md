@@ -174,13 +174,22 @@ end**; the temporary DR service used for that drill was decommissioned. Producti
 database is no longer a local-only artifact.
 
 **Still true, and load-bearing:** **scheduled** backup is **NOT running**. The bounded daily
-in-process scheduler is **MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED** — no scheduled run has ever
-occurred, so **never assume a recent automatic copy exists**; check `status` for the real last-success
-timestamp before relying on any off-provider object. P10-BR1's own capability remains local, this
-runbook still creates **no retention rule of any kind**, and nothing here authorizes a restore: §5
-above still governs, and repointing `INVENTORAI_DB_PATH` still requires separate explicit Owner
-operational authorization. Deep recovery procedures live in `docs/DISASTER_RECOVERY_PLAN.md`
-Scenario 7 — this runbook coordinates, DR recovers (§16).
+in-process scheduler is **MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED** — **no scheduled run evidence
+exists**, so **never assume a recent automatic copy exists**.
+
+**How to establish backup recency — read the object, not the scheduler.** Verify recency from the
+**stored backup object's own evidence**: the object key and its embedded timestamp, the provider-side
+object metadata where available, the locally recorded backup evidence for that run, and the recorded
+SHA-256 and byte count. **Scheduler state is not recency evidence.** `scripts/inventorai_offsite_backup.py
+status` reports **scheduler state only** — what the scheduler last recorded about its own runs — and
+**must never be treated as proof that a recent backup object exists**. A manual backup taken outside
+the scheduler leaves no trace in scheduler state at all, so scheduler state can be empty while a usable
+object exists, and could in principle report a success whose object is missing. **Confirm the object.**
+
+P10-BR1's own capability remains local, this runbook still creates **no retention rule of any kind**,
+and nothing here authorizes a restore: §5 above still governs, and repointing `INVENTORAI_DB_PATH`
+still requires separate explicit Owner operational authorization. Deep recovery procedures live in
+`docs/DISASTER_RECOVERY_PLAN.md` Scenario 7 — this runbook coordinates, DR recovers (§16).
 
 ## §8. Availability / outage path (uses authoritative P10-OB1)
 

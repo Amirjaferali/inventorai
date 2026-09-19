@@ -15,7 +15,9 @@ PLANNED / NOT IMPLEMENTED section is an active control)
 * **Still true, verified against source:** AI advisory transfer remains disabled in code —
   `engine/ai_advisor.py`, `AI_ADVISORY_ENABLED = False`, the dormant Anthropic call path
   unreachable without a source change and configuring no API key — so **AI token spend is zero**.
-  There is **no payment provider**, **no live billing of users**, and **no hosted monitoring**.
+  There is **no payment provider**, **no live billing of users**, and **no paid third-party
+  monitoring service** — monitoring currently rests on the hosting platform's own metrics and log
+  surface, which carries no separate charge and provides no alerting.
   Public paid activation remains BLOCKED under `D-P8-PL-01 class C`.
 * **No longer true — provider costs now exist and are outside runtime control.** Production
   hosting exists (Render, Frankfurt region, Docker runtime, one non-public web service, one
@@ -68,8 +70,10 @@ is claimed."*
 
 **Current truth:** hosting and backup-storage costs **do** exist today (OD-INFRA-1 Render /
 OD-INFRA-2 Frankfurt / OD-INFRA-5 Cloudflare R2), and an email provider is selected under
-OD-INFRA-6 with live sending not yet activated. **Monitoring (OD-INFRA-4) and payment processing
-remain unselected and cost nothing.** What has not changed is the part that matters for this
+OD-INFRA-6 with live sending not yet activated. **Monitoring rests on the hosting platform's own
+metrics and log surface at no separate charge — no dedicated monitoring provider is selected
+(OD-INFRA-4 OPEN) and no alerting exists. Payment processing remains unselected and costs
+nothing.** What has not changed is the part that matters for this
 document: **no cloud or provider billing is metered, budgeted, capped, alerted on or otherwise
 controlled by runtime code, and no such control is claimed here.** The OD-J2-delegated
 infrastructure gate and the later provider gates still govern these decisions; a provisioned

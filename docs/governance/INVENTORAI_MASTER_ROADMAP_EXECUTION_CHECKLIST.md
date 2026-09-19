@@ -65,19 +65,37 @@ lineages.
 **Any SHA written in prose — here, in the roadmap, in any handover — is evidence of its
 recorded moment, not a permanent live-tip expectation.**
 
-At the start of every session, before planning or mutation:
+At the start of every session, before planning or mutation. **A successful fetch does not
+change your checkout** — resolve the authoritative ref explicitly and compare it to HEAD,
+rather than assuming local HEAD moved:
 
 ```
+# 1. fetch the authoritative remote branch
 git fetch origin feature/atomic-json-session-persistence
+
+# 2. resolve the fetched authoritative ref EXPLICITLY (this is the authority)
+git rev-parse refs/remotes/origin/feature/atomic-json-session-persistence
+git rev-parse refs/remotes/origin/feature/atomic-json-session-persistence^{tree}
+
+# 3. resolve your own checkout separately
 git rev-parse HEAD
 git rev-parse HEAD^{tree}
 git status --short
+
+# 4. compare them, and say which you are working from
+git rev-list --left-right --count \
+  refs/remotes/origin/feature/atomic-json-session-persistence...HEAD
 ```
 
-Recorded baseline at this synchronization cut (evidence only, expected to advance):
+**The fetched authoritative ref is the current authority**, not your local HEAD. If they
+differ, your checkout is behind, ahead, or diverged — establish which before mutating
+anything, and never report a local HEAD as the live tip.
 
-- HEAD `61b482820cd2a2bb37ab73f017f2c840331707f3`
-- TREE `e190d35d961474a500374a36d5bc87fa9ac8adfb`
+Recorded baseline at this synchronization cut. **This is evidence of one moment and is
+expected to go stale. It is not a permanent pin and no future SHA is hard-coded here:**
+
+- authoritative base at the cut: HEAD `61b482820cd2a2bb37ab73f017f2c840331707f3`
+- tree `e190d35d961474a500374a36d5bc87fa9ac8adfb`
 - working tree CLEAN
 
 If the live tip has advanced, that is normal. Apply Lean §10 / AHAEP §5 to a base

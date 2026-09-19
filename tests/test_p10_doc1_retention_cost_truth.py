@@ -126,14 +126,48 @@ def test_retention_doc_matches_source_truth():
 # ==========================================================================
 # COST_GOVERNANCE_PLAN.md
 # ==========================================================================
+def _current_cost_section_lines():
+    """Raw lines of the 'Current cost reality' section."""
+    with open(COST, encoding="utf-8") as fh:
+        lines = fh.read().splitlines()
+    start = next((i for i, l in enumerate(lines)
+                  if l.startswith("## Current cost reality")), None)
+    assert start is not None, "the plan must carry a current-cost-reality section"
+    end = next((i for i, l in enumerate(lines[start + 1:], start + 1)
+                if l.startswith("## ")), len(lines))
+    assert end > start, "the current section must end before the next heading"
+    return lines[start:end]
+
+
 def _current_cost_reality():
-    """The 'Current cost reality' section, up to the HISTORICAL section."""
-    text = _norm(COST)
-    start = text.find("## Current cost reality")
-    assert start != -1, "the plan must carry a current-cost-reality section"
-    end = text.find("## HISTORICAL", start)
-    assert end != -1, "the current section must end before the historical one"
-    return text[start:end]
+    """The current section with every SUPERSEDED bullet removed.
+
+    This is the whole point of the repair. The section deliberately preserves
+    the prior zero-cost claim verbatim, and that quotation contains the very
+    tokens the positive checks look for — `AI_ADVISORY_ENABLED = False` among
+    them. Scanning the section as a whole therefore let a correct-sounding
+    history satisfy a check about the present while the live bullets said
+    something else. A bullet that opens `* **SUPERSEDED` is dropped along with
+    its continuation lines, and only what remains may satisfy a current claim.
+    """
+    kept, skipping = [], False
+    for line in _current_cost_section_lines():
+        if line.startswith("* "):
+            skipping = line.startswith("* **SUPERSEDED")
+        if not skipping:
+            kept.append(line)
+    return re.sub(r"\s+", " ", "\n".join(kept))
+
+
+def _superseded_cost_bullets():
+    """The dropped history, so its preservation can be checked separately."""
+    kept, skipping = [], False
+    for line in _current_cost_section_lines():
+        if line.startswith("* "):
+            skipping = line.startswith("* **SUPERSEDED")
+        if skipping:
+            kept.append(line)
+    return re.sub(r"\s+", " ", "\n".join(kept))
 
 
 def test_cost_plan_current_reality_is_explicit():
@@ -155,7 +189,11 @@ def test_cost_plan_current_reality_is_explicit():
     assert "AI token spend is zero" in current
     assert "no payment provider" in current
     assert "no live billing of users" in current
-    assert "no hosted monitoring" in current
+    # monitoring: the platform stack exists and is free; no PAID service does.
+    # "no hosted monitoring" was the old wording and became misleading once the
+    # platform's own metrics and logs were in use.
+    assert "no paid third-party" in current and "monitoring service" in current
+    assert "provides no alerting" in current
     # --- newly true: provider costs exist and must not be described as absent
     assert "Production hosting exists" in current
     assert "off-provider backup destination exists" in current
@@ -181,6 +219,9 @@ def test_old_zero_cost_claim_only_survives_as_labeled_history():
         assert "SUPERSEDED" in window, (
             "this claim may appear ONLY inside preserved superseded text: %s"
             % text[max(0, match.start() - 200):match.end() + 80])
+    # …and it must live in the dropped history, never in the live bullets
+    assert "There is NO live paid usage of any kind" in _superseded_cost_bullets()
+    assert "There is NO live paid usage of any kind" not in _current_cost_reality()
 
 
 def test_cost_plan_never_claims_active_controls():

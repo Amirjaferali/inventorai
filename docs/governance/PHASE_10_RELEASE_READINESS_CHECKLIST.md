@@ -14,21 +14,37 @@ closure-disposition matrix lives at
 Owner-decidable; this checklist remains the per-row truth surface and owns no decision).
 **Structural invariants:** enforced by `tests/test_p10_rl1_release_readiness_checklist.py`.
 
-**Current-state synchronization (v1.32, 2026-09-19) — documentation only.** Eight rows
-carried point-in-time absence claims that later merged and provisioned infrastructure
-made false. Each is now marked `SUPERSEDED v1.32` and quotes its prior wording verbatim:
-**RL-B2** (production backup scheduling), **RL-B3** (offsite backup), **RL-C2** (TLS),
-**RL-F1** (hosting), **RL-F2** (region), **RL-F5** (backup provider), **RL-F6** (email
-provider) and **RL-F7** (production environment). Nothing was deleted and no gate moved.
+**Current-state synchronization (v1.32, 2026-09-19) — documentation only.** Thirteen rows
+carried point-in-time absence claims that later merged and provisioned infrastructure made
+false. Each is now marked `SUPERSEDED v1.32`, quotes its prior wording verbatim, and opens
+with an explicit `CURRENT STATE:` marker: **RL-B2**, **RL-B3**, **RL-B6**, **RL-C2**,
+**RL-C3**, **RL-C5**, **RL-F1**, **RL-F2**, **RL-F3**, **RL-F4**, **RL-F5**, **RL-F6** and
+**RL-F7**. **RL-G3** is corrected separately — see PSRR below. Nothing was deleted.
+
+**Every PROVIDER-DEPENDENT row now carries exactly one `CURRENT STATE:` marker** drawn
+from a bounded vocabulary — `NOT SELECTED` · `SELECTED / NOT PROVISIONED` ·
+`PROVISIONED / NOT COMPLETE` · `IMPLEMENTED / NOT DEPLOYED` · `DEPLOYED / NOT COMPLETE`.
+**No completion state exists in that vocabulary**, so no provider-dependent row can claim
+completion, and a row's current state is read from its own marker — never from surviving
+historical text elsewhere in the row. The distinctions are enforced, not just asserted:
+**selection ≠ provisioning ≠ implementation ≠ deployment ≠ completion**, and
+**merged ≠ deployed**.
+
+**PSRR current truth, corrected — the following pins are SUPERSEDED v1.32 and quoted here
+only as history.** The earlier pins `PSRR TRIGGERED: NO` and "execution has
+NOT begun and is NOT authorized" were true before the OD-FR1 trigger and before the
+application-layer tranche was authorized and executed. They are **no longer current truth**
+and survive only as labelled history in RL-G3. Current: **trigger condition MET (OD-FR1)**;
+**execution BEGUN — application-layer tranche only**, 21 of 37 items, independently
+accepted; provider-dependent tranche, policy substance and items 35–37 outstanding;
+**PSRR NOT COMPLETE**; **PSRR GO ELIGIBLE: NOT ESTABLISHED**; no GO and no NO-GO exists.
+
 **No status changed to a completed one; no gate was opened; no obligation was discharged.**
-`PSRR TRIGGERED: NO` · `DEPLOYMENT AUTHORIZED: NO` · `PAID ACTIVATION AUTHORIZED: NO`
-are all unchanged, every legal/tax row stays `DEFERRED — EXTERNAL ADVISER REQUIRED`, and
-the daily off-provider backup scheduler is **MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED**.
-The load-bearing distinction is unchanged and now carries more weight, not less:
-**selection ≠ provisioning ≠ completion**, and merged ≠ deployed.
-The structural guard above was amended in the same candidate, narrowly and with the
-reasons written into its docstring, so that a provisioned row can state provisioned truth
-while still being forbidden to claim completion. See
+`DEPLOYMENT AUTHORIZED: NO` and `PAID ACTIVATION AUTHORIZED: NO` are unchanged, every
+legal/tax row stays `DEFERRED — EXTERNAL ADVISER REQUIRED`, and the daily off-provider
+backup scheduler is **MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED**. The structural guard
+above was amended in the same lane, with its reasons written into its own docstrings, so a
+provisioned row can state provisioned truth while remaining unable to claim completion. See
 `INVENTORAI_MASTER_EXECUTION_ROADMAP.md` §6 Stage 38 for the operational lane this
 reconciles against.
 
@@ -80,11 +96,11 @@ security standard, or release authority.
 | ID | Item | Status | Source | Current truth / boundary | Blocks |
 |---|---|---|---|---|---|
 | RL-B1 | Local backup/restore + drill | IMPLEMENTED LOCAL FOUNDATION | P10-BR1; `engine/backup_service.py`; drill evidence | local capability, drill-verified; local ≠ production backup readiness | — |
-| RL-B2 | Production backup scheduling | PROVIDER-DEPENDENT | OD-J2 §3.2 (delegated infrastructure gate); OD-INFRA-5; `engine/offsite_backup_scheduler.py` (PR #664) | **SUPERSEDED v1.32** (was: "does not exist"). ONE bounded in-process daily off-provider scheduler is **MERGED** under OD-INFRA-5 — and is **NOT DEPLOYED and NOT LIVE-ACTIVATED**; no scheduled run has occurred. Merged is not deployed; implemented is not activated; NOT COMPLETE | first production deployment |
-| RL-B3 | Offsite backup | PROVIDER-DEPENDENT | OD-J2 §3.2; OD-INFRA-5; `engine/r2_object_upload.py`; `scripts/inventorai_offsite_backup.py` | **SUPERSEDED v1.32** (was: "does not exist; never claimed"). An off-provider destination is PROVISIONED under OD-INFRA-5 (private bucket, create-only writes, scoped token) and **one live off-provider backup exists**; a full-loss disaster-recovery drill passed end to end and the temporary DR service was decommissioned. Recurrence belongs to RL-B2, not to this row: NOT COMPLETE | first production deployment |
-| RL-B4 | Backup retention | DEFERRED — EXTERNAL ADVISER REQUIRED + PROVIDER-DEPENDENT | P10-DOC1 `docs/DATA_RETENTION_POLICY.md`; OD-DR1 | no retention rule exists or is decided | production backup design |
+| RL-B2 | Production backup scheduling | PROVIDER-DEPENDENT | OD-J2 §3.2 (delegated infrastructure gate); OD-INFRA-5; `engine/offsite_backup_scheduler.py` (PR #664) | CURRENT STATE: IMPLEMENTED / NOT DEPLOYED. **SUPERSEDED v1.32** (was: "does not exist"). ONE bounded in-process daily off-provider scheduler is **MERGED** under OD-INFRA-5 — and is **NOT DEPLOYED and NOT LIVE-ACTIVATED**; no scheduled run has occurred. Merged is not deployed; implemented is not activated; NOT COMPLETE | first production deployment |
+| RL-B3 | Offsite backup | PROVIDER-DEPENDENT | OD-J2 §3.2; OD-INFRA-5; `engine/r2_object_upload.py`; `scripts/inventorai_offsite_backup.py` | CURRENT STATE: PROVISIONED / NOT COMPLETE. **SUPERSEDED v1.32** (was: "does not exist; never claimed"). An off-provider destination is PROVISIONED under OD-INFRA-5 (private bucket, create-only writes, scoped token) and **one live off-provider backup object exists**; a full-loss disaster-recovery drill passed end to end and the temporary DR service was decommissioned. **Backup recency is not established by this row** — read it from the stored object's own metadata, never from scheduler state. Recurrence belongs to RL-B2 and retention to RL-B4: NOT COMPLETE | first production deployment |
+| RL-B4 | Backup retention | DEFERRED — EXTERNAL ADVISER REQUIRED + PROVIDER-DEPENDENT | P10-DOC1 `docs/DATA_RETENTION_POLICY.md`; OD-DR1 | CURRENT STATE: NOT SELECTED. No retention rule exists or is decided | production backup design |
 | RL-B5 | Observability foundation | IMPLEMENTED LOCAL FOUNDATION | P10-OB1; `/health`; `web/observability.py` | local health surface + data-minimized JSON logging seam | — |
-| RL-B6 | Production monitoring/alerting/dashboards | PROVIDER-DEPENDENT | P10-OB1 boundaries; `docs/OBSERVABILITY_ARCHITECTURE.md` | none exists; P10-C §4 row = PARTIAL — foundation only | PSRR items 21–22 |
+| RL-B6 | Production monitoring/alerting/dashboards | PROVIDER-DEPENDENT | P10-OB1 boundaries; `docs/OBSERVABILITY_ARCHITECTURE.md`; OD-INFRA-1 | CURRENT STATE: PROVISIONED / NOT COMPLETE. **SUPERSEDED v1.32** (was: "none exists"). The hosting platform's own metrics and log surface exists under OD-INFRA-1, alongside `/health` and the P10-OB1 bounded logging seam — so a monitoring stack does exist. **What does not exist: alerting, paging, dashboards beyond the platform's own, and any dedicated monitoring provider (OD-INFRA-4 OPEN).** Nobody is notified when something breaks. P10-C §4 row = PARTIAL: NOT COMPLETE | PSRR items 21–22 |
 | RL-B7 | Internal technical incident response | IMPLEMENTED LOCAL FOUNDATION | P10-IR1 runbook | internal foundation; informs PSRR item 27, does not satisfy it | — |
 | RL-B8 | Customer-facing support model | OPEN + COMMERCIAL DECISION REQUIRED | P10-IR1 §17; P10-C §4 | no support channel/commitments; wording legally sensitive (LQ-03) | paid activation |
 | RL-B9 | Escalation/runbooks (technical) | IMPLEMENTED LOCAL FOUNDATION | P10-IR1; `docs/DISASTER_RECOVERY_PLAN.md` Scenario 7 | IR coordinates, DR recovers | production on-call: PROVIDER-DEPENDENT |
@@ -94,10 +110,10 @@ security standard, or release authority.
 | ID | Item | Status | Source | Current truth / boundary | Blocks |
 |---|---|---|---|---|---|
 | RL-C1 | Production secrets/configuration operations | PSRR-TIME + DEPLOYMENT-TIME | PSRR §7 item 8; `web/app.py` env-based fail-closed secret | local foundation exists; rotation/ops process does not | deployment |
-| RL-C2 | TLS | PROVIDER-DEPENDENT + DEPLOYMENT-TIME | P10-SEC1 record; `docs/SECURITY_ARCHITECTURE.md`; OD-INFRA-1 | **SUPERSEDED v1.32** (was: "no TLS termination exists anywhere"). The hosting provider terminates TLS for the non-public service under OD-INFRA-1. OD-INFRA-3 (TLS/proxy approach) is still OPEN, no proxy trust is configured, and the production posture is unreviewed: NOT COMPLETE | HSTS (RL-C4); deployment |
-| RL-C3 | Reverse proxy / trusted-forwarding | PROVIDER-DEPENDENT | P10-SEC1 §12 boundary | no proxy trust configured (deliberate) | HSTS |
+| RL-C2 | TLS | PROVIDER-DEPENDENT + DEPLOYMENT-TIME | P10-SEC1 record; `docs/SECURITY_ARCHITECTURE.md`; OD-INFRA-1 | CURRENT STATE: PROVISIONED / NOT COMPLETE. **SUPERSEDED v1.32** (was: "no TLS termination exists anywhere"). TLS terminates at the hosting platform edge under OD-INFRA-1 — **that is the approach in force, not an absence**. What is missing is the recorded instrument, not the capability: no separate OD-INFRA-3 decision artifact exists for the TLS/proxy approach, application-side forwarded-header trust stays deliberately off (RL-C3), HSTS stays deferred (RL-C4), and the production TLS posture is unreviewed: NOT COMPLETE | HSTS (RL-C4); deployment |
+| RL-C3 | Reverse proxy / trusted-forwarding | PROVIDER-DEPENDENT | P10-SEC1 §12 boundary; OD-INFRA-1 | CURRENT STATE: PROVISIONED / NOT COMPLETE. **SUPERSEDED v1.32** (was: "no proxy trust configured (deliberate)" — read at the time as "no proxy exists"). A platform-edge reverse proxy exists under OD-INFRA-1. **Application-side trusted-forwarding remains deliberately off** — `web/app.py` trusts no forwarded literals — which is a decision, not a gap: NOT COMPLETE | HSTS |
 | RL-C4 | HSTS reassessment | DEPLOYMENT-TIME | `docs/SECURITY_ARCHITECTURE.md` "HSTS — DEFERRED" | intentionally deferred pending trusted HTTPS/proxy context | — |
-| RL-C5 | Provider-specific security configuration | PROVIDER-DEPENDENT | PSRR §7 items 29–32 | no provider exists | PSRR |
+| RL-C5 | Provider-specific security configuration | PROVIDER-DEPENDENT | PSRR §7 items 29–32; OD-INFRA-1 | CURRENT STATE: PROVISIONED / NOT COMPLETE. **SUPERSEDED v1.32** (was: "no provider exists"). Providers now exist — OD-INFRA-1 hosting, OD-INFRA-5 object storage, OD-INFRA-6 email adapter. **Their provider-specific security configuration has never been reviewed**, and PSRR §7 items 29–32 are unreached: NOT COMPLETE | PSRR |
 | RL-C6 | Dependency/vulnerability review freshness | PSRR-TIME | PSRR §7 items 12–13; P10-DEP1 evidence | re-run the local audit at PSRR; point-in-time results expire | PSRR GO |
 | RL-C7 | Production authorization/security review | PSRR-TIME | PSRR §7 items 1–5, 33–36 | not executed | PSRR GO |
 | RL-C8 | Abuse/rate-limit review | PSRR-TIME | PSRR §8 ("broad abuse controls NOT CLAIMED DELIVERED") | auth-surface floor only | PSRR items 23–25 |
@@ -123,22 +139,22 @@ security standard, or release authority.
 | RL-E1 | Legal/commercial entity readiness | DEFERRED — EXTERNAL ADVISER REQUIRED | OD-CJ1 §1; P10-LT1 LQ-01/LQ-02 | Kuwait = intent fact only; no entity exists/decided |
 | RL-E2 | Tax / VAT / GST / registrations | DEFERRED — EXTERNAL ADVISER REQUIRED | P10-LT1 TQ-01…TQ-05, TQ-11 | open questions; no conclusion |
 | RL-E3 | Invoicing / receipts | DEFERRED — EXTERNAL ADVISER REQUIRED + COMMERCIAL DECISION REQUIRED | TQ-06/TQ-09/TQ-10 | nothing decided or built |
-| RL-E4 | Payment provider | PROVIDER-DEPENDENT | OD-CJ1 §8–§9; P8-I4 `PaymentProviderPort` | NOT SELECTED; provider-neutral boundary exists |
-| RL-E5 | Merchant of Record | PROVIDER-DEPENDENT + DEFERRED — EXTERNAL ADVISER REQUIRED | OD-CJ1 §9; TQ-12/TQ-13 | NOT SELECTED; fact needs registered |
+| RL-E4 | Payment provider | PROVIDER-DEPENDENT | OD-CJ1 §8–§9; P8-I4 `PaymentProviderPort` | CURRENT STATE: NOT SELECTED. No payment provider; the provider-neutral boundary exists |
+| RL-E5 | Merchant of Record | PROVIDER-DEPENDENT + DEFERRED — EXTERNAL ADVISER REQUIRED | OD-CJ1 §9; TQ-12/TQ-13 | CURRENT STATE: NOT SELECTED. No Merchant of Record; fact needs registered |
 | RL-E6 | Pricing / billing frequency / trial / renewal / cancellation / refunds / dunning | COMMERCIAL DECISION REQUIRED | P10-LT1 §10 (counsel-needed assumptions = OWNER INPUT REQUIRED) | none decided (only USD base currency + recurring direction are accepted strategy) |
-| RL-E7 | Final payment methods | COMMERCIAL DECISION REQUIRED + PROVIDER-DEPENDENT | OD-CJ1 §8A | compatibility direction only (Visa/MC/Apple Pay/KNET-where-applicable); per-method recurring capability at the provider gate |
+| RL-E7 | Final payment methods | COMMERCIAL DECISION REQUIRED + PROVIDER-DEPENDENT | OD-CJ1 §8A | CURRENT STATE: NOT SELECTED. Compatibility direction only (Visa/MC/Apple Pay/KNET-where-applicable); per-method recurring capability at the provider gate |
 | RL-E8 | Public paid activation | BLOCKED | `D-P8-PL-01 class C` (ODR) | hard-blocked until legal/readiness + PSRR GO + deployment gate + Owner authorization |
 
 ## F. Provider / production
 
 | ID | Item | Status | Source | Current truth |
 |---|---|---|---|---|
-| RL-F1 | Hosting provider | PROVIDER-DEPENDENT | OD-J2 §3.2; INFRA-G1-R1 (OD-INFRA-1); INFRA-G1-P1 | **SUPERSEDED v1.32** (was: "NOT PROVISIONED, NOT CONFIGURED, no account/resource exists"). Owner-SELECTED: Render (OD-INFRA-1, INFRA-G1-R1), and now PROVISIONED and CONFIGURED as ONE non-public web service — Docker runtime, one instance, one worker, one thread, one persistent disk at `/var/data` carrying the canonical SQLite, platform-environment secrets, `/health`. Provisioning is not completion and not release: NOT COMPLETE |
-| RL-F2 | Deployment region | PROVIDER-DEPENDENT | OD-J2 §3.2; INFRA-G1-R1 (OD-INFRA-2) | **SUPERSEDED v1.32** (was: "NOT PROVISIONED"). Owner-SELECTED: Frankfurt (OD-INFRA-2, INFRA-G1-R1), and the service is PROVISIONED in that region. **No legal, tax or data-residency conclusion is implied or available** — RL-D2/RL-D3/RL-E2 remain adviser-dependent: NOT COMPLETE |
-| RL-F3 | Reverse-proxy/TLS provider | PROVIDER-DEPENDENT | P10-SEC1 boundaries | NOT SELECTED (OD-INFRA-3 OPEN) |
-| RL-F4 | Monitoring provider | PROVIDER-DEPENDENT | P10-OB1 boundaries | NOT SELECTED (OD-INFRA-4 OPEN) |
-| RL-F5 | Backup provider | PROVIDER-DEPENDENT | P10-BR1 boundaries; OD-INFRA-5 | **SUPERSEDED v1.32** (was: "NOT SELECTED"). Owner-SELECTED: Cloudflare R2 as the off-provider backup destination (OD-INFRA-5), PROVISIONED as a private bucket with create-only writes and a scoped token. Retention (RL-B4) and recurrence (RL-B2) stay unresolved: NOT COMPLETE |
-| RL-F6 | Email provider | PROVIDER-DEPENDENT | `engine/email_sender.py` (`ResendEmailSender`, OD-INFRA-6); PR #663 | **SUPERSEDED v1.32** (was: "NOT SELECTED (dev-sink only)"). Owner-SELECTED: Resend for transactional account email (OD-INFRA-6), with the adapter, a durable SQLite outbox, one bounded dispatcher and a trusted public base URL merged. The sending identity is **NOT PROVISIONED** and live sending is NOT ACTIVATED: **production email identity and Resend activation are DEFERRED TO FINAL PRE-RELEASE — NOT CANCELLED**; the email retry-budget P1 must be revisited before live activation; artifact delivery is a separate capability: NOT COMPLETE |
+| RL-F1 | Hosting provider | PROVIDER-DEPENDENT | OD-J2 §3.2; INFRA-G1-R1 (OD-INFRA-1); INFRA-G1-P1 | CURRENT STATE: PROVISIONED / NOT COMPLETE. **SUPERSEDED v1.32** (was: "NOT PROVISIONED, NOT CONFIGURED, no account/resource exists"). Owner-SELECTED: Render (OD-INFRA-1, INFRA-G1-R1), and now PROVISIONED and CONFIGURED as ONE non-public web service — Docker runtime, one instance, one worker, one thread, one persistent disk at `/var/data` carrying the canonical SQLite, platform-environment secrets, `/health`. Provisioning is not completion and not release: NOT COMPLETE |
+| RL-F2 | Deployment region | PROVIDER-DEPENDENT | OD-J2 §3.2; INFRA-G1-R1 (OD-INFRA-2) | CURRENT STATE: PROVISIONED / NOT COMPLETE. **SUPERSEDED v1.32** (was: "NOT PROVISIONED"). Owner-SELECTED: Frankfurt (OD-INFRA-2, INFRA-G1-R1), and the service is PROVISIONED in that region. **No legal, tax or data-residency conclusion is implied or available** — RL-D2/RL-D3/RL-E2 remain adviser-dependent: NOT COMPLETE |
+| RL-F3 | Reverse-proxy/TLS provider | PROVIDER-DEPENDENT | P10-SEC1 boundaries; OD-INFRA-1 | CURRENT STATE: PROVISIONED / NOT COMPLETE. **SUPERSEDED v1.32** (was: "NOT SELECTED (OD-INFRA-3 OPEN)"). Reverse proxy and TLS come from the hosting platform edge, decided in fact by the OD-INFRA-1 selection — so this is **not an open provider choice and not an absent capability**. No separate third-party proxy/TLS provider is selected and none is required at this posture. **The gap is documentary: no OD-INFRA-3 decision artifact records the approach**: NOT COMPLETE |
+| RL-F4 | Monitoring provider | PROVIDER-DEPENDENT | P10-OB1 boundaries; OD-INFRA-1 | CURRENT STATE: PROVISIONED / NOT COMPLETE. **SUPERSEDED v1.32** (was: "NOT SELECTED (OD-INFRA-4 OPEN)"). Monitoring currently rests on the hosting platform's own metrics and log surface under OD-INFRA-1, plus `/health`. **No dedicated monitoring provider is selected — OD-INFRA-4 stays OPEN — and no alerting or paging exists** (RL-B6): NOT COMPLETE |
+| RL-F5 | Backup provider | PROVIDER-DEPENDENT | P10-BR1 boundaries; OD-INFRA-5 | CURRENT STATE: PROVISIONED / NOT COMPLETE. **SUPERSEDED v1.32** (was: "NOT SELECTED"). Owner-SELECTED: Cloudflare R2 as the off-provider backup destination (OD-INFRA-5), PROVISIONED as a private bucket with create-only writes and a scoped token. Retention (RL-B4) and recurrence (RL-B2) stay unresolved: NOT COMPLETE |
+| RL-F6 | Email provider | PROVIDER-DEPENDENT | `engine/email_sender.py` (`ResendEmailSender`, OD-INFRA-6); PR #663 | CURRENT STATE: SELECTED / NOT PROVISIONED. **SUPERSEDED v1.32** (was: "NOT SELECTED (dev-sink only)"). Owner-SELECTED: Resend for transactional account email (OD-INFRA-6), with the adapter, a durable SQLite outbox, one bounded dispatcher and a trusted public base URL merged. The sending identity is **NOT PROVISIONED** and live sending is NOT ACTIVATED: **production email identity and Resend activation are DEFERRED TO FINAL PRE-RELEASE — NOT CANCELLED**; the email retry-budget P1 must be revisited before live activation; artifact delivery is a separate capability: NOT COMPLETE |
 | RL-F7 | Production environment | DEPLOYMENT-TIME | OD-P; `web/app.py` `_run_config` (bounded single-threaded MVP serving); INFRA-G1-P1 | **SUPERSEDED v1.32** (was: "none exists"). A non-public production-shaped environment exists and persists across restart and redeploy; it sits behind Maintenance Mode and has never served the public. First public production deployment stays BLOCKED on RL-G5 + RL-G6 |
 
 ## G. Gates (sequence truth)
@@ -147,7 +163,7 @@ security standard, or release authority.
 |---|---|---|---|---|
 | RL-G1 | Phase 10 closure | FORMAL CLOSURE RECORD CREATED (authoritative on merge) | `docs/governance/PHASE_10_FORMAL_CLOSURE_RECORD.md`; P10-CL0 (PR #538, `OD-P10-CL0-STRUCTURE` Option 2) | PHASE 10 FORMALLY CLOSED under Option 2 when the closure record is merged and post-merge verified; closure binds every open obligation to its hard-blocking lane and converts NOTHING to complete; PHASE-10 CLOSURE ≠ RELEASE APPROVAL |
 | RL-G2 | PSRR REGISTERED | IMPLEMENTED LOCAL FOUNDATION (registration only) | `PSRR_..._REGISTRATION.md` | registered; 37-item minimum scope |
-| RL-G3 | PSRR TRIGGERED | TRIGGER CONDITION MET (OD-FR1) — EXECUTION NOT AUTHORIZED / NOT STARTED | PSRR registration §4; OD-FR1 (durably recorded in `docs/governance/PSRR_C1_PSRR_EXECUTION_CONTRACT.md` §2) | trigger = intent to reach FIRST PUBLIC PRODUCTION DEPLOYMENT; OD-FR1 (Owner intent = YES) establishes that fact; execution remains separately authorized; this checklist does not trigger it |
+| RL-G3 | PSRR TRIGGERED | TRIGGER CONDITION MET (OD-FR1) — EXECUTION BEGUN, PSRR NOT COMPLETE | PSRR registration §4; OD-FR1 (durably recorded in `docs/governance/PSRR_C1_PSRR_EXECUTION_CONTRACT.md` §2); PSRR-C1 §5.1 | **SUPERSEDED v1.32** (was: "EXECUTION NOT AUTHORIZED / NOT STARTED", and the pin "PSRR TRIGGERED: NO" — both were truth before the trigger and before the tranche, and are preserved here as history, not as current state). Trigger = intent to reach FIRST PUBLIC PRODUCTION DEPLOYMENT; OD-FR1 (Owner intent = YES) established that fact, so the **trigger condition is MET**. **PSRR execution has since BEGUN**: the application-layer tranche was separately authorized, executed and independently accepted (RL-G4). Still outstanding: the provider-dependent tranche, policy substance and items 35–37. This checklist does not trigger it |
 | RL-G4 | PSRR EXECUTED | PARTIALLY EXECUTED — APPLICATION-LAYER TRANCHE ONLY | `docs/governance/PSRR_APPLICATION_LAYER_TRANCHE_EXECUTION_RECORD.md`; PSRR-C1 §5.1 | application-layer tranche EXECUTED and independently accepted (21 distinct item numbers, app halves only for split items); provider-dependent tranche, policy substance, and items 35–37 remain; PSRR NOT COMPLETE; NO GO exists |
 | RL-G5 | PSRR GO/NO-GO | OPEN (NO GO EXISTS) | same §5–§6 | public production BLOCKED until PSRR = GO |
 | RL-G6 | Deployment authorization | BLOCKED | OD-P (ODR) | separate deployment gate + explicit Owner authorization, both required |
@@ -171,7 +187,14 @@ PHASE 10: FORMALLY CLOSED UNDER OD-P10-CL0-STRUCTURE OPTION 2 (on merge of the c
 PHASE-10 CLOSURE ≠ RELEASE APPROVAL — every deferred obligation stays in its hard-blocking lane.
 (The earlier "PHASE 10 CLOSURE ELIGIBLE NOW: NO" line was superseded by the Owner-accepted P10-CL0
 eligibility determination and Option-2 structure decision, PR #538.)
-PAID ACTIVATION AUTHORIZED: NO        PSRR TRIGGERED: NO        DEPLOYMENT AUTHORIZED: NO
-("PSRR TRIGGERED: NO" = PSRR gate execution has NOT begun and is NOT authorized. Per RL-G3, the §4
-trigger CONDITION is now met by the OD-FR1 Owner intent; execution requires separate authorization.)
+PAID ACTIVATION AUTHORIZED: NO        DEPLOYMENT AUTHORIZED: NO
+PSRR TRIGGER CONDITION: MET (OD-FR1)
+PSRR EXECUTION: BEGUN — APPLICATION-LAYER TRANCHE ONLY (21 of 37 items, independently accepted)
+PSRR REMAINING: provider-dependent tranche + policy substance + items 35–37
+PSRR NOT COMPLETE                     PSRR GO ELIGIBLE: NOT ESTABLISHED
+PSRR = GO: NOT ESTABLISHED — no GO and no NO-GO exists
+(SUPERSEDED v1.32: the earlier pins "PSRR TRIGGERED: NO" and "PSRR gate execution has NOT begun and
+is NOT authorized" were truth before the OD-FR1 trigger and before the tranche was authorized and
+executed. They are preserved as history in RL-G3 and are NOT current truth. Nothing here advances the
+gate: this checklist does not trigger it, and public production stays BLOCKED until PSRR = GO.)
 ```
