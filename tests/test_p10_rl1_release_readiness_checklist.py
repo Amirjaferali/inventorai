@@ -253,12 +253,17 @@ def test_owned_rows_are_found_by_immutable_id_not_by_label():
 
 
 def test_no_owned_row_can_claim_completion():
-    """Completion is absent from the vocabulary, and forbidden in prose."""
+    """Completion is absent from the vocabulary, and forbidden in prose.
+
+    The prose half is read case-insensitively (see the contradiction section
+    below), so "completed" in sentence case fails exactly as "COMPLETED" does.
+    """
     for row_id in _PROVIDER_ROW_IDS:
         state = _row_state(row_id)
         for word in ("COMPLETE", "COMPLETED", "DONE", "FINISHED"):
             assert not re.search(r"(?<!NOT )\b%s\b" % word, state), (row_id, state)
-        assert not re.search(r"(?<!NOT )\bCOMPLETED?\b", _row_prose(row_id)), row_id
+        claimed = _claims(_row_prose(row_id), _COMPLETION_CLAIMS + ("done", "finished"))
+        assert not claimed, (row_id, claimed)
 
 
 def test_states_beyond_selection_cite_their_gate():
@@ -269,49 +274,116 @@ def test_states_beyond_selection_cite_their_gate():
         assert _GATE.search(_row(row_id)), row_id
 
 
+# --------------------------------------------------------------------------
+# Contradiction detection: CASE-INSENSITIVE and negation-aware.
+#
+# REPAIRED (v1.32 final single-defect pass). The previous scan matched only
+# upper-case tokens, so false prose in ordinary sentence case slipped past it
+# entirely — "the scheduler is deployed, live and activated" under an
+# IMPLEMENTED / NOT DEPLOYED marker, or "current provider work is completed"
+# under a non-complete one. Case was never part of the contract; the claim is.
+#
+# Prose is casefolded once (Unicode-safe) and claims are recognised as bounded
+# terms. A claim is NOT a contradiction when it is genuinely negated, so the
+# truthful wordings the rows depend on — "not deployed", "not activated",
+# "NOT LIVE-ACTIVATED", "not complete" — keep passing. Negation is read from a
+# bounded window immediately before the term, which may contain only
+# whitespace, markup, punctuation, hyphenation and a short list of connecting
+# words; anything else ends the window and the claim counts as asserted.
+# The CURRENT STATE marker keeps its exact upper-case vocabulary.
+# --------------------------------------------------------------------------
+_NEGATOR = re.compile(
+    r"\b(?:not|never|no|nor)\b"
+    r"(?:[\s*_`()\[\],;:.—–/\"'-]"
+    r"|\b(?:yet|longer|still|be|been|being|is|are|it|currently|any)\b)*$")
+
+# Terms that assert deployment/activation, and terms that assert completion.
+_DEPLOYMENT_CLAIMS = ("live-activated", "deployed", "activated", "is live",
+                      "now live", "goes live", "went live", "in production")
+_COMPLETION_CLAIMS = ("completed", "complete")
+_PROVISION_CLAIMS = ("provisioned", "provisioning")
+_SELECTION_CLAIMS = ("selected",)
+
+
+def _claims(prose, terms, allow_owner_selected=False):
+    """Un-negated occurrences of any term, read case-insensitively.
+
+    Returns the matched terms, so a failure message names what was asserted.
+    """
+    text = prose.casefold()
+    found = []
+    for term in terms:
+        pattern = r"(?<![\w-])%s\b" % re.escape(term)
+        for match in re.finditer(pattern, text):
+            before = text[max(0, match.start() - 90):match.start()]
+            if _NEGATOR.search(before):
+                continue                      # "not deployed" is not a claim
+            if allow_owner_selected and before.endswith("owner-"):
+                continue                      # a recorded Owner selection
+            found.append(term)
+    return found
+
+
+def _negated_phrase(prose, term):
+    """True when the prose explicitly states the negated form of `term`."""
+    return bool(re.search(r"\bnot\s+%s\b" % re.escape(term), prose.casefold()))
+
+
 def test_row_prose_never_contradicts_its_state():
-    """The state machine's contradiction rules, enforced per state."""
+    """The state machine's contradiction rules, enforced per state.
+
+    Every check below reads casefolded prose, so capitalisation cannot be used
+    to smuggle a false current claim past the guard.
+    """
     for row_id in _PROVIDER_ROW_IDS:
         state = _row_state(row_id)
         prose = _row_prose(row_id)
-        bare_selected = re.search(r"(?<!NOT )(?<!Owner-)\bSELECTED\b", prose)
-        provisioned = re.search(r"(?<!NOT )\bPROVISIONED\b", prose)
-        deployed = re.search(r"(?<!NOT )\bDEPLOYED\b", prose)
-        # the inner (?<![-A-Z]) stops "NOT LIVE-ACTIVATED" matching on its own
-        # "ACTIVATED" tail, where the NOT lookbehind cannot reach
-        activated = re.search(
-            r"(?<!NOT )(?<![-A-Z])(LIVE-ACTIVATED|ACTIVATED|LIVE)\b", prose)
-        assert not bare_selected, row_id
+        row = _row(row_id)
+
+        deployed = _claims(prose, _DEPLOYMENT_CLAIMS)
+        completed = _claims(prose, _COMPLETION_CLAIMS)
+        provisioned = _claims(prose, _PROVISION_CLAIMS)
+        selected = _claims(prose, _SELECTION_CLAIMS, allow_owner_selected=True)
+
+        # No provider-dependent row may assert completion, in any state.
+        assert not completed, (row_id, state, completed)
 
         if state == "NOT SELECTED":
-            # must not name an adopted provider or decision
-            assert "Owner-SELECTED" not in prose, row_id
-            assert not provisioned, row_id
-            assert not deployed, row_id
+            # must not name an adopted provider, approach or decision
+            assert "owner-selected" not in prose.casefold(), row_id
+            assert not selected, (row_id, selected)
+            assert not provisioned, (row_id, provisioned)
+            assert not deployed, (row_id, deployed)
             assert "DECISION: SATISFIED" not in prose, row_id
+        else:
+            # a bare selection is only permissible under a cited gate; every
+            # non-NOT-SELECTED state already has to cite one, so this states
+            # the dependency rather than adding a second rule
+            if selected:
+                assert _GATE.search(row), (row_id, selected)
 
         if state == "SELECTED / NOT PROVISIONED":
-            # may name the selection; must not claim it is live
-            assert "NOT PROVISIONED" in prose, row_id
-            assert not provisioned, row_id
-            assert not deployed, row_id
-            assert not activated, row_id
+            # may name the selection; must not claim it is provisioned or live
+            assert _negated_phrase(prose, "provisioned"), row_id
+            assert not provisioned, (row_id, provisioned)
+            assert not deployed, (row_id, deployed)
 
         if state == "PROVISIONED / NOT COMPLETE":
             # provisioning evidence required; must not deny provisioning
             assert provisioned, row_id
-            assert "NOT PROVISIONED" not in prose, row_id
-            assert _GATE.search(_row(row_id)), row_id
-            assert not deployed, row_id
+            assert not _negated_phrase(prose, "provisioned"), row_id
+            assert _GATE.search(row), row_id
+            assert not deployed, (row_id, deployed)
 
         if state == "IMPLEMENTED / NOT DEPLOYED":
-            assert "NOT DEPLOYED" in prose, row_id
-            assert not deployed, row_id
-            assert not activated, row_id
+            assert _negated_phrase(prose, "deployed"), row_id
+            assert not deployed, (row_id, deployed)
 
         if state == "DEPLOYED / NOT COMPLETE":
             assert deployed, row_id
-            assert "NOT COMPLETE" in prose, row_id
+            # must still say what remains: the negated completion, explicitly
+            assert _negated_phrase(prose, "complete") or \
+                _negated_phrase(prose, "completed"), row_id
 
 
 def test_owned_row_history_lives_outside_the_region():
