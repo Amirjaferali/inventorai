@@ -248,8 +248,37 @@ retention decision exists. **A provider snapshot is also not this**: a persisten
 disk snapshot is provider-local and proves nothing about surviving loss of the
 provider or the account.
 
-Not activated by this repository: no schedule, cron job, bucket or credential is
-created here. Turning the daily run on is a separate operator action.
+**Runs daily by itself in production.** SUPERSEDED IN PART (was: "Not
+activated by this repository: no schedule ... is created here. Turning the
+daily run on is a separate operator action."). The canonical database lives on
+the persistent disk mounted into the one web-service process, and a separate
+cron job or worker cannot be assumed to share that disk, so the schedule lives
+in that process: one bounded daemon thread inside the one Gunicorn worker
+(`engine/offsite_backup_scheduler.py`) runs the same `daily` pipeline
+approximately once per 24 hours whenever all four `INVENTORAI_R2_*` variables
+are set. Eligibility is decided from a state row (`offsite_backup_state`) in
+the canonical database, never from memory alone, so restarts and redeploys do
+not produce duplicate backups and downtime yields one catch-up run, not one per
+missed day. Each run first claims that row under a unique claim id in one
+atomic write; a claim older than six hours counts as abandoned and may be
+reclaimed by a later run, and a run that finishes after losing its claim
+writes nothing (its completion is recorded only as a bounded "stale" event),
+so an old run can never overwrite a newer run's state. A failed run is
+recorded under a stable category and retried after six hours, not seconds, so
+a provider outage costs a handful of attempts per day. Each run emits one bounded operational event (success or failure); the
+state row keeps the last success time, the stored object's key, byte count and
+SHA-256, the last failure time and code, and a consecutive-failure counter.
+Read it, read-only and without any credential, from a shell inside the
+container (`/health` itself is unchanged):
+
+```
+python scripts/inventorai_offsite_backup.py status <live-database>
+```
+
+With any variable missing, production still boots, `/health` still answers,
+and no upload can happen. Still not created by this repository: the bucket and
+the credential. The commands above remain the manual operator path over the
+same pipeline.
 
 ### Auditing the dependencies actually installed in the image
 

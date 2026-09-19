@@ -83,12 +83,20 @@ unless the provider accepted the object. Configuration is environment-only
 Boundaries: SUPERSEDED IN PART — the previous boundary line read "No production
 backup scheduling, no offsite/cloud backup, no retention policy, no
 encryption-at-rest redesign", which was the truth of P10-BR1 at its own gate.
-Now accurate: an off-provider upload CAPABILITY exists and is runnable. Still
-absent, unchanged: no schedule is activated by this repository (no cron job, no
-Render Cron Job, no bucket and no credential is created here — the daily run is
-a separate operator action); NO retention policy and NO deletion/expiry path of
-any kind, locally or remotely; no client-side encryption (the upload relies on
-HTTPS in transit and the provider's at-rest encryption); and a provider disk
-snapshot remains provider-local and is NOT a backup posture. A verified local
+Now accurate: an off-provider upload CAPABILITY exists and is runnable, and —
+SUPERSEDED IN PART (was: "no schedule is activated by this repository ... the
+daily run is a separate operator action") — the daily run is performed
+automatically by ONE bounded in-process scheduler
+(`engine/offsite_backup_scheduler.py`) inside the production web-service
+process whenever the `INVENTORAI_R2_*` configuration is complete: roughly once
+per 24 hours, eligibility decided from the persisted `offsite_backup_state` row
+(no duplicate after a restart or redeploy), failures retried after hours, not
+seconds. RPO for Scenario 7 is therefore "up to ~24 hours plus any failed
+retries" once the configuration is in place. Still absent, unchanged: no cron
+job, Render Cron Job, bucket or credential is created by this repository; NO
+retention policy and NO deletion/expiry path of any kind, locally or remotely;
+no client-side encryption (the upload relies on HTTPS in transit and the
+provider's at-rest encryption); and a provider disk snapshot remains
+provider-local and is NOT a backup posture. A verified local
 drill is still NOT a production backup posture, and a full provider-loss restore
 drill has not been performed.
