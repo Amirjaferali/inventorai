@@ -51,6 +51,7 @@ from engine.semantic_registry import (
 from engine.domain_rules import get_substance_signals
 from tests.fixtures.pvcg_r3i_frozen_expectations import (
     EXPECTED_SURFACES, CONCEPT, CAUSAL, UNKNOWN, SUBSTANCE,
+    PATH_N_PF_PAIRING,
 )
 from web.result_feedback import get_result_feedback
 from web.ui_text import localize_deep
@@ -923,6 +924,11 @@ _PATH_N_FAMILIES = {
         "الماء قد يدخل إلى العلبة ويعطلها.",
         "لم أختبرها بالماء ولا أعرف ماذا سيحدث.",
     ),
+    "PF-PHYSICAL-WORKABILITY": (
+        "لا أعرف إن كان هذا ممكنا من الناحية الفيزيائية.",
+        "أريد التحقق من الناحية الفيزيائية قبل البناء.",
+        "بالفيزيائية لم أتحقق بعد.",
+    ),
 }
 
 
@@ -997,19 +1003,91 @@ def test_every_path_n_concept_cites_a_committed_governed_question():
         assert concept.en_surfaces and concept.ar_surfaces
 
 
-def test_the_rvr2_path_n_english_surfaces_are_all_paired_in_arabic():
-    """The invariant this repair exists to restore.
+@pytest.mark.parametrize("english,concept_id,provenance_token", PATH_N_PF_PAIRING,
+                         ids=[r[0] for r in PATH_N_PF_PAIRING])
+def test_each_path_n_english_surface_is_paired_on_its_own_concept(
+        english, concept_id, provenance_token):
+    """The invariant this repair exists to restore, checked per concept.
 
-    Every English surface RVR-2 admitted from the Path-N bank must be carried
-    by a registry concept that also has Arabic surfaces. This fails if a future
-    English widening is made without its Arabic pair — the exact regression
-    that produced the measured M-1 divergence.
+    A union check over all PHYSICAL_FEASIBILITY concepts would pass if an
+    English surface were paired onto the WRONG concept, so each row is checked
+    against the concept and the governed question it actually belongs to.
+
+    The expectation rows live in the frozen fixture and are LITERAL: they do
+    not derive from the registry, so deleting or moving a pairing leaves the
+    expectation standing and this goes RED. They also do not discover a NEW
+    English widening on their own — that still has to be added by hand, and the
+    fixture says so rather than implying otherwise.
     """
-    path_n_english = {"safe", "safely", "safety",
-                      "reliable", "reliably", "reliability",
-                      "wear", "wears", "water"}
-    assert path_n_english <= _INTENT_WORDS[PHYSICAL_FEASIBILITY]
-    paired = {surface for c in CONCEPTS
-              if c.owner == PHYSICAL_FEASIBILITY and c.ar_surfaces
-              for surface, _mode in c.en_surfaces}
-    assert path_n_english <= paired, sorted(path_n_english - paired)
+    assert english in _INTENT_WORDS[PHYSICAL_FEASIBILITY], (
+        "%r is not (or no longer) an admitted English PF surface" % english)
+    by_id = {c.concept_id: c for c in CONCEPTS}
+    assert concept_id in by_id, "concept %s is missing" % concept_id
+    concept = by_id[concept_id]
+    assert concept.owner == PHYSICAL_FEASIBILITY
+    assert provenance_token in concept.provenance, concept.provenance
+    assert (english, WORD) in concept.en_surfaces, (
+        "%r is not carried by %s" % (english, concept_id))
+    assert concept.ar_surfaces, (
+        "%s carries %r in English with no Arabic pair" % (concept_id, english))
+
+
+@pytest.mark.parametrize("english,concept_id,_prov", PATH_N_PF_PAIRING,
+                         ids=[r[0] for r in PATH_N_PF_PAIRING])
+def test_no_other_concept_claims_a_path_n_english_surface(
+        english, concept_id, _prov):
+    """One surface, one concept — a second claimant would make the per-concept
+    check above satisfiable by the wrong owner."""
+    claimants = {c.concept_id for c in CONCEPTS
+                 if (english, WORD) in c.en_surfaces}
+    assert claimants == {concept_id}, sorted(claimants)
+
+
+def test_the_frozen_pairing_table_covers_the_four_path_n_questions():
+    """All four governed PF questions of the bank are represented.
+
+    N-PF-4 was the live unpaired instance the previous candidate missed while
+    its guard asserted a narrower set than its wording claimed.
+    """
+    tokens = {row[2] for row in PATH_N_PF_PAIRING}
+    assert tokens == {"N-PF-1", "N-PF-2", "N-PF-3", "N-PF-4"}, sorted(tokens)
+
+
+# ---------------------------------------------------------------------------
+# N-PF-4 — "can this physically work" is its own governed concept.
+#
+# PF-PRINCIPLE (Q1) asks WHICH physical principle the mechanism relies on.
+# N-PF-4 asks WHETHER it can physically work. They share vocabulary and are
+# not the same question, so the registry keeps them apart and these tests hold
+# that boundary rather than assuming it.
+# ---------------------------------------------------------------------------
+def test_the_english_physically_surface_is_relevant_and_reaches_no_other_gap():
+    probe = "I am not sure whether this can physically work at all."
+    assert addresses_gap(probe, PHYSICAL_FEASIBILITY) is True
+    assert activated_concepts(probe, PHYSICAL_FEASIBILITY) == frozenset(
+        {"PF-PHYSICAL-WORKABILITY"})
+    for other in GAPS:
+        if other != PHYSICAL_FEASIBILITY:
+            assert addresses_gap(probe, other) is False, other
+
+
+def test_n_pf_4_and_pf_principle_stay_distinct_concepts():
+    """Truthful provenance: neither question absorbs the other."""
+    workability = "لا أعرف إن كان هذا ممكنا من الناحية الفيزيائية."
+    principle = "تعتمد الآلية على مبدأ فيزيائي هو انضغاط النابض."
+    assert activated_concepts(workability, PHYSICAL_FEASIBILITY) == frozenset(
+        {"PF-PHYSICAL-WORKABILITY"})
+    assert "PF-PRINCIPLE" in activated_concepts(principle, PHYSICAL_FEASIBILITY)
+    assert "PF-PHYSICAL-WORKABILITY" not in activated_concepts(
+        principle, PHYSICAL_FEASIBILITY)
+
+
+def test_the_q1_masculine_principle_form_is_not_an_n_pf_4_surface():
+    """`فيزيائي` belongs to the Q1 principle question; registering it here
+    would claim N-PF-4 provenance for wording N-PF-4 does not use."""
+    by_id = {c.concept_id: c for c in CONCEPTS}
+    ar = {surface for surface, _mode
+          in by_id["PF-PHYSICAL-WORKABILITY"].ar_surfaces}
+    assert ar == {"فيزيائية"}, sorted(ar)
+    assert "فيزيائي" not in ar
+    assert "فيزيائيا" not in ar     # in no governed question, in either language

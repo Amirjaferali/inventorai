@@ -268,6 +268,9 @@ _PF_N2 = ("PHYSICAL_FEASIBILITY/N-PF-2 'What do you think would keep the system 
 _PF_N3 = ("PHYSICAL_FEASIBILITY/N-PF-3 'Are there real-world conditions, such as heat, "
           "water, time, or wear, that might stop it from working?' / text_ar '… مثل "
           "الحرارة أو الماء أو مرور الوقت أو التآكل …'")
+_PF_N4 = ("PHYSICAL_FEASIBILITY/N-PF-4 'If an engineer offered to check one thing about "
+          "whether this can physically work, what would you ask them to check first?' / "
+          "text_ar '… ما إذا كان هذا قادرا على العمل من الناحية الفيزيائية …'")
 _BA_Q1 = "BOUNDARY_AMBIGUITY/Q1 'What does your invention specifically NOT do or NOT cover? State at least one clear boundary.'"
 _BA_Q2 = "BOUNDARY_AMBIGUITY/Q2 'Name one existing approach that is similar to yours. What makes yours different…'"
 _BA_Q3 = "BOUNDARY_AMBIGUITY/Q3 '… would it still be your invention? What is the core that cannot be replaced?'"
@@ -415,8 +418,7 @@ CONCEPTS = (
     # not registered: `رطوبة` / `تلف`, which no governed PF question expresses
     # in either language; the unregistered-wording residual stays a declared
     # R2/R3 known bound rather than being closed with answer-derived
-    # vocabulary. `physically` / `فيزيائية` (N-PF-4) is left alone too: adding
-    # it to PF-PRINCIPLE would break that concept's own Q1 provenance.
+    # vocabulary.
     Concept("PF-SAFETY", PHYSICAL_FEASIBILITY, _PF_N1,
             (("safe", WORD), ("safely", WORD), ("safety", WORD)),
             (("امان", WORD),)),
@@ -429,6 +431,23 @@ CONCEPTS = (
     Concept("PF-WATER", PHYSICAL_FEASIBILITY, _PF_N3,
             (("water", WORD),),
             (("ماء", WORD),)),
+    # N-PF-4 asks whether the invention can PHYSICALLY WORK. That is not the
+    # same governed concept as PF-PRINCIPLE, which asks which physical
+    # principle the mechanism relies on (Q1) — the two share vocabulary but
+    # answer different questions, so this is its own concept with its own
+    # provenance rather than a surface bolted onto PF-PRINCIPLE.
+    #
+    # The Arabic surface is the adjective the committed text_ar actually uses
+    # in "من الناحية الفيزيائية". The masculine `فيزيائي` is NOT registered
+    # here: it is the form the Q1 principle question uses (مبدأ فيزيائي) and
+    # belongs to that question, not this one. The adverb `فيزيائيا` is not
+    # registered either — it appears in no committed PHYSICAL_FEASIBILITY
+    # question in either language, and §5.6 admits only what a governed
+    # question expresses. Neither omission is a collision, so neither is
+    # recorded in COLLISION_DISPOSITIONS.
+    Concept("PF-PHYSICAL-WORKABILITY", PHYSICAL_FEASIBILITY, _PF_N4,
+            (("physically", WORD),),
+            (("فيزيائية", WORD),)),
 
     # ── BOUNDARY_AMBIGUITY ──────────────────────────────────────────────────
     # Bare نطاق is NOT registered: it renders both BOUNDARY_AMBIGUITY "scope"
