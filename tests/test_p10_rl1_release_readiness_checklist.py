@@ -19,7 +19,6 @@ import os
 import re
 
 from tests import current_truth_contract as contract
-from tests import semantic_claims as claims
 
 CHECKLIST = os.path.join("docs", "governance",
                          "PHASE_10_RELEASE_READINESS_CHECKLIST.md")
@@ -154,19 +153,21 @@ def test_dep1_point_in_time_and_test_only_dependency_visible():
 
 
 # --------------------------------------------------------------------------
-# PROVIDER-DEPENDENT rows: a bounded current-state machine, anchored by
-# IMMUTABLE row IDs and read only from the CURRENT-TRUTH region.
+# PROVIDER-DEPENDENT rows: explicit machine-readable state, by immutable ID,
+# read only from the CURRENT-TRUTH region.
 #
-# REPAIRED AGAIN (v1.32 contract hardening). Two earlier designs failed.
-# The first scanned whole rows for tokens, so a preserved "NOT COMPLETE"
-# anywhere in a row could satisfy a check while the row's live claim said
-# otherwise. The second stripped particular Markdown shapes to separate
-# history, which only moved the leak to shapes it did not anticipate. Now:
-# history lives OUTSIDE an explicitly delimited region and is never read;
-# rows are located by their immutable RL- identifier, so relabelling a row's
-# status or category cannot make it drop out of validation; and each row's
-# state comes from one marker with a bounded vocabulary that contains no
-# completion state at all.
+# DESIGN RESET (v1.32). Earlier versions of this guard tried to infer a row's
+# state from its English prose — first by keyword, then by stripping Markdown
+# shapes, then with a semantic claim classifier. Each attempt was over-
+# engineered and still unsafe: free prose has synonyms, negation scope,
+# subjects and conjunctions, and a guard that must understand all of that is
+# a guard that will be wrong. The prose is no longer authority for anything.
+#
+# Each owned row now carries two structured elements and they ARE the row's
+# machine truth: one CURRENT STATE marker from a bounded vocabulary, and one
+# {…} field block of six YES/NO/N/A fields. Deterministic invariants bind
+# marker to fields. The prose after them is explanatory only and is not read
+# for state. History lives outside the region and is never read at all.
 # --------------------------------------------------------------------------
 _PD_CURRENT_STATES = (
     "NOT SELECTED",
@@ -186,8 +187,59 @@ _PROVIDER_ROW_IDS = (
     "RL-F1", "RL-F2", "RL-F3", "RL-F4", "RL-F5", "RL-F6",
 )
 
+_FIELD_NAMES = ("SELECTED", "PROVISIONED", "IMPLEMENTED", "DEPLOYED",
+                "LIVE_ACTIVATED", "COMPLETE")
+_FIELD_VALUES = ("YES", "NO", "N/A")
+
 _CURRENT_STATE = re.compile(r"CURRENT STATE: ([A-Z][A-Z /]*[A-Z])\.")
+_FIELD_BLOCK = re.compile(r"\{([^{}]*)\}")
+_FIELD = re.compile(r"^\s*([A-Z_]+)\s*:\s*(\S+)\s*$")
 _GATE = re.compile(r"(INFRA-G1-R1|OD-INFRA-\d|OD-CJ1|P8-I4|OD-J2|OD-DR1|P10-BR1)")
+
+# Deterministic marker → field invariants. Each entry names the values a
+# field MAY take under that state; a field not listed is unconstrained.
+# COMPLETE is constrained to NO under every state because no completion
+# state exists in the vocabulary.
+_INVARIANTS = {
+    "NOT SELECTED": {
+        "SELECTED": ("NO",),
+        "PROVISIONED": ("NO", "N/A"),
+        "IMPLEMENTED": ("NO", "N/A"),
+        "DEPLOYED": ("NO", "N/A"),
+        "LIVE_ACTIVATED": ("NO", "N/A"),
+        "COMPLETE": ("NO",),
+    },
+    "SELECTED / NOT PROVISIONED": {
+        "SELECTED": ("YES",),
+        "PROVISIONED": ("NO",),
+        "DEPLOYED": ("NO",),
+        "LIVE_ACTIVATED": ("NO",),
+        "COMPLETE": ("NO",),
+    },
+    "PROVISIONED / NOT COMPLETE": {
+        "SELECTED": ("YES", "N/A"),
+        "PROVISIONED": ("YES",),
+        # deployment fields reflect actual evidence, not implication — but a
+        # live-activated subject would belong under a later state
+        "LIVE_ACTIVATED": ("NO", "N/A"),
+        "COMPLETE": ("NO",),
+    },
+    "IMPLEMENTED / NOT DEPLOYED": {
+        "SELECTED": ("YES", "N/A"),
+        "IMPLEMENTED": ("YES",),
+        "DEPLOYED": ("NO",),
+        "LIVE_ACTIVATED": ("NO",),
+        "COMPLETE": ("NO",),
+    },
+    "DEPLOYED / NOT COMPLETE": {
+        "SELECTED": ("YES", "N/A"),
+        "PROVISIONED": ("YES", "N/A"),
+        "IMPLEMENTED": ("YES", "N/A"),
+        "DEPLOYED": ("YES",),
+        # LIVE_ACTIVATED reflects actual truth independently
+        "COMPLETE": ("NO",),
+    },
+}
 
 
 def _release_current_truth():
@@ -213,7 +265,7 @@ def _cells(row):
 
 
 def _row_truth(row):
-    """The row's own CURRENT TRUTH cell — where its live claim lives."""
+    """The row's own CURRENT TRUTH cell — where its machine state lives."""
     return _cells(row)[5]
 
 
@@ -226,9 +278,29 @@ def _row_state(row_id):
     return states[0]
 
 
-def _row_prose(row_id):
-    """The current-truth cell with the marker removed: the row's live prose."""
-    return _CURRENT_STATE.sub("", _row_truth(_row(row_id)))
+def _row_fields(row_id):
+    """The row's {…} field block, parsed strictly.
+
+    Exactly one block; exactly the six known fields, each exactly once; each
+    value YES, NO or N/A. Anything else fails here, before any invariant is
+    consulted, so a malformed block can never be read as a valid state.
+    """
+    cell = _row_truth(_row(row_id))
+    blocks = _FIELD_BLOCK.findall(cell)
+    assert len(blocks) == 1, (
+        "%s needs exactly one {…} field block, found %d" % (row_id, len(blocks)))
+    fields = {}
+    for entry in blocks[0].split(";"):
+        match = _FIELD.match(entry)
+        assert match, (row_id, "malformed field entry", entry.strip())
+        name, value = match.group(1), match.group(2)
+        assert name in _FIELD_NAMES, (row_id, "unknown field", name)
+        assert name not in fields, (row_id, "duplicate field", name)
+        assert value in _FIELD_VALUES, (row_id, name, "invalid value", value)
+        fields[name] = value
+    missing = [name for name in _FIELD_NAMES if name not in fields]
+    assert not missing, (row_id, "missing fields", missing)
+    return fields
 
 
 def test_release_current_truth_region_is_well_formed():
@@ -236,21 +308,48 @@ def test_release_current_truth_region_is_well_formed():
     assert _release_current_truth().strip()
 
 
-def test_every_owned_row_declares_one_bounded_current_state():
-    for row_id in _PROVIDER_ROW_IDS:
-        state = _row_state(row_id)
-        assert state in _PD_CURRENT_STATES, (row_id, state)
-
-
 def test_owned_rows_are_found_by_immutable_id_not_by_label():
-    """Relabelling a row must not remove it from this guard's inventory.
-
-    The rows are enumerated by ID above. This test states the contract
-    explicitly: every enumerated ID resolves to exactly one row inside the
-    region, whatever its status or category column happens to say.
-    """
+    """Relabelling a row must not remove it from this guard's inventory."""
     for row_id in _PROVIDER_ROW_IDS:
         assert _row(row_id).startswith("| %s |" % row_id)
+
+
+def test_every_owned_row_declares_one_bounded_current_state():
+    for row_id in _PROVIDER_ROW_IDS:
+        assert _row_state(row_id) in _PD_CURRENT_STATES, row_id
+
+
+def test_every_owned_row_carries_a_well_formed_field_block():
+    for row_id in _PROVIDER_ROW_IDS:
+        fields = _row_fields(row_id)
+        assert set(fields) == set(_FIELD_NAMES), (row_id, fields)
+
+
+def test_no_owned_row_can_claim_completion():
+    """No completion state exists, and COMPLETE is NO on every owned row."""
+    for row_id in _PROVIDER_ROW_IDS:
+        state = _row_state(row_id)
+        for word in ("COMPLETE", "COMPLETED", "DONE", "FINISHED"):
+            assert not re.search(r"(?<!NOT )\b%s\b" % word, state), (row_id, state)
+        assert _row_fields(row_id)["COMPLETE"] == "NO", row_id
+
+
+def test_row_fields_satisfy_their_state_invariants():
+    """The deterministic marker → field contract, per state.
+
+    This is the whole guard: a CURRENT STATE marker whose fields say
+    something else fails here, and nothing in the explanatory prose can
+    rescue or undermine it.
+    """
+    for row_id in _PROVIDER_ROW_IDS:
+        state = _row_state(row_id)
+        fields = _row_fields(row_id)
+        # an out-of-vocabulary marker (e.g. "COMPLETE") is a failure in its
+        # own right, reported as one rather than as a lookup error
+        assert state in _INVARIANTS, (row_id, "unknown CURRENT STATE", state)
+        for name, allowed in _INVARIANTS[state].items():
+            assert fields[name] in allowed, (
+                row_id, state, name, fields[name], "allowed:", allowed)
 
 
 def test_states_beyond_selection_cite_their_gate():
@@ -261,128 +360,18 @@ def test_states_beyond_selection_cite_their_gate():
         assert _GATE.search(_row(row_id)), row_id
 
 
-# --------------------------------------------------------------------------
-# State validation, consuming ONE claim-occurrence model.
-#
-# REPAIRED (v1.32 claim-scoped polarity). Earlier versions inferred a
-# concept's polarity from the surrounding text, so one claim's modifier could
-# change another claim's meaning — the `not` in "deployed but not activated"
-# negated *deployed*, and "pending" in a later clause defeated an unrelated
-# completion claim. tests/semantic_claims.py now gives every occurrence its
-# own polarity from its own clause and aggregates without discarding
-# disagreement, so a row that both affirms and denies a concept reports
-# CONFLICT rather than quietly picking a side.
-#
-# There is exactly one source of claim truth in this file: no second negation
-# helper, no separate existence matcher, no activation matcher that bypasses
-# aggregation, and no raw-substring state check that could contradict it.
-# --------------------------------------------------------------------------
-_CONCEPTS = ("selection", "provisioning", "deployment", "activation",
-             "completion")
+def test_selected_rows_record_selection_in_fields_not_only_prose():
+    """A SELECTED field must be YES wherever the marker says selected.
 
-
-def _row_claims(row_id):
-    """Every guarded concept's aggregated state for this row's live prose."""
-    prose = _row_prose(row_id)
-    return {concept: claims.classify(prose, concept)
-            for concept in _CONCEPTS}
-
-
-def _why(row_id, concept):
-    """Occurrence detail, so a failure says what the prose actually claimed."""
-    return claims.explain(_row_prose(row_id), concept)
-
-
-def test_no_owned_row_can_affirm_completion():
-    """No provider-dependent row may assert completion, in any state.
-
-    NEGATED and NON_AFFIRMING both pass — "not complete", "completion is not
-    established" and a bare mention of completion are all fine. AFFIRMED
-    fails, and so does CONFLICT: a row that says both is not a truth surface.
+    The structured field is the truth; a provider name in prose is not.
     """
     for row_id in _PROVIDER_ROW_IDS:
         state = _row_state(row_id)
-        for word in ("COMPLETE", "COMPLETED", "DONE", "FINISHED"):
-            assert not re.search(r"(?<!NOT )\b%s\b" % word, state), (row_id, state)
-        verdict = claims.classify(_row_prose(row_id), "completion")
-        assert verdict not in (claims.AFFIRMED, claims.CONFLICT), (
-            row_id, state, verdict, _why(row_id, "completion"))
-
-
-def test_no_owned_row_reports_conflicting_claims():
-    """A row may not affirm and deny the same concept.
-
-    Every state below names a singular current truth, so contradictory
-    evidence is a defect in the row, not something for the guard to resolve.
-    """
-    for row_id in _PROVIDER_ROW_IDS:
-        verdict = _row_claims(row_id)
-        for concept, value in verdict.items():
-            assert value != claims.CONFLICT, (
-                row_id, concept, _why(row_id, concept))
-
-
-def test_row_prose_never_contradicts_its_state():
-    """The state machine, expressed over aggregated claim states.
-
-    No rule requires an exact phrase: any wording the shared classifier reads
-    as the required state satisfies it, and CONFLICT never satisfies anything.
-    """
-    for row_id in _PROVIDER_ROW_IDS:
-        state = _row_state(row_id)
-        verdict = _row_claims(row_id)
-        row = _row(row_id)
-
-        def must_affirm(concept):
-            assert verdict[concept] == claims.AFFIRMED, (
-                row_id, state, concept, verdict[concept],
-                "prose must assert present %s" % concept,
-                _why(row_id, concept))
-
-        def must_negate(concept):
-            assert verdict[concept] == claims.NEGATED, (
-                row_id, state, concept, verdict[concept],
-                "prose must explicitly deny present %s" % concept,
-                _why(row_id, concept))
-
-        def must_not_affirm(concept):
-            assert verdict[concept] not in (claims.AFFIRMED, claims.CONFLICT), (
-                row_id, state, concept, verdict[concept],
-                _why(row_id, concept))
-
-        # completion is never affirmable on these rows, whatever the state
-        must_not_affirm("completion")
-
+        fields = _row_fields(row_id)
         if state == "NOT SELECTED":
-            # selection must be denied or simply absent — never asserted,
-            # and an Owner selection recorded here counts as an assertion
-            assert verdict["selection"] in (claims.NEGATED, claims.ABSENT), (
-                row_id, verdict["selection"], _why(row_id, "selection"))
-            must_not_affirm("provisioning")
-            must_not_affirm("deployment")
-            must_not_affirm("activation")
-            assert "DECISION: SATISFIED" not in _row_prose(row_id), row_id
-        elif verdict["selection"] == claims.AFFIRMED:
-            # a selection asserted here must name the gate that authorized it
-            assert _GATE.search(row), (row_id, "selection without a gate")
-
-        if state == "SELECTED / NOT PROVISIONED":
-            must_affirm("selection")
-            must_negate("provisioning")
-            must_not_affirm("deployment")
-            must_not_affirm("activation")
-
-        if state == "PROVISIONED / NOT COMPLETE":
-            must_affirm("provisioning")
-            assert _GATE.search(row), row_id
-            must_not_affirm("deployment")
-
-        if state == "IMPLEMENTED / NOT DEPLOYED":
-            must_negate("deployment")
-            must_negate("activation")
-
-        if state == "DEPLOYED / NOT COMPLETE":
-            must_affirm("deployment")
+            assert fields["SELECTED"] == "NO", row_id
+        elif state in ("SELECTED / NOT PROVISIONED", "IMPLEMENTED / NOT DEPLOYED"):
+            assert fields["SELECTED"] in ("YES", "N/A"), row_id
 
 
 def test_owned_row_history_lives_outside_the_region():
