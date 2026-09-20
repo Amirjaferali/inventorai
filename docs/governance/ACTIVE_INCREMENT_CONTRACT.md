@@ -23,8 +23,78 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--stage-9-t1a-prime-disposition"></a>
+## Current authority — Stage 9 / T1-A′ disposition (Owner acceptance, 2026-09-20)
+
+**ACTIVE CONTRACT: NONE — unchanged.** An Owner DISPOSITION recording, not an
+implementation mandate. No product, engine, web, schema or persistence path changed.
+
+**Read the distinction before anything else, because the two are easy to conflate.**
+
+| | |
+|---|---|
+| **STAGE 9 (the disposition task)** | **COMPLETED — DISPOSITION A** |
+| **T1-A′ (the obligation)** | **OPEN** |
+
+Stage 9 is named *T1-A′ disposition*. It asks what the lawful disposition IS, not that
+T1-A′ must close. The disposition is that the obligation stays open, and recording that
+truthfully is what completes the stage.
+
+**`T1-A′: OPEN` · `CLOSURE EVIDENCE: NOT MET` · `TRIGGER: FIRED` · `FRB: REMAINS` ·
+`HAS PASSED: NO` · `HAS EVER PASSED: NO` · `HAS EVER CLOSED: NO`.**
+
+**Accepted evidence — `S2-PATHN-RUN-002`, executed against RC `1f3d9d14…`.**
+
+* **No Full Pass — 0 of 8.** Core gate `PARTIAL` on R1, R2, R4, R5, R7 and `FAIL` on
+  R3, R6, R8.
+* **Criteria 5 and 6 FAIL in all 8 records.**
+* **Candidate representation / platform-side comparison: ABSENT** on the evaluated
+  Path-N surface.
+* **Deliverable eligibility: 0 records. Stage 3 reached: 0 records.**
+
+**The closure criterion is unchanged and is not weakened here:** *"authorized
+verification run meeting §15.7 criteria, Owner-adjudicated."* `SUPERSEDED: NO` ·
+`EXISTING EVIDENCE SATISFIES IT: NO`. **No acceptance/disclosure path analogous to
+Stage 8 is added to this row** — the Stage-8 precedent does not transfer, because that
+row carries an explicit acceptance branch and this one does not.
+
+**Remediations that are genuinely true, and what they do not do.** Arabic serving and
+RTL; correction-affordance reachability; provenance consistency; honest-exhaustion
+controls; the E-1 perspective-inversion repair; withdraw-and-replace reachability; and
+no observed criterion regression. These are valid positive evidence findings, and they **remain insufficient**:
+they do **not** satisfy §15.7, do **not** create a Full Pass, do **not** authorize an aggregate
+improvement score (S2 §15.9), and do **not** close T1-A′.
+
+**The G-3 decision-value gap REMAINS MATERIAL** and is a direct cause of the unmet
+criteria rather than a parallel concern: criteria 5 and 6 fail because platform-side
+candidate comparison happens nowhere. `ODS-001 / Options Database: NOT DESIGNED / NOT
+AUTHORIZED` · `FDC-001 Decision Workspace: INACTIVE / PRESERVE UNMODIFIED AND PAUSE` ·
+`RVR-4 / W2-A: CLOSED` but it delivered user-declared alternatives, **not** platform-side
+candidate comparison. Neither dependency is activated by this recording.
+
+**M-1 practitioner observation, unchanged:** language-SYMMETRIC (R6 EN and R8 AR behave
+identically), therefore **not** the Stage-8 EN↔AR divergence; it traces to the frozen
+corpus's honest evidence-absence answer; the product's honest-exhaustion handling exists
+and is served but was unexercised by that corpus; `W1-N3` remains CLOSED. It does not
+change this disposition.
+
+**Run authority — no trigger is created here.** `THIRD S2 RUN: CONSUMED` ·
+`FOURTH S2 RUN / RUN-004: NOT AUTHORIZED` · `FURTHER SUPPLEMENTAL SLICE: NOT AUTHORIZED` ·
+`NEW BENCHMARK: NOT AUTHORIZED` · `NEW HUMAN EXPERIMENT: NOT AUTHORIZED`. A future run
+needs all three of: an appropriate separately authorized product change where applicable,
+a separate Owner decision, and a separate run authorization.
+
+**Next Master Roadmap stage: Stage 10 — T2-C′ differential product-value assessment.**
+`STAGE 10 STARTED: NO`. Its standing boundary is unchanged: assess only **material
+changes** since the accepted WS16 evidence, across Electronics and Mechanical; do not
+restart a full historical review; do not repeat accepted evidence without material
+change; MCP returns at Stage 10 only within its existing scope and is not begun here.
+**T1-A′ travels forward as a carried residual — `OPEN / FRB / release-value criteria not
+met` — and routing onward must never erase it.** `PUBLIC RELEASE: NOT AUTHORIZED` ·
+`DEPLOYMENT: NOT AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED`.
+
 <a id="current-authority--stage-8-en-ar-divergence-closure"></a>
-## Current authority — Stage 8 / EN↔AR divergence closure (Owner acceptance + disclosure, 2026-09-20)
+## Current authority — Stage 8 / EN↔AR divergence closure (Owner acceptance + disclosure, 2026-09-20) — SUPERSEDED FOR PRESENT ROUTING BY THE STAGE 9 DISPOSITION BLOCK ABOVE; ITS SUBSTANTIVE STAGE-8 DISPOSITION AND RESIDUALS REMAIN CURRENT AND ARE PRESERVED IN FULL
 
 **ACTIVE CONTRACT: NONE — unchanged.** This entry records an Owner DISPOSITION and the
 closure conditions that are now met. It authorizes no implementation, and none was
@@ -67,7 +137,7 @@ stays exactly what it was at its recorded moment.
 * **The loose Arabic test fragment** noted by the disclosure review — **NON-BLOCKING /
   NATURAL-TOUCH ONLY**, and no Stage-8 obligation.
 
-**Next Master Roadmap stage: Stage 9 — `T1-A′` disposition.** Closing Stage 8 starts
+*(SUPERSEDED for present routing by the Stage 9 disposition block above — preserved verbatim:)* **Next Master Roadmap stage: Stage 9 — `T1-A′` disposition.** Closing Stage 8 starts
 nothing: Stage 9 needs its own explicit mandate, uses existing evidence only, and carries
 its standing boundary unchanged — no `RUN-004`, no fourth S2 run, no new human experiment by
 default, and **`T1-A′` has never passed and never closed; that history is not rewritten as a
@@ -75,7 +145,7 @@ PASS.** `PUBLIC RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED` ·
 `PAID ACTIVATION: NOT AUTHORIZED`.
 
 <a id="current-authority--stage-7-t2g-bounded-closure"></a>
-## Current authority — Stage 7 / T2-G bounded closure (Owner acceptance, 2026-09-20)
+## Current authority — Stage 7 / T2-G bounded closure (Owner acceptance, 2026-09-20) — SUPERSEDED FOR PRESENT ROUTING BY THE STAGE 9 DISPOSITION BLOCK ABOVE; ITS SUBSTANTIVE STAGE-7 CLOSURE AND PRESERVED RESIDUALS REMAIN CURRENT AND ARE PRESERVED IN FULL
 
 **ACTIVE CONTRACT: NONE — unchanged.** This entry records an Owner DISPOSITION, not a
 new mandate. It authorizes no implementation, and none was performed: `engine/`, `web/`,
@@ -137,7 +207,7 @@ reversal restores the prior reading byte-identically, forged request versions ar
 ignored, a corrupt adoption history fails closed, and the DDL is idempotent on a
 populated database.
 
-**Next Master Roadmap stage: Stage 8.** Closing Stage 7 starts nothing: Stage 8 remains
+*(SUPERSEDED for present routing by the Stage 9 disposition block above — preserved verbatim:)* **Next Master Roadmap stage: Stage 8.** Closing Stage 7 starts nothing: Stage 8 remains
 unauthorized until separately mandated. `PUBLIC RELEASE: NOT AUTHORIZED` ·
 `DEPLOYMENT: NOT AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED` · no provider action ·
 no scheduler activation · no migration executed. Derived routing

@@ -285,31 +285,46 @@ def test_the_arabic_contrast_observation_is_recorded_without_a_new_lifecycle():
         "the Arabic contrast vocabulary must be unchanged by a documentation cut")
 
 
-def test_stage_nine_is_the_next_stage_and_authorizes_nothing():
+def test_stage_ten_is_the_next_stage_and_authorizes_nothing():
     """The CURRENT next stage, asserted so preserved history cannot satisfy it.
 
-    The earlier version of this guard asserted "Next Master Roadmap stage:
-    Stage 8." That sentence is still in the roadmap — correctly, as preserved
-    Stage-7-amendment history — so once Stage 8 closed the assertion would have
-    stayed green while pointing at the wrong stage. It now asserts the current
-    routing AND that no live sentence still routes to Stage 8: the Stage-8
-    wording must survive only inside an explicit supersession note.
+    This guard has now been wrong-but-green twice, and the shape of the failure
+    is the same each time: it asserted a routing sentence that was still in the
+    documents as legitimate preserved history, so closing the stage it named
+    left the assertion passing while it pointed at the wrong stage. It asserted
+    "Stage 8" after Stage 8 closed; it asserted "Stage 9" after the Stage-9
+    disposition task completed. Both versions passed.
+
+    So it asserts two things that cannot both survive a stale update: the
+    CURRENT routing sentence must be present, AND every surviving sentence that
+    routes to Stage 7, 8 or 9 must sit inside an explicit supersession note.
+    The second half is what actually catches the drift — a document that has
+    not been re-routed keeps a live stale sentence and fails here.
     """
     roadmap, checklist, contract = (_flat(ROADMAP), _flat(CHECKLIST),
                                     _flat(CONTRACT))
-    assert "Next Master Roadmap stage: Stage 9" in roadmap
-    assert "Next Master Roadmap stage: Stage 9" in contract
-    assert "Stage 9" in checklist
-    # every surviving "Stage 8 is next" sentence must be marked superseded
-    for flat, path in ((roadmap, ROADMAP), (checklist, CHECKLIST)):
-        for match in re.finditer(r"Next Master Roadmap stage: Stage 8", flat):
-            window = flat[max(0, match.start() - 600):match.start()]
-            assert "SUPERSEDED" in window.upper(), (
-                "a live sentence still routes to Stage 8 in %s" % path)
-    # closing one stage never starts the next
-    assert "Stage 9 requires its own explicit mandate" in checklist
-    assert "Closing Stage 8 starts nothing" in contract or \
-        "Closing Stage 8 starts nothing" in checklist
+    assert "Next Master Roadmap stage: Stage 10" in roadmap
+    assert "Next Master Roadmap stage: Stage 10" in contract
+    assert "**CURRENT STAGE:** Stage 10" in checklist
+    # every surviving "Stage N is next" sentence, for every already-routed-past
+    # stage, must be marked superseded — in the navigation AND in the authority.
+    for flat, path in ((roadmap, ROADMAP), (checklist, CHECKLIST),
+                       (contract, CONTRACT)):
+        for stale in ("Next Master Roadmap stage: Stage 7",
+                      "Next Master Roadmap stage: Stage 8",
+                      "Next Master Roadmap stage: Stage 9"):
+            for match in re.finditer(re.escape(stale), flat):
+                window = flat[max(0, match.start() - 600):match.start()]
+                assert "SUPERSEDED" in window.upper(), (
+                    "a live sentence still routes to a closed stage in %s: %s"
+                    % (path, stale))
+    # closing or dispositioning one stage never starts the next
+    assert "Stage 10 requires its own explicit mandate" in checklist
+    assert "completing the Stage-9 disposition starts nothing" in checklist
+    assert "`STAGE 10 STARTED: NO`" in contract
+    # and the stage after the frontier is still untouched
+    assert re.search(r"^- \[ \] \*\*10 — T2-C′ differential assessment:",
+                     _read(ROADMAP), re.M), "stage 10 checkbox is not empty"
 
 
 def test_stage_eight_is_closed_by_disposition_not_by_repair():
@@ -435,3 +450,223 @@ def test_the_closure_claims_no_release_deployment_or_activation():
         assert "PUBLIC RELEASE: NOT AUTHORIZED" in flat, path
         assert "DEPLOYMENT: NOT AUTHORIZED" in flat, path
         assert "PAID ACTIVATION: NOT AUTHORIZED" in flat, path
+
+
+# ==========================================================================
+# N. Stage 9 / T1-A′ disposition (Owner acceptance, 2026-09-20)
+#
+# Stage 9 is a DISPOSITION task, and that is exactly where a reader — human or
+# successor agent — loses the thread: the stage completes while the obligation
+# it dispositioned stays open. A ticked Stage-9 checkbox next to a `T1-A′` that
+# has never passed and never closed is correct, and it is also the single most
+# misreadable state in this roadmap. These guards keep the two halves bound
+# together, so that no surface can carry the completion without the residual.
+#
+# Every check below is SCOPED to a current block — the Stage-9 authority block,
+# the Stage-9 roadmap amendment, the checklist's current-stage section, or the
+# `T1-A′` register row itself. A whole-file scan would stay green on this file
+# set purely from preserved history, which is the F-1 defect class this suite
+# has already been corrected for twice.
+# ==========================================================================
+def _contract_stage9_block():
+    """The CURRENT Stage-9 authority block only."""
+    text = _read(CONTRACT)
+    start = text.index('<a id="current-authority--stage-9-t1a-prime-disposition"></a>')
+    end = text.index('<a id="current-authority--stage-8-en-ar-divergence-closure"></a>',
+                     start)
+    return re.sub(r"\s+", " ", text[start:end])
+
+
+def _roadmap_stage9_block():
+    """The CURRENT Stage-9 routing override only, not the amendments below it."""
+    text = _read(ROADMAP)
+    start = text.index("## Current routing override — v1.32 Stage 9 disposition amendment")
+    end = text.index("## Current routing override — v1.32 Stage 8 closure amendment",
+                     start)
+    return re.sub(r"\s+", " ", text[start:end])
+
+
+def _register_t1a_prime_row():
+    """The single `T1-A′` closure row, as one flattened table line."""
+    rows = [line for line in _read(REGISTER).splitlines()
+            if line.startswith("| T1-A′ closure — S2 release-value criteria met |")]
+    assert len(rows) == 1, ("the T1-A′ row must stay single, not forked", len(rows))
+    assert len(rows[0].split("|")) - 2 == 8, "the T1-A′ row lost or gained a cell"
+    return rows[0]
+
+
+def test_the_stage_nine_task_completes_without_closing_the_obligation():
+    """The completion and the openness must travel together, in every surface."""
+    contract, roadmap = _contract_stage9_block(), _roadmap_stage9_block()
+    checklist, row = (_checklist_current_stage_block(),
+                      re.sub(r"\s+", " ", _register_t1a_prime_row()))
+    # the stage checkbox is ticked ...
+    assert re.search(r"^- \[x\] \*\*9 — T1-A′ disposition:\*\*",
+                     _read(ROADMAP), re.M), "stage 9 checkbox is not ticked"
+    # ... and each current surface states the completion AND the openness
+    assert "| **STAGE 9 (the disposition task)** | **COMPLETED — DISPOSITION A** |" in contract
+    assert "| **T1-A′ (the obligation)** | **OPEN** |" in contract
+    assert "**`STAGE 9 — T1-A′ DISPOSITION: COMPLETED ✅ — DISPOSITION A.`**" in roadmap
+    assert "**`T1-A′ ITSELF REMAINS OPEN. IT HAS NOT PASSED AND HAS NOT CLOSED.`**" in roadmap
+    assert "**The Stage-9 DISPOSITION TASK is COMPLETED ✅ (Disposition A)**" in checklist
+    assert "The Stage-9 *disposition task* is COMPLETED; **this obligation is NOT.**" in row
+    # the never-passed / never-closed history is stated, not merely implied
+    for flat in (contract, row):
+        assert "`HAS EVER PASSED: NO`" in flat
+        assert "`HAS EVER CLOSED: NO`" in flat
+    assert "It has never passed and never closed." in checklist
+    for flat in (contract, roadmap, checklist, row):
+        assert "CLOSURE EVIDENCE: NOT MET" in flat
+
+
+def test_stage_nine_is_no_longer_the_current_stage():
+    """A disposition that completed must not leave its stage reading current.
+
+    The superseded Stage-9 wording is preserved deliberately, so presence alone
+    proves nothing. Each occurrence must sit inside a supersession note.
+    """
+    checklist = _flat(CHECKLIST)
+    assert "**CURRENT STAGE:** Stage 10" in checklist
+    for match in re.finditer(r"CURRENT STAGE:\*{0,2} Stage 9", checklist):
+        window = checklist[max(0, match.start() - 600):match.start()]
+        assert "SUPERSEDED" in window.upper(), (
+            "the checklist still reads Stage 9 as the current stage")
+    assert "CURRENT PRODUCT-DEPTH FRONTIER: Stage 10 if authorized." in checklist
+
+
+def test_the_t1a_prime_closure_criterion_is_preserved_and_unbranched():
+    """§15.7 must be quoted intact, with no Stage-8-style acceptance branch.
+
+    Stage 8 closed a row that carried an explicit acceptance branch. This row
+    does not, and the guard exists so the precedent cannot be transferred by a
+    later editor who remembers only that "the last one was accepted".
+    """
+    row = _register_t1a_prime_row()
+    criterion = ("authorized verification run meeting §15.7 criteria, "
+                 "Owner-adjudicated")
+    assert row.split("|")[-2].strip() == criterion, (
+        "the closure-evidence cell was rewritten")
+    flat_row = re.sub(r"\s+", " ", row)
+    assert ("NO acceptance/disclosure path analogous to the EN↔AR row is "
+            "added here") in flat_row
+    contract = _contract_stage9_block()
+    assert '*"%s."*' % criterion in contract
+    assert ("No acceptance/disclosure path analogous to Stage 8 is added to "
+            "this row") in contract
+    assert "no acceptance/disclosure path analogous to Stage 8 is added" in \
+        _roadmap_stage9_block()
+
+
+def test_the_t1a_prime_residual_is_carried_forward_not_erased():
+    """Routing to Stage 10 must not drop the residual on the way."""
+    assert ("**CARRIED RESIDUAL, NEVER TO BE ERASED BY ROUTING FORWARD — "
+            "`T1-A′`: `OPEN` · `FRB` · `RELEASE-VALUE CRITERIA NOT MET` · "
+            "`CLOSURE EVIDENCE: NOT MET`.**") in _checklist_current_stage_block()
+    assert "T1-A′ travels forward as a carried residual" in _contract_stage9_block()
+    assert "travels forward as a carried residual" in _roadmap_stage9_block()
+    assert ("this row travels forward as a carried residual and must not be "
+            "erased by routing onward") in re.sub(r"\s+", " ",
+                                                  _register_t1a_prime_row())
+    # the Group 2 state line must still show the obligation, not just the tick
+    assert "`T1-A′` travels forward as a carried residual" in _flat(ROADMAP)
+
+
+def test_the_disposition_creates_no_run_authority():
+    """Completing Stage 9 arms nothing: no RUN-004, no fourth S2 run."""
+    for flat in (_contract_stage9_block(), _roadmap_stage9_block(),
+                 _checklist_current_stage_block(),
+                 re.sub(r"\s+", " ", _register_t1a_prime_row())):
+        assert "FOURTH S2 RUN / RUN-004: NOT AUTHORIZED" in flat, flat[:90]
+    for flat in (_contract_stage9_block(), _roadmap_stage9_block(),
+                 _checklist_current_stage_block()):
+        assert "`THIRD S2 RUN: CONSUMED`" in flat
+        assert "NEW HUMAN EXPERIMENT: NOT AUTHORIZED" in flat
+    assert "`STAGE 10 STARTED: NO`" in _contract_stage9_block()
+    assert "`STAGE 10 STARTED: NO`" in _roadmap_stage9_block()
+
+
+def test_the_failed_criteria_and_the_absent_comparison_stay_recorded():
+    """The specific evidence findings, not a summary word, must survive."""
+    contract, roadmap = _contract_stage9_block(), _roadmap_stage9_block()
+    checklist, row = (_checklist_current_stage_block(),
+                      re.sub(r"\s+", " ", _register_t1a_prime_row()))
+    assert "**No Full Pass — 0 of 8.**" in contract
+    assert "**no Full Pass, 0 of 8**" in roadmap
+    assert "No Full Pass (0 of 8)" in checklist
+    assert "**no Full Pass, 0 of 8**" in row
+    assert "**Criteria 5 and 6 FAIL in all 8 records.**" in contract
+    for flat in (roadmap, checklist):
+        assert "criteria 5 and 6 FAIL in all 8" in flat
+    assert "**criteria 5 and 6 FAIL in all 8**" in row
+    assert "**Candidate representation / platform-side comparison: ABSENT**" in contract
+    for flat in (roadmap, checklist):
+        assert "platform-side candidate comparison ABSENT" in flat
+    assert "platform-side comparison ABSENT" in row
+    # the remediations are recorded as true AND as insufficient
+    for flat in (contract, roadmap, row):
+        assert "insufficient" in flat.lower() or "remain insufficient" in flat.lower()
+
+
+def test_the_stage_nine_forbidden_claims_are_absent():
+    """The eleven readings this disposition must never be turned into.
+
+    Scanned NEGATION-AWARE, as the Stage-8 guard is: these surfaces state what
+    is NOT true, and a bare substring scan would read the denial as the claim.
+
+    One literal exemption, stated rather than silently tolerated: the register
+    row's NAME is "T1-A′ closure — S2 release-value criteria met" — it names the
+    condition the row is open against. That exact row-name string is removed
+    before scanning; no other literal is exempted. Three negation SHAPES are
+    then stripped generically, each documented at its line below.
+    """
+    _NEGATIONS = (
+        r"(?:no claim is made that|no claim of|none that|nor that|"
+        r"(?:is |are )?not a claim that|it does not (?:say|claim)|"
+        r"do(?:es)? not claim|never claims?|"
+        r"no (?:record|run|case|result)s?)[^.]{0,80}?"
+    )
+    _ROW_NAME = "t1-a′ closure — s2 release-value criteria met"
+    for path in (ROADMAP, CHECKLIST, CONTRACT, REGISTER):
+        flat = _flat(path).lower().replace(_ROW_NAME, "")
+        for claim in (
+                # 1-2: the obligation closed / passed
+                "t1-a′ closed", "t1-a′ is closed", "t1-a′ has closed",
+                "t1-a′ passed", "t1-a′ has passed",
+                # 3: release-value criteria met
+                "release-value criteria met", "release-value criteria are met",
+                # 4: a Full Pass
+                "full pass achieved", "achieved a full pass",
+                "full pass in 8/8", "a full pass was reached",
+                # 5: Stage 9 still current
+                "stage 9 remains the current stage",
+                "stage 9 is still the current stage",
+                # 6: Stage 10 started by this synchronization
+                "stage 10 started: yes", "stage 10 has started",
+                "stage 10 is underway", "stage 10 has begun",
+                # 7-8: run authority
+                "run-004 authorized", "run-004 is authorized",
+                "fourth s2 run authorized", "fourth s2 run is authorized",
+                # 9: criteria 5 or 6 passed
+                "criteria 5 and 6 passed", "criterion 5 passed",
+                "criterion 6 passed", "criteria 5 and 6 pass",
+                # 10: platform-side comparison exists
+                "platform-side comparison exists",
+                "platform-side candidate comparison exists",
+                "platform-side candidate comparison is implemented",
+                # 11: the residual gone
+                "t1-a′ is no longer a residual",
+                "t1-a′ no longer travels forward",
+                "the t1-a′ residual is discharged"):
+            # two negation shapes are stripped before the scan:
+            #   prefix   — "no claim is made that <claim>"
+            #   trailing — "<claim>: no", the boundary-table form these
+            #              documents use, e.g. "`T1-A′ CLOSED: NO`"
+            # (the third, adjacent shape is applied below.)
+            stripped = re.sub(_NEGATIONS + re.escape(claim), "", flat)
+            stripped = re.sub(re.escape(claim) + r":?\s*(?:no\b|not\b)",
+                              "", stripped)
+            #   adjacent — "no <claim>", stripped with ZERO slack so that a
+            #              distant "no" cannot excuse a positive claim
+            stripped = re.sub(r"\*{0,2}no\*{0,2}\s+" + re.escape(claim), "",
+                              stripped)
+            assert claim not in stripped, (path, claim)
