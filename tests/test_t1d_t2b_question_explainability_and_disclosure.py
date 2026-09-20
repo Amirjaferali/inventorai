@@ -978,3 +978,112 @@ def test_t2a_quantity_behaviour_is_unchanged(client):
     with appmod.app.test_request_context():
         package = appmod._deliverable_context(sid)[1]
     assert "requirement_quantities" not in package["_session_meta"]
+
+
+# ---------------------------------------------------------------------------
+# Bounded assessment/progression limitation — disclosed, not fixed.
+#
+# The Owner accepted the known Mechanism-A residual as a disclosed product
+# limitation. These tests pin the disclosure itself: that it renders beside the
+# answer box in both languages, that the two renderings say the same bounded
+# thing, and — as load-bearing as the presence checks — that neither wording
+# drifts into a claim the evidence does not support.
+# ---------------------------------------------------------------------------
+_ASSESSMENT_NOTE = "UI_ASSESSMENT_WORDING_NOTE"
+
+
+def _assessment_note(body):
+    m = re.search(r'<p class="answer-hint answer-hint-assessment"[^>]*>(.*?)</p>',
+                  body, re.S)
+    return None if m is None else re.sub(r"<[^>]+>", "", m.group(1)).strip()
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_the_assessment_limitation_is_disclosed_beside_the_answer_box(client, lang):
+    c, _appmod = client
+    sid = _start(c)
+    body = _page(c, sid, lang)
+    assert _assessment_note(body) == _copy(_ASSESSMENT_NOTE, lang)
+
+
+def test_the_existing_answer_guidance_is_not_replaced(client):
+    """The new line is added beside the old hint, never in place of it."""
+    c, _appmod = client
+    sid = _start(c)
+    for lang in ("en", "ar"):
+        body = _page(c, sid, lang)
+        assert _copy("UI_B_SESSION_025", lang) in body, lang
+        assert _copy(_ASSESSMENT_NOTE, lang) in body, lang
+
+
+def test_the_disclosure_is_not_version_gated(client):
+    """The limitation is true of every project, so every project discloses it.
+
+    The questioning disclosure beside it IS version-gated and stays so; this
+    one must not inherit that gating, or a legacy project would be told less
+    than is true of it.
+    """
+    c, appmod = client
+    from engine.session_reconstruction import (
+        RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1,
+        ENGINE_CONTRACT_VERSION_T2G2,
+    )
+    original = appmod.CURRENT_ENGINE_CONTRACT_VERSION
+    try:
+        for version in (RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1,
+                        ENGINE_CONTRACT_VERSION_T2G2):
+            appmod.CURRENT_ENGINE_CONTRACT_VERSION = version
+            sid = _start(c)
+            assert _assessment_note(_page(c, sid)) == _copy(_ASSESSMENT_NOTE), version
+            appmod.SESSION_STORE.clear()
+    finally:
+        appmod.CURRENT_ENGINE_CONTRACT_VERSION = original
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_both_renderings_carry_the_same_bounded_meaning(lang):
+    """Four elements, present in each language: fixed automated rules; that
+    they decide assessment AND progress; that similar meaning can be read
+    differently; and that rephrasing is the recourse."""
+    note = _copy(_ASSESSMENT_NOTE, lang)
+    required = {
+        "en": ("fixed automated language rules", "assess answers",
+               "decide progress", "read differently",
+               "intended meaning is similar", "rephrase"),
+        "ar": ("قواعد لغوية آلية ثابتة", "لتقييم الإجابات", "وتحديد",
+               "بشكل مختلف", "المعنى المقصود متشابه", "أعد صياغة"),
+    }[lang]
+    for fragment in required:
+        assert fragment in note, (lang, fragment)
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_the_disclosure_claims_nothing_the_evidence_does_not_support(lang):
+    """It must not become a claim about a language, a fix, or the user.
+
+    The accepted residual is that FIXED RULES can read similar meanings
+    differently. It is not that any language is worse, not that parity is
+    solved, not that the limitation is repaired, and not that a
+    misinterpretation is the user's fault.
+    """
+    note = _copy(_ASSESSMENT_NOTE, lang).lower()
+    forbidden = {
+        "en": ("arabic", "english", "less reliable", "more permissive",
+               "any language", "every language", "impossible", "fixed the",
+               "now correct", "fully supported", "your mistake", "incorrect answer"),
+        "ar": ("العربية", "الإنجليزية", "أقل موثوقية", "أكثر تساهلا",
+               "مستحيل", "تم إصلاح", "خطؤك", "إجابة خاطئة"),
+    }[lang]
+    for claim in forbidden:
+        assert claim.lower() not in note, (lang, claim)
+
+
+def test_the_two_disclosures_stay_distinct_surfaces():
+    """The questioning disclosure describes how a QUESTION is chosen; this one
+    describes how an ANSWER is assessed. Neither may absorb the other."""
+    for lang in ("en", "ar"):
+        questioning = _copy("UI_T2G2_QUESTION_SET", lang)
+        assessment = _copy(_ASSESSMENT_NOTE, lang)
+        assert questioning != assessment
+        assert assessment not in questioning
+        assert questioning not in assessment
