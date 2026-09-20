@@ -254,6 +254,20 @@ _MC_Q2 = "MECHANISM_COMPLETENESS/Q2 'What are the individual components or actio
 _PF_Q1 = "PHYSICAL_FEASIBILITY/Q1 'What physical principle does your mechanism rely on?'"
 _PF_Q2 = "PHYSICAL_FEASIBILITY/Q2 'Does your invention consume or manage energy? … approximate power requirement and source?'"
 _PF_Q3 = "PHYSICAL_FEASIBILITY/Q3 'What are the physical limits or constraints your mechanism must operate within?'"
+# Path-N bank provenance (R3-C §5.1/3 admits "the domain pack question
+# artifact" alongside ``engine.progression_loop.QUESTIONS``). These are the
+# committed questions in
+# docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json,
+# quoted with the Arabic the concepts below are derived from.
+_PF_N1 = ("PHYSICAL_FEASIBILITY/N-PF-1 'What would need to be true for this system to "
+          "work safely in the real world?' / text_ar '… لكي يعمل هذا النظام بأمان "
+          "في العالم الحقيقي؟'")
+_PF_N2 = ("PHYSICAL_FEASIBILITY/N-PF-2 'What do you think would keep the system running "
+          "reliably over time?' / text_ar '… ما الذي سيبقي النظام يعمل بشكل موثوق "
+          "مع الوقت؟'")
+_PF_N3 = ("PHYSICAL_FEASIBILITY/N-PF-3 'Are there real-world conditions, such as heat, "
+          "water, time, or wear, that might stop it from working?' / text_ar '… مثل "
+          "الحرارة أو الماء أو مرور الوقت أو التآكل …'")
 _BA_Q1 = "BOUNDARY_AMBIGUITY/Q1 'What does your invention specifically NOT do or NOT cover? State at least one clear boundary.'"
 _BA_Q2 = "BOUNDARY_AMBIGUITY/Q2 'Name one existing approach that is similar to yours. What makes yours different…'"
 _BA_Q3 = "BOUNDARY_AMBIGUITY/Q3 '… would it still be your invention? What is the core that cannot be replaced?'"
@@ -374,6 +388,47 @@ CONCEPTS = (
             (("capacity", WORD), ("efficiency", WORD),
              ("feasible", WORD), ("feasibility", WORD)),
             (("سعة", WORD), ("كفاءة", WORD), ("جدوى", WORD))),
+
+    # ── PHYSICAL_FEASIBILITY, Path-N layer ──────────────────────────────────
+    # RVR-2 (Wave-1, PR #579) admitted the English surfaces below into
+    # ``gap_relevance._INTENT_WORDS`` by re-deriving them from the COMMITTED
+    # Path-N bank — see that file's own comment, "re-derivation from the
+    # COMMITTED Path-N banks … 'work safely in the real world', 'running
+    # reliably over time', 'heat, water, time, or wear'". That widening landed
+    # on 2026-08-23, ONE DAY after this registry was written, and it touched
+    # `engine/gap_relevance.py` alone. The paired Arabic concepts were never
+    # added, so an Arabic answer expressing the SAME already-owned family was
+    # not recognised while its English counterpart was. These four concepts
+    # close that pairing and add no family the committed questions do not
+    # already express.
+    #
+    # Every Arabic surface is taken from the `text_ar` of the SAME governed
+    # question that licensed its English surface — never from a measured
+    # answer. Close inflections only, exactly as the English re-derivation
+    # took `reliability` alongside `reliably`.
+    #
+    # NOT registered here, deliberately: `قوة` ("force") from the mechanical
+    # bank — it is carried inside the committed MECHANISM_COMPLETENESS marker
+    # نقل القوة, so registering it would make a mechanism-only answer activate
+    # PHYSICAL_FEASIBILITY. That mirrors the English side's own exclusion of
+    # `force` as a single word (gap_relevance.py §PHYSICAL_FEASIBILITY). Also
+    # not registered: `رطوبة` / `تلف`, which no governed PF question expresses
+    # in either language; the unregistered-wording residual stays a declared
+    # R2/R3 known bound rather than being closed with answer-derived
+    # vocabulary. `physically` / `فيزيائية` (N-PF-4) is left alone too: adding
+    # it to PF-PRINCIPLE would break that concept's own Q1 provenance.
+    Concept("PF-SAFETY", PHYSICAL_FEASIBILITY, _PF_N1,
+            (("safe", WORD), ("safely", WORD), ("safety", WORD)),
+            (("امان", WORD),)),
+    Concept("PF-RELIABILITY", PHYSICAL_FEASIBILITY, _PF_N2,
+            (("reliable", WORD), ("reliably", WORD), ("reliability", WORD)),
+            (("موثوق", WORD), ("موثوقية", WORD))),
+    Concept("PF-WEAR", PHYSICAL_FEASIBILITY, _PF_N3,
+            (("wear", WORD), ("wears", WORD)),
+            (("تاكل", WORD),)),
+    Concept("PF-WATER", PHYSICAL_FEASIBILITY, _PF_N3,
+            (("water", WORD),),
+            (("ماء", WORD),)),
 
     # ── BOUNDARY_AMBIGUITY ──────────────────────────────────────────────────
     # Bare نطاق is NOT registered: it renders both BOUNDARY_AMBIGUITY "scope"
@@ -742,6 +797,19 @@ COLLISION_DISPOSITIONS = {
     "ضغط (pressure) vs يضغط (presses)":
         "DISTINCT TOKENS. ضغط is a mechanical SUBSTANCE surface, not an "
         "intent concept, so the two classes cannot collide.",
+    "قوة (bare 'force')":
+        "NOT REGISTERED — it is carried inside the committed "
+        "MECHANISM_COMPLETENESS marker نقل القوة, so registering it for "
+        "PHYSICAL_FEASIBILITY made the mechanism-only answer "
+        "المزلاج ينقل القوة إلى الإطار activate PHYSICAL_FEASIBILITY. "
+        "Measured before exclusion, not assumed. This mirrors the English "
+        "side's own exclusion of `force` as a single word.",
+    "رطوبة (damp) / تلف (damage)":
+        "NOT REGISTERED — no governed PHYSICAL_FEASIBILITY question expresses "
+        "either concept, in English or Arabic. They appear only in a measured "
+        "RUN-002 answer, and registering from an answer rather than from a "
+        "governed question is exactly what §5.6 prohibits. The residual stays "
+        "a declared R2/R3 unregistered-wording known bound.",
 }
 
 

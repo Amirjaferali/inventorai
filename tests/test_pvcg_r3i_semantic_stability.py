@@ -889,3 +889,127 @@ class TestNormalizationBoundary:
     def test_latin_normalization_is_not_added(self):
         """§9.1 — N-1 measured English already stable; R3 adds nothing."""
         assert normalize_ar("Step BY step") == "Step BY step"
+
+
+# ---------------------------------------------------------------------------
+# PATH-N PARITY — the PF-SAFETY / PF-DURABILITY families, EN↔AR.
+#
+# RVR-2 widened the ENGLISH PHYSICAL_FEASIBILITY family by re-deriving surfaces
+# from the committed Path-N bank (gap_relevance.py: "'work safely in the real
+# world', 'running reliably over time', 'heat, water, time, or wear'"). That
+# landed one day after this registry and touched gap_relevance.py alone, so the
+# paired Arabic concepts were never added and an Arabic answer expressing the
+# SAME owned family was not recognised while its English counterpart was.
+#
+# These tests pin the CLASS, not a sentence: for each family, several distinct
+# Arabic wordings and morphology variants must activate PHYSICAL_FEASIBILITY,
+# and none of them may reach any other gap.
+# ---------------------------------------------------------------------------
+_PATH_N_FAMILIES = {
+    "PF-SAFETY": (
+        "لا أعرف هامش الأمان المطلوب تحت الحمل.",
+        "بأمان تام هو ما أريده من هذا التصميم.",
+        "الأمان هو ما يقلقني أكثر في هذا التصميم.",
+    ),
+    "PF-RELIABILITY": (
+        "لن يعمل بشكل موثوق مع الوقت في الخارج.",
+        "موثوقية الآلية غير معروفة بعد.",
+    ),
+    "PF-WEAR": (
+        "التآكل قد يوقف الآلية بعد سنة.",
+        "أخشى تآكل السطح المعدني مع الاستعمال.",
+    ),
+    "PF-WATER": (
+        "الماء قد يدخل إلى العلبة ويعطلها.",
+        "لم أختبرها بالماء ولا أعرف ماذا سيحدث.",
+    ),
+}
+
+
+@pytest.mark.parametrize("concept_id,probe", [
+    (cid, probe) for cid, probes in _PATH_N_FAMILIES.items() for probe in probes
+], ids=["%s:%d" % (cid, i)
+        for cid, probes in _PATH_N_FAMILIES.items()
+        for i in range(len(probes))])
+def test_path_n_family_activates_physical_feasibility_in_arabic(concept_id, probe):
+    """The owned family is recognised through the concept, not a fixed string."""
+    assert addresses_gap(probe, PHYSICAL_FEASIBILITY) is True, probe
+    assert concept_id in activated_concepts(probe, PHYSICAL_FEASIBILITY)
+
+
+@pytest.mark.parametrize("probe", [p for ps in _PATH_N_FAMILIES.values() for p in ps])
+def test_path_n_family_reaches_no_other_gap(probe):
+    """Widening PHYSICAL_FEASIBILITY must not contaminate another family."""
+    for other in GAPS:
+        if other == PHYSICAL_FEASIBILITY:
+            continue
+        assert addresses_gap(probe, other) is False, (other, probe)
+
+
+# Negative controls, one per non-feasibility content class. Each is ordinary
+# Arabic an inventor might really write; none expresses a governed PF concept.
+_NOT_FEASIBILITY = {
+    "mechanism": "المزلاج ينقل القوة إلى الإطار عبر خط المفصلة.",
+    "boundary": "فكرتي لا تغطي الأبواب الكهربائية إطلاقا.",
+    "commercial": "السعر المستهدف مئة دينار والسوق كبير جدا.",
+    "affective": "أشعر بالراحة والفخر عند استخدام المنتج.",
+    "step_sequence": "الخطوات: أفرد المنحدر، ثم يقفل المثبت، ثم يعبر الكرسي.",
+}
+
+
+@pytest.mark.parametrize("label,probe", sorted(_NOT_FEASIBILITY.items()))
+def test_non_feasibility_arabic_content_stays_irrelevant(label, probe):
+    assert addresses_gap(probe, PHYSICAL_FEASIBILITY) is False, (label, probe)
+
+
+def test_bare_force_is_not_a_registered_feasibility_surface():
+    """`قوة` is carried inside the committed MC marker نقل القوة, so
+    registering it would make a mechanism-only answer satisfy feasibility.
+    The English side excludes bare `force` for the same reason."""
+    registered = {surface for c in CONCEPTS
+                  if c.owner == PHYSICAL_FEASIBILITY
+                  for surface, _mode in c.ar_surfaces}
+    assert "قوة" not in registered
+    assert "force" not in _INTENT_WORDS[PHYSICAL_FEASIBILITY]
+
+
+def test_answer_derived_vocabulary_is_not_registered():
+    """The R7 residual stays open rather than being closed from an answer.
+
+    `رطوبة` (damp) and `تلف` (damage) appear in a measured RUN-002 answer and
+    in no governed PHYSICAL_FEASIBILITY question, in either language. §5.6
+    prohibits registering a concept no governed question expresses, so the
+    unregistered-wording residual is preserved as a declared known bound.
+    """
+    registered = {surface for c in CONCEPTS
+                  for surface, _mode in c.ar_surfaces}
+    for answer_only in ("رطوبة", "تلف", "يتلف", "تتلف"):
+        assert answer_only not in registered, answer_only
+
+
+def test_every_path_n_concept_cites_a_committed_governed_question():
+    """§5.1/3 — provenance, or the concept must not exist."""
+    by_id = {c.concept_id: c for c in CONCEPTS}
+    for cid in _PATH_N_FAMILIES:
+        concept = by_id[cid]
+        assert concept.owner == PHYSICAL_FEASIBILITY
+        assert "N-PF-" in concept.provenance, concept.provenance
+        assert concept.en_surfaces and concept.ar_surfaces
+
+
+def test_the_rvr2_path_n_english_surfaces_are_all_paired_in_arabic():
+    """The invariant this repair exists to restore.
+
+    Every English surface RVR-2 admitted from the Path-N bank must be carried
+    by a registry concept that also has Arabic surfaces. This fails if a future
+    English widening is made without its Arabic pair — the exact regression
+    that produced the measured M-1 divergence.
+    """
+    path_n_english = {"safe", "safely", "safety",
+                      "reliable", "reliably", "reliability",
+                      "wear", "wears", "water"}
+    assert path_n_english <= _INTENT_WORDS[PHYSICAL_FEASIBILITY]
+    paired = {surface for c in CONCEPTS
+              if c.owner == PHYSICAL_FEASIBILITY and c.ar_surfaces
+              for surface, _mode in c.en_surfaces}
+    assert path_n_english <= paired, sorted(path_n_english - paired)
