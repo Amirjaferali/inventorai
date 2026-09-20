@@ -51,6 +51,7 @@ from engine.semantic_registry import (
 from engine.domain_rules import get_substance_signals
 from tests.fixtures.pvcg_r3i_frozen_expectations import (
     EXPECTED_SURFACES, CONCEPT, CAUSAL, UNKNOWN, SUBSTANCE,
+    PATH_N_PF_PAIRING,
 )
 from web.result_feedback import get_result_feedback
 from web.ui_text import localize_deep
@@ -889,3 +890,204 @@ class TestNormalizationBoundary:
     def test_latin_normalization_is_not_added(self):
         """§9.1 — N-1 measured English already stable; R3 adds nothing."""
         assert normalize_ar("Step BY step") == "Step BY step"
+
+
+# ---------------------------------------------------------------------------
+# PATH-N PARITY — the PF-SAFETY / PF-DURABILITY families, EN↔AR.
+#
+# RVR-2 widened the ENGLISH PHYSICAL_FEASIBILITY family by re-deriving surfaces
+# from the committed Path-N bank (gap_relevance.py: "'work safely in the real
+# world', 'running reliably over time', 'heat, water, time, or wear'"). That
+# landed one day after this registry and touched gap_relevance.py alone, so the
+# paired Arabic concepts were never added and an Arabic answer expressing the
+# SAME owned family was not recognised while its English counterpart was.
+#
+# These tests pin the CLASS, not a sentence: for each family, several distinct
+# Arabic wordings and morphology variants must activate PHYSICAL_FEASIBILITY,
+# and none of them may reach any other gap.
+# ---------------------------------------------------------------------------
+_PATH_N_FAMILIES = {
+    "PF-SAFETY": (
+        "لا أعرف هامش الأمان المطلوب تحت الحمل.",
+        "بأمان تام هو ما أريده من هذا التصميم.",
+        "الأمان هو ما يقلقني أكثر في هذا التصميم.",
+    ),
+    "PF-RELIABILITY": (
+        "لن يعمل بشكل موثوق مع الوقت في الخارج.",
+        "موثوقية الآلية غير معروفة بعد.",
+    ),
+    "PF-WEAR": (
+        "التآكل قد يوقف الآلية بعد سنة.",
+        "أخشى تآكل السطح المعدني مع الاستعمال.",
+    ),
+    "PF-WATER": (
+        "الماء قد يدخل إلى العلبة ويعطلها.",
+        "لم أختبرها بالماء ولا أعرف ماذا سيحدث.",
+    ),
+    "PF-PHYSICAL-WORKABILITY": (
+        "لا أعرف إن كان هذا ممكنا من الناحية الفيزيائية.",
+        "أريد التحقق من الناحية الفيزيائية قبل البناء.",
+        "بالفيزيائية لم أتحقق بعد.",
+    ),
+}
+
+
+@pytest.mark.parametrize("concept_id,probe", [
+    (cid, probe) for cid, probes in _PATH_N_FAMILIES.items() for probe in probes
+], ids=["%s:%d" % (cid, i)
+        for cid, probes in _PATH_N_FAMILIES.items()
+        for i in range(len(probes))])
+def test_path_n_family_activates_physical_feasibility_in_arabic(concept_id, probe):
+    """The owned family is recognised through the concept, not a fixed string."""
+    assert addresses_gap(probe, PHYSICAL_FEASIBILITY) is True, probe
+    assert concept_id in activated_concepts(probe, PHYSICAL_FEASIBILITY)
+
+
+@pytest.mark.parametrize("probe", [p for ps in _PATH_N_FAMILIES.values() for p in ps])
+def test_path_n_family_reaches_no_other_gap(probe):
+    """Widening PHYSICAL_FEASIBILITY must not contaminate another family."""
+    for other in GAPS:
+        if other == PHYSICAL_FEASIBILITY:
+            continue
+        assert addresses_gap(probe, other) is False, (other, probe)
+
+
+# Negative controls, one per non-feasibility content class. Each is ordinary
+# Arabic an inventor might really write; none expresses a governed PF concept.
+_NOT_FEASIBILITY = {
+    "mechanism": "المزلاج ينقل القوة إلى الإطار عبر خط المفصلة.",
+    "boundary": "فكرتي لا تغطي الأبواب الكهربائية إطلاقا.",
+    "commercial": "السعر المستهدف مئة دينار والسوق كبير جدا.",
+    "affective": "أشعر بالراحة والفخر عند استخدام المنتج.",
+    "step_sequence": "الخطوات: أفرد المنحدر، ثم يقفل المثبت، ثم يعبر الكرسي.",
+}
+
+
+@pytest.mark.parametrize("label,probe", sorted(_NOT_FEASIBILITY.items()))
+def test_non_feasibility_arabic_content_stays_irrelevant(label, probe):
+    assert addresses_gap(probe, PHYSICAL_FEASIBILITY) is False, (label, probe)
+
+
+def test_bare_force_is_not_a_registered_feasibility_surface():
+    """`قوة` is carried inside the committed MC marker نقل القوة, so
+    registering it would make a mechanism-only answer satisfy feasibility.
+    The English side excludes bare `force` for the same reason."""
+    registered = {surface for c in CONCEPTS
+                  if c.owner == PHYSICAL_FEASIBILITY
+                  for surface, _mode in c.ar_surfaces}
+    assert "قوة" not in registered
+    assert "force" not in _INTENT_WORDS[PHYSICAL_FEASIBILITY]
+
+
+def test_answer_derived_vocabulary_is_not_registered():
+    """The R7 residual stays open rather than being closed from an answer.
+
+    `رطوبة` (damp) and `تلف` (damage) appear in a measured RUN-002 answer and
+    in no governed PHYSICAL_FEASIBILITY question, in either language. §5.6
+    prohibits registering a concept no governed question expresses, so the
+    unregistered-wording residual is preserved as a declared known bound.
+    """
+    registered = {surface for c in CONCEPTS
+                  for surface, _mode in c.ar_surfaces}
+    for answer_only in ("رطوبة", "تلف", "يتلف", "تتلف"):
+        assert answer_only not in registered, answer_only
+
+
+def test_every_path_n_concept_cites_a_committed_governed_question():
+    """§5.1/3 — provenance, or the concept must not exist."""
+    by_id = {c.concept_id: c for c in CONCEPTS}
+    for cid in _PATH_N_FAMILIES:
+        concept = by_id[cid]
+        assert concept.owner == PHYSICAL_FEASIBILITY
+        assert "N-PF-" in concept.provenance, concept.provenance
+        assert concept.en_surfaces and concept.ar_surfaces
+
+
+@pytest.mark.parametrize("english,concept_id,provenance_token", PATH_N_PF_PAIRING,
+                         ids=[r[0] for r in PATH_N_PF_PAIRING])
+def test_each_path_n_english_surface_is_paired_on_its_own_concept(
+        english, concept_id, provenance_token):
+    """The invariant this repair exists to restore, checked per concept.
+
+    A union check over all PHYSICAL_FEASIBILITY concepts would pass if an
+    English surface were paired onto the WRONG concept, so each row is checked
+    against the concept and the governed question it actually belongs to.
+
+    The expectation rows live in the frozen fixture and are LITERAL: they do
+    not derive from the registry, so deleting or moving a pairing leaves the
+    expectation standing and this goes RED. They also do not discover a NEW
+    English widening on their own — that still has to be added by hand, and the
+    fixture says so rather than implying otherwise.
+    """
+    assert english in _INTENT_WORDS[PHYSICAL_FEASIBILITY], (
+        "%r is not (or no longer) an admitted English PF surface" % english)
+    by_id = {c.concept_id: c for c in CONCEPTS}
+    assert concept_id in by_id, "concept %s is missing" % concept_id
+    concept = by_id[concept_id]
+    assert concept.owner == PHYSICAL_FEASIBILITY
+    assert provenance_token in concept.provenance, concept.provenance
+    assert (english, WORD) in concept.en_surfaces, (
+        "%r is not carried by %s" % (english, concept_id))
+    assert concept.ar_surfaces, (
+        "%s carries %r in English with no Arabic pair" % (concept_id, english))
+
+
+@pytest.mark.parametrize("english,concept_id,_prov", PATH_N_PF_PAIRING,
+                         ids=[r[0] for r in PATH_N_PF_PAIRING])
+def test_no_other_concept_claims_a_path_n_english_surface(
+        english, concept_id, _prov):
+    """One surface, one concept — a second claimant would make the per-concept
+    check above satisfiable by the wrong owner."""
+    claimants = {c.concept_id for c in CONCEPTS
+                 if (english, WORD) in c.en_surfaces}
+    assert claimants == {concept_id}, sorted(claimants)
+
+
+def test_the_frozen_pairing_table_covers_the_four_path_n_questions():
+    """All four governed PF questions of the bank are represented.
+
+    N-PF-4 was the live unpaired instance the previous candidate missed while
+    its guard asserted a narrower set than its wording claimed.
+    """
+    tokens = {row[2] for row in PATH_N_PF_PAIRING}
+    assert tokens == {"N-PF-1", "N-PF-2", "N-PF-3", "N-PF-4"}, sorted(tokens)
+
+
+# ---------------------------------------------------------------------------
+# N-PF-4 — "can this physically work" is its own governed concept.
+#
+# PF-PRINCIPLE (Q1) asks WHICH physical principle the mechanism relies on.
+# N-PF-4 asks WHETHER it can physically work. They share vocabulary and are
+# not the same question, so the registry keeps them apart and these tests hold
+# that boundary rather than assuming it.
+# ---------------------------------------------------------------------------
+def test_the_english_physically_surface_is_relevant_and_reaches_no_other_gap():
+    probe = "I am not sure whether this can physically work at all."
+    assert addresses_gap(probe, PHYSICAL_FEASIBILITY) is True
+    assert activated_concepts(probe, PHYSICAL_FEASIBILITY) == frozenset(
+        {"PF-PHYSICAL-WORKABILITY"})
+    for other in GAPS:
+        if other != PHYSICAL_FEASIBILITY:
+            assert addresses_gap(probe, other) is False, other
+
+
+def test_n_pf_4_and_pf_principle_stay_distinct_concepts():
+    """Truthful provenance: neither question absorbs the other."""
+    workability = "لا أعرف إن كان هذا ممكنا من الناحية الفيزيائية."
+    principle = "تعتمد الآلية على مبدأ فيزيائي هو انضغاط النابض."
+    assert activated_concepts(workability, PHYSICAL_FEASIBILITY) == frozenset(
+        {"PF-PHYSICAL-WORKABILITY"})
+    assert "PF-PRINCIPLE" in activated_concepts(principle, PHYSICAL_FEASIBILITY)
+    assert "PF-PHYSICAL-WORKABILITY" not in activated_concepts(
+        principle, PHYSICAL_FEASIBILITY)
+
+
+def test_the_q1_masculine_principle_form_is_not_an_n_pf_4_surface():
+    """`فيزيائي` belongs to the Q1 principle question; registering it here
+    would claim N-PF-4 provenance for wording N-PF-4 does not use."""
+    by_id = {c.concept_id: c for c in CONCEPTS}
+    ar = {surface for surface, _mode
+          in by_id["PF-PHYSICAL-WORKABILITY"].ar_surfaces}
+    assert ar == {"فيزيائية"}, sorted(ar)
+    assert "فيزيائي" not in ar
+    assert "فيزيائيا" not in ar     # in no governed question, in either language

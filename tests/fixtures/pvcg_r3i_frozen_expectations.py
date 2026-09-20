@@ -110,6 +110,12 @@ EXPECTED_SURFACES = (
     ('concept', 'PF-CAPACITY', 'PHYSICAL_FEASIBILITY', 'سعة', 'word', 'هذا سعة فقط'),
     ('concept', 'PF-CAPACITY', 'PHYSICAL_FEASIBILITY', 'كفاءة', 'word', 'هذا كفاءة فقط'),
     ('concept', 'PF-CAPACITY', 'PHYSICAL_FEASIBILITY', 'جدوى', 'word', 'هذا جدوى فقط'),
+    ('concept', 'PF-SAFETY', 'PHYSICAL_FEASIBILITY', 'امان', 'word', 'هذا امان فقط'),
+    ('concept', 'PF-RELIABILITY', 'PHYSICAL_FEASIBILITY', 'موثوق', 'word', 'هذا موثوق فقط'),
+    ('concept', 'PF-RELIABILITY', 'PHYSICAL_FEASIBILITY', 'موثوقية', 'word', 'هذا موثوقية فقط'),
+    ('concept', 'PF-WEAR', 'PHYSICAL_FEASIBILITY', 'تاكل', 'word', 'هذا تاكل فقط'),
+    ('concept', 'PF-WATER', 'PHYSICAL_FEASIBILITY', 'ماء', 'word', 'هذا ماء فقط'),
+    ('concept', 'PF-PHYSICAL-WORKABILITY', 'PHYSICAL_FEASIBILITY', 'فيزيائية', 'word', 'هذا فيزيائية فقط'),
     ('concept', 'BA-SCOPE', 'BOUNDARY_AMBIGUITY', 'نطاق الاختراع', 'phrase', 'هذا نطاق الاختراع فقط'),
     ('concept', 'BA-SCOPE', 'BOUNDARY_AMBIGUITY', 'حدود الاختراع', 'phrase', 'هذا حدود الاختراع فقط'),
     ('concept', 'BA-NOT-COVER', 'BOUNDARY_AMBIGUITY', 'لا يغطي', 'phrase', 'هذا لا يغطي فقط'),
@@ -290,4 +296,33 @@ EXPECTED_SURFACES = (
     ('substance', 'actuator', 'mechanical', 'مشغل', 'word', 'هذا مشغل فقط'),
     ('substance', 'mechanism', 'mechanical', 'الية', 'word', 'هذا الية فقط'),
     ('substance', 'friction', 'mechanical', 'احتكاك', 'word', 'هذا احتكاك فقط'),
+)
+
+
+#: (english_surface, expected_concept_id, expected_provenance_token)
+#:
+#: The bounded RVR-2 Path-N admission set for PHYSICAL_FEASIBILITY, as LITERAL
+#: committed data. RVR-2 widened the English relevance family by re-deriving
+#: these surfaces from the committed Path-N bank (see the comment in
+#: engine/gap_relevance.py); each one must be carried by the registry concept
+#: named here, with Arabic surfaces, citing the governed question named here.
+#:
+#: STATED TRUTHFULLY — this table is FROZEN and LITERAL. It does NOT discover a
+#: future English widening on its own; nothing here can. If RVR-2 or a successor
+#: admits another Path-N surface, this table has to be extended BY HAND, and
+#: until it is, the new surface is unguarded. What the table DOES catch, because
+#: it is independent of the object under test, is any listed surface losing its
+#: Arabic pair, moving to a different concept, or losing its provenance — which
+#: is exactly the regression that produced the measured M-1 divergence.
+PATH_N_PF_PAIRING = (
+    ('safe', 'PF-SAFETY', 'N-PF-1'),
+    ('safely', 'PF-SAFETY', 'N-PF-1'),
+    ('safety', 'PF-SAFETY', 'N-PF-1'),
+    ('reliable', 'PF-RELIABILITY', 'N-PF-2'),
+    ('reliably', 'PF-RELIABILITY', 'N-PF-2'),
+    ('reliability', 'PF-RELIABILITY', 'N-PF-2'),
+    ('wear', 'PF-WEAR', 'N-PF-3'),
+    ('wears', 'PF-WEAR', 'N-PF-3'),
+    ('water', 'PF-WATER', 'N-PF-3'),
+    ('physically', 'PF-PHYSICAL-WORKABILITY', 'N-PF-4'),
 )
