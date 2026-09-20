@@ -189,11 +189,15 @@ _PROVIDER_ROW_IDS = (
 
 _FIELD_NAMES = ("SELECTED", "PROVISIONED", "IMPLEMENTED", "DEPLOYED",
                 "LIVE_ACTIVATED", "COMPLETE")
-_FIELD_VALUES = ("YES", "NO", "N/A")
+_FIELD_VALUES = {
+    "SELECTED": ("YES", "NO", "N/A"),
+    "PROVISIONED": ("YES", "NO", "N/A"),
+    "IMPLEMENTED": ("YES", "NO", "N/A"),
+    "DEPLOYED": ("YES", "NO", "N/A"),
+    "LIVE_ACTIVATED": ("YES", "NO", "N/A"),
+    "COMPLETE": ("YES", "NO"),
+}
 
-_CURRENT_STATE = re.compile(r"CURRENT STATE: ([A-Z][A-Z /]*[A-Z])\.")
-_FIELD_BLOCK = re.compile(r"\{([^{}]*)\}")
-_FIELD = re.compile(r"^\s*([A-Z_]+)\s*:\s*(\S+)\s*$")
 _GATE = re.compile(r"(INFRA-G1-R1|OD-INFRA-\d|OD-CJ1|P8-I4|OD-J2|OD-DR1|P10-BR1)")
 
 # Deterministic marker → field invariants. Each entry names the values a
@@ -242,6 +246,111 @@ _INVARIANTS = {
 }
 
 
+
+# --------------------------------------------------------------------------
+# The authoritative contract parser.
+#
+# HARDENED (v1.32 structural-parser pass). The earlier parser used findall()
+# to pull "a" marker and "a" {…} block from anywhere in the cell. That let a
+# malformed first marker be rescued by a later valid one, and let a malformed
+# outer block hide a valid inner block that findall's [^{}]* happily matched.
+# This parser reads the contract from ONE fixed location - the start of the
+# cell - and validates the WHOLE structure: prefix, block, flatness,
+# delimiters, exact field set, and the absence of any second machine
+# declaration in the remaining prose. It never searches, never falls back,
+# and never picks a best match. Malformed means malformed.
+# --------------------------------------------------------------------------
+_PREFIX = "CURRENT STATE: "
+_DECLARATION_TOKENS = ("current state:",) + tuple(
+    name.lower() + ":" for name in _FIELD_NAMES)
+
+
+class ContractError(AssertionError):
+    """A row's machine contract is malformed. It is not interpreted further."""
+
+
+def _parse_contract(cell):
+    """Parse `cell` as `<state>. {<six fields>} <prose>` from its start.
+
+    Returns (state, fields). Raises ContractError on any structural fault.
+    Nothing after the closing delimiter may carry machine meaning.
+    """
+    # 1. bounded leading whitespace only (table-cell padding)
+    body = cell
+    stripped = body.lstrip(" ")
+    if len(body) - len(stripped) > 3:
+        raise ContractError("too much leading whitespace before the contract")
+    body = stripped
+
+    # 2. authoritative prefix at the very start
+    if not body.startswith(_PREFIX):
+        raise ContractError("cell does not begin with the CURRENT STATE prefix")
+    body = body[len(_PREFIX):]
+
+    # 3. the state runs to the first period and must be exact vocabulary
+    dot = body.find(".")
+    if dot == -1:
+        raise ContractError("CURRENT STATE is not terminated by a period")
+    state = body[:dot]
+    if state not in _PD_CURRENT_STATES:
+        raise ContractError("unknown or malformed CURRENT STATE: %r" % state)
+    body = body[dot + 1:]
+
+    # 4. the field block must come immediately next (one optional space)
+    if body.startswith(" "):
+        body = body[1:]
+    if not body.startswith("{"):
+        raise ContractError("field block must immediately follow the state")
+    body = body[1:]
+
+    # 5. flat, closed block: no nested open before the close, and exactly one
+    #    close - the remainder may contain no delimiter of either kind
+    close = body.find("}")
+    nested = body.find("{")
+    if close == -1:
+        raise ContractError("field block is not closed")
+    if nested != -1 and nested < close:
+        raise ContractError("nested opening delimiter inside the field block")
+    block, rest = body[:close], body[close + 1:]
+    if "{" in rest or "}" in rest:
+        raise ContractError("stray or additional block delimiter after the "
+                            "authoritative field block")
+
+    # 6. exactly the six known fields, each once, each with a valid value
+    fields = {}
+    for entry in block.split(";"):
+        parts = entry.split(":")
+        if len(parts) != 2:
+            raise ContractError("malformed field entry: %r" % entry)
+        name, value = parts[0].strip(), parts[1].strip()
+        if name not in _FIELD_NAMES:
+            raise ContractError("unknown field: %r" % name)
+        if name in fields:
+            raise ContractError("duplicate field: %r" % name)
+        if value not in _FIELD_VALUES[name]:
+            raise ContractError("invalid value for %s: %r" % (name, value))
+        fields[name] = value
+    missing = [name for name in _FIELD_NAMES if name not in fields]
+    if missing:
+        raise ContractError("missing fields: %r" % missing)
+
+    # 7. the prose may carry no second machine declaration of any kind, in
+    #    any capitalisation - not even "just an example". A declaration
+    #    token is a KEY that starts its own word: "current state:",
+    #    "deployed:". A hyphenated compound such as "Owner-SELECTED: Render"
+    #    is one word whose tail happens to be a key name and is not a
+    #    machine declaration; this is a lexical rule, not an interpretation
+    #    of intent.
+    lowered = re.sub(r"\s+", " ", rest.lower())
+    for token in _DECLARATION_TOKENS:
+        if re.search(r"(?<![a-z0-9_-])" + re.escape(token), lowered):
+            raise ContractError(
+                "duplicate or ambiguous machine declaration in prose: %r"
+                % token)
+
+    return state, fields
+
+
 def _release_current_truth():
     """The explicit CURRENT-TRUTH:RELEASE-READINESS region."""
     return contract.region(_text(), "RELEASE-READINESS")
@@ -265,42 +374,128 @@ def _cells(row):
 
 
 def _row_truth(row):
-    """The row's own CURRENT TRUTH cell — where its machine state lives."""
+    """The row's own CURRENT TRUTH cell - where its machine contract lives."""
     return _cells(row)[5]
 
 
+def _row_contract(row_id):
+    try:
+        return _parse_contract(_row_truth(_row(row_id)))
+    except ContractError as exc:
+        raise AssertionError("%s: %s" % (row_id, exc))
+
+
 def _row_state(row_id):
-    """The row's CURRENT STATE marker — exactly one, or the row fails."""
-    states = _CURRENT_STATE.findall(_row_truth(_row(row_id)))
-    assert len(states) == 1, (
-        "%s needs exactly one CURRENT STATE marker in its current-truth cell, "
-        "found %d" % (row_id, len(states)))
-    return states[0]
+    return _row_contract(row_id)[0]
 
 
 def _row_fields(row_id):
-    """The row's {…} field block, parsed strictly.
+    return _row_contract(row_id)[1]
 
-    Exactly one block; exactly the six known fields, each exactly once; each
-    value YES, NO or N/A. Anything else fails here, before any invariant is
-    consulted, so a malformed block can never be read as a valid state.
-    """
-    cell = _row_truth(_row(row_id))
-    blocks = _FIELD_BLOCK.findall(cell)
-    assert len(blocks) == 1, (
-        "%s needs exactly one {…} field block, found %d" % (row_id, len(blocks)))
-    fields = {}
-    for entry in blocks[0].split(";"):
-        match = _FIELD.match(entry)
-        assert match, (row_id, "malformed field entry", entry.strip())
-        name, value = match.group(1), match.group(2)
-        assert name in _FIELD_NAMES, (row_id, "unknown field", name)
-        assert name not in fields, (row_id, "duplicate field", name)
-        assert value in _FIELD_VALUES, (row_id, name, "invalid value", value)
-        fields[name] = value
-    missing = [name for name in _FIELD_NAMES if name not in fields]
-    assert not missing, (row_id, "missing fields", missing)
-    return fields
+
+# --------------------------------------------------------------------------
+# Parser unit tests on synthetic cells - the structural failure class itself,
+# independent of the live document.
+# --------------------------------------------------------------------------
+_VALID_BLOCK = ("{SELECTED: YES; PROVISIONED: YES; IMPLEMENTED: N/A; "
+                "DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: NO}")
+_VALID_CELL = " CURRENT STATE: PROVISIONED / NOT COMPLETE. " + _VALID_BLOCK + \
+              " Owner-SELECTED: Render (OD-INFRA-1); one live backup object exists "
+
+_MALFORMED_CELLS = {
+    "missing prefix, valid marker later":
+        " Owner-SELECTED. Example: CURRENT STATE: PROVISIONED / NOT COMPLETE. " + _VALID_BLOCK,
+    "malformed first state, valid later":
+        " CURRENT STATE: COMPLETE! " + _VALID_BLOCK +
+        " Previous example: CURRENT STATE: PROVISIONED / NOT COMPLETE.",
+    "unknown state":
+        " CURRENT STATE: MOSTLY DONE. " + _VALID_BLOCK,
+    "punctuation-corrupted marker":
+        " CURRENT STATE - PROVISIONED / NOT COMPLETE. " + _VALID_BLOCK,
+    "lowercase duplicate declaration later":
+        _VALID_CELL + " previous: current state: completed",
+    "uppercase duplicate declaration later":
+        _VALID_CELL + " PREVIOUS: CURRENT STATE: NOT SELECTED.",
+    "two valid markers":
+        _VALID_CELL + " CURRENT STATE: PROVISIONED / NOT COMPLETE. " + _VALID_BLOCK,
+    "invalid first, valid second":
+        " CURRENT STATE: DONE. {COMPLETE: YES} CURRENT STATE: NOT SELECTED. "
+        "{SELECTED: NO; PROVISIONED: N/A; IMPLEMENTED: N/A; DEPLOYED: N/A; LIVE_ACTIVATED: N/A; COMPLETE: NO}",
+    "missing block":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. prose only",
+    "block not immediately after state":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. see below " + _VALID_BLOCK,
+    "duplicated block":
+        _VALID_CELL + " " + _VALID_BLOCK,
+    "nested block":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {SELECTED: NO; COMPLETE: YES " + _VALID_BLOCK + "}",
+    "malformed outer, valid inner":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {SELECTED: NO; COMPLETE: YES; " + _VALID_BLOCK + "}",
+    "unclosed outer, valid inner":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {SELECTED: NO; " + _VALID_BLOCK,
+    "unclosed block":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {SELECTED: YES; PROVISIONED: YES; "
+        "IMPLEMENTED: N/A; DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: NO prose",
+    "stray close":
+        _VALID_CELL + " } ",
+    "wrong delimiter order":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. }SELECTED: YES; PROVISIONED: YES; "
+        "IMPLEMENTED: N/A; DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: NO{",
+    "extra field":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {SELECTED: YES; PROVISIONED: YES; "
+        "IMPLEMENTED: N/A; DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: NO; RELEASED: YES}",
+    "missing field":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {SELECTED: YES; PROVISIONED: YES; "
+        "IMPLEMENTED: N/A; DEPLOYED: NO; COMPLETE: NO}",
+    "duplicate field":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {SELECTED: YES; PROVISIONED: YES; "
+        "IMPLEMENTED: N/A; DEPLOYED: NO; DEPLOYED: YES; LIVE_ACTIVATED: NO; COMPLETE: NO}",
+    "malformed key":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {SELECTED YES; PROVISIONED: YES; "
+        "IMPLEMENTED: N/A; DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: NO}",
+    "malformed value":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {SELECTED: YES; PROVISIONED: MAYBE; "
+        "IMPLEMENTED: N/A; DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: NO}",
+    "COMPLETE: N/A (not permitted for COMPLETE)":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {SELECTED: YES; PROVISIONED: YES; "
+        "IMPLEMENTED: N/A; DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: N/A}",
+    "field outside block":
+        _VALID_CELL + " DEPLOYED: YES",
+    "second block in prose":
+        _VALID_CELL + " historically {DEPLOYED: YES}",
+    "field-style declaration in prose":
+        _VALID_CELL + " note - complete: yes as of Friday",
+}
+
+_VALID_CELLS = {
+    "canonical": _VALID_CELL,
+    "no padding": "CURRENT STATE: NOT SELECTED. {SELECTED: NO; PROVISIONED: N/A; "
+                  "IMPLEMENTED: N/A; DEPLOYED: N/A; LIVE_ACTIVATED: N/A; COMPLETE: NO}",
+    "prose uses 'live' as adjective": _VALID_CELL + " the live backup object is live.",
+    "prose names providers": _VALID_CELL + " Candidates: Stripe, Adyen, Tap; none selected.",
+    "prose says NOT COMPLETE without a colon": _VALID_CELL + " release: NOT COMPLETE",
+    "prose mentions deployment word without colon": _VALID_CELL + " it is not deployed anywhere",
+    "deployed state": " CURRENT STATE: DEPLOYED / NOT COMPLETE. {SELECTED: YES; PROVISIONED: YES; "
+                      "IMPLEMENTED: N/A; DEPLOYED: YES; LIVE_ACTIVATED: NO; COMPLETE: NO} prose",
+    "implemented state": " CURRENT STATE: IMPLEMENTED / NOT DEPLOYED. {SELECTED: YES; PROVISIONED: N/A; "
+                         "IMPLEMENTED: YES; DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: NO} prose",
+}
+
+
+def test_contract_parser_rejects_every_malformed_structure():
+    for label, cell in _MALFORMED_CELLS.items():
+        try:
+            _parse_contract(cell)
+        except ContractError:
+            continue
+        raise AssertionError("parser accepted a malformed cell: %s" % label)
+
+
+def test_contract_parser_accepts_valid_structures():
+    for label, cell in _VALID_CELLS.items():
+        state, fields = _parse_contract(cell)
+        assert state in _PD_CURRENT_STATES, label
+        assert set(fields) == set(_FIELD_NAMES), label
 
 
 def test_release_current_truth_region_is_well_formed():
