@@ -9,9 +9,12 @@ documents stale without failing here. P10-DOC1 changes NO runtime code —
 these are repository doc-invariant checks in the established convention.
 Input contract: run under pytest from the repository root; reads the two
 documents plus the source files their claims cite.
-Output contract: superseded claims stay labeled; no prescriptive retention
-duration exists; retention substance stays OPEN; disabled/absent controls are
-never claimed active; cited source truth still matches.
+Output contract: superseded claims stay labeled AND stay out of the current
+sections; no prescriptive retention duration exists; retention substance stays
+OPEN; disabled/absent controls are never claimed active; the cost plan's CURRENT
+section states both halves of the real position (zero AI/billing spend, and the
+provider costs that now exist uncontrolled by runtime code); cited source truth
+still matches in both directions.
 Prohibited behaviors: MUST NOT weaken to pass; MUST NOT decide any retention
 rule or legal conclusion.
 """
@@ -19,13 +22,19 @@ import glob
 import os
 import re
 
+from tests import current_truth_contract as contract
+
 RETENTION = os.path.join("docs", "DATA_RETENTION_POLICY.md")
 COST = os.path.join("docs", "COST_GOVERNANCE_PLAN.md")
 
 
-def _norm(path):
+def _raw(path):
     with open(path, encoding="utf-8") as fh:
-        return re.sub(r"\s+", " ", fh.read())
+        return fh.read()
+
+
+def _norm(path):
+    return re.sub(r"\s+", " ", _raw(path))
 
 
 # ==========================================================================
@@ -123,11 +132,96 @@ def test_retention_doc_matches_source_truth():
 # ==========================================================================
 # COST_GOVERNANCE_PLAN.md
 # ==========================================================================
-def test_cost_plan_states_no_live_paid_usage():
+def _cost_current_truth():
+    """The explicit CURRENT-TRUTH:COST region — the only current-truth source.
+
+    REPAIRED AGAIN (v1.32 contract hardening). Two earlier attempts tried to
+    separate current truth from history by recognising Markdown shapes, and
+    both leaked: a preserved claim in a shape the guard had not anticipated
+    could satisfy a check about the present. The document now delimits its
+    current truth explicitly and this guard reads nothing else. History may sit
+    anywhere outside the region, in any format, and may contradict it freely.
+    """
+    return re.sub(r"\s+", " ", contract.region(_raw(COST), "COST"))
+
+
+def _cost_history():
+    """Everything outside the region — preserved, and never a current claim."""
+    return re.sub(r"\s+", " ", contract.outside(_raw(COST), "COST"))
+
+
+def test_cost_current_truth_region_is_well_formed():
+    """Missing, duplicated or malformed region = failure, never a silent pass."""
+    assert contract.region(_raw(COST), "COST").strip()
+
+
+def test_cost_current_truth_states_the_provider_costs_that_exist():
+    """The region must name every provider cost that is actually incurred.
+
+    REPAIRED AGAIN (v1.32 contract hardening). Only the delimited region is
+    read. A correct-sounding historical claim elsewhere in the file — bullet,
+    blockquote, table, italic aside or prose — cannot satisfy any of this.
+    """
+    current = _cost_current_truth()
+    assert "Production hosting exists" in current
+    assert "off-provider backup destination exists" in current
+    assert "email provider and adapter direction exists" in current
+    assert "OD-INFRA-1" in current and "OD-INFRA-5" in current
+    assert "OD-INFRA-6" in current
+
+
+def test_cost_current_truth_states_what_costs_nothing():
+    current = _cost_current_truth()
+    assert "AI token spend is zero" in current
+    assert "AI_ADVISORY_ENABLED = False" in current
+    assert "Live production email sending remains DEFERRED" in current
+    assert "No payment provider is live" in current
+    assert "no live user billing exists" in current
+    assert "No paid third-party monitoring service" in current
+
+
+def test_cost_current_truth_denies_a_runtime_cost_control_system():
+    """The plan must not imply that runtime code governs provider spend."""
+    current = _cost_current_truth()
+    assert ("Runtime code does not provide a complete provider-cost budgeting, "
+            "capping or alerting system" in current)
+    assert "no kill switch, no spending ceiling, no cost accumulator" in current
+
+
+def test_cost_current_truth_records_od_infra_4_as_decided():
+    """A settled selection is not operational readiness, and vice versa."""
+    current = _cost_current_truth()
+    assert "OD-INFRA-4 DECISION: SATISFIED AS A SELECTION DECISION" in current
+    assert "no dedicated third-party monitoring provider was adopted" in current
+    assert "remain OPEN operations work" in current
+    assert "Nobody is notified when something breaks" in current
+    # the decision must not be recorded as still open anywhere current
+    assert "OD-INFRA-4 OPEN" not in current
+    assert "OD-INFRA-4 remains OPEN" not in current
+
+
+def test_cost_current_truth_never_claims_zero_paid_usage():
+    """The vague old formulation may not reappear as a current claim."""
+    current = _cost_current_truth()
+    for vague in ("no live paid usage of any kind",
+                  "no provider cost", "no cloud/provider billing",
+                  "do not exist today"):
+        assert vague.lower() not in current.lower(), vague
+
+
+def test_old_zero_cost_claim_only_survives_outside_the_region():
+    """The superseded claim stays visible — and stays out of current truth."""
+    claim = "There is NO live paid usage of any kind"
+    assert claim in _cost_history(), (
+        "the superseded claim must stay visible as labeled history — deleting "
+        "it would hide that the plan once asserted zero provider cost")
+    assert claim not in _cost_current_truth()
     text = _norm(COST)
-    assert "There is NO live paid usage of any kind" in text
-    assert "AI_ADVISORY_ENABLED = False" in text
-    assert "no kill switch, no spending ceiling, no cost accumulator" in text
+    for match in re.finditer(re.escape(claim), text):
+        window = text[max(0, match.start() - 400):match.start()]
+        assert "SUPERSEDED" in window, (
+            "this claim may appear ONLY inside preserved superseded text: %s"
+            % text[max(0, match.start() - 200):match.end() + 80])
 
 
 def test_cost_plan_never_claims_active_controls():
@@ -152,6 +246,28 @@ def test_cost_plan_matches_source_truth():
         source = fh.read()
     assert "AI_ADVISORY_ENABLED = False" in source
     assert '"max_tokens": 150' in source
+
+
+def test_provider_cost_claims_tied_to_source_truth():
+    """The document's "these providers now cost money" claims must keep
+    matching the source that makes them true, in both directions.
+
+    Added with the v1.32 repair: the current section names an off-provider
+    backup path and a production email adapter. If either is ever removed the
+    document's cost reality changes, and this test makes that change loud
+    instead of leaving a stale claim of cost where none is incurred.
+    """
+    assert os.path.isfile(os.path.join("engine", "r2_object_upload.py"))
+    assert os.path.isfile(os.path.join("engine", "offsite_backup_scheduler.py"))
+    assert os.path.isfile(
+        os.path.join("scripts", "inventorai_offsite_backup.py"))
+    with open(os.path.join("engine", "email_sender.py"), encoding="utf-8") as fh:
+        assert "class ResendEmailSender" in fh.read()
+    # the scheduler exists in the tree but must not be described as running:
+    # nothing in web/ may start it outside the production gate.
+    with open(os.path.join("web", "app.py"), encoding="utf-8") as fh:
+        app_source = fh.read()
+    assert "_start_offsite_backup_scheduler_if_production" in app_source
 
 
 def test_paid_activation_block_referenced():

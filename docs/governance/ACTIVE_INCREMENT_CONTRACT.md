@@ -24,9 +24,39 @@ self-SHA or lifecycle-label change creates a synchronization candidate. When no 
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
 <a id="current-authority--post-652-declaration"></a>
-## Current authority — post-PR-652 declaration
+<a id="current-authority--post-664-declaration"></a>
+## Current authority — post-PR-664 declaration (v1.32 synchronization, 2026-09-19)
 
-**ACTIVE CONTRACT: NONE.** No NEW implementation mandate is currently active. This
+**ACTIVE CONTRACT: NONE.** The declaration below still holds; what changed is the set
+of completed work behind it. **Documentation-only cut** at HEAD
+`61b482820cd2a2bb37ab73f017f2c840331707f3`, tree
+`e190d35d961474a500374a36d5bc87fa9ac8adfb`. Resolve the live tip from Git each session.
+
+**Authoritative implementation now runs through PR #664, not PR #652.** Twelve further
+merges (PRs #653–#664) are part of the authoritative state, each separately
+Owner-authorized with its own exact-head merge authorization and post-merge
+verification. The two that changed the product's operational shape:
+
+| PR | Merge | Subject |
+|---|---|---|
+| #663 | `06bf3632ae9914732e945f00f5ff9f130aea57a0` | production transactional email (Resend adapter under OD-INFRA-6, durable SQLite outbox, ONE bounded dispatcher, trusted public base URL) + off-provider Cloudflare R2 backup transport and operator path under OD-INFRA-5 |
+| #664 | `61b482820cd2a2bb37ab73f017f2c840331707f3` | ONE bounded in-process daily off-provider backup scheduler (OD-INFRA-5) |
+
+**The daily scheduler is MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED.** No scheduled run
+has occurred; deploying the merged code would activate it, and deployment is not
+authorized. **Live Resend activation and official domain selection remain DEFERRED TO
+FINAL PRE-RELEASE — NOT CANCELLED**, and the email retry-budget P1 must be revisited
+before live activation. `PUBLIC RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED` ·
+`PAID ACTIVATION: NOT AUTHORIZED`. **A1 is completed work and is not the current
+mandate.** Derived routing: `INVENTORAI_MASTER_EXECUTION_ROADMAP.md` v1.32 and its
+Operating Checklist — both derived navigation, neither authority, and this file outranks
+both.
+
+*(The `current-authority--post-652-declaration` anchor above is retained so existing
+links keep resolving; the PR #647–#652 declaration it named is preserved verbatim below,
+superseded only as to its stopping point.)*
+
+No NEW implementation mandate is currently active. This
 is the "no mandate" state for FUTURE work only; it does NOT mean the merged
 Readiness, Commercial-evidence or Manufacturing-evidence capabilities lacked
 authority. Each was separately Owner-authorized, delivered as a bounded candidate,

@@ -5,6 +5,90 @@
 meaning. CLAUDE.md owns the single boot sequence. Historical material below does not
 override this current entry or impose another reading/approval/synchronization sequence.
 
+## v1.32 current-state synchronization — read this first (2026-09-19)
+
+**Documentation-only cut at HEAD `61b482820cd2a2bb37ab73f017f2c840331707f3`, tree
+`e190d35d961474a500374a36d5bc87fa9ac8adfb`, branch
+`feature/atomic-json-session-persistence`. Resolve the live tip from Git each session;
+this is evidence of its moment, not a pin.** Nothing below this block is deleted. Where
+an earlier statement in this file conflicts with this block, **this block is the current
+truth and the earlier statement is preserved as truth at its own recorded gate.** No
+status is promoted, no gate is opened and no obligation is discharged by this
+synchronization.
+
+**Twenty-two merge commits advanced the repository past the state most of this file
+describes — PRs #643 through #664.** The bullets below stopped at PR #656 and at
+PRs #647–#652; they are not wrong about what they recorded, only incomplete.
+
+- **PR #643 is MERGED** at `38827bf`, final head `3bb443ce69eba3a9e7f746c5068792ddb004d466`,
+  after four recorded repair cycles. Any statement that it is awaiting return, published
+  or unmerged is superseded. **PR #644** merged the T2-G legacy-migration path.
+- **PR #663 (MERGED, `06bf3632ae9914732e945f00f5ff9f130aea57a0`)** delivered production
+  transactional email — a Resend adapter under OD-INFRA-6, a durable SQLite outbox, ONE
+  bounded dispatcher and a trusted public base URL — together with the off-provider
+  Cloudflare R2 backup transport and operator path under OD-INFRA-5.
+- **Evidence-class boundary — repository identity is not provider identity.**
+  - **Repository PR #663 merge SHA:** `06bf3632ae9914732e945f00f5ff9f130aea57a0`, read from
+    Git. This is a repository fact and **not** a claim about what the provider is running.
+  - **Provider exact deployed SHA: NOT VERIFIED IN THIS SESSION.** It must be re-read from
+    the provider surface before it is cited as exact.
+  - **Prior provider evidence:** an **abbreviated** deployment identity consistent with
+    `06bf363…`. An abbreviation is all that evidence supports.
+  - **Never infer an exact full provider SHA**, from a merge SHA or by widening an
+    abbreviation. A full SHA produced that way once turned out to exist nowhere in Git; it
+    is withdrawn, and the invalid literal is deliberately not reproduced anywhere in this
+    repository.
+- **PR #664 (MERGED, `61b482820cd2a2bb37ab73f017f2c840331707f3`)** delivered ONE bounded
+  in-process daily off-provider backup scheduler. **It is MERGED, NOT DEPLOYED and NOT
+  LIVE-ACTIVATED. No scheduled run has occurred.** Deploying the merged code would
+  activate it, and deployment is not authorized.
+- **Production hosting exists.** Render in the Frankfurt region, Docker runtime, ONE
+  non-public web service (one instance, one worker, one thread), ONE persistent disk at
+  `/var/data` holding the canonical SQLite, secrets through platform environment only,
+  `/health`, access-log token redaction, persistence verified across **restart** and
+  **redeploy**. Any "no production hosting", "no provider", "no region", "no TLS
+  anywhere" or "no production environment" claim elsewhere in this file is
+  time-scoped history, not current truth.
+- **Off-provider backup exists.** A private R2 bucket with create-only writes and a
+  scoped token; **one live off-provider backup**; a **full-loss disaster-recovery drill
+  PASS** end to end; the temporary DR service **decommissioned**. "No offsite backup"
+  and "no scheduled backup code" claims are superseded.
+- **FCORA has executed once, and its historical result is NOT rewritten.**
+  `FCORA-EXECUTION-01`, READ-ONLY, at HEAD `d3f56660…` returned
+  **`C — FCORA FAIL — MATERIAL RELEASE-BLOCKING RECONCILIATION DEFECT`** with
+  `REPOSITORY ARTIFACT FOR THAT EXECUTION: NOT COMMITTED / NOT CLAIMED`. The later
+  `FCORA-DIFFERENTIAL-RECHECK-01` at HEAD `7c59c314…` returned
+  `B — DIFFERENTIAL RECHECK PASS WITH NON-BLOCKING DEFERRED ITEMS`, silent-disappearance
+  current count **0**, unaccounted/orphan **0**, Rows 174 and 186 **CLOSED / SATISFIED**.
+  These are two separate records. **No FCORA PASS exists** and clearance is not release
+  approval. Any remaining "FCORA NOT STARTED" wording is superseded as current state.
+- **PRE-FCORA has executed** (Stage 42) and must be re-convened at the then-current tip
+  immediately before FCORA. It is not "not started".
+- **PSRR remains PARTIAL.** The application-layer tranche is executed and independently
+  accepted (21 of 37 items) and provider-dependent evidence now exists in fact but is
+  not yet recorded in the repository. `PSRR COMPLETE: NO` · `PSRR GO ELIGIBLE: NO` ·
+  **no GO and no NO-GO exists.**
+- **Stale register rows corrected in this same candidate:** T1-D and OD-PDVG-12 are
+  **CLOSED** (PR #639; OD-PDVG-13 and OD-PDVG-12 consumed), and T2-E is **CLOSED for its
+  accepted Option-B scope only** (PR #640) with the wider evidence-writer direction still
+  deferred and unauthorized.
+- **A1 is completed work, not the current mandate.** `ACTIVE CONTRACT: NONE` stands;
+  CLAUDE.md has been corrected to match.
+
+**Unchanged by all of the above, and stated plainly:** `PUBLIC RELEASE: NOT AUTHORIZED` ·
+`DEPLOYMENT: NOT AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED` · Maintenance Mode
+unchanged · official domain selection and production email identity / live Resend
+activation **DEFERRED TO FINAL PRE-RELEASE — NOT CANCELLED** · readiness ceiling
+`INSUFFICIENT_EVIDENCE` in every dimension, with no positive promotion path authorized ·
+automatic CAD / PCB generation outside current product direction. **Merged is not
+deployed. Implemented is not activated. Evidence captured is not a validated conclusion.
+Selection is not provisioning and provisioning is not completion.**
+
+Derived stage-by-stage routing for this cut lives in
+[INVENTORAI_MASTER_EXECUTION_ROADMAP.md](INVENTORAI_MASTER_EXECUTION_ROADMAP.md) v1.32 and
+[INVENTORAI_MASTER_ROADMAP_EXECUTION_CHECKLIST.md](INVENTORAI_MASTER_ROADMAP_EXECUTION_CHECKLIST.md).
+**Both are derived navigation, not authority, and this file outranks both.**
+
 ## Current authority and position
 
 - Repository: Amirjaferali/inventorai.
@@ -137,7 +221,11 @@ and has been **EXECUTED** at the PR #652 tip (verdict C — NOT READY; see the c
 entry above); its §D-2 ownership and mandatory trigger are unmoved and no gate it
 guards is satisfied by that review or by the `PRE-FCORA-AUTHORITY-SYNC-01` authority
 sync recorded in the current entry. FCORA is later, **NOT AUTHORIZED and NOT
-STARTED**. No recovery, evaluator-drift inspection, external
+STARTED** *(truth at this gate, preserved; the "NOT STARTED" half is **SUPERSEDED** as
+current state — FCORA has since executed once under `FCORA-EXECUTION-01`, its historical
+`C — FCORA FAIL` result preserved and not rewritten, with the later differential
+clearance recorded separately. See the v1.32 block at the top of this file. Nothing else
+in this sentence changes, and no FCORA PASS exists)*. No recovery, evaluator-drift inspection, external
 linkage, feasibility evaluation or gate execution is activated by this sync.
 
 The bounded recovery lane remains closed in the decision-use record with **BLOCKED**

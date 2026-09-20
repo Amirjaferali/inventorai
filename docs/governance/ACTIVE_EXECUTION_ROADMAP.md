@@ -15,6 +15,35 @@ declarations or universal separate-approval rules. Substantive decisions and unf
 return gates remain with their existing owners. Use §§10–11 below for current reading
 and recording mechanics. No completed F-01/F-02 or OSP lifecycle is reopened.
 
+**v1.32 continuity cut (2026-09-19) — documentation only.** Live identity at this cut:
+branch `feature/atomic-json-session-persistence`, HEAD
+`61b482820cd2a2bb37ab73f017f2c840331707f3`, tree
+`e190d35d961474a500374a36d5bc87fa9ac8adfb`, working tree clean — evidence of its moment,
+resolve the live tip from Git each session. `ACTIVE CONTRACT: NONE` is unchanged; what
+advanced is the completed work behind it. **The authoritative implementation now runs
+through PR #664, not PR #656 or PR #652.** PRs #643 and #644 are merged (T2-G t2g2 and
+the legacy-migration path); **PR #663** merged production transactional email (Resend
+adapter under OD-INFRA-6, durable SQLite outbox, ONE bounded dispatcher, trusted public
+base URL) together with the off-provider Cloudflare R2 backup transport and operator path
+under OD-INFRA-5; **PR #664** merged ONE bounded in-process daily off-provider backup
+scheduler. Production hosting exists (Render, Frankfurt, Docker, one non-public web
+service, one persistent disk carrying the canonical SQLite, persistence verified across
+restart and redeploy), one live off-provider backup exists, and a full-loss
+disaster-recovery drill passed end to end with the temporary DR service decommissioned.
+**The scheduler is MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED**; `PUBLIC RELEASE`,
+`DEPLOYMENT` and `PAID ACTIVATION` all remain **NOT AUTHORIZED**; official domain
+selection and live Resend activation remain **DEFERRED TO FINAL PRE-RELEASE — NOT
+CANCELLED**. FCORA has executed once with its historical
+`C — FCORA FAIL — MATERIAL RELEASE-BLOCKING RECONCILIATION DEFECT` **preserved and not
+rewritten**, and the later differential clearance recorded **separately**; **no FCORA
+PASS exists**. Earlier entries below stopping at PR #656, PR #652 or an unmerged PR #643
+are preserved as truth at their recorded time and are superseded only as to current
+position. Derived stage routing:
+[INVENTORAI_MASTER_EXECUTION_ROADMAP.md](INVENTORAI_MASTER_EXECUTION_ROADMAP.md) v1.32
+and its
+[Operating Checklist](INVENTORAI_MASTER_ROADMAP_EXECUTION_CHECKLIST.md) — derived
+navigation only, and this file outranks both on execution continuity.
+
 ## PR #626 documentation sync completed and post-return authority
 
 **Owner source:** current-chat "OWNER AUTHORIZATION — BOUNDED POST-RETURN AUTHORITY
