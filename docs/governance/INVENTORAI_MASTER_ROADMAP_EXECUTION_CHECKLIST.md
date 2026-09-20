@@ -48,7 +48,7 @@ it mentions is owned elsewhere; it only points at the owner.
 
 ## A. Current Master Roadmap version
 
-**v1.32** — post-PR-#664 current-state synchronization cut.
+**v1.32** — post-PR-#664 current-state synchronization cut, **amended 2026-09-20 by the Owner Stage 7 closure acceptance** (documentation-only; no new roadmap version, no structural change). Read the roadmap's *Stage 7 closure amendment* block before its v1.32 block.
 Previous cut: v1.31 (successor activation cut), preserved as history inside the same
 roadmap file. **v1.31's "AWAITING CONSOLIDATED RETURN" stop point is CONSUMED.**
 
@@ -132,11 +132,20 @@ Read those before acting on any stage; this table is a locator, not a status sou
 
 ## E. Current Stage / current subtask
 
-- **CURRENT SYNCHRONIZATION STEP:** v1.31 → v1.32
+- **CURRENT SYNCHRONIZATION STEP:** v1.32 → v1.32 + Stage 7 closure amendment (2026-09-20)
 - **CURRENT EARLIEST INCOMPLETE PRODUCT GROUP:** Group 2
-- **CURRENT STAGE:** Stage 7 (T2-G) — PARTIAL, materially advanced
-- **CURRENT SUBTASK:** Stage 7 bounded residuals — N-1/N-2 pending bounded acceptance,
-  R1/R2/R3, and the three-version legacy-migration disposition
+- **CURRENT STAGE:** Stage 8 — the next Master Roadmap stage. **Stage 7 (T2-G) is COMPLETED
+  ✅ within its bounded T2-G scope**; `N-1`/`N-2` SATISFIED and the three-version legacy
+  migration CLOSED/ACCEPTED under policy B.
+- **CURRENT SUBTASK:** none is authorized. Stage 8 requires its own explicit mandate; closing
+  Stage 7 starts nothing.
+- **PRESERVED, NOT DISCHARGED:** `R1` and `R2` (separate future residuals), `R3` (returns only
+  at its own applicable gate), `N-3`–`N-6`, and the non-blocking Arabic `ولكن`
+  contrast-form observation on the existing T2-G register row. Never silently drop these.
+- *(Superseded wording, preserved — was: "CURRENT SYNCHRONIZATION STEP: v1.31 → v1.32 /
+  CURRENT STAGE: Stage 7 (T2-G) — PARTIAL, materially advanced / CURRENT SUBTASK: Stage 7
+  bounded residuals — N-1/N-2 pending bounded acceptance, R1/R2/R3, and the three-version
+  legacy-migration disposition".)*
 - **CURRENT MANDATE:** owned by `ACTIVE_INCREMENT_CONTRACT.md`. This checklist does not
   set the mandate and never overrides it.
 
@@ -144,19 +153,23 @@ Read those before acting on any stage; this table is a locator, not a status sou
 
 Nothing below is authorized by this file. Each still requires the current mandate.
 
-1. **Stage 7** — close the bounded residuals (N-1/N-2 acceptance; the three-version
-   legacy-migration disposition). Do not reopen PR #643 or PR #644 lifecycles.
+1. **Stage 8** — repair or explicitly accept/disclose the measured 2-of-4 substantive
+   EN↔AR divergence before serious release.
 2. **Stage 9** — T1-A′ disposition from existing evidence. No RUN-004 and no fourth
    S2 run without new authority.
-3. **Stage 8** — repair or explicitly accept/disclose the measured 2-of-4 substantive
-   EN↔AR divergence before serious release.
-4. **Stage 10** — T2-C′ differential assessment of material changes only, since the
+3. **Stage 10** — T2-C′ differential assessment of material changes only, since the
    accepted WS16 evidence, across Electronics and Mechanical.
-5. **Stage 15 (IRL)** — the thinnest surviving readiness stage; its ownership is
+4. **Stage 15 (IRL)** — the thinnest surviving readiness stage; its ownership is
    unresolved and Stage 15 is now its only home. It must not be lost.
 
-Steps 1–4 are the Group 2 frontier. Step 5 is flagged because it is the highest
+Steps 1–3 are the Group 2 frontier. Step 4 is flagged because it is the highest
 loss risk, not because it is next in sequence.
+
+**Stage 7 is CLOSED and is no longer a step.** *(Superseded wording, preserved — was step 1:
+"**Stage 7** — close the bounded residuals (N-1/N-2 acceptance; the three-version
+legacy-migration disposition). Do not reopen PR #643 or PR #644 lifecycles.")* Do not reopen
+the PR #642, #643 or #644 lifecycles, and do not treat `R1`/`R2`/`R3` as Stage 7 work: they are
+preserved separately at their own triggers.
 
 ## G. Owner-deferred items — preserve, never silently drop
 
@@ -217,9 +230,9 @@ run has occurred. Deploying the merged code would activate it; that is not autho
 
 ## I. Current product-depth position
 
-**CURRENT PRODUCT-DEPTH FRONTIER: Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized.**
+**CURRENT PRODUCT-DEPTH FRONTIER: Stage 8 → Stage 9 → Stage 10 if authorized.** *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
 
-Group 1 is complete. Group 2 is the earliest incomplete group. Group 3 has Stage 12
+Group 1 is complete. **Stage 7 is COMPLETED within its bounded T2-G scope; Stage 8 is the next Master Roadmap stage.** Group 2 is still the earliest incomplete group. Group 3 has Stage 12
 complete, Stages 13 and 14 partial through the three-dimension Readiness Snapshot only,
 and Stage 15 open and thinnest. The Snapshot ceiling is `INSUFFICIENT_EVIDENCE` in every
 dimension: a captured dimension is not a validated conclusion.
@@ -280,13 +293,22 @@ Two further distinctions carried from current evidence and never to be collapsed
 
 ```
 CURRENT SYNCHRONIZATION STEP:
-v1.31 → v1.32
+v1.32 + Stage 7 closure amendment (2026-09-20)
 
 CURRENT EARLIEST INCOMPLETE PRODUCT GROUP:
 Group 2
 
+STAGE 7:
+COMPLETED within its bounded T2-G scope
+N-1 SATISFIED
+N-2 SATISFIED
+legacy migration CLOSED / ACCEPTED (policy B, explicit confirmed adoption)
+R1 PRESERVED
+R2 PRESERVED
+R3 PRESERVED at its own gate
+
 CURRENT PRODUCT-DEPTH FRONTIER:
-Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized
+Stage 8 → Stage 9 → Stage 10 if authorized
 
 CURRENT TECHNOLOGY-DEEPENING POSITION:
 Stages 18–27 preserved, not entered / not authorized
@@ -307,6 +329,19 @@ DAILY BACKUP SCHEDULER:
 MERGED
 NOT DEPLOYED
 NOT LIVE-ACTIVATED
+```
+
+**Preserved — the v1.32 cut's own verbatim record, superseded for present position only:**
+
+```
+CURRENT SYNCHRONIZATION STEP:
+v1.31 → v1.32
+
+CURRENT EARLIEST INCOMPLETE PRODUCT GROUP:
+Group 2
+
+CURRENT PRODUCT-DEPTH FRONTIER:
+Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized
 ```
 
 ---

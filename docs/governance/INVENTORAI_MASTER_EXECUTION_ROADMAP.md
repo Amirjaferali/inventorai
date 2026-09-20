@@ -30,7 +30,50 @@
 > `ACTIVE_EXECUTION_ROADMAP.md`. Where any of those disagrees with this file, **they
 > control and this file is the stale one.**
 
-## Current routing override — v1.32 (post-PR-#664 synchronization cut)
+## Current routing override — v1.32 Stage 7 closure amendment (2026-09-20)
+
+**This amendment sits on top of the v1.32 cut below; it does not replace it and does not
+create a new roadmap version.** Read this first for present routing, then the v1.32 block
+for everything it still governs. Nothing below it is deleted.
+
+**Documentation-only.** No product code, no runtime behaviour and no stage structure
+changed. All 45 Stage IDs, all 28 tracking IDs and the Group 1–9 structure are preserved
+unchanged.
+
+**`STAGE 7 / T2-G: COMPLETED ✅ WITHIN ITS BOUNDED T2-G SCOPE.`** The Owner accepted the
+completed read-only Stage 7 bounded-closure assessment at HEAD
+`9530d07196ad1dec7609ada7ec44b4eb03f56337`, tree
+`87b1be8b6956c17a009a1d559fc6b12da70e2935`. PR #643 **MERGED**; PR #644 **MERGED**;
+`N-1` and `N-2` **SATISFIED**; the three-version legacy migration **CLOSED / ACCEPTED**
+under policy **B — explicit confirmed adoption**, with automatic migration on open still
+rejected.
+
+**Preserved, not discharged:** `R1` and `R2` remain separate future residuals, `R3`
+returns only at its own applicable gate, and `N-3`–`N-6` keep their existing triggers.
+Closing Stage 7's bounded scope discharges none of them. The bounded Arabic
+`ولكن` contrast-form observation is carried on the existing T2-G register row as a
+non-blocking product-language note — safe under-progress direction, no gate, no repair
+obligation, no lifecycle of its own.
+
+**Authority for this amendment** is the Owner disposition recorded in
+`ACTIVE_INCREMENT_CONTRACT.md` → *Current authority — Stage 7 / T2-G bounded closure*.
+This file is derived navigation and states none of it on its own.
+
+**Next Master Roadmap stage: Stage 8.** Group 2 remains the earliest incomplete group.
+Closing Stage 7 authorizes nothing: Stage 8 still requires its own explicit mandate.
+`PUBLIC RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED` ·
+`PAID ACTIVATION: NOT AUTHORIZED`. The PR #664 daily off-provider backup scheduler
+remains **MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED**.
+
+*(This amendment supersedes, for present routing only, the v1.32 "Next action" paragraph
+that read: "work the earliest incomplete group — Group 2. Close Stage 7's bounded
+residuals (N-1/N-2 and the three-version legacy-migration disposition), then Stages 9
+and 8, both decidable from existing evidence without new runs." That sentence is
+preserved verbatim in place below as truth at its own recorded moment.)*
+
+---
+
+## Current routing override — v1.32 (post-PR-#664 synchronization cut) — SUPERSEDED FOR PRESENT ROUTING BY THE 2026-09-20 STAGE 7 CLOSURE AMENDMENT ABOVE, PRESERVED IN FULL
 
 **Synchronization only. No execution-status change is created by this update; the
 statuses below are RECONCILED from merged evidence that v1.31 had not yet seen.**
@@ -267,7 +310,7 @@ No checkbox, eligibility statement, recommendation, or roadmap position grants p
 | PR #642 authority provenance | Owner-supplied executor returns name `PR642-EXACT-HEAD-MERGE-01 v1.0` and `PR642-PR-RECORD-CLOSE-01 v1.0` as exercised; prior signed Git merge and current live PR/comment evidence establish their resulting states. Lead did not perform these writes or reconstruct unseen Owner issuance. Both tasks are consumed; no new mutation follows from this checklist |
 | PR #642 independent disposition | **B — PASS WITH NON-BLOCKING FINDINGS ADOPTED** from `PR642-T2G-UNICODE-SPAN-DIFF-REVIEW-02`. F-3 resolved on `e0af0fcf…`; F-1/original F-2 and other accepted conclusions inherited within their limits. Reporting qualifications remain with N-2; N-1–N-6 and all residuals preserved. No further repair/review pending |
 | PR #642 repair boundary — published | Exactly `engine/answer_stance.py`, `tests/test_t2g_answer_stance.py`, `tests/test_t2g_versioned_journey.py`, `docs/governance/ACTIVE_INCREMENT_CONTRACT.md`. Other paths unchanged from the sole reviewed parent; no second branch/PR or new schema/version/selector |
-| Current continuation | Stage 7 PARTIAL; t2g2 candidate published as PR #643, formal Creator return awaited per Owner. No new design, duplicate implementation, scope acceptance or merge authorization. Extra-file and local-failure disclosures pending consolidated disposition |
+| Current continuation | **SUPERSEDED 2026-09-20 — Stage 7 is COMPLETED within its bounded T2-G scope; PR #643 and PR #644 are both MERGED and no return is awaited. Next Master Roadmap stage: Stage 8.** *(Preserved wording, true at its own moment:)* Stage 7 PARTIAL; t2g2 candidate published as PR #643, formal Creator return awaited per Owner. No new design, duplicate implementation, scope acceptance or merge authorization. Extra-file and local-failure disclosures pending consolidated disposition |
 | PR #642 actual merge / authoritative tip | `d19967197cec7368fcd9a734ab96321b1fe932c9` — VERIFIED live; exactly the recorded accepted merge content |
 | PR #642 actual merge parents / tree | Exactly two ordered parents: `6fa8d9bb637c794f2daf6b35ffbcda9e2da5020b`, `e0af0fcf56cc7785d2691c4286852cd61cdd47fa`; tree `40a281de056a4ac9caf675f6445e02cccde2994a` — VERIFIED |
 | PR #642 accepted candidate to merge | `files:[]` — EMPTY content difference; verified via compare, no new test run |
@@ -297,12 +340,12 @@ This is the short operating view of the detailed sequence in §6. A successor wo
 ### Group 2 — Stages 6–10: feedback, semantic depth, and known value defects
 
 - [x] **6 — T2-D:** COMPLETED ✅ — PR #641 merged as `6fa8d9bb637c794f2daf6b35ffbcda9e2da5020b` from accepted `967ff2812b5e3b651eb3df47d798f15323f6b747`; post-merge identity verification PASS and content diff EMPTY. Original and boundary repairs accepted within their reported limits. Four T2-D observations and six PR #640 findings remain deferred; no repeat implementation/review.
-- [ ] **7 — T2-G:** PARTIAL / MERGED SLICES, BOUNDED RESIDUALS 🔄 — **UPDATED v1.32.** t2g1 integrated and administratively closed; **t2g2 PR #643 MERGED** at `38827bf`, final head `3bb443ce69eba3a9e7f746c5068792ddb004d466` after four repair cycles (`PR643-T2G2-SCOPE-REPAIR-01…04`); **PR #644 T2-G legacy migration MERGED**. The v1.31 extra-file and `generated_at` disclosures are RESOLVED inside that candidate (eleventh file Owner-retained and recorded as outside the original mandate; test-local clock pin; the hit-rate claim explicitly withdrawn). Still open: N-1/N-2 pending bounded acceptance, R1/R2/R3, and the three-version legacy-migration disposition. *(Superseded wording — was: "AWAITING CLAUDE RETURN … not merged".)*
+- [x] **7 — T2-G:** **COMPLETED ✅ WITHIN ITS BOUNDED T2-G SCOPE — UPDATED 2026-09-20 (Owner Stage 7 closure acceptance).** `N-1` and `N-2` are **SATISFIED**; the three-version legacy migration is **CLOSED / ACCEPTED** under policy B (explicit confirmed adoption; automatic migration on open still rejected). **Preserved, not discharged:** `R1` and `R2` stay separate future residuals, `R3` returns only at its own applicable gate, `N-3`–`N-6` keep their triggers, and the Arabic `ولكن` contrast-form note rides the existing T2-G register row as a non-blocking product-language observation (safe under-progress direction; no gate, no repair obligation). Completion of this bounded scope is **not** full semantic-adaptivity capability and **not** a paid-activation claim. *(Superseded wording, preserved — was: "PARTIAL / MERGED SLICES, BOUNDED RESIDUALS 🔄 — **UPDATED v1.32.**")* t2g1 integrated and administratively closed; **t2g2 PR #643 MERGED** at `38827bf`, final head `3bb443ce69eba3a9e7f746c5068792ddb004d466` after four repair cycles (`PR643-T2G2-SCOPE-REPAIR-01…04`); **PR #644 T2-G legacy migration MERGED**. The v1.31 extra-file and `generated_at` disclosures are RESOLVED inside that candidate (eleventh file Owner-retained and recorded as outside the original mandate; test-local clock pin; the hit-rate claim explicitly withdrawn). *(Superseded 2026-09-20, preserved verbatim — was: "Still open: N-1/N-2 pending bounded acceptance, R1/R2/R3, and the three-version legacy-migration disposition.")* *(Superseded wording — was: "AWAITING CLAUDE RETURN … not merged".)*
 - [ ] **8 — EN↔AR divergence:** repair or explicitly accept/disclose the measured 2-of-4 substantive divergence before serious release.
 - [ ] **9 — T1-A′ disposition:** use existing evidence; no RUN-004/fourth S2 run without new authority.
 - [ ] **10 — T2-C′ differential assessment:** assess only material changes since accepted WS16 evidence across Electronics and Mechanical.
 
-**Group state — UPDATED v1.32:** Stage 6 COMPLETED ✅. **Stage 7 PARTIAL and materially advanced — PR #643 and PR #644 both merged; the v1.31 wait and both disclosures are consumed.** Its remaining residuals are bounded (N-1/N-2, legacy-migration disposition). Stages 8–10 unchanged. **Group 2 is the earliest incomplete group and therefore the current product-depth frontier.** No paid-activation obligation discharged.
+**Group state — UPDATED 2026-09-20 (Stage 7 closure acceptance):** Stage 6 COMPLETED ✅. **Stage 7 COMPLETED ✅ within its bounded T2-G scope** — `N-1`/`N-2` SATISFIED, legacy migration CLOSED/ACCEPTED under policy B; `R1`, `R2`, `R3` and `N-3`–`N-6` preserved at their own triggers, not discharged. **Stage 8 is now the next Master Roadmap stage** and still requires its own explicit mandate. Stages 9–10 unchanged. **Group 2 remains the earliest incomplete group and therefore the current product-depth frontier.** No paid-activation obligation discharged. *(Superseded wording, preserved — was: "Stage 7 PARTIAL and materially advanced — PR #643 and PR #644 both merged; the v1.31 wait and both disclosures are consumed. Its remaining residuals are bounded (N-1/N-2, legacy-migration disposition).")*
 
 ### Group 3 — Stages 11–15: human evidence and readiness foundations
 
@@ -930,7 +973,7 @@ Preserve: IP confidentiality; user/project/host/field-scoped authorization and e
 | 12 | T2-E Option B + T2-F — PR #640 lifecycle | COMPLETED ✅ — independent B/PASS and Lead adoption; explicit Owner acceptance/merge authority exercised; merge `100ceb886ceb8d01b77bcf4b5cc5d47787f0c4a2`; post-merge identity verification PASS, candidate-to-merge content diff empty. Six findings deferred unchanged |
 | 13 | T1-D / T2-B′ residual UX, after overlap proof | COMPLETED ✅ — PR #639 / `0f164324…`, post-merge verified |
 | 14 | T2-D ownership and capture | COMPLETED ✅ — independent B/PASS adopted; Creator-reported merge authority exercised; PR #641 merged as `6fa8d9bb637c794f2daf6b35ffbcda9e2da5020b` from accepted `967ff2812b5e3b651eb3df47d798f15323f6b747`. Post-merge identity verification PASS / candidate content diff EMPTY. Four deferred observations and prior accepted limits preserved; no response outstanding |
-| 15 | T2-G ownership and bounded semantic adaptation | **PARTIAL / MERGED SLICES — UPDATED v1.32** 🔄 — **PR #643 MERGED** (`38827bf`; final head `3bb443ce…`; four repair cycles `PR643-T2G2-SCOPE-REPAIR-01…04`) and **PR #644 T2-G legacy migration MERGED**. Both v1.31 disclosures RESOLVED in-candidate: eleventh file Owner-retained and recorded as outside the original mandate; `generated_at` fixed by a test-local clock pin with the hit-rate claim withdrawn. Remaining and bounded: N-1/N-2 pending bounded acceptance, R1/R2/R3, three-version legacy-migration disposition. *(Superseded — was: "AWAITING ORIGINAL CLAUDE RETURN … no merge".)* |
+| 15 | T2-G ownership and bounded semantic adaptation | **COMPLETED ✅ WITHIN BOUNDED T2-G SCOPE — UPDATED 2026-09-20 (Owner Stage 7 closure acceptance)** — `N-1`/`N-2` **SATISFIED**; three-version legacy migration **CLOSED / ACCEPTED** under policy B (explicit confirmed adoption; automatic migration on open still rejected). **Preserved, not discharged:** `R1`, `R2` (separate future residuals), `R3` (own gate), `N-3`–`N-6`, plus the non-blocking Arabic `ولكن` contrast-form observation on the existing T2-G register row. Bounded closure is not full semantic-adaptivity capability. *(Superseded wording, preserved — was: "PARTIAL / MERGED SLICES — UPDATED v1.32" with "Remaining and bounded: N-1/N-2 pending bounded acceptance, R1/R2/R3, three-version legacy-migration disposition".)* — **PR #643 MERGED** (`38827bf`; final head `3bb443ce…`; four repair cycles `PR643-T2G2-SCOPE-REPAIR-01…04`) and **PR #644 T2-G legacy migration MERGED**. Both v1.31 disclosures RESOLVED in-candidate: eleventh file Owner-retained and recorded as outside the original mandate; `generated_at` fixed by a test-local clock pin with the hit-rate claim withdrawn. Remaining and bounded: N-1/N-2 pending bounded acceptance, R1/R2/R3, three-version legacy-migration disposition. *(Superseded — was: "AWAITING ORIGINAL CLAUDE RETURN … no merge".)* |
 | 16 | EN↔AR divergence disposition | OPEN / before Serious Release ⏳ |
 | 17 | T1-A′ disposition without RUN-004 | OPEN / FRB ⛔ |
 | 18 | Differential T2-C′ product-value assessment | NOT AUTHORIZED ⏳ |

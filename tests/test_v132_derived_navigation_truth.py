@@ -175,3 +175,145 @@ def test_repository_merge_sha_is_labeled_as_repository_evidence():
     assert "**Repository PR #663 merge SHA:** `%s`" % _REAL_PR663_MERGE in normalized
     assert "Provider exact deployed SHA: NOT VERIFIED IN THIS SESSION" in normalized
     assert "Never infer an exact full provider SHA" in normalized
+
+
+# ==========================================================================
+# Stage 7 / T2-G bounded closure (Owner acceptance, 2026-09-20)
+#
+# These guards exist because closure is exactly where residuals get lost. A
+# stage that reads COMPLETED must still carry the obligations its closure did
+# NOT discharge, and the preserved residuals must be readable as preserved —
+# not merely absent from a list that no longer mentions them.
+# ==========================================================================
+CONTRACT = os.path.join("docs", "governance", "ACTIVE_INCREMENT_CONTRACT.md")
+REGISTER = os.path.join("docs", "governance", "DEFERRED_OBLIGATIONS_REGISTER.md")
+
+
+def _flat(path):
+    return re.sub(r"\s+", " ", _read(path))
+
+
+def test_stage_seven_reads_completed_within_its_bounded_scope():
+    roadmap = _flat(ROADMAP)
+    assert "STAGE 7 / T2-G: COMPLETED \u2705 WITHIN ITS BOUNDED T2-G SCOPE." in roadmap
+    # the stage checkbox itself must be ticked, not merely described
+    assert re.search(r"^- \[x\] \*\*7 — T2-G:\*\*",
+                     _read(ROADMAP), re.M), "stage 7 checkbox not ticked"
+    assert "STAGE 7 / T2-G: COMPLETED WITHIN ITS BOUNDED T2-G SCOPE." in _flat(CONTRACT)
+
+
+def test_bounded_closure_is_never_stated_as_full_capability():
+    """Closing a bounded slice is not delivering the capability."""
+    for path in (ROADMAP, REGISTER):
+        flat = _flat(path).lower()
+        assert "not full semantic-adaptivity capability" in flat or \
+            "capability not complete" in flat, path
+    for claim in ("t2-g is complete", "t2-g capability complete",
+                  "semantic adaptive questioning is complete",
+                  "full t2-g capability delivered"):
+        for path in (ROADMAP, CHECKLIST, CONTRACT, REGISTER):
+            assert claim not in _flat(path).lower(), (path, claim)
+
+
+def test_n1_and_n2_read_satisfied_in_the_authority_not_only_the_navigation():
+    contract = _flat(CONTRACT)
+    assert "`N-1` single-sentence mixed answers vetoed | **SATISFIED**" in contract
+    assert "`N-2` terse genuine explanations missed | **SATISFIED**" in contract
+
+
+def test_r1_r2_r3_are_preserved_and_never_silently_dropped():
+    """Each must remain findable AND be labeled preserved, in the register
+    that owns them and in the derived navigation that routes to them."""
+    register = _flat(REGISTER)
+    for rid in ("`R1`", "`R2`", "`R3`"):
+        assert rid in register, rid
+    assert "PRESERVED AS SEPARATE FUTURE RESIDUALS" in register
+    assert "PRESERVED at its own applicable gate" in register
+    # closure must not be described as discharging them
+    for path in (ROADMAP, CHECKLIST, CONTRACT, REGISTER):
+        flat = _flat(path)
+        for claim in ("R1 is closed", "R2 is closed", "R3 is closed",
+                      "R1/R2/R3 closed", "R1, R2 and R3 are discharged"):
+            assert claim not in flat, (path, claim)
+    for path in (ROADMAP, CHECKLIST, CONTRACT):
+        assert "Preserved, not discharged" in _flat(path) or \
+            "PRESERVED, NOT DISCHARGED" in _flat(path), path
+
+
+def test_n3_through_n6_keep_their_triggers():
+    for path in (CONTRACT, REGISTER):
+        flat = _flat(path)
+        assert "`N-3`\u2013`N-6`" in flat or "`N-3`-`N-6`" in flat, path
+
+
+def test_legacy_migration_is_closed_under_explicit_adoption_only():
+    register = _flat(REGISTER)
+    assert "**CLOSED / SATISFIED \u2014 2026-09-20 Owner Stage 7 closure acceptance.**" in register
+    assert "Policy B \u2014 EXPLICIT CONFIRMED MIGRATION is preserved" in register
+    # the rejected alternative must stay rejected wherever closure is stated
+    for path in (CONTRACT, ROADMAP, REGISTER):
+        flat = _flat(path).lower()
+        assert "automatic migration on open" in flat, path
+        assert "rejected" in flat, path
+    for claim in ("projects are migrated automatically",
+                  "migration runs on open", "all projects now run the current rules"):
+        for path in (ROADMAP, CHECKLIST, CONTRACT, REGISTER):
+            assert claim not in _flat(path).lower(), (path, claim)
+
+
+def test_the_arabic_contrast_observation_is_recorded_without_a_new_lifecycle():
+    """`ولكن` is a disclosed non-blocking observation, not a new obligation.
+
+    It must be findable in governance (the source already disclosed it), must
+    state its safe failure direction, and must not acquire a row, gate or
+    return trigger of its own.
+    """
+    prefixed = "\u0648\u0644\u0643\u0646"
+    register = _flat(REGISTER)
+    contract = _flat(CONTRACT)
+    assert prefixed in register and prefixed in contract
+    for flat in (register, contract):
+        assert "under-progress on a true answer" in flat
+        assert "never unearned support" in flat
+    # no separate lifecycle
+    assert "not a repair obligation" in contract.lower()
+    assert "not a gate" in contract.lower()
+    # and it must not have been implemented under a documentation authorization
+    with open(os.path.join("engine", "answer_stance.py"), encoding="utf-8") as fh:
+        stance = fh.read()
+    assert '_T2G2_CONTRAST_AR = ("\u0644\u0643\u0646", "\u0644\u0643\u0646\u0651")' in stance, (
+        "the Arabic contrast vocabulary must be unchanged by a documentation cut")
+
+
+def test_stage_eight_is_the_next_stage_and_authorizes_nothing():
+    for path in (ROADMAP, CHECKLIST):
+        flat = _flat(path)
+        assert "Stage 8" in flat, path
+    assert "Next Master Roadmap stage: Stage 8." in _flat(ROADMAP)
+    assert "Next Master Roadmap stage: Stage 8." in _flat(CONTRACT)
+    # closing one stage never starts the next
+    roadmap = _flat(ROADMAP)
+    assert "Stage 8 still requires its own explicit mandate" in roadmap
+    assert "Closing Stage 7 starts nothing" in _flat(CONTRACT) or \
+        "Closing Stage 7 authorizes nothing" in roadmap
+
+
+def test_the_superseded_stage_seven_wording_survives_as_history():
+    """Preserve + supersede: the PARTIAL states must stay readable."""
+    contract = _flat(CONTRACT)
+    assert "Status: PARTIAL T2-G \u2014 migration path DELIVERED AS A CANDIDATE; merge not authorized." \
+        in contract
+    assert "`N-1` and `N-2` open pending bounded acceptance" in contract
+    assert "SUPERSEDED AS CURRENT STATUS (Stage 7 closure, 2026-09-20)" in contract
+    roadmap = _flat(ROADMAP)
+    assert ("Still open: N-1/N-2 pending bounded acceptance, R1/R2/R3, and the "
+            "three-version legacy-migration disposition.") in roadmap
+    assert _flat(CHECKLIST).count("Superseded") >= 1
+
+
+def test_the_closure_claims_no_release_deployment_or_activation():
+    for path in (ROADMAP, CONTRACT):
+        flat = _flat(path)
+        assert "PUBLIC RELEASE: NOT AUTHORIZED" in flat, path
+        assert "DEPLOYMENT: NOT AUTHORIZED" in flat, path
+        assert "PAID ACTIVATION: NOT AUTHORIZED" in flat, path

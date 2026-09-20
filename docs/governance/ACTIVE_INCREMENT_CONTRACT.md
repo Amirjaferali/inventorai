@@ -23,6 +23,76 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--stage-7-t2g-bounded-closure"></a>
+## Current authority — Stage 7 / T2-G bounded closure (Owner acceptance, 2026-09-20)
+
+**ACTIVE CONTRACT: NONE — unchanged.** This entry records an Owner DISPOSITION, not a
+new mandate. It authorizes no implementation, and none was performed: `engine/`, `web/`,
+`scripts/`, `domains/` and `schemas/` are untouched and **no runtime behaviour changed**.
+
+**Read this before any earlier T2-G status sentence in this file.** Every earlier
+"PARTIAL T2-G", "merge not authorized" and "`N-1` and `N-2` open pending bounded
+acceptance" statement was true at its own recorded moment and is **preserved verbatim
+below as history**. None of them is current truth, and none is deleted.
+
+**Disposition.** `STAGE 7 / T2-G: COMPLETED WITHIN ITS BOUNDED T2-G SCOPE.` The Owner
+accepted the completed read-only Stage 7 bounded-closure assessment performed at HEAD
+`9530d07196ad1dec7609ada7ec44b4eb03f56337`, tree
+`87b1be8b6956c17a009a1d559fc6b12da70e2935`. No additional product implementation is
+authorized or required for Stage 7 closure.
+
+| Item | Disposition |
+|---|---|
+| PR #643 (t2g2 concise/mixed) | **MERGED** — `38827bf9…`, accepted head `3bb443ce69eba3a9e7f746c5068792ddb004d466`, after four recorded repair cycles |
+| PR #644 (T2-G legacy migration) | **MERGED** — `6dfd94e3…`, accepted head `b7491e34…` |
+| `N-1` single-sentence mixed answers vetoed | **SATISFIED** within the delivered T2-G bounded scope |
+| `N-2` terse genuine explanations missed | **SATISFIED** within the delivered T2-G bounded scope |
+| `R1` unregistered or short ignorance phrasings | **PRESERVED AS A SEPARATE FUTURE RESIDUAL** — does not block Stage 7 closure |
+| `R2` unrelated marker-bearing padding + paraphrase under-coverage | **PRESERVED AS A SEPARATE FUTURE RESIDUAL** — does not block Stage 7 closure |
+| `R3` cross-gap adaptivity | **OUTSIDE the current T2-G bounded scope** — returns only at its own applicable gate |
+| Three-version legacy migration | **CLOSED / ACCEPTED** under policy **B — explicit confirmed adoption** |
+| `N-3`–`N-6` | unchanged, keeping their existing triggers |
+
+**Preserved, not discharged.** `R1`, `R2` and `R3` survive this closure unchanged. Closing Stage 7's bounded scope
+discharges none of them, and none may be silently dropped. Their register rows in
+`DEFERRED_OBLIGATIONS_REGISTER.md` §3 remain their home.
+
+**Legacy migration — what CLOSED means here.** Policy **B — EXPLICIT CONFIRMED
+MIGRATION** is preserved exactly as merged: an append-only `engine_version_adoptions`
+ledger, an immutable creation stamp, full deterministic per-project replay, reversal by
+another appended row, and each project disclosing the rules it actually runs under on
+its own surface in both languages. **Automatic migration on open remains REJECTED and
+must not be introduced.** The three engine-contract versions
+(`p4-2-level1-recon-v1`, `…-t2g1`, `…-t2g2`) coexist by decision, not by omission.
+
+**Bounded product-language observation — the Arabic prefixed form `ولكن`.** The merged
+T2-G-2 contrast vocabulary is the four registered standalone tokens (`but`, `however`,
+`لكن`, `لكنّ`). The prefixed Arabic form `ولكن` is not among them, so a single-sentence
+mixed answer written with it is not split and its explanation is not admitted. The
+failure direction is **under-progress on a true answer** — the rule's declared direction
+of error — never unearned support. `engine/answer_stance.py` already disclosed this; it
+is recorded here so governance discloses what the source does. **It is NOT a material
+defect, NOT a repair obligation and NOT a gate.** It creates no return trigger and no
+lifecycle of its own, and `ولكن` must not be added to runtime code under this
+authorization. It is carried as an observation on the existing T2-G row.
+
+**Evidence relied on (focused, no full regression).** `tests/test_t2g_answer_stance.py`,
+`tests/test_t2g2_concise_mixed.py`, `tests/test_t2g_versioned_journey.py` and
+`tests/test_t2g_version_adoption.py`: **367 passed, 0 failed.** Version truth verified
+inside that set — the creation stamp is never updated, no project-version UPDATE
+mutation exists, zero-adoption projects render and reconstruct exactly as before, cold
+read surfaces never write, replay/restart/resume agree after adoption, an appended
+reversal restores the prior reading byte-identically, forged request versions are
+ignored, a corrupt adoption history fails closed, and the DDL is idempotent on a
+populated database.
+
+**Next Master Roadmap stage: Stage 8.** Closing Stage 7 starts nothing: Stage 8 remains
+unauthorized until separately mandated. `PUBLIC RELEASE: NOT AUTHORIZED` ·
+`DEPLOYMENT: NOT AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED` · no provider action ·
+no scheduler activation · no migration executed. Derived routing
+(`INVENTORAI_MASTER_EXECUTION_ROADMAP.md` and its Operating Checklist) is navigation,
+not authority, and this file outranks both.
+
 <a id="current-authority--post-652-declaration"></a>
 <a id="current-authority--post-664-declaration"></a>
 ## Current authority — post-PR-664 declaration (v1.32 synchronization, 2026-09-19)
@@ -552,7 +622,11 @@ progression-loop semantics, intent-serving semantics, deliverable-assembler
 logic, exports, API semantics, committed question content, PR #643 behaviour.
 
 **Status: PARTIAL T2-G — migration path DELIVERED AS A CANDIDATE; merge not
-authorized.** Migration is not evidence that anything else is solved. Preserved
+authorized.** Migration is not evidence that anything else is solved. **SUPERSEDED AS CURRENT
+STATUS (Stage 7 closure, 2026-09-20) — preserved verbatim as truth at its own
+recorded moment:** PR #644 has since MERGED and the three-version disposition is
+CLOSED / ACCEPTED under the same policy B. See
+[Stage 7 / T2-G bounded closure](#current-authority--stage-7-t2g-bounded-closure). Preserved
 unchanged with their triggers: PR #643 closure, the Stage 8 decisions, the T1-A′
 supersession, `R1`, `R2`, `R3`, `N-1`–`N-6`, G-4-A, the EN↔AR residual rows, the
 T2-A paid-activation blocker and its random-skip test debt, the PR #642
@@ -1163,7 +1237,11 @@ token/storage, API/export and operational logging are unchanged.
 **Status: PARTIAL T2-G.** Achieved: concise explanations and single-sentence
 mixed answers are recognised in both domains and both languages under the new
 contract, with the accepted repetition, Unicode-coordinate and cost properties
-intact. Not achieved and retained with their triggers: `R1` unregistered or
+intact. **SUPERSEDED AS CURRENT STATUS (Stage 7 closure, 2026-09-20) —
+preserved verbatim as truth at its own recorded moment:** `N-1` and `N-2` are now
+SATISFIED within the delivered bounded scope; `R1` and `R2` are preserved as
+separate future residuals and `R3` returns at its own gate. See
+[Stage 7 / T2-G bounded closure](#current-authority--stage-7-t2g-bounded-closure). Not achieved and retained with their triggers: `R1` unregistered or
 short ignorance phrasings; **`R2` unrelated marker-bearing padding and
 paraphrase under-coverage — a prototype domain lexicon built from committed
 question texts plus registry substance signals was measured and REJECTED, because
