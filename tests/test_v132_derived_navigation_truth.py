@@ -285,46 +285,48 @@ def test_the_arabic_contrast_observation_is_recorded_without_a_new_lifecycle():
         "the Arabic contrast vocabulary must be unchanged by a documentation cut")
 
 
-def test_stage_ten_is_the_next_stage_and_authorizes_nothing():
+def test_stage_eleven_is_the_next_stage_and_authorizes_nothing():
     """The CURRENT next stage, asserted so preserved history cannot satisfy it.
 
-    This guard has now been wrong-but-green twice, and the shape of the failure
-    is the same each time: it asserted a routing sentence that was still in the
-    documents as legitimate preserved history, so closing the stage it named
-    left the assertion passing while it pointed at the wrong stage. It asserted
-    "Stage 8" after Stage 8 closed; it asserted "Stage 9" after the Stage-9
-    disposition task completed. Both versions passed.
+    This guard has now been wrong-but-green three times, and the shape of the
+    failure is the same each time: it asserted a routing sentence that was still
+    in the documents as legitimate preserved history, so closing the stage it
+    named left the assertion passing while it pointed at the wrong stage. It
+    asserted "Stage 8" after Stage 8 closed, "Stage 9" after the Stage-9
+    disposition completed, and "Stage 10" after the Stage-10 differential
+    completed. Every version passed.
 
     So it asserts two things that cannot both survive a stale update: the
     CURRENT routing sentence must be present, AND every surviving sentence that
-    routes to Stage 7, 8 or 9 must sit inside an explicit supersession note.
+    routes to Stage 7, 8, 9 or 10 must sit inside an explicit supersession note.
     The second half is what actually catches the drift — a document that has
     not been re-routed keeps a live stale sentence and fails here.
     """
     roadmap, checklist, contract = (_flat(ROADMAP), _flat(CHECKLIST),
                                     _flat(CONTRACT))
-    assert "Next Master Roadmap stage: Stage 10" in roadmap
-    assert "Next Master Roadmap stage: Stage 10" in contract
-    assert "**CURRENT STAGE:** Stage 10" in checklist
+    assert "Next Master Roadmap stage: Stage 11" in roadmap
+    assert "Next Master Roadmap stage: Stage 11" in contract
+    assert "**CURRENT STAGE:** Stage 11" in checklist
     # every surviving "Stage N is next" sentence, for every already-routed-past
     # stage, must be marked superseded — in the navigation AND in the authority.
     for flat, path in ((roadmap, ROADMAP), (checklist, CHECKLIST),
                        (contract, CONTRACT)):
         for stale in ("Next Master Roadmap stage: Stage 7",
                       "Next Master Roadmap stage: Stage 8",
-                      "Next Master Roadmap stage: Stage 9"):
+                      "Next Master Roadmap stage: Stage 9",
+                      "Next Master Roadmap stage: Stage 10"):
             for match in re.finditer(re.escape(stale), flat):
                 window = flat[max(0, match.start() - 600):match.start()]
                 assert "SUPERSEDED" in window.upper(), (
                     "a live sentence still routes to a closed stage in %s: %s"
                     % (path, stale))
-    # closing or dispositioning one stage never starts the next
-    assert "Stage 10 requires its own explicit mandate" in checklist
-    assert "completing the Stage-9 disposition starts nothing" in checklist
-    assert "`STAGE 10 STARTED: NO`" in contract
+    # completing or dispositioning one stage never starts the next
+    assert "Stage 11 requires its own explicit mandate" in checklist
+    assert "completing the Stage-10 differential starts nothing" in checklist
+    assert "`STAGE 11 STARTED: NO`" in contract
     # and the stage after the frontier is still untouched
-    assert re.search(r"^- \[ \] \*\*10 — T2-C′ differential assessment:",
-                     _read(ROADMAP), re.M), "stage 10 checkbox is not empty"
+    assert re.search(r"^- \[ \] \*\*11 — T1-C′/A2 human evidence:",
+                     _read(ROADMAP), re.M), "stage 11 checkbox is not empty"
 
 
 def test_stage_eight_is_closed_by_disposition_not_by_repair():
@@ -519,19 +521,25 @@ def test_the_stage_nine_task_completes_without_closing_the_obligation():
         assert "CLOSURE EVIDENCE: NOT MET" in flat
 
 
-def test_stage_nine_is_no_longer_the_current_stage():
-    """A disposition that completed must not leave its stage reading current.
+def test_no_completed_stage_is_left_reading_as_the_current_stage():
+    """A stage that completed must not still read as current, anywhere.
 
-    The superseded Stage-9 wording is preserved deliberately, so presence alone
-    proves nothing. Each occurrence must sit inside a supersession note.
+    The superseded wording for each completed stage is preserved deliberately,
+    so presence alone proves nothing. Each occurrence must sit inside a
+    supersession note. Stage 9 and Stage 10 are both checked, because each was
+    the current stage at a previous synchronization and each left its wording
+    behind.
     """
     checklist = _flat(CHECKLIST)
-    assert "**CURRENT STAGE:** Stage 10" in checklist
-    for match in re.finditer(r"CURRENT STAGE:\*{0,2} Stage 9", checklist):
-        window = checklist[max(0, match.start() - 600):match.start()]
-        assert "SUPERSEDED" in window.upper(), (
-            "the checklist still reads Stage 9 as the current stage")
-    assert "CURRENT PRODUCT-DEPTH FRONTIER: Stage 10 if authorized." in checklist
+    assert "**CURRENT STAGE:** Stage 11" in checklist
+    for stage in (9, 10):
+        for match in re.finditer(r"CURRENT STAGE:\*{0,2} Stage %d" % stage,
+                                 checklist):
+            window = checklist[max(0, match.start() - 600):match.start()]
+            assert "SUPERSEDED" in window.upper(), (
+                "the checklist still reads Stage %d as the current stage"
+                % stage)
+    assert "CURRENT PRODUCT-DEPTH FRONTIER: Stage 11 if authorized." in checklist
 
 
 def test_the_t1a_prime_closure_criterion_is_preserved_and_unbranched():
@@ -667,6 +675,255 @@ def test_the_stage_nine_forbidden_claims_are_absent():
                               "", stripped)
             #   adjacent — "no <claim>", stripped with ZERO slack so that a
             #              distant "no" cannot excuse a positive claim
+            stripped = re.sub(r"\*{0,2}no\*{0,2}\s+" + re.escape(claim), "",
+                              stripped)
+            assert claim not in stripped, (path, claim)
+
+
+# ==========================================================================
+# O. Stage 10 / T2-C′ differential product-value assessment (Owner, 2026-09-20)
+#
+# The same trap as Stage 9, one level further on: a DIFFERENTIAL task completes
+# while the thing it assessed is unchanged. A ticked Stage-10 checkbox beside a
+# `T2-C′` that still reads PARTIAL is correct, and a reader who takes the tick
+# for a verdict gets the product's maturity exactly backwards. These guards
+# keep the completion bound to the verdict, and keep four things that are easy
+# to round off from being rounded off:
+#
+#   * material product change  is not  proven user value
+#   * candidate REPRESENTATION is not  candidate COMPARISON
+#   * a new Mechanical domain  is not  Electronics-equivalent depth
+#   * capture surfaces         are not validated conclusions
+#
+# Scoped to current blocks throughout, for the reason given in §N.
+# ==========================================================================
+def _contract_stage10_block():
+    """The CURRENT Stage-10 authority block only."""
+    text = _read(CONTRACT)
+    start = text.index('<a id="current-authority--stage-10-t2c-prime-differential"></a>')
+    end = text.index('<a id="current-authority--stage-9-t1a-prime-disposition"></a>',
+                     start)
+    return re.sub(r"\s+", " ", text[start:end])
+
+
+def _roadmap_stage10_block():
+    """The CURRENT Stage-10 routing override only."""
+    text = _read(ROADMAP)
+    start = text.index("## Current routing override — v1.32 Stage 10 differential amendment")
+    end = text.index("## Current routing override — v1.32 Stage 9 disposition amendment",
+                     start)
+    return re.sub(r"\s+", " ", text[start:end])
+
+
+def _register_stage10_gate():
+    """The CURRENT Stage-10 maintenance-gate paragraph in the register.
+
+    Scoped on its own, because it is a second place the verdict is stated and
+    a whole-file check would let one of the two drift while the other held.
+    """
+    text = _read(REGISTER)
+    start = text.index("**LATEST MAINTENANCE GATE — STAGE 10 / T2-C′ DIFFERENTIAL")
+    end = text.index("**LATEST MAINTENANCE GATE — STAGE 9 /", start)
+    return re.sub(r"\s+", " ", text[start:end])
+
+
+def _register_t2c_prime_row():
+    """The single Tier-2 row that already carries `T2-C′`.
+
+    Asserted single and eight-celled because the Owner decision forbids
+    inventing a second T2-C′ row, and a fork is exactly how that happens.
+    """
+    rows = [line for line in _read(REGISTER).splitlines()
+            if line.startswith("| T2-A WS6 quantified-requirements extension;")]
+    assert len(rows) == 1, ("the Tier-2 T2-C′ row must stay single", len(rows))
+    assert len(rows[0].split("|")) - 2 == 8, "the Tier-2 row lost or gained a cell"
+    return rows[0]
+
+
+def test_the_stage_ten_differential_completes_without_changing_the_verdict():
+    """The completion and the PARTIAL verdict must travel together."""
+    contract, roadmap = _contract_stage10_block(), _roadmap_stage10_block()
+    checklist, row = (_checklist_current_stage_block(),
+                      re.sub(r"\s+", " ", _register_t2c_prime_row()))
+    assert re.search(r"^- \[x\] \*\*10 — T2-C′ differential assessment:\*\*",
+                     _read(ROADMAP), re.M), "stage 10 checkbox is not ticked"
+    assert ("| **STAGE 10 (the differential assessment)** | "
+            "**COMPLETED — DISPOSITION B** |") in contract
+    assert ("| **T2-C′ (the product-value state)** | "
+            "**PARTIAL — updated differential recorded** |") in contract
+    assert ("**`STAGE 10 — T2-C′ DIFFERENTIAL PRODUCT-VALUE ASSESSMENT: "
+            "COMPLETED ✅ — DISPOSITION B.`**") in roadmap
+    assert ("**`T2-C′ PRODUCT-VALUE CONCLUSION REMAINS PARTIAL. IT HAS NOT "
+            "PASSED AND IS NOT FULLY CLOSED.`**") in roadmap
+    assert "**this row is NOT closed and `T2-C′` did NOT pass.**" in row
+    # the verdict is stated twice in the register — in the row and in the
+    # Stage-10 maintenance gate — and BOTH must carry it, so neither can drift
+    # while the other holds.
+    gate = _register_stage10_gate()
+    for flat in (row, gate):
+        assert "`VERDICT: PARTIAL UNCHANGED`" in flat
+        assert "`POST-WS16 FACTUAL PREMISES: MATERIALLY UPDATED`" in flat
+    assert "`STAGE-10 DIFFERENTIAL: COMPLETED — DISPOSITION B`" in gate
+    assert "NO new row was created and NO row was closed" in gate
+    for flat in (contract, roadmap, checklist, row):
+        assert "PASS: NO" in flat
+        assert "FULLY CLOSED: NO" in flat
+
+
+def test_the_controlling_ws16_baseline_is_preserved_not_rewritten():
+    """Electronics-only baseline, PDVG-01's PARTIAL, both intact."""
+    contract, roadmap = _contract_stage10_block(), _roadmap_stage10_block()
+    row = re.sub(r"\s+", " ", _register_t2c_prime_row())
+    for flat in (contract, roadmap, row):
+        assert "electronics/electrical" in flat.lower(), flat[:90]
+        assert "MECHANICAL WS16 BASELINE: NONE" in flat
+        assert "**`PARTIAL`, not `ADEQUATE`**" in flat
+    assert "PDVG-01" in contract and "PDVG-01" in roadmap and "PDVG-01" in row
+
+
+def test_representation_is_never_recorded_as_comparison():
+    """The G-3 distinction, in every current surface."""
+    contract, roadmap = _contract_stage10_block(), _roadmap_stage10_block()
+    checklist, row = (_checklist_current_stage_block(),
+                      re.sub(r"\s+", " ", _register_t2c_prime_row()))
+    for flat in (contract, roadmap, checklist, row):
+        assert "CANDIDATE REPRESENTATION" in flat
+        assert "PLATFORM-SIDE CANDIDATE COMPARISON: ABSENT" in flat
+    # and the historical RUN-002 result is not re-opened by it
+    for flat in (contract, roadmap, checklist):
+        lowered = flat.lower()
+        assert "criteria 5 or 6 now pass" in lowered, (
+            "the do-not-infer sentence is missing")
+
+
+def test_mechanical_is_never_recorded_as_equivalent_to_electronics():
+    """A new domain is not equivalent depth, and the uncertainty stays open."""
+    contract, roadmap = _contract_stage10_block(), _roadmap_stage10_block()
+    checklist, row = (_checklist_current_stage_block(),
+                      re.sub(r"\s+", " ", _register_t2c_prime_row()))
+    for flat in (contract, roadmap, checklist, row):
+        assert "DEPTH EQUIVALENCE" in flat and "NOT ESTABLISHED" in flat, flat[:90]
+    for flat in (contract, roadmap, row):
+        assert "UNCERTAIN PRODUCT-VALUE SIGNIFICANCE" in flat
+        # neither direction may be claimed
+        lowered = flat.lower()
+        assert "defect proven" in lowered and "parity proven" in lowered
+
+
+def test_capture_surfaces_are_never_promoted_to_conclusions():
+    """FEATURE EXISTS ≠ EVIDENCE EXISTS ≠ VALIDATED CONCLUSION EXISTS."""
+    contract, checklist = _contract_stage10_block(), _checklist_current_stage_block()
+    for flat in (contract, checklist):
+        assert "FEATURE EXISTS" in flat and "VALIDATED CONCLUSION" in flat
+        assert "INSUFFICIENT_EVIDENCE" in flat
+    assert "VALIDATED COMMERCIAL CONCLUSION: NO" in contract or \
+        "`VALIDATED COMMERCIAL CONCLUSION: NO`" in checklist
+    assert "MANUFACTURABILITY CONCLUSION: NO" in contract or \
+        "`MANUFACTURABILITY CONCLUSION: NO`" in checklist
+    # the runtime ceiling itself, not only the prose about it
+    with open(os.path.join("engine", "readiness_snapshot.py"), encoding="utf-8") as fh:
+        snapshot = fh.read()
+    assert "EMITTABLE_DISPOSITIONS = (DISPOSITION_INSUFFICIENT_EVIDENCE,)" in snapshot, (
+        "the readiness ceiling must not be widened by a documentation cut")
+
+
+def test_mcp_stays_deferred_with_no_trigger_and_no_row():
+    contract, roadmap = _contract_stage10_block(), _roadmap_stage10_block()
+    checklist = _checklist_current_stage_block()
+    for flat in (contract, roadmap, checklist):
+        assert "TRIGGER: NOT FOUND" in flat
+        assert "NOT AUTHORIZED" in flat
+    assert "MCP CURRENT STATUS: DEFERRED RECOMMENDATION ONLY" in contract
+    assert "REQUIRED FOR T2-C′ DISPOSITION: NO" in checklist
+    # no MCP implementation may have arrived under a documentation authorization
+    for directory in ("engine", "web"):
+        for name in sorted(os.listdir(directory)):
+            assert "mcp" not in name.lower(), (directory, name)
+
+
+def test_stage_eleven_is_next_and_starts_nothing():
+    contract, roadmap = _contract_stage10_block(), _roadmap_stage10_block()
+    checklist = _checklist_current_stage_block()
+    for flat in (contract, roadmap):
+        assert ("**Next Master Roadmap stage: Stage 11 — T1-C′ / A2 human "
+                "evidence.** `STAGE 11 STARTED: NO`") in flat
+    assert "**`STAGE 11 STARTED: NO`**" in checklist
+    # the human-evidence conditions travel with the routing
+    for flat in (contract, roadmap, checklist):
+        assert "consent/custody" in flat
+        assert "separate authorization" in flat
+
+
+def test_the_t1a_prime_residual_survives_stage_ten():
+    """Stage 10 discharges nothing that Stage 9 left open."""
+    contract, row = (_contract_stage10_block(),
+                     re.sub(r"\s+", " ", _register_t1a_prime_row()))
+    checklist = _checklist_current_stage_block()
+    for flat in (contract, checklist, row):
+        assert "OPEN" in flat and "FRB" in flat
+        assert "CLOSURE EVIDENCE: NOT MET" in flat
+    assert "RUN-004: NOT AUTHORIZED" in contract
+    # the Stage-9 T1-A′ guards must still hold on their own blocks
+    assert "`HAS EVER PASSED: NO`" in row
+
+
+def test_the_stage_ten_forbidden_claims_are_absent():
+    """The fourteen readings this differential must never be turned into.
+
+    Negation-aware, with the same three shapes §N documents, and the same
+    single literal exemption for the register row's own name.
+
+    One alternative is added beyond §N's vocabulary: "none of these/this/
+    them/which", which is the form these Stage-10 surfaces use to deny exactly
+    the claims below ("none of which is REAL USER VALUE PROVEN"). It is added
+    here rather than in §N so that §N's scanner stays byte-identical to the
+    one its own mutation run proved.
+    """
+    _NEGATIONS = (
+        r"(?:no claim is made that|no claim of|none that|nor that|"
+        r"none of (?:these|this|them|which)|"
+        r"(?:is |are )?not a claim that|it does not (?:say|claim)|"
+        r"do(?:es)? not claim|never claims?|"
+        r"no (?:record|run|case|result)s?)[^.]{0,80}?"
+    )
+    _ROW_NAME = "t1-a′ closure — s2 release-value criteria met"
+    for path in (ROADMAP, CHECKLIST, CONTRACT, REGISTER):
+        flat = _flat(path).lower().replace(_ROW_NAME, "")
+        for claim in (
+                # Stage 11 started
+                "stage 11 started: yes", "stage 11 has started",
+                "stage 11 is underway", "stage 11 has begun",
+                # T2-C′ passed or closed
+                "t2-c′ pass: yes", "t2-c′ passed", "t2-c′ is closed",
+                "t2-c′ fully closed: yes", "t2-c′ has closed",
+                # value and differentiation proven
+                "real user value proven", "user value is proven",
+                "product differentiation proven", "differentiation is proven",
+                # mechanical equivalence
+                "mechanical is equivalent to electronics",
+                "mechanical depth equivalence: yes",
+                "equivalent electronics/mechanical depth",
+                # comparison
+                "candidate comparison now exists",
+                "platform-side candidate comparison now exists",
+                # T1-A′
+                "t1-a′ closed", "t1-a′ passed",
+                # run authority
+                "run-004 authorized", "run-004 is authorized",
+                # MCP
+                "mcp is required", "mcp implementation authorized",
+                "mcp authorized: yes",
+                # readiness promotions
+                "readiness pass", "commercial readiness pass",
+                "manufacturing readiness pass",
+                "readiness: pass_with_conditions"):
+            stripped = re.sub(_NEGATIONS + re.escape(claim), "", flat)
+            # the trailing shape also admits the copula these surfaces use:
+            # "<claim> is NOT claimed", alongside §N's "<claim>: no".
+            stripped = re.sub(
+                re.escape(claim)
+                + r"(?::|\s+(?:is|are|was|were))?\s*(?:no\b|not\b)",
+                "", stripped)
             stripped = re.sub(r"\*{0,2}no\*{0,2}\s+" + re.escape(claim), "",
                               stripped)
             assert claim not in stripped, (path, claim)

@@ -23,8 +23,97 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--stage-10-t2c-prime-differential"></a>
+## Current authority — Stage 10 / T2-C′ differential product-value assessment (Owner acceptance, 2026-09-20)
+
+**ACTIVE CONTRACT: NONE — unchanged.** An Owner acceptance of a completed READ-ONLY
+differential, not an implementation mandate. No product, engine, web, schema, persistence
+or deployment path changed. No benchmark, human round or MCP work is begun.
+
+**Read the distinction before drawing any conclusion, because the two are easy to conflate.**
+
+| | |
+|---|---|
+| **STAGE 10 (the differential assessment)** | **COMPLETED — DISPOSITION B** |
+| **T2-C′ (the product-value state)** | **PARTIAL — updated differential recorded** |
+
+Stage 10 is named *T2-C′ differential product-value assessment*. It asks what materially
+changed since the accepted WS16 evidence and whether that alters the accepted conclusion.
+The Owner-accepted answer is that **the factual premises of the old baseline have materially
+changed while the verdict remains `PARTIAL`**, and recording that is what completes the stage.
+
+**`T2-C′: PARTIAL` · `T2-C′ PASS: NO` · `T2-C′ FULLY CLOSED: NO` · `REAL USER VALUE:
+UNEVIDENCED` · `PRODUCT DIFFERENTIATION: UNEVIDENCED` · `MECHANICAL DEPTH EQUIVALENCE: NOT
+ESTABLISHED`.** No claim of validated product value is made anywhere by this recording.
+
+**Controlling baseline, preserved and not rewritten.** WS16 provides the original
+**electronics/electrical** validation baseline — `MECHANICAL WS16 BASELINE: NONE / ZERO
+COVERAGE`, `mechanical` occurring zero times in its contract. `PDVG-01` (PR #559, merge
+`a9b9d53c…`) provides the accepted **first differential** over WS16 and the controlling
+T2-C′ product-value conclusion: **`PARTIAL`, not `ADEQUATE`** — roughly 6 of 14 dimensions,
+executed once at an older tip. Neither document is rewritten here.
+
+**Electronics differential — `MATERIALLY UPDATED / VERDICT PARTIAL`.** Post-WS16 merged work
+materially changed the Electronics picture: durable saved-project journey and recovery;
+bilingual/Arabic serving; correction and withdraw-and-replace; T2-G questioning; per-question
+explainability; semantic quality ordering and evidence references; quantified requirements;
+contextual feedback; rendered candidate representation; project-record longitudinal
+visibility; commercial evidence capture; manufacturing evidence capture; the Readiness
+Snapshot; and the Stage-8 relevance repair with its assessment disclosure. **None of this is
+converted into `REAL USER VALUE PROVEN` or `PRODUCT DIFFERENTIATION PROVEN`** — both remain
+unevidenced by repository evidence.
+
+**Mechanical differential — `NEW POST-WS16 DOMAIN / DEPTH EQUIVALENCE NOT ESTABLISHED`.**
+Mechanical is now an activated product domain with its own governed domain and content
+surfaces, so the current product materially differs from a baseline that had none. **Equivalent
+Electronics/Mechanical depth is NOT claimed.** Four observations stay open with
+`UNCERTAIN PRODUCT-VALUE SIGNIFICANCE` — neither `DEFECT PROVEN` nor `PARITY PROVEN`: the
+smaller Mechanical substance-signal set; the smaller `PHYSICAL_FEASIBILITY` question set; the
+Stage-8 PF semantic derivation originating from the electronics Path-N source; and the
+Mechanical capability declaration's intentional exclusion of deeper engineering functions.
+**No implementation is authorized from these observations.**
+
+**G-3 — representation is not comparison.** `CANDIDATE REPRESENTATION: NOW PRESENT` ·
+`PLATFORM-SIDE CANDIDATE COMPARISON: ABSENT`. G-3 changed the representation reality *after*
+the `RUN-002` RC and created **no comparison engine**. The `T1-A′` historical `RUN-002` result
+therefore **remains valid historical evidence**. **Do not infer that criteria 5 or 6 now pass,
+and do not infer that `T1-A′` is closer to closure in any formal sense** — establishing a
+changed §15.7 outcome would require a new verification run, and none is authorized.
+
+**`T1-A′` carried residual, undischarged by this acceptance:** `T1-A′: OPEN` · `FRB: REMAINS` ·
+`CLOSURE EVIDENCE: NOT MET` · `RUN-004: NOT AUTHORIZED`. The accepted Stage-10 differential
+does not close, supersede or weaken it.
+
+**Three truth classes, kept apart: FEATURE EXISTS ≠ EVIDENCE EXISTS ≠ VALIDATED CONCLUSION
+EXISTS.** `READINESS SNAPSHOT — MATERIAL TO T2-C′: PARTIAL`, ceiling
+`INSUFFICIENT_EVIDENCE`. `COMMERCIAL EVIDENCE — MATERIAL TO T2-C′: PARTIAL`; durable capture
+exists; `VALIDATED COMMERCIAL CONCLUSION: NO`. `MANUFACTURING EVIDENCE — MATERIAL TO T2-C′:
+PARTIAL`; capture exists; `MANUFACTURABILITY CONCLUSION: NO`. Nothing here promotes `PASS`,
+`PASS_WITH_CONDITIONS`, `HOLD`, commercial readiness, manufacturing readiness or technical
+readiness.
+
+**MCP.** `MCP CURRENT STATUS: DEFERRED RECOMMENDATION ONLY` · `MCP TRIGGER: NOT FOUND` ·
+`MCP REQUIRED FOR T2-C′ DISPOSITION: NO` · `MCP IMPLEMENTATION AUTHORIZED: NO`. No MCP
+register row is created, no implementation begins, and no connector or provider is selected.
+
+**Human-evidence boundary.** Real user value remains unevidenced by repository evidence and
+its existing owner is the **Stage 11 / T1-C′ / A2** human-evidence lane. This recording does
+not enter Stage 11, authorize a human round, authorize ILT, authorize A2, or collect
+evidence, and the obligation is **not duplicated inside T2-C′**.
+
+**Evidence provenance.** The measurements behind this acceptance are
+**CREATOR-REPRODUCED / REPOSITORY-DERIVED**. They are **not** relabelled
+`INDEPENDENTLY VERIFIED`; no separate independent review exists for them.
+
+**Next Master Roadmap stage: Stage 11 — T1-C′ / A2 human evidence.** `STAGE 11 STARTED: NO`.
+It remains subject to its existing authorization conditions: reuse valid prior evidence where
+applicable, and **new human activity requires separate authorization and the existing
+consent/custody boundaries**. No human collection begins merely because routing reaches it.
+`PUBLIC RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED` ·
+`PAID ACTIVATION: NOT AUTHORIZED`.
+
 <a id="current-authority--stage-9-t1a-prime-disposition"></a>
-## Current authority — Stage 9 / T1-A′ disposition (Owner acceptance, 2026-09-20)
+## Current authority — Stage 9 / T1-A′ disposition (Owner acceptance, 2026-09-20) — SUPERSEDED FOR PRESENT ROUTING BY THE STAGE 10 DIFFERENTIAL BLOCK ABOVE; ITS SUBSTANTIVE STAGE-9 DISPOSITION AND THE OPEN T1-A′ OBLIGATION REMAIN CURRENT AND ARE PRESERVED IN FULL
 
 **ACTIVE CONTRACT: NONE — unchanged.** An Owner DISPOSITION recording, not an
 implementation mandate. No product, engine, web, schema or persistence path changed.
@@ -84,7 +173,7 @@ change this disposition.
 needs all three of: an appropriate separately authorized product change where applicable,
 a separate Owner decision, and a separate run authorization.
 
-**Next Master Roadmap stage: Stage 10 — T2-C′ differential product-value assessment.**
+*(SUPERSEDED for present routing by the Stage 10 differential block above — preserved verbatim:)* **Next Master Roadmap stage: Stage 10 — T2-C′ differential product-value assessment.**
 `STAGE 10 STARTED: NO`. Its standing boundary is unchanged: assess only **material
 changes** since the accepted WS16 evidence, across Electronics and Mechanical; do not
 restart a full historical review; do not repeat accepted evidence without material
