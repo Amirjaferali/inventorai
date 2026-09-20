@@ -262,89 +262,112 @@ def test_states_beyond_selection_cite_their_gate():
 
 
 # --------------------------------------------------------------------------
-# Contradiction and evidence rules, both read from ONE semantic classifier.
+# State validation, consuming ONE claim-occurrence model.
 #
-# REPAIRED (v1.32 semantic-claim hardening). This guard previously kept two
-# mechanisms — positive-keyword detection and required-negation detection —
-# which could and did disagree. That produced two failures at once: a bare
-# noun ("provisioning") counted as evidence that provisioning existed, and a
-# negation one side accepted ("not yet deployed") the other side rejected.
-# Both sides now call tests/semantic_claims.py, which answers AFFIRMED,
-# NEGATED, NON_AFFIRMING or ABSENT for a bounded concept vocabulary. There is
-# no second, stricter negation rule anywhere in this file.
+# REPAIRED (v1.32 claim-scoped polarity). Earlier versions inferred a
+# concept's polarity from the surrounding text, so one claim's modifier could
+# change another claim's meaning — the `not` in "deployed but not activated"
+# negated *deployed*, and "pending" in a later clause defeated an unrelated
+# completion claim. tests/semantic_claims.py now gives every occurrence its
+# own polarity from its own clause and aggregates without discarding
+# disagreement, so a row that both affirms and denies a concept reports
+# CONFLICT rather than quietly picking a side.
 #
-# The classifier is deliberately not an English parser. It fails toward
-# NON_AFFIRMING, which never satisfies a positive requirement, so unclear
-# prose cannot be mistaken for an assertion of present fact.
+# There is exactly one source of claim truth in this file: no second negation
+# helper, no separate existence matcher, no activation matcher that bypasses
+# aggregation, and no raw-substring state check that could contradict it.
 # --------------------------------------------------------------------------
 _CONCEPTS = ("selection", "provisioning", "deployment", "activation",
              "completion")
 
 
 def _row_claims(row_id):
-    """Every guarded concept's semantic state for this row's live prose."""
+    """Every guarded concept's aggregated state for this row's live prose."""
     prose = _row_prose(row_id)
     return {concept: claims.classify(prose, concept)
             for concept in _CONCEPTS}
 
 
+def _why(row_id, concept):
+    """Occurrence detail, so a failure says what the prose actually claimed."""
+    return claims.explain(_row_prose(row_id), concept)
+
+
 def test_no_owned_row_can_affirm_completion():
     """No provider-dependent row may assert completion, in any state.
 
-    NEGATED and NON_AFFIRMING are both fine — "not complete", "completion is
-    not established" and a bare mention of "completion" all pass. Only an
-    affirmation fails, in any casing.
+    NEGATED and NON_AFFIRMING both pass — "not complete", "completion is not
+    established" and a bare mention of completion are all fine. AFFIRMED
+    fails, and so does CONFLICT: a row that says both is not a truth surface.
     """
     for row_id in _PROVIDER_ROW_IDS:
         state = _row_state(row_id)
         for word in ("COMPLETE", "COMPLETED", "DONE", "FINISHED"):
             assert not re.search(r"(?<!NOT )\b%s\b" % word, state), (row_id, state)
         verdict = claims.classify(_row_prose(row_id), "completion")
-        assert verdict != claims.AFFIRMED, (row_id, state, verdict)
+        assert verdict not in (claims.AFFIRMED, claims.CONFLICT), (
+            row_id, state, verdict, _why(row_id, "completion"))
+
+
+def test_no_owned_row_reports_conflicting_claims():
+    """A row may not affirm and deny the same concept.
+
+    Every state below names a singular current truth, so contradictory
+    evidence is a defect in the row, not something for the guard to resolve.
+    """
+    for row_id in _PROVIDER_ROW_IDS:
+        verdict = _row_claims(row_id)
+        for concept, value in verdict.items():
+            assert value != claims.CONFLICT, (
+                row_id, concept, _why(row_id, concept))
 
 
 def test_row_prose_never_contradicts_its_state():
-    """The state machine, expressed as semantic requirements per state.
+    """The state machine, expressed over aggregated claim states.
 
-    Each rule names what must be AFFIRMED, what must be NEGATED, and what must
-    simply not be AFFIRMED. No rule requires an exact phrase: any wording the
-    shared classifier reads as the required semantic state satisfies it.
+    No rule requires an exact phrase: any wording the shared classifier reads
+    as the required state satisfies it, and CONFLICT never satisfies anything.
     """
     for row_id in _PROVIDER_ROW_IDS:
         state = _row_state(row_id)
         verdict = _row_claims(row_id)
         row = _row(row_id)
 
-        def must_not_affirm(concept):
-            assert verdict[concept] != claims.AFFIRMED, (
-                row_id, state, concept, verdict[concept])
-
         def must_affirm(concept):
             assert verdict[concept] == claims.AFFIRMED, (
                 row_id, state, concept, verdict[concept],
-                "prose must assert present %s, not merely mention it" % concept)
+                "prose must assert present %s" % concept,
+                _why(row_id, concept))
 
         def must_negate(concept):
             assert verdict[concept] == claims.NEGATED, (
                 row_id, state, concept, verdict[concept],
-                "prose must explicitly deny present %s" % concept)
+                "prose must explicitly deny present %s" % concept,
+                _why(row_id, concept))
+
+        def must_not_affirm(concept):
+            assert verdict[concept] not in (claims.AFFIRMED, claims.CONFLICT), (
+                row_id, state, concept, verdict[concept],
+                _why(row_id, concept))
 
         # completion is never affirmable on these rows, whatever the state
         must_not_affirm("completion")
 
         if state == "NOT SELECTED":
-            must_not_affirm("selection")
+            # selection must be denied or simply absent — never asserted,
+            # and an Owner selection recorded here counts as an assertion
+            assert verdict["selection"] in (claims.NEGATED, claims.ABSENT), (
+                row_id, verdict["selection"], _why(row_id, "selection"))
             must_not_affirm("provisioning")
             must_not_affirm("deployment")
             must_not_affirm("activation")
             assert "DECISION: SATISFIED" not in _row_prose(row_id), row_id
-        else:
-            # a selection asserted here must name the gate that authorized it;
-            # every non-NOT-SELECTED state already has to cite one
-            if verdict["selection"] == claims.AFFIRMED:
-                assert _GATE.search(row), (row_id, "selection without a gate")
+        elif verdict["selection"] == claims.AFFIRMED:
+            # a selection asserted here must name the gate that authorized it
+            assert _GATE.search(row), (row_id, "selection without a gate")
 
         if state == "SELECTED / NOT PROVISIONED":
+            must_affirm("selection")
             must_negate("provisioning")
             must_not_affirm("deployment")
             must_not_affirm("activation")
@@ -356,7 +379,7 @@ def test_row_prose_never_contradicts_its_state():
 
         if state == "IMPLEMENTED / NOT DEPLOYED":
             must_negate("deployment")
-            must_not_affirm("activation")
+            must_negate("activation")
 
         if state == "DEPLOYED / NOT COMPLETE":
             must_affirm("deployment")
