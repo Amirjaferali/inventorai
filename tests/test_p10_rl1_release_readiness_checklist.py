@@ -261,8 +261,47 @@ _INVARIANTS = {
 # and never picks a best match. Malformed means malformed.
 # --------------------------------------------------------------------------
 _PREFIX = "CURRENT STATE: "
-_DECLARATION_TOKENS = ("current state:",) + tuple(
-    name.lower() + ":" for name in _FIELD_NAMES)
+
+# --------------------------------------------------------------------------
+# ONE lexical grammar for machine declarations.
+#
+# HARDENED (v1.32 lexical pass). The block parser split entries on ":" and
+# stripped whitespace, so it accepted "COMPLETE : NO"; the trailing detector
+# looked for the narrower literal "complete:" and therefore let
+# "COMPLETE : YES", "current state : completed" and "_COMPLETE: YES_" survive
+# in the prose after the block. Two grammars, one gap. There is now exactly
+# one recognizer, and both the authoritative block and the trailing scan
+# read it. Anything the block could accept, the scan must see.
+#
+# A machine declaration is: a declaration boundary (not embedded in a word
+# or a hyphenated human label), bounded Markdown emphasis, a machine KEY,
+# bounded emphasis, bounded whitespace, a colon. Case-insensitive. So
+# "Owner-SELECTED: Render" is one hyphenated word and is NOT a declaration,
+# while "SELECTED: YES", " selected : yes", "_SELECTed: YES_" and
+# "**SELECTED : YES**" all are.
+# --------------------------------------------------------------------------
+_MACHINE_KEYS = ("CURRENT STATE",) + _FIELD_NAMES
+_DECLARATION = re.compile(
+    r"(?<![A-Za-z0-9_-])"                       # declaration boundary
+    r"(?P<lead>[*_`]*)[ \t]*"                    # bounded leading emphasis
+    r"(?P<key>current[ \t]+state|selected|provisioned|implemented|deployed"
+    r"|live_activated|complete)"
+    r"(?P<trail>[*_`]*)[ \t]*:",                 # emphasis, whitespace, colon
+    re.IGNORECASE)
+
+
+def recognize_machine_declarations(text):
+    """Every machine declaration in `text`, as (canonical_key, match).
+
+    This is the single source of lexical truth for the contract: the block
+    parser uses it to read a field entry, and the trailing scan uses it to
+    find a forbidden second declaration. They cannot disagree.
+    """
+    found = []
+    for match in _DECLARATION.finditer(text):
+        key = re.sub(r"[ \t]+", " ", match.group("key")).upper()
+        found.append((key, match))
+    return found
 
 
 class ContractError(AssertionError):
@@ -316,17 +355,27 @@ def _parse_contract(cell):
         raise ContractError("stray or additional block delimiter after the "
                             "authoritative field block")
 
-    # 6. exactly the six known fields, each once, each with a valid value
+    # 6. exactly the six known fields, each once, each with a valid value.
+    #    An entry is read with the SAME recognizer the trailing scan uses;
+    #    the block then additionally requires the canonical spelling - an
+    #    upper-case key with no emphasis - so the block is a strict subset of
+    #    what the recognizer detects, never a superset.
     fields = {}
     for entry in block.split(";"):
-        parts = entry.split(":")
-        if len(parts) != 2:
+        declarations = recognize_machine_declarations(entry)
+        if len(declarations) != 1:
             raise ContractError("malformed field entry: %r" % entry)
-        name, value = parts[0].strip(), parts[1].strip()
+        name, match = declarations[0]
+        if entry[:match.start()].strip(" \t"):
+            raise ContractError("malformed field entry: %r" % entry)
+        if match.group("lead") or match.group("trail") \
+                or match.group("key") != name:
+            raise ContractError("non-canonical field key in block: %r" % entry)
         if name not in _FIELD_NAMES:
             raise ContractError("unknown field: %r" % name)
         if name in fields:
             raise ContractError("duplicate field: %r" % name)
+        value = entry[match.end():].strip(" \t")
         if value not in _FIELD_VALUES[name]:
             raise ContractError("invalid value for %s: %r" % (name, value))
         fields[name] = value
@@ -334,19 +383,14 @@ def _parse_contract(cell):
     if missing:
         raise ContractError("missing fields: %r" % missing)
 
-    # 7. the prose may carry no second machine declaration of any kind, in
-    #    any capitalisation - not even "just an example". A declaration
-    #    token is a KEY that starts its own word: "current state:",
-    #    "deployed:". A hyphenated compound such as "Owner-SELECTED: Render"
-    #    is one word whose tail happens to be a key name and is not a
-    #    machine declaration; this is a lexical rule, not an interpretation
-    #    of intent.
-    lowered = re.sub(r"\s+", " ", rest.lower())
-    for token in _DECLARATION_TOKENS:
-        if re.search(r"(?<![a-z0-9_-])" + re.escape(token), lowered):
-            raise ContractError(
-                "duplicate or ambiguous machine declaration in prose: %r"
-                % token)
+    # 7. the prose may carry no second machine declaration of any kind -
+    #    any case, any bounded whitespace around the colon, any bounded
+    #    emphasis - not even "just an example". Same recognizer as step 6.
+    extra = recognize_machine_declarations(rest)
+    if extra:
+        raise ContractError(
+            "duplicate or ambiguous machine declaration in prose: %r"
+            % extra[0][1].group(0))
 
     return state, fields
 
@@ -465,6 +509,28 @@ _MALFORMED_CELLS = {
         _VALID_CELL + " historically {DEPLOYED: YES}",
     "field-style declaration in prose":
         _VALID_CELL + " note - complete: yes as of Friday",
+    # --- lexical class: spacing, tabs, case, emphasis after the block ---
+    "spaced colon after block": _VALID_CELL + " COMPLETE : YES",
+    "spaced DEPLOYED after block": _VALID_CELL + " DEPLOYED : YES",
+    "tabbed lowercase after block": _VALID_CELL + " complete\t:\tyes",
+    "spaced current state after block": _VALID_CELL + " current state : completed",
+    "underscore-wrapped after block": _VALID_CELL + " _COMPLETE: YES_",
+    "bold-wrapped spaced after block": _VALID_CELL + " **DEPLOYED : YES**",
+    "SELECTED spaced after block": _VALID_CELL + " SELECTED : YES",
+    "lowercase selected spaced after block": _VALID_CELL + " selected : yes",
+    "mixed-case emphasised after block": _VALID_CELL + " _SELECTed: YES_",
+    "bold SELECTED spaced after block": _VALID_CELL + " **SELECTED : YES**",
+    "backtick-wrapped after block": _VALID_CELL + " `COMPLETE: YES`",
+    "leading spaces duplicate": _VALID_CELL + "     DEPLOYED: YES",
+    "tab-led duplicate": _VALID_CELL + "\tDEPLOYED:\tYES",
+    "malformed first then spaced duplicate":
+        " CURRENT STATE: COMPLETE! " + _VALID_BLOCK + " COMPLETE : NO",
+    "emphasised key inside block":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {_SELECTED_: YES; PROVISIONED: YES; "
+        "IMPLEMENTED: N/A; DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: NO}",
+    "lowercase key inside block":
+        " CURRENT STATE: PROVISIONED / NOT COMPLETE. {selected: YES; PROVISIONED: YES; "
+        "IMPLEMENTED: N/A; DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: NO}",
 }
 
 _VALID_CELLS = {
@@ -479,6 +545,13 @@ _VALID_CELLS = {
                       "IMPLEMENTED: N/A; DEPLOYED: YES; LIVE_ACTIVATED: NO; COMPLETE: NO} prose",
     "implemented state": " CURRENT STATE: IMPLEMENTED / NOT DEPLOYED. {SELECTED: YES; PROVISIONED: N/A; "
                          "IMPLEMENTED: YES; DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: NO} prose",
+    # --- lexical class: human labels and plain words are not declarations ---
+    "Owner-SELECTED label": _VALID_CELL + " Owner-SELECTED: Render",
+    "owner-selected lowercase label": _VALID_CELL + " owner-selected: Resend",
+    "word 'selected' without declaration syntax": _VALID_CELL + " no provider is selected here",
+    "word 'complete' without declaration syntax": _VALID_CELL + " the work is not complete",
+    "spaced colon inside block is tolerated": " CURRENT STATE: NOT SELECTED. {SELECTED : NO; PROVISIONED: N/A; "
+        "IMPLEMENTED: N/A; DEPLOYED: N/A; LIVE_ACTIVATED: N/A; COMPLETE : NO} prose",
 }
 
 
