@@ -285,17 +285,135 @@ def test_the_arabic_contrast_observation_is_recorded_without_a_new_lifecycle():
         "the Arabic contrast vocabulary must be unchanged by a documentation cut")
 
 
-def test_stage_eight_is_the_next_stage_and_authorizes_nothing():
-    for path in (ROADMAP, CHECKLIST):
-        flat = _flat(path)
-        assert "Stage 8" in flat, path
-    assert "Next Master Roadmap stage: Stage 8." in _flat(ROADMAP)
-    assert "Next Master Roadmap stage: Stage 8." in _flat(CONTRACT)
+def test_stage_nine_is_the_next_stage_and_authorizes_nothing():
+    """The CURRENT next stage, asserted so preserved history cannot satisfy it.
+
+    The earlier version of this guard asserted "Next Master Roadmap stage:
+    Stage 8." That sentence is still in the roadmap — correctly, as preserved
+    Stage-7-amendment history — so once Stage 8 closed the assertion would have
+    stayed green while pointing at the wrong stage. It now asserts the current
+    routing AND that no live sentence still routes to Stage 8: the Stage-8
+    wording must survive only inside an explicit supersession note.
+    """
+    roadmap, checklist, contract = (_flat(ROADMAP), _flat(CHECKLIST),
+                                    _flat(CONTRACT))
+    assert "Next Master Roadmap stage: Stage 9" in roadmap
+    assert "Next Master Roadmap stage: Stage 9" in contract
+    assert "Stage 9" in checklist
+    # every surviving "Stage 8 is next" sentence must be marked superseded
+    for flat, path in ((roadmap, ROADMAP), (checklist, CHECKLIST)):
+        for match in re.finditer(r"Next Master Roadmap stage: Stage 8", flat):
+            window = flat[max(0, match.start() - 600):match.start()]
+            assert "SUPERSEDED" in window.upper(), (
+                "a live sentence still routes to Stage 8 in %s" % path)
     # closing one stage never starts the next
-    roadmap = _flat(ROADMAP)
-    assert "Stage 8 still requires its own explicit mandate" in roadmap
-    assert "Closing Stage 7 starts nothing" in _flat(CONTRACT) or \
-        "Closing Stage 7 authorizes nothing" in roadmap
+    assert "Stage 9 requires its own explicit mandate" in checklist
+    assert "Closing Stage 8 starts nothing" in contract or \
+        "Closing Stage 8 starts nothing" in checklist
+
+
+def test_stage_eight_is_closed_by_disposition_not_by_repair():
+    """Closure must never read as a repair, in any of the four surfaces."""
+    roadmap, contract, register = (_flat(ROADMAP), _flat(CONTRACT),
+                                   _flat(REGISTER))
+    assert re.search(r"^- \[x\] \*\*8 — EN↔AR divergence:", _read(ROADMAP), re.M), (
+        "stage 8 checkbox is not ticked")
+    for flat in (roadmap, contract, register):
+        assert "MECHANISM A: CURRENT / NOT FIXED" in flat or \
+            "Mechanism A** — `CURRENT / NOT FIXED`" in flat or \
+            "Mechanism A stays CURRENT / NOT FIXED" in flat or \
+            "MECHANISM A: CURRENT / NOT\nFIXED" in flat
+    # both merges are recorded as the closure evidence
+    for flat in (roadmap, contract, register):
+        assert "PR #667" in flat
+        assert "PR #668" in flat
+    # and the forbidden readings are absent everywhere.
+    #
+    # Scanned NEGATION-AWARE, following the P10-IR1 precedent for "no refund".
+    # These surfaces deliberately say what is NOT claimed — "no claim is made
+    # that ... Arabic generally fails" — and a bare substring scan would read
+    # that disclaimer as the claim it exists to deny. The negated forms are
+    # stripped first, then the bare claim must be gone.
+    _NEGATIONS = (
+        r"(?:no claim is made that|no claim of|none that|nor that|"
+        r"(?:is |are )?not a claim that|it does not (?:say|claim)|"
+        r"do(?:es)? not claim|never claims?)[^.]{0,80}?"
+    )
+    for path in (ROADMAP, CHECKLIST, CONTRACT, REGISTER):
+        flat = _flat(path).lower()
+        for claim in ("mechanism a is fixed", "mechanism a fixed",
+                      "mechanism a repaired", "mechanism b closed",
+                      "full en↔ar parity achieved", "parity achieved",
+                      "arabic is inferior", "arabic generally fails",
+                      "run-004 authorized", "stage 9 started",
+                      "t1-a′ passed", "stage 7 reopened"):
+            stripped = re.sub(_NEGATIONS + re.escape(claim), "", flat)
+            assert claim not in stripped, (path, claim)
+
+
+def test_the_stage_eight_residuals_are_preserved_not_discharged():
+    """Closing the stage discharges none of them."""
+    register, contract = _flat(REGISTER), _flat(CONTRACT)
+    for flat in (register, contract):
+        assert "OPEN / DEFERRED" in flat            # Mechanism B
+        assert "R7 PF#1" in flat                    # unregistered-wording residual
+        assert "NOT ESTABLISHED" in flat            # no safe bounded repair
+    assert "NON-BLOCKING" in register.upper()       # dual activation
+    # exactly one EN↔AR row — closure must not have forked a second one
+    rows = [line for line in _read(REGISTER).splitlines()
+            if line.startswith("| **EN↔AR SUBSTANTIVE-ASSESSMENT OUTCOME DIVERGENCE")]
+    assert len(rows) == 1, len(rows)
+
+
+def _contract_stage8_block():
+    """The CURRENT Stage-8 authority block only.
+
+    Scoped deliberately. `RUN-004` and `T1-A′` appear dozens of times in this
+    file's preserved history, so a whole-file presence check would stay green
+    with the boundary deleted from the block that is supposed to carry it —
+    the same defect class as the Stage-8 routing guard above.
+    """
+    text = _read(CONTRACT)
+    start = text.index('<a id="current-authority--stage-8-en-ar-divergence-closure"></a>')
+    end = text.index('<a id="current-authority--stage-7-t2g-bounded-closure"></a>', start)
+    return re.sub(r"\s+", " ", text[start:end])
+
+
+def _checklist_current_stage_block():
+    """The CURRENT '## E. Current Stage / current subtask' section only."""
+    text = _read(CHECKLIST)
+    start = text.index("## E. Current Stage")
+    end = text.index("## F.", start)
+    return re.sub(r"\s+", " ", text[start:end])
+
+
+def test_the_stage_nine_boundary_survives_closure():
+    """T1-A′ is not promoted by Stage-8 closure, and its history stands."""
+    block = _contract_stage8_block()
+    checklist_block = _checklist_current_stage_block()
+    boundary = "no `RUN-004`, no fourth S2 run, no new human experiment by default"
+    for flat in (block, checklist_block):
+        assert boundary in flat, (
+            "the standing Stage-9 boundary sentence is missing: %s" % flat[:90])
+    assert "NEVER PASSED" in checklist_block.upper()
+    assert "never passed and never closed" in block.lower()
+    # the Stage-8 block must also carry its own residual truths
+    for fragment in ("CURRENT / NOT FIXED", "OPEN / DEFERRED", "R7 PF#1"):
+        assert fragment in block, fragment
+
+
+def test_mechanism_b_is_not_recorded_closed_in_the_register_row():
+    """Scoped to the EN↔AR row itself, not the whole register."""
+    row = [line for line in _read(REGISTER).splitlines()
+           if line.startswith("| **EN↔AR SUBSTANTIVE-ASSESSMENT OUTCOME DIVERGENCE")]
+    assert len(row) == 1
+    flat = re.sub(r"\s+", " ", row[0])
+    assert "`MECHANISM B: OPEN / DEFERRED`" in flat
+    assert "MECHANISM A: CURRENT / NOT FIXED" in flat
+    lowered = flat.lower()
+    for claim in ("mechanism b closed", "mechanism b is closed",
+                  "mechanism b resolved"):
+        assert claim not in lowered, claim
 
 
 def test_the_superseded_stage_seven_wording_survives_as_history():
