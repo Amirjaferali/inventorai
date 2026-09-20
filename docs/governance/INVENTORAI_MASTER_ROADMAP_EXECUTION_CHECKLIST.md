@@ -132,11 +132,42 @@ Read those before acting on any stage; this table is a locator, not a status sou
 
 ## E. Current Stage / current subtask
 
-- **CURRENT SYNCHRONIZATION STEP:** v1.32 + Stage 9 disposition amendment (2026-09-20)
-- **CURRENT EARLIEST INCOMPLETE PRODUCT GROUP:** Group 2
-- **CURRENT STAGE:** Stage 10 — T2-C′ differential product-value assessment.
-  **The Stage-9 DISPOSITION TASK is COMPLETED ✅ (Disposition A)** — and read the next
-  bullet before concluding anything from that.
+- **CURRENT SYNCHRONIZATION STEP:** v1.32 + Stage 10 differential amendment (2026-09-20)
+- **CURRENT EARLIEST GROUP HOLDING AN UNTICKED STAGE:** Group 3. All five Group-2 stages
+  (6–10) now read COMPLETED — **which is a statement about checkboxes, not a discharge:
+  Group 2 still carries `T1-A′` OPEN and the `T2-C′` verdict PARTIAL.**
+  *(Superseded wording, preserved — was: "CURRENT EARLIEST INCOMPLETE PRODUCT GROUP:
+  Group 2".)*
+- **CURRENT STAGE:** Stage 11 — T1-C′ / A2 human evidence. **`STAGE 11 STARTED: NO`** —
+  routing reaching it starts no human collection, no ILT, no A2 and no new round. Its
+  existing conditions stand: reuse valid prior evidence where applicable, and new human
+  activity requires separate authorization and the existing consent/custody boundaries.
+  **The Stage-10 DIFFERENTIAL ASSESSMENT is COMPLETED ✅ (Disposition B)** — and read the
+  next two bullets before concluding anything from that.
+- **CARRIED RESIDUAL, NEVER TO BE ERASED BY ROUTING FORWARD — `T2-C′`: `PARTIAL` ·
+  `PASS: NO` · `FULLY CLOSED: NO`.** Completing the Stage-10 differential did NOT change
+  the product-value conclusion: Stage 10 asks what materially changed since the accepted
+  WS16 evidence, and the answer is that the product changed materially while the verdict
+  stays `PARTIAL`. `REAL USER VALUE: UNEVIDENCED` — owned by Stage 11 / `T1-C′` / A2, not
+  duplicated into T2-C′. `PRODUCT DIFFERENTIATION: UNEVIDENCED` — owned by `T1-A′`.
+  **`MECHANICAL DEPTH EQUIVALENCE: NOT ESTABLISHED`** — the smaller substance-signal set,
+  the smaller `PHYSICAL_FEASIBILITY` question set, the electronics-sourced Stage-8 PF
+  derivation and the intentional capability-declaration exclusions all carry
+  `UNCERTAIN PRODUCT-VALUE SIGNIFICANCE`: neither defect proven nor parity proven, and
+  nothing is authorized from them. WS16 was **electronics/electrical only**
+  (`MECHANICAL WS16 BASELINE: NONE`); PDVG-01 carries the controlling `PARTIAL`.
+- **`CANDIDATE REPRESENTATION: PRESENT` · `PLATFORM-SIDE CANDIDATE COMPARISON: ABSENT`.**
+  G-3 changed representation after the `RUN-002` RC and created no comparison engine, so
+  the historical `RUN-002` result stands as valid historical evidence. Do NOT infer that
+  criteria 5 or 6 now pass, or that `T1-A′` is closer to closure.
+- **MCP:** `DEFERRED RECOMMENDATION ONLY` · `TRIGGER: NOT FOUND` ·
+  `REQUIRED FOR T2-C′ DISPOSITION: NO` · `IMPLEMENTATION AUTHORIZED: NO`. No row, no
+  implementation, no provider selected.
+- **FEATURE EXISTS ≠ EVIDENCE EXISTS ≠ VALIDATED CONCLUSION EXISTS.** Readiness Snapshot
+  material `PARTIAL`, ceiling `INSUFFICIENT_EVIDENCE`; commercial capture exists with
+  `VALIDATED COMMERCIAL CONCLUSION: NO`; manufacturing capture exists with
+  `MANUFACTURABILITY CONCLUSION: NO`. No readiness, commercial-readiness or
+  manufacturing-readiness `PASS`.
 - **CARRIED RESIDUAL, NEVER TO BE ERASED BY ROUTING FORWARD — `T1-A′`: `OPEN` · `FRB` ·
   `RELEASE-VALUE CRITERIA NOT MET` · `CLOSURE EVIDENCE: NOT MET`.** It has never passed
   and never closed. Completing the
@@ -145,7 +176,8 @@ Read those before acting on any stage; this table is a locator, not a status sou
   and 6 FAIL in all 8, platform-side candidate comparison ABSENT, 0 deliverable-eligible,
   0 reaching Stage 3. §15.7 is preserved exactly and no Stage-8-style acceptance/disclosure
   path exists for this row.
-- **STAGE 10 BOUNDARY, standing and unchanged:** assess only MATERIAL CHANGES since the
+- **STAGE 10 BOUNDARY — HONOURED BY THE COMPLETED DIFFERENTIAL, preserved as the record of
+  what bounded it:** assess only MATERIAL CHANGES since the
   accepted WS16 evidence across Electronics and Mechanical; do not restart a full historical
   review; do not repeat accepted evidence without material change; MCP returns only within
   its existing scope and is not begun by routing here.
@@ -159,10 +191,16 @@ Read those before acting on any stage; this table is a locator, not a status sou
   disclosure: PR #667 merged the bounded M-1 relevance repair (`F-1`, `F-2` CLOSED) and
   PR #668 merged the bilingual assessment/progression disclosure. **Stage 7 (T2-G) remains
   COMPLETED ✅** within its bounded scope.
-- **CURRENT SUBTASK:** NONE AUTHORIZED. Stage 10 requires its own explicit mandate;
-  completing the Stage-9 disposition starts nothing.
+- **CURRENT SUBTASK:** NONE AUTHORIZED. Stage 11 requires its own explicit mandate;
+  completing the Stage-10 differential starts nothing.
+- *(Superseded wording, preserved — was: "NONE AUTHORIZED. Stage 10 requires its own
+  explicit mandate; completing the Stage-9 disposition starts nothing.")*
 - *(Superseded wording, preserved — was: "none is authorized. Stage 9 requires its own
   explicit mandate; closing Stage 8 starts nothing.")*
+- **PRIOR STAGE COMPLETIONS, still true and still not discharges.**
+  **The Stage-9 DISPOSITION TASK is COMPLETED ✅ (Disposition A)** — and `T1-A′` is still OPEN.
+  **Stage 8 (EN↔AR divergence) is COMPLETED ✅ / CLOSED** under Owner acceptance + surface
+  disclosure. **Stage 7 (T2-G) remains COMPLETED ✅** within its bounded scope.
 - **STAGE 9 BOUNDARY, standing and unchanged:** existing evidence only — no `RUN-004`, no
   fourth S2 run, no new human experiment by default, and **`T1-A′` has NEVER PASSED and
   NEVER CLOSED.** Do not rewrite that historical failure as a PASS.
@@ -189,13 +227,20 @@ Read those before acting on any stage; this table is a locator, not a status sou
 
 Nothing below is authorized by this file. Each still requires the current mandate.
 
-1. **Stage 10** — T2-C′ differential assessment of material changes only, since the
-   accepted WS16 evidence, across Electronics and Mechanical.
+1. **Stage 11** — T1-C′ / A2 human evidence. `STAGE 11 STARTED: NO`. Reuse valid prior
+   evidence where applicable; new human activity requires separate authorization and the
+   existing consent/custody boundaries. Routing here authorizes no collection.
 2. **Stage 15 (IRL)** — the thinnest surviving readiness stage; its ownership is
    unresolved and Stage 15 is now its only home. It must not be lost.
 
-Step 1 is the Group 2 frontier. Step 2 is flagged because it is the highest
+Step 1 is the Group 3 frontier. Step 2 is flagged because it is the highest
 loss risk, not because it is next in sequence.
+
+**The Stage-10 differential assessment is COMPLETED and is no longer a step — but `T2-C′`
+is NOT closed and is carried forward as a `PARTIAL` product-value verdict, and `T1-A′`
+remains an OPEN / FRB residual.** *(Superseded wording, preserved — was step 1:
+"**Stage 10** — T2-C′ differential assessment of material changes only, since the accepted
+WS16 evidence, across Electronics and Mechanical." and "Step 1 is the Group 2 frontier.")*
 
 **The Stage-9 disposition task is COMPLETED and is no longer a step — but `T1-A′` is NOT
 closed and is carried forward as an OPEN / FRB residual.** *(Superseded wording, preserved
@@ -273,9 +318,9 @@ run has occurred. Deploying the merged code would activate it; that is not autho
 
 ## I. Current product-depth position
 
-**CURRENT PRODUCT-DEPTH FRONTIER: Stage 10 if authorized.** *(Superseded 2026-09-20, preserved — was: "Stage 9 → Stage 10 if authorized"; the Stage-9 disposition task is COMPLETED, while `T1-A′` itself stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 8 is now CLOSED under Owner acceptance + disclosure.)* *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
+**CURRENT PRODUCT-DEPTH FRONTIER: Stage 11 if authorized.** *(Superseded 2026-09-20, preserved — was: "Stage 10 if authorized"; the Stage-10 differential assessment is COMPLETED (B), while `T2-C′` stays `PARTIAL` and `T1-A′` stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 9 → Stage 10 if authorized"; the Stage-9 disposition task is COMPLETED, while `T1-A′` itself stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 8 is now CLOSED under Owner acceptance + disclosure.)* *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
 
-Group 1 is complete. **Stage 7 COMPLETED, Stage 8 CLOSED, and the Stage-9 `T1-A′` disposition task COMPLETED (A) — with `T1-A′` itself still OPEN / FRB; Stage 10 — T2-C′ — is the next Master Roadmap stage.** Group 2 is still the earliest incomplete group. Group 3 has Stage 12
+Group 1 is complete. **Stage 7 COMPLETED, Stage 8 CLOSED, the Stage-9 `T1-A′` disposition task COMPLETED (A) and the Stage-10 T2-C′ differential COMPLETED (B) — with `T1-A′` itself still OPEN / FRB and the `T2-C′` product-value verdict still PARTIAL; Stage 11 — T1-C′ / A2 — is the next Master Roadmap stage and is NOT started.** All five Group-2 stages now read completed, so **Group 3 is the earliest group holding an unticked stage** — a checkbox fact, not a discharge of Group 2's residuals. *(Superseded 2026-09-20, preserved — was: "Stage 10 — T2-C′ — is the next Master Roadmap stage. Group 2 is still the earliest incomplete group.")* Group 3 has Stage 12
 complete, Stages 13 and 14 partial through the three-dimension Readiness Snapshot only,
 and Stage 15 open and thinnest. The Snapshot ceiling is `INSUFFICIENT_EVIDENCE` in every
 dimension: a captured dimension is not a validated conclusion.
@@ -336,10 +381,11 @@ Two further distinctions carried from current evidence and never to be collapsed
 
 ```
 CURRENT SYNCHRONIZATION STEP:
-v1.32 + Stage 9 disposition amendment (2026-09-20)
+v1.32 + Stage 10 differential amendment (2026-09-20)
 
-CURRENT EARLIEST INCOMPLETE PRODUCT GROUP:
-Group 2
+CURRENT EARLIEST GROUP HOLDING AN UNTICKED STAGE:
+Group 3
+(all five Group-2 stages ticked; Group 2 residuals NOT discharged)
 
 STAGE 7:
 COMPLETED within its bounded T2-G scope
@@ -359,12 +405,27 @@ R7 PF#1 OPEN / PRESERVED
 STAGE 9 DISPOSITION TASK:
 COMPLETED — DISPOSITION A
 
+STAGE 10 DIFFERENTIAL ASSESSMENT:
+COMPLETED — DISPOSITION B
+
+T2-C′ PRODUCT-VALUE CONCLUSION:
+PARTIAL / updated differential recorded
+PASS: NO
+FULLY CLOSED: NO
+REAL USER VALUE: UNEVIDENCED (Stage 11 / T1-C′)
+PRODUCT DIFFERENTIATION: UNEVIDENCED (T1-A′)
+MECHANICAL DEPTH EQUIVALENCE: NOT ESTABLISHED
+CANDIDATE REPRESENTATION: PRESENT
+PLATFORM-SIDE CANDIDATE COMPARISON: ABSENT
+MCP: DEFERRED / NO TRIGGER / NOT AUTHORIZED
+
 T1-A′ OBLIGATION:
 OPEN / FRB / release-value criteria NOT MET
 never passed, never closed
 
 CURRENT PRODUCT-DEPTH FRONTIER:
-Stage 10 if authorized
+Stage 11 if authorized
+STAGE 11 STARTED: NO
 
 CURRENT TECHNOLOGY-DEEPENING POSITION:
 Stages 18–27 preserved, not entered / not authorized

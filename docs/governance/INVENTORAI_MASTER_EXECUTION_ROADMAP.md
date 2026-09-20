@@ -30,7 +30,72 @@
 > `ACTIVE_EXECUTION_ROADMAP.md`. Where any of those disagrees with this file, **they
 > control and this file is the stale one.**
 
-## Current routing override — v1.32 Stage 9 disposition amendment (2026-09-20)
+## Current routing override — v1.32 Stage 10 differential amendment (2026-09-20)
+
+**Sits on top of the Stage 9 disposition amendment and the v1.32 cut below, replacing
+neither and creating no new roadmap version.** Read it first for present routing.
+
+**Documentation-only.** No product, engine, web, schema or persistence path changed.
+All 45 Stage IDs, all 28 tracking IDs and the Group 1–9 structure are preserved.
+
+**`STAGE 10 — T2-C′ DIFFERENTIAL PRODUCT-VALUE ASSESSMENT: COMPLETED ✅ — DISPOSITION B.`**
+Read the next line before drawing any conclusion from that tick.
+
+**`T2-C′ PRODUCT-VALUE CONCLUSION REMAINS PARTIAL. IT HAS NOT PASSED AND IS NOT FULLY
+CLOSED.`** Stage 10 is a *differential* task: it asks what materially changed since the
+accepted WS16 evidence and whether that alters the accepted conclusion. The Owner-accepted
+answer is that **the product materially changed while the verdict stays `PARTIAL`**.
+`T2-C′ PASS: NO` · `T2-C′ FULLY CLOSED: NO` · `REAL USER VALUE: UNEVIDENCED` ·
+`PRODUCT DIFFERENTIATION: UNEVIDENCED` · `MECHANICAL DEPTH EQUIVALENCE: NOT ESTABLISHED`.
+
+**Controlling baseline, preserved not rewritten.** WS16 is the original
+**electronics/electrical-only** validation baseline — `MECHANICAL WS16 BASELINE: NONE /
+ZERO COVERAGE`. PDVG-01 (PR #559) is the accepted first differential and carries the
+controlling conclusion **`PARTIAL`, not `ADEQUATE`**.
+
+**Electronics differential — `MATERIALLY UPDATED / VERDICT PARTIAL`:** durable saved-project
+journey and recovery, bilingual/Arabic serving, correction and withdraw-and-replace, T2-G
+questioning, per-question explainability, semantic quality ordering and evidence references,
+quantified requirements, contextual feedback, rendered candidate representation,
+project-record longitudinal visibility, commercial evidence capture, manufacturing evidence
+capture, the Readiness Snapshot, and the Stage-8 relevance repair with its assessment
+disclosure. **None of these becomes `REAL USER VALUE PROVEN` or `PRODUCT DIFFERENTIATION
+PROVEN`.**
+
+**Mechanical differential — `NEW POST-WS16 DOMAIN / DEPTH EQUIVALENCE NOT ESTABLISHED`.**
+Mechanical is an activated product domain with its own governed domain and content surfaces,
+so the product materially differs from a baseline that had none; **equivalent depth is not
+claimed**. The smaller substance-signal set, the smaller `PHYSICAL_FEASIBILITY` question set,
+the electronics-sourced Stage-8 PF derivation and the intentional capability-declaration
+exclusions all carry `UNCERTAIN PRODUCT-VALUE SIGNIFICANCE` — **neither defect proven nor
+parity proven**, and none authorizes implementation.
+
+**`CANDIDATE REPRESENTATION: PRESENT` · `PLATFORM-SIDE CANDIDATE COMPARISON: ABSENT`.** G-3
+changed representation after the `RUN-002` RC and created no comparison engine, so the
+historical `RUN-002` result stands as valid historical evidence. **No inference is drawn that
+criteria 5 or 6 now pass, or that `T1-A′` is closer to closure.** `T1-A′: OPEN` ·
+`FRB: REMAINS` · `CLOSURE EVIDENCE: NOT MET` · `RUN-004: NOT AUTHORIZED`.
+
+**FEATURE EXISTS ≠ EVIDENCE EXISTS ≠ VALIDATED CONCLUSION EXISTS.** Readiness Snapshot
+`PARTIAL` material, ceiling `INSUFFICIENT_EVIDENCE`; commercial capture exists with no
+validated commercial conclusion; manufacturing capture exists with no manufacturability
+conclusion. No readiness, commercial-readiness or manufacturing-readiness `PASS`.
+
+**MCP: `DEFERRED RECOMMENDATION ONLY` · `TRIGGER: NOT FOUND` · `REQUIRED FOR T2-C′
+DISPOSITION: NO` · `IMPLEMENTATION AUTHORIZED: NO`.** No MCP row, no implementation, no
+provider selected.
+
+**Next Master Roadmap stage: Stage 11 — T1-C′ / A2 human evidence.** `STAGE 11 STARTED: NO`;
+it needs its own explicit mandate and keeps its existing authorization conditions — reuse
+valid prior evidence where applicable, and new human activity requires separate authorization
+and the existing consent/custody boundaries. **`T1-A′` and the `PARTIAL` T2-C′ verdict both
+travel forward as carried residuals and routing onward must not erase them.**
+`PUBLIC RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED` ·
+`PAID ACTIVATION: NOT AUTHORIZED`.
+
+---
+
+## Current routing override — v1.32 Stage 9 disposition amendment (2026-09-20) — SUPERSEDED FOR PRESENT ROUTING BY THE STAGE 10 DIFFERENTIAL AMENDMENT ABOVE, PRESERVED IN FULL
 
 **Sits on top of the Stage 8 closure amendment and the v1.32 cut below, replacing
 neither and creating no new roadmap version.** Read it first for present routing.
@@ -69,7 +134,7 @@ not the Stage-8 EN↔AR divergence, and `W1-N3` stays CLOSED.
 AUTHORIZED` · `FURTHER SUPPLEMENTAL SLICE: NOT AUTHORIZED` · `NEW BENCHMARK: NOT
 AUTHORIZED` · `NEW HUMAN EXPERIMENT: NOT AUTHORIZED`.
 
-**Next Master Roadmap stage: Stage 10 — T2-C′ differential product-value assessment.**
+*(SUPERSEDED for present routing by the Stage 10 differential amendment above — preserved verbatim:)* **Next Master Roadmap stage: Stage 10 — T2-C′ differential product-value assessment.**
 `STAGE 10 STARTED: NO`; it needs its own explicit mandate, and its standing boundary is
 unchanged — material changes only since the accepted WS16 evidence, across Electronics
 and Mechanical, no full historical restart, no repetition of accepted evidence without
@@ -427,9 +492,9 @@ This is the short operating view of the detailed sequence in §6. A successor wo
 - [x] **7 — T2-G:** **COMPLETED ✅ WITHIN ITS BOUNDED T2-G SCOPE — UPDATED 2026-09-20 (Owner Stage 7 closure acceptance).** `N-1` and `N-2` are **SATISFIED**; the three-version legacy migration is **CLOSED / ACCEPTED** under policy B (explicit confirmed adoption; automatic migration on open still rejected). **Preserved, not discharged:** `R1` and `R2` stay separate future residuals, `R3` returns only at its own applicable gate, `N-3`–`N-6` keep their triggers, and the Arabic `ولكن` contrast-form note rides the existing T2-G register row as a non-blocking product-language observation (safe under-progress direction; no gate, no repair obligation). Completion of this bounded scope is **not** full semantic-adaptivity capability and **not** a paid-activation claim. *(Superseded wording, preserved — was: "PARTIAL / MERGED SLICES, BOUNDED RESIDUALS 🔄 — **UPDATED v1.32.**")* t2g1 integrated and administratively closed; **t2g2 PR #643 MERGED** at `38827bf`, final head `3bb443ce69eba3a9e7f746c5068792ddb004d466` after four repair cycles (`PR643-T2G2-SCOPE-REPAIR-01…04`); **PR #644 T2-G legacy migration MERGED**. The v1.31 extra-file and `generated_at` disclosures are RESOLVED inside that candidate (eleventh file Owner-retained and recorded as outside the original mandate; test-local clock pin; the hit-rate claim explicitly withdrawn). *(Superseded 2026-09-20, preserved verbatim — was: "Still open: N-1/N-2 pending bounded acceptance, R1/R2/R3, and the three-version legacy-migration disposition.")* *(Superseded wording — was: "AWAITING CLAUDE RETURN … not merged".)*
 - [x] **8 — EN↔AR divergence:** **COMPLETED ✅ / CLOSED UNDER OWNER ACCEPTANCE + SURFACE DISCLOSURE — 2026-09-20.** PR #667 merged the bounded M-1 relevance repair (`F-1`, `F-2` CLOSED); the Mechanism-A residual is explicitly accepted as a known bounded limitation; PR #668 merged the bilingual EN/AR assessment-and-progression disclosure. **Closure is not repair:** `MECHANISM A: CURRENT / NOT FIXED` (no safe bounded repair, implementation not authorized), `MECHANISM B: OPEN / DEFERRED`, the `R7 PF#1` residual `OPEN / PRESERVED` under its existing R2/R3 owner, and the `الحدود الفيزيائية` dual activation non-blocking. No claim of full EN↔AR parity and none that Arabic generally fails. *(Superseded wording, preserved — was: "repair or explicitly accept/disclose the measured 2-of-4 substantive divergence before serious release.")*
 - [x] **9 — T1-A′ disposition:** **DISPOSITION TASK COMPLETED ✅ — DISPOSITION A (2026-09-20). `T1-A′ ITSELF REMAINS OPEN / FRB`: it has NOT passed and has NOT closed, and `CLOSURE EVIDENCE: NOT MET`.** Stage 9 asks what the lawful disposition is; the Owner-accepted answer is that the obligation stays open. From `S2-PATHN-RUN-002`: no Full Pass 0 of 8; criteria 5 and 6 FAIL in all 8; platform-side candidate comparison ABSENT; 0 deliverable-eligible; 0 reaching Stage 3. The §15.7 closure criterion is preserved exactly and no Stage-8-style acceptance/disclosure path is added. The verified remediations remain true and remain insufficient; no aggregate improvement score exists. `THIRD S2 RUN: CONSUMED` · `RUN-004: NOT AUTHORIZED`. *(Superseded wording, preserved — was: "use existing evidence; no RUN-004/fourth S2 run without new authority.")*
-- [ ] **10 — T2-C′ differential assessment:** assess only material changes since accepted WS16 evidence across Electronics and Mechanical.
+- [x] **10 — T2-C′ differential assessment:** **DIFFERENTIAL ASSESSMENT COMPLETED ✅ — DISPOSITION B (2026-09-20). `T2-C′ PRODUCT-VALUE CONCLUSION REMAINS PARTIAL`: it has NOT passed and is NOT fully closed.** Stage 10 asks what materially changed since the accepted WS16 evidence; the Owner-accepted answer is that the product materially changed while the verdict stays `PARTIAL`. WS16 was **electronics/electrical only** (`MECHANICAL WS16 BASELINE: NONE`) and PDVG-01 carries the controlling `PARTIAL`. Electronics: materially updated. Mechanical: a new post-WS16 domain, **depth equivalence NOT established**. `REAL USER VALUE: UNEVIDENCED` (Stage 11 / `T1-C′`) · `PRODUCT DIFFERENTIATION: UNEVIDENCED` (`T1-A′`) · `CANDIDATE REPRESENTATION: PRESENT` but `PLATFORM-SIDE CANDIDATE COMPARISON: ABSENT` · `T1-A′: OPEN / FRB` · `MCP: DEFERRED / NO TRIGGER / NOT AUTHORIZED`. *(Was: "assess only material changes since accepted WS16 evidence across Electronics and Mechanical.")*
 
-**Group state — UPDATED 2026-09-20 (Stage 9 disposition acceptance):** **Stage 9 DISPOSITION TASK COMPLETED ✅ (A)** — and `T1-A′` itself **REMAINS OPEN / FRB**, never passed, never closed, closure evidence NOT MET. **Stage 10 — T2-C′ differential assessment — is now the next Master Roadmap stage** and still requires its own explicit mandate; `T1-A′` travels forward as a carried residual. *(Prior line, preserved:)* **Stage 8 COMPLETED ✅ / CLOSED** under Owner acceptance + surface disclosure (PR #667 repair, PR #668 disclosure); Mechanism A stays CURRENT / NOT FIXED and Mechanism B stays OPEN / DEFERRED, so closure is a disposition, not a repair. *(SUPERSEDED 2026-09-20 — the Stage-9 disposition task is COMPLETED and Stage 10 is next; preserved verbatim:)* **Stage 9 — `T1-A′` disposition — is now the next Master Roadmap stage** and still requires its own explicit mandate; `T1-A′` has never passed and never closed. *(Prior line, preserved:)* Stage 6 COMPLETED ✅. **Stage 7 COMPLETED ✅ within its bounded T2-G scope** — `N-1`/`N-2` SATISFIED, legacy migration CLOSED/ACCEPTED under policy B; `R1`, `R2`, `R3` and `N-3`–`N-6` preserved at their own triggers, not discharged. *(Superseded 2026-09-20 — was: "**Stage 8 is now the next Master Roadmap stage** and still requires its own explicit mandate."; Stage 8 is now CLOSED and Stage 9 is next.)* Stages 9–10 unchanged. **Group 2 remains the earliest incomplete group and therefore the current product-depth frontier.** No paid-activation obligation discharged. *(Superseded wording, preserved — was: "Stage 7 PARTIAL and materially advanced — PR #643 and PR #644 both merged; the v1.31 wait and both disclosures are consumed. Its remaining residuals are bounded (N-1/N-2, legacy-migration disposition).")*
+**Group state — UPDATED 2026-09-20 (Stage 10 differential acceptance):** **ALL FIVE GROUP-2 STAGES (6–10) NOW READ COMPLETED ✅** — Stage 10's differential assessment closed as **DISPOSITION B**. **Read the next sentence before concluding that Group 2 is discharged: it is not.** The group carries **undischarged residuals that ticking its stages did NOT close** — `T1-A′: OPEN / FRB / CLOSURE EVIDENCE NOT MET` and `T2-C′ PRODUCT-VALUE CONCLUSION: PARTIAL` (`PASS: NO`, `FULLY CLOSED: NO`, real user value and product differentiation UNEVIDENCED, Mechanical depth equivalence NOT ESTABLISHED). **Stage 11 — T1-C′ / A2 human evidence — is now the next Master Roadmap stage**, `STAGE 11 STARTED: NO`, and **Group 3 is now the earliest group holding an unticked stage** — which is a statement about checkboxes, not a discharge of Group 2's residuals. *(SUPERSEDED 2026-09-20 — the Stage-10 differential is COMPLETED and Stage 11 is next; preserved verbatim:)* **Stage 9 DISPOSITION TASK COMPLETED ✅ (A)** — and `T1-A′` itself **REMAINS OPEN / FRB**, never passed, never closed, closure evidence NOT MET. *(Superseded by the Stage-10 acceptance above, preserved verbatim:)* **Stage 10 — T2-C′ differential assessment — is now the next Master Roadmap stage** and still requires its own explicit mandate; `T1-A′` travels forward as a carried residual. *(Prior line, preserved:)* **Stage 8 COMPLETED ✅ / CLOSED** under Owner acceptance + surface disclosure (PR #667 repair, PR #668 disclosure); Mechanism A stays CURRENT / NOT FIXED and Mechanism B stays OPEN / DEFERRED, so closure is a disposition, not a repair. *(SUPERSEDED 2026-09-20 — the Stage-9 disposition task is COMPLETED and Stage 10 is next; preserved verbatim:)* **Stage 9 — `T1-A′` disposition — is now the next Master Roadmap stage** and still requires its own explicit mandate; `T1-A′` has never passed and never closed. *(Prior line, preserved:)* Stage 6 COMPLETED ✅. **Stage 7 COMPLETED ✅ within its bounded T2-G scope** — `N-1`/`N-2` SATISFIED, legacy migration CLOSED/ACCEPTED under policy B; `R1`, `R2`, `R3` and `N-3`–`N-6` preserved at their own triggers, not discharged. *(Superseded 2026-09-20 — was: "**Stage 8 is now the next Master Roadmap stage** and still requires its own explicit mandate."; Stage 8 is now CLOSED and Stage 9 is next.)* Stages 9–10 unchanged. **Group 2 remains the earliest incomplete group and therefore the current product-depth frontier.** No paid-activation obligation discharged. *(Superseded wording, preserved — was: "Stage 7 PARTIAL and materially advanced — PR #643 and PR #644 both merged; the v1.31 wait and both disclosures are consumed. Its remaining residuals are bounded (N-1/N-2, legacy-migration disposition).")*
 
 ### Group 3 — Stages 11–15: human evidence and readiness foundations
 
@@ -439,7 +504,7 @@ This is the short operating view of the detailed sequence in §6. A successor wo
 - [ ] **14 — MRL-compatible view:** **PARTIAL — UPDATED v1.32.** Manufacturing Evidence Owner and Capture merged (PRs #651, #652) and Manufacturing joined the Snapshot as an evidence-sufficiency dimension, ceiling `INSUFFICIENT_EVIDENCE` only, carrying **no manufacturability conclusion**. The MRL view itself is NOT built; `MRL FINAL OWNER / COMPOSITION PREDECIDED: NO`; it still depends on CAP-12/13 and WS-PFV-001 evidence that does not exist.
 - [ ] **15 — IRL-compatible view:** expose interfaces and subsystem integration evidence; close durable subsystem identity/persistence residuals when required.
 
-**Group state — UPDATED v1.32:** Stage 11 intentionally deferred (CEHR/Route-B preserved, not cancelled). **Stage 12 is now COMPLETED**; Stages 13 and 14 are PARTIAL through the Readiness Snapshot only; **Stage 15 (IRL) remains OPEN and is the thinnest — its ownership is unresolved and this Stage is its only home**, since DOR row 174 (which formerly carried it) is closed. Stage 15 must not be lost.
+**Group state — UPDATED 2026-09-20 (Stage 10 differential acceptance):** **Stage 11 is now the next Master Roadmap stage and `STAGE 11 STARTED: NO`** — routing reaching it starts no human collection. Its existing authorization conditions are unchanged: reuse valid prior evidence where applicable, and new human activity requires separate authorization and the existing consent/custody boundaries. *(Prior line, preserved:)* Stage 11 intentionally deferred (CEHR/Route-B preserved, not cancelled). **Stage 12 is now COMPLETED**; Stages 13 and 14 are PARTIAL through the Readiness Snapshot only; **Stage 15 (IRL) remains OPEN and is the thinnest — its ownership is unresolved and this Stage is its only home**, since DOR row 174 (which formerly carried it) is closed. Stage 15 must not be lost.
 
 ### Group 4 — Stages 16–20: system/commercial readiness and technical guidance
 
@@ -1060,7 +1125,7 @@ Preserve: IP confidentiality; user/project/host/field-scoped authorization and e
 | 15 | T2-G ownership and bounded semantic adaptation | **COMPLETED ✅ WITHIN BOUNDED T2-G SCOPE — UPDATED 2026-09-20 (Owner Stage 7 closure acceptance)** — `N-1`/`N-2` **SATISFIED**; three-version legacy migration **CLOSED / ACCEPTED** under policy B (explicit confirmed adoption; automatic migration on open still rejected). **Preserved, not discharged:** `R1`, `R2` (separate future residuals), `R3` (own gate), `N-3`–`N-6`, plus the non-blocking Arabic `ولكن` contrast-form observation on the existing T2-G register row. Bounded closure is not full semantic-adaptivity capability. *(Superseded wording, preserved — was: "PARTIAL / MERGED SLICES — UPDATED v1.32" with "Remaining and bounded: N-1/N-2 pending bounded acceptance, R1/R2/R3, three-version legacy-migration disposition".)* — **PR #643 MERGED** (`38827bf`; final head `3bb443ce…`; four repair cycles `PR643-T2G2-SCOPE-REPAIR-01…04`) and **PR #644 T2-G legacy migration MERGED**. Both v1.31 disclosures RESOLVED in-candidate: eleventh file Owner-retained and recorded as outside the original mandate; `generated_at` fixed by a test-local clock pin with the hit-rate claim withdrawn. Remaining and bounded: N-1/N-2 pending bounded acceptance, R1/R2/R3, three-version legacy-migration disposition. *(Superseded — was: "AWAITING ORIGINAL CLAUDE RETURN … no merge".)* |
 | 16 | EN↔AR divergence disposition | **CLOSED / SATISFIED ✅ — 2026-09-20, Owner acceptance + surface disclosure (PR #667 repair, PR #668 disclosure). Mechanism A remains CURRENT / NOT FIXED; Mechanism B OPEN / DEFERRED; residuals preserved.** *(Was: "OPEN / before Serious Release ⏳".)* |
 | 17 | T1-A′ disposition without RUN-004 | **STAGE-9 DISPOSITION TASK COMPLETED ✅ (A, 2026-09-20) — but the OBLIGATION stays `OPEN / FRB` ⛔: never passed, never closed, closure evidence NOT MET, §15.7 preserved, RUN-004 NOT AUTHORIZED.** *(Was: "OPEN / FRB ⛔".)* |
-| 18 | Differential T2-C′ product-value assessment | NOT AUTHORIZED ⏳ |
+| 18 | Differential T2-C′ product-value assessment | **STAGE-10 DIFFERENTIAL COMPLETED ✅ (B, 2026-09-20) — but the PRODUCT-VALUE CONCLUSION stays `PARTIAL` ⏳: `T2-C′ PASS: NO`, `FULLY CLOSED: NO`, real user value and product differentiation UNEVIDENCED, Mechanical depth equivalence NOT ESTABLISHED.** *(Was: "NOT AUTHORIZED ⏳".)* |
 | 19 | T1-C′/A2 human evidence | DEFERRED / no new collection ⏳ |
 | 20 | Readiness repository reconciliation | **COMPLETED ✅ — UPDATED v1.32** — one compositional architecture over canonical evidence, no duplicate truth source: ONE shared `readiness_evidence` substrate, `NEW OWNER REQUIRED: NO`, `NEW ENGINE REQUIRED: NO`, FDC-001 retained as canonical decision owner. PRs #647–#652; `ROW-174-MINIMAL-CLOSURE-01` / `DOR-174-186-DISPOSITION-01`. Positive readiness promotion remains POST-RELEASE |
 | 21 | TRL/MRL/IRL/SRL-compatible architecture and increments | **PARTIAL — UPDATED v1.32** — a three-dimension Readiness Snapshot exists (Technical, Commercial, Manufacturing) at ceiling `INSUFFICIENT_EVIDENCE` only, with no overall, composite, score, percentage or weakest-link result. **The TRL, MRL, IRL and SRL views themselves are NOT built and NOT authorized**; IRL ownership is unresolved (Stage 15) and `MRL FINAL OWNER / COMPOSITION PREDECIDED: NO` |
