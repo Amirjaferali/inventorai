@@ -980,6 +980,25 @@ UI_STRINGS = {
         "en": "Answer in the box below, or choose one of the response options.",
         "ar": "أجب في المربع أدناه، أو اختر أحد خيارات الرد.",
     },
+    # Bounded assessment/progression limitation, disclosed beside the answer
+    # box it concerns (Owner decision: accept the known residual and disclose
+    # it). It says only what is true of the shipped rules: assessment and
+    # progression are fixed automated language rules, wording can be read
+    # differently at similar meaning, and rephrasing is the user's recourse.
+    # It does NOT say any language is less reliable than another, does NOT
+    # claim the limitation is solved, and does NOT put the cause on the user.
+    "UI_ASSESSMENT_WORDING_NOTE": {
+        "en": ("InventorAI uses fixed automated language rules to assess answers "
+               "and decide progress. Wording can sometimes be read differently "
+               "even when the intended meaning is similar. If an answer seems to "
+               "be read differently from what you meant, or progress does not "
+               "change as you expected, rephrase the technical meaning or add "
+               "detail."),
+        "ar": ("يستخدم InventorAI قواعد لغوية آلية ثابتة لتقييم الإجابات وتحديد "
+               "التقدم. وقد تُقرأ بعض الصياغات بشكل مختلف حتى عندما يكون المعنى "
+               "المقصود متشابهًا. وإذا بدا أن إجابتك قُرئت على غير ما قصدت، أو لم "
+               "يتغيّر التقدم كما توقعت، فأعد صياغة المعنى الفني أو أضف تفصيلًا."),
+    },
     "UI_B_SESSION_026": {
         "en": "Help me understand this question",
         "ar": "ساعدني على فهم هذا السؤال",

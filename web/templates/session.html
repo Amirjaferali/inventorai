@@ -374,6 +374,15 @@ body{overflow-wrap:anywhere}
 {% endif %}
 {% if question %}
 <p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">{{ t('UI_B_SESSION_025') }}</p>
+{#- ASSESSMENT-WORDING-DISCLOSURE-BEGIN — bounded assessment/progression
+    limitation, beside the answer box it concerns. Owner decision: the known
+    residual is ACCEPTED and DISCLOSED, not fixed. One line on the existing
+    answer-guidance seam, through the existing t() localization path — no new
+    page, modal, warning framework or second help system, and the existing
+    hint above is untouched. Not version-gated: the limitation is true of
+    every project, so every project sees it. -#}
+<p class="answer-hint answer-hint-assessment" style="font-size:12px;color:#888;margin:-8px 0 14px 0">{{ t('UI_ASSESSMENT_WORDING_NOTE') }}</p>
+{#- ASSESSMENT-WORDING-DISCLOSURE-END -#}
 {# T1-D (OD-PDVG-13): truthful disclosure of how questions are chosen in THIS
    version — a fixed governed set, deterministic state-aware selection, and no
    semantic follow-up generated from the meaning of a free-text answer. One
