@@ -23,6 +23,57 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--stage-8-en-ar-divergence-closure"></a>
+## Current authority — Stage 8 / EN↔AR divergence closure (Owner acceptance + disclosure, 2026-09-20)
+
+**ACTIVE CONTRACT: NONE — unchanged.** This entry records an Owner DISPOSITION and the
+closure conditions that are now met. It authorizes no implementation, and none was
+performed: no product, engine, web, schema or persistence path changed.
+
+**Disposition.** `STAGE 8 / EN↔AR SUBSTANTIVE ASSESSMENT DIVERGENCE: COMPLETED / CLOSED
+UNDER THE OWNER ACCEPTANCE + SURFACE DISCLOSURE PATH.` The registered closure criterion in
+`DEFERRED_OBLIGATIONS_REGISTER.md` §3 admits two routes for its second limb — technical
+resolution with evidence, **or** explicit Owner acceptance with the rule disclosed on the
+product surface. The Owner selected the second. All three limbs are now satisfied.
+
+| Limb | Evidence |
+|---|---|
+| Ownership classified, no duplicate assessment/relevance/language owner | The G-4 adjudication stands; `engine/gap_relevance.py` remains the single relevance owner and was not changed by either PR |
+| Technical part — the bounded M-1 relevance half | **PR #667 MERGED** `c1fffddb2db56aa4c5a8a72c83d658cfb20e4476`; `F-1` CLOSED, `F-2` CLOSED |
+| Owner-acceptance part | The Mechanism-A residual is explicitly **ACCEPTED as a known bounded product limitation**, not repaired |
+| Surface-disclosure part | **PR #668 MERGED** `c6933304c9757fcc487a00fddc33a888a1f4548e` — one bilingual EN/AR assessment-and-progression limitation disclosure on the session answer surface, ungated by engine-contract version |
+| Implementation and tests required by the chosen disposition | Separately authorized and verified in those two merges |
+
+**What this closure does NOT say.** It does not say Mechanism A is fixed. It does not claim
+full EN↔AR parity. It does not say Arabic is inferior or generally fails. It does not close
+Mechanism B. It does not promote `T1-A′`, authorize `RUN-004` or a fourth S2 run, start
+Stage 9, or discharge any other obligation. The historical RVR-8 negative/mixed result
+stays exactly what it was at its recorded moment.
+
+**Preserved, not discharged.**
+
+* **Mechanism A** — `CURRENT / NOT FIXED` · `SAFE BOUNDED REPAIR: NOT ESTABLISHED` ·
+  `IMPLEMENTATION AUTHORIZED: NO`. The English raw conditional surface can still read a
+  preference clause as causal structure; the direction of error is unearned progress on the
+  **English** side. Accepted as a disclosed limitation, and the disclosure is live.
+* **Mechanism B** — `OPEN / DEFERRED` · `CODE CHANGE: NOT AUTHORIZED`. It caused no measured
+  final-gap divergence and is not a Stage-8 closure blocker; it returns only under its own
+  separate bounded Owner decision.
+* **The `R7 PF#1` residual** — `OPEN / PRESERVED` under the existing R2/R3
+  unregistered-wording bound, with its existing owner. No answer-derived vocabulary.
+* **The `الحدود الفيزيائية` dual activation** of `PF-PHYSICAL-LIMIT` and
+  `PF-PHYSICAL-WORKABILITY`, both inside `PHYSICAL_FEASIBILITY` — **NON-BLOCKING
+  OBSERVATION**, no row, gate, return lifecycle or repair task.
+* **The loose Arabic test fragment** noted by the disclosure review — **NON-BLOCKING /
+  NATURAL-TOUCH ONLY**, and no Stage-8 obligation.
+
+**Next Master Roadmap stage: Stage 9 — `T1-A′` disposition.** Closing Stage 8 starts
+nothing: Stage 9 needs its own explicit mandate, uses existing evidence only, and carries
+its standing boundary unchanged — no `RUN-004`, no fourth S2 run, no new human experiment by
+default, and **`T1-A′` has never passed and never closed; that history is not rewritten as a
+PASS.** `PUBLIC RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED` ·
+`PAID ACTIVATION: NOT AUTHORIZED`.
+
 <a id="current-authority--stage-7-t2g-bounded-closure"></a>
 ## Current authority — Stage 7 / T2-G bounded closure (Owner acceptance, 2026-09-20)
 

@@ -132,13 +132,27 @@ Read those before acting on any stage; this table is a locator, not a status sou
 
 ## E. Current Stage / current subtask
 
-- **CURRENT SYNCHRONIZATION STEP:** v1.32 → v1.32 + Stage 7 closure amendment (2026-09-20)
+- **CURRENT SYNCHRONIZATION STEP:** v1.32 + Stage 8 closure amendment (2026-09-20)
 - **CURRENT EARLIEST INCOMPLETE PRODUCT GROUP:** Group 2
-- **CURRENT STAGE:** Stage 8 — the next Master Roadmap stage. **Stage 7 (T2-G) is COMPLETED
-  ✅ within its bounded T2-G scope**; `N-1`/`N-2` SATISFIED and the three-version legacy
-  migration CLOSED/ACCEPTED under policy B.
-- **CURRENT SUBTASK:** none is authorized. Stage 8 requires its own explicit mandate; closing
-  Stage 7 starts nothing.
+- **CURRENT STAGE:** Stage 9 — `T1-A′` disposition, the next Master Roadmap stage.
+  **Stage 8 (EN↔AR divergence) is COMPLETED ✅ / CLOSED** under Owner acceptance + surface
+  disclosure: PR #667 merged the bounded M-1 relevance repair (`F-1`, `F-2` CLOSED) and
+  PR #668 merged the bilingual assessment/progression disclosure. **Stage 7 (T2-G) remains
+  COMPLETED ✅** within its bounded scope.
+- **CURRENT SUBTASK:** none is authorized. Stage 9 requires its own explicit mandate; closing
+  Stage 8 starts nothing.
+- **STAGE 9 BOUNDARY, standing and unchanged:** existing evidence only — no `RUN-004`, no
+  fourth S2 run, no new human experiment by default, and **`T1-A′` has NEVER PASSED and
+  NEVER CLOSED.** Do not rewrite that historical failure as a PASS.
+- **STAGE 8 CLOSURE IS A DISPOSITION, NOT A REPAIR:** `MECHANISM A: CURRENT / NOT FIXED`
+  (no safe bounded repair established, implementation not authorized; accepted as a disclosed
+  limitation), `MECHANISM B: OPEN / DEFERRED`, the `R7 PF#1` residual `OPEN / PRESERVED`
+  under its existing R2/R3 owner, and the `الحدود الفيزيائية` dual activation non-blocking.
+  No claim of full EN↔AR parity and none that Arabic generally fails.
+- *(Superseded wording, preserved — was: "CURRENT SYNCHRONIZATION STEP: v1.32 → v1.32 +
+  Stage 7 closure amendment / CURRENT STAGE: Stage 8 — the next Master Roadmap stage /
+  CURRENT SUBTASK: none is authorized. Stage 8 requires its own explicit mandate; closing
+  Stage 7 starts nothing.")*
 - **PRESERVED, NOT DISCHARGED:** `R1` and `R2` (separate future residuals), `R3` (returns only
   at its own applicable gate), `N-3`–`N-6`, and the non-blocking Arabic `ولكن`
   contrast-form observation on the existing T2-G register row. Never silently drop these.
@@ -153,17 +167,20 @@ Read those before acting on any stage; this table is a locator, not a status sou
 
 Nothing below is authorized by this file. Each still requires the current mandate.
 
-1. **Stage 8** — repair or explicitly accept/disclose the measured 2-of-4 substantive
-   EN↔AR divergence before serious release.
-2. **Stage 9** — T1-A′ disposition from existing evidence. No RUN-004 and no fourth
-   S2 run without new authority.
-3. **Stage 10** — T2-C′ differential assessment of material changes only, since the
+1. **Stage 9** — T1-A′ disposition from existing evidence. No RUN-004 and no fourth
+   S2 run without new authority. `T1-A′` has never passed and never closed.
+2. **Stage 10** — T2-C′ differential assessment of material changes only, since the
    accepted WS16 evidence, across Electronics and Mechanical.
-4. **Stage 15 (IRL)** — the thinnest surviving readiness stage; its ownership is
+3. **Stage 15 (IRL)** — the thinnest surviving readiness stage; its ownership is
    unresolved and Stage 15 is now its only home. It must not be lost.
 
-Steps 1–3 are the Group 2 frontier. Step 4 is flagged because it is the highest
+Steps 1–2 are the Group 2 frontier. Step 3 is flagged because it is the highest
 loss risk, not because it is next in sequence.
+
+**Stage 8 is CLOSED and is no longer a step.** *(Superseded wording, preserved — was step 1:
+"**Stage 8** — repair or explicitly accept/disclose the measured 2-of-4 substantive EN↔AR
+divergence before serious release.")* It closed by Owner acceptance + surface disclosure, not
+by repair: Mechanism A stays CURRENT / NOT FIXED and Mechanism B stays OPEN / DEFERRED.
 
 **Stage 7 is CLOSED and is no longer a step.** *(Superseded wording, preserved — was step 1:
 "**Stage 7** — close the bounded residuals (N-1/N-2 acceptance; the three-version
@@ -230,9 +247,9 @@ run has occurred. Deploying the merged code would activate it; that is not autho
 
 ## I. Current product-depth position
 
-**CURRENT PRODUCT-DEPTH FRONTIER: Stage 8 → Stage 9 → Stage 10 if authorized.** *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
+**CURRENT PRODUCT-DEPTH FRONTIER: Stage 9 → Stage 10 if authorized.** *(Superseded 2026-09-20, preserved — was: "Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 8 is now CLOSED under Owner acceptance + disclosure.)* *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
 
-Group 1 is complete. **Stage 7 is COMPLETED within its bounded T2-G scope; Stage 8 is the next Master Roadmap stage.** Group 2 is still the earliest incomplete group. Group 3 has Stage 12
+Group 1 is complete. **Stage 7 is COMPLETED within its bounded T2-G scope and Stage 8 is CLOSED under Owner acceptance + surface disclosure; Stage 9 — `T1-A′` — is the next Master Roadmap stage.** Group 2 is still the earliest incomplete group. Group 3 has Stage 12
 complete, Stages 13 and 14 partial through the three-dimension Readiness Snapshot only,
 and Stage 15 open and thinnest. The Snapshot ceiling is `INSUFFICIENT_EVIDENCE` in every
 dimension: a captured dimension is not a validated conclusion.
@@ -293,7 +310,7 @@ Two further distinctions carried from current evidence and never to be collapsed
 
 ```
 CURRENT SYNCHRONIZATION STEP:
-v1.32 + Stage 7 closure amendment (2026-09-20)
+v1.32 + Stage 8 closure amendment (2026-09-20)
 
 CURRENT EARLIEST INCOMPLETE PRODUCT GROUP:
 Group 2
@@ -307,8 +324,14 @@ R1 PRESERVED
 R2 PRESERVED
 R3 PRESERVED at its own gate
 
+STAGE 8:
+CLOSED / COMPLETED under Owner acceptance + surface disclosure
+Mechanism A CURRENT / NOT FIXED
+Mechanism B OPEN / DEFERRED
+R7 PF#1 OPEN / PRESERVED
+
 CURRENT PRODUCT-DEPTH FRONTIER:
-Stage 8 → Stage 9 → Stage 10 if authorized
+Stage 9 → Stage 10 if authorized
 
 CURRENT TECHNOLOGY-DEEPENING POSITION:
 Stages 18–27 preserved, not entered / not authorized
