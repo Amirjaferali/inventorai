@@ -30,7 +30,56 @@
 > `ACTIVE_EXECUTION_ROADMAP.md`. Where any of those disagrees with this file, **they
 > control and this file is the stale one.**
 
-## Current routing override — v1.32 Stage 8 closure amendment (2026-09-20)
+## Current routing override — v1.32 Stage 9 disposition amendment (2026-09-20)
+
+**Sits on top of the Stage 8 closure amendment and the v1.32 cut below, replacing
+neither and creating no new roadmap version.** Read it first for present routing.
+
+**Documentation-only.** No product, engine, web, schema or persistence path changed.
+All 45 Stage IDs, all 28 tracking IDs and the Group 1–9 structure are preserved.
+
+**`STAGE 9 — T1-A′ DISPOSITION: COMPLETED ✅ — DISPOSITION A.`** Read the next line
+before drawing any conclusion from that tick.
+
+**`T1-A′ ITSELF REMAINS OPEN. IT HAS NOT PASSED AND HAS NOT CLOSED.`** Stage 9 is a
+*disposition* task: it asks what the lawful disposition is, and the Owner-accepted
+answer is that the obligation stays open. `CLOSURE EVIDENCE: NOT MET` · `TRIGGER: FIRED` ·
+`FRB: REMAINS` · `HAS EVER PASSED: NO` · `HAS EVER CLOSED: NO`. From
+`S2-PATHN-RUN-002`: **no Full Pass, 0 of 8**; **criteria 5 and 6 FAIL in all 8**;
+**platform-side candidate comparison ABSENT**; **0 records deliverable-eligible**;
+**0 records reaching Stage 3**. The closure criterion — *"authorized verification run
+meeting §15.7 criteria, Owner-adjudicated"* — is preserved exactly, and **no
+acceptance/disclosure path analogous to Stage 8 is added**: that row had an explicit
+acceptance branch, this one does not.
+
+**The verified remediations remain true and remain insufficient.** Arabic serving and
+RTL, correction-affordance reachability, provenance consistency, honest-exhaustion
+controls, the E-1 perspective-inversion repair, withdraw-and-replace reachability, and
+no observed criterion regression. None of them satisfies §15.7, creates a Full Pass,
+authorizes an aggregate improvement score, or closes the row.
+
+**G-3 decision-value gap REMAINS MATERIAL** — criteria 5 and 6 fail because
+platform-side candidate comparison happens nowhere. `ODS-001: NOT DESIGNED / NOT
+AUTHORIZED` · `FDC-001: INACTIVE / PRESERVE UNMODIFIED AND PAUSE` · `RVR-4 / W2-A:
+CLOSED` (user-declared alternatives, not platform-side comparison). Neither dependency
+is activated here. The M-1 practitioner observation is unchanged, language-symmetric,
+not the Stage-8 EN↔AR divergence, and `W1-N3` stays CLOSED.
+
+**No run trigger is created.** `THIRD S2 RUN: CONSUMED` · `FOURTH S2 RUN / RUN-004: NOT
+AUTHORIZED` · `FURTHER SUPPLEMENTAL SLICE: NOT AUTHORIZED` · `NEW BENCHMARK: NOT
+AUTHORIZED` · `NEW HUMAN EXPERIMENT: NOT AUTHORIZED`.
+
+**Next Master Roadmap stage: Stage 10 — T2-C′ differential product-value assessment.**
+`STAGE 10 STARTED: NO`; it needs its own explicit mandate, and its standing boundary is
+unchanged — material changes only since the accepted WS16 evidence, across Electronics
+and Mechanical, no full historical restart, no repetition of accepted evidence without
+material change, MCP only within its existing scope. **T1-A′ travels forward as a
+carried residual and routing onward must not erase it.** `PUBLIC RELEASE: NOT
+AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED`.
+
+---
+
+## Current routing override — v1.32 Stage 8 closure amendment (2026-09-20) — SUPERSEDED FOR PRESENT ROUTING BY THE STAGE 9 DISPOSITION AMENDMENT ABOVE, PRESERVED IN FULL
 
 **This amendment sits on top of the Stage 7 closure amendment and the v1.32 cut below. It
 replaces neither and creates no new roadmap version.** Read it first for present routing.
@@ -55,7 +104,7 @@ under its own separate bounded decision. The `R7 PF#1` unregistered-wording resi
 activation stays a non-blocking observation. No claim is made that EN↔AR parity is solved or
 that Arabic generally fails, and the historical RVR-8 negative/mixed result is not rewritten.
 
-**Next Master Roadmap stage: Stage 9 — `T1-A′` disposition.** Group 2 remains the earliest
+*(SUPERSEDED for present routing by the Stage 9 disposition amendment above — preserved verbatim:)* **Next Master Roadmap stage: Stage 9 — `T1-A′` disposition.** Group 2 remains the earliest
 incomplete group. Closing Stage 8 starts nothing: Stage 9 requires its own explicit mandate,
 uses existing evidence only, and keeps its standing boundary — no `RUN-004`, no fourth S2
 run, no new human experiment by default, and **`T1-A′` has never passed and never closed.**
@@ -377,10 +426,10 @@ This is the short operating view of the detailed sequence in §6. A successor wo
 - [x] **6 — T2-D:** COMPLETED ✅ — PR #641 merged as `6fa8d9bb637c794f2daf6b35ffbcda9e2da5020b` from accepted `967ff2812b5e3b651eb3df47d798f15323f6b747`; post-merge identity verification PASS and content diff EMPTY. Original and boundary repairs accepted within their reported limits. Four T2-D observations and six PR #640 findings remain deferred; no repeat implementation/review.
 - [x] **7 — T2-G:** **COMPLETED ✅ WITHIN ITS BOUNDED T2-G SCOPE — UPDATED 2026-09-20 (Owner Stage 7 closure acceptance).** `N-1` and `N-2` are **SATISFIED**; the three-version legacy migration is **CLOSED / ACCEPTED** under policy B (explicit confirmed adoption; automatic migration on open still rejected). **Preserved, not discharged:** `R1` and `R2` stay separate future residuals, `R3` returns only at its own applicable gate, `N-3`–`N-6` keep their triggers, and the Arabic `ولكن` contrast-form note rides the existing T2-G register row as a non-blocking product-language observation (safe under-progress direction; no gate, no repair obligation). Completion of this bounded scope is **not** full semantic-adaptivity capability and **not** a paid-activation claim. *(Superseded wording, preserved — was: "PARTIAL / MERGED SLICES, BOUNDED RESIDUALS 🔄 — **UPDATED v1.32.**")* t2g1 integrated and administratively closed; **t2g2 PR #643 MERGED** at `38827bf`, final head `3bb443ce69eba3a9e7f746c5068792ddb004d466` after four repair cycles (`PR643-T2G2-SCOPE-REPAIR-01…04`); **PR #644 T2-G legacy migration MERGED**. The v1.31 extra-file and `generated_at` disclosures are RESOLVED inside that candidate (eleventh file Owner-retained and recorded as outside the original mandate; test-local clock pin; the hit-rate claim explicitly withdrawn). *(Superseded 2026-09-20, preserved verbatim — was: "Still open: N-1/N-2 pending bounded acceptance, R1/R2/R3, and the three-version legacy-migration disposition.")* *(Superseded wording — was: "AWAITING CLAUDE RETURN … not merged".)*
 - [x] **8 — EN↔AR divergence:** **COMPLETED ✅ / CLOSED UNDER OWNER ACCEPTANCE + SURFACE DISCLOSURE — 2026-09-20.** PR #667 merged the bounded M-1 relevance repair (`F-1`, `F-2` CLOSED); the Mechanism-A residual is explicitly accepted as a known bounded limitation; PR #668 merged the bilingual EN/AR assessment-and-progression disclosure. **Closure is not repair:** `MECHANISM A: CURRENT / NOT FIXED` (no safe bounded repair, implementation not authorized), `MECHANISM B: OPEN / DEFERRED`, the `R7 PF#1` residual `OPEN / PRESERVED` under its existing R2/R3 owner, and the `الحدود الفيزيائية` dual activation non-blocking. No claim of full EN↔AR parity and none that Arabic generally fails. *(Superseded wording, preserved — was: "repair or explicitly accept/disclose the measured 2-of-4 substantive divergence before serious release.")*
-- [ ] **9 — T1-A′ disposition:** use existing evidence; no RUN-004/fourth S2 run without new authority.
+- [x] **9 — T1-A′ disposition:** **DISPOSITION TASK COMPLETED ✅ — DISPOSITION A (2026-09-20). `T1-A′ ITSELF REMAINS OPEN / FRB`: it has NOT passed and has NOT closed, and `CLOSURE EVIDENCE: NOT MET`.** Stage 9 asks what the lawful disposition is; the Owner-accepted answer is that the obligation stays open. From `S2-PATHN-RUN-002`: no Full Pass 0 of 8; criteria 5 and 6 FAIL in all 8; platform-side candidate comparison ABSENT; 0 deliverable-eligible; 0 reaching Stage 3. The §15.7 closure criterion is preserved exactly and no Stage-8-style acceptance/disclosure path is added. The verified remediations remain true and remain insufficient; no aggregate improvement score exists. `THIRD S2 RUN: CONSUMED` · `RUN-004: NOT AUTHORIZED`. *(Superseded wording, preserved — was: "use existing evidence; no RUN-004/fourth S2 run without new authority.")*
 - [ ] **10 — T2-C′ differential assessment:** assess only material changes since accepted WS16 evidence across Electronics and Mechanical.
 
-**Group state — UPDATED 2026-09-20 (Stage 8 closure acceptance):** **Stage 8 COMPLETED ✅ / CLOSED** under Owner acceptance + surface disclosure (PR #667 repair, PR #668 disclosure); Mechanism A stays CURRENT / NOT FIXED and Mechanism B stays OPEN / DEFERRED, so closure is a disposition, not a repair. **Stage 9 — `T1-A′` disposition — is now the next Master Roadmap stage** and still requires its own explicit mandate; `T1-A′` has never passed and never closed. *(Prior line, preserved:)* Stage 6 COMPLETED ✅. **Stage 7 COMPLETED ✅ within its bounded T2-G scope** — `N-1`/`N-2` SATISFIED, legacy migration CLOSED/ACCEPTED under policy B; `R1`, `R2`, `R3` and `N-3`–`N-6` preserved at their own triggers, not discharged. *(Superseded 2026-09-20 — was: "**Stage 8 is now the next Master Roadmap stage** and still requires its own explicit mandate."; Stage 8 is now CLOSED and Stage 9 is next.)* Stages 9–10 unchanged. **Group 2 remains the earliest incomplete group and therefore the current product-depth frontier.** No paid-activation obligation discharged. *(Superseded wording, preserved — was: "Stage 7 PARTIAL and materially advanced — PR #643 and PR #644 both merged; the v1.31 wait and both disclosures are consumed. Its remaining residuals are bounded (N-1/N-2, legacy-migration disposition).")*
+**Group state — UPDATED 2026-09-20 (Stage 9 disposition acceptance):** **Stage 9 DISPOSITION TASK COMPLETED ✅ (A)** — and `T1-A′` itself **REMAINS OPEN / FRB**, never passed, never closed, closure evidence NOT MET. **Stage 10 — T2-C′ differential assessment — is now the next Master Roadmap stage** and still requires its own explicit mandate; `T1-A′` travels forward as a carried residual. *(Prior line, preserved:)* **Stage 8 COMPLETED ✅ / CLOSED** under Owner acceptance + surface disclosure (PR #667 repair, PR #668 disclosure); Mechanism A stays CURRENT / NOT FIXED and Mechanism B stays OPEN / DEFERRED, so closure is a disposition, not a repair. *(SUPERSEDED 2026-09-20 — the Stage-9 disposition task is COMPLETED and Stage 10 is next; preserved verbatim:)* **Stage 9 — `T1-A′` disposition — is now the next Master Roadmap stage** and still requires its own explicit mandate; `T1-A′` has never passed and never closed. *(Prior line, preserved:)* Stage 6 COMPLETED ✅. **Stage 7 COMPLETED ✅ within its bounded T2-G scope** — `N-1`/`N-2` SATISFIED, legacy migration CLOSED/ACCEPTED under policy B; `R1`, `R2`, `R3` and `N-3`–`N-6` preserved at their own triggers, not discharged. *(Superseded 2026-09-20 — was: "**Stage 8 is now the next Master Roadmap stage** and still requires its own explicit mandate."; Stage 8 is now CLOSED and Stage 9 is next.)* Stages 9–10 unchanged. **Group 2 remains the earliest incomplete group and therefore the current product-depth frontier.** No paid-activation obligation discharged. *(Superseded wording, preserved — was: "Stage 7 PARTIAL and materially advanced — PR #643 and PR #644 both merged; the v1.31 wait and both disclosures are consumed. Its remaining residuals are bounded (N-1/N-2, legacy-migration disposition).")*
 
 ### Group 3 — Stages 11–15: human evidence and readiness foundations
 
@@ -1010,7 +1059,7 @@ Preserve: IP confidentiality; user/project/host/field-scoped authorization and e
 | 14 | T2-D ownership and capture | COMPLETED ✅ — independent B/PASS adopted; Creator-reported merge authority exercised; PR #641 merged as `6fa8d9bb637c794f2daf6b35ffbcda9e2da5020b` from accepted `967ff2812b5e3b651eb3df47d798f15323f6b747`. Post-merge identity verification PASS / candidate content diff EMPTY. Four deferred observations and prior accepted limits preserved; no response outstanding |
 | 15 | T2-G ownership and bounded semantic adaptation | **COMPLETED ✅ WITHIN BOUNDED T2-G SCOPE — UPDATED 2026-09-20 (Owner Stage 7 closure acceptance)** — `N-1`/`N-2` **SATISFIED**; three-version legacy migration **CLOSED / ACCEPTED** under policy B (explicit confirmed adoption; automatic migration on open still rejected). **Preserved, not discharged:** `R1`, `R2` (separate future residuals), `R3` (own gate), `N-3`–`N-6`, plus the non-blocking Arabic `ولكن` contrast-form observation on the existing T2-G register row. Bounded closure is not full semantic-adaptivity capability. *(Superseded wording, preserved — was: "PARTIAL / MERGED SLICES — UPDATED v1.32" with "Remaining and bounded: N-1/N-2 pending bounded acceptance, R1/R2/R3, three-version legacy-migration disposition".)* — **PR #643 MERGED** (`38827bf`; final head `3bb443ce…`; four repair cycles `PR643-T2G2-SCOPE-REPAIR-01…04`) and **PR #644 T2-G legacy migration MERGED**. Both v1.31 disclosures RESOLVED in-candidate: eleventh file Owner-retained and recorded as outside the original mandate; `generated_at` fixed by a test-local clock pin with the hit-rate claim withdrawn. Remaining and bounded: N-1/N-2 pending bounded acceptance, R1/R2/R3, three-version legacy-migration disposition. *(Superseded — was: "AWAITING ORIGINAL CLAUDE RETURN … no merge".)* |
 | 16 | EN↔AR divergence disposition | **CLOSED / SATISFIED ✅ — 2026-09-20, Owner acceptance + surface disclosure (PR #667 repair, PR #668 disclosure). Mechanism A remains CURRENT / NOT FIXED; Mechanism B OPEN / DEFERRED; residuals preserved.** *(Was: "OPEN / before Serious Release ⏳".)* |
-| 17 | T1-A′ disposition without RUN-004 | OPEN / FRB ⛔ |
+| 17 | T1-A′ disposition without RUN-004 | **STAGE-9 DISPOSITION TASK COMPLETED ✅ (A, 2026-09-20) — but the OBLIGATION stays `OPEN / FRB` ⛔: never passed, never closed, closure evidence NOT MET, §15.7 preserved, RUN-004 NOT AUTHORIZED.** *(Was: "OPEN / FRB ⛔".)* |
 | 18 | Differential T2-C′ product-value assessment | NOT AUTHORIZED ⏳ |
 | 19 | T1-C′/A2 human evidence | DEFERRED / no new collection ⏳ |
 | 20 | Readiness repository reconciliation | **COMPLETED ✅ — UPDATED v1.32** — one compositional architecture over canonical evidence, no duplicate truth source: ONE shared `readiness_evidence` substrate, `NEW OWNER REQUIRED: NO`, `NEW ENGINE REQUIRED: NO`, FDC-001 retained as canonical decision owner. PRs #647–#652; `ROW-174-MINIMAL-CLOSURE-01` / `DOR-174-186-DISPOSITION-01`. Positive readiness promotion remains POST-RELEASE |

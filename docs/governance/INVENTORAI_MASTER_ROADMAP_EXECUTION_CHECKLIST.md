@@ -132,15 +132,37 @@ Read those before acting on any stage; this table is a locator, not a status sou
 
 ## E. Current Stage / current subtask
 
-- **CURRENT SYNCHRONIZATION STEP:** v1.32 + Stage 8 closure amendment (2026-09-20)
+- **CURRENT SYNCHRONIZATION STEP:** v1.32 + Stage 9 disposition amendment (2026-09-20)
 - **CURRENT EARLIEST INCOMPLETE PRODUCT GROUP:** Group 2
-- **CURRENT STAGE:** Stage 9 — `T1-A′` disposition, the next Master Roadmap stage.
+- **CURRENT STAGE:** Stage 10 — T2-C′ differential product-value assessment.
+  **The Stage-9 DISPOSITION TASK is COMPLETED ✅ (Disposition A)** — and read the next
+  bullet before concluding anything from that.
+- **CARRIED RESIDUAL, NEVER TO BE ERASED BY ROUTING FORWARD — `T1-A′`: `OPEN` · `FRB` ·
+  `RELEASE-VALUE CRITERIA NOT MET` · `CLOSURE EVIDENCE: NOT MET`.** It has never passed
+  and never closed. Completing the
+  Stage-9 disposition task did NOT close the obligation: Stage 9 asks what the lawful
+  disposition is, and the answer is that it stays open. No Full Pass (0 of 8), criteria 5
+  and 6 FAIL in all 8, platform-side candidate comparison ABSENT, 0 deliverable-eligible,
+  0 reaching Stage 3. §15.7 is preserved exactly and no Stage-8-style acceptance/disclosure
+  path exists for this row.
+- **STAGE 10 BOUNDARY, standing and unchanged:** assess only MATERIAL CHANGES since the
+  accepted WS16 evidence across Electronics and Mechanical; do not restart a full historical
+  review; do not repeat accepted evidence without material change; MCP returns only within
+  its existing scope and is not begun by routing here.
+- **RUN AUTHORITY:** `THIRD S2 RUN: CONSUMED` · `FOURTH S2 RUN / RUN-004: NOT AUTHORIZED` ·
+  `FURTHER SUPPLEMENTAL SLICE: NOT AUTHORIZED` · `NEW BENCHMARK: NOT AUTHORIZED` ·
+  `NEW HUMAN EXPERIMENT: NOT AUTHORIZED`. No run trigger is created by the disposition.
+- *(Superseded wording, preserved — was: "CURRENT SYNCHRONIZATION STEP: v1.32 + Stage 8
+  closure amendment / CURRENT STAGE: Stage 9 — `T1-A′` disposition, the next Master Roadmap
+  stage.")*
   **Stage 8 (EN↔AR divergence) is COMPLETED ✅ / CLOSED** under Owner acceptance + surface
   disclosure: PR #667 merged the bounded M-1 relevance repair (`F-1`, `F-2` CLOSED) and
   PR #668 merged the bilingual assessment/progression disclosure. **Stage 7 (T2-G) remains
   COMPLETED ✅** within its bounded scope.
-- **CURRENT SUBTASK:** none is authorized. Stage 9 requires its own explicit mandate; closing
-  Stage 8 starts nothing.
+- **CURRENT SUBTASK:** NONE AUTHORIZED. Stage 10 requires its own explicit mandate;
+  completing the Stage-9 disposition starts nothing.
+- *(Superseded wording, preserved — was: "none is authorized. Stage 9 requires its own
+  explicit mandate; closing Stage 8 starts nothing.")*
 - **STAGE 9 BOUNDARY, standing and unchanged:** existing evidence only — no `RUN-004`, no
   fourth S2 run, no new human experiment by default, and **`T1-A′` has NEVER PASSED and
   NEVER CLOSED.** Do not rewrite that historical failure as a PASS.
@@ -167,15 +189,19 @@ Read those before acting on any stage; this table is a locator, not a status sou
 
 Nothing below is authorized by this file. Each still requires the current mandate.
 
-1. **Stage 9** — T1-A′ disposition from existing evidence. No RUN-004 and no fourth
-   S2 run without new authority. `T1-A′` has never passed and never closed.
-2. **Stage 10** — T2-C′ differential assessment of material changes only, since the
+1. **Stage 10** — T2-C′ differential assessment of material changes only, since the
    accepted WS16 evidence, across Electronics and Mechanical.
-3. **Stage 15 (IRL)** — the thinnest surviving readiness stage; its ownership is
+2. **Stage 15 (IRL)** — the thinnest surviving readiness stage; its ownership is
    unresolved and Stage 15 is now its only home. It must not be lost.
 
-Steps 1–2 are the Group 2 frontier. Step 3 is flagged because it is the highest
+Step 1 is the Group 2 frontier. Step 2 is flagged because it is the highest
 loss risk, not because it is next in sequence.
+
+**The Stage-9 disposition task is COMPLETED and is no longer a step — but `T1-A′` is NOT
+closed and is carried forward as an OPEN / FRB residual.** *(Superseded wording, preserved
+— was step 1: "**Stage 9** — T1-A′ disposition from existing evidence. No RUN-004 and no
+fourth S2 run without new authority. `T1-A′` has never passed and never closed.")* The last
+sentence of that step stays true: `T1-A′` has never passed and never closed.
 
 **Stage 8 is CLOSED and is no longer a step.** *(Superseded wording, preserved — was step 1:
 "**Stage 8** — repair or explicitly accept/disclose the measured 2-of-4 substantive EN↔AR
@@ -247,9 +273,9 @@ run has occurred. Deploying the merged code would activate it; that is not autho
 
 ## I. Current product-depth position
 
-**CURRENT PRODUCT-DEPTH FRONTIER: Stage 9 → Stage 10 if authorized.** *(Superseded 2026-09-20, preserved — was: "Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 8 is now CLOSED under Owner acceptance + disclosure.)* *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
+**CURRENT PRODUCT-DEPTH FRONTIER: Stage 10 if authorized.** *(Superseded 2026-09-20, preserved — was: "Stage 9 → Stage 10 if authorized"; the Stage-9 disposition task is COMPLETED, while `T1-A′` itself stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 8 is now CLOSED under Owner acceptance + disclosure.)* *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
 
-Group 1 is complete. **Stage 7 is COMPLETED within its bounded T2-G scope and Stage 8 is CLOSED under Owner acceptance + surface disclosure; Stage 9 — `T1-A′` — is the next Master Roadmap stage.** Group 2 is still the earliest incomplete group. Group 3 has Stage 12
+Group 1 is complete. **Stage 7 COMPLETED, Stage 8 CLOSED, and the Stage-9 `T1-A′` disposition task COMPLETED (A) — with `T1-A′` itself still OPEN / FRB; Stage 10 — T2-C′ — is the next Master Roadmap stage.** Group 2 is still the earliest incomplete group. Group 3 has Stage 12
 complete, Stages 13 and 14 partial through the three-dimension Readiness Snapshot only,
 and Stage 15 open and thinnest. The Snapshot ceiling is `INSUFFICIENT_EVIDENCE` in every
 dimension: a captured dimension is not a validated conclusion.
@@ -310,7 +336,7 @@ Two further distinctions carried from current evidence and never to be collapsed
 
 ```
 CURRENT SYNCHRONIZATION STEP:
-v1.32 + Stage 8 closure amendment (2026-09-20)
+v1.32 + Stage 9 disposition amendment (2026-09-20)
 
 CURRENT EARLIEST INCOMPLETE PRODUCT GROUP:
 Group 2
@@ -330,8 +356,15 @@ Mechanism A CURRENT / NOT FIXED
 Mechanism B OPEN / DEFERRED
 R7 PF#1 OPEN / PRESERVED
 
+STAGE 9 DISPOSITION TASK:
+COMPLETED — DISPOSITION A
+
+T1-A′ OBLIGATION:
+OPEN / FRB / release-value criteria NOT MET
+never passed, never closed
+
 CURRENT PRODUCT-DEPTH FRONTIER:
-Stage 9 → Stage 10 if authorized
+Stage 10 if authorized
 
 CURRENT TECHNOLOGY-DEEPENING POSITION:
 Stages 18–27 preserved, not entered / not authorized
