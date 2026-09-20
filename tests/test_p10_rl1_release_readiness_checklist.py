@@ -17,6 +17,7 @@ Prohibited: weakening to pass; fabricating readiness.
 import glob
 import os
 import re
+import unicodedata
 
 from tests import current_truth_contract as contract
 
@@ -281,6 +282,36 @@ _PREFIX = "CURRENT STATE: "
 # "**SELECTED : YES**" all are.
 # --------------------------------------------------------------------------
 _MACHINE_KEYS = ("CURRENT STATE",) + _FIELD_NAMES
+
+# --------------------------------------------------------------------------
+# Horizontal whitespace, normalized ONCE before the grammar sees anything.
+#
+# HARDENED (v1.32 Unicode-whitespace pass). The recognizer matched only ASCII
+# space and tab around the colon, so "COMPLETE\u00A0: YES" (NBSP),
+# "DEPLOYED\u202F: YES" (narrow NBSP) and "CURRENT STATE\u2009: completed"
+# (thin space) slipped past the trailing scan. Every horizontal space
+# character - Unicode general category Zs, plus TAB - is now folded to one
+# ASCII space before either consumer runs, character for character, so
+# offsets are preserved and both the block parser and the trailing scan see
+# the same normalized text. Line-breaking characters (LF, CR, VT, FF, NEL,
+# LINE SEPARATOR, PARAGRAPH SEPARATOR) are NOT horizontal whitespace and are
+# left untouched: a declaration cannot be assembled across a line break.
+# --------------------------------------------------------------------------
+_HORIZONTAL_SPACE = frozenset(
+    [chr(c) for c in range(0x10000) if unicodedata.category(chr(c)) == "Zs"]
+    + ["\t"])
+# the enumerated class from the hardening instruction must be fully covered
+assert _HORIZONTAL_SPACE.issuperset(
+    "\u0020\u0009\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005"
+    "\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000")
+assert not _HORIZONTAL_SPACE.intersection("\n\r\x0b\x0c\u0085\u2028\u2029")
+
+
+def normalize_horizontal_space(text):
+    """Fold every horizontal space character to ASCII space, 1:1."""
+    return "".join(" " if ch in _HORIZONTAL_SPACE else ch for ch in text)
+
+
 _DECLARATION = re.compile(
     r"(?<![A-Za-z0-9_-])"                       # declaration boundary
     r"(?P<lead>[*_`]*)[ \t]*"                    # bounded leading emphasis
@@ -298,7 +329,7 @@ def recognize_machine_declarations(text):
     find a forbidden second declaration. They cannot disagree.
     """
     found = []
-    for match in _DECLARATION.finditer(text):
+    for match in _DECLARATION.finditer(normalize_horizontal_space(text)):
         key = re.sub(r"[ \t]+", " ", match.group("key")).upper()
         found.append((key, match))
     return found
@@ -314,6 +345,9 @@ def _parse_contract(cell):
     Returns (state, fields). Raises ContractError on any structural fault.
     Nothing after the closing delimiter may carry machine meaning.
     """
+    # 0. one representation for both consumers: horizontal space folded 1:1
+    cell = normalize_horizontal_space(cell)
+
     # 1. bounded leading whitespace only (table-cell padding)
     body = cell
     stripped = body.lstrip(" ")
@@ -531,6 +565,20 @@ _MALFORMED_CELLS = {
     "lowercase key inside block":
         " CURRENT STATE: PROVISIONED / NOT COMPLETE. {selected: YES; PROVISIONED: YES; "
         "IMPLEMENTED: N/A; DEPLOYED: NO; LIVE_ACTIVATED: NO; COMPLETE: NO}",
+    # --- Unicode horizontal whitespace around the colon, after the block ---
+    "NBSP before colon": _VALID_CELL + " COMPLETE\u00A0: YES",
+    "narrow NBSP before colon": _VALID_CELL + " COMPLETE\u202F: YES",
+    "thin space before colon": _VALID_CELL + " COMPLETE\u2009: YES",
+    "NBSP both sides": _VALID_CELL + " DEPLOYED\u00A0:\u00A0YES",
+    "figure space both sides": _VALID_CELL + " SELECTED\u2007:\u2007YES",
+    "ideographic space in CURRENT STATE": _VALID_CELL + " CURRENT STATE\u3000: COMPLETED",
+    "lowercase + em space": _VALID_CELL + " complete\u2003: yes",
+    "mixed case + hair space": _VALID_CELL + " Deployed\u200A: Yes",
+    "bold-wrapped + NBSP": _VALID_CELL + " **COMPLETE\u00A0: YES**",
+    "mixed ASCII and Unicode space": _VALID_CELL + " COMPLETE \u00A0\t: YES",
+    "ogham space mark": _VALID_CELL + " PROVISIONED\u1680: YES",
+    "medium mathematical space": _VALID_CELL + " LIVE_ACTIVATED\u205F: YES",
+    "NBSP inside CURRENT STATE key": _VALID_CELL + " CURRENT\u00A0STATE: COMPLETED",
 }
 
 _VALID_CELLS = {
@@ -552,6 +600,9 @@ _VALID_CELLS = {
     "word 'complete' without declaration syntax": _VALID_CELL + " the work is not complete",
     "spaced colon inside block is tolerated": " CURRENT STATE: NOT SELECTED. {SELECTED : NO; PROVISIONED: N/A; "
         "IMPLEMENTED: N/A; DEPLOYED: N/A; LIVE_ACTIVATED: N/A; COMPLETE : NO} prose",
+    "Owner-SELECTED with NBSP before colon is still a human label":
+        _VALID_CELL + " Owner-SELECTED\u00A0: Cloudflare R2",
+    "word-embedded key with NBSP is not a declaration": _VALID_CELL + " incomplete\u00A0: yes",
 }
 
 
@@ -562,6 +613,19 @@ def test_contract_parser_rejects_every_malformed_structure():
         except ContractError:
             continue
         raise AssertionError("parser accepted a malformed cell: %s" % label)
+
+
+def test_declaration_grammar_folds_horizontal_space_but_not_line_breaks():
+    """One normalized representation; line structure stays intact."""
+    for space in ("\u00A0", "\u202F", "\u2009", "\u3000", "\t", "\u2007"):
+        assert recognize_machine_declarations("COMPLETE" + space + ": YES"), repr(space)
+        assert recognize_machine_declarations("current" + space + "state: x"), repr(space)
+    for brk in ("\n", "\r", "\x0b", "\x0c", "\u0085", "\u2028", "\u2029"):
+        assert not recognize_machine_declarations("COMPLETE" + brk + ": YES"), repr(brk)
+        assert not recognize_machine_declarations("current" + brk + "state: x"), repr(brk)
+    # the fold is length-preserving, so recognizer offsets are valid on input
+    text = "x\u00A0COMPLETE\u3000: YES"
+    assert len(normalize_horizontal_space(text)) == len(text)
 
 
 def test_contract_parser_accepts_valid_structures():
