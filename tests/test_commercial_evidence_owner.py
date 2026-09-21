@@ -445,12 +445,81 @@ def test_the_table_is_additive_and_the_sibling_stores_are_untouched(tmp_path):
         "project_id", "seq", "record_id", "payload", "idempotency_key"]
     columns = [c[1] for c in con.execute(
         "PRAGMA table_info(readiness_evidence)")]
+    # AMENDED at the Stage-17 D2 slice: eight quantitative columns were added
+    # ADDITIVELY to this same table — no second table, no second owner. The pin
+    # stays exact so a ninth column cannot arrive unnoticed.
     assert columns == [
         "project_id", "evidence_seq", "evidence_id", "dimension", "topic",
         "subject_text", "statement_text", "source_identity", "provenance",
         "occurred_on", "scope_text", "limitation_text", "claim_status",
+        "value_state", "value_exact", "value_min", "value_max", "currency",
+        "value_basis", "estimate_basis", "estimate_rationale",
         "withdrawn", "supersedes_evidence_id", "event_key",
         "recorded_iteration", "recorded_at"]
+
+
+def test_a_pre_d2_database_migrates_additively_and_keeps_every_row(tmp_path):
+    """The migration is the safety property, so it is exercised, not assumed.
+
+    A database built WITHOUT the quantitative columns is opened again by the
+    current store: the columns appear, every existing row survives byte-for-byte
+    with the truthful NONE/empty state, and nothing is rewritten."""
+    path = str(tmp_path / "pre_d2.sqlite")
+    store = SqliteRecordStore(path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(store, seq=0, key="pre1"))
+    before = store.load_readiness_evidence(pid)
+    assert len(before) == 1
+
+    # Drop back to the pre-D2 shape by rebuilding the table without the eight
+    # columns, exactly as an older deployment's file would look.
+    con = sqlite3.connect(path)
+    try:
+        con.execute("ALTER TABLE readiness_evidence RENAME TO _old_evidence")
+        con.execute("""
+            CREATE TABLE readiness_evidence (
+                project_id TEXT NOT NULL, evidence_seq INTEGER NOT NULL,
+                evidence_id TEXT NOT NULL, dimension TEXT NOT NULL,
+                topic TEXT NOT NULL, subject_text TEXT NOT NULL,
+                statement_text TEXT NOT NULL, source_identity TEXT NOT NULL,
+                provenance TEXT NOT NULL, occurred_on TEXT NOT NULL,
+                scope_text TEXT NOT NULL, limitation_text TEXT NOT NULL,
+                claim_status TEXT NOT NULL,
+                withdrawn INTEGER NOT NULL DEFAULT 0,
+                supersedes_evidence_id TEXT, event_key TEXT NOT NULL,
+                recorded_iteration INTEGER NOT NULL, recorded_at TEXT NOT NULL,
+                PRIMARY KEY (project_id, evidence_id))""")
+        con.execute("""
+            INSERT INTO readiness_evidence SELECT project_id, evidence_seq,
+                evidence_id, dimension, topic, subject_text, statement_text,
+                source_identity, provenance, occurred_on, scope_text,
+                limitation_text, claim_status, withdrawn,
+                supersedes_evidence_id, event_key, recorded_iteration,
+                recorded_at FROM _old_evidence""")
+        con.execute("DROP TABLE _old_evidence")
+        con.commit()
+        pre = [c[1] for c in con.execute("PRAGMA table_info(readiness_evidence)")]
+        assert "value_state" not in pre
+    finally:
+        con.close()
+
+    migrated = SqliteRecordStore(path)
+    con = sqlite3.connect(path)
+    try:
+        after = [c[1] for c in con.execute("PRAGMA table_info(readiness_evidence)")]
+    finally:
+        con.close()
+    for column, _default in SqliteRecordStore._EVIDENCE_QUANTITY_COLUMNS:
+        assert column in after, column
+
+    rows = migrated.load_readiness_evidence(pid)
+    assert len(rows) == 1
+    assert rows[0].statement_text == before[0].statement_text
+    assert rows[0].evidence_id == before[0].evidence_id
+    assert rows[0].value_state == "NONE"          # truthful, not invented
+    for field in ("value_exact", "value_min", "value_max", "currency",
+                  "value_basis", "estimate_basis", "estimate_rationale"):
+        assert getattr(rows[0], field) == ""
 
 
 def test_saved_project_reconstruction_is_unaffected(tmp_path):

@@ -237,8 +237,15 @@ def test_provenance_is_forced_and_is_not_a_control(owner):
     body = _page(c, sid)
     assert 'name="provenance"' not in body
     form = re.search(r'id="cev-form".*?</form>', body, re.S).group(0)
-    assert form.count("<select") == 1          # the topic control, and only it
+    # AMENDED at the Stage-17 D2 slice. The old assertion counted selects,
+    # which was a proxy for "the topic is the only control". D2 adds four
+    # authorized quantity controls, so the proxy is replaced by the thing it
+    # stood for: the controls are ENUMERATED, and provenance and claim status
+    # are not among them. An unauthorized fifth control fails here.
+    assert set(re.findall(r'<select name="([a-z_]+)"', form)) == {
+        "topic", "value_state", "currency", "value_basis", "estimate_basis"}
     assert 'name="provenance"' not in form
+    assert 'name="claim_status"' not in form
 
 
 def test_claim_status_is_forced_and_is_not_a_control(owner):
@@ -946,3 +953,340 @@ def test_a_read_only_session_offers_no_lifecycle_affordance(owner):
     other, _oid = _client_for("reader@example.com")
     foreign = other.get(SESSION % sid)
     assert foreign.status_code in (302, 303, 403, 404)
+
+
+# ==========================================================================
+# D2 — quantitative commercial structure
+#
+# APPROXIMATE IS NOT ARBITRARY. Almost everything below is about refusal: a
+# number with nothing behind it, a range that is really a guess, a midpoint
+# nobody supplied, a currency nobody chose. NONE is a real answer here, and the
+# tests treat it as one.
+# ==========================================================================
+Q_EXACT = {"value_state": "EXACT", "value_exact": "120", "currency": "USD",
+           "value_basis": "per_unit", "estimate_basis": "supplier_quote",
+           "estimate_rationale": "one quote from a local supplier"}
+Q_RANGE = {"value_state": "ESTIMATED_RANGE", "value_min": "100",
+           "value_max": "150", "currency": "USD", "value_basis": "per_unit",
+           "estimate_basis": "comparable_product_price",
+           "estimate_rationale": "two comparable ramps, assuming the same size"}
+
+
+def _rendered(key, lang):
+    """A UI string as it appears in the PAGE, not as it appears in the table.
+
+    Jinja escapes HTML, so a label carrying an apostrophe ("A comparable
+    product's price") reaches the body as `&#39;`. Comparing the raw string
+    would fail for a correct page, so the escaping is applied here rather than
+    removed from the copy."""
+    from markupsafe import escape
+    return str(escape(ui_text.text(key, lang)))
+
+
+def _q(client, sid, topic="price", **over):
+    data = dict(GOOD)
+    data["topic"] = topic
+    data.update(over)
+    return client.post(CEV % sid, data=data)
+
+
+def test_an_exact_amount_is_stored_as_one_truthful_value(owner):
+    """1 + 8. The amount and the currency are separate stored fields."""
+    c, _aid, sid = owner
+    assert _q(c, sid, **Q_EXACT).status_code in (302, 303)
+    row = _only_active(sid)
+    assert row.value_state == "EXACT"
+    assert row.value_exact == "120"
+    assert row.currency == "USD"                 # never inside the amount
+    assert row.value_min == "" and row.value_max == ""
+    assert row.value_basis == "per_unit"
+    assert row.estimate_basis == "supplier_quote"
+
+
+def test_an_estimated_range_stores_min_and_max_distinctly(owner):
+    """2 + 6. Both ends are kept, and NO midpoint is synthesised anywhere."""
+    c, _aid, sid = owner
+    assert _q(c, sid, **Q_RANGE).status_code in (302, 303)
+    row = _only_active(sid)
+    assert row.value_state == "ESTIMATED_RANGE"
+    assert row.value_min == "100" and row.value_max == "150"
+    assert row.value_exact == ""                 # no collapsed single value
+    body = _page(c, sid)
+    assert "125" not in body                     # the midpoint is never derived
+    assert "100" in body and "150" in body
+
+
+def test_none_stores_no_invented_number(owner):
+    """3 + 16. NONE is a recorded answer and it renders as absence, not zero."""
+    c, _aid, sid = owner
+    assert _q(c, sid).status_code in (302, 303)   # no quantity fields sent
+    row = _only_active(sid)
+    assert row.value_state == "NONE"
+    for field in ("value_exact", "value_min", "value_max", "currency",
+                  "value_basis", "estimate_basis", "estimate_rationale"):
+        assert getattr(row, field) == "", field
+    body = _page(c, sid)
+    assert "data-cev-amount-state" not in body   # no amount line at all
+    assert "data-cev-amount-value" not in body
+
+
+def test_zero_is_a_real_amount_and_is_not_none(owner):
+    """17. Zero and "no amount" are different states and stay different."""
+    c, _aid, sid = owner
+    assert _q(c, sid, topic="cost_revenue_assumption", **dict(
+        Q_EXACT, value_exact="0", estimate_basis="owner_assumption",
+        estimate_rationale="assumed no unit cost at this stage")
+    ).status_code in (302, 303)
+    row = _only_active(sid)
+    assert row.value_state == "EXACT" and row.value_exact == "0"
+    assert row.value_state != "NONE"
+    assert 'data-cev-amount-state="EXACT"' in _page(c, sid)
+
+
+def test_a_range_requires_min_not_above_max(owner):
+    """4. An inverted range is refused, not silently swapped."""
+    c, _aid, sid = owner
+    assert _q(c, sid, **dict(Q_RANGE, value_min="200", value_max="150")
+              ).status_code in (302, 303)
+    assert _rows(sid) == ()
+    assert _q(c, sid, **dict(Q_RANGE, value_min="150", value_max="150")
+              ).status_code in (302, 303)
+    assert _only_active(sid).value_min == "150"      # equal ends are fine
+
+
+def test_a_quantity_without_a_documented_basis_is_refused(owner):
+    """5. NO BASIS -> NONE. The whole submission is refused, never downgraded
+    to a bare number, because a silently basis-less amount is the thing this
+    slice exists to prevent."""
+    c, _aid, sid = owner
+    for missing in ("estimate_basis", "estimate_rationale", "value_basis"):
+        payload = dict(Q_RANGE)
+        payload[missing] = ""
+        assert _q(c, sid, **payload).status_code in (302, 303)
+        assert _rows(sid) == (), missing
+    assert _q(c, sid, **dict(Q_RANGE, estimate_basis="made_it_up")
+              ).status_code in (302, 303)
+    assert _rows(sid) == ()
+
+
+def test_no_range_is_invented_from_an_exact_value(owner):
+    """A leftover min/max on an EXACT row is refused rather than reconciled."""
+    c, _aid, sid = owner
+    assert _q(c, sid, **dict(Q_EXACT, value_min="100", value_max="150")
+              ).status_code in (302, 303)
+    assert _rows(sid) == ()
+
+
+def test_usd_is_the_default_and_no_currency_is_inferred(owner):
+    """7 + 8. USD applies when the field is absent; an unsupported code is
+    refused rather than converted or defaulted over."""
+    c, _aid, sid = owner
+    payload = dict(Q_EXACT)
+    payload.pop("currency")
+    assert _q(c, sid, **payload).status_code in (302, 303)
+    assert _only_active(sid).currency == "USD"
+
+    assert _q(c, sid, topic="funding_need", **dict(
+        Q_EXACT, currency="KWD", estimate_basis="owner_assumption",
+        estimate_rationale="r")).status_code in (302, 303)
+    assert len(_active(sid)) == 1                # the KWD row was refused
+    assert all(r.currency in ("USD", "") for r in _rows(sid))
+
+
+def test_a_non_monetary_topic_cannot_carry_an_amount(owner):
+    """9. price / willingness_to_pay / funding_need structure cannot leak into
+    a topic that records no money."""
+    c, _aid, sid = owner
+    for topic in ("demand", "market_entry", "first_sale_viability",
+                  "licensing", "differentiation"):
+        assert _q(c, sid, topic=topic, **Q_EXACT).status_code in (302, 303)
+        assert _rows(sid) == (), topic
+    # and each still records perfectly well WITHOUT an amount
+    assert _q(c, sid, topic="demand").status_code in (302, 303)
+    assert _only_active(sid).value_state == "NONE"
+
+
+def test_each_monetary_topic_keeps_its_own_amount(owner):
+    """9. Amounts recorded under different topics never migrate."""
+    c, _aid, sid = owner
+    _q(c, sid, topic="price", subject_text="a", **Q_EXACT)
+    _q(c, sid, topic="willingness_to_pay", subject_text="b", **dict(
+        Q_EXACT, value_exact="95", estimate_basis="willingness_to_pay_evidence",
+        estimate_rationale="one buyer said so"))
+    _q(c, sid, topic="funding_need", subject_text="c", **dict(
+        Q_RANGE, value_min="20000", value_max="30000",
+        estimate_basis="owner_assumption", estimate_rationale="rough plan"))
+    by_topic = {r.topic: r for r in _active(sid)}
+    assert by_topic["price"].value_exact == "120"
+    assert by_topic["willingness_to_pay"].value_exact == "95"
+    assert by_topic["funding_need"].value_min == "20000"
+    assert by_topic["price"].value_min == ""
+    assert by_topic["funding_need"].value_exact == ""
+
+
+def test_manufacturing_evidence_cannot_carry_a_commercial_amount(owner):
+    """10. The quantitative structure does not reach the other dimension."""
+    c, _aid, sid = owner
+    r = c.post("/session/%s/manufacturing-evidence" % sid, data={
+        "topic": "material", "subject_text": "Aluminium",
+        "statement_text": "Likely aluminium extrusion.",
+        "source_identity": "Inventor", "occurred_on": "",
+        "scope_text": "the frame", "limitation_text": "not checked",
+        "value_state": "EXACT", "value_exact": "120", "currency": "USD",
+    })
+    assert r.status_code in (302, 303)
+    assert _rows(sid) == (), "a quantity reached the Manufacturing route"
+    # the same item without quantity fields records normally, at NONE
+    assert c.post("/session/%s/manufacturing-evidence" % sid, data={
+        "topic": "material", "subject_text": "Aluminium",
+        "statement_text": "Likely aluminium extrusion.",
+        "source_identity": "Inventor", "occurred_on": "",
+        "scope_text": "the frame", "limitation_text": "not checked",
+    }).status_code in (302, 303)
+    assert _rows(sid)[0].value_state == "NONE"
+
+
+def test_a_correction_restates_the_amount_truthfully(owner):
+    """11. D1 supersession carries quantitative fields without inventing."""
+    c, _aid, sid = owner
+    _q(c, sid, **Q_EXACT)
+    first = _only_active(sid)
+    assert first.value_exact == "120"
+
+    data = dict(GOOD)
+    data.pop("topic")
+    data.update(Q_RANGE)
+    data["supersedes_evidence_id"] = first.evidence_id
+    assert c.post(CEV_CORRECT % sid, data=data).status_code in (302, 303)
+
+    active = _only_active(sid)
+    assert active.value_state == "ESTIMATED_RANGE"
+    assert active.value_min == "100" and active.value_max == "150"
+    # the superseded row keeps its own amount, untouched
+    old = [r for r in _rows(sid) if r.evidence_id == first.evidence_id][0]
+    assert old.value_state == "EXACT" and old.value_exact == "120"
+
+
+def test_a_correction_that_drops_the_amount_records_none_not_the_old_one(owner):
+    """11. Omitting the quantity means NONE. A corrected item must never keep a
+    superseded number the owner did not restate."""
+    c, _aid, sid = owner
+    _q(c, sid, **Q_EXACT)
+    first = _only_active(sid)
+    data = dict(GOOD)
+    data.pop("topic")
+    data["supersedes_evidence_id"] = first.evidence_id
+    assert c.post(CEV_CORRECT % sid, data=data).status_code in (302, 303)
+    active = _only_active(sid)
+    assert active.value_state == "NONE" and active.value_exact == ""
+    assert [r for r in _rows(sid)
+            if r.evidence_id == first.evidence_id][0].value_exact == "120"
+
+
+def test_a_withdrawal_preserves_the_historical_amount(owner):
+    """12. History still shows WHAT was withdrawn, amount included."""
+    c, _aid, sid = owner
+    _q(c, sid, **Q_RANGE)
+    first = _only_active(sid)
+    assert _withdraw(c, sid, first.evidence_id).status_code in (302, 303)
+    kept = [r for r in _rows(sid) if r.evidence_id == first.evidence_id][0]
+    assert kept.value_min == "100" and kept.value_max == "150"
+    withdrawal = [r for r in _rows(sid) if r.evidence_id != first.evidence_id][0]
+    assert withdrawal.withdrawn is True
+    assert withdrawal.value_min == "100"          # carried, not blanked
+    assert _active(sid) == ()
+
+
+def test_malformed_amounts_fail_closed(owner):
+    """18 + 19. A malformed or unsupported amount is refused, never parsed,
+    rounded, or turned into a guess."""
+    c, _aid, sid = owner
+    for bad in ("-5", "1,000", "$120", "120.999", "1e3", "about 120",
+                "100-150", "١٢٠", " ", "12 0"):
+        assert _q(c, sid, **dict(Q_EXACT, value_exact=bad)
+                  ).status_code in (302, 303)
+        assert _rows(sid) == (), bad
+    for bad in ("MAYBE", "exact", "range", "estimated"):
+        assert _q(c, sid, **dict(Q_EXACT, value_state=bad)
+                  ).status_code in (302, 303)
+        assert _rows(sid) == (), bad
+
+
+def test_an_amount_is_never_a_validation_or_readiness_promotion(owner):
+    """14 + 15. A number changes no status anywhere."""
+    c, _aid, sid = owner
+    _q(c, sid, **Q_EXACT)
+    assert all(r.claim_status == CLAIM_STATUS_UNVALIDATED for r in _rows(sid))
+    body = _page(c, sid)
+    for forbidden in ("PASS_WITH_CONDITIONS", "SPECIALIST_REVIEWED",
+                      "INDEPENDENTLY_VERIFIED", "EMPIRICALLY_DEMONSTRATED",
+                      "commercial_readiness", "readiness_score"):
+        assert forbidden not in body, forbidden
+    assert "INSUFFICIENT_EVIDENCE" not in re.search(
+        r'data-cev-amount.*?</p>', body, re.S).group(0)
+
+
+def test_the_amount_surface_renders_in_both_languages(owner):
+    """13. The same quantitative semantics, including the not-checked note."""
+    c, _aid, sid = owner
+    _q(c, sid, **Q_RANGE)
+    for lang in ("en", "ar"):
+        c.post("/ui-language", data={"lang": lang})
+        body = _page(c, sid)
+        for key in ("UI_CEV_Q_HEADING", "UI_CEV_Q_EXPLAIN", "UI_CEV_Q_STATE",
+                    "UI_CEV_Q_STATE_NONE", "UI_CEV_Q_STATE_EXACT",
+                    "UI_CEV_Q_STATE_ESTIMATED_RANGE", "UI_CEV_Q_CURRENCY",
+                    "UI_CEV_Q_ESTIMATE_BASIS", "UI_CEV_Q_NOT_VALIDATED",
+                    "UI_CEV_EB_COMPARABLE_PRODUCT_PRICE"):
+            assert _rendered(key, lang) in body, (lang, key)
+        assert "100" in body and "150" in body    # digits are never localised
+        assert "USD" in body
+
+
+def test_every_quantitative_term_exists_in_both_languages():
+    """13. No English-only lifecycle or quantity semantics."""
+    from engine.commercial_evidence import (
+        ESTIMATE_BASES, VALUE_BASES, VALUE_STATES,
+    )
+    keys = (["UI_CEV_Q_STATE_" + s for s in VALUE_STATES]
+            + ["UI_CEV_BASIS_" + b.upper() for b in VALUE_BASES]
+            + ["UI_CEV_EB_" + b.upper() for b in ESTIMATE_BASES]
+            + ["UI_CEV_Q_HEADING", "UI_CEV_Q_EXPLAIN", "UI_CEV_Q_STATE",
+               "UI_CEV_Q_CURRENCY", "UI_CEV_Q_BASIS", "UI_CEV_Q_RATIONALE",
+               "UI_CEV_Q_NOT_VALIDATED"])
+    # every governed state, value basis and estimate basis must be sayable in
+    # both languages, derived from the owner's vocabularies so a new member
+    # cannot be added without its translations
+    assert len(keys) == len(VALUE_STATES) + len(VALUE_BASES) + \
+        len(ESTIMATE_BASES) + 7
+    for key in keys:
+        for lang in ("en", "ar"):
+            assert ui_text.text(key, lang), (key, lang)
+        assert ui_text.text(key, "en") != ui_text.text(key, "ar"), key
+
+
+def test_the_arabic_amount_wording_does_not_imply_a_checked_number():
+    """13. An estimate must not read as validated or final in either language."""
+    en = ui_text.text("UI_CEV_Q_NOT_VALIDATED", "en").lower()
+    ar = ui_text.text("UI_CEV_Q_NOT_VALIDATED", "ar")
+    assert "does not" in en and "final" in en
+    assert "لا يجعله" in ar     # "does not make it"
+    assert "نهائي" in ar                  # "final"
+    for lang in ("en", "ar"):
+        explain = ui_text.text("UI_CEV_Q_EXPLAIN", lang).lower()
+        for claim in ("verified", "validated", "confirmed price",
+                      "متحقق منه من إنفنتوراي"):
+            assert claim not in explain, (lang, claim)
+
+
+def test_the_gap_and_lifecycle_behaviour_survive_the_quantity_slice(owner):
+    """20. D2 disturbs neither of the slices before it."""
+    c, _aid, sid = owner
+    assert _gap_topics(_page(c, sid)) == list(COMMERCIAL_TOPICS)
+    _q(c, sid, **Q_EXACT)
+    gaps = _gap_topics(_page(c, sid))
+    assert "price" not in gaps
+    assert len(gaps) == len(COMMERCIAL_TOPICS) - 1
+    _withdraw(c, sid, _only_active(sid).evidence_id)
+    assert _gap_topics(_page(c, sid)) == list(COMMERCIAL_TOPICS)
+    assert 'data-cev-history-state="withdrawn"' in _page(c, sid)

@@ -1,4 +1,49 @@
 {% extends "base.html" %}
+{# D2 quantity fieldset, shared by the create and correction forms. Collapsed
+   by default, defaults to "Not established", and asks for a basis because an
+   amount without one is refused by the owner. #}
+{% macro cev_quantity_fields(cev, item=None) %}
+  <details class="cev-quantity" data-cev-quantity>
+    <summary style="cursor:pointer;font-size:12px;color:#3a3a5c">{{ t('UI_CEV_Q_HEADING') }}</summary>
+    <p class="journey-note" data-cev-q-explain style="margin:4px 0">{{ t('UI_CEV_Q_EXPLAIN') }}</p>
+    <p style="margin:4px 0"><label>{{ t('UI_CEV_Q_STATE') }}
+      <select name="value_state" data-cev-q-state>
+        {% for state in cev.value_states %}
+        <option value="{{ state }}"{% if item and item.value_state == state %} selected{% elif not item and state == 'NONE' %} selected{% endif %}>{{ t('UI_CEV_Q_STATE_' ~ state) }}</option>
+        {% endfor %}
+      </select></label></p>
+    <p style="margin:4px 0"><label>{{ t('UI_CEV_Q_EXACT') }}
+      <input type="text" name="value_exact" inputmode="decimal" size="12" data-cev-q-exact value="{{ item.value_exact if item else '' }}"></label>
+      <label>{{ t('UI_CEV_Q_MIN') }}
+      <input type="text" name="value_min" inputmode="decimal" size="12" data-cev-q-min value="{{ item.value_min if item else '' }}"></label>
+      <label>{{ t('UI_CEV_Q_MAX') }}
+      <input type="text" name="value_max" inputmode="decimal" size="12" data-cev-q-max value="{{ item.value_max if item else '' }}"></label></p>
+    <p style="margin:4px 0"><label>{{ t('UI_CEV_Q_CURRENCY') }}
+      <select name="currency" data-cev-q-currency>
+        {% for code in cev.currencies %}
+        <option value="{{ code }}"{% if (item and item.currency == code) or (not item and code == cev.default_currency) %} selected{% endif %}>{{ code }}</option>
+        {% endfor %}
+      </select></label>
+      <label>{{ t('UI_CEV_Q_BASIS') }}
+      <select name="value_basis" data-cev-q-basis>
+        <option value=""></option>
+        {% for basis in cev.value_bases %}
+        <option value="{{ basis }}"{% if item and item.value_basis == basis %} selected{% endif %}>{{ t('UI_CEV_BASIS_' ~ basis|upper) }}</option>
+        {% endfor %}
+      </select></label></p>
+    <p style="margin:4px 0"><label>{{ t('UI_CEV_Q_ESTIMATE_BASIS') }}
+      <select name="estimate_basis" data-cev-q-estimate-basis>
+        <option value=""></option>
+        {% for basis in cev.estimate_bases %}
+        <option value="{{ basis }}"{% if item and item.estimate_basis == basis %} selected{% endif %}>{{ t('UI_CEV_EB_' ~ basis|upper) }}</option>
+        {% endfor %}
+      </select></label></p>
+    <p style="margin:4px 0"><label>{{ t('UI_CEV_Q_RATIONALE') }}<br>
+      <input type="text" name="estimate_rationale" dir="auto" size="48" data-cev-q-rationale value="{{ item.estimate_rationale if item else '' }}"></label>
+      <span class="journey-note">{{ t('UI_CEV_Q_RATIONALE_HELP') }}</span></p>
+    <p class="journey-note" data-cev-q-not-validated style="margin:4px 0;color:#777">{{ t('UI_CEV_Q_NOT_VALIDATED') }}</p>
+  </details>
+{% endmacro %}
 {% block title %}{{ t('UI_TITLE_SESSION') }}{% endblock %}
 {% block head %}
 <style>
@@ -1191,6 +1236,10 @@ body{overflow-wrap:anywhere}
       <p class="journey-note" style="margin:2px 0">{{ t('UI_CEV_META_SOURCE') }}: <bdi data-cev-source dir="auto">{{ item.source_identity }}</bdi>{% if item.occurred_on %} · {{ t('UI_CEV_META_DATE') }}: <bdi data-cev-date>{{ item.occurred_on }}</bdi>{% endif %}</p>
       <p class="journey-note" style="margin:2px 0">{{ t('UI_CEV_META_SCOPE') }}: <bdi data-cev-scope dir="auto">{{ item.scope_text }}</bdi></p>
       <p class="journey-note" style="margin:2px 0">{{ t('UI_CEV_META_LIMITATION') }}: <bdi data-cev-limitation dir="auto">{{ item.limitation_text }}</bdi></p>
+      {% if item.value_state != 'NONE' %}
+      <p class="journey-note commercial-evidence-amount" data-cev-amount data-cev-amount-state="{{ item.value_state }}" style="margin:2px 0">{{ t('UI_CEV_Q_STATE') }}: <span data-cev-amount-state-label>{{ t('UI_CEV_Q_STATE_' ~ item.value_state) }}</span> · <span data-cev-amount-value>{% if item.value_state == 'EXACT' %}{{ item.value_exact }}{% else %}{{ item.value_min }}–{{ item.value_max }}{% endif %}</span> <span data-cev-amount-currency>{{ item.currency }}</span> · {{ t('UI_CEV_Q_BASIS') }} {{ t('UI_CEV_BASIS_' ~ item.value_basis|upper) }}</p>
+      <p class="journey-note" data-cev-amount-basis style="margin:2px 0">{{ t('UI_CEV_Q_ESTIMATE_BASIS') }}: {{ t('UI_CEV_EB_' ~ item.estimate_basis|upper) }} · <bdi dir="auto">{{ item.estimate_rationale }}</bdi></p>
+      {% endif %}
       <p class="journey-note" style="margin:2px 0;color:#777">{{ t('UI_CEV_META_ORIGIN') }}: <span data-cev-origin>{{ t('UI_CEV_META_ORIGIN_VALUE') }}</span> · {{ t('UI_CEV_META_STANDING') }}: <span data-cev-standing>{{ t('UI_CEV_META_STANDING_VALUE') }}</span></p>
       {% if commercial_evidence.writable %}
       {# D1 lifecycle. Both acts APPEND; neither edits or deletes the row above. #}
@@ -1212,6 +1261,7 @@ body{overflow-wrap:anywhere}
             <input type="text" name="scope_text" dir="auto" size="48" value="{{ item.scope_text }}" required></label></p>
           <p style="margin:4px 0"><label>{{ t('UI_CEV_FIELD_LIMITATION') }}<br>
             <input type="text" name="limitation_text" dir="auto" size="48" value="{{ item.limitation_text }}" required></label></p>
+          {% if item.topic in commercial_evidence.quantifiable %}{{ cev_quantity_fields(commercial_evidence, item) }}{% endif %}
           <p style="margin:4px 0"><button type="submit" data-cev-correct-submit>{{ t('UI_CEV_CORRECT_SUBMIT') }}</button></p>
         </form>
       </details>
@@ -1276,6 +1326,7 @@ body{overflow-wrap:anywhere}
     <p style="margin:4px 0"><label for="cev-limitation">{{ t('UI_CEV_FIELD_LIMITATION') }}</label><br>
       <input type="text" name="limitation_text" id="cev-limitation" dir="auto" size="48" required></p>
     <p class="journey-note" style="margin:2px 0">{{ t('UI_CEV_LIMITATION_NOTE') }}</p>
+    {{ cev_quantity_fields(commercial_evidence) }}
     <button type="submit" id="cev-submit">{{ t('UI_CEV_SUBMIT') }}</button>
   </form>
   {% endif %}

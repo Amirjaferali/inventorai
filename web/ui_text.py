@@ -2620,6 +2620,130 @@ UI_STRINGS = {
     # "withdrawn" are statements about the RECORD, never about the market and
     # never about the owner who wrote it: an earlier version is not a mistake
     # and a withdrawal is not a failure.
+    # --- D2 quantitative structure -------------------------------------
+    # The wording carries the rule: an amount needs a basis, and "Not
+    # established" is offered as an ANSWER rather than as a blank. Neither
+    # language may imply that a recorded estimate has been checked or agreed.
+    "UI_CEV_Q_HEADING": {
+        "en": "Amount",
+        "ar": "\u0627\u0644\u0645\u0628\u0644\u063a",
+    },
+    "UI_CEV_Q_EXPLAIN": {
+        "en": "Record an amount only if you can say where it came from. If you cannot, leave this as \u201cNot established\u201d \u2014 that is a real answer, not a gap to fill with a guess. An estimate recorded here is still your own estimate: InventorAI has checked none of it.",
+        "ar": "\u0633\u062c\u0651\u0644 \u0645\u0628\u0644\u063a\u064b\u0627 \u0641\u0642\u0637 \u0625\u0630\u0627 \u0643\u0627\u0646 \u0628\u0625\u0645\u0643\u0627\u0646\u0643 \u0628\u064a\u0627\u0646 \u0645\u0635\u062f\u0631\u0647. \u0648\u0625\u0630\u0627 \u0644\u0645 \u062a\u0633\u062a\u0637\u0639\u060c \u0641\u0627\u062a\u0631\u0643 \u0627\u0644\u062d\u0642\u0644 \u0639\u0644\u0649 \u201c\u063a\u064a\u0631 \u0645\u062d\u062f\u064e\u0651\u062f\u201d \u2014 \u0641\u0647\u0630\u0647 \u0625\u062c\u0627\u0628\u0629 \u062d\u0642\u064a\u0642\u064a\u0629 \u0648\u0644\u064a\u0633\u062a \u0641\u0631\u0627\u063a\u064b\u0627 \u064a\u064f\u0645\u0644\u0623 \u0628\u0627\u0644\u062a\u062e\u0645\u064a\u0646. \u0648\u0627\u0644\u062a\u0642\u062f\u064a\u0631 \u0627\u0644\u0645\u0633\u062c\u064e\u0651\u0644 \u0647\u0646\u0627 \u064a\u0638\u0644 \u062a\u0642\u062f\u064a\u0631\u0643 \u0623\u0646\u062a: \u0644\u0645 \u064a\u062a\u062d\u0642\u0642 \u0625\u0646\u0641\u0646\u062a\u0648\u0631\u0627\u064a \u0645\u0646 \u0623\u064a \u0645\u0646\u0647.",
+    },
+    "UI_CEV_Q_STATE": {
+        "en": "Amount status",
+        "ar": "\u062d\u0627\u0644\u0629 \u0627\u0644\u0645\u0628\u0644\u063a",
+    },
+    "UI_CEV_Q_STATE_NONE": {
+        "en": "Not established",
+        "ar": "\u063a\u064a\u0631 \u0645\u062d\u062f\u064e\u0651\u062f",
+    },
+    "UI_CEV_Q_STATE_EXACT": {
+        "en": "Exact",
+        "ar": "\u0645\u0628\u0644\u063a \u0645\u062d\u062f\u064e\u0651\u062f",
+    },
+    "UI_CEV_Q_STATE_ESTIMATED_RANGE": {
+        "en": "Estimated range",
+        "ar": "\u0646\u0637\u0627\u0642 \u062a\u0642\u062f\u064a\u0631\u064a",
+    },
+    "UI_CEV_Q_EXACT": {
+        "en": "Amount",
+        "ar": "\u0627\u0644\u0645\u0628\u0644\u063a",
+    },
+    "UI_CEV_Q_MIN": {
+        "en": "Lowest",
+        "ar": "\u0627\u0644\u062d\u062f \u0627\u0644\u0623\u062f\u0646\u0649",
+    },
+    "UI_CEV_Q_MAX": {
+        "en": "Highest",
+        "ar": "\u0627\u0644\u062d\u062f \u0627\u0644\u0623\u0639\u0644\u0649",
+    },
+    "UI_CEV_Q_CURRENCY": {
+        "en": "Currency",
+        "ar": "\u0627\u0644\u0639\u0645\u0644\u0629",
+    },
+    "UI_CEV_Q_BASIS": {
+        "en": "Per",
+        "ar": "\u0644\u0643\u0644",
+    },
+    "UI_CEV_Q_ESTIMATE_BASIS": {
+        "en": "Where the amount comes from",
+        "ar": "\u0645\u0635\u062f\u0631 \u0627\u0644\u0645\u0628\u0644\u063a",
+    },
+    "UI_CEV_Q_RATIONALE": {
+        "en": "Why this amount",
+        "ar": "\u0633\u0628\u0628 \u0647\u0630\u0627 \u0627\u0644\u0645\u0628\u0644\u063a",
+    },
+    "UI_CEV_Q_RATIONALE_HELP": {
+        "en": "What you based it on, and what it assumes.",
+        "ar": "\u0645\u0627 \u0627\u0644\u0630\u064a \u0627\u0639\u062a\u0645\u062f\u062a \u0639\u0644\u064a\u0647\u060c \u0648\u0645\u0627 \u0627\u0644\u0630\u064a \u064a\u0641\u062a\u0631\u0636\u0647.",
+    },
+    "UI_CEV_Q_NOT_VALIDATED": {
+        "en": "Recording an amount does not make it checked, agreed or final.",
+        "ar": "\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u0645\u0628\u0644\u063a \u0644\u0627 \u064a\u062c\u0639\u0644\u0647 \u0645\u062a\u062d\u0642\u064e\u0651\u0642\u064b\u0627 \u0645\u0646\u0647 \u0648\u0644\u0627 \u0645\u062a\u064e\u0651\u0641\u0642\u064b\u0627 \u0639\u0644\u064a\u0647 \u0648\u0644\u0627 \u0646\u0647\u0627\u0626\u064a\u064b\u0627.",
+    },
+    "UI_CEV_BASIS_PER_UNIT": {
+        "en": "Unit",
+        "ar": "\u0648\u062d\u062f\u0629",
+    },
+    "UI_CEV_BASIS_PER_MONTH": {
+        "en": "Month",
+        "ar": "\u0634\u0647\u0631",
+    },
+    "UI_CEV_BASIS_PER_PROJECT": {
+        "en": "Project",
+        "ar": "\u0645\u0634\u0631\u0648\u0639",
+    },
+    "UI_CEV_BASIS_PER_INSTALLATION": {
+        "en": "Installation",
+        "ar": "\u062a\u0631\u0643\u064a\u0628",
+    },
+    "UI_CEV_BASIS_OTHER": {
+        "en": "Other",
+        "ar": "\u0623\u062e\u0631\u0649",
+    },
+    "UI_CEV_EB_SUPPLIER_QUOTE": {
+        "en": "A supplier quote",
+        "ar": "\u0639\u0631\u0636 \u0633\u0639\u0631 \u0645\u0646 \u0645\u0648\u0631\u0651\u062f",
+    },
+    "UI_CEV_EB_COMPARABLE_PRODUCT_PRICE": {
+        "en": "A comparable product's price",
+        "ar": "\u0633\u0639\u0631 \u0645\u0646\u062a\u062c \u0645\u0645\u0627\u062b\u0644",
+    },
+    "UI_CEV_EB_PRELIMINARY_COMPONENT_COST": {
+        "en": "A preliminary component cost",
+        "ar": "\u062a\u0643\u0644\u0641\u0629 \u0645\u0628\u062f\u0626\u064a\u0629 \u0644\u0644\u0645\u0643\u0648\u0651\u0646\u0627\u062a",
+    },
+    "UI_CEV_EB_MANUFACTURING_COST_ESTIMATE": {
+        "en": "A manufacturing cost estimate",
+        "ar": "\u062a\u0642\u062f\u064a\u0631 \u0644\u062a\u0643\u0644\u0641\u0629 \u0627\u0644\u062a\u0635\u0646\u064a\u0639",
+    },
+    "UI_CEV_EB_WILLINGNESS_TO_PAY_EVIDENCE": {
+        "en": "Something a buyer told you",
+        "ar": "\u0645\u0627 \u0623\u062e\u0628\u0631\u0643 \u0628\u0647 \u0645\u0634\u062a\u0631\u064d",
+    },
+    "UI_CEV_EB_REFERENCE_MARKET_PRICE": {
+        "en": "A reference market price",
+        "ar": "\u0633\u0639\u0631 \u0633\u0648\u0642 \u0645\u0631\u062c\u0639\u064a",
+    },
+    "UI_CEV_EB_OWNER_ASSUMPTION": {
+        "en": "Your own assumption",
+        "ar": "\u0627\u0641\u062a\u0631\u0627\u0636 \u0645\u0646\u0643",
+    },
+    "UI_CEV_EB_PRIOR_PROTOTYPE_COST": {
+        "en": "A previous prototype's cost",
+        "ar": "\u062a\u0643\u0644\u0641\u0629 \u0646\u0645\u0648\u0630\u062c \u0623\u0648\u0644\u064a \u0633\u0627\u0628\u0642",
+    },
+    "UI_CEV_EB_CHANNEL_MARGIN_ASSUMPTION": {
+        "en": "A channel or margin assumption",
+        "ar": "\u0627\u0641\u062a\u0631\u0627\u0636 \u0639\u0646 \u0642\u0646\u0627\u0629 \u0627\u0644\u0628\u064a\u0639 \u0623\u0648 \u0627\u0644\u0647\u0627\u0645\u0634",
+    },
+    "UI_CEV_EB_OTHER_DOCUMENTED": {
+        "en": "Another documented basis",
+        "ar": "\u0623\u0633\u0627\u0633 \u0645\u0648\u062b\u064e\u0651\u0642 \u0622\u062e\u0631",
+    },
     "UI_CEV_CORRECT_HEADING": {
         "en": "Correct this item",
         "ar": "\u0635\u062d\u0651\u062d \u0647\u0630\u0627 \u0627\u0644\u0639\u0646\u0635\u0631",
