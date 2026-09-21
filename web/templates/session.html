@@ -1,4 +1,27 @@
 {% extends "base.html" %}
+{# D3 supporting-item selector, shared by the create and correction forms.
+   One optional choice among the items already recorded, defaulting to the
+   explicit "no supporting item" answer. It offers no ranking, no count and no
+   recommendation: the options are the owner's own items in the owner's own
+   order. `exclude_id` drops the item being corrected, which can never be the
+   support for its own replacement. #}
+{% macro cev_link_field(cev, exclude_id=None, selected=None) %}
+  <p class="cev-link" data-cev-link-field style="margin:4px 0"><label>{{ t('UI_CEV_LINK_LABEL') }}<br>
+    <select name="supporting_evidence_id" data-cev-link-select>
+      <option value="" {% if not selected %}selected{% endif %}>{{ t('UI_CEV_LINK_NONE') }}</option>
+      {% for choice in cev.link_choices %}{% if choice.evidence_id != exclude_id %}
+      <option value="{{ choice.evidence_id }}" {% if selected == choice.evidence_id %}selected{% endif %}>{{ t('UI_CEV_TOPIC_' ~ choice.topic|upper) }} · {{ choice.subject_text }}</option>
+      {% endif %}{% endfor %}
+    </select></label></p>
+  <p class="journey-note" data-cev-link-explain style="margin:2px 0;color:#777">{{ t('UI_CEV_LINK_EXPLAIN') }}</p>
+{% endmacro %}
+{# The rendered link: a traversal naming ONE item, never a badge or a tally. #}
+{% macro cev_link_line(cev, row, label_key) %}
+  {%- set target = cev.link_labels.get(row.supporting_evidence_id) if row.supporting_evidence_id else None -%}
+  {% if target %}
+  <p class="journey-note commercial-evidence-link" data-cev-link data-cev-link-target="{{ row.supporting_evidence_id }}" style="margin:2px 0">{{ t(label_key) }}: <strong>{{ t('UI_CEV_TOPIC_' ~ target.topic|upper) }}</strong> · <bdi data-cev-link-subject dir="auto">{{ target.subject_text }}</bdi></p>
+  {% endif %}
+{% endmacro %}
 {# D2 quantity fieldset, shared by the create and correction forms. Collapsed
    by default, defaults to "Not established", and asks for a basis because an
    amount without one is refused by the owner. #}
@@ -1240,6 +1263,7 @@ body{overflow-wrap:anywhere}
       <p class="journey-note commercial-evidence-amount" data-cev-amount data-cev-amount-state="{{ item.value_state }}" style="margin:2px 0">{{ t('UI_CEV_Q_STATE') }}: <span data-cev-amount-state-label>{{ t('UI_CEV_Q_STATE_' ~ item.value_state) }}</span> · <span data-cev-amount-value>{% if item.value_state == 'EXACT' %}{{ item.value_exact }}{% else %}{{ item.value_min }}–{{ item.value_max }}{% endif %}</span> <span data-cev-amount-currency>{{ item.currency }}</span> · {{ t('UI_CEV_Q_BASIS') }} {{ t('UI_CEV_BASIS_' ~ item.value_basis|upper) }}</p>
       <p class="journey-note" data-cev-amount-basis style="margin:2px 0">{{ t('UI_CEV_Q_ESTIMATE_BASIS') }}: {{ t('UI_CEV_EB_' ~ item.estimate_basis|upper) }} · <bdi dir="auto">{{ item.estimate_rationale }}</bdi></p>
       {% endif %}
+      {{ cev_link_line(commercial_evidence, item, 'UI_CEV_LINK_SUPPORTED_BY') }}
       <p class="journey-note" style="margin:2px 0;color:#777">{{ t('UI_CEV_META_ORIGIN') }}: <span data-cev-origin>{{ t('UI_CEV_META_ORIGIN_VALUE') }}</span> · {{ t('UI_CEV_META_STANDING') }}: <span data-cev-standing>{{ t('UI_CEV_META_STANDING_VALUE') }}</span></p>
       {% if commercial_evidence.writable %}
       {# D1 lifecycle. Both acts APPEND; neither edits or deletes the row above. #}
@@ -1261,6 +1285,7 @@ body{overflow-wrap:anywhere}
             <input type="text" name="scope_text" dir="auto" size="48" value="{{ item.scope_text }}" required></label></p>
           <p style="margin:4px 0"><label>{{ t('UI_CEV_FIELD_LIMITATION') }}<br>
             <input type="text" name="limitation_text" dir="auto" size="48" value="{{ item.limitation_text }}" required></label></p>
+          {{ cev_link_field(commercial_evidence, item.evidence_id, item.supporting_evidence_id) }}
           {% if item.topic in commercial_evidence.quantifiable %}{{ cev_quantity_fields(commercial_evidence, item) }}{% endif %}
           <p style="margin:4px 0"><button type="submit" data-cev-correct-submit>{{ t('UI_CEV_CORRECT_SUBMIT') }}</button></p>
         </form>
@@ -1288,6 +1313,7 @@ body{overflow-wrap:anywhere}
       <p class="journey-note" style="margin:0"><strong>{{ t('UI_CEV_TOPIC_' ~ past.row.topic|upper) }}</strong> · <span data-cev-history-state-label>{% if past.state == 'withdrawn' %}{{ t('UI_CEV_STATE_WITHDRAWN') }}{% else %}{{ t('UI_CEV_STATE_REPLACED') }}{% endif %}</span></p>
       <p style="margin:2px 0"><bdi data-cev-history-subject dir="auto">{{ past.row.subject_text }}</bdi></p>
       <p data-cev-history-statement dir="auto" style="margin:2px 0">{{ past.row.statement_text }}</p>
+      {{ cev_link_line(commercial_evidence, past.row, 'UI_CEV_LINK_WAS_SUPPORTED_BY') }}
     </li>
     {% endfor %}
   </ul>
@@ -1326,6 +1352,7 @@ body{overflow-wrap:anywhere}
     <p style="margin:4px 0"><label for="cev-limitation">{{ t('UI_CEV_FIELD_LIMITATION') }}</label><br>
       <input type="text" name="limitation_text" id="cev-limitation" dir="auto" size="48" required></p>
     <p class="journey-note" style="margin:2px 0">{{ t('UI_CEV_LIMITATION_NOTE') }}</p>
+    {{ cev_link_field(commercial_evidence) }}
     {{ cev_quantity_fields(commercial_evidence) }}
     <button type="submit" id="cev-submit">{{ t('UI_CEV_SUBMIT') }}</button>
   </form>

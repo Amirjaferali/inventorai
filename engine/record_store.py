@@ -457,6 +457,17 @@ _ADOPTION_TABLE = "engine_version_adoptions"
 # MANY independent roots stay legal — recording several pieces of demand
 # evidence is normal. There is NO UPDATE path: a change is a superseding row and
 # a withdrawal is a superseding row.
+#
+# D3 adds the SECOND edge, `supporting_evidence_id`, and deliberately gives it
+# NO foreign key, unlike the predecessor edge above. The correct constraint is
+# the composite `(project_id, supporting_evidence_id)`, and SQLite cannot add a
+# composite foreign key through `ALTER TABLE ADD COLUMN`. Declaring one here
+# only would make a FRESH database enforce a rule a MIGRATED one does not — two
+# schemas wearing one name, with a cross-project link refused on one and
+# accepted on the other. The owner module enforces every target rule instead
+# (exists, this project, this dimension, not itself, not the superseded item,
+# no cycle), identically on both, and it has to: existence and direction are
+# the least of those, and a foreign key can express none of the rest.
 _READINESS_EVIDENCE_SCHEMA = (
     """
     CREATE TABLE IF NOT EXISTS readiness_evidence (
@@ -483,6 +494,7 @@ _READINESS_EVIDENCE_SCHEMA = (
         estimate_rationale     TEXT    NOT NULL DEFAULT '',
         withdrawn              INTEGER NOT NULL DEFAULT 0,
         supersedes_evidence_id TEXT,
+        supporting_evidence_id TEXT,
         event_key              TEXT    NOT NULL,
         recorded_iteration     INTEGER NOT NULL,
         recorded_at            TEXT    NOT NULL,
@@ -779,6 +791,14 @@ class SqliteRecordStore:
                 conn.execute(
                     "ALTER TABLE readiness_evidence ADD COLUMN %s TEXT NOT NULL "
                     "DEFAULT %s" % (column, default))
+        # D3 forward migration, the same guarded additive rule. The column is
+        # NULLABLE and carries no DEFAULT clause, so every existing row gains
+        # NULL — the truthful state for an item recorded when no link could be
+        # named. No row is read, rewritten or reinterpreted to do it.
+        for column in self._EVIDENCE_LINK_COLUMNS:
+            if column not in cols:
+                conn.execute(
+                    "ALTER TABLE readiness_evidence ADD COLUMN %s TEXT" % column)
 
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
@@ -1360,7 +1380,8 @@ class SqliteRecordStore:
         "limitation_text, claim_status, withdrawn, supersedes_evidence_id, "
         "event_key, recorded_iteration, recorded_at, "
         "value_state, value_exact, value_min, value_max, currency, "
-        "value_basis, estimate_basis, estimate_rationale")
+        "value_basis, estimate_basis, estimate_rationale, "
+        "supporting_evidence_id")
 
     #: D2 quantitative columns, added additively to the EXISTING evidence table
     #: rather than in a second table: they describe the SAME recorded item, and
@@ -1377,6 +1398,12 @@ class SqliteRecordStore:
         ("estimate_basis", "''"),
         ("estimate_rationale", "''"),
     )
+
+    #: The D3 linkage column, migrated by the same guarded additive rule but
+    #: NULLABLE: a row recorded before links existed named no supporting item,
+    #: and NULL says exactly that. An empty string would say "a link to
+    #: nothing", which is not what any pre-D3 owner did.
+    _EVIDENCE_LINK_COLUMNS = ("supporting_evidence_id",)
 
     def _evidence_rows(self, project_id: str):
         return self._conn.execute(
@@ -1397,7 +1424,8 @@ class SqliteRecordStore:
             event_key=row[14], recorded_iteration=row[15], recorded_at=row[16],
             value_state=row[17], value_exact=row[18], value_min=row[19],
             value_max=row[20], currency=row[21], value_basis=row[22],
-            estimate_basis=row[23], estimate_rationale=row[24])
+            estimate_basis=row[23], estimate_rationale=row[24],
+            supporting_evidence_id=row[25])
 
     def new_readiness_evidence_id(self) -> str:
         """A durability-safe, collision-safe readiness-evidence identifier."""
@@ -1497,7 +1525,7 @@ class SqliteRecordStore:
                 "INSERT INTO readiness_evidence (project_id, "
                 + self._EVIDENCE_COLUMNS + ") "
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                "?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (project_id, seq, evidence.evidence_id, evidence.dimension,
                  evidence.topic, evidence.subject_text, evidence.statement_text,
                  evidence.source_identity, evidence.provenance,
@@ -1509,7 +1537,8 @@ class SqliteRecordStore:
                  evidence.value_state, evidence.value_exact,
                  evidence.value_min, evidence.value_max, evidence.currency,
                  evidence.value_basis, evidence.estimate_basis,
-                 evidence.estimate_rationale))
+                 evidence.estimate_rationale,
+                 evidence.supporting_evidence_id))
             return EVIDENCE_INSERTED
 
     def load_readiness_evidence(self, project_id: str) -> tuple:
