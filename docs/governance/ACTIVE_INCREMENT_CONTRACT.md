@@ -105,10 +105,117 @@ evidence, and the obligation is **not duplicated inside T2-C′**.
 **CREATOR-REPRODUCED / REPOSITORY-DERIVED**. They are **not** relabelled
 `INDEPENDENTLY VERIFIED`; no separate independent review exists for them.
 
-**Next Master Roadmap stage: Stage 11 — T1-C′ / A2 human evidence.** `STAGE 11 STARTED: NO`.
+<!-- CURRENT-BLOCK: current-routing -->
+**NEXT EXECUTABLE MASTER ROADMAP STAGE: Stage 18 — D13 / CAP-01 structured technical
+guidance.** `STAGE 18 STARTED: NO`. It requires its own separate mandate; routing reaching it
+authorizes no implementation, and Stage 18 is `NOT AUTHORIZED FOR IMPLEMENTATION`.
+**Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and
+`STAGE 11 STARTED: NO`. It was routed PAST, not completed, and **routing past a deferred
+stage never completes it**. Its existing authorization conditions stand: reuse valid prior
+evidence where applicable, and **new human activity requires separate authorization and the
+existing consent/custody boundaries**. No human collection begins merely because routing
+moves past it.
+<!-- END CURRENT-BLOCK: current-routing -->
+
+<!-- CURRENT-BLOCK: stages-13-16-dependencies -->
+**Stages 13–16 remain PARTIAL / OPEN, each on its OWN stage-specific dependencies.**
+**T2-E is NOT the sole dependency of all four**; it is shared, and the per-stage detail is
+recorded in the roadmap.
+
+- **STAGE 13 — PARTIAL / DEFERRED.** Technical evidence-sufficiency exists; **T2-E /
+  OD-PDVG-08b evidence-writer reachability** materially blocks progress beyond
+  `INSUFFICIENT_EVIDENCE`.
+- **STAGE 14 — PARTIAL / DEFERRED.** Dependencies include **CAP-12**, **CAP-13** and
+  **WS-PFV-001**, plus the shared **T2-E** reachability.
+- **STAGE 15 — PARTIAL / DEFERRED.** The **Phase-7 integration/interface foundation
+  EXISTS**, so **IRL ownership is NOT wholly absent**. Remaining: **per-project integration
+  evidence**, **durable subsystem identity**, **inbound/write-import**, **async/vendor
+  integration**, plus **T2-E** reachability.
+- **STAGE 16 — DEFERRED.** Primarily **Stage 13 technical measurement** and the **Stage 15
+  integration axis**; **Stage 14 is relevant IF manufacturing participates** in a future SRL
+  composition.
+<!-- END CURRENT-BLOCK: stages-13-16-dependencies -->
+
+<!-- CURRENT-BLOCK: stage-17-disposition -->
+**STAGE 17 PRODUCT-DEPTH WORK: COMPLETED FOR THE CURRENT AUTHORIZED PRODUCT SCOPE.**
+`D1: MERGED` · `D2: MERGED` · `D3: MERGED` · `PRE-D1/D2/D3 DEPTH: MODERATE` ·
+`POST-D1/D2/D3 DEPTH: MODERATE-DEEP` · `TOPICS SUFFICIENTLY DEEP: 15 / 15` ·
+`ADDITIONAL STAGE-17 PRODUCT-DEPTH IMPLEMENTATION: NOT JUSTIFIED`.
+**COMMERCIAL READINESS: PARTIAL** · `VALIDATED COMMERCIAL CONCLUSION: NO` ·
+`READINESS CEILING: INSUFFICIENT_EVIDENCE`. **Stage 17 is NOT commercially closed**, and
+Commercial Readiness is NOT asserted as passing: **no market validation, no demand
+validation, no product-market-fit proof, no validated differentiation and no first-sale
+readiness** is claimed or authorized. **L5 provenance depth, L6 evidence quality and L8
+validation state remain DEFERRED and BLOCKED on T2-E / OD-PDVG-08b evidence-writer
+reachability, and are not duplicated inside Stage 17.**
+<!-- END CURRENT-BLOCK: stage-17-disposition -->
+
+<!-- CURRENT-BLOCK: stage-18-semantic-normalization -->
+**CARRIED INTO STAGE 18 — MULTILINGUAL SEMANTIC NORMALIZATION LAYER: PRESERVED ·
+NOT AUTHORIZED · NOT IMPLEMENTED.** At the BEGINNING of Stage 18 / D13 / CAP-01 adjudication,
+explicitly reconsider it. Intended bounded flow: user input (Arabic / English / future
+supported language) → semantic normalization → canonical InventorAI concepts → the EXISTING
+deterministic progression / decision engine; the existing engine stays the decision owner.
+**The COMPLETE preserved safeguard set**, recorded in full in the roadmap: **shadow-first
+operation · pinned model / version · confidence boundary · fail-closed behaviour ·
+deterministic fallback · provider-neutral architecture · no automatic concept creation ·
+the model is NEVER the final decision owner · no automatic readiness promotion · no
+unsupported engineering conclusion · AUDITABILITY / PROVENANCE · PRIVACY / DATA BOUNDARY.**
+
+**AUDITABILITY / PROVENANCE.** Where privacy permits, preserve enough attributable
+information to understand: **source input → normalization proposal → selected canonical
+concept.**
+
+**PRIVACY / DATA BOUNDARY.** Before ANY external model/provider integration, Stage-18
+adjudication **must determine** what project/user data may be transmitted outside InventorAI,
+and under what privacy, security and retention boundary.
+
+Those last two are material safeguards, written out here so this pointer cannot read as
+though they had disappeared. **Nothing here authorizes any of it**: no provider is selected,
+no provider is integrated, and no live privacy policy is defined here.
+<!-- END CURRENT-BLOCK: stage-18-semantic-normalization -->
+
+<!-- CURRENT-BLOCK: d3-fk-hardening -->
+**CARRIED FORWARD — D3 FK HARDENING NOTE (`supporting_evidence_id`): PRESERVED.** CURRENT
+enforcement is **canonical Commercial Evidence owner/store validation**, and **fresh and
+migrated databases receive the SAME effective owner/store enforcement**. **NO fresh-only
+database FK is to be added**; **NO unequal fresh-vs-migrated constraint behaviour**; and
+**NO SQLite trigger is to be added merely to imitate part of the constraint.** A composite
+FK is reconsidered ONLY when **EITHER** all existing databases can be safely rebuilt with
+identical constraints, **OR** a suitable datastore transition such as **PostgreSQL** permits
+consistent adoption. **At that future adoption:** preserve all existing rows; preserve D1
+lifecycle semantics; preserve D2 quantitative semantics; preserve D3 linkage semantics;
+preserve legacy migration compatibility; fresh and migrated database behaviour must be
+identical; and **retain owner/store validation as defence-in-depth** even after FK adoption.
+**POSSIBLE FUTURE DEFENSE-IN-DEPTH: automated integrity audit — DO NOT BUILD IT NOW SOLELY
+BECAUSE IT IS POSSIBLE.** A preserved possibility only: `NOT IMPLEMENTED` · `NOT AUTHORIZED`
+· not a new implementation mandate.
+<!-- END CURRENT-BLOCK: d3-fk-hardening -->
+
+<!-- CURRENT-BLOCK: material-residuals -->
+**PRESERVED MATERIAL RESIDUALS.** This synchronization discharges none of them and reopens
+none of them; each keeps its existing owner and trigger, and **name AND disposition are both
+preserved**: **T1-A′** — OPEN / FRB, closure evidence NOT MET · **RUN-004** — NOT
+AUTHORIZED · **T2-C′** — PARTIAL · **REAL USER VALUE** — UNEVIDENCED · **PRODUCT
+DIFFERENTIATION** — UNEVIDENCED · **Stage 11 / `T1-C′` / A2** — DEFERRED / NOT STARTED,
+new human work separately authorized, consent/custody controls intact · **CEHR** —
+DEFERRED, NOT CANCELLED · **Route-B** — PRESERVED · **G-4-A** — CURRENT / NOT FIXED ·
+**G-4-B Mechanism B** — DEFERRED · **HICR** — PRESERVED at its existing trigger ·
+**PRE-FCORA** — PRESERVED at its existing trigger · **T2-A random-skip debt** — PRESERVED ·
+**T2-D observations** — PRESERVED · **PR #640 findings** — PRESERVED · **`N-3`–`N-6`** —
+PRESERVED · **Stages 13–16** — stage-specific dependencies PRESERVED, each on its own
+dependencies rather than one shared blocker · **READINESS CEILING** — INSUFFICIENT_EVIDENCE,
+with **positive readiness promotion NOT CURRENTLY AUTHORIZED** · **DEPLOYMENT** — NOT
+AUTHORIZED · **PUBLIC RELEASE** — NOT AUTHORIZED · **PAID ACTIVATION** — NOT AUTHORIZED ·
+**Stage 44 lineage gate** — PRESERVED · **Stage 45 deployment gate** — PRESERVED ·
+**WATCH-01** — PRESERVED / PLANNED / NOT YET IMPLEMENTED · **WATCH-04** — PRESERVED.
+<!-- END CURRENT-BLOCK: material-residuals -->
+
+*(SUPERSEDED 2026-09-21 by the Stage-17 product-depth disposition — preserved verbatim:
+"**Next Master Roadmap stage: Stage 11 — T1-C′ / A2 human evidence.** `STAGE 11 STARTED: NO`.
 It remains subject to its existing authorization conditions: reuse valid prior evidence where
 applicable, and **new human activity requires separate authorization and the existing
-consent/custody boundaries**. No human collection begins merely because routing reaches it.
+consent/custody boundaries**. No human collection begins merely because routing reaches it.")*
 `PUBLIC RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED` ·
 `PAID ACTIVATION: NOT AUTHORIZED`.
 

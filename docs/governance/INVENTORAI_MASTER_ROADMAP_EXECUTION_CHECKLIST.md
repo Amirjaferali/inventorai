@@ -138,10 +138,53 @@ Read those before acting on any stage; this table is a locator, not a status sou
   Group 2 still carries `T1-A′` OPEN and the `T2-C′` verdict PARTIAL.**
   *(Superseded wording, preserved — was: "CURRENT EARLIEST INCOMPLETE PRODUCT GROUP:
   Group 2".)*
-- **CURRENT STAGE:** Stage 11 — T1-C′ / A2 human evidence. **`STAGE 11 STARTED: NO`** —
-  routing reaching it starts no human collection, no ILT, no A2 and no new round. Its
-  existing conditions stand: reuse valid prior evidence where applicable, and new human
-  activity requires separate authorization and the existing consent/custody boundaries.
+<!-- CURRENT-BLOCK: current-routing -->
+- **CURRENT STAGE:** Stage 18 — D13 / CAP-01 structured technical guidance.
+  **NEXT EXECUTABLE MASTER ROADMAP STAGE: Stage 18 — D13 / CAP-01.**
+  **`STAGE 18 STARTED: NO`** — it requires its own separate mandate, routing reaching it
+  authorizes no implementation, and Stage 18 is `NOT AUTHORIZED FOR IMPLEMENTATION`.
+  **Stage 18 is the next EXECUTABLE stage, not the next obligation: Stage 11 — T1-C′ / A2
+  human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, `STAGE 11 STARTED: NO`. It
+  was routed PAST, not completed; **routing past a deferred stage never completes it.**
+  Routing past it starts no human collection, no ILT, no A2 and no new round; reuse valid
+  prior evidence where applicable, and new human activity requires separate authorization
+  and the existing consent/custody boundaries.
+<!-- END CURRENT-BLOCK: current-routing -->
+<!-- CURRENT-BLOCK: stages-13-16-dependencies -->
+- **Stages 13–16 remain PARTIAL / OPEN, each on its OWN stage-specific dependencies.**
+  **T2-E is NOT the sole dependency of all four** — it is shared, and the per-stage detail
+  is in the roadmap.
+  - **STAGE 13 — PARTIAL / DEFERRED.** Technical evidence-sufficiency exists; **T2-E /
+    OD-PDVG-08b evidence-writer reachability** materially blocks progress beyond
+    `INSUFFICIENT_EVIDENCE`.
+  - **STAGE 14 — PARTIAL / DEFERRED.** **CAP-12**, **CAP-13**, **WS-PFV-001**, plus shared
+    **T2-E**.
+  - **STAGE 15 — PARTIAL / DEFERRED.** **Phase-7 integration/interface foundation EXISTS**,
+    so **IRL ownership is NOT wholly absent**. Remaining: **per-project integration
+    evidence**, **durable subsystem identity**, **inbound/write-import**, **async/vendor
+    integration**, plus **T2-E** reachability.
+  - **STAGE 16 — DEFERRED.** Primarily **Stage 13 technical measurement** and the **Stage 15
+    integration axis**; **Stage 14 is relevant IF manufacturing participates** in a future
+    SRL composition.
+<!-- END CURRENT-BLOCK: stages-13-16-dependencies -->
+<!-- CURRENT-BLOCK: stage-17-disposition -->
+- **STAGE 17 PRODUCT-DEPTH WORK: COMPLETED FOR THE CURRENT AUTHORIZED PRODUCT SCOPE.**
+  `D1: MERGED` · `D2: MERGED` · `D3: MERGED` · `PRE-D1/D2/D3 DEPTH: MODERATE` ·
+  `POST-D1/D2/D3 DEPTH: MODERATE-DEEP` · `TOPICS SUFFICIENTLY DEEP: 15 / 15` ·
+  `ADDITIONAL STAGE-17 PRODUCT-DEPTH IMPLEMENTATION: NOT JUSTIFIED`.
+  **COMMERCIAL READINESS: PARTIAL** · `VALIDATED COMMERCIAL CONCLUSION: NO` ·
+  `READINESS CEILING: INSUFFICIENT_EVIDENCE`. **Stage 17 is NOT commercially closed**, and
+  Commercial Readiness is NOT asserted as passing: **no market validation, no demand
+  validation, no product-market-fit proof, no validated differentiation and no first-sale
+  readiness** is claimed or authorized. Its remaining gaps — **L5 provenance depth, L6
+  evidence quality, L8 validation state** — are owned by **T2-E / OD-PDVG-08b**
+  evidence-writer reachability and are not duplicated into Stage 17.
+<!-- END CURRENT-BLOCK: stage-17-disposition -->
+  *(Superseded wording, preserved — was: "**CURRENT STAGE:** Stage 11 — T1-C′ / A2 human
+  evidence. **`STAGE 11 STARTED: NO`** — routing reaching it starts no human collection, no
+  ILT, no A2 and no new round. Its existing conditions stand: reuse valid prior evidence
+  where applicable, and new human activity requires separate authorization and the existing
+  consent/custody boundaries.")*
   **The Stage-10 DIFFERENTIAL ASSESSMENT is COMPLETED ✅ (Disposition B)** — and read the
   next two bullets before concluding anything from that.
 - **CARRIED RESIDUAL, NEVER TO BE ERASED BY ROUTING FORWARD — `T2-C′`: `PARTIAL` ·
@@ -191,8 +234,67 @@ Read those before acting on any stage; this table is a locator, not a status sou
   disclosure: PR #667 merged the bounded M-1 relevance repair (`F-1`, `F-2` CLOSED) and
   PR #668 merged the bilingual assessment/progression disclosure. **Stage 7 (T2-G) remains
   COMPLETED ✅** within its bounded scope.
-- **CURRENT SUBTASK:** NONE AUTHORIZED. Stage 11 requires its own explicit mandate;
-  completing the Stage-10 differential starts nothing.
+<!-- CURRENT-BLOCK: stage-18-semantic-normalization -->
+- **CARRIED INTO STAGE 18 — MULTILINGUAL SEMANTIC NORMALIZATION LAYER:
+  PRESERVED / NOT AUTHORIZED / NOT IMPLEMENTED.** At the BEGINNING of Stage 18 / D13 / CAP-01
+  adjudication, explicitly reconsider it: user input (Arabic / English / future supported
+  language) → semantic normalization → canonical InventorAI concepts → the EXISTING
+  deterministic progression / decision engine; the existing engine stays the decision owner.
+  **The COMPLETE preserved safeguard set**, recorded in full in the roadmap: **shadow-first
+  operation · pinned model / version · confidence boundary · fail-closed behaviour ·
+  deterministic fallback · provider-neutral architecture · no automatic concept creation ·
+  the model is NEVER the final decision owner · no automatic readiness promotion · no
+  unsupported engineering conclusion · AUDITABILITY / PROVENANCE · PRIVACY / DATA
+  BOUNDARY.**
+  **AUDITABILITY / PROVENANCE.** Where privacy permits, preserve enough attributable
+  information to understand: **source input → normalization proposal → selected canonical
+  concept.**
+  **PRIVACY / DATA BOUNDARY.** Before ANY external model/provider integration, Stage-18
+  adjudication **must determine** what project/user data may be transmitted outside
+  InventorAI, and under what privacy, security and retention boundary.
+  Those last two are material safeguards, written out here so this pointer cannot read as
+  though they had disappeared. **This checklist authorizes none of it**: no provider is
+  selected, no provider is integrated, and no live privacy policy is defined here.
+<!-- END CURRENT-BLOCK: stage-18-semantic-normalization -->
+<!-- CURRENT-BLOCK: d3-fk-hardening -->
+- **CARRIED FORWARD — D3 FK HARDENING NOTE (`supporting_evidence_id`): PRESERVED.**
+  CURRENT enforcement is **canonical Commercial Evidence owner/store validation**, and
+  **fresh and migrated databases receive the SAME effective owner/store enforcement**.
+  **NO fresh-only database FK**; **NO unequal fresh-vs-migrated constraint behaviour**; and
+  **NO SQLite trigger added merely to imitate part of the constraint.** A composite FK is
+  reconsidered ONLY when **EITHER** all existing databases can be safely rebuilt with
+  identical constraints, **OR** a suitable datastore transition such as **PostgreSQL**
+  permits consistent adoption. **At that future adoption:** preserve all existing rows;
+  preserve D1 lifecycle semantics; preserve D2 quantitative semantics; preserve D3 linkage
+  semantics; preserve legacy migration compatibility; fresh and migrated database behaviour
+  must be identical; and **retain owner/store validation as defence-in-depth** even after FK
+  adoption. **POSSIBLE FUTURE DEFENSE-IN-DEPTH: automated integrity audit — DO NOT BUILD IT
+  NOW SOLELY BECAUSE IT IS POSSIBLE.** A preserved possibility only: `NOT IMPLEMENTED` ·
+  `NOT AUTHORIZED` · not a new implementation mandate.
+<!-- END CURRENT-BLOCK: d3-fk-hardening -->
+<!-- CURRENT-BLOCK: material-residuals -->
+- **PRESERVED MATERIAL RESIDUALS — none discharged, none reopened, each keeping its existing
+  owner and trigger, with NAME AND DISPOSITION both preserved:** **T1-A′** — OPEN / FRB,
+  closure evidence NOT MET · **RUN-004** — NOT AUTHORIZED · **T2-C′** — PARTIAL ·
+  **REAL USER VALUE** — UNEVIDENCED · **PRODUCT DIFFERENTIATION** — UNEVIDENCED ·
+  **Stage 11 / `T1-C′` / A2** — DEFERRED / NOT STARTED, new human work separately
+  authorized, consent/custody controls intact · **CEHR** — DEFERRED, NOT CANCELLED ·
+  **Route-B** — PRESERVED · **G-4-A** — CURRENT / NOT FIXED · **G-4-B Mechanism B** —
+  DEFERRED · **HICR** — PRESERVED at its existing trigger · **PRE-FCORA** — PRESERVED at
+  its existing trigger · **T2-A random-skip debt** — PRESERVED · **T2-D observations** —
+  PRESERVED · **PR #640 findings** — PRESERVED · **`N-3`–`N-6`** — PRESERVED ·
+  **Stages 13–16** — stage-specific dependencies PRESERVED, each on its own dependencies
+  rather than one shared blocker · **READINESS CEILING** — INSUFFICIENT_EVIDENCE, with
+  **positive readiness promotion NOT CURRENTLY AUTHORIZED** · **DEPLOYMENT** — NOT
+  AUTHORIZED · **PUBLIC RELEASE** — NOT AUTHORIZED · **PAID ACTIVATION** — NOT AUTHORIZED ·
+  **Stage 44 lineage gate** — PRESERVED · **Stage 45 deployment gate** — PRESERVED ·
+  **WATCH-01** — PRESERVED / PLANNED / NOT YET IMPLEMENTED · **WATCH-04** — PRESERVED.
+<!-- END CURRENT-BLOCK: material-residuals -->
+- **CURRENT SUBTASK:** NONE AUTHORIZED. Stage 18 requires its own separate mandate, and
+  Stage 11 requires its own explicit mandate; completing the Stage-17 product-depth work
+  starts nothing, and neither did completing the Stage-10 differential.
+  *(Superseded wording, preserved — was: "NONE AUTHORIZED. Stage 11 requires its own explicit
+  mandate; completing the Stage-10 differential starts nothing.")*
 - *(Superseded wording, preserved — was: "NONE AUTHORIZED. Stage 10 requires its own
   explicit mandate; completing the Stage-9 disposition starts nothing.")*
 - *(Superseded wording, preserved — was: "none is authorized. Stage 9 requires its own
@@ -227,14 +329,22 @@ Read those before acting on any stage; this table is a locator, not a status sou
 
 Nothing below is authorized by this file. Each still requires the current mandate.
 
-1. **Stage 11** — T1-C′ / A2 human evidence. `STAGE 11 STARTED: NO`. Reuse valid prior
-   evidence where applicable; new human activity requires separate authorization and the
-   existing consent/custody boundaries. Routing here authorizes no collection.
-2. **Stage 15 (IRL)** — the thinnest surviving readiness stage; its ownership is
+1. **Stage 18** — D13 / CAP-01 structured technical guidance. `STAGE 18 STARTED: NO`. The
+   next EXECUTABLE stage; it requires its own separate mandate and authorizes nothing here.
+2. **Stage 11** — T1-C′ / A2 human evidence. **DEFERRED, not completed.**
+   `STAGE 11 STARTED: NO`. Reuse valid prior evidence where applicable; new human activity
+   requires separate authorization and the existing consent/custody boundaries. Routing past
+   it authorizes no collection and discharges nothing.
+3. **Stage 15 (IRL)** — the thinnest surviving readiness stage; its ownership is
    unresolved and Stage 15 is now its only home. It must not be lost.
 
-Step 1 is the Group 3 frontier. Step 2 is flagged because it is the highest
-loss risk, not because it is next in sequence.
+Step 1 is the next EXECUTABLE stage and starts nothing by being listed. Step 2 is the
+deferred obligation that routing past it does NOT complete. Step 3 is flagged because it is
+the highest loss risk, not because it is next in sequence.
+*(Superseded wording, preserved — was: "Step 1 is the Group 3 frontier. Step 2 is flagged
+because it is the highest loss risk, not because it is next in sequence."; the Stage-17
+product-depth disposition made Stage 18 the next executable step and moved Stage 11, which
+remains deferred, to step 2.)*
 
 **The Stage-10 differential assessment is COMPLETED and is no longer a step — but `T2-C′`
 is NOT closed and is carried forward as a `PARTIAL` product-value verdict, and `T1-A′`
@@ -318,9 +428,9 @@ run has occurred. Deploying the merged code would activate it; that is not autho
 
 ## I. Current product-depth position
 
-**CURRENT PRODUCT-DEPTH FRONTIER: Stage 11 if authorized.** *(Superseded 2026-09-20, preserved — was: "Stage 10 if authorized"; the Stage-10 differential assessment is COMPLETED (B), while `T2-C′` stays `PARTIAL` and `T1-A′` stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 9 → Stage 10 if authorized"; the Stage-9 disposition task is COMPLETED, while `T1-A′` itself stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 8 is now CLOSED under Owner acceptance + disclosure.)* *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
+**CURRENT PRODUCT-DEPTH FRONTIER: Stage 18 if authorized — as the next EXECUTABLE stage only; Stage 11 stays DEFERRED and undischarged and Stages 13–16 stay PARTIAL / OPEN.** Stage 17 product-depth work is COMPLETE for the current authorized product scope (D1 + D2 + D3, MODERATE-DEEP) while COMMERCIAL READINESS stays PARTIAL with `VALIDATED COMMERCIAL CONCLUSION: NO`. *(Superseded 2026-09-21, preserved — was: "Stage 11 if authorized"; the Stage-17 product-depth disposition routes to Stage 18 as next executable, and completes neither Stage 11 nor Stage 17's commercial readiness.)* *(Superseded 2026-09-20, preserved — was: "Stage 10 if authorized"; the Stage-10 differential assessment is COMPLETED (B), while `T2-C′` stays `PARTIAL` and `T1-A′` stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 9 → Stage 10 if authorized"; the Stage-9 disposition task is COMPLETED, while `T1-A′` itself stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 8 is now CLOSED under Owner acceptance + disclosure.)* *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
 
-Group 1 is complete. **Stage 7 COMPLETED, Stage 8 CLOSED, the Stage-9 `T1-A′` disposition task COMPLETED (A) and the Stage-10 T2-C′ differential COMPLETED (B) — with `T1-A′` itself still OPEN / FRB and the `T2-C′` product-value verdict still PARTIAL; Stage 11 — T1-C′ / A2 — is the next Master Roadmap stage and is NOT started.** All five Group-2 stages now read completed, so **Group 3 is the earliest group holding an unticked stage** — a checkbox fact, not a discharge of Group 2's residuals. *(Superseded 2026-09-20, preserved — was: "Stage 10 — T2-C′ — is the next Master Roadmap stage. Group 2 is still the earliest incomplete group.")* Group 3 has Stage 12
+Group 1 is complete. **Stage 7 COMPLETED, Stage 8 CLOSED, the Stage-9 `T1-A′` disposition task COMPLETED (A) and the Stage-10 T2-C′ differential COMPLETED (B) — with `T1-A′` itself still OPEN / FRB and the `T2-C′` product-value verdict still PARTIAL; the NEXT EXECUTABLE Master Roadmap stage is Stage 18 — D13 / CAP-01, `STAGE 18 STARTED: NO`, while Stage 11 — T1-C′ / A2 — is DEFERRED / UNDISCHARGED / NOT STARTED and was routed PAST, not completed.** *(Superseded 2026-09-21 by the Stage-17 product-depth disposition, preserved verbatim — was: "Stage 11 — T1-C′ / A2 — is the next Master Roadmap stage and is NOT started."; routing moved to Stage 18 and Stage 11 stays deferred, so that sentence is HISTORICAL and is not current routing.)* All five Group-2 stages now read completed, so **Group 3 is the earliest group holding an unticked stage** — a checkbox fact, not a discharge of Group 2's residuals. *(Superseded 2026-09-20, preserved — was: "Stage 10 — T2-C′ — is the next Master Roadmap stage. Group 2 is still the earliest incomplete group.")* Group 3 has Stage 12
 complete, Stages 13 and 14 partial through the three-dimension Readiness Snapshot only,
 and Stage 15 open and thinnest. The Snapshot ceiling is `INSUFFICIENT_EVIDENCE` in every
 dimension: a captured dimension is not a validated conclusion.
@@ -424,8 +534,24 @@ OPEN / FRB / release-value criteria NOT MET
 never passed, never closed
 
 CURRENT PRODUCT-DEPTH FRONTIER:
-Stage 11 if authorized
-STAGE 11 STARTED: NO
+Stage 18 if authorized (next EXECUTABLE stage only)
+STAGE 18 STARTED: NO
+STAGE 11: DEFERRED / UNDISCHARGED / STAGE 11 STARTED: NO
+STAGES 13-16: PARTIAL / OPEN — EACH ON ITS OWN DEPENDENCIES,
+NOT ONE SHARED BLOCKER (T2-E is shared, NOT the sole blocker):
+  STAGE 13: PARTIAL / DEFERRED — technical evidence-sufficiency exists;
+    T2-E / OD-PDVG-08b evidence-writer reachability materially blocks
+    progress beyond INSUFFICIENT_EVIDENCE
+  STAGE 14: PARTIAL / DEFERRED — CAP-12, CAP-13, WS-PFV-001, plus shared T2-E
+  STAGE 15: PARTIAL / DEFERRED — Phase-7 integration/interface foundation EXISTS;
+    remaining: per-project integration evidence, durable subsystem identity,
+    inbound/write-import, async/vendor integration, plus T2-E reachability
+  STAGE 16: DEFERRED — primarily Stage 13 technical measurement and the
+    Stage 15 integration axis; Stage 14 relevant IF manufacturing participates
+    in a future SRL composition
+STAGE 17 PRODUCT-DEPTH: COMPLETE FOR CURRENT AUTHORIZED SCOPE
+COMMERCIAL READINESS: PARTIAL
+VALIDATED COMMERCIAL CONCLUSION: NO
 
 CURRENT TECHNOLOGY-DEEPENING POSITION:
 Stages 18–27 preserved, not entered / not authorized

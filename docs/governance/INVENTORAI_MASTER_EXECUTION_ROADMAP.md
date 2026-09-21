@@ -32,6 +32,12 @@
 
 ## Current routing override — v1.32 Stage 10 differential amendment (2026-09-20)
 
+**PRESENT ROUTING UPDATED 2026-09-21 by the Stage-17 product-depth disposition, inside this
+same section and creating no new roadmap version — the roadmap remains v1.32.** This heading
+names the amendment that created the section and is deliberately NOT renamed: the Stage-10
+differential record below is unchanged and still stands. Only the next-stage routing moved,
+and the "Next executable Master Roadmap stage" sentence below is the current pointer.
+
 **Sits on top of the Stage 9 disposition amendment and the v1.32 cut below, replacing
 neither and creating no new roadmap version.** Read it first for present routing.
 
@@ -85,13 +91,176 @@ conclusion. No readiness, commercial-readiness or manufacturing-readiness `PASS`
 DISPOSITION: NO` · `IMPLEMENTATION AUTHORIZED: NO`.** No MCP row, no implementation, no
 provider selected.
 
-**Next Master Roadmap stage: Stage 11 — T1-C′ / A2 human evidence.** `STAGE 11 STARTED: NO`;
+<!-- CURRENT-BLOCK: current-routing -->
+**Next executable Master Roadmap stage: Stage 18 — D13 / CAP-01 structured technical
+guidance.** `STAGE 18 STARTED: NO`; it requires its own explicit mandate, routing reaching
+it authorizes no implementation, and Stage 18 is `NOT AUTHORIZED FOR IMPLEMENTATION`.
+**Routing reaching it discharges nothing behind it.** `STAGE 11 STARTED: NO` and **Stage 11
+— T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**: it was routed
+PAST, not completed, and **routing past a deferred stage never completes it**. Reuse valid
+prior evidence where applicable, and new human activity requires separate authorization
+and the existing consent/custody boundaries. **Stages 13–16 remain PARTIAL / OPEN, each
+on its OWN stage-specific dependencies** — set out per stage under "Carried forward — Stages 13–16 stage-specific
+dependencies" below. T2-E / OD-PDVG-08b evidence-writer reachability is shared across them,
+but **it is NOT the whole dependency set for Stages 14, 15 and 16**, and no routing sentence
+may be read as though one blocker explained all four. Stage 17's OWN remaining L5
+provenance-depth, L6 evidence-quality and L8 validation-state gaps are the ones owned by
+T2-E / OD-PDVG-08b, and they are not duplicated into Stage 17.
+<!-- END CURRENT-BLOCK: current-routing -->
+
+<!-- CURRENT-BLOCK: stage-17-disposition -->
+**STAGE 17 PRODUCT-DEPTH WORK: COMPLETED FOR THE CURRENT AUTHORIZED PRODUCT SCOPE.**
+`D1: MERGED` · `D2: MERGED` · `D3: MERGED` · `PRE-D1/D2/D3 DEPTH: MODERATE` ·
+`POST-D1/D2/D3 DEPTH: MODERATE-DEEP` · `TOPICS SUFFICIENTLY DEEP: 15 / 15` ·
+`ADDITIONAL STAGE-17 PRODUCT-DEPTH IMPLEMENTATION: NOT JUSTIFIED`.
+**COMMERCIAL READINESS: PARTIAL** · `VALIDATED COMMERCIAL CONCLUSION: NO` ·
+`READINESS CEILING: INSUFFICIENT_EVIDENCE`. **Stage 17 is NOT commercially closed**, and
+Commercial Readiness is NOT asserted as passing. Product depth complete is not commercial
+validation: **no market validation, no demand validation, no product-market-fit proof, no
+validated differentiation and no first-sale readiness** is claimed or authorized.
+<!-- END CURRENT-BLOCK: stage-17-disposition -->
+
+**`T1-A′` and the `PARTIAL` T2-C′ verdict both travel forward as carried residuals and
+routing onward must not erase them.**
+*(SUPERSEDED 2026-09-21 by the Stage-17 product-depth disposition — preserved verbatim:
+"**Next Master Roadmap stage: Stage 11 — T1-C′ / A2 human evidence.** `STAGE 11 STARTED: NO`;
 it needs its own explicit mandate and keeps its existing authorization conditions — reuse
 valid prior evidence where applicable, and new human activity requires separate authorization
-and the existing consent/custody boundaries. **`T1-A′` and the `PARTIAL` T2-C′ verdict both
-travel forward as carried residuals and routing onward must not erase them.**
+and the existing consent/custody boundaries." Stage 11 is NOT completed by this update: it
+stays deferred, and Stage 18 is the next EXECUTABLE stage, not the next obligation.)*
 `PUBLIC RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED` ·
 `PAID ACTIVATION: NOT AUTHORIZED`.
+
+<!-- CURRENT-BLOCK: stage-18-semantic-normalization -->
+### Carried into Stage 18 — Multilingual Semantic Normalization Layer
+
+**PRESERVED FOR STAGE-18 ADJUDICATION · NOT AUTHORIZED · NOT IMPLEMENTED.** Recorded here in
+ROUTING so it cannot be lost between stages: **at the BEGINNING of Stage 18 / D13 / CAP-01
+adjudication, explicitly reconsider it.** Writing it down starts nothing.
+
+Intended bounded flow: **user input (Arabic / English / future supported language) → semantic
+normalization → canonical InventorAI concepts → the EXISTING deterministic progression /
+decision engine.** The existing engine remains the decision owner; this layer would sit in
+front of it, never inside it.
+
+Safeguards to preserve at Stage-18 adjudication — **the COMPLETE preserved safeguard set,
+none of it optional prose**: **shadow-first operation · pinned model / version · confidence
+boundary · fail-closed behaviour · deterministic fallback · provider-neutral architecture ·
+no automatic concept creation · the model is NEVER the final decision owner · no automatic
+readiness promotion · no unsupported engineering conclusion · AUDITABILITY / PROVENANCE ·
+PRIVACY / DATA BOUNDARY.** The last two are material safeguards and are written out in full
+below, because a bare two-word entry would not carry them.
+
+**AUDITABILITY / PROVENANCE.** Where privacy permits, preserve enough attributable
+information to understand: **source input → normalization proposal → selected canonical
+concept.** A normalization that cannot be traced back to the input that produced it and the
+proposal that was chosen cannot be adjudicated, corrected or withdrawn later.
+
+**PRIVACY / DATA BOUNDARY.** Before ANY external model/provider integration, Stage-18
+adjudication must determine **what project/user data may be transmitted outside InventorAI,
+and under what privacy, security and retention boundary.** This is preservation for that
+later Stage-18 READ-ONLY adjudication only: **no provider is integrated, no provider is
+selected, and no live privacy policy is defined here.**
+<!-- END CURRENT-BLOCK: stage-18-semantic-normalization -->
+
+<!-- CURRENT-BLOCK: stages-13-16-dependencies -->
+### Carried forward — Stages 13–16 stage-specific dependencies
+
+**Recorded per stage so the distinction is not lost. None of these is discharged here.
+T2-E is NOT the sole dependency of all four** — T2-E / OD-PDVG-08b is a SHARED dependency.
+
+**STAGE 13 — TRL-COMPATIBLE VIEW: PARTIAL / DEFERRED.** Technical evidence-sufficiency
+exists, but wider **T2-E / OD-PDVG-08b evidence-writer reachability** prevents meaningful
+progression beyond the current `INSUFFICIENT_EVIDENCE` ceiling.
+
+**STAGE 14 — MRL-COMPATIBLE VIEW: PARTIAL / DEFERRED.** Dependencies include **CAP-12
+materials/process**, **CAP-13 specification/safety**, **WS-PFV-001 prototype
+feasibility/validation**, and the shared **T2-E evidence-writer reachability**. T2-E alone
+would not unblock it.
+
+**STAGE 15 — IRL-COMPATIBLE VIEW: PARTIAL / DEFERRED.** The **Phase-7
+integration/interface foundation EXISTS**, so **IRL ownership is NOT wholly absent**, and
+no surface may state or imply that it is. Remaining dependencies include **per-project integration evidence**,
+**durable subsystem identity**, **inbound/write-import**, **async/vendor integration**, and
+**T2-E writer reachability**.
+
+**STAGE 16 — SRL-COMPATIBLE COMPOSITION: DEFERRED.** Primary dependencies are **Stage 13
+technical measurement** and the **Stage 15 integration axis**. **Stage 14 is relevant IF
+manufacturing participates** in a future SRL composition, and is not a primary dependency
+today.
+<!-- END CURRENT-BLOCK: stages-13-16-dependencies -->
+
+<!-- CURRENT-BLOCK: d3-fk-hardening -->
+### Carried forward — D3 FK HARDENING NOTE (`supporting_evidence_id`)
+
+**CURRENT STATUS: integrity is enforced by the canonical Commercial Evidence owner/store
+path** — existence, same project, same dimension, non-self, separation from the supersession
+edge, and acyclicity, applied identically on fresh and migrated databases, with the complete
+resulting history validated before the durable insert. Enforcement is relocated, not absent.
+
+**NO FRESH-ONLY DATABASE FK IS TO BE ADDED.** Re-evaluate a true composite database FK —
+`(project_id, supporting_evidence_id)` → `readiness_evidence(project_id, evidence_id)` —
+**only when EITHER** a future migration can safely rebuild `readiness_evidence` for **ALL**
+existing databases, so fresh and migrated databases receive identical constraints, **OR** the
+datastore moves to a platform such as PostgreSQL where the composite FK can be introduced
+consistently and safely.
+
+**At that time:** preserve all existing rows; preserve D1 lifecycle semantics; preserve D2
+quantitative semantics; preserve D3 linkage semantics; verify legacy migration compatibility;
+ensure fresh and migrated databases enforce the SAME database constraints; and retain
+owner/store validation as defence-in-depth even after FK adoption.
+
+**Until then:** no fresh-only FK; no unequal integrity behaviour; and **no SQLite trigger
+added merely to imitate part of the constraint** — a partial imitation of a constraint is
+harder to reason about than the explicit owner-side rule it would shadow.
+
+**POSSIBLE FUTURE DEFENSE-IN-DEPTH: automated integrity audit** — a periodic or on-demand
+sweep confirming that every stored `supporting_evidence_id` still resolves inside its own
+project and dimension. **DO NOT BUILD IT NOW SOLELY BECAUSE IT IS POSSIBLE.** This records a
+possibility, **not a new implementation mandate**: `NOT IMPLEMENTED` · `NOT AUTHORIZED`. It
+neither weakens nor replaces the owner/store enforcement that is current, and it opens no
+workstream.
+<!-- END CURRENT-BLOCK: d3-fk-hardening -->
+
+<!-- CURRENT-BLOCK: material-residuals -->
+### Preserved material residuals — NOT discharged by this synchronization
+
+Routing forward discharges none of these. This synchronization closes none of them and
+reopens none of them; each keeps its existing owner and its existing trigger. **Name AND
+disposition are both preserved** — a name kept beside a quietly changed disposition is the
+same loss as a deleted name, so each is written as `NAME — DISPOSITION`:
+
+- **T1-A′** — OPEN / FRB, closure evidence NOT MET.
+- **RUN-004** — NOT AUTHORIZED.
+- **T2-C′** — PARTIAL.
+- **REAL USER VALUE** — UNEVIDENCED.
+- **PRODUCT DIFFERENTIATION** — UNEVIDENCED.
+- **Stage 11 / `T1-C′` / A2** — DEFERRED / NOT STARTED; new human work requires separate
+  authorization and the existing consent/custody controls.
+- **CEHR** — DEFERRED, NOT CANCELLED.
+- **Route-B** — PRESERVED.
+- **G-4-A** — CURRENT / NOT FIXED, unless later authority changed it.
+- **G-4-B Mechanism B** — DEFERRED.
+- **HICR** — PRESERVED at its existing trigger.
+- **PRE-FCORA** — PRESERVED at its existing trigger.
+- **T2-A random-skip debt** — PRESERVED.
+- **T2-D observations** — PRESERVED.
+- **PR #640 findings** — PRESERVED.
+- **`N-3`–`N-6`** — PRESERVED at their own triggers.
+- **Stages 13–16** — their stage-specific dependencies remain PRESERVED, each on its own
+  dependencies rather than one shared blocker.
+- **READINESS CEILING** — INSUFFICIENT_EVIDENCE, with **positive readiness promotion NOT
+  CURRENTLY AUTHORIZED** and no positive readiness promotion path.
+- **DEPLOYMENT** — NOT AUTHORIZED.
+- **PUBLIC RELEASE** — NOT AUTHORIZED.
+- **PAID ACTIVATION** — NOT AUTHORIZED.
+- **Stage 44 lineage gate** — PRESERVED.
+- **Stage 45 deployment gate** — PRESERVED.
+- **WATCH-01 — Automated Authoritative-State / Documentation-Drift Control** — PRESERVED /
+  PLANNED / NOT YET IMPLEMENTED, and not implemented by this synchronization.
+- **WATCH-04 — DATA DEPTH PRINCIPLE** — PRESERVED: presence ≠ depth ≠ evidence ≠
+  provenance ≠ validation ≠ decision value.
+<!-- END CURRENT-BLOCK: material-residuals -->
 
 ---
 
@@ -494,7 +663,7 @@ This is the short operating view of the detailed sequence in §6. A successor wo
 - [x] **9 — T1-A′ disposition:** **DISPOSITION TASK COMPLETED ✅ — DISPOSITION A (2026-09-20). `T1-A′ ITSELF REMAINS OPEN / FRB`: it has NOT passed and has NOT closed, and `CLOSURE EVIDENCE: NOT MET`.** Stage 9 asks what the lawful disposition is; the Owner-accepted answer is that the obligation stays open. From `S2-PATHN-RUN-002`: no Full Pass 0 of 8; criteria 5 and 6 FAIL in all 8; platform-side candidate comparison ABSENT; 0 deliverable-eligible; 0 reaching Stage 3. The §15.7 closure criterion is preserved exactly and no Stage-8-style acceptance/disclosure path is added. The verified remediations remain true and remain insufficient; no aggregate improvement score exists. `THIRD S2 RUN: CONSUMED` · `RUN-004: NOT AUTHORIZED`. *(Superseded wording, preserved — was: "use existing evidence; no RUN-004/fourth S2 run without new authority.")*
 - [x] **10 — T2-C′ differential assessment:** **DIFFERENTIAL ASSESSMENT COMPLETED ✅ — DISPOSITION B (2026-09-20). `T2-C′ PRODUCT-VALUE CONCLUSION REMAINS PARTIAL`: it has NOT passed and is NOT fully closed.** Stage 10 asks what materially changed since the accepted WS16 evidence; the Owner-accepted answer is that the product materially changed while the verdict stays `PARTIAL`. WS16 was **electronics/electrical only** (`MECHANICAL WS16 BASELINE: NONE`) and PDVG-01 carries the controlling `PARTIAL`. Electronics: materially updated. Mechanical: a new post-WS16 domain, **depth equivalence NOT established**. `REAL USER VALUE: UNEVIDENCED` (Stage 11 / `T1-C′`) · `PRODUCT DIFFERENTIATION: UNEVIDENCED` (`T1-A′`) · `CANDIDATE REPRESENTATION: PRESENT` but `PLATFORM-SIDE CANDIDATE COMPARISON: ABSENT` · `T1-A′: OPEN / FRB` · `MCP: DEFERRED / NO TRIGGER / NOT AUTHORIZED`. *(Was: "assess only material changes since accepted WS16 evidence across Electronics and Mechanical.")*
 
-**Group state — UPDATED 2026-09-20 (Stage 10 differential acceptance):** **ALL FIVE GROUP-2 STAGES (6–10) NOW READ COMPLETED ✅** — Stage 10's differential assessment closed as **DISPOSITION B**. **Read the next sentence before concluding that Group 2 is discharged: it is not.** The group carries **undischarged residuals that ticking its stages did NOT close** — `T1-A′: OPEN / FRB / CLOSURE EVIDENCE NOT MET` and `T2-C′ PRODUCT-VALUE CONCLUSION: PARTIAL` (`PASS: NO`, `FULLY CLOSED: NO`, real user value and product differentiation UNEVIDENCED, Mechanical depth equivalence NOT ESTABLISHED). **Stage 11 — T1-C′ / A2 human evidence — is now the next Master Roadmap stage**, `STAGE 11 STARTED: NO`, and **Group 3 is now the earliest group holding an unticked stage** — which is a statement about checkboxes, not a discharge of Group 2's residuals. *(SUPERSEDED 2026-09-20 — the Stage-10 differential is COMPLETED and Stage 11 is next; preserved verbatim:)* **Stage 9 DISPOSITION TASK COMPLETED ✅ (A)** — and `T1-A′` itself **REMAINS OPEN / FRB**, never passed, never closed, closure evidence NOT MET. *(Superseded by the Stage-10 acceptance above, preserved verbatim:)* **Stage 10 — T2-C′ differential assessment — is now the next Master Roadmap stage** and still requires its own explicit mandate; `T1-A′` travels forward as a carried residual. *(Prior line, preserved:)* **Stage 8 COMPLETED ✅ / CLOSED** under Owner acceptance + surface disclosure (PR #667 repair, PR #668 disclosure); Mechanism A stays CURRENT / NOT FIXED and Mechanism B stays OPEN / DEFERRED, so closure is a disposition, not a repair. *(SUPERSEDED 2026-09-20 — the Stage-9 disposition task is COMPLETED and Stage 10 is next; preserved verbatim:)* **Stage 9 — `T1-A′` disposition — is now the next Master Roadmap stage** and still requires its own explicit mandate; `T1-A′` has never passed and never closed. *(Prior line, preserved:)* Stage 6 COMPLETED ✅. **Stage 7 COMPLETED ✅ within its bounded T2-G scope** — `N-1`/`N-2` SATISFIED, legacy migration CLOSED/ACCEPTED under policy B; `R1`, `R2`, `R3` and `N-3`–`N-6` preserved at their own triggers, not discharged. *(Superseded 2026-09-20 — was: "**Stage 8 is now the next Master Roadmap stage** and still requires its own explicit mandate."; Stage 8 is now CLOSED and Stage 9 is next.)* Stages 9–10 unchanged. **Group 2 remains the earliest incomplete group and therefore the current product-depth frontier.** No paid-activation obligation discharged. *(Superseded wording, preserved — was: "Stage 7 PARTIAL and materially advanced — PR #643 and PR #644 both merged; the v1.31 wait and both disclosures are consumed. Its remaining residuals are bounded (N-1/N-2, legacy-migration disposition).")*
+**Group state — UPDATED 2026-09-20 (Stage 10 differential acceptance):** **ALL FIVE GROUP-2 STAGES (6–10) NOW READ COMPLETED ✅** — Stage 10's differential assessment closed as **DISPOSITION B**. **Read the next sentence before concluding that Group 2 is discharged: it is not.** The group carries **undischarged residuals that ticking its stages did NOT close** — `T1-A′: OPEN / FRB / CLOSURE EVIDENCE NOT MET` and `T2-C′ PRODUCT-VALUE CONCLUSION: PARTIAL` (`PASS: NO`, `FULLY CLOSED: NO`, real user value and product differentiation UNEVIDENCED, Mechanical depth equivalence NOT ESTABLISHED). *(SUPERSEDED 2026-09-21 by the Stage-17 product-depth disposition — Stage 18 is now the next EXECUTABLE stage while Stage 11 stays DEFERRED and undischarged; preserved verbatim:)* **Stage 11 — T1-C′ / A2 human evidence — is now the next Master Roadmap stage**, `STAGE 11 STARTED: NO`, and **Group 3 is now the earliest group holding an unticked stage** — which is a statement about checkboxes, not a discharge of Group 2's residuals. *(SUPERSEDED 2026-09-20 — the Stage-10 differential is COMPLETED and Stage 11 is next; preserved verbatim:)* **Stage 9 DISPOSITION TASK COMPLETED ✅ (A)** — and `T1-A′` itself **REMAINS OPEN / FRB**, never passed, never closed, closure evidence NOT MET. *(Superseded by the Stage-10 acceptance above, preserved verbatim:)* **Stage 10 — T2-C′ differential assessment — is now the next Master Roadmap stage** and still requires its own explicit mandate; `T1-A′` travels forward as a carried residual. *(Prior line, preserved:)* **Stage 8 COMPLETED ✅ / CLOSED** under Owner acceptance + surface disclosure (PR #667 repair, PR #668 disclosure); Mechanism A stays CURRENT / NOT FIXED and Mechanism B stays OPEN / DEFERRED, so closure is a disposition, not a repair. *(SUPERSEDED 2026-09-20 — the Stage-9 disposition task is COMPLETED and Stage 10 is next; preserved verbatim:)* **Stage 9 — `T1-A′` disposition — is now the next Master Roadmap stage** and still requires its own explicit mandate; `T1-A′` has never passed and never closed. *(Prior line, preserved:)* Stage 6 COMPLETED ✅. **Stage 7 COMPLETED ✅ within its bounded T2-G scope** — `N-1`/`N-2` SATISFIED, legacy migration CLOSED/ACCEPTED under policy B; `R1`, `R2`, `R3` and `N-3`–`N-6` preserved at their own triggers, not discharged. *(Superseded 2026-09-20 — was: "**Stage 8 is now the next Master Roadmap stage** and still requires its own explicit mandate."; Stage 8 is now CLOSED and Stage 9 is next.)* Stages 9–10 unchanged. **Group 2 remains the earliest incomplete group and therefore the current product-depth frontier.** No paid-activation obligation discharged. *(Superseded wording, preserved — was: "Stage 7 PARTIAL and materially advanced — PR #643 and PR #644 both merged; the v1.31 wait and both disclosures are consumed. Its remaining residuals are bounded (N-1/N-2, legacy-migration disposition).")*
 
 ### Group 3 — Stages 11–15: human evidence and readiness foundations
 
@@ -504,12 +673,12 @@ This is the short operating view of the detailed sequence in §6. A successor wo
 - [ ] **14 — MRL-compatible view:** **PARTIAL — UPDATED v1.32.** Manufacturing Evidence Owner and Capture merged (PRs #651, #652) and Manufacturing joined the Snapshot as an evidence-sufficiency dimension, ceiling `INSUFFICIENT_EVIDENCE` only, carrying **no manufacturability conclusion**. The MRL view itself is NOT built; `MRL FINAL OWNER / COMPOSITION PREDECIDED: NO`; it still depends on CAP-12/13 and WS-PFV-001 evidence that does not exist.
 - [ ] **15 — IRL-compatible view:** expose interfaces and subsystem integration evidence; close durable subsystem identity/persistence residuals when required.
 
-**Group state — UPDATED 2026-09-20 (Stage 10 differential acceptance):** **Stage 11 is now the next Master Roadmap stage and `STAGE 11 STARTED: NO`** — routing reaching it starts no human collection. Its existing authorization conditions are unchanged: reuse valid prior evidence where applicable, and new human activity requires separate authorization and the existing consent/custody boundaries. *(Prior line, preserved:)* Stage 11 intentionally deferred (CEHR/Route-B preserved, not cancelled). **Stage 12 is now COMPLETED**; Stages 13 and 14 are PARTIAL through the Readiness Snapshot only; **Stage 15 (IRL) remains OPEN and is the thinnest — its ownership is unresolved and this Stage is its only home**, since DOR row 174 (which formerly carried it) is closed. Stage 15 must not be lost.
+**Group state — UPDATED 2026-09-21 (Stage-17 product-depth disposition):** **Stage 18 is now the next EXECUTABLE Master Roadmap stage and `STAGE 18 STARTED: NO`; Stage 11 remains DEFERRED and undischarged, `STAGE 11 STARTED: NO`.** Routing past a deferred stage never completes it. *(SUPERSEDED 2026-09-21 — preserved verbatim:)* **Stage 11 is now the next Master Roadmap stage and `STAGE 11 STARTED: NO`** — routing reaching it starts no human collection. Its existing authorization conditions are unchanged: reuse valid prior evidence where applicable, and new human activity requires separate authorization and the existing consent/custody boundaries. *(Prior line, preserved:)* Stage 11 intentionally deferred (CEHR/Route-B preserved, not cancelled). **Stage 12 is now COMPLETED**; Stages 13 and 14 are PARTIAL through the Readiness Snapshot only; **Stage 15 (IRL) remains OPEN and is the thinnest — its ownership is unresolved and this Stage is its only home**, since DOR row 174 (which formerly carried it) is closed. Stage 15 must not be lost.
 
 ### Group 4 — Stages 16–20: system/commercial readiness and technical guidance
 
 - [ ] **16 — SRL-compatible composition:** combine technical and integration state without hiding the weakest axis or inventing a single score.
-- [ ] **17 — Market Reality / Commercial Readiness:** **PARTIAL — UPDATED v1.32.** The **capture mechanism** exists and is merged: Commercial Evidence Owner and Commercial Evidence Capture (PRs #647, #649), with a Commercial dimension in the Snapshot at ceiling `INSUFFICIENT_EVIDENCE` only. **Actual evidence captured is limited and no validated commercial conclusion exists or is authorized.** The full future scope is preserved below and in `INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md` §16.G: target user/audience, direct alternatives, indirect alternatives, differentiation, proof of demand, licensing, market-entry risks, revenue model, funding needs and path to first sale. Never output the unsupported conclusion "marketable".
+- [ ] **17 — Market Reality / Commercial Readiness:** **PARTIAL — PRODUCT-DEPTH COMPLETE FOR CURRENT AUTHORIZED SCOPE, UPDATED 2026-09-21.** The Commercial Data Depth slices are merged: **D1** lifecycle & longitudinal reachability, **D2** quantitative commercial structure (EXACT / ESTIMATED_RANGE / NONE, USD default, no defensible basis → no accepted number, no invented midpoint, no invented range, NONE ≠ ZERO) and **D3** commercial evidence linkage (one supporting item, a traversal and never a rating). Post-recheck depth is **MODERATE-DEEP** (from MODERATE); **15 / 15 topics are sufficiently deep for the current Stage-17 product scope**; `ADDITIONAL STAGE-17 PRODUCT DEPTH IMPLEMENTATION: NOT JUSTIFIED` — further fields would be over-engineering or would improperly enter the deferred T2-E lane. **The remaining gaps are L5 provenance depth, L6 evidence quality and L8 validation state, owned by T2-E / OD-PDVG-08b evidence-writer reachability and NOT duplicated here.** **COMMERCIAL READINESS REMAINS PARTIAL**: `VALIDATED COMMERCIAL CONCLUSION: NO`, `READINESS CEILING: INSUFFICIENT_EVIDENCE`, Commercial Readiness is NOT asserted as passing, and no market validation, demand validation, product-market fit, validated differentiation or first-sale readiness is claimed or authorized. Stage 17 is NOT closed. *(Superseded wording, preserved — was: "**PARTIAL — UPDATED v1.32.**")* The **capture mechanism** exists and is merged: Commercial Evidence Owner and Commercial Evidence Capture (PRs #647, #649), with a Commercial dimension in the Snapshot at ceiling `INSUFFICIENT_EVIDENCE` only. **Actual evidence captured is limited and no validated commercial conclusion exists or is authorized.** The full future scope is preserved below and in `INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md` §16.G: target user/audience, direct alternatives, indirect alternatives, differentiation, proof of demand, licensing, market-entry risks, revenue model, funding needs and path to first sale. Never output the unsupported conclusion "marketable".
 - [ ] **18 — D13/CAP-01 guidance:** bounded technical next-step guidance after Research Gate 3 prerequisites; AI remains non-authoritative.
 - [ ] **19 — WS-PFV-001/CAP-09:** experiment-plan designer; never fabricate results.
 - [ ] **20 — CAP-08:** append-only assumption register with impact, evidence need, status and supersession.
