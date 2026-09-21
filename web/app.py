@@ -111,6 +111,12 @@ from engine.commercial_evidence import (
     DIMENSION_MANUFACTURING as _DIMENSION_MANUFACTURING,
     manufacturing_evidence_view as _manufacturing_evidence_view,
     uncovered_topics as _uncovered_topics,
+    evidence_lifecycle as _evidence_lifecycle,
+    active_evidence as _cev_active_evidence,
+    canonical_evidence_dict as _cev_canonical,
+    LIFECYCLE_CURRENT as _LC_CURRENT,
+    LIFECYCLE_REPLACED as _LC_REPLACED,
+    LIFECYCLE_WITHDRAWN as _LC_WITHDRAWN,
     normalize_text as _cev_normalize_text,
     normalize_optional_date as _cev_normalize_date,
     TEXT_FIELD_CAPS as _CEV_TEXT_FIELD_CAPS,
@@ -6665,6 +6671,10 @@ CEV_NOT_SAVED_MESSAGE = "CEV_NOT_SAVED"
 CEV_TEXT_REJECTED_MESSAGE = "CEV_TEXT_REJECTED"
 CEV_UNKNOWN_MESSAGE = "CEV_OUTCOME_UNKNOWN"
 CEV_CAP_MESSAGE = "CEV_CAP_REACHED"
+# D1 lifecycle acts. Separate acks so the page never says "saved" for a
+# withdrawal or "withdrawn" for a correction.
+CEV_CORRECTED_ACK = "CEV_CORRECTED"
+CEV_WITHDRAWN_ACK = "CEV_WITHDRAWN"
 
 _CEV_DISPLAY_KEY = {
     CEV_SAVED_ACK: "UI_CEV_NOTICE_SAVED",
@@ -6673,6 +6683,8 @@ _CEV_DISPLAY_KEY = {
     CEV_TEXT_REJECTED_MESSAGE: "UI_CEV_NOTICE_TEXT_REJECTED",
     CEV_UNKNOWN_MESSAGE: "UI_CEV_NOTICE_UNKNOWN",
     CEV_CAP_MESSAGE: "UI_CEV_NOTICE_CAP",
+    CEV_CORRECTED_ACK: "UI_CEV_NOTICE_CORRECTED",
+    CEV_WITHDRAWN_ACK: "UI_CEV_NOTICE_WITHDRAWN",
 }
 
 
@@ -6755,6 +6767,16 @@ def _commercial_evidence_context(sid, writable):
         # and the template renders no gap block at all, so a complete project
         # is never shown a false gap and is never told it is "complete" either.
         "uncovered": list(_uncovered_topics(_DIMENSION_COMMERCIAL, view)),
+        # D1: the rows this project recorded that are no longer current, each
+        # carrying the lifecycle state the owner's own model already implies.
+        # Append order, which is the owner's order — not recency-ranked, not
+        # sorted by anything, and never a judgement about the rows in it.
+        "history": [
+            {"row": _cev_canonical(row), "state": state, "replaces": replaces}
+            for row, state, replaces
+            in _evidence_lifecycle(rows, _DIMENSION_COMMERCIAL)
+            if state != _LC_CURRENT
+        ],
         "writable": bool(writable),
     }
 
@@ -6998,6 +7020,215 @@ def record_manufacturing_evidence(sid):
     else:
         _publish_mfg_notice(entry, error=MFG_NOT_SAVED_MESSAGE)
     return redirect(url_for("show_session", sid=sid))
+
+
+_CEV_CORRECT_FIELDS = frozenset({"csrf_token", "supersedes_evidence_id"}) | {
+    name for name in _CEV_TEXT_FIELDS}
+_CEV_WITHDRAW_FIELDS = frozenset({"csrf_token", "supersedes_evidence_id"})
+
+
+def _cev_lifecycle_event_key(sid, action, prior_id, topic, fields):
+    """The durable exact-replay identity of ONE lifecycle act.
+
+    Same construction and same purpose as `_cev_event_key`, with two additions
+    that matter: the ACTION and the superseded id are inside the message. That
+    is why a correction whose text happens to equal some other item's text still
+    gets its own key instead of colliding with it, while a retried correction —
+    same act, same target, same content — reproduces the key exactly and is
+    recognised as the replay it is."""
+    msg = _canonical_message(
+        "commercial-evidence-lifecycle-v1", sid, action, prior_id, topic,
+        *[fields[name] for name in _CEV_TEXT_FIELDS])
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _cev_active_target(sid, prior_id):
+    """Resolve ``prior_id`` to a CURRENT Commercial item of this project, or
+    None. Fail-closed by construction: an unknown id, an id from another
+    project, a Manufacturing row, an already-replaced row and a withdrawn row
+    all resolve to None, so the caller refuses before minting anything.
+
+    The owner re-checks all of this at the durable boundary; this is the early
+    refusal, not the guarantee."""
+    if not isinstance(prior_id, str) or not prior_id:
+        return None
+    try:
+        rows = _get_store().load_readiness_evidence(sid)
+    except Exception:
+        return None
+    for row in _cev_active_evidence(rows, _DIMENSION_COMMERCIAL):
+        if row.evidence_id == prior_id:
+            return row
+    return None
+
+
+def _cev_lifecycle_write(sid, entry, evidence, ack):
+    """Persist ONE lifecycle row and publish exactly one truthful notice.
+
+    Identical durability discipline to the create path: resolve the event key
+    against the store FIRST so a retry is acknowledged as a replay, persist
+    before acknowledging, and never claim an outcome the store did not give."""
+    try:
+        stored = _get_store().readiness_evidence_for_event_key(
+            sid, evidence.event_key)
+    except Exception:
+        _publish_cev_notice(entry, error=CEV_UNKNOWN_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    if stored is not None:
+        if _is_same_evidence_event(stored, evidence):
+            _publish_cev_notice(entry, ack=CEV_REPLAY_ACK)
+        else:
+            _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        outcome = _get_store().append_readiness_evidence(sid, evidence)
+    except _CevCapExceeded:
+        _publish_cev_notice(entry, error=CEV_CAP_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except (_ProjectNotFound, _CommercialEvidenceHistoryError,
+            _CommercialEvidenceError, StoreError):
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except Exception:
+        _publish_cev_notice(entry, error=CEV_UNKNOWN_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    if outcome in (_CEV_INSERTED, _CEV_EXACT_REPLAY):
+        _publish_cev_notice(
+            entry, ack=(ack if outcome == _CEV_INSERTED else CEV_REPLAY_ACK))
+    else:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+    return redirect(url_for("show_session", sid=sid))
+
+
+@app.route("/session/<sid>/commercial-evidence/correct", methods=["POST"])
+def correct_commercial_evidence(sid):
+    """Replace ONE current Commercial evidence item with a corrected one.
+
+    Nothing is mutated. The replacement is APPENDED with the owner's existing
+    ``supersedes_evidence_id`` semantics, the superseded row stays in history
+    verbatim, and the replacement becomes the active item.
+
+    The topic is taken from the item being corrected and is NOT a form field.
+    Correcting what an item SAYS is one act; filing it under a different topic
+    is a different one, and conflating them would make coverage change as a
+    side effect of a text edit. A mis-filed item is withdrawn and recorded
+    again under the right topic.
+
+    Same gates as the create path, in the same order: ownership, writer
+    account, strict field allowlist, bounded free text — then the owner's own
+    validation at the durable boundary."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    if _quantity_writer_account(sid) is None:
+        return _deny_project()
+    lang = _current_ui_lang()
+    if set(request.form.keys()) - _CEV_CORRECT_FIELDS or \
+            any(len(request.form.getlist(k)) != 1 for k in request.form.keys()):
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    state = entry["state"]
+    if getattr(state, "domain", None) is None:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    prior = _cev_active_target(sid, request.form.get("supersedes_evidence_id"))
+    if prior is None:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    fields = {name: request.form.get(name, "") for name in _CEV_TEXT_FIELDS}
+    for value in fields.values():
+        if _free_text_error(value, lang) is not None:
+            _publish_cev_notice(entry, error=CEV_TEXT_REJECTED_MESSAGE)
+            return redirect(url_for("show_session", sid=sid))
+    try:
+        evidence = _make_readiness_evidence(
+            evidence_id=_get_store().new_readiness_evidence_id(),
+            evidence_seq=0,
+            dimension=_DIMENSION_COMMERCIAL,
+            topic=prior.topic,                    # carried, never re-chosen
+            subject_text=fields["subject_text"],
+            statement_text=fields["statement_text"],
+            source_identity=fields["source_identity"],
+            occurred_on=fields["occurred_on"],
+            scope_text=fields["scope_text"],
+            limitation_text=fields["limitation_text"],
+            provenance=_CEV_PROVENANCE,
+            supersedes_evidence_id=prior.evidence_id,
+            event_key=_cev_lifecycle_event_key(
+                sid, "correct", prior.evidence_id, prior.topic, fields),
+            recorded_iteration=int(getattr(state, "iteration", 0) or 0),
+            recorded_at=_quantity_recorded_at())
+    except _CommercialEvidenceError:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except Exception:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    return _cev_lifecycle_write(sid, entry, evidence, CEV_CORRECTED_ACK)
+
+
+@app.route("/session/<sid>/commercial-evidence/withdraw", methods=["POST"])
+def withdraw_commercial_evidence(sid):
+    """Withdraw ONE current Commercial evidence item.
+
+    A withdrawal is a NEW row that supersedes the item and carries the owner's
+    ``withdrawn`` flag — the model's own semantics, unchanged. The withdrawn
+    item stays in history verbatim; the chain simply stops contributing to the
+    active set, so the topic becomes uncovered again when no other active item
+    covers it.
+
+    The row carries the withdrawn item's own text forward rather than asking
+    for new text: a withdrawal states that the chain no longer stands, and
+    inventing replacement prose for it would put words in the owner's mouth."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    if _quantity_writer_account(sid) is None:
+        return _deny_project()
+    if set(request.form.keys()) - _CEV_WITHDRAW_FIELDS or \
+            any(len(request.form.getlist(k)) != 1 for k in request.form.keys()):
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    state = entry["state"]
+    if getattr(state, "domain", None) is None:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    prior = _cev_active_target(sid, request.form.get("supersedes_evidence_id"))
+    if prior is None:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    carried = {name: getattr(prior, name) for name in _CEV_TEXT_FIELDS}
+    try:
+        evidence = _make_readiness_evidence(
+            evidence_id=_get_store().new_readiness_evidence_id(),
+            evidence_seq=0,
+            dimension=_DIMENSION_COMMERCIAL,
+            topic=prior.topic,
+            subject_text=carried["subject_text"],
+            statement_text=carried["statement_text"],
+            source_identity=carried["source_identity"],
+            occurred_on=carried["occurred_on"],
+            scope_text=carried["scope_text"],
+            limitation_text=carried["limitation_text"],
+            provenance=_CEV_PROVENANCE,
+            withdrawn=True,
+            supersedes_evidence_id=prior.evidence_id,
+            event_key=_cev_lifecycle_event_key(
+                sid, "withdraw", prior.evidence_id, prior.topic, carried),
+            recorded_iteration=int(getattr(state, "iteration", 0) or 0),
+            recorded_at=_quantity_recorded_at())
+    except _CommercialEvidenceError:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except Exception:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    return _cev_lifecycle_write(sid, entry, evidence, CEV_WITHDRAWN_ACK)
 
 
 @app.route("/session/<sid>/commercial-evidence", methods=["POST"])

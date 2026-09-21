@@ -1192,10 +1192,55 @@ body{overflow-wrap:anywhere}
       <p class="journey-note" style="margin:2px 0">{{ t('UI_CEV_META_SCOPE') }}: <bdi data-cev-scope dir="auto">{{ item.scope_text }}</bdi></p>
       <p class="journey-note" style="margin:2px 0">{{ t('UI_CEV_META_LIMITATION') }}: <bdi data-cev-limitation dir="auto">{{ item.limitation_text }}</bdi></p>
       <p class="journey-note" style="margin:2px 0;color:#777">{{ t('UI_CEV_META_ORIGIN') }}: <span data-cev-origin>{{ t('UI_CEV_META_ORIGIN_VALUE') }}</span> · {{ t('UI_CEV_META_STANDING') }}: <span data-cev-standing>{{ t('UI_CEV_META_STANDING_VALUE') }}</span></p>
+      {% if commercial_evidence.writable %}
+      {# D1 lifecycle. Both acts APPEND; neither edits or deletes the row above. #}
+      <details class="commercial-evidence-correct" data-cev-correct>
+        <summary style="cursor:pointer;font-size:12px;color:#3a3a5c">{{ t('UI_CEV_CORRECT_HEADING') }}</summary>
+        <p class="journey-note" data-cev-correct-explain style="margin:4px 0">{{ t('UI_CEV_CORRECT_EXPLAIN') }}</p>
+        <form method="POST" action="/session/{{ sid }}/commercial-evidence/correct" class="cev-correct-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="supersedes_evidence_id" value="{{ item.evidence_id }}">
+          <p style="margin:4px 0"><label>{{ t('UI_CEV_FIELD_SUBJECT') }}<br>
+            <input type="text" name="subject_text" dir="auto" size="48" value="{{ item.subject_text }}" required></label></p>
+          <p style="margin:4px 0"><label>{{ t('UI_CEV_FIELD_STATEMENT') }}<br>
+            <textarea name="statement_text" dir="auto" rows="3" cols="48" required>{{ item.statement_text }}</textarea></label></p>
+          <p style="margin:4px 0"><label>{{ t('UI_CEV_FIELD_SOURCE') }}<br>
+            <input type="text" name="source_identity" dir="auto" size="48" value="{{ item.source_identity }}" required></label></p>
+          <p style="margin:4px 0"><label>{{ t('UI_CEV_FIELD_DATE') }}<br>
+            <input type="text" name="occurred_on" dir="auto" size="16" value="{{ item.occurred_on }}"></label></p>
+          <p style="margin:4px 0"><label>{{ t('UI_CEV_FIELD_SCOPE') }}<br>
+            <input type="text" name="scope_text" dir="auto" size="48" value="{{ item.scope_text }}" required></label></p>
+          <p style="margin:4px 0"><label>{{ t('UI_CEV_FIELD_LIMITATION') }}<br>
+            <input type="text" name="limitation_text" dir="auto" size="48" value="{{ item.limitation_text }}" required></label></p>
+          <p style="margin:4px 0"><button type="submit" data-cev-correct-submit>{{ t('UI_CEV_CORRECT_SUBMIT') }}</button></p>
+        </form>
+      </details>
+      <p class="journey-note" data-cev-withdraw-explain style="margin:4px 0">{{ t('UI_CEV_WITHDRAW_EXPLAIN') }}</p>
+      <form method="POST" action="/session/{{ sid }}/commercial-evidence/withdraw" class="cev-withdraw-form" style="margin:0 0 4px 0">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="supersedes_evidence_id" value="{{ item.evidence_id }}">
+        <button type="submit" data-cev-withdraw-submit>{{ t('UI_CEV_WITHDRAW_SUBMIT') }}</button>
+      </form>
+      {% endif %}
     </li>
     {% endfor %}
   </ul>
   <p class="journey-note" style="margin-top:6px;color:#777">{{ t('UI_CEV_META_NOTE') }}</p>
+  {% endif %}
+  {# History. Rendered only when something is no longer current; append order,
+     which is the owner's order, and never sorted or ranked. #}
+  {% if commercial_evidence.history %}
+  <h3 class="commercial-evidence-history-heading" style="font-size:13px;margin:12px 0 4px 0">{{ t('UI_CEV_HISTORY_HEADING') }}</h3>
+  <p class="journey-note" data-cev-history-explain style="margin:0 0 6px 0">{{ t('UI_CEV_HISTORY_EXPLAIN') }}</p>
+  <ul class="commercial-evidence-history-list" data-cev-history-list style="margin:0;padding-inline-start:20px;font-size:13px;color:#666">
+    {% for past in commercial_evidence.history %}
+    <li class="commercial-evidence-history-item" data-cev-history-item data-cev-history-state="{{ past.state }}" data-cev-history-topic="{{ past.row.topic }}" style="margin:0 0 8px 0">
+      <p class="journey-note" style="margin:0"><strong>{{ t('UI_CEV_TOPIC_' ~ past.row.topic|upper) }}</strong> · <span data-cev-history-state-label>{% if past.state == 'withdrawn' %}{{ t('UI_CEV_STATE_WITHDRAWN') }}{% else %}{{ t('UI_CEV_STATE_REPLACED') }}{% endif %}</span></p>
+      <p style="margin:2px 0"><bdi data-cev-history-subject dir="auto">{{ past.row.subject_text }}</bdi></p>
+      <p data-cev-history-statement dir="auto" style="margin:2px 0">{{ past.row.statement_text }}</p>
+    </li>
+    {% endfor %}
+  </ul>
   {% endif %}
   {# Gap block. Rendered ONLY when at least one governed topic is uncovered, so a
      fully covered project sees no empty list and is never told it is complete. #}

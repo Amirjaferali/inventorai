@@ -40,6 +40,12 @@ MUTATIONS = (
     # Commercial Evidence Capture: the single-step Commercial evidence write,
     # covered by the same evidence matrix below.
     "/session/<sid>/commercial-evidence",
+    # Stage-17 D1 lifecycle: the Commercial evidence owner's existing
+    # supersession and withdrawal semantics, reached from the product surface.
+    # Both APPEND through the same owner API the create route uses, so they
+    # belong to this inventory and to the same integrity matrix.
+    "/session/<sid>/commercial-evidence/correct",
+    "/session/<sid>/commercial-evidence/withdraw",
     # Manufacturing Evidence Capture: the single-step Manufacturing evidence
     # write, covered by the same evidence matrix below.
     "/session/<sid>/manufacturing-evidence",

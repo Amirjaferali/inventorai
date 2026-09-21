@@ -671,3 +671,278 @@ def test_the_gap_block_introduces_no_score_ranking_or_promotion(owner):
     # and the list is the vocabulary order, never re-sorted into a priority
     gaps = _gap_topics(body)
     assert gaps == [t for t in COMMERCIAL_TOPICS if t != "price"]
+
+
+# ==========================================================================
+# D1 — lifecycle reachability: correct, withdraw, and the history that results
+#
+# The owner has always supported supersession and withdrawal; until now no
+# product path reached them, so no commercial assumption could be corrected and
+# none could be seen changing. These tests are mostly about the two things a
+# lifecycle can get wrong: losing history, and letting one act mean another.
+# ==========================================================================
+CEV_CORRECT = "/session/%s/commercial-evidence/correct"
+CEV_WITHDRAW = "/session/%s/commercial-evidence/withdraw"
+
+
+def _active(sid):
+    from engine.commercial_evidence import active_evidence
+    return active_evidence(_rows(sid), DIMENSION_COMMERCIAL)
+
+
+def _only_active(sid):
+    rows = _active(sid)
+    assert len(rows) == 1, [r.evidence_id for r in rows]
+    return rows[0]
+
+
+def _correct(client, sid, prior_id, **over):
+    data = dict(GOOD)
+    data.pop("topic")                       # the topic is carried, never posted
+    data.update(over)
+    data["supersedes_evidence_id"] = prior_id
+    return client.post(CEV_CORRECT % sid, data=data)
+
+
+def _withdraw(client, sid, prior_id):
+    return client.post(CEV_WITHDRAW % sid,
+                       data={"supersedes_evidence_id": prior_id})
+
+
+def test_a_correction_appends_and_never_mutates_the_old_row(owner):
+    """1 + 2. The old row survives byte-for-byte and is superseded by the new."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="demand", statement_text="Two agencies asked.")
+    first = _only_active(sid)
+    before = _raw_rows(sid)
+
+    assert _correct(c, sid, first.evidence_id,
+                    statement_text="Two agencies asked, one twice."
+                    ).status_code in (302, 303)
+
+    rows = _rows(sid)
+    assert len(rows) == 2                       # appended, not replaced
+    old = [r for r in rows if r.evidence_id == first.evidence_id][0]
+    assert old.statement_text == "Two agencies asked."      # untouched
+    assert old.topic == first.topic and old.event_key == first.event_key
+    new = [r for r in rows if r.evidence_id != first.evidence_id][0]
+    assert new.supersedes_evidence_id == first.evidence_id
+    assert new.withdrawn is False
+    assert len(_raw_rows(sid)) == len(before) + 1
+
+
+def test_the_correction_becomes_the_active_item(owner):
+    """3. The active view returns the replacement, and only it."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="price", statement_text="A ramp sells around 400.")
+    first = _only_active(sid)
+    _correct(c, sid, first.evidence_id,
+             statement_text="A ramp sells around 450.")
+    active = _only_active(sid)
+    assert active.evidence_id != first.evidence_id
+    assert active.statement_text == "A ramp sells around 450."
+    body = _page(c, sid)
+    assert "A ramp sells around 450." in body
+    # the earlier version is not gone — it is shown as history
+    assert "A ramp sells around 400." in body
+    assert 'data-cev-history-state="replaced"' in body
+
+
+def test_a_correction_does_not_uncover_the_topic(owner):
+    """4. Coverage follows the ACTIVE replacement, not the superseded row."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="licensing", statement_text="No licence needed here.")
+    first = _only_active(sid)
+    assert "licensing" not in _gap_topics(_page(c, sid))
+    _correct(c, sid, first.evidence_id,
+             statement_text="A local permit may be needed.")
+    assert "licensing" not in _gap_topics(_page(c, sid))
+    assert _only_active(sid).topic == "licensing"
+
+
+def test_a_correction_carries_the_topic_and_cannot_refile_it(owner):
+    """The topic is not a field of this route; posting one is refused WHOLE."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="channel", statement_text="Sold through agencies.")
+    first = _only_active(sid)
+    r = _correct(c, sid, first.evidence_id, topic="price")
+    assert r.status_code in (302, 303)
+    assert len(_rows(sid)) == 1                 # refused, nothing appended
+    assert _only_active(sid).evidence_id == first.evidence_id
+
+
+def test_a_withdrawal_preserves_history_and_empties_the_active_view(owner):
+    """5 + 6. The chain stops contributing; every row of it is retained."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="funding_need",
+            statement_text="About 20k to reach a first batch.")
+    first = _only_active(sid)
+
+    assert _withdraw(c, sid, first.evidence_id).status_code in (302, 303)
+
+    rows = _rows(sid)
+    assert len(rows) == 2
+    kept = [r for r in rows if r.evidence_id == first.evidence_id][0]
+    assert kept.statement_text == "About 20k to reach a first batch."
+    assert kept.withdrawn is False              # the ORIGINAL is not rewritten
+    withdrawal = [r for r in rows if r.evidence_id != first.evidence_id][0]
+    assert withdrawal.withdrawn is True
+    assert withdrawal.supersedes_evidence_id == first.evidence_id
+    assert _active(sid) == ()
+
+
+def test_a_withdrawal_uncovers_the_topic_only_when_nothing_else_covers_it(owner):
+    """7. Two items on one topic: withdrawing one leaves the topic covered."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="demand", subject_text="first",
+            statement_text="One agency asked in spring.")
+    _record(c, sid, topic="demand", subject_text="second",
+            statement_text="Another asked in autumn.")
+    assert "demand" not in _gap_topics(_page(c, sid))
+    one = [r for r in _active(sid) if r.subject_text == "first"][0]
+
+    _withdraw(c, sid, one.evidence_id)
+    assert "demand" not in _gap_topics(_page(c, sid))    # still covered
+
+    other = _only_active(sid)
+    _withdraw(c, sid, other.evidence_id)
+    assert "demand" in _gap_topics(_page(c, sid))        # now uncovered
+
+
+def test_lifecycle_acts_cannot_cross_the_two_dimensions(owner):
+    """8. A Manufacturing row is not a valid target for a Commercial act."""
+    c, _aid, sid = owner
+    assert c.post("/session/%s/manufacturing-evidence" % sid, data={
+        "topic": "material",
+        "subject_text": "Aluminium extrusion",
+        "statement_text": "The frame is most likely aluminium extrusion.",
+        "source_identity": "Inventor, from their own experience",
+        "occurred_on": "",
+        "scope_text": "the frame only",
+        "limitation_text": "not checked against any supplier",
+    }).status_code in (302, 303)
+    mfg = [r for r in _rows(sid) if r.dimension != DIMENSION_COMMERCIAL]
+    assert len(mfg) == 1
+    before = len(_rows(sid))
+
+    assert _correct(c, sid, mfg[0].evidence_id).status_code in (302, 303)
+    assert _withdraw(c, sid, mfg[0].evidence_id).status_code in (302, 303)
+
+    assert len(_rows(sid)) == before            # both refused, nothing appended
+    assert [r for r in _rows(sid) if r.dimension != DIMENSION_COMMERCIAL][0] \
+        .withdrawn is False
+
+
+def test_invalid_stale_and_foreign_targets_all_fail_closed(owner):
+    """9. Unknown id, already-superseded id, withdrawn id, another account's
+    project and an empty target are each refused with nothing appended."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="market_entry", statement_text="Start locally.")
+    first = _only_active(sid)
+    _correct(c, sid, first.evidence_id, statement_text="Start in one city.")
+    replacement = _only_active(sid)
+    count = len(_rows(sid))
+
+    for bad in ("", "not-an-id", first.evidence_id):   # last is already stale
+        assert _correct(c, sid, bad).status_code in (302, 303)
+        assert _withdraw(c, sid, bad).status_code in (302, 303)
+    assert len(_rows(sid)) == count
+
+    _withdraw(c, sid, replacement.evidence_id)          # now withdrawn
+    count = len(_rows(sid))
+    assert _correct(c, sid, replacement.evidence_id).status_code in (302, 303)
+    assert len(_rows(sid)) == count
+
+    other, _other_id = _client_for("intruder@example.com")
+    assert _correct(other, sid, replacement.evidence_id).status_code in (302, 303, 403, 404)
+    assert _withdraw(other, sid, replacement.evidence_id).status_code in (302, 303, 403, 404)
+    assert len(_rows(sid)) == count
+
+
+def test_a_retried_lifecycle_act_is_a_replay_not_a_second_row(owner):
+    """The create path's durability discipline, held by the lifecycle path."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="revenue_model", statement_text="One-off sale.")
+    first = _only_active(sid)
+    _correct(c, sid, first.evidence_id, statement_text="Sold once, not leased.")
+    count = len(_rows(sid))
+    _correct(c, sid, first.evidence_id, statement_text="Sold once, not leased.")
+    assert len(_rows(sid)) == count             # identical retry appended nothing
+
+
+def test_the_history_surface_renders_in_both_languages(owner):
+    """10. EN and AR carry the same lifecycle meaning, states included."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="target_customer", statement_text="Home-care agencies.")
+    first = _only_active(sid)
+    _correct(c, sid, first.evidence_id, statement_text="Agencies, not families.")
+    second = _only_active(sid)
+    _record(c, sid, topic="price", subject_text="p", statement_text="Around 400.")
+    third = [r for r in _active(sid) if r.topic == "price"][0]
+    _withdraw(c, sid, third.evidence_id)
+
+    for lang in ("en", "ar"):
+        c.post("/ui-language", data={"lang": lang})
+        body = _page(c, sid)
+        for key in ("UI_CEV_HISTORY_HEADING", "UI_CEV_HISTORY_EXPLAIN",
+                    "UI_CEV_STATE_REPLACED", "UI_CEV_STATE_WITHDRAWN",
+                    "UI_CEV_CORRECT_HEADING", "UI_CEV_CORRECT_EXPLAIN",
+                    "UI_CEV_WITHDRAW_SUBMIT", "UI_CEV_WITHDRAW_EXPLAIN"):
+            assert ui_text.text(key, lang) in body, (lang, key)
+        assert 'data-cev-history-state="replaced"' in body
+        assert 'data-cev-history-state="withdrawn"' in body
+    # and the owner's own words are never translated
+    assert "Home-care agencies." in _page(c, sid)
+    assert second.statement_text == "Agencies, not families."
+
+
+def test_both_lifecycle_notices_exist_in_both_languages():
+    for key in ("UI_CEV_NOTICE_CORRECTED", "UI_CEV_NOTICE_WITHDRAWN",
+                "UI_CEV_STATE_REPLACED", "UI_CEV_STATE_WITHDRAWN"):
+        for lang in ("en", "ar"):
+            assert ui_text.text(key, lang), (key, lang)
+        assert ui_text.text(key, "en") != ui_text.text(key, "ar"), key
+
+
+def test_the_history_presentation_carries_no_ranking_or_promotion(owner):
+    """11. History is a record, not an assessment."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="differentiation", statement_text="Lighter frame.")
+    first = _only_active(sid)
+    _correct(c, sid, first.evidence_id, statement_text="Lighter and cheaper.")
+    body = _page(c, sid)
+    start = body.index("data-cev-history-explain")
+    end = body.index("</ul>", body.index("data-cev-history-list"))
+    block = body[start:end]
+    for forbidden in ("%", "PASS", "HOLD", "INSUFFICIENT_EVIDENCE", "score",
+                      "SPECIALIST_REVIEWED", "INDEPENDENTLY_VERIFIED",
+                      "better", "worse", "improved"):
+        assert forbidden not in block, forbidden
+    # every row still carries the one frozen claim status
+    assert all(r.claim_status == CLAIM_STATUS_UNVALIDATED for r in _rows(sid))
+
+
+def test_the_gap_behaviour_is_unchanged_by_the_lifecycle_slice(owner):
+    """12. D1 does not disturb what the previous slice established."""
+    c, _aid, sid = owner
+    assert _gap_topics(_page(c, sid)) == list(COMMERCIAL_TOPICS)
+    _record(c, sid, topic="willingness_to_pay", statement_text="Maybe 400.")
+    gaps = _gap_topics(_page(c, sid))
+    assert "willingness_to_pay" not in gaps
+    assert len(gaps) == len(COMMERCIAL_TOPICS) - 1
+    item = _only_active(sid)
+    _correct(c, sid, item.evidence_id, statement_text="Maybe 450.")
+    assert _gap_topics(_page(c, sid)) == gaps          # correction changes nothing
+    _withdraw(c, sid, _only_active(sid).evidence_id)
+    assert _gap_topics(_page(c, sid)) == list(COMMERCIAL_TOPICS)
+
+
+def test_a_read_only_session_offers_no_lifecycle_affordance(owner):
+    """The writable gate governs the new forms exactly as it governs the old."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="demand", statement_text="One agency asked.")
+    body = _page(c, sid)
+    assert "data-cev-correct-submit" in body and "data-cev-withdraw-submit" in body
+    other, _oid = _client_for("reader@example.com")
+    foreign = other.get(SESSION % sid)
+    assert foreign.status_code in (302, 303, 403, 404)
