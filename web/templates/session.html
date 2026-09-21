@@ -1197,6 +1197,17 @@ body{overflow-wrap:anywhere}
   </ul>
   <p class="journey-note" style="margin-top:6px;color:#777">{{ t('UI_CEV_META_NOTE') }}</p>
   {% endif %}
+  {# Gap block. Rendered ONLY when at least one governed topic is uncovered, so a
+     fully covered project sees no empty list and is never told it is complete. #}
+  {% if commercial_evidence.uncovered %}
+  <h3 class="commercial-evidence-gap-heading" style="font-size:13px;margin:12px 0 4px 0">{{ t('UI_CEV_GAP_HEADING') }}</h3>
+  <p class="journey-note commercial-evidence-gap-explain" data-cev-gap-explain style="margin:0 0 6px 0">{{ t('UI_CEV_GAP_EXPLAIN') }}</p>
+  <ul class="commercial-evidence-gap-list" data-cev-gap-list style="margin:0;padding-inline-start:20px;font-size:13px;color:#444">
+    {% for topic in commercial_evidence.uncovered %}
+    <li class="commercial-evidence-gap-item" data-cev-gap-item data-cev-gap-topic="{{ topic }}">{{ t('UI_CEV_TOPIC_' ~ topic|upper) }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
   {% if commercial_evidence.writable %}
   <h3 style="font-size:13px;margin:12px 0 4px 0">{{ t('UI_CEV_ADD_HEADING') }}</h3>
   <form method="POST" action="/session/{{ sid }}/commercial-evidence" class="cev-form" id="cev-form">

@@ -538,3 +538,136 @@ def test_no_technical_or_decision_surface_changed(owner):
              len(state.assertions), derive_readiness(state).overall_verified())
     assert after == before
     assert after[3] is False
+
+
+# ==========================================================================
+# The Commercial evidence GAP block
+#
+# The block names the governed topics nothing has been recorded for. Its entire
+# risk is that a reader takes an empty topic for a finding about their market,
+# so most of what follows is about what the block must NOT say, in BOTH
+# languages, and about the one state where it must not appear at all.
+# ==========================================================================
+_GAP_ITEM = re.compile(r'data-cev-gap-topic="([a-z_]+)"')
+
+
+def _gap_topics(body):
+    return _GAP_ITEM.findall(body)
+
+
+def test_a_project_with_no_commercial_evidence_lists_every_topic_as_a_gap(owner):
+    c, _aid, sid = owner
+    body = _page(c, sid)
+    assert _gap_topics(body) == list(COMMERCIAL_TOPICS)
+    assert ui_text.text("UI_CEV_GAP_HEADING", "en") in body
+
+
+def test_recording_one_item_removes_exactly_that_topic_from_the_gaps(owner):
+    c, _aid, sid = owner
+    _record(c, sid, topic="demand",
+            statement_text="Two agencies asked about a ramp last year.")
+    gaps = _gap_topics(_page(c, sid))
+    assert "demand" not in gaps
+    assert len(gaps) == len(COMMERCIAL_TOPICS) - 1
+    assert set(gaps) | {"demand"} == set(COMMERCIAL_TOPICS)
+
+
+def test_full_coverage_renders_no_gap_block_at_all(owner):
+    """A covered project is shown no empty list \u2014 and is not congratulated
+    either: the block simply is not there, because "complete" would be a
+    conclusion and this page draws none."""
+    c, _aid, sid = owner
+    for i, topic in enumerate(COMMERCIAL_TOPICS):
+        r = _record(c, sid, topic=topic,
+                    subject_text="subject %d" % i,
+                    statement_text="a recorded statement number %d" % i)
+        assert r.status_code in (302, 303), (topic, r.status_code)
+    body = _page(c, sid)
+    assert _gap_topics(body) == []
+    assert ui_text.text("UI_CEV_GAP_HEADING", "en") not in body
+    assert ui_text.text("UI_CEV_GAP_HEADING", "ar") not in body
+    assert "data-cev-gap-list" not in body
+
+
+def test_manufacturing_evidence_does_not_close_a_commercial_gap(owner):
+    """The page's two evidence blocks read their own dimensions only."""
+    c, _aid, sid = owner
+    r = c.post("/session/%s/manufacturing-evidence" % sid, data={
+        "topic": "material",
+        "subject_text": "Aluminium extrusion for the ramp frame",
+        "statement_text": "The frame is most likely aluminium extrusion.",
+        "source_identity": "Inventor, from their own experience",
+        "occurred_on": "",
+        "scope_text": "the frame only",
+        "limitation_text": "not checked against any supplier",
+    })
+    assert r.status_code in (302, 303), r.status_code
+    assert _gap_topics(_page(c, sid)) == list(COMMERCIAL_TOPICS)
+
+
+def test_the_gap_block_renders_in_arabic_and_says_the_same_thing(owner):
+    """EN and AR must both carry the disclaimer. A gap list that warned in one
+    language only would be worse than no list."""
+    c, _aid, sid = owner
+    c.post("/ui-language", data={"lang": "ar"})
+    body = _page(c, sid)
+    for key in ("UI_CEV_GAP_HEADING", "UI_CEV_GAP_EXPLAIN"):
+        assert ui_text.text(key, "ar") in body, key
+        assert ui_text.text(key, "en") not in body, key
+    assert _gap_topics(body) == list(COMMERCIAL_TOPICS)
+    # the topic labels themselves are the Arabic ones
+    assert ui_text.text("UI_CEV_TOPIC_DEMAND", "ar") in body
+
+
+def test_both_languages_carry_the_same_four_statements():
+    """Semantic alignment, element by element rather than by length.
+
+    The copy deliberately never quotes the readings it denies \u2014 saying "there
+    is no market" in order to deny it would put that phrase on the page, where a
+    substring guard and a skimming reader would both find it. So each language
+    is checked for the four things it DOES say."""
+    en = ui_text.text("UI_CEV_GAP_EXPLAIN", "en")
+    ar = ui_text.text("UI_CEV_GAP_EXPLAIN", "ar")
+    assert en and ar and en != ar
+    for fragment in ("nothing has been written down",   # an empty topic means only that
+                     "not a conclusion",                # not a finding
+                     "not a measurement",               # not a score
+                     "the order below"):                # order carries no priority
+        assert fragment in en, fragment
+    for fragment in ("\u0644\u0645 \u064a\u064f\u0643\u062a\u0628 \u0639\u0646\u0647 \u0634\u064a\u0621",
+                     "\u0644\u064a\u0633 \u0627\u0633\u062a\u0646\u062a\u0627\u062c\u064b\u0627",
+                     "\u0648\u0644\u064a\u0633 \u0642\u064a\u0627\u0633\u064b\u0627",
+                     "\u0648\u0627\u0644\u062a\u0631\u062a\u064a\u0628 \u0623\u062f\u0646\u0627\u0647"):
+        assert fragment in ar, fragment
+
+
+def test_the_gap_wording_never_states_a_finding_about_the_market(owner):
+    """The forbidden readings, scanned on the rendered page in both languages."""
+    c, _aid, sid = owner
+    for lang in ("en", "ar"):
+        c.post("/ui-language", data={"lang": lang})
+        body = _page(c, sid).lower()
+        for claim in ("no market exists", "there is no market",
+                      "no demand exists", "there is no demand",
+                      "not viable", "no viability exists",
+                      "commercially unready", "commercial readiness failed",
+                      "not marketable", "market validated",
+                      "demand proven", "product-market fit"):
+            assert claim not in body, (lang, claim)
+
+
+def test_the_gap_block_introduces_no_score_ranking_or_promotion(owner):
+    """No count, percentage, level or disposition may appear with the gaps."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="price", statement_text="A ramp sells around 400.")
+    body = _page(c, sid)
+    start = body.index("data-cev-gap-explain")
+    end = body.index("</ul>", body.index("data-cev-gap-list"))
+    block = body[start:end]
+    for forbidden in ("%", "PASS", "PASS_WITH_CONDITIONS", "HOLD",
+                      "INSUFFICIENT_EVIDENCE", "score", "level",
+                      "14 of 15", "1/15"):
+        assert forbidden not in block, forbidden
+    # and the list is the vocabulary order, never re-sorted into a priority
+    gaps = _gap_topics(body)
+    assert gaps == [t for t in COMMERCIAL_TOPICS if t != "price"]

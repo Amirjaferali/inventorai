@@ -33,7 +33,8 @@ from engine.commercial_evidence import (
     TOPICS_BY_DIMENSION, CommercialEvidenceError,
     CommercialEvidenceHistoryError, EvidenceCapExceeded, ReadinessEvidence,
     active_evidence, canonical_evidence_dict, commercial_evidence_view,
-    evidence_chain, make_readiness_evidence, validate_evidence_history,
+    evidence_chain, make_readiness_evidence, manufacturing_evidence_view,
+    uncovered_topics, validate_evidence_history,
 )
 from engine.idea_state import (
     EXPERT_SUPPLIED, EXTERNAL_EVIDENCE, IdeaState, OWNER_STATED,
@@ -742,3 +743,128 @@ def test_hardening_leaves_valid_recording_replay_and_withdrawal_intact(
     assert len(evidence_chain(rows, stored_first.evidence_id)) == 3
     assert all(r.claim_status == CLAIM_STATUS_UNVALIDATED for r in rows)
     assert store.load_readiness_evidence(pid) == rows  # replay is stable
+
+
+# ==========================================================================
+# Commercial evidence GAPS — the governed topics with nothing recorded yet
+#
+# `uncovered_topics` is set arithmetic over the owner's own vocabulary and its
+# own canonical view, so these tests guard the two ways such a derivation goes
+# wrong: it reports a gap that is not real, or it hides one that is. The
+# supersession case is the sharp one — a withdrawn item must give its topic
+# back, because the view is what governs coverage, not the append history.
+# ==========================================================================
+def _view_with(topics, dimension=DIMENSION_COMMERCIAL):
+    """A minimal stand-in for the canonical view's coverage contract."""
+    return {"topics": tuple(topics)}
+
+
+def test_a_project_with_no_evidence_has_every_governed_topic_uncovered():
+    gaps = uncovered_topics(DIMENSION_COMMERCIAL, _view_with(()))
+    assert gaps == tuple(COMMERCIAL_TOPICS)
+    assert len(gaps) == len(COMMERCIAL_TOPICS)
+
+
+def test_a_covered_topic_is_excluded_and_the_rest_survive():
+    covered = (COMMERCIAL_TOPICS[0], COMMERCIAL_TOPICS[4])
+    gaps = uncovered_topics(DIMENSION_COMMERCIAL, _view_with(covered))
+    for t in covered:
+        assert t not in gaps
+    assert len(gaps) == len(COMMERCIAL_TOPICS) - len(covered)
+    assert set(gaps) | set(covered) == set(COMMERCIAL_TOPICS)
+
+
+def test_full_coverage_emits_no_false_gap():
+    assert uncovered_topics(
+        DIMENSION_COMMERCIAL, _view_with(COMMERCIAL_TOPICS)) == ()
+
+
+def test_the_gap_list_keeps_the_committed_vocabulary_order():
+    """Order must carry no meaning, so it must not be re-sorted into one."""
+    gaps = uncovered_topics(DIMENSION_COMMERCIAL, _view_with(()))
+    assert list(gaps) == list(COMMERCIAL_TOPICS)
+    assert list(gaps) != sorted(gaps), (
+        "the committed vocabulary is deliberately not alphabetical; a sorted "
+        "result would mean the derivation re-ordered it")
+
+
+def test_a_withdrawn_item_gives_its_topic_back(tmp_path):
+    """The CURRENT canonical view governs coverage, not the append history.
+
+    This is the case a naive implementation gets wrong: the row is still in the
+    ledger forever, but it no longer covers anything, so the topic is a gap
+    again and the page must say so."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    topic = COMMERCIAL_TOPICS[2]
+    first = _evidence(store, seq=0, topic=topic, key="g1")
+    assert store.append_readiness_evidence(pid, first) == EVIDENCE_INSERTED
+    view = commercial_evidence_view(store.load_readiness_evidence(pid))
+    assert topic not in uncovered_topics(DIMENSION_COMMERCIAL, view)
+
+    stored = store.load_readiness_evidence(pid)[0]
+    withdrawal = _evidence(store, seq=1, topic=topic, key="g2",
+                           withdrawn=True, supersedes=stored.evidence_id)
+    assert store.append_readiness_evidence(pid, withdrawal) == EVIDENCE_INSERTED
+    rows = store.load_readiness_evidence(pid)
+    assert len(rows) == 2                      # append-only, nothing removed
+    view = commercial_evidence_view(rows)
+    assert topic in uncovered_topics(DIMENSION_COMMERCIAL, view)
+
+
+def test_a_superseding_item_keeps_its_topic_covered(tmp_path):
+    """A correction is still coverage — only a withdrawal gives the topic back."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    topic = COMMERCIAL_TOPICS[3]
+    first = _evidence(store, seq=0, topic=topic, key="s1")
+    store.append_readiness_evidence(pid, first)
+    stored = store.load_readiness_evidence(pid)[0]
+    corrected = _evidence(store, seq=1, topic=topic, key="s2",
+                          supersedes=stored.evidence_id,
+                          statement_text="the corrected statement")
+    store.append_readiness_evidence(pid, corrected)
+    view = commercial_evidence_view(store.load_readiness_evidence(pid))
+    assert topic not in uncovered_topics(DIMENSION_COMMERCIAL, view)
+
+
+def test_the_two_dimensions_cannot_contaminate_each_other(tmp_path):
+    """Manufacturing coverage must never close a Commercial gap, or the reverse."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    m_topic = TOPICS_BY_DIMENSION[DIMENSION_MANUFACTURING][0]
+    row = _evidence(store, seq=0, topic=m_topic, key="m1",
+                    dimension=DIMENSION_MANUFACTURING)
+    assert store.append_readiness_evidence(pid, row) == EVIDENCE_INSERTED
+    rows = store.load_readiness_evidence(pid)
+
+    # every Commercial topic is still a gap ...
+    assert uncovered_topics(
+        DIMENSION_COMMERCIAL, commercial_evidence_view(rows)
+    ) == tuple(COMMERCIAL_TOPICS)
+    # ... and only the recorded Manufacturing topic left the Manufacturing list
+    m_gaps = uncovered_topics(
+        DIMENSION_MANUFACTURING, manufacturing_evidence_view(rows))
+    assert m_topic not in m_gaps
+    assert len(m_gaps) == len(TOPICS_BY_DIMENSION[DIMENSION_MANUFACTURING]) - 1
+    # and a Commercial topic name can never appear in a Manufacturing gap list
+    assert not set(m_gaps) & set(COMMERCIAL_TOPICS)
+
+
+def test_every_active_dimension_can_be_asked_and_nothing_else_can():
+    for dimension in ACTIVE_DIMENSIONS:
+        assert uncovered_topics(dimension, _view_with(())) == tuple(
+            TOPICS_BY_DIMENSION[dimension])
+    for bogus in ("INTEGRATION", "TECHNICAL", "", None):
+        with pytest.raises(ValueError):
+            uncovered_topics(bogus, _view_with(()))
+
+
+def test_the_derivation_holds_no_state_and_writes_nothing():
+    """Pure: same inputs, same output, and the vocabulary is never mutated."""
+    before = tuple(TOPICS_BY_DIMENSION[DIMENSION_COMMERCIAL])
+    view = _view_with((COMMERCIAL_TOPICS[1],))
+    assert uncovered_topics(DIMENSION_COMMERCIAL, view) == uncovered_topics(
+        DIMENSION_COMMERCIAL, view)
+    assert tuple(TOPICS_BY_DIMENSION[DIMENSION_COMMERCIAL]) == before
+    assert view == _view_with((COMMERCIAL_TOPICS[1],))
