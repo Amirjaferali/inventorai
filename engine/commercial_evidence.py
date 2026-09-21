@@ -589,9 +589,11 @@ def uncovered_topics(dimension, view):
         already dimension-scoped, so a Commercial gap can never be computed from
         Manufacturing coverage or the reverse.
 
-    Supersession is handled where it already is: ``view["topics"]`` comes from
-    the ACTIVE rows, so a withdrawn or superseded item stops covering its topic
-    and the topic truthfully reappears here.
+    Coverage is derived from ACTIVE rows, so the two lifecycle acts differ and
+    the difference matters. A WITHDRAWAL can make a topic uncovered again, when
+    no active row remains for it. A CORRECTION/SUPERSESSION replaces the old row
+    with its active replacement, so coverage REMAINS when that replacement
+    carries the same topic — supersession alone never uncovers a topic.
 
     Order is the committed vocabulary order, so the caller renders a stable list
     and no ordering can be read as priority."""
