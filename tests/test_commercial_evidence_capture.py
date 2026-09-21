@@ -242,8 +242,12 @@ def test_provenance_is_forced_and_is_not_a_control(owner):
     # authorized quantity controls, so the proxy is replaced by the thing it
     # stood for: the controls are ENUMERATED, and provenance and claim status
     # are not among them. An unauthorized fifth control fails here.
+    # AMENDED AGAIN at D3: one further authorized control, the optional
+    # supporting-item selector. Provenance and claim status are still not
+    # controls and still cannot be.
     assert set(re.findall(r'<select name="([a-z_]+)"', form)) == {
-        "topic", "value_state", "currency", "value_basis", "estimate_basis"}
+        "topic", "value_state", "currency", "value_basis", "estimate_basis",
+        "supporting_evidence_id"}
     assert 'name="provenance"' not in form
     assert 'name="claim_status"' not in form
 
@@ -1290,3 +1294,286 @@ def test_the_gap_and_lifecycle_behaviour_survive_the_quantity_slice(owner):
     _withdraw(c, sid, _only_active(sid).evidence_id)
     assert _gap_topics(_page(c, sid)) == list(COMMERCIAL_TOPICS)
     assert 'data-cev-history-state="withdrawn"' in _page(c, sid)
+
+
+# ==========================================================================
+# 12. D3 — the supporting link on the surface: a traversal, never a rating
+# ==========================================================================
+def _link_of(sid, event_index=-1):
+    return _rows(sid)[event_index].supporting_evidence_id
+
+
+def _record_pair(c, sid):
+    """One item to cite, then the citing item. Returns (target, citing)."""
+    _record(c, sid, topic="market_alternative",
+            subject_text="The ramp already sold by a national supplier")
+    target = _only_active(sid)
+    _record(c, sid, topic="differentiation",
+            subject_text="Folds flat, unlike the supplier ramp",
+            supporting_evidence_id=target.evidence_id)
+    citing = [r for r in _rows(sid) if r.topic == "differentiation"][0]
+    return target, citing
+
+
+def test_the_owner_can_link_one_item_to_a_supporting_item(owner):
+    """1 + 2. Differentiation linked to the market_alternative it compares."""
+    c, _aid, sid = owner
+    target, citing = _record_pair(c, sid)
+    assert citing.supporting_evidence_id == target.evidence_id
+    body = _page(c, sid)
+    assert 'data-cev-link-target="%s"' % target.evidence_id in body
+    assert _rendered("UI_CEV_LINK_SUPPORTED_BY", "en") in body
+    # The page names the item it points at, so the link can be followed.
+    assert "The ramp already sold by a national supplier" in body
+
+
+def test_recording_without_a_link_is_the_ordinary_case(owner):
+    """An item with no link renders no link line, and carries NULL."""
+    c, _aid, sid = owner
+    assert _record(c, sid).status_code == 302
+    assert _link_of(sid) is None
+    body = _page(c, sid)
+    assert "data-cev-link-target" not in body
+    # The absence is offered as an ANSWER in the form, not stamped on the item.
+    assert _rendered("UI_CEV_LINK_NONE", "en") in body
+
+
+def test_the_high_value_pairings_are_all_expressible(owner):
+    """3 + 4 + 5 of the authorized use cases, recorded end to end.
+
+    funding_need -> cost_revenue_assumption, price -> a comparable-price item,
+    and willingness_to_pay -> customer_evidence."""
+    c, _aid, sid = owner
+    made = {}
+    for topic, subject in (("cost_revenue_assumption", "Unit cost as planned"),
+                           ("market_alternative", "A comparable ramp's price"),
+                           ("customer_evidence", "One agency interview")):
+        assert _record(c, sid, topic=topic, subject_text=subject
+                       ).status_code == 302
+        made[topic] = [r for r in _rows(sid) if r.topic == topic][0].evidence_id
+    for topic, support in (("funding_need", "cost_revenue_assumption"),
+                           ("price", "market_alternative"),
+                           ("willingness_to_pay", "customer_evidence")):
+        assert _record(c, sid, topic=topic,
+                       subject_text="an item about " + topic,
+                       supporting_evidence_id=made[support]).status_code == 302
+        row = [r for r in _rows(sid) if r.topic == topic][0]
+        assert row.supporting_evidence_id == made[support], topic
+        assert row.claim_status == "UNVALIDATED"
+
+
+def test_an_unresolvable_link_refuses_the_whole_submission(owner):
+    """3. Refused, never quietly recorded without the link.
+
+    Dropping it would show the item as deliberately unsupported when the owner
+    had chosen support for it."""
+    c, _aid, sid = owner
+    assert _record(c, sid, supporting_evidence_id="rev-not-a-real-id"
+                   ).status_code == 302
+    assert _rows(sid) == ()
+
+
+def test_a_cross_project_link_cannot_be_posted(owner):
+    """4. Another project's item is not reachable from this session."""
+    c, _aid, sid = owner
+    other = _start(c)
+    _record(c, other)
+    theirs = _only_active(other)
+    assert _record(c, sid, supporting_evidence_id=theirs.evidence_id
+                   ).status_code == 302
+    assert _rows(sid) == ()
+    assert len(_rows(other)) == 1
+
+
+def test_a_withdrawn_or_replaced_item_is_not_offered_as_support(owner):
+    """The selector offers this dimension's CURRENT items only."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="demand", subject_text="An agency asked twice")
+    first = _only_active(sid)
+    _withdraw(c, sid, first.evidence_id)
+    body = _page(c, sid)
+    form = re.search(r'id="cev-form".*?</form>', body, re.S).group(0)
+    assert 'value="%s"' % first.evidence_id not in form
+
+
+def test_a_correction_restates_the_link_and_omission_means_no_link(owner):
+    """9 + 10. The link is restated exactly as the words and the amount are.
+
+    Omitting it means NO LINK, not "keep the old one": a link surviving its own
+    correction unexamined would let the item go on citing support nobody
+    re-affirmed."""
+    c, _aid, sid = owner
+    target, citing = _record_pair(c, sid)
+
+    # Restated explicitly: the replacement carries the link on purpose.
+    assert _correct(c, sid, citing.evidence_id,
+                    subject_text="Folds flat and stows upright",
+                    supporting_evidence_id=target.evidence_id
+                    ).status_code == 302
+    restated = [r for r in _active(sid) if r.topic == "differentiation"][0]
+    assert restated.supporting_evidence_id == target.evidence_id
+
+    # Omitted: the next replacement names no support at all.
+    assert _correct(c, sid, restated.evidence_id,
+                    subject_text="Folds flat, stows upright, no tools"
+                    ).status_code == 302
+    dropped = [r for r in _active(sid) if r.topic == "differentiation"][0]
+    assert dropped.supporting_evidence_id is None
+
+
+def test_a_superseded_row_keeps_its_own_link(owner):
+    """11. History is not rewritten by a correction that drops the link."""
+    c, _aid, sid = owner
+    target, citing = _record_pair(c, sid)
+    _correct(c, sid, citing.evidence_id,
+             subject_text="Folds flat, stows upright, no tools")
+    old = [r for r in _rows(sid) if r.evidence_id == citing.evidence_id][0]
+    assert old.supporting_evidence_id == target.evidence_id
+    body = _page(c, sid)
+    assert _rendered("UI_CEV_LINK_WAS_SUPPORTED_BY", "en") in body
+
+
+def test_a_withdrawal_carries_the_link_forward(owner):
+    """12. History shows what provenance was withdrawn, not merely that some
+    was. Erasing the link here would quietly unpick the trail afterwards."""
+    c, _aid, sid = owner
+    target, citing = _record_pair(c, sid)
+    assert _withdraw(c, sid, citing.evidence_id).status_code == 302
+    withdrawal = _rows(sid)[-1]
+    assert withdrawal.withdrawn is True
+    assert withdrawal.supersedes_evidence_id == citing.evidence_id
+    assert withdrawal.supporting_evidence_id == target.evidence_id
+    assert withdrawal.supersedes_evidence_id != withdrawal.supporting_evidence_id
+
+
+def test_a_link_cannot_be_the_item_it_replaces(owner):
+    """8. The correction form never offers the item being corrected, and a
+    posted attempt is refused rather than reconciled."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="demand", subject_text="Two agencies asked")
+    first = _only_active(sid)
+    body = _page(c, sid)
+    correct_form = re.search(
+        r'action="/session/%s/commercial-evidence/correct".*?</form>' % sid,
+        body, re.S).group(0)
+    assert 'value="%s"' % first.evidence_id in correct_form   # the hidden target
+    select = re.search(r'<select name="supporting_evidence_id".*?</select>',
+                       correct_form, re.S).group(0)
+    assert first.evidence_id not in select
+    assert _correct(c, sid, first.evidence_id,
+                    supporting_evidence_id=first.evidence_id).status_code == 302
+    assert len(_rows(sid)) == 1                               # nothing appended
+
+
+def test_a_linked_quantity_keeps_every_d2_rule(owner):
+    """13 + 14 + 15. 100-150 USD, linked, and still an estimated range."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="market_alternative",
+            subject_text="A comparable ramp's listed price")
+    quote = _only_active(sid)
+    assert _q(c, sid, topic="price", supporting_evidence_id=quote.evidence_id,
+              **Q_RANGE).status_code == 302
+    row = [r for r in _rows(sid) if r.topic == "price"][0]
+    assert row.supporting_evidence_id == quote.evidence_id
+    assert row.value_state == "ESTIMATED_RANGE"
+    assert (row.value_min, row.value_max) == ("100", "150")
+    assert row.value_exact == ""
+    assert row.currency == "USD"
+    assert row.claim_status == "UNVALIDATED"
+    body = _page(c, sid)
+    assert "125" not in body                     # still no midpoint anywhere
+    assert _rendered("UI_CEV_Q_NOT_VALIDATED", "en") in body
+    # A link is not a basis: the same submission without one is still refused.
+    ranged = dict(Q_RANGE)
+    ranged["estimate_basis"] = ""
+    ranged["estimate_rationale"] = ""
+    before = len(_rows(sid))
+    assert _q(c, sid, topic="willingness_to_pay",
+              supporting_evidence_id=quote.evidence_id, **ranged
+              ).status_code == 302
+    assert len(_rows(sid)) == before
+
+
+def test_the_link_surface_shows_no_count_badge_or_score(owner):
+    """18. A link is a traversal; the page must never turn it into a rating."""
+    c, _aid, sid = owner
+    target, _citing = _record_pair(c, sid)
+    _record(c, sid, topic="demand", subject_text="Two agencies asked",
+            supporting_evidence_id=target.evidence_id)
+    body = _page(c, sid)
+    # Scoped to the Commercial evidence block itself: the assertion is about
+    # what THIS surface says, and the rest of the page has its own vocabulary
+    # that this slice neither owns nor changed.
+    start = body.index('id="cev-commercial-evidence"')
+    block = body[start:body.index('id="t3a-project-record"', start)] \
+        if 'id="t3a-project-record"' in body[start:] else body[start:]
+    for forbidden in ("supporting-count", "link-count", "data-cev-link-count",
+                      "data-cev-link-score", "data-cev-link-strength",
+                      "data-cev-link-badge", "supported-score"):
+        assert forbidden not in block
+    # The claim is about what the LINK copy says, so it is asked of the link
+    # copy. A page-wide word sweep would fire on the block's existing truthful
+    # negations ("InventorAI has verified none of it"), which are exactly the
+    # sentences this slice must keep.
+    # The LABELS are the strings that stand beside an item as an assertion, so
+    # they are what a badge would have to hide in. The explanatory paragraph is
+    # excluded on purpose: it is where this slice's own denials live ("nothing
+    # is counted, rated or ranked"), and a word sweep cannot tell a denial from
+    # a claim.
+    labels = " ".join(ui_text.text(key, lang).lower()
+                      for lang in ("en", "ar")
+                      for key in ("UI_CEV_LINK_LABEL", "UI_CEV_LINK_NONE",
+                                  "UI_CEV_LINK_SUPPORTED_BY",
+                                  "UI_CEV_LINK_WAS_SUPPORTED_BY"))
+    for word in ("verified", "validated", "proven", "certified", "confirmed",
+                 "score", "rating", "ranked", "strength", "sufficient",
+                 "strong", "weak"):
+        assert word not in labels, word
+    # And the explanation does carry the denial, rather than merely omitting a
+    # claim: an owner reading it is told a link is not a rating.
+    explain = ui_text.text("UI_CEV_LINK_EXPLAIN", "en").lower()
+    assert "not" in explain and "ranked" in explain
+    # Two items cite the same target and the page says so twice, identically:
+    # nothing tallies them and the target gains nothing from being cited twice.
+    assert block.count('data-cev-link-target="%s"' % target.evidence_id) == 2
+    assert "%" not in re.sub(r'%[0-9A-Fa-f]{2}', "", block)
+
+
+def test_the_link_reads_the_same_in_both_languages(owner):
+    """19. Equivalent semantics, and neither language implies verification."""
+    c, _aid, sid = owner
+    target, _citing = _record_pair(c, sid)
+    for lang in ("en", "ar"):
+        c.post("/ui-language", data={"lang": lang})
+        body = _page(c, sid)
+        assert _rendered("UI_CEV_LINK_SUPPORTED_BY", lang) in body
+        assert _rendered("UI_CEV_LINK_LABEL", lang) in body
+        assert _rendered("UI_CEV_LINK_NONE", lang) in body
+        assert _rendered("UI_CEV_LINK_EXPLAIN", lang) in body
+        assert 'data-cev-link-target="%s"' % target.evidence_id in body
+    for lang in ("en", "ar"):
+        for key in ("UI_CEV_LINK_LABEL", "UI_CEV_LINK_NONE",
+                    "UI_CEV_LINK_SUPPORTED_BY", "UI_CEV_LINK_WAS_SUPPORTED_BY",
+                    "UI_CEV_LINK_EXPLAIN"):
+            assert ui_text.text(key, lang).strip()
+    ar = " ".join(ui_text.text(k, "ar") for k in (
+        "UI_CEV_LINK_LABEL", "UI_CEV_LINK_NONE", "UI_CEV_LINK_SUPPORTED_BY",
+        "UI_CEV_LINK_WAS_SUPPORTED_BY", "UI_CEV_LINK_EXPLAIN"))
+    for implies_verification in ("متحقق",      # verified
+                                "موثّق",      # documented/certified
+                                "مؤكد",            # confirmed
+                                "مثبت",            # proven
+                                "معتمد"):     # certified
+        assert implies_verification not in ar, implies_verification
+
+
+def test_the_link_field_cannot_carry_a_forged_status(owner):
+    """The new control widens nothing: the refused field set is unchanged."""
+    c, _aid, sid = owner
+    _record(c, sid, topic="market_alternative", subject_text="A rival ramp")
+    target = _only_active(sid)
+    for forged in ("provenance", "claim_status", "validation_status",
+                   "dimension", "supporting_evidence_ids"):
+        assert _record(c, sid, supporting_evidence_id=target.evidence_id,
+                       **{forged: "x"}).status_code == 302
+    assert len(_rows(sid)) == 1

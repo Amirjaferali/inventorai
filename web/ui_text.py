@@ -2804,6 +2804,43 @@ UI_STRINGS = {
         "en": "That item was withdrawn. It is kept below as history.",
         "ar": "\u0633\u064f\u062d\u0628 \u0630\u0644\u0643 \u0627\u0644\u0639\u0646\u0635\u0631. \u0648\u0647\u0648 \u0645\u062d\u0641\u0648\u0638 \u0623\u062f\u0646\u0627\u0647 \u0636\u0645\u0646 \u0627\u0644\u0633\u062c\u0644\u0651.",
     },
+    # --- D3 supporting-evidence linkage -------------------------------------
+    # A link is a TRAVERSAL: it names the item this one was recorded against.
+    # Nothing here says checked, verified, validated, proven, certified,
+    # accepted, strong or sufficient, in either language, because a reference
+    # existing establishes none of those. There is no count, badge, score,
+    # ranking or percentage anywhere in this group.
+    "UI_CEV_LINK_LABEL": {
+        "en": "Supporting item (optional)",
+        "ar": "\u0627\u0644\u0639\u0646\u0635\u0631 \u0627\u0644\u0645\u0633\u0627\u0646\u062f (\u0627\u062e\u062a\u064a\u0627\u0631\u064a)",
+    },
+    "UI_CEV_LINK_NONE": {
+        "en": "No supporting item selected",
+        "ar": "\u0644\u0645 \u064a\u064f\u062e\u062a\u0631 \u0639\u0646\u0635\u0631 \u0645\u0633\u0627\u0646\u062f",
+    },
+    "UI_CEV_LINK_SUPPORTED_BY": {
+        "en": "Supported by",
+        "ar": "\u0645\u0633\u0646\u0648\u062f \u0625\u0644\u0649",
+    },
+    "UI_CEV_LINK_WAS_SUPPORTED_BY": {
+        "en": "Was supported by",
+        "ar": "\u0643\u0627\u0646 \u0645\u0633\u0646\u0648\u062f\u064b\u0627 \u0625\u0644\u0649",
+    },
+    "UI_CEV_LINK_EXPLAIN": {
+        "en": ("You can point this item at ONE other item you recorded, as "
+               "the one it was written against. That is all a link does: it "
+               "says where to look next. It does not check either item, does "
+               "not make either one agreed or final, and adds nothing to "
+               "either. An item with no link is not weaker than one with a "
+               "link \u2014 nothing here is counted, rated or ranked."),
+        "ar": ("\u064a\u0645\u0643\u0646\u0643 \u0623\u0646 \u062a\u0631\u0628\u0637 \u0647\u0630\u0627 \u0627\u0644\u0639\u0646\u0635\u0631 \u0628\u0639\u0646\u0635\u0631 \u0648\u0627\u062d\u062f \u0622\u062e\u0631 "
+               "\u0633\u062c\u0651\u0644\u062a\u0647\u060c \u0628\u0627\u0639\u062a\u0628\u0627\u0631\u0647 \u0627\u0644\u0639\u0646\u0635\u0631 \u0627\u0644\u0630\u064a \u0643\u064f\u062a\u0628 \u0641\u064a \u0645\u0642\u0627\u0628\u0644\u0647. \u0647\u0630\u0627 \u0643\u0644 \u0645\u0627 "
+               "\u064a\u0641\u0639\u0644\u0647 \u0627\u0644\u0631\u0628\u0637: \u064a\u062f\u0644\u0651 \u0639\u0644\u0649 \u0645\u0648\u0636\u0639 \u0627\u0644\u0646\u0638\u0631 \u0627\u0644\u062a\u0627\u0644\u064a. \u0648\u0647\u0648 \u0644\u0627 \u064a\u0641\u062d\u0635 "
+               "\u0623\u064a\u064b\u0627 \u0645\u0646 \u0627\u0644\u0639\u0646\u0635\u0631\u064a\u0646\u060c \u0648\u0644\u0627 \u064a\u062c\u0639\u0644 \u0623\u064a\u064b\u0627 \u0645\u0646\u0647\u0645\u0627 \u0645\u062a\u0641\u0642\u064b\u0627 \u0639\u0644\u064a\u0647 \u0623\u0648 "
+               "\u0646\u0647\u0627\u0626\u064a\u064b\u0627\u060c \u0648\u0644\u0627 \u064a\u0636\u064a\u0641 \u0625\u0644\u0649 \u0623\u064a\u064d \u0645\u0646\u0647\u0645\u0627 \u0634\u064a\u0626\u064b\u0627. \u0648\u0627\u0644\u0639\u0646\u0635\u0631 \u0628\u0644\u0627 "
+               "\u0631\u0628\u0637 \u0644\u064a\u0633 \u0623\u0636\u0639\u0641 \u0645\u0646 \u0639\u0646\u0635\u0631 \u0645\u0631\u0628\u0648\u0637 \u2014 \u0644\u0627 \u0634\u064a\u0621 \u0647\u0646\u0627 \u064a\u064f\u0639\u062f\u0651 \u0623\u0648 "
+               "\u064a\u064f\u0642\u064a\u0651\u0645 \u0623\u0648 \u064a\u064f\u0631\u062a\u0651\u0628."),
+    },
     "UI_CEV_GAP_HEADING": {
         "en": "Commercial topics you have not recorded anything for yet",
         "ar": "\u0645\u0648\u0636\u0648\u0639\u0627\u062a \u062a\u062c\u0627\u0631\u064a\u0629 \u0644\u0645 \u062a\u0633\u062c\u0651\u0644 \u0639\u0646\u0647\u0627 \u0634\u064a\u0626\u064b\u0627 \u0628\u0639\u062f",

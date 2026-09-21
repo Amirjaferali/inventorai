@@ -37,6 +37,8 @@ from engine.commercial_evidence import (
     LIFECYCLE_REPLACED, LIFECYCLE_STATES, LIFECYCLE_WITHDRAWN,
     make_readiness_evidence, manufacturing_evidence_view,
     uncovered_topics, validate_evidence_history,
+    CANONICAL_ROW_FIELDS, is_same_evidence_event, normalize_optional_link,
+    supporting_item,
 )
 from engine.idea_state import (
     EXPERT_SUPPLIED, EXTERNAL_EVIDENCE, IdeaState, OWNER_STATED,
@@ -448,14 +450,25 @@ def test_the_table_is_additive_and_the_sibling_stores_are_untouched(tmp_path):
     # AMENDED at the Stage-17 D2 slice: eight quantitative columns were added
     # ADDITIVELY to this same table — no second table, no second owner. The pin
     # stays exact so a ninth column cannot arrive unnoticed.
+    # AMENDED AGAIN at the Stage-17 D3 slice: ONE nullable linkage column,
+    # `supporting_evidence_id`, added the same way. It is the SECOND edge on
+    # this row and sits beside the first; the pin names it so a second linkage
+    # column, or a link table, cannot arrive quietly either.
     assert columns == [
         "project_id", "evidence_seq", "evidence_id", "dimension", "topic",
         "subject_text", "statement_text", "source_identity", "provenance",
         "occurred_on", "scope_text", "limitation_text", "claim_status",
         "value_state", "value_exact", "value_min", "value_max", "currency",
         "value_basis", "estimate_basis", "estimate_rationale",
-        "withdrawn", "supersedes_evidence_id", "event_key",
-        "recorded_iteration", "recorded_at"]
+        "withdrawn", "supersedes_evidence_id", "supporting_evidence_id",
+        "event_key", "recorded_iteration", "recorded_at"]
+    # Exactly ONE linkage column, and it is NULLABLE: `notnull` is 0 and no
+    # default is declared, so a pre-D3 row gains NULL — no link, truthfully —
+    # rather than an empty string that would read as "a link to nothing".
+    link_cols = [c for c in con.execute(
+        "PRAGMA table_info(readiness_evidence)") if c[1].startswith("supporting")]
+    assert len(link_cols) == 1
+    assert link_cols[0][3] == 0 and link_cols[0][4] is None
 
 
 def test_a_pre_d2_database_migrates_additively_and_keeps_every_row(tmp_path):
@@ -1037,3 +1050,318 @@ def test_the_lifecycle_projection_holds_no_state_and_adds_no_axis(tmp_path):
     assert all(r.claim_status == CLAIM_STATUS_UNVALIDATED
                for r, _s, _p in evidence_lifecycle(rows, DIMENSION_COMMERCIAL))
     assert set(LIFECYCLE_STATES) == {"current", "replaced", "withdrawn"}
+
+
+# ==========================================================================
+# 10. D3 — the supporting link: one edge, fail-closed, never a rating
+# ==========================================================================
+def _linked(store, target_id, **over):
+    return _evidence(store, supporting_evidence_id=target_id, **over)
+
+
+def test_one_item_may_be_supported_by_one_other_and_it_persists(tmp_path):
+    """1 + 2. The link is durable and resolves back to the exact item."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(
+        store, key="alt", topic="market_alternative"))
+    alternative = store.load_readiness_evidence(pid)[0]
+    store.append_readiness_evidence(pid, _linked(
+        store, alternative.evidence_id, key="diff", topic="differentiation"))
+
+    rows = store.load_readiness_evidence(pid)
+    assert rows[1].supporting_evidence_id == alternative.evidence_id
+    assert supporting_item(rows, rows[1]).evidence_id == alternative.evidence_id
+    # The supporting item is not changed by being cited, and the citing item is
+    # not promoted by citing: both are exactly what they were.
+    assert rows[0].supporting_evidence_id is None
+    assert rows[0].claim_status == rows[1].claim_status == CLAIM_STATUS_UNVALIDATED
+    assert rows[0].provenance == rows[1].provenance == OWNER_STATED
+
+
+def test_naming_no_supporting_item_is_an_ordinary_answer(tmp_path):
+    """NULL is the ordinary state, and blank submissions reach it truthfully.
+
+    Empty, blank and absent all mean the same thing — no supporting item was
+    named — so they collapse to None rather than to an empty string that would
+    later read as "a link to nothing"."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(store, key="bare"))
+    assert store.load_readiness_evidence(pid)[0].supporting_evidence_id is None
+    for blank in (None, "", "   ", "\t"):
+        assert normalize_optional_link(blank) is None
+    # An identifier is never tidied into shape: repairing one would invent a
+    # reference the owner did not make.
+    with pytest.raises(CommercialEvidenceError):
+        normalize_optional_link(" rev-abc ")
+
+
+def test_the_supporting_item_must_exist(tmp_path):
+    """3. An unknown target is refused; nothing is written."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    with pytest.raises(CommercialEvidenceError):
+        store.append_readiness_evidence(
+            pid, _linked(store, "rev-nothing-like-this", key="ghost"))
+    assert store.load_readiness_evidence(pid) == ()
+
+
+def test_a_cross_project_supporting_link_fails_closed(tmp_path):
+    """4. Another project's item is simply not here, so the link cannot reach it.
+
+    This is the same question as "does it exist": the store loads ONE project's
+    rows, and the candidate is checked against those and nothing else."""
+    a, b = _store(tmp_path, "a.sqlite"), _store(tmp_path, "b.sqlite")
+    pa, pb = _project(a, "proj-a"), _project(b, "proj-b")
+    b.append_readiness_evidence(pb, _evidence(b, key="theirs"))
+    theirs = b.load_readiness_evidence(pb)[0]
+    with pytest.raises(CommercialEvidenceError):
+        a.append_readiness_evidence(
+            pa, _linked(a, theirs.evidence_id, key="reach"))
+    assert a.load_readiness_evidence(pa) == ()
+    # And the other project is untouched by the attempt.
+    assert len(b.load_readiness_evidence(pb)) == 1
+
+
+def test_a_cross_dimension_supporting_link_fails_closed(tmp_path):
+    """5 + 22. Commercial and Manufacturing cannot support each other, so the
+    isolation the shared substrate depends on is not weakened by the new edge."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(store, key="com"))
+    commercial = store.load_readiness_evidence(pid)[0]
+    store.append_readiness_evidence(pid, _evidence(
+        store, key="mfg", dimension=DIMENSION_MANUFACTURING, topic="material"))
+    manufacturing = store.load_readiness_evidence(pid)[1]
+
+    with pytest.raises(CommercialEvidenceError):
+        store.append_readiness_evidence(pid, _linked(
+            store, commercial.evidence_id, key="m2c",
+            dimension=DIMENSION_MANUFACTURING, topic="cost"))
+    with pytest.raises(CommercialEvidenceError):
+        store.append_readiness_evidence(pid, _linked(
+            store, manufacturing.evidence_id, key="c2m", topic="price"))
+    assert len(store.load_readiness_evidence(pid)) == 2
+
+
+def test_an_item_cannot_support_itself(tmp_path):
+    """6. Refused by the sanctioned constructor, before any store is reached."""
+    store = _store(tmp_path)
+    eid = store.new_readiness_evidence_id()
+    with pytest.raises(CommercialEvidenceError):
+        make_readiness_evidence(
+            evidence_id=eid, evidence_seq=0, dimension=DIMENSION_COMMERCIAL,
+            topic=COMMERCIAL_TOPICS[0], supporting_evidence_id=eid,
+            event_key="self", recorded_iteration=1,
+            recorded_at="2026-01-01T00:00:00.000000Z", **GOOD)
+
+
+def test_supporting_links_cannot_run_in_a_circle(tmp_path):
+    """7. A loop is refused by the loader, so it can never be traversed.
+
+    The write path cannot build one — a candidate may only point at an item
+    that ALREADY exists — but this validator also reads histories it did not
+    write, and a circular one is a durable, silently traversable lie."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(store, key="one"))
+    row = store.load_readiness_evidence(pid)[0]
+    a = dataclasses.replace(row, supporting_evidence_id="rev-b")
+    b = dataclasses.replace(row, evidence_id="rev-b", evidence_seq=1,
+                            event_key="two",
+                            supporting_evidence_id=row.evidence_id)
+    with pytest.raises(CommercialEvidenceHistoryError):
+        validate_evidence_history([a, b])
+    # Even a one-row self-loop that bypassed the constructor fails closed.
+    with pytest.raises(CommercialEvidenceHistoryError):
+        validate_evidence_history(
+            [dataclasses.replace(row, supporting_evidence_id=row.evidence_id)])
+
+
+def test_the_two_edges_cannot_be_confused(tmp_path):
+    """8. "This replaces that" and "that supports this" are different claims.
+
+    They are different columns, they are validated separately, and one pair can
+    never carry both: an item does not become the evidence for its own
+    replacement."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(store, key="first"))
+    first = store.load_readiness_evidence(pid)[0]
+    with pytest.raises(CommercialEvidenceError):
+        _evidence(store, key="both", supersedes=first.evidence_id,
+                  supporting_evidence_id=first.evidence_id)
+    # Separately, each edge is legitimate and they are stored apart.
+    store.append_readiness_evidence(pid, _evidence(store, key="support"))
+    support = store.load_readiness_evidence(pid)[1]
+    store.append_readiness_evidence(pid, _evidence(
+        store, key="fixed", supersedes=first.evidence_id,
+        supporting_evidence_id=support.evidence_id))
+    head = store.load_readiness_evidence(pid)[2]
+    assert head.supersedes_evidence_id == first.evidence_id
+    assert head.supporting_evidence_id == support.evidence_id
+    assert head.supersedes_evidence_id != head.supporting_evidence_id
+
+
+def test_the_link_is_part_of_what_was_recorded(tmp_path):
+    """Two items alike in every word but their support are two items, not a
+    replay of one another — the same rule D2 applies to the amount."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(store, key="target"))
+    target = store.load_readiness_evidence(pid)[0]
+    bare = _evidence(store, key="same")
+    linked = dataclasses.replace(
+        bare, evidence_id=store.new_readiness_evidence_id(),
+        supporting_evidence_id=target.evidence_id)
+    assert not is_same_evidence_event(bare, linked)
+    assert "supporting_evidence_id" in CANONICAL_ROW_FIELDS
+
+
+def test_a_link_never_promotes_status_provenance_or_readiness(tmp_path):
+    """16 + 17. Citing something changes nothing about either item.
+
+    There is no second value to promote to: the claim status is a frozen
+    single value, so no code path here can become a quality ladder."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(store, key="src"))
+    src = store.load_readiness_evidence(pid)[0]
+    store.append_readiness_evidence(pid, _linked(store, src.evidence_id,
+                                                 key="cites"))
+    for row in store.load_readiness_evidence(pid):
+        assert row.claim_status == CLAIM_STATUS_UNVALIDATED
+        assert row.provenance == OWNER_STATED
+    assert CLAIM_STATUSES == (CLAIM_STATUS_UNVALIDATED,)
+    view = commercial_evidence_view(store.load_readiness_evidence(pid))
+    # The projection reports what was recorded and gains no strength axis: no
+    # link count, no supported/unsupported split, no score of any kind.
+    assert set(view) == {"total", "active", "topics"}
+
+
+def test_a_link_is_not_a_basis_and_does_not_touch_a_quantity(tmp_path):
+    """13 + 14 + 15. D2 is unchanged by D3, including its refusals."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(
+        store, key="quote", topic="market_alternative"))
+    quote = store.load_readiness_evidence(pid)[0]
+    priced = _evidence(
+        store, key="ranged", topic="price",
+        supporting_evidence_id=quote.evidence_id,
+        value_state="ESTIMATED_RANGE", value_min="100", value_max="150",
+        currency="USD", value_basis="per_unit",
+        estimate_basis="comparable_product_price",
+        estimate_rationale="two comparable ramps of the same size")
+    store.append_readiness_evidence(pid, priced)
+    stored = store.load_readiness_evidence(pid)[1]
+    assert stored.value_state == "ESTIMATED_RANGE"
+    assert (stored.value_min, stored.value_max) == ("100", "150")
+    assert stored.currency == "USD"
+    assert stored.value_exact == ""          # no midpoint, still
+    assert stored.claim_status == CLAIM_STATUS_UNVALIDATED
+    # NO DEFENSIBLE BASIS -> NO ACCEPTED NUMBER survives the link: a supporting
+    # item is not an estimate basis and cannot stand in for one.
+    with pytest.raises(CommercialEvidenceError):
+        _evidence(store, key="basisless", topic="price",
+                  supporting_evidence_id=quote.evidence_id,
+                  value_state="ESTIMATED_RANGE", value_min="100",
+                  value_max="150", currency="USD", value_basis="per_unit",
+                  estimate_basis="", estimate_rationale="")
+
+
+def test_history_keeps_a_link_whose_target_is_no_longer_current(tmp_path):
+    """11. A link resolves against the WHOLE history, not the current items.
+
+    An item whose support has since been corrected still cites exactly the item
+    it was recorded against; dropping the link when its target stopped being
+    current would rewrite what the owner said."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(store, key="old-support"))
+    support = store.load_readiness_evidence(pid)[0]
+    store.append_readiness_evidence(pid, _linked(store, support.evidence_id,
+                                                 key="citing"))
+    store.append_readiness_evidence(pid, _evidence(
+        store, key="support-fixed", supersedes=support.evidence_id))
+
+    rows = store.load_readiness_evidence(pid)
+    citing = [r for r in rows if r.event_key == "citing"][0]
+    assert citing.supporting_evidence_id == support.evidence_id
+    assert supporting_item(rows, citing).evidence_id == support.evidence_id
+    # The cited row is no longer current, and saying so is not erasing it.
+    current = {r.evidence_id for r in active_evidence(rows)}
+    assert support.evidence_id not in current
+
+
+def test_a_pre_d3_database_migrates_additively_and_keeps_every_row(tmp_path):
+    """20 + 21. The migration is the safety property, so it is exercised.
+
+    A database built WITHOUT the linkage column is opened by the current store:
+    the column appears as NULL on every existing row, nothing is rewritten, and
+    opening it again changes nothing."""
+    path = str(tmp_path / "pre_d3.sqlite")
+    store = SqliteRecordStore(path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(store, seq=0, key="pre1"))
+    before = store.load_readiness_evidence(pid)
+    assert len(before) == 1
+
+    con = sqlite3.connect(path)
+    try:
+        info = list(con.execute("PRAGMA table_info(readiness_evidence)"))
+        keep = [(c[1], c[2], c[3]) for c in info
+                if c[1] != "supporting_evidence_id"]
+        names = [n for n, _t, _nn in keep]
+        con.execute("ALTER TABLE readiness_evidence RENAME TO _old_evidence")
+        con.execute("CREATE TABLE readiness_evidence (%s, PRIMARY KEY "
+                    "(project_id, evidence_id))" % ", ".join(
+                        "%s %s%s" % (n, t, " NOT NULL" if nn else "")
+                        for n, t, nn in keep))
+        con.execute("INSERT INTO readiness_evidence SELECT %s FROM "
+                    "_old_evidence" % ", ".join(names))
+        con.execute("DROP TABLE _old_evidence")
+        con.commit()
+        assert "supporting_evidence_id" not in names
+        raw_before = list(con.execute(
+            "SELECT %s FROM readiness_evidence" % ", ".join(names)))
+    finally:
+        con.close()
+
+    migrated = SqliteRecordStore(path)
+    rows = migrated.load_readiness_evidence(pid)
+    assert len(rows) == 1
+    assert rows[0].evidence_id == before[0].evidence_id
+    assert rows[0].statement_text == before[0].statement_text
+    assert rows[0].value_state == before[0].value_state
+    assert rows[0].supporting_evidence_id is None     # truthful, not invented
+
+    SqliteRecordStore(path), SqliteRecordStore(path)   # idempotent
+    con = sqlite3.connect(path)
+    try:
+        cols = [c[1] for c in con.execute(
+            "PRAGMA table_info(readiness_evidence)")]
+        assert cols.count("supporting_evidence_id") == 1
+        assert list(con.execute("SELECT %s FROM readiness_evidence"
+                                % ", ".join(names))) == raw_before
+    finally:
+        con.close()
+
+
+def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
+    """No join table, no second store, no second owner, no reuse of the
+    assertion-anchored reference owner for this."""
+    path = str(tmp_path / "shape.sqlite")
+    SqliteRecordStore(path)
+    con = sqlite3.connect(path)
+    tables = {r[0] for r in con.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'")}
+    assert tables == {"projects", "records", "requirement_quantities",
+                      "evidence_references", "readiness_evidence",
+                      "question_feedback", "engine_version_adoptions"}
+    source = open("engine/commercial_evidence.py", encoding="utf-8").read()
+    assert "anchor_record_id" not in source
+    store_source = open("engine/record_store.py", encoding="utf-8").read()
+    # The linkage column belongs to readiness_evidence and nowhere else.
+    assert store_source.count("supporting_evidence_id TEXT") == 1

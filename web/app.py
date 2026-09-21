@@ -6710,9 +6710,12 @@ def _cev_notice_text(token, lang):
 _CEV_QUANTITY_FIELDS = ("value_state", "value_exact", "value_min", "value_max",
                         "currency", "value_basis", "estimate_basis",
                         "estimate_rationale")
+# D3 linkage. Optional on every submission: naming no supporting item is the
+# ordinary answer, and an empty value means exactly that.
+_CEV_LINK_FIELD = "supporting_evidence_id"
 _CEV_FIELDS = frozenset({
     "csrf_token", "topic", "subject_text", "statement_text", "source_identity",
-    "occurred_on", "scope_text", "limitation_text",
+    "occurred_on", "scope_text", "limitation_text", _CEV_LINK_FIELD,
 }) | set(_CEV_QUANTITY_FIELDS)
 _CEV_TEXT_FIELDS = ("subject_text", "statement_text", "source_identity",
                     "occurred_on", "scope_text", "limitation_text")
@@ -6760,6 +6763,30 @@ def _cev_quantity_kwargs(form, topic):
             "estimate_rationale": sent["estimate_rationale"]}
 
 
+def _cev_supporting_kwarg(sid, form, exclude_id=None):
+    """The supporting-link argument for one submission, or None meaning REFUSE
+    THE WHOLE SUBMISSION.
+
+    An absent or blank field is NO LINK, which is an ordinary answer and never
+    an error. A value that is sent must resolve to a CURRENT Commercial item of
+    this project — and not to the item this submission replaces, because
+    "this supersedes that" and "that supports this" cannot both be said of one
+    pair. A value that does not resolve is refused rather than dropped: quietly
+    recording the item with no link would show it as deliberately unsupported
+    when the owner had chosen support for it.
+
+    The owner module re-asks every one of these at the durable boundary; this
+    is the early refusal, not the guarantee."""
+    sent = (form.get(_CEV_LINK_FIELD, "") or "").strip()
+    if not sent:
+        return {_CEV_LINK_FIELD: None}
+    if exclude_id is not None and sent == exclude_id:
+        return None
+    if _cev_active_target(sid, sent) is None:
+        return None
+    return {_CEV_LINK_FIELD: sent}
+
+
 def _publish_cev_notice(entry, ack=None, error=None):
     """Publish exactly ONE current Commercial-evidence notice, inside this
     namespace only. The answer, correction, quantity, reference and feedback
@@ -6772,7 +6799,7 @@ def _publish_cev_notice(entry, ack=None, error=None):
         entry[CEV_ERROR_SLOT] = error
 
 
-def _cev_event_key(sid, topic, fields, quantity):
+def _cev_event_key(sid, topic, fields, quantity, link):
     """The durable exact-replay identity of ONE recorded item, derived from the
     project and the CONTENT the owner submitted.
 
@@ -6786,7 +6813,11 @@ def _cev_event_key(sid, topic, fields, quantity):
     msg = _canonical_message(
         "commercial-evidence-event-v1", sid, topic,
         *[fields[name] for name in _CEV_TEXT_FIELDS],
-        *[str(quantity.get(name, "")) for name in _CEV_QUANTITY_FIELDS])
+        *[str(quantity.get(name, "")) for name in _CEV_QUANTITY_FIELDS],
+        # The link is part of what was recorded, so it is part of the event: two
+        # otherwise identical items naming different support are two items, and
+        # re-submitting one of them is still its own replay.
+        str((link or {}).get(_CEV_LINK_FIELD) or ""))
     return _p2a_hmac.new(_answer_secret(), msg,
                          _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
 
@@ -6839,6 +6870,24 @@ def _commercial_evidence_context(sid, writable):
             for row, state, replaces
             in _evidence_lifecycle(rows, _DIMENSION_COMMERCIAL)
             if state != _LC_CURRENT
+        ],
+        # D3: what a supporting link POINTS AT, resolved over the WHOLE history
+        # so an item whose support has since been corrected or withdrawn still
+        # renders the item it actually cites. Identity only — topic and subject
+        # — because a link is a traversal and the page must be able to name its
+        # target without grading it.
+        "link_labels": {
+            row.evidence_id: {"topic": row.topic,
+                              "subject_text": row.subject_text}
+            for row in rows if row.dimension == _DIMENSION_COMMERCIAL
+        },
+        # The items a NEW link may name: this dimension's current items, in the
+        # owner's own append order. Not ranked, not scored, and not filtered by
+        # any judgement about which would make better support.
+        "link_choices": [
+            {"evidence_id": row["evidence_id"], "topic": row["topic"],
+             "subject_text": row["subject_text"]}
+            for row in view["active"]
         ],
         "writable": bool(writable),
     }
@@ -7085,13 +7134,14 @@ def record_manufacturing_evidence(sid):
     return redirect(url_for("show_session", sid=sid))
 
 
-_CEV_CORRECT_FIELDS = (frozenset({"csrf_token", "supersedes_evidence_id"})
+_CEV_CORRECT_FIELDS = (frozenset({"csrf_token", "supersedes_evidence_id",
+                                  _CEV_LINK_FIELD})
                        | set(_CEV_TEXT_FIELDS) | set(_CEV_QUANTITY_FIELDS))
 _CEV_WITHDRAW_FIELDS = frozenset({"csrf_token", "supersedes_evidence_id"})
 
 
 def _cev_lifecycle_event_key(sid, action, prior_id, topic, fields,
-                             quantity):
+                             quantity, link):
     """The durable exact-replay identity of ONE lifecycle act.
 
     Same construction and same purpose as `_cev_event_key`, with two additions
@@ -7103,7 +7153,8 @@ def _cev_lifecycle_event_key(sid, action, prior_id, topic, fields,
     msg = _canonical_message(
         "commercial-evidence-lifecycle-v1", sid, action, prior_id, topic,
         *[fields[name] for name in _CEV_TEXT_FIELDS],
-        *[str(quantity.get(name, "")) for name in _CEV_QUANTITY_FIELDS])
+        *[str(quantity.get(name, "")) for name in _CEV_QUANTITY_FIELDS],
+        str((link or {}).get(_CEV_LINK_FIELD) or ""))
     return _p2a_hmac.new(_answer_secret(), msg,
                          _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
 
@@ -7216,6 +7267,17 @@ def correct_commercial_evidence(sid):
     if quantity is None:
         _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
+    # A correction restates the supporting link exactly as it restates the
+    # words and the amount. Omitting it therefore means NO LINK, not "keep the
+    # old one": a link surviving its own correction unexamined would let this
+    # item go on citing support nobody re-affirmed. The superseded row keeps
+    # its own link, so nothing is lost — it becomes history, which is what it
+    # is. The replaced item itself can never be the support for its replacement.
+    link = _cev_supporting_kwarg(sid, request.form,
+                                 exclude_id=prior.evidence_id)
+    if link is None:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
     try:
         evidence = _make_readiness_evidence(
             evidence_id=_get_store().new_readiness_evidence_id(),
@@ -7232,10 +7294,10 @@ def correct_commercial_evidence(sid):
             supersedes_evidence_id=prior.evidence_id,
             event_key=_cev_lifecycle_event_key(
                 sid, "correct", prior.evidence_id, prior.topic, fields,
-                quantity),
+                quantity, link),
             recorded_iteration=int(getattr(state, "iteration", 0) or 0),
             recorded_at=_quantity_recorded_at(),
-            **quantity)
+            **quantity, **link)
     except _CommercialEvidenceError:
         _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
@@ -7282,6 +7344,10 @@ def withdraw_commercial_evidence(sid):
     # the historical record still shows WHAT was withdrawn, amount included.
     carried_quantity = {name: getattr(prior, name)
                         for name in _CEV_QUANTITY_FIELDS}
+    # The withdrawal row carries the supporting link forward too, so the history
+    # shows what provenance was withdrawn and not merely that something was.
+    # Erasing the link here would quietly unpick the trail after the fact.
+    carried_link = {_CEV_LINK_FIELD: getattr(prior, _CEV_LINK_FIELD)}
     try:
         evidence = _make_readiness_evidence(
             evidence_id=_get_store().new_readiness_evidence_id(),
@@ -7299,10 +7365,10 @@ def withdraw_commercial_evidence(sid):
             supersedes_evidence_id=prior.evidence_id,
             event_key=_cev_lifecycle_event_key(
                 sid, "withdraw", prior.evidence_id, prior.topic, carried,
-                carried_quantity),
+                carried_quantity, carried_link),
             recorded_iteration=int(getattr(state, "iteration", 0) or 0),
             recorded_at=_quantity_recorded_at(),
-            **carried_quantity)
+            **carried_quantity, **carried_link)
     except _CommercialEvidenceError:
         _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
@@ -7362,7 +7428,11 @@ def record_commercial_evidence(sid):
     if quantity is None:
         _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
-    event_key = _cev_event_key(sid, topic, fields, quantity)
+    link = _cev_supporting_kwarg(sid, request.form)
+    if link is None:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    event_key = _cev_event_key(sid, topic, fields, quantity, link)
     try:
         evidence = _make_readiness_evidence(
             evidence_id=_get_store().new_readiness_evidence_id(),
@@ -7381,7 +7451,7 @@ def record_commercial_evidence(sid):
             event_key=event_key,
             recorded_iteration=int(getattr(state, "iteration", 0) or 0),
             recorded_at=_quantity_recorded_at(),
-            **quantity)
+            **quantity, **link)
     except _CommercialEvidenceError:
         _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))

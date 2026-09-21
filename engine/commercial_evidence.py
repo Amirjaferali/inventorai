@@ -429,6 +429,36 @@ def validate_topic(dimension, topic):
     return topic
 
 
+def normalize_optional_link(value):
+    """The stored form of a supporting-item reference: an exact identifier, or
+    ``None`` meaning NO LINK.
+
+    Empty, blank and ``None`` all mean the same ordinary thing — the owner named
+    no supporting item — so they collapse to ``None`` rather than to an empty
+    string that would later read as "a link to nothing". A non-empty value is
+    kept EXACTLY as given: an identifier is not text to be tidied, and repairing
+    one would be inventing a reference the owner did not make."""
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise CommercialEvidenceError("supporting_evidence_id: must be text")
+    if not value.strip():
+        return None
+    if value != value.strip():
+        raise CommercialEvidenceError(
+            "supporting_evidence_id: is not a stored value")
+    return value
+
+
+def is_stored_link(value):
+    """True iff ``value`` is EXACTLY the stored form of a supporting link. The
+    rule is asked, never re-stated."""
+    try:
+        return normalize_optional_link(value) == value
+    except CommercialEvidenceError:
+        return False
+
+
 @dataclass(frozen=True)
 class ReadinessEvidence:
     """One immutable, append-only owner-recorded readiness-evidence item.
@@ -472,6 +502,15 @@ class ReadinessEvidence:
     value_basis: str = ""
     estimate_basis: str = ""
     estimate_rationale: str = ""
+    # D3 linkage. The SECOND edge this row may carry, and deliberately not the
+    # first: `supersedes_evidence_id` says "this REPLACES that item",
+    # `supporting_evidence_id` says "that item SUPPORTS this one". They are
+    # different claims, so they are different columns and a row may never point
+    # both at the same item. NULL is the ordinary state and means exactly no
+    # supporting item was named — never "unknown support" and never "unsupported
+    # therefore weaker". A link is a traversal, not a rating: it changes no
+    # status, no provenance and no readiness anywhere.
+    supporting_evidence_id: Optional[str] = None
 
 
 CANONICAL_ROW_FIELDS = tuple(ReadinessEvidence.__dataclass_fields__)
@@ -487,6 +526,9 @@ _IDENTITY_FIELDS = (
     # only in the amount are different events, not a replay of one another.
     "value_state", "value_exact", "value_min", "value_max", "currency",
     "value_basis", "estimate_basis", "estimate_rationale",
+    # Likewise the supporting link: naming a different supporting item is a
+    # different statement about the same words, not a replay of one of them.
+    "supporting_evidence_id",
 )
 
 
@@ -499,7 +541,8 @@ def make_readiness_evidence(*, evidence_id, evidence_seq, dimension, topic,
                             value_state=VALUE_STATE_NONE, value_exact=None,
                             value_min=None, value_max=None, currency="",
                             value_basis="", estimate_basis="",
-                            estimate_rationale=""):
+                            estimate_rationale="",
+                            supporting_evidence_id=None):
     """Build ONE validated canonical row, or raise ``CommercialEvidenceError``.
 
     Conservative by construction: ``claim_status`` is the single UNVALIDATED
@@ -512,7 +555,9 @@ def make_readiness_evidence(*, evidence_id, evidence_seq, dimension, topic,
     if withdrawn and not supersedes_evidence_id:
         raise CommercialEvidenceError(
             "withdrawn: a withdrawal must supersede an existing item")
-    return validate_quantity(ReadinessEvidence(
+    # Both rule sets are asked ONCE, here and at the durable boundary, so the
+    # sanctioned constructor and the store cannot drift apart on either edge.
+    return validate_link(validate_quantity(ReadinessEvidence(
         evidence_id=evidence_id,
         evidence_seq=evidence_seq,
         dimension=dimension,
@@ -552,7 +597,12 @@ def make_readiness_evidence(*, evidence_id, evidence_seq, dimension, topic,
                             else normalize_text(
                                 estimate_rationale, "estimate_rationale",
                                 MAX_ESTIMATE_RATIONALE_CHARS)),
-    ))
+        # An empty submission means NO LINK, which is an ordinary answer. The
+        # id itself is never parsed, trimmed into shape or repaired: whatever
+        # survives here must name a real item of this project's own history,
+        # and `validate_new_evidence` is what asks that question.
+        supporting_evidence_id=normalize_optional_link(supporting_evidence_id),
+    )))
 
 
 def canonical_evidence_dict(evidence):
@@ -634,7 +684,35 @@ def validate_evidence_row(row):
     if row.withdrawn and not row.supersedes_evidence_id:
         raise CommercialEvidenceError(
             "withdrawn: a withdrawal must supersede an existing item")
+    validate_link(row)
     validate_quantity(row)
+    return row
+
+
+def validate_link(row):
+    """The supporting-link rules that ONE row can answer by itself, and return
+    the row. Whether the named item exists, is of this project and is of this
+    dimension is a question about the HISTORY, so it is asked there.
+
+    Fails closed on every violation and repairs nothing: an invalid link is
+    refused, never quietly dropped to NO LINK, because silently discarding the
+    reference the owner chose would leave an item looking deliberately
+    unsupported when in fact its support was thrown away."""
+    if not is_stored_link(row.supporting_evidence_id):
+        raise CommercialEvidenceError(
+            "supporting_evidence_id: is not a stored value")
+    if row.supporting_evidence_id is None:
+        return row
+    if row.supporting_evidence_id == row.evidence_id:
+        raise CommercialEvidenceError(
+            "supporting_evidence_id: an item cannot support itself")
+    # The two edges are different claims and must stay distinguishable. "This
+    # replaces that" and "that supports this" cannot both be true of one pair:
+    # an item does not become the evidence for its own replacement.
+    if row.supersedes_evidence_id is not None \
+            and row.supporting_evidence_id == row.supersedes_evidence_id:
+        raise CommercialEvidenceError(
+            "supporting_evidence_id: cannot also be the superseded item")
     return row
 
 
@@ -675,7 +753,62 @@ def validate_evidence_history(rows):
             raise CommercialEvidenceHistoryError(
                 "a withdrawal must supersede an existing item")
         seen[row.evidence_id] = row
+    _validate_supporting_links(rows, seen)
     return tuple(rows)
+
+
+def _validate_supporting_links(rows, by_id):
+    """Every supporting link must name a real item of THIS project's own
+    dimension, and the links must not run in a circle.
+
+    Cross-project is answered by the same question as "does it exist": the
+    store loads one project's rows, so an item of another project is simply not
+    here and the history fails closed rather than reaching across.
+
+    Circularity is checked even though the write path cannot create it — a
+    candidate may only point at an item that ALREADY exists — because this
+    validator also reads histories it did not write, and a loop would otherwise
+    be a durable, silently traversable lie."""
+    for row in rows:
+        target_id = row.supporting_evidence_id
+        if target_id is None:
+            continue
+        target = by_id.get(target_id)
+        if target is None:
+            raise CommercialEvidenceHistoryError(
+                "supporting item is not an item of this project")
+        if target.dimension != row.dimension:
+            raise CommercialEvidenceHistoryError(
+                "supporting item belongs to a different dimension")
+    for row in rows:
+        seen_ids, cursor, limit = set(), row, len(rows) + 1
+        while cursor.supporting_evidence_id is not None:
+            if cursor.evidence_id in seen_ids or limit <= 0:
+                raise CommercialEvidenceHistoryError("supporting link cycle")
+            seen_ids.add(cursor.evidence_id)
+            limit -= 1
+            cursor = by_id[cursor.supporting_evidence_id]
+
+
+def evidence_index(rows):
+    """``{evidence_id: row}`` over one project's WHOLE history. Pure."""
+    return {r.evidence_id: r for r in rows}
+
+
+def supporting_item(rows, evidence):
+    """The item named as supporting ``evidence``, or ``None`` when it names
+    none.
+
+    Resolved against the FULL history, not the current items, because a
+    supporting item that has since been corrected or withdrawn is still exactly
+    the item this row was recorded against. Silently dropping the link once its
+    target stopped being current would rewrite what the owner said.
+
+    Pure. Returns a row; it derives no status, strength or conclusion from the
+    fact that a link exists."""
+    if evidence.supporting_evidence_id is None:
+        return None
+    return evidence_index(rows).get(evidence.supporting_evidence_id)
 
 
 def superseded_ids(rows):
@@ -694,6 +827,19 @@ def validate_new_evidence(existing_rows, candidate):
     if any(r.event_key == candidate.event_key for r in rows):
         raise CommercialEvidenceError("event_key: already exists")
     validate_evidence_row(candidate)
+    support_id = candidate.supporting_evidence_id
+    if support_id is not None:
+        support = by_id.get(support_id)
+        # An item can only be supported by something that is ALREADY recorded.
+        # This is what makes a cross-project or invented reference impossible
+        # rather than merely unlikely: the candidate is checked against this
+        # project's own durable history and nothing else.
+        if support is None:
+            raise CommercialEvidenceError(
+                "supporting_evidence_id: unknown item")
+        if support.dimension != candidate.dimension:
+            raise CommercialEvidenceError(
+                "supporting_evidence_id: belongs to a different dimension")
     prior_id = candidate.supersedes_evidence_id
     if prior_id is None:
         if candidate.withdrawn:
