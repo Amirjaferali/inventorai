@@ -994,6 +994,56 @@ def _q(client, sid, topic="price", **over):
     return client.post(CEV % sid, data=data)
 
 
+def _item_region(body, topic):
+    """The rendered region of ONE recorded commercial-evidence item.
+
+    Runs from that item's marker to the next item's, so an assertion about
+    what THIS item displays cannot be answered by another item's markup.
+    """
+    start = body.index('data-cev-item data-cev-topic="%s"' % topic)
+    nxt = body.find("data-cev-item ", start + 1)
+    return body[start:nxt if nxt != -1 else len(body)]
+
+
+def _amount_display(body, topic="price"):
+    """The element that renders an item's amount — the D2 display contract.
+
+    A quantity assertion belongs here and nowhere wider. The full page also
+    carries evidence ids, option values and signed tokens, which are random
+    hex and therefore contain arbitrary digit runs; a page-wide substring
+    check for a number is a statement about those identifiers, not about the
+    displayed amount, and fails on a dice roll rather than on a defect.
+    """
+    region = _item_region(body, topic)
+    m = re.search(r"<p[^>]*data-cev-amount\b.*?</p>", region, re.S)
+    assert m, "topic %s renders no amount element" % topic
+    return m.group(0)
+
+
+def _amount_value(body, topic="price"):
+    """Just the amount itself, as the page shows it to a reader."""
+    m = re.search(r"<span data-cev-amount-value>(.*?)</span>",
+                  _amount_display(body, topic), re.S)
+    assert m, "the amount element renders no value"
+    return m.group(1).strip()
+
+
+def _quantity_form_values(body, topic="price"):
+    """(exact, min, max) as pre-filled into that item's correction form.
+
+    A midpoint could be invented in the form as easily as in the display, so
+    both surfaces are checked.
+    """
+    region = _item_region(body, topic)
+    out = []
+    for field in ("value_exact", "value_min", "value_max"):
+        m = re.search(r'<input[^>]*name="%s"[^>]*value="([^"]*)"' % field,
+                      region)
+        assert m, "no %s input rendered for topic %s" % (field, topic)
+        out.append(m.group(1))
+    return tuple(out)
+
+
 def test_an_exact_amount_is_stored_as_one_truthful_value(owner):
     """1 + 8. The amount and the currency are separate stored fields."""
     c, _aid, sid = owner
@@ -1481,7 +1531,19 @@ def test_a_linked_quantity_keeps_every_d2_rule(owner):
     assert row.currency == "USD"
     assert row.claim_status == "UNVALIDATED"
     body = _page(c, sid)
-    assert "125" not in body                     # still no midpoint anywhere
+    # No invented midpoint, asserted where the amount is actually rendered.
+    # This used to read `"125" not in body`: right rule, wrong surface. The
+    # page also carries random evidence ids and signed tokens, and one in
+    # roughly thirteen renders contains "125" inside one of them, so the
+    # assertion failed on hex rather than on an invented midpoint. Scoped to
+    # the amount element, the same rule holds without the dice roll.
+    amount = _amount_display(body, "price")
+    assert "125" not in amount, amount
+    # ...and the range is still shown as a range, not collapsed into anything
+    assert _amount_value(body, "price") == "100\u2013150"
+    assert 'data-cev-amount-state="ESTIMATED_RANGE"' in amount
+    # nor may a midpoint be pre-filled into the correction form
+    assert _quantity_form_values(body, "price") == ("", "100", "150")
     assert _rendered("UI_CEV_Q_NOT_VALIDATED", "en") in body
     # A link is not a basis: the same submission without one is still refused.
     ranged = dict(Q_RANGE)
