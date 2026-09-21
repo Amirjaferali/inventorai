@@ -16,7 +16,6 @@ Prohibited: real network; real provider; background nondeterminism in these test
 import logging
 import os
 import re
-import statistics
 import subprocess
 import sys
 import threading
@@ -452,16 +451,25 @@ def test_dev_memory_sender_behaviour_is_preserved_end_to_end(client):
 # =============================================================================
 
 LATENCY = 0.5          # simulated provider round trip, seconds
-SAMPLES = 5
+SAMPLES = 5            # also the bounded rate-limit budget these paths allow,
+                       # so this is a behavioural constant, not a knob to turn
 
 
-def _median_ms(client, path, data_for):
+def _branch_ms(client, path, data_for):
+    """Every per-request wall-clock sample for one branch, in milliseconds.
+
+    Returns the samples rather than a summary because the caller needs the
+    MINIMUM, not the middle. See the timing note in the oracle test: a shared
+    runner only ever adds time to a sample, so the minimum is the statistic
+    that answers "does this branch carry a mandatory wait", while a median
+    answers "how busy was the machine".
+    """
     samples = []
     for i in range(SAMPLES):
         started = time.perf_counter()
         client.post(path, data=data_for(i))
         samples.append((time.perf_counter() - started) * 1000)
-    return statistics.median(samples)
+    return samples
 
 
 def test_anonymous_requests_perform_no_provider_call_and_show_no_branch_latency(
@@ -490,30 +498,62 @@ def test_anonymous_requests_perform_no_provider_call_and_show_no_branch_latency(
     monkeypatch.setattr(webapp, "_EMAIL_SENDER", sender)
     assert sender.calls == []
 
-    timings = {
-        "register/new": _median_ms(client, "/register", lambda i: {
-            "email": "timing-new-%d@example.com" % i, "password": PASSWORD,
-            "password_confirm": PASSWORD}),
-        "register/existing": _median_ms(client, "/register", lambda i: {
-            "email": "known-active@example.com", "password": PASSWORD,
-            "password_confirm": PASSWORD}),
-        "recover/unknown": _median_ms(client, "/recover", lambda i: {
-            "email": "never-seen-%d@example.com" % i}),
-        "recover/known-active": _median_ms(client, "/recover", lambda i: {
-            "email": "known-active@example.com"}),
-        "recover/disabled": _median_ms(client, "/recover", lambda i: {
-            "email": "known-disabled@example.com"}),
-    }
-    # 1. No provider call happened inside ANY anonymous request.
-    assert sender.calls == [], "the request path contacted the provider"
-    # 2. Every branch returns before the provider delay could dominate it.
-    for name, ms in timings.items():
-        assert ms < LATENCY * 1000 * 0.5, (name, ms, timings)
-    # 3. No material provider-latency-correlated branch difference.
+    samples = {}
+    for name, path, data_for in (
+            ("register/new", "/register", lambda i: {
+                "email": "timing-new-%d@example.com" % i, "password": PASSWORD,
+                "password_confirm": PASSWORD}),
+            ("register/existing", "/register", lambda i: {
+                "email": "known-active@example.com", "password": PASSWORD,
+                "password_confirm": PASSWORD}),
+            ("recover/unknown", "/recover", lambda i: {
+                "email": "never-seen-%d@example.com" % i}),
+            ("recover/known-active", "/recover", lambda i: {
+                "email": "known-active@example.com"}),
+            ("recover/disabled", "/recover", lambda i: {
+                "email": "known-disabled@example.com"})):
+        samples[name] = _branch_ms(client, path, data_for)
+        # 1. The provider was never reached from inside a request - the
+        #    DETERMINISTIC statement of the property, and the strong one: the
+        #    round trip these branches must not carry IS a call to this sender,
+        #    and a call that never happened cannot have taken half a second. No
+        #    clock is involved, so no runner can talk it out of failing.
+        #    Checked per branch rather than once at the end, so a failure names
+        #    the branch that reached the provider instead of only reporting
+        #    that one did.
+        assert sender.calls == [], (
+            "the request path contacted the provider on %s" % name)
+    #    That assertion is a live detector rather than a vacuous one, which
+    #    `test_the_provider_detector_is_not_blind` below proves separately -
+    #    it is kept out of this test because restoring inline dispatch here
+    #    would flush the outbox that step 4 inspects.
+
+    # 2. No account-existence-correlated branch difference - the oracle itself.
+    #
+    #    Read off the MINIMUM of each branch's samples. Scheduling noise only
+    #    ever ADDS time to a sample; it never makes a mandatory wait short. So
+    #    a branch carrying a provider round trip cannot produce one fast
+    #    sample, while a branch without one produces several even on a busy
+    #    machine. The budget below is unchanged at a quarter of the provider
+    #    delay - only the statistic moved, from one noise inflates (the median)
+    #    to one it cannot.
+    #
+    #    This previously also capped each branch's ABSOLUTE time at half the
+    #    provider delay. That cap could not survive a loaded runner and was not
+    #    measuring the oracle: /register spends most of its time in the
+    #    password KDF, which is CPU-bound, so under contention both register
+    #    branches rose together to ~336 ms while differing from each other by
+    #    3 ms. The property held perfectly and the absolute cap failed anyway.
+    #    What that cap was really asserting - that the provider round trip is
+    #    not inside a request - is exactly what assertion 1 now proves
+    #    deterministically and per branch, so the coverage moved up, not away.
+    fastest = {name: min(s) for name, s in samples.items()}
+    spread = {name: max(s) - min(s) for name, s in samples.items()}
     tolerance = LATENCY * 1000 * 0.25
-    recover = [timings[k] for k in timings if k.startswith("recover/")]
-    assert max(recover) - min(recover) < tolerance, timings
-    assert abs(timings["register/new"] - timings["register/existing"]) < tolerance, timings
+    recover = [fastest[k] for k in fastest if k.startswith("recover/")]
+    assert max(recover) - min(recover) < tolerance, (fastest, spread)
+    assert abs(fastest["register/new"] - fastest["register/existing"]) < tolerance, \
+        (fastest, spread)
 
     # 4. The calls were deferred, not dropped: exactly the eligible messages.
     counts = webapp._EMAIL_DISPATCHER.dispatch_pending()
@@ -523,6 +563,26 @@ def test_anonymous_requests_perform_no_provider_call_and_show_no_branch_latency(
     assert "known-disabled@example.com" not in recipients
     assert not any(r.startswith("never-seen") for r in recipients)
     assert _store().count_outbox() == 0
+
+
+def test_the_provider_detector_is_not_blind(client, monkeypatch):
+    """Positive control for the oracle test's deterministic assertion.
+
+    `sender.calls == []` is only evidence if a provider call WOULD have been
+    recorded there. Inline dispatch is the shape the outbox replaced, so
+    restoring it must produce exactly the call the anonymous request path is
+    forbidden to make. If this ever stops firing, that `== []` has gone blind
+    and passes for the wrong reason - which is the failure mode an assertion
+    about an absent thing always risks.
+    """
+    probe = _ScriptedSender()
+    monkeypatch.setattr(webapp, "_EMAIL_SENDER", probe)
+    monkeypatch.setattr(webapp, "_EMAIL_INLINE_DISPATCH", True)
+    _register(client, "detector-probe@example.com")
+    assert probe.calls, (
+        "the provider detector is blind: inline dispatch reached no sender, "
+        "so asserting `calls == []` elsewhere proves nothing")
+    assert probe.calls[0]["to"] == "detector-probe@example.com"
 
 
 def test_provider_slowness_or_failure_cannot_reach_the_request(client, monkeypatch):
@@ -535,11 +595,18 @@ def test_provider_slowness_or_failure_cannot_reach_the_request(client, monkeypat
 
     failing_slow = _ScriptedSender(latency=LATENCY, fail=True)
     monkeypatch.setattr(webapp, "_EMAIL_SENDER", failing_slow)
-    known = _median_ms(client, "/recover", lambda i: {"email": "outage-known@example.com"})
-    unknown = _median_ms(client, "/recover", lambda i: {"email": "nobody-%d@example.com" % i})
+    known = _branch_ms(client, "/recover", lambda i: {"email": "outage-known@example.com"})
+    unknown = _branch_ms(client, "/recover", lambda i: {"email": "nobody-%d@example.com" % i})
+    # Deterministic first: a slow, failing provider is never reached from the
+    # request path at all, whatever the clock says.
     assert failing_slow.calls == []
-    assert known < LATENCY * 1000 * 0.5 and unknown < LATENCY * 1000 * 0.5
-    assert abs(known - unknown) < LATENCY * 1000 * 0.25
+    # Then the same budgets as the oracle test, read off the minimum for the
+    # same reason: noise inflates a sample, it never shortens a mandatory wait.
+    fast_known, fast_unknown = min(known), min(unknown)
+    assert fast_known < LATENCY * 1000 * 0.5 and fast_unknown < LATENCY * 1000 * 0.5, \
+        (fast_known, fast_unknown)
+    assert abs(fast_known - fast_unknown) < LATENCY * 1000 * 0.25, \
+        (fast_known, fast_unknown)
     # Deferred delivery then fails, bounded, and claims nothing.
     counts = webapp._EMAIL_DISPATCHER.dispatch_pending()
     assert counts[RETRY_LATER] == SAMPLES and counts[DELIVERED] == 0
