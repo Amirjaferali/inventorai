@@ -2607,6 +2607,32 @@ UI_STRINGS = {
         "ar": ("لم تُسجَّل أي أدلة تجارية بعد. هذه مجرد صفحة فارغة، وليست "
                "نتيجةً بشأن سوقك."),
     },
+    # --- Commercial evidence GAPS (Stage 17 bounded presentation) -----------
+    # These three strings carry the whole truth boundary of the gap block, so
+    # they are worded to be unusable as a finding. "Not yet recorded" is a fact
+    # about the page; "no market", "no demand" and "not viable" are claims about
+    # the world, and this product makes none of them. The EN and AR say the same
+    # thing, including the disclaimer — a gap list that warned in one language
+    # only would be worse than no list.
+    "UI_CEV_GAP_HEADING": {
+        "en": "Commercial topics you have not recorded anything for yet",
+        "ar": "\u0645\u0648\u0636\u0648\u0639\u0627\u062a \u062a\u062c\u0627\u0631\u064a\u0629 \u0644\u0645 \u062a\u0633\u062c\u0651\u0644 \u0639\u0646\u0647\u0627 \u0634\u064a\u0626\u064b\u0627 \u0628\u0639\u062f",
+    },
+    "UI_CEV_GAP_EXPLAIN": {
+        "en": ("These are the topics this page can hold that have nothing "
+               "recorded against them yet. An empty topic means only that "
+               "\u2014 nothing has been written down about it so far. It is not a "
+               "conclusion about your idea, your buyers or your market, and it "
+               "is not a measurement: nothing here is counted or weighed, and "
+               "the order below is simply the order these topics are listed "
+               "in."),
+        "ar": ("\u0647\u0630\u0647 \u0647\u064a \u0627\u0644\u0645\u0648\u0636\u0648\u0639\u0627\u062a \u0627\u0644\u062a\u064a \u064a\u0645\u0643\u0646 \u0644\u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629 \u0623\u0646 \u062a\u062d\u062a\u0648\u064a\u0647\u0627 \u0648\u0644\u0645 "
+               "\u064a\u064f\u0633\u062c\u064e\u0651\u0644 \u0639\u0646\u0647\u0627 \u0634\u064a\u0621 \u0628\u0639\u062f. \u0627\u0644\u0645\u0648\u0636\u0648\u0639 \u0627\u0644\u0641\u0627\u0631\u063a \u064a\u0639\u0646\u064a \u0630\u0644\u0643 \u0641\u0642\u0637 \u2014 "
+               "\u0644\u0645 \u064a\u064f\u0643\u062a\u0628 \u0639\u0646\u0647 \u0634\u064a\u0621 \u062d\u062a\u0649 \u0627\u0644\u0622\u0646. \u0648\u0647\u0648 \u0644\u064a\u0633 \u0627\u0633\u062a\u0646\u062a\u0627\u062c\u064b\u0627 \u0639\u0646 \u0641\u0643\u0631\u062a\u0643 \u0648\u0644\u0627 \u0639\u0646 "
+               "\u0627\u0644\u0645\u0634\u062a\u0631\u064a\u0646 \u0648\u0644\u0627 \u0639\u0646 \u0627\u0644\u0633\u0648\u0642\u060c \u0648\u0644\u064a\u0633 \u0642\u064a\u0627\u0633\u064b\u0627: \u0644\u0627 \u0634\u064a\u0621 \u0647\u0646\u0627 \u064a\u064f\u0639\u062f\u0651 \u0623\u0648 "
+               "\u064a\u064f\u0648\u0632\u064e\u0646\u060c \u0648\u0627\u0644\u062a\u0631\u062a\u064a\u0628 \u0623\u062f\u0646\u0627\u0647 \u0647\u0648 \u062a\u0631\u062a\u064a\u0628 \u0633\u0631\u062f \u0647\u0630\u0647 "
+               "\u0627\u0644\u0645\u0648\u0636\u0648\u0639\u0627\u062a \u0641\u062d\u0633\u0628."),
+    },
     "UI_CEV_ADD_HEADING": {
         "en": "Record one more item",
         "ar": "سجّل عنصرًا آخر",

@@ -568,6 +568,41 @@ def evidence_view(rows, dimension):
     }
 
 
+def uncovered_topics(dimension, view):
+    """The governed topics of ONE dimension that its CURRENT view does not cover.
+
+    Pure set arithmetic over two things that already exist: the governed
+    vocabulary of `dimension`, and the topics the canonical view reports as
+    covered. It reads no store, writes nothing, and adds no state.
+
+    What it is NOT, each true by construction rather than by convention:
+
+      * NOT a second source of truth. The vocabulary and the view are both the
+        existing owner's; this returns the difference and holds nothing.
+      * NOT a judgement. An uncovered topic means no evidence has been RECORDED
+        for it. It is not a finding about the market, the demand, the viability
+        or the idea, and no caller may render it as one.
+      * NOT a score, count-based threshold, ranking, weighting or readiness
+        signal. The result is a list in the vocabulary's own committed order,
+        never sorted by importance, because no importance exists.
+      * NOT cross-dimension. `dimension` selects the vocabulary AND the view is
+        already dimension-scoped, so a Commercial gap can never be computed from
+        Manufacturing coverage or the reverse.
+
+    Coverage is derived from ACTIVE rows, so the two lifecycle acts differ and
+    the difference matters. A WITHDRAWAL can make a topic uncovered again, when
+    no active row remains for it. A CORRECTION/SUPERSESSION replaces the old row
+    with its active replacement, so coverage REMAINS when that replacement
+    carries the same topic — supersession alone never uncovers a topic.
+
+    Order is the committed vocabulary order, so the caller renders a stable list
+    and no ordering can be read as priority."""
+    if dimension not in TOPICS_BY_DIMENSION:
+        raise ValueError("unknown evidence dimension: %r" % (dimension,))
+    covered = set(view["topics"])
+    return tuple(t for t in TOPICS_BY_DIMENSION[dimension] if t not in covered)
+
+
 def commercial_evidence_view(rows):
     """The Commercial projection. Unchanged behaviour: the shared `evidence_view`
     is the same code this function always ran, now named once and reused."""

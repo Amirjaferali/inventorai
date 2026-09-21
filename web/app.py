@@ -110,6 +110,7 @@ from engine.commercial_evidence import (
     MANUFACTURING_TOPICS as _MANUFACTURING_TOPICS,
     DIMENSION_MANUFACTURING as _DIMENSION_MANUFACTURING,
     manufacturing_evidence_view as _manufacturing_evidence_view,
+    uncovered_topics as _uncovered_topics,
     normalize_text as _cev_normalize_text,
     normalize_optional_date as _cev_normalize_date,
     TEXT_FIELD_CAPS as _CEV_TEXT_FIELD_CAPS,
@@ -6747,6 +6748,13 @@ def _commercial_evidence_context(sid, writable):
         "total": view["total"],
         "topics": list(view["topics"]),
         "choices": list(_COMMERCIAL_TOPICS),
+        # Governed topics with nothing recorded yet, derived by the OWNER from
+        # the same view above — never recomputed here, never cached, and never
+        # a judgement: an uncovered topic says only that no evidence has been
+        # recorded for it. When every governed topic is covered this is empty
+        # and the template renders no gap block at all, so a complete project
+        # is never shown a false gap and is never told it is "complete" either.
+        "uncovered": list(_uncovered_topics(_DIMENSION_COMMERCIAL, view)),
         "writable": bool(writable),
     }
 
