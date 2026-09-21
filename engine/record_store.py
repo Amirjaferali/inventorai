@@ -473,6 +473,14 @@ _READINESS_EVIDENCE_SCHEMA = (
         scope_text             TEXT    NOT NULL,
         limitation_text        TEXT    NOT NULL,
         claim_status           TEXT    NOT NULL,
+        value_state            TEXT    NOT NULL DEFAULT 'NONE',
+        value_exact            TEXT    NOT NULL DEFAULT '',
+        value_min              TEXT    NOT NULL DEFAULT '',
+        value_max              TEXT    NOT NULL DEFAULT '',
+        currency               TEXT    NOT NULL DEFAULT '',
+        value_basis            TEXT    NOT NULL DEFAULT '',
+        estimate_basis         TEXT    NOT NULL DEFAULT '',
+        estimate_rationale     TEXT    NOT NULL DEFAULT '',
         withdrawn              INTEGER NOT NULL DEFAULT 0,
         supersedes_evidence_id TEXT,
         event_key              TEXT    NOT NULL,
@@ -758,6 +766,19 @@ class SqliteRecordStore:
         or row. Rollback is disable-and-ignore (stop reading the table)."""
         for stmt in _READINESS_EVIDENCE_SCHEMA:
             conn.execute(stmt)
+        # D2 forward migration, same additive discipline as every migration
+        # above: guarded `ALTER TABLE ADD COLUMN`, idempotent, never rewriting a
+        # row. An existing populated database keeps every evidence row exactly
+        # as recorded and simply gains the NONE/empty defaults, which is the
+        # truthful state for an item recorded before quantities existed.
+        # Rollback is disable-and-ignore, never a destructive column drop.
+        cols = [row[1] for row in
+                conn.execute("PRAGMA table_info(readiness_evidence)").fetchall()]
+        for column, default in self._EVIDENCE_QUANTITY_COLUMNS:
+            if column not in cols:
+                conn.execute(
+                    "ALTER TABLE readiness_evidence ADD COLUMN %s TEXT NOT NULL "
+                    "DEFAULT %s" % (column, default))
 
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
@@ -1337,7 +1358,25 @@ class SqliteRecordStore:
         "evidence_seq, evidence_id, dimension, topic, subject_text, "
         "statement_text, source_identity, provenance, occurred_on, scope_text, "
         "limitation_text, claim_status, withdrawn, supersedes_evidence_id, "
-        "event_key, recorded_iteration, recorded_at")
+        "event_key, recorded_iteration, recorded_at, "
+        "value_state, value_exact, value_min, value_max, currency, "
+        "value_basis, estimate_basis, estimate_rationale")
+
+    #: D2 quantitative columns, added additively to the EXISTING evidence table
+    #: rather than in a second table: they describe the SAME recorded item, and
+    #: splitting one item across two rows would give the owner two places to be
+    #: corrected and withdrawn from. Every one is NOT NULL with an empty/NONE
+    #: default, so a pre-D2 row is already valid under the new rules.
+    _EVIDENCE_QUANTITY_COLUMNS = (
+        ("value_state", "'NONE'"),
+        ("value_exact", "''"),
+        ("value_min", "''"),
+        ("value_max", "''"),
+        ("currency", "''"),
+        ("value_basis", "''"),
+        ("estimate_basis", "''"),
+        ("estimate_rationale", "''"),
+    )
 
     def _evidence_rows(self, project_id: str):
         return self._conn.execute(
@@ -1355,7 +1394,10 @@ class SqliteRecordStore:
             source_identity=row[6], provenance=row[7], occurred_on=row[8],
             scope_text=row[9], limitation_text=row[10], claim_status=row[11],
             withdrawn=bool(row[12]), supersedes_evidence_id=row[13],
-            event_key=row[14], recorded_iteration=row[15], recorded_at=row[16])
+            event_key=row[14], recorded_iteration=row[15], recorded_at=row[16],
+            value_state=row[17], value_exact=row[18], value_min=row[19],
+            value_max=row[20], currency=row[21], value_basis=row[22],
+            estimate_basis=row[23], estimate_rationale=row[24])
 
     def new_readiness_evidence_id(self) -> str:
         """A durability-safe, collision-safe readiness-evidence identifier."""
@@ -1454,7 +1496,8 @@ class SqliteRecordStore:
             self._conn.execute(
                 "INSERT INTO readiness_evidence (project_id, "
                 + self._EVIDENCE_COLUMNS + ") "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                "?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (project_id, seq, evidence.evidence_id, evidence.dimension,
                  evidence.topic, evidence.subject_text, evidence.statement_text,
                  evidence.source_identity, evidence.provenance,
@@ -1462,7 +1505,11 @@ class SqliteRecordStore:
                  evidence.limitation_text, evidence.claim_status,
                  1 if evidence.withdrawn else 0,
                  evidence.supersedes_evidence_id, evidence.event_key,
-                 evidence.recorded_iteration, evidence.recorded_at))
+                 evidence.recorded_iteration, evidence.recorded_at,
+                 evidence.value_state, evidence.value_exact,
+                 evidence.value_min, evidence.value_max, evidence.currency,
+                 evidence.value_basis, evidence.estimate_basis,
+                 evidence.estimate_rationale))
             return EVIDENCE_INSERTED
 
     def load_readiness_evidence(self, project_id: str) -> tuple:

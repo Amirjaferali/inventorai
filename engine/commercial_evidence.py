@@ -48,6 +48,7 @@ authorized by the instruction that created this module. The provenance axis is
 reused in full so such evidence can later be REPRESENTED without a schema
 redesign; representing a provenance value is not collecting it.
 """
+import decimal
 import re
 from dataclasses import dataclass
 from typing import Optional
@@ -173,6 +174,171 @@ TOPICS_BY_DIMENSION = {
     DIMENSION_MANUFACTURING: MANUFACTURING_TOPICS,
 }
 
+# --- D2: bounded quantitative structure -------------------------------------
+# APPROXIMATE IS NOT ARBITRARY. A commercial number is recorded only in one of
+# three truthful states, and the third is a real answer rather than a failure:
+#
+#   NONE             no defensible quantitative basis exists. Nothing is stored.
+#   EXACT            one value, with a documented basis behind it.
+#   ESTIMATED_RANGE  a low and a high value, with a documented basis behind it.
+#
+# No midpoint is ever derived from a range, no range is ever derived from a
+# value, and no value is ever derived from prose. The rules below are the
+# reason: a quantified row without a basis type and a rationale is REFUSED, so
+# the only way to get a number in is to say where it came from.
+VALUE_STATE_NONE = "NONE"
+VALUE_STATE_EXACT = "EXACT"
+VALUE_STATE_ESTIMATED_RANGE = "ESTIMATED_RANGE"
+VALUE_STATES = (VALUE_STATE_NONE, VALUE_STATE_EXACT, VALUE_STATE_ESTIMATED_RANGE)
+
+# Currency is stored SEPARATELY from the amount and is never inferred. USD is
+# the default and, today, the only supported value: the field is explicit and
+# structured so another currency can be added later without a redesign, and
+# nothing here ever converts between currencies.
+CURRENCY_USD = "USD"
+CURRENCIES = (CURRENCY_USD,)
+DEFAULT_CURRENCY = CURRENCY_USD
+
+# What the amount is per. A closed list, because "per unit" and "per month" are
+# different claims and free text would let them blur.
+VALUE_BASES = (
+    "per_unit", "per_month", "per_project", "per_installation", "other",
+)
+
+# WHERE the number came from. Closed, because "we estimated it" and "a supplier
+# quoted it" are not the same evidence, and a quantified row must name one.
+ESTIMATE_BASES = (
+    "supplier_quote",
+    "comparable_product_price",
+    "preliminary_component_cost",
+    "manufacturing_cost_estimate",
+    "willingness_to_pay_evidence",
+    "reference_market_price",
+    "owner_assumption",
+    "prior_prototype_cost",
+    "channel_margin_assumption",
+    "other_documented",
+)
+
+#: The topics where a MONETARY quantity is a truthful thing to record. Every
+#: other topic — Commercial or Manufacturing — must stay `VALUE_STATE_NONE`.
+#:
+#: `demand` is deliberately absent: it wants an observation COUNT, not money,
+#: and forcing it through a currency-bearing model would misdescribe it.
+#: `market_entry` and `first_sale_viability` are deliberately absent too: a
+#: target window is a forecast, and this product does not make forecasts.
+QUANTIFIABLE_TOPICS = frozenset({
+    "price", "willingness_to_pay", "cost_revenue_assumption", "funding_need",
+})
+
+# The rationale is bounded like every other owner text. It is NOT in
+# TEXT_FIELD_CAPS: that loop runs for every row, and a NONE row must carry an
+# EMPTY rationale, which `validate_quantity` asserts directly.
+MAX_ESTIMATE_RATIONALE_CHARS = 600
+MAX_AMOUNT_DIGITS = 15          # before the decimal point
+MAX_AMOUNT_DECIMALS = 2
+_AMOUNT_RE = re.compile(r"^(0|[1-9][0-9]{0,%d})(\.[0-9]{1,%d})?$"
+                        % (MAX_AMOUNT_DIGITS - 1, MAX_AMOUNT_DECIMALS))
+
+
+def normalize_amount(text, field):
+    """A recorded amount, or the empty string. Never a float, never rounded.
+
+    Stored as the owner's own digits so nothing is lost to binary floating
+    point and nothing is silently reformatted. An empty value is legitimate and
+    means NO AMOUNT — it is not zero. Zero itself is a valid amount and is
+    stored as ``"0"``, which is why the two can never be confused downstream.
+
+    Anything else — a negative, a thousands separator, a currency symbol, a
+    range written as prose, an exponent, whitespace inside — is REFUSED rather
+    than parsed, because guessing what a malformed amount meant is exactly the
+    invention this slice exists to prevent."""
+    if text is None:
+        return ""
+    if not isinstance(text, str):
+        raise CommercialEvidenceError("%s: must be text" % field)
+    stripped = text.strip()
+    if not stripped:
+        return ""
+    if not _AMOUNT_RE.match(stripped):
+        raise CommercialEvidenceError("%s: is not a recordable amount" % field)
+    return stripped
+
+
+def is_stored_amount(text):
+    """True iff ``text`` is exactly what `normalize_amount` would have stored."""
+    if not isinstance(text, str):
+        return False
+    return text == "" or bool(_AMOUNT_RE.match(text))
+
+
+def _amount_value(text):
+    """Decimal comparison of two stored amounts. Never used for arithmetic on
+    the owner's numbers — only to check that a low is not above a high."""
+    return decimal.Decimal(text)
+
+
+def validate_quantity(row):
+    """Every quantitative rule for ONE row, or a refusal. Returns the row.
+
+    The whole point is what it REFUSES. A range with no basis, a value on a
+    topic that has no money in it, an amount with no currency, a high below a
+    low, a leftover min on an EXACT row: each is a way a number could arrive
+    without anyone having stood behind it, and each is rejected rather than
+    normalised into something plausible."""
+    state = row.value_state
+    if state not in VALUE_STATES:
+        raise CommercialEvidenceError("value_state: unknown state")
+    for field in ("value_exact", "value_min", "value_max"):
+        if not is_stored_amount(getattr(row, field)):
+            raise CommercialEvidenceError("%s: is not a stored amount" % field)
+
+    if state == VALUE_STATE_NONE:
+        # NOTHING may linger. A NONE row that still carried a currency or a
+        # stale min would read as "no value" while holding one.
+        for field in ("value_exact", "value_min", "value_max", "currency",
+                      "value_basis", "estimate_basis", "estimate_rationale"):
+            if getattr(row, field) != "":
+                raise CommercialEvidenceError(
+                    "%s: must be empty when no value is recorded" % field)
+        return row
+
+    # From here the row CLAIMS a number, so every support it needs is required.
+    if row.topic not in QUANTIFIABLE_TOPICS:
+        raise CommercialEvidenceError(
+            "value_state: this topic records no monetary quantity")
+    if row.currency not in CURRENCIES:
+        raise CommercialEvidenceError("currency: unsupported currency")
+    if row.value_basis not in VALUE_BASES:
+        raise CommercialEvidenceError("value_basis: unknown basis")
+    # NO BASIS -> NONE. This is the rule that makes the other rules mean
+    # something: without it an estimate could enter with nothing behind it.
+    if row.estimate_basis not in ESTIMATE_BASES:
+        raise CommercialEvidenceError("estimate_basis: unknown basis type")
+    if not is_stored_text(row.estimate_rationale, "estimate_rationale",
+                          MAX_ESTIMATE_RATIONALE_CHARS) or \
+            not row.estimate_rationale.strip():
+        raise CommercialEvidenceError("estimate_rationale: is empty")
+
+    if state == VALUE_STATE_EXACT:
+        if not row.value_exact:
+            raise CommercialEvidenceError("value_exact: is empty")
+        if row.value_min or row.value_max:
+            raise CommercialEvidenceError(
+                "value_min/value_max: an exact value carries no range")
+        return row
+
+    # ESTIMATED_RANGE
+    if not row.value_min or not row.value_max:
+        raise CommercialEvidenceError("value_min/value_max: a range needs both")
+    if row.value_exact:
+        raise CommercialEvidenceError(
+            "value_exact: a range carries no exact value")
+    if _amount_value(row.value_min) > _amount_value(row.value_max):
+        raise CommercialEvidenceError("value_min: is above value_max")
+    return row
+
+
 # --- Evidence strength ------------------------------------------------------
 # ONE value, deliberately (see the module docstring). Because the writer has no
 # second value available, no code path can promote a recorded statement, and
@@ -295,6 +461,17 @@ class ReadinessEvidence:
     event_key: str
     recorded_iteration: int
     recorded_at: str
+    # D2 quantitative structure. Every field defaults to the empty/NONE state,
+    # so every row written before this slice stays valid and stays honest: no
+    # value, no currency, no basis, nothing inferred for it afterwards.
+    value_state: str = VALUE_STATE_NONE
+    value_exact: str = ""
+    value_min: str = ""
+    value_max: str = ""
+    currency: str = ""
+    value_basis: str = ""
+    estimate_basis: str = ""
+    estimate_rationale: str = ""
 
 
 CANONICAL_ROW_FIELDS = tuple(ReadinessEvidence.__dataclass_fields__)
@@ -306,6 +483,10 @@ _IDENTITY_FIELDS = (
     "dimension", "topic", "subject_text", "statement_text", "source_identity",
     "provenance", "occurred_on", "scope_text", "limitation_text",
     "claim_status", "withdrawn", "supersedes_evidence_id", "event_key",
+    # The quantity IS part of what the owner recorded: two rows that differ
+    # only in the amount are different events, not a replay of one another.
+    "value_state", "value_exact", "value_min", "value_max", "currency",
+    "value_basis", "estimate_basis", "estimate_rationale",
 )
 
 
@@ -314,7 +495,11 @@ def make_readiness_evidence(*, evidence_id, evidence_seq, dimension, topic,
                             occurred_on=None, scope_text, limitation_text,
                             provenance=DEFAULT_PROVENANCE, withdrawn=False,
                             supersedes_evidence_id=None, event_key,
-                            recorded_iteration, recorded_at):
+                            recorded_iteration, recorded_at,
+                            value_state=VALUE_STATE_NONE, value_exact=None,
+                            value_min=None, value_max=None, currency="",
+                            value_basis="", estimate_basis="",
+                            estimate_rationale=""):
     """Build ONE validated canonical row, or raise ``CommercialEvidenceError``.
 
     Conservative by construction: ``claim_status`` is the single UNVALIDATED
@@ -327,7 +512,7 @@ def make_readiness_evidence(*, evidence_id, evidence_seq, dimension, topic,
     if withdrawn and not supersedes_evidence_id:
         raise CommercialEvidenceError(
             "withdrawn: a withdrawal must supersede an existing item")
-    return ReadinessEvidence(
+    return validate_quantity(ReadinessEvidence(
         evidence_id=evidence_id,
         evidence_seq=evidence_seq,
         dimension=dimension,
@@ -350,7 +535,24 @@ def make_readiness_evidence(*, evidence_id, evidence_seq, dimension, topic,
         event_key=event_key,
         recorded_iteration=recorded_iteration,
         recorded_at=recorded_at,
-    )
+        # Amounts are normalised (or refused) here; every quantitative RULE is
+        # then asked once, by `validate_quantity` below, so the constructor and
+        # the durable boundary cannot drift apart.
+        value_state=value_state,
+        value_exact=normalize_amount(value_exact, "value_exact"),
+        value_min=normalize_amount(value_min, "value_min"),
+        value_max=normalize_amount(value_max, "value_max"),
+        currency=currency,
+        value_basis=value_basis,
+        estimate_basis=estimate_basis,
+        # Empty is legitimate here and means NO RATIONALE, which is only ever
+        # valid on a NONE row — `validate_quantity` refuses it on any row that
+        # claims a number, so emptiness cannot become a way past the basis rule.
+        estimate_rationale=("" if not (estimate_rationale or "").strip()
+                            else normalize_text(
+                                estimate_rationale, "estimate_rationale",
+                                MAX_ESTIMATE_RATIONALE_CHARS)),
+    ))
 
 
 def canonical_evidence_dict(evidence):
@@ -432,6 +634,7 @@ def validate_evidence_row(row):
     if row.withdrawn and not row.supersedes_evidence_id:
         raise CommercialEvidenceError(
             "withdrawn: a withdrawal must supersede an existing item")
+    validate_quantity(row)
     return row
 
 

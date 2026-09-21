@@ -114,6 +114,13 @@ from engine.commercial_evidence import (
     evidence_lifecycle as _evidence_lifecycle,
     active_evidence as _cev_active_evidence,
     canonical_evidence_dict as _cev_canonical,
+    QUANTIFIABLE_TOPICS as _CEV_QUANTIFIABLE,
+    VALUE_STATES as _CEV_VALUE_STATES,
+    VALUE_STATE_NONE as _CEV_VALUE_NONE,
+    VALUE_BASES as _CEV_VALUE_BASES,
+    ESTIMATE_BASES as _CEV_ESTIMATE_BASES,
+    CURRENCIES as _CEV_CURRENCIES,
+    DEFAULT_CURRENCY as _CEV_DEFAULT_CURRENCY,
     LIFECYCLE_CURRENT as _LC_CURRENT,
     LIFECYCLE_REPLACED as _LC_REPLACED,
     LIFECYCLE_WITHDRAWN as _LC_WITHDRAWN,
@@ -6698,12 +6705,59 @@ def _cev_notice_text(token, lang):
 # claim_status, validation status, readiness status, dimension. A submission
 # carrying any of them is refused whole, so a forged value is never merely
 # ignored — the write does not happen.
+# D2 quantity fields. Optional on every submission: a topic that records no
+# money never sends them, and a topic that does may still record NONE.
+_CEV_QUANTITY_FIELDS = ("value_state", "value_exact", "value_min", "value_max",
+                        "currency", "value_basis", "estimate_basis",
+                        "estimate_rationale")
 _CEV_FIELDS = frozenset({
     "csrf_token", "topic", "subject_text", "statement_text", "source_identity",
     "occurred_on", "scope_text", "limitation_text",
-})
+}) | set(_CEV_QUANTITY_FIELDS)
 _CEV_TEXT_FIELDS = ("subject_text", "statement_text", "source_identity",
                     "occurred_on", "scope_text", "limitation_text")
+
+
+def _cev_quantity_kwargs(form, topic):
+    """The quantity arguments for one submission, or None when the form is not
+    a recordable quantity.
+
+    Returns the NONE state for a topic that records no money and for a topic
+    that does but was left empty — both are truthful, and neither invents a
+    number. Every VALUE is passed through untouched: this function chooses no
+    amount, no currency and no basis, it only decides which fields to forward,
+    and the owner then refuses anything that does not hold together. Returning
+    None means REFUSE THE WHOLE SUBMISSION, never "record it without the
+    number"."""
+    none_state = {"value_state": _CEV_VALUE_NONE}
+    sent = {name: form.get(name, "") for name in _CEV_QUANTITY_FIELDS}
+    state = sent["value_state"] or _CEV_VALUE_NONE
+    if topic not in _CEV_QUANTIFIABLE:
+        # A non-monetary topic that nonetheless carried quantity values is a
+        # malformed submission, not one to quietly strip.
+        if any(sent[name] for name in _CEV_QUANTITY_FIELDS
+               if name != "value_state") or state != _CEV_VALUE_NONE:
+            return None
+        return none_state
+    if state == _CEV_VALUE_NONE:
+        if any(sent[name] for name in _CEV_QUANTITY_FIELDS
+               if name != "value_state"):
+            return None          # "no value" that still carries one
+        return none_state
+    if state not in _CEV_VALUE_STATES:
+        return None
+    # Currency is explicit and never inferred from anything about the user; the
+    # default is applied only when the field was not sent at all.
+    currency = sent["currency"] or _CEV_DEFAULT_CURRENCY
+    if currency not in _CEV_CURRENCIES or \
+            sent["value_basis"] not in _CEV_VALUE_BASES or \
+            sent["estimate_basis"] not in _CEV_ESTIMATE_BASES:
+        return None
+    return {"value_state": state, "value_exact": sent["value_exact"],
+            "value_min": sent["value_min"], "value_max": sent["value_max"],
+            "currency": currency, "value_basis": sent["value_basis"],
+            "estimate_basis": sent["estimate_basis"],
+            "estimate_rationale": sent["estimate_rationale"]}
 
 
 def _publish_cev_notice(entry, ack=None, error=None):
@@ -6718,7 +6772,7 @@ def _publish_cev_notice(entry, ack=None, error=None):
         entry[CEV_ERROR_SLOT] = error
 
 
-def _cev_event_key(sid, topic, fields):
+def _cev_event_key(sid, topic, fields, quantity):
     """The durable exact-replay identity of ONE recorded item, derived from the
     project and the CONTENT the owner submitted.
 
@@ -6731,7 +6785,8 @@ def _cev_event_key(sid, topic, fields):
     under its own domain-separator label."""
     msg = _canonical_message(
         "commercial-evidence-event-v1", sid, topic,
-        *[fields[name] for name in _CEV_TEXT_FIELDS])
+        *[fields[name] for name in _CEV_TEXT_FIELDS],
+        *[str(quantity.get(name, "")) for name in _CEV_QUANTITY_FIELDS])
     return _p2a_hmac.new(_answer_secret(), msg,
                          _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
 
@@ -6767,6 +6822,14 @@ def _commercial_evidence_context(sid, writable):
         # and the template renders no gap block at all, so a complete project
         # is never shown a false gap and is never told it is "complete" either.
         "uncovered": list(_uncovered_topics(_DIMENSION_COMMERCIAL, view)),
+        # D2 vocabularies, composed from the owner so the form can never offer
+        # a state, basis or currency the owner would refuse.
+        "quantifiable": sorted(_CEV_QUANTIFIABLE),
+        "value_states": list(_CEV_VALUE_STATES),
+        "value_bases": list(_CEV_VALUE_BASES),
+        "estimate_bases": list(_CEV_ESTIMATE_BASES),
+        "currencies": list(_CEV_CURRENCIES),
+        "default_currency": _CEV_DEFAULT_CURRENCY,
         # D1: the rows this project recorded that are no longer current, each
         # carrying the lifecycle state the owner's own model already implies.
         # Append order, which is the owner's order — not recency-ranked, not
@@ -7022,12 +7085,13 @@ def record_manufacturing_evidence(sid):
     return redirect(url_for("show_session", sid=sid))
 
 
-_CEV_CORRECT_FIELDS = frozenset({"csrf_token", "supersedes_evidence_id"}) | {
-    name for name in _CEV_TEXT_FIELDS}
+_CEV_CORRECT_FIELDS = (frozenset({"csrf_token", "supersedes_evidence_id"})
+                       | set(_CEV_TEXT_FIELDS) | set(_CEV_QUANTITY_FIELDS))
 _CEV_WITHDRAW_FIELDS = frozenset({"csrf_token", "supersedes_evidence_id"})
 
 
-def _cev_lifecycle_event_key(sid, action, prior_id, topic, fields):
+def _cev_lifecycle_event_key(sid, action, prior_id, topic, fields,
+                             quantity):
     """The durable exact-replay identity of ONE lifecycle act.
 
     Same construction and same purpose as `_cev_event_key`, with two additions
@@ -7038,7 +7102,8 @@ def _cev_lifecycle_event_key(sid, action, prior_id, topic, fields):
     recognised as the replay it is."""
     msg = _canonical_message(
         "commercial-evidence-lifecycle-v1", sid, action, prior_id, topic,
-        *[fields[name] for name in _CEV_TEXT_FIELDS])
+        *[fields[name] for name in _CEV_TEXT_FIELDS],
+        *[str(quantity.get(name, "")) for name in _CEV_QUANTITY_FIELDS])
     return _p2a_hmac.new(_answer_secret(), msg,
                          _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
 
@@ -7143,6 +7208,14 @@ def correct_commercial_evidence(sid):
         if _free_text_error(value, lang) is not None:
             _publish_cev_notice(entry, error=CEV_TEXT_REJECTED_MESSAGE)
             return redirect(url_for("show_session", sid=sid))
+    # A correction restates the quantity as well as the words. Omitting the
+    # quantity fields therefore means NONE, not "keep the old number": a
+    # corrected item that silently kept a superseded amount would be the one
+    # way a number could survive its own correction unexamined.
+    quantity = _cev_quantity_kwargs(request.form, prior.topic)
+    if quantity is None:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
     try:
         evidence = _make_readiness_evidence(
             evidence_id=_get_store().new_readiness_evidence_id(),
@@ -7158,9 +7231,11 @@ def correct_commercial_evidence(sid):
             provenance=_CEV_PROVENANCE,
             supersedes_evidence_id=prior.evidence_id,
             event_key=_cev_lifecycle_event_key(
-                sid, "correct", prior.evidence_id, prior.topic, fields),
+                sid, "correct", prior.evidence_id, prior.topic, fields,
+                quantity),
             recorded_iteration=int(getattr(state, "iteration", 0) or 0),
-            recorded_at=_quantity_recorded_at())
+            recorded_at=_quantity_recorded_at(),
+            **quantity)
     except _CommercialEvidenceError:
         _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
@@ -7203,6 +7278,10 @@ def withdraw_commercial_evidence(sid):
         _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     carried = {name: getattr(prior, name) for name in _CEV_TEXT_FIELDS}
+    # The withdrawal row carries the item's own quantity forward verbatim, so
+    # the historical record still shows WHAT was withdrawn, amount included.
+    carried_quantity = {name: getattr(prior, name)
+                        for name in _CEV_QUANTITY_FIELDS}
     try:
         evidence = _make_readiness_evidence(
             evidence_id=_get_store().new_readiness_evidence_id(),
@@ -7219,9 +7298,11 @@ def withdraw_commercial_evidence(sid):
             withdrawn=True,
             supersedes_evidence_id=prior.evidence_id,
             event_key=_cev_lifecycle_event_key(
-                sid, "withdraw", prior.evidence_id, prior.topic, carried),
+                sid, "withdraw", prior.evidence_id, prior.topic, carried,
+                carried_quantity),
             recorded_iteration=int(getattr(state, "iteration", 0) or 0),
-            recorded_at=_quantity_recorded_at())
+            recorded_at=_quantity_recorded_at(),
+            **carried_quantity)
     except _CommercialEvidenceError:
         _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
@@ -7277,7 +7358,11 @@ def record_commercial_evidence(sid):
         if _free_text_error(value, lang) is not None:
             _publish_cev_notice(entry, error=CEV_TEXT_REJECTED_MESSAGE)
             return redirect(url_for("show_session", sid=sid))
-    event_key = _cev_event_key(sid, topic, fields)
+    quantity = _cev_quantity_kwargs(request.form, topic)
+    if quantity is None:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    event_key = _cev_event_key(sid, topic, fields, quantity)
     try:
         evidence = _make_readiness_evidence(
             evidence_id=_get_store().new_readiness_evidence_id(),
@@ -7295,7 +7380,8 @@ def record_commercial_evidence(sid):
             provenance=_CEV_PROVENANCE,
             event_key=event_key,
             recorded_iteration=int(getattr(state, "iteration", 0) or 0),
-            recorded_at=_quantity_recorded_at())
+            recorded_at=_quantity_recorded_at(),
+            **quantity)
     except _CommercialEvidenceError:
         _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
