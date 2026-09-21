@@ -2614,6 +2614,72 @@ UI_STRINGS = {
     # the world, and this product makes none of them. The EN and AR say the same
     # thing, including the disclaimer — a gap list that warned in one language
     # only would be worse than no list.
+    # --- D1 lifecycle: correct, withdraw, and the history that results -------
+    # The lifecycle words carry the whole meaning of this slice, so EN and AR
+    # must say the same thing about the same three states. "Replaced" and
+    # "withdrawn" are statements about the RECORD, never about the market and
+    # never about the owner who wrote it: an earlier version is not a mistake
+    # and a withdrawal is not a failure.
+    "UI_CEV_CORRECT_HEADING": {
+        "en": "Correct this item",
+        "ar": "\u0635\u062d\u0651\u062d \u0647\u0630\u0627 \u0627\u0644\u0639\u0646\u0635\u0631",
+    },
+    "UI_CEV_CORRECT_EXPLAIN": {
+        "en": ("A correction records a new version beside the old one. The "
+               "earlier version is kept exactly as you wrote it and stays "
+               "visible below as history \u2014 nothing is overwritten or deleted. "
+               "The topic stays the same; to file an item under a different "
+               "topic, withdraw it and record it again."),
+        "ar": ("\u0627\u0644\u062a\u0635\u062d\u064a\u062d \u064a\u0633\u062c\u0651\u0644 \u0646\u0633\u062e\u0629 \u062c\u062f\u064a\u062f\u0629 \u0625\u0644\u0649 \u062c\u0627\u0646\u0628 \u0627\u0644\u0642\u062f\u064a\u0645\u0629. "
+               "\u0648\u062a\u064f\u062d\u0641\u0638 \u0627\u0644\u0646\u0633\u062e\u0629 \u0627\u0644\u0633\u0627\u0628\u0642\u0629 \u0643\u0645\u0627 \u0643\u062a\u0628\u062a\u0647\u0627 \u062a\u0645\u0627\u0645\u064b\u0627 \u0648\u062a\u0628\u0642\u0649 \u0638\u0627\u0647\u0631\u0629 \u0623\u062f\u0646\u0627\u0647 "
+               "\u0636\u0645\u0646 \u0627\u0644\u0633\u062c\u0644\u0651 \u2014 \u0644\u0627 \u0634\u064a\u0621 \u064a\u064f\u0633\u062a\u0628\u062f\u0644 \u0623\u0648 \u064a\u064f\u062d\u0630\u0641. \u0648\u064a\u0628\u0642\u0649 \u0627\u0644\u0645\u0648\u0636\u0648\u0639 \u0643\u0645\u0627 \u0647\u0648\u061b "
+               "\u0648\u0644\u062a\u0633\u062c\u064a\u0644 \u0639\u0646\u0635\u0631 \u062a\u062d\u062a \u0645\u0648\u0636\u0648\u0639 \u0622\u062e\u0631\u060c \u0627\u0633\u062d\u0628\u0647 \u062b\u0645 \u0633\u062c\u0651\u0644\u0647 \u0645\u0646 \u062c\u062f\u064a\u062f."),
+    },
+    "UI_CEV_CORRECT_SUBMIT": {
+        "en": "Record the correction",
+        "ar": "\u0633\u062c\u0651\u0644 \u0627\u0644\u062a\u0635\u062d\u064a\u062d",
+    },
+    "UI_CEV_WITHDRAW_SUBMIT": {
+        "en": "Withdraw this item",
+        "ar": "\u0627\u0633\u062d\u0628 \u0647\u0630\u0627 \u0627\u0644\u0639\u0646\u0635\u0631",
+    },
+    "UI_CEV_WITHDRAW_EXPLAIN": {
+        "en": ("Withdrawing says this item no longer stands. It is kept in the "
+               "history below exactly as you wrote it, and it stops counting as "
+               "something recorded for its topic."),
+        "ar": ("\u0627\u0644\u0633\u062d\u0628 \u064a\u0639\u0646\u064a \u0623\u0646 \u0647\u0630\u0627 \u0627\u0644\u0639\u0646\u0635\u0631 \u0644\u0645 \u064a\u0639\u062f \u0642\u0627\u0626\u0645\u064b\u0627. \u0648\u064a\u064f\u062d\u0641\u0638 \u0641\u064a "
+               "\u0627\u0644\u0633\u062c\u0644\u0651 \u0623\u062f\u0646\u0627\u0647 \u0643\u0645\u0627 \u0643\u062a\u0628\u062a\u0647 \u062a\u0645\u0627\u0645\u064b\u0627\u060c \u0648\u064a\u062a\u0648\u0642\u0641 \u0639\u0646 \u0627\u0644\u0627\u062d\u062a\u0633\u0627\u0628 \u0643\u0634\u064a\u0621 "
+               "\u0645\u064f\u0633\u062c\u0651\u0644 \u0644\u0645\u0648\u0636\u0648\u0639\u0647."),
+    },
+    "UI_CEV_HISTORY_HEADING": {
+        "en": "Earlier versions and withdrawn items",
+        "ar": "\u0627\u0644\u0646\u0633\u062e \u0627\u0644\u0633\u0627\u0628\u0642\u0629 \u0648\u0627\u0644\u0639\u0646\u0627\u0635\u0631 \u0627\u0644\u0645\u0633\u062d\u0648\u0628\u0629",
+    },
+    "UI_CEV_HISTORY_EXPLAIN": {
+        "en": ("Everything you recorded is kept, in the order you recorded it. "
+               "An earlier version is not a mistake and a withdrawn item is not "
+               "a failure \u2014 both are what you wrote at the time, and they are "
+               "shown so the record stays honest about how it changed."),
+        "ar": ("\u064a\u064f\u062d\u0641\u0638 \u0643\u0644 \u0645\u0627 \u0633\u062c\u0651\u0644\u062a\u0647\u060c \u0628\u0627\u0644\u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u0630\u064a \u0633\u062c\u0651\u0644\u062a\u0647 \u0628\u0647. \u0648\u0627\u0644\u0646\u0633\u062e\u0629 "
+               "\u0627\u0644\u0633\u0627\u0628\u0642\u0629 \u0644\u064a\u0633\u062a \u062e\u0637\u0623\u060c \u0648\u0627\u0644\u0639\u0646\u0635\u0631 \u0627\u0644\u0645\u0633\u062d\u0648\u0628 \u0644\u064a\u0633 \u0625\u062e\u0641\u0627\u0642\u064b\u0627 \u2014 \u0643\u0644\u0627\u0647\u0645\u0627 \u0645\u0627 "
+               "\u0643\u062a\u0628\u062a\u0647 \u0641\u064a \u062d\u064a\u0646\u0647\u060c \u0648\u064a\u064f\u0639\u0631\u0636\u0627\u0646 \u0644\u064a\u0628\u0642\u0649 \u0627\u0644\u0633\u062c\u0644\u0651 \u0635\u0627\u062f\u0642\u064b\u0627 \u0639\u0646 \u0643\u064a\u0641 \u062a\u063a\u064a\u0651\u0631."),
+    },
+    "UI_CEV_STATE_REPLACED": {
+        "en": "Replaced by a later version",
+        "ar": "\u0627\u0633\u062a\u064f\u0628\u062f\u0644\u062a \u0628\u0646\u0633\u062e\u0629 \u0644\u0627\u062d\u0642\u0629",
+    },
+    "UI_CEV_STATE_WITHDRAWN": {
+        "en": "Withdrawn",
+        "ar": "\u0645\u0633\u062d\u0648\u0628",
+    },
+    "UI_CEV_NOTICE_CORRECTED": {
+        "en": "Your correction was recorded. The earlier version is kept below.",
+        "ar": "\u0633\u064f\u062c\u0651\u0644 \u062a\u0635\u062d\u064a\u062d\u0643. \u0648\u0627\u0644\u0646\u0633\u062e\u0629 \u0627\u0644\u0633\u0627\u0628\u0642\u0629 \u0645\u062d\u0641\u0648\u0638\u0629 \u0623\u062f\u0646\u0627\u0647.",
+    },
+    "UI_CEV_NOTICE_WITHDRAWN": {
+        "en": "That item was withdrawn. It is kept below as history.",
+        "ar": "\u0633\u064f\u062d\u0628 \u0630\u0644\u0643 \u0627\u0644\u0639\u0646\u0635\u0631. \u0648\u0647\u0648 \u0645\u062d\u0641\u0648\u0638 \u0623\u062f\u0646\u0627\u0647 \u0636\u0645\u0646 \u0627\u0644\u0633\u062c\u0644\u0651.",
+    },
     "UI_CEV_GAP_HEADING": {
         "en": "Commercial topics you have not recorded anything for yet",
         "ar": "\u0645\u0648\u0636\u0648\u0639\u0627\u062a \u062a\u062c\u0627\u0631\u064a\u0629 \u0644\u0645 \u062a\u0633\u062c\u0651\u0644 \u0639\u0646\u0647\u0627 \u0634\u064a\u0626\u064b\u0627 \u0628\u0639\u062f",

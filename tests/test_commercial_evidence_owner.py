@@ -33,7 +33,9 @@ from engine.commercial_evidence import (
     TOPICS_BY_DIMENSION, CommercialEvidenceError,
     CommercialEvidenceHistoryError, EvidenceCapExceeded, ReadinessEvidence,
     active_evidence, canonical_evidence_dict, commercial_evidence_view,
-    evidence_chain, make_readiness_evidence, manufacturing_evidence_view,
+    evidence_chain, evidence_lifecycle, LIFECYCLE_CURRENT,
+    LIFECYCLE_REPLACED, LIFECYCLE_STATES, LIFECYCLE_WITHDRAWN,
+    make_readiness_evidence, manufacturing_evidence_view,
     uncovered_topics, validate_evidence_history,
 )
 from engine.idea_state import (
@@ -486,6 +488,13 @@ def test_the_web_surface_consumes_the_owner_only_through_the_capture_slices():
     routes = {
         "/session/<sid>/commercial-evidence": "record_commercial_evidence",
         "/session/<sid>/manufacturing-evidence": "record_manufacturing_evidence",
+        # Stage-17 D1: the owner's EXISTING supersession and withdrawal
+        # semantics made reachable. Two more enumerated POST-only routes on the
+        # same boundary — not a new lane, not a new owner, not a new dimension.
+        "/session/<sid>/commercial-evidence/correct":
+            "correct_commercial_evidence",
+        "/session/<sid>/commercial-evidence/withdraw":
+            "withdraw_commercial_evidence",
     }
     for rule, view in routes.items():
         assert web.count('@app.route("%s"' % rule) == 1, rule
@@ -495,8 +504,17 @@ def test_the_web_surface_consumes_the_owner_only_through_the_capture_slices():
     # One read-context builder per dimension, and no third one.
     for builder in ("_commercial_evidence_context", "_manufacturing_evidence_context"):
         assert web.count("def %s(" % builder) == 1, builder
-    # Writes go through the owner's API — one call per route, no direct SQL.
-    assert web.count("append_readiness_evidence(") == len(routes)
+    # Writes go through the owner's API, never direct SQL. The count is of
+    # WRITE PATHS, not routes, and the two differ on purpose: four routes reach
+    # the owner through three paths, because the D1 lifecycle routes share one
+    # durable writer (`_cev_lifecycle_write`) so the replay-then-persist
+    # discipline exists once rather than being copied per act.
+    #
+    #   commercial create · manufacturing create · commercial lifecycle
+    #
+    # A fourth call site would mean a lifecycle route grew its own path.
+    assert web.count("append_readiness_evidence(") == 3
+    assert web.count("def _cev_lifecycle_write(") == 1
     # Scan CODE, not prose: the route comments explain the shared substrate by
     # name, which is documentation of the boundary rather than a breach of it.
     residual = _code_only(os.path.join(_ROOT, "web", "app.py"))
@@ -868,3 +886,85 @@ def test_the_derivation_holds_no_state_and_writes_nothing():
         DIMENSION_COMMERCIAL, view)
     assert tuple(TOPICS_BY_DIMENSION[DIMENSION_COMMERCIAL]) == before
     assert view == _view_with((COMMERCIAL_TOPICS[1],))
+
+
+# ==========================================================================
+# D1 — the lifecycle projection
+#
+# `evidence_lifecycle` renames nothing and decides nothing: it labels rows with
+# states the append-only model already implies. These tests hold it to that —
+# the labels must agree with `active_evidence`, which is the owner's existing
+# answer to the same question from the other side.
+# ==========================================================================
+def test_lifecycle_labels_agree_with_the_active_set(tmp_path):
+    """The projection and `active_evidence` must never disagree: anything
+    labelled current is active, and anything active is labelled current."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    kept = _evidence(store, seq=0, topic=COMMERCIAL_TOPICS[0], key="l1")
+    store.append_readiness_evidence(pid, kept)
+    rows = store.load_readiness_evidence(pid)
+    corrected = _evidence(store, seq=1, topic=COMMERCIAL_TOPICS[0], key="l2",
+                          supersedes=rows[0].evidence_id,
+                          statement_text="a corrected statement")
+    store.append_readiness_evidence(pid, corrected)
+    doomed = _evidence(store, seq=2, topic=COMMERCIAL_TOPICS[1], key="l3")
+    store.append_readiness_evidence(pid, doomed)
+    rows = store.load_readiness_evidence(pid)
+    doomed_id = [r.evidence_id for r in rows if r.event_key == "l3"][0]
+    store.append_readiness_evidence(pid, _evidence(
+        store, seq=3, topic=COMMERCIAL_TOPICS[1], key="l4",
+        withdrawn=True, supersedes=doomed_id))
+
+    rows = store.load_readiness_evidence(pid)
+    lifecycle = evidence_lifecycle(rows, DIMENSION_COMMERCIAL)
+    assert len(lifecycle) == 4
+    assert all(state in LIFECYCLE_STATES for _r, state, _p in lifecycle)
+    labelled_current = {r.evidence_id for r, s, _p in lifecycle
+                        if s == LIFECYCLE_CURRENT}
+    assert labelled_current == {
+        r.evidence_id for r in active_evidence(rows, DIMENSION_COMMERCIAL)}
+
+    by_key = {r.event_key: s for r, s, _p in lifecycle}
+    assert by_key == {"l1": LIFECYCLE_REPLACED, "l2": LIFECYCLE_CURRENT,
+                      "l3": LIFECYCLE_REPLACED, "l4": LIFECYCLE_WITHDRAWN}
+
+
+def test_the_lifecycle_projection_keeps_append_order_and_the_replaces_edge(tmp_path):
+    """Append order is the owner's order; no recency or importance sorting."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(store, seq=0, key="o1"))
+    first_id = store.load_readiness_evidence(pid)[0].evidence_id
+    store.append_readiness_evidence(pid, _evidence(
+        store, seq=1, key="o2", supersedes=first_id,
+        statement_text="a corrected statement"))
+    lifecycle = evidence_lifecycle(store.load_readiness_evidence(pid),
+                                   DIMENSION_COMMERCIAL)
+    assert [r.event_key for r, _s, _p in lifecycle] == ["o1", "o2"]
+    assert [p for _r, _s, p in lifecycle] == [None, first_id]
+
+
+def test_the_lifecycle_projection_is_dimension_scoped(tmp_path):
+    """A Manufacturing row never appears in the Commercial lifecycle."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(
+        store, seq=0, key="d1", topic=TOPICS_BY_DIMENSION[
+            DIMENSION_MANUFACTURING][0], dimension=DIMENSION_MANUFACTURING))
+    rows = store.load_readiness_evidence(pid)
+    assert evidence_lifecycle(rows, DIMENSION_COMMERCIAL) == ()
+    assert len(evidence_lifecycle(rows, DIMENSION_MANUFACTURING)) == 1
+
+
+def test_the_lifecycle_projection_holds_no_state_and_adds_no_axis(tmp_path):
+    """Pure, and it introduces no claim status, score or disposition."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    store.append_readiness_evidence(pid, _evidence(store, seq=0, key="p1"))
+    rows = store.load_readiness_evidence(pid)
+    assert evidence_lifecycle(rows, DIMENSION_COMMERCIAL) == \
+        evidence_lifecycle(rows, DIMENSION_COMMERCIAL)
+    assert all(r.claim_status == CLAIM_STATUS_UNVALIDATED
+               for r, _s, _p in evidence_lifecycle(rows, DIMENSION_COMMERCIAL))
+    assert set(LIFECYCLE_STATES) == {"current", "replaced", "withdrawn"}

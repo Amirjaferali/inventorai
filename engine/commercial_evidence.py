@@ -545,6 +545,50 @@ def evidence_chain(rows, evidence_id):
     return tuple(chain)
 
 
+# The lifecycle state of ONE row, as the existing append-only model already
+# determines it. These are names for states the owner has always had; no new
+# lifecycle, no new stored field and no new vocabulary is introduced.
+LIFECYCLE_CURRENT = "current"        # nothing supersedes it, it is not a withdrawal
+LIFECYCLE_REPLACED = "replaced"      # a later row supersedes it
+LIFECYCLE_WITHDRAWN = "withdrawn"    # it IS the withdrawal row of its chain
+LIFECYCLE_STATES = (LIFECYCLE_CURRENT, LIFECYCLE_REPLACED, LIFECYCLE_WITHDRAWN)
+
+
+def evidence_lifecycle(rows, dimension):
+    """Every row of one dimension in append order, each labelled with the
+    lifecycle state the EXISTING model already implies. Pure.
+
+    Returns a tuple of ``(row, state, replaces_id)``, oldest first, where
+    ``state`` is one of ``LIFECYCLE_STATES`` and ``replaces_id`` is the row this
+    one supersedes, or None. Nothing is recomputed: ``replaced`` is read from
+    the same ``superseded_ids`` that ``active_evidence`` reads, and
+    ``withdrawn`` is the stored flag.
+
+    What it is NOT:
+
+      * NOT a second lifecycle. It renames nothing and decides nothing; a caller
+        that ignored it entirely would get the same active set as before.
+      * NOT a judgement. A replaced row is not wrong and a withdrawn one is not
+        a failure; both are what the owner said at the time, kept because the
+        ledger is append-only.
+      * NOT ordered by importance. Append order is the owner's own order, and
+        it carries no ranking, score or recency preference.
+      * NOT a validation signal. Every row still carries the one frozen claim
+        status, and nothing here can change it."""
+    scoped = evidence_for_dimension(rows, dimension)
+    replaced = superseded_ids(scoped)
+    out = []
+    for row in scoped:
+        if row.withdrawn:
+            state = LIFECYCLE_WITHDRAWN
+        elif row.evidence_id in replaced:
+            state = LIFECYCLE_REPLACED
+        else:
+            state = LIFECYCLE_CURRENT
+        out.append((row, state, row.supersedes_evidence_id))
+    return tuple(out)
+
+
 def evidence_view(rows, dimension):
     """The minimum READ projection for ONE dimension of one project's evidence.
 
