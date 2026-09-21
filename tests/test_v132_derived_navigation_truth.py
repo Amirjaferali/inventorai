@@ -285,28 +285,34 @@ def test_the_arabic_contrast_observation_is_recorded_without_a_new_lifecycle():
         "the Arabic contrast vocabulary must be unchanged by a documentation cut")
 
 
-def test_stage_eleven_is_the_next_stage_and_authorizes_nothing():
+def test_stage_eighteen_is_the_next_executable_stage_and_authorizes_nothing():
     """The CURRENT next stage, asserted so preserved history cannot satisfy it.
 
-    This guard has now been wrong-but-green three times, and the shape of the
-    failure is the same each time: it asserted a routing sentence that was still
-    in the documents as legitimate preserved history, so closing the stage it
-    named left the assertion passing while it pointed at the wrong stage. It
-    asserted "Stage 8" after Stage 8 closed, "Stage 9" after the Stage-9
-    disposition completed, and "Stage 10" after the Stage-10 differential
-    completed. Every version passed.
+    This guard was wrong-but-green three times, and the shape of the failure was
+    the same each time: it asserted a routing sentence that was still in the
+    documents as legitimate preserved history, so closing the stage it named
+    left the assertion passing while it pointed at the wrong stage. It asserted
+    "Stage 8" after Stage 8 closed, "Stage 9" after the Stage-9 disposition
+    completed, and "Stage 10" after the Stage-10 differential completed. Every
+    version passed.
 
     So it asserts two things that cannot both survive a stale update: the
     CURRENT routing sentence must be present, AND every surviving sentence that
-    routes to Stage 7, 8, 9 or 10 must sit inside an explicit supersession note.
-    The second half is what actually catches the drift — a document that has
-    not been re-routed keeps a live stale sentence and fails here.
+    routes to an already-routed-past stage must sit inside an explicit
+    supersession note. The second half is what catches the drift — a document
+    that has not been re-routed keeps a live stale sentence and fails here.
+
+    Stage 11 joins that stale list at the Stage-17 product-depth disposition,
+    and the reason matters: it was routed PAST, not completed. So this guard
+    also asserts, separately, that every surface still calls it DEFERRED and
+    still carries `STAGE 11 STARTED: NO`. Routing forward must never read as a
+    discharge — that is the exact confusion these documents exist to prevent.
     """
     roadmap, checklist, contract = (_flat(ROADMAP), _flat(CHECKLIST),
                                     _flat(CONTRACT))
-    assert "Next Master Roadmap stage: Stage 11" in roadmap
-    assert "Next Master Roadmap stage: Stage 11" in contract
-    assert "**CURRENT STAGE:** Stage 11" in checklist
+    assert "Next executable Master Roadmap stage: Stage 18" in roadmap
+    assert "Next executable Master Roadmap stage: Stage 18" in contract
+    assert "**CURRENT STAGE:** Stage 18" in checklist
     # every surviving "Stage N is next" sentence, for every already-routed-past
     # stage, must be marked superseded — in the navigation AND in the authority.
     for flat, path in ((roadmap, ROADMAP), (checklist, CHECKLIST),
@@ -314,19 +320,62 @@ def test_stage_eleven_is_the_next_stage_and_authorizes_nothing():
         for stale in ("Next Master Roadmap stage: Stage 7",
                       "Next Master Roadmap stage: Stage 8",
                       "Next Master Roadmap stage: Stage 9",
-                      "Next Master Roadmap stage: Stage 10"):
+                      "Next Master Roadmap stage: Stage 10",
+                      "Next Master Roadmap stage: Stage 11"):
             for match in re.finditer(re.escape(stale), flat):
                 window = flat[max(0, match.start() - 600):match.start()]
                 assert "SUPERSEDED" in window.upper(), (
-                    "a live sentence still routes to a closed stage in %s: %s"
+                    "a live sentence still routes to a routed-past stage in %s: %s"
                     % (path, stale))
-    # completing or dispositioning one stage never starts the next
-    assert "Stage 11 requires its own explicit mandate" in checklist
-    assert "completing the Stage-10 differential starts nothing" in checklist
-    assert "`STAGE 11 STARTED: NO`" in contract
-    # and the stage after the frontier is still untouched
+    # routing PAST Stage 11 is not completing it, and every surface must say so
+    for flat, path in ((roadmap, ROADMAP), (checklist, CHECKLIST),
+                       (contract, CONTRACT)):
+        assert "`STAGE 11 STARTED: NO`" in flat, path
+        assert "DEFERRED" in flat.upper(), path
     assert re.search(r"^- \[ \] \*\*11 — T1-C′/A2 human evidence:",
                      _read(ROADMAP), re.M), "stage 11 checkbox is not empty"
+    # completing or dispositioning one stage never starts the next
+    assert "Stage 18 requires its own separate mandate" in checklist
+    assert "completing the Stage-17 product-depth work" in checklist
+    assert "`STAGE 18 STARTED: NO`" in contract
+    # and Stage 18 itself is still untouched
+    assert re.search(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:",
+                     _read(ROADMAP), re.M), "stage 18 checkbox is not empty"
+
+
+def test_stage_seventeen_product_depth_is_not_commercial_readiness():
+    """The distinction the disposition turns on, guarded in all three surfaces.
+
+    Product-depth work completing is not a Commercial Readiness PASS. A surface
+    that records the first without carrying the second is the drift this guard
+    exists to catch, so both must appear together and Stage 17 must stay
+    unticked."""
+    roadmap, checklist, contract = (_flat(ROADMAP), _flat(CHECKLIST),
+                                    _flat(CONTRACT))
+    for flat, path in ((roadmap, ROADMAP), (checklist, CHECKLIST),
+                       (contract, CONTRACT)):
+        assert "PRODUCT-DEPTH WORK" in flat.upper(), path
+        assert "COMMERCIAL READINESS" in flat.upper(), path
+        assert "VALIDATED COMMERCIAL CONCLUSION: NO" in flat, path
+        assert "INSUFFICIENT_EVIDENCE" in flat, path
+        # The denial must be PRESENT, not merely the claim absent: a surface
+        # that simply omits the point teaches nothing. A blunt substring sweep
+        # cannot tell "no product-market fit is claimed" from "product-market
+        # fit", so the affirmative forms are what is forbidden.
+        assert "Commercial Readiness is NOT asserted as passing" in flat \
+            or "does **not** assert Commercial Readiness as passing" in flat, path
+        for forbidden in ("COMMERCIAL READINESS: PASS",
+                          "COMMERCIAL READINESS PASS \u2705",
+                          "PRODUCT-MARKET FIT: ESTABLISHED",
+                          "DEMAND: VALIDATED"):
+            assert forbidden not in flat.upper(), (path, forbidden)
+    # the remaining gaps stay with their owner and are not re-homed into Stage 17
+    for flat, path in ((roadmap, ROADMAP), (contract, CONTRACT),
+                       (checklist, CHECKLIST)):
+        assert "T2-E" in flat, path
+    # Stage 17 is NOT closed: its checkbox stays empty
+    assert re.search(r"^- \[ \] \*\*17 — Market Reality / Commercial Readiness:",
+                     _read(ROADMAP), re.M), "stage 17 checkbox is not empty"
 
 
 def test_stage_eight_is_closed_by_disposition_not_by_repair():
@@ -531,15 +580,20 @@ def test_no_completed_stage_is_left_reading_as_the_current_stage():
     behind.
     """
     checklist = _flat(CHECKLIST)
-    assert "**CURRENT STAGE:** Stage 11" in checklist
-    for stage in (9, 10):
+    assert "**CURRENT STAGE:** Stage 18" in checklist
+    # AMENDED at the Stage-17 product-depth disposition: Stage 11 joins this
+    # list. It was routed PAST, not completed, so its old current-stage wording
+    # must now sit inside a supersession note exactly like a completed stage's.
+    for stage in (9, 10, 11):
         for match in re.finditer(r"CURRENT STAGE:\*{0,2} Stage %d" % stage,
                                  checklist):
             window = checklist[max(0, match.start() - 600):match.start()]
             assert "SUPERSEDED" in window.upper(), (
                 "the checklist still reads Stage %d as the current stage"
                 % stage)
-    assert "CURRENT PRODUCT-DEPTH FRONTIER: Stage 11 if authorized." in checklist
+    assert "CURRENT PRODUCT-DEPTH FRONTIER: Stage 18 if authorized" in checklist
+    # and the frontier must not read as a discharge of what it routed past
+    assert "Stage 11 stays DEFERRED and undischarged" in checklist
 
 
 def test_the_t1a_prime_closure_criterion_is_preserved_and_unbranched():

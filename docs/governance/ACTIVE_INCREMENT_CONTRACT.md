@@ -105,10 +105,32 @@ evidence, and the obligation is **not duplicated inside T2-C′**.
 **CREATOR-REPRODUCED / REPOSITORY-DERIVED**. They are **not** relabelled
 `INDEPENDENTLY VERIFIED`; no separate independent review exists for them.
 
-**Next Master Roadmap stage: Stage 11 — T1-C′ / A2 human evidence.** `STAGE 11 STARTED: NO`.
+**Next executable Master Roadmap stage: Stage 18 — D13 / CAP-01 structured technical
+guidance.** `STAGE 18 STARTED: NO`. It requires its own separate mandate; routing reaching it
+authorizes no implementation.
+
+**Stage 17 PRODUCT-DEPTH WORK: COMPLETED FOR THE CURRENT AUTHORIZED PRODUCT SCOPE.** D1, D2
+and D3 are merged; post-recheck depth is MODERATE-DEEP; 15 / 15 Commercial topics are
+sufficiently deep for the current Stage-17 product scope; `ADDITIONAL STAGE-17 PRODUCT DEPTH
+IMPLEMENTATION: NOT JUSTIFIED`. **COMMERCIAL READINESS: PARTIAL** · `VALIDATED COMMERCIAL
+CONCLUSION: NO` · `READINESS CEILING: INSUFFICIENT_EVIDENCE`. Commercial Readiness is NOT asserted as
+passing, and no market validation, demand validation, product-market fit, validated
+differentiation or first-sale readiness is claimed; Stage 17 commercial validation is NOT
+closed.
+**L5 provenance depth, L6 evidence quality and L8 validation state remain DEFERRED and
+BLOCKED on T2-E / OD-PDVG-08b evidence-writer reachability, and are not duplicated inside
+Stage 17.**
+
+**Stage 11 remains DEFERRED and undischarged.** `STAGE 11 STARTED: NO`. It remains subject to
+its existing authorization conditions: reuse valid prior evidence where applicable, and **new
+human activity requires separate authorization and the existing consent/custody boundaries**.
+No human collection begins merely because routing moves past it, and routing past a deferred
+stage never completes it. Stages 13–16 likewise remain PARTIAL / OPEN.
+*(SUPERSEDED 2026-09-21 by the Stage-17 product-depth disposition — preserved verbatim:
+"**Next Master Roadmap stage: Stage 11 — T1-C′ / A2 human evidence.** `STAGE 11 STARTED: NO`.
 It remains subject to its existing authorization conditions: reuse valid prior evidence where
 applicable, and **new human activity requires separate authorization and the existing
-consent/custody boundaries**. No human collection begins merely because routing reaches it.
+consent/custody boundaries**. No human collection begins merely because routing reaches it.")*
 `PUBLIC RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED` ·
 `PAID ACTIVATION: NOT AUTHORIZED`.
 
