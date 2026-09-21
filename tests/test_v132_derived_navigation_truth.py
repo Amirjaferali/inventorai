@@ -33,6 +33,11 @@ CHECKLIST = os.path.join("docs", "governance",
 _WITHDRAWN_DEPLOYED_SHA = "06bf3632ae9914732e945" + "5965f551955c5d4a8c1"
 _REAL_PR663_MERGE = "06bf3632ae9914732e945f00f5ff9f130aea57a0"
 
+# Same reason, same convention: the tracking identifier that was minted without
+# authority and withdrawn is assembled at runtime, so the guard forbidding it
+# does not put a live copy of it back into the repository it scans.
+_UNAUTHORIZED_MINTED_ID = "WATCH-" + "02"
+
 
 def _read(path):
     with open(path, encoding="utf-8") as fh:
@@ -193,6 +198,86 @@ def _flat(path):
     return re.sub(r"\s+", " ", _read(path))
 
 
+# ==========================================================================
+# Current-state blocks
+#
+# Every CURRENT-state claim in these three documents lives inside a fenced
+# block the documents declare themselves:
+#
+#     <!-- CURRENT-BLOCK: name -->  ...  <!-- END CURRENT-BLOCK: name -->
+#
+# Guards assert against the fenced block, never against the whole file, and
+# preserved history lives OUTSIDE the fences. That separation is the point.
+# A file-wide substring sweep is satisfied by any superseded sentence still
+# sitting in the document as legitimate history, which is how the routing
+# guard in this file was wrong-but-green three times running, and how an
+# independent mutation review later showed nineteen more inversions passing:
+# the token was always somewhere in the file, just not where it mattered.
+# ==========================================================================
+CURRENT_BLOCKS = ("current-routing", "stages-13-16-dependencies",
+                  "stage-17-disposition", "stage-18-semantic-normalization",
+                  "d3-fk-hardening", "material-residuals")
+
+_OPEN = "<!-- CURRENT-BLOCK: %s -->"
+_CLOSE = "<!-- END CURRENT-BLOCK: %s -->"
+
+# Markers that identify preserved history. None may appear inside a fence.
+_HISTORY_MARKERS = ("Superseded wording, preserved", "SUPERSEDED 20",
+                    "preserved verbatim", "Prior line, preserved",
+                    "Superseded 20")
+
+
+def _current(path, name):
+    """The whitespace-flattened text of ONE fenced current-state block."""
+    raw = _read(path)
+    o, c = _OPEN % name, _CLOSE % name
+    assert raw.count(o) == 1, (path, name, "open fence not unique")
+    assert raw.count(c) == 1, (path, name, "close fence not unique")
+    i = raw.index(o) + len(o)
+    j = raw.index(c, i)
+    return re.sub(r"\s+", " ", raw[i:j])
+
+
+def _surfaces(name):
+    """(path, current block) for all three routing surfaces."""
+    return tuple((path, _current(path, name))
+                 for path in (ROADMAP, CHECKLIST, CONTRACT))
+
+
+def _needs(block, path, label, *patterns):
+    """Every pattern must be present, case-sensitively, in this block."""
+    for pat in patterns:
+        assert re.search(pat, block, re.S), (path, label, "MISSING", pat)
+
+
+def _rejects(block, path, label, *patterns):
+    """No pattern may appear. This is what catches a REVERSAL, as opposed to
+    a deletion: negating a safeguard in place leaves every token intact."""
+    for pat in patterns:
+        m = re.search(pat, block, re.I | re.S)
+        assert m is None, (path, label, "FORBIDDEN", pat, m.group(0))
+
+
+def _only_negated(block, path, term, negators=("no ", "not ", "never ")):
+    """Every occurrence of `term` must be negated where it stands.
+
+    "no SQLite trigger" and "a SQLite trigger is required" contain the same
+    token; only the words in front of it carry the rule.
+    """
+    for m in re.finditer(re.escape(term), block, re.I):
+        lead = block[max(0, m.start() - 12):m.start()].lower()
+        assert any(n in lead for n in negators), (
+            path, term, "NOT NEGATED", block[max(0, m.start() - 40):m.end()])
+
+
+def _roadmap_section(heading):
+    """One roadmap `### ` section, whitespace-flattened."""
+    raw = _read(ROADMAP)
+    start = raw.index("### " + heading)
+    end = raw.find("\n### ", start + 1)
+    return re.sub(r"\s+", " ", raw[start:len(raw) if end == -1 else end])
+
+
 def test_stage_seven_reads_completed_within_its_bounded_scope():
     roadmap = _flat(ROADMAP)
     assert "STAGE 7 / T2-G: COMPLETED \u2705 WITHIN ITS BOUNDED T2-G SCOPE." in roadmap
@@ -285,48 +370,496 @@ def test_the_arabic_contrast_observation_is_recorded_without_a_new_lifecycle():
         "the Arabic contrast vocabulary must be unchanged by a documentation cut")
 
 
-def test_stage_eleven_is_the_next_stage_and_authorizes_nothing():
-    """The CURRENT next stage, asserted so preserved history cannot satisfy it.
+def test_every_surface_declares_the_same_current_state_blocks():
+    """The fences are themselves part of the contract.
 
-    This guard has now been wrong-but-green three times, and the shape of the
-    failure is the same each time: it asserted a routing sentence that was still
-    in the documents as legitimate preserved history, so closing the stage it
-    named left the assertion passing while it pointed at the wrong stage. It
-    asserted "Stage 8" after Stage 8 closed, "Stage 9" after the Stage-9
-    disposition completed, and "Stage 10" after the Stage-10 differential
-    completed. Every version passed.
-
-    So it asserts two things that cannot both survive a stale update: the
-    CURRENT routing sentence must be present, AND every surviving sentence that
-    routes to Stage 7, 8, 9 or 10 must sit inside an explicit supersession note.
-    The second half is what actually catches the drift — a document that has
-    not been re-routed keeps a live stale sentence and fails here.
+    A guard scoped to a block is only as good as the block boundary, so the
+    boundaries are asserted first: all three surfaces declare the same set,
+    every fence is balanced, and — the load-bearing half — NO preserved-history
+    marker may sit inside a fence. That invariant is what makes every guard
+    below mean "the CURRENT document says this", rather than "the token exists
+    somewhere in 1500 lines of preserved amendments".
     """
-    roadmap, checklist, contract = (_flat(ROADMAP), _flat(CHECKLIST),
-                                    _flat(CONTRACT))
-    assert "Next Master Roadmap stage: Stage 11" in roadmap
-    assert "Next Master Roadmap stage: Stage 11" in contract
-    assert "**CURRENT STAGE:** Stage 11" in checklist
+    for path in (ROADMAP, CHECKLIST, CONTRACT):
+        raw = _read(path)
+        opened = re.findall(r"<!-- CURRENT-BLOCK: (\S+) -->", raw)
+        closed = re.findall(r"<!-- END CURRENT-BLOCK: (\S+) -->", raw)
+        assert opened == closed, (path, opened, closed)
+        assert sorted(opened) == sorted(CURRENT_BLOCKS), (path, opened)
+        for name in CURRENT_BLOCKS:
+            body = _current(path, name)
+            assert body.strip(), (path, name, "empty current block")
+            for marker in _HISTORY_MARKERS:
+                assert marker not in body, (path, name, "history inside fence",
+                                            marker)
+
+
+def test_stage_eighteen_is_the_next_executable_stage_and_authorizes_nothing():
+    """The CURRENT routing, asserted where preserved history cannot reach it.
+
+    This guard has been wrong-but-green four times, and the shape never
+    changed: it asserted a routing sentence that was still in the documents as
+    legitimate preserved history, so closing the stage it named left the
+    assertion passing while it pointed at the wrong stage. "Stage 8" after
+    Stage 8 closed, "Stage 9" after the Stage-9 disposition, "Stage 10" after
+    the Stage-10 differential, and most recently a live checklist sentence
+    still calling Stage 11 next while the current-position area routed to 18.
+
+    So the current claim is asserted inside the current-routing fence, the
+    inverted claim is forbidden there, and every surviving "Stage N is next"
+    sentence anywhere in the file must still sit inside a supersession note.
+    Stage 11 is on that stale list for a reason that matters: it was routed
+    PAST, not completed. Routing forward must never read as a discharge.
+    """
+    for path, routing in _surfaces("current-routing"):
+        _needs(routing, path, "routing",
+               r"(?i)NEXT EXECUTABLE MASTER ROADMAP STAGE: Stage 18",
+               r"`STAGE 18 STARTED: NO`",
+               r"NOT AUTHORIZED FOR IMPLEMENTATION",
+               r"`STAGE 11 STARTED: NO`",
+               r"Stage 11[^.]{0,200}DEFERRED",
+               r"routed\s+PAST, not completed",
+               r"routing past a deferred stage never completes it")
+        _rejects(routing, path, "routing",
+                 r"Stage 11[^.]{0,80}\bis the next\b",
+                 r"next Master Roadmap stage: Stage 11",
+                 r"STAGE 11 STARTED: YES",
+                 r"STAGE 18 STARTED: YES",
+                 r"Stage 11[^.]{0,80}\b(COMPLETED|DISCHARGED|CLOSED)\b")
     # every surviving "Stage N is next" sentence, for every already-routed-past
     # stage, must be marked superseded — in the navigation AND in the authority.
-    for flat, path in ((roadmap, ROADMAP), (checklist, CHECKLIST),
-                       (contract, CONTRACT)):
+    for path in (ROADMAP, CHECKLIST, CONTRACT):
+        flat = _flat(path)
         for stale in ("Next Master Roadmap stage: Stage 7",
                       "Next Master Roadmap stage: Stage 8",
                       "Next Master Roadmap stage: Stage 9",
-                      "Next Master Roadmap stage: Stage 10"):
+                      "Next Master Roadmap stage: Stage 10",
+                      "Next Master Roadmap stage: Stage 11",
+                      "is the next Master Roadmap stage"):
             for match in re.finditer(re.escape(stale), flat):
                 window = flat[max(0, match.start() - 600):match.start()]
                 assert "SUPERSEDED" in window.upper(), (
-                    "a live sentence still routes to a closed stage in %s: %s"
+                    "a live sentence still routes to a routed-past stage in %s: %s"
                     % (path, stale))
     # completing or dispositioning one stage never starts the next
-    assert "Stage 11 requires its own explicit mandate" in checklist
-    assert "completing the Stage-10 differential starts nothing" in checklist
-    assert "`STAGE 11 STARTED: NO`" in contract
-    # and the stage after the frontier is still untouched
+    assert "Stage 18 requires its own separate mandate" in _flat(CHECKLIST)
+    assert "completing the Stage-17 product-depth work" in _flat(CHECKLIST)
+    # and neither stage's checkbox has been ticked by routing
     assert re.search(r"^- \[ \] \*\*11 — T1-C′/A2 human evidence:",
                      _read(ROADMAP), re.M), "stage 11 checkbox is not empty"
+    assert re.search(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:",
+                     _read(ROADMAP), re.M), "stage 18 checkbox is not empty"
+
+
+# The safeguard set, as one canonical run. Asserting the whole run at once is
+# what catches a NEGATION: "no shadow-first operation" keeps every token and
+# breaks the sequence. Asserting the items individually would not.
+SAFEGUARD_RUN = (
+    "shadow-first operation \u00b7 pinned model / version \u00b7 confidence boundary \u00b7 "
+    "fail-closed behaviour \u00b7 deterministic fallback \u00b7 provider-neutral architecture \u00b7 "
+    "no automatic concept creation \u00b7 the model is NEVER the final decision owner \u00b7 "
+    "no automatic readiness promotion \u00b7 no unsupported engineering conclusion \u00b7 "
+    "AUDITABILITY / PROVENANCE \u00b7 PRIVACY / DATA BOUNDARY")
+
+_ARROW = "\u2192"
+PROVENANCE_CHAIN = ("source input %s normalization proposal %s selected canonical concept"
+                    % (_ARROW, _ARROW))
+
+
+def test_the_stage_eighteen_semantic_normalization_note_survives_routing():
+    """The carried note, asserted as MEANING rather than as vocabulary.
+
+    An independent mutation review showed the previous version of this guard
+    staying green while the note was flipped to AUTHORIZED, while shadow-first
+    was negated in place, while the privacy duty became "need not determine",
+    and while the auditability and privacy paragraphs were reduced to their
+    own labels. Every one of those keeps the words and reverses the rule,
+    which is why presence checks cannot be the whole contract.
+
+    So: the status line is asserted as a line, the safeguards as one
+    uninterrupted run, both material safeguards as their operative sentences,
+    and the reversals are forbidden by name.
+    """
+    for path, note in _surfaces("stage-18-semantic-normalization"):
+        _needs(note, path, "semantic-normalization",
+               # PRESERVED / NOT AUTHORIZED / NOT IMPLEMENTED, as one statement
+               r"PRESERVED[^.]{0,40}[\u00b7/]\s*NOT AUTHORIZED\s*[\u00b7/]\s*NOT IMPLEMENTED",
+               r"BEGINNING of Stage 18",
+               re.escape(SAFEGUARD_RUN),
+               # auditability/provenance, as substance
+               r"Where privacy permits, preserve enough attributable",
+               re.escape(PROVENANCE_CHAIN),
+               # privacy/data boundary, as an obligation
+               r"Before ANY external model/provider integration",
+               r"must determine",
+               r"may be transmitted outside\s+InventorAI",
+               r"privacy, security and retention boundary",
+               # preservation only
+               r"no provider is selected",
+               r"no provider is integrated",
+               r"no live privacy policy is defined here")
+        _rejects(note, path, "semantic-normalization",
+                 # status reversal
+                 r"LAYER:?\s*(PRESERVED\s*[\u00b7/]\s*)?AUTHORIZED\b",
+                 r"\bIS AUTHORIZED\b", r"\b(NOW|ALREADY) IMPLEMENTED\b",
+                 r"IMPLEMENTATION AUTHORIZED: YES",
+                 # safeguard reversal
+                 r"\bno[t]? shadow-first",
+                 r"\bno[t]? pinned model",
+                 r"\bno[t]? fail-closed",
+                 r"\bno[t]? deterministic fallback",
+                 r"\bnot provider-neutral",
+                 r"automatic concept creation is (allowed|permitted)",
+                 r"automatic readiness promotion is (allowed|permitted)",
+                 # decision ownership reversal
+                 r"provider may decide",
+                 r"(model|provider) (is|becomes) the final decision owner",
+                 # privacy duty reversal
+                 r"need not determine", r"is not required to determine",
+                 r"may determine whether")
+
+
+def test_the_carried_stage_18_note_carries_no_tracking_identifier():
+    """A tracking identifier is GRANTED, not assumed by whoever writes it up.
+
+    The Owner handover preserved the multilingual semantic-normalization
+    concept and assigned it no ID. One was minted anyway, withdrawn on review,
+    and a mutation then showed a DIFFERENT synthetic identifier sliding in
+    unnoticed — forbidding one literal proves nothing about the next one.
+
+    So this is a positive contract instead: the carried note is titled by an
+    exact approved descriptive heading, with no identifier attached at either
+    end, and no identifier-shaped token may appear in that title at all.
+    """
+    approved = ("Carried into Stage 18 \u2014 Multilingual Semantic Normalization "
+                "Layer")
+    # the roadmap records it as a heading, and the heading must match exactly
+    roadmap_note = _current(ROADMAP, "stage-18-semantic-normalization")
+    m = re.match(r"\s*### (.+?)\s+\*\*PRESERVED", roadmap_note)
+    assert m, roadmap_note[:160]
+    assert m.group(1) == approved, m.group(1)
+    # the derived surfaces record it as a bold lead-in label, same rule
+    for path in (CHECKLIST, CONTRACT):
+        note = _current(path, "stage-18-semantic-normalization")
+        m = re.search(r"\*\*(CARRIED INTO STAGE 18 [^*:]*):", note)
+        assert m, (path, note[:160])
+        label = m.group(1).strip()
+        assert label == ("CARRIED INTO STAGE 18 \u2014 MULTILINGUAL SEMANTIC "
+                         "NORMALIZATION LAYER"), (path, label)
+    # ...and nothing identifier-shaped anywhere in any of those titles
+    for path in (ROADMAP, CHECKLIST, CONTRACT):
+        note = _current(path, "stage-18-semantic-normalization")
+        title = note[:note.index("PRESERVED")]
+        bad = re.search(r"\b[A-Z][A-Z0-9]{1,9}-\d+\b", title)
+        assert bad is None, (path, "identifier minted in the title",
+                             bad.group(0) if bad else None)
+    # the withdrawn literal stays gone, and the two authorized WATCH IDs stay
+    for path in (ROADMAP, CHECKLIST, CONTRACT, __file__):
+        assert _UNAUTHORIZED_MINTED_ID not in _read(path), path
+    for path in (ROADMAP, CHECKLIST, CONTRACT):
+        minted = set(re.findall(r"WATCH-\d+", _read(path)))
+        assert minted == {"WATCH-01", "WATCH-04"}, (path, sorted(minted))
+
+
+def _stage_deps(path):
+    """The Stages 13–16 block, split into one entry PER STAGE.
+
+    Scoping per stage is what makes a SWAP fail: moving Stage 14's
+    dependencies under Stage 15 keeps every token in the block and changes
+    what the document says about both stages.
+    """
+    block = _current(path, "stages-13-16-dependencies")
+    out = {}
+    for part in re.split(r"(?=STAGE 1[3-6] \u2014)", block):
+        m = re.match(r"STAGE (1[3-6]) \u2014", part)
+        if m:
+            out[int(m.group(1))] = part
+    return out
+
+
+def test_stages_thirteen_to_sixteen_keep_their_own_dependencies():
+    """Four stages, four dependency sets — not one shared blocker.
+
+    Collapsing them onto T2-E reads as though a single unblock would clear all
+    four. It would not, and a successor trusting that summary works the wrong
+    dependency for a quarter. Each stage is therefore asserted inside its own
+    slice, and each slice forbids the OTHER stages' dependencies, so a swap is
+    caught from both directions.
+    """
+    for path, block in _surfaces("stages-13-16-dependencies"):
+        _needs(block, path, "13-16",
+               r"(?i)T2-E is NOT the sole dependency of all four")
+        deps = _stage_deps(path)
+        assert sorted(deps) == [13, 14, 15, 16], (path, sorted(deps))
+
+        _needs(deps[13], path, "stage 13",
+               r"PARTIAL / DEFERRED",
+               r"Technical evidence-sufficiency exists",
+               r"T2-E", r"INSUFFICIENT_EVIDENCE")
+        _rejects(deps[13], path, "stage 13",
+                 r"CAP-12", r"WS-PFV-001", r"Phase[- ]7")
+
+        _needs(deps[14], path, "stage 14",
+               r"PARTIAL / DEFERRED",
+               r"CAP-12", r"CAP-13", r"WS-PFV-001", r"T2-E")
+        _rejects(deps[14], path, "stage 14",
+                 r"Phase[- ]7", r"inbound/write-import")
+
+        _needs(deps[15], path, "stage 15",
+               r"PARTIAL / DEFERRED",
+               r"Phase[- ]7 integration/interface foundation",
+               r"(?i)EXISTS",
+               r"IRL ownership is NOT wholly absent",
+               r"per-project integration evidence",
+               r"durable subsystem identity",
+               r"inbound/write-import",
+               r"async/vendor integration",
+               r"T2-E")
+        _rejects(deps[15], path, "stage 15",
+                 r"CAP-12", r"CAP-13", r"WS-PFV-001",
+                 r"foundation (is |does not |)(absent|missing)",
+                 r"no IRL ownership",
+                 r"IRL ownership is wholly absent",
+                 r"ownership (is|remains) absent")
+
+        _needs(deps[16], path, "stage 16",
+               r"DEFERRED",
+               r"Stage 13 technical measurement",
+               r"Stage 15 integration axis",
+               r"Stage 14 is relevant IF manufacturing participates")
+
+
+def test_the_d3_fk_hardening_note_survives_with_its_conditions():
+    """The FK note, asserted as operative direction rather than vocabulary.
+
+    A mutation review showed the previous guard green while the SQLite trigger
+    became required, legacy-migration compatibility was deleted, defence-in-
+    depth retention was reversed and fresh/migrated parity disappeared. Each
+    of those keeps the words "SQLite trigger", "legacy", "owner/store" in the
+    file and reverses what the note actually says.
+
+    So both escape conditions, both prohibitions, every at-adoption duty and
+    the one preserved possibility are asserted in the block, the trigger term
+    is required to be negated wherever it appears, and the reversals are
+    forbidden by name.
+    """
+    for path, fk in _surfaces("d3-fk-hardening"):
+        _needs(fk, path, "fk",
+               # current enforcement, and that it is EQUAL across databases
+               r"(?i)owner/store",
+               r"(?i)fresh and migrated",
+               r"(?i)(SAME effective owner/store enforcement|"
+               r"applied identically on fresh and migrated)",
+               # the two prohibitions
+               r"(?i)no fresh-only",
+               r"(?i)no unequal",
+               r"(?i)no SQLite trigger",
+               # the two escape conditions, both of them
+               r"(?i)safely rebuil(t|d)",
+               r"(?i)(ALL existing databases|for \*\*ALL\*\*)",
+               r"PostgreSQL",
+               # the at-adoption duties
+               r"(?i)preserve all existing rows",
+               r"(?i)preserve D1 lifecycle semantics",
+               r"(?i)preserve D2 quantitative semantics",
+               r"(?i)preserve D3 linkage semantics",
+               r"(?i)legacy migration compatibility",
+               r"(?i)retain owner/store validation as defence-in-depth",
+               # the preserved possibility, with the boundary that keeps it one
+               r"POSSIBLE FUTURE DEFENSE-IN-DEPTH: automated integrity audit",
+               r"DO NOT BUILD IT NOW SOLELY BECAUSE IT IS POSSIBLE",
+               r"not a new implementation mandate")
+        _rejects(fk, path, "fk",
+                 r"SQLite trigger (is|are) required",
+                 r"(add|introduce)e?s? a SQLite trigger",
+                 r"SQLite trigger (must|should|shall) be added",
+                 r"fresh-only (FK|foreign key) (is|may be) (added|permitted|allowed)",
+                 r"(drop|remove|discard|no longer retain) owner/store",
+                 r"owner/store validation (may|can) be (removed|dropped)",
+                 r"owner/store validation is (replaced|superseded)",
+                 r"(build|implement) (the |an )?automated integrity audit now")
+        # "no SQLite trigger" and "a SQLite trigger is required" share a token;
+        # only the words in front of it carry the rule.
+        _only_negated(fk, path, "SQLite trigger")
+        _only_negated(fk, path, "fresh-only")
+    # the roadmap also states that enforcement moved rather than vanished
+    assert "Enforcement is relocated, not absent." in _current(
+        ROADMAP, "d3-fk-hardening")
+
+
+# Each residual, with the disposition that IS the residual. A name kept beside
+# a changed disposition is the same loss as a deleted name, so both halves are
+# asserted, and the contradicting dispositions are forbidden in the same clause.
+RESIDUALS = (
+    ("T1-A\u2032", r"\*\*T1-A\u2032\*\*", r"OPEN",
+     r"\b(CLOSED|DISCHARGED|PASSED|COMPLETED)\b"),
+    ("RUN-004", r"\*\*RUN-004\*\*", r"NOT AUTHORIZED", r"\b(APPROVED|PERMITTED)\b"),
+    ("T2-C\u2032", r"\*\*T2-C\u2032\*\*", r"PARTIAL", r"\b(CLOSED|COMPLETE|PASS)\b"),
+    ("real user value", r"\*\*REAL USER VALUE\*\*", r"UNEVIDENCED",
+     r"\b(VALIDATED|PROVEN|EVIDENCED\b(?<!UNEVIDENCED))"),
+    ("product differentiation", r"\*\*PRODUCT DIFFERENTIATION\*\*", r"UNEVIDENCED",
+     r"\b(VALIDATED|PROVEN)\b"),
+    ("Stage 11 / T1-C\u2032 / A2", r"\*\*Stage 11 / `T1-C\u2032` / A2\*\*",
+     r"DEFERRED / NOT STARTED", r"\b(COMPLETED|DISCHARGED)\b"),
+    ("CEHR", r"\*\*CEHR\*\*", r"DEFERRED, NOT CANCELLED", r"\b(CLOSED|DISCHARGED)\b"),
+    ("Route-B", r"\*\*Route-B\*\*", r"PRESERVED",
+     r"\b(CLOSED|CANCELLED|DISCHARGED)\b"),
+    ("G-4-A", r"\*\*G-4-A\*\*", r"CURRENT / NOT FIXED", r"\bNOW FIXED\b"),
+    ("G-4-B", r"\*\*G-4-B Mechanism B\*\*", r"DEFERRED",
+     r"\b(CLOSED|COMPLETED|FIXED)\b"),
+    ("HICR", r"\*\*HICR\*\*", r"PRESERVED", r"\b(CLOSED|CANCELLED|DISCHARGED)\b"),
+    ("PRE-FCORA", r"\*\*PRE-FCORA\*\*", r"PRESERVED",
+     r"\b(CLOSED|CANCELLED|DISCHARGED)\b"),
+    ("T2-A", r"\*\*T2-A random-skip debt\*\*", r"PRESERVED",
+     r"\b(CLOSED|DISCHARGED)\b"),
+    ("T2-D", r"\*\*T2-D observations\*\*", r"PRESERVED", r"\b(CLOSED|DISCHARGED)\b"),
+    ("PR #640", r"\*\*PR #640 findings\*\*", r"PRESERVED",
+     r"\b(CLOSED|DISCHARGED)\b"),
+    ("N-3\u2013N-6", r"\*\*`N-3`\u2013`N-6`\*\*", r"PRESERVED",
+     r"\b(CLOSED|DISCHARGED)\b"),
+    ("Stages 13\u201316", r"\*\*Stages 13\u201316\*\*", r"PRESERVED",
+     r"\b(DISCHARGED|CLOSED)\b"),
+    ("readiness ceiling", r"\*\*READINESS CEILING\*\*",
+     r"INSUFFICIENT_EVIDENCE.{0,120}NOT\s+CURRENTLY AUTHORIZED",
+     r"\b(PASS|PROMOTED|SUFFICIENT_EVIDENCE)\b"),
+    ("deployment", r"\*\*DEPLOYMENT\*\*", r"NOT AUTHORIZED", r"\bAPPROVED\b"),
+    ("public release", r"\*\*PUBLIC RELEASE\*\*", r"NOT AUTHORIZED", r"\bAPPROVED\b"),
+    ("paid activation", r"\*\*PAID ACTIVATION\*\*", r"NOT AUTHORIZED", r"\bAPPROVED\b"),
+    ("Stage 44", r"\*\*Stage 44 lineage gate\*\*", r"PRESERVED",
+     r"\b(CLOSED|DISCHARGED|SATISFIED)\b"),
+    ("Stage 45", r"\*\*Stage 45 deployment gate\*\*", r"PRESERVED",
+     r"\b(CLOSED|DISCHARGED|SATISFIED)\b"),
+    ("WATCH-01", r"\*\*WATCH-01\b[^*]*\*\*", r"NOT YET IMPLEMENTED",
+     r"\b(IMPLEMENTED\b(?<!NOT YET IMPLEMENTED)|DELIVERED|BUILT)"),
+    ("WATCH-04", r"\*\*WATCH-04\b[^*]*\*\*", r"PRESERVED",
+     r"\b(RETIRED|CLOSED|SUPERSEDED)\b"),
+)
+
+
+def _residual_clauses(path):
+    """The residual block, split into one clause per residual.
+
+    The roadmap writes them as list items and the derived surfaces as a
+    mid-dot run; both split cleanly, and splitting is what keeps one
+    residual's disposition from vouching for its neighbour's.
+    """
+    block = _current(path, "material-residuals")
+    parts = re.split(r"\s+\u00b7\s+|\s+-\s+(?=\*\*)", block)
+    return [c for c in parts if c.strip()]
+
+
+def test_no_material_residual_is_silently_discharged():
+    """Every residual keeps BOTH its name and its disposition.
+
+    The earlier version of this guard checked names inside a fixed 2000-
+    character window. A mutation review then flipped CEHR to cancelled,
+    Route-B to closed and WATCH-01 to implemented, and deleted HICR outright,
+    with the suite staying green: the names were all still there, and the
+    window was an arbitrary boundary rather than the block's own.
+
+    So the block is parsed at its declared fence, split per residual, and each
+    one must carry its accepted disposition in its OWN clause while the
+    contradicting dispositions are forbidden there.
+    """
+    for path in (ROADMAP, CHECKLIST, CONTRACT):
+        clauses = _residual_clauses(path)
+        for label, name_pat, required, forbidden in RESIDUALS:
+            owned = [c for c in clauses if re.search(name_pat, c)]
+            assert owned, (path, label, "residual name is gone")
+            assert any(re.search(required, c, re.S) for c in owned), (
+                path, label, "disposition lost", owned[:1])
+            for c in owned:
+                m = re.search(forbidden, c)
+                assert m is None, (path, label, "disposition contradicted",
+                                   m.group(0), c[:160])
+
+
+def test_stage_seventeen_product_depth_is_not_commercial_readiness():
+    """The full accepted Stage-17 conjunction, not any one half of it.
+
+    A mutation review showed the previous guard green while the commercial
+    conclusion flipped to YES, while readiness read COMPLETE, while depth read
+    SHALLOW, while the topic count read 1 / 15 and while product-depth
+    completion was inverted — because older historical Stage-17 text elsewhere
+    in the documents satisfied every broad assertion.
+
+    Scoped to the current Stage-17 fence, the whole conjunction is asserted and
+    each inversion is forbidden. Product depth complete is not commercial
+    validation, and a surface recording the first without the second is exactly
+    the drift this guard exists to catch.
+    """
+    for path, st17 in _surfaces("stage-17-disposition"):
+        _needs(st17, path, "stage 17",
+               r"PRODUCT-DEPTH WORK: COMPLETED FOR THE CURRENT AUTHORIZED PRODUCT SCOPE",
+               r"`D1: MERGED`", r"`D2: MERGED`", r"`D3: MERGED`",
+               r"`PRE-D1/D2/D3 DEPTH: MODERATE`",
+               r"`POST-D1/D2/D3 DEPTH: MODERATE-DEEP`",
+               r"`TOPICS SUFFICIENTLY DEEP: 15 / 15`",
+               r"`ADDITIONAL STAGE-17 PRODUCT-DEPTH IMPLEMENTATION: NOT JUSTIFIED`",
+               r"COMMERCIAL READINESS: PARTIAL",
+               r"`VALIDATED COMMERCIAL CONCLUSION: NO`",
+               r"`READINESS CEILING: INSUFFICIENT_EVIDENCE`",
+               r"Stage 17 is NOT commercially closed",
+               r"Commercial Readiness is NOT asserted as passing",
+               r"no market validation", r"no demand validation",
+               r"no product-market-fit proof",
+               r"no validated differentiation",
+               r"no first-sale readiness")
+        _rejects(st17, path, "stage 17",
+                 r"VALIDATED COMMERCIAL CONCLUSION: YES",
+                 r"COMMERCIAL READINESS: (COMPLETE|PASS|COMPLETED)",
+                 r"COMMERCIAL READINESS PASS",
+                 r"\bSHALLOW\b",
+                 r"TOPICS SUFFICIENTLY DEEP: (?!15 ?/ ?15)",
+                 r"PRODUCT-DEPTH WORK: NOT COMPLETED",
+                 r"STAGE 17 NOT COMPLETED",
+                 r"PRODUCT-MARKET FIT: ESTABLISHED",
+                 r"DEMAND: VALIDATED",
+                 r"READINESS CEILING: (?!INSUFFICIENT_EVIDENCE)")
+    # Stage 17 is NOT closed: its checkbox stays empty
+    assert re.search(r"^- \[ \] \*\*17 — Market Reality / Commercial Readiness:",
+                     _read(ROADMAP), re.M), "stage 17 checkbox is not empty"
+
+
+# Claims that are false everywhere, in current text and in preserved history
+# alike. Scoping a FORBIDDEN pattern to a block is strictly weaker than
+# scoping it to the file: a mutation review flipped the commercial conclusion
+# in a Stage-17 sentence that sits OUTSIDE the current fence, and a
+# block-scoped guard had nothing to say about it. Required patterns stay
+# fenced; forbidden ones do not need to be.
+NEVER_TRUE_ANYWHERE = (
+    r"VALIDATED COMMERCIAL CONCLUSION: YES",
+    r"COMMERCIAL READINESS: (PASS|COMPLETE|COMPLETED)",
+    r"COMMERCIAL READINESS PASS",
+    r"MANUFACTURABILITY CONCLUSION: YES",
+    r"PRODUCT-MARKET FIT: ESTABLISHED",
+    r"DEMAND: VALIDATED",
+    r"READINESS CEILING: SUFFICIENT_EVIDENCE",
+    r"STAGE 11 STARTED: YES",
+    r"STAGE 18 STARTED: YES",
+    r"(DEPLOYMENT|PUBLIC RELEASE|PAID ACTIVATION): AUTHORIZED",
+    r"T1-A′: (CLOSED|PASSED)",
+    r"RUN-004: AUTHORIZED",
+)
+
+
+def test_the_forbidden_claims_are_absent_from_every_surface():
+    """Some claims are false in current text AND in preserved history.
+
+    No amendment these documents preserve ever asserted a validated commercial
+    conclusion, a readiness PASS or an authorized deployment, so there is no
+    legitimate historical sentence for these patterns to belong to. Forbidding
+    them file-wide therefore costs nothing and closes the gap a block-scoped
+    guard leaves: a mutation review flipped the commercial conclusion in a
+    Stage-17 line sitting just outside the current fence, and every fenced
+    assertion stayed green because the fence was not where the lie was.
+    """
+    for path in (ROADMAP, CHECKLIST, CONTRACT):
+        flat = _flat(path)
+        for pat in NEVER_TRUE_ANYWHERE:
+            m = re.search(pat, flat)
+            assert m is None, (path, "FORBIDDEN CLAIM", pat,
+                               m.group(0) if m else None)
 
 
 def test_stage_eight_is_closed_by_disposition_not_by_repair():
@@ -531,15 +1064,20 @@ def test_no_completed_stage_is_left_reading_as_the_current_stage():
     behind.
     """
     checklist = _flat(CHECKLIST)
-    assert "**CURRENT STAGE:** Stage 11" in checklist
-    for stage in (9, 10):
+    assert "**CURRENT STAGE:** Stage 18" in checklist
+    # AMENDED at the Stage-17 product-depth disposition: Stage 11 joins this
+    # list. It was routed PAST, not completed, so its old current-stage wording
+    # must now sit inside a supersession note exactly like a completed stage's.
+    for stage in (9, 10, 11):
         for match in re.finditer(r"CURRENT STAGE:\*{0,2} Stage %d" % stage,
                                  checklist):
             window = checklist[max(0, match.start() - 600):match.start()]
             assert "SUPERSEDED" in window.upper(), (
                 "the checklist still reads Stage %d as the current stage"
                 % stage)
-    assert "CURRENT PRODUCT-DEPTH FRONTIER: Stage 11 if authorized." in checklist
+    assert "CURRENT PRODUCT-DEPTH FRONTIER: Stage 18 if authorized" in checklist
+    # and the frontier must not read as a discharge of what it routed past
+    assert "Stage 11 stays DEFERRED and undischarged" in checklist
 
 
 def test_the_t1a_prime_closure_criterion_is_preserved_and_unbranched():
