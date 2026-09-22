@@ -1557,7 +1557,7 @@ def test_the_capability_register_records_one_bounded_exception_not_a_general_ope
     flat = _flat(CAPABILITIES)
     for pat in (r"two bounded deterministic Stage-18 CAP-01 guidance increments",
                 r"first IMPLEMENTED / MERGED /\s*POST-MERGE VERIFIED \(PR #678\)",
-                r"research-direction addendum now OWNER-AUTHORIZED / IMPLEMENTED IN\s*CANDIDATE / NOT YET AUTHORITATIVE",
+                r"research-direction addendum likewise IMPLEMENTED / MERGED / POST-MERGE\s*VERIFIED \(PR #679",
                 r"(?i)(does|do) NOT authorize full CAP-01 / full STG",
                 r"(?i)CAP-02 \u2026 CAP-18, which remain `RECORDED \u2014 NOT AUTHORIZED",
                 r"`FULL CAP-01 / FULL STG: NOT AUTHORIZED`",
@@ -1632,6 +1632,14 @@ def test_the_integration_invariants_are_recorded_as_practice_not_as_a_gate():
                      r"authorization\s+gate or approval step", roadmap)
 
 
+def _absent(text, needle):
+    """``needle not in text`` as a plain bool. Asserting ``not in`` directly over a
+    whole flattened governance document makes pytest build an ndiff of that
+    document on failure — quadratic, and long enough on these files to stall a CI
+    run instead of reporting the failure. A bool keeps a failing guard fast."""
+    return needle not in text
+
+
 def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
     """PR #678 made four live sentences false at once, and each stayed green
     because nothing asserted it: the roadmap's Group-4 state ("Stages 18–20 ...
@@ -1661,7 +1669,7 @@ def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
     assert "Stages 19 and 20 remain recorded future capabilities, NOT AUTHORIZED" in roadmap
     assert "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED" in checklist
     raw_checklist = _read(CHECKLIST)
-    assert "Stages 18–27 preserved, not entered / not authorized" not in raw_checklist
+    assert _absent(raw_checklist, "Stages 18–27 preserved, not entered / not authorized")
     assert "Stages 19–27 preserved, not entered / not authorized" in raw_checklist
     row = [l for l in raw_checklist.splitlines() if l.startswith("| 4 | 16–20 |")]
     assert len(row) == 1 and "18 entered / partial" in row[0], row
@@ -1676,27 +1684,52 @@ def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
                 in routing), path
     # and the contract no longer calls the merged PR #678 candidate "this candidate"
     contract = _flat(CONTRACT)
-    assert "synchronized to that same truth in this candidate" not in contract
+    assert _absent(contract, "synchronized to that same truth in this candidate")
     assert "synchronized to that same truth in the PR #678 candidate, merged" in contract
 
 
-def test_second_increment_status_is_pre_publication_truth_not_merge_truth():
-    """Implemented-in-candidate is not merged. The second increment is complete in
-    an UNPUBLISHED candidate, so every live status must say exactly that: Owner-
-    authorized, implemented in candidate, not yet authoritative. "In
-    implementation" understates it; "merged" or "post-merge verified" would claim
-    events that have not happened. Both directions are forbidden."""
+def test_second_increment_status_is_merge_truth_and_no_contract_is_active():
+    """PR #679 merged, so the pre-merge semantics this guard used to require are
+    now false in the other direction. "Implemented in candidate / not yet
+    authoritative" understates a merged, post-merge-verified increment exactly as
+    "in implementation" once understated a finished one. The merge fact must be on
+    every fence, every pre-merge phrase must be gone from live text, and with both
+    bounded increments delivered and no successor mandate the live contract is
+    NONE — everywhere a successor agent reads it first."""
+    merge = "d75075b01e79909ba98ac695abb4f8969e14f753"
     token = ("SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / "
-             "IMPLEMENTED IN CANDIDATE / NOT YET AUTHORITATIVE")
+             "IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge " + merge)
     for path, routing in _surfaces("current-routing"):
         assert token in routing, path
+        assert "`STAGE 18 COMPLETE: NO`" in routing, path
+    assert token in _current(STATE, "current-position")
     for path in (ROADMAP, CHECKLIST, CONTRACT, STATE, CAPABILITIES):
         flat = _flat(path)
-        assert "OWNER-AUTHORIZED / IN IMPLEMENTATION" not in flat, path
-        for m in re.finditer(r"SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT:[^`]{0,120}", flat):
-            claim = m.group(0)
-            assert not re.search(r"\bMERGED\b|POST-MERGE|(?<!NOT YET )\bAUTHORITATIVE\b",
-                                 claim), (path, claim)
+        assert _absent(flat, "OWNER-AUTHORIZED / IN IMPLEMENTATION"), path
+        for m in re.finditer(r"SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT:[^`]{0,160}", flat):
+            assert "IN CANDIDATE" not in m.group(0) and "NOT YET" not in m.group(0), (path, m.group(0))
+        for phrase in ("implemented in candidate, not yet authoritative",
+                       "implemented in candidate and not yet authoritative"):
+            assert _absent(flat, phrase), (path, phrase)
+    # ACTIVE CONTRACT: NONE, stated where it is read first, and never contradicted
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    head = claude[claude.index("## Current authority"):claude.index("*(Superseded wording")]
+    assert "ACTIVE CONTRACT: NONE." in head and "ACTIVE CONTRACT: PRESENT" not in head
+    assert "no further CAP-01 implementation is authorized" in head
+    assert "Stage 18 remains STARTED / PARTIAL / NOT COMPLETE" in head
+    contract = _read(CONTRACT)
+    first = contract.index("## Current authority")
+    assert contract[first:].startswith("## Current authority — post-PR-#679: no active contract")
+    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
+    for pat in (r"\*\*ACTIVE CONTRACT: NONE\.\*\*", r"FURTHER CAP-01 IMPLEMENTATION\*\* \| \*\*NOT CURRENTLY AUTHORIZED",
+                r"STARTED: YES` · `COMPLETE: NO` · \*\*PARTIAL", r"typed\s+technical-parameter inputs",
+                r"Stage 19 is not begun"):
+        assert re.search(pat, top), pat
+    assert _absent(re.sub(r"\*\(Superseded.*?\)\*", "", _flat(CONTRACT)),
+                   "This is the live mandate."), "a live-mandate claim survives outside history"
+    assert "ACTIVE CONTRACT: NONE" in _current(STATE, "current-position")
+    assert "NONE AUTHORIZED — `ACTIVE CONTRACT: NONE`" in _flat(CHECKLIST)
+    assert "NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED" in _read(CHECKLIST)
 
 
 def test_group_two_reads_completed_with_its_residuals_carried():

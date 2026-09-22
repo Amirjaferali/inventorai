@@ -2,13 +2,14 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: PRESENT — see
-docs/governance/ACTIVE_INCREMENT_CONTRACT.md for the exact live Owner-authorized
-mandate, scope and conditions.** CLAUDE.md routes to that contract and does not
-duplicate or expand it. The current bounded Stage 18 / CAP-01 authorization does not
-mean Stage 18 is complete or that full CAP-01 / full STG is authorized, and this
-routing statement authorizes no successor Stage, capability, deployment, release or
-paid activation.
+**ACTIVE CONTRACT: NONE.** No implementation mandate is currently active; any further
+product, readiness, governance or automation work requires a new explicit Owner
+authorization. docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the
+delivered history, and is the file to read for authority — this paragraph routes, it does
+not authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
+increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
+authorized, full CAP-01 / full STG is not authorized, no successor Stage is started, and
+deployment, public release and paid activation remain NOT AUTHORIZED.
 
 *(Superseded wording, preserved so the change is visible rather than silent: "ASTRA
 MILESTONE 2 / A1 is the current bounded saved-project and recovery mandate under

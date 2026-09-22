@@ -23,11 +23,40 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--stage-18-cap01-second-bounded-increment"></a>
-## Current authority — Stage 18 / CAP-01 second bounded increment: research-direction addendum (Owner authorization, 2026-09-22)
+<a id="current-authority--post-pr-679-no-active-contract"></a>
+## Current authority — post-PR-#679: no active contract (2026-09-22)
 
-**ACTIVE CONTRACT: Stage 18 / CAP-01 SECOND BOUNDED INCREMENT — RESEARCH-DIRECTION
-ADDENDUM.** `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED IN CANDIDATE / NOT YET AUTHORITATIVE`. This is the live mandate. It rests on the Owner-accepted
+**ACTIVE CONTRACT: NONE.** Both Owner-authorized bounded Stage-18 / CAP-01 increments are
+delivered, and no successor implementation mandate has been authorized. Only the Owner may
+issue one; nothing in this file, the roadmap or the checklist fills the gap.
+
+| | |
+|---|---|
+| **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **PARTIAL** |
+| **FIRST BOUNDED CAP-01 INCREMENT** (checklist) | `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` |
+| **SECOND BOUNDED CAP-01 INCREMENT** (research direction) | `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` |
+| **FULL CAP-01 / FULL STG** | `NOT AUTHORIZED / NOT IMPLEMENTED` |
+| **FURTHER CAP-01 IMPLEMENTATION** | **NOT CURRENTLY AUTHORIZED** |
+
+**Return trigger for project-specific CAP-01 behaviour (preserved, not activated).** A
+separately authorized architecture/data-model decision that provides trustworthy, typed
+technical-parameter inputs. No such data model exists or is created here, and free-text
+inspection is not a substitute for one.
+
+**Unchanged.** No successor Stage is started — Stage 19 is not begun and Stages 19–27 stay
+preserved, not entered and not authorized. Mechanical stays ACTIVE with no CAP-01 profile.
+`D13 RESEARCH: REMAINS CLOSED`. `DEPLOYMENT: NOT AUTHORIZED` · `PUBLIC RELEASE: NOT
+AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED`.
+
+<a id="current-authority--stage-18-cap01-second-bounded-increment"></a>
+## Current authority — Stage 18 / CAP-01 second bounded increment: research-direction addendum (Owner authorization, 2026-09-22) — DELIVERED (PR #679)
+
+**SECOND BOUNDED CAP-01 INCREMENT — RESEARCH-DIRECTION ADDENDUM — DELIVERED.**
+`SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753`. This
+was the live mandate until PR #679 merged; it is now delivered history, and `ACTIVE
+CONTRACT: NONE` is recorded in the section above. *(Superseded 2026-09-22, preserved — this
+opened "**ACTIVE CONTRACT: Stage 18 / CAP-01 SECOND BOUNDED INCREMENT — RESEARCH-DIRECTION
+ADDENDUM.** … This is the live mandate.")* It rests on the Owner-accepted
 read-only Stage-18 remainder adjudication (verdict **B — only a very narrow class-general
 CAP-01 extension is justified now**) and adds ONE thing to the existing
 `CAP01_ELECTRONICS_INTERFACE_V1` profile: **where to look** for the information the six
@@ -63,12 +92,12 @@ persistence, new domain, project-specific detection or specialist inference. `DE
 NOT AUTHORIZED` · `PUBLIC RELEASE: NOT AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED`.
 
 <a id="current-authority--stage-18-cap01-first-bounded-increment"></a>
-## Current authority — Stage 18 / CAP-01 first bounded guidance increment (Owner authorization, 2026-09-21)
+## Current authority — Stage 18 / CAP-01 first bounded guidance increment (Owner authorization, 2026-09-21) — DELIVERED (PR #678)
 
 **FIRST BOUNDED CAP-01 INCREMENT — `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3`.** The Owner
 authorized ONE bounded, deterministic, presentation-only CAP-01 / Structured Technical
-Guidance increment. It is delivered; the live mandate is now the second bounded increment
-recorded in the section above, and every product boundary below remains binding on it.
+Guidance increment. It is delivered, and so is the second bounded increment recorded above
+(PR #679); every product boundary below remained binding on it. `ACTIVE CONTRACT: NONE`.
 *(Superseded 2026-09-22, preserved so the change is visible rather than silent: this opened
 "**ACTIVE CONTRACT: Stage 18 / CAP-01 FIRST BOUNDED IMPLEMENTATION INCREMENT.** The Owner
 authorizes ONE bounded, deterministic, presentation-only CAP-01 / Structured Technical
@@ -231,7 +260,7 @@ evidence, and the obligation is **not duplicated inside T2-C′**.
 guidance.** `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner authorized ONE
 bounded first CAP-01 guidance increment, recorded in full in the Stage-18 current-authority
 section above; the stage is ENTERED as fact. `FIRST BOUNDED CAP-01 INCREMENT:
-OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED IN CANDIDATE / NOT YET AUTHORITATIVE` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
+OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
 `D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
 unticked** — one authorized bounded slice is not the stage.
 **Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and
