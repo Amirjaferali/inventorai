@@ -92,10 +92,14 @@ DISPOSITION: NO` · `IMPLEMENTATION AUTHORIZED: NO`.** No MCP row, no implementa
 provider selected.
 
 <!-- CURRENT-BLOCK: current-routing -->
-**Next executable Master Roadmap stage: Stage 18 — D13 / CAP-01 structured technical
-guidance.** `STAGE 18 STARTED: NO`; it requires its own explicit mandate, routing reaching
-it authorizes no implementation, and Stage 18 is `NOT AUTHORIZED FOR IMPLEMENTATION`.
-**Routing reaching it discharges nothing behind it.** `STAGE 11 STARTED: NO` and **Stage 11
+**Current Master Roadmap stage: Stage 18 — D13 / CAP-01 structured technical
+guidance.** `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner authorized ONE
+bounded first CAP-01 guidance increment, so Stage 18 is ENTERED as fact, not as a routing
+pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `FULL CAP-01 / FULL STG:
+NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`. **Stage 18
+remains PARTIAL and its checkbox stays unticked** — one authorized bounded slice is not
+the stage, and implementing it completes nothing beyond itself.
+**Entering Stage 18 discharges nothing behind it.** `STAGE 11 STARTED: NO` and **Stage 11
 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**: it was routed
 PAST, not completed, and **routing past a deferred stage never completes it**. Reuse valid
 prior evidence where applicable, and new human activity requires separate authorization
@@ -107,6 +111,12 @@ may be read as though one blocker explained all four. Stage 17's OWN remaining L
 provenance-depth, L6 evidence-quality and L8 validation-state gaps are the ones owned by
 T2-E / OD-PDVG-08b, and they are not duplicated into Stage 17.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded, preserved so the change is visible rather than silent: before the Owner's
+bounded authorization this read "`STAGE 18 STARTED: NO`; it requires its own explicit
+mandate, routing reaching it authorizes no implementation, and Stage 18 is `NOT AUTHORIZED
+FOR IMPLEMENTATION`". That was accurate until the authorization and is false as present
+truth.)*
 
 <!-- CURRENT-BLOCK: stage-17-disposition -->
 **STAGE 17 PRODUCT-DEPTH WORK: COMPLETED FOR THE CURRENT AUTHORIZED PRODUCT SCOPE.**
@@ -673,7 +683,7 @@ This is the short operating view of the detailed sequence in §6. A successor wo
 - [ ] **14 — MRL-compatible view:** **PARTIAL — UPDATED v1.32.** Manufacturing Evidence Owner and Capture merged (PRs #651, #652) and Manufacturing joined the Snapshot as an evidence-sufficiency dimension, ceiling `INSUFFICIENT_EVIDENCE` only, carrying **no manufacturability conclusion**. The MRL view itself is NOT built; `MRL FINAL OWNER / COMPOSITION PREDECIDED: NO`; it still depends on CAP-12/13 and WS-PFV-001 evidence that does not exist.
 - [ ] **15 — IRL-compatible view:** expose interfaces and subsystem integration evidence; close durable subsystem identity/persistence residuals when required.
 
-**Group state — UPDATED 2026-09-21 (Stage-17 product-depth disposition):** **Stage 18 is now the next EXECUTABLE Master Roadmap stage and `STAGE 18 STARTED: NO`; Stage 11 remains DEFERRED and undischarged, `STAGE 11 STARTED: NO`.** Routing past a deferred stage never completes it. *(SUPERSEDED 2026-09-21 — preserved verbatim:)* **Stage 11 is now the next Master Roadmap stage and `STAGE 11 STARTED: NO`** — routing reaching it starts no human collection. Its existing authorization conditions are unchanged: reuse valid prior evidence where applicable, and new human activity requires separate authorization and the existing consent/custody boundaries. *(Prior line, preserved:)* Stage 11 intentionally deferred (CEHR/Route-B preserved, not cancelled). **Stage 12 is now COMPLETED**; Stages 13 and 14 are PARTIAL through the Readiness Snapshot only; **Stage 15 (IRL) remains OPEN and is the thinnest — its ownership is unresolved and this Stage is its only home**, since DOR row 174 (which formerly carried it) is closed. Stage 15 must not be lost.
+**Group state — UPDATED 2026-09-21 (Stage-17 product-depth disposition):** **Stage 18 is now the CURRENT Master Roadmap stage: `STAGE 18 STARTED: YES` / `STAGE 18 COMPLETE: NO`, ENTERED under ONE Owner-authorized bounded first CAP-01 guidance increment, with full CAP-01/STG still NOT AUTHORIZED; Stage 11 remains DEFERRED and undischarged, `STAGE 11 STARTED: NO`.** *(SUPERSEDED 2026-09-21 — preserved verbatim:)* **Stage 18 is now the next EXECUTABLE Master Roadmap stage and `STAGE 18 STARTED: NO`.** Routing past a deferred stage never completes it. *(SUPERSEDED 2026-09-21 — preserved verbatim:)* **Stage 11 is now the next Master Roadmap stage and `STAGE 11 STARTED: NO`** — routing reaching it starts no human collection. Its existing authorization conditions are unchanged: reuse valid prior evidence where applicable, and new human activity requires separate authorization and the existing consent/custody boundaries. *(Prior line, preserved:)* Stage 11 intentionally deferred (CEHR/Route-B preserved, not cancelled). **Stage 12 is now COMPLETED**; Stages 13 and 14 are PARTIAL through the Readiness Snapshot only; **Stage 15 (IRL) remains OPEN and is the thinnest — its ownership is unresolved and this Stage is its only home**, since DOR row 174 (which formerly carried it) is closed. Stage 15 must not be lost.
 
 ### Group 4 — Stages 16–20: system/commercial readiness and technical guidance
 
@@ -1272,6 +1282,66 @@ Preserve: IP confidentiality; user/project/host/field-scoped authorization and e
 **CAD / PCB boundary preserved.** **Automatic CAD / PCB generation is NOT part of the current product direction.** External-tool interoperability does **not** authorize automatic CAD generation, automatic PCB generation or autonomous manufacturing-file generation. Where future interoperability touches CAD- or PCB-adjacent tools, that is integration and interoperability only unless separately authorized. The dedicated PCB domain remains deferred, and reuse of a terrestrial engineering capability never proves space qualification.
 
 **Nothing is implemented, selected, connected, piloted or authorized by recording this direction.**
+
+### 8C. Cross-stage capability-integration invariants — anti-drift operating rules, NOT a gate
+
+**Derived from existing architecture; they create no Stage, Workstream, tracking ID,
+register, authorization gate or approval step, and they grant no implementation
+authority.** They exist because the first bounded Stage-18 / CAP-01 increment showed how
+easily a first slice hardens into permanent architecture, and how easily a new capability
+absorbs an owner that already exists.
+
+- **A. EXISTING OWNER FIRST.** Before creating a truth owner, engine, store, registry or
+  model, identify the existing owner and extend or consume it. Do not duplicate ownership
+  merely because a new Stage or CAP needs the data.
+- **B. PRODUCE ONCE — CONSUME MANY.** Canonical technical/evidence truth is produced once
+  by its proper owner and consumed by many capabilities. No per-CAP duplicate evidence,
+  risk, assumption, contradiction, readiness, project-identity or domain-taxonomy store.
+- **C. CAPABILITY OWNERSHIP DOES NOT COLLAPSE.** A capability may consume another's
+  output; it must not silently absorb that capability's responsibility. **CAP-01** bounded
+  technical / unresolved-technical-gap guidance · **CAP-04** gap action packages ·
+  **CAP-09 / WS-PFV-001** experiment planning and physical validation · **CAP-12**
+  prototype materials and manufacturing advisory · **CAP-13** specification, thickness and
+  bounded safety advisory · **CAP-14** static visual interpretation and user-confirmed
+  component inventory · **THERM-01** future thermal calculation/analysis where separately
+  authorized · **CAP-08** assumptions · **CAP-10** contradictions · **CAP-11**
+  evidence-quality ladder · **CAP-06** multi-axis readiness PRESENTATION, not readiness
+  truth ownership · **CAP-07** decision-room COMPOSITION, not independent truth creation ·
+  **Technical Realization** the shared technical-capability layer for future technical
+  producers and artifacts, not a duplicate CAP-01 engine.
+- **D. FIRST IMPLEMENTATION ≠ PERMANENT ARCHITECTURE.** A first domain, first provider,
+  first language seam, first datastore or first capability slice must not silently become
+  the architecture. Current implementation limitations must stay explicitly
+  distinguishable from target architecture.
+- **E. DOMAIN-SPECIFIC KNOWLEDGE / DOMAIN-AGNOSTIC CORE.** Domain-specific technical
+  knowledge stays outside domain-agnostic core decision/progression logic. **No future
+  CAP-01 profile may require domain-name branching in core progression or readiness
+  logic.**
+- **F. CURRENT SINGLE DOMAIN IS AN ADAPTER LIMITATION.** Today's assembled package exposes
+  a single root capability/domain. That is current runtime reality, **not** the permanent
+  CAP-01 domain model; future project architecture may carry multiple domains and
+  subsystem-level domain context. Present CAP-01 presentation must remain extendable to
+  that without replacing the basic presentation/profile mechanism.
+- **G. LANGUAGE.** The first CAP-01 profile renders bounded EN/AR copy through the
+  existing `ui_lang` / `t()` seam. That is the current rendering adapter and does **not**
+  establish UI locale as the permanent generated-output language authority; the separately
+  preserved future output-language capability is untouched.
+- **H. FULL CAP-01 PRESERVED.** The first slice is presentation-only and class-general.
+  CAP-01 as a full future capability is **not** permanently limited to static presentation.
+  Its preserved intended future scope — when separately governed and supported — still
+  includes the exact unresolved technical subproblem, the relevant technical subdomain, the
+  specific missing technical information, precise research direction and search terms,
+  required measurements / tests / documents, can/cannot verify, uncertainty and risk,
+  specialist category ONLY when evidence-supported, and provenance.
+- **I. GUIDANCE OWNER ≠ ALL TECHNICAL PRODUCTION.** CAP-01 may produce bounded technical
+  guidance. It must not duplicate separately-owned specialized calculations, materials,
+  specifications, visual interpretation, physical validation, thermal analysis or other
+  authorized technical-production capabilities.
+- **J. CROSS-ROADMAP CHECK BEFORE MATERIAL FUTURE WORK.** For future Technology Deepening,
+  Domain Expansion, Readiness, Manufacturing, Integration or AI implementation
+  instructions, the instruction author checks materially overlapping existing and future
+  owners before implementation. This is part of the existing pre-send / anti-drift
+  discipline in §11 — **it is NOT a new approval gate.**
 
 ## 9. Current Master Checklist
 

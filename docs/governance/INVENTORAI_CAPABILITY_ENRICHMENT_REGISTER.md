@@ -53,7 +53,11 @@ duplicate or conflict with any existing authority.
 
 All capabilities recorded here (CAP-01 … CAP-18) share the status **`RECORDED — NOT AUTHORIZED FOR
 IMPLEMENTATION`** and require **separate explicit owner authorization** before any implementation (see
-§R5/§R6). (CAP-15 … CAP-18 were added by the legacy post-mortem capture in §1A; the original fourteen
+§R5/§R6), **with ONE bounded exception recorded in the CAP-01 entry below: the Owner has explicitly
+authorized ONE first bounded deterministic Stage-18 CAP-01 guidance increment. That authorization is
+confined to that increment. It does NOT authorize full CAP-01 / full STG, and it changes nothing for
+CAP-02 … CAP-18, which remain `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` unless already governed
+otherwise by their own authority.** (CAP-15 … CAP-18 were added by the legacy post-mortem capture in §1A; the original fourteen
 concepts referenced elsewhere in this register's genesis note are unchanged.)
 
 ### CAP-01 — Structured Technical Guidance
@@ -77,9 +81,21 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   SEPARATELY OWNER-GATED`) governs.
 - **Proposed acceptance criteria:** deterministic gap identification with full provenance from the
   recorded requirement; no invented competence/tools/standards; explicit abstention where unsupported.
-- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (governed by D13).
-- **Activation conditions:** the D13 Source Review and D13 owner-gated authorization chain.
-- **Separate owner authorization requirement:** yes — via the D13 authority.
+- **Current authorization state:** `RECORDED — BROADER CAPABILITY NOT AUTHORIZED FOR IMPLEMENTATION`
+  (governed by D13), **except for ONE first bounded deterministic Stage-18 CAP-01 guidance increment,
+  which the Owner has explicitly authorized.** That increment is presentation-only, class-general and
+  conditional, with one authorized domain guidance profile (`electronics_electrical`), bounded EN/AR
+  copy, and no concept-class assertion, record inspection, numeric value, compatibility or safety
+  verdict, specialist classification, AI/provider integration, schema or persistence.
+  `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `D13 RESEARCH: REMAINS CLOSED` · `STAGE 18 COMPLETE: NO`.
+  **The intended full future scope of CAP-01 above is NOT reduced by that first slice** — the slice is
+  a first increment, not the capability's ceiling.
+- **Activation conditions:** the D13 Source Review and D13 owner-gated authorization chain for anything
+  beyond the one authorized bounded increment.
+- **Separate owner authorization requirement:** yes — via the D13 authority, and separately for each
+  future domain CAP-01 guidance profile, which additionally requires its own governed domain knowledge.
+  Domain activation is NOT CAP-01 profile availability: an activated domain with no authorized profile
+  (`mechanical` today) is a missing profile, never an unsupported domain.
 
 ### CAP-02 — Simplified One-Step Journey Presentation
 - **Product problem:** the internal governance model is too complex for a lay inventor to navigate.
@@ -590,7 +606,7 @@ nothing, authorizes nothing, and changes no critical path.
 
 | Capability | Primary activation gate / authority | Also spans | Current status |
 |---|---|---|---|
-| CAP-01 Structured Technical Guidance | **D13** (owner-gated) | WS-PFV-001, CAP-04, CAP-09 | RECORDED — NOT AUTHORIZED |
+| CAP-01 Structured Technical Guidance | **D13** (owner-gated) | WS-PFV-001, CAP-04, CAP-09 | RECORDED — NOT AUTHORIZED, **except ONE Owner-authorized first bounded Stage-18 guidance increment** (full CAP-01/STG still NOT AUTHORIZED) |
 | CAP-02 Simplified One-Step Journey | WS8 / later UX increment | CAP-06, CAP-07 | RECORDED — NOT AUTHORIZED |
 | CAP-03 Adaptive Assistance | WS13 / WS14 | CAP-02, AI Coach | RECORDED — NOT AUTHORIZED |
 | CAP-04 Gap Action Packs | WS12 (+ D13 for technical) | CAP-01, CAP-09 | RECORDED — NOT AUTHORIZED |
@@ -606,7 +622,9 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | Dedicated static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13 | RECORDED — NOT AUTHORIZED |
 
 The matrix is indicative sequencing only; it activates nothing. All eighteen capabilities (CAP-01…CAP-18) remain
-`RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+`RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, **save for the ONE Owner-authorized first bounded Stage-18
+CAP-01 guidance increment noted in the CAP-01 row. That single exception authorizes no other capability,
+no other CAP-01 scope and no additional domain**, and nothing in this matrix becomes authorized by it.
 
 ## 3. Dependency map
 

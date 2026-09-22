@@ -140,16 +140,25 @@ Read those before acting on any stage; this table is a locator, not a status sou
   Group 2".)*
 <!-- CURRENT-BLOCK: current-routing -->
 - **CURRENT STAGE:** Stage 18 — D13 / CAP-01 structured technical guidance.
-  **NEXT EXECUTABLE MASTER ROADMAP STAGE: Stage 18 — D13 / CAP-01.**
-  **`STAGE 18 STARTED: NO`** — it requires its own separate mandate, routing reaching it
-  authorizes no implementation, and Stage 18 is `NOT AUTHORIZED FOR IMPLEMENTATION`.
-  **Stage 18 is the next EXECUTABLE stage, not the next obligation: Stage 11 — T1-C′ / A2
+  **CURRENT MASTER ROADMAP STAGE: Stage 18 — D13 / CAP-01.**
+  **`STAGE 18 STARTED: YES`** · **`STAGE 18 COMPLETE: NO`** — the Owner authorized ONE
+  bounded first CAP-01 guidance increment, so the stage is ENTERED as fact.
+  `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT
+  AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`. **Stage 18
+  remains PARTIAL and its roadmap checkbox stays unticked** — one authorized bounded slice
+  is not the stage.
+  **Entering Stage 18 is not the next obligation discharged: Stage 11 — T1-C′ / A2
   human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, `STAGE 11 STARTED: NO`. It
   was routed PAST, not completed; **routing past a deferred stage never completes it.**
   Routing past it starts no human collection, no ILT, no A2 and no new round; reuse valid
   prior evidence where applicable, and new human activity requires separate authorization
   and the existing consent/custody boundaries.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded, preserved so the change is visible rather than silent: before the Owner's
+bounded authorization this read "**`STAGE 18 STARTED: NO`** — it requires its own separate
+mandate, routing reaching it authorizes no implementation, and Stage 18 is `NOT AUTHORIZED
+FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)*
 <!-- CURRENT-BLOCK: stages-13-16-dependencies -->
 - **Stages 13–16 remain PARTIAL / OPEN, each on its OWN stage-specific dependencies.**
   **T2-E is NOT the sole dependency of all four** — it is shared, and the per-stage detail
@@ -290,9 +299,12 @@ Read those before acting on any stage; this table is a locator, not a status sou
   **Stage 44 lineage gate** — PRESERVED · **Stage 45 deployment gate** — PRESERVED ·
   **WATCH-01** — PRESERVED / PLANNED / NOT YET IMPLEMENTED · **WATCH-04** — PRESERVED.
 <!-- END CURRENT-BLOCK: material-residuals -->
-- **CURRENT SUBTASK:** NONE AUTHORIZED. Stage 18 requires its own separate mandate, and
-  Stage 11 requires its own explicit mandate; completing the Stage-17 product-depth work
-  starts nothing, and neither did completing the Stage-10 differential.
+- **CURRENT SUBTASK:** ONE Owner-authorized bounded Stage-18 / CAP-01 first guidance
+  increment, and nothing else. Stage 18 no longer requires a further mandate for that one
+  slice; every wider CAP-01/STG scope still does, and Stage 11 still requires its own
+  explicit mandate. Completing the Stage-17 product-depth work started nothing, and neither
+  did completing the Stage-10 differential.
+  *(Superseded 2026-09-21, preserved — was: "NONE AUTHORIZED. Stage 18 requires its own separate mandate, and Stage 11 requires its own explicit mandate; completing the Stage-17 product-depth work starts nothing, and neither did completing the Stage-10 differential."; the Owner authorized ONE bounded first CAP-01 increment, so Stage 18 is ENTERED. Full CAP-01/STG stays unauthorized and Stage 18 stays PARTIAL.)*
   *(Superseded wording, preserved — was: "NONE AUTHORIZED. Stage 11 requires its own explicit
   mandate; completing the Stage-10 differential starts nothing.")*
 - *(Superseded wording, preserved — was: "NONE AUTHORIZED. Stage 10 requires its own
@@ -329,8 +341,11 @@ Read those before acting on any stage; this table is a locator, not a status sou
 
 Nothing below is authorized by this file. Each still requires the current mandate.
 
-1. **Stage 18** — D13 / CAP-01 structured technical guidance. `STAGE 18 STARTED: NO`. The
-   next EXECUTABLE stage; it requires its own separate mandate and authorizes nothing here.
+1. **Stage 18** — D13 / CAP-01 structured technical guidance. `STAGE 18 STARTED: YES` ·
+   `STAGE 18 COMPLETE: NO`. ENTERED under ONE Owner-authorized bounded first CAP-01
+   guidance increment; the remainder of Stage 18 still requires its own separate mandate,
+   and nothing here authorizes it.
+   *(Superseded 2026-09-21, preserved — was: "`STAGE 18 STARTED: NO`. The next EXECUTABLE stage; it requires its own separate mandate and authorizes nothing here."; the Owner authorized ONE bounded first CAP-01 increment, so Stage 18 is ENTERED. Full CAP-01/STG stays unauthorized and Stage 18 stays PARTIAL.)*
 2. **Stage 11** — T1-C′ / A2 human evidence. **DEFERRED, not completed.**
    `STAGE 11 STARTED: NO`. Reuse valid prior evidence where applicable; new human activity
    requires separate authorization and the existing consent/custody boundaries. Routing past
@@ -338,7 +353,8 @@ Nothing below is authorized by this file. Each still requires the current mandat
 3. **Stage 15 (IRL)** — the thinnest surviving readiness stage; its ownership is
    unresolved and Stage 15 is now its only home. It must not be lost.
 
-Step 1 is the next EXECUTABLE stage and starts nothing by being listed. Step 2 is the
+Step 1 is the stage now ENTERED, and being listed here still starts nothing beyond the one
+authorized bounded increment. Step 2 is the
 deferred obligation that routing past it does NOT complete. Step 3 is flagged because it is
 the highest loss risk, not because it is next in sequence.
 *(Superseded wording, preserved — was: "Step 1 is the Group 3 frontier. Step 2 is flagged
@@ -430,7 +446,7 @@ run has occurred. Deploying the merged code would activate it; that is not autho
 
 **CURRENT PRODUCT-DEPTH FRONTIER: Stage 18 if authorized — as the next EXECUTABLE stage only; Stage 11 stays DEFERRED and undischarged and Stages 13–16 stay PARTIAL / OPEN.** Stage 17 product-depth work is COMPLETE for the current authorized product scope (D1 + D2 + D3, MODERATE-DEEP) while COMMERCIAL READINESS stays PARTIAL with `VALIDATED COMMERCIAL CONCLUSION: NO`. *(Superseded 2026-09-21, preserved — was: "Stage 11 if authorized"; the Stage-17 product-depth disposition routes to Stage 18 as next executable, and completes neither Stage 11 nor Stage 17's commercial readiness.)* *(Superseded 2026-09-20, preserved — was: "Stage 10 if authorized"; the Stage-10 differential assessment is COMPLETED (B), while `T2-C′` stays `PARTIAL` and `T1-A′` stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 9 → Stage 10 if authorized"; the Stage-9 disposition task is COMPLETED, while `T1-A′` itself stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 8 is now CLOSED under Owner acceptance + disclosure.)* *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
 
-Group 1 is complete. **Stage 7 COMPLETED, Stage 8 CLOSED, the Stage-9 `T1-A′` disposition task COMPLETED (A) and the Stage-10 T2-C′ differential COMPLETED (B) — with `T1-A′` itself still OPEN / FRB and the `T2-C′` product-value verdict still PARTIAL; the NEXT EXECUTABLE Master Roadmap stage is Stage 18 — D13 / CAP-01, `STAGE 18 STARTED: NO`, while Stage 11 — T1-C′ / A2 — is DEFERRED / UNDISCHARGED / NOT STARTED and was routed PAST, not completed.** *(Superseded 2026-09-21 by the Stage-17 product-depth disposition, preserved verbatim — was: "Stage 11 — T1-C′ / A2 — is the next Master Roadmap stage and is NOT started."; routing moved to Stage 18 and Stage 11 stays deferred, so that sentence is HISTORICAL and is not current routing.)* All five Group-2 stages now read completed, so **Group 3 is the earliest group holding an unticked stage** — a checkbox fact, not a discharge of Group 2's residuals. *(Superseded 2026-09-20, preserved — was: "Stage 10 — T2-C′ — is the next Master Roadmap stage. Group 2 is still the earliest incomplete group.")* Group 3 has Stage 12
+Group 1 is complete. **Stage 7 COMPLETED, Stage 8 CLOSED, the Stage-9 `T1-A′` disposition task COMPLETED (A) and the Stage-10 T2-C′ differential COMPLETED (B) — with `T1-A′` itself still OPEN / FRB and the `T2-C′` product-value verdict still PARTIAL; the CURRENT Master Roadmap stage is Stage 18 — D13 / CAP-01, `STAGE 18 STARTED: YES` / `STAGE 18 COMPLETE: NO` under ONE Owner-authorized bounded first CAP-01 increment, while Stage 11 — T1-C′ / A2 — is DEFERRED / UNDISCHARGED / NOT STARTED and was routed PAST, not completed.** *(Superseded 2026-09-21 by the Stage-17 product-depth disposition, preserved verbatim — was: "Stage 11 — T1-C′ / A2 — is the next Master Roadmap stage and is NOT started."; routing moved to Stage 18 and Stage 11 stays deferred, so that sentence is HISTORICAL and is not current routing.)* All five Group-2 stages now read completed, so **Group 3 is the earliest group holding an unticked stage** — a checkbox fact, not a discharge of Group 2's residuals. *(Superseded 2026-09-20, preserved — was: "Stage 10 — T2-C′ — is the next Master Roadmap stage. Group 2 is still the earliest incomplete group.")* Group 3 has Stage 12
 complete, Stages 13 and 14 partial through the three-dimension Readiness Snapshot only,
 and Stage 15 open and thinnest. The Snapshot ceiling is `INSUFFICIENT_EVIDENCE` in every
 dimension: a captured dimension is not a validated conclusion.
@@ -485,6 +501,43 @@ they create no approval stage.
 Two further distinctions carried from current evidence and never to be collapsed:
 **selection ≠ provisioning ≠ completion**, and **registration ≠ authorization**.
 
+**Cross-stage capability-integration invariants (14–23).** Same standing as the rules
+above: operating practice derived from existing architecture, creating no Stage,
+Workstream, tracking ID, register, gate or approval step. The roadmap §8C carries the full
+wording; conflicts resolve upward as usual.
+
+14. **EXISTING OWNER FIRST.** Identify the existing truth owner and extend or consume it
+    before creating an engine, store, registry or model. Do not duplicate ownership merely
+    because a new Stage or CAP needs the data.
+15. **PRODUCE ONCE — CONSUME MANY.** No per-CAP duplicate evidence, risk, assumption,
+    contradiction, readiness, project-identity or domain-taxonomy store.
+16. **CAPABILITY OWNERSHIP DOES NOT COLLAPSE.** Consuming another capability's output
+    never absorbs its responsibility — CAP-01 guidance, CAP-04 gap action packages,
+    CAP-09 / WS-PFV-001 experiment and physical validation, CAP-12 materials and
+    manufacturing, CAP-13 specification/thickness/safety, CAP-14 static visual
+    interpretation, THERM-01 thermal analysis, CAP-08 assumptions, CAP-10 contradictions,
+    CAP-11 evidence-quality ladder, CAP-06 readiness PRESENTATION (not readiness truth),
+    CAP-07 decision-room COMPOSITION (not truth creation), and Technical Realization as
+    the shared technical-capability layer rather than a duplicate CAP-01 engine.
+17. **FIRST IMPLEMENTATION ≠ PERMANENT ARCHITECTURE.** A first domain, provider, language
+    seam, datastore or capability slice must stay explicitly distinguishable from target
+    architecture.
+18. **Domain-specific knowledge stays outside the domain-agnostic core.** No future CAP-01
+    profile may require domain-name branching in core progression or readiness logic.
+19. **Today's single root capability/domain is an ADAPTER LIMITATION**, not the permanent
+    CAP-01 domain model. Future multi-domain / subsystem-level context must be reachable by
+    extension, not replacement.
+20. **The `ui_lang` / `t()` seam is the current rendering adapter**, not the permanent
+    generated-output language authority.
+21. **Full CAP-01 scope is preserved.** The first bounded slice is presentation-only and
+    class-general; it is not the permanent ceiling for CAP-01.
+22. **Guidance owner ≠ all technical production.** CAP-01 must not duplicate
+    separately-owned calculations, materials, specifications, visual interpretation,
+    physical validation or thermal analysis.
+23. **Cross-roadmap owner check before material future work** (Technology Deepening, Domain
+    Expansion, Readiness, Manufacturing, Integration, AI). Part of the existing pre-send /
+    anti-drift discipline — **not a new approval gate.**
+
 ---
 
 ## Current position at this synchronization cut — verbatim record
@@ -534,8 +587,12 @@ OPEN / FRB / release-value criteria NOT MET
 never passed, never closed
 
 CURRENT PRODUCT-DEPTH FRONTIER:
-Stage 18 if authorized (next EXECUTABLE stage only)
-STAGE 18 STARTED: NO
+Stage 18 (ENTERED under ONE Owner-authorized bounded first CAP-01 increment)
+STAGE 18 STARTED: YES
+STAGE 18 COMPLETE: NO
+FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED
+FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE
+D13 RESEARCH: REMAINS CLOSED
 STAGE 11: DEFERRED / UNDISCHARGED / STAGE 11 STARTED: NO
 STAGES 13-16: PARTIAL / OPEN — EACH ON ITS OWN DEPENDENCIES,
 NOT ONE SHARED BLOCKER (T2-E is shared, NOT the sole blocker):
