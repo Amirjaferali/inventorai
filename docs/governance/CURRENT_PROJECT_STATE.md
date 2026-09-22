@@ -6,16 +6,19 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-22): Stage 18 — D13 / CAP-01 structured technical guidance.**
+**Current position (2026-09-22, post-PR-#679): Stage 18 — D13 / CAP-01 structured technical guidance.**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
-not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED IN CANDIDATE / NOT YET AUTHORITATIVE` · `FULL CAP-01
+not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
-Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; implementing the slice
-completes nothing beyond itself. The exact mandate, its boundaries and the first authorized
-domain guidance profile (`electronics_electrical` only) are recorded once in
-[ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md); this entry routes and does not
-authorize. **CAP-01 remains architecturally domain-extensible: electronics is the FIRST
+Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
+complete nothing beyond themselves. `ACTIVE CONTRACT: NONE` — **no further CAP-01
+implementation is currently authorized**, and no successor Stage is started. Project-specific
+CAP-01 behaviour returns only with a separately authorized architecture/data-model decision
+providing trustworthy typed technical-parameter inputs. The delivered mandates, their
+boundaries and the first authorized domain guidance profile (`electronics_electrical` only)
+are recorded in [ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md); this entry
+routes and does not authorize. **CAP-01 remains architecturally domain-extensible: electronics is the FIRST
 authorized profile, not the definition of CAP-01, and `mechanical` remains a fully activated
 InventorAI domain that simply has no authorized CAP-01 profile yet.** Cross-stage
 capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
@@ -92,10 +95,12 @@ PRs #647–#652; they are not wrong about what they recorded, only incomplete.
 - **A1 is completed work, not the current mandate.** *(Superseded 2026-09-21, preserved so
   the change is visible rather than silent: this read "`ACTIVE CONTRACT: NONE` stands;
   CLAUDE.md has been corrected to match." That was accurate at this synchronization cut.)*
-  **As present truth an active bounded contract exists** — the Owner-authorized first
-  bounded Stage-18 / CAP-01 guidance increment, recorded in ACTIVE_INCREMENT_CONTRACT.md and
-  summarized in the current-position block at the head of this file. A1 remains completed
-  work either way, and nothing else became authorized.
+  **As present truth `ACTIVE CONTRACT: NONE` again** — the two bounded Stage-18 / CAP-01
+  increments that were authorized after this cut are both delivered (PR #678, PR #679) and no
+  successor mandate exists; see ACTIVE_INCREMENT_CONTRACT.md and the current-position block
+  at the head of this file. A1 remains completed work either way.
+  *(Superseded 2026-09-22, preserved — was: "As present truth an active bounded contract
+  exists — the Owner-authorized first bounded Stage-18 / CAP-01 guidance increment …".)*
 
 **Unchanged by all of the above, and stated plainly:** `PUBLIC RELEASE: NOT AUTHORIZED` ·
 `DEPLOYMENT: NOT AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED` · Maintenance Mode
@@ -747,7 +752,7 @@ status**, holds **no current per-item status values of its own**, and creates no
 | 1. Deliverable-Stabilization workstreams (WS1–WS17) | `DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md` §15 *Workstream status table* | Per-WS status + closure evidence, including **deferred / post-gate** entries (e.g. WS17 / AI Coach) | That tracker (§15) |
 | 2. Product-Foundation / Commercial-Readiness phase **structure** (Phase 0–10) | `PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` §4 objectives / §5 sequence & dependencies | Objectives, intended phase **structure**, sequence/dependencies, remediation intent — **NOT** current execution status | **Layer 3** (roadmap + formal closure records) — **NOT** this plan's header/adoption/status text |
 | 3. Active phase/sub-gate **execution status** (P4 / P5 / P6 — e.g. P6-1, D-P6-18) | `ACTIVE_EXECUTION_ROADMAP.md` (§4 live status + append-only tail) + formal closure records, subject to `ACTIVE_INCREMENT_CONTRACT.md` + `OWNER_DECISION_REGISTER.md` | Current lane / holds / authorized next action / phase-execution status | The latest authoritative roadmap entry (+ closure records) |
-| 4. Owner-added capability inventory (CAP-01…CAP-18) | `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` | Recorded capabilities — all `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (**registration ≠ authorization**), except CAP-01's two Owner-authorized bounded Stage-18 increments (the first merged in PR #678; the second, a research-direction addendum, implemented in candidate and not yet authoritative) — full CAP-01 stays NOT AUTHORIZED. Range corrected to CAP-01…CAP-18 under G-MPR-01-D D6 (the register extends through CAP-18; CAP-15…CAP-18 are equally tracked; earlier "CAP-01…CAP-14" enumerations are superseded as index range). | That register |
+| 4. Owner-added capability inventory (CAP-01…CAP-18) | `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` | Recorded capabilities — all `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (**registration ≠ authorization**), except CAP-01's two Owner-authorized bounded Stage-18 increments (the first merged in PR #678; the second, a research-direction addendum, merged in PR #679) — full CAP-01 stays NOT AUTHORIZED. Range corrected to CAP-01…CAP-18 under G-MPR-01-D D6 (the register extends through CAP-18; CAP-15…CAP-18 are equally tracked; earlier "CAP-01…CAP-14" enumerations are superseded as index range). | That register |
 | 5. Owner decisions & authorization state (OD-/D- numbers) | `OWNER_DECISION_REGISTER.md` | Owner decisions + separate-authorization requirements (**a recorded proposal is NOT execution authorization**) | That register |
 | 6. Deferred Obligations Register (permanent cross-cutting obligation ledger — Owner rule) | `DEFERRED_OBLIGATIONS_REGISTER.md` | Per-obligation current disposition, return gate, blocking level, and closure evidence for deferred/open/conditional obligations (source owners stay authoritative for the underlying capability/decision) | That register |
 

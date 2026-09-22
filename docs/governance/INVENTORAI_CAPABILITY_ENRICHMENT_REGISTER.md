@@ -55,8 +55,8 @@ All capabilities recorded here (CAP-01 … CAP-18) share the status **`RECORDED 
 IMPLEMENTATION`** and require **separate explicit owner authorization** before any implementation (see
 §R5/§R6), **with ONE bounded exception recorded in the CAP-01 entry below: the Owner has explicitly
 authorized two bounded deterministic Stage-18 CAP-01 guidance increments — the first IMPLEMENTED / MERGED /
-POST-MERGE VERIFIED (PR #678), the second a research-direction addendum now OWNER-AUTHORIZED / IMPLEMENTED IN
-CANDIDATE / NOT YET AUTHORITATIVE. Those authorizations are confined to those increments. They do NOT authorize full CAP-01 / full STG, and they change nothing for
+POST-MERGE VERIFIED (PR #678), the second a research-direction addendum likewise IMPLEMENTED / MERGED / POST-MERGE
+VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`). Those authorizations are confined to those increments. They do NOT authorize full CAP-01 / full STG, and they change nothing for
 CAP-02 … CAP-18, which remain `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` unless already governed
 otherwise by their own authority.** (CAP-15 … CAP-18 were added by the legacy post-mortem capture in §1A; the original fourteen
 concepts referenced elsewhere in this register's genesis note are unchanged.)
@@ -86,7 +86,8 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   (governed by D13), **except for two Owner-authorized bounded deterministic Stage-18 CAP-01 guidance
   increments: the first IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678, merge `84c45cec89f5348f279c591dd739ded0d0db24b3`), and the
   second — a class-general research-direction addendum naming where to look and generic search terms for
-  the same six topics — OWNER-AUTHORIZED / IMPLEMENTED IN CANDIDATE / NOT YET AUTHORITATIVE.** Both are presentation-only; the second
+  the same six topics — IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`).** No further
+  CAP-01 implementation is currently authorized. Both are presentation-only; the second
   adds no evidence, retrieval, numeric value, project inspection or specialist. That increment is presentation-only, class-general and
   conditional, with one authorized domain guidance profile (`electronics_electrical`), bounded EN/AR
   copy, and no concept-class assertion, record inspection, numeric value, compatibility or safety
@@ -610,7 +611,7 @@ nothing, authorizes nothing, and changes no critical path.
 
 | Capability | Primary activation gate / authority | Also spans | Current status |
 |---|---|---|---|
-| CAP-01 Structured Technical Guidance | **D13** (owner-gated) | WS-PFV-001, CAP-04, CAP-09 | RECORDED — NOT AUTHORIZED, **except two Owner-authorized bounded Stage-18 guidance increments** (first merged in PR #678; second research-direction addendum implemented in candidate, not yet authoritative; full CAP-01/STG still NOT AUTHORIZED) |
+| CAP-01 Structured Technical Guidance | **D13** (owner-gated) | WS-PFV-001, CAP-04, CAP-09 | RECORDED — NOT AUTHORIZED, **except two Owner-authorized bounded Stage-18 guidance increments** (first merged in PR #678; second research-direction addendum merged in PR #679; full CAP-01/STG still NOT AUTHORIZED) |
 | CAP-02 Simplified One-Step Journey | WS8 / later UX increment | CAP-06, CAP-07 | RECORDED — NOT AUTHORIZED |
 | CAP-03 Adaptive Assistance | WS13 / WS14 | CAP-02, AI Coach | RECORDED — NOT AUTHORIZED |
 | CAP-04 Gap Action Packs | WS12 (+ D13 for technical) | CAP-01, CAP-09 | RECORDED — NOT AUTHORIZED |

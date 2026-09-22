@@ -120,7 +120,7 @@ explicit Owner structural-change authorization.
 | 1 | 1–5 | Close the existing product-depth lane | **COMPLETE ✅** |
 | 2 | 6–10 | Feedback, semantic depth, known value defects | **ALL STAGES COMPLETED ✅ — carried residuals remain: T1-A′ OPEN / FRB; T2-C′ PARTIAL** (not the current frontier; completing the checkboxes discharged neither residual) |
 | 3 | 11–15 | Human evidence and readiness foundations | Partial — 12 complete; 13/14 partial; 15 thinnest and must not be lost |
-| 4 | 16–20 | System/commercial readiness and technical guidance | 17 partial; 18 entered / partial (first CAP-01 increment merged, second implemented in candidate, not yet authoritative); 16, 19–20 not authorized |
+| 4 | 16–20 | System/commercial readiness and technical guidance | 17 partial; 18 entered / partial (both bounded CAP-01 increments merged, PRs #678 and #679; no further CAP-01 authorized); 16, 19–20 not authorized |
 | 5 | 21–25 | Decision support and engineering depth | Not authorized — zero merged runtime code |
 | 6 | 26–30 | Visual/thermal depth and new domains | 29 complete/active; 28/30/31 gated; 26–27 not authorized |
 | 7 | 31–35 | IoT depth and optional output capabilities | Not authorized (Stage 33 ≠ PR #663 account email) |
@@ -143,7 +143,7 @@ Read those before acting on any stage; this table is a locator, not a status sou
   **CURRENT MASTER ROADMAP STAGE: Stage 18 — D13 / CAP-01.**
   **`STAGE 18 STARTED: YES`** · **`STAGE 18 COMPLETE: NO`** — the Owner authorized ONE
   bounded first CAP-01 guidance increment, so the stage is ENTERED as fact.
-  `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED IN CANDIDATE / NOT YET AUTHORITATIVE` · `FULL CAP-01 / FULL STG: NOT
+  `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01 / FULL STG: NOT
   AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`. **Stage 18
   remains PARTIAL and its roadmap checkbox stays unticked** — one authorized bounded slice
   is not the stage.
@@ -299,11 +299,15 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   **Stage 44 lineage gate** — PRESERVED · **Stage 45 deployment gate** — PRESERVED ·
   **WATCH-01** — PRESERVED / PLANNED / NOT YET IMPLEMENTED · **WATCH-04** — PRESERVED.
 <!-- END CURRENT-BLOCK: material-residuals -->
-- **CURRENT SUBTASK:** ONE Owner-authorized bounded Stage-18 / CAP-01 first guidance
-  increment, and nothing else. Stage 18 no longer requires a further mandate for that one
-  slice; every wider CAP-01/STG scope still does, and Stage 11 still requires its own
-  explicit mandate. Completing the Stage-17 product-depth work started nothing, and neither
-  did completing the Stage-10 differential.
+- **CURRENT SUBTASK:** NONE AUTHORIZED — `ACTIVE CONTRACT: NONE`. Both bounded Stage-18 /
+  CAP-01 increments are delivered (PR #678 checklist, PR #679 research direction); every
+  further CAP-01/STG scope requires a new explicit mandate, and Stage 11 still requires its
+  own explicit mandate. Completing the Stage-17 product-depth work started nothing, and
+  neither did completing the Stage-10 differential.
+  *(Superseded 2026-09-22, preserved — was: "ONE Owner-authorized bounded Stage-18 / CAP-01
+  first guidance increment, and nothing else. Stage 18 no longer requires a further mandate
+  for that one slice; every wider CAP-01/STG scope still does …"; both bounded increments
+  are now merged and no successor mandate exists.)*
   *(Superseded 2026-09-21, preserved — was: "NONE AUTHORIZED. Stage 18 requires its own separate mandate, and Stage 11 requires its own explicit mandate; completing the Stage-17 product-depth work starts nothing, and neither did completing the Stage-10 differential."; the Owner authorized ONE bounded first CAP-01 increment, so Stage 18 is ENTERED. Full CAP-01/STG stays unauthorized and Stage 18 stays PARTIAL.)*
   *(Superseded wording, preserved — was: "NONE AUTHORIZED. Stage 11 requires its own explicit
   mandate; completing the Stage-10 differential starts nothing.")*
@@ -342,8 +346,8 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
 Nothing below is authorized by this file. Each still requires the current mandate.
 
 1. **Stage 18** — D13 / CAP-01 structured technical guidance. `STAGE 18 STARTED: YES` ·
-   `STAGE 18 COMPLETE: NO`. ENTERED under ONE Owner-authorized bounded first CAP-01
-   guidance increment; the remainder of Stage 18 still requires its own separate mandate,
+   `STAGE 18 COMPLETE: NO`. ENTERED; its two bounded CAP-01 increments are merged
+   (PR #678, PR #679). The remainder of Stage 18 still requires its own separate mandate,
    and nothing here authorizes it.
    *(Superseded 2026-09-21, preserved — was: "`STAGE 18 STARTED: NO`. The next EXECUTABLE stage; it requires its own separate mandate and authorizes nothing here."; the Owner authorized ONE bounded first CAP-01 increment, so Stage 18 is ENTERED. Full CAP-01/STG stays unauthorized and Stage 18 stays PARTIAL.)*
 2. **Stage 11** — T1-C′ / A2 human evidence. **DEFERRED, not completed.**
@@ -444,7 +448,7 @@ run has occurred. Deploying the merged code would activate it; that is not autho
 
 ## I. Current product-depth position
 
-**CURRENT PRODUCT-DEPTH FRONTIER: Stage 18 — ENTERED / PARTIAL: first bounded CAP-01 increment merged (PR #678), second bounded research-direction increment Owner-authorized and implemented in candidate, not yet authoritative, full CAP-01/STG NOT AUTHORIZED; Stage 11 stays DEFERRED and undischarged and Stages 13–16 stay PARTIAL / OPEN.** *(Superseded 2026-09-22, preserved — was: "Stage 18 if authorized — as the next EXECUTABLE stage only"; Stage 18 was entered under the Owner's bounded authorization and its first increment merged.)* Stage 17 product-depth work is COMPLETE for the current authorized product scope (D1 + D2 + D3, MODERATE-DEEP) while COMMERCIAL READINESS stays PARTIAL with `VALIDATED COMMERCIAL CONCLUSION: NO`. *(Superseded 2026-09-21, preserved — was: "Stage 11 if authorized"; the Stage-17 product-depth disposition routes to Stage 18 as next executable, and completes neither Stage 11 nor Stage 17's commercial readiness.)* *(Superseded 2026-09-20, preserved — was: "Stage 10 if authorized"; the Stage-10 differential assessment is COMPLETED (B), while `T2-C′` stays `PARTIAL` and `T1-A′` stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 9 → Stage 10 if authorized"; the Stage-9 disposition task is COMPLETED, while `T1-A′` itself stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 8 is now CLOSED under Owner acceptance + disclosure.)* *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
+**CURRENT PRODUCT-DEPTH FRONTIER: Stage 18 — ENTERED / PARTIAL: first bounded CAP-01 increment merged (PR #678), second bounded research-direction increment merged (PR #679), no further CAP-01 implementation currently authorized, full CAP-01/STG NOT AUTHORIZED; Stage 11 stays DEFERRED and undischarged and Stages 13–16 stay PARTIAL / OPEN.** *(Superseded 2026-09-22, preserved — was: "Stage 18 if authorized — as the next EXECUTABLE stage only"; Stage 18 was entered under the Owner's bounded authorization and its first increment merged.)* Stage 17 product-depth work is COMPLETE for the current authorized product scope (D1 + D2 + D3, MODERATE-DEEP) while COMMERCIAL READINESS stays PARTIAL with `VALIDATED COMMERCIAL CONCLUSION: NO`. *(Superseded 2026-09-21, preserved — was: "Stage 11 if authorized"; the Stage-17 product-depth disposition routes to Stage 18 as next executable, and completes neither Stage 11 nor Stage 17's commercial readiness.)* *(Superseded 2026-09-20, preserved — was: "Stage 10 if authorized"; the Stage-10 differential assessment is COMPLETED (B), while `T2-C′` stays `PARTIAL` and `T1-A′` stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 9 → Stage 10 if authorized"; the Stage-9 disposition task is COMPLETED, while `T1-A′` itself stays OPEN / FRB.)* *(Superseded 2026-09-20, preserved — was: "Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 8 is now CLOSED under Owner acceptance + disclosure.)* *(Superseded 2026-09-20, preserved — was: "Stage 7 → Stage 8 → Stage 9 → Stage 10 if authorized"; Stage 7 is now COMPLETED within its bounded T2-G scope.)*
 
 Group 1 is complete. **Stage 7 COMPLETED, Stage 8 CLOSED, the Stage-9 `T1-A′` disposition task COMPLETED (A) and the Stage-10 T2-C′ differential COMPLETED (B) — with `T1-A′` itself still OPEN / FRB and the `T2-C′` product-value verdict still PARTIAL; the CURRENT Master Roadmap stage is Stage 18 — D13 / CAP-01, `STAGE 18 STARTED: YES` / `STAGE 18 COMPLETE: NO` under ONE Owner-authorized bounded first CAP-01 increment, while Stage 11 — T1-C′ / A2 — is DEFERRED / UNDISCHARGED / NOT STARTED and was routed PAST, not completed.** *(Superseded 2026-09-21 by the Stage-17 product-depth disposition, preserved verbatim — was: "Stage 11 — T1-C′ / A2 — is the next Master Roadmap stage and is NOT started."; routing moved to Stage 18 and Stage 11 stays deferred, so that sentence is HISTORICAL and is not current routing.)* All five Group-2 stages now read completed, so **Group 3 is the earliest group holding an unticked stage** — a checkbox fact, not a discharge of Group 2's residuals. *(Superseded 2026-09-20, preserved — was: "Stage 10 — T2-C′ — is the next Master Roadmap stage. Group 2 is still the earliest incomplete group.")* Group 3 has Stage 12
 complete, Stages 13 and 14 partial through the three-dimension Readiness Snapshot only,
@@ -453,7 +457,7 @@ dimension: a captured dimension is not a validated conclusion.
 
 ## J. Current Technology-Deepening position
 
-**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment Owner-authorized and implemented in candidate, not yet authoritative; full CAP-01/STG NOT AUTHORIZED. **Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
+**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED. **Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
 
 Nothing in the readiness or infrastructure lanes touched any of them. Adjacent progress
 is not implementation. CAP-12 and CAP-13 must remain separate capabilities. Release-lane
@@ -592,7 +596,9 @@ STAGE 18 STARTED: YES
 STAGE 18 COMPLETE: NO
 FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED
   IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3
-SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED IN CANDIDATE / NOT YET AUTHORITATIVE
+SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753
+NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED
+ACTIVE CONTRACT: NONE
 FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE
 D13 RESEARCH: REMAINS CLOSED
 STAGE 11: DEFERRED / UNDISCHARGED / STAGE 11 STARTED: NO
@@ -613,7 +619,7 @@ COMMERCIAL READINESS: PARTIAL
 VALIDATED COMMERCIAL CONCLUSION: NO
 
 CURRENT TECHNOLOGY-DEEPENING POSITION:
-Stage 18 entered / partial — first CAP-01 increment merged, second implemented in candidate, not yet authoritative
+Stage 18 entered / partial — both bounded CAP-01 increments merged (PRs #678, #679); no further CAP-01 authorized
 Stages 19–27 preserved, not entered / not authorized
 
 CURRENT DOMAIN-EXPANSION POSITION:
