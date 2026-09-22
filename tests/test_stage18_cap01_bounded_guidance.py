@@ -158,6 +158,11 @@ def _items(block):
     return re.findall(r"<li class=\"cap01-item\" data-cap01-item>(.*?)</li>", block, re.S)
 
 
+def _research_items(block):
+    return re.findall(r"<li class=\"cap01-research-item\" data-cap01-research-item>(.*?)</li>",
+                      block, re.S)
+
+
 def _parts(block):
     """The block's reader-visible copy, one entry per rendered part. Scanning per
     part rather than over the flattened block keeps a claim attributable to the
@@ -170,6 +175,14 @@ def _parts(block):
     assert set(parts) == {"title", "intro", "boundary", "limit", "evidence"}, sorted(parts)
     for n, item in enumerate(_items(block), 1):
         parts["item_%d" % n] = _visible(item)
+    # The research-direction group is scanned by the SAME boundary checks: a claim
+    # smuggled into "where to look" is exactly as false as one in the checklist.
+    for n in ("research-title", "research-intro"):
+        m = re.search(r"<[^>]*data-cap01-%s[^>]*>(.*?)</[a-z0-9]+>" % n, block, re.S)
+        if m:
+            parts[n.replace("-", "_")] = _visible(m.group(1))
+    for n, item in enumerate(_research_items(block), 1):
+        parts["research_item_%d" % n] = _visible(item)
     return parts
 
 
@@ -501,6 +514,8 @@ def test_11_no_render_ever_mixes_the_two_languages():
         view = cap01_guidance.profile_copy(PROFILE_DOMAIN)
         keys = [view[p] for p in ("title_key", "intro_key", "boundary_key",
                                   "limit_key", "evidence_key")] + list(view["item_keys"])
+        keys += [view["research"]["title_key"], view["research"]["intro_key"]]
+        keys += list(view["research"]["item_keys"])
         for key in keys:
             assert ui_text.UI_STRINGS[key][mine] in visible, key
             assert ui_text.UI_STRINGS[key][theirs] not in visible, key
@@ -749,7 +764,9 @@ def test_19c_the_pdf_shell_also_suppresses_the_block_when_no_profile_applies():
 # ==========================================================================
 def test_20a_the_bilingual_exception_is_limited_to_the_cap01_keys():
     keys = [k for k in ui_text.UI_STRINGS if k.startswith("UI_CAP01_")]
-    assert len(keys) == 11
+    # 11 from the first increment + 8 from the research-direction addendum
+    assert len(keys) == 19
+    assert len([k for k in keys if "_RESEARCH_" in k]) == 8
     assert all(k.startswith("UI_%s_" % PROFILE_ID) for k in keys)
     for key in keys:
         entry = ui_text.UI_STRINGS[key]
@@ -824,7 +841,7 @@ def test_21b_ui_text_still_owns_the_copy_and_the_resolver_owns_no_text():
     ui = _source(_UI_TEXT_PATH)
     guidance = _source(_GUIDANCE_PATH)
     # copy stayed put
-    assert len([k for k in ui_text.UI_STRINGS if k.startswith("UI_CAP01_")]) == 11
+    assert len([k for k in ui_text.UI_STRINGS if k.startswith("UI_CAP01_")]) == 19
     assert "Technical information to check" in ui
     assert "\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0641\u0646\u064a\u0629 \u0644\u0644\u0645\u0631\u0627\u062c\u0639\u0629" in ui
     # and did NOT follow the availability table across
@@ -974,3 +991,242 @@ def test_22g_a_multi_row_render_stays_one_language_and_one_block_per_profile(mon
     assert html.count('data-cap01-profile="CAP01_SEAM_PROBE"') == 1
     assert "probe-en TITLE" in html
     assert "probe-ar TITLE" not in html
+
+
+# ==========================================================================
+# 23. SECOND BOUNDED INCREMENT — research-direction addendum
+# ==========================================================================
+# What the first increment rendered, frozen: the 11 PR #678 copy keys, EN and AR,
+# hashed at the authorized base 84c45cec. The addendum may only ADD; any edit to
+# the accepted checklist copy changes this digest.
+_PR678_COPY_DIGEST = "c964bcd2219eb1027d847ebab2a426d3fcfb50c4f9fe8e56de7999251334f0a0"
+
+_RESEARCH_EN_MARKS = (
+    "Where to look next",
+    "research aids only",
+    "\u201csensor output signal type\u201d",
+    "\u201clogic output VOH VOL\u201d",
+    "\u201cVIH VIL input threshold\u201d",
+    "\u201cADC source impedance\u201d",
+    "\u201ctimer input capture\u201d",
+    "combine it with the relevant section or parameter",
+)
+_RESEARCH_AR_MARKS = (
+    "\u0623\u064a\u0646 \u062a\u0628\u062d\u062b \u0644\u0627\u062d\u0642\u064b\u0627",
+    "\u0648\u0633\u0627\u0626\u0644 \u0645\u0633\u0627\u0639\u062f\u0629 \u0644\u0644\u0628\u062d\u062b",
+    "\u0639\u0628\u0627\u0631\u0627\u062a \u0628\u062d\u062b \u0645\u0642\u062a\u0631\u062d\u0629",
+)
+
+
+def _research_region(block):
+    """The research-direction group only: from its heading to the boundary copy."""
+    # Cut on TAG boundaries: slicing at the attribute would leave a half tag whose
+    # "cap01" text then reads as a digit in the reader-visible copy.
+    start = block.rindex("<", 0, block.index("data-cap01-research-title"))
+    end = block.rindex("<", 0, block.index("data-cap01-boundary", start))
+    return block[start:end]
+
+
+def test_23a_the_six_accepted_checklist_items_are_byte_for_byte_unchanged():
+    import hashlib, json
+    base = {k: ui_text.UI_STRINGS[k] for k in sorted(ui_text.UI_STRINGS)
+            if k.startswith("UI_CAP01_") and "_RESEARCH_" not in k}
+    assert len(base) == 11
+    got = hashlib.sha256(json.dumps(base, ensure_ascii=False,
+                                    sort_keys=True).encode("utf-8")).hexdigest()
+    assert got == _PR678_COPY_DIGEST, "the accepted PR #678 copy was edited"
+    block = _block(_render(_package(_open_gap_state())))
+    assert len(_items(block)) == 6
+
+
+def test_23b_research_heading_intro_and_six_lines_render_in_english():
+    block = _block(_render(_package(_open_gap_state()), lang="en"))
+    assert "data-cap01-research-title" in block and "data-cap01-research-intro" in block
+    assert len(_research_items(block)) == 6
+    visible = _visible(block)
+    for mark in _RESEARCH_EN_MARKS:
+        assert mark in visible, mark
+    for n in range(1, 7):
+        key = "UI_%s_RESEARCH_ITEM_%d" % (PROFILE_ID, n)
+        assert ui_text.UI_STRINGS[key]["en"] in visible, key
+
+
+def test_23c_research_heading_intro_and_six_lines_render_in_arabic():
+    block = _block(_render(_package(_open_gap_state()), lang="ar"))
+    assert len(_research_items(block)) == 6
+    visible = _visible(block)
+    for mark in _RESEARCH_AR_MARKS:
+        assert mark in visible, mark
+    for n in range(1, 7):
+        key = "UI_%s_RESEARCH_ITEM_%d" % (PROFILE_ID, n)
+        assert ui_text.UI_STRINGS[key]["ar"] in visible, key
+
+
+def test_23d_the_research_group_never_mixes_languages():
+    package = _package(_open_gap_state())
+    en = _visible(_research_region(_block(_render(package, lang="en"))))
+    ar = _visible(_research_region(_block(_render(package, lang="ar"))))
+    assert re.search(r"[\u0600-\u06FF]", en) is None, "Arabic leaked into the English group"
+    for mark in _RESEARCH_EN_MARKS:
+        assert mark not in ar, mark
+
+
+def test_23e_research_sits_inside_the_block_before_its_governing_boundary():
+    """BOUNDARY / LIMIT / EVIDENCE must still close the block, so they govern the
+    research lines too — the addendum may not be rendered after them."""
+    block = _block(_render(_package(_open_gap_state())))
+    order = [block.index(m) for m in ("data-cap01-item", "data-cap01-research-title",
+                                      "data-cap01-research-item", "data-cap01-boundary",
+                                      "data-cap01-limit", "data-cap01-evidence")]
+    assert order == sorted(order), order
+
+
+def test_23f_search_terms_carry_no_numeric_value_threshold_or_unit():
+    for lang in ("en", "ar"):
+        region = _visible(_research_region(_block(_render(_package(_open_gap_state()),
+                                                          lang=lang))))
+        assert re.search(r"\d", region) is None, (lang, "digit in research copy")
+        for token in ("=", "<", ">", "\u00b1", "%", "\u03a9", "\u00b5"):
+            assert token not in region, (lang, token)
+        for unit in (r"\bmV\b", r"\bV\b", r"\bkHz\b", r"\bHz\b", r"\bmA\b",
+                     r"\bk?ohms?\b"):
+            assert not re.search(unit, region, re.I), (lang, unit)
+
+
+def test_23g_research_copy_names_no_vendor_product_lab_standard_or_specialist():
+    named = ("Arduino", "ESP32", "STM32", "ATmega", "PIC", "Raspberry", "Texas Instruments",
+             "Microchip", "Analog Devices", "Bosch", "Fluke", "Keysight", "Tektronix",
+             "IEC", "ISO ", "IEEE", "ASTM", "UL ", "digikey", "mouser", "octopart",
+             "google", "http", "www.")
+    for lang in ("en", "ar"):
+        region = _visible(_research_region(_block(_render(_package(_open_gap_state()),
+                                                          lang=lang))))
+        for name in named:
+            assert name.lower() not in region.lower(), (lang, name)
+        block = _block(_render(_package(_open_gap_state()), lang=lang))
+        for term in (("specialist", "expert", "engineer", "consultant", "laboratory")
+                     if lang == "en" else ("\u0645\u062e\u062a\u0635", "\u062e\u0628\u064a\u0631",
+                                          "\u0645\u0647\u0646\u062f\u0633", "\u0645\u062e\u062a\u0628\u0631")):
+            assert _offenders(block, term, lang) == [], (lang, term)
+
+
+def test_23h_research_copy_issues_no_verdict_recommendation_or_project_claim():
+    """Where to look is not what to do. No compatibility, safety, circuit or
+    conditioning verdict; no claim that an item applies to, or is missing from,
+    this project; and no suggestion that the platform searched or retrieved."""
+    for lang, terms in (
+            ("en", ("compatible", "compatibility", "safe", "unsafe", "correct",
+                    "recommend", "you should use", "use a", "divider", "level shifter",
+                    "buffer", "op-amp", "amplif", "filter", "conditioning",
+                    "you are missing", "your project needs", "your record",
+                    "we found", "we searched", "we retrieved", "we checked")),
+            ("ar", ("\u0627\u0644\u062a\u0648\u0627\u0641\u0642", "\u0622\u0645\u0646",
+                    "\u0646\u0648\u0635\u064a", "\u064a\u0646\u0642\u0635\u0643",
+                    "\u0628\u062d\u062b\u0646\u0627", "\u0648\u062c\u062f\u0646\u0627"))):
+        block = _block(_render(_package(_open_gap_state()), lang=lang))
+        research = {k: v for k, v in _parts(block).items() if k.startswith("research")}
+        assert len(research) == 8, sorted(research)
+        for term in terms:
+            for name, text in research.items():
+                for sentence in _sentences(text):
+                    if _mentions(sentence, term):
+                        assert _denied(sentence, term, lang), (lang, name, term, sentence)
+
+
+def test_23i_no_research_copy_without_a_resolved_profile():
+    for state in (_open_gap_state(MECHANICAL_IDEA), _closed_gap_state()):
+        html = _render(_package(state))
+        assert "data-cap01-research" not in html
+    unknown = _open_gap_state()
+    unknown.domain_signal = "zzz_not_a_domain"
+    assert "data-cap01-research" not in _render(_package(unknown))
+
+
+def test_23j_mechanical_stays_byte_identical_with_the_addendum_present(monkeypatch):
+    package = _package(_open_gap_state(MECHANICAL_IDEA))
+    with_addendum = _mask_csrf(_render(package))
+    for n in list(range(1, 7)):
+        monkeypatch.delitem(ui_text.UI_STRINGS, "UI_%s_RESEARCH_ITEM_%d" % (PROFILE_ID, n))
+    assert _mask_csrf(_render(package)) == with_addendum
+
+
+def test_23k_duplicate_rows_still_render_one_block_and_one_research_group():
+    package = _package(_open_gap_state())
+    rows = package["section_3_assessment_overview"]["capabilities_assessed"]
+    rows.append(dict(rows[0]))
+    rows.insert(0, {"capability_id": "mechanical", "gaps_open": 3})
+    html = _render(package)
+    assert html.count("data-cap01-research-title") == 1
+    assert html.count("data-cap01-research-item") == 6
+
+
+def test_23l_the_research_group_is_optional_and_all_or_nothing(monkeypatch):
+    """A future profile must not be forced to ship research copy, and a half
+    group must never render — the checklist keeps rendering either way."""
+    prefix = "UI_CAP01_SEAM_PROBE_"
+    monkeypatch.setitem(cap01_guidance.CAP01_PROFILE_BY_DOMAIN,
+                        "seam_probe_domain", "CAP01_SEAM_PROBE")
+    for part in ("TITLE", "INTRO", "BOUNDARY", "LIMIT", "EVIDENCE", "ITEM_1"):
+        monkeypatch.setitem(ui_text.UI_STRINGS, prefix + part,
+                            {"en": "probe " + part, "ar": "probe " + part})
+    view = cap01_guidance.profile_copy("seam_probe_domain")
+    assert view is not None and view["research"] is None
+    # heading + intro but no lines -> still no group
+    for part in ("RESEARCH_TITLE", "RESEARCH_INTRO"):
+        monkeypatch.setitem(ui_text.UI_STRINGS, prefix + part,
+                            {"en": "probe " + part, "ar": "probe " + part})
+    assert cap01_guidance.profile_copy("seam_probe_domain")["research"] is None
+    # lines but no intro -> still no group
+    monkeypatch.setitem(ui_text.UI_STRINGS, prefix + "RESEARCH_ITEM_1",
+                        {"en": "probe line", "ar": "probe line"})
+    monkeypatch.delitem(ui_text.UI_STRINGS, prefix + "RESEARCH_INTRO")
+    assert cap01_guidance.profile_copy("seam_probe_domain")["research"] is None
+    # the electronics profile keeps all six lines through all of this
+    assert len(cap01_guidance.profile_copy(PROFILE_DOMAIN)["research"]["item_keys"]) == 6
+
+
+def test_23m_research_copy_is_catalogue_owned_and_the_resolver_holds_none_of_it():
+    guidance = _source(_GUIDANCE_PATH)
+    for n in range(1, 7):
+        for lang in ("en", "ar"):
+            text = ui_text.UI_STRINGS["UI_%s_RESEARCH_ITEM_%d" % (PROFILE_ID, n)][lang]
+            assert text not in guidance
+    for word in ("Datasheet", "datasheet", "Search terms", "Characteristics"):
+        assert word not in _code(_GUIDANCE_PATH), word
+    region = _template_cap01_region()
+    for word in ("Search terms", "Characteristics", "Where to look"):
+        assert word not in region, word
+
+
+def test_23n_pdf_carries_the_identical_research_group():
+    package = _package(_open_gap_state())
+    for lang in ("en", "ar"):
+        assert _block(_render(package, lang=lang)) == \
+            _block(_render(package, lang=lang, pdf=True))
+
+
+# ==========================================================================
+# 24. GOVERNANCE TRUTH AFTER PR #678
+# ==========================================================================
+_STATE_PATH = os.path.join(_ROOT, "docs", "governance", "CURRENT_PROJECT_STATE.md")
+_CONTRACT_PATH = os.path.join(_ROOT, "docs", "governance", "ACTIVE_INCREMENT_CONTRACT.md")
+_MERGE_678 = "84c45cec89f5348f279c591dd739ded0d0db24b3"
+
+
+def _fenced(path, name):
+    raw = _source(path)
+    o = "<!-- CURRENT-BLOCK: %s -->" % name
+    return re.sub(r"\s+", " ", raw[raw.index(o) + len(o):
+                                   raw.index("<!-- END CURRENT-BLOCK: %s -->" % name)])
+
+
+def test_24_current_state_says_first_merged_second_authorized_stage_partial():
+    for block in (_fenced(_STATE_PATH, "current-position"),
+                  _fenced(_CONTRACT_PATH, "current-routing")):
+        assert "`FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED`" in block
+        assert "IMPLEMENTED / MERGED / POST-MERGE VERIFIED" in block
+        assert "PR #678" in block and _MERGE_678 in block
+        assert "SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED" in block
+        assert "`STAGE 18 COMPLETE: NO`" in block
+        assert re.search(r"FULL CAP-01\s*/\s*FULL STG: NOT AUTHORIZED", block)
+        assert "STAGE 18 COMPLETE: YES" not in block

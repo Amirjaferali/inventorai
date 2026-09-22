@@ -1114,7 +1114,13 @@ def test_no_completed_stage_is_left_reading_as_the_current_stage():
             assert "SUPERSEDED" in window.upper(), (
                 "the checklist still reads Stage %d as the current stage"
                 % stage)
-    assert "CURRENT PRODUCT-DEPTH FRONTIER: Stage 18 if authorized" in checklist
+    # AMENDED post-PR-#678: Stage 18 is ENTERED, so "Stage 18 if authorized" is
+    # history now. The live frontier must say so, and the old wording may survive
+    # only inside the supersession note that preserves it.
+    assert "CURRENT PRODUCT-DEPTH FRONTIER: Stage 18 — ENTERED / PARTIAL" in checklist
+    for match in re.finditer(r"Stage 18 if authorized", checklist):
+        window = checklist[max(0, match.start() - 200):match.start()]
+        assert "Superseded" in window, "a live 'Stage 18 if authorized' frontier survives"
     # and the frontier must not read as a discharge of what it routed past
     assert "Stage 11 stays DEFERRED and undischarged" in checklist
 
@@ -1549,8 +1555,10 @@ def test_the_capability_register_records_one_bounded_exception_not_a_general_ope
     NOT trimmed down to the size of its first slice.
     """
     flat = _flat(CAPABILITIES)
-    for pat in (r"ONE first bounded deterministic Stage-18 CAP-01 guidance increment",
-                r"(?i)does NOT authorize full CAP-01 / full STG",
+    for pat in (r"two bounded deterministic Stage-18 CAP-01 guidance increments",
+                r"first IMPLEMENTED / MERGED /\s*POST-MERGE VERIFIED \(PR #678\)",
+                r"research-direction addendum now OWNER-AUTHORIZED / IMPLEMENTED IN\s*CANDIDATE / NOT YET AUTHORITATIVE",
+                r"(?i)(does|do) NOT authorize full CAP-01 / full STG",
                 r"(?i)CAP-02 \u2026 CAP-18, which remain `RECORDED \u2014 NOT AUTHORIZED",
                 r"`FULL CAP-01 / FULL STG: NOT AUTHORIZED`",
                 r"`D13 RESEARCH: REMAINS CLOSED`",
@@ -1622,3 +1630,85 @@ def test_the_integration_invariants_are_recorded_as_practice_not_as_a_gate():
     # and the roadmap says in terms that it creates none of the usual artifacts
     assert re.search(r"(?i)create no Stage, Workstream, tracking ID, register, "
                      r"authorization\s+gate or approval step", roadmap)
+
+
+def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
+    """PR #678 made four live sentences false at once, and each stayed green
+    because nothing asserted it: the roadmap's Group-4 state ("Stages 18–20 ...
+    NOT AUTHORIZED ... zero merged runtime code"), the checklist's
+    Technology-Deepening position and machine record ("Stages 18–27 ... not
+    entered"), and the checklist's Group table ("16, 18–20 not authorized").
+
+    Each old sentence is legitimate HISTORY and stays preserved, so presence
+    proves nothing either way. The contract is: every surviving copy sits inside a
+    supersession note, the corrected current sentence is present, Stages 19–27
+    stay not-entered, and the first slice's merge fact rides beside the guarded
+    OWNER-AUTHORIZED token rather than replacing it.
+    """
+    merge = "84c45cec89f5348f279c591dd739ded0d0db24b3"
+    roadmap, checklist = _flat(ROADMAP), _flat(CHECKLIST)
+    stale = (
+        (roadmap, "Stage 16 and Stages 18–20 remain recorded future capabilities, NOT AUTHORIZED"),
+        (roadmap, "Stages 18–20 are the first three Technology Deepening stages and have zero merged runtime code"),
+        (checklist, "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED"),
+    )
+    for text, sentence in stale:
+        for m in re.finditer(re.escape(sentence), text):
+            window = text[max(0, m.start() - 400):m.start()]
+            assert "Superseded" in window or "SUPERSEDED" in window, (
+                "live stale Stage-18 wording survives", sentence)
+    assert "Stage 18 is ENTERED / PARTIAL" in roadmap
+    assert "Stages 19 and 20 remain recorded future capabilities, NOT AUTHORIZED" in roadmap
+    assert "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED" in checklist
+    raw_checklist = _read(CHECKLIST)
+    assert "Stages 18–27 preserved, not entered / not authorized" not in raw_checklist
+    assert "Stages 19–27 preserved, not entered / not authorized" in raw_checklist
+    row = [l for l in raw_checklist.splitlines() if l.startswith("| 4 | 16–20 |")]
+    assert len(row) == 1 and "18 entered / partial" in row[0], row
+    assert "16, 18–20 not authorized" not in row[0]
+    # the first slice's merge fact beside the guarded token, on every fence
+    for path, routing in _surfaces("current-routing"):
+        i = routing.index("FIRST BOUNDED CAP-01 INCREMENT")
+        near = routing[i:i + 260]
+        assert "IMPLEMENTED / MERGED / POST-MERGE VERIFIED" in near, path
+        assert "PR #678" in near and merge in near, path
+        assert ("SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED"
+                in routing), path
+    # and the contract no longer calls the merged PR #678 candidate "this candidate"
+    contract = _flat(CONTRACT)
+    assert "synchronized to that same truth in this candidate" not in contract
+    assert "synchronized to that same truth in the PR #678 candidate, merged" in contract
+
+
+def test_second_increment_status_is_pre_publication_truth_not_merge_truth():
+    """Implemented-in-candidate is not merged. The second increment is complete in
+    an UNPUBLISHED candidate, so every live status must say exactly that: Owner-
+    authorized, implemented in candidate, not yet authoritative. "In
+    implementation" understates it; "merged" or "post-merge verified" would claim
+    events that have not happened. Both directions are forbidden."""
+    token = ("SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / "
+             "IMPLEMENTED IN CANDIDATE / NOT YET AUTHORITATIVE")
+    for path, routing in _surfaces("current-routing"):
+        assert token in routing, path
+    for path in (ROADMAP, CHECKLIST, CONTRACT, STATE, CAPABILITIES):
+        flat = _flat(path)
+        assert "OWNER-AUTHORIZED / IN IMPLEMENTATION" not in flat, path
+        for m in re.finditer(r"SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT:[^`]{0,120}", flat):
+            claim = m.group(0)
+            assert not re.search(r"\bMERGED\b|POST-MERGE|(?<!NOT YET )\bAUTHORITATIVE\b",
+                                 claim), (path, claim)
+
+
+def test_group_two_reads_completed_with_its_residuals_carried():
+    """Group 2's checkboxes are all ticked, so calling it the current frontier is
+    false — but ticking them discharged neither carried residual. The row must say
+    both, and Group 3 must remain the earliest group holding an unticked stage."""
+    rows = [l for l in _read(CHECKLIST).splitlines() if l.startswith("| 2 | 6–10 |")]
+    assert len(rows) == 1, rows
+    row = rows[0]
+    assert "ALL STAGES COMPLETED" in row
+    assert "T1-A′ OPEN / FRB" in row and "T2-C′ PARTIAL" in row
+    assert "EARLIEST INCOMPLETE" not in row and "current frontier**" not in row
+    for pat in (r"(?i)discharged(?! neither)", r"(?i)\bCLOSED\b", r"T1-A′ (CLOSED|PASSED)"):
+        assert not re.search(pat, row), (pat, row)
+    assert "**CURRENT EARLIEST GROUP HOLDING AN UNTICKED STAGE:** Group 3" in _read(CHECKLIST)

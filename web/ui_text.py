@@ -3249,6 +3249,108 @@ UI_STRINGS = {
             "من مصدر أولي."
         ),
     },
+
+    # --- Stage 18 / CAP-01 second bounded increment: research-direction addendum --
+    # Owner-authorized copy for the SAME CAP01_ELECTRONICS_INTERFACE_V1 profile. It
+    # tells the reader WHERE to look and WHICH generic search terms may help find the
+    # information the checklist above names. It is navigation aid only: no web or
+    # datasheet retrieval, no evidence, no numeric value, no threshold, no vendor,
+    # product, laboratory, standard or specialist, and no claim that any item applies
+    # to, or is missing from, the reader's project. The profile's BOUNDARY, LIMIT and
+    # EVIDENCE copy above governs this addendum too.
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_RESEARCH_TITLE": {
+        "en": "Where to look next — research direction",
+        "ar": "أين تبحث لاحقًا — توجيه البحث",
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_RESEARCH_INTRO": {
+        "en": (
+            "If one of the checklist items is relevant to your idea, use the matching "
+            "documentation category and search terms below to locate the governing "
+            "technical information. These are research aids only; they do not establish "
+            "that your project needs a specific value, method, component, or specialist."
+        ),
+        "ar": (
+            "إذا كان أحد بنود القائمة مناسبًا لفكرتك، فاستخدم فئة الوثائق وعبارات البحث "
+            "المقابلة أدناه للوصول إلى المعلومات الفنية الحاكمة. هذه وسائل مساعدة للبحث "
+            "فقط؛ ولا تثبت أن مشروعك يحتاج قيمة أو طريقة أو مكوّنًا أو مختصًا بعينه."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_RESEARCH_ITEM_1": {
+        "en": (
+            "Sensor output type — look in the sensor datasheet sections describing output "
+            "or signal characteristics. Search terms: “sensor output signal type”, "
+            "“analog digital pulse frequency output”."
+        ),
+        "ar": (
+            "نوع خرج المستشعر — راجع أقسام ورقة بيانات المستشعر التي تصف الخرج أو خصائص "
+            "الإشارة. عبارات بحث مقترحة: «نوع إشارة خرج المستشعر»، «خرج تماثلي رقمي نبضي "
+            "ترددي»."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_RESEARCH_ITEM_2": {
+        "en": (
+            "Sensor output voltage or logic levels — look in sections such as Output "
+            "Characteristics, Electrical Characteristics, or DC Characteristics. Search "
+            "terms: “sensor output voltage range”, “logic output VOH VOL”."
+        ),
+        "ar": (
+            "جهد خرج المستشعر أو مستويات المنطق — راجع أقسامًا مثل خصائص الخرج أو الخصائص "
+            "الكهربائية أو خصائص التيار المستمر. عبارات بحث مقترحة: «نطاق جهد خرج "
+            "المستشعر»، «مستويات خرج المنطق VOH VOL»."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_RESEARCH_ITEM_3": {
+        "en": (
+            "Microcontroller input requirements — look in I/O Pin Characteristics, "
+            "Electrical Characteristics, and ADC/Reference sections when applicable. "
+            "Search terms: “MCU input voltage range”, “ADC reference voltage”, “VIH VIL "
+            "input threshold”."
+        ),
+        "ar": (
+            "متطلبات دخل المتحكم الدقيق — راجع خصائص أطراف الإدخال/الإخراج والخصائص "
+            "الكهربائية وأقسام محول ADC أو الجهد المرجعي عند انطباقها. عبارات بحث مقترحة: "
+            "«نطاق جهد دخل المتحكم الدقيق»، «الجهد المرجعي ADC»، «عتبات الدخل VIH VIL»."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_RESEARCH_ITEM_4": {
+        "en": (
+            "Source impedance — look in sensor Output Impedance or Output Characteristics "
+            "and in the MCU/ADC Input or Acquisition Characteristics. Search terms: "
+            "“sensor output impedance”, “ADC source impedance”, “input loading”."
+        ),
+        "ar": (
+            "معاوقة المصدر — راجع معاوقة الخرج أو خصائص الخرج في ورقة بيانات المستشعر، "
+            "وخصائص الدخل أو الاكتساب الخاصة بالمتحكم الدقيق أو ADC. عبارات بحث مقترحة: "
+            "«معاوقة خرج المستشعر»، «معاوقة المصدر ADC»، «تحميل الدخل»."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_RESEARCH_ITEM_5": {
+        "en": (
+            "Pulse/frequency — look in the sensor Timing or Frequency Output sections and "
+            "the MCU Timer/Counter/Input Capture sections. Search terms: “sensor pulse "
+            "frequency range”, “timer input capture”, “pulse counting input”."
+        ),
+        "ar": (
+            "النبضات/التردد — راجع أقسام التوقيت أو خرج التردد في ورقة بيانات المستشعر، "
+            "وأقسام المؤقت أو العداد أو التقاط الدخل في المتحكم الدقيق. عبارات بحث "
+            "مقترحة: «نطاق تردد نبضات المستشعر»، «التقاط دخل المؤقت»، «دخل عد النبضات»."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_RESEARCH_ITEM_6": {
+        "en": (
+            "Governing documentation — prioritize the applicable device datasheet "
+            "sections such as Electrical Characteristics, DC Characteristics, Timing "
+            "Characteristics, I/O Characteristics, and ADC Characteristics. When a device "
+            "or part number is known, combine it with the relevant section or parameter "
+            "in the search terms."
+        ),
+        "ar": (
+            "الوثائق الفنية الحاكمة — أعطِ الأولوية لأقسام ورقة بيانات الجهاز ذات الصلة، "
+            "مثل الخصائص الكهربائية وخصائص التيار المستمر وخصائص التوقيت وخصائص "
+            "الإدخال/الإخراج وخصائص ADC. عندما يكون اسم الجهاز أو رقم الجزء معروفًا، "
+            "ادمجه مع اسم القسم أو المعامل ذي الصلة في عبارة البحث."
+        ),
+    },
 }
 
 

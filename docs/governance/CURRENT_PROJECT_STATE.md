@@ -6,10 +6,10 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-21): Stage 18 — D13 / CAP-01 structured technical guidance.**
+**Current position (2026-09-22): Stage 18 — D13 / CAP-01 structured technical guidance.**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
-not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `FULL CAP-01
+not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED IN CANDIDATE / NOT YET AUTHORITATIVE` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; implementing the slice
 completes nothing beyond itself. The exact mandate, its boundaries and the first authorized
@@ -747,7 +747,7 @@ status**, holds **no current per-item status values of its own**, and creates no
 | 1. Deliverable-Stabilization workstreams (WS1–WS17) | `DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md` §15 *Workstream status table* | Per-WS status + closure evidence, including **deferred / post-gate** entries (e.g. WS17 / AI Coach) | That tracker (§15) |
 | 2. Product-Foundation / Commercial-Readiness phase **structure** (Phase 0–10) | `PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` §4 objectives / §5 sequence & dependencies | Objectives, intended phase **structure**, sequence/dependencies, remediation intent — **NOT** current execution status | **Layer 3** (roadmap + formal closure records) — **NOT** this plan's header/adoption/status text |
 | 3. Active phase/sub-gate **execution status** (P4 / P5 / P6 — e.g. P6-1, D-P6-18) | `ACTIVE_EXECUTION_ROADMAP.md` (§4 live status + append-only tail) + formal closure records, subject to `ACTIVE_INCREMENT_CONTRACT.md` + `OWNER_DECISION_REGISTER.md` | Current lane / holds / authorized next action / phase-execution status | The latest authoritative roadmap entry (+ closure records) |
-| 4. Owner-added capability inventory (CAP-01…CAP-18) | `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` | Recorded capabilities — all `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (**registration ≠ authorization**). Range corrected to CAP-01…CAP-18 under G-MPR-01-D D6 (the register extends through CAP-18; CAP-15…CAP-18 are equally tracked; earlier "CAP-01…CAP-14" enumerations are superseded as index range). | That register |
+| 4. Owner-added capability inventory (CAP-01…CAP-18) | `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` | Recorded capabilities — all `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (**registration ≠ authorization**), except CAP-01's two Owner-authorized bounded Stage-18 increments (the first merged in PR #678; the second, a research-direction addendum, implemented in candidate and not yet authoritative) — full CAP-01 stays NOT AUTHORIZED. Range corrected to CAP-01…CAP-18 under G-MPR-01-D D6 (the register extends through CAP-18; CAP-15…CAP-18 are equally tracked; earlier "CAP-01…CAP-14" enumerations are superseded as index range). | That register |
 | 5. Owner decisions & authorization state (OD-/D- numbers) | `OWNER_DECISION_REGISTER.md` | Owner decisions + separate-authorization requirements (**a recorded proposal is NOT execution authorization**) | That register |
 | 6. Deferred Obligations Register (permanent cross-cutting obligation ledger — Owner rule) | `DEFERRED_OBLIGATIONS_REGISTER.md` | Per-obligation current disposition, return gate, blocking level, and closure evidence for deferred/open/conditional obligations (source owners stay authoritative for the underlying capability/decision) | That register |
 
