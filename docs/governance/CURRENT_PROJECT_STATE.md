@@ -5,6 +5,23 @@
 meaning. CLAUDE.md owns the single boot sequence. Historical material below does not
 override this current entry or impose another reading/approval/synchronization sequence.
 
+<!-- CURRENT-BLOCK: current-position -->
+**Current position (2026-09-21): Stage 18 — D13 / CAP-01 structured technical guidance.**
+`STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
+first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
+not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `FULL CAP-01
+/ FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
+Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; implementing the slice
+completes nothing beyond itself. The exact mandate, its boundaries and the first authorized
+domain guidance profile (`electronics_electrical` only) are recorded once in
+[ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md); this entry routes and does not
+authorize. **CAP-01 remains architecturally domain-extensible: electronics is the FIRST
+authorized profile, not the definition of CAP-01, and `mechanical` remains a fully activated
+InventorAI domain that simply has no authorized CAP-01 profile yet.** Cross-stage
+capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
+operating practice — they add no Stage, gate or approval step.
+<!-- END CURRENT-BLOCK: current-position -->
+
 ## v1.32 current-state synchronization — read this first (2026-09-19)
 
 **Documentation-only cut at HEAD `61b482820cd2a2bb37ab73f017f2c840331707f3`, tree
@@ -72,8 +89,13 @@ PRs #647–#652; they are not wrong about what they recorded, only incomplete.
   **CLOSED** (PR #639; OD-PDVG-13 and OD-PDVG-12 consumed), and T2-E is **CLOSED for its
   accepted Option-B scope only** (PR #640) with the wider evidence-writer direction still
   deferred and unauthorized.
-- **A1 is completed work, not the current mandate.** `ACTIVE CONTRACT: NONE` stands;
-  CLAUDE.md has been corrected to match.
+- **A1 is completed work, not the current mandate.** *(Superseded 2026-09-21, preserved so
+  the change is visible rather than silent: this read "`ACTIVE CONTRACT: NONE` stands;
+  CLAUDE.md has been corrected to match." That was accurate at this synchronization cut.)*
+  **As present truth an active bounded contract exists** — the Owner-authorized first
+  bounded Stage-18 / CAP-01 guidance increment, recorded in ACTIVE_INCREMENT_CONTRACT.md and
+  summarized in the current-position block at the head of this file. A1 remains completed
+  work either way, and nothing else became authorized.
 
 **Unchanged by all of the above, and stated plainly:** `PUBLIC RELEASE: NOT AUTHORIZED` ·
 `DEPLOYMENT: NOT AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED` · Maintenance Mode

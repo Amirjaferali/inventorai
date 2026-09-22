@@ -192,6 +192,9 @@ def test_repository_merge_sha_is_labeled_as_repository_evidence():
 # ==========================================================================
 CONTRACT = os.path.join("docs", "governance", "ACTIVE_INCREMENT_CONTRACT.md")
 REGISTER = os.path.join("docs", "governance", "DEFERRED_OBLIGATIONS_REGISTER.md")
+CAPABILITIES = os.path.join("docs", "governance",
+                            "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md")
+STATE = os.path.join("docs", "governance", "CURRENT_PROJECT_STATE.md")
 
 
 def _flat(path):
@@ -394,7 +397,7 @@ def test_every_surface_declares_the_same_current_state_blocks():
                                             marker)
 
 
-def test_stage_eighteen_is_the_next_executable_stage_and_authorizes_nothing():
+def test_stage_eighteen_is_entered_and_still_completes_nothing():
     """The CURRENT routing, asserted where preserved history cannot reach it.
 
     This guard has been wrong-but-green four times, and the shape never
@@ -405,17 +408,29 @@ def test_stage_eighteen_is_the_next_executable_stage_and_authorizes_nothing():
     the Stage-10 differential, and most recently a live checklist sentence
     still calling Stage 11 next while the current-position area routed to 18.
 
-    So the current claim is asserted inside the current-routing fence, the
-    inverted claim is forbidden there, and every surviving "Stage N is next"
-    sentence anywhere in the file must still sit inside a supersession note.
-    Stage 11 is on that stale list for a reason that matters: it was routed
-    PAST, not completed. Routing forward must never read as a discharge.
+    A fifth variant of the same failure is now closed here. The Owner
+    authorized ONE bounded first CAP-01 increment, which makes "Stage 18 is the
+    NEXT executable stage" and "`STAGE 18 STARTED: NO`" false as present truth
+    while both sentences remain legitimate preserved history a few lines below
+    the fence. So the guard flips with the fact: entry is required, the stale
+    pre-authorization wording is forbidden INSIDE the fence, and the two claims
+    that entry does NOT license — stage completion and full CAP-01/STG — are
+    required to stay explicitly denied. One authorized slice is not the stage.
+
+    Stage 11 is asserted unchanged for a reason that matters: it was routed
+    PAST, not completed. Routing forward must never read as a discharge, and
+    entering Stage 18 discharges nothing behind it either.
     """
     for path, routing in _surfaces("current-routing"):
         _needs(routing, path, "routing",
-               r"(?i)NEXT EXECUTABLE MASTER ROADMAP STAGE: Stage 18",
-               r"`STAGE 18 STARTED: NO`",
-               r"NOT AUTHORIZED FOR IMPLEMENTATION",
+               r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18",
+               r"`STAGE 18 STARTED: YES`",
+               r"`STAGE 18 COMPLETE: NO`",
+               r"`FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED`",
+               r"FULL CAP-01 / FULL STG:\s*NOT\s+AUTHORIZED",
+               r"`D13 RESEARCH: REMAINS CLOSED`",
+               r"(?i)Stage 18\s+remains PARTIAL",
+               r"(?i)checkbox stays unticked",
                r"`STAGE 11 STARTED: NO`",
                r"Stage 11[^.]{0,200}DEFERRED",
                r"routed\s+PAST, not completed",
@@ -424,7 +439,18 @@ def test_stage_eighteen_is_the_next_executable_stage_and_authorizes_nothing():
                  r"Stage 11[^.]{0,80}\bis the next\b",
                  r"next Master Roadmap stage: Stage 11",
                  r"STAGE 11 STARTED: YES",
-                 r"STAGE 18 STARTED: YES",
+                 # the pre-authorization wording is history now, not current text
+                 r"STAGE 18 STARTED: NO",
+                 r"Stage 18 is `NOT AUTHORIZED FOR IMPLEMENTATION`",
+                 # entry is not completion, and the slice is not the capability
+                 r"STAGE 18 COMPLETE: YES",
+                 # tight on purpose: "entering Stage 18 is not the next
+                 # obligation discharged" is TRUE and must stay sayable, so the
+                 # forbidden shape is the predicate, not the bare co-occurrence
+                 r"Stage 18\s+(is|was|has been)\s+(COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b",
+                 r"Stage 18[^.]{0,30}\bmarked (complete|completed|closed)\b",
+                 r"FULL (CAP-01|STG)[^.]{0,40}: *AUTHORIZED",
+                 r"D13 RESEARCH: (REOPENED|OPEN)",
                  r"Stage 11[^.]{0,80}\b(COMPLETED|DISCHARGED|CLOSED)\b")
     # every surviving "Stage N is next" sentence, for every already-routed-past
     # stage, must be marked superseded — in the navigation AND in the authority.
@@ -441,9 +467,14 @@ def test_stage_eighteen_is_the_next_executable_stage_and_authorizes_nothing():
                 assert "SUPERSEDED" in window.upper(), (
                     "a live sentence still routes to a routed-past stage in %s: %s"
                     % (path, stale))
-    # completing or dispositioning one stage never starts the next
-    assert "Stage 18 requires its own separate mandate" in _flat(CHECKLIST)
-    assert "completing the Stage-17 product-depth work" in _flat(CHECKLIST)
+    # completing or dispositioning one stage never starts the next. Stage 18 is
+    # now ENTERED, so the live subtask line must name the ONE authorized bounded
+    # increment AND keep the wider scope gated — "entered" is not "open season".
+    flat_checklist = _flat(CHECKLIST)
+    assert "ONE Owner-authorized bounded Stage-18 / CAP-01 first guidance" in flat_checklist
+    assert "every wider CAP-01/STG scope still does" in flat_checklist
+    assert "Stage 11 still requires its own explicit mandate" in flat_checklist
+    assert "completing the Stage-17 product-depth work" in flat_checklist
     # and neither stage's checkbox has been ticked by routing
     assert re.search(r"^- \[ \] \*\*11 — T1-C′/A2 human evidence:",
                      _read(ROADMAP), re.M), "stage 11 checkbox is not empty"
@@ -836,7 +867,15 @@ NEVER_TRUE_ANYWHERE = (
     r"DEMAND: VALIDATED",
     r"READINESS CEILING: SUFFICIENT_EVIDENCE",
     r"STAGE 11 STARTED: YES",
-    r"STAGE 18 STARTED: YES",
+    # `STAGE 18 STARTED: YES` was on this list until the Owner authorized the
+    # first bounded CAP-01 increment, at which point it became TRUE. What entry
+    # still does not license takes its place: completing the stage, authorizing
+    # full CAP-01/STG, reopening D13, or activating another domain's profile.
+    r"STAGE 18 COMPLETE: YES",
+    r"STAGE 18: (COMPLETE|COMPLETED)",
+    r"FULL (CAP-01|STG)[^.\n]{0,40}: *AUTHORIZED",
+    r"CAP-01: FULLY AUTHORIZED",
+    r"D13 RESEARCH: (REOPENED|OPEN)\b",
     r"(DEPLOYMENT|PUBLIC RELEASE|PAID ACTIVATION): AUTHORIZED",
     r"T1-A′: (CLOSED|PASSED)",
     r"RUN-004: AUTHORIZED",
@@ -1465,3 +1504,121 @@ def test_the_stage_ten_forbidden_claims_are_absent():
             stripped = re.sub(r"\*{0,2}no\*{0,2}\s+" + re.escape(claim), "",
                               stripped)
             assert claim not in stripped, (path, claim)
+
+
+# ==========================================================================
+# Stage 18 entry: the bounded authorization, and what it does NOT unlock
+# ==========================================================================
+def test_the_current_state_file_routes_to_the_entered_stage_and_authorizes_nothing():
+    """CLAUDE.md sends every agent to this file's CURRENT entry, and that entry
+    sits at the head of 6000 lines of preserved history. So it is fenced like
+    the other surfaces, and the fence must carry the entry fact WITHOUT
+    carrying authority: the mandate lives in the contract, and this file routes.
+    """
+    block = _current(STATE, "current-position")
+    for pat in (r"`STAGE 18 STARTED: YES`", r"`STAGE 18 COMPLETE: NO`",
+                r"FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED",
+                r"FULL CAP-01\s*/\s*FULL STG: NOT AUTHORIZED",
+                r"`D13 RESEARCH: REMAINS CLOSED`",
+                r"(?i)Stage 18 stays \*\*PARTIAL\*\*",
+                r"(?i)this entry routes and does not\s+authorize",
+                r"electronics_electrical` only",
+                r"(?i)FIRST\s+authorized profile, not the definition of CAP-01",
+                r"(?i)`mechanical` remains a fully activated"):
+        assert re.search(pat, block, re.S), ("current-position", "MISSING", pat)
+    for pat in (r"STAGE 18 STARTED: NO", r"STAGE 18 COMPLETE: YES",
+                r"(?i)mechanical[^.]{0,60}unsupported"):
+        assert re.search(pat, block, re.I | re.S) is None, ("current-position",
+                                                            "FORBIDDEN", pat)
+    # the stale ACTIVE CONTRACT: NONE claim may survive ONLY as preserved history
+    flat = _flat(STATE)
+    for m in re.finditer(r"`ACTIVE CONTRACT: NONE` stands", flat):
+        window = flat[max(0, m.start() - 400):m.start()]
+        assert "Superseded" in window or "preserved" in window, (
+            "a live ACTIVE CONTRACT: NONE claim survives the bounded authorization")
+
+
+def test_the_capability_register_records_one_bounded_exception_not_a_general_opening():
+    """The register carried TWO blanket "all eighteen are NOT AUTHORIZED"
+    statements plus a CAP-01 row saying the same. One bounded authorization
+    makes all three false as written, and the tempting repair — deleting the
+    blanket — would read as though every recorded capability opened at once.
+
+    So the contract is: the exception is named, it is scoped to ONE increment,
+    the blanket survives for everything else, and CAP-01's full future scope is
+    NOT trimmed down to the size of its first slice.
+    """
+    flat = _flat(CAPABILITIES)
+    for pat in (r"ONE first bounded deterministic Stage-18 CAP-01 guidance increment",
+                r"(?i)does NOT authorize full CAP-01 / full STG",
+                r"(?i)CAP-02 \u2026 CAP-18, which remain `RECORDED \u2014 NOT AUTHORIZED",
+                r"`FULL CAP-01 / FULL STG: NOT AUTHORIZED`",
+                r"`D13 RESEARCH: REMAINS CLOSED`",
+                r"`STAGE 18 COMPLETE: NO`",
+                r"(?i)intended full future scope of CAP-01 above is NOT reduced",
+                r"(?i)Domain activation is NOT CAP-01 profile availability",
+                r"(?i)a missing profile, never an unsupported domain"):
+        assert re.search(pat, flat, re.S), ("capability register", "MISSING", pat)
+    # the blanket must still bind everything the exception does not name
+    assert re.search(r"All capabilities recorded here \(CAP-01 \u2026 CAP-18\) share the "
+                     r"status \*\*`RECORDED \u2014 NOT AUTHORIZED FOR\s+IMPLEMENTATION`\*\*",
+                     flat), "the general non-authorization statement was deleted"
+    for pat in (r"CAP-0[2-9][^|]{0,80}\| *RECORDED \u2014 AUTHORIZED",
+                r"(?i)all eighteen capabilities[^.]{0,60}are now authorized",
+                r"(?i)CAP-01[^.]{0,40}FULLY AUTHORIZED"):
+        assert re.search(pat, flat, re.I | re.S) is None, ("capability register",
+                                                           "FORBIDDEN", pat)
+    # CAP-01's preserved future scope is the thing most at risk of being trimmed
+    for kept in ("exact unresolved technical subproblem", "suggested search terms",
+                 "required measurements/tests/", "what the system can and cannot verify",
+                 r"appropriate specialist\s+category only when necessary and "
+                 r"evidence-supported"):
+        assert re.search(kept, flat), ("CAP-01 future scope trimmed", kept)
+
+
+def test_the_integration_invariants_are_recorded_as_practice_not_as_a_gate():
+    """Recorded on BOTH derived surfaces, and recorded as operating practice.
+
+    The failure this guards against is the one that produced it: a first slice
+    silently becoming the architecture, and a new capability quietly absorbing
+    an owner that already exists. The second failure mode is the cure becoming
+    the disease — an anti-drift note growing into another approval stage. So
+    the invariants are required by substance, and gate language is forbidden.
+    """
+    # Slice the two sections. Scanning the whole 1500-line file for gate language
+    # would report the roadmap's OTHER, legitimate gates; the question here is
+    # only whether THIS section became one.
+    raw_roadmap = _read(ROADMAP)
+    assert "### 8C. Cross-stage capability-integration invariants" in raw_roadmap
+    i = raw_roadmap.index("### 8C. Cross-stage capability-integration invariants")
+    roadmap = re.sub(r"\s+", " ", raw_roadmap[i:raw_roadmap.index("\n## 9.", i)])
+    raw_checklist = _read(CHECKLIST)
+    j = raw_checklist.index("Cross-stage capability-integration invariants (14")
+    checklist = re.sub(r"\s+", " ", raw_checklist[j:raw_checklist.index("\n---", j)])
+    for text in (roadmap, checklist):
+        for pat in (r"EXISTING OWNER FIRST",
+                    r"PRODUCE ONCE",
+                    r"CAPABILITY OWNERSHIP DOES NOT COLLAPSE|never absorbs its responsibility|"
+                    r"absorbs its responsibility|ownership does not collapse",
+                    r"FIRST IMPLEMENTATION \u2260 PERMANENT ARCHITECTURE",
+                    r"(?i)ADAPTER LIMITATION",
+                    r"(?i)permanent generated-output language authority",
+                    r"(?i)CAP-06[^.]{0,80}(PRESENTATION|readiness PRESENTATION)",
+                    r"(?i)CAP-07[^.]{0,80}COMPOSITION",
+                    r"(?i)Technical Realization"):
+            assert re.search(pat, text, re.S), ("integration invariants", "MISSING", pat)
+        # It must never become another approval stage. "it is NOT a new approval
+        # gate" is the point of the section, so the scan is negation-aware and
+        # asks whether a negator governs the phrase, not whether one co-occurs.
+        for pat in (r"new (approval|authorization) gate",
+                    r"must be approved before", r"requires sign-?off",
+                    r"may not proceed until"):
+            for m in re.finditer(pat, text, re.I):
+                head = text[max(0, m.start() - 70):m.start()].lower()
+                assert any(n in head for n in ("not ", "no ", "never", "isn't",
+                                               "is not", "creates no")), (
+                    "integration invariants", "became a gate", pat,
+                    text[max(0, m.start() - 70):m.end() + 20])
+    # and the roadmap says in terms that it creates none of the usual artifacts
+    assert re.search(r"(?i)create no Stage, Workstream, tracking ID, register, "
+                     r"authorization\s+gate or approval step", roadmap)

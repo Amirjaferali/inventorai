@@ -23,6 +23,82 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--stage-18-cap01-first-bounded-increment"></a>
+## Current authority — Stage 18 / CAP-01 first bounded guidance increment (Owner authorization, 2026-09-21)
+
+**ACTIVE CONTRACT: Stage 18 / CAP-01 FIRST BOUNDED IMPLEMENTATION INCREMENT.** The Owner
+authorizes ONE bounded, deterministic, presentation-only CAP-01 / Structured Technical
+Guidance increment. This is the live mandate; every declaration below it in this file
+remains evidence at its recorded time.
+
+**Read the distinction first, because the two are easy to conflate.**
+
+| | |
+|---|---|
+| **CAP-01 CORE PRESENTATION MECHANISM** | **DOMAIN-EXTENSIBLE** |
+| **CURRENT AUTHORIZED CAP-01 KNOWLEDGE/GUIDANCE PROFILES** | **`electronics_electrical` ONLY** |
+
+**First authorized profile: `electronics_electrical`.** It is the FIRST authorized profile,
+**NOT the permanent definition of CAP-01**. The implementation encodes no
+`CAP-01 == electronics_electrical` invariant: a trusted canonical domain resolves through ONE
+small presentation-layer table to an authorized profile or to nothing, so a future profile is
+one governed row plus its own copy — no change to progression, readiness, evidence, gap
+ownership, semantic ownership, domain classification or deterministic decision ownership.
+
+**`DOMAIN ACTIVATION` is NOT `CAP-01 PROFILE AVAILABILITY`.** **Mechanical remains a fully
+activated InventorAI domain** with unchanged routing, questions, safety handling, readiness
+and deliverables; it simply has **no authorized CAP-01 profile in this increment**. An absent
+profile means ONLY *no domain-specific CAP-01 guidance profile is authorized yet* — never
+unsupported, invalid, not activated, failed or incomplete — and renders nothing at all. **No
+unsupported-domain message is emitted because a profile is absent.** Future domain profiles
+require their own governed knowledge **and** separate explicit Owner authorization.
+
+**Product boundary, binding on the rendered block.** `CLASS-GENERAL CONDITIONAL FRAMING
+ONLY` · `PROJECT CONCEPT-CLASS ASSERTION: NONE` · `MISSING-FIELD INSPECTION: NONE` ·
+`NUMERICS / THRESHOLDS / VALUES: NONE` · `COMPATIBILITY CONCLUSION: NONE` · `SAFETY OR
+CORRECTNESS VERDICT: NONE` · `CONDITIONING RECOMMENDATION: NONE` · `SPECIALIST
+CLASSIFICATION: NONE` · `NAMED VENDOR / PRODUCT / TOOL / LABORATORY / STANDARD: NONE`. The
+block discloses that its topics come from the accepted bounded D13 technical knowledge
+package and are corroborated/reasoned, **not primary-verified device-specific conclusions**.
+
+**Localization.** `BOUNDED EN/AR CAP-01 COPY ONLY`, carried on the existing `ui_lang` / `t()`
+seam as the ONE explicit Owner-elected exception to the `web/ui_text.py` Category-C
+generated-output rule, which is otherwise unchanged. It authorizes **no** general Category-C
+translation, **no** Question Translation Assistant, **no** automatic or model translation and
+**no** further deliverable localization. Exactly one language renders at a time.
+
+**Preserved boundaries.** `AI / PROVIDER INTEGRATION: NONE` · `SCHEMA / PERSISTENCE / NEW
+CANONICAL SECTION: NONE` · `SECTION 13 UNCHANGED` · `SECTION 14 UNCHANGED` · `STATE,
+READINESS, GAP, EVIDENCE AND PROGRESSION MUTATION: NONE` · `ADDITIONAL DOMAIN ACTIVATION:
+NONE` · `D13 RESEARCH: REMAINS CLOSED` · `FULL STG: REMAINS UNAUTHORIZED BEYOND THIS BOUNDED
+SLICE` · `T2-E: NOT STARTED` · `PUBLIC RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT
+AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED`.
+
+**Stage 18 status.** `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. Stage 18 is
+ENTERED, and it stays **PARTIAL**: its roadmap checkbox remains unticked and implementing
+this slice completes nothing beyond itself. The four derived/current-state surfaces —
+CURRENT_PROJECT_STATE.md, the Master Roadmap, the Operating Checklist and the Capability
+Enrichment Register — are synchronized to that same truth in this candidate, replacing the
+pre-authorization wording (`STAGE 18 STARTED: NO`, `NOT AUTHORIZED FOR IMPLEMENTATION`, and
+the register's blanket CAP-01…CAP-18 statement) while preserving it as explicitly
+superseded. No Stage, Workstream, tracking ID, register, gate or governance document was
+created to do it, and no other capability, stage or domain became authorized.
+
+**Forward-compatibility constraints recorded with this authorization.** CAP-01 is a
+**guidance owner, not a technical-production owner**, and it absorbs no responsibility from
+CAP-04, CAP-06, CAP-07, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-13, CAP-14, THERM-01,
+WS-PFV-001 or the shared Technical Realization layer. **The first slice is not CAP-01's
+ceiling:** the capability's preserved future scope — exact unresolved technical subproblem,
+relevant subdomain, specific missing technical information, research direction and search
+terms, required measurements/tests/documents, can/cannot verify, uncertainty and risk,
+evidence-supported specialist category, provenance — is unchanged by it. **Today's single
+root capability/domain in the assembled package is a current runtime limitation, not the
+CAP-01 domain model**, and the presentation mechanism consumes the capability collection so
+future multi-domain or subsystem-level context extends it rather than replacing it. **The
+`ui_lang` / `t()` seam is the current rendering adapter, not the permanent generated-output
+language authority.** The full wording lives in the roadmap §8C and checklist §L.14–23 as
+operating practice; neither adds a Stage, gate or approval step.
+
 <a id="current-authority--stage-10-t2c-prime-differential"></a>
 ## Current authority — Stage 10 / T2-C′ differential product-value assessment (Owner acceptance, 2026-09-20)
 
@@ -106,9 +182,13 @@ evidence, and the obligation is **not duplicated inside T2-C′**.
 `INDEPENDENTLY VERIFIED`; no separate independent review exists for them.
 
 <!-- CURRENT-BLOCK: current-routing -->
-**NEXT EXECUTABLE MASTER ROADMAP STAGE: Stage 18 — D13 / CAP-01 structured technical
-guidance.** `STAGE 18 STARTED: NO`. It requires its own separate mandate; routing reaching it
-authorizes no implementation, and Stage 18 is `NOT AUTHORIZED FOR IMPLEMENTATION`.
+**CURRENT MASTER ROADMAP STAGE: Stage 18 — D13 / CAP-01 structured technical
+guidance.** `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner authorized ONE
+bounded first CAP-01 guidance increment, recorded in full in the Stage-18 current-authority
+section above; the stage is ENTERED as fact. `FIRST BOUNDED CAP-01 INCREMENT:
+OWNER-AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
+`D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
+unticked** — one authorized bounded slice is not the stage.
 **Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and
 `STAGE 11 STARTED: NO`. It was routed PAST, not completed, and **routing past a deferred
 stage never completes it**. Its existing authorization conditions stand: reuse valid prior
@@ -116,6 +196,11 @@ evidence where applicable, and **new human activity requires separate authorizat
 existing consent/custody boundaries**. No human collection begins merely because routing
 moves past it.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded, preserved so the change is visible rather than silent: before the Owner's
+bounded authorization this read "`STAGE 18 STARTED: NO`. It requires its own separate
+mandate; routing reaching it authorizes no implementation, and Stage 18 is `NOT AUTHORIZED
+FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)*
 
 <!-- CURRENT-BLOCK: stages-13-16-dependencies -->
 **Stages 13–16 remain PARTIAL / OPEN, each on its OWN stage-specific dependencies.**

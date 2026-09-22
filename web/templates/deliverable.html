@@ -400,6 +400,37 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endfor %}
   {%- endif %}
   {#- T2E-BLOCK-END #}
+  {#- CAP01-BLOCK-START
+     Stage 18 / CAP-01 first bounded increment — ADDITIVE PRESENTATION ONLY, placed
+     next to the Requirement Landscape. `cap01_profiles` is the bounded resolver in
+     web/cap01_guidance.py; it reads the ALREADY-ASSEMBLED package and returns zero
+     or more authorized profiles as copy KEYS. It consumes the canonical capability
+     rows as a COLLECTION rather than picking the first one, so today's single-domain
+     runtime stays a current limitation instead of hardening into the CAP-01 domain
+     model — nothing here claims multi-domain support, and nothing here creates it.
+     No domain literal, no if/elif domain chain and no domain knowledge live in this
+     template; no inventor text is inspected and no concept-class membership is
+     inferred. A domain with no authorized profile simply contributes nothing, which
+     means ONLY "no CAP-01 profile authorized yet" — never that the domain is
+     unsupported, so no unsupported-domain wording is emitted on this path. Every
+     user-facing string goes through t(), so exactly ONE language renders. Nothing is
+     generated, stored or decided: the package, Section 13, Section 14, gap state,
+     evidence and readiness are untouched, and no canonical section is added. #}
+  {%- for cap01 in cap01_profiles(package) %}
+  <div class="cap01-block" data-cap01-profile="{{ cap01.profile_id }}">
+    <h3 class="cap01-title" data-cap01-title>{{ t(cap01.title_key) }}</h3>
+    <p class="group-lede cap01-intro" data-cap01-intro>{{ t(cap01.intro_key) }}</p>
+    <ul class="cap01-items">
+      {%- for _cap01_item_key in cap01.item_keys %}
+      <li class="cap01-item" data-cap01-item>{{ t(_cap01_item_key) }}</li>
+      {%- endfor %}
+    </ul>
+    <p class="group-lede cap01-boundary" data-cap01-boundary>{{ t(cap01.boundary_key) }}</p>
+    <p class="group-lede cap01-limit" data-cap01-limit>{{ t(cap01.limit_key) }}</p>
+    <p class="group-lede cap01-evidence" data-cap01-evidence>{{ t(cap01.evidence_key) }}</p>
+  </div>
+  {%- endfor %}
+  {#- CAP01-BLOCK-END #}
   <p class="report-return"><a href="#report-contents">{{ t('UI_REPORT_BACK_CONTENTS') }}</a></p>
 </section>
 

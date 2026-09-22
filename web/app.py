@@ -274,6 +274,7 @@ from web.answer_coauthoring_prompts import get_answer_coauthoring_prompts  # GAC
 from web.uncertainty_guidance import get_uncertainty_guidance  # GUS: display-only supportive uncertainty guidance
 from web.result_feedback import get_result_feedback  # PLRF: display-only plain-language result feedback
 from web.domain_label import public_domain_label as _public_domain_label  # P6-1: central public label resolver (display-only)
+from web import cap01_guidance  # Stage 18 / CAP-01: bounded presentation-profile resolver (display-only)
 
 # --- G-SC0 Bounded Security Containment: runtime security configuration -------
 # Runtime debug, host, and the Flask secret are environment-controlled with safe
@@ -491,6 +492,16 @@ app.jinja_env.filters["public_domain_label"] = _public_domain_label
 app.jinja_env.globals["t"] = lambda key: ui_text.text(key, _current_ui_lang())
 app.jinja_env.globals["ui_lang"] = "en"
 app.jinja_env.globals["ui_dir"] = "ltr"
+# Stage 18 / CAP-01: expose the bounded CAP-01 presentation-profile resolver through
+# the SAME Jinja-global mechanism. Capability availability is owned by
+# `web/cap01_guidance.py`, NOT by the string catalogue: `ui_text` keeps the EN/AR
+# copy, this module decides which domains have an authorized profile and what parts
+# it renders. It is a pure function of the ALREADY-ASSEMBLED package — it reads no
+# request input, no free text and no persisted state, mutates nothing, and returns
+# catalogue KEYS only (the copy is resolved by `t` in the selected language). It
+# yields zero or more profiles; zero renders nothing, and that is never an
+# unsupported-domain signal.
+app.jinja_env.globals["cap01_profiles"] = cap01_guidance.profiles_for_package
 SESSION_STORE = {}
 
 # --- P4-1b-1: durable project store (construction, configuration, cold-load) --

@@ -25,7 +25,16 @@ Prohibited behaviours (boundaries)
   * Canonical technical/system QUESTION text is NOT in this catalogue: D-P6-18 does
     not translate questions (the Question Translation Assistant is a separate,
     later gate). Category-C generated OUTPUT and Category-D question/guided-prompt
-    copy are intentionally excluded and remain English.
+    copy are intentionally excluded and remain English, with ONE explicit,
+    Owner-elected exception: the bounded Stage 18 / CAP-01 guidance-profile copy
+    (the ``UI_CAP01_*`` keys below) is carried here in English AND Arabic. That
+    exception is limited to the authorized CAP-01 advisory block. This file owns
+    that block's COPY only; which domains have an authorized CAP-01 profile, and
+    what parts a profile renders, belong to ``web/cap01_guidance.py`` — capability
+    availability is not translation and does not live in the string catalogue. It does NOT widen
+    the Category-C rule and authorizes no general generated-output translation, no
+    Question Translation Assistant, no automatic/model translation, and no further
+    deliverable localization.
   * No new dependency, no framework, no gettext/Babel.
 """
 
@@ -54,6 +63,18 @@ def text(key, lang):
         return key
     lang = normalize(lang)
     return entry.get(lang) or entry.get("en") or key
+
+
+def has_string(key):
+    """True when the catalogue carries copy for ``key`` in every supported language.
+
+    The ONE read-only predicate other presentation modules use to ask whether copy
+    exists, so a caller that owns STRUCTURE (which keys a thing renders) never has
+    to reach into ``UI_STRINGS`` or hold text of its own. Never raises."""
+    entry = UI_STRINGS.get(key)
+    return (isinstance(entry, dict)
+            and all(isinstance(entry.get(lang), str) and entry[lang].strip()
+                    for lang in SUPPORTED_LANGS))
 
 
 # Known server-side English message constants (web/app.py) -> catalogue key, so a
@@ -302,7 +323,8 @@ def localize_deep(value, lang):
 # English is verbatim from the live templates/constants (parity-preserving);
 # Arabic is the finalized, owner-approved copy (including the truth-corrected
 # sensitive paragraphs). Category-C output and Category-D question/guided-prompt
-# copy are deliberately absent.
+# copy are deliberately absent, except for the ONE Owner-elected bounded exception
+# recorded in the module docstring: the CAP-01 ``UI_CAP01_*`` keys.
 UI_STRINGS = {
     "UI_CSRF_REJECT": {
         "en": "Your session security token was missing or invalid. This request was rejected before any change was made.",
@@ -3128,6 +3150,104 @@ UI_STRINGS = {
     "UI_T3A_EVENT_OTHER": {
         "en": "Entry recorded",
         "ar": "إدخال مسجَّل",
+    },
+
+    # --- Stage 18 / CAP-01 — first authorized bounded guidance profile ------
+    # Owner-elected Category-C exception (module docstring). These keys are the
+    # COPY of the CAP01_ELECTRONICS_INTERFACE_V1 profile; the domain -> profile
+    # table lives below the catalogue. The copy is class-general and CONDITIONAL
+    # by construction: it never asserts that the reader's project belongs to the
+    # interface class, never says a field is present or missing, carries no
+    # numeric value/threshold/equation, no compatibility or safety verdict, no
+    # conditioning recommendation, no specialist classification and no named
+    # vendor/product/tool/laboratory/standard. Each entry renders through t() so
+    # exactly ONE language reaches the reader.
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_TITLE": {
+        "en": "Technical information to check — when applicable",
+        "ar": "معلومات فنية للمراجعة — عند انطباقها",
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_INTRO": {
+        "en": (
+            "If your idea involves a low-voltage, non-safety-critical, single-signal "
+            "sensor-to-microcontroller interface, useful technical information to provide "
+            "or check may include:"
+        ),
+        "ar": (
+            "إذا كانت فكرتك تتضمن واجهة إشارة واحدة بين مستشعر ومتحكم دقيق، ضمن تطبيق منخفض "
+            "الجهد وغير حرج للسلامة، فقد تشمل المعلومات الفنية المفيدة التي يمكن توفيرها أو "
+            "مراجعتها ما يلي:"
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_ITEM_1": {
+        "en": "Sensor output type: analog voltage, single-ended digital logic, or pulse/frequency.",
+        "ar": "نوع خرج المستشعر: جهد تماثلي، أو منطق رقمي أحادي الطرف، أو نبضات/تردد.",
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_ITEM_2": {
+        "en": "Sensor output voltage or logic-level range.",
+        "ar": "نطاق جهد خرج المستشعر أو مستويات المنطق.",
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_ITEM_3": {
+        "en": (
+            "Microcontroller input requirements, including logic thresholds or ADC "
+            "reference/input range when applicable."
+        ),
+        "ar": (
+            "متطلبات دخل المتحكم الدقيق، بما في ذلك عتبات المنطق أو مرجع/نطاق دخل محول ADC "
+            "عند انطباق ذلك."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_ITEM_4": {
+        "en": "Source impedance when relevant to the input interface.",
+        "ar": "معاوقة المصدر عندما تكون ذات صلة بواجهة الدخل.",
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_ITEM_5": {
+        "en": "Pulse/frequency range when the sensor output uses pulses or frequency.",
+        "ar": "نطاق النبضات/التردد عندما يعتمد خرج المستشعر على النبضات أو التردد.",
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_ITEM_6": {
+        "en": (
+            "Governing technical documentation, such as the device datasheet "
+            "electrical-characteristics information."
+        ),
+        "ar": "الوثائق الفنية الحاكمة، مثل معلومات الخصائص الكهربائية في ورقة بيانات الجهاز.",
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_BOUNDARY": {
+        "en": (
+            "InventorAI is presenting a class-general checklist only. In this first "
+            "increment, it does not determine that your project belongs to this interface "
+            "class and does not inspect your record to decide which of these items are "
+            "present or missing."
+        ),
+        "ar": (
+            "يعرض InventorAI هنا قائمة عامة مرتبطة بهذه الفئة الفنية فقط. في هذا الإصدار "
+            "الأول، لا يقرر النظام أن مشروعك ينتمي إلى هذا النوع من الواجهات، ولا يفحص سجلك "
+            "ليحدد أيًا من هذه المعلومات موجود أو مفقود."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_LIMIT": {
+        "en": (
+            "It does not determine compatibility, safe limits, device-specific values, "
+            "circuit correctness, signal-conditioning method, or specialist suitability. "
+            "Device-specific values require appropriate governing technical documentation "
+            "and independent verification."
+        ),
+        "ar": (
+            "لا يحدد النظام التوافق، أو الحدود الآمنة، أو القيم الخاصة بالجهاز، أو صحة "
+            "الدائرة، أو طريقة تكييف الإشارة، أو ملاءمة فئة أخصائي. وتتطلب القيم الخاصة "
+            "بالجهاز الرجوع إلى الوثائق الفنية الحاكمة المناسبة والتحقق المستقل."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_INTERFACE_V1_EVIDENCE": {
+        "en": (
+            "These topics come from the accepted bounded D13 technical knowledge package. "
+            "They are based on corroborated/reasoned evidence and are not primary-verified "
+            "device-specific conclusions."
+        ),
+        "ar": (
+            "تستند هذه الموضوعات إلى حزمة المعرفة التقنية D13 المقبولة والمحدودة النطاق. "
+            "وهي مبنية على أدلة مؤيدة/استدلالية، وليست استنتاجات خاصة بجهاز تم التحقق منها "
+            "من مصدر أولي."
+        ),
     },
 }
 
