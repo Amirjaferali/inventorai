@@ -23,13 +23,57 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--stage-18-cap01-second-bounded-increment"></a>
+## Current authority — Stage 18 / CAP-01 second bounded increment: research-direction addendum (Owner authorization, 2026-09-22)
+
+**ACTIVE CONTRACT: Stage 18 / CAP-01 SECOND BOUNDED INCREMENT — RESEARCH-DIRECTION
+ADDENDUM.** `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED IN CANDIDATE / NOT YET AUTHORITATIVE`. This is the live mandate. It rests on the Owner-accepted
+read-only Stage-18 remainder adjudication (verdict **B — only a very narrow class-general
+CAP-01 extension is justified now**) and adds ONE thing to the existing
+`CAP01_ELECTRONICS_INTERFACE_V1` profile: **where to look** for the information the six
+accepted checklist items name, and **which generic search terms** may help find it — a
+heading, an intro and six lines, in Owner-approved EN/AR copy.
+
+**It is research DIRECTION only** — not web research, source or datasheet retrieval, evidence
+collection, compatibility analysis, engineering advice, project-specific inspection or
+technical verification. The copy stays class-general, conditional, informational and
+non-authoritative: no claim that an item applies to, or is missing from, the reader's
+project; no free-text inspection; no sensor or interface classification; no concept class;
+no numeric value, threshold or unit; no compatibility calculation; no circuit, conditioning
+or material recommendation; no specialist; no vendor, product, laboratory or applicable
+standard. The first increment's BOUNDARY, LIMIT and EVIDENCE copy governs the addendum.
+
+**D13 semantics preserved exactly.** `PRIMARY-VERIFIED: NO` · `GOVERNING PARAMETERS:
+CORROBORATED / REASONED at the bounded class level` · `DEVICE-SPECIFIC VALUES: ABSTAINED` ·
+`PROJECT-SPECIFIC VALUES: NOT KNOWN`. The research lines are navigation aids drawn from the
+accepted D13 knowledge package; they are **not new evidence** and upgrade no grade.
+`D13 RESEARCH: REMAINS CLOSED`.
+
+**Mechanism.** Reuses the PR #678 seam unchanged in shape: `web/ui_text.py` owns the copy,
+`web/cap01_guidance.py` owns structure through ONE optional, all-or-nothing research-direction
+group any future separately-authorized profile may carry or omit, and the template renders it
+inside the existing block, before the BOUNDARY / LIMIT / EVIDENCE copy that governs it. No new
+module, profile registry, research engine, search service, provider abstraction,
+external-source adapter or canonical state. `web/app.py` is unchanged.
+
+**Unchanged.** `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO` — Stage 18 stays PARTIAL.
+`FULL CAP-01 / FULL STG: NOT AUTHORIZED`. Mechanical stays ACTIVE with no CAP-01 profile.
+Stages 19–27 remain preserved, not entered and not authorized. No AI/provider, schema,
+persistence, new domain, project-specific detection or specialist inference. `DEPLOYMENT:
+NOT AUTHORIZED` · `PUBLIC RELEASE: NOT AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED`.
+
 <a id="current-authority--stage-18-cap01-first-bounded-increment"></a>
 ## Current authority — Stage 18 / CAP-01 first bounded guidance increment (Owner authorization, 2026-09-21)
 
-**ACTIVE CONTRACT: Stage 18 / CAP-01 FIRST BOUNDED IMPLEMENTATION INCREMENT.** The Owner
+**FIRST BOUNDED CAP-01 INCREMENT — `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3`.** The Owner
+authorized ONE bounded, deterministic, presentation-only CAP-01 / Structured Technical
+Guidance increment. It is delivered; the live mandate is now the second bounded increment
+recorded in the section above, and every product boundary below remains binding on it.
+*(Superseded 2026-09-22, preserved so the change is visible rather than silent: this opened
+"**ACTIVE CONTRACT: Stage 18 / CAP-01 FIRST BOUNDED IMPLEMENTATION INCREMENT.** The Owner
 authorizes ONE bounded, deterministic, presentation-only CAP-01 / Structured Technical
 Guidance increment. This is the live mandate; every declaration below it in this file
-remains evidence at its recorded time.
+remains evidence at its recorded time." That was accurate until PR #678 merged.)*
 
 **Read the distinction first, because the two are easy to conflate.**
 
@@ -78,7 +122,8 @@ AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED`.
 ENTERED, and it stays **PARTIAL**: its roadmap checkbox remains unticked and implementing
 this slice completes nothing beyond itself. The four derived/current-state surfaces —
 CURRENT_PROJECT_STATE.md, the Master Roadmap, the Operating Checklist and the Capability
-Enrichment Register — are synchronized to that same truth in this candidate, replacing the
+Enrichment Register — were synchronized to that same truth in the PR #678 candidate, merged
+as `84c45cec89f5348f279c591dd739ded0d0db24b3` and post-merge verified, replacing the
 pre-authorization wording (`STAGE 18 STARTED: NO`, `NOT AUTHORIZED FOR IMPLEMENTATION`, and
 the register's blanket CAP-01…CAP-18 statement) while preserving it as explicitly
 superseded. No Stage, Workstream, tracking ID, register, gate or governance document was
@@ -186,7 +231,7 @@ evidence, and the obligation is **not duplicated inside T2-C′**.
 guidance.** `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner authorized ONE
 bounded first CAP-01 guidance increment, recorded in full in the Stage-18 current-authority
 section above; the stage is ENTERED as fact. `FIRST BOUNDED CAP-01 INCREMENT:
-OWNER-AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
+OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED IN CANDIDATE / NOT YET AUTHORITATIVE` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
 `D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
 unticked** — one authorized bounded slice is not the stage.
 **Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and

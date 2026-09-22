@@ -425,6 +425,19 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
       <li class="cap01-item" data-cap01-item>{{ t(_cap01_item_key) }}</li>
       {%- endfor %}
     </ul>
+    {#- Second bounded increment: the profile's OPTIONAL research-direction group —
+        where to look and which generic search terms may help. Navigation aid only;
+        the BOUNDARY / LIMIT / EVIDENCE copy below governs it as well. No nested
+        container, so the block stays one flat, scannable unit. #}
+    {%- if cap01.research %}
+    <h4 class="cap01-research-title" data-cap01-research-title>{{ t(cap01.research.title_key) }}</h4>
+    <p class="group-lede cap01-research-intro" data-cap01-research-intro>{{ t(cap01.research.intro_key) }}</p>
+    <ul class="cap01-research-items">
+      {%- for _cap01_research_key in cap01.research.item_keys %}
+      <li class="cap01-research-item" data-cap01-research-item>{{ t(_cap01_research_key) }}</li>
+      {%- endfor %}
+    </ul>
+    {%- endif %}
     <p class="group-lede cap01-boundary" data-cap01-boundary>{{ t(cap01.boundary_key) }}</p>
     <p class="group-lede cap01-limit" data-cap01-limit>{{ t(cap01.limit_key) }}</p>
     <p class="group-lede cap01-evidence" data-cap01-evidence>{{ t(cap01.evidence_key) }}</p>

@@ -1,7 +1,8 @@
 """Stage 18 / CAP-01 — the bounded CAP-01 presentation-profile resolver.
 
-Gate: the Owner-authorized FIRST bounded Stage-18 / CAP-01 guidance increment
-(contract in ACTIVE_INCREMENT_CONTRACT.md).
+Gate: the Owner-authorized bounded Stage-18 / CAP-01 guidance increments — the
+first (checklist, PR #678) and the second (research-direction addendum) — recorded
+in ACTIVE_INCREMENT_CONTRACT.md.
 
 Purpose
   The ONE place that answers "does an AUTHORIZED CAP-01 guidance profile exist
@@ -40,8 +41,8 @@ Boundaries
     responsibility from CAP-04, CAP-06, CAP-07, CAP-08, CAP-09, CAP-10, CAP-11,
     CAP-12, CAP-13, CAP-14, THERM-01, WS-PFV-001 or the shared Technical
     Realization layer (roadmap §8C, invariants A–C and I).
-  * This first slice is presentation-only and class-general. It is a FIRST
-    increment, not CAP-01's ceiling, and not its permanent architecture
+  * Both bounded increments are presentation-only and class-general. They are
+    early increments, not CAP-01's ceiling, and not its permanent architecture
     (invariants D and H).
   * No plugin framework, no generic capability registry, no unused future row.
 """
@@ -69,6 +70,16 @@ _COPY_PARTS = {
     "evidence_key": "EVIDENCE",
 }
 
+# An OPTIONAL research-direction group a profile may carry: a heading, an intro
+# and its own ``RESEARCH_ITEM_<n>`` lines, discovered by the same convention as the
+# checklist items. It is optional so a future profile is never forced to ship one,
+# and all-or-nothing so it can never render as half a group; its absence leaves the
+# rest of the profile exactly as it was.
+_RESEARCH_PARTS = {
+    "title_key": "RESEARCH_TITLE",
+    "intro_key": "RESEARCH_INTRO",
+}
+
 # Where the canonical, already-assembled domain rows live. Read as a COLLECTION,
 # deliberately: today the assembler emits exactly one capability, but that is a
 # CURRENT RUNTIME LIMITATION, not the CAP-01 domain model (invariant F). Reading
@@ -93,10 +104,11 @@ def profile_copy(domain_id):
     """The CAP-01 copy KEYS to render for a trusted canonical domain id, or
     ``None`` when no authorized profile exists for it (or its copy is incomplete).
 
-    Returns a fresh dict of catalogue keys — ``profile_id``, the five part keys
-    and an ordered ``item_keys`` tuple. Never text. An incomplete profile fails
-    closed rather than rendering half a block, and ``None`` is a silent
-    no-render, not an unsupported-domain signal."""
+    Returns a fresh dict of catalogue keys — ``profile_id``, the five part keys,
+    an ordered ``item_keys`` tuple and ``research`` (the optional research-direction
+    group, or ``None``). Never text. An incomplete profile fails closed rather than
+    rendering half a block, and ``None`` is a silent no-render, not an
+    unsupported-domain signal."""
     profile_id = profile_for_domain(domain_id)
     if profile_id is None:
         return None
@@ -104,14 +116,35 @@ def profile_copy(domain_id):
     view = {name: prefix + part for name, part in _COPY_PARTS.items()}
     if not all(ui_text.has_string(key) for key in view.values()):
         return None
-    item_keys = []
-    while ui_text.has_string(prefix + "ITEM_%d" % (len(item_keys) + 1)):
-        item_keys.append(prefix + "ITEM_%d" % (len(item_keys) + 1))
+    item_keys = _numbered(prefix + "ITEM_")
     if not item_keys:
         return None
     view["profile_id"] = profile_id
-    view["item_keys"] = tuple(item_keys)
+    view["item_keys"] = item_keys
+    view["research"] = _research(prefix)
     return view
+
+
+def _numbered(stem):
+    """The consecutive ``<stem>1``, ``<stem>2``, ... keys the catalogue carries."""
+    keys = []
+    while ui_text.has_string(stem + "%d" % (len(keys) + 1)):
+        keys.append(stem + "%d" % (len(keys) + 1))
+    return tuple(keys)
+
+
+def _research(prefix):
+    """The profile's research-direction group as catalogue keys, or ``None``.
+
+    All-or-nothing: a heading, an intro and at least one line, or nothing at all.
+    Where to look and which generic terms to search for are navigation aids only;
+    this retrieves nothing, creates no evidence and claims nothing about the
+    reader's project."""
+    group = {name: prefix + part for name, part in _RESEARCH_PARTS.items()}
+    if not all(ui_text.has_string(key) for key in group.values()):
+        return None
+    group["item_keys"] = _numbered(prefix + "RESEARCH_ITEM_")
+    return group if group["item_keys"] else None
 
 
 def _rows(package):
