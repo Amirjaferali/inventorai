@@ -120,7 +120,7 @@ explicit Owner structural-change authorization.
 | 1 | 1–5 | Close the existing product-depth lane | **COMPLETE ✅** |
 | 2 | 6–10 | Feedback, semantic depth, known value defects | **ALL STAGES COMPLETED ✅ — carried residuals remain: T1-A′ OPEN / FRB; T2-C′ PARTIAL** (not the current frontier; completing the checkboxes discharged neither residual) |
 | 3 | 11–15 | Human evidence and readiness foundations | Partial — 12 complete; 13/14 partial; 15 thinnest and must not be lost |
-| 4 | 16–20 | System/commercial readiness and technical guidance | 17 partial; 18 entered / partial (both bounded CAP-01 increments merged, PRs #678 and #679; no further CAP-01 authorized); 16, 19–20 not authorized |
+| 4 | 16–20 | System/commercial readiness and technical guidance | 17 partial; 18 entered / partial (both bounded CAP-01 increments merged, PRs #678 and #679; no further CAP-01 authorized); 19 entered for foundation / contract work only (CAP-09 implementation not authorized); 16, 20 not authorized |
 | 5 | 21–25 | Decision support and engineering depth | Not authorized — zero merged runtime code |
 | 6 | 26–30 | Visual/thermal depth and new domains | 29 complete/active; 28/30/31 gated; 26–27 not authorized |
 | 7 | 31–35 | IoT depth and optional output capabilities | Not authorized (Stage 33 ≠ PR #663 account email) |
@@ -147,6 +147,13 @@ Read those before acting on any stage; this table is a locator, not a status sou
   AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`. **Stage 18
   remains PARTIAL and its roadmap checkbox stays unticked** — one authorized bounded slice
   is not the stage.
+  **Also ENTERED, for foundation / contract work only: Stage 19 — WS-PFV-001 / CAP-09
+  Experiment-Plan Designer.** `ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY` ·
+  `STAGE 19: ENTERED FOR FOUNDATION / CONTRACT WORK` · `CAP-09 PRODUCT IMPLEMENTATION: NOT
+  STARTED / NOT AUTHORIZED YET`. Section 11 + `SuccessCriterion` stay the canonical planning
+  owner. Schema / persistence implementation is not authorized. The next technical action after
+  contract acceptance is a READ-ONLY architecture / data-flow assessment. The Stage-19 checkbox
+  stays unticked, and entering Stage 19 completes nothing in Stage 18.
   **Entering Stage 18 is not the next obligation discharged: Stage 11 — T1-C′ / A2
   human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, `STAGE 11 STARTED: NO`. It
   was routed PAST, not completed; **routing past a deferred stage never completes it.**
@@ -299,11 +306,18 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   **Stage 44 lineage gate** — PRESERVED · **Stage 45 deployment gate** — PRESERVED ·
   **WATCH-01** — PRESERVED / PLANNED / NOT YET IMPLEMENTED · **WATCH-04** — PRESERVED.
 <!-- END CURRENT-BLOCK: material-residuals -->
-- **CURRENT SUBTASK:** NONE AUTHORIZED — `ACTIVE CONTRACT: NONE`. Both bounded Stage-18 /
-  CAP-01 increments are delivered (PR #678 checklist, PR #679 research direction); every
-  further CAP-01/STG scope requires a new explicit mandate, and Stage 11 still requires its
-  own explicit mandate. Completing the Stage-17 product-depth work started nothing, and
-  neither did completing the Stage-10 differential.
+- **CURRENT SUBTASK:** STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY — `ACTIVE CONTRACT: STAGE 19
+  / CAP-09 FOUNDATION CONTRACT ONLY`. The next technical action after contract acceptance is a
+  READ-ONLY architecture / data-flow assessment of the smallest durable extension of the
+  existing Section-11 / `SuccessCriterion` planning owner. CAP-09 product implementation is
+  NOT STARTED / NOT AUTHORIZED YET, and schema / persistence implementation is not authorized.
+  Both bounded Stage-18 / CAP-01 increments are delivered (PR #678 checklist, PR #679 research
+  direction); every further CAP-01/STG scope requires a new explicit mandate, and Stage 11
+  still requires its own explicit mandate. Completing the Stage-17 product-depth work started
+  nothing, and neither did completing the Stage-10 differential.
+  *(Superseded 2026-09-23, preserved — was: "NONE AUTHORIZED — `ACTIVE CONTRACT: NONE`. Both
+  bounded Stage-18 / CAP-01 increments are delivered …"; the Owner then authorized the Stage-19
+  entry contract only.)*
   *(Superseded 2026-09-22, preserved — was: "ONE Owner-authorized bounded Stage-18 / CAP-01
   first guidance increment, and nothing else. Stage 18 no longer requires a further mandate
   for that one slice; every wider CAP-01/STG scope still does …"; both bounded increments
@@ -457,7 +471,7 @@ dimension: a captured dimension is not a validated conclusion.
 
 ## J. Current Technology-Deepening position
 
-**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED. **Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
+**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED. **Stage 19 ENTERED FOR FOUNDATION / CONTRACT WORK ONLY** (2026-09-23) — CAP-09 product implementation NOT STARTED / NOT AUTHORIZED YET; zero merged runtime code. **Stages 20–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-23, preserved — was: "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until the Owner's Stage-19 entry-contract authorization.)* *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
 
 Nothing in the readiness or infrastructure lanes touched any of them. Adjacent progress
 is not implementation. CAP-12 and CAP-13 must remain separate capabilities. Release-lane
@@ -598,7 +612,9 @@ FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED
   IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3
 SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753
 NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED
-ACTIVE CONTRACT: NONE
+ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY
+STAGE 19: ENTERED FOR FOUNDATION / CONTRACT WORK
+CAP-09 PRODUCT IMPLEMENTATION: NOT STARTED / NOT AUTHORIZED YET
 FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE
 D13 RESEARCH: REMAINS CLOSED
 STAGE 11: DEFERRED / UNDISCHARGED / STAGE 11 STARTED: NO
@@ -620,7 +636,8 @@ VALIDATED COMMERCIAL CONCLUSION: NO
 
 CURRENT TECHNOLOGY-DEEPENING POSITION:
 Stage 18 entered / partial — both bounded CAP-01 increments merged (PRs #678, #679); no further CAP-01 authorized
-Stages 19–27 preserved, not entered / not authorized
+Stage 19 entered for foundation / contract work only — CAP-09 implementation not authorized
+Stages 20–27 preserved, not entered / not authorized
 
 CURRENT DOMAIN-EXPANSION POSITION:
 Stage 29 active

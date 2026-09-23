@@ -2,14 +2,24 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: NONE.** No implementation mandate is currently active; any further
-product, readiness, governance or automation work requires a new explicit Owner
-authorization. docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the
-delivered history, and is the file to read for authority — this paragraph routes, it does
-not authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
+**ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY.** Stage 19 (WS-PFV-001 /
+CAP-09 Experiment-Plan Designer) is ENTERED FOR FOUNDATION / CONTRACT WORK only. CAP-09
+product implementation is NOT STARTED / NOT AUTHORIZED YET, and schema / persistence
+implementation is not authorized. The next technical action after contract acceptance is a
+READ-ONLY architecture / data-flow assessment; any other product, readiness, governance or
+automation work requires a new explicit Owner authorization.
+docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the delivered
+history, and is the file to read for authority — this paragraph routes, it does not
+authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
-authorized, full CAP-01 / full STG is not authorized, no successor Stage is started, and
+authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized, and
 deployment, public release and paid activation remain NOT AUTHORIZED.
+
+*(Superseded 2026-09-23, preserved so the change is visible rather than silent: this opened
+"**ACTIVE CONTRACT: NONE.** No implementation mandate is currently active; any further
+product, readiness, governance or automation work requires a new explicit Owner
+authorization." and said "no successor Stage is started". Both were true until the Owner's
+Stage-19 entry-contract authorization.)*
 
 *(Superseded wording, preserved so the change is visible rather than silent: "ASTRA
 MILESTONE 2 / A1 is the current bounded saved-project and recovery mandate under
