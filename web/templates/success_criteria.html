@@ -35,6 +35,9 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 </div>
 
 {% if error %}<div class="error">{{ error }}</div>{% endif %}
+{# F-09: a refused submission is re-shown as the inventor typed it, and is
+   explicitly marked as NOT saved. #}
+{% if draft_notice %}<div class="notice" role="status" id="draft-unsaved">{{ t('UI_SC_DRAFT_UNSAVED') }}</div>{% endif %}
 {% if notice %}<div class="notice" role="status">{{ notice }}</div>{% endif %}
 {% if stale_notice %}<div class="stale">{{ stale_notice }}</div>{% endif %}
 {% if stale_methods %}<div class="stale">{{ t('UI_SC_METHOD_STALE') }}</div>{% endif %}
@@ -66,7 +69,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
               name="{{ field_prefix }}{{ exp.experiment_id }}" rows="2"
               maxlength="{{ max_length }}"
               dir="auto" aria-describedby="experiment-source-{{ nav_id }} criterion-guidance-{{ nav_id }}"
-              placeholder="{{ t('UI_B_SC_003') }}">{% if exp.success_criterion_provenance == 'user_defined' %}{{ exp.success_criterion }}{% endif %}</textarea>
+              placeholder="{{ t('UI_B_SC_003') }}">{% if criterion_drafts is not none and exp.experiment_id in criterion_drafts %}{{ criterion_drafts[exp.experiment_id] }}{% elif exp.success_criterion_provenance == 'user_defined' %}{{ exp.success_criterion }}{% endif %}</textarea>
     <p class="criterion-guidance" id="criterion-guidance-{{ nav_id }}">{{ t('UI_SC_LIMIT').format(limit=max_length) }} {{ t('UI_SC_SAVE_CLEAR') }}</p>
     {# SLICE-02: the inventor's own measurement method — never generated and
        never merged with the system-provided "Observe" context above. #}
@@ -75,7 +78,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
               name="{{ method_prefix }}{{ exp.experiment_id }}" rows="3"
               maxlength="{{ method_max_length }}"
               dir="auto" aria-describedby="experiment-source-{{ nav_id }} method-guidance-{{ nav_id }}"
-              placeholder="{{ t('UI_SC_METHOD_PLACEHOLDER') }}">{% if exp.measurement_method_provenance == 'user_defined' %}{{ exp.measurement_method }}{% endif %}</textarea>
+              placeholder="{{ t('UI_SC_METHOD_PLACEHOLDER') }}">{% if method_drafts is not none and exp.experiment_id in method_drafts %}{{ method_drafts[exp.experiment_id] }}{% elif exp.measurement_method_provenance == 'user_defined' %}{{ exp.measurement_method }}{% endif %}</textarea>
     <p class="criterion-guidance" id="method-guidance-{{ nav_id }}">{{ t('UI_SC_LIMIT').format(limit=method_max_length) }} {{ t('UI_SC_SAVE_CLEAR') }}</p>
   </div>
   {% endfor %}

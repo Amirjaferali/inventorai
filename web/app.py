@@ -8023,11 +8023,41 @@ def _resolve_criteria_write(sid, delta, method_delta):
     return _SC_WRITE_SAVED
 
 
-def _render_criteria(sid, plan, status=200, error=None, notice=None):
+def _same_planning_text(raw, durable):
+    """F-09: True when a submitted planning value is the durable value left
+    unchanged — equal after the route's own outer trim, ignoring ONLY how line
+    breaks are represented. A browser submits every textarea line break as CRLF,
+    so an untouched value stored with LF (or CR) would otherwise be rewritten,
+    or even refused for length, merely because the page was saved. An unchanged
+    value is simply not part of the delta; nothing is canonicalized, and every
+    value that IS written is written exactly as submitted."""
+    text = raw.strip()
+    if durable is None:
+        return text == ""
+    def lines(value):
+        return value.replace("\r\n", "\n").replace("\r", "\n")
+    return lines(text) == lines(durable)
+
+
+def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None):
+    """``drafts`` (F-09): the REJECTED submission, request-local only, as
+    ``(criteria, methods)`` maps of ``experiment_id -> submitted text``. Each
+    draft is shown in its own field instead of the durable value, under an
+    explicit UNSAVED notice; it is never written to state or the store. NUL is
+    never echoed (it was the reason for refusal and is not representable in an
+    HTML text field); every other character renders through autoescape."""
     lang = _current_ui_lang()
+    criterion_drafts = method_drafts = None
+    if drafts is not None:
+        criterion_drafts, method_drafts = (
+            {eid: raw.replace("\x00", "") for eid, raw in part.items()}
+            for part in drafts)
     return render_template(
         "success_criteria.html",
         sid=sid,
+        criterion_drafts=criterion_drafts,
+        method_drafts=method_drafts,
+        draft_notice=drafts is not None,
         experiments=None if plan is None else plan["items"],
         stale_notice=None if plan is None else plan.get("stale_criteria_notice"),
         stale_methods=bool(plan and plan.get("stale_measurement_methods")),
@@ -8085,38 +8115,58 @@ def save_success_criteria(sid):
                          for name, val in request.form.items()
                          if name.startswith(_METHOD_FIELD_PREFIX)}
 
+    # F-09: a rejected submission is re-shown AS SUBMITTED (request-local, never
+    # saved) so a refusal can never discard what the inventor just typed.
+    drafts = (submitted, submitted_methods)
+
     # Validate the WHOLE planning delta before any write: an unknown or
     # no-longer-current id, an over-limit value, or invalid text in EITHER
     # concept rejects the entire request.
     for eid in list(submitted) + list(submitted_methods):
         if eid not in current_ids:
             return _render_criteria(
-                sid, plan, status=400,
+                sid, plan, status=400, drafts=drafts,
                 error="A submitted experiment is not part of the current plan. "
                       "No changes were saved.")
-    for eid, raw in submitted.items():
+
+    # F-09: a value left exactly as the project holds it (see
+    # `_same_planning_text`) is not an edit, so it is neither re-validated nor
+    # re-written; only genuine edits form the delta.
+    durable = {it["experiment_id"]: it["success_criterion"] for it in plan["items"]
+               if it.get("success_criterion_provenance") == "user_defined"}
+    durable_methods = {it["experiment_id"]: it["measurement_method"]
+                       for it in plan["items"] if "measurement_method" in it}
+    edits = {eid: raw for eid, raw in submitted.items()
+             if not _same_planning_text(raw, durable.get(eid))}
+    method_edits = {eid: raw for eid, raw in submitted_methods.items()
+                    if not _same_planning_text(raw, durable_methods.get(eid))}
+
+    # The limit counts the submitted text as received: a browser sends each
+    # line break as two characters (CRLF), which the form guidance states.
+    for eid, raw in edits.items():
         if len(raw.strip()) > MAX_CRITERION_LENGTH:
             return _render_criteria(
-                sid, plan, status=400,
+                sid, plan, status=400, drafts=drafts,
                 error=f"A criterion exceeds the {MAX_CRITERION_LENGTH}-character "
                       "limit. No changes were saved.")
-    for raw in submitted_methods.values():
+    for raw in method_edits.values():
         if len(raw.strip()) > MAX_MEASUREMENT_METHOD_LENGTH:
-            return _render_criteria(sid, plan, status=400,
+            return _render_criteria(sid, plan, status=400, drafts=drafts,
                                     error=SC_METHOD_TOO_LONG_MESSAGE)
     # CORRECTION-01 (F-03): the product's EXISTING invalid-free-text policy — an
     # embedded NUL anywhere is invalid input, rejected before persistence with
     # its bounded EN/AR copy. Nothing is stripped or rewritten.
     lang = _current_ui_lang()
-    for raw in list(submitted.values()) + list(submitted_methods.values()):
+    for raw in list(edits.values()) + list(method_edits.values()):
         invalid = _free_text_error(raw, lang)
         if invalid is not None:
-            return _render_criteria(sid, plan, status=400, error=invalid)
+            return _render_criteria(sid, plan, status=400, error=invalid,
+                                    drafts=drafts)
 
-    # Trim only; whitespace-only deletes that one entry; an identical
-    # resubmission is an idempotent upsert.
-    delta = {eid: (raw.strip() or None) for eid, raw in submitted.items()}
-    method_delta = {eid: (raw.strip() or None) for eid, raw in submitted_methods.items()}
+    # Trim only; whitespace-only deletes that one entry; an unchanged value is
+    # not in `edits` at all, so it is never re-written.
+    delta = {eid: (raw.strip() or None) for eid, raw in edits.items()}
+    method_delta = {eid: (raw.strip() or None) for eid, raw in method_edits.items()}
     try:
         _get_store().apply_planning_metadata_delta(sid, delta, method_delta)
     except Exception:

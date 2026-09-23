@@ -1916,7 +1916,9 @@ def test_stage_19_slice_02_is_the_bounded_slice_on_every_live_surface():
            r"never govern core progression",
            r"Variable \(still blocked by the missing typed experiment-parameter model",
            r"No Domain Capability Profile, no new domain",
-           r"F-09 stays deferred",
+           r"F-09 was not part of SLICE-02; the Owner separately authorized ONE bounded F-09 "
+           r"planning-form recovery fix",
+           r"durable line endings are unchanged",
            r"`STAGE 11 / A2: DEFERRED / UNDISCHARGED`",
            r"`STAGE 15 \(IRL\): PRESERVED — MUST NOT BE LOST`", r"`T2-E: DEFERRED`",
            r"`CI OPTIMIZATION: SEPARATE / NOT IMPLEMENTED`",

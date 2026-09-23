@@ -693,9 +693,21 @@ UI_STRINGS = {
         "en": "Edit this experiment’s criterion and measurement method",
         "ar": "تعديل معيار هذه التجربة وطريقة قياسها",
     },
+    # F-09: the limit counts the text as the browser submits it, where every
+    # line break is sent as two characters (CRLF); say so, truthfully.
     "UI_SC_LIMIT": {
-        "en": "Optional. Limit: {limit} characters.",
-        "ar": "اختياري. الحد الأقصى: {limit} حرف.",
+        "en": ("Optional. Limit: {limit} characters; each line break counts as "
+               "two characters."),
+        "ar": "اختياري. الحد الأقصى: {limit} حرف، ويُحتسب كل فاصل أسطر بحرفين.",
+    },
+    # F-09: shown only when a submission was refused and the inventor's own
+    # entries are re-shown in the form — they are NOT saved.
+    "UI_SC_DRAFT_UNSAVED": {
+        "en": ("Your entries are still shown in the form below, but they have "
+               "not been saved. Correct them and choose Save criteria and "
+               "methods to save them."),
+        "ar": ("لا تزال إدخالاتك معروضة في النموذج أدناه، لكنها لم تُحفظ. "
+               "صحّحها ثم اختر حفظ المعايير والطرق لحفظها."),
     },
     "UI_SC_SAVE_CLEAR": {
         "en": ("Edits apply only when you choose Save criteria and methods. To "

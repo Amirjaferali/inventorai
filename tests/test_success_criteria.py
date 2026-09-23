@@ -336,7 +336,11 @@ def test_empty_plan_and_rejection_preserve_context_contract(lang):
     body = response.get_data(as_text=True)
     assert 'class="experiment-context"' in body
     assert 'class="stale"' in body
-    assert 'existing target</textarea>' in body
+    # F-09: the refused submission is re-shown as typed (never the durable value
+    # it would have replaced), explicitly marked as NOT saved.
+    assert ('x' * (MAX_CRITERION_LENGTH + 1)) + '</textarea>' in body
+    assert 'existing target</textarea>' not in body
+    assert 'id="draft-unsaved"' in body
     assert state.__dict__ == before
 
 
