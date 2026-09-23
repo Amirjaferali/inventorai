@@ -96,6 +96,97 @@ evidence captured is not a validated conclusion.** In particular the daily off-p
 backup scheduler is **MERGED, NOT DEPLOYED and NOT LIVE-ACTIVATED**, and public release,
 deployment and paid activation all remain **NOT AUTHORIZED**.
 
+## Lead execution continuity
+
+These are operating rules for continuity, proportion and review routing. They add no boot
+step, no authority level and no implementation authorization; the boot sequence above stays
+the single boot sequence and the authority hierarchy above stays controlling.
+
+**Continuity source.** Continuity never rests on Lead memory, chat memory or handover prose
+alone. Use, in the order the task makes applicable: live Git/repository state; explicit Owner
+decisions; the current authoritative governance/current-state documents; merged repository
+evidence; the Master Execution Roadmap; the Operating Checklist; the current successor
+handover and Lead Watchlist. Roadmap, checklist, handover and watchlist are continuity aids,
+never independent execution authority.
+
+**Product progress over governance.** Use the minimum governance proportionate to material
+risk. Create no new review, document, gate, synchronization cycle or architecture exercise
+unless it addresses a concrete material risk or an explicit current requirement. Do not reopen
+completed or accepted work without new material evidence of a defect.
+
+**Lead and executor.** The designated Lead owns sequencing, current-action selection,
+architecture adjudication, evidence reconciliation, review routing and the next-step
+recommendation. Claude Code or another bounded execution agent executes repository work within
+the exact authorized scope; execution agents never silently redefine the roadmap or expand an
+authorization.
+
+**Review routing.** Use specialist review only when materially justified, never ritually.
+Material UX / browser / E2E / localization changes go to the designated independent
+UX/behaviour reviewer when needed. Architecture, persistence, schema, replay, provenance and
+state-ownership questions escalate to the designated architecture reviewer (Astra role) when
+materially necessary.
+
+**Technical-proposal classification.** Every Lead technical proposal carries exactly one
+class: **NOW** (required for the current authorized action); **NEXT TRIGGER** (useful only when
+a named, evidence-based trigger occurs); **WATCH** (monitor, do not implement yet);
+**PREMATURE** (technically possible, currently unjustified, not to be implemented). No agent
+converts a WATCH or NEXT TRIGGER item into implementation without its stated trigger and
+authority.
+
+**Opportunistic modularization.** Launch no broad refactor because files are large. When
+authorized product work touches a high-coupling area, consider the smallest bounded extraction
+that materially reduces repeated logic or coupling. Current WATCH areas, not refactor
+authorization: `web/app.py` growth and its repeated route–validation–save–recovery logic;
+`engine/record_store.py` growth and persistence-ownership concentration.
+
+**SQLite / datastore boundary.** Initiate no PostgreSQL or other datastore migration because it
+might scale better. Migration needs an evidence-based trigger: material concurrent-writer
+pressure, locking/latency constraints, a multi-instance requirement or another demonstrated
+operational need. Until then it stays WATCH / PREMATURE as the evidence dictates.
+
+**Domain-scaling boundary.** Study coverage of Electronics/Electrical + Mechanical is the
+current baseline, not the permanent InventorAI domain ceiling. Before repeated future domain
+activations, evaluate whether a bounded Domain Pack Conformance Validator would reduce repeated
+manual validation; that validator is NEXT TRIGGER, not authorized implementation.
+
+**Human-study boundary.** No recruitment, participant contact or human-data collection begins
+without the required Owner authorization and applicable consent/custody readiness. Before the
+first authorized T1-C′ human execution, perform an automated Study Dry Run once its
+preconditions are satisfied. The accepted T1-C′ V1 study corpus
+(`docs/validation/T1C_STANDARDIZED_STUDY_CORPUS_V1.md`) never becomes a pre-study
+product-tuning or regression corpus.
+
+**Test proportionality.** Default sequence where appropriate: focused tests → affected/adjacent
+tests → stable full regression → hosted required CI. Never weaken mandatory CI; do not rerun
+the full suite repeatedly during intermediate work when focused evidence is sufficient.
+
+**Authority-document discipline.** Authority surfaces are already large: prefer concise current
+truth, add no lifecycle prose or duplicate historical narration unless materially necessary,
+and create no new governance document when an existing owner can truthfully hold the rule.
+
+**Lead Watchlist.** For substantive continuity the Lead keeps a concise watchlist: current
+action; material technical risks; high-leverage technical opportunities; NEXT TRIGGER items;
+WATCH items; PREMATURE work; any trigger that has newly become true. It is continuity
+information, not execution authority.
+
+**Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
+from repository evidence and the handover/current sources, and returns: (1) authoritative
+branch; (2) authoritative HEAD; (3) current executable action; (4) completed work that must not
+be reopened; (5) current Lead Watchlist; (6) NOW items; (7) NEXT TRIGGER items; (8) WATCH items;
+(9) PREMATURE / forbidden work; (10) execution-agent role; (11) architecture-review escalation
+rule; (12) Owner-reserved decisions and authorization boundaries; (13) human-study
+authorization state; (14) exactly ONE next action. A material inconsistency exposed by the
+reconstruction is resolved before mutation. No ceremonial confirmation is required when the
+reconstruction is materially correct. This applies Lean §9 (successor reconstruction and the
+single checkpoint); it does not replace it.
+
+**Successor handover.** Every substantive successor handover preserves at minimum: live
+authoritative identity; current executable action; closed work that must not be reopened;
+these Lead Execution Continuity Rules; the Lead Watchlist; NOW / NEXT TRIGGER / WATCH /
+PREMATURE state; current material technical risks; current deferred obligations; reviewer
+routing; Owner authorization boundaries; the exact stopping point and next action. This
+complements the existing successor-handover protocol (Lean §9) and does not replace it.
+
 ## Historical material and substantive boundaries
 
 Historical evidence, superseded contracts and candidate-lifecycle records are
