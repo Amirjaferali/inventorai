@@ -148,6 +148,14 @@ class SuccessCriterionInvalid(StoreError):
     text). Raised BEFORE the write transaction opens, so nothing is written."""
 
 
+class RecordStoreConnectionUnsafe(StoreError):
+    """IR-01: the store connection is left inside an UNRESOLVED transaction (a
+    failed write whose defensive ROLLBACK did not end the transaction). A read on
+    that connection would observe its OWN uncommitted changes, so it is never
+    accepted as committed durable state. Mirrors the ``AccountStore`` B-01
+    precedent: set once, never cleared automatically, no reconnect lifecycle."""
+
+
 class SuccessCriterionCorrupt(StoreError):
     """Stage 19 / CAP-09: a durable success-criterion row of the project is
     malformed. Fail-closed for the WHOLE collection: no partial set is returned
@@ -705,6 +713,9 @@ class SqliteRecordStore:
         # does NOT survive close — durability tests use a real file path in a
         # pytest tmp_path). No repository-tracked database file is used.
         self._path = path
+        # IR-01: set only when a failed write leaves the connection inside an
+        # unresolved transaction. Never cleared automatically.
+        self._connection_unsafe = False
         # ``isolation_level=None`` puts the connection in autocommit mode so EVERY
         # write goes through the explicit ``_write()`` transaction below, which
         # opens with ``BEGIN IMMEDIATE``. Taking the RESERVED write lock up front
@@ -757,7 +768,31 @@ class SqliteRecordStore:
                 self._conn.execute("ROLLBACK")
             except sqlite3.OperationalError:
                 pass
+            # IR-01: if the transaction is STILL open, the rollback did not
+            # resolve it, and this connection would read its own uncommitted
+            # changes as if they were durable. Mark it unsafe (never cleared
+            # automatically) so no such read is accepted as committed state.
+            if not self._transaction_resolved():
+                self._connection_unsafe = True
             raise
+
+    def _transaction_resolved(self) -> bool:
+        try:
+            return not self._conn.in_transaction
+        except Exception:
+            return False
+
+    def committed_state_readable(self) -> bool:
+        """True only when a read on this connection reflects COMMITTED durable
+        state: no unresolved write transaction is open and the connection was
+        never left unresolved by a failed rollback (IR-01)."""
+        return not self._connection_unsafe and self._transaction_resolved()
+
+    def _refuse_uncommitted_reads(self) -> None:
+        if not self.committed_state_readable():
+            raise RecordStoreConnectionUnsafe(
+                "connection is inside an unresolved transaction; its reads are "
+                "not committed durable state")
 
     # --- migration (additive, idempotent, forward + safe rollback) ----------
     @staticmethod
@@ -1967,7 +2002,12 @@ class SqliteRecordStore:
             collection — no partial set, no skipped row, nothing repaired;
           * storage failure          -> the SQL error propagates.
 
+        IR-01: a connection left inside an unresolved transaction raises
+        ``RecordStoreConnectionUnsafe`` instead of reading — its view would include
+        its OWN uncommitted changes, which are not durable truth.
+
         Read-only; project-scoped (never reads another project); logs nothing."""
+        self._refuse_uncommitted_reads()
         self._require_project(project_id)
         rows = self._conn.execute(
             "SELECT experiment_id, success_criterion FROM prototype_plan_metadata "
@@ -2004,6 +2044,7 @@ class SqliteRecordStore:
                 raise SuccessCriterionInvalid("malformed experiment id")
             if criterion is not None and not _valid_criterion_text(criterion):
                 raise SuccessCriterionInvalid("malformed criterion text")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
         with self._write():
             self._require_project(project_id)
             for experiment_id, criterion in items:

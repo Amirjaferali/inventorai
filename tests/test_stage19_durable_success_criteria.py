@@ -1390,3 +1390,188 @@ def test_f04_confirmation_rule_unreadable_durable_state_is_unknown(monkeypatch):
 
     monkeypatch.setattr(webapp, "_get_store", lambda: _Store())
     assert webapp._resolve_criteria_write("p", {"a": "x"}) == "unknown"
+
+
+# ==========================================================================
+# IR-01 — an unresolved transaction is NEVER durable confirmation
+# ==========================================================================
+class _CommitAndRollbackFail:
+    """Faithful injection of the independent review's failure shape: the
+    mutation executes inside the transaction, COMMIT raises WITHOUT committing,
+    and the defensive ROLLBACK also raises WITHOUT rolling back — so the SAME
+    connection stays ``in_transaction`` and can still see its own uncommitted
+    change. Everything else is the real connection."""
+
+    def __init__(self, conn):
+        self._conn = conn
+        self.armed = True
+
+    def execute(self, sql, *args):
+        if self.armed and sql in ("COMMIT", "ROLLBACK"):
+            if sql == "ROLLBACK":
+                self.armed = False
+            raise sqlite3.OperationalError("injected: %s failed" % sql)
+        return self._conn.execute(sql, *args)
+
+    def __getattr__(self, name):
+        return getattr(self._conn, name)
+
+
+def _independent_value(sid, eid):
+    """The COMMITTED value, read through a SEPARATE SQLite connection."""
+    con = sqlite3.connect(_db_path())
+    try:
+        row = con.execute(
+            "SELECT success_criterion FROM prototype_plan_metadata "
+            "WHERE project_id = ? AND experiment_id = ?", (sid, eid)).fetchone()
+        return None if row is None else row[0]
+    finally:
+        con.close()
+
+
+def test_ir01_uncommitted_same_connection_visibility_is_never_saved(client, monkeypatch):
+    sid = _journey(client)
+    ids = _live_ids(sid)
+    eid = ids[0]
+    assert _post_criteria(client, sid, {eid: "old committed target"}).status_code == 302
+    live = SESSION_STORE[sid]["state"]
+    memory_before = copy.deepcopy(live.success_criteria)
+    assert memory_before[eid].criterion == "old committed target"
+    store = webapp._get_store()
+    real_conn = store._conn
+    proxy = _CommitAndRollbackFail(real_conn)
+    monkeypatch.setattr(store, "_conn", proxy)
+    r = _post_criteria(client, sid, {eid: "new uncommitted target", ids[1]: "also new"})
+    # The failure shape is real: the transaction is still unresolved ...
+    assert real_conn.in_transaction is True
+    # ... the SAME connection sees its own uncommitted change ...
+    same = dict(real_conn.execute(
+        "SELECT experiment_id, success_criterion FROM prototype_plan_metadata "
+        "WHERE project_id = ?", (sid,)).fetchall())
+    assert same[eid] == "new uncommitted target"
+    # ... while an INDEPENDENT connection still sees the OLD committed value.
+    assert _independent_value(sid, eid) == "old committed target"
+    assert _independent_value(sid, ids[1]) is None
+    # The application must report UNKNOWN — never success, never "not saved".
+    body = html.unescape(r.get_data(as_text=True))
+    assert r.status_code == 503, r.status_code
+    assert OUTCOME_UNKNOWN in body
+    assert NOT_SAVED not in body and SAVED_NOT_SHOWN not in body
+    # Nothing uncommitted was published to memory.
+    assert live.success_criteria == memory_before
+    # Criteria surfaces fail closed on the unresolved connection afterwards.
+    r2, body2 = _criteria_page(client, sid)
+    assert r2.status_code == 503 and CRITERIA_UNAVAILABLE in body2
+    assert "new uncommitted target" not in body2
+    monkeypatch.setattr(store, "_conn", real_conn)
+    # Close / reopen: the durable value is the OLD committed criterion.
+    _restart()
+    assert _reopened_items(sid)[eid]["success_criterion"] == "old committed target"
+    assert _independent_value(sid, ids[1]) is None
+
+
+def test_ir01_mixed_delete_and_upsert_under_unresolved_transaction_is_unknown(client,
+                                                                              monkeypatch):
+    """E: the same durability rule governs the WHOLE submitted delta."""
+    sid = _journey(client)
+    ids = _live_ids(sid)
+    _post_criteria(client, sid, {ids[0]: "keep old", ids[1]: "to be deleted"})
+    memory_before = copy.deepcopy(SESSION_STORE[sid]["state"].success_criteria)
+    store = webapp._get_store()
+    real_conn = store._conn
+    monkeypatch.setattr(store, "_conn", _CommitAndRollbackFail(real_conn))
+    r = _post_criteria(client, sid, {ids[0]: "changed", ids[1]: "   "})
+    assert real_conn.in_transaction is True
+    assert r.status_code == 503 and OUTCOME_UNKNOWN in html.unescape(r.get_data(as_text=True))
+    assert _independent_value(sid, ids[0]) == "keep old"
+    assert _independent_value(sid, ids[1]) == "to be deleted"
+    assert SESSION_STORE[sid]["state"].success_criteria == memory_before
+    monkeypatch.setattr(store, "_conn", real_conn)
+    _restart()
+    items = _reopened_items(sid)
+    assert items[ids[0]]["success_criterion"] == "keep old"
+    assert items[ids[1]]["success_criterion"] == "to be deleted"
+
+
+def test_ir01_store_marks_unresolved_transaction_unsafe_and_never_clears_it(tmp_path):
+    from engine.record_contract import ProjectRecordContract
+    from engine.idea_state import IdeaState
+    from engine.record_store import RecordStoreConnectionUnsafe
+    store = SqliteRecordStore(str(tmp_path / "unsafe.sqlite"))
+    real = store._conn
+    try:
+        pid = store.create_project(
+            ProjectRecordContract.from_state(IdeaState(idea_id="u")), project_id="p-u")
+        eid = "exp_v1_acknowledged_unknown_" + "d" * 32
+        store.apply_success_criteria_delta(pid, {eid: "committed"})
+        assert store.committed_state_readable() is True
+        store._conn = _CommitAndRollbackFail(real)
+        with pytest.raises(sqlite3.OperationalError):
+            store.apply_success_criteria_delta(pid, {eid: "uncommitted"})
+        assert real.in_transaction is True
+        assert store.committed_state_readable() is False
+        with pytest.raises(RecordStoreConnectionUnsafe):       # no same-connection read
+            store.load_success_criteria(pid)
+        with pytest.raises(RecordStoreConnectionUnsafe):       # no write on top of it
+            store.apply_success_criteria_delta(pid, {eid: "another"})
+        store._conn = real
+        real.execute("ROLLBACK")                               # even once resolved ...
+        assert store.committed_state_readable() is False       # ... never auto-cleared
+    finally:
+        store._conn = real
+        store.close()
+
+
+def test_ir01_failure_that_leaves_no_open_transaction_is_not_unsafe(tmp_path):
+    """Negative control: a failed write whose rollback DID resolve the
+    transaction (or that had none left) keeps committed-state reads available,
+    so confirmed rollback (NOT SAVED) and confirmed commit (SAVED) still work."""
+    from engine.record_contract import ProjectRecordContract
+    from engine.idea_state import IdeaState
+    store = SqliteRecordStore(str(tmp_path / "safe.sqlite"))
+    real = store._conn
+    try:
+        pid = store.create_project(
+            ProjectRecordContract.from_state(IdeaState(idea_id="s")), project_id="p-s")
+        eid = "exp_v1_acknowledged_unknown_" + "e" * 32
+        store._conn = _FailOnSecondMutation(real)              # rollback succeeds
+        with pytest.raises(sqlite3.OperationalError):
+            store.apply_success_criteria_delta(
+                pid, {eid: "one", "exp_v1_acknowledged_unknown_" + "f" * 32: "two"})
+        store._conn = real
+        assert store.committed_state_readable() is True
+        assert store.load_success_criteria(pid) == ()          # confirmed rollback
+        store._conn = _CommitThenRaise(real)                   # committed, then raised
+        with pytest.raises(sqlite3.OperationalError):
+            store.apply_success_criteria_delta(pid, {eid: "committed"})
+        store._conn = real
+        assert store.committed_state_readable() is True
+        assert store.load_success_criteria(pid) == ((eid, "committed"),)
+    finally:
+        store._conn = real
+        store.close()
+
+
+def test_ir01_any_open_transaction_is_not_committed_state(tmp_path):
+    """Defence in depth: even without the sticky flag, a connection that is
+    inside ANY open transaction does not offer its reads as committed state."""
+    from engine.record_contract import ProjectRecordContract
+    from engine.idea_state import IdeaState
+    from engine.record_store import RecordStoreConnectionUnsafe
+    store = SqliteRecordStore(str(tmp_path / "open.sqlite"))
+    try:
+        pid = store.create_project(
+            ProjectRecordContract.from_state(IdeaState(idea_id="o")), project_id="p-o")
+        eid = "exp_v1_acknowledged_unknown_" + "a" * 32
+        store._conn.execute("BEGIN IMMEDIATE")
+        store._conn.execute("INSERT INTO prototype_plan_metadata VALUES (?, ?, ?)",
+                            (pid, eid, "uncommitted"))
+        assert store._connection_unsafe is False
+        assert store.committed_state_readable() is False
+        with pytest.raises(RecordStoreConnectionUnsafe):
+            store.load_success_criteria(pid)
+        store._conn.execute("ROLLBACK")
+        assert store.committed_state_readable() is True
+        assert store.load_success_criteria(pid) == ()
+    finally:
+        store.close()
