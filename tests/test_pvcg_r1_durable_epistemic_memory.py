@@ -487,8 +487,11 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
         conn.close()
     # AMENDED at Stage 19 / CAP-09 IMPLEMENTATION-01: `prototype_plan_metadata`
     # stores the EXISTING SuccessCriterion (current value, no payload, no
-    # disposition); it is not a second ledger. The exact list is kept.
+    # disposition); it is not a second ledger. The exact list is kept. AMENDED at
+    # Stage 19 / CAP-09 SLICE-02: its sibling `prototype_measurement_methods`
+    # (current value, no payload, no disposition) is not a ledger either.
     assert tables == ["engine_version_adoptions", "evidence_references", "projects",
+                      "prototype_measurement_methods",
                       "prototype_plan_metadata", "question_feedback",
                       "readiness_evidence", "records",
                       "requirement_quantities"], tables

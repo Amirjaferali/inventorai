@@ -1769,11 +1769,12 @@ def test_group_two_reads_completed_with_its_residuals_carried():
 # ==========================================================================
 # Stage 19 entry: the WS-PFV-001 / CAP-09 FOUNDATION CONTRACT, and what it does NOT unlock
 # ==========================================================================
-_S19_CONTRACT = ("`ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION "
-                 "— IMPLEMENTATION-01 ONLY`")
+_S19_CONTRACT = ("`ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
+                 "MEASUREMENT METHOD ONLY`")
 _S19_ENTERED = "`STAGE 19: ENTERED / NOT COMPLETE`"
-_S19_ONLY = ("`AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION — "
-             "IMPLEMENTATION-01 / CORRECTION-01`")
+_S19_ONLY = ("`AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
+             "MEASUREMENT METHOD`")
+_S19_DELIVERED = "`DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682`"
 _S19_NOT_FULL = ("`FULL CAP-09: NOT AUTHORIZED`", "`FULL WS-PFV-001: NOT AUTHORIZED`")
 
 
@@ -1820,27 +1821,16 @@ def test_stage_19_foundation_rules_still_bind_after_implementation_01():
              r"dependency 3[^.]{0,60}SATISFIED FOR (ALL|EVERY|FULL|WS-PFV-001 IMPLEMENTATION)")
 
 
-def test_stage_19_implementation_01_is_the_bounded_remediation_on_every_live_surface():
-    """IMPLEMENTATION-01 authorizes ONE thing: the EXISTING SuccessCriterion made
-    durable in the same project store. The failure modes keep every token in
-    place: "an implementation is authorized" read as full CAP-09 or full
-    WS-PFV-001, the durable sidecar read as a parallel experiment store, or the
-    remediation read as evidence / result / readiness capture. So the guard
-    requires the narrow wording AND rejects the widened predicate on the
-    authority, all three routing fences, the current-position entry, CLAUDE.md,
-    the checklist, the roadmap row and the capability register — and it records
-    no merge/candidate lifecycle state that a merge would make false.
-    """
-    contract = _read(CONTRACT)
-    first = contract.index("## Current authority")
-    assert contract[first:].startswith(
-        "## Current authority — Stage 19 / CAP-09 durable SuccessCriterion remediation "
-        "— IMPLEMENTATION-01"), contract[first:first + 120]
-    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
+def test_stage_19_implementation_01_rules_still_bind_after_slice_02():
+    """IMPLEMENTATION-01 (PR #682) is delivered history now, but its rules are
+    exactly what SLICE-02 reuses: the EXISTING SuccessCriterion made durable in
+    the same store, one atomic delta, truthful outcome, no progression coupling.
+    They must survive the supersession; only its ACTIVE CONTRACT line becomes
+    visibly superseded history."""
+    top = _section(_read(CONTRACT), "current-authority--stage-19-cap09-durable-success-criterion")
     _needs(top, CONTRACT, "implementation-01",
-           r"\*\*ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — "
-           r"IMPLEMENTATION-01 ONLY\.\*\*",
-           r"`ENTERED / NOT COMPLETE` — checkbox stays unticked",
+           r"DELIVERED \(PR #682\); SUPERSEDED as current authority by SLICE-02",
+           r"\*\*No longer the current authority\.\*\*",
            r"\*\*AUTHORIZED IMPLEMENTATION\*\* \| \*\*DURABLE SUCCESS-CRITERION REMEDIATION — "
            r"IMPLEMENTATION-01 / CORRECTION-01\*\*",
            r"\*\*FULL CAP-09\*\* \| `NOT AUTHORIZED`",
@@ -1860,8 +1850,6 @@ def test_stage_19_implementation_01_is_the_bounded_remediation_on_every_live_sur
            r"never reported as a failed save",
            r"Store failure and corruption fail closed with no partial set",
            r"never falls back to session-only saving",
-           # CORRECTION-01: the corrected truth, and the rejected interpretation
-           # kept only as superseded history
            r"\*\*Editing does not require writable progression state\.\*\*",
            r"cold, not resumed, or already complete",
            r"never reopens progression, never changes maturity, stage or gaps",
@@ -1873,16 +1861,70 @@ def test_stage_19_implementation_01_is_the_bounded_remediation_on_every_live_sur
            r"unreadable means the outcome is unknown",
            r"F-09, F-10 and F-11 are NOT part of CORRECTION-01",
            r"No parallel experiment store, second database",
-           r"No Evidence, experiment-result or validation-result capture",
+           r"No Evidence, experiment-result or validation-result capture")
+    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "implementation-01",
+             r"\*\*ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION",
+             r"stays view-only", r"Continue the project to change",
+             r"FULL (CAP-09|WS-PFV-001)\W{0,8}(IS )?AUTHORIZED\b",
+             r"STAGE 19 COMPLETE: YES", r"STAGE 19: COMPLETE")
+
+
+def test_stage_19_slice_02_is_the_bounded_slice_on_every_live_surface():
+    """SLICE-02 authorizes ONE thing: the inventor's own measurement method per
+    EXISTING Section-11 experiment, durable in a narrowly typed sibling sidecar
+    of the same store. The failure modes keep every token in place: "a slice is
+    authorized" read as full CAP-09 or full WS-PFV-001, the sidecar read as a
+    parallel experiment store or a widened criterion table, the method read as
+    a measurement / result / Evidence, or the slice read as opening Variable or
+    the other CAP-09 fields. So the guard requires the narrow wording AND rejects
+    the widened predicate on the authority, all three routing fences, the
+    current-position entry, CLAUDE.md, the checklist, the roadmap row and the
+    capability register — and it records no candidate lifecycle state that a
+    merge would make false.
+    """
+    contract = _read(CONTRACT)
+    first = contract.index("## Current authority")
+    assert contract[first:].startswith(
+        "## Current authority — Stage 19 / CAP-09 SLICE-02 durable user-written "
+        "Measurement Method"), contract[first:first + 120]
+    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
+    _needs(top, CONTRACT, "slice-02",
+           r"\*\*ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT "
+           r"METHOD ONLY\.\*\*",
+           r"`ENTERED / NOT COMPLETE` — checkbox stays unticked",
+           r"\*\*AUTHORIZED IMPLEMENTATION\*\* \| \*\*CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
+           r"MEASUREMENT METHOD\*\*",
+           r"\*\*DURABLE SUCCESS-CRITERION REMEDIATION\*\* \| `DELIVERED — PR #682`",
+           r"\*\*FULL CAP-09\*\* \| `NOT AUTHORIZED`",
+           r"\*\*FULL WS-PFV-001\*\* \| `NOT AUTHORIZED`",
+           r"It is \*\*not\*\* full CAP-09, it is \*\*not\*\* full WS-PFV-001",
+           r"still no second semantic owner",
+           r"The v1 identity algorithm, experiment ordering and source priority are unchanged",
+           r"`what_to_observe`, which the method never replaces or combines with",
+           r"the existing `SqliteRecordStore`, in the SAME database",
+           r"`prototype_measurement_methods \(project_id, experiment_id, measurement_method\)`",
+           r"`prototype_plan_metadata` is NOT widened",
+           r"never a measurement, result, Evidence, validation outcome, readiness value or "
+           r"progression input",
+           r"Section 11 stays composed in ONE place",
+           r"committed in ONE transaction",
+           r"reading back the COMPLETE submitted delta of both concepts",
+           r"An unresolved transaction is never read as committed truth \(IR-01\)",
+           r"UNKNOWN publishes nothing",
+           r"editing needs no writable progression state",
+           r"never remapped, and reattaches only by its exact id",
+           r"never govern core progression",
+           r"Variable \(still blocked by the missing typed experiment-parameter model",
+           r"No Domain Capability Profile, no new domain",
+           r"F-09 stays deferred",
            r"`STAGE 11 / A2: DEFERRED / UNDISCHARGED`",
            r"`STAGE 15 \(IRL\): PRESERVED — MUST NOT BE LOST`", r"`T2-E: DEFERRED`",
            r"`CI OPTIMIZATION: SEPARATE / NOT IMPLEMENTED`",
            r"`STARTED: YES` · `COMPLETE: NO` · \*\*PARTIAL\*\* — unchanged",
            r"FURTHER CAP-01 IMPLEMENTATION\*\* \| \*\*NOT CURRENTLY AUTHORIZED")
-    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "implementation-01",
-             r"stays view-only", r"Continue the project to change",
-             r"FULL CAP-09[^.|]{0,20}\W{0,4}AUTHORIZED(?! )",
+    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "slice-02",
              r"FULL (CAP-09|WS-PFV-001)\W{0,8}(IS )?AUTHORIZED\b",
+             r"VARIABLE\W{0,8}(IS )?AUTHORIZED\b",
              r"STAGE 19 COMPLETE: YES", r"STAGE 19: COMPLETE",
              r"IMPLEMENTED IN CANDIDATE", r"NOT YET AUTHORITATIVE",
              r"FULL (CAP-01|STG)[^.|]{0,40}: *AUTHORIZED")
@@ -1892,11 +1934,16 @@ def test_stage_19_implementation_01_is_the_bounded_remediation_on_every_live_sur
         _needs(block, path, "stage-19 live", re.escape(_S19_CONTRACT).replace(r"\ ", r"\s+"),
                re.escape(_S19_ENTERED).replace(r"\ ", r"\s+"),
                re.escape(_S19_ONLY).replace(r"\ ", r"\s+"),
+               re.escape(_S19_DELIVERED).replace(r"\ ", r"\s+"),
                *(re.escape(t).replace(r"\ ", r"\s+") for t in _S19_NOT_FULL),
-               r"Section 11 \+\s+`SuccessCriterion` stay the canonical planning\s+owner")
+               r"Section 11 \+\s+`SuccessCriterion` stay the canonical planning\s+owner",
+               r"Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED")
         _rejects(block, path, "stage-19 live",
                  r"ACTIVE CONTRACT: NONE", r"FOUNDATION CONTRACT ONLY",
                  r"ENTERED FOR FOUNDATION", r"CAP-09 PRODUCT IMPLEMENTATION",
+                 r"IMPLEMENTATION-01 ONLY",
+                 r"FULL (CAP-09|WS-PFV-001)\W{0,8}(IS )?AUTHORIZED\b",
+                 r"VARIABLE\W{0,8}(IS )?AUTHORIZED\b",
                  r"STAGE 19 COMPLETE: YES", r"Stages 19–27 preserved",
                  r"IMPLEMENTED IN CANDIDATE", r"NOT YET AUTHORITATIVE")
     for path, routing in _surfaces("current-routing"):
@@ -1905,25 +1952,29 @@ def test_stage_19_implementation_01_is_the_bounded_remediation_on_every_live_sur
     # CLAUDE.md routes to it first, and does not widen it
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    for needle in ("ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION "
-                   "— IMPLEMENTATION-01 ONLY.",
+    for needle in ("ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
+                   "MEASUREMENT METHOD ONLY.",
                    "is ENTERED / NOT COMPLETE",
-                   "The only authorized implementation is the durable SuccessCriterion remediation",
+                   "The durable SuccessCriterion remediation (IMPLEMENTATION-01 / CORRECTION-01) "
+                   "is delivered (PR #682).",
+                   "The only authorized implementation is CAP-09 SLICE-02",
                    "Full CAP-09 and full WS-PFV-001 are NOT AUTHORIZED",
                    "no other Stage is authorized"):
         assert needle in head, needle
     for stale in ("FOUNDATION CONTRACT ONLY", "NOT STARTED / NOT AUTHORIZED YET",
-                  "ACTIVE CONTRACT: NONE"):
+                  "ACTIVE CONTRACT: NONE", "IMPLEMENTATION-01 ONLY"):
         assert _absent(head, stale), stale
     # the checklist subtask and machine record, and the roadmap row
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
-    assert ("**CURRENT SUBTASK:** STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — "
-            "IMPLEMENTATION-01 ONLY") in flat_checklist
-    for line in ("ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION "
-                 "— IMPLEMENTATION-01 ONLY",
+    assert ("**CURRENT SUBTASK:** STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT "
+            "METHOD ONLY") in flat_checklist
+    for line in ("ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
+                 "MEASUREMENT METHOD ONLY",
                  "STAGE 19: ENTERED / NOT COMPLETE",
-                 "AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION — "
-                 "IMPLEMENTATION-01 / CORRECTION-01",
+                 "AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
+                 "MEASUREMENT METHOD",
+                 "DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682",
+                 "VARIABLE / HYPOTHESIS / OTHER CAP-09 FIELDS: NOT AUTHORIZED",
                  "CRITERIA EDITING: NO WRITABLE PROGRESSION STATE REQUIRED",
                  "PLANNING-METADATA CORRUPTION: DOES NOT GOVERN CORE PROGRESSION",
                  "SECTION-11 CONSUMERS: FAIL CLOSED WHEN DURABLE CRITERIA CANNOT BE READ",
@@ -1931,23 +1982,28 @@ def test_stage_19_implementation_01_is_the_bounded_remediation_on_every_live_sur
                  "NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
     for gone in ("ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY",
+                 "ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION "
+                 "— IMPLEMENTATION-01 ONLY",
                  "CAP-09 PRODUCT IMPLEMENTATION: NOT STARTED / NOT AUTHORIZED YET",
                  "ACTIVE CONTRACT: NONE"):
         assert re.search(r"^" + re.escape(gone) + r"$", raw_checklist, re.M) is None, gone
     rows = re.findall(r"^- \[ \] \*\*19 — WS-PFV-001/CAP-09:\*\*.*$", _read(ROADMAP), re.M)
     assert len(rows) == 1, "stage 19 row missing, duplicated or ticked"
     assert "**ENTERED / NOT COMPLETE (2026-09-23):**" in rows[0]
-    assert "the ONLY authorized implementation is the durable SuccessCriterion remediation" in rows[0]
+    assert "the ONLY authorized implementation is CAP-09 SLICE-02" in rows[0]
+    assert "is delivered (PR #682)" in rows[0]
     assert "full CAP-09 and full WS-PFV-001 NOT AUTHORIZED" in rows[0]
     assert "satisfied for planning-only CAP-09 entry, and for nothing wider" in rows[0]
     assert re.search(r"^- \[ \] \*\*20 — CAP-08:", _read(ROADMAP), re.M), "stage 20 row changed"
-    # the register records ONE bounded CAP-09 exception, not an opening of CAP-09
+    # the register records TWO bounded CAP-09 exceptions, not an opening of CAP-09
     register = _read(CAPABILITIES)
     reg_rows = [l for l in register.splitlines() if l.startswith("| CAP-09 Experiment Designer |")]
     assert len(reg_rows) == 2, reg_rows
     for r in reg_rows:
         assert "RECORDED — NOT AUTHORIZED, except one bounded" in r, r
         assert "durable SuccessCriterion remediation" in r, r
+        assert "SLICE-02 durable measurement method" in r, r
     flat_register = _flat(CAPABILITIES)
     assert "It does NOT authorize full CAP-09 or full WS-PFV-001" in flat_register
+    assert "Variable, hypothesis, risks and a result category are NOT authorized" in flat_register
     assert "`FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`" in flat_register

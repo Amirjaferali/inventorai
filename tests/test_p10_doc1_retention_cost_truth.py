@@ -104,8 +104,11 @@ _AUTOMATIC_DELETION_TABLES = ("auth_rate_limits", "email_outbox")
 # Stage 19 / CAP-09 IMPLEMENTATION-01 added ONE user-initiated current-value
 # removal (the owner clearing their own success criterion). It is a separate
 # category, NOT an automatic deletion: the automatic set above is unchanged, and
-# the document must name this one explicitly as well.
-_USER_INITIATED_DELETION_TABLES = ("prototype_plan_metadata",)
+# the document must name this one explicitly as well. Stage 19 / CAP-09 SLICE-02
+# extended the SAME user-initiated kind (the owner clearing their own
+# measurement method) to its sibling sidecar; the automatic set is unchanged.
+_USER_INITIATED_DELETION_TABLES = ("prototype_plan_metadata",
+                                   "prototype_measurement_methods")
 
 
 def test_retention_doc_matches_source_truth():
@@ -130,8 +133,9 @@ def test_retention_doc_matches_source_truth():
     assert "cleanup_expired_rate_limits" in doc
     assert "mark_email_delivered" in doc and "email_outbox" in doc
     flat = re.sub(r"\s+", " ", doc)
-    assert "One USER-INITIATED removal exists" in flat
+    assert "One USER-INITIATED kind of removal exists" in flat
     assert "`prototype_plan_metadata`" in flat
+    assert "`prototype_measurement_methods`" in flat
     assert "It is NOT an automatic deletion, NOT an erasure capability" in flat
     # the 7-day client TTL claim must keep matching the real script
     with open(os.path.join("web", "static", "js", "local_draft.js"),

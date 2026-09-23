@@ -21,6 +21,7 @@ textarea{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radi
 .experiment-context dt{font-weight:bold;font-size:13px;margin-top:10px}
 .experiment-context dd{margin:4px 0 0;white-space:pre-wrap;line-height:1.6;font-size:13px}
 .criterion-guidance{font-size:13px;line-height:1.6;color:#444;margin:8px 0 0}
+.method-label{margin-top:14px}
 @media(max-width:520px){body{margin:18px auto;padding:0 14px}.app-header{flex-wrap:wrap}.app-header .temp-session{white-space:normal}.exp{padding:12px}button{max-width:100%;box-sizing:border-box}}
 button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
 .links{margin-top:24px;font-size:13px}
@@ -30,11 +31,13 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 <h1>{{ t('UI_B_SC_001') }}</h1>
 <div class="intro">
   {{ t('UI_SENS_SC_01') }}
+  <p>{{ t('UI_SC_METHOD_INTRO') }}</p>
 </div>
 
 {% if error %}<div class="error">{{ error }}</div>{% endif %}
 {% if notice %}<div class="notice" role="status">{{ notice }}</div>{% endif %}
 {% if stale_notice %}<div class="stale">{{ stale_notice }}</div>{% endif %}
+{% if stale_methods %}<div class="stale">{{ t('UI_SC_METHOD_STALE') }}</div>{% endif %}
 
 {# experiments is None when no CURRENT plan could be offered (the notice above
    says why); that must never read as "no proposed experiments". #}
@@ -65,6 +68,15 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
               dir="auto" aria-describedby="experiment-source-{{ nav_id }} criterion-guidance-{{ nav_id }}"
               placeholder="{{ t('UI_B_SC_003') }}">{% if exp.success_criterion_provenance == 'user_defined' %}{{ exp.success_criterion }}{% endif %}</textarea>
     <p class="criterion-guidance" id="criterion-guidance-{{ nav_id }}">{{ t('UI_SC_LIMIT').format(limit=max_length) }} {{ t('UI_SC_SAVE_CLEAR') }}</p>
+    {# SLICE-02: the inventor's own measurement method — never generated and
+       never merged with the system-provided "Observe" context above. #}
+    <label for="method-{{ nav_id }}" class="method-label">{{ t('UI_SC_METHOD_LABEL') }}</label>
+    <textarea id="method-{{ nav_id }}"
+              name="{{ method_prefix }}{{ exp.experiment_id }}" rows="3"
+              maxlength="{{ method_max_length }}"
+              dir="auto" aria-describedby="experiment-source-{{ nav_id }} method-guidance-{{ nav_id }}"
+              placeholder="{{ t('UI_SC_METHOD_PLACEHOLDER') }}">{% if exp.measurement_method_provenance == 'user_defined' %}{{ exp.measurement_method }}{% endif %}</textarea>
+    <p class="criterion-guidance" id="method-guidance-{{ nav_id }}">{{ t('UI_SC_LIMIT').format(limit=method_max_length) }} {{ t('UI_SC_SAVE_CLEAR') }}</p>
   </div>
   {% endfor %}
   <button type="submit">{{ t('UI_B_SC_004') }}</button>

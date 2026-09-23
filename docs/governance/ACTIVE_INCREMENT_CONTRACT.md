@@ -23,12 +23,89 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--stage-19-cap09-durable-success-criterion"></a>
-## Current authority — Stage 19 / CAP-09 durable SuccessCriterion remediation — IMPLEMENTATION-01 (Owner authorization, 2026-09-23)
+<a id="current-authority--stage-19-cap09-slice-02-measurement-method"></a>
+## Current authority — Stage 19 / CAP-09 SLICE-02 durable user-written Measurement Method (Owner authorization, 2026-09-23)
 
-**ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01
-ONLY.** The Lead completed the read-only Stage-19 architecture / data-flow assessment named in
-the foundation contract below. An independent architectural review then returned PASS WITH
+**ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD
+ONLY.** After the durable SuccessCriterion remediation was delivered (PR #682), a read-only
+Stage-19 remainder assessment found exactly one next product slice justified by the
+repository, and the Owner / Lead authorized it: for each EXISTING Section-11 experiment, the
+inventor may record their OWN description of how they plan to measure or check it. It is
+**not** full CAP-09, it is **not** full WS-PFV-001, and it authorizes no later Stage.
+
+| | |
+|---|---|
+| **STAGE 19** | `ENTERED / NOT COMPLETE` — checkbox stays unticked |
+| **AUTHORIZED IMPLEMENTATION** | **CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD** |
+| **DURABLE SUCCESS-CRITERION REMEDIATION** | `DELIVERED — PR #682` (IMPLEMENTATION-01 / CORRECTION-01 / IR-01; its rules below still bind) |
+| **FULL CAP-09** | `NOT AUTHORIZED` |
+| **FULL WS-PFV-001** | `NOT AUTHORIZED` |
+| **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **PARTIAL** — unchanged |
+| **FULL CAP-01 / FULL STG** | `NOT AUTHORIZED / NOT IMPLEMENTED` — unchanged |
+| **FURTHER CAP-01 IMPLEMENTATION** | **NOT CURRENTLY AUTHORIZED** — unchanged |
+
+**The fixed architecture — still no second semantic owner.**
+
+- **Experiment owner and identity:** unchanged — Section 11 (`_s11`, `_experiment_id` /
+  `_canonical_source`). The v1 identity algorithm, experiment ordering and source priority
+  are unchanged, and so is the system-provided `what_to_observe`, which the method never
+  replaces or combines with.
+- **Semantics:** ONE new typed planning concept, `MeasurementMethod`
+  (`engine/idea_state.py`), keyed like `SuccessCriterion` by the stable `experiment_id`,
+  provenance `user_defined`. Planning metadata only: never generated, inferred, interpreted
+  or graded, and never a measurement, result, Evidence, validation outcome, readiness value
+  or progression input.
+- **Durable storage:** the existing `SqliteRecordStore`, in the SAME database. ONE narrowly
+  typed, additive, current-value sibling sidecar, `prototype_measurement_methods
+  (project_id, experiment_id, measurement_method)`, with identity `(project_id,
+  experiment_id)`, a foreign key to `projects` and CHECKs (text, 1–1000 characters, no NUL).
+  `prototype_plan_metadata` is NOT widened: its row still means a success criterion exists.
+- **Composition:** Section 11 stays composed in ONE place. The bounded change to
+  `engine/deliverable_assembler.py` attaches a method to an experiment only when one is
+  recorded and lists stale methods only when one exists, as a bounded, exhaustive amendment
+  of the A-20/A-21 assembler pin. `ProjectRecordContract`, reconstruction, progression,
+  authorization, Evidence, validation and readiness are unchanged.
+
+**Binding behaviour.** The planning page, its single Save and the durable rules of the
+delivered remediation are reused, not duplicated.
+
+- **One atomic planning write:** ONE submission is ONE planning delta over criteria AND
+  methods. It is validated whole against CURRENT durable project truth — an unknown or
+  no-longer-current id, an over-limit value or a NUL in either concept rejects everything —
+  and committed in ONE transaction. A non-empty value is upserted, a whitespace-only one
+  deletes that entry only, and an omitted one is untouched.
+- **Truthful outcome:** a write that raises is confirmed by reading back the COMPLETE
+  submitted delta of both concepts. Present means saved, demonstrably absent means not
+  saved, unreadable means unknown. An unresolved transaction is never read as committed
+  truth (IR-01), and UNKNOWN publishes nothing.
+- **Planning metadata only:** editing needs no writable progression state. A stale method
+  is preserved, never remapped, and reattaches only by its exact id. Corrupt method rows fail
+  the Section-11 consumers closed and never govern core progression.
+
+**Still NOT authorized.** Variable (still blocked by the missing typed experiment-parameter
+model and experiment-to-requirement relationship), a hypothesis field, a failure / revision
+user field, a required-evidence / result-category field, execution or result state and
+per-experiment risk. Generated or suggested methods, units inference, parameter extraction
+and typed variables. Experiment execution, result, Evidence or validation capture, readiness
+promotion, PASS / PARTIAL / FAIL / INCONCLUSIVE behaviour, prototype version history and a
+corrective / retest subsystem. No Domain Capability Profile, no new domain, no CAP-01 or T2-E
+expansion and no AI / provider work. F-09 stays deferred.
+
+**Preserved.** `STAGE 11 / A2: DEFERRED / UNDISCHARGED` · `STAGE 15 (IRL): PRESERVED — MUST
+NOT BE LOST` · `T2-E: DEFERRED` · `CI OPTIMIZATION: SEPARATE / NOT IMPLEMENTED` · `D13
+RESEARCH: REMAINS CLOSED` · Stages 20–27 stay preserved, not entered and not authorized ·
+`DEPLOYMENT: NOT AUTHORIZED` · `PUBLIC RELEASE: NOT AUTHORIZED` · `PAID ACTIVATION: NOT
+AUTHORIZED`.
+
+<a id="current-authority--stage-19-cap09-durable-success-criterion"></a>
+## Current authority — Stage 19 / CAP-09 durable SuccessCriterion remediation — IMPLEMENTATION-01 (Owner authorization, 2026-09-23) — DELIVERED (PR #682); SUPERSEDED as current authority by SLICE-02
+
+**No longer the current authority.** This remediation was delivered by PR #682, and SLICE-02
+above replaced it as the current authority on 2026-09-23. Every rule below still binds,
+except where it is marked superseded. *(Superseded 2026-09-23, preserved so the change is
+visible rather than silent: this opened "**ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE
+SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 ONLY.**")* The Lead completed the read-only
+Stage-19 architecture / data-flow assessment named in the foundation contract below. An independent architectural review then returned PASS WITH
 REQUIRED CORRECTIONS, and the Lead accepted its blocking corrections into the specification.
 On that basis the Owner authorized ONE bounded Stage-19 architectural remediation. It is
 **not** full CAP-09, it is **not** full WS-PFV-001, and it authorizes no later Stage.
@@ -496,13 +573,17 @@ OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 —
 `D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
 unticked** — one authorized bounded slice is not the stage.
 **Also ENTERED: Stage 19 — WS-PFV-001 / CAP-09 Experiment-Plan Designer.** `ACTIVE CONTRACT:
-STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 ONLY` · `STAGE 19:
-ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION —
-IMPLEMENTATION-01 / CORRECTION-01` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
-`SuccessCriterion` stay the canonical planning owner; the remediation only makes the EXISTING
-criterion durable in the same project store. Editing it needs no writable progression
-state, and planning-metadata corruption does not govern core progression. The Stage-19
-checkbox stays unticked, and
+STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD ONLY` · `STAGE 19:
+ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN
+MEASUREMENT METHOD` · `DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682` ·
+`FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
+`SuccessCriterion` stay the canonical planning owner. The delivered remediation made the
+EXISTING criterion durable in the same project store; SLICE-02 adds ONE inventor-written
+measurement method per existing experiment, durable in a narrowly typed sibling sidecar of
+the same store and saved in the same atomic planning write. Editing either needs no
+writable progression state, and planning-metadata corruption does not govern core
+progression. Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED. The
+Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
 **Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and
 `STAGE 11 STARTED: NO`. It was routed PAST, not completed, and **routing past a deferred
@@ -511,6 +592,12 @@ evidence where applicable, and **new human activity requires separate authorizat
 existing consent/custody boundaries**. No human collection begins merely because routing
 moves past it.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded 2026-09-23 by SLICE-02, preserved so the change is visible rather than silent:
+the Stage-19 routing line read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION
+REMEDIATION — IMPLEMENTATION-01 ONLY` · … `AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION
+REMEDIATION — IMPLEMENTATION-01 / CORRECTION-01`". That was true until PR #682 delivered the
+remediation and the Owner authorized SLICE-02.)*
 
 *(Superseded 2026-09-23 by CORRECTION-01, preserved: the Stage-19 routing line named
 "`AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION ONLY`".)*

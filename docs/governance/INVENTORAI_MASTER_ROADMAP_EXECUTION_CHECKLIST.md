@@ -120,7 +120,7 @@ explicit Owner structural-change authorization.
 | 1 | 1–5 | Close the existing product-depth lane | **COMPLETE ✅** |
 | 2 | 6–10 | Feedback, semantic depth, known value defects | **ALL STAGES COMPLETED ✅ — carried residuals remain: T1-A′ OPEN / FRB; T2-C′ PARTIAL** (not the current frontier; completing the checkboxes discharged neither residual) |
 | 3 | 11–15 | Human evidence and readiness foundations | Partial — 12 complete; 13/14 partial; 15 thinnest and must not be lost |
-| 4 | 16–20 | System/commercial readiness and technical guidance | 17 partial; 18 entered / partial (both bounded CAP-01 increments merged, PRs #678 and #679; no further CAP-01 authorized); 19 entered / not complete (durable SuccessCriterion remediation only; full CAP-09 not authorized); 16, 20 not authorized |
+| 4 | 16–20 | System/commercial readiness and technical guidance | 17 partial; 18 entered / partial (both bounded CAP-01 increments merged, PRs #678 and #679; no further CAP-01 authorized); 19 entered / not complete (durable SuccessCriterion remediation delivered, PR #682; SLICE-02 durable measurement method only; full CAP-09 not authorized); 16, 20 not authorized |
 | 5 | 21–25 | Decision support and engineering depth | Not authorized — zero merged runtime code |
 | 6 | 26–30 | Visual/thermal depth and new domains | 29 complete/active; 28/30/31 gated; 26–27 not authorized |
 | 7 | 31–35 | IoT depth and optional output capabilities | Not authorized (Stage 33 ≠ PR #663 account email) |
@@ -148,13 +148,17 @@ Read those before acting on any stage; this table is a locator, not a status sou
   remains PARTIAL and its roadmap checkbox stays unticked** — one authorized bounded slice
   is not the stage.
   **Also ENTERED: Stage 19 — WS-PFV-001 / CAP-09 Experiment-Plan Designer.** `ACTIVE CONTRACT:
-  STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 ONLY` · `STAGE 19:
-  ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION —
-  IMPLEMENTATION-01 / CORRECTION-01` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
-  `SuccessCriterion` stay the canonical planning owner; the remediation only makes the EXISTING
-  criterion durable in the same project store. Editing it needs no writable progression
-  state, and planning-metadata corruption does not govern core progression. The Stage-19
-  checkbox stays unticked, and
+  STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD ONLY` · `STAGE 19:
+  ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN
+  MEASUREMENT METHOD` · `DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682` ·
+  `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
+  `SuccessCriterion` stay the canonical planning owner. The delivered remediation made the
+  EXISTING criterion durable in the same project store; SLICE-02 adds ONE inventor-written
+  measurement method per existing experiment, durable in a narrowly typed sibling sidecar of
+  the same store and saved in the same atomic planning write. Editing either needs no
+  writable progression state, and planning-metadata corruption does not govern core
+  progression. Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED. The
+  Stage-19 checkbox stays unticked, and
   entering Stage 19 completes nothing in Stage 18.
   **Entering Stage 18 is not the next obligation discharged: Stage 11 — T1-C′ / A2
   human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, `STAGE 11 STARTED: NO`. It
@@ -163,6 +167,12 @@ Read those before acting on any stage; this table is a locator, not a status sou
   prior evidence where applicable, and new human activity requires separate authorization
   and the existing consent/custody boundaries.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded 2026-09-23 by SLICE-02, preserved so the change is visible rather than silent:
+the Stage-19 routing line read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION
+REMEDIATION — IMPLEMENTATION-01 ONLY` · … `AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION
+REMEDIATION — IMPLEMENTATION-01 / CORRECTION-01`". That was true until PR #682 delivered the
+remediation and the Owner authorized SLICE-02.)*
 
 *(Superseded 2026-09-23 by CORRECTION-01, preserved: the Stage-19 routing line named
 "`AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION ONLY`".)*
@@ -316,16 +326,22 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   **Stage 44 lineage gate** — PRESERVED · **Stage 45 deployment gate** — PRESERVED ·
   **WATCH-01** — PRESERVED / PLANNED / NOT YET IMPLEMENTED · **WATCH-04** — PRESERVED.
 <!-- END CURRENT-BLOCK: material-residuals -->
-- **CURRENT SUBTASK:** STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION —
-  IMPLEMENTATION-01 ONLY — `ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION
-  REMEDIATION — IMPLEMENTATION-01 ONLY`, with CORRECTION-01. The EXISTING Section-11
-  `SuccessCriterion` is made durable in the same project store, validated against current
-  durable project truth and attached to every state Section 11 consumes. Editing it needs no
-  writable progression state, and planning-metadata corruption does not govern core
-  progression. Full CAP-09 and full WS-PFV-001 are NOT AUTHORIZED. Both bounded Stage-18 / CAP-01 increments are delivered (PR #678 checklist, PR #679 research
+- **CURRENT SUBTASK:** STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT
+  METHOD ONLY — `ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN
+  MEASUREMENT METHOD ONLY`. For each EXISTING Section-11 experiment the inventor may record
+  their own measurement method, durable in a narrowly typed sibling sidecar of the same
+  project store and saved with the success criteria in ONE atomic planning write. The durable
+  SuccessCriterion remediation (IMPLEMENTATION-01 / CORRECTION-01) is delivered (PR #682).
+  Editing needs no writable progression state, and planning-metadata corruption does not
+  govern core progression. Variable, hypothesis and every other CAP-09 field, full CAP-09 and
+  full WS-PFV-001 are NOT AUTHORIZED. Both bounded Stage-18 / CAP-01 increments are delivered (PR #678 checklist, PR #679 research
   direction); every further CAP-01/STG scope requires a new explicit mandate, and Stage 11
   still requires its own explicit mandate. Completing the Stage-17 product-depth work started
   nothing, and neither did completing the Stage-10 differential.
+  *(Superseded 2026-09-23 by SLICE-02, preserved — was: "STAGE 19 / CAP-09 DURABLE
+  SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 ONLY … The EXISTING Section-11
+  `SuccessCriterion` is made durable in the same project store"; PR #682 delivered it and the
+  Owner then authorized SLICE-02.)*
   *(Superseded 2026-09-23, preserved — was: "STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY — … The
   next technical action after contract acceptance is a READ-ONLY architecture / data-flow
   assessment … CAP-09 product implementation is NOT STARTED / NOT AUTHORIZED YET, and schema /
@@ -487,7 +503,7 @@ dimension: a captured dimension is not a validated conclusion.
 
 ## J. Current Technology-Deepening position
 
-**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED. **Stage 19 ENTERED / NOT COMPLETE** (2026-09-23) — the only authorized implementation is the durable SuccessCriterion remediation (IMPLEMENTATION-01); full CAP-09 and full WS-PFV-001 NOT AUTHORIZED. *(Superseded 2026-09-23, preserved — was: "**Stage 19 ENTERED FOR FOUNDATION / CONTRACT WORK ONLY** (2026-09-23) — CAP-09 product implementation NOT STARTED / NOT AUTHORIZED YET; zero merged runtime code.")* **Stages 20–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-23, preserved — was: "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until the Owner's Stage-19 entry-contract authorization.)* *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
+**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED. **Stage 19 ENTERED / NOT COMPLETE** (2026-09-23) — the durable SuccessCriterion remediation (IMPLEMENTATION-01) is delivered (PR #682); the only authorized implementation is CAP-09 SLICE-02 (durable user-written measurement method); full CAP-09 and full WS-PFV-001 NOT AUTHORIZED. *(Superseded 2026-09-23 by SLICE-02, preserved — was: "the only authorized implementation is the durable SuccessCriterion remediation (IMPLEMENTATION-01)".)* *(Superseded 2026-09-23, preserved — was: "**Stage 19 ENTERED FOR FOUNDATION / CONTRACT WORK ONLY** (2026-09-23) — CAP-09 product implementation NOT STARTED / NOT AUTHORIZED YET; zero merged runtime code.")* **Stages 20–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-23, preserved — was: "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until the Owner's Stage-19 entry-contract authorization.)* *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
 
 Nothing in the readiness or infrastructure lanes touched any of them. Adjacent progress
 is not implementation. CAP-12 and CAP-13 must remain separate capabilities. Release-lane
@@ -628,9 +644,11 @@ FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED
   IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3
 SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753
 NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED
-ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 ONLY
+ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD ONLY
 STAGE 19: ENTERED / NOT COMPLETE
-AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 / CORRECTION-01
+AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD
+DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682
+VARIABLE / HYPOTHESIS / OTHER CAP-09 FIELDS: NOT AUTHORIZED
 CRITERIA EDITING: NO WRITABLE PROGRESSION STATE REQUIRED
 PLANNING-METADATA CORRUPTION: DOES NOT GOVERN CORE PROGRESSION
 SECTION-11 CONSUMERS: FAIL CLOSED WHEN DURABLE CRITERIA CANNOT BE READ
@@ -657,7 +675,7 @@ VALIDATED COMMERCIAL CONCLUSION: NO
 
 CURRENT TECHNOLOGY-DEEPENING POSITION:
 Stage 18 entered / partial — both bounded CAP-01 increments merged (PRs #678, #679); no further CAP-01 authorized
-Stage 19 entered / not complete — durable SuccessCriterion remediation only; full CAP-09 not authorized
+Stage 19 entered / not complete — durable SuccessCriterion remediation delivered (PR #682); SLICE-02 durable measurement method only; full CAP-09 not authorized
 Stages 20–27 preserved, not entered / not authorized
 
 CURRENT DOMAIN-EXPANSION POSITION:

@@ -1260,6 +1260,33 @@ def _stale_success_criteria(state, current_ids):
             stale.append({"experiment_id": eid, "criterion": txt,
                           "provenance": getattr(sc, "provenance", "user_defined")})
     return stale
+
+
+def _resolve_measurement_method(exp, eid, state):
+    """Stage 19 / CAP-09 SLICE-02: attach the inventor's OWN measurement method
+    for this experiment (state.measurement_methods[eid]) when one is recorded.
+    Additive only when present: an experiment without one gains no key, so its
+    item is unchanged. Never generated, inferred from the source or from
+    ``what_to_observe``, combined with it, interpreted or graded."""
+    user = (getattr(state, "measurement_methods", None) or {}).get(eid)
+    text = (getattr(user, "method", "") or "").strip() if user else ""
+    if text:
+        exp["measurement_method"] = text
+        exp["measurement_method_provenance"] = getattr(user, "provenance", "user_defined")
+
+
+def _stale_measurement_methods(state, current_ids):
+    """User methods whose experiment_id is no longer generated. Preserved and
+    surfaced honestly; never reattached elsewhere. Deterministic (dict order)."""
+    stale = []
+    for eid, mm in (getattr(state, "measurement_methods", None) or {}).items():
+        if eid in current_ids:
+            continue
+        txt = (getattr(mm, "method", "") or "").strip()
+        if txt:
+            stale.append({"experiment_id": eid, "measurement_method": txt,
+                          "provenance": getattr(mm, "provenance", "user_defined")})
+    return stale
 _PLAN_STOPWORDS = {
     "that", "this", "with", "from", "would", "which", "have", "been", "they",
     "their", "there", "when", "what", "into", "such", "than", "then", "them",
@@ -1366,6 +1393,7 @@ def _s11(state):
         seen_ids[eid] = payload
         exp["experiment_id"] = eid
         _resolve_success_criterion(exp, eid, source_text, state)
+        _resolve_measurement_method(exp, eid, state)
         exp["required_expertise_or_tools"] = expertise_field  # legacy per-item field, unchanged
         items.append(exp)
 
@@ -1449,8 +1477,9 @@ def _s11(state):
                                  "content": claim},
             })
 
-    stale = _stale_success_criteria(state, {it["experiment_id"] for it in items})
-    return {
+    current_ids = {it["experiment_id"] for it in items}
+    stale = _stale_success_criteria(state, current_ids)
+    plan = {
         "title": "Prototype & Test Plan",
         "items": items,
         "count": len(items),
@@ -1470,6 +1499,11 @@ def _s11(state):
                 "validated, certified, or shown feasible. You define the success "
                 "criteria.",
     }
+    # SLICE-02: additive only when a stale inventor method exists.
+    stale_methods = _stale_measurement_methods(state, current_ids)
+    if stale_methods:
+        plan["stale_measurement_methods"] = stale_methods
+    return plan
 
 
 def _now_iso():

@@ -29,6 +29,7 @@ ul{padding-left:18px;font-size:13px;color:#444}
 li{margin-bottom:4px}
 .field-label{font-weight:bold;color:#2c3e50;font-size:13px}
 .field-value{font-size:13px;color:#444;margin-bottom:6px}
+.user-method{white-space:pre-wrap}
 .vp-meta{font-size:12px;color:#667;line-height:1.5;margin:0 0 12px 0}
 .vp-intro{font-size:13px;color:#555;line-height:1.5;margin:0 0 12px 0}
 .back-link{margin-top:30px;font-size:13px}
@@ -623,6 +624,13 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% else %}
   <div class="field-value"><strong>{{ t('UI_B_DELIV_080') }}</strong> {{ exp.success_criterion }}</div>
   {% endif %}
+  {# SLICE-02: the inventor's own measurement method, or truthful absence — never
+     a generated method and never merged with "Observe:" above. #}
+  {% if exp.measurement_method_provenance == 'user_defined' %}
+  <div class="field-value"><strong>{{ t('UI_DELIV_METHOD_DEFINED') }}</strong> <span class="user-method">{{ exp.measurement_method }}</span></div>
+  {% else %}
+  <div class="field-value"><strong>{{ t('UI_DELIV_METHOD_ABSENT_LABEL') }}</strong> {{ t('UI_DELIV_METHOD_ABSENT') }}</div>
+  {% endif %}
   <div class="field-value"><strong>{{ t('UI_B_DELIV_081') }}</strong> {{ exp.failure_or_revision_condition }}</div>
   <div class="field-value"><strong>{{ t('UI_B_DELIV_082') }}</strong> {{ exp.expected_evidence_upgrade }}</div>
   {% if not pdf_mode %}<p class="experiment-criterion-link"><a href="{{ url_for('success_criteria', sid=sid) }}#criterion-{{ nav_id }}" aria-describedby="report-experiment-source-{{ nav_id }}">{{ t('UI_SC_EDIT_EXPERIMENT') }}</a></p>{% endif %}
@@ -636,6 +644,9 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
   {% if package.section_11_prototype_test_plan.stale_criteria_notice %}
   <div class="field-value status-snapshot">{{ package.section_11_prototype_test_plan.stale_criteria_notice }}</div>
+  {% endif %}
+  {% if package.section_11_prototype_test_plan.stale_measurement_methods %}
+  <div class="field-value status-snapshot">{{ t('UI_SC_METHOD_STALE') }}</div>
   {% endif %}
   {% if package.section_11_prototype_test_plan["items"] and not pdf_mode %}
   <div class="field-value"><a href="{{ url_for('success_criteria', sid=sid) }}">{{ t('UI_B_DELIV_084') }}</a></div>

@@ -162,6 +162,19 @@ class SuccessCriterionCorrupt(StoreError):
     and nothing is repaired, deleted or reinterpreted."""
 
 
+class MeasurementMethodInvalid(StoreError):
+    """Stage 19 / CAP-09 SLICE-02: a submitted measurement-method delta is
+    structurally invalid (unknown shape, malformed experiment id, empty /
+    untrimmed / over-limit / NUL-bearing text). Raised BEFORE the write
+    transaction opens, so nothing is written."""
+
+
+class MeasurementMethodCorrupt(StoreError):
+    """Stage 19 / CAP-09 SLICE-02: a durable measurement-method row of the
+    project is malformed. Fail-closed for the WHOLE collection: no partial set is
+    returned and nothing is repaired, deleted or reinterpreted."""
+
+
 @runtime_checkable
 class RecordStore(Protocol):
     """Datastore-neutral durable record-store interface (the abstraction
@@ -213,6 +226,11 @@ class RecordStore(Protocol):
     # prototype_plan_metadata note below).
     def load_success_criteria(self, project_id: str) -> tuple: ...
     def apply_success_criteria_delta(self, project_id: str, delta) -> None: ...
+    # Stage 19 / CAP-09 SLICE-02 durable MeasurementMethod (additive; see the
+    # prototype_measurement_methods note below).
+    def load_measurement_methods(self, project_id: str) -> tuple: ...
+    def apply_planning_metadata_delta(self, project_id: str, criteria_delta,
+                                      method_delta) -> None: ...
 
 
 _SCHEMA = (
@@ -639,6 +657,48 @@ def _valid_criterion_text(value) -> bool:
             and "\x00" not in value)
 
 
+# Stage 19 / CAP-09 SLICE-02 — durable user-written MeasurementMethod (Owner-
+# authorized). ONE narrowly typed, additive, project-scoped, CURRENT-VALUE
+# sibling of ``prototype_plan_metadata`` in the SAME database. It stores the
+# inventor's own description of HOW they plan to measure or check one
+# Section-11 experiment, keyed by the canonical stable ``experiment_id`` — and
+# nothing else: no experiment definition, source or generated plan text, no
+# variable, unit or parameter, no provenance (a stored row is by construction
+# the inventor's own text), and no Evidence, measurement, result, validation,
+# readiness or PASS/PARTIAL/FAIL/INCONCLUSIVE value. ``prototype_plan_metadata``
+# is deliberately NOT widened: its row still means "a success criterion exists".
+# Same identity, foreign key, CHECK backstop, idempotent additive migration and
+# disable-and-ignore rollback as that table.
+_MEASUREMENT_METHOD_TABLE = "prototype_measurement_methods"
+_MEASUREMENT_METHOD_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS prototype_measurement_methods (
+        project_id         TEXT NOT NULL,
+        experiment_id      TEXT NOT NULL,
+        measurement_method TEXT NOT NULL,
+        PRIMARY KEY (project_id, experiment_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        CHECK (typeof(experiment_id) = 'text'
+               AND length(experiment_id) BETWEEN 1 AND 128),
+        CHECK (typeof(measurement_method) = 'text'
+               AND length(measurement_method) BETWEEN 1 AND 1000
+               AND instr(CAST(measurement_method AS BLOB), X'00') = 0)
+    )
+    """,
+)
+# The per-method length bound (characters), shared with the web route.
+MAX_MEASUREMENT_METHOD_LENGTH = 1000
+
+
+def _valid_method_text(value) -> bool:
+    """A stored method is exactly what the route stores: non-empty, already
+    trimmed (internal newlines and tabs kept), within the bound, and free of
+    NUL anywhere in the value."""
+    return (isinstance(value, str) and value == value.strip()
+            and 0 < len(value) <= MAX_MEASUREMENT_METHOD_LENGTH
+            and "\x00" not in value)
+
+
 # Outcome vocabulary of an adoption append (mirrors the merged T2-A/T2-D
 # vocabulary: an already-recorded exact event is historical no-write
 # evidence, never a conflict and never a second write).
@@ -743,6 +803,7 @@ class SqliteRecordStore:
             self._migrate_engine_version_adoptions(self._conn)
             self._migrate_readiness_evidence(self._conn)
             self._migrate_prototype_plan_metadata(self._conn)
+            self._migrate_prototype_measurement_methods(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -919,6 +980,15 @@ class SqliteRecordStore:
         database; touches no existing table, column or row. Rollback is
         disable-and-ignore (stop reading the table)."""
         for stmt in _PLAN_METADATA_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_prototype_measurement_methods(self, conn) -> None:
+        """Stage 19 / CAP-09 SLICE-02 forward migration against the LIVE schema:
+        additively create the ``prototype_measurement_methods`` sidecar.
+        Idempotent (``IF NOT EXISTS``) on a fresh and on an existing populated
+        database; touches no existing table, column or row. Rollback is
+        disable-and-ignore (stop reading the table)."""
+        for stmt in _MEASUREMENT_METHOD_SCHEMA:
             conn.execute(stmt)
 
     # --- identifiers --------------------------------------------------------
@@ -2034,20 +2104,75 @@ class SqliteRecordStore:
         as last committed write wins for the keys each one actually submitted.
 
         This method does not decide which experiment ids are current: the caller
-        validates the delta against the current plan generated by Section 11."""
+        validates the delta against the current plan generated by Section 11.
+        SLICE-02: it is the criteria-only form of the ONE combined planning
+        write, ``apply_planning_metadata_delta``."""
+        self.apply_planning_metadata_delta(project_id, delta, {})
+
+    # --- Stage 19 / CAP-09 SLICE-02 durable MeasurementMethod (current value) --
+    def load_measurement_methods(self, project_id: str) -> tuple:
+        """Load and VALIDATE one project's durable measurement methods; return an
+        immutable tuple of ``(experiment_id, method)`` pairs ordered by
+        ``experiment_id``. The same distinct outcomes as
+        ``load_success_criteria``: no project row -> ``ProjectNotFound``; zero
+        rows -> ``()``; any malformed row -> ``MeasurementMethodCorrupt`` for the
+        WHOLE collection; storage failure propagates; and (IR-01) a connection
+        left inside an unresolved transaction raises
+        ``RecordStoreConnectionUnsafe`` instead of reading its own uncommitted
+        changes. Read-only; project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        self._require_project(project_id)
+        rows = self._conn.execute(
+            "SELECT experiment_id, measurement_method FROM prototype_measurement_methods "
+            "WHERE project_id = ? ORDER BY experiment_id ASC", (project_id,)
+        ).fetchall()
+        for experiment_id, method in rows:
+            if not _valid_experiment_id(experiment_id) or not _valid_method_text(method):
+                raise MeasurementMethodCorrupt(
+                    "durable measurement-method row is malformed")
+        return tuple((experiment_id, method) for experiment_id, method in rows)
+
+    @staticmethod
+    def _delta_items(delta, invalid, text_ok):
+        """Structural validation of ONE concept's submitted delta (a mapping of
+        experiment_id -> trimmed text, or None for delete); raises ``invalid``."""
         try:
             items = list(delta.items())
         except AttributeError:
-            raise SuccessCriterionInvalid("delta must be a mapping") from None
-        for experiment_id, criterion in items:
+            raise invalid("delta must be a mapping") from None
+        for experiment_id, value in items:
             if not _valid_experiment_id(experiment_id):
-                raise SuccessCriterionInvalid("malformed experiment id")
-            if criterion is not None and not _valid_criterion_text(criterion):
-                raise SuccessCriterionInvalid("malformed criterion text")
+                raise invalid("malformed experiment id")
+            if value is not None and not text_ok(value):
+                raise invalid("malformed text")
+        return items
+
+    def apply_planning_metadata_delta(self, project_id: str, criteria_delta,
+                                      method_delta) -> None:
+        """Apply ONE complete, already-validated planning submission atomically:
+        the success-criterion delta AND the measurement-method delta together.
+
+        Each delta maps ``experiment_id`` to a non-empty trimmed text (UPSERT
+        that key) or ``None`` (DELETE that key only); keys absent from a delta
+        are never touched. BOTH deltas are validated structurally BEFORE the
+        transaction opens (``SuccessCriterionInvalid`` /
+        ``MeasurementMethodInvalid``, nothing written). Then every change of
+        both concepts runs inside ONE ``BEGIN IMMEDIATE`` transaction that first
+        requires the durable project (``ProjectNotFound``). Any failure before
+        COMMIT rolls the ENTIRE submission back: no partial save of either
+        concept, and never two commits presented as one. IR-01: a connection
+        left unresolved by an earlier failed write refuses to write.
+
+        This method does not decide which experiment ids are current: the caller
+        validates both deltas against the current plan generated by Section 11."""
+        criteria = self._delta_items(criteria_delta, SuccessCriterionInvalid,
+                                     _valid_criterion_text)
+        methods = self._delta_items(method_delta, MeasurementMethodInvalid,
+                                    _valid_method_text)
         self._refuse_uncommitted_reads()      # IR-01: never write on top of it
         with self._write():
             self._require_project(project_id)
-            for experiment_id, criterion in items:
+            for experiment_id, criterion in criteria:
                 if criterion is None:
                     self._conn.execute(
                         "DELETE FROM prototype_plan_metadata "
@@ -2061,6 +2186,20 @@ class SqliteRecordStore:
                         "ON CONFLICT (project_id, experiment_id) "
                         "DO UPDATE SET success_criterion = excluded.success_criterion",
                         (project_id, experiment_id, criterion))
+            for experiment_id, method in methods:
+                if method is None:
+                    self._conn.execute(
+                        "DELETE FROM prototype_measurement_methods "
+                        "WHERE project_id = ? AND experiment_id = ?",
+                        (project_id, experiment_id))
+                else:
+                    self._conn.execute(
+                        "INSERT INTO prototype_measurement_methods "
+                        "(project_id, experiment_id, measurement_method) "
+                        "VALUES (?, ?, ?) "
+                        "ON CONFLICT (project_id, experiment_id) "
+                        "DO UPDATE SET measurement_method = excluded.measurement_method",
+                        (project_id, experiment_id, method))
 
     def project_ids(self) -> List[str]:
         return [row[0] for row in

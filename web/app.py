@@ -20,7 +20,7 @@ from flask import (
 from engine.domain_rules import classify_domain, DomainResultKind, is_known_domain
 from engine import domain_activation
 from engine.idea_state import (
-    IdeaState, SuccessCriterion,
+    IdeaState, SuccessCriterion, MeasurementMethod,
     CRITICALITY_FEASIBILITY_THREATENING, CRITICALITY_VALUE_ENHANCING,
     CRITICALITY_REFINEMENT, CRITICALITY_ACTION_CONFIRMED,
     CRITICALITY_ACTION_DEFERRED,
@@ -86,7 +86,7 @@ from engine.deliverable_assembler import assemble_deliverable
 import sqlite3
 from engine.record_store import (
     SqliteRecordStore, StoreError, ProjectNotFound as _ProjectNotFound,
-    MAX_SUCCESS_CRITERION_LENGTH,
+    MAX_SUCCESS_CRITERION_LENGTH, MAX_MEASUREMENT_METHOD_LENGTH,
     QuantityChainConflict as _QuantityChainConflict,
     QuantityCapExceeded as _QuantityCapExceeded,
     QuantityAnchorIneligible as _QuantityAnchorIneligible,
@@ -1532,8 +1532,10 @@ def _attach_quantity_history(sid, state):
 # --- Stage 19 / CAP-09 durable SuccessCriterion (planning metadata only) ------
 # The EXISTING user-authored `SuccessCriterion` is durable in the SAME project
 # store (`prototype_plan_metadata`, keyed by the canonical Section-11 stable
-# experiment_id). `_attach_success_criteria` is the ONE application-layer
-# attachment operation, used where Section 11 is actually CONSUMED (the HTML/PDF
+# experiment_id), and so — SLICE-02 — is the inventor-written MeasurementMethod
+# (`prototype_measurement_methods`, same key). `_attach_planning_metadata` is the
+# ONE application-layer attachment operation for BOTH, used where Section 11 is
+# actually CONSUMED (the HTML/PDF
 # deliverable context and both criteria routes): the durable collection is
 # validated WHOLE and attached to the state being consumed, and a corrupt or
 # unreadable collection fails THAT surface closed. CORRECTION-01 (F-02):
@@ -1556,18 +1558,36 @@ def _durable_success_criteria(sid):
     return {eid: SuccessCriterion(criterion=text) for eid, text in rows}
 
 
-def _attach_success_criteria(sid, state):
-    """Attach the durable criteria of ``sid`` to ``state`` — the state actually
-    being consumed or published. Returns False, leaving ``state`` UNTOUCHED, on
-    a storage failure or a corrupt row (never a partial or silently empty set),
-    so every caller fails closed. A memory-only context (no durable project)
-    has nothing durable to attach and leaves the carrier as it is."""
+def _durable_measurement_methods(sid):
+    """Stage 19 / CAP-09 SLICE-02: the project's durable measurement methods as
+    ``{experiment_id: MeasurementMethod}`` — the same outcomes as
+    ``_durable_success_criteria`` (absence ``{}``, no durable project ``None``,
+    storage failure / corruption RAISE). Provenance is re-derived as the
+    truthful ``user_defined``."""
     try:
-        loaded = _durable_success_criteria(sid)
+        rows = _get_store().load_measurement_methods(sid)
+    except _ProjectNotFound:
+        return None
+    return {eid: MeasurementMethod(method=text) for eid, text in rows}
+
+
+def _attach_planning_metadata(sid, state):
+    """Attach the durable Section-11 planning metadata of ``sid`` — success
+    criteria AND measurement methods — to ``state``, the state actually being
+    consumed or published. BOTH collections are loaded before EITHER is
+    assigned: on a storage failure or a corrupt row of either, it returns
+    False and leaves ``state`` UNTOUCHED (never a partial or silently empty
+    set), so every caller fails closed. A memory-only context (no durable
+    project) has nothing durable to attach and leaves the carrier as it is."""
+    try:
+        criteria = _durable_success_criteria(sid)
+        methods = _durable_measurement_methods(sid)
     except Exception:
         return False
-    if loaded is not None:
-        state.success_criteria = loaded
+    if criteria is not None:
+        state.success_criteria = criteria
+    if methods is not None:
+        state.measurement_methods = methods
     return True
 
 
@@ -5182,16 +5202,18 @@ def _deliverable_context(sid):
     if not _attach_quantity_history(sid, state):
         return None
     # Stage 19 / CAP-09: Section 11 is assembled from the durable success
-    # criteria attached to THIS state (the one actually consumed — live,
-    # reconstructed, or cold). Storage failure or corruption fails the HTML
-    # report and the PDF closed. A cold state that could NOT be reconstructed
+    # criteria and (SLICE-02) measurement methods attached to THIS state (the
+    # one actually consumed — live, reconstructed, or cold). Storage failure or
+    # corruption fails the HTML report and the PDF closed. A cold state that
+    # could NOT be reconstructed
     # carries no current plan, so durable criteria cannot be placed against
     # one: rather than show every saved criterion as stale, or silently drop
     # them, the report fails closed through the same generic behaviour.
-    if not _attach_success_criteria(sid, state):
+    if not _attach_planning_metadata(sid, state):
         return None
     if (getattr(state, "domain", None) is None and not reconstructed_deliverable
-            and getattr(state, "success_criteria", None)):
+            and (getattr(state, "success_criteria", None)
+                 or getattr(state, "measurement_methods", None))):
         return None
     package = assemble_deliverable(state)
     # T2-A: the additive nested package key, composed HERE at the one shared
@@ -7883,8 +7905,15 @@ def keep_snapshot(sid):
 # its criteria directly — cold, not resumed, or already complete — without a
 # writable progression session. Editing never reopens progression, never
 # changes maturity, stage or gaps, and never establishes a writable session.
+#
+# Stage 19 / CAP-09 SLICE-02: the SAME page and the SAME single Save also carry
+# the inventor's own measurement method per experiment ("method__<experiment_id>"
+# — how they plan to measure or check it; never generated, never a result). One
+# submission is ONE planning delta over both concepts, validated whole and
+# committed in ONE durable transaction.
 MAX_CRITERION_LENGTH = MAX_SUCCESS_CRITERION_LENGTH
 _CRITERION_FIELD_PREFIX = "criterion__"
+_METHOD_FIELD_PREFIX = "method__"
 
 # Why the current plan could not be offered. Distinct on purpose: a session
 # that is not a saved project, a plan that is not available, and saved criteria
@@ -7895,29 +7924,36 @@ _SC_NO_PROJECT = "no_project"
 _SC_PLAN_UNAVAILABLE = "plan_unavailable"
 _SC_CRITERIA_UNAVAILABLE = "criteria_unavailable"
 
+# SLICE-02: the page now carries success criteria AND measurement methods, and
+# its outcomes cover both, so each outcome names both (same meaning otherwise).
 SC_NOT_SAVED_PROJECT_MESSAGE = (
-    "Success criteria can only be kept for a saved project. This session is not "
-    "saved as a project, so criteria cannot be saved here. Nothing was changed.")
+    "Success criteria and measurement methods can only be kept for a saved "
+    "project. This session is not saved as a project, so they cannot be saved "
+    "here. Nothing was changed.")
 SC_PLAN_UNAVAILABLE_MESSAGE = (
     "The current Prototype & Test Plan is not available from this saved "
-    "project, so success criteria cannot be shown or changed from this page. "
-    "Nothing was changed.")
-SC_CRITERIA_UNAVAILABLE_MESSAGE = (
-    "Your saved success criteria could not be read, so they cannot be shown or "
+    "project, so success criteria and measurement methods cannot be shown or "
     "changed from this page. Nothing was changed.")
+SC_CRITERIA_UNAVAILABLE_MESSAGE = (
+    "Your saved success criteria and measurement methods could not be read, so "
+    "they cannot be shown or changed from this page. Nothing was changed.")
 SC_NOT_SAVED_MESSAGE = (
-    "Your success criteria could not be saved just now. Nothing was changed.")
+    "Your success criteria and measurement methods could not be saved just now. "
+    "Nothing was changed.")
 # The durable write COMMITTED; only updating this page failed. Never "not saved".
 SC_SAVED_NOT_SHOWN_MESSAGE = (
-    "Your success criteria were saved to your project, but this page could not "
-    "show them. Reload this page to see the criteria your project holds.")
+    "Your success criteria and measurement methods were saved to your project, "
+    "but this page could not show them. Reload this page to see what your "
+    "project holds.")
 # CORRECTION-01 (F-04): the write raised and its durable outcome could NOT be
 # established by reading the project back. Asserts neither a write nor a
 # rollback — only what is known.
 SC_OUTCOME_UNKNOWN_MESSAGE = (
-    "We could not confirm whether your success criteria were saved. Reload this "
-    "page to see the criteria your project currently holds before entering them "
-    "again.")
+    "We could not confirm whether your success criteria and measurement methods "
+    "were saved. Reload this page to see what your project currently holds "
+    "before entering them again.")
+SC_METHOD_TOO_LONG_MESSAGE = (
+    "A measurement method exceeds the 1000-character limit. No changes were saved.")
 _SC_STATUS_MESSAGE = {
     _SC_NO_PROJECT: (SC_NOT_SAVED_PROJECT_MESSAGE, 409),
     _SC_PLAN_UNAVAILABLE: (SC_PLAN_UNAVAILABLE_MESSAGE, 503),
@@ -7950,7 +7986,7 @@ def _current_criteria_context(sid):
         recon = None
     if recon is None or recon.review.level != 1 or recon.state is None:
         return _SC_PLAN_UNAVAILABLE, None
-    if not _attach_success_criteria(sid, recon.state):
+    if not _attach_planning_metadata(sid, recon.state):
         return _SC_CRITERIA_UNAVAILABLE, None
     try:
         plan = assemble_deliverable(recon.state)["section_11_prototype_test_plan"]
@@ -7959,26 +7995,31 @@ def _current_criteria_context(sid):
     return _SC_OK, plan
 
 
-def _resolve_criteria_write(sid, delta):
-    """Bounded confirm-by-reload after ``apply_success_criteria_delta`` RAISED.
+def _resolve_criteria_write(sid, delta, method_delta):
+    """Bounded confirm-by-reload after ``apply_planning_metadata_delta`` RAISED.
 
-    Reads the project's durable criteria and compares ONLY the submitted delta:
+    Reads the project's durable criteria AND measurement methods (both through
+    the store's IR-01 guard: an unresolved transaction is never read as
+    committed truth) and compares ONLY the COMPLETE submitted planning delta:
     a submitted text is confirmed iff ``durable[eid] == text``; a submitted
     deletion is confirmed iff ``eid`` is absent. Omitted ids take no part. The
-    requested state counts as saved only when EVERY submitted key matches; one
-    demonstrable mismatch means it was not saved; an unreadable durable state
-    leaves the outcome unknown. It never asks which attempt produced a value —
-    only whether the user's requested state is durably present now."""
+    requested state counts as saved only when EVERY submitted key of BOTH
+    concepts matches; one demonstrable mismatch means it was not saved; an
+    unreadable durable state of either concept leaves the outcome unknown. It
+    never asks which attempt produced a value — only whether the user's
+    requested state is durably present now."""
     try:
         durable = dict(_get_store().load_success_criteria(sid))
+        durable_methods = dict(_get_store().load_measurement_methods(sid))
     except Exception:
         return _SC_WRITE_UNKNOWN
-    for eid, text in delta.items():
-        if text is None:
-            if eid in durable:
+    for submitted, committed in ((delta, durable), (method_delta, durable_methods)):
+        for eid, text in submitted.items():
+            if text is None:
+                if eid in committed:
+                    return _SC_WRITE_NOT_SAVED
+            elif committed.get(eid) != text:
                 return _SC_WRITE_NOT_SAVED
-        elif durable.get(eid) != text:
-            return _SC_WRITE_NOT_SAVED
     return _SC_WRITE_SAVED
 
 
@@ -7989,8 +8030,11 @@ def _render_criteria(sid, plan, status=200, error=None, notice=None):
         sid=sid,
         experiments=None if plan is None else plan["items"],
         stale_notice=None if plan is None else plan.get("stale_criteria_notice"),
+        stale_methods=bool(plan and plan.get("stale_measurement_methods")),
         field_prefix=_CRITERION_FIELD_PREFIX,
+        method_prefix=_METHOD_FIELD_PREFIX,
         max_length=MAX_CRITERION_LENGTH,
+        method_max_length=MAX_MEASUREMENT_METHOD_LENGTH,
         # CF-2 Arabic-localization remainder: every message here is one of this
         # module's known English constants, registered in
         # `ui_text._MESSAGE_KEYS` (or copy already localized by
@@ -8031,15 +8075,20 @@ def save_success_criteria(sid):
         return _criteria_unavailable(sid, status)
     current_ids = {it["experiment_id"] for it in plan["items"]}
 
-    # Collect submitted criteria, namespaced by experiment_id. A field that is
-    # not submitted is not part of the delta and is never touched.
+    # Collect submitted criteria AND methods, each namespaced by experiment_id.
+    # A field that is not submitted is not part of the delta and is never
+    # touched.
     submitted = {name[len(_CRITERION_FIELD_PREFIX):]: val
                  for name, val in request.form.items()
                  if name.startswith(_CRITERION_FIELD_PREFIX)}
+    submitted_methods = {name[len(_METHOD_FIELD_PREFIX):]: val
+                         for name, val in request.form.items()
+                         if name.startswith(_METHOD_FIELD_PREFIX)}
 
-    # Validate the WHOLE delta before any write: an unknown or no-longer-current
-    # id, an over-limit value, or invalid text rejects the entire request.
-    for eid in submitted:
+    # Validate the WHOLE planning delta before any write: an unknown or
+    # no-longer-current id, an over-limit value, or invalid text in EITHER
+    # concept rejects the entire request.
+    for eid in list(submitted) + list(submitted_methods):
         if eid not in current_ids:
             return _render_criteria(
                 sid, plan, status=400,
@@ -8051,24 +8100,29 @@ def save_success_criteria(sid):
                 sid, plan, status=400,
                 error=f"A criterion exceeds the {MAX_CRITERION_LENGTH}-character "
                       "limit. No changes were saved.")
+    for raw in submitted_methods.values():
+        if len(raw.strip()) > MAX_MEASUREMENT_METHOD_LENGTH:
+            return _render_criteria(sid, plan, status=400,
+                                    error=SC_METHOD_TOO_LONG_MESSAGE)
     # CORRECTION-01 (F-03): the product's EXISTING invalid-free-text policy — an
     # embedded NUL anywhere is invalid input, rejected before persistence with
     # its bounded EN/AR copy. Nothing is stripped or rewritten.
     lang = _current_ui_lang()
-    for raw in submitted.values():
+    for raw in list(submitted.values()) + list(submitted_methods.values()):
         invalid = _free_text_error(raw, lang)
         if invalid is not None:
             return _render_criteria(sid, plan, status=400, error=invalid)
 
-    # Trim only; whitespace-only deletes that one criterion; an identical
+    # Trim only; whitespace-only deletes that one entry; an identical
     # resubmission is an idempotent upsert.
     delta = {eid: (raw.strip() or None) for eid, raw in submitted.items()}
+    method_delta = {eid: (raw.strip() or None) for eid, raw in submitted_methods.items()}
     try:
-        _get_store().apply_success_criteria_delta(sid, delta)
+        _get_store().apply_planning_metadata_delta(sid, delta, method_delta)
     except Exception:
         # CORRECTION-01 (F-04): never turn an UNKNOWN durable outcome into a
         # failure. Read the project back and decide from durable truth only.
-        outcome = _resolve_criteria_write(sid, delta)
+        outcome = _resolve_criteria_write(sid, delta, method_delta)
         if outcome == _SC_WRITE_NOT_SAVED:
             # Demonstrably not reflected; memory was never touched.
             return _render_criteria(sid, plan, status=503, error=SC_NOT_SAVED_MESSAGE)
@@ -8082,7 +8136,7 @@ def save_success_criteria(sid):
     # next load shows the committed values.
     try:
         entry = SESSION_STORE.get(sid)
-        if entry is not None and not _attach_success_criteria(sid, entry["state"]):
+        if entry is not None and not _attach_planning_metadata(sid, entry["state"]):
             return _render_criteria(sid, None, notice=SC_SAVED_NOT_SHOWN_MESSAGE)
         return redirect(url_for("show_deliverable", sid=sid))
     except Exception:

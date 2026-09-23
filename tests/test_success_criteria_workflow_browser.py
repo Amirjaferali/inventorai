@@ -152,10 +152,14 @@ def test_live_navigation_toggle_and_save_clear_preserve_semantics(server, _brows
         assert text('UI_SC_SAVE_CLEAR', lang) in target.locator('..').inner_text()
         assert target.get_attribute('maxlength') == '1000'
         form = page.locator('form[action$="/success-criteria"]')
+        # SLICE-02: each experiment card carries its criterion AND its
+        # inventor-written measurement method, in plan order.
         assert form.locator('input,textarea,select').evaluate_all('els => els.map(e => e.name)') == [
-            'csrf_token', *['criterion__' + eid for eid in ids]]
+            'csrf_token', *[name for eid in ids
+                            for name in ('criterion__' + eid, 'method__' + eid)]]
         target.fill('  Revised target هدف معدّل\nwith  spaces <tag>  ')
         page.locator('[name="criterion__' + ids[0] + '"]').fill('   ')
+        page.locator('[name="method__' + ids[1] + '"]').fill('  قياس بمسطرة <tag>  ')
         values = form.locator('textarea').evaluate_all('els => els.map(e => e.value)')
         requests.clear()
         for summary in page.locator('.experiment-context summary').all():
@@ -171,21 +175,30 @@ def test_live_navigation_toggle_and_save_clear_preserve_semantics(server, _brows
         expect(page).to_have_url(report_url)
         posts = [parse_qs(data, keep_blank_values=True) for method, _, data in requests if method == 'POST']
         assert len(posts) == 1
-        assert set(posts[0]) == {'csrf_token', *['criterion__' + eid for eid in ids]}
+        assert set(posts[0]) == {'csrf_token', *['criterion__' + eid for eid in ids],
+                                 *['method__' + eid for eid in ids]}
         assert ids[0] not in state.success_criteria
         # Native HTML form encoding normalizes textarea LF to CRLF; the route
         # trims only the submitted value and preserves its internal whitespace.
         submitted = posts[0]['criterion__' + ids[1]][0]
-        assert submitted == values[1].replace('\n', '\r\n')
+        # boxes alternate criterion / method per experiment: [2] is ids[1]'s criterion
+        assert submitted == values[2].replace('\n', '\r\n')
         assert state.success_criteria[ids[1]].criterion == submitted.strip()
         assert state.success_criteria[ids[2]].criterion == before['success_criteria'][ids[2]].criterion
-        assert {k: v for k, v in state.__dict__.items() if k != 'success_criteria'} == {
-            k: v for k, v in before.items() if k != 'success_criteria'}
+        # SLICE-02: the method typed in the real browser is saved as written
+        # (outer whitespace trimmed only); the other boxes were empty -> none.
+        assert {eid: mm.method for eid, mm in state.measurement_methods.items()} == {
+            ids[1]: 'قياس بمسطرة <tag>'}
+        planning = ('success_criteria', 'measurement_methods')
+        assert {k: v for k, v in state.__dict__.items() if k not in planning} == {
+            k: v for k, v in before.items() if k not in planning}
         # ...and the saved delta is the DURABLE truth, not only session memory.
         store = _durable_store()
         try:
             assert dict(store.load_success_criteria(sid)) == {
                 eid: sc.criterion for eid, sc in state.success_criteria.items()}
+            assert dict(store.load_measurement_methods(sid)) == {
+                ids[1]: 'قياس بمسطرة <tag>'}
         finally:
             store.close()
     finally:
@@ -213,7 +226,8 @@ def test_stale_fragment_leaves_current_form_usable_without_javascript(server, _b
         link.click()
         assert page.locator('#' + old_target).count() == 0
         assert page.locator('textarea:focus').count() == 0
-        assert page.locator('textarea').count() == len(_ids(state))
+        # one criterion box and one measurement-method box per current experiment
+        assert page.locator('textarea').count() == 2 * len(_ids(state))
         expect(page.locator('form[action$="/success-criteria"] button')).to_be_visible()
         assert state.success_criteria == {}
     finally:
