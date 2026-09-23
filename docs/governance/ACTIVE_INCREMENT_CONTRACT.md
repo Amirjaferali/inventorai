@@ -23,12 +23,132 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--post-pr-679-no-active-contract"></a>
-## Current authority — post-PR-#679: no active contract (2026-09-22)
+<a id="current-authority--stage-19-cap09-foundation-contract"></a>
+## Current authority — Stage 19 / WS-PFV-001 / CAP-09 planning foundation: entry contract only (Owner authorization, 2026-09-23)
 
-**ACTIVE CONTRACT: NONE.** Both Owner-authorized bounded Stage-18 / CAP-01 increments are
-delivered, and no successor implementation mandate has been authorized. Only the Owner may
-issue one; nothing in this file, the roadmap or the checklist fills the gap.
+**ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY.** The Owner has entered Stage 19
+for one purpose: recording the CAP-09 Experiment-Plan Designer FOUNDATION / CONTRACT. It covers
+this governance recording and the read-only assessment named at the end of this section. It
+authorizes **no** product, runtime, UI, schema, persistence, migration, domain or CI change.
+Nothing in this file, the roadmap or the checklist extends it.
+
+| | |
+|---|---|
+| **STAGE 19** | `ENTERED FOR FOUNDATION / CONTRACT WORK` · `COMPLETE: NO` — checkbox stays unticked |
+| **CAP-09 PRODUCT IMPLEMENTATION** | **NOT STARTED / NOT AUTHORIZED YET** |
+| **WS-PFV-001 DEPENDENCY 3** (Structured Technical Guidance product-implementation foundation) | **SATISFIED FOR PLANNING-ONLY CAP-09 ENTRY — nothing wider** |
+| **CANONICAL PLANNING OWNER** | **Section 11 "Prototype & Test Plan" + `SuccessCriterion`** |
+| **SCHEMA / PERSISTENCE IMPLEMENTATION** | **NOT AUTHORIZED — final schema NOT selected** |
+| **NEXT TECHNICAL ACTION (after contract acceptance)** | **READ-ONLY architecture / data-flow assessment** |
+| **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **PARTIAL** — unchanged |
+| **FULL CAP-01 / FULL STG** | `NOT AUTHORIZED / NOT IMPLEMENTED` — unchanged |
+| **FURTHER CAP-01 IMPLEMENTATION** | **NOT CURRENTLY AUTHORIZED** — unchanged |
+
+**1. Dependency 3 — ruled narrowly.** The Owner rules that WS-PFV-001 §7 dependency 3
+("Structured Technical Guidance product-implementation foundation") is **SATISFIED FOR
+PLANNING-ONLY CAP-09 ENTRY**. The basis is that PR #678 and PR #679 together form an STG
+product-implementation FOUNDATION. They do **not** complete CAP-01 or STG. The ruling does
+**NOT** satisfy dependency 3 for any broader WS-PFV-001 capability: validation, result
+capture, readiness, physical validation or status. Each of those still has to meet the
+dependency on its own terms and needs a separate Owner authorization. Dependencies 1 (formal
+D13 closure) and 2 (the Structured Invention Disclosure and Patent Export Owner Decision) were
+found satisfied in the read-only Stage-19 entry-readiness reconciliation. WS-PFV-001
+implementation beyond CAP-09 planning is not begun. Stage 18 remains PARTIAL / NOT COMPLETE.
+
+**2. What CAP-09 is, and never is.** CAP-09 is **PLANNING METADATA ONLY**. It must never
+execute a test, simulate, fabricate a result, record a validation outcome from a plan, promote
+readiness, claim scientific validity or replace specialist review. **Experiment PLAN ≠
+Evidence · Experiment PLAN ≠ Validation Result · Experiment PLAN ≠ Readiness.**
+
+**3. Canonical owner — existing owner first; produce once, consume many.** The existing
+canonical planning owner has two parts:
+
+- **Section 11 "Prototype & Test Plan"** (`_s11` in `engine/deliverable_assembler.py`): at
+  most three deterministic proposed experiments, each with a stable `experiment_id`, under a
+  plan-level non-execution note.
+- **`SuccessCriterion`** (`engine/idea_state.py`), keyed by `experiment_id`.
+
+CAP-09 **must extend and consume these**. It gets no parallel experiment store, no parallel
+experiment engine, and no duplicate evidence, validation or readiness ownership (roadmap §8C;
+checklist §L.14–23).
+
+**4. First-slice target fields — recorded, not implemented.**
+
+| Field | Rule |
+|---|---|
+| Hypothesis | Framed only from an existing canonical / verbatim source; never generated. |
+| Variable | Never inferred from free text; explicit user input where no canonical source exists. |
+| Measurement method | Never invented; explicit user input until governed Domain Capability Profiles (WS-PFV-001 §9) exist. |
+| Success criterion | Extends / reuses `SuccessCriterion`. |
+| Failure / revision criterion | Reuses the Section-11 `failure_or_revision_condition` precedent where truthful; otherwise explicit user input. |
+| Required evidence / result category | Existing canonical evidence-category metadata only. A planned result is NOT Evidence. |
+| Execution state | Explicit `NOT EXECUTED / NO RESULT RECORDED`. |
+
+Per-experiment risk is **NOT** in the first slice. The exception is an existing canonical risk
+owner that can be consumed without duplication.
+
+**5. Durability requirement — recorded; schema NOT selected.** New user-authored CAP-09
+planning metadata **MUST be durable before it is presented as a saved-project capability**.
+
+- Today `SuccessCriterion` is session-only: `record_store`, `record_contract` and
+  `session_reconstruction` do not carry it. That makes it a SEMANTICS precedent, not the
+  final durability model.
+- No further session-only user-input planning fields may be added as permanent product
+  architecture.
+- No parallel experiment database or store may be created.
+
+The next architecture assessment must find the **smallest extension of the EXISTING
+saved-project / record-reconstruction architecture**. This contract does NOT select the final
+schema, and schema / persistence implementation is NOT authorized.
+
+**6. WS-PFV / CAP-09 separation.** The first CAP-09 slice excludes all of the following:
+
+- feasibility status levels (WS-PFV-001 §5);
+- prototype readiness;
+- evidence or test-result capture;
+- `PASS / PARTIAL / FAIL / INCONCLUSIVE`;
+- corrective action or retest;
+- version history;
+- validation reporting;
+- physical-test evidence;
+- readiness promotion.
+
+**7. Multi-domain boundary.** CAP-09 and WS-PFV-001 stay domain-independent (WS-PFV-001 §3).
+There is no `WS-PFV == electronics` invariant and no `CAP-09 == electronics` invariant.
+`mechanical` remains an ACTIVE InventorAI domain. Domain content arrives later, and only
+through separately governed Domain Capability Profiles (WS-PFV-001 §9–§10). No new domain is
+activated.
+
+**8. Preserved, unchanged.**
+
+- `STAGE 18: STARTED / PARTIAL / NOT COMPLETE` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED`
+- `STAGE 11 / A2: DEFERRED / UNDISCHARGED`
+- `STAGE 15 (IRL): PRESERVED — MUST NOT BE LOST`
+- `T2-E: DEFERRED` — its wider evidence-writer direction
+- Stages 20–27 stay preserved, not entered and not authorized; no other Stage becomes
+  authorized.
+- `D13 RESEARCH: REMAINS CLOSED`
+- `CI OPTIMIZATION: PLANNED / NOT IMPLEMENTED / SEPARATE` — CI is not modified.
+- `DEPLOYMENT: NOT AUTHORIZED` · `PUBLIC RELEASE: NOT AUTHORIZED` · `PAID ACTIVATION: NOT
+  AUTHORIZED`
+
+**9. Next technical action.** After Owner / Lead acceptance of this contract, the next step is
+a **READ-ONLY architecture / data-flow assessment**. It looks for the smallest durable
+extension of the existing Section-11 / `SuccessCriterion` planning owner inside the existing
+saved-project / record-reconstruction architecture, and it mutates nothing. Any later step in
+the WS-PFV-001 §11 flow (Contract → UX and state model → BASE RED → implementation → GREEN …)
+needs its own explicit Owner authorization.
+
+<a id="current-authority--post-pr-679-no-active-contract"></a>
+## Current authority — post-PR-#679: no active contract (2026-09-22) — SUPERSEDED (2026-09-23) by the Stage-19 entry contract
+
+**No longer the current authority.** The Stage-19 / CAP-09 foundation contract above replaced
+this declaration on 2026-09-23. Its Stage-18 facts remain true and are carried into that
+section. *(Superseded 2026-09-23, preserved so the change is visible rather than silent: this
+opened "**ACTIVE CONTRACT: NONE.** Both Owner-authorized bounded Stage-18 / CAP-01 increments
+are delivered, and no successor implementation mandate has been authorized. Only the Owner may
+issue one; nothing in this file, the roadmap or the checklist fills the gap." That was true
+until the Owner's Stage-19 entry-contract authorization.)*
 
 | | |
 |---|---|
@@ -43,8 +163,10 @@ separately authorized architecture/data-model decision that provides trustworthy
 technical-parameter inputs. No such data model exists or is created here, and free-text
 inspection is not a substitute for one.
 
-**Unchanged.** No successor Stage is started — Stage 19 is not begun and Stages 19–27 stay
-preserved, not entered and not authorized. Mechanical stays ACTIVE with no CAP-01 profile.
+**Unchanged.** Stage 19 is now entered for foundation / contract work only (section above), and
+Stages 20–27 stay preserved, not entered and not authorized. *(Superseded 2026-09-23, preserved
+— was: "No successor Stage is started — Stage 19 is not begun and Stages 19–27 stay preserved,
+not entered and not authorized.")* Mechanical stays ACTIVE with no CAP-01 profile.
 `D13 RESEARCH: REMAINS CLOSED`. `DEPLOYMENT: NOT AUTHORIZED` · `PUBLIC RELEASE: NOT
 AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED`.
 
@@ -53,8 +175,9 @@ AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED`.
 
 **SECOND BOUNDED CAP-01 INCREMENT — RESEARCH-DIRECTION ADDENDUM — DELIVERED.**
 `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753`. This
-was the live mandate until PR #679 merged; it is now delivered history, and `ACTIVE
-CONTRACT: NONE` is recorded in the section above. *(Superseded 2026-09-22, preserved — this
+was the live mandate until PR #679 merged; it is now delivered history. The current authority
+is the Stage-19 / CAP-09 foundation contract at the top of this file. *(Superseded 2026-09-23,
+preserved — this ended "and `ACTIVE CONTRACT: NONE` is recorded in the section above.")* *(Superseded 2026-09-22, preserved — this
 opened "**ACTIVE CONTRACT: Stage 18 / CAP-01 SECOND BOUNDED INCREMENT — RESEARCH-DIRECTION
 ADDENDUM.** … This is the live mandate.")* It rests on the Owner-accepted
 read-only Stage-18 remainder adjudication (verdict **B — only a very narrow class-general
@@ -97,7 +220,9 @@ NOT AUTHORIZED` · `PUBLIC RELEASE: NOT AUTHORIZED` · `PAID ACTIVATION: NOT AUT
 **FIRST BOUNDED CAP-01 INCREMENT — `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3`.** The Owner
 authorized ONE bounded, deterministic, presentation-only CAP-01 / Structured Technical
 Guidance increment. It is delivered, and so is the second bounded increment recorded above
-(PR #679); every product boundary below remained binding on it. `ACTIVE CONTRACT: NONE`.
+(PR #679); every product boundary below remained binding on it. *(Superseded 2026-09-23,
+preserved — this ended "`ACTIVE CONTRACT: NONE`."; the current authority is the Stage-19 /
+CAP-09 foundation contract at the top of this file.)*
 *(Superseded 2026-09-22, preserved so the change is visible rather than silent: this opened
 "**ACTIVE CONTRACT: Stage 18 / CAP-01 FIRST BOUNDED IMPLEMENTATION INCREMENT.** The Owner
 authorizes ONE bounded, deterministic, presentation-only CAP-01 / Structured Technical
@@ -263,6 +388,13 @@ section above; the stage is ENTERED as fact. `FIRST BOUNDED CAP-01 INCREMENT:
 OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
 `D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
 unticked** — one authorized bounded slice is not the stage.
+**Also ENTERED, for foundation / contract work only: Stage 19 — WS-PFV-001 / CAP-09
+Experiment-Plan Designer.** `ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY` ·
+`STAGE 19: ENTERED FOR FOUNDATION / CONTRACT WORK` · `CAP-09 PRODUCT IMPLEMENTATION: NOT
+STARTED / NOT AUTHORIZED YET`. Section 11 + `SuccessCriterion` stay the canonical planning
+owner. Schema / persistence implementation is not authorized. The next technical action after
+contract acceptance is a READ-ONLY architecture / data-flow assessment. The Stage-19 checkbox
+stays unticked, and entering Stage 19 completes nothing in Stage 18.
 **Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and
 `STAGE 11 STARTED: NO`. It was routed PAST, not completed, and **routing past a deferred
 stage never completes it**. Its existing authorization conditions stand: reuse valid prior
