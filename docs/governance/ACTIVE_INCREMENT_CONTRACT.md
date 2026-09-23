@@ -89,7 +89,11 @@ per-experiment risk. Generated or suggested methods, units inference, parameter 
 and typed variables. Experiment execution, result, Evidence or validation capture, readiness
 promotion, PASS / PARTIAL / FAIL / INCONCLUSIVE behaviour, prototype version history and a
 corrective / retest subsystem. No Domain Capability Profile, no new domain, no CAP-01 or T2-E
-expansion and no AI / provider work. F-09 stays deferred.
+expansion and no AI / provider work. F-09 was not part of SLICE-02; the Owner separately
+authorized ONE bounded F-09 planning-form recovery fix: a refused planning submission re-shows
+the inventor's own drafts, explicitly unsaved and never written, the limit guidance states
+that each line break counts as two characters, and durable line endings are unchanged.
+*(Superseded 2026-09-23, preserved — this ended "F-09 stays deferred.")*
 
 **Preserved.** `STAGE 11 / A2: DEFERRED / UNDISCHARGED` · `STAGE 15 (IRL): PRESERVED — MUST
 NOT BE LOST` · `T2-E: DEFERRED` · `CI OPTIMIZATION: SEPARATE / NOT IMPLEMENTED` · `D13
