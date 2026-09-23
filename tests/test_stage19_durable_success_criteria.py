@@ -497,9 +497,9 @@ def test_13_failure_between_mutations_rolls_back_everything(client, monkeypatch)
 def test_14_post_commit_failure_is_never_reported_as_not_saved(client, monkeypatch, failure):
     sid = _journey(client)
     ids = _live_ids(sid)
-    originals = (webapp._attach_success_criteria, webapp.redirect)
+    originals = (webapp._attach_planning_metadata, webapp.redirect)
     if failure == "publication":
-        real = webapp._attach_success_criteria
+        real = webapp._attach_planning_metadata
         calls = {"n": 0}
 
         def attach(sid_, state):
@@ -508,7 +508,7 @@ def test_14_post_commit_failure_is_never_reported_as_not_saved(client, monkeypat
             calls["n"] += 1
             return False if calls["n"] == 2 else real(sid_, state)
 
-        monkeypatch.setattr(webapp, "_attach_success_criteria", attach)
+        monkeypatch.setattr(webapp, "_attach_planning_metadata", attach)
     else:
         def broken_redirect(*a, **k):
             raise RuntimeError("injected redirect failure")
@@ -520,7 +520,7 @@ def test_14_post_commit_failure_is_never_reported_as_not_saved(client, monkeypat
     assert SAVED_NOT_SHOWN in body and NOT_SAVED not in body
     # Restore ONLY what this test replaced (monkeypatch.undo() would also
     # revert the conftest per-test database path).
-    monkeypatch.setattr(webapp, "_attach_success_criteria", originals[0])
+    monkeypatch.setattr(webapp, "_attach_planning_metadata", originals[0])
     monkeypatch.setattr(webapp, "redirect", originals[1])
     _restart()
     items = _reopened_items(sid)
@@ -951,7 +951,7 @@ def test_31_a_bad_row_never_yields_a_partial_attachment(client):
     carrier = {"prior": SuccessCriterion("carrier before")}
     state = SESSION_STORE[sid]["state"]
     state.success_criteria = dict(carrier)
-    assert webapp._attach_success_criteria(sid, state) is False
+    assert webapp._attach_planning_metadata(sid, state) is False
     assert state.success_criteria == carrier             # untouched, not the good subset
 
 
@@ -1287,11 +1287,11 @@ def test_f04_c_f_unreadable_outcome_is_unknown_and_memory_untouched(client, monk
             raise sqlite3.OperationalError("injected: database is locked")
         return real_load(self, project_id)
 
-    def failing_apply(self, project_id, delta):
+    def failing_apply(self, project_id, delta, method_delta):
         raise sqlite3.OperationalError("injected: disk I/O error")
 
     monkeypatch.setattr(SqliteRecordStore, "load_success_criteria", load)
-    monkeypatch.setattr(SqliteRecordStore, "apply_success_criteria_delta", failing_apply)
+    monkeypatch.setattr(SqliteRecordStore, "apply_planning_metadata_delta", failing_apply)
     r = _post_criteria(client, sid, {ids[0]: "outcome cannot be known"})
     body = html.unescape(r.get_data(as_text=True))
     assert r.status_code == 503 and OUTCOME_UNKNOWN in body
@@ -1306,10 +1306,10 @@ def test_f04_partial_match_is_not_confirmed_as_saved(client, monkeypatch):
     ids = _live_ids(sid)
     _post_criteria(client, sid, {ids[0]: "already there"})
 
-    def failing_apply(self, project_id, delta):
+    def failing_apply(self, project_id, delta, method_delta):
         raise sqlite3.OperationalError("injected: failed before commit")
 
-    monkeypatch.setattr(SqliteRecordStore, "apply_success_criteria_delta", failing_apply)
+    monkeypatch.setattr(SqliteRecordStore, "apply_planning_metadata_delta", failing_apply)
     r = _post_criteria(client, sid, {ids[0]: "already there", ids[1]: "never written"})
     assert r.status_code == 503 and NOT_SAVED in html.unescape(r.get_data(as_text=True))
     assert _durable(sid) == {ids[0]: "already there"}
@@ -1379,8 +1379,11 @@ def test_f04_confirmation_rule_compares_only_the_submitted_delta(monkeypatch, du
         def load_success_criteria(self, project_id):
             return tuple(durable.items())
 
+        def load_measurement_methods(self, project_id):
+            return ()
+
     monkeypatch.setattr(webapp, "_get_store", lambda: _Store())
-    assert webapp._resolve_criteria_write("p", delta) == expected
+    assert webapp._resolve_criteria_write("p", delta, {}) == expected
 
 
 def test_f04_confirmation_rule_unreadable_durable_state_is_unknown(monkeypatch):
@@ -1388,8 +1391,11 @@ def test_f04_confirmation_rule_unreadable_durable_state_is_unknown(monkeypatch):
         def load_success_criteria(self, project_id):
             raise SuccessCriterionCorrupt("malformed")
 
+        def load_measurement_methods(self, project_id):
+            return ()
+
     monkeypatch.setattr(webapp, "_get_store", lambda: _Store())
-    assert webapp._resolve_criteria_write("p", {"a": "x"}) == "unknown"
+    assert webapp._resolve_criteria_write("p", {"a": "x"}, {}) == "unknown"
 
 
 # ==========================================================================

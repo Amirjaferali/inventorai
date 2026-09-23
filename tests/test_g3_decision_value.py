@@ -536,6 +536,82 @@ _MG8_ASSEMBLER_SUBSTITUTIONS = (
 )
 
 
+# Stage 19 / CAP-09 SLICE-02 bounded pin amendment (Owner authorization "STAGE 19 /
+# CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD", §6: bounded changes
+# to engine/deliverable_assembler.py ONLY as required to introduce and resolve the
+# Measurement Method planning field, so Section 11 stays composed in ONE place).
+# The EXHAUSTIVE, ordered table of additional replacements over the A-20/A-21 pin,
+# applied AFTER the MG-8 table. The guard still demands byte-equality, so any
+# assembler change outside this table fails exactly as before. Not a newer
+# baseline and not a broad exemption.
+# Previous behaviour: Section-11 items carried no inventor-written method.
+# New behaviour: an experiment WITH a recorded method gains `measurement_method`
+# and `measurement_method_provenance`; the plan gains `stale_measurement_methods`
+# ONLY when a stale method exists. Items without a method, experiment identity,
+# ordering, source priority, `what_to_observe` and every other field are
+# byte-identical to the pin.
+_CAP09_S02_ASSEMBLER_SUBSTITUTIONS = (
+    (  # [1]
+        '    return stale\n'
+        '_PLAN_STOPWORDS = {\n',
+        '    return stale\n'
+        '\n'
+        '\n'
+        'def _resolve_measurement_method(exp, eid, state):\n'
+        '    """Stage 19 / CAP-09 SLICE-02: attach the inventor\'s OWN measurement method\n'
+        '    for this experiment (state.measurement_methods[eid]) when one is recorded.\n'
+        '    Additive only when present: an experiment without one gains no key, so its\n'
+        '    item is unchanged. Never generated, inferred from the source or from\n'
+        '    ``what_to_observe``, combined with it, interpreted or graded."""\n'
+        '    user = (getattr(state, "measurement_methods", None) or {}).get(eid)\n'
+        '    text = (getattr(user, "method", "") or "").strip() if user else ""\n'
+        '    if text:\n'
+        '        exp["measurement_method"] = text\n'
+        '        exp["measurement_method_provenance"] = getattr(user, "provenance", "user_defined")\n'
+        '\n'
+        '\n'
+        'def _stale_measurement_methods(state, current_ids):\n'
+        '    """User methods whose experiment_id is no longer generated. Preserved and\n'
+        '    surfaced honestly; never reattached elsewhere. Deterministic (dict order)."""\n'
+        '    stale = []\n'
+        '    for eid, mm in (getattr(state, "measurement_methods", None) or {}).items():\n'
+        '        if eid in current_ids:\n'
+        '            continue\n'
+        '        txt = (getattr(mm, "method", "") or "").strip()\n'
+        '        if txt:\n'
+        '            stale.append({"experiment_id": eid, "measurement_method": txt,\n'
+        '                          "provenance": getattr(mm, "provenance", "user_defined")})\n'
+        '    return stale\n'
+        '_PLAN_STOPWORDS = {\n'),
+    (  # [2]
+        '        _resolve_success_criterion(exp, eid, source_text, state)\n',
+        '        _resolve_success_criterion(exp, eid, source_text, state)\n'
+        '        _resolve_measurement_method(exp, eid, state)\n'),
+    (  # [3]
+        '    stale = _stale_success_criteria(state, {it["experiment_id"] for it in items})\n'
+        '    return {\n',
+        '    current_ids = {it["experiment_id"] for it in items}\n'
+        '    stale = _stale_success_criteria(state, current_ids)\n'
+        '    plan = {\n'),
+    (  # [4]
+        '                "criteria.",\n'
+        '    }\n'
+        '\n'
+        '\n'
+        'def _now_iso():\n',
+        '                "criteria.",\n'
+        '    }\n'
+        '    # SLICE-02: additive only when a stale inventor method exists.\n'
+        '    stale_methods = _stale_measurement_methods(state, current_ids)\n'
+        '    if stale_methods:\n'
+        '        plan["stale_measurement_methods"] = stale_methods\n'
+        '    return plan\n'
+        '\n'
+        '\n'
+        'def _now_iso():\n'),
+)
+
+
 def test_a20_a21_dw_lane_and_assembler_untouched():
     import subprocess
     base = "f96c1900a0f5d0831a7654223ae4e008d4df961e"
@@ -569,6 +645,11 @@ def test_a20_a21_dw_lane_and_assembler_untouched():
     for _old, _new in _MG8_ASSEMBLER_SUBSTITUTIONS:
         assert expected.count(_old) == 1, (
             "an authorized MG-8 anchor is missing or no longer unique")
+        expected = expected.replace(_old, _new)
+    # Stage 19 / CAP-09 SLICE-02 bounded amendment: the same rule, applied after.
+    for _old, _new in _CAP09_S02_ASSEMBLER_SUBSTITUTIONS:
+        assert expected.count(_old) == 1, (
+            "an authorized SLICE-02 anchor is missing or no longer unique")
         expected = expected.replace(_old, _new)
     with open(os.path.join(root, "engine", "deliverable_assembler.py"),
               encoding="utf-8") as fh:

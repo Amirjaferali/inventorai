@@ -20,6 +20,7 @@ notably LQ-09/LQ-10/TQ-07) and separate Owner acceptance.
 | Auth sessions | Signed cookie (client) + server-side epoch/idle/absolute checks; no session rows | YES |
 | Projects / records (user invention content) | Durable SQLite (`projects`, `records`) | YES |
 | Prototype & Test Plan success criteria (user-authored planning targets; Stage 19 / CAP-09 IMPLEMENTATION-01) | Durable SQLite (`prototype_plan_metadata`) — ONE current value per project and experiment: an edit replaces the text and clearing the box removes that row; no history is kept | YES |
+| Prototype & Test Plan measurement methods (user-written descriptions of how the inventor plans to measure or check an experiment; Stage 19 / CAP-09 SLICE-02) | Durable SQLite (`prototype_measurement_methods`) — ONE current value per project and experiment: an edit replaces the text and clearing the box removes that row; no history is kept | YES |
 | Audit / commercial scaffolding (`access_audit`, `commercial_audit`, lifecycle, dedupe, usage) | Durable SQLite, append-only; NO live billing data | Partly |
 | Auth rate-limit counters | Durable SQLite (`auth_rate_limits`) — privacy-digest keys, no raw email | NO |
 | Outbound email outbox (OD-INFRA-6) | Durable SQLite (`email_outbox`) — recipient address + token-bearing verification/reset body, TRANSIENT: deleted on confirmed provider acceptance, scrubbed (recipient/subject/body nulled) when the bounded retry budget is exhausted; never logged, never exported | YES (while pending) |
@@ -47,12 +48,17 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
   from the `email_outbox` table the moment the provider confirms acceptance
   (`mark_email_delivered`). The outbox row is a transient carrier for a token-bearing message;
   deleting it promptly is operational message cleanup and decides no user-data retention rule.
-* One USER-INITIATED removal exists (Stage 19 / CAP-09 IMPLEMENTATION-01). When the owner of
-  a project clears one of their own Prototype & Test Plan success criteria, that single
+* One USER-INITIATED kind of removal exists (Stage 19 / CAP-09 IMPLEMENTATION-01). When the
+  owner of a project clears one of their own Prototype & Test Plan success criteria, that single
   current-value row is removed from `prototype_plan_metadata`; editing it replaces the text in
   place. This is the owner editing their own planning metadata. It is NOT an automatic
   deletion, NOT an erasure capability and NOT account or project erasure, and it decides no
   retention rule. Earlier values may persist in backups exactly like every other row.
+  SLICE-02 (Stage 19 / CAP-09) extends the same user-initiated behaviour, unchanged in kind,
+  to the owner's own Prototype & Test Plan measurement methods: clearing one removes that single
+  current-value row from `prototype_measurement_methods`, and editing it replaces the text in
+  place. It is likewise NOT an automatic deletion, NOT an erasure capability and NOT account
+  or project erasure; it decides no retention rule, and earlier values may persist in backups.
 * Browser drafts expire client-side after a 7-day lazy TTL (`web/static/js/local_draft.js`,
   `TTL_MS = 7 days`) — a client mechanism, not a server retention rule.
 * Self-service export is project-scoped only (P10-D3a); account-wide export DEFERRED (OD-DR2).

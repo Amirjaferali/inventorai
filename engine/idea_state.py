@@ -282,6 +282,23 @@ class SuccessCriterion:
 
 
 @dataclass
+class MeasurementMethod:
+    """
+    Stage 19 / CAP-09 SLICE-02: the inventor's OWN description of HOW they plan
+    to measure or check one proposed Prototype & Test Plan experiment. Planning
+    metadata ONLY: never a measurement, a result, Evidence, a validation outcome
+    or readiness; never generated, inferred, interpreted or graded; never read
+    by progression or maturity; never written to the ILT-002 transcript.
+    Distinct from the system-provided ``what_to_observe`` context, which it
+    never replaces or combines with. Keyed in IdeaState.measurement_methods by
+    the experiment's stable experiment_id. provenance records that the inventor
+    authored it.
+    """
+    method     : str
+    provenance : str = "user_defined"
+
+
+@dataclass
 class IterationLog:
     iteration       : int
     gap_targeted    : str
@@ -349,6 +366,11 @@ class IdeaState:
     # eagerly (no `from __future__ import annotations`), so the parameterized
     # form is safe — matching the Gap.evidence: list[Evidence] precedent.
     success_criteria : dict[str, SuccessCriterion] = field(default_factory=dict)
+
+    # Stage 19 / CAP-09 SLICE-02: per-experiment inventor-written measurement
+    # methods (planning metadata only), keyed like success_criteria. Default
+    # empty; same boundaries as success_criteria above.
+    measurement_methods : dict[str, MeasurementMethod] = field(default_factory=dict)
 
     # Increment 2 append-only interaction/assertion ledger. Distinct from the
     # legacy compatibility fields (known_problem/known_mechanism/gaps/maturity):

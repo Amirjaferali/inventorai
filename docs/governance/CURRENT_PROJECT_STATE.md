@@ -6,20 +6,23 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-23): Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (durable SuccessCriterion remediation only).**
+**Current position (2026-09-23): Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 durable user-written measurement method only).**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
 not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
 complete nothing beyond themselves. **No further CAP-01 implementation is currently
-authorized.** `ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION —
-IMPLEMENTATION-01 ONLY` · `STAGE 19: ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION:
-DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 / CORRECTION-01` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001:
-NOT AUTHORIZED`. Section 11 + `SuccessCriterion` stay the canonical planning owner; the
-remediation only makes the EXISTING criterion durable in the same project store. Editing it
-needs no writable progression state, and planning-metadata corruption does not govern core
-progression. No other Stage is authorized. Project-specific
+authorized.** `ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 —
+DURABLE USER-WRITTEN MEASUREMENT METHOD ONLY` · `STAGE 19: ENTERED / NOT COMPLETE` ·
+`AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD` ·
+`DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682` · `FULL CAP-09: NOT AUTHORIZED` ·
+`FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 + `SuccessCriterion` stay the canonical planning
+owner. The delivered remediation made the EXISTING criterion durable in the same project
+store; SLICE-02 adds ONE inventor-written measurement method per existing experiment,
+durable in a narrowly typed sibling sidecar of the same store. Editing either needs no
+writable progression state, and planning-metadata corruption does not govern core
+progression. Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED. No other Stage is authorized. Project-specific
 CAP-01 behaviour returns only with a separately authorized architecture/data-model decision
 providing trustworthy typed technical-parameter inputs. The delivered mandates, their
 boundaries and the first authorized domain guidance profile (`electronics_electrical` only)
@@ -30,6 +33,13 @@ InventorAI domain that simply has no authorized CAP-01 profile yet.** Cross-stag
 capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
 operating practice — they add no Stage, gate or approval step.
 <!-- END CURRENT-BLOCK: current-position -->
+
+*(Superseded 2026-09-23 by SLICE-02, preserved so the change is visible rather than silent:
+the current-position entry read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION
+REMEDIATION — IMPLEMENTATION-01 ONLY` · … `AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION
+REMEDIATION — IMPLEMENTATION-01 / CORRECTION-01`" and "(durable SuccessCriterion remediation
+only)". That was true until PR #682 delivered the remediation and the Owner authorized
+SLICE-02.)*
 
 *(Superseded 2026-09-23 by CORRECTION-01, preserved: the current-position entry named
 "`AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION ONLY`".)*

@@ -2,11 +2,12 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01
+**ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD
 ONLY.** Stage 19 (WS-PFV-001 / CAP-09 Experiment-Plan Designer) is ENTERED / NOT COMPLETE.
-The only authorized implementation is the durable SuccessCriterion remediation
-(IMPLEMENTATION-01 / CORRECTION-01): the EXISTING Section-11 `SuccessCriterion` becomes
-durable in the same project store. Full CAP-09 and full
+The durable SuccessCriterion remediation (IMPLEMENTATION-01 / CORRECTION-01) is delivered
+(PR #682). The only authorized implementation is CAP-09 SLICE-02: one inventor-written
+measurement method per existing Section-11 experiment, durable in the same project store.
+Full CAP-09 and full
 WS-PFV-001 are NOT AUTHORIZED. Any other product, readiness, governance or automation work
 requires a new explicit Owner authorization.
 docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the delivered
@@ -15,6 +16,12 @@ authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CA
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized, and
 deployment, public release and paid activation remain NOT AUTHORIZED.
+
+*(Superseded 2026-09-23, preserved so the change is visible rather than silent: this opened
+"**ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01
+ONLY.** … The only authorized implementation is the durable SuccessCriterion remediation
+(IMPLEMENTATION-01 / CORRECTION-01)". That was true until PR #682 delivered it and the Owner
+authorized SLICE-02.)*
 
 *(Superseded 2026-09-23, preserved so the change is visible rather than silent: this opened
 "**ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY.** … CAP-09 product
