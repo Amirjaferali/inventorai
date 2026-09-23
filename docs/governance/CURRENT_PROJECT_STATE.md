@@ -6,19 +6,19 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-23): Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL); Stage 19 — WS-PFV-001 / CAP-09 entered for foundation / contract work only.**
+**Current position (2026-09-23): Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (durable SuccessCriterion remediation only).**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
 not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
 complete nothing beyond themselves. **No further CAP-01 implementation is currently
-authorized.** `ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY` · `STAGE 19:
-ENTERED FOR FOUNDATION / CONTRACT WORK` · `CAP-09 PRODUCT IMPLEMENTATION: NOT STARTED / NOT
-AUTHORIZED YET`. Section 11 + `SuccessCriterion` stay the canonical planning owner, and
-schema / persistence implementation is not authorized. The next technical action after
-contract acceptance is a READ-ONLY architecture / data-flow assessment. No other Stage is
-authorized. Project-specific
+authorized.** `ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION —
+IMPLEMENTATION-01 ONLY` · `STAGE 19: ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION:
+DURABLE SUCCESS-CRITERION REMEDIATION ONLY` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001:
+NOT AUTHORIZED`. Section 11 + `SuccessCriterion` stay the canonical planning owner; the
+remediation only makes the EXISTING criterion durable in the same project store. No other
+Stage is authorized. Project-specific
 CAP-01 behaviour returns only with a separately authorized architecture/data-model decision
 providing trustworthy typed technical-parameter inputs. The delivered mandates, their
 boundaries and the first authorized domain guidance profile (`electronics_electrical` only)
@@ -29,6 +29,11 @@ InventorAI domain that simply has no authorized CAP-01 profile yet.** Cross-stag
 capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
 operating practice — they add no Stage, gate or approval step.
 <!-- END CURRENT-BLOCK: current-position -->
+
+*(Superseded 2026-09-23, preserved so the change is visible rather than silent: the
+current-position entry read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY` ·
+`STAGE 19: ENTERED FOR FOUNDATION / CONTRACT WORK` · `CAP-09 PRODUCT IMPLEMENTATION: NOT
+STARTED / NOT AUTHORIZED YET`". That was true until the Owner authorized IMPLEMENTATION-01.)*
 
 *(Superseded 2026-09-23, preserved so the change is visible rather than silent: the
 current-position entry read "`ACTIVE CONTRACT: NONE` — **no further CAP-01 implementation is
@@ -105,11 +110,15 @@ PRs #647–#652; they are not wrong about what they recorded, only incomplete.
 - **A1 is completed work, not the current mandate.** *(Superseded 2026-09-21, preserved so
   the change is visible rather than silent: this read "`ACTIVE CONTRACT: NONE` stands;
   CLAUDE.md has been corrected to match." That was accurate at this synchronization cut.)*
-  **As present truth the active contract is the Stage-19 / CAP-09 FOUNDATION CONTRACT
-  ONLY** — the two bounded Stage-18 / CAP-01 increments authorized after this cut are both
-  delivered (PR #678, PR #679), and CAP-09 product implementation is not authorized; see
+  **As present truth the active contract is the Stage-19 / CAP-09 durable SuccessCriterion
+  remediation — IMPLEMENTATION-01 only** — the two bounded Stage-18 / CAP-01 increments
+  authorized after this cut are both delivered (PR #678, PR #679), and full CAP-09 is not
+  authorized; see
   ACTIVE_INCREMENT_CONTRACT.md and the current-position block at the head of this file. A1
   remains completed work either way.
+  *(Superseded 2026-09-23, preserved — was: "As present truth the active contract is the
+  Stage-19 / CAP-09 FOUNDATION CONTRACT ONLY — … CAP-09 product implementation is not
+  authorized".)*
   *(Superseded 2026-09-23, preserved — was: "As present truth `ACTIVE CONTRACT: NONE` again —
   … no successor mandate exists".)*
   *(Superseded 2026-09-22, preserved — was: "As present truth an active bounded contract

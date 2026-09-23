@@ -2,6 +2,10 @@
 
 Synthetic render cases do not claim engine eligibility. Live journeys use the
 existing isolated DB and single-thread server fixture; no production JS is added.
+Stage 19 / CAP-09: the criteria routes validate against CURRENT durable project
+truth, so each live journey is a REAL saved project started and answered through
+the browser against the live server (its SQLite store lives on the server
+thread); the test thread reads the durable rows through its own connection.
 """
 import copy
 import os
@@ -11,11 +15,34 @@ from urllib.parse import parse_qs
 import pytest
 from playwright.sync_api import expect
 
-from engine.idea_state import SuccessCriterion
-from tests.test_draft_l2_local_continuity import server, _browser
+from engine.record_store import SqliteRecordStore
+from tests.test_draft_l2_local_continuity import server, _browser, _start
 from tests.test_increment_6_deliverable_redesign import render_criteria_workflow_case
-from tests.test_success_criteria import _seed, _ids
+from tests.test_stage19_durable_success_criteria import (
+    ELEC_ANSWERS, ELEC_DISPLACING_ANSWER, ELEC_IDEA)
+from tests.test_success_criteria import _ids
+from web.app import SESSION_STORE
 from web.ui_text import text
+
+
+def _answer_in_browser(page, base, sid, response):
+    page.goto(base + f'/session/{sid}')
+    page.fill('#response', response)
+    page.locator('#answer-form button[type=submit]').click()
+    page.wait_for_load_state()
+
+
+def _browser_project(page, base, answers=ELEC_ANSWERS):
+    """A REAL saved project: /start and every answer go through the browser."""
+    sid = _start(page, base, ELEC_IDEA)
+    for response in answers:
+        _answer_in_browser(page, base, sid, response)
+    return sid, SESSION_STORE[sid]['state']
+
+
+def _durable_store():
+    """A SEPARATE connection to the same database, owned by the test thread."""
+    return SqliteRecordStore(os.environ['INVENTORAI_DB_PATH'])
 
 
 @pytest.mark.parametrize('lang,width', [('en', 1280), ('ar', 1280), ('en', 360), ('ar', 360)])
@@ -79,11 +106,18 @@ def test_context_native_accessibility_and_exact_text_without_javascript(_browser
 @pytest.mark.parametrize('lang', ['en', 'ar'])
 @pytest.mark.parametrize('javascript', [False, True])
 def test_live_navigation_toggle_and_save_clear_preserve_semantics(server, _browser, lang, javascript):
-    sid, state = _seed()
+    setup = _browser.new_context()
+    try:
+        sid, state = _browser_project(setup.new_page(), server)
+    finally:
+        setup.close()
     ids = _ids(state)
-    for i, eid in enumerate(ids):
-        state.success_criteria[eid] = SuccessCriterion(f'existing {i} العربية <tag>')
-    before = copy.deepcopy(state.__dict__)
+    store = _durable_store()
+    try:
+        store.apply_success_criteria_delta(
+            sid, {eid: f'existing {i} العربية <tag>' for i, eid in enumerate(ids)})
+    finally:
+        store.close()
     context = _browser.new_context(java_script_enabled=javascript)
     if javascript:
         context.add_init_script("""(() => {
@@ -101,6 +135,11 @@ def test_live_navigation_toggle_and_save_clear_preserve_semantics(server, _brows
         page.goto(report_url)
         if lang == 'ar':
             page.get_by_role('button', name='العربية', exact=True).click()
+        # The report attaches the durable criteria to the live carrier; from here
+        # nothing but the explicit save may change the session state.
+        before = copy.deepcopy(state.__dict__)
+        assert {eid: sc.criterion for eid, sc in before['success_criteria'].items()} == {
+            eid: f'existing {i} العربية <tag>' for i, eid in enumerate(ids)}
         link = page.locator('.experiment-criterion-link a').nth(1)
         requests = []
         page.on('request', lambda req: requests.append((req.method, req.url, req.post_data)))
@@ -142,21 +181,33 @@ def test_live_navigation_toggle_and_save_clear_preserve_semantics(server, _brows
         assert state.success_criteria[ids[2]].criterion == before['success_criteria'][ids[2]].criterion
         assert {k: v for k, v in state.__dict__.items() if k != 'success_criteria'} == {
             k: v for k, v in before.items() if k != 'success_criteria'}
+        # ...and the saved delta is the DURABLE truth, not only session memory.
+        store = _durable_store()
+        try:
+            assert dict(store.load_success_criteria(sid)) == {
+                eid: sc.criterion for eid, sc in state.success_criteria.items()}
+        finally:
+            store.close()
     finally:
         context.close()
 
 
 @pytest.mark.parametrize('lang', ['en', 'ar'])
 def test_stale_fragment_leaves_current_form_usable_without_javascript(server, _browser, lang):
-    sid, state = _seed()
-    old_id = _ids(state)[0]
     context = _browser.new_context(java_script_enabled=False)
     page = context.new_page()
     try:
+        sid, state = _browser_project(context.new_page(), server)
+        before_ids = _ids(state)
         page.goto(server + f'/session/{sid}/deliverable')
         if lang == 'ar':
             page.get_by_role('button', name='العربية', exact=True).click()
-        state.acknowledged_unknowns.clear()
+        # A REAL durable change to the plan after the report was rendered: a
+        # further answer adds a third unknown that displaces one experiment.
+        _answer_in_browser(context.new_page(), server, sid, ELEC_DISPLACING_ANSWER)
+        displaced = [eid for eid in before_ids if eid not in _ids(state)]
+        assert len(displaced) == 1
+        old_id = displaced[0]
         old_target = 'criterion-' + old_id.rsplit('_', 1)[-1]
         link = page.locator(f'.experiment-criterion-link a[href$="#{old_target}"]')
         link.click()

@@ -28,6 +28,7 @@ NOT authentication, ownership, or authorization.
 """
 import dataclasses
 import json
+import re
 import sqlite3
 import uuid
 from contextlib import contextmanager
@@ -141,6 +142,18 @@ class AdoptionCapReached(StoreError):
     Refused clearly inside the transaction; history is never truncated."""
 
 
+class SuccessCriterionInvalid(StoreError):
+    """Stage 19 / CAP-09: a submitted success-criterion delta is structurally
+    invalid (unknown shape, malformed experiment id, empty/untrimmed/over-limit
+    text). Raised BEFORE the write transaction opens, so nothing is written."""
+
+
+class SuccessCriterionCorrupt(StoreError):
+    """Stage 19 / CAP-09: a durable success-criterion row of the project is
+    malformed. Fail-closed for the WHOLE collection: no partial set is returned
+    and nothing is repaired, deleted or reinterpreted."""
+
+
 @runtime_checkable
 class RecordStore(Protocol):
     """Datastore-neutral durable record-store interface (the abstraction
@@ -188,6 +201,10 @@ class RecordStore(Protocol):
     def append_readiness_evidence(self, project_id: str, evidence) -> str: ...
     def load_readiness_evidence(self, project_id: str) -> tuple: ...
     def readiness_evidence_for_event_key(self, project_id: str, event_key: str): ...
+    # Stage 19 / CAP-09 durable SuccessCriterion (additive; see the
+    # prototype_plan_metadata note below).
+    def load_success_criteria(self, project_id: str) -> tuple: ...
+    def apply_success_criteria_delta(self, project_id: str, delta) -> None: ...
 
 
 _SCHEMA = (
@@ -555,6 +572,62 @@ _ADOPTION_SCHEMA = (
     "WHERE supersedes_adoption_id IS NULL",
 )
 
+# Stage 19 / CAP-09 — durable SuccessCriterion remediation (Owner-authorized
+# IMPLEMENTATION-01). ONE additive, project-scoped, CURRENT-VALUE sidecar that
+# stores the EXISTING user-authored ``SuccessCriterion`` text keyed by the
+# canonical Section-11 stable ``experiment_id`` — and nothing else. It is NOT an
+# experiment store: it holds no experiment definition, title, source copy,
+# hypothesis, generated plan text, Evidence, result, validation, readiness or
+# PASS/PARTIAL/FAIL/INCONCLUSIVE value, and no provenance (a stored row is by
+# construction the inventor's own criterion; the reader re-derives the existing
+# ``user_defined`` provenance). Experiment generation and identity stay with
+# Section 11 (``engine.deliverable_assembler``); this table never generates,
+# remaps or validates an experiment against a plan — the web layer does that
+# against CURRENT durable project truth before any write.
+#
+# Identity is ``(project_id, experiment_id)``; the project FOREIGN KEY is
+# enforced (``PRAGMA foreign_keys = ON`` on every connection). The CHECKs are a
+# database-level backstop only; the loader re-validates every row. Additive and
+# idempotent (``IF NOT EXISTS``) on a fresh database AND on an existing
+# populated database; touches no existing table, column or row. Rollback is
+# disable-and-ignore (stop reading the table), never a destructive drop.
+_PLAN_METADATA_TABLE = "prototype_plan_metadata"
+_PLAN_METADATA_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS prototype_plan_metadata (
+        project_id        TEXT NOT NULL,
+        experiment_id     TEXT NOT NULL,
+        success_criterion TEXT NOT NULL,
+        PRIMARY KEY (project_id, experiment_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        CHECK (typeof(experiment_id) = 'text'
+               AND length(experiment_id) BETWEEN 1 AND 128),
+        CHECK (typeof(success_criterion) = 'text'
+               AND length(success_criterion) BETWEEN 1 AND 1000)
+    )
+    """,
+)
+# The per-criterion length bound (characters), shared with the web route.
+MAX_SUCCESS_CRITERION_LENGTH = 1000
+# Structural shape of a stored experiment id. It is deliberately LOOSER than the
+# v1 generator (it names no source type and no digest length), so this store
+# owns no identity semantics: it only refuses what can never be an id.
+_EXPERIMENT_ID_SHAPE = re.compile(r"\Aexp_[a-z0-9]+(?:_[a-z0-9]+)+\Z")
+_MAX_EXPERIMENT_ID_LENGTH = 128
+
+
+def _valid_experiment_id(value) -> bool:
+    return (isinstance(value, str) and 0 < len(value) <= _MAX_EXPERIMENT_ID_LENGTH
+            and _EXPERIMENT_ID_SHAPE.match(value) is not None)
+
+
+def _valid_criterion_text(value) -> bool:
+    """A stored criterion is exactly what the route stores: non-empty, already
+    trimmed, and within the bound."""
+    return (isinstance(value, str) and value == value.strip()
+            and 0 < len(value) <= MAX_SUCCESS_CRITERION_LENGTH)
+
+
 # Outcome vocabulary of an adoption append (mirrors the merged T2-A/T2-D
 # vocabulary: an already-recorded exact event is historical no-write
 # evidence, never a conflict and never a second write).
@@ -655,6 +728,7 @@ class SqliteRecordStore:
             self._migrate_question_feedback(self._conn)
             self._migrate_engine_version_adoptions(self._conn)
             self._migrate_readiness_evidence(self._conn)
+            self._migrate_prototype_plan_metadata(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -799,6 +873,15 @@ class SqliteRecordStore:
             if column not in cols:
                 conn.execute(
                     "ALTER TABLE readiness_evidence ADD COLUMN %s TEXT" % column)
+
+    def _migrate_prototype_plan_metadata(self, conn) -> None:
+        """Stage 19 / CAP-09 forward migration against the LIVE schema:
+        additively create the ``prototype_plan_metadata`` sidecar. Idempotent
+        (``IF NOT EXISTS``) on a fresh database and on an existing populated
+        database; touches no existing table, column or row. Rollback is
+        disable-and-ignore (stop reading the table)."""
+        for stmt in _PLAN_METADATA_SCHEMA:
+            conn.execute(stmt)
 
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
@@ -1859,6 +1942,81 @@ class SqliteRecordStore:
                  feedback.supersedes_feedback_id, feedback.event_key,
                  feedback.recorded_at))
         return FEEDBACK_INSERTED
+
+    # --- Stage 19 / CAP-09 durable SuccessCriterion (current value) ----------
+    def _require_project(self, project_id: str) -> None:
+        row = self._conn.execute(
+            "SELECT COUNT(*) FROM projects WHERE project_id = ?", (project_id,)
+        ).fetchone()
+        if not row or row[0] == 0:
+            raise ProjectNotFound(project_id)
+
+    def load_success_criteria(self, project_id: str) -> tuple:
+        """Load and VALIDATE one project's durable success criteria; return an
+        immutable tuple of ``(experiment_id, criterion)`` pairs ordered by
+        ``experiment_id`` (deterministic; independent of physical row order).
+
+        Distinct outcomes, never collapsed into one another:
+          * no project row           -> ``ProjectNotFound`` (the caller decides;
+            a memory-only context has no durable sidecar at all);
+          * a project with zero rows -> ``()`` (genuine absence);
+          * any malformed row        -> ``SuccessCriterionCorrupt`` for the WHOLE
+            collection — no partial set, no skipped row, nothing repaired;
+          * storage failure          -> the SQL error propagates.
+
+        Read-only; project-scoped (never reads another project); logs nothing."""
+        self._require_project(project_id)
+        rows = self._conn.execute(
+            "SELECT experiment_id, success_criterion FROM prototype_plan_metadata "
+            "WHERE project_id = ? ORDER BY experiment_id ASC", (project_id,)
+        ).fetchall()
+        for experiment_id, criterion in rows:
+            if not _valid_experiment_id(experiment_id) \
+                    or not _valid_criterion_text(criterion):
+                raise SuccessCriterionCorrupt(
+                    "durable success-criterion row is malformed")
+        return tuple((experiment_id, criterion) for experiment_id, criterion in rows)
+
+    def apply_success_criteria_delta(self, project_id: str, delta) -> None:
+        """Apply ONE complete, already-validated submitted delta atomically.
+
+        ``delta`` maps ``experiment_id`` to either a non-empty trimmed criterion
+        (UPSERT that key) or ``None`` (DELETE that key only). Keys absent from
+        ``delta`` are never touched — this is not a replace-the-whole-map write.
+        The whole delta is validated structurally BEFORE the transaction opens
+        (``SuccessCriterionInvalid``, nothing written); then every change runs
+        inside ONE ``BEGIN IMMEDIATE`` transaction that first requires the
+        durable project (``ProjectNotFound``). Any failure before COMMIT rolls
+        the ENTIRE delta back: no partial save. Concurrent submissions resolve
+        as last committed write wins for the keys each one actually submitted.
+
+        This method does not decide which experiment ids are current: the caller
+        validates the delta against the current plan generated by Section 11."""
+        try:
+            items = list(delta.items())
+        except AttributeError:
+            raise SuccessCriterionInvalid("delta must be a mapping") from None
+        for experiment_id, criterion in items:
+            if not _valid_experiment_id(experiment_id):
+                raise SuccessCriterionInvalid("malformed experiment id")
+            if criterion is not None and not _valid_criterion_text(criterion):
+                raise SuccessCriterionInvalid("malformed criterion text")
+        with self._write():
+            self._require_project(project_id)
+            for experiment_id, criterion in items:
+                if criterion is None:
+                    self._conn.execute(
+                        "DELETE FROM prototype_plan_metadata "
+                        "WHERE project_id = ? AND experiment_id = ?",
+                        (project_id, experiment_id))
+                else:
+                    self._conn.execute(
+                        "INSERT INTO prototype_plan_metadata "
+                        "(project_id, experiment_id, success_criterion) "
+                        "VALUES (?, ?, ?) "
+                        "ON CONFLICT (project_id, experiment_id) "
+                        "DO UPDATE SET success_criterion = excluded.success_criterion",
+                        (project_id, experiment_id, criterion))
 
     def project_ids(self) -> List[str]:
         return [row[0] for row in

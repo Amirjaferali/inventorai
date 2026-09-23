@@ -101,6 +101,11 @@ def test_no_prescriptive_retention_duration():
 # second (delivered outbox message removal); the guard's purpose - doc/source
 # parity on automatic deletion - is unchanged, only its enumerated set grew.
 _AUTOMATIC_DELETION_TABLES = ("auth_rate_limits", "email_outbox")
+# Stage 19 / CAP-09 IMPLEMENTATION-01 added ONE user-initiated current-value
+# removal (the owner clearing their own success criterion). It is a separate
+# category, NOT an automatic deletion: the automatic set above is unchanged, and
+# the document must name this one explicitly as well.
+_USER_INITIATED_DELETION_TABLES = ("prototype_plan_metadata",)
 
 
 def test_retention_doc_matches_source_truth():
@@ -114,15 +119,20 @@ def test_retention_doc_matches_source_truth():
                 if "DELETE FROM" in line:
                     deletes.append((path, line.strip()))
     assert deletes, "expected the bounded rate-limit cleanup to exist"
+    known = _AUTOMATIC_DELETION_TABLES + _USER_INITIATED_DELETION_TABLES
     for path, line in deletes:
-        assert any(table in line for table in _AUTOMATIC_DELETION_TABLES), (path, line)
-    seen_tables = {table for table in _AUTOMATIC_DELETION_TABLES
+        assert any(table in line for table in known), (path, line)
+    seen_tables = {table for table in known
                    if any(table in line for _p, line in deletes)}
-    assert seen_tables == set(_AUTOMATIC_DELETION_TABLES), seen_tables
+    assert seen_tables == set(known), seen_tables
     with open(os.path.join("docs", "DATA_RETENTION_POLICY.md"), encoding="utf-8") as fh:
         doc = fh.read()
     assert "cleanup_expired_rate_limits" in doc
     assert "mark_email_delivered" in doc and "email_outbox" in doc
+    flat = re.sub(r"\s+", " ", doc)
+    assert "One USER-INITIATED removal exists" in flat
+    assert "`prototype_plan_metadata`" in flat
+    assert "It is NOT an automatic deletion, NOT an erasure capability" in flat
     # the 7-day client TTL claim must keep matching the real script
     with open(os.path.join("web", "static", "js", "local_draft.js"),
               encoding="utf-8") as fh:

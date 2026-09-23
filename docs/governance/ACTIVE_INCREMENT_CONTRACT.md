@@ -23,23 +23,101 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--stage-19-cap09-foundation-contract"></a>
-## Current authority — Stage 19 / WS-PFV-001 / CAP-09 planning foundation: entry contract only (Owner authorization, 2026-09-23)
+<a id="current-authority--stage-19-cap09-durable-success-criterion"></a>
+## Current authority — Stage 19 / CAP-09 durable SuccessCriterion remediation — IMPLEMENTATION-01 (Owner authorization, 2026-09-23)
 
-**ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY.** The Owner has entered Stage 19
-for one purpose: recording the CAP-09 Experiment-Plan Designer FOUNDATION / CONTRACT. It covers
-this governance recording and the read-only assessment named at the end of this section. It
-authorizes **no** product, runtime, UI, schema, persistence, migration, domain or CI change.
-Nothing in this file, the roadmap or the checklist extends it.
+**ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01
+ONLY.** The Lead completed the read-only Stage-19 architecture / data-flow assessment named in
+the foundation contract below. An independent architectural review then returned PASS WITH
+REQUIRED CORRECTIONS, and the Lead accepted its blocking corrections into the specification.
+On that basis the Owner authorized ONE bounded Stage-19 architectural remediation. It is
+**not** full CAP-09, it is **not** full WS-PFV-001, and it authorizes no later Stage.
+
+| | |
+|---|---|
+| **STAGE 19** | `ENTERED / NOT COMPLETE` — checkbox stays unticked |
+| **AUTHORIZED IMPLEMENTATION** | **DURABLE SUCCESS-CRITERION REMEDIATION ONLY** |
+| **FULL CAP-09** | `NOT AUTHORIZED` |
+| **FULL WS-PFV-001** | `NOT AUTHORIZED` |
+| **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **PARTIAL** — unchanged |
+| **FULL CAP-01 / FULL STG** | `NOT AUTHORIZED / NOT IMPLEMENTED` — unchanged |
+| **FURTHER CAP-01 IMPLEMENTATION** | **NOT CURRENTLY AUTHORIZED** — unchanged |
+
+**The defect this repairs.** The existing user-authored `SuccessCriterion` is Experiment-Plan
+metadata keyed to the canonical Section-11 stable `experiment_id`. It lived only in
+`IdeaState.success_criteria`, so process or session memory loss erased it. That violated the
+Stage-19 durability requirement recorded below: new user-authored CAP-09 planning metadata
+must be durable before it is presented as a saved-project capability.
+
+**The fixed architecture — no second semantic owner.**
+
+- **Experiment owner and identity:** Section 11 (`_s11`, `_experiment_id` /
+  `_canonical_source` in `engine/deliverable_assembler.py`). The v1 identity algorithm is
+  unchanged.
+- **Semantics:** the existing `SuccessCriterion` (`engine/idea_state.py`).
+- **Durable storage:** the existing `SqliteRecordStore`, in the SAME database. ONE additive,
+  current-value, project-scoped sidecar, `prototype_plan_metadata (project_id,
+  experiment_id, success_criterion)`, with identity `(project_id, experiment_id)` and a
+  foreign key to `projects`. It stores the existing criterion text only: no provenance, no
+  experiment definition, no source or plan text, no Evidence, result, validation, readiness
+  or PASS / PARTIAL / FAIL / INCONCLUSIVE value.
+- **Unchanged owners:** project identity `projects.project_id`; authorization
+  `_project_authorized`; reconstruction `engine/session_reconstruction.py`; progression;
+  Evidence, validation and readiness.
+- **Not widened:** `ProjectRecordContract`. The criterion is planning metadata attached
+  AFTER reconstruction. It is never replayed and never a progression input.
+
+**Binding behaviour.**
+
+- **Attachment:** one application-layer operation attaches the durable criteria to the state
+  actually consumed or published. That covers the cold saved-project entry, the HTML and
+  PDF deliverable, both criteria routes, explicit writable resume, answer correction and
+  engine-version adoption or reversal.
+- **Currentness:** an edit is validated against CURRENT durable project truth (a Level-1
+  reconstruction), never against a cached session. When currentness cannot be established,
+  the edit is refused truthfully.
+- **Atomic delta:** a submitted non-empty criterion is upserted, a whitespace-only one is
+  deleted and an omitted one is untouched. The whole delta commits in ONE transaction or
+  rolls back entirely. The write is persisted before it is published, and a failure after
+  the commit is never reported as a failed save.
+- **Distinct states:** genuine absence, valid current, valid stale, current plan
+  unavailable, store unavailable and corruption stay distinct. Store failure and corruption
+  fail closed with no partial set. A stale criterion is preserved and never remapped.
+- **No fallback:** a memory-only context with no durable project never falls back to
+  session-only saving. A cold saved-project view stays view-only.
+
+**Still NOT authorized.** No parallel experiment store, second database, PostgreSQL
+migration or generic metadata framework. No Evidence, experiment-result or validation-result
+capture. No readiness promotion, feasibility levels, PASS / PARTIAL / FAIL / INCONCLUSIVE
+behaviour, prototype version history or corrective / retest subsystem. No Domain Capability
+Profile and no new domain. No CAP-01 or T2-E expansion and no AI / provider work.
+
+**Preserved.** `STAGE 11 / A2: DEFERRED / UNDISCHARGED` · `STAGE 15 (IRL): PRESERVED — MUST
+NOT BE LOST` · `T2-E: DEFERRED` · `CI OPTIMIZATION: SEPARATE / NOT IMPLEMENTED` · `D13
+RESEARCH: REMAINS CLOSED` · Stages 20–27 stay preserved, not entered and not authorized ·
+`DEPLOYMENT: NOT AUTHORIZED` · `PUBLIC RELEASE: NOT AUTHORIZED` · `PAID ACTIVATION: NOT
+AUTHORIZED`.
+
+<a id="current-authority--stage-19-cap09-foundation-contract"></a>
+## Current authority — Stage 19 / WS-PFV-001 / CAP-09 planning foundation: entry contract only (Owner authorization, 2026-09-23) — DELIVERED (PR #681); SUPERSEDED as current authority by IMPLEMENTATION-01
+
+**No longer the current authority.** This foundation contract was delivered by PR #681. Its
+read-only assessment was completed, and IMPLEMENTATION-01 above replaced it as the current
+authority on 2026-09-23. Every foundation rule below still binds, except where it is marked
+superseded. *(Superseded 2026-09-23, preserved so the change is visible rather than silent:
+this opened "**ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY.** The Owner has
+entered Stage 19 for one purpose: recording the CAP-09 Experiment-Plan Designer FOUNDATION /
+CONTRACT. … It authorizes **no** product, runtime, UI, schema, persistence, migration, domain
+or CI change.")*
 
 | | |
 |---|---|
 | **STAGE 19** | `ENTERED FOR FOUNDATION / CONTRACT WORK` · `COMPLETE: NO` — checkbox stays unticked |
-| **CAP-09 PRODUCT IMPLEMENTATION** | **NOT STARTED / NOT AUTHORIZED YET** |
+| **CAP-09 PRODUCT IMPLEMENTATION** | *(Superseded 2026-09-23, preserved — was `NOT STARTED / NOT AUTHORIZED YET`; IMPLEMENTATION-01 above authorizes the durable SuccessCriterion remediation only.)* |
 | **WS-PFV-001 DEPENDENCY 3** (Structured Technical Guidance product-implementation foundation) | **SATISFIED FOR PLANNING-ONLY CAP-09 ENTRY — nothing wider** |
 | **CANONICAL PLANNING OWNER** | **Section 11 "Prototype & Test Plan" + `SuccessCriterion`** |
-| **SCHEMA / PERSISTENCE IMPLEMENTATION** | **NOT AUTHORIZED — final schema NOT selected** |
-| **NEXT TECHNICAL ACTION (after contract acceptance)** | **READ-ONLY architecture / data-flow assessment** |
+| **SCHEMA / PERSISTENCE IMPLEMENTATION** | *(Superseded 2026-09-23, preserved — was `NOT AUTHORIZED — final schema NOT selected`; IMPLEMENTATION-01 above selects ONE bounded sidecar for the EXISTING SuccessCriterion only.)* |
+| **NEXT TECHNICAL ACTION (after contract acceptance)** | **READ-ONLY architecture / data-flow assessment** — completed by the Lead |
 | **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **PARTIAL** — unchanged |
 | **FULL CAP-01 / FULL STG** | `NOT AUTHORIZED / NOT IMPLEMENTED` — unchanged |
 | **FURTHER CAP-01 IMPLEMENTATION** | **NOT CURRENTLY AUTHORIZED** — unchanged |
@@ -99,7 +177,10 @@ planning metadata **MUST be durable before it is presented as a saved-project ca
 
 The next architecture assessment must find the **smallest extension of the EXISTING
 saved-project / record-reconstruction architecture**. This contract does NOT select the final
-schema, and schema / persistence implementation is NOT authorized.
+schema, and schema / persistence implementation is NOT authorized. *(Superseded 2026-09-23 in
+part, preserved: IMPLEMENTATION-01 above makes the EXISTING `SuccessCriterion` durable through
+ONE bounded sidecar in the same store. The session-only description in the first bullet was
+true at this contract's time. Every other clause here still binds.)*
 
 **6. WS-PFV / CAP-09 separation.** The first CAP-09 slice excludes all of the following:
 
@@ -137,7 +218,8 @@ a **READ-ONLY architecture / data-flow assessment**. It looks for the smallest d
 extension of the existing Section-11 / `SuccessCriterion` planning owner inside the existing
 saved-project / record-reconstruction architecture, and it mutates nothing. Any later step in
 the WS-PFV-001 §11 flow (Contract → UX and state model → BASE RED → implementation → GREEN …)
-needs its own explicit Owner authorization.
+needs its own explicit Owner authorization. *(Completed 2026-09-23: the Lead performed this
+assessment, and its accepted outcome is IMPLEMENTATION-01 above.)*
 
 <a id="current-authority--post-pr-679-no-active-contract"></a>
 ## Current authority — post-PR-#679: no active contract (2026-09-22) — SUPERSEDED (2026-09-23) by the Stage-19 entry contract
@@ -388,13 +470,13 @@ section above; the stage is ENTERED as fact. `FIRST BOUNDED CAP-01 INCREMENT:
 OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
 `D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
 unticked** — one authorized bounded slice is not the stage.
-**Also ENTERED, for foundation / contract work only: Stage 19 — WS-PFV-001 / CAP-09
-Experiment-Plan Designer.** `ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY` ·
-`STAGE 19: ENTERED FOR FOUNDATION / CONTRACT WORK` · `CAP-09 PRODUCT IMPLEMENTATION: NOT
-STARTED / NOT AUTHORIZED YET`. Section 11 + `SuccessCriterion` stay the canonical planning
-owner. Schema / persistence implementation is not authorized. The next technical action after
-contract acceptance is a READ-ONLY architecture / data-flow assessment. The Stage-19 checkbox
-stays unticked, and entering Stage 19 completes nothing in Stage 18.
+**Also ENTERED: Stage 19 — WS-PFV-001 / CAP-09 Experiment-Plan Designer.** `ACTIVE CONTRACT:
+STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 ONLY` · `STAGE 19:
+ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION
+ONLY` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
+`SuccessCriterion` stay the canonical planning owner; the remediation only makes the EXISTING
+criterion durable in the same project store. The Stage-19 checkbox stays unticked, and
+entering Stage 19 completes nothing in Stage 18.
 **Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and
 `STAGE 11 STARTED: NO`. It was routed PAST, not completed, and **routing past a deferred
 stage never completes it**. Its existing authorization conditions stand: reuse valid prior
@@ -402,6 +484,11 @@ evidence where applicable, and **new human activity requires separate authorizat
 existing consent/custody boundaries**. No human collection begins merely because routing
 moves past it.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded 2026-09-23, preserved so the change is visible rather than silent: the Stage-19
+routing line read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY` · `STAGE 19:
+ENTERED FOR FOUNDATION / CONTRACT WORK` · `CAP-09 PRODUCT IMPLEMENTATION: NOT STARTED / NOT
+AUTHORIZED YET`". That was true until the Owner authorized IMPLEMENTATION-01.)*
 
 *(Superseded, preserved so the change is visible rather than silent: before the Owner's
 bounded authorization this read "`STAGE 18 STARTED: NO`. It requires its own separate

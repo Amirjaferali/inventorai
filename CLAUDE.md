@@ -2,18 +2,23 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY.** Stage 19 (WS-PFV-001 /
-CAP-09 Experiment-Plan Designer) is ENTERED FOR FOUNDATION / CONTRACT WORK only. CAP-09
-product implementation is NOT STARTED / NOT AUTHORIZED YET, and schema / persistence
-implementation is not authorized. The next technical action after contract acceptance is a
-READ-ONLY architecture / data-flow assessment; any other product, readiness, governance or
-automation work requires a new explicit Owner authorization.
+**ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01
+ONLY.** Stage 19 (WS-PFV-001 / CAP-09 Experiment-Plan Designer) is ENTERED / NOT COMPLETE.
+The only authorized implementation is the durable SuccessCriterion remediation: the EXISTING
+Section-11 `SuccessCriterion` becomes durable in the same project store. Full CAP-09 and full
+WS-PFV-001 are NOT AUTHORIZED. Any other product, readiness, governance or automation work
+requires a new explicit Owner authorization.
 docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the delivered
 history, and is the file to read for authority — this paragraph routes, it does not
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized, and
 deployment, public release and paid activation remain NOT AUTHORIZED.
+
+*(Superseded 2026-09-23, preserved so the change is visible rather than silent: this opened
+"**ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY.** … CAP-09 product
+implementation is NOT STARTED / NOT AUTHORIZED YET, and schema / persistence implementation is
+not authorized." That was true until the Owner authorized IMPLEMENTATION-01.)*
 
 *(Superseded 2026-09-23, preserved so the change is visible rather than silent: this opened
 "**ACTIVE CONTRACT: NONE.** No implementation mandate is currently active; any further

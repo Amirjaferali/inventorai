@@ -600,10 +600,12 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
     # T2-E Option B additively created `evidence_references`, T2-D added
     # `question_feedback`, the T2-G legacy migration added the append-only
     # `engine_version_adoptions` and the Commercial Evidence Owner added the
-    # append-only `readiness_evidence`; every assertion below about
-    # requirement_quantities itself is unchanged.
+    # append-only `readiness_evidence`, and Stage 19 / CAP-09 IMPLEMENTATION-01
+    # added the current-value `prototype_plan_metadata` sidecar; every
+    # assertion below about requirement_quantities itself is unchanged.
     assert tables == ["engine_version_adoptions", "evidence_references", "projects",
-                      "question_feedback", "readiness_evidence", "records",
+                      "prototype_plan_metadata", "question_feedback",
+                      "readiness_evidence", "records",
                       "requirement_quantities"]
     cols = [r[1] for r in conn.execute("PRAGMA table_info(requirement_quantities)")]
     assert cols == ["project_id", "quantity_seq", "quantity_id", "anchor_record_id",

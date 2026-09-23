@@ -116,6 +116,23 @@ _MESSAGE_KEYS = {
      "No changes were saved."): "UI_B_SC_007",
     ("A criterion exceeds the 1000-character "
      "limit. No changes were saved."): "UI_B_SC_008",
+    # Stage 19 / CAP-09 durable SuccessCriterion: the truthful outcome
+    # messages of the durable criteria routes (web/app.py), registered the
+    # same way. They are DISTINCT because the outcomes are distinct.
+    ("Success criteria can only be kept for a saved project. This session is not "
+     "saved as a project, so criteria cannot be saved here. Nothing was changed."):
+        "UI_SC_ERR_NOT_SAVED_PROJECT",
+    ("The current Prototype & Test Plan could not be rebuilt from your saved "
+     "project just now, so success criteria cannot be shown or changed here. "
+     "Nothing was changed."): "UI_SC_ERR_PLAN_UNAVAILABLE",
+    ("Your saved success criteria could not be loaded just now, so they cannot be "
+     "shown or changed here. Nothing was changed."): "UI_SC_ERR_CRITERIA_UNAVAILABLE",
+    ("This saved project is open for viewing only. Continue the project to "
+     "change its success criteria. Nothing was changed."): "UI_SC_VIEW_ONLY",
+    ("Your success criteria could not be saved just now. Nothing was changed."):
+        "UI_SC_ERR_NOT_SAVED",
+    ("Your success criteria were saved to your project, but this page could not "
+     "be updated just now. Reload shortly to see them."): "UI_SC_ERR_SAVED_NOT_SHOWN",
     # PVCG-R4-C §13 E-1: the correction path must be bilingual, so its three
     # server messages are registered here exactly like every other one.
     ("That correction could not be applied just now. "
@@ -720,6 +737,45 @@ UI_STRINGS = {
     "UI_B_SC_008": {
         "en": "A criterion exceeds the 1000-character limit. No changes were saved.",
         "ar": "يتجاوز أحد المعايير الحد الأقصى البالغ 1000 حرف. لم يتم حفظ أي تغييرات.",
+    },
+    # Stage 19 / CAP-09 durable SuccessCriterion — registered via
+    # `_MESSAGE_KEYS` (storage stays English; only display localises).
+    "UI_SC_ERR_NOT_SAVED_PROJECT": {
+        "en": ("Success criteria can only be kept for a saved project. This session "
+               "is not saved as a project, so criteria cannot be saved here. "
+               "Nothing was changed."),
+        "ar": ("لا يمكن الاحتفاظ بمعايير النجاح إلا لمشروع محفوظ. هذه الجلسة غير "
+               "محفوظة كمشروع، لذلك لا يمكن حفظ المعايير هنا. لم يتم تغيير أي شيء."),
+    },
+    "UI_SC_ERR_PLAN_UNAVAILABLE": {
+        "en": ("The current Prototype & Test Plan could not be rebuilt from your "
+               "saved project just now, so success criteria cannot be shown or "
+               "changed here. Nothing was changed."),
+        "ar": ("تعذّرت إعادة بناء خطة النموذج الأولي والاختبار الحالية من مشروعك "
+               "المحفوظ الآن، لذلك لا يمكن عرض معايير النجاح أو تغييرها هنا. لم يتم "
+               "تغيير أي شيء."),
+    },
+    "UI_SC_ERR_CRITERIA_UNAVAILABLE": {
+        "en": ("Your saved success criteria could not be loaded just now, so they "
+               "cannot be shown or changed here. Nothing was changed."),
+        "ar": ("تعذّر تحميل معايير النجاح المحفوظة الآن، لذلك لا يمكن عرضها أو "
+               "تغييرها هنا. لم يتم تغيير أي شيء."),
+    },
+    "UI_SC_VIEW_ONLY": {
+        "en": ("This saved project is open for viewing only. Continue the project "
+               "to change its success criteria. Nothing was changed."),
+        "ar": ("هذا المشروع المحفوظ مفتوح للعرض فقط. تابع المشروع لتغيير معايير "
+               "النجاح الخاصة به. لم يتم تغيير أي شيء."),
+    },
+    "UI_SC_ERR_NOT_SAVED": {
+        "en": "Your success criteria could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ معايير النجاح الآن. لم يتم تغيير أي شيء.",
+    },
+    "UI_SC_ERR_SAVED_NOT_SHOWN": {
+        "en": ("Your success criteria were saved to your project, but this page "
+               "could not be updated just now. Reload shortly to see them."),
+        "ar": ("تم حفظ معايير النجاح في مشروعك، لكن تعذّر تحديث هذه الصفحة الآن. "
+               "أعد تحميل الصفحة بعد قليل لرؤيتها."),
     },
 
     # --- PVCG-R4 explicit correction / withdrawal (web/app.py correct_answer) --
