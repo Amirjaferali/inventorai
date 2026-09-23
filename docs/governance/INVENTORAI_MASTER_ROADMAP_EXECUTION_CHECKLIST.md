@@ -149,10 +149,12 @@ Read those before acting on any stage; this table is a locator, not a status sou
   is not the stage.
   **Also ENTERED: Stage 19 — WS-PFV-001 / CAP-09 Experiment-Plan Designer.** `ACTIVE CONTRACT:
   STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 ONLY` · `STAGE 19:
-  ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION
-  ONLY` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
+  ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION —
+  IMPLEMENTATION-01 / CORRECTION-01` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
   `SuccessCriterion` stay the canonical planning owner; the remediation only makes the EXISTING
-  criterion durable in the same project store. The Stage-19 checkbox stays unticked, and
+  criterion durable in the same project store. Editing it needs no writable progression
+  state, and planning-metadata corruption does not govern core progression. The Stage-19
+  checkbox stays unticked, and
   entering Stage 19 completes nothing in Stage 18.
   **Entering Stage 18 is not the next obligation discharged: Stage 11 — T1-C′ / A2
   human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, `STAGE 11 STARTED: NO`. It
@@ -161,6 +163,9 @@ Read those before acting on any stage; this table is a locator, not a status sou
   prior evidence where applicable, and new human activity requires separate authorization
   and the existing consent/custody boundaries.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded 2026-09-23 by CORRECTION-01, preserved: the Stage-19 routing line named
+"`AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION ONLY`".)*
 
 *(Superseded 2026-09-23, preserved so the change is visible rather than silent: the Stage-19
 routing line read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY` · `STAGE 19:
@@ -313,10 +318,11 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
 <!-- END CURRENT-BLOCK: material-residuals -->
 - **CURRENT SUBTASK:** STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION —
   IMPLEMENTATION-01 ONLY — `ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION
-  REMEDIATION — IMPLEMENTATION-01 ONLY`. The EXISTING Section-11 `SuccessCriterion` is made
-  durable in the same project store, validated against current durable project truth and
-  attached to every state Section 11 consumes. Full CAP-09 and full WS-PFV-001 are NOT
-  AUTHORIZED. Both bounded Stage-18 / CAP-01 increments are delivered (PR #678 checklist, PR #679 research
+  REMEDIATION — IMPLEMENTATION-01 ONLY`, with CORRECTION-01. The EXISTING Section-11
+  `SuccessCriterion` is made durable in the same project store, validated against current
+  durable project truth and attached to every state Section 11 consumes. Editing it needs no
+  writable progression state, and planning-metadata corruption does not govern core
+  progression. Full CAP-09 and full WS-PFV-001 are NOT AUTHORIZED. Both bounded Stage-18 / CAP-01 increments are delivered (PR #678 checklist, PR #679 research
   direction); every further CAP-01/STG scope requires a new explicit mandate, and Stage 11
   still requires its own explicit mandate. Completing the Stage-17 product-depth work started
   nothing, and neither did completing the Stage-10 differential.
@@ -624,7 +630,10 @@ SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENT
 NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED
 ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 ONLY
 STAGE 19: ENTERED / NOT COMPLETE
-AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION ONLY
+AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 / CORRECTION-01
+CRITERIA EDITING: NO WRITABLE PROGRESSION STATE REQUIRED
+PLANNING-METADATA CORRUPTION: DOES NOT GOVERN CORE PROGRESSION
+SECTION-11 CONSUMERS: FAIL CLOSED WHEN DURABLE CRITERIA CANNOT BE READ
 FULL CAP-09: NOT AUTHORIZED
 FULL WS-PFV-001: NOT AUTHORIZED
 FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE

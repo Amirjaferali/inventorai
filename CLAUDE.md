@@ -4,8 +4,9 @@
 
 **ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01
 ONLY.** Stage 19 (WS-PFV-001 / CAP-09 Experiment-Plan Designer) is ENTERED / NOT COMPLETE.
-The only authorized implementation is the durable SuccessCriterion remediation: the EXISTING
-Section-11 `SuccessCriterion` becomes durable in the same project store. Full CAP-09 and full
+The only authorized implementation is the durable SuccessCriterion remediation
+(IMPLEMENTATION-01 / CORRECTION-01): the EXISTING Section-11 `SuccessCriterion` becomes
+durable in the same project store. Full CAP-09 and full
 WS-PFV-001 are NOT AUTHORIZED. Any other product, readiness, governance or automation work
 requires a new explicit Owner authorization.
 docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the delivered

@@ -122,17 +122,19 @@ _MESSAGE_KEYS = {
     ("Success criteria can only be kept for a saved project. This session is not "
      "saved as a project, so criteria cannot be saved here. Nothing was changed."):
         "UI_SC_ERR_NOT_SAVED_PROJECT",
-    ("The current Prototype & Test Plan could not be rebuilt from your saved "
-     "project just now, so success criteria cannot be shown or changed here. "
+    ("The current Prototype & Test Plan is not available from this saved "
+     "project, so success criteria cannot be shown or changed from this page. "
      "Nothing was changed."): "UI_SC_ERR_PLAN_UNAVAILABLE",
-    ("Your saved success criteria could not be loaded just now, so they cannot be "
-     "shown or changed here. Nothing was changed."): "UI_SC_ERR_CRITERIA_UNAVAILABLE",
-    ("This saved project is open for viewing only. Continue the project to "
-     "change its success criteria. Nothing was changed."): "UI_SC_VIEW_ONLY",
+    ("Your saved success criteria could not be read, so they cannot be shown or "
+     "changed from this page. Nothing was changed."): "UI_SC_ERR_CRITERIA_UNAVAILABLE",
     ("Your success criteria could not be saved just now. Nothing was changed."):
         "UI_SC_ERR_NOT_SAVED",
     ("Your success criteria were saved to your project, but this page could not "
-     "be updated just now. Reload shortly to see them."): "UI_SC_ERR_SAVED_NOT_SHOWN",
+     "show them. Reload this page to see the criteria your project holds."):
+        "UI_SC_ERR_SAVED_NOT_SHOWN",
+    ("We could not confirm whether your success criteria were saved. Reload this "
+     "page to see the criteria your project currently holds before entering them "
+     "again."): "UI_SC_ERR_OUTCOME_UNKNOWN",
     # PVCG-R4-C §13 E-1: the correction path must be bilingual, so its three
     # server messages are registered here exactly like every other one.
     ("That correction could not be applied just now. "
@@ -748,24 +750,18 @@ UI_STRINGS = {
                "محفوظة كمشروع، لذلك لا يمكن حفظ المعايير هنا. لم يتم تغيير أي شيء."),
     },
     "UI_SC_ERR_PLAN_UNAVAILABLE": {
-        "en": ("The current Prototype & Test Plan could not be rebuilt from your "
-               "saved project just now, so success criteria cannot be shown or "
-               "changed here. Nothing was changed."),
-        "ar": ("تعذّرت إعادة بناء خطة النموذج الأولي والاختبار الحالية من مشروعك "
-               "المحفوظ الآن، لذلك لا يمكن عرض معايير النجاح أو تغييرها هنا. لم يتم "
-               "تغيير أي شيء."),
+        "en": ("The current Prototype & Test Plan is not available from this saved "
+               "project, so success criteria cannot be shown or changed from this "
+               "page. Nothing was changed."),
+        "ar": ("خطة النموذج الأولي والاختبار الحالية غير متاحة من هذا المشروع "
+               "المحفوظ، لذلك لا يمكن عرض معايير النجاح أو تغييرها من هذه الصفحة. "
+               "لم يتم تغيير أي شيء."),
     },
     "UI_SC_ERR_CRITERIA_UNAVAILABLE": {
-        "en": ("Your saved success criteria could not be loaded just now, so they "
-               "cannot be shown or changed here. Nothing was changed."),
-        "ar": ("تعذّر تحميل معايير النجاح المحفوظة الآن، لذلك لا يمكن عرضها أو "
-               "تغييرها هنا. لم يتم تغيير أي شيء."),
-    },
-    "UI_SC_VIEW_ONLY": {
-        "en": ("This saved project is open for viewing only. Continue the project "
-               "to change its success criteria. Nothing was changed."),
-        "ar": ("هذا المشروع المحفوظ مفتوح للعرض فقط. تابع المشروع لتغيير معايير "
-               "النجاح الخاصة به. لم يتم تغيير أي شيء."),
+        "en": ("Your saved success criteria could not be read, so they cannot be "
+               "shown or changed from this page. Nothing was changed."),
+        "ar": ("تعذّرت قراءة معايير النجاح المحفوظة، لذلك لا يمكن عرضها أو "
+               "تغييرها من هذه الصفحة. لم يتم تغيير أي شيء."),
     },
     "UI_SC_ERR_NOT_SAVED": {
         "en": "Your success criteria could not be saved just now. Nothing was changed.",
@@ -773,9 +769,20 @@ UI_STRINGS = {
     },
     "UI_SC_ERR_SAVED_NOT_SHOWN": {
         "en": ("Your success criteria were saved to your project, but this page "
-               "could not be updated just now. Reload shortly to see them."),
-        "ar": ("تم حفظ معايير النجاح في مشروعك، لكن تعذّر تحديث هذه الصفحة الآن. "
-               "أعد تحميل الصفحة بعد قليل لرؤيتها."),
+               "could not show them. Reload this page to see the criteria your "
+               "project holds."),
+        "ar": ("تم حفظ معايير النجاح في مشروعك، لكن تعذّر عرضها في هذه الصفحة. "
+               "أعد تحميل الصفحة لرؤية المعايير المحفوظة في مشروعك."),
+    },
+    # CORRECTION-01 (F-04): the durable outcome of a failed write could not be
+    # established — neither a save nor a rollback is asserted.
+    "UI_SC_ERR_OUTCOME_UNKNOWN": {
+        "en": ("We could not confirm whether your success criteria were saved. "
+               "Reload this page to see the criteria your project currently "
+               "holds before entering them again."),
+        "ar": ("لم نتمكن من التأكد مما إذا كانت معايير النجاح قد حُفظت. أعد تحميل "
+               "هذه الصفحة لرؤية المعايير المحفوظة حاليًا في مشروعك قبل إدخالها "
+               "مرة أخرى."),
     },
 
     # --- PVCG-R4 explicit correction / withdrawal (web/app.py correct_answer) --

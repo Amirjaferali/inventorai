@@ -603,7 +603,8 @@ _PLAN_METADATA_SCHEMA = (
         CHECK (typeof(experiment_id) = 'text'
                AND length(experiment_id) BETWEEN 1 AND 128),
         CHECK (typeof(success_criterion) = 'text'
-               AND length(success_criterion) BETWEEN 1 AND 1000)
+               AND length(success_criterion) BETWEEN 1 AND 1000
+               AND instr(CAST(success_criterion AS BLOB), X'00') = 0)
     )
     """,
 )
@@ -623,9 +624,11 @@ def _valid_experiment_id(value) -> bool:
 
 def _valid_criterion_text(value) -> bool:
     """A stored criterion is exactly what the route stores: non-empty, already
-    trimmed, and within the bound."""
+    trimmed, within the bound, and free of NUL (CORRECTION-01 F-03 — a NUL is
+    invalid input anywhere in the value, so no caller can persist one)."""
     return (isinstance(value, str) and value == value.strip()
-            and 0 < len(value) <= MAX_SUCCESS_CRITERION_LENGTH)
+            and 0 < len(value) <= MAX_SUCCESS_CRITERION_LENGTH
+            and "\x00" not in value)
 
 
 # Outcome vocabulary of an adoption append (mirrors the merged T2-A/T2-D

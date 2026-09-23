@@ -1285,11 +1285,6 @@ def _cold_load_entry(sid):
         # corrupt or unavailable history fails the WHOLE cold load closed
         # (generic unavailable behaviour) — never a partial/unquantified view.
         state.requirement_quantities = list(_get_store().load_requirement_quantities(sid))
-        # Stage 19 / CAP-09: attach the durable success criteria; a corrupt or
-        # unavailable collection fails the WHOLE cold load closed, exactly like
-        # the quantity history above.
-        if not _attach_success_criteria(sid, state):
-            return None
     except Exception:
         # Fail closed. Storage/contract errors are translated to the generic
         # unavailable behaviour at this web boundary; no user content is logged.
@@ -1538,12 +1533,15 @@ def _attach_quantity_history(sid, state):
 # The EXISTING user-authored `SuccessCriterion` is durable in the SAME project
 # store (`prototype_plan_metadata`, keyed by the canonical Section-11 stable
 # experiment_id). `_attach_success_criteria` is the ONE application-layer
-# attachment operation: every state that Section 11 consumes, and every state
-# placed into SESSION_STORE by a cold load, a writable resume, a correction or
-# an engine-version adoption/reversal, receives the durable collection through
-# it — validated WHOLE before the carrier is replaced. It never reads
-# progression, never becomes a progression input, and never enters the record
-# contract, the ILT-002 transcript, Evidence, validation or readiness.
+# attachment operation, used where Section 11 is actually CONSUMED (the HTML/PDF
+# deliverable context and both criteria routes): the durable collection is
+# validated WHOLE and attached to the state being consumed, and a corrupt or
+# unreadable collection fails THAT surface closed. CORRECTION-01 (F-02):
+# optional planning metadata never governs core progression — cold entry,
+# writable resume, answer correction and engine-version adoption/reversal do
+# not load it and cannot be blocked by it. It never reads progression, never
+# becomes a progression input, and never enters the record contract, the
+# ILT-002 transcript, Evidence, validation or readiness.
 def _durable_success_criteria(sid):
     """The project's durable criteria as ``{experiment_id: SuccessCriterion}``
     (genuine absence -> ``{}``), or ``None`` when ``sid`` has NO durable project
@@ -3919,11 +3917,6 @@ def resume_project(sid):
     # establishment (the read-only view then fails closed on its own render).
     if not _attach_quantity_history(sid, rstate):
         return redirect(url_for("show_session", sid=sid))
-    # Stage 19 / CAP-09: the same rule for the durable success criteria — they
-    # are attached BEFORE the writable state is published, and a corrupt or
-    # unavailable collection refuses establishment.
-    if not _attach_success_criteria(sid, rstate):
-        return redirect(url_for("show_session", sid=sid))
     # Establishment: the replayed canonical IdeaState (domain/path set by the
     # canonical replay from the persisted inputs; ledger restored verbatim)
     # becomes the state of a FRESH transient entry. A fresh answer token is
@@ -5523,10 +5516,6 @@ def correct_answer(sid):
     # could not be reattached afterwards.
     try:
         _get_store().load_requirement_quantities(sid)
-        # Stage 19 / CAP-09: the same pre-append rule for the durable success
-        # criteria, so a correction never commits against a collection that
-        # could not be reattached to the replayed state afterwards.
-        _durable_success_criteria(sid)
     except Exception:
         entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
@@ -5603,13 +5592,6 @@ def correct_answer(sid):
     # withdrew simply attaches to nothing current (the engine's deterministic
     # inactive-anchor rule); its rows are retained, never deleted.
     if not _attach_quantity_history(sid, _recon.state):
-        entry["_answer_error"] = CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
-        return redirect(url_for("show_session", sid=sid))
-    # Stage 19 / CAP-09: reattach the durable success criteria to the replayed
-    # state BEFORE it replaces live state. A criterion whose experiment this
-    # correction removed from the plan stays durable and surfaces as stale; one
-    # whose exact canonical source returns reattaches through the same id.
-    if not _attach_success_criteria(sid, _recon.state):
         entry["_answer_error"] = CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 
@@ -6135,8 +6117,7 @@ def adopt_engine_version(sid):
     except Exception:
         _recon = None
     if _recon is None or _recon.review.level != 1 or _recon.state is None \
-            or not _attach_quantity_history(sid, _recon.state) \
-            or not _attach_success_criteria(sid, _recon.state):
+            or not _attach_quantity_history(sid, _recon.state):
         # The durable adoption ALREADY committed, so this must not say
         # "nothing was changed": the choice of rules is saved, the live view
         # was not updated, and it is reflected whenever the project can be
@@ -7895,16 +7876,20 @@ def keep_snapshot(sid):
 # truth — never a cached SESSION_STORE plan merely because it exists. The plan
 # is the Section-11 plan of a transient, read-only Level-1 reconstruction of the
 # project (the same canonical replay the cold views use), with the durable
-# criteria attached. That state is never placed into SESSION_STORE, so viewing
-# criteria never establishes a writable session. A write additionally requires
-# a live or explicitly resumed writable session: a cold view is view-only here
-# exactly as it is everywhere else.
+# criteria attached. That state is never placed into SESSION_STORE.
+#
+# CORRECTION-01 (F-01): a criterion is planning metadata, not progression. An
+# authorized DURABLE project whose current plan can be reconstructed may edit
+# its criteria directly — cold, not resumed, or already complete — without a
+# writable progression session. Editing never reopens progression, never
+# changes maturity, stage or gaps, and never establishes a writable session.
 MAX_CRITERION_LENGTH = MAX_SUCCESS_CRITERION_LENGTH
 _CRITERION_FIELD_PREFIX = "criterion__"
 
 # Why the current plan could not be offered. Distinct on purpose: a session
-# that is not a saved project, a plan that could not be rebuilt, and saved
-# criteria that could not be loaded are different truths.
+# that is not a saved project, a plan that is not available, and saved criteria
+# that could not be read are different truths. (CORRECTION-01 F-05: the copy
+# never claims a condition is temporary when that is not known.)
 _SC_OK = "ok"
 _SC_NO_PROJECT = "no_project"
 _SC_PLAN_UNAVAILABLE = "plan_unavailable"
@@ -7914,26 +7899,35 @@ SC_NOT_SAVED_PROJECT_MESSAGE = (
     "Success criteria can only be kept for a saved project. This session is not "
     "saved as a project, so criteria cannot be saved here. Nothing was changed.")
 SC_PLAN_UNAVAILABLE_MESSAGE = (
-    "The current Prototype & Test Plan could not be rebuilt from your saved "
-    "project just now, so success criteria cannot be shown or changed here. "
+    "The current Prototype & Test Plan is not available from this saved "
+    "project, so success criteria cannot be shown or changed from this page. "
     "Nothing was changed.")
 SC_CRITERIA_UNAVAILABLE_MESSAGE = (
-    "Your saved success criteria could not be loaded just now, so they cannot be "
-    "shown or changed here. Nothing was changed.")
-SC_VIEW_ONLY_MESSAGE = (
-    "This saved project is open for viewing only. Continue the project to "
-    "change its success criteria. Nothing was changed.")
+    "Your saved success criteria could not be read, so they cannot be shown or "
+    "changed from this page. Nothing was changed.")
 SC_NOT_SAVED_MESSAGE = (
     "Your success criteria could not be saved just now. Nothing was changed.")
 # The durable write COMMITTED; only updating this page failed. Never "not saved".
 SC_SAVED_NOT_SHOWN_MESSAGE = (
     "Your success criteria were saved to your project, but this page could not "
-    "be updated just now. Reload shortly to see them.")
+    "show them. Reload this page to see the criteria your project holds.")
+# CORRECTION-01 (F-04): the write raised and its durable outcome could NOT be
+# established by reading the project back. Asserts neither a write nor a
+# rollback — only what is known.
+SC_OUTCOME_UNKNOWN_MESSAGE = (
+    "We could not confirm whether your success criteria were saved. Reload this "
+    "page to see the criteria your project currently holds before entering them "
+    "again.")
 _SC_STATUS_MESSAGE = {
     _SC_NO_PROJECT: (SC_NOT_SAVED_PROJECT_MESSAGE, 409),
     _SC_PLAN_UNAVAILABLE: (SC_PLAN_UNAVAILABLE_MESSAGE, 503),
     _SC_CRITERIA_UNAVAILABLE: (SC_CRITERIA_UNAVAILABLE_MESSAGE, 503),
 }
+
+# Outcomes of a criteria write whose store call RAISED (CORRECTION-01 F-04).
+_SC_WRITE_SAVED = "saved"
+_SC_WRITE_NOT_SAVED = "not_saved"
+_SC_WRITE_UNKNOWN = "unknown"
 
 
 def _current_criteria_context(sid):
@@ -7965,15 +7959,30 @@ def _current_criteria_context(sid):
     return _SC_OK, plan
 
 
-def _criteria_writable(sid):
-    """A live or explicitly resumed writable session exists for ``sid`` (the
-    committed cold-view marker is ``state.domain is None``)."""
-    entry = SESSION_STORE.get(sid)
-    return bool(entry) and getattr(entry.get("state"), "domain", None) is not None
+def _resolve_criteria_write(sid, delta):
+    """Bounded confirm-by-reload after ``apply_success_criteria_delta`` RAISED.
+
+    Reads the project's durable criteria and compares ONLY the submitted delta:
+    a submitted text is confirmed iff ``durable[eid] == text``; a submitted
+    deletion is confirmed iff ``eid`` is absent. Omitted ids take no part. The
+    requested state counts as saved only when EVERY submitted key matches; one
+    demonstrable mismatch means it was not saved; an unreadable durable state
+    leaves the outcome unknown. It never asks which attempt produced a value —
+    only whether the user's requested state is durably present now."""
+    try:
+        durable = dict(_get_store().load_success_criteria(sid))
+    except Exception:
+        return _SC_WRITE_UNKNOWN
+    for eid, text in delta.items():
+        if text is None:
+            if eid in durable:
+                return _SC_WRITE_NOT_SAVED
+        elif durable.get(eid) != text:
+            return _SC_WRITE_NOT_SAVED
+    return _SC_WRITE_SAVED
 
 
-def _render_criteria(sid, plan, status=200, error=None, notice=None,
-                     read_only=False):
+def _render_criteria(sid, plan, status=200, error=None, notice=None):
     lang = _current_ui_lang()
     return render_template(
         "success_criteria.html",
@@ -7984,11 +7993,11 @@ def _render_criteria(sid, plan, status=200, error=None, notice=None,
         max_length=MAX_CRITERION_LENGTH,
         # CF-2 Arabic-localization remainder: every message here is one of this
         # module's known English constants, registered in
-        # `ui_text._MESSAGE_KEYS`; localize_message() fails open for anything
+        # `ui_text._MESSAGE_KEYS` (or copy already localized by
+        # `_free_text_error`); localize_message() fails open for anything
         # unregistered.
         error=ui_text.localize_message(error, lang),
         notice=ui_text.localize_message(notice, lang),
-        read_only=read_only,
     ), status
 
 
@@ -8004,9 +8013,6 @@ def success_criteria(sid):
     status, plan = _current_criteria_context(sid)
     if status != _SC_OK:
         return _criteria_unavailable(sid, status)
-    if not _criteria_writable(sid):
-        return _render_criteria(sid, plan, notice=SC_VIEW_ONLY_MESSAGE,
-                                read_only=True)
     return _render_criteria(sid, plan)
 
 
@@ -8016,15 +8022,13 @@ def save_success_criteria(sid):
     # durable planning truth -> canonical current ids -> validate the WHOLE
     # submitted delta -> ONE atomic durable commit -> only then publish to
     # memory -> acknowledge. `IdeaState.success_criteria` is never mutated
-    # before the commit.
+    # before the durable outcome is known. No writable progression session is
+    # required or created (CORRECTION-01 F-01).
     if not _project_authorized(sid):
         return _deny_project()
     status, plan = _current_criteria_context(sid)
     if status != _SC_OK:
         return _criteria_unavailable(sid, status)
-    if not _criteria_writable(sid):
-        return _render_criteria(sid, plan, status=409, notice=SC_VIEW_ONLY_MESSAGE,
-                                read_only=True)
     current_ids = {it["experiment_id"] for it in plan["items"]}
 
     # Collect submitted criteria, namespaced by experiment_id. A field that is
@@ -8034,7 +8038,7 @@ def save_success_criteria(sid):
                  if name.startswith(_CRITERION_FIELD_PREFIX)}
 
     # Validate the WHOLE delta before any write: an unknown or no-longer-current
-    # id, or an over-limit value, rejects the entire request.
+    # id, an over-limit value, or invalid text rejects the entire request.
     for eid in submitted:
         if eid not in current_ids:
             return _render_criteria(
@@ -8047,6 +8051,14 @@ def save_success_criteria(sid):
                 sid, plan, status=400,
                 error=f"A criterion exceeds the {MAX_CRITERION_LENGTH}-character "
                       "limit. No changes were saved.")
+    # CORRECTION-01 (F-03): the product's EXISTING invalid-free-text policy — an
+    # embedded NUL anywhere is invalid input, rejected before persistence with
+    # its bounded EN/AR copy. Nothing is stripped or rewritten.
+    lang = _current_ui_lang()
+    for raw in submitted.values():
+        invalid = _free_text_error(raw, lang)
+        if invalid is not None:
+            return _render_criteria(sid, plan, status=400, error=invalid)
 
     # Trim only; whitespace-only deletes that one criterion; an identical
     # resubmission is an idempotent upsert.
@@ -8054,11 +8066,20 @@ def save_success_criteria(sid):
     try:
         _get_store().apply_success_criteria_delta(sid, delta)
     except Exception:
-        # The store rolled the ENTIRE delta back; memory was never touched.
-        return _render_criteria(sid, plan, status=503, error=SC_NOT_SAVED_MESSAGE)
+        # CORRECTION-01 (F-04): never turn an UNKNOWN durable outcome into a
+        # failure. Read the project back and decide from durable truth only.
+        outcome = _resolve_criteria_write(sid, delta)
+        if outcome == _SC_WRITE_NOT_SAVED:
+            # Demonstrably not reflected; memory was never touched.
+            return _render_criteria(sid, plan, status=503, error=SC_NOT_SAVED_MESSAGE)
+        if outcome == _SC_WRITE_UNKNOWN:
+            return _render_criteria(sid, None, status=503,
+                                    notice=SC_OUTCOME_UNKNOWN_MESSAGE)
+        # _SC_WRITE_SAVED: the requested state IS durably present; continue.
 
-    # COMMITTED. From here a failure is a presentation failure, never a failed
-    # save: durable truth wins and the next load shows the committed values.
+    # COMMITTED (or confirmed durably present). From here a failure is a
+    # presentation failure, never a failed save: durable truth wins and the
+    # next load shows the committed values.
     try:
         entry = SESSION_STORE.get(sid)
         if entry is not None and not _attach_success_criteria(sid, entry["state"]):

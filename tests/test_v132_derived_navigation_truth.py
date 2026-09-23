@@ -1772,7 +1772,8 @@ def test_group_two_reads_completed_with_its_residuals_carried():
 _S19_CONTRACT = ("`ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION "
                  "— IMPLEMENTATION-01 ONLY`")
 _S19_ENTERED = "`STAGE 19: ENTERED / NOT COMPLETE`"
-_S19_ONLY = "`AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION ONLY`"
+_S19_ONLY = ("`AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION — "
+             "IMPLEMENTATION-01 / CORRECTION-01`")
 _S19_NOT_FULL = ("`FULL CAP-09: NOT AUTHORIZED`", "`FULL WS-PFV-001: NOT AUTHORIZED`")
 
 
@@ -1840,7 +1841,8 @@ def test_stage_19_implementation_01_is_the_bounded_remediation_on_every_live_sur
            r"\*\*ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — "
            r"IMPLEMENTATION-01 ONLY\.\*\*",
            r"`ENTERED / NOT COMPLETE` — checkbox stays unticked",
-           r"\*\*AUTHORIZED IMPLEMENTATION\*\* \| \*\*DURABLE SUCCESS-CRITERION REMEDIATION ONLY\*\*",
+           r"\*\*AUTHORIZED IMPLEMENTATION\*\* \| \*\*DURABLE SUCCESS-CRITERION REMEDIATION — "
+           r"IMPLEMENTATION-01 / CORRECTION-01\*\*",
            r"\*\*FULL CAP-09\*\* \| `NOT AUTHORIZED`",
            r"\*\*FULL WS-PFV-001\*\* \| `NOT AUTHORIZED`",
            r"It is \*\*not\*\* full CAP-09, it is \*\*not\*\* full WS-PFV-001",
@@ -1858,7 +1860,18 @@ def test_stage_19_implementation_01_is_the_bounded_remediation_on_every_live_sur
            r"never reported as a failed save",
            r"Store failure and corruption fail closed with no partial set",
            r"never falls back to session-only saving",
-           r"A cold saved-project view stays view-only",
+           # CORRECTION-01: the corrected truth, and the rejected interpretation
+           # kept only as superseded history
+           r"\*\*Editing does not require writable progression state\.\*\*",
+           r"cold, not resumed, or already complete",
+           r"never reopens progression, never changes maturity, stage or gaps",
+           r"\*\*Planning-metadata corruption does not govern core progression\.\*\*",
+           r"never blocks cold entry, writable resume, an answer correction",
+           r"\*\*Section-11 consumers fail closed\.\*\*",
+           r"never repaired or collapsed into an empty collection",
+           r"A NUL anywhere in a criterion is invalid input",
+           r"unreadable means the outcome is unknown",
+           r"F-09, F-10 and F-11 are NOT part of CORRECTION-01",
            r"No parallel experiment store, second database",
            r"No Evidence, experiment-result or validation-result capture",
            r"`STAGE 11 / A2: DEFERRED / UNDISCHARGED`",
@@ -1866,7 +1879,8 @@ def test_stage_19_implementation_01_is_the_bounded_remediation_on_every_live_sur
            r"`CI OPTIMIZATION: SEPARATE / NOT IMPLEMENTED`",
            r"`STARTED: YES` · `COMPLETE: NO` · \*\*PARTIAL\*\* — unchanged",
            r"FURTHER CAP-01 IMPLEMENTATION\*\* \| \*\*NOT CURRENTLY AUTHORIZED")
-    _rejects(top, CONTRACT, "implementation-01",
+    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "implementation-01",
+             r"stays view-only", r"Continue the project to change",
              r"FULL CAP-09[^.|]{0,20}\W{0,4}AUTHORIZED(?! )",
              r"FULL (CAP-09|WS-PFV-001)\W{0,8}(IS )?AUTHORIZED\b",
              r"STAGE 19 COMPLETE: YES", r"STAGE 19: COMPLETE",
@@ -1908,7 +1922,11 @@ def test_stage_19_implementation_01_is_the_bounded_remediation_on_every_live_sur
     for line in ("ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION "
                  "— IMPLEMENTATION-01 ONLY",
                  "STAGE 19: ENTERED / NOT COMPLETE",
-                 "AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION ONLY",
+                 "AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION — "
+                 "IMPLEMENTATION-01 / CORRECTION-01",
+                 "CRITERIA EDITING: NO WRITABLE PROGRESSION STATE REQUIRED",
+                 "PLANNING-METADATA CORRUPTION: DOES NOT GOVERN CORE PROGRESSION",
+                 "SECTION-11 CONSUMERS: FAIL CLOSED WHEN DURABLE CRITERIA CANNOT BE READ",
                  "FULL CAP-09: NOT AUTHORIZED", "FULL WS-PFV-001: NOT AUTHORIZED",
                  "NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line

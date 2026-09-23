@@ -36,7 +36,7 @@ On that basis the Owner authorized ONE bounded Stage-19 architectural remediatio
 | | |
 |---|---|
 | **STAGE 19** | `ENTERED / NOT COMPLETE` — checkbox stays unticked |
-| **AUTHORIZED IMPLEMENTATION** | **DURABLE SUCCESS-CRITERION REMEDIATION ONLY** |
+| **AUTHORIZED IMPLEMENTATION** | **DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 / CORRECTION-01** |
 | **FULL CAP-09** | `NOT AUTHORIZED` |
 | **FULL WS-PFV-001** | `NOT AUTHORIZED` |
 | **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **PARTIAL** — unchanged |
@@ -70,9 +70,10 @@ must be durable before it is presented as a saved-project capability.
 **Binding behaviour.**
 
 - **Attachment:** one application-layer operation attaches the durable criteria to the state
-  actually consumed or published. That covers the cold saved-project entry, the HTML and
-  PDF deliverable, both criteria routes, explicit writable resume, answer correction and
-  engine-version adoption or reversal.
+  that Section 11 actually consumes: the HTML and PDF deliverable and both criteria routes.
+  *(Superseded 2026-09-23 by CORRECTION-01, preserved — this also listed "the cold
+  saved-project entry, … explicit writable resume, answer correction and engine-version
+  adoption or reversal" as attachment points.)*
 - **Currentness:** an edit is validated against CURRENT durable project truth (a Level-1
   reconstruction), never against a cached session. When currentness cannot be established,
   the edit is refused truthfully.
@@ -84,7 +85,31 @@ must be durable before it is presented as a saved-project capability.
   unavailable, store unavailable and corruption stay distinct. Store failure and corruption
   fail closed with no partial set. A stale criterion is preserved and never remapped.
 - **No fallback:** a memory-only context with no durable project never falls back to
-  session-only saving. A cold saved-project view stays view-only.
+  session-only saving. *(Superseded 2026-09-23 by CORRECTION-01, preserved — this ended "A
+  cold saved-project view stays view-only.", an implementation interpretation the Lead
+  rejected.)*
+
+**CORRECTION-01 (Owner authorization, 2026-09-23) — the corrected truth.**
+
+- **Editing does not require writable progression state.** An authorized durable project
+  whose current Section-11 plan can be reconstructed edits its criteria directly: cold, not
+  resumed, or already complete. Editing never reopens progression, never changes maturity,
+  stage or gaps, and never establishes a writable session. Cold progression stays read-only
+  for progression actions.
+- **Planning-metadata corruption does not govern core progression.** An unreadable or
+  corrupt criteria collection never blocks cold entry, writable resume, an answer correction
+  (its durable append, replay or state replacement) or engine-version adoption or reversal.
+- **Section-11 consumers fail closed.** The criteria routes and the HTML and PDF deliverable
+  fail closed while the durable criteria cannot be read. The corrupt rows stay durably
+  present and are never repaired or collapsed into an empty collection.
+- **Input.** A NUL anywhere in a criterion is invalid input: it is refused before persistence
+  (HTTP 400, the existing bilingual invalid-text copy) and the store and a database CHECK
+  refuse it independently.
+- **Uncertain outcome.** When the durable write raises, the project is read back and ONLY the
+  submitted delta is compared. The requested state present means saved; demonstrably absent
+  means not saved; unreadable means the outcome is unknown, and neither is asserted.
+- **Copy.** Unavailability copy no longer claims that a condition is temporary.
+- F-09, F-10 and F-11 are NOT part of CORRECTION-01.
 
 **Still NOT authorized.** No parallel experiment store, second database, PostgreSQL
 migration or generic metadata framework. No Evidence, experiment-result or validation-result
@@ -472,10 +497,12 @@ OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 —
 unticked** — one authorized bounded slice is not the stage.
 **Also ENTERED: Stage 19 — WS-PFV-001 / CAP-09 Experiment-Plan Designer.** `ACTIVE CONTRACT:
 STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 ONLY` · `STAGE 19:
-ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION
-ONLY` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
+ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION —
+IMPLEMENTATION-01 / CORRECTION-01` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
 `SuccessCriterion` stay the canonical planning owner; the remediation only makes the EXISTING
-criterion durable in the same project store. The Stage-19 checkbox stays unticked, and
+criterion durable in the same project store. Editing it needs no writable progression
+state, and planning-metadata corruption does not govern core progression. The Stage-19
+checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
 **Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and
 `STAGE 11 STARTED: NO`. It was routed PAST, not completed, and **routing past a deferred
@@ -484,6 +511,9 @@ evidence where applicable, and **new human activity requires separate authorizat
 existing consent/custody boundaries**. No human collection begins merely because routing
 moves past it.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded 2026-09-23 by CORRECTION-01, preserved: the Stage-19 routing line named
+"`AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION ONLY`".)*
 
 *(Superseded 2026-09-23, preserved so the change is visible rather than silent: the Stage-19
 routing line read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY` · `STAGE 19:

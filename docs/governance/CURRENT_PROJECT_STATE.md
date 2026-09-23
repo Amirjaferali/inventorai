@@ -15,10 +15,11 @@ Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two deli
 complete nothing beyond themselves. **No further CAP-01 implementation is currently
 authorized.** `ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION —
 IMPLEMENTATION-01 ONLY` · `STAGE 19: ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION:
-DURABLE SUCCESS-CRITERION REMEDIATION ONLY` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001:
+DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01 / CORRECTION-01` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001:
 NOT AUTHORIZED`. Section 11 + `SuccessCriterion` stay the canonical planning owner; the
-remediation only makes the EXISTING criterion durable in the same project store. No other
-Stage is authorized. Project-specific
+remediation only makes the EXISTING criterion durable in the same project store. Editing it
+needs no writable progression state, and planning-metadata corruption does not govern core
+progression. No other Stage is authorized. Project-specific
 CAP-01 behaviour returns only with a separately authorized architecture/data-model decision
 providing trustworthy typed technical-parameter inputs. The delivered mandates, their
 boundaries and the first authorized domain guidance profile (`electronics_electrical` only)
@@ -29,6 +30,9 @@ InventorAI domain that simply has no authorized CAP-01 profile yet.** Cross-stag
 capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
 operating practice — they add no Stage, gate or approval step.
 <!-- END CURRENT-BLOCK: current-position -->
+
+*(Superseded 2026-09-23 by CORRECTION-01, preserved: the current-position entry named
+"`AUTHORIZED IMPLEMENTATION: DURABLE SUCCESS-CRITERION REMEDIATION ONLY`".)*
 
 *(Superseded 2026-09-23, preserved so the change is visible rather than silent: the
 current-position entry read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY` ·

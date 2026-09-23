@@ -212,7 +212,7 @@ from engine.record_store import (
 from engine.session_reconstruction import RECONSTRUCTION_VERSION
 
 PW = "correct horse battery staple"
-VIEW_ONLY = webapp.SC_VIEW_ONLY_MESSAGE
+OUTCOME_UNKNOWN = webapp.SC_OUTCOME_UNKNOWN_MESSAGE
 NOT_SAVED = webapp.SC_NOT_SAVED_MESSAGE
 SAVED_NOT_SHOWN = webapp.SC_SAVED_NOT_SHOWN_MESSAGE
 NOT_A_PROJECT = webapp.SC_NOT_SAVED_PROJECT_MESSAGE
@@ -560,8 +560,11 @@ def test_15_16_17_23_stale_is_preserved_never_remapped_and_reattaches_by_identit
                     "The threshold will be chosen by measuring real stops.").status_code == 302
     new_state = SESSION_STORE[sid]["state"]
     assert new_state is not old_state                                   # replaced (23)
-    assert new_state.success_criteria[claim_id].criterion == "claim demonstrated at 20 km/h"
-    assert new_state.success_criteria[unknown_id].criterion == "threshold measured on 10 stops"
+    # The Section-11 consumer reads the durable criteria onto the REPLACED
+    # state it assembles (CORRECTION-01 F-02: no carrier prerequisite).
+    live_items = _reopened_items(sid)
+    assert live_items[claim_id]["success_criterion"] == "claim demonstrated at 20 km/h"
+    assert live_items[unknown_id]["success_criterion"] == "threshold measured on 10 stops"
     _restart()
     items = _reopened_items(sid)
     assert items[claim_id]["success_criterion"] == "claim demonstrated at 20 km/h"
@@ -620,43 +623,153 @@ def test_20_adoption_freshness_uses_the_durable_effective_version(client, monkey
     assert _durable(sid) == {ids[0]: "validated against durable truth"}
 
 
-# ==========================================================================
-# 21-22 — cold view is view-only; explicit resume attaches before publishing
-# ==========================================================================
-def test_21_cold_view_uses_durable_truth_without_writable_resume(client):
+def _progression_snapshot(sid):
+    """Durable progression truth of the saved project (maturity, stage, gaps,
+    open gaps and accepted-answer count) from the canonical reconstruction."""
+    recon = webapp.reconstruct_readonly_state(webapp._get_store(), sid)
+    return (recon.review.maturity_level, recon.review.current_stage,
+            sorted((g.gap_type, g.status) for g in recon.state.gaps),
+            recon.review.open_gaps, len(recon.review.accepted_answer_evidence))
+
+
+def _no_writable_session(sid):
+    entry = SESSION_STORE.get(sid)
+    return entry is None or getattr(entry["state"], "domain", None) is None
+
+
+def _assert_editable_page(client, sid, lang):
+    from web.ui_text import text
+    client.post("/ui-language", data={"lang": lang})
+    r, body = _criteria_page(client, sid)
+    client.post("/ui-language", data={"lang": "en"})
+    assert r.status_code == 200
+    assert ">%s</button>" % text("UI_B_SC_004", lang) in body          # save control
+    assert text("UI_SC_SAVE_CLEAR", lang) in body                      # truthful guidance
+    assert "readonly" not in body
+    # never an instruction to continue/resume the project to edit criteria
+    assert "Continue the project" not in body and "تابع المشروع" not in body
+    return body
+
+
+def test_21_cold_in_progress_project_edits_criteria_without_resume(client):
+    """CORRECTION-01 F-01: a cold, not-resumed saved project edits its criteria
+    directly. No writable progression session is created, progression does not
+    move, and the value survives another restart."""
     sid = _journey(client)
     eid = _live_ids(sid)[0]
     _post_criteria(client, sid, {eid: "cold readable target"})
     _restart()
+    before = _progression_snapshot(sid)
     fresh = csrf_client(app)
-    r, body = _criteria_page(fresh, sid)
-    assert r.status_code == 200
-    assert "cold readable target</textarea>" in body
-    assert VIEW_ONLY in body
-    from web.ui_text import text
-    assert "readonly" in body
-    assert ">%s</button>" % text("UI_B_SC_004", "en") not in body   # no save control
-    assert text("UI_SC_SAVE_CLEAR", "en") not in body                 # no save guidance
-    entry = SESSION_STORE.get(sid)
-    assert entry is None or getattr(entry["state"], "domain", None) is None
-    r = _post_criteria(fresh, sid, {eid: "must not be written from a cold view"})
-    assert r.status_code == 409
-    assert _durable(sid) == {eid: "cold readable target"}
-    entry = SESSION_STORE.get(sid)
-    assert entry is None or getattr(entry["state"], "domain", None) is None
+    for lang in ("en", "ar"):
+        body = _assert_editable_page(fresh, sid, lang)
+        assert "cold readable target</textarea>" in body
+    assert _no_writable_session(sid)
+    r = _post_criteria(fresh, sid, {eid: "edited cold, without resume"})
+    assert r.status_code == 302
+    assert _durable(sid) == {eid: "edited cold, without resume"}
+    assert _no_writable_session(sid)                     # nothing established
+    assert _progression_snapshot(sid) == before          # progression untouched
+    _restart()
+    assert _reopened_items(sid)[eid]["success_criterion"] == "edited cold, without resume"
 
 
-def test_22_explicit_resume_attaches_criteria_before_publishing(client):
+def _completed_project(client):
+    """A LEGITIMATELY completed saved project through the real routes: the
+    mechanism gap is answered closed, every remaining gap receives a substantive
+    answer and — where still open — an explicit Accept Risk, until maturity 2
+    with no open gap. Uses the existing accepted-risk journey helpers."""
+    from engine.progression_loop import select_next_gap
+    from engine.idea_state import (MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY,
+                                   BOUNDARY_AMBIGUITY)
+    from tests.test_wave1_rvr1_accepted_risk import (
+        _start as _ramp_start, _answer_until, _token as _ramp_token, _ATTEMPT)
+    strong = {
+        "PROBLEM_MECHANISM_FIT": (
+            "My invention addresses the problem of a folding ramp that can collapse "
+            "under a wheelchair. The toggle latch holds the ramp flat because it "
+            "snaps over its center point and resists folding under load. Without "
+            "this mechanism the ramp could fold while in use. However, this "
+            "mechanism does not address a ramp that is installed on uneven ground "
+            "— that is a limitation of the approach."),
+        "ASSUMPTION_INVENTORY": (
+            "I assume the toggle latch stays engaged under repeated wheelchair "
+            "loading. This assumption is unvalidated and load-bearing — if wrong, "
+            "the ramp could fold during use. I also assume the hinge paint will not "
+            "wear, but if wrong I would just repaint it. The first assumption is "
+            "essential; the second is peripheral."),
+        "EXPERTISE_GAP_AWARENESS": (
+            "The implementation demands expertise in structural load analysis, "
+            "specifically hinge and latch fatigue, and in accessibility standards "
+            "for ramps. I lack sufficient knowledge of fatigue analysis — I would "
+            "need to bring in a structural engineer. Without that expertise, the "
+            "latch sizing would be wrong and the ramp could fail."),
+    }
+    sid = _ramp_start(client)
+    state = SESSION_STORE[sid]["state"]
+    _answer_until(client, webapp, sid, MECHANISM_COMPLETENESS)
+
+    def _accept(gap):
+        client.post("/session/%s/accept-risk" % sid, data={
+            "gap_type": gap, "risk_confirm": "yes",
+            "answer_token": _ramp_token(client, sid)})
+
+    for gap in (PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY):
+        client.post("/session/%s" % sid, data={
+            "response": _ATTEMPT[gap], "answer_token": _ramp_token(client, sid),
+            "action": "answered"})
+        _accept(gap)
+    for _ in range(6):
+        gap = select_next_gap(state)
+        if gap is None:
+            break
+        client.post("/session/%s" % sid, data={
+            "response": strong[gap], "answer_token": _ramp_token(client, sid),
+            "action": "answered"})
+        if state.get_gap(gap).status in ("OPEN", "PARTIAL"):
+            _accept(gap)
+    assert state.maturity_level >= 2 and not state.get_open_gaps(), "not completed"
+    return sid
+
+
+def test_21c_completed_project_edits_criteria_after_restart_without_resume(client):
+    """CORRECTION-01 F-01, the case that was a dead end: a genuinely COMPLETED
+    project cannot be resumed (by design), yet its criteria stay editable after
+    a restart — without reopening progression and without any resume."""
+    sid = _completed_project(client)
+    ids = _live_ids(sid)
+    assert ids, "a completed project still carries its Prototype & Test Plan"
+    _post_criteria(client, sid, {ids[0]: "set while live"})
+    _restart()
+    before = _progression_snapshot(sid)
+    assert before[0] >= 2 and before[3] == ()            # completed: no open gap
+    fresh = csrf_client(app)
+    # negative control: resume is (correctly) refused for a completed project
+    fresh.post("/session/%s/resume" % sid, data={})
+    assert _no_writable_session(sid)
+    for lang in ("en", "ar"):
+        body = _assert_editable_page(fresh, sid, lang)
+        assert "set while live</textarea>" in body
+    r = _post_criteria(fresh, sid, {ids[0]: "edited after completion"})
+    assert r.status_code == 302
+    assert _durable(sid) == {ids[0]: "edited after completion"}
+    assert _no_writable_session(sid)
+    assert _progression_snapshot(sid) == before          # nothing reopened
+    _restart()
+    assert _reopened_items(sid)[ids[0]]["success_criterion"] == "edited after completion"
+
+
+def test_22_resumed_project_consumers_read_the_durable_criteria(client):
+    """Resume establishes progression only; Section-11 consumers read the
+    durable criteria themselves (CORRECTION-01 F-02: no carrier prerequisite)."""
     sid = _journey(client)
     eid = _live_ids(sid)[1]
     _post_criteria(client, sid, {eid: "resumed target"})
     _restart()
     fresh = csrf_client(app)
     assert fresh.post("/session/%s/resume" % sid, data={}).status_code == 302
-    state = SESSION_STORE[sid]["state"]
-    assert getattr(state, "domain", None) is not None               # writable
-    assert state.success_criteria[eid].criterion == "resumed target"
-    assert state.success_criteria[eid].provenance == "user_defined"
+    assert not _no_writable_session(sid)                             # writable
+    assert "resumed target" in _report(fresh, sid)
     assert _post_criteria(fresh, sid, {eid: "edited after resume"}).status_code == 302
     assert _durable(sid) == {eid: "edited after resume"}
 
@@ -666,16 +779,24 @@ def _live_ids_after_restart(sid):
     return [it["experiment_id"] for it in _plan_items(recon.state)]
 
 
-def test_22b_resume_refuses_establishment_on_corrupt_metadata(client):
+def test_22b_corrupt_criteria_do_not_block_session_entry_or_resume(client):
+    """CORRECTION-01 F-02: an unreadable planning-metadata row blocks neither
+    ordinary cold entry nor writable resume; it stays durably present and
+    unavailable only where Section 11 consumes it."""
     sid = _journey(client)
     eid = _live_ids(sid)[0]
     _post_criteria(client, sid, {eid: "good"})
     _restart()
-    _insert_raw(sid, _live_ids_after_restart(sid)[1], "  untrimmed  ")
+    bad = _live_ids_after_restart(sid)[1]
+    _insert_raw(sid, bad, "  untrimmed  ")
     fresh = csrf_client(app)
-    fresh.post("/session/%s/resume" % sid, data={})
-    entry = SESSION_STORE.get(sid)
-    assert entry is None or getattr(entry["state"], "domain", None) is None
+    assert fresh.get("/session/%s" % sid).status_code == 200         # cold entry
+    assert fresh.post("/session/%s/resume" % sid, data={}).status_code == 302
+    assert not _no_writable_session(sid)                              # resumed
+    _answer(fresh, sid, "The LED is a bright red one.")               # progression
+    assert (bad, "  untrimmed  ") in _raw_rows(sid)                   # not repaired
+    r, body = _criteria_page(fresh, sid)
+    assert r.status_code == 503 and CRITERIA_UNAVAILABLE in body
 
 
 # ==========================================================================
@@ -690,10 +811,14 @@ def test_24_adoption_and_reversal_carry_the_durable_criteria(client):
         assert _adopt(client, sid, action).status_code == 302
         after = SESSION_STORE[sid]["state"]
         assert after is not before                                   # replaced
+        # The consumer attaches the durable criteria to the REPLACED state it
+        # assembles (CORRECTION-01 F-02: no carrier prerequisite on replacement).
+        with app.test_request_context():
+            context = webapp._deliverable_context(sid)
+        assert context is not None and context[4] is after
         assert {k: v.criterion for k, v in after.success_criteria.items()} == {
             ids[0]: "held across adoption", ids[1]: "and reversal"}
-        from engine.deliverable_assembler import assemble_deliverable
-        plan = assemble_deliverable(after)["section_11_prototype_test_plan"]
+        plan = context[1]["section_11_prototype_test_plan"]
         plan_ids = [it["experiment_id"] for it in plan["items"]]
         # Present on the current plan, or truthfully stale — never dropped.
         stale = {s["experiment_id"] for s in plan["stale_criteria"]}
@@ -787,8 +912,16 @@ def test_29_corrupt_metadata_fails_closed_and_never_reads_as_empty(client, corru
     assert r.status_code == 302 and r.headers["Location"].endswith("/")
     r = _post_criteria(client, sid, {ids[2]: "blocked while corrupt"})
     assert r.status_code == 503
+    r = csrf_client(app).post("/session/%s/deliverable.pdf" % sid, data={})
+    assert r.status_code == 302 and r.headers["Location"].endswith("/")   # PDF closed
+    assert len(_raw_rows(sid)) == 2                                        # not repaired
     _restart()
-    r = csrf_client(app).get("/session/%s" % sid)          # cold load fails closed
+    # CORRECTION-01 F-02: ordinary cold entry does not consume Section 11, so an
+    # unreadable planning-metadata row no longer blocks it ...
+    r = csrf_client(app).get("/session/%s" % sid)
+    assert r.status_code == 200
+    # ... while every Section-11 consumer still fails closed after the restart.
+    r = csrf_client(app).get("/session/%s/deliverable" % sid)
     assert r.status_code == 302 and r.headers["Location"].endswith("/")
 
 
@@ -978,11 +1111,10 @@ def test_cold_report_without_a_current_plan_never_shows_saved_criteria_as_stale(
             html.unescape(r.get_data(as_text=True))
 
 
-def test_correction_refuses_before_its_append_when_saved_criteria_are_corrupt(client):
-    """A correction must never COMMIT against a criteria collection that could
-    not be reattached to the replayed state afterwards: with a corrupt row it
-    is refused BEFORE the durable append — no new ledger record, nothing
-    replaced, and the truthful not-applied message (never "saved")."""
+def test_corrupt_criteria_never_block_a_valid_answer_correction(client):
+    """CORRECTION-01 F-02: a corrupt planning-metadata row must NOT prevent a
+    valid answer correction from being durably appended, replayed and applied.
+    The corrupt row stays durably present and unavailable on Section 11."""
     sid = _journey(client)
     ids = _live_ids(sid)
     _insert_raw(sid, ids[0], "  untrimmed  ")
@@ -992,6 +1124,269 @@ def test_correction_refuses_before_its_append_when_saved_criteria_are_corrupt(cl
     record = _answered_record(sid, ELEC_ANSWERS[3])
     assert _correct(client, sid, record.record_id,
                     "The rain question is answered by a sealed enclosure.").status_code == 302
-    assert [assertion_to_dict(r) for r in store.load_contract(sid).assertions] == ledger_before
-    assert SESSION_STORE[sid]["state"] is live_before
-    assert SESSION_STORE[sid].get("_answer_error") == webapp.CORRECTION_NOT_APPLIED_MESSAGE
+    ledger_after = [assertion_to_dict(r) for r in store.load_contract(sid).assertions]
+    assert len(ledger_after) == len(ledger_before) + 1             # durably appended
+    assert SESSION_STORE[sid]["state"] is not live_before           # replaced
+    assert SESSION_STORE[sid].get("_answer_error") is None
+    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.CORRECTION_APPLIED_ACK
+    assert (ids[0], "  untrimmed  ") in _raw_rows(sid)              # not repaired
+    r, body = _criteria_page(client, sid)
+    assert r.status_code == 503 and CRITERIA_UNAVAILABLE in body
+
+
+def test_corrupt_criteria_never_block_adoption_or_reversal(client):
+    """CORRECTION-01 F-02: engine-version adoption and reversal replace core
+    state without SuccessCriterion hydration as a gate."""
+    sid = _legacy_journey(client)
+    ids = _live_ids(sid)
+    _insert_raw(sid, ids[0], "\tcorrupt\t")
+    for action, ack in (("adopt", "EVA_ADOPTED"), ("revert", "EVA_REVERTED")):
+        before = SESSION_STORE[sid]["state"]
+        assert _adopt(client, sid, action).status_code == 302
+        assert SESSION_STORE[sid]["state"] is not before
+        assert SESSION_STORE[sid].get("_eva_ack") == ack
+        assert SESSION_STORE[sid].get("_eva_error") is None
+    assert (ids[0], "\tcorrupt\t") in _raw_rows(sid)
+    r, body = _criteria_page(client, sid)
+    assert r.status_code == 503 and CRITERIA_UNAVAILABLE in body
+
+# ==========================================================================
+# CORRECTION-01 F-03 — NUL is invalid criterion input everywhere
+# ==========================================================================
+NUL_CASES = [("leading", "\x00leading nul"), ("embedded", "mid\x00dle"),
+             ("trailing", "trailing nul\x00")]
+
+
+@pytest.mark.parametrize("where,value", NUL_CASES)
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_f03_http_rejects_nul_before_persistence(client, where, value, lang):
+    sid = _journey(client)
+    ids = _live_ids(sid)
+    _post_criteria(client, sid, {ids[1]: "existing"})
+    memory_before = copy.deepcopy(SESSION_STORE[sid]["state"].success_criteria)
+    client.post("/ui-language", data={"lang": lang})
+    r = _post_criteria(client, sid, {ids[0]: value, ids[1]: "would change"})
+    body = html.unescape(r.get_data(as_text=True))
+    assert r.status_code == 400                               # never a 503
+    assert webapp._free_text_error(value, lang) in body      # bounded EN/AR copy
+    assert "just now" not in body and "الآن" not in body
+    assert _durable(sid) == {ids[1]: "existing"}               # whole request refused
+    assert SESSION_STORE[sid]["state"].success_criteria == memory_before
+
+
+@pytest.mark.parametrize("where,value", NUL_CASES)
+def test_f03_store_api_and_database_reject_nul(tmp_path, where, value):
+    from engine.record_contract import ProjectRecordContract
+    from engine.idea_state import IdeaState
+    store = SqliteRecordStore(str(tmp_path / "nul.sqlite"))
+    try:
+        pid = store.create_project(
+            ProjectRecordContract.from_state(IdeaState(idea_id="n")), project_id="p-nul")
+        eid = "exp_v1_acknowledged_unknown_" + "c" * 32
+        with pytest.raises(SuccessCriterionInvalid):
+            store.apply_success_criteria_delta(pid, {eid: value})
+        with pytest.raises(sqlite3.IntegrityError):          # CHECK, defence in depth
+            store._conn.execute("INSERT INTO prototype_plan_metadata VALUES (?, ?, ?)",
+                                (pid, eid, value))
+        assert store.load_success_criteria(pid) == ()
+    finally:
+        store.close()
+
+
+def test_f03_legitimate_text_is_preserved_exactly(client):
+    """Negative controls: Arabic, other Unicode, internal newlines, tabs and
+    punctuation are all legitimate and stored verbatim (well inside the limit)."""
+    sid = _journey(client)
+    ids = _live_ids(sid)
+    values = {ids[0]: "يضيء الضوء خلال ثانيتين — ✓ 2 s",
+              ids[1]: "line one\r\nline two\twith a tab",
+              ids[2]: "Punctuation: (a), [b]; {c}! ? \"q\" 'r' 50% ±1 °C"}
+    assert _post_criteria(client, sid, values).status_code == 302
+    assert _durable(sid) == values
+    _restart()
+    items = _reopened_items(sid)
+    for eid, text in values.items():
+        assert items[eid]["success_criterion"] == text
+
+
+# ==========================================================================
+# CORRECTION-01 F-04 — an uncertain durable outcome is resolved, never guessed
+# ==========================================================================
+class _CommitThenRaise:
+    """Bounded injection: the transaction COMMITS, then an error is reported —
+    the 'error after the commit point' case."""
+
+    def __init__(self, conn):
+        self._conn = conn
+        self.armed = True
+
+    def execute(self, sql, *args):
+        if sql == "COMMIT" and self.armed:
+            self.armed = False
+            self._conn.execute("COMMIT")
+            raise sqlite3.OperationalError("injected: error after the commit point")
+        return self._conn.execute(sql, *args)
+
+    def __getattr__(self, name):
+        return getattr(self._conn, name)
+
+
+def test_f04_a_before_commit_failure_is_confirmed_not_saved(client, monkeypatch):
+    sid = _journey(client)
+    ids = _live_ids(sid)
+    store = webapp._get_store()
+    proxy = _FailOnSecondMutation(store._conn)
+    monkeypatch.setattr(store, "_conn", proxy)
+    r = _post_criteria(client, sid, {ids[0]: "one", ids[1]: "two"})
+    monkeypatch.setattr(store, "_conn", proxy._conn)
+    body = html.unescape(r.get_data(as_text=True))
+    assert r.status_code == 503 and NOT_SAVED in body
+    assert OUTCOME_UNKNOWN not in body and SAVED_NOT_SHOWN not in body
+    assert _durable(sid) == {}
+
+
+@pytest.mark.parametrize("mixed", [False, True])
+def test_f04_b_d_e_committed_delta_is_recognized_as_saved(client, monkeypatch, mixed):
+    """B: the requested state is durably present after the exception -> saved,
+    never "Nothing was changed". D: a mixed upsert + delete confirms only when
+    EVERY submitted key matches. E: omitted keys take no part."""
+    sid = _journey(client)
+    ids = _live_ids(sid)
+    _post_criteria(client, sid, {ids[1]: "to delete", ids[2]: "omitted, untouched"})
+    delta = {ids[0]: "committed then raised"}
+    if mixed:
+        delta[ids[1]] = ""
+    store = webapp._get_store()
+    proxy = _CommitThenRaise(store._conn)
+    monkeypatch.setattr(store, "_conn", proxy)
+    r = _post_criteria(client, sid, delta)
+    monkeypatch.setattr(store, "_conn", proxy._conn)
+    assert r.status_code == 302 and r.headers["Location"].endswith("/deliverable")
+    expected = {ids[0]: "committed then raised", ids[2]: "omitted, untouched"}
+    if not mixed:
+        expected[ids[1]] = "to delete"
+    assert _durable(sid) == expected
+    # published to memory only AFTER the durable truth was established
+    assert {k: v.criterion for k, v in
+            SESSION_STORE[sid]["state"].success_criteria.items()} == expected
+
+
+def test_f04_c_f_unreadable_outcome_is_unknown_and_memory_untouched(client, monkeypatch):
+    sid = _journey(client)
+    ids = _live_ids(sid)
+    live = SESSION_STORE[sid]["state"]
+    memory_before = copy.deepcopy(live.success_criteria)
+    real_load = SqliteRecordStore.load_success_criteria
+    calls = {"n": 0}
+
+    def load(self, project_id):
+        # call 1 establishes the current plan BEFORE the write; the reload that
+        # would resolve the outcome after the failed write is unreadable.
+        calls["n"] += 1
+        if calls["n"] >= 2:
+            raise sqlite3.OperationalError("injected: database is locked")
+        return real_load(self, project_id)
+
+    def failing_apply(self, project_id, delta):
+        raise sqlite3.OperationalError("injected: disk I/O error")
+
+    monkeypatch.setattr(SqliteRecordStore, "load_success_criteria", load)
+    monkeypatch.setattr(SqliteRecordStore, "apply_success_criteria_delta", failing_apply)
+    r = _post_criteria(client, sid, {ids[0]: "outcome cannot be known"})
+    body = html.unescape(r.get_data(as_text=True))
+    assert r.status_code == 503 and OUTCOME_UNKNOWN in body
+    assert NOT_SAVED not in body and SAVED_NOT_SHOWN not in body   # neither asserted
+    assert 'name="criterion__' not in body                         # no stale form
+    assert live.success_criteria == memory_before
+
+
+def test_f04_partial_match_is_not_confirmed_as_saved(client, monkeypatch):
+    """D: one submitted key already durable, the other not -> NOT saved."""
+    sid = _journey(client)
+    ids = _live_ids(sid)
+    _post_criteria(client, sid, {ids[0]: "already there"})
+
+    def failing_apply(self, project_id, delta):
+        raise sqlite3.OperationalError("injected: failed before commit")
+
+    monkeypatch.setattr(SqliteRecordStore, "apply_success_criteria_delta", failing_apply)
+    r = _post_criteria(client, sid, {ids[0]: "already there", ids[1]: "never written"})
+    assert r.status_code == 503 and NOT_SAVED in html.unescape(r.get_data(as_text=True))
+    assert _durable(sid) == {ids[0]: "already there"}
+
+
+# ==========================================================================
+# CORRECTION-01 F-05 — no temporariness is claimed where it is not known
+# ==========================================================================
+_TEMPORAL_EN = ("just now", "try again", "shortly", "temporar", "later", "moment")
+_TEMPORAL_AR = ("الآن", "بعد قليل", "لاحقًا", "مؤقت", "حاول مرة أخرى")
+
+
+def _assert_no_temporariness(body, lang):
+    for word in (_TEMPORAL_EN if lang == "en" else _TEMPORAL_AR):
+        assert word not in body, (lang, word)
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_f05_unreconstructable_project_copy_claims_no_temporariness(client, lang):
+    """A saved project the current architecture cannot reconstruct (a legacy
+    ILT start-route project) is told its plan is not available — never that a
+    retry will help. The project is NOT made reconstructable."""
+    from web.ui_text import text
+    r = client.post("/start_ilt002_water_leak",
+                    data={"idea": "A water leak sensor with a buzzer and a battery circuit"})
+    sid = r.headers["Location"].rsplit("/", 1)[-1]
+    rv = webapp.reconstruct_readonly_state(webapp._get_store(), sid)
+    assert rv.review.level != 1                          # genuinely not reconstructable
+    client.post("/ui-language", data={"lang": lang})
+    r, body = _criteria_page(client, sid)
+    assert r.status_code == 503
+    notice = text("UI_SC_ERR_PLAN_UNAVAILABLE", lang)
+    assert notice in body
+    _assert_no_temporariness(notice, lang)
+    assert text("UI_B_SC_005", lang) not in body         # never "no experiments"
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_f05_unreadable_criteria_copy_claims_no_temporariness(client, lang):
+    from web.ui_text import text
+    sid = _journey(client)
+    _insert_raw(sid, _live_ids(sid)[0], " padded ")
+    client.post("/ui-language", data={"lang": lang})
+    r, body = _criteria_page(client, sid)
+    notice = text("UI_SC_ERR_CRITERIA_UNAVAILABLE", lang)
+    assert r.status_code == 503 and notice in body
+    _assert_no_temporariness(notice, lang)
+    for key in ("UI_SC_ERR_SAVED_NOT_SHOWN", "UI_SC_ERR_OUTCOME_UNKNOWN"):
+        _assert_no_temporariness(text(key, lang), lang)
+
+
+@pytest.mark.parametrize("durable,delta,expected", [
+    # every submitted upsert present, every submitted deletion absent -> saved
+    ({"a": "x", "z": "omitted"}, {"a": "x", "b": None}, "saved"),
+    # a submitted deletion still present -> demonstrably not saved
+    ({"a": "x", "b": "still here"}, {"a": "x", "b": None}, "not_saved"),
+    # a submitted upsert with a different durable value -> not saved
+    ({"a": "old"}, {"a": "new"}, "not_saved"),
+    # a submitted upsert absent -> not saved
+    ({}, {"a": "new"}, "not_saved"),
+    # omitted ids never participate, whatever their value
+    ({"a": "x", "omitted": "anything"}, {"a": "x"}, "saved"),
+])
+def test_f04_confirmation_rule_compares_only_the_submitted_delta(monkeypatch, durable, delta,
+                                                                 expected):
+    class _Store:
+        def load_success_criteria(self, project_id):
+            return tuple(durable.items())
+
+    monkeypatch.setattr(webapp, "_get_store", lambda: _Store())
+    assert webapp._resolve_criteria_write("p", delta) == expected
+
+
+def test_f04_confirmation_rule_unreadable_durable_state_is_unknown(monkeypatch):
+    class _Store:
+        def load_success_criteria(self, project_id):
+            raise SuccessCriterionCorrupt("malformed")
+
+    monkeypatch.setattr(webapp, "_get_store", lambda: _Store())
+    assert webapp._resolve_criteria_write("p", {"a": "x"}) == "unknown"
