@@ -21,7 +21,10 @@ from engine.idea_state import (
     CLOSED, REASONED, ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
 )
 from engine.deliverable_assembler import assemble_deliverable
+import web.app as webapp
 from web.app import app, SESSION_STORE, MAX_CRITERION_LENGTH
+from tests.test_stage19_durable_success_criteria import (
+    ELEC_ANSWERS, _journey as _real_journey)
 
 PREFIX = "criterion__"
 REQUIRED = "Owner-defined criterion required."
@@ -53,6 +56,23 @@ def _seed(unknown="I do not know how many wrong attempts should trigger lockout"
         s.known_mechanism = Evidence(mech, REASONED, 0)
     SESSION_STORE[sid] = {"state": s, "last_result": None, "transcript": []}
     return sid, s
+
+
+# Stage 19 / CAP-09 durable SuccessCriterion: the criteria ROUTES work against
+# CURRENT durable project truth (a Level-1 reconstruction of the saved project),
+# so every route test below runs on a REAL saved project created through /start
+# and answered through the real route. The returned state is the live
+# SESSION_STORE carrier the route publishes to only after a durable commit. The
+# synthetic `_seed` above stays for the engine-level tests, which call the
+# assembler directly and never touch a route.
+def _durable_seed(answers=ELEC_ANSWERS):
+    sid = _real_journey(csrf_client(app), answers=answers)
+    return sid, SESSION_STORE[sid]["state"]
+
+
+def _store_criteria(sid, mapping):
+    """Write criteria DURABLY, exactly as a committed save would."""
+    webapp._get_store().apply_success_criteria_delta(sid, mapping)
 
 
 def _ids(s):
@@ -104,7 +124,7 @@ def test_4_criteria_do_not_alter_maturity_or_progression():
 # === Stable identity (5-8) ==================================================
 
 def test_5_criterion_stored_by_experiment_id():
-    sid, s = _seed()
+    sid, s = _durable_seed()
     eid = _ids(s)[0]
     _post(csrf_client(app), sid, {eid: "alarm within the user-chosen window"})
     assert s.success_criteria[eid].criterion == "alarm within the user-chosen window"
@@ -141,6 +161,22 @@ def test_8_two_assumption_experiments_hold_different_criteria():
          "second assumption about radio range through concrete")
     ids = _ids(s)
     assert len(ids) == 2
+    # Engine level: two same-type experiments carry two distinct criteria.
+    s.success_criteria[ids[0]] = SuccessCriterion("crit A")
+    s.success_criteria[ids[1]] = SuccessCriterion("crit B")
+    by_id = {it["experiment_id"]: it["success_criterion"]
+             for it in assemble_deliverable(s)["section_11_prototype_test_plan"]["items"]}
+    assert by_id == {ids[0]: "crit A", ids[1]: "crit B"}
+
+
+def test_8_route_two_same_type_experiments_hold_different_criteria():
+    # Route level, on a REAL saved project: a real journey yields two
+    # acknowledged-unknown experiments (the same source type) with distinct ids.
+    sid, s = _durable_seed()
+    items = assemble_deliverable(s)["section_11_prototype_test_plan"]["items"]
+    ids = [it["experiment_id"] for it in items
+           if it["traceability"]["source_type"] == "acknowledged_unknown"]
+    assert len(ids) == 2 and ids[0] != ids[1]
     _post(csrf_client(app), sid, {ids[0]: "crit A", ids[1]: "crit B"})
     assert s.success_criteria[ids[0]].criterion == "crit A"
     assert s.success_criteria[ids[1]].criterion == "crit B"
@@ -149,9 +185,9 @@ def test_8_two_assumption_experiments_hold_different_criteria():
 # === GET page (9-13) ========================================================
 
 def test_9_10_11_12_get_lists_experiments_and_distinguishes_from_result():
-    sid, s = _seed()
+    sid, s = _durable_seed()
     ids = _ids(s)
-    s.success_criteria[ids[0]] = SuccessCriterion("prefilled target one")
+    _store_criteria(sid, {ids[0]: "prefilled target one"})
     body = csrf_client(app).get(f"/session/{sid}/success-criteria").get_data(as_text=True)
     # 9: lists all current experiments
     for it in assemble_deliverable(s)["section_11_prototype_test_plan"]["items"]:
@@ -172,14 +208,14 @@ def test_13_unknown_session_redirects():
 # === POST (14-23) ===========================================================
 
 def test_14_valid_criterion_saved():
-    sid, s = _seed()
+    sid, s = _durable_seed()
     r = _post(csrf_client(app), sid, {_ids(s)[0]: "a saved target"})
     assert r.status_code == 302
     assert s.success_criteria[_ids(s)[0]].criterion == "a saved target"
 
 
 def test_15_criterion_can_be_edited():
-    sid, s = _seed(); eid = _ids(s)[0]
+    sid, s = _durable_seed(); eid = _ids(s)[0]
     c = csrf_client(app)
     _post(c, sid, {eid: "first"})
     _post(c, sid, {eid: "second edited"})
@@ -187,13 +223,13 @@ def test_15_criterion_can_be_edited():
 
 
 def test_16_whitespace_trimmed_internal_preserved():
-    sid, s = _seed(); eid = _ids(s)[0]
+    sid, s = _durable_seed(); eid = _ids(s)[0]
     _post(csrf_client(app), sid, {eid: "   keep  inner   spacing   "})
     assert s.success_criteria[eid].criterion == "keep  inner   spacing"
 
 
 def test_17_whitespace_only_removes_criterion():
-    sid, s = _seed(); eid = _ids(s)[0]
+    sid, s = _durable_seed(); eid = _ids(s)[0]
     c = csrf_client(app)
     _post(c, sid, {eid: "present"})
     assert eid in s.success_criteria
@@ -202,7 +238,7 @@ def test_17_whitespace_only_removes_criterion():
 
 
 def test_18_unknown_experiment_id_rejected():
-    sid, s = _seed()
+    sid, s = _durable_seed()
     before = dict(s.success_criteria)
     r = _post(csrf_client(app), sid, {"exp_v1_acknowledged_unknown_" + "0"*32: "x"})
     assert r.status_code == 400
@@ -210,7 +246,7 @@ def test_18_unknown_experiment_id_rejected():
 
 
 def test_19_stale_experiment_id_rejected():
-    sid, s = _seed()
+    sid, s = _durable_seed()
     stale_id = "exp_v1_reasoned_leading_claim_" + "a"*32   # not in current plan
     r = _post(csrf_client(app), sid, {stale_id: "x"})
     assert r.status_code == 400
@@ -218,7 +254,7 @@ def test_19_stale_experiment_id_rejected():
 
 
 def test_20_over_limit_rejected_without_partial_save():
-    sid, s = _seed(); ids = _ids(s)
+    sid, s = _durable_seed(); ids = _ids(s)
     r = _post(csrf_client(app), sid,
               {ids[0]: "ok", ids[1]: "a" * (MAX_CRITERION_LENGTH + 1)})
     assert r.status_code == 400
@@ -227,25 +263,29 @@ def test_20_over_limit_rejected_without_partial_save():
 
 
 def test_21_multiple_criteria_saved_in_one_request():
-    sid, s = _seed(); ids = _ids(s)
+    sid, s = _durable_seed(); ids = _ids(s)
     _post(csrf_client(app), sid, {ids[0]: "c0", ids[1]: "c1", ids[2]: "c2"})
     assert [s.success_criteria[i].criterion for i in ids] == ["c0", "c1", "c2"]
 
 
 def test_22_no_transcript_entry_written():
-    sid, s = _seed(); eid = _ids(s)[0]
+    sid, s = _durable_seed(); eid = _ids(s)[0]
     path = f"/tmp/ilt002_transcript_{sid}.jsonl"
     if os.path.exists(path):
         os.remove(path)
+    # A real journey already carries its answered turns; the criteria route
+    # must add NOTHING to the ILT-002 transcript.
+    transcript_before = copy.deepcopy(SESSION_STORE[sid]["transcript"])
     _post(csrf_client(app), sid, {eid: "no transcript please"})
     assert not os.path.exists(path)
-    assert SESSION_STORE[sid]["transcript"] == []
+    assert SESSION_STORE[sid]["transcript"] == transcript_before
 
 
 @pytest.mark.parametrize("lang", ["en", "ar"])
 def test_experiment_context_matches_current_payload_without_state_change(lang):
     from web.ui_text import text
-    sid, state = _seed(unknown='Unknown <img src=x> العربية & details')
+    sid, state = _durable_seed(answers=ELEC_ANSWERS[:2] + (
+        'I do not know whether Unknown <img src=x> العربية & details matter.',))
     client = csrf_client(app)
     with client.session_transaction() as session:
         session['ui_lang'] = lang
@@ -277,17 +317,19 @@ def test_experiment_context_matches_current_payload_without_state_change(lang):
 
 @pytest.mark.parametrize("lang", ["en", "ar"])
 def test_empty_plan_and_rejection_preserve_context_contract(lang):
-    sid, state = _seed(unknown=None, assumption=None, mech=None)
+    sid, state = _durable_seed(answers=())          # a real project with no plan yet
+    assert _ids(state) == []
     client = csrf_client(app)
     with client.session_transaction() as session:
         session['ui_lang'] = lang
     body = client.get(f'/session/{sid}/success-criteria').get_data(as_text=True)
     assert 'class="experiment-context"' not in body
     assert 'name="criterion__' not in body
-    sid, state = _seed()
+    sid, state = _durable_seed()
     eid = _ids(state)[0]
-    state.success_criteria[eid] = SuccessCriterion('existing target')
-    state.success_criteria['stale-id'] = SuccessCriterion('preserved stale target')
+    _store_criteria(sid, {eid: 'existing target',
+                          'exp_v1_reasoned_leading_claim_' + 'b' * 32:
+                              'preserved stale target'})
     before = copy.deepcopy(state.__dict__)
     response = _post(client, sid, {eid: 'x' * (MAX_CRITERION_LENGTH + 1)})
     assert response.status_code == 400
@@ -299,7 +341,7 @@ def test_empty_plan_and_rejection_preserve_context_contract(lang):
 
 
 def test_23_only_planning_metadata_changes_in_session():
-    sid, s = _seed(); eid = _ids(s)[0]
+    sid, s = _durable_seed(); eid = _ids(s)[0]
     before = _snap(s)
     _post(csrf_client(app), sid, {eid: "target"})
     assert _snap(s) == before                        # maturity/gaps/evidence/iteration unchanged
@@ -392,14 +434,14 @@ def test_31_html_is_escaped():
 
 
 def test_32_unknown_id_not_accepted():
-    sid, s = _seed()
+    sid, s = _durable_seed()
     r = _post(csrf_client(app), sid, {"totally_bogus_id": "x"})
     assert r.status_code == 400
     assert "totally_bogus_id" not in s.success_criteria
 
 
 def test_33_34_35_no_evidence_gap_or_maturity_change():
-    sid, s = _seed(); eid = _ids(s)[0]
+    sid, s = _durable_seed(); eid = _ids(s)[0]
     mech_q = s.known_mechanism.quality
     gap_status = [(g.gap_type, g.status) for g in s.gaps]
     maturity = s.maturity_level
@@ -412,7 +454,7 @@ def test_33_34_35_no_evidence_gap_or_maturity_change():
 # === POST atomicity & partial-submission contract ===========================
 
 def test_atomic_reject_preserves_a_valid_field_when_another_is_unknown():
-    sid, s = _seed(); ids = _ids(s)
+    sid, s = _durable_seed(); ids = _ids(s)
     r = csrf_client(app).post(
         f"/session/{sid}/success-criteria",
         data={PREFIX + ids[0]: "a valid one",
@@ -423,7 +465,7 @@ def test_atomic_reject_preserves_a_valid_field_when_another_is_unknown():
 
 
 def test_omitted_field_leaves_existing_criterion_unchanged():
-    sid, s = _seed(); ids = _ids(s)
+    sid, s = _durable_seed(); ids = _ids(s)
     c = csrf_client(app)
     _post(c, sid, {ids[0]: "keep me", ids[1]: "and me"})
     # second request omits ids[0] entirely; updates only ids[1]
@@ -434,7 +476,7 @@ def test_omitted_field_leaves_existing_criterion_unchanged():
 
 
 def test_partial_valid_request_does_not_delete_other_criteria():
-    sid, s = _seed(); ids = _ids(s)
+    sid, s = _durable_seed(); ids = _ids(s)
     c = csrf_client(app)
     _post(c, sid, {ids[0]: "first", ids[1]: "second", ids[2]: "third"})
     _post(c, sid, {ids[1]: "second-edited"})        # only one field present
@@ -444,7 +486,7 @@ def test_partial_valid_request_does_not_delete_other_criteria():
 
 
 def test_repeated_identical_submission_is_idempotent():
-    sid, s = _seed(); eid = _ids(s)[0]
+    sid, s = _durable_seed(); eid = _ids(s)[0]
     c = csrf_client(app)
     _post(c, sid, {eid: "stable target"})
     _post(c, sid, {eid: "stable target"})
@@ -453,11 +495,12 @@ def test_repeated_identical_submission_is_idempotent():
 
 
 def test_rejected_submission_writes_no_transcript():
-    sid, s = _seed()
+    sid, s = _durable_seed()
     path = f"/tmp/ilt002_transcript_{sid}.jsonl"
     if os.path.exists(path):
         os.remove(path)
+    transcript_before = copy.deepcopy(SESSION_STORE[sid]["transcript"])
     r = _post(csrf_client(app), sid, {"exp_v1_bogus_" + "0" * 32: "x"})
     assert r.status_code == 400
     assert not os.path.exists(path)
-    assert SESSION_STORE[sid]["transcript"] == []
+    assert SESSION_STORE[sid]["transcript"] == transcript_before

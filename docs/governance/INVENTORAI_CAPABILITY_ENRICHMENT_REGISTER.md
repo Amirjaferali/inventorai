@@ -58,7 +58,10 @@ authorized two bounded deterministic Stage-18 CAP-01 guidance increments — the
 POST-MERGE VERIFIED (PR #678), the second a research-direction addendum likewise IMPLEMENTED / MERGED / POST-MERGE
 VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`). Those authorizations are confined to those increments. They do NOT authorize full CAP-01 / full STG, and they change nothing for
 CAP-02 … CAP-18, which remain `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` unless already governed
-otherwise by their own authority.** (CAP-15 … CAP-18 were added by the legacy post-mortem capture in §1A; the original fourteen
+otherwise by their own authority.** **A second, separately bounded exception is recorded in the
+CAP-09 entry below: the Owner authorized ONE Stage-19 durable SuccessCriterion remediation
+(IMPLEMENTATION-01), which makes the EXISTING `SuccessCriterion` durable. It does NOT authorize
+full CAP-09 or full WS-PFV-001, and it changes nothing for any other capability.** (CAP-15 … CAP-18 were added by the legacy post-mortem capture in §1A; the original fourteen
 concepts referenced elsewhere in this register's genesis note are unchanged.)
 
 ### CAP-01 — Structured Technical Guidance
@@ -254,7 +257,10 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
 - **Proposed acceptance criteria:** deterministic structure; explicit non-execution and non-validity
   disclaimers; specialist review preserved.
 - **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (governed by
-  WS-PFV-001).
+  WS-PFV-001), **with ONE bounded exception**: the Owner-authorized Stage-19 durable
+  SuccessCriterion remediation (IMPLEMENTATION-01). It makes the EXISTING Section-11
+  `SuccessCriterion` durable in the same project store and adds no new CAP-09 field.
+  `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`.
 - **Activation conditions:** the WS-PFV-001 activation chain.
 - **Separate owner authorization requirement:** yes — via WS-PFV-001.
 
@@ -619,7 +625,7 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-06 Readiness Dashboard | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-02, CAP-07, CAP-11 | RECORDED — NOT AUTHORIZED |
 | CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | RECORDED — NOT AUTHORIZED |
 | CAP-08 Assumption Register | Assumption-tracking increment | WS12, CAP-05, CAP-10, CAP-11 | RECORDED — NOT AUTHORIZED |
-| CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED |
+| CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (full CAP-09 still NOT AUTHORIZED) |
 | CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | RECORDED — NOT AUTHORIZED |
 | CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | Dedicated materials-and-manufacturing feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14 | RECORDED — NOT AUTHORIZED |
@@ -768,7 +774,7 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | CAP-06 Readiness Dashboard | RECORDED — NOT AUTHORIZED | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-11; Patent Export decision; WS-PFV-001 | Yes | — | At the readiness increment / WS12–WS16 closure |
 | CAP-07 Invention Decision Room | RECORDED — NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
 | CAP-08 Assumption Register | RECORDED — NOT AUTHORIZED | Assumption-tracking increment | Provenance/validation axes; ledger; WS12; CAP-11 | Yes | — | At the assumption increment / WS12–WS16 closure |
-| CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
+| CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
 | CAP-10 Contradiction Detector | RECORDED — NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
 | CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | RECORDED — NOT AUTHORIZED | Materials-and-manufacturing feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the materials feasibility gate / WS12–WS16 closure |

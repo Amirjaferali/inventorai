@@ -42,7 +42,6 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from engine import domain_activation
-from engine.idea_state import IdeaState
 from web import ui_text
 from web.app import (
     app, SESSION_STORE, UNSUPPORTED_DOMAIN_MESSAGE, CONFIRMATION_REQUIRED_MESSAGE,
@@ -411,16 +410,16 @@ def test_green_ar_admission_outcome_unchanged_by_language(activate, client):
 
 
 # ===================================================== 7/8. success-criteria ----
-def _make_session():
-    sid = "cf2-ar-sc-smoke"
-    state = IdeaState(idea_id="cf2-ar-sc-smoke-idea")
-    state.domain = ELEC
-    SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
-    return sid
+def _make_session(client):
+    # Stage 19 / CAP-09: the criteria routes validate against CURRENT durable
+    # project truth, so the smoke case is a REAL saved project (/start through
+    # the real route) rather than a memory-only session with no durable row.
+    from tests.test_stage19_durable_success_criteria import _journey
+    return _journey(client, answers=())
 
 
 def test_green_en_success_criteria_unknown_experiment_byte_identical(client):
-    sid = _make_session()
+    sid = _make_session(client)
     try:
         resp = client.post(f"/session/{sid}/success-criteria",
                             data={"criterion__does-not-exist": "x"})
@@ -433,7 +432,7 @@ def test_green_en_success_criteria_unknown_experiment_byte_identical(client):
 
 
 def test_green_ar_success_criteria_unknown_experiment_localized(client):
-    sid = _make_session()
+    sid = _make_session(client)
     try:
         _set_lang(client, "ar")
         resp = client.post(f"/session/{sid}/success-criteria",

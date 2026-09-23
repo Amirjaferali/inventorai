@@ -1357,9 +1357,14 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
     con = sqlite3.connect(path)
     tables = {r[0] for r in con.execute(
         "SELECT name FROM sqlite_master WHERE type='table'")}
+    # AMENDED at Stage 19 / CAP-09 IMPLEMENTATION-01: the additive
+    # `prototype_plan_metadata` sidecar durably stores the EXISTING
+    # SuccessCriterion. It is not a join table and not a commercial owner; the
+    # exact-set equality is kept.
     assert tables == {"projects", "records", "requirement_quantities",
                       "evidence_references", "readiness_evidence",
-                      "question_feedback", "engine_version_adoptions"}
+                      "question_feedback", "engine_version_adoptions",
+                      "prototype_plan_metadata"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()
