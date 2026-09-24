@@ -268,6 +268,9 @@ from engine.session_reconstruction import (
     MAX_ACCEPTED_ANSWER_REPLAY as _RECON_MAX_ANSWER_REPLAY,
     reconstruct_readonly_state,
 )
+# MSNL local-only shadow Candidate 01: the web layer may reach ONLY the capture
+# seam (`_msnl_capture` below). Adapters and evaluation are never called here.
+from engine import msnl_shadow as _msnl_shadow
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
 # section, imported as a module-level name so one selection feeds both surfaces.
 from engine.idea_development_outputs import derive_next_development_step
@@ -453,6 +456,18 @@ def _inject_safe_language_switch_target():
 # Arabic, and all other legitimate Unicode pass untouched; there is NO general
 # control-character sanitizer and NO ASCII-only rule.
 MAX_FREE_TEXT_CHARS = 20000
+
+
+def _msnl_capture(**fields):
+    """MSNL shadow Candidate 01 — hand one ALREADY-COMMITTED owner event to the
+    local capture seam. Called only after a genuinely new durable append (and,
+    for an answer, after live publication). Plain values only; the switch is
+    off by default and the sink discards. Any failure is swallowed so the
+    acknowledgement, redirect, message and live state are exactly unchanged."""
+    try:
+        _msnl_shadow.capture_accepted_event(**fields)
+    except Exception:
+        pass
 
 
 def _free_text_error(value, lang):
@@ -5787,6 +5802,18 @@ def correct_answer(sid):
         entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 
+    # MSNL shadow Candidate 01: this NEW correction record is now durable, so it
+    # becomes capture-eligible exactly once, on whichever outcome path below it
+    # leaves by. The gap and question target are the target record's, inherited
+    # verbatim; nothing is re-resolved. Replay never reaches this seam.
+    def _msnl_capture_correction(status):
+        _msnl_capture(
+            project_ref=sid, record_id=new_record.record_id,
+            accepted_text=response, gap_type=target.gap_context,
+            question_target=target.question_target,
+            domain=getattr(state, "domain", None),
+            kind=_msnl_shadow.EVENT_CORRECTION, correction_status=status)
+
     # §8 RP-1 — FULL deterministic replay of the AMENDED accepted-source stream
     # through the UNCHANGED canonical reconstruction (which itself replays
     # through the UNCHANGED `progression_loop.run_iteration`). No targeted
@@ -5823,6 +5850,7 @@ def correct_answer(sid):
         # durable rollback is claimed, and the contract's persistence ordering
         # is unchanged.
         entry["_answer_error"] = CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+        _msnl_capture_correction(_msnl_shadow.CORRECTION_SAVED_NOT_APPLIED)
         return redirect(url_for("show_session", sid=sid))
 
     # T2-A (Owner-mandated ordering): after the successful durable correction
@@ -5837,6 +5865,7 @@ def correct_answer(sid):
     # inactive-anchor rule); its rows are retained, never deleted.
     if not _attach_quantity_history(sid, _recon.state):
         entry["_answer_error"] = CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+        _msnl_capture_correction(_msnl_shadow.CORRECTION_SAVED_NOT_APPLIED)
         return redirect(url_for("show_session", sid=sid))
 
     # §8 RP-4 — ATOMIC live-state replacement. The replayed state REPLACES the
@@ -5880,6 +5909,7 @@ def correct_answer(sid):
     if _lapsed_gaps or _resolved_gaps:
         entry["_risk_lapse_notice"] = {
             "action": _lapsed_gaps, "resolved": _resolved_gaps}
+    _msnl_capture_correction(_msnl_shadow.CORRECTION_APPLIED)
     return redirect(url_for("show_session", sid=sid))
 
 
@@ -8664,6 +8694,16 @@ def submit_answer(sid):
         # matching local draft. It is set on NO failure/ambiguous path; it never
         # persists, and it changes no engine/durable/accepted-answer semantics.
         entry["_answer_accepted"] = True
+        # MSNL shadow Candidate 01: one best-effort capture of this NEWLY
+        # committed and published answer. Unreachable for validation failures,
+        # refusals, durable failures and confirmed duplicates (all returned
+        # above). Observes only; the engine already consumed the text.
+        _msnl_capture(
+            project_ref=sid, record_id=new_record.record_id,
+            accepted_text=response, gap_type=targeted_gap,
+            question_target=question_target,
+            domain=getattr(state, "domain", None),
+            kind=_msnl_shadow.EVENT_ANSWERED)
     else:
         # G-UX-ANSWER-VALIDATION: answered chosen but the response is empty. Set a
         # SINGLE-USE transient and preserve Post/Redirect/Get. The empty string is
