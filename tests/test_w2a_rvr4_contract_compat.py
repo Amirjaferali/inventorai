@@ -54,9 +54,12 @@ def _envelope(payloads):
             "assertions": payloads}
 
 
-def test_field_set_is_exactly_fifteen_with_new_field():
+def test_field_set_is_exactly_sixteen_with_new_fields():
+    # W2-A added the 15th field; UQTR-01 Step 2B deliberately adds the 16th
+    # (`question_target`) under its own bounded legacy load rule.
     assert "decision_context_root" in _ASSERTION_FIELDS
-    assert len(_ASSERTION_FIELDS) == 15
+    assert "question_target" in _ASSERTION_FIELDS
+    assert len(_ASSERTION_FIELDS) == 16
 
 
 def test_compat1_legacy_payload_missing_only_new_field_loads_none():
