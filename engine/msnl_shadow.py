@@ -114,8 +114,10 @@ class AcceptedEvent:
             raise ValueError("accepted_text must be non-empty text")
         if self.gap_type is not None and self.gap_type not in GOVERNED_OWNERS:
             raise ValueError("gap_type must be a governed gap or None")
-        if self.question_target is not None and not isinstance(self.question_target, str):
-            raise ValueError("question_target must be text or None")
+        # The durable record contract: None, or a non-empty string. Never
+        # normalized, trimmed or inferred here.
+        if self.question_target is not None and not _nonempty_str(self.question_target):
+            raise ValueError("question_target must be None or non-empty text")
         if not _nonempty_str(self.domain):
             raise ValueError("domain must be the admitted domain id")
         if self.kind == EVENT_ANSWERED:
@@ -237,8 +239,8 @@ class ShadowResponse:
         if self.outcome not in OUTCOMES:
             raise ValueError("unknown adapter outcome")
         if not isinstance(self.concept_ids, tuple) or not all(
-                isinstance(i, str) for i in self.concept_ids):
-            raise ValueError("concept_ids must be a tuple of ids")
+                _nonempty_str(i) for i in self.concept_ids):
+            raise ValueError("concept_ids must be a tuple of non-empty ids")
         if len(set(self.concept_ids)) != len(self.concept_ids):
             raise ValueError("concept_ids must not repeat")
         if self.outcome == PROPOSED and not self.concept_ids:

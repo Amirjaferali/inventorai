@@ -178,6 +178,16 @@ class TestContracts:
             ms.LocalRef("project-1", "")
         assert ms.LocalRef("a", "rec-1") != ms.LocalRef("b", "rec-1")
 
+    @pytest.mark.parametrize("target", ["", 0, b"Q", ("Q",)])
+    def test_question_target_must_be_none_or_non_empty_text(self, target):
+        # R1: the durable record contract — None or a non-empty string.
+        with pytest.raises(ValueError):
+            _event(question_target=target)
+
+    @pytest.mark.parametrize("target", [None, "PATHN:N-MC-2", " padded "])
+    def test_valid_question_target_is_kept_verbatim(self, target):
+        assert _event(question_target=target).question_target == target
+
     def test_genuinely_absent_gap_and_target_are_allowed(self):
         event = _event(gap_type=None, question_target=None)
         assert ms.build_request(event).candidates == ()
@@ -244,6 +254,9 @@ class TestResponseRules:
         {"outcome": "MAYBE"}, {"outcome": ms.PROPOSED, "concept_ids": ["MC-STEP"]},
         {"outcome": ms.PROPOSED, "concept_ids": ("MC-STEP", "MC-STEP")},
         {"outcome": ms.PROPOSED, "concept_ids": (1,)},
+        # R2: an empty-string id is refused by the response contract itself
+        {"outcome": ms.PROPOSED, "concept_ids": ("",)},
+        {"outcome": ms.PROPOSED, "concept_ids": ("MC-STEP", "")},
     ])
     def test_malformed_response_is_refused(self, bad):
         with pytest.raises(ValueError):
