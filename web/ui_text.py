@@ -238,12 +238,14 @@ RVR7_SUBSTANTIVE_AR = {
         "في إيجادها، لاستكمال الباقي؟ وإن لم تكن متأكدا، يمكنك أيضا استخدام الخيارات "
         "أدناه لتحديده كغير معروف، أو تأجيله، أو تسجيل افتراض مبدئي، أو طلب مختص أو دليل."
     ),
+    # UQTR-01 truth fix, paired with the English engine constant: no promise
+    # of the accept-as-known-risk exit, which exists only where offered.
     RVR7_EXHAUSTED_EXIT_PROMPT: (
-        "لقد استُنفدت الأسئلة المعدة لهذا الجانب، وتكرارها لن يدفعه إلى الأمام. "
-        "خياراتك الصادقة الآن: أضف معلومات جديدة فعلا في صندوق الإجابة؛ أو حدده كغير "
-        "معروف أو مؤجل؛ أو سجّل افتراضا مبدئيا؛ أو اطلب مختصا أو دليلا؛ أو — إن تعذر "
-        "حله الآن — اقبله صراحة كمخاطرة معروفة حتى تتمكن الرحلة من المضي بينما تبقى "
-        "المخاطرة مسجلة بوضوح."
+        "لقد استُنفدت الأسئلة المعدّة لهذا الجانب، ولن يساعد تكرارها على إحراز مزيد من "
+        "التقدم. الخيارات المتاحة لك الآن: أضف معلومات جديدة فعلًا في خانة الإجابة؛ أو "
+        "حدّد هذه النقطة على أنها غير معروفة أو مؤجلة؛ أو سجّل افتراضًا مبدئيًا؛ أو "
+        "اطلب رأي مختص أو دليلًا. ولا يمكن قبول هذا الجانب كمخاطرة معروفة إلا إذا ظهر "
+        "هذا الخيار في الصفحة."
     ),
     RVR7_INTAKE_QUESTION: (
         "صِف اختراعك بمزيد من التفصيل — ما المشكلة المحددة التي يحلها، وكيف يحلها؟"
@@ -1750,6 +1752,71 @@ UI_STRINGS = {
     "UI_ACT_EVIDENCE": {
         "en": "Evidence or a test is needed for this",
         "ar": "يلزم دليل أو اختبار لهذا",
+    },
+    # UQTR-01: gap-scoped non-answer serving suppression + the 4+2 response
+    # group. Truthful chrome only: suppression stops the AUTOMATIC re-ask; it
+    # resolves nothing, assumes no technical answer and supplies nothing.
+    "UI_UQTR_MORE_CHOICES": {
+        "en": "More response options",
+        "ar": "خيارات رد إضافية",
+    },
+    "UI_UQTR_TEXT_HINT": {
+        "en": ("Text is required if you choose to answer the question. For the "
+               "other options, you may add an optional note."),
+        "ar": ("النص مطلوب إذا اخترت الإجابة عن السؤال. في الخيارات الأخرى، يمكنك "
+               "إضافة ملاحظة اختيارية."),
+    },
+    "UI_UQTR_SUPPRESSED_HEADING": {
+        "en": "This technical point is still unresolved.",
+        "ar": "هذه النقطة التقنية لا تزال غير محسومة.",
+    },
+    "UI_UQTR_MEANING_UNKNOWN": {
+        "en": "You recorded that this point is not known yet.",
+        "ar": "سجّلت أن هذه النقطة غير معروفة بعد.",
+    },
+    "UI_UQTR_MEANING_DEFERRED": {
+        "en": ("You deferred this point for now. Deferring it does not mean it has "
+               "been resolved."),
+        "ar": "أجّلت هذه النقطة في الوقت الحالي. التأجيل لا يعني أنها حُسمت.",
+    },
+    "UI_UQTR_MEANING_SPECIALIST_REQUESTED": {
+        "en": ("You recorded that this point needs specialist input. Choosing this "
+               "option does not mean specialist input has already been provided."),
+        "ar": ("سجّلت أن هذه النقطة تحتاج إلى رأي مختص. اختيار هذا الخيار لا يعني "
+               "أن رأيًا متخصصًا قد قُدّم."),
+    },
+    "UI_UQTR_MEANING_EVIDENCE_REQUESTED": {
+        "en": ("You recorded that this point needs evidence or a test. Requesting it "
+               "does not mean evidence or a test result is already available."),
+        "ar": ("سجّلت أن هذه النقطة تحتاج إلى دليل أو اختبار. مجرد طلب ذلك لا يعني "
+               "أن دليلًا أو نتيجة اختبار قد أصبح متاحًا."),
+    },
+    "UI_UQTR_MEANING_PROVISIONAL_ASSUMPTION": {
+        "en": ("You recorded a provisional assumption. It is unverified and is not "
+               "an established fact."),
+        "ar": "سجّلت افتراضًا مبدئيًا. هذا الافتراض غير متحقق منه ولا يُعد حقيقة مثبتة.",
+    },
+    "UI_UQTR_SUPPRESSED_NEXT": {
+        "en": ("Your choice was recorded and no technical answer has been assumed. "
+               "This question will not be asked again automatically. Your current "
+               "assessment shows what is still needed, and you can revisit this "
+               "question whenever you want."),
+        "ar": ("تم تسجيل اختيارك ولم يُفترض أي جواب تقني. لن يُطرح هذا السؤال "
+               "تلقائيًا مرة أخرى. يوضّح التقييم الحالي ما لا يزال مطلوبًا، ويمكنك "
+               "العودة إلى هذا السؤال متى شئت."),
+    },
+    "UI_UQTR_REVISIT": {
+        "en": "Revisit this technical question",
+        "ar": "العودة إلى هذا السؤال التقني",
+    },
+    "UI_UQTR_JOURNEY_NOTE": {
+        "en": ("Your choice for this technical point was recorded; the point "
+               "remains unresolved."),
+        "ar": "تم تسجيل اختيارك لهذه النقطة التقنية، وهي لا تزال غير محسومة.",
+    },
+    "UI_UQTR_CTA": {
+        "en": "Review what is still needed",
+        "ar": "مراجعة ما لا يزال مطلوبًا",
     },
     # Correction free-text placeholder (criticality correction stage). UI chrome.
     "UI_CRIT_CORR_PLACEHOLDER": {
