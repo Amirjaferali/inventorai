@@ -2255,6 +2255,8 @@ import hashlib as _p2a_hashlib
 
 _ANSWER_TOKEN_SEP = "."
 _ANSWER_TOKEN_NONCE_BYTES = 24
+# Generous bound on a submitted token (an issued one is ~65 characters).
+_ANSWER_TOKEN_MAX_LEN = 512
 # 32 hex chars of SHA-256 output == 128 bits (owner constraint: truncation >= 128b).
 _ANSWER_HMAC_HEX_LEN = 32
 
@@ -2310,12 +2312,25 @@ def _valid_answer_token(sid, token):
     closed on missing, malformed, forged, cross-session, or cross-project
     tokens — the signature binds sid, so a token minted for another session does
     not verify here."""
-    if not token or _ANSWER_TOKEN_SEP not in token:
+    # UQTR-01 Step 2B R4: TOTAL over arbitrary request input — any type,
+    # length, encoding or shape failure is False and nothing ever raises (a
+    # non-ASCII str would make str compare_digest raise TypeError). The token
+    # format, secret, HMAC and sid binding are unchanged; the comparison is
+    # now over validated ASCII bytes.
+    try:
+        if (not isinstance(token, str) or not token
+                or len(token) > _ANSWER_TOKEN_MAX_LEN
+                or _ANSWER_TOKEN_SEP not in token):
+            return False
+        nonce, _, sig = token.partition(_ANSWER_TOKEN_SEP)
+        if not nonce or not sig:
+            return False
+        sig_bytes = sig.encode("ascii")
+        nonce.encode("ascii")
+        return _p2a_hmac.compare_digest(
+            sig_bytes, _answer_token_sig(sid, nonce).encode("ascii"))
+    except Exception:
         return False
-    nonce, _, sig = token.partition(_ANSWER_TOKEN_SEP)
-    if not nonce or not sig:
-        return False
-    return _p2a_hmac.compare_digest(sig, _answer_token_sig(sid, nonce))
 
 
 def _answer_idempotency_key(sid, token):
@@ -2438,6 +2453,15 @@ def _verified_answer_target(sid, answer_token, raw):
         return None
 
 
+def _leave_criticality_flow(entry):
+    """R1: an ACCEPTED new non-criticality interaction leaves the transient
+    completion-stage criticality flow (the pre-existing intent), called only
+    after that interaction's durable write has committed. Recorded
+    confirmations are unaffected."""
+    entry.pop("criticality_stage", None)
+    entry.pop("criticality_correction", None)
+
+
 def _question_target_of(target):
     """The durable question_target a verified target mints: the canonical
     RVR-7 identity of a QUESTION context, and None for the criticality
@@ -2464,8 +2488,9 @@ def _is_exact_durable_duplicate(sid, state, action, response, token, target):
             return False
         key = _answer_idempotency_key(sid, token)
     else:
-        key = _interaction_idempotency_key(
-            sid, action, target.gap, state.iteration, response or "")
+        key = _target_interaction_idempotency_key(
+            sid, action, target.gap, state.iteration, response or "",
+            _question_target_of(target))
     try:
         prior = _get_store().record_payload_for_idempotency_key(sid, key)
     except Exception:
@@ -2494,6 +2519,22 @@ def _interaction_idempotency_key(sid, action, gap_context, iteration, content):
     same event, while a different action / gap / text yields a different key."""
     msg = _canonical_message("pvcg-r1-interaction", sid, action,
                              gap_context or "", str(iteration), content or "")
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _target_interaction_idempotency_key(sid, action, gap_context, iteration,
+                                        content, question_target):
+    """UQTR-01 Step 2B R3: the durable idempotency identity of ONE NEW
+    target-aware NON-ANSWER interaction. Same construction and length as
+    `_interaction_idempotency_key`, under its own domain separator, with the
+    VERIFIED canonical question_target added to the material identity: two
+    same-gap / same-iteration / same-text non-answers on different questions
+    are distinct events. None and "" never encode alike. Historical rows keep
+    their existing keys; nothing is rewritten or migrated."""
+    msg = _canonical_message("uqtr-target-aware-interaction-v2", sid, action,
+                             gap_context or "", str(iteration), content or "",
+                             _uqtr_opt(question_target))
     return _p2a_hmac.new(_answer_secret(), msg,
                          _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
 
@@ -8384,15 +8425,16 @@ def submit_answer(sid):
     state = entry["state"]
     # Workstream 4: the structured criticality actions are handled by their
     # own guarded branch (additive; the six frozen dispositions below are
-    # untouched). Any OTHER post leaves the criticality step, so its transient
-    # UI stage is cleared — recorded confirmations are unaffected.
+    # untouched). Any OTHER post that is ACCEPTED as a new interaction leaves
+    # the criticality step, so its transient UI stage is cleared then (and only
+    # then) — recorded confirmations are unaffected.
     if request.form.get("criticality_action") is not None:
         return _handle_criticality_action(entry, state, sid)
-    entry.pop("criticality_stage", None)
-    # UQTR-01 Step 2B: whether the page this post leaves was the correction
-    # stage is read here, before the transient stage is cleared as before; the
-    # target check below needs it to re-resolve the current form context.
-    _criticality_correction = bool(entry.pop("criticality_correction", None))
+    # UQTR-01 Step 2B R1: the transient criticality stage is only READ here.
+    # Verification is observational: a refused, invalid, failed or duplicate
+    # post leaves the current criticality flow exactly as it was; the stage is
+    # left (cleared) only once a NEW interaction has actually been accepted.
+    _criticality_correction = bool(entry.get("criticality_correction"))
     # Increment 1A: resolve the explicit structured action. Legacy-compatibility
     # rule (chosen, explicit): a submission with NO `action` field is treated as
     # `answered` — exactly the pre-1A behavior, where a non-empty `response` is
@@ -8425,7 +8467,12 @@ def submit_answer(sid):
     # 2. The signed target must bind to EXACTLY this answer token and sid.
     signed_target = _verified_answer_target(
         sid, token, request.form.get("answer_target", ""))
-    if signed_target is None:
+    # R2: the criticality-correction context is an answered free-text form
+    # only; a non-answer disposition there is not a valid event. Checked before
+    # the duplicate lookup and before any mint, append or transient change.
+    if signed_target is None or (
+            signed_target.kind == UQTR_TARGET_CRITICALITY_CORRECTION
+            and action != ACTION_ANSWERED):
         entry["_answer_error"] = ANSWER_FORM_STALE_MESSAGE
         return redirect(url_for("show_session", sid=sid))
     # 3. Freshness. A consumed token still verifies forever under the stateless
@@ -8490,8 +8537,9 @@ def submit_answer(sid):
             gap_context=gap_ctx, iteration=state.iteration,
             question_target=question_target,
         )
-        idem_key = _interaction_idempotency_key(
-            sid, action, gap_ctx, state.iteration, response or "")
+        idem_key = _target_interaction_idempotency_key(
+            sid, action, gap_ctx, state.iteration, response or "",
+            question_target)
         try:
             _get_store().append_record(sid, new_record, idempotency_key=idem_key)
         except sqlite3.IntegrityError:
@@ -8522,6 +8570,7 @@ def submit_answer(sid):
         # UQTR-01 Step 2B: an accepted non-answer is a question-bearing write
         # too, so it consumes the token; every older form is no longer current.
         entry.pop("answer_token", None)
+        _leave_criticality_flow(entry)
         entry.setdefault("interaction_actions", []).append({
             "action": action,
             "iteration": state.iteration,
@@ -8607,6 +8656,7 @@ def submit_answer(sid):
         # Consume the token (single-use for acceptance); the next render issues a
         # fresh one, so distinct submissions get distinct idempotency identities.
         entry.pop("answer_token", None)
+        _leave_criticality_flow(entry)
         # Draft Level 2 (G-DRAFT-L2-...-IMPLEMENTATION-01): a truthful, one-shot
         # ACCEPTED signal, set ONLY here after a durable append committed and the
         # staged evaluation was published. The next session render exposes it once

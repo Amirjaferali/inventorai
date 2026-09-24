@@ -144,11 +144,20 @@ def _durable(sid):
     return list(appmod._get_store().load_contract(sid).assertions)
 
 
+def _criticality_transient(sid):
+    """The CURRENT tab's transient criticality flow plus recorded confirmations
+    — a refusal must leave all of it exactly as it was (R1)."""
+    e = _entry(sid)
+    return (repr(e.get("criticality_stage")), e.get("criticality_correction"),
+            len(getattr(e["state"], "criticality_confirmations", []) or []))
+
+
 def _structural(sid):
     s = _state(sid)
     return ([(g.gap_type, g.status, g.iterations_open) for g in s.gaps],
             s.maturity_level, s.current_stage, s.iteration,
-            len(s.assertions), len(_entry(sid)["transcript"]))
+            len(s.assertions), len(_entry(sid)["transcript"]),
+            _criticality_transient(sid))
 
 
 def _context(sid):
@@ -181,7 +190,8 @@ class _Spy:
 
 def _assert_refused(c, sid, before_struct, before_durable, spy=None,
                     stale_text=None, message=STALE_EN):
-    assert _structural(sid) == before_struct, "no progression on refusal"
+    assert _structural(sid) == before_struct, \
+        "no progression and no criticality-context change on refusal"
     assert len(_durable(sid)) == before_durable, "nothing appended on refusal"
     if spy is not None:
         assert spy.assess == 0, "no assessment before target verification"
@@ -556,13 +566,27 @@ def test_aba_stale_form_is_refused_after_the_same_question_returns(client, monke
 # criticality-correction context
 # ---------------------------------------------------------------------------
 
-def _completed_at_correction_stage():
+def _completed_journey():
+    """A completed WS1 journey. Returns (client, sid, ws4, focus_token,
+    last_flow_page): the last in-progress page still holds the REAL answer
+    form whose token the final accepted answer consumed — a genuine stale
+    QUESTION form."""
     from tests import test_structured_criticality as ws4
     c, sid = ws4._start(ws4.IDEA_WS1)
-    ws4._drive_ws1_journey_to_completion(c, sid)
+    pages = ws4._drive_ws1_journey_to_completion(c, sid)
     ftok = ws4._focus_token(ws4._page(c, sid))
+    return c, sid, ws4, ftok, pages[-2]
+
+
+def _enter_correction(c, sid, ftok):
     assert c.post(f"/session/{sid}", data={
         "criticality_action": "summary_change", "focus_token": ftok}).status_code == 302
+    assert _entry(sid).get("criticality_correction") is True
+
+
+def _completed_at_correction_stage():
+    c, sid, ws4, ftok, _ = _completed_journey()
+    _enter_correction(c, sid, ftok)
     return c, sid, ws4
 
 
@@ -611,14 +635,12 @@ def test_criticality_correction_cannot_be_substituted_for_question(client, monke
 
 
 def test_reentering_correction_context_retires_the_earlier_correction_form(monkeypatch):
-    c, sid, ws4 = _completed_at_correction_stage()
+    c, sid, ws4, ftok, _ = _completed_journey()
+    _enter_correction(c, sid, ftok)
     old = _correction_form(c, sid)
-    # Leave the correction stage without writing, then enter it again.
-    _post(c, sid, {"answer_token": old["answer_token"], "answer_target": "x"},
-          response="leave", action=None)
-    ftok = ws4._focus_token(ws4._page(c, sid))
-    c.post(f"/session/{sid}", data={"criticality_action": "summary_change",
-                                     "focus_token": ftok})
+    # Enter the correction context again through the real summary action
+    # (a refused post is NOT a way out of it — it changes nothing).
+    _enter_correction(c, sid, ftok)
     new = _correction_form(c, sid)
     assert new["answer_token"] != old["answer_token"]
     assert _decode(new["answer_target"]) == _decode(old["answer_target"])
@@ -727,3 +749,224 @@ def test_stale_form_refusal_is_localized_and_generic(client, lang):
     # Nothing names the failed condition.
     for word in ("token", "signature", "target", "engine-contract", "hmac"):
         assert word not in expected.lower()
+
+
+# ---------------------------------------------------------------------------
+# Repair Pass 01 — L1: refusal never mutates the criticality flow
+# ---------------------------------------------------------------------------
+
+def _stale_question_form(last_flow_page):
+    m = re.search(r'<form id="answer-form".*?</form>', last_flow_page, re.S)
+    return _form_fields(m.group(0))
+
+
+def test_l1_a_clarification_survives_stale_question_refusal(monkeypatch):
+    c, sid, ws4, ftok, last_flow = _completed_journey()
+    assert c.post(f"/session/{sid}", data={
+        "criticality_action": "summary_correct", "focus_token": ftok}).status_code == 302
+    stage = _entry(sid).get("criticality_stage")
+    assert stage and stage.get("requirement_id")
+    stale = _stale_question_form(last_flow)
+    assert stale["answer_token"] != _entry(sid).get("answer_token")
+    before, n = _structural(sid), len(_durable(sid))
+    spy = _Spy(monkeypatch)
+    _post(c, sid, stale, response="Stale question text.")
+    _assert_refused(c, sid, before, n, spy, stale_text="Stale question text.")
+    assert _entry(sid).get("criticality_stage") == stage
+    assert 'name="category_choice"' in _body(c, sid)     # clarification still shown
+    appmod.SESSION_STORE.pop(sid, None)
+
+
+def test_l1_b_correction_survives_stale_question_refusal(monkeypatch):
+    c, sid, ws4, ftok, last_flow = _completed_journey()
+    _enter_correction(c, sid, ftok)
+    before, n = _structural(sid), len(_durable(sid))
+    spy = _Spy(monkeypatch)
+    _post(c, sid, _stale_question_form(last_flow), response="Stale question text.")
+    _assert_refused(c, sid, before, n, spy, stale_text="Stale question text.")
+    assert _entry(sid).get("criticality_correction") is True
+    _correction_form(c, sid)                              # correction form still shown
+    appmod.SESSION_STORE.pop(sid, None)
+
+
+@pytest.mark.parametrize("attack", ["tampered", "missing_target", "stale_token",
+                                    "forged_token", "empty_answer"])
+def test_l1_c_correction_survives_its_own_refused_form(monkeypatch, attack):
+    c, sid, ws4, ftok, _ = _completed_journey()
+    _enter_correction(c, sid, ftok)
+    old = _correction_form(c, sid)
+    if attack == "stale_token":
+        _enter_correction(c, sid, ftok)                   # rotates; old is stale
+    form = _correction_form(c, sid) if attack != "stale_token" else old
+    body, _, sig = form["answer_target"].rpartition(".")
+    fields = dict(form)
+    response = "Refused correction text."
+    message = STALE_EN
+    if attack == "tampered":
+        fields["answer_target"] = body + "." + ("0" if sig[0] != "0" else "1") + sig[1:]
+    elif attack == "missing_target":
+        del fields["answer_target"]
+    elif attack == "forged_token":
+        fields["answer_token"] = "forged.token"
+        message = appmod.ANSWER_NOT_SAVED_MESSAGE
+    elif attack == "empty_answer":
+        response = ""                                     # validation refusal
+        message = appmod.ANSWER_REQUIRED_MESSAGE
+    before, n = _structural(sid), len(_durable(sid))
+    spy = _Spy(monkeypatch)
+    _post(c, sid, fields, response=response, action=None)
+    _assert_refused(c, sid, before, n, spy,
+                    stale_text=response or None, message=message)
+    assert _entry(sid).get("criticality_correction") is True
+    appmod.SESSION_STORE.pop(sid, None)
+
+
+def test_l1_d_duplicate_retry_keeps_the_newer_criticality_context(monkeypatch):
+    c, sid, ws4, ftok, last_flow = _completed_journey()
+    final = [r for r in _durable(sid) if r.disposition == "answered"][-1]
+    _enter_correction(c, sid, ftok)
+    before, n = _structural(sid), len(_durable(sid))
+    spy = _Spy(monkeypatch)
+    # The final in-progress form, resubmitted with EXACTLY its accepted answer.
+    _post(c, sid, _stale_question_form(last_flow), response=final.content)
+    assert _structural(sid) == before and len(_durable(sid)) == n
+    assert spy.assess == 0 and spy.append == 0
+    assert _entry(sid).get("criticality_correction") is True
+    body = _html.unescape(_body(c, sid))
+    assert STALE_EN not in body                           # silent no-op, as before
+    appmod.SESSION_STORE.pop(sid, None)
+
+
+def test_l1_e_accepted_new_interaction_leaves_the_criticality_flow():
+    c, sid, ws4, ftok, _ = _completed_journey()
+    _enter_correction(c, sid, ftok)
+    n = len(_durable(sid))
+    _post(c, sid, _correction_form(c, sid),
+          response="The enclosure also needs a vent near the relay.", action=None)
+    assert len(_durable(sid)) == n + 1
+    assert "criticality_correction" not in _entry(sid)
+    assert "criticality_stage" not in _entry(sid)
+    appmod.SESSION_STORE.pop(sid, None)
+
+
+# ---------------------------------------------------------------------------
+# L2: CRITICALITY_CORRECTION => answered only
+# ---------------------------------------------------------------------------
+
+def test_l2_all_five_non_answers_refused_in_correction_context(monkeypatch):
+    c, sid, ws4, ftok, _ = _completed_journey()
+    _enter_correction(c, sid, ftok)
+    form = _correction_form(c, sid)
+    before, n = _structural(sid), len(_durable(sid))
+    spy = _Spy(monkeypatch)
+    for action in ("unknown", "deferred", "provisional_assumption",
+                   "specialist_requested", "evidence_requested"):
+        _post(c, sid, form, response="Not a correction " + action, action=action)
+        _assert_refused(c, sid, before, n, spy,
+                        stale_text="Not a correction " + action)
+        assert _entry(sid).get("answer_token") == form["answer_token"]
+    assert not [r for r in _durable(sid)
+                if r.gap_context is None and r.disposition != "answered"]
+    monkeypatch.undo()
+    _post(c, sid, form, response="A real correction.", action="answered")
+    assert len(_durable(sid)) == n + 1                    # the form itself is fine
+    appmod.SESSION_STORE.pop(sid, None)
+
+
+# ---------------------------------------------------------------------------
+# L3: target-aware non-answer idempotency (real PF Q1 -> correction -> PF Q2)
+# ---------------------------------------------------------------------------
+
+def _idempotency_keys(sid):
+    con = sqlite3.connect(os.environ["INVENTORAI_DB_PATH"])
+    try:
+        return dict(con.execute("SELECT record_id, idempotency_key FROM records "
+                                "WHERE project_id = ?", (sid,)).fetchall())
+    finally:
+        con.close()
+
+
+def test_l3_same_text_non_answers_on_two_questions_are_distinct_events(client):
+    sid = _start(client)
+    for text in (WEAK, ANSWER, ANSWER_CLOSING):
+        _answer_fresh(client, sid, text)
+    q1_identity, gap, _ = _context(sid)
+    assert (q1_identity, gap) == ("PATHN:N-PF-1", "PHYSICAL_FEASIBILITY")
+    q1_form = _answer_form(client, sid)
+    _post(client, sid, q1_form, response=NOTE, action="unknown")
+    first = _durable(sid)[-1]
+    iteration = _state(sid).iteration
+    assert (first.disposition, first.question_target) == ("unknown", q1_identity)
+    # The existing correction path moves the SAME gap to its next question at
+    # the SAME iteration.
+    _body(client, sid)
+    client.post(f"/session/{sid}/correct", data={
+        "supersedes_record_id": "rec_1", "response": ANSWER,
+        "answer_token": _entry(sid)["answer_token"]})
+    q2_identity = _context(sid)[0]
+    assert q2_identity == "PATHN:N-PF-2" and _context(sid)[1] == gap
+    assert _state(sid).iteration == iteration
+    # The pre-repair key cannot tell these two events apart ...
+    assert appmod._interaction_idempotency_key(sid, "unknown", gap, iteration, NOTE) \
+        == appmod._interaction_idempotency_key(sid, "unknown", gap, iteration, NOTE)
+    # ... the target-aware key does.
+    k1 = appmod._target_interaction_idempotency_key(
+        sid, "unknown", gap, iteration, NOTE, q1_identity)
+    k2 = appmod._target_interaction_idempotency_key(
+        sid, "unknown", gap, iteration, NOTE, q2_identity)
+    assert k1 != k2
+    q2_form = _answer_form(client, sid)
+    n = len(_durable(sid))
+    _post(client, sid, q2_form, response=NOTE, action="unknown")
+    assert len(_durable(sid)) == n + 1
+    second = _durable(sid)[-1]
+    assert (second.disposition, second.content, second.question_target) == (
+        "unknown", NOTE, q2_identity)
+    keys = _idempotency_keys(sid)
+    assert (keys[first.record_id], keys[second.record_id]) == (k1, k2)
+    assert first.question_target == q1_identity           # unchanged
+    # Retrying either exact event is a no-op; the Q1 form retried is Q1's event
+    # only — it is never taken for (or written as) the Q2 event.
+    after = _structural(sid)
+    for form in (q1_form, q2_form, q1_form):
+        _post(client, sid, form, response=NOTE, action="unknown")
+        assert _structural(sid) == after and len(_durable(sid)) == n + 1
+    assert STALE_EN not in _html.unescape(_body(client, sid))
+    assert [r.question_target for r in _durable(sid)
+            if r.disposition == "unknown"] == [q1_identity, q2_identity]
+    # A different text on the old Q1 form is a stale form, not a new event.
+    _post(client, sid, q1_form, response=NOTE + " more", action="unknown")
+    assert len(_durable(sid)) == n + 1
+    assert STALE_EN in _html.unescape(_body(client, sid))
+
+
+# ---------------------------------------------------------------------------
+# L4: the answer-token verifier is total
+# ---------------------------------------------------------------------------
+
+def test_l4_token_verifier_never_raises(client):
+    sid = _start(client)
+    good = appmod._answer_token_for(sid, _entry(sid))
+    nonce, _, sig = good.partition(".")
+    assert appmod._valid_answer_token(sid, good) is True
+    for bad in (None, "", 123, b"bytes.token", [good], ".", "a.", ".b", "no-sep",
+                "é.é", nonce + ".é" + sig[1:], "é" + nonce[1:] + "." + sig,
+                nonce + "." + sig + "é", "\udcff." + sig,
+                nonce + "." + "a" * 600, "a" * 600 + "." + sig):
+        assert appmod._valid_answer_token(sid, bad) is False, repr(bad)[:40]
+
+
+@pytest.mark.parametrize("action", ["answered", "unknown"])
+@pytest.mark.parametrize("token", ["é.é", "nonce.sigé", "ü" * 40 + ".x"])
+def test_l4_non_ascii_token_is_a_bounded_refusal(client, monkeypatch, action, token):
+    sid = _start(client)
+    form = _answer_form(client, sid)
+    before, n = _structural(sid), len(_durable(sid))
+    spy = _Spy(monkeypatch)
+    r = client.post(f"/session/{sid}", data={
+        "response": ANSWER, "action": action, "answer_token": token,
+        "answer_target": form["answer_target"]}, answer_binding=False)
+    assert r.status_code == 302
+    _assert_refused(client, sid, before, n, spy, message=(
+        appmod.ANSWER_NOT_SAVED_MESSAGE if action == "answered"
+        else appmod.INTERACTION_NOT_SAVED_MESSAGE))
