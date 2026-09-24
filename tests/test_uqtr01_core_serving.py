@@ -450,7 +450,8 @@ def test_arabic_page_carries_the_same_semantics_rtl(client):
 
 def test_every_uqtr_string_is_bilingual():
     keys = [k for k in ui_text.UI_STRINGS if k.startswith("UI_UQTR_")]
-    assert len(keys) == 12
+    # 12 CORE strings + UQTR-01 Step 2B's one stale-response-form refusal.
+    assert len(keys) == 13
     for k in keys:
         en, ar = ui_text.text(k, "en"), ui_text.text(k, "ar")
         assert en and ar and en != ar, k

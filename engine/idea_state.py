@@ -246,6 +246,13 @@ class AssertionRecord:
     # the exact founding-chain root record_id on alternative declarations and
     # withdrawals. Never carried by gap_context/question_id/content/position.
     decision_context_root : Optional[str] = None
+    # UQTR-01 Step 2B: the canonical RVR-7 identity of the question this record
+    # answered, minted ONLY from the server-verified signed answer target of a
+    # new question-bearing write. None on every legacy record (never inferred
+    # from content, wording, language, current state or replay), on records with
+    # no canonical question (e.g. the completion-stage criticality correction)
+    # and on decision actions. A correction inherits its prior's value verbatim.
+    question_target : Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -419,7 +426,7 @@ class IdeaState:
                            iteration=0, provenance=None,
                            validation_status=UNVALIDATED, quality=None,
                            responsibility=None, supersedes=None,
-                           decision_context_root=None):
+                           decision_context_root=None, question_target=None):
         """Append a durable disposition record for one of the six owner actions.
 
         Append-only: never mutates an existing record and never removes one. Has
@@ -502,6 +509,21 @@ class IdeaState:
         # above is untouched for legacy-to-legacy behavior (ID-11).
         self._validate_decision_action_structure(
             action, decision_context_root, superseded_ids)
+        # UQTR-01 Step 2B — question_target carrier legality, still BEFORE
+        # anything is appended: a non-empty string or None; never on a decision
+        # action; and a correction carries its prior's value VERBATIM (a
+        # content correction never becomes a target correction).
+        if question_target is not None:
+            if not isinstance(question_target, str) or not question_target:
+                raise ValueError("question_target must be a non-empty string")
+            if action in DECISION_ACTION_DISPOSITIONS:
+                raise ValueError(
+                    "a decision-action record may not carry question_target")
+        for prior_id in superseded_ids:
+            if self._require_record(prior_id).question_target != question_target:
+                raise ValueError(
+                    "a correction must inherit its prior's question_target "
+                    f"verbatim: {prior_id!r}")
         record = AssertionRecord(
             record_id=record_id, disposition=action, content=content,
             gap_context=gap_context, iteration=iteration, provenance=provenance,
@@ -510,6 +532,7 @@ class IdeaState:
             responsibility=responsibility, resolves_gap=False,
             supersedes=list(superseded_ids),
             decision_context_root=decision_context_root,
+            question_target=question_target,
         )
         self.assertions.append(record)
         # In-memory inverse edge, set through the EXISTING canonical primitive so

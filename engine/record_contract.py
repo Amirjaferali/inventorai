@@ -81,6 +81,10 @@ _ASSERTION_FIELDS = (
     # attachment. The ONLY loader relaxation is the bounded legacy rule in
     # `assertion_from_dict` below; decision-action payloads get no escape.
     "decision_context_root",
+    # UQTR-01 Step 2B: the canonical RVR-7 question identity a record answered.
+    # Every payload persisted before this field existed omits it and loads with
+    # None (never inferred); see `assertion_from_dict`.
+    "question_target",
 )
 
 _ENVELOPE_FIELDS = ("contract_version", "idea_id", "assertions")
@@ -105,6 +109,7 @@ def assertion_to_dict(record):
         "supersedes": list(record.supersedes),
         "superseded_by": record.superseded_by,
         "decision_context_root": record.decision_context_root,
+        "question_target": record.question_target,
     }
 
 
@@ -181,6 +186,14 @@ def assertion_from_dict(data):
         raise UnknownFieldError(
             "unknown assertion field(s): %s" % sorted(unknown))
     missing = set(_ASSERTION_FIELDS) - keys
+    if "question_target" in missing:
+        # UQTR-01 Step 2B — every payload persisted before the field existed
+        # omits it, whatever its disposition, and it loads as None: history
+        # carries no question identity and none is ever inferred (not from
+        # content, wording, language, current state, replay or a model). This
+        # relaxes ONLY this one key; every other missing field still fails.
+        data = dict(data, question_target=None)
+        missing = missing - {"question_target"}
     if missing == {"decision_context_root"} \
             and data.get("disposition") in LEGACY_INTERACTION_DISPOSITIONS:
         # W2-A contract §4 — the ONE bounded compatibility relaxation: a
@@ -203,6 +216,11 @@ def assertion_from_dict(data):
     if not isinstance(status, str) or status not in VALIDATION_STATUSES:
         raise InvalidValidationStatusError(
             "validation_status is outside the canonical validation vocabulary")
+    question_target = data["question_target"]
+    if question_target is not None and (
+            not isinstance(question_target, str) or not question_target):
+        raise InvalidReferenceError(
+            "question_target must be a non-empty string or null")
     return AssertionRecord(
         record_id=data["record_id"],
         disposition=data["disposition"],
@@ -219,6 +237,7 @@ def assertion_from_dict(data):
         supersedes=list(data["supersedes"]),
         superseded_by=data["superseded_by"],
         decision_context_root=data["decision_context_root"],
+        question_target=question_target,
     )
 
 
@@ -324,6 +343,21 @@ class ProjectRecordContract:
         # decision-action records. Fail closed: an invalid persisted decision
         # payload never becomes live state. Mirrors the carrier mint rules
         # (structural legality only; decision semantics stay with FDC-001).
+        # UQTR-01 Step 2B — question_target load-side legality, mirroring the
+        # carrier mint rules: a decision action never carries one, and a
+        # correction carries its prior's value verbatim (never re-derived).
+        for r in self.assertions:
+            target = getattr(r, "question_target", None)
+            if target is not None \
+                    and r.disposition in DECISION_ACTION_DISPOSITIONS:
+                raise InvalidReferenceError(
+                    "decision-action record %r carries a question_target"
+                    % r.record_id)
+            for ref in r.supersedes:
+                if getattr(by_id[ref], "question_target", None) != target:
+                    raise InvalidReferenceError(
+                        "record %r does not inherit the question_target of "
+                        "the record it supersedes" % r.record_id)
         for r in self.assertions:
             root_ref = getattr(r, "decision_context_root", None)
             if r.disposition not in DECISION_ACTION_DISPOSITIONS:

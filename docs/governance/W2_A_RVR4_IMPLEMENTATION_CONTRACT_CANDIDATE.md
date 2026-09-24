@@ -782,3 +782,25 @@ authorization under the established lifecycle (verify tip → bounded
 candidate → freeze SHA → Grill → bundle → Owner merge). Statuses used
 here (`RECORDED` / `PLANNED` / `ELIGIBLE` / `OWNER-AUTHORIZED` / `ACTIVE`
 / `CLOSED`) are never conflated; closing this gate activates nothing.
+
+---
+
+## Addendum — UQTR-01 Step 2B: 16th contract field (additive; §4 unchanged)
+
+Recorded with the UQTR-01 Step 2B target-aware binding candidate; it authorizes
+nothing by itself and edits no clause above.
+
+- `_ASSERTION_FIELDS` grows from 15 to 16: `question_target` (the canonical
+  RVR-7 question identity a record answered, minted only from a
+  server-verified signed answer target). `CONTRACT_VERSION` stays
+  `p4-0-record-contract-v1`; no schema, table or contract-version migration.
+- **Second bounded load rule.** A payload missing `question_target` loads with
+  `None`, whatever its disposition — every row persisted before the field
+  existed. It is never inferred from content, wording, language, current state,
+  replay or a model. This relaxes that one key only; the §4 rule for
+  `decision_context_root` and every other strictness above are unchanged (a
+  pre-W2-A payload missing both keys takes both rules).
+- **Load-side legality** mirrors the carrier: a non-empty string or `None`; a
+  decision-action record never carries one; a record that supersedes another
+  carries the superseded record's value verbatim (a content correction never
+  becomes a target correction).

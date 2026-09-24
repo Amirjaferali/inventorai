@@ -194,7 +194,9 @@ def test_stale_multitab_submission_does_not_duplicate(client):
     assert len(_store().load_accepted_answer_evidence(sid)) == n + 1
     assert SESSION_STORE[sid]["state"].maturity_level == mat   # no corruption
     body = html.unescape(client.get("/session/" + sid).get_data(as_text=True))
-    assert "could not be saved" in body                 # honest fail-closed message
+    # UQTR-01 Step 2B: a consumed token with different content is a stale form;
+    # the one honest freshness refusal says nothing was saved.
+    assert "no longer current, so nothing was saved" in body
     SESSION_STORE.pop(sid, None)
 
 

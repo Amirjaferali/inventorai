@@ -58,6 +58,10 @@ _EXPECTED_ASSERTION_FIELDS = frozenset({
     # tests/test_w2a_rvr4_contract_compat.py. This guard fired exactly as
     # designed and is reconciled here deliberately, additively.
     "decision_context_root",
+    # UQTR-01 Step 2B: deliberate 16th authoritative field — the canonical RVR-7
+    # question identity a record answered. Every pre-existing payload omits it
+    # and loads with None; see tests/test_uqtr01_target_binding.py.
+    "question_target",
 })
 
 

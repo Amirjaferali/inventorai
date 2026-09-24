@@ -181,6 +181,11 @@ _MESSAGE_KEYS = {
         "UI_T2A_ERR_UNKNOWN",
     ("Your quantity was saved to your project, but it could not be shown here "
      "just now. Reload this page shortly to see it."): "UI_T2A_ERR_SAVED_NOT_SHOWN",
+    # UQTR-01 Step 2B: the ONE high-level refusal for a stale, reused, swapped
+    # or cross-context response form (web/app.py ANSWER_FORM_STALE_MESSAGE).
+    ("This response form is no longer current, so nothing was saved. "
+     "Please review the current question and respond there."):
+        "UI_UQTR_FORM_STALE",
 }
 
 
@@ -1752,6 +1757,14 @@ UI_STRINGS = {
     "UI_ACT_EVIDENCE": {
         "en": "Evidence or a test is needed for this",
         "ar": "يلزم دليل أو اختبار لهذا",
+    },
+    # UQTR-01 Step 2B: Owner-supplied EN/AR stale-response-form refusal (one
+    # high-level message for every target/freshness failure).
+    "UI_UQTR_FORM_STALE": {
+        "en": ("This response form is no longer current, so nothing was saved. "
+               "Please review the current question and respond there."),
+        "ar": ("هذا النموذج لم يعد هو النموذج الحالي، لذلك لم يتم حفظ أي شيء. "
+               "يرجى مراجعة السؤال الحالي والإجابة عنه."),
     },
     # UQTR-01: gap-scoped non-answer serving suppression + the 4+2 response
     # group. Truthful chrome only: suppression stops the AUTOMATIC re-ask; it

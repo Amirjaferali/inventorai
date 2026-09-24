@@ -522,6 +522,8 @@ body{overflow-wrap:anywhere}
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   {# P4-1b-2a: server-issued idempotency token required on this answered-producing form. #}
   <input type="hidden" name="answer_token" value="{{ answer_token }}">
+  {# UQTR-01 Step 2B: the signed form context (question identity, gap, engine-contract version), bound to the token above. #}
+  <input type="hidden" name="answer_target" value="{{ answer_target }}">
   <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">{{ t('UI_B_SESSION_031') }}</label>
   <textarea id="response" name="response" rows="5" placeholder="{{ t('UI_B_SESSION_032') }}"{% if answer_error %} aria-describedby="answer-error" autofocus{% endif %}
     data-draft-field="answer" data-draft-scope="{{ sid }}" data-draft-context="{{ draft_context }}" data-draft-context-version="{{ draft_context_version }}" data-draft-account="{{ account_context }}"></textarea>
@@ -753,6 +755,8 @@ body{overflow-wrap:anywhere}
   {# P4-1b-2a: this criticality-correction free-text form posts no `action`, so it
      resolves to `answered` and MUST also carry the server-issued idempotency token. #}
   <input type="hidden" name="answer_token" value="{{ answer_token }}">
+  {# UQTR-01 Step 2B: its own signed criticality-correction context (no canonical question). #}
+  <input type="hidden" name="answer_target" value="{{ answer_target }}">
   <textarea name="response" rows="5" placeholder="{{ t('UI_CRIT_CORR_PLACEHOLDER') }}"
     data-draft-field="correction" data-draft-scope="{{ sid }}" data-draft-context="{{ draft_context }}" data-draft-context-version="{{ draft_context_version }}" data-draft-account="{{ account_context }}"></textarea>
   <br>
