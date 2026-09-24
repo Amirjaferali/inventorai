@@ -127,3 +127,26 @@ dormant-weight residual, CF-6, CF-2, THERM-01, CAP-12/13, WS-PFV-001, D4, D8, Ph
 untouched with their owners. **STOP conditions:** any forbidden-path need; any flip beyond the enumerated five; any
 electronics served-output delta; any content authorship need; any Owner-policy question.
 **Next required gate: Mandatory Grill on this exact corrected contract candidate.**
+
+## §8. Additive amendment — UQTR-01 Step 1 owner-friendly Mechanical Path-N presentation
+
+**Authority:** Owner authorization "UQTR-01 STEP 1 — MECHANICAL PATH N OWNER-FRIENDLY QUESTION REWRITE —
+CANDIDATE 01" (base `8d8ef6337e68ae06112c2605fcc1be7216d36633`). This section is ADDITIVE; §§1–7 above stay as
+recorded, and it amends §3/§6 for the MECHANICAL artifact's wording only.
+
+- **What stays a verbatim projection of `domains/mechanical/domain.json`:** the three gap-type keys, and per gap
+  type the `question_id`s and their order — TEN entries, 1:1 with `gap_type_mappings` (identity lineage).
+- **What no longer is:** each entry's `text` / `text_ar`. They are the Owner-approved owner-friendly presentation
+  supplied in that authorization (content authored by the Owner, not by an executor). §3's "no new content
+  authorship" and "text identical" no longer hold for the mechanical wording, so §6's verbatim-projection pin
+  becomes an identity-lineage pin (`question_id` / gap / order 1:1 with the pack) plus an exact pin of the approved
+  EN and AR copy. Any drift of either surface still flips RED.
+- **Unchanged:** `domains/mechanical/domain.json` stays byte-identical and remains the specialist question bank for
+  future optional technical refinement. So do the seam's behavior (§2), the domain→artifact mapping, the metadata
+  key set (only `"source"` is re-worded to state the rule above), the Electronics artifact (byte-frozen) and the
+  mechanical question-intent registry. So do gap assessment, closure, selection, maturity, accepted risk,
+  readiness and validation: owner-friendly wording changes how the owner is asked, never the technical truth
+  needed to resolve a gap.
+- **Disclosed reconciliations:** the D3 verbatim-projection test; the I5 served-text pin for
+  `mechanical:MECHANISM_COMPLETENESS:Q1`; and the I5 `engine/path_n_questions.py` digest, re-frozen because the
+  seam's docstring now states this rule (documentation only; no code change).
