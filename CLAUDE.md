@@ -2,20 +2,28 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD
-ONLY.** Stage 19 (WS-PFV-001 / CAP-09 Experiment-Plan Designer) is ENTERED / NOT COMPLETE.
-The durable SuccessCriterion remediation (IMPLEMENTATION-01 / CORRECTION-01) is delivered
-(PR #682). The only authorized implementation is CAP-09 SLICE-02: one inventor-written
-measurement method per existing Section-11 experiment, durable in the same project store.
-Full CAP-09 and full
-WS-PFV-001 are NOT AUTHORIZED. Any other product, readiness, governance or automation work
-requires a new explicit Owner authorization.
+**ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY.**
+It maps to the EXISTING Stage-18 semantic-normalization item and creates no new Master
+Roadmap Stage. MSNL implementation is NOT YET AUTHORIZED: no runtime MSNL, no provider
+selection or integration, no external model call and no external transmission of user,
+project or invention data. Target-Aware Question / Answer Binding is COMPLETE (PR #690, merge
+`ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`). Stage 19 (WS-PFV-001 / CAP-09 Experiment-Plan
+Designer) is ENTERED / NOT COMPLETE: the durable SuccessCriterion remediation (PR #682) and
+CAP-09 SLICE-02, the durable user-written measurement method (PR #683), are delivered, and
+SLICE-02 is not the active contract. Full CAP-09 and full WS-PFV-001 are NOT AUTHORIZED. Any
+other product, readiness, governance or automation work requires a new explicit Owner
+authorization.
 docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the delivered
 history, and is the file to read for authority — this paragraph routes, it does not
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized, and
 deployment, public release and paid activation remain NOT AUTHORIZED.
+
+*(Superseded 2026-09-24, preserved so the change is visible rather than silent: this opened
+"**ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD
+ONLY.** … The only authorized implementation is CAP-09 SLICE-02". That was true until PR #683
+delivered SLICE-02 and the Owner authorized MSNL Step 1.)*
 
 *(Superseded 2026-09-23, preserved so the change is visible rather than silent: this opened
 "**ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01
@@ -159,6 +167,18 @@ product-tuning or regression corpus.
 **Test proportionality.** Default sequence where appropriate: focused tests → affected/adjacent
 tests → stable full regression → hosted required CI. Never weaken mandatory CI; do not rerun
 the full suite repeatedly during intermediate work when focused evidence is sufficient.
+
+**Reading boundary.** Diff-first → search-first → exact-function / exact-range. For large
+files, read the smallest relevant range first and expand only to direct material dependencies;
+do not read large files end-to-end by default. A high-risk task requires relevant deep
+evidence, not automatic whole-repository reading.
+
+**CI freshness before merge.** Merge only on the latest required-check state for the exact PR
+head and current event. When a PR transition (ready-for-review, synchronize) triggers a newer
+required run, an earlier green run does not authorize the merge while the newer required check
+is pending (PR #690). Do not assume a branch push alone triggers required CI; inspect the
+current workflow triggers when publication mechanics matter. Never bypass a pending or failed
+latest required check.
 
 **Authority-document discipline.** Authority surfaces are already large: prefer concise current
 truth, add no lifecycle prose or duplicate historical narration unless materially necessary,

@@ -6,23 +6,31 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-23): Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 durable user-written measurement method only).**
+**Current position (2026-09-24): Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; current bounded action: MSNL Step 1 — read-only architecture / data-flow adjudication of the carried semantic-normalization item); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
 not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
 complete nothing beyond themselves. **No further CAP-01 implementation is currently
-authorized.** `ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 —
-DURABLE USER-WRITTEN MEASUREMENT METHOD ONLY` · `STAGE 19: ENTERED / NOT COMPLETE` ·
-`AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD` ·
-`DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682` · `FULL CAP-09: NOT AUTHORIZED` ·
-`FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 + `SuccessCriterion` stay the canonical planning
-owner. The delivered remediation made the EXISTING criterion durable in the same project
-store; SLICE-02 adds ONE inventor-written measurement method per existing experiment,
-durable in a narrowly typed sibling sidecar of the same store. Editing either needs no
-writable progression state, and planning-metadata corruption does not govern core
-progression. Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED. No other Stage is authorized. Project-specific
+authorized.** `ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW
+ADJUDICATION ONLY` · `MSNL IMPLEMENTATION: NOT YET AUTHORIZED` — the EXISTING Stage-18
+semantic-normalization item, not a new Master Roadmap Stage; no runtime MSNL, no provider
+selection or integration, no live or external model call and no external transmission of user /
+project / invention data. `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge
+ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a` (UQTR CORE PR #688 and Mechanical Path-N Step 1 PR
+#689 also merged). The Mechanical default-visible Path-N set remains 10 questions; the
+approximately-five Owner-question shape is a design target, not a quota and not implemented, and
+a hidden question must never mean a hidden unknown. `STAGE 19: ENTERED / NOT COMPLETE` ·
+`DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682` · `CAP-09 SLICE-02: DELIVERED — PR
+#683 — merge 8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60` · `F-09 PLANNING-FORM RECOVERY: DELIVERED —
+PR #684` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
+`SuccessCriterion` stay the canonical planning owner; SLICE-02 was bounded to ONE inventor-written
+measurement method per existing experiment. Variable, hypothesis and every other CAP-09 field stay
+NOT AUTHORIZED. The T1-C′ synthetic corpus (PR #685) and automated dry-run are preparation
+mechanics only — not real-user usability, value, differentiation, market or human validation.
+WATCH: the pre-Target-Aware reader does not load sixteen-field AssertionRecord rows — account for
+reader compatibility before any rollback / release planning. No other Stage is authorized. Project-specific
 CAP-01 behaviour returns only with a separately authorized architecture/data-model decision
 providing trustworthy typed technical-parameter inputs. The delivered mandates, their
 boundaries and the first authorized domain guidance profile (`electronics_electrical` only)
@@ -33,6 +41,12 @@ InventorAI domain that simply has no authorized CAP-01 profile yet.** Cross-stag
 capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
 operating practice — they add no Stage, gate or approval step.
 <!-- END CURRENT-BLOCK: current-position -->
+
+*(Superseded 2026-09-24 by MSNL Step 1, preserved so the change is visible rather than silent:
+the current-position entry read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE
+USER-WRITTEN MEASUREMENT METHOD ONLY` · … `AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE
+USER-WRITTEN MEASUREMENT METHOD`" and "(CAP-09 SLICE-02 durable user-written measurement method
+only)". That was true until PR #683 delivered SLICE-02 and the Owner authorized MSNL Step 1.)*
 
 *(Superseded 2026-09-23 by SLICE-02, preserved so the change is visible rather than silent:
 the current-position entry read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION

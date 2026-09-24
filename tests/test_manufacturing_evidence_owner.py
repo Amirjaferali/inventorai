@@ -514,7 +514,11 @@ def test_no_cad_pcb_bom_or_supplier_functionality_appears(owner):
     """U. No engineering generation, no sourcing, no external lookup."""
     c, _aid, sid = owner
     _record(c, sid)
-    body = _page(c, sid).lower()
+    # What APPEARS to the user: visible prose, not raw markup. Random hidden
+    # security-token values (e.g. "…bcad69…") are not functionality and must not
+    # trip a substring match — the same visible-prose pattern used above.
+    import html as _html
+    body = _html.unescape(re.sub(r"<[^>]+>", " ", _page(c, sid))).lower()
     for banned in ("cad", "pcb", "gerber", "step file", "bill of materials",
                    "generate bom", "supplier search", "request a quote",
                    "get quotes", "sourcing"):
