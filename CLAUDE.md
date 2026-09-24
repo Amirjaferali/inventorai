@@ -20,34 +20,10 @@ increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized, and
 deployment, public release and paid activation remain NOT AUTHORIZED.
 
-*(Superseded 2026-09-24, preserved so the change is visible rather than silent: this opened
-"**ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD
-ONLY.** … The only authorized implementation is CAP-09 SLICE-02". That was true until PR #683
-delivered SLICE-02 and the Owner authorized MSNL Step 1.)*
-
-*(Superseded 2026-09-23, preserved so the change is visible rather than silent: this opened
-"**ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION — IMPLEMENTATION-01
-ONLY.** … The only authorized implementation is the durable SuccessCriterion remediation
-(IMPLEMENTATION-01 / CORRECTION-01)". That was true until PR #682 delivered it and the Owner
-authorized SLICE-02.)*
-
-*(Superseded 2026-09-23, preserved so the change is visible rather than silent: this opened
-"**ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY.** … CAP-09 product
-implementation is NOT STARTED / NOT AUTHORIZED YET, and schema / persistence implementation is
-not authorized." That was true until the Owner authorized IMPLEMENTATION-01.)*
-
-*(Superseded 2026-09-23, preserved so the change is visible rather than silent: this opened
-"**ACTIVE CONTRACT: NONE.** No implementation mandate is currently active; any further
-product, readiness, governance or automation work requires a new explicit Owner
-authorization." and said "no successor Stage is started". Both were true until the Owner's
-Stage-19 entry-contract authorization.)*
-
-*(Superseded wording, preserved so the change is visible rather than silent: "ASTRA
-MILESTONE 2 / A1 is the current bounded saved-project and recovery mandate under
-ASTRA-M2-A1-PRODUCT-FIRST-SAVED-JOURNEY-DELIVER-01." **A1 is COMPLETED work, not the
-current mandate.** Milestone 1, R-05 integration and A1's saved-journey and
-safe-recovery delivery are all complete; A2, new human activity and successor
-implementation remain deferred and separately authorized.)*
+*(Superseded current-authority declarations — the former CAP-09 SLICE-02, IMPLEMENTATION-01,
+Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
+with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
+live.)*
 
 docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md §2 owns milestone
 authority and its precedence; §§3–5B own risk, tests and review. The
@@ -179,6 +155,10 @@ required run, an earlier green run does not authorize the merge while the newer 
 is pending (PR #690). Do not assume a branch push alone triggers required CI; inspect the
 current workflow triggers when publication mechanics matter. Never bypass a pending or failed
 latest required check.
+A failed required check is evidence, not implicit authorization to repair or rerun. First
+classify its cause: the current change, environment/infrastructure, or an unrelated /
+pre-existing defect. Repair only when that repair is within the active mandate; otherwise hold
+the affected operation and report. Do not rerun merely to seek a green result.
 
 **Authority-document discipline.** Authority surfaces are already large: prefer concise current
 truth, add no lifecycle prose or duplicate historical narration unless materially necessary,
@@ -199,6 +179,11 @@ authorization state; (14) exactly ONE next action. A material inconsistency expo
 reconstruction is resolved before mutation. No ceremonial confirmation is required when the
 reconstruction is materially correct. This applies Lean §9 (successor reconstruction and the
 single checkpoint); it does not replace it.
+The reconstruction applies when Lead control is taken over or re-established from a
+predecessor handover or checkpoint after a material continuity break. It does not run for
+ordinary bounded executor tasks, same-session child agents, or routine continuation where the
+current Lead's authority and live repository identity are already established. This clarifies
+the existing Lean §9 successor trigger; it does not change Lean §9.
 
 **Successor handover.** Every substantive successor handover preserves at minimum: live
 authoritative identity; current executable action; closed work that must not be reopened;
@@ -215,10 +200,8 @@ reading duties or closed holds. ILT-002_GOVERNANCE_ANCHOR.md governs the integri
 and limits of the ILT evidence ledger; its restrictions on reconstructing missing
 sessions do not prohibit repository continuity reconstruction under Lean §9.
 
-The old replay/refactor mission and its old Current Priority were task-scoped,
-not a permanent prohibition on Owner-authorized product implementation. When work
-touches replay or scoring, retain truthful provenance, unchanged accepted evidence
-unless expressly authorized, and faithful reporting of engine.scoring.score_case().
+When work touches replay or scoring, retain truthful provenance, unchanged accepted
+evidence unless expressly authorized, and faithful reporting of engine.scoring.score_case().
 Fixtures and replay greenness are not substitutes for semantic truth. Investigate
 the affected cause of a mismatch before changing behavior; never fabricate parity,
 hide failed criteria, silently change product meaning or mutate preserved evidence.
