@@ -182,6 +182,9 @@ body{overflow-wrap:anywhere}
   {% elif w2b_primary_action == 'decision_refine' and (state.maturity_level < 2 or open_gaps) %}
     <p class="journey-note">{{ t('UI_W2B_ACTION_DECISION_EVIDENCE') }}</p>
     <a class="journey-primary" data-primary-action href="#w2b-decision-capture">{{ t('UI_W2B_ACTION_DECISION_LINK') }}</a>
+  {% elif uqtr_suppression and (state.maturity_level < 2 or open_gaps) and question %}
+    <p class="journey-note">{{ t('UI_UQTR_JOURNEY_NOTE') }}</p>
+    <a class="journey-primary" data-primary-action href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_UQTR_CTA') }}</a>
   {% elif (state.maturity_level < 2 or open_gaps) and question %}
     <p class="journey-note">{{ t('UI_A1_ANSWER_NOTE') }}</p>
     <a class="journey-primary" data-primary-action href="#response">{{ t('UI_A1_ANSWER_NEXT') }}</a>
@@ -404,7 +407,9 @@ body{overflow-wrap:anywhere}
 {# primary advisory panel this yields to Guided Uncertainty Support — it is     #}
 {# suppressed only in the uncertainty state. This is display-only and reversible #}
 {# by state; the truthful WARN badge/reason above (last_result) is unaffected.  #}
-{% if current_scaffolding_guidance and not current_uncertainty_guidance %}
+{#- UQTR-01 C02: captured once; rendered here unless the question is suppressed,
+    in which case it renders inside the voluntary revisit only. -#}
+{% set uqtr_help_scaffolding %}{% if current_scaffolding_guidance and not current_uncertainty_guidance %}
 <div class="scaffolding-guidance" style="margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #ffe0b2;background:#fff8ef;font-size:13px">
   <div class="scaffolding-guidance-heading" style="font-weight:bold;color:#e65100;margin-bottom:6px">{{ current_scaffolding_guidance.heading }}</div>
   <div class="scaffolding-guidance-lead" style="color:#5a4633;margin-bottom:8px">{{ current_scaffolding_guidance.lead }}</div>
@@ -414,7 +419,27 @@ body{overflow-wrap:anywhere}
   <div class="scaffolding-guidance-note" style="font-size:12px;color:#8a7a68">{{ current_scaffolding_guidance.note }}</div>
 </div>
 {% endif %}
+{% endset %}{% if not uqtr_suppression %}{{ uqtr_help_scaffolding }}{% endif %}
 
+{#- UQTR-01-BEGIN — gap-scoped non-answer serving suppression. When the
+    owner's latest ACTIVE action on the canonically selected gap is one of the
+    five non-answer actions, the technical question stops being the automatic
+    primary demand. This is presentation only: the gap, maturity, stage,
+    validation and readiness are untouched (question suppression is not gap
+    resolution), and the EXISTING question and EXISTING answer form stay
+    available inside a native, user-controlled disclosure — no new route, no
+    persisted revisit state, no JavaScript and no new disposition. -#}
+{% if question and uqtr_suppression %}
+<div class="uqtr-suppressed" id="uqtr-suppressed" role="status" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #d9dfe7;background:#f7f9fb;font-size:13px;color:#34495e">
+  <p class="uqtr-suppressed-heading" style="margin:0 0 6px 0"><strong>{{ t('UI_UQTR_SUPPRESSED_HEADING') }}</strong></p>
+  <p class="uqtr-suppressed-meaning" style="margin:0 0 6px 0">{{ t('UI_UQTR_MEANING_' ~ uqtr_suppression|upper) }}</p>
+  <p class="uqtr-suppressed-next" style="margin:0">{{ t('UI_UQTR_SUPPRESSED_NEXT') }}</p>
+</div>
+<details class="uqtr-revisit" id="uqtr-revisit" style="margin-bottom:14px;border:1px solid #d6e0e8;border-radius:4px;padding:6px 14px"{% if answer_error %} open{% endif %}>
+<summary class="uqtr-revisit-summary" style="cursor:pointer;padding:4px 0;font-size:14px;color:#2c3e50">{{ t('UI_UQTR_REVISIT') }}</summary>
+{{ uqtr_help_scaffolding }}
+{% endif %}
+{#- UQTR-01-END (opening) -#}
 {% if question %}
 <div class="current-question-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:4px">{{ t('UI_B_SESSION_023') }}</div>
 {% if gap_type and current_gap_label %}
@@ -501,17 +526,78 @@ body{overflow-wrap:anywhere}
   <textarea id="response" name="response" rows="5" placeholder="{{ t('UI_B_SESSION_032') }}"{% if answer_error %} aria-describedby="answer-error" autofocus{% endif %}
     data-draft-field="answer" data-draft-scope="{{ sid }}" data-draft-context="{{ draft_context }}" data-draft-context-version="{{ draft_context_version }}" data-draft-account="{{ account_context }}"></textarea>
   <br>
-  <fieldset style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
+  <p class="answer-text-hint" style="font-size:12px;color:#888;margin:4px 0 0 0">{{ t('UI_UQTR_TEXT_HINT') }}</p>
+  {#- UQTR-01: ONE radio group with the SAME six action values — four primary
+      choices, then the two additional choices inside a native disclosure.
+      No new semantics; the canonical response field above is unchanged. -#}
+  <fieldset class="response-choices" style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
     <legend style="font-size:13px;color:#555;padding:0 6px">{{ t('UI_B_SESSION_033') }}</legend>
     <label style="display:block;margin:5px 0"><input type="radio" name="action" value="answered" checked> {{ t('UI_ACT_ANSWERED') }}</label>
     <label style="display:block;margin:5px 0"><input type="radio" name="action" value="unknown"> {{ t('UI_ACT_UNKNOWN') }}</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="deferred"> {{ t('UI_ACT_DEFERRED') }}</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="provisional_assumption"> {{ t('UI_ACT_PROVISIONAL') }}</label>
     <label style="display:block;margin:5px 0"><input type="radio" name="action" value="specialist_requested"> {{ t('UI_ACT_SPECIALIST') }}</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="evidence_requested"> {{ t('UI_ACT_EVIDENCE') }}</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="deferred"> {{ t('UI_ACT_DEFERRED') }}</label>
+    <details class="response-more-choices" style="margin-top:6px">
+      <summary style="cursor:pointer;font-size:13px;color:#555">{{ t('UI_UQTR_MORE_CHOICES') }}</summary>
+      <label style="display:block;margin:5px 0"><input type="radio" name="action" value="provisional_assumption"> {{ t('UI_ACT_PROVISIONAL') }}</label>
+      <label style="display:block;margin:5px 0"><input type="radio" name="action" value="evidence_requested"> {{ t('UI_ACT_EVIDENCE') }}</label>
+    </details>
   </fieldset>
   <button type="submit">{{ t('UI_B_SESSION_034') }}</button>
 </form>
+{#- UQTR-01 C02: question-specific answer-help panels, each defined ONCE. When
+    the question is suppressed they render ONLY inside the voluntary revisit
+    (never as automatic pressure outside it); otherwise each renders at its
+    unchanged original position below. Helpers and precedence are untouched. -#}
+{% set uqtr_help_clarification %}{% if question and current_clarification %}
+<details style="margin-bottom:14px;border:1px solid #d6e0e8;border-radius:4px;background:#fafcfe">
+  <summary style="cursor:pointer;padding:9px 14px;font-size:14px;color:#2c3e50">{{ t('UI_B_SESSION_026') }}</summary>
+  <div style="padding:4px 14px 12px 14px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:6px">{{ t('UI_B_SESSION_027') }}</div>
+    <div style="font-size:14px;font-weight:bold;color:#2c3e50;margin-bottom:6px">{{ current_clarification.label }}</div>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0">{{ current_clarification.plain_language }}</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>{{ t('UI_B_SESSION_028') }}</strong> {{ current_clarification.information_needed }}</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>{{ t('UI_B_SESSION_029') }}</strong> {{ current_clarification.answer_shape }}</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0">{{ current_clarification.support_hint }}</p>
+  </div>
+</details>
+{% endif %}
+{% endset %}{% set uqtr_help_responsibility %}{% if question and current_responsibility %}
+<div class="gap-guidance" style="background:#f3f7fb;border-color:#cfe0ee;margin-bottom:14px">
+  <div class="gap-guidance-heading">{{ current_responsibility.label }}</div>
+  <div class="gap-guidance-text">{{ current_responsibility.guidance }}</div>
+</div>
+{% endif %}
+{% endset %}{% set uqtr_help_uncertainty %}{% if question and current_uncertainty_guidance %}
+{# Arabic / RTL Supportive Response (contract PR #148): lang/dir are scoped to    #}
+{# THIS uncertainty panel only, from the display-only guidance dict. The page     #}
+{# the shell follows the selected UI language (base.html renders                  #}
+{# <html lang="{{ ui_lang }}"> with dir="rtl" in Arabic); this panel carries its  #}
+{# own lang/dir because its content is resolved independently.                    #}
+{# RTL when an Arabic-script uncertainty cue is detected. No other surface,        #}
+{# precedence guard, action, or behavior changes.                                 #}
+<div class="uncertainty-guidance" lang="{{ current_uncertainty_guidance.lang }}" dir="{{ current_uncertainty_guidance.dir }}" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #cfe6d6;background:#f2faf5;font-size:13px">
+  <div class="uncertainty-guidance-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#5a9a75;margin-bottom:6px">{{ current_uncertainty_guidance.eyebrow }}</div>
+  <div class="uncertainty-guidance-heading" style="font-weight:bold;color:#2c5a42;margin-bottom:8px">{{ current_uncertainty_guidance.heading }}</div>
+  <ul class="uncertainty-guidance-prompts" style="margin:0 0 8px 18px;color:#3d5a4c">
+    {% for prompt in current_uncertainty_guidance.prompts %}<li>{{ prompt }}</li>{% endfor %}
+  </ul>
+  <div class="uncertainty-guidance-note" style="font-size:12px;color:#7a9a88">{{ current_uncertainty_guidance.note }}</div>
+</div>
+{% endif %}
+{% endset %}{% set uqtr_help_coauthoring %}{% if question and current_answer_coauthoring and not current_uncertainty_guidance and not current_scaffolding_guidance %}
+<div class="answer-coauthoring" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px dashed #b9c9d6;background:#f6f9fc;font-size:13px">
+  <div class="answer-coauthoring-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:6px">{{ t('UI_B_SESSION_030') }}</div>
+  <div class="answer-coauthoring-heading" style="font-weight:bold;color:#2c3e50;margin-bottom:8px">{{ current_answer_coauthoring.heading }}</div>
+  <ul class="answer-coauthoring-prompts" style="margin:0 0 8px 18px;color:#41525f">
+    {% for prompt in current_answer_coauthoring.prompts %}<li>{{ prompt }}</li>{% endfor %}
+  </ul>
+  <div class="answer-coauthoring-note" style="font-size:12px;color:#8a97a3">{{ current_answer_coauthoring.note }}</div>
+</div>
+{% endif %}
+{% endset %}{% if question and uqtr_suppression %}
+{{ uqtr_help_clarification }}{{ uqtr_help_responsibility }}{{ uqtr_help_uncertainty }}{{ uqtr_help_coauthoring }}
+</details>
+{% endif %}
 
 {# W2-B / RVR-6a (Contract Amendment 1 §4/§10/§16): governed serving cues.
    Each cue truthfully explains an ACTUAL serving change (the replaced
@@ -545,26 +631,9 @@ body{overflow-wrap:anywhere}
 <div class="w2b-risk-note" style="margin-bottom:14px;padding:9px 14px;border-radius:4px;border:1px solid #e8dfc8;background:#fbf7ec;font-size:13px;color:#6b5d3f">{{ t('UI_W2B_CUE_RISK_NOT_REASKED') }}</div>
 {% endif %}
 
-{% if question and current_clarification %}
-<details style="margin-bottom:14px;border:1px solid #d6e0e8;border-radius:4px;background:#fafcfe">
-  <summary style="cursor:pointer;padding:9px 14px;font-size:14px;color:#2c3e50">{{ t('UI_B_SESSION_026') }}</summary>
-  <div style="padding:4px 14px 12px 14px">
-    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:6px">{{ t('UI_B_SESSION_027') }}</div>
-    <div style="font-size:14px;font-weight:bold;color:#2c3e50;margin-bottom:6px">{{ current_clarification.label }}</div>
-    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0">{{ current_clarification.plain_language }}</p>
-    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>{{ t('UI_B_SESSION_028') }}</strong> {{ current_clarification.information_needed }}</p>
-    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>{{ t('UI_B_SESSION_029') }}</strong> {{ current_clarification.answer_shape }}</p>
-    <p style="font-size:13px;color:#555;line-height:1.5;margin:0">{{ current_clarification.support_hint }}</p>
-  </div>
-</details>
-{% endif %}
+{% if not uqtr_suppression %}{{ uqtr_help_clarification }}{% endif %}
 
-{% if question and current_responsibility %}
-<div class="gap-guidance" style="background:#f3f7fb;border-color:#cfe0ee;margin-bottom:14px">
-  <div class="gap-guidance-heading">{{ current_responsibility.label }}</div>
-  <div class="gap-guidance-text">{{ current_responsibility.guidance }}</div>
-</div>
-{% endif %}
+{% if not uqtr_suppression %}{{ uqtr_help_responsibility }}{% endif %}
 
 
 
@@ -594,23 +663,7 @@ body{overflow-wrap:anywhere}
 {# ("I don't know" / "لا أعرف"). It supplies no answer text, has no save/approve/  #}
 {# apply/rewrite control, carries no hidden form field, and adds no session        #}
 {# action. The inventor writes and owns the answer; there is nothing exam-like.    #}
-{% if question and current_uncertainty_guidance %}
-{# Arabic / RTL Supportive Response (contract PR #148): lang/dir are scoped to    #}
-{# THIS uncertainty panel only, from the display-only guidance dict. The page     #}
-{# the shell follows the selected UI language (base.html renders                  #}
-{# <html lang="{{ ui_lang }}"> with dir="rtl" in Arabic); this panel carries its  #}
-{# own lang/dir because its content is resolved independently.                    #}
-{# RTL when an Arabic-script uncertainty cue is detected. No other surface,        #}
-{# precedence guard, action, or behavior changes.                                 #}
-<div class="uncertainty-guidance" lang="{{ current_uncertainty_guidance.lang }}" dir="{{ current_uncertainty_guidance.dir }}" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #cfe6d6;background:#f2faf5;font-size:13px">
-  <div class="uncertainty-guidance-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#5a9a75;margin-bottom:6px">{{ current_uncertainty_guidance.eyebrow }}</div>
-  <div class="uncertainty-guidance-heading" style="font-weight:bold;color:#2c5a42;margin-bottom:8px">{{ current_uncertainty_guidance.heading }}</div>
-  <ul class="uncertainty-guidance-prompts" style="margin:0 0 8px 18px;color:#3d5a4c">
-    {% for prompt in current_uncertainty_guidance.prompts %}<li>{{ prompt }}</li>{% endfor %}
-  </ul>
-  <div class="uncertainty-guidance-note" style="font-size:12px;color:#7a9a88">{{ current_uncertainty_guidance.note }}</div>
-</div>
-{% endif %}
+{% if not uqtr_suppression %}{{ uqtr_help_uncertainty }}{% endif %}
 
 {# Guided Answer Co-Authoring Increment 1 — Advisory Prompt Support (PR #127     #}
 {# Increment Contract): OPTIONAL, display-only, content-free prompts naming the  #}
@@ -623,16 +676,7 @@ body{overflow-wrap:anywhere}
 {# primary in every non-uncertainty / non-WARN state. Display-only, state-       #}
 {# specific, reversible by state; the Co-Authoring capability/helper are         #}
 {# unchanged and never removed, degraded, duplicated, or persistently disabled.  #}
-{% if question and current_answer_coauthoring and not current_uncertainty_guidance and not current_scaffolding_guidance %}
-<div class="answer-coauthoring" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px dashed #b9c9d6;background:#f6f9fc;font-size:13px">
-  <div class="answer-coauthoring-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:6px">{{ t('UI_B_SESSION_030') }}</div>
-  <div class="answer-coauthoring-heading" style="font-weight:bold;color:#2c3e50;margin-bottom:8px">{{ current_answer_coauthoring.heading }}</div>
-  <ul class="answer-coauthoring-prompts" style="margin:0 0 8px 18px;color:#41525f">
-    {% for prompt in current_answer_coauthoring.prompts %}<li>{{ prompt }}</li>{% endfor %}
-  </ul>
-  <div class="answer-coauthoring-note" style="font-size:12px;color:#8a97a3">{{ current_answer_coauthoring.note }}</div>
-</div>
-{% endif %}
+{% if not uqtr_suppression %}{{ uqtr_help_coauthoring }}{% endif %}
 
 
 

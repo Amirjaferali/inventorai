@@ -168,9 +168,23 @@ _DOMAINS = os.path.join(_REPO, "domains")
 # their bodies; capture alone promotes no maturity and touches no gap.
 #   pre-MG-8     progression_loop.py =
 #       f5cc2dcfaaa2dc0c651b33016d06a5bd773c9f7cfd3a69af35e6281daec3307d
+# UQTR-01 reconciliation (disclosed; mechanical digest re-freeze ONLY — Owner
+# authorizations `UQTR-01 CORE IMPLEMENTATION CANDIDATE 01` and `UQTR-01 CORE
+# REVIEW CORRECTION — SUCCESSOR CANDIDATE 02`,
+# docs/governance/W2_B_RVR6A_CONTRACT_AMENDMENT_2_UQTR01_CANDIDATE.md §5).
+# Candidate 02 replaces Candidate 01 (not an ancestor); the Candidate-01 pin
+# 4b3e353c… never entered this lineage. Candidate 02 re-words the final
+# Owner-approved exhausted prompt.
+# ADDITIVE serving-only rule `compute_non_answer_suppression` beside the W2-B
+# decision (no fifth trigger, ServingDecision unchanged) plus the RVR-2
+# exhausted-prompt truth fix (no accept-risk promise). run_iteration,
+# select_next_gap, evaluate_transition, accept_gap_risk, the W2-D gate, the
+# question selectors and replay semantics are byte-unchanged in their bodies.
+#   pre-UQTR-01 progression_loop.py =
+#       da2c405d3f7b4995f43141d0b89720f97e94b731345b1ad054c77b821f58ab90
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "da2c405d3f7b4995f43141d0b89720f97e94b731345b1ad054c77b821f58ab90",
+    "engine/progression_loop.py": "9220530bf99a796d5f13af84c17cb3c8eeb1fb76754292f16f8cd0506eb0bb77",
 }
 # The mechanical pack hash IS this corpus's inventory validity anchor.
 # P9-MECH-SF reconciliation (contract §4 item 10, disclosed): re-frozen after

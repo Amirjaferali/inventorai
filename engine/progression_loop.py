@@ -218,13 +218,18 @@ QUESTIONS = {
 # the same reframe re-served 18-20x). A different, stable, governed message
 # that names the honest exits. Display selection only - canonical state, gap
 # status, get_question(), and the six owner actions are untouched.
+# UQTR-01 truth fix: this generic prompt is served for EVERY Stage-2 gap,
+# including MECHANISM_COMPLETENESS, which can never be risk-accepted. It
+# therefore no longer promises the accept-as-known-risk exit; it says that
+# exit exists only where the page actually offers it (the separate governed
+# affordance, rendered only when its own availability check passes).
 _EXHAUSTED_EXIT_PROMPT = (
     "The prepared questions for this area are exhausted, and repeating them "
-    "will not move it forward. Your honest options now: add genuinely new "
+    "will not move it forward. Your available options now: add genuinely new "
     "information in the answer box; mark this unknown or deferred; note a "
-    "provisional assumption; ask for a specialist or evidence; or - if it "
-    "cannot be resolved now - accept it explicitly as a known risk so the "
-    "journey can move on while the risk stays visibly recorded."
+    "provisional assumption; or ask for a specialist or evidence. Accepting "
+    "an area as a known risk is possible only where this page shows that "
+    "option."
 )
 
 _STALL_REFRAME = (
@@ -1414,6 +1419,9 @@ def run_iteration(state: IdeaState, response: str) -> dict:
 from dataclasses import dataclass as _dataclass
 
 from engine.idea_state import (
+    DISPOSITION_ANSWERED, DISPOSITION_UNKNOWN, DISPOSITION_DEFERRED,
+    DISPOSITION_PROVISIONAL_ASSUMPTION, DISPOSITION_SPECIALIST_REQUESTED,
+    DISPOSITION_EVIDENCE_REQUESTED,
     DISPOSITION_ANSWERED as _W2B_ANSWERED,
     DISPOSITION_RISK_ACCEPTED as _W2B_RISK_ACCEPTED,
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED as _W2B_ALT_DECLARED,
@@ -1710,3 +1718,76 @@ def compute_serving_decision(state, register_elevated=False):
         lapsed_served_gap=lapsed_served,
         accepted_risk_gaps=accepted_risk_gaps,
     )
+
+
+# ─────────────────────────────────────────────
+# UQTR-01 — gap-scoped non-answer serving suppression
+# ─────────────────────────────────────────────
+# A SERVING consequence only, composed alongside `compute_serving_decision`
+# at the serving surface. It is NOT a fifth W2-B trigger (the four-class set
+# above is unchanged), it replaces no served text, and it never selects a
+# gap: `select_next_gap` stays the one canonical technical-gap selector.
+#
+# What it answers: has the owner's latest ACTIVE interaction with the
+# canonically selected gap been one of the five non-answer actions? If so,
+# the serving surface stops presenting that technical question as the
+# automatic primary demand and keeps it available as a voluntary revisit.
+#
+# What it never does (question suppression is not gap resolution): it does
+# not touch gap status, iterations, maturity, stage, evidence, validation,
+# accepted risk, completion, deliverable eligibility or derived readiness.
+# It is a pure function of the durable, restored assertion ledger — no
+# clocks, render counters, retry counts, transient session memory, random
+# or model decisions, and no persisted serving state — so a live session, a
+# cold reconstruction and a writable resume derive the same result.
+
+# The five owner actions that suppress automatic re-asking. Exactly the
+# existing non-answer dispositions: no new vocabulary.
+UQTR_SUPPRESSING_DISPOSITIONS = frozenset({
+    DISPOSITION_UNKNOWN, DISPOSITION_DEFERRED,
+    DISPOSITION_PROVISIONAL_ASSUMPTION, DISPOSITION_SPECIALIST_REQUESTED,
+    DISPOSITION_EVIDENCE_REQUESTED,
+})
+
+# The records that can decide the question: the five above plus `answered`,
+# the one action that re-engages the gap and restores ordinary serving.
+_UQTR_APPLICABLE_DISPOSITIONS = UQTR_SUPPRESSING_DISPOSITIONS | {
+    DISPOSITION_ANSWERED}
+
+
+@_dataclass(frozen=True)
+class NonAnswerSuppression:
+    """Immutable, derived, never persisted. ``gap_type`` is the canonically
+    selected gap whose automatic re-ask is suppressed; ``disposition`` is the
+    owner's latest active non-answer action on it; ``record_id`` identifies
+    that durable ledger record."""
+    gap_type: str
+    disposition: str
+    record_id: str
+
+
+def compute_non_answer_suppression(state):
+    """UQTR-01 serving rule for the CURRENT canonical gap, or None.
+
+    Reads ACTIVE records only (``superseded_by is None``), in durable ledger
+    order, whose ``gap_context`` is the canonically selected gap and whose
+    disposition is one of the six owner interaction actions. The latest such
+    record decides: a non-answer action suppresses the automatic re-ask; an
+    ``answered`` record (or no applicable record) leaves ordinary serving in
+    place. Pure and read-only."""
+    served_gap = select_next_gap(state)
+    if served_gap is None:
+        return None
+    latest = None
+    for record in getattr(state, "assertions", ()):
+        if getattr(record, "superseded_by", None) is not None:
+            continue
+        if getattr(record, "gap_context", None) != served_gap:
+            continue
+        if getattr(record, "disposition", None) in _UQTR_APPLICABLE_DISPOSITIONS:
+            latest = record
+    if latest is None or latest.disposition not in UQTR_SUPPRESSING_DISPOSITIONS:
+        return None
+    return NonAnswerSuppression(gap_type=served_gap,
+                                disposition=latest.disposition,
+                                record_id=latest.record_id)

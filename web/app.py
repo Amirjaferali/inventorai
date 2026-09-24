@@ -42,6 +42,9 @@ from engine.progression_loop import (
     # Consumed ONLY by the session render below; run_iteration, replay, and
     # the canonical writers never consult it.
     compute_serving_decision,
+    # UQTR-01: the derived gap-scoped non-answer suppression rule, composed
+    # beside the W2-B decision at the same render surface only.
+    compute_non_answer_suppression,
     TRIGGER_CRITICAL_UNRESOLVED, TRIGGER_LAPSED_ACCEPTANCE,
     TRIGGER_MULTIPLE_ALTERNATIVES, TRIGGER_COMPLETED_INTENT_SKIP,
     # RVR-7 (authoritative path manifest freeze, PR #588): read-only inputs to the
@@ -4884,6 +4887,19 @@ def show_session(sid):
     closed_gaps = [g for g in state.gaps if g.status == "CLOSED"]
     gap_labels = {g.gap_type: GAP_LABELS.get(g.gap_type, GAP_LABELS["__default__"]) for g in state.gaps}
     current_gap_label = GAP_LABELS.get(gap_type, GAP_LABELS["__default__"]) if gap_type else None
+    # UQTR-01: serving-only suppression of the automatic re-ask. Derived from
+    # the durable ledger for the SAME canonical gap the question context
+    # selected; it never changes `question` (the question stays available for
+    # a voluntary revisit and the completion branch is untouched) and fails
+    # closed to ordinary serving.
+    uqtr_suppression = None
+    if gap_type and question is not None:
+        try:
+            _uqtr = compute_non_answer_suppression(state)
+            if _uqtr is not None and _uqtr.gap_type == gap_type:
+                uqtr_suppression = _uqtr.disposition
+        except Exception:
+            uqtr_suppression = None
     # Transcript capture: store question before render so POST can record it.
     # No engine effect. Evidence preservation only.
     # RVR-7: what is stored here stays the CANONICAL ENGLISH decision — storage,
@@ -5039,6 +5055,9 @@ def show_session(sid):
         question_explanation=question_explanation,
         next_development_step=next_development_step,
         question=question,
+        # UQTR-01: the suppressing disposition (one of the five non-answer
+        # actions) or None. Presentation only.
+        uqtr_suppression=uqtr_suppression,
         # RVR-7 / M-13: the substantive question element must declare the language
         # and direction of the text ACTUALLY rendered, never a hardcoded en/ltr.
         question_lang=question_lang,
