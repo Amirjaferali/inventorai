@@ -109,7 +109,9 @@ read them; a change touching only those files would receive the smoke test floor
 is unchanged by this synchronization.
 
 **Preserved.** `STAGE 11 / A2: DEFERRED / UNDISCHARGED` · `STAGE 15 (IRL): PRESERVED — MUST
-NOT BE LOST` · `T2-E: DEFERRED` · `D13 RESEARCH: REMAINS CLOSED` · Stages 20–27 stay preserved,
+NOT BE LOST` · `T2-E OPTION-B ACCEPTED BOUNDED SCOPE: CLOSED — PR #640` · `WIDER ADVANCED
+EVIDENCE-WRITER DIRECTION: DEFERRED / NOT AUTHORIZED` · `D13 RESEARCH: REMAINS CLOSED` ·
+Stages 20–27 stay preserved,
 not entered and not authorized · `DEPLOYMENT: NOT AUTHORIZED` · `PUBLIC RELEASE: NOT
 AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED`. No human experiment, CAD / PCB generation, MCP
 activation or new domain is authorized.
