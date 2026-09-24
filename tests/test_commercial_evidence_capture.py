@@ -1066,8 +1066,12 @@ def test_an_estimated_range_stores_min_and_max_distinctly(owner):
     assert row.value_min == "100" and row.value_max == "150"
     assert row.value_exact == ""                 # no collapsed single value
     body = _page(c, sid)
-    assert "125" not in body                     # the midpoint is never derived
-    assert "100" in body and "150" in body
+    # The midpoint is never derived — asserted on the amount surfaces, not the
+    # whole page, whose random signed tokens can contain "125" by chance.
+    amount = _amount_display(body, "price")
+    assert "125" not in amount, amount
+    assert _amount_value(body, "price") == "100\u2013150"
+    assert _quantity_form_values(body, "price") == ("", "100", "150")
 
 
 def test_none_stores_no_invented_number(owner):
