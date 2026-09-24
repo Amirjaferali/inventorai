@@ -1,7 +1,7 @@
 {
   "metadata": {
     "domain": "mechanical",
-    "source": "domains/mechanical/domain.json — verbatim from gap_type_mappings (question_id/text/order copied 1:1; no content authorship)",
+    "source": "domains/mechanical/domain.json — question_id, gap ownership and order projected 1:1 from gap_type_mappings; text/text_ar are the Owner-approved UQTR-01 Step 1 owner-friendly presentation (NOT a verbatim projection of pack wording; the specialist pack question bank is unchanged)",
     "provenance_ref": "mechanical:PR001",
     "contract": "DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_SERVICE_CONTRACT.md",
     "generated_by_gate": "D-GMPR-D3-PN implementation"
@@ -10,57 +10,57 @@
     "MECHANISM_COMPLETENESS": [
       {
         "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
-        "text": "Describe the physical steps your mechanism takes to achieve its function.",
-        "text_ar": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها."
+        "text": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+        "text_ar": "بكلماتك، ماذا يحدث من لحظة استخدام الفكرة إلى أن تحقق النتيجة التي تريدها؟ صف الخطوات المادية الأساسية التي تتوقع حدوثها، حتى لو كنت لا تعرف أسماءها التقنية."
       },
       {
         "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
-        "text": "What moves, connects, or transfers force?",
-        "text_ar": "ما الذي يتحرك أو يتصل أو ينقل القوة؟"
+        "text": "Which parts do you expect to move or connect, and what does each one do to the next part? If you are unsure how force is transferred, describe the movement or effect you expect.",
+        "text_ar": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه."
       },
       {
         "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
-        "text": "What are the individual mechanical components and how does each one contribute to the overall motion or function?",
-        "text_ar": "ما المكونات الميكانيكية المنفردة، وكيف يسهم كل مكون في الحركة الكلية أو في الوظيفة؟"
+        "text": "What main parts do you think your idea needs, and what job should each part do? You do not need to know the technical name of a part.",
+        "text_ar": "ما الأجزاء الرئيسية التي تعتقد أن فكرتك تحتاج إليها، وما المهمة التي تتوقع من كل جزء أن يؤديها؟ لا يلزم أن تعرف الاسم التقني للجزء."
       },
       {
         "question_id": "mechanical:MECHANISM_COMPLETENESS:Q4",
-        "text": "If someone tried to build your mechanism tomorrow with no further explanation, what physical detail would be missing?",
-        "text_ar": "لو حاول أحدهم بناء آليتك غدا دون أي شرح إضافي، ما التفصيل المادي الذي سيكون مفقودا؟"
+        "text": "If someone tried to build a simple prototype tomorrow, what part of how it works would still need more explanation or engineering work? State what you know and do not guess what you do not know.",
+        "text_ar": "لو حاول شخص بناء نموذج أولي مبسط غدًا، فما الجزء من طريقة العمل الذي سيظل بحاجة إلى شرح أو عمل هندسي إضافي؟ اذكر ما تعرفه فقط، ولا تخمّن ما لا تعرفه."
       }
     ],
     "PHYSICAL_FEASIBILITY": [
       {
         "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q1",
-        "text": "What physical principle does your mechanism rely on? (e.g. leverage, spring tension, gear ratio, friction)",
-        "text_ar": "على أي مبدأ فيزيائي تعتمد آليتك؟ (مثل الرافعة، أو شد النابض، أو نسبة التروس، أو الاحتكاك)"
+        "text": "What do you expect makes the movement or physical action happen in your idea? For example: pushing, pulling, turning, sliding, gravity, spring action, or friction. If you do not know the engineering principle, describe what you expect to happen physically.",
+        "text_ar": "ما الذي تتوقع أنه يجعل الحركة أو الفعل المادي يحدث في فكرتك؟ مثل الدفع أو السحب أو الدوران أو الانزلاق أو الجاذبية أو عمل النابض أو الاحتكاك. وإذا لم تعرف المبدأ الهندسي، فصف ما تتوقع أن يحدث ماديًا."
       },
       {
         "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q2",
-        "text": "What are the material or force constraints your mechanism must operate within?",
-        "text_ar": "ما قيود المواد أو قيود القوة التي يجب أن تعمل آليتك ضمنها؟"
+        "text": "What limits or conditions could affect whether the idea works physically? For example: weight, load, force, material, distance, or movement. State what you know; you can record what you do not know instead of guessing.",
+        "text_ar": "ما الحدود أو الظروف التي قد تؤثر في عمل الفكرة ماديًا؟ مثل الوزن أو الحمل أو القوة أو المادة أو المسافة أو الحركة. اذكر ما تعرفه، ويمكنك تسجيل ما لا تعرفه بدل التخمين."
       }
     ],
     "BOUNDARY_AMBIGUITY": [
       {
         "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q1",
-        "text": "What does your mechanism specifically NOT do or NOT cover?",
-        "text_ar": "ما الذي لا تقوم به آليتك تحديدا أو لا تغطيه؟"
+        "text": "What should your idea do, and what is it deliberately not intended to do or cover?",
+        "text_ar": "ما الذي يجب أن تفعله فكرتك، وما الذي لا يُقصد منها أن تفعله أو تغطيه؟"
       },
       {
         "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q2",
-        "text": "State at least one clear mechanical boundary.",
-        "text_ar": "اذكر حدا ميكانيكيا واضحا واحدا على الأقل."
+        "text": "Where should the limits of your idea be? Give one clear limit — for example, a weight, size, movement, or use situation it is not meant to handle.",
+        "text_ar": "أين يجب أن تكون حدود فكرتك؟ اذكر حدًا واضحًا واحدًا، مثل وزن أو حجم أو حركة أو حالة استخدام لا يُفترض أن تتعامل معها."
       },
       {
         "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q3",
-        "text": "Name one existing mechanical approach similar to yours.",
-        "text_ar": "اذكر نهجا ميكانيكيا قائما واحدا مشابها لنهجك."
+        "text": "Do you know of an existing product or mechanism that works in a similar way? If yes, name one example. If not, do not guess.",
+        "text_ar": "هل تعرف منتجًا أو آلية موجودة تعمل بطريقة مشابهة؟ إذا نعم، اذكر مثالًا واحدًا. وإذا لم تعرف، فلا تخمّن."
       },
       {
         "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q4",
-        "text": "What makes yours different in a concrete, physical way?",
-        "text_ar": "ما الذي يجعل نهجك مختلفا بشكل مادي ملموس؟"
+        "text": "Compared with that example, what physical behaviour, arrangement, or way of use do you expect to be different in your idea? State only what you know.",
+        "text_ar": "مقارنةً بذلك المثال، ما الاختلاف المادي أو في ترتيب الأجزاء أو طريقة الاستخدام الذي تتوقعه في فكرتك؟ اذكر فقط ما تعرفه."
       }
     ]
   }

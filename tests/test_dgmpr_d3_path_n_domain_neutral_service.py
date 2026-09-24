@@ -84,27 +84,36 @@ def test_mechanical_artifact_exists_with_contract_shape():
             assert {"question_id", "text"}.issubset(entry), gap
 
 
-def test_mechanical_artifact_is_verbatim_pack_projection():
-    # 1:1 with the I5-proven pack content: same gap types, order, question_id, text.
+def test_mechanical_artifact_projects_pack_identity_with_approved_copy():
+    # UQTR-01 Step 1 reconciliation (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
+    # SERVICE_CONTRACT.md §8). This pin was `test_mechanical_artifact_is_verbatim_
+    # pack_projection` (question_id/text/order 1:1 with the pack). Under §8 the
+    # IDENTITY lineage stays 1:1 — same gap types, order and question_id — while
+    # the WORDING is the Owner-approved owner-friendly presentation, pinned
+    # EXACTLY (EN and AR), so any drift of either surface still flips RED. The
+    # pack is untouched and keeps its specialist text, which the artifact no
+    # longer serves.
+    from tests.test_uqtr01_mechanical_path_n_owner_friendly import APPROVED_COPY
     with open(_MECH_PACK, encoding="utf-8") as fh:
         pack = json.load(fh)
-    expected = {
-        g["gap_type_id"]: [
-            {"question_id": q["question_id"], "text": q["text"]} for q in g["questions"]
-        ]
+    pack_ids = {
+        g["gap_type_id"]: [q["question_id"] for q in g["questions"]]
         for g in pack["gap_type_mappings"]
     }
-    # RVR-7 (PR #588 §5.E): the projection is now taken over the ENGLISH fields
-    # only. English provenance is UNCHANGED in strength — the artifact's
-    # {question_id, text} projection must still equal the pack 1:1, so any drift of
-    # the mechanical English wording at the artifact still flips this RED. The pack
-    # itself is untouched and carries no Arabic content.
-    english_projection = {
-        gap: [{"question_id": e["question_id"], "text": e["text"]} for e in variants]
-        for gap, variants in _mech_artifact()["gaps"].items()
+    pack_text = {
+        q["question_id"]: q["text"]
+        for g in pack["gap_type_mappings"] for q in g["questions"]
     }
-    assert english_projection == expected
-    assert sum(len(v) for v in expected.values()) == 10
+    gaps = _mech_artifact()["gaps"]
+    assert {gap: [e["question_id"] for e in v] for gap, v in gaps.items()} == pack_ids
+    assert {
+        gap: [(e["question_id"], e["text"], e["text_ar"]) for e in v]
+        for gap, v in gaps.items()
+    } == APPROVED_COPY
+    for variants in gaps.values():
+        for e in variants:
+            assert e["text"] != pack_text[e["question_id"]]
+    assert sum(len(v) for v in pack_ids.values()) == 10
 
 
 # ---------------------------------------------------------------- GREEN: mechanical served canonically
@@ -253,7 +262,9 @@ def test_evidence_inventory_and_critical_pins_intact():
         "test_evidence_inventory_and_critical_pins_intact",
         "test_malformed_artifact_fails_loud_without_poisoning_other_caches",
         "test_mechanical_artifact_exists_with_contract_shape",
-        "test_mechanical_artifact_is_verbatim_pack_projection",
+        # UQTR-01 Step 1 (§8): renamed from
+        # test_mechanical_artifact_is_verbatim_pack_projection.
+        "test_mechanical_artifact_projects_pack_identity_with_approved_copy",
         "test_mechanical_pack_carries_no_arabic_content",
         "test_mechanical_served_all_gap_types_all_indices_with_clamping",
         "test_mechanical_service_does_not_activate_mechanical",

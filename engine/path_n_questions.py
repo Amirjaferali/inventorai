@@ -15,8 +15,9 @@ Source  : docs/governance/path_n_content_config/<domain>_path_n_questions.json �
           NEVER used as a filesystem path component; only canonical keys of the
           mapping resolve — unmapped/unknown/traversal-shaped identities → None).
           Electronics artifact location pinned by 806a3c6 / 26fa3e1 (byte-frozen);
-          mechanical artifact is the D-GMPR-D3-PN verbatim projection of the
-          I5-proven pack questions.
+          the mechanical artifact projects the pack's question_ids, gap ownership
+          and order 1:1, while its wording is the Owner-approved UQTR-01 Step 1
+          owner-friendly presentation (D-GMPR-D3-PN §8; the pack is unchanged).
 
 RVR-7 language boundary (authoritative path manifest freeze, PR #588): a record now
 carries BOTH committed surfaces, but ``get_path_n_question`` and every engine caller

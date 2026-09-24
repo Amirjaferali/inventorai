@@ -199,7 +199,14 @@ _FROZEN_ENGINE_SHA256 = {
     # progression_loop / pack hashes below remain UNCHANGED by construction.
     #   pre-RVR-7 path_n_questions.py =
     #       a1a682d38293defd4b351e6238aeb870b4f765eaf3fc0f105c4932f75286ce7f
-    "engine/path_n_questions.py": "56280afd936903f3b7018d9dbd97d8e194279f835a2f7315131bce3dba506907",
+    # UQTR-01 Step 1 reconciliation (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
+    # SERVICE_CONTRACT.md §8): re-frozen because the seam's module DOCSTRING now
+    # states that the mechanical artifact's wording is the Owner-approved
+    # owner-friendly presentation rather than a verbatim pack projection.
+    # Documentation only — no code line of the seam changed.
+    #   pre-UQTR-01-Step-1 path_n_questions.py =
+    #       56280afd936903f3b7018d9dbd97d8e194279f835a2f7315131bce3dba506907
+    "engine/path_n_questions.py": "5214e794af1bf7f3e5a817eae06c8aedf7c735f004a9255a46bdee505faebd9c",
 }
 # L2SC-01 reconciliation (disclosed; docs/governance/L2SC01_SUBSTANCE_SIGNAL_
 # PLURAL_ALIAS_INCREMENT_CONTRACT.md §10): mechanical and electronics_electrical
@@ -421,6 +428,15 @@ def test_content_keyed_cross_domain_leakage_protection():
 # ---------------------------------------------------------------- §12(b) D-GMPR blocker pin
 
 
+# UQTR-01 Step 1 (D-GMPR-D3-PN §8): the Owner-approved owner-friendly wording
+# now served for mechanical:MECHANISM_COMPLETENESS:Q1.
+_OWNER_FRIENDLY_MC_Q1 = (
+    "In your own words, what happens from the moment someone uses your idea "
+    "until it produces the result you want? Describe the main physical steps you "
+    "expect, even if you do not know their technical names."
+)
+
+
 def test_dgmpr_seam_remediated_mechanical_served():
     # D-GMPR-D3-PN reconciliation #1 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the former blocker pin (mechanical → None) was
@@ -429,12 +445,18 @@ def test_dgmpr_seam_remediated_mechanical_served():
     # through the canonical seam, while electronics and the None default remain
     # served unchanged. §12(b)'s activation-grade completion is recordable only
     # at that lane's closure, not here.
+    # UQTR-01 Step 1 reconciliation (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
+    # SERVICE_CONTRACT.md §8): the served identity is unchanged, but the served
+    # WORDING is now the Owner-approved owner-friendly presentation, no longer
+    # the pack's specialist text (which `_EXPECTED_QUESTIONS` keeps pinning, since
+    # the pack itself is byte-unchanged).
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         served = get_served_question("MECHANISM_COMPLETENESS", 0, domain="mechanical")
         assert served is not None
         assert served.question_id == "mechanical:MECHANISM_COMPLETENESS:Q1"
-        assert served.text == _EXPECTED_QUESTIONS["MECHANISM_COMPLETENESS"][0]
+        assert served.text == _OWNER_FRIENDLY_MC_Q1
+        assert served.text != _EXPECTED_QUESTIONS["MECHANISM_COMPLETENESS"][0]
         assert get_served_question("MECHANISM_COMPLETENESS", 0, domain=None) is not None
         assert (
             get_served_question("MECHANISM_COMPLETENESS", 0, domain="electronics_electrical")
