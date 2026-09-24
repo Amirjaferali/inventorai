@@ -120,7 +120,7 @@ explicit Owner structural-change authorization.
 | 1 | 1–5 | Close the existing product-depth lane | **COMPLETE ✅** |
 | 2 | 6–10 | Feedback, semantic depth, known value defects | **ALL STAGES COMPLETED ✅ — carried residuals remain: T1-A′ OPEN / FRB; T2-C′ PARTIAL** (not the current frontier; completing the checkboxes discharged neither residual) |
 | 3 | 11–15 | Human evidence and readiness foundations | Partial — 12 complete; 13/14 partial; 15 thinnest and must not be lost |
-| 4 | 16–20 | System/commercial readiness and technical guidance | 17 partial; 18 entered / partial (both bounded CAP-01 increments merged, PRs #678 and #679; no further CAP-01 authorized); 19 entered / not complete (durable SuccessCriterion remediation delivered, PR #682; SLICE-02 durable measurement method only; full CAP-09 not authorized); 16, 20 not authorized |
+| 4 | 16–20 | System/commercial readiness and technical guidance | 17 partial; 18 entered / partial (both bounded CAP-01 increments merged, PRs #678 and #679; no further CAP-01 authorized); 19 entered / not complete (durable SuccessCriterion remediation delivered, PR #682; SLICE-02 durable measurement method delivered, PR #683; full CAP-09 not authorized); current bounded action: MSNL Step 1 read-only adjudication of the Stage-18 semantic-normalization item; 16, 20 not authorized |
 | 5 | 21–25 | Decision support and engineering depth | Not authorized — zero merged runtime code |
 | 6 | 26–30 | Visual/thermal depth and new domains | 29 complete/active; 28/30/31 gated; 26–27 not authorized |
 | 7 | 31–35 | IoT depth and optional output capabilities | Not authorized (Stage 33 ≠ PR #663 account email) |
@@ -147,19 +147,20 @@ Read those before acting on any stage; this table is a locator, not a status sou
   AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`. **Stage 18
   remains PARTIAL and its roadmap checkbox stays unticked** — one authorized bounded slice
   is not the stage.
-  **Also ENTERED: Stage 19 — WS-PFV-001 / CAP-09 Experiment-Plan Designer.** `ACTIVE CONTRACT:
-  STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD ONLY` · `STAGE 19:
-  ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN
-  MEASUREMENT METHOD` · `DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682` ·
-  `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
-  `SuccessCriterion` stay the canonical planning owner. The delivered remediation made the
-  EXISTING criterion durable in the same project store; SLICE-02 adds ONE inventor-written
-  measurement method per existing experiment, durable in a narrowly typed sibling sidecar of
-  the same store and saved in the same atomic planning write. Editing either needs no
-  writable progression state, and planning-metadata corruption does not govern core
-  progression. Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED. The
-  Stage-19 checkbox stays unticked, and
+  **Also ENTERED: Stage 19 — WS-PFV-001 / CAP-09 Experiment-Plan Designer.** `STAGE 19: ENTERED / NOT COMPLETE` · `DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682` · `CAP-09 SLICE-02: DELIVERED — PR #683 — merge 8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60` · `F-09 PLANNING-FORM RECOVERY: DELIVERED — PR #684 — merge 079a9000bd23d19328b10c3854490264bf9b1697` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
+  `SuccessCriterion` stay the canonical planning owner. SLICE-02 was bounded: ONE
+  inventor-written measurement method per existing experiment, durable in a narrowly typed
+  sibling sidecar of the same store. Delivering it is not the stage and opens nothing wider:
+  Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
+  implementation is currently authorized. The Stage-19 checkbox stays unticked, and
   entering Stage 19 completes nothing in Stage 18.
+  **CURRENT BOUNDED ACTION — the EXISTING Stage-18 semantic-normalization item, not a new
+  Master Roadmap Stage:** `ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY` · `MSNL IMPLEMENTATION: NOT YET AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
+  Step 1 authorizes repository inspection and adjudication only. It authorizes no runtime MSNL
+  implementation, no provider selection or integration, no live or external model call, no
+  transmission of user / project / invention data outside InventorAI, no persisted
+  SYSTEM_INFERRED truth, no automatic concept creation, no readiness / maturity / validation
+  promotion, no autonomous technical orchestration and no question hiding or reduction.
   **Entering Stage 18 is not the next obligation discharged: Stage 11 — T1-C′ / A2
   human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, `STAGE 11 STARTED: NO`. It
   was routed PAST, not completed; **routing past a deferred stage never completes it.**
@@ -167,6 +168,12 @@ Read those before acting on any stage; this table is a locator, not a status sou
   prior evidence where applicable, and new human activity requires separate authorization
   and the existing consent/custody boundaries.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded 2026-09-24 by MSNL Step 1, preserved so the change is visible rather than
+silent: the Stage-19 routing line read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE
+USER-WRITTEN MEASUREMENT METHOD ONLY` · … `AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE
+USER-WRITTEN MEASUREMENT METHOD`". That was true until PR #683 delivered SLICE-02 and the Owner
+authorized MSNL Step 1.)*
 
 *(Superseded 2026-09-23 by SLICE-02, preserved so the change is visible rather than silent:
 the Stage-19 routing line read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION
@@ -272,7 +279,8 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   COMPLETED ✅** within its bounded scope.
 <!-- CURRENT-BLOCK: stage-18-semantic-normalization -->
 - **CARRIED INTO STAGE 18 — MULTILINGUAL SEMANTIC NORMALIZATION LAYER:
-  PRESERVED / NOT AUTHORIZED / NOT IMPLEMENTED.** At the BEGINNING of Stage 18 / D13 / CAP-01
+  PRESERVED / NOT AUTHORIZED / NOT IMPLEMENTED as implementation · READ-ONLY ADJUDICATION
+  AUTHORIZED (MSNL Step 1) / IMPLEMENTATION NOT YET AUTHORIZED.** At the BEGINNING of Stage 18 / D13 / CAP-01
   adjudication, explicitly reconsider it: user input (Arabic / English / future supported
   language) → semantic normalization → canonical InventorAI concepts → the EXISTING
   deterministic progression / decision engine; the existing engine stays the decision owner.
@@ -291,6 +299,26 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   Those last two are material safeguards, written out here so this pointer cannot read as
   though they had disappeared. **This checklist authorizes none of it**: no provider is
   selected, no provider is integrated, and no live privacy policy is defined here.
+  **MSNL STEP 1 — READ-ONLY ADJUDICATION AUTHORIZED (2026-09-24) / IMPLEMENTATION NOT YET
+  AUTHORIZED.** The Owner opened the read-only architecture / data-flow adjudication of this
+  item only; that authorizes no runtime, no provider, no model call and no data transmission,
+  and the preservation statements here still hold. The adjudication — and any later step —
+  must honour: **(1) shadow / proposal first** — before provenance hardening, MSNL output may
+  only propose a normalization and never becomes authoritative project truth; **(2) closed
+  concept vocabulary** — map natural-language input only to existing governed canonical
+  concepts, never inventing one; **(3) precision first** — a false semantic attribution is
+  more dangerous than an abstention; **(4) abstain is safe** — low confidence or ambiguity
+  returns ABSTAIN / NO-MAPPING, never a classification forced to raise coverage; **(5) fail
+  closed with deterministic fallback** — when MSNL abstains or fails, the existing
+  deterministic engine stays functional and authoritative; **(6) provider neutrality** — no
+  binding to one vendor or model; **(7) no decision authority** — MSNL never decides gap
+  status, maturity, readiness, validation, evidence truth, specialist completion or commercial
+  readiness; **(8) traceability** — where privacy permits, keep source input → normalization
+  proposal → candidate canonical concept → disposition; **(9) privacy / data minimization** —
+  before ANY external provider integration, determine what invention / project / user data
+  may leave InventorAI, the minimum needed, retention, security, provider handling and the
+  applicable privacy boundary, and never send whole-project context merely because it is
+  technically convenient.
 <!-- END CURRENT-BLOCK: stage-18-semantic-normalization -->
 <!-- CURRENT-BLOCK: d3-fk-hardening -->
 - **CARRIED FORWARD — D3 FK HARDENING NOTE (`supporting_evidence_id`): PRESERVED.**
@@ -326,15 +354,19 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   **Stage 44 lineage gate** — PRESERVED · **Stage 45 deployment gate** — PRESERVED ·
   **WATCH-01** — PRESERVED / PLANNED / NOT YET IMPLEMENTED · **WATCH-04** — PRESERVED.
 <!-- END CURRENT-BLOCK: material-residuals -->
-- **CURRENT SUBTASK:** STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT
-  METHOD ONLY — `ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN
-  MEASUREMENT METHOD ONLY`. For each EXISTING Section-11 experiment the inventor may record
-  their own measurement method, durable in a narrowly typed sibling sidecar of the same
-  project store and saved with the success criteria in ONE atomic planning write. The durable
-  SuccessCriterion remediation (IMPLEMENTATION-01 / CORRECTION-01) is delivered (PR #682).
-  Editing needs no writable progression state, and planning-metadata corruption does not
-  govern core progression. Variable, hypothesis and every other CAP-09 field, full CAP-09 and
-  full WS-PFV-001 are NOT AUTHORIZED. Both bounded Stage-18 / CAP-01 increments are delivered (PR #678 checklist, PR #679 research
+- **CURRENT SUBTASK:** MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY —
+  `ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY` ·
+  `MSNL IMPLEMENTATION: NOT YET AUTHORIZED`. It is the EXISTING Stage-18 semantic-normalization
+  item, not a new Master Roadmap Stage: repository inspection and adjudication only — no
+  runtime MSNL, no provider selection or integration, no live or external model call and no
+  external transmission of user / project / invention data. Target-Aware Question / Answer
+  Binding is COMPLETE (PR #690). Stage 19 stays ENTERED / NOT COMPLETE: the durable
+  SuccessCriterion remediation (PR #682) and CAP-09 SLICE-02 (PR #683) are delivered; Variable,
+  hypothesis and every other CAP-09 field, full CAP-09 and full WS-PFV-001 are NOT AUTHORIZED.
+  *(Superseded 2026-09-24 by MSNL Step 1, preserved — was: "STAGE 19 / CAP-09 SLICE-02 —
+  DURABLE USER-WRITTEN MEASUREMENT METHOD ONLY — `ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 —
+  DURABLE USER-WRITTEN MEASUREMENT METHOD ONLY`"; PR #683 delivered SLICE-02 and the Owner then
+  authorized MSNL Step 1.)* Both bounded Stage-18 / CAP-01 increments are delivered (PR #678 checklist, PR #679 research
   direction); every further CAP-01/STG scope requires a new explicit mandate, and Stage 11
   still requires its own explicit mandate. Completing the Stage-17 product-depth work started
   nothing, and neither did completing the Stage-10 differential.
@@ -503,7 +535,7 @@ dimension: a captured dimension is not a validated conclusion.
 
 ## J. Current Technology-Deepening position
 
-**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED. **Stage 19 ENTERED / NOT COMPLETE** (2026-09-23) — the durable SuccessCriterion remediation (IMPLEMENTATION-01) is delivered (PR #682); the only authorized implementation is CAP-09 SLICE-02 (durable user-written measurement method); full CAP-09 and full WS-PFV-001 NOT AUTHORIZED. *(Superseded 2026-09-23 by SLICE-02, preserved — was: "the only authorized implementation is the durable SuccessCriterion remediation (IMPLEMENTATION-01)".)* *(Superseded 2026-09-23, preserved — was: "**Stage 19 ENTERED FOR FOUNDATION / CONTRACT WORK ONLY** (2026-09-23) — CAP-09 product implementation NOT STARTED / NOT AUTHORIZED YET; zero merged runtime code.")* **Stages 20–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-23, preserved — was: "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until the Owner's Stage-19 entry-contract authorization.)* *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
+**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED. **Stage 19 ENTERED / NOT COMPLETE** (2026-09-23) — the durable SuccessCriterion remediation (IMPLEMENTATION-01) is delivered (PR #682); CAP-09 SLICE-02 (durable user-written measurement method) is delivered (PR #683) and no further CAP-09 implementation is currently authorized; full CAP-09 and full WS-PFV-001 NOT AUTHORIZED. The current bounded action is MSNL Step 1 — read-only architecture / data-flow adjudication of the Stage-18 semantic-normalization item; implementation NOT YET AUTHORIZED. *(Superseded 2026-09-24, preserved — was: "the only authorized implementation is CAP-09 SLICE-02 (durable user-written measurement method)".)* *(Superseded 2026-09-23 by SLICE-02, preserved — was: "the only authorized implementation is the durable SuccessCriterion remediation (IMPLEMENTATION-01)".)* *(Superseded 2026-09-23, preserved — was: "**Stage 19 ENTERED FOR FOUNDATION / CONTRACT WORK ONLY** (2026-09-23) — CAP-09 product implementation NOT STARTED / NOT AUTHORIZED YET; zero merged runtime code.")* **Stages 20–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-23, preserved — was: "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until the Owner's Stage-19 entry-contract authorization.)* *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
 
 Nothing in the readiness or infrastructure lanes touched any of them. Adjacent progress
 is not implementation. CAP-12 and CAP-13 must remain separate capabilities. Release-lane
@@ -644,9 +676,12 @@ FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED
   IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3
 SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753
 NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED
-ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD ONLY
+ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY
+MSNL IMPLEMENTATION: NOT YET AUTHORIZED
+MSNL ROADMAP MAPPING: EXISTING STAGE-18 SEMANTIC-NORMALIZATION ITEM — NO NEW STAGE
+TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a
 STAGE 19: ENTERED / NOT COMPLETE
-AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD
+CAP-09 SLICE-02: DELIVERED — PR #683 — merge 8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60
 DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682
 VARIABLE / HYPOTHESIS / OTHER CAP-09 FIELDS: NOT AUTHORIZED
 CRITERIA EDITING: NO WRITABLE PROGRESSION STATE REQUIRED
@@ -675,7 +710,8 @@ VALIDATED COMMERCIAL CONCLUSION: NO
 
 CURRENT TECHNOLOGY-DEEPENING POSITION:
 Stage 18 entered / partial — both bounded CAP-01 increments merged (PRs #678, #679); no further CAP-01 authorized
-Stage 19 entered / not complete — durable SuccessCriterion remediation delivered (PR #682); SLICE-02 durable measurement method only; full CAP-09 not authorized
+Stage 19 entered / not complete — durable SuccessCriterion remediation delivered (PR #682); SLICE-02 durable measurement method delivered (PR #683); full CAP-09 not authorized
+MSNL Step 1 — read-only adjudication of the Stage-18 semantic-normalization item; implementation not yet authorized
 Stages 20–27 preserved, not entered / not authorized
 
 CURRENT DOMAIN-EXPANSION POSITION:

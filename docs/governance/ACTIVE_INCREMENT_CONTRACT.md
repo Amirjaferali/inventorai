@@ -23,11 +23,105 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--stage-19-cap09-slice-02-measurement-method"></a>
-## Current authority — Stage 19 / CAP-09 SLICE-02 durable user-written Measurement Method (Owner authorization, 2026-09-23)
+<a id="current-authority--msnl-step-1-read-only-adjudication"></a>
+## Current authority — MSNL Step 1 read-only architecture / data-flow adjudication (Owner authorization, 2026-09-24)
 
-**ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD
-ONLY.** After the durable SuccessCriterion remediation was delivered (PR #682), a read-only
+**ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY.**
+MSNL (Multilingual Semantic Normalization Layer) is the EXISTING Stage-18
+semantic-normalization item carried in the `stage-18-semantic-normalization` block below; this
+creates no new Master Roadmap Stage and changes no stage checkbox. Its rules are recorded once,
+in that block.
+
+| | |
+|---|---|
+| **MSNL STEP 1** | `READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY` |
+| **MSNL IMPLEMENTATION** | `NOT YET AUTHORIZED` |
+| **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **PARTIAL** — unchanged |
+| **STAGE 19** | `ENTERED / NOT COMPLETE` — unchanged; checkbox stays unticked |
+| **CAP-09 SLICE-02** | `DELIVERED — PR #683 — merge 8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60` |
+| **F-09 PLANNING-FORM RECOVERY** | `DELIVERED — PR #684 — merge 079a9000bd23d19328b10c3854490264bf9b1697` |
+| **TARGET-AWARE QUESTION / ANSWER BINDING** | `COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a` |
+| **FULL CAP-09 / FULL WS-PFV-001** | `NOT AUTHORIZED` |
+| **FURTHER CAP-01 IMPLEMENTATION** | **NOT CURRENTLY AUTHORIZED** — unchanged |
+
+**Authorized now (read-only):** repository inspection; current input-flow mapping; canonical
+concept-owner mapping; data-flow / trust-boundary analysis; shadow / proposal architecture
+adjudication; confidence / abstention / fallback design adjudication; provenance-interface
+requirement analysis; privacy / data-minimization boundary analysis; provider-neutral interface
+analysis; test / evaluation strategy design.
+
+**Not authorized by this step:** runtime MSNL implementation; external LLM / provider
+integration; provider selection; spend commitment; sending user / project / invention data
+externally; live model calls; new persisted SYSTEM_INFERRED truth; state mutation; gap closure;
+maturity / readiness / validation promotion; new concept creation; autonomous technical
+orchestration; question hiding or reduction; new domain activation.
+
+**Delivered and closed — not reopened.** Stage-19 CAP-09 SLICE-02 (durable user-written
+measurement method) is DELIVERED (PR #683) and is no longer the active contract; Stage 19 stays
+ENTERED / NOT COMPLETE, and delivering a slice authorizes no further CAP-09. The bounded F-09
+planning-form rejected-draft recovery is DELIVERED (PR #684). UQTR CORE (PR #688) and Mechanical
+Path-N owner-friendly Step 1 (PR #689) are MERGED. Target-Aware Question / Answer Binding (PR
+#690, merge `ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`) is MERGED / POST-MERGE IDENTITY VERIFIED
+and COMPLETE for its accepted scope; its L1–L4 repairs are not reopened. Astra final Level-1
+verdict: PASS WITH NON-BLOCKING FINDINGS.
+
+**T1-C′ preparation is mechanics only.** The standardized synthetic study corpus (PR #685,
+merge `77e2f86e12f3c292ea84409794ff15000bffa035`) and the later automated study dry-run evidence
+establish preparation mechanics only — **not** real-user usability, real-user value, product
+differentiation, market validation or human validation. New human activity remains separately
+authorized.
+
+**Current question visibility.** The Mechanical default-visible Path-N set remains **10
+questions**; Target-Aware did not reduce question visibility. An approximately-five
+Owner-question shape is a **design target — not a hard engine quota and not implemented**. The
+product rule: ask the Owner only what only the Owner can answer or what materially changes
+orchestration. **A hidden question must never mean a hidden unknown**: any future hidden
+technical need stays explicitly owned by SYSTEM, SPECIALIST, EVIDENCE or optional OWNER
+refinement.
+
+**Protected sequence.** Target-Aware — COMPLETE → MSNL → Provenance Hardening → Autonomous
+Technical Orchestration → safe question reduction → RC validation → Product Differentiation
+Evidence. MSNL may begin in SHADOW / PROPOSAL-ONLY mode before Provenance Hardening, but **no
+durable or authoritative system-generated technical inference may be activated** until consumers
+can distinguish at least OWNER_STATED, SYSTEM_INFERRED, EXPERT_SUPPLIED and EXTERNAL_EVIDENCE as
+applicable. System generation is not evidence; SYSTEM_INFERRED is not OWNER_STATED;
+`specialist_required` is not `specialist_reviewed`; `evidence_requested` is not
+`evidence_exists`.
+
+**Autonomous Technical Orchestration — NOT YET CURRENT; next only after provenance hardening.**
+When separately authorized it may propose technical directions, decompose a problem, identify
+assumptions, unknowns, specialist needs and evidence / test needs, and offer alternatives — and
+every such proposal stays SYSTEM_INFERRED + UNVALIDATED until independently supported. Nothing
+here activates it.
+
+**WATCH — reader compatibility before any rollback / release.** Target-Aware expanded durable
+`AssertionRecord` payloads from 15 to 16 fields, and the pre-Target-Aware reader does not load
+sixteen-field rows. This was accepted as a NON-BLOCKING candidate finding and is **not** a
+current execution blocker. Before deployment / release rollback planning, explicitly account
+for forward / backward reader compatibility or a truthful forward-only recovery strategy. No
+repair and no migration now.
+
+**WATCH — CI passive-authority list (separate follow-up, not repaired here).** The
+`passive_authority` comment in `.github/workflows/ci.yml` says `CLAUDE.md`,
+`ACTIVE_INCREMENT_CONTRACT.md` and `CURRENT_PROJECT_STATE.md` have no test consumers, but
+`tests/test_v132_derived_navigation_truth.py` and `tests/test_stage18_cap01_bounded_guidance.py`
+read them; a change touching only those files would receive the smoke test floor. The workflow
+is unchanged by this synchronization.
+
+**Preserved.** `STAGE 11 / A2: DEFERRED / UNDISCHARGED` · `STAGE 15 (IRL): PRESERVED — MUST
+NOT BE LOST` · `T2-E: DEFERRED` · `D13 RESEARCH: REMAINS CLOSED` · Stages 20–27 stay preserved,
+not entered and not authorized · `DEPLOYMENT: NOT AUTHORIZED` · `PUBLIC RELEASE: NOT
+AUTHORIZED` · `PAID ACTIVATION: NOT AUTHORIZED`. No human experiment, CAD / PCB generation, MCP
+activation or new domain is authorized.
+
+<a id="current-authority--stage-19-cap09-slice-02-measurement-method"></a>
+## Current authority — Stage 19 / CAP-09 SLICE-02 durable user-written Measurement Method (Owner authorization, 2026-09-23) — DELIVERED (PR #683); SUPERSEDED as current authority by MSNL Step 1
+
+**No longer the current authority.** SLICE-02 was delivered by PR #683 (merge
+`8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60`), and MSNL Step 1 above replaced it as the current
+authority on 2026-09-24. Every rule below still binds. *(Superseded 2026-09-24, preserved so
+the change is visible rather than silent: this opened "**ACTIVE CONTRACT: STAGE 19 / CAP-09
+SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD ONLY.**".)* After the durable SuccessCriterion remediation was delivered (PR #682), a read-only
 Stage-19 remainder assessment found exactly one next product slice justified by the
 repository, and the Owner / Lead authorized it: for each EXISTING Section-11 experiment, the
 inventor may record their OWN description of how they plan to measure or check it. It is
@@ -36,7 +130,7 @@ inventor may record their OWN description of how they plan to measure or check i
 | | |
 |---|---|
 | **STAGE 19** | `ENTERED / NOT COMPLETE` — checkbox stays unticked |
-| **AUTHORIZED IMPLEMENTATION** | **CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD** |
+| **DELIVERED IMPLEMENTATION** | **CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD** — `DELIVERED — PR #683` *(Superseded 2026-09-24, preserved — this row was labelled "AUTHORIZED IMPLEMENTATION")* |
 | **DURABLE SUCCESS-CRITERION REMEDIATION** | `DELIVERED — PR #682` (IMPLEMENTATION-01 / CORRECTION-01 / IR-01; its rules below still bind) |
 | **FULL CAP-09** | `NOT AUTHORIZED` |
 | **FULL WS-PFV-001** | `NOT AUTHORIZED` |
@@ -576,19 +670,20 @@ section above; the stage is ENTERED as fact. `FIRST BOUNDED CAP-01 INCREMENT:
 OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
 `D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
 unticked** — one authorized bounded slice is not the stage.
-**Also ENTERED: Stage 19 — WS-PFV-001 / CAP-09 Experiment-Plan Designer.** `ACTIVE CONTRACT:
-STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT METHOD ONLY` · `STAGE 19:
-ENTERED / NOT COMPLETE` · `AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN
-MEASUREMENT METHOD` · `DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682` ·
-`FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
-`SuccessCriterion` stay the canonical planning owner. The delivered remediation made the
-EXISTING criterion durable in the same project store; SLICE-02 adds ONE inventor-written
-measurement method per existing experiment, durable in a narrowly typed sibling sidecar of
-the same store and saved in the same atomic planning write. Editing either needs no
-writable progression state, and planning-metadata corruption does not govern core
-progression. Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED. The
-Stage-19 checkbox stays unticked, and
+**Also ENTERED: Stage 19 — WS-PFV-001 / CAP-09 Experiment-Plan Designer.** `STAGE 19: ENTERED / NOT COMPLETE` · `DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682` · `CAP-09 SLICE-02: DELIVERED — PR #683 — merge 8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60` · `F-09 PLANNING-FORM RECOVERY: DELIVERED — PR #684 — merge 079a9000bd23d19328b10c3854490264bf9b1697` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
+`SuccessCriterion` stay the canonical planning owner. SLICE-02 was bounded: ONE
+inventor-written measurement method per existing experiment, durable in a narrowly typed
+sibling sidecar of the same store. Delivering it is not the stage and opens nothing wider:
+Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
+implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
+**CURRENT BOUNDED ACTION — the EXISTING Stage-18 semantic-normalization item, not a new
+Master Roadmap Stage:** `ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY` · `MSNL IMPLEMENTATION: NOT YET AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
+Step 1 authorizes repository inspection and adjudication only. It authorizes no runtime MSNL
+implementation, no provider selection or integration, no live or external model call, no
+transmission of user / project / invention data outside InventorAI, no persisted
+SYSTEM_INFERRED truth, no automatic concept creation, no readiness / maturity / validation
+promotion, no autonomous technical orchestration and no question hiding or reduction.
 **Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and
 `STAGE 11 STARTED: NO`. It was routed PAST, not completed, and **routing past a deferred
 stage never completes it**. Its existing authorization conditions stand: reuse valid prior
@@ -596,6 +691,12 @@ evidence where applicable, and **new human activity requires separate authorizat
 existing consent/custody boundaries**. No human collection begins merely because routing
 moves past it.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded 2026-09-24 by MSNL Step 1, preserved so the change is visible rather than
+silent: the Stage-19 routing line read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE
+USER-WRITTEN MEASUREMENT METHOD ONLY` · … `AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE
+USER-WRITTEN MEASUREMENT METHOD`". That was true until PR #683 delivered SLICE-02 and the Owner
+authorized MSNL Step 1.)*
 
 *(Superseded 2026-09-23 by SLICE-02, preserved so the change is visible rather than silent:
 the Stage-19 routing line read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION
@@ -651,7 +752,8 @@ reachability, and are not duplicated inside Stage 17.**
 
 <!-- CURRENT-BLOCK: stage-18-semantic-normalization -->
 **CARRIED INTO STAGE 18 — MULTILINGUAL SEMANTIC NORMALIZATION LAYER: PRESERVED ·
-NOT AUTHORIZED · NOT IMPLEMENTED.** At the BEGINNING of Stage 18 / D13 / CAP-01 adjudication,
+NOT AUTHORIZED · NOT IMPLEMENTED as implementation · READ-ONLY ADJUDICATION AUTHORIZED (MSNL
+Step 1) / IMPLEMENTATION NOT YET AUTHORIZED.** At the BEGINNING of Stage 18 / D13 / CAP-01 adjudication,
 explicitly reconsider it. Intended bounded flow: user input (Arabic / English / future
 supported language) → semantic normalization → canonical InventorAI concepts → the EXISTING
 deterministic progression / decision engine; the existing engine stays the decision owner.
@@ -672,6 +774,27 @@ and under what privacy, security and retention boundary.
 Those last two are material safeguards, written out here so this pointer cannot read as
 though they had disappeared. **Nothing here authorizes any of it**: no provider is selected,
 no provider is integrated, and no live privacy policy is defined here.
+
+**MSNL STEP 1 — READ-ONLY ADJUDICATION AUTHORIZED (2026-09-24) / IMPLEMENTATION NOT YET
+AUTHORIZED.** The Owner opened the read-only architecture / data-flow adjudication of this
+item only; that authorizes no runtime, no provider, no model call and no data transmission,
+and the preservation statements here still hold. The adjudication — and any later step —
+must honour: **(1) shadow / proposal first** — before provenance hardening, MSNL output may
+only propose a normalization and never becomes authoritative project truth; **(2) closed
+concept vocabulary** — map natural-language input only to existing governed canonical
+concepts, never inventing one; **(3) precision first** — a false semantic attribution is
+more dangerous than an abstention; **(4) abstain is safe** — low confidence or ambiguity
+returns ABSTAIN / NO-MAPPING, never a classification forced to raise coverage; **(5) fail
+closed with deterministic fallback** — when MSNL abstains or fails, the existing
+deterministic engine stays functional and authoritative; **(6) provider neutrality** — no
+binding to one vendor or model; **(7) no decision authority** — MSNL never decides gap
+status, maturity, readiness, validation, evidence truth, specialist completion or commercial
+readiness; **(8) traceability** — where privacy permits, keep source input → normalization
+proposal → candidate canonical concept → disposition; **(9) privacy / data minimization** —
+before ANY external provider integration, determine what invention / project / user data
+may leave InventorAI, the minimum needed, retention, security, provider handling and the
+applicable privacy boundary, and never send whole-project context merely because it is
+technically convenient.
 <!-- END CURRENT-BLOCK: stage-18-semantic-normalization -->
 
 <!-- CURRENT-BLOCK: d3-fk-hardening -->

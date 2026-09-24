@@ -1769,11 +1769,16 @@ def test_group_two_reads_completed_with_its_residuals_carried():
 # ==========================================================================
 # Stage 19 entry: the WS-PFV-001 / CAP-09 FOUNDATION CONTRACT, and what it does NOT unlock
 # ==========================================================================
-_S19_CONTRACT = ("`ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
-                 "MEASUREMENT METHOD ONLY`")
+# SLICE-02 is DELIVERED (PR #683) and superseded as the live contract by MSNL
+# Step 1 (2026-09-24). Its two former live tokens are now FORBIDDEN on every live
+# surface; they may survive only as preserved, visibly superseded history.
+_S19_FORMER_CONTRACT = ("ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
+                        "MEASUREMENT METHOD ONLY")
+_S19_FORMER_ONLY = ("AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
+                    "MEASUREMENT METHOD")
 _S19_ENTERED = "`STAGE 19: ENTERED / NOT COMPLETE`"
-_S19_ONLY = ("`AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
-             "MEASUREMENT METHOD`")
+_S19_SLICE_02 = ("`CAP-09 SLICE-02: DELIVERED — PR #683 — merge "
+                 "8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60`")
 _S19_DELIVERED = "`DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682`"
 _S19_NOT_FULL = ("`FULL CAP-09: NOT AUTHORIZED`", "`FULL WS-PFV-001: NOT AUTHORIZED`")
 
@@ -1869,31 +1874,41 @@ def test_stage_19_implementation_01_rules_still_bind_after_slice_02():
              r"STAGE 19 COMPLETE: YES", r"STAGE 19: COMPLETE")
 
 
-def test_stage_19_slice_02_is_the_bounded_slice_on_every_live_surface():
-    """SLICE-02 authorizes ONE thing: the inventor's own measurement method per
+def _tok(token):
+    """A backticked routing token, tolerant only of line wrapping."""
+    return re.escape(token).replace(r"\ ", r"\s+")
+
+
+# A live surface may never present SLICE-02 as the current contract again.
+_SLICE_02_LIVE_REVERSALS = (
+    re.escape(_S19_FORMER_CONTRACT).replace(r"\ ", r"\s+"),
+    re.escape(_S19_FORMER_ONLY).replace(r"\ ", r"\s+"),
+    r"only authorized implementation is CAP-09 SLICE-02",
+    r"SLICE-02 is the (live|current|active) (contract|mandate|implementation)")
+
+
+def test_stage_19_slice_02_is_delivered_history_and_still_bounded():
+    """SLICE-02 authorized ONE thing — the inventor's own measurement method per
     EXISTING Section-11 experiment, durable in a narrowly typed sibling sidecar
-    of the same store. The failure modes keep every token in place: "a slice is
-    authorized" read as full CAP-09 or full WS-PFV-001, the sidecar read as a
-    parallel experiment store or a widened criterion table, the method read as
-    a measurement / result / Evidence, or the slice read as opening Variable or
-    the other CAP-09 fields. So the guard requires the narrow wording AND rejects
-    the widened predicate on the authority, all three routing fences, the
-    current-position entry, CLAUDE.md, the checklist, the roadmap row and the
-    capability register — and it records no candidate lifecycle state that a
-    merge would make false.
+    of the same store — and PR #683 delivered it. The guard advances with the
+    fact instead of freezing the old routing: the slice must read DELIVERED and
+    visibly superseded as the live contract, every bounded-scope rule of the
+    delivered section must survive verbatim, and no live surface may present it
+    as the active contract again. Delivering a slice still opens nothing: full
+    CAP-09, full WS-PFV-001, Variable and the other CAP-09 fields stay NOT
+    AUTHORIZED, and Stage 19 stays ENTERED / NOT COMPLETE.
     """
     contract = _read(CONTRACT)
-    first = contract.index("## Current authority")
-    assert contract[first:].startswith(
-        "## Current authority — Stage 19 / CAP-09 SLICE-02 durable user-written "
-        "Measurement Method"), contract[first:first + 120]
-    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
-    _needs(top, CONTRACT, "slice-02",
-           r"\*\*ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT "
-           r"METHOD ONLY\.\*\*",
+    top = _section(contract, "current-authority--stage-19-cap09-slice-02-measurement-method")
+    _needs(top, CONTRACT, "slice-02 delivered",
+           r"Measurement Method \(Owner authorization, 2026-09-23\) — DELIVERED \(PR #683\); "
+           r"SUPERSEDED as current authority by MSNL Step 1",
+           r"\*\*No longer the current authority\.\*\* SLICE-02 was delivered by PR #683 "
+           r"\(merge `8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60`\)",
+           r"Every rule below still binds",
            r"`ENTERED / NOT COMPLETE` — checkbox stays unticked",
-           r"\*\*AUTHORIZED IMPLEMENTATION\*\* \| \*\*CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
-           r"MEASUREMENT METHOD\*\*",
+           r"\*\*DELIVERED IMPLEMENTATION\*\* \| \*\*CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
+           r"MEASUREMENT METHOD\*\* — `DELIVERED — PR #683`",
            r"\*\*DURABLE SUCCESS-CRITERION REMEDIATION\*\* \| `DELIVERED — PR #682`",
            r"\*\*FULL CAP-09\*\* \| `NOT AUTHORIZED`",
            r"\*\*FULL WS-PFV-001\*\* \| `NOT AUTHORIZED`",
@@ -1924,7 +1939,9 @@ def test_stage_19_slice_02_is_the_bounded_slice_on_every_live_surface():
            r"`CI OPTIMIZATION: SEPARATE / NOT IMPLEMENTED`",
            r"`STARTED: YES` · `COMPLETE: NO` · \*\*PARTIAL\*\* — unchanged",
            r"FURTHER CAP-01 IMPLEMENTATION\*\* \| \*\*NOT CURRENTLY AUTHORIZED")
-    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "slice-02",
+    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "slice-02 delivered",
+             r"\*\*ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02",
+             r"\*\*AUTHORIZED IMPLEMENTATION\*\* \| \*\*CAP-09 SLICE-02",
              r"FULL (CAP-09|WS-PFV-001)\W{0,8}(IS )?AUTHORIZED\b",
              r"VARIABLE\W{0,8}(IS )?AUTHORIZED\b",
              r"STAGE 19 COMPLETE: YES", r"STAGE 19: COMPLETE",
@@ -1933,14 +1950,11 @@ def test_stage_19_slice_02_is_the_bounded_slice_on_every_live_surface():
     live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
     live_surfaces.append((STATE, _current(STATE, "current-position")))
     for path, block in live_surfaces:
-        _needs(block, path, "stage-19 live", re.escape(_S19_CONTRACT).replace(r"\ ", r"\s+"),
-               re.escape(_S19_ENTERED).replace(r"\ ", r"\s+"),
-               re.escape(_S19_ONLY).replace(r"\ ", r"\s+"),
-               re.escape(_S19_DELIVERED).replace(r"\ ", r"\s+"),
-               *(re.escape(t).replace(r"\ ", r"\s+") for t in _S19_NOT_FULL),
+        _needs(block, path, "stage-19 live", _tok(_S19_ENTERED), _tok(_S19_SLICE_02),
+               _tok(_S19_DELIVERED), *(_tok(t) for t in _S19_NOT_FULL),
                r"Section 11 \+\s+`SuccessCriterion` stay the canonical planning\s+owner",
-               r"Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED")
-        _rejects(block, path, "stage-19 live",
+               r"Variable, hypothesis and every other CAP-09 field stay\s+NOT AUTHORIZED")
+        _rejects(block, path, "stage-19 live", *_SLICE_02_LIVE_REVERSALS,
                  r"ACTIVE CONTRACT: NONE", r"FOUNDATION CONTRACT ONLY",
                  r"ENTERED FOR FOUNDATION", r"CAP-09 PRODUCT IMPLEMENTATION",
                  r"IMPLEMENTATION-01 ONLY",
@@ -1950,31 +1964,27 @@ def test_stage_19_slice_02_is_the_bounded_slice_on_every_live_surface():
                  r"IMPLEMENTED IN CANDIDATE", r"NOT YET AUTHORITATIVE")
     for path, routing in _surfaces("current-routing"):
         _needs(routing, path, "stage-19 routing", r"Stage-19 checkbox stays unticked",
-               r"entering Stage 19 completes nothing in Stage 18")
-    # CLAUDE.md routes to it first, and does not widen it
+               r"entering Stage 19 completes nothing in Stage 18",
+               r"no further CAP-09\s+implementation is currently authorized")
+    # CLAUDE.md records the delivery and does not route to the slice
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    for needle in ("ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
-                   "MEASUREMENT METHOD ONLY.",
-                   "is ENTERED / NOT COMPLETE",
-                   "The durable SuccessCriterion remediation (IMPLEMENTATION-01 / CORRECTION-01) "
-                   "is delivered (PR #682).",
-                   "The only authorized implementation is CAP-09 SLICE-02",
+    for needle in ("is ENTERED / NOT COMPLETE",
+                   "the durable SuccessCriterion remediation (PR #682) and CAP-09 SLICE-02, the "
+                   "durable user-written measurement method (PR #683), are delivered",
+                   "SLICE-02 is not the active contract",
                    "Full CAP-09 and full WS-PFV-001 are NOT AUTHORIZED",
                    "no other Stage is authorized"):
         assert needle in head, needle
     for stale in ("FOUNDATION CONTRACT ONLY", "NOT STARTED / NOT AUTHORIZED YET",
-                  "ACTIVE CONTRACT: NONE", "IMPLEMENTATION-01 ONLY"):
+                  "ACTIVE CONTRACT: NONE", "IMPLEMENTATION-01 ONLY",
+                  _S19_FORMER_CONTRACT, "The only authorized implementation is CAP-09 SLICE-02"):
         assert _absent(head, stale), stale
-    # the checklist subtask and machine record, and the roadmap row
-    flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
-    assert ("**CURRENT SUBTASK:** STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN MEASUREMENT "
-            "METHOD ONLY") in flat_checklist
-    for line in ("ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
-                 "MEASUREMENT METHOD ONLY",
-                 "STAGE 19: ENTERED / NOT COMPLETE",
-                 "AUTHORIZED IMPLEMENTATION: CAP-09 SLICE-02 — DURABLE USER-WRITTEN "
-                 "MEASUREMENT METHOD",
+    # the checklist machine record keeps every bounded fact, and no SLICE-02 contract line
+    raw_checklist = _read(CHECKLIST)
+    for line in ("STAGE 19: ENTERED / NOT COMPLETE",
+                 "CAP-09 SLICE-02: DELIVERED — PR #683 — merge "
+                 "8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60",
                  "DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682",
                  "VARIABLE / HYPOTHESIS / OTHER CAP-09 FIELDS: NOT AUTHORIZED",
                  "CRITERIA EDITING: NO WRITABLE PROGRESSION STATE REQUIRED",
@@ -1987,15 +1997,24 @@ def test_stage_19_slice_02_is_the_bounded_slice_on_every_live_surface():
                  "ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION "
                  "— IMPLEMENTATION-01 ONLY",
                  "CAP-09 PRODUCT IMPLEMENTATION: NOT STARTED / NOT AUTHORIZED YET",
-                 "ACTIVE CONTRACT: NONE"):
+                 "ACTIVE CONTRACT: NONE", _S19_FORMER_CONTRACT, _S19_FORMER_ONLY):
         assert re.search(r"^" + re.escape(gone) + r"$", raw_checklist, re.M) is None, gone
+    live_checklist = re.sub(r"\*\(Superseded.*?\)\*", "", _flat(CHECKLIST))
+    assert _absent(live_checklist, "**CURRENT SUBTASK:** STAGE 19 / CAP-09 SLICE-02")
+    assert _absent(live_checklist, "the only authorized implementation is CAP-09 SLICE-02")
+    # the roadmap row: delivered, still bounded, still unticked
     rows = re.findall(r"^- \[ \] \*\*19 — WS-PFV-001/CAP-09:\*\*.*$", _read(ROADMAP), re.M)
     assert len(rows) == 1, "stage 19 row missing, duplicated or ticked"
-    assert "**ENTERED / NOT COMPLETE (2026-09-23):**" in rows[0]
-    assert "the ONLY authorized implementation is CAP-09 SLICE-02" in rows[0]
-    assert "is delivered (PR #682)" in rows[0]
-    assert "full CAP-09 and full WS-PFV-001 NOT AUTHORIZED" in rows[0]
-    assert "satisfied for planning-only CAP-09 entry, and for nothing wider" in rows[0]
+    row = rows[0]
+    assert "**ENTERED / NOT COMPLETE (2026-09-23):**" in row
+    assert ("CAP-09 SLICE-02, one inventor-written measurement method per existing experiment, "
+            "durable in the same project store, is delivered (PR #683)") in row
+    assert "no further CAP-09 implementation is currently authorized" in row
+    assert "is delivered (PR #682)" in row
+    assert "full CAP-09 and full WS-PFV-001 NOT AUTHORIZED" in row
+    assert "satisfied for planning-only CAP-09 entry, and for nothing wider" in row
+    live_row = re.sub(r"\*\(Superseded.*?\)\*", "", row)
+    assert _absent(live_row, "the ONLY authorized implementation is CAP-09 SLICE-02"), live_row
     assert re.search(r"^- \[ \] \*\*20 — CAP-08:", _read(ROADMAP), re.M), "stage 20 row changed"
     # the register records TWO bounded CAP-09 exceptions, not an opening of CAP-09
     register = _read(CAPABILITIES)
@@ -2009,3 +2028,184 @@ def test_stage_19_slice_02_is_the_bounded_slice_on_every_live_surface():
     assert "It does NOT authorize full CAP-09 or full WS-PFV-001" in flat_register
     assert "Variable, hypothesis, risks and a result category are NOT authorized" in flat_register
     assert "`FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`" in flat_register
+
+
+# ==========================================================================
+# MSNL Step 1: the live contract is READ-ONLY adjudication, never implementation
+# ==========================================================================
+_MSNL_CONTRACT = ("`ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW "
+                  "ADJUDICATION ONLY`")
+_MSNL_NOT_YET = "`MSNL IMPLEMENTATION: NOT YET AUTHORIZED`"
+_TARGET_AWARE = ("`TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge "
+                 "ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`")
+
+# Every way the read-only step could be misread as something wider. Each is an
+# affirmative predicate, so the required negations ("no provider selection", "not
+# yet authorized", "is not OWNER_STATED") stay sayable while a reversal fails.
+_MSNL_REVERSALS = (
+    r"MSNL (runtime |implementation )?(is|has been) (now )?(authorized|implemented|active|activated)\b",
+    r"MSNL IMPLEMENTATION\W{0,8}(IS )?(AUTHORIZED|IMPLEMENTED|ACTIVE)\b",
+    r"runtime MSNL (implementation )?(is|has been) (authorized|permitted|allowed)",
+    r"(?<!no )provider (is|has been|was) (selected|integrated|adopted|activated|chosen)",
+    r"(model|LLM) calls? (is|are) (authorized|permitted|allowed|enabled)",
+    r"(may|can|is allowed to|are allowed to) (send|transmit)[^.]{0,60}(outside InventorAI|externally)",
+    r"SYSTEM_INFERRED[^.]{0,40}\b(is|becomes) (authoritative|persisted|OWNER_STATED)",
+    r"automatic concept creation (is|becomes) (allowed|permitted|authorized)",
+    r"(readiness|maturity|validation) promotion (is|becomes) (allowed|permitted|authorized)",
+    r"AUTONOMOUS TECHNICAL ORCHESTRATION\W{0,8}(IS )?(AUTHORIZED|ACTIVE|ACTIVATED|CURRENT)\b",
+    r"question (hiding|reduction)[^.;]{0,30}\b(is|are) (authorized|allowed|permitted|active)",
+    r"STAGE 18 COMPLETE: YES", r"STAGE 19 COMPLETE: YES", r"STAGE 19: COMPLETE",
+    r"Stage 18\s+(is|was|has been)\s+(COMPLETE|COMPLETED|CLOSED)\b",
+    r"Stage 19\s+(is|was|has been)\s+(COMPLETE|COMPLETED|CLOSED)\b",
+    r"FULL (CAP-09|WS-PFV-001)\W{0,8}(IS )?AUTHORIZED\b",
+    r"\bStage (4[6-9]|[5-9]\d)\b", r"\bSTAGE (4[6-9]|[5-9]\d)\b")
+
+
+def test_msnl_step_1_is_the_live_read_only_contract_on_every_live_surface():
+    """MSNL Step 1 authorizes READ-ONLY architecture / data-flow adjudication of
+    the EXISTING Stage-18 semantic-normalization item, and nothing else. The
+    failure modes this guards keep every token in place: the step read as
+    runtime implementation, a provider or model activated, invention data sent
+    out, a system inference persisted as truth, concepts invented, readiness
+    promoted, orchestration activated, questions hidden, a stage marked complete
+    or a new stage minted. So the live wording is required on every live surface
+    AND each reversal is forbidden by its predicate.
+    """
+    contract = _read(CONTRACT)
+    first = contract.index("## Current authority")
+    assert contract[first:].startswith(
+        "## Current authority — MSNL Step 1 read-only architecture / data-flow adjudication"), \
+        contract[first:first + 120]
+    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
+    _needs(top, CONTRACT, "msnl step 1",
+           r"\*\*ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION "
+           r"ONLY\.\*\*",
+           r"EXISTING Stage-18 semantic-normalization item",
+           r"creates no new Master Roadmap Stage and changes no stage checkbox",
+           r"\*\*MSNL STEP 1\*\* \| `READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY`",
+           r"\*\*MSNL IMPLEMENTATION\*\* \| `NOT YET AUTHORIZED`",
+           r"\*\*STAGE 18\*\* \| `STARTED: YES` · `COMPLETE: NO` · \*\*PARTIAL\*\* — unchanged",
+           r"\*\*STAGE 19\*\* \| `ENTERED / NOT COMPLETE` — unchanged",
+           r"\*\*CAP-09 SLICE-02\*\* \| `DELIVERED — PR #683",
+           r"\*\*TARGET-AWARE QUESTION / ANSWER BINDING\*\* \| `COMPLETE — PR #690 — merge "
+           r"ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`",
+           r"\*\*FULL CAP-09 / FULL WS-PFV-001\*\* \| `NOT AUTHORIZED`",
+           # what is NOT authorized, as one explicit list
+           r"\*\*Not authorized by this step:\*\* runtime MSNL implementation; external LLM / "
+           r"provider integration; provider selection; spend commitment; sending user / project "
+           r"/ invention data externally; live model calls; new persisted SYSTEM_INFERRED truth; "
+           r"state mutation; gap closure; maturity / readiness / validation promotion; new "
+           r"concept creation; autonomous technical orchestration; question hiding or "
+           r"reduction; new domain activation\.",
+           # delivered work is not reopened; preparation is not validation
+           r"L1–L4 repairs are not reopened",
+           r"PASS WITH NON-BLOCKING FINDINGS",
+           r"establish preparation mechanics only — \*\*not\*\* real-user usability, real-user "
+           r"value, product differentiation, market validation or human validation",
+           # visibility truth
+           r"Mechanical default-visible Path-N set remains \*\*10 questions\*\*",
+           r"Target-Aware did not reduce question visibility",
+           r"\*\*design target — not a hard engine quota and not implemented\*\*",
+           r"\*\*A hidden question must never mean a hidden unknown\*\*",
+           # the protected sequence and the provenance precondition
+           r"Target-Aware — COMPLETE → MSNL → Provenance Hardening → Autonomous Technical "
+           r"Orchestration → safe question reduction → RC validation → Product Differentiation "
+           r"Evidence",
+           r"\*\*no durable or authoritative system-generated technical inference may be "
+           r"activated\*\*",
+           r"OWNER_STATED, SYSTEM_INFERRED, EXPERT_SUPPLIED and EXTERNAL_EVIDENCE",
+           r"SYSTEM_INFERRED is not OWNER_STATED",
+           r"\*\*Autonomous Technical Orchestration — NOT YET CURRENT",
+           r"SYSTEM_INFERRED \+ UNVALIDATED until independently supported",
+           # the two WATCH items, recorded and NOT repaired
+           r"pre-Target-Aware reader does not load sixteen-field rows",
+           r"No repair and no migration now",
+           r"The workflow is unchanged by this synchronization")
+    _rejects(top, CONTRACT, "msnl step 1", *_MSNL_REVERSALS)
+    live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
+    live_surfaces.append((STATE, _current(STATE, "current-position")))
+    for path, block in live_surfaces:
+        _needs(block, path, "msnl live", _tok(_MSNL_CONTRACT), _tok(_MSNL_NOT_YET),
+               _tok(_TARGET_AWARE),
+               r"EXISTING Stage-18\s+semantic-normalization item",
+               r"not a new\s+Master Roadmap Stage",
+               r"no provider\s+selection or integration",
+               r"no live or external model call")
+        _rejects(block, path, "msnl live", *_MSNL_REVERSALS)
+    for path, routing in _surfaces("current-routing"):
+        _needs(routing, path, "msnl routing",
+               r"Step 1 authorizes repository inspection and adjudication only",
+               r"no runtime MSNL\s+implementation",
+               r"no\s+transmission of user / project / invention data outside InventorAI",
+               r"no persisted\s+SYSTEM_INFERRED truth",
+               r"no automatic concept creation",
+               r"no readiness / maturity / validation\s+promotion",
+               r"no autonomous technical orchestration",
+               r"no question hiding or reduction")
+    # the carried Stage-18 note: read-only adjudication opened, implementation not
+    for path, note in _surfaces("stage-18-semantic-normalization"):
+        _needs(note, path, "msnl note",
+               r"NOT AUTHORIZED\s*[\u00b7/]\s*NOT IMPLEMENTED as implementation",
+               r"READ-ONLY ADJUDICATION\s+AUTHORIZED \(MSNL\s+Step 1\) / IMPLEMENTATION NOT YET "
+               r"AUTHORIZED",
+               r"that authorizes no runtime, no provider, no model call and no data transmission",
+               r"\*\*\(1\) shadow / proposal first\*\* — before provenance hardening, MSNL output "
+               r"may only propose a normalization and never becomes authoritative project truth",
+               r"\*\*\(2\) closed concept vocabulary\*\* — map natural-language input only to "
+               r"existing governed canonical concepts, never inventing one",
+               r"\*\*\(3\) precision first\*\* — a false semantic attribution is more dangerous "
+               r"than an abstention",
+               r"\*\*\(4\) abstain is safe\*\* — low confidence or ambiguity returns ABSTAIN / "
+               r"NO-MAPPING, never a classification forced to raise coverage",
+               r"\*\*\(5\) fail closed with deterministic fallback\*\* — when MSNL abstains or "
+               r"fails, the existing deterministic engine stays functional and authoritative",
+               r"\*\*\(6\) provider neutrality\*\* — no binding to one vendor or model",
+               r"\*\*\(7\) no decision authority\*\* — MSNL never decides gap status, maturity, "
+               r"readiness, validation, evidence truth, specialist completion or commercial "
+               r"readiness",
+               r"source input → normalization proposal → candidate canonical concept → "
+               r"disposition",
+               r"\*\*\(9\) privacy / data minimization\*\* — before ANY external provider "
+               r"integration, determine what invention / project / user data may leave InventorAI, "
+               r"the minimum needed, retention, security, provider handling and the applicable "
+               r"privacy boundary, and never send whole-project context merely because it is "
+               r"technically convenient")
+        _rejects(note, path, "msnl note", *_MSNL_REVERSALS,
+                 r"MSNL output (may|can) (become|be) (authoritative|project truth)",
+                 r"(must|should|may) force a classification",
+                 r"MSNL (may|can) (decide|invent)",
+                 r"(may|can) send whole-project context")
+    # CLAUDE.md routes to the read-only step, and does not widen it
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
+    for needle in ("ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW "
+                   "ADJUDICATION ONLY.",
+                   "It maps to the EXISTING Stage-18 semantic-normalization item and creates no "
+                   "new Master Roadmap Stage.",
+                   "MSNL implementation is NOT YET AUTHORIZED: no runtime MSNL, no provider "
+                   "selection or integration, no external model call and no external "
+                   "transmission of user, project or invention data.",
+                   "Target-Aware Question / Answer Binding is COMPLETE (PR #690, merge "
+                   "`ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`)."):
+        assert needle in head, needle
+    for pat in _MSNL_REVERSALS:
+        assert re.search(pat, head, re.I) is None, pat
+    # the checklist subtask and machine record, and the roadmap Stage-18 row
+    flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
+    assert ("**CURRENT SUBTASK:** MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW "
+            "ADJUDICATION ONLY") in flat_checklist
+    for line in ("ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW "
+                 "ADJUDICATION ONLY",
+                 "MSNL IMPLEMENTATION: NOT YET AUTHORIZED",
+                 "MSNL ROADMAP MAPPING: EXISTING STAGE-18 SEMANTIC-NORMALIZATION ITEM — NO NEW "
+                 "STAGE",
+                 "TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge "
+                 "ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a"):
+        assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
+    rows = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", _read(ROADMAP), re.M)
+    assert len(rows) == 1, "stage 18 row missing, duplicated or ticked"
+    assert ("the current bounded action is MSNL Step 1 — read-only architecture / data-flow "
+            "adjudication of the carried semantic-normalization item, implementation NOT YET "
+            "AUTHORIZED") in rows[0]
+    for pat in _MSNL_REVERSALS:
+        assert re.search(pat, rows[0], re.I) is None, pat
