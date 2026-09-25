@@ -6,22 +6,26 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-25): Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; current bounded action: Provenance Hardening Step 1 — assertion source / validation boundary only; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
+**Current position (2026-09-25): Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; current bounded action: Autonomous Technical Orchestration synthetic shadow evaluation foundation — Implementation 01; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
 not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
 complete nothing beyond themselves. **No further CAP-01 implementation is currently
-authorized.** `ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY` — the
-provenance precondition of the EXISTING Stage-18 semantic-normalization item, not a new Master
-Roadmap Stage. `MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d`
+authorized.** `ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION — SYNTHETIC SHADOW EVALUATION FOUNDATION — IMPLEMENTATION 01` — the next item of the
+protected sequence recorded in the EXISTING Stage-18 semantic-normalization block, not a new Master
+Roadmap Stage. `PROVENANCE HARDENING STEP 1: DELIVERED — PR #695 — merge 6c413c54684b0eff6d1d0db205b3ccc82d99bc06` · `DETERMINISTIC LOCAL ORCHESTRATION: NO-CHANGE / DIFFERENT TRIGGER REQUIRED` · `OWNER DECISIONS D1 / D2 / D3: APPROVED FOR SYNTHETIC EXTERNAL EVALUATION ONLY` (OpenAI API, `gpt-6-sol`,
+synthetic evaluation only — not a production-provider decision; the adapter is operationally OFF,
+the harness runs only the committed synthetic pack, and hosted CI stays network-free) · `REAL INVENTION DATA: NOT AUTHORIZED FOR EXTERNAL TRANSMISSION` · `OD-2 / OD-3 / OD-4: UNDECIDED — NOT REQUIRED`; every
+orchestration output is ephemeral, proposal-only and non-authoritative — conceptually
+SYSTEM_INFERRED + UNVALIDATED and written nowhere. `MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d`
 (capture OFF by default, discarding sink; no provider, no persistence, no inference authority) ·
 `MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` (synthetic English /
 MSA / Kuwaiti-Gulf / Egyptian pack; not real-user evidence and not proof of LLM or dialect support)
 · `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED`;
-no provider selection or integration, no live or external model call, no external transmission of
-user / project / invention data, no readiness use of system inference (OD-3 undecided) and no
+no live-product call path, no external transmission of real user / project / invention data, no
+proposal persistence (OD-2 undecided), no readiness use of system inference (OD-3 undecided) and no
 validation-award writer (OD-4 undecided). `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge
 ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a` (UQTR CORE PR #688 and Mechanical Path-N Step 1 PR
 #689 also merged). The Mechanical default-visible Path-N set remains 10 questions; the
@@ -46,6 +50,13 @@ InventorAI domain that simply has no authorized CAP-01 profile yet.** Cross-stag
 capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
 operating practice — they add no Stage, gate or approval step.
 <!-- END CURRENT-BLOCK: current-position -->
+
+*(Superseded 2026-09-25 by the Autonomous Technical Orchestration synthetic shadow evaluation
+foundation, preserved so the change is visible rather than silent: the current-position entry read
+"`ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY`" and
+"(PARTIAL; current bounded action: Provenance Hardening Step 1 — assertion source / validation
+boundary only; …)". That was true until PR #695 delivered Step 1 and the Owner decided D1 / D2 /
+D3.)*
 
 *(Superseded 2026-09-24 by MSNL Step 1, preserved so the change is visible rather than silent:
 the current-position entry read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE

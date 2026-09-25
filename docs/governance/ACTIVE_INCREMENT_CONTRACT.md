@@ -23,10 +23,79 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--provenance-hardening-step-1"></a>
-## Current authority — Provenance Hardening Step 1 assertion source / validation boundary (Owner authorization, 2026-09-25)
+<a id="current-authority--ato-synthetic-shadow-evaluation-foundation"></a>
+## Current authority — Autonomous Technical Orchestration synthetic shadow evaluation foundation — Implementation 01 (Owner decisions D1 / D2 / D3, 2026-09-25)
 
-**ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY.**
+**ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION — SYNTHETIC SHADOW EVALUATION FOUNDATION — IMPLEMENTATION 01.**
+It is the next item of the protected sequence recorded in the EXISTING Stage-18
+semantic-normalization block, creates no new Master Roadmap Stage and changes no stage
+checkbox. It builds an offline, provider-neutral evaluation foundation only: every
+orchestration output is EPHEMERAL, PROPOSAL-ONLY and NON-AUTHORITATIVE — conceptually
+SYSTEM_INFERRED + UNVALIDATED and written nowhere.
+
+| | |
+|---|---|
+| **PROVENANCE HARDENING STEP 1** | `DELIVERED — PR #695 — merge 6c413c54684b0eff6d1d0db205b3ccc82d99bc06` |
+| **DETERMINISTIC LOCAL ORCHESTRATION** | `NO-CHANGE / DIFFERENT TRIGGER REQUIRED` — read-only adjudication accepted |
+| **OWNER DECISIONS D1 / D2 / D3** | `APPROVED FOR SYNTHETIC EXTERNAL EVALUATION ONLY` |
+| **FIRST SYNTHETIC-EVALUATION PROVIDER / MODEL (D3)** | `OpenAI API · gpt-6-sol` — not a production-provider decision and not a permanent vendor selection |
+| **FIRST REAL SYNTHETIC PROVIDER RUN** | `NOT YET — separate Lead authorization after review and hosted CI` |
+| **REAL INVENTION DATA** | `NOT AUTHORIZED FOR EXTERNAL TRANSMISSION` |
+| **MSNL LOCAL-ONLY SHADOW FOUNDATION** | `DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d` |
+| **MSNL EVALUATION PACK V1** | `DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` |
+| **EXTERNAL / PROVIDER MSNL** | `NOT AUTHORIZED` |
+| **DURABLE SYSTEM_INFERRED WRITER** | `NOT AUTHORIZED` |
+| **OD-2 / OD-3 / OD-4** | `UNDECIDED — NOT REQUIRED` |
+| **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **PARTIAL** — unchanged |
+| **STAGE 19** | `ENTERED / NOT COMPLETE` — unchanged; checkbox stays unticked |
+| **FULL CAP-09 / FULL WS-PFV-001** | `NOT AUTHORIZED` |
+
+**Authorized now (D1, D2, D3 — synthetic only):** `engine/technical_orchestration_shadow.py`
+(the provider-neutral request, the closed eight-kind proposal vocabulary, request-local source
+handles, the deterministic local adjudicator and the always-abstaining NullAdapter);
+`engine/technical_orchestration_openai.py` (ONE evaluation adapter, operationally OFF: it opens no
+connection unless the developer harness constructs it with explicit network permission and a
+credential from `OPENAI_API_KEY`); the committed Synthetic Orchestration Evaluation Pack V1; the
+developer-run harness `scripts/run_technical_orchestration_eval.py`, which runs only that pinned
+pack; and this current-truth update. Hosted CI stays network-free and uses fakes and the
+NullAdapter only.
+
+**D2 baseline for any evaluation provider — MUST:** API / Business terms, not consumer chat; API
+inputs and outputs not used for training by default; TLS in transit; documented contractual
+confidentiality / data-processing terms; documented bounded retention; no provider-side threads,
+conversations, files, vector stores, assistants or memory; no InventorAI logging of prompt or
+response content; stateless requests; documented, reviewable provider behaviour. **SHOULD:** zero
+or limited retention where available; independent security / compliance evidence; subprocessor
+transparency. Real invention data stays separately gated and may need stronger controls
+(zero-retention, data residency, privacy notice, consent).
+
+**Not authorized by this step:** any real inventor / project / invention / personal data in an
+external request; any live-product call path (web, API v1, progression, session reconstruction,
+MSNL capture, deliverable, background worker); a production provider decision; a durable
+SYSTEM_INFERRED writer; a proposal carrier or any proposal persistence (OD-2); readiness use of
+system inference (OD-3); any validation-award writer (OD-4); user-visible proposals; question
+hiding or reduction; reuse of `engine/ai_advisor.py`; new concept creation; deployment, public
+release and paid activation.
+
+**Authority boundary.** A proposal is never OWNER_STATED, Evidence, validated truth, readiness,
+maturity, gap closure, specialist review, empirical demonstration or a final design decision; it
+never rewrites Owner history, creates a canonical concept, closes a requirement, awards
+validation, selects a contradiction winner or silently chooses an engineering solution. The
+deterministic core remains the authority. Orchestration consumes — and never recomputes — the
+next development step, the requirement landscape, the validation plan, controlled-unknown
+progression and MSNL; this foundation takes synthetic input only and imports none of them.
+
+**Unchanged.** The Mechanical default-visible Path-N set remains **10 questions**; a hidden
+question must never mean a hidden unknown. The protected sequence stands: Target-Aware — COMPLETE
+→ MSNL → Provenance Hardening → Autonomous Technical Orchestration → safe question reduction → RC
+validation → Product Differentiation Evidence. The `ai_advisor` WATCH (hardcoded endpoint,
+hardcoded model, raw `idea_summary` / `last_response` transmission) stands, and the WATCH items
+and preservation statements in the sections below still stand.
+
+<a id="current-authority--provenance-hardening-step-1"></a>
+## Current authority — Provenance Hardening Step 1 assertion source / validation boundary (Owner authorization, 2026-09-25) — DELIVERED (PR #695); SUPERSEDED as current authority by the Autonomous Technical Orchestration synthetic shadow evaluation foundation
+
+**No longer the current authority.** Step 1 was delivered (PR #695, merge `6c413c54684b0eff6d1d0db205b3ccc82d99bc06`) and the Autonomous Technical Orchestration synthetic shadow evaluation foundation above replaced it as the current authority on 2026-09-25. Every rule below still binds. *(Superseded 2026-09-25, preserved so the change is visible rather than silent: this opened "**ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY.**".)*
 It hardens the EXISTING owner-interaction `AssertionRecord` source / validation / responsibility
 boundary — the provenance precondition the protected sequence places before any durable or
 authoritative system inference. It is the provenance precondition of the EXISTING Stage-18
@@ -739,18 +808,19 @@ sibling sidecar of the same store. Delivering it is not the stage and opens noth
 Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — the provenance precondition of the EXISTING Stage-18
-semantic-normalization item, not a new Master Roadmap Stage:** `ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY` · `MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d` · `MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` · `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
-The shadow foundation's capture is OFF by default and its sink discards: no provider, no
-persistence and no inference authority. Evaluation Pack V1 is synthetic only — a
-representative English / MSA / Kuwaiti-Gulf / Egyptian pack, not real-user evidence and not
-proof of LLM or dialect support, built with no provider or model. Step 1 hardens the
-owner-interaction record's source / validation / responsibility boundary only. It authorizes
-no durable SYSTEM_INFERRED writer, no validation-award writer (OD-4 undecided), no readiness
-use of system inference (OD-3 undecided), no provider selection or integration, no live or
-external model call, no transmission of user / project / invention data outside InventorAI,
-no automatic concept creation, no readiness / maturity / validation promotion, no autonomous
-technical orchestration and no question hiding or reduction.
+**CURRENT BOUNDED ACTION — the next item of the protected sequence recorded in the EXISTING
+Stage-18 semantic-normalization block, not a new Master Roadmap Stage:** `ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION — SYNTHETIC SHADOW EVALUATION FOUNDATION — IMPLEMENTATION 01` · `PROVENANCE HARDENING STEP 1: DELIVERED — PR #695 — merge 6c413c54684b0eff6d1d0db205b3ccc82d99bc06` · `DETERMINISTIC LOCAL ORCHESTRATION: NO-CHANGE / DIFFERENT TRIGGER REQUIRED` · `OWNER DECISIONS D1 / D2 / D3: APPROVED FOR SYNTHETIC EXTERNAL EVALUATION ONLY` · `REAL INVENTION DATA: NOT AUTHORIZED FOR EXTERNAL TRANSMISSION` · `OD-2 / OD-3 / OD-4: UNDECIDED — NOT REQUIRED` · `MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d` · `MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` · `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
+The foundation is offline and provider-neutral: every orchestration output is ephemeral,
+proposal-only and non-authoritative — conceptually SYSTEM_INFERRED + UNVALIDATED and written
+nowhere. The one evaluation adapter (OpenAI API, `gpt-6-sol` — D3, synthetic evaluation only, not
+a production-provider decision) is operationally OFF and reachable only from the developer-run
+harness over the committed synthetic pack; the first real synthetic provider run needs a
+separate Lead authorization after review and hosted CI, and hosted CI stays network-free. It
+authorizes no real inventor / project / invention data in any external request, no live-product
+call path, no durable SYSTEM_INFERRED writer, no proposal persistence (OD-2 undecided), no
+readiness use of system inference (OD-3 undecided), no validation-award writer (OD-4 undecided),
+no automatic concept creation, no readiness / maturity / validation promotion, no user-visible
+proposals and no question hiding or reduction.
 **Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and
 `STAGE 11 STARTED: NO`. It was routed PAST, not completed, and **routing past a deferred
 stage never completes it**. Its existing authorization conditions stand: reuse valid prior
@@ -758,6 +828,11 @@ evidence where applicable, and **new human activity requires separate authorizat
 existing consent/custody boundaries**. No human collection begins merely because routing
 moves past it.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded 2026-09-25 by the Autonomous Technical Orchestration synthetic shadow evaluation
+foundation, preserved so the change is visible rather than silent: the current bounded action read
+"`ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY`".
+That was true until PR #695 delivered Step 1 and the Owner decided D1 / D2 / D3.)*
 
 *(Superseded 2026-09-25 by Provenance Hardening Step 1, preserved so the change is visible
 rather than silent: the current bounded action read "`ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY

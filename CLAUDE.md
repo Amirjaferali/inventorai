@@ -2,17 +2,23 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY.**
-It hardens the existing owner-interaction record's source / validation / responsibility boundary
-before any durable system inference, as the provenance precondition of the EXISTING Stage-18
-semantic-normalization item, and creates no new Master Roadmap Stage. The MSNL local-only shadow
+**ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION — SYNTHETIC SHADOW EVALUATION FOUNDATION —
+IMPLEMENTATION 01.** It is the next item of the protected sequence recorded in the EXISTING
+Stage-18 semantic-normalization block, and creates no new Master Roadmap Stage. Provenance
+Hardening Step 1 is DELIVERED (PR #695, merge `6c413c54684b0eff6d1d0db205b3ccc82d99bc06`); deterministic local
+orchestration was adjudicated NO-CHANGE / DIFFERENT TRIGGER REQUIRED. Owner decisions D1 / D2 /
+D3 are approved for SYNTHETIC external evaluation only: an offline, provider-neutral foundation
+whose outputs are ephemeral, proposal-only and non-authoritative, with one evaluation adapter
+(OpenAI API, `gpt-6-sol` — not a production-provider decision) that stays operationally OFF and
+reachable only from the developer harness over the committed synthetic pack; hosted CI stays
+network-free. Real invention data is NOT AUTHORIZED FOR EXTERNAL TRANSMISSION. The MSNL local-only shadow
 foundation (PR #693, merge `319b702678a1785e117c018f87cf171d5cbf2c9d`) and MSNL Evaluation Pack V1
 (PR #694, merge `c5f59093eafbccce8ff9e947d40c46f3ae86915f`) are delivered: capture is OFF by
 default and its sink discards, the pack is synthetic only, and neither uses a provider or model.
-External / provider MSNL, a durable SYSTEM_INFERRED writer, readiness use of system inference
-(OD-3) and any validation-award writer (OD-4) are NOT AUTHORIZED: no provider selection or
-integration, no external model call, no external transmission of user, project or invention data
-and no question reduction. Target-Aware Question / Answer Binding is COMPLETE (PR #690, merge
+External / provider MSNL, a durable SYSTEM_INFERRED writer, proposal persistence (OD-2), readiness
+use of system inference (OD-3) and any validation-award writer (OD-4) are NOT AUTHORIZED: no
+live-product model call path, no production provider decision, no external transmission of real
+user, project or invention data and no question reduction. Target-Aware Question / Answer Binding is COMPLETE (PR #690, merge
 `ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`). Stage 19 (WS-PFV-001 / CAP-09 Experiment-Plan
 Designer) is ENTERED / NOT COMPLETE: the durable SuccessCriterion remediation (PR #682) and
 CAP-09 SLICE-02, the durable user-written measurement method (PR #683), are delivered, and
@@ -26,7 +32,7 @@ increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized, and
 deployment, public release and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
