@@ -87,10 +87,24 @@ def _state():
 def _record(state, action, content="owner content",
             gap_context=MECHANISM_COMPLETENESS, iteration=1, **kw):
     """Probe the (currently absent) append-only interaction ledger."""
-    return state.record_interaction(
+    # Provenance Hardening Step 1: the owner-interaction seam now dictates
+    # provenance, mints UNVALIDATED only and stores only the carrier's own
+    # responsibility. A fixture that models a record no current writer mints (a
+    # legacy record, or a future writer's validation or responsibility) sets
+    # those fields on the minted in-memory record, reproducing exactly the
+    # object the seam used to build.
+    modelled = {k: kw.pop(k) for k in ("provenance", "validation_status",
+                                      "responsibility") if k in kw}
+    rec = state.record_interaction(
         action=action, content=content,
         gap_context=gap_context, iteration=iteration, **kw,
     )
+    if "provenance" in modelled and "responsibility" not in modelled:
+        modelled["responsibility"] = (
+            "OWNER_INPUT" if modelled["provenance"] == "OWNER_STATED" else None)
+    for key, value in modelled.items():
+        setattr(rec, key, value)
+    return rec
 
 
 # ===========================================================================
@@ -369,32 +383,42 @@ def test_deliverable_does_not_overstate_certainty():
     assert d["_session_meta"].get("derived_verified_ready") is False
 
 
+# Provenance Hardening Step 1: the owner-interaction seam can no longer mint a
+# system, expert or external source at all, so these three invariants are now
+# held by refusal at the seam plus the independence of the two axes.
+
 def test_system_suggestion_is_not_evidence():
     s = _state()
-    rec = _record(s, ACTION_ANSWERED, content="system-suggested value",
-                  provenance=getattr(idea_state, "SYSTEM_INFERRED"))
-    assert rec.provenance == getattr(idea_state, "SYSTEM_INFERRED")
-    assert rec.validation_status == getattr(idea_state, "UNVALIDATED")
+    with pytest.raises(ValueError):
+        s.record_interaction(action=ACTION_ANSWERED, content="system-suggested value",
+                             gap_context=MECHANISM_COMPLETENESS, iteration=1,
+                             provenance=getattr(idea_state, "SYSTEM_INFERRED"))
+    assert s.assertions == []
+    assert getattr(idea_state, "SYSTEM_INFERRED") not in idea_state.VALIDATION_STATUSES
 
 
 def test_specialist_provided_differs_from_specialist_confirmed():
     s = _state()
-    provided = _record(s, ACTION_ANSWERED, content="spec value",
-                       provenance=getattr(idea_state, "EXPERT_SUPPLIED"),
-                       validation_status=getattr(idea_state, "UNVALIDATED"))
-    confirmed = _record(s, ACTION_ANSWERED, content="spec value confirmed",
-                        provenance=getattr(idea_state, "EXPERT_SUPPLIED"),
-                        validation_status=getattr(idea_state, "SPECIALIST_REVIEWED"))
-    assert provided.validation_status != confirmed.validation_status
+    with pytest.raises(ValueError):
+        s.record_interaction(action=ACTION_ANSWERED, content="spec value",
+                             gap_context=MECHANISM_COMPLETENESS, iteration=1,
+                             provenance=getattr(idea_state, "EXPERT_SUPPLIED"))
+    # supplied-by-an-expert (source) and reviewed-by-a-specialist (validation)
+    # live on different axes; neither value appears on the other axis
+    assert getattr(idea_state, "EXPERT_SUPPLIED") in idea_state.PROVENANCE_VALUES
+    assert getattr(idea_state, "EXPERT_SUPPLIED") not in idea_state.VALIDATION_STATUSES
+    assert getattr(idea_state, "SPECIALIST_REVIEWED") not in idea_state.PROVENANCE_VALUES
 
 
 def test_documentary_evidence_differs_from_verbal_assertion():
     s = _state()
-    doc = _record(s, ACTION_ANSWERED, content="datasheet value",
-                  provenance=getattr(idea_state, "EXTERNAL_EVIDENCE"))
-    verbal = _record(s, ACTION_ANSWERED, content="I think it is 5V",
-                     provenance=getattr(idea_state, "OWNER_STATED"))
-    assert doc.provenance != verbal.provenance
+    with pytest.raises(ValueError):
+        s.record_interaction(action=ACTION_ANSWERED, content="datasheet value",
+                             gap_context=MECHANISM_COMPLETENESS, iteration=1,
+                             provenance=getattr(idea_state, "EXTERNAL_EVIDENCE"))
+    verbal = _record(s, ACTION_ANSWERED, content="I think it is 5V")
+    assert verbal.provenance == getattr(idea_state, "OWNER_STATED")
+    assert verbal.provenance != getattr(idea_state, "EXTERNAL_EVIDENCE")
 
 
 # ===========================================================================

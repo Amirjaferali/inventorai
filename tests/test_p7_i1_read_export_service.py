@@ -45,7 +45,7 @@ def _contract(idea_id="idea-p7i1"):
     return ProjectRecordContract(idea_id=idea_id, assertions=[
         AssertionRecord(record_id="rec_1", disposition="answered",
                         content="alpha", gap_context="g1", iteration=1,
-                        provenance=OWNER_STATED, validation_status=UNVALIDATED),
+                        provenance=OWNER_STATED, responsibility="OWNER_INPUT", validation_status=UNVALIDATED),
         AssertionRecord(record_id="rec_2", disposition="answered",
                         content="beta", gap_context="g2", iteration=2,
                         provenance=LEGACY_UNSPECIFIED,

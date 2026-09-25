@@ -61,11 +61,17 @@ def test_seam1_legacy_mint_unchanged():
     assert r.provenance == OWNER_STATED and r.responsibility == OWNER_INPUT
     assert r.resolves_gap is False and r.decision_context_root is None
     assert r.gap_context == PHYSICAL_FEASIBILITY
-    # explicit legacy provenance override still wins for legacy actions
+    # Provenance Hardening Step 1 (Owner-authorized reversal of the former
+    # "explicit legacy override still wins" rule): the disposition dictates
+    # provenance, so an explicit value may only restate it.
+    with pytest.raises(ValueError):
+        s.record_interaction(action=DISPOSITION_ANSWERED, content="x",
+                             gap_context=PHYSICAL_FEASIBILITY,
+                             provenance=LEGACY_UNSPECIFIED)
     r2 = s.record_interaction(action=DISPOSITION_ANSWERED, content="x",
                               gap_context=PHYSICAL_FEASIBILITY,
-                              provenance=LEGACY_UNSPECIFIED)
-    assert r2.provenance == LEGACY_UNSPECIFIED
+                              provenance=OWNER_STATED)
+    assert r2.provenance == OWNER_STATED
     with pytest.raises(ValueError):
         s.record_interaction(action="totally_unknown")
 

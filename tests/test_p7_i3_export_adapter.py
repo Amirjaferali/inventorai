@@ -41,7 +41,7 @@ def _store(tmp_path):
     s = SqliteRecordStore(str(tmp_path / "p7i3.sqlite3"))
     contract = ProjectRecordContract(idea_id="idea-p7i3", assertions=[
         AssertionRecord(record_id="rec_1", disposition="answered", content="a",
-                        gap_context="g1", iteration=1, provenance=OWNER_STATED,
+                        gap_context="g1", iteration=1, provenance=OWNER_STATED, responsibility="OWNER_INPUT",
                         validation_status=UNVALIDATED),
         AssertionRecord(record_id="rec_2", disposition="answered", content="b",
                         gap_context="g2", iteration=2, provenance=LEGACY_UNSPECIFIED,

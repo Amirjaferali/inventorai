@@ -23,10 +23,70 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--msnl-step-1-read-only-adjudication"></a>
-## Current authority — MSNL Step 1 read-only architecture / data-flow adjudication (Owner authorization, 2026-09-24)
+<a id="current-authority--provenance-hardening-step-1"></a>
+## Current authority — Provenance Hardening Step 1 assertion source / validation boundary (Owner authorization, 2026-09-25)
 
-**ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY.**
+**ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY.**
+It hardens the EXISTING owner-interaction `AssertionRecord` source / validation / responsibility
+boundary — the provenance precondition the protected sequence places before any durable or
+authoritative system inference. It is the provenance precondition of the EXISTING Stage-18
+semantic-normalization item, creates no new Master Roadmap Stage and changes no stage checkbox.
+
+| | |
+|---|---|
+| **PROVENANCE HARDENING STEP 1** | `ASSERTION SOURCE / VALIDATION BOUNDARY ONLY` |
+| **MSNL LOCAL-ONLY SHADOW FOUNDATION** | `DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d` |
+| **MSNL EVALUATION PACK V1** | `DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` |
+| **EXTERNAL / PROVIDER MSNL** | `NOT AUTHORIZED` |
+| **DURABLE SYSTEM_INFERRED WRITER** | `NOT AUTHORIZED` |
+| **FUTURE SYSTEM-PROPOSAL CARRIER** | `UNDECIDED — OD-2` |
+| **READINESS USE OF SYSTEM INFERENCE** | `NOT AUTHORIZED — OD-3 UNDECIDED` |
+| **VALIDATION-AWARD WRITER** | `NOT AUTHORIZED — OD-4 UNDECIDED` |
+| **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **PARTIAL** — unchanged |
+| **STAGE 19** | `ENTERED / NOT COMPLETE` — unchanged; checkbox stays unticked |
+| **TARGET-AWARE QUESTION / ANSWER BINDING** | `COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a` |
+| **FULL CAP-09 / FULL WS-PFV-001** | `NOT AUTHORIZED` |
+| **FURTHER CAP-01 IMPLEMENTATION** | **NOT CURRENTLY AUTHORIZED** — unchanged |
+
+**Authorized now (OD-1, OD-5):** one closed canonical provenance vocabulary — the existing five
+values, owned by `engine/idea_state.py` and reused unchanged by commercial evidence; on the
+owner-interaction carrier, provenance dictated by the disposition (`OWNER_STATED` or
+`LEGACY_UNSPECIFIED` only), `UNVALIDATED`-only minting and responsibility limited to the carrier's
+own value (`OWNER_STATED` → `OWNER_INPUT`, otherwise none); fail-closed load checks for provenance
+and responsibility modelled on the existing validation-status boundary; and this current-truth
+update.
+
+**Not authorized by this step:** a durable SYSTEM_INFERRED writer; a new proposal carrier or any
+proposal persistence; any validation-award writer; any readiness-policy change or readiness use of
+system inference; cross-source supersession; external LLM / provider integration; provider
+selection; live model calls; sending user / project / invention data externally; new concept
+creation; autonomous technical orchestration; question hiding or reduction; deployment, public
+release and paid activation.
+
+**Delivered since MSNL Step 1 — recorded, not widened.** The MSNL local-only shadow foundation
+(PR #693): capture is OFF by default and the default sink discards — no provider, no persistence
+and no inference authority. MSNL Evaluation Pack V1 (PR #694): synthetic only — a representative
+English / MSA / Kuwaiti-Gulf / Egyptian pack, not real-user evidence and not proof of LLM or
+dialect support; no provider or model was used. Neither marks Stage 18 or MSNL complete.
+
+**Source is not validation.** Provenance says where a claim came from; validation status says
+whether and how it was validated. OWNER_STATED is not true; SYSTEM_INFERRED is not validated;
+EXPERT_SUPPLIED is not SPECIALIST_REVIEWED; EXTERNAL_EVIDENCE is not EMPIRICALLY_DEMONSTRATED or
+INDEPENDENTLY_VERIFIED; `specialist_required` is not `specialist_reviewed`; `evidence_requested`
+is not `evidence_exists`. Every canonical validation status stays representable and loadable:
+what may be represented is not what any writer may award.
+
+**Unchanged.** The Mechanical default-visible Path-N set remains **10 questions** and this step
+authorizes no question reduction; a hidden question must never mean a hidden unknown. The
+protected sequence stands: Target-Aware — COMPLETE → MSNL → Provenance Hardening → Autonomous
+Technical Orchestration → safe question reduction → RC validation → Product Differentiation
+Evidence. The WATCH items and preservation statements recorded in the MSNL Step 1 section below
+still stand.
+
+<a id="current-authority--msnl-step-1-read-only-adjudication"></a>
+## Current authority — MSNL Step 1 read-only architecture / data-flow adjudication (Owner authorization, 2026-09-24) — DELIVERED; SUPERSEDED as current authority by Provenance Hardening Step 1
+
+**No longer the current authority.** The adjudication was delivered, the Owner then authorized the local-only shadow foundation (PR #693) and Evaluation Pack V1 (PR #694), and Provenance Hardening Step 1 above replaced it as the current authority on 2026-09-25. Every rule below still binds. *(Superseded 2026-09-25, preserved so the change is visible rather than silent: this opened "**ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY.**".)*
 MSNL (Multilingual Semantic Normalization Layer) is the EXISTING Stage-18
 semantic-normalization item carried in the `stage-18-semantic-normalization` block below; this
 creates no new Master Roadmap Stage and changes no stage checkbox. Its rules are recorded once,
@@ -679,13 +739,18 @@ sibling sidecar of the same store. Delivering it is not the stage and opens noth
 Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — the EXISTING Stage-18 semantic-normalization item, not a new
-Master Roadmap Stage:** `ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY` · `MSNL IMPLEMENTATION: NOT YET AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
-Step 1 authorizes repository inspection and adjudication only. It authorizes no runtime MSNL
-implementation, no provider selection or integration, no live or external model call, no
-transmission of user / project / invention data outside InventorAI, no persisted
-SYSTEM_INFERRED truth, no automatic concept creation, no readiness / maturity / validation
-promotion, no autonomous technical orchestration and no question hiding or reduction.
+**CURRENT BOUNDED ACTION — the provenance precondition of the EXISTING Stage-18
+semantic-normalization item, not a new Master Roadmap Stage:** `ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY` · `MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d` · `MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` · `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
+The shadow foundation's capture is OFF by default and its sink discards: no provider, no
+persistence and no inference authority. Evaluation Pack V1 is synthetic only — a
+representative English / MSA / Kuwaiti-Gulf / Egyptian pack, not real-user evidence and not
+proof of LLM or dialect support, built with no provider or model. Step 1 hardens the
+owner-interaction record's source / validation / responsibility boundary only. It authorizes
+no durable SYSTEM_INFERRED writer, no validation-award writer (OD-4 undecided), no readiness
+use of system inference (OD-3 undecided), no provider selection or integration, no live or
+external model call, no transmission of user / project / invention data outside InventorAI,
+no automatic concept creation, no readiness / maturity / validation promotion, no autonomous
+technical orchestration and no question hiding or reduction.
 **Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and
 `STAGE 11 STARTED: NO`. It was routed PAST, not completed, and **routing past a deferred
 stage never completes it**. Its existing authorization conditions stand: reuse valid prior
@@ -693,6 +758,12 @@ evidence where applicable, and **new human activity requires separate authorizat
 existing consent/custody boundaries**. No human collection begins merely because routing
 moves past it.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded 2026-09-25 by Provenance Hardening Step 1, preserved so the change is visible
+rather than silent: the current bounded action read "`ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY
+ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY` · `MSNL IMPLEMENTATION: NOT YET AUTHORIZED`". That
+was true until the Owner authorized the local-only shadow foundation (PR #693) and Evaluation
+Pack V1 (PR #694), then Provenance Hardening Step 1.)*
 
 *(Superseded 2026-09-24 by MSNL Step 1, preserved so the change is visible rather than
 silent: the Stage-19 routing line read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE
@@ -754,8 +825,7 @@ reachability, and are not duplicated inside Stage 17.**
 
 <!-- CURRENT-BLOCK: stage-18-semantic-normalization -->
 **CARRIED INTO STAGE 18 — MULTILINGUAL SEMANTIC NORMALIZATION LAYER: PRESERVED ·
-NOT AUTHORIZED · NOT IMPLEMENTED as implementation · READ-ONLY ADJUDICATION AUTHORIZED (MSNL
-Step 1) / IMPLEMENTATION NOT YET AUTHORIZED.** At the BEGINNING of Stage 18 / D13 / CAP-01 adjudication,
+NOT AUTHORIZED · NOT IMPLEMENTED as implementation · ONLY A LOCAL-ONLY SHADOW FOUNDATION (PR #693) AND A SYNTHETIC EVALUATION PACK (PR #694) DELIVERED; EXTERNAL / PROVIDER / DURABLE MSNL NOT AUTHORIZED.** At the BEGINNING of Stage 18 / D13 / CAP-01 adjudication,
 explicitly reconsider it. Intended bounded flow: user input (Arabic / English / future
 supported language) → semantic normalization → canonical InventorAI concepts → the EXISTING
 deterministic progression / decision engine; the existing engine stays the decision owner.
@@ -777,10 +847,13 @@ Those last two are material safeguards, written out here so this pointer cannot 
 though they had disappeared. **Nothing here authorizes any of it**: no provider is selected,
 no provider is integrated, and no live privacy policy is defined here.
 
-**MSNL STEP 1 — READ-ONLY ADJUDICATION AUTHORIZED (2026-09-24) / IMPLEMENTATION NOT YET
+**MSNL STEP 1 — READ-ONLY ADJUDICATION (2026-09-24), THEN A LOCAL-ONLY SHADOW FOUNDATION
+(PR #693) AND EVALUATION PACK V1 (PR #694); EXTERNAL / PROVIDER / DURABLE MSNL NOT
 AUTHORIZED.** The Owner opened the read-only architecture / data-flow adjudication of this
-item only; that authorizes no runtime, no provider, no model call and no data transmission,
-and the preservation statements here still hold. The adjudication — and any later step —
+item; that authorized no runtime, no provider, no model call and no data transmission, and
+the preservation statements here still hold. The later shadow foundation's capture is OFF by
+default and its sink discards — no provider, no persistence, no inference authority — and the
+evaluation pack is synthetic only. The adjudication — and any later step —
 must honour: **(1) shadow / proposal first** — before provenance hardening, MSNL output may
 only propose a normalization and never becomes authoritative project truth; **(2) closed
 concept vocabulary** — map natural-language input only to existing governed canonical

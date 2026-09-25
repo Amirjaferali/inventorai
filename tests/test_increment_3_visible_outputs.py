@@ -299,9 +299,11 @@ def test_verified_ready_state_does_not_invent_a_problem():
     # one CLOSED gap + an independently-verified owner answer => verified readiness
     s.gaps.append(Gap(gap_type=MECHANISM_COMPLETENESS, status=CLOSED, opened_at=1,
                       closed_at=2))
+    # no current writer awards validation: modelled on the minted record
+    # (Provenance Hardening Step 1)
     s.record_interaction(action=DISPOSITION_ANSWERED, content="verified value",
                          gap_context=MECHANISM_COMPLETENESS, iteration=1,
-                         validation_status=INDEPENDENTLY_VERIFIED)
+                         ).validation_status = INDEPENDENTLY_VERIFIED
     payload = _derive(s)
     # No invented problem: either no payload, or a non-problem "ready" statement.
     assert payload is None or payload.issue_type not in PROBLEM_ISSUE_TYPES

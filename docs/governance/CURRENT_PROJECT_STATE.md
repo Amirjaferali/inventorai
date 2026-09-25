@@ -6,18 +6,23 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-24): Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; current bounded action: MSNL Step 1 — read-only architecture / data-flow adjudication of the carried semantic-normalization item); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
+**Current position (2026-09-25): Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; current bounded action: Provenance Hardening Step 1 — assertion source / validation boundary only; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
 not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
 complete nothing beyond themselves. **No further CAP-01 implementation is currently
-authorized.** `ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW
-ADJUDICATION ONLY` · `MSNL IMPLEMENTATION: NOT YET AUTHORIZED` — the EXISTING Stage-18
-semantic-normalization item, not a new Master Roadmap Stage; no runtime MSNL, no provider
-selection or integration, no live or external model call and no external transmission of user /
-project / invention data. `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge
+authorized.** `ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY` — the
+provenance precondition of the EXISTING Stage-18 semantic-normalization item, not a new Master
+Roadmap Stage. `MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d`
+(capture OFF by default, discarding sink; no provider, no persistence, no inference authority) ·
+`MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` (synthetic English /
+MSA / Kuwaiti-Gulf / Egyptian pack; not real-user evidence and not proof of LLM or dialect support)
+· `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED`;
+no provider selection or integration, no live or external model call, no external transmission of
+user / project / invention data, no readiness use of system inference (OD-3 undecided) and no
+validation-award writer (OD-4 undecided). `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge
 ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a` (UQTR CORE PR #688 and Mechanical Path-N Step 1 PR
 #689 also merged). The Mechanical default-visible Path-N set remains 10 questions; the
 approximately-five Owner-question shape is a design target, not a quota and not implemented, and

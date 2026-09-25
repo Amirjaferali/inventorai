@@ -284,8 +284,13 @@ def test_contract_round_trip_and_legacy_load_never_infers():
     # Every payload persisted before the field existed loads with None — whatever
     # its disposition or content (content naming a question never becomes one).
     for disposition in ("answered", "unknown", "deferred", "risk_accepted"):
+        # A non-asserting record carries LEGACY_UNSPECIFIED (provenance is not
+        # under test here; it is only made legal for the disposition).
+        source = {"provenance": "LEGACY_UNSPECIFIED", "responsibility": None} \
+            if disposition in ("unknown", "deferred") else {}
         legacy = _payload(disposition=disposition,
-                          content="Answer to PATHN:N-MC-1 (the mechanism question)")
+                          content="Answer to PATHN:N-MC-1 (the mechanism question)",
+                          **source)
         assert "question_target" not in legacy
         assert assertion_from_dict(legacy).question_target is None
     ctx = _payload(disposition=DISPOSITION_DECISION_CONTEXT_DECLARED, gap_context=None)

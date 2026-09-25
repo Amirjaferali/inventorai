@@ -2,11 +2,17 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY.**
-It maps to the EXISTING Stage-18 semantic-normalization item and creates no new Master
-Roadmap Stage. MSNL implementation is NOT YET AUTHORIZED: no runtime MSNL, no provider
-selection or integration, no external model call and no external transmission of user,
-project or invention data. Target-Aware Question / Answer Binding is COMPLETE (PR #690, merge
+**ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY.**
+It hardens the existing owner-interaction record's source / validation / responsibility boundary
+before any durable system inference, as the provenance precondition of the EXISTING Stage-18
+semantic-normalization item, and creates no new Master Roadmap Stage. The MSNL local-only shadow
+foundation (PR #693, merge `319b702678a1785e117c018f87cf171d5cbf2c9d`) and MSNL Evaluation Pack V1
+(PR #694, merge `c5f59093eafbccce8ff9e947d40c46f3ae86915f`) are delivered: capture is OFF by
+default and its sink discards, the pack is synthetic only, and neither uses a provider or model.
+External / provider MSNL, a durable SYSTEM_INFERRED writer, readiness use of system inference
+(OD-3) and any validation-award writer (OD-4) are NOT AUTHORIZED: no provider selection or
+integration, no external model call, no external transmission of user, project or invention data
+and no question reduction. Target-Aware Question / Answer Binding is COMPLETE (PR #690, merge
 `ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`). Stage 19 (WS-PFV-001 / CAP-09 Experiment-Plan
 Designer) is ENTERED / NOT COMPLETE: the durable SuccessCriterion remediation (PR #682) and
 CAP-09 SLICE-02, the durable user-written measurement method (PR #683), are delivered, and
@@ -20,7 +26,7 @@ increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized, and
 deployment, public release and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*

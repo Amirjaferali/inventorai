@@ -33,6 +33,8 @@ from dataclasses import dataclass, field
 
 from engine.idea_state import (
     AssertionRecord, IdeaState, VALIDATION_STATUSES,
+    ASSERTION_PROVENANCE_VALUES, ASSERTION_RESPONSIBILITY_BY_PROVENANCE,
+    ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION,
     DECISION_ACTION_DISPOSITIONS, LEGACY_INTERACTION_DISPOSITIONS,
     DISPOSITION_DECISION_CONTEXT_DECLARED,
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED,
@@ -60,6 +62,16 @@ class InvalidValidationStatusError(ContractError):
     """A restored record carries a ``validation_status`` outside the canonical
     validation vocabulary. A ``ContractError``/``ValueError`` like every other
     restore failure, so existing fail-closed callers already handle it."""
+
+
+class InvalidProvenanceError(ContractError):
+    """A restored record carries a ``provenance`` this owner-interaction
+    carrier cannot hold (Provenance Hardening Step 1)."""
+
+
+class InvalidResponsibilityError(ContractError):
+    """A restored record's ``responsibility`` contradicts what this carrier
+    stores for its provenance (Provenance Hardening Step 1)."""
 
 
 class InvalidReferenceError(ContractError):
@@ -167,7 +179,10 @@ def reconcile_supersession_edges(assertions):
 def assertion_from_dict(data):
     """Reconstruct one AssertionRecord, rejecting unknown or missing fields so
     nothing is silently dropped, and rejecting a ``validation_status`` outside
-    the canonical validation vocabulary. Every other value is restored verbatim.
+    the canonical validation vocabulary, a ``provenance`` this carrier cannot
+    hold or this record's known disposition cannot carry, and a
+    ``responsibility`` that contradicts that provenance. Every other value is
+    restored verbatim.
 
     The validation axis is checked here because this is the boundary where a
     stored payload becomes a live record: `derive_readiness` reads that axis and
@@ -216,6 +231,33 @@ def assertion_from_dict(data):
     if not isinstance(status, str) or status not in VALIDATION_STATUSES:
         raise InvalidValidationStatusError(
             "validation_status is outside the canonical validation vocabulary")
+    # Provenance Hardening Step 1 — the same fail-closed shape as the
+    # validation axis above: type first, then membership, never coerced, never
+    # echoed. This carrier holds owner interactions only, so a canonical but
+    # non-owner source (SYSTEM_INFERRED / EXPERT_SUPPLIED / EXTERNAL_EVIDENCE)
+    # is refused here exactly like an unknown one. The legal values load
+    # verbatim. Every canonical validation_status stays loadable: what may be
+    # REPRESENTED is not what any writer may award.
+    provenance = data["provenance"]
+    if not isinstance(provenance, str) \
+            or provenance not in ASSERTION_PROVENANCE_VALUES:
+        raise InvalidProvenanceError(
+            "provenance is outside the owner-interaction carrier vocabulary")
+    # Candidate 03 — the load side of the mint rule: for a KNOWN disposition the
+    # stored provenance must be one that disposition can truthfully carry
+    # (idea_state owns the matrix). A mismatch is refused, never coerced, and
+    # the value is not echoed. An unknown disposition keeps its prior handling.
+    disposition = data["disposition"]
+    if isinstance(disposition, str) \
+            and disposition in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION \
+            and provenance not in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION[disposition]:
+        raise InvalidProvenanceError(
+            "provenance is not one this record's disposition can carry")
+    responsibility = data["responsibility"]
+    if (responsibility is not None and not isinstance(responsibility, str)) \
+            or responsibility != ASSERTION_RESPONSIBILITY_BY_PROVENANCE[provenance]:
+        raise InvalidResponsibilityError(
+            "responsibility contradicts the carrier's stored provenance")
     question_target = data["question_target"]
     if question_target is not None and (
             not isinstance(question_target, str) or not question_target):

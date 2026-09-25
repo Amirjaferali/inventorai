@@ -54,11 +54,8 @@ from dataclasses import dataclass
 from typing import Optional
 
 from engine.idea_state import (
-    EXPERT_SUPPLIED,
-    EXTERNAL_EVIDENCE,
-    LEGACY_UNSPECIFIED,
     OWNER_STATED,
-    SYSTEM_INFERRED,
+    PROVENANCE_VALUES as _CANONICAL_PROVENANCE_VALUES,
 )
 
 
@@ -346,16 +343,11 @@ def validate_quantity(row):
 CLAIM_STATUS_UNVALIDATED = "UNVALIDATED"
 CLAIM_STATUSES = (CLAIM_STATUS_UNVALIDATED,)
 
-# The canonical provenance axis, reused unchanged. The default is the only value
-# any writer can reach today: nothing in this increment collects specialist or
-# external evidence.
-PROVENANCE_VALUES = (
-    OWNER_STATED,
-    SYSTEM_INFERRED,
-    EXPERT_SUPPLIED,
-    EXTERNAL_EVIDENCE,
-    LEGACY_UNSPECIFIED,
-)
+# The canonical provenance axis, reused unchanged from its single owner
+# (`engine.idea_state.PROVENANCE_VALUES`, the same five values in the same
+# order). The default is the only value any writer can reach today: nothing in
+# this increment collects specialist or external evidence.
+PROVENANCE_VALUES = _CANONICAL_PROVENANCE_VALUES
 DEFAULT_PROVENANCE = OWNER_STATED
 
 # --- Bounded owner text policy ----------------------------------------------
