@@ -11,6 +11,10 @@ File-creation contract:
     `--provider {null,openai}` (default `null`: no network, ever);
     `--allow-network` (required, together with `OPENAI_API_KEY` in the
       environment, before the OpenAI adapter may open any connection);
+    `--managed-credential` (valid only with `--provider openai
+      --allow-network`: the adapter reads no key and sends no Authorization
+      header — the managed environment's egress proxy injects the credential
+      outside this process, so `OPENAI_API_KEY` is neither checked nor read);
     `--case CASE_ID` (repeatable; must name a case already in the pack);
     `--show-proposals` (print accepted synthetic proposal texts for human
       review).
@@ -221,13 +225,18 @@ def metrics(pack, runs):
     }
 
 
-def _adapter(provider, allow_network):
+def _adapter(provider, allow_network, managed_credential=False):
+    if managed_credential and provider != "openai":
+        raise SystemExit("refused: --managed-credential needs --provider openai")
     if provider == "null":
         return tos.NullAdapter()
     if not allow_network:
         raise SystemExit("refused: --provider openai needs --allow-network")
     from engine.technical_orchestration_openai import (
-        CREDENTIAL_ENV, OpenAIOrchestrationAdapter)
+        CREDENTIAL_ENV, CREDENTIAL_MODE_MANAGED_PROXY, OpenAIOrchestrationAdapter)
+    if managed_credential:
+        return OpenAIOrchestrationAdapter(
+            allow_network=True, credential_mode=CREDENTIAL_MODE_MANAGED_PROXY)
     if not os.environ.get(CREDENTIAL_ENV):
         raise SystemExit("refused: %s is not set" % CREDENTIAL_ENV)
     return OpenAIOrchestrationAdapter(allow_network=True)
@@ -238,6 +247,7 @@ def build_parser():
         description="Run the committed SYNTHETIC orchestration evaluation pack.")
     p.add_argument("--provider", choices=("null", "openai"), default="null")
     p.add_argument("--allow-network", action="store_true")
+    p.add_argument("--managed-credential", action="store_true")
     p.add_argument("--case", action="append", dest="cases", metavar="CASE_ID")
     p.add_argument("--show-proposals", action="store_true")
     return p
@@ -255,7 +265,7 @@ def main(argv=None):
         print("refused: unknown case id", file=sys.stderr)
         return 2
     try:
-        adapter = _adapter(args.provider, args.allow_network)
+        adapter = _adapter(args.provider, args.allow_network, args.managed_credential)
     except SystemExit as exc:
         print(str(exc), file=sys.stderr)
         return 2

@@ -8,7 +8,9 @@ File-creation contract:
     handles, the deterministic local adjudicator and the always-abstaining
     NullAdapter) and the OpenAI evaluation adapter in
     `engine/technical_orchestration_openai.py` through a FAKE transport only;
-    and that no product path imports either module.
+    and its two credential modes (`env`, `managed_proxy`) plus the harness's
+    `--managed-credential` flag; and that no product path imports either
+    module.
   Input contract: synthetic strings only. No network, no credential, no real
     user or invention data, no product state.
   Output contract: pass/fail evidence only.
@@ -467,6 +469,273 @@ def test_default_transport_posts_to_the_approved_endpoint_only(wire):
         toa._urllib_transport("https://another-host.invalid/v1/responses",
                               {"Authorization": "Bearer x"}, b"{}", 5)
     assert w.seen == []
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3c. Credential modes — ``env`` (default, unchanged) and ``managed_proxy``
+#     (the managed environment's egress proxy injects the credential outside
+#     the process). Fake / offline transports only; managed-mode behaviour is
+#     proven from the ABSENCE of any Authorization header.
+# ─────────────────────────────────────────────────────────────────────────────
+
+_REPLY = {"outcome": "PROPOSED", "proposals": [
+    {"kind": "DIRECTION", "text": "Explore a reed switch.",
+     "source_handles": ["s1"], "gap_type": MC}]}
+
+
+class _KeyGuardedEnviron(dict):
+    """An environment in which any access to ``OPENAI_API_KEY`` fails the
+    test, so a managed-mode path provably never inspects it."""
+
+    def _guard(self, key):
+        if key == toa.CREDENTIAL_ENV:
+            raise AssertionError("OPENAI_API_KEY must not be inspected")
+
+    def __getitem__(self, key):
+        self._guard(key)
+        return dict.__getitem__(self, key)
+
+    def get(self, key, default=None):
+        self._guard(key)
+        return dict.get(self, key, default)
+
+    def __contains__(self, key):
+        self._guard(key)
+        return dict.__contains__(self, key)
+
+
+@pytest.fixture
+def key_guard(monkeypatch):
+    import os
+    monkeypatch.setattr(os, "environ", _KeyGuardedEnviron(
+        (k, v) for k, v in os.environ.items() if k != toa.CREDENTIAL_ENV))
+
+
+def _managed(transport=None, **kw):
+    return toa.OpenAIOrchestrationAdapter(
+        allow_network=True, transport=transport,
+        credential_mode=toa.CREDENTIAL_MODE_MANAGED_PROXY, **kw)
+
+
+def _no_authorization(headers):
+    return all(k.lower() != "authorization" for k in headers)
+
+
+def test_credential_mode_vocabulary_is_closed_and_env_is_the_default():
+    assert toa.CREDENTIAL_MODES == ("env", "managed_proxy")
+    adapter = toa.OpenAIOrchestrationAdapter()
+    assert adapter._credential_mode == toa.CREDENTIAL_MODE_ENV == "env"
+
+
+def test_env_mode_headers_are_exactly_as_before(monkeypatch):
+    monkeypatch.delenv(toa.CREDENTIAL_ENV, raising=False)
+    req, _ = _request()
+    for adapter_kw in ({}, {"credential_mode": "env"}):
+        t = FakeTransport(body=_provider_body(_REPLY))
+        res = tos.evaluate(req, _adapter(t, **adapter_kw))
+        url, headers, body, _timeout = t.calls[0]
+        assert headers == {"Authorization": "Bearer " + FAKE_KEY,
+                           "Content-Type": "application/json"}
+        assert url == toa.ENDPOINT and body == json.dumps(
+            toa.build_payload(req), ensure_ascii=False).encode("utf-8")
+        assert res.disposition == tos.DISPOSITION_ACCEPTED
+    monkeypatch.setenv(toa.CREDENTIAL_ENV, FAKE_KEY)
+    t = FakeTransport(body=_provider_body(_REPLY))
+    tos.evaluate(req, toa.OpenAIOrchestrationAdapter(allow_network=True, transport=t))
+    assert t.calls[0][1]["Authorization"] == "Bearer " + FAKE_KEY
+    monkeypatch.delenv(toa.CREDENTIAL_ENV)
+    t = FakeTransport(body=b"")
+    adapter = toa.OpenAIOrchestrationAdapter(allow_network=True, transport=t,
+                                             credential_mode="env")
+    assert tos.evaluate(req, adapter).outcome == tos.ERROR
+    assert adapter.last_error_kind == toa.ERR_MISSING_CREDENTIAL and t.calls == []
+
+
+def test_managed_mode_sends_no_authorization_header_and_never_inspects_the_env(
+        key_guard, capsys):
+    req, _ = _request()
+    t = FakeTransport(body=_provider_body(_REPLY))
+    adapter = _managed(t)
+    res = tos.evaluate(req, adapter)
+    assert len(t.calls) == 1
+    url, headers, body, _timeout = t.calls[0]
+    assert headers == {"Content-Type": "application/json"}
+    assert _no_authorization(headers)
+    assert url == toa.ENDPOINT
+    assert body == json.dumps(toa.build_payload(req), ensure_ascii=False).encode("utf-8")
+    assert json.loads(body)["store"] is False
+    assert adapter.last_error_kind is None
+    assert res.disposition == tos.DISPOSITION_ACCEPTED
+    assert [p.text for p in res.proposals] == ["Explore a reed switch."]
+    out = capsys.readouterr()
+    assert out.out == out.err == ""
+
+
+def test_managed_mode_ignores_a_present_env_key(monkeypatch, capsys):
+    monkeypatch.setenv(toa.CREDENTIAL_ENV, FAKE_KEY)
+    req, _ = _request()
+    t = FakeTransport(body=_provider_body(_REPLY))
+    adapter = _managed(t)
+    res = tos.evaluate(req, adapter)
+    _url, headers, body, _timeout = t.calls[0]
+    assert _no_authorization(headers) and FAKE_KEY not in json.dumps(headers)
+    out = capsys.readouterr()
+    for text in (body.decode(), repr(res), repr(adapter), out.out, out.err):
+        assert FAKE_KEY not in text
+
+
+def test_managed_mode_is_off_without_explicit_network_permission(key_guard):
+    req, _ = _request()
+    for allow in (False, None, 1, "yes"):
+        t = FakeTransport(body=b"")
+        adapter = toa.OpenAIOrchestrationAdapter(
+            allow_network=allow, transport=t,
+            credential_mode=toa.CREDENTIAL_MODE_MANAGED_PROXY)
+        assert tos.evaluate(req, adapter).outcome == tos.ERROR
+        assert adapter.last_error_kind == toa.ERR_NETWORK_NOT_ALLOWED and t.calls == []
+
+
+@pytest.mark.parametrize("key", [FAKE_KEY, ""])
+def test_managed_mode_with_an_explicit_key_is_refused_before_transport(key, capsys):
+    req, _ = _request()
+    t = FakeTransport(body=_provider_body(_REPLY))
+    adapter = _managed(t, api_key=key)
+    res = tos.evaluate(req, adapter)
+    assert (res.outcome, res.proposals) == (tos.ERROR, ())
+    assert adapter.last_error_kind == toa.ERR_CREDENTIAL_MODE and t.calls == []
+    out = capsys.readouterr()
+    for text in (repr(res), repr(adapter), str(adapter.last_error_kind), out.out, out.err):
+        assert FAKE_KEY not in text
+
+
+@pytest.mark.parametrize("mode", [None, "", "ENV", "managed", "proxy",
+                                  "managed_proxy ", "api_key"])
+def test_unknown_credential_mode_is_refused_before_transport(mode, monkeypatch):
+    monkeypatch.setenv(toa.CREDENTIAL_ENV, FAKE_KEY)
+    req, _ = _request()
+    for key in (None, FAKE_KEY):
+        t = FakeTransport(body=_provider_body(_REPLY))
+        adapter = toa.OpenAIOrchestrationAdapter(allow_network=True, api_key=key,
+                                                 transport=t, credential_mode=mode)
+        assert tos.evaluate(req, adapter).outcome == tos.ERROR
+        assert adapter.last_error_kind == toa.ERR_CREDENTIAL_MODE and t.calls == []
+
+
+@pytest.mark.parametrize("status", [301, 302, 303, 307, 308])
+@pytest.mark.parametrize("location", ["http://another-host.invalid/collect",
+                                      "https://another-host.invalid/collect",
+                                      "https://api.openai.com/v1/elsewhere"])
+def test_managed_mode_real_transport_never_follows_a_redirect(
+        wire, key_guard, status, location, capsys):
+    import urllib.request
+    before = urllib.request._opener
+    w = wire(status, location)
+    req, _ = _request(focal_text="Synthetic buckle clip text.")
+    adapter = _managed()
+    res = tos.evaluate(req, adapter)
+    assert len(w.seen) == 1, [r["url"] for r in w.seen]          # zero follow-ups
+    first = w.seen[0]
+    assert first["url"] == toa.ENDPOINT and first["method"] == "POST"
+    assert _no_authorization(first["headers"])
+    assert b"Synthetic buckle clip text." in first["data"]
+    assert (res.outcome, res.proposals) == (tos.ERROR, ())
+    assert adapter.last_error_kind == toa.ERR_HTTP_STATUS
+    assert urllib.request._opener is before                        # nothing installed
+    out = capsys.readouterr()
+    assert out.out == out.err == ""
+
+
+def test_managed_mode_real_transport_direct_200_is_endpoint_confined(wire, key_guard):
+    import urllib.request
+    before = urllib.request._opener
+    w = wire(200, body=_provider_body(_REPLY))
+    req, _ = _request()
+    res = tos.evaluate(req, _managed())
+    assert len(w.seen) == 1 and w.seen[0]["url"] == toa.ENDPOINT
+    assert w.seen[0]["method"] == "POST" and _no_authorization(w.seen[0]["headers"])
+    assert json.loads(w.seen[0]["data"])["store"] is False
+    assert res.disposition == tos.DISPOSITION_ACCEPTED
+    assert [p.text for p in res.proposals] == ["Explore a reed switch."]
+    assert urllib.request._opener is before
+    with pytest.raises(ValueError):
+        toa._urllib_transport("https://another-host.invalid/v1/responses",
+                              {"Content-Type": "application/json"}, b"{}", 5)
+    assert len(w.seen) == 1
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3d. The harness — the --managed-credential flag (fake transport only)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _harness():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "run_technical_orchestration_eval_managed",
+        ROOT / "scripts" / "run_technical_orchestration_eval.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+@pytest.fixture
+def harness(monkeypatch):
+    import socket
+    import urllib.request
+
+    def refuse(*a, **k):
+        raise AssertionError("network must not be touched")
+    monkeypatch.setattr(urllib.request, "urlopen", refuse)
+    monkeypatch.setattr(socket, "create_connection", refuse)
+    return _harness()
+
+
+def test_harness_default_stays_null_and_offline(harness, capsys):
+    assert harness.main([]) == 0
+    assert json.loads(capsys.readouterr().out)["adapter"] == "null"
+
+
+def test_harness_openai_without_the_flag_still_needs_the_env_key(harness, monkeypatch, capsys):
+    monkeypatch.delenv(toa.CREDENTIAL_ENV, raising=False)
+    assert harness.main(["--provider", "openai", "--allow-network"]) == 2
+    assert "OPENAI_API_KEY is not set" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("argv, reason", [
+    (["--managed-credential"], "needs --provider openai"),
+    (["--provider", "null", "--managed-credential"], "needs --provider openai"),
+    (["--provider", "null", "--allow-network", "--managed-credential"],
+     "needs --provider openai"),
+    (["--provider", "openai", "--managed-credential"], "needs --allow-network"),
+])
+def test_harness_refuses_invalid_managed_flag_combinations(harness, key_guard, argv,
+                                                           reason, capsys):
+    assert harness.main(argv) == 2
+    captured = capsys.readouterr()
+    assert captured.out == "" and reason in captured.err
+
+
+def test_harness_managed_flag_builds_managed_mode_without_checking_the_env(
+        harness, key_guard, monkeypatch, capsys):
+    sent = []
+
+    def fake(url, headers, body, timeout):
+        sent.append((url, dict(headers), json.loads(body)))
+        refusal = {"status": "completed", "output": [{"type": "message", "content": [
+            {"type": "refusal", "refusal": "no"}]}]}
+        return 200, json.dumps(refusal).encode()
+    monkeypatch.setattr(toa, "_urllib_transport", fake)
+    adapter = harness._adapter("openai", True, True)
+    assert isinstance(adapter, toa.OpenAIOrchestrationAdapter)
+    assert adapter._credential_mode == toa.CREDENTIAL_MODE_MANAGED_PROXY
+    assert adapter._api_key is None
+    assert harness.main(["--provider", "openai", "--allow-network",
+                         "--managed-credential", "--case", "direction-en"]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["adapter"] == "openai:gpt-6-sol"
+    assert len(sent) == 1
+    url, headers, payload = sent[0]
+    assert url == toa.ENDPOINT and headers == {"Content-Type": "application/json"}
+    assert payload["store"] is False
 
 
 # ─────────────────────────────────────────────────────────────────────────────
