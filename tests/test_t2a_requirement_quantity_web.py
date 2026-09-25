@@ -480,7 +480,7 @@ def test_token_expiry_899_accepted_900_expired(db_path, monkeypatch):
     lambda t: "", lambda t: "forged.token", lambda t: t.split(".")[0],
     lambda t: t.split(".")[0] + ".", lambda t: "." + t.split(".")[1],
     lambda t: t[:-1] + ("0" if t[-1] != "0" else "1"),
-    lambda t: "x" + t[1:], lambda t: t + "0", lambda t: t.upper(),
+    lambda t: ("y" if t[0] == "x" else "x") + t[1:], lambda t: t + "0", lambda t: t.upper(),
 ])
 def test_tampered_or_missing_token_is_refused_generically(db_path, mutate):
     c, _aid = _client_for("t2a-tamper@example.com")
@@ -488,8 +488,7 @@ def test_tampered_or_missing_token_is_refused_generically(db_path, mutate):
     assert _propose(c, sid, "rec_1", "7 V").status_code == 302
     token = _ctoken(_page(c, sid))
     bad = mutate(token)
-    if bad == token:
-        pytest.skip("mutation produced the same token")
+    assert bad != token, "tamper mutation must change the token"
     assert _confirm(c, sid, bad).status_code == 302
     body = _page(c, sid)
     assert webapp.QUANTITY_NOT_SAVED_MESSAGE in body and token not in body
