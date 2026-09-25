@@ -130,6 +130,22 @@ jobs:
       - name: Universal guardrail smoke
         run: python scripts/run_universal_smoke.py
 
+      # RIG-2A SHADOW (advisory only). Repository intelligence analyses the exact
+      # tested merge (EXPECTED_BASE -> EXPECTED_MERGE) and writes a proposal as DATA
+      # in $RUNNER_TEMP. It has ZERO authority here: no step reads its output, it
+      # never selects or skips a test, and it is fail-open telemetry. The FULL
+      # regression below is unchanged and alone decides red/green. This
+      # continue-on-error exception applies ONLY to shadow telemetry and must
+      # never be reused once RIG receives any authority.
+      - name: RIG shadow plan (advisory only; selects nothing)
+        if: steps.scope.outputs.scope == 'full'
+        continue-on-error: true
+        run: |
+          echo "RIG shadow analysis: $EXPECTED_BASE -> tested merge $EXPECTED_MERGE (PR head $EXPECTED_HEAD is identity only)"
+          python scripts/repository_intelligence.py --base "$EXPECTED_BASE" --head "$EXPECTED_MERGE" \
+            > "$RUNNER_TEMP/rig-shadow.json" \
+            || echo "RIG shadow evidence unavailable (advisory only; FULL regression still runs)"
+
       - name: Full regression and mandatory-check audit
         if: steps.scope.outputs.scope == 'full'
         run: |
@@ -175,12 +191,118 @@ jobs:
           assert result.returncode == 0, f'pytest failed: exit {result.returncode}'
           PY
 
+      - name: RIG shadow comparison (advisory only; never affects CI status)
+        if: always() && steps.scope.outputs.scope == 'full'
+        continue-on-error: true
+        run: |
+          python scripts/repository_intelligence_shadow.py --mode compare \
+            --rig "$RUNNER_TEMP/rig-shadow.json" \
+            --junit "$RUNNER_TEMP/inventorai-pytest.xml" \
+            --pr-head "$EXPECTED_HEAD" --tested-merge "$EXPECTED_MERGE" \
+            --summary "$GITHUB_STEP_SUMMARY"
+
       - name: Confirm repository data was not changed
         if: always()
         run: |
           git diff --exit-code
           git diff --cached --exit-code
           test -z "$(git ls-files --others --exclude-standard)"
+
+  fast:
+    name: RIG fast feedback (advisory)
+    # RIG-2A FAST FEEDBACK (advisory only). Runs in PARALLEL with `verify`, never
+    # gates a merge and is NOT a dependency of `required`. Only when RIG proposes
+    # AFFECTED-CANDIDATE for the exact tested merge does it run RIG's validated
+    # candidate test files early; FULL/SMOKE/unavailable run nothing. A pass means
+    # only "the proposed candidate tests passed early" — FULL CI in `verify`
+    # remains the only authoritative regression. Fail-open by design.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    continue-on-error: true
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      INVENTORAI_DRAFT_L2_REQUIRE_BROWSER: '1'
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_MERGE: ${{ github.sha }}
+    steps:
+      - name: Check out the exact proposed merge
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify the tested-merge identity (advisory lane)
+        run: |
+          python3 - <<'PY'
+          import os, re, subprocess
+          base, head, merge = (os.environ[k] for k in ('EXPECTED_BASE', 'EXPECTED_HEAD', 'EXPECTED_MERGE'))
+          assert all(re.fullmatch(r'[0-9a-f]{40}', sha) for sha in (base, head, merge))
+          parents = subprocess.check_output(['git', 'rev-list', '--parents', '-n', '1', 'HEAD']).decode().split()
+          assert parents == [merge, base, head], 'The checked-out merge must contain the event base and exact PR head'
+          print('PR head:', head, '| tested merge:', merge, '| analysis:', base, '->', merge)
+          PY
+
+      - name: Set up the repository-required Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version-file: .python-version
+
+      - name: RIG fast plan (advisory; decides only whether this lane runs)
+        id: fastplan
+        run: |
+          python scripts/repository_intelligence_shadow.py --mode fast-plan \
+            --base "$EXPECTED_BASE" --tested-merge "$EXPECTED_MERGE" --pr-head "$EXPECTED_HEAD" \
+            --plan "$RUNNER_TEMP/rig-fast-plan.json" \
+            --outputs "$GITHUB_OUTPUT" --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Install the governed test environment (fast lane)
+        if: steps.fastplan.outputs.run_fast == 'true'
+        run: |
+          echo "INVENTORAI_DB_PATH=$RUNNER_TEMP/inventorai-ci.sqlite" >> "$GITHUB_ENV"
+          echo "PLAYWRIGHT_BROWSERS_PATH=$RUNNER_TEMP/playwright" >> "$GITHUB_ENV"
+          python -m venv "$RUNNER_TEMP/inventorai-venv"
+          echo "$RUNNER_TEMP/inventorai-venv/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip install --disable-pip-version-check --no-input -r requirements.txt -r tests/requirements-draft-l2.txt
+          "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip check
+
+      - name: Install the matching Chromium and Linux prerequisites (fast lane)
+        if: steps.fastplan.outputs.run_fast == 'true'
+        run: python -m playwright install --with-deps chromium
+
+      - name: Run RIG candidate tests early (advisory; NOT A MERGE GATE)
+        id: fastrun
+        if: steps.fastplan.outputs.run_fast == 'true'
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, subprocess, sys
+          tmp = pathlib.Path(os.environ['RUNNER_TEMP'])
+          plan = json.loads((tmp / 'rig-fast-plan.json').read_text())
+          candidates = plan['candidates']          # validated tracked test files at the tested merge
+          assert candidates and all(isinstance(c, str) and c.startswith('tests/') for c in candidates)
+          argv = [sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider',
+                  '--junitxml=' + str(tmp / 'rig-fast-pytest.xml'), '--', *candidates]
+          code = subprocess.run(argv).returncode    # argv list: no shell, no joined strings
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+              out.write(f'exit_code={code}\n')
+          if code != 0:
+              print(f'::warning title=RIG FAST FEEDBACK FAIL (advisory)::candidate tests failed (exit {code}); '
+                    'NOT A MERGE GATE — FULL CI remains authoritative')
+          PY
+
+      - name: RIG fast feedback report (advisory)
+        if: always() && steps.fastplan.outputs.run_fast == 'true'
+        run: |
+          python scripts/repository_intelligence_shadow.py --mode fast-report \
+            --plan "$RUNNER_TEMP/rig-fast-plan.json" \
+            --junit "$RUNNER_TEMP/rig-fast-pytest.xml" \
+            --exit-code "${{ steps.fastrun.outputs.exit_code }}" \
+            --summary "$GITHUB_STEP_SUMMARY"
 
   required:
     name: CI required
