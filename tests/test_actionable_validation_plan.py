@@ -204,9 +204,11 @@ def _undetermined_state():
     responsibility is unrecorded, so the committed §7 precedence resolves the
     step responsibility to the internal token UNDETERMINED."""
     s = IdeaState(idea_id="ws7-undetermined")
-    s.record_interaction(DISPOSITION_ANSWERED, iteration=0,
-                         content=UNDETERMINED_STATEMENT,
-                         provenance=LEGACY_UNSPECIFIED)
+    # a legacy answered record: no current writer mints it, so it is modelled
+    # on the minted in-memory record (Provenance Hardening Step 1)
+    rec = s.record_interaction(DISPOSITION_ANSWERED, iteration=0,
+                               content=UNDETERMINED_STATEMENT)
+    rec.provenance, rec.responsibility = LEGACY_UNSPECIFIED, None
     return s
 
 

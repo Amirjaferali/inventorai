@@ -2061,94 +2061,74 @@ _MSNL_REVERSALS = (
     r"\bStage (4[6-9]|[5-9]\d)\b", r"\bSTAGE (4[6-9]|[5-9]\d)\b")
 
 
-def test_msnl_step_1_is_the_live_read_only_contract_on_every_live_surface():
-    """MSNL Step 1 authorizes READ-ONLY architecture / data-flow adjudication of
-    the EXISTING Stage-18 semantic-normalization item, and nothing else. The
-    failure modes this guards keep every token in place: the step read as
-    runtime implementation, a provider or model activated, invention data sent
-    out, a system inference persisted as truth, concepts invented, readiness
-    promoted, orchestration activated, questions hidden, a stage marked complete
-    or a new stage minted. So the live wording is required on every live surface
-    AND each reversal is forbidden by its predicate.
+_PH1_CONTRACT = ("`ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION "
+                 "BOUNDARY ONLY`")
+_MSNL_SHADOW = ("`MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge "
+                "319b702678a1785e117c018f87cf171d5cbf2c9d`")
+_MSNL_PACK = ("`MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge "
+              "c5f59093eafbccce8ff9e947d40c46f3ae86915f`")
+_EXTERNAL_MSNL_NO = "`EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED`"
+_DURABLE_SI_NO = "`DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED`"
+
+# Every way Provenance Hardening Step 1 could be misread as something wider,
+# on top of every MSNL reversal (which stay forbidden: the MSNL boundary did
+# not relax because the live contract advanced).
+_PH1_REVERSALS = _MSNL_REVERSALS + (
+    r"DURABLE SYSTEM_INFERRED WRITER\W{0,8}(IS )?(AUTHORIZED|ACTIVE|IMPLEMENTED)\b",
+    r"VALIDATION-AWARD WRITER\W{0,8}(IS )?(AUTHORIZED|ACTIVE|IMPLEMENTED)\b",
+    r"READINESS USE OF SYSTEM INFERENCE\W{0,8}(IS )?(AUTHORIZED|ACTIVE)\b",
+    r"EXTERNAL / PROVIDER MSNL\W{0,8}(IS )?(AUTHORIZED|ACTIVE|IMPLEMENTED)\b",
+    r"(OD-3|OD-4)\W{0,4}(is )?(decided|DECIDED|resolved)\b",
+    r"SYSTEM_INFERRED[^.]{0,40}\b(may|can) (be persisted|become durable|count toward readiness)",
+    r"(DEPLOYMENT|PUBLIC RELEASE|PAID ACTIVATION)\W{0,8}(IS )?AUTHORIZED\b",
+    re.escape(_MSNL_CONTRACT), re.escape(_MSNL_NOT_YET))
+
+
+def test_msnl_step_1_is_delivered_history_and_its_safety_rules_still_bind():
+    """MSNL Step 1 (read-only adjudication) was delivered, and the Owner then
+    authorized exactly two bounded MSNL deliveries — the local-only shadow
+    foundation (PR #693) and the synthetic Evaluation Pack V1 (PR #694). The
+    guard advances with the fact instead of freezing the old routing: Step 1
+    reads DELIVERED and visibly superseded, while every MSNL safety rule it
+    recorded still binds verbatim and no reversal may appear. Nothing here
+    authorizes a provider, a model call, data transmission, durable system
+    inference or any wider MSNL.
     """
     contract = _read(CONTRACT)
-    first = contract.index("## Current authority")
-    assert contract[first:].startswith(
-        "## Current authority — MSNL Step 1 read-only architecture / data-flow adjudication"), \
-        contract[first:first + 120]
-    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
-    _needs(top, CONTRACT, "msnl step 1",
-           r"\*\*ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION "
-           r"ONLY\.\*\*",
+    top = _section(contract, "current-authority--msnl-step-1-read-only-adjudication")
+    _needs(top, CONTRACT, "msnl step 1 delivered",
+           r"adjudication \(Owner authorization, 2026-09-24\) — DELIVERED; SUPERSEDED as current "
+           r"authority by Provenance Hardening Step 1",
+           r"\*\*No longer the current authority\.\*\*",
+           r"Every rule below still binds",
            r"EXISTING Stage-18 semantic-normalization item",
-           r"creates no new Master Roadmap Stage and changes no stage checkbox",
-           r"\*\*MSNL STEP 1\*\* \| `READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY`",
-           r"\*\*MSNL IMPLEMENTATION\*\* \| `NOT YET AUTHORIZED`",
-           r"\*\*STAGE 18\*\* \| `STARTED: YES` · `COMPLETE: NO` · \*\*PARTIAL\*\* — unchanged",
-           r"\*\*STAGE 19\*\* \| `ENTERED / NOT COMPLETE` — unchanged",
-           r"\*\*CAP-09 SLICE-02\*\* \| `DELIVERED — PR #683",
-           r"\*\*TARGET-AWARE QUESTION / ANSWER BINDING\*\* \| `COMPLETE — PR #690 — merge "
-           r"ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`",
-           r"\*\*FULL CAP-09 / FULL WS-PFV-001\*\* \| `NOT AUTHORIZED`",
-           # what is NOT authorized, as one explicit list
            r"\*\*Not authorized by this step:\*\* runtime MSNL implementation; external LLM / "
            r"provider integration; provider selection; spend commitment; sending user / project "
            r"/ invention data externally; live model calls; new persisted SYSTEM_INFERRED truth; "
            r"state mutation; gap closure; maturity / readiness / validation promotion; new "
            r"concept creation; autonomous technical orchestration; question hiding or "
            r"reduction; new domain activation\.",
-           # delivered work is not reopened; preparation is not validation
            r"L1–L4 repairs are not reopened",
-           r"PASS WITH NON-BLOCKING FINDINGS",
-           r"establish preparation mechanics only — \*\*not\*\* real-user usability, real-user "
-           r"value, product differentiation, market validation or human validation",
-           # visibility truth
            r"Mechanical default-visible Path-N set remains \*\*10 questions\*\*",
-           r"Target-Aware did not reduce question visibility",
-           r"\*\*design target — not a hard engine quota and not implemented\*\*",
            r"\*\*A hidden question must never mean a hidden unknown\*\*",
-           # the protected sequence and the provenance precondition
-           r"Target-Aware — COMPLETE → MSNL → Provenance Hardening → Autonomous Technical "
-           r"Orchestration → safe question reduction → RC validation → Product Differentiation "
-           r"Evidence",
            r"\*\*no durable or authoritative system-generated technical inference may be "
            r"activated\*\*",
-           r"OWNER_STATED, SYSTEM_INFERRED, EXPERT_SUPPLIED and EXTERNAL_EVIDENCE",
            r"SYSTEM_INFERRED is not OWNER_STATED",
-           r"\*\*Autonomous Technical Orchestration — NOT YET CURRENT",
            r"SYSTEM_INFERRED \+ UNVALIDATED until independently supported",
-           # the two WATCH items, recorded and NOT repaired
            r"pre-Target-Aware reader does not load sixteen-field rows",
-           r"No repair and no migration now",
-           r"The workflow is unchanged by this synchronization")
-    _rejects(top, CONTRACT, "msnl step 1", *_MSNL_REVERSALS)
-    live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
-    live_surfaces.append((STATE, _current(STATE, "current-position")))
-    for path, block in live_surfaces:
-        _needs(block, path, "msnl live", _tok(_MSNL_CONTRACT), _tok(_MSNL_NOT_YET),
-               _tok(_TARGET_AWARE),
-               r"EXISTING Stage-18\s+semantic-normalization item",
-               r"not a new\s+Master Roadmap Stage",
-               r"no provider\s+selection or integration",
-               r"no live or external model call")
-        _rejects(block, path, "msnl live", *_MSNL_REVERSALS)
-    for path, routing in _surfaces("current-routing"):
-        _needs(routing, path, "msnl routing",
-               r"Step 1 authorizes repository inspection and adjudication only",
-               r"no runtime MSNL\s+implementation",
-               r"no\s+transmission of user / project / invention data outside InventorAI",
-               r"no persisted\s+SYSTEM_INFERRED truth",
-               r"no automatic concept creation",
-               r"no readiness / maturity / validation\s+promotion",
-               r"no autonomous technical orchestration",
-               r"no question hiding or reduction")
-    # the carried Stage-18 note: read-only adjudication opened, implementation not
+           r"No repair and no migration now")
+    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "msnl step 1 delivered",
+             *_MSNL_REVERSALS, r"\*\*ACTIVE CONTRACT: MSNL STEP 1")
+    # the carried Stage-18 note: its nine rules bind every later step verbatim
     for path, note in _surfaces("stage-18-semantic-normalization"):
         _needs(note, path, "msnl note",
-               r"NOT AUTHORIZED\s*[\u00b7/]\s*NOT IMPLEMENTED as implementation",
-               r"READ-ONLY ADJUDICATION\s+AUTHORIZED \(MSNL\s+Step 1\) / IMPLEMENTATION NOT YET "
-               r"AUTHORIZED",
-               r"that authorizes no runtime, no provider, no model call and no data transmission",
+               r"NOT AUTHORIZED\s*[·/]\s*NOT IMPLEMENTED as implementation",
+               r"ONLY A LOCAL-ONLY SHADOW FOUNDATION \(PR #693\) AND A SYNTHETIC EVALUATION\s+PACK "
+               r"\(PR #694\) DELIVERED; EXTERNAL / PROVIDER / DURABLE MSNL NOT AUTHORIZED",
+               r"that authorized no runtime, no provider, no model call and no data transmission",
+               r"capture is OFF by\s+default and its sink discards — no provider, no persistence, "
+               r"no inference authority",
+               r"evaluation pack is synthetic only",
                r"\*\*\(1\) shadow / proposal first\*\* — before provenance hardening, MSNL output "
                r"may only propose a normalization and never becomes authoritative project truth",
                r"\*\*\(2\) closed concept vocabulary\*\* — map natural-language input only to "
@@ -2175,37 +2155,135 @@ def test_msnl_step_1_is_the_live_read_only_contract_on_every_live_surface():
                  r"(must|should|may) force a classification",
                  r"MSNL (may|can) (decide|invent)",
                  r"(may|can) send whole-project context")
-    # CLAUDE.md routes to the read-only step, and does not widen it
+
+
+def test_provenance_hardening_step_1_is_the_live_contract_on_every_live_surface():
+    """Provenance Hardening Step 1 hardens the EXISTING owner-interaction
+    AssertionRecord source / validation / responsibility boundary, and nothing
+    else. The failure modes this guards keep every token in place: the step
+    read as a durable SYSTEM_INFERRED writer, a validation award, readiness use
+    of system inference (OD-3) or a decided validation writer (OD-4); the two
+    delivered MSNL items read as external or provider MSNL; a stage marked
+    complete; question reduction; or deployment. So the live wording is required
+    on every live surface AND each reversal is forbidden by its predicate.
+    """
+    contract = _read(CONTRACT)
+    first = contract.index("## Current authority")
+    assert contract[first:].startswith(
+        "## Current authority — Provenance Hardening Step 1 assertion source / validation "
+        "boundary"), contract[first:first + 120]
+    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
+    _needs(top, CONTRACT, "provenance hardening step 1",
+           r"\*\*ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION "
+           r"BOUNDARY ONLY\.\*\*",
+           r"provenance precondition of the EXISTING Stage-18 semantic-normalization item",
+           r"creates no new Master Roadmap Stage and changes no stage checkbox",
+           r"\*\*MSNL LOCAL-ONLY SHADOW FOUNDATION\*\* \| `DELIVERED — PR #693 — merge "
+           r"319b702678a1785e117c018f87cf171d5cbf2c9d`",
+           r"\*\*MSNL EVALUATION PACK V1\*\* \| `DELIVERED — PR #694 — merge "
+           r"c5f59093eafbccce8ff9e947d40c46f3ae86915f`",
+           r"\*\*EXTERNAL / PROVIDER MSNL\*\* \| `NOT AUTHORIZED`",
+           r"\*\*DURABLE SYSTEM_INFERRED WRITER\*\* \| `NOT AUTHORIZED`",
+           r"\*\*FUTURE SYSTEM-PROPOSAL CARRIER\*\* \| `UNDECIDED — OD-2`",
+           r"\*\*READINESS USE OF SYSTEM INFERENCE\*\* \| `NOT AUTHORIZED — OD-3 UNDECIDED`",
+           r"\*\*VALIDATION-AWARD WRITER\*\* \| `NOT AUTHORIZED — OD-4 UNDECIDED`",
+           r"\*\*STAGE 18\*\* \| `STARTED: YES` · `COMPLETE: NO` · \*\*PARTIAL\*\* — unchanged",
+           r"\*\*STAGE 19\*\* \| `ENTERED / NOT COMPLETE` — unchanged",
+           r"\*\*FULL CAP-09 / FULL WS-PFV-001\*\* \| `NOT AUTHORIZED`",
+           r"capture is OFF by default and the default sink discards — no provider, no "
+           r"persistence and no inference authority",
+           r"synthetic only — a representative English / MSA / Kuwaiti-Gulf / Egyptian pack, "
+           r"not real-user evidence and not proof of LLM or dialect support; no provider or "
+           r"model was used",
+           r"Neither marks Stage 18 or MSNL complete",
+           r"\*\*Not authorized by this step:\*\* a durable SYSTEM_INFERRED writer; a new "
+           r"proposal carrier or any proposal persistence; any validation-award writer; any "
+           r"readiness-policy change or readiness use of system inference; cross-source "
+           r"supersession; external LLM / provider integration; provider selection; live model "
+           r"calls; sending user / project / invention data externally; new concept creation; "
+           r"autonomous technical orchestration; question hiding or reduction; deployment, "
+           r"public release and paid activation\.",
+           r"OWNER_STATED is not true; SYSTEM_INFERRED is not validated; EXPERT_SUPPLIED is "
+           r"not SPECIALIST_REVIEWED; EXTERNAL_EVIDENCE is not EMPIRICALLY_DEMONSTRATED or "
+           r"INDEPENDENTLY_VERIFIED",
+           r"`specialist_required` is not `specialist_reviewed`; `evidence_requested` is not "
+           r"`evidence_exists`",
+           r"what may be represented is not what any writer may award",
+           r"Mechanical default-visible Path-N set remains \*\*10 questions\*\*",
+           r"a hidden question must never mean a hidden unknown",
+           r"Target-Aware — COMPLETE → MSNL → Provenance Hardening → Autonomous Technical "
+           r"Orchestration → safe question reduction → RC validation → Product Differentiation "
+           r"Evidence")
+    _rejects(top, CONTRACT, "provenance hardening step 1", *_PH1_REVERSALS)
+    live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
+    live_surfaces.append((STATE, _current(STATE, "current-position")))
+    for path, block in live_surfaces:
+        _needs(block, path, "ph1 live", _tok(_PH1_CONTRACT), _tok(_MSNL_SHADOW),
+               _tok(_MSNL_PACK), _tok(_EXTERNAL_MSNL_NO), _tok(_DURABLE_SI_NO),
+               _tok(_TARGET_AWARE),
+               r"EXISTING Stage-18\s+semantic-normalization item",
+               r"not a new\s+Master Roadmap Stage",
+               r"no provider\s+selection or integration",
+               r"no live or external model call",
+               r"OD-3\s+undecided", r"OD-4\s+undecided")
+        _rejects(block, path, "ph1 live", *_PH1_REVERSALS)
+    for path, routing in _surfaces("current-routing"):
+        _needs(routing, path, "ph1 routing",
+               r"capture is OFF by\s+default and its sink discards",
+               r"not real-user evidence and\s+not proof of LLM or dialect support",
+               r"no durable\s+SYSTEM_INFERRED writer",
+               r"no\s+transmission of user / project / invention data outside InventorAI",
+               r"no automatic concept creation",
+               r"no readiness / maturity\s*/\s*validation\s+promotion",
+               r"no autonomous\s+technical orchestration",
+               r"no question hiding or\s+reduction")
+    # CLAUDE.md routes to the step, and does not widen it
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    for needle in ("ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW "
-                   "ADJUDICATION ONLY.",
-                   "It maps to the EXISTING Stage-18 semantic-normalization item and creates no "
-                   "new Master Roadmap Stage.",
-                   "MSNL implementation is NOT YET AUTHORIZED: no runtime MSNL, no provider "
-                   "selection or integration, no external model call and no external "
-                   "transmission of user, project or invention data.",
+    for needle in ("ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION "
+                   "BOUNDARY ONLY.",
+                   "provenance precondition of the EXISTING Stage-18 semantic-normalization item, "
+                   "and creates no new Master Roadmap Stage.",
+                   "The MSNL local-only shadow foundation (PR #693, merge "
+                   "`319b702678a1785e117c018f87cf171d5cbf2c9d`) and MSNL Evaluation Pack V1 (PR #694, "
+                   "merge `c5f59093eafbccce8ff9e947d40c46f3ae86915f`) are delivered",
+                   "capture is OFF by default and its sink discards, the pack is synthetic only, "
+                   "and neither uses a provider or model.",
+                   "External / provider MSNL, a durable SYSTEM_INFERRED writer, readiness use of "
+                   "system inference (OD-3) and any validation-award writer (OD-4) are NOT "
+                   "AUTHORIZED",
+                   "no question reduction",
                    "Target-Aware Question / Answer Binding is COMPLETE (PR #690, merge "
                    "`ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`)."):
         assert needle in head, needle
-    for pat in _MSNL_REVERSALS:
+    for pat in _PH1_REVERSALS:
         assert re.search(pat, head, re.I) is None, pat
     # the checklist subtask and machine record, and the roadmap Stage-18 row
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
-    assert ("**CURRENT SUBTASK:** MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW "
-            "ADJUDICATION ONLY") in flat_checklist
-    for line in ("ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW "
-                 "ADJUDICATION ONLY",
-                 "MSNL IMPLEMENTATION: NOT YET AUTHORIZED",
+    assert ("**CURRENT SUBTASK:** PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION "
+            "BOUNDARY ONLY") in flat_checklist
+    for line in ("ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION "
+                 "BOUNDARY ONLY",
+                 "MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge "
+                 "319b702678a1785e117c018f87cf171d5cbf2c9d",
+                 "MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge "
+                 "c5f59093eafbccce8ff9e947d40c46f3ae86915f",
+                 "EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED",
+                 "DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED",
+                 "READINESS USE OF SYSTEM INFERENCE: NOT AUTHORIZED — OD-3 UNDECIDED",
+                 "VALIDATION-AWARD WRITER: NOT AUTHORIZED — OD-4 UNDECIDED",
                  "MSNL ROADMAP MAPPING: EXISTING STAGE-18 SEMANTIC-NORMALIZATION ITEM — NO NEW "
                  "STAGE",
                  "TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge "
                  "ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
+    assert re.search(r"^ACTIVE CONTRACT: MSNL STEP 1", raw_checklist, re.M) is None
+    assert re.search(r"^MSNL IMPLEMENTATION: NOT YET AUTHORIZED$", raw_checklist, re.M) is None
     rows = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", _read(ROADMAP), re.M)
     assert len(rows) == 1, "stage 18 row missing, duplicated or ticked"
-    assert ("the current bounded action is MSNL Step 1 — read-only architecture / data-flow "
-            "adjudication of the carried semantic-normalization item, implementation NOT YET "
-            "AUTHORIZED") in rows[0]
-    for pat in _MSNL_REVERSALS:
+    assert ("the MSNL local-only shadow foundation (PR #693) and Evaluation Pack V1 (PR #694) "
+            "are delivered, external / provider / durable MSNL stays NOT AUTHORIZED, and the "
+            "current bounded action is Provenance Hardening Step 1 — the assertion source / "
+            "validation boundary that precedes any durable system inference") in rows[0]
+    for pat in _PH1_REVERSALS:
         assert re.search(pat, rows[0], re.I) is None, pat

@@ -117,7 +117,7 @@ def _put_project(store, project_id, *, idea_id="idea-x", seed=None, domain=None,
     for i, content in enumerate(answers, start=1):
         rec = AssertionRecord(
             record_id=f"rec_{i}", disposition=DISPOSITION_ANSWERED, content=content,
-            gap_context=None, iteration=i, provenance=OWNER_STATED,
+            gap_context=None, iteration=i, provenance=OWNER_STATED, responsibility="OWNER_INPUT",
             validation_status=UNVALIDATED)
         store.append_record(project_id, rec, idempotency_key=f"idem-{project_id}-{i}")
 
@@ -155,10 +155,10 @@ def test_replay_follows_store_seq_not_record_id(client):
                  path="N", version=SR.RECONSTRUCTION_VERSION)
     r2 = AssertionRecord(record_id="rec_2", disposition=DISPOSITION_ANSWERED,
                          content=ANSWER_1, gap_context=None, iteration=2,
-                         provenance=OWNER_STATED, validation_status=UNVALIDATED)
+                         provenance=OWNER_STATED, responsibility="OWNER_INPUT", validation_status=UNVALIDATED)
     r1 = AssertionRecord(record_id="rec_1", disposition=DISPOSITION_ANSWERED,
                          content=ANSWER_2, gap_context=None, iteration=1,
-                         provenance=OWNER_STATED, validation_status=UNVALIDATED)
+                         provenance=OWNER_STATED, responsibility="OWNER_INPUT", validation_status=UNVALIDATED)
     store.append_record("seqproj", r2, idempotency_key="k2")
     store.append_record("seqproj", r1, idempotency_key="k1")
     snap = SR.reconstruct_review_state(store, "seqproj")
@@ -186,7 +186,7 @@ def test_non_contiguous_rec_n_supported(client):
     for rid, content, seqk in (("rec_3", ANSWER_1, "a"), ("rec_7", ANSWER_2, "b")):
         rec = AssertionRecord(record_id=rid, disposition=DISPOSITION_ANSWERED,
                               content=content, gap_context=None, iteration=1,
-                              provenance=OWNER_STATED, validation_status=UNVALIDATED)
+                              provenance=OWNER_STATED, responsibility="OWNER_INPUT", validation_status=UNVALIDATED)
         store.append_record("gaps", rec, idempotency_key=seqk)
     snap = SR.reconstruct_review_state(store, "gaps")
     assert snap.level == 1
@@ -205,7 +205,7 @@ def test_only_answered_records_are_replayed(client):
     # evidence nor replayed: only the one answered record survives.
     deferred = AssertionRecord(
         record_id="rec_2", disposition=DISPOSITION_DEFERRED, content="deferred note",
-        gap_context=None, iteration=2, provenance=OWNER_STATED,
+        gap_context=None, iteration=2, provenance=OWNER_STATED, responsibility="OWNER_INPUT",
         validation_status=UNVALIDATED)
     store.append_record("ansonly", deferred, idempotency_key="def-1")
     snap = SR.reconstruct_review_state(store, "ansonly")
@@ -525,7 +525,7 @@ def test_p4_1b2a_append_still_works(client):
     # A same-key duplicate append fails closed (idempotency backstop intact).
     dup = AssertionRecord(record_id="rec_9", disposition=DISPOSITION_ANSWERED,
                           content=ANSWER_1, gap_context=None, iteration=9,
-                          provenance=OWNER_STATED, validation_status=UNVALIDATED)
+                          provenance=OWNER_STATED, responsibility="OWNER_INPUT", validation_status=UNVALIDATED)
     import sqlite3
     with pytest.raises(sqlite3.IntegrityError):
         store.append_record("reg2a", dup, idempotency_key="idem-reg2a-1")
@@ -707,7 +707,7 @@ def test_perf01_withdrawn_answer_is_restored_but_never_replayed(monkeypatch):
                  answers=[ANSWER_1, ANSWER_2])
     store.append_record("p1wd", AssertionRecord(
         record_id="rec_3", disposition=DISPOSITION_ANSWERED, content=ANSWER_3,
-        gap_context=None, iteration=3, provenance=OWNER_STATED,
+        gap_context=None, iteration=3, provenance=OWNER_STATED, responsibility="OWNER_INPUT",
         validation_status=UNVALIDATED, supersedes=["rec_1"]),
         idempotency_key="idem-p1wd-3")
     seen = _count_iterations(monkeypatch)
@@ -730,7 +730,7 @@ def test_perf01_non_answer_records_are_restored_but_never_replayed(monkeypatch):
     store.append_record("p1na", AssertionRecord(
         record_id="rec_9", disposition=DISPOSITION_DEFERRED,
         content="deferred content", gap_context=None, iteration=2,
-        provenance=OWNER_STATED, validation_status=UNVALIDATED),
+        provenance=OWNER_STATED, responsibility="OWNER_INPUT", validation_status=UNVALIDATED),
         idempotency_key="idem-p1na-9")
     seen = _count_iterations(monkeypatch)
     session = SR.reconstruct_readonly_state(store, "p1na")
@@ -813,7 +813,7 @@ def test_perf01_risk_accepted_record_keeps_its_distinct_single_pass(monkeypatch)
     store.append_record("p1risk", AssertionRecord(
         record_id="rec_7", disposition=DISPOSITION_RISK_ACCEPTED,
         content="accepted risk", gap_context="mechanism_completeness",
-        iteration=2, provenance=OWNER_STATED, validation_status=UNVALIDATED),
+        iteration=2, provenance=OWNER_STATED, responsibility="OWNER_INPUT", validation_status=UNVALIDATED),
         idempotency_key="idem-p1risk-7")
     accepts = []
     real_accept = SR.progression_loop.accept_gap_risk

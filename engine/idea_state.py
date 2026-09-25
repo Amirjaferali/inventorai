@@ -76,6 +76,35 @@ SPECIALIST_INPUT   = "SPECIALIST_INPUT"
 EMPIRICAL_EVIDENCE = "EMPIRICAL_EVIDENCE"
 UNDETERMINED       = "UNDETERMINED"
 
+# --- Provenance Hardening Step 1: closed vocabularies (no new value) --------
+# The ONE canonical provenance vocabulary: exactly the five constants above, in
+# a fixed order. Every other module reuses this tuple; none re-lists it.
+PROVENANCE_VALUES = (
+    OWNER_STATED,
+    SYSTEM_INFERRED,
+    EXPERT_SUPPLIED,
+    EXTERNAL_EVIDENCE,
+    LEGACY_UNSPECIFIED,
+)
+# The provenance values legal on the owner-interaction AssertionRecord carrier
+# TODAY. SYSTEM_INFERRED, EXPERT_SUPPLIED and EXTERNAL_EVIDENCE stay canonical
+# values, but no writer of this carrier may produce them: a system, expert or
+# external claim is not an owner interaction, and its carrier is undecided.
+ASSERTION_PROVENANCE_VALUES = frozenset({OWNER_STATED, LEGACY_UNSPECIFIED})
+# The closed responsibility vocabulary: the five constants above.
+RESPONSIBILITY_VALUES = frozenset({
+    OWNER_INPUT, SYSTEM_ANALYSIS, SPECIALIST_INPUT, EMPIRICAL_EVIDENCE,
+    UNDETERMINED,
+})
+# The responsibility this carrier stores for each legal provenance: the owner
+# is responsible for what the owner stated; otherwise nothing is stored and
+# responsibility stays derived at display time. Nothing else is ever inferred
+# from provenance.
+ASSERTION_RESPONSIBILITY_BY_PROVENANCE = {
+    OWNER_STATED: OWNER_INPUT,
+    LEGACY_UNSPECIFIED: None,
+}
+
 # --- Workstream 4: structured criticality confirmation vocabulary ---------
 # (STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md §4/§6; C4-R4/C4-R5.)
 # Confirmable categories: exactly the three non-UNDETERMINED C4-R4 categories.
@@ -153,7 +182,8 @@ _PENDING_BY_DISPOSITION = {
 
 # Default provenance is derived ONLY from the owner action that created the
 # record (the action itself is the source fact) — never from text, vocabulary,
-# quality, maturity, or gap status. An explicit provenance argument always wins.
+# quality, maturity, or gap status. An explicit provenance argument may only
+# restate this value (Provenance Hardening Step 1); it never overrides it.
 # Owner-asserting actions default to OWNER_STATED; the non-asserting actions
 # (unknown / deferred / specialist_requested / evidence_requested) assert no
 # content and so remain LEGACY_UNSPECIFIED.
@@ -431,8 +461,8 @@ class IdeaState:
 
         Append-only: never mutates an existing record and never removes one. Has
         NO effect on maturity, lifecycle, gaps, transitions, or the transcript.
-        Provenance, when not given explicitly, is derived ONLY from the action
-        (never from text/quality/maturity). Returns the new record.
+        Provenance is derived ONLY from the action (never from text/quality/
+        maturity); an explicit value may only restate it. Returns the new record.
 
         W2-A (authoritative contract §3 mint-seam rule): the three
         decision-action dispositions receive class-bounded STRUCTURAL
@@ -461,15 +491,33 @@ class IdeaState:
             raise ValueError(
                 "decision_context_root is reserved for decision-action "
                 "dispositions")
-        if provenance is None:
-            provenance = _DEFAULT_PROVENANCE_BY_DISPOSITION.get(
-                action, LEGACY_UNSPECIFIED)
+        # Provenance Hardening Step 1: this is an OWNER-INTERACTION carrier, so
+        # the source is dictated by the disposition alone. An explicit value may
+        # only restate it — it can never change who the source is.
+        dictated = _DEFAULT_PROVENANCE_BY_DISPOSITION.get(
+            action, LEGACY_UNSPECIFIED)
+        if provenance is not None and provenance != dictated:
+            raise ValueError(
+                f"provenance of a {action!r} record is dictated by its "
+                f"disposition ({dictated})")
+        provenance = dictated
+        # Mint authority is not vocabulary: the other canonical statuses stay
+        # representable and loadable, but no writer is authorized to award
+        # them, so this generic seam mints UNVALIDATED only.
+        if validation_status != UNVALIDATED:
+            raise ValueError(
+                "record_interaction mints UNVALIDATED only; no validation "
+                "award is authorized through this seam")
         # Responsibility is stored EXPLICITLY only for owner-created records
         # (contract §3.4): when this record is owner-stated, the owner is
         # responsible. Otherwise it is left None and remains DERIVED by the
         # existing display behavior (web.responsibility_labels) — never fabricated.
-        if responsibility is None and provenance == OWNER_STATED:
-            responsibility = OWNER_INPUT
+        # An explicit value may only restate that; it may not contradict it.
+        carried = ASSERTION_RESPONSIBILITY_BY_PROVENANCE[provenance]
+        if responsibility is not None and responsibility != carried:
+            raise ValueError(
+                f"responsibility of a {provenance} record must be {carried}")
+        responsibility = carried
         # P10-PC3 B1 repair (Independent Review): the next id derives from the
         # ledger's MAX existing rec_N, not its length. For every live ledger
         # (ids minted here sequentially, hence contiguous 1..N) max == len, so

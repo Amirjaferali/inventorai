@@ -112,7 +112,21 @@ def _state():
 
 
 def _record(s, action, **kw):
-    return s.record_interaction(action, iteration=0, **kw)
+    # Provenance Hardening Step 1: the owner-interaction seam now dictates
+    # provenance, mints UNVALIDATED only and stores only the carrier's own
+    # responsibility. A fixture that models a record no current writer mints (a
+    # legacy record, or a future writer's validation or responsibility) sets
+    # those fields on the minted in-memory record, reproducing exactly the
+    # object the seam used to build.
+    modelled = {k: kw.pop(k) for k in ("provenance", "validation_status",
+                                      "responsibility") if k in kw}
+    rec = s.record_interaction(action, iteration=0, **kw)
+    if "provenance" in modelled and "responsibility" not in modelled:
+        modelled["responsibility"] = (
+            "OWNER_INPUT" if modelled["provenance"] == "OWNER_STATED" else None)
+    for key, value in modelled.items():
+        setattr(rec, key, value)
+    return rec
 
 
 def _step_by_reqid(plan, requirement_id):

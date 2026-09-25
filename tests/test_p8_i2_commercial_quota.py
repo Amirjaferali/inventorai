@@ -261,7 +261,7 @@ def test_owner_data_access_not_blocked_by_quota(tmp_path):
     rs = SqliteRecordStore(str(tmp_path / "rec.sqlite3"))
     contract = ProjectRecordContract(idea_id="idea-1", assertions=[
         AssertionRecord(record_id="r1", disposition="answered", content="c",
-                        gap_context="g", iteration=1, provenance=OWNER_STATED,
+                        gap_context="g", iteration=1, provenance=OWNER_STATED, responsibility="OWNER_INPUT",
                         validation_status=UNVALIDATED)])
     rs.create_project(contract, project_id="p1", owner_account_id=a)
     # READ of already-owned data — unaffected by commercial quota exhaustion.

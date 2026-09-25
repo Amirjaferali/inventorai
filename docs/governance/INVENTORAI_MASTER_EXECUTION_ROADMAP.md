@@ -106,13 +106,18 @@ sibling sidecar of the same store. Delivering it is not the stage and opens noth
 Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — the EXISTING Stage-18 semantic-normalization item, not a new
-Master Roadmap Stage:** `ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY` · `MSNL IMPLEMENTATION: NOT YET AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
-Step 1 authorizes repository inspection and adjudication only. It authorizes no runtime MSNL
-implementation, no provider selection or integration, no live or external model call, no
-transmission of user / project / invention data outside InventorAI, no persisted
-SYSTEM_INFERRED truth, no automatic concept creation, no readiness / maturity / validation
-promotion, no autonomous technical orchestration and no question hiding or reduction.
+**CURRENT BOUNDED ACTION — the provenance precondition of the EXISTING Stage-18
+semantic-normalization item, not a new Master Roadmap Stage:** `ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1 — ASSERTION SOURCE / VALIDATION BOUNDARY ONLY` · `MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d` · `MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` · `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
+The shadow foundation's capture is OFF by default and its sink discards: no provider, no
+persistence and no inference authority. Evaluation Pack V1 is synthetic only — a
+representative English / MSA / Kuwaiti-Gulf / Egyptian pack, not real-user evidence and not
+proof of LLM or dialect support, built with no provider or model. Step 1 hardens the
+owner-interaction record's source / validation / responsibility boundary only. It authorizes
+no durable SYSTEM_INFERRED writer, no validation-award writer (OD-4 undecided), no readiness
+use of system inference (OD-3 undecided), no provider selection or integration, no live or
+external model call, no transmission of user / project / invention data outside InventorAI,
+no automatic concept creation, no readiness / maturity / validation promotion, no autonomous
+technical orchestration and no question hiding or reduction.
 **Entering Stage 18 discharges nothing behind it.** `STAGE 11 STARTED: NO` and **Stage 11
 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**: it was routed
 PAST, not completed, and **routing past a deferred stage never completes it**. Reuse valid
@@ -125,6 +130,12 @@ may be read as though one blocker explained all four. Stage 17's OWN remaining L
 provenance-depth, L6 evidence-quality and L8 validation-state gaps are the ones owned by
 T2-E / OD-PDVG-08b, and they are not duplicated into Stage 17.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded 2026-09-25 by Provenance Hardening Step 1, preserved so the change is visible
+rather than silent: the current bounded action read "`ACTIVE CONTRACT: MSNL STEP 1 — READ-ONLY
+ARCHITECTURE / DATA-FLOW ADJUDICATION ONLY` · `MSNL IMPLEMENTATION: NOT YET AUTHORIZED`". That
+was true until the Owner authorized the local-only shadow foundation (PR #693) and Evaluation
+Pack V1 (PR #694), then Provenance Hardening Step 1.)*
 
 *(Superseded 2026-09-24 by MSNL Step 1, preserved so the change is visible rather than
 silent: the Stage-19 routing line read "`ACTIVE CONTRACT: STAGE 19 / CAP-09 SLICE-02 — DURABLE
@@ -178,8 +189,7 @@ stays deferred, and Stage 18 is the next EXECUTABLE stage, not the next obligati
 <!-- CURRENT-BLOCK: stage-18-semantic-normalization -->
 ### Carried into Stage 18 — Multilingual Semantic Normalization Layer
 
-**PRESERVED FOR STAGE-18 ADJUDICATION · NOT AUTHORIZED · NOT IMPLEMENTED as implementation ·
-READ-ONLY ADJUDICATION AUTHORIZED (MSNL Step 1) / IMPLEMENTATION NOT YET AUTHORIZED.** Recorded here in
+**PRESERVED FOR STAGE-18 ADJUDICATION · NOT AUTHORIZED · NOT IMPLEMENTED as implementation · ONLY A LOCAL-ONLY SHADOW FOUNDATION (PR #693) AND A SYNTHETIC EVALUATION PACK (PR #694) DELIVERED; EXTERNAL / PROVIDER / DURABLE MSNL NOT AUTHORIZED.** Recorded here in
 ROUTING so it cannot be lost between stages: **at the BEGINNING of Stage 18 / D13 / CAP-01
 adjudication, explicitly reconsider it.** Writing it down starts nothing.
 
@@ -207,10 +217,13 @@ and under what privacy, security and retention boundary.** This is preservation 
 later Stage-18 READ-ONLY adjudication only: **no provider is integrated, no provider is
 selected, and no live privacy policy is defined here.**
 
-**MSNL STEP 1 — READ-ONLY ADJUDICATION AUTHORIZED (2026-09-24) / IMPLEMENTATION NOT YET
+**MSNL STEP 1 — READ-ONLY ADJUDICATION (2026-09-24), THEN A LOCAL-ONLY SHADOW FOUNDATION
+(PR #693) AND EVALUATION PACK V1 (PR #694); EXTERNAL / PROVIDER / DURABLE MSNL NOT
 AUTHORIZED.** The Owner opened the read-only architecture / data-flow adjudication of this
-item only; that authorizes no runtime, no provider, no model call and no data transmission,
-and the preservation statements here still hold. The adjudication — and any later step —
+item; that authorized no runtime, no provider, no model call and no data transmission, and
+the preservation statements here still hold. The later shadow foundation's capture is OFF by
+default and its sink discards — no provider, no persistence, no inference authority — and the
+evaluation pack is synthetic only. The adjudication — and any later step —
 must honour: **(1) shadow / proposal first** — before provenance hardening, MSNL output may
 only propose a normalization and never becomes authoritative project truth; **(2) closed
 concept vocabulary** — map natural-language input only to existing governed canonical
@@ -745,7 +758,7 @@ This is the short operating view of the detailed sequence in §6. A successor wo
 
 - [ ] **16 — SRL-compatible composition:** combine technical and integration state without hiding the weakest axis or inventing a single score.
 - [ ] **17 — Market Reality / Commercial Readiness:** **PARTIAL — PRODUCT-DEPTH COMPLETE FOR CURRENT AUTHORIZED SCOPE, UPDATED 2026-09-21.** The Commercial Data Depth slices are merged: **D1** lifecycle & longitudinal reachability, **D2** quantitative commercial structure (EXACT / ESTIMATED_RANGE / NONE, USD default, no defensible basis → no accepted number, no invented midpoint, no invented range, NONE ≠ ZERO) and **D3** commercial evidence linkage (one supporting item, a traversal and never a rating). Post-recheck depth is **MODERATE-DEEP** (from MODERATE); **15 / 15 topics are sufficiently deep for the current Stage-17 product scope**; `ADDITIONAL STAGE-17 PRODUCT DEPTH IMPLEMENTATION: NOT JUSTIFIED` — further fields would be over-engineering or would improperly enter the deferred T2-E lane. **The remaining gaps are L5 provenance depth, L6 evidence quality and L8 validation state, owned by T2-E / OD-PDVG-08b evidence-writer reachability and NOT duplicated here.** **COMMERCIAL READINESS REMAINS PARTIAL**: `VALIDATED COMMERCIAL CONCLUSION: NO`, `READINESS CEILING: INSUFFICIENT_EVIDENCE`, Commercial Readiness is NOT asserted as passing, and no market validation, demand validation, product-market fit, validated differentiation or first-sale readiness is claimed or authorized. Stage 17 is NOT closed. *(Superseded wording, preserved — was: "**PARTIAL — UPDATED v1.32.**")* The **capture mechanism** exists and is merged: Commercial Evidence Owner and Commercial Evidence Capture (PRs #647, #649), with a Commercial dimension in the Snapshot at ceiling `INSUFFICIENT_EVIDENCE` only. **Actual evidence captured is limited and no validated commercial conclusion exists or is authorized.** The full future scope is preserved below and in `INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md` §16.G: target user/audience, direct alternatives, indirect alternatives, differentiation, proof of demand, licensing, market-entry risks, revenue model, funding needs and path to first sale. Never output the unsupported conclusion "marketable".
-- [ ] **18 — D13/CAP-01 guidance:** bounded technical next-step guidance after Research Gate 3 prerequisites; AI remains non-authoritative. **ENTERED / PARTIAL (2026-09-22):** first bounded increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED; the current bounded action is MSNL Step 1 — read-only architecture / data-flow adjudication of the carried semantic-normalization item, implementation NOT YET AUTHORIZED (2026-09-24); the checkbox stays unticked.
+- [ ] **18 — D13/CAP-01 guidance:** bounded technical next-step guidance after Research Gate 3 prerequisites; AI remains non-authoritative. **ENTERED / PARTIAL (2026-09-22):** first bounded increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED; the MSNL local-only shadow foundation (PR #693) and Evaluation Pack V1 (PR #694) are delivered, external / provider / durable MSNL stays NOT AUTHORIZED, and the current bounded action is Provenance Hardening Step 1 — the assertion source / validation boundary that precedes any durable system inference (2026-09-25); the checkbox stays unticked.
 - [ ] **19 — WS-PFV-001/CAP-09:** experiment-plan designer; never fabricate results. **ENTERED / NOT COMPLETE (2026-09-23):** the Owner ruled WS-PFV-001 dependency 3 satisfied for planning-only CAP-09 entry, and for nothing wider; Section 11 + `SuccessCriterion` stay the canonical planning owner; new user-authored planning metadata must be durable before it is presented as a saved-project capability; the durable SuccessCriterion remediation (IMPLEMENTATION-01 / CORRECTION-01), which makes the EXISTING criterion durable in the same project store, is delivered (PR #682); CAP-09 SLICE-02, one inventor-written measurement method per existing experiment, durable in the same project store, is delivered (PR #683), and no further CAP-09 implementation is currently authorized; variable, hypothesis, risks and every other CAP-09 field NOT AUTHORIZED; full CAP-09 and full WS-PFV-001 NOT AUTHORIZED; the checkbox stays unticked. *(Superseded 2026-09-24 by MSNL Step 1, preserved — was: "the ONLY authorized implementation is CAP-09 SLICE-02, one inventor-written measurement method per existing experiment, durable in the same project store".)* *(Superseded 2026-09-23 by SLICE-02, preserved — was: "the ONLY authorized implementation is the durable SuccessCriterion remediation (IMPLEMENTATION-01 / CORRECTION-01), which makes the EXISTING criterion durable in the same project store".)* *(Superseded 2026-09-23, preserved — was: "**ENTERED FOR FOUNDATION / CONTRACT WORK ONLY (2026-09-23):** … with no schema selected; CAP-09 product implementation NOT STARTED / NOT AUTHORIZED YET".)*
 - [ ] **20 — CAP-08:** append-only assumption register with impact, evidence need, status and supersession.
 

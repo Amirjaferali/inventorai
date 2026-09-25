@@ -35,8 +35,10 @@ _FORBIDDEN = ["validated", "verified", "feasible", "certified", "guaranteed",
 def _state(responsibilities):
     s = IdeaState(idea_id="p7b-" + uuid.uuid4().hex[:8])
     for i, resp in enumerate(responsibilities):
+        # modelled on the minted record: no current writer stores explicit
+        # responsibility tokens (Provenance Hardening Step 1)
         s.record_interaction(DISPOSITION_PROVISIONAL_ASSUMPTION, iteration=0,
-                             content=f"answer {i}", responsibility=resp)
+                             content=f"answer {i}").responsibility = resp
     return s
 
 

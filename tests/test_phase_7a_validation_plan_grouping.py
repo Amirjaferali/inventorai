@@ -36,12 +36,14 @@ def _multi_step_state():
     """Three provisional-assumption records spanning several responsibilities, so
     the derived validation plan has steps that land in more than one group."""
     s = IdeaState(idea_id="p7a-" + uuid.uuid4().hex[:8])
-    s.record_interaction(DISPOSITION_PROVISIONAL_ASSUMPTION, iteration=0,
-                         content="assume the 5V rail is stable", responsibility=OWNER_INPUT)
-    s.record_interaction(DISPOSITION_PROVISIONAL_ASSUMPTION, iteration=0,
-                         content="thermal margin needs an EE review", responsibility=SPECIALIST_INPUT)
-    s.record_interaction(DISPOSITION_PROVISIONAL_ASSUMPTION, iteration=0,
-                         content="sensor drift needs bench measurement", responsibility=EMPIRICAL_EVIDENCE)
+    # explicit responsibility tokens are modelled on the minted in-memory
+    # records: no current writer stores them (Provenance Hardening Step 1)
+    for content, responsibility in (
+            ("assume the 5V rail is stable", OWNER_INPUT),
+            ("thermal margin needs an EE review", SPECIALIST_INPUT),
+            ("sensor drift needs bench measurement", EMPIRICAL_EVIDENCE)):
+        s.record_interaction(DISPOSITION_PROVISIONAL_ASSUMPTION, iteration=0,
+                             content=content).responsibility = responsibility
     return s
 
 
