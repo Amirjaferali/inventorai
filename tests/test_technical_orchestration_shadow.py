@@ -372,6 +372,104 @@ def test_default_transport_is_never_reached_in_tests(monkeypatch):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# 3b. The REAL default urllib transport — exact endpoint confinement
+#     (Astra R1). urllib's own handlers run; only the socket-level open of each
+#     scheme is replaced by an offline recorder, so a redirect that urllib
+#     would follow shows up as a second recorded request.
+# ─────────────────────────────────────────────────────────────────────────────
+
+class _Wire:
+    """Offline stand-in for the network below urllib's handler chain."""
+
+    def __init__(self, status, location=None, body=b""):
+        self.status, self.location, self.body, self.seen = status, location, body, []
+
+    def _record(self, req):
+        self.seen.append({"url": req.full_url, "method": req.get_method(),
+                          "headers": dict(req.header_items()), "data": req.data})
+
+    def _response(self, req, status, headers, body):
+        import http.client
+        import io
+        import urllib.response
+        msg = http.client.parse_headers(io.BytesIO(headers))
+        resp = urllib.response.addinfourl(io.BytesIO(body), msg, req.full_url, status)
+        resp.msg = "synthetic"
+        return resp
+
+    def https_open(self, handler, req):
+        self._record(req)
+        if len(self.seen) == 1 and self.location:
+            return self._response(req, self.status,
+                                  b"Location: " + self.location.encode() + b"\r\n\r\n", b"")
+        return self._response(req, 200, b"Content-Type: application/json\r\n\r\n", self.body)
+
+    def http_open(self, handler, req):
+        self._record(req)
+        return self._response(req, 200, b"\r\n", b"{}")
+
+
+@pytest.fixture
+def wire(monkeypatch):
+    import urllib.request
+
+    def install(status, location=None, body=b""):
+        w = _Wire(status, location, body)
+        monkeypatch.setattr(urllib.request.HTTPSHandler, "https_open",
+                            lambda self, req: w.https_open(self, req))
+        monkeypatch.setattr(urllib.request.HTTPHandler, "http_open",
+                            lambda self, req: w.http_open(self, req))
+        return w
+    return install
+
+
+@pytest.mark.parametrize("status", [301, 302, 303, 307, 308])
+@pytest.mark.parametrize("location", ["http://another-host.invalid/collect",
+                                      "https://another-host.invalid/collect",
+                                      "https://api.openai.com/v1/elsewhere"])
+def test_default_transport_never_follows_a_redirect(wire, status, location, capsys):
+    import urllib.request
+    before = urllib.request._opener
+    w = wire(status, location)
+    req, _ = _request(focal_text="Synthetic buckle clip text.")
+    adapter = toa.OpenAIOrchestrationAdapter(allow_network=True, api_key=FAKE_KEY)
+    res = tos.evaluate(req, adapter)
+    assert len(w.seen) == 1, [r["url"] for r in w.seen]          # zero follow-ups
+    first = w.seen[0]
+    assert first["url"] == toa.ENDPOINT and first["method"] == "POST"
+    assert first["headers"]["Authorization"] == "Bearer " + FAKE_KEY
+    assert b"Synthetic buckle clip text." in first["data"]
+    assert (res.outcome, res.proposals) == (tos.ERROR, ())
+    assert adapter.last_error_kind == toa.ERR_HTTP_STATUS
+    assert urllib.request._opener is before                        # nothing installed
+    out = capsys.readouterr()
+    for text in (repr(res), repr(adapter), out.out, out.err):
+        assert FAKE_KEY not in text
+
+
+def test_default_transport_returns_a_direct_200_body(wire):
+    reply = {"outcome": "PROPOSED", "proposals": [
+        {"kind": "DIRECTION", "text": "Explore a reed switch.",
+         "source_handles": ["s1"], "gap_type": MC}]}
+    w = wire(200, body=_provider_body(reply))
+    status, body = toa._urllib_transport(toa.ENDPOINT, {"Authorization": "Bearer x"},
+                                         b"{}", 5)
+    assert (status, body) == (200, _provider_body(reply)) and len(w.seen) == 1
+    req, _ = _request()
+    res = tos.evaluate(req, toa.OpenAIOrchestrationAdapter(allow_network=True,
+                                                          api_key=FAKE_KEY))
+    assert [p.text for p in res.proposals] == ["Explore a reed switch."]
+
+
+def test_default_transport_posts_to_the_approved_endpoint_only(wire):
+    w = wire(200, body=b"{}")
+    with pytest.raises(ValueError):
+        toa._urllib_transport("https://another-host.invalid/v1/responses",
+                              {"Authorization": "Bearer x"}, b"{}", 5)
+    assert w.seen == []
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # 4. Boundaries — no product path reaches either module
 # ─────────────────────────────────────────────────────────────────────────────
 

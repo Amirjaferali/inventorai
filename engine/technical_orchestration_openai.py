@@ -33,8 +33,9 @@ a URL, a result, an error, a repr or any output. This module does no logging.
 
 FAILURE
 -------
-Every timeout, transport failure, non-200 status, incomplete or malformed
-response becomes ``ERROR`` with no proposals; ``last_error_kind`` names the
+The default transport makes exactly one request to the approved endpoint and
+follows no redirect. Every timeout, transport failure, non-200 status
+(including any 3xx), incomplete or malformed response becomes ``ERROR`` with no proposals; ``last_error_kind`` names the
 category only. A provider object never escapes this module. A provider refusal
 is an ``ABSTAIN``.
 """
@@ -108,11 +109,31 @@ def build_payload(request, model=MODEL):
     }
 
 
+class _RefuseRedirects(urllib.request.HTTPRedirectHandler):
+    """Refuses every redirect (301 / 302 / 303 / 307 / 308) before any
+    follow-up request is built, so the credential, the body and the synthetic
+    source text can never reach a ``Location`` target — same host or not,
+    HTTPS or not. The redirect then surfaces as an ``HTTPError`` carrying its
+    3xx status, which the adapter reports as ``ERROR``."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def _opener():
+    """A private opener for one call. It is never installed globally, so
+    urllib's module-level state is untouched."""
+    return urllib.request.build_opener(_RefuseRedirects)
+
+
 def _urllib_transport(url, headers, body, timeout):
-    """The default transport: one HTTPS POST. Returns (status, body bytes)."""
+    """The default transport: ONE HTTPS POST to the approved endpoint and no
+    follow-up request of any kind. Returns (status, body bytes)."""
+    if url != ENDPOINT:
+        raise ValueError("the orchestration adapter posts to its approved endpoint only")
     req = urllib.request.Request(url, data=body, headers=headers, method="POST")
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
+        with _opener().open(req, timeout=timeout) as resp:
             return resp.status, resp.read()
     except urllib.error.HTTPError as exc:
         return exc.code, b""
