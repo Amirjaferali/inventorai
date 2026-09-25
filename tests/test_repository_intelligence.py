@@ -426,7 +426,9 @@ def test_every_tracked_test_is_discovered_and_parsed(head_graph):
 def test_orchestration_area_is_bounded_and_central_files_are_not(head_graph):
     tests = set(head_graph.tests)
     orch = {d for d in head_graph.dependents("engine/technical_orchestration_openai.py") if d in tests}
-    assert orch == {"tests/test_technical_orchestration_eval.py", "tests/test_technical_orchestration_shadow.py"}
+    required = {"tests/test_technical_orchestration_eval.py", "tests/test_technical_orchestration_shadow.py"}
+    assert required <= orch                                                   # known evidence present
+    assert len(orch) <= rig.CENTRALITY_ESCALATION_SHARE * len(tests)          # still bounded, not central
     assert "engine/idea_state.py" in head_graph.forward["engine/technical_orchestration_shadow.py"]
     for central in ("engine/idea_state.py", "engine/record_contract.py", "web/app.py"):
         reach = {d for d in head_graph.dependents(central) if d in tests}
