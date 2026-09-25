@@ -13,8 +13,8 @@ OPERATIONALLY OFF
 -----------------
 No product path imports this module (machine-checked). The only caller is the
 developer-run evaluation harness, and even there the adapter refuses to open a
-connection unless it was constructed with ``allow_network=True`` and a
-credential is present. Hosted CI never reaches the network: tests inject a
+connection unless it was constructed with ``allow_network=True`` and its
+credential mode is satisfied. Hosted CI never reaches the network: tests inject a
 fake transport.
 
 REQUEST MODE (D2)
@@ -27,9 +27,14 @@ are sent — no project, account, record, requirement or question identity.
 
 SECRET
 ------
-The credential comes only from the caller or the ``OPENAI_API_KEY`` environment
-variable, travels only in the ``Authorization`` header, and is never placed in
-a URL, a result, an error, a repr or any output. This module does no logging.
+Two credential modes, chosen explicitly and never falling back to each other:
+``env`` (the default) takes the credential only from the caller or the
+``OPENAI_API_KEY`` environment variable and sends it only in the
+``Authorization`` header; ``managed_proxy`` reads no key, accepts no key and
+sends no ``Authorization`` header at all — the managed environment's egress
+proxy injects the credential outside this process, so the secret is never in
+it. Either way the credential is never placed in a URL, a result, an error, a
+repr or any output. This module does no logging.
 
 FAILURE
 -------
@@ -52,12 +57,16 @@ from engine.technical_orchestration_shadow import (
 MODEL = "gpt-6-sol"
 ENDPOINT = "https://api.openai.com/v1/responses"
 CREDENTIAL_ENV = "OPENAI_API_KEY"
+CREDENTIAL_MODE_ENV = "env"
+CREDENTIAL_MODE_MANAGED_PROXY = "managed_proxy"
+CREDENTIAL_MODES = (CREDENTIAL_MODE_ENV, CREDENTIAL_MODE_MANAGED_PROXY)
 TIMEOUT_SECONDS = 90
 MAX_OUTPUT_TOKENS = 4000
 
 # Error categories (never a message, never provider text, never the key).
 ERR_NETWORK_NOT_ALLOWED = "network_not_allowed"
 ERR_MISSING_CREDENTIAL = "missing_credential"
+ERR_CREDENTIAL_MODE = "credential_mode"
 ERR_TRANSPORT = "transport"
 ERR_HTTP_STATUS = "http_status"
 ERR_INCOMPLETE = "incomplete"
@@ -194,9 +203,11 @@ class OpenAIOrchestrationAdapter(OrchestrationAdapter):
     name = "openai:" + MODEL
 
     def __init__(self, *, allow_network=False, api_key=None, transport=None,
-                 model=MODEL, timeout=TIMEOUT_SECONDS):
+                 model=MODEL, timeout=TIMEOUT_SECONDS,
+                 credential_mode=CREDENTIAL_MODE_ENV):
         self._allow_network = allow_network is True
         self._api_key = api_key
+        self._credential_mode = credential_mode
         self._transport = transport or _urllib_transport
         self._model = model
         self._timeout = timeout
@@ -204,8 +215,9 @@ class OpenAIOrchestrationAdapter(OrchestrationAdapter):
         self.last_error_kind = None
 
     def __repr__(self):
-        return "OpenAIOrchestrationAdapter(model=%r, allow_network=%r)" % (
-            self._model, self._allow_network)
+        return ("OpenAIOrchestrationAdapter(model=%r, allow_network=%r, "
+                "credential_mode=%r)" % (self._model, self._allow_network,
+                                         self._credential_mode))
 
     def _fail(self, kind):
         self.last_error_kind = kind
@@ -215,16 +227,23 @@ class OpenAIOrchestrationAdapter(OrchestrationAdapter):
         self.last_error_kind = None
         if not self._allow_network:
             return self._fail(ERR_NETWORK_NOT_ALLOWED)
-        key = self._api_key or os.environ.get(CREDENTIAL_ENV)
-        if not key:
-            return self._fail(ERR_MISSING_CREDENTIAL)
+        if self._credential_mode == CREDENTIAL_MODE_MANAGED_PROXY:
+            if self._api_key is not None:
+                return self._fail(ERR_CREDENTIAL_MODE)
+            headers = {"Content-Type": "application/json"}
+        elif self._credential_mode == CREDENTIAL_MODE_ENV:
+            key = self._api_key or os.environ.get(CREDENTIAL_ENV)
+            if not key:
+                return self._fail(ERR_MISSING_CREDENTIAL)
+            headers = {"Authorization": "Bearer " + key,
+                       "Content-Type": "application/json"}
+        else:
+            return self._fail(ERR_CREDENTIAL_MODE)
         try:
             body = json.dumps(build_payload(request, self._model),
                               ensure_ascii=False).encode("utf-8")
         except Exception:
             return self._fail(ERR_MALFORMED)
-        headers = {"Authorization": "Bearer " + key,
-                   "Content-Type": "application/json"}
         try:
             status, raw = self._transport(ENDPOINT, headers, body, self._timeout)
         except Exception:

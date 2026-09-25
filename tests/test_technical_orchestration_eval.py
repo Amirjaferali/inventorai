@@ -293,7 +293,7 @@ def test_openai_run_uses_only_the_committed_pack_and_never_prints_the_key(
 def test_harness_accepts_no_file_project_session_or_free_input():
     options = {s for a in H.build_parser()._actions for s in a.option_strings}
     assert options == {"-h", "--help", "--provider", "--allow-network", "--case",
-                       "--show-proposals"}
+                       "--show-proposals", "--managed-credential"}
     with pytest.raises(SystemExit):
         H.build_parser().parse_args(["--pack", "x.json"])
     with pytest.raises(SystemExit):
