@@ -33,7 +33,7 @@ from web.app import app, SESSION_STORE
 from engine.record_store import SqliteRecordStore
 from engine.record_contract import ContractError, ProjectRecordContract
 from engine.idea_state import (
-    IdeaState, AssertionRecord, OWNER_STATED, UNVALIDATED,
+    IdeaState, AssertionRecord, OWNER_STATED, LEGACY_UNSPECIFIED, UNVALIDATED,
     DISPOSITION_ANSWERED, DISPOSITION_DEFERRED,
 )
 from engine import session_reconstruction as SR
@@ -205,7 +205,7 @@ def test_only_answered_records_are_replayed(client):
     # evidence nor replayed: only the one answered record survives.
     deferred = AssertionRecord(
         record_id="rec_2", disposition=DISPOSITION_DEFERRED, content="deferred note",
-        gap_context=None, iteration=2, provenance=OWNER_STATED, responsibility="OWNER_INPUT",
+        gap_context=None, iteration=2, provenance=LEGACY_UNSPECIFIED, responsibility=None,
         validation_status=UNVALIDATED)
     store.append_record("ansonly", deferred, idempotency_key="def-1")
     snap = SR.reconstruct_review_state(store, "ansonly")
@@ -730,7 +730,7 @@ def test_perf01_non_answer_records_are_restored_but_never_replayed(monkeypatch):
     store.append_record("p1na", AssertionRecord(
         record_id="rec_9", disposition=DISPOSITION_DEFERRED,
         content="deferred content", gap_context=None, iteration=2,
-        provenance=OWNER_STATED, responsibility="OWNER_INPUT", validation_status=UNVALIDATED),
+        provenance=LEGACY_UNSPECIFIED, responsibility=None, validation_status=UNVALIDATED),
         idempotency_key="idem-p1na-9")
     seen = _count_iterations(monkeypatch)
     session = SR.reconstruct_readonly_state(store, "p1na")

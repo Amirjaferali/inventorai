@@ -34,6 +34,7 @@ from dataclasses import dataclass, field
 from engine.idea_state import (
     AssertionRecord, IdeaState, VALIDATION_STATUSES,
     ASSERTION_PROVENANCE_VALUES, ASSERTION_RESPONSIBILITY_BY_PROVENANCE,
+    ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION,
     DECISION_ACTION_DISPOSITIONS, LEGACY_INTERACTION_DISPOSITIONS,
     DISPOSITION_DECISION_CONTEXT_DECLARED,
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED,
@@ -179,8 +180,9 @@ def assertion_from_dict(data):
     """Reconstruct one AssertionRecord, rejecting unknown or missing fields so
     nothing is silently dropped, and rejecting a ``validation_status`` outside
     the canonical validation vocabulary, a ``provenance`` this carrier cannot
-    hold, and a ``responsibility`` that contradicts that provenance. Every other
-    value is restored verbatim.
+    hold or this record's known disposition cannot carry, and a
+    ``responsibility`` that contradicts that provenance. Every other value is
+    restored verbatim.
 
     The validation axis is checked here because this is the boundary where a
     stored payload becomes a live record: `derive_readiness` reads that axis and
@@ -241,6 +243,16 @@ def assertion_from_dict(data):
             or provenance not in ASSERTION_PROVENANCE_VALUES:
         raise InvalidProvenanceError(
             "provenance is outside the owner-interaction carrier vocabulary")
+    # Candidate 03 — the load side of the mint rule: for a KNOWN disposition the
+    # stored provenance must be one that disposition can truthfully carry
+    # (idea_state owns the matrix). A mismatch is refused, never coerced, and
+    # the value is not echoed. An unknown disposition keeps its prior handling.
+    disposition = data["disposition"]
+    if isinstance(disposition, str) \
+            and disposition in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION \
+            and provenance not in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION[disposition]:
+        raise InvalidProvenanceError(
+            "provenance is not one this record's disposition can carry")
     responsibility = data["responsibility"]
     if (responsibility is not None and not isinstance(responsibility, str)) \
             or responsibility != ASSERTION_RESPONSIBILITY_BY_PROVENANCE[provenance]:

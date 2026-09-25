@@ -202,6 +202,29 @@ _DEFAULT_PROVENANCE_BY_DISPOSITION = {
     DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN: OWNER_STATED,
 }
 
+# Provenance Hardening Step 1 — the provenance a STORED record of each known
+# disposition may carry when it is loaded (engine.record_contract). It is the
+# load-side twin of the mint map above, kept explicit so no disposition can
+# enter without its own load policy. Each set holds exactly the mint value,
+# plus LEGACY_UNSPECIFIED for answered / provisional_assumption ONLY: those
+# owner-asserting records were persisted before provenance was stamped, so
+# LEGACY is their truthful historical source. A non-asserting disposition can
+# never have been OWNER_STATED, and risk / decision actions were OWNER_STATED
+# from their introduction. Load compatibility grants nothing to the mint seam.
+# Distinct from LEGACY_INTERACTION_DISPOSITIONS (W2-A decision_context_root).
+ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION = {
+    DISPOSITION_ANSWERED:               frozenset({OWNER_STATED, LEGACY_UNSPECIFIED}),
+    DISPOSITION_PROVISIONAL_ASSUMPTION: frozenset({OWNER_STATED, LEGACY_UNSPECIFIED}),
+    DISPOSITION_UNKNOWN:                frozenset({LEGACY_UNSPECIFIED}),
+    DISPOSITION_DEFERRED:               frozenset({LEGACY_UNSPECIFIED}),
+    DISPOSITION_SPECIALIST_REQUESTED:   frozenset({LEGACY_UNSPECIFIED}),
+    DISPOSITION_EVIDENCE_REQUESTED:     frozenset({LEGACY_UNSPECIFIED}),
+    DISPOSITION_RISK_ACCEPTED:          frozenset({OWNER_STATED}),
+    DISPOSITION_DECISION_CONTEXT_DECLARED:      frozenset({OWNER_STATED}),
+    DISPOSITION_DECISION_ALTERNATIVE_DECLARED:  frozenset({OWNER_STATED}),
+    DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN: frozenset({OWNER_STATED}),
+}
+
 # Validation levels treated as "validated" (i.e. not owner-unvalidated) by the
 # pure derived-readiness recomputation. UNVALIDATED is deliberately excluded.
 VALIDATED_STATUSES = frozenset({

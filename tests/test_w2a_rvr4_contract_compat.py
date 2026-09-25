@@ -66,7 +66,12 @@ def test_compat1_legacy_payload_missing_only_new_field_loads_none():
     for disposition in ("answered", "unknown", "deferred",
                         "provisional_assumption", "specialist_requested",
                         "evidence_requested", "risk_accepted"):
-        p = _legacy_payload(disposition=disposition)
+        # Provenance is only made legal for the disposition (a non-asserting
+        # record carries LEGACY_UNSPECIFIED); this test owns the missing field.
+        source = {} if disposition in ("answered", "provisional_assumption",
+                                       "risk_accepted") \
+            else {"provenance": "LEGACY_UNSPECIFIED", "responsibility": None}
+        p = _legacy_payload(disposition=disposition, **source)
         assert "decision_context_root" not in p
         r = assertion_from_dict(p)
         assert r.decision_context_root is None

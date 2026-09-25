@@ -20,11 +20,16 @@ import pathlib
 import pytest
 
 from engine import commercial_evidence, idea_state
-from engine.decision_composition import declare_alternative, declare_decision_context
+from engine.decision_composition import (
+    declare_alternative, declare_decision_context, withdraw_alternative,
+)
 from engine.derived_readiness import derive_readiness
 from engine.idea_state import (
+    ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION,
     ASSERTION_PROVENANCE_VALUES, ASSERTION_RESPONSIBILITY_BY_PROVENANCE,
-    DECISION_ACTION_DISPOSITIONS, DISPOSITION_ANSWERED, DISPOSITION_DEFERRED,
+    DECISION_ACTION_DISPOSITIONS, DISPOSITION_DECISION_ALTERNATIVE_DECLARED,
+    DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN,
+    DISPOSITION_DECISION_CONTEXT_DECLARED, DISPOSITION_ANSWERED, DISPOSITION_DEFERRED,
     DISPOSITION_EVIDENCE_REQUESTED, DISPOSITION_PROVISIONAL_ASSUMPTION,
     DISPOSITION_RISK_ACCEPTED, DISPOSITION_SPECIALIST_REQUESTED,
     DISPOSITION_UNKNOWN, EMPIRICAL_EVIDENCE, EMPIRICALLY_DEMONSTRATED,
@@ -37,7 +42,8 @@ from engine.idea_state import (
 )
 from engine.record_contract import (
     InvalidProvenanceError, InvalidResponsibilityError,
-    InvalidValidationStatusError, assertion_from_dict, assertion_to_dict,
+    InvalidValidationStatusError, ProjectRecordContract, assertion_from_dict,
+    assertion_to_dict,
 )
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -328,3 +334,183 @@ def test_readiness_for_legal_records_is_unchanged():
                                gap_context=MECHANISM_COMPLETENESS, iteration=1)
     rec.validation_status = INDEPENDENTLY_VERIFIED
     assert derive_readiness(t).is_verified(MECHANISM_COMPLETENESS) is True
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 18 — Candidate 03: the load boundary enforces the mint's source/disposition
+# rule. A stored record may carry only a provenance its disposition can
+# truthfully hold; answered / provisional_assumption additionally keep their
+# pre-provenance LEGACY history. Refused, never coerced, never echoed.
+# ─────────────────────────────────────────────────────────────────────────────
+
+NON_ASSERTING = (DISPOSITION_UNKNOWN, DISPOSITION_DEFERRED,
+                 DISPOSITION_SPECIALIST_REQUESTED, DISPOSITION_EVIDENCE_REQUESTED)
+HISTORICAL_LEGACY = (DISPOSITION_ANSWERED, DISPOSITION_PROVISIONAL_ASSUMPTION)
+OWNER_ONLY = (DISPOSITION_RISK_ACCEPTED,) + tuple(sorted(DECISION_ACTION_DISPOSITIONS))
+LOAD_MATRIX = {
+    DISPOSITION_ANSWERED:               {OWNER_STATED, LEGACY_UNSPECIFIED},
+    DISPOSITION_PROVISIONAL_ASSUMPTION: {OWNER_STATED, LEGACY_UNSPECIFIED},
+    DISPOSITION_UNKNOWN:                {LEGACY_UNSPECIFIED},
+    DISPOSITION_DEFERRED:               {LEGACY_UNSPECIFIED},
+    DISPOSITION_SPECIALIST_REQUESTED:   {LEGACY_UNSPECIFIED},
+    DISPOSITION_EVIDENCE_REQUESTED:     {LEGACY_UNSPECIFIED},
+    DISPOSITION_RISK_ACCEPTED:          {OWNER_STATED},
+    DISPOSITION_DECISION_CONTEXT_DECLARED:      {OWNER_STATED},
+    DISPOSITION_DECISION_ALTERNATIVE_DECLARED:  {OWNER_STATED},
+    DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN: {OWNER_STATED},
+}
+
+
+def _source(provenance):
+    return {"provenance": provenance,
+            "responsibility": ASSERTION_RESPONSIBILITY_BY_PROVENANCE[provenance]}
+
+
+def _decision_records():
+    """One structurally valid record of each decision action, minted live."""
+    s = IdeaState(idea_id="ph1-dec")
+    ctx = declare_decision_context(s, "which latch?", iteration=1)
+    alt = declare_alternative(s, "toggle", ctx.record_id, iteration=1)
+    wdr = withdraw_alternative(s, alt.record_id, reason="too stiff", iteration=1)
+    return s, {r.disposition: r for r in (ctx, alt, wdr)}
+
+
+def _payload_for(disposition, provenance):
+    """A stored payload of `disposition` carrying `provenance` (and the
+    responsibility that provenance requires), otherwise a legal live record."""
+    if disposition in DECISION_ACTION_DISPOSITIONS:
+        _s, recs = _decision_records()
+        data = assertion_to_dict(recs[disposition])
+    else:
+        _s, rec = _mint(disposition)
+        data = assertion_to_dict(rec)
+    data.update(_source(provenance))
+    return data
+
+
+def test_load_matrix_covers_every_known_disposition_exactly():
+    # A future disposition cannot enter without its own explicit load policy.
+    assert set(ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION) == set(INTERACTION_DISPOSITIONS)
+    assert {d: set(v) for d, v in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION.items()} \
+        == LOAD_MATRIX
+    for allowed in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION.values():
+        assert isinstance(allowed, frozenset)
+        assert allowed <= ASSERTION_PROVENANCE_VALUES       # no new provenance value
+    # Distinct from the W2-A decision_context_root compatibility set.
+    assert ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION is not idea_state.LEGACY_INTERACTION_DISPOSITIONS
+
+
+def test_load_matrix_admits_what_the_mint_dictates_and_widens_nothing():
+    for disposition, allowed in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION.items():
+        dictated = idea_state._DEFAULT_PROVENANCE_BY_DISPOSITION.get(
+            disposition, LEGACY_UNSPECIFIED)
+        assert dictated in allowed
+        extra = allowed - {dictated}
+        # the ONLY load-only allowance is pre-provenance answered/provisional history
+        assert extra == ({LEGACY_UNSPECIFIED} if disposition in HISTORICAL_LEGACY else set())
+
+
+@pytest.mark.parametrize("disposition", NON_ASSERTING)
+def test_non_asserting_record_stored_as_owner_stated_is_refused(disposition):
+    with pytest.raises(InvalidProvenanceError) as err:
+        assertion_from_dict(_payload_for(disposition, OWNER_STATED))
+    assert OWNER_STATED not in str(err.value)             # stored value never echoed
+
+
+@pytest.mark.parametrize("disposition", OWNER_ONLY)
+def test_owner_only_record_stored_as_legacy_is_refused(disposition):
+    with pytest.raises(InvalidProvenanceError) as err:
+        assertion_from_dict(_payload_for(disposition, LEGACY_UNSPECIFIED))
+    assert LEGACY_UNSPECIFIED not in str(err.value)
+
+
+@pytest.mark.parametrize("disposition,provenance", sorted(
+    (d, p) for d, allowed in LOAD_MATRIX.items() for p in allowed))
+def test_every_legal_source_disposition_pair_loads_verbatim(disposition, provenance):
+    data = _payload_for(disposition, provenance)
+    back = assertion_from_dict(dict(data))
+    assert assertion_to_dict(back) == data                 # verbatim round trip
+    assert back.disposition == disposition and back.provenance == provenance
+    assert back.responsibility == ASSERTION_RESPONSIBILITY_BY_PROVENANCE[provenance]
+
+
+def test_decision_actions_load_through_the_full_contract_envelope():
+    s, _recs = _decision_records()
+    data = ProjectRecordContract.from_state(s).to_dict()
+    restored = ProjectRecordContract.from_dict(data)
+    assert restored.to_dict() == data
+    assert {r.provenance for r in restored.assertions} == {OWNER_STATED}
+
+
+@pytest.mark.parametrize("disposition", sorted(DECISION_ACTION_DISPOSITIONS))
+def test_legacy_decision_action_is_refused_inside_a_valid_envelope(disposition):
+    # W2-A structure is intact; only the one record's source is falsified.
+    s, _recs = _decision_records()
+    data = ProjectRecordContract.from_state(s).to_dict()
+    for p in data["assertions"]:
+        if p["disposition"] == disposition:
+            p.update(_source(LEGACY_UNSPECIFIED))
+    restored = None
+    with pytest.raises(InvalidProvenanceError):
+        restored = ProjectRecordContract.from_dict(data)
+    assert restored is None                                # no live record returned
+
+
+def test_rejected_non_asserting_payload_never_becomes_a_live_record():
+    s = IdeaState(idea_id="ph1-env")
+    s.record_interaction(action=DISPOSITION_ANSWERED, content="a",
+                         gap_context=MECHANISM_COMPLETENESS, iteration=1)
+    s.record_interaction(action=DISPOSITION_DEFERRED, content="later",
+                         gap_context=MECHANISM_COMPLETENESS, iteration=2)
+    data = ProjectRecordContract.from_state(s).to_dict()
+    assert ProjectRecordContract.from_dict(data).to_dict() == data   # legal: loads
+    data["assertions"][1].update(_source(OWNER_STATED))              # impossible state
+    restored = None
+    with pytest.raises(InvalidProvenanceError):
+        restored = ProjectRecordContract.from_dict(data)
+    assert restored is None
+
+
+@pytest.mark.parametrize("disposition", NON_ASSERTING)
+def test_responsibility_is_still_checked_once_the_source_is_legal(disposition):
+    data = _payload_for(disposition, LEGACY_UNSPECIFIED)
+    for bad in (OWNER_INPUT, SYSTEM_ANALYSIS, SPECIALIST_INPUT, UNDETERMINED):
+        with pytest.raises(InvalidResponsibilityError):
+            assertion_from_dict(dict(data, responsibility=bad))
+    # an illegal source is refused as a SOURCE even with a matching responsibility
+    with pytest.raises(InvalidProvenanceError):
+        assertion_from_dict(dict(data, provenance=OWNER_STATED,
+                                 responsibility=OWNER_INPUT))
+
+
+@pytest.mark.parametrize("disposition", sorted(LOAD_MATRIX))
+def test_validation_axis_is_untouched_by_the_disposition_rule(disposition):
+    for provenance in LOAD_MATRIX[disposition]:
+        for status in VALIDATION_STATUSES:
+            back = assertion_from_dict(dict(_payload_for(disposition, provenance),
+                                            validation_status=status))
+            assert (back.provenance, back.validation_status) == (provenance, status)
+        with pytest.raises(InvalidValidationStatusError):
+            assertion_from_dict(dict(_payload_for(disposition, provenance),
+                                     validation_status="VERIFIED"))
+    # a validated status never makes an illegal source legal
+    for provenance in set(ASSERTION_PROVENANCE_VALUES) - LOAD_MATRIX[disposition]:
+        for status in VALIDATED_STATUSES:
+            with pytest.raises(InvalidProvenanceError):
+                assertion_from_dict(dict(_payload_for(disposition, provenance),
+                                         validation_status=status))
+
+
+def test_mint_behaviour_is_unchanged_by_the_load_rule():
+    for disposition in sorted(INTERACTION_DISPOSITIONS - DECISION_ACTION_DISPOSITIONS):
+        _s, rec = _mint(disposition)
+        dictated = idea_state._DEFAULT_PROVENANCE_BY_DISPOSITION.get(
+            disposition, LEGACY_UNSPECIFIED)
+        assert (rec.provenance, rec.validation_status, rec.responsibility) == (
+            dictated, UNVALIDATED, ASSERTION_RESPONSIBILITY_BY_PROVENANCE[dictated])
+        # the historical LEGACY allowance is load-only: the mint still refuses it
+        if dictated == OWNER_STATED:
+            with pytest.raises(ValueError):
+                _mint(disposition, provenance=LEGACY_UNSPECIFIED)
+    _s, recs = _decision_records()
+    assert {r.provenance for r in recs.values()} == {OWNER_STATED}
