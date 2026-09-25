@@ -70,6 +70,8 @@ RIG_SELF_PATHS = (
     "scripts/verify_repository_intelligence_replay.py",
     "tests/test_repository_intelligence.py",
     "tests/fixtures/repository_intelligence_replay_v1.json",
+    "scripts/repository_intelligence_shadow.py",
+    "tests/test_repository_intelligence_shadow.py",
 )
 DECLARED_STATE_CONTRACT = (
     "engine/idea_state.py", "engine/record_contract.py", "engine/record_store.py",
