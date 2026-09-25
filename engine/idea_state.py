@@ -474,9 +474,11 @@ class IdeaState:
         if action not in INTERACTION_DISPOSITIONS:
             raise ValueError(f"unknown interaction action: {action!r}")
         if action in DECISION_ACTION_DISPOSITIONS:
-            # Frozen provenance rule (§2): the generic "explicit provenance
-            # always wins" override cannot stamp a decision action as
-            # legacy/unspecified or platform-derived.
+            # Frozen provenance rule (§2), preserved: provenance is dictated
+            # by the disposition, and an explicit provenance argument may only
+            # restate that dictated value — it can never override or
+            # reclassify the source. A decision action is always OWNER_STATED,
+            # so any other explicit value is refused here with its own message.
             if provenance is not None and provenance != OWNER_STATED:
                 raise ValueError(
                     "decision-action provenance must be OWNER_STATED, got "
