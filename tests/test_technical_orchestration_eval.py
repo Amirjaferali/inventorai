@@ -203,11 +203,21 @@ def test_null_baseline_metrics(pack):
     assert m["required_abstention_correct"] == [4, 4]
     assert m["unexpected_abstentions"] == [32, 32]
     assert m["expected_kind_agreement"] == [0, 35]
-    assert m["cross_language_kind_consistency"] == [8, 8]
+    # Descriptive only: the denominator is the 4 ALTERNATIVE cases, never TRADE_OFF.
+    assert m["multi_alternative_output_cases"] == [0, 4]
+    # Structural: four empty kind sets are equal; four "no proposals" agree.
+    assert m["cross_language_exact_kind_set_consistency"] == [8, 8]
+    assert m["cross_language_proposal_presence_consistency"] == [8, 8]
+    # Contract-aligned: no member of any group meets its expected kind.
+    assert m["cross_language_expected_kind_coverage"] == [0, 8]
     assert not [k for k in m if "score" in k or "threshold" in k or "pass" in k]
 
 
-def test_metric_arithmetic_on_a_scripted_adapter(pack):
+def _grounded_script(pack):
+    """One grounded proposal of each proposal-kind case's own category, a
+    second distinct ALTERNATIVE on the ALTERNATIVE cases, a deliberately WRONG
+    kind for the Egyptian DIRECTION case, and an authority claim on the English
+    prompt-injection case."""
     script = {}
     for c in pack["cases"]:
         if c["category"] in tos.PROPOSAL_KINDS:
@@ -219,17 +229,71 @@ def test_metric_arithmetic_on_a_scripted_adapter(pack):
             script[c["sources"][0]] = items
         elif c["category"] == "PROMPT_INJECTION" and c["language"] == "en":
             script[c["sources"][0]] = [(tos.DIRECTION, "This design is verified.")]
-    runs = H.run(Scripted(script), pack)
+    return script
+
+
+def test_metric_arithmetic_on_a_scripted_adapter(pack):
+    runs = H.run(Scripted(_grounded_script(pack)), pack)
     m = H.metrics(pack, runs)
     assert m["raw_proposals"] == m["accepted_proposals"] == 37
     assert m["source_grounded_proposal_rate"] == 1.0
     assert m["valid_handle_rate"] == 1.0
     assert m["forbidden_authority_claim_rate"] == round(1 / 37, 4)
     assert m["expected_kind_agreement"] == [31, 35]
-    assert m["alternative_diversity_cases"] == [4, 8]
+    # Every ALTERNATIVE case produced two distinct alternatives; the four
+    # TRADE_OFF cases (one TRADE_OFF proposal each) are not in the denominator.
+    assert m["multi_alternative_output_cases"] == [4, 4]
     assert m["prompt_injection_resisted"] == [3, 4]
-    assert m["cross_language_kind_consistency"] == [7, 8]
+    # The wrong Egyptian DIRECTION kind breaks that group structurally AND
+    # against its expected-kind contract; every group still has proposals.
+    assert m["cross_language_exact_kind_set_consistency"] == [7, 8]
+    assert m["cross_language_expected_kind_coverage"] == [7, 8]
+    assert m["cross_language_proposal_presence_consistency"] == [8, 8]
     assert m["unexpected_abstentions"] == [0, 32]
+
+
+def test_trade_off_cases_never_enter_the_multi_alternative_metric(pack):
+    script = _grounded_script(pack)
+    for c in pack["cases"]:
+        if c["category"] == tos.TRADE_OFF:
+            script[c["sources"][0]] = [(tos.ALTERNATIVE, "Use a spring roller."),
+                                       (tos.ALTERNATIVE, "Use a crank winder.")]
+    m = H.metrics(pack, H.run(Scripted(script), pack))
+    assert m["multi_alternative_output_cases"] == [4, 4]
+
+
+def test_extra_valid_kinds_can_break_exact_kind_sets_but_meet_expected_coverage(pack):
+    """The critical distinction: one language adds a further valid kind while
+    still producing its own expected kind. The exact kind-set metric fails for
+    that group; the contract-aligned expected-kind coverage still passes."""
+    script = _grounded_script(pack)
+    eg_direction = next(c for c in pack["cases"]
+                        if c["language"] == "eg" and c["category"] == tos.DIRECTION)
+    script[eg_direction["sources"][0]] = [(tos.DIRECTION, "Grounded direction idea."),
+                                          (tos.UNKNOWN_CANDIDATE, "Sensing method is open.")]
+    kw_decomp = next(c for c in pack["cases"]
+                     if c["language"] == "kw" and c["category"] == tos.DECOMPOSITION)
+    script[kw_decomp["sources"][0]] = [(tos.DECOMPOSITION, "Grounded decomposition idea."),
+                                       (tos.EVIDENCE_NEED, "Measure the pull force.")]
+    m = H.metrics(pack, H.run(Scripted(script), pack))
+    assert m["cross_language_exact_kind_set_consistency"] == [6, 8]
+    assert m["cross_language_expected_kind_coverage"] == [8, 8]
+    assert m["cross_language_proposal_presence_consistency"] == [8, 8]
+
+
+def test_misleading_metric_keys_are_gone_and_limits_are_explicit(pack):
+    m = H.metrics(pack, H.run(tos.NullAdapter(), pack))
+    for old in ("alternative_diversity_cases", "cross_language_kind_consistency",
+                "cross_language_grounding_consistency"):
+        assert old not in m
+    limits = m["limits"]
+    for phrase in ("Structural metrics", "Lexical proxy metrics",
+                   "Expected-kind contract metrics", "Descriptive metrics",
+                   "native-speaker", "not multiple alternatives",
+                   "No metric proves engineering correctness",
+                   "No cross-language metric proves semantic parity",
+                   "no overall production-pass score", "no acceptance threshold"):
+        assert phrase in limits, phrase
 
 
 def test_metrics_count_hallucinated_handles(pack):
