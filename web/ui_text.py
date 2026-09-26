@@ -1863,6 +1863,52 @@ UI_STRINGS = {
         "en": "Save note",
         "ar": "حفظ الملاحظة",
     },
+    # Slice 1 journey safety — no question is served and a routed need blocks
+    # the next stage. Truthful: nothing is resolved, assumed or accepted here.
+    "UI_NR_RECOVERY_HEADING": {
+        "en": "No question is waiting for you right now",
+        "ar": "لا يوجد سؤال بانتظارك الآن",
+    },
+    "UI_NR_RECOVERY_TEXT": {
+        "en": ("A point above still needs specialist input, so the next stage "
+               "stays locked. Your earlier answer on it did not describe how it "
+               "would work, so accepting it as a known risk is not available "
+               "yet. You do not have to invent technical details."),
+        "ar": ("ما زالت نقطة أعلاه تحتاج إلى مدخلات مختص، لذلك تبقى المرحلة "
+               "التالية مغلقة. إجابتك السابقة عنها لم تصف كيف سيعمل ذلك، لذلك "
+               "لا يتاح قبولها كمخاطرة معروفة بعد. لست مضطرًا لاختلاق تفاصيل تقنية."),
+    },
+    "UI_NR_RECOVERY_CORRECT": {
+        "en": ("If you can now describe it in your own words, correct your "
+               "earlier answer. After that you may choose to accept this point "
+               "as a known, unresolved risk."),
+        "ar": ("إذا كنت تستطيع الآن وصفها بكلماتك، صحّح إجابتك السابقة. بعد ذلك "
+               "يمكنك أن تختار قبول هذه النقطة كمخاطرة معروفة غير محسومة."),
+    },
+    "UI_NR_RECOVERY_LINK": {
+        "en": "Correct your earlier answer",
+        "ar": "تصحيح إجابتك السابقة",
+    },
+    "UI_NR_RECOVERY_WAIT": {
+        "en": ("Otherwise this point stays open until specialist input is "
+               "recorded. You can still add your own note or review the "
+               "current handoff."),
+        "ar": ("وإلا تبقى هذه النقطة مفتوحة إلى أن تُسجَّل مدخلات مختص. ما زال "
+               "بإمكانك إضافة ملاحظتك أو مراجعة ملف التسليم الحالي."),
+    },
+    "UI_NR_RECOVERY_JOURNEY_NOTE": {
+        "en": ("No question is waiting. One point still needs specialist input "
+               "before the next stage."),
+        "ar": "لا يوجد سؤال بانتظارك. ما زالت نقطة تحتاج إلى مدخلات مختص قبل المرحلة التالية.",
+    },
+    "UI_NR_RECOVERY_CTA": {
+        "en": "See your options",
+        "ar": "عرض خياراتك",
+    },
+    "UI_NO_QUESTION_NOTE": {
+        "en": "No question is waiting for you right now.",
+        "ar": "لا يوجد سؤال بانتظارك الآن.",
+    },
     "UI_UQTR_CTA": {
         "en": "Review what is still needed",
         "ar": "مراجعة ما لا يزال مطلوبًا",

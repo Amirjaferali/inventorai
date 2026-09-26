@@ -188,6 +188,9 @@ body{overflow-wrap:anywhere}
   {% elif (state.maturity_level < 2 or open_gaps) and question %}
     <p class="journey-note">{{ t('UI_A1_ANSWER_NOTE') }}</p>
     <a class="journey-primary" data-primary-action href="#response">{{ t('UI_A1_ANSWER_NEXT') }}</a>
+  {% elif routed_recovery %}
+    <p class="journey-note">{{ t('UI_NR_RECOVERY_JOURNEY_NOTE') }}</p>
+    <a class="journey-primary" data-primary-action href="#routed-recovery">{{ t('UI_NR_RECOVERY_CTA') }}</a>
   {% elif criticality_step %}
     <a class="journey-primary" data-primary-action href="#criticality-review">{{ t('UI_A1_REVIEW_REQUIREMENT') }}</a>
   {% else %}
@@ -455,7 +458,7 @@ body{overflow-wrap:anywhere}
    English/LTR whenever English is what is served, including the deterministic
    English fallback. Non-question chrome continues to follow the UI language
    under the unchanged part of D-P6-18. #}
-<p class="question" lang="{{ question_lang }}" dir="{{ question_dir }}">{{ question }}</p>
+{% if question %}<p class="question" lang="{{ question_lang }}" dir="{{ question_dir }}">{{ question }}</p>{% endif %}
 {# T2-B' (OD-PDVG-12): one short, fixed explanation of why THIS question is
    asked, selected by the exact committed identity the render edge resolved and
    rendered adjacent to the question itself. Absent whenever no eligible
@@ -563,6 +566,10 @@ body{overflow-wrap:anywhere}
 </div>
 {% endfor %}
 {% endif %}
+{#- Slice 1 journey safety: the answer form exists ONLY for a served question.
+    With none, the truthful outstanding / recovery state renders instead (the
+    server also refuses any answer post without a current question). -#}
+{% if question %}
 <form id="answer-form" method="POST" action="/session/{{ sid }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   {# P4-1b-2a: server-issued idempotency token required on this answered-producing form. #}
@@ -591,6 +598,19 @@ body{overflow-wrap:anywhere}
   </fieldset>
   <button type="submit">{{ t('UI_B_SESSION_034') }}</button>
 </form>
+{% elif routed_recovery %}
+<div class="routed-recovery gap-guidance" id="routed-recovery" data-routed-recovery-gap="{{ routed_recovery.gap_type }}" style="margin-bottom:14px">
+  <div class="gap-guidance-heading">{{ t('UI_NR_RECOVERY_HEADING') }}</div>
+  <div class="gap-guidance-text">{{ t('UI_NR_RECOVERY_TEXT') }}</div>
+  {% if routed_recovery.record_id %}
+  <div class="gap-guidance-text" style="font-size:13px;color:#555">{{ t('UI_NR_RECOVERY_CORRECT') }}</div>
+  <a class="routed-recovery-correct" href="#correct-answer">{{ t('UI_NR_RECOVERY_LINK') }}</a>
+  {% endif %}
+  <div class="gap-guidance-text" style="font-size:13px;color:#555;margin-top:6px">{{ t('UI_NR_RECOVERY_WAIT') }}</div>
+</div>
+{% else %}
+<p class="no-question journey-note">{{ t('UI_NO_QUESTION_NOTE') }}</p>
+{% endif %}
 {#- UQTR-01 C02: question-specific answer-help panels, each defined ONCE. When
     the question is suppressed they render ONLY inside the voluntary revisit
     (never as automatic pressure outside it); otherwise each renders at its
@@ -855,7 +875,7 @@ body{overflow-wrap:anywhere}
    affordance appears only on a live (or explicitly resumed) session. #}
 {% set active_answers = state.assertions | default([]) | selectattr('disposition', 'equalto', 'answered') | selectattr('superseded_by', 'none') | list %}
 {% if active_answers and state.domain %}
-<details class="correct-answer" style="margin-top:14px;border:1px solid #c9d6e8;border-radius:4px;background:#f4f8fd;padding:10px 14px">
+<details class="correct-answer" id="correct-answer"{% if routed_recovery and routed_recovery.record_id %} open{% endif %} style="margin-top:14px;border:1px solid #c9d6e8;border-radius:4px;background:#f4f8fd;padding:10px 14px">
   <summary style="cursor:pointer;font-size:13px;color:#2c5a8c;font-weight:bold">{{ t('UI_RVR5_CORRECT_HEADING') }}</summary>
   <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_RVR5_CORRECT_EXPLAIN') }}</p>
   <form method="POST" action="/session/{{ sid }}/correct">
@@ -864,7 +884,7 @@ body{overflow-wrap:anywhere}
     <label for="correct-target" style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_RVR5_CORRECT_SELECT') }}</label>
     <select id="correct-target" name="supersedes_record_id" required aria-controls="correction-preview" aria-describedby="correction-preview-help" style="max-width:100%;margin-bottom:8px">
       {% for rec in active_answers %}
-      <option value="{{ rec.record_id }}">{{ rec.record_id }} · {{ rec.gap_context | gap_display }} · {{ rec.content[:70] }}{% if rec.content|length > 70 %}…{% endif %}</option>
+      <option value="{{ rec.record_id }}"{% if routed_recovery and routed_recovery.record_id == rec.record_id %} selected{% endif %}>{{ rec.record_id }} · {{ rec.gap_context | gap_display }} · {{ rec.content[:70] }}{% if rec.content|length > 70 %}…{% endif %}</option>
       {% endfor %}
     </select>
     <p id="correction-preview-help" class="journey-note">{{ t('UI_CORRECTION_PREVIEW_HELP') }}</p>

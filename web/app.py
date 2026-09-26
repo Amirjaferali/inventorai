@@ -2435,6 +2435,11 @@ def _answer_target_from(qctx, state, criticality_correction):
     complete = not (state.maturity_level < 2 or state.get_open_gaps())
     if complete and criticality_correction:
         return _AnswerTarget(UQTR_TARGET_CRITICALITY_CORRECTION, None, None, ecv)
+    # Slice 1 journey safety: no served question, no QUESTION context. The page
+    # renders no answer form then, and the post re-resolution below fails
+    # closed, so no answer can ever be minted against a null question/gap.
+    if qctx.question is None:
+        return None
     return _AnswerTarget(UQTR_TARGET_QUESTION, qctx.identity, qctx.gap_type, ecv)
 
 
@@ -2501,8 +2506,31 @@ def _routed_needs_context(sid, entry, state, lang):
     return items
 
 
+def _routed_recovery_context(state, question):
+    """Recovery for the one routed dead end: no question is served, the journey
+    is below Level 2, and a routed gap whose Owner questioning is exhausted is
+    not yet eligible for the existing OD-R1 exit because no active substantive
+    attempt exists. Returns ``{"gap_type", "record_id"}`` naming that gap and
+    its latest active answered record (the existing correction path's target),
+    or None. Pure; it changes no progression, gate or routing semantics."""
+    if question is not None or state.maturity_level >= 2:
+        return None
+    for gap_type in _routed_risk_targets(state):
+        if substantive_attempt_recorded(state, gap_type):
+            continue
+        attempts = [r for r in state.assertions
+                    if r.disposition == "answered" and r.gap_context == gap_type
+                    and r.superseded_by is None]
+        return {"gap_type": gap_type,
+                "record_id": attempts[-1].record_id if attempts else None}
+    return None
+
+
 def _issue_answer_target(sid, answer_token, target):
-    """The signed target carried by the form rendered with ``answer_token``."""
+    """The signed target carried by the form rendered with ``answer_token``.
+    Empty when there is no current QUESTION context (no form renders then)."""
+    if target is None:
+        return ""
     payload = json.dumps(
         {"k": target.kind, "q": target.identity, "g": target.gap,
          "v": target.ecv},
@@ -5288,6 +5316,9 @@ def show_session(sid):
             sid, _answer_token_for(sid, entry),
             _answer_target_from(_qctx, state,
                                 bool(entry.get("criticality_correction")))),
+        # Slice 1 journey safety: the truthful recovery for a journey that has
+        # no served question while a routed need blocks the next stage.
+        routed_recovery=_routed_recovery_context(state, question),
         # Workstream 4: read-only render context for the completion-stage
         # structured criticality step (None while the journey is in progress
         # or when no contextually supported unconfirmed requirement remains).
