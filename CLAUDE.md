@@ -2,15 +2,22 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER DEPENDENCY.**
-Stage 20 / CAP-08 is ENTERED / PARTIAL through this one bounded slice (no new Master Roadmap
-Stage; CAP-08 and Stage 20 are not complete): the inventor explicitly declares that one or more of
-their own active recorded answers depend on ONE of their own active provisional assumptions,
-recorded as one OWNER_STATED, UNVALIDATED `assumption_dependency_declared` record per directed
-assumption → answer edge on the existing ledger, with the dependency a deterministic derived
-projection — domain-neutral, no automatic or AI dependency inference, no validation, no
-evidence-needed metadata and no readiness, gap, maturity, progression, scoring, NeedRouting or
-validation-award authority. CAP-10 Slice 1 — Stage 21 / CAP-10 ENTERED / PARTIAL through the
+**ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + PROJECT CONTEXT PANEL.**
+Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through this one bounded slice (no new Master
+Roadmap Stage; CAP-05, CAP-07 and Stage 22 are not complete): a pure, read-only decision-trace
+projection over the existing canonical ledger shows each decision's complete alternative history
+(active and withdrawn alternatives preserved, withdrawal reasons verbatim) with the existing
+comparison / readiness semantics reused unchanged, beside a clearly separated project-context
+panel that is explicitly NOT LINKED to any specific decision — no inferred decision relationship,
+no new persistence, schema, writer or route, no CAP-11 evidence-strength semantics, no confidence
+score, no best or recommended alternative and no AI / model / provider call; domain-neutral, with
+CAP-08 / CAP-10 ownership unchanged. The slice is implemented and passed independent UX /
+behaviour review; its PR / merge is pending. CAP-08 Slice 1 — Stage 20 / CAP-08 ENTERED / PARTIAL
+through the Owner-declared assumption → answer dependency (one OWNER_STATED, UNVALIDATED
+`assumption_dependency_declared` record per directed assumption → answer edge; domain-neutral, no
+automatic or AI dependency inference, no validation, no evidence-needed metadata and no readiness,
+gap, maturity, progression, scoring, NeedRouting or validation-award authority) — is DELIVERED
+(PR #704, merge `56eea683138a7880e836c7d577faf3f289beb22b`). CAP-10 Slice 1 — Stage 21 / CAP-10 ENTERED / PARTIAL through the
 Owner-declared contradiction between two recorded answers (one OWNER_STATED, UNVALIDATED
 `contradiction_declared` record; no automatic or AI detection, no validation, no winner, no
 resolution, no SYSTEM_INFERRED contradiction writer) — is DELIVERED (PR #703, merge
@@ -50,10 +57,11 @@ history, and is the file to read for authority — this paragraph routes, it doe
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized beyond the
-bounded Stage-20 CAP-08 Slice 1 (Stage 21 stays ENTERED / PARTIAL through the delivered CAP-10
-Slice 1 only), and deployment, public release and paid activation remain NOT AUTHORIZED.
+bounded Stage-22 CAP-05 + CAP-07 Slice 1 (Stages 20 and 21 stay ENTERED / PARTIAL through the
+delivered CAP-08 and CAP-10 Slice 1 only), and deployment, public release and paid activation
+remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*

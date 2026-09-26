@@ -838,6 +838,21 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         <div style="font-size:12px;color:#777;margin:2px 0 0 12px">{{ t('UI_G3_NOT_COMPARABLE') }}</div>
           {% endif %}
         {% endif %}
+        {#- Stage 22 / CAP-05 Slice 1: the same read-only chain trace as the
+            session, always expanded here so print/PDF carries it. -#}
+        {% set dt_trace = decision_trace.get(d.context_root, {}).get(a.root) if (decision_trace is defined and decision_trace) else None %}
+        {% if dt_trace %}
+        <div class="dt-history" data-dt-root="{{ a.root }}" style="font-size:12px;margin:2px 0 0 12px">
+          <div style="color:#5a2c8c">{{ t('UI_DT_HISTORY_SUMMARY') }} ({{ dt_trace.events | length }})</div>
+          <ol class="dt-events" style="margin:2px 0 4px 0;padding-inline-start:18px">
+            {% for e in dt_trace.events %}
+            <li class="dt-event dt-{{ e.kind }}" data-dt-record="{{ e.record_id }}"><bdi>{{ e.record_id }}</bdi> · {{ t('UI_DT_EVENT_' ~ e.kind|upper) }}{% if e.kind == 'withdrawn' %}{% if e.content %} — {{ t('UI_G3_REASON_LABEL') }}: <span class="dt-text" dir="auto">{{ e.content }}</span>{% else %} — <span class="dt-no-reason">{{ t('UI_G3_REASON_NOT_RECORDED') }}</span>{% endif %}{% else %}: <span class="dt-text" dir="auto">{{ e.content }}</span>{% endif %}</li>
+            {% endfor %}
+          </ol>
+        </div>
+        {% else %}
+        <div class="dt-unavailable" style="font-size:12px;color:#777;margin:2px 0 0 12px">{{ t('UI_DT_TRACE_UNAVAILABLE') }}</div>
+        {% endif %}
       </li>
       {% endfor %}
     </ul>
@@ -850,6 +865,28 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     {% endif %}
   </div>
   {% endfor %}
+  {#- Stage 22 / CAP-07 Slice 1: PROJECT CONTEXT, outside every decision.
+      Report links point only at report-local sections that always render;
+      no session-only form is ever linked from the report or its PDF. -#}
+  {% if decision_project_context is defined %}
+  {% set dt_needs = ('#report-needs', 'UI_B_DELIV_031') %}
+  {% set dt_links = {
+      'declared_contradictions': dt_needs, 'assumption_dependencies': dt_needs,
+      'provisional_assumptions': dt_needs, 'recorded_unknowns': dt_needs,
+      'deferred_items': dt_needs, 'pending_evidence': dt_needs,
+      'pending_specialist': dt_needs, 'open_gaps': dt_needs,
+      'next_step': ('#report-next-steps', 'UI_DT_LINK_NEXT_STEPS'),
+  } %}
+  <div class="dt-project-context" id="report-decision-project-context" style="border:1px dashed #b9b0c9;border-radius:4px;background:#ffffff;padding:8px 12px;margin-bottom:10px">
+    <h3 style="font-size:13px;color:#4a3c78;margin:0 0 4px 0">{{ t('UI_DT_CTX_HEADING') }}</h3>
+    <p class="dt-ctx-note" style="font-size:12px;color:#555;margin:0 0 6px 0">{{ t('UI_DT_CTX_NOTE') }}</p>
+    <ul style="margin:0;padding-inline-start:18px;font-size:13px">
+      {% for row in decision_project_context %}
+      <li class="dt-ctx-row" data-dt-category="{{ row.key }}" data-dt-status="{{ row.status }}"><span class="dt-ctx-label">{{ t('UI_DT_CAT_' ~ row.key|upper) }}</span>: {% if row.key == 'next_step' %}{{ t('UI_DT_NEXT_STEP_AVAILABLE') if row.status == 'items' else (t('UI_DT_NEXT_STEP_NONE') if row.status == 'empty' else t('UI_DT_STATE_UNAVAILABLE')) }}{% elif row.status == 'items' %}{{ t('UI_DT_STATE_CURRENT') }} <span class="dt-ctx-count">{{ row.count }}</span>{% elif row.status == 'historical' %}{{ t('UI_DT_STATE_HISTORICAL') }}{% elif row.status == 'empty' %}{{ t('UI_DT_STATE_EMPTY') }}{% else %}{{ t('UI_DT_STATE_UNAVAILABLE') }}{% endif %}{% set dt_link = dt_links.get(row.key) %}{% if dt_link and row.status in ('items', 'historical') %} · {{ t('UI_DT_SEE') }} <a class="dt-ctx-link" href="{{ dt_link[0] }}">{{ t(dt_link[1]) }}</a>{% endif %}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
   <p class="report-return"><a href="#report-contents">{{ t('UI_REPORT_BACK_CONTENTS') }}</a></p>
 </section>
 {% endif %}

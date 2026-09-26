@@ -6,14 +6,25 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-26): Stage 20 — CAP-08 Assumption Register ENTERED / PARTIAL (current bounded action: CAP-08 Slice 1 — Owner-declared assumption → answer dependency); Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL (CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers — delivered, PR #703); Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing — delivered, PR #701, with the bounded weak-PF recovery PR #702; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
+**Current position (2026-09-26): Stage 22 — CAP-05 Decision Trace + CAP-07 Invention Decision Room ENTERED / PARTIAL (current bounded action: CAP-05 + CAP-07 Slice 1 — read-only decision trace + project context panel; implemented, independent UX / behaviour review PASS, PR / merge pending); Stage 20 — CAP-08 Assumption Register ENTERED / PARTIAL (CAP-08 Slice 1 — Owner-declared assumption → answer dependency — delivered, PR #704); Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL (CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers — delivered, PR #703); Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing — delivered, PR #701, with the bounded weak-PF recovery PR #702; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
 not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
 complete nothing beyond themselves. **No further CAP-01 implementation is currently
-authorized.** `ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER DEPENDENCY` ·
+authorized.** `ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + PROJECT CONTEXT PANEL` ·
+`STAGE 22: ENTERED / PARTIAL` · `FULL CAP-05: NOT AUTHORIZED` · `FULL CAP-07: NOT AUTHORIZED` ·
+`SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING`: a pure,
+read-only decision-trace projection over the existing canonical ledger shows each decision's
+complete alternative history — active and withdrawn alternatives preserved — with the existing
+comparison / readiness semantics reused unchanged, beside a clearly separated project-context
+panel that is explicitly NOT LINKED to any specific decision; no decision relationship is
+inferred, there is no new persistence, schema, writer or route, no CAP-11 evidence-strength
+semantics, no confidence score, no best or recommended alternative and no AI / model / provider
+call; it is domain-neutral, CAP-08 / CAP-10 ownership is unchanged, and the Stage-22 checkbox
+stays unticked.
+`CAP-08 SLICE 1: DELIVERED — PR #704 — merge 56eea683138a7880e836c7d577faf3f289beb22b` ·
 `STAGE 20: ENTERED / PARTIAL` · `FULL CAP-08: NOT AUTHORIZED` · `AUTOMATIC / AI DEPENDENCY INFERENCE: NOT AUTHORIZED`:
 the inventor explicitly declares that one or more of their own active recorded answers depend on
 ONE of their own active provisional assumptions — one OWNER_STATED, UNVALIDATED
@@ -68,8 +79,8 @@ WATCH: the pre-Target-Aware reader does not load sixteen-field AssertionRecord r
 pre-CAP-10 reader does not load a `contradiction_declared` row (its `contradiction_endpoints`
 field), and a pre-CAP-08 reader does not load an `assumption_dependency_declared` row (its
 `dependency_edge` field) — account for reader compatibility before any rollback / release
-planning. No other Stage is authorized beyond the bounded Stage-20 CAP-08 Slice 1 (Stage 21 stays
-ENTERED / PARTIAL through the delivered CAP-10 Slice 1 only). Project-specific
+planning. No other Stage is authorized beyond the bounded Stage-22 CAP-05 + CAP-07 Slice 1
+(Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10 Slice 1 only). Project-specific
 CAP-01 behaviour returns only with a separately authorized architecture/data-model decision
 providing trustworthy typed technical-parameter inputs. The delivered mandates, their
 boundaries and the first authorized domain guidance profile (`electronics_electrical` only)
@@ -80,6 +91,13 @@ InventorAI domain that simply has no authorized CAP-01 profile yet.** Cross-stag
 capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
 operating practice — they add no Stage, gate or approval step.
 <!-- END CURRENT-BLOCK: current-position -->
+
+*(Superseded 2026-09-26 by Stage 22 / CAP-05 + CAP-07 Slice 1, preserved so the change is visible
+rather than silent: the current-position entry read "Stage 20 — CAP-08 Assumption Register ENTERED
+/ PARTIAL (current bounded action: CAP-08 Slice 1 — Owner-declared assumption → answer
+dependency)" and "`ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER
+DEPENDENCY`". That was true until PR #704 delivered it and the Owner authorized Stage 22 / CAP-05
++ CAP-07 Slice 1.)*
 
 *(Superseded 2026-09-26 by CAP-08 Slice 1, preserved so the change is visible rather than silent:
 the current-position entry read "Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL

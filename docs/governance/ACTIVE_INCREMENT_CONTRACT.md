@@ -23,10 +23,51 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--cap08-slice-1"></a>
-## Current authority — Stage 20 / CAP-08 Slice 1 — Owner-declared assumption → answer dependency (Owner / Lead authorization, 2026-09-26)
+<a id="current-authority--stage22-slice-1"></a>
+## Current authority — Stage 22 / CAP-05 + CAP-07 Slice 1 — Read-only decision trace + project context panel (Owner / Lead authorization, 2026-09-26)
 
-**ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER DEPENDENCY.**
+**ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + PROJECT CONTEXT PANEL.**
+Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through this one bounded slice. It creates no new
+Master Roadmap Stage, completes neither CAP-05, CAP-07 nor Stage 22, and the Stage-22 checkbox
+stays unticked. Status: AUTHORIZED / IMPLEMENTED / INDEPENDENT UX-BEHAVIOUR REVIEW PASS — PR /
+merge pending. Review: one independent non-authoring UX / behaviour review PASS with no material
+findings; architecture (Astra) review not required — no architecture, persistence, schema,
+replay, provenance, state-ownership or trust-boundary change.
+
+| | |
+|---|---|
+| **SCOPE** | a READ-ONLY composition of existing canonical decision truth: per decision, the current question and each alternative's complete recorded history, plus a clearly separated project-context panel |
+| **DIRECTLY LINKED** | only facts proven by the decision chains (`decision_context_root` / decision supersession): active and withdrawn alternatives preserved, every recorded wording in ledger order, withdrawal reasons verbatim ("no reason recorded" only when literally true), and the existing comparison eligibility / not-comparable / readiness / blocking-reason truth reused unchanged |
+| **PROJECT CONTEXT** | counts from each category's own canonical owner (CAP-10 declared pairs, CAP-08 projection, ledger dispositions, requirement-landscape pending kinds, open gaps, next development step), shown outside every decision and explicitly NOT LINKED to any specific decision; a derivation failure reads unavailable, never zero or none; historical-but-none-active stays distinct from never recorded where the owner records it |
+| **DECISION LINKAGE / INFERENCE** | `NONE` — no inferred, text-matched or new decision relationship |
+| **PERSISTENCE / SCHEMA / WRITER / ROUTE** | `NONE` — pure projection, derived on demand, never persisted; the canonical deliverable package and assembler are unchanged |
+| **EVIDENCE STRENGTH / CONFIDENCE / RECOMMENDATION** | `NONE` — no CAP-11 semantics, no confidence score, no best or recommended alternative |
+| **DOMAIN** | domain-neutral: canonical record semantics only |
+| **CAP-08 / CAP-10** | ownership unchanged; both remain the delivered Slice 1 owners of their projections |
+| **EXTERNAL MODEL / REAL INVENTION DATA** | NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
+
+**Meaning.** The inventor can inspect a decision's recorded alternative history in one place and
+see project context without InventorAI claiming that the context is linked to, supports or
+undermines any particular decision; project context is not decision evidence. Surfaces: the
+existing session decision section (history collapsed per alternative; links only to sections
+present in that render) and the existing report / PDF decision section (history expanded; links
+only to report-local sections). **Deferred / not authorized:** full CAP-05 (supporting evidence,
+assumptions, confidence / uncertainty basis, what could change a decision); full CAP-07; a CAP-05
+durable decision-trace writer; decision-question history UX; CAP-06, CAP-11, CAP-12, CAP-13; any
+external call; deployment, public release and paid activation. WATCH (non-blocking review
+observations, no repair cycle): a historical declared conflict may link to the report's "What it
+needs" section even when that section no longer mentions it; the "currently 1" wording is terse;
+the session panel offers fewer links than the report.
+
+<a id="current-authority--cap08-slice-1"></a>
+## Current authority — Stage 20 / CAP-08 Slice 1 — Owner-declared assumption → answer dependency (Owner / Lead authorization, 2026-09-26) — DELIVERED (PR #704); SUPERSEDED as current authority by Stage 22 / CAP-05 + CAP-07 Slice 1
+
+**No longer the current authority.** CAP-08 Slice 1 was delivered (PR #704, merge
+`56eea683138a7880e836c7d577faf3f289beb22b`); Stage 22 / CAP-05 + CAP-07 Slice 1 above replaced it
+as the current authority on 2026-09-26. Every rule below still binds except where Stage 22 /
+CAP-05 + CAP-07 Slice 1 states otherwise. *(Superseded 2026-09-26, preserved so the change is
+visible rather than silent: this opened "**ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED
+ASSUMPTION → ANSWER DEPENDENCY.**")*
 Stage 20 / CAP-08 is ENTERED / PARTIAL through this one bounded slice. It creates no new Master
 Roadmap Stage, completes neither CAP-08 nor Stage 20, and the Stage-20 checkbox stays unticked.
 Architecture review: Astra — exact-candidate conformance PASS after the F1 / F2 corrections and
@@ -930,8 +971,18 @@ sibling sidecar of the same store. Delivering it is not the stage and opens noth
 Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — Stage 20 / CAP-08 Assumption Register, ENTERED through ONE bounded
-slice:** `ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER DEPENDENCY` · `STAGE 20: ENTERED / PARTIAL` · `FULL CAP-08: NOT AUTHORIZED` · `AUTOMATIC / AI DEPENDENCY INFERENCE: NOT AUTHORIZED`.
+**CURRENT BOUNDED ACTION — Stage 22 / CAP-05 Decision Trace + CAP-07 Invention Decision Room,
+ENTERED through ONE bounded slice:** `ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + PROJECT CONTEXT PANEL` · `STAGE 22: ENTERED / PARTIAL` · `FULL CAP-05: NOT AUTHORIZED` · `FULL CAP-07: NOT AUTHORIZED` · `SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING`.
+A pure, read-only decision-trace projection over the existing canonical ledger shows each
+decision's complete alternative history — active and withdrawn alternatives preserved, withdrawal
+reasons verbatim — with the existing comparison / readiness semantics reused unchanged, beside a
+clearly separated project-context panel that is explicitly NOT LINKED to any specific decision.
+No decision relationship is inferred; there is no new persistence, schema, writer or route, no
+CAP-11 evidence-strength semantics, no confidence score, no best or recommended alternative and no
+AI / model / provider call. It is domain-neutral and leaves CAP-08 / CAP-10 ownership unchanged.
+The Stage-22 checkbox stays unticked; entering Stage 22 completes nothing in Stages 18–21.
+**DELIVERED — Stage 20 / CAP-08 Assumption Register, ENTERED through ONE bounded slice:**
+`CAP-08 SLICE 1: DELIVERED — PR #704 — merge 56eea683138a7880e836c7d577faf3f289beb22b` · `STAGE 20: ENTERED / PARTIAL` · `FULL CAP-08: NOT AUTHORIZED` · `AUTOMATIC / AI DEPENDENCY INFERENCE: NOT AUTHORIZED`.
 The inventor explicitly declares that one or more of their own active recorded answers depend on
 ONE of their own active provisional assumptions: one OWNER_STATED, UNVALIDATED
 `assumption_dependency_declared` record per directed assumption → answer edge on the existing

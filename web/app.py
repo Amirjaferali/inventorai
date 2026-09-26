@@ -5507,6 +5507,10 @@ def show_session(sid):
         # alternative names) renders verbatim — it is never translated; the
         # surrounding chrome uses the governed UI_W2A_* catalogue keys.
         decision_capture=_decision_capture_view_safe(state),
+        # Stage 22 / CAP-05 + CAP-07 Slice 1: read-only trace + separated
+        # project context (derived on demand; never persisted).
+        decision_trace=_decision_trace_view_safe(state),
+        decision_project_context=_decision_project_context(state),
         # W2-D (W1-N4): single-use correction-lapse notice (popped so it
         # renders exactly once after the Post/Redirect/Get, like answer_error).
         # Gap types are mapped to their existing localized display headings.
@@ -5692,6 +5696,10 @@ def show_deliverable(sid):
         # deliverable surface (derived on demand; not part of the canonical
         # deliverable package — the assembler is deliberately untouched).
         decision_capture=_decision_capture_view_safe(state),
+        # Stage 22 / CAP-05 + CAP-07 Slice 1: read-only trace + separated
+        # project context (derived on demand; never persisted).
+        decision_trace=_decision_trace_view_safe(state),
+        decision_project_context=_decision_project_context(state),
         # CAP-08 Slice 1: the inventor-declared dependency view (derived on
         # demand; not part of the canonical package — the assembler is
         # untouched). Rendered only when a declaration exists.
@@ -5839,6 +5847,10 @@ def download_deliverable_pdf(sid):
             t2a_statements=_quantity_statements(package, state),
             evidence_references=_evref_deliverable_view(sid, state),
             decision_capture=_decision_capture_view_safe(state),
+            # Stage 22 / CAP-05 + CAP-07 Slice 1: read-only trace + separated
+            # project context (derived on demand; never persisted).
+            decision_trace=_decision_trace_view_safe(state),
+            decision_project_context=_decision_project_context(state),
             assumption_dependencies=_assumption_dependency_view(state),
             snapshot_kept_ack=None,
         )
@@ -8812,6 +8824,110 @@ def _decision_capture_view_safe(state):
         return decision_capture_view(state)
     except Exception:
         return []
+
+
+# Stage 22 / CAP-05 + CAP-07 Slice 1 — read-only decision trace and the
+# separated project-context panel. Both are derived on demand and never
+# persisted; nothing here writes, links or infers. Every project-context count
+# comes from that category's own canonical owner, never from display text, and
+# no concept is counted through two owners.
+DT_CTX_ITEMS = "items"
+DT_CTX_EMPTY = "empty"
+DT_CTX_HISTORICAL = "historical"
+DT_CTX_UNAVAILABLE = "unavailable"
+
+
+def _decision_trace_view_safe(state):
+    """The per-alternative trace, or None when it cannot be derived (the
+    surface then says so — a failure never reads as an empty history)."""
+    from engine.decision_composition import decision_trace_view
+    try:
+        return decision_trace_view(state)
+    except Exception:
+        return None
+
+
+def _dt_ledger_count(state, disposition):
+    return sum(1 for r in getattr(state, "assertions", [])
+               if r.disposition == disposition and r.superseded_by is None)
+
+
+def _dt_declared_contradictions(state, _memo):
+    from engine.idea_state import active_declared_contradiction_pairs
+    assertions = list(getattr(state, "assertions", []))
+    active = len(active_declared_contradiction_pairs(assertions))
+    declared = any(r.disposition == _DISP_CONTRADICTION_DECLARED
+                   for r in assertions)
+    return active, declared
+
+
+def _dt_assumption_dependencies(state, _memo):
+    projection = _project_assumption_dependencies(
+        getattr(state, "assertions", []))
+    return len(projection.active_edges), bool(projection.declarations)
+
+
+def _dt_pending(state, memo, anchor_kind):
+    # One landscape derivation serves both pending categories of a render.
+    if "anchor_kinds" not in memo:
+        memo["anchor_kinds"] = [
+            req.primary_anchor.anchor_kind
+            for req in derive_requirement_landscape(state).requirements]
+    return memo["anchor_kinds"].count(anchor_kind)
+
+
+def _dt_next_step(state, _memo):
+    # The same condition under which the session shows its next-step callout.
+    step = derive_next_development_step(state)
+    return 1 if (step is not None and getattr(step, "reference_id", None)) else 0
+
+
+# (key, owner(state, memo), needs_live_state). An owner returns a count, or an
+# (active_count, ever_declared) pair when it truthfully distinguishes history.
+# Gap-, routing- and next-step-derived categories need the live working state:
+# a cold read-only view does not carry it, so they are UNAVAILABLE there
+# rather than a misleading zero.
+_DT_CATEGORIES = (
+    ("declared_contradictions", _dt_declared_contradictions, False),
+    ("assumption_dependencies", _dt_assumption_dependencies, False),
+    ("provisional_assumptions",
+     lambda s, m: _dt_ledger_count(s, _DISP_PROVISIONAL), False),
+    ("recorded_unknowns", lambda s, m: _dt_ledger_count(s, _DISP_UNKNOWN), False),
+    ("deferred_items", lambda s, m: _dt_ledger_count(s, _DISP_DEFERRED), False),
+    ("pending_evidence", lambda s, m: _dt_pending(s, m, "pending_evidence"), True),
+    ("pending_specialist",
+     lambda s, m: _dt_pending(s, m, "pending_specialist"), True),
+    ("open_gaps", lambda s, m: len(s.get_open_gaps()), True),
+    ("next_step", _dt_next_step, True),
+)
+
+
+def _decision_project_context(state):
+    """One entry per category: ``{key, status, count}``. ``status`` is
+    ``items`` / ``empty`` / ``historical`` (declared before, none active now —
+    only where the owner records that) / ``unavailable`` (could not be
+    derived; ``count`` is then None, never 0). The panel belongs to the
+    decision view, so a project with no declared decision derives nothing."""
+    if not any(r.disposition == _DISP_CONTEXT_DECLARED
+               for r in getattr(state, "assertions", []) or []):
+        return []
+    live = getattr(state, "domain", None) is not None
+    memo, rows = {}, []
+    for key, owner, needs_live in _DT_CATEGORIES:
+        count, status = None, DT_CTX_UNAVAILABLE
+        if live or not needs_live:
+            try:
+                result = owner(state, memo)
+                if isinstance(result, tuple):
+                    count, ever = result
+                else:
+                    count, ever = result, False
+                status = (DT_CTX_ITEMS if count else
+                          DT_CTX_HISTORICAL if ever else DT_CTX_EMPTY)
+            except Exception:
+                count, status = None, DT_CTX_UNAVAILABLE
+        rows.append({"key": key, "status": status, "count": count})
+    return rows
 
 
 def _handle_decision_post(sid, mint, idem_label, idem_content,
