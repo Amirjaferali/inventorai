@@ -190,7 +190,11 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   panel explicitly NOT LINKED to any specific decision. It composes existing truth only: inferred
   decision relationships, new persistence / schema / writers / routes, CAP-11 evidence-strength
   semantics, confidence scoring, best or recommended alternatives and any AI / model / provider
-  call stay NOT AUTHORIZED. Supporting evidence, assumptions, confidence / uncertainty basis,
+  call stay NOT AUTHORIZED. Delivered (PR #706). Slice 2 (2026-09-26) adds a read-only,
+  project-level Actionable Decision Room Summary: the canonical Validation Plan grouped strictly
+  by its responsibility tokens beside the existing next development step, reused unchanged — no
+  ranking, decision linkage, recommendation, confidence, evidence-strength or readiness
+  semantics, and no form, route, writer or persistence. Supporting evidence, assumptions, confidence / uncertainty basis,
   what could change a decision and a durable decision-trace writer stay NOT AUTHORIZED.
   `FULL CAP-05: NOT AUTHORIZED`.
 - **Activation conditions:** a separately authorized decision-support increment.
@@ -233,8 +237,9 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
 - **Protected boundaries:** read-only over canonical records; no independent state/evidence mutation.
 - **Proposed acceptance criteria:** every item traces to a canonical record; no state mutation.
 - **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, **with ONE bounded
-  exception**: the same Stage 22 / CAP-05 + CAP-07 Slice 1 (2026-09-26), whose read-only decision
-  view composes canonical records without creating truth and mutates nothing.
+  exception**: the same Stage 22 / CAP-05 + CAP-07 Slice 1 (2026-09-26; delivered, PR #706) and
+  Slice 2 (the read-only Actionable Decision Room Summary), whose decision view composes canonical
+  records without creating truth and mutates nothing.
   `FULL CAP-07: NOT AUTHORIZED`.
 - **Activation conditions:** a separately authorized consolidation increment.
 - **Separate owner authorization requirement:** yes.
@@ -653,9 +658,9 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-02 Simplified One-Step Journey | WS8 / later UX increment | CAP-06, CAP-07 | RECORDED — NOT AUTHORIZED |
 | CAP-03 Adaptive Assistance | WS13 / WS14 | CAP-02, AI Coach | RECORDED — NOT AUTHORIZED |
 | CAP-04 Gap Action Packs | WS12 (+ D13 for technical) | CAP-01, CAP-09 | RECORDED — NOT AUTHORIZED |
-| CAP-05 Decision Trace | Decision-support increment | CAP-07, CAP-08, CAP-11 | SLICE 1 AUTHORIZED (with CAP-07: read-only decision trace + project context panel only) — FULL CAP-05 NOT AUTHORIZED |
+| CAP-05 Decision Trace | Decision-support increment | CAP-07, CAP-08, CAP-11 | SLICE 1 DELIVERED + SLICE 2 AUTHORIZED (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-05 NOT AUTHORIZED |
 | CAP-06 Readiness Dashboard | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-02, CAP-07, CAP-11 | RECORDED — NOT AUTHORIZED |
-| CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | SLICE 1 AUTHORIZED (with CAP-05: read-only decision trace + project context panel only) — FULL CAP-07 NOT AUTHORIZED |
+| CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | SLICE 1 DELIVERED + SLICE 2 AUTHORIZED (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED |
 | CAP-08 Assumption Register | Assumption-tracking increment | WS12, CAP-05, CAP-10, CAP-11 | SLICE 1 AUTHORIZED (Owner-declared assumption → answer dependency only) — FULL CAP-08 NOT AUTHORIZED |
 | CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (delivered, PR #682) and one bounded SLICE-02 durable measurement method (full CAP-09 still NOT AUTHORIZED) |
 | CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED |
@@ -802,9 +807,9 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | CAP-02 Simplified One-Step Journey | RECORDED — NOT AUTHORIZED | WS8 / later UX increment | Committed state; WS8; WS12 unknowns; CAP-04 | Yes | — | At the UX increment / WS12–WS16 closure |
 | CAP-03 Adaptive Assistance | RECORDED — NOT AUTHORIZED | WS13 / WS14 | Deterministic sufficiency; WS12; WS13/WS14 | Yes | — | At WS13/WS14 authorization / WS12–WS16 closure |
 | CAP-04 Gap Action Packs | RECORDED — NOT AUTHORIZED | WS12 (+ D13 for technical) | WS12 closure paths; D13; gap/blocker model | Yes | — | At WS12 closure and any D13 gate |
-| CAP-05 Decision Trace | SLICE 1 AUTHORIZED (with CAP-07: read-only decision trace + project context panel only) — FULL CAP-05 NOT AUTHORIZED | Decision-support increment | Decision workspace; evidence axes; CAP-08; CAP-11 | Yes | — | At the decision-support increment / WS12–WS16 closure |
+| CAP-05 Decision Trace | SLICE 1 DELIVERED + SLICE 2 AUTHORIZED (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-05 NOT AUTHORIZED | Decision-support increment | Decision workspace; evidence axes; CAP-08; CAP-11 | Yes | — | At the decision-support increment / WS12–WS16 closure |
 | CAP-06 Readiness Dashboard | RECORDED — NOT AUTHORIZED | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-11; Patent Export decision; WS-PFV-001 | Yes | — | At the readiness increment / WS12–WS16 closure |
-| CAP-07 Invention Decision Room | SLICE 1 AUTHORIZED (with CAP-05: read-only decision trace + project context panel only) — FULL CAP-07 NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
+| CAP-07 Invention Decision Room | SLICE 1 DELIVERED + SLICE 2 AUTHORIZED (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
 | CAP-08 Assumption Register | SLICE 1 AUTHORIZED (Owner-declared assumption → answer dependency only) — FULL CAP-08 NOT AUTHORIZED | Assumption-tracking increment | Provenance/validation axes; ledger; WS12; CAP-11 | Yes | — | At the assumption increment / WS12–WS16 closure |
 | CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation (delivered, PR #682) and one bounded SLICE-02 durable measurement method | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
 | CAP-10 Contradiction Detector | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |

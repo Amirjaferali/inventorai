@@ -6,16 +6,25 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-26): Stage 22 — CAP-05 Decision Trace + CAP-07 Invention Decision Room ENTERED / PARTIAL (current bounded action: CAP-05 + CAP-07 Slice 1 — read-only decision trace + project context panel; implemented, independent UX / behaviour review PASS, PR / merge pending); Stage 20 — CAP-08 Assumption Register ENTERED / PARTIAL (CAP-08 Slice 1 — Owner-declared assumption → answer dependency — delivered, PR #704); Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL (CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers — delivered, PR #703); Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing — delivered, PR #701, with the bounded weak-PF recovery PR #702; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
+**Current position (2026-09-26): Stage 22 — CAP-05 Decision Trace + CAP-07 Invention Decision Room ENTERED / PARTIAL (current bounded action: CAP-05 + CAP-07 Slice 2 — Actionable Decision Room Summary; implemented, Correction 01 completed, targeted independent UX / behaviour verification PASS, PR / merge pending; Slice 1 — read-only decision trace + project context panel — delivered, PR #706); Stage 20 — CAP-08 Assumption Register ENTERED / PARTIAL (CAP-08 Slice 1 — Owner-declared assumption → answer dependency — delivered, PR #704); Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL (CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers — delivered, PR #703); Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing — delivered, PR #701, with the bounded weak-PF recovery PR #702; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
 not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
 complete nothing beyond themselves. **No further CAP-01 implementation is currently
-authorized.** `ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + PROJECT CONTEXT PANEL` ·
+authorized.** `ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY` ·
 `STAGE 22: ENTERED / PARTIAL` · `FULL CAP-05: NOT AUTHORIZED` · `FULL CAP-07: NOT AUTHORIZED` ·
-`SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING`: a pure,
+`SLICE 2: IMPLEMENTED — CORRECTION 01 — INDEPENDENT UX / BEHAVIOUR VERIFICATION PASS — PR / MERGE PENDING`:
+one read-only, project-level action summary in the Decision Room answers what the project
+currently calls for without asking the inventor anything new — the canonical Validation Plan
+grouped strictly by its responsibility tokens (UNDETERMINED and blocked items as
+needs-clarification, each with its canonical subject; a missing subject fails closed to
+unavailable) beside the existing next development step reused unchanged; no action ranking, no
+decision-specific linkage, no recommendation, confidence, evidence-strength or readiness
+semantics, no form, question, route, writer or persistence; Section 14 stays the detailed
+Validation Plan owner.
+`CAP-05 + CAP-07 SLICE 1: DELIVERED — PR #706 — merge f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`: a pure,
 read-only decision-trace projection over the existing canonical ledger shows each decision's
 complete alternative history — active and withdrawn alternatives preserved — with the existing
 comparison / readiness semantics reused unchanged, beside a clearly separated project-context
@@ -79,8 +88,12 @@ WATCH: the pre-Target-Aware reader does not load sixteen-field AssertionRecord r
 pre-CAP-10 reader does not load a `contradiction_declared` row (its `contradiction_endpoints`
 field), and a pre-CAP-08 reader does not load an `assumption_dependency_declared` row (its
 `dependency_edge` field) — account for reader compatibility before any rollback / release
-planning. No other Stage is authorized beyond the bounded Stage-22 CAP-05 + CAP-07 Slice 1
-(Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10 Slice 1 only). Project-specific
+planning. No other Stage is authorized beyond the bounded Stage-22 CAP-05 + CAP-07 Slice 2
+(Slice 1 delivered; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and
+CAP-10 Slice 1 only). Canonical English technical statements inside the Arabic UI are a current
+limitation; the bounded Arabic / dialect language direction, the shared declared-action and
+relationship primitives, RIG, MCP and C2 are carried as NEXT TRIGGER / WATCH in the CLAUDE.md Lead
+Watchlist — none is authorized. Project-specific
 CAP-01 behaviour returns only with a separately authorized architecture/data-model decision
 providing trustworthy typed technical-parameter inputs. The delivered mandates, their
 boundaries and the first authorized domain guidance profile (`electronics_electrical` only)
@@ -91,6 +104,13 @@ InventorAI domain that simply has no authorized CAP-01 profile yet.** Cross-stag
 capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
 operating practice — they add no Stage, gate or approval step.
 <!-- END CURRENT-BLOCK: current-position -->
+
+*(Superseded 2026-09-26 by Stage 22 / CAP-05 + CAP-07 Slice 2, preserved so the change is visible
+rather than silent: the current-position entry read "(current bounded action: CAP-05 + CAP-07
+Slice 1 — read-only decision trace + project context panel; implemented, independent UX /
+behaviour review PASS, PR / merge pending)" and "`ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1 —
+READ-ONLY DECISION TRACE + PROJECT CONTEXT PANEL`". That was true until PR #706 delivered it and
+the Owner authorized Slice 2.)*
 
 *(Superseded 2026-09-26 by Stage 22 / CAP-05 + CAP-07 Slice 1, preserved so the change is visible
 rather than silent: the current-position entry read "Stage 20 — CAP-08 Assumption Register ENTERED

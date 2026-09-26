@@ -1689,7 +1689,8 @@ def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
     assert _absent(raw_checklist, "Stages 22–27 preserved, not entered / not authorized")
     assert re.search(r"^Stages 23–27 preserved, not entered / not authorized$", raw_checklist, re.M)
     row5 = [l for l in raw_checklist.splitlines() if l.startswith("| 5 | 21–25 |")]
-    assert len(row5) == 1 and "22 entered / partial (CAP-05 + CAP-07 Slice 1 only" in row5[0], row5
+    assert len(row5) == 1 and "22 entered / partial (CAP-05 + CAP-07 Slice 1 —" in row5[0], row5
+    assert "Slice 2 — Actionable Decision Room Summary; current bounded action" in row5[0], row5
     assert "22–25 not authorized" not in row5[0], row5
     row = [l for l in raw_checklist.splitlines() if l.startswith("| 4 | 16–20 |")]
     assert len(row) == 1 and "18 entered / partial" in row[0], row
@@ -2569,96 +2570,211 @@ _STAGE22_REVERSALS = (
     r"Stage 46")
 
 
-def test_stage22_cap05_cap07_slice_1_is_the_live_contract_on_every_live_surface():
-    """Stage 22 / CAP-05 + CAP-07 Slice 1 is the live contract: a pure, read-only
-    decision trace over the existing ledger beside a clearly separated project-
-    context panel explicitly NOT LINKED to any decision. The failure modes this
-    guards keep every token in place: full CAP-05 / CAP-07 or Stage 22 read as
-    authorized / complete, project context read as linked to or evidence for a
-    decision, a recommended option or confidence read as present, the prior
-    contracts read as live, or a new Master Roadmap Stage.
-    """
+_STAGE22_SLICE1_DELIVERED = ("`CAP-05 + CAP-07 SLICE 1: DELIVERED — PR #706 — merge "
+                             "f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`")
+
+
+def test_stage22_slice_1_is_delivered_history_and_its_rules_still_bind():
+    """Stage 22 / CAP-05 + CAP-07 Slice 1 was delivered (PR #706). Its section
+    reads DELIVERED and visibly superseded, every rule still binds, the live
+    surfaces carry the delivered token and never again "PR / merge pending"."""
     contract = _read(CONTRACT)
-    first = contract.index("## Current authority")
-    assert contract[first:].startswith(
-        "## Current authority — Stage 22 / CAP-05 + CAP-07 Slice 1 — Read-only decision "
-        "trace + project context panel"), contract[first:first + 120]
-    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
-    _needs(top, CONTRACT, "stage22",
-           r"\*\*ACTIVE CONTRACT: CAP-05 \+ CAP-07 SLICE 1 — READ-ONLY DECISION TRACE \+ "
-           r"PROJECT CONTEXT PANEL\.\*\*",
-           r"Stage 22 / CAP-05 \+ CAP-07 is ENTERED / PARTIAL through this one bounded slice",
-           r"creates no new Master Roadmap Stage, completes neither CAP-05, CAP-07 nor Stage 22, "
-           r"and the Stage-22 checkbox stays unticked",
-           r"AUTHORIZED / IMPLEMENTED / INDEPENDENT UX-BEHAVIOUR REVIEW PASS — PR / merge pending",
+    top = re.sub(r"\s+", " ", _section(contract, "current-authority--stage22-slice-1"))
+    _needs(top, CONTRACT, "stage22 slice1 delivered",
+           r"Read-only decision trace \+ project context panel \(Owner / Lead authorization, "
+           r"2026-09-26\) — DELIVERED \(PR #706\); SUPERSEDED as current authority by Stage 22 "
+           r"/ CAP-05 \+ CAP-07 Slice 2",
+           r"\*\*No longer the current authority\.\*\*",
+           r"PR #706, merge `f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`",
+           r"Every rule below still binds except where Slice 2 states otherwise",
+           r"Status: DELIVERED \(PR #706\)",
            r"explicitly NOT LINKED to any specific decision",
            r"\*\*DECISION LINKAGE / INFERENCE\*\* \| `NONE`",
-           r"\*\*PERSISTENCE / SCHEMA / WRITER / ROUTE\*\* \| `NONE`",
-           r"\*\*EVIDENCE STRENGTH / CONFIDENCE / RECOMMENDATION\*\* \| `NONE`",
-           r"a derivation failure reads unavailable, never zero or none",
-           r"domain-neutral",
-           r"NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION",
-           r"project context is not decision evidence",
-           r"full CAP-05 \(supporting evidence, assumptions, confidence / uncertainty basis, "
-           r"what could change a decision\); full CAP-07; a CAP-05 durable decision-trace writer")
-    _rejects(top, CONTRACT, "stage22", *_STAGE22_REVERSALS)
+           r"\*\*EVIDENCE STRENGTH / CONFIDENCE / RECOMMENDATION\*\* \| `NONE`")
+    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "stage22 slice1 delivered",
+             *_STAGE22_REVERSALS, r"\*\*ACTIVE CONTRACT: CAP-05 \+ CAP-07 SLICE 1",
+             r"INDEPENDENT UX-BEHAVIOUR REVIEW PASS — PR / merge pending")
     live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
     live_surfaces.append((STATE, _current(STATE, "current-position")))
     for path, block in live_surfaces:
-        _needs(block, path, "stage22 live", _tok(_STAGE22_CONTRACT),
+        _needs(block, path, "stage22 slice1 delivered live", _tok(_STAGE22_SLICE1_DELIVERED),
+               r"explicitly\s+NOT\s+LINKED\s+to\s+any\s+specific\s+decision")
+        _rejects(block, path, "stage22 slice1 delivered live",
+                 re.escape(_STAGE22_CONTRACT),
+                 r"SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE "
+                 r"PENDING")
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
+    assert "Slice 1 — DELIVERED (PR #706, merge `f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`)" in head
+    assert "ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1" not in head
+    assert "its PR / merge is pending. CAP-08" not in head
+    raw_checklist = _read(CHECKLIST)
+    assert re.search(r"^CAP-05 \+ CAP-07 SLICE 1: DELIVERED — PR #706 — merge "
+                     r"f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4$", raw_checklist, re.M)
+    assert re.search(r"^ACTIVE CONTRACT: CAP-05 \+ CAP-07 SLICE 1", raw_checklist, re.M) is None
+    rows = re.findall(r"^- \[ \] \*\*22 — CAP-05 \+ CAP-07:\*\*.*$", _read(ROADMAP), re.M)
+    assert len(rows) == 1
+    assert "Delivered (PR #706, merge `f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`)." in rows[0]
+
+
+_STAGE22_SLICE2_CONTRACT = ("`ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION "
+                            "ROOM SUMMARY`")
+_STAGE22_SLICE2_STATUS = ("`SLICE 2: IMPLEMENTED — CORRECTION 01 — INDEPENDENT UX / BEHAVIOUR "
+                          "VERIFICATION PASS — PR / MERGE PENDING`")
+_STAGE22_SLICE2_REVERSALS = _STAGE22_REVERSALS + (
+    re.escape(_STAGE22_CONTRACT),
+    r"(?<!no )(?<!not )actions? (is |are )?(ranked|prioriti[sz]ed)\b",
+    r"(?<!no )(?<!not )(STAGE 23|Stage 23)(:| is)?\W{0,4}(ENTERED|AUTHORIZED)\b",
+    r"(?<!no )readiness score\b")
+
+
+def test_stage22_slice_2_is_the_live_contract_on_every_live_surface():
+    """Stage 22 / CAP-05 + CAP-07 Slice 2 is the live contract: one read-only,
+    project-level action summary grouped strictly by the canonical Validation
+    Plan responsibility tokens beside the existing next development step. Guards:
+    full CAP-05 / CAP-07 / Stage 22 read as authorized or complete, a ranking,
+    recommendation, confidence or readiness claim, decision linkage, Stage 23
+    read as entered, or a new Master Roadmap Stage."""
+    contract = _read(CONTRACT)
+    first = contract.index("## Current authority")
+    assert contract[first:].startswith(
+        "## Current authority — Stage 22 / CAP-05 + CAP-07 Slice 2 — Actionable Decision "
+        "Room Summary"), contract[first:first + 120]
+    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
+    _needs(top, CONTRACT, "stage22 slice2",
+           r"\*\*ACTIVE CONTRACT: CAP-05 \+ CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM "
+           r"SUMMARY\.\*\*",
+           r"Stage 22 / CAP-05 \+ CAP-07 stays ENTERED / PARTIAL",
+           r"completes neither CAP-05, CAP-07 nor Stage 22, and the Stage-22 checkbox stays "
+           r"unticked",
+           r"CORRECTION 01 COMPLETED / TARGETED INDEPENDENT VERIFICATION PASS — PR / merge "
+           r"pending",
+           r"`OWNER_EXECUTABLE`, `SPECIALIST_REQUIRED`, `EMPIRICAL_EVIDENCE_REQUIRED`, "
+           r"`SYSTEM_DERIVABLE`",
+           r"`provenance\.display_label` \+ the canonical statement",
+           r"a missing or malformed subject fails closed to unavailable",
+           r"reused unchanged; no action ranking is created",
+           r"\*\*DECISION LINKAGE\*\* \| `NONE`",
+           r"\*\*RECOMMENDATION / CONFIDENCE / EVIDENCE STRENGTH / READINESS\*\* \| `NONE`",
+           r"\*\*FORM / QUESTION / ROUTE / WRITER / PERSISTENCE\*\* \| `NONE`",
+           r"stays the detailed Validation Plan owner",
+           r"NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION")
+    _rejects(top, CONTRACT, "stage22 slice2", *_STAGE22_SLICE2_REVERSALS)
+    live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
+    live_surfaces.append((STATE, _current(STATE, "current-position")))
+    for path, block in live_surfaces:
+        _needs(block, path, "stage22 slice2 live", _tok(_STAGE22_SLICE2_CONTRACT),
                _tok("`STAGE 22: ENTERED / PARTIAL`"), _tok("`FULL CAP-05: NOT AUTHORIZED`"),
-               _tok("`FULL CAP-07: NOT AUTHORIZED`"),
-               _tok("`SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / "
-                    "MERGE PENDING`"),
-               _tok(_CAP08_DELIVERED), _tok(_CAP10_DELIVERED),
-               r"explicitly\s+NOT\s+LINKED\s+to\s+any\s+specific\s+decision",
-               r"no\s+CAP-11\s+evidence-strength\s+semantics,\s+no\s+confidence\s+score,"
-               r"\s+no\s+best\s+or\s+recommended\s+alternative",
-               r"domain-neutral")
-        _rejects(block, path, "stage22 live", *_STAGE22_REVERSALS)
+               _tok("`FULL CAP-07: NOT AUTHORIZED`"), _tok(_STAGE22_SLICE2_STATUS),
+               _tok(_STAGE22_SLICE1_DELIVERED), _tok(_CAP08_DELIVERED),
+               _tok(_CAP10_DELIVERED),
+               r"grouped\s+strictly\s+by\s+its\s+responsibility\s+tokens",
+               r"no\s+(action\s+)?ranking",
+               r"no\s+decision-specific\s+linkage")
+        _rejects(block, path, "stage22 slice2 live", *_STAGE22_SLICE2_REVERSALS)
     for path, routing in _surfaces("current-routing"):
-        _needs(routing, path, "stage22 routing", r"The Stage-22 checkbox stays\s+unticked",
+        _needs(routing, path, "stage22 slice2 routing",
+               r"The Stage-22 checkbox stays\s+unticked",
                r"entering Stage 22 completes nothing in Stages 18–21")
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    for needle in ("ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + "
-                   "PROJECT CONTEXT PANEL.",
-                   "Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through this one bounded slice",
-                   "explicitly NOT LINKED to any specific decision",
+    for needle in ("ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY.",
+                   "Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through bounded slices",
                    "no other Stage is authorized beyond the bounded Stage-22 CAP-05 + CAP-07 "
-                   "Slice 1"):
+                   "Slice 2"):
         assert needle in head, needle
-    for pat in _STAGE22_REVERSALS:
+    for pat in _STAGE22_SLICE2_REVERSALS:
         assert re.search(pat, head, re.I) is None, pat
-    assert "the former CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1" in claude
+    assert ("the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1"
+            in claude)
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
-    assert ("**CURRENT SUBTASK:** CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + "
-            "PROJECT CONTEXT PANEL") in flat_checklist
-    for line in ("ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + "
-                 "PROJECT CONTEXT PANEL",
-                 "STAGE 22: ENTERED / PARTIAL — CAP-05 + CAP-07 SLICE 1 ONLY",
-                 "FULL CAP-05: NOT AUTHORIZED",
-                 "FULL CAP-07: NOT AUTHORIZED",
-                 "Stage 22 entered / partial — CAP-05 + CAP-07 Slice 1 only (read-only decision "
-                 "trace + project context panel; current bounded action); full CAP-05 / CAP-07 "
-                 "not authorized"):
+    assert ("**CURRENT SUBTASK:** CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY"
+            in flat_checklist)
+    for line in ("ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY",
+                 "STAGE 22: ENTERED / PARTIAL — CAP-05 + CAP-07 SLICES 1–2 ONLY",
+                 _STAGE22_SLICE2_STATUS.strip("`"),
+                 "FULL CAP-05: NOT AUTHORIZED", "FULL CAP-07: NOT AUTHORIZED",
+                 "Stages 23–27 preserved, not entered / not authorized"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
     roadmap = _read(ROADMAP)
     rows = re.findall(r"^- \[ \] \*\*22 — CAP-05 \+ CAP-07:\*\*.*$", roadmap, re.M)
     assert len(rows) == 1, "stage 22 row missing, duplicated or ticked"
-    assert "**ENTERED / PARTIAL (2026-09-26):** CAP-05 + CAP-07 Slice 1" in rows[0]
+    assert "**Slice 2 (2026-09-26):** an Actionable Decision Room Summary" in rows[0]
     assert "Full CAP-05 and full CAP-07 NOT AUTHORIZED; the checkbox stays unticked." in rows[0]
-    for pat in _STAGE22_REVERSALS:
-        assert re.search(pat, rows[0], re.I) is None, pat
-    # the fixed 45-stage structure is unchanged: stages 1..45 once each, no 46
+    for pat in _STAGE22_SLICE2_REVERSALS:
+        assert re.search(pat, re.sub(r"\*\(Superseded.*?\)\*", "", rows[0]), re.I) is None, pat
     numbers = [int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)]
     assert sorted(numbers) == list(range(1, 46)), numbers
-    # the capability register records the one bounded exception, not full CAP-05 / CAP-07
     register = _flat(os.path.join("docs", "governance",
                                   "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md"))
-    assert "Stage 22 / CAP-05 + CAP-07 Slice 1 (2026-09-26)" in register
+    assert "Slice 2 (2026-09-26) adds a read-only, project-level Actionable Decision Room" in register
     assert "`FULL CAP-05: NOT AUTHORIZED`" in register
     assert "`FULL CAP-07: NOT AUTHORIZED`" in register
-    for row in ("| CAP-05 Decision Trace | RECORDED — NOT AUTHORIZED |",
-                "| CAP-07 Invention Decision Room | RECORDED — NOT AUTHORIZED |"):
-        assert row not in register, row
+
+
+def test_lead_operating_method_and_watchlist_are_preserved_as_continuity_only():
+    """The Lead Operating Method (Product-Build First / Evidence-Driven) and the
+    current Lead Watchlist live in CLAUDE.md as successor continuity: every rule
+    is present, the successor rule binds, and every deferred / trigger-based item
+    stays deferred — none is read as authorized."""
+    raw = _read("CLAUDE.md")
+    assert "\n### Lead Operating Method — Product-Build First / Evidence-Driven\n" in raw
+    claude = re.sub(r"\s+", " ", raw)
+    method = claude[claude.index("### Lead Operating Method"):
+                    claude.index("## Historical material and substantive boundaries")]
+    for needle in (
+            "It adds no authority level, boot step, approval gate or implementation "
+            "authorization",
+            "**A. Product-Build First.**", "**B. Evidence-driven sequencing.**",
+            "The Master Roadmap is navigation, not automatic execution order",
+            "**C. Meaningful vertical slices.**", "**D. Quality is preserved.**",
+            "never weakens truthfulness, security, mandatory CI, required testing or "
+            "material independent review",
+            "**E. Review routing by material risk.**", "No reviewer is added ritually",
+            "**F. No reopening without new evidence.**", "**G. No review recursion.**",
+            "**H. Immutable reviewed candidate.**", "**I. Test proportionality.**",
+            "never FULL for reassurance",
+            "The newest mandatory hosted CI on the exact final PR head stays authoritative",
+            "**J. C1-Lite** is advisory developer tooling, not a merge gate",
+            "FP-01 / FP-02 / FP-15", "`superseded_by is None`",
+            "**K. Success metric.**",
+            "PR, document and test counts alone are not product progress",
+            "**L. Successor rule.** A successor Lead MUST reconstruct and follow this "
+            "Operating Method before choosing its first new action",
+            "without new material evidence or a new Owner decision"):
+        assert needle in method, needle
+    watch = claude[claude.index("**Current Lead Watchlist (2026-09-26).**"):
+                   claude.index("**Successor Lead (mandatory).**")]
+    for needle in (
+            "none of it authorizes work", "RIG (advisory only; FULL and mandatory CI keep "
+            "authority)", "**RIG-3A PREMATURE / BLOCKED** under the current file-level topology",
+            "RIG-4 DEFERRED / PREMATURE", "RIG-6 NOT READY",
+            "**RIG-7 MCP read interface DEFERRED, NOT CANCELLED.**",
+            "RIG-8 living project knowledge and RIG-9 optional wiki / visual layer FUTURE / "
+            "TRIGGER-BASED", "No separate RIG-R roadmap",
+            "**C1-Lite** DELIVERED / ADVISORY",
+            "**Acceleration-window C2** — deeper Agent Context / RIG-5 integration after "
+            "C1-Lite, not any older identifier named C2 — DEFERRED, NOT CANCELLED",
+            "The Acceleration Window is CLOSED",
+            "**MCP** implementation DEFERRED; trigger NOT FOUND; authorization NO",
+            "no generic command execution",
+            "**NEXT TRIGGER — shared declared-action primitive.**",
+            "Evaluation only; a capability without such a write path does not fire it",
+            "**NEXT TRIGGER — analytical relationship primitive.**",
+            "No generic graph in advance; separate from the declared-action trigger",
+            "**NEXT TRIGGER — language direction.**",
+            "proves no general dialect support", "CURRENT LIMITATION",
+            "no universal-dialect claim",
+            "It never gains authority over canonical technical concepts, readiness, validation, "
+            "feasibility, progression, state mutation, evidence promotion or decision selection",
+            "fails closed to the deterministic fallback",
+            "External / provider MSNL and any external transmission of real invention, project "
+            "or user data remain NOT AUTHORIZED",
+            "CAP-06 NOT AUTHORIZED", "CAP-12 and CAP-13 NOT AUTHORIZED and distinct",
+            "**WATCH — Stage 22 Slice 2 (non-blocking, no repair cycle).**"):
+        assert needle in watch, needle
+    for pat in (r"MCP (implementation )?(is )?AUTHORIZED\b(?<!NOT AUTHORIZED)",
+                r"RIG-3A (is )?(READY|AUTHORIZED|ACTIVE)\b",
+                r"(C2|RIG-7|MCP)[^.]{0,20}\bCANCELLED\b(?<!NOT CANCELLED)",
+                r"(?<!no )(?<!NOT )(live|external) (LLM|provider|MSNL) (is )?AUTHORIZED\b"):
+        assert re.search(pat, watch) is None, pat
