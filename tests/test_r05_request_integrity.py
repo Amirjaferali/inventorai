@@ -20,6 +20,8 @@ MUTATIONS = (
     "/recover", "/reset/<token>", "/start", "/start_ilt002_water_leak",
     "/start_ilt002_combination_lock", "/start_ilt002_combination_lock_path_n",
     "/session/<sid>/resume", "/session/<sid>/correct", "/session/<sid>/accept-risk",
+    # CAP-10 Slice 1: the inventor's explicit conflict declaration.
+    "/session/<sid>/declare-conflict",
     "/session/<sid>/decision/declare-context", "/session/<sid>/decision/declare-alternative",
     "/session/<sid>/decision/refine-alternative", "/session/<sid>/decision/withdraw-alternative",
     "/session/<sid>/keep-snapshot", "/session/<sid>/success-criteria", "/session/<sid>",

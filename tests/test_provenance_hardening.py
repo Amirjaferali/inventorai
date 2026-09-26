@@ -358,6 +358,9 @@ LOAD_MATRIX = {
     DISPOSITION_DECISION_CONTEXT_DECLARED:      {OWNER_STATED},
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED:  {OWNER_STATED},
     DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN: {OWNER_STATED},
+    # CAP-10 Slice 1: the inventor's conflict declaration — a singleton, never
+    # LEGACY_UNSPECIFIED (it did not exist before provenance was stamped).
+    idea_state.DISPOSITION_CONTRADICTION_DECLARED: {OWNER_STATED},
 }
 
 
@@ -390,7 +393,8 @@ def _payload_for(disposition, provenance):
 
 def test_load_matrix_covers_every_known_disposition_exactly():
     # A future disposition cannot enter without its own explicit load policy.
-    assert set(ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION) == set(INTERACTION_DISPOSITIONS)
+    assert set(ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION) == set(INTERACTION_DISPOSITIONS) \
+        | {idea_state.DISPOSITION_CONTRADICTION_DECLARED}
     assert {d: set(v) for d, v in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION.items()} \
         == LOAD_MATRIX
     for allowed in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION.values():
@@ -424,8 +428,16 @@ def test_owner_only_record_stored_as_legacy_is_refused(disposition):
     assert LEGACY_UNSPECIFIED not in str(err.value)
 
 
+# CAP-10 Slice 1: the conflict declaration has its own carrier (not
+# `record_interaction`) and a stricter, disposition-specific load shape
+# (UNVALIDATED only, neutral fields, two endpoints); its load matrix entry is
+# pinned above and its load rules in tests/test_cap10_declared_contradiction.py.
+INTERACTION_LOAD_MATRIX = {d: v for d, v in LOAD_MATRIX.items()
+                           if d != idea_state.DISPOSITION_CONTRADICTION_DECLARED}
+
+
 @pytest.mark.parametrize("disposition,provenance", sorted(
-    (d, p) for d, allowed in LOAD_MATRIX.items() for p in allowed))
+    (d, p) for d, allowed in INTERACTION_LOAD_MATRIX.items() for p in allowed))
 def test_every_legal_source_disposition_pair_loads_verbatim(disposition, provenance):
     data = _payload_for(disposition, provenance)
     back = assertion_from_dict(dict(data))
@@ -483,7 +495,7 @@ def test_responsibility_is_still_checked_once_the_source_is_legal(disposition):
                                  responsibility=OWNER_INPUT))
 
 
-@pytest.mark.parametrize("disposition", sorted(LOAD_MATRIX))
+@pytest.mark.parametrize("disposition", sorted(INTERACTION_LOAD_MATRIX))
 def test_validation_axis_is_untouched_by_the_disposition_rule(disposition):
     for provenance in LOAD_MATRIX[disposition]:
         for status in VALIDATION_STATUSES:

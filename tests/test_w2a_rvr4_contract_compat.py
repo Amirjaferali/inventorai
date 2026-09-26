@@ -59,7 +59,9 @@ def test_field_set_is_exactly_sixteen_with_new_fields():
     # (`question_target`) under its own bounded legacy load rule.
     assert "decision_context_root" in _ASSERTION_FIELDS
     assert "question_target" in _ASSERTION_FIELDS
-    assert len(_ASSERTION_FIELDS) == 16
+    # CAP-10 Slice 1: the 17th, declaration-only `contradiction_endpoints`.
+    assert "contradiction_endpoints" in _ASSERTION_FIELDS
+    assert len(_ASSERTION_FIELDS) == 17
 
 
 def test_compat1_legacy_payload_missing_only_new_field_loads_none():

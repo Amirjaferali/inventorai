@@ -31,6 +31,8 @@ from engine.idea_state import (
     DISPOSITION_DEFERRED,
     DISPOSITION_PROVISIONAL_ASSUMPTION,
     CRITICALITY_ACTION_CONFIRMED,
+    DISPOSITION_CONTRADICTION_DECLARED,
+    active_declared_contradiction_pairs,
 )
 
 # --- Frozen category / status vocabularies (contract §4.2, §9.7) ------------------
@@ -91,6 +93,17 @@ _ACTION = {
 _CONTRADICTION_STATEMENT = (
     "Resolve the active contradiction between the two recorded answers."
 )
+# CAP-10 Slice 1: a contradiction the INVENTOR declared is attributed to them.
+# It is not validated, neither answer is assumed correct, nothing requires the
+# two answers to become one, and it moves no gap or maturity level.
+_DECLARED_LABEL = "Contradiction you declared"
+_DECLARED_STATEMENT = (
+    "You marked these two recorded answers as conflicting: “{a}” and “{b}”. "
+    "This declaration has not been validated, and neither answer is assumed "
+    "correct.")
+_DECLARED_ACTION = (
+    "Review both answers. If one no longer reflects your intent, correct it; "
+    "the system does not choose which answer is right.")
 
 # Workstream 6 (REQUIREMENT_LANDSCAPE_SYNTHESIS_INCREMENT_CONTRACT.md §2.2/§7;
 # owner decision D3): truthful public vocabulary for the three explicitly
@@ -314,14 +327,24 @@ def _requirement_from_route(rev):
     )
 
 
-def _requirement_from_pair(lo, hi):
+def _requirement_from_pair(lo, hi, declared=None):
+    """One requirement per active contradiction pair. ``declared`` is the
+    (lo_record, hi_record) of an inventor declaration of THIS pair (CAP-10), so
+    the row is attributed to the inventor; a legacy edge keeps its wording."""
     ref = lo + "|" + hi
-    anchor = ProvenanceAnchor(anchor_kind="active_contradiction", anchor_reference=ref,
-                              display_label=_ANCHOR_LABELS["active_contradiction"])
+    label = _ANCHOR_LABELS["active_contradiction"]
     action_kind, statement = _ACTION["active_contradiction"]
+    requirement_statement = _CONTRADICTION_STATEMENT
+    if declared is not None:
+        label = _DECLARED_LABEL
+        statement = _DECLARED_ACTION
+        requirement_statement = _DECLARED_STATEMENT.format(
+            a=declared[0].content, b=declared[1].content)
+    anchor = ProvenanceAnchor(anchor_kind="active_contradiction", anchor_reference=ref,
+                              display_label=label)
     return DerivedRequirement(
         requirement_id="req:contradiction:" + ref,
-        statement=_CONTRADICTION_STATEMENT,
+        statement=requirement_statement,
         primary_anchor=anchor,
         supporting_references=(),
         source_status=_SOURCE_STATUS["active_contradiction"],
@@ -379,11 +402,19 @@ def derive_requirement_landscape(state):
     # recorded answer, or a validation-plan/deliverable input (both inherit
     # this landscape). Bounded class exclusion only: every legacy disposition
     # keeps its behavior byte-identically.
+    # CAP-10 Slice 1: an inventor `contradiction_declared` record is
+    # relationship metadata over two answers, never itself a "Recorded answer"
+    # requirement; the contradiction row is derived from its endpoints below.
     active = [r for r in getattr(state, "assertions", [])
               if getattr(r, "superseded_by", None) is None
               and getattr(r, "disposition", None)
-              not in DECISION_ACTION_DISPOSITIONS]
+              not in DECISION_ACTION_DISPOSITIONS
+              and getattr(r, "disposition", None)
+              != DISPOSITION_CONTRADICTION_DECLARED]
     active_ids = {r.record_id for r in active}
+    by_id = {r.record_id: r for r in active}
+    declared_pairs = active_declared_contradiction_pairs(
+        getattr(state, "assertions", []))
 
     # 1. Active contradiction pairs (order-normalized; F-2 / §6.5). A malformed edge
     #    whose partner is missing or inactive yields no pair.
@@ -394,7 +425,10 @@ def derive_requirement_landscape(state):
                 pairs.add(_order_pair(r.record_id, pid))
     paired = {rid for pair in pairs for rid in pair}
 
-    requirements = [_requirement_from_pair(lo, hi) for (lo, hi) in pairs]
+    requirements = [
+        _requirement_from_pair(
+            lo, hi, (by_id[lo], by_id[hi]) if (lo, hi) in declared_pairs else None)
+        for (lo, hi) in pairs]
 
     # 2. Non-contradiction active records -> exactly one requirement each (§6.5).
     for r in active:

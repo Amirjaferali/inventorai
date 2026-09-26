@@ -4,6 +4,7 @@ Scope: electronics/electrical, LEVEL 0-2.
 Governed by: MVP_SCOPE_FREEZE.md
 """
 
+import re
 from dataclasses import dataclass, field
 from typing import Optional
 from datetime import datetime
@@ -169,6 +170,14 @@ INTERACTION_DISPOSITIONS = frozenset({
     DISPOSITION_EVIDENCE_REQUESTED, DISPOSITION_RISK_ACCEPTED,
 }) | DECISION_ACTION_DISPOSITIONS
 
+# CAP-10 Slice 1 (Stage 21): the inventor's explicit declaration that TWO of
+# their own active recorded answers conflict. Relationship metadata over two
+# existing answers — NOT an answer, NOT an owner interaction on a question, and
+# deliberately NOT in INTERACTION_DISPOSITIONS (`record_interaction` refuses it;
+# its one carrier is `record_contradiction_declaration`). It resolves nothing,
+# chooses no winner and changes no gap, maturity, progression or score.
+DISPOSITION_CONTRADICTION_DECLARED = "contradiction_declared"
+
 # The seven pre-W2-A dispositions, needed by the bounded legacy-payload load
 # rule in engine.record_contract (contract §4: only a LEGACY payload may omit
 # `decision_context_root`).
@@ -200,6 +209,9 @@ _DEFAULT_PROVENANCE_BY_DISPOSITION = {
     DISPOSITION_DECISION_CONTEXT_DECLARED:      OWNER_STATED,
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED:  OWNER_STATED,
     DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN: OWNER_STATED,
+    # CAP-10 Slice 1: an inventor's own conflict declaration. Its carrier is
+    # `record_contradiction_declaration` (record_interaction refuses it).
+    DISPOSITION_CONTRADICTION_DECLARED:         OWNER_STATED,
 }
 
 # Provenance Hardening Step 1 — the provenance a STORED record of each known
@@ -223,6 +235,8 @@ ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION = {
     DISPOSITION_DECISION_CONTEXT_DECLARED:      frozenset({OWNER_STATED}),
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED:  frozenset({OWNER_STATED}),
     DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN: frozenset({OWNER_STATED}),
+    # CAP-10 Slice 1: singleton — introduced OWNER_STATED, never LEGACY.
+    DISPOSITION_CONTRADICTION_DECLARED:         frozenset({OWNER_STATED}),
 }
 
 # Validation levels treated as "validated" (i.e. not owner-unvalidated) by the
@@ -306,6 +320,93 @@ class AssertionRecord:
     # no canonical question (e.g. the completion-stage criticality correction)
     # and on decision actions. A correction inherits its prior's value verbatim.
     question_target : Optional[str] = None
+    # CAP-10 Slice 1: the canonical (lo, hi) pair of endpoint record ids on a
+    # `contradiction_declared` record ONLY; None on every other record. The
+    # endpoints' own questions, gaps and text stay owned by the endpoints.
+    contradiction_endpoints : Optional[list] = None
+
+
+# CAP-10 Slice 1 — the ONE shared projection path. The durable authority for an
+# owner-declared contradiction is the `contradiction_declared` record; the
+# symmetric `contradicts` edges on its two endpoints are a DERIVED projection,
+# applied here (live after mint, and on every load) through the same linking
+# primitive `IdeaState.mark_contradiction` uses. The projected partners are
+# remembered on the record instance (never a dataclass field), so the
+# serializer can keep them out of any durable payload: the endpoint rows are
+# never rewritten and no second, independently editable truth source exists.
+_PROJECTED_CONTRADICTS_ATTR = "_projected_contradicts"
+_REC_ID_RE = re.compile(r"^rec_[1-9][0-9]*$")
+
+
+def _link_contradiction(a, b):
+    """The existing symmetric, idempotent contradiction link between two
+    distinct records (the body `mark_contradiction` always had)."""
+    if a.record_id == b.record_id:
+        raise ValueError(
+            f"a record cannot contradict itself: {a.record_id!r}")
+    if b.record_id not in a.contradicts:
+        a.contradicts.append(b.record_id)
+    if a.record_id not in b.contradicts:
+        b.contradicts.append(a.record_id)
+
+
+def projected_contradicts(record):
+    """The partner ids on ``record.contradicts`` that are a CAP-10 projection
+    (empty for every record that is not a declared endpoint)."""
+    return frozenset(getattr(record, _PROJECTED_CONTRADICTS_ATTR, ()) or ())
+
+
+def canonical_contradiction_pair(record_id_a, record_id_b):
+    """Deterministic (lo, hi) order of two ``rec_N`` ids by their number, so the
+    selection order never makes a different relationship. Refuses malformed
+    ids and a pair naming one record twice."""
+    for rid in (record_id_a, record_id_b):
+        if not isinstance(rid, str) or not _REC_ID_RE.match(rid):
+            raise ValueError("a contradiction endpoint must be a rec_N id")
+    if record_id_a == record_id_b:
+        raise ValueError("a contradiction needs two distinct recorded answers")
+    return sorted((record_id_a, record_id_b), key=lambda r: int(r[4:]))
+
+
+def project_declared_contradictions(assertions):
+    """Apply every `contradiction_declared` record in ``assertions`` to its two
+    endpoints through the shared link. Idempotent; an endpoint missing from the
+    list is skipped (the record contract rejects such a history before this is
+    reached). Returns ``assertions``."""
+    by_id = {r.record_id: r for r in assertions}
+    for record in assertions:
+        if record.disposition != DISPOSITION_CONTRADICTION_DECLARED:
+            continue
+        pair = record.contradiction_endpoints or ()
+        if len(pair) != 2 or pair[0] not in by_id or pair[1] not in by_id:
+            continue
+        a, b = by_id[pair[0]], by_id[pair[1]]
+        for this, other in ((a, b), (b, a)):
+            if other.record_id not in this.contradicts:
+                projected = set(projected_contradicts(this))
+                projected.add(other.record_id)
+                setattr(this, _PROJECTED_CONTRADICTS_ATTR, frozenset(projected))
+        _link_contradiction(a, b)
+    return assertions
+
+
+def active_declared_contradiction_pairs(assertions):
+    """The (lo, hi) pairs of every owner declaration whose BOTH endpoints are
+    still active (not superseded). A declaration never transfers to a
+    correction's replacement answer; once either endpoint is superseded the
+    pair is simply no longer active — historical, never 'resolved'."""
+    by_id = {r.record_id: r for r in assertions}
+    pairs = set()
+    for record in assertions:
+        if record.disposition != DISPOSITION_CONTRADICTION_DECLARED:
+            continue
+        pair = record.contradiction_endpoints or ()
+        if len(pair) != 2:
+            continue
+        ends = [by_id.get(rid) for rid in pair]
+        if all(e is not None and e.superseded_by is None for e in ends):
+            pairs.add(tuple(pair))
+    return frozenset(pairs)
 
 
 @dataclass(frozen=True)
@@ -713,13 +814,49 @@ class IdeaState:
         no self-edge is ever created (F-5). Repeated valid calls are idempotent."""
         a = self._require_record(record_id_a)
         b = self._require_record(record_id_b)
-        if record_id_a == record_id_b:
-            raise ValueError(
-                f"a record cannot contradict itself: {record_id_a!r}")
-        if record_id_b not in a.contradicts:
-            a.contradicts.append(record_id_b)
-        if record_id_a not in b.contradicts:
-            b.contradicts.append(record_id_a)
+        _link_contradiction(a, b)
+
+    def record_contradiction_declaration(self, record_id_a, record_id_b,
+                                         content="", iteration=0):
+        """CAP-10 Slice 1 — the ONE carrier of a `contradiction_declared`
+        record: the inventor's explicit statement that two of their own
+        currently ACTIVE `answered` records conflict. Append-only; fails closed
+        with NOTHING appended on malformed, unknown, identical, non-answer or
+        already-superseded endpoints, or on a pair already actively declared.
+
+        The record is OWNER_STATED / OWNER_INPUT / UNVALIDATED, carries no gap,
+        question, decision context, quality, pending state, supersession or
+        contradiction edge of its own, and keeps the optional note verbatim in
+        ``content``. The symmetric edges are then projected onto the two
+        endpoints through the shared path. It changes no gap, maturity,
+        progression, score or routing, and chooses no winner."""
+        pair = canonical_contradiction_pair(record_id_a, record_id_b)
+        for rid in pair:
+            endpoint = self._require_record(rid)
+            if endpoint.disposition != DISPOSITION_ANSWERED:
+                raise ValueError("a contradiction endpoint must be an answer")
+            if endpoint.superseded_by is not None:
+                raise ValueError("a contradiction endpoint must be active")
+        if tuple(pair) in active_declared_contradiction_pairs(self.assertions):
+            raise ValueError("this contradiction is already declared")
+        _max_n = max((int(r.record_id[4:]) for r in self.assertions
+                      if isinstance(r.record_id, str)
+                      and r.record_id.startswith("rec_")
+                      and r.record_id[4:].isdigit()), default=0)
+        record = AssertionRecord(
+            record_id=f"rec_{_max_n + 1}",
+            disposition=DISPOSITION_CONTRADICTION_DECLARED,
+            content=content or "", gap_context=None, iteration=iteration,
+            provenance=_DEFAULT_PROVENANCE_BY_DISPOSITION[
+                DISPOSITION_CONTRADICTION_DECLARED],
+            validation_status=UNVALIDATED, quality=None, pending=None,
+            responsibility=ASSERTION_RESPONSIBILITY_BY_PROVENANCE[OWNER_STATED],
+            resolves_gap=False, decision_context_root=None,
+            question_target=None, contradiction_endpoints=list(pair),
+        )
+        self.assertions.append(record)
+        project_declared_contradictions(self.assertions)
+        return record
 
     def mark_supersession(self, superseded_id, by_id):
         """Mark superseded_id as superseded by by_id. Non-destructive: the

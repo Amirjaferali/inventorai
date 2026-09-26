@@ -39,6 +39,9 @@ from engine.idea_state import (
     DISPOSITION_DECISION_CONTEXT_DECLARED,
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED,
     DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN,
+    DISPOSITION_ANSWERED, DISPOSITION_CONTRADICTION_DECLARED, OWNER_STATED,
+    UNVALIDATED, canonical_contradiction_pair, projected_contradicts,
+    project_declared_contradictions,
 )
 
 # One minimal supported contract version. Unknown versions fail explicitly.
@@ -97,6 +100,10 @@ _ASSERTION_FIELDS = (
     # Every payload persisted before this field existed omits it and loads with
     # None (never inferred); see `assertion_from_dict`.
     "question_target",
+    # CAP-10 Slice 1: the canonical endpoint pair of a `contradiction_declared`
+    # record. Written ONLY on that record (omitted everywhere else, so every
+    # other payload stays byte-identical) and refused on any other disposition.
+    "contradiction_endpoints",
 )
 
 _ENVELOPE_FIELDS = ("contract_version", "idea_id", "assertions")
@@ -104,8 +111,14 @@ _ENVELOPE_FIELDS = ("contract_version", "idea_id", "assertions")
 
 def assertion_to_dict(record):
     """Serialize one AssertionRecord to a JSON-compatible dict (all
-    authoritative fields; verbatim values; link lists copied)."""
-    return {
+    authoritative fields; verbatim values; link lists copied).
+
+    CAP-10 Slice 1: a contradiction edge PROJECTED from an owner declaration is
+    derived truth, never durable authority, so it is never written here — the
+    declaration record alone is persisted. ``contradiction_endpoints`` is
+    written only on a declaration, so every other payload is unchanged."""
+    projected = projected_contradicts(record)
+    data = {
         "record_id": record.record_id,
         "disposition": record.disposition,
         "content": record.content,
@@ -117,12 +130,16 @@ def assertion_to_dict(record):
         "pending": record.pending,
         "responsibility": record.responsibility,
         "resolves_gap": record.resolves_gap,
-        "contradicts": list(record.contradicts),
+        "contradicts": [ref for ref in record.contradicts
+                        if ref not in projected],
         "supersedes": list(record.supersedes),
         "superseded_by": record.superseded_by,
         "decision_context_root": record.decision_context_root,
         "question_target": record.question_target,
     }
+    if getattr(record, "contradiction_endpoints", None) is not None:
+        data["contradiction_endpoints"] = list(record.contradiction_endpoints)
+    return data
 
 
 def reconcile_supersession_edges(assertions):
@@ -209,6 +226,13 @@ def assertion_from_dict(data):
         # relaxes ONLY this one key; every other missing field still fails.
         data = dict(data, question_target=None)
         missing = missing - {"question_target"}
+    # CAP-10 Slice 1: the endpoint pair is written only on a declaration, so
+    # its absence is the normal shape of every other payload (and of all
+    # history). A declaration without it fails in `_contradiction_declaration`.
+    endpoints_present = "contradiction_endpoints" in data
+    if "contradiction_endpoints" in missing:
+        data = dict(data, contradiction_endpoints=None)
+        missing = missing - {"contradiction_endpoints"}
     if missing == {"decision_context_root"} \
             and data.get("disposition") in LEGACY_INTERACTION_DISPOSITIONS:
         # W2-A contract §4 — the ONE bounded compatibility relaxation: a
@@ -263,6 +287,11 @@ def assertion_from_dict(data):
             not isinstance(question_target, str) or not question_target):
         raise InvalidReferenceError(
             "question_target must be a non-empty string or null")
+    if disposition == DISPOSITION_CONTRADICTION_DECLARED:
+        _check_contradiction_declaration(data)
+    elif endpoints_present:
+        raise InvalidReferenceError(
+            "contradiction_endpoints is reserved for contradiction_declared")
     return AssertionRecord(
         record_id=data["record_id"],
         disposition=data["disposition"],
@@ -280,7 +309,43 @@ def assertion_from_dict(data):
         superseded_by=data["superseded_by"],
         decision_context_root=data["decision_context_root"],
         question_target=question_target,
+        contradiction_endpoints=(None if data["contradiction_endpoints"] is None
+                                 else list(data["contradiction_endpoints"])),
     )
+
+
+def _check_contradiction_declaration(data):
+    """CAP-10 Slice 1 — the stored shape of one `contradiction_declared`
+    record, mirroring its carrier: OWNER_STATED (enforced above through the
+    load-provenance singleton) and UNVALIDATED only, exactly two canonical
+    endpoint ids, and every non-applicable field neutral. Refused, never
+    coerced; no value is echoed."""
+    if data["validation_status"] != UNVALIDATED:
+        raise InvalidValidationStatusError(
+            "a contradiction declaration is UNVALIDATED only")
+    if data["provenance"] != OWNER_STATED:
+        raise InvalidProvenanceError(
+            "a contradiction declaration is OWNER_STATED only")
+    pair = data["contradiction_endpoints"]
+    if not isinstance(pair, list) or len(pair) != 2:
+        raise InvalidReferenceError(
+            "a contradiction declaration names exactly two endpoints")
+    try:
+        canonical = canonical_contradiction_pair(pair[0], pair[1])
+    except ValueError:
+        raise InvalidReferenceError(
+            "a contradiction declaration has malformed endpoints") from None
+    if list(pair) != canonical:
+        raise InvalidReferenceError(
+            "contradiction endpoints are not in canonical order")
+    if (data["gap_context"] is not None or data["question_target"] is not None
+            or data["decision_context_root"] is not None
+            or data["quality"] is not None or data["pending"] is not None
+            or data["resolves_gap"] is not False
+            or data["contradicts"] or data["supersedes"]
+            or data["superseded_by"] is not None):
+        raise InvalidReferenceError(
+            "a contradiction declaration carries a non-neutral field")
 
 
 @dataclass
@@ -340,6 +405,9 @@ class ProjectRecordContract:
         contract = cls(idea_id=data["idea_id"], assertions=assertions,
                        contract_version=version)
         contract.validate()
+        # CAP-10 Slice 1: the validated declarations are projected onto their
+        # endpoints through the ONE shared path (live mint uses the same).
+        project_declared_contradictions(assertions)
         return contract
 
     @classmethod
@@ -459,7 +527,77 @@ class ProjectRecordContract:
                     raise InvalidReferenceError(
                         "cross-context decision supersession at record %r"
                         % r.record_id)
+        self._validate_contradiction_declarations(by_id)
         return self
+
+    def _validate_contradiction_declarations(self, by_id):
+        """CAP-10 Slice 1 — CHRONOLOGICAL relationship validation. The ledger
+        is walked in durable order (this list IS `records.seq` order) and every
+        `contradiction_declared` record is checked against the ledger AS IT
+        STOOD AT ITS OWN POSITION: both endpoints already present (no forward
+        reference), `answered`, and not yet superseded by any EARLIER record.
+        Final `superseded_by` state is deliberately not used — a correction
+        AFTER a valid declaration is a valid history (the declaration stays
+        historical and its pair simply becomes inactive), while a declaration
+        naming an already-corrected answer is refused.
+
+        Also refused: any record superseding a declaration (Slice 1 has no
+        declaration correction), a second declaration of a pair that is still
+        active, and a stored `contradicts` edge between two endpoints of a
+        declaration (a projection must never become durable authority).
+        Legacy edges between other records keep loading unchanged."""
+        seen = set()
+        superseded = set()
+        active_pairs = set()
+        declared_pairs = set()
+        for r in self.assertions:
+            for ref in r.supersedes:
+                if by_id[ref].disposition == DISPOSITION_CONTRADICTION_DECLARED:
+                    raise InvalidReferenceError(
+                        "record %r supersedes a contradiction declaration"
+                        % r.record_id)
+            if r.disposition == DISPOSITION_CONTRADICTION_DECLARED:
+                pair = tuple(r.contradiction_endpoints or ())
+                if len(pair) != 2:
+                    raise InvalidReferenceError(
+                        "contradiction declaration %r lacks two endpoints"
+                        % r.record_id)
+                for rid in pair:
+                    if rid not in seen:
+                        raise InvalidReferenceError(
+                            "contradiction declaration %r names an endpoint "
+                            "that is not earlier in the ledger" % r.record_id)
+                    if by_id[rid].disposition != DISPOSITION_ANSWERED:
+                        raise InvalidReferenceError(
+                            "contradiction declaration %r names a non-answer "
+                            "endpoint" % r.record_id)
+                    if rid in superseded:
+                        raise InvalidReferenceError(
+                            "contradiction declaration %r names an endpoint "
+                            "already superseded at its position" % r.record_id)
+                active_pairs = {p for p in active_pairs
+                                if not (set(p) & superseded)}
+                if pair in active_pairs:
+                    raise InvalidReferenceError(
+                        "contradiction declaration %r repeats an active "
+                        "declaration" % r.record_id)
+                active_pairs.add(pair)
+                declared_pairs.add(pair)
+            superseded.update(r.supersedes)
+            seen.add(r.record_id)
+        if not declared_pairs:
+            return
+        for r in self.assertions:
+            durable = set(r.contradicts) - projected_contradicts(r)
+            for ref in durable:
+                try:
+                    pair = tuple(canonical_contradiction_pair(r.record_id, ref))
+                except ValueError:
+                    continue            # a legacy edge outside the rec_N shape
+                if pair in declared_pairs:
+                    raise InvalidReferenceError(
+                        "record %r stores a contradiction edge owned by a "
+                        "declaration" % r.record_id)
 
     # --- reconstruction of a state suitable for a FRESH readiness call ------
     def to_state(self):

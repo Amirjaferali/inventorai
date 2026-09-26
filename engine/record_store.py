@@ -82,6 +82,13 @@ class ProjectNotFound(StoreError):
     """Raised when a project id is not present in the store."""
 
 
+class ContradictionDeclarationRejected(StoreError):
+    """CAP-10 Slice 1: a `contradiction_declared` append is not valid against
+    the DURABLE ledger inside the write transaction (an endpoint unknown,
+    not an answer, already superseded, or the pair already actively declared).
+    Decided before any row is written; nothing is written."""
+
+
 class FeedbackChainConflict(StoreError):
     """T2-D: the expected head moved, a root was proposed for a context that
     already has one, or the stable event key names a DIFFERENT event. An
@@ -1335,6 +1342,65 @@ class SqliteRecordStore:
         return [r[0] for r in self._conn.execute(
             "SELECT project_id FROM projects WHERE owner_account_id = ? "
             "ORDER BY project_id", (owner_account_id,)).fetchall()]
+
+    def append_contradiction_declaration(self, project_id: str, record,
+                                         idempotency_key: str) -> None:
+        """CAP-10 Slice 1 — append ONE `contradiction_declared` record. Its
+        endpoints are re-resolved against the DURABLE ledger INSIDE the same
+        serialized write transaction (``BEGIN IMMEDIATE``) that appends it, by
+        the record contract's own chronological validation over the stored
+        history plus this record at the next position. A correction that
+        committed first therefore makes this append fail closed
+        (``ContradictionDeclarationRejected``); a correction that commits later
+        leaves a valid history. The durable idempotency key is required and
+        rides the existing partial UNIQUE index, so a duplicate raises
+        ``sqlite3.IntegrityError`` and rolls back like every other append."""
+        from engine.idea_state import DISPOSITION_CONTRADICTION_DECLARED
+        from engine.record_contract import (
+            ContractError, assertion_from_dict, reconcile_supersession_edges)
+        if getattr(record, "disposition", None) != DISPOSITION_CONTRADICTION_DECLARED:
+            raise ContradictionDeclarationRejected("not a contradiction declaration")
+        if not idempotency_key:
+            raise ContradictionDeclarationRejected("an idempotency key is required")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            proj = self._conn.execute(
+                "SELECT idea_id, contract_version FROM projects WHERE project_id = ?",
+                (project_id,)).fetchone()
+            if proj is None:
+                raise ProjectNotFound(project_id)
+            rows = self._conn.execute(
+                "SELECT payload FROM records WHERE project_id = ? ORDER BY seq ASC",
+                (project_id,)).fetchall()
+            payload = assertion_to_dict(record)
+            try:
+                history = [assertion_from_dict(json.loads(p)) for (p,) in rows]
+                history.append(assertion_from_dict(payload))
+                reconcile_supersession_edges(history)
+                ProjectRecordContract(idea_id=proj[0], assertions=history,
+                                      contract_version=proj[1]).validate()
+            except ContractError:
+                raise ContradictionDeclarationRejected(
+                    "the declaration is not valid against the durable ledger"
+                ) from None
+            seq = self._conn.execute(
+                "SELECT COALESCE(MAX(seq), -1) + 1 FROM records WHERE project_id = ?",
+                (project_id,)).fetchone()[0]
+            self._conn.execute(
+                "INSERT INTO records (project_id, seq, record_id, payload, idempotency_key) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (project_id, seq, record.record_id,
+                 json.dumps(payload, sort_keys=True), idempotency_key))
+
+    def committed_record_payload_for_idempotency_key(self, project_id: str,
+                                                     idempotency_key: str):
+        """CAP-10 Slice 1 — the STORED payload for ``idempotency_key`` read ONLY
+        from committed durable state. On a connection left inside an
+        unresolved transaction (a failed COMMIT whose ROLLBACK also failed,
+        IR-01) a read would see its OWN uncommitted row, so this refuses with
+        ``RecordStoreConnectionUnsafe`` instead of confirming anything."""
+        self._refuse_uncommitted_reads()
+        return self.record_payload_for_idempotency_key(project_id, idempotency_key)
 
     def append_record(self, project_id: str, record, idempotency_key: str = None) -> None:
         """Atomically append one accepted-input record to an existing project,

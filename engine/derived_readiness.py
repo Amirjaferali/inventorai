@@ -89,8 +89,13 @@ class DerivedReadiness:
         Superseding one endpoint deactivates that side, so a contradiction with a
         superseded record no longer blocks the active set. No conflict is resolved
         automatically; the deactivated record is simply not in the active set."""
+        # CAP-10 Slice 1: the partner may sit in ANOTHER gap (an inventor may
+        # declare two answers from different areas as conflicting), so partner
+        # activity is read over the whole ledger. Only contradictions whose two
+        # endpoints are BOTH still active count; a historical one never does.
         active = self._active(gap_type)
-        active_ids = {r.record_id for r in active}
+        active_ids = {r.record_id for r in getattr(self._state, "assertions", [])
+                      if self._is_active(r)}
         for r in active:
             if any(other in active_ids for other in getattr(r, "contradicts", [])):
                 return True
