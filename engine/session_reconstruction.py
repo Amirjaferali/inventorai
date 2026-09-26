@@ -54,10 +54,12 @@ Hard boundaries (fail-closed, no false-green):
 The seed idea is sensitive user content: it is never logged, never placed in an
 exception string, and never duplicated into an `AssertionRecord`.
 """
+import contextlib
 import copy
 from dataclasses import dataclass, field
 from typing import Optional
 
+from engine import need_routing
 from engine import progression_loop
 from engine.idea_state import (IdeaState, DISPOSITION_ANSWERED,
     DISPOSITION_RISK_ACCEPTED)
@@ -91,6 +93,15 @@ ENGINE_CONTRACT_VERSION_T2G1 = "p4-2-level1-recon-v1-t2g1"
 # its own rules. Legacy migration remains a pending decision across all three.
 ENGINE_CONTRACT_VERSION_T2G2 = "p4-2-level1-recon-v1-t2g2"
 
+# Safe Question Reduction Slice 1: the FOURTH supported engine-contract
+# version. It carries every T2-G-2 rule unchanged and is the ONLY version
+# whose projects may hold durable NeedRouting revisions (materialized at
+# creation). Every existing project keeps its recorded version and replays
+# exactly as before: nothing is backfilled, no routing is synthesized, and a
+# routing history on any other version fails closed.
+ENGINE_CONTRACT_VERSION_NR1 = "p4-2-level1-recon-v1-t2g2-nr1"
+ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS = (ENGINE_CONTRACT_VERSION_NR1,)
+
 # Both exact versions are supported through the ONE existing progression and
 # reconstruction path — the earlier stamp is NOT replaced, so no valid legacy
 # project is stranded at Level 0. Anything else still fails closed.
@@ -98,11 +109,12 @@ SUPPORTED_ENGINE_CONTRACT_VERSIONS = (
     RECONSTRUCTION_VERSION,
     ENGINE_CONTRACT_VERSION_T2G1,
     ENGINE_CONTRACT_VERSION_T2G2,
+    ENGINE_CONTRACT_VERSION_NR1,
 )
 
 # The version a newly created supported project records. Separate name so the
 # "what do we stamp now" decision is never confused with "what do we support".
-CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_T2G2
+CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_NR1
 
 # Deterministic Path-N support only.
 SUPPORTED_PATH = "N"
@@ -261,7 +273,7 @@ def reconstruct_readonly_state(store, project_id: str) -> "ReconstructedReadonly
     ``reconstruct_review_state`` — which remains byte-for-byte unchanged in
     behavior (it returns exactly the ``review`` element). Performs NO mutation
     of any kind."""
-    review, state = _reconstruct(store, project_id)
+    review, state = _reconstruct_snapshot(store, project_id)
     return ReconstructedReadonlySession(review=review, state=state)
 
 
@@ -273,12 +285,35 @@ def reconstruct_review_state(store, project_id: str) -> ReconstructedReviewState
     otherwise); propagates the canonical ``ContractError`` on malformed durable
     content; raises ``ReconstructionReplayLimitError`` when the accepted-answer
     replay count exceeds the bound. Performs NO mutation of any kind."""
-    return _reconstruct(store, project_id)[0]
+    return _reconstruct_snapshot(store, project_id)[0]
+
+
+def _read_snapshot(store):
+    """Safe Question Reduction Slice 1: ONE consistent durable snapshot for
+    the whole reconstruction — envelope, Owner ledger, adoption history and
+    NeedRouting revisions are read inside one read transaction when the store
+    offers it (test doubles without it keep their exact behavior)."""
+    opener = getattr(store, "read_snapshot", None)
+    return opener() if callable(opener) else contextlib.nullcontext()
+
+
+def _load_routing(store, project_id):
+    """The project's validated NeedRouting history, or () for a store that
+    has no routing carrier. A corrupt history raises (fail closed)."""
+    loader = getattr(store, "load_need_routing", None)
+    return tuple(loader(project_id)) if callable(loader) else ()
+
+
+def _reconstruct_snapshot(store, project_id: str):
+    """Safe Question Reduction Slice 1: run the ONE shared replay with every
+    durable read inside one snapshot. Returns ``(review, state_or_None)``."""
+    with _read_snapshot(store):
+        return _reconstruct(store, project_id)
 
 
 def _reconstruct(store, project_id: str):
-    """Shared single replay (P10-PC2 extraction — verbatim P4-2 Level-1 logic;
-    no behavior change). Returns ``(review, state_or_None)``."""
+    """Shared single replay (P10-PC2 extraction — verbatim P4-2 Level-1 logic
+    plus the Slice-1 routing interleave). Returns ``(review, state_or_None)``."""
     # PERF-01: ONE full validated contract load per reconstruction. Loading the
     # contract IS the validation seam (`load_accepted_answer_evidence` was only a
     # thin `answered` filter over this same load), so a malformed / unsupported-
@@ -348,6 +383,21 @@ def _reconstruct(store, project_id: str):
             "accepted-answer replay count %d exceeds the bound %d"
             % (len(evidence), MAX_ACCEPTED_ANSWER_REPLAY))
 
+    # Safe Question Reduction Slice 1: the project's durable routing revisions
+    # from the SAME snapshot. Only a routing-aware version may carry any; every
+    # revision must name a committed policy of the project's own domain and a
+    # durable ledger position that exists. Anything else fails closed — and
+    # nothing is ever synthesized for a project that has no routing rows.
+    routing = _load_routing(store, project_id)
+    if routing:
+        if not need_routing.is_routing_aware(version):
+            raise need_routing.NeedRoutingError(
+                "routing revisions exist on a version that does not support them")
+        need_routing.validate_against_policy(routing, domain)
+        if routing[-1].after_assertion_seq >= len(contract.assertions):
+            raise need_routing.NeedRoutingError(
+                "routing revision names a ledger position that does not exist")
+
     # PVCG-R4-C §8 RP-1 — THE AMENDED ACCEPTED-SOURCE STREAM.
     #
     # Exactly the same ONE canonical active-set rule the five derived modules
@@ -387,6 +437,17 @@ def _reconstruct(store, project_id: str):
     # under exactly the one version the project's durable record names.
     state.engine_contract_version = version
 
+    # Slice 1: revisions committed before any Owner record apply first, then
+    # each revision right after the Owner record it followed durably — the
+    # durable interleave, never "routing after all answers".
+    _pending_routing = list(routing)
+
+    def _apply_routing_through(position):
+        while _pending_routing and \
+                _pending_routing[0].after_assertion_seq <= position:
+            need_routing.apply_revision(state, _pending_routing.pop(0))
+
+    _apply_routing_through(-1)
     last_result = progression_loop.run_iteration(state, seed)   # seed first
     # RVR-1 (Wave-1 remediation contract, OD-R1): the replay walks the FULL
     # durable ledger in seq order and applies exactly two record kinds — the
@@ -408,7 +469,7 @@ def _reconstruct(store, project_id: str):
     # UX can truthfully explain the lapse. Derived report only; nothing is
     # persisted and no record is mutated.
     _risk_outcomes = []
-    for record in contract_assertions_seq(contract):
+    for _position, record in enumerate(contract_assertions_seq(contract)):
         if (record.disposition == DISPOSITION_ANSWERED
                 and record.record_id in _amended_ids):
             last_result = progression_loop.run_iteration(state, record.content)
@@ -430,6 +491,8 @@ def _reconstruct(store, project_id: str):
                     gap_context=record.gap_context,
                     applied=False,
                     reason=_reason))
+        _apply_routing_through(_position)
+    _apply_routing_through(len(contract.assertions))
 
     # P10-PC2: restore the durably persisted interaction ledger VERBATIM onto
     # the fresh state — these are the very ``AssertionRecord`` values created

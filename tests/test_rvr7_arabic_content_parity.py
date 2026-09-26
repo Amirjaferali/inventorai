@@ -87,9 +87,15 @@ def test_arabic_variant_is_actually_arabic_and_english_is_not():
 
 
 def test_entry_key_set_is_the_closed_allowlist():
+    # Safe Question Reduction Slice 1: the ONE disclosed extension is the
+    # bounded optional `routing` descriptor on mechanical PHYSICAL_FEASIBILITY:Q2.
+    routed = {"mechanical": {"mechanical:PHYSICAL_FEASIBILITY:Q2"}}
     for domain in DOMAIN_ARTIFACTS:
         for e in _entries(domain):
-            assert set(e).issubset(ALLOWED_ENTRY_KEYS), (domain, e.get("question_id"))
+            allowed = ALLOWED_ENTRY_KEYS | (
+                {"routing"} if e.get("question_id") in routed.get(domain, ())
+                else set())
+            assert set(e).issubset(allowed), (domain, e.get("question_id"))
             assert {"question_id", "text"}.issubset(e)
 
 

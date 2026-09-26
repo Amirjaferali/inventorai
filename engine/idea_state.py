@@ -464,6 +464,16 @@ class IdeaState:
     # serialized into the P4-0 record contract.
     requirement_quantities : list = field(default_factory=list)
 
+    # Safe Question Reduction Slice 1: the in-memory CARRIER of the project's
+    # durable NeedRouting revisions (frozen
+    # ``engine.need_routing.NeedRoutingRevision`` rows in routing order),
+    # applied through ``engine.need_routing.apply_revision`` at the SAME
+    # durable position live and in replay. It is a SYSTEM routing record, not
+    # an Owner ledger record, not Evidence and not a gap status; it is never
+    # serialized into the P4-0 record contract. Empty by default, so every
+    # pre-routing state, fixture and replay is byte-identical.
+    need_routing : list = field(default_factory=list)
+
     def get_open_gaps(self):
         return [g for g in self.gaps if g.status in (OPEN, PARTIAL)]
 

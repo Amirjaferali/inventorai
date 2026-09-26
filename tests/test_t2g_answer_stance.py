@@ -65,13 +65,16 @@ def _veto(state, response, ids=MECH_IDS):
 # ==========================================================================
 # 1. Version gating — the rule can never switch itself on
 # ==========================================================================
-def test_the_three_supported_versions_are_exactly_these():
+def test_the_supported_versions_are_exactly_these():
+    # Safe Question Reduction Slice 1 adds the FOURTH, routing-aware version.
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_NR1
     assert RECONSTRUCTION_VERSION == "p4-2-level1-recon-v1"
     assert ENGINE_CONTRACT_VERSION_T2G1 == "p4-2-level1-recon-v1-t2g1"
     assert ENGINE_CONTRACT_VERSION_T2G2 == "p4-2-level1-recon-v1-t2g2"
+    assert ENGINE_CONTRACT_VERSION_NR1 == "p4-2-level1-recon-v1-t2g2-nr1"
     assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == (
         RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1,
-        ENGINE_CONTRACT_VERSION_T2G2)
+        ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_NR1)
 
 
 @pytest.mark.parametrize("version", [None, RECONSTRUCTION_VERSION, "", "anything",

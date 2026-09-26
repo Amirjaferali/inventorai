@@ -230,9 +230,12 @@ def test_start_persists_reconstruction_inputs(client):
     # one reconstruction path, so no valid legacy project is stranded.
     # T2-G-2: a fresh /start now records the newest contract; all three stay
     # supported through the one reconstruction path.
-    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_T2G2
+    # Safe Question Reduction Slice 1: a fresh /start now records the
+    # routing-aware version (T2-G-2 rules + NeedRouting); all four stay
+    # supported through the one reconstruction path.
+    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_NR1
     assert inputs["engine_contract_version"] in SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS
-    assert len(SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS) == 3
+    assert len(SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS) == 4
 
 
 def test_a_project_created_under_t2g1_keeps_that_stamp(client):

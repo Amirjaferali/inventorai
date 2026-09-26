@@ -610,7 +610,10 @@ def test_project_record_is_built_from_load_calls_only_and_never_persisted(client
     finally:
         appmod._STORE = original
     assert BLOCK_ID in page
-    assert calls and all(n.startswith("load_") for n in calls), calls
+    # Safe Question Reduction Slice 1: `read_snapshot` is the read-only scope
+    # that makes reconstruction's reads one consistent snapshot; it writes nothing.
+    assert calls and all(n.startswith("load_") or n == "read_snapshot"
+                         for n in calls), calls
     assert "project_record" not in appmod.SESSION_STORE[sid]
     src = inspect.getsource(appmod._project_record_context)
     for forbidden in ("INSERT", "UPDATE", "CREATE TABLE", "append_", ".execute(",

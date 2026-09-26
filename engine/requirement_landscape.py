@@ -271,6 +271,49 @@ def _requirement_from_record(record, kind):
     )
 
 
+# Safe Question Reduction Slice 1: an OUTSTANDING routed need (the current
+# head of a need's durable routing chain is a ROUTE) is its own requirement row,
+# so a sidecar routing record never disappears from the landscape, the
+# validation plan or the deliverable. It reuses the existing request anchor
+# kinds (specialist / evidence input pending) with a ``routing:`` reference —
+# no new anchor kind, no record lookup, no domain wording. Read directly from
+# ``state.need_routing`` to keep this module's import boundary.
+_ROUTING_KIND = {"SPECIALIST": "pending_specialist", "EVIDENCE": "pending_evidence"}
+_ROUTING_STATEMENT = {
+    "pending_specialist": "{label}: specialist input is required. This item "
+                          "remains unresolved; no specialist input is recorded yet.",
+    "pending_evidence": "{label}: empirical evidence is required. This item "
+                        "remains unresolved; no evidence is recorded yet.",
+}
+
+
+def _outstanding_routes(state):
+    heads = {}
+    for rev in getattr(state, "need_routing", None) or ():
+        heads[(rev.gap_type, rev.question_id)] = rev
+    return [rev for rev in heads.values()
+            if rev.operation == "ROUTE" and rev.required_input in _ROUTING_KIND]
+
+
+def _requirement_from_route(rev):
+    kind = _ROUTING_KIND[rev.required_input]
+    reference = "routing:" + rev.gap_type + ":" + rev.question_id
+    action_kind, statement = _ACTION[kind]
+    return DerivedRequirement(
+        requirement_id=_record_id_prefix(kind) + reference,
+        statement=_ROUTING_STATEMENT[kind].format(label=_gap_label(rev.gap_type)),
+        primary_anchor=ProvenanceAnchor(anchor_kind=kind, anchor_reference=reference,
+                                        display_label=_ANCHOR_LABELS[kind]),
+        supporting_references=(),
+        source_status=_SOURCE_STATUS[kind],
+        criticality=UNDETERMINED,
+        criticality_authority=AUTHORITY_SYSTEM_DERIVED,
+        criticality_rationale=None,
+        resolving_action=ResolvingAction(action_kind, statement, reference),
+        linked_risk_ids=(),
+    )
+
+
 def _requirement_from_pair(lo, hi):
     ref = lo + "|" + hi
     anchor = ProvenanceAnchor(anchor_kind="active_contradiction", anchor_reference=ref,
@@ -368,6 +411,10 @@ def derive_requirement_landscape(state):
         by_type.setdefault(g.gap_type, []).append(g)
     for gap_type in by_type:
         requirements.append(_requirement_from_gap(gap_type, by_type[gap_type]))
+
+    # 3b. Slice 1: outstanding routed needs (none without routing).
+    for rev in _outstanding_routes(state):
+        requirements.append(_requirement_from_route(rev))
 
     ordered = tuple(sorted(requirements, key=_order_key))
 

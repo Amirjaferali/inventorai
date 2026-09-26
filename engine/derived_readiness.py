@@ -37,6 +37,7 @@ from engine.idea_state import (
     STAGE_2_GAP_TYPES,
     STAGE_3_GAP_TYPES,
 )
+from engine.need_routing import gap_has_outstanding_routing, outstanding_routed_gaps
 
 # The gap contexts that are legitimate inputs to TECHNICAL derived readiness:
 # the six canonical gap types, taken from their existing definitions rather than
@@ -66,6 +67,12 @@ class DerivedReadiness:
         self._readiness_contexts = {
             c: recs for c, recs in by_context.items()
             if c in READINESS_GAP_CONTEXTS}
+        # Safe Question Reduction Slice 1: a gap with an outstanding routed
+        # need is a readiness context even before any record names it, so the
+        # sidecar routing can never disappear from technical readiness (no-op
+        # without routing).
+        for gap_type in outstanding_routed_gaps(state):
+            self._readiness_contexts.setdefault(gap_type, [])
 
     @staticmethod
     def _is_active(record):
@@ -99,6 +106,10 @@ class DerivedReadiness:
         "verified readiness": there is no technical gap for it to be readiness
         ABOUT. It fails closed here rather than being silently treated as a gap."""
         if gap_type not in READINESS_GAP_CONTEXTS:
+            return False
+        # Slice 1: an outstanding routed need (specialist / evidence input
+        # still owed) is never verified readiness.
+        if gap_has_outstanding_routing(self._state, gap_type):
             return False
         recs = self._active(gap_type)
         if not recs:

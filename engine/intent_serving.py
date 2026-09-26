@@ -382,12 +382,19 @@ def _effective(state, gap_type):
     if canonical.question_id not in covered:
         return IntentServing(canonical.question_id, canonical.text,
                              canonical.design_gap_id, adjusted=False)
+    # Safe Question Reduction Slice 1: a question whose need is routed to a
+    # specialist / evidence is not eligible for Owner questioning, so W2-C
+    # never adjusts the display to it (empty set without routing).
+    from engine.need_routing import outstanding_routed_question_ids
+    routed = outstanding_routed_question_ids(state, gap_type)
     for variant in variants[canonical_index + 1:]:
-        if variant.question_id not in covered:
+        if variant.question_id not in covered \
+                and variant.question_id not in routed:
             return IntentServing(variant.question_id, variant.text,
                                  variant.design_gap_id, adjusted=True)
     for variant in variants[:canonical_index]:
-        if variant.question_id not in covered:
+        if variant.question_id not in covered \
+                and variant.question_id not in routed:
             return IntentServing(variant.question_id, variant.text,
                                  variant.design_gap_id, adjusted=True)
     return IntentServing(canonical.question_id, canonical.text,

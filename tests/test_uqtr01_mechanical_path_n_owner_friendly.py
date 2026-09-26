@@ -159,9 +159,14 @@ def test_artifact_shape_and_metadata_state_the_new_truth():
                        "generated_by_gate"}
     assert md["domain"] == "mechanical"
     assert "owner-friendly" in md["source"] and "NOT a verbatim" in md["source"]
+    # Safe Question Reduction Slice 1: the ONE disclosed extension is the
+    # bounded routing descriptor on PHYSICAL_FEASIBILITY:Q2 (copy unchanged).
     for entries in data["gaps"].values():
         for e in entries:
-            assert list(e) == ["question_id", "text", "text_ar"]
+            expected = ["question_id", "text", "text_ar"]
+            if e["question_id"] == "mechanical:PHYSICAL_FEASIBILITY:Q2":
+                expected = expected + ["routing"]
+            assert list(e) == expected
 
 
 # ---------------------------------------------------------------------------

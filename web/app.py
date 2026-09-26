@@ -263,6 +263,7 @@ from engine.session_reconstruction import (
     CURRENT_ENGINE_CONTRACT_VERSION,
     ENGINE_CONTRACT_VERSION_T2G1,
     ENGINE_CONTRACT_VERSION_T2G2,
+    ENGINE_CONTRACT_VERSION_NR1,
     SUPPORTED_ENGINE_CONTRACT_VERSIONS,
     SUPPORTED_PATH as _RECON_SUPPORTED_PATH,
     MAX_ACCEPTED_ANSWER_REPLAY as _RECON_MAX_ANSWER_REPLAY,
@@ -271,6 +272,8 @@ from engine.session_reconstruction import (
 # MSNL local-only shadow Candidate 01: the web layer may reach ONLY the capture
 # seam (`_msnl_capture` below). Adapters and evaluation are never called here.
 from engine import msnl_shadow as _msnl_shadow
+# Safe Question Reduction Slice 1: deterministic question-scoped NeedRouting.
+from engine import need_routing as _need_routing
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
 # section, imported as a module-level name so one selection feeds both surfaces.
 from engine.idea_development_outputs import derive_next_development_step
@@ -2372,8 +2375,16 @@ def _answer_idempotency_key(sid, token):
 # criticality-correction free-text form, which has no canonical question.
 UQTR_TARGET_QUESTION = "QUESTION"
 UQTR_TARGET_CRITICALITY_CORRECTION = "CRITICALITY_CORRECTION"
+# Safe Question Reduction Slice 1: the optional Owner note on an OUTSTANDING
+# routed need. Its own closed kind, bound to that need's exact canonical
+# question identity and gap — never to whatever gap is primary at submission.
+UQTR_TARGET_ROUTED_NEED = "ROUTED_NEED"
 _UQTR_TARGET_KINDS = frozenset(
-    {UQTR_TARGET_QUESTION, UQTR_TARGET_CRITICALITY_CORRECTION})
+    {UQTR_TARGET_QUESTION, UQTR_TARGET_CRITICALITY_CORRECTION,
+     UQTR_TARGET_ROUTED_NEED})
+# The ONE Owner action a routed-need note records: an OWNER_STATED provisional
+# statement that establishes nothing and discharges nothing.
+_ROUTED_NEED_ACTION = "provisional_assumption"
 _UQTR_TARGET_DOMAIN = "uqtr01-answer-target-v1"
 _UQTR_TARGET_FIELDS = frozenset({"k", "q", "g", "v"})
 _UQTR_TARGET_MAX_LEN = 4096
@@ -2425,6 +2436,69 @@ def _answer_target_from(qctx, state, criticality_correction):
     if complete and criticality_correction:
         return _AnswerTarget(UQTR_TARGET_CRITICALITY_CORRECTION, None, None, ecv)
     return _AnswerTarget(UQTR_TARGET_QUESTION, qctx.identity, qctx.gap_type, ecv)
+
+
+def _routed_need_target(state, gap_type, identity):
+    """The ROUTED_NEED form context for one need, or None when that exact
+    need is not currently outstanding on a gap this journey has reached.
+    ``identity`` is the canonical RVR-7 served-question identity
+    (``PATHN:<question_id>``) — the same carrier every other answer target
+    and every durable ``question_target`` uses. Pure; the SAME check renders
+    the form and re-verifies the post."""
+    if not gap_type or not isinstance(identity, str) \
+            or not identity.startswith(_PATHN_IDENTITY_PREFIX) \
+            or state.get_gap(gap_type) is None:
+        return None
+    question_id = identity[len(_PATHN_IDENTITY_PREFIX):]
+    if question_id not in _need_routing.outstanding_routed_question_ids(
+            state, gap_type):
+        return None
+    return _AnswerTarget(UQTR_TARGET_ROUTED_NEED, identity, gap_type,
+                         getattr(state, "engine_contract_version", None))
+
+
+def _routed_risk_targets(state):
+    """The routed gaps an owner may explicitly accept as a known risk through
+    the EXISTING OD-R1 route although they are no longer served: OPEN/PARTIAL,
+    never MECHANISM_COMPLETENESS, with an outstanding routed need whose Owner
+    questioning is exhausted. Pure; empty without routing."""
+    out = []
+    for gap_type in _need_routing.outstanding_routed_gaps(state):
+        gap = state.get_gap(gap_type)
+        if gap_type != _MECH_GAP and gap is not None \
+                and _need_routing.owner_questioning_exhausted(state, gap):
+            out.append(gap_type)
+    return tuple(out)
+
+
+def _routed_needs_context(sid, entry, state, lang):
+    """Render context for the outstanding routed needs of reached gaps: the
+    truthful unresolved notice plus, on a writable page, the optional note
+    form bound to that need's own signed target. Empty without routing."""
+    items = []
+    token = _answer_token_for(sid, entry)
+    for gap_type, question_id, required_input, policy in \
+            _need_routing.outstanding_needs(state):
+        target = _routed_need_target(
+            state, gap_type, _PATHN_IDENTITY_PREFIX + question_id)
+        if target is None:
+            continue
+        arabic = lang == "ar"
+        items.append({
+            "question_id": question_id,
+            "gap_type": gap_type,
+            # the SAME W2-D availability policy the route re-checks
+            "risk_available": (gap_type in _routed_risk_targets(state)
+                               and substantive_attempt_recorded(state, gap_type)),
+            "required_input": required_input,
+            "need_text": None if policy is None else (
+                policy.need_text_ar if arabic else policy.need_text),
+            "owner_input_prompt": None if policy is None else (
+                policy.owner_input_prompt_ar if arabic
+                else policy.owner_input_prompt),
+            "answer_target": _issue_answer_target(sid, token, target),
+        })
+    return items
 
 
 def _issue_answer_target(sid, answer_token, target):
@@ -2481,7 +2555,9 @@ def _question_target_of(target):
     """The durable question_target a verified target mints: the canonical
     RVR-7 identity of a QUESTION context, and None for the criticality
     correction (it is not a canonical question — nothing is fabricated)."""
-    return target.identity if target.kind == UQTR_TARGET_QUESTION else None
+    return (target.identity
+            if target.kind in (UQTR_TARGET_QUESTION, UQTR_TARGET_ROUTED_NEED)
+            else None)
 
 
 def _payload_matches_event(sid, payload, gap, action, content, question_target):
@@ -3976,6 +4052,21 @@ def start():
     # projects are untouched and keep their own recorded stamp. The named legacy
     # ILT start routes below set no carrier and therefore stay pre-T2-G.
     state.engine_contract_version = CURRENT_ENGINE_CONTRACT_VERSION
+    # Safe Question Reduction Slice 1: the canonical creation boundary
+    # materializes the project's routed needs (one ROUTE per committed routing
+    # policy of its domain, routing-aware versions only) BEFORE the seed is
+    # read and IN the same durable transaction as the envelope below — so a
+    # routed need exists before any Owner answer can, and a failed creation
+    # leaves no routing behind. Rendering never mints routing.
+    try:
+        creation_routing = _need_routing.creation_revisions(
+            sid, state.domain, state.path, state.engine_contract_version)
+        for _rev in creation_routing:
+            _need_routing.apply_revision(state, _rev)
+    except Exception:
+        return _render_start_page(
+            error=ui_text.localize_message(SERVICE_UNAVAILABLE_MESSAGE, _current_ui_lang()),
+            status=503)
     initial_result = run_iteration(state, idea_text)
     # P4-1b-1 creation order: durably create the project envelope BEFORE any live
     # session is advertised. Durable creation is the commit point for /start; on
@@ -3990,10 +4081,14 @@ def start():
     owner_account_id = _new_project_owner()
     try:
         contract = ProjectRecordContract.from_state(state)
+        # Routing rows are passed only when there are any, so a project with
+        # no routing makes exactly the pre-routing create_project call.
+        _routing_kw = ({"need_routing": creation_routing}
+                       if creation_routing else {})
         _get_store().create_project(
             contract, project_id=sid,
             reconstruction_inputs=_reconstruction_inputs(idea_text, state),
-            owner_account_id=owner_account_id)
+            owner_account_id=owner_account_id, **_routing_kw)
     except Exception:
         return _render_start_page(
             error=ui_text.localize_message(SERVICE_UNAVAILABLE_MESSAGE, _current_ui_lang()),
@@ -4745,7 +4840,9 @@ def _questioning_disclosure_key(state):
     not running it. `UI_T1D_QUESTION_SET` and `UI_T2G_QUESTION_SET` are
     returned byte-unchanged for the versions they already described."""
     version = getattr(state, "engine_contract_version", None)
-    if version == ENGINE_CONTRACT_VERSION_T2G2:
+    # Safe Question Reduction Slice 1: the routing-aware version asks under the
+    # T2-G-2 rules unchanged.
+    if version in (ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_NR1):
         return "UI_T2G2_QUESTION_SET"
     if version == ENGINE_CONTRACT_VERSION_T2G1:
         return "UI_T2G_QUESTION_SET"
@@ -5213,6 +5310,9 @@ def show_session(sid):
         # earlier texts are unchanged, and this adds no cold-page disclosure:
         # the existing read-only boundary is untouched.
         t2g_questioning=_questioning_disclosure_key(state),
+        # Safe Question Reduction Slice 1: outstanding routed needs (not
+        # mandatory inventor questions; still unresolved). Empty without routing.
+        routed_needs=_routed_needs_context(sid, entry, state, _current_ui_lang()),
         # T2-D: optional feedback control for the question actually displayed.
         # Presentation-only; never persisted into canonical state, an export,
         # the API, the deliverable or reconstruction.
@@ -5943,6 +6043,11 @@ EVA_CONFIRM_VALUE = "yes"
 # The initial bounded populations that may adopt: the pre-T2-G creation stamp
 # and the intermediate T2-G-1 stamp. The current stamp is never adoptable.
 _EVA_ADOPTABLE_VERSIONS = (RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1)
+# Safe Question Reduction Slice 1: the version an existing project may ADOPT
+# stays exactly the T2-G-2 rules it adopted before. The routing-aware version
+# is stamped on NEW projects only (routing is materialized at creation), so no
+# existing project ever adopts routing semantics.
+_EVA_ADOPTION_TARGET_VERSION = ENGINE_CONTRACT_VERSION_T2G2
 # Its own two-slot notice namespace; the answer, correction, quantity,
 # evidence-reference and feedback slots are never touched.
 EVA_ACK_SLOT = "_eva_ack"
@@ -6048,10 +6153,10 @@ def _eva_eligibility(sid, state):
     return {
         "position": position,
         "can_adopt": (position["effective"] in _EVA_ADOPTABLE_VERSIONS
-                      and position["effective"] != CURRENT_ENGINE_CONTRACT_VERSION),
+                      and position["effective"] != _EVA_ADOPTION_TARGET_VERSION),
         "can_revert": (head is not None
                        and head.from_version in SUPPORTED_ENGINE_CONTRACT_VERSIONS
-                       and head.from_version != CURRENT_ENGINE_CONTRACT_VERSION),
+                       and head.from_version != _EVA_ADOPTION_TARGET_VERSION),
         "adopted": position["effective"] != position["creation"],
     }
 
@@ -6341,7 +6446,7 @@ def adopt_engine_version(sid):
         if not elig["can_adopt"]:
             _publish_eva_notice(entry, error=EVA_NOT_APPLIED_MESSAGE)
             return redirect(url_for("show_session", sid=sid))
-        target = CURRENT_ENGINE_CONTRACT_VERSION
+        target = _EVA_ADOPTION_TARGET_VERSION
     else:
         if not elig["can_revert"]:
             _publish_eva_notice(entry, error=EVA_NOT_APPLIED_MESSAGE)
@@ -7873,9 +7978,14 @@ def accept_risk(sid):
     # Explicit confirmation is mandatory; the accepted gap must be exactly the
     # currently served one (the question the user is looking at), so consent
     # can never silently target a different gap.
+    # Safe Question Reduction Slice 1: a routed gap whose mandatory Owner
+    # questioning is exhausted is never "served" again, so it is named here
+    # explicitly as the ONE other eligible target (it renders in its own
+    # routed-need block). Every other safeguard below is unchanged.
     if (request.form.get("risk_confirm") != "yes"
             or not gap_type
-            or gap_type != select_next_gap(state)
+            or (gap_type != select_next_gap(state)
+                and gap_type not in _routed_risk_targets(state))
             or gap_type == _MECH_GAP):
         entry["_answer_error"] = RISK_NOT_ACCEPTED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
@@ -8502,8 +8612,15 @@ def submit_answer(sid):
     # the duplicate lookup and before any mint, append or transient change.
     if signed_target is None or (
             signed_target.kind == UQTR_TARGET_CRITICALITY_CORRECTION
-            and action != ACTION_ANSWERED):
+            and action != ACTION_ANSWERED) or (
+            signed_target.kind == UQTR_TARGET_ROUTED_NEED
+            and action != _ROUTED_NEED_ACTION):
         entry["_answer_error"] = ANSWER_FORM_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # Slice 1: a routed-need note must carry the note itself (the token is
+    # kept, exactly like the empty-answer validation below).
+    if signed_target.kind == UQTR_TARGET_ROUTED_NEED and not response:
+        entry["_answer_error"] = ANSWER_REQUIRED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
     # 3. Freshness. A consumed token still verifies forever under the stateless
     #    check above, so that alone never authorizes a NEW write: the token must
@@ -8525,9 +8642,15 @@ def submit_answer(sid):
     #    rendered from, and require kind, identity, gap and effective
     #    engine-contract version to match what was signed. Fail closed.
     try:
-        current_target = _answer_target_from(
-            _resolve_question_context(state, entry.get("last_result")), state,
-            _criticality_correction)
+        if signed_target.kind == UQTR_TARGET_ROUTED_NEED:
+            # Slice 1: re-verify against CURRENT truth that this exact need is
+            # still outstanding — independent of which gap is primary now.
+            current_target = _routed_need_target(
+                state, signed_target.gap, signed_target.identity)
+        else:
+            current_target = _answer_target_from(
+                _resolve_question_context(state, entry.get("last_result")), state,
+                _criticality_correction)
     except Exception:
         current_target = None          # unresolvable context: fail closed
     if current_target is None or tuple(signed_target) != tuple(current_target):
@@ -8546,7 +8669,11 @@ def submit_answer(sid):
         # owner text is retained verbatim as metadata, not as an assessed response
         # or evidence. The journey truthfully redisplays the same (still-open)
         # question with an honest acknowledgement rather than feigning progress.
-        gap_ctx = select_next_gap(state)
+        # Slice 1: a routed-need note is filed under ITS need's gap, never under
+        # whatever gap is primary now; every other action is unchanged.
+        gap_ctx = (signed_target.gap
+                   if signed_target.kind == UQTR_TARGET_ROUTED_NEED
+                   else select_next_gap(state))
         # Increment 2 + PVCG-R1: the disposition record on the IdeaState ledger,
         # now written through the CANONICAL durable seam. It adds NO epistemic
         # movement (no assess/score/gap/maturity/transcript change) — it records,

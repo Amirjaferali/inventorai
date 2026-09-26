@@ -2212,161 +2212,185 @@ _ATO_REVERSALS = _PH1_REVERSALS + (
     r"(OD-2)\W{0,4}(is )?(decided|DECIDED|resolved)\b")
 
 
-def test_ato_synthetic_shadow_foundation_is_the_live_contract_on_every_live_surface():
+def test_ato_synthetic_shadow_foundation_is_delivered_history_and_its_rules_still_bind():
     """The Autonomous Technical Orchestration synthetic shadow evaluation
-    foundation is the live contract: an offline, provider-neutral, proposal-only
-    foundation for SYNTHETIC material only, with Provenance Hardening Step 1
-    delivered. The failure modes this guards keep every token in place: real
-    invention data read as transmissible, the D3 evaluation provider read as a
-    production decision, a live-product call path, proposals read as
-    authoritative or persisted, OD-2 / OD-3 / OD-4 read as decided, a stage
-    marked complete, question reduction, or deployment.
+    foundation was delivered (PR #696; PR #697 / PR #698 followed; the synthetic
+    canary, RUN 01 and RUN 01A were performed). The guard advances with the
+    fact: the section reads DELIVERED and visibly superseded, every boundary
+    rule still binds, and it may never again present itself as the live
+    contract or read as anything wider than it was.
+    """
+    contract = _read(CONTRACT)
+    top = _section(contract, "current-authority--ato-synthetic-shadow-evaluation-foundation")
+    _needs(top, CONTRACT, "ato delivered",
+           r"Implementation 01 \(Owner decisions D1 / D2 / D3, 2026-09-25\) — DELIVERED \(PR "
+           r"#696\); SUPERSEDED as current authority by Safe Question Reduction Slice 1",
+           r"\*\*No longer the current authority\.\*\*",
+           r"PR #696, merge `96b7ba1773216ba0a1350a116341f6746360321c`",
+           r"PR #697, merge `5f464c8cfa93648e66787d04eb3a09298a458cb3`",
+           r"PR #698, merge `49aa5003f90349c8ea62aca36aa10a19c33e3c6f`",
+           r"Every rule below still binds except where Slice 1 states otherwise",
+           r"EPHEMERAL, PROPOSAL-ONLY and NON-AUTHORITATIVE — conceptually SYSTEM_INFERRED \+ "
+           r"UNVALIDATED and written nowhere",
+           r"\*\*SYNTHETIC PROVIDER RUNS\*\* \| `PERFORMED` — managed-credential canary; RUN 01 "
+           r"over the committed 55-case synthetic pack; RUN 01A bounded stability diagnostic\. "
+           r"Synthetic only; no real invention data\. Any further run needs its own Lead "
+           r"authorization",
+           r"\*\*REAL INVENTION DATA\*\* \| `NOT AUTHORIZED FOR EXTERNAL TRANSMISSION`",
+           r"`OpenAI API · gpt-6-sol` — not a production-provider decision and not a permanent "
+           r"vendor selection",
+           r"one closed credential mode: `env` \(an explicit key or `OPENAI_API_KEY`\) or "
+           r"`managed_proxy` \(`--managed-credential`: the process reads and sends no key; the "
+           r"managed egress proxy supplies it\)",
+           r"Hosted CI stays network-free and uses fakes and the NullAdapter only",
+           r"A proposal is never OWNER_STATED, Evidence, validated truth, readiness, maturity, "
+           r"gap closure, specialist review, empirical demonstration or a final design decision",
+           r"The deterministic core remains the authority",
+           r"a hidden question must never mean a hidden unknown")
+    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "ato delivered",
+             *_ATO_REVERSALS, r"FIRST REAL SYNTHETIC PROVIDER RUN\*\* \| `NOT YET",
+             r"a credential from `OPENAI_API_KEY`\);",
+             r"\*\*ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION")
+
+
+_SQR1_CONTRACT = "`ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED ROUTING ONLY`"
+_ATO_DELIVERED = ("`AUTONOMOUS TECHNICAL ORCHESTRATION SYNTHETIC SHADOW EVALUATION FOUNDATION: "
+                  "DELIVERED — PR #696 — merge 96b7ba1773216ba0a1350a116341f6746360321c`")
+_SQR1_REVERSALS = tuple(
+    p for p in _ATO_REVERSALS
+    if not p.startswith(r"DURABLE SYSTEM_INFERRED WRITER")) + (
+    re.escape(_ATO_CONTRACT),
+    r"DURABLE SYSTEM_INFERRED WRITER\W{0,8}(IS )?(AUTHORIZED|ACTIVE|IMPLEMENTED)\b(?! ONLY)",
+    r"(BOUNDARY_AMBIGUITY|BA)[: ]Q[34] (is |are )?(routed|suppressed|hidden)",
+    r"(routed|routing) (need|requirement)s? (is|are) (solved|resolved|satisfied|validated)",
+    r"specialist (input )?(is|has been) (assigned|provided|reviewed)",
+    r"MECHANISM_COMPLETENESS (is|becomes) (routable|parkable|risk-acceptable)",
+    r"FIRST REAL SYNTHETIC PROVIDER RUN\W{0,8}`?NOT YET",
+    r"first real synthetic provider run needs")
+
+
+def test_safe_question_reduction_slice_1_is_the_live_contract_on_every_live_surface():
+    """Safe Question Reduction Slice 1 is the live contract: mechanical
+    PHYSICAL_FEASIBILITY:Q2 ONLY is routed to specialist input on NEW
+    routing-aware projects through ONE deterministic durable NeedRouting record,
+    while the requirement stays outstanding. The failure modes this guards keep
+    every token in place: the routed need read as solved, any other question
+    routed, MECHANISM_COMPLETENESS made routable, a general SYSTEM_INFERRED
+    writer, real invention data read as transmissible, or a stale provider-run
+    claim.
     """
     contract = _read(CONTRACT)
     first = contract.index("## Current authority")
     assert contract[first:].startswith(
-        "## Current authority — Autonomous Technical Orchestration synthetic shadow evaluation "
-        "foundation — Implementation 01"), contract[first:first + 120]
+        "## Current authority — Safe Question Reduction Slice 1 — PF:Q2 non-Owner need "
+        "routing only"), contract[first:first + 120]
     top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
-    _needs(top, CONTRACT, "ato foundation",
-           r"\*\*ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION — SYNTHETIC SHADOW "
-           r"EVALUATION FOUNDATION — IMPLEMENTATION 01\.\*\*",
-           r"next item of the protected sequence recorded in the EXISTING Stage-18 "
-           r"semantic-normalization block, creates no new Master Roadmap Stage and changes no "
-           r"stage checkbox",
-           r"EPHEMERAL, PROPOSAL-ONLY and NON-AUTHORITATIVE — conceptually SYSTEM_INFERRED \+ "
-           r"UNVALIDATED and written nowhere",
-           r"\*\*PROVENANCE HARDENING STEP 1\*\* \| `DELIVERED — PR #695 — merge "
-           r"6c413c54684b0eff6d1d0db205b3ccc82d99bc06`",
-           r"\*\*DETERMINISTIC LOCAL ORCHESTRATION\*\* \| `NO-CHANGE / DIFFERENT TRIGGER "
-           r"REQUIRED`",
-           r"\*\*OWNER DECISIONS D1 / D2 / D3\*\* \| `APPROVED FOR SYNTHETIC EXTERNAL "
-           r"EVALUATION ONLY`",
-           r"`OpenAI API · gpt-6-sol` — not a production-provider decision and not a permanent "
-           r"vendor selection",
-           r"\*\*FIRST REAL SYNTHETIC PROVIDER RUN\*\* \| `NOT YET — separate Lead "
-           r"authorization after review and hosted CI`",
-           r"\*\*REAL INVENTION DATA\*\* \| `NOT AUTHORIZED FOR EXTERNAL TRANSMISSION`",
-           r"\*\*EXTERNAL / PROVIDER MSNL\*\* \| `NOT AUTHORIZED`",
-           r"\*\*DURABLE SYSTEM_INFERRED WRITER\*\* \| `NOT AUTHORIZED`",
-           r"\*\*OD-2 / OD-3 / OD-4\*\* \| `UNDECIDED — NOT REQUIRED`",
-           r"\*\*STAGE 18\*\* \| `STARTED: YES` · `COMPLETE: NO` · \*\*PARTIAL\*\* — unchanged",
-           r"\*\*STAGE 19\*\* \| `ENTERED / NOT COMPLETE` — unchanged",
-           r"\*\*FULL CAP-09 / FULL WS-PFV-001\*\* \| `NOT AUTHORIZED`",
-           r"operationally OFF: it opens no connection unless the developer harness constructs "
-           r"it with explicit network permission and a credential from `OPENAI_API_KEY`",
-           r"which runs only that pinned pack",
-           r"Hosted CI stays network-free and uses fakes and the NullAdapter only",
-           r"API inputs and outputs not used for training by default",
-           r"no provider-side threads, conversations, files, vector stores, assistants or "
-           r"memory; no InventorAI logging of prompt or response content; stateless requests",
-           r"\*\*Not authorized by this step:\*\* any real inventor / project / invention / "
-           r"personal data in an external request; any live-product call path \(web, API v1, "
-           r"progression, session reconstruction, MSNL capture, deliverable, background "
-           r"worker\); a production provider decision; a durable SYSTEM_INFERRED writer; a "
-           r"proposal carrier or any proposal persistence \(OD-2\); readiness use of system "
-           r"inference \(OD-3\); any validation-award writer \(OD-4\); user-visible proposals; "
-           r"question hiding or reduction; reuse of `engine/ai_advisor\.py`; new concept "
-           r"creation; deployment, public release and paid activation\.",
-           r"A proposal is never OWNER_STATED, Evidence, validated truth, readiness, maturity, "
-           r"gap closure, specialist review, empirical demonstration or a final design decision",
-           r"selects a contradiction winner or silently chooses an engineering solution",
-           r"The deterministic core remains the authority",
-           r"consumes — and never recomputes — the next development step, the requirement "
-           r"landscape, the validation plan, controlled-unknown progression and MSNL",
-           r"Mechanical default-visible Path-N set remains \*\*10 questions\*\*",
-           r"a hidden question must never mean a hidden unknown",
-           r"Target-Aware — COMPLETE → MSNL → Provenance Hardening → Autonomous Technical "
-           r"Orchestration → safe question reduction → RC validation → Product Differentiation "
-           r"Evidence",
-           r"The `ai_advisor` WATCH \(hardcoded endpoint, hardcoded model, raw `idea_summary` / "
-           r"`last_response` transmission\) stands")
-    _rejects(top, CONTRACT, "ato foundation", *_ATO_REVERSALS)
+    _needs(top, CONTRACT, "sqr1",
+           r"\*\*ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED "
+           r"ROUTING ONLY\.\*\*",
+           r"next item of the protected sequence in the EXISTING Stage-18 "
+           r"semantic-normalization block; it creates no new Master Roadmap Stage and changes "
+           r"no stage checkbox",
+           r"`mechanical:PHYSICAL_FEASIBILITY:Q2` ONLY → `SPECIALIST`",
+           r"NEW routing-aware projects: \*\*9\*\* · every existing project: \*\*10\*\*, unchanged",
+           r"`ONE NARROW EXCEPTION — deterministic NeedRoutingRevision rows \(ROUTE / RETRACT\) "
+           r"only`; every other system-inference writer stays NOT AUTHORIZED",
+           r"`p4-2-level1-recon-v1-t2g2-nr1`",
+           r"MECHANISM_COMPLETENESS is never routable, parkable or risk-acceptable",
+           r"NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION",
+           r"Removing mandatory Owner answering is not a solved requirement",
+           r"`eligible_for_owner_questioning = false` and `satisfied_for_maturity = false`",
+           r"can never be CLOSED while the need is outstanding, and vetoes Level 1 → 2 while PF "
+           r"is OPEN / PARTIAL",
+           r"is a maturity exception, never a discharge: the routed need stays outstanding and "
+           r"unresolved",
+           r"rendering never writes")
+    _rejects(top, CONTRACT, "sqr1", *_SQR1_REVERSALS)
     live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
     live_surfaces.append((STATE, _current(STATE, "current-position")))
     for path, block in live_surfaces:
-        _needs(block, path, "ato live", _tok(_ATO_CONTRACT), _tok(_PH1_DELIVERED),
-               _tok(_ATO_NO_CHANGE), _tok(_ATO_D123), _tok(_ATO_REAL_NO), _tok(_ATO_OD),
+        _needs(block, path, "sqr1 live", _tok(_SQR1_CONTRACT), _tok(_ATO_DELIVERED),
+               _tok(_PH1_DELIVERED), _tok(_ATO_REAL_NO), _tok(_ATO_OD),
                _tok(_MSNL_SHADOW), _tok(_MSNL_PACK), _tok(_EXTERNAL_MSNL_NO),
-               _tok(_DURABLE_SI_NO),
                r"EXISTING Stage-18\s+semantic-normalization block",
                r"not a new\s+Master Roadmap Stage",
                r"SYSTEM_INFERRED \+ UNVALIDATED and\s+written\s+nowhere",
                r"not\s+a\s+production-provider\s+decision",
                r"OD-3\s+undecided", r"OD-4\s+undecided")
-        _rejects(block, path, "ato live", *_ATO_REVERSALS)
+        _rejects(block, path, "sqr1 live", *_SQR1_REVERSALS)
     for path, routing in _surfaces("current-routing"):
-        _needs(routing, path, "ato routing", _tok(_TARGET_AWARE),
+        _needs(routing, path, "sqr1 routing", _tok(_TARGET_AWARE),
                r"operationally OFF and reachable only from the developer-run\s+harness over "
                r"the committed synthetic pack",
-               r"the first real synthetic provider run needs a\s+separate Lead authorization "
-               r"after review and hosted CI, and hosted CI stays network-free",
-               r"no real inventor / project / invention data in any external request",
-               r"no live-product\s+call path",
-               r"no durable SYSTEM_INFERRED writer",
-               r"no proposal persistence \(OD-2 undecided\)",
+               r"synthetic provider runs\s+\(a managed-credential canary, RUN 01 over the "
+               r"committed 55-case pack and the RUN 01A stability\s+diagnostic\) have been "
+               r"performed on synthetic data only",
+               r"no real inventor / project /\s+invention data in any external request",
+               r"no live-product call path",
+               r"no proposal persistence \(OD-2\s+undecided\)",
                r"no automatic concept creation",
                r"no readiness / maturity / validation promotion",
-               r"no user-visible\s+proposals and no question hiding or reduction")
+               r"ONLY mechanical PHYSICAL_FEASIBILITY:Q2 to specialist input",
+               r"the only authorized durable SYSTEM_INFERRED\s+writer",
+               r"it hides no unknown and reduces no\s+other question")
     # CLAUDE.md routes to the step, and does not widen it
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    for needle in ("ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION — SYNTHETIC SHADOW "
-                   "EVALUATION FOUNDATION — IMPLEMENTATION 01.",
+    for needle in ("ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED "
+                   "ROUTING ONLY.",
                    "the next item of the protected sequence recorded in the EXISTING Stage-18 "
-                   "semantic-normalization block, and creates no new Master Roadmap Stage.",
+                   "semantic-normalization block, and creates no new Master Roadmap Stage",
+                   "while the requirement stays outstanding",
+                   "The Autonomous Technical Orchestration synthetic shadow evaluation "
+                   "foundation is DELIVERED (PR #696",
                    "Provenance Hardening Step 1 is DELIVERED (PR #695, merge "
                    "`6c413c54684b0eff6d1d0db205b3ccc82d99bc06`)",
-                   "deterministic local orchestration was adjudicated NO-CHANGE / DIFFERENT "
-                   "TRIGGER REQUIRED.",
-                   "Owner decisions D1 / D2 / D3 are approved for SYNTHETIC external evaluation "
-                   "only",
-                   "(OpenAI API, `gpt-6-sol` — not a production-provider decision) that stays "
-                   "operationally OFF",
-                   "hosted CI stays network-free.",
                    "Real invention data is NOT AUTHORIZED FOR EXTERNAL TRANSMISSION.",
-                   "External / provider MSNL, a durable SYSTEM_INFERRED writer, proposal "
-                   "persistence (OD-2), readiness use of system inference (OD-3) and any "
-                   "validation-award writer (OD-4) are NOT AUTHORIZED",
-                   "no question reduction",
+                   "a durable SYSTEM_INFERRED writer (other than the deterministic NeedRouting "
+                   "record of Slice 1)",
+                   "no question reduction beyond Slice 1",
                    "Target-Aware Question / Answer Binding is COMPLETE (PR #690, merge "
                    "`ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`)."):
         assert needle in head, needle
-    for pat in _ATO_REVERSALS:
+    for pat in _SQR1_REVERSALS:
         assert re.search(pat, head, re.I) is None, pat
     # the checklist subtask and machine record, and the roadmap Stage-18 row
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
-    assert ("**CURRENT SUBTASK:** AUTONOMOUS TECHNICAL ORCHESTRATION — SYNTHETIC SHADOW "
-            "EVALUATION FOUNDATION — IMPLEMENTATION 01") in flat_checklist
-    for line in ("ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION — SYNTHETIC SHADOW "
-                 "EVALUATION FOUNDATION — IMPLEMENTATION 01",
+    assert ("**CURRENT SUBTASK:** SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED "
+            "ROUTING ONLY") in flat_checklist
+    for line in ("ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED "
+                 "ROUTING ONLY",
+                 "AUTONOMOUS TECHNICAL ORCHESTRATION SYNTHETIC SHADOW EVALUATION FOUNDATION: "
+                 "DELIVERED — PR #696 — merge 96b7ba1773216ba0a1350a116341f6746360321c",
+                 "MANAGED-CREDENTIAL COMPATIBILITY: DELIVERED — PR #697 — merge "
+                 "5f464c8cfa93648e66787d04eb3a09298a458cb3",
+                 "METRIC-CONTRACT CORRECTION: DELIVERED — PR #698 — merge "
+                 "49aa5003f90349c8ea62aca36aa10a19c33e3c6f",
+                 "SYNTHETIC PROVIDER RUNS: PERFORMED — CANARY, RUN 01, RUN 01A — SYNTHETIC ONLY",
+                 "MECHANICAL MANDATORY OWNER-VISIBLE QUESTIONS: 9 ON NEW ROUTING-AWARE PROJECTS "
+                 "— 10 ON EXISTING PROJECTS",
                  "PROVENANCE HARDENING STEP 1: DELIVERED — PR #695 — merge "
                  "6c413c54684b0eff6d1d0db205b3ccc82d99bc06",
-                 "DETERMINISTIC LOCAL ORCHESTRATION: NO-CHANGE / DIFFERENT TRIGGER REQUIRED",
-                 "OWNER DECISIONS D1 / D2 / D3: APPROVED FOR SYNTHETIC EXTERNAL EVALUATION ONLY",
                  "REAL INVENTION DATA: NOT AUTHORIZED FOR EXTERNAL TRANSMISSION",
                  "PROPOSAL CARRIER / PERSISTENCE: NOT AUTHORIZED — OD-2 UNDECIDED",
-                 "MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge "
-                 "319b702678a1785e117c018f87cf171d5cbf2c9d",
-                 "MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge "
-                 "c5f59093eafbccce8ff9e947d40c46f3ae86915f",
                  "EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED",
-                 "DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED",
+                 "DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED — EXCEPT DETERMINISTIC NEED "
+                 "ROUTING (SLICE 1)",
                  "READINESS USE OF SYSTEM INFERENCE: NOT AUTHORIZED — OD-3 UNDECIDED",
                  "VALIDATION-AWARD WRITER: NOT AUTHORIZED — OD-4 UNDECIDED",
-                 "MSNL ROADMAP MAPPING: EXISTING STAGE-18 SEMANTIC-NORMALIZATION ITEM — NO NEW "
-                 "STAGE",
                  "TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge "
                  "ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
     for gone in (r"^ACTIVE CONTRACT: MSNL STEP 1", r"^MSNL IMPLEMENTATION: NOT YET AUTHORIZED$",
-                 r"^ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1"):
+                 r"^ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1",
+                 r"^ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION",
+                 r"^DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED$"):
         assert re.search(gone, raw_checklist, re.M) is None, gone
     rows = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", _read(ROADMAP), re.M)
     assert len(rows) == 1, "stage 18 row missing, duplicated or ticked"
-    assert ("Provenance Hardening Step 1 is delivered (PR #695), and the current bounded action "
-            "is the Autonomous Technical Orchestration synthetic shadow evaluation foundation — "
+    assert ("the Autonomous Technical Orchestration synthetic shadow evaluation foundation — "
             "an offline, provider-neutral, proposal-only evaluation foundation for synthetic "
-            "material only") in rows[0]
-    for pat in _ATO_REVERSALS:
+            "material only — is delivered (PR #696; PR #697, PR #698 followed), and the current "
+            "bounded action is Safe Question Reduction Slice 1") in rows[0]
+    for pat in _SQR1_REVERSALS:
         assert re.search(pat, rows[0], re.I) is None, pat
