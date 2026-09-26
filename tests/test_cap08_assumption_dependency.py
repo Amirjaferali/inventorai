@@ -910,6 +910,10 @@ def _edges(sid):
              d["dependency_edge"]["dependent_answer_record_id"]) for d in _deps(sid)]
 
 
+@pytest.mark.failure_pattern(
+    "FP-02",
+    invariant=("a stable action identity never changes with the submitted material; only an exact committed retry is a no-op and the same identity with different material fails closed"),
+    constructs=("flask-route", "hmac-signature", "persistence-writer"))
 def test_f1_a_to_f_same_identity_changed_material_always_fails_closed(client):
     """Astra's reproduction: the SAME submission identity and SAME valid binding
     first commit one batch; every other material under it is refused."""
@@ -995,6 +999,10 @@ def test_f1_i_a_freshly_issued_identity_may_declare_another_batch(client):
         assert len(_rows(sid)) == rows, bad
 
 
+@pytest.mark.failure_pattern(
+    "FP-08",
+    invariant=("a stored batch counts as complete only when exactly its declared number of rows exists; a partial batch is never success"),
+    constructs=("parsed-identity-accumulation", "committed-confirmation"))
 def test_f1_j_partial_committed_batch_is_never_acknowledged(client):
     sid, (p1, _p2), ans = _f1_project(client)
     form = _dform(client, sid)
@@ -1092,6 +1100,10 @@ def _classify(monkeypatch, suffix_rows, answers=_A):
     ([("0:2", "rec_1"), ("1:2", "rec_4")], "material"),
     ([("0:2", "rec_1"), ("1:2", "rec_3")], None),
 ])
+@pytest.mark.failure_pattern(
+    "FP-07",
+    invariant=("distinct durable rows never collapse onto one logical position; a duplicate position fails closed instead of overwriting"),
+    constructs=("parsed-identity-accumulation",))
 def test_final_f1_each_check_rejects_its_own_fixture(rows, reason):
     prefix = appmod._dependency_action_prefix(_ACTION)
     raw = [(prefix + suffix, _edge(answer)) for suffix, answer in rows]
@@ -1130,6 +1142,10 @@ def test_final_f1_classifier_accepts_only_the_exact_canonical_batch(
     assert _classify(monkeypatch, rows) == expected, label
 
 
+@pytest.mark.failure_pattern(
+    "FP-06",
+    invariant=("a durable identifier is accepted only in the exact canonical spelling the writer emits"),
+    constructs=("canonical-identifier-parsing", "parsed-identity-accumulation"))
 def test_final_f1_canonical_position_parser():
     ok = appmod._canonical_edge_position
     assert ok("0:1") == (0, 1) and ok("9:10") == (9, 10) and ok("10:11") == (10, 11)

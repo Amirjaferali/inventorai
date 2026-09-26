@@ -407,6 +407,10 @@ def test_load_matrix_covers_every_known_disposition_exactly():
     assert ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION is not idea_state.LEGACY_INTERACTION_DISPOSITIONS
 
 
+@pytest.mark.failure_pattern(
+    "FP-14",
+    invariant=("the load boundary admits exactly what the write side can produce, and nothing wider"),
+    constructs=("load-validation-boundary",))
 def test_load_matrix_admits_what_the_mint_dictates_and_widens_nothing():
     for disposition, allowed in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION.items():
         dictated = idea_state._DEFAULT_PROVENANCE_BY_DISPOSITION.get(
