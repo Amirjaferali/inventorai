@@ -3630,6 +3630,62 @@ UI_STRINGS = {
     "UI_DT_SEE": {"en": "see", "ar": "انظر"},
     "UI_DT_LINK_NEXT_STEPS": {
         "en": "the next-steps section", "ar": "قسم الخطوات التالية"},
+    # --- Stage 22 / CAP-05 + CAP-07 Slice 2: the read-only project-level action
+    # summary. Presentation chrome only: it names no decision, alternative,
+    # recommendation, confidence, evidence strength or completed result.
+    "UI_AS_HEADING": {
+        "en": "What the project currently calls for",
+        "ar": "ما يتطلّبه المشروع حاليًا",
+    },
+    "UI_AS_NOTE": {
+        "en": ("These actions come from the current project state. InventorAI has "
+               "not linked them to a specific decision or alternative. Listing an "
+               "action does not mean it has been carried out."),
+        "ar": ("تأتي هذه الإجراءات من حالة المشروع الحالية. لم يربطها InventorAI "
+               "بقرار أو بديل محدد. إدراج إجراء هنا لا يعني أنه قد نُفِّذ."),
+    },
+    "UI_AS_GROUP_OWNER": {
+        "en": "You can do these yourself",
+        "ar": "يمكنك القيام بها بنفسك",
+    },
+    "UI_AS_GROUP_SPECIALIST": {
+        "en": "Needs specialist input",
+        "ar": "يحتاج إلى مدخلات متخصّص",
+    },
+    "UI_AS_GROUP_EVIDENCE": {
+        "en": "Needs evidence or a test",
+        "ar": "يحتاج إلى دليل أو اختبار",
+    },
+    "UI_AS_GROUP_SYSTEM": {
+        "en": "System analysis is the current responsibility",
+        "ar": "التحليل الآلي هو المسؤولية الحالية",
+    },
+    "UI_AS_GROUP_CLARIFICATION": {
+        "en": "Needs clarification before an action can be assigned",
+        "ar": "يحتاج إلى توضيح قبل إسناد إجراء",
+    },
+    "UI_AS_REPEAT_A": {"en": "(applies to ", "ar": "(ينطبق على "},
+    "UI_AS_REPEAT_B": {"en": " recorded items)", "ar": " من العناصر المسجَّلة)"},
+    "UI_AS_EMPTY": {
+        "en": "The current project state lists no actions at present.",
+        "ar": "لا تتضمّن حالة المشروع الحالية أي إجراءات في الوقت الحاضر.",
+    },
+    "UI_AS_UNAVAILABLE": {
+        "en": "This summary could not be shown here. Nothing was changed.",
+        "ar": "تعذّر عرض هذا الملخّص هنا. لم يتغيّر أي شيء.",
+    },
+    "UI_AS_NEXT_STEP": {
+        "en": "Current next development step",
+        "ar": "خطوة التطوير التالية الحالية",
+    },
+    "UI_AS_SEE_PLAN": {
+        "en": "See the full Validation Plan",
+        "ar": "اطّلع على خطة التحقق الكاملة",
+    },
+    "UI_AS_SEE_PLAN_REPORT": {
+        "en": "See the full Validation Plan in the report",
+        "ar": "اطّلع على خطة التحقق الكاملة في التقرير",
+    },
     "UI_T3A_EVENT_ANSWER_RECORDED": {
         "en": "Answer recorded",
         "ar": "إجابة مسجَّلة",
