@@ -198,6 +198,19 @@ _MESSAGE_KEYS = {
     ("We could not confirm whether that conflict was saved. Reload this page "
      "to see what your project holds before recording it again."):
         "UI_CAP10_ERR_UNKNOWN",
+    # CAP-08 Slice 1 (web/app.py declare_dependency): its refusals render
+    # through the `_answer_error` slot, so they are registered here.
+    ("That dependency could not be saved just now. Nothing was changed."):
+        "UI_CAP08_ERR_NOT_SAVED",
+    ("Choose one of your provisional assumptions and at least one of your "
+     "current recorded answers, and tick the declaration box. Nothing was "
+     "changed."): "UI_CAP08_ERR_INVALID",
+    ("One of those records is no longer current, or that dependency is already "
+     "recorded, so nothing was saved. Review your current records and try "
+     "again."): "UI_CAP08_ERR_STALE",
+    ("We could not tell whether that dependency was saved. Reload this page "
+     "to see what your project holds before recording it again."):
+        "UI_CAP08_ERR_UNKNOWN",
 }
 
 
@@ -3427,6 +3440,123 @@ UI_STRINGS = {
         "ar": ("لم نتمكّن من التأكد مما إذا كان هذا التعارض قد حُفظ. أعد تحميل "
                "هذه الصفحة لترى ما يحتويه مشروعك قبل تسجيله مرة أخرى."),
     },
+    # CAP-08 Slice 1 — the inventor's explicit assumption -> answer dependency
+    # declaration. Truthful: declared by the inventor, not validated, never a
+    # confirmation or rejection of the assumption, no progress effect.
+    "UI_T3A_EVENT_ASSUMPTION_DEPENDENCY_DECLARED": {
+        "en": "Dependency you declared on an assumption",
+        "ar": "اعتماد أعلنته على افتراض",
+    },
+    "UI_T3A_DEPENDS_ON_ASSUMPTION": {
+        "en": "Assumption: step",
+        "ar": "الافتراض: الخطوة",
+    },
+    "UI_T3A_DECLARES_DEPENDENT": {
+        "en": "Answer declared dependent: step",
+        "ar": "الإجابة المعلَن اعتمادها: الخطوة",
+    },
+    "UI_T3A_DEPENDENCY_INACTIVE": {
+        "en": ("No longer active: one of its two records was later replaced. "
+               "Kept as history."),
+        "ar": "لم يعد نشطًا: استُبدل أحد سجليه لاحقًا. محفوظ ضمن السجل.",
+    },
+    "UI_CAP08_VIEW_HEADING": {
+        "en": "Answers you declared dependent on an assumption",
+        "ar": "إجابات أعلنتَ أنها تعتمد على افتراض",
+    },
+    "UI_CAP08_VIEW_NOTE": {
+        "en": ("You declared that these recorded answers depend on this "
+               "provisional assumption. This dependency has not been "
+               "validated."),
+        "ar": ("أعلنتَ أن هذه الإجابات المسجّلة تعتمد على هذا الافتراض المؤقت. "
+               "هذا الاعتماد غير مُتحقَّق منه."),
+    },
+    "UI_CAP08_ASSUMPTION_LABEL": {
+        "en": "Provisional assumption:",
+        "ar": "افتراض مؤقت:",
+    },
+    "UI_CAP08_NONE": {
+        "en": "No dependency recorded.",
+        "ar": "لم تُسجَّل علاقة اعتماد.",
+    },
+    # Astra F2: declarations exist historically, none is currently active.
+    "UI_CAP08_INACTIVE_HISTORY": {
+        "en": ("Dependency declarations were recorded previously, but none is "
+               "currently active."),
+        "ar": ("تم تسجيل علاقات اعتماد سابقًا، ولكن لا توجد علاقة اعتماد نشطة "
+               "حاليًا."),
+    },
+    "UI_CAP08_HEADING": {
+        "en": "Mark answers that depend on an assumption",
+        "ar": "تعليم إجابات تعتمد على افتراض",
+    },
+    "UI_CAP08_EXPLAIN": {
+        "en": ("If some of your recorded answers depend on one of your "
+               "provisional assumptions, you can record that here. The system "
+               "does not check the assumption or the answers, and recording it "
+               "does not change your progress."),
+        "ar": ("إذا كانت بعض إجاباتك المسجّلة تعتمد على أحد افتراضاتك المؤقتة، "
+               "يمكنك تسجيل ذلك هنا. لا يفحص النظام الافتراض ولا الإجابات، ولا "
+               "يغيّر التسجيل تقدّمك."),
+    },
+    "UI_CAP08_SELECT_ASSUMPTION": {
+        "en": "Choose one of your provisional assumptions",
+        "ar": "اختر افتراضًا واحدًا من افتراضاتك المؤقتة",
+    },
+    "UI_CAP08_SELECT_ANSWERS": {
+        "en": "Choose the current answers that depend on it",
+        "ar": "اختر الإجابات الحالية التي تعتمد عليه",
+    },
+    "UI_CAP08_CONFIRM": {
+        "en": ("I declare that these recorded answers depend on this "
+               "assumption. I understand this dependency is not validated."),
+        "ar": ("أُعلن أن هذه الإجابات المسجّلة تعتمد على هذا الافتراض. وأفهم أن "
+               "هذا الاعتماد غير مُتحقَّق منه."),
+    },
+    "UI_CAP08_BUTTON": {
+        "en": "Record the dependency",
+        "ar": "تسجيل الاعتماد",
+    },
+    "UI_CAP08_ERR_NOT_SAVED": {
+        "en": "That dependency could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ هذا الاعتماد الآن. لم يتم تغيير أي شيء.",
+    },
+    "UI_CAP08_ERR_INVALID": {
+        "en": ("Choose one of your provisional assumptions and at least one of "
+               "your current recorded answers, and tick the declaration box. "
+               "Nothing was changed."),
+        "ar": ("اختر افتراضًا واحدًا من افتراضاتك المؤقتة وإجابة واحدة على الأقل "
+               "من إجاباتك المسجّلة الحالية، وحدّد مربع الإعلان. لم يتم تغيير أي "
+               "شيء."),
+    },
+    "UI_CAP08_ERR_STALE": {
+        "en": ("One of those records is no longer current, or that dependency is "
+               "already recorded, so nothing was saved. Review your current "
+               "records and try again."),
+        "ar": ("أحد هذه السجلات لم يعد حاليًا، أو أن هذا الاعتماد مسجّل مسبقًا، "
+               "لذلك لم يُحفظ شيء. راجع سجلاتك الحالية وحاول مجددًا."),
+    },
+    "UI_CAP08_ERR_UNKNOWN": {
+        "en": ("We could not tell whether that dependency was saved. Reload "
+               "this page to see what your project holds before recording it "
+               "again."),
+        "ar": ("لم نتمكّن من معرفة ما إذا كان هذا الاعتماد قد حُفظ. أعد تحميل "
+               "هذه الصفحة لترى ما يحتويه مشروعك قبل تسجيله مرة أخرى."),
+    },
+    "UI_CAP08_REPORT_HEADING": {
+        "en": "Dependencies you declared on your provisional assumptions",
+        "ar": "اعتمادات أعلنتها على افتراضاتك المؤقتة",
+    },
+    "UI_CAP08_REPORT_NOT_REQUIREMENT": {
+        "en": ("Declared by you; not validated. These are not requirements and "
+               "do not change readiness."),
+        "ar": ("أعلنتها أنت؛ غير مُتحقَّق منها. هذه ليست متطلبات ولا تغيّر "
+               "الجاهزية."),
+    },
+    "UI_CAP08_REPORT_COUNT": {
+        "en": "recorded answer(s) declared dependent",
+        "ar": "إجابة (إجابات) مسجّلة أُعلن أنها تعتمد عليه",
+    },
     "UI_T3A_EVENT_ANSWER_RECORDED": {
         "en": "Answer recorded",
         "ar": "إجابة مسجَّلة",
@@ -3760,6 +3890,11 @@ QUESTION_EXPLANATION_KEYS = {
 # questions, the criticality clarification ask, and user content are deliberately
 # ABSENT. Populated below; kept as the single owner-approved Arabic registry.
 _DEEP_AR = {
+    # --- CAP-08 Slice 1 dependency-declaration acknowledgement (web.app) ---
+    "Saved. You declared that these recorded answers depend on this "
+    "provisional assumption. This dependency has not been validated.":
+        "تم الحفظ. أعلنتَ أن هذه الإجابات المسجّلة تعتمد على هذا الافتراض "
+        "المؤقت. هذا الاعتماد غير مُتحقَّق منه.",
     # --- CAP-10 Slice 1 conflict-declaration acknowledgement (web.app) ---
     "Saved. You believe these two recorded answers conflict. This declaration "
     "has not been validated, and neither answer is assumed correct.":

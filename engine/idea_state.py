@@ -178,6 +178,24 @@ INTERACTION_DISPOSITIONS = frozenset({
 # chooses no winner and changes no gap, maturity, progression or score.
 DISPOSITION_CONTRADICTION_DECLARED = "contradiction_declared"
 
+# CAP-08 Slice 1 (Stage 20): the inventor's explicit declaration that ONE of
+# their recorded answers depends on ONE of their own provisional assumptions.
+# One record = one DIRECTED edge (assumption -> dependent answer). Like the
+# CAP-10 record it is relationship metadata over two existing records, NOT in
+# INTERACTION_DISPOSITIONS (`record_interaction` refuses it; its one carrier is
+# `record_assumption_dependency_declarations`). It validates, confirms or
+# rejects nothing and changes no gap, maturity, progression, score, routing or
+# readiness.
+DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED = "assumption_dependency_declared"
+
+# The closed set of relationship-metadata dispositions: records that relate
+# existing records and are never themselves an answer, a requirement, a
+# question event or a serving event.
+RELATIONSHIP_METADATA_DISPOSITIONS = frozenset({
+    DISPOSITION_CONTRADICTION_DECLARED,
+    DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED,
+})
+
 # The seven pre-W2-A dispositions, needed by the bounded legacy-payload load
 # rule in engine.record_contract (contract §4: only a LEGACY payload may omit
 # `decision_context_root`).
@@ -212,6 +230,9 @@ _DEFAULT_PROVENANCE_BY_DISPOSITION = {
     # CAP-10 Slice 1: an inventor's own conflict declaration. Its carrier is
     # `record_contradiction_declaration` (record_interaction refuses it).
     DISPOSITION_CONTRADICTION_DECLARED:         OWNER_STATED,
+    # CAP-08 Slice 1: an inventor's own dependency declaration. Its carrier is
+    # `record_assumption_dependency_declarations` (record_interaction refuses it).
+    DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED: OWNER_STATED,
 }
 
 # Provenance Hardening Step 1 — the provenance a STORED record of each known
@@ -237,6 +258,8 @@ ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION = {
     DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN: frozenset({OWNER_STATED}),
     # CAP-10 Slice 1: singleton — introduced OWNER_STATED, never LEGACY.
     DISPOSITION_CONTRADICTION_DECLARED:         frozenset({OWNER_STATED}),
+    # CAP-08 Slice 1: singleton — introduced OWNER_STATED, never LEGACY.
+    DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED: frozenset({OWNER_STATED}),
 }
 
 # Validation levels treated as "validated" (i.e. not owner-unvalidated) by the
@@ -324,6 +347,11 @@ class AssertionRecord:
     # `contradiction_declared` record ONLY; None on every other record. The
     # endpoints' own questions, gaps and text stay owned by the endpoints.
     contradiction_endpoints : Optional[list] = None
+    # CAP-08 Slice 1: the directed edge of an `assumption_dependency_declared`
+    # record ONLY — {"assumption_record_id": ..., "dependent_answer_record_id":
+    # ...}; None on every other record. Questions, gaps, requirements and text
+    # stay owned by the two endpoints and are resolved from them, never copied.
+    dependency_edge : Optional[dict] = None
 
 
 # CAP-10 Slice 1 — the ONE shared projection path. The durable authority for an
@@ -407,6 +435,95 @@ def active_declared_contradiction_pairs(assertions):
         if all(e is not None and e.superseded_by is None for e in ends):
             pairs.add(tuple(pair))
     return frozenset(pairs)
+
+
+# CAP-08 Slice 1 — the directed assumption -> answer dependency primitive.
+# Domain-neutral: it keys only on canonical record types and record ids, never
+# on a domain, a question catalog, a gap or technical vocabulary.
+DEPENDENCY_EDGE_KEYS = ("assumption_record_id", "dependent_answer_record_id")
+
+
+def _rec_number(record_id):
+    if not isinstance(record_id, str) or not _REC_ID_RE.match(record_id):
+        raise ValueError("a dependency endpoint must be a rec_N id")
+    return int(record_id[4:])
+
+
+def normalize_dependent_answers(record_ids):
+    """The unique, deterministic (numeric ``rec_N``) order of a submitted set of
+    dependent answer ids. Refuses an empty submission and malformed ids."""
+    ids = list(record_ids or ())
+    if not ids:
+        raise ValueError("a dependency needs at least one dependent answer")
+    for rid in ids:
+        _rec_number(rid)
+    return sorted(set(ids), key=_rec_number)
+
+
+def dependency_edge_of(record):
+    """``(assumption_record_id, dependent_answer_record_id)`` of a well-formed
+    dependency declaration, else None."""
+    if getattr(record, "disposition", None) != \
+            DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED:
+        return None
+    edge = getattr(record, "dependency_edge", None)
+    if not isinstance(edge, dict) or set(edge) != set(DEPENDENCY_EDGE_KEYS):
+        return None
+    return (edge["assumption_record_id"], edge["dependent_answer_record_id"])
+
+
+@dataclass(frozen=True)
+class DeclaredDependency:
+    """One historical dependency declaration and whether its edge is active
+    (BOTH endpoints still present and not superseded). Derived, never stored."""
+    declaration_record_id      : str
+    assumption_record_id       : str
+    dependent_answer_record_id : str
+    active                     : bool
+
+
+@dataclass(frozen=True)
+class AssumptionDependencyProjection:
+    """The ONE derived view of every `assumption_dependency_declared` record:
+    the declarations in durable ledger order (historical and active), the
+    active directed edges, and the active edges grouped by assumption (groups
+    in assumption ledger order, answers in ledger order). The declaration
+    records are the authority; this view is recomputed, never persisted."""
+    declarations  : tuple
+    active_edges  : tuple
+    by_assumption : tuple        # ((assumption_record_id, (answer_id, ...)), ...)
+
+
+def project_assumption_dependencies(assertions):
+    """Pure, deterministic projection over ``assertions`` (ledger order). A
+    declaration's edge is active iff its assumption AND its dependent answer
+    are both present and not superseded; a superseded endpoint makes that
+    exact edge inactive and nothing transfers to a replacement record. Endpoint
+    rows are never touched."""
+    records = list(assertions or ())
+    by_id = {r.record_id: r for r in records}
+    position = {r.record_id: i for i, r in enumerate(records)}
+    declarations, active = [], []
+    for record in records:
+        edge = dependency_edge_of(record)
+        if edge is None:
+            continue
+        ends = [by_id.get(rid) for rid in edge]
+        is_active = all(e is not None and e.superseded_by is None for e in ends)
+        declarations.append(DeclaredDependency(record.record_id, edge[0],
+                                               edge[1], is_active))
+        if is_active and edge not in active:
+            active.append(edge)
+    grouped = {}
+    for assumption_id, answer_id in active:
+        grouped.setdefault(assumption_id, []).append(answer_id)
+    by_assumption = tuple(
+        (aid, tuple(sorted(answers, key=lambda rid: position[rid])))
+        for aid, answers in sorted(grouped.items(),
+                                   key=lambda item: position[item[0]]))
+    return AssumptionDependencyProjection(
+        declarations=tuple(declarations), active_edges=tuple(active),
+        by_assumption=by_assumption)
 
 
 @dataclass(frozen=True)
@@ -857,6 +974,59 @@ class IdeaState:
         self.assertions.append(record)
         project_declared_contradictions(self.assertions)
         return record
+
+    def record_assumption_dependency_declarations(self, assumption_record_id,
+                                                  dependent_answer_record_ids,
+                                                  iteration=0):
+        """CAP-08 Slice 1 — the ONE carrier of `assumption_dependency_declared`
+        records: the inventor's explicit statement that each of the given
+        recorded answers depends on the given provisional assumption.
+
+        The dependent answers are normalized to a unique deterministic order
+        and minted as ONE record per directed edge (assumption -> answer). The
+        batch is all-or-nothing: it fails closed with NOTHING appended when the
+        assumption is not an ACTIVE `provisional_assumption`, when any answer
+        is not an ACTIVE `answered` record, or when any edge is already
+        actively declared. Each record is OWNER_STATED / OWNER_INPUT /
+        UNVALIDATED with empty content and every other field neutral. It
+        changes no gap, maturity, progression, score, routing or readiness."""
+        _rec_number(assumption_record_id)
+        answers = normalize_dependent_answers(dependent_answer_record_ids)
+        assumption = self._require_record(assumption_record_id)
+        if assumption.disposition != DISPOSITION_PROVISIONAL_ASSUMPTION:
+            raise ValueError("a dependency names a provisional assumption")
+        if assumption.superseded_by is not None:
+            raise ValueError("a dependency assumption must be active")
+        for rid in answers:
+            answer = self._require_record(rid)
+            if answer.disposition != DISPOSITION_ANSWERED:
+                raise ValueError("a dependent record must be an answer")
+            if answer.superseded_by is not None:
+                raise ValueError("a dependent answer must be active")
+        active = set(project_assumption_dependencies(self.assertions).active_edges)
+        if any((assumption_record_id, rid) in active for rid in answers):
+            raise ValueError("this dependency is already declared")
+        _max_n = max((int(r.record_id[4:]) for r in self.assertions
+                      if isinstance(r.record_id, str)
+                      and r.record_id.startswith("rec_")
+                      and r.record_id[4:].isdigit()), default=0)
+        minted = []
+        for offset, rid in enumerate(answers, start=1):
+            minted.append(AssertionRecord(
+                record_id=f"rec_{_max_n + offset}",
+                disposition=DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED,
+                content="", gap_context=None, iteration=iteration,
+                provenance=_DEFAULT_PROVENANCE_BY_DISPOSITION[
+                    DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED],
+                validation_status=UNVALIDATED, quality=None, pending=None,
+                responsibility=ASSERTION_RESPONSIBILITY_BY_PROVENANCE[OWNER_STATED],
+                resolves_gap=False, decision_context_root=None,
+                question_target=None, contradiction_endpoints=None,
+                dependency_edge={"assumption_record_id": assumption_record_id,
+                                 "dependent_answer_record_id": rid},
+            ))
+        self.assertions.extend(minted)
+        return minted
 
     def mark_supersession(self, superseded_id, by_id):
         """Mark superseded_id as superseded by by_id. Non-destructive: the

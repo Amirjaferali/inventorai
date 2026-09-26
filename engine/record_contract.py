@@ -29,6 +29,7 @@ introduced — that mapping is deferred to P4-1. Derived/cached conclusions
 readiness is always freshly derived from restored records.
 """
 import json
+import re
 from dataclasses import dataclass, field
 
 from engine.idea_state import (
@@ -42,6 +43,9 @@ from engine.idea_state import (
     DISPOSITION_ANSWERED, DISPOSITION_CONTRADICTION_DECLARED, OWNER_STATED,
     UNVALIDATED, canonical_contradiction_pair, projected_contradicts,
     project_declared_contradictions,
+    DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED,
+    DISPOSITION_PROVISIONAL_ASSUMPTION, DEPENDENCY_EDGE_KEYS,
+    RELATIONSHIP_METADATA_DISPOSITIONS, dependency_edge_of,
 )
 
 # One minimal supported contract version. Unknown versions fail explicitly.
@@ -104,6 +108,10 @@ _ASSERTION_FIELDS = (
     # record. Written ONLY on that record (omitted everywhere else, so every
     # other payload stays byte-identical) and refused on any other disposition.
     "contradiction_endpoints",
+    # CAP-08 Slice 1: the directed edge of an `assumption_dependency_declared`
+    # record. Written ONLY on that record (omitted everywhere else, so every
+    # other payload stays byte-identical) and refused on any other disposition.
+    "dependency_edge",
 )
 
 _ENVELOPE_FIELDS = ("contract_version", "idea_id", "assertions")
@@ -139,6 +147,8 @@ def assertion_to_dict(record):
     }
     if getattr(record, "contradiction_endpoints", None) is not None:
         data["contradiction_endpoints"] = list(record.contradiction_endpoints)
+    if getattr(record, "dependency_edge", None) is not None:
+        data["dependency_edge"] = dict(record.dependency_edge)
     return data
 
 
@@ -233,6 +243,11 @@ def assertion_from_dict(data):
     if "contradiction_endpoints" in missing:
         data = dict(data, contradiction_endpoints=None)
         missing = missing - {"contradiction_endpoints"}
+    # CAP-08 Slice 1: the same rule for the dependency edge.
+    edge_present = "dependency_edge" in data
+    if "dependency_edge" in missing:
+        data = dict(data, dependency_edge=None)
+        missing = missing - {"dependency_edge"}
     if missing == {"decision_context_root"} \
             and data.get("disposition") in LEGACY_INTERACTION_DISPOSITIONS:
         # W2-A contract §4 — the ONE bounded compatibility relaxation: a
@@ -292,6 +307,11 @@ def assertion_from_dict(data):
     elif endpoints_present:
         raise InvalidReferenceError(
             "contradiction_endpoints is reserved for contradiction_declared")
+    if disposition == DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED:
+        _check_assumption_dependency_declaration(data)
+    elif edge_present:
+        raise InvalidReferenceError(
+            "dependency_edge is reserved for assumption_dependency_declared")
     return AssertionRecord(
         record_id=data["record_id"],
         disposition=data["disposition"],
@@ -311,6 +331,8 @@ def assertion_from_dict(data):
         question_target=question_target,
         contradiction_endpoints=(None if data["contradiction_endpoints"] is None
                                  else list(data["contradiction_endpoints"])),
+        dependency_edge=(None if data["dependency_edge"] is None
+                         else dict(data["dependency_edge"])),
     )
 
 
@@ -346,6 +368,46 @@ def _check_contradiction_declaration(data):
             or data["superseded_by"] is not None):
         raise InvalidReferenceError(
             "a contradiction declaration carries a non-neutral field")
+
+
+def _check_assumption_dependency_declaration(data):
+    """CAP-08 Slice 1 — the stored shape of one `assumption_dependency_declared`
+    record, mirroring its carrier: OWNER_STATED (also enforced through the
+    load-provenance singleton) and UNVALIDATED only, one directed edge naming
+    two distinct ``rec_N`` ids under exactly the two typed keys, empty content
+    and every non-applicable field neutral. Refused, never coerced; no value
+    is echoed."""
+    if data["validation_status"] != UNVALIDATED:
+        raise InvalidValidationStatusError(
+            "a dependency declaration is UNVALIDATED only")
+    if data["provenance"] != OWNER_STATED:
+        raise InvalidProvenanceError(
+            "a dependency declaration is OWNER_STATED only")
+    edge = data["dependency_edge"]
+    if not isinstance(edge, dict) or set(edge) != set(DEPENDENCY_EDGE_KEYS):
+        raise InvalidReferenceError(
+            "a dependency declaration names exactly one directed edge")
+    for key in DEPENDENCY_EDGE_KEYS:
+        ref = edge[key]
+        if not isinstance(ref, str) or not _REC_REF_RE.match(ref):
+            raise InvalidReferenceError(
+                "a dependency declaration has a malformed endpoint")
+    if edge["assumption_record_id"] == edge["dependent_answer_record_id"]:
+        raise InvalidReferenceError(
+            "a dependency declaration names one record twice")
+    if (data["content"] != "" or data["gap_context"] is not None
+            or data["question_target"] is not None
+            or data["decision_context_root"] is not None
+            or data["quality"] is not None or data["pending"] is not None
+            or data["resolves_gap"] is not False
+            or data["contradicts"] or data["supersedes"]
+            or data["superseded_by"] is not None
+            or data["contradiction_endpoints"] is not None):
+        raise InvalidReferenceError(
+            "a dependency declaration carries a non-neutral field")
+
+
+_REC_REF_RE = re.compile(r"^rec_[1-9][0-9]*$")
 
 
 @dataclass
@@ -527,64 +589,115 @@ class ProjectRecordContract:
                     raise InvalidReferenceError(
                         "cross-context decision supersession at record %r"
                         % r.record_id)
-        self._validate_contradiction_declarations(by_id)
+        self._validate_relationship_declarations(by_id)
         return self
 
-    def _validate_contradiction_declarations(self, by_id):
-        """CAP-10 Slice 1 — CHRONOLOGICAL relationship validation. The ledger
-        is walked in durable order (this list IS `records.seq` order) and every
-        `contradiction_declared` record is checked against the ledger AS IT
-        STOOD AT ITS OWN POSITION: both endpoints already present (no forward
-        reference), `answered`, and not yet superseded by any EARLIER record.
-        Final `superseded_by` state is deliberately not used — a correction
-        AFTER a valid declaration is a valid history (the declaration stays
-        historical and its pair simply becomes inactive), while a declaration
-        naming an already-corrected answer is refused.
-
-        Also refused: any record superseding a declaration (Slice 1 has no
-        declaration correction), a second declaration of a pair that is still
-        active, and a stored `contradicts` edge between two endpoints of a
-        declaration (a projection must never become durable authority).
-        Legacy edges between other records keep loading unchanged."""
+    def _validate_relationship_declarations(self, by_id):
+        """CHRONOLOGICAL relationship validation — ONE durable-order walk shared
+        by every relationship-metadata record (CAP-10 contradiction, CAP-08
+        directed dependency). The ledger is walked in durable order (this list
+        IS `records.seq` order) with one shared record of which ids already
+        exist and which are already superseded at each position; every
+        declaration is checked against the ledger AS IT STOOD AT ITS OWN
+        POSITION by its OWN kind's rule. Final `superseded_by` state is
+        deliberately not used: an endpoint superseded AFTER a valid
+        declaration is a valid history (the declaration stays historical and
+        simply becomes inactive), while a declaration naming an endpoint that
+        was already superseded is refused. No record may supersede a
+        relationship declaration (Slice 1 has no declaration correction)."""
         seen = set()
         superseded = set()
-        active_pairs = set()
-        declared_pairs = set()
+        contradiction_walk = {"active": set(), "declared": set()}
+        dependency_walk = {"active": set()}
         for r in self.assertions:
             for ref in r.supersedes:
-                if by_id[ref].disposition == DISPOSITION_CONTRADICTION_DECLARED:
+                if by_id[ref].disposition in RELATIONSHIP_METADATA_DISPOSITIONS:
+                    if by_id[ref].disposition == DISPOSITION_CONTRADICTION_DECLARED:
+                        raise InvalidReferenceError(
+                            "record %r supersedes a contradiction declaration"
+                            % r.record_id)
                     raise InvalidReferenceError(
-                        "record %r supersedes a contradiction declaration"
+                        "record %r supersedes a relationship declaration"
                         % r.record_id)
             if r.disposition == DISPOSITION_CONTRADICTION_DECLARED:
-                pair = tuple(r.contradiction_endpoints or ())
-                if len(pair) != 2:
-                    raise InvalidReferenceError(
-                        "contradiction declaration %r lacks two endpoints"
-                        % r.record_id)
-                for rid in pair:
-                    if rid not in seen:
-                        raise InvalidReferenceError(
-                            "contradiction declaration %r names an endpoint "
-                            "that is not earlier in the ledger" % r.record_id)
-                    if by_id[rid].disposition != DISPOSITION_ANSWERED:
-                        raise InvalidReferenceError(
-                            "contradiction declaration %r names a non-answer "
-                            "endpoint" % r.record_id)
-                    if rid in superseded:
-                        raise InvalidReferenceError(
-                            "contradiction declaration %r names an endpoint "
-                            "already superseded at its position" % r.record_id)
-                active_pairs = {p for p in active_pairs
-                                if not (set(p) & superseded)}
-                if pair in active_pairs:
-                    raise InvalidReferenceError(
-                        "contradiction declaration %r repeats an active "
-                        "declaration" % r.record_id)
-                active_pairs.add(pair)
-                declared_pairs.add(pair)
+                self._contradiction_at_position(r, by_id, seen, superseded,
+                                                contradiction_walk)
+            elif r.disposition == DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED:
+                self._dependency_at_position(r, by_id, seen, superseded,
+                                             dependency_walk)
             superseded.update(r.supersedes)
             seen.add(r.record_id)
+        self._no_durable_declared_contradiction_edge(
+            contradiction_walk["declared"])
+
+    @staticmethod
+    def _contradiction_at_position(r, by_id, seen, superseded, walk):
+        """CAP-10 Slice 1 rule: both endpoints already present (no forward
+        reference), `answered`, not yet superseded at this position, and the
+        pair not already actively declared."""
+        pair = tuple(r.contradiction_endpoints or ())
+        if len(pair) != 2:
+            raise InvalidReferenceError(
+                "contradiction declaration %r lacks two endpoints"
+                % r.record_id)
+        for rid in pair:
+            if rid not in seen:
+                raise InvalidReferenceError(
+                    "contradiction declaration %r names an endpoint "
+                    "that is not earlier in the ledger" % r.record_id)
+            if by_id[rid].disposition != DISPOSITION_ANSWERED:
+                raise InvalidReferenceError(
+                    "contradiction declaration %r names a non-answer "
+                    "endpoint" % r.record_id)
+            if rid in superseded:
+                raise InvalidReferenceError(
+                    "contradiction declaration %r names an endpoint "
+                    "already superseded at its position" % r.record_id)
+        walk["active"] = {p for p in walk["active"] if not (set(p) & superseded)}
+        if pair in walk["active"]:
+            raise InvalidReferenceError(
+                "contradiction declaration %r repeats an active "
+                "declaration" % r.record_id)
+        walk["active"].add(pair)
+        walk["declared"].add(pair)
+
+    @staticmethod
+    def _dependency_at_position(r, by_id, seen, superseded, walk):
+        """CAP-08 Slice 1 rule — DIRECTED, never pair-normalized: the
+        assumption endpoint is an earlier, not-yet-superseded
+        `provisional_assumption`; the dependent endpoint is an earlier,
+        not-yet-superseded `answered` record; and the exact directed edge is
+        not already actively declared."""
+        edge = dependency_edge_of(r)
+        if edge is None:
+            raise InvalidReferenceError(
+                "dependency declaration %r lacks a directed edge" % r.record_id)
+        roles = ((edge[0], DISPOSITION_PROVISIONAL_ASSUMPTION),
+                 (edge[1], DISPOSITION_ANSWERED))
+        for rid, disposition in roles:
+            if rid not in seen:
+                raise InvalidReferenceError(
+                    "dependency declaration %r names an endpoint that is not "
+                    "earlier in the ledger" % r.record_id)
+            if by_id[rid].disposition != disposition:
+                raise InvalidReferenceError(
+                    "dependency declaration %r names an endpoint of the wrong "
+                    "role" % r.record_id)
+            if rid in superseded:
+                raise InvalidReferenceError(
+                    "dependency declaration %r names an endpoint already "
+                    "superseded at its position" % r.record_id)
+        walk["active"] = {e for e in walk["active"] if not (set(e) & superseded)}
+        if edge in walk["active"]:
+            raise InvalidReferenceError(
+                "dependency declaration %r repeats an active declaration"
+                % r.record_id)
+        walk["active"].add(edge)
+
+    def _no_durable_declared_contradiction_edge(self, declared_pairs):
+        """CAP-10 Slice 1: a stored `contradicts` edge between two endpoints of
+        a declaration is refused (a projection must never become durable
+        authority). Legacy edges between other records keep loading."""
         if not declared_pairs:
             return
         for r in self.assertions:

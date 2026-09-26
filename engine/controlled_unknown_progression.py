@@ -39,6 +39,7 @@ from engine.idea_state import (
     INTERACTION_DISPOSITIONS,
     ACCEPTED_RISK,
     DISPOSITION_ANSWERED,
+    DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED,
 )
 
 # --- OD-3: the six proposed WS12 controlled-unknown PATH classifications ------
@@ -193,6 +194,11 @@ def report_controlled_unknowns(state) -> tuple:
         ))
     for record in getattr(state, "assertions", ()) or ():
         if getattr(record, "disposition", None) == DISPOSITION_ANSWERED:
+            continue
+        # CAP-08 Slice 1: an inventor dependency declaration relates two
+        # existing records; it is not itself an unknown.
+        if getattr(record, "disposition", None) \
+                == DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED:
             continue
         views.append(ControlledUnknownView(
             source_kind=_SOURCE_ASSERTION_RECORD,

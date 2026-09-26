@@ -89,6 +89,14 @@ class ContradictionDeclarationRejected(StoreError):
     Decided before any row is written; nothing is written."""
 
 
+class AssumptionDependencyDeclarationRejected(StoreError):
+    """CAP-08 Slice 1: an `assumption_dependency_declared` batch is not valid
+    against the DURABLE ledger inside the write transaction (an endpoint
+    unknown, of the wrong role, already superseded, or an edge already
+    actively declared). Decided before any row is written; nothing is
+    written — the whole batch, never a part of it."""
+
+
 class FeedbackChainConflict(StoreError):
     """T2-D: the expected head moved, a root was proposed for a context that
     already has one, or the stable event key names a DIFFERENT event. An
@@ -1391,6 +1399,86 @@ class SqliteRecordStore:
                 "VALUES (?, ?, ?, ?, ?)",
                 (project_id, seq, record.record_id,
                  json.dumps(payload, sort_keys=True), idempotency_key))
+
+    def append_assumption_dependency_declarations(self, project_id: str,
+                                                  records, idempotency_keys) -> None:
+        """CAP-08 Slice 1 — append ONE complete batch of
+        `assumption_dependency_declared` records (one directed edge each) in
+        ONE serialized write transaction (``BEGIN IMMEDIATE``): all rows commit
+        or none do. Every edge is re-resolved against the DURABLE ledger INSIDE
+        that transaction by the record contract's own chronological validation
+        over the stored history plus the whole batch at the next positions, so
+        a correction that committed first makes the batch fail closed
+        (``AssumptionDependencyDeclarationRejected``) and no partial batch is
+        ever written. One durable idempotency key per edge row is required and
+        rides the existing partial UNIQUE index; a duplicate key raises
+        ``sqlite3.IntegrityError`` and rolls the whole batch back."""
+        from engine.idea_state import DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED
+        from engine.record_contract import (
+            ContractError, assertion_from_dict, reconcile_supersession_edges)
+        records = list(records or ())
+        keys = list(idempotency_keys or ())
+        if not records or len(keys) != len(records):
+            raise AssumptionDependencyDeclarationRejected(
+                "one idempotency key per declaration is required")
+        if any(getattr(r, "disposition", None)
+               != DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED for r in records):
+            raise AssumptionDependencyDeclarationRejected(
+                "not a dependency declaration")
+        if not all(keys) or len(set(keys)) != len(keys):
+            raise AssumptionDependencyDeclarationRejected(
+                "distinct idempotency keys are required")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            proj = self._conn.execute(
+                "SELECT idea_id, contract_version FROM projects WHERE project_id = ?",
+                (project_id,)).fetchone()
+            if proj is None:
+                raise ProjectNotFound(project_id)
+            rows = self._conn.execute(
+                "SELECT payload FROM records WHERE project_id = ? ORDER BY seq ASC",
+                (project_id,)).fetchall()
+            payloads = [assertion_to_dict(r) for r in records]
+            try:
+                history = [assertion_from_dict(json.loads(p)) for (p,) in rows]
+                history.extend(assertion_from_dict(p) for p in payloads)
+                reconcile_supersession_edges(history)
+                ProjectRecordContract(idea_id=proj[0], assertions=history,
+                                      contract_version=proj[1]).validate()
+            except ContractError:
+                raise AssumptionDependencyDeclarationRejected(
+                    "the declarations are not valid against the durable ledger"
+                ) from None
+            seq = self._conn.execute(
+                "SELECT COALESCE(MAX(seq), -1) + 1 FROM records WHERE project_id = ?",
+                (project_id,)).fetchone()[0]
+            for offset, (record, payload, key) in enumerate(
+                    zip(records, payloads, keys)):
+                self._conn.execute(
+                    "INSERT INTO records (project_id, seq, record_id, payload, "
+                    "idempotency_key) VALUES (?, ?, ?, ?, ?)",
+                    (project_id, seq + offset, record.record_id,
+                     json.dumps(payload, sort_keys=True), key))
+
+    def committed_records_for_idempotency_key_prefix(self, project_id: str,
+                                                     prefix: str):
+        """CAP-08 Slice 1 — every ``(idempotency_key, payload)`` of this project
+        whose durable key starts with ``prefix``, read ONLY from committed
+        durable state (IR-01: refuses on an unresolved connection), in key
+        order. ``prefix`` must be a non-empty ``[0-9a-z:]`` string, so it can
+        never carry a LIKE wildcard. Project-scoped; reads nothing across
+        projects."""
+        if not isinstance(prefix, str) or not prefix or any(
+                ch not in "0123456789abcdefghijklmnopqrstuvwxyz:" for ch in prefix):
+            raise ValueError("an idempotency key prefix is [0-9a-z:] only")
+        self._refuse_uncommitted_reads()
+        rows = self._conn.execute(
+            "SELECT idempotency_key, payload FROM records "
+            "WHERE project_id = ? AND idempotency_key LIKE ? "
+            "ORDER BY idempotency_key",
+            (project_id, prefix + "%")).fetchall()
+        return [(key, json.loads(payload)) for key, payload in rows
+                if key.startswith(prefix)]
 
     def committed_record_payload_for_idempotency_key(self, project_id: str,
                                                      idempotency_key: str):

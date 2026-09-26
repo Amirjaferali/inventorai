@@ -184,7 +184,9 @@ _DOMAINS = os.path.join(_REPO, "domains")
 #       da2c405d3f7b4995f43141d0b89720f97e94b731345b1ad054c77b821f58ab90
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "70ce71fbc61ad21ea99c446aca565cc0443f6572115d74dd87305ee7f0e98874",
+    # CAP-08 Slice 1 re-freeze: the relationship-metadata serving containment
+    # in _alternatives_crossing_context (pre-CAP-08 = 70ce71fb...8874).
+    "engine/progression_loop.py": "b8ba596c9315df592f358cd2230e6102c13ea1ed292527e19da6c18b64014f50",
 }
 # The mechanical pack hash IS this corpus's inventory validity anchor.
 # P9-MECH-SF reconciliation (contract §4 item 10, disclosed): re-frozen after

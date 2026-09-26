@@ -31,7 +31,7 @@ from engine.idea_state import (
     DISPOSITION_DEFERRED,
     DISPOSITION_PROVISIONAL_ASSUMPTION,
     CRITICALITY_ACTION_CONFIRMED,
-    DISPOSITION_CONTRADICTION_DECLARED,
+    RELATIONSHIP_METADATA_DISPOSITIONS,
     active_declared_contradiction_pairs,
 )
 
@@ -402,15 +402,18 @@ def derive_requirement_landscape(state):
     # recorded answer, or a validation-plan/deliverable input (both inherit
     # this landscape). Bounded class exclusion only: every legacy disposition
     # keeps its behavior byte-identically.
-    # CAP-10 Slice 1: an inventor `contradiction_declared` record is
-    # relationship metadata over two answers, never itself a "Recorded answer"
-    # requirement; the contradiction row is derived from its endpoints below.
+    # CAP-10 / CAP-08 Slice 1: an inventor relationship declaration
+    # (`contradiction_declared`, `assumption_dependency_declared`) is metadata
+    # over existing records, never itself a "Recorded answer" requirement (and
+    # so never validation-plan or deliverable work through this landscape); the
+    # contradiction row is derived from its endpoints below, and a dependency
+    # has no landscape row at all.
     active = [r for r in getattr(state, "assertions", [])
               if getattr(r, "superseded_by", None) is None
               and getattr(r, "disposition", None)
               not in DECISION_ACTION_DISPOSITIONS
               and getattr(r, "disposition", None)
-              != DISPOSITION_CONTRADICTION_DECLARED]
+              not in RELATIONSHIP_METADATA_DISPOSITIONS]
     active_ids = {r.record_id for r in active}
     by_id = {r.record_id: r for r in active}
     declared_pairs = active_declared_contradiction_pairs(

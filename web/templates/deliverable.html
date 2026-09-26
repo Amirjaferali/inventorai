@@ -326,6 +326,24 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if rsl13.section_13_note %}
   <div class="field-value" style="white-space:pre-line;margin-top:8px">{{ rsl13.section_13_note }}</div>
   {% endif %}
+  {#- CAP08-VIEW-BEGIN — CAP-08 Slice 1: compact view, ADJACENT to the
+     requirement landscape, of the dependencies the inventor declared between
+     their provisional assumptions and recorded answers. Presentation only over
+     the ONE derived projection; a dependency is not a requirement, a risk or a
+     criticality item. Every scaffolding tag self-erases, so a project with no
+     declaration renders byte-identically to before. #}
+  {%- if assumption_dependencies and assumption_dependencies.declared_count %}
+  <div class="cap08-dependency-view" style="margin-top:10px">
+  <div class="field-label">{{ t('UI_CAP08_VIEW_HEADING') }}</div>
+  <div class="field-value" style="color:#667">{{ t('UI_CAP08_REPORT_NOT_REQUIREMENT') }}</div>
+  {% for g in assumption_dependencies.groups %}
+  <div class="field-value" data-dependency-assumption="{{ g.assumption.record_id }}"><span dir="auto">{{ g.assumption.text }}</span> — {{ g.answers | length }} {{ t('UI_CAP08_REPORT_COUNT') }}</div>
+  {% else %}
+  <div class="field-value" data-dependency-inactive-history>{{ t('UI_CAP08_INACTIVE_HISTORY') }}</div>
+  {% endfor %}
+  </div>
+  {%- endif %}
+  {#- CAP08-VIEW-END #}
   {#- T2A-BLOCK-BEGIN — the T2-A addition to this report section. The two
      sentinels delimit it exactly, so the zero-row equivalence proof can
      reconstruct the BASE source by removing the text between them. Every
@@ -469,6 +487,27 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     {% endfor %}
   </ul>
   {% endif %}
+  {#- CAP08-DECLARED-BEGIN — CAP-08 Slice 1: the explicitly inventor-declared
+     subsection of this assumptions area, kept visibly SEPARATE from the
+     generated assumptions above (never joined by text, numbering or inferred
+     matching). Self-erasing when no declaration exists. #}
+  {%- if assumption_dependencies and assumption_dependencies.declared_count %}
+  <div class="cap08-declared-dependencies">
+  <h4>{{ t('UI_CAP08_REPORT_HEADING') }}</h4>
+  <p class="group-lede">{{ t('UI_CAP08_VIEW_NOTE') }}</p>
+  {% for g in assumption_dependencies.groups %}
+  <div class="field-label">{{ t('UI_CAP08_ASSUMPTION_LABEL') }} <span dir="auto">{{ g.assumption.text }}</span></div>
+  <ul>
+    {% for a in g.answers %}
+    <li data-dependency-answer="{{ a.record_id }}"><span dir="auto">{{ a.text }}</span></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value" data-dependency-inactive-history>{{ t('UI_CAP08_INACTIVE_HISTORY') }}</div>
+  {% endfor %}
+  </div>
+  {%- endif %}
+  {#- CAP08-DECLARED-END #}
 
   <h3>{{ t('UI_B_DELIV_048') }}</h3>
   {% if package["section_8_unresolved_items"]["items"] %}

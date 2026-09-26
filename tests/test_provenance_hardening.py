@@ -361,6 +361,9 @@ LOAD_MATRIX = {
     # CAP-10 Slice 1: the inventor's conflict declaration — a singleton, never
     # LEGACY_UNSPECIFIED (it did not exist before provenance was stamped).
     idea_state.DISPOSITION_CONTRADICTION_DECLARED: {OWNER_STATED},
+    # CAP-08 Slice 1: the inventor's dependency declaration — likewise a
+    # singleton, never LEGACY_UNSPECIFIED.
+    idea_state.DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED: {OWNER_STATED},
 }
 
 
@@ -394,7 +397,7 @@ def _payload_for(disposition, provenance):
 def test_load_matrix_covers_every_known_disposition_exactly():
     # A future disposition cannot enter without its own explicit load policy.
     assert set(ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION) == set(INTERACTION_DISPOSITIONS) \
-        | {idea_state.DISPOSITION_CONTRADICTION_DECLARED}
+        | idea_state.RELATIONSHIP_METADATA_DISPOSITIONS
     assert {d: set(v) for d, v in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION.items()} \
         == LOAD_MATRIX
     for allowed in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION.values():
@@ -432,8 +435,10 @@ def test_owner_only_record_stored_as_legacy_is_refused(disposition):
 # `record_interaction`) and a stricter, disposition-specific load shape
 # (UNVALIDATED only, neutral fields, two endpoints); its load matrix entry is
 # pinned above and its load rules in tests/test_cap10_declared_contradiction.py.
+# CAP-08 Slice 1: the dependency declaration likewise (its load rules are in
+# tests/test_cap08_assumption_dependency.py).
 INTERACTION_LOAD_MATRIX = {d: v for d, v in LOAD_MATRIX.items()
-                           if d != idea_state.DISPOSITION_CONTRADICTION_DECLARED}
+                           if d not in idea_state.RELATIONSHIP_METADATA_DISPOSITIONS}
 
 
 @pytest.mark.parametrize("disposition,provenance", sorted(
