@@ -53,11 +53,11 @@ def _live_state():
     return s
 
 
-def _step(statement, responsibility, n=1):
+def _step(statement, responsibility, n=1, label="Recorded answer"):
     return vp.ValidationStep(
         step_id=f"vstep:req:{n}", statement=statement, responsibility=responsibility,
         evidence_category="x", closure_condition="x",
-        provenance=vp.ProvenanceRef("assertion", f"rec_{n}", "Recorded answer"),
+        provenance=vp.ProvenanceRef("assertion", f"rec_{n}", label),
         confidence=vp.CONFIDENCE_UNDETERMINED)
 
 
@@ -90,7 +90,9 @@ def test_b_n_every_step_lands_once_in_its_own_responsibility_group():
               "UNDETERMINED": "clarification"}
     for step in plan.steps:
         entries = groups[key_of[step.responsibility]]["entries"]
-        assert [e["text"] for e in entries].count(step.statement) == 1
+        shown = (step.provenance.display_label + ": " + step.statement
+                 if step.responsibility == vp.UNDETERMINED else step.statement)
+        assert [e["text"] for e in entries].count(shown) == 1
     assert summary["total"] == len(plan.steps) + len(plan.blocked_items)
     assert sum(g["count"] for g in summary["groups"]) == summary["total"]
     # the realistic state yields owner, specialist, evidence and clarification
@@ -124,8 +126,80 @@ def test_h_blocked_and_undetermined_items_are_kept_as_clarification(monkeypatch)
     groups = _groups(_summary(_live_state()))
     assert set(groups) == {"clarification"}
     assert [e["text"] for e in groups["clarification"]["entries"]] == [
-        "Address the open gap: Physical Feasibility.", "Recorded unknown"]
+        "Recorded answer: Address the open gap: Physical Feasibility.",
+        "Recorded unknown"]
     assert groups["clarification"]["count"] == 2
+
+
+GENERIC = "Validate, revise, or replace it before relying on it."
+
+
+def test_correction_01_undetermined_step_carries_its_canonical_subject(monkeypatch):
+    """A: outside Section 14 an UNDETERMINED step keeps its own canonical
+    provenance label, verbatim, in front of its verbatim statement; C: the
+    other responsibility groups keep the bare canonical statement."""
+    plan = vp.ValidationPlan(outcome=vp.OUTCOME_PLAN, steps=(
+        _step(GENERIC, vp.UNDETERMINED, 1, label="Provisional assumption"),
+        _step("Obtain the requested specialist input.", vp.SPECIALIST_REQUIRED, 2,
+              label="Pending specialist request"),
+        _step("Confirm the frame", vp.OWNER_EXECUTABLE, 3),
+    ), blocked_items=())
+    monkeypatch.setattr(vp, "derive_validation_plan", lambda state: plan)
+    groups = _groups(_summary(_live_state()))
+    assert [e["text"] for e in groups["clarification"]["entries"]] == [
+        "Provisional assumption: " + GENERIC]
+    assert [e["text"] for e in groups["specialist"]["entries"]] == [
+        "Obtain the requested specialist input."]
+    assert [e["text"] for e in groups["owner"]["entries"]] == ["Confirm the frame"]
+
+
+def test_correction_01_same_generic_statement_different_subjects_stay_apart(
+        monkeypatch):
+    """B: two UNDETERMINED steps with the same generic statement but different
+    canonical subjects never collapse into one ambiguous entry; the same
+    subject twice still collapses with its count."""
+    plan = vp.ValidationPlan(outcome=vp.OUTCOME_PLAN, steps=(
+        _step(GENERIC, vp.UNDETERMINED, 1, label="Provisional assumption"),
+        _step(GENERIC, vp.UNDETERMINED, 2, label="Recorded unknown"),
+        _step(GENERIC, vp.UNDETERMINED, 3, label="Provisional assumption"),
+    ), blocked_items=())
+    monkeypatch.setattr(vp, "derive_validation_plan", lambda state: plan)
+    [group] = _summary(_live_state())["groups"]
+    assert group["entries"] == [
+        {"text": "Provisional assumption: " + GENERIC, "repeat": 2},
+        {"text": "Recorded unknown: " + GENERIC, "repeat": 1}]
+    assert group["count"] == 3
+
+
+@pytest.mark.parametrize("label", [None, "", "   ", 7])
+def test_correction_01_missing_subject_fails_closed(monkeypatch, label):
+    """A referent-less UNDETERMINED statement is never rendered: a missing or
+    malformed canonical label makes the whole summary unavailable."""
+    plan = vp.ValidationPlan(outcome=vp.OUTCOME_PLAN, steps=(
+        _step(GENERIC, vp.UNDETERMINED, 1, label=label),), blocked_items=())
+    monkeypatch.setattr(vp, "derive_validation_plan", lambda state: plan)
+    summary = _summary(_live_state())
+    assert (summary["status"], summary["groups"], summary["total"]) == (
+        "unavailable", [], None)
+
+
+def test_correction_01_real_provisional_assumption_keeps_its_subject(client):
+    """A (end to end): a real provisional assumption recorded through the
+    carrier renders with its canonical subject on the served page; D: the
+    summary still holds no control."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    state = appmod.SESSION_STORE[sid]["state"]
+    state.record_interaction("provisional_assumption", "pin carries the load",
+                             gap_context=PHYSICAL_FEASIBILITY)
+    plan = vp.derive_validation_plan(state)
+    [step] = [s for s in plan.steps if s.provenance.display_label
+              == "Provisional assumption"]
+    assert step.responsibility == vp.UNDETERMINED
+    page = c.get(f"/session/{sid}").get_data(as_text=True)
+    _, _, block = _element(page, "decision-action-summary")
+    assert html.escape("Provisional assumption: " + step.statement) in block
+    _no_controls(block)
 
 
 def test_n_identical_statements_collapse_with_a_count(monkeypatch):

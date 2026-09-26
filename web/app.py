@@ -8988,7 +8988,17 @@ def _decision_action_summary(state):
             key = _AS_GROUP_BY_RESPONSIBILITY.get(step.responsibility)
             if key is None:
                 raise ValueError("non-canonical responsibility")
-            _as_add(groups, key, step.statement)
+            text = step.statement
+            if step.responsibility == "UNDETERMINED":
+                # Correction 01: outside Section 14 a generic statement ("…
+                # before relying on it") loses its subject, so it carries its
+                # own canonical provenance label. No subject is inferred: a
+                # missing / malformed label fails the summary closed.
+                label = getattr(step.provenance, "display_label", None)
+                if not isinstance(label, str) or not label.strip():
+                    raise ValueError("undetermined step without a label")
+                text = label.strip() + ": " + step.statement
+            _as_add(groups, key, text)
         for item in plan.blocked_items:
             _as_add(groups, "clarification", item.provenance.display_label)
         summary["groups"] = [
