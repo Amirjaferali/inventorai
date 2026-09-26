@@ -186,6 +186,18 @@ _MESSAGE_KEYS = {
     ("This response form is no longer current, so nothing was saved. "
      "Please review the current question and respond there."):
         "UI_UQTR_FORM_STALE",
+    # CAP-10 Slice 1 (web/app.py declare_conflict): its refusals render through
+    # the `_answer_error` slot, so they are registered here.
+    ("That conflict could not be saved just now. Nothing was changed."):
+        "UI_CAP10_ERR_NOT_SAVED",
+    ("Choose exactly two of your current recorded answers and confirm that you "
+     "believe they conflict. Nothing was changed."): "UI_CAP10_ERR_INVALID",
+    ("One of those answers is no longer current, or that conflict is already "
+     "recorded, so nothing was saved. Review your current answers and try "
+     "again."): "UI_CAP10_ERR_STALE",
+    ("We could not confirm whether that conflict was saved. Reload this page "
+     "to see what your project holds before recording it again."):
+        "UI_CAP10_ERR_UNKNOWN",
 }
 
 
@@ -3351,6 +3363,70 @@ UI_STRINGS = {
         "en": "Earlier answers were kept exactly as recorded.",
         "ar": "بقيت الإجابات السابقة كما سُجّلت تمامًا.",
     },
+    "UI_T3A_EVENT_CONTRADICTION_DECLARED": {
+        "en": "Conflict you declared between two answers",
+        "ar": "تعارض أعلنته بين إجابتين",
+    },
+    "UI_T3A_DECLARES_CONFLICT": {
+        "en": "Marks as conflicting: step",
+        "ar": "يعلّم كمتعارض: الخطوة",
+    },
+    # CAP-10 Slice 1 — the inventor's explicit conflict declaration. Truthful:
+    # the inventor's own belief, not validated, no winner, no progress effect.
+    "UI_CAP10_HEADING": {
+        "en": "Mark two answers as conflicting",
+        "ar": "تعليم إجابتين على أنهما متعارضتان",
+    },
+    "UI_CAP10_EXPLAIN": {
+        "en": ("If you believe two of your recorded answers conflict, you can "
+               "record that here. The system does not decide which answer is "
+               "right, and recording it does not change your progress."),
+        "ar": ("إذا كنت ترى أن إجابتين من إجاباتك المسجّلة متعارضتان، يمكنك "
+               "تسجيل ذلك هنا. لا يقرّر النظام أيّ الإجابتين صحيحة، ولا يغيّر "
+               "التسجيل تقدّمك."),
+    },
+    "UI_CAP10_SELECT": {
+        "en": "Choose exactly two of your current answers",
+        "ar": "اختر إجابتين بالضبط من إجاباتك الحالية",
+    },
+    "UI_CAP10_NOTE": {
+        "en": "Optional note (kept exactly as you write it)",
+        "ar": "ملاحظة اختيارية (تُحفظ كما تكتبها تمامًا)",
+    },
+    "UI_CAP10_CONFIRM": {
+        "en": ("I believe these two recorded answers conflict. I understand "
+               "this declaration is not validated."),
+        "ar": ("أرى أن هاتين الإجابتين المسجّلتين متعارضتان. وأفهم أن هذا "
+               "الإعلان غير مُتحقَّق منه."),
+    },
+    "UI_CAP10_BUTTON": {
+        "en": "Record the conflict",
+        "ar": "تسجيل التعارض",
+    },
+    "UI_CAP10_ERR_NOT_SAVED": {
+        "en": "That conflict could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ هذا التعارض الآن. لم يتم تغيير أي شيء.",
+    },
+    "UI_CAP10_ERR_INVALID": {
+        "en": ("Choose exactly two of your current recorded answers and confirm "
+               "that you believe they conflict. Nothing was changed."),
+        "ar": ("اختر إجابتين بالضبط من إجاباتك المسجّلة الحالية وأكّد أنك ترى "
+               "أنهما متعارضتان. لم يتم تغيير أي شيء."),
+    },
+    "UI_CAP10_ERR_STALE": {
+        "en": ("One of those answers is no longer current, or that conflict is "
+               "already recorded, so nothing was saved. Review your current "
+               "answers and try again."),
+        "ar": ("إحدى هاتين الإجابتين لم تعد حالية، أو أن هذا التعارض مسجّل "
+               "مسبقًا، لذلك لم يُحفظ شيء. راجع إجاباتك الحالية وحاول مجددًا."),
+    },
+    "UI_CAP10_ERR_UNKNOWN": {
+        "en": ("We could not confirm whether that conflict was saved. Reload "
+               "this page to see what your project holds before recording it "
+               "again."),
+        "ar": ("لم نتمكّن من التأكد مما إذا كان هذا التعارض قد حُفظ. أعد تحميل "
+               "هذه الصفحة لترى ما يحتويه مشروعك قبل تسجيله مرة أخرى."),
+    },
     "UI_T3A_EVENT_ANSWER_RECORDED": {
         "en": "Answer recorded",
         "ar": "إجابة مسجَّلة",
@@ -3684,6 +3760,11 @@ QUESTION_EXPLANATION_KEYS = {
 # questions, the criticality clarification ask, and user content are deliberately
 # ABSENT. Populated below; kept as the single owner-approved Arabic registry.
 _DEEP_AR = {
+    # --- CAP-10 Slice 1 conflict-declaration acknowledgement (web.app) ---
+    "Saved. You believe these two recorded answers conflict. This declaration "
+    "has not been validated, and neither answer is assumed correct.":
+        "تم الحفظ. أنت ترى أن هاتين الإجابتين المسجّلتين متعارضتان. هذا الإعلان "
+        "غير مُتحقَّق منه، ولا تُفترض صحة أيٍّ من الإجابتين.",
     # --- W2-A decision-capture acknowledgement (web.app constant) ---
     "Your decision entry was recorded and saved to your project.":
         "تم تسجيل إدخالك القراري وحفظه في مشروعك.",

@@ -31,6 +31,7 @@ from engine.idea_state import (
     OWNER_STATED,
     OWNER_INPUT, SYSTEM_ANALYSIS, SPECIALIST_INPUT, EMPIRICAL_EVIDENCE, UNDETERMINED,
     DISPOSITION_ANSWERED, DISPOSITION_PROVISIONAL_ASSUMPTION,
+    active_declared_contradiction_pairs,
 )
 from engine.requirement_landscape import derive_requirement_landscape
 
@@ -160,6 +161,12 @@ def _classify(requirement, state):
     """Return (responsibility, evidence_category) for an eligible requirement."""
     kind = requirement.primary_anchor.anchor_kind
     if kind == "active_contradiction":
+        # CAP-10 Slice 1: an inventor-declared conflict closes when either
+        # answer is corrected — never "merged into one" answer.
+        pair = tuple(requirement.primary_anchor.anchor_reference.split("|", 1))
+        if pair in active_declared_contradiction_pairs(
+                getattr(state, "assertions", []) or []):
+            return OWNER_EXECUTABLE, "a correction of either conflicting answer"
         return OWNER_EXECUTABLE, "reconciliation of conflicting records"
     if kind == "pending_evidence":
         return EMPIRICAL_EVIDENCE_REQUIRED, "empirical evidence"

@@ -40,6 +40,7 @@ from engine.idea_state import (
     SPECIALIST_INPUT,
     EMPIRICAL_EVIDENCE,
     UNDETERMINED,
+    active_declared_contradiction_pairs,
 )
 
 # Engine-resident responsibility vocabulary (O-1). No web-layer mapping is used.
@@ -188,15 +189,36 @@ def derive_next_development_step(state):
     contradictions = _active_contradiction_candidates(active)
     if contradictions:
         r = _select_record(contradictions)
+        # CAP-10 Slice 1: an inventor-declared conflict is attributed to the
+        # inventor. No contradiction ever gated progression, and nothing
+        # requires the two answers to become one.
+        declared = any(r.record_id in pair for pair in
+                       active_declared_contradiction_pairs(
+                           getattr(state, "assertions", [])))
+        if declared:
+            return _from_record(
+                "active_contradiction", r,
+                title="Two recorded answers you marked as conflicting",
+                why="You declared that these two recorded answers conflict. "
+                    "This declaration has not been validated, and neither "
+                    "answer is assumed correct.",
+                action="Review both answers; if one no longer reflects your "
+                       "intent, correct it (the system does not choose a "
+                       "winner).",
+                sufficiency="Either answer is corrected, so the declared "
+                            "conflict is no longer active.",
+                unlock="The declared conflict is no longer active.",
+                uncertainty="Which answer, if either, reflects your intent is "
+                            "undetermined.",
+                provider=UNDETERMINED,
+            )
         return _from_record(
             "active_contradiction", r,
             title="Unresolved contradiction between recorded answers",
-            why="Two recorded answers conflict; the conflict must be reconciled "
-                "before the idea can advance.",
+            why="Two recorded answers conflict; neither is assumed correct.",
             action="Reconcile the conflicting recorded answers "
                    "(the system does not choose a winner).",
-            sufficiency="The conflicting answers are reconciled into one "
-                        "consistent recorded answer.",
+            sufficiency="The conflicting recorded answers are reconciled.",
             unlock="The contradiction is resolved.",
             uncertainty="Which recorded answer is correct is undetermined until "
                         "reconciled.",

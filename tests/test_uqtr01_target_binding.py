@@ -217,8 +217,11 @@ def _drive_to_exhausted_partial(c, sid):
 # ---------------------------------------------------------------------------
 
 def test_contract_has_sixteen_fields_and_version_is_unchanged():
-    assert len(_ASSERTION_FIELDS) == 16
-    assert _ASSERTION_FIELDS[-1] == "question_target"
+    # CAP-10 Slice 1 deliberately adds a 17th field after question_target
+    # (`contradiction_endpoints`, declaration-only); the version is unchanged.
+    assert len(_ASSERTION_FIELDS) == 17
+    assert _ASSERTION_FIELDS[-2] == "question_target"
+    assert _ASSERTION_FIELDS[-1] == "contradiction_endpoints"
     assert CONTRACT_VERSION == "p4-0-record-contract-v1"
     assert AssertionRecord(record_id="rec_1", disposition="answered", content="x",
                            gap_context=None, iteration=0).question_target is None

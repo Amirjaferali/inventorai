@@ -6,16 +6,24 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-25): Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; current bounded action: Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing only; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
+**Current position (2026-09-26): Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL (current bounded action: CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers); Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing — delivered, PR #701, with the bounded weak-PF recovery PR #702; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
 not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
 complete nothing beyond themselves. **No further CAP-01 implementation is currently
-authorized.** `ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED ROUTING ONLY` — the next item of the
-protected sequence recorded in the EXISTING Stage-18 semantic-normalization block, not a new Master
-Roadmap Stage: on NEW routing-aware projects (`p4-2-level1-recon-v1-t2g2-nr1`) mechanical
+authorized.** `ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED ANSWERS` ·
+`STAGE 21: ENTERED / PARTIAL` · `FULL CAP-10: NOT AUTHORIZED` · `SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED`:
+the inventor explicitly declares that exactly two of their own active recorded answers conflict —
+one OWNER_STATED, UNVALIDATED `contradiction_declared` record on the existing ledger, the
+contradiction a deterministic derived projection with no parallel durable store; nothing is
+detected automatically or by AI, validated or resolved, no winner is chosen, and it has no gap,
+maturity, progression, scoring or NeedRouting authority; the Stage-21 checkbox stays unticked.
+`SAFE QUESTION REDUCTION — SLICE 1: DELIVERED — PR #701 — merge 34c0fc372f7374488acda03514e279119b735bc5` ·
+`WEAK-PF RECOVERY: DELIVERED — PR #702 — merge 20f27e5100cf9d475ae68d73da7cc17b2ecbf241` — the next
+item of the protected sequence recorded in the EXISTING Stage-18 semantic-normalization block, not
+a new Master Roadmap Stage: on NEW routing-aware projects (`p4-2-level1-recon-v1-t2g2-nr1`) mechanical
 PHYSICAL_FEASIBILITY:Q2 is routed to specialist input by one deterministic, durable
 SYSTEM_INFERRED NeedRouting record, so the Mechanical mandatory Owner-visible set is 9 there and
 stays 10 on every existing project; the requirement stays outstanding (PF never CLOSED while
@@ -47,8 +55,10 @@ PR #684` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. 
 measurement method per existing experiment. Variable, hypothesis and every other CAP-09 field stay
 NOT AUTHORIZED. The T1-C′ synthetic corpus (PR #685) and automated dry-run are preparation
 mechanics only — not real-user usability, value, differentiation, market or human validation.
-WATCH: the pre-Target-Aware reader does not load sixteen-field AssertionRecord rows — account for
-reader compatibility before any rollback / release planning. No other Stage is authorized. Project-specific
+WATCH: the pre-Target-Aware reader does not load sixteen-field AssertionRecord rows, and a
+pre-CAP-10 reader does not load a `contradiction_declared` row (its `contradiction_endpoints`
+field) — account for reader compatibility before any rollback / release planning. No other Stage
+is authorized beyond the bounded Stage-21 CAP-10 Slice 1. Project-specific
 CAP-01 behaviour returns only with a separately authorized architecture/data-model decision
 providing trustworthy typed technical-parameter inputs. The delivered mandates, their
 boundaries and the first authorized domain guidance profile (`electronics_electrical` only)

@@ -72,6 +72,9 @@ from engine.idea_state import (
     DISPOSITION_DECISION_CONTEXT_DECLARED as _DISP_CONTEXT_DECLARED,
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED as _DISP_ALT_DECLARED,
     DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN as _DISP_ALT_WITHDRAWN,
+    DISPOSITION_CONTRADICTION_DECLARED as _DISP_CONTRADICTION_DECLARED,
+    canonical_contradiction_pair as _canonical_contradiction_pair,
+    project_declared_contradictions as _project_declared_contradictions,
 )
 from web.gap_labels import (
     GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE,
@@ -93,6 +96,7 @@ from engine.record_store import (
     QuantityChainConflict as _QuantityChainConflict,
     QuantityCapExceeded as _QuantityCapExceeded,
     QuantityAnchorIneligible as _QuantityAnchorIneligible,
+    ContradictionDeclarationRejected as _ContradictionDeclarationRejected,
 )
 from engine.record_contract import ProjectRecordContract
 # T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate): the
@@ -1397,6 +1401,26 @@ CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE = (
     "What you see below has not changed yet. The saved correction will be "
     "reflected whenever this project can be rebuilt successfully."
 )
+
+# CAP-10 Slice 1 — the inventor's explicit conflict declaration (declare_conflict).
+# Truthful: the inventor's own belief, never validated, no winner, no progress
+# effect. Refusals render through `_answer_error` (localize_message); the ack
+# through `_interaction_ack` (localize_deep).
+CONTRADICTION_DECLARED_ACK = (
+    "Saved. You believe these two recorded answers conflict. This declaration "
+    "has not been validated, and neither answer is assumed correct.")
+CONTRADICTION_NOT_SAVED_MESSAGE = (
+    "That conflict could not be saved just now. Nothing was changed.")
+CONTRADICTION_INVALID_MESSAGE = (
+    "Choose exactly two of your current recorded answers and confirm that you "
+    "believe they conflict. Nothing was changed.")
+CONTRADICTION_STALE_MESSAGE = (
+    "One of those answers is no longer current, or that conflict is already "
+    "recorded, so nothing was saved. Review your current answers and try "
+    "again.")
+CONTRADICTION_UNKNOWN_MESSAGE = (
+    "We could not confirm whether that conflict was saved. Reload this page "
+    "to see what your project holds before recording it again.")
 
 CORRECTION_APPLIED_ACK = (
     "Your earlier answer was withdrawn and kept in the project history. "
@@ -5319,6 +5343,9 @@ def show_session(sid):
         # Slice 1 journey safety: the truthful recovery for a journey that has
         # no served question while a routed need blocks the next stage.
         routed_recovery=_routed_recovery_context(state, question),
+        # CAP-10 Slice 1: the dedicated signed binding the conflict form carries.
+        conflict_binding=_issue_cap10_binding(
+            sid, _answer_token_for(sid, entry), state),
         # Workstream 4: read-only render context for the completion-stage
         # structured criticality step (None while the journey is in progress
         # or when no contextually supported unconfirmed requirement remains).
@@ -5793,6 +5820,233 @@ def download_deliverable_pdf(sid):
     return response
 
 
+def _contradiction_idempotency_key(sid, lo, hi, token):
+    """CAP-10 Slice 1: the durable idempotency identity of ONE conflict
+    declaration — HMAC over (project, canonical endpoint pair, stable
+    submission identity), in the SAME additive column under the SAME partial
+    UNIQUE index as every other append. The submission identity is the
+    server-issued, sid-bound answer token the form carried: it survives a
+    retry, a double-submit and a restart (it verifies statelessly). The note is
+    deliberately NOT part of the key, so the same key with different material
+    is detectable and fails closed."""
+    msg = _canonical_message("cap10-contradiction-declaration-v1", sid, lo, hi,
+                             token)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _declaration_payload_matches(payload, pair, note):
+    """Confirm-by-reload: the STORED event is exactly this declaration —
+    disposition, canonical endpoint pair and the exact accepted VERBATIM note
+    (no whitespace or other normalisation on either side)."""
+    return (isinstance(payload, dict)
+            and payload.get("disposition") == _DISP_CONTRADICTION_DECLARED
+            and payload.get("contradiction_endpoints") == list(pair)
+            and payload.get("content") == note)
+
+
+# --- CAP-10 Slice 1: dedicated server-issued action binding -------------------
+# A generic answer token never authorizes a conflict declaration. The page that
+# renders the CAP-10 form issues a SEPARATE binding, signed with the existing
+# answer secret / canonical-message HMAC under its own domain separator, that
+# commits to: the project (sid), the CAP-10 action kind, the effective engine
+# contract version, the answer token rendered on the SAME page (the form's
+# stable submission identity) and the EXACT eligible endpoint set shown in the
+# form (its active answered records, in ledger order). A NEW declaration needs
+# a binding that verifies for this sid + token, a selected pair inside the bound
+# set, a token that is still the entry's current one, and a bound set that is
+# still exactly the current eligible set; any ledger change since the form was
+# rendered makes the binding stale. An already durably committed EXACT
+# declaration of the same submission identity is recognised before freshness.
+_CAP10_BINDING_KIND = "CAP10_DECLARE_CONFLICT"
+_CAP10_BINDING_DOMAIN = "cap10-declaration-binding-v1"
+_CAP10_BINDING_MAX_LEN = 16384
+
+
+def _cap10_eligible_endpoints(state):
+    """The endpoints the CAP-10 form offers: every ACTIVE answered record, in
+    ledger order (the template's `active_answers`)."""
+    return [r.record_id for r in getattr(state, "assertions", []) or []
+            if r.disposition == ACTION_ANSWERED
+            and getattr(r, "superseded_by", None) is None]
+
+
+def _cap10_binding_sig(sid, token, ecv, eligible):
+    msg = _canonical_message(_CAP10_BINDING_DOMAIN, sid, token,
+                             _CAP10_BINDING_KIND, _uqtr_opt(ecv),
+                             ",".join(eligible))
+    return _p2a_hmac.new(_answer_secret(), msg, _p2a_hashlib.sha256).hexdigest()
+
+
+def _issue_cap10_binding(sid, token, state):
+    """The signed CAP-10 binding for the form rendered with ``token``, or ""
+    when the form cannot be offered (fewer than two eligible answers)."""
+    eligible = _cap10_eligible_endpoints(state)
+    if len(eligible) < 2:
+        return ""
+    ecv = getattr(state, "engine_contract_version", None)
+    payload = json.dumps({"k": _CAP10_BINDING_KIND, "v": ecv, "e": eligible},
+                         sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    body = _p2a_b64.urlsafe_b64encode(payload.encode("ascii")).decode(
+        "ascii").rstrip("=")
+    return body + "." + _cap10_binding_sig(sid, token, ecv, eligible)
+
+
+def _verified_cap10_binding(sid, token, raw):
+    """``(ecv, eligible_tuple)`` of a binding signed for exactly this sid and
+    token, or None (missing, malformed, oversized, another kind, another
+    project, another token, tampered). Constant-time comparison; never raises."""
+    try:
+        if (not isinstance(raw, str) or not raw or len(raw) > _CAP10_BINDING_MAX_LEN
+                or not token):
+            return None
+        body, sep, sig = raw.rpartition(".")
+        if not sep or not body or not sig:
+            return None
+        data = json.loads(_p2a_b64.urlsafe_b64decode(
+            (body + "=" * (-len(body) % 4)).encode("ascii")).decode("ascii"))
+        if not isinstance(data, dict) or set(data) != {"k", "v", "e"} \
+                or data["k"] != _CAP10_BINDING_KIND:
+            return None
+        ecv, eligible = data["v"], data["e"]
+        if ecv is not None and not isinstance(ecv, str):
+            return None
+        if not isinstance(eligible, list) or len(eligible) < 2 \
+                or not all(isinstance(e, str) for e in eligible) \
+                or len(set(eligible)) != len(eligible):
+            return None
+        expected = _cap10_binding_sig(sid, token, ecv, eligible)
+        if not _p2a_hmac.compare_digest(sig.encode("utf-8"),
+                                        expected.encode("ascii")):
+            return None
+        return ecv, tuple(eligible)
+    except Exception:
+        return None
+
+
+@app.route("/session/<sid>/declare-conflict", methods=["POST"])
+def declare_conflict(sid):
+    """CAP-10 Slice 1 — the inventor explicitly declares that TWO of their own
+    current recorded answers conflict.
+
+    A dedicated action, never a question answer, authorized only by its own
+    server-issued CAP-10 binding (see above). It mints ONE append-only
+    `contradiction_declared` record (OWNER_STATED, UNVALIDATED) naming the
+    canonical endpoint pair and carrying the note VERBATIM, persists it with
+    the endpoints re-resolved INSIDE the durable write transaction, and only
+    after COMMITTED durable confirmation publishes it to live state, where the
+    symmetric contradiction is projected through the shared path. It chooses
+    no winner, resolves nothing, and changes no gap, maturity, progression,
+    score or routing; the existing correction path is the only way a declared
+    conflict becomes inactive."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    token = request.form.get("answer_token", "")
+    binding = _verified_cap10_binding(
+        sid, token, request.form.get("conflict_binding", ""))
+    if not _valid_answer_token(sid, token) or binding is None:
+        entry["_answer_error"] = CONTRADICTION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    bound_ecv, bound_endpoints = binding
+    endpoints = request.form.getlist("endpoint")
+    # The note is the inventor's text EXACTLY as submitted: never stripped or
+    # otherwise normalised, so stored content and retry material are verbatim.
+    note = request.form.get("note") or ""
+    _input_error = _free_text_error(note, _current_ui_lang())
+    if _input_error is not None:
+        return (_input_error, 400)
+    if len(endpoints) != 2 or request.form.get("conflict_confirm") != "yes":
+        entry["_answer_error"] = CONTRADICTION_INVALID_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        pair = _canonical_contradiction_pair(endpoints[0], endpoints[1])
+    except ValueError:
+        entry["_answer_error"] = CONTRADICTION_INVALID_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # The selected pair must lie inside the set the binding committed to.
+    if not set(pair) <= set(bound_endpoints):
+        entry["_answer_error"] = CONTRADICTION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    idem_key = _contradiction_idempotency_key(sid, pair[0], pair[1], token)
+
+    def _committed_prior():
+        # IR-01: confirmation is read ONLY from committed durable state; a
+        # connection left inside an unresolved transaction refuses the read.
+        return _get_store().committed_record_payload_for_idempotency_key(
+            sid, idem_key)
+
+    # EXACT committed retry (refresh, double-submit, restart, even after a
+    # later correction made an endpoint stale) is recognised BEFORE freshness
+    # and changes nothing; the same key naming different material fails closed.
+    try:
+        prior = _committed_prior()
+    except StoreError:
+        entry["_answer_error"] = CONTRADICTION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    if prior is not None:
+        if _declaration_payload_matches(prior, pair, note):
+            entry["_interaction_ack"] = CONTRADICTION_DECLARED_ACK
+        else:
+            entry["_answer_error"] = CONTRADICTION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    # NEW declaration: the binding must still describe the live form context —
+    # the entry's CURRENT token, the current engine version and exactly the
+    # current eligible endpoint set. Anything older is stale.
+    if (token != entry.get("answer_token")
+            or bound_ecv != getattr(state, "engine_contract_version", None)
+            or list(bound_endpoints) != _cap10_eligible_endpoints(state)):
+        entry["_answer_error"] = CONTRADICTION_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    # Staged mint against a THROWAWAY ledger view: the carrier refuses unknown,
+    # non-answer, superseded or already-declared endpoints with nothing
+    # appended, and live state stays untouched until the durable append.
+    import copy
+    _minter = IdeaState(idea_id=state.idea_id)
+    _minter.assertions = [copy.deepcopy(r) for r in state.assertions]
+    try:
+        new_record = _minter.record_contradiction_declaration(
+            pair[0], pair[1], content=note, iteration=state.iteration)
+    except ValueError:
+        entry["_answer_error"] = CONTRADICTION_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        _get_store().append_contradiction_declaration(
+            sid, new_record, idempotency_key=idem_key)
+    except _ContradictionDeclarationRejected:
+        entry["_answer_error"] = CONTRADICTION_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    except (sqlite3.IntegrityError, StoreError, sqlite3.Error):
+        # Never assume an outcome: only an exact event CONFIRMED from committed
+        # durable state is published; an unconfirmable outcome says so and
+        # changes nothing in live state.
+        try:
+            prior = _committed_prior()
+        except Exception:
+            entry["_answer_error"] = CONTRADICTION_UNKNOWN_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        if prior is None or not _declaration_payload_matches(prior, pair, note):
+            entry["_answer_error"] = CONTRADICTION_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        if not any(r.record_id == new_record.record_id
+                   and r.disposition == _DISP_CONTRADICTION_DECLARED
+                   for r in state.assertions):
+            state.assertions.append(new_record)
+            _project_declared_contradictions(state.assertions)
+        entry["_interaction_ack"] = CONTRADICTION_DECLARED_ACK
+        return redirect(url_for("show_session", sid=sid))
+    # Durable commit confirmed: publish the ONE record and project its edges.
+    state.assertions.append(new_record)
+    _project_declared_contradictions(state.assertions)
+    entry["_interaction_ack"] = CONTRADICTION_DECLARED_ACK
+    return redirect(url_for("show_session", sid=sid))
+
+
 @app.route("/session/<sid>/correct", methods=["POST"])
 def correct_answer(sid):
     """PVCG-R4 — EXPLICIT USER CORRECTION / WITHDRAWAL of one prior accepted
@@ -6232,6 +6486,7 @@ _T3A_EVENT_BY_DISPOSITION = {
     DISPOSITION_RISK_ACCEPTED: "risk_accepted",
     _DISP_CONTEXT_DECLARED: "decision_context_declared",
     _DISP_ALT_WITHDRAWN: "alternative_withdrawn",
+    _DISP_CONTRADICTION_DECLARED: "contradiction_declared",
 }
 # The closed event vocabulary the template may name (UI_T3A_EVENT_<KIND>).
 T3A_EVENT_KINDS = frozenset(_T3A_EVENT_BY_DISPOSITION.values()) | frozenset({
@@ -6357,6 +6612,10 @@ def _project_record_context(state, sid):
             # "" means none was recorded, which is said plainly, never invented.
             text, reason, reason_missing = None, (content or None), not content
         links = []
+        # CAP-10 Slice 1: a declaration names the two answers it marks as
+        # conflicting; they are shown by their steps, never re-quoted here.
+        for target in (getattr(record, "contradiction_endpoints", None) or ()):
+            links.append(_link("declares_conflict", target))
         for target in (getattr(record, "supersedes", None) or ()):
             links.append(_link(
                 "withdraws" if kind == "alternative_withdrawn" else "replaces",

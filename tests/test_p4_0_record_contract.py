@@ -62,6 +62,11 @@ _EXPECTED_ASSERTION_FIELDS = frozenset({
     # question identity a record answered. Every pre-existing payload omits it
     # and loads with None; see tests/test_uqtr01_target_binding.py.
     "question_target",
+    # CAP-10 Slice 1: deliberate 17th authoritative field — the canonical
+    # endpoint pair of a `contradiction_declared` record. Written only on that
+    # record and absent from every other payload; see
+    # tests/test_cap10_declared_contradiction.py.
+    "contradiction_endpoints",
 })
 
 
@@ -288,7 +293,15 @@ def test_rc1_field_completeness_guard_matches_authoritative_dataclass():
         "AssertionRecord authoritative fields changed (symmetric difference: "
         "%s); update engine/record_contract.py and this proof deliberately."
         % sorted(actual ^ _EXPECTED_ASSERTION_FIELDS))
-    # 2) the contract's serialization covers exactly the authoritative fields
+    # 2) the contract's serialization covers exactly the authoritative fields.
+    # CAP-10 Slice 1: `contradiction_endpoints` is written ONLY on a
+    # `contradiction_declared` record, so an ordinary record serializes every
+    # other field and a declaration serializes all of them.
     sample = sample_state().assertions[0]
-    assert set(assertion_to_dict(sample)) == actual, (
+    assert set(assertion_to_dict(sample)) == actual - {"contradiction_endpoints"}, (
         "contract serialization keys do not match AssertionRecord fields")
+    declaring = sample_state()
+    answers = [r.record_id for r in declaring.assertions
+               if r.disposition == "answered" and r.superseded_by is None][:2]
+    declaration = declaring.record_contradiction_declaration(*answers)
+    assert set(assertion_to_dict(declaration)) == actual

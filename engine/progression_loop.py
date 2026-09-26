@@ -1485,6 +1485,7 @@ from engine.idea_state import (
     DISPOSITION_ANSWERED as _W2B_ANSWERED,
     DISPOSITION_RISK_ACCEPTED as _W2B_RISK_ACCEPTED,
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED as _W2B_ALT_DECLARED,
+    DISPOSITION_CONTRADICTION_DECLARED,
 )
 
 # The four authoritative trigger classes (Amendment §5 — closed set).
@@ -1647,7 +1648,11 @@ def _alternatives_crossing_context(state):
     never fires; re-crossing after a withdrawal fires again. Idempotent for
     an unchanged ledger snapshot. NOT a comparability claim of any kind —
     FDC-001 alone owns comparability/readiness."""
-    assertions = list(getattr(state, "assertions", []))
+    # CAP-10 Slice 1 containment: an inventor `contradiction_declared` record
+    # is relationship metadata over two answers, not a ledger EVENT for this
+    # serving trigger, so it never ends (or starts) the transition.
+    assertions = [r for r in getattr(state, "assertions", [])
+                  if r.disposition != DISPOSITION_CONTRADICTION_DECLARED]
     if not assertions:
         return None
 

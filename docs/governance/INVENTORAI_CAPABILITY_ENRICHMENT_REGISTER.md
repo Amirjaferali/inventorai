@@ -284,7 +284,13 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
 - **Protected boundaries:** report-only with provenance; never auto-resolve or pick a winner.
 - **Proposed acceptance criteria:** deterministic contradiction detection with provenance; no silent
   resolution.
-- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, **with ONE bounded
+  exception**: CAP-10 Slice 1 (Stage 21, 2026-09-26) — the inventor explicitly declares that exactly
+  two of their own active recorded answers conflict, as one OWNER_STATED, UNVALIDATED
+  `contradiction_declared` record on the existing ledger, with the contradiction a deterministic
+  derived projection. It is a capture of the inventor's statement, not detection: automatic or AI
+  detection, contradictions over assumptions / quantities / commercial items / success criteria /
+  decisions, and any resolution workflow stay NOT AUTHORIZED. `FULL CAP-10: NOT AUTHORIZED`.
 - **Activation conditions:** a separately authorized contradiction-detection increment.
 - **Separate owner authorization requirement:** yes.
 
@@ -631,7 +637,7 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | RECORDED — NOT AUTHORIZED |
 | CAP-08 Assumption Register | Assumption-tracking increment | WS12, CAP-05, CAP-10, CAP-11 | RECORDED — NOT AUTHORIZED |
 | CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (delivered, PR #682) and one bounded SLICE-02 durable measurement method (full CAP-09 still NOT AUTHORIZED) |
-| CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | RECORDED — NOT AUTHORIZED |
+| CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED |
 | CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | Dedicated materials-and-manufacturing feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14 | RECORDED — NOT AUTHORIZED |
 | CAP-13 Component Thickness, Specification, and Safety Advisory | Dedicated thickness-and-safety feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14 | RECORDED — NOT AUTHORIZED |
@@ -780,7 +786,7 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | CAP-07 Invention Decision Room | RECORDED — NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
 | CAP-08 Assumption Register | RECORDED — NOT AUTHORIZED | Assumption-tracking increment | Provenance/validation axes; ledger; WS12; CAP-11 | Yes | — | At the assumption increment / WS12–WS16 closure |
 | CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation (delivered, PR #682) and one bounded SLICE-02 durable measurement method | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
-| CAP-10 Contradiction Detector | RECORDED — NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
+| CAP-10 Contradiction Detector | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
 | CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | RECORDED — NOT AUTHORIZED | Materials-and-manufacturing feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the materials feasibility gate / WS12–WS16 closure |
 | CAP-13 Component Thickness, Specification, and Safety Advisory | RECORDED — NOT AUTHORIZED | Thickness-and-safety feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the thickness feasibility gate / WS12–WS16 closure |

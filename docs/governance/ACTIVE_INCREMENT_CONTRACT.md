@@ -23,10 +23,47 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--safe-question-reduction-slice-1"></a>
-## Current authority — Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing only (Owner / Lead authorization, 2026-09-26)
+<a id="current-authority--cap10-slice-1"></a>
+## Current authority — Stage 21 / CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers (Owner / Lead authorization, 2026-09-26)
 
-**ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED ROUTING ONLY.**
+**ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED ANSWERS.**
+Stage 21 / CAP-10 is ENTERED / PARTIAL through this one bounded slice. It creates no new Master
+Roadmap Stage, completes neither CAP-10 nor Stage 21, and the Stage-21 checkbox stays unticked.
+Architecture review: Astra — exact-candidate conformance PASS after the F1 / F2 / F3 corrections.
+
+| | |
+|---|---|
+| **SCOPE** | the inventor explicitly declares that exactly TWO of their own ACTIVE recorded answers conflict |
+| **CARRIER** | the existing AssertionRecord ledger and `records` table: one `contradiction_declared` record with a canonical `contradiction_endpoints` pair — no parallel durable contradiction store |
+| **SOURCE / VALIDATION** | `OWNER_STATED` / `OWNER_INPUT` · `UNVALIDATED` only · the optional note is kept verbatim |
+| **CONTRADICTION** | a deterministic DERIVED projection onto the two answers; the endpoint rows are never rewritten |
+| **SYSTEM_INFERRED CONTRADICTION WRITER** | `NONE — NOT AUTHORIZED` |
+| **GAP / MATURITY / PROGRESSION / SCORING / NEEDROUTING** | no authority and no effect |
+| **STAGE 18 / STAGE 19** | unchanged (PARTIAL / ENTERED — NOT COMPLETE) |
+| **EXTERNAL MODEL / REAL INVENTION DATA** | NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
+
+**Meaning.** A declaration is the inventor's own statement, not a detection: nothing is detected
+automatically or by AI, the contradiction is not validated, no winner is chosen and nothing is
+resolved. It becomes inactive — never "resolved" — once either answer is corrected through the
+existing correction path, and it never transfers to the replacement answer. The existing
+contradiction surfaces (requirement landscape, derived readiness across gaps, next development
+step, validation plan, deliverable) show it, attributed to the inventor. A new declaration needs
+its own server-issued action binding; an uncertain write is acknowledged only from committed
+durable state. **Not authorized:** automatic or AI contradiction detection; contradictions
+involving assumptions, quantities, commercial items, success criteria or decisions; a resolution
+workflow or winner selection; CAP-08, CAP-05 / CAP-07, CAP-11, CAP-12; full CAP-10; Safe Question
+Reduction Slice 2; any external call; deployment, public release and paid activation.
+
+<a id="current-authority--safe-question-reduction-slice-1"></a>
+## Current authority — Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing only (Owner / Lead authorization, 2026-09-26) — DELIVERED (PR #701; PR #702 followed); SUPERSEDED as current authority by CAP-10 Slice 1
+
+**No longer the current authority.** Slice 1 was delivered (PR #701, merge
+`34c0fc372f7374488acda03514e279119b735bc5`), followed by the bounded weak-PF recovery (PR #702,
+merge `20f27e5100cf9d475ae68d73da7cc17b2ecbf241`); CAP-10 Slice 1 above replaced it as the current
+authority on 2026-09-26. Every rule below still binds except where CAP-10 Slice 1 states
+otherwise. *(Superseded 2026-09-26, preserved so the change is visible rather than silent: this
+opened "**ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED ROUTING
+ONLY.**")*
 The next item of the protected sequence in the EXISTING Stage-18 semantic-normalization block; it
 creates no new Master Roadmap Stage and changes no stage checkbox. Architecture review: Astra —
 SOUND WITH MATERIAL CONDITIONS (Option C, a narrow question-scoped NeedRouting carrier).
@@ -852,8 +889,16 @@ sibling sidecar of the same store. Delivering it is not the stage and opens noth
 Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — the next item of the protected sequence recorded in the EXISTING
-Stage-18 semantic-normalization block, not a new Master Roadmap Stage:** `ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED ROUTING ONLY` · `AUTONOMOUS TECHNICAL ORCHESTRATION SYNTHETIC SHADOW EVALUATION FOUNDATION: DELIVERED — PR #696 — merge 96b7ba1773216ba0a1350a116341f6746360321c` · `MANAGED-CREDENTIAL COMPATIBILITY: DELIVERED — PR #697 — merge 5f464c8cfa93648e66787d04eb3a09298a458cb3` · `METRIC-CONTRACT CORRECTION: DELIVERED — PR #698 — merge 49aa5003f90349c8ea62aca36aa10a19c33e3c6f` · `SYNTHETIC PROVIDER RUNS: PERFORMED — canary, RUN 01, RUN 01A; synthetic only` · `PROVENANCE HARDENING STEP 1: DELIVERED — PR #695 — merge 6c413c54684b0eff6d1d0db205b3ccc82d99bc06` · `DETERMINISTIC LOCAL ORCHESTRATION: NO-CHANGE / DIFFERENT TRIGGER REQUIRED` · `OWNER DECISIONS D1 / D2 / D3: APPROVED FOR SYNTHETIC EXTERNAL EVALUATION ONLY` · `REAL INVENTION DATA: NOT AUTHORIZED FOR EXTERNAL TRANSMISSION` · `OD-2 / OD-3 / OD-4: UNDECIDED — NOT REQUIRED` · `MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d` · `MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` · `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
+**CURRENT BOUNDED ACTION — Stage 21 / CAP-10 Contradiction Detector, ENTERED through ONE bounded
+slice:** `ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED ANSWERS` · `STAGE 21: ENTERED / PARTIAL` · `FULL CAP-10: NOT AUTHORIZED` · `SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED`.
+The inventor explicitly declares that exactly two of their own active recorded answers conflict:
+one OWNER_STATED, UNVALIDATED `contradiction_declared` record on the existing ledger, the
+contradiction a deterministic derived projection with no parallel durable store. Nothing is
+detected automatically or by AI, nothing is validated or resolved, no winner is chosen, and it
+has no gap, maturity, progression, scoring or NeedRouting authority. The Stage-21 checkbox stays
+unticked; entering Stage 21 completes nothing in Stages 18–20.
+**PROTECTED SEQUENCE — recorded in the EXISTING Stage-18 semantic-normalization block, not a new
+Master Roadmap Stage:** `SAFE QUESTION REDUCTION — SLICE 1: DELIVERED — PR #701 — merge 34c0fc372f7374488acda03514e279119b735bc5` · `WEAK-PF RECOVERY: DELIVERED — PR #702 — merge 20f27e5100cf9d475ae68d73da7cc17b2ecbf241` · `AUTONOMOUS TECHNICAL ORCHESTRATION SYNTHETIC SHADOW EVALUATION FOUNDATION: DELIVERED — PR #696 — merge 96b7ba1773216ba0a1350a116341f6746360321c` · `MANAGED-CREDENTIAL COMPATIBILITY: DELIVERED — PR #697 — merge 5f464c8cfa93648e66787d04eb3a09298a458cb3` · `METRIC-CONTRACT CORRECTION: DELIVERED — PR #698 — merge 49aa5003f90349c8ea62aca36aa10a19c33e3c6f` · `SYNTHETIC PROVIDER RUNS: PERFORMED — canary, RUN 01, RUN 01A; synthetic only` · `PROVENANCE HARDENING STEP 1: DELIVERED — PR #695 — merge 6c413c54684b0eff6d1d0db205b3ccc82d99bc06` · `DETERMINISTIC LOCAL ORCHESTRATION: NO-CHANGE / DIFFERENT TRIGGER REQUIRED` · `OWNER DECISIONS D1 / D2 / D3: APPROVED FOR SYNTHETIC EXTERNAL EVALUATION ONLY` · `REAL INVENTION DATA: NOT AUTHORIZED FOR EXTERNAL TRANSMISSION` · `OD-2 / OD-3 / OD-4: UNDECIDED — NOT REQUIRED` · `MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d` · `MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` · `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
 The foundation is offline and provider-neutral: every orchestration output is ephemeral,
 proposal-only and non-authoritative — conceptually SYSTEM_INFERRED + UNVALIDATED and written
 nowhere. The one evaluation adapter (OpenAI API, `gpt-6-sol` — D3, synthetic evaluation only, not
@@ -865,8 +910,8 @@ authorization, and hosted CI stays network-free. It authorizes no real inventor 
 invention data in any external request, no live-product call path, no proposal persistence (OD-2
 undecided), no readiness use of system inference (OD-3 undecided), no validation-award writer
 (OD-4 undecided), no automatic concept creation, no readiness / maturity / validation promotion
-and no user-visible proposals. Safe Question Reduction Slice 1 (the current bounded action) routes
-ONLY mechanical PHYSICAL_FEASIBILITY:Q2 to specialist input on NEW routing-aware projects through
+and no user-visible proposals. Safe Question Reduction Slice 1 (delivered, PR #701; weak-PF
+recovery PR #702) routes ONLY mechanical PHYSICAL_FEASIBILITY:Q2 to specialist input on NEW routing-aware projects through
 one deterministic, durable NeedRouting record — the only authorized durable SYSTEM_INFERRED
 writer — while the underlying requirement stays outstanding; it hides no unknown and reduces no
 other question.

@@ -1662,6 +1662,8 @@ def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
         # made history in turn by the Stage-19 entry contract (2026-09-23)
         (roadmap, "Stages 19 and 20 remain recorded future capabilities, NOT AUTHORIZED"),
         (checklist, "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED"),
+        # made history in turn by the CAP-10 Slice 1 entry of Stage 21 (2026-09-26)
+        (checklist, "Stages 20–27 preserved, NOT ENTERED / NOT AUTHORIZED"),
     )
     for text, sentence in stale:
         for m in re.finditer(re.escape(sentence), text):
@@ -1670,11 +1672,12 @@ def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
                 "live stale Stage-18 wording survives", sentence)
     assert "Stage 18 is ENTERED / PARTIAL" in roadmap
     assert "Stage 20 remains a recorded future capability, NOT AUTHORIZED" in roadmap
-    assert "Stages 20–27 preserved, NOT ENTERED / NOT AUTHORIZED" in checklist
+    assert "Stage 20 and Stages 22–27 preserved, NOT ENTERED / NOT AUTHORIZED" in checklist
     raw_checklist = _read(CHECKLIST)
     assert _absent(raw_checklist, "Stages 18–27 preserved, not entered / not authorized")
     assert _absent(raw_checklist, "Stages 19–27 preserved, not entered / not authorized")
-    assert "Stages 20–27 preserved, not entered / not authorized" in raw_checklist
+    assert _absent(raw_checklist, "Stages 20–27 preserved, not entered / not authorized")
+    assert "Stage 20 and Stages 22–27 preserved, not entered / not authorized" in raw_checklist
     row = [l for l in raw_checklist.splitlines() if l.startswith("| 4 | 16–20 |")]
     assert len(row) == 1 and "18 entered / partial" in row[0], row
     assert "19 entered / not complete" in row[0], row
@@ -2254,6 +2257,10 @@ def test_ato_synthetic_shadow_foundation_is_delivered_history_and_its_rules_stil
 
 
 _SQR1_CONTRACT = "`ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED ROUTING ONLY`"
+_SQR1_DELIVERED = ("`SAFE QUESTION REDUCTION — SLICE 1: DELIVERED — PR #701 — merge "
+                   "34c0fc372f7374488acda03514e279119b735bc5`")
+_SQR1_RECOVERY = ("`WEAK-PF RECOVERY: DELIVERED — PR #702 — merge "
+                  "20f27e5100cf9d475ae68d73da7cc17b2ecbf241`")
 _ATO_DELIVERED = ("`AUTONOMOUS TECHNICAL ORCHESTRATION SYNTHETIC SHADOW EVALUATION FOUNDATION: "
                   "DELIVERED — PR #696 — merge 96b7ba1773216ba0a1350a116341f6746360321c`")
 _SQR1_REVERSALS = tuple(
@@ -2269,128 +2276,182 @@ _SQR1_REVERSALS = tuple(
     r"first real synthetic provider run needs")
 
 
-def test_safe_question_reduction_slice_1_is_the_live_contract_on_every_live_surface():
-    """Safe Question Reduction Slice 1 is the live contract: mechanical
-    PHYSICAL_FEASIBILITY:Q2 ONLY is routed to specialist input on NEW
-    routing-aware projects through ONE deterministic durable NeedRouting record,
-    while the requirement stays outstanding. The failure modes this guards keep
-    every token in place: the routed need read as solved, any other question
-    routed, MECHANISM_COMPLETENESS made routable, a general SYSTEM_INFERRED
-    writer, real invention data read as transmissible, or a stale provider-run
-    claim.
+def test_safe_question_reduction_slice_1_is_delivered_history_and_its_rules_still_bind():
+    """Safe Question Reduction Slice 1 was delivered (PR #701; the bounded weak-PF
+    recovery PR #702 followed). The guard advances with the fact: the section
+    reads DELIVERED and visibly superseded, every routing rule still binds, the
+    live surfaces carry the delivered tokens, and it may never again present
+    itself as the live contract or read as anything wider than it was.
     """
     contract = _read(CONTRACT)
-    first = contract.index("## Current authority")
-    assert contract[first:].startswith(
-        "## Current authority — Safe Question Reduction Slice 1 — PF:Q2 non-Owner need "
-        "routing only"), contract[first:first + 120]
-    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
-    _needs(top, CONTRACT, "sqr1",
-           r"\*\*ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED "
-           r"ROUTING ONLY\.\*\*",
-           r"next item of the protected sequence in the EXISTING Stage-18 "
-           r"semantic-normalization block; it creates no new Master Roadmap Stage and changes "
-           r"no stage checkbox",
+    top = _section(contract, "current-authority--safe-question-reduction-slice-1")
+    _needs(top, CONTRACT, "sqr1 delivered",
+           r"PF:Q2 non-Owner need routing only \(Owner / Lead authorization, 2026-09-26\) — "
+           r"DELIVERED \(PR #701; PR #702 followed\); SUPERSEDED as current authority by CAP-10 "
+           r"Slice 1",
+           r"\*\*No longer the current authority\.\*\*",
+           r"PR #701, merge `34c0fc372f7374488acda03514e279119b735bc5`",
+           r"PR #702, merge `20f27e5100cf9d475ae68d73da7cc17b2ecbf241`",
+           r"Every rule below still binds except where CAP-10 Slice 1 states otherwise",
            r"`mechanical:PHYSICAL_FEASIBILITY:Q2` ONLY → `SPECIALIST`",
            r"NEW routing-aware projects: \*\*9\*\* · every existing project: \*\*10\*\*, unchanged",
            r"`ONE NARROW EXCEPTION — deterministic NeedRoutingRevision rows \(ROUTE / RETRACT\) "
            r"only`; every other system-inference writer stays NOT AUTHORIZED",
-           r"`p4-2-level1-recon-v1-t2g2-nr1`",
            r"MECHANISM_COMPLETENESS is never routable, parkable or risk-acceptable",
-           r"NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION",
            r"Removing mandatory Owner answering is not a solved requirement",
-           r"`eligible_for_owner_questioning = false` and `satisfied_for_maturity = false`",
-           r"can never be CLOSED while the need is outstanding, and vetoes Level 1 → 2 while PF "
-           r"is OPEN / PARTIAL",
            r"is a maturity exception, never a discharge: the routed need stays outstanding and "
            r"unresolved",
            r"rendering never writes")
-    _rejects(top, CONTRACT, "sqr1", *_SQR1_REVERSALS)
+    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "sqr1 delivered",
+             *_SQR1_REVERSALS, r"\*\*ACTIVE CONTRACT: SAFE QUESTION REDUCTION")
     live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
     live_surfaces.append((STATE, _current(STATE, "current-position")))
     for path, block in live_surfaces:
-        _needs(block, path, "sqr1 live", _tok(_SQR1_CONTRACT), _tok(_ATO_DELIVERED),
-               _tok(_PH1_DELIVERED), _tok(_ATO_REAL_NO), _tok(_ATO_OD),
-               _tok(_MSNL_SHADOW), _tok(_MSNL_PACK), _tok(_EXTERNAL_MSNL_NO),
+        _needs(block, path, "sqr1 delivered live", _tok(_SQR1_DELIVERED),
+               _tok(_SQR1_RECOVERY), _tok(_ATO_DELIVERED), _tok(_PH1_DELIVERED),
+               _tok(_ATO_REAL_NO), _tok(_ATO_OD), _tok(_MSNL_SHADOW), _tok(_MSNL_PACK),
+               _tok(_EXTERNAL_MSNL_NO),
                r"EXISTING Stage-18\s+semantic-normalization block",
                r"not a new\s+Master Roadmap Stage",
                r"SYSTEM_INFERRED \+ UNVALIDATED and\s+written\s+nowhere",
                r"not\s+a\s+production-provider\s+decision",
                r"OD-3\s+undecided", r"OD-4\s+undecided")
-        _rejects(block, path, "sqr1 live", *_SQR1_REVERSALS)
+        _rejects(block, path, "sqr1 delivered live", *_SQR1_REVERSALS)
     for path, routing in _surfaces("current-routing"):
-        _needs(routing, path, "sqr1 routing", _tok(_TARGET_AWARE),
-               r"operationally OFF and reachable only from the developer-run\s+harness over "
-               r"the committed synthetic pack",
-               r"synthetic provider runs\s+\(a managed-credential canary, RUN 01 over the "
-               r"committed 55-case pack and the RUN 01A stability\s+diagnostic\) have been "
-               r"performed on synthetic data only",
-               r"no real inventor / project /\s+invention data in any external request",
-               r"no live-product call path",
-               r"no proposal persistence \(OD-2\s+undecided\)",
-               r"no automatic concept creation",
-               r"no readiness / maturity / validation promotion",
+        _needs(routing, path, "sqr1 delivered routing", _tok(_TARGET_AWARE),
                r"ONLY mechanical PHYSICAL_FEASIBILITY:Q2 to specialist input",
                r"the only authorized durable SYSTEM_INFERRED\s+writer",
                r"it hides no unknown and reduces no\s+other question")
-    # CLAUDE.md routes to the step, and does not widen it
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    for needle in ("ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED "
-                   "ROUTING ONLY.",
-                   "the next item of the protected sequence recorded in the EXISTING Stage-18 "
-                   "semantic-normalization block, and creates no new Master Roadmap Stage",
+    for needle in ("Safe Question Reduction Slice 1 — the next item of the protected sequence "
+                   "recorded in the EXISTING Stage-18 semantic-normalization block, which creates "
+                   "no new Master Roadmap Stage — is DELIVERED (PR #701, merge "
+                   "`34c0fc372f7374488acda03514e279119b735bc5`",
+                   "PR #702, merge `20f27e5100cf9d475ae68d73da7cc17b2ecbf241`",
                    "while the requirement stays outstanding",
-                   "The Autonomous Technical Orchestration synthetic shadow evaluation "
-                   "foundation is DELIVERED (PR #696",
-                   "Provenance Hardening Step 1 is DELIVERED (PR #695, merge "
-                   "`6c413c54684b0eff6d1d0db205b3ccc82d99bc06`)",
-                   "Real invention data is NOT AUTHORIZED FOR EXTERNAL TRANSMISSION.",
                    "a durable SYSTEM_INFERRED writer (other than the deterministic NeedRouting "
                    "record of Slice 1)",
                    "no question reduction beyond Slice 1",
-                   "Target-Aware Question / Answer Binding is COMPLETE (PR #690, merge "
-                   "`ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`)."):
+                   "Real invention data is NOT AUTHORIZED FOR EXTERNAL TRANSMISSION."):
         assert needle in head, needle
-    for pat in _SQR1_REVERSALS:
-        assert re.search(pat, head, re.I) is None, pat
-    # the checklist subtask and machine record, and the roadmap Stage-18 row
-    flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
-    assert ("**CURRENT SUBTASK:** SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED "
-            "ROUTING ONLY") in flat_checklist
-    for line in ("ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED "
-                 "ROUTING ONLY",
-                 "AUTONOMOUS TECHNICAL ORCHESTRATION SYNTHETIC SHADOW EVALUATION FOUNDATION: "
-                 "DELIVERED — PR #696 — merge 96b7ba1773216ba0a1350a116341f6746360321c",
-                 "MANAGED-CREDENTIAL COMPATIBILITY: DELIVERED — PR #697 — merge "
-                 "5f464c8cfa93648e66787d04eb3a09298a458cb3",
-                 "METRIC-CONTRACT CORRECTION: DELIVERED — PR #698 — merge "
-                 "49aa5003f90349c8ea62aca36aa10a19c33e3c6f",
-                 "SYNTHETIC PROVIDER RUNS: PERFORMED — CANARY, RUN 01, RUN 01A — SYNTHETIC ONLY",
+    raw_checklist = _read(CHECKLIST)
+    for line in ("SAFE QUESTION REDUCTION — SLICE 1: DELIVERED — PR #701 — merge "
+                 "34c0fc372f7374488acda03514e279119b735bc5",
+                 "WEAK-PF RECOVERY: DELIVERED — PR #702 — merge "
+                 "20f27e5100cf9d475ae68d73da7cc17b2ecbf241",
                  "MECHANICAL MANDATORY OWNER-VISIBLE QUESTIONS: 9 ON NEW ROUTING-AWARE PROJECTS "
                  "— 10 ON EXISTING PROJECTS",
-                 "PROVENANCE HARDENING STEP 1: DELIVERED — PR #695 — merge "
-                 "6c413c54684b0eff6d1d0db205b3ccc82d99bc06",
-                 "REAL INVENTION DATA: NOT AUTHORIZED FOR EXTERNAL TRANSMISSION",
-                 "PROPOSAL CARRIER / PERSISTENCE: NOT AUTHORIZED — OD-2 UNDECIDED",
-                 "EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED",
                  "DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED — EXCEPT DETERMINISTIC NEED "
-                 "ROUTING (SLICE 1)",
-                 "READINESS USE OF SYSTEM INFERENCE: NOT AUTHORIZED — OD-3 UNDECIDED",
-                 "VALIDATION-AWARD WRITER: NOT AUTHORIZED — OD-4 UNDECIDED",
-                 "TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge "
-                 "ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a"):
+                 "ROUTING (SLICE 1)"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
-    for gone in (r"^ACTIVE CONTRACT: MSNL STEP 1", r"^MSNL IMPLEMENTATION: NOT YET AUTHORIZED$",
-                 r"^ACTIVE CONTRACT: PROVENANCE HARDENING STEP 1",
-                 r"^ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION",
-                 r"^DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED$"):
-        assert re.search(gone, raw_checklist, re.M) is None, gone
+    assert re.search(r"^ACTIVE CONTRACT: SAFE QUESTION REDUCTION", raw_checklist, re.M) is None
     rows = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", _read(ROADMAP), re.M)
     assert len(rows) == 1, "stage 18 row missing, duplicated or ticked"
-    assert ("the Autonomous Technical Orchestration synthetic shadow evaluation foundation — "
-            "an offline, provider-neutral, proposal-only evaluation foundation for synthetic "
-            "material only — is delivered (PR #696; PR #697, PR #698 followed), and the current "
-            "bounded action is Safe Question Reduction Slice 1") in rows[0]
-    for pat in _SQR1_REVERSALS:
+    assert ("Safe Question Reduction Slice 1 — mechanical PF:Q2 routed to specialist input on "
+            "new routing-aware projects while the requirement stays outstanding — is delivered "
+            "(PR #701; the bounded weak-PF recovery PR #702 followed), and the current bounded "
+            "action has moved to Stage 21 / CAP-10 Slice 1") in rows[0]
+
+
+_CAP10_CONTRACT = ("`ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN "
+                   "TWO RECORDED ANSWERS`")
+_CAP10_REVERSALS = _SQR1_REVERSALS + (
+    re.escape(_SQR1_CONTRACT),
+    r"FULL CAP-10\W{0,8}(IS )?AUTHORIZED\b",
+    r"STAGE 21(:| IS)?\W{0,4}COMPLETE\b",
+    r"CAP-10 (is |slice 1 is )?complete\b",
+    r"SYSTEM_INFERRED CONTRADICTION WRITER\W{0,8}(IS )?(AUTHORIZED|ACTIVE)\b",
+    r"\b(AI|automatically) detect(s|ed)\b",
+    r"contradictions? (is |are )?(validated|verified|resolved)\b(?! or)",
+    r"(?<!no )(?<!never )(winner|answer) (is )?(chosen|selected|picked)\b",
+    r"Stage 46")
+
+
+def test_cap10_slice_1_is_the_live_contract_on_every_live_surface():
+    """CAP-10 Slice 1 (Stage 21) is the live contract: the inventor explicitly
+    declares that exactly two of their own active recorded answers conflict —
+    one OWNER_STATED, UNVALIDATED record on the existing ledger, the
+    contradiction a deterministic derived projection. The failure modes this
+    guards keep every token in place: the declaration read as automatic or AI
+    detection, as validated or resolved, as choosing a winner, a system-inferred
+    contradiction writer, full CAP-10 or Stage 21 read as authorized / complete,
+    or a new Master Roadmap Stage.
+    """
+    contract = _read(CONTRACT)
+    first = contract.index("## Current authority")
+    assert contract[first:].startswith(
+        "## Current authority — Stage 21 / CAP-10 Slice 1 — Owner-declared contradiction "
+        "between two recorded answers"), contract[first:first + 120]
+    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
+    _needs(top, CONTRACT, "cap10",
+           r"\*\*ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO "
+           r"RECORDED ANSWERS\.\*\*",
+           r"Stage 21 / CAP-10 is ENTERED / PARTIAL through this one bounded slice",
+           r"creates no new Master Roadmap Stage, completes neither CAP-10 nor Stage 21, and the "
+           r"Stage-21 checkbox stays unticked",
+           r"one `contradiction_declared` record with a canonical `contradiction_endpoints` "
+           r"pair — no parallel durable contradiction store",
+           r"`OWNER_STATED` / `OWNER_INPUT` · `UNVALIDATED` only",
+           r"a deterministic DERIVED projection",
+           r"\*\*SYSTEM_INFERRED CONTRADICTION WRITER\*\* \| `NONE — NOT AUTHORIZED`",
+           r"no authority and no effect",
+           r"NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION",
+           r"nothing is detected automatically or by AI, the contradiction is not validated, "
+           r"no winner is chosen and nothing is resolved",
+           r"becomes inactive — never \"resolved\" — once either answer is corrected",
+           r"full CAP-10")
+    _rejects(top, CONTRACT, "cap10", *_CAP10_REVERSALS)
+    live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
+    live_surfaces.append((STATE, _current(STATE, "current-position")))
+    for path, block in live_surfaces:
+        _needs(block, path, "cap10 live", _tok(_CAP10_CONTRACT),
+               _tok("`STAGE 21: ENTERED / PARTIAL`"), _tok("`FULL CAP-10: NOT AUTHORIZED`"),
+               _tok("`SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED`"),
+               _tok(_SQR1_DELIVERED), _tok(_SQR1_RECOVERY),
+               r"OWNER_STATED, UNVALIDATED\s+`contradiction_declared`\s+record",
+               r"deterministic\s+derived\s+projection",
+               r"no\s+gap,\s+maturity,\s+progression,\s+scoring\s+or\s+NeedRouting\s+authority")
+        _rejects(block, path, "cap10 live", *_CAP10_REVERSALS)
+    for path, routing in _surfaces("current-routing"):
+        _needs(routing, path, "cap10 routing", r"The Stage-21 checkbox stays\s+unticked",
+               r"entering Stage 21 completes nothing in Stages 18–20")
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
+    for needle in ("ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO "
+                   "RECORDED ANSWERS.",
+                   "Stage 21 / CAP-10 is ENTERED / PARTIAL through this one bounded slice",
+                   "no automatic or AI detection, no validation, no winner, no resolution, no "
+                   "SYSTEM_INFERRED contradiction writer",
+                   "no other Stage is authorized beyond the bounded Stage-21 CAP-10 Slice 1"):
+        assert needle in head, needle
+    for pat in _CAP10_REVERSALS:
+        assert re.search(pat, head, re.I) is None, pat
+    flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
+    assert ("**CURRENT SUBTASK:** CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO "
+            "RECORDED ANSWERS") in flat_checklist
+    for line in ("ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO "
+                 "RECORDED ANSWERS",
+                 "STAGE 21: ENTERED / PARTIAL — CAP-10 SLICE 1 ONLY",
+                 "FULL CAP-10: NOT AUTHORIZED",
+                 "SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED",
+                 "Stage 21 entered / partial — CAP-10 Slice 1 only (Owner-declared contradiction "
+                 "between two recorded answers; current bounded action); full CAP-10 not "
+                 "authorized"):
+        assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
+    roadmap = _read(ROADMAP)
+    rows = re.findall(r"^- \[ \] \*\*21 — CAP-10:\*\*.*$", roadmap, re.M)
+    assert len(rows) == 1, "stage 21 row missing, duplicated or ticked"
+    assert "**ENTERED / PARTIAL (2026-09-26):** CAP-10 Slice 1" in rows[0]
+    assert "Full CAP-10 NOT AUTHORIZED; the checkbox stays unticked." in rows[0]
+    for pat in _CAP10_REVERSALS:
         assert re.search(pat, rows[0], re.I) is None, pat
+    # the fixed 45-stage structure is unchanged: stages 1..45 once each, no 46
+    numbers = [int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)]
+    assert sorted(numbers) == list(range(1, 46)), numbers
+    # the capability register records the one bounded exception, not full CAP-10
+    register = _flat(os.path.join("docs", "governance",
+                                  "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md"))
+    assert "CAP-10 Slice 1 (Stage 21, 2026-09-26)" in register
+    assert "`FULL CAP-10: NOT AUTHORIZED`" in register
+    assert "| CAP-10 Contradiction Detector | RECORDED — NOT AUTHORIZED |" not in register

@@ -2,12 +2,20 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED ROUTING ONLY.** It is
-the next item of the protected sequence recorded in the EXISTING Stage-18 semantic-normalization
-block, and creates no new Master Roadmap Stage: on NEW routing-aware projects mechanical
-PHYSICAL_FEASIBILITY:Q2 is routed to specialist input by one deterministic, durable NeedRouting
-record while the requirement stays outstanding (9 mandatory Owner-visible Mechanical questions
-there; 10 on every existing project). The Autonomous Technical Orchestration synthetic shadow
+**ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED ANSWERS.**
+Stage 21 / CAP-10 is ENTERED / PARTIAL through this one bounded slice (no new Master Roadmap
+Stage; CAP-10 and Stage 21 are not complete): the inventor explicitly declares that exactly two of
+their own active recorded answers conflict, recorded as one OWNER_STATED, UNVALIDATED
+`contradiction_declared` record on the existing ledger, with the contradiction a deterministic
+derived projection — no automatic or AI detection, no validation, no winner, no resolution, no
+SYSTEM_INFERRED contradiction writer and no gap, maturity, progression, scoring or NeedRouting
+authority. Safe Question Reduction Slice 1 — the next item of the protected sequence recorded in
+the EXISTING Stage-18 semantic-normalization block, which creates no new Master Roadmap Stage — is
+DELIVERED (PR #701, merge `34c0fc372f7374488acda03514e279119b735bc5`; the bounded weak-PF recovery
+PR #702, merge `20f27e5100cf9d475ae68d73da7cc17b2ecbf241`, followed): on NEW routing-aware projects
+mechanical PHYSICAL_FEASIBILITY:Q2 is routed to specialist input by one deterministic, durable
+NeedRouting record while the requirement stays outstanding (9 mandatory Owner-visible Mechanical
+questions there; 10 on every existing project). The Autonomous Technical Orchestration synthetic shadow
 evaluation foundation is DELIVERED (PR #696, merge `96b7ba1773216ba0a1350a116341f6746360321c`;
 managed-credential compatibility PR #697 and the metric-contract correction PR #698 followed; the
 synthetic canary, RUN 01 and RUN 01A were performed on synthetic data only). Provenance
@@ -36,10 +44,11 @@ docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the deliv
 history, and is the file to read for authority — this paragraph routes, it does not
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
-authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized, and
-deployment, public release and paid activation remain NOT AUTHORIZED.
+authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized beyond the
+bounded Stage-21 CAP-10 Slice 1, and deployment, public release and paid activation remain NOT
+AUTHORIZED.
 
-*(Superseded current-authority declarations — the former Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
