@@ -2,15 +2,20 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED ANSWERS.**
-Stage 21 / CAP-10 is ENTERED / PARTIAL through this one bounded slice (no new Master Roadmap
-Stage; CAP-10 and Stage 21 are not complete): the inventor explicitly declares that exactly two of
-their own active recorded answers conflict, recorded as one OWNER_STATED, UNVALIDATED
-`contradiction_declared` record on the existing ledger, with the contradiction a deterministic
-derived projection — no automatic or AI detection, no validation, no winner, no resolution, no
-SYSTEM_INFERRED contradiction writer and no gap, maturity, progression, scoring or NeedRouting
-authority. Safe Question Reduction Slice 1 — the next item of the protected sequence recorded in
-the EXISTING Stage-18 semantic-normalization block, which creates no new Master Roadmap Stage — is
+**ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER DEPENDENCY.**
+Stage 20 / CAP-08 is ENTERED / PARTIAL through this one bounded slice (no new Master Roadmap
+Stage; CAP-08 and Stage 20 are not complete): the inventor explicitly declares that one or more of
+their own active recorded answers depend on ONE of their own active provisional assumptions,
+recorded as one OWNER_STATED, UNVALIDATED `assumption_dependency_declared` record per directed
+assumption → answer edge on the existing ledger, with the dependency a deterministic derived
+projection — domain-neutral, no automatic or AI dependency inference, no validation, no
+evidence-needed metadata and no readiness, gap, maturity, progression, scoring, NeedRouting or
+validation-award authority. CAP-10 Slice 1 — Stage 21 / CAP-10 ENTERED / PARTIAL through the
+Owner-declared contradiction between two recorded answers (one OWNER_STATED, UNVALIDATED
+`contradiction_declared` record; no automatic or AI detection, no validation, no winner, no
+resolution, no SYSTEM_INFERRED contradiction writer) — is DELIVERED (PR #703, merge
+`963132ddb78faae58625cd942e44a48e00ba531e`). Safe Question Reduction Slice 1 — the next item of
+the protected sequence recorded in the EXISTING Stage-18 semantic-normalization block, which creates no new Master Roadmap Stage — is
 DELIVERED (PR #701, merge `34c0fc372f7374488acda03514e279119b735bc5`; the bounded weak-PF recovery
 PR #702, merge `20f27e5100cf9d475ae68d73da7cc17b2ecbf241`, followed): on NEW routing-aware projects
 mechanical PHYSICAL_FEASIBILITY:Q2 is routed to specialist input by one deterministic, durable
@@ -45,10 +50,10 @@ history, and is the file to read for authority — this paragraph routes, it doe
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized beyond the
-bounded Stage-21 CAP-10 Slice 1, and deployment, public release and paid activation remain NOT
-AUTHORIZED.
+bounded Stage-20 CAP-08 Slice 1 (Stage 21 stays ENTERED / PARTIAL through the delivered CAP-10
+Slice 1 only), and deployment, public release and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*

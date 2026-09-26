@@ -75,6 +75,9 @@ from engine.idea_state import (
     DISPOSITION_CONTRADICTION_DECLARED as _DISP_CONTRADICTION_DECLARED,
     canonical_contradiction_pair as _canonical_contradiction_pair,
     project_declared_contradictions as _project_declared_contradictions,
+    DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED as _DISP_DEPENDENCY_DECLARED,
+    normalize_dependent_answers as _normalize_dependent_answers,
+    project_assumption_dependencies as _project_assumption_dependencies,
 )
 from web.gap_labels import (
     GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE,
@@ -97,6 +100,7 @@ from engine.record_store import (
     QuantityCapExceeded as _QuantityCapExceeded,
     QuantityAnchorIneligible as _QuantityAnchorIneligible,
     ContradictionDeclarationRejected as _ContradictionDeclarationRejected,
+    AssumptionDependencyDeclarationRejected as _DependencyDeclarationRejected,
 )
 from engine.record_contract import ProjectRecordContract
 # T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate): the
@@ -1420,6 +1424,28 @@ CONTRADICTION_STALE_MESSAGE = (
     "again.")
 CONTRADICTION_UNKNOWN_MESSAGE = (
     "We could not confirm whether that conflict was saved. Reload this page "
+    "to see what your project holds before recording it again.")
+
+# CAP-08 Slice 1 — the inventor's explicit assumption -> answer dependency
+# declaration (declare_dependency). Truthful: the inventor's own statement,
+# never validated, never a confirmation or rejection of the assumption, no
+# progress effect. Refusals render through `_answer_error`; the ack through
+# `_interaction_ack` (localize_deep).
+DEPENDENCY_DECLARED_ACK = (
+    "Saved. You declared that these recorded answers depend on this "
+    "provisional assumption. This dependency has not been validated.")
+DEPENDENCY_NOT_SAVED_MESSAGE = (
+    "That dependency could not be saved just now. Nothing was changed.")
+DEPENDENCY_INVALID_MESSAGE = (
+    "Choose one of your provisional assumptions and at least one of your "
+    "current recorded answers, and tick the declaration box. Nothing was "
+    "changed.")
+DEPENDENCY_STALE_MESSAGE = (
+    "One of those records is no longer current, or that dependency is already "
+    "recorded, so nothing was saved. Review your current records and try "
+    "again.")
+DEPENDENCY_UNKNOWN_MESSAGE = (
+    "We could not tell whether that dependency was saved. Reload this page "
     "to see what your project holds before recording it again.")
 
 CORRECTION_APPLIED_ACK = (
@@ -5346,6 +5372,16 @@ def show_session(sid):
         # CAP-10 Slice 1: the dedicated signed binding the conflict form carries.
         conflict_binding=_issue_cap10_binding(
             sid, _answer_token_for(sid, entry), state),
+        # CAP-08 Slice 1: the dedicated signed binding the dependency form
+        # carries, and the ONE derived dependency view.
+        dependency_binding=_issue_cap08_binding(
+            sid, _answer_token_for(sid, entry), state),
+        # Astra F1: the separate submission identity, issued (and held on the
+        # entry) ONLY while the CAP-08 form is actually offered.
+        dependency_submission=(_cap08_submission_for(sid, entry)
+                               if _cap08_eligible_assumptions(state)
+                               and _cap10_eligible_endpoints(state) else ""),
+        dependency_view=_assumption_dependency_view(state),
         # Workstream 4: read-only render context for the completion-stage
         # structured criticality step (None while the journey is in progress
         # or when no contextually supported unconfirmed requirement remains).
@@ -5656,6 +5692,10 @@ def show_deliverable(sid):
         # deliverable surface (derived on demand; not part of the canonical
         # deliverable package — the assembler is deliberately untouched).
         decision_capture=_decision_capture_view_safe(state),
+        # CAP-08 Slice 1: the inventor-declared dependency view (derived on
+        # demand; not part of the canonical package — the assembler is
+        # untouched). Rendered only when a declaration exists.
+        assumption_dependencies=_assumption_dependency_view(state),
         # G-UX-SNAPSHOT-DECISION: single-use, per-sid "Keep current snapshot"
         # acknowledgement, popped here so it renders once after the Post/Redirect/Get
         # and never repeats on a later plain GET. None on every normal load.
@@ -5799,6 +5839,7 @@ def download_deliverable_pdf(sid):
             t2a_statements=_quantity_statements(package, state),
             evidence_references=_evref_deliverable_view(sid, state),
             decision_capture=_decision_capture_view_safe(state),
+            assumption_dependencies=_assumption_dependency_view(state),
             snapshot_kept_ack=None,
         )
         pdf_bytes = _pdf_bytes_from_source(source)
@@ -6045,6 +6086,409 @@ def declare_conflict(sid):
     _project_declared_contradictions(state.assertions)
     entry["_interaction_ack"] = CONTRADICTION_DECLARED_ACK
     return redirect(url_for("show_session", sid=sid))
+
+
+# --- CAP-08 Slice 1: owner-declared assumption -> answer dependency -----------
+# A dedicated action with its OWN server-issued binding (distinct action kind
+# and signature domain; a CAP-10 binding or a generic answer token never
+# authorizes it). The binding commits, role-separated, to the project (sid),
+# the CAP-08 action kind, the effective engine contract version, the answer
+# token rendered on the SAME page, the
+# exact eligible ASSUMPTION set (active provisional assumptions, ledger order)
+# and the exact eligible ANSWER set (active answered records, ledger order).
+_CAP08_BINDING_KIND = "CAP08_DECLARE_DEPENDENCY"
+_CAP08_BINDING_DOMAIN = "cap08-dependency-binding-v1"
+_CAP08_BINDING_MAX_LEN = 32768
+
+
+def _cap08_eligible_assumptions(state):
+    """The assumption endpoints the CAP-08 form offers: every ACTIVE ledger
+    `provisional_assumption` record, in ledger order. Generated report
+    assumptions (Section 5 ASM-*) are not ledger records and never appear."""
+    return [r.record_id for r in getattr(state, "assertions", []) or []
+            if r.disposition == _DISP_PROVISIONAL
+            and getattr(r, "superseded_by", None) is None]
+
+
+def _cap08_binding_sig(sid, token, ecv, assumptions, answers):
+    msg = _canonical_message(_CAP08_BINDING_DOMAIN, sid, token,
+                             _CAP08_BINDING_KIND, _uqtr_opt(ecv),
+                             "assumptions:" + ",".join(assumptions),
+                             "answers:" + ",".join(answers))
+    return _p2a_hmac.new(_answer_secret(), msg, _p2a_hashlib.sha256).hexdigest()
+
+
+def _issue_cap08_binding(sid, token, state):
+    """The signed CAP-08 binding for the form rendered with ``token``, or ""
+    when the form cannot be offered (no eligible assumption or answer)."""
+    assumptions = _cap08_eligible_assumptions(state)
+    answers = _cap10_eligible_endpoints(state)
+    if not assumptions or not answers:
+        return ""
+    ecv = getattr(state, "engine_contract_version", None)
+    payload = json.dumps({"k": _CAP08_BINDING_KIND, "v": ecv,
+                          "a": assumptions, "d": answers},
+                         sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    body = _p2a_b64.urlsafe_b64encode(payload.encode("ascii")).decode(
+        "ascii").rstrip("=")
+    return body + "." + _cap08_binding_sig(sid, token, ecv, assumptions, answers)
+
+
+def _verified_cap08_binding(sid, token, raw):
+    """``(ecv, assumptions_tuple, answers_tuple)`` of a binding signed for
+    exactly this sid and token under the CAP-08 kind and domain, or None
+    (missing, malformed, oversized, another kind, another project, another
+    token, tampered). Constant-time comparison; never raises."""
+    try:
+        if (not isinstance(raw, str) or not raw or len(raw) > _CAP08_BINDING_MAX_LEN
+                or not token):
+            return None
+        body, sep, sig = raw.rpartition(".")
+        if not sep or not body or not sig:
+            return None
+        data = json.loads(_p2a_b64.urlsafe_b64decode(
+            (body + "=" * (-len(body) % 4)).encode("ascii")).decode("ascii"))
+        if not isinstance(data, dict) or set(data) != {"k", "v", "a", "d"} \
+                or data["k"] != _CAP08_BINDING_KIND:
+            return None
+        ecv, assumptions, answers = data["v"], data["a"], data["d"]
+        if ecv is not None and not isinstance(ecv, str):
+            return None
+        for ids in (assumptions, answers):
+            if not isinstance(ids, list) or not ids \
+                    or not all(isinstance(e, str) for e in ids) \
+                    or len(set(ids)) != len(ids):
+                return None
+        expected = _cap08_binding_sig(sid, token, ecv, assumptions, answers)
+        if not _p2a_hmac.compare_digest(sig.encode("utf-8"),
+                                        expected.encode("ascii")):
+            return None
+        return ecv, tuple(assumptions), tuple(answers)
+    except Exception:
+        return None
+
+
+# --- CAP-08 submission identity (Astra F1) ------------------------------------
+# WHICH durable action attempt a post is, kept SEPARATE from the binding (which
+# authorizes WHAT may be selected) and from the selection itself. The page issues
+# one random nonce per live form context (retained across renders until a
+# declaration under it is committed or recognised, then rotated), carried as its
+# own signed field. The durable action identity is HMAC(project, nonce) — it
+# never changes with the selected assumption or answers, so the SAME identity
+# with ANY different material is detectable and fails closed.
+_CAP08_SUBMISSION_DOMAIN = "cap08-submission-v1"
+_CAP08_SUBMISSION_ENTRY_KEY = "cap08_submission"
+_CAP08_KEY_PREFIX = "cap08:"
+
+
+def _cap08_submission_sig(sid, nonce):
+    return _p2a_hmac.new(
+        _answer_secret(), _canonical_message(_CAP08_SUBMISSION_DOMAIN, sid, nonce),
+        _p2a_hashlib.sha256).hexdigest()
+
+
+def _cap08_submission_for(sid, entry):
+    """The entry's current signed CAP-08 submission identity, issuing and
+    storing one when absent (retained across renders until consumed)."""
+    value = entry.get(_CAP08_SUBMISSION_ENTRY_KEY)
+    if not value:
+        nonce = secrets.token_hex(16)
+        value = nonce + "." + _cap08_submission_sig(sid, nonce)
+        entry[_CAP08_SUBMISSION_ENTRY_KEY] = value
+    return value
+
+
+def _verified_cap08_submission(sid, raw):
+    """The nonce of a submission identity signed for exactly this project, or
+    None (missing, malformed, another project, tampered). Stateless, so an
+    exact retry verifies after a restart. Never raises."""
+    try:
+        if not isinstance(raw, str) or len(raw) > 256:
+            return None
+        nonce, sep, sig = raw.partition(".")
+        if not sep or len(nonce) != 32 or any(
+                ch not in "0123456789abcdef" for ch in nonce):
+            return None
+        if not _p2a_hmac.compare_digest(sig.encode("utf-8"),
+                                        _cap08_submission_sig(sid, nonce).encode("ascii")):
+            return None
+        return nonce
+    except Exception:
+        return None
+
+
+def _dependency_action_key(sid, nonce):
+    """The stable durable action identity of ONE CAP-08 submission: HMAC over
+    (project, submission nonce) ONLY — never over the selected material."""
+    msg = _canonical_message("cap08-dependency-action-v2", sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _dependency_action_prefix(action_key):
+    return _CAP08_KEY_PREFIX + action_key + ":"
+
+
+def _dependency_edge_keys(action_key, count):
+    """One durable idempotency key per edge row of a batch of ``count`` edges:
+    ``cap08:<action>:<index>:<count>``, in the SAME additive column under the
+    SAME partial UNIQUE index as every other append. Every row names its
+    position AND the size of the complete batch, so a partial batch is
+    distinguishable from a complete one from committed state alone."""
+    return [f"{_dependency_action_prefix(action_key)}{i}:{count}"
+            for i in range(count)]
+
+
+def _dependency_payload_matches(payload, assumption_id, answer_id):
+    """Confirm-by-reload: the STORED event is exactly this directed edge."""
+    return (isinstance(payload, dict)
+            and payload.get("disposition") == _DISP_DEPENDENCY_DECLARED
+            and payload.get("dependency_edge") == {
+                "assumption_record_id": assumption_id,
+                "dependent_answer_record_id": answer_id}
+            and payload.get("content") == "")
+
+
+def _committed_dependency_batch(sid, action_key, assumption_id, answers):
+    """Classify THIS action identity from COMMITTED durable state only:
+
+    * "absent"    — no row under the identity (it was never consumed);
+    * "committed" — exactly one COMPLETE batch (rows 0..N-1 of the size N every
+                    row records) whose material is exactly this assumption and
+                    this normalized answer list;
+    * "conflict"  — anything else: different material, a subset, a superset, a
+                    disjoint batch, or a partial / inconsistent batch.
+
+    Raises StoreError when committed state cannot be read (IR-01: an
+    unresolved connection never confirms anything)."""
+    prefix = _dependency_action_prefix(action_key)
+    rows = _get_store().committed_records_for_idempotency_key_prefix(sid, prefix)
+    return _classify_dependency_rows(prefix, rows, assumption_id, answers)[0]
+
+
+def _classify_dependency_rows(prefix, rows, assumption_id, answers):
+    """``(outcome, reason)`` for the RAW committed rows under one action prefix.
+    Astra F1 (final): fail-closed interpretation — only the exact spelling the
+    writer emits is accepted, no two raw rows may collapse onto one logical
+    position (never a silent dict overwrite), and COMMITTED means exactly N raw
+    rows at exactly the N canonical positions 0..N-1 of one agreed size N whose
+    material is exactly the expected batch. ``reason`` names the first failed
+    check (None when committed or absent)."""
+    if not rows:
+        return "absent", None
+    parsed = []
+    for key, payload in rows:
+        position = _canonical_edge_position(key[len(prefix):])
+        if position is None:
+            return "conflict", "non-canonical position"
+        parsed.append((position, payload))
+    positions = [position for position, _payload in parsed]
+    if len(set(positions)) != len(positions):
+        return "conflict", "duplicate position"
+    sizes = {size for _index, size in positions}
+    if len(sizes) != 1:
+        return "conflict", "inconsistent size"
+    size = sizes.pop()
+    if len(rows) != size:
+        return "conflict", "row count"
+    if set(positions) != {(i, size) for i in range(size)}:
+        return "conflict", "positions"
+    if size != len(answers):
+        return "conflict", "batch size"
+    by_position = dict(parsed)
+    if all(_dependency_payload_matches(by_position[(i, size)], assumption_id, rid)
+           for i, rid in enumerate(answers)):
+        return "committed", None
+    return "conflict", "material"
+
+
+def _canonical_edge_position(suffix):
+    """``(index, size)`` of a raw edge-key suffix ONLY when it is exactly the
+    writer's canonical ``<index>:<size>`` spelling — plain ASCII decimal, no
+    sign, whitespace, leading-zero alias or extra component — with
+    ``0 <= index < size``; otherwise None."""
+    parts = suffix.split(":") if isinstance(suffix, str) else []
+    if len(parts) != 2:
+        return None
+    raw_index, raw_size = parts
+    for raw in parts:
+        if not raw or any(ch not in "0123456789" for ch in raw):
+            return None
+    index, size = int(raw_index), int(raw_size)
+    if raw_index != str(index) or raw_size != str(size):
+        return None                                    # leading-zero alias
+    if size <= 0 or not 0 <= index < size:
+        return None
+    return index, size
+
+
+def _assumption_dependency_view(state):
+    """The ONE read-only render context every CAP-08 consumer uses (session
+    view, project record, report): the derived projection with each endpoint's
+    own recorded text and question area resolved from the endpoint record
+    (never copied into the declaration). Declared by the inventor; not
+    validated; not a requirement, a risk or readiness input."""
+    assertions = list(getattr(state, "assertions", None) or ())
+    projection = _project_assumption_dependencies(assertions)
+    by_id = {r.record_id: r for r in assertions}
+
+    def _endpoint(rid):
+        record = by_id.get(rid)
+        return {"record_id": rid,
+                "text": getattr(record, "content", "") if record else "",
+                "context": getattr(record, "gap_context", None) if record else None}
+    groups = [{"assumption": _endpoint(aid),
+               "answers": [_endpoint(rid) for rid in answers]}
+              for aid, answers in projection.by_assumption]
+    return {"groups": groups,
+            "active_count": len(projection.active_edges),
+            "declared_count": len(projection.declarations),
+            "inactive_declarations": frozenset(
+                d.declaration_record_id for d in projection.declarations
+                if not d.active)}
+
+
+@app.route("/session/<sid>/declare-dependency", methods=["POST"])
+def declare_dependency(sid):
+    """CAP-08 Slice 1 — the inventor explicitly declares that one or more of
+    their own current recorded answers depend on ONE of their own current
+    provisional assumptions.
+
+    A dedicated action, never a question answer, authorized only by its own
+    server-issued CAP-08 binding (see above). The dependent answers are
+    normalized to a unique deterministic order and minted as ONE append-only
+    `assumption_dependency_declared` record per directed edge (OWNER_STATED,
+    UNVALIDATED). The COMPLETE batch is persisted in ONE serialized write
+    transaction with every endpoint re-resolved INSIDE it — all edges or none —
+    and is published to live state only after COMMITTED durable confirmation.
+    It validates, confirms or rejects nothing and changes no gap, maturity,
+    progression, score, routing or readiness."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    token = request.form.get("answer_token", "")
+    binding = _verified_cap08_binding(
+        sid, token, request.form.get("dependency_binding", ""))
+    if not _valid_answer_token(sid, token) or binding is None:
+        entry["_answer_error"] = DEPENDENCY_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    bound_ecv, bound_assumptions, bound_answers = binding
+    # Astra F1: WHICH durable action attempt this is — its own signed field,
+    # independent of the binding and of the selection.
+    submission = request.form.get("dependency_submission", "")
+    nonce = _verified_cap08_submission(sid, submission)
+    if nonce is None:
+        entry["_answer_error"] = DEPENDENCY_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    assumptions = request.form.getlist("assumption")
+    if (len(assumptions) != 1
+            or request.form.get("dependency_confirm") != "yes"):
+        entry["_answer_error"] = DEPENDENCY_INVALID_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    assumption_id = assumptions[0]
+    try:
+        answers = _normalize_dependent_answers(request.form.getlist("dependent"))
+    except ValueError:
+        entry["_answer_error"] = DEPENDENCY_INVALID_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # Each selected endpoint must lie inside the set the binding committed to
+    # FOR ITS ROLE.
+    if (assumption_id not in bound_assumptions
+            or not set(answers) <= set(bound_answers)):
+        entry["_answer_error"] = DEPENDENCY_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    action_key = _dependency_action_key(sid, nonce)
+    edge_keys = _dependency_edge_keys(action_key, len(answers))
+
+    def _consume_submission():
+        # The identity is spent: the next render issues a fresh one, so a new
+        # legitimate declaration always needs a new server-issued identity.
+        if entry.get(_CAP08_SUBMISSION_ENTRY_KEY) == submission:
+            entry.pop(_CAP08_SUBMISSION_ENTRY_KEY, None)
+
+    # EXACT committed retry (refresh, double-submit, restart, even after a
+    # later correction made an endpoint stale) is recognised BEFORE freshness
+    # and changes nothing. The SAME identity with ANY other material — another
+    # assumption, another answer set, a subset, a superset, a disjoint batch —
+    # or a partial batch under it fails closed.
+    try:
+        prior = _committed_dependency_batch(sid, action_key, assumption_id, answers)
+    except StoreError:
+        entry["_answer_error"] = DEPENDENCY_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    if prior == "committed":
+        _consume_submission()
+        entry["_interaction_ack"] = DEPENDENCY_DECLARED_ACK
+        return redirect(url_for("show_session", sid=sid))
+    if prior == "conflict":
+        # The identity is already spent on other (or partial) material and can
+        # never succeed again; a refreshed page gets a new one.
+        _consume_submission()
+        entry["_answer_error"] = DEPENDENCY_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    # NEW declaration: the binding must still describe the live form context —
+    # the entry's CURRENT token and CURRENT submission identity, the current
+    # engine version and exactly the current eligible assumption and answer
+    # sets. Anything older is stale.
+    if (token != entry.get("answer_token")
+            or submission != entry.get(_CAP08_SUBMISSION_ENTRY_KEY)
+            or bound_ecv != getattr(state, "engine_contract_version", None)
+            or list(bound_assumptions) != _cap08_eligible_assumptions(state)
+            or list(bound_answers) != _cap10_eligible_endpoints(state)):
+        entry["_answer_error"] = DEPENDENCY_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    # Staged mint against a THROWAWAY ledger view: the carrier refuses the
+    # WHOLE batch (wrong role, superseded, unknown, or an edge already
+    # actively declared) with nothing appended; live state stays untouched
+    # until the durable append.
+    import copy
+    _minter = IdeaState(idea_id=state.idea_id)
+    _minter.assertions = [copy.deepcopy(r) for r in state.assertions]
+    try:
+        new_records = _minter.record_assumption_dependency_declarations(
+            assumption_id, answers, iteration=state.iteration)
+    except ValueError:
+        entry["_answer_error"] = DEPENDENCY_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    def _publish():
+        known = {r.record_id for r in state.assertions}
+        for record in new_records:
+            if record.record_id not in known:
+                state.assertions.append(record)
+        _consume_submission()
+        entry["_interaction_ack"] = DEPENDENCY_DECLARED_ACK
+        return redirect(url_for("show_session", sid=sid))
+
+    try:
+        _get_store().append_assumption_dependency_declarations(
+            sid, new_records, edge_keys)
+    except _DependencyDeclarationRejected:
+        entry["_answer_error"] = DEPENDENCY_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    except (sqlite3.IntegrityError, StoreError, sqlite3.Error):
+        # Never assume an outcome: only the exact COMPLETE batch CONFIRMED from
+        # committed durable state is published; an unconfirmable outcome says
+        # so and changes nothing in live state.
+        try:
+            outcome = _committed_dependency_batch(
+                sid, action_key, assumption_id, answers)
+        except Exception:
+            entry["_answer_error"] = DEPENDENCY_UNKNOWN_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        if outcome != "committed":
+            if outcome == "conflict":
+                _consume_submission()      # spent on a partial batch: rotate
+            entry["_answer_error"] = DEPENDENCY_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        return _publish()
+    # Durable commit of the complete batch confirmed: publish it.
+    return _publish()
 
 
 @app.route("/session/<sid>/correct", methods=["POST"])
@@ -6487,6 +6931,7 @@ _T3A_EVENT_BY_DISPOSITION = {
     _DISP_CONTEXT_DECLARED: "decision_context_declared",
     _DISP_ALT_WITHDRAWN: "alternative_withdrawn",
     _DISP_CONTRADICTION_DECLARED: "contradiction_declared",
+    _DISP_DEPENDENCY_DECLARED: "assumption_dependency_declared",
 }
 # The closed event vocabulary the template may name (UI_T3A_EVENT_<KIND>).
 T3A_EVENT_KINDS = frozenset(_T3A_EVENT_BY_DISPOSITION.values()) | frozenset({
@@ -6602,6 +7047,10 @@ def _project_record_context(state, sid):
         return {"relation": relation, "step": ordinal_of.get(target_id),
                 "record_id": target_id}
 
+    # CAP-08 Slice 1: the same derived projection every dependency consumer
+    # reads; it only says which declarations are no longer active.
+    inactive_dependencies = _assumption_dependency_view(state)[
+        "inactive_declarations"]
     entries = []
     for record in assertions:
         kind = _t3a_event_kind(record)
@@ -6616,6 +7065,14 @@ def _project_record_context(state, sid):
         # conflicting; they are shown by their steps, never re-quoted here.
         for target in (getattr(record, "contradiction_endpoints", None) or ()):
             links.append(_link("declares_conflict", target))
+        # CAP-08 Slice 1: a dependency declaration names its assumption and the
+        # one answer declared dependent on it, by their steps (never re-quoted).
+        edge = getattr(record, "dependency_edge", None)
+        if kind == "assumption_dependency_declared" and isinstance(edge, dict):
+            links.append(_link("depends_on_assumption",
+                               edge.get("assumption_record_id")))
+            links.append(_link("declares_dependent",
+                               edge.get("dependent_answer_record_id")))
         for target in (getattr(record, "supersedes", None) or ()):
             links.append(_link(
                 "withdraws" if kind == "alternative_withdrawn" else "replaces",
@@ -6638,6 +7095,7 @@ def _project_record_context(state, sid):
             "reason": reason,
             "reason_missing": reason_missing,
             "withdrawn_answer": kind == "answer_withdrawn_replaced",
+            "dependency_inactive": record.record_id in inactive_dependencies,
             "links": links,
             "attached": attached.get(record.record_id, []),
         })
