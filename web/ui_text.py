@@ -1827,6 +1827,42 @@ UI_STRINGS = {
                "remains unresolved."),
         "ar": "تم تسجيل اختيارك لهذه النقطة التقنية، وهي لا تزال غير محسومة.",
     },
+    # Safe Question Reduction Slice 1 — a routed need (not a mandatory
+    # inventor question; still unresolved). The need wording itself is domain
+    # content from the committed Path-N artifact, never from this catalogue.
+    "UI_NR_HEADING_SPECIALIST": {
+        "en": "Specialist input required",
+        "ar": "مدخلات مختص مطلوبة",
+    },
+    "UI_NR_HEADING_EVIDENCE": {
+        "en": "Evidence or measurement required",
+        "ar": "دليل أو قياس مطلوب",
+    },
+    "UI_NR_NOT_ASKED": {
+        "en": ("You are not asked to answer this point yourself. It stays open "
+               "until specialist input is recorded; no technical answer has "
+               "been assumed."),
+        "ar": ("لا يُطلب منك الإجابة عن هذه النقطة بنفسك. تبقى مفتوحة إلى أن "
+               "تُسجَّل مدخلات مختص، ولم يُفترض أي جواب تقني."),
+    },
+    "UI_NR_NOT_ASKED_EVIDENCE": {
+        "en": ("You are not asked to answer this point yourself. It stays open "
+               "until evidence or a measurement is recorded; no technical "
+               "answer has been assumed."),
+        "ar": ("لا يُطلب منك الإجابة عن هذه النقطة بنفسك. تبقى مفتوحة إلى أن "
+               "يُسجَّل دليل أو قياس، ولم يُفترض أي جواب تقني."),
+    },
+    "UI_NR_OPTIONAL_NOTE": {
+        "en": ("Optional. What you add is saved as your own note; it does not "
+               "establish the technical limit and does not replace specialist "
+               "input."),
+        "ar": ("اختياري. ما تضيفه يُحفظ كملاحظة منك، ولا يحدّد الحد التقني ولا "
+               "يحلّ محل مدخلات المختص."),
+    },
+    "UI_NR_SAVE": {
+        "en": "Save note",
+        "ar": "حفظ الملاحظة",
+    },
     "UI_UQTR_CTA": {
         "en": "Review what is still needed",
         "ar": "مراجعة ما لا يزال مطلوبًا",

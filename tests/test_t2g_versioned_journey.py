@@ -212,9 +212,12 @@ def test_a_real_current_start_records_the_newest_version(client):
     c, appmod, db = client
     _login(c, appmod)
     sid = _start(c)
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G2
-    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G2
-    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_T2G2
+    # Safe Question Reduction Slice 1: the newest version is the routing-aware
+    # one, which carries the T2-G-2 rules unchanged.
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_NR1
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_NR1
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_NR1
+    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_NR1
 
 
 def test_the_version_is_selected_before_the_seed_is_interpreted(client):
@@ -246,10 +249,11 @@ def test_the_version_cannot_be_switched_by_browser_input(client, forged):
     c, appmod, db = client
     _login(c, appmod)
     sid = _start(c, extra={"engine_contract_version": forged})
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G2
+    current = appmod.CURRENT_ENGINE_CONTRACT_VERSION   # the server constant
+    assert _stamp(db, sid) == current
     _answer(c, sid, F2_UNKNOWN, extra={"engine_contract_version": forged})
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G2
-    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G2
+    assert _stamp(db, sid) == current
+    assert _snapshot(appmod, sid)["version"] == current
 
 
 def test_ordinary_resume_does_not_switch_the_version(client):
@@ -349,10 +353,14 @@ def test_a_legacy_project_reproduces_the_pre_t2g_reading(client):
     assert got["coverage"] == ["mechanical:MECHANISM_COMPLETENESS:Q2"]
 
 
-def test_the_veto_does_not_reach_other_gaps(client):
-    """An explicit unknown against a LATER gap keeps its existing behaviour."""
+def test_the_veto_does_not_reach_other_gaps(client, monkeypatch):
+    """An explicit unknown against a LATER gap keeps its existing behaviour.
+    Created under T2-G-2 (the version this pin describes): on a routing-aware
+    project PF's Owner questioning ends after PF:Q1 by Slice-1 design."""
     c, appmod, _db = client
     _login(c, appmod)
+    monkeypatch.setattr(appmod, "CURRENT_ENGINE_CONTRACT_VERSION",
+                        ENGINE_CONTRACT_VERSION_T2G2)
     sid = _start(c)
     for text in (F1_AFFIRM, K_FOLLOW_UP):
         _answer(c, sid, text)

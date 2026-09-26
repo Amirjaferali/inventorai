@@ -907,8 +907,12 @@ def t2g_rule_level(state, gap_type=None, domain=None):
     exactly; level 2 adds the bounded concise/mixed paths for T2-G-2 projects
     only. Outside the named gap and domains the level is 0 at every version."""
     from engine.session_reconstruction import (
-        ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2)
-    levels = {ENGINE_CONTRACT_VERSION_T2G1: 1, ENGINE_CONTRACT_VERSION_T2G2: 2}
+        ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2,
+        ENGINE_CONTRACT_VERSION_NR1)
+    # Safe Question Reduction Slice 1: the routing-aware version carries every
+    # T2-G-2 rule unchanged (routing is additive to it, not a rule change).
+    levels = {ENGINE_CONTRACT_VERSION_T2G1: 1, ENGINE_CONTRACT_VERSION_T2G2: 2,
+              ENGINE_CONTRACT_VERSION_NR1: 2}
     level = levels.get(getattr(state, "engine_contract_version", None), 0)
     if not level:
         return 0

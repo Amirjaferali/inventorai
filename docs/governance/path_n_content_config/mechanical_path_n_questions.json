@@ -38,7 +38,15 @@
       {
         "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q2",
         "text": "What limits or conditions could affect whether the idea works physically? For example: weight, load, force, material, distance, or movement. State what you know; you can record what you do not know instead of guessing.",
-        "text_ar": "ما الحدود أو الظروف التي قد تؤثر في عمل الفكرة ماديًا؟ مثل الوزن أو الحمل أو القوة أو المادة أو المسافة أو الحركة. اذكر ما تعرفه، ويمكنك تسجيل ما لا تعرفه بدل التخمين."
+        "text_ar": "ما الحدود أو الظروف التي قد تؤثر في عمل الفكرة ماديًا؟ مثل الوزن أو الحمل أو القوة أو المادة أو المسافة أو الحركة. اذكر ما تعرفه، ويمكنك تسجيل ما لا تعرفه بدل التخمين.",
+        "routing": {
+          "required_input": "SPECIALIST",
+          "policy_ref": "mechanical-path-n-routing-v1:PHYSICAL_FEASIBILITY:Q2",
+          "need_text": "Technical operating limits remain unresolved.",
+          "need_text_ar": "الحدود التشغيلية الفنية ما زالت غير محسومة.",
+          "owner_input_prompt": "Add intended use conditions if known.",
+          "owner_input_prompt_ar": "يمكنك إضافة ظروف الاستخدام المقصودة إذا كنت تعرفها."
+        }
       }
     ],
     "BOUNDARY_AMBIGUITY": [

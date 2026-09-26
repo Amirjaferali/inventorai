@@ -59,6 +59,14 @@ from engine.question_feedback import (
     FEEDBACK_CHOICES, MAX_FEEDBACK_ROWS_PER_PROJECT,
     QuestionFeedbackHistoryError, FeedbackCapExceeded,
 )
+# Safe Question Reduction Slice 1: the deterministic SYSTEM routing record. A
+# separate durable row type, deliberately NOT an assertion record (it is not
+# an Owner action and must never be replayed as an answer).
+from engine.need_routing import (
+    NeedRoutingError, NeedRoutingRevision, REVISION_EVENT_IDENTITY_FIELDS,
+    is_routing_aware, next_revision_check, validate_against_policy,
+    validate_revision_fields, validate_routing_history,
+)
 from engine.evidence_reference import (
     EvidenceReference, validate_reference_history, validate_new_reference,
     active_reference_for_anchor, REFERENCE_INSERTED, REFERENCE_EXACT_REPLAY,
@@ -135,6 +143,18 @@ class AdoptionHistoryError(StoreError):
     structurally invalid (no root, a fork, a broken predecessor edge, or a
     ``from_version`` that does not continue the previous ``to_version``).
     Fail-closed: nothing is returned and nothing is repaired."""
+
+
+class NeedRoutingHistoryError(StoreError):
+    """A project's durable NeedRouting history (or a revision offered for it)
+    violates the closed routing contract. Structural message only; fail-closed,
+    nothing repaired."""
+
+
+class NeedRoutingConflict(StoreError):
+    """A routing append that cannot continue the durable history truthfully
+    (a different event under the same key, or a version that carries no
+    routing). Nothing was written."""
 
 
 class AdoptionCapReached(StoreError):
@@ -702,6 +722,53 @@ def _valid_method_text(value) -> bool:
 # Outcome vocabulary of an adoption append (mirrors the merged T2-A/T2-D
 # vocabulary: an already-recorded exact event is historical no-write
 # evidence, never a conflict and never a second write).
+# Safe Question Reduction Slice 1 — the NeedRouting sidecar. ONE append-only,
+# project-scoped history of SYSTEM_INFERRED routing revisions (ROUTE /
+# RETRACT). Identity is (project_id, routing_seq); a need is
+# (project_id, gap_type, question_id). The CHECKs are a database backstop for
+# the closed vocabulary (the loader re-validates every row): SYSTEM_INFERRED
+# only, MECHANISM_COMPLETENESS never, ROUTE <-> required input. Additive and
+# idempotent (``IF NOT EXISTS``); touches no existing table, column or row.
+# Rollback is disable-and-ignore (stop reading the table).
+_NEED_ROUTING_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS need_routing_revisions (
+        project_id          TEXT    NOT NULL,
+        routing_seq         INTEGER NOT NULL,
+        gap_type            TEXT    NOT NULL,
+        question_id         TEXT    NOT NULL,
+        after_assertion_seq INTEGER NOT NULL,
+        operation           TEXT    NOT NULL,
+        required_input      TEXT,
+        policy_ref          TEXT    NOT NULL,
+        supersedes_seq      INTEGER,
+        provenance          TEXT    NOT NULL,
+        event_key           TEXT    NOT NULL,
+        PRIMARY KEY (project_id, routing_seq),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, supersedes_seq)
+            REFERENCES need_routing_revisions(project_id, routing_seq),
+        CHECK (operation IN ('ROUTE', 'RETRACT')),
+        CHECK ((operation = 'ROUTE' AND required_input IN ('SPECIALIST', 'EVIDENCE'))
+               OR (operation = 'RETRACT' AND required_input IS NULL)),
+        CHECK (provenance = 'SYSTEM_INFERRED'),
+        CHECK (gap_type <> 'MECHANISM_COMPLETENESS'),
+        CHECK (routing_seq >= 0),
+        CHECK (after_assertion_seq >= -1),
+        CHECK (supersedes_seq IS NULL OR supersedes_seq < routing_seq),
+        CHECK (length(question_id) > 0 AND length(policy_ref) > 0
+               AND length(event_key) > 0)
+    )
+    """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS need_routing_revisions_event_key_uq "
+    "ON need_routing_revisions (project_id, event_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS need_routing_revisions_successor_uq "
+    "ON need_routing_revisions (project_id, supersedes_seq) "
+    "WHERE supersedes_seq IS NOT NULL",
+)
+NEED_ROUTING_INSERTED = "INSERTED"
+NEED_ROUTING_EXACT_REPLAY = "EXACT_REPLAY"
+
 ADOPTION_INSERTED = "INSERTED"
 ADOPTION_EXACT_REPLAY = "EXACT_REPLAY"
 # Bounded growth: a project cannot accumulate an unbounded adoption history.
@@ -804,6 +871,7 @@ class SqliteRecordStore:
             self._migrate_readiness_evidence(self._conn)
             self._migrate_prototype_plan_metadata(self._conn)
             self._migrate_prototype_measurement_methods(self._conn)
+            self._migrate_need_routing(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -991,6 +1059,15 @@ class SqliteRecordStore:
         for stmt in _MEASUREMENT_METHOD_SCHEMA:
             conn.execute(stmt)
 
+    def _migrate_need_routing(self, conn) -> None:
+        """Safe Question Reduction Slice 1 forward migration: additively create
+        the ``need_routing_revisions`` sidecar. Idempotent (``IF NOT EXISTS``)
+        on a fresh and on an existing populated database; touches no existing
+        table, column or row; nothing is backfilled. Rollback is
+        disable-and-ignore (stop reading the table)."""
+        for stmt in _NEED_ROUTING_SCHEMA:
+            conn.execute(stmt)
+
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
         """A durability-safe, collision-safe identifier for a NEWLY created
@@ -1000,7 +1077,8 @@ class SqliteRecordStore:
     # --- writes (atomic) ----------------------------------------------------
     def create_project(self, contract: ProjectRecordContract, project_id: str = None,
                        reconstruction_inputs: dict = None,
-                       owner_account_id: str = None) -> str:
+                       owner_account_id: str = None,
+                       need_routing=()) -> str:
         """Atomically persist a project envelope + its accepted-input records.
         Existing serialized record identifiers are preserved exactly. A failure
         (e.g. a duplicate record_id) rolls back the whole write — no partial
@@ -1014,9 +1092,31 @@ class SqliteRecordStore:
         NULL and the project remains a legacy/Level-0 project. These values are
         written ONCE here at creation and are never mutated afterwards. The seed
         idea is sensitive user content: it is stored only in this project column,
-        never duplicated into an ``AssertionRecord`` and never logged."""
+        never duplicated into an ``AssertionRecord`` and never logged.
+
+        ``need_routing`` (Safe Question Reduction Slice 1) is the project's
+        creation-boundary ROUTE revisions, inserted in the SAME transaction as
+        the envelope — so a routed need exists before any Owner answer can
+        exist, and a failed creation leaves no project AND no routing row.
+        Only a routing-aware version on an empty ledger may carry them."""
         pid = project_id or uuid.uuid4().hex
         ri = reconstruction_inputs or {}
+        routing = tuple(need_routing or ())
+        if routing:
+            try:
+                routing = validate_routing_history(routing)
+                validate_against_policy(routing, ri.get("confirmed_domain"))
+            except NeedRoutingError as exc:
+                raise NeedRoutingHistoryError(str(exc)) from None
+            if not is_routing_aware(ri.get("engine_contract_version")) \
+                    or ri.get("path") != "N":
+                raise NeedRoutingConflict(
+                    "creation routing needs a routing-aware Path-N project")
+            if contract.assertions or any(
+                    rev.project_id != pid or rev.after_assertion_seq != -1
+                    for rev in routing):
+                raise NeedRoutingConflict(
+                    "creation routing must precede every Owner record")
         with self._write():   # single transaction: commit on success, rollback on error
             # P5-3: ``owner_account_id`` is written HERE, in the SAME atomic INSERT
             # that creates the project row — there is no create-then-assign step,
@@ -1041,7 +1141,149 @@ class SqliteRecordStore:
                     (pid, seq, record.record_id,
                      json.dumps(assertion_to_dict(record), sort_keys=True)),
                 )
+            for rev in routing:
+                self._insert_need_routing(pid, rev)
         return pid
+
+    # --- Safe Question Reduction Slice 1: NeedRouting (append-only) ----------
+    _ROUTING_COLUMNS = (
+        "routing_seq, gap_type, question_id, after_assertion_seq, operation, "
+        "required_input, policy_ref, supersedes_seq, provenance, event_key")
+
+    @staticmethod
+    def _routing_from_row(project_id, row):
+        return NeedRoutingRevision(
+            project_id=project_id, routing_seq=row[0], gap_type=row[1],
+            question_id=row[2], after_assertion_seq=row[3], operation=row[4],
+            required_input=row[5], policy_ref=row[6], supersedes_seq=row[7],
+            provenance=row[8], event_key=row[9])
+
+    def _routing_rows(self, project_id):
+        return [self._routing_from_row(project_id, row) for row in self._conn.execute(
+            "SELECT " + self._ROUTING_COLUMNS + " FROM need_routing_revisions "
+            "WHERE project_id = ? ORDER BY routing_seq ASC",
+            (project_id,)).fetchall()]
+
+    def _insert_need_routing(self, project_id, rev):
+        self._conn.execute(
+            "INSERT INTO need_routing_revisions (project_id, "
+            + self._ROUTING_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (project_id, rev.routing_seq, rev.gap_type, rev.question_id,
+             rev.after_assertion_seq, rev.operation, rev.required_input,
+             rev.policy_ref, rev.supersedes_seq, rev.provenance, rev.event_key))
+
+    def _validated_routing(self, project_id):
+        rows = self._routing_rows(project_id)
+        if not rows:
+            return ()
+        try:
+            history = validate_routing_history(rows)
+        except NeedRoutingError as exc:
+            raise NeedRoutingHistoryError(str(exc)) from None
+        seqs = {row[0] for row in self._conn.execute(
+            "SELECT seq FROM records WHERE project_id = ?", (project_id,))}
+        for rev in history:
+            if rev.after_assertion_seq != -1 and rev.after_assertion_seq not in seqs:
+                raise NeedRoutingHistoryError(
+                    "routing revision names a ledger position that does not exist")
+        return history
+
+    def load_need_routing(self, project_id: str) -> tuple:
+        """This project's durable NeedRouting history in ``routing_seq`` order,
+        structurally validated (``NeedRoutingHistoryError`` on a corrupt
+        history — fail-closed, nothing repaired). An unknown project or a
+        project without routing yields ``()``. Read-only; project-scoped; safe
+        inside ``read_snapshot``. Like ``load_contract`` (the ledger it is
+        replayed with), it applies no IR-01 refusal of its own; the writer
+        below does."""
+        return self._validated_routing(project_id)
+
+    def need_routing_for_event_key(self, project_id: str, event_key: str):
+        """The stored revision carrying ``event_key``, or ``None`` — the
+        confirm-by-reload seam for exact-replay resolution."""
+        if event_key is None:
+            return None
+        row = self._conn.execute(
+            "SELECT " + self._ROUTING_COLUMNS + " FROM need_routing_revisions "
+            "WHERE project_id = ? AND event_key = ?",
+            (project_id, event_key)).fetchone()
+        return None if row is None else self._routing_from_row(project_id, row)
+
+    def append_need_routing(self, project_id: str, revision) -> str:
+        """Atomically append ONE routing revision (a later ROUTE or RETRACT)
+        and return the TRUTHFUL outcome: ``NEED_ROUTING_EXACT_REPLAY`` when
+        the exact event is already stored under its ``event_key`` (resolved
+        first), ``NEED_ROUTING_INSERTED`` when this call committed the row.
+
+        ONE serialized transaction; full rollback on any failure. Inside it,
+        against durable truth: the project exists and runs a routing-aware
+        version (its creation stamp or adoption head); the revision names a
+        committed policy of the project's own domain; the store assigns
+        ``routing_seq`` (the next position) and ``after_assertion_seq`` (the
+        last durable Owner record, -1 when none); the chain rule holds. The
+        caller's positions are ignored. There is no update path."""
+        # The store assigns the positions, so the caller's routing_seq /
+        # after_assertion_seq are not validated here; every field of the
+        # PLACED revision is validated inside the transaction below.
+        if not isinstance(revision, NeedRoutingRevision):
+            raise NeedRoutingHistoryError("routing revision has the wrong type")
+        if revision.project_id != project_id:
+            raise NeedRoutingConflict("routing revision belongs to another project")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            row = self._conn.execute(
+                "SELECT engine_contract_version, confirmed_domain, recon_path "
+                "FROM projects WHERE project_id = ?", (project_id,)).fetchone()
+            if row is None:
+                raise ProjectNotFound(project_id)
+            creation_stamp, domain, path = row
+            stored = self.need_routing_for_event_key(project_id, revision.event_key)
+            if stored is not None:
+                if all(getattr(stored, f) == getattr(revision, f)
+                       for f in REVISION_EVENT_IDENTITY_FIELDS):
+                    return NEED_ROUTING_EXACT_REPLAY
+                raise NeedRoutingConflict("event key already names a different event")
+            adoptions = validate_adoption_history(self._adoption_rows(project_id))
+            effective = adoptions[-1].to_version if adoptions else creation_stamp
+            if path != "N" or not is_routing_aware(effective):
+                raise NeedRoutingConflict(
+                    "this project's version carries no need routing")
+            history = list(self._validated_routing(project_id))
+            after = self._conn.execute(
+                "SELECT COALESCE(MAX(seq), -1) FROM records WHERE project_id = ?",
+                (project_id,)).fetchone()[0]
+            placed = dataclasses.replace(
+                revision, routing_seq=len(history), after_assertion_seq=after)
+            try:
+                validate_against_policy((placed,), domain)
+                next_revision_check(history, placed)
+            except NeedRoutingError as exc:
+                raise NeedRoutingHistoryError(str(exc)) from None
+            self._insert_need_routing(project_id, placed)
+        return NEED_ROUTING_INSERTED
+
+    @contextmanager
+    def read_snapshot(self):
+        """ONE consistent read view (a deferred read transaction) for a
+        multi-read consumer such as reconstruction. Never writes. On a
+        connection left unresolved (IR-01) it opens nothing and changes
+        nothing, so the existing guarded readers keep deciding exactly as
+        before."""
+        if not self.committed_state_readable():
+            yield
+            return
+        # An outermost SAVEPOINT opens a DEFERRED read transaction in autocommit
+        # mode (one consistent snapshot for every read inside) and RELEASE ends
+        # it; nothing is ever written through it.
+        self._conn.execute("SAVEPOINT need_routing_read_snapshot")
+        try:
+            yield
+        finally:
+            try:
+                self._conn.execute("RELEASE SAVEPOINT need_routing_read_snapshot")
+            except sqlite3.OperationalError:
+                if not self._transaction_resolved():
+                    self._connection_unsafe = True
 
     def load_reconstruction_inputs(self, project_id: str) -> dict:
         """P4-2 Level-1 — return the additive project-envelope reconstruction

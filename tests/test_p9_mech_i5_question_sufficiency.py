@@ -185,7 +185,7 @@ _PROV_PATH = os.path.join(_DOMAINS, "domain_provenance.json")
 #       da2c405d3f7b4995f43141d0b89720f97e94b731345b1ad054c77b821f58ab90
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "9220530bf99a796d5f13af84c17cb3c8eeb1fb76754292f16f8cd0506eb0bb77",
+    "engine/progression_loop.py": "0312ea28a83f4e1d990496ce3c06a9305690a8c620531b15f91f59becb11d221",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.
@@ -206,7 +206,7 @@ _FROZEN_ENGINE_SHA256 = {
     # Documentation only — no code line of the seam changed.
     #   pre-UQTR-01-Step-1 path_n_questions.py =
     #       56280afd936903f3b7018d9dbd97d8e194279f835a2f7315131bce3dba506907
-    "engine/path_n_questions.py": "5214e794af1bf7f3e5a817eae06c8aedf7c735f004a9255a46bdee505faebd9c",
+    "engine/path_n_questions.py": "01c3299b1ed4d9275b39c1089bf3c7cb53846a45fd9aa753425103c63d706c45",
 }
 # L2SC-01 reconciliation (disclosed; docs/governance/L2SC01_SUBSTANCE_SIGNAL_
 # PLURAL_ALIAS_INCREMENT_CONTRACT.md §10): mechanical and electronics_electrical

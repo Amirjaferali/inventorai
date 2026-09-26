@@ -23,10 +23,49 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--ato-synthetic-shadow-evaluation-foundation"></a>
-## Current authority — Autonomous Technical Orchestration synthetic shadow evaluation foundation — Implementation 01 (Owner decisions D1 / D2 / D3, 2026-09-25)
+<a id="current-authority--safe-question-reduction-slice-1"></a>
+## Current authority — Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing only (Owner / Lead authorization, 2026-09-26)
 
-**ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION — SYNTHETIC SHADOW EVALUATION FOUNDATION — IMPLEMENTATION 01.**
+**ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED ROUTING ONLY.**
+The next item of the protected sequence in the EXISTING Stage-18 semantic-normalization block; it
+creates no new Master Roadmap Stage and changes no stage checkbox. Architecture review: Astra —
+SOUND WITH MATERIAL CONDITIONS (Option C, a narrow question-scoped NeedRouting carrier).
+
+| | |
+|---|---|
+| **ROUTED QUESTION** | `mechanical:PHYSICAL_FEASIBILITY:Q2` ONLY → `SPECIALIST` (evidence may be required later; its existence is never claimed) |
+| **MECHANICAL MANDATORY OWNER-VISIBLE QUESTIONS** | NEW routing-aware projects: **9** · every existing project: **10**, unchanged |
+| **DURABLE SYSTEM_INFERRED WRITER** | `ONE NARROW EXCEPTION — deterministic NeedRoutingRevision rows (ROUTE / RETRACT) only`; every other system-inference writer stays NOT AUTHORIZED |
+| **ENGINE-CONTRACT VERSION** | `p4-2-level1-recon-v1-t2g2-nr1` (T2-G-2 rules + routing) stamped on new projects; no existing project adopts it |
+| **BOUNDARY_AMBIGUITY Q3 / Q4, ELECTRONICS, MECHANISM_COMPLETENESS** | UNCHANGED; MECHANISM_COMPLETENESS is never routable, parkable or risk-acceptable |
+| **EXTERNAL MODEL / REAL INVENTION DATA** | NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
+| **STAGE 18 / STAGE 19** | unchanged (PARTIAL / ENTERED — NOT COMPLETE) |
+
+**Meaning.** Removing mandatory Owner answering is not a solved requirement: a routed PF:Q2 is
+`eligible_for_owner_questioning = false` and `satisfied_for_maturity = false`. PF stays OPEN /
+PARTIAL and visible (open-gap truth, requirement landscape, validation plan, derived readiness),
+can never be CLOSED while the need is outstanding, and vetoes Level 1 → 2 while PF is OPEN / PARTIAL.
+An explicit Owner OD-R1 risk acceptance of PF (the existing route and safeguards) is a maturity
+exception, never a discharge: the routed need stays outstanding and unresolved (Owner decision,
+2026-09-26). Boundary questioning continues. The optional Owner note stays OWNER_STATED, binds
+to the exact PF:Q2 identity and discharges nothing. Routing is materialized only at project
+creation, in the same transaction as the envelope, and replayed in durable order; rendering never
+writes. **Not authorized:** routing any other question, general proposal persistence, model-made
+classifications, validation / specialist-review / evidence awards, readiness promotion, a
+specialist-assignment or evidence-validation subsystem, any external call, deployment, public
+release and paid activation.
+
+<a id="current-authority--ato-synthetic-shadow-evaluation-foundation"></a>
+## Current authority — Autonomous Technical Orchestration synthetic shadow evaluation foundation — Implementation 01 (Owner decisions D1 / D2 / D3, 2026-09-25) — DELIVERED (PR #696); SUPERSEDED as current authority by Safe Question Reduction Slice 1
+
+**No longer the current authority.** Implementation 01 was delivered (PR #696, merge
+`96b7ba1773216ba0a1350a116341f6746360321c`), followed by managed-credential compatibility (PR #697,
+merge `5f464c8cfa93648e66787d04eb3a09298a458cb3`) and the metric-contract correction (PR #698,
+merge `49aa5003f90349c8ea62aca36aa10a19c33e3c6f`); Safe Question Reduction Slice 1 above replaced it
+as the current authority on 2026-09-26. Every rule below still binds except where Slice 1 states
+otherwise. *(Superseded 2026-09-26, preserved so the change is visible rather than silent: this
+opened "**ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION — SYNTHETIC SHADOW EVALUATION
+FOUNDATION — IMPLEMENTATION 01.**")*
 It is the next item of the protected sequence recorded in the EXISTING Stage-18
 semantic-normalization block, creates no new Master Roadmap Stage and changes no stage
 checkbox. It builds an offline, provider-neutral evaluation foundation only: every
@@ -39,7 +78,10 @@ SYSTEM_INFERRED + UNVALIDATED and written nowhere.
 | **DETERMINISTIC LOCAL ORCHESTRATION** | `NO-CHANGE / DIFFERENT TRIGGER REQUIRED` — read-only adjudication accepted |
 | **OWNER DECISIONS D1 / D2 / D3** | `APPROVED FOR SYNTHETIC EXTERNAL EVALUATION ONLY` |
 | **FIRST SYNTHETIC-EVALUATION PROVIDER / MODEL (D3)** | `OpenAI API · gpt-6-sol` — not a production-provider decision and not a permanent vendor selection |
-| **FIRST REAL SYNTHETIC PROVIDER RUN** | `NOT YET — separate Lead authorization after review and hosted CI` |
+| **SYNTHETIC-EVALUATION FOUNDATION** | `DELIVERED — PR #696 — merge 96b7ba1773216ba0a1350a116341f6746360321c` |
+| **MANAGED-CREDENTIAL COMPATIBILITY** | `DELIVERED — PR #697 — merge 5f464c8cfa93648e66787d04eb3a09298a458cb3` |
+| **METRIC-CONTRACT CORRECTION** | `DELIVERED — PR #698 — merge 49aa5003f90349c8ea62aca36aa10a19c33e3c6f` |
+| **SYNTHETIC PROVIDER RUNS** | `PERFORMED` — managed-credential canary; RUN 01 over the committed 55-case synthetic pack; RUN 01A bounded stability diagnostic. Synthetic only; no real invention data. Any further run needs its own Lead authorization |
 | **REAL INVENTION DATA** | `NOT AUTHORIZED FOR EXTERNAL TRANSMISSION` |
 | **MSNL LOCAL-ONLY SHADOW FOUNDATION** | `DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d` |
 | **MSNL EVALUATION PACK V1** | `DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` |
@@ -54,8 +96,10 @@ SYSTEM_INFERRED + UNVALIDATED and written nowhere.
 (the provider-neutral request, the closed eight-kind proposal vocabulary, request-local source
 handles, the deterministic local adjudicator and the always-abstaining NullAdapter);
 `engine/technical_orchestration_openai.py` (ONE evaluation adapter, operationally OFF: it opens no
-connection unless the developer harness constructs it with explicit network permission and a
-credential from `OPENAI_API_KEY`); the committed Synthetic Orchestration Evaluation Pack V1; the
+connection unless the developer harness constructs it with explicit network permission and one
+closed credential mode: `env` (an explicit key or `OPENAI_API_KEY`) or `managed_proxy`
+(`--managed-credential`: the process reads and sends no key; the managed egress proxy supplies
+it)); the committed Synthetic Orchestration Evaluation Pack V1; the
 developer-run harness `scripts/run_technical_orchestration_eval.py`, which runs only that pinned
 pack; and this current-truth update. Hosted CI stays network-free and uses fakes and the
 NullAdapter only.
@@ -809,18 +853,23 @@ Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no fu
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
 **CURRENT BOUNDED ACTION — the next item of the protected sequence recorded in the EXISTING
-Stage-18 semantic-normalization block, not a new Master Roadmap Stage:** `ACTIVE CONTRACT: AUTONOMOUS TECHNICAL ORCHESTRATION — SYNTHETIC SHADOW EVALUATION FOUNDATION — IMPLEMENTATION 01` · `PROVENANCE HARDENING STEP 1: DELIVERED — PR #695 — merge 6c413c54684b0eff6d1d0db205b3ccc82d99bc06` · `DETERMINISTIC LOCAL ORCHESTRATION: NO-CHANGE / DIFFERENT TRIGGER REQUIRED` · `OWNER DECISIONS D1 / D2 / D3: APPROVED FOR SYNTHETIC EXTERNAL EVALUATION ONLY` · `REAL INVENTION DATA: NOT AUTHORIZED FOR EXTERNAL TRANSMISSION` · `OD-2 / OD-3 / OD-4: UNDECIDED — NOT REQUIRED` · `MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d` · `MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` · `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
+Stage-18 semantic-normalization block, not a new Master Roadmap Stage:** `ACTIVE CONTRACT: SAFE QUESTION REDUCTION — SLICE 1 — PF:Q2 NON-OWNER NEED ROUTING ONLY` · `AUTONOMOUS TECHNICAL ORCHESTRATION SYNTHETIC SHADOW EVALUATION FOUNDATION: DELIVERED — PR #696 — merge 96b7ba1773216ba0a1350a116341f6746360321c` · `MANAGED-CREDENTIAL COMPATIBILITY: DELIVERED — PR #697 — merge 5f464c8cfa93648e66787d04eb3a09298a458cb3` · `METRIC-CONTRACT CORRECTION: DELIVERED — PR #698 — merge 49aa5003f90349c8ea62aca36aa10a19c33e3c6f` · `SYNTHETIC PROVIDER RUNS: PERFORMED — canary, RUN 01, RUN 01A; synthetic only` · `PROVENANCE HARDENING STEP 1: DELIVERED — PR #695 — merge 6c413c54684b0eff6d1d0db205b3ccc82d99bc06` · `DETERMINISTIC LOCAL ORCHESTRATION: NO-CHANGE / DIFFERENT TRIGGER REQUIRED` · `OWNER DECISIONS D1 / D2 / D3: APPROVED FOR SYNTHETIC EXTERNAL EVALUATION ONLY` · `REAL INVENTION DATA: NOT AUTHORIZED FOR EXTERNAL TRANSMISSION` · `OD-2 / OD-3 / OD-4: UNDECIDED — NOT REQUIRED` · `MSNL LOCAL-ONLY SHADOW FOUNDATION: DELIVERED — PR #693 — merge 319b702678a1785e117c018f87cf171d5cbf2c9d` · `MSNL EVALUATION PACK V1: DELIVERED — PR #694 — merge c5f59093eafbccce8ff9e947d40c46f3ae86915f` · `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED` · `TARGET-AWARE QUESTION / ANSWER BINDING: COMPLETE — PR #690 — merge ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`.
 The foundation is offline and provider-neutral: every orchestration output is ephemeral,
 proposal-only and non-authoritative — conceptually SYSTEM_INFERRED + UNVALIDATED and written
 nowhere. The one evaluation adapter (OpenAI API, `gpt-6-sol` — D3, synthetic evaluation only, not
 a production-provider decision) is operationally OFF and reachable only from the developer-run
-harness over the committed synthetic pack; the first real synthetic provider run needs a
-separate Lead authorization after review and hosted CI, and hosted CI stays network-free. It
-authorizes no real inventor / project / invention data in any external request, no live-product
-call path, no durable SYSTEM_INFERRED writer, no proposal persistence (OD-2 undecided), no
-readiness use of system inference (OD-3 undecided), no validation-award writer (OD-4 undecided),
-no automatic concept creation, no readiness / maturity / validation promotion, no user-visible
-proposals and no question hiding or reduction.
+harness over the committed synthetic pack; the separately authorized synthetic provider runs
+(a managed-credential canary, RUN 01 over the committed 55-case pack and the RUN 01A stability
+diagnostic) have been performed on synthetic data only, any further run needs its own Lead
+authorization, and hosted CI stays network-free. It authorizes no real inventor / project /
+invention data in any external request, no live-product call path, no proposal persistence (OD-2
+undecided), no readiness use of system inference (OD-3 undecided), no validation-award writer
+(OD-4 undecided), no automatic concept creation, no readiness / maturity / validation promotion
+and no user-visible proposals. Safe Question Reduction Slice 1 (the current bounded action) routes
+ONLY mechanical PHYSICAL_FEASIBILITY:Q2 to specialist input on NEW routing-aware projects through
+one deterministic, durable NeedRouting record — the only authorized durable SYSTEM_INFERRED
+writer — while the underlying requirement stays outstanding; it hides no unknown and reduces no
+other question.
 **Stage 11 — T1-C′ / A2 human evidence — is DEFERRED / UNDISCHARGED / NOT STARTED**, and
 `STAGE 11 STARTED: NO`. It was routed PAST, not completed, and **routing past a deferred
 stage never completes it**. Its existing authorization conditions stand: reuse valid prior

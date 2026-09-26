@@ -490,7 +490,11 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
     # disposition); it is not a second ledger. The exact list is kept. AMENDED at
     # Stage 19 / CAP-09 SLICE-02: its sibling `prototype_measurement_methods`
     # (current value, no payload, no disposition) is not a ledger either.
-    assert tables == ["engine_version_adoptions", "evidence_references", "projects",
+    # AMENDED at Safe Question Reduction Slice 1: `need_routing_revisions`
+    # (typed SYSTEM routing revisions, no payload, no disposition) is not a
+    # second Owner ledger.
+    assert tables == ["engine_version_adoptions", "evidence_references",
+                      "need_routing_revisions", "projects",
                       "prototype_measurement_methods",
                       "prototype_plan_metadata", "question_feedback",
                       "readiness_evidence", "records",

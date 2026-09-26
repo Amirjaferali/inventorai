@@ -603,8 +603,10 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
     # append-only `readiness_evidence`, and Stage 19 / CAP-09 IMPLEMENTATION-01
     # added the current-value `prototype_plan_metadata` sidecar, and CAP-09
     # SLICE-02 its sibling `prototype_measurement_methods`; every assertion
-    # below about requirement_quantities itself is unchanged.
-    assert tables == ["engine_version_adoptions", "evidence_references", "projects",
+    # below about requirement_quantities itself is unchanged. Safe Question
+    # Reduction Slice 1 added the append-only `need_routing_revisions` sidecar.
+    assert tables == ["engine_version_adoptions", "evidence_references",
+                      "need_routing_revisions", "projects",
                       "prototype_measurement_methods",
                       "prototype_plan_metadata", "question_feedback",
                       "readiness_evidence", "records",

@@ -56,6 +56,19 @@ UNAVAILABLE = webapp.SC_CRITERIA_UNAVAILABLE_MESSAGE
 EID_SHAPE = "exp_v1_acknowledged_unknown_" + "d" * 32
 
 
+@pytest.fixture(autouse=True)
+def _pre_routing_mechanical_projects(monkeypatch):
+    """Safe Question Reduction Slice 1: this suite exercises the Mechanical
+    journey as it runs on T2-G-2 projects (PF:Q2 Owner-asked, PF closable,
+    Level 2 reachable). NEW routing-aware projects are covered by
+    tests/test_safe_question_routing_pf_q2.py, so the projects created here
+    keep the T2-G-2 version exactly as before."""
+    import web.app as _app
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G2
+    monkeypatch.setattr(_app, "CURRENT_ENGINE_CONTRACT_VERSION",
+                        ENGINE_CONTRACT_VERSION_T2G2)
+
+
 @pytest.fixture
 def client():
     app.config["TESTING"] = True

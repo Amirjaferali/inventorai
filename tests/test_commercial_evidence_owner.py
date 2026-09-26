@@ -1362,11 +1362,15 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
     # SuccessCriterion. It is not a join table and not a commercial owner; the
     # exact-set equality is kept. AMENDED at Stage 19 / CAP-09 SLICE-02: its
     # sibling `prototype_measurement_methods` stores the inventor-written
-    # measurement method, likewise planning metadata only.
+    # measurement method, likewise planning metadata only. AMENDED at Safe
+    # Question Reduction Slice 1: the append-only `need_routing_revisions`
+    # sidecar holds deterministic SYSTEM routing revisions only — not a
+    # commercial owner and not a join table.
     assert tables == {"projects", "records", "requirement_quantities",
                       "evidence_references", "readiness_evidence",
                       "question_feedback", "engine_version_adoptions",
-                      "prototype_plan_metadata", "prototype_measurement_methods"}
+                      "prototype_plan_metadata", "prototype_measurement_methods",
+                      "need_routing_revisions"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()

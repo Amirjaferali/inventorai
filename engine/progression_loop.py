@@ -40,6 +40,13 @@ from engine.idea_state import (
 # REASONED, so every raw >= / > on this axis encodes the WRONG ladder. This
 # module is the single ordering owner; the serialized strings are unchanged.
 from engine.evidence_order import quality_at_least, quality_stronger
+# Safe Question Reduction Slice 1: typed, question-scoped NeedRouting. Every
+# helper below is a no-op for a state carrying no routing revision, so every
+# pre-routing journey, fixture and replay is byte-identical.
+from engine.need_routing import (
+    gap_has_outstanding_routing, outstanding_routed_gaps,
+    owner_questioning_exhausted,
+)
 
 
 # --- Gap priority order (per MVP_SCOPE_FREEZE) ---
@@ -105,17 +112,40 @@ def select_next_gap(state: IdeaState) -> str | None:
     """
     Return the highest-priority OPEN/PARTIAL gap_type for the active stage.
     Returns None if no open gaps exist.
+
+    Safe Question Reduction Slice 1: a gap whose mandatory Owner questioning is
+    exhausted by an outstanding routed need (``owner_questioning_exhausted``)
+    is not selected for Owner questioning. It stays OPEN/PARTIAL — the open-gap
+    truth (``state.get_open_gaps()``) is unchanged — so the need remains
+    visible and unresolved. With no routing this is byte-identical.
     """
-    open_gaps = {g.gap_type: g for g in state.gaps if g.status in (OPEN, PARTIAL)}
+    open_gaps = {g.gap_type: g for g in state.gaps if g.status in (OPEN, PARTIAL)
+                 and not owner_questioning_exhausted(state, g)}
     for gap_type in _active_gap_priority(state):
         if gap_type in open_gaps:
             return gap_type
     return None
 
 
+def routed_maturity_veto_gaps(state):
+    """Safe Question Reduction Slice 1 (Owner decision): the routable gaps whose
+    outstanding routed requirement vetoes Level 1 -> 2 — every such gap EXCEPT
+    one the owner explicitly accepted as a known risk through the existing OD-R1
+    path. ACCEPTED_RISK is a maturity exception, never a discharge: the routed
+    need stays outstanding and unresolved (``satisfied_for_maturity`` stays
+    False); it simply does not ALSO veto the transition. Empty without routing."""
+    return tuple(g for g in outstanding_routed_gaps(state)
+                 if getattr(state.get_gap(g), "status", None) != ACCEPTED_RISK)
+
+
 def _open_next_gap_if_needed(state):
-    """Open the next active-stage priority gap if no OPEN/PARTIAL gap exists. Returns gap_type or None."""
-    if any(g.status in (OPEN, PARTIAL) for g in state.gaps):
+    """Open the next active-stage priority gap if no OPEN/PARTIAL gap exists. Returns gap_type or None.
+
+    Safe Question Reduction Slice 1: a routed gap whose Owner questioning is
+    exhausted no longer blocks the cascade, so later Owner work continues
+    while that gap stays unresolved."""
+    if any(g.status in (OPEN, PARTIAL) and not owner_questioning_exhausted(state, g)
+           for g in state.gaps):
         return None
     for next_gap_type in _active_gap_priority(state):
         if state.get_gap(next_gap_type) is None:
@@ -1002,6 +1032,17 @@ def integrate_response(
     if gap.status == CLOSED:
         return "PASS", f"{gap_type} already closed — no change"
 
+    # Safe Question Reduction Slice 1 — CLOSURE GUARD. While a routed need of
+    # this gap is outstanding, NO Owner answer can close it (DEMONSTRATED and
+    # the REASONED follow-up alike): the strongest Owner answer leaves it
+    # PARTIAL. The answer itself is still recorded (evidence above, OWNER_STATED
+    # and UNVALIDATED); only the false CLOSED is prevented.
+    if gap_has_outstanding_routing(state, gap_type) \
+            and quality in (DEMONSTRATED, REASONED):
+        gap.status = PARTIAL
+        return "WARN", (f"{gap_type} addressed by the owner — a routed "
+                        f"requirement still needs specialist or evidence input")
+
     if quality == DEMONSTRATED:
         gap.status = CLOSED
         gap.closed_at = state.iteration
@@ -1166,6 +1207,15 @@ def evaluate_transition(state: IdeaState) -> tuple[bool, str]:
                 continue
             if gap.status != CLOSED:
                 return False, f"BLOCK: {required_gap} not yet closed (status: {gap.status})"
+        # Safe Question Reduction Slice 1: every existing requirement above is
+        # preserved, AND no outstanding routed Stage-2 requirement may block,
+        # unless its gap reached ACCEPTED_RISK through the explicit OD-R1 owner
+        # action (a maturity exception, not a resolution; the need stays
+        # outstanding). Routing itself never grants the exception.
+        routed = routed_maturity_veto_gaps(state)
+        if routed:
+            return False, (f"BLOCK: {routed[0]} has an outstanding routed "
+                           f"requirement (specialist or evidence input)")
         return True, "Mechanism established — ready for LEVEL 2"
 
     return False, f"LEVEL {level} is max for MVP"
@@ -1183,6 +1233,9 @@ def update_direction(state: IdeaState, prev_level: int) -> None:
         stalled_gaps = [
             g for g in state.gaps
             if g.status in (OPEN, PARTIAL) and g.iterations_open >= STALL_THRESHOLD
+            # Slice 1: a routed gap awaiting specialist/evidence input is not
+            # stalled by the owner (no-op without routing).
+            and not owner_questioning_exhausted(state, g)
         ]
         if stalled_gaps:
             state.direction = STALLED
@@ -1202,13 +1255,19 @@ def run_iteration(state: IdeaState, response: str) -> dict:
     state.iteration += 1
     prev_level = state.maturity_level
 
-    # Update gap iteration counters
-    for g in state.gaps:
-        if g.status in (OPEN, PARTIAL):
-            g.iterations_open += 1
-
-    # Select gap
+    # Select gap. Safe Question Reduction Slice 1: selected on the state as it
+    # stood when the question was SERVED (before the counters move), so the
+    # answer is integrated into the gap it answered. Without routing,
+    # selection never reads the counters, so this order is byte-identical.
     gap_type = select_next_gap(state)
+
+    # Update gap iteration counters. A gap whose mandatory Owner questioning is
+    # exhausted by routing is not being questioned, so its counter stays put
+    # (no-op without routing).
+    exhausted = {id(g) for g in state.gaps if owner_questioning_exhausted(state, g)}
+    for g in state.gaps:
+        if g.status in (OPEN, PARTIAL) and id(g) not in exhausted:
+            g.iterations_open += 1
 
     # Level-0 problem establishment path
     # Handles initial response when no gaps exist yet (maturity=0)
@@ -1254,7 +1313,8 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             state.gaps.append(gap)
         # GAP_PRIORITY cascade: open next gap when no OPEN/PARTIAL gap exists
         next_gap_opened = None
-        if len([g for g in state.gaps if g.status in (OPEN, PARTIAL)]) == 0:
+        if len([g for g in state.gaps if g.status in (OPEN, PARTIAL)
+                and not owner_questioning_exhausted(state, g)]) == 0:
             # Select gap priority based on current stage
             active_priority = (
                 STAGE3_GAP_PRIORITY
@@ -1498,6 +1558,9 @@ def _level1_blocking_gap(state):
             continue
         if gap.status != CLOSED:
             return required_gap
+    routed = routed_maturity_veto_gaps(state)
+    if routed:
+        return routed[0]
     return None
 
 

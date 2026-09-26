@@ -78,10 +78,18 @@ def test_mechanical_artifact_exists_with_contract_shape():
     # Arabic sibling admitted by the authoritative freeze (§5.E); every other key is
     # still rejected, so unknown-field protection is preserved — and tightened,
     # because the allowlist admits exactly one disclosed extension and nothing else.
+    # Safe Question Reduction Slice 1: ONE further disclosed extension — the
+    # bounded optional `routing` descriptor, admitted on exactly one entry
+    # (PHYSICAL_FEASIBILITY:Q2) and validated by the seam itself.
+    routed = []
     for gap, variants in data["gaps"].items():
         for entry in variants:
-            assert set(entry).issubset({"question_id", "text", "text_ar"}), gap
+            assert set(entry).issubset(
+                {"question_id", "text", "text_ar", "routing"}), gap
             assert {"question_id", "text"}.issubset(entry), gap
+            if "routing" in entry:
+                routed.append(entry["question_id"])
+    assert routed == ["mechanical:PHYSICAL_FEASIBILITY:Q2"]
 
 
 def test_mechanical_artifact_projects_pack_identity_with_approved_copy():

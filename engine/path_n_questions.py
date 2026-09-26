@@ -38,6 +38,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from engine.idea_state import MECHANISM_COMPLETENESS
+
 # Electronics remains the backward-compatible default owner for ``domain=None``
 # (existing callers unchanged); it is one mapped domain among several — NOT a
 # shared-core assumption that Electronics is the only possible domain (D3-B).
@@ -106,6 +108,89 @@ class ServedQuestion:
     text: str
     design_gap_id: str
     text_ar: "str | None" = None
+    # Safe Question Reduction Slice 1: the entry's OPTIONAL routing policy,
+    # read atomically from the SAME entry in the SAME read. ``None`` (the
+    # default, and every entry without a descriptor) keeps existing behavior.
+    # It is POLICY only: whether a project actually routes the question is
+    # decided by that project's durable NeedRouting revisions, never here.
+    routing: "RoutingPolicy | None" = None
+
+
+# Safe Question Reduction Slice 1 — the bounded optional routing descriptor a
+# committed Path-N entry may carry. Closed shape; typed; domain content (the
+# need wording) lives in the artifact, never in shared engine logic.
+ROUTING_REQUIRED_INPUTS = frozenset({"SPECIALIST", "EVIDENCE"})
+_ROUTING_FIELDS = frozenset({
+    "required_input", "policy_ref", "need_text", "need_text_ar",
+    "owner_input_prompt", "owner_input_prompt_ar"})
+
+
+@dataclass(frozen=True)
+class RoutingPolicy:
+    """The typed routing descriptor of ONE committed question entry."""
+    required_input: str
+    policy_ref: str
+    need_text: str
+    need_text_ar: str
+    owner_input_prompt: str
+    owner_input_prompt_ar: str
+
+
+def _routing_from_entry(entry, gap_type, index):
+    """The entry's RoutingPolicy, or None when it carries no descriptor.
+
+    A present descriptor must be exactly the closed shape with non-blank text
+    and a closed ``required_input``; anything else — and ANY descriptor on the
+    MECHANISM_COMPLETENESS gap, which is never routable — fails loudly. A
+    malformed descriptor therefore never silently hides a question."""
+    if "routing" not in entry:
+        return None
+    raw = entry["routing"]
+    if not isinstance(raw, dict) or set(raw) != _ROUTING_FIELDS:
+        raise ValueError(
+            f"Path N routing descriptor for {gap_type}[{index}] is malformed "
+            "— failing loudly, no question is hidden")
+    if gap_type == MECHANISM_COMPLETENESS:
+        raise ValueError(
+            "MECHANISM_COMPLETENESS questions are never routable — failing "
+            "loudly, no question is hidden")
+    if raw["required_input"] not in ROUTING_REQUIRED_INPUTS:
+        raise ValueError(
+            f"Path N routing descriptor for {gap_type}[{index}] names an "
+            "unknown required input — failing loudly")
+    for key in _ROUTING_FIELDS - {"required_input"}:
+        if not isinstance(raw[key], str) or not raw[key].strip():
+            raise ValueError(
+                f"Path N routing descriptor for {gap_type}[{index}] has no "
+                f"usable {key!r} — failing loudly")
+    return RoutingPolicy(**{key: raw[key] for key in _ROUTING_FIELDS})
+
+
+def routing_policies(domain: "str | None") -> tuple:
+    """Every committed routing descriptor of ``domain``'s artifact, as
+    ``(gap_type, question_id, RoutingPolicy)`` in artifact order.
+
+    Validates EVERY descriptor of the artifact (fail-loud on any malformed
+    one). A domain without a committed artifact has no policy (``()``)."""
+    domain_key = _ELECTRONICS_DOMAIN if domain is None else domain
+    if domain_key not in _DOMAIN_ARTIFACTS:
+        return ()
+    policies = []
+    for gap_type, variants in _load_content(domain_key).items():
+        for index, entry in enumerate(variants or ()):
+            if not isinstance(entry, dict):
+                raise ValueError(
+                    f"Path N artifact entry for {gap_type}[{index}] is malformed "
+                    "— failing loudly, no fallback (b3a5fba §5)")
+            policy = _routing_from_entry(entry, gap_type, index)
+            if policy is not None:
+                question_id = entry.get("question_id")
+                if not isinstance(question_id, str) or not question_id.strip():
+                    raise ValueError(
+                        f"Path N artifact entry for {gap_type}[{index}] has no "
+                        "usable 'question_id' — failing loudly")
+                policies.append((gap_type, question_id, policy))
+    return tuple(policies)
 
 
 def get_served_question(gap_type: str, iterations_open: int,
@@ -160,7 +245,8 @@ def get_served_question(gap_type: str, iterations_open: int,
     if not isinstance(text_ar, str) or not text_ar.strip():
         text_ar = None
     return ServedQuestion(question_id=question_id, text=text,
-                          design_gap_id=gap_type, text_ar=text_ar)
+                          design_gap_id=gap_type, text_ar=text_ar,
+                          routing=_routing_from_entry(entry, gap_type, index))
 
 
 def get_served_question_by_id(gap_type: str, question_id: str,
