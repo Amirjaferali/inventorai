@@ -120,8 +120,8 @@ explicit Owner structural-change authorization.
 | 1 | 1–5 | Close the existing product-depth lane | **COMPLETE ✅** |
 | 2 | 6–10 | Feedback, semantic depth, known value defects | **ALL STAGES COMPLETED ✅ — carried residuals remain: T1-A′ OPEN / FRB; T2-C′ PARTIAL** (not the current frontier; completing the checkboxes discharged neither residual) |
 | 3 | 11–15 | Human evidence and readiness foundations | Partial — 12 complete; 13/14 partial; 15 thinnest and must not be lost |
-| 4 | 16–20 | System/commercial readiness and technical guidance | 17 partial; 18 entered / partial (both bounded CAP-01 increments merged, PRs #678 and #679; no further CAP-01 authorized); 19 entered / not complete (durable SuccessCriterion remediation delivered, PR #682; SLICE-02 durable measurement method delivered, PR #683; full CAP-09 not authorized); current bounded action: MSNL Step 1 read-only adjudication of the Stage-18 semantic-normalization item; 16, 20 not authorized |
-| 5 | 21–25 | Decision support and engineering depth | 21 entered / partial (CAP-10 Slice 1 only — Owner-declared contradiction between two recorded answers; full CAP-10 not authorized); 22–25 not authorized — zero merged runtime code |
+| 4 | 16–20 | System/commercial readiness and technical guidance | 17 partial; 18 entered / partial (both bounded CAP-01 increments merged, PRs #678 and #679; no further CAP-01 authorized); 19 entered / not complete (durable SuccessCriterion remediation delivered, PR #682; SLICE-02 durable measurement method delivered, PR #683; full CAP-09 not authorized); 20 entered / partial (CAP-08 Slice 1 only — Owner-declared assumption → answer dependency; current bounded action; full CAP-08 not authorized); 16 not authorized |
+| 5 | 21–25 | Decision support and engineering depth | 21 entered / partial (CAP-10 Slice 1 only — Owner-declared contradiction between two recorded answers; delivered, PR #703; full CAP-10 not authorized); 22–25 not authorized — zero merged runtime code |
 | 6 | 26–30 | Visual/thermal depth and new domains | 29 complete/active; 28/30/31 gated; 26–27 not authorized |
 | 7 | 31–35 | IoT depth and optional output capabilities | Not authorized (Stage 33 ≠ PR #663 account email) |
 | 8 | 36–40 | AI boundary and production/commercial prerequisites | 38 partial and materially advanced; 36/37/40 not authorized; 39 adviser-dependent |
@@ -154,8 +154,18 @@ Read those before acting on any stage; this table is a locator, not a status sou
   Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
   implementation is currently authorized. The Stage-19 checkbox stays unticked, and
   entering Stage 19 completes nothing in Stage 18.
-  **CURRENT BOUNDED ACTION — Stage 21 / CAP-10 Contradiction Detector, ENTERED through ONE bounded
-slice:** `ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED ANSWERS` · `STAGE 21: ENTERED / PARTIAL` · `FULL CAP-10: NOT AUTHORIZED` · `SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED`.
+  **CURRENT BOUNDED ACTION — Stage 20 / CAP-08 Assumption Register, ENTERED through ONE bounded
+slice:** `ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER DEPENDENCY` · `STAGE 20: ENTERED / PARTIAL` · `FULL CAP-08: NOT AUTHORIZED` · `AUTOMATIC / AI DEPENDENCY INFERENCE: NOT AUTHORIZED`.
+The inventor explicitly declares that one or more of their own active recorded answers depend on
+ONE of their own active provisional assumptions: one OWNER_STATED, UNVALIDATED
+`assumption_dependency_declared` record per directed assumption → answer edge on the existing
+ledger, the dependency a deterministic derived projection with no parallel durable dependency
+graph. It is domain-neutral; nothing is inferred automatically or by AI, nothing is validated, no
+evidence-needed metadata is recorded, and it has no readiness, gap, maturity, progression,
+scoring, NeedRouting or validation-award authority. The Stage-20 checkbox stays unticked;
+entering Stage 20 completes nothing in Stages 18–19.
+**DELIVERED — Stage 21 / CAP-10 Contradiction Detector, ENTERED through ONE bounded slice:**
+`CAP-10 SLICE 1: DELIVERED — PR #703 — merge 963132ddb78faae58625cd942e44a48e00ba531e` · `STAGE 21: ENTERED / PARTIAL` · `FULL CAP-10: NOT AUTHORIZED` · `SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED`.
 The inventor explicitly declares that exactly two of their own active recorded answers conflict:
 one OWNER_STATED, UNVALIDATED `contradiction_declared` record on the existing ledger, the
 contradiction a deterministic derived projection with no parallel durable store. Nothing is
@@ -386,8 +396,11 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   **Stage 44 lineage gate** — PRESERVED · **Stage 45 deployment gate** — PRESERVED ·
   **WATCH-01** — PRESERVED / PLANNED / NOT YET IMPLEMENTED · **WATCH-04** — PRESERVED.
 <!-- END CURRENT-BLOCK: material-residuals -->
-- **CURRENT SUBTASK:** CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED ANSWERS —
-  `ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED ANSWERS` ·
+- **CURRENT SUBTASK:** CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER DEPENDENCY —
+  `ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER DEPENDENCY` ·
+  `STAGE 20: ENTERED / PARTIAL` · `FULL CAP-08: NOT AUTHORIZED` ·
+  `AUTOMATIC / AI DEPENDENCY INFERENCE: NOT AUTHORIZED` ·
+  `CAP-10 SLICE 1: DELIVERED — PR #703 — merge 963132ddb78faae58625cd942e44a48e00ba531e` ·
   `STAGE 21: ENTERED / PARTIAL` · `FULL CAP-10: NOT AUTHORIZED` ·
   `SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED` ·
   `SAFE QUESTION REDUCTION — SLICE 1: DELIVERED — PR #701 — merge 34c0fc372f7374488acda03514e279119b735bc5` ·
@@ -396,8 +409,17 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   `PROVENANCE HARDENING STEP 1: DELIVERED — PR #695 — merge 6c413c54684b0eff6d1d0db205b3ccc82d99bc06` ·
   `REAL INVENTION DATA: NOT AUTHORIZED FOR EXTERNAL TRANSMISSION` ·
   `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED — except deterministic NeedRouting (Slice 1)`.
-  CAP-10 Slice 1 (Stage 21, ENTERED / PARTIAL): the inventor explicitly declares that exactly two
-  of their own active recorded answers conflict — one OWNER_STATED, UNVALIDATED
+  CAP-08 Slice 1 (Stage 20, ENTERED / PARTIAL): the inventor explicitly declares that one or more
+  of their own active recorded answers depend on ONE of their own active provisional assumptions —
+  one OWNER_STATED, UNVALIDATED `assumption_dependency_declared` record per directed assumption →
+  answer edge on the existing ledger, the dependency a deterministic derived projection with no
+  parallel durable dependency graph; domain-neutral; nothing is inferred automatically or by AI or
+  validated, no evidence-needed metadata is recorded, and it has no readiness, gap, maturity,
+  progression, scoring, NeedRouting or validation-award authority. *(Superseded 2026-09-26 by
+  CAP-08 Slice 1, preserved — was: "CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO
+  RECORDED ANSWERS"; PR #703 delivered it.)*
+  CAP-10 Slice 1 (Stage 21, ENTERED / PARTIAL; delivered, PR #703): the inventor explicitly
+  declares that exactly two of their own active recorded answers conflict — one OWNER_STATED, UNVALIDATED
   `contradiction_declared` record on the existing ledger, the contradiction a deterministic derived
   projection with no parallel durable store; nothing is detected automatically or by AI, validated
   or resolved, no winner is chosen, and it has no gap, maturity, progression, scoring or
@@ -598,7 +620,7 @@ dimension: a captured dimension is not a validated conclusion.
 
 ## J. Current Technology-Deepening position
 
-**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED. **Stage 19 ENTERED / NOT COMPLETE** (2026-09-23) — the durable SuccessCriterion remediation (IMPLEMENTATION-01) is delivered (PR #682); CAP-09 SLICE-02 (durable user-written measurement method) is delivered (PR #683) and no further CAP-09 implementation is currently authorized; full CAP-09 and full WS-PFV-001 NOT AUTHORIZED. The current bounded action is MSNL Step 1 — read-only architecture / data-flow adjudication of the Stage-18 semantic-normalization item; implementation NOT YET AUTHORIZED. *(Superseded 2026-09-24, preserved — was: "the only authorized implementation is CAP-09 SLICE-02 (durable user-written measurement method)".)* *(Superseded 2026-09-23 by SLICE-02, preserved — was: "the only authorized implementation is the durable SuccessCriterion remediation (IMPLEMENTATION-01)".)* *(Superseded 2026-09-23, preserved — was: "**Stage 19 ENTERED FOR FOUNDATION / CONTRACT WORK ONLY** (2026-09-23) — CAP-09 product implementation NOT STARTED / NOT AUTHORIZED YET; zero merged runtime code.")* **Stage 21 ENTERED / PARTIAL** (2026-09-26) — CAP-10 Slice 1 only (Owner-declared contradiction between two recorded answers: OWNER_STATED, UNVALIDATED, no automatic or AI detection, no winner, no resolution); full CAP-10 NOT AUTHORIZED. **Stage 20 and Stages 22–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-26 by the CAP-10 Slice 1 entry, preserved — was: "Stages 20–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.")* *(Superseded 2026-09-23, preserved — was: "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until the Owner's Stage-19 entry-contract authorization.)* *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
+**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED. **Stage 19 ENTERED / NOT COMPLETE** (2026-09-23) — the durable SuccessCriterion remediation (IMPLEMENTATION-01) is delivered (PR #682); CAP-09 SLICE-02 (durable user-written measurement method) is delivered (PR #683) and no further CAP-09 implementation is currently authorized; full CAP-09 and full WS-PFV-001 NOT AUTHORIZED. The current bounded action is MSNL Step 1 — read-only architecture / data-flow adjudication of the Stage-18 semantic-normalization item; implementation NOT YET AUTHORIZED. *(Superseded 2026-09-24, preserved — was: "the only authorized implementation is CAP-09 SLICE-02 (durable user-written measurement method)".)* *(Superseded 2026-09-23 by SLICE-02, preserved — was: "the only authorized implementation is the durable SuccessCriterion remediation (IMPLEMENTATION-01)".)* *(Superseded 2026-09-23, preserved — was: "**Stage 19 ENTERED FOR FOUNDATION / CONTRACT WORK ONLY** (2026-09-23) — CAP-09 product implementation NOT STARTED / NOT AUTHORIZED YET; zero merged runtime code.")* **Stage 21 ENTERED / PARTIAL** (2026-09-26) — CAP-10 Slice 1 only (Owner-declared contradiction between two recorded answers: OWNER_STATED, UNVALIDATED, no automatic or AI detection, no winner, no resolution); full CAP-10 NOT AUTHORIZED; delivered (PR #703). **Stage 20 ENTERED / PARTIAL** (2026-09-26) — CAP-08 Slice 1 only (Owner-declared assumption → answer dependency: OWNER_STATED, UNVALIDATED, one record per directed edge, no automatic or AI inference, no readiness or progression authority); full CAP-08 NOT AUTHORIZED. **Stages 22–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-26 by the CAP-08 Slice 1 entry, preserved — was: "Stage 20 and Stages 22–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.")* *(Superseded 2026-09-26 by the CAP-10 Slice 1 entry, preserved — was: "Stages 20–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.")* *(Superseded 2026-09-23, preserved — was: "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until the Owner's Stage-19 entry-contract authorization.)* *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
 
 Nothing in the readiness or infrastructure lanes touched any of them. Adjacent progress
 is not implementation. CAP-12 and CAP-13 must remain separate capabilities. Release-lane
@@ -739,7 +761,11 @@ FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED
   IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3
 SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753
 NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED
-ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED ANSWERS
+ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER DEPENDENCY
+STAGE 20: ENTERED / PARTIAL — CAP-08 SLICE 1 ONLY
+FULL CAP-08: NOT AUTHORIZED
+AUTOMATIC / AI DEPENDENCY INFERENCE: NOT AUTHORIZED
+CAP-10 SLICE 1: DELIVERED — PR #703 — merge 963132ddb78faae58625cd942e44a48e00ba531e
 STAGE 21: ENTERED / PARTIAL — CAP-10 SLICE 1 ONLY
 FULL CAP-10: NOT AUTHORIZED
 SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED
@@ -798,8 +824,9 @@ MSNL local-only shadow foundation (PR #693) and synthetic Evaluation Pack V1 (PR
 Provenance Hardening Step 1 — assertion source / validation boundary delivered (PR #695)
 Autonomous Technical Orchestration — synthetic shadow evaluation foundation, Implementation 01, delivered (PR #696; PR #697, PR #698 followed; synthetic external evaluation only)
 Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing delivered (PR #701; bounded weak-PF recovery PR #702)
-Stage 21 entered / partial — CAP-10 Slice 1 only (Owner-declared contradiction between two recorded answers; current bounded action); full CAP-10 not authorized
-Stage 20 and Stages 22–27 preserved, not entered / not authorized
+Stage 21 entered / partial — CAP-10 Slice 1 only (Owner-declared contradiction between two recorded answers; delivered, PR #703); full CAP-10 not authorized
+Stage 20 entered / partial — CAP-08 Slice 1 only (Owner-declared assumption → answer dependency; current bounded action); full CAP-08 not authorized
+Stages 22–27 preserved, not entered / not authorized
 
 CURRENT DOMAIN-EXPANSION POSITION:
 Stage 29 active

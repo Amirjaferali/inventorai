@@ -23,10 +23,51 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--cap10-slice-1"></a>
-## Current authority — Stage 21 / CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers (Owner / Lead authorization, 2026-09-26)
+<a id="current-authority--cap08-slice-1"></a>
+## Current authority — Stage 20 / CAP-08 Slice 1 — Owner-declared assumption → answer dependency (Owner / Lead authorization, 2026-09-26)
 
-**ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED ANSWERS.**
+**ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER DEPENDENCY.**
+Stage 20 / CAP-08 is ENTERED / PARTIAL through this one bounded slice. It creates no new Master
+Roadmap Stage, completes neither CAP-08 nor Stage 20, and the Stage-20 checkbox stays unticked.
+Architecture review: Astra — exact-candidate conformance PASS after the F1 / F2 corrections and
+the final F1 classifier correction.
+
+| | |
+|---|---|
+| **SCOPE** | the inventor explicitly declares that one or more of their own ACTIVE recorded answers depend on ONE of their own ACTIVE provisional assumptions |
+| **CARRIER** | the existing AssertionRecord ledger and `records` table: one `assumption_dependency_declared` record per DIRECTED edge (`assumption_record_id` → `dependent_answer_record_id`) — no parallel durable dependency graph |
+| **SOURCE / VALIDATION** | `OWNER_STATED` / `OWNER_INPUT` · `UNVALIDATED` only · no evidence-needed metadata in Slice 1 |
+| **DEPENDENCY** | a deterministic DERIVED projection; an edge becomes inactive once either endpoint is superseded and never transfers to a replacement; the endpoint rows are never rewritten |
+| **AUTOMATIC / AI DEPENDENCY INFERENCE** | `NONE — NOT AUTHORIZED` |
+| **READINESS / GAP / MATURITY / PROGRESSION / SCORING / NEEDROUTING / VALIDATION AWARD** | no authority and no effect |
+| **DOMAIN** | domain-neutral: keyed only on canonical record types and project scope |
+| **STAGE 18 / STAGE 19 / STAGE 21** | unchanged (PARTIAL / ENTERED — NOT COMPLETE / ENTERED — PARTIAL) |
+| **EXTERNAL MODEL / REAL INVENTION DATA** | NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
+
+**Meaning.** A declaration is the inventor's own statement, not an inference: nothing is inferred
+automatically or by AI, the dependency is not validated, and it is not evidence, a requirement, a
+risk row or a readiness input. Consumers activated: the Owner declaration action, the project
+history, a compact dependency view and an inventor-declared subsection of the deliverable's
+assumptions area; a project with inactive history only reads "recorded previously, but none is
+currently active", never "no dependency recorded". A multi-answer submission is one atomic batch
+under its own server-issued action binding and a separate submission identity; the same identity
+with different material fails closed, and an uncertain write is acknowledged only when the
+complete exact batch is confirmed from committed durable state. **Deferred / not authorized:**
+next-development-step dependency reasoning; validation-plan integration; readiness
+interpretation; experiment generation; decision / risk propagation; an assumption correction UI;
+dependency retraction; evidence-needed metadata; CAP-05 / CAP-07, CAP-09 beyond its delivered
+slices, CAP-11, CAP-12; full CAP-08; any external call; deployment, public release and paid
+activation.
+
+<a id="current-authority--cap10-slice-1"></a>
+## Current authority — Stage 21 / CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers (Owner / Lead authorization, 2026-09-26) — DELIVERED (PR #703); SUPERSEDED as current authority by CAP-08 Slice 1
+
+**No longer the current authority.** CAP-10 Slice 1 was delivered (PR #703, merge
+`963132ddb78faae58625cd942e44a48e00ba531e`); CAP-08 Slice 1 above replaced it as the current
+authority on 2026-09-26. Every rule below still binds except where CAP-08 Slice 1 states
+otherwise. *(Superseded 2026-09-26, preserved so the change is visible rather than silent: this
+opened "**ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED
+ANSWERS.**")*
 Stage 21 / CAP-10 is ENTERED / PARTIAL through this one bounded slice. It creates no new Master
 Roadmap Stage, completes neither CAP-10 nor Stage 21, and the Stage-21 checkbox stays unticked.
 Architecture review: Astra — exact-candidate conformance PASS after the F1 / F2 / F3 corrections.
@@ -889,8 +930,18 @@ sibling sidecar of the same store. Delivering it is not the stage and opens noth
 Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — Stage 21 / CAP-10 Contradiction Detector, ENTERED through ONE bounded
-slice:** `ACTIVE CONTRACT: CAP-10 SLICE 1 — OWNER-DECLARED CONTRADICTION BETWEEN TWO RECORDED ANSWERS` · `STAGE 21: ENTERED / PARTIAL` · `FULL CAP-10: NOT AUTHORIZED` · `SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED`.
+**CURRENT BOUNDED ACTION — Stage 20 / CAP-08 Assumption Register, ENTERED through ONE bounded
+slice:** `ACTIVE CONTRACT: CAP-08 SLICE 1 — OWNER-DECLARED ASSUMPTION → ANSWER DEPENDENCY` · `STAGE 20: ENTERED / PARTIAL` · `FULL CAP-08: NOT AUTHORIZED` · `AUTOMATIC / AI DEPENDENCY INFERENCE: NOT AUTHORIZED`.
+The inventor explicitly declares that one or more of their own active recorded answers depend on
+ONE of their own active provisional assumptions: one OWNER_STATED, UNVALIDATED
+`assumption_dependency_declared` record per directed assumption → answer edge on the existing
+ledger, the dependency a deterministic derived projection with no parallel durable dependency
+graph. It is domain-neutral; nothing is inferred automatically or by AI, nothing is validated, no
+evidence-needed metadata is recorded, and it has no readiness, gap, maturity, progression,
+scoring, NeedRouting or validation-award authority. The Stage-20 checkbox stays unticked;
+entering Stage 20 completes nothing in Stages 18–19.
+**DELIVERED — Stage 21 / CAP-10 Contradiction Detector, ENTERED through ONE bounded slice:**
+`CAP-10 SLICE 1: DELIVERED — PR #703 — merge 963132ddb78faae58625cd942e44a48e00ba531e` · `STAGE 21: ENTERED / PARTIAL` · `FULL CAP-10: NOT AUTHORIZED` · `SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED`.
 The inventor explicitly declares that exactly two of their own active recorded answers conflict:
 one OWNER_STATED, UNVALIDATED `contradiction_declared` record on the existing ledger, the
 contradiction a deterministic derived projection with no parallel durable store. Nothing is
