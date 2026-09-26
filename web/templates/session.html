@@ -214,7 +214,7 @@ body{overflow-wrap:anywhere}
    Renders the single primary issue selected by the shared engine derivation. The
    template performs no priority/record/provider logic and mutates no state. #}
 {% if next_development_step and next_development_step.reference_id %}
-<div class="next-step-callout" style="background:#eef5ff;border:1px solid #b3d1ff;border-radius:4px;padding:10px 14px;margin-bottom:18px">
+<div class="next-step-callout" id="next-development-step" style="background:#eef5ff;border:1px solid #b3d1ff;border-radius:4px;padding:10px 14px;margin-bottom:18px">
   <div class="next-step-heading" style="font-weight:bold;color:#1a4f8b">{{ t('UI_B_SESSION_001') }}</div>
   <div class="next-step-issue" style="font-size:14px;margin-top:4px">{{ next_development_step.title }}</div>
   {% if next_development_step.why_it_matters %}
@@ -1266,6 +1266,23 @@ body{overflow-wrap:anywhere}
         </form>
           {% endif %}
         {% endif %}
+        {#- Stage 22 / CAP-05 Slice 1: this alternative's OWN recorded chain
+            (declared -> refined -> withdrawn), verbatim and in ledger order.
+            Read-only; a trace that cannot be derived says so. -#}
+        {% set dt_trace = decision_trace.get(d.context_root, {}).get(a.root) if (decision_trace is defined and decision_trace) else None %}
+        {% if dt_trace %}
+        <details class="dt-history" data-dt-root="{{ a.root }}" style="margin:4px 0 0 12px;font-size:12px">
+          <summary style="cursor:pointer;color:#5a2c8c">{{ t('UI_DT_HISTORY_SUMMARY') }} ({{ dt_trace.events | length }})</summary>
+          <p class="dt-history-note" style="color:#777;margin:4px 0">{{ t('UI_DT_HISTORY_NOTE') }}</p>
+          <ol class="dt-events" style="margin:2px 0 4px 0;padding-inline-start:18px">
+            {% for e in dt_trace.events %}
+            <li class="dt-event dt-{{ e.kind }}" data-dt-record="{{ e.record_id }}"><bdi>{{ e.record_id }}</bdi> · {{ t('UI_DT_EVENT_' ~ e.kind|upper) }}{% if e.kind == 'withdrawn' %}{% if e.content %} — {{ t('UI_G3_REASON_LABEL') }}: <span class="dt-text" dir="auto">{{ e.content }}</span>{% else %} — <span class="dt-no-reason">{{ t('UI_G3_REASON_NOT_RECORDED') }}</span>{% endif %}{% else %}: <span class="dt-text" dir="auto">{{ e.content }}</span>{% endif %}</li>
+            {% endfor %}
+          </ol>
+        </details>
+        {% else %}
+        <div class="dt-unavailable" style="font-size:12px;color:#777;margin:2px 0 0 12px">{{ t('UI_DT_TRACE_UNAVAILABLE') }}</div>
+        {% endif %}
       </li>
       {% endfor %}
     </ul>
@@ -1288,6 +1305,30 @@ body{overflow-wrap:anywhere}
     {% endif %}
   </div>
   {% endfor %}
+  {#- Stage 22 / CAP-07 Slice 1: PROJECT CONTEXT, deliberately outside every
+      decision and alternative. Counts come from each category's canonical
+      owner; nothing here is linked to a decision. A link is offered only to
+      a section that this very render contains. -#}
+  {% if decision_capture and decision_project_context is defined %}
+  {% set dt_record = ('#t3a-project-record', 'UI_T3A_HEADING') if project_record else None %}
+  {% set dt_links = {
+      'declared_contradictions': dt_record,
+      'assumption_dependencies': (('#assumption-dependencies', 'UI_CAP08_VIEW_HEADING') if (active_answers and state.domain and (dependency_binding or dependency_view.declared_count)) else dt_record),
+      'provisional_assumptions': dt_record,
+      'recorded_unknowns': dt_record,
+      'deferred_items': dt_record,
+      'next_step': (('#next-development-step', 'UI_B_SESSION_001') if (next_development_step and next_development_step.reference_id) else None),
+  } %}
+  <section class="dt-project-context" id="decision-project-context" aria-labelledby="decision-project-context-heading" style="border:1px dashed #b9b0c9;border-radius:4px;background:#ffffff;padding:8px 12px;margin-bottom:10px">
+    <h3 id="decision-project-context-heading" style="font-size:13px;color:#4a3c78;margin:0 0 4px 0">{{ t('UI_DT_CTX_HEADING') }}</h3>
+    <p class="dt-ctx-note" style="font-size:12px;color:#555;margin:0 0 6px 0">{{ t('UI_DT_CTX_NOTE') }}</p>
+    <ul style="margin:0;padding-inline-start:18px;font-size:13px">
+      {% for row in decision_project_context %}
+      <li class="dt-ctx-row" data-dt-category="{{ row.key }}" data-dt-status="{{ row.status }}"><span class="dt-ctx-label">{{ t('UI_DT_CAT_' ~ row.key|upper) }}</span>: {% if row.key == 'next_step' %}{{ t('UI_DT_NEXT_STEP_AVAILABLE') if row.status == 'items' else (t('UI_DT_NEXT_STEP_NONE') if row.status == 'empty' else t('UI_DT_STATE_UNAVAILABLE')) }}{% elif row.status == 'items' %}{{ t('UI_DT_STATE_CURRENT') }} <span class="dt-ctx-count">{{ row.count }}</span>{% elif row.status == 'historical' %}{{ t('UI_DT_STATE_HISTORICAL') }}{% elif row.status == 'empty' %}{{ t('UI_DT_STATE_EMPTY') }}{% else %}{{ t('UI_DT_STATE_UNAVAILABLE') }}{% endif %}{% set dt_link = dt_links.get(row.key) %}{% if dt_link and row.status in ('items', 'historical') %} · {{ t('UI_DT_SEE') }} <a class="dt-ctx-link" href="{{ dt_link[0] }}">{{ t(dt_link[1]) }}</a>{% endif %}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
   {% if state.domain %}
   <form method="POST" action="/session/{{ sid }}/decision/declare-context" style="margin-top:6px">
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">

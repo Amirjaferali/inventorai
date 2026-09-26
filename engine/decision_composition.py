@@ -259,6 +259,66 @@ def rendered_alternative_set(state):
     return by_context
 
 
+TRACE_EVENT_DECLARED = "declared"
+TRACE_EVENT_REFINED = "refined"
+TRACE_EVENT_WITHDRAWN = "withdrawn"
+
+
+def decision_trace_view(state):
+    """Stage 22 / CAP-05 Slice 1 — the read-only per-alternative TRACE, keyed
+    ``{context_root: {alternative_root: trace}}``.
+
+    Each ``trace`` restates ONLY the alternative chain's own ledger records,
+    found through the same ``_chain_index`` as SET A:
+
+      ``root``             the founding record id
+      ``lifecycle_state``  ``active`` | ``withdrawn`` (the chain's active head)
+      ``events``           every record of the chain in ledger order, each
+                           ``{kind, record_id, content, iteration}`` where
+                           ``kind`` is ``declared`` (the founding record),
+                           ``refined`` (a later declared wording) or
+                           ``withdrawn``; ``content`` is the inventor's wording,
+                           or for a withdrawal the reason exactly as recorded
+                           (``""`` when none was recorded).
+
+    Context-chain history is deliberately NOT exposed (no ordinary journey
+    refines a context; the current question stays ``decision_capture_view``'s).
+    Nothing outside the decision chains is read, so no relationship to any
+    other record is implied. Pure, deterministic, persisted nowhere."""
+    assertions = list(getattr(state, "assertions", []))
+    by_id, root_of = _chain_index(assertions)
+    chains = {}
+    for r in assertions:
+        if r.disposition == DISPOSITION_DECISION_ALTERNATIVE_DECLARED:
+            root = root_of(r)
+            kind = (TRACE_EVENT_DECLARED if r.record_id == root
+                    else TRACE_EVENT_REFINED)
+        elif r.disposition == DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN:
+            root = root_of(r)
+            kind = TRACE_EVENT_WITHDRAWN
+        else:
+            continue
+        trace = chains.setdefault(root, {
+            "context_root": r.decision_context_root, "root": root,
+            "lifecycle_state": None, "events": []})
+        trace["events"].append({
+            "kind": kind, "record_id": r.record_id,
+            "content": r.content or "", "iteration": r.iteration})
+        if getattr(r, "superseded_by", None) is None:
+            trace["lifecycle_state"] = (
+                ALT_LIFECYCLE_WITHDRAWN if kind == TRACE_EVENT_WITHDRAWN
+                else ALT_LIFECYCLE_ACTIVE)
+
+    view = {}
+    for root in sorted(chains, key=_root_num):
+        trace = chains[root]
+        if trace["lifecycle_state"] is None:
+            # No active head: the chain cannot be described truthfully.
+            raise ValueError(f"alternative chain {root!r} has no active head")
+        view.setdefault(trace.pop("context_root"), {})[root] = trace
+    return view
+
+
 def decision_capture_view(state):
     """Presentation-shaped, JSON-safe projection for the existing journey
     surfaces (session/deliverable templates). Derived; carries the ledger ids

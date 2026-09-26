@@ -3557,6 +3557,79 @@ UI_STRINGS = {
         "en": "recorded answer(s) declared dependent",
         "ar": "إجابة (إجابات) مسجّلة أُعلن أنها تعتمد عليه",
     },
+    # --- Stage 22 / CAP-05 + CAP-07 Slice 1: read-only decision trace and the
+    # separated project-context panel. Presentation only: no key here names a
+    # relationship between a decision and any other record, an evidence
+    # strength, a confidence or a preferred option.
+    "UI_DT_HISTORY_SUMMARY": {
+        "en": "Recorded history of this alternative",
+        "ar": "السجل المدوَّن لهذا البديل",
+    },
+    "UI_DT_HISTORY_NOTE": {
+        "en": ("Every wording you recorded for this alternative, in the order "
+               "you recorded it."),
+        "ar": "كل صيغة سجّلتها لهذا البديل، بالترتيب الذي سجّلتها به.",
+    },
+    "UI_DT_EVENT_DECLARED": {"en": "Declared", "ar": "أُعلِن"},
+    "UI_DT_EVENT_REFINED": {"en": "Refined to", "ar": "عُدِّل إلى"},
+    "UI_DT_EVENT_WITHDRAWN": {"en": "Withdrawn", "ar": "سُحِب"},
+    "UI_DT_TRACE_UNAVAILABLE": {
+        "en": ("The recorded history of this alternative could not be shown "
+               "right now. Nothing was changed."),
+        "ar": "تعذّر عرض السجل المدوَّن لهذا البديل الآن. لم يتغيّر أي شيء.",
+    },
+    "UI_DT_CTX_HEADING": {
+        "en": "Project context — not linked to any decision above",
+        "ar": "سياق المشروع — غير مرتبط بأي قرار أعلاه",
+    },
+    "UI_DT_CTX_NOTE": {
+        "en": ("These items are recorded elsewhere in your project. InventorAI "
+               "has not linked any of them to a specific decision or "
+               "alternative. They are shown for orientation only and say "
+               "nothing about which alternative to choose."),
+        "ar": ("هذه البنود مسجّلة في مواضع أخرى من مشروعك. لم يربط InventorAI "
+               "أيًّا منها بقرار أو بديل محدد. تُعرض للاطلاع فقط، ولا تقول "
+               "شيئًا عن البديل الذي ينبغي اختياره."),
+    },
+    "UI_DT_CAT_DECLARED_CONTRADICTIONS": {
+        "en": "Conflicts you declared between recorded answers",
+        "ar": "تعارضات أعلنتها بين إجابات مسجّلة",
+    },
+    "UI_DT_CAT_ASSUMPTION_DEPENDENCIES": {
+        "en": "Answer dependencies you declared on an assumption",
+        "ar": "علاقات اعتماد أعلنتها بين إجابات وافتراض",
+    },
+    "UI_DT_CAT_PROVISIONAL_ASSUMPTIONS": {
+        "en": "Provisional assumptions", "ar": "افتراضات مؤقتة"},
+    "UI_DT_CAT_RECORDED_UNKNOWNS": {
+        "en": "Recorded unknowns", "ar": "أمور مجهولة مسجّلة"},
+    "UI_DT_CAT_DEFERRED_ITEMS": {
+        "en": "Deferred items", "ar": "بنود مؤجَّلة"},
+    "UI_DT_CAT_PENDING_EVIDENCE": {
+        "en": "Pending evidence requests", "ar": "طلبات أدلة معلّقة"},
+    "UI_DT_CAT_PENDING_SPECIALIST": {
+        "en": "Waiting for specialist input", "ar": "بانتظار مدخلات متخصص"},
+    "UI_DT_CAT_OPEN_GAPS": {
+        "en": "Open information gaps", "ar": "فجوات معلومات مفتوحة"},
+    "UI_DT_CAT_NEXT_STEP": {
+        "en": "Next development step", "ar": "خطوة التطوير التالية"},
+    "UI_DT_STATE_CURRENT": {"en": "currently", "ar": "حاليًا"},
+    "UI_DT_STATE_EMPTY": {"en": "none at present", "ar": "لا يوجد حاليًا"},
+    "UI_DT_STATE_HISTORICAL": {
+        "en": "recorded earlier; none is active now",
+        "ar": "سُجِّل سابقًا؛ لا يوجد ما هو نشط الآن",
+    },
+    "UI_DT_STATE_UNAVAILABLE": {
+        "en": "could not be shown here", "ar": "تعذّر عرضه هنا"},
+    "UI_DT_NEXT_STEP_AVAILABLE": {
+        "en": "one is currently shown for your project",
+        "ar": "تُعرض حاليًا خطوة لمشروعك",
+    },
+    "UI_DT_NEXT_STEP_NONE": {
+        "en": "none is currently shown", "ar": "لا تُعرض خطوة حاليًا"},
+    "UI_DT_SEE": {"en": "see", "ar": "انظر"},
+    "UI_DT_LINK_NEXT_STEPS": {
+        "en": "the next-steps section", "ar": "قسم الخطوات التالية"},
     "UI_T3A_EVENT_ANSWER_RECORDED": {
         "en": "Answer recorded",
         "ar": "إجابة مسجَّلة",
