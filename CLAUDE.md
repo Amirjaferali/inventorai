@@ -261,9 +261,27 @@ information, not execution authority.
   decisions stay authoritative, and it fails closed to the deterministic fallback. External /
   provider MSNL and any external transmission of real invention, project or user data remain
   NOT AUTHORIZED; activation needs its own authorization and data boundary.
-- **Preserved states.** CAP-08, CAP-10 and Safe Question Reduction Slice 1 DELIVERED. CAP-06 NOT
-  AUTHORIZED (its dashboard dependencies are not ready); CAP-12 and CAP-13 NOT AUTHORIZED and
-  distinct; full CAP-09 NOT AUTHORIZED.
+- **Preserved states.** CAP-08, CAP-10 and Safe Question Reduction Slice 1 DELIVERED. CAP-12 and
+  CAP-13 NOT AUTHORIZED and distinct; full CAP-09 NOT AUTHORIZED.
+- **CAP-06 — Multi-Axis Invention Readiness Dashboard: PREMATURE / NOT AUTHORIZED NOW, not
+  cancelled.** Its full axes depend on still-unready owners (CAP-11 evidence strength, Patent
+  Export / patent-disclosure readiness, WS-PFV-001 / prototype readiness). Build no misleading
+  partial "full dashboard" because some readiness surfaces exist; reconsider only when a bounded
+  truthful dashboard slice has sufficient canonical axes and its own authorization.
+- **Production abuse / fraud — routed through the EXISTING PSRR + Stage 38 + Stage 40 owners; no
+  new workstream or gate.** Before public production or paid activation, that existing path must
+  explicitly account for the applicable surface: authentication abuse, account takeover,
+  credential stuffing / distributed credential abuse, bot / automation abuse, account-creation /
+  free-tier abuse, production rate limiting, monitoring and alerting, WAF / edge / DDoS
+  responsibilities, incident-response readiness, payment / stolen-payment fraud, chargeback /
+  dispute responsibility, payment-provider / Merchant-of-Record fraud controls, auditability /
+  security logging, and provider-vs-InventorAI responsibility boundaries. GitHub / CI protects
+  code-change and merge integrity and does not replace application security; hosting / edge
+  providers may own TLS / edge / DDoS / WAF functions and a selected payment / MoR provider
+  payment-card fraud controls; InventorAI keeps authorization, project / account ownership,
+  session security, account abuse, business-rule enforcement, auditability and truthful
+  entitlement / access decisions. No provider is selected; no payment implementation,
+  deployment, public release or paid activation is authorized.
 - **WATCH — Stage 22 Slice 2 (non-blocking, no repair cycle).** Slice-1 / Slice-2 next-step
   redundancy; long owner-action groups on mature projects; RTL placement of the "applies to N"
   note; group labels worded differently from Section 14; the report carries both the summary
@@ -336,6 +354,23 @@ authorization.
 - **L. Successor rule.** A successor Lead MUST reconstruct and follow this Operating Method
   before choosing its first new action, and must not replace it with personal workflow
   preference without new material evidence or a new Owner decision.
+- **M. Product-deepening lens (direction, not authority).** Product deepening has three
+  complementary axes: **technical deepening** (canonical technical concepts, relationships,
+  constraints, feasibility, materials, manufacturing, physics, electrical / thermal behaviour,
+  interfaces, failure modes, safety, measurable requirements, evidence, validation, specialist
+  routing, readiness implications); **analytical deepening** (contradictions, assumptions,
+  unknowns, evidence gaps, alternatives, dependencies, decision trace, rationale, risks,
+  requirement relationships, validation, readiness, historical reasoning); and **domain
+  extensibility** (Electronics / Electrical and Mechanical are implementations of an extensible
+  product model, not its permanent ceiling). Conceptual direction: Domain Profile → Technical
+  Deepening → Analytical Deepening → Evidence / Validation → Decisions → Readiness. This is a
+  product-direction and sequencing lens only; it authorizes no generic graph, new domain, new
+  schema, CAP-06, CAP-11, CAP-12, CAP-13 or any other capability.
+- **N. Sequencing lens (non-gating).** When selecting a next increment, ask whether the
+  highest-value move is BUILD, DEEPEN, CONNECT, SIMPLIFY, ACCELERATE, PROVE, SCALE or SHIP. It is
+  a prioritization lens only — no fixed sequence and no approval gate; the next action still
+  follows live truth, dependencies, user value, risk, current capability and Owner
+  authorization.
 
 ## Historical material and substantive boundaries
 

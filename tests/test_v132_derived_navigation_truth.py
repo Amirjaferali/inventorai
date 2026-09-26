@@ -2770,7 +2770,7 @@ def test_lead_operating_method_and_watchlist_are_preserved_as_continuity_only():
             "fails closed to the deterministic fallback",
             "External / provider MSNL and any external transmission of real invention, project "
             "or user data remain NOT AUTHORIZED",
-            "CAP-06 NOT AUTHORIZED", "CAP-12 and CAP-13 NOT AUTHORIZED and distinct",
+            "CAP-12 and CAP-13 NOT AUTHORIZED and distinct",
             "**WATCH — Stage 22 Slice 2 (non-blocking, no repair cycle).**"):
         assert needle in watch, needle
     for pat in (r"MCP (implementation )?(is )?AUTHORIZED\b(?<!NOT AUTHORIZED)",
@@ -2778,3 +2778,55 @@ def test_lead_operating_method_and_watchlist_are_preserved_as_continuity_only():
                 r"(C2|RIG-7|MCP)[^.]{0,20}\bCANCELLED\b(?<!NOT CANCELLED)",
                 r"(?<!no )(?<!NOT )(live|external) (LLM|provider|MSNL) (is )?AUTHORIZED\b"):
         assert re.search(pat, watch) is None, pat
+
+
+def test_continuity_addendum_lenses_cap06_and_fraud_routing_authorize_nothing():
+    """Continuity addendum: the three product-deepening axes and the
+    Domain Profile → … → Readiness direction are a lens, not authority; the
+    BUILD … SHIP lens is non-gating; CAP-06 is PREMATURE / NOT AUTHORIZED NOW and
+    not cancelled; production abuse / fraud routes through the EXISTING PSRR /
+    Stage 38 / Stage 40 owners with no new gate, no provider selection and no
+    deployment, payment or paid-activation authority."""
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    method = claude[claude.index("### Lead Operating Method"):
+                    claude.index("## Historical material and substantive boundaries")]
+    for needle in (
+            "**M. Product-deepening lens (direction, not authority).**",
+            "**technical deepening**", "**analytical deepening**", "**domain extensibility**",
+            "not its permanent ceiling",
+            "Domain Profile → Technical Deepening → Analytical Deepening → Evidence / "
+            "Validation → Decisions → Readiness",
+            "it authorizes no generic graph, new domain, new schema, CAP-06, CAP-11, CAP-12, "
+            "CAP-13 or any other capability",
+            "**N. Sequencing lens (non-gating).**",
+            "BUILD, DEEPEN, CONNECT, SIMPLIFY, ACCELERATE, PROVE, SCALE or SHIP",
+            "no fixed sequence and no approval gate"):
+        assert needle in method, needle
+    watch = claude[claude.index("**Current Lead Watchlist (2026-09-26).**"):
+                   claude.index("**Successor Lead (mandatory).**")]
+    for needle in (
+            "**CAP-06 — Multi-Axis Invention Readiness Dashboard: PREMATURE / NOT AUTHORIZED "
+            "NOW, not cancelled.**",
+            "CAP-11 evidence strength, Patent Export / patent-disclosure readiness, "
+            "WS-PFV-001 / prototype readiness",
+            "Build no misleading partial \"full dashboard\"",
+            "**Production abuse / fraud — routed through the EXISTING PSRR + Stage 38 + Stage 40 "
+            "owners; no new workstream or gate.**",
+            "credential stuffing", "chargeback / dispute responsibility",
+            "GitHub / CI protects code-change and merge integrity and does not replace "
+            "application security",
+            "InventorAI keeps authorization, project / account ownership, session security",
+            "No provider is selected; no payment implementation, deployment, public release or "
+            "paid activation is authorized"):
+        assert needle in watch, needle
+    negation = ("No provider is selected; no payment implementation, deployment, public release "
+                "or paid activation is authorized")
+    claims = watch.replace(negation, "")
+    for pat in (r"CAP-06[^.]{0,40}\bCANCELLED\b(?<!not cancelled)",
+                r"(?<!no )(?<!NOT )(payment|deployment|paid activation) (is )?authorized\b"):
+        assert re.search(pat, claims, re.I) is None, pat
+    rows = re.findall(r"^- \[ \] \*\*40 — Payment provider:\*\*.*$", _read(ROADMAP), re.M)
+    assert len(rows) == 1
+    assert ("the existing PSRR / Stage-38 / Stage-40 path must explicitly account for the "
+            "production-abuse / fraud surface") in rows[0]
+    assert "no new gate, no provider selected, nothing authorized" in rows[0]
