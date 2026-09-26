@@ -523,6 +523,10 @@ def test_engine_contract_version_is_bound_and_re_resolved(client, monkeypatch):
 # ABA stale-form regression
 # ---------------------------------------------------------------------------
 
+@pytest.mark.failure_pattern(
+    "FP-01",
+    invariant=("a server-issued form authorization is valid only for the exact current context; a stale or replayed form is refused even when the same context returns"),
+    constructs=("flask-route", "signing-domain", "hmac-signature"))
 def test_aba_stale_form_is_refused_after_the_same_question_returns(client, monkeypatch):
     sid = _start(client)
     _drive_to_exhausted_partial(client, sid)
@@ -799,6 +803,10 @@ def test_l1_b_correction_survives_stale_question_refusal(monkeypatch):
     appmod.SESSION_STORE.pop(sid, None)
 
 
+@pytest.mark.failure_pattern(
+    "FP-15",
+    invariant=("a refused or failed request leaves durable and in-session state exactly as it was"),
+    constructs=("flask-route",))
 @pytest.mark.parametrize("attack", ["tampered", "missing_target", "stale_token",
                                     "forged_token", "empty_answer"])
 def test_l1_c_correction_survives_its_own_refused_form(monkeypatch, attack):
@@ -954,6 +962,10 @@ def test_l3_same_text_non_answers_on_two_questions_are_distinct_events(client):
 # L4: the answer-token verifier is total
 # ---------------------------------------------------------------------------
 
+@pytest.mark.failure_pattern(
+    "FP-17",
+    invariant=("a verifier returns a refusal for any malformed input and never raises"),
+    constructs=("signing-domain", "hmac-signature"))
 def test_l4_token_verifier_never_raises(client):
     sid = _start(client)
     good = appmod._answer_token_for(sid, _entry(sid))

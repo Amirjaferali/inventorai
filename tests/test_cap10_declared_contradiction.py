@@ -653,6 +653,10 @@ def test_f1_c_a_stale_binding_cannot_create_a_new_declaration(client):
     assert len(_declarations(sid)) == 1
 
 
+@pytest.mark.failure_pattern(
+    "FP-02",
+    invariant=("a stable action identity never changes with the submitted material; only an exact committed retry is a no-op and the same identity with different material fails closed"),
+    constructs=("flask-route", "hmac-signature", "persistence-writer"))
 def test_f1_d_exact_committed_retry_survives_staleness_only_for_that_event(client):
     sid, answered = _web_project(client)
     a, b, c = answered[0], answered[-1], answered[1]

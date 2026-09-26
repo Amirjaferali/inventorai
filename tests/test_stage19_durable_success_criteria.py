@@ -1284,6 +1284,10 @@ def test_f04_b_d_e_committed_delta_is_recognized_as_saved(client, monkeypatch, m
             SESSION_STORE[sid]["state"].success_criteria.items()} == expected
 
 
+@pytest.mark.failure_pattern(
+    "FP-04",
+    invariant=("an uncertain write is acknowledged only when durable state confirms it; an unreadable outcome is reported as unknown and nothing is published"),
+    constructs=("persistence-writer", "committed-confirmation", "commit-recovery"))
 def test_f04_c_f_unreadable_outcome_is_unknown_and_memory_untouched(client, monkeypatch):
     sid = _journey(client)
     ids = _live_ids(sid)
@@ -1448,6 +1452,10 @@ def _independent_value(sid, eid):
         con.close()
 
 
+@pytest.mark.failure_pattern(
+    "FP-05",
+    invariant=("a connection left inside an unresolved transaction never serves as proof of a committed write"),
+    constructs=("persistence-writer", "committed-confirmation", "commit-recovery"))
 def test_ir01_uncommitted_same_connection_visibility_is_never_saved(client, monkeypatch):
     sid = _journey(client)
     ids = _live_ids(sid)
