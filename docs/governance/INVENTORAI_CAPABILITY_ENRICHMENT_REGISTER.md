@@ -122,7 +122,13 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   change.
 - **Proposed acceptance criteria:** the four concepts derive deterministically from canonical records;
   no invented "next action"; gates unchanged.
-- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, **with ONE bounded
+  exception**: CAP-02 Slice 1 — Project Compass / Simplified One-Step Journey (2026-09-27; no new
+  Master Roadmap Stage): the top-of-session Project Orientation evolved into ONE Project Compass
+  (Recorded so far, Still unresolved, Why it matters now, What to do now) composed read-only from
+  existing owners, keeping the existing primary-action branches and exactly ONE primary journey
+  action; session only. Implemented; independent UX / behaviour review PASS; PR / merge pending.
+  `FULL CAP-02: NOT AUTHORIZED`.
 - **Activation conditions:** a separately authorized presentation/UX increment.
 - **Separate owner authorization requirement:** yes.
 
@@ -169,8 +175,8 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   read-only pack per current unresolved gap (OPEN / PARTIAL) composed from the Requirement
   Landscape, the exact matching Validation Plan gap step and active NeedRouting routes by exact
   identity with the committed RoutingPolicy. It is never Evidence, never closes a gap, asks and
-  writes nothing, and has no ranking, readiness or progression authority. Implemented;
-  independent UX / behaviour review PASS; PR / merge pending. `FULL CAP-04: NOT AUTHORIZED`.
+  writes nothing, and has no ranking, readiness or progression authority. Delivered (PR #708).
+  `FULL CAP-04: NOT AUTHORIZED`.
 - **Activation conditions:** WS12 (and D13 where technical) owner authorization.
 - **Separate owner authorization requirement:** yes.
 
@@ -661,9 +667,9 @@ nothing, authorizes nothing, and changes no critical path.
 | Capability | Primary activation gate / authority | Also spans | Current status |
 |---|---|---|---|
 | CAP-01 Structured Technical Guidance | **D13** (owner-gated) | WS-PFV-001, CAP-04, CAP-09 | RECORDED — NOT AUTHORIZED, **except two Owner-authorized bounded Stage-18 guidance increments** (first merged in PR #678; second research-direction addendum merged in PR #679; full CAP-01/STG still NOT AUTHORIZED) |
-| CAP-02 Simplified One-Step Journey | WS8 / later UX increment | CAP-06, CAP-07 | RECORDED — NOT AUTHORIZED |
+| CAP-02 Simplified One-Step Journey | WS8 / later UX increment | CAP-06, CAP-07 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (implemented, review PASS, PR / merge pending) — FULL CAP-02 NOT AUTHORIZED |
 | CAP-03 Adaptive Assistance | WS13 / WS14 | CAP-02, AI Coach | RECORDED — NOT AUTHORIZED |
-| CAP-04 Gap Action Packs | WS12 (+ D13 for technical) | CAP-01, CAP-09 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (implemented, review PASS, PR / merge pending) — FULL CAP-04 NOT AUTHORIZED |
+| CAP-04 Gap Action Packs | WS12 (+ D13 for technical) | CAP-01, CAP-09 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (delivered, PR #708) — FULL CAP-04 NOT AUTHORIZED |
 | CAP-05 Decision Trace | Decision-support increment | CAP-07, CAP-08, CAP-11 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-05 NOT AUTHORIZED |
 | CAP-06 Readiness Dashboard | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-02, CAP-07, CAP-11 | RECORDED — NOT AUTHORIZED |
 | CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED |
@@ -810,9 +816,9 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | Capability ID | Current status | Earliest activation gate | Prerequisites | Owner authorization required | Last reviewed Workstream | Next mandatory review point |
 |---|---|---|---|---|---|---|
 | CAP-01 Structured Technical Guidance | RECORDED — NOT AUTHORIZED | D13 (owner-gated) | D13 governed knowledge sources; D13 Source Review | Yes (via D13) | — (none since registration) | At WS12–WS16 closure and any D13 gate |
-| CAP-02 Simplified One-Step Journey | RECORDED — NOT AUTHORIZED | WS8 / later UX increment | Committed state; WS8; WS12 unknowns; CAP-04 | Yes | — | At the UX increment / WS12–WS16 closure |
+| CAP-02 Simplified One-Step Journey | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (implemented, review PASS, PR / merge pending) — FULL CAP-02 NOT AUTHORIZED | WS8 / later UX increment | Committed state; WS8; WS12 unknowns; CAP-04 | Yes | — | At the UX increment / WS12–WS16 closure |
 | CAP-03 Adaptive Assistance | RECORDED — NOT AUTHORIZED | WS13 / WS14 | Deterministic sufficiency; WS12; WS13/WS14 | Yes | — | At WS13/WS14 authorization / WS12–WS16 closure |
-| CAP-04 Gap Action Packs | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (implemented, review PASS, PR / merge pending) — FULL CAP-04 NOT AUTHORIZED | WS12 (+ D13 for technical) | WS12 closure paths; D13; gap/blocker model | Yes | — | At WS12 closure and any D13 gate |
+| CAP-04 Gap Action Packs | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (delivered, PR #708) — FULL CAP-04 NOT AUTHORIZED | WS12 (+ D13 for technical) | WS12 closure paths; D13; gap/blocker model | Yes | — | At WS12 closure and any D13 gate |
 | CAP-05 Decision Trace | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-05 NOT AUTHORIZED | Decision-support increment | Decision workspace; evidence axes; CAP-08; CAP-11 | Yes | — | At the decision-support increment / WS12–WS16 closure |
 | CAP-06 Readiness Dashboard | RECORDED — NOT AUTHORIZED | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-11; Patent Export decision; WS-PFV-001 | Yes | — | At the readiness increment / WS12–WS16 closure |
 | CAP-07 Invention Decision Room | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
