@@ -2,8 +2,20 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY.**
-CAP-02 Slice 1 is ONE bounded slice under the already-recorded CAP-02 capability (no new Master
+**ACTIVE CONTRACT: CAP-11 SLICE 1 — EVIDENCE DETAILS.**
+CAP-11 Slice 1 is ONE bounded slice under the already-recorded CAP-11 capability, governed by the
+exact Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`
+(no new Master Roadmap Stage; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; FULL CAP-11 NOT
+AUTHORIZED): report Section 2 (Known Problem, Known Mechanism) and the PDF show "About this
+evidence" with THREE independent rows — Form, Source and Validation — from the existing evidence
+quality, provenance and validation fields, never combined into a score, rank, tier or confidence;
+LEGACY_UNSPECIFIED reads "Source metadata not available" and is not reclassified; unknown values
+read "Not available". Display capability only — no validation, provenance, quality or promotion
+writer, no readiness authority, no engine, package, schema, persistence or state change, no AI /
+LLM / provider call; Section 9, the session page and Commercial / Manufacturing evidence are out of
+scope. It is implemented, its independent UX / behaviour review passed with no material findings,
+and its PR / merge is pending. CAP-02 Slice 1 — DELIVERED (PR #709, merge
+`a9e46e57e1d9595fdc92af0bb508ee3fd141c9ea`; full CAP-02 NOT AUTHORIZED) — is ONE bounded slice under the already-recorded CAP-02 capability (no new Master
 Roadmap Stage; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; full CAP-02 NOT AUTHORIZED): the
 existing top-of-session Project Orientation becomes ONE Project Compass with four concepts —
 Recorded so far (active current answered records only), Still unresolved (per-category counts
@@ -11,9 +23,7 @@ from existing owners, never summed), Why it matters now (`derive_next_developmen
 unchanged; the former standalone Next Development Step callout folded in as context) and What
 to do now (the existing primary-action branches, unchanged; exactly ONE primary journey action);
 session only, report and PDF unchanged; no state mutation, persistence, schema, replay, writer,
-progression, readiness, scoring or ranking change and no AI / LLM / provider call. It is
-implemented, its independent UX / behaviour review passed with no material findings, and its PR /
-merge is pending. CAP-04 Slice 1 — DELIVERED (PR #708, merge
+progression, readiness, scoring or ranking change and no AI / LLM / provider call. CAP-04 Slice 1 — DELIVERED (PR #708, merge
 `78f6a73113ff9eaa9c5e0941b2bd857595899404`; full CAP-04 NOT AUTHORIZED) — is one read-only
 Actionable Gap Pack per current unresolved gap (OPEN / PARTIAL; CLOSED and ACCEPTED_RISK get
 none) joining the Requirement Landscape gap requirement and required action, the exact matching
@@ -82,12 +92,12 @@ history, and is the file to read for authority — this paragraph routes, it doe
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized — the
-bounded CAP-02 Slice 1 enters no Stage (Stage 22 stays ENTERED / PARTIAL through its delivered
+bounded CAP-11 Slice 1 enters no Stage (Stage 22 stays ENTERED / PARTIAL through its delivered
 Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -344,6 +354,14 @@ information, not execution authority.
   "Specialist input pending: 1" before any answer because the routing already exists; first-time
   comprehension only. (F) English technical statements inside Arabic explanatory UI stay
   acceptable under the language policy above; no correction for that alone.
+- **WATCH — CAP-11 Slice 1 (non-blocking, no repair cycle).** Form, Source and Validation stay
+  three independent axes; no combined score or ranking is authorized. (A) A current Known Problem
+  may show "Source metadata not available" beside a Known Mechanism showing "You", which an
+  inventor who wrote both may notice; it is the truthful presentation under the approved contract
+  — do not reclassify LEGACY_UNSPECIFIED to remove the contrast. (B) The Arabic Form label
+  "تقرير مباشر (Asserted)" passed review; "إفادة مباشرة" might read more naturally — language
+  polish only, reassess when a future CAP-11 / report-language slice naturally touches it. Other
+  English explanatory text in Section 2 is a pre-existing language limitation, not a CAP-11 defect.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative

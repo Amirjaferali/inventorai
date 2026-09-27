@@ -106,9 +106,25 @@ sibling sidecar of the same store. Delivering it is not the stage and opens noth
 Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — CAP-02 Simplified One-Step Journey, ONE bounded slice under the
-already-recorded CAP-02 capability (no new Master Roadmap Stage):** `ACTIVE CONTRACT: CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY` · `CAP-02 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-02: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
-CAP-02 Slice 1 evolves the existing top-of-session Project Orientation into ONE Project Compass
+**CURRENT BOUNDED ACTION — CAP-11 Evidence Quality Ladder, ONE bounded slice under the
+already-recorded CAP-11 capability (no new Master Roadmap Stage):** `ACTIVE CONTRACT: CAP-11 SLICE 1 — EVIDENCE DETAILS` · `CAP-11 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-11: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
+CAP-11 Slice 1 runs under the Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`
+(the contract authorizes Slice 1 only). It enhances the existing report Section 2 evidence
+presentation only: for each present Known Problem / Known Mechanism item the report and PDF show
+"About this evidence" with THREE independent rows — Form, Source and Validation — from the
+existing evidence quality, provenance and validation fields. The three axes are never combined into
+a score, percentage, tier, LOW / MEDIUM / HIGH, weak / strong, confidence, colour or badge ranking or
+readiness, and no provenance or Form value grants validation; the internal quality order stays
+internal. LEGACY_UNSPECIFIED reads "Source metadata not available" and is not reclassified;
+UNVALIDATED reads "No validation recorded"; an unknown value reads "Not available" for its row
+only. Slice 1 adds display capability only: showing SPECIALIST_REVIEWED, EMPIRICALLY_DEMONSTRATED or
+INDEPENDENTLY_VERIFIED does not mean current workflows can award them, and no validation,
+provenance, quality or promotion writer and no readiness authority exists. Presentation only — no
+engine, package, JSON export, schema, persistence, replay, readiness, maturity, progression or gap
+change; Section 9, the session page, safety signals, Commercial / Manufacturing evidence, the
+Requirement Landscape and the Validation Plan are out of scope; no AI / LLM / provider call.
+**DELIVERED — CAP-02 Simplified One-Step Journey, ONE bounded slice (no new Master Roadmap Stage):** `CAP-02 SLICE 1: DELIVERED — PR #709 — merge a9e46e57e1d9595fdc92af0bb508ee3fd141c9ea` · `FULL CAP-02: NOT AUTHORIZED`.
+CAP-02 Slice 1 (delivered) evolves the existing top-of-session Project Orientation into ONE Project Compass
 with four concepts: Recorded so far, Still unresolved, Why it matters now and What to do now.
 Recorded so far counts active current answered records only (superseded answers and decision /
 relationship / risk-acceptance metadata excluded). Unresolved categories come from existing
