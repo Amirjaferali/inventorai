@@ -23,14 +23,44 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--stage22-slice-2"></a>
-## Current authority — Stage 22 / CAP-05 + CAP-07 Slice 2 — Actionable Decision Room Summary (Owner / Lead authorization, 2026-09-26)
+<a id="current-authority--cap04-slice-1"></a>
+## Current authority — CAP-04 Slice 1 — Actionable Gap Pack (Owner / Lead authorization, 2026-09-27)
 
-**ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY.**
+**ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK.**
+ONE bounded slice under the already-recorded CAP-04 capability. It creates no new Master Roadmap
+Stage, Stage 23 is NOT ENTERED, and full CAP-04 is NOT AUTHORIZED. Status: OWNER-AUTHORIZED /
+IMPLEMENTED / INDEPENDENT UX / BEHAVIOUR REVIEW PASS — material findings: NONE — PR / merge pending.
+Architecture (Astra) review not required: pure, read-only composition of existing owners.
+
+| | |
+|---|---|
+| **SCOPE** | one read-only Actionable Gap Pack per CURRENT unresolved gap: OPEN / PARTIAL only; a CLOSED gap gets no pack; an `ACCEPTED_RISK` gap gets no pack and stays explicitly not resolved and not validated |
+| **IDENTITY / ORDER / REQUIRED ACTION** | the Requirement Landscape, unchanged (its gap requirement and resolving action, verbatim) |
+| **RESPONSIBILITY / INPUT CATEGORY / CLOSURE** | the exact matching Validation Plan gap step, verbatim |
+| **ROUTED NEEDS** | active NeedRouting routes matched only by exact identity plus the committed RoutingPolicy; a RETRACTED route does not render; a route / policy mismatch fails closed |
+| **NO ROUTE** | says that no specific acquisition route is assigned from current project truth |
+| **SURFACES** | the same truth in the session, report and PDF; a failed or cold derivation reads unavailable, never empty |
+| **QUESTION / FORM / POST / WRITER / PERSISTENCE / SCHEMA / REPLAY / STATE MUTATION** | `NONE` |
+| **RANKING / SCORE / SEVERITY / FEASIBILITY / READINESS / PROGRESSION** | `NONE` |
+| **AI / LLM / PROVIDER / REAL INVENTION DATA** | NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
+
+**Deferred / not authorized:** full CAP-04, a further CAP-04 slice, Stage 23, CAP-06, CAP-11,
+CAP-12, CAP-13, deployment, public release and paid activation. WATCH (non-blocking, no repair
+cycle) is carried in the CLAUDE.md Lead Watchlist.
+
+<a id="current-authority--stage22-slice-2"></a>
+## Current authority — Stage 22 / CAP-05 + CAP-07 Slice 2 — Actionable Decision Room Summary (Owner / Lead authorization, 2026-09-26) — DELIVERED (PR #707); SUPERSEDED as current authority by CAP-04 Slice 1
+
+**No longer the current authority.** Slice 2 was delivered (PR #707, merge
+`d5068f83d46bdf2b3b28ceeb3f0e4e78fd32cdbe`); CAP-04 Slice 1 above replaced it as the current authority on
+2026-09-27. Every rule below still binds except where CAP-04 Slice 1 states otherwise. *(Superseded
+2026-09-27, preserved so the change is visible rather than silent: this opened "**ACTIVE
+CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY.**" and recorded the slice as
+"PR / merge pending".)*
 Stage 22 / CAP-05 + CAP-07 stays ENTERED / PARTIAL. This bounded slice creates no new Master
 Roadmap Stage, completes neither CAP-05, CAP-07 nor Stage 22, and the Stage-22 checkbox stays
 unticked. Status: AUTHORIZED / IMPLEMENTED / INDEPENDENT UX / BEHAVIOUR REVIEW COMPLETED /
-CORRECTION 01 COMPLETED / TARGETED INDEPENDENT VERIFICATION PASS — PR / merge pending. The review
+CORRECTION 01 COMPLETED / TARGETED INDEPENDENT VERIFICATION PASS — DELIVERED (PR #707). The review
 found one bounded referent defect (an UNDETERMINED statement lost its subject outside Section 14),
 corrected in a separate commit on top of the unchanged reviewed implementation and verified by
 targeted review; architecture (Astra) review not required.
@@ -1003,9 +1033,21 @@ sibling sidecar of the same store. Delivering it is not the stage and opens noth
 Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — Stage 22 / CAP-05 Decision Trace + CAP-07 Invention Decision Room,
-ENTERED / PARTIAL through bounded slices:** `ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY` · `STAGE 22: ENTERED / PARTIAL` · `FULL CAP-05: NOT AUTHORIZED` · `FULL CAP-07: NOT AUTHORIZED` · `SLICE 2: IMPLEMENTED — CORRECTION 01 — INDEPENDENT UX / BEHAVIOUR VERIFICATION PASS — PR / MERGE PENDING` · `CAP-05 + CAP-07 SLICE 1: DELIVERED — PR #706 — merge f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`.
-Slice 2 adds one read-only, project-level action summary to the Decision Room that answers what
+**CURRENT BOUNDED ACTION — CAP-04 Gap Action Packs, ONE bounded slice under the already-recorded
+CAP-04 capability (no new Master Roadmap Stage):** `ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK` · `CAP-04 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-04: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED`.
+CAP-04 Slice 1 shows one read-only Actionable Gap Pack per CURRENT unresolved gap — OPEN /
+PARTIAL only; a CLOSED gap gets no pack; an ACCEPTED_RISK gap gets no pack and stays explicitly
+not resolved and not validated. Pack identity, order and the required action come unchanged from
+the Requirement Landscape; responsibility, input category and closure condition come from the
+exact matching Validation Plan gap step; active routed needs come from NeedRouting by exact
+identity plus the committed RoutingPolicy — a RETRACTED route does not render and a route / policy
+mismatch fails closed; a gap with no route says that no specific acquisition route is assigned
+from current project truth. The same truth appears in the session, report and PDF. It adds no
+question, form, POST, writer, persistence, schema, replay or state mutation, no ranking, score,
+severity, feasibility, readiness or progression authority and no AI / LLM / provider call.
+**DELIVERED — Stage 22 / CAP-05 Decision Trace + CAP-07 Invention Decision Room,
+ENTERED / PARTIAL through bounded slices:** `CAP-05 + CAP-07 SLICE 2: DELIVERED — PR #707 — merge d5068f83d46bdf2b3b28ceeb3f0e4e78fd32cdbe` · `STAGE 22: ENTERED / PARTIAL` · `FULL CAP-05: NOT AUTHORIZED` · `FULL CAP-07: NOT AUTHORIZED` · `CAP-05 + CAP-07 SLICE 1: DELIVERED — PR #706 — merge f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`.
+Slice 2 (delivered) adds one read-only, project-level action summary to the Decision Room that answers what
 the project currently calls for without asking the inventor anything new: the canonical
 Validation Plan grouped strictly by its responsibility tokens (OWNER_EXECUTABLE,
 SPECIALIST_REQUIRED, EMPIRICAL_EVIDENCE_REQUIRED, SYSTEM_DERIVABLE; UNDETERMINED and blocked
