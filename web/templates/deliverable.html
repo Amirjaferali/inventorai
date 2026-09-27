@@ -689,6 +689,13 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% else %}
   <div class="field-value"><strong>{{ t('UI_B_DELIV_080') }}</strong> {{ exp.success_criterion }}</div>
   {% endif %}
+  {# CAP-09 SLICE 3: the inventor's own test hypothesis (what they expect to
+     happen), or truthful absence — never generated, graded or a result. #}
+  {% if exp.test_hypothesis_provenance == 'user_defined' %}
+  <div class="field-value" data-test-hypothesis><strong>{{ t('UI_DELIV_HYPOTHESIS_DEFINED') }}</strong> <span class="user-hypothesis" dir="auto">{{ exp.test_hypothesis }}</span></div>
+  {% else %}
+  <div class="field-value" data-test-hypothesis-absent><strong>{{ t('UI_DELIV_HYPOTHESIS_ABSENT_LABEL') }}</strong> {{ t('UI_DELIV_HYPOTHESIS_ABSENT') }}</div>
+  {% endif %}
   {# SLICE-02: the inventor's own measurement method, or truthful absence — never
      a generated method and never merged with "Observe:" above. #}
   {% if exp.measurement_method_provenance == 'user_defined' %}
@@ -712,6 +719,9 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
   {% if package.section_11_prototype_test_plan.stale_measurement_methods %}
   <div class="field-value status-snapshot">{{ t('UI_SC_METHOD_STALE') }}</div>
+  {% endif %}
+  {% if package.section_11_prototype_test_plan.stale_test_hypotheses %}
+  <div class="field-value status-snapshot" data-stale-hypotheses>{{ t('UI_SC_HYPOTHESIS_STALE') }}</div>
   {% endif %}
   {% if package.section_11_prototype_test_plan["items"] and not pdf_mode %}
   <div class="field-value"><a href="{{ url_for('success_criteria', sid=sid) }}">{{ t('UI_B_DELIV_084') }}</a></div>

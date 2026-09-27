@@ -612,6 +612,71 @@ _CAP09_S02_ASSEMBLER_SUBSTITUTIONS = (
 )
 
 
+# Stage 19 / CAP-09 SLICE 3 bounded pin amendment (Owner authorization "CAP-09
+# SLICE 3 OWNER-DEFINED TEST HYPOTHESIS": a pure assembler resolver attaching
+# `test_hypothesis` / `test_hypothesis_provenance` and truthful stale handling,
+# so Section 11 stays composed in ONE place). The EXHAUSTIVE, ordered table of
+# additional replacements, applied AFTER the SLICE-02 table; the guard still
+# demands byte-equality, so any other assembler change fails exactly as before.
+# Previous behaviour: Section-11 items carried no inventor-written hypothesis.
+# New behaviour: an experiment WITH a recorded hypothesis gains
+# `test_hypothesis` and `test_hypothesis_provenance`; the plan gains
+# `stale_test_hypotheses` ONLY when a stale hypothesis exists. Items without a
+# hypothesis, experiment identity, ordering and every other field are
+# byte-identical to the pin.
+_CAP09_S03_ASSEMBLER_SUBSTITUTIONS = (
+    (  # [1]
+        '                          "provenance": getattr(mm, "provenance", "user_defined")})\n'
+        '    return stale\n'
+        '_PLAN_STOPWORDS = {\n',
+        '                          "provenance": getattr(mm, "provenance", "user_defined")})\n'
+        '    return stale\n'
+        '\n'
+        '\n'
+        'def _resolve_test_hypothesis(exp, eid, state):\n'
+        '    """Stage 19 / CAP-09 SLICE 3: attach the inventor\'s OWN test hypothesis\n'
+        '    (what they expect to happen) for this experiment\n'
+        '    (state.test_hypotheses[eid]) when one is recorded. Planning metadata only:\n'
+        '    additive when present, never generated, inferred, parsed, graded, treated\n'
+        '    as evidence or as a result, and never a readiness input."""\n'
+        '    user = (getattr(state, "test_hypotheses", None) or {}).get(eid)\n'
+        '    text = (getattr(user, "hypothesis", "") or "").strip() if user else ""\n'
+        '    if text:\n'
+        '        exp["test_hypothesis"] = text\n'
+        '        exp["test_hypothesis_provenance"] = getattr(user, "provenance", "user_defined")\n'
+        '\n'
+        '\n'
+        'def _stale_test_hypotheses(state, current_ids):\n'
+        '    """User hypotheses whose experiment_id is no longer generated. Preserved\n'
+        '    and surfaced honestly; never reattached elsewhere. Deterministic (dict order)."""\n'
+        '    stale = []\n'
+        '    for eid, th in (getattr(state, "test_hypotheses", None) or {}).items():\n'
+        '        if eid in current_ids:\n'
+        '            continue\n'
+        '        txt = (getattr(th, "hypothesis", "") or "").strip()\n'
+        '        if txt:\n'
+        '            stale.append({"experiment_id": eid, "test_hypothesis": txt,\n'
+        '                          "provenance": getattr(th, "provenance", "user_defined")})\n'
+        '    return stale\n'
+        '\n'
+        '\n'
+        '_PLAN_STOPWORDS = {\n'),
+    (  # [2]
+        '        _resolve_measurement_method(exp, eid, state)\n',
+        '        _resolve_measurement_method(exp, eid, state)\n'
+        '        _resolve_test_hypothesis(exp, eid, state)\n'),
+    (  # [3]
+        '        plan["stale_measurement_methods"] = stale_methods\n'
+        '    return plan\n',
+        '        plan["stale_measurement_methods"] = stale_methods\n'
+        '    # SLICE 3: additive only when a stale inventor hypothesis exists.\n'
+        '    stale_hypotheses = _stale_test_hypotheses(state, current_ids)\n'
+        '    if stale_hypotheses:\n'
+        '        plan["stale_test_hypotheses"] = stale_hypotheses\n'
+        '    return plan\n'),
+)
+
+
 def test_a20_a21_dw_lane_and_assembler_untouched():
     import subprocess
     base = "f96c1900a0f5d0831a7654223ae4e008d4df961e"
@@ -650,6 +715,11 @@ def test_a20_a21_dw_lane_and_assembler_untouched():
     for _old, _new in _CAP09_S02_ASSEMBLER_SUBSTITUTIONS:
         assert expected.count(_old) == 1, (
             "an authorized SLICE-02 anchor is missing or no longer unique")
+        expected = expected.replace(_old, _new)
+    # Stage 19 / CAP-09 SLICE 3 bounded amendment: the same rule, applied after.
+    for _old, _new in _CAP09_S03_ASSEMBLER_SUBSTITUTIONS:
+        assert expected.count(_old) == 1, (
+            "an authorized SLICE 3 anchor is missing or no longer unique")
         expected = expected.replace(_old, _new)
     with open(os.path.join(root, "engine", "deliverable_assembler.py"),
               encoding="utf-8") as fh:

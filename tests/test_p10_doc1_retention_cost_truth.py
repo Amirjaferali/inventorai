@@ -107,8 +107,11 @@ _AUTOMATIC_DELETION_TABLES = ("auth_rate_limits", "email_outbox")
 # the document must name this one explicitly as well. Stage 19 / CAP-09 SLICE-02
 # extended the SAME user-initiated kind (the owner clearing their own
 # measurement method) to its sibling sidecar; the automatic set is unchanged.
+# Stage 19 / CAP-09 SLICE 3 extended the SAME kind once more (the owner clearing
+# their own test hypothesis); the automatic set is still unchanged.
 _USER_INITIATED_DELETION_TABLES = ("prototype_plan_metadata",
-                                   "prototype_measurement_methods")
+                                   "prototype_measurement_methods",
+                                   "prototype_test_hypotheses")
 
 
 def test_retention_doc_matches_source_truth():
@@ -136,6 +139,7 @@ def test_retention_doc_matches_source_truth():
     assert "One USER-INITIATED kind of removal exists" in flat
     assert "`prototype_plan_metadata`" in flat
     assert "`prototype_measurement_methods`" in flat
+    assert "`prototype_test_hypotheses`" in flat
     assert "It is NOT an automatic deletion, NOT an erasure capability" in flat
     # the 7-day client TTL claim must keep matching the real script
     with open(os.path.join("web", "static", "js", "local_draft.js"),

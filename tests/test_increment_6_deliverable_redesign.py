@@ -664,16 +664,20 @@ def test_navigation_digest_keeps_source_namespace_and_stability():
         def targets(rows):
             body = render_template('success_criteria.html', sid='stable', experiments=rows,
                                    field_prefix='criterion__', max_length=1000,
-                                   method_prefix='method__', method_max_length=1000)
+                                   method_prefix='method__', method_max_length=1000,
+                                   hypothesis_prefix='hypothesis__',
+                                   hypothesis_max_length=1000)
             return dict(re.findall(r'<textarea id="([^"]+)"\s+name="([^"]+)"', body))
         original = targets(items)
         assert original == targets(list(reversed(items))) == targets(copy.deepcopy(items))
-        # SLICE-02: each card has a criterion AND a measurement-method box; both
-        # navigation targets use the same stable digest, never the source enum.
+        # SLICE-02 / SLICE 3: each card has a criterion, a test-hypothesis AND a
+        # measurement-method box; every navigation target uses the same stable
+        # digest, never the source enum.
         assert set(original.values()) == (
             {'criterion__' + eid for eid in identities}
+            | {'hypothesis__' + eid for eid in identities}
             | {'method__' + eid for eid in identities})
-        assert all(re.fullmatch(r'(criterion|method)-[0-9a-f]{32}', target)
+        assert all(re.fullmatch(r'(criterion|hypothesis|method)-[0-9a-f]{32}', target)
                    for target in original)
 
 

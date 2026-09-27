@@ -604,11 +604,13 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
     # added the current-value `prototype_plan_metadata` sidecar, and CAP-09
     # SLICE-02 its sibling `prototype_measurement_methods`; every assertion
     # below about requirement_quantities itself is unchanged. Safe Question
-    # Reduction Slice 1 added the append-only `need_routing_revisions` sidecar.
+    # Reduction Slice 1 added the append-only `need_routing_revisions` sidecar,
+    # and CAP-09 SLICE 3 the current-value `prototype_test_hypotheses` sibling.
     assert tables == ["engine_version_adoptions", "evidence_references",
                       "need_routing_revisions", "projects",
                       "prototype_measurement_methods",
-                      "prototype_plan_metadata", "question_feedback",
+                      "prototype_plan_metadata", "prototype_test_hypotheses",
+                      "question_feedback",
                       "readiness_evidence", "records",
                       "requirement_quantities"]
     cols = [r[1] for r in conn.execute("PRAGMA table_info(requirement_quantities)")]

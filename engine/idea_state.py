@@ -577,6 +577,25 @@ class MeasurementMethod:
 
 
 @dataclass
+class TestHypothesis:
+    """
+    Stage 19 / CAP-09 SLICE 3: the inventor's OWN test hypothesis for one
+    proposed Prototype & Test Plan experiment — what they expect to happen in
+    it, in their own words. Planning metadata ONLY: never Evidence, a result,
+    a validation outcome, readiness, an assumption (CAP-08) or a contradiction
+    (CAP-10); never generated, inferred, parsed, interpreted, checked or
+    graded; never read by progression or maturity; never written to the
+    ILT-002 transcript. Distinct from the system-generated ``objective``, the
+    success criterion and the measurement method, which it never replaces or
+    combines with. Keyed in IdeaState.test_hypotheses by the experiment's stable
+    experiment_id. provenance records that the inventor authored it.
+    """
+    __test__ = False          # not a pytest test class despite its name
+    hypothesis : str
+    provenance : str = "user_defined"
+
+
+@dataclass
 class IterationLog:
     iteration       : int
     gap_targeted    : str
@@ -649,6 +668,11 @@ class IdeaState:
     # methods (planning metadata only), keyed like success_criteria. Default
     # empty; same boundaries as success_criteria above.
     measurement_methods : dict[str, MeasurementMethod] = field(default_factory=dict)
+
+    # Stage 19 / CAP-09 SLICE 3: per-experiment inventor-written test
+    # hypotheses (planning metadata only), keyed like success_criteria. Default
+    # empty; same boundaries as success_criteria above.
+    test_hypotheses : dict[str, TestHypothesis] = field(default_factory=dict)
 
     # Increment 2 append-only interaction/assertion ledger. Distinct from the
     # legacy compatibility fields (known_problem/known_mechanism/gaps/maturity):
