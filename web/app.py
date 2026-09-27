@@ -571,6 +571,12 @@ app.jinja_env.globals["ui_dir"] = "ltr"
 # yields zero or more profiles; zero renders nothing, and that is never an
 # unsupported-domain signal.
 app.jinja_env.globals["cap01_profiles"] = cap01_guidance.profiles_for_package
+# Mechanical CAP-01 open-gap technical context (Owner-authorized bounded slice):
+# the SAME resolver's gap-scoped shape is NOT a Jinja global because it needs the
+# EXACT canonical gap identities / lifecycle states of the already-loaded state,
+# which the assembled package publicizes only as presentation wording. Each
+# deliverable route resolves it through `_cap01_gap_contexts` and passes the
+# resulting copy KEYS to the template. Read-only; never raises; never persists.
 SESSION_STORE = {}
 
 # --- P4-1b-1: durable project store (construction, configuration, cold-load) --
@@ -5782,6 +5788,9 @@ def show_deliverable(sid):
         decision_action_summary=_decision_action_summary(state),
         # CAP-04 Slice 1: read-only gap action packs (derived on demand).
         gap_action_packs=_gap_action_packs_context(state, _current_ui_lang()),
+        # Mechanical CAP-01 open-gap technical context: copy keys resolved from
+        # the trusted package domain + exact canonical gap states (read-only).
+        cap01_gap_contexts=_cap01_gap_contexts(package, state),
         # CAP-08 Slice 1: the inventor-declared dependency view (derived on
         # demand; not part of the canonical package — the assembler is
         # untouched). Rendered only when a declaration exists.
@@ -5936,6 +5945,10 @@ def download_deliverable_pdf(sid):
             decision_action_summary=_decision_action_summary(state),
             # CAP-04 Slice 1: read-only gap action packs (derived on demand).
             gap_action_packs=_gap_action_packs_context(state, _current_ui_lang()),
+            # Mechanical CAP-01 open-gap technical context (same resolved keys
+            # as the HTML report, so the PDF cannot say something the screen
+            # does not).
+            cap01_gap_contexts=_cap01_gap_contexts(package, state),
             assumption_dependencies=_assumption_dependency_view(state),
             snapshot_kept_ack=None,
         )
@@ -9113,6 +9126,21 @@ _GP_RESPONSIBILITIES = frozenset({
     "OWNER_EXECUTABLE", "SPECIALIST_REQUIRED", "EMPIRICAL_EVIDENCE_REQUIRED",
     "SYSTEM_DERIVABLE", "UNDETERMINED"})
 _GP_REQUIRED_INPUTS = frozenset({"SPECIALIST", "EVIDENCE"})
+
+
+def _cap01_gap_contexts(package, state):
+    """Mechanical CAP-01 open-gap technical context — presentation glue only.
+
+    Hands the ALREADY-ASSEMBLED package (trusted canonical domain rows) and the
+    EXACT canonical gap records of the already-loaded state to the bounded
+    CAP-01 resolver, which returns copy KEYS or ``None``. The publicized
+    ``gaps_detail[].gap_type`` wording is never used as the binding key. No
+    request input, no free text, no write, no state / readiness / gap change."""
+    try:
+        gaps = getattr(state, "gaps", None) or ()
+        return cap01_guidance.gap_contexts_for_package(package, gaps)
+    except Exception:
+        return None
 
 
 def _gap_action_packs_context(state, lang):

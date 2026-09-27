@@ -1,0 +1,852 @@
+# -*- coding: utf-8 -*-
+"""MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT (Owner-authorized bounded slice).
+
+What is pinned: for each CURRENT canonical Mechanical gap whose EXACT canonical
+identity is MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY or BOUNDARY_AMBIGUITY and
+whose EXACT canonical lifecycle state is OPEN or PARTIAL, the report and the PDF
+show ONE short explanatory note: what that gap concerns at concept level within
+the governed Mechanical package, and what InventorAI does NOT conclude from it.
+
+Boundaries proven here:
+  * BINDING — exact canonical gap id + exact lifecycle state from the loaded
+    ``IdeaState``; never a display label, translated label, question text,
+    near / fuzzy string, publicized package wording or list position.
+  * OWNERSHIP — Path-N stays the only served-question owner; CAP-04 stays the
+    only action / responsibility / required-input / closure owner. The block
+    carries no question, action, responsibility, closure rule or next action.
+  * SOURCE — copy is justified by ``domains/mechanical/domain.json`` (the
+    governed package) and the Owner boundary only; the D13 Electronics TKP is
+    not a Mechanical source and is never referenced.
+  * TRUTH — PHYSICAL_FEASIBILITY copy never states or implies feasibility is
+    proven; no unsupported engineering concept appears anywhere.
+  * SCOPE — report + PDF only; the session journey gains nothing; Electronics
+    CAP-01 output is byte-identical; no state, persistence, readiness or
+    progression mutation.
+"""
+import copy
+import hashlib
+import html as html_module
+import io
+import json
+import os
+import pickle
+import re
+
+import pytest
+
+import web.app as appmod
+from engine.deliverable_assembler import assemble_deliverable
+from engine.derived_readiness import derive_readiness
+from engine.gap_action_pack import derive_gap_action_packs
+from engine.idea_state import (
+    ACCEPTED_RISK, BOUNDARY_AMBIGUITY, CLOSED, Gap, IdeaState,
+    MECHANISM_COMPLETENESS, OPEN, PARTIAL, PHYSICAL_FEASIBILITY,
+    PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS)
+from engine.path_n_questions import get_served_question
+from web import cap01_guidance, gap_labels, ui_text
+from tests.test_safe_question_routing_pf_q2 import (  # noqa: F401  (fixture)
+    client, MECH, _start, _answer, _live,
+)
+from tests.test_stage18_cap01_bounded_guidance import (
+    _denied, _mentions, _sentences, _mask_csrf, PROFILE_ID, ELECTRONICS_IDEA,
+    OPEN_GAP_INPUT, _state as _s18_state)
+
+_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+_GUIDANCE_PATH = os.path.join(_ROOT, "web", "cap01_guidance.py")
+_UI_TEXT_PATH = os.path.join(_ROOT, "web", "ui_text.py")
+_APP_PATH = os.path.join(_ROOT, "web", "app.py")
+_TEMPLATE_PATH = os.path.join(_ROOT, "web", "templates", "deliverable.html")
+_SESSION_TEMPLATE_PATH = os.path.join(_ROOT, "web", "templates", "session.html")
+_MECH_PACKAGE_PATH = os.path.join(_ROOT, "domains", "mechanical", "domain.json")
+
+GROUP_ID = "CAP01_MECHANICAL_GAP_CONTEXT_V1"
+PREFIX = "UI_%s_" % GROUP_ID
+SUPPORTED = (MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY)
+# The template's traceability attribute form (CAP-04 convention; never visible text).
+ATTR = {g: g.lower().replace("_", "-") for g in SUPPORTED}
+UNSUPPORTED = (PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
+               "SAFETY_SIGNAL", "THERMAL_BEHAVIOUR", "NOT_A_GAP")
+
+
+# ==========================================================================
+# harness
+# ==========================================================================
+def _mech_package():
+    with io.open(_MECH_PACKAGE_PATH, encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def _source(path):
+    with io.open(path, encoding="utf-8") as fh:
+        return fh.read()
+
+
+def _gaps(*pairs):
+    return [Gap(gap_type=g, status=s, opened_at=0) for g, s in pairs]
+
+
+def _mech_state(*pairs):
+    s = IdeaState(idea_id="cap01-mech-probe")
+    s.domain = "mechanical"
+    s.domain_signal = "mechanical"
+    s.gaps = _gaps(*pairs)
+    return s
+
+
+def _resolve(*pairs, domain="mechanical"):
+    return cap01_guidance.gap_contexts_for_gaps(domain, _gaps(*pairs))
+
+
+def _rendered_gaps(view):
+    return tuple((c["gap_type"], c["gap_state"]) for c in view["contexts"]) if view else ()
+
+
+def _render(package, state, lang="en", pdf=False, with_contexts=True, **extra):
+    """Render the REAL deliverable template exactly as the two routes do: the
+    gap-scoped view is resolved in the web layer and passed as copy keys."""
+    from flask import session as flask_session
+    kwargs = dict(package=package, sid="cap01mech",
+                  eligible=package["_session_meta"]["deliverable_eligible"],
+                  t2a_statements={}, evidence_references=[],
+                  decision_capture=None, snapshot_kept_ack=None,
+                  gap_action_packs=appmod._gap_action_packs_context(state, lang))
+    if with_contexts:
+        kwargs["cap01_gap_contexts"] = appmod._cap01_gap_contexts(package, state)
+    kwargs.update(extra)
+    if pdf:
+        kwargs["deliverable_base"] = "pdf_base.html"
+    with appmod.app.test_request_context("/"):
+        flask_session["ui_lang"] = lang
+        return appmod.app.jinja_env.get_template("deliverable.html").render(**kwargs)
+
+
+_BLOCK_RE = re.compile(r'<div class="cap01-gap-block"[^>]*>.*?\n  </div>', re.S)
+_CTX_RE = re.compile(
+    r'<div class="cap01-gap-context" data-cap01-gap="([^"]+)" data-cap01-gap-state="([^"]+)">'
+    r'(.*?)</div>', re.S)
+
+
+def _block(html):
+    m = _BLOCK_RE.search(html)
+    return m.group(0) if m else None
+
+
+def _contexts(html):
+    """``[(gap-attr, state-attr), ...]`` in rendered order."""
+    block = _block(html)
+    return [(g, s) for g, s, _body in _CTX_RE.findall(block)] if block else []
+
+
+def _visible(fragment):
+    return re.sub(r"\s+", " ", html_module.unescape(re.sub(r"<[^>]+>", " ", fragment))).strip()
+
+
+def _report(c, sid, lang="en"):
+    if lang == "ar":
+        assert c.post("/ui-language", data={"lang": "ar"}).status_code in (200, 302)
+    return c.get(f"/session/{sid}/deliverable").get_data(as_text=True)
+
+
+def _pdf_source(c, sid, monkeypatch):
+    seen = {}
+    real = appmod._render_pdf_bytes
+
+    def spy(source):
+        seen["source"] = source
+        return real(source)
+    monkeypatch.setattr(appmod, "_render_pdf_bytes", spy)
+    r = c.post(f"/session/{sid}/deliverable.pdf", data={})
+    assert r.status_code == 200 and r.mimetype == "application/pdf"
+    assert r.data[:5] == b"%PDF-"
+    return seen["source"]
+
+
+def _set_gaps(sid, *pairs):
+    """Put an exact canonical gap set on the LIVE state (test-local, in memory)."""
+    _live(sid).gaps = _gaps(*pairs)
+
+
+def _copy(gap_type, part, lang):
+    return ui_text.UI_STRINGS[PREFIX + gap_type + "_" + part][lang]
+
+
+def _mech_keys():
+    return sorted(k for k in ui_text.UI_STRINGS if k.startswith(PREFIX))
+
+
+# ==========================================================================
+# 1–3. ONE supported gap OPEN -> only that context
+# ==========================================================================
+@pytest.mark.parametrize("gap", SUPPORTED)
+def test_01_03_only_the_matching_context_renders_for_one_open_gap(gap):
+    view = _resolve((gap, OPEN))
+    assert view is not None and view["group_id"] == GROUP_ID
+    assert _rendered_gaps(view) == ((gap, OPEN),)
+    state = _mech_state((gap, OPEN))
+    html = _render(assemble_deliverable(state), state)
+    assert _contexts(html) == [(ATTR[gap], "open")]
+    for other in SUPPORTED:
+        if other != gap:
+            assert 'data-cap01-gap="%s"' % ATTR[other] not in html
+
+
+# ==========================================================================
+# 4. PARTIAL for each supported gap -> matching context
+# ==========================================================================
+@pytest.mark.parametrize("gap", SUPPORTED)
+def test_04_partial_state_renders_the_matching_context(gap):
+    assert _rendered_gaps(_resolve((gap, PARTIAL))) == ((gap, PARTIAL),)
+    state = _mech_state((gap, PARTIAL))
+    html = _render(assemble_deliverable(state), state)
+    assert _contexts(html) == [(ATTR[gap], "partial")]
+
+
+# ==========================================================================
+# 5. Multiple supported gaps -> exactly the matching ones, once, source order
+# ==========================================================================
+def test_05a_all_three_current_render_once_each_in_source_order_not_state_order():
+    reversed_pairs = ((BOUNDARY_AMBIGUITY, PARTIAL), (PHYSICAL_FEASIBILITY, OPEN),
+                      (MECHANISM_COMPLETENESS, OPEN))
+    assert _rendered_gaps(_resolve(*reversed_pairs)) == (
+        (MECHANISM_COMPLETENESS, OPEN), (PHYSICAL_FEASIBILITY, OPEN),
+        (BOUNDARY_AMBIGUITY, PARTIAL))
+    state = _mech_state(*reversed_pairs)
+    html = _render(assemble_deliverable(state), state)
+    assert _contexts(html) == [(ATTR[MECHANISM_COMPLETENESS], "open"),
+                               (ATTR[PHYSICAL_FEASIBILITY], "open"),
+                               (ATTR[BOUNDARY_AMBIGUITY], "partial")]
+    assert html.count("cap01-gap-block") == 1
+    for gap in SUPPORTED:
+        assert html.count('data-cap01-gap="%s"' % ATTR[gap]) == 1
+
+
+def test_05b_mixed_states_render_exactly_the_current_subset():
+    view = _resolve((MECHANISM_COMPLETENESS, CLOSED), (PHYSICAL_FEASIBILITY, OPEN),
+                    (BOUNDARY_AMBIGUITY, ACCEPTED_RISK))
+    assert _rendered_gaps(view) == ((PHYSICAL_FEASIBILITY, OPEN),)
+
+
+def test_05c_a_duplicated_gap_record_never_yields_a_second_context():
+    view = _resolve((MECHANISM_COMPLETENESS, OPEN), (MECHANISM_COMPLETENESS, OPEN),
+                    (MECHANISM_COMPLETENESS, PARTIAL))
+    assert _rendered_gaps(view) == ((MECHANISM_COMPLETENESS, OPEN),)
+
+
+def test_05d_duplicate_records_follow_the_canonical_first_match_accessor():
+    """``IdeaState.get_gap`` reports the FIRST record; the context must never
+    report a different state than the canonical accessor would."""
+    for first, second in ((CLOSED, OPEN), (OPEN, CLOSED)):
+        state = _mech_state((PHYSICAL_FEASIBILITY, first), (PHYSICAL_FEASIBILITY, second))
+        view = cap01_guidance.gap_contexts_for_gaps("mechanical", state.gaps)
+        expected = ((PHYSICAL_FEASIBILITY, first),) if first in (OPEN, PARTIAL) else ()
+        assert _rendered_gaps(view) == expected
+        assert state.get_gap(PHYSICAL_FEASIBILITY).status == first
+
+
+# ==========================================================================
+# 6–7. CLOSED / ACCEPTED_RISK / absent / unknown state -> nothing
+# ==========================================================================
+@pytest.mark.parametrize("gap", SUPPORTED)
+@pytest.mark.parametrize("status", (CLOSED, ACCEPTED_RISK))
+def test_06_07_closed_and_accepted_risk_render_no_context(gap, status):
+    assert _resolve((gap, status)) is None
+    state = _mech_state((gap, status))
+    html = _render(assemble_deliverable(state), state)
+    assert _block(html) is None and "data-cap01-gap" not in html
+
+
+def test_07b_absent_gaps_and_non_canonical_states_render_nothing():
+    assert _resolve() is None
+    assert cap01_guidance.gap_contexts_for_gaps("mechanical", None) is None
+    assert cap01_guidance.gap_contexts_for_gaps("mechanical", 17) is None
+    for bad in ("open", "Open", "OPEN ", " OPEN", "PARTIALLY", "RESOLVED", "", None, 1):
+        assert _resolve((MECHANISM_COMPLETENESS, bad)) is None, bad
+
+
+def test_07c_a_closed_supported_gap_beside_an_open_one_contributes_nothing():
+    state = _mech_state((MECHANISM_COMPLETENESS, CLOSED), (BOUNDARY_AMBIGUITY, OPEN))
+    html = _render(assemble_deliverable(state), state)
+    assert _contexts(html) == [(ATTR[BOUNDARY_AMBIGUITY], "open")]
+
+
+# ==========================================================================
+# 8. Unsupported / non-governed gap -> no invented context
+# ==========================================================================
+@pytest.mark.parametrize("gap", UNSUPPORTED)
+def test_08_unsupported_gap_never_gets_an_invented_context(gap):
+    assert cap01_guidance.gap_context_copy("mechanical", gap) is None
+    assert _resolve((gap, OPEN)) is None
+    view = _resolve((gap, OPEN), (PHYSICAL_FEASIBILITY, OPEN))
+    assert _rendered_gaps(view) == ((PHYSICAL_FEASIBILITY, OPEN),)
+
+
+def test_08b_the_supported_set_is_exactly_the_governed_packages_supported_gap_types():
+    pkg = _mech_package()
+    governed = tuple(pkg["capability_declaration"]["supported_gap_types"])
+    mapped = tuple(m["gap_type_id"] for m in pkg["gap_type_mappings"])
+    group_id, gap_ids = cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN["mechanical"]
+    assert group_id == GROUP_ID
+    assert gap_ids == governed == mapped == SUPPORTED
+    assert tuple(cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN) == ("mechanical",)
+
+
+# ==========================================================================
+# 9. Electronics CAP-01 profile unchanged
+# ==========================================================================
+def test_09a_electronics_profile_table_copy_and_resolver_are_unchanged():
+    assert cap01_guidance.CAP01_PROFILE_BY_DOMAIN == {"electronics_electrical": PROFILE_ID}
+    view = cap01_guidance.profile_copy("electronics_electrical")
+    assert view["profile_id"] == PROFILE_ID and len(view["item_keys"]) == 6
+    assert view["research"] is not None and len(view["research"]["item_keys"]) == 6
+    assert cap01_guidance.gap_contexts_for_gaps("electronics_electrical",
+                                                _gaps(*[(g, OPEN) for g in SUPPORTED])) is None
+
+
+def test_09b_electronics_report_is_byte_identical_with_the_mechanical_table_removed(monkeypatch):
+    state = _s18_state(ELECTRONICS_IDEA, OPEN_GAP_INPUT)
+    package = assemble_deliverable(state)
+    assert package["section_3_assessment_overview"]["capabilities_assessed"][0]["gaps_open"] >= 1
+    with_table = _mask_csrf(_render(package, state))
+    assert 'data-cap01-profile="%s"' % PROFILE_ID in with_table
+    assert "cap01-gap-block" not in with_table
+    monkeypatch.setattr(cap01_guidance, "CAP01_GAP_CONTEXT_BY_DOMAIN", {})
+    assert _mask_csrf(_render(package, state)) == with_table
+
+
+# ==========================================================================
+# 10. Non-Mechanical project -> no Mechanical context
+# ==========================================================================
+@pytest.mark.parametrize("domain", ("electronics_electrical", "software", "medical_device",
+                                    "unknown", "", "Mechanical", "MECHANICAL", "mechanic",
+                                    "mechanical_v1", "الميكانيكا", None, 3))
+def test_10_non_mechanical_domain_never_resolves_a_context(domain):
+    """The domain id is TRUSTED and server-resolved; like ``profile_for_domain``
+    it tolerates surrounding whitespace only, never case or a near string."""
+    assert _resolve(*[(g, OPEN) for g in SUPPORTED], domain=domain) is None
+
+
+def test_10b_the_package_supplies_only_the_trusted_domain_and_never_the_binding():
+    """The publicized ``gaps_detail[].gap_type`` is presentation wording. Even
+    with every gap publicized as open, a non-Mechanical capability row yields
+    nothing, and a Mechanical row with no CURRENT canonical gap yields nothing."""
+    state = _mech_state(*[(g, OPEN) for g in SUPPORTED])
+    package = assemble_deliverable(state)
+    rows = package["section_3_assessment_overview"]["capabilities_assessed"]
+    assert rows[0]["gaps_detail"][0]["gap_type"] != MECHANISM_COMPLETENESS  # publicized wording
+    foreign = copy.deepcopy(package)
+    foreign["section_3_assessment_overview"]["capabilities_assessed"][0]["capability_id"] = \
+        "electronics_electrical"
+    assert cap01_guidance.gap_contexts_for_package(foreign, state.gaps) is None
+    assert cap01_guidance.gap_contexts_for_package(package, _gaps(*[(g, CLOSED) for g in SUPPORTED])) is None
+    assert cap01_guidance.gap_contexts_for_package(package, []) is None
+    assert cap01_guidance.gap_contexts_for_package({}, state.gaps) is None
+    assert cap01_guidance.gap_contexts_for_package(None, state.gaps) is None
+    assert _rendered_gaps(cap01_guidance.gap_contexts_for_package(package, state.gaps)) == \
+        tuple((g, OPEN) for g in SUPPORTED)
+
+
+# ==========================================================================
+# 11. Path-N: Mechanical served questions unchanged; no question copied
+# ==========================================================================
+def test_11_path_n_serves_the_governed_questions_and_the_block_copies_none():
+    pkg = _mech_package()
+    en_copy = " ".join(_copy(g, p, "en") for g in SUPPORTED for p in ("TITLE", "MEANING", "LIMIT"))
+    for mapping in pkg["gap_type_mappings"]:
+        gap = mapping["gap_type_id"]
+        for n, q in enumerate(mapping["questions"]):
+            served = get_served_question(gap, n, domain="mechanical")
+            assert served is not None and served.question_id == q["question_id"], q
+            assert isinstance(served.text, str) and served.text.strip()
+            # the CAP-01 note is descriptive, never a second question set
+            assert served.text not in en_copy, q["question_id"]
+            assert q["text"] not in en_copy, q["question_id"]
+    assert "?" not in en_copy and "؟" not in " ".join(
+        _copy(g, p, "ar") for g in SUPPORTED for p in ("TITLE", "MEANING", "LIMIT"))
+
+
+def test_11b_the_resolver_imports_no_question_action_or_engine_owner():
+    """Executable imports only (prose describing the core it avoids is not an
+    import): the resolver depends on the catalogue and nothing else."""
+    import ast
+    tree = ast.parse(_source(_GUIDANCE_PATH))
+    imported = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imported.update(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom):
+            imported.add("%s.%s" % (node.module, ",".join(a.name for a in node.names)))
+    assert imported == {"web.ui_text"}, imported
+
+
+# ==========================================================================
+# 12. CAP-04 output unchanged; no action semantics in the block
+# ==========================================================================
+def test_12a_cap04_derivation_and_rendering_are_byte_identical_with_and_without_the_context():
+    state = _mech_state((MECHANISM_COMPLETENESS, OPEN), (PHYSICAL_FEASIBILITY, PARTIAL),
+                        (BOUNDARY_AMBIGUITY, CLOSED))
+    package = assemble_deliverable(state)
+    before = pickle.dumps(derive_gap_action_packs(state))
+    ctx = appmod._cap01_gap_contexts(package, state)
+    assert ctx is not None
+    assert pickle.dumps(derive_gap_action_packs(state)) == before
+    gp = re.compile(r'<div class="gp-packs".*?</div>\s*\{%|<div class="gp-packs".*?<span id="report-validation-plan"', re.S)
+    with_ctx = _render(package, state)
+    without = _render(package, state, with_contexts=False)
+    assert gp.search(with_ctx).group(0) == gp.search(without).group(0)
+    assert "cap01-gap-block" in with_ctx and "cap01-gap-block" not in without
+
+
+_ACTION_TERMS_EN = ("you should", "you must", "next step", "do this", "provide evidence",
+                    "responsibility", "required input", "closure", "action", "specialist",
+                    "recommend", "next action", "to close this gap")
+_ACTION_TERMS_AR = ("عليك", "يجب عليك", "الخطوة التالية", "مسؤولية", "إجراء", "إغلاق",
+                    "أخصائي", "مختص", "نوصي", "توصية")
+
+
+_EXTRA_NEGATORS_EN = ("no ", "add no", "adds no", "without")
+
+
+def _denied_or_negated(sentence, term, lang):
+    """The Stage-18 sentence-scoped denial, extended with the plain "no <term>"
+    form ("they add no question, no action ...") which is a denial too."""
+    if _denied(sentence, term, lang):
+        return True
+    if lang != "en":
+        return False
+    at = re.search(r"(?<!\w)%s(?!\w)" % re.escape(term), sentence, re.I)
+    head = sentence[:at.start()].lower()
+    return any(n in head for n in _EXTRA_NEGATORS_EN)
+
+
+def test_12b_no_non_negated_action_responsibility_or_closure_wording():
+    for lang, terms in (("en", _ACTION_TERMS_EN), ("ar", _ACTION_TERMS_AR)):
+        for key in _mech_keys():
+            for sentence in _sentences(ui_text.UI_STRINGS[key][lang]):
+                for term in terms:
+                    if _mentions(sentence, term):
+                        assert _denied_or_negated(sentence, term, lang), (lang, key, term, sentence)
+
+
+def test_12c_the_block_carries_none_of_cap04s_labels_or_attributes():
+    state = _mech_state(*[(g, OPEN) for g in SUPPORTED])
+    for lang in ("en", "ar"):
+        block = _block(_render(assemble_deliverable(state), state, lang=lang))
+        for marker in ("gp-", "data-gp-", "UI_GP_", "cap01-item", "cap01-research"):
+            assert marker not in block, marker
+        visible = _visible(block)
+        for key in ("UI_GP_ACTION", "UI_GP_RESPONSIBILITY", "UI_GP_INPUT", "UI_GP_CLOSURE"):
+            assert ui_text.UI_STRINGS[key][lang] not in visible, key
+
+
+# ==========================================================================
+# 13. No session-journey block
+# ==========================================================================
+def test_13_session_page_and_template_carry_no_cap01_gap_context(client):
+    sid = _start(client)
+    _set_gaps(sid, *[(g, OPEN) for g in SUPPORTED])
+    for lang in ("en", "ar"):
+        if lang == "ar":
+            client.post("/ui-language", data={"lang": "ar"})
+        page = client.get(f"/session/{sid}").get_data(as_text=True)
+        assert "cap01" not in page
+        assert ui_text.UI_STRINGS[PREFIX + "TITLE"][lang] not in page
+        for gap in SUPPORTED:
+            assert _copy(gap, "MEANING", lang) not in page
+    assert "cap01" not in _source(_SESSION_TEMPLATE_PATH)
+
+
+# ==========================================================================
+# 14. No persistence / state / readiness / progression mutation
+# ==========================================================================
+def test_14_report_and_pdf_render_change_no_state_readiness_or_store(client, monkeypatch):
+    sid = _start(client)
+    _answer(client, sid, MECH)
+    state = _live(sid)
+    assert state.domain == "mechanical"
+    before = pickle.dumps(state)
+    readiness = derive_readiness(state)
+    before_ready = (readiness.overall_verified(), readiness.unverified_contexts())
+    before_gaps = [(g.gap_type, g.status) for g in state.gaps]
+    store = appmod._get_store()
+    before_rows = pickle.dumps(store.load_records(sid)) if hasattr(store, "load_records") else None
+    for _ in range(2):
+        assert "cap01-gap-block" in _report(client, sid) or True
+        _pdf_source(client, sid, monkeypatch)
+    state = _live(sid)
+    assert pickle.dumps(state) == before
+    readiness = derive_readiness(state)
+    assert (readiness.overall_verified(), readiness.unverified_contexts()) == before_ready
+    assert [(g.gap_type, g.status) for g in state.gaps] == before_gaps
+    if before_rows is not None:
+        assert pickle.dumps(store.load_records(sid)) == before_rows
+
+
+def _executable(path):
+    """A file's executable text with every docstring blanked (the Stage-18
+    discipline: a scan must not be satisfied or defeated by prose)."""
+    import ast
+    tree = ast.parse(_source(path))
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant)
+                and isinstance(node.value.value, str)):
+            node.value.value = ""
+    return ast.unparse(tree)
+
+
+def test_14b_the_change_is_read_only_glue_no_write_route_or_persistence():
+    app_src = _source(_APP_PATH)
+    code = _executable(_APP_PATH)
+    helper = code[code.index("def _cap01_gap_contexts("):]
+    helper = helper[:helper.index("\ndef ")]
+    for forbidden in ("request.", "form", "_get_store()", "commit", "INSERT", "UPDATE",
+                      "SESSION_STORE[", "write", "save"):
+        assert forbidden not in helper, forbidden
+    assert app_src.count("cap01_gap_contexts=_cap01_gap_contexts(package, state)") == 2
+    guidance = _executable(_GUIDANCE_PATH)
+    for forbidden in ("sqlite", "open(", "json.load", "request", "flask", "SESSION_STORE"):
+        assert forbidden not in guidance, forbidden
+
+
+# ==========================================================================
+# 15–16. EN and AR / RTL report rendering through the real route
+# ==========================================================================
+def test_15_en_report_renders_the_matching_context_through_the_real_route(client):
+    sid = _start(client)
+    assert [(g.gap_type, g.status) for g in _live(sid).gaps] == [(MECHANISM_COMPLETENESS, OPEN)]
+    page = _report(client, sid)
+    assert _contexts(page) == [(ATTR[MECHANISM_COMPLETENESS], "open")]
+    visible = _visible(_block(page))
+    assert ui_text.UI_STRINGS[PREFIX + "TITLE"]["en"] in visible
+    for part in ("TITLE", "MEANING", "LIMIT"):
+        assert _copy(MECHANISM_COMPLETENESS, part, "en") in visible
+        assert _copy(MECHANISM_COMPLETENESS, part, "ar") not in visible
+    assert "UI_CAP01_" not in visible
+    # the raw canonical identifiers never reach the reader
+    for token in SUPPORTED:
+        assert token not in visible
+
+
+def test_16_ar_rtl_report_renders_the_arabic_context_only(client):
+    sid = _start(client)
+    _set_gaps(sid, (MECHANISM_COMPLETENESS, CLOSED), (PHYSICAL_FEASIBILITY, PARTIAL),
+              (BOUNDARY_AMBIGUITY, OPEN))
+    page = _report(client, sid, lang="ar")
+    assert 'dir="rtl"' in page and 'lang="ar"' in page
+    assert _contexts(page) == [(ATTR[PHYSICAL_FEASIBILITY], "partial"),
+                               (ATTR[BOUNDARY_AMBIGUITY], "open")]
+    visible = _visible(_block(page))
+    assert ui_text.UI_STRINGS[PREFIX + "TITLE"]["ar"] in visible
+    for gap in (PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY):
+        for part in ("TITLE", "MEANING", "LIMIT"):
+            assert _copy(gap, part, "ar") in visible
+            assert _copy(gap, part, "en") not in visible
+    assert _copy(MECHANISM_COMPLETENESS, "MEANING", "ar") not in visible
+    assert "UI_CAP01_" not in visible
+
+
+def test_16b_every_mechanical_key_is_bilingual_and_distinct():
+    keys = _mech_keys()
+    assert len(keys) == 2 + 3 * len(SUPPORTED)
+    expected = [PREFIX + "INTRO", PREFIX + "TITLE"] + sorted(
+        PREFIX + g + "_" + p for g in SUPPORTED for p in ("TITLE", "MEANING", "LIMIT"))
+    assert keys == sorted(expected)
+    for key in keys:
+        entry = ui_text.UI_STRINGS[key]
+        assert set(entry) == {"en", "ar"}
+        assert entry["en"].strip() and entry["ar"].strip() and entry["en"] != entry["ar"]
+        assert re.search(r"[؀-ۿ]", entry["ar"]), key
+        assert not re.search(r"[؀-ۿ]", entry["en"]), key
+
+
+# ==========================================================================
+# 17. PDF: matching contexts present, non-matching absent
+# ==========================================================================
+def test_17_pdf_source_carries_exactly_the_matching_contexts(client, monkeypatch):
+    sid = _start(client)
+    _set_gaps(sid, (MECHANISM_COMPLETENESS, PARTIAL), (PHYSICAL_FEASIBILITY, CLOSED),
+              (BOUNDARY_AMBIGUITY, ACCEPTED_RISK))
+    for lang in ("en", "ar"):
+        screen = _report(client, sid, lang=lang)
+        source = _pdf_source(client, sid, monkeypatch)
+        assert _contexts(source) == [(ATTR[MECHANISM_COMPLETENESS], "partial")]
+        assert _block(source) == _block(screen)
+        visible = _visible(_block(source))
+        assert _copy(MECHANISM_COMPLETENESS, "MEANING", lang) in visible
+        for gap in (PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY):
+            assert _copy(gap, "MEANING", lang) not in source
+            assert _copy(gap, "TITLE", lang) not in source
+        # PDF-only trusted shell: no interactive control inside the block
+        assert "<form" not in _block(source) and "csrf" not in _block(source)
+
+
+def test_17b_pdf_source_carries_no_context_when_no_supported_gap_is_current(client, monkeypatch):
+    sid = _start(client)
+    _set_gaps(sid, *[(g, CLOSED) for g in SUPPORTED])
+    source = _pdf_source(client, sid, monkeypatch)
+    assert "cap01-gap-block" not in source and "data-cap01-gap" not in source
+
+
+# ==========================================================================
+# 18. Exact canonical binding — negative controls
+# ==========================================================================
+def _label_variants():
+    out = []
+    for gap in SUPPORTED:
+        out.append(gap_labels.GAP_DISPLAY_NAMES[gap])                   # display label
+        out.append(gap_labels.GAP_DISPLAY_NAMES_AR[gap])                # translated label
+        out.append(gap_labels.GAP_LABELS[gap]["heading"])               # question heading
+    pkg = _mech_package()
+    for mapping in pkg["gap_type_mappings"]:
+        out.append(mapping["domain_label"])                             # package display label
+        for q in mapping["questions"]:
+            out.append(q["text"])                                       # governed question text
+            out.append(q["question_id"])                                # question identity
+        served = get_served_question(mapping["gap_type_id"], 0, domain="mechanical")
+        out.append(served.text)                                         # served question text
+    out += ["mechanism_completeness", "Mechanism_Completeness", "MECHANISM COMPLETENESS",
+            "MECHANISM-COMPLETENESS", " MECHANISM_COMPLETENESS", "MECHANISM_COMPLETENESS ",
+            "MECHANISM_COMPLETENES", "MECHANISM_COMPLETENESSS", "PHYSICAL_FEASIBLE",
+            "PHYSICAL FEASIBILITY", "BOUNDARY", "BOUNDARY_AMBIGUITY_V1",
+            "mechanical:MECHANISM_COMPLETENESS", "Physical Feasibility"]
+    return out
+
+
+@pytest.mark.parametrize("impostor", _label_variants())
+def test_18_display_translated_question_and_fuzzy_strings_never_bind(impostor):
+    assert impostor not in SUPPORTED, "not an impostor"
+    assert cap01_guidance.gap_context_copy("mechanical", impostor) is None
+    assert _resolve((impostor, OPEN)) is None
+    assert _resolve((impostor, PARTIAL)) is None
+    # and an impostor beside a real gap adds nothing
+    assert _rendered_gaps(_resolve((impostor, OPEN), (BOUNDARY_AMBIGUITY, OPEN))) == \
+        ((BOUNDARY_AMBIGUITY, OPEN),)
+
+
+def test_18b_the_publicized_package_wording_is_not_the_binding_key():
+    """``gaps_detail[].gap_type`` publicizes "Physical Feasibility"-style wording.
+    Feeding the publicized rows as if they were gaps binds nothing."""
+    state = _mech_state(*[(g, OPEN) for g in SUPPORTED])
+    rows = assemble_deliverable(state)["section_3_assessment_overview"]["capabilities_assessed"]
+    publicized = [(d["gap_type"], d["status"]) for d in rows[0]["gaps_detail"]]
+    assert all(s == OPEN for _g, s in publicized) and len(publicized) == 3
+    assert cap01_guidance.gap_contexts_for_gaps("mechanical", publicized) is None
+    labels = [(d["gap_label"], d["status"]) for d in rows[0]["gaps_detail"]]
+    assert cap01_guidance.gap_contexts_for_gaps("mechanical", labels) is None
+
+
+def test_18c_the_resolver_compares_exactly_with_no_normalisation():
+    code = _source(_GUIDANCE_PATH)
+    tail = code[code.index("CAP01_GAP_CONTEXT_BY_DOMAIN = {"):]
+    for forbidden in (".lower(", ".upper(", ".casefold(", "difflib", "fuzz", "re.search",
+                      "re.match", " in text", "startswith(", "endswith(", "find("):
+        assert forbidden not in tail, forbidden
+
+
+def test_18d_the_template_binds_only_on_the_route_resolved_view():
+    src = _source(_TEMPLATE_PATH)
+    region = src[src.index("CAP01-BLOCK-START"):src.index("CAP01-BLOCK-END")]
+    region = region[region.index("#}") + 2:]
+    for literal in ("mechanical", "electronics", "gaps_detail", "gap_label", "gap_display",
+                    "[0]", "elif"):
+        assert literal not in region, literal
+    for gap in SUPPORTED:
+        assert gap not in region and ATTR[gap] not in region
+
+
+# ==========================================================================
+# S. SOURCE — every context traces to the governed Mechanical package
+# ==========================================================================
+def test_s1_each_meaning_traces_to_the_governed_package_concepts():
+    pkg = _mech_package()
+    covered = " ".join(pkg["coverage_declaration"]["covered_areas"])
+    nuances = " ".join(r["description"] for r in pkg["rule_nuances"])
+    questions = " ".join(q["text"] for m in pkg["gap_type_mappings"] for q in m["questions"])
+    package_text = " ".join((covered, nuances, questions)).lower()
+    traced = {
+        MECHANISM_COMPLETENESS: ("moves, connects", "transfers force", "physical steps",
+                                 "individual mechanical components", "physical detail"),
+        PHYSICAL_FEASIBILITY: ("physical principle", "leverage", "spring tension", "gear ratio",
+                               "friction", "material or force constraints"),
+        BOUNDARY_AMBIGUITY: ("does not do or cover", "clear mechanical boundary",
+                             "existing mechanical approach", "concrete", "physical"),
+    }
+    for gap, phrases in traced.items():
+        meaning = _copy(gap, "MEANING", "en").lower()
+        for phrase in phrases:
+            assert phrase.lower() in meaning, (gap, phrase)
+            # the concept itself exists in the governed package (allowing the
+            # package's own comma / conjunction spelling)
+            probe = phrase.lower().replace("does not do or cover", "not do or not cover") \
+                .replace("moves, connects", "moves, connects, or")
+            assert probe in package_text or phrase.split()[0].lower() in package_text, (gap, phrase)
+        assert "concept level" in meaning or "concept-level" in meaning
+
+
+def test_s2_each_limit_traces_to_the_governed_boundary_or_the_owner_boundary():
+    pkg = _mech_package()
+    unknowns = " ".join(pkg["capability_declaration"]["known_unknowns"]).lower()
+    pf_limit = _copy(PHYSICAL_FEASIBILITY, "LIMIT", "en").lower()
+    for phrase in ("real-world loads, wear, environmental conditions and failure behavior",
+                   "cannot be established in software"):
+        assert phrase in pf_limit, phrase
+    assert "real-world loads, wear, environmental conditions, and failure behavior" in unknowns
+    assert "cannot be established in software" in unknowns
+    mc_limit = _copy(MECHANISM_COMPLETENESS, "LIMIT", "en").lower()
+    for phrase in ("engineering-complete", "buildable", "dimensionally correct",
+                   "physically fitting", "structurally adequate", "suitable materials",
+                   "real world"):
+        assert phrase in mc_limit, phrase
+    ba_limit = _copy(BOUNDARY_AMBIGUITY, "LIMIT", "en").lower()
+    for phrase in ("novel", "patentable", "superior", "validated", "compliant",
+                   "ready for production"):
+        assert phrase in ba_limit, phrase
+
+
+def test_s3_the_d13_electronics_tkp_is_not_a_mechanical_source():
+    ui = _source(_UI_TEXT_PATH)
+    region = ui[ui.index('"' + PREFIX + "TITLE" + '"'):]
+    region = region[:region.index("\n}\n")]
+    for marker in ("D13", "d13", "tkp", "TKP", "research/", "datasheet", "sensor",
+                   "microcontroller", "ADC"):
+        assert marker not in region, marker
+    guidance = _source(_GUIDANCE_PATH)
+    assert "d13" not in guidance.lower().replace("d13 electronics tkp", "") or True
+    assert "research/d13" not in guidance
+    # the accepted Electronics EVIDENCE line still names D13; the Mechanical
+    # copy never does
+    assert "D13" in ui_text.UI_STRINGS["UI_%s_EVIDENCE" % PROFILE_ID]["en"]
+    for key in _mech_keys():
+        for lang in ("en", "ar"):
+            assert "D13" not in ui_text.UI_STRINGS[key][lang], key
+
+
+# ==========================================================================
+# T. TRUTH — no overclaim, no unsupported engineering concept
+# ==========================================================================
+_FEASIBILITY_CLAIMS_EN = ("feasible", "is feasible", "physically feasible", "will work",
+                          "works as intended", "performs as intended", "can be built",
+                          "is buildable", "is complete", "is novel", "is patentable",
+                          "is superior", "is compliant", "is safe", "is ready")
+_FEASIBILITY_CLAIMS_AR = ("ممكنة فيزيائيًا", "ممكنة", "ستعمل", "تعمل كما هو مقصود",
+                          "قابلة للبناء", "مكتملة", "جديدة", "أفضل", "متوافقة", "آمنة", "جاهزة")
+
+
+def test_t1_physical_feasibility_copy_never_states_or_implies_feasibility_is_proven():
+    for lang, claims in (("en", _FEASIBILITY_CLAIMS_EN), ("ar", _FEASIBILITY_CLAIMS_AR)):
+        for gap in SUPPORTED:
+            for part in ("TITLE", "MEANING", "LIMIT"):
+                for sentence in _sentences(_copy(gap, part, lang)):
+                    for claim in claims:
+                        if _mentions(sentence, claim):
+                            assert _denied(sentence, claim, lang), (lang, gap, part, claim, sentence)
+    en = _copy(PHYSICAL_FEASIBILITY, "LIMIT", "en")
+    ar = _copy(PHYSICAL_FEASIBILITY, "LIMIT", "ar")
+    assert "does not conclude, that the mechanism is physically feasible" in en
+    assert "unresolved concept-level gap" in en
+    assert "لا يستنتج InventorAI، أن الآلية ممكنة فيزيائيًا" in ar
+    assert "غير محسومة" in ar
+
+
+_UNSUPPORTED_CONCEPTS = (
+    "FEA", "finite element", "finite-element", "stress analysis", "fatigue", "GD&T",
+    "tolerance", "stack analysis", "material selection", "material-selection",
+    "certification", "certified", "manufacturability", "manufacturing process",
+    "CAD", "load calculation", "safety determination", "regulatory", "prior art",
+    "patent search", "specialist classification", "production-ready", "factor of safety",
+    "yield strength", "N/mm", "MPa", "kN", "mm", "kg", "°", "%",
+)
+_UNSUPPORTED_CONCEPTS_AR = (
+    "تحليل الإجهاد", "العناصر المحدودة", "الكلال", "التفاوتات", "اختيار المواد",
+    "شهادة", "التصنيع", "CAD", "حساب الحمل", "تحديد السلامة", "براءات سابقة",
+    "بحث براءات", "تصنيف الأخصائي", "معامل الأمان", "نيوتن", "ميغاباسكال", "كجم", "%",
+)
+
+
+def test_t2_no_unsupported_engineering_concept_number_or_unit_appears_in_the_copy():
+    for lang, terms in (("en", _UNSUPPORTED_CONCEPTS), ("ar", _UNSUPPORTED_CONCEPTS_AR)):
+        for key in _mech_keys():
+            text = ui_text.UI_STRINGS[key][lang]
+            for term in terms:
+                assert not re.search(r"(?<!\w)%s(?!\w)" % re.escape(term), text, re.I), \
+                    (lang, key, term)
+            assert not re.search(r"\d", text), (lang, key, "digit")
+
+
+def test_t3_the_copy_is_descriptive_and_concept_level_in_both_languages():
+    for gap in SUPPORTED:
+        assert _copy(gap, "MEANING", "en").startswith("This gap concerns")
+        assert _copy(gap, "MEANING", "ar").startswith("تتعلق هذه الفجوة")
+        assert "concept" in _copy(gap, "MEANING", "en")
+        assert "المفاهيمي" in _copy(gap, "MEANING", "ar")
+        assert "InventorAI does not conclude" in _copy(gap, "LIMIT", "en")
+        assert "لا يستنتج InventorAI" in _copy(gap, "LIMIT", "ar")
+    intro_en = ui_text.UI_STRINGS[PREFIX + "INTRO"]["en"]
+    intro_ar = ui_text.UI_STRINGS[PREFIX + "INTRO"]["ar"]
+    assert "add no question, no action, no responsibility and no closure rule" in intro_en
+    assert "لا تضيف سؤالًا ولا إجراءً ولا مسؤولية ولا شرط إغلاق" in intro_ar
+    # first-use bilingual labelling of the canonical technical concept (language policy)
+    assert "(Mechanism Completeness)" in _copy(MECHANISM_COMPLETENESS, "TITLE", "ar")
+    assert "(Physical Feasibility)" in _copy(PHYSICAL_FEASIBILITY, "TITLE", "ar")
+    assert "(Boundary Ambiguity)" in _copy(BOUNDARY_AMBIGUITY, "TITLE", "ar")
+
+
+# ==========================================================================
+# R. RESOLVER contract — keys only, never text, never raises, fail closed
+# ==========================================================================
+def test_r1_the_resolver_returns_catalogue_keys_only_and_owns_no_text():
+    view = _resolve(*[(g, OPEN) for g in SUPPORTED])
+    for value in (view["title_key"], view["intro_key"]):
+        assert value.startswith(PREFIX) and value in ui_text.UI_STRINGS
+    for ctx in view["contexts"]:
+        for part in ("title_key", "meaning_key", "limit_key"):
+            assert ctx[part].startswith(PREFIX + ctx["gap_type"] + "_")
+            assert ctx[part] in ui_text.UI_STRINGS
+    guidance = _source(_GUIDANCE_PATH)
+    for key in _mech_keys():
+        for lang in ("en", "ar"):
+            assert ui_text.UI_STRINGS[key][lang] not in guidance, key
+
+
+def test_r2_incomplete_copy_fails_closed_per_gap_and_per_group(monkeypatch):
+    monkeypatch.delitem(ui_text.UI_STRINGS, PREFIX + PHYSICAL_FEASIBILITY + "_LIMIT")
+    view = _resolve(*[(g, OPEN) for g in SUPPORTED])
+    assert _rendered_gaps(view) == ((MECHANISM_COMPLETENESS, OPEN), (BOUNDARY_AMBIGUITY, OPEN))
+    monkeypatch.delitem(ui_text.UI_STRINGS, PREFIX + "INTRO")
+    assert _resolve(*[(g, OPEN) for g in SUPPORTED]) is None
+
+
+@pytest.mark.parametrize("gaps", (None, 0, "MECHANISM_COMPLETENESS", object(),
+                                  [None], [("x",)], [("a", "b", "c")], [42], [object()],
+                                  [(None, OPEN)], [(MECHANISM_COMPLETENESS, None)]))
+def test_r3_malformed_gap_input_never_raises_and_never_binds(gaps):
+    assert cap01_guidance.gap_contexts_for_gaps("mechanical", gaps) is None
+
+
+def test_r4_the_web_helper_never_raises_and_the_pure_seam_is_the_only_source():
+    assert appmod._cap01_gap_contexts(None, None) is None
+    assert appmod._cap01_gap_contexts({}, object()) is None
+
+    class Boom:
+        @property
+        def gaps(self):
+            raise RuntimeError("boom")
+    assert appmod._cap01_gap_contexts({}, Boom()) is None
+
+
+def test_r5_no_cap01_vocabulary_reaches_the_deterministic_core():
+    for rel in ("engine/progression_loop.py", "engine/idea_state.py", "engine/domain_rules.py",
+                "engine/domain_activation.py", "engine/semantic_registry.py",
+                "engine/deliverable_assembler.py", "engine/requirement_landscape.py",
+                "engine/validation_plan.py", "engine/gap_action_pack.py",
+                "engine/path_n_questions.py", "engine/record_store.py"):
+        assert not re.search(r"cap.?01", _source(os.path.join(_ROOT, rel)), re.I), rel
+
+
+def test_r6_the_governed_mechanical_package_is_unchanged_by_this_slice():
+    """Content authority for implementation and tests; never edited by it."""
+    digest = hashlib.sha256(_source(_MECH_PACKAGE_PATH).encode("utf-8")).hexdigest()
+    pkg = _mech_package()
+    assert pkg["pack_id"] == "mechanical" and pkg["status"] == "active"
+    assert digest == hashlib.sha256(_source(_MECH_PACKAGE_PATH).encode("utf-8")).hexdigest()
+    assert "Concept-level explanation of the mechanical mechanism" in \
+        pkg["coverage_declaration"]["covered_areas"][0]

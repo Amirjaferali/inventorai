@@ -189,3 +189,191 @@ def profiles_for_package(package):
         seen.add(view["profile_id"])
         profiles.append(view)
     return tuple(profiles)
+
+
+# ---------------------------------------------------------------------------
+# MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT (Owner-authorized bounded slice)
+#
+# A SECOND, gap-scoped presentation shape beside the domain-level checklist
+# profile above. It answers ONE question: "for this trusted canonical domain,
+# which CURRENT (OPEN / PARTIAL) canonical gaps have an authorized explanatory
+# context, and which copy keys does each render?". The copy explains, at concept
+# level, what the exact gap concerns within the governed Mechanical package
+# (``domains/mechanical/domain.json``: gap_type_mappings, rule_nuances,
+# capability_declaration, coverage_declaration) and what InventorAI does NOT
+# conclude from it. It is explanatory context only — no question, action,
+# responsibility, required input, closure rule or next action: Path-N stays the
+# only served-question owner and CAP-04 the only action owner.
+#
+# Binding is by EXACT canonical identity and EXACT canonical lifecycle state:
+# the gap's ``gap_type`` constant and ``status`` constant as carried on the
+# already-loaded ``IdeaState``. Never by display label, translated label,
+# question text, rendered title, keyword, fuzzy match or list position. The
+# publicized ``gaps_detail[].gap_type`` of the assembled package is presentation
+# wording ("Physical Feasibility") and is deliberately NOT read here.
+#
+# The existing Electronics profile path above is untouched: a domain with no row
+# in this table contributes nothing, and "nothing" means only that no gap-scoped
+# CAP-01 context is authorized for it.
+# ---------------------------------------------------------------------------
+
+# Trusted canonical domain id -> (context group id, canonical gap ids in the
+# deterministic SOURCE order the governed package declares them). ONE row per
+# authorized domain; ONE context per supported canonical gap; nothing else.
+CAP01_GAP_CONTEXT_BY_DOMAIN = {
+    "mechanical": (
+        "CAP01_MECHANICAL_GAP_CONTEXT_V1",
+        ("MECHANISM_COMPLETENESS", "PHYSICAL_FEASIBILITY", "BOUNDARY_AMBIGUITY"),
+    ),
+}
+
+# The ONLY lifecycle states that make a gap CURRENT for this context. CLOSED,
+# ACCEPTED_RISK, an unknown state or an absent gap render nothing.
+_CURRENT_GAP_STATES = frozenset({"OPEN", "PARTIAL"})
+
+# Group-level copy parts (one heading + one intro for the whole block).
+_GAP_GROUP_PARTS = {
+    "title_key": "TITLE",
+    "intro_key": "INTRO",
+}
+
+# Per-gap copy parts: the gap heading, what the gap CONCERNS at concept level,
+# and what InventorAI does NOT conclude from it.
+_GAP_CONTEXT_PARTS = {
+    "title_key":   "TITLE",
+    "meaning_key": "MEANING",
+    "limit_key":   "LIMIT",
+}
+
+
+def _gap_identity(gap):
+    """``(gap_type, status)`` of one canonical gap record, or ``None``.
+
+    Accepts the ``IdeaState.gaps`` record shape (``.gap_type`` / ``.status``
+    attributes) or an explicit ``(gap_type, status)`` pair. Both values must be
+    strings and are compared EXACTLY — no normalisation, no stripping, no case
+    folding — so a display label, a translated label or a near string can never
+    satisfy the binding."""
+    if isinstance(gap, (tuple, list)) and len(gap) == 2:
+        gap_type, status = gap
+    else:
+        gap_type = getattr(gap, "gap_type", None)
+        status = getattr(gap, "status", None)
+    if isinstance(gap_type, str) and isinstance(status, str):
+        return gap_type, status
+    return None
+
+
+def _current_gap_states(gaps):
+    """Canonical gap id -> its EXACT lifecycle state, first record per id.
+
+    Mirrors the canonical ``IdeaState.get_gap`` accessor (first match wins), so
+    a duplicated record never yields a second context and never changes the
+    state the canonical accessor would report."""
+    states = {}
+    try:
+        records = tuple(gaps)
+    except TypeError:
+        return states
+    for gap in records:
+        identity = _gap_identity(gap)
+        if identity is None:
+            continue
+        gap_type, status = identity
+        if gap_type not in states:
+            states[gap_type] = status
+    return states
+
+
+def gap_context_copy(domain_id, gap_type):
+    """The CAP-01 gap-context copy KEYS for one trusted canonical domain id and
+    one EXACT canonical gap id, or ``None`` when no context is authorized for
+    that pair (or its copy is incomplete).
+
+    Pure and data-driven. The result carries ``group_id``, ``gap_type`` (the
+    canonical id, for traceability attributes only — never as visible text) and
+    the three part keys. Never text. Availability is not lifecycle: this does
+    not know whether the gap is current; ``gap_contexts_for_gaps`` decides that."""
+    if not isinstance(domain_id, str) or not isinstance(gap_type, str):
+        return None
+    row = CAP01_GAP_CONTEXT_BY_DOMAIN.get(domain_id.strip())
+    if row is None:
+        return None
+    group_id, gap_ids = row
+    if gap_type not in gap_ids:
+        return None
+    prefix = "UI_" + group_id + "_" + gap_type + "_"
+    view = {name: prefix + part for name, part in _GAP_CONTEXT_PARTS.items()}
+    if not all(ui_text.has_string(key) for key in view.values()):
+        return None
+    view["group_id"] = group_id
+    view["gap_type"] = gap_type
+    return view
+
+
+def _gap_group_copy(group_id):
+    """The group heading / intro copy KEYS for a context group, or ``None`` when
+    the group copy is incomplete (fail closed: no half block)."""
+    prefix = "UI_" + group_id + "_"
+    view = {name: prefix + part for name, part in _GAP_GROUP_PARTS.items()}
+    if not all(ui_text.has_string(key) for key in view.values()):
+        return None
+    view["group_id"] = group_id
+    return view
+
+
+def gap_contexts_for_gaps(domain_id, gaps):
+    """The resolved gap-scoped CAP-01 view for ONE trusted canonical domain id
+    and the canonical gap records of the already-loaded state, or ``None``.
+
+    Exactly three facts decide each context and none is derived here: the
+    trusted domain id has an authorized context row; the canonical gap id is
+    one of that row's supported gaps; and the gap's EXACT canonical lifecycle
+    state is OPEN or PARTIAL on the state. Contexts come back in the table's
+    deterministic source order (never state order), at most once per canonical
+    gap, each carrying its copy keys, its canonical ``gap_type`` and its exact
+    ``gap_state``. A domain without a row, a domain with no current supported
+    gap, or incomplete copy yields ``None`` — a silent no-render that says
+    nothing about the domain's support. Never raises."""
+    if not isinstance(domain_id, str):
+        return None
+    row = CAP01_GAP_CONTEXT_BY_DOMAIN.get(domain_id.strip())
+    if row is None:
+        return None
+    group_id, gap_ids = row
+    group = _gap_group_copy(group_id)
+    if group is None:
+        return None
+    states = _current_gap_states(gaps)
+    contexts = []
+    for gap_type in gap_ids:
+        state = states.get(gap_type)
+        if state not in _CURRENT_GAP_STATES:
+            continue
+        view = gap_context_copy(domain_id, gap_type)
+        if view is None:
+            continue
+        view["gap_state"] = state
+        contexts.append(view)
+    if not contexts:
+        return None
+    group["contexts"] = tuple(contexts)
+    return group
+
+
+def gap_contexts_for_package(package, gaps):
+    """The gap-scoped CAP-01 view for an assembled package plus the canonical
+    gap records of the state it was assembled from, or ``None``.
+
+    The package supplies ONLY the trusted canonical domain context (the
+    capability rows' ``capability_id``, read as a COLLECTION exactly like
+    ``profiles_for_package``); the gap identities and lifecycle states come from
+    the canonical ``gaps`` records, never from the package's publicized
+    presentation wording. The first row whose domain has an authorized context
+    and at least one current supported gap wins; today's single-domain runtime
+    is a current limitation, not the model. Never raises."""
+    for row in _rows(package):
+        view = gap_contexts_for_gaps(row.get("capability_id"), gaps)
+        if view is not None:
+            return view
+    return None

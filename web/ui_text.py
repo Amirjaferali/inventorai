@@ -4251,6 +4251,148 @@ UI_STRINGS = {
             "ادمجه مع اسم القسم أو المعامل ذي الصلة في عبارة البحث."
         ),
     },
+
+    # --- MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT (Owner-authorized bounded
+    # slice). Gap-scoped explanatory copy for the governed Mechanical package
+    # (domains/mechanical/domain.json: gap_type_mappings, rule_nuances,
+    # capability_declaration, coverage_declaration). Each context states, at
+    # concept level, what the EXACT canonical gap concerns and what InventorAI does
+    # NOT conclude from it. Explanatory only: no question, action, responsibility,
+    # required input, closure rule or next action (Path-N and CAP-04 keep those).
+    # The D13 Electronics package is NOT a source of any line below. Selection is
+    # owned by web/cap01_guidance.py by exact canonical gap identity + lifecycle
+    # state; these entries are copy only and never bind anything.
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_TITLE": {
+        "en": "Technical context for the unresolved mechanical gaps",
+        "ar": "سياق فني للفجوات الميكانيكية غير المحسومة",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_INTRO": {
+        "en": (
+            "Each note below explains, at concept level only, what one currently open "
+            "or partially addressed gap concerns within InventorAI's mechanical coverage, "
+            "and what InventorAI does not conclude from it. These notes are explanatory "
+            "context only: they add no question, no action, no responsibility and no "
+            "closure rule, and they do not replace the gap action packs or the "
+            "Validation Plan."
+        ),
+        "ar": (
+            "توضّح كل ملاحظة أدناه، على المستوى المفاهيمي فقط، ما تتعلق به فجوة واحدة "
+            "مفتوحة حاليًا أو مُعالَجة جزئيًا ضمن التغطية الميكانيكية في InventorAI، "
+            "وما الذي لا يستنتجه InventorAI منها. هذه الملاحظات سياق توضيحي فقط: لا "
+            "تضيف سؤالًا ولا إجراءً ولا مسؤولية ولا شرط إغلاق، ولا تحل محل حِزم إجراءات "
+            "الفجوات أو خطة التحقق (Validation Plan)."
+        ),
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_TITLE": {
+        "en": "Mechanism completeness — what this gap concerns",
+        "ar": "اكتمال الآلية (Mechanism Completeness) — ما تتعلق به هذه الفجوة",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_MEANING": {
+        "en": (
+            "This gap concerns the concept-level description of how the mechanism works "
+            "physically: the sequence of physical steps it takes to achieve its function; "
+            "what moves, connects or transfers force; and the individual mechanical "
+            "components and how each one contributes to the overall motion or function. "
+            "Where such physical detail is still missing from the description, mechanism "
+            "completeness remains unresolved at concept level."
+        ),
+        "ar": (
+            "تتعلق هذه الفجوة بالوصف المفاهيمي لكيفية عمل الآلية فيزيائيًا: تسلسل الخطوات "
+            "الفيزيائية التي تؤدي بها وظيفتها؛ وما الذي يتحرك أو يتصل أو ينقل القوة؛ "
+            "والمكوّنات الميكانيكية المنفردة وكيف يساهم كل منها في الحركة أو الوظيفة "
+            "الكلية. وحيث يظل هذا التفصيل الفيزيائي غائبًا عن الوصف، يبقى اكتمال الآلية "
+            "غير محسوم على المستوى المفاهيمي."
+        ),
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LIMIT": {
+        "en": (
+            "InventorAI does not conclude from this gap, or from its later closure, that "
+            "the mechanism is engineering-complete, buildable, dimensionally correct, "
+            "physically fitting, structurally adequate or made of suitable materials, and "
+            "it does not conclude how the mechanism would perform in the real world. "
+            "Mechanism completeness here is a concept-level reasoning assessment, not "
+            "detailed engineering."
+        ),
+        "ar": (
+            "لا يستنتج InventorAI من هذه الفجوة، ولا من إغلاقها لاحقًا، أن الآلية مكتملة "
+            "هندسيًا، أو قابلة للبناء، أو صحيحة الأبعاد، أو متوافقة فيزيائيًا في التركيب، "
+            "أو كافية إنشائيًا، أو مصنوعة من مواد مناسبة، ولا يستنتج كيف ستعمل الآلية في "
+            "الواقع. اكتمال الآلية هنا تقييم استدلالي على المستوى المفاهيمي، وليس هندسة "
+            "تفصيلية."
+        ),
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_TITLE": {
+        "en": "Physical feasibility — what this gap concerns",
+        "ar": "الجدوى الفيزيائية (Physical Feasibility) — ما تتعلق به هذه الفجوة",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_MEANING": {
+        "en": (
+            "This gap concerns, at concept level, the physical principle the inventor says "
+            "the mechanism relies on — for example leverage, spring tension, gear ratio or "
+            "friction — and the material or force constraints the inventor states the "
+            "mechanism must operate within. Where that principle or those constraints are "
+            "not yet stated or clarified, physical feasibility remains an unresolved "
+            "concept-level gap."
+        ),
+        "ar": (
+            "تتعلق هذه الفجوة، على المستوى المفاهيمي، بالمبدأ الفيزيائي الذي يقول المخترع إن "
+            "الآلية تعتمد عليه — مثل الرافعة، أو شدّ النابض، أو نسبة التروس، أو الاحتكاك — "
+            "وبقيود المواد أو القوى التي يذكر المخترع أن الآلية يجب أن تعمل ضمنها. وحيث لم "
+            "يُذكر هذا المبدأ أو لم تُوضَّح هذه القيود بعد، تبقى الجدوى الفيزيائية فجوة غير "
+            "محسومة على المستوى المفاهيمي."
+        ),
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_LIMIT": {
+        "en": (
+            "This note explains an unresolved concept-level gap; it does not establish, "
+            "and InventorAI does not conclude, that the mechanism is physically feasible. "
+            "Real-world loads, wear, environmental conditions and failure behavior remain "
+            "unknown unless separately evidenced, and it cannot be established in software "
+            "whether the mechanism performs as intended. InventorAI calculates or "
+            "recommends no load, limit, value, material or dimension."
+        ),
+        "ar": (
+            "توضّح هذه الملاحظة فجوة غير محسومة على المستوى المفاهيمي؛ وهي لا تثبت، ولا "
+            "يستنتج InventorAI، أن الآلية ممكنة فيزيائيًا. تبقى الأحمال الواقعية، والتآكل، "
+            "والظروف البيئية، وسلوك الفشل مجهولةً ما لم تُدعَم بأدلة مستقلة، ولا يمكن "
+            "إثبات أن الآلية تعمل كما هو مقصود عبر البرمجيات. ولا يحسب InventorAI ولا يوصي "
+            "بأي حمل أو حدّ أو قيمة أو مادة أو بُعد."
+        ),
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_BOUNDARY_AMBIGUITY_TITLE": {
+        "en": "Scope and boundaries — what this gap concerns",
+        "ar": "النطاق والحدود (Boundary Ambiguity) — ما تتعلق به هذه الفجوة",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_BOUNDARY_AMBIGUITY_MEANING": {
+        "en": (
+            "This gap concerns, at concept level, what the mechanism does and does not do "
+            "or cover, whether a clear mechanical boundary has been stated, and the "
+            "concrete physical way in which the inventor describes it as different from an "
+            "existing mechanical approach. Where that scope or that distinction is not yet "
+            "stated, the boundary remains ambiguous at concept level."
+        ),
+        "ar": (
+            "تتعلق هذه الفجوة، على المستوى المفاهيمي، بما تفعله الآلية وما لا تفعله أو لا "
+            "تغطيه، وبما إذا كان قد ذُكر حدّ ميكانيكي واضح، وبالطريقة الفيزيائية الملموسة "
+            "التي يصف بها المخترع اختلافها عن نهج ميكانيكي قائم. وحيث لم يُذكر هذا النطاق أو "
+            "هذا الاختلاف بعد، يبقى الحدّ غامضًا على المستوى المفاهيمي."
+        ),
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_BOUNDARY_AMBIGUITY_LIMIT": {
+        "en": (
+            "InventorAI does not conclude from this gap, or from its later closure, that "
+            "the mechanism is novel or patentable, superior to an existing approach, "
+            "differentiated in a validated way, compliant with any regulation or "
+            "standard, or ready for production. The distinction described is the "
+            "inventor's own concept-level statement."
+        ),
+        "ar": (
+            "لا يستنتج InventorAI من هذه الفجوة، ولا من إغلاقها لاحقًا، أن الآلية جديدة أو "
+            "قابلة للحماية ببراءة اختراع، أو أنها أفضل من نهج قائم، أو أن تمايزها مُتحقَّق "
+            "منه، أو أنها متوافقة مع أي لائحة أو معيار، أو جاهزة للإنتاج. والاختلاف "
+            "الموصوف هو بيان المخترع نفسه على المستوى المفاهيمي."
+        ),
+    },
 }
 
 
