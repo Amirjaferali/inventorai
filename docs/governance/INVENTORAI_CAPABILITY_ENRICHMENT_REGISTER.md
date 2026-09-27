@@ -56,7 +56,7 @@ IMPLEMENTATION`** and require **separate explicit owner authorization** before a
 §R5/§R6), **with ONE bounded exception recorded in the CAP-01 entry below: the Owner has explicitly
 authorized two bounded deterministic Stage-18 CAP-01 guidance increments — the first IMPLEMENTED / MERGED /
 POST-MERGE VERIFIED (PR #678), the second a research-direction addendum likewise IMPLEMENTED / MERGED / POST-MERGE
-VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`). Those authorizations are confined to those increments. They do NOT authorize full CAP-01 / full STG, and they change nothing for
+VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`) — and, separately, ONE bounded gap-scoped Mechanical CAP-01 Open-Gap Technical Context (OWNER-AUTHORIZED / IMPLEMENTED at candidate `99f6b91185c0a1766e48e2abe0efde629b939ab1` / INDEPENDENT NON-AUTHORING REVIEW PASS, material findings NONE / PR / merge pending; not a Mechanical domain-level checklist profile). Those authorizations are confined to those increments and that slice. They do NOT authorize full CAP-01 / full STG, and they change nothing for
 CAP-02 … CAP-18, which remain `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` unless already governed
 otherwise by their own authority.** **A second, separately bounded exception is recorded in the
 CAP-09 entry below: the Owner authorized ONE Stage-19 durable SuccessCriterion remediation
@@ -94,8 +94,16 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   (governed by D13), **except for two Owner-authorized bounded deterministic Stage-18 CAP-01 guidance
   increments: the first IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678, merge `84c45cec89f5348f279c591dd739ded0d0db24b3`), and the
   second — a class-general research-direction addendum naming where to look and generic search terms for
-  the same six topics — IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`).** No further
-  CAP-01 implementation is currently authorized. Both are presentation-only; the second
+  the same six topics — IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`).** A third, separately Owner-authorized bounded
+  slice — the Mechanical Open-Gap Technical Context: OWNER-AUTHORIZED / IMPLEMENTED at candidate
+  `99f6b91185c0a1766e48e2abe0efde629b939ab1` / INDEPENDENT NON-AUTHORING REVIEW PASS (material findings NONE) / PR / MERGE
+  PENDING — shows, for each CURRENT (OPEN / PARTIAL) canonical Mechanical gap (MECHANISM_COMPLETENESS,
+  PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY), one short explanatory technical context in the report /
+  deliverable and PDF, grounded only in the governed Mechanical truth (`domains/mechanical/domain.json`;
+  the D13 Electronics package is not a Mechanical source); it is a gap-scoped explanatory presentation
+  slice, not a Mechanical domain-level checklist profile, a D13 Mechanical package, a technical engine or
+  engineering execution. No further CAP-01 implementation beyond the currently authorized Mechanical
+  bounded slice is authorized. The two Electronics increments are presentation-only; the second
   adds no evidence, retrieval, numeric value, project inspection or specialist. That increment is presentation-only, class-general and
   conditional, with one authorized domain guidance profile (`electronics_electrical`), bounded EN/AR
   copy, and no concept-class assertion, record inspection, numeric value, compatibility or safety
@@ -107,8 +115,9 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   beyond the one authorized bounded increment.
 - **Separate owner authorization requirement:** yes — via the D13 authority, and separately for each
   future domain CAP-01 guidance profile, which additionally requires its own governed domain knowledge.
-  Domain activation is NOT CAP-01 profile availability: an activated domain with no authorized profile
-  (`mechanical` today) is a missing profile, never an unsupported domain.
+  Domain activation is NOT CAP-01 profile availability: an activated domain with no authorized domain-level
+  checklist profile (`mechanical` today — it has NO Electronics-style checklist profile, and separately has the
+  bounded gap-scoped Open-Gap Technical Context above) is a missing profile, never an unsupported domain.
 
 ### CAP-02 — Simplified One-Step Journey Presentation
 - **Product problem:** the internal governance model is too complex for a lay inventor to navigate.
@@ -695,7 +704,7 @@ nothing, authorizes nothing, and changes no critical path.
 
 | Capability | Primary activation gate / authority | Also spans | Current status |
 |---|---|---|---|
-| CAP-01 Structured Technical Guidance | **D13** (owner-gated) | WS-PFV-001, CAP-04, CAP-09 | RECORDED — NOT AUTHORIZED, **except two Owner-authorized bounded Stage-18 guidance increments** (first merged in PR #678; second research-direction addendum merged in PR #679; full CAP-01/STG still NOT AUTHORIZED) |
+| CAP-01 Structured Technical Guidance | **D13** (owner-gated) | WS-PFV-001, CAP-04, CAP-09 | RECORDED — NOT AUTHORIZED, **except two Owner-authorized bounded Stage-18 guidance increments** (Electronics; first merged in PR #678; second research-direction addendum merged in PR #679) **and one Owner-authorized bounded gap-scoped Mechanical Open-Gap Technical Context** (implemented at candidate 99f6b91185c0a1766e48e2abe0efde629b939ab1; independent non-authoring review PASS; PR / merge pending; not a Mechanical domain-level checklist profile; full CAP-01/STG still NOT AUTHORIZED) |
 | CAP-02 Simplified One-Step Journey | WS8 / later UX increment | CAP-06, CAP-07 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (delivered, PR #709) — FULL CAP-02 NOT AUTHORIZED |
 | CAP-03 Adaptive Assistance | WS13 / WS14 | CAP-02, AI Coach | RECORDED — NOT AUTHORIZED |
 | CAP-04 Gap Action Packs | WS12 (+ D13 for technical) | CAP-01, CAP-09 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (delivered, PR #708) — FULL CAP-04 NOT AUTHORIZED |
@@ -703,7 +712,7 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-06 Readiness Dashboard | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-02, CAP-07, CAP-11 | RECORDED — NOT AUTHORIZED |
 | CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED |
 | CAP-08 Assumption Register | Assumption-tracking increment | WS12, CAP-05, CAP-10, CAP-11 | SLICE 1 AUTHORIZED (Owner-declared assumption → answer dependency only) — FULL CAP-08 NOT AUTHORIZED |
-| CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) and one bounded Slice 4 durable Test Variable / Condition (implemented, reviews PASS, PR / merge pending) (full CAP-09 still NOT AUTHORIZED) |
+| CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) and one bounded Slice 4 durable Test Variable / Condition (delivered, PR #712) (full CAP-09 still NOT AUTHORIZED) |
 | CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED |
 | CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | Dedicated materials-and-manufacturing feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14 | RECORDED — NOT AUTHORIZED |
@@ -844,7 +853,7 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 
 | Capability ID | Current status | Earliest activation gate | Prerequisites | Owner authorization required | Last reviewed Workstream | Next mandatory review point |
 |---|---|---|---|---|---|---|
-| CAP-01 Structured Technical Guidance | RECORDED — NOT AUTHORIZED | D13 (owner-gated) | D13 governed knowledge sources; D13 Source Review | Yes (via D13) | — (none since registration) | At WS12–WS16 closure and any D13 gate |
+| CAP-01 Structured Technical Guidance | RECORDED — NOT AUTHORIZED, except two bounded Electronics Stage-18 guidance increments (delivered, PR #678 and PR #679) and one bounded gap-scoped Mechanical Open-Gap Technical Context (implemented, independent review PASS, PR / merge pending) | D13 (owner-gated) | D13 governed knowledge sources; D13 Source Review | Yes (via D13) | — (none since registration) | At WS12–WS16 closure and any D13 gate |
 | CAP-02 Simplified One-Step Journey | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (delivered, PR #709) — FULL CAP-02 NOT AUTHORIZED | WS8 / later UX increment | Committed state; WS8; WS12 unknowns; CAP-04 | Yes | — | At the UX increment / WS12–WS16 closure |
 | CAP-03 Adaptive Assistance | RECORDED — NOT AUTHORIZED | WS13 / WS14 | Deterministic sufficiency; WS12; WS13/WS14 | Yes | — | At WS13/WS14 authorization / WS12–WS16 closure |
 | CAP-04 Gap Action Packs | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (delivered, PR #708) — FULL CAP-04 NOT AUTHORIZED | WS12 (+ D13 for technical) | WS12 closure paths; D13; gap/blocker model | Yes | — | At WS12 closure and any D13 gate |
@@ -852,7 +861,7 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | CAP-06 Readiness Dashboard | RECORDED — NOT AUTHORIZED | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-11; Patent Export decision; WS-PFV-001 | Yes | — | At the readiness increment / WS12–WS16 closure |
 | CAP-07 Invention Decision Room | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
 | CAP-08 Assumption Register | SLICE 1 AUTHORIZED (Owner-declared assumption → answer dependency only) — FULL CAP-08 NOT AUTHORIZED | Assumption-tracking increment | Provenance/validation axes; ledger; WS12; CAP-11 | Yes | — | At the assumption increment / WS12–WS16 closure |
-| CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) and one bounded Slice 4 durable Test Variable / Condition (implemented, reviews PASS, PR / merge pending) | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
+| CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) and one bounded Slice 4 durable Test Variable / Condition (delivered, PR #712) | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
 | CAP-10 Contradiction Detector | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
 | CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | RECORDED — NOT AUTHORIZED | Materials-and-manufacturing feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the materials feasibility gate / WS12–WS16 closure |

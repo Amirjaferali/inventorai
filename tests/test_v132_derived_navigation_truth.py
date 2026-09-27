@@ -1746,7 +1746,9 @@ def test_second_increment_status_is_merge_truth_and_the_none_contract_is_superse
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
     assert _absent(head, "ACTIVE CONTRACT: NONE") and _absent(head, "ACTIVE CONTRACT: PRESENT")
     assert _absent(head, "no successor Stage is started")
-    assert "no further CAP-01 implementation is authorized" in head
+    assert ("no further CAP-01 implementation beyond the currently authorized Mechanical bounded "
+            "slice is authorized") in head
+    assert "no further CAP-01 implementation is authorized," not in head
     assert "Stage 18 remains STARTED / PARTIAL / NOT COMPLETE" in head
     contract = _read(CONTRACT)
     i = contract.index("## Current authority — post-PR-#679: no active contract")
@@ -1767,7 +1769,10 @@ def test_second_increment_status_is_merge_truth_and_the_none_contract_is_superse
         assert "Superseded" in flat_checklist[max(0, m.start() - 60):m.start()], (
             "a live NONE-AUTHORIZED subtask survives the Stage-19 entry contract")
     raw_checklist = _read(CHECKLIST)
-    assert "NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED" in raw_checklist
+    assert ("NO FURTHER CAP-01 IMPLEMENTATION BEYOND THE CURRENTLY AUTHORIZED MECHANICAL SLICE IS "
+            "AUTHORIZED") in raw_checklist
+    assert re.search(r"^NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED$",
+                     raw_checklist, re.M) is None
     assert re.search(r"^ACTIVE CONTRACT: NONE$", raw_checklist, re.M) is None
 
 
@@ -2017,7 +2022,10 @@ def test_stage_19_slice_02_is_delivered_history_and_still_bounded():
                  "PLANNING-METADATA CORRUPTION: DOES NOT GOVERN CORE PROGRESSION",
                  "SECTION-11 CONSUMERS: FAIL CLOSED WHEN DURABLE CRITERIA CANNOT BE READ",
                  "FULL CAP-09: NOT AUTHORIZED", "FULL WS-PFV-001: NOT AUTHORIZED",
-                 "NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED"):
+                 # rotated with the Mechanical CAP-01 bounded slice: the plain-text boundary
+                 # names the one authorized Mechanical slice instead of a blanket denial
+                 "NO FURTHER CAP-01 IMPLEMENTATION BEYOND THE CURRENTLY AUTHORIZED MECHANICAL "
+                 "SLICE IS AUTHORIZED"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
     for gone in ("ACTIVE CONTRACT: STAGE 19 / CAP-09 FOUNDATION CONTRACT ONLY",
                  "ACTIVE CONTRACT: STAGE 19 / CAP-09 DURABLE SUCCESS-CRITERION REMEDIATION "
@@ -3011,36 +3019,27 @@ _CAP09S4_REVERSALS = _CAP09S3_REVERSALS + (
     r"TEST VARIABLE / CONDITION\W{0,8}NOT AUTHORIZED")
 
 
-def test_cap09_slice_4_is_the_live_contract_on_every_live_surface():
-    """CAP-09 Slice 4 — Owner-defined Test Variable / Condition — is the live
-    bounded action inside the already-entered Stage 19: implemented, Astra and
-    UX / behaviour reviews PASS, PR / merge pending. The variable / condition is
-    what the inventor changes or compares, distinct from the Objective, What to
-    Observe, the Success Criterion, the Test Hypothesis and the Measurement
-    Method; it reuses the canonical experiment_id, the ONE planning Save covers
-    up to four concepts atomically with 2 / 3-concept callers compatible, it is
-    opaque planning metadata (no formal variable model) with no Evidence /
-    result / readiness / progression authority, CAP-08 / CAP-10 isolated.
-    Result, full CAP-09 and full WS-PFV-001 stay NOT AUTHORIZED; Stage 23 not
-    entered, CAP-06 not activated, 45 stages kept."""
+_CAP09S4_DELIVERED = ("`CAP-09 SLICE 4: DELIVERED — PR #712 — merge "
+                      "c0faedcd3bff317d9439a7561c220a6ca97f7f4a`")
+
+
+def test_cap09_slice_4_is_delivered_history_and_its_rules_still_bind():
+    """CAP-09 Slice 4 — Owner-defined Test Variable / Condition — was delivered
+    (PR #712, merge c0faedc). Its section reads DELIVERED and visibly superseded,
+    its rules still bind, and no live surface presents it as the current contract
+    or as "PR / merge pending" again."""
     contract = _read(CONTRACT)
-    first = contract.index("## Current authority")
-    assert contract[first:].startswith(
-        "## Current authority — Stage 19 / CAP-09 Slice 4 — Owner-Defined Test Variable / "
-        "Condition"), contract[first:first + 120]
     top = re.sub(r"\s+", " ", _section(contract, "current-authority--cap09-slice-4"))
-    _needs(top, CONTRACT, "cap09 slice4",
-           r"\*\*ACTIVE CONTRACT: CAP-09 SLICE 4 — OWNER-DEFINED TEST VARIABLE / CONDITION\.\*\*",
-           r"Stage 19 stays ENTERED / NOT COMPLETE, Stage 23 is NOT ENTERED, CAP-06 is NOT "
-           r"ACTIVATED, and FULL CAP-09 and FULL WS-PFV-001 are NOT AUTHORIZED",
-           r"ASTRA ARCHITECTURE REVIEW PASS \(71 focused tests, including all 62 Slice-4 tests, "
-           r"plus 5 independent architectural probe groups\) / INDEPENDENT UX / BEHAVIOUR REVIEW "
-           r"PASS — material findings: NONE — PR / merge pending",
-           r"Objective = system-generated purpose / context; What to Observe = system-generated "
-           r"observation guidance; Success Criterion = what the inventor counts as success; Test "
-           r"Hypothesis = what the inventor expects to happen; Test Variable / Condition = what "
-           r"the inventor changes or compares; Measurement Method = how the inventor plans to "
-           r"measure or check it",
+    _needs(top, CONTRACT, "cap09 slice4 delivered",
+           r"Owner-Defined Test Variable / Condition \(Owner / Lead authorization, 2026-09-27\) — "
+           r"DELIVERED \(PR #712\); SUPERSEDED as current authority by Mechanical CAP-01 Open-Gap "
+           r"Technical Context",
+           r"\*\*No longer the current authority\.\*\*",
+           r"PR #712, merge `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`",
+           r"Every rule below still binds except where Mechanical CAP-01 Open-Gap Technical "
+           r"Context states otherwise",
+           r"material findings: NONE — DELIVERED \(PR #712, merge "
+           r"`c0faedcd3bff317d9439a7561c220a6ca97f7f4a`\)",
            r"\*\*INVENTOR PLANNING SET\*\* \| four concepts: Success Criterion, Test Hypothesis, "
            r"Test Variable / Condition, Measurement Method",
            r"\*\*IDENTITY\*\* \| the canonical `experiment_id` stays the only experiment "
@@ -3048,96 +3047,332 @@ def test_cap09_slice_4_is_the_live_contract_on_every_live_surface():
            r"`prototype_test_variables` \(project_id, experiment_id, inventor-authored text only\)",
            r"up to four submitted concept deltas atomically",
            r"two- and three-concept callers stay compatible",
-           r"never delete all",
            r"\*\*NO FORMAL SCIENTIFIC AUTHORITY\*\*",
-           r"CAP-08 assumption or dependency, or CAP-10 contradiction",
            re.escape(_CAP09S4_BOUNDED), re.escape(_CAP09S4_FORMAL_NO),
            r"\*\*Deferred / not authorized:\*\* a formal experimental variable model")
-    _rejects(top, CONTRACT, "cap09 slice4", *_CAP09S4_REVERSALS)
+    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "cap09 slice4 delivered",
+             *_CAP09S4_REVERSALS, r"\*\*ACTIVE CONTRACT: CAP-09 SLICE 4", r"PR / merge pending")
     live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
     live_surfaces.append((STATE, _current(STATE, "current-position")))
     for path, block in live_surfaces:
-        _needs(block, path, "cap09 slice4 live", _tok(_CAP09S4_CONTRACT), _tok(_CAP09S4_STATUS),
+        _needs(block, path, "cap09 slice4 delivered live", _tok(_CAP09S4_DELIVERED),
                _tok(_CAP09S4_BOUNDED), _tok(_CAP09S4_FORMAL_NO),
                _tok("`FULL CAP-09: NOT AUTHORIZED`"), _tok("`FULL WS-PFV-001: NOT AUTHORIZED`"),
-               _tok("`RESULT: NOT AUTHORIZED`"),
-               _tok("`STAGE 23: NOT ENTERED`"), _tok("`CAP-06: NOT ACTIVATED`"),
-               _tok(_CAP09S3_DELIVERED), _tok(_CAP11_DELIVERED), _tok(_S19_ENTERED),
+               _tok("`RESULT: NOT AUTHORIZED`"), _tok(_CAP09S3_DELIVERED), _tok(_S19_ENTERED),
+               r"CAP-09\s+Slice\s+4\s+\(delivered\):\s+for\s+each\s+CURRENT\s+Section-11\s+experiment",
                r"what\s+they\s+intend\s+to\s+change,\s+compare\s+or\s+set\s+differently\s+in\s+"
                r"that\s+test",
-               r"system-generated\s+Objective\s+\(purpose\s+/\s+context\)\s+and\s+What\s+to\s+"
-               r"Observe",
-               r"Success\s+Criterion\s+\(what\s+the\s+inventor\s+counts\s+as\s+success\)",
-               r"Test\s+Hypothesis\s+\(what\s+the\s+inventor\s+expects\s+to\s+happen\)",
-               r"Measurement\s+Method\s+\(how\s+the\s+inventor\s+plans\s+to\s+measure\s+or\s+"
-               r"check\s+it\)",
-               r"Objective\s+and\s+What\s+to\s+Observe\s+are\s+not\s+inventor-authored",
-               r"canonical\s+`experiment_id`\s+stays\s+the\s+only\s+experiment\s+identity\s+\(no\s+"
-               r"variable_id",
                r"`prototype_test_variables`",
                r"up\s+to\s+four\s+submitted\s+concept\s+deltas\s+atomically",
-               r"commits\s+together\s+or\s+rolls\s+back\s+together",
-               r"two-\s+and\s+three-concept\s+callers\s+stay\s+compatible",
-               r"never\s+delete\s+all",
-               r"SAVED\s+/\s+NOT\s+SAVED\s+/\s+UNKNOWN",
-               r"opaque\s+user-authored\s+free\s+text",
-               r"PLANNING\s+METADATA\s+ONLY",
-               r"CAP-08\s+assumption\s+or\s+dependency,\s+or\s+CAP-10\s+contradiction",
-               r"never\s+attached\s+to\s+or\s+remapped",
                r"A\s+formal\s+experimental\s+variable\s+model")
-        _rejects(block, path, "cap09 slice4 live", *_CAP09S4_REVERSALS,
-                 _tok("`VARIABLE: NOT AUTHORIZED`"))
+        _rejects(block, path, "cap09 slice4 delivered live", *_CAP09S4_REVERSALS,
+                 re.escape(_CAP09S4_CONTRACT), _tok(_CAP09S4_STATUS),
+                 _tok("`VARIABLE: NOT AUTHORIZED`"),
+                 r"Test Variable / Condition, below — was separately Owner-authorized",
+                 r"Test Variable / Condition per current experiment \(current bounded action")
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    for needle in ("ACTIVE CONTRACT: CAP-09 SLICE 4 — OWNER-DEFINED TEST VARIABLE / CONDITION.",
-                   "Stage 19 stays ENTERED / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06 NOT "
-                   "ACTIVATED; FULL CAP-09 and FULL WS-PFV-001 NOT AUTHORIZED",
-                   "reuses the canonical `experiment_id` (no variable_id, no second experiment "
-                   "owner)",
-                   "`prototype_test_variables`",
-                   "applies up to four concept deltas atomically",
-                   "BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION is AUTHORIZED WITHIN CAP-09 "
-                   "SLICE 4; a FORMAL EXPERIMENTAL VARIABLE MODEL and Result stay NOT AUTHORIZED",
-                   "its PR / merge is pending",
-                   "the bounded CAP-09 Slice 4 sits inside the already-entered Stage 19 and enters "
-                   "no new Stage"):
+    assert ("CAP-09 Slice 4 — DELIVERED (PR #712, merge "
+            "`c0faedcd3bff317d9439a7561c220a6ca97f7f4a`)") in head
+    assert "ACTIVE CONTRACT: CAP-09 SLICE 4" not in head
+    assert "CAP-09 Slice 4 (above) is the current bounded action" not in head
+    assert "the former CAP-09 Slice 4, the former CAP-09 Slice 3" in claude
+    raw_checklist = _read(CHECKLIST)
+    assert re.search(r"^" + re.escape(_CAP09S4_DELIVERED.strip("`")) + r"$", raw_checklist, re.M)
+    for stale in ("ACTIVE CONTRACT: CAP-09 SLICE 4", _CAP09S4_STATUS.strip("`"),
+                  "NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED"):
+        assert re.search(r"^" + re.escape(stale), raw_checklist, re.M) is None, stale
+    [row] = re.findall(r"^- \[ \] \*\*19 — WS-PFV-001/CAP-09:\*\*.*$", _read(ROADMAP), re.M)
+    assert ("CAP-09 Slice 4, one inventor-written free-text Test Variable / Condition per "
+            "current experiment, durable in the same project store as planning metadata only, "
+            "is delivered (PR #712, merge `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`)") in row
+    live_row = row[:row.index("*(Superseded")]
+    assert "is the current bounded action" not in live_row
+    assert "no CAP-09 implementation beyond Slice 4 is currently authorized" in live_row
+
+
+_MECH_CAND = "99f6b91185c0a1766e48e2abe0efde629b939ab1"
+_MECH_CONTRACT = "`ACTIVE CONTRACT: MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT`"
+_MECH_STATUS = ("`MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: OWNER-AUTHORIZED — IMPLEMENTED "
+                "(candidate " + _MECH_CAND + ") — INDEPENDENT NON-AUTHORING REVIEW PASS — "
+                "MATERIAL FINDINGS: NONE — PR / MERGE PENDING`")
+_MECH_NO_PROFILE = "`MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED`"
+_MECH_BOUNDARY = ("`NO FURTHER CAP-01 IMPLEMENTATION BEYOND THE CURRENTLY AUTHORIZED MECHANICAL "
+                  "SLICE IS AUTHORIZED`")
+# A live surface may never present the Mechanical slice as delivered / merged, as a
+# full or domain-level Mechanical CAP-01 profile, or as a new domain activation.
+_MECH_REVERSALS = _CAP09S4_REVERSALS + (
+    re.escape(_CAP09S4_CONTRACT),
+    r"CAP-09 SLICE 4: IMPLEMENTED",
+    r"OPEN-GAP TECHNICAL CONTEXT: (DELIVERED|MERGED)",
+    r"MECHANICAL CAP-01[^.]{0,40}: (DELIVERED|MERGED)\b",
+    r"MECHANICAL (DOMAIN-LEVEL )?(CHECKLIST )?PROFILE\W{0,8}(IS )?AUTHORIZED\b",
+    r"FULL MECHANICAL CAP-01\W{0,8}(IS )?AUTHORIZED\b",
+    r"D13 MECHANICAL PACKAGE\W{0,8}(IS )?AUTHORIZED\b",
+    r"NEW DOMAIN ACTIVATION\W{0,8}(IS )?AUTHORIZED\b",
+    r"(?<!not )(?<!no )(?<!never )(FEA|stress|fatigue|GD&T|tolerance) (analysis|verification)"
+    r"\W{0,8}(IS )?(PROVIDED|PERFORMED|AUTHORIZED)\b",
+    r"(?<!never implies the mechanism has been )shown physically feasible",
+    r"STAGE 18 COMPLETE: YES",
+    r"NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED",
+    r"simply has no authorized CAP-01 profile yet")
+
+
+def test_mechanical_cap01_open_gap_context_is_the_live_contract_on_every_live_surface():
+    """Mechanical CAP-01 — Open-Gap Technical Context — is the live bounded action
+    inside the already-entered Stage 18: Owner-authorized, implemented at the
+    reviewed candidate, independent non-authoring review PASS with no material
+    finding, PR NOT OPENED / merge pending. It is a gap-scoped explanatory
+    presentation slice (exact canonical gap identity + OPEN / PARTIAL state,
+    report / deliverable and PDF only, governed Mechanical truth only, no D13
+    reuse, Path-N and CAP-04 ownership untouched, no state / engine / AI change)
+    — NOT a Mechanical domain-level checklist profile and NOT full CAP-01. Stage
+    18 stays ENTERED / PARTIAL / NOT COMPLETE; full CAP-01 / STG, any new domain
+    activation, deployment and release stay NOT AUTHORIZED; 45 stages kept."""
+    contract = _read(CONTRACT)
+    first = contract.index("## Current authority")
+    assert contract[first:].startswith(
+        "## Current authority — Stage 18 / Mechanical CAP-01 — Open-Gap Technical Context"), (
+        contract[first:first + 120])
+    top = re.sub(r"\s+", " ",
+                 _section(contract, "current-authority--mechanical-cap01-open-gap-context"))
+    _needs(top, CONTRACT, "mechanical cap01",
+           r"\*\*ACTIVE CONTRACT: MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT\.\*\*",
+           r"Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 is NOT ENTERED; CAP-06 is "
+           r"NOT ACTIVATED; FULL CAP-01 / FULL STG stay NOT AUTHORIZED",
+           r"OWNER-AUTHORIZED / IMPLEMENTED — candidate `" + _MECH_CAND + r"` \(tree "
+           r"`4440aa3713c87498a46824396ffae4894e002a0f`; sole parent "
+           r"`c0faedcd3bff317d9439a7561c220a6ca97f7f4a`",
+           r"INDEPENDENT NON-AUTHORING REVIEW PASS — material findings: NONE \(risk LEVEL 2 — "
+           r"MEDIUM",
+           r"PR NOT OPENED — PR / merge pending / merge NOT PERFORMED / deployment and release NOT "
+           r"AUTHORIZED",
+           r"\*\*SCOPE\*\* \| Mechanical only: for each CURRENT canonical Mechanical gap whose EXACT "
+           r"canonical identity is `MECHANISM_COMPLETENESS`, `PHYSICAL_FEASIBILITY` or "
+           r"`BOUNDARY_AMBIGUITY` and whose EXACT canonical state is OPEN or PARTIAL",
+           r"\*\*SURFACES\*\* \| report / deliverable and PDF only; the session / question journey "
+           r"is unchanged",
+           r"\*\*BINDING\*\* \| exact canonical `IdeaState\.gaps\[\]\.gap_type` \+ `\.status`",
+           r"CLOSED / ACCEPTED_RISK / absent / unsupported gaps render nothing",
+           r"\*\*SOURCE TRUTH\*\* \| technical substance grounded only in the existing governed "
+           r"Mechanical truth \(`domains/mechanical/domain\.json`",
+           r"the D13 Electronics package \(`research/d13-tkp-pkg-001`\) is NOT a Mechanical source",
+           r"PHYSICAL_FEASIBILITY wording never implies the mechanism has been shown physically "
+           r"feasible",
+           r"\*\*OWNERSHIP\*\* \| Path-N remains the question-serving owner; CAP-04 remains the "
+           r"action / responsibility / required-input / closure / routed-need owner",
+           r"\*\*WHAT IT IS NOT\*\* \| NOT a full Mechanical CAP-01 profile, NOT a D13 Mechanical "
+           r"package, NOT a technical engine, NOT engineering execution",
+           r"Mechanical still has NO Electronics-style domain-level checklist profile",
+           r"\*\*NO STATE CHANGE\*\*", r"no `engine/\*` change",
+           r"no AI / LLM / provider call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION",
+           re.escape(_MECH_NO_PROFILE), r"`FULL CAP-01 / FULL STG: NOT AUTHORIZED`",
+           r"\*\*Deferred / not authorized:\*\* a Mechanical domain-level checklist profile, any "
+           r"further CAP-01 implementation beyond this bounded Mechanical slice, full CAP-01 / full "
+           r"STG, a D13 Mechanical package, any new domain activation")
+    _rejects(top, CONTRACT, "mechanical cap01", *_MECH_REVERSALS)
+    live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
+    live_surfaces.append((STATE, _current(STATE, "current-position")))
+    for path, block in live_surfaces:
+        _needs(block, path, "mechanical cap01 live", _tok(_MECH_CONTRACT), _tok(_MECH_STATUS),
+               _tok(_MECH_NO_PROFILE), _tok(_MECH_BOUNDARY),
+               _tok("`STAGE 18: ENTERED / PARTIAL / NOT COMPLETE`"),
+               _tok("`FULL CAP-01 / FULL STG: NOT AUTHORIZED`"),
+               _tok("`STAGE 23: NOT ENTERED`"), _tok("`CAP-06: NOT ACTIVATED`"),
+               _tok("`DEPLOYMENT / RELEASE: NOT AUTHORIZED`"), _tok(_CAP09S4_DELIVERED),
+               r"MECHANISM_COMPLETENESS,\s+PHYSICAL_FEASIBILITY\s+or\s+BOUNDARY_AMBIGUITY",
+               r"EXACT\s+canonical\s+state\s+is\s+OPEN\s+or\s+PARTIAL",
+               r"report\s+/\s+deliverable\s+and\s+the\s+PDF\s+show\s+one\s+short\s+explanatory\s+"
+               r"technical\s+context",
+               r"what\s+InventorAI\s+does\s+not\s+conclude\s+from\s+it",
+               r"grounded\s+only\s+in\s+the\s+existing\s+governed\s+Mechanical\s+truth\s+"
+               r"\(`domains/mechanical/domain\.json`\)",
+               r"the\s+D13\s+Electronics\s+package\s+is\s+not\s+a\s+Mechanical\s+source",
+               r"Mechanical\s+only;\s+report\s+/\s+deliverable\s+and\s+PDF\s+only;\s+explanatory\s+"
+               r"technical\s+context\s+only",
+               r"Path-N\s+remains\s+the\s+question-serving\s+owner\s+and\s+CAP-04\s+the\s+action\s+/"
+               r"\s+responsibility\s+/\s+required-input\s+/\s+closure\s+owner",
+               r"no\s+state,\s+persistence,\s+schema,\s+readiness,\s+progression\s+or\s+scoring\s+"
+               r"change,\s+no\s+engine\s+change,\s+and\s+no\s+AI\s+/\s+LLM\s+/\s+provider\s+call",
+               r"NOT\s+a\s+full\s+Mechanical\s+CAP-01\s+profile,\s+a\s+D13\s+Mechanical\s+package,"
+               r"\s+a\s+technical\s+engine\s+or\s+engineering\s+execution",
+               r"NO\s+Electronics-style\s+domain-level\s+checklist\s+profile\s+and\s+NOW\s+has\s+"
+               r"this\s+separately\s+authorized\s+gap-scoped\s+Open-Gap\s+Technical\s+Context",
+               r"`" + _MECH_CAND + r"`\s+\(tree\s+`4440aa3713c87498a46824396ffae4894e002a0f`,\s+"
+               r"sole\s+parent\s+`c0faedcd3bff317d9439a7561c220a6ca97f7f4a`\)",
+               r"independent\s+non-authoring\s+review\s+PASS,\s+material\s+findings\s+NONE",
+               r"PR\s+NOT\s+OPENED,\s+merge\s+NOT\s+PERFORMED;\s+deployment\s+/\s+release\s+NOT\s+"
+               r"AUTHORIZED")
+        _rejects(block, path, "mechanical cap01 live", *_MECH_REVERSALS)
+    # the routing surfaces keep Stage 18 entered-not-complete beside the new action
+    for path, routing in _surfaces("current-routing"):
+        _needs(routing, path, "mechanical cap01 routing",
+               r"\*\*CURRENT BOUNDED ACTION — Stage 18 / Mechanical CAP-01 — Open-Gap Technical "
+               r"Context, ONE separately\s+Owner-authorized bounded gap-scoped presentation slice",
+               r"`STAGE 18 STARTED: YES`", r"`STAGE 18 COMPLETE: NO`")
+    # CLAUDE.md routes to the slice and authorizes nothing wider
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
+    for needle in ("ACTIVE CONTRACT: MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT.",
+                   "Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06 "
+                   "NOT ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED",
+                   "MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY or BOUNDARY_AMBIGUITY",
+                   "the D13 Electronics package is not a Mechanical source",
+                   "NOT a full Mechanical CAP-01 profile",
+                   "NO Electronics-style domain-level checklist profile",
+                   "`" + _MECH_CAND + "`", "PR NOT OPENED",
+                   "merge NOT PERFORMED / deployment and release NOT AUTHORIZED",
+                   "no further CAP-01 implementation beyond the currently authorized Mechanical "
+                   "bounded slice is authorized",
+                   "the bounded Mechanical CAP-01 slice sits inside the already-entered Stage 18 "
+                   "and enters no new Stage",
+                   "Stage 18 remains STARTED / PARTIAL / NOT COMPLETE"):
         assert needle in head, needle
-    for pat in _CAP09S4_REVERSALS:
+    for pat in _MECH_REVERSALS:
         assert re.search(pat, head, re.I) is None, pat
+    # the checklist subtask and plain-text mirrors
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
-    assert ("**CURRENT SUBTASK:** CAP-09 SLICE 4 — OWNER-DEFINED TEST VARIABLE / CONDITION"
-            in flat_checklist)
-    subtask = flat_checklist[flat_checklist.index("**CURRENT SUBTASK:** CAP-09 SLICE 4"):]
+    assert "**CURRENT SUBTASK:** MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT" in flat_checklist
+    subtask = flat_checklist[flat_checklist.index("**CURRENT SUBTASK:** MECHANICAL CAP-01"):]
     subtask = subtask[:subtask.index("*(Superseded")]
-    _needs(subtask, CHECKLIST, "cap09 slice4 subtask", _tok(_CAP09S4_CONTRACT),
-           _tok(_CAP09S4_STATUS), _tok(_CAP09S4_BOUNDED), _tok(_CAP09S4_FORMAL_NO),
-           _tok("`STAGE 23: NOT ENTERED`"), _tok("`CAP-06: NOT ACTIVATED`"),
-           _tok("`RESULT: NOT AUTHORIZED`"), _tok(_CAP09S3_DELIVERED))
-    _rejects(subtask, CHECKLIST, "cap09 slice4 subtask", *_CAP09S4_REVERSALS)
-    for line in (_CAP09S4_CONTRACT.strip("`"), _CAP09S4_STATUS.strip("`"),
-                 _CAP09S3_DELIVERED.strip("`"),
-                 "CAP-09 SLICE 4 TEST VARIABLE / CONDITION: PLANNING METADATA ONLY — OPAQUE FREE "
-                 "TEXT — NOT EVIDENCE / RESULT / VALIDATION / READINESS / PROGRESSION",
-                 "PLANNING SAVE: ONE ATOMIC DELTA — SUCCESS CRITERION + MEASUREMENT METHOD + TEST "
-                 "HYPOTHESIS + TEST VARIABLE / CONDITION",
-                 _CAP09S4_BOUNDED.strip("`"),
-                 "FORMAL EXPERIMENTAL VARIABLE MODEL / RESULT / OTHER CAP-09 FIELDS: NOT AUTHORIZED",
+    _needs(subtask, CHECKLIST, "mechanical cap01 subtask", _tok(_MECH_CONTRACT),
+           _tok(_MECH_STATUS), _tok(_MECH_NO_PROFILE), _tok(_MECH_BOUNDARY),
+           _tok("`FULL CAP-01 / FULL STG: NOT AUTHORIZED`"),
+           _tok("`DEPLOYMENT / RELEASE: NOT AUTHORIZED`"), _tok(_CAP09S4_DELIVERED),
+           _tok("`STAGE 23: NOT ENTERED`"), _tok("`CAP-06: NOT ACTIVATED`"))
+    _rejects(subtask, CHECKLIST, "mechanical cap01 subtask", *_MECH_REVERSALS)
+    for line in (_MECH_CONTRACT.strip("`"), _MECH_STATUS.strip("`"),
+                 _MECH_NO_PROFILE.strip("`"), _MECH_BOUNDARY.strip("`"),
+                 _CAP09S4_DELIVERED.strip("`"),
                  "FULL CAP-09: NOT AUTHORIZED", "FULL WS-PFV-001: NOT AUTHORIZED",
                  "CAP-06: NOT ACTIVATED", "Stages 23–27 preserved, not entered / not authorized"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
+    # the roadmap: Stage 18 row names the slice, keeps the boundary, 45 stages survive
     roadmap = _read(ROADMAP)
     numbers = [int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)]
     assert sorted(numbers) == list(range(1, 46)), numbers
-    assert re.findall(r"^- \[ \] \*\*23 — CAP-06:\*\* multi-axis readiness dashboard only "
-                      r"after readiness axes exist; no hidden weighting\.$", roadmap, re.M)
-    [row] = re.findall(r"^- \[ \] \*\*19 — WS-PFV-001/CAP-09:\*\*.*$", roadmap, re.M)
-    assert ("CAP-09 Slice 4, one inventor-written free-text Test Variable / Condition per "
-            "current experiment, durable in the same project store as planning metadata only, "
-            "is the current bounded action") in row
-    assert ("CAP-09 Slice 3, one inventor-written Test Hypothesis per current experiment, "
-            "durable in the same project store as planning metadata only, is delivered "
-            "(PR #711)") in row
+    [row] = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
+    for needle in ("Mechanical CAP-01 Open-Gap Technical Context, a separately Owner-authorized "
+                   "gap-scoped explanatory presentation slice (NOT a Mechanical domain-level "
+                   "checklist profile) — is the current bounded action",
+                   "implemented at candidate " + _MECH_CAND,
+                   "independent non-authoring review PASS, material findings NONE; PR / merge "
+                   "pending; Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE",
+                   "no further CAP-01 implementation beyond the currently authorized Mechanical "
+                   "bounded slice is authorized; full CAP-01/STG NOT AUTHORIZED"):
+        assert needle in row, needle
+    assert "no further CAP-01 implementation currently authorized" not in row
+    # the register: the exception is now two Electronics increments + one bounded
+    # gap-scoped Mechanical slice, and the blanket still binds everything else
+    register = _flat(CAPABILITIES)
+    for needle in ("two bounded deterministic Stage-18 CAP-01 guidance increments",
+                   "ONE bounded gap-scoped Mechanical CAP-01 Open-Gap Technical Context "
+                   "(OWNER-AUTHORIZED / IMPLEMENTED at candidate `" + _MECH_CAND + "` / "
+                   "INDEPENDENT NON-AUTHORING REVIEW PASS, material findings NONE / PR / merge "
+                   "pending; not a Mechanical domain-level checklist profile)",
+                   "not a Mechanical domain-level checklist profile, a D13 Mechanical package, a "
+                   "technical engine or engineering execution",
+                   "No further CAP-01 implementation beyond the currently authorized Mechanical "
+                   "bounded slice is authorized",
+                   "**and one Owner-authorized bounded gap-scoped Mechanical Open-Gap Technical "
+                   "Context**",
+                   "one bounded Slice 4 durable Test Variable / Condition (delivered, PR #712)"):
+        assert needle in register, needle
+    assert "No further CAP-01 implementation is currently authorized" not in register
+    assert re.search(r"CAP-01[^|]{0,200}\| *RECORDED — AUTHORIZED", register) is None
+    # the current-state entry distinguishes the two Mechanical CAP-01 shapes
+    state = _current(STATE, "current-position")
+    for needle in ("`mechanical` remains a fully activated",
+                   "NO Electronics-style domain-level CAP-01 checklist profile and NOW has the "
+                   "separately authorized gap-scoped Mechanical Open-Gap Technical Context",
+                   "No further CAP-01 implementation beyond the currently authorized Mechanical "
+                   "bounded slice is authorized"):
+        assert needle in state, needle
+    assert "simply has no authorized CAP-01 profile yet" not in state
+    assert "No further CAP-01 implementation is currently authorized" not in state
 
+
+def test_read_before_build_and_multi_domain_deepening_are_operating_method_not_gates():
+    """Two continuity rules extend EXISTING CLAUDE.md paragraphs and create no
+    gate: READ BEFORE BUILD / REUSE BEFORE CREATE is the Lead's own bounded
+    overlap check (not a mandatory executor round, approval stage or governance
+    gate), and the multi-domain Technical Deepening rule is a design principle
+    that authorizes no new domain activation and no Stage 28 / 30 / 31 work;
+    the roadmap rows for those stages stay unticked and unchanged in kind."""
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    cont = claude[claude.index("## Lead execution continuity"):
+                  claude.index("### Lead Operating Method")]
+    lead = cont[cont.index("**Lead and executor.**"):cont.index("**Review routing.**")]
+    for needle in ("**READ BEFORE BUILD / REUSE BEFORE CREATE** is the Lead's standing method",
+                   "normally directly, because the Lead has repository access",
+                   "what already exists, the canonical owner(s), the reusable seam(s) and the "
+                   "genuinely missing product delta",
+                   "A separate Claude / executor read-only round is not the default prerequisite",
+                   "ALREADY EXISTS → DO NOT BUILD A DUPLICATE",
+                   "PARTIAL → reuse / extend the existing owner and implement only the missing "
+                   "delta",
+                   "ABSENT → implementation may be proposed within Owner-authorized scope",
+                   "It is an operating method bounded to the proposed change — not a governance "
+                   "gate, approval stage, mandatory extra agent round or historical reconstruction "
+                   "requirement"):
+        assert needle in lead, needle
+    claims = lead.replace("not a governance gate, approval stage, mandatory extra agent round or "
+                          "historical reconstruction requirement", "")
+    for pat in (r"(?i)READ BEFORE BUILD[^.]{0,160}\b(mandatory|approval) (gate|stage|round)\b",
+                r"(?i)\b(is|as) a (governance|approval) gate\b"):
+        assert re.search(pat, claims) is None, pat
+    dom = cont[cont.index("**Domain-scaling boundary.**"):cont.index("**Human-study boundary.**")]
+    for needle in ("not the permanent InventorAI domain ceiling",
+                   "Domain Pack Conformance Validator",
+                   "that validator is NEXT TRIGGER, not authorized implementation",
+                   "**Multi-domain Technical Deepening continuity rule (design / continuity "
+                   "principle only; it authorizes NO new domain activation and no Stage 28 / 30 / "
+                   "31 implementation).**",
+                   "exactly two runtime-activated specialist domains (`electronics_electrical`, "
+                   "`mechanical`)",
+                   "ONE shared extensible technical architecture PLUS independently governed "
+                   "domain-specific technical knowledge, never duplicated parallel technical "
+                   "systems per domain",
+                   "domain pack presence ≠ runtime activation",
+                   "registered ≠ supported ≠ activated",
+                   "domain activation does not authorize arbitrary technical guidance",
+                   "every technical statement requires governed domain / source authority",
+                   "D13 Electronics knowledge is NOT Mechanical or other-domain technical "
+                   "authority",
+                   "shared architecture does NOT imply identical semantics or identical gap sets "
+                   "across domains",
+                   "do not hard-code technical-depth architecture around today's Electronics + "
+                   "Mechanical only",
+                   "do not prematurely build a giant generic technical framework",
+                   "generalize only the shared seam a real product slice justifies",
+                   "must not require rewriting the product core",
+                   "Stage 28 (IoT → Drone / Unmanned → Renewable, with Satellite / Space-System "
+                   "as the preserved later Stage-28 subitem)",
+                   "Stage 30 (cross-domain safeguards before new-domain activation)",
+                   "Stage 31 (future IoT technical depth)"):
+        assert needle in dom, needle
+    claims = dom.replace("it authorizes NO new domain activation and no Stage 28 / 30 / 31 "
+                         "implementation", "")
+    for pat in (r"(?i)(?<!no )(?<!not )new domain activation (is )?authorized",
+                r"(?i)Stage (28|30|31)[^.]{0,40}\b(AUTHORIZED|ENTERED|STARTED|ACTIVATED)\b",
+                r"(?i)(IoT|drone|renewable|satellite)[^.]{0,40}\b(ACTIVATED|AUTHORIZED)\b"):
+        assert re.search(pat, claims) is None, pat
+    roadmap = _read(ROADMAP)
+    for stage in ("28 — Additional-domain program:", "30 — Cross-domain safeguards:",
+                  "31 — IoT architecture:"):
+        assert re.search(r"^- \[ \] \*\*" + re.escape(stage), roadmap, re.M), stage
+    watch = claude[claude.index("**Current Lead Watchlist (2026-09-26).**"):
+                   claude.index("**Successor Lead (mandatory).**")]
+    for needle in ("**NEXT TRIGGER — one read-only prompt audit after Mechanical CAP-01 closes.**",
+                   "`/doctor prompt-audit`",
+                   "Not a recurring gate; not before every slice; no automatic edits; the Lead "
+                   "reviews proposed prompt changes before any mutation",
+                   "it must not delay the Mechanical CAP-01 publication",
+                   "**WATCH — Mechanical CAP-01 test hygiene (non-blocking, no repair cycle).**",
+                   "Two `or True` clauses in `tests/test_cap01_mechanical_open_gap_context.py`",
+                   "Remove or replace them on the next natural touch of that test file",
+                   "the reviewed implementation and its tests are not modified for this"):
+        assert needle in watch, needle
 
 def test_cap09_slice_3_watch_is_non_blocking_continuity_only():
     """The CAP-09 Slice 3 UX review observations stay a non-blocking WATCH with

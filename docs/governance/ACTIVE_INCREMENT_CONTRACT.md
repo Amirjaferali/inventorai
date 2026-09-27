@@ -23,17 +23,55 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--cap09-slice-4"></a>
-## Current authority — Stage 19 / CAP-09 Slice 4 — Owner-Defined Test Variable / Condition (Owner / Lead authorization, 2026-09-27)
+<a id="current-authority--mechanical-cap01-open-gap-context"></a>
+## Current authority — Stage 18 / Mechanical CAP-01 — Open-Gap Technical Context (Owner / Lead authorization, 2026-09-27)
 
-**ACTIVE CONTRACT: CAP-09 SLICE 4 — OWNER-DEFINED TEST VARIABLE / CONDITION.**
+**ACTIVE CONTRACT: MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT.**
+ONE separately Owner-authorized bounded, gap-scoped presentation slice inside the already-entered
+Stage 18 (D13 / CAP-01), recorded by the Owner authorization itself (no separate contract document).
+It creates no new Master Roadmap Stage; Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 is
+NOT ENTERED; CAP-06 is NOT ACTIVATED; FULL CAP-01 / FULL STG stay NOT AUTHORIZED. Status:
+OWNER-AUTHORIZED / IMPLEMENTED — candidate `99f6b91185c0a1766e48e2abe0efde629b939ab1` (tree `4440aa3713c87498a46824396ffae4894e002a0f`; sole parent `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`, the authoritative base) /
+INDEPENDENT NON-AUTHORING REVIEW PASS — material findings: NONE (risk LEVEL 2 — MEDIUM; independent
+full regression 8544 passed, 1 skipped, 1 xfailed, 0 failed) / PR NOT OPENED — PR / merge pending /
+merge NOT PERFORMED / deployment and release NOT AUTHORIZED.
+
+| | |
+|---|---|
+| **SCOPE** | Mechanical only: for each CURRENT canonical Mechanical gap whose EXACT canonical identity is `MECHANISM_COMPLETENESS`, `PHYSICAL_FEASIBILITY` or `BOUNDARY_AMBIGUITY` and whose EXACT canonical state is OPEN or PARTIAL, the report / deliverable and the PDF show ONE short explanatory technical context: what that gap concerns at concept level within the governed Mechanical package, and what InventorAI does not conclude from it |
+| **SURFACES** | report / deliverable and PDF only; the session / question journey is unchanged |
+| **BINDING** | exact canonical `IdeaState.gaps[].gap_type` + `.status` of the already-loaded state; never a display label, translated label, question text, report title, keyword, substring, normalised or fuzzy match; CLOSED / ACCEPTED_RISK / absent / unsupported gaps render nothing; each current gap renders only its own context, once |
+| **SOURCE TRUTH** | technical substance grounded only in the existing governed Mechanical truth (`domains/mechanical/domain.json`: gap_type_mappings, rule_nuances, capability_declaration, coverage_declaration); the D13 Electronics package (`research/d13-tkp-pkg-001`) is NOT a Mechanical source; no FEA / stress / fatigue, materials-selection, GD&T / tolerance, manufacturing-process, CAD / physical-fit, real-world load, numeric recommendation, safety, patent / novelty, specialist-classification or production-readiness claim; PHYSICAL_FEASIBILITY wording never implies the mechanism has been shown physically feasible |
+| **OWNERSHIP** | Path-N remains the question-serving owner; CAP-04 remains the action / responsibility / required-input / closure / routed-need owner; the context adds no question, action, responsibility, required input, closure rule or next action |
+| **WHAT IT IS NOT** | NOT a full Mechanical CAP-01 profile, NOT a D13 Mechanical package, NOT a technical engine, NOT engineering execution — a separately bounded gap-scoped explanatory presentation capability; Mechanical still has NO Electronics-style domain-level checklist profile, and the Electronics CAP-01 profile is unchanged |
+| **NO STATE CHANGE** | no state, persistence, schema, gap lifecycle, question selection, evidence, readiness, maturity, progression, scoring, security / trust-boundary or provenance change; no `engine/*` change |
+| **LANGUAGE** | Arabic-first UX, not Arabic-only terminology: first-use bilingual concept labels; no raw canonical identifier visible to the inventor; report and PDF show equivalent context |
+| **AI / LLM / PROVIDER / REAL INVENTION DATA** | no AI / LLM / provider call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
+
+`MECHANICAL OPEN-GAP TECHNICAL CONTEXT: OWNER-AUTHORIZED — ONE BOUNDED GAP-SCOPED SLICE` ·
+`MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED`.
+
+**Deferred / not authorized:** a Mechanical domain-level checklist profile, any further CAP-01
+implementation beyond this bounded Mechanical slice, full CAP-01 / full STG, a D13 Mechanical
+package, any new domain activation, Stage 23, CAP-06, CAP-12, CAP-13, deployment, public release and
+paid activation. WATCH (non-blocking, no repair cycle) is carried in the CLAUDE.md Lead Watchlist.
+
+<a id="current-authority--cap09-slice-4"></a>
+## Current authority — Stage 19 / CAP-09 Slice 4 — Owner-Defined Test Variable / Condition (Owner / Lead authorization, 2026-09-27) — DELIVERED (PR #712); SUPERSEDED as current authority by Mechanical CAP-01 Open-Gap Technical Context
+
+**No longer the current authority.** CAP-09 Slice 4 was delivered (PR #712, merge
+`c0faedcd3bff317d9439a7561c220a6ca97f7f4a`); Mechanical CAP-01 — Open-Gap Technical Context above replaced it as the
+current authority on 2026-09-27. Every rule below still binds except where Mechanical CAP-01 Open-Gap
+Technical Context states otherwise. *(Superseded 2026-09-27, preserved so the change is visible rather
+than silent: this opened "**ACTIVE CONTRACT: CAP-09 SLICE 4 — OWNER-DEFINED TEST VARIABLE /
+CONDITION.**" and recorded the slice as "PR / merge pending".)*
 ONE further bounded slice inside the already-entered Stage 19 (WS-PFV-001 / CAP-09), recorded by
 the Owner authorization itself (no separate contract document). It creates no new Master Roadmap
 Stage, Stage 19 stays ENTERED / NOT COMPLETE, Stage 23 is NOT ENTERED, CAP-06 is NOT ACTIVATED,
 and FULL CAP-09 and FULL WS-PFV-001 are NOT AUTHORIZED. Status: OWNER-AUTHORIZED / IMPLEMENTED /
 ASTRA ARCHITECTURE REVIEW PASS (71 focused tests, including all 62 Slice-4 tests, plus 5
 independent architectural probe groups) / INDEPENDENT UX / BEHAVIOUR REVIEW PASS — material
-findings: NONE — PR / merge pending.
+findings: NONE — DELIVERED (PR #712, merge `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`).
 
 | | |
 |---|---|
@@ -1163,18 +1201,35 @@ section above; the stage is ENTERED as fact. `FIRST BOUNDED CAP-01 INCREMENT:
 OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
 `D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
 unticked** — one authorized bounded slice is not the stage.
+**CURRENT BOUNDED ACTION — Stage 18 / Mechanical CAP-01 — Open-Gap Technical Context, ONE separately
+Owner-authorized bounded gap-scoped presentation slice (no new Master Roadmap Stage; Stage 18 stays
+ENTERED / PARTIAL / NOT COMPLETE):** `ACTIVE CONTRACT: MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT` · `MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: OWNER-AUTHORIZED — IMPLEMENTED (candidate 99f6b91185c0a1766e48e2abe0efde629b939ab1) — INDEPENDENT NON-AUTHORING REVIEW PASS — MATERIAL FINDINGS: NONE — PR / MERGE PENDING` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION BEYOND THE CURRENTLY AUTHORIZED MECHANICAL SLICE IS AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+For each CURRENT canonical Mechanical gap whose EXACT canonical identity is MECHANISM_COMPLETENESS,
+PHYSICAL_FEASIBILITY or BOUNDARY_AMBIGUITY and whose EXACT canonical state is OPEN or PARTIAL, the
+report / deliverable and the PDF show one short explanatory technical context — what that gap concerns
+at concept level within the governed Mechanical package, and what InventorAI does not conclude from it —
+grounded only in the existing governed Mechanical truth (`domains/mechanical/domain.json`); the D13
+Electronics package is not a Mechanical source. Mechanical only; report / deliverable and PDF only;
+explanatory technical context only. Path-N remains the question-serving owner and CAP-04 the action /
+responsibility / required-input / closure owner; no state, persistence, schema, readiness, progression
+or scoring change, no engine change, and no AI / LLM / provider call. It is NOT a full Mechanical CAP-01
+profile, a D13 Mechanical package, a technical engine or engineering execution: Mechanical still has NO
+Electronics-style domain-level checklist profile and NOW has this separately authorized gap-scoped
+Open-Gap Technical Context. Implementation candidate `99f6b91185c0a1766e48e2abe0efde629b939ab1` (tree `4440aa3713c87498a46824396ffae4894e002a0f`, sole parent `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`); independent
+non-authoring review PASS, material findings NONE, risk LEVEL 2 — MEDIUM; PR NOT OPENED, merge NOT
+PERFORMED; deployment / release NOT AUTHORIZED.
 **Also ENTERED: Stage 19 — WS-PFV-001 / CAP-09 Experiment-Plan Designer.** `STAGE 19: ENTERED / NOT COMPLETE` · `DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682` · `CAP-09 SLICE-02: DELIVERED — PR #683 — merge 8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60` · `F-09 PLANNING-FORM RECOVERY: DELIVERED — PR #684 — merge 079a9000bd23d19328b10c3854490264bf9b1697` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
 `SuccessCriterion` stay the canonical planning owner. SLICE-02 was bounded: ONE
 inventor-written measurement method per existing experiment, durable in a narrowly typed
 sibling sidecar of the same store. Delivering it is not the stage and opens nothing wider:
 CAP-09 Slice 3 — the inventor-written Test Hypothesis — is delivered (PR #711), and CAP-09 Slice 4
-— the inventor-written Test Variable / Condition, below — was separately Owner-authorized; a formal
+— the inventor-written Test Variable / Condition, below — is delivered (PR #712, merge `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`); a formal
 variable model, Result and every other CAP-09 field stay NOT AUTHORIZED, and no CAP-09
 implementation beyond Slice 4 is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — Stage 19 / CAP-09 Experiment-Plan Designer, ONE further bounded slice
-(no new Master Roadmap Stage; Stage 19 stays ENTERED / NOT COMPLETE):** `ACTIVE CONTRACT: CAP-09 SLICE 4 — OWNER-DEFINED TEST VARIABLE / CONDITION` · `CAP-09 SLICE 4: IMPLEMENTED — ASTRA ARCHITECTURE REVIEW PASS — UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED` · `BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION: AUTHORIZED WITHIN CAP-09 SLICE 4` · `FORMAL EXPERIMENTAL VARIABLE MODEL: NOT AUTHORIZED` · `RESULT: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
-For each CURRENT Section-11 experiment the inventor can record, edit or clear their own Test
+**DELIVERED — CAP-09 Slice 4 — Owner-Defined Test Variable / Condition (inside Stage 19; no new Master
+Roadmap Stage; Stage 19 stays ENTERED / NOT COMPLETE):** `CAP-09 SLICE 4: DELIVERED — PR #712 — merge c0faedcd3bff317d9439a7561c220a6ca97f7f4a` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED` · `BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION: AUTHORIZED WITHIN CAP-09 SLICE 4` · `FORMAL EXPERIMENTAL VARIABLE MODEL: NOT AUTHORIZED` · `RESULT: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
+CAP-09 Slice 4 (delivered): for each CURRENT Section-11 experiment the inventor can record, edit or clear their own Test
 Variable / Condition — what they intend to change, compare or set differently in that test. It
 stays distinct from the system-generated Objective (purpose / context) and What to Observe
 (observation guidance), the Success Criterion (what the inventor counts as success), the Test

@@ -2,10 +2,29 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: CAP-09 SLICE 4 — OWNER-DEFINED TEST VARIABLE / CONDITION.**
-CAP-09 Slice 4 is ONE further bounded slice inside the already-entered Stage 19 (WS-PFV-001 /
-CAP-09; no new Master Roadmap Stage; Stage 19 stays ENTERED / NOT COMPLETE; Stage 23 NOT ENTERED;
-CAP-06 NOT ACTIVATED; FULL CAP-09 and FULL WS-PFV-001 NOT AUTHORIZED): for each CURRENT Section-11
+**ACTIVE CONTRACT: MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT.**
+Mechanical CAP-01 — Open-Gap Technical Context is ONE separately Owner-authorized bounded, gap-scoped
+presentation slice inside the already-entered Stage 18 (D13 / CAP-01; no new Master Roadmap Stage;
+Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; FULL CAP-01 /
+FULL STG NOT AUTHORIZED): for each CURRENT canonical Mechanical gap whose EXACT identity is
+MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY or BOUNDARY_AMBIGUITY and whose EXACT canonical state is
+OPEN or PARTIAL, the report / deliverable and the PDF show one short explanatory technical context —
+what that gap concerns at concept level within the governed Mechanical package and what InventorAI
+does not conclude from it — grounded only in the existing governed Mechanical truth
+(`domains/mechanical/domain.json`); the D13 Electronics package is not a Mechanical source. Mechanical
+only; report / deliverable and PDF only; explanatory technical context only. Path-N remains the
+question-serving owner and CAP-04 the action / responsibility / required-input / closure owner; no
+state, persistence, schema, readiness, progression or scoring change, no engine change, and no AI /
+LLM / provider call. It is NOT a full Mechanical CAP-01 profile, a D13 Mechanical package, a technical
+engine or engineering execution: Mechanical still has NO Electronics-style domain-level checklist
+profile and NOW has this separately authorized gap-scoped Open-Gap Technical Context. Status:
+OWNER-AUTHORIZED / IMPLEMENTED at candidate `99f6b91185c0a1766e48e2abe0efde629b939ab1` (tree `4440aa3713c87498a46824396ffae4894e002a0f`, sole parent `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`) / INDEPENDENT
+NON-AUTHORING REVIEW PASS — material findings: NONE (risk LEVEL 2 — MEDIUM) / PR NOT OPENED — PR /
+merge pending / merge NOT PERFORMED / deployment and release NOT AUTHORIZED. No further CAP-01
+implementation beyond the currently authorized Mechanical bounded slice is authorized. CAP-09 Slice 4 —
+DELIVERED (PR #712, merge `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`) — is the preceding bounded slice inside Stage 19
+(WS-PFV-001 / CAP-09; Stage 19 stays ENTERED / NOT COMPLETE; FULL CAP-09 and FULL WS-PFV-001 NOT
+AUTHORIZED): for each CURRENT Section-11
 experiment the inventor can record, edit or clear their own Test Variable / Condition — in free
 text, what they intend to change, compare or set differently in that test — distinct from the
 system-generated Objective and What to Observe, the Success Criterion, the Test Hypothesis and the
@@ -19,8 +38,7 @@ type, units, ranges, controls validation or design grading, no Evidence, result,
 readiness, maturity, progression, gap closure, CAP-08 assumption / dependency or CAP-10
 contradiction, and no AI / LLM / provider call. BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION is
 AUTHORIZED WITHIN CAP-09 SLICE 4; a FORMAL EXPERIMENTAL VARIABLE MODEL and Result stay NOT
-AUTHORIZED. It is implemented, its Astra architecture review and independent UX / behaviour review
-both passed with no material findings, and its PR / merge is pending. CAP-09 Slice 3 — DELIVERED
+AUTHORIZED. CAP-09 Slice 3 — DELIVERED
 (PR #711, merge `e393e29cd0ba4f568cf1fd1a0d4c2e0e7742eabd`) — is the preceding bounded slice inside Stage 19: for each CURRENT Section-11
 experiment the inventor can record, edit or clear their own Test Hypothesis — what they expect to
 happen — distinct from the system-generated Objective, the Success Criterion (what counts as
@@ -112,22 +130,24 @@ question reduction beyond Slice 1. Target-Aware Question / Answer Binding is COM
 `ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`). Stage 19 (WS-PFV-001 / CAP-09 Experiment-Plan
 Designer) is ENTERED / NOT COMPLETE: the durable SuccessCriterion remediation (PR #682) and
 CAP-09 SLICE-02, the durable user-written measurement method (PR #683), are delivered, and
-SLICE-02 is not the active contract; CAP-09 Slice 3 is delivered (PR #711) and CAP-09 Slice 4
-(above) is the current bounded action. Full
+SLICE-02 is not the active contract; CAP-09 Slice 3 (PR #711) and CAP-09 Slice 4 (PR #712, above)
+are delivered, and no CAP-09 implementation beyond Slice 4 is authorized. Full
 CAP-09 and full WS-PFV-001 are NOT AUTHORIZED. Any
 other product, readiness, governance or automation work requires a new explicit Owner
 authorization.
 docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the delivered
 history, and is the file to read for authority — this paragraph routes, it does not
-authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
-increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
-authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized — the
-bounded CAP-09 Slice 4 sits inside the already-entered Stage 19 and enters no new Stage (Stage 22 stays ENTERED / PARTIAL through its delivered
+authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded Electronics CAP-01
+increments are delivered (PR #678, PR #679) and the bounded Mechanical Open-Gap Technical Context
+(above) is its current bounded action, no further CAP-01 implementation beyond the currently
+authorized Mechanical bounded slice is authorized, full CAP-01 / full STG is not authorized, no other
+Stage is authorized — the bounded Mechanical CAP-01 slice sits inside the already-entered Stage 18 and
+enters no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
 Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -209,7 +229,18 @@ completed or accepted work without new material evidence of a defect.
 architecture adjudication, evidence reconciliation, review routing and the next-step
 recommendation. Claude Code or another bounded execution agent executes repository work within
 the exact authorized scope; execution agents never silently redefine the roadmap or expand an
-authorization.
+authorization. **READ BEFORE BUILD / REUSE BEFORE CREATE** is the Lead's standing method: before
+issuing a NEW product implementation instruction, the Lead itself performs ONE bounded
+repository-based overlap / reuse check — normally directly, because the Lead has repository access —
+sufficient to determine what already exists, the canonical owner(s), the reusable seam(s) and the
+genuinely missing product delta. A separate Claude / executor read-only round is not the default
+prerequisite; use executor read-only inquiry only when the Lead cannot establish a material fact
+directly or executor-local / environment evidence is genuinely required. Outcomes: ALREADY EXISTS →
+DO NOT BUILD A DUPLICATE; PARTIAL → reuse / extend the existing owner and implement only the missing
+delta; ABSENT → implementation may be proposed within Owner-authorized scope. It is an operating
+method bounded to the proposed change — not a governance gate, approval stage, mandatory extra agent
+round or historical reconstruction requirement (roadmap §8C-A / §8C-J and Owner ruling D-FPC-MAP-06
+carry the underlying no-duplicate-owner rule).
 
 **Review routing.** Use specialist review only when materially justified, never ritually.
 Material UX / browser / E2E / localization changes go to the designated independent
@@ -239,6 +270,26 @@ operational need. Until then it stays WATCH / PREMATURE as the evidence dictates
 current baseline, not the permanent InventorAI domain ceiling. Before repeated future domain
 activations, evaluate whether a bounded Domain Pack Conformance Validator would reduce repeated
 manual validation; that validator is NEXT TRIGGER, not authorized implementation.
+**Multi-domain Technical Deepening continuity rule (design / continuity principle only; it
+authorizes NO new domain activation and no Stage 28 / 30 / 31 implementation).** InventorAI is
+intentionally a multi-domain invention-development platform with, today, exactly two runtime-activated
+specialist domains (`electronics_electrical`, `mechanical`). Future Technical Deepening preserves ONE
+shared extensible technical architecture PLUS independently governed domain-specific technical
+knowledge, never duplicated parallel technical systems per domain. Preserve these distinctions: domain
+pack presence ≠ runtime activation; registered ≠ supported ≠ activated (`engine/domain_activation.py`
+owns activation truth); domain activation does not authorize arbitrary technical guidance; every
+technical statement requires governed domain / source authority (`domains/<pack>/domain.json`); D13
+Electronics knowledge is NOT Mechanical or other-domain technical authority; shared architecture does
+NOT imply identical semantics or identical gap sets across domains (Software, Mechanical, Medical, IoT
+and future domains may differ); do not hard-code technical-depth architecture around today's
+Electronics + Mechanical only, and do not prematurely build a giant generic technical framework —
+generalize only the shared seam a real product slice justifies. A future third / fourth qualified
+domain must not require rewriting the product core merely because the first implementations assumed
+two active domains. The future domain direction stays where it is recorded: Master Roadmap Stage 28
+(IoT → Drone / Unmanned → Renewable, with Satellite / Space-System as the preserved later Stage-28
+subitem), Stage 30 (cross-domain safeguards before new-domain activation) and Stage 31 (future IoT
+technical depth); roadmap §8C invariants D–F and the Product-Foundation §5 multi-domain contract's
+no-core-domain-name-branching principle carry the architecture rule.
 
 **Human-study boundary.** No recruitment, participant contact or human-data collection begins
 without the required Owner authorization and applicable consent/custody readiness. Before the
@@ -418,6 +469,17 @@ information, not execution authority.
   pre-existing limitation affecting other planning rows too — no Slice-4 repair cycle. The accepted
   first-use Arabic concept is "متغيّر / شرط الاختبار (Test Variable / Condition)"; inventor-authored
   text stays verbatim.
+- **NEXT TRIGGER — one read-only prompt audit after Mechanical CAP-01 closes.** After the Mechanical
+  CAP-01 Open-Gap Technical Context lifecycle is fully closed and merged, run ONE separate read-only
+  `/doctor prompt-audit` (or the installed Claude Code version's current equivalent if renamed) to
+  inspect CLAUDE.md, skills, agents and commands for dated / harmful prompting patterns. Not a
+  recurring gate; not before every slice; no automatic edits; the Lead reviews proposed prompt changes
+  before any mutation; it must not delay the Mechanical CAP-01 publication.
+- **WATCH — Mechanical CAP-01 test hygiene (non-blocking, no repair cycle).** Two `or True` clauses in
+  `tests/test_cap01_mechanical_open_gap_context.py` are non-blocking test-hygiene debt: the material
+  risks they nominally cover are independently covered by other real assertions and direct code
+  inspection (independent review PASS, material findings NONE). Remove or replace them on the next
+  natural touch of that test file; the reviewed implementation and its tests are not modified for this.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative

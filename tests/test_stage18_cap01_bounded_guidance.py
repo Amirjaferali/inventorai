@@ -59,9 +59,21 @@ _GUIDANCE_PATH = os.path.join(_ROOT, "web", "cap01_guidance.py")
 _APP_PATH = os.path.join(_ROOT, "web", "app.py")
 _TEMPLATE_PATH = os.path.join(_ROOT, "web", "templates", "deliverable.html")
 
-# The first (and only) authorized CAP-01 profile.
+# The first (and only) authorized domain-level CAP-01 checklist profile.
 PROFILE_ID = "CAP01_ELECTRONICS_INTERFACE_V1"
 PROFILE_DOMAIN = "electronics_electrical"
+# The separately Owner-authorized Mechanical CAP-01 open-gap technical context
+# (gap-scoped, resolved per route from exact canonical gap identity + lifecycle
+# state; pinned in tests/test_cap01_mechanical_open_gap_context.py). Its copy keys
+# share the ``UI_CAP01_`` namespace, so the Electronics-only pins below filter by
+# the Electronics profile prefix instead of the whole namespace.
+MECH_GAP_CONTEXT_ID = "CAP01_MECHANICAL_GAP_CONTEXT_V1"
+MECH_GAP_CONTEXT_PREFIX = "UI_%s_" % MECH_GAP_CONTEXT_ID
+
+
+def _electronics_keys():
+    """Every catalogue key of the Electronics profile (checklist + research)."""
+    return [k for k in ui_text.UI_STRINGS if k.startswith("UI_%s_" % PROFILE_ID)]
 
 # The canonical top-level deliverable sections. CAP-01 adds none of these.
 CANONICAL_SECTION_KEYS = (
@@ -367,8 +379,11 @@ def test_04a_mechanical_remains_an_activated_inventorai_domain():
 
 
 def test_04b_no_cap01_block_renders_on_a_mechanical_deliverable():
-    """Neither the electronics profile nor any Mechanical profile appears: no
-    Mechanical CAP-01 knowledge profile is authorized in this increment."""
+    """Neither the electronics profile nor any Mechanical domain-level checklist
+    profile appears: no Mechanical CAP-01 checklist profile is authorized. (The
+    separately-authorized Mechanical open-gap technical context is a gap-scoped
+    shape resolved per route from canonical gap state, not a domain profile; it is
+    pinned in tests/test_cap01_mechanical_open_gap_context.py.)"""
     html = _render(_package(_open_gap_state(MECHANICAL_IDEA)))
     assert _block(html) is None
     assert "cap01-block" not in html and "data-cap01" not in html
@@ -460,8 +475,11 @@ def test_08a_profile_selection_is_table_driven_not_hard_coded_branching(monkeypa
 
 def test_08b_the_probe_leaves_no_residue_and_no_unused_future_row_is_shipped():
     assert tuple(cap01_guidance.CAP01_PROFILE_BY_DOMAIN) == (PROFILE_DOMAIN,)
+    # The only other ``UI_CAP01_`` keys are the separately-authorized Mechanical
+    # gap-context group's; no unused future profile row or key is shipped.
     assert not [k for k in ui_text.UI_STRINGS
-                if k.startswith("UI_CAP01_") and PROFILE_ID not in k]
+                if k.startswith("UI_CAP01_") and PROFILE_ID not in k
+                and not k.startswith(MECH_GAP_CONTEXT_PREFIX)]
 
 
 def test_08c_an_incomplete_future_profile_fails_closed_rather_than_half_rendering(monkeypatch):
@@ -763,7 +781,7 @@ def test_19c_the_pdf_shell_also_suppresses_the_block_when_no_profile_applies():
 # 20. LOCALIZATION BOUNDARY
 # ==========================================================================
 def test_20a_the_bilingual_exception_is_limited_to_the_cap01_keys():
-    keys = [k for k in ui_text.UI_STRINGS if k.startswith("UI_CAP01_")]
+    keys = _electronics_keys()
     # 11 from the first increment + 8 from the research-direction addendum
     assert len(keys) == 19
     assert len([k for k in keys if "_RESEARCH_" in k]) == 8
@@ -841,7 +859,7 @@ def test_21b_ui_text_still_owns_the_copy_and_the_resolver_owns_no_text():
     ui = _source(_UI_TEXT_PATH)
     guidance = _source(_GUIDANCE_PATH)
     # copy stayed put
-    assert len([k for k in ui_text.UI_STRINGS if k.startswith("UI_CAP01_")]) == 19
+    assert len(_electronics_keys()) == 19
     assert "Technical information to check" in ui
     assert "\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0641\u0646\u064a\u0629 \u0644\u0644\u0645\u0631\u0627\u062c\u0639\u0629" in ui
     # and did NOT follow the availability table across
@@ -1029,8 +1047,8 @@ def _research_region(block):
 
 def test_23a_the_six_accepted_checklist_items_are_byte_for_byte_unchanged():
     import hashlib, json
-    base = {k: ui_text.UI_STRINGS[k] for k in sorted(ui_text.UI_STRINGS)
-            if k.startswith("UI_CAP01_") and "_RESEARCH_" not in k}
+    base = {k: ui_text.UI_STRINGS[k] for k in sorted(_electronics_keys())
+            if "_RESEARCH_" not in k}
     assert len(base) == 11
     got = hashlib.sha256(json.dumps(base, ensure_ascii=False,
                                     sort_keys=True).encode("utf-8")).hexdigest()
