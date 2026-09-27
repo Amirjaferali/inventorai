@@ -36,6 +36,7 @@ li{margin-bottom:4px}
 .ev-details-rows dd{margin:0}
 .ev-details-note{margin:4px 0 8px;font-size:12px;color:#667}
 .user-method{white-space:pre-wrap}
+.user-variable{white-space:pre-wrap}
 .vp-meta{font-size:12px;color:#667;line-height:1.5;margin:0 0 12px 0}
 .vp-intro{font-size:13px;color:#555;line-height:1.5;margin:0 0 12px 0}
 .back-link{margin-top:30px;font-size:13px}
@@ -696,6 +697,14 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% else %}
   <div class="field-value" data-test-hypothesis-absent><strong>{{ t('UI_DELIV_HYPOTHESIS_ABSENT_LABEL') }}</strong> {{ t('UI_DELIV_HYPOTHESIS_ABSENT') }}</div>
   {% endif %}
+  {# CAP-09 SLICE 4: the inventor's own test variable / condition (what they plan
+     to change or compare), or truthful absence — never generated, inferred,
+     parsed, graded or a result. #}
+  {% if exp.test_variable_provenance == 'user_defined' %}
+  <div class="field-value" data-test-variable><strong>{{ t('UI_DELIV_VARIABLE_DEFINED') }}</strong> <span class="user-variable" dir="auto">{{ exp.test_variable }}</span></div>
+  {% else %}
+  <div class="field-value" data-test-variable-absent><strong>{{ t('UI_DELIV_VARIABLE_ABSENT_LABEL') }}</strong> {{ t('UI_DELIV_VARIABLE_ABSENT') }}</div>
+  {% endif %}
   {# SLICE-02: the inventor's own measurement method, or truthful absence — never
      a generated method and never merged with "Observe:" above. #}
   {% if exp.measurement_method_provenance == 'user_defined' %}
@@ -722,6 +731,9 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
   {% if package.section_11_prototype_test_plan.stale_test_hypotheses %}
   <div class="field-value status-snapshot" data-stale-hypotheses>{{ t('UI_SC_HYPOTHESIS_STALE') }}</div>
+  {% endif %}
+  {% if package.section_11_prototype_test_plan.stale_test_variables %}
+  <div class="field-value status-snapshot" data-stale-variables>{{ t('UI_SC_VARIABLE_STALE') }}</div>
   {% endif %}
   {% if package.section_11_prototype_test_plan["items"] and not pdf_mode %}
   <div class="field-value"><a href="{{ url_for('success_criteria', sid=sid) }}">{{ t('UI_B_DELIV_084') }}</a></div>

@@ -23,16 +23,57 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--cap09-slice-3"></a>
-## Current authority — Stage 19 / CAP-09 Slice 3 — Owner-Defined Test Hypothesis (Owner / Lead authorization, 2026-09-27)
+<a id="current-authority--cap09-slice-4"></a>
+## Current authority — Stage 19 / CAP-09 Slice 4 — Owner-Defined Test Variable / Condition (Owner / Lead authorization, 2026-09-27)
 
-**ACTIVE CONTRACT: CAP-09 SLICE 3 — OWNER-DEFINED TEST HYPOTHESIS.**
+**ACTIVE CONTRACT: CAP-09 SLICE 4 — OWNER-DEFINED TEST VARIABLE / CONDITION.**
+ONE further bounded slice inside the already-entered Stage 19 (WS-PFV-001 / CAP-09), recorded by
+the Owner authorization itself (no separate contract document). It creates no new Master Roadmap
+Stage, Stage 19 stays ENTERED / NOT COMPLETE, Stage 23 is NOT ENTERED, CAP-06 is NOT ACTIVATED,
+and FULL CAP-09 and FULL WS-PFV-001 are NOT AUTHORIZED. Status: OWNER-AUTHORIZED / IMPLEMENTED /
+ASTRA ARCHITECTURE REVIEW PASS (71 focused tests, including all 62 Slice-4 tests, plus 5
+independent architectural probe groups) / INDEPENDENT UX / BEHAVIOUR REVIEW PASS — material
+findings: NONE — PR / merge pending.
+
+| | |
+|---|---|
+| **SCOPE** | for each CURRENT Section-11 experiment, ONE inventor-authored free-text Test Variable / Condition — what the inventor intends to change, compare or set differently in that test — recorded, edited or cleared on the existing planning page and shown in the report and PDF |
+| **DISTINCT CONCEPTS** | Objective = system-generated purpose / context; What to Observe = system-generated observation guidance; Success Criterion = what the inventor counts as success; Test Hypothesis = what the inventor expects to happen; Test Variable / Condition = what the inventor changes or compares; Measurement Method = how the inventor plans to measure or check it. None replaces, derives or combines with another |
+| **INVENTOR PLANNING SET** | four concepts: Success Criterion, Test Hypothesis, Test Variable / Condition, Measurement Method; Objective and What to Observe are not inventor-authored planning metadata |
+| **IDENTITY** | the canonical `experiment_id` stays the only experiment identity; no variable_id; no second experiment owner |
+| **PERSISTENCE** | ONE new durable current-value sibling sidecar `prototype_test_variables` (project_id, experiment_id, inventor-authored text only); `prototype_plan_metadata`, `prototype_measurement_methods` and `prototype_test_hypotheses` keep their meanings |
+| **ONE ATOMIC PLANNING SAVE** | the existing planning transaction applies up to four submitted concept deltas atomically — every requested change commits together or rolls back together; two- and three-concept callers stay compatible; an omitted (`None`) delta means no edit, never delete all; IR-01 stays authoritative; confirm-by-reload keeps SAVED / NOT SAVED / UNKNOWN truthful across every submitted concept and never turns UNKNOWN into success or failure |
+| **STALE** | a variable whose experiment_id is no longer current is preserved, surfaced as stale, not applied and never attached to or remapped onto another experiment by list position or text similarity; the SAME canonical experiment_id returning applies its own value again by identity |
+| **NO FORMAL SCIENTIFIC AUTHORITY** | opaque user-authored free text: no variable type, no dependent / independent / controlled variable, no controls validation, no units or ranges, no scientific-validity judgement and no design grading |
+| **AUTHORITY** | PLANNING METADATA ONLY — never generated, inferred, parsed or graded; no Evidence, result, validation, readiness, maturity, progression, gap closure, CAP-08 assumption or dependency, or CAP-10 contradiction; no authority over next-question selection, the Requirement Landscape, the Validation Plan, the Next Development Step, the Decision Room or CAP-11 validation |
+| **LANGUAGE** | Arabic-first UX, not Arabic-only terminology: "متغيّر / شرط الاختبار (Test Variable / Condition)"; inventor-authored text stays verbatim |
+| **AI / LLM / PROVIDER / REAL INVENTION DATA** | no AI / LLM generates, rewrites, parses, grades or suggests the variable; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
+
+`BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION: AUTHORIZED WITHIN CAP-09 SLICE 4` ·
+`FORMAL EXPERIMENTAL VARIABLE MODEL: NOT AUTHORIZED`.
+
+**Deferred / not authorized:** a formal experimental variable model (independent / dependent /
+controlled variable structure, variable taxonomy, units, ranges, formal treatment / control groups,
+an experimental-design engine), Result, a Failure Criterion as a new inventor field, Risks as
+CAP-09 fields, CAP-09 Slice 5, full CAP-09, full WS-PFV-001, Stage 23, CAP-06, CAP-12, CAP-13,
+deployment, public release and paid activation. WATCH (non-blocking, no repair cycle) is carried
+in the CLAUDE.md Lead Watchlist.
+
+<a id="current-authority--cap09-slice-3"></a>
+## Current authority — Stage 19 / CAP-09 Slice 3 — Owner-Defined Test Hypothesis (Owner / Lead authorization, 2026-09-27) — DELIVERED (PR #711); SUPERSEDED as current authority by CAP-09 Slice 4
+
+**No longer the current authority.** CAP-09 Slice 3 was delivered (PR #711, merge
+`e393e29cd0ba4f568cf1fd1a0d4c2e0e7742eabd`); CAP-09 Slice 4 above replaced it as the current authority on
+2026-09-27. Every rule below still binds except where CAP-09 Slice 4 states otherwise. *(Superseded
+2026-09-27, preserved so the change is visible rather than silent: this opened "**ACTIVE
+CONTRACT: CAP-09 SLICE 3 — OWNER-DEFINED TEST HYPOTHESIS.**", recorded the slice as "PR / merge
+pending" and deferred "Variable" without qualification.)*
 ONE further bounded slice inside the already-entered Stage 19 (WS-PFV-001 / CAP-09), recorded by
 the Owner authorization itself (no separate contract document). It creates no new Master Roadmap
 Stage, Stage 19 stays ENTERED / NOT COMPLETE, Stage 23 is NOT ENTERED, CAP-06 is NOT ACTIVATED,
 and FULL CAP-09 and FULL WS-PFV-001 are NOT AUTHORIZED. Status: OWNER-AUTHORIZED / IMPLEMENTED /
 INDEPENDENT UX / BEHAVIOUR REVIEW PASS / ASTRA ARCHITECTURE REVIEW PASS (76 focused tests plus 4
-additional architectural probes) — material findings: NONE — PR / merge pending.
+additional architectural probes) — material findings: NONE — DELIVERED (PR #711).
 
 | | |
 |---|---|
@@ -46,8 +87,8 @@ additional architectural probes) — material findings: NONE — PR / merge pend
 | **LANGUAGE** | Arabic-first UX, not Arabic-only terminology: "فرضية الاختبار (Test Hypothesis)"; inventor-authored text stays verbatim |
 | **AI / LLM / PROVIDER / REAL INVENTION DATA** | no AI / LLM generates, rewrites, evaluates or scores the hypothesis; no MSNL / LLM / provider activation; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
 
-**Deferred / not authorized:** Variable, Result, a Failure Criterion as a new inventor field,
-Risks as CAP-09 fields, CAP-09 Slice 4, full CAP-09, full WS-PFV-001, Stage 23, CAP-06, CAP-12,
+**Deferred / not authorized (as amended by CAP-09 Slice 4):** a formal experimental variable
+model, Result, a Failure Criterion as a new inventor field, Risks as CAP-09 fields, full CAP-09, full WS-PFV-001, Stage 23, CAP-06, CAP-12,
 CAP-13, deployment, public release and paid activation. WATCH (non-blocking, no repair cycle) is
 carried in the CLAUDE.md Lead Watchlist.
 
@@ -1126,13 +1167,46 @@ unticked** — one authorized bounded slice is not the stage.
 `SuccessCriterion` stay the canonical planning owner. SLICE-02 was bounded: ONE
 inventor-written measurement method per existing experiment, durable in a narrowly typed
 sibling sidecar of the same store. Delivering it is not the stage and opens nothing wider:
-CAP-09 Slice 3 — the inventor-written Test Hypothesis, below — was separately Owner-authorized;
-Variable, Result and every other CAP-09 field stay NOT AUTHORIZED, and no CAP-09
-implementation beyond Slice 3 is currently authorized. The Stage-19 checkbox stays unticked, and
+CAP-09 Slice 3 — the inventor-written Test Hypothesis — is delivered (PR #711), and CAP-09 Slice 4
+— the inventor-written Test Variable / Condition, below — was separately Owner-authorized; a formal
+variable model, Result and every other CAP-09 field stay NOT AUTHORIZED, and no CAP-09
+implementation beyond Slice 4 is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
 **CURRENT BOUNDED ACTION — Stage 19 / CAP-09 Experiment-Plan Designer, ONE further bounded slice
-(no new Master Roadmap Stage; Stage 19 stays ENTERED / NOT COMPLETE):** `ACTIVE CONTRACT: CAP-09 SLICE 3 — OWNER-DEFINED TEST HYPOTHESIS` · `CAP-09 SLICE 3: IMPLEMENTED — UX / BEHAVIOUR REVIEW PASS — ASTRA ARCHITECTURE REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED` · `VARIABLE: NOT AUTHORIZED` · `RESULT: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
+(no new Master Roadmap Stage; Stage 19 stays ENTERED / NOT COMPLETE):** `ACTIVE CONTRACT: CAP-09 SLICE 4 — OWNER-DEFINED TEST VARIABLE / CONDITION` · `CAP-09 SLICE 4: IMPLEMENTED — ASTRA ARCHITECTURE REVIEW PASS — UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED` · `BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION: AUTHORIZED WITHIN CAP-09 SLICE 4` · `FORMAL EXPERIMENTAL VARIABLE MODEL: NOT AUTHORIZED` · `RESULT: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
 For each CURRENT Section-11 experiment the inventor can record, edit or clear their own Test
+Variable / Condition — what they intend to change, compare or set differently in that test. It
+stays distinct from the system-generated Objective (purpose / context) and What to Observe
+(observation guidance), the Success Criterion (what the inventor counts as success), the Test
+Hypothesis (what the inventor expects to happen) and the Measurement Method (how the inventor plans
+to measure or check it). The inventor-authored planning set is now four concepts — Success
+Criterion, Test Hypothesis, Test Variable / Condition and Measurement Method — saved together
+through the ONE existing planning Save; Objective and What to Observe are not inventor-authored
+planning metadata. The canonical `experiment_id` stays the only experiment identity (no
+variable_id, no second experiment owner); the variable is durable current-value planning metadata
+in ONE new sibling sidecar, `prototype_test_variables` (project_id, experiment_id,
+inventor-authored text only), while `prototype_plan_metadata`, `prototype_measurement_methods` and
+`prototype_test_hypotheses` keep their meanings. The existing planning transaction applies up to
+four submitted concept deltas atomically — every requested change commits together or rolls back
+together; existing two- and three-concept callers stay compatible, and an omitted (`None`) delta
+means no edit, never delete all; IR-01 stays authoritative, and confirm-by-reload keeps SAVED / NOT
+SAVED / UNKNOWN truthful across every submitted concept (UNKNOWN is never turned into success or
+failure). A variable whose experiment_id is no longer in the current plan is preserved, surfaced as
+stale, not applied and never attached to or remapped onto another experiment by list position or
+text similarity; if the SAME canonical experiment_id returns, its own value applies again by
+identity. The Test Variable / Condition is opaque user-authored free text: InventorAI does not
+determine a variable type, identify dependent / independent variables, validate controls, set
+units or ranges, judge scientific validity or grade the design. It is PLANNING METADATA ONLY and
+creates no Evidence, result, validation, readiness, maturity, progression, gap closure, CAP-08
+assumption or dependency, or CAP-10 contradiction; it has no authority over next-question
+selection, the Requirement Landscape, the Validation Plan, the Next Development Step, the Decision
+Room or CAP-11 validation. No AI / LLM generates, rewrites, parses, grades or suggests it, and no
+invention data is transmitted to an external provider. A formal experimental variable model
+(independent / dependent / controlled variables, a variable taxonomy, units, ranges, formal
+treatment / control groups or an experimental-design engine), Result, a Failure Criterion as a new
+inventor field and Risks as CAP-09 fields stay NOT AUTHORIZED.
+**DELIVERED — CAP-09 Slice 3 — Owner-Defined Test Hypothesis (inside Stage 19):** `CAP-09 SLICE 3: DELIVERED — PR #711 — merge e393e29cd0ba4f568cf1fd1a0d4c2e0e7742eabd`.
+CAP-09 Slice 3 (delivered): for each CURRENT Section-11 experiment the inventor can record, edit or clear their own Test
 Hypothesis — what they expect to happen in that experiment. It stays distinct from the
 system-generated Objective (the experiment's purpose / context), the Success Criterion (what the
 inventor would count as success) and the Measurement Method (how the inventor plans to measure or
@@ -1153,8 +1227,7 @@ result, confirmed / rejected hypothesis, validation, readiness, maturity, progre
 CAP-08 assumption or dependency, or CAP-10 contradiction; it does not alter the Requirement
 Landscape, the Validation Plan, the Next Development Step or CAP-11 evidence validation. No AI /
 LLM generates, rewrites, evaluates or scores it, no invention data is transmitted to an external
-provider, and no MSNL / LLM / provider activation is authorized. Variable, Result, a Failure
-Criterion as a new inventor field and Risks as CAP-09 fields stay NOT AUTHORIZED.
+provider, and no MSNL / LLM / provider activation is authorized.
 **DELIVERED — CAP-11 Evidence Quality Ladder, ONE bounded slice under the already-recorded CAP-11
 capability (no new Master Roadmap Stage):** `CAP-11 SLICE 1: DELIVERED — PR #710 — merge 7d2e9ab011a0bbf17b577f354e2b47ab09114add` · `FULL CAP-11: NOT AUTHORIZED`.
 CAP-11 Slice 1 (delivered) ran under the Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`
