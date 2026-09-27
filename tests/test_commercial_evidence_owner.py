@@ -1365,12 +1365,14 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
     # measurement method, likewise planning metadata only. AMENDED at Safe
     # Question Reduction Slice 1: the append-only `need_routing_revisions`
     # sidecar holds deterministic SYSTEM routing revisions only — not a
-    # commercial owner and not a join table.
+    # commercial owner and not a join table. AMENDED at Stage 19 / CAP-09
+    # SLICE 3: the sibling `prototype_test_hypotheses` stores the inventor-written
+    # test hypothesis, likewise planning metadata only.
     assert tables == {"projects", "records", "requirement_quantities",
                       "evidence_references", "readiness_evidence",
                       "question_feedback", "engine_version_adoptions",
                       "prototype_plan_metadata", "prototype_measurement_methods",
-                      "need_routing_revisions"}
+                      "prototype_test_hypotheses", "need_routing_revisions"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()

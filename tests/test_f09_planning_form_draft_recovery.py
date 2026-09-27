@@ -244,7 +244,7 @@ def test_guidance_states_how_line_breaks_count_and_no_script_is_used(client, lan
     client.post("/ui-language", data={"lang": "en"})
     assert r.status_code == 200
     guidance = text("UI_SC_LIMIT", lang).format(limit=LIMIT)
-    assert body.count(guidance) == 2 * len(_live_ids(sid))   # every field, both concepts
+    assert body.count(guidance) == 3 * len(_live_ids(sid))   # every field, all three concepts (CAP-09 SLICE 3)
     assert "<script" not in body                              # no JS is relied on
     assert 'maxlength="1000"' in body                         # the hard upper bound stays
     assert 'id="draft-unsaved"' not in body                   # only after a refusal

@@ -20,7 +20,7 @@ from flask import (
 from engine.domain_rules import classify_domain, DomainResultKind, is_known_domain
 from engine import domain_activation
 from engine.idea_state import (
-    IdeaState, SuccessCriterion, MeasurementMethod,
+    IdeaState, SuccessCriterion, MeasurementMethod, TestHypothesis,
     CRITICALITY_FEASIBILITY_THREATENING, CRITICALITY_VALUE_ENHANCING,
     CRITICALITY_REFINEMENT, CRITICALITY_ACTION_CONFIRMED,
     CRITICALITY_ACTION_DEFERRED,
@@ -96,6 +96,7 @@ import sqlite3
 from engine.record_store import (
     SqliteRecordStore, StoreError, ProjectNotFound as _ProjectNotFound,
     MAX_SUCCESS_CRITERION_LENGTH, MAX_MEASUREMENT_METHOD_LENGTH,
+    MAX_TEST_HYPOTHESIS_LENGTH,
     QuantityChainConflict as _QuantityChainConflict,
     QuantityCapExceeded as _QuantityCapExceeded,
     QuantityAnchorIneligible as _QuantityAnchorIneligible,
@@ -1680,23 +1681,40 @@ def _durable_measurement_methods(sid):
     return {eid: MeasurementMethod(method=text) for eid, text in rows}
 
 
+def _durable_test_hypotheses(sid):
+    """Stage 19 / CAP-09 SLICE 3: the project's durable test hypotheses as
+    ``{experiment_id: TestHypothesis}`` — the same outcomes as
+    ``_durable_measurement_methods`` (absence ``{}``, no durable project
+    ``None``, storage failure / corruption RAISE). Provenance is re-derived as
+    the truthful ``user_defined``."""
+    try:
+        rows = _get_store().load_test_hypotheses(sid)
+    except _ProjectNotFound:
+        return None
+    return {eid: TestHypothesis(hypothesis=text) for eid, text in rows}
+
+
 def _attach_planning_metadata(sid, state):
     """Attach the durable Section-11 planning metadata of ``sid`` — success
-    criteria AND measurement methods — to ``state``, the state actually being
-    consumed or published. BOTH collections are loaded before EITHER is
-    assigned: on a storage failure or a corrupt row of either, it returns
+    criteria, measurement methods AND (SLICE 3) test hypotheses — to
+    ``state``, the state actually being consumed or published. ALL THREE
+    collections are loaded before ANY is assigned: on a storage failure or a
+    corrupt row of any of them, it returns
     False and leaves ``state`` UNTOUCHED (never a partial or silently empty
     set), so every caller fails closed. A memory-only context (no durable
     project) has nothing durable to attach and leaves the carrier as it is."""
     try:
         criteria = _durable_success_criteria(sid)
         methods = _durable_measurement_methods(sid)
+        hypotheses = _durable_test_hypotheses(sid)
     except Exception:
         return False
     if criteria is not None:
         state.success_criteria = criteria
     if methods is not None:
         state.measurement_methods = methods
+    if hypotheses is not None:
+        state.test_hypotheses = hypotheses
     return True
 
 
@@ -5688,7 +5706,8 @@ def _deliverable_context(sid):
         return None
     if (getattr(state, "domain", None) is None and not reconstructed_deliverable
             and (getattr(state, "success_criteria", None)
-                 or getattr(state, "measurement_methods", None))):
+                 or getattr(state, "measurement_methods", None)
+                 or getattr(state, "test_hypotheses", None))):
         return None
     package = assemble_deliverable(state)
     # T2-A: the additive nested package key, composed HERE at the one shared
@@ -9394,9 +9413,16 @@ def keep_snapshot(sid):
 # — how they plan to measure or check it; never generated, never a result). One
 # submission is ONE planning delta over both concepts, validated whole and
 # committed in ONE durable transaction.
+#
+# Stage 19 / CAP-09 SLICE 3: the SAME page and the SAME single Save also carry
+# the inventor's own test hypothesis per experiment ("hypothesis__<experiment_id>"
+# — what they expect to happen; planning metadata only, never generated,
+# parsed, graded, evidence, a result or a readiness input). The one submission
+# is ONE planning delta over all three concepts, committed in ONE transaction.
 MAX_CRITERION_LENGTH = MAX_SUCCESS_CRITERION_LENGTH
 _CRITERION_FIELD_PREFIX = "criterion__"
 _METHOD_FIELD_PREFIX = "method__"
+_HYPOTHESIS_FIELD_PREFIX = "hypothesis__"
 
 # Why the current plan could not be offered. Distinct on purpose: a session
 # that is not a saved project, a plan that is not available, and saved criteria
@@ -9407,36 +9433,40 @@ _SC_NO_PROJECT = "no_project"
 _SC_PLAN_UNAVAILABLE = "plan_unavailable"
 _SC_CRITERIA_UNAVAILABLE = "criteria_unavailable"
 
-# SLICE-02: the page now carries success criteria AND measurement methods, and
-# its outcomes cover both, so each outcome names both (same meaning otherwise).
+# SLICE-02 / SLICE 3: the page carries success criteria, measurement methods
+# AND test hypotheses, and its outcomes cover all three, so each outcome names
+# all three (same meaning otherwise).
 SC_NOT_SAVED_PROJECT_MESSAGE = (
-    "Success criteria and measurement methods can only be kept for a saved "
-    "project. This session is not saved as a project, so they cannot be saved "
-    "here. Nothing was changed.")
+    "Success criteria, measurement methods and test hypotheses can only be kept "
+    "for a saved project. This session is not saved as a project, so they "
+    "cannot be saved here. Nothing was changed.")
 SC_PLAN_UNAVAILABLE_MESSAGE = (
     "The current Prototype & Test Plan is not available from this saved "
-    "project, so success criteria and measurement methods cannot be shown or "
-    "changed from this page. Nothing was changed.")
+    "project, so success criteria, measurement methods and test hypotheses "
+    "cannot be shown or changed from this page. Nothing was changed.")
 SC_CRITERIA_UNAVAILABLE_MESSAGE = (
-    "Your saved success criteria and measurement methods could not be read, so "
-    "they cannot be shown or changed from this page. Nothing was changed.")
+    "Your saved success criteria, measurement methods and test hypotheses could "
+    "not be read, so they cannot be shown or changed from this page. Nothing "
+    "was changed.")
 SC_NOT_SAVED_MESSAGE = (
-    "Your success criteria and measurement methods could not be saved just now. "
-    "Nothing was changed.")
+    "Your success criteria, measurement methods and test hypotheses could not "
+    "be saved just now. Nothing was changed.")
 # The durable write COMMITTED; only updating this page failed. Never "not saved".
 SC_SAVED_NOT_SHOWN_MESSAGE = (
-    "Your success criteria and measurement methods were saved to your project, "
-    "but this page could not show them. Reload this page to see what your "
-    "project holds.")
+    "Your success criteria, measurement methods and test hypotheses were saved "
+    "to your project, but this page could not show them. Reload this page to "
+    "see what your project holds.")
 # CORRECTION-01 (F-04): the write raised and its durable outcome could NOT be
 # established by reading the project back. Asserts neither a write nor a
 # rollback — only what is known.
 SC_OUTCOME_UNKNOWN_MESSAGE = (
-    "We could not confirm whether your success criteria and measurement methods "
-    "were saved. Reload this page to see what your project currently holds "
-    "before entering them again.")
+    "We could not confirm whether your success criteria, measurement methods "
+    "and test hypotheses were saved. Reload this page to see what your project "
+    "currently holds before entering them again.")
 SC_METHOD_TOO_LONG_MESSAGE = (
     "A measurement method exceeds the 1000-character limit. No changes were saved.")
+SC_HYPOTHESIS_TOO_LONG_MESSAGE = (
+    "A test hypothesis exceeds the 1000-character limit. No changes were saved.")
 _SC_STATUS_MESSAGE = {
     _SC_NO_PROJECT: (SC_NOT_SAVED_PROJECT_MESSAGE, 409),
     _SC_PLAN_UNAVAILABLE: (SC_PLAN_UNAVAILABLE_MESSAGE, 503),
@@ -9478,8 +9508,12 @@ def _current_criteria_context(sid):
     return _SC_OK, plan
 
 
-def _resolve_criteria_write(sid, delta, method_delta):
+def _resolve_criteria_write(sid, delta, method_delta, hypothesis_delta=None):
     """Bounded confirm-by-reload after ``apply_planning_metadata_delta`` RAISED.
+
+    SLICE 3: a non-empty ``hypothesis_delta`` takes part exactly like the other
+    two concepts (its durable hypotheses are read and compared the same way);
+    an absent or empty one is not read at all.
 
     Reads the project's durable criteria AND measurement methods (both through
     the store's IR-01 guard: an unresolved transaction is never read as
@@ -9494,9 +9528,13 @@ def _resolve_criteria_write(sid, delta, method_delta):
     try:
         durable = dict(_get_store().load_success_criteria(sid))
         durable_methods = dict(_get_store().load_measurement_methods(sid))
+        pairs = [(delta, durable), (method_delta, durable_methods)]
+        if hypothesis_delta:
+            pairs.append((hypothesis_delta,
+                          dict(_get_store().load_test_hypotheses(sid))))
     except Exception:
         return _SC_WRITE_UNKNOWN
-    for submitted, committed in ((delta, durable), (method_delta, durable_methods)):
+    for submitted, committed in pairs:
         for eid, text in submitted.items():
             if text is None:
                 if eid in committed:
@@ -9524,15 +9562,16 @@ def _same_planning_text(raw, durable):
 
 def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None):
     """``drafts`` (F-09): the REJECTED submission, request-local only, as
-    ``(criteria, methods)`` maps of ``experiment_id -> submitted text``. Each
+    ``(criteria, methods, hypotheses)`` maps of ``experiment_id -> submitted
+    text``. Each
     draft is shown in its own field instead of the durable value, under an
     explicit UNSAVED notice; it is never written to state or the store. NUL is
     never echoed (it was the reason for refusal and is not representable in an
     HTML text field); every other character renders through autoescape."""
     lang = _current_ui_lang()
-    criterion_drafts = method_drafts = None
+    criterion_drafts = method_drafts = hypothesis_drafts = None
     if drafts is not None:
-        criterion_drafts, method_drafts = (
+        criterion_drafts, method_drafts, hypothesis_drafts = (
             {eid: raw.replace("\x00", "") for eid, raw in part.items()}
             for part in drafts)
     return render_template(
@@ -9540,14 +9579,18 @@ def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None
         sid=sid,
         criterion_drafts=criterion_drafts,
         method_drafts=method_drafts,
+        hypothesis_drafts=hypothesis_drafts,
         draft_notice=drafts is not None,
         experiments=None if plan is None else plan["items"],
         stale_notice=None if plan is None else plan.get("stale_criteria_notice"),
         stale_methods=bool(plan and plan.get("stale_measurement_methods")),
+        stale_hypotheses=bool(plan and plan.get("stale_test_hypotheses")),
         field_prefix=_CRITERION_FIELD_PREFIX,
         method_prefix=_METHOD_FIELD_PREFIX,
+        hypothesis_prefix=_HYPOTHESIS_FIELD_PREFIX,
         max_length=MAX_CRITERION_LENGTH,
         method_max_length=MAX_MEASUREMENT_METHOD_LENGTH,
+        hypothesis_max_length=MAX_TEST_HYPOTHESIS_LENGTH,
         # CF-2 Arabic-localization remainder: every message here is one of this
         # module's known English constants, registered in
         # `ui_text._MESSAGE_KEYS` (or copy already localized by
@@ -9588,7 +9631,8 @@ def save_success_criteria(sid):
         return _criteria_unavailable(sid, status)
     current_ids = {it["experiment_id"] for it in plan["items"]}
 
-    # Collect submitted criteria AND methods, each namespaced by experiment_id.
+    # Collect submitted criteria, methods AND (SLICE 3) hypotheses, each
+    # namespaced by experiment_id.
     # A field that is not submitted is not part of the delta and is never
     # touched.
     submitted = {name[len(_CRITERION_FIELD_PREFIX):]: val
@@ -9597,15 +9641,18 @@ def save_success_criteria(sid):
     submitted_methods = {name[len(_METHOD_FIELD_PREFIX):]: val
                          for name, val in request.form.items()
                          if name.startswith(_METHOD_FIELD_PREFIX)}
+    submitted_hypotheses = {name[len(_HYPOTHESIS_FIELD_PREFIX):]: val
+                            for name, val in request.form.items()
+                            if name.startswith(_HYPOTHESIS_FIELD_PREFIX)}
 
     # F-09: a rejected submission is re-shown AS SUBMITTED (request-local, never
     # saved) so a refusal can never discard what the inventor just typed.
-    drafts = (submitted, submitted_methods)
+    drafts = (submitted, submitted_methods, submitted_hypotheses)
 
     # Validate the WHOLE planning delta before any write: an unknown or
-    # no-longer-current id, an over-limit value, or invalid text in EITHER
+    # no-longer-current id, an over-limit value, or invalid text in ANY
     # concept rejects the entire request.
-    for eid in list(submitted) + list(submitted_methods):
+    for eid in list(submitted) + list(submitted_methods) + list(submitted_hypotheses):
         if eid not in current_ids:
             return _render_criteria(
                 sid, plan, status=400, drafts=drafts,
@@ -9619,10 +9666,14 @@ def save_success_criteria(sid):
                if it.get("success_criterion_provenance") == "user_defined"}
     durable_methods = {it["experiment_id"]: it["measurement_method"]
                        for it in plan["items"] if "measurement_method" in it}
+    durable_hypotheses = {it["experiment_id"]: it["test_hypothesis"]
+                          for it in plan["items"] if "test_hypothesis" in it}
     edits = {eid: raw for eid, raw in submitted.items()
              if not _same_planning_text(raw, durable.get(eid))}
     method_edits = {eid: raw for eid, raw in submitted_methods.items()
                     if not _same_planning_text(raw, durable_methods.get(eid))}
+    hypothesis_edits = {eid: raw for eid, raw in submitted_hypotheses.items()
+                        if not _same_planning_text(raw, durable_hypotheses.get(eid))}
 
     # The limit counts the submitted text as received: a browser sends each
     # line break as two characters (CRLF), which the form guidance states.
@@ -9636,11 +9687,16 @@ def save_success_criteria(sid):
         if len(raw.strip()) > MAX_MEASUREMENT_METHOD_LENGTH:
             return _render_criteria(sid, plan, status=400, drafts=drafts,
                                     error=SC_METHOD_TOO_LONG_MESSAGE)
+    for raw in hypothesis_edits.values():
+        if len(raw.strip()) > MAX_TEST_HYPOTHESIS_LENGTH:
+            return _render_criteria(sid, plan, status=400, drafts=drafts,
+                                    error=SC_HYPOTHESIS_TOO_LONG_MESSAGE)
     # CORRECTION-01 (F-03): the product's EXISTING invalid-free-text policy — an
     # embedded NUL anywhere is invalid input, rejected before persistence with
     # its bounded EN/AR copy. Nothing is stripped or rewritten.
     lang = _current_ui_lang()
-    for raw in list(edits.values()) + list(method_edits.values()):
+    for raw in (list(edits.values()) + list(method_edits.values())
+                + list(hypothesis_edits.values())):
         invalid = _free_text_error(raw, lang)
         if invalid is not None:
             return _render_criteria(sid, plan, status=400, error=invalid,
@@ -9650,12 +9706,20 @@ def save_success_criteria(sid):
     # not in `edits` at all, so it is never re-written.
     delta = {eid: (raw.strip() or None) for eid, raw in edits.items()}
     method_delta = {eid: (raw.strip() or None) for eid, raw in method_edits.items()}
+    hypothesis_delta = {eid: (raw.strip() or None)
+                        for eid, raw in hypothesis_edits.items()}
     try:
-        _get_store().apply_planning_metadata_delta(sid, delta, method_delta)
+        # SLICE 3: ONE call, ONE transaction over every concept. A submission
+        # that changes no hypothesis uses the unchanged two-delta call.
+        if hypothesis_delta:
+            _get_store().apply_planning_metadata_delta(
+                sid, delta, method_delta, hypothesis_delta)
+        else:
+            _get_store().apply_planning_metadata_delta(sid, delta, method_delta)
     except Exception:
         # CORRECTION-01 (F-04): never turn an UNKNOWN durable outcome into a
         # failure. Read the project back and decide from durable truth only.
-        outcome = _resolve_criteria_write(sid, delta, method_delta)
+        outcome = _resolve_criteria_write(sid, delta, method_delta, hypothesis_delta)
         if outcome == _SC_WRITE_NOT_SAVED:
             # Demonstrably not reflected; memory was never touched.
             return _render_criteria(sid, plan, status=503, error=SC_NOT_SAVED_MESSAGE)

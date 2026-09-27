@@ -6,17 +6,43 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-27): CAP-11 Evidence Quality Ladder — current bounded action: CAP-11 Slice 1 — Evidence Details (one bounded slice under the already-recorded CAP-11 capability and the Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`, no new Master Roadmap Stage, Stage 23 not entered, CAP-06 not activated; implemented, independent UX / behaviour review PASS with no material findings, PR / merge pending; full CAP-11 NOT AUTHORIZED); CAP-02 Simplified One-Step Journey (Slice 1 — Project Compass — delivered, PR #709; full CAP-02 NOT AUTHORIZED); CAP-04 Gap Action Packs (Slice 1 — Actionable Gap Pack — delivered, PR #708; full CAP-04 NOT AUTHORIZED); Stage 22 — CAP-05 Decision Trace + CAP-07 Invention Decision Room ENTERED / PARTIAL (Slice 2 — Actionable Decision Room Summary — delivered, PR #707; Slice 1 — read-only decision trace + project context panel — delivered, PR #706); Stage 20 — CAP-08 Assumption Register ENTERED / PARTIAL (CAP-08 Slice 1 — Owner-declared assumption → answer dependency — delivered, PR #704); Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL (CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers — delivered, PR #703); Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing — delivered, PR #701, with the bounded weak-PF recovery PR #702; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
+**Current position (2026-09-27): Stage 19 / CAP-09 Experiment-Plan Designer — current bounded action: CAP-09 Slice 3 — Owner-Defined Test Hypothesis (one further bounded slice inside the already-entered Stage 19, no new Master Roadmap Stage, Stage 23 not entered, CAP-06 not activated; implemented, independent UX / behaviour review PASS and Astra architecture review PASS with no material findings, PR / merge pending; full CAP-09 and full WS-PFV-001 NOT AUTHORIZED); CAP-11 Evidence Quality Ladder (Slice 1 — Evidence Details — delivered, PR #710; full CAP-11 NOT AUTHORIZED); CAP-02 Simplified One-Step Journey (Slice 1 — Project Compass — delivered, PR #709; full CAP-02 NOT AUTHORIZED); CAP-04 Gap Action Packs (Slice 1 — Actionable Gap Pack — delivered, PR #708; full CAP-04 NOT AUTHORIZED); Stage 22 — CAP-05 Decision Trace + CAP-07 Invention Decision Room ENTERED / PARTIAL (Slice 2 — Actionable Decision Room Summary — delivered, PR #707; Slice 1 — read-only decision trace + project context panel — delivered, PR #706); Stage 20 — CAP-08 Assumption Register ENTERED / PARTIAL (CAP-08 Slice 1 — Owner-declared assumption → answer dependency — delivered, PR #704); Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL (CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers — delivered, PR #703); Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing — delivered, PR #701, with the bounded weak-PF recovery PR #702; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
 not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
 complete nothing beyond themselves. **No further CAP-01 implementation is currently
-authorized.** `ACTIVE CONTRACT: CAP-11 SLICE 1 — EVIDENCE DETAILS` ·
-`CAP-11 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` ·
-`FULL CAP-11: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`:
-CAP-11 Slice 1 runs under the Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`
+authorized.** `ACTIVE CONTRACT: CAP-09 SLICE 3 — OWNER-DEFINED TEST HYPOTHESIS` ·
+`CAP-09 SLICE 3: IMPLEMENTED — UX / BEHAVIOUR REVIEW PASS — ASTRA ARCHITECTURE REVIEW PASS — PR / MERGE PENDING` ·
+`FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED` · `VARIABLE: NOT AUTHORIZED` ·
+`RESULT: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`:
+for each CURRENT Section-11 experiment the inventor can record, edit or clear their own Test
+Hypothesis — what they expect to happen in that experiment. It stays distinct from the
+system-generated Objective (the experiment's purpose / context), the Success Criterion (what the
+inventor would count as success) and the Measurement Method (how the inventor plans to measure or
+check it); the three inventor planning entries may be saved together through the ONE existing
+planning Save. The canonical `experiment_id` stays the only experiment identity (no second
+experiment owner); the hypothesis is durable current-value planning metadata in ONE new sibling
+sidecar, `prototype_test_hypotheses` (project_id, experiment_id, inventor-authored text only),
+while `prototype_plan_metadata` and `prototype_measurement_methods` keep their meanings. The
+existing planning transaction applies the submitted Success Criterion, Measurement Method and Test
+Hypothesis delta atomically — every requested change commits together or rolls back together;
+existing two-concept callers stay backward compatible, IR-01 stays authoritative, and
+confirm-by-reload keeps SAVED / NOT SAVED / UNKNOWN truthful across the three-concept delta. A
+hypothesis whose experiment_id is no longer in the current plan is preserved, surfaced as stale and
+never attached to or remapped onto another experiment by position or text similarity; if the SAME
+canonical experiment_id returns, its own hypothesis applies again by identity. Test Hypothesis is
+PLANNING METADATA ONLY — never generated, inferred or graded — and creates no Evidence, test
+result, confirmed / rejected hypothesis, validation, readiness, maturity, progression, gap closure,
+CAP-08 assumption or dependency, or CAP-10 contradiction; it does not alter the Requirement
+Landscape, the Validation Plan, the Next Development Step or CAP-11 evidence validation. No AI /
+LLM generates, rewrites, evaluates or scores it, no invention data is transmitted to an external
+provider, and no MSNL / LLM / provider activation is authorized. Variable, Result, a Failure
+Criterion as a new inventor field and Risks as CAP-09 fields stay NOT AUTHORIZED.
+`CAP-11 SLICE 1: DELIVERED — PR #710 — merge 7d2e9ab011a0bbf17b577f354e2b47ab09114add` ·
+`FULL CAP-11: NOT AUTHORIZED`:
+CAP-11 Slice 1 (delivered) ran under the Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`
 (the contract authorizes Slice 1 only). It enhances the existing report Section 2 evidence
 presentation only: for each present Known Problem / Known Mechanism item the report and PDF show
 "About this evidence" with THREE independent rows — Form, Source and Validation — from the
@@ -124,8 +150,9 @@ hidden question must never mean a hidden unknown. `STAGE 19: ENTERED / NOT COMPL
 #683 — merge 8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60` · `F-09 PLANNING-FORM RECOVERY: DELIVERED —
 PR #684` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
 `SuccessCriterion` stay the canonical planning owner; SLICE-02 was bounded to ONE inventor-written
-measurement method per existing experiment. Variable, hypothesis and every other CAP-09 field stay
-NOT AUTHORIZED. The T1-C′ synthetic corpus (PR #685) and automated dry-run are preparation
+measurement method per existing experiment, and CAP-09 Slice 3 to ONE inventor-written Test
+Hypothesis per current experiment (current bounded action, above). Variable, Result and every other
+CAP-09 field stay NOT AUTHORIZED. The T1-C′ synthetic corpus (PR #685) and automated dry-run are preparation
 mechanics only — not real-user usability, value, differentiation, market or human validation.
 WATCH: the pre-Target-Aware reader does not load sixteen-field AssertionRecord rows, a
 pre-CAP-10 reader does not load a `contradiction_declared` row (its `contradiction_endpoints`
@@ -147,6 +174,13 @@ InventorAI domain that simply has no authorized CAP-01 profile yet.** Cross-stag
 capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
 operating practice — they add no Stage, gate or approval step.
 <!-- END CURRENT-BLOCK: current-position -->
+
+*(Superseded 2026-09-27 by CAP-09 Slice 3, preserved so the change is visible rather than
+silent: the current-position entry read "CAP-11 Evidence Quality Ladder — current bounded action:
+CAP-11 Slice 1 — Evidence Details (… implemented, independent UX / behaviour review PASS with no
+material findings, PR / merge pending …)" and "`ACTIVE CONTRACT: CAP-11 SLICE 1 — EVIDENCE
+DETAILS`". That was true until PR #710 delivered it (merge
+`7d2e9ab011a0bbf17b577f354e2b47ab09114add`) and the Owner authorized CAP-09 Slice 3.)*
 
 *(Superseded 2026-09-27 by CAP-11 Slice 1, preserved so the change is visible rather than
 silent: the current-position entry read "CAP-02 Simplified One-Step Journey — current bounded

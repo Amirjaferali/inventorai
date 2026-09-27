@@ -492,11 +492,14 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
     # (current value, no payload, no disposition) is not a ledger either.
     # AMENDED at Safe Question Reduction Slice 1: `need_routing_revisions`
     # (typed SYSTEM routing revisions, no payload, no disposition) is not a
-    # second Owner ledger.
+    # second Owner ledger. AMENDED at Stage 19 / CAP-09 SLICE 3: the sibling
+    # `prototype_test_hypotheses` (current value, no payload, no disposition) is
+    # not a ledger either.
     assert tables == ["engine_version_adoptions", "evidence_references",
                       "need_routing_revisions", "projects",
                       "prototype_measurement_methods",
-                      "prototype_plan_metadata", "question_feedback",
+                      "prototype_plan_metadata", "prototype_test_hypotheses",
+                      "question_feedback",
                       "readiness_evidence", "records",
                       "requirement_quantities"], tables
     assert ledger_like == ["records"], ledger_like

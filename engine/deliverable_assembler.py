@@ -1287,6 +1287,35 @@ def _stale_measurement_methods(state, current_ids):
             stale.append({"experiment_id": eid, "measurement_method": txt,
                           "provenance": getattr(mm, "provenance", "user_defined")})
     return stale
+
+
+def _resolve_test_hypothesis(exp, eid, state):
+    """Stage 19 / CAP-09 SLICE 3: attach the inventor's OWN test hypothesis
+    (what they expect to happen) for this experiment
+    (state.test_hypotheses[eid]) when one is recorded. Planning metadata only:
+    additive when present, never generated, inferred, parsed, graded, treated
+    as evidence or as a result, and never a readiness input."""
+    user = (getattr(state, "test_hypotheses", None) or {}).get(eid)
+    text = (getattr(user, "hypothesis", "") or "").strip() if user else ""
+    if text:
+        exp["test_hypothesis"] = text
+        exp["test_hypothesis_provenance"] = getattr(user, "provenance", "user_defined")
+
+
+def _stale_test_hypotheses(state, current_ids):
+    """User hypotheses whose experiment_id is no longer generated. Preserved
+    and surfaced honestly; never reattached elsewhere. Deterministic (dict order)."""
+    stale = []
+    for eid, th in (getattr(state, "test_hypotheses", None) or {}).items():
+        if eid in current_ids:
+            continue
+        txt = (getattr(th, "hypothesis", "") or "").strip()
+        if txt:
+            stale.append({"experiment_id": eid, "test_hypothesis": txt,
+                          "provenance": getattr(th, "provenance", "user_defined")})
+    return stale
+
+
 _PLAN_STOPWORDS = {
     "that", "this", "with", "from", "would", "which", "have", "been", "they",
     "their", "there", "when", "what", "into", "such", "than", "then", "them",
@@ -1394,6 +1423,7 @@ def _s11(state):
         exp["experiment_id"] = eid
         _resolve_success_criterion(exp, eid, source_text, state)
         _resolve_measurement_method(exp, eid, state)
+        _resolve_test_hypothesis(exp, eid, state)
         exp["required_expertise_or_tools"] = expertise_field  # legacy per-item field, unchanged
         items.append(exp)
 
@@ -1503,6 +1533,10 @@ def _s11(state):
     stale_methods = _stale_measurement_methods(state, current_ids)
     if stale_methods:
         plan["stale_measurement_methods"] = stale_methods
+    # SLICE 3: additive only when a stale inventor hypothesis exists.
+    stale_hypotheses = _stale_test_hypotheses(state, current_ids)
+    if stale_hypotheses:
+        plan["stale_test_hypotheses"] = stale_hypotheses
     return plan
 
 

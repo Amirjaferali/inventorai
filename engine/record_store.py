@@ -210,6 +210,21 @@ class MeasurementMethodCorrupt(StoreError):
     returned and nothing is repaired, deleted or reinterpreted."""
 
 
+class TestHypothesisInvalid(StoreError):
+    """Stage 19 / CAP-09 SLICE 3: a submitted test-hypothesis delta is
+    structurally invalid (unknown shape, malformed experiment id, empty /
+    untrimmed / over-limit / NUL-bearing text). Raised BEFORE the write
+    transaction opens, so nothing is written."""
+    __test__ = False
+
+
+class TestHypothesisCorrupt(StoreError):
+    """Stage 19 / CAP-09 SLICE 3: a durable test-hypothesis row of the project
+    is malformed. Fail-closed for the WHOLE collection: no partial set is
+    returned and nothing is repaired, deleted or reinterpreted."""
+    __test__ = False
+
+
 @runtime_checkable
 class RecordStore(Protocol):
     """Datastore-neutral durable record-store interface (the abstraction
@@ -264,8 +279,12 @@ class RecordStore(Protocol):
     # Stage 19 / CAP-09 SLICE-02 durable MeasurementMethod (additive; see the
     # prototype_measurement_methods note below).
     def load_measurement_methods(self, project_id: str) -> tuple: ...
+    # Stage 19 / CAP-09 SLICE 3 durable TestHypothesis (additive; see the
+    # prototype_test_hypotheses note below).
+    def load_test_hypotheses(self, project_id: str) -> tuple: ...
     def apply_planning_metadata_delta(self, project_id: str, criteria_delta,
-                                      method_delta) -> None: ...
+                                      method_delta,
+                                      hypothesis_delta=None) -> None: ...
 
 
 _SCHEMA = (
@@ -734,6 +753,48 @@ def _valid_method_text(value) -> bool:
             and "\x00" not in value)
 
 
+# Stage 19 / CAP-09 SLICE 3 — durable user-written TestHypothesis (Owner-
+# authorized). ONE narrowly typed, additive, project-scoped, CURRENT-VALUE
+# sibling of ``prototype_plan_metadata`` and ``prototype_measurement_methods``
+# in the SAME database. It stores the inventor's own statement of what they
+# expect to happen in one Section-11 experiment, keyed by the canonical stable
+# ``experiment_id`` — and nothing else: no experiment definition, title,
+# objective, source or generated plan text, no parsed variable, condition,
+# unit or magnitude, no provenance (a stored row is by construction the
+# inventor's own text), and no Evidence, result, confirmed / rejected state,
+# validation, score, confidence or readiness value. The two sibling tables are
+# deliberately NOT widened. Same identity, foreign key, CHECK backstop,
+# idempotent additive migration and disable-and-ignore rollback as they have.
+_TEST_HYPOTHESIS_TABLE = "prototype_test_hypotheses"
+_TEST_HYPOTHESIS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS prototype_test_hypotheses (
+        project_id      TEXT NOT NULL,
+        experiment_id   TEXT NOT NULL,
+        test_hypothesis TEXT NOT NULL,
+        PRIMARY KEY (project_id, experiment_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        CHECK (typeof(experiment_id) = 'text'
+               AND length(experiment_id) BETWEEN 1 AND 128),
+        CHECK (typeof(test_hypothesis) = 'text'
+               AND length(test_hypothesis) BETWEEN 1 AND 1000
+               AND instr(CAST(test_hypothesis AS BLOB), X'00') = 0)
+    )
+    """,
+)
+# The per-hypothesis length bound (characters), shared with the web route.
+MAX_TEST_HYPOTHESIS_LENGTH = 1000
+
+
+def _valid_hypothesis_text(value) -> bool:
+    """A stored hypothesis is exactly what the route stores: non-empty, already
+    trimmed (internal newlines and tabs kept), within the bound, and free of
+    NUL anywhere in the value."""
+    return (isinstance(value, str) and value == value.strip()
+            and 0 < len(value) <= MAX_TEST_HYPOTHESIS_LENGTH
+            and "\x00" not in value)
+
+
 # Outcome vocabulary of an adoption append (mirrors the merged T2-A/T2-D
 # vocabulary: an already-recorded exact event is historical no-write
 # evidence, never a conflict and never a second write).
@@ -886,6 +947,7 @@ class SqliteRecordStore:
             self._migrate_readiness_evidence(self._conn)
             self._migrate_prototype_plan_metadata(self._conn)
             self._migrate_prototype_measurement_methods(self._conn)
+            self._migrate_prototype_test_hypotheses(self._conn)
             self._migrate_need_routing(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
@@ -1072,6 +1134,15 @@ class SqliteRecordStore:
         database; touches no existing table, column or row. Rollback is
         disable-and-ignore (stop reading the table)."""
         for stmt in _MEASUREMENT_METHOD_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_prototype_test_hypotheses(self, conn) -> None:
+        """Stage 19 / CAP-09 SLICE 3 forward migration against the LIVE schema:
+        additively create the ``prototype_test_hypotheses`` sidecar. Idempotent
+        (``IF NOT EXISTS``) on a fresh and on an existing populated database;
+        touches no existing table, column or row. Rollback is
+        disable-and-ignore (stop reading the table)."""
+        for stmt in _TEST_HYPOTHESIS_SCHEMA:
             conn.execute(stmt)
 
     def _migrate_need_routing(self, conn) -> None:
@@ -2528,6 +2599,30 @@ class SqliteRecordStore:
                     "durable measurement-method row is malformed")
         return tuple((experiment_id, method) for experiment_id, method in rows)
 
+    # --- Stage 19 / CAP-09 SLICE 3 durable TestHypothesis (current value) ------
+    def load_test_hypotheses(self, project_id: str) -> tuple:
+        """Load and VALIDATE one project's durable test hypotheses; return an
+        immutable tuple of ``(experiment_id, hypothesis)`` pairs ordered by
+        ``experiment_id``. The same distinct outcomes as
+        ``load_success_criteria``: no project row -> ``ProjectNotFound``; zero
+        rows -> ``()``; any malformed row -> ``TestHypothesisCorrupt`` for the
+        WHOLE collection; storage failure propagates; and (IR-01) a connection
+        left inside an unresolved transaction raises
+        ``RecordStoreConnectionUnsafe`` instead of reading its own uncommitted
+        changes. Read-only; project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        self._require_project(project_id)
+        rows = self._conn.execute(
+            "SELECT experiment_id, test_hypothesis FROM prototype_test_hypotheses "
+            "WHERE project_id = ? ORDER BY experiment_id ASC", (project_id,)
+        ).fetchall()
+        for experiment_id, hypothesis in rows:
+            if not _valid_experiment_id(experiment_id) \
+                    or not _valid_hypothesis_text(hypothesis):
+                raise TestHypothesisCorrupt(
+                    "durable test-hypothesis row is malformed")
+        return tuple((experiment_id, hypothesis) for experiment_id, hypothesis in rows)
+
     @staticmethod
     def _delta_items(delta, invalid, text_ok):
         """Structural validation of ONE concept's submitted delta (a mapping of
@@ -2544,27 +2639,33 @@ class SqliteRecordStore:
         return items
 
     def apply_planning_metadata_delta(self, project_id: str, criteria_delta,
-                                      method_delta) -> None:
+                                      method_delta, hypothesis_delta=None) -> None:
         """Apply ONE complete, already-validated planning submission atomically:
-        the success-criterion delta AND the measurement-method delta together.
+        the success-criterion delta, the measurement-method delta AND (SLICE 3)
+        the test-hypothesis delta together. ``hypothesis_delta=None`` is an
+        EMPTY delta (never a deletion), so every existing two-concept caller is
+        unchanged.
 
         Each delta maps ``experiment_id`` to a non-empty trimmed text (UPSERT
         that key) or ``None`` (DELETE that key only); keys absent from a delta
-        are never touched. BOTH deltas are validated structurally BEFORE the
+        are never touched. ALL THREE deltas are validated structurally BEFORE the
         transaction opens (``SuccessCriterionInvalid`` /
-        ``MeasurementMethodInvalid``, nothing written). Then every change of
-        both concepts runs inside ONE ``BEGIN IMMEDIATE`` transaction that first
+        ``MeasurementMethodInvalid`` / ``TestHypothesisInvalid``, nothing
+        written). Then every change of all three concepts runs inside ONE ``BEGIN IMMEDIATE`` transaction that first
         requires the durable project (``ProjectNotFound``). Any failure before
-        COMMIT rolls the ENTIRE submission back: no partial save of either
+        COMMIT rolls the ENTIRE submission back: no partial save of any
         concept, and never two commits presented as one. IR-01: a connection
         left unresolved by an earlier failed write refuses to write.
 
         This method does not decide which experiment ids are current: the caller
-        validates both deltas against the current plan generated by Section 11."""
+        validates every delta against the current plan generated by Section 11."""
         criteria = self._delta_items(criteria_delta, SuccessCriterionInvalid,
                                      _valid_criterion_text)
         methods = self._delta_items(method_delta, MeasurementMethodInvalid,
                                     _valid_method_text)
+        hypotheses = self._delta_items(
+            {} if hypothesis_delta is None else hypothesis_delta,
+            TestHypothesisInvalid, _valid_hypothesis_text)
         self._refuse_uncommitted_reads()      # IR-01: never write on top of it
         with self._write():
             self._require_project(project_id)
@@ -2596,6 +2697,20 @@ class SqliteRecordStore:
                         "ON CONFLICT (project_id, experiment_id) "
                         "DO UPDATE SET measurement_method = excluded.measurement_method",
                         (project_id, experiment_id, method))
+            for experiment_id, hypothesis in hypotheses:
+                if hypothesis is None:
+                    self._conn.execute(
+                        "DELETE FROM prototype_test_hypotheses "
+                        "WHERE project_id = ? AND experiment_id = ?",
+                        (project_id, experiment_id))
+                else:
+                    self._conn.execute(
+                        "INSERT INTO prototype_test_hypotheses "
+                        "(project_id, experiment_id, test_hypothesis) "
+                        "VALUES (?, ?, ?) "
+                        "ON CONFLICT (project_id, experiment_id) "
+                        "DO UPDATE SET test_hypothesis = excluded.test_hypothesis",
+                        (project_id, experiment_id, hypothesis))
 
     def project_ids(self) -> List[str]:
         return [row[0] for row in

@@ -61,8 +61,9 @@ CAP-02 … CAP-18, which remain `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`
 otherwise by their own authority.** **A second, separately bounded exception is recorded in the
 CAP-09 entry below: the Owner authorized ONE Stage-19 durable SuccessCriterion remediation
 (IMPLEMENTATION-01, delivered by PR #682), which makes the EXISTING `SuccessCriterion` durable,
-and then ONE bounded CAP-09 SLICE-02, which adds a durable inventor-written measurement method
-per existing experiment. It does NOT authorize full CAP-09 or full WS-PFV-001, and it changes
+then ONE bounded CAP-09 SLICE-02, which adds a durable inventor-written measurement method
+per existing experiment, and then ONE bounded CAP-09 Slice 3, which adds a durable inventor-written
+Test Hypothesis per current experiment. It does NOT authorize full CAP-09 or full WS-PFV-001, and it changes
 nothing for any other capability.** (CAP-15 … CAP-18 were added by the legacy post-mortem capture in §1A; the original fourteen
 concepts referenced elsewhere in this register's genesis note are unchanged.)
 
@@ -297,12 +298,19 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
 - **Proposed acceptance criteria:** deterministic structure; explicit non-execution and non-validity
   disclaimers; specialist review preserved.
 - **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (governed by
-  WS-PFV-001), **with TWO bounded exceptions**: the Owner-authorized Stage-19 durable
+  WS-PFV-001), **with THREE bounded exceptions**: (1) the Owner-authorized Stage-19 durable
   SuccessCriterion remediation (IMPLEMENTATION-01, delivered by PR #682), which makes the
   EXISTING Section-11 `SuccessCriterion` durable in the same project store and adds no new
-  CAP-09 field; and CAP-09 SLICE-02, which adds ONE field — the inventor's own measurement
+  CAP-09 field; (2) CAP-09 SLICE-02, which adds ONE field — the inventor's own measurement
   method per existing experiment, durable in a narrowly typed sibling sidecar of the same
-  store. Variable, hypothesis, risks and a result category are NOT authorized.
+  store (delivered, PR #683); and (3) CAP-09 Slice 3, which adds ONE field — the inventor's own
+  Test Hypothesis (what they expect to happen): ONE inventor-authored hypothesis text per CURRENT
+  Section-11 experiment, keyed by the canonical `experiment_id`, durable current-value planning
+  metadata in the sibling sidecar `prototype_test_hypotheses`, shown on the planning page and in
+  the report / PDF, never generated, inferred or graded, and not Evidence, a result, validation,
+  readiness, progression, a CAP-08 assumption or a CAP-10 contradiction (implemented, UX /
+  behaviour and Astra architecture reviews PASS, PR / merge pending). Variable, Result, a Failure
+  Criterion as a new inventor field and Risks as CAP-09 fields are NOT authorized.
   `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`.
 - **Activation conditions:** the WS-PFV-001 activation chain.
 - **Separate owner authorization requirement:** yes — via WS-PFV-001.
@@ -357,7 +365,7 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   and the PDF show three independent rows — Form, Source, Validation — from the existing axes;
   presentation only, with no score, rank or tier, no validation / provenance / quality writer, no
   promotion and no readiness authority. The recorded long-term ladder hierarchy above is NOT
-  implemented. Implemented; independent UX / behaviour review PASS; PR / merge pending.
+  implemented. Delivered (PR #710, merge `7d2e9ab011a0bbf17b577f354e2b47ab09114add`).
   `FULL CAP-11: NOT AUTHORIZED`.
 - **Activation conditions:** a separately authorized evidence-quality-ladder contract.
 - **Separate owner authorization requirement:** yes.
@@ -682,9 +690,9 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-06 Readiness Dashboard | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-02, CAP-07, CAP-11 | RECORDED — NOT AUTHORIZED |
 | CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED |
 | CAP-08 Assumption Register | Assumption-tracking increment | WS12, CAP-05, CAP-10, CAP-11 | SLICE 1 AUTHORIZED (Owner-declared assumption → answer dependency only) — FULL CAP-08 NOT AUTHORIZED |
-| CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (delivered, PR #682) and one bounded SLICE-02 durable measurement method (full CAP-09 still NOT AUTHORIZED) |
+| CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683) and one bounded Slice 3 durable Test Hypothesis (implemented, reviews PASS, PR / merge pending) (full CAP-09 still NOT AUTHORIZED) |
 | CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED |
-| CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (implemented, review PASS, PR / merge pending) — FULL CAP-11 NOT AUTHORIZED |
+| CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | Dedicated materials-and-manufacturing feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14 | RECORDED — NOT AUTHORIZED |
 | CAP-13 Component Thickness, Specification, and Safety Advisory | Dedicated thickness-and-safety feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14 | RECORDED — NOT AUTHORIZED |
 | CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | Dedicated static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13 | RECORDED — NOT AUTHORIZED |
@@ -831,9 +839,9 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | CAP-06 Readiness Dashboard | RECORDED — NOT AUTHORIZED | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-11; Patent Export decision; WS-PFV-001 | Yes | — | At the readiness increment / WS12–WS16 closure |
 | CAP-07 Invention Decision Room | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
 | CAP-08 Assumption Register | SLICE 1 AUTHORIZED (Owner-declared assumption → answer dependency only) — FULL CAP-08 NOT AUTHORIZED | Assumption-tracking increment | Provenance/validation axes; ledger; WS12; CAP-11 | Yes | — | At the assumption increment / WS12–WS16 closure |
-| CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation (delivered, PR #682) and one bounded SLICE-02 durable measurement method | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
+| CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683) and one bounded Slice 3 durable Test Hypothesis (implemented, reviews PASS, PR / merge pending) | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
 | CAP-10 Contradiction Detector | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
-| CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (implemented, review PASS, PR / merge pending) — FULL CAP-11 NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |
+| CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | RECORDED — NOT AUTHORIZED | Materials-and-manufacturing feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the materials feasibility gate / WS12–WS16 closure |
 | CAP-13 Component Thickness, Specification, and Safety Advisory | RECORDED — NOT AUTHORIZED | Thickness-and-safety feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the thickness feasibility gate / WS12–WS16 closure |
 | CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | RECORDED — NOT AUTHORIZED | Static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13; static-image/2D feasibility gate (§6) | Yes | — | At the static-visual feasibility gate / WS12–WS16 closure |

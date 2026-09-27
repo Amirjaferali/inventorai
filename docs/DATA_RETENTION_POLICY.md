@@ -21,6 +21,7 @@ notably LQ-09/LQ-10/TQ-07) and separate Owner acceptance.
 | Projects / records (user invention content) | Durable SQLite (`projects`, `records`) | YES |
 | Prototype & Test Plan success criteria (user-authored planning targets; Stage 19 / CAP-09 IMPLEMENTATION-01) | Durable SQLite (`prototype_plan_metadata`) — ONE current value per project and experiment: an edit replaces the text and clearing the box removes that row; no history is kept | YES |
 | Prototype & Test Plan measurement methods (user-written descriptions of how the inventor plans to measure or check an experiment; Stage 19 / CAP-09 SLICE-02) | Durable SQLite (`prototype_measurement_methods`) — ONE current value per project and experiment: an edit replaces the text and clearing the box removes that row; no history is kept | YES |
+| Prototype & Test Plan test hypotheses (user-written statements of what the inventor expects to happen in an experiment; Stage 19 / CAP-09 SLICE 3) | Durable SQLite (`prototype_test_hypotheses`) — ONE current value per project and experiment: an edit replaces the text and clearing the box removes that row; no history is kept | YES |
 | Audit / commercial scaffolding (`access_audit`, `commercial_audit`, lifecycle, dedupe, usage) | Durable SQLite, append-only; NO live billing data | Partly |
 | Auth rate-limit counters | Durable SQLite (`auth_rate_limits`) — privacy-digest keys, no raw email | NO |
 | Outbound email outbox (OD-INFRA-6) | Durable SQLite (`email_outbox`) — recipient address + token-bearing verification/reset body, TRANSIENT: deleted on confirmed provider acceptance, scrubbed (recipient/subject/body nulled) when the bounded retry budget is exhausted; never logged, never exported | YES (while pending) |
@@ -59,6 +60,11 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
   current-value row from `prototype_measurement_methods`, and editing it replaces the text in
   place. It is likewise NOT an automatic deletion, NOT an erasure capability and NOT account
   or project erasure; it decides no retention rule, and earlier values may persist in backups.
+  SLICE 3 (Stage 19 / CAP-09) extends the same behaviour, unchanged in kind, to the owner's own
+  test hypotheses: clearing one removes that single current-value row from
+  `prototype_test_hypotheses`, and editing it replaces the text in place. It is likewise NOT an
+  automatic deletion, NOT an erasure capability and NOT account or project erasure; it decides
+  no retention rule, and earlier values may persist in backups.
 * Browser drafts expire client-side after a 7-day lazy TTL (`web/static/js/local_draft.js`,
   `TTL_MS = 7 days`) — a client mechanism, not a server retention rule.
 * Self-service export is project-scoped only (P10-D3a); account-wide export DEFERRED (OD-DR2).

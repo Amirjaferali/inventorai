@@ -32,6 +32,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 <div class="intro">
   {{ t('UI_SENS_SC_01') }}
   <p>{{ t('UI_SC_METHOD_INTRO') }}</p>
+  <p>{{ t('UI_SC_HYPOTHESIS_INTRO') }}</p>
 </div>
 
 {% if error %}<div class="error">{{ error }}</div>{% endif %}
@@ -41,6 +42,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 {% if notice %}<div class="notice" role="status">{{ notice }}</div>{% endif %}
 {% if stale_notice %}<div class="stale">{{ stale_notice }}</div>{% endif %}
 {% if stale_methods %}<div class="stale">{{ t('UI_SC_METHOD_STALE') }}</div>{% endif %}
+{% if stale_hypotheses %}<div class="stale" data-stale-hypotheses>{{ t('UI_SC_HYPOTHESIS_STALE') }}</div>{% endif %}
 
 {# experiments is None when no CURRENT plan could be offered (the notice above
    says why); that must never read as "no proposed experiments". #}
@@ -71,6 +73,15 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
               dir="auto" aria-describedby="experiment-source-{{ nav_id }} criterion-guidance-{{ nav_id }}"
               placeholder="{{ t('UI_B_SC_003') }}">{% if criterion_drafts is not none and exp.experiment_id in criterion_drafts %}{{ criterion_drafts[exp.experiment_id] }}{% elif exp.success_criterion_provenance == 'user_defined' %}{{ exp.success_criterion }}{% endif %}</textarea>
     <p class="criterion-guidance" id="criterion-guidance-{{ nav_id }}">{{ t('UI_SC_LIMIT').format(limit=max_length) }} {{ t('UI_SC_SAVE_CLEAR') }}</p>
+    {# SLICE 3: the inventor's own test hypothesis — what they expect to happen.
+       Planning metadata only: never generated, parsed, graded or a result. #}
+    <label for="hypothesis-{{ nav_id }}" class="method-label">{{ t('UI_SC_HYPOTHESIS_LABEL') }}</label>
+    <textarea id="hypothesis-{{ nav_id }}"
+              name="{{ hypothesis_prefix }}{{ exp.experiment_id }}" rows="2"
+              maxlength="{{ hypothesis_max_length }}"
+              dir="auto" aria-describedby="experiment-source-{{ nav_id }} hypothesis-guidance-{{ nav_id }}"
+              placeholder="{{ t('UI_SC_HYPOTHESIS_PLACEHOLDER') }}">{% if hypothesis_drafts is not none and exp.experiment_id in hypothesis_drafts %}{{ hypothesis_drafts[exp.experiment_id] }}{% elif exp.test_hypothesis_provenance == 'user_defined' %}{{ exp.test_hypothesis }}{% endif %}</textarea>
+    <p class="criterion-guidance" id="hypothesis-guidance-{{ nav_id }}">{{ t('UI_SC_LIMIT').format(limit=hypothesis_max_length) }} {{ t('UI_SC_SAVE_CLEAR') }}</p>
     {# SLICE-02: the inventor's own measurement method — never generated and
        never merged with the system-provided "Observe" context above. #}
     <label for="method-{{ nav_id }}" class="method-label">{{ t('UI_SC_METHOD_LABEL') }}</label>
