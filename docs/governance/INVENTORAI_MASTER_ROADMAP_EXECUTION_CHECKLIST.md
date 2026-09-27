@@ -154,9 +154,22 @@ Read those before acting on any stage; this table is a locator, not a status sou
   Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
   implementation is currently authorized. The Stage-19 checkbox stays unticked, and
   entering Stage 19 completes nothing in Stage 18.
-  **CURRENT BOUNDED ACTION — CAP-04 Gap Action Packs, ONE bounded slice under the already-recorded
-CAP-04 capability (no new Master Roadmap Stage):** `ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK` · `CAP-04 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-04: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED`.
-CAP-04 Slice 1 shows one read-only Actionable Gap Pack per CURRENT unresolved gap — OPEN /
+  **CURRENT BOUNDED ACTION — CAP-02 Simplified One-Step Journey, ONE bounded slice under the
+already-recorded CAP-02 capability (no new Master Roadmap Stage):** `ACTIVE CONTRACT: CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY` · `CAP-02 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-02: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
+CAP-02 Slice 1 evolves the existing top-of-session Project Orientation into ONE Project Compass
+with four concepts: Recorded so far, Still unresolved, Why it matters now and What to do now.
+Recorded so far counts active current answered records only (superseded answers and decision /
+relationship / risk-acceptance metadata excluded). Unresolved categories come from existing
+canonical owners and are never summed into a composite total; explicit "not known yet" answers and
+unknowns mentioned inside answers stay distinct categories. `derive_next_development_step` stays the
+development-step owner: the former standalone Next Development Step callout is folded into the
+Compass as why / how-addressed context, never a second action. The existing primary-action branch
+logic is unchanged and the Compass holds exactly ONE primary journey action. Gap Action Packs stay
+the per-gap detail below it, the Decision Room stays separate, and the report and PDF are unchanged.
+No state mutation, persistence, schema, replay, writer, progression, readiness, scoring or ranking
+change and no AI / LLM / provider call.
+**DELIVERED — CAP-04 Gap Action Packs, ONE bounded slice (no new Master Roadmap Stage):** `CAP-04 SLICE 1: DELIVERED — PR #708 — merge 78f6a73113ff9eaa9c5e0941b2bd857595899404` · `FULL CAP-04: NOT AUTHORIZED`.
+CAP-04 Slice 1 (delivered) shows one read-only Actionable Gap Pack per CURRENT unresolved gap — OPEN /
 PARTIAL only; a CLOSED gap gets no pack; an ACCEPTED_RISK gap gets no pack and stays explicitly
 not resolved and not validated. Pack identity, order and the required action come unchanged from
 the Requirement Landscape; responsibility, input category and closure condition come from the
@@ -426,10 +439,12 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   **Stage 44 lineage gate** — PRESERVED · **Stage 45 deployment gate** — PRESERVED ·
   **WATCH-01** — PRESERVED / PLANNED / NOT YET IMPLEMENTED · **WATCH-04** — PRESERVED.
 <!-- END CURRENT-BLOCK: material-residuals -->
-- **CURRENT SUBTASK:** CAP-04 SLICE 1 — ACTIONABLE GAP PACK —
-  `ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK` ·
-  `CAP-04 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` ·
-  `FULL CAP-04: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` ·
+- **CURRENT SUBTASK:** CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY —
+  `ACTIVE CONTRACT: CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY` ·
+  `CAP-02 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` ·
+  `FULL CAP-02: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` ·
+  `CAP-04 SLICE 1: DELIVERED — PR #708 — merge 78f6a73113ff9eaa9c5e0941b2bd857595899404` ·
+  `FULL CAP-04: NOT AUTHORIZED` ·
   `CAP-05 + CAP-07 SLICE 2: DELIVERED — PR #707 — merge d5068f83d46bdf2b3b28ceeb3f0e4e78fd32cdbe` ·
   `STAGE 22: ENTERED / PARTIAL` · `FULL CAP-05: NOT AUTHORIZED` · `FULL CAP-07: NOT AUTHORIZED` ·
   `CAP-05 + CAP-07 SLICE 1: DELIVERED — PR #706 — merge f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4` ·
@@ -445,7 +460,14 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   `PROVENANCE HARDENING STEP 1: DELIVERED — PR #695 — merge 6c413c54684b0eff6d1d0db205b3ccc82d99bc06` ·
   `REAL INVENTION DATA: NOT AUTHORIZED FOR EXTERNAL TRANSMISSION` ·
   `EXTERNAL / PROVIDER MSNL: NOT AUTHORIZED` · `DURABLE SYSTEM_INFERRED WRITER: NOT AUTHORIZED — except deterministic NeedRouting (Slice 1)`.
-  CAP-04 Slice 1 (no Master Roadmap Stage; Stage 23 not entered): one read-only Actionable Gap
+  CAP-02 Slice 1 (no Master Roadmap Stage; Stage 23 not entered; CAP-06 not activated): the
+  top-of-session Project Orientation becomes ONE Project Compass — Recorded so far, Still
+  unresolved, Why it matters now, What to do now — from existing owners only, with the existing
+  primary-action branches unchanged and exactly ONE primary journey action; session only, report
+  and PDF unchanged; no state, persistence, writer, ranking, readiness or progression change and no
+  AI / LLM / provider call. *(Superseded 2026-09-27 by CAP-02 Slice 1, preserved — was: "CAP-04
+  SLICE 1 — ACTIONABLE GAP PACK"; PR #708 delivered it.)*
+  CAP-04 Slice 1 (no Master Roadmap Stage; Stage 23 not entered; delivered, PR #708): one read-only Actionable Gap
   Pack per current unresolved gap (OPEN / PARTIAL) from the Requirement Landscape, the exact
   matching Validation Plan gap step and active NeedRouting routes by exact identity with the
   committed RoutingPolicy; no question, form, writer, persistence, ranking, readiness or
@@ -682,7 +704,7 @@ dimension: a captured dimension is not a validated conclusion.
 
 ## J. Current Technology-Deepening position
 
-**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED. **Stage 19 ENTERED / NOT COMPLETE** (2026-09-23) — the durable SuccessCriterion remediation (IMPLEMENTATION-01) is delivered (PR #682); CAP-09 SLICE-02 (durable user-written measurement method) is delivered (PR #683) and no further CAP-09 implementation is currently authorized; full CAP-09 and full WS-PFV-001 NOT AUTHORIZED. The current bounded action is MSNL Step 1 — read-only architecture / data-flow adjudication of the Stage-18 semantic-normalization item; implementation NOT YET AUTHORIZED. *(Superseded 2026-09-24, preserved — was: "the only authorized implementation is CAP-09 SLICE-02 (durable user-written measurement method)".)* *(Superseded 2026-09-23 by SLICE-02, preserved — was: "the only authorized implementation is the durable SuccessCriterion remediation (IMPLEMENTATION-01)".)* *(Superseded 2026-09-23, preserved — was: "**Stage 19 ENTERED FOR FOUNDATION / CONTRACT WORK ONLY** (2026-09-23) — CAP-09 product implementation NOT STARTED / NOT AUTHORIZED YET; zero merged runtime code.")* **Stage 21 ENTERED / PARTIAL** (2026-09-26) — CAP-10 Slice 1 only (Owner-declared contradiction between two recorded answers: OWNER_STATED, UNVALIDATED, no automatic or AI detection, no winner, no resolution); full CAP-10 NOT AUTHORIZED; delivered (PR #703). **Stage 20 ENTERED / PARTIAL** (2026-09-26) — CAP-08 Slice 1 only (Owner-declared assumption → answer dependency: OWNER_STATED, UNVALIDATED, one record per directed edge, no automatic or AI inference, no readiness or progression authority); full CAP-08 NOT AUTHORIZED; delivered (PR #704). **Stage 22 ENTERED / PARTIAL** (2026-09-26) — CAP-05 + CAP-07 Slice 1 (read-only decision trace + project context panel: no inferred decision relationship, no new persistence or writer, no evidence-strength, confidence or recommendation semantics; delivered, PR #706) and Slice 2 (Actionable Decision Room Summary: read-only, project-level, grouped by canonical Validation Plan responsibility; delivered, PR #707); full CAP-05 / CAP-07 NOT AUTHORIZED. The current bounded action is CAP-04 Slice 1 (Actionable Gap Pack), which enters no Stage. **Stages 23–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-26 by the Stage 22 Slice 1 entry, preserved — was: "Stages 22–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.")* *(Superseded 2026-09-26 by the CAP-08 Slice 1 entry, preserved — was: "Stage 20 and Stages 22–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.")* *(Superseded 2026-09-26 by the CAP-10 Slice 1 entry, preserved — was: "Stages 20–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.")* *(Superseded 2026-09-23, preserved — was: "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until the Owner's Stage-19 entry-contract authorization.)* *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
+**Stage 18 ENTERED / PARTIAL** — first bounded CAP-01 increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678); second bounded research-direction increment IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679); no further CAP-01 implementation currently authorized; full CAP-01/STG NOT AUTHORIZED. **Stage 19 ENTERED / NOT COMPLETE** (2026-09-23) — the durable SuccessCriterion remediation (IMPLEMENTATION-01) is delivered (PR #682); CAP-09 SLICE-02 (durable user-written measurement method) is delivered (PR #683) and no further CAP-09 implementation is currently authorized; full CAP-09 and full WS-PFV-001 NOT AUTHORIZED. The current bounded action is MSNL Step 1 — read-only architecture / data-flow adjudication of the Stage-18 semantic-normalization item; implementation NOT YET AUTHORIZED. *(Superseded 2026-09-24, preserved — was: "the only authorized implementation is CAP-09 SLICE-02 (durable user-written measurement method)".)* *(Superseded 2026-09-23 by SLICE-02, preserved — was: "the only authorized implementation is the durable SuccessCriterion remediation (IMPLEMENTATION-01)".)* *(Superseded 2026-09-23, preserved — was: "**Stage 19 ENTERED FOR FOUNDATION / CONTRACT WORK ONLY** (2026-09-23) — CAP-09 product implementation NOT STARTED / NOT AUTHORIZED YET; zero merged runtime code.")* **Stage 21 ENTERED / PARTIAL** (2026-09-26) — CAP-10 Slice 1 only (Owner-declared contradiction between two recorded answers: OWNER_STATED, UNVALIDATED, no automatic or AI detection, no winner, no resolution); full CAP-10 NOT AUTHORIZED; delivered (PR #703). **Stage 20 ENTERED / PARTIAL** (2026-09-26) — CAP-08 Slice 1 only (Owner-declared assumption → answer dependency: OWNER_STATED, UNVALIDATED, one record per directed edge, no automatic or AI inference, no readiness or progression authority); full CAP-08 NOT AUTHORIZED; delivered (PR #704). **Stage 22 ENTERED / PARTIAL** (2026-09-26) — CAP-05 + CAP-07 Slice 1 (read-only decision trace + project context panel: no inferred decision relationship, no new persistence or writer, no evidence-strength, confidence or recommendation semantics; delivered, PR #706) and Slice 2 (Actionable Decision Room Summary: read-only, project-level, grouped by canonical Validation Plan responsibility; delivered, PR #707); full CAP-05 / CAP-07 NOT AUTHORIZED. CAP-04 Slice 1 (Actionable Gap Pack) is delivered (PR #708); the current bounded action is CAP-02 Slice 1 (Project Compass), which enters no Stage. **Stages 23–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.** *(Superseded 2026-09-26 by the Stage 22 Slice 1 entry, preserved — was: "Stages 22–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.")* *(Superseded 2026-09-26 by the CAP-08 Slice 1 entry, preserved — was: "Stage 20 and Stages 22–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.")* *(Superseded 2026-09-26 by the CAP-10 Slice 1 entry, preserved — was: "Stages 20–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code.")* *(Superseded 2026-09-23, preserved — was: "Stages 19–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until the Owner's Stage-19 entry-contract authorization.)* *(Superseded 2026-09-22, preserved — was: "Stages 18–27 preserved, NOT ENTERED / NOT AUTHORIZED — zero merged runtime code."; accurate until PR #678 merged.)*
 
 Nothing in the readiness or infrastructure lanes touched any of them. Adjacent progress
 is not implementation. CAP-12 and CAP-13 must remain separate capabilities. Release-lane
@@ -823,8 +845,11 @@ FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED
   IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3
 SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753
 NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED
-ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK
-CAP-04 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING
+ACTIVE CONTRACT: CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY
+CAP-02 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING
+FULL CAP-02: NOT AUTHORIZED
+CAP-06: NOT ACTIVATED
+CAP-04 SLICE 1: DELIVERED — PR #708 — merge 78f6a73113ff9eaa9c5e0941b2bd857595899404
 FULL CAP-04: NOT AUTHORIZED
 STAGE 22: ENTERED / PARTIAL — CAP-05 + CAP-07 SLICES 1–2 ONLY
 CAP-05 + CAP-07 SLICE 2: DELIVERED — PR #707 — merge d5068f83d46bdf2b3b28ceeb3f0e4e78fd32cdbe
@@ -897,7 +922,8 @@ Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing delivered (PR #
 Stage 21 entered / partial — CAP-10 Slice 1 only (Owner-declared contradiction between two recorded answers; delivered, PR #703); full CAP-10 not authorized
 Stage 20 entered / partial — CAP-08 Slice 1 only (Owner-declared assumption → answer dependency; delivered, PR #704); full CAP-08 not authorized
 Stage 22 entered / partial — CAP-05 + CAP-07 Slice 1 (read-only decision trace + project context panel; delivered, PR #706) and Slice 2 (Actionable Decision Room Summary; delivered, PR #707); full CAP-05 / CAP-07 not authorized
-CAP-04 Slice 1 (Actionable Gap Pack) current bounded action; enters no Stage; full CAP-04 not authorized
+CAP-02 Slice 1 (Project Compass) current bounded action; enters no Stage; full CAP-02 not authorized
+CAP-04 Slice 1 (Actionable Gap Pack) delivered, PR #708; enters no Stage; full CAP-04 not authorized
 Stages 23–27 preserved, not entered / not authorized
 
 CURRENT DOMAIN-EXPANSION POSITION:

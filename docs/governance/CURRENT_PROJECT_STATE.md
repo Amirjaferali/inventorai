@@ -6,16 +6,30 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-27): CAP-04 Gap Action Packs — current bounded action: CAP-04 Slice 1 — Actionable Gap Pack (one bounded slice under the already-recorded CAP-04 capability, no new Master Roadmap Stage, Stage 23 not entered; implemented, independent UX / behaviour review PASS with no material findings, PR / merge pending; full CAP-04 NOT AUTHORIZED); Stage 22 — CAP-05 Decision Trace + CAP-07 Invention Decision Room ENTERED / PARTIAL (Slice 2 — Actionable Decision Room Summary — delivered, PR #707; Slice 1 — read-only decision trace + project context panel — delivered, PR #706); Stage 20 — CAP-08 Assumption Register ENTERED / PARTIAL (CAP-08 Slice 1 — Owner-declared assumption → answer dependency — delivered, PR #704); Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL (CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers — delivered, PR #703); Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing — delivered, PR #701, with the bounded weak-PF recovery PR #702; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
+**Current position (2026-09-27): CAP-02 Simplified One-Step Journey — current bounded action: CAP-02 Slice 1 — Project Compass (one bounded slice under the already-recorded CAP-02 capability, no new Master Roadmap Stage, Stage 23 not entered, CAP-06 not activated; implemented, independent UX / behaviour review PASS with no material findings, PR / merge pending; full CAP-02 NOT AUTHORIZED); CAP-04 Gap Action Packs (Slice 1 — Actionable Gap Pack — delivered, PR #708; full CAP-04 NOT AUTHORIZED); Stage 22 — CAP-05 Decision Trace + CAP-07 Invention Decision Room ENTERED / PARTIAL (Slice 2 — Actionable Decision Room Summary — delivered, PR #707; Slice 1 — read-only decision trace + project context panel — delivered, PR #706); Stage 20 — CAP-08 Assumption Register ENTERED / PARTIAL (CAP-08 Slice 1 — Owner-declared assumption → answer dependency — delivered, PR #704); Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL (CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers — delivered, PR #703); Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing — delivered, PR #701, with the bounded weak-PF recovery PR #702; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
 not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
 complete nothing beyond themselves. **No further CAP-01 implementation is currently
-authorized.** `ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK` ·
-`CAP-04 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` ·
-`FULL CAP-04: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED`:
+authorized.** `ACTIVE CONTRACT: CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY` ·
+`CAP-02 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` ·
+`FULL CAP-02: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`:
+CAP-02 Slice 1 evolves the existing top-of-session Project Orientation into ONE Project Compass
+with four concepts: Recorded so far, Still unresolved, Why it matters now and What to do now.
+Recorded so far counts active current answered records only (superseded answers and decision /
+relationship / risk-acceptance metadata excluded). Unresolved categories come from existing
+canonical owners and are never summed into a composite total; explicit "not known yet" answers and
+unknowns mentioned inside answers stay distinct categories. `derive_next_development_step` stays the
+development-step owner: the former standalone Next Development Step callout is folded into the
+Compass as why / how-addressed context, never a second action. The existing primary-action branch
+logic is unchanged and the Compass holds exactly ONE primary journey action. Gap Action Packs stay
+the per-gap detail below it, the Decision Room stays separate, and the report and PDF are unchanged.
+No state mutation, persistence, schema, replay, writer, progression, readiness, scoring or ranking
+change and no AI / LLM / provider call.
+`CAP-04 SLICE 1: DELIVERED — PR #708 — merge 78f6a73113ff9eaa9c5e0941b2bd857595899404` ·
+`FULL CAP-04: NOT AUTHORIZED`:
 CAP-04 Slice 1 shows one read-only Actionable Gap Pack per CURRENT unresolved gap — OPEN /
 PARTIAL only; a CLOSED gap gets no pack; an ACCEPTED_RISK gap gets no pack and stays explicitly
 not resolved and not validated. Pack identity, order and the required action come unchanged from
@@ -116,6 +130,13 @@ InventorAI domain that simply has no authorized CAP-01 profile yet.** Cross-stag
 capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
 operating practice — they add no Stage, gate or approval step.
 <!-- END CURRENT-BLOCK: current-position -->
+
+*(Superseded 2026-09-27 by CAP-02 Slice 1, preserved so the change is visible rather than
+silent: the current-position entry read "CAP-04 Gap Action Packs — current bounded action: CAP-04
+Slice 1 — Actionable Gap Pack (… implemented, independent UX / behaviour review PASS with no
+material findings, PR / merge pending …)" and "`ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP
+PACK`". That was true until PR #708 delivered it (merge `78f6a73113ff9eaa9c5e0941b2bd857595899404`) and the
+Owner authorized CAP-02 Slice 1.)*
 
 *(Superseded 2026-09-27 by CAP-04 Slice 1, preserved so the change is visible rather than
 silent: the current-position entry read "(current bounded action: CAP-05 + CAP-07 Slice 2 —

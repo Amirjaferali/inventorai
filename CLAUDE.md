@@ -2,17 +2,25 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK.**
-CAP-04 Slice 1 is ONE bounded slice under the already-recorded CAP-04 capability (no new Master
-Roadmap Stage; Stage 23 NOT ENTERED; full CAP-04 NOT AUTHORIZED): one read-only Actionable Gap
-Pack per current unresolved gap (OPEN / PARTIAL; CLOSED and ACCEPTED_RISK get none) joining the
-Requirement Landscape gap requirement and required action, the exact matching Validation Plan gap
-step and active NeedRouting routes by exact identity with the committed RoutingPolicy (RETRACTED
-routes do not render; a mismatch fails closed) — no new question, form, POST, writer,
-persistence, schema, replay or state mutation, no ranking, score, severity, feasibility,
-readiness or progression authority and no AI / LLM / provider call. It is implemented, its
-independent UX / behaviour review passed with no material findings, and its PR / merge is
-pending. Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through bounded slices (no new Master
+**ACTIVE CONTRACT: CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY.**
+CAP-02 Slice 1 is ONE bounded slice under the already-recorded CAP-02 capability (no new Master
+Roadmap Stage; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; full CAP-02 NOT AUTHORIZED): the
+existing top-of-session Project Orientation becomes ONE Project Compass with four concepts —
+Recorded so far (active current answered records only), Still unresolved (per-category counts
+from existing owners, never summed), Why it matters now (`derive_next_development_step`,
+unchanged; the former standalone Next Development Step callout folded in as context) and What
+to do now (the existing primary-action branches, unchanged; exactly ONE primary journey action);
+session only, report and PDF unchanged; no state mutation, persistence, schema, replay, writer,
+progression, readiness, scoring or ranking change and no AI / LLM / provider call. It is
+implemented, its independent UX / behaviour review passed with no material findings, and its PR /
+merge is pending. CAP-04 Slice 1 — DELIVERED (PR #708, merge
+`78f6a73113ff9eaa9c5e0941b2bd857595899404`; full CAP-04 NOT AUTHORIZED) — is one read-only
+Actionable Gap Pack per current unresolved gap (OPEN / PARTIAL; CLOSED and ACCEPTED_RISK get
+none) joining the Requirement Landscape gap requirement and required action, the exact matching
+Validation Plan gap step and active NeedRouting routes by exact identity with the committed
+RoutingPolicy (RETRACTED routes do not render; a mismatch fails closed) — no new question, form,
+POST, writer, persistence, schema, replay or state mutation, no ranking, score, severity,
+feasibility, readiness or progression authority and no AI / LLM / provider call. Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through bounded slices (no new Master
 Roadmap Stage; CAP-05, CAP-07 and Stage 22 are not complete). Slice 2 — DELIVERED (PR #707,
 merge `d5068f83d46bdf2b3b28ceeb3f0e4e78fd32cdbe`) — adds one read-only, project-level
 action summary to the Decision Room that answers what the project currently calls for without
@@ -74,12 +82,12 @@ history, and is the file to read for authority — this paragraph routes, it doe
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized — the
-bounded CAP-04 Slice 1 enters no Stage (Stage 22 stays ENTERED / PARTIAL through its delivered
+bounded CAP-02 Slice 1 enters no Stage (Stage 22 stays ENTERED / PARTIAL through its delivered
 Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -322,6 +330,20 @@ information, not execution authority.
   Development Step; Arabic specialist wording differs slightly between a reused and a new string;
   English canonical statements on Arabic surfaces may look visually split. Under the language
   policy above, precise English technical terminology itself is not a defect.
+- **WATCH — CAP-02 Slice 1 (non-blocking, no repair cycle).** Exactly ONE primary journey
+  action stays a protected product rule. (A) The single primary CTA now sits about 300 px lower
+  on desktop than before and below the first 390 px mobile viewport; when a future slice
+  naturally touches the top-of-session journey, reassess placing it earlier while keeping the
+  four-concept Compass and the one-primary-action rule — do not undo the Compass now. (B) The
+  Decision Room link still reads "Next Development Step" but lands on the Compass row "Why it
+  matters now"; navigation is correct, terminology alignment only. (C) The older "What You Have
+  Marked as Not Yet Known" panel holds unknowns mentioned inside answers, which the Compass now
+  separates from questions answered as not known yet; align its heading when that panel is next
+  naturally touched. (D) "Details for each open gap" links to Gap Action Packs, which also cover
+  partially addressed gaps; wording only. (E) A new Mechanical project can truthfully show
+  "Specialist input pending: 1" before any answer because the routing already exists; first-time
+  comprehension only. (F) English technical statements inside Arabic explanatory UI stay
+  acceptable under the language policy above; no correction for that alone.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative

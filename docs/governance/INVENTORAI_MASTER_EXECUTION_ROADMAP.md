@@ -106,9 +106,22 @@ sibling sidecar of the same store. Delivering it is not the stage and opens noth
 Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — CAP-04 Gap Action Packs, ONE bounded slice under the already-recorded
-CAP-04 capability (no new Master Roadmap Stage):** `ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK` · `CAP-04 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-04: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED`.
-CAP-04 Slice 1 shows one read-only Actionable Gap Pack per CURRENT unresolved gap — OPEN /
+**CURRENT BOUNDED ACTION — CAP-02 Simplified One-Step Journey, ONE bounded slice under the
+already-recorded CAP-02 capability (no new Master Roadmap Stage):** `ACTIVE CONTRACT: CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY` · `CAP-02 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-02: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
+CAP-02 Slice 1 evolves the existing top-of-session Project Orientation into ONE Project Compass
+with four concepts: Recorded so far, Still unresolved, Why it matters now and What to do now.
+Recorded so far counts active current answered records only (superseded answers and decision /
+relationship / risk-acceptance metadata excluded). Unresolved categories come from existing
+canonical owners and are never summed into a composite total; explicit "not known yet" answers and
+unknowns mentioned inside answers stay distinct categories. `derive_next_development_step` stays the
+development-step owner: the former standalone Next Development Step callout is folded into the
+Compass as why / how-addressed context, never a second action. The existing primary-action branch
+logic is unchanged and the Compass holds exactly ONE primary journey action. Gap Action Packs stay
+the per-gap detail below it, the Decision Room stays separate, and the report and PDF are unchanged.
+No state mutation, persistence, schema, replay, writer, progression, readiness, scoring or ranking
+change and no AI / LLM / provider call.
+**DELIVERED — CAP-04 Gap Action Packs, ONE bounded slice (no new Master Roadmap Stage):** `CAP-04 SLICE 1: DELIVERED — PR #708 — merge 78f6a73113ff9eaa9c5e0941b2bd857595899404` · `FULL CAP-04: NOT AUTHORIZED`.
+CAP-04 Slice 1 (delivered) shows one read-only Actionable Gap Pack per CURRENT unresolved gap — OPEN /
 PARTIAL only; a CLOSED gap gets no pack; an ACCEPTED_RISK gap gets no pack and stays explicitly
 not resolved and not validated. Pack identity, order and the required action come unchanged from
 the Requirement Landscape; responsibility, input category and closure condition come from the
