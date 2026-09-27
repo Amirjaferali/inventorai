@@ -3757,6 +3757,52 @@ UI_STRINGS = {
     "UI_GP_SEE_DETAIL": {"en": "See the detail:", "ar": "اطّلع على التفاصيل:"},
     "UI_GP_SEE_DETAIL_REPORT": {"en": "See the detail in the report:",
                                 "ar": "اطّلع على التفاصيل في التقرير:"},
+    # CAP-02 Slice 1 — Project Compass (session only). Plain four-row chrome;
+    # counts are shown per category and never presented as a total.
+    "UI_PC_HEADING": {"en": "Where your project stands",
+                      "ar": "أين يقف مشروعك الآن"},
+    "UI_PC_RECORDED": {"en": "Recorded so far", "ar": "ما سجّلته حتى الآن"},
+    "UI_PC_ANSWERS_N": {"en": "Answers recorded:", "ar": "الإجابات المسجّلة:"},
+    "UI_PC_ANSWERS_NONE": {"en": "No answers recorded yet.",
+                           "ar": "لم تُسجَّل أي إجابة بعد."},
+    "UI_PC_RECORDED_NOTE": {
+        "en": "These are your own statements as recorded; recording an answer "
+              "does not confirm it.",
+        "ar": "هذه أقوالك كما سُجّلت؛ وتسجيل الإجابة لا يعني تأكيد صحتها."},
+    "UI_PC_UNRESOLVED": {"en": "Still unresolved", "ar": "ما لم يُحسم بعد"},
+    "UI_PC_CAT_GAPS": {"en": "Open or partly addressed gaps",
+                       "ar": "فجوات مفتوحة أو معالَجة جزئيًا"},
+    "UI_PC_CAT_UNKNOWNS": {"en": "Questions you answered as not known yet",
+                           "ar": "أسئلة أجبتَ عنها بأنها غير معروفة بعد"},
+    "UI_PC_CAT_NOTED_UNKNOWNS": {"en": "Unknowns you mentioned within your answers",
+                                 "ar": "أمور غير معروفة ذكرتَها ضمن إجاباتك"},
+    "UI_PC_CAT_DEFERRED": {"en": "Items you deferred", "ar": "بنود أجّلتها"},
+    "UI_PC_CAT_SPECIALIST": {"en": "Specialist input pending",
+                             "ar": "بانتظار مدخلات من مختص"},
+    "UI_PC_CAT_EVIDENCE": {"en": "Empirical evidence pending",
+                           "ar": "بانتظار أدلة تجريبية"},
+    "UI_PC_CAT_CONTRADICTIONS": {"en": "Conflicting recorded answers",
+                                 "ar": "إجابات مسجّلة متعارضة"},
+    "UI_PC_NOT_SUMMED": {
+        "en": "These counts can refer to the same issue, so they are not added "
+              "together.",
+        "ar": "قد تشير هذه الأعداد إلى المسألة نفسها، لذلك لا تُجمع معًا."},
+    "UI_PC_UNRESOLVED_NONE": {
+        "en": "Nothing is listed as unresolved at the moment. This does not "
+              "mean the project is finished.",
+        "ar": "لا يوجد حاليًا ما هو مُدرج على أنه لم يُحسم. وهذا لا يعني أن "
+              "المشروع قد اكتمل."},
+    "UI_PC_SEE_PACKS": {"en": "Details for each open gap",
+                        "ar": "تفاصيل كل فجوة مفتوحة"},
+    "UI_PC_WHY": {"en": "Why it matters now", "ar": "لماذا يهمّ هذا الآن"},
+    "UI_PC_ADDRESSED_BY": {"en": "How it is addressed:",
+                           "ar": "طريقة معالجته:"},
+    "UI_PC_WHY_NONE": {
+        "en": "No current development focus is derived from what is recorded.",
+        "ar": "لا يوجد حاليًا محور تطوير مستخلص مما سُجّل."},
+    "UI_PC_UNAVAILABLE": {"en": "Not available right now.",
+                          "ar": "غير متاح حاليًا."},
+    "UI_PC_DO_NOW": {"en": "What to do now", "ar": "ما الذي تفعله الآن"},
     "UI_T3A_EVENT_ANSWER_RECORDED": {
         "en": "Answer recorded",
         "ar": "إجابة مسجَّلة",

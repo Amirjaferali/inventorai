@@ -113,6 +113,13 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 .project-orientation .idea-excerpt{font-size:19px;line-height:1.5;margin:4px 0 12px}
 .journey-primary{background:#263b4b;color:#fff;border:2px solid #263b4b;border-radius:6px;display:inline-block;padding:11px 18px;text-decoration:none;font-weight:bold;margin-top:8px}
 .project-orientation .journey-primary{color:#fff}
+.project-compass .pc-heading{margin-top:14px}
+.pc-row{border-top:1px solid #dbe5ee;padding:8px 0}
+.pc-row .pc-label{font-size:13px;margin:0 0 4px;color:#526474;font-weight:bold}
+.pc-value{font-size:14px;margin:0;color:#2c3e50}
+.pc-note{font-size:12px;color:#5b6b78;margin:4px 0 0;line-height:1.5}
+.pc-categories{margin:0;padding-inline-start:18px;font-size:14px;color:#2c3e50}
+.pc-muted{color:#777}
 .journey-note{font-size:13px;line-height:1.6;color:#526474}
 .journey-feedback{background:#eef7ee;border:1px solid #bcdcbc;padding:12px;border-radius:6px;line-height:1.5}
 #answer-form{border:1px solid #bccddc;background:#f8fbfd;padding:16px;border-radius:8px;margin:14px 0 22px}
@@ -165,11 +172,71 @@ body{overflow-wrap:anywhere}
    other notice. #}
 {% if eva_ack %}<p class="journey-feedback eva-notice eva-notice-ack" role="status">{{ eva_ack }}</p>{% endif %}
 {% if eva_error %}<p class="answer-error eva-notice eva-notice-error" role="alert" style="color:#9e2722;border:1px solid #daaaa7;padding:12px;line-height:1.5">{{ eva_error }}</p>{% endif %}
-<section class="project-orientation" aria-labelledby="project-orientation-title">
+{#- CAP-02 Slice 1 — Project Compass: the existing Project Orientation, evolved
+    into four plain rows (recorded so far / still unresolved / why it matters now
+    / what to do now). Counts come from _project_compass_context (active answered
+    ledger + canonical Requirement Landscape, per category, never summed); the
+    "why" row is the existing Next Development Step, reused unchanged and shown
+    as context, never as a second action; the "what to do now" row keeps the
+    existing primary-action branches exactly — the ONE primary action. -#}
+{% set pc = project_compass if project_compass is defined else none %}
+<section class="project-orientation project-compass" id="project-compass" aria-labelledby="project-orientation-title">
   <h2 id="project-orientation-title">{{ t('UI_A1_ORIGINAL_IDEA') }}</h2>
   <p class="idea-excerpt" dir="auto">{{ project_identification.idea or t('UI_A1_UNTITLED') }}</p>
   <p class="journey-note">{{ t('UI_A1_DESCRIPTION_NOTE') }} {{ t('UI_A1_PROJECT_ID') }}: <bdi>{{ sid }}</bdi></p>
-  <h2>{{ t('UI_A1_NEXT_ACTION') }}</h2>
+  <h2 class="pc-heading">{{ t('UI_PC_HEADING') }}</h2>
+  <div class="pc-row pc-recorded" data-pc-row="recorded">
+    <h3 class="pc-label">{{ t('UI_PC_RECORDED') }}</h3>
+    {% if pc and pc.status == 'available' %}
+    <p class="pc-value" data-pc-answers="{{ pc.answers }}">{% if pc.answers %}{{ t('UI_PC_ANSWERS_N') }} <span class="pc-count">{{ pc.answers }}</span>{% else %}{{ t('UI_PC_ANSWERS_NONE') }}{% endif %}</p>
+    <p class="pc-note">{{ t('UI_PC_RECORDED_NOTE') }}{% if project_record %} <a class="pc-link" href="#t3a-project-record">{{ t('UI_T3A_HEADING') }}</a>{% endif %}</p>
+    {% else %}
+    <p class="pc-value pc-muted" data-pc-unavailable>{{ t('UI_PC_UNAVAILABLE') }}</p>
+    {% endif %}
+  </div>
+  <div class="pc-row pc-unresolved" data-pc-row="unresolved">
+    <h3 class="pc-label">{{ t('UI_PC_UNRESOLVED') }}</h3>
+    {% if pc and pc.status == 'available' %}
+    {% if pc.unresolved %}
+    <ul class="pc-categories">
+      {% for key, count in pc.unresolved %}
+      <li data-pc-category="{{ key }}">{{ t('UI_PC_CAT_' ~ key|upper) }}: <span class="pc-count">{{ count }}</span></li>
+      {% endfor %}
+    </ul>
+    {% if pc.unresolved | length > 1 %}<p class="pc-note">{{ t('UI_PC_NOT_SUMMED') }}</p>{% endif %}
+    {% if gap_action_packs is defined and gap_action_packs.status == 'available' and gap_action_packs.packs %}
+    <p class="pc-note"><a class="pc-link" href="#gap-action-packs">{{ t('UI_PC_SEE_PACKS') }}</a></p>
+    {% endif %}
+    {% else %}
+    <p class="pc-value pc-none" data-pc-none>{{ t('UI_PC_UNRESOLVED_NONE') }}</p>
+    {% endif %}
+    {% else %}
+    <p class="pc-value pc-muted" data-pc-unavailable>{{ t('UI_PC_UNAVAILABLE') }}</p>
+    {% endif %}
+  </div>
+  <div class="pc-row pc-why" data-pc-row="why">
+    <h3 class="pc-label">{{ t('UI_PC_WHY') }}</h3>
+    {% if next_development_step and next_development_step.reference_id %}
+    <div class="next-step-callout" id="next-development-step">
+      <div class="next-step-issue pc-value" dir="auto">{{ next_development_step.title }}</div>
+      {% if next_development_step.why_it_matters %}
+      <div class="next-step-why pc-note" dir="auto">{{ next_development_step.why_it_matters }}</div>
+      {% endif %}
+      {% if next_development_step.next_action %}
+      <div class="next-step-action pc-note">{{ t('UI_PC_ADDRESSED_BY') }} <span dir="auto">{{ next_development_step.next_action }}</span></div>
+      {% endif %}
+      {#- Increment-3 generated-output language disclosure (Owner decision, Option B):
+          the generated text above stays English by rule. -#}
+      <div class="next-step-genout-note pc-note">{{ t('UI_B_GENOUT_DISCLOSURE') }}</div>
+    </div>
+    {% elif pc and pc.status == 'available' %}
+    <p class="pc-value pc-none" data-pc-why-none>{{ t('UI_PC_WHY_NONE') }}</p>
+    {% else %}
+    <p class="pc-value pc-muted" data-pc-unavailable>{{ t('UI_PC_UNAVAILABLE') }}</p>
+    {% endif %}
+  </div>
+  <div class="pc-row pc-do" data-pc-row="do">
+  <h3 class="pc-label">{{ t('UI_PC_DO_NOW') }}</h3>
   {% if reconstructed_review and reconstructed_review.resume_eligible %}
     <p class="journey-note">{{ t('UI_A1_READ_ONLY') }}</p>
     <form method="POST" action="/session/{{ sid }}/resume">
@@ -197,6 +264,7 @@ body{overflow-wrap:anywhere}
     <p class="journey-note">{{ t('UI_A1_HANDOFF_NOTE') }}</p>
     <a class="journey-primary" data-primary-action href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a>
   {% endif %}
+  </div>
 </section>
 <div id="journey-submit-feedback" role="status" aria-live="polite" data-sending="{{ t('UI_A1_SENDING') }}" data-waiting="{{ t('UI_A1_WAITING') }}"></div>
 
@@ -210,27 +278,9 @@ body{overflow-wrap:anywhere}
 
 <div class="disclosure">{{ session_disclosure }}</div>
 
-{# Increment 3 (R-3/R-5): compact, presentation-only Next Development Step callout.
-   Renders the single primary issue selected by the shared engine derivation. The
-   template performs no priority/record/provider logic and mutates no state. #}
-{% if next_development_step and next_development_step.reference_id %}
-<div class="next-step-callout" id="next-development-step" style="background:#eef5ff;border:1px solid #b3d1ff;border-radius:4px;padding:10px 14px;margin-bottom:18px">
-  <div class="next-step-heading" style="font-weight:bold;color:#1a4f8b">{{ t('UI_B_SESSION_001') }}</div>
-  <div class="next-step-issue" style="font-size:14px;margin-top:4px">{{ next_development_step.title }}</div>
-  {% if next_development_step.why_it_matters %}
-  <div class="next-step-why" style="font-size:13px;color:#555;margin-top:4px">{{ next_development_step.why_it_matters }}</div>
-  {% endif %}
-  {% if next_development_step.next_action %}
-  <div class="next-step-action" style="font-size:13px;color:#444;margin-top:6px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#1a4f8b">{{ t('UI_B_SESSION_002') }}</span> {{ next_development_step.next_action }}</div>
-  {% endif %}
-  <div class="next-step-ref" style="font-size:12px;color:#666;margin-top:4px">{{ t('UI_B_SESSION_003') }} {{ next_development_step.reference_id | gap_display }}</div>
-  {# Increment-3 generated-output language disclosure (Owner decision, Option B).
-     Presentation-only: it discloses that the generated substantive text above stays
-     English by rule while the interface follows the selected language. It localises
-     no generated content and changes no payload. #}
-  <div class="next-step-genout-note" style="font-size:12px;color:#666;margin-top:6px">{{ t('UI_B_GENOUT_DISCLOSURE') }}</div>
-</div>
-{% endif %}
+{#- CAP-02 Slice 1: the former standalone Next Development Step callout is
+    folded into the Project Compass "why it matters now" row above (same
+    derivation, same #next-development-step anchor). -#}
 {#- CAP-04 Slice 1: one read-only Actionable Gap Pack per current unresolved
     gap (engine.gap_action_pack). It joins the landscape's gap requirement, the
     same gap's Validation Plan step and any exact routed need; it asks nothing,

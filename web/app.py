@@ -5514,6 +5514,8 @@ def show_session(sid):
         decision_action_summary=_decision_action_summary(state),
         # CAP-04 Slice 1: read-only gap action packs (derived on demand).
         gap_action_packs=_gap_action_packs_context(state, _current_ui_lang()),
+        # CAP-02 Slice 1: Project Compass counts (session only; derived on demand).
+        project_compass=_project_compass_context(state),
         # W2-D (W1-N4): single-use correction-lapse notice (popped so it
         # renders exactly once after the Post/Redirect/Get, like answer_error).
         # Gap types are mapped to their existing localized display headings.
@@ -9084,6 +9086,65 @@ def _gap_action_packs_context(state, lang):
             })
         return {"status": GP_AVAILABLE, "packs": packs,
                 "accepted_risk": list(pack_set.accepted_risk_gap_types)}
+    except Exception:
+        return unavailable
+
+
+# CAP-02 Slice 1 — the Project Compass: the counts shown under "recorded so far"
+# and "still unresolved" at the top of the live journey. Read-only composition
+# of existing owners: the active answered ledger (the same set the template's
+# `active_answers` uses) and the canonical Requirement Landscape rows, counted
+# per category and never summed — a gap and a routed need for that gap are
+# separate rows, so a total would double-count. Why-it-matters and the primary
+# action stay with their own owners (derive_next_development_step and the
+# template's primary-action branches).
+PC_AVAILABLE = "available"
+PC_UNAVAILABLE = "unavailable"
+# (category key, landscape anchor kind, record disposition or None), in a
+# fixed display order that carries no priority.
+_PC_CATEGORIES = (
+    ("gaps", "gap", None),
+    ("unknowns", "assertion", _DISP_UNKNOWN),
+    ("noted_unknowns", None, None),           # state.acknowledged_unknowns
+    ("deferred", "assertion", _DISP_DEFERRED),
+    ("specialist", "pending_specialist", None),
+    ("evidence", "pending_evidence", None),
+    ("contradictions", "active_contradiction", None),
+)
+
+
+def _project_compass_context(state):
+    """``{status, answers, unresolved}``: ``answers`` is the count of active
+    answered records; ``unresolved`` lists ``(category, count)`` for the
+    non-empty categories only. ``unavailable`` — never zero — when the live
+    working state is absent (cold read-only view) or the derivation fails."""
+    unavailable = {"status": PC_UNAVAILABLE, "answers": None, "unresolved": []}
+    if getattr(state, "domain", None) is None:
+        return unavailable
+    try:
+        assertions = list(getattr(state, "assertions", None) or ())
+        answers = sum(1 for r in assertions
+                      if getattr(r, "disposition", None) == _DISP_ANSWERED
+                      and getattr(r, "superseded_by", None) is None)
+        disposition_of = {r.record_id: getattr(r, "disposition", None)
+                          for r in assertions}
+        counts = dict.fromkeys((key for key, _, _ in _PC_CATEGORIES), 0)
+        # Unknowns the inventor wrote INSIDE an answer are held apart from the
+        # explicit "not known yet" answers (disjoint owners; the page lists
+        # them in its own panel), so they are their own category.
+        counts["noted_unknowns"] = len(getattr(state, "acknowledged_unknowns", None) or ())
+        for req in derive_requirement_landscape(state).requirements:
+            anchor = req.primary_anchor
+            for key, kind, disposition in _PC_CATEGORIES:
+                if kind is None or anchor.anchor_kind != kind:
+                    continue
+                if disposition is not None and \
+                        disposition_of.get(anchor.anchor_reference) != disposition:
+                    continue
+                counts[key] += 1
+        return {"status": PC_AVAILABLE, "answers": answers,
+                "unresolved": [(key, counts[key]) for key, _, _ in _PC_CATEGORIES
+                               if counts[key]]}
     except Exception:
         return unavailable
 
