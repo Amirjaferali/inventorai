@@ -2,18 +2,26 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY.**
-Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through bounded slices (no new Master Roadmap
-Stage; CAP-05, CAP-07 and Stage 22 are not complete). Slice 2 adds one read-only, project-level
+**ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK.**
+CAP-04 Slice 1 is ONE bounded slice under the already-recorded CAP-04 capability (no new Master
+Roadmap Stage; Stage 23 NOT ENTERED; full CAP-04 NOT AUTHORIZED): one read-only Actionable Gap
+Pack per current unresolved gap (OPEN / PARTIAL; CLOSED and ACCEPTED_RISK get none) joining the
+Requirement Landscape gap requirement and required action, the exact matching Validation Plan gap
+step and active NeedRouting routes by exact identity with the committed RoutingPolicy (RETRACTED
+routes do not render; a mismatch fails closed) — no new question, form, POST, writer,
+persistence, schema, replay or state mutation, no ranking, score, severity, feasibility,
+readiness or progression authority and no AI / LLM / provider call. It is implemented, its
+independent UX / behaviour review passed with no material findings, and its PR / merge is
+pending. Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through bounded slices (no new Master
+Roadmap Stage; CAP-05, CAP-07 and Stage 22 are not complete). Slice 2 — DELIVERED (PR #707,
+merge `d5068f83d46bdf2b3b28ceeb3f0e4e78fd32cdbe`) — adds one read-only, project-level
 action summary to the Decision Room that answers what the project currently calls for without
 asking the inventor anything new: the canonical Validation Plan grouped strictly by its own
 responsibility tokens (UNDETERMINED and blocked items as needs-clarification, each with its
 canonical subject; a missing subject fails closed to unavailable) beside the existing next
 development step reused unchanged — no action ranking, no decision-specific linkage, no
 recommendation, confidence, evidence-strength or readiness semantics, no new form, question,
-route, writer or persistence; Section 14 stays the detailed Validation Plan owner. Slice 2 is
-implemented, its one bounded Correction 01 passed targeted independent UX / behaviour
-verification, and its PR / merge is pending. Slice 1 — DELIVERED (PR #706, merge
+route, writer or persistence; Section 14 stays the detailed Validation Plan owner. Slice 1 — DELIVERED (PR #706, merge
 `f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`) — is a pure, read-only decision-trace
 projection over the existing canonical ledger shows each decision's complete alternative history
 (active and withdrawn alternatives preserved, withdrawal reasons verbatim) with the existing
@@ -65,12 +73,13 @@ docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the deliv
 history, and is the file to read for authority — this paragraph routes, it does not
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
-authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized beyond the
-bounded Stage-22 CAP-05 + CAP-07 Slice 2 (Slice 1 delivered; Stages 20 and 21 stay ENTERED /
-PARTIAL through the delivered CAP-08 and CAP-10 Slice 1 only), and deployment, public release
+authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized — the
+bounded CAP-04 Slice 1 enters no Stage (Stage 22 stays ENTERED / PARTIAL through its delivered
+Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
+Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -261,6 +270,21 @@ information, not execution authority.
   decisions stay authoritative, and it fails closed to the deterministic fallback. External /
   provider MSNL and any external transmission of real invention, project or user data remain
   NOT AUTHORIZED; activation needs its own authorization and data boundary.
+  **Owner language policy (2026-09-27): Arabic-first UX, not Arabic-only terminology.** Arabic
+  UX chrome, navigation, explanatory prose and user guidance are normally Arabic. Precise
+  canonical technical terms, established engineering terminology, acronyms and identifiers MAY
+  stay English where translation would reduce technical precision, recognizability,
+  professional meaning or readability; there is no forced literal translation for language
+  purity, and an English technical term inside an Arabic sentence is acceptable when it is the
+  clearer technical expression. First-use bilingual labeling is encouraged where useful (e.g.
+  خطة التحقق (Validation Plan)), after which the English term may be reused; API, CSRF, LLM,
+  MSNL and Validation Plan are examples, and the same applies to engineering terminology.
+  Inventor-authored content stays verbatim. A future MSNL / LLM language layer, if separately
+  activated, naturalizes the surrounding Arabic WITHOUT silently changing canonical technical
+  terminology or meaning. The policy does NOT authorize live MSNL, LLM or provider use, and does
+  not let long English explanatory prose replace Arabic UX: natural Arabic explanation plus
+  precise English technical terminology where appropriate. The "CURRENT LIMITATION" above is
+  untranslated English explanatory statements, not English technical terms.
 - **Preserved states.** CAP-08, CAP-10 and Safe Question Reduction Slice 1 DELIVERED. CAP-12 and
   CAP-13 NOT AUTHORIZED and distinct; full CAP-09 NOT AUTHORIZED.
 - **CAP-06 — Multi-Axis Invention Readiness Dashboard: PREMATURE / NOT AUTHORIZED NOW, not
@@ -288,6 +312,16 @@ information, not execution authority.
   and Section 14; an open-gap entry may name the gap twice ("Mechanism Completeness: Address the
   open gap: Mechanism Completeness."); canonical technical statements stay in their source
   language on Arabic surfaces (see the language direction above).
+- **WATCH — CAP-04 Slice 1 (non-blocking, no repair cycle).** The gap-level responsibility /
+  input / closure quartet is generic for gaps whose Validation Plan step resolves to
+  UNDETERMINED / clarifying information; a routed pack may show two responsibility lines (gap
+  level and routed need); the EN gap label ("Practical feasibility") differs from the canonical
+  action wording ("Physical Feasibility") — truthful, polish only; "acquisition route" may be
+  jargon for non-technical users; the intro could state more explicitly that the packs cover
+  every current unresolved gap in fixed deterministic order and do not replace the single Next
+  Development Step; Arabic specialist wording differs slightly between a reused and a new string;
+  English canonical statements on Arabic surfaces may look visually split. Under the language
+  policy above, precise English technical terminology itself is not a defect.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative

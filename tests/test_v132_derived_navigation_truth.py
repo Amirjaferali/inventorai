@@ -1690,7 +1690,8 @@ def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
     assert re.search(r"^Stages 23–27 preserved, not entered / not authorized$", raw_checklist, re.M)
     row5 = [l for l in raw_checklist.splitlines() if l.startswith("| 5 | 21–25 |")]
     assert len(row5) == 1 and "22 entered / partial (CAP-05 + CAP-07 Slice 1 —" in row5[0], row5
-    assert "Slice 2 — Actionable Decision Room Summary; current bounded action" in row5[0], row5
+    assert "Slice 2 — Actionable Decision Room Summary; delivered, PR #707" in row5[0], row5
+    assert "current bounded action" not in row5[0], row5
     assert "22–25 not authorized" not in row5[0], row5
     row = [l for l in raw_checklist.splitlines() if l.startswith("| 4 | 16–20 |")]
     assert len(row) == 1 and "18 entered / partial" in row[0], row
@@ -2601,8 +2602,8 @@ def test_stage22_slice_1_is_delivered_history_and_its_rules_still_bind():
                r"explicitly\s+NOT\s+LINKED\s+to\s+any\s+specific\s+decision")
         _rejects(block, path, "stage22 slice1 delivered live",
                  re.escape(_STAGE22_CONTRACT),
-                 r"SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE "
-                 r"PENDING")
+                 r"(?<!CAP-04 )SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — "
+                 r"PR / MERGE PENDING")
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
     assert "Slice 1 — DELIVERED (PR #706, merge `f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`)" in head
@@ -2628,88 +2629,198 @@ _STAGE22_SLICE2_REVERSALS = _STAGE22_REVERSALS + (
     r"(?<!no )readiness score\b")
 
 
-def test_stage22_slice_2_is_the_live_contract_on_every_live_surface():
-    """Stage 22 / CAP-05 + CAP-07 Slice 2 is the live contract: one read-only,
-    project-level action summary grouped strictly by the canonical Validation
-    Plan responsibility tokens beside the existing next development step. Guards:
-    full CAP-05 / CAP-07 / Stage 22 read as authorized or complete, a ranking,
-    recommendation, confidence or readiness claim, decision linkage, Stage 23
-    read as entered, or a new Master Roadmap Stage."""
+_STAGE22_SLICE2_DELIVERED = ("`CAP-05 + CAP-07 SLICE 2: DELIVERED — PR #707 — merge "
+                             "d5068f83d46bdf2b3b28ceeb3f0e4e78fd32cdbe`")
+
+
+def test_stage22_slice_2_is_delivered_history_and_its_rules_still_bind():
+    """Stage 22 / CAP-05 + CAP-07 Slice 2 was delivered (PR #707, merge
+    d5068f8). Its section reads DELIVERED and visibly superseded, every rule
+    still binds, Stage 22 stays ENTERED / PARTIAL, the live surfaces carry the
+    delivered token and never again "PR / merge pending" or the Slice 2
+    contract as current."""
     contract = _read(CONTRACT)
-    first = contract.index("## Current authority")
-    assert contract[first:].startswith(
-        "## Current authority — Stage 22 / CAP-05 + CAP-07 Slice 2 — Actionable Decision "
-        "Room Summary"), contract[first:first + 120]
-    top = re.sub(r"\s+", " ", contract[first:contract.index("## Current authority", first + 5)])
-    _needs(top, CONTRACT, "stage22 slice2",
-           r"\*\*ACTIVE CONTRACT: CAP-05 \+ CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM "
-           r"SUMMARY\.\*\*",
-           r"Stage 22 / CAP-05 \+ CAP-07 stays ENTERED / PARTIAL",
-           r"completes neither CAP-05, CAP-07 nor Stage 22, and the Stage-22 checkbox stays "
-           r"unticked",
-           r"CORRECTION 01 COMPLETED / TARGETED INDEPENDENT VERIFICATION PASS — PR / merge "
-           r"pending",
+    top = re.sub(r"\s+", " ", _section(contract, "current-authority--stage22-slice-2"))
+    _needs(top, CONTRACT, "stage22 slice2 delivered",
+           r"Actionable Decision Room Summary \(Owner / Lead authorization, 2026-09-26\) — "
+           r"DELIVERED \(PR #707\); SUPERSEDED as current authority by CAP-04 Slice 1",
+           r"\*\*No longer the current authority\.\*\*",
+           r"PR #707, merge `d5068f83d46bdf2b3b28ceeb3f0e4e78fd32cdbe`",
+           r"Every rule below still binds except where CAP-04 Slice 1 states otherwise",
+           r"TARGETED INDEPENDENT VERIFICATION PASS — DELIVERED \(PR #707\)",
            r"`OWNER_EXECUTABLE`, `SPECIALIST_REQUIRED`, `EMPIRICAL_EVIDENCE_REQUIRED`, "
            r"`SYSTEM_DERIVABLE`",
-           r"`provenance\.display_label` \+ the canonical statement",
-           r"a missing or malformed subject fails closed to unavailable",
            r"reused unchanged; no action ranking is created",
            r"\*\*DECISION LINKAGE\*\* \| `NONE`",
            r"\*\*RECOMMENDATION / CONFIDENCE / EVIDENCE STRENGTH / READINESS\*\* \| `NONE`",
-           r"\*\*FORM / QUESTION / ROUTE / WRITER / PERSISTENCE\*\* \| `NONE`",
-           r"stays the detailed Validation Plan owner",
-           r"NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION")
-    _rejects(top, CONTRACT, "stage22 slice2", *_STAGE22_SLICE2_REVERSALS)
+           r"\*\*FORM / QUESTION / ROUTE / WRITER / PERSISTENCE\*\* \| `NONE`")
+    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "stage22 slice2 delivered",
+             *_STAGE22_SLICE2_REVERSALS, r"\*\*ACTIVE CONTRACT: CAP-05 \+ CAP-07 SLICE 2",
+             r"PR / merge pending")
     live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
     live_surfaces.append((STATE, _current(STATE, "current-position")))
     for path, block in live_surfaces:
-        _needs(block, path, "stage22 slice2 live", _tok(_STAGE22_SLICE2_CONTRACT),
+        _needs(block, path, "stage22 slice2 delivered live", _tok(_STAGE22_SLICE2_DELIVERED),
                _tok("`STAGE 22: ENTERED / PARTIAL`"), _tok("`FULL CAP-05: NOT AUTHORIZED`"),
-               _tok("`FULL CAP-07: NOT AUTHORIZED`"), _tok(_STAGE22_SLICE2_STATUS),
-               _tok(_STAGE22_SLICE1_DELIVERED), _tok(_CAP08_DELIVERED),
-               _tok(_CAP10_DELIVERED),
-               r"grouped\s+strictly\s+by\s+its\s+responsibility\s+tokens",
-               r"no\s+(action\s+)?ranking",
-               r"no\s+decision-specific\s+linkage")
-        _rejects(block, path, "stage22 slice2 live", *_STAGE22_SLICE2_REVERSALS)
+               _tok("`FULL CAP-07: NOT AUTHORIZED`"),
+               r"grouped\s+strictly\s+by\s+its\s+responsibility\s+tokens")
+        _rejects(block, path, "stage22 slice2 delivered live",
+                 re.escape(_STAGE22_SLICE2_CONTRACT), re.escape(_STAGE22_SLICE2_STATUS),
+                 *_STAGE22_SLICE2_REVERSALS)
     for path, routing in _surfaces("current-routing"):
         _needs(routing, path, "stage22 slice2 routing",
                r"The Stage-22 checkbox stays\s+unticked",
                r"entering Stage 22 completes nothing in Stages 18–21")
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    for needle in ("ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY.",
-                   "Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through bounded slices",
-                   "no other Stage is authorized beyond the bounded Stage-22 CAP-05 + CAP-07 "
-                   "Slice 2"):
-        assert needle in head, needle
-    for pat in _STAGE22_SLICE2_REVERSALS:
-        assert re.search(pat, head, re.I) is None, pat
-    assert ("the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1"
-            in claude)
-    flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
-    assert ("**CURRENT SUBTASK:** CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY"
-            in flat_checklist)
-    for line in ("ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY",
-                 "STAGE 22: ENTERED / PARTIAL — CAP-05 + CAP-07 SLICES 1–2 ONLY",
-                 _STAGE22_SLICE2_STATUS.strip("`"),
+    assert ("Slice 2 — DELIVERED (PR #707, merge `d5068f83d46bdf2b3b28ceeb3f0e4e78fd32cdbe`)"
+            in head)
+    assert "Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through bounded slices" in head
+    assert "ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2" not in head
+    assert "PR / merge is pending. Slice 1" not in head
+    assert ("the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 "
+            "Slice 1, CAP-08 Slice 1, CAP-10 Slice 1" in claude)
+    raw_checklist = _read(CHECKLIST)
+    for line in ("STAGE 22: ENTERED / PARTIAL — CAP-05 + CAP-07 SLICES 1–2 ONLY",
+                 _STAGE22_SLICE2_DELIVERED.strip("`"),
                  "FULL CAP-05: NOT AUTHORIZED", "FULL CAP-07: NOT AUTHORIZED",
                  "Stages 23–27 preserved, not entered / not authorized"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
+    for stale in ("ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2", _STAGE22_SLICE2_STATUS.strip("`")):
+        assert re.search(r"^" + re.escape(stale), raw_checklist, re.M) is None, stale
     roadmap = _read(ROADMAP)
     rows = re.findall(r"^- \[ \] \*\*22 — CAP-05 \+ CAP-07:\*\*.*$", roadmap, re.M)
     assert len(rows) == 1, "stage 22 row missing, duplicated or ticked"
-    assert "**Slice 2 (2026-09-26):** an Actionable Decision Room Summary" in rows[0]
-    assert "Full CAP-05 and full CAP-07 NOT AUTHORIZED; the checkbox stays unticked." in rows[0]
+    row = re.sub(r"\*\(Superseded.*?\)\*", "", rows[0])
+    assert "**Slice 2 (2026-09-26):** an Actionable Decision Room Summary" in row
+    assert "Delivered (PR #707, merge `d5068f83d46bdf2b3b28ceeb3f0e4e78fd32cdbe`)." in row
+    assert "PR / merge pending" not in row
+    assert "Full CAP-05 and full CAP-07 NOT AUTHORIZED; the checkbox stays unticked." in row
     for pat in _STAGE22_SLICE2_REVERSALS:
-        assert re.search(pat, re.sub(r"\*\(Superseded.*?\)\*", "", rows[0]), re.I) is None, pat
-    numbers = [int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)]
-    assert sorted(numbers) == list(range(1, 46)), numbers
+        assert re.search(pat, row, re.I) is None, pat
     register = _flat(os.path.join("docs", "governance",
                                   "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md"))
-    assert "Slice 2 (2026-09-26) adds a read-only, project-level Actionable Decision Room" in register
+    assert "Slice 2 (2026-09-26; delivered, PR #707) adds a read-only" in register
+    assert "SLICE 2 AUTHORIZED" not in register
     assert "`FULL CAP-05: NOT AUTHORIZED`" in register
     assert "`FULL CAP-07: NOT AUTHORIZED`" in register
+
+
+_CAP04_CONTRACT = "`ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK`"
+_CAP04_STATUS = ("`CAP-04 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / "
+                 "MERGE PENDING`")
+_CAP04_REVERSALS = _STAGE22_SLICE2_REVERSALS + (
+    re.escape(_STAGE22_SLICE2_CONTRACT),
+    r"FULL CAP-04\W{0,8}(IS )?AUTHORIZED\b",
+    r"CAP-04 (is |slice 1 is )?complete\b",
+    r"(?<!no )(?<!not )CAP-06\W{0,8}(IS )?(ACTIVE|ACTIVATED|AUTHORIZED)\b",
+    r"(?<!no )(?<!not )(gaps?|packs?|actions?) (is |are )?(ranked|scored|prioriti[sz]ed)\b",
+    r"(?<!no )(?<!not )(pack|action pack) (is |counts as )?evidence\b",
+    r"(?<!no )(?<!not )(pack|action pack) closes (a|the) gap\b")
+
+
+def test_cap04_slice_1_is_the_live_contract_on_every_live_surface():
+    """CAP-04 Slice 1 — the read-only Actionable Gap Pack — is the live bounded
+    action: implemented, independent UX / behaviour review PASS, PR / merge
+    pending. It enters no Master Roadmap Stage (Stage 23 NOT ENTERED, the
+    45-stage structure unchanged), full CAP-04 stays NOT AUTHORIZED, CAP-06 stays
+    un-activated, and the canonical owners / read-only boundary are recorded."""
+    contract = _read(CONTRACT)
+    first = contract.index("## Current authority")
+    assert contract[first:].startswith(
+        "## Current authority — CAP-04 Slice 1 — Actionable Gap Pack"), \
+        contract[first:first + 120]
+    top = re.sub(r"\s+", " ", _section(contract, "current-authority--cap04-slice-1"))
+    _needs(top, CONTRACT, "cap04 slice1",
+           r"\*\*ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK\.\*\*",
+           r"It creates no new Master Roadmap Stage, Stage 23 is NOT ENTERED, and full CAP-04 is "
+           r"NOT AUTHORIZED",
+           r"INDEPENDENT UX / BEHAVIOUR REVIEW PASS — material findings: NONE — PR / merge "
+           r"pending",
+           r"OPEN / PARTIAL only; a CLOSED gap gets no pack; an `ACCEPTED_RISK` gap gets no pack "
+           r"and stays explicitly not resolved and not validated",
+           r"the Requirement Landscape, unchanged",
+           r"the exact matching Validation Plan gap step, verbatim",
+           r"a RETRACTED route does not render; a route / policy mismatch fails closed",
+           r"no specific acquisition route is assigned from current project truth",
+           r"the same truth in the session, report and PDF",
+           r"\*\*QUESTION / FORM / POST / WRITER / PERSISTENCE / SCHEMA / REPLAY / STATE "
+           r"MUTATION\*\* \| `NONE`",
+           r"\*\*RANKING / SCORE / SEVERITY / FEASIBILITY / READINESS / PROGRESSION\*\* \| `NONE`",
+           r"NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION")
+    _rejects(top, CONTRACT, "cap04 slice1", *_CAP04_REVERSALS)
+    live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
+    live_surfaces.append((STATE, _current(STATE, "current-position")))
+    for path, block in live_surfaces:
+        _needs(block, path, "cap04 slice1 live", _tok(_CAP04_CONTRACT), _tok(_CAP04_STATUS),
+               _tok("`FULL CAP-04: NOT AUTHORIZED`"), _tok("`STAGE 23: NOT ENTERED`"),
+               _tok(_STAGE22_SLICE2_DELIVERED), _tok(_STAGE22_SLICE1_DELIVERED),
+               _tok(_CAP08_DELIVERED), _tok(_CAP10_DELIVERED),
+               r"an\s+ACCEPTED_RISK\s+gap\s+gets\s+no\s+pack\s+and\s+stays\s+explicitly\s+not\s+"
+               r"resolved\s+and\s+not\s+validated",
+               r"a\s+RETRACTED\s+route\s+does\s+not\s+render",
+               r"no\s+AI\s+/\s+LLM\s+/\s+provider\s+call")
+        _rejects(block, path, "cap04 slice1 live", *_CAP04_REVERSALS)
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
+    for needle in ("ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK.",
+                   "no new Master Roadmap Stage; Stage 23 NOT ENTERED; full CAP-04 NOT AUTHORIZED",
+                   "its PR / merge is pending",
+                   "no other Stage is authorized — the bounded CAP-04 Slice 1 enters no Stage"):
+        assert needle in head, needle
+    for pat in _CAP04_REVERSALS:
+        assert re.search(pat, head, re.I) is None, pat
+    flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
+    assert "**CURRENT SUBTASK:** CAP-04 SLICE 1 — ACTIONABLE GAP PACK" in flat_checklist
+    for line in ("ACTIVE CONTRACT: CAP-04 SLICE 1 — ACTIONABLE GAP PACK",
+                 _CAP04_STATUS.strip("`"), "FULL CAP-04: NOT AUTHORIZED"):
+        assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
+    roadmap = _read(ROADMAP)
+    numbers = [int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)]
+    assert sorted(numbers) == list(range(1, 46)), numbers
+    assert re.findall(r"^- \[ \] \*\*23 — CAP-06:\*\* multi-axis readiness dashboard only "
+                      r"after readiness axes exist; no hidden weighting\.$", roadmap, re.M)
+    assert "CAP-04" not in re.findall(r"^- \[[ x]\] \*\*23 — .*$", roadmap, re.M)[0]
+    register = _flat(os.path.join("docs", "governance",
+                                  "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md"))
+    assert "CAP-04 Slice 1 — Actionable Gap Pack (2026-09-27; no new Master Roadmap Stage)" in register
+    assert "`FULL CAP-04: NOT AUTHORIZED`" in register
+    assert "It is never Evidence, never closes a gap, asks and writes nothing" in register
+
+
+def test_arabic_first_language_policy_and_cap04_watch_are_continuity_only():
+    """The Owner language policy — Arabic-first UX, not Arabic-only terminology —
+    lives in the EXISTING CLAUDE.md language-direction owner and authorizes no
+    live MSNL / LLM / provider use; the CAP-04 review observations stay a
+    non-blocking WATCH with no repair cycle."""
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    watch = claude[claude.index("**Current Lead Watchlist (2026-09-26).**"):
+                   claude.index("**Successor Lead (mandatory).**")]
+    lang = watch[watch.index("**NEXT TRIGGER — language direction.**"):
+                 watch.index("**Preserved states.**")]
+    for needle in (
+            "**Owner language policy (2026-09-27): Arabic-first UX, not Arabic-only terminology.**",
+            "Arabic UX chrome, navigation, explanatory prose and user guidance are normally Arabic",
+            "MAY stay English where translation would reduce technical precision, "
+            "recognizability, professional meaning or readability",
+            "no forced literal translation for language purity",
+            "First-use bilingual labeling is encouraged",
+            "خطة التحقق (Validation Plan)",
+            "Inventor-authored content stays verbatim",
+            "WITHOUT silently changing canonical technical terminology or meaning",
+            "The policy does NOT authorize live MSNL, LLM or provider use",
+            "does not let long English explanatory prose replace Arabic UX"):
+        assert needle in lang, needle
+    for pat in (r"(?<!NOT )authori[sz]es? (live )?(MSNL|LLM|provider)",
+                r"(?<!no )(?<!NOT )(live|external) (LLM|provider|MSNL) (use )?(is )?AUTHORIZED\b"):
+        assert re.search(pat, lang) is None, pat
+    cap04 = watch[watch.index("**WATCH — CAP-04 Slice 1 (non-blocking, no repair cycle).**"):]
+    for needle in ("UNDETERMINED / clarifying information", "two responsibility lines",
+                   "(\"Practical feasibility\")", "(\"Physical Feasibility\")",
+                   "\"acquisition route\" may be jargon",
+                   "do not replace the single Next Development Step",
+                   "precise English technical terminology itself is not a defect"):
+        assert needle in cap04, needle
 
 
 def test_lead_operating_method_and_watchlist_are_preserved_as_continuity_only():

@@ -3686,6 +3686,77 @@ UI_STRINGS = {
         "en": "See the full Validation Plan in the report",
         "ar": "اطّلع على خطة التحقق الكاملة في التقرير",
     },
+    # --- CAP-04 Slice 1: the read-only Actionable Gap Pack. Presentation chrome
+    # only: no key names a severity, rank, recommendation, provider, completed
+    # test, readiness or progression outcome.
+    "UI_GP_HEADING": {"en": "Gap action packs", "ar": "حِزم إجراءات الفجوات"},
+    "UI_GP_INTRO": {
+        "en": ("One package for each open or partially addressed gap, built from "
+               "your current project state. It asks you nothing new and changes "
+               "nothing."),
+        "ar": ("حزمة واحدة لكل فجوة مفتوحة أو معالَجة جزئيًا، مبنية على حالة "
+               "مشروعك الحالية. لا تطرح عليك أي سؤال جديد ولا تغيّر أي شيء."),
+    },
+    "UI_GP_STATE_OPEN": {
+        "en": "this recorded gap remains open",
+        "ar": "لا تزال هذه الفجوة المسجّلة مفتوحة",
+    },
+    "UI_GP_STATE_PARTIAL": {
+        "en": "this recorded gap remains partially addressed",
+        "ar": "لا تزال هذه الفجوة المسجّلة معالَجة جزئيًا",
+    },
+    "UI_GP_ACTION": {"en": "Required action", "ar": "الإجراء المطلوب"},
+    "UI_GP_RESPONSIBILITY": {"en": "Who provides the input",
+                             "ar": "مَن يقدّم المدخلات"},
+    "UI_GP_RESP_OWNER_EXECUTABLE": {"en": "You can provide it yourself",
+                                    "ar": "يمكنك تقديمها بنفسك"},
+    "UI_GP_RESP_SPECIALIST_REQUIRED": {"en": "Specialist input is required",
+                                       "ar": "مطلوب مدخلات متخصّص"},
+    "UI_GP_RESP_EMPIRICAL_EVIDENCE_REQUIRED": {"en": "Empirical evidence is required",
+                                               "ar": "مطلوب دليل تجريبي"},
+    "UI_GP_RESP_SYSTEM_DERIVABLE": {
+        "en": "System analysis is the current responsibility",
+        "ar": "التحليل الآلي هو المسؤولية الحالية"},
+    "UI_GP_RESP_UNDETERMINED": {
+        "en": "Not yet assigned from the current project state",
+        "ar": "لم تُحدَّد بعد من حالة المشروع الحالية"},
+    "UI_GP_INPUT": {"en": "Input currently required", "ar": "المدخلات المطلوبة حاليًا"},
+    "UI_GP_CLOSURE": {"en": "Closure condition", "ar": "شرط الإغلاق"},
+    "UI_GP_ROUTED_HEADING": {"en": "Routed need for this gap",
+                             "ar": "احتياج موجَّه لهذه الفجوة"},
+    "UI_GP_NO_ROUTE": {
+        "en": ("No specific acquisition route has been assigned from the current "
+               "project state."),
+        "ar": "لم يُحدَّد من حالة المشروع الحالية مسار محدد للحصول على هذه المدخلات.",
+    },
+    "UI_GP_ROUTE_UNAVAILABLE": {
+        "en": "Details of this routed need could not be shown here.",
+        "ar": "تعذّر عرض تفاصيل هذا الاحتياج الموجَّه هنا.",
+    },
+    "UI_GP_AFTER": {
+        "en": ("What comes next is decided only after the required information is "
+               "recorded and the project state is derived again. Recording it does "
+               "not by itself close the gap or change readiness."),
+        "ar": ("لا يتحدد ما يأتي بعد ذلك إلا بعد تسجيل المعلومات المطلوبة وإعادة "
+               "اشتقاق حالة المشروع. تسجيلها لا يُغلق الفجوة ولا يغيّر الجاهزية "
+               "بحد ذاته."),
+    },
+    "UI_GP_EMPTY": {
+        "en": ("No open or partially addressed gaps are recorded in the current "
+               "project state."),
+        "ar": "لا توجد في حالة المشروع الحالية فجوات مفتوحة أو معالَجة جزئيًا.",
+    },
+    "UI_GP_ACCEPTED_RISK": {
+        "en": "These gaps carry an accepted risk and are not treated as resolved:",
+        "ar": "هذه الفجوات تحمل مخاطرة مقبولة ولا تُعامَل على أنها محلولة:",
+    },
+    "UI_GP_UNAVAILABLE": {
+        "en": "The gap action packs could not be shown here. Nothing was changed.",
+        "ar": "تعذّر عرض حِزم إجراءات الفجوات هنا. لم يتغيّر أي شيء.",
+    },
+    "UI_GP_SEE_DETAIL": {"en": "See the detail:", "ar": "اطّلع على التفاصيل:"},
+    "UI_GP_SEE_DETAIL_REPORT": {"en": "See the detail in the report:",
+                                "ar": "اطّلع على التفاصيل في التقرير:"},
     "UI_T3A_EVENT_ANSWER_RECORDED": {
         "en": "Answer recorded",
         "ar": "إجابة مسجَّلة",

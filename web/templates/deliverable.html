@@ -694,6 +694,58 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 
   {#- Stage 22 Slice 2: presentation-only anchor for the Decision Room link; the
       heading itself stays byte-identical. -#}
+{#- CAP-04 Slice 1: one read-only Actionable Gap Pack per current unresolved
+    gap (engine.gap_action_pack). It joins the landscape's gap requirement, the
+    same gap's Validation Plan step and any exact routed need; it asks nothing,
+    writes nothing and ranks nothing. Canonical statements stay verbatim. -#}
+{% if gap_action_packs is defined %}
+{% set gpk = gap_action_packs %}
+<div class="gp-packs" id="report-gap-action-packs" style="margin:10px 0 14px 0;border:1px solid #d6dde8;border-radius:4px;background:#ffffff;padding:8px 14px">
+  <h3 style="margin:0 0 4px 0">{{ t('UI_GP_HEADING') }}{% if gpk.status == 'available' %} (<span class="gp-count">{{ gpk.packs | length }}</span>){% endif %}</h3>
+  <p class="gp-intro" style="font-size:12px;color:#555;margin:6px 0">{{ t('UI_GP_INTRO') }}</p>
+  {% if gpk.status == 'available' %}
+  {% if gpk.packs %}
+  {% for p in gpk.packs %}
+    <div class="gp-pack" data-gp-gap="{{ p.gap_type|lower|replace('_', '-') }}" data-gp-state="{{ p.gap_state|lower }}" style="margin:6px 0;border-top:1px solid #e2e6ea;padding:6px 0">
+      <div style="font-size:13px"><strong class="gp-gap-label">{{ p.gap_type | gap_display }}</strong> — {{ t('UI_GP_STATE_' ~ p.gap_state) }}</div>
+      <dl class="gp-facts" style="font-size:12px;margin:4px 0 0 0">
+        <dt style="font-weight:bold">{{ t('UI_GP_ACTION') }}</dt><dd class="gp-action" dir="auto" style="margin:0 0 4px 12px">{{ p.action_statement }}</dd>
+        <dt style="font-weight:bold">{{ t('UI_GP_RESPONSIBILITY') }}</dt><dd class="gp-resp" data-gp-resp="{{ p.responsibility|lower|replace('_', '-') }}" style="margin:0 0 4px 12px">{{ t('UI_GP_RESP_' ~ p.responsibility) }}</dd>
+        <dt style="font-weight:bold">{{ t('UI_GP_INPUT') }}</dt><dd class="gp-input" dir="auto" style="margin:0 0 4px 12px">{{ p.evidence_category }}</dd>
+        <dt style="font-weight:bold">{{ t('UI_GP_CLOSURE') }}</dt><dd class="gp-closure" dir="auto" style="margin:0 0 4px 12px">{{ p.closure_condition }}</dd>
+      </dl>
+      {% if p.routed %}
+      {% for n in p.routed %}
+      <div class="gp-route" data-gp-route="{{ n.required_input|lower }}" data-gp-route-available="{{ 'yes' if n.available else 'no' }}" style="font-size:12px;margin:6px 0 0 12px;border-inline-start:3px solid #b3d1ff;padding-inline-start:8px">
+        <div style="font-weight:bold">{{ t('UI_GP_ROUTED_HEADING') }}: {{ t('UI_NR_HEADING_EVIDENCE') if n.required_input == 'EVIDENCE' else t('UI_NR_HEADING_SPECIALIST') }}</div>
+        {% if n.available %}
+        <div class="gp-route-text" dir="auto">{{ n.need_text }}</div>
+        <div class="gp-route-resp" data-gp-resp="{{ n.responsibility|lower|replace('_', '-') }}">{{ t('UI_GP_RESPONSIBILITY') }}: {{ t('UI_GP_RESP_' ~ n.responsibility) }}</div>
+        <div>{{ t('UI_GP_INPUT') }}: <span dir="auto">{{ n.evidence_category }}</span></div>
+        <div>{{ t('UI_GP_CLOSURE') }}: <span dir="auto">{{ n.closure_condition }}</span></div>
+        {% else %}
+        <div class="gp-route-unavailable">{{ t('UI_GP_ROUTE_UNAVAILABLE') }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+      {% else %}
+      <p class="gp-no-route" style="font-size:12px;color:#555;margin:4px 0 0 0">{{ t('UI_GP_NO_ROUTE') }}</p>
+      {% endif %}
+      <p class="gp-after" style="font-size:12px;color:#777;margin:6px 0 0 0">{{ t('UI_GP_AFTER') }}</p>
+    </div>
+  {% endfor %}
+  {% else %}
+  <p class="gp-empty" data-gp-empty style="font-size:13px;margin:4px 0">{{ t('UI_GP_EMPTY') }}</p>
+  {% endif %}
+  {% if gpk.accepted_risk %}
+  <p class="gp-accepted-risk" style="font-size:12px;color:#555;margin:6px 0 0 0">{{ t('UI_GP_ACCEPTED_RISK') }} {% for g in gpk.accepted_risk %}{{ g | gap_display }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+  {% endif %}
+  <p class="gp-links" style="font-size:12px;margin:8px 0 0 0">{{ t('UI_GP_SEE_DETAIL') }} <a class="gp-link" href="#report-needs">{{ t('UI_B_DELIV_031') }}</a> · <a class="gp-link" href="#report-validation-plan">{{ t('UI_B_DELIV_085') }}</a></p>
+  {% else %}
+  <p class="gp-unavailable" data-gp-unavailable style="font-size:13px;color:#777;margin:4px 0">{{ t('UI_GP_UNAVAILABLE') }}</p>
+  {% endif %}
+</div>
+{% endif %}
   <span id="report-validation-plan" class="report-anchor"></span>
   <h3>{{ t('UI_B_DELIV_085') }}</h3>
   {# Increment 5 (additive): presentation-only render of the Validation Plan in
