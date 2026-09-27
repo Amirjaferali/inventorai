@@ -2,10 +2,26 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: CAP-09 SLICE 3 — OWNER-DEFINED TEST HYPOTHESIS.**
-CAP-09 Slice 3 is ONE further bounded slice inside the already-entered Stage 19 (WS-PFV-001 /
+**ACTIVE CONTRACT: CAP-09 SLICE 4 — OWNER-DEFINED TEST VARIABLE / CONDITION.**
+CAP-09 Slice 4 is ONE further bounded slice inside the already-entered Stage 19 (WS-PFV-001 /
 CAP-09; no new Master Roadmap Stage; Stage 19 stays ENTERED / NOT COMPLETE; Stage 23 NOT ENTERED;
 CAP-06 NOT ACTIVATED; FULL CAP-09 and FULL WS-PFV-001 NOT AUTHORIZED): for each CURRENT Section-11
+experiment the inventor can record, edit or clear their own Test Variable / Condition — in free
+text, what they intend to change, compare or set differently in that test — distinct from the
+system-generated Objective and What to Observe, the Success Criterion, the Test Hypothesis and the
+Measurement Method. It reuses the canonical `experiment_id` (no variable_id, no second experiment
+owner), is durable current-value planning metadata in ONE new sibling sidecar
+`prototype_test_variables`, and the ONE existing planning Save applies up to four concept deltas
+atomically (two- and three-concept callers unchanged; an omitted delta is no edit, never delete
+all; IR-01 and SAVED / NOT SAVED / UNKNOWN confirm-by-reload unchanged); a stale variable is
+preserved and never remapped. Opaque planning metadata only — no formal variable model, variable
+type, units, ranges, controls validation or design grading, no Evidence, result, validation,
+readiness, maturity, progression, gap closure, CAP-08 assumption / dependency or CAP-10
+contradiction, and no AI / LLM / provider call. BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION is
+AUTHORIZED WITHIN CAP-09 SLICE 4; a FORMAL EXPERIMENTAL VARIABLE MODEL and Result stay NOT
+AUTHORIZED. It is implemented, its Astra architecture review and independent UX / behaviour review
+both passed with no material findings, and its PR / merge is pending. CAP-09 Slice 3 — DELIVERED
+(PR #711, merge `e393e29cd0ba4f568cf1fd1a0d4c2e0e7742eabd`) — is the preceding bounded slice inside Stage 19: for each CURRENT Section-11
 experiment the inventor can record, edit or clear their own Test Hypothesis — what they expect to
 happen — distinct from the system-generated Objective, the Success Criterion (what counts as
 success) and the Measurement Method (how it is measured or checked). It reuses the canonical
@@ -15,9 +31,7 @@ Success Criterion, Measurement Method and Test Hypothesis delta atomically (IR-0
 SAVED / UNKNOWN confirm-by-reload unchanged); a stale hypothesis is preserved and never remapped.
 Planning metadata only — no Evidence, result, validation, readiness, maturity, progression, gap
 closure, CAP-08 assumption / dependency or CAP-10 contradiction, and no AI / LLM / provider call;
-Variable and Result stay NOT AUTHORIZED. It is implemented, its independent UX / behaviour review
-and Astra architecture review both passed with no material findings, and its PR / merge is
-pending. CAP-11 Slice 1 — DELIVERED (PR #710, merge
+Result stays NOT AUTHORIZED. CAP-11 Slice 1 — DELIVERED (PR #710, merge
 `7d2e9ab011a0bbf17b577f354e2b47ab09114add`; full CAP-11 NOT AUTHORIZED) — is ONE bounded slice under the already-recorded CAP-11 capability, governed by the
 exact Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`
 (no new Master Roadmap Stage; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; FULL CAP-11 NOT
@@ -98,7 +112,8 @@ question reduction beyond Slice 1. Target-Aware Question / Answer Binding is COM
 `ca9311029f30ea66ceae28f5dda5c5e6dd4e2b4a`). Stage 19 (WS-PFV-001 / CAP-09 Experiment-Plan
 Designer) is ENTERED / NOT COMPLETE: the durable SuccessCriterion remediation (PR #682) and
 CAP-09 SLICE-02, the durable user-written measurement method (PR #683), are delivered, and
-SLICE-02 is not the active contract; CAP-09 Slice 3 (above) is the current bounded action. Full
+SLICE-02 is not the active contract; CAP-09 Slice 3 is delivered (PR #711) and CAP-09 Slice 4
+(above) is the current bounded action. Full
 CAP-09 and full WS-PFV-001 are NOT AUTHORIZED. Any
 other product, readiness, governance or automation work requires a new explicit Owner
 authorization.
@@ -107,12 +122,12 @@ history, and is the file to read for authority — this paragraph routes, it doe
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized — the
-bounded CAP-09 Slice 3 sits inside the already-entered Stage 19 and enters no new Stage (Stage 22 stays ENTERED / PARTIAL through its delivered
+bounded CAP-09 Slice 4 sits inside the already-entered Stage 19 and enters no new Stage (Stage 22 stays ENTERED / PARTIAL through its delivered
 Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -378,7 +393,7 @@ information, not execution authority.
   polish only, reassess when a future CAP-11 / report-language slice naturally touches it. Other
   English explanatory text in Section 2 is a pre-existing language limitation, not a CAP-11 defect.
 - **WATCH — CAP-09 Slice 3 (non-blocking, no repair cycle).** Test Hypothesis stays planning
-  metadata only; Variable and Result stay NOT AUTHORIZED. (A) The browser `<title>` of the planning
+  metadata only; a formal experimental variable model and Result stay NOT AUTHORIZED. (A) The browser `<title>` of the planning
   page still names Success Criteria and Measurement Methods but not Test Hypothesis — wording polish
   only. (B) `.user-method` preserves visual line breaks in the report / PDF via pre-wrap while
   `.user-hypothesis` does not; the stored text stays truthful and verbatim — visual consistency
@@ -389,6 +404,20 @@ information, not execution authority.
   across the page heading, intro, experiment card and report link; comprehension review PASS —
   polish only. The accepted first-use Arabic concept is "فرضية الاختبار (Test Hypothesis)" under the
   language policy above; inventor-authored text stays verbatim.
+- **WATCH — CAP-09 Slice 4 (non-blocking, no repair cycle).** Test Variable / Condition stays opaque
+  planning metadata; a formal experimental variable model and Result stay NOT AUTHORIZED. (A)
+  `UI_TITLE_SUCCESS` (the browser title) still names only Success Criteria and Measurement Methods
+  while the page also carries the Test Hypothesis and Test Variable / Condition — wording polish
+  only. (B) Variable text keeps visible line breaks via pre-wrap while the report hypothesis text
+  does not — consistency polish only. (C) The identical save / clear guidance repeats for all four
+  editable fields, which materially lengthens the page at 390 px but causes no overflow and no
+  material comprehension defect — simplify only when naturally touched. (D) The intro's conceptual
+  order differs from the card order; no comprehension defect found. (E) At 390 px the two-row
+  variable textarea can visually clip part of the example placeholder until focus — placeholder
+  only. (F) Adversarial neutral-heavy mixed-direction text may reorder in the Arabic PDF renderer; a
+  pre-existing limitation affecting other planning rows too — no Slice-4 repair cycle. The accepted
+  first-use Arabic concept is "متغيّر / شرط الاختبار (Test Variable / Condition)"; inventor-authored
+  text stays verbatim.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative
