@@ -23,14 +23,47 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--cap02-slice-1"></a>
-## Current authority — CAP-02 Slice 1 — Project Compass / Simplified One-Step Journey (Owner / Lead authorization, 2026-09-27)
+<a id="current-authority--cap11-slice-1"></a>
+## Current authority — CAP-11 Slice 1 — Evidence Details (Owner approval of the CAP-11 entry contract, 2026-09-27)
 
-**ACTIVE CONTRACT: CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY.**
+**ACTIVE CONTRACT: CAP-11 SLICE 1 — EVIDENCE DETAILS.**
+ONE bounded slice under the already-recorded CAP-11 capability, governed by the exact
+Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md` (CAP-11 — Evidence
+Quality Ladder: Entry Contract + Slice 1 — Evidence Details), which is the detailed authority and
+authorizes Slice 1 only. It creates no new Master Roadmap Stage, Stage 23 is NOT ENTERED, CAP-06 is
+NOT ACTIVATED, and FULL CAP-11 is NOT AUTHORIZED. Status: OWNER-AUTHORIZED / APPROVED CONTRACT
+INSTALLED / IMPLEMENTED / INDEPENDENT UX / BEHAVIOUR REVIEW PASS — material findings: NONE — PR /
+merge pending. Architecture (Astra) review not required: presentation only.
+
+| | |
+|---|---|
+| **SCOPE** | report Section 2 (Known Problem, Known Mechanism) and the PDF only: "About this evidence" with three rows — Form, Source, Validation |
+| **THREE AXES** | Form (existing evidence quality), Source (existing provenance) and Validation (existing validation status) stay independent; no provenance or Form value grants validation |
+| **SCORE / RANK / TIER / CONFIDENCE / CROSS-AXIS LADDER** | `NONE` — the internal quality order stays internal; no order among the three validated values |
+| **LEGACY / UNKNOWN** | LEGACY_UNSPECIFIED reads "Source metadata not available" and is not reclassified; UNVALIDATED reads "No validation recorded"; an unknown value reads "Not available" for its row only |
+| **WRITERS / PROMOTION / READINESS AUTHORITY** | `NONE` — display capability only; showing a validated label does not mean current workflows can award it |
+| **ENGINE / PACKAGE / JSON / SCHEMA / PERSISTENCE / REPLAY / STATE** | `NONE` |
+| **OUT OF SCOPE** | Section 9, the session page, safety signals, Commercial / Manufacturing evidence (their "Standing" meaning unchanged), the Requirement Landscape, the Validation Plan |
+| **AI / LLM / PROVIDER / REAL INVENTION DATA** | NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
+
+**Deferred / not authorized:** full CAP-11 (every ladder level, promotion workflow, validation
+writer, evidence-strength conclusion or additional surface), Stage 23, CAP-06, CAP-12, CAP-13,
+deployment, public release and paid activation. WATCH (non-blocking, no repair cycle) is carried in
+the CLAUDE.md Lead Watchlist.
+
+<a id="current-authority--cap02-slice-1"></a>
+## Current authority — CAP-02 Slice 1 — Project Compass / Simplified One-Step Journey (Owner / Lead authorization, 2026-09-27) — DELIVERED (PR #709); SUPERSEDED as current authority by CAP-11 Slice 1
+
+**No longer the current authority.** CAP-02 Slice 1 was delivered (PR #709, merge
+`a9e46e57e1d9595fdc92af0bb508ee3fd141c9ea`); CAP-11 Slice 1 above replaced it as the current authority on
+2026-09-27. Every rule below still binds except where CAP-11 Slice 1 states otherwise. *(Superseded
+2026-09-27, preserved so the change is visible rather than silent: this opened "**ACTIVE
+CONTRACT: CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY.**" and recorded the
+slice as "PR / merge pending".)*
 ONE bounded slice under the already-recorded CAP-02 capability. It creates no new Master Roadmap
 Stage, Stage 23 is NOT ENTERED, CAP-06 is NOT ACTIVATED, and full CAP-02 is NOT AUTHORIZED.
 Status: OWNER-AUTHORIZED / IMPLEMENTED / INDEPENDENT UX / BEHAVIOUR REVIEW PASS — material findings:
-NONE — PR / merge pending. Architecture (Astra) review not required: presentation-only, pure
+NONE — DELIVERED (PR #709). Architecture (Astra) review not required: presentation-only, pure
 read-only composition of existing owners.
 
 | | |
@@ -1064,9 +1097,25 @@ sibling sidecar of the same store. Delivering it is not the stage and opens noth
 Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — CAP-02 Simplified One-Step Journey, ONE bounded slice under the
-already-recorded CAP-02 capability (no new Master Roadmap Stage):** `ACTIVE CONTRACT: CAP-02 SLICE 1 — PROJECT COMPASS / SIMPLIFIED ONE-STEP JOURNEY` · `CAP-02 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-02: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
-CAP-02 Slice 1 evolves the existing top-of-session Project Orientation into ONE Project Compass
+**CURRENT BOUNDED ACTION — CAP-11 Evidence Quality Ladder, ONE bounded slice under the
+already-recorded CAP-11 capability (no new Master Roadmap Stage):** `ACTIVE CONTRACT: CAP-11 SLICE 1 — EVIDENCE DETAILS` · `CAP-11 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-11: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
+CAP-11 Slice 1 runs under the Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`
+(the contract authorizes Slice 1 only). It enhances the existing report Section 2 evidence
+presentation only: for each present Known Problem / Known Mechanism item the report and PDF show
+"About this evidence" with THREE independent rows — Form, Source and Validation — from the
+existing evidence quality, provenance and validation fields. The three axes are never combined into
+a score, percentage, tier, LOW / MEDIUM / HIGH, weak / strong, confidence, colour or badge ranking or
+readiness, and no provenance or Form value grants validation; the internal quality order stays
+internal. LEGACY_UNSPECIFIED reads "Source metadata not available" and is not reclassified;
+UNVALIDATED reads "No validation recorded"; an unknown value reads "Not available" for its row
+only. Slice 1 adds display capability only: showing SPECIALIST_REVIEWED, EMPIRICALLY_DEMONSTRATED or
+INDEPENDENTLY_VERIFIED does not mean current workflows can award them, and no validation,
+provenance, quality or promotion writer and no readiness authority exists. Presentation only — no
+engine, package, JSON export, schema, persistence, replay, readiness, maturity, progression or gap
+change; Section 9, the session page, safety signals, Commercial / Manufacturing evidence, the
+Requirement Landscape and the Validation Plan are out of scope; no AI / LLM / provider call.
+**DELIVERED — CAP-02 Simplified One-Step Journey, ONE bounded slice (no new Master Roadmap Stage):** `CAP-02 SLICE 1: DELIVERED — PR #709 — merge a9e46e57e1d9595fdc92af0bb508ee3fd141c9ea` · `FULL CAP-02: NOT AUTHORIZED`.
+CAP-02 Slice 1 (delivered) evolves the existing top-of-session Project Orientation into ONE Project Compass
 with four concepts: Recorded so far, Still unresolved, Why it matters now and What to do now.
 Recorded so far counts active current answered records only (superseded answers and decision /
 relationship / risk-acceptance metadata excluded). Unresolved categories come from existing

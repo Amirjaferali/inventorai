@@ -514,6 +514,44 @@ app.jinja_env.filters["gap_display"] = friendly_gap_name
 # "General idea review" for unknown/missing/unsupported state (never electronics).
 # Presentation only — activates no domain and changes no deterministic behavior.
 app.jinja_env.filters["public_domain_label"] = _public_domain_label
+
+
+# CAP-11 Slice 1 — Evidence Details (docs/governance/
+# CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md). Presentation only: maps the three
+# independent axes of ONE already-assembled Section-2 evidence dict (the
+# package's own `quality` / `provenance` / `validation_status` values) to UI
+# text keys. The package values are resolved back to canonical values through
+# the assembler's own public-value functions, so no package wording is copied
+# here. Nothing is combined, ordered, scored or written; anything unrecognised
+# is "not available" for that row only — never UNVALIDATED, OWNER_STATED,
+# LEGACY_UNSPECIFIED or a tier.
+def _evidence_details(ev):
+    from engine import deliverable_assembler as _da
+    from engine.idea_state import (
+        ASSERTED, REASONED, DEMONSTRATED, PROVENANCE_VALUES, VALIDATION_STATUSES)
+    na = {"key": "UI_ED_NA", "slug": "na"}
+    details = {"form": na, "source": na, "validation": na}
+    if not isinstance(ev, dict):
+        return details
+    try:
+        forms = {_da._plain_quality(q): q for q in (ASSERTED, REASONED, DEMONSTRATED)}
+        sources = {_da._public_provenance(p): p for p in PROVENANCE_VALUES}
+        form = forms.get(ev.get("quality")) if isinstance(ev.get("quality"), str) else None
+        source = sources.get(ev.get("provenance")) \
+            if isinstance(ev.get("provenance"), str) else None
+        validation = ev.get("validation_status")
+        if not isinstance(validation, str) or validation not in VALIDATION_STATUSES:
+            validation = None
+    except Exception:
+        return details
+    for axis, value in (("form", form), ("source", source), ("validation", validation)):
+        if value is not None:
+            details[axis] = {"key": "UI_ED_%s_%s" % (axis.upper(), value),
+                             "slug": value.lower().replace("_", "-")}
+    return details
+
+
+app.jinja_env.filters["evidence_details"] = _evidence_details
 # D-P6-18: expose the UI-string resolver and language/direction to EVERY template
 # render path. For normal requests the context processor below overrides these with
 # the per-request values; registering them as Jinja globals additionally keeps a

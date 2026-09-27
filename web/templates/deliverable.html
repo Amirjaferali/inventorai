@@ -29,6 +29,12 @@ ul{padding-left:18px;font-size:13px;color:#444}
 li{margin-bottom:4px}
 .field-label{font-weight:bold;color:#2c3e50;font-size:13px}
 .field-value{font-size:13px;color:#444;margin-bottom:6px}
+.ev-details{margin:2px 0 10px;padding-inline-start:10px;border-inline-start:3px solid #d6dde8;font-size:12px;color:#444}
+.ev-details-heading{font-weight:bold;color:#526474;margin-bottom:2px}
+.ev-details-rows{display:grid;grid-template-columns:max-content 1fr;gap:1px 10px;margin:0}
+.ev-details-rows dt{color:#526474}
+.ev-details-rows dd{margin:0}
+.ev-details-note{margin:4px 0 8px;font-size:12px;color:#667}
 .user-method{white-space:pre-wrap}
 .vp-meta{font-size:12px;color:#667;line-height:1.5;margin:0 0 12px 0}
 .vp-intro{font-size:13px;color:#555;line-height:1.5;margin:0 0 12px 0}
@@ -178,6 +184,21 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   </ol>
 </nav>
 
+{#- CAP-11 Slice 1 — Evidence Details: the three independent axes of ONE
+    Section-2 evidence item (Form / Source / Validation), each shown on its own
+    row from the package's existing fields; nothing is combined, ranked or
+    scored, and an unrecognised value reads "not available" for that row. -#}
+{% macro evidence_details(ev) -%}
+{% set ed = ev | evidence_details %}
+<div class="ev-details" data-ev-details>
+  <div class="ev-details-heading">{{ t('UI_ED_HEADING') }}</div>
+  <dl class="ev-details-rows">
+    <dt>{{ t('UI_ED_FORM') }}</dt><dd data-ed-form="{{ ed.form.slug }}">{{ t(ed.form.key) }}</dd>
+    <dt>{{ t('UI_ED_SOURCE') }}</dt><dd data-ed-source="{{ ed.source.slug }}">{{ t(ed.source.key) }}</dd>
+    <dt>{{ t('UI_ED_VALIDATION') }}</dt><dd data-ed-validation="{{ ed.validation.slug }}">{{ t(ed.validation.key) }}</dd>
+  </dl>
+</div>
+{%- endmacro %}
 <section>
   <h2 id="report-idea" class="report-section-heading" tabindex="-1">{{ t('UI_B_DELIV_020') }}</h2>
   <p class="group-lede">{{ t('UI_B_DELIV_021') }}</p>
@@ -192,6 +213,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if package.section_2_invention_summary.known_problem %}
   <div class="field-label">{{ t('UI_B_DELIV_024') }}{% if package.section_2_invention_summary.known_problem.evidence_id %} <span class="ev-id" style="font-weight:normal;color:#667">({{ package.section_2_invention_summary.known_problem.evidence_id }})</span>{% endif %}</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_problem.content }}</div>
+  {{ evidence_details(package.section_2_invention_summary.known_problem) }}
   {% elif package.section_2_invention_summary.known_problem_note %}
   <div class="field-label">{{ t('UI_B_DELIV_024') }}</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_problem_note }}</div>
@@ -199,6 +221,10 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if package.section_2_invention_summary.known_mechanism %}
   <div class="field-label">{{ t('UI_B_DELIV_025') }}{% if package.section_2_invention_summary.known_mechanism.evidence_id %} <span class="ev-id" style="font-weight:normal;color:#667">({{ package.section_2_invention_summary.known_mechanism.evidence_id }})</span>{% endif %}</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_mechanism.content }}</div>
+  {{ evidence_details(package.section_2_invention_summary.known_mechanism) }}
+  {% endif %}
+  {% if package.section_2_invention_summary.known_problem or package.section_2_invention_summary.known_mechanism %}
+  <p class="ev-details-note" data-ev-details-note>{{ t('UI_ED_FORM_NOTE') }}</p>
   {% endif %}
   <p class="report-return"><a href="#report-contents">{{ t('UI_REPORT_BACK_CONTENTS') }}</a></p>
 </section>

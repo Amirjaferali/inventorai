@@ -127,7 +127,7 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   Master Roadmap Stage): the top-of-session Project Orientation evolved into ONE Project Compass
   (Recorded so far, Still unresolved, Why it matters now, What to do now) composed read-only from
   existing owners, keeping the existing primary-action branches and exactly ONE primary journey
-  action; session only. Implemented; independent UX / behaviour review PASS; PR / merge pending.
+  action; session only. Delivered (PR #709).
   `FULL CAP-02: NOT AUTHORIZED`.
 - **Activation conditions:** a separately authorized presentation/UX increment.
 - **Separate owner authorization requirement:** yes.
@@ -350,7 +350,15 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   auto-promotion; final semantics require a separate contract.
 - **Proposed acceptance criteria:** deterministic mapping from committed axes; no inference from text; a
   ratified ladder contract before implementation.
-- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (full capability),
+  **with ONE bounded exception**: CAP-11 Slice 1 — Evidence Details (2026-09-27; no new Master
+  Roadmap Stage), governed by the exact Owner-approved entry contract
+  `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`. Report Section 2 (Known Problem, Known Mechanism)
+  and the PDF show three independent rows — Form, Source, Validation — from the existing axes;
+  presentation only, with no score, rank or tier, no validation / provenance / quality writer, no
+  promotion and no readiness authority. The recorded long-term ladder hierarchy above is NOT
+  implemented. Implemented; independent UX / behaviour review PASS; PR / merge pending.
+  `FULL CAP-11: NOT AUTHORIZED`.
 - **Activation conditions:** a separately authorized evidence-quality-ladder contract.
 - **Separate owner authorization requirement:** yes.
 
@@ -667,7 +675,7 @@ nothing, authorizes nothing, and changes no critical path.
 | Capability | Primary activation gate / authority | Also spans | Current status |
 |---|---|---|---|
 | CAP-01 Structured Technical Guidance | **D13** (owner-gated) | WS-PFV-001, CAP-04, CAP-09 | RECORDED — NOT AUTHORIZED, **except two Owner-authorized bounded Stage-18 guidance increments** (first merged in PR #678; second research-direction addendum merged in PR #679; full CAP-01/STG still NOT AUTHORIZED) |
-| CAP-02 Simplified One-Step Journey | WS8 / later UX increment | CAP-06, CAP-07 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (implemented, review PASS, PR / merge pending) — FULL CAP-02 NOT AUTHORIZED |
+| CAP-02 Simplified One-Step Journey | WS8 / later UX increment | CAP-06, CAP-07 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (delivered, PR #709) — FULL CAP-02 NOT AUTHORIZED |
 | CAP-03 Adaptive Assistance | WS13 / WS14 | CAP-02, AI Coach | RECORDED — NOT AUTHORIZED |
 | CAP-04 Gap Action Packs | WS12 (+ D13 for technical) | CAP-01, CAP-09 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (delivered, PR #708) — FULL CAP-04 NOT AUTHORIZED |
 | CAP-05 Decision Trace | Decision-support increment | CAP-07, CAP-08, CAP-11 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-05 NOT AUTHORIZED |
@@ -676,7 +684,7 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-08 Assumption Register | Assumption-tracking increment | WS12, CAP-05, CAP-10, CAP-11 | SLICE 1 AUTHORIZED (Owner-declared assumption → answer dependency only) — FULL CAP-08 NOT AUTHORIZED |
 | CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (delivered, PR #682) and one bounded SLICE-02 durable measurement method (full CAP-09 still NOT AUTHORIZED) |
 | CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED |
-| CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED |
+| CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (implemented, review PASS, PR / merge pending) — FULL CAP-11 NOT AUTHORIZED |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | Dedicated materials-and-manufacturing feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14 | RECORDED — NOT AUTHORIZED |
 | CAP-13 Component Thickness, Specification, and Safety Advisory | Dedicated thickness-and-safety feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14 | RECORDED — NOT AUTHORIZED |
 | CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | Dedicated static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13 | RECORDED — NOT AUTHORIZED |
@@ -816,7 +824,7 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | Capability ID | Current status | Earliest activation gate | Prerequisites | Owner authorization required | Last reviewed Workstream | Next mandatory review point |
 |---|---|---|---|---|---|---|
 | CAP-01 Structured Technical Guidance | RECORDED — NOT AUTHORIZED | D13 (owner-gated) | D13 governed knowledge sources; D13 Source Review | Yes (via D13) | — (none since registration) | At WS12–WS16 closure and any D13 gate |
-| CAP-02 Simplified One-Step Journey | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (implemented, review PASS, PR / merge pending) — FULL CAP-02 NOT AUTHORIZED | WS8 / later UX increment | Committed state; WS8; WS12 unknowns; CAP-04 | Yes | — | At the UX increment / WS12–WS16 closure |
+| CAP-02 Simplified One-Step Journey | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (delivered, PR #709) — FULL CAP-02 NOT AUTHORIZED | WS8 / later UX increment | Committed state; WS8; WS12 unknowns; CAP-04 | Yes | — | At the UX increment / WS12–WS16 closure |
 | CAP-03 Adaptive Assistance | RECORDED — NOT AUTHORIZED | WS13 / WS14 | Deterministic sufficiency; WS12; WS13/WS14 | Yes | — | At WS13/WS14 authorization / WS12–WS16 closure |
 | CAP-04 Gap Action Packs | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (delivered, PR #708) — FULL CAP-04 NOT AUTHORIZED | WS12 (+ D13 for technical) | WS12 closure paths; D13; gap/blocker model | Yes | — | At WS12 closure and any D13 gate |
 | CAP-05 Decision Trace | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-05 NOT AUTHORIZED | Decision-support increment | Decision workspace; evidence axes; CAP-08; CAP-11 | Yes | — | At the decision-support increment / WS12–WS16 closure |
@@ -825,7 +833,7 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | CAP-08 Assumption Register | SLICE 1 AUTHORIZED (Owner-declared assumption → answer dependency only) — FULL CAP-08 NOT AUTHORIZED | Assumption-tracking increment | Provenance/validation axes; ledger; WS12; CAP-11 | Yes | — | At the assumption increment / WS12–WS16 closure |
 | CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation (delivered, PR #682) and one bounded SLICE-02 durable measurement method | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
 | CAP-10 Contradiction Detector | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
-| CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |
+| CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (implemented, review PASS, PR / merge pending) — FULL CAP-11 NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | RECORDED — NOT AUTHORIZED | Materials-and-manufacturing feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the materials feasibility gate / WS12–WS16 closure |
 | CAP-13 Component Thickness, Specification, and Safety Advisory | RECORDED — NOT AUTHORIZED | Thickness-and-safety feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the thickness feasibility gate / WS12–WS16 closure |
 | CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | RECORDED — NOT AUTHORIZED | Static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13; static-image/2D feasibility gate (§6) | Yes | — | At the static-visual feasibility gate / WS12–WS16 closure |
