@@ -3803,6 +3803,40 @@ UI_STRINGS = {
     "UI_PC_UNAVAILABLE": {"en": "Not available right now.",
                           "ar": "غير متاح حاليًا."},
     "UI_PC_DO_NOW": {"en": "What to do now", "ar": "ما الذي تفعله الآن"},
+    # CAP-11 Slice 1 — Evidence Details (report Section 2 only). Three
+    # independent axes, each on its own row; neutral labels with no order,
+    # score or strength verdict (docs/governance/
+    # CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md §§6-9).
+    "UI_ED_HEADING": {"en": "About this evidence", "ar": "عن هذا الدليل"},
+    "UI_ED_FORM": {"en": "Form", "ar": "الصيغة"},
+    "UI_ED_SOURCE": {"en": "Source", "ar": "المصدر"},
+    "UI_ED_VALIDATION": {"en": "Validation", "ar": "التحقق"},
+    "UI_ED_FORM_ASSERTED": {"en": "Asserted", "ar": "تقرير مباشر (Asserted)"},
+    "UI_ED_FORM_REASONED": {"en": "Reasoned", "ar": "تعليل منطقي (Reasoned)"},
+    "UI_ED_FORM_DEMONSTRATED": {"en": "Demonstrated",
+                                "ar": "عرض عملي (Demonstrated)"},
+    "UI_ED_FORM_NOTE": {
+        "en": "Form describes how the evidence is structured and reasoned. It "
+              "is not a validation result.",
+        "ar": "تصف الصيغة بنية الدليل وطريقة تعليله، وهي ليست نتيجة تحقق."},
+    "UI_ED_SOURCE_OWNER_STATED": {"en": "You", "ar": "أنت"},
+    "UI_ED_SOURCE_SYSTEM_INFERRED": {"en": "System-derived",
+                                     "ar": "مستخلَص من النظام"},
+    "UI_ED_SOURCE_EXPERT_SUPPLIED": {"en": "Expert-supplied",
+                                     "ar": "مقدَّم من خبير"},
+    "UI_ED_SOURCE_EXTERNAL_EVIDENCE": {"en": "External evidence",
+                                       "ar": "دليل خارجي"},
+    "UI_ED_SOURCE_LEGACY_UNSPECIFIED": {"en": "Source metadata not available",
+                                        "ar": "بيانات المصدر غير متاحة"},
+    "UI_ED_VALIDATION_UNVALIDATED": {"en": "No validation recorded",
+                                     "ar": "لا يوجد تحقق مسجّل"},
+    "UI_ED_VALIDATION_SPECIALIST_REVIEWED": {"en": "Reviewed by a specialist",
+                                             "ar": "راجعه مختص"},
+    "UI_ED_VALIDATION_EMPIRICALLY_DEMONSTRATED": {
+        "en": "Empirically demonstrated", "ar": "مُثبَت تجريبيًا"},
+    "UI_ED_VALIDATION_INDEPENDENTLY_VERIFIED": {
+        "en": "Independently verified", "ar": "تحقّق منه طرف مستقل"},
+    "UI_ED_NA": {"en": "Not available", "ar": "غير متاح"},
     "UI_T3A_EVENT_ANSWER_RECORDED": {
         "en": "Answer recorded",
         "ar": "إجابة مسجَّلة",
