@@ -23,17 +23,49 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--cap11-slice-1"></a>
-## Current authority — CAP-11 Slice 1 — Evidence Details (Owner approval of the CAP-11 entry contract, 2026-09-27)
+<a id="current-authority--cap09-slice-3"></a>
+## Current authority — Stage 19 / CAP-09 Slice 3 — Owner-Defined Test Hypothesis (Owner / Lead authorization, 2026-09-27)
 
-**ACTIVE CONTRACT: CAP-11 SLICE 1 — EVIDENCE DETAILS.**
+**ACTIVE CONTRACT: CAP-09 SLICE 3 — OWNER-DEFINED TEST HYPOTHESIS.**
+ONE further bounded slice inside the already-entered Stage 19 (WS-PFV-001 / CAP-09), recorded by
+the Owner authorization itself (no separate contract document). It creates no new Master Roadmap
+Stage, Stage 19 stays ENTERED / NOT COMPLETE, Stage 23 is NOT ENTERED, CAP-06 is NOT ACTIVATED,
+and FULL CAP-09 and FULL WS-PFV-001 are NOT AUTHORIZED. Status: OWNER-AUTHORIZED / IMPLEMENTED /
+INDEPENDENT UX / BEHAVIOUR REVIEW PASS / ASTRA ARCHITECTURE REVIEW PASS (76 focused tests plus 4
+additional architectural probes) — material findings: NONE — PR / merge pending.
+
+| | |
+|---|---|
+| **SCOPE** | for each CURRENT Section-11 experiment, ONE inventor-authored Test Hypothesis — what the inventor expects to happen in that experiment — recorded, edited or cleared on the existing planning page and shown in the report and PDF |
+| **DISTINCT CONCEPTS** | Objective = system-generated experiment purpose / context; Success Criterion = what the inventor would count as success; Measurement Method = how the inventor plans to measure or check it; Test Hypothesis = what the inventor expects to happen. None replaces or combines with another |
+| **IDENTITY** | the canonical `experiment_id` stays the only experiment identity; no second experiment owner |
+| **PERSISTENCE** | ONE new durable current-value sibling sidecar `prototype_test_hypotheses` (project_id, experiment_id, inventor-authored text only); `prototype_plan_metadata` and `prototype_measurement_methods` keep their meanings |
+| **ONE ATOMIC PLANNING SAVE** | the existing planning transaction applies the submitted Success Criterion, Measurement Method and Test Hypothesis delta atomically — all requested changes commit together or roll back together; existing two-concept callers stay backward compatible; IR-01 stays authoritative; confirm-by-reload keeps SAVED / NOT SAVED / UNKNOWN truthful across the three-concept delta |
+| **STALE** | a hypothesis whose experiment_id is no longer current is preserved, surfaced as stale, never attached to or remapped onto another experiment by position or text similarity; the SAME canonical experiment_id returning applies its own hypothesis again by identity |
+| **AUTHORITY** | PLANNING METADATA ONLY — never generated, inferred or graded; no Evidence, test result, confirmed / rejected hypothesis, validation, readiness, maturity, progression, gap closure, CAP-08 assumption or dependency, or CAP-10 contradiction; the Requirement Landscape, Validation Plan, Next Development Step and CAP-11 evidence validation are unchanged |
+| **LANGUAGE** | Arabic-first UX, not Arabic-only terminology: "فرضية الاختبار (Test Hypothesis)"; inventor-authored text stays verbatim |
+| **AI / LLM / PROVIDER / REAL INVENTION DATA** | no AI / LLM generates, rewrites, evaluates or scores the hypothesis; no MSNL / LLM / provider activation; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
+
+**Deferred / not authorized:** Variable, Result, a Failure Criterion as a new inventor field,
+Risks as CAP-09 fields, CAP-09 Slice 4, full CAP-09, full WS-PFV-001, Stage 23, CAP-06, CAP-12,
+CAP-13, deployment, public release and paid activation. WATCH (non-blocking, no repair cycle) is
+carried in the CLAUDE.md Lead Watchlist.
+
+<a id="current-authority--cap11-slice-1"></a>
+## Current authority — CAP-11 Slice 1 — Evidence Details (Owner approval of the CAP-11 entry contract, 2026-09-27) — DELIVERED (PR #710); SUPERSEDED as current authority by CAP-09 Slice 3
+
+**No longer the current authority.** CAP-11 Slice 1 was delivered (PR #710, merge
+`7d2e9ab011a0bbf17b577f354e2b47ab09114add`); CAP-09 Slice 3 above replaced it as the current authority on
+2026-09-27. Every rule below still binds except where CAP-09 Slice 3 states otherwise. *(Superseded
+2026-09-27, preserved so the change is visible rather than silent: this opened "**ACTIVE
+CONTRACT: CAP-11 SLICE 1 — EVIDENCE DETAILS.**" and recorded the slice as "PR / merge pending".)*
 ONE bounded slice under the already-recorded CAP-11 capability, governed by the exact
 Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md` (CAP-11 — Evidence
 Quality Ladder: Entry Contract + Slice 1 — Evidence Details), which is the detailed authority and
 authorizes Slice 1 only. It creates no new Master Roadmap Stage, Stage 23 is NOT ENTERED, CAP-06 is
 NOT ACTIVATED, and FULL CAP-11 is NOT AUTHORIZED. Status: OWNER-AUTHORIZED / APPROVED CONTRACT
-INSTALLED / IMPLEMENTED / INDEPENDENT UX / BEHAVIOUR REVIEW PASS — material findings: NONE — PR /
-merge pending. Architecture (Astra) review not required: presentation only.
+INSTALLED / IMPLEMENTED / INDEPENDENT UX / BEHAVIOUR REVIEW PASS — material findings: NONE —
+DELIVERED (PR #710). Architecture (Astra) review not required: presentation only.
 
 | | |
 |---|---|
@@ -1094,12 +1126,38 @@ unticked** — one authorized bounded slice is not the stage.
 `SuccessCriterion` stay the canonical planning owner. SLICE-02 was bounded: ONE
 inventor-written measurement method per existing experiment, durable in a narrowly typed
 sibling sidecar of the same store. Delivering it is not the stage and opens nothing wider:
-Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no further CAP-09
-implementation is currently authorized. The Stage-19 checkbox stays unticked, and
+CAP-09 Slice 3 — the inventor-written Test Hypothesis, below — was separately Owner-authorized;
+Variable, Result and every other CAP-09 field stay NOT AUTHORIZED, and no CAP-09
+implementation beyond Slice 3 is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
-**CURRENT BOUNDED ACTION — CAP-11 Evidence Quality Ladder, ONE bounded slice under the
-already-recorded CAP-11 capability (no new Master Roadmap Stage):** `ACTIVE CONTRACT: CAP-11 SLICE 1 — EVIDENCE DETAILS` · `CAP-11 SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-11: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
-CAP-11 Slice 1 runs under the Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`
+**CURRENT BOUNDED ACTION — Stage 19 / CAP-09 Experiment-Plan Designer, ONE further bounded slice
+(no new Master Roadmap Stage; Stage 19 stays ENTERED / NOT COMPLETE):** `ACTIVE CONTRACT: CAP-09 SLICE 3 — OWNER-DEFINED TEST HYPOTHESIS` · `CAP-09 SLICE 3: IMPLEMENTED — UX / BEHAVIOUR REVIEW PASS — ASTRA ARCHITECTURE REVIEW PASS — PR / MERGE PENDING` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED` · `VARIABLE: NOT AUTHORIZED` · `RESULT: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
+For each CURRENT Section-11 experiment the inventor can record, edit or clear their own Test
+Hypothesis — what they expect to happen in that experiment. It stays distinct from the
+system-generated Objective (the experiment's purpose / context), the Success Criterion (what the
+inventor would count as success) and the Measurement Method (how the inventor plans to measure or
+check it); the three inventor planning entries may be saved together through the ONE existing
+planning Save. The canonical `experiment_id` stays the only experiment identity (no second
+experiment owner); the hypothesis is durable current-value planning metadata in ONE new sibling
+sidecar, `prototype_test_hypotheses` (project_id, experiment_id, inventor-authored text only),
+while `prototype_plan_metadata` and `prototype_measurement_methods` keep their meanings. The
+existing planning transaction applies the submitted Success Criterion, Measurement Method and Test
+Hypothesis delta atomically — every requested change commits together or rolls back together;
+existing two-concept callers stay backward compatible, IR-01 stays authoritative, and
+confirm-by-reload keeps SAVED / NOT SAVED / UNKNOWN truthful across the three-concept delta. A
+hypothesis whose experiment_id is no longer in the current plan is preserved, surfaced as stale and
+never attached to or remapped onto another experiment by position or text similarity; if the SAME
+canonical experiment_id returns, its own hypothesis applies again by identity. Test Hypothesis is
+PLANNING METADATA ONLY — never generated, inferred or graded — and creates no Evidence, test
+result, confirmed / rejected hypothesis, validation, readiness, maturity, progression, gap closure,
+CAP-08 assumption or dependency, or CAP-10 contradiction; it does not alter the Requirement
+Landscape, the Validation Plan, the Next Development Step or CAP-11 evidence validation. No AI /
+LLM generates, rewrites, evaluates or scores it, no invention data is transmitted to an external
+provider, and no MSNL / LLM / provider activation is authorized. Variable, Result, a Failure
+Criterion as a new inventor field and Risks as CAP-09 fields stay NOT AUTHORIZED.
+**DELIVERED — CAP-11 Evidence Quality Ladder, ONE bounded slice under the already-recorded CAP-11
+capability (no new Master Roadmap Stage):** `CAP-11 SLICE 1: DELIVERED — PR #710 — merge 7d2e9ab011a0bbf17b577f354e2b47ab09114add` · `FULL CAP-11: NOT AUTHORIZED`.
+CAP-11 Slice 1 (delivered) ran under the Owner-approved entry contract `docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`
 (the contract authorizes Slice 1 only). It enhances the existing report Section 2 evidence
 presentation only: for each present Known Problem / Known Mechanism item the report and PDF show
 "About this evidence" with THREE independent rows — Form, Source and Validation — from the

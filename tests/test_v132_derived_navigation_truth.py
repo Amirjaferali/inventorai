@@ -1973,8 +1973,10 @@ def test_stage_19_slice_02_is_delivered_history_and_still_bounded():
         _needs(block, path, "stage-19 live", _tok(_S19_ENTERED), _tok(_S19_SLICE_02),
                _tok(_S19_DELIVERED), *(_tok(t) for t in _S19_NOT_FULL),
                r"Section 11 \+\s+`SuccessCriterion` stay the canonical planning\s+owner",
-               r"Variable, hypothesis and every other CAP-09 field stay\s+NOT AUTHORIZED")
+               r"Variable, Result and every other CAP-09 field stay\s+NOT AUTHORIZED")
         _rejects(block, path, "stage-19 live", *_SLICE_02_LIVE_REVERSALS,
+                 r"Variable, hypothesis and every other CAP-09 field stay\s+NOT AUTHORIZED",
+                 r"no further CAP-09\s+implementation is currently authorized",
                  r"ACTIVE CONTRACT: NONE", r"FOUNDATION CONTRACT ONLY",
                  r"ENTERED FOR FOUNDATION", r"CAP-09 PRODUCT IMPLEMENTATION",
                  r"IMPLEMENTATION-01 ONLY",
@@ -1985,7 +1987,7 @@ def test_stage_19_slice_02_is_delivered_history_and_still_bounded():
     for path, routing in _surfaces("current-routing"):
         _needs(routing, path, "stage-19 routing", r"Stage-19 checkbox stays unticked",
                r"entering Stage 19 completes nothing in Stage 18",
-               r"no further CAP-09\s+implementation is currently authorized")
+               r"no CAP-09\s+implementation beyond Slice 3 is currently authorized")
     # CLAUDE.md records the delivery and does not route to the slice
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
@@ -2006,7 +2008,7 @@ def test_stage_19_slice_02_is_delivered_history_and_still_bounded():
                  "CAP-09 SLICE-02: DELIVERED — PR #683 — merge "
                  "8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60",
                  "DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682",
-                 "VARIABLE / HYPOTHESIS / OTHER CAP-09 FIELDS: NOT AUTHORIZED",
+                 "VARIABLE / RESULT / OTHER CAP-09 FIELDS: NOT AUTHORIZED",
                  "CRITERIA EDITING: NO WRITABLE PROGRESSION STATE REQUIRED",
                  "PLANNING-METADATA CORRUPTION: DOES NOT GOVERN CORE PROGRESSION",
                  "SECTION-11 CONSUMERS: FAIL CLOSED WHEN DURABLE CRITERIA CANNOT BE READ",
@@ -2029,14 +2031,15 @@ def test_stage_19_slice_02_is_delivered_history_and_still_bounded():
     assert "**ENTERED / NOT COMPLETE (2026-09-23):**" in row
     assert ("CAP-09 SLICE-02, one inventor-written measurement method per existing experiment, "
             "durable in the same project store, is delivered (PR #683)") in row
-    assert "no further CAP-09 implementation is currently authorized" in row
+    assert "no CAP-09 implementation beyond Slice 3 is currently authorized" in row
     assert "is delivered (PR #682)" in row
     assert "full CAP-09 and full WS-PFV-001 NOT AUTHORIZED" in row
     assert "satisfied for planning-only CAP-09 entry, and for nothing wider" in row
     live_row = re.sub(r"\*\(Superseded.*?\)\*", "", row)
     assert _absent(live_row, "the ONLY authorized implementation is CAP-09 SLICE-02"), live_row
+    assert _absent(live_row, "no further CAP-09 implementation is currently authorized"), live_row
     assert re.search(r"^- \[ \] \*\*20 — CAP-08:", _read(ROADMAP), re.M), "stage 20 row changed"
-    # the register records TWO bounded CAP-09 exceptions, not an opening of CAP-09
+    # the register records THREE bounded CAP-09 exceptions, not an opening of CAP-09
     register = _read(CAPABILITIES)
     reg_rows = [l for l in register.splitlines() if l.startswith("| CAP-09 Experiment Designer |")]
     assert len(reg_rows) == 2, reg_rows
@@ -2044,9 +2047,13 @@ def test_stage_19_slice_02_is_delivered_history_and_still_bounded():
         assert "RECORDED — NOT AUTHORIZED, except one bounded" in r, r
         assert "durable SuccessCriterion remediation" in r, r
         assert "SLICE-02 durable measurement method" in r, r
+        assert "Slice 3 durable Test Hypothesis" in r, r
     flat_register = _flat(CAPABILITIES)
     assert "It does NOT authorize full CAP-09 or full WS-PFV-001" in flat_register
-    assert "Variable, hypothesis, risks and a result category are NOT authorized" in flat_register
+    assert "**with THREE bounded exceptions**" in flat_register
+    assert ("Variable, Result, a Failure Criterion as a new inventor field and Risks as CAP-09 "
+            "fields are NOT authorized") in flat_register
+    assert "Variable, hypothesis, risks and a result category are NOT authorized" not in flat_register
     assert "`FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`" in flat_register
 
 
@@ -2844,13 +2851,16 @@ _CAP11_REVERSALS = _CAP02_REVERSALS + (
     r"(?<!no )(?<!not )validation writer (is )?(authorized|added|active)\b")
 
 
-def test_cap11_slice_1_is_the_live_contract_on_every_live_surface():
-    """CAP-11 Slice 1 — Evidence Details — is the live bounded action under the
-    installed Owner-approved entry contract: implemented, independent UX /
-    behaviour review PASS, PR / merge pending. Full CAP-11 stays NOT
-    AUTHORIZED; Form / Source / Validation stay three independent axes with no
-    combined score; report Section 2 + PDF only; no writer or readiness
-    authority; Stage 23 not entered, CAP-06 not activated, 45 stages kept."""
+_CAP11_DELIVERED = ("`CAP-11 SLICE 1: DELIVERED — PR #710 — merge "
+                    "7d2e9ab011a0bbf17b577f354e2b47ab09114add`")
+
+
+def test_cap11_slice_1_is_delivered_history_and_its_rules_still_bind():
+    """CAP-11 Slice 1 — Evidence Details — was delivered (PR #710, merge
+    7d2e9ab). Its section reads DELIVERED and visibly superseded, every rule
+    still binds (three independent axes, no combined score, no writer or
+    readiness authority), full CAP-11 stays NOT AUTHORIZED, and no live surface
+    presents it as the current contract or as "PR / merge pending" again."""
     assert os.path.isfile(_CAP11_CONTRACT_PATH)
     cap11 = _read(_CAP11_CONTRACT_PATH)
     for needle in ("# CAP-11 — EVIDENCE QUALITY LADDER",
@@ -2858,64 +2868,199 @@ def test_cap11_slice_1_is_the_live_contract_on_every_live_surface():
                    "**FULL CAP-11: NOT AUTHORIZED.**"):
         assert needle in cap11, needle
     contract = _read(CONTRACT)
-    first = contract.index("## Current authority")
-    assert contract[first:].startswith(
-        "## Current authority — CAP-11 Slice 1 — Evidence Details"), contract[first:first + 120]
     top = re.sub(r"\s+", " ", _section(contract, "current-authority--cap11-slice-1"))
-    _needs(top, CONTRACT, "cap11 slice1",
-           r"\*\*ACTIVE CONTRACT: CAP-11 SLICE 1 — EVIDENCE DETAILS\.\*\*",
+    _needs(top, CONTRACT, "cap11 slice1 delivered",
+           r"Evidence Details \(Owner approval of the CAP-11 entry contract, 2026-09-27\) — "
+           r"DELIVERED \(PR #710\); SUPERSEDED as current authority by CAP-09 Slice 3",
+           r"\*\*No longer the current authority\.\*\*",
+           r"PR #710, merge `7d2e9ab011a0bbf17b577f354e2b47ab09114add`",
+           r"Every rule below still binds except where CAP-09 Slice 3 states otherwise",
+           r"material findings: NONE — DELIVERED \(PR #710\)",
            re.escape("`docs/governance/CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT.md`"),
-           r"authorizes Slice 1 only",
            r"Stage 23 is NOT ENTERED, CAP-06 is NOT ACTIVATED, and FULL CAP-11 is NOT AUTHORIZED",
-           r"APPROVED CONTRACT INSTALLED / IMPLEMENTED / INDEPENDENT UX / BEHAVIOUR REVIEW PASS — "
-           r"material findings: NONE — PR / merge pending",
            r"report Section 2 \(Known Problem, Known Mechanism\) and the PDF only",
            r"three rows — Form, Source, Validation",
            r"stay independent; no provenance or Form value grants validation",
            r"\*\*SCORE / RANK / TIER / CONFIDENCE / CROSS-AXIS LADDER\*\* \| `NONE`",
            r"\*\*WRITERS / PROMOTION / READINESS AUTHORITY\*\* \| `NONE`",
            r"Section 9, the session page, safety signals, Commercial / Manufacturing evidence")
-    _rejects(top, CONTRACT, "cap11 slice1", *_CAP11_REVERSALS)
+    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "cap11 slice1 delivered",
+             *_CAP11_REVERSALS, r"\*\*ACTIVE CONTRACT: CAP-11 SLICE 1", r"PR / merge pending")
     live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
     live_surfaces.append((STATE, _current(STATE, "current-position")))
     for path, block in live_surfaces:
-        _needs(block, path, "cap11 slice1 live", _tok(_CAP11_CONTRACT), _tok(_CAP11_STATUS),
-               _tok("`FULL CAP-11: NOT AUTHORIZED`"), _tok("`STAGE 23: NOT ENTERED`"),
-               _tok("`CAP-06: NOT ACTIVATED`"), _tok(_CAP02_DELIVERED), _tok(_CAP04_DELIVERED),
+        _needs(block, path, "cap11 slice1 delivered live", _tok(_CAP11_DELIVERED),
+               _tok("`FULL CAP-11: NOT AUTHORIZED`"),
                r"CAP11_EVIDENCE_DETAILS_ENTRY_CONTRACT\.md",
                r"THREE\s+independent\s+rows\s+—\s+Form,\s+Source\s+and\s+Validation",
                r"never\s+combined\s+into\s+a\s+score",
                r"no\s+validation,\s+provenance,\s+quality\s+or\s+promotion\s+writer\s+and\s+no\s+"
                r"readiness\s+authority",
                r"Section\s+9,\s+the\s+session\s+page")
-        _rejects(block, path, "cap11 slice1 live", *_CAP11_REVERSALS)
+        _rejects(block, path, "cap11 slice1 delivered live", re.escape(_CAP11_CONTRACT),
+                 _tok(_CAP11_STATUS), *_CAP11_REVERSALS)
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    for needle in ("ACTIVE CONTRACT: CAP-11 SLICE 1 — EVIDENCE DETAILS.",
-                   "no new Master Roadmap Stage; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; FULL "
-                   "CAP-11 NOT AUTHORIZED",
-                   "THREE independent rows — Form, Source and Validation",
+    assert ("CAP-11 Slice 1 — DELIVERED (PR #710, merge "
+            "`7d2e9ab011a0bbf17b577f354e2b47ab09114add`; full CAP-11 NOT AUTHORIZED)" in head)
+    assert "ACTIVE CONTRACT: CAP-11 SLICE 1" not in head
+    assert "the former CAP-11 Slice 1, the former CAP-02 Slice 1" in claude
+    raw_checklist = _read(CHECKLIST)
+    for line in (_CAP11_DELIVERED.strip("`"), "FULL CAP-11: NOT AUTHORIZED"):
+        assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
+    for stale in ("ACTIVE CONTRACT: CAP-11 SLICE 1", _CAP11_STATUS.strip("`")):
+        assert re.search(r"^" + re.escape(stale), raw_checklist, re.M) is None, stale
+    register = _flat(os.path.join("docs", "governance",
+                                  "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md"))
+    assert "CAP-11 Slice 1 — Evidence Details (2026-09-27; no new Master Roadmap Stage)" in register
+    assert "The recorded long-term ladder hierarchy above is NOT implemented" in register
+    assert ("Delivered (PR #710, merge `7d2e9ab011a0bbf17b577f354e2b47ab09114add`). "
+            "`FULL CAP-11: NOT AUTHORIZED`.") in register
+    assert "Evidence Details under the approved entry contract (implemented, review PASS, PR / " \
+        "merge pending)" not in register
+
+
+_CAP09S3_CONTRACT = "`ACTIVE CONTRACT: CAP-09 SLICE 3 — OWNER-DEFINED TEST HYPOTHESIS`"
+_CAP09S3_STATUS = ("`CAP-09 SLICE 3: IMPLEMENTED — UX / BEHAVIOUR REVIEW PASS — ASTRA "
+                   "ARCHITECTURE REVIEW PASS — PR / MERGE PENDING`")
+_CAP09S3_REVERSALS = _CAP11_REVERSALS + (
+    re.escape(_CAP11_CONTRACT),
+    r"FULL (CAP-09|WS-PFV-001)\W{0,8}(IS )?AUTHORIZED\b",
+    r"\bVARIABLE\W{0,8}(IS )?AUTHORIZED\b",
+    r"\bRESULT\W{0,8}(IS )?AUTHORIZED\b",
+    r"(?<!no )(?<!not )Test Hypothesis (is|counts as|becomes|creates) (an? )?"
+    r"(Evidence|test result|result|validation|validated|readiness)\b",
+    r"planning (save|transaction)[^.]{0,60}\b(non-atomic|not atomic|partial(ly)? commit)",
+    r"STAGE 23\W{0,8}(IS )?ENTERED\b",
+    r"CAP-06\W{0,8}(IS )?(ACTIVATED|ACTIVE)\b",
+    r"STAGE 19\W{0,8}(IS )?COMPLETE\b",
+    r"CAP-11 SLICE 1: IMPLEMENTED")
+
+
+def test_cap09_slice_3_is_the_live_contract_on_every_live_surface():
+    """CAP-09 Slice 3 — Owner-defined Test Hypothesis — is the live bounded action
+    inside the already-entered Stage 19: implemented, UX / behaviour and Astra
+    architecture reviews PASS, PR / merge pending. The hypothesis is what the
+    inventor expects to happen, distinct from the Objective, the Success
+    Criterion and the Measurement Method; it reuses the canonical experiment_id,
+    the ONE planning Save covers exactly three concepts atomically, and it is
+    planning metadata only — no Evidence / result / validation / readiness /
+    progression, CAP-08 / CAP-10 isolated. Variable, Result, full CAP-09 and full
+    WS-PFV-001 stay NOT AUTHORIZED; Stage 23 not entered, CAP-06 not activated,
+    45 stages kept."""
+    contract = _read(CONTRACT)
+    first = contract.index("## Current authority")
+    assert contract[first:].startswith(
+        "## Current authority — Stage 19 / CAP-09 Slice 3 — Owner-Defined Test Hypothesis"), \
+        contract[first:first + 120]
+    top = re.sub(r"\s+", " ", _section(contract, "current-authority--cap09-slice-3"))
+    _needs(top, CONTRACT, "cap09 slice3",
+           r"\*\*ACTIVE CONTRACT: CAP-09 SLICE 3 — OWNER-DEFINED TEST HYPOTHESIS\.\*\*",
+           r"Stage 19 stays ENTERED / NOT COMPLETE, Stage 23 is NOT ENTERED, CAP-06 is NOT "
+           r"ACTIVATED, and FULL CAP-09 and FULL WS-PFV-001 are NOT AUTHORIZED",
+           r"ASTRA ARCHITECTURE REVIEW PASS \(76 focused tests plus 4 additional architectural "
+           r"probes\) — material findings: NONE — PR / merge pending",
+           r"\*\*DISTINCT CONCEPTS\*\* \| Objective = system-generated experiment purpose / "
+           r"context; Success Criterion = what the inventor would count as success; Measurement "
+           r"Method = how the inventor plans to measure or check it; Test Hypothesis = what the "
+           r"inventor expects to happen",
+           r"\*\*IDENTITY\*\* \| the canonical `experiment_id` stays the only experiment identity",
+           r"`prototype_test_hypotheses` \(project_id, experiment_id, inventor-authored text only\)",
+           r"\*\*ONE ATOMIC PLANNING SAVE\*\* \| .{0,80}Success Criterion, Measurement Method "
+           r"and Test Hypothesis delta atomically",
+           r"PLANNING METADATA ONLY — never generated, inferred or graded; no Evidence, test "
+           r"result, confirmed / rejected hypothesis, validation, readiness",
+           r"CAP-08 assumption or dependency, or CAP-10 contradiction",
+           r"\*\*Deferred / not authorized:\*\* Variable, Result, a Failure Criterion as a new "
+           r"inventor field, Risks as CAP-09 fields")
+    _rejects(top, CONTRACT, "cap09 slice3", *_CAP09S3_REVERSALS)
+    live_surfaces = [(p, r) for p, r in _surfaces("current-routing")]
+    live_surfaces.append((STATE, _current(STATE, "current-position")))
+    for path, block in live_surfaces:
+        _needs(block, path, "cap09 slice3 live", _tok(_CAP09S3_CONTRACT), _tok(_CAP09S3_STATUS),
+               _tok("`FULL CAP-09: NOT AUTHORIZED`"), _tok("`FULL WS-PFV-001: NOT AUTHORIZED`"),
+               _tok("`VARIABLE: NOT AUTHORIZED`"), _tok("`RESULT: NOT AUTHORIZED`"),
+               _tok("`STAGE 23: NOT ENTERED`"), _tok("`CAP-06: NOT ACTIVATED`"),
+               _tok(_CAP11_DELIVERED), _tok(_CAP02_DELIVERED), _tok(_S19_ENTERED),
+               r"what\s+they\s+expect\s+to\s+happen\s+in\s+that\s+experiment",
+               r"system-generated\s+Objective",
+               r"Success\s+Criterion\s+\(what\s+the\s+inventor\s+would\s+count\s+as\s+success\)",
+               r"Measurement\s+Method\s+\(how\s+the\s+inventor\s+plans\s+to\s+measure\s+or\s+"
+               r"check\s+it\)",
+               r"canonical\s+`experiment_id`\s+stays\s+the\s+only\s+experiment\s+identity",
+               r"`prototype_test_hypotheses`",
+               r"Success\s+Criterion,\s+Measurement\s+Method\s+and\s+Test\s+Hypothesis\s+delta\s+"
+               r"atomically",
+               r"commits\s+together\s+or\s+rolls\s+back\s+together",
+               r"SAVED\s+/\s+NOT\s+SAVED\s+/\s+UNKNOWN",
+               r"PLANNING\s+METADATA\s+ONLY",
+               r"creates\s+no\s+Evidence,\s+test\s+result",
+               r"CAP-08\s+assumption\s+or\s+dependency,\s+or\s+CAP-10\s+contradiction",
+               r"never\s+attached\s+to\s+or\s+remapped",
+               r"Variable,\s+Result,\s+a\s+Failure\s+Criterion")
+        _rejects(block, path, "cap09 slice3 live", *_CAP09S3_REVERSALS)
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
+    for needle in ("ACTIVE CONTRACT: CAP-09 SLICE 3 — OWNER-DEFINED TEST HYPOTHESIS.",
+                   "Stage 19 stays ENTERED / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06 NOT "
+                   "ACTIVATED; FULL CAP-09 and FULL WS-PFV-001 NOT AUTHORIZED",
+                   "reuses the canonical `experiment_id` (no second experiment owner)",
+                   "`prototype_test_hypotheses`",
+                   "Success Criterion, Measurement Method and Test Hypothesis delta atomically",
+                   "Variable and Result stay NOT AUTHORIZED",
                    "its PR / merge is pending",
-                   "no other Stage is authorized — the bounded CAP-11 Slice 1 enters no Stage"):
+                   "the bounded CAP-09 Slice 3 sits inside the already-entered Stage 19 and enters "
+                   "no new Stage"):
         assert needle in head, needle
-    for pat in _CAP11_REVERSALS:
+    for pat in _CAP09S3_REVERSALS:
         assert re.search(pat, head, re.I) is None, pat
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
-    assert "**CURRENT SUBTASK:** CAP-11 SLICE 1 — EVIDENCE DETAILS" in flat_checklist
-    for line in (_CAP11_CONTRACT.strip("`"), _CAP11_STATUS.strip("`"),
-                 "FULL CAP-11: NOT AUTHORIZED", "CAP-06: NOT ACTIVATED",
-                 "Stages 23–27 preserved, not entered / not authorized"):
+    assert "**CURRENT SUBTASK:** CAP-09 SLICE 3 — OWNER-DEFINED TEST HYPOTHESIS" in flat_checklist
+    # the live subtask item sits outside the fenced routing block: scan it too,
+    # up to its first preserved superseded note
+    subtask = flat_checklist[flat_checklist.index("**CURRENT SUBTASK:** CAP-09 SLICE 3"):]
+    subtask = subtask[:subtask.index("*(Superseded")]
+    _needs(subtask, CHECKLIST, "cap09 slice3 subtask", _tok(_CAP09S3_CONTRACT),
+           _tok(_CAP09S3_STATUS), _tok("`STAGE 23: NOT ENTERED`"), _tok("`CAP-06: NOT ACTIVATED`"),
+           _tok("`VARIABLE: NOT AUTHORIZED`"), _tok("`RESULT: NOT AUTHORIZED`"),
+           _tok(_CAP11_DELIVERED))
+    _rejects(subtask, CHECKLIST, "cap09 slice3 subtask", *_CAP09S3_REVERSALS)
+    for line in (_CAP09S3_CONTRACT.strip("`"), _CAP09S3_STATUS.strip("`"),
+                 "CAP-09 SLICE 3 TEST HYPOTHESIS: PLANNING METADATA ONLY — NOT EVIDENCE / RESULT "
+                 "/ VALIDATION / READINESS / PROGRESSION",
+                 "PLANNING SAVE: ONE ATOMIC DELTA — SUCCESS CRITERION + MEASUREMENT METHOD + TEST "
+                 "HYPOTHESIS",
+                 "VARIABLE / RESULT / OTHER CAP-09 FIELDS: NOT AUTHORIZED",
+                 "FULL CAP-09: NOT AUTHORIZED", "FULL WS-PFV-001: NOT AUTHORIZED",
+                 "CAP-06: NOT ACTIVATED", "Stages 23–27 preserved, not entered / not authorized"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
     roadmap = _read(ROADMAP)
     numbers = [int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)]
     assert sorted(numbers) == list(range(1, 46)), numbers
     assert re.findall(r"^- \[ \] \*\*23 — CAP-06:\*\* multi-axis readiness dashboard only "
                       r"after readiness axes exist; no hidden weighting\.$", roadmap, re.M)
-    register = _flat(os.path.join("docs", "governance",
-                                  "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md"))
-    assert "CAP-11 Slice 1 — Evidence Details (2026-09-27; no new Master Roadmap Stage)" in register
-    assert "The recorded long-term ladder hierarchy above is NOT implemented" in register
-    assert "`FULL CAP-11: NOT AUTHORIZED`" in register
+    [row] = re.findall(r"^- \[ \] \*\*19 — WS-PFV-001/CAP-09:\*\*.*$", roadmap, re.M)
+    assert ("CAP-09 Slice 3, one inventor-written Test Hypothesis per current experiment, durable "
+            "in the same project store as planning metadata only, is the current bounded "
+            "action") in row
+
+
+def test_cap09_slice_3_watch_is_non_blocking_continuity_only():
+    """The CAP-09 Slice 3 UX review observations stay a non-blocking WATCH with
+    no repair cycle."""
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    watch = claude[claude.index("**Current Lead Watchlist (2026-09-26).**"):
+                   claude.index("**Successor Lead (mandatory).**")]
+    s3 = watch[watch.index("**WATCH — CAP-09 Slice 3 (non-blocking, no repair cycle).**"):]
+    for needle in ("Test Hypothesis stays planning metadata only; Variable and Result stay NOT "
+                   "AUTHORIZED",
+                   "browser `<title>`", "wording polish only",
+                   "`.user-hypothesis` does not", "visual consistency only",
+                   "may reorder in the PDF renderer", "not a Slice-3 defect",
+                   "no overflow and no material usability defect",
+                   "comprehension review PASS — polish only",
+                   "\"فرضية الاختبار (Test Hypothesis)\""):
+        assert needle in s3, needle
 
 
 def test_cap11_watch_is_non_blocking_continuity_only():
