@@ -5511,6 +5511,7 @@ def show_session(sid):
         # project context (derived on demand; never persisted).
         decision_trace=_decision_trace_view_safe(state),
         decision_project_context=_decision_project_context(state),
+        decision_action_summary=_decision_action_summary(state),
         # W2-D (W1-N4): single-use correction-lapse notice (popped so it
         # renders exactly once after the Post/Redirect/Get, like answer_error).
         # Gap types are mapped to their existing localized display headings.
@@ -5700,6 +5701,7 @@ def show_deliverable(sid):
         # project context (derived on demand; never persisted).
         decision_trace=_decision_trace_view_safe(state),
         decision_project_context=_decision_project_context(state),
+        decision_action_summary=_decision_action_summary(state),
         # CAP-08 Slice 1: the inventor-declared dependency view (derived on
         # demand; not part of the canonical package — the assembler is
         # untouched). Rendered only when a declaration exists.
@@ -5851,6 +5853,7 @@ def download_deliverable_pdf(sid):
             # project context (derived on demand; never persisted).
             decision_trace=_decision_trace_view_safe(state),
             decision_project_context=_decision_project_context(state),
+            decision_action_summary=_decision_action_summary(state),
             assumption_dependencies=_assumption_dependency_view(state),
             snapshot_kept_ack=None,
         )
@@ -8928,6 +8931,94 @@ def _decision_project_context(state):
                 count, status = None, DT_CTX_UNAVAILABLE
         rows.append({"key": key, "status": status, "count": count})
     return rows
+
+
+# Stage 22 / CAP-05 + CAP-07 Slice 2 — the read-only, PROJECT-LEVEL action
+# summary of the Decision Room. It composes the canonical Validation Plan
+# (grouped ONLY by its own responsibility tokens) and the existing next
+# development step; it asks nothing, writes nothing, ranks nothing and links
+# nothing to a decision. Section 14 stays the detailed owner.
+AS_AVAILABLE = "available"
+AS_UNAVAILABLE = "unavailable"
+# Presentation order; each canonical responsibility maps to exactly one group.
+_AS_GROUP_BY_RESPONSIBILITY = {
+    "OWNER_EXECUTABLE": "owner",
+    "SPECIALIST_REQUIRED": "specialist",
+    "EMPIRICAL_EVIDENCE_REQUIRED": "evidence",
+    "SYSTEM_DERIVABLE": "system",
+    "UNDETERMINED": "clarification",
+}
+_AS_GROUP_ORDER = ("owner", "specialist", "evidence", "system", "clarification")
+
+
+def _as_add(groups, key, text):
+    items = groups.setdefault(key, [])
+    for item in items:
+        if item["text"] == text:          # the same canonical statement, once
+            item["repeat"] += 1
+            return
+    items.append({"text": text, "repeat": 1})
+
+
+def _decision_action_summary(state):
+    """``None`` when no decision is declared (the summary belongs to the
+    decision view); otherwise ``{status, groups, total, next_step}``.
+
+    ``groups``: non-empty groups in fixed order, each ``{key, count, entries}``,
+    ``entries`` the canonical statements verbatim (identical statements collapsed
+    with a ``repeat`` count). Validation Plan steps go to the group of their own
+    responsibility token; every blocked item goes to ``clarification`` (it has
+    no assignable action yet). ``status`` is ``unavailable`` — never an empty
+    list — when the live working state is absent (a cold read-only view), the
+    derivation fails, or a token outside the canonical vocabulary appears.
+    ``next_step`` is the existing derivation, unchanged and unranked:
+    ``{status: items|empty|unavailable, title}``."""
+    if not any(r.disposition == _DISP_CONTEXT_DECLARED
+               for r in getattr(state, "assertions", []) or []):
+        return None
+    summary = {"status": AS_UNAVAILABLE, "groups": [], "total": None,
+               "next_step": {"status": DT_CTX_UNAVAILABLE, "title": None}}
+    if getattr(state, "domain", None) is None:
+        return summary
+    try:
+        from engine.validation_plan import derive_validation_plan
+        plan = derive_validation_plan(state)
+        groups = {}
+        for step in plan.steps:
+            key = _AS_GROUP_BY_RESPONSIBILITY.get(step.responsibility)
+            if key is None:
+                raise ValueError("non-canonical responsibility")
+            text = step.statement
+            if step.responsibility == "UNDETERMINED":
+                # Correction 01: outside Section 14 a generic statement ("…
+                # before relying on it") loses its subject, so it carries its
+                # own canonical provenance label. No subject is inferred: a
+                # missing / malformed label fails the summary closed.
+                label = getattr(step.provenance, "display_label", None)
+                if not isinstance(label, str) or not label.strip():
+                    raise ValueError("undetermined step without a label")
+                text = label.strip() + ": " + step.statement
+            _as_add(groups, key, text)
+        for item in plan.blocked_items:
+            _as_add(groups, "clarification", item.provenance.display_label)
+        summary["groups"] = [
+            {"key": key, "entries": groups[key],
+             "count": sum(i["repeat"] for i in groups[key])}
+            for key in _AS_GROUP_ORDER if key in groups]
+        summary["total"] = sum(g["count"] for g in summary["groups"])
+        summary["status"] = AS_AVAILABLE
+    except Exception:
+        return {"status": AS_UNAVAILABLE, "groups": [], "total": None,
+                "next_step": {"status": DT_CTX_UNAVAILABLE, "title": None}}
+    try:
+        step = derive_next_development_step(state)
+        if step is not None and getattr(step, "reference_id", None):
+            summary["next_step"] = {"status": DT_CTX_ITEMS, "title": step.title}
+        else:
+            summary["next_step"] = {"status": DT_CTX_EMPTY, "title": None}
+    except Exception:
+        summary["next_step"] = {"status": DT_CTX_UNAVAILABLE, "title": None}
+    return summary
 
 
 def _handle_decision_post(sid, mint, idem_label, idem_content,

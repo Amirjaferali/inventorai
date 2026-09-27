@@ -2,17 +2,26 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + PROJECT CONTEXT PANEL.**
-Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through this one bounded slice (no new Master
-Roadmap Stage; CAP-05, CAP-07 and Stage 22 are not complete): a pure, read-only decision-trace
+**ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY.**
+Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through bounded slices (no new Master Roadmap
+Stage; CAP-05, CAP-07 and Stage 22 are not complete). Slice 2 adds one read-only, project-level
+action summary to the Decision Room that answers what the project currently calls for without
+asking the inventor anything new: the canonical Validation Plan grouped strictly by its own
+responsibility tokens (UNDETERMINED and blocked items as needs-clarification, each with its
+canonical subject; a missing subject fails closed to unavailable) beside the existing next
+development step reused unchanged — no action ranking, no decision-specific linkage, no
+recommendation, confidence, evidence-strength or readiness semantics, no new form, question,
+route, writer or persistence; Section 14 stays the detailed Validation Plan owner. Slice 2 is
+implemented, its one bounded Correction 01 passed targeted independent UX / behaviour
+verification, and its PR / merge is pending. Slice 1 — DELIVERED (PR #706, merge
+`f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`) — is a pure, read-only decision-trace
 projection over the existing canonical ledger shows each decision's complete alternative history
 (active and withdrawn alternatives preserved, withdrawal reasons verbatim) with the existing
 comparison / readiness semantics reused unchanged, beside a clearly separated project-context
 panel that is explicitly NOT LINKED to any specific decision — no inferred decision relationship,
 no new persistence, schema, writer or route, no CAP-11 evidence-strength semantics, no confidence
 score, no best or recommended alternative and no AI / model / provider call; domain-neutral, with
-CAP-08 / CAP-10 ownership unchanged. The slice is implemented and passed independent UX /
-behaviour review; its PR / merge is pending. CAP-08 Slice 1 — Stage 20 / CAP-08 ENTERED / PARTIAL
+CAP-08 / CAP-10 ownership unchanged. CAP-08 Slice 1 — Stage 20 / CAP-08 ENTERED / PARTIAL
 through the Owner-declared assumption → answer dependency (one OWNER_STATED, UNVALIDATED
 `assumption_dependency_declared` record per directed assumption → answer edge; domain-neutral, no
 automatic or AI dependency inference, no validation, no evidence-needed metadata and no readiness,
@@ -57,11 +66,11 @@ history, and is the file to read for authority — this paragraph routes, it doe
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded CAP-01
 increments are delivered (PR #678, PR #679), no further CAP-01 implementation is
 authorized, full CAP-01 / full STG is not authorized, no other Stage is authorized beyond the
-bounded Stage-22 CAP-05 + CAP-07 Slice 1 (Stages 20 and 21 stay ENTERED / PARTIAL through the
-delivered CAP-08 and CAP-10 Slice 1 only), and deployment, public release and paid activation
-remain NOT AUTHORIZED.
+bounded Stage-22 CAP-05 + CAP-07 Slice 2 (Slice 1 delivered; Stages 20 and 21 stay ENTERED /
+PARTIAL through the delivered CAP-08 and CAP-10 Slice 1 only), and deployment, public release
+and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -210,6 +219,76 @@ action; material technical risks; high-leverage technical opportunities; NEXT TR
 WATCH items; PREMATURE work; any trigger that has newly become true. It is continuity
 information, not execution authority.
 
+**Current Lead Watchlist (2026-09-26).** Continuity state only; none of it authorizes work.
+- **RIG (advisory only; FULL and mandatory CI keep authority).** RIG-0, RIG-1A/1B/1C and RIG-2A
+  COMPLETE; RIG-2B PASSIVE on natural PRs. **RIG-3A PREMATURE / BLOCKED** under the current
+  file-level topology: the central / autouse test topology makes paths such as `web/app.py` reach
+  essentially the full test set, so file-level scoping has shown no safe useful FULL reduction.
+  Do not wait for more identical FULL observations, weaken CI or refactor `web/app.py` to make
+  RIG look effective; re-evaluate only when a natural material trigger changes the topology or
+  the impact model. RIG-4 DEFERRED / PREMATURE (graph cost is no bottleneck). RIG-5 partially
+  available through existing RIG output; no further RIG-5 work authorized. RIG-6 NOT READY (no
+  durable capability → implementation → tests → user-path owner). **RIG-7 MCP read interface
+  DEFERRED, NOT CANCELLED.** RIG-8 living project knowledge and RIG-9 optional wiki / visual
+  layer FUTURE / TRIGGER-BASED. No separate RIG-R roadmap.
+- **C1-Lite** DELIVERED / ADVISORY. **Acceleration-window C2** — deeper Agent Context / RIG-5
+  integration after C1-Lite, not any older identifier named C2 — DEFERRED, NOT CANCELLED;
+  reconsider only when real product work shows C1-Lite value and a concrete context-retrieval
+  bottleneck remains. The Acceleration Window is CLOSED.
+- **MCP** implementation DEFERRED; trigger NOT FOUND; authorization NO; strategic place: the
+  future RIG-7 read-only interface. If triggered: read-only first, bounded project / snapshot
+  scope, explicit authorization, privacy / IP preserving, provider / host neutral, no generic
+  command execution, no readiness / evidence / state mutation, no automatic evidence promotion.
+  No MCP provider or implementation is selected.
+- **NEXT TRIGGER — shared declared-action primitive.** CAP-10 and CAP-08 repeat declared-action
+  mechanics; do not refactor them now. Before the next genuinely new owner or signed durable
+  declaration path, evaluate ONE shared primitive for binding → freshness / authorization →
+  durable append → committed-state confirmation → retry / recovery. Evaluation only; a
+  capability without such a write path does not fire it.
+- **NEXT TRIGGER — analytical relationship primitive.** CAP-10 (contradiction) and CAP-08
+  (assumption → answer dependency) are two durable relation types. Before a THIRD, inspect
+  whether a shared Relationship Primitive is justified. No generic graph in advance; separate from
+  the declared-action trigger.
+- **NEXT TRIGGER — language direction.** MSNL local-only shadow foundation (PR #693) and
+  Evaluation Pack V1 (PR #694) are delivered; its synthetic evaluation covers English, MSA,
+  Kuwaiti-Gulf and Egyptian and proves no general dialect support. Canonical English technical
+  statements inside the Arabic UI are a CURRENT LIMITATION, not the intended end-state. A future
+  bounded controlled LLM / MSNL layer MAY provide natural Arabic phrasing, language
+  understanding and bounded dialect normalization (evaluated on at least MSA, Kuwaiti / Gulf and
+  deliberately selected common dialects; no universal-dialect claim). It never gains authority
+  over canonical technical concepts, readiness, validation, feasibility, progression, state
+  mutation, evidence promotion or decision selection; canonical meaning and deterministic
+  decisions stay authoritative, and it fails closed to the deterministic fallback. External /
+  provider MSNL and any external transmission of real invention, project or user data remain
+  NOT AUTHORIZED; activation needs its own authorization and data boundary.
+- **Preserved states.** CAP-08, CAP-10 and Safe Question Reduction Slice 1 DELIVERED. CAP-12 and
+  CAP-13 NOT AUTHORIZED and distinct; full CAP-09 NOT AUTHORIZED.
+- **CAP-06 — Multi-Axis Invention Readiness Dashboard: PREMATURE / NOT AUTHORIZED NOW, not
+  cancelled.** Its full axes depend on still-unready owners (CAP-11 evidence strength, Patent
+  Export / patent-disclosure readiness, WS-PFV-001 / prototype readiness). Build no misleading
+  partial "full dashboard" because some readiness surfaces exist; reconsider only when a bounded
+  truthful dashboard slice has sufficient canonical axes and its own authorization.
+- **Production abuse / fraud — routed through the EXISTING PSRR + Stage 38 + Stage 40 owners; no
+  new workstream or gate.** Before public production or paid activation, that existing path must
+  explicitly account for the applicable surface: authentication abuse, account takeover,
+  credential stuffing / distributed credential abuse, bot / automation abuse, account-creation /
+  free-tier abuse, production rate limiting, monitoring and alerting, WAF / edge / DDoS
+  responsibilities, incident-response readiness, payment / stolen-payment fraud, chargeback /
+  dispute responsibility, payment-provider / Merchant-of-Record fraud controls, auditability /
+  security logging, and provider-vs-InventorAI responsibility boundaries. GitHub / CI protects
+  code-change and merge integrity and does not replace application security; hosting / edge
+  providers may own TLS / edge / DDoS / WAF functions and a selected payment / MoR provider
+  payment-card fraud controls; InventorAI keeps authorization, project / account ownership,
+  session security, account abuse, business-rule enforcement, auditability and truthful
+  entitlement / access decisions. No provider is selected; no payment implementation,
+  deployment, public release or paid activation is authorized.
+- **WATCH — Stage 22 Slice 2 (non-blocking, no repair cycle).** Slice-1 / Slice-2 next-step
+  redundancy; long owner-action groups on mature projects; RTL placement of the "applies to N"
+  note; group labels worded differently from Section 14; the report carries both the summary
+  and Section 14; an open-gap entry may name the gap twice ("Mechanism Completeness: Address the
+  open gap: Mechanism Completeness."); canonical technical statements stay in their source
+  language on Arabic surfaces (see the language direction above).
+
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative
 branch; (2) authoritative HEAD; (3) current executable action; (4) completed work that must not
@@ -232,6 +311,66 @@ these Lead Execution Continuity Rules; the Lead Watchlist; NOW / NEXT TRIGGER / 
 PREMATURE state; current material technical risks; current deferred obligations; reviewer
 routing; Owner authorization boundaries; the exact stopping point and next action. This
 complements the existing successor-handover protocol (Lean §9) and does not replace it.
+
+### Lead Operating Method — Product-Build First / Evidence-Driven
+
+Successor continuity. It adds no authority level, boot step, approval gate or implementation
+authorization.
+
+- **A. Product-Build First.** Prefer meaningful user-visible product capability over internal
+  tooling, governance or refactoring, unless the latter removes a demonstrated material
+  bottleneck or risk.
+- **B. Evidence-driven sequencing.** The Master Roadmap is navigation, not automatic execution
+  order. Choose the next action from live product truth, dependencies, user value, material
+  risk, existing capability and the current Owner authorization.
+- **C. Meaningful vertical slices.** Prefer the smallest SAFE slice that creates coherent user
+  value — not merely the smallest diff or the most PRs.
+- **D. Quality is preserved.** Acceleration removes repeated assurance, duplicated review and
+  unnecessary governance; it never weakens truthfulness, security, mandatory CI, required
+  testing or material independent review.
+- **E. Review routing by material risk.** The UX / behaviour reviewer takes material UX,
+  browser, bilingual / RTL or journey-comprehension changes; the Astra / architecture reviewer
+  takes material architecture, persistence, schema, replay, provenance, state-ownership,
+  security / trust-boundary or cross-capability authority changes. No reviewer is added
+  ritually.
+- **F. No reopening without new evidence.** Completed or accepted work is reopened only for a new
+  material defect or a new Owner decision.
+- **G. No review recursion.** A clean independent PASS with no material finding generates no
+  further review layer. One bounded material finding gets one bounded correction and a targeted
+  verification, not a full review restart, unless the scope actually expanded.
+- **H. Immutable reviewed candidate.** An independently reviewed implementation stays exactly as
+  reviewed in history; corrections and current-truth syncs are separate commits on top.
+- **I. Test proportionality.** Focused → affected / adjacent → FULL when material reach or risk
+  warrants it; never FULL for reassurance. The newest mandatory hosted CI on the exact final PR
+  head stays authoritative before merge.
+- **J. C1-Lite** is advisory developer tooling, not a merge gate or implementation authority;
+  measure it on real product work. Known WATCH: a changed Flask render route may surface FP-01 /
+  FP-02 / FP-15 although authorization / write semantics are untouched; the
+  supersession-traversal matcher may fire on a plain `superseded_by is None` active-record
+  filter. Do not repair these preemptively without demonstrated material cost.
+- **K. Success metric.** User-visible capability gained, coherent journey improvement, fewer
+  correction / review loops and no quality regression. PR, document and test counts alone are
+  not product progress.
+- **L. Successor rule.** A successor Lead MUST reconstruct and follow this Operating Method
+  before choosing its first new action, and must not replace it with personal workflow
+  preference without new material evidence or a new Owner decision.
+- **M. Product-deepening lens (direction, not authority).** Product deepening has three
+  complementary axes: **technical deepening** (canonical technical concepts, relationships,
+  constraints, feasibility, materials, manufacturing, physics, electrical / thermal behaviour,
+  interfaces, failure modes, safety, measurable requirements, evidence, validation, specialist
+  routing, readiness implications); **analytical deepening** (contradictions, assumptions,
+  unknowns, evidence gaps, alternatives, dependencies, decision trace, rationale, risks,
+  requirement relationships, validation, readiness, historical reasoning); and **domain
+  extensibility** (Electronics / Electrical and Mechanical are implementations of an extensible
+  product model, not its permanent ceiling). Conceptual direction: Domain Profile → Technical
+  Deepening → Analytical Deepening → Evidence / Validation → Decisions → Readiness. This is a
+  product-direction and sequencing lens only; it authorizes no generic graph, new domain, new
+  schema, CAP-06, CAP-11, CAP-12, CAP-13 or any other capability.
+- **N. Sequencing lens (non-gating).** When selecting a next increment, ask whether the
+  highest-value move is BUILD, DEEPEN, CONNECT, SIMPLIFY, ACCELERATE, PROVE, SCALE or SHIP. It is
+  a prioritization lens only — no fixed sequence and no approval gate; the next action still
+  follows live truth, dependencies, user value, risk, current capability and Owner
+  authorization.
 
 ## Historical material and substantive boundaries
 

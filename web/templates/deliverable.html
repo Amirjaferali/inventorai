@@ -692,6 +692,9 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
   <div class="field-value"><em>{{ package.section_11_prototype_test_plan.note }}</em></div>
 
+  {#- Stage 22 Slice 2: presentation-only anchor for the Decision Room link; the
+      heading itself stays byte-identical. -#}
+  <span id="report-validation-plan" class="report-anchor"></span>
   <h3>{{ t('UI_B_DELIV_085') }}</h3>
   {# Increment 5 (additive): presentation-only render of the Validation Plan in
      package.section_14_validation_plan. Proposed validation actions and blocked
@@ -886,6 +889,38 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
       {% endfor %}
     </ul>
   </div>
+  {% endif %}
+  {#- Stage 22 / CAP-05 + CAP-07 Slice 2: the read-only PROJECT-LEVEL action
+      summary, outside every decision. Groups come only from the canonical
+      Validation Plan responsibility tokens; the next development step is the
+      existing derivation, unchanged. No form, no input, no write; Section 14
+      stays the detailed owner. -#}
+  {% if decision_action_summary is defined and decision_action_summary %}
+  {% set das = decision_action_summary %}
+  <section class="as-summary" id="report-decision-action-summary" style="border:1px solid #c9d6e8;border-radius:4px;background:#ffffff;padding:8px 12px;margin-bottom:10px">
+    <h3 style="font-size:13px;color:#2c5a8c;margin:0 0 4px 0">{{ t('UI_AS_HEADING') }}</h3>
+    <p class="as-note" style="font-size:12px;color:#555;margin:0 0 6px 0">{{ t('UI_AS_NOTE') }}</p>
+    {% if das.status == 'available' %}
+    {% if das.groups %}
+    {% for g in das.groups %}
+      <div class="as-group" data-as-group="{{ g.key }}" style="margin:4px 0">
+        <div><span class="as-group-label" style="font-size:13px;font-weight:bold">{{ t('UI_AS_GROUP_' ~ g.key|upper) }}</span> (<span class="as-count">{{ g.count }}</span>)</div>
+        <ul style="margin:2px 0 4px 0;padding-inline-start:18px;font-size:12px">
+          {% for i in g.entries %}
+          <li class="as-item"><span class="as-text" dir="auto">{{ i.text }}</span>{% if i.repeat > 1 %} <span class="as-repeat" style="color:#667">{{ t('UI_AS_REPEAT_A') }}{{ i.repeat }}{{ t('UI_AS_REPEAT_B') }}</span>{% endif %}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+    {% else %}
+    <p class="as-empty" data-as-empty style="font-size:13px;margin:0">{{ t('UI_AS_EMPTY') }}</p>
+    {% endif %}
+    <p class="as-plan-link" style="font-size:12px;margin:6px 0 0 0"><a class="as-link" href="#report-validation-plan">{{ t('UI_AS_SEE_PLAN') }}</a></p>
+    {% else %}
+    <p class="as-unavailable" data-as-unavailable style="font-size:13px;color:#777;margin:0">{{ t('UI_AS_UNAVAILABLE') }}</p>
+    {% endif %}
+    <p class="as-next" data-as-next-status="{{ das.next_step.status }}" style="font-size:13px;margin:6px 0 0 0"><strong>{{ t('UI_AS_NEXT_STEP') }}:</strong> {% if das.next_step.status == 'items' %}<span class="as-next-title" dir="auto">{{ das.next_step.title }}</span> · {{ t('UI_DT_SEE') }} <a class="as-link" href="#report-next-steps">{{ t('UI_DT_LINK_NEXT_STEPS') }}</a>{% elif das.next_step.status == 'empty' %}{{ t('UI_DT_NEXT_STEP_NONE') }}{% else %}{{ t('UI_DT_STATE_UNAVAILABLE') }}{% endif %}</p>
+  </section>
   {% endif %}
   <p class="report-return"><a href="#report-contents">{{ t('UI_REPORT_BACK_CONTENTS') }}</a></p>
 </section>

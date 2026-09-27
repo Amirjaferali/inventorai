@@ -1329,6 +1329,38 @@ body{overflow-wrap:anywhere}
     </ul>
   </section>
   {% endif %}
+  {#- Stage 22 / CAP-05 + CAP-07 Slice 2: the read-only PROJECT-LEVEL action
+      summary, outside every decision. Groups come only from the canonical
+      Validation Plan responsibility tokens; the next development step is the
+      existing derivation, unchanged. No form, no input, no write; Section 14
+      stays the detailed owner. -#}
+  {% if decision_action_summary is defined and decision_action_summary %}
+  {% set das = decision_action_summary %}
+  <section class="as-summary" id="decision-action-summary" style="border:1px solid #c9d6e8;border-radius:4px;background:#ffffff;padding:8px 12px;margin-bottom:10px">
+    <h3 style="font-size:13px;color:#2c5a8c;margin:0 0 4px 0">{{ t('UI_AS_HEADING') }}</h3>
+    <p class="as-note" style="font-size:12px;color:#555;margin:0 0 6px 0">{{ t('UI_AS_NOTE') }}</p>
+    {% if das.status == 'available' %}
+    {% if das.groups %}
+    {% for g in das.groups %}
+      <details class="as-group" data-as-group="{{ g.key }}" style="margin:4px 0">
+        <summary style="cursor:pointer"><span class="as-group-label" style="font-size:13px;font-weight:bold">{{ t('UI_AS_GROUP_' ~ g.key|upper) }}</span> (<span class="as-count">{{ g.count }}</span>)</summary>
+        <ul style="margin:2px 0 4px 0;padding-inline-start:18px;font-size:12px">
+          {% for i in g.entries %}
+          <li class="as-item"><span class="as-text" dir="auto">{{ i.text }}</span>{% if i.repeat > 1 %} <span class="as-repeat" style="color:#667">{{ t('UI_AS_REPEAT_A') }}{{ i.repeat }}{{ t('UI_AS_REPEAT_B') }}</span>{% endif %}</li>
+          {% endfor %}
+        </ul>
+      </details>
+    {% endfor %}
+    {% else %}
+    <p class="as-empty" data-as-empty style="font-size:13px;margin:0">{{ t('UI_AS_EMPTY') }}</p>
+    {% endif %}
+    <p class="as-plan-link" style="font-size:12px;margin:6px 0 0 0"><a class="as-link" href="{{ url_for('show_deliverable', sid=sid) }}#report-validation-plan">{{ t('UI_AS_SEE_PLAN_REPORT') }}</a></p>
+    {% else %}
+    <p class="as-unavailable" data-as-unavailable style="font-size:13px;color:#777;margin:0">{{ t('UI_AS_UNAVAILABLE') }}</p>
+    {% endif %}
+    <p class="as-next" data-as-next-status="{{ das.next_step.status }}" style="font-size:13px;margin:6px 0 0 0"><strong>{{ t('UI_AS_NEXT_STEP') }}:</strong> {% if das.next_step.status == 'items' %}<span class="as-next-title" dir="auto">{{ das.next_step.title }}</span>{% if next_development_step and next_development_step.reference_id %} · {{ t('UI_DT_SEE') }} <a class="as-link" href="#next-development-step">{{ t('UI_B_SESSION_001') }}</a>{% endif %}{% elif das.next_step.status == 'empty' %}{{ t('UI_DT_NEXT_STEP_NONE') }}{% else %}{{ t('UI_DT_STATE_UNAVAILABLE') }}{% endif %}</p>
+  </section>
+  {% endif %}
   {% if state.domain %}
   <form method="POST" action="/session/{{ sid }}/decision/declare-context" style="margin-top:6px">
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">

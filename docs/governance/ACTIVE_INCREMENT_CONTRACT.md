@@ -23,14 +23,46 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--stage22-slice-1"></a>
-## Current authority — Stage 22 / CAP-05 + CAP-07 Slice 1 — Read-only decision trace + project context panel (Owner / Lead authorization, 2026-09-26)
+<a id="current-authority--stage22-slice-2"></a>
+## Current authority — Stage 22 / CAP-05 + CAP-07 Slice 2 — Actionable Decision Room Summary (Owner / Lead authorization, 2026-09-26)
 
-**ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + PROJECT CONTEXT PANEL.**
+**ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY.**
+Stage 22 / CAP-05 + CAP-07 stays ENTERED / PARTIAL. This bounded slice creates no new Master
+Roadmap Stage, completes neither CAP-05, CAP-07 nor Stage 22, and the Stage-22 checkbox stays
+unticked. Status: AUTHORIZED / IMPLEMENTED / INDEPENDENT UX / BEHAVIOUR REVIEW COMPLETED /
+CORRECTION 01 COMPLETED / TARGETED INDEPENDENT VERIFICATION PASS — PR / merge pending. The review
+found one bounded referent defect (an UNDETERMINED statement lost its subject outside Section 14),
+corrected in a separate commit on top of the unchanged reviewed implementation and verified by
+targeted review; architecture (Astra) review not required.
+
+| | |
+|---|---|
+| **SCOPE** | one read-only, PROJECT-LEVEL action summary in the existing Decision Room answering what the project currently calls for, without asking the inventor anything new |
+| **CATEGORY OWNER** | the canonical Validation Plan, grouped ONLY by its responsibility tokens: `OWNER_EXECUTABLE`, `SPECIALIST_REQUIRED`, `EMPIRICAL_EVIDENCE_REQUIRED`, `SYSTEM_DERIVABLE`; `UNDETERMINED` steps and every blocked item → needs clarification before an action can be assigned |
+| **UNDETERMINED SUBJECT** | Correction 01: shown as the canonical `provenance.display_label` + the canonical statement, both verbatim; a missing or malformed subject fails closed to unavailable; nothing is inferred |
+| **NEXT DEVELOPMENT STEP** | the existing derivation, reused unchanged; no action ranking is created |
+| **DECISION LINKAGE** | `NONE` — the summary sits outside every decision and alternative and says it is not linked to any |
+| **RECOMMENDATION / CONFIDENCE / EVIDENCE STRENGTH / READINESS** | `NONE` |
+| **FORM / QUESTION / ROUTE / WRITER / PERSISTENCE** | `NONE` — derived on demand, never persisted; a failed or cold derivation reads unavailable, never empty |
+| **SECTION 14** | stays the detailed Validation Plan owner |
+| **EXTERNAL MODEL / REAL INVENTION DATA** | NO call; NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
+
+**Deferred / not authorized:** full CAP-05, full CAP-07, CAP-06, CAP-11, CAP-12, CAP-13, Stage 23
+or a further Stage-22 slice, deployment, public release and paid activation. WATCH (non-blocking,
+no repair cycle) is carried in the CLAUDE.md Lead Watchlist.
+
+<a id="current-authority--stage22-slice-1"></a>
+## Current authority — Stage 22 / CAP-05 + CAP-07 Slice 1 — Read-only decision trace + project context panel (Owner / Lead authorization, 2026-09-26) — DELIVERED (PR #706); SUPERSEDED as current authority by Stage 22 / CAP-05 + CAP-07 Slice 2
+
+**No longer the current authority.** Slice 1 was delivered (PR #706, merge
+`f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`); Slice 2 above replaced it as the current authority on
+2026-09-26. Every rule below still binds except where Slice 2 states otherwise. *(Superseded
+2026-09-26, preserved so the change is visible rather than silent: this opened "**ACTIVE
+CONTRACT: CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + PROJECT CONTEXT PANEL.**" and
+recorded the slice as "PR / merge pending".)*
 Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through this one bounded slice. It creates no new
 Master Roadmap Stage, completes neither CAP-05, CAP-07 nor Stage 22, and the Stage-22 checkbox
-stays unticked. Status: AUTHORIZED / IMPLEMENTED / INDEPENDENT UX-BEHAVIOUR REVIEW PASS — PR /
-merge pending. Review: one independent non-authoring UX / behaviour review PASS with no material
+stays unticked. Status: DELIVERED (PR #706). Review: one independent non-authoring UX / behaviour review PASS with no material
 findings; architecture (Astra) review not required — no architecture, persistence, schema,
 replay, provenance, state-ownership or trust-boundary change.
 
@@ -972,8 +1004,16 @@ Variable, hypothesis and every other CAP-09 field stay NOT AUTHORIZED, and no fu
 implementation is currently authorized. The Stage-19 checkbox stays unticked, and
 entering Stage 19 completes nothing in Stage 18.
 **CURRENT BOUNDED ACTION — Stage 22 / CAP-05 Decision Trace + CAP-07 Invention Decision Room,
-ENTERED through ONE bounded slice:** `ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 1 — READ-ONLY DECISION TRACE + PROJECT CONTEXT PANEL` · `STAGE 22: ENTERED / PARTIAL` · `FULL CAP-05: NOT AUTHORIZED` · `FULL CAP-07: NOT AUTHORIZED` · `SLICE 1: IMPLEMENTED — INDEPENDENT UX / BEHAVIOUR REVIEW PASS — PR / MERGE PENDING`.
-A pure, read-only decision-trace projection over the existing canonical ledger shows each
+ENTERED / PARTIAL through bounded slices:** `ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2 — ACTIONABLE DECISION ROOM SUMMARY` · `STAGE 22: ENTERED / PARTIAL` · `FULL CAP-05: NOT AUTHORIZED` · `FULL CAP-07: NOT AUTHORIZED` · `SLICE 2: IMPLEMENTED — CORRECTION 01 — INDEPENDENT UX / BEHAVIOUR VERIFICATION PASS — PR / MERGE PENDING` · `CAP-05 + CAP-07 SLICE 1: DELIVERED — PR #706 — merge f391fc530b9b828b54e56fb9f73e56ef6a7ce6e4`.
+Slice 2 adds one read-only, project-level action summary to the Decision Room that answers what
+the project currently calls for without asking the inventor anything new: the canonical
+Validation Plan grouped strictly by its responsibility tokens (OWNER_EXECUTABLE,
+SPECIALIST_REQUIRED, EMPIRICAL_EVIDENCE_REQUIRED, SYSTEM_DERIVABLE; UNDETERMINED and blocked
+items as needs-clarification, each shown with its canonical subject, a missing subject failing
+closed to unavailable) beside the existing next development step reused unchanged. It creates no
+action ranking, no decision-specific linkage, no recommendation, confidence, evidence-strength
+or readiness semantics, no form, question, route or writer and no persistence; Section 14 stays
+the detailed Validation Plan owner. Slice 1 (delivered): a pure, read-only decision-trace projection over the existing canonical ledger shows each
 decision's complete alternative history — active and withdrawn alternatives preserved, withdrawal
 reasons verbatim — with the existing comparison / readiness semantics reused unchanged, beside a
 clearly separated project-context panel that is explicitly NOT LINKED to any specific decision.
