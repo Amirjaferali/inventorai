@@ -33,6 +33,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   {{ t('UI_SENS_SC_01') }}
   <p>{{ t('UI_SC_METHOD_INTRO') }}</p>
   <p>{{ t('UI_SC_HYPOTHESIS_INTRO') }}</p>
+  <p>{{ t('UI_SC_VARIABLE_INTRO') }}</p>
 </div>
 
 {% if error %}<div class="error">{{ error }}</div>{% endif %}
@@ -43,6 +44,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 {% if stale_notice %}<div class="stale">{{ stale_notice }}</div>{% endif %}
 {% if stale_methods %}<div class="stale">{{ t('UI_SC_METHOD_STALE') }}</div>{% endif %}
 {% if stale_hypotheses %}<div class="stale" data-stale-hypotheses>{{ t('UI_SC_HYPOTHESIS_STALE') }}</div>{% endif %}
+{% if stale_variables %}<div class="stale" data-stale-variables>{{ t('UI_SC_VARIABLE_STALE') }}</div>{% endif %}
 
 {# experiments is None when no CURRENT plan could be offered (the notice above
    says why); that must never read as "no proposed experiments". #}
@@ -82,6 +84,16 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
               dir="auto" aria-describedby="experiment-source-{{ nav_id }} hypothesis-guidance-{{ nav_id }}"
               placeholder="{{ t('UI_SC_HYPOTHESIS_PLACEHOLDER') }}">{% if hypothesis_drafts is not none and exp.experiment_id in hypothesis_drafts %}{{ hypothesis_drafts[exp.experiment_id] }}{% elif exp.test_hypothesis_provenance == 'user_defined' %}{{ exp.test_hypothesis }}{% endif %}</textarea>
     <p class="criterion-guidance" id="hypothesis-guidance-{{ nav_id }}">{{ t('UI_SC_LIMIT').format(limit=hypothesis_max_length) }} {{ t('UI_SC_SAVE_CLEAR') }}</p>
+    {# SLICE 4: the inventor's own test variable / condition — what they plan to
+       change or compare. ONE free-text planning field: never generated,
+       inferred, parsed into a formal variable model, graded or a result. #}
+    <label for="variable-{{ nav_id }}" class="method-label">{{ t('UI_SC_VARIABLE_LABEL') }}</label>
+    <textarea id="variable-{{ nav_id }}"
+              name="{{ variable_prefix }}{{ exp.experiment_id }}" rows="2"
+              maxlength="{{ variable_max_length }}"
+              dir="auto" aria-describedby="experiment-source-{{ nav_id }} variable-guidance-{{ nav_id }}"
+              placeholder="{{ t('UI_SC_VARIABLE_PLACEHOLDER') }}">{% if variable_drafts is not none and exp.experiment_id in variable_drafts %}{{ variable_drafts[exp.experiment_id] }}{% elif exp.test_variable_provenance == 'user_defined' %}{{ exp.test_variable }}{% endif %}</textarea>
+    <p class="criterion-guidance" id="variable-guidance-{{ nav_id }}">{{ t('UI_SC_VARIABLE_NOT_RESULT') }} {{ t('UI_SC_LIMIT').format(limit=variable_max_length) }} {{ t('UI_SC_SAVE_CLEAR') }}</p>
     {# SLICE-02: the inventor's own measurement method — never generated and
        never merged with the system-provided "Observe" context above. #}
     <label for="method-{{ nav_id }}" class="method-label">{{ t('UI_SC_METHOD_LABEL') }}</label>

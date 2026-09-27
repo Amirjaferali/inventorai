@@ -1316,6 +1316,35 @@ def _stale_test_hypotheses(state, current_ids):
     return stale
 
 
+def _resolve_test_variable(exp, eid, state):
+    """Stage 19 / CAP-09 SLICE 4: attach the inventor's OWN test variable /
+    condition (what they plan to change or compare) for this experiment
+    (state.test_variables[eid]) when one is recorded. Planning metadata only:
+    additive when present, never generated, inferred (from the hypothesis,
+    method, ``what_to_observe`` or anything else), parsed, graded, treated as
+    evidence or as a result, and never a readiness input."""
+    user = (getattr(state, "test_variables", None) or {}).get(eid)
+    text = (getattr(user, "variable", "") or "").strip() if user else ""
+    if text:
+        exp["test_variable"] = text
+        exp["test_variable_provenance"] = getattr(user, "provenance", "user_defined")
+
+
+def _stale_test_variables(state, current_ids):
+    """User variables / conditions whose experiment_id is no longer generated.
+    Preserved and surfaced honestly; never reattached elsewhere. Deterministic
+    (dict order)."""
+    stale = []
+    for eid, tv in (getattr(state, "test_variables", None) or {}).items():
+        if eid in current_ids:
+            continue
+        txt = (getattr(tv, "variable", "") or "").strip()
+        if txt:
+            stale.append({"experiment_id": eid, "test_variable": txt,
+                          "provenance": getattr(tv, "provenance", "user_defined")})
+    return stale
+
+
 _PLAN_STOPWORDS = {
     "that", "this", "with", "from", "would", "which", "have", "been", "they",
     "their", "there", "when", "what", "into", "such", "than", "then", "them",
@@ -1424,6 +1453,7 @@ def _s11(state):
         _resolve_success_criterion(exp, eid, source_text, state)
         _resolve_measurement_method(exp, eid, state)
         _resolve_test_hypothesis(exp, eid, state)
+        _resolve_test_variable(exp, eid, state)
         exp["required_expertise_or_tools"] = expertise_field  # legacy per-item field, unchanged
         items.append(exp)
 
@@ -1537,6 +1567,10 @@ def _s11(state):
     stale_hypotheses = _stale_test_hypotheses(state, current_ids)
     if stale_hypotheses:
         plan["stale_test_hypotheses"] = stale_hypotheses
+    # SLICE 4: additive only when a stale inventor variable / condition exists.
+    stale_variables = _stale_test_variables(state, current_ids)
+    if stale_variables:
+        plan["stale_test_variables"] = stale_variables
     return plan
 
 

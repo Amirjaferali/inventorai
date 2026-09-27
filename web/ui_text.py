@@ -119,30 +119,41 @@ _MESSAGE_KEYS = {
     # Stage 19 / CAP-09 durable SuccessCriterion: the truthful outcome
     # messages of the durable criteria routes (web/app.py), registered the
     # same way. They are DISTINCT because the outcomes are distinct.
-    # SLICE-02 / SLICE 3: the same outcomes, now naming all three planning
-    # concepts the page saves, plus the method and hypothesis limits.
-    ("Success criteria, measurement methods and test hypotheses can only be kept "
-     "for a saved project. This session is not saved as a project, so they "
-     "cannot be saved here. Nothing was changed."): "UI_SC_ERR_NOT_SAVED_PROJECT",
-    ("The current Prototype & Test Plan is not available from this saved "
-     "project, so success criteria, measurement methods and test hypotheses "
-     "cannot be shown or changed from this page. Nothing was changed."):
-        "UI_SC_ERR_PLAN_UNAVAILABLE",
-    ("Your saved success criteria, measurement methods and test hypotheses could "
-     "not be read, so they cannot be shown or changed from this page. Nothing "
-     "was changed."): "UI_SC_ERR_CRITERIA_UNAVAILABLE",
-    ("Your success criteria, measurement methods and test hypotheses could not "
-     "be saved just now. Nothing was changed."): "UI_SC_ERR_NOT_SAVED",
-    ("Your success criteria, measurement methods and test hypotheses were saved "
-     "to your project, but this page could not show them. Reload this page to "
-     "see what your project holds."): "UI_SC_ERR_SAVED_NOT_SHOWN",
-    ("We could not confirm whether your success criteria, measurement methods "
-     "and test hypotheses were saved. Reload this page to see what your project "
-     "currently holds before entering them again."): "UI_SC_ERR_OUTCOME_UNKNOWN",
+    # SLICE-02 / SLICE 3 / SLICE 4: the same outcomes, now naming all four
+    # planning concepts the page saves, plus the per-concept limits.
+    (
+     "Success criteria, test hypotheses, test variables / conditions and "
+     "measurement methods can only be kept for a saved project. This session "
+     "is not saved as a project, so they cannot be saved here. Nothing was "
+     "changed."): "UI_SC_ERR_NOT_SAVED_PROJECT",
+    (
+     "The current Prototype & Test Plan is not available from this saved "
+     "project, so success criteria, test hypotheses, test variables / "
+     "conditions and measurement methods cannot be shown or changed from "
+     "this page. Nothing was changed."): "UI_SC_ERR_PLAN_UNAVAILABLE",
+    (
+     "Your saved success criteria, test hypotheses, test variables / "
+     "conditions and measurement methods could not be read, so they cannot "
+     "be shown or changed from this page. Nothing was changed."): "UI_SC_ERR_CRITERIA_UNAVAILABLE",
+    (
+     "Your success criteria, test hypotheses, test variables / conditions "
+     "and measurement methods could not be saved just now. Nothing was "
+     "changed."): "UI_SC_ERR_NOT_SAVED",
+    (
+     "Your success criteria, test hypotheses, test variables / conditions "
+     "and measurement methods were saved to your project, but this page "
+     "could not show them. Reload this page to see what your project holds."): "UI_SC_ERR_SAVED_NOT_SHOWN",
+    (
+     "We could not confirm whether your success criteria, test hypotheses, "
+     "test variables / conditions and measurement methods were saved. Reload "
+     "this page to see what your project currently holds before entering "
+     "them again."): "UI_SC_ERR_OUTCOME_UNKNOWN",
     ("A measurement method exceeds the 1000-character limit. "
      "No changes were saved."): "UI_SC_ERR_METHOD_TOO_LONG",
     ("A test hypothesis exceeds the 1000-character limit. "
      "No changes were saved."): "UI_SC_ERR_HYPOTHESIS_TOO_LONG",
+    ("A test variable / condition exceeds the 1000-character limit. No changes "
+     "were saved."): "UI_SC_ERR_VARIABLE_TOO_LONG",
     # PVCG-R4-C §13 E-1: the correction path must be bilingual, so its three
     # server messages are registered here exactly like every other one.
     ("That correction could not be applied just now. "
@@ -725,8 +736,9 @@ UI_STRINGS = {
         "ar": "سياق التجربة",
     },
     "UI_SC_EDIT_EXPERIMENT": {
-        "en": "Edit this experiment’s hypothesis, criterion and measurement method",
-        "ar": "تعديل فرضية هذه التجربة ومعيارها وطريقة قياسها",
+        "en": ("Edit this experiment’s criterion, hypothesis, variable / condition "
+               "and measurement method"),
+        "ar": "تعديل معيار هذه التجربة وفرضيتها ومتغيّرها / شرطها وطريقة قياسها",
     },
     # F-09: the limit counts the text as the browser submits it, where every
     # line break is sent as two characters (CRLF); say so, truthfully.
@@ -752,9 +764,10 @@ UI_STRINGS = {
                "إدخال موجود، أفرغ خانته ثم اختر حفظ إدخالات التخطيط."),
     },
     "UI_B_SC_001": {
-        "en": ("InventorAI — Define Test Hypotheses, Success Criteria and "
-               "Measurement Methods"),
-        "ar": "InventorAI — تحديد فرضيات الاختبار ومعايير النجاح وطرق القياس",
+        "en": ("InventorAI — Define Success Criteria, Test Hypotheses, Test "
+               "Variables / Conditions and Measurement Methods"),
+        "ar": ("InventorAI — تحديد معايير النجاح وفرضيات الاختبار ومتغيّرات / شروط "
+               "الاختبار وطرق القياس"),
     },
     "UI_SENS_SC_01": {
         "en": ("For each proposed experiment below, you may enter one success "
@@ -797,51 +810,68 @@ UI_STRINGS = {
     # Stage 19 / CAP-09 durable SuccessCriterion — registered via
     # `_MESSAGE_KEYS` (storage stays English; only display localises).
     "UI_SC_ERR_NOT_SAVED_PROJECT": {
-        "en": ("Success criteria, measurement methods and test hypotheses can only "
-               "be kept for a saved project. This session is not saved as a "
-               "project, so they cannot be saved here. Nothing was changed."),
-        "ar": ("لا يمكن الاحتفاظ بمعايير النجاح وطرق القياس وفرضيات الاختبار إلا "
-               "لمشروع محفوظ. هذه الجلسة غير محفوظة كمشروع، لذلك لا يمكن حفظها "
-               "هنا. لم يتم تغيير أي شيء."),
+        "en": (
+            "Success criteria, test hypotheses, test variables / conditions and "
+            "measurement methods can only be kept for a saved project. This session "
+            "is not saved as a project, so they cannot be saved here. Nothing was "
+            "changed."),
+        "ar": (
+            "لا يمكن الاحتفاظ بمعايير النجاح وفرضيات الاختبار ومتغيّرات / شروط "
+            "الاختبار وطرق القياس إلا لمشروع محفوظ. هذه الجلسة غير محفوظة كمشروع، "
+            "لذلك لا يمكن حفظها هنا. لم يتم تغيير أي شيء."),
     },
     "UI_SC_ERR_PLAN_UNAVAILABLE": {
-        "en": ("The current Prototype & Test Plan is not available from this saved "
-               "project, so success criteria, measurement methods and test "
-               "hypotheses cannot be shown or changed from this page. Nothing was "
-               "changed."),
-        "ar": ("خطة النموذج الأولي والاختبار الحالية غير متاحة من هذا المشروع "
-               "المحفوظ، لذلك لا يمكن عرض معايير النجاح وطرق القياس وفرضيات "
-               "الاختبار أو تغييرها من هذه الصفحة. لم يتم تغيير أي شيء."),
+        "en": (
+            "The current Prototype & Test Plan is not available from this saved "
+            "project, so success criteria, test hypotheses, test variables / "
+            "conditions and measurement methods cannot be shown or changed from "
+            "this page. Nothing was changed."),
+        "ar": (
+            "خطة النموذج الأولي والاختبار الحالية غير متاحة من هذا المشروع المحفوظ، "
+            "لذلك لا يمكن عرض معايير النجاح وفرضيات الاختبار ومتغيّرات / شروط "
+            "الاختبار وطرق القياس أو تغييرها من هذه الصفحة. لم يتم تغيير أي شيء."),
     },
     "UI_SC_ERR_CRITERIA_UNAVAILABLE": {
-        "en": ("Your saved success criteria, measurement methods and test "
-               "hypotheses could not be read, so they cannot be shown or changed "
-               "from this page. Nothing was changed."),
-        "ar": ("تعذّرت قراءة معايير النجاح وطرق القياس وفرضيات الاختبار المحفوظة، "
-               "لذلك لا يمكن عرضها أو تغييرها من هذه الصفحة. لم يتم تغيير أي شيء."),
+        "en": (
+            "Your saved success criteria, test hypotheses, test variables / "
+            "conditions and measurement methods could not be read, so they cannot "
+            "be shown or changed from this page. Nothing was changed."),
+        "ar": (
+            "تعذّرت قراءة معايير النجاح وفرضيات الاختبار ومتغيّرات / شروط الاختبار "
+            "وطرق القياس المحفوظة، لذلك لا يمكن عرضها أو تغييرها من هذه الصفحة. لم "
+            "يتم تغيير أي شيء."),
     },
     "UI_SC_ERR_NOT_SAVED": {
-        "en": ("Your success criteria, measurement methods and test hypotheses "
-               "could not be saved just now. Nothing was changed."),
-        "ar": ("تعذّر حفظ معايير النجاح وطرق القياس وفرضيات الاختبار الآن. لم يتم "
-               "تغيير أي شيء."),
+        "en": (
+            "Your success criteria, test hypotheses, test variables / conditions "
+            "and measurement methods could not be saved just now. Nothing was "
+            "changed."),
+        "ar": (
+            "تعذّر حفظ معايير النجاح وفرضيات الاختبار ومتغيّرات / شروط الاختبار "
+            "وطرق القياس الآن. لم يتم تغيير أي شيء."),
     },
     "UI_SC_ERR_SAVED_NOT_SHOWN": {
-        "en": ("Your success criteria, measurement methods and test hypotheses "
-               "were saved to your project, but this page could not show them. "
-               "Reload this page to see what your project holds."),
-        "ar": ("تم حفظ معايير النجاح وطرق القياس وفرضيات الاختبار في مشروعك، لكن "
-               "تعذّر عرضها في هذه الصفحة. أعد تحميل الصفحة لرؤية ما يحفظه مشروعك."),
+        "en": (
+            "Your success criteria, test hypotheses, test variables / conditions "
+            "and measurement methods were saved to your project, but this page "
+            "could not show them. Reload this page to see what your project holds."),
+        "ar": (
+            "تم حفظ معايير النجاح وفرضيات الاختبار ومتغيّرات / شروط الاختبار وطرق "
+            "القياس في مشروعك، لكن تعذّر عرضها في هذه الصفحة. أعد تحميل الصفحة "
+            "لرؤية ما يحفظه مشروعك."),
     },
     # CORRECTION-01 (F-04): the durable outcome of a failed write could not be
     # established — neither a save nor a rollback is asserted.
     "UI_SC_ERR_OUTCOME_UNKNOWN": {
-        "en": ("We could not confirm whether your success criteria, measurement "
-               "methods and test hypotheses were saved. Reload this page to see "
-               "what your project currently holds before entering them again."),
-        "ar": ("لم نتمكن من التأكد مما إذا كانت معايير النجاح وطرق القياس وفرضيات "
-               "الاختبار قد حُفظت. أعد تحميل هذه الصفحة لرؤية ما يحفظه مشروعك "
-               "حاليًا قبل إدخالها مرة أخرى."),
+        "en": (
+            "We could not confirm whether your success criteria, test hypotheses, "
+            "test variables / conditions and measurement methods were saved. Reload "
+            "this page to see what your project currently holds before entering "
+            "them again."),
+        "ar": (
+            "لم نتمكن من التأكد مما إذا كانت معايير النجاح وفرضيات الاختبار "
+            "ومتغيّرات / شروط الاختبار وطرق القياس قد حُفظت. أعد تحميل هذه الصفحة "
+            "لرؤية ما يحفظه مشروعك حاليًا قبل إدخالها مرة أخرى."),
     },
     # Stage 19 / CAP-09 SLICE-02 — the inventor-written measurement method.
     "UI_SC_ERR_METHOD_TOO_LONG": {
@@ -922,6 +952,56 @@ UI_STRINGS = {
     "UI_DELIV_HYPOTHESIS_ABSENT": {
         "en": "Not yet stated by you.",
         "ar": "لم تذكرها بعد.",
+    },
+    # Stage 19 / CAP-09 SLICE 4 — the inventor-written test variable / condition:
+    # what the inventor plans to change or compare in one experiment. ONE
+    # free-text planning field; never a formal variable model, a result,
+    # evidence, validation or a readiness input.
+    "UI_SC_ERR_VARIABLE_TOO_LONG": {
+        "en": "A test variable / condition exceeds the 1000-character limit. No changes were saved.",
+        "ar": "يتجاوز أحد متغيّرات / شروط الاختبار الحد الأقصى البالغ 1000 حرف. لم يتم حفظ أي تغييرات.",
+    },
+    "UI_SC_VARIABLE_INTRO": {
+        "en": ("You may also describe one test variable / condition for each "
+               "experiment: what you will change, compare or set differently in "
+               "that test, in your own words. It is your plan only — not a result "
+               "or evidence — and it is not checked, graded or treated as a formal "
+               "experimental design."),
+        "ar": ("يمكنك أيضًا وصف متغيّر / شرط اختبار واحد لكل تجربة: ما الذي ستغيّره "
+               "أو تقارنه أو تضبطه بشكل مختلف في ذلك الاختبار، بكلماتك الخاصة. إنه "
+               "خطتك فقط — وليس نتيجة ولا دليلًا — ولا يُراجَع أو يُقيَّم أو يُعامَل "
+               "كتصميم تجريبي رسمي."),
+    },
+    "UI_SC_VARIABLE_LABEL": {
+        "en": "Test variable / condition (what will you change or compare in this test?):",
+        "ar": ("متغيّر / شرط الاختبار (Test Variable / Condition) — ما الذي "
+               "ستغيّره أو تقارنه في هذا الاختبار؟"),
+    },
+    "UI_SC_VARIABLE_PLACEHOLDER": {
+        "en": "Optional — for example, compare two thicknesses, or run at low and high voltage.",
+        "ar": "اختياري — مثلًا: قارن بين سماكتين، أو اختبر عند جهد منخفض وجهد مرتفع.",
+    },
+    "UI_SC_VARIABLE_NOT_RESULT": {
+        "en": "This is what you plan to vary or compare, not the result.",
+        "ar": "هذا ما تخطط لتغييره أو مقارنته، وليس النتيجة.",
+    },
+    "UI_SC_VARIABLE_STALE": {
+        "en": ("A previously entered test variable / condition no longer matches a "
+               "current proposed experiment. It has been preserved but is not applied."),
+        "ar": ("لم يعد أحد متغيّرات / شروط الاختبار المُدخلة سابقًا مطابقًا لتجربة "
+               "مقترحة حالية. تم الاحتفاظ به لكنه غير مطبّق."),
+    },
+    "UI_DELIV_VARIABLE_DEFINED": {
+        "en": "Test variable / condition — user-defined (what you plan to change or compare):",
+        "ar": "متغيّر / شرط الاختبار — مُعرَّف من المستخدم (ما تخطط لتغييره أو مقارنته):",
+    },
+    "UI_DELIV_VARIABLE_ABSENT_LABEL": {
+        "en": "Test variable / condition:",
+        "ar": "متغيّر / شرط الاختبار:",
+    },
+    "UI_DELIV_VARIABLE_ABSENT": {
+        "en": "Nothing entered yet.",
+        "ar": "لم تُدخِل شيئًا بعد.",
     },
 
     # --- PVCG-R4 explicit correction / withdrawal (web/app.py correct_answer) --
@@ -1754,9 +1834,10 @@ UI_STRINGS = {
         "ar": "الخبرات والأدوات المشتركة التي حدّدها المخترِع",
     },
     "UI_B_DELIV_084": {
-        "en": ("Define or edit success criteria, test hypotheses and measurement "
-               "methods"),
-        "ar": "تحديد معايير النجاح وفرضيات الاختبار وطرق القياس أو تعديلها",
+        "en": ("Define or edit success criteria, test hypotheses, test variables / "
+               "conditions and measurement methods"),
+        "ar": ("تحديد معايير النجاح وفرضيات الاختبار ومتغيّرات / شروط الاختبار وطرق "
+               "القياس أو تعديلها"),
     },
     "UI_B_DELIV_085": {"en": "Validation Plan", "ar": "خطة التحقق"},
     "UI_B_DELIV_086": {

@@ -596,6 +596,32 @@ class TestHypothesis:
 
 
 @dataclass
+class TestVariable:
+    """
+    Stage 19 / CAP-09 SLICE 4: the inventor's OWN test variable / condition for
+    one proposed Prototype & Test Plan experiment — in their own free-text
+    words, the factor, setting, input, configuration or condition they intend
+    to deliberately change, compare or vary during that ONE experiment ("What
+    will you change or compare in this test?"). It is NOT a formal
+    experimental-design model: no independent / dependent / control variable,
+    unit, range, factor taxonomy or causal relationship, and the text is never
+    parsed into one. Planning metadata ONLY: never Evidence, a result, a
+    validation outcome, readiness, an assumption (CAP-08) or a contradiction
+    (CAP-10); never generated, inferred (from the hypothesis, the method,
+    ``what_to_observe``, the mechanism or anything else), interpreted, checked
+    or graded; never read by progression or maturity; never written to the
+    ILT-002 transcript. Distinct from the system-generated ``objective`` and
+    ``what_to_observe``, the success criterion, the test hypothesis and the
+    measurement method, which it never replaces or combines with. Keyed in
+    IdeaState.test_variables by the experiment's stable experiment_id.
+    provenance records that the inventor authored it.
+    """
+    __test__ = False          # not a pytest test class despite its name
+    variable   : str
+    provenance : str = "user_defined"
+
+
+@dataclass
 class IterationLog:
     iteration       : int
     gap_targeted    : str
@@ -673,6 +699,11 @@ class IdeaState:
     # hypotheses (planning metadata only), keyed like success_criteria. Default
     # empty; same boundaries as success_criteria above.
     test_hypotheses : dict[str, TestHypothesis] = field(default_factory=dict)
+
+    # Stage 19 / CAP-09 SLICE 4: per-experiment inventor-written test variable /
+    # condition (planning metadata only), keyed like success_criteria. Default
+    # empty; same boundaries as success_criteria above.
+    test_variables : dict[str, TestVariable] = field(default_factory=dict)
 
     # Increment 2 append-only interaction/assertion ledger. Distinct from the
     # legacy compatibility fields (known_problem/known_mechanism/gaps/maturity):
