@@ -5512,6 +5512,8 @@ def show_session(sid):
         decision_trace=_decision_trace_view_safe(state),
         decision_project_context=_decision_project_context(state),
         decision_action_summary=_decision_action_summary(state),
+        # CAP-04 Slice 1: read-only gap action packs (derived on demand).
+        gap_action_packs=_gap_action_packs_context(state, _current_ui_lang()),
         # W2-D (W1-N4): single-use correction-lapse notice (popped so it
         # renders exactly once after the Post/Redirect/Get, like answer_error).
         # Gap types are mapped to their existing localized display headings.
@@ -5702,6 +5704,8 @@ def show_deliverable(sid):
         decision_trace=_decision_trace_view_safe(state),
         decision_project_context=_decision_project_context(state),
         decision_action_summary=_decision_action_summary(state),
+        # CAP-04 Slice 1: read-only gap action packs (derived on demand).
+        gap_action_packs=_gap_action_packs_context(state, _current_ui_lang()),
         # CAP-08 Slice 1: the inventor-declared dependency view (derived on
         # demand; not part of the canonical package — the assembler is
         # untouched). Rendered only when a declaration exists.
@@ -5854,6 +5858,8 @@ def download_deliverable_pdf(sid):
             decision_trace=_decision_trace_view_safe(state),
             decision_project_context=_decision_project_context(state),
             decision_action_summary=_decision_action_summary(state),
+            # CAP-04 Slice 1: read-only gap action packs (derived on demand).
+            gap_action_packs=_gap_action_packs_context(state, _current_ui_lang()),
             assumption_dependencies=_assumption_dependency_view(state),
             snapshot_kept_ack=None,
         )
@@ -9019,6 +9025,67 @@ def _decision_action_summary(state):
     except Exception:
         summary["next_step"] = {"status": DT_CTX_UNAVAILABLE, "title": None}
     return summary
+
+
+# CAP-04 Slice 1 — the Actionable Gap Pack: presentation of the pure engine
+# composition (engine.gap_action_pack). Read-only; no question, form or write.
+# Only canonical tokens select wording; canonical statements stay verbatim and
+# the routed need's committed Arabic text is used on Arabic surfaces.
+GP_AVAILABLE = "available"
+GP_UNAVAILABLE = "unavailable"
+_GP_RESPONSIBILITIES = frozenset({
+    "OWNER_EXECUTABLE", "SPECIALIST_REQUIRED", "EMPIRICAL_EVIDENCE_REQUIRED",
+    "SYSTEM_DERIVABLE", "UNDETERMINED"})
+_GP_REQUIRED_INPUTS = frozenset({"SPECIALIST", "EVIDENCE"})
+
+
+def _gap_action_packs_context(state, lang):
+    """``{status, packs, accepted_risk}``. ``unavailable`` — never an empty
+    success — when the live working state is absent (cold read-only view), the
+    derivation fails, or a token outside the canonical vocabulary appears."""
+    unavailable = {"status": GP_UNAVAILABLE, "packs": [], "accepted_risk": []}
+    if getattr(state, "domain", None) is None:
+        return unavailable
+    try:
+        from engine.gap_action_pack import derive_gap_action_packs
+        pack_set = derive_gap_action_packs(state)
+        arabic = lang == "ar"
+        packs = []
+        for pack in pack_set.packs:
+            if pack.responsibility not in _GP_RESPONSIBILITIES:
+                raise ValueError("non-canonical responsibility")
+            routed = []
+            for need in pack.routed_needs:
+                if need.required_input not in _GP_REQUIRED_INPUTS or (
+                        need.available
+                        and need.responsibility not in _GP_RESPONSIBILITIES):
+                    raise ValueError("non-canonical routed need")
+                need_text = need.need_text_ar if arabic else need.need_text
+                # A committed need text missing in the UI language is kept
+                # as an unavailable detail, never rendered blank.
+                available = need.available and isinstance(need_text, str) \
+                    and bool(need_text.strip())
+                routed.append({
+                    "available": available,
+                    "required_input": need.required_input,
+                    "responsibility": need.responsibility if available else None,
+                    "evidence_category": need.evidence_category if available else None,
+                    "closure_condition": need.closure_condition if available else None,
+                    "need_text": need_text if available else None,
+                })
+            packs.append({
+                "gap_type": pack.gap_type,
+                "gap_state": pack.gap_state,
+                "action_statement": pack.action_statement,
+                "responsibility": pack.responsibility,
+                "evidence_category": pack.evidence_category,
+                "closure_condition": pack.closure_condition,
+                "routed": routed,
+            })
+        return {"status": GP_AVAILABLE, "packs": packs,
+                "accepted_risk": list(pack_set.accepted_risk_gap_types)}
+    except Exception:
+        return unavailable
 
 
 def _handle_decision_post(sid, mint, idem_label, idem_content,
