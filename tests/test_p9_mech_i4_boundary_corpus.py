@@ -204,8 +204,18 @@ _FROZEN_ENGINE_SHA256 = {
 # content is byte-unchanged (same signal-inventory proof cited above, which
 # this reconciliation does not disturb); electronics_electrical re-frozen for
 # the same reason as I1.
+# Mechanical Technical Deepening Slice 1 reconciliation (Force, Moment &
+# Pressure Fundamentals): mechanical re-frozen to its new authorized byte
+# identity after adding ONE bounded, inert, additive `reference_fundamentals`
+# group plus its governance-note entry. classification_signals,
+# substance_signals and substance_signal_plural_aliases are byte-unchanged
+# (same signal-inventory proof cited above), and gap_type_mappings, the
+# questions and rule_nuances are byte-unchanged, so this corpus stays valid
+# under its own terms and NO corpus rebuild was required or performed. This
+# re-freeze does NOT authorize or imply any classifier, activation, rule,
+# progression or question-serving change.
 _FROZEN_PACK_SHA256 = {
-    "mechanical": "901dd7188ddefda9cbe69a835cc64959c1d55debfe61b262d720abd904069e79",
+    "mechanical": "d157054acaa7d5a939a55e62281df9e7ac3b5ab6781b5f030f279875cf6db806",
     "electronics_electrical": "53f431e38a70c2b621e19afb7323ad9bc4732c6c4151ea6b8c46a3214f098dfb",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
