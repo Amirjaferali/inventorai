@@ -23,18 +23,58 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--mechanical-cap01-open-gap-context"></a>
-## Current authority — Stage 18 / Mechanical CAP-01 — Open-Gap Technical Context (Owner / Lead authorization, 2026-09-27)
+<a id="current-authority--mechanical-td-slice1-force-moment-pressure"></a>
+## Current authority — Stage 18 / Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals (Owner / Lead authorization, 2026-09-28)
 
-**ACTIVE CONTRACT: MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT.**
+**ACTIVE CONTRACT: MECHANICAL TECHNICAL DEEPENING SLICE 1 — FORCE, MOMENT & PRESSURE FUNDAMENTALS.**
+ONE Owner-authorized bounded slice inside the already-entered Stage 18 (D13 / CAP-01), recorded by the
+Owner authorization itself (no separate contract document). It creates no new Master Roadmap Stage;
+Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 is NOT ENTERED; CAP-06 is NOT ACTIVATED; FULL
+CAP-01 / FULL STG stay NOT AUTHORIZED. Status: OWNER-AUTHORIZED / IMPLEMENTED — final candidate
+`e56e32def45346944eecab9982dfb572fa5764f3` (tree `8157eacf5b012d153534b5901aacd9c30abfa26d`; implementation
+`ddb0a0835d1ae95d1375054e7aa52cbb3ec19bda`, provenance inspection-date correction
+`bdb2b4e80da9cae59d24db04f3c419c56764ecde` and I4 Mechanical pack SHA-pin correction
+`e56e32def45346944eecab9982dfb572fa5764f3` on the authoritative base `225c0d36e6cfa97a25cd58c671b7c4f090627fb5`) / INDEPENDENT
+NON-AUTHORING REVIEW COMPLETE — final disposition PASS, no material findings remain (risk LEVEL 2 —
+MEDIUM; the one material finding, M-1, a stale I4 pack pin, was resolved and re-checked) / PR NOT OPENED /
+merge NOT PERFORMED / deployment and release NOT AUTHORIZED.
+
+| | |
+|---|---|
+| **SCOPE** | Mechanical only: for the exact CURRENT canonical `PHYSICAL_FEASIBILITY` gap in exact state OPEN or PARTIAL, the existing Mechanical CAP-01 context in the report / deliverable and PDF may carry ONE optional block of four source-backed reference fundamentals: simple perpendicular torque / moment (T = F × L⊥); ideal static moment balance (F₁L₁ = F₂L₂); uniform pressure over an effective area (F = pA); SI unit discipline (N·m; Pa / kPa) |
+| **BINDING** | the existing exact Mechanical CAP-01 gap identity + lifecycle binding only; MECHANISM_COMPLETENESS or BOUNDARY_AMBIGUITY alone, CLOSED, ACCEPTED_RISK, unknown states and non-Mechanical domains render nothing; labels, translated labels, question text, inventor text and classification / substance signals never bind |
+| **TRUTH BOUNDARY** | reference fundamentals only — the same bounded set whenever the exact condition holds; no applicability inference, no project calculation, no gap closure, no feasibility, structural or safety conclusion, no validation, readiness or progression effect |
+| **SOURCES** | governed Mechanical provenance mechanical:PR006–PR011 (NASA Glenn Research Center — Torque (Moment), Balance Of Forces, Aerodynamic Forces; NIST SP 811 Appendix B.9; and their source-use policies); factual paraphrase only, no NASA / NIST image, logo, media or endorsement; mechanical:PR001–PR005 unchanged; the Lead-level Section-8 source inspection (2026-09-28) is a source-use compatibility control, not a legal opinion |
+| **DOMAIN KNOWLEDGE** | one inert, additive `reference_fundamentals` group (`force_moment_pressure_v1`) in `domains/mechanical/domain.json`; signals, gap mappings, questions, rule nuances and aliases byte-unchanged; classification, activation, rules and question serving unchanged |
+| **OWNERSHIP / NOT** | Path-N and CAP-04 ownership unchanged; no CAP-12, CAP-13 or THERM-01 scope; no Technical Realization framework, knowledge / calculation registry or formula engine |
+| **NO STATE CHANGE / AI** | no state, persistence, schema, engine or domain-activation change; no AI / LLM / provider call; real invention data NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
+
+`MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED — PR #713 — merge 225c0d36e6cfa97a25cd58c671b7c4f090627fb5` ·
+`NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED`.
+
+**Deferred / not authorized:** any next Technical Deepening slice, pulley / gear / spring / friction /
+work-energy / hydraulic-advantage relationships, project calculations or input workflows, a Mechanical
+domain-level checklist profile, full CAP-01 / full STG, any new domain activation, Stage 23, CAP-06,
+CAP-12, CAP-13, THERM-01, deployment, public release and paid activation.
+
+<a id="current-authority--mechanical-cap01-open-gap-context"></a>
+## Current authority — Stage 18 / Mechanical CAP-01 — Open-Gap Technical Context (Owner / Lead authorization, 2026-09-27) — DELIVERED (PR #713); SUPERSEDED as current authority by Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals
+
+**No longer the current authority.** Mechanical CAP-01 — Open-Gap Technical Context was delivered (PR
+#713, merge `225c0d36e6cfa97a25cd58c671b7c4f090627fb5`; post-merge identity / content verification PASS); Mechanical
+Technical Deepening Slice 1 above replaced it as the current authority on 2026-09-28. Every rule below
+still binds except where Mechanical Technical Deepening Slice 1 states otherwise. *(Superseded
+2026-09-28, preserved so the change is visible rather than silent: this opened "**ACTIVE CONTRACT:
+MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT.**" and recorded the slice as "PR NOT OPENED — PR / merge
+pending / merge NOT PERFORMED".)*
 ONE separately Owner-authorized bounded, gap-scoped presentation slice inside the already-entered
 Stage 18 (D13 / CAP-01), recorded by the Owner authorization itself (no separate contract document).
 It creates no new Master Roadmap Stage; Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 is
 NOT ENTERED; CAP-06 is NOT ACTIVATED; FULL CAP-01 / FULL STG stay NOT AUTHORIZED. Status:
 OWNER-AUTHORIZED / IMPLEMENTED — candidate `99f6b91185c0a1766e48e2abe0efde629b939ab1` (tree `4440aa3713c87498a46824396ffae4894e002a0f`; sole parent `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`, the authoritative base) /
 INDEPENDENT NON-AUTHORING REVIEW PASS — material findings: NONE (risk LEVEL 2 — MEDIUM; independent
-full regression 8544 passed, 1 skipped, 1 xfailed, 0 failed) / PR NOT OPENED — PR / merge pending /
-merge NOT PERFORMED / deployment and release NOT AUTHORIZED.
+full regression 8544 passed, 1 skipped, 1 xfailed, 0 failed) / DELIVERED (PR #713, merge
+`225c0d36e6cfa97a25cd58c671b7c4f090627fb5`) / deployment and release NOT AUTHORIZED.
 
 | | |
 |---|---|
@@ -1201,23 +1241,27 @@ section above; the stage is ENTERED as fact. `FIRST BOUNDED CAP-01 INCREMENT:
 OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
 `D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
 unticked** — one authorized bounded slice is not the stage.
-**CURRENT BOUNDED ACTION — Stage 18 / Mechanical CAP-01 — Open-Gap Technical Context, ONE separately
-Owner-authorized bounded gap-scoped presentation slice (no new Master Roadmap Stage; Stage 18 stays
-ENTERED / PARTIAL / NOT COMPLETE):** `ACTIVE CONTRACT: MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT` · `MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: OWNER-AUTHORIZED — IMPLEMENTED (candidate 99f6b91185c0a1766e48e2abe0efde629b939ab1) — INDEPENDENT NON-AUTHORING REVIEW PASS — MATERIAL FINDINGS: NONE — PR / MERGE PENDING` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION BEYOND THE CURRENTLY AUTHORIZED MECHANICAL SLICE IS AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
-For each CURRENT canonical Mechanical gap whose EXACT canonical identity is MECHANISM_COMPLETENESS,
-PHYSICAL_FEASIBILITY or BOUNDARY_AMBIGUITY and whose EXACT canonical state is OPEN or PARTIAL, the
-report / deliverable and the PDF show one short explanatory technical context — what that gap concerns
-at concept level within the governed Mechanical package, and what InventorAI does not conclude from it —
-grounded only in the existing governed Mechanical truth (`domains/mechanical/domain.json`); the D13
-Electronics package is not a Mechanical source. Mechanical only; report / deliverable and PDF only;
-explanatory technical context only. Path-N remains the question-serving owner and CAP-04 the action /
-responsibility / required-input / closure owner; no state, persistence, schema, readiness, progression
-or scoring change, no engine change, and no AI / LLM / provider call. It is NOT a full Mechanical CAP-01
-profile, a D13 Mechanical package, a technical engine or engineering execution: Mechanical still has NO
-Electronics-style domain-level checklist profile and NOW has this separately authorized gap-scoped
-Open-Gap Technical Context. Implementation candidate `99f6b91185c0a1766e48e2abe0efde629b939ab1` (tree `4440aa3713c87498a46824396ffae4894e002a0f`, sole parent `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`); independent
-non-authoring review PASS, material findings NONE, risk LEVEL 2 — MEDIUM; PR NOT OPENED, merge NOT
-PERFORMED; deployment / release NOT AUTHORIZED.
+**CURRENT BOUNDED ACTION — Stage 18 / Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure
+Fundamentals, ONE Owner-authorized bounded slice (no new Master Roadmap Stage; Stage 18 stays ENTERED /
+PARTIAL / NOT COMPLETE):** `ACTIVE CONTRACT: MECHANICAL TECHNICAL DEEPENING SLICE 1 — FORCE, MOMENT & PRESSURE FUNDAMENTALS` · `MECHANICAL TECHNICAL DEEPENING SLICE 1: OWNER-AUTHORIZED — IMPLEMENTED (final candidate e56e32def45346944eecab9982dfb572fa5764f3) — INDEPENDENT NON-AUTHORING REVIEW COMPLETE — PASS — NO MATERIAL FINDINGS REMAIN — PR / MERGE PENDING` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION BEYOND THE CURRENTLY AUTHORIZED MECHANICAL SLICE IS AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+Mechanical only: for the exact CURRENT canonical PHYSICAL_FEASIBILITY gap in exact state OPEN or
+PARTIAL, the existing report / deliverable and PDF may show four source-backed reference fundamentals —
+simple perpendicular torque / moment (T = F × L⊥), ideal static moment balance (F₁L₁ = F₂L₂), uniform
+pressure over an effective area (F = pA) and SI unit discipline (N·m; Pa / kPa) — from the governed
+Mechanical provenance mechanical:PR006–PR011. Reference fundamentals only: no applicability inference,
+no project calculation, no gap closure, no feasibility, structural or safety conclusion, no validation,
+readiness or progression effect, and no AI / provider call. Final candidate
+`e56e32def45346944eecab9982dfb572fa5764f3` (tree `8157eacf5b012d153534b5901aacd9c30abfa26d`); independent
+non-authoring review COMPLETE, PASS, no material findings remain; PR NOT OPENED, merge NOT PERFORMED;
+deployment / release NOT AUTHORIZED.
+**DELIVERED — Stage 18 / Mechanical CAP-01 — Open-Gap Technical Context (inside Stage 18; no new Master
+Roadmap Stage):** `MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED — PR #713 — merge 225c0d36e6cfa97a25cd58c671b7c4f090627fb5` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`.
+Mechanical CAP-01 Open-Gap Technical Context (delivered): one short explanatory context per CURRENT
+(OPEN / PARTIAL) canonical Mechanical gap in the report / deliverable and PDF, grounded only in the
+governed Mechanical truth (`domains/mechanical/domain.json`); the D13 Electronics package is not a
+Mechanical source; Path-N and CAP-04 ownership unchanged; it is not a full Mechanical CAP-01 profile, and
+Mechanical still has NO Electronics-style domain-level checklist profile. Its boundaries are recorded in
+its contract section.
 **Also ENTERED: Stage 19 — WS-PFV-001 / CAP-09 Experiment-Plan Designer.** `STAGE 19: ENTERED / NOT COMPLETE` · `DURABLE SUCCESS-CRITERION REMEDIATION: DELIVERED — PR #682` · `CAP-09 SLICE-02: DELIVERED — PR #683 — merge 8778e2f8d40fd2dbdcc25b89a3a7221aec6d3f60` · `F-09 PLANNING-FORM RECOVERY: DELIVERED — PR #684 — merge 079a9000bd23d19328b10c3854490264bf9b1697` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED`. Section 11 +
 `SuccessCriterion` stay the canonical planning owner. SLICE-02 was bounded: ONE
 inventor-written measurement method per existing experiment, durable in a narrowly typed
