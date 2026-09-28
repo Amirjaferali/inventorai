@@ -2,21 +2,22 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: MECHANICAL TECHNICAL DEEPENING SLICE 1 — FORCE, MOMENT & PRESSURE FUNDAMENTALS.**
-ONE Owner-authorized bounded slice inside the already-entered Stage 18 (D13 / CAP-01; no new Master
-Roadmap Stage; Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06 NOT
-ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED). Mechanical only: for the exact CURRENT canonical
-`PHYSICAL_FEASIBILITY` gap in exact state OPEN or PARTIAL, the existing report / deliverable and PDF may
-show four source-backed reference fundamentals — simple perpendicular torque / moment (T = F × L⊥),
-ideal static moment balance (F₁L₁ = F₂L₂), uniform pressure over an effective area (F = pA) and SI unit
-discipline (N·m; Pa / kPa) — from the governed Mechanical provenance mechanical:PR006–PR011. Reference
-fundamentals only: no applicability inference, no project calculation, no gap closure, no feasibility,
-structural or safety conclusion, no validation, readiness or progression effect, and no AI / LLM /
-provider call. Status: OWNER-AUTHORIZED / IMPLEMENTED — final candidate
-`e56e32def45346944eecab9982dfb572fa5764f3` (tree `8157eacf5b012d153534b5901aacd9c30abfa26d`) / INDEPENDENT
-NON-AUTHORING REVIEW COMPLETE — PASS, no material findings remain / PR NOT OPENED / merge NOT PERFORMED /
-deployment and release NOT AUTHORIZED. No next Technical Deepening slice is authorized, and no further
-CAP-01 implementation beyond the currently authorized Mechanical bounded slice is authorized.
+**ACTIVE CONTRACT: NONE.** No product increment is currently authorized. The last Owner-authorized
+bounded slice — Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals — is
+DELIVERED (PR #714, merge `dd445183a110da4ef707226e3ff9121f6c315e5b`; post-merge identity / content verification
+PASS; independent non-authoring review COMPLETE — PASS, no material findings remain), and no subsequent
+increment has been authorized. This does NOT mean the roadmap is complete; delivered history never fills
+the active-contract slot. Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06
+NOT ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED; no next Technical Deepening slice is authorized;
+Stage 15 / IRL and IoT / Drone / Renewable / Satellite implementation stay NOT AUTHORIZED; deployment and
+release NOT AUTHORIZED. Slice 1 (delivered, inside Stage 18 — D13 / CAP-01; no new Master Roadmap Stage):
+for the exact CURRENT canonical Mechanical `PHYSICAL_FEASIBILITY` gap in exact state OPEN or PARTIAL, the
+report / deliverable and PDF may show four source-backed reference fundamentals — (T = F × L⊥),
+(F₁L₁ = F₂L₂), (F = pA) and (N·m; Pa / kPa) — from the governed Mechanical provenance
+mechanical:PR006–PR011. Reference fundamentals only: no applicability inference, no project calculation,
+no gap closure, no feasibility, structural or safety conclusion, no validation, readiness or progression
+effect, and no AI / LLM / provider call. No further CAP-01 implementation is authorized beyond the
+delivered Mechanical slices.
 Mechanical CAP-01 — Open-Gap Technical Context — DELIVERED (PR #713, merge
 `225c0d36e6cfa97a25cd58c671b7c4f090627fb5`; post-merge identity / content verification PASS) — is the
 preceding bounded slice inside Stage 18: one short explanatory context per current Mechanical gap in the
@@ -140,17 +141,17 @@ docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the deliv
 history, and is the file to read for authority — this paragraph routes, it does not
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded Electronics CAP-01
 increments are delivered (PR #678, PR #679), the bounded Mechanical Open-Gap Technical Context is
-delivered (PR #713) and Mechanical Technical Deepening Slice 1 (above) is its current bounded action,
-no further CAP-01 implementation beyond the currently authorized Mechanical bounded slice is
-authorized, no next Technical Deepening slice is authorized, full CAP-01 / full STG is not authorized,
-no other Stage is authorized — the bounded Mechanical Technical Deepening slice sits inside the
-already-entered Stage 18 and enters no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
+delivered (PR #713) and Mechanical Technical Deepening Slice 1 is delivered (PR #714); ACTIVE CONTRACT:
+NONE — there is no current authorized Technical Deepening subtask, no further CAP-01 implementation is
+authorized beyond the delivered Mechanical slices, no next Technical Deepening slice is authorized, full
+CAP-01 / full STG is not authorized, no other Stage is authorized — the delivered Mechanical Technical
+Deepening slice sat inside the already-entered Stage 18 and entered no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
 Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
-Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
+*(Superseded current-authority declarations — the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+Foundation-contract, the former post-PR-#679 `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
 
