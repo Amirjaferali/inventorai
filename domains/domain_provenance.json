@@ -42,6 +42,58 @@
       "cross_domain_usage": null
     },
     {
+      "record_id": "electronics_electrical:PR004",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "U.S. Department of Energy — DOE Fundamentals Handbook: Electrical Science, Volume 1 of 4, Module 1 — Basic Electrical Theory (DOE-HDBK-1011/1-92)",
+      "source_type": "government_reference_publication",
+      "standard_number": "DOE-HDBK-1011/1-92",
+      "jurisdiction": "US",
+      "version_or_edition": "DOE-HDBK-1011/1-92, Volume 1 of 4, Module 1 — Ohm's Law (handbook page 14) and Electric Power (handbook page 16); official DOE record status: ARCHIVE — Canceled, effective April 2016 — as inspected 2026-09-28 (Lead-level independent source inspection; executor egress was blocked by environment policy)",
+      "url": null,
+      "notes": "Source for the Electrical / Electronics Technical Deepening Slice 1 reference claims ohms_law_reference and electrical_power_vi_reference (reference_fundamentals group basic_electrical_reference_v1): Ohm's law as written in the handbook, E = I × R / E = IR (handbook page 14), where the source identifies E = voltage (V), I = current (A) and R = resistance (Ω); and electric power, P = I × E / P = IE (handbook page 16). The handbook uses E for voltage; InventorAI presents the SAME relationships as V = I × R (V = IR) and P = V × I (P = VI) because the product and SI unit presentation use V for voltage — a notation normalization only; it is not claimed that DOE wrote V = I × R or P = V × I. STATUS BOUNDARY: the official DOE record shows status ARCHIVE — Canceled, effective April 2016; the handbook is used ONLY as a historical / fundamentals reference for these two bounded factual relationships and NOT as current regulatory, safety or compliance guidance or authority, and never as proof that a user design is safe, compliant or valid. Factual / mathematical relationships only, in InventorAI-authored paraphrase; no DOE paragraph, explanatory prose, worked numerical example, figure, diagram, photograph or logo is copied; no extra derived equation, conductance, AC relationship or circuit-solving procedure is imported; no DOE endorsement is stated or implied; the U.S. Department of Energy is acknowledged as the source; no content attributed to a third party is relied upon, and the handbook's references to commercial textbooks or other source material authorize no copying of those works. The official PDF was available on the DOE surface at inspection; no URL is recorded in this entry. Source-use disposition: electronics_electrical:PR006. Bounded reference relationships only — no project-specific calculation and no applicability inference.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "electronics_electrical:PR005",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "NIST Guide for the Use of the International System of Units (SI) — Special Publication 811 — Appendix B.9, Factors for units listed by kind of quantity or field of science",
+      "source_type": "government_reference_publication",
+      "standard_number": "NIST SP 811",
+      "jurisdiction": "US",
+      "version_or_edition": "NIST SP 811, Appendix B.9 (web edition) — as inspected 2026-09-28 (Lead-level independent source inspection; executor egress was blocked by environment policy)",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "notes": "Source for the Electrical / Electronics Technical Deepening Slice 1 reference claim si_electrical_unit_discipline (reference_fundamentals group basic_electrical_reference_v1): the inspected page confirms ampere — A, volt — V, ohm — Ω and watt — W; used ONLY for these bounded unit / quantity facts (voltage — V; current — A; resistance — Ω; power — W). No conversion table, conversion factor, other quantity or unrelated NIST content is reproduced; NIST acknowledgement is preserved; no third-party material is relied upon; no endorsement implied. Source-use disposition: electronics_electrical:PR007. Correct units do not validate a circuit or design.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "electronics_electrical:PR006",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "U.S. Department of Energy — Web Policies — Copyright, Restrictions and Permissions Notice",
+      "source_type": "source_use_policy",
+      "standard_number": null,
+      "jurisdiction": "US",
+      "version_or_edition": "Web page — as inspected 2026-09-28 (Lead-level independent source inspection; executor egress was blocked by environment policy)",
+      "url": null,
+      "notes": "SOURCE-USE COMPATIBILITY DISPOSITION (not a legal opinion or legal determination) for electronics_electrical:PR004 in the Electrical / Electronics Technical Deepening Slice 1. The inspected DOE Web Policies state that government information on DOE websites is in the public domain and may be freely distributed / copied, with appropriate DOE acknowledgement requested; the same policy warns that documents, illustrations, photographs and other resources contributed or licensed by private parties may remain copyright-protected, and the handbook foreword records the involvement of the DOE Training Coordination Program managed by EG&G Idaho, Inc. No blanket claim is made that every expressive element of the handbook is public-domain material. Conservative disposition: factual / mathematical relationships only; InventorAI-authored paraphrase only; no copied explanatory prose or worked examples; no figures, diagrams, photographs or logos; no third-party-attributed material; neutral source acknowledgement only (\"Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92\"); no statement or implication that DOE endorses, reviewed or approved InventorAI or any user project. InventorAI remains responsible for its own presented output.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "electronics_electrical:PR007",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "NIST — Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "source_type": "source_use_policy",
+      "standard_number": null,
+      "jurisdiction": "US",
+      "version_or_edition": "Web page — as inspected 2026-09-28 (Lead-level independent source inspection; executor egress was blocked by environment policy)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "notes": "SOURCE-USE COMPATIBILITY DISPOSITION (not a legal opinion or legal determination) for electronics_electrical:PR005 in the Electrical / Electronics Technical Deepening Slice 1. The inspected NIST guidance states that NIST employee-authored Technical Series works are not subject to U.S. copyright protection, that NIST grants broad worldwide reuse / derivative-work rights where it may assert foreign rights, that appropriate NIST acknowledgement / citation is required, and that some NIST works may contain third-party-authored protected material. Use is limited to the bounded unit / quantity facts (V; A; Ω; W) with source acknowledgement; no unrelated content is reproduced; no third-party material is relied upon; no endorsement implied. InventorAI remains responsible for its own presented output.",
+      "cross_domain_usage": []
+    },
+    {
       "record_id": "mechanical:PR001",
       "pack_id": "mechanical",
       "tier": 1,

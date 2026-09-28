@@ -4523,6 +4523,178 @@ UI_STRINGS = {
             "إنشائيًا، ولا تثبت أن الاختراع تم التحقق منه."
         ),
     },
+
+    # --- ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1 — BASIC ELECTRICAL
+    # REFERENCE FUNDAMENTALS (Owner-authorized bounded reference fundamentals). ONE
+    # gap-scoped context for the EXACT canonical Electronics PHYSICAL_FEASIBILITY gap,
+    # grounded in the governed Electronics package (domains/electronics_electrical/
+    # domain.json: its PHYSICAL_FEASIBILITY gap mapping, rule nuance RN002 and
+    # coverage declaration), plus its OPTIONAL reference-fundamentals sub-view: three
+    # bounded claims declared in the pack (reference_fundamentals /
+    # basic_electrical_reference_v1) with source provenance
+    # electronics_electrical:PR004–PR005 and source-use-policy provenance
+    # electronics_electrical:PR006–PR007. The handbook writes E for voltage; the
+    # SAME relationships are shown with V (notation normalization only). Factual
+    # paraphrase only: no copied DOE / NIST prose, figure, diagram, photograph or
+    # logo, no endorsement implication, no IEC / IPC text, no project-specific
+    # calculation, no formula selection. This is separate from, and does not repeat,
+    # the domain-level CAP01_ELECTRONICS_INTERFACE_V1 checklist above. Selection is
+    # owned by web/cap01_guidance.py by exact canonical gap identity + lifecycle
+    # state; these entries bind nothing. Equations and unit symbols live in their
+    # own EQUATION keys (language-neutral, identical in EN and AR) so the template
+    # isolates them with dir="ltr".
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_TITLE": {
+        "en": "Technical context for the unresolved electrical feasibility gap",
+        "ar": "سياق فني لفجوة الجدوى الكهربائية غير المحسومة",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_INTRO": {
+        "en": (
+            "The note below explains, at concept level only, what the currently open or "
+            "partially addressed electrical feasibility gap concerns within InventorAI's "
+            "electronics / electrical coverage, and what InventorAI does not conclude from it. "
+            "It is explanatory context only: it adds no question, action, responsibility or "
+            "closure rule, and it does not replace the technical-information checklist, the gap "
+            "action packs or the Validation Plan."
+        ),
+        "ar": (
+            "توضّح الملاحظة أدناه، على المستوى المفاهيمي فقط، ما تتعلق به فجوة الجدوى الكهربائية "
+            "المفتوحة حاليًا أو المُعالَجة جزئيًا ضمن تغطية الإلكترونيات / الكهرباء في InventorAI، "
+            "وما الذي لا يستنتجه InventorAI منها. هذه الملاحظة سياق توضيحي فقط: لا تضيف سؤالًا ولا "
+            "إجراءً ولا مسؤولية ولا شرط إغلاق، ولا تحل محل قائمة المعلومات الفنية أو حِزم إجراءات "
+            "الفجوات أو خطة التحقق (Validation Plan)."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_TITLE": {
+        "en": "Electrical feasibility — what this gap concerns",
+        "ar": "الجدوى الكهربائية (Physical Feasibility) — ما تتعلق به هذه الفجوة",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_MEANING": {
+        "en": (
+            "This gap concerns, at concept level, what provides the energy or power for the "
+            "design to operate, and the electrical requirements or constraints — such as "
+            "voltage, current or frequency — that the inventor states the design depends on or "
+            "must stay within. Where that power source or those requirements are not yet stated "
+            "or clarified, electrical feasibility remains an unresolved concept-level gap."
+        ),
+        "ar": (
+            "تتعلق هذه الفجوة، على المستوى المفاهيمي، بما يوفّر الطاقة أو القدرة اللازمة لتشغيل "
+            "التصميم، وبالمتطلبات أو القيود الكهربائية — مثل الجهد أو التيار أو التردد — التي يذكر "
+            "المخترع أن التصميم يعتمد عليها أو يجب أن يبقى ضمنها. وحيث لم يُذكر مصدر القدرة هذا أو "
+            "لم تُوضَّح هذه المتطلبات بعد، تبقى الجدوى الكهربائية فجوة غير محسومة على المستوى "
+            "المفاهيمي."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_LIMIT": {
+        "en": (
+            "This note explains an unresolved concept-level gap; it does not establish, and "
+            "InventorAI does not conclude, that the design is electrically feasible, compatible "
+            "or safe. InventorAI does not calculate or recommend any voltage, current, power, "
+            "limit, component value or rating."
+        ),
+        "ar": (
+            "توضّح هذه الملاحظة فجوة غير محسومة على المستوى المفاهيمي؛ وهي لا تثبت، ولا يستنتج "
+            "InventorAI، أن التصميم ممكن كهربائيًا أو متوافق أو آمن. ولا يحسب InventorAI ولا يوصي "
+            "بأي جهد أو تيار أو قدرة أو حدّ أو قيمة مكوّن أو تصنيف."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_TITLE": {
+        "en": "Reference fundamentals that may help with this electrical feasibility gap",
+        "ar": "أساسيات مرجعية قد تساعد في فهم فجوة الجدوى الكهربائية هذه",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_INTRO": {
+        "en": (
+            "These are basic electrical reference relationships. InventorAI has not determined "
+            "that these relationships apply to your design. Use a relationship only where it "
+            "matches your actual circuit and verified values."
+        ),
+        "ar": (
+            "هذه علاقات كهربائية مرجعية أساسية. لم يحدد InventorAI أن هذه العلاقات تنطبق على "
+            "تصميمك. استخدم العلاقة فقط حيث تطابق دائرتك الفعلية وقيمك المتحقق منها."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_1_TITLE": {
+        "en": "Ohm's law (resistive reference)",
+        "ar": "قانون أوم (Ohm's law) — مرجع للعناصر المقاومية",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_1_LEAD": {
+        "en": "For a resistive element, where V is voltage, I is current and R is resistance:",
+        "ar": "لعنصر مقاومي، حيث V الجهد و I التيار و R المقاومة:",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_1_EQUATION": {
+        "en": "V = I × R",
+        "ar": "V = I × R",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_1_NOTE": {
+        "en": (
+            "A bounded Ohm's-law / resistive reference relationship, not a calculation for your "
+            "circuit. InventorAI has not determined that your device, component or circuit "
+            "behaves this way."
+        ),
+        "ar": (
+            "علاقة مرجعية محدودة لقانون أوم / العناصر المقاومية، وليست حسابًا لدائرتك. لم يحدد "
+            "InventorAI أن جهازك أو مكوّنك أو دائرتك تتصرف بهذه الطريقة."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_2_TITLE": {
+        "en": "Basic electrical power",
+        "ar": "القدرة الكهربائية الأساسية",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_2_LEAD": {
+        "en": "Basic reference form, where P is power, V is voltage and I is current:",
+        "ar": "الصيغة المرجعية الأساسية، حيث P القدرة و V الجهد و I التيار:",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_2_EQUATION": {
+        "en": "P = V × I",
+        "ar": "P = V × I",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_2_NOTE": {
+        "en": (
+            "A basic power reference relationship. It does not establish component rating, "
+            "power-supply suitability, battery sizing, efficiency, thermal adequacy or safety."
+        ),
+        "ar": (
+            "علاقة مرجعية أساسية للقدرة. لا تثبت تصنيف المكوّنات، ولا ملاءمة مصدر التغذية، ولا "
+            "تحديد سعة البطارية، ولا الكفاءة، ولا الكفاية الحرارية، ولا السلامة."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_3_TITLE": {
+        "en": "SI units",
+        "ar": "وحدات SI",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_3_LEAD": {
+        "en": "Voltage, current, resistance and power are expressed in volts, amperes, ohms and watts:",
+        "ar": "يُعبَّر عن الجهد والتيار والمقاومة والقدرة بوحدات الفولت والأمبير والأوم والواط:",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_3_EQUATION": {
+        "en": "V, A, Ω, W",
+        "ar": "V, A, Ω, W",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_3_NOTE": {
+        "en": "Correct units do not validate a circuit or design.",
+        "ar": "صحة الوحدات لا تعني صحة الدائرة أو التصميم.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_SOURCE": {
+        "en": (
+            "Reference source material: U.S. Department of Energy — Electrical Science, "
+            "DOE-HDBK-1011/1-92; NIST Guide to the SI, SP 811 Appendix B.9."
+        ),
+        "ar": (
+            "مواد مرجعية: وزارة الطاقة الأمريكية (U.S. Department of Energy) — Electrical "
+            "Science، DOE-HDBK-1011/1-92؛ ودليل NIST للنظام الدولي للوحدات، SP 811 Appendix B.9."
+        ),
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_BOUNDARY": {
+        "en": (
+            "These reference fundamentals do not close the electrical feasibility gap, calculate "
+            "your design, establish compatibility or safe voltage / current limits, prove that the "
+            "circuit works, size any component, prove electrical safety or validate the invention."
+        ),
+        "ar": (
+            "هذه الأساسيات المرجعية لا تغلق فجوة الجدوى الكهربائية، ولا تحسب تصميمك، ولا تثبت "
+            "التوافق أو حدود الجهد / التيار الآمنة، ولا تثبت أن الدائرة تعمل، ولا تحدد مقاسات أي "
+            "مكوّن، ولا تثبت السلامة الكهربائية، ولا تثبت أن الاختراع تم التحقق منه."
+        ),
+    },
 }
 
 

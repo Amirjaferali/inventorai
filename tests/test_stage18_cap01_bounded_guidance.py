@@ -48,7 +48,7 @@ import pytest
 from engine import domain_activation
 from engine.deliverable_assembler import assemble_deliverable
 from engine.domain_rules import infer_domain
-from engine.idea_state import IdeaState
+from engine.idea_state import Gap, IdeaState
 from engine.progression_loop import run_iteration
 from web import cap01_guidance, ui_text
 from web.app import app as _flask_app
@@ -69,6 +69,7 @@ PROFILE_DOMAIN = "electronics_electrical"
 # the Electronics profile prefix instead of the whole namespace.
 MECH_GAP_CONTEXT_ID = "CAP01_MECHANICAL_GAP_CONTEXT_V1"
 MECH_GAP_CONTEXT_PREFIX = "UI_%s_" % MECH_GAP_CONTEXT_ID
+ELEC_GAP_CONTEXT_PREFIX = "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_"
 
 
 def _electronics_keys():
@@ -476,10 +477,21 @@ def test_08a_profile_selection_is_table_driven_not_hard_coded_branching(monkeypa
 def test_08b_the_probe_leaves_no_residue_and_no_unused_future_row_is_shipped():
     assert tuple(cap01_guidance.CAP01_PROFILE_BY_DOMAIN) == (PROFILE_DOMAIN,)
     # The only other ``UI_CAP01_`` keys are the separately-authorized Mechanical
-    # gap-context group's; no unused future profile row or key is shipped.
+    # gap-context group's and the separately-authorized Electronics
+    # PHYSICAL_FEASIBILITY gap-context group's (Electrical / Electronics Technical
+    # Deepening Slice 1); no unused future profile row or key is shipped.
     assert not [k for k in ui_text.UI_STRINGS
                 if k.startswith("UI_CAP01_") and PROFILE_ID not in k
-                and not k.startswith(MECH_GAP_CONTEXT_PREFIX)]
+                and not k.startswith(MECH_GAP_CONTEXT_PREFIX)
+                and not k.startswith(ELEC_GAP_CONTEXT_PREFIX)]
+    # ...and every Electronics gap-context key is consumed by its one resolved row.
+    view = cap01_guidance.gap_contexts_for_gaps(
+        PROFILE_DOMAIN, [Gap(gap_type="PHYSICAL_FEASIBILITY", status="OPEN", opened_at=0)])
+    ctx = view["contexts"][0]
+    used = {view["title_key"], view["intro_key"], ctx["title_key"], ctx["meaning_key"],
+            ctx["limit_key"]} | {v for k, v in ctx["fundamentals"].items() if k.endswith("_key")} | {
+        v for c in ctx["fundamentals"]["claims"] for k, v in c.items() if k.endswith("_key")}
+    assert used == {k for k in ui_text.UI_STRINGS if k.startswith(ELEC_GAP_CONTEXT_PREFIX)}
 
 
 def test_08c_an_incomplete_future_profile_fails_closed_rather_than_half_rendering(monkeypatch):

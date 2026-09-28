@@ -154,9 +154,45 @@
     "traversal_hints": null,
     "multi_domain_signals": null
   },
+  "reference_fundamentals": [
+    {
+      "group_id": "basic_electrical_reference_v1",
+      "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+      "claims": [
+        {
+          "claim_id": "ohms_law_reference",
+          "relationship": "V = I × R",
+          "fact": "For a resistive element, the voltage across it equals the current through it multiplied by its resistance (Ohm's law). The DOE handbook writes this relationship as E = I × R, using E for voltage; it is presented here with V for voltage (notation normalization only, same relationship).",
+          "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+          "source_ref": "electronics_electrical:PR004",
+          "source_use_policy_ref": "electronics_electrical:PR006",
+          "limitation": "Bounded resistive / Ohm's-law reference relationship only. InventorAI does not determine that the inventor's device, component or circuit is ohmic or that this relationship applies to the inventor's design. No project-specific calculation."
+        },
+        {
+          "claim_id": "electrical_power_vi_reference",
+          "relationship": "P = V × I",
+          "fact": "Basic electrical power equals voltage multiplied by current (basic DC / reference form). The DOE handbook writes this relationship as P = I × E (P = IE), using E for voltage; it is presented here with V for voltage (notation normalization only, same relationship).",
+          "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+          "source_ref": "electronics_electrical:PR004",
+          "source_use_policy_ref": "electronics_electrical:PR006",
+          "limitation": "Basic DC / reference relationship only. Not extended to AC power factor, reactive or apparent power, efficiency, thermal rating, power-supply, battery or motor sizing, component rating, safety or any project-specific calculation."
+        },
+        {
+          "claim_id": "si_electrical_unit_discipline",
+          "relationship": "voltage: V; current: A; resistance: Ω; power: W",
+          "fact": "SI units: electric potential difference / voltage — volt (V); electric current — ampere (A); electric resistance — ohm (Ω); power — watt (W).",
+          "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+          "source_ref": "electronics_electrical:PR005",
+          "source_use_policy_ref": "electronics_electrical:PR007",
+          "limitation": "Unit discipline only. Correct units do not validate a circuit or design."
+        }
+      ]
+    }
+  ],
   "_governance_notes": {
     "arabic_classification_signals": "DEFERRED — Arabic tokens from ELECTRONICS_SIGNALS in domain_rules.py could not be verified as uncorrupted during Step 2a. Must be re-read directly from source and validated before admission. Flagged for Stage 3 review.",
     "iot_pcb_weight_reduction": "iot and pcb set to weight 0.15, below recognition floor 0.3, to preserve fail-closed behavior for future dedicated IoT and PCB packs.",
-    "electronics_questions": "DEFERRED — ELECTRONICS_QUESTIONS not found in domain_rules.py. Question banks empty. Engine uses generic fallback. To be authored in Stage 3."
+    "electronics_questions": "DEFERRED — ELECTRONICS_QUESTIONS not found in domain_rules.py. Question banks empty. Engine uses generic fallback. To be authored in Stage 3.",
+    "electrical_td_slice1_reference_fundamentals": "Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals (Owner-authorized bounded reference fundamentals): reference_fundamentals is ONE additive, declaration-only group (basic_electrical_reference_v1, applicable gap PHYSICAL_FEASIBILITY) recording three bounded reference claims with exact source provenance (electronics_electrical:PR004–PR005), source-use-policy provenance (electronics_electrical:PR006–PR007) and explicit limitations. It is inert for the classifier, get_active_rules, Path-N question serving, NeedRouting, progression, readiness, evidence state and the domain registry loader (no loader or schema change); it is not a classification or substance signal and carries no executable formula selection, user-input variable, calculation procedure, threshold or applicability logic. Its only consumer is the presentation layer's bounded gap-scoped CAP-01 context (web/cap01_guidance.py, catalogue copy in web/ui_text.py), which shows the same bounded reference set only while the exact canonical PHYSICAL_FEASIBILITY gap is OPEN or PARTIAL and never selects which relationship applies to a project. It does not change the domain-level CAP-01 checklist / research profile (CAP01_ELECTRONICS_INTERFACE_V1). Existing provenance electronics_electrical:PR001–PR003 are unchanged, and IEC 60050 / IPC-2221B (PR001 / PR002) are not the claim authority for these reference fundamentals."
   }
 }

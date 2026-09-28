@@ -209,7 +209,14 @@ _FROZEN_ENGINE_SHA256 = {
 # Other-pack byte freeze (unchanged lineage from I1/I2). L2SC-01 reconciliation
 # (disclosed; electronics_electrical re-frozen, see I1's own comment).
 _FROZEN_PACK_SHA256 = {
-    "electronics_electrical": "53f431e38a70c2b621e19afb7323ad9bc4732c6c4151ea6b8c46a3214f098dfb",
+    # Electrical / Electronics Technical Deepening Slice 1 (Basic Electrical Reference
+    # Fundamentals): electronics_electrical re-frozen after adding ONE bounded, inert,
+    # additive `reference_fundamentals` group plus its governance-note entry (provenance
+    # electronics_electrical:PR004–PR007). Every pre-existing field is unchanged
+    # (classification / substance signals, plural aliases, gap_type_mappings and their
+    # questions, rule_nuances, aliases, coverage_declaration); no classifier, rule,
+    # activation, question-serving or progression change is authorized or implied.
+    "electronics_electrical": "188f63ddc8dfa493b5885bc4afc6b17b742e1fefd4f3915efbc2c81d2dde13dc",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",
