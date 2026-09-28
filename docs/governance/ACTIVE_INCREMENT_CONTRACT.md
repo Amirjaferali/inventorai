@@ -23,10 +23,38 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--mechanical-td-slice1-force-moment-pressure"></a>
-## Current authority — Stage 18 / Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals (Owner / Lead authorization, 2026-09-28)
+<a id="current-authority--post-pr-714-no-active-contract"></a>
+## Current authority — post-PR-#714: no active contract (2026-09-28)
 
-**ACTIVE CONTRACT: MECHANICAL TECHNICAL DEEPENING SLICE 1 — FORCE, MOMENT & PRESSURE FUNDAMENTALS.**
+**ACTIVE CONTRACT: NONE.** Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure
+Fundamentals, the last Owner-authorized bounded slice, is DELIVERED (PR #714, merge
+`dd445183a110da4ef707226e3ff9121f6c315e5b`; post-merge identity / content verification PASS; independent non-authoring
+review COMPLETE — PASS, no material findings remain), and no subsequent increment has been authorized.
+Only the Owner may issue one; nothing in this file, the roadmap or the checklist fills the gap, and
+historical delivered work never fills the active-contract slot. This does NOT mean the roadmap is
+complete.
+
+| | |
+|---|---|
+| **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **ENTERED / PARTIAL / NOT COMPLETE**; its roadmap checkbox stays unticked |
+| **MECHANICAL TECHNICAL DEEPENING SLICE 1** | `MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #714 — merge dd445183a110da4ef707226e3ff9121f6c315e5b` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` — for the exact current Mechanical `PHYSICAL_FEASIBILITY` gap in OPEN or PARTIAL only, four bounded source-backed reference fundamentals (T = F × L⊥; F₁L₁ = F₂L₂; F = pA; N·m; Pa / kPa); reference fundamentals only — no applicability inference, no project-specific calculation, no gap closure, no feasibility, structural or safety conclusion, no validation, readiness or progression effect; its rules are recorded in its section below and still bind |
+| **MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT** | `DELIVERED — PR #713 — merge 225c0d36e6cfa97a25cd58c671b7c4f090627fb5` |
+| **NEXT TECHNICAL DEEPENING SLICE** | **NOT AUTHORIZED** — there is NO current authorized Technical Deepening subtask |
+| **FULL CAP-01 / FULL STG** | **NOT AUTHORIZED** |
+| **STAGE 15 / IRL; IoT / DRONE / RENEWABLE / SATELLITE** | implementation **NOT AUTHORIZED**; the portfolio / integration direction recorded in CLAUDE.md stays planning direction only |
+
+`ACTIVE CONTRACT: NONE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` ·
+`NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+
+<a id="current-authority--mechanical-td-slice1-force-moment-pressure"></a>
+## Current authority — Stage 18 / Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals (Owner / Lead authorization, 2026-09-28) — DELIVERED (PR #714); SUPERSEDED as current authority by the post-PR-#714 no-active-contract declaration
+
+**No longer the current authority.** Mechanical Technical Deepening Slice 1 was delivered (PR #714, merge
+`dd445183a110da4ef707226e3ff9121f6c315e5b`; post-merge identity / content verification PASS); no subsequent increment is
+authorized, so the section above declares ACTIVE CONTRACT: NONE. Every rule below still binds.
+*(Superseded 2026-09-28, preserved so the change is visible rather than silent: this opened
+"**ACTIVE CONTRACT: MECHANICAL TECHNICAL DEEPENING SLICE 1 — FORCE, MOMENT & PRESSURE FUNDAMENTALS.**"
+and recorded the slice as "PR NOT OPENED / merge NOT PERFORMED".)*
 ONE Owner-authorized bounded slice inside the already-entered Stage 18 (D13 / CAP-01), recorded by the
 Owner authorization itself (no separate contract document). It creates no new Master Roadmap Stage;
 Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 is NOT ENTERED; CAP-06 is NOT ACTIVATED; FULL
@@ -36,8 +64,8 @@ CAP-01 / FULL STG stay NOT AUTHORIZED. Status: OWNER-AUTHORIZED / IMPLEMENTED �
 `bdb2b4e80da9cae59d24db04f3c419c56764ecde` and I4 Mechanical pack SHA-pin correction
 `e56e32def45346944eecab9982dfb572fa5764f3` on the authoritative base `225c0d36e6cfa97a25cd58c671b7c4f090627fb5`) / INDEPENDENT
 NON-AUTHORING REVIEW COMPLETE — final disposition PASS, no material findings remain (risk LEVEL 2 —
-MEDIUM; the one material finding, M-1, a stale I4 pack pin, was resolved and re-checked) / PR NOT OPENED /
-merge NOT PERFORMED / deployment and release NOT AUTHORIZED.
+MEDIUM; the one material finding, M-1, a stale I4 pack pin, was resolved and re-checked) / DELIVERED (PR
+#714, merge `dd445183a110da4ef707226e3ff9121f6c315e5b`) / deployment and release NOT AUTHORIZED.
 
 | | |
 |---|---|
@@ -49,6 +77,7 @@ merge NOT PERFORMED / deployment and release NOT AUTHORIZED.
 | **OWNERSHIP / NOT** | Path-N and CAP-04 ownership unchanged; no CAP-12, CAP-13 or THERM-01 scope; no Technical Realization framework, knowledge / calculation registry or formula engine |
 | **NO STATE CHANGE / AI** | no state, persistence, schema, engine or domain-activation change; no AI / LLM / provider call; real invention data NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
 
+`MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #714 — merge dd445183a110da4ef707226e3ff9121f6c315e5b` ·
 `MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED — PR #713 — merge 225c0d36e6cfa97a25cd58c671b7c4f090627fb5` ·
 `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED`.
 
@@ -1241,19 +1270,21 @@ section above; the stage is ENTERED as fact. `FIRST BOUNDED CAP-01 INCREMENT:
 OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
 `D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
 unticked** — one authorized bounded slice is not the stage.
-**CURRENT BOUNDED ACTION — Stage 18 / Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure
-Fundamentals, ONE Owner-authorized bounded slice (no new Master Roadmap Stage; Stage 18 stays ENTERED /
-PARTIAL / NOT COMPLETE):** `ACTIVE CONTRACT: MECHANICAL TECHNICAL DEEPENING SLICE 1 — FORCE, MOMENT & PRESSURE FUNDAMENTALS` · `MECHANICAL TECHNICAL DEEPENING SLICE 1: OWNER-AUTHORIZED — IMPLEMENTED (final candidate e56e32def45346944eecab9982dfb572fa5764f3) — INDEPENDENT NON-AUTHORING REVIEW COMPLETE — PASS — NO MATERIAL FINDINGS REMAIN — PR / MERGE PENDING` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION BEYOND THE CURRENTLY AUTHORIZED MECHANICAL SLICE IS AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
-Mechanical only: for the exact CURRENT canonical PHYSICAL_FEASIBILITY gap in exact state OPEN or
+**NO ACTIVE CONTRACT — post-PR-#714 (2026-09-28); Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE:**
+`ACTIVE CONTRACT: NONE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+No subsequent increment is authorized; this does NOT mean the roadmap is complete, and delivered history
+never fills the active-contract slot. Stage 15 / IRL and IoT / Drone / Renewable / Satellite
+implementation stay NOT AUTHORIZED.
+**DELIVERED — Stage 18 / Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals
+(inside Stage 18; no new Master Roadmap Stage):** `MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #714 — merge dd445183a110da4ef707226e3ff9121f6c315e5b` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`.
+Mechanical Technical Deepening Slice 1 (delivered). Mechanical only: for the exact CURRENT canonical PHYSICAL_FEASIBILITY gap in exact state OPEN or
 PARTIAL, the existing report / deliverable and PDF may show four source-backed reference fundamentals —
 simple perpendicular torque / moment (T = F × L⊥), ideal static moment balance (F₁L₁ = F₂L₂), uniform
 pressure over an effective area (F = pA) and SI unit discipline (N·m; Pa / kPa) — from the governed
 Mechanical provenance mechanical:PR006–PR011. Reference fundamentals only: no applicability inference,
 no project calculation, no gap closure, no feasibility, structural or safety conclusion, no validation,
-readiness or progression effect, and no AI / provider call. Final candidate
-`e56e32def45346944eecab9982dfb572fa5764f3` (tree `8157eacf5b012d153534b5901aacd9c30abfa26d`); independent
-non-authoring review COMPLETE, PASS, no material findings remain; PR NOT OPENED, merge NOT PERFORMED;
-deployment / release NOT AUTHORIZED.
+readiness or progression effect, and no AI / provider call. Independent non-authoring review
+COMPLETE — PASS, no material findings remain. Its boundaries are recorded in its contract section.
 **DELIVERED — Stage 18 / Mechanical CAP-01 — Open-Gap Technical Context (inside Stage 18; no new Master
 Roadmap Stage):** `MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED — PR #713 — merge 225c0d36e6cfa97a25cd58c671b7c4f090627fb5` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`.
 Mechanical CAP-01 Open-Gap Technical Context (delivered): one short explanatory context per CURRENT
