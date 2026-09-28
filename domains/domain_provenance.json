@@ -119,7 +119,7 @@
       "source_type": "government_reference_publication",
       "standard_number": null,
       "jurisdiction": "US",
-      "version_or_edition": "Web page as inspected 2026-09-27 (Lead-level Section-8 inspection)",
+      "version_or_edition": "Web page as inspected 2026-09-28 (Lead-level Section-8 inspection)",
       "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/torque-moment/",
       "notes": "Source for the Mechanical Technical Deepening Slice 1 reference claim torque_moment_perpendicular (reference_fundamentals group force_moment_pressure_v1): torque / moment is the product of force and the perpendicular distance from the pivot; simple perpendicular case T = F × L⊥. Textual statement; no image, chart or diagram is reproduced or relied upon. Factual paraphrase only; no NASA explanatory prose, image, logo or media is copied; no endorsement or review by NASA of InventorAI or of any user project is stated or implied. Source-use disposition: mechanical:PR010. Bounded reference relationship only — no project-specific calculation and no applicability inference.",
       "cross_domain_usage": []
@@ -132,7 +132,7 @@
       "source_type": "government_reference_publication",
       "standard_number": null,
       "jurisdiction": "US",
-      "version_or_edition": "Web page as inspected 2026-09-27 (Lead-level Section-8 inspection)",
+      "version_or_edition": "Web page as inspected 2026-09-28 (Lead-level Section-8 inspection)",
       "url": "https://www.grc.nasa.gov/www/k-12/WindTunnel/Activities/balance_of_forces.html",
       "notes": "Source for the Mechanical Technical Deepening Slice 1 reference claim ideal_static_moment_balance (reference_fundamentals group force_moment_pressure_v1): torque = force × moment arm, and for an ideal balanced system the opposing moment products are equal, F₁L₁ = F₂L₂. Textual statement; the page's diagrams are not reproduced or relied upon. The page carries contributor / editor credits; those credits are not a third-party copyright attribution on the relied-upon relationship and no contributor prose is copied. Factual paraphrase only; no NASA image, logo or media; no endorsement implied. Source-use disposition: mechanical:PR010. Ideal static reference relationship only — friction, deformation, acceleration, dynamic response and structural adequacy are outside it.",
       "cross_domain_usage": []
@@ -145,7 +145,7 @@
       "source_type": "government_reference_publication",
       "standard_number": null,
       "jurisdiction": "US",
-      "version_or_edition": "Web page as inspected 2026-09-27 (Lead-level Section-8 inspection)",
+      "version_or_edition": "Web page as inspected 2026-09-28 (Lead-level Section-8 inspection)",
       "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/aerodynamic-forces/",
       "notes": "Source for the Mechanical Technical Deepening Slice 1 reference claim pressure_force_area_uniform (reference_fundamentals group force_moment_pressure_v1): for a small section the force magnitude equals pressure × area and the pressure force acts normal (perpendicular) to the surface; used only as the bounded uniform-pressure reference relationship F = pA over an effective area. Textual statement; no image reproduced or relied upon. Factual paraphrase only; no NASA image, logo or media; no endorsement implied. Source-use disposition: mechanical:PR010. Not extended to hydraulic-system performance, pressure losses, seal behaviour, component ratings, fluid suitability or safety.",
       "cross_domain_usage": []
@@ -158,7 +158,7 @@
       "source_type": "government_reference_publication",
       "standard_number": "NIST SP 811",
       "jurisdiction": "US",
-      "version_or_edition": "NIST SP 811, Appendix B.9 (web edition) as inspected 2026-09-27 (Lead-level Section-8 inspection)",
+      "version_or_edition": "NIST SP 811, Appendix B.9 (web edition) as inspected 2026-09-28 (Lead-level Section-8 inspection)",
       "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
       "notes": "Source for the Mechanical Technical Deepening Slice 1 reference claim si_quantity_unit_discipline (reference_fundamentals group force_moment_pressure_v1): moment of force / torque — newton metre (N·m); pressure — pascal / kilopascal (Pa / kPa). Unit and quantity identification only; no conversion factors, other quantities or unrelated NIST content are reproduced. Source-use disposition: mechanical:PR011. Correct units do not validate a design.",
       "cross_domain_usage": []
@@ -171,7 +171,7 @@
       "source_type": "source_use_policy",
       "standard_number": null,
       "jurisdiction": "US",
-      "version_or_edition": "Web page as inspected 2026-09-27 (Lead-level Section-8 inspection)",
+      "version_or_edition": "Web page as inspected 2026-09-28 (Lead-level Section-8 inspection)",
       "url": "https://sti.nasa.gov/disclaimers/",
       "notes": "Source-use compatibility disposition (not a legal opinion or legal determination) for mechanical:PR006, mechanical:PR007 and mechanical:PR008 in the Mechanical Technical Deepening Slice 1: factual, paraphrased use only; no copied NASA explanatory prose; no NASA image, logo, insignia or media; neutral source acknowledgement only (\"Reference source material: NASA Glenn Research Center\"); no statement or implication that NASA endorses, reviewed or approved InventorAI or any user project; third-party-rights caution — material bearing an explicit third-party copyright attribution is not relied upon. InventorAI remains responsible for its own presented output.",
       "cross_domain_usage": []
@@ -184,7 +184,7 @@
       "source_type": "source_use_policy",
       "standard_number": null,
       "jurisdiction": "US",
-      "version_or_edition": "Web page as inspected 2026-09-27 (Lead-level Section-8 inspection)",
+      "version_or_edition": "Web page as inspected 2026-09-28 (Lead-level Section-8 inspection)",
       "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
       "notes": "Source-use compatibility disposition (not a legal opinion or legal determination) for mechanical:PR009 in the Mechanical Technical Deepening Slice 1: NIST Technical Series material authored by NIST may be reused with source acknowledgement, subject to the explicit third-party-material exception; use is limited to the bounded unit / quantity identification (N·m; Pa / kPa) with source acknowledgement; no unrelated NIST content is reproduced; no endorsement implied. InventorAI remains responsible for its own presented output.",
       "cross_domain_usage": []
