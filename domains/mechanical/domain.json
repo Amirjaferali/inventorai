@@ -408,6 +408,50 @@
       "What cannot be established in software remains an explicit unknown requiring later physical or specialist validation; richer declared metadata does not increase runtime capability"
     ]
   },
+  "reference_fundamentals": [
+    {
+      "group_id": "force_moment_pressure_v1",
+      "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+      "claims": [
+        {
+          "claim_id": "torque_moment_perpendicular",
+          "relationship": "T = F × L⊥",
+          "fact": "For a perpendicular force about a pivot, torque / moment is the product of the force and the perpendicular moment arm L⊥ (simple perpendicular case).",
+          "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+          "source_ref": "mechanical:PR006",
+          "source_use_policy_ref": "mechanical:PR010",
+          "limitation": "Reference relationship only. No project-specific calculation. InventorAI does not determine whether this relationship applies to the inventor's mechanism."
+        },
+        {
+          "claim_id": "ideal_static_moment_balance",
+          "relationship": "F₁L₁ = F₂L₂",
+          "fact": "For an ideal statically balanced pivot with perpendicular forces, the opposing moment products are equal.",
+          "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+          "source_ref": "mechanical:PR007",
+          "source_use_policy_ref": "mechanical:PR010",
+          "limitation": "Ideal static reference relationship only. It does not account for friction, deformation, acceleration, dynamic response or structural adequacy. No project-specific calculation."
+        },
+        {
+          "claim_id": "pressure_force_area_uniform",
+          "relationship": "F = pA",
+          "fact": "For uniform pressure acting over an effective area, the force magnitude equals pressure × area; the pressure force acts normal to the surface.",
+          "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+          "source_ref": "mechanical:PR008",
+          "source_use_policy_ref": "mechanical:PR010",
+          "limitation": "Reference relationship only. It does not establish hydraulic-system performance, pressure losses, seal behaviour, component ratings, fluid suitability or safety. No project-specific calculation."
+        },
+        {
+          "claim_id": "si_quantity_unit_discipline",
+          "relationship": "torque / moment: N·m; pressure: Pa / kPa",
+          "fact": "SI unit for moment of force / torque: newton metre (N·m). SI unit for pressure: pascal (Pa), commonly kilopascal (kPa).",
+          "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+          "source_ref": "mechanical:PR009",
+          "source_use_policy_ref": "mechanical:PR011",
+          "limitation": "Unit discipline only. Correct units do not validate a design."
+        }
+      ]
+    }
+  ],
   "_governance_notes": {
     "rule_nuances_absent": "AB-006-A Step 1b (corrected): rule_nuances populated with MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, and BOUNDARY_AMBIGUITY, migrated from hardcoded get_active_rules() mechanical branch in domain_rules.py. BOUNDARY_AMBIGUITY was omitted in original Step 1b commit 5eb514c — corrected here. No invented fields added.",
     "cross_domain_signals": "valve, pressure, compression, actuator documented as legitimate cross-domain concepts. Context ownership declared per signal. Not deleted. AB-006 candidates.",
@@ -416,6 +460,7 @@
     "p9_mech_i1_declarations": "P9-MECH-I1 (P9_MECH_I1_TRUTHFUL_CAPABILITY_COVERAGE_DECLARATION_CONTRACT.md): capability_declaration and coverage_declaration added as additive, declaration-only metadata under provenance record mechanical:PR002. Runtime behavior unchanged: these fields are not classifier inputs; dormant per-signal weight/layer metadata remains dormant and is not implied runtime-active; mechanical remains NOT QUALIFIED and NOT ACTIVATED after I1 alone (OD-M2 clause 2: no unannotated QUALIFIED claim).",
     "p9_mech_i2_rule_nuances": "P9-MECH-I2 (P9_MECH_I2_QUALIFICATION_GRADE_RULE_NUANCES_CONTRACT.md): the three rule_nuances entries were enriched IN PLACE to qualification-grade full shape under provenance record mechanical:PR003, with the modifier_value values, order, and count preserved byte-identically. Runtime inertness: rule_nuances are governed pack metadata; the sole runtime reader is engine/domain_rules.py get_active_rules, which projects only modifier_value values and has no downstream runtime consumer today; this enrichment therefore creates no runtime behavior. modifier_type 'active_gap_rule_marker' records what these entries mechanically are — governed markers enumerating the pack's own gap types (the migrated hardcoded-branch lineage) — and is deliberately NOT electronics' 'additional_signal_required' requirement-marker semantic. Any future rule-nuance consumption is a separate shared-core gate; nothing is authorized here.",
     "p9_mech_i3_signal_quality": "P9-MECH-I3 (P9_MECH_I3_SIGNAL_QUALITY_AB006_DISPOSITION_CONTRACT.md): evidence-based dispositions of the recorded AB-006 flags and cross-domain context ownerships; every change is grounded in a parent-defect case pinned in tests/test_p9_mech_i3_signal_quality.py; no downstream engine change; the OD2 legacy precedence RULE is untouched (the corrected outcomes are tie-composition changes from corrected vocabulary, individually disclosed). Dispositions — mechanism: REMOVE from classification (generic; proven false attraction of software prose via legacy 1-1 ties; retained as LOW-SPECIFICITY substance where its substring class is clean; residual: bare-'mechanism' ideas now classify NONE, a documented recall trade-off). locking: REPLACE with the multi-word signal 'locking mechanism' under mechanical:PR004 (narrowing; kills software-prose false attraction while keeping the genuine mechanical phrase; bidirectional evidence pinned). bracket: RETAIN WITH EVIDENCE (genuine mounting/wall usage; residual: software-prose collisions such as tournament brackets remain a documented limitation — removal would orphan genuine usage). fastener: RETAIN WITH EVIDENCE (discriminative; no sibling collision evidenced). valve: RETAIN WITH EVIDENCE (medical-precedence structurally protects clinical prose; medical > mechanical on ties). actuator: RETAIN WITH EVIDENCE (electronics-precedence protects electro-mechanical prose). force: REMOVE from substance (substring false-substance defect: 'force' inside 'reinforced' flipped vague answers to REASONED). bar: REMOVE from substance (explicitly flagged Ambiguous; substring defect: 'bar' inside 'barrier'). pressure: RETAIN WITH EVIDENCE (substance is domain-scoped; no clean substring defect; cross-domain ownership note stands). compression: RETAIN WITH EVIDENCE (domain-scoped; 'decompression' substring residual documented as mechanical-context-acceptable). mechanism (substance): RETAIN WITH EVIDENCE (no containing-word substring class; LOW-SPECIFICITY residual documented). No signal was added to raise Mechanical scores; inventories are equality-pinned against stuffing.",
-    "p9_mech_sf_safety_family": "P9-MECH-SF (OD-M2 clause 3 / D-P9-MECH-02; contract docs/governance/P9_MECH_SAFETY_CUE_FAMILY_CONTRACT.md; provenance mechanical:PR005): the governed Mechanical safety-cue family now exists in engine/safety_signal.py, so the former OD-M2 clause-1 NOT-COVERED statements (which conditioned coverage on that family's future existence) were replaced in the SAME increment by the truthful detection-scoped statements above (the contract's mandatory declaration truthfulness cascade). Detection only — never a safety determination; every signal requires independent validation. classification_signals, substance_signals, gap_type_mappings, aliases, and rule_nuances are byte-unchanged by this increment (the I4/I5 corpus validity anchors were re-frozen on that proof). Mechanical remains NOT ACTIVATED."
+    "p9_mech_sf_safety_family": "P9-MECH-SF (OD-M2 clause 3 / D-P9-MECH-02; contract docs/governance/P9_MECH_SAFETY_CUE_FAMILY_CONTRACT.md; provenance mechanical:PR005): the governed Mechanical safety-cue family now exists in engine/safety_signal.py, so the former OD-M2 clause-1 NOT-COVERED statements (which conditioned coverage on that family's future existence) were replaced in the SAME increment by the truthful detection-scoped statements above (the contract's mandatory declaration truthfulness cascade). Detection only — never a safety determination; every signal requires independent validation. classification_signals, substance_signals, gap_type_mappings, aliases, and rule_nuances are byte-unchanged by this increment (the I4/I5 corpus validity anchors were re-frozen on that proof). Mechanical remains NOT ACTIVATED.",
+    "mechanical_td_slice1_reference_fundamentals": "Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals (Owner-authorized bounded reference fundamentals): reference_fundamentals is ONE additive, declaration-only group (force_moment_pressure_v1, applicable gap PHYSICAL_FEASIBILITY) recording four bounded reference claims with exact source provenance (mechanical:PR006–PR009), source-use-policy provenance (mechanical:PR010–PR011) and explicit limitations. It is inert for the classifier, get_active_rules, Path-N question serving, NeedRouting, progression, readiness and the domain registry loader (no loader or schema change); it is not a classification or substance signal and carries no executable formula selection, user-input variable, calculation procedure, threshold or applicability logic. Its only consumer is the presentation layer's bounded Mechanical CAP-01 gap-scoped context (web/cap01_guidance.py, catalogue copy in web/ui_text.py), which shows the same bounded reference set only while the exact canonical PHYSICAL_FEASIBILITY gap is OPEN or PARTIAL and never selects which relationship applies to a project. Existing provenance mechanical:PR001–PR005 are unchanged."
   }
 }

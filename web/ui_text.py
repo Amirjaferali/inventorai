@@ -4393,6 +4393,136 @@ UI_STRINGS = {
             "الموصوف هو بيان المخترع نفسه على المستوى المفاهيمي."
         ),
     },
+
+    # --- MECHANICAL TECHNICAL DEEPENING SLICE 1 — FORCE, MOMENT & PRESSURE FUNDAMENTALS
+    # (Owner-authorized bounded reference fundamentals). OPTIONAL sub-view of the
+    # Mechanical CAP-01 PHYSICAL_FEASIBILITY gap context above: the SAME bounded
+    # reference set renders only while the exact canonical PHYSICAL_FEASIBILITY gap is
+    # OPEN or PARTIAL (selection owned by web/cap01_guidance.py; these entries bind
+    # nothing). Four bounded claims declared in domains/mechanical/domain.json
+    # (reference_fundamentals / force_moment_pressure_v1) with exact source
+    # provenance mechanical:PR006–PR009 and source-use-policy provenance
+    # mechanical:PR010–PR011. Factual paraphrase only: no copied NASA / NIST
+    # explanatory prose, no image / logo / media, no endorsement implication, no
+    # project-specific calculation, no formula selection. Equations and unit
+    # symbols live in their own EQUATION keys so the template can isolate them
+    # with dir="ltr"; they are language-neutral and identical in EN and AR.
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_TITLE": {
+        "en": "Reference fundamentals that may help with this gap",
+        "ar": "أساسيات مرجعية قد تساعد في فهم هذه الفجوة",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_INTRO": {
+        "en": (
+            "These relationships are reference fundamentals that may be relevant. InventorAI has "
+            "not determined that any of them applies to your design. Use only a relationship that "
+            "matches your actual mechanism and verified inputs."
+        ),
+        "ar": (
+            "هذه علاقات مرجعية قد تكون ذات صلة. لم يحدد InventorAI أن أيًا منها ينطبق على تصميمك. "
+            "استخدم فقط العلاقة التي تطابق آليتك الفعلية ومدخلاتك المتحقق منها."
+        ),
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_1_TITLE": {
+        "en": "Torque / moment",
+        "ar": "العزم / عزم القوة",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_1_LEAD": {
+        "en": "For a perpendicular force about a pivot:",
+        "ar": "في حالة قوة عمودية حول نقطة ارتكاز:",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_1_EQUATION": {
+        "en": "T = F × L⊥",
+        "ar": "T = F × L⊥",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_1_NOTE": {
+        "en": (
+            "L⊥ is the perpendicular moment arm. This is a reference relationship, not a "
+            "calculation for your project."
+        ),
+        "ar": "حيث L⊥ هو ذراع العزم العمودي. هذه علاقة مرجعية وليست حسابًا لمشروعك.",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_2_TITLE": {
+        "en": "Ideal static moment balance",
+        "ar": "اتزان العزوم الساكن المثالي",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_2_LEAD": {
+        "en": "For an ideal statically balanced pivot with perpendicular forces:",
+        "ar": "في نظام مثالي متزن ساكنًا حول نقطة ارتكاز ومع قوى عمودية:",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_2_EQUATION": {
+        "en": "F₁L₁ = F₂L₂",
+        "ar": "F₁L₁ = F₂L₂",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_2_NOTE": {
+        "en": (
+            "This ideal relationship does not account for friction, deformation, acceleration, "
+            "dynamic response or structural adequacy."
+        ),
+        "ar": (
+            "لا تشمل هذه العلاقة المثالية الاحتكاك أو التشوه أو التسارع أو الاستجابة الديناميكية "
+            "أو الكفاية الإنشائية."
+        ),
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_3_TITLE": {
+        "en": "Pressure / force / area",
+        "ar": "الضغط / القوة / المساحة",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_3_LEAD": {
+        "en": "For uniform pressure acting over an effective area:",
+        "ar": "عند تأثير ضغط منتظم على مساحة فعالة:",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_3_EQUATION": {
+        "en": "F = pA",
+        "ar": "F = pA",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_3_NOTE": {
+        "en": (
+            "This reference relationship does not establish hydraulic-system performance, "
+            "pressure losses, seal behaviour, component ratings, fluid suitability or safety."
+        ),
+        "ar": (
+            "لا تثبت هذه العلاقة المرجعية أداء نظام هيدروليكي أو فواقد الضغط أو سلوك الأختام أو "
+            "تصنيفات المكونات أو ملاءمة المائع أو السلامة."
+        ),
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_4_TITLE": {
+        "en": "SI units",
+        "ar": "وحدات SI",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_4_LEAD": {
+        "en": "Torque / moment is expressed in",
+        "ar": "يُعبَّر عن العزم / عزم القوة بوحدة",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_4_EQUATION": {
+        "en": "N·m",
+        "ar": "N·m",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_ITEM_4_NOTE": {
+        "en": "Pressure is expressed in Pa or kPa. Correct units do not validate a design.",
+        "ar": "يُعبَّر عن الضغط بوحدة Pa أو kPa. صحة الوحدات لا تعني صحة التصميم.",
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_SOURCE": {
+        "en": (
+            "Reference source material: NASA Glenn Research Center — Torque (Moment), Balance Of "
+            "Forces, Aerodynamic Forces; NIST Guide to the SI, SP 811 Appendix B.9."
+        ),
+        "ar": (
+            "مواد مرجعية: مركز غلين للأبحاث التابع لناسا — Torque (Moment)، Balance Of Forces، "
+            "Aerodynamic Forces؛ ودليل NIST للنظام الدولي للوحدات، SP 811 Appendix B.9."
+        ),
+    },
+    "UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_FUNDAMENTALS_BOUNDARY": {
+        "en": (
+            "These reference fundamentals do not satisfy the physical feasibility gap, perform a "
+            "project calculation, prove that the mechanism works, establish safety or structural "
+            "adequacy, or validate the invention."
+        ),
+        "ar": (
+            "هذه الأساسيات المرجعية لا تغلق فجوة الجدوى الفيزيائية (Physical Feasibility)، ولا "
+            "تنفذ حسابًا خاصًا بالمشروع، ولا تثبت أن الآلية تعمل أو أن التصميم آمن أو كافٍ "
+            "إنشائيًا، ولا تثبت أن الاختراع تم التحقق منه."
+        ),
+    },
 }
 
 

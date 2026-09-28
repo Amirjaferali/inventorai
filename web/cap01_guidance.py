@@ -245,6 +245,45 @@ _GAP_CONTEXT_PARTS = {
     "limit_key":   "LIMIT",
 }
 
+# MECHANICAL TECHNICAL DEEPENING SLICE 1 — FORCE, MOMENT & PRESSURE FUNDAMENTALS.
+# An OPTIONAL reference-fundamentals sub-view attached to ONE already-resolved
+# gap context. (trusted canonical domain id, EXACT canonical gap id) -> (the
+# governed pack's reference_fundamentals group id, its claim ids in the pack's
+# source order). The gap context's own binding (exact gap id + exact OPEN /
+# PARTIAL lifecycle state, decided in ``gap_contexts_for_gaps``) is the ONLY
+# authority for whether anything renders; this table adds no second binding,
+# reads no inventor text, no classification / substance signal and no package
+# wording, and selects no relationship for a project — the SAME bounded
+# reference set is shown whenever the exact authorized condition exists. The
+# technical claim / source / limitation truth lives in
+# ``domains/mechanical/domain.json`` (reference_fundamentals) and
+# ``domains/domain_provenance.json``; the copy lives in ``web/ui_text.py``; this
+# table owns availability and structure only. No calculation, no formula
+# selection, no generic knowledge or calculation registry.
+CAP01_GAP_FUNDAMENTALS = {
+    ("mechanical", "PHYSICAL_FEASIBILITY"): (
+        "force_moment_pressure_v1",
+        ("torque_moment_perpendicular", "ideal_static_moment_balance",
+         "pressure_force_area_uniform", "si_quantity_unit_discipline"),
+    ),
+}
+
+# Group-level parts of the fundamentals sub-view, then the four parts every item
+# carries. ``EQUATION`` is deliberately its own part so the template can isolate
+# the language-neutral relationship / unit symbols in a left-to-right span.
+_FUNDAMENTALS_PARTS = {
+    "title_key":    "TITLE",
+    "intro_key":    "INTRO",
+    "source_key":   "SOURCE",
+    "boundary_key": "BOUNDARY",
+}
+_FUNDAMENTALS_ITEM_PARTS = {
+    "title_key":    "TITLE",
+    "lead_key":     "LEAD",
+    "equation_key": "EQUATION",
+    "note_key":     "NOTE",
+}
+
 
 def _gap_identity(gap):
     """``(gap_type, status)`` of one canonical gap record, or ``None``.
@@ -308,6 +347,40 @@ def gap_context_copy(domain_id, gap_type):
         return None
     view["group_id"] = group_id
     view["gap_type"] = gap_type
+    view["fundamentals"] = _fundamentals(domain_id.strip(), gap_type, prefix)
+    return view
+
+
+def _fundamentals(domain_id, gap_type, prefix):
+    """The OPTIONAL reference-fundamentals sub-view of one gap context, as copy
+    KEYS plus the pack's group / claim identifiers, or ``None``.
+
+    All-or-nothing: the group parts and every item's four parts must exist in
+    the catalogue, or nothing renders — a half set of relationships would be a
+    different (and untruthful) statement. ``None`` here never removes the gap
+    context itself; the context's title / meaning / limit render unchanged."""
+    row = CAP01_GAP_FUNDAMENTALS.get((domain_id, gap_type))
+    if row is None:
+        return None
+    group_id, claim_ids = row
+    stem = prefix + "FUNDAMENTALS_"
+    view = {name: stem + part for name, part in _FUNDAMENTALS_PARTS.items()}
+    if not all(ui_text.has_string(key) for key in view.values()):
+        return None
+    claims = []
+    for number, claim_id in enumerate(claim_ids, 1):
+        item = {name: stem + "ITEM_%d_" % number + part
+                for name, part in _FUNDAMENTALS_ITEM_PARTS.items()}
+        if not all(ui_text.has_string(key) for key in item.values()):
+            return None
+        item["claim_id"] = claim_id
+        claims.append(item)
+    if not claims:
+        return None
+    view["group_id"] = group_id
+    # Named ``claims`` (never ``items``): a template attribute lookup on a dict
+    # would otherwise resolve to the dict method and iterate nothing.
+    view["claims"] = tuple(claims)
     return view
 
 
