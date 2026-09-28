@@ -41,9 +41,14 @@ _EE_REGISTRY = os.path.join(_CONFIG, "electronics_electrical_question_intent_reg
 _MECH_PACK = os.path.join(_REPO, "domains", "mechanical", "domain.json")
 
 # Byte identity of the files this slice must NOT change (values at the
-# authorized base 8d8ef633).
+# authorized base 8d8ef633). The Mechanical pack value is the CURRENT authorized
+# specialist-pack identity: it was re-baselined once after UQTR, when Mechanical
+# Technical Deepening Slice 1 added the bounded, inert `reference_fundamentals`
+# metadata (questions, signals, rule nuances and aliases byte-unchanged). The
+# UQTR invariant is unchanged: its own Path-N owner-friendly behavior must never
+# alter the current specialist pack.
 _UNCHANGED_SHA256 = {
-    _MECH_PACK: "901dd7188ddefda9cbe69a835cc64959c1d55debfe61b262d720abd904069e79",
+    _MECH_PACK: "d157054acaa7d5a939a55e62281df9e7ac3b5ab6781b5f030f279875cf6db806",
     _MECH_REGISTRY: "b2db0b898a03c103aa86b1811a78121ec37ad21d8f44b03b3171e480f1d91f24",
     _EE_ARTIFACT: "7b3e06c0492c91486b429ce14479c43a1c8ff3ebe268137c148b07cc7cb8590c",
     _EE_REGISTRY: "5b0d35667635c2470a59fee272b129e27a172c0640e94473efd442ad9b131884",

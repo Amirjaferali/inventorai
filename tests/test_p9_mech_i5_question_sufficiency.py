@@ -226,7 +226,16 @@ _FROZEN_PACK_SHA256 = {
     # rebuild — declaration bytes are the only pack change. Engine hashes,
     # other-pack hashes, question-inventory pins, and this file's test
     # inventory are untouched.
-    "mechanical": "901dd7188ddefda9cbe69a835cc64959c1d55debfe61b262d720abd904069e79",
+    # Mechanical Technical Deepening Slice 1 (Force, Moment & Pressure
+    # Fundamentals): re-frozen after adding ONE bounded, inert, additive
+    # `reference_fundamentals` group plus its governance-note entry (provenance
+    # mechanical:PR006–PR011). classification_signals, substance_signals,
+    # substance_signal_plural_aliases, gap_type_mappings, rule_nuances and
+    # aliases are byte-unchanged and stay independently protected (canonical
+    # classification/substance hashes in tests/test_p9_mech_safety_cue_family.py;
+    # _EXPECTED_QUESTIONS below). This re-freeze authorizes and implies NO
+    # runtime classification, rule, question-serving or progression change.
+    "mechanical": "d157054acaa7d5a939a55e62281df9e7ac3b5ab6781b5f030f279875cf6db806",
     "electronics_electrical": "53f431e38a70c2b621e19afb7323ad9bc4732c6c4151ea6b8c46a3214f098dfb",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",

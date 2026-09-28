@@ -472,7 +472,13 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
      responsibility, required input, closure rule or next action (Path-N and the gap
      action packs keep those). The domain-level checklist loop above is unchanged; a
      domain with no gap-scoped context contributes nothing here, which again means only
-     "not authorized yet". No domain literal and no branch chain live in this markup. #}
+     "not authorized yet". No domain literal and no branch chain live in this markup.
+     Technical Deepening Slice 1 — bounded reference fundamentals: a gap context MAY carry an
+     OPTIONAL `fundamentals` sub-view (resolved by the same module, copy KEYS only) — a title,
+     an intro, four reference items (title / lead / language-neutral equation or unit symbols
+     isolated in a dir="ltr" bdi so RTL never reorders them / note), a neutral source
+     acknowledgement and a boundary line. The template renders it passively and decides no
+     applicability; no relationship is selected for the project, nothing is calculated. #}
   {%- for cap01 in cap01_profiles(package) %}
   <div class="cap01-block" data-cap01-profile="{{ cap01.profile_id }}">
     <h3 class="cap01-title" data-cap01-title>{{ t(cap01.title_key) }}</h3>
@@ -509,6 +515,25 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
       <h4 class="cap01-gap-title" data-cap01-gap-title>{{ t(_cap01_gap.title_key) }}</h4>
       <p class="group-lede cap01-gap-meaning" data-cap01-gap-meaning>{{ t(_cap01_gap.meaning_key) }}</p>
       <p class="group-lede cap01-gap-limit" data-cap01-gap-limit>{{ t(_cap01_gap.limit_key) }}</p>
+      {%- if _cap01_gap.fundamentals %}
+      {%- set _cap01_fund = _cap01_gap.fundamentals %}
+      <div class="cap01-fundamentals" data-cap01-fundamentals="{{ _cap01_fund.group_id|replace('_', '-') }}">
+        <h5 class="cap01-fund-title" data-cap01-fund-title>{{ t(_cap01_fund.title_key) }}</h5>
+        <p class="group-lede cap01-fund-intro" data-cap01-fund-intro>{{ t(_cap01_fund.intro_key) }}</p>
+        <ul class="cap01-fund-items">
+          {%- for _cap01_claim in _cap01_fund.claims %}
+          <li class="cap01-fund-item" data-cap01-fund-claim="{{ _cap01_claim.claim_id|replace('_', '-') }}">
+            <strong class="cap01-fund-item-title" data-cap01-fund-item-title>{{ t(_cap01_claim.title_key) }}</strong>
+            <span class="cap01-fund-item-lead" data-cap01-fund-item-lead>{{ t(_cap01_claim.lead_key) }}</span>
+            <bdi class="cap01-fund-equation" dir="ltr" data-cap01-fund-equation>{{ t(_cap01_claim.equation_key) }}</bdi>
+            <span class="cap01-fund-item-note" data-cap01-fund-item-note>{{ t(_cap01_claim.note_key) }}</span>
+          </li>
+          {%- endfor %}
+        </ul>
+        <p class="group-lede cap01-fund-source" data-cap01-fund-source>{{ t(_cap01_fund.source_key) }}</p>
+        <p class="group-lede cap01-fund-boundary" data-cap01-fund-boundary>{{ t(_cap01_fund.boundary_key) }}</p>
+      </div>
+      {%- endif %}
     </div>
     {%- endfor %}
   </div>

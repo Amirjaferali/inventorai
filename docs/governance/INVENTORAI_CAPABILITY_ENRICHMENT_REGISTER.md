@@ -56,7 +56,7 @@ IMPLEMENTATION`** and require **separate explicit owner authorization** before a
 §R5/§R6), **with ONE bounded exception recorded in the CAP-01 entry below: the Owner has explicitly
 authorized two bounded deterministic Stage-18 CAP-01 guidance increments — the first IMPLEMENTED / MERGED /
 POST-MERGE VERIFIED (PR #678), the second a research-direction addendum likewise IMPLEMENTED / MERGED / POST-MERGE
-VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`) — and, separately, ONE bounded gap-scoped Mechanical CAP-01 Open-Gap Technical Context (OWNER-AUTHORIZED / IMPLEMENTED at candidate `99f6b91185c0a1766e48e2abe0efde629b939ab1` / INDEPENDENT NON-AUTHORING REVIEW PASS, material findings NONE / PR / merge pending; not a Mechanical domain-level checklist profile). Those authorizations are confined to those increments and that slice. They do NOT authorize full CAP-01 / full STG, and they change nothing for
+VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`) — and, separately, ONE bounded gap-scoped Mechanical CAP-01 Open-Gap Technical Context (DELIVERED — PR #713, merge `225c0d36e6cfa97a25cd58c671b7c4f090627fb5`; not a Mechanical domain-level checklist profile), and ONE bounded Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals (OWNER-AUTHORIZED / IMPLEMENTED at final candidate `e56e32def45346944eecab9982dfb572fa5764f3` / INDEPENDENT NON-AUTHORING REVIEW COMPLETE, PASS / PR / merge pending; four source-backed reference fundamentals only). Those authorizations are confined to those increments and those slices. They do NOT authorize full CAP-01 / full STG, and they change nothing for
 CAP-02 … CAP-18, which remain `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` unless already governed
 otherwise by their own authority.** **A second, separately bounded exception is recorded in the
 CAP-09 entry below: the Owner authorized ONE Stage-19 durable SuccessCriterion remediation
@@ -95,14 +95,20 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   increments: the first IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #678, merge `84c45cec89f5348f279c591dd739ded0d0db24b3`), and the
   second — a class-general research-direction addendum naming where to look and generic search terms for
   the same six topics — IMPLEMENTED / MERGED / POST-MERGE VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`).** A third, separately Owner-authorized bounded
-  slice — the Mechanical Open-Gap Technical Context: OWNER-AUTHORIZED / IMPLEMENTED at candidate
-  `99f6b91185c0a1766e48e2abe0efde629b939ab1` / INDEPENDENT NON-AUTHORING REVIEW PASS (material findings NONE) / PR / MERGE
-  PENDING — shows, for each CURRENT (OPEN / PARTIAL) canonical Mechanical gap (MECHANISM_COMPLETENESS,
+  slice — the Mechanical Open-Gap Technical Context: DELIVERED (PR #713, merge
+  `225c0d36e6cfa97a25cd58c671b7c4f090627fb5`) — shows, for each CURRENT (OPEN / PARTIAL) canonical Mechanical gap (MECHANISM_COMPLETENESS,
   PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY), one short explanatory technical context in the report /
   deliverable and PDF, grounded only in the governed Mechanical truth (`domains/mechanical/domain.json`;
   the D13 Electronics package is not a Mechanical source); it is a gap-scoped explanatory presentation
   slice, not a Mechanical domain-level checklist profile, a D13 Mechanical package, a technical engine or
-  engineering execution. No further CAP-01 implementation beyond the currently authorized Mechanical
+  engineering execution. A fourth bounded slice — Mechanical Technical Deepening Slice 1 — Force, Moment &
+  Pressure Fundamentals: OWNER-AUTHORIZED / IMPLEMENTED at final candidate
+  `e56e32def45346944eecab9982dfb572fa5764f3` / INDEPENDENT NON-AUTHORING REVIEW COMPLETE, PASS / PR / MERGE
+  PENDING — adds, only for a CURRENT (OPEN / PARTIAL) canonical PHYSICAL_FEASIBILITY gap, four
+  source-backed reference fundamentals (T = F × L⊥; F₁L₁ = F₂L₂; F = pA; N·m and Pa / kPa) from the
+  governed Mechanical provenance mechanical:PR006–PR011, with no applicability inference, project
+  calculation, gap closure or feasibility, structural or safety conclusion. No next Technical Deepening
+  slice is authorized. No further CAP-01 implementation beyond the currently authorized Mechanical
   bounded slice is authorized. The two Electronics increments are presentation-only; the second
   adds no evidence, retrieval, numeric value, project inspection or specialist. That increment is presentation-only, class-general and
   conditional, with one authorized domain guidance profile (`electronics_electrical`), bounded EN/AR
@@ -704,7 +710,7 @@ nothing, authorizes nothing, and changes no critical path.
 
 | Capability | Primary activation gate / authority | Also spans | Current status |
 |---|---|---|---|
-| CAP-01 Structured Technical Guidance | **D13** (owner-gated) | WS-PFV-001, CAP-04, CAP-09 | RECORDED — NOT AUTHORIZED, **except two Owner-authorized bounded Stage-18 guidance increments** (Electronics; first merged in PR #678; second research-direction addendum merged in PR #679) **and one Owner-authorized bounded gap-scoped Mechanical Open-Gap Technical Context** (implemented at candidate 99f6b91185c0a1766e48e2abe0efde629b939ab1; independent non-authoring review PASS; PR / merge pending; not a Mechanical domain-level checklist profile; full CAP-01/STG still NOT AUTHORIZED) |
+| CAP-01 Structured Technical Guidance | **D13** (owner-gated) | WS-PFV-001, CAP-04, CAP-09 | RECORDED — NOT AUTHORIZED, **except two Owner-authorized bounded Stage-18 guidance increments** (Electronics; first merged in PR #678; second research-direction addendum merged in PR #679) **and one Owner-authorized bounded gap-scoped Mechanical Open-Gap Technical Context** (delivered, PR #713; not a Mechanical domain-level checklist profile) **plus Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals** (final candidate e56e32def45346944eecab9982dfb572fa5764f3; independent non-authoring review PASS; PR / merge pending; full CAP-01/STG still NOT AUTHORIZED) |
 | CAP-02 Simplified One-Step Journey | WS8 / later UX increment | CAP-06, CAP-07 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (delivered, PR #709) — FULL CAP-02 NOT AUTHORIZED |
 | CAP-03 Adaptive Assistance | WS13 / WS14 | CAP-02, AI Coach | RECORDED — NOT AUTHORIZED |
 | CAP-04 Gap Action Packs | WS12 (+ D13 for technical) | CAP-01, CAP-09 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (delivered, PR #708) — FULL CAP-04 NOT AUTHORIZED |
@@ -853,7 +859,7 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 
 | Capability ID | Current status | Earliest activation gate | Prerequisites | Owner authorization required | Last reviewed Workstream | Next mandatory review point |
 |---|---|---|---|---|---|---|
-| CAP-01 Structured Technical Guidance | RECORDED — NOT AUTHORIZED, except two bounded Electronics Stage-18 guidance increments (delivered, PR #678 and PR #679) and one bounded gap-scoped Mechanical Open-Gap Technical Context (implemented, independent review PASS, PR / merge pending) | D13 (owner-gated) | D13 governed knowledge sources; D13 Source Review | Yes (via D13) | — (none since registration) | At WS12–WS16 closure and any D13 gate |
+| CAP-01 Structured Technical Guidance | RECORDED — NOT AUTHORIZED, except two bounded Electronics Stage-18 guidance increments (delivered, PR #678 and PR #679) one bounded gap-scoped Mechanical Open-Gap Technical Context (delivered, PR #713) and Mechanical Technical Deepening Slice 1 (implemented, independent review PASS, PR / merge pending) | D13 (owner-gated) | D13 governed knowledge sources; D13 Source Review | Yes (via D13) | — (none since registration) | At WS12–WS16 closure and any D13 gate |
 | CAP-02 Simplified One-Step Journey | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (delivered, PR #709) — FULL CAP-02 NOT AUTHORIZED | WS8 / later UX increment | Committed state; WS8; WS12 unknowns; CAP-04 | Yes | — | At the UX increment / WS12–WS16 closure |
 | CAP-03 Adaptive Assistance | RECORDED — NOT AUTHORIZED | WS13 / WS14 | Deterministic sufficiency; WS12; WS13/WS14 | Yes | — | At WS13/WS14 authorization / WS12–WS16 closure |
 | CAP-04 Gap Action Packs | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (delivered, PR #708) — FULL CAP-04 NOT AUTHORIZED | WS12 (+ D13 for technical) | WS12 closure paths; D13; gap/blocker model | Yes | — | At WS12 closure and any D13 gate |

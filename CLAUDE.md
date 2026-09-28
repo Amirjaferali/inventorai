@@ -2,26 +2,27 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT.**
-Mechanical CAP-01 — Open-Gap Technical Context is ONE separately Owner-authorized bounded, gap-scoped
-presentation slice inside the already-entered Stage 18 (D13 / CAP-01; no new Master Roadmap Stage;
-Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; FULL CAP-01 /
-FULL STG NOT AUTHORIZED): for each CURRENT canonical Mechanical gap whose EXACT identity is
-MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY or BOUNDARY_AMBIGUITY and whose EXACT canonical state is
-OPEN or PARTIAL, the report / deliverable and the PDF show one short explanatory technical context —
-what that gap concerns at concept level within the governed Mechanical package and what InventorAI
-does not conclude from it — grounded only in the existing governed Mechanical truth
-(`domains/mechanical/domain.json`); the D13 Electronics package is not a Mechanical source. Mechanical
-only; report / deliverable and PDF only; explanatory technical context only. Path-N remains the
-question-serving owner and CAP-04 the action / responsibility / required-input / closure owner; no
-state, persistence, schema, readiness, progression or scoring change, no engine change, and no AI /
-LLM / provider call. It is NOT a full Mechanical CAP-01 profile, a D13 Mechanical package, a technical
-engine or engineering execution: Mechanical still has NO Electronics-style domain-level checklist
-profile and NOW has this separately authorized gap-scoped Open-Gap Technical Context. Status:
-OWNER-AUTHORIZED / IMPLEMENTED at candidate `99f6b91185c0a1766e48e2abe0efde629b939ab1` (tree `4440aa3713c87498a46824396ffae4894e002a0f`, sole parent `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`) / INDEPENDENT
-NON-AUTHORING REVIEW PASS — material findings: NONE (risk LEVEL 2 — MEDIUM) / PR NOT OPENED — PR /
-merge pending / merge NOT PERFORMED / deployment and release NOT AUTHORIZED. No further CAP-01
-implementation beyond the currently authorized Mechanical bounded slice is authorized. CAP-09 Slice 4 —
+**ACTIVE CONTRACT: MECHANICAL TECHNICAL DEEPENING SLICE 1 — FORCE, MOMENT & PRESSURE FUNDAMENTALS.**
+ONE Owner-authorized bounded slice inside the already-entered Stage 18 (D13 / CAP-01; no new Master
+Roadmap Stage; Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06 NOT
+ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED). Mechanical only: for the exact CURRENT canonical
+`PHYSICAL_FEASIBILITY` gap in exact state OPEN or PARTIAL, the existing report / deliverable and PDF may
+show four source-backed reference fundamentals — simple perpendicular torque / moment (T = F × L⊥),
+ideal static moment balance (F₁L₁ = F₂L₂), uniform pressure over an effective area (F = pA) and SI unit
+discipline (N·m; Pa / kPa) — from the governed Mechanical provenance mechanical:PR006–PR011. Reference
+fundamentals only: no applicability inference, no project calculation, no gap closure, no feasibility,
+structural or safety conclusion, no validation, readiness or progression effect, and no AI / LLM /
+provider call. Status: OWNER-AUTHORIZED / IMPLEMENTED — final candidate
+`e56e32def45346944eecab9982dfb572fa5764f3` (tree `8157eacf5b012d153534b5901aacd9c30abfa26d`) / INDEPENDENT
+NON-AUTHORING REVIEW COMPLETE — PASS, no material findings remain / PR NOT OPENED / merge NOT PERFORMED /
+deployment and release NOT AUTHORIZED. No next Technical Deepening slice is authorized, and no further
+CAP-01 implementation beyond the currently authorized Mechanical bounded slice is authorized.
+Mechanical CAP-01 — Open-Gap Technical Context — DELIVERED (PR #713, merge
+`225c0d36e6cfa97a25cd58c671b7c4f090627fb5`; post-merge identity / content verification PASS) — is the
+preceding bounded slice inside Stage 18: one short explanatory context per current Mechanical gap in the
+report / deliverable and PDF, grounded only in `domains/mechanical/domain.json`; it is not a full
+Mechanical CAP-01 profile, and Mechanical still has NO Electronics-style domain-level checklist profile.
+CAP-09 Slice 4 —
 DELIVERED (PR #712, merge `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`) — is the preceding bounded slice inside Stage 19
 (WS-PFV-001 / CAP-09; Stage 19 stays ENTERED / NOT COMPLETE; FULL CAP-09 and FULL WS-PFV-001 NOT
 AUTHORIZED): for each CURRENT Section-11
@@ -138,16 +139,17 @@ authorization.
 docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the delivered
 history, and is the file to read for authority — this paragraph routes, it does not
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded Electronics CAP-01
-increments are delivered (PR #678, PR #679) and the bounded Mechanical Open-Gap Technical Context
-(above) is its current bounded action, no further CAP-01 implementation beyond the currently
-authorized Mechanical bounded slice is authorized, full CAP-01 / full STG is not authorized, no other
-Stage is authorized — the bounded Mechanical CAP-01 slice sits inside the already-entered Stage 18 and
-enters no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
+increments are delivered (PR #678, PR #679), the bounded Mechanical Open-Gap Technical Context is
+delivered (PR #713) and Mechanical Technical Deepening Slice 1 (above) is its current bounded action,
+no further CAP-01 implementation beyond the currently authorized Mechanical bounded slice is
+authorized, no next Technical Deepening slice is authorized, full CAP-01 / full STG is not authorized,
+no other Stage is authorized — the bounded Mechanical Technical Deepening slice sits inside the
+already-entered Stage 18 and enters no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
 Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -290,6 +292,29 @@ two active domains. The future domain direction stays where it is recorded: Mast
 subitem), Stage 30 (cross-domain safeguards before new-domain activation) and Stage 31 (future IoT
 technical depth); roadmap §8C invariants D–F and the Product-Foundation §5 multi-domain contract's
 no-core-domain-name-branching principle carry the architecture rule.
+**Owner-accepted portfolio / integration direction (planning direction only; it authorizes no domain,
+Stage or slice).** Shared InventorAI architecture + independently governed domain-specific knowledge +
+truthful domain-specific depth + shared evidence / gap / validation / decision architecture. Technical
+depth and cross-domain integration are BOTH necessary: depth must not become isolated parallel domain
+systems, and integration must not become a generic framework built ahead of real use cases. Cross-domain
+integration means shared project / subsystem / interface / dependency / evidence reasoning while each
+domain keeps authority over its own technical truth; Stage 15 / IRL stays the existing roadmap home for
+subsystem interfaces, cross-domain dependencies, integration evidence and durable subsystem identity /
+persistence when required — no Stage 15 implementation is authorized now and no new integration Stage or
+capability is created. Current priority: Mechanical deepening now → IoT → Drone / Unmanned → Renewable →
+Satellite / Space consideration. For ordinary new domains (IoT, Drone / Unmanned, Renewable) the
+preferred operating model is Add → Qualify → Activate → Establish Useful Baseline → Deepen — a preferred
+model, not a universal mandatory lifecycle. Satellite / Space keeps its Stage-28 direction and does NOT
+require a full new Domain Pack first: it may resolve to composition / orchestration, extension of
+existing capabilities, a smaller space-specific reasoning layer, a true new domain only if justified, or
+deferral where existing capability suffices; composition / smaller reasoning stays preferred first, and
+Satellite / Space implementation remains unauthorized. The Software and Medical Device packs exist in the
+repository but are NOT in the active execution sequence: they remain in the FUTURE-DOMAIN REASSESSMENT
+POOL and are neither activated nor deepened without product value, overlap assessment, source maturity
+and explicit Owner authorization. Stage 30 cross-domain safeguards stay mandatory before any NEW domain
+activation and are reviewed proportionally to the actual proposed domain and the shared boundaries it
+affects — not a recurring full-project governance audit, a mandatory whole-history review or automatic
+re-validation of unrelated domains. No new domain activation is authorized.
 
 **Human-study boundary.** No recruitment, participant contact or human-data collection begins
 without the required Owner authorization and applicable consent/custody readiness. Before the
@@ -469,17 +494,13 @@ information, not execution authority.
   pre-existing limitation affecting other planning rows too — no Slice-4 repair cycle. The accepted
   first-use Arabic concept is "متغيّر / شرط الاختبار (Test Variable / Condition)"; inventor-authored
   text stays verbatim.
-- **NEXT TRIGGER — one read-only prompt audit after Mechanical CAP-01 closes.** After the Mechanical
-  CAP-01 Open-Gap Technical Context lifecycle is fully closed and merged, run ONE separate read-only
-  `/doctor prompt-audit` (or the installed Claude Code version's current equivalent if renamed) to
-  inspect CLAUDE.md, skills, agents and commands for dated / harmful prompting patterns. Not a
-  recurring gate; not before every slice; no automatic edits; the Lead reviews proposed prompt changes
-  before any mutation; it must not delay the Mechanical CAP-01 publication.
-- **WATCH — Mechanical CAP-01 test hygiene (non-blocking, no repair cycle).** Two `or True` clauses in
-  `tests/test_cap01_mechanical_open_gap_context.py` are non-blocking test-hygiene debt: the material
-  risks they nominally cover are independently covered by other real assertions and direct code
-  inspection (independent review PASS, material findings NONE). Remove or replace them on the next
-  natural touch of that test file; the reviewed implementation and its tests are not modified for this.
+- **COMPLETE — one-time read-only prompt audit (the former NEXT TRIGGER, fired after Mechanical CAP-01
+  closed).** It ran once, read-only: PASS — NO MATERIAL PROMPT ISSUE; no governance cycle is required.
+  Its non-blocking hygiene findings stay natural-touch only (e.g. concise current truth over repeated
+  delivered-history narration). It is not a recurring gate or a prerequisite for any slice.
+- **CLOSED — Mechanical CAP-01 test-hygiene WATCH.** The two `or True` clauses in
+  `tests/test_cap01_mechanical_open_gap_context.py` were replaced with real assertions on the natural
+  touch by Mechanical Technical Deepening Slice 1; nothing remains open.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative

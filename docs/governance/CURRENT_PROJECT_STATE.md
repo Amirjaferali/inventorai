@@ -6,28 +6,27 @@ meaning. CLAUDE.md owns the single boot sequence. Historical material below does
 override this current entry or impose another reading/approval/synchronization sequence.
 
 <!-- CURRENT-BLOCK: current-position -->
-**Current position (2026-09-27): Stage 18 / Mechanical CAP-01 — current bounded action: Mechanical CAP-01 — Open-Gap Technical Context (one separately Owner-authorized bounded gap-scoped presentation slice inside the already-entered Stage 18, no new Master Roadmap Stage, Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE, Stage 23 not entered, CAP-06 not activated; implemented at candidate `99f6b91185c0a1766e48e2abe0efde629b939ab1`, independent non-authoring review PASS with no material findings, PR NOT OPENED — PR / merge pending; full CAP-01 / full STG NOT AUTHORIZED; deployment / release NOT AUTHORIZED); CAP-09 Slice 4 — Owner-Defined Test Variable / Condition — delivered, PR #712 (full CAP-09, full WS-PFV-001 and a formal experimental variable model NOT AUTHORIZED); CAP-09 Slice 3 — Owner-Defined Test Hypothesis — delivered, PR #711; CAP-11 Evidence Quality Ladder (Slice 1 — Evidence Details — delivered, PR #710; full CAP-11 NOT AUTHORIZED); CAP-02 Simplified One-Step Journey (Slice 1 — Project Compass — delivered, PR #709; full CAP-02 NOT AUTHORIZED); CAP-04 Gap Action Packs (Slice 1 — Actionable Gap Pack — delivered, PR #708; full CAP-04 NOT AUTHORIZED); Stage 22 — CAP-05 Decision Trace + CAP-07 Invention Decision Room ENTERED / PARTIAL (Slice 2 — Actionable Decision Room Summary — delivered, PR #707; Slice 1 — read-only decision trace + project context panel — delivered, PR #706); Stage 20 — CAP-08 Assumption Register ENTERED / PARTIAL (CAP-08 Slice 1 — Owner-declared assumption → answer dependency — delivered, PR #704); Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL (CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers — delivered, PR #703); Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing — delivered, PR #701, with the bounded weak-PF recovery PR #702; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
+**Current position (2026-09-28): Stage 18 / Mechanical Technical Deepening — current bounded action: Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals (one Owner-authorized bounded slice inside the already-entered Stage 18, no new Master Roadmap Stage, Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE, Stage 23 not entered, CAP-06 not activated; final candidate `e56e32def45346944eecab9982dfb572fa5764f3`, independent non-authoring review COMPLETE — PASS, no material findings remain, PR NOT OPENED — PR / merge pending; no next Technical Deepening slice authorized; full CAP-01 / full STG NOT AUTHORIZED; deployment / release NOT AUTHORIZED); Mechanical CAP-01 — Open-Gap Technical Context — delivered, PR #713; CAP-09 Slice 4 — Owner-Defined Test Variable / Condition — delivered, PR #712 (full CAP-09, full WS-PFV-001 and a formal experimental variable model NOT AUTHORIZED); CAP-09 Slice 3 — Owner-Defined Test Hypothesis — delivered, PR #711; CAP-11 Evidence Quality Ladder (Slice 1 — Evidence Details — delivered, PR #710; full CAP-11 NOT AUTHORIZED); CAP-02 Simplified One-Step Journey (Slice 1 — Project Compass — delivered, PR #709; full CAP-02 NOT AUTHORIZED); CAP-04 Gap Action Packs (Slice 1 — Actionable Gap Pack — delivered, PR #708; full CAP-04 NOT AUTHORIZED); Stage 22 — CAP-05 Decision Trace + CAP-07 Invention Decision Room ENTERED / PARTIAL (Slice 2 — Actionable Decision Room Summary — delivered, PR #707; Slice 1 — read-only decision trace + project context panel — delivered, PR #706); Stage 20 — CAP-08 Assumption Register ENTERED / PARTIAL (CAP-08 Slice 1 — Owner-declared assumption → answer dependency — delivered, PR #704); Stage 21 — CAP-10 Contradiction Detector ENTERED / PARTIAL (CAP-10 Slice 1 — Owner-declared contradiction between two recorded answers — delivered, PR #703); Stage 18 — D13 / CAP-01 structured technical guidance (PARTIAL; Safe Question Reduction Slice 1 — PF:Q2 non-Owner need routing — delivered, PR #701, with the bounded weak-PF recovery PR #702; Autonomous Technical Orchestration synthetic shadow evaluation foundation delivered, PR #696, with managed-credential compatibility PR #697 and the metric-contract correction PR #698, and the synthetic canary / RUN 01 / RUN 01A performed on synthetic data only; Provenance Hardening Step 1 delivered, PR #695; MSNL local-only shadow foundation PR #693 and Evaluation Pack V1 PR #694 delivered); Stage 19 — WS-PFV-001 / CAP-09 entered / not complete (CAP-09 SLICE-02 delivered, PR #683).**
 `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO`. The Owner explicitly authorized **ONE
 first bounded deterministic CAP-01 guidance increment**, so the stage is ENTERED as fact,
 not as a routing pointer. `FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01
 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`.
 Stage 18 stays **PARTIAL** and its roadmap checkbox stays unticked; the two delivered slices
 complete nothing beyond themselves. **No further CAP-01 implementation beyond the currently authorized Mechanical bounded slice is
-authorized.** `ACTIVE CONTRACT: MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT` · `MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: OWNER-AUTHORIZED — IMPLEMENTED (candidate 99f6b91185c0a1766e48e2abe0efde629b939ab1) — INDEPENDENT NON-AUTHORING REVIEW PASS — MATERIAL FINDINGS: NONE — PR / MERGE PENDING` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION BEYOND THE CURRENTLY AUTHORIZED MECHANICAL SLICE IS AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`:
-For each CURRENT canonical Mechanical gap whose EXACT canonical identity is MECHANISM_COMPLETENESS,
-PHYSICAL_FEASIBILITY or BOUNDARY_AMBIGUITY and whose EXACT canonical state is OPEN or PARTIAL, the
-report / deliverable and the PDF show one short explanatory technical context — what that gap concerns
-at concept level within the governed Mechanical package, and what InventorAI does not conclude from it —
-grounded only in the existing governed Mechanical truth (`domains/mechanical/domain.json`); the D13
-Electronics package is not a Mechanical source. Mechanical only; report / deliverable and PDF only;
-explanatory technical context only. Path-N remains the question-serving owner and CAP-04 the action /
-responsibility / required-input / closure owner; no state, persistence, schema, readiness, progression
-or scoring change, no engine change, and no AI / LLM / provider call. It is NOT a full Mechanical CAP-01
-profile, a D13 Mechanical package, a technical engine or engineering execution: Mechanical still has NO
-Electronics-style domain-level checklist profile and NOW has this separately authorized gap-scoped
-Open-Gap Technical Context. Implementation candidate `99f6b91185c0a1766e48e2abe0efde629b939ab1` (tree `4440aa3713c87498a46824396ffae4894e002a0f`, sole parent `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`); independent
-non-authoring review PASS, material findings NONE, risk LEVEL 2 — MEDIUM; PR NOT OPENED, merge NOT
-PERFORMED; deployment / release NOT AUTHORIZED.
+authorized.** `ACTIVE CONTRACT: MECHANICAL TECHNICAL DEEPENING SLICE 1 — FORCE, MOMENT & PRESSURE FUNDAMENTALS` · `MECHANICAL TECHNICAL DEEPENING SLICE 1: OWNER-AUTHORIZED — IMPLEMENTED (final candidate e56e32def45346944eecab9982dfb572fa5764f3) — INDEPENDENT NON-AUTHORING REVIEW COMPLETE — PASS — NO MATERIAL FINDINGS REMAIN — PR / MERGE PENDING` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED — PR #713 — merge 225c0d36e6cfa97a25cd58c671b7c4f090627fb5` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION BEYOND THE CURRENTLY AUTHORIZED MECHANICAL SLICE IS AUTHORIZED` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`:
+Mechanical only: for the exact CURRENT canonical PHYSICAL_FEASIBILITY gap in exact state OPEN or
+PARTIAL, the existing report / deliverable and PDF may show four source-backed reference fundamentals —
+simple perpendicular torque / moment (T = F × L⊥), ideal static moment balance (F₁L₁ = F₂L₂), uniform
+pressure over an effective area (F = pA) and SI unit discipline (N·m; Pa / kPa) — from the governed
+Mechanical provenance mechanical:PR006–PR011. Reference fundamentals only: no applicability inference,
+no project calculation, no gap closure, no feasibility, structural or safety conclusion, no validation,
+readiness or progression effect, and no AI / provider call. Final candidate
+`e56e32def45346944eecab9982dfb572fa5764f3` (tree `8157eacf5b012d153534b5901aacd9c30abfa26d`); independent
+non-authoring review COMPLETE, PASS, no material findings remain; PR NOT OPENED, merge NOT PERFORMED;
+deployment / release NOT AUTHORIZED. Mechanical CAP-01 Open-Gap Technical Context (delivered, PR #713,
+merge `225c0d36e6cfa97a25cd58c671b7c4f090627fb5`): one short explanatory context per CURRENT (OPEN / PARTIAL)
+canonical Mechanical gap in the report / deliverable and PDF, grounded only in the governed Mechanical
+truth; not a full Mechanical CAP-01 profile.
 `CAP-09 SLICE 4: DELIVERED — PR #712 — merge c0faedcd3bff317d9439a7561c220a6ca97f7f4a` ·
 `FULL CAP-09: NOT AUTHORIZED` ·
 `FULL WS-PFV-001: NOT AUTHORIZED` ·
@@ -222,11 +221,19 @@ are recorded in [ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md); th
 routes and does not authorize. **CAP-01 remains architecturally domain-extensible: electronics is the FIRST
 authorized profile, not the definition of CAP-01, and `mechanical` remains a fully activated
 InventorAI domain that has NO Electronics-style domain-level CAP-01 checklist profile and NOW has the
-separately authorized gap-scoped Mechanical Open-Gap Technical Context (current bounded action, above) —
-a bounded explanatory presentation slice, not a full Mechanical CAP-01 profile.** Cross-stage
+separately authorized gap-scoped Mechanical Open-Gap Technical Context (delivered, PR #713) plus the
+bounded Force, Moment & Pressure reference fundamentals (current bounded action, above) — bounded
+presentation slices, not a full Mechanical CAP-01 profile.** Cross-stage
 capability-integration invariants are recorded in the roadmap §8C and checklist §L.14–23 as
 operating practice — they add no Stage, gate or approval step.
 <!-- END CURRENT-BLOCK: current-position -->
+
+*(Superseded 2026-09-28 by Mechanical Technical Deepening Slice 1, preserved so the change is visible
+rather than silent: the current-position entry read "Stage 18 / Mechanical CAP-01 — current bounded
+action: Mechanical CAP-01 — Open-Gap Technical Context (… PR NOT OPENED — PR / merge pending …)" and
+"`ACTIVE CONTRACT: MECHANICAL CAP-01 — OPEN-GAP TECHNICAL CONTEXT`". That was true until PR #713
+delivered it (merge `225c0d36e6cfa97a25cd58c671b7c4f090627fb5`) and the Owner authorized Mechanical
+Technical Deepening Slice 1.)*
 
 *(Superseded 2026-09-27 by Mechanical CAP-01 — Open-Gap Technical Context, preserved so the change is
 visible rather than silent: the current-position entry read "Stage 19 / CAP-09 Experiment-Plan Designer —
