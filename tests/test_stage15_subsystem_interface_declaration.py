@@ -529,13 +529,14 @@ def test_unresolved_commit_and_rollback_is_reported_as_unknown_and_never_read(cl
     finally:
         store._conn = real
     try:
-        assert r.status_code == 302
+        assert r.status_code == 503                          # bounded UNKNOWN response
         assert store._connection_unsafe is True and real.in_transaction
         # the hazard is real: THIS connection sees its own uncommitted row ...
         assert real.execute("SELECT COUNT(*) FROM subsystem_interfaces").fetchone()[0] == 1
         # ... an independent connection sees nothing committed
         assert _raw("SELECT COUNT(*) FROM subsystem_interfaces")[0][0] == 0
-        assert _error(sid) == appmod.S15_INTERFACE_UNKNOWN_MESSAGE
+        assert appmod.S15_INTERFACE_UNKNOWN_MESSAGE in _html.unescape(r.get_data(as_text=True))
+        assert _error(sid) is None                           # never NOT SAVED
         assert _live(sid).subsystem_interfaces == []        # nothing published
         for call in (lambda: store.load_subsystem_interfaces(sid),
                      lambda: store.load_subsystem_composition(sid),
@@ -1194,3 +1195,328 @@ def test_no_provider_network_or_source_material_is_introduced():
         text = open(os.path.join(_ROOT, path), encoding="utf-8").read()
         for word in ("openai", "requests", "urllib", "http://", "https://", "NASA"):
             assert word not in text, (path, word)
+
+
+# ==========================================================================
+# PR #720 bounded repair — F1 (completed project after restart), F2 (direct
+# committed retry after restart), F3 (UNKNOWN stays UNKNOWN)
+# ==========================================================================
+def _restart():
+    """Process / session memory loss + a SAME-database reopen: drop every live
+    session and the application store handle; the next request constructs a
+    fresh store on the same file."""
+    appmod.SESSION_STORE.clear()
+    store = appmod._STORE
+    if store is not None:
+        store.close()
+    appmod._STORE = None
+
+
+def _progression(sid):
+    recon = SR.reconstruct_readonly_state(_store(), sid)
+    return (recon.review.maturity_level, recon.review.current_stage,
+            sorted((g.gap_type, g.status) for g in recon.state.gaps),
+            recon.review.open_gaps, len(recon.review.accepted_answer_evidence),
+            recon.review.next_question)
+
+
+def _no_writable_session(sid):
+    entry = appmod.SESSION_STORE.get(sid)
+    return entry is None or getattr(entry["state"], "domain", None) is None
+
+
+def _completed_integrated(c):
+    """A LEGITIMATELY completed integrated project through the real routes (the
+    existing accepted-risk journey helpers): maturity 2, no open gap."""
+    from engine.progression_loop import select_next_gap
+    from engine.idea_state import (MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY,
+                                   BOUNDARY_AMBIGUITY)
+    from tests.test_wave1_rvr1_accepted_risk import (
+        _answer_until, _token as _ramp_token, _ATTEMPT)
+    strong = {
+        "PROBLEM_MECHANISM_FIT": (
+            "My invention addresses the problem of a folding ramp that can collapse "
+            "under a wheelchair. The toggle latch holds the ramp flat because it "
+            "snaps over its center point and resists folding under load. Without "
+            "this mechanism the ramp could fold while in use. However, this "
+            "mechanism does not address a ramp that is installed on uneven ground "
+            "— that is a limitation of the approach."),
+        "ASSUMPTION_INVENTORY": (
+            "I assume the toggle latch stays engaged under repeated wheelchair "
+            "loading. This assumption is unvalidated and load-bearing — if wrong, "
+            "the ramp could fold during use. I also assume the hinge paint will not "
+            "wear, but if wrong I would just repaint it. The first assumption is "
+            "essential; the second is peripheral."),
+        "EXPERTISE_GAP_AWARENESS": (
+            "The implementation demands expertise in structural load analysis, "
+            "specifically hinge and latch fatigue, and in accessibility standards "
+            "for ramps. I lack sufficient knowledge of fatigue analysis — I would "
+            "need to bring in a structural engineer. Without that expertise, the "
+            "latch sizing would be wrong and the ramp could fail."),
+    }
+    sid = _integrated(c)
+    state = _live(sid)
+    _answer_until(c, appmod, sid, MECHANISM_COMPLETENESS)
+
+    def _accept(gap):
+        c.post("/session/%s/accept-risk" % sid, data={
+            "gap_type": gap, "risk_confirm": "yes",
+            "answer_token": _ramp_token(c, sid)})
+
+    for gap in (PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY):
+        c.post("/session/%s" % sid, data={
+            "response": _ATTEMPT[gap], "answer_token": _ramp_token(c, sid),
+            "action": "answered"})
+        _accept(gap)
+    for _ in range(6):
+        gap = select_next_gap(state)
+        if gap is None:
+            break
+        c.post("/session/%s" % sid, data={
+            "response": strong[gap], "answer_token": _ramp_token(c, sid),
+            "action": "answered"})
+        if state.get_gap(gap).status in ("OPEN", "PARTIAL"):
+            _accept(gap)
+    assert state.maturity_level >= 2 and not state.get_open_gaps(), "not completed"
+    return sid
+
+
+def test_f1_completed_integrated_project_declares_after_restart_without_reopening(client):
+    sid = _completed_integrated(client)
+    assert _declare(client, sid, "Declared while live.").status_code == 302
+    [first] = [i.interface_id for i in _live(sid).subsystem_interfaces]
+    _restart()
+    before = _progression(sid)
+    assert before[0] >= 2 and before[3] == ()                 # completed, no open gap
+    # the completed-project Resume prohibition is preserved
+    client.post(f"/session/{sid}/resume", data={})
+    assert _no_writable_session(sid)
+    page = _page(client, sid)
+    assert "Declared while live." in _visible(_ifc_block(page))   # still visible
+    form = _form(page)
+    assert form["interface_binding"] and form["interface_submission"]
+    minted = []
+    real_new = sm.new_interface_id
+    try:
+        sm.new_interface_id = lambda: minted.append(1) or real_new()
+        r = _declare(client, sid, "Declared after restart.", form=form)
+    finally:
+        sm.new_interface_id = real_new
+    assert r.status_code == 302 and minted == [1]
+    assert _entry(sid).get("_interaction_ack") == appmod.S15_INTERFACE_DECLARED_ACK
+    assert [row[5] for row in _ifc_rows(sid)] == [
+        "Declared while live.", "Declared after restart."]
+    assert _ifc_rows(sid)[0][2] == first
+    # no writable question session, no progression change, same focus
+    assert _no_writable_session(sid)
+    assert getattr(_live(sid), "domain", None) is None
+    assert _progression(sid) == before
+    assert "Declared after restart." in _visible(_ifc_block(_page(client, sid)))
+    _restart()
+    assert _progression(sid) == before
+    assert [i.description for i in _store().load_subsystem_interfaces(sid)] == [
+        "Declared while live.", "Declared after restart."]
+    client.post(f"/session/{sid}/resume", data={})
+    assert _no_writable_session(sid)                          # still never reopens
+
+
+def test_f1_cold_action_keeps_the_cap_and_ordinary_projects_unchanged(client):
+    sid = _integrated(client)
+    subs = _live(sid).subsystems
+    for n in range(sm.MAX_SUBSYSTEM_INTERFACES_PER_PROJECT - 1):
+        _store().append_subsystem_interface(sid, _ifc(subs, "Interaction %d." % n), "k%d" % n)
+    _restart()
+    form = _form(_page(client, sid))                          # one slot left
+    assert form["interface_binding"]
+    assert _declare(client, sid, "The last one.", form=form).status_code == 302
+    assert len(_ifc_rows(sid)) == sm.MAX_SUBSYSTEM_INTERFACES_PER_PROJECT
+    _restart()
+    page = _page(client, sid)
+    assert _form(page)["interface_binding"] is None           # cap reached: no form
+    assert _declare(client, sid, "One too many.", form=form).status_code == 302
+    assert len(_ifc_rows(sid)) == sm.MAX_SUBSYSTEM_INTERFACES_PER_PROJECT
+    # an ordinary single-domain project is offered nothing cold either
+    plain = _created(client.post("/start", data={"idea": ELEC_IDEA,
+                                                 "domain_confirm": ELEC}))
+    _restart()
+    assert _form(_page(client, plain))["interface_binding"] is None
+    assert _ifc_rows(plain) == []
+
+
+def test_f2_exact_committed_retry_resolves_directly_after_restart(client):
+    sid = _integrated(client)
+    form = _form(_page(client, sid))
+    assert _declare(client, sid, form=form).status_code == 302
+    [row] = _ifc_rows(sid)
+    _restart()                                                # no intervening GET
+    minted = []
+    real_new = sm.new_interface_id
+    try:
+        sm.new_interface_id = lambda: minted.append(1) or real_new()
+        r = _declare(client, sid, form=form)
+    finally:
+        sm.new_interface_id = real_new
+    assert r.status_code == 302 and r.headers["Location"].endswith(f"/session/{sid}")
+    assert minted == []                                       # no new identity
+    assert _ifc_rows(sid) == [row]                            # no new row
+    assert _entry(sid).get("_interaction_ack") == appmod.S15_INTERFACE_DECLARED_ACK
+    assert [i.interface_id for i in _live(sid).subsystem_interfaces] == [row[2]]
+    assert _no_writable_session(sid)
+    # changed material under the same identity, directly after another restart
+    _restart()
+    assert _declare(client, sid, "Different text.", form=form).status_code == 302
+    assert _error(sid) == appmod.S15_INTERFACE_NOT_SAVED_MESSAGE
+    assert _ifc_rows(sid) == [row]
+
+
+def test_f2_forged_cross_project_and_uncommitted_retries_stay_refused(client):
+    sid = _integrated(client)
+    other = _integrated(client)
+    form = _form(_page(client, sid))
+    other_form = _form(_page(client, other))
+    _declare(client, sid, form=form)
+    fresh = _form(_page(client, sid))                         # issued, never submitted
+    _restart()
+    tampered = dict(form, interface_submission=form["interface_submission"][:-1] + (
+        "0" if form["interface_submission"][-1] != "0" else "1"))
+    assert _declare(client, sid, form=tampered).status_code == 302
+    assert _error(sid) == appmod.S15_INTERFACE_NOT_SAVED_MESSAGE
+    # project A's signed action replayed against project B
+    assert _declare(client, other, form=form).status_code == 302
+    assert _error(other) == appmod.S15_INTERFACE_NOT_SAVED_MESSAGE
+    assert _ifc_rows(other) == []
+    # B's own form bound to A's parts cannot exist; B's identity on A fails too
+    assert _declare(client, sid, form=other_form).status_code == 302
+    assert _error(sid) == appmod.S15_INTERFACE_NOT_SAVED_MESSAGE
+    # a never-committed action after restart is not current: nothing saved
+    _restart()
+    assert _declare(client, sid, "Never committed.", form=fresh).status_code == 302
+    assert _error(sid) == appmod.S15_INTERFACE_STALE_MESSAGE
+    assert len(_ifc_rows(sid)) == 1
+    # malformed / missing pieces
+    for broken in (dict(form, interface_binding="x.y"), dict(form, answer_token=""),
+                   dict(form, interface_submission="")):
+        _restart()
+        assert _declare(client, sid, form=broken).status_code == 302
+        assert _error(sid) == appmod.S15_INTERFACE_NOT_SAVED_MESSAGE
+    assert len(_ifc_rows(sid)) == 1
+
+
+def _unknown_attempt(c, sid, form, lang=None):
+    store = _store()
+    real = store._conn
+    store._conn = _CommitAndRollbackFail(real)
+    try:
+        r = _declare(c, sid, form=form)
+    finally:
+        store._conn = real
+    assert store._connection_unsafe is True and real.in_transaction
+    return store, real, r
+
+
+def _retry_fields(raw):
+    fields = {}
+    for name in ("answer_token", "interface_binding", "interface_submission",
+                 "interface_description", "interface_confirm"):
+        m = re.search(r'name="%s" value="([^"]*)"' % name, raw)
+        fields[name] = _html.unescape(m.group(1)) if m else None
+    return fields
+
+
+def test_f3_unknown_is_visible_and_never_saved_or_not_saved(client):
+    sid = _integrated(client)
+    form = _form(_page(client, sid))
+    store, real, r = _unknown_attempt(client, sid, form)
+    try:
+        body = _html.unescape(r.get_data(as_text=True))
+        assert r.status_code == 503 and r.headers["Cache-Control"] == "no-store"
+        assert appmod.S15_INTERFACE_UNKNOWN_MESSAGE in body          # visible truth
+        assert appmod.S15_INTERFACE_DECLARED_ACK not in body          # no false SAVED
+        assert appmod.S15_INTERFACE_NOT_SAVED_MESSAGE not in body     # no false NOT SAVED
+        assert DESC not in _visible(r.get_data(as_text=True))         # no project state
+        assert _entry(sid).get("_interaction_ack") is None and _error(sid) is None
+        assert _live(sid).subsystem_interfaces == []                  # never durable truth
+        assert _raw("SELECT COUNT(*) FROM subsystem_interfaces")[0][0] == 0
+        # the SAME signed action is offered again, unconsumed
+        retry = _retry_fields(r.get_data(as_text=True))
+        assert retry == dict(form, interface_description=DESC, interface_confirm="yes")
+        assert _entry(sid).get(appmod._S15_IFC_SUBMISSION_ENTRY_KEY) == form["interface_submission"]
+        # repeated while still unknowable: UNKNOWN again, never NOT SAVED
+        again = client.post(f"/session/{sid}/declare-interface", data=retry)
+        assert again.status_code == 503
+        assert appmod.S15_INTERFACE_UNKNOWN_MESSAGE in _html.unescape(again.get_data(as_text=True))
+        assert _error(sid) is None
+        # ... also after the runtime entry is lost while the store stays unsafe
+        appmod.SESSION_STORE.clear()
+        lost = client.post(f"/session/{sid}/declare-interface", data=retry)
+        assert lost.status_code == 503
+        assert appmod.S15_INTERFACE_UNKNOWN_MESSAGE in _html.unescape(lost.get_data(as_text=True))
+        # ... and a forged action is never dressed up as UNKNOWN
+        forged = client.post(f"/session/{sid}/declare-interface",
+                             data=dict(retry, interface_binding="x.y"))
+        assert forged.status_code == 302
+    finally:
+        real.close()                                           # uncommitted row discarded
+        appmod._STORE = None
+    # later, a healthy store reports the ACTUAL outcome: it never committed
+    appmod.SESSION_STORE.clear()
+    resolved = client.post(f"/session/{sid}/declare-interface", data=retry)
+    assert resolved.status_code == 302
+    assert _error(sid) == appmod.S15_INTERFACE_STALE_MESSAGE      # nothing was saved
+    assert _ifc_rows(sid) == [] and _live(sid).subsystem_interfaces == []
+
+
+def test_f3_unknown_resolves_to_the_committed_declaration_once_readable(client, monkeypatch):
+    sid = _integrated(client)
+    form = _form(_page(client, sid))
+    store = _store()
+    real = store._conn
+    store._conn = _FailOn(real, commit_then=True)             # commits, then raises
+    real_lookup = rs.SqliteRecordStore.committed_subsystem_interface_for_submission
+    calls = []
+
+    def lookup(self, pid, key):
+        calls.append(key)
+        if len(calls) == 1:                    # the pre-write check reads fine
+            return real_lookup(self, pid, key)
+        raise RecordStoreConnectionUnsafe("injected: committed state unreadable")
+
+    monkeypatch.setattr(
+        rs.SqliteRecordStore, "committed_subsystem_interface_for_submission", lookup)
+    try:
+        r = _declare(client, sid, form=form)
+    finally:
+        store._conn = real
+    assert r.status_code == 503 and len(calls) == 2
+    assert appmod.S15_INTERFACE_UNKNOWN_MESSAGE in _html.unescape(r.get_data(as_text=True))
+    assert _live(sid).subsystem_interfaces == []                  # not published
+    [row] = _ifc_rows(sid)                                        # it DID commit
+    monkeypatch.setattr(rs.SqliteRecordStore,
+                        "committed_subsystem_interface_for_submission", real_lookup)
+    _restart()
+    retry = _retry_fields(r.get_data(as_text=True))
+    resolved = client.post(f"/session/{sid}/declare-interface", data=retry)
+    assert resolved.status_code == 302
+    assert _entry(sid).get("_interaction_ack") == appmod.S15_INTERFACE_DECLARED_ACK
+    assert _ifc_rows(sid) == [row]                                # never twice
+    assert [i.interface_id for i in _live(sid).subsystem_interfaces] == [row[2]]
+
+
+def test_f3_unknown_response_is_localized(client):
+    sid = _integrated(client)
+    form = _form(_page(client, sid))
+    assert client.post("/ui-language", data={"lang": "ar"}).status_code in (200, 302)
+    store, real, r = _unknown_attempt(client, sid, form)
+    try:
+        body = _html.unescape(r.get_data(as_text=True))
+        assert r.status_code == 503 and 'dir="rtl"' in body
+        for key in ("UI_S15_IFC_ERR_UNKNOWN", "UI_S15_IFC_UNKNOWN_TITLE",
+                    "UI_S15_IFC_UNKNOWN_RETRY", "UI_S15_IFC_UNKNOWN_BACK"):
+            assert ui_text.text(key, "ar") in body
+            assert ui_text.text(key, "en") != ui_text.text(key, "ar")
+        assert ui_text.localize_message(appmod.S15_INTERFACE_UNKNOWN_MESSAGE, "ar") == \
+            ui_text.text("UI_S15_IFC_ERR_UNKNOWN", "ar")
+    finally:
+        real.close()
+        appmod._STORE = None
+        client.post("/ui-language", data={"lang": "en"})

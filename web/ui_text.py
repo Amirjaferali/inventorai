@@ -237,8 +237,9 @@ _MESSAGE_KEYS = {
      "changed - please remove it and submit again."): "UI_S15_IFC_ERR_INVALID_CHAR",
     ("This form is no longer current, so nothing was saved. Review the page "
      "and record the interaction again."): "UI_S15_IFC_ERR_STALE",
-    ("We could not confirm whether that interaction was saved. Reload this "
-     "page to see what your project holds before recording it again."):
+    ("We could not confirm whether that interaction was saved. It is not "
+     "shown as saved until that can be confirmed. Submitting it again from "
+     "here is safe: it will never be recorded twice."):
         "UI_S15_IFC_ERR_UNKNOWN",
 }
 
@@ -574,9 +575,15 @@ UI_STRINGS = {
         "ar": "لم يعد هذا النموذج حاليًا، لذلك لم يُحفظ أي شيء. راجع الصفحة وسجّل التفاعل مرة أخرى.",
     },
     "UI_S15_IFC_ERR_UNKNOWN": {
-        "en": "We could not confirm whether that interaction was saved. Reload this page to see what your project holds before recording it again.",
-        "ar": "تعذّر علينا التأكد مما إذا كان هذا التفاعل قد حُفظ. أعد تحميل هذه الصفحة لترى ما يحتويه مشروعك قبل تسجيله مرة أخرى.",
+        "en": "We could not confirm whether that interaction was saved. It is not shown as saved until that can be confirmed. Submitting it again from here is safe: it will never be recorded twice.",
+        "ar": "تعذّر علينا التأكد مما إذا كان هذا التفاعل قد حُفظ. لن يُعرض على أنه محفوظ حتى يمكن التأكد من ذلك. إعادة إرساله من هنا آمنة: لن يُسجَّل مرتين أبدًا.",
     },
+    "UI_S15_IFC_UNKNOWN_TITLE": {"en": "Save not confirmed", "ar": "لم يتأكد الحفظ"},
+    "UI_S15_IFC_UNKNOWN_RETRY": {
+        "en": "Submit the same interaction again",
+        "ar": "إعادة إرسال التفاعل نفسه",
+    },
+    "UI_S15_IFC_UNKNOWN_BACK": {"en": "Back to your project", "ar": "العودة إلى مشروعك"},
     "UI_CSRF_REJECT": {
         "en": "Your session security token was missing or invalid. This request was rejected before any change was made.",
         "ar": "رمز أمان الجلسة مفقود أو غير صالح. رُفض هذا الطلب قبل إجراء أي تغيير.",
