@@ -505,7 +505,10 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       "prototype_plan_metadata", "prototype_test_hypotheses",
                       "prototype_test_variables", "question_feedback",
                       "readiness_evidence", "records",
-                      "requirement_quantities"], tables
+                      "requirement_quantities",
+                      # Stage 15 Slice 2 sidecar: Owner-declared interfaces
+                      # (no payload, no disposition) — not a second ledger.
+                      "subsystem_interfaces"], tables
     assert ledger_like == ["records"], ledger_like
     assert "payload" not in quantity_cols and "disposition" not in quantity_cols
     assert "payload" not in reference_cols and "disposition" not in reference_cols

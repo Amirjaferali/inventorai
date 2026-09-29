@@ -17,6 +17,14 @@ Contract of ``derive_requirement_landscape(state)``:
   * every MVP-1 criticality is ``UNDETERMINED`` with ``system-derived`` authority;
   * ZERO grounded risks in MVP-1; the empty landscape appears only when no valid
     active anchor remains.
+
+Stage 15 Slice 2 adds ONE bounded anchor kind, ``subsystem_interface``: one
+requirement per Owner-declared interface between two parts of the project's
+durable composition (``state.subsystem_interfaces``, owned by
+``engine.subsystem_model``). It is DERIVED only — never persisted — with the
+deterministic identity ``req:interface:<interface_id>``; its resolving action
+asks for verification PREPARATION, never claims verification, and it creates
+no risk row and no compatibility, feasibility or readiness fact.
 """
 import re
 from dataclasses import dataclass, field, replace
@@ -57,6 +65,7 @@ _SOURCE_STATUS = {
     "pending_specialist": "specialist input pending",
     "gap_open": "open",
     "gap_partial": "partially addressed",
+    "subsystem_interface": "declared by you; not validated",
 }
 
 # Fixed anchor-kind display labels (contract §9.10.5). No raw enum is ever shown.
@@ -65,6 +74,7 @@ _ANCHOR_LABELS = {
     "active_contradiction": "Recorded contradiction",
     "pending_evidence": "Pending evidence request",
     "pending_specialist": "Pending specialist request",
+    "subsystem_interface": "Interface you declared",
 }
 
 # Canonical human-readable gap labels, resident here to honor the import boundary
@@ -89,7 +99,20 @@ _ACTION = {
                          "Provide the requested empirical evidence."),
     "pending_specialist": ("obtain_requested_specialist_input",
                            "Obtain the requested specialist input."),
+    "subsystem_interface": ("prepare_interface_verification",
+                            "Establish how this declared interaction will be "
+                            "checked: define the intended operating conditions, "
+                            "an observable acceptance criterion, and what "
+                            "evidence or review will be needed. Compatibility "
+                            "remains unassessed."),
 }
+# Stage 15 Slice 2: the Owner-declared interface row. The part names are read
+# from the parts themselves (never copied into the interface); the Owner's
+# description is quoted verbatim. Nothing here is validated or assessed.
+_INTERFACE_STATEMENT = (
+    "You declared an interaction between “{a}” and “{b}”: “{d}”. This "
+    "declaration has not been validated, and compatibility between the parts "
+    "has not been assessed.")
 _CONTRADICTION_STATEMENT = (
     "Resolve the active contradiction between the two recorded answers."
 )
@@ -145,6 +168,7 @@ _PRECEDENCE = {
     "pending_specialist": 2,
     "assertion": 3,
     "gap": 4,
+    "subsystem_interface": 5,
 }
 
 _REC_ID_RE = re.compile(r"^rec_(\d+)$")
@@ -377,13 +401,59 @@ def _requirement_from_gap(gap_type, group):
     )
 
 
+def interface_context(state, interface_id):
+    """``(part_a_name, part_b_name, description)`` of the Owner-declared
+    interface ``interface_id`` of ``state`` — the part names resolved from the
+    project's own parts by identity — or ``None`` when the interface or either
+    endpoint does not resolve (never guessed). Pure and read-only."""
+    names = {getattr(sub, "subsystem_id", None): getattr(sub, "display_name", None)
+             for sub in getattr(state, "subsystems", None) or ()}
+    for item in getattr(state, "subsystem_interfaces", None) or ():
+        if getattr(item, "interface_id", None) != interface_id:
+            continue
+        a = names.get(getattr(item, "subsystem_a_id", None))
+        b = names.get(getattr(item, "subsystem_b_id", None))
+        description = getattr(item, "description", None)
+        if not (isinstance(a, str) and a and isinstance(b, str) and b
+                and isinstance(description, str) and description):
+            return None
+        return a, b, description
+    return None
+
+
+def _requirement_from_interface(state, interface_id):
+    """ONE derived requirement for ONE Owner-declared interface, or None when
+    it does not resolve against the project's own parts (skipped, never
+    raised). Identity is deterministic from the immutable interface id."""
+    context = interface_context(state, interface_id)
+    if context is None:
+        return None
+    kind = "subsystem_interface"
+    action_kind, statement = _ACTION[kind]
+    return DerivedRequirement(
+        requirement_id="req:interface:" + interface_id,
+        statement=_INTERFACE_STATEMENT.format(a=context[0], b=context[1],
+                                              d=context[2]),
+        primary_anchor=ProvenanceAnchor(anchor_kind=kind,
+                                        anchor_reference=interface_id,
+                                        display_label=_ANCHOR_LABELS[kind]),
+        supporting_references=(),
+        source_status=_SOURCE_STATUS[kind],
+        criticality=UNDETERMINED,
+        criticality_authority=AUTHORITY_SYSTEM_DERIVED,
+        criticality_rationale=None,
+        resolving_action=ResolvingAction(action_kind, statement, interface_id),
+        linked_risk_ids=(),
+    )
+
+
 def _order_key(requirement):
     kind = requirement.primary_anchor.anchor_kind
     precedence = _PRECEDENCE[kind]
     if kind == "active_contradiction":
         lo, hi = requirement.primary_anchor.anchor_reference.split("|", 1)
         within = (_rec_sort_key(lo), _rec_sort_key(hi))
-    elif kind == "gap":
+    elif kind in ("gap", "subsystem_interface"):
         within = (requirement.primary_anchor.anchor_reference,)
     else:
         within = (_rec_sort_key(requirement.primary_anchor.anchor_reference),)
@@ -452,6 +522,19 @@ def derive_requirement_landscape(state):
     # 3b. Slice 1: outstanding routed needs (none without routing).
     for rev in _outstanding_routes(state):
         requirements.append(_requirement_from_route(rev))
+
+    # 3c. Stage 15 Slice 2: one requirement per Owner-declared interface
+    #     between the project's own parts (none without a declaration). Derived
+    #     only; no risk row is created.
+    seen_interfaces = set()
+    for item in getattr(state, "subsystem_interfaces", None) or ():
+        interface_id = getattr(item, "interface_id", None)
+        if not isinstance(interface_id, str) or interface_id in seen_interfaces:
+            continue
+        seen_interfaces.add(interface_id)
+        requirement = _requirement_from_interface(state, interface_id)
+        if requirement is not None:
+            requirements.append(requirement)
 
     ordered = tuple(sorted(requirements, key=_order_key))
 

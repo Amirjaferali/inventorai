@@ -20,6 +20,14 @@ Contract of ``derive_validation_plan(state)`` (§4–§14):
   * ordering inherited from the Increment 4 landscape order (organizational only);
   * every MVP-1 ``confidence`` is ``UNDETERMINED``; outcome ∈ {PLAN, EMPTY, BLOCKED}.
 
+Stage 15 Slice 2: a ``subsystem_interface`` requirement (one Owner-declared
+interface between two parts) yields ONE verification-PREPARATION step: it asks
+how the declared interaction will be checked and never claims that it is
+checked. Responsibility and confidence stay ``UNDETERMINED`` (no specialist,
+empirical-test or Owner-competence inference); no number, threshold or test
+procedure is invented, and its closure wording states that completing the
+preparation does not verify the interaction or establish compatibility.
+
 The module-level name ``derive_requirement_landscape`` is the authorized §19 test
 seam: tests may monkeypatch it at this import site to construct BLOCKED / mixed /
 malformed cases. Production behavior is driven by the real Increment 4 derivation.
@@ -34,6 +42,7 @@ from engine.idea_state import (
     active_declared_contradiction_pairs,
 )
 from engine.requirement_landscape import derive_requirement_landscape
+from engine.requirement_landscape import interface_context
 
 # --- Frozen ValidationStep responsibility vocabulary (contract §7; exactly five) --
 OWNER_EXECUTABLE            = "OWNER_EXECUTABLE"
@@ -73,8 +82,26 @@ _LEDGER_TRANSLATION = {
 # Anchor kinds that can support an eligible step (contract §7 / §8).
 _STEP_ANCHOR_KINDS = frozenset({
     "active_contradiction", "pending_evidence", "pending_specialist",
-    "assertion", "gap",
+    "assertion", "gap", "subsystem_interface",
 })
+
+# Stage 15 Slice 2: the ONE verification-preparation step of a declared
+# interface. Preparation only — it names what must be DEFINED before any check
+# (conditions, an observable acceptance criterion, the evidence or review
+# needed) and never supplies a value, a threshold, a procedure or a result.
+_INTERFACE_STEP_STATEMENT = (
+    "Prepare how the interaction you declared between “{a}” and “{b}” "
+    "(“{d}”) will be checked: define the intended operating conditions, an "
+    "observable acceptance criterion, and what evidence or review will be "
+    "needed. Compatibility remains unassessed.")
+_INTERFACE_EVIDENCE_CATEGORY = (
+    "verification preparation (intended operating conditions, an observable "
+    "acceptance criterion, and the evidence or review needed)")
+_INTERFACE_CLOSURE = (
+    "This preparation is complete when the intended operating conditions, an "
+    "observable acceptance criterion and the evidence or review needed are "
+    "defined; none is recorded yet. Completing this preparation does not "
+    "verify the interaction or establish compatibility.")
 
 # Fixed, generic wording for a blocked item (contract §8 / §12; no fabrication).
 _BLOCKED_REASON = (
@@ -174,6 +201,10 @@ def _classify(requirement, state):
         return SPECIALIST_REQUIRED, "specialist input"
     if kind == "gap":
         return UNDETERMINED, "clarifying information"
+    if kind == "subsystem_interface":
+        # No responsibility is inferred from two engineering parts being
+        # involved: no specialist, empirical-test or Owner-competence claim.
+        return UNDETERMINED, _INTERFACE_EVIDENCE_CATEGORY
     # assertion anchor: consult the underlying record's disposition/provenance/resp.
     responsibility = _assertion_responsibility(
         _active_record(state, requirement.primary_anchor.anchor_reference))
@@ -243,6 +274,13 @@ def derive_validation_plan(state):
             seen_steps.add(step_id)
             responsibility, evidence_category = _classify(req, state)
             statement = req.resolving_action.statement
+            closure_condition = _closure_condition(evidence_category)
+            if kind == "subsystem_interface":
+                context = interface_context(state, req.primary_anchor.anchor_reference)
+                if context is not None:
+                    statement = _INTERFACE_STEP_STATEMENT.format(
+                        a=context[0], b=context[1], d=context[2])
+                closure_condition = _INTERFACE_CLOSURE
             if kind == "assertion":
                 record = _active_record(state, req.primary_anchor.anchor_reference)
                 if record is not None and \
@@ -254,7 +292,7 @@ def derive_validation_plan(state):
                 statement=statement,
                 responsibility=responsibility,
                 evidence_category=evidence_category,
-                closure_condition=_closure_condition(evidence_category),
+                closure_condition=closure_condition,
                 provenance=_provenance(req),
                 confidence=CONFIDENCE_UNDETERMINED,
             ))

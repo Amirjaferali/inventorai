@@ -314,6 +314,21 @@ def _load_subsystems(store, project_id):
     return tuple(loader(project_id)) if callable(loader) else ()
 
 
+def _load_composition(store, project_id):
+    """Stage 15 Slice 2: ``(subsystems, interfaces)`` — the durable
+    Owner-declared composition AND its Owner-declared interfaces, read from the
+    SAME snapshot through the store's one combined reader, so a composition and
+    an interface list from different durable moments are never combined. A
+    store without the interface carrier yields its composition and no
+    interfaces (test doubles keep their exact behavior). Corruption in either
+    raises (fail closed, no partial integration view)."""
+    loader = getattr(store, "load_subsystem_composition", None)
+    if callable(loader):
+        subsystems, interfaces = loader(project_id)
+        return tuple(subsystems), tuple(interfaces)
+    return _load_subsystems(store, project_id), ()
+
+
 def _reconstruct_snapshot(store, project_id: str):
     """Safe Question Reduction Slice 1: run the ONE shared replay with every
     durable read inside one snapshot. Returns ``(review, state_or_None)``."""
@@ -412,7 +427,9 @@ def _reconstruct(store, project_id: str):
     # the SAME snapshot and reattached VERBATIM (same ids, same order) below.
     # It is metadata only: it never enters the replay, never changes the
     # scalar root (the initial analysis focus) and moves no gap or maturity.
-    subsystems = _load_subsystems(store, project_id)
+    # Stage 15 Slice 2: its Owner-declared interfaces come from the same
+    # snapshot and are reattached verbatim too — equally outside the replay.
+    subsystems, interfaces = _load_composition(store, project_id)
 
     # PVCG-R4-C §8 RP-1 — THE AMENDED ACCEPTED-SOURCE STREAM.
     #
@@ -453,6 +470,7 @@ def _reconstruct(store, project_id: str):
     # under exactly the one version the project's durable record names.
     state.engine_contract_version = version
     state.subsystems = list(subsystems)
+    state.subsystem_interfaces = list(interfaces)
 
     # Slice 1: revisions committed before any Owner record apply first, then
     # each revision right after the Owner record it followed durably — the

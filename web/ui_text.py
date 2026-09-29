@@ -225,6 +225,21 @@ _MESSAGE_KEYS = {
     ("We could not tell whether that dependency was saved. Reload this page "
      "to see what your project holds before recording it again."):
         "UI_CAP08_ERR_UNKNOWN",
+    # Stage 15 Slice 2 (web/app.py declare_interface): its refusals render
+    # through the `_answer_error` slot, so they are registered here.
+    ("That interaction could not be saved just now. Nothing was changed."):
+        "UI_S15_IFC_ERR_NOT_SAVED",
+    ("Describe the interaction in your own words and tick the declaration "
+     "box. Nothing was changed."): "UI_S15_IFC_ERR_INVALID",
+    ("An interaction description can be at most 300 characters. Nothing was "
+     "changed - please shorten it and submit again."): "UI_S15_IFC_ERR_TOO_LONG",
+    ("The interaction description contains an invalid character. Nothing was "
+     "changed - please remove it and submit again."): "UI_S15_IFC_ERR_INVALID_CHAR",
+    ("This form is no longer current, so nothing was saved. Review the page "
+     "and record the interaction again."): "UI_S15_IFC_ERR_STALE",
+    ("We could not confirm whether that interaction was saved. Reload this "
+     "page to see what your project holds before recording it again."):
+        "UI_S15_IFC_ERR_UNKNOWN",
 }
 
 
@@ -489,6 +504,78 @@ UI_STRINGS = {
     "UI_S15_SCOPE_PROVENANCE": {
         "en": "Both parts are recorded as you described them; they have not been checked or verified.",
         "ar": "سُجّل الجزآن كما وصفتهما، ولم يُفحصا ولم يُتحقَّق منهما.",
+    },
+    # --- Stage 15 Slice 2 — how the two parts interact (Owner declarations) --
+    # Plain user-facing language only (same boundary as the Slice-1 keys).
+    # The Owner's own interaction text is never in this catalogue (it is
+    # rendered verbatim, escaped).
+    "UI_S15_IFC_TITLE": {
+        "en": "How the parts interact",
+        "ar": "كيف يتفاعل الجزآن",
+    },
+    "UI_S15_IFC_INTRO": {
+        "en": "Record, in your own words, how the two parts of your invention are intended to interact — for example, what one part provides to, receives from or does to the other. For each interaction, InventorAI adds one preparation step to your Validation Plan. It does not check or assess the interaction.",
+        "ar": "سجّل بكلماتك كيف يُفترض أن يتفاعل جزآ اختراعك — مثلًا: ما الذي يقدّمه أحد الجزأين للآخر، أو يستقبله منه، أو يُحدثه فيه. ولكل تفاعل يضيف InventorAI خطوة تحضير واحدة إلى خطة التحقق (Validation Plan). ولا يفحص InventorAI التفاعل ولا يقيّمه.",
+    },
+    "UI_S15_IFC_NONE": {
+        "en": "No interaction between the parts has been recorded yet.",
+        "ar": "لم يُسجَّل أي تفاعل بين الجزأين بعد.",
+    },
+    "UI_S15_IFC_BETWEEN": {"en": "Between", "ar": "بين"},
+    "UI_S15_IFC_AND": {"en": "and", "ar": "و"},
+    "UI_S15_IFC_DESCRIPTION": {"en": "Your description:", "ar": "وصفك:"},
+    "UI_S15_IFC_PROVENANCE": {
+        "en": "Recorded as you described it; it has not been checked or validated.",
+        "ar": "سُجّل كما وصفته، ولم يُفحص ولم يُتحقَّق منه.",
+    },
+    "UI_S15_IFC_ACTION_LABEL": {
+        "en": "Verification preparation:",
+        "ar": "التحضير للتحقق:",
+    },
+    "UI_S15_IFC_ACTION": {
+        "en": "Establish how this declared interaction will be checked: define the intended operating conditions, an observable acceptance criterion, and what evidence or review will be needed.",
+        "ar": "حدّد كيف سيُفحص هذا التفاعل المُعلَن: عرّف ظروف التشغيل المقصودة، ومعيار قبول يمكن ملاحظته، وما يلزم من أدلة أو مراجعة.",
+    },
+    "UI_S15_IFC_NOT_ESTABLISHED": {
+        "en": "Engineering compatibility between the parts has NOT been established. Completing this preparation does not verify the interaction.",
+        "ar": "لم يُثبَت التوافق الهندسي بين الجزأين. وإكمال هذا التحضير لا يعني التحقق من التفاعل.",
+    },
+    "UI_S15_IFC_FORM_SUMMARY": {
+        "en": "Record how the parts interact",
+        "ar": "سجّل كيف يتفاعل الجزآن",
+    },
+    "UI_S15_IFC_FIELD": {
+        "en": "Describe one interaction between the two parts (up to 300 characters)",
+        "ar": "صِف تفاعلًا واحدًا بين الجزأين (حتى 300 حرف)",
+    },
+    "UI_S15_IFC_CONFIRM": {
+        "en": "This is my own description. I understand it is not checked, and that compatibility between the parts is not assessed.",
+        "ar": "هذا وصفي الخاص. وأفهم أنه لا يُفحص، وأن التوافق بين الجزأين لا يُقيَّم.",
+    },
+    "UI_S15_IFC_BUTTON": {"en": "Record the interaction", "ar": "تسجيل التفاعل"},
+    "UI_S15_IFC_ERR_NOT_SAVED": {
+        "en": "That interaction could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ هذا التفاعل الآن. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_IFC_ERR_INVALID": {
+        "en": "Describe the interaction in your own words and tick the declaration box. Nothing was changed.",
+        "ar": "صِف التفاعل بكلماتك وحدّد مربع الإعلان. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_IFC_ERR_TOO_LONG": {
+        "en": "An interaction description can be at most 300 characters. Nothing was changed - please shorten it and submit again.",
+        "ar": "يمكن أن يصل وصف التفاعل إلى 300 حرف على الأكثر. لم يتم تغيير أي شيء — يُرجى تقصير النص وإعادة الإرسال.",
+    },
+    "UI_S15_IFC_ERR_INVALID_CHAR": {
+        "en": "The interaction description contains an invalid character. Nothing was changed - please remove it and submit again.",
+        "ar": "يحتوي وصف التفاعل على رمز غير صالح. لم يتم تغيير أي شيء — يُرجى إزالته وإعادة الإرسال.",
+    },
+    "UI_S15_IFC_ERR_STALE": {
+        "en": "This form is no longer current, so nothing was saved. Review the page and record the interaction again.",
+        "ar": "لم يعد هذا النموذج حاليًا، لذلك لم يُحفظ أي شيء. راجع الصفحة وسجّل التفاعل مرة أخرى.",
+    },
+    "UI_S15_IFC_ERR_UNKNOWN": {
+        "en": "We could not confirm whether that interaction was saved. Reload this page to see what your project holds before recording it again.",
+        "ar": "تعذّر علينا التأكد مما إذا كان هذا التفاعل قد حُفظ. أعد تحميل هذه الصفحة لترى ما يحتويه مشروعك قبل تسجيله مرة أخرى.",
     },
     "UI_CSRF_REJECT": {
         "en": "Your session security token was missing or invalid. This request was rejected before any change was made.",
@@ -4838,6 +4925,13 @@ QUESTION_EXPLANATION_KEYS = {
 # questions, the criticality clarification ask, and user content are deliberately
 # ABSENT. Populated below; kept as the single owner-approved Arabic registry.
 _DEEP_AR = {
+    # --- Stage 15 Slice 2 interaction-declaration acknowledgement (web.app) ---
+    "Saved. You recorded how these two parts interact. This declaration has "
+    "not been validated, and compatibility between the parts has not been "
+    "assessed. One preparation step was added to your Validation Plan.":
+        "تم الحفظ. سجّلتَ كيف يتفاعل هذان الجزآن. هذا الإعلان غير مُتحقَّق منه، "
+        "ولم يُقيَّم التوافق بين الجزأين. وأُضيفت خطوة تحضير واحدة إلى خطة "
+        "التحقق (Validation Plan).",
     # --- CAP-08 Slice 1 dependency-declaration acknowledgement (web.app) ---
     "Saved. You declared that these recorded answers depend on this "
     "provisional assumption. This dependency has not been validated.":
