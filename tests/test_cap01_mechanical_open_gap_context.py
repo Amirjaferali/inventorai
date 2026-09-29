@@ -19,9 +19,12 @@ Boundaries proven here:
     not a Mechanical source and is never referenced.
   * TRUTH — PHYSICAL_FEASIBILITY copy never states or implies feasibility is
     proven; no unsupported engineering concept appears anywhere.
-  * SCOPE — report + PDF only; the session journey gains nothing; Electronics
-    CAP-01 output is byte-identical; no state, persistence, readiness or
-    progression mutation.
+  * SCOPE — report + PDF only; the session journey gains nothing; this slice
+    leaves Electronics CAP-01 output byte-identical (the separately authorized
+    Electrical / Electronics Technical Deepening Slice 1 adds its own Electronics
+    PHYSICAL_FEASIBILITY context, guarded in
+    tests/test_cap01_electrical_reference_fundamentals.py); no state,
+    persistence, readiness or progression mutation.
 
 Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals
 (section F below) adds ONE optional reference-fundamentals sub-view to the
@@ -73,6 +76,11 @@ PREFIX = "UI_%s_" % GROUP_ID
 SUPPORTED = (MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY)
 # The template's traceability attribute form (CAP-04 convention; never visible text).
 ATTR = {g: g.lower().replace("_", "-") for g in SUPPORTED}
+# Electrical / Electronics Technical Deepening Slice 1 — the ONE other gap-context
+# row (its own group, exactly PHYSICAL_FEASIBILITY); guarded in full by
+# tests/test_cap01_electrical_reference_fundamentals.py.
+ELEC_DOMAIN = "electronics_electrical"
+ELEC_GROUP_ID = "CAP01_ELECTRONICS_GAP_CONTEXT_V1"
 UNSUPPORTED = (PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
                "SAFETY_SIGNAL", "THERMAL_BEHAVIOUR", "NOT_A_GAP")
 
@@ -367,7 +375,11 @@ def test_08b_the_supported_set_is_exactly_the_governed_packages_supported_gap_ty
     group_id, gap_ids = cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN["mechanical"]
     assert group_id == GROUP_ID
     assert gap_ids == governed == mapped == SUPPORTED
-    assert tuple(cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN) == ("mechanical",)
+    # Electrical / Electronics Technical Deepening Slice 1 added exactly ONE other
+    # row: the Electronics PHYSICAL_FEASIBILITY context (its own group, one gap).
+    assert tuple(cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN) == ("mechanical", ELEC_DOMAIN)
+    assert cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN[ELEC_DOMAIN] == (
+        ELEC_GROUP_ID, (PHYSICAL_FEASIBILITY,))
 
 
 # ==========================================================================
@@ -378,8 +390,15 @@ def test_09a_electronics_profile_table_copy_and_resolver_are_unchanged():
     view = cap01_guidance.profile_copy("electronics_electrical")
     assert view["profile_id"] == PROFILE_ID and len(view["item_keys"]) == 6
     assert view["research"] is not None and len(view["research"]["item_keys"]) == 6
-    assert cap01_guidance.gap_contexts_for_gaps("electronics_electrical",
-                                                _gaps(*[(g, OPEN) for g in SUPPORTED])) is None
+    elec = cap01_guidance.gap_contexts_for_gaps("electronics_electrical",
+                                                _gaps(*[(g, OPEN) for g in SUPPORTED]))
+    assert elec["group_id"] == ELEC_GROUP_ID != GROUP_ID
+    assert _rendered_gaps(elec) == ((PHYSICAL_FEASIBILITY, OPEN),)
+    assert not any(v.startswith(PREFIX) for c in elec["contexts"] for v in c.values()
+                   if isinstance(v, str))
+    assert cap01_guidance.gap_contexts_for_gaps(
+        "electronics_electrical", _gaps((MECHANISM_COMPLETENESS, OPEN),
+                                        (BOUNDARY_AMBIGUITY, OPEN))) is None
 
 
 def test_09b_electronics_report_is_byte_identical_with_the_mechanical_table_removed(monkeypatch):
@@ -396,13 +415,22 @@ def test_09b_electronics_report_is_byte_identical_with_the_mechanical_table_remo
 # ==========================================================================
 # 10. Non-Mechanical project -> no Mechanical context
 # ==========================================================================
-@pytest.mark.parametrize("domain", ("electronics_electrical", "software", "medical_device",
+@pytest.mark.parametrize("domain", ("software", "medical_device",
                                     "unknown", "", "Mechanical", "MECHANICAL", "mechanic",
                                     "mechanical_v1", "الميكانيكا", None, 3))
 def test_10_non_mechanical_domain_never_resolves_a_context(domain):
     """The domain id is TRUSTED and server-resolved; like ``profile_for_domain``
     it tolerates surrounding whitespace only, never case or a near string."""
     assert _resolve(*[(g, OPEN) for g in SUPPORTED], domain=domain) is None
+
+
+def test_10c_electronics_never_resolves_a_mechanical_context():
+    """Electrical / Electronics Technical Deepening Slice 1: the Electronics domain
+    resolves ONLY its own PHYSICAL_FEASIBILITY context, never a Mechanical one."""
+    view = _resolve(*[(g, OPEN) for g in SUPPORTED], domain=ELEC_DOMAIN)
+    assert view["group_id"] == ELEC_GROUP_ID
+    assert _rendered_gaps(view) == ((PHYSICAL_FEASIBILITY, OPEN),)
+    assert view["contexts"][0]["fundamentals"]["group_id"] != FUND_GROUP
 
 
 def test_10b_the_package_supplies_only_the_trusted_domain_and_never_the_binding():
@@ -416,6 +444,11 @@ def test_10b_the_package_supplies_only_the_trusted_domain_and_never_the_binding(
     foreign = copy.deepcopy(package)
     foreign["section_3_assessment_overview"]["capabilities_assessed"][0]["capability_id"] = \
         "electronics_electrical"
+    foreign_view = cap01_guidance.gap_contexts_for_package(foreign, state.gaps)
+    assert foreign_view["group_id"] == ELEC_GROUP_ID          # never the Mechanical group
+    assert _rendered_gaps(foreign_view) == ((PHYSICAL_FEASIBILITY, OPEN),)
+    foreign["section_3_assessment_overview"]["capabilities_assessed"][0]["capability_id"] = \
+        "software"
     assert cap01_guidance.gap_contexts_for_package(foreign, state.gaps) is None
     assert cap01_guidance.gap_contexts_for_package(package, _gaps(*[(g, CLOSED) for g in SUPPORTED])) is None
     assert cap01_guidance.gap_contexts_for_package(package, []) is None
@@ -1048,11 +1081,18 @@ def test_f05_other_gap_contexts_never_carry_the_sub_view_even_beside_a_current_p
     assert by_gap[PHYSICAL_FEASIBILITY]["fundamentals"]["group_id"] == FUND_GROUP
 
 
-@pytest.mark.parametrize("domain", ("electronics_electrical", "software", "medical_device",
+@pytest.mark.parametrize("domain", ("software", "medical_device",
                                     "Mechanical", "MECHANICAL", "mechanic", "", None))
 def test_f06_non_mechanical_domains_render_no_fundamentals(domain):
     assert _pf_context((PHYSICAL_FEASIBILITY, OPEN), domain=domain) is None
     assert cap01_guidance.CAP01_GAP_FUNDAMENTALS.get((domain, PHYSICAL_FEASIBILITY)) is None
+
+
+def test_f06c_electronics_never_renders_the_mechanical_fundamentals():
+    # Electrical / Electronics Technical Deepening Slice 1 owns its OWN row.
+    fund = _pf_context((PHYSICAL_FEASIBILITY, OPEN), domain=ELEC_DOMAIN)["fundamentals"]
+    assert fund["group_id"] == "basic_electrical_reference_v1" != FUND_GROUP
+    assert not any(k.startswith(FUND_PREFIX) for c in fund["claims"] for k in c.values())
 
 
 def test_f06b_electronics_report_is_byte_identical_with_the_fundamentals_table_removed(monkeypatch):
@@ -1293,7 +1333,10 @@ def test_f18_pack_group_declares_the_four_claims_with_exact_source_and_policy_li
         assert equation in claim["relationship"] or equation == "N·m" and "N·m" in claim["relationship"]
         assert claim["limitation"].strip() and claim["fact"].strip()
     # the resolver's table and the governed group agree exactly
-    assert cap01_guidance.CAP01_GAP_FUNDAMENTALS == {("mechanical", PHYSICAL_FEASIBILITY): (FUND_GROUP, FUND_CLAIMS)}
+    assert cap01_guidance.CAP01_GAP_FUNDAMENTALS[("mechanical", PHYSICAL_FEASIBILITY)] == \
+        (FUND_GROUP, FUND_CLAIMS)
+    assert set(cap01_guidance.CAP01_GAP_FUNDAMENTALS) == {
+        ("mechanical", PHYSICAL_FEASIBILITY), (ELEC_DOMAIN, PHYSICAL_FEASIBILITY)}
 
 
 def test_f19_the_group_carries_no_executable_rule_variable_threshold_or_applicability_logic():
@@ -1406,8 +1449,10 @@ def test_f25_no_generic_framework_registry_or_calculation_primitive_was_created(
                       "select_formula", "infer_"):
         assert forbidden not in guidance, forbidden
     import web.cap01_guidance as module
-    assert len(cap01_guidance.CAP01_GAP_FUNDAMENTALS) == 1
-    assert set(cap01_guidance.CAP01_GAP_FUNDAMENTALS) == {("mechanical", PHYSICAL_FEASIBILITY)}
+    # Electrical / Electronics Technical Deepening Slice 1 added exactly ONE row.
+    assert len(cap01_guidance.CAP01_GAP_FUNDAMENTALS) == 2
+    assert set(cap01_guidance.CAP01_GAP_FUNDAMENTALS) == {
+        ("mechanical", PHYSICAL_FEASIBILITY), (ELEC_DOMAIN, PHYSICAL_FEASIBILITY)}
     # no new module, engine file or persistence surface is involved
     assert module.__name__ == "web.cap01_guidance"
 

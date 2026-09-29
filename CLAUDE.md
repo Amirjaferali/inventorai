@@ -2,22 +2,29 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: NONE.** No product increment is currently authorized. The last Owner-authorized
-bounded slice — Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals — is
-DELIVERED (PR #714, merge `dd445183a110da4ef707226e3ff9121f6c315e5b`; post-merge identity / content verification
-PASS; independent non-authoring review COMPLETE — PASS, no material findings remain), and no subsequent
-increment has been authorized. This does NOT mean the roadmap is complete; delivered history never fills
-the active-contract slot. Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06
-NOT ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED; no next Technical Deepening slice is authorized;
-Stage 15 / IRL and IoT / Drone / Renewable / Satellite implementation stay NOT AUTHORIZED; deployment and
-release NOT AUTHORIZED. Slice 1 (delivered, inside Stage 18 — D13 / CAP-01; no new Master Roadmap Stage):
-for the exact CURRENT canonical Mechanical `PHYSICAL_FEASIBILITY` gap in exact state OPEN or PARTIAL, the
-report / deliverable and PDF may show four source-backed reference fundamentals — (T = F × L⊥),
-(F₁L₁ = F₂L₂), (F = pA) and (N·m; Pa / kPa) — from the governed Mechanical provenance
-mechanical:PR006–PR011. Reference fundamentals only: no applicability inference, no project calculation,
-no gap closure, no feasibility, structural or safety conclusion, no validation, readiness or progression
-effect, and no AI / LLM / provider call. No further CAP-01 implementation is authorized beyond the
-delivered Mechanical slices.
+**ACTIVE CONTRACT: ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1 — BASIC ELECTRICAL REFERENCE FUNDAMENTALS.**
+ONE Owner-authorized bounded slice inside the already-entered Stage 18 (D13 / CAP-01; no new Master
+Roadmap Stage; Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06 NOT
+ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED). Electrical / Electronics only: for the exact CURRENT
+canonical `electronics_electrical` `PHYSICAL_FEASIBILITY` gap in exact state OPEN or PARTIAL, the report /
+deliverable and PDF may show three source-backed reference fundamentals — (V = I × R), (P = V × I) and SI
+unit discipline (V / A / Ω / W) — from electronics_electrical:PR004–PR007 (DOE-HDBK-1011/1-92, archived —
+canceled April 2016, historical / fundamentals reference only; NIST SP 811 Appendix B.9 unit facts only).
+Reference fundamentals only: no applicability inference, no project calculation, no gap closure, no
+compatibility verdict, no safe-limit determination, no component / power / battery sizing, no
+circuit-operation proof, no electrical-safety conclusion, no readiness / progression / validation effect,
+and no AI / LLM / provider call. Status: OWNER-AUTHORIZED / IMPLEMENTED — candidate
+`10e2210dc2f427f2feeee80ea808ca8d91387ad0` (tree `b4b9831e36b386919569922aa365d61b152c8a68`) / INDEPENDENT
+NON-AUTHORING REVIEW COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS / PR NOT OPENED / merge NOT PERFORMED /
+deployment and release NOT AUTHORIZED. No next slice beyond this Electrical slice is authorized;
+Mechatronics / Robotics / IoT / Drone / Renewable / Satellite implementation and Stage 15 / IRL
+implementation are NOT AUTHORIZED; no further CAP-01 implementation is authorized beyond the delivered
+Mechanical slices and the current Electrical slice.
+Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals — DELIVERED (PR #714, merge
+`dd445183a110da4ef707226e3ff9121f6c315e5b`; post-merge identity / content verification PASS) — is the
+preceding bounded slice inside Stage 18: four source-backed reference fundamentals (T = F × L⊥;
+F₁L₁ = F₂L₂; F = pA; N·m; Pa / kPa) for the exact current Mechanical `PHYSICAL_FEASIBILITY` gap only, from
+mechanical:PR006–PR011, with the same reference-only boundary.
 Mechanical CAP-01 — Open-Gap Technical Context — DELIVERED (PR #713, merge
 `225c0d36e6cfa97a25cd58c671b7c4f090627fb5`; post-merge identity / content verification PASS) — is the
 preceding bounded slice inside Stage 18: one short explanatory context per current Mechanical gap in the
@@ -141,16 +148,17 @@ docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the deliv
 history, and is the file to read for authority — this paragraph routes, it does not
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded Electronics CAP-01
 increments are delivered (PR #678, PR #679), the bounded Mechanical Open-Gap Technical Context is
-delivered (PR #713) and Mechanical Technical Deepening Slice 1 is delivered (PR #714); ACTIVE CONTRACT:
-NONE — there is no current authorized Technical Deepening subtask, no further CAP-01 implementation is
-authorized beyond the delivered Mechanical slices, no next Technical Deepening slice is authorized, full
-CAP-01 / full STG is not authorized, no other Stage is authorized — the delivered Mechanical Technical
-Deepening slice sat inside the already-entered Stage 18 and entered no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
+delivered (PR #713), Mechanical Technical Deepening Slice 1 is delivered (PR #714) and Electrical /
+Electronics Technical Deepening Slice 1 (above) is its current bounded action, no further CAP-01
+implementation is authorized beyond the delivered Mechanical slices and the current Electrical slice, no
+next slice beyond this Electrical slice is authorized, full CAP-01 / full STG is not authorized, no other
+Stage is authorized — the bounded Electrical Technical Deepening slice sits inside the already-entered
+Stage 18 and enters no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
 Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, the former post-PR-#679 `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -302,8 +310,12 @@ integration means shared project / subsystem / interface / dependency / evidence
 domain keeps authority over its own technical truth; Stage 15 / IRL stays the existing roadmap home for
 subsystem interfaces, cross-domain dependencies, integration evidence and durable subsystem identity /
 persistence when required — no Stage 15 implementation is authorized now and no new integration Stage or
-capability is created. Current priority: Mechanical deepening now → IoT → Drone / Unmanned → Renewable →
-Satellite / Space consideration. For ordinary new domains (IoT, Drone / Unmanned, Renewable) the
+capability is created. Portfolio sequencing is RE-ASSESSED, not a permanently hard-coded order: after the
+current Electrical slice and a useful Mechanical + Electrical baseline, the NEXT REASSESSMENT considers the
+smallest real Electrical ↔ Mechanical / Mechatronics integration slice; after integration evidence exists,
+a Robotics capability assessment precedes any Robotics decision; IoT, Drone / Unmanned, Renewable and
+Satellite / Space remain future portfolio directions ordered by product value, dependencies, overlap, source
+maturity, technical authority and actual integration needs. For ordinary new domains (IoT, Drone / Unmanned, Renewable) the
 preferred operating model is Add → Qualify → Activate → Establish Useful Baseline → Deepen — a preferred
 model, not a universal mandatory lifecycle. Satellite / Space keeps its Stage-28 direction and does NOT
 require a full new Domain Pack first: it may resolve to composition / orchestration, extension of
@@ -316,6 +328,52 @@ and explicit Owner authorization. Stage 30 cross-domain safeguards stay mandator
 activation and are reviewed proportionally to the actual proposed domain and the shared boundaries it
 affects — not a recurring full-project governance audit, a mandatory whole-history review or automatic
 re-validation of unrelated domains. No new domain activation is authorized.
+**Invention-first multi-domain principle (Owner-accepted; planning direction, authorizes nothing).** THE
+USER SUBMITS AN INVENTION, NOT A DOMAIN: InventorAI internally identifies which technical disciplines are
+involved and does not force one integrated invention into artificially separate product journeys merely
+because it spans several technologies. A Domain Pack is an internal governed source of technical
+authority, not automatically a separate user-facing product. NOT EVERY NAMED TECHNOLOGY REQUIRES A DOMAIN
+PACK: for a future technology, first assess whether the smallest truthful implementation is reuse,
+composition / orchestration, extension, a bounded technology-specific reasoning layer, a genuinely new
+governed domain, or deferral. **Mechatronics (planning direction only):** first treated as a cross-domain
+integration perspective, not automatically a duplicated technical domain — its value is integration among
+Mechanical mechanisms, electrical power, electronics, sensors, actuators, control, software, feedback and
+subsystem interfaces; no generic Mechatronics framework is built ahead of an actual product slice, and
+Stage 15 / IRL stays the home for durable subsystem identity, interfaces, dependencies, integration evidence
+and related persistence when separately authorized (no Stage 15 implementation is authorized now).
+**Robotics (planning / future reassessment only):** Robotics is NOT automatically a new Domain Pack; before
+any Robotics domain decision, determine which required truth is already owned by Mechanical, Electrical /
+Electronics, Software / Control, sensors, Mechatronics integration, future perception / vision or
+communications / IoT; only materially unowned Robotics-specific truth may justify an extension, a bounded
+Robotics reasoning layer or, if evidence genuinely requires it, a separately governed Robotics domain;
+Mechanical / Electrical knowledge is never duplicated inside a Robotics container; no Robotics
+implementation is authorized now.
+**Technical Knowledge & Intellectual Property Source Boundary (Owner-accepted standing execution
+principle; it creates no gate, document or program).** NO TECHNICAL DEPTH WITHOUT SOURCE AUTHORITY. NO
+SOURCE INGESTION WITHOUT A KNOWN AND COMPATIBLE USE BASIS. UNKNOWN RIGHTS = DO NOT INGEST BY DEFAULT. AI
+ANSWER ≠ SOURCE LICENSE. For each material technical claim: define the exact claim; identify the required
+technical authority; verify the original source; verify the source-use basis; bind the source only to the
+claims it actually supports. Availability on the public internet is not permission for commercial reuse;
+free-to-read / Open Access does not automatically mean commercial reuse is permitted; attribution alone
+does not cure an incompatible license. When technically adequate, prefer authoritative sources with
+clearer compatible reuse rights (government / public-domain, open-government, appropriately licensed
+academic / institutional, permissively licensed open material), but never substitute a technically weaker
+open source for a standard-specific compliance / certification claim. Protected or proprietary standards
+(ISO / IEC / IEEE / IPC / ASME) may be referenced where lawful and appropriate, but access does NOT
+authorize copying protected prose, tables, figures, datasets or other protected expression; where legally
+compatible, InventorAI uses its own factual paraphrase of technical facts, equations and relationships.
+Third-party material inside an otherwise usable source is treated separately, and no source endorsement
+may be implied. SEARCH BY TECHNICAL CLAIM / TECHNICAL NEED, NOT MERELY BY DOMAIN NAME. Technical knowledge
+is represented once where practical and reused through explicit claim / domain mappings — the same
+technical fact is not duplicated merely because Mechanical, Electrical, Mechatronics, Robotics or IoT may
+all consume it — and shared knowledge does NOT erase domain-specific technical authority: each context
+stays bounded by its own authority.
+**Shared knowledge vs private inventor information (standing boundary).** SHARED GOVERNED TECHNICAL
+KNOWLEDGE stays separate from PRIVATE INVENTOR / PROJECT INFORMATION. A user's invention, attachments,
+project facts, measurements, design choices or proprietary material never become shared InventorAI
+technical knowledge merely because the user supplied them, and one inventor's private material is never
+used as shared knowledge for another inventor without separate valid authority. Real invention / project /
+user data remains NOT AUTHORIZED for external AI / provider transmission unless separately authorized.
 
 **Human-study boundary.** No recruitment, participant contact or human-data collection begins
 without the required Owner authorization and applicable consent/custody readiness. Before the
@@ -502,6 +560,30 @@ information, not execution authority.
 - **CLOSED — Mechanical CAP-01 test-hygiene WATCH.** The two `or True` clauses in
   `tests/test_cap01_mechanical_open_gap_context.py` were replaced with real assertions on the natural
   touch by Mechanical Technical Deepening Slice 1; nothing remains open.
+- **NEXT TRIGGER — source-rights architecture (future architecture decision, not current
+  implementation).** Before any future live web / retrieval / provider knowledge ingestion reaches
+  production, require an explicit source-rights architecture covering allowed-source policy, blocked-source
+  policy, unknown-rights fail-closed behaviour, commercial-use compatibility, adaptation rights, attribution
+  handling, third-party-content handling, bulk / database extraction boundaries and private-project-data
+  separation. Do not build it now.
+- **FUTURE RELEASE TRIGGER — ONE bounded THIRD-PARTY CONTENT & IP RELEASE CHECK.** Before public /
+  commercial release (including GitHub Marketplace or comparable distribution), check the material actually
+  shipped or relied upon: technical source rights, required attribution, software / library licenses,
+  datasets, images / figures, logos / trademarks, proprietary standards, vendor documentation and
+  private-user-content separation. Platform acceptance is NOT InventorAI IP clearance. It is one bounded
+  check, not a recurring governance program.
+- **WATCH — Electrical / Electronics Technical Deepening Slice 1 (non-blocking, no repair cycle).**
+  Independent non-authoring review: PASS WITH NON-BLOCKING OBSERVATIONS; no second review required.
+  (N-1) SOURCE URL TRACEABILITY: `electronics_electrical:PR004` and `PR006` carry `url: null`; exact source
+  identity suffices for this candidate — complete the URL fields at the next natural provenance / source
+  touch if the exact authoritative URL remains known and verified. (O-1) EQUATION WRAPPING / SEPARATOR: the
+  generic fundamentals template can wrap an equation mid-expression and visually run the note after it (no
+  symbol corruption demonstrated) — at the next natural CAP-01 fundamentals presentation touch consider
+  `white-space: nowrap` and a clear visual separator if still justified. (O-2) ARABIC ELECTRICAL "RATING"
+  TERMINOLOGY: the denial copy uses wording closer to "classification" — at the next natural Arabic CAP-01
+  copy touch consider a term closer to القيم الاسمية. (O-3) Electronics PF gap-context host: CLOSED — NO
+  DEFECT (explicitly authorized). (O-4) current truth: RESOLVED by the product-attached sync. None of these
+  modifies the reviewed candidate.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative

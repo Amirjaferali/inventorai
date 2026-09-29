@@ -220,10 +220,19 @@ def profiles_for_package(package):
 # Trusted canonical domain id -> (context group id, canonical gap ids in the
 # deterministic SOURCE order the governed package declares them). ONE row per
 # authorized domain; ONE context per supported canonical gap; nothing else.
+# The ``electronics_electrical`` row (Electrical / Electronics Technical Deepening
+# Slice 1) carries EXACTLY ONE gap, PHYSICAL_FEASIBILITY, grounded in the
+# governed Electronics package (``domains/electronics_electrical/domain.json``);
+# it is separate from, and changes nothing in, the domain-level
+# CAP01_ELECTRONICS_INTERFACE_V1 checklist / research profile above.
 CAP01_GAP_CONTEXT_BY_DOMAIN = {
     "mechanical": (
         "CAP01_MECHANICAL_GAP_CONTEXT_V1",
         ("MECHANISM_COMPLETENESS", "PHYSICAL_FEASIBILITY", "BOUNDARY_AMBIGUITY"),
+    ),
+    "electronics_electrical": (
+        "CAP01_ELECTRONICS_GAP_CONTEXT_V1",
+        ("PHYSICAL_FEASIBILITY",),
     ),
 }
 
@@ -260,11 +269,23 @@ _GAP_CONTEXT_PARTS = {
 # ``domains/domain_provenance.json``; the copy lives in ``web/ui_text.py``; this
 # table owns availability and structure only. No calculation, no formula
 # selection, no generic knowledge or calculation registry.
+# ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1 — BASIC ELECTRICAL REFERENCE
+# FUNDAMENTALS adds ONE row on the same seam: the exact Electronics
+# PHYSICAL_FEASIBILITY context carries three bounded reference claims (Ohm's-law
+# reference, basic power reference, SI unit discipline) declared in
+# ``domains/electronics_electrical/domain.json`` (basic_electrical_reference_v1)
+# with provenance electronics_electrical:PR004–PR007. Same rules: no second
+# binding, no inventor text, no signals, no calculation, no formula selection.
 CAP01_GAP_FUNDAMENTALS = {
     ("mechanical", "PHYSICAL_FEASIBILITY"): (
         "force_moment_pressure_v1",
         ("torque_moment_perpendicular", "ideal_static_moment_balance",
          "pressure_force_area_uniform", "si_quantity_unit_discipline"),
+    ),
+    ("electronics_electrical", "PHYSICAL_FEASIBILITY"): (
+        "basic_electrical_reference_v1",
+        ("ohms_law_reference", "electrical_power_vi_reference",
+         "si_electrical_unit_discipline"),
     ),
 }
 
