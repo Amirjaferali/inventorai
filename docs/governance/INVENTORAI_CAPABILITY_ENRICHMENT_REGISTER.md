@@ -115,9 +115,9 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   checklist profile, with no applicability inference, calculation, gap closure, compatibility, safe-limit,
   sizing, circuit-operation or electrical-safety conclusion. No further CAP-01 implementation is authorized
   beyond the delivered Mechanical and Electrical slices. Stage 15 — Integrated Invention Entry & Durable
-  Subsystem Composition — Slice 1 (the current bounded product action: implementation complete candidate
-  `41d06a27ed657a1bf6460c638655f0a6de5447a0`; independent architecture + implementation review cycle COMPLETE —
-  F1-CLOSED; PR NOT OPENED / merge NOT PERFORMED) is NOT a CAP-01 slice: it records one Owner-declared
+  Subsystem Composition — Slice 1 (DELIVERED — PR #718 — merge `3f3546a279c7f7020744bcbfee957de84ac2e136`;
+  post-merge identity / content verification PASS; independent architecture + implementation review cycle
+  COMPLETE — F1-CLOSED; no product increment is currently authorized) is NOT a CAP-01 slice: it records one Owner-declared
   Mechanical + Electrical / Electronics composition and one initial analysis focus, and adds no CAP-01
   technical depth and no technical-source knowledge. The two Electronics increments are presentation-only; the second
   adds no evidence, retrieval, numeric value, project inspection or specialist. That increment is presentation-only, class-general and

@@ -23,10 +23,44 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--stage15-integrated-invention-entry-slice1"></a>
-## Current authority — Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (Owner authorization, 2026-09-29)
+<a id="current-authority--post-pr-718-no-active-contract"></a>
+## Current authority — post-PR-#718: no active contract (2026-09-29)
 
-**ACTIVE CONTRACT: STAGE 15 — INTEGRATED INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — SLICE 1.**
+**ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. Stage 15 — Integrated Invention Entry &
+Durable Subsystem Composition — Slice 1, the last Owner-authorized bounded product slice, is DELIVERED (PR #718,
+merge `3f3546a279c7f7020744bcbfee957de84ac2e136`; post-merge identity / content verification PASS; independent
+architecture + implementation review cycle COMPLETE — F1-CLOSED), and no subsequent product increment has been
+authorized. Only the Owner may issue one; nothing in this file, the roadmap or the checklist fills the gap, and
+historical delivered work never fills the active-contract slot. This does NOT mean the roadmap, Stage 15,
+Stage 18 or integration is complete, or that a next slice is authorized. The next step
+is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT — read-only planning / selection over live repository and
+product evidence until the Owner separately authorizes another product increment.
+
+| | |
+|---|---|
+| **STAGE 15 SLICE 1** | `STAGE 15 SLICE 1: DELIVERED — PR #718 — merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` — one genuine invention containing both a Mechanical part and an Electrical / Electronics part can enter InventorAI as ONE project; the Owner confirms the two parts genuinely belong to the same invention, identifies one Mechanical part and one Electrical / Electronic part and selects one initial analysis focus; InventorAI durably preserves both subsystem identities, the Owner-stated part names / functions, the OWNER_STATED / UNVALIDATED composition and the selected initial analysis focus; the project cold-loads, reconstructs and resumes with the same composition and identities; the session, HTML report and PDF disclose that only the selected initial focus is currently evaluated and that the other part and their integration have NOT yet been independently evaluated or validated; its rules are recorded in its section below and still bind |
+| **ANCESTRY** | original implementation `90322f146a56099a2e6647ba0c53e5195963d41c` → F1 / IR01-A correction `41d06a27ed657a1bf6460c638655f0a6de5447a0` → product-attached current-truth sync / PR head `be6ab2c14be34e49300444b4c6c5104e2f9bdf0a` → merge `3f3546a279c7f7020744bcbfee957de84ac2e136` (ordered parents `c525f037a23dae16a317fc12d449ce1586852ae1`, `be6ab2c14be34e49300444b4c6c5104e2f9bdf0a`; merge tree `c8f201bd4117fd210683fffbd06da8e1a695847a` = PR-head tree) |
+| **FINAL REVIEW STATE** | initial review C. FAIL — one material finding F1 / P2 / IR01-A; correction F1-CLOSED; targeted re-review B. TARGETED PASS WITH NON-BLOCKING OBSERVATIONS; IR01-B — CORRECTED / NO REMAINING MATERIAL DEFECT; EXPORT-A — ACCEPTABLE NON-BLOCKING OMISSION; NO REMAINING MATERIAL FINDING; review cycle COMPLETE; no second architecture review required |
+| **ARCHITECTURE (preserved)** | ONE PROJECT · ONE scalar root `confirmed_domain` · MULTI-DOMAIN AT SUBSYSTEM GRAIN · NO peer root domains; `confirmed_domain` is the IMMUTABLE INITIAL ANALYSIS FOCUS for this slice — NOT a claim that the entire invention belongs exclusively to that domain; no focus-switch behaviour and no historical answer reinterpretation exist; the classifier is unchanged — AMBIGUOUS_TIE remains ambiguity, AMBIGUOUS_TIE ≠ GENUINE MULTI-DOMAIN, MULTI_DOMAIN_NEEDS_D4 is not manufactured |
+| **STAGE 15** | **ENTERED / PARTIAL / NOT COMPLETE**; its checkbox stays UNTICKED; the Phase-7 integration / interface foundation still EXISTS; Slice 1 establishes integrated-invention entry, durable Mechanical + Electrical / Electronics subsystem composition, durable subsystem identities for this bounded use case, one immutable initial analysis focus, close / reopen / reconstruction / resume preservation and truthful session / HTML / PDF scope disclosure — it does NOT complete the wider Stage-15 obligation; wider Stage-15 work stays DEFERRED / NOT AUTHORIZED (broader per-project integration evidence; wider interface / dependency evidence; subsystem / interface integration evidence beyond Slice 1; wider durable subsystem semantics beyond the delivered bounded use case; inbound / write-import; async / vendor integration; T2-E writer reachability); no full IRL capability, no IRL level, no complete integration readiness and no engineering compatibility is claimed |
+| **STAGE 18** | `CURRENT MASTER ROADMAP STAGE: Stage 18 — D13 / CAP-01` · `STAGE 18 STARTED: YES` · `STAGE 18 COMPLETE: NO` · **ENTERED / PARTIAL / NOT COMPLETE**; its checkbox stays unticked; Electrical / Electronics Technical Deepening Slice 1 DELIVERED (PR #716), Mechanical Technical Deepening Slice 1 DELIVERED (PR #714) and Mechanical CAP-01 Open-Gap Technical Context DELIVERED (PR #713); no current Technical Deepening subtask; no additional CAP-01 implementation authorized; FULL CAP-01 / FULL STG NOT AUTHORIZED; the Stage-15 delivery does not complete, cancel or renumber Stage 18 |
+| **NEXT STEP** | LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT — READ-ONLY planning / selection only, using live repository / product evidence, until the Owner separately authorizes another product increment; it pre-authorizes no further Stage-15 slice, interface engineering, Robotics assessment implementation, IoT, other Domain Pack or other Technical Deepening slice |
+| **MECHATRONICS / ROBOTICS** | Mechatronics stays a cross-domain integration perspective first; no Mechatronics Domain Pack exists or is authorized; Slice 1 is the first delivered bounded Mechanical ↔ Electrical / Electronics integrated-invention product slice and provides no full engineering integration analysis; Robotics is NOT started automatically and stays a future capability assessment only — a Robotics capability assessment must precede any later decision among reuse, composition, extension, a bounded reasoning layer, a separate domain or deferral; this closure authorizes none of those |
+| **REVIEW OBSERVATIONS** | S15-N1 — NON-BLOCKING: `IdeaState.subsystems` commentary is stale regarding persistence; natural trigger: the next legitimate `engine/idea_state.py` subsystem semantics / documentation touch; not fixed now. S15-N2 — EXPORT-A / NON-BLOCKING: the self-service structured export omits the subsystem composition; natural trigger: the next bounded read / export composition touch; no export / API redesign now. O-3 carried invention text / reclassification — NO MATERIAL FINDING. O-4 integrated-entry / clarification UX — NO MATERIAL FINDING. No repair cycle |
+| **SOURCE / IP / PRIVACY** | NO TECHNICAL DEPTH WITHOUT SOURCE AUTHORITY; NO SOURCE INGESTION WITHOUT A KNOWN AND COMPATIBLE USE BASIS; UNKNOWN RIGHTS = DO NOT INGEST BY DEFAULT; AI ANSWER ≠ SOURCE LICENSE; THE USER SUBMITS AN INVENTION, NOT A DOMAIN; NOT EVERY NAMED TECHNOLOGY REQUIRES A DOMAIN PACK; subsystem names / functions stay PRIVATE INVENTOR / PROJECT INFORMATION; external transmission of real invention / project / user data NOT AUTHORIZED |
+
+`ACTIVE CONTRACT: NONE` · `NEXT PRODUCT INCREMENT: NOT AUTHORIZED` · `NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT` · `STAGE 15 SLICE 1: DELIVERED — PR #718 — merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B CORRECTED / NO REMAINING MATERIAL DEFECT` · `STAGE 15 SLICE 1 ANCESTRY: implementation 90322f146a56099a2e6647ba0c53e5195963d41c, F1 / IR01-A correction 41d06a27ed657a1bf6460c638655f0a6de5447a0, current-truth sync / PR head be6ab2c14be34e49300444b4c6c5104e2f9bdf0a, merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `STAGE 15: ENTERED / PARTIAL / NOT COMPLETE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL AND ELECTRICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `ANOTHER STAGE-15 SLICE: NOT AUTHORIZED` · `FULL STAGE 15 / IRL: NOT AUTHORIZED` · `IRL SCORING / LEVELS: NOT AUTHORIZED` · `FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED` · `ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED` · `MECHATRONICS DOMAIN PACK: NOT AUTHORIZED` · `ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+
+<a id="current-authority--stage15-integrated-invention-entry-slice1"></a>
+## Current authority — Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (Owner authorization, 2026-09-29) — DELIVERED (PR #718); SUPERSEDED as current authority by the post-PR-#718 no-active-contract declaration
+
+**No longer the current authority.** Stage 15 — Integrated Invention Entry & Durable Subsystem Composition —
+Slice 1 was delivered (PR #718, merge `3f3546a279c7f7020744bcbfee957de84ac2e136`; post-merge identity / content
+verification PASS); no subsequent increment is authorized, so the section above declares a no-active-contract
+state. Every rule below still binds, and Stage 15 stays ENTERED / PARTIAL / NOT COMPLETE. *(Superseded
+2026-09-29, preserved so the change is visible rather than silent: this opened "**ACTIVE CONTRACT: STAGE 15 —
+INTEGRATED INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — SLICE 1.**" and recorded the slice as
+"IMPLEMENTATION: COMPLETE CANDIDATE … F1-CLOSED / PR NOT OPENED / merge NOT PERFORMED".)*
 ONE Owner-authorized bounded product slice, selected by the Owner-controlled Next-Increment Reassessment and
 recorded by the Owner authorization itself (no separate contract document). It is a bounded re-entry into
 the already-open Stage-15 integration obligation and creates no new Master Roadmap Stage: Stage 15 is
@@ -34,12 +68,15 @@ ENTERED / PARTIAL / NOT COMPLETE through exactly this slice (checkbox unticked).
 SEQUENTIAL MARKER stays `CURRENT MASTER ROADMAP STAGE: Stage 18 — D13 / CAP-01` (Stage 18 ENTERED / PARTIAL /
 NOT COMPLETE, checkbox unticked): entering this Stage-15 residual does not complete, cancel or renumber
 Stage 18, does not make Stage 15 the sole incomplete stage and discharges no other residual. Status: OWNER
-AUTHORIZED: YES / IMPLEMENTATION: COMPLETE CANDIDATE — original implementation commit
+AUTHORIZED: YES / IMPLEMENTED — original implementation commit
 `90322f146a56099a2e6647ba0c53e5195963d41c` (tree `fc3c7890284ca873f26c4b16a29e4bee2649714f`; sole parent
 `c525f037a23dae16a317fc12d449ce1586852ae1`), F1 / IR01-A correction commit `41d06a27ed657a1bf6460c638655f0a6de5447a0`
-(sole parent `90322f146a56099a2e6647ba0c53e5195963d41c`); CURRENT REVIEWED PRODUCT HEAD `41d06a27ed657a1bf6460c638655f0a6de5447a0`
+(sole parent `90322f146a56099a2e6647ba0c53e5195963d41c`); FINAL REVIEWED PRODUCT HEAD `41d06a27ed657a1bf6460c638655f0a6de5447a0`
 (tree `02b8c1244000820d2202be905d7325c35af4bc5c`) / INDEPENDENT ARCHITECTURE + IMPLEMENTATION REVIEW CYCLE COMPLETE —
-F1-CLOSED / PR NOT OPENED / merge NOT PERFORMED / deployment and release NOT AUTHORIZED.
+F1-CLOSED; product-attached current-truth sync / PR head `be6ab2c14be34e49300444b4c6c5104e2f9bdf0a` (tree
+`c8f201bd4117fd210683fffbd06da8e1a695847a`; sole parent `41d06a27ed657a1bf6460c638655f0a6de5447a0`) / DELIVERED (PR #718, merge
+`3f3546a279c7f7020744bcbfee957de84ac2e136`; ordered parents `c525f037a23dae16a317fc12d449ce1586852ae1`,
+`be6ab2c14be34e49300444b4c6c5104e2f9bdf0a`; merge tree = PR-head tree) / deployment and release NOT AUTHORIZED.
 
 | | |
 |---|---|
@@ -49,14 +86,16 @@ F1-CLOSED / PR NOT OPENED / merge NOT PERFORMED / deployment and release NOT AUT
 | **DURABLE COMPOSITION** | the existing subsystem owner (`engine/subsystem_model.py`) was reused and extended — no new subsystem model; exactly one `mechanical` and one `electronics_electrical` subsystem, each with a system-generated subsystem identity, display name, function / role, OWNER_STATED provenance, UNVALIDATED state and canonical domain; ONE additive `project_subsystems` sidecar in the existing SQLite store; no backfill; no destructive migration; old projects keep zero subsystem rows; `ProjectRecordContract` unchanged; subsystem declarations are NOT AssertionRecords; project creation atomically covers the project envelope, accepted records where applicable, creation NeedRouting rows and the subsystem composition rows |
 | **SCOPE DISCLOSURE** | session + HTML report + PDF truthfully disclose that both parts belong to the same Owner-declared invention, that one initial analysis focus is selected, that InventorAI currently evaluates through that selected focus, and that the other part and the integration between the parts have NOT yet been independently evaluated or validated; no automatic "Mechatronics" label; no compatibility, feasibility or integrated-validation conclusion; no non-focused specialist evaluation |
 | **REVIEW** | initial exact-candidate independent architecture + implementation review of `90322f146a56099a2e6647ba0c53e5195963d41c`: C. FAIL — one material finding, F1 / P2 / IR01-A (an unresolved COMMIT + ROLLBACK failure could let the same unsafe SQLite connection expose its own uncommitted subsystem composition as durable truth); all other architecture / product areas: no material finding. Correction `41d06a27ed657a1bf6460c638655f0a6de5447a0`: `load_project_subsystems()` refuses the persistent unsafe connection before any SELECT with the existing `RecordStoreConnectionUnsafe`; a healthy `read_snapshot()` remains valid. Targeted re-review of the corrected head: B. TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1 CLOSED; IR01-B — CORRECTED / NO REMAINING MATERIAL DEFECT. Final material-review state: NO REMAINING MATERIAL FINDING; the ONE required independent architecture + implementation review cycle is COMPLETE; no second architecture review is required |
-| **EVIDENCE** | author, on the corrected final product tree: focused Stage-15 58 passed; the four correction-touched modules 279 passed; persistence / migration / reconstruction 334 passed; other IR-01 owners 385 passed; admission / tie / web / T2G / subsystem 177 passed; mutation probes 2 / 2 caught; author full regression 8790 passed / 2 skipped / 1 xfailed / 0 failed / 0 errors; `git diff --check` clean. Independent targeted evidence: 437 passed / 0 failed / 0 errors / 0 skipped. The independent full regression was ENVIRONMENT-LIMITED on Windows (the repository full-suite assumes Linux / POSIX behaviour and no Linux / WSL / Docker environment was available there) — a known reviewer-host limitation, NOT a product failure; the independent reviewer did NOT complete a clean full regression; hosted CI on the eventual PR is the mandatory final full-suite merge gate |
+| **EVIDENCE** | author, on the corrected final product tree: focused Stage-15 58 passed; the four correction-touched modules 279 passed; persistence / migration / reconstruction 334 passed; other IR-01 owners 385 passed; admission / tie / web / T2G / subsystem 177 passed; mutation probes 2 / 2 caught; author full regression 8790 passed / 2 skipped / 1 xfailed / 0 failed / 0 errors; `git diff --check` clean. Independent targeted evidence: 437 passed / 0 failed / 0 errors / 0 skipped. The independent full regression was ENVIRONMENT-LIMITED on Windows (the repository full-suite assumes Linux / POSIX behaviour and no Linux / WSL / Docker environment was available there) — a known reviewer-host limitation, NOT a product failure; the independent reviewer did NOT complete a clean full regression; hosted CI on the PR was the mandatory final full-suite merge gate — on PR #718 (run 36597956066, head `be6ab2c14be34e49300444b4c6c5104e2f9bdf0a`) CI required, Verify candidate and RIG fast feedback all passed before the merge |
 | **NON-BLOCKING OBSERVATIONS** | S15-N1 — stale `IdeaState.subsystems` commentary (it still describes the carrier as persistence-independent / never durably persisted) — NON-BLOCKING; natural trigger: the next legitimate `engine/idea_state.py` touch involving subsystem semantics / documentation. S15-N2 — the self-service structured export omits the subsystem composition — EXPORT-A — ACCEPTABLE NON-BLOCKING OMISSION (the export states the canonical support state of the selected initial focus and makes no affirmative claim that the project is single-domain or that the whole invention was validated); natural trigger: the next bounded read / export composition touch; no API / export redesign now |
 | **SOURCE / IP / PRIVACY** | the slice adds no technical-source knowledge; NO TECHNICAL DEPTH WITHOUT SOURCE AUTHORITY; subsystem names and functions are PRIVATE INVENTOR / PROJECT INFORMATION — never shared governed technical knowledge and NOT AUTHORIZED for external AI / provider transmission; no AI / LLM / provider call |
 | **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **ENTERED / PARTIAL / NOT COMPLETE**; its checkbox stays unticked; Electrical / Electronics Technical Deepening Slice 1 DELIVERED (PR #716), Mechanical Technical Deepening Slice 1 DELIVERED (PR #714) and Mechanical CAP-01 Open-Gap Technical Context DELIVERED (PR #713) — not reopened; no current Technical Deepening subtask is authorized and this Stage-15 work authorizes no additional CAP-01 technical-depth slice |
 
-`ACTIVE CONTRACT: STAGE 15 — INTEGRATED INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — SLICE 1` · `STAGE 15 SLICE 1: OWNER-AUTHORIZED — IMPLEMENTATION COMPLETE CANDIDATE (implementation 90322f146a56099a2e6647ba0c53e5195963d41c, F1 / IR01-A correction 41d06a27ed657a1bf6460c638655f0a6de5447a0) — INDEPENDENT ARCHITECTURE + IMPLEMENTATION REVIEW CYCLE COMPLETE — F1-CLOSED — PR NOT OPENED / MERGE NOT PERFORMED` · `FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B CORRECTED / NO REMAINING MATERIAL DEFECT` · `CURRENT REVIEWED PRODUCT HEAD: 41d06a27ed657a1bf6460c638655f0a6de5447a0 (tree 02b8c1244000820d2202be905d7325c35af4bc5c)` · `STAGE 15: ENTERED / PARTIAL / NOT COMPLETE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL AND ELECTRICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `FULL STAGE 15 / IRL: NOT AUTHORIZED` · `IRL SCORING / LEVELS: NOT AUTHORIZED` · `FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED` · `ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED` · `MECHATRONICS DOMAIN PACK: NOT AUTHORIZED` · `ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+`STAGE 15 SLICE 1: DELIVERED — PR #718 — merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B CORRECTED / NO REMAINING MATERIAL DEFECT` · `STAGE 15 SLICE 1 ANCESTRY: implementation 90322f146a56099a2e6647ba0c53e5195963d41c, F1 / IR01-A correction 41d06a27ed657a1bf6460c638655f0a6de5447a0, current-truth sync / PR head be6ab2c14be34e49300444b4c6c5104e2f9bdf0a, merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `STAGE 15: ENTERED / PARTIAL / NOT COMPLETE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `ANOTHER STAGE-15 SLICE: NOT AUTHORIZED` · `FULL STAGE 15 / IRL: NOT AUTHORIZED` · `IRL SCORING / LEVELS: NOT AUTHORIZED` · `FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED` · `ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED` · `MECHATRONICS DOMAIN PACK: NOT AUTHORIZED` · `ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+*(Superseded 2026-09-29, preserved — this token line began "`ACTIVE CONTRACT: STAGE 15 — INTEGRATED INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — SLICE 1` · `STAGE 15 SLICE 1: OWNER-AUTHORIZED —
+IMPLEMENTATION COMPLETE CANDIDATE (…) — … — PR NOT OPENED / MERGE NOT PERFORMED`".)*
 
-**Deferred / not authorized:** full Stage-15 / IRL completion; IRL scoring / levels; full D4 compatibility
+**Deferred / not authorized:** another Stage-15 slice; full Stage-15 / IRL completion; IRL scoring / levels; full D4 compatibility
 evaluation; a cross-domain engineering compatibility verdict; interface engineering; subsystem-level gap /
 evidence / readiness engines; independent Mechanical + Electrical evaluations in one run; analysis-focus
 switching; peer root domains; generic N-domain composition; a Mechatronics Domain Pack; Robotics
@@ -1385,12 +1424,19 @@ section above; the stage is ENTERED as fact. `FIRST BOUNDED CAP-01 INCREMENT:
 OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
 `D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
 unticked** — one authorized bounded slice is not the stage.
-**CURRENT BOUNDED PRODUCT ACTION — Stage 15 / Integrated Invention Entry & Durable Subsystem Composition —
-Slice 1 (a bounded re-entry into the already-open Stage-15 integration obligation, selected by the
-Owner-controlled Next-Increment Reassessment; no new Master Roadmap Stage; the MASTER ROADMAP SEQUENTIAL
-MARKER stays Stage 18 — ENTERED / PARTIAL / NOT COMPLETE):** `ACTIVE CONTRACT: STAGE 15 — INTEGRATED INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — SLICE 1` · `STAGE 15 SLICE 1: OWNER-AUTHORIZED — IMPLEMENTATION COMPLETE CANDIDATE (implementation 90322f146a56099a2e6647ba0c53e5195963d41c, F1 / IR01-A correction 41d06a27ed657a1bf6460c638655f0a6de5447a0) — INDEPENDENT ARCHITECTURE + IMPLEMENTATION REVIEW CYCLE COMPLETE — F1-CLOSED — PR NOT OPENED / MERGE NOT PERFORMED` · `FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B CORRECTED / NO REMAINING MATERIAL DEFECT` · `CURRENT REVIEWED PRODUCT HEAD: 41d06a27ed657a1bf6460c638655f0a6de5447a0 (tree 02b8c1244000820d2202be905d7325c35af4bc5c)` · `STAGE 15: ENTERED / PARTIAL / NOT COMPLETE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL AND ELECTRICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `FULL STAGE 15 / IRL: NOT AUTHORIZED` · `IRL SCORING / LEVELS: NOT AUTHORIZED` · `FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED` · `ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED` · `MECHATRONICS DOMAIN PACK: NOT AUTHORIZED` · `ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
-Stage 15 Slice 1 (implementation complete candidate). One genuine invention containing both a Mechanical part
-and an Electrical / Electronics part may enter InventorAI as ONE project: submit invention → clarify whether
+**NO ACTIVE CONTRACT — post-PR-#718 (2026-09-29); Stage 15 and Stage 18 both stay ENTERED / PARTIAL / NOT
+COMPLETE:** `ACTIVE CONTRACT: NONE` · `NEXT PRODUCT INCREMENT: NOT AUTHORIZED` · `NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT` · `STAGE 15 SLICE 1: DELIVERED — PR #718 — merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B CORRECTED / NO REMAINING MATERIAL DEFECT` · `STAGE 15 SLICE 1 ANCESTRY: implementation 90322f146a56099a2e6647ba0c53e5195963d41c, F1 / IR01-A correction 41d06a27ed657a1bf6460c638655f0a6de5447a0, current-truth sync / PR head be6ab2c14be34e49300444b4c6c5104e2f9bdf0a, merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `STAGE 15: ENTERED / PARTIAL / NOT COMPLETE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL AND ELECTRICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `ANOTHER STAGE-15 SLICE: NOT AUTHORIZED` · `FULL STAGE 15 / IRL: NOT AUTHORIZED` · `IRL SCORING / LEVELS: NOT AUTHORIZED` · `FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED` · `ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED` · `MECHATRONICS DOMAIN PACK: NOT AUTHORIZED` · `ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+No product increment is authorized after PR #718. This does NOT mean the roadmap, Stage 15, Stage 18 or
+integration is complete, or that a next slice is authorized, and delivered history never fills the
+active-contract slot. The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT: read-only planning /
+selection over live repository and product evidence until the Owner separately authorizes another product
+increment. It pre-authorizes no further Stage-15 slice, interface engineering, Robotics assessment
+implementation, IoT, other Domain Pack or Technical Deepening slice.
+**DELIVERED — Stage 15 / Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (a bounded
+re-entry into the already-open Stage-15 integration obligation; no new Master Roadmap Stage; the MASTER ROADMAP
+SEQUENTIAL MARKER stays Stage 18):** `STAGE 15 SLICE 1: DELIVERED — PR #718 — merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`.
+Stage 15 Slice 1 (delivered). One genuine invention containing both a Mechanical part
+and an Electrical / Electronics part can enter InventorAI as ONE project: submit invention → clarify whether
 the Mechanical and Electrical / Electronic parts genuinely work together in the same invention → record one
 Mechanical part → record one Electrical / Electronic part → select one initial analysis focus → atomically
 create the project → durably preserve both subsystem identities / composition → cold-load / reconstruct /
@@ -1400,15 +1446,17 @@ root `domains = [...]`; `confirmed_domain` is the IMMUTABLE INITIAL ANALYSIS FOC
 electronics_electrical), not a claim that the whole invention belongs to that domain; no focus-switch and no
 historical answer reinterpretation exist. The classifier is unchanged: AMBIGUOUS_TIE remains ambiguity
 (AMBIGUOUS_TIE ≠ GENUINE MULTI-DOMAIN) and MULTI_DOMAIN_NEEDS_D4 is not manufactured; the composition is
-OWNER_STATED / UNVALIDATED and distinct from classification. The other part and the integration between the
+OWNER_STATED / UNVALIDATED and distinct from classification. Only the selected initial analysis focus is currently evaluated. The
+other part and the integration between the
 parts have NOT yet been independently evaluated or validated; no automatic Mechatronics label, no
 compatibility, feasibility or integrated-validation conclusion and no non-focused specialist evaluation.
-Original implementation `90322f146a56099a2e6647ba0c53e5195963d41c` (tree `fc3c7890284ca873f26c4b16a29e4bee2649714f`); F1 / IR01-A
-correction `41d06a27ed657a1bf6460c638655f0a6de5447a0` = current reviewed product head (tree
-`02b8c1244000820d2202be905d7325c35af4bc5c`); independent architecture + implementation review cycle COMPLETE —
-initial C. FAIL with one material finding (F1 / P2 / IR01-A), targeted re-review B. TARGETED PASS WITH
-NON-BLOCKING OBSERVATIONS — F1 CLOSED, no remaining material finding; PR NOT OPENED, merge NOT PERFORMED;
-deployment / release NOT AUTHORIZED.
+Delivered in PR #718 (merge `3f3546a279c7f7020744bcbfee957de84ac2e136`; original implementation
+`90322f146a56099a2e6647ba0c53e5195963d41c`, F1 / IR01-A correction `41d06a27ed657a1bf6460c638655f0a6de5447a0` and
+product-attached current-truth sync / PR head `be6ab2c14be34e49300444b4c6c5104e2f9bdf0a` preserved in ancestry);
+independent architecture + implementation review cycle COMPLETE — initial C. FAIL with one material finding
+(F1 / P2 / IR01-A), targeted re-review B. TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED (IR01-B —
+CORRECTED / NO REMAINING MATERIAL DEFECT; EXPORT-A — ACCEPTABLE NON-BLOCKING OMISSION), no remaining material
+finding; S15-N1 / S15-N2 stay non-blocking; deployment / release NOT AUTHORIZED.
 **DELIVERED — Stage 18 / Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference
 Fundamentals (inside Stage 18; no new Master Roadmap Stage):** `ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #716 — merge 11564b235b056aaf12ca9d5596418f43a2d7e61c` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`.
 Electrical / Electronics Technical Deepening Slice 1 (delivered). Electrical / Electronics only: for the exact CURRENT canonical electronics_electrical
@@ -1609,6 +1657,14 @@ existing consent/custody boundaries**. No human collection begins merely because
 moves past it.
 <!-- END CURRENT-BLOCK: current-routing -->
 
+*(Superseded 2026-09-29 by the post-PR-#718 closure, preserved so the change is visible rather than silent: the
+current routing read "**CURRENT BOUNDED PRODUCT ACTION — Stage 15 / Integrated Invention Entry & Durable
+Subsystem Composition — Slice 1 (…):** `ACTIVE CONTRACT: STAGE 15 — INTEGRATED INVENTION ENTRY & DURABLE
+SUBSYSTEM COMPOSITION — SLICE 1` · `STAGE 15 SLICE 1: OWNER-AUTHORIZED — IMPLEMENTATION COMPLETE CANDIDATE (…) —
+… — F1-CLOSED — PR NOT OPENED / MERGE NOT PERFORMED` · `CURRENT REVIEWED PRODUCT HEAD: 41d06a2…` …" and
+"Stage 15 Slice 1 (implementation complete candidate). … PR NOT OPENED, merge NOT PERFORMED". That was true
+until PR #718 merged (merge `3f3546a279c7f7020744bcbfee957de84ac2e136`).)*
+
 *(Superseded 2026-09-29 by Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1,
 preserved so the change is visible rather than silent: the current routing read "**NO ACTIVE CONTRACT —
 post-PR-#716 (2026-09-29); Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE:** `ACTIVE CONTRACT: NONE` · `NO
@@ -1665,11 +1721,13 @@ recorded in the roadmap.
   **WS-PFV-001**, plus the shared **T2-E** reachability.
 - **STAGE 15 — ENTERED / PARTIAL / NOT COMPLETE THROUGH ONE BOUNDED SLICE.** The **Phase-7
   integration/interface foundation EXISTS**, so **IRL ownership is NOT wholly absent**.
-  **Integrated Invention Entry & Durable Subsystem Composition Slice 1 is IMPLEMENTED
-  CANDIDATE / REVIEW COMPLETE / PR PENDING**; **wider Stage-15 work remains DEFERRED / NOT
+  **Integrated Invention Entry & Durable Subsystem Composition Slice 1 is DELIVERED — PR
+  #718 — merge `3f3546a279c7f7020744bcbfee957de84ac2e136`** (post-merge identity / content verification
+  PASS; bounded use case only — no full IRL capability, no IRL level, no complete integration
+  readiness, no engineering compatibility); **wider Stage-15 work remains DEFERRED / NOT
   AUTHORIZED**. Remaining: **broader per-project integration evidence**, **wider
-  interface/dependency evidence**, **durable subsystem identity** beyond the bounded Slice-1
-  composition, **inbound/write-import**, **async/vendor integration**, plus **T2-E**
+  interface/dependency evidence** (subsystem/interface integration evidence beyond Slice 1),
+  **durable subsystem identity** beyond the delivered bounded Slice-1 use case, **inbound/write-import**, **async/vendor integration**, plus **T2-E**
   reachability.
 - **STAGE 16 — DEFERRED.** Primarily **Stage 13 technical measurement** and the **Stage 15
   integration axis**; **Stage 14 is relevant IF manufacturing participates** in a future SRL
