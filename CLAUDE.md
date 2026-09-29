@@ -2,18 +2,34 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: NONE.** No product increment is currently authorized. The last Owner-authorized
-bounded slice — Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference
-Fundamentals — is DELIVERED (PR #716, merge `11564b235b056aaf12ca9d5596418f43a2d7e61c`; post-merge identity / content
-verification PASS; independent non-authoring review COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS), and no
-subsequent increment has been authorized. This does NOT mean the roadmap is complete; delivered history never
-fills the active-contract slot. Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06
-NOT ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED; there is no current authorized Technical Deepening
-subtask and no next Technical Deepening slice is authorized; Stage 15 / IRL, Electrical ↔ Mechanical /
-Mechatronics integration, Robotics, IoT, Drone / Unmanned, Renewable and Satellite / Space implementation stay
-NOT AUTHORIZED; deployment and release NOT AUTHORIZED. The next step is a Lead-controlled Next-Increment
-Reassessment, which may evaluate an Electrical ↔ Mechanical / Mechatronics integration slice but authorizes no
-implementation. Electrical Slice 1 (delivered, inside Stage 18 — D13 / CAP-01; no new Master Roadmap Stage):
+**ACTIVE CONTRACT: STAGE 15 — INTEGRATED INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — SLICE 1.** ONE
+Owner-authorized bounded product slice, selected by the Owner-controlled Next-Increment Reassessment: a bounded
+re-entry into the already-open Stage-15 integration obligation (no new Master Roadmap Stage). Stage 15 is
+ENTERED / PARTIAL / NOT COMPLETE through exactly this slice (checkbox unticked); the MASTER ROADMAP SEQUENTIAL
+MARKER stays Stage 18 — ENTERED / PARTIAL / NOT COMPLETE (checkbox unticked). One genuine invention containing
+both a Mechanical part and an Electrical / Electronics part may enter InventorAI as ONE project: the Owner
+confirms the parts genuinely work together, records one Mechanical and one Electrical / Electronic part and
+selects one initial analysis focus (`mechanical` or `electronics_electrical`) before the project is atomically
+created; both subsystem identities / the composition are durable (one additive `project_subsystems` sidecar;
+OWNER_STATED / UNVALIDATED), survive cold load / reconstruction / resume, and the session, HTML report and PDF
+disclose the bounded scope. ONE PROJECT → ONE scalar root `confirmed_domain` (the IMMUTABLE INITIAL ANALYSIS
+FOCUS, not a whole-invention domain claim) → subsystems; NO peer root `domains = [...]`; the classifier is
+unchanged (AMBIGUOUS_TIE ≠ GENUINE MULTI-DOMAIN; MULTI_DOMAIN_NEEDS_D4 is not manufactured). The other part and
+the integration between the parts have NOT yet been independently evaluated or validated. Status: OWNER
+AUTHORIZED / IMPLEMENTATION COMPLETE CANDIDATE — original implementation `90322f146a56099a2e6647ba0c53e5195963d41c`,
+F1 / IR01-A correction `41d06a27ed657a1bf6460c638655f0a6de5447a0` (current reviewed product head, tree
+`02b8c1244000820d2202be905d7325c35af4bc5c`) / independent architecture + implementation review cycle COMPLETE —
+F1-CLOSED, final targeted PASS WITH NON-BLOCKING OBSERVATIONS / PR NOT OPENED / merge NOT PERFORMED /
+deployment and release NOT AUTHORIZED. Full Stage 15 / IRL, IRL scoring / levels, full D4 compatibility
+evaluation, interface engineering, subsystem-level gap / evidence / readiness engines, analysis-focus switching,
+peer root domains, generic N-domain composition, a Mechatronics Domain Pack, Robotics, IoT, Drone / Unmanned,
+Renewable and Satellite / Space stay NOT AUTHORIZED. There is no current authorized Technical Deepening subtask,
+no next Technical Deepening slice is authorized and this Stage-15 work authorizes no additional CAP-01 technical
+depth; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED.
+Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals — is DELIVERED
+(PR #716, merge `11564b235b056aaf12ca9d5596418f43a2d7e61c`; post-merge identity / content verification PASS;
+independent non-authoring review COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS) — the preceding bounded slice
+inside Stage 18 (D13 / CAP-01; no new Master Roadmap Stage):
 for the exact CURRENT canonical `electronics_electrical` `PHYSICAL_FEASIBILITY` gap in exact state OPEN or
 PARTIAL, the report / deliverable and PDF may show three source-backed reference fundamentals — (V = I × R),
 (P = V × I) and SI unit discipline (V / A / Ω / W) — from electronics_electrical:PR004–PR007
@@ -152,16 +168,18 @@ history, and is the file to read for authority — this paragraph routes, it doe
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded Electronics CAP-01
 increments are delivered (PR #678, PR #679), the bounded Mechanical Open-Gap Technical Context is
 delivered (PR #713), Mechanical Technical Deepening Slice 1 is delivered (PR #714) and Electrical /
-Electronics Technical Deepening Slice 1 is delivered (PR #716); ACTIVE CONTRACT: NONE — there is no current
-authorized Technical Deepening subtask, no further CAP-01 implementation is authorized beyond the delivered
-Mechanical and Electrical slices, no next Technical Deepening slice is authorized, full CAP-01 / full STG is
-not authorized, no other Stage is authorized — the delivered Electrical Technical Deepening slice sat inside
+Electronics Technical Deepening Slice 1 is delivered (PR #716); there is no current authorized Technical
+Deepening subtask, no further CAP-01 implementation is authorized beyond the delivered Mechanical and
+Electrical slices, no next Technical Deepening slice is authorized, full CAP-01 / full STG is not authorized;
+the current bounded product action is Stage 15 — Integrated Invention Entry & Durable Subsystem Composition —
+Slice 1, which re-enters the already-open Stage 15 (ENTERED / PARTIAL / NOT COMPLETE through that one slice)
+while the Master Roadmap sequential marker stays Stage 18; no other Stage is authorized — the delivered Electrical Technical Deepening slice sat inside
 the already-entered Stage 18 and entered no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
 Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, the former post-PR-#679 `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -312,10 +330,14 @@ systems, and integration must not become a generic framework built ahead of real
 integration means shared project / subsystem / interface / dependency / evidence reasoning while each
 domain keeps authority over its own technical truth; Stage 15 / IRL stays the existing roadmap home for
 subsystem interfaces, cross-domain dependencies, integration evidence and durable subsystem identity /
-persistence when required — no Stage 15 implementation is authorized now and no new integration Stage or
-capability is created. Portfolio sequencing is RE-ASSESSED, not a permanently hard-coded order: after the
+persistence when required — no Stage 15 implementation is authorized beyond the bounded Stage 15 — Integrated
+Invention Entry & Durable Subsystem Composition — Slice 1 (the current bounded product action) and no new
+integration Stage or capability is created. Portfolio sequencing is RE-ASSESSED, not a permanently hard-coded order: after the
 delivered Electrical slice and a useful Mechanical + Electrical baseline, the NEXT REASSESSMENT considers the
-smallest real Electrical ↔ Mechanical / Mechatronics integration slice; after integration evidence exists,
+smallest real Electrical ↔ Mechanical / Mechatronics integration slice (that reassessment selected Stage 15 —
+Integrated Invention Entry & Durable Subsystem Composition — Slice 1, the FIRST real bounded Mechanical ↔
+Electrical / Electronics integrated-invention product slice; it performs no full engineering integration
+analysis); after integration evidence exists,
 a Robotics capability assessment precedes any Robotics decision; IoT, Drone / Unmanned, Renewable and
 Satellite / Space remain future portfolio directions ordered by product value, dependencies, overlap, source
 maturity, technical authority and actual integration needs. For ordinary new domains (IoT, Drone / Unmanned, Renewable) the
@@ -343,7 +365,10 @@ integration perspective, not automatically a duplicated technical domain — its
 Mechanical mechanisms, electrical power, electronics, sensors, actuators, control, software, feedback and
 subsystem interfaces; no generic Mechatronics framework is built ahead of an actual product slice, and
 Stage 15 / IRL stays the home for durable subsystem identity, interfaces, dependencies, integration evidence
-and related persistence when separately authorized (no Stage 15 implementation is authorized now).
+and related persistence when separately authorized (no Stage 15 implementation beyond the bounded Integrated
+Invention Entry & Durable Subsystem Composition Slice 1 is authorized now; that slice records one Owner-declared
+Mechanical + Electrical / Electronics composition and one initial analysis focus, is not a Mechatronics domain
+and applies no Mechatronics label).
 **Robotics (planning / future reassessment only):** Robotics is NOT automatically a new Domain Pack; before
 any Robotics domain decision, determine which required truth is already owned by Mechanical, Electrical /
 Electronics, Software / Control, sensors, Mechatronics integration, future perception / vision or
@@ -588,6 +613,18 @@ information, not execution authority.
   DEFECT (explicitly authorized). (O-4) current truth: RESOLVED by the product-attached sync; the pre-merge
   current-truth lag is CLOSED / RESOLVED by the post-PR-#716 closure (the slice is DELIVERED, PR #716). None
   of these modifies the reviewed candidate.
+- **WATCH — Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (non-blocking, no
+  repair cycle).** Independent architecture + implementation review cycle COMPLETE: the original candidate's one
+  material finding (F1 / P2 / IR01-A) is CLOSED by correction `41d06a2` (IR01-B — CORRECTED / NO REMAINING
+  MATERIAL DEFECT); final targeted PASS WITH NON-BLOCKING OBSERVATIONS; no second architecture review required.
+  (S15-N1) STALE `IdeaState.subsystems` COMMENTARY: it still describes the carrier as persistence-independent /
+  never durably persisted — NON-BLOCKING; correct it at the next legitimate `engine/idea_state.py` touch
+  involving subsystem semantics / documentation. (S15-N2) EXPORT OMITS THE COMPOSITION: EXPORT-A — ACCEPTABLE
+  NON-BLOCKING OMISSION (the export states the canonical support state of the selected initial focus and makes
+  no single-domain or whole-invention-validated claim); reconsider at the next bounded read / export composition
+  touch — no API / export redesign now. The independent FULL regression was ENVIRONMENT-LIMITED on Windows
+  (Linux / POSIX suite assumptions), not a product failure; hosted CI on the PR is the mandatory final
+  full-suite merge gate.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative

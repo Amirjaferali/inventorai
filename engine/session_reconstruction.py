@@ -304,6 +304,16 @@ def _load_routing(store, project_id):
     return tuple(loader(project_id)) if callable(loader) else ()
 
 
+def _load_subsystems(store, project_id):
+    """Stage 15 Slice 1: the project's durable Owner-declared subsystem
+    composition from the SAME snapshot, or () for a store without the carrier
+    (test doubles keep their exact behavior). Never inferred from the seed
+    text, never regenerated, never reordered; a corrupt composition raises
+    (fail closed, no partial state)."""
+    loader = getattr(store, "load_project_subsystems", None)
+    return tuple(loader(project_id)) if callable(loader) else ()
+
+
 def _reconstruct_snapshot(store, project_id: str):
     """Safe Question Reduction Slice 1: run the ONE shared replay with every
     durable read inside one snapshot. Returns ``(review, state_or_None)``."""
@@ -398,6 +408,12 @@ def _reconstruct(store, project_id: str):
             raise need_routing.NeedRoutingError(
                 "routing revision names a ledger position that does not exist")
 
+    # Stage 15 Slice 1: the Owner-declared subsystem composition, read from
+    # the SAME snapshot and reattached VERBATIM (same ids, same order) below.
+    # It is metadata only: it never enters the replay, never changes the
+    # scalar root (the initial analysis focus) and moves no gap or maturity.
+    subsystems = _load_subsystems(store, project_id)
+
     # PVCG-R4-C §8 RP-1 — THE AMENDED ACCEPTED-SOURCE STREAM.
     #
     # Exactly the same ONE canonical active-set rule the five derived modules
@@ -436,6 +452,7 @@ def _reconstruct(store, project_id: str):
     # seed is interpreted, so every replayed answer including the seed is read
     # under exactly the one version the project's durable record names.
     state.engine_contract_version = version
+    state.subsystems = list(subsystems)
 
     # Slice 1: revisions committed before any Owner record apply first, then
     # each revision right after the Owner record it followed durably — the

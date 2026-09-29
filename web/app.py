@@ -18,6 +18,7 @@ from flask import (
     g, has_request_context, session as flask_session,
 )
 from engine.domain_rules import classify_domain, DomainResultKind, is_known_domain
+from engine import subsystem_model as _subsystem_model  # Stage 15 Slice 1: the ONE subsystem owner
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState, SuccessCriterion, MeasurementMethod, TestHypothesis, TestVariable,
@@ -1359,6 +1360,10 @@ def _cold_load_entry(sid):
         # corrupt or unavailable history fails the WHOLE cold load closed
         # (generic unavailable behaviour) — never a partial/unquantified view.
         state.requirement_quantities = list(_get_store().load_requirement_quantities(sid))
+        # Stage 15 Slice 1: reattach the durable Owner-declared subsystem
+        # composition (same ids, same order; never inferred from the seed). A
+        # corrupt composition fails the WHOLE cold load closed.
+        state.subsystems = list(_get_store().load_project_subsystems(sid))
     except Exception:
         # Fail closed. Storage/contract errors are translated to the generic
         # unavailable behaviour at this web boundary; no user content is logged.
@@ -1643,6 +1648,51 @@ def _attach_quantity_history(sid, state):
         state.requirement_quantities = previous
         return False
     return True
+
+
+def _attach_project_subsystems(sid, state):
+    """Stage 15 Slice 1: refresh ``state.subsystems`` from the DURABLE
+    Owner-declared composition of ``sid`` — the ONE attachment seam the
+    session page and the shared deliverable context (HTML + PDF) use, so every
+    surface shows exactly the persisted ids, parts and order, never a
+    re-inference. Returns False — leaving ``state`` untouched — on a corrupt
+    composition or any storage failure, so the caller fails closed. A context
+    with no durable project keeps its carrier as it is."""
+    try:
+        subsystems = _get_store().load_project_subsystems(sid)
+    except _ProjectNotFound:
+        return True
+    except Exception:
+        return False
+    state.subsystems = list(subsystems)
+    return True
+
+
+def _integrated_scope_context(state):
+    """Stage 15 Slice 1: the bounded INTEGRATED INVENTION SCOPE view of
+    ``state`` — both Owner-declared parts (name + what it does, verbatim) and
+    the catalogue key of the initial analysis focus — or None for every
+    ordinary project and for any composition that does not validate against
+    the state's own scalar root (never a partial or guessed scope). Read-only;
+    it carries no internal identifier (no subsystem id, no domain id) to the
+    template, and it presents no gap, evidence or evaluation of either part."""
+    focus = getattr(state, "domain", None) or getattr(state, "domain_signal", None)
+    try:
+        composition = _subsystem_model.validate_composition(
+            getattr(state, "subsystems", None) or (), focus)
+    except _subsystem_model.CompositionError:
+        return None
+    if not composition:
+        return None
+    parts = {sub.domain: sub for sub in composition}
+    mech = parts["mechanical"]
+    elec = parts["electronics_electrical"]
+    return {
+        "mechanical": {"name": mech.display_name, "function": mech.function_text},
+        "electrical": {"name": elec.display_name, "function": elec.function_text},
+        "focus_key": ("UI_S15_SCOPE_FOCUS_MECH" if focus == "mechanical"
+                      else "UI_S15_SCOPE_FOCUS_ELEC"),
+    }
 
 
 # --- Stage 19 / CAP-09 durable SuccessCriterion (planning metadata only) ------
@@ -3236,7 +3286,8 @@ def _lay_electrical_evidence_count(lowered_text: str) -> int:
     return len(tokens & _LAY_ELECTRICAL_WORDS)
 
 def _render_start_page(error=None, status=None, present_domain=None,
-                       choice_domains=None, carry_idea=None, carried_choice=None):
+                       choice_domains=None, carry_idea=None, carried_choice=None,
+                       composition=None):
     """CF5-F002 (Amendment 01 §14.1): single renderer for the /start admission
     surface (`index.html`). Supplies the activation-derived consent context so
     the rendered consent control always presents/carries a domain from the
@@ -3254,6 +3305,13 @@ def _render_start_page(error=None, status=None, present_domain=None,
                               choice through the confirm submission.
       * choice_domains      — D2/U2: present ONLY the currently activated
                               specialist domains as an explicit choice set.
+      * composition         — Stage 15 Slice 1: the bounded integrated-invention
+                              clarification (YES / NO / NOT SURE, the two
+                              parts, the initial analysis focus).
+
+    Every ordinary mode additionally offers the optional integrated-invention
+    declaration, but ONLY while both composed part domains are activated (so
+    the historical single-activated pages are unchanged).
 
     Presentation only: no session, no admission, no persistence.
     """
@@ -3350,6 +3408,9 @@ def _render_start_page(error=None, status=None, present_domain=None,
         start_choice_prompt=choice_prompt,
         start_carry_idea=carry_idea,
         start_carried_choice=carried_choice,
+        # Stage 15 Slice 1 (presentation only).
+        start_integrated_offer=_composition_domains_activated(activated),
+        start_composition=composition,
         **(generalized or {}))
     return rendered if status is None else (rendered, status)
 
@@ -4043,6 +4104,157 @@ def data_and_session():
     # renders only the static template.
     return render_template("data_session.html")
 
+# --- Stage 15 Slice 1 — Integrated Invention Entry ----------------------------
+# The Owner submits an invention, not a domain. When an invention genuinely
+# contains a Mechanical part and an Electrical / Electronics part that work
+# together, the Owner declares that composition (OWNER-STATED, UNVALIDATED),
+# names both parts and selects the INITIAL ANALYSIS FOCUS; the project is then
+# the ordinary project with that focus as its immutable scalar root and the two
+# parts as durable subsystem descriptors. Nothing here classifies, evaluates,
+# validates or activates anything: the classifier is unchanged, AMBIGUOUS_TIE
+# keeps its meaning (no winner), MULTI_DOMAIN_NEEDS_D4 is never manufactured,
+# and a declaration never admits a domain the canonical policy does not
+# activate. The declared part text is private inventor information: it is
+# never logged and never leaves this process.
+_COMPOSITION_ANSWERS = ("yes", "no", "not_sure")
+_COMPOSITION_FIELDS = (
+    ("mechanical", "mech_part_name", "mech_part_function"),
+    ("electronics_electrical", "elec_part_name", "elec_part_function"),
+)
+
+
+def _integrated_entry_requested(form):
+    """True when this /start submission carries the Owner's explicit
+    integrated-invention declaration (the start-page option) or is the
+    composition clarification's own submission."""
+    return (form.get("integrated_invention") == "yes"
+            or form.get("composition_step") == "1")
+
+
+def _composition_domains_activated(activated):
+    """True only while EVERY composed part domain is in the canonical
+    activation set (read at request time; never a cached decision)."""
+    return all(d in activated for d in _subsystem_model.COMPOSITION_DOMAINS)
+
+
+def _is_exact_composition_tie(classification):
+    """Case A: an AMBIGUOUS_TIE whose candidate set is EXACTLY the two composed
+    part domains. Any other tie (another pair, three-way) is not this case."""
+    return (classification.kind is DomainResultKind.AMBIGUOUS_TIE
+            and classification.candidates
+            == tuple(sorted(_subsystem_model.COMPOSITION_DOMAINS)))
+
+
+def _composition_classification_eligible(classification):
+    """The classifier results under which the composition clarification may be
+    offered: the exact composed-pair tie, a SINGLE result naming one of the two
+    composed domains (a real integrated invention often scores one family
+    higher), or NONE. Every other result — a recognized-but-not-activated
+    SINGLE, another tie, MULTI_DOMAIN_NEEDS_D4, UNRESOLVED_NON_ACTIVATED_TIE —
+    stays on the existing fail-closed path."""
+    kind = classification.kind
+    if kind is DomainResultKind.AMBIGUOUS_TIE:
+        return _is_exact_composition_tie(classification)
+    if kind is DomainResultKind.SINGLE:
+        return classification.selected_domain in _subsystem_model.COMPOSITION_DOMAINS
+    return kind is DomainResultKind.NONE
+
+
+def _composition_submitted_values(form):
+    """The raw submitted composition values, for re-rendering the SAME form
+    after a validation error (escaped by the template; never logged)."""
+    values = {"answer": form.get("composition_answer") or "",
+              "focus": form.get("initial_focus") or ""}
+    for _domain, name_field, function_field in _COMPOSITION_FIELDS:
+        values[name_field] = form.get(name_field) or ""
+        values[function_field] = form.get(function_field) or ""
+    return values
+
+
+def _composition_parts_error(form):
+    """Validate the four part fields. Returns ``(parts, error_key)``: ``parts``
+    maps each composed domain to its trimmed ``(name, function)`` when every
+    field is valid, else ``error_key`` names the bounded rejection. Over-limit
+    input is rejected, never truncated; a NUL is rejected, never stripped."""
+    parts = {}
+    too_long = invalid = missing = False
+    for domain, name_field, function_field in _COMPOSITION_FIELDS:
+        name = (form.get(name_field) or "").strip()
+        function = (form.get(function_field) or "").strip()
+        if not name or not function:
+            missing = True
+        if (len(name) > _subsystem_model.MAX_SUBSYSTEM_NAME_LENGTH
+                or len(function) > _subsystem_model.MAX_SUBSYSTEM_FUNCTION_LENGTH):
+            too_long = True
+        if "\x00" in name or "\x00" in function:
+            invalid = True
+        parts[domain] = (name, function)
+    if invalid:
+        return None, "UI_S15_ERR_INVALID_CHAR"
+    if too_long:
+        return None, "UI_S15_ERR_TOO_LONG"
+    if missing:
+        return None, "UI_S15_ERR_FIELDS"
+    return parts, None
+
+
+def _render_composition_page(idea_text, classification, error_key=None,
+                             values=None, status=None):
+    """Render the bounded composition clarification (a mode of the start page).
+    Presentation only: no session, no admission, no persistence."""
+    return _render_start_page(
+        error=(ui_text.text(error_key, _current_ui_lang()) if error_key else None),
+        status=status,
+        composition={
+            "idea": idea_text,
+            "intro_key": ("UI_S15_INTRO_TIE"
+                          if _is_exact_composition_tie(classification)
+                          else "UI_S15_INTRO_DECLARED"),
+            "values": values or _composition_submitted_values({}),
+        })
+
+
+def _integrated_invention_start(idea_text, classification, activated, lang):
+    """Stage 15 Slice 1 admission flow. Creates NOTHING until a valid YES with
+    every field valid; NO / NOT SURE save nothing, create no session and invent
+    no winning domain (the idea text is carried back to the ordinary form)."""
+    lowered = idea_text.lower()
+    if (not _composition_domains_activated(activated)
+            or not _composition_classification_eligible(classification)
+            or _has_strong_unsupported_evidence(lowered, activated)):
+        # The existing unsupported / recognized-not-activated safeguards win:
+        # the composition path is never a domain override.
+        return _render_start_page(error=_unsupported_domain_message(activated, lang))
+    form = request.form
+    if form.get("composition_step") != "1":
+        return _render_composition_page(idea_text, classification)
+    values = _composition_submitted_values(form)
+    answer = form.get("composition_answer")
+    if answer not in _COMPOSITION_ANSWERS:
+        return _render_composition_page(idea_text, classification,
+                                        "UI_S15_ERR_ANSWER", values, 400)
+    if answer != "yes":
+        return _render_start_page(
+            error=ui_text.text("UI_S15_GUIDE_NO" if answer == "no"
+                               else "UI_S15_GUIDE_NOT_SURE", lang),
+            carry_idea=idea_text)
+    parts, error_key = _composition_parts_error(form)
+    if error_key is not None:
+        return _render_composition_page(idea_text, classification, error_key,
+                                        values, 400)
+    focus = form.get("initial_focus")
+    if (focus not in _subsystem_model.COMPOSITION_DOMAINS
+            or not domain_activation.is_activated(focus)):
+        # A missing or forged focus (any value outside the two composed,
+        # currently activated part domains) never admits anything.
+        return _render_composition_page(idea_text, classification,
+                                        "UI_S15_ERR_FOCUS", values, 400)
+    subsystems = tuple(
+        _subsystem_model.declared_subsystem(domain, *parts[domain])
+        for domain in _subsystem_model.COMPOSITION_DOMAINS)
+    return _create_project_session(idea_text, focus, subsystems=subsystems)
+
+
 @app.route("/start", methods=["POST"])
 def start():
     idea_text = request.form.get("idea", "").strip()
@@ -4073,6 +4285,14 @@ def start():
         # Defensive fail-closed boundary: with no activated specialist domain
         # nothing is admissible. Unreachable under any governed activation state.
         return _render_start_page(error=_unsupported_domain_message(activated, lang))
+    # Stage 15 Slice 1: the Owner explicitly declared an integrated invention
+    # (the start-page option or the composition clarification itself). It is
+    # admissible ONLY while BOTH composed part domains are activated by the
+    # canonical policy; otherwise it is refused here — never silently turned
+    # into an ordinary single-domain admission.
+    integrated_requested = _integrated_entry_requested(request.form)
+    if integrated_requested and not _composition_domains_activated(activated):
+        return _render_start_page(error=_unsupported_domain_message(activated, lang))
     sole = activated[0] if len(activated) == 1 else None
     if sole is not None and confirm != sole:
         # Exactly ONE activated domain: the one-step form carries that sole
@@ -4090,6 +4310,14 @@ def start():
     # produced (D4 is a separate, unexecuted gate) — its branch stays dormant
     # and fail-closed.
     classification = classify_domain(idea_text)
+    if integrated_requested or _is_exact_composition_tie(classification):
+        # Stage 15 Slice 1 (Case A: the EXACT Mechanical / Electrical-Electronics
+        # activated tie; Case B: the Owner's explicit declaration). The tie is
+        # still NOT admitted and still has no winner: the Owner is asked whether
+        # the parts genuinely work together, and nothing is created before a
+        # complete, valid YES. Every other tie / richer result keeps the
+        # fail-closed branches below unchanged.
+        return _integrated_invention_start(idea_text, classification, activated, lang)
     if classification.kind is DomainResultKind.AMBIGUOUS_TIE:
         # Fail closed: an ambiguous activated tie is NOT a single supported
         # domain. It must never enter the None classifier-miss fallback, never
@@ -4184,6 +4412,18 @@ def start():
     # Admit: the persisted session-domain is exactly the classified-or-chosen
     # AND explicitly confirmed ACTIVATED domain (§4.F — no cross-domain
     # mislabeling).
+    return _create_project_session(idea_text, target)
+
+
+def _create_project_session(idea_text, target, subsystems=()):
+    """The ONE /start creation path (extracted unchanged for Stage 15 Slice 1
+    so the ordinary admission and the integrated-invention admission share it):
+    admit ``target`` through the canonical activation gate, run the seed,
+    durably create the project envelope — with its creation routing and, for an
+    integrated invention only, its Owner-declared subsystem rows — in ONE
+    transaction, and only then advertise the live session. ``subsystems`` is
+    empty for every ordinary project, which then makes exactly the pre-slice
+    ``create_project`` call."""
     state = IdeaState(idea_id=str(uuid.uuid4()))
     # Specialist-runtime admission remains bound to the canonical engine
     # activation policy (§5-I2) at this single gate; the target is admitted
@@ -4224,6 +4464,11 @@ def start():
             error=ui_text.localize_message(SERVICE_UNAVAILABLE_MESSAGE, _current_ui_lang()),
             status=503)
     initial_result = run_iteration(state, idea_text)
+    # Stage 15 Slice 1: the declared parts are attached to the live state
+    # before it is presented (metadata only — the seed was read above exactly
+    # as for any project, under the Owner-selected initial analysis focus).
+    if subsystems:
+        state.subsystems = list(subsystems)
     # P4-1b-1 creation order: durably create the project envelope BEFORE any live
     # session is advertised. Durable creation is the commit point for /start; on
     # failure we fail closed — no SESSION_STORE entry, generic unavailable, no
@@ -4241,6 +4486,11 @@ def start():
         # no routing makes exactly the pre-routing create_project call.
         _routing_kw = ({"need_routing": creation_routing}
                        if creation_routing else {})
+        # Stage 15 Slice 1: an integrated invention's Owner-declared parts are
+        # written in the SAME creation transaction; an ordinary project passes
+        # nothing and its call is byte-identical to before.
+        if subsystems:
+            _routing_kw["subsystems"] = tuple(subsystems)
         _get_store().create_project(
             contract, project_id=sid,
             reconstruction_inputs=_reconstruction_inputs(idea_text, state),
@@ -5255,6 +5505,10 @@ def show_session(sid):
     # never a page with a partial or silently empty quantity block.
     if not _attach_quantity_history(sid, state):
         return redirect(url_for("index"))
+    # Stage 15 Slice 1: the durable subsystem composition, refreshed on every
+    # render; a corrupt composition fails the page closed the same way.
+    if not _attach_project_subsystems(sid, state):
+        return redirect(url_for("index"))
     last_result = entry.get("last_result")
     # P10-PC1: surface the merged P4-2 Level-1 deterministic READ-ONLY
     # reconstruction on cold-loaded sessions (the committed cold-load marker is
@@ -5414,6 +5668,9 @@ def show_session(sid):
     return render_template("session.html",
         sid=sid,
         project_identification=_project_identification(sid),
+        # Stage 15 Slice 1: the bounded integrated-invention scope (None for
+        # every ordinary project).
+        integrated_scope=_integrated_scope_context(state),
         # P5-3: a TRUTHFUL owned-state signal — True only when the current
         # authenticated account is the durable owner of this project. Never claims
         # ownership for a NULL-owner (legacy/anonymous) project. Display only.
@@ -5726,6 +5983,11 @@ def _deliverable_context(sid):
     # them, the report fails closed through the same generic behaviour.
     if not _attach_planning_metadata(sid, state):
         return None
+    # Stage 15 Slice 1: the report states the durable composition of THIS
+    # state (live, reconstructed or cold); a corrupt composition fails the
+    # HTML report and the PDF closed.
+    if not _attach_project_subsystems(sid, state):
+        return None
     if (getattr(state, "domain", None) is None and not reconstructed_deliverable
             and (getattr(state, "success_criteria", None)
                  or getattr(state, "measurement_methods", None)
@@ -5771,6 +6033,8 @@ def show_deliverable(sid):
         package=package,
         eligible=eligible,
         reconstructed_deliverable=reconstructed_deliverable,
+        # Stage 15 Slice 1: the same bounded scope disclosure as the session.
+        integrated_scope=_integrated_scope_context(state),
         # T2-A: statements for the canonical quantity rows (presentation only).
         t2a_statements=_quantity_statements(package, state),
         # T2-E Option B: owner-recorded, explicitly UNVERIFIED evidence
@@ -5935,6 +6199,9 @@ def download_deliverable_pdf(sid):
             package=package,
             eligible=eligible,
             reconstructed_deliverable=reconstructed_deliverable,
+            # Stage 15 Slice 1: the SAME scope disclosure as the HTML report,
+            # so a focused PDF cannot read as a cross-domain assessment.
+            integrated_scope=_integrated_scope_context(state),
             t2a_statements=_quantity_statements(package, state),
             evidence_references=_evref_deliverable_view(sid, state),
             decision_capture=_decision_capture_view_safe(state),

@@ -1487,9 +1487,16 @@ def test_ir01_uncommitted_same_connection_visibility_is_never_saved(client, monk
     # Nothing uncommitted was published to memory.
     assert live.success_criteria == memory_before
     # Criteria surfaces fail closed on the unresolved connection afterwards.
+    # Stage 15 F1 / IR01-A: the durable subsystem loader now refuses the
+    # unsafe connection, so reconstruction fails EARLIER and the truthful 503
+    # is the existing PLAN-unavailable state (an ordering change in fail-closed
+    # detection, not a Stage-19 behaviour change).
     r2, body2 = _criteria_page(client, sid)
-    assert r2.status_code == 503 and CRITERIA_UNAVAILABLE in body2
+    assert r2.status_code == 503 and PLAN_UNAVAILABLE in body2
+    assert CRITERIA_UNAVAILABLE not in body2
     assert "new uncommitted target" not in body2
+    assert "old committed target" not in body2      # nothing shown as current truth
+    assert _independent_value(sid, eid) == "old committed target"
     monkeypatch.setattr(store, "_conn", real_conn)
     # Close / reopen: the durable value is the OLD committed criterion.
     _restart()

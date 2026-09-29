@@ -185,7 +185,7 @@ def test_red_e2_10_start_real_tie_fails_closed_electronics_pair(activate):
     electronics_electrical + mechanical activated. On the authoritative parent
     classify_domain -> incidental SINGLE(electronics_electrical), so /start ADMITS an
     electronics session (302 + session created). After the P9-E2 fix classify_domain
-    -> AMBIGUOUS_TIE, and /start fails closed: 200 UNSUPPORTED, no admission, no
+    -> AMBIGUOUS_TIE, and /start fails closed: 200, no winner, no admission, no
     session, no None-fallback electronics admission. This exercises the real
     classifier through the route (no injected DomainClassification)."""
     from web import app as web_app
@@ -195,12 +195,17 @@ def test_red_e2_10_start_real_tie_fails_closed_electronics_pair(activate):
     resp = _start_post(client, f"{_ELEC} and {_MECH}")
     assert resp.status_code == 200                          # NOT a 302 admission
     assert set(web_app.SESSION_STORE) == before             # no session created
-    # Fail closed via the ambiguity branch. Since CF5-F002 §4.E the refusal
-    # copy is activation-derived (truthful under a broadened activation set),
-    # so the fail-closed message is asserted through the same activation-aware
-    # seam rather than the historical electronics-only constant.
+    # Still no winner and no admission. Stage 15 Slice 1 (Owner-authorized
+    # Case A): for the EXACT electronics_electrical + mechanical activated tie
+    # the refusal copy is replaced by the bounded integrated-invention
+    # clarification — which itself creates nothing until the Owner declares a
+    # genuine composition (guarded in tests/test_stage15_integrated_invention_entry.py).
+    # Every other tie (e.g. RED-E2-10b below) keeps the refusal copy.
+    body = resp.get_data(as_text=True)
+    assert "data-composition-form" in body
+    assert 'name="domain_confirm"' not in body              # no winner offered
     assert web_app._unsupported_domain_message(
-        domain_activation.activated_domains()) in resp.get_data(as_text=True)
+        domain_activation.activated_domains()) not in body
 
 
 def test_red_e2_10b_start_real_tie_fails_closed_non_electronics_pair(activate):

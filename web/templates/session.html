@@ -184,6 +184,25 @@ body{overflow-wrap:anywhere}
   <h2 id="project-orientation-title">{{ t('UI_A1_ORIGINAL_IDEA') }}</h2>
   <p class="idea-excerpt" dir="auto">{{ project_identification.idea or t('UI_A1_UNTITLED') }}</p>
   <p class="journey-note">{{ t('UI_A1_DESCRIPTION_NOTE') }} {{ t('UI_A1_PROJECT_ID') }}: <bdi>{{ sid }}</bdi></p>
+{#- Stage 15 Slice 1 — INTEGRATED INVENTION SCOPE: the Owner-declared parts
+    (verbatim, escaped) and the initial analysis focus, with the bounded
+    statement that only the focus is currently evaluated. No gap, evidence or
+    evaluation of either part is shown here. -#}
+{% if integrated_scope is defined and integrated_scope %}
+<section class="integrated-scope" id="integrated-scope" data-integrated-scope aria-labelledby="integrated-scope-title" style="border:1px solid #c9d6e3;background:#f5f9fc;border-radius:4px;padding:10px 14px;margin:12px 0">
+  <h2 id="integrated-scope-title" style="font-size:16px;margin:0 0 8px 0">{{ t('UI_S15_SCOPE_TITLE') }}</h2>
+  <dl style="margin:0">
+    <dt style="font-weight:bold">{{ t('UI_S15_SCOPE_MECH') }}</dt>
+    <dd style="margin:0 0 6px 0" data-scope-part="mechanical"><bdi dir="auto">{{ integrated_scope.mechanical.name }}</bdi> &mdash; {{ t('UI_S15_SCOPE_FUNCTION') }} <bdi dir="auto">{{ integrated_scope.mechanical.function }}</bdi></dd>
+    <dt style="font-weight:bold">{{ t('UI_S15_SCOPE_ELEC') }}</dt>
+    <dd style="margin:0 0 6px 0" data-scope-part="electrical"><bdi dir="auto">{{ integrated_scope.electrical.name }}</bdi> &mdash; {{ t('UI_S15_SCOPE_FUNCTION') }} <bdi dir="auto">{{ integrated_scope.electrical.function }}</bdi></dd>
+    <dt style="font-weight:bold">{{ t('UI_S15_SCOPE_FOCUS') }}</dt>
+    <dd style="margin:0 0 6px 0" data-scope-focus>{{ t(integrated_scope.focus_key) }}</dd>
+  </dl>
+  <p style="margin:6px 0 0 0" data-scope-statement>{{ t('UI_S15_SCOPE_STATEMENT') }}</p>
+  <p style="margin:6px 0 0 0;font-size:13px;color:#555">{{ t('UI_S15_SCOPE_PROVENANCE') }}</p>
+</section>
+{% endif %}
   <h2 class="pc-heading">{{ t('UI_PC_HEADING') }}</h2>
   <div class="pc-row pc-recorded" data-pc-row="recorded">
     <h3 class="pc-label">{{ t('UI_PC_RECORDED') }}</h3>

@@ -21,6 +21,57 @@
    electronics page (U4 backward compatibility). #}
 <p>{% if start_is_electronics_only %}{{ t('UI_B_INDEX_004') }}{% else %}{{ start_scope_sentence }}{% endif %}</p>
 {% if error %}<p class="error">{{ error }}</p>{% endif %}
+{% if start_composition %}
+{#- Stage 15 Slice 1 — Integrated Invention Entry: the bounded clarification.
+    No default answer, no default focus; nothing is saved and no project exists
+    until a YES with every field valid. The idea text and every part field are
+    the Owner's own words, rendered escaped and never interpreted. -#}
+{#- No maxlength: a browser would silently cut a pasted over-limit value; the
+    server rejects over-limit input explicitly instead (the labels state the
+    limits). -#}
+{% set cv = start_composition['values'] %}
+<form method="POST" action="/start" class="composition-form" data-composition-form>
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+  <input type="hidden" name="composition_step" value="1">
+  <input type="hidden" name="integrated_invention" value="yes">
+  <input type="hidden" name="idea" value="{{ start_composition['idea'] }}">
+  <h2>{{ t('UI_S15_TITLE') }}</h2>
+  <p>{{ t(start_composition['intro_key']) }}</p>
+  <p style="font-size:14px;margin-bottom:4px"><strong>{{ t('UI_S15_IDEA_LABEL') }}</strong></p>
+  <p class="composition-idea" dir="auto" style="white-space:pre-wrap;background:#f7f7f7;border:1px solid #ddd;border-radius:4px;padding:8px 12px">{{ start_composition['idea'] }}</p>
+  <fieldset style="margin-top:12px;border:1px solid #ccc;border-radius:4px;padding:8px 12px">
+    <legend style="font-size:14px">{{ t('UI_S15_QUESTION') }}</legend>
+    {% for value, key in [('yes', 'UI_S15_YES'), ('no', 'UI_S15_NO'), ('not_sure', 'UI_S15_NOT_SURE')] %}
+    <label style="display:block;margin-top:6px;font-size:14px">
+    <input type="radio" name="composition_answer" value="{{ value }}" required{% if cv['answer'] == value %} checked{% endif %}>
+    {{ t(key) }}
+    </label>
+    {% endfor %}
+  </fieldset>
+  <p style="font-size:14px;margin-top:16px">{{ t('UI_S15_IF_YES') }}</p>
+  {% for legend_key, name_field, function_field in [('UI_S15_MECH_LEGEND', 'mech_part_name', 'mech_part_function'), ('UI_S15_ELEC_LEGEND', 'elec_part_name', 'elec_part_function')] %}
+  <fieldset style="margin-top:8px;border:1px solid #ccc;border-radius:4px;padding:8px 12px">
+    <legend style="font-size:14px">{{ t(legend_key) }}</legend>
+    <label for="{{ name_field }}" style="display:block;margin-top:4px;font-size:13px">{{ t('UI_S15_PART_NAME') }}</label>
+    <input type="text" id="{{ name_field }}" name="{{ name_field }}" dir="auto" value="{{ cv[name_field] }}" style="width:100%;padding:8px;font-size:15px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box">
+    <label for="{{ function_field }}" style="display:block;margin-top:8px;font-size:13px">{{ t('UI_S15_PART_FUNCTION') }}</label>
+    <textarea id="{{ function_field }}" name="{{ function_field }}" dir="auto" rows="2" style="box-sizing:border-box">{{ cv[function_field] }}</textarea>
+  </fieldset>
+  {% endfor %}
+  <fieldset style="margin-top:12px;border:1px solid #ccc;border-radius:4px;padding:8px 12px">
+    <legend style="font-size:14px">{{ t('UI_S15_FOCUS_PROMPT') }}</legend>
+    {% for value, key in [('mechanical', 'UI_S15_FOCUS_MECH'), ('electronics_electrical', 'UI_S15_FOCUS_ELEC')] %}
+    <label style="display:block;margin-top:6px;font-size:14px">
+    <input type="radio" name="initial_focus" value="{{ value }}"{% if cv['focus'] == value %} checked{% endif %}>
+    {{ t(key) }}
+    </label>
+    {% endfor %}
+    <p style="font-size:13px;color:#555;margin:8px 0 0 0">{{ t('UI_S15_FOCUS_NOTE') }}</p>
+  </fieldset>
+  <p style="font-size:13px;color:#555">{{ t('UI_S15_NOTHING_SAVED') }}</p>
+  <button type="submit">{{ t('UI_S15_SUBMIT') }}</button>
+</form>
+{% else %}
 <form method="POST" action="/start">
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
 <label for="idea" style="display:block;margin-bottom:6px;font-size:14px">{{ t('UI_B_INDEX_005') }}</label>
@@ -55,7 +106,16 @@
 {% if start_sole_domain == 'electronics_electrical' %}{{ t('UI_B_INDEX_007') }}{% else %}{{ start_confirm_label }}{% endif %}
 </label>
 {% endif %}
+{% if start_integrated_offer %}
+{#- Stage 15 Slice 1: the optional integrated-invention declaration. It is NOT
+    a domain selector; it only leads to the bounded clarification. -#}
+<label style="display:block;margin-top:12px;font-size:14px">
+<input type="checkbox" name="integrated_invention" value="yes">
+{{ t('UI_S15_OFFER_LABEL') }}
+</label>
+{% endif %}
 <button type="submit">{{ t('UI_B_INDEX_008') }}</button>
 </form>
+{% endif %}
 <p style="color:#888;font-size:13px">{% if start_is_electronics_only %}{{ t('UI_B_INDEX_009') }}{% else %}{{ start_supported_note }}{% endif %}</p>
 {% endblock %}

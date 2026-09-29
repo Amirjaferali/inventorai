@@ -728,6 +728,13 @@ def test_index_page_states_currently_activated_domain_support():
 def test_index_page_does_not_advertise_other_domains():
     client = csrf_client(app)
     body = client.get("/").get_data(as_text=True)
+    # Stage 15 Slice 1: the optional integrated-invention declaration is the
+    # ONE authorized lowercase mention (Mechanical is activated and is listed
+    # in the supported-domains statement above).
+    from web import ui_text as _ui_text
+    offer = _ui_text.text("UI_S15_OFFER_LABEL", "en")
+    assert body.count(offer) == 1
+    body = body.replace(offer, "")
     assert "mechanical" not in body
     assert "medical device" not in body
     assert "medical_device" not in body

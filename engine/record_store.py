@@ -67,6 +67,12 @@ from engine.need_routing import (
     is_routing_aware, next_revision_check, validate_against_policy,
     validate_revision_fields, validate_routing_history,
 )
+# Stage 15 Slice 1: the Owner-declared subsystem composition. The existing
+# Subsystem descriptor is the ONE model; this store only persists it.
+from engine.subsystem_model import (
+    CompositionError, Subsystem, validate_composition,
+    MAX_SUBSYSTEM_NAME_LENGTH, MAX_SUBSYSTEM_FUNCTION_LENGTH,
+)
 from engine.evidence_reference import (
     EvidenceReference, validate_reference_history, validate_new_reference,
     active_reference_for_anchor, REFERENCE_INSERTED, REFERENCE_EXACT_REPLAY,
@@ -170,6 +176,19 @@ class NeedRoutingConflict(StoreError):
     """A routing append that cannot continue the durable history truthfully
     (a different event under the same key, or a version that carries no
     routing). Nothing was written."""
+
+
+class ProjectSubsystemsInvalid(StoreError):
+    """Stage 15 Slice 1: a subsystem composition offered to ``create_project``
+    violates the bounded composition contract. Raised BEFORE the write
+    transaction opens, so no project, routing or subsystem row is written."""
+
+
+class ProjectSubsystemsCorrupt(StoreError):
+    """Stage 15 Slice 1: a project's durable subsystem rows are malformed,
+    incomplete, out of order or inconsistent with its initial analysis focus.
+    Fail-closed for the WHOLE collection: nothing partial is returned and
+    nothing is repaired, deleted or reinterpreted."""
 
 
 class AdoptionCapReached(StoreError):
@@ -304,6 +323,9 @@ class RecordStore(Protocol):
                                       method_delta,
                                       hypothesis_delta=None,
                                       variable_delta=None) -> None: ...
+    # Stage 15 Slice 1 durable subsystem composition (additive; written only by
+    # create_project(subsystems=...); see the project_subsystems note below).
+    def load_project_subsystems(self, project_id: str) -> tuple: ...
 
 
 _SCHEMA = (
@@ -904,6 +926,52 @@ _NEED_ROUTING_SCHEMA = (
     "ON need_routing_revisions (project_id, supersedes_seq) "
     "WHERE supersedes_seq IS NOT NULL",
 )
+# Stage 15 Slice 1 — the ``project_subsystems`` sidecar: the Owner-declared
+# subsystem composition of an integrated invention (exactly one Mechanical part
+# and one Electrical / Electronics part in this slice). Written ONLY inside
+# ``create_project``'s single creation transaction; never updated or deleted
+# afterwards (no writer exists). Identity is the system-generated
+# ``subsystem_id`` — unique per project (primary key) AND across the store
+# (unique index), so no row can ever be read as another project's part.
+# ``subsystem_seq`` fixes the deterministic display / round-trip order. The
+# CHECKs are a database backstop for the fixed provenance / validation values
+# and the text bounds; the canonical part-domain vocabulary is enforced by the
+# loader (``engine.subsystem_model.validate_composition``) so a future,
+# separately-authorized composition can widen it without a table rebuild.
+# Additive and idempotent (``IF NOT EXISTS``); touches no existing table,
+# column or row; nothing is backfilled (a pre-slice project simply has no
+# rows). Rollback is disable-and-ignore (stop reading the table).
+_PROJECT_SUBSYSTEMS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS project_subsystems (
+        project_id        TEXT    NOT NULL,
+        subsystem_seq     INTEGER NOT NULL,
+        subsystem_id      TEXT    NOT NULL,
+        domain            TEXT    NOT NULL,
+        display_name      TEXT    NOT NULL,
+        function_text     TEXT    NOT NULL,
+        provenance        TEXT    NOT NULL,
+        validation_state  TEXT    NOT NULL,
+        PRIMARY KEY (project_id, subsystem_id),
+        UNIQUE (project_id, subsystem_seq),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        CHECK (subsystem_seq >= 0),
+        CHECK (provenance = 'OWNER_STATED'),
+        CHECK (validation_state = 'UNVALIDATED'),
+        CHECK (typeof(subsystem_id) = 'text' AND length(subsystem_id) = 36),
+        CHECK (typeof(domain) = 'text' AND length(domain) > 0),
+        CHECK (typeof(display_name) = 'text'
+               AND length(display_name) BETWEEN 1 AND %d
+               AND instr(CAST(display_name AS BLOB), X'00') = 0),
+        CHECK (typeof(function_text) = 'text'
+               AND length(function_text) BETWEEN 1 AND %d
+               AND instr(CAST(function_text AS BLOB), X'00') = 0)
+    )
+    """ % (MAX_SUBSYSTEM_NAME_LENGTH, MAX_SUBSYSTEM_FUNCTION_LENGTH),
+    "CREATE UNIQUE INDEX IF NOT EXISTS project_subsystems_id_uq "
+    "ON project_subsystems (subsystem_id)",
+)
+
 NEED_ROUTING_INSERTED = "INSERTED"
 NEED_ROUTING_EXACT_REPLAY = "EXACT_REPLAY"
 
@@ -1012,6 +1080,7 @@ class SqliteRecordStore:
             self._migrate_prototype_test_hypotheses(self._conn)
             self._migrate_prototype_test_variables(self._conn)
             self._migrate_need_routing(self._conn)
+            self._migrate_project_subsystems(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -1226,6 +1295,15 @@ class SqliteRecordStore:
         for stmt in _NEED_ROUTING_SCHEMA:
             conn.execute(stmt)
 
+    def _migrate_project_subsystems(self, conn) -> None:
+        """Stage 15 Slice 1 forward migration: additively create the
+        ``project_subsystems`` sidecar. Idempotent (``IF NOT EXISTS``) on a
+        fresh and on an existing populated database; touches no existing
+        table, column or row; nothing is backfilled or inferred for an existing
+        project. Rollback is disable-and-ignore (stop reading the table)."""
+        for stmt in _PROJECT_SUBSYSTEMS_SCHEMA:
+            conn.execute(stmt)
+
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
         """A durability-safe, collision-safe identifier for a NEWLY created
@@ -1236,7 +1314,7 @@ class SqliteRecordStore:
     def create_project(self, contract: ProjectRecordContract, project_id: str = None,
                        reconstruction_inputs: dict = None,
                        owner_account_id: str = None,
-                       need_routing=()) -> str:
+                       need_routing=(), subsystems=()) -> str:
         """Atomically persist a project envelope + its accepted-input records.
         Existing serialized record identifiers are preserved exactly. A failure
         (e.g. a duplicate record_id) rolls back the whole write — no partial
@@ -1256,10 +1334,23 @@ class SqliteRecordStore:
         creation-boundary ROUTE revisions, inserted in the SAME transaction as
         the envelope — so a routed need exists before any Owner answer can
         exist, and a failed creation leaves no project AND no routing row.
-        Only a routing-aware version on an empty ledger may carry them."""
+        Only a routing-aware version on an empty ledger may carry them.
+
+        ``subsystems`` (Stage 15 Slice 1) is the Owner-declared composition of
+        an integrated invention — validated WHOLE against the bounded contract
+        (and the project's ``confirmed_domain`` initial analysis focus) BEFORE
+        the transaction opens, then inserted in the SAME transaction as the
+        envelope and the routing rows: a failure of ANY part leaves no project,
+        no routing row and no subsystem row. Omitted, it writes nothing (the
+        exact pre-slice behaviour)."""
         pid = project_id or uuid.uuid4().hex
         ri = reconstruction_inputs or {}
         routing = tuple(need_routing or ())
+        try:
+            composition = validate_composition(
+                subsystems, ri.get("confirmed_domain"))
+        except CompositionError as exc:
+            raise ProjectSubsystemsInvalid(str(exc)) from None
         if routing:
             try:
                 routing = validate_routing_history(routing)
@@ -1301,7 +1392,64 @@ class SqliteRecordStore:
                 )
             for rev in routing:
                 self._insert_need_routing(pid, rev)
+            for seq, sub in enumerate(composition):
+                self._conn.execute(
+                    "INSERT INTO project_subsystems (project_id, subsystem_seq, "
+                    "subsystem_id, domain, display_name, function_text, "
+                    "provenance, validation_state) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (pid, seq, sub.subsystem_id, sub.domain, sub.display_name,
+                     sub.function_text, sub.provenance, sub.validation_state))
         return pid
+
+    # --- Stage 15 Slice 1: Owner-declared subsystem composition (read) -------
+    def load_project_subsystems(self, project_id: str) -> tuple:
+        """This project's durable subsystem composition as a tuple of
+        ``Subsystem`` descriptors in ``subsystem_seq`` order, validated WHOLE
+        against the bounded composition contract and the project's own
+        ``confirmed_domain``. No project row -> ``ProjectNotFound``; zero rows
+        (every ordinary and pre-slice project) -> ``()``; any malformed,
+        missing, extra, out-of-order or inconsistent row ->
+        ``ProjectSubsystemsCorrupt`` (nothing partial, nothing repaired).
+        Read-only; project-scoped (it can only ever read rows keyed by THIS
+        project id); logs nothing.
+
+        IR-01 (F1 correction): a connection a failed write left UNSAFE (a
+        failed COMMIT whose defensive ROLLBACK also failed — the persistent
+        ``_connection_unsafe`` flag) raises ``RecordStoreConnectionUnsafe``
+        BEFORE any SELECT, so that connection's own uncommitted composition is
+        never returned as durable truth. The guard reads the persistent flag
+        only — NOT ``_refuse_uncommitted_reads()``, whose open-transaction limb
+        would also reject the healthy ``read_snapshot()`` SAVEPOINT that
+        reconstruction reads this loader inside. The flag is never cleared
+        here; nothing is repaired, rolled back or reconnected."""
+        if self._connection_unsafe:
+            raise RecordStoreConnectionUnsafe(
+                "connection is inside an unresolved transaction; its reads are "
+                "not committed durable state")
+        project = self._conn.execute(
+            "SELECT confirmed_domain FROM projects WHERE project_id = ?",
+            (project_id,)).fetchone()
+        if project is None:
+            raise ProjectNotFound(project_id)
+        rows = self._conn.execute(
+            "SELECT subsystem_seq, subsystem_id, domain, display_name, "
+            "function_text, provenance, validation_state "
+            "FROM project_subsystems WHERE project_id = ? "
+            "ORDER BY subsystem_seq ASC", (project_id,)).fetchall()
+        if not rows:
+            return ()
+        if [row[0] for row in rows] != list(range(len(rows))):
+            raise ProjectSubsystemsCorrupt("durable subsystem order is not contiguous")
+        subs = tuple(
+            Subsystem(subsystem_id=row[1], domain=row[2], display_name=row[3],
+                      function_text=row[4], provenance=row[5],
+                      validation_state=row[6])
+            for row in rows)
+        try:
+            return validate_composition(subs, project[0])
+        except CompositionError as exc:
+            raise ProjectSubsystemsCorrupt(str(exc)) from None
 
     # --- Safe Question Reduction Slice 1: NeedRouting (append-only) ----------
     _ROUTING_COLUMNS = (

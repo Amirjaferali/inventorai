@@ -224,7 +224,11 @@ def test_the_version_is_selected_before_the_seed_is_interpreted(client):
     """The carrier the seed was read under IS the stamp that was persisted."""
     import inspect
     c, appmod, db = client
-    source = inspect.getsource(appmod.start)
+    # Stage 15 Slice 1 extracted the unchanged creation path out of `start`
+    # into `_create_project_session`, which `start` delegates to.
+    assert "return _create_project_session(idea_text, target)" in \
+        inspect.getsource(appmod.start)
+    source = inspect.getsource(appmod._create_project_session)
     assign = source.index("state.engine_contract_version = ")
     seed_run = source.index("initial_result = run_iteration(state, idea_text)")
     persist = source.index("_reconstruction_inputs(idea_text, state)")

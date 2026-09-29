@@ -396,6 +396,100 @@ def localize_deep(value, lang):
 # copy are deliberately absent, except for the ONE Owner-elected bounded exception
 # recorded in the module docstring: the CAP-01 ``UI_CAP01_*`` keys.
 UI_STRINGS = {
+    # --- Stage 15 Slice 1 — Integrated Invention Entry & scope disclosure -----
+    # Plain user-facing language only: no Domain Pack, D4, IRL, subsystem
+    # architecture or classification wording. The Owner's own part text is
+    # never in this catalogue (it is rendered verbatim, escaped).
+    "UI_S15_OFFER_LABEL": {
+        "en": "My invention includes mechanical and electrical/electronic parts that work together.",
+        "ar": "يتضمن اختراعي أجزاءً ميكانيكية وأجزاءً كهربائية / إلكترونية تعمل معًا.",
+    },
+    "UI_S15_TITLE": {"en": "The parts of your invention", "ar": "أجزاء اختراعك"},
+    "UI_S15_INTRO_TIE": {
+        "en": "Your description mentions both mechanical and electrical / electronic aspects, so InventorAI needs one clarification before it starts.",
+        "ar": "يذكر وصفك جوانب ميكانيكية وكهربائية / إلكترونية معًا، لذلك يحتاج InventorAI إلى توضيح واحد قبل البدء.",
+    },
+    "UI_S15_INTRO_DECLARED": {
+        "en": "You said your invention includes mechanical and electrical / electronic parts that work together. Please confirm this before InventorAI starts.",
+        "ar": "ذكرتَ أن اختراعك يتضمن أجزاءً ميكانيكية وأجزاءً كهربائية / إلكترونية تعمل معًا. يُرجى تأكيد ذلك قبل أن يبدأ InventorAI.",
+    },
+    "UI_S15_IDEA_LABEL": {"en": "Your description", "ar": "وصفك"},
+    "UI_S15_QUESTION": {
+        "en": "Does your invention contain mechanical and electrical/electronic parts that work together as parts of the same invention?",
+        "ar": "هل يحتوي اختراعك على أجزاء ميكانيكية وأجزاء كهربائية / إلكترونية تعمل معًا بوصفها أجزاءً من الاختراع نفسه؟",
+    },
+    "UI_S15_YES": {"en": "Yes", "ar": "نعم"},
+    "UI_S15_NO": {"en": "No", "ar": "لا"},
+    "UI_S15_NOT_SURE": {"en": "Not sure", "ar": "لست متأكدًا"},
+    "UI_S15_IF_YES": {
+        "en": "If yes, describe each part briefly:",
+        "ar": "إذا كانت إجابتك «نعم»، فصِف كل جزء باختصار:",
+    },
+    "UI_S15_MECH_LEGEND": {"en": "Mechanical part", "ar": "الجزء الميكانيكي"},
+    "UI_S15_ELEC_LEGEND": {"en": "Electrical / electronic part", "ar": "الجزء الكهربائي / الإلكتروني"},
+    "UI_S15_PART_NAME": {"en": "Short name (up to 80 characters)", "ar": "اسم مختصر (حتى 80 حرفًا)"},
+    "UI_S15_PART_FUNCTION": {
+        "en": "What it does in your invention (up to 300 characters)",
+        "ar": "ما الذي يفعله في اختراعك (حتى 300 حرف)",
+    },
+    "UI_S15_FOCUS_PROMPT": {
+        "en": "Which part should InventorAI examine first?",
+        "ar": "أيّ جزء تريد أن يفحصه InventorAI أولًا؟",
+    },
+    "UI_S15_FOCUS_MECH": {"en": "The mechanical part", "ar": "الجزء الميكانيكي"},
+    "UI_S15_FOCUS_ELEC": {"en": "The electrical / electronic part", "ar": "الجزء الكهربائي / الإلكتروني"},
+    "UI_S15_FOCUS_NOTE": {
+        "en": "InventorAI will examine your invention through this part first, and this choice cannot be changed later for this project. The other part is recorded, but it is not evaluated in this project yet.",
+        "ar": "سيفحص InventorAI اختراعك من خلال هذا الجزء أولًا، ولا يمكن تغيير هذا الاختيار لاحقًا في هذا المشروع. يُسجَّل الجزء الآخر، لكنه لا يُقيَّم في هذا المشروع بعد.",
+    },
+    "UI_S15_NOTHING_SAVED": {
+        "en": "Nothing is saved until you answer Yes and complete every field.",
+        "ar": "لا يُحفظ أي شيء إلا بعد أن تجيب بـ«نعم» وتكمل جميع الحقول.",
+    },
+    "UI_S15_SUBMIT": {"en": "Continue", "ar": "متابعة"},
+    "UI_S15_ERR_ANSWER": {
+        "en": "Please choose Yes, No or Not sure. Nothing was saved.",
+        "ar": "يُرجى اختيار «نعم» أو «لا» أو «لست متأكدًا». لم يُحفظ أي شيء.",
+    },
+    "UI_S15_ERR_FIELDS": {
+        "en": "Please give a short name and a short description of what it does for both parts. Nothing was saved.",
+        "ar": "يُرجى كتابة اسم مختصر ووصف مختصر لما يفعله كلٌّ من الجزأين. لم يُحفظ أي شيء.",
+    },
+    "UI_S15_ERR_TOO_LONG": {
+        "en": "A part name can be at most 80 characters and a part description at most 300 characters. Nothing was saved - please shorten it and submit again.",
+        "ar": "يمكن أن يصل اسم الجزء إلى 80 حرفًا على الأكثر، ووصفه إلى 300 حرف على الأكثر. لم يُحفظ أي شيء — يُرجى تقصير النص وإعادة الإرسال.",
+    },
+    "UI_S15_ERR_INVALID_CHAR": {
+        "en": "A part field contains an invalid character. Nothing was saved - please remove it and submit again.",
+        "ar": "يحتوي أحد حقول الأجزاء على رمز غير صالح. لم يُحفظ أي شيء — يُرجى إزالته وإعادة الإرسال.",
+    },
+    "UI_S15_ERR_FOCUS": {
+        "en": "Please choose which part InventorAI should examine first. Nothing was saved.",
+        "ar": "يُرجى اختيار الجزء الذي تريد أن يفحصه InventorAI أولًا. لم يُحفظ أي شيء.",
+    },
+    "UI_S15_GUIDE_NO": {
+        "en": "Nothing was saved and no project was created. Please revise your description so it clearly states what your invention does and how it works, then submit it again.",
+        "ar": "لم يُحفظ أي شيء ولم يُنشأ أي مشروع. يُرجى تعديل وصفك ليوضّح ما يفعله اختراعك وكيف يعمل، ثم أعد إرساله.",
+    },
+    "UI_S15_GUIDE_NOT_SURE": {
+        "en": "Nothing was saved and no project was created. That is fine - please add a sentence describing the main parts of your invention and how they work together (for example, which part moves and which part uses electricity), then submit it again.",
+        "ar": "لم يُحفظ أي شيء ولم يُنشأ أي مشروع. لا بأس بذلك — يُرجى إضافة جملة تصف الأجزاء الرئيسية لاختراعك وكيف تعمل معًا (مثلًا: أيّ جزء يتحرك وأيّ جزء يستخدم الكهرباء)، ثم أعد إرساله.",
+    },
+    "UI_S15_SCOPE_TITLE": {"en": "Integrated invention scope", "ar": "نطاق الاختراع المتكامل"},
+    "UI_S15_SCOPE_MECH": {"en": "Mechanical part", "ar": "الجزء الميكانيكي"},
+    "UI_S15_SCOPE_ELEC": {"en": "Electrical / electronic part", "ar": "الجزء الكهربائي / الإلكتروني"},
+    "UI_S15_SCOPE_FUNCTION": {"en": "What it does:", "ar": "ما يفعله:"},
+    "UI_S15_SCOPE_FOCUS": {"en": "Initial analysis focus", "ar": "محور التحليل الأولي"},
+    "UI_S15_SCOPE_FOCUS_MECH": {"en": "Mechanical", "ar": "الميكانيكا"},
+    "UI_S15_SCOPE_FOCUS_ELEC": {"en": "Electrical / Electronics", "ar": "الكهرباء / الإلكترونيات"},
+    "UI_S15_SCOPE_STATEMENT": {
+        "en": "This project records both parts as belonging to the same invention. InventorAI is currently evaluating the invention through the selected initial analysis focus. The other part and the integration between the parts have not yet been independently evaluated or validated.",
+        "ar": "يسجّل هذا المشروع الجزأين بوصفهما جزأين من الاختراع نفسه. يقيّم InventorAI الاختراع حاليًا من خلال محور التحليل الأولي المختار. أما الجزء الآخر والتكامل بين الجزأين فلم يُقيَّما بعدُ ولم يُتحقَّق منهما بشكل مستقل.",
+    },
+    "UI_S15_SCOPE_PROVENANCE": {
+        "en": "Both parts are recorded as you described them; they have not been checked or verified.",
+        "ar": "سُجّل الجزآن كما وصفتهما، ولم يُفحصا ولم يُتحقَّق منهما.",
+    },
     "UI_CSRF_REJECT": {
         "en": "Your session security token was missing or invalid. This request was rejected before any change was made.",
         "ar": "رمز أمان الجلسة مفقود أو غير صالح. رُفض هذا الطلب قبل إجراء أي تغيير.",

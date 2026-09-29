@@ -1318,8 +1318,21 @@ def test_failed_commit_and_rollback_never_publishes_uncommitted_data(client):
         assert entry.get("_interaction_ack") != appmod.DEPENDENCY_DECLARED_ACK
         assert entry.get("_answer_error") == appmod.DEPENDENCY_UNKNOWN_MESSAGE
         entry.pop("_answer_error", None)
-        _declare(client, sid, assumption, [answered[1]])  # unresolved: writes nothing
+        # STRONGER fail-closed (Stage 15 F1 / IR01-A): while the store
+        # connection stays unsafe the session page itself is unavailable — it
+        # redirects through the existing unavailable behaviour and issues NO
+        # fresh form or token, so no further declaration can be submitted
+        # through it.
+        page = client.get(f"/session/{sid}")
+        assert page.status_code == 302 and page.headers["Location"].endswith("/")
+        body = page.get_data(as_text=True)
+        assert 'name="answer_token"' not in body
+        assert 'name="dependency_binding"' not in body
+        assert 'name="dependency_submission"' not in body
         assert _independent_deps(sid) == []
+        assert _live(sid).assertions == live_before
+        assert appmod.SESSION_STORE[sid].get("_interaction_ack") \
+            != appmod.DEPENDENCY_DECLARED_ACK
     finally:
         store._conn = real
         if real.in_transaction:

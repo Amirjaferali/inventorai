@@ -498,7 +498,9 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
     # `prototype_test_variables` (current value, no payload, no disposition) is
     # not a ledger either.
     assert tables == ["engine_version_adoptions", "evidence_references",
-                      "need_routing_revisions", "projects",
+                      "need_routing_revisions",
+                      "project_subsystems",   # Stage 15 Slice 1 sidecar
+                      "projects",
                       "prototype_measurement_methods",
                       "prototype_plan_metadata", "prototype_test_hypotheses",
                       "prototype_test_variables", "question_feedback",
