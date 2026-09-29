@@ -187,6 +187,26 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   </dl>
   <p style="margin:6px 0 0 0" data-scope-statement>{{ t('UI_S15_SCOPE_STATEMENT') }}</p>
   <p style="margin:6px 0 0 0;font-size:13px;color:#555">{{ t('UI_S15_SCOPE_PROVENANCE') }}</p>
+  {#- Stage 15 Slice 2 — HOW THE PARTS INTERACT: the Owner's own declared
+      interactions (verbatim, escaped; part names resolved from the parts),
+      each with its ONE verification-preparation action and the explicit
+      statement that compatibility has NOT been established. -#}
+  <div class="integrated-interfaces" id="integrated-interfaces" data-integrated-interfaces style="margin-top:10px;border-top:1px solid #dbe4ec;padding-top:8px">
+    <h3 style="font-size:14px;margin:0 0 6px 0">{{ t('UI_S15_IFC_TITLE') }}</h3>
+    {% if integrated_scope.interfaces %}
+    {% for ifc in integrated_scope.interfaces %}
+    <div class="integrated-interface" data-integrated-interface style="margin:0 0 8px 0">
+      <p style="margin:0;font-weight:bold">{{ t('UI_S15_IFC_BETWEEN') }} <bdi dir="auto">{{ ifc.a }}</bdi> {{ t('UI_S15_IFC_AND') }} <bdi dir="auto">{{ ifc.b }}</bdi></p>
+      <p style="margin:2px 0 0 0">{{ t('UI_S15_IFC_DESCRIPTION') }} <bdi dir="auto" data-interface-description>{{ ifc.description }}</bdi></p>
+      <p style="margin:2px 0 0 0;font-size:13px;color:#555" data-interface-provenance>{{ t('UI_S15_IFC_PROVENANCE') }}</p>
+      <p style="margin:2px 0 0 0;font-size:13px" data-interface-action><strong>{{ t('UI_S15_IFC_ACTION_LABEL') }}</strong> {{ t('UI_S15_IFC_ACTION') }}</p>
+      <p style="margin:2px 0 0 0;font-size:13px" data-interface-not-established>{{ t('UI_S15_IFC_NOT_ESTABLISHED') }}</p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p style="margin:0;font-size:13px;color:#555" data-interfaces-none>{{ t('UI_S15_IFC_NONE') }}</p>
+    {% endif %}
+  </div>
 </section>
 {% endif %}
 <nav id="report-contents" class="report-contents" aria-label="{{ t('UI_REPORT_CONTENTS') }}" tabindex="-1">

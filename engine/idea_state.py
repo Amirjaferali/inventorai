@@ -716,14 +716,22 @@ class IdeaState:
     # reload, and no durable retention is implied (persistence stays frozen).
     criticality_confirmations : list = field(default_factory=list)
 
-    # §5-I3 subsystem foundation (D-S5-04 / D-S5-05): optional, in-memory,
-    # persistence-independent subsystem descriptors. Empty by default so absence
-    # preserves the current single-domain behavior. NOTHING here is written to
-    # durable persistence, and it NEVER changes the project root domain (the
-    # scalar `domain`/`confirmed_domain`). A subsystem may reference a canonical
+    # §5-I3 subsystem foundation (D-S5-04 / D-S5-05): optional subsystem
+    # descriptors. Empty by default so absence preserves the current
+    # single-domain behavior. Since Stage 15 Slice 1 an Owner-declared
+    # composition is loaded here from the durable `project_subsystems` sidecar
+    # (written only at project creation); this carrier itself writes nothing.
+    # It NEVER changes the project root domain (the scalar
+    # `domain`/`confirmed_domain`). A subsystem may reference a canonical
     # domain as metadata only — a reference never activates a domain. See
     # engine/subsystem_model.py.
     subsystems : list = field(default_factory=list)
+    # Stage 15 Slice 2: the Owner-declared interfaces between parts of that
+    # composition, loaded from the durable `subsystem_interfaces` sidecar
+    # (engine/subsystem_model.py owns their meaning). Outside the answer
+    # replay: they never change the root domain, a question, a gap, maturity,
+    # progression, scoring or domain activation. Empty by default.
+    subsystem_interfaces : list = field(default_factory=list)
 
     # T2-A Quantified Requirements Slice 1: the in-memory CARRIER of the
     # project's validated durable requirement-quantity history (a list of

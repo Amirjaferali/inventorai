@@ -96,6 +96,8 @@ from engine.deliverable_assembler import assemble_deliverable
 import sqlite3
 from engine.record_store import (
     SqliteRecordStore, StoreError, ProjectNotFound as _ProjectNotFound,
+    ProjectSubsystemsCorrupt as _ProjectSubsystemsCorrupt,
+    SubsystemInterfacesCorrupt as _SubsystemInterfacesCorrupt,
     MAX_SUCCESS_CRITERION_LENGTH, MAX_MEASUREMENT_METHOD_LENGTH,
     MAX_TEST_HYPOTHESIS_LENGTH, MAX_TEST_VARIABLE_LENGTH,
     QuantityChainConflict as _QuantityChainConflict,
@@ -103,6 +105,8 @@ from engine.record_store import (
     QuantityAnchorIneligible as _QuantityAnchorIneligible,
     ContradictionDeclarationRejected as _ContradictionDeclarationRejected,
     AssumptionDependencyDeclarationRejected as _DependencyDeclarationRejected,
+    SubsystemInterfaceRejected as _SubsystemInterfaceRejected,
+    SubsystemInterfaceConflict as _SubsystemInterfaceConflict,
 )
 from engine.record_contract import ProjectRecordContract
 # T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate): the
@@ -1363,7 +1367,11 @@ def _cold_load_entry(sid):
         # Stage 15 Slice 1: reattach the durable Owner-declared subsystem
         # composition (same ids, same order; never inferred from the seed). A
         # corrupt composition fails the WHOLE cold load closed.
-        state.subsystems = list(_get_store().load_project_subsystems(sid))
+        # Stage 15 Slice 2: together with its Owner-declared interfaces, read
+        # from ONE consistent snapshot; corruption in either fails closed.
+        _subs, _ifcs = _load_composition_and_interfaces(sid)
+        state.subsystems = list(_subs)
+        state.subsystem_interfaces = list(_ifcs)
     except Exception:
         # Fail closed. Storage/contract errors are translated to the generic
         # unavailable behaviour at this web boundary; no user content is logged.
@@ -1497,6 +1505,34 @@ DEPENDENCY_STALE_MESSAGE = (
 DEPENDENCY_UNKNOWN_MESSAGE = (
     "We could not tell whether that dependency was saved. Reload this page "
     "to see what your project holds before recording it again.")
+
+# Stage 15 Slice 2 — the inventor's explicit declaration of how the two parts
+# of an integrated invention interact (declare_interface). Truthful: the
+# inventor's own statement, never validated, no compatibility assessment, no
+# progress effect. Refusals render through `_answer_error` (localize_message);
+# the ack through `_interaction_ack` (localize_deep).
+S15_INTERFACE_DECLARED_ACK = (
+    "Saved. You recorded how these two parts interact. This declaration has "
+    "not been validated, and compatibility between the parts has not been "
+    "assessed. One preparation step was added to your Validation Plan.")
+S15_INTERFACE_NOT_SAVED_MESSAGE = (
+    "That interaction could not be saved just now. Nothing was changed.")
+S15_INTERFACE_INVALID_MESSAGE = (
+    "Describe the interaction in your own words and tick the declaration "
+    "box. Nothing was changed.")
+S15_INTERFACE_TOO_LONG_MESSAGE = (
+    "An interaction description can be at most 300 characters. Nothing was "
+    "changed - please shorten it and submit again.")
+S15_INTERFACE_INVALID_CHAR_MESSAGE = (
+    "The interaction description contains an invalid character. Nothing was "
+    "changed - please remove it and submit again.")
+S15_INTERFACE_STALE_MESSAGE = (
+    "This form is no longer current, so nothing was saved. Review the page "
+    "and record the interaction again.")
+S15_INTERFACE_UNKNOWN_MESSAGE = (
+    "We could not confirm whether that interaction was saved. It is not shown "
+    "as saved until that can be confirmed. Submitting it again from here is "
+    "safe: it will never be recorded twice.")
 
 CORRECTION_APPLIED_ACK = (
     "Your earlier answer was withdrawn and kept in the project history. "
@@ -1659,13 +1695,27 @@ def _attach_project_subsystems(sid, state):
     composition or any storage failure, so the caller fails closed. A context
     with no durable project keeps its carrier as it is."""
     try:
-        subsystems = _get_store().load_project_subsystems(sid)
+        subsystems, interfaces = _load_composition_and_interfaces(sid)
     except _ProjectNotFound:
         return True
     except Exception:
         return False
     state.subsystems = list(subsystems)
+    state.subsystem_interfaces = list(interfaces)
     return True
+
+
+def _load_composition_and_interfaces(sid):
+    """Stage 15 Slice 2: ``(subsystems, interfaces)`` of ``sid`` from ONE
+    consistent durable snapshot (the store's combined reader), so a surface
+    never shows a composition and an interface list from different durable
+    moments. A store without the interface carrier yields no interfaces."""
+    store = _get_store()
+    loader = getattr(store, "load_subsystem_composition", None)
+    if callable(loader):
+        subsystems, interfaces = loader(sid)
+        return tuple(subsystems), tuple(interfaces)
+    return tuple(store.load_project_subsystems(sid)), ()
 
 
 def _integrated_scope_context(state):
@@ -1687,11 +1737,25 @@ def _integrated_scope_context(state):
     parts = {sub.domain: sub for sub in composition}
     mech = parts["mechanical"]
     elec = parts["electronics_electrical"]
+    # Stage 15 Slice 2: the Owner-declared interactions between the parts,
+    # each resolved to the parts' own names by identity (never copied into
+    # the declaration). Anything that does not validate against THIS
+    # composition fails the whole view closed — never a partial list.
+    try:
+        interfaces = _subsystem_model.validate_interfaces(
+            getattr(state, "subsystem_interfaces", None) or (), composition)
+    except _subsystem_model.InterfaceError:
+        return None
+    names = {sub.subsystem_id: sub.display_name for sub in composition}
     return {
         "mechanical": {"name": mech.display_name, "function": mech.function_text},
         "electrical": {"name": elec.display_name, "function": elec.function_text},
         "focus_key": ("UI_S15_SCOPE_FOCUS_MECH" if focus == "mechanical"
                       else "UI_S15_SCOPE_FOCUS_ELEC"),
+        "interfaces": [{"a": names[item.subsystem_a_id],
+                        "b": names[item.subsystem_b_id],
+                        "description": item.description}
+                       for item in interfaces],
     }
 
 
@@ -5665,6 +5729,7 @@ def show_session(sid):
     _uncertainty_text = (
         max(_uncertainty_candidates, key=lambda c: c[0])[1]
         if _uncertainty_candidates else "")
+    s15_focus = _s15_interface_focus(sid, state)
     return render_template("session.html",
         sid=sid,
         project_identification=_project_identification(sid),
@@ -5717,6 +5782,17 @@ def show_session(sid):
                                if _cap08_eligible_assumptions(state)
                                and _cap10_eligible_endpoints(state) else ""),
         dependency_view=_assumption_dependency_view(state),
+        # Stage 15 Slice 2: the dedicated signed binding of the interaction
+        # form and its separate submission identity (issued and held on the
+        # entry ONLY while the form is actually offered).
+        # A cold-loaded saved project (no writable state) is offered the
+        # form against its DURABLE focus — never by establishing a session.
+        interface_binding=_issue_s15_interface_binding(
+            sid, _answer_token_for(sid, entry), state, s15_focus),
+        interface_submission=(
+            _submission_identity_for(sid, entry, _S15_IFC_SUBMISSION_DOMAIN,
+                                     _S15_IFC_SUBMISSION_ENTRY_KEY)
+            if _s15_interface_pair(state, s15_focus) is not None else ""),
         # Workstream 4: read-only render context for the completion-stage
         # structured criticality step (None while the journey is in progress
         # or when no contextually supported unconfirmed requirement remains).
@@ -6558,27 +6634,34 @@ _CAP08_SUBMISSION_ENTRY_KEY = "cap08_submission"
 _CAP08_KEY_PREFIX = "cap08:"
 
 
-def _cap08_submission_sig(sid, nonce):
+# Shared declared-action submission identity (extracted verbatim from the
+# CAP-08 mechanics above so the Stage-15 Slice-2 interface declaration reuses
+# it; CAP-08 keeps its exact behaviour through the three thin wrappers below).
+# ``domain`` is the signature domain separator and ``entry_key`` the entry slot
+# that holds the live identity; nothing else differs between consumers.
+def _submission_sig(domain, sid, nonce):
     return _p2a_hmac.new(
-        _answer_secret(), _canonical_message(_CAP08_SUBMISSION_DOMAIN, sid, nonce),
+        _answer_secret(), _canonical_message(domain, sid, nonce),
         _p2a_hashlib.sha256).hexdigest()
 
 
-def _cap08_submission_for(sid, entry):
-    """The entry's current signed CAP-08 submission identity, issuing and
-    storing one when absent (retained across renders until consumed)."""
-    value = entry.get(_CAP08_SUBMISSION_ENTRY_KEY)
+def _submission_identity_for(sid, entry, domain, entry_key):
+    """The entry's current signed submission identity under ``domain``,
+    issuing and storing one in ``entry_key`` when absent (retained across
+    renders until consumed)."""
+    value = entry.get(entry_key)
     if not value:
         nonce = secrets.token_hex(16)
-        value = nonce + "." + _cap08_submission_sig(sid, nonce)
-        entry[_CAP08_SUBMISSION_ENTRY_KEY] = value
+        value = nonce + "." + _submission_sig(domain, sid, nonce)
+        entry[entry_key] = value
     return value
 
 
-def _verified_cap08_submission(sid, raw):
-    """The nonce of a submission identity signed for exactly this project, or
-    None (missing, malformed, another project, tampered). Stateless, so an
-    exact retry verifies after a restart. Never raises."""
+def _verified_submission_identity(sid, raw, domain):
+    """The nonce of a submission identity signed under ``domain`` for exactly
+    this project, or None (missing, malformed, another project, another
+    domain, tampered). Stateless, so an exact retry verifies after a restart.
+    Never raises."""
     try:
         if not isinstance(raw, str) or len(raw) > 256:
             return None
@@ -6586,12 +6669,31 @@ def _verified_cap08_submission(sid, raw):
         if not sep or len(nonce) != 32 or any(
                 ch not in "0123456789abcdef" for ch in nonce):
             return None
-        if not _p2a_hmac.compare_digest(sig.encode("utf-8"),
-                                        _cap08_submission_sig(sid, nonce).encode("ascii")):
+        if not _p2a_hmac.compare_digest(
+                sig.encode("utf-8"),
+                _submission_sig(domain, sid, nonce).encode("ascii")):
             return None
         return nonce
     except Exception:
         return None
+
+
+def _cap08_submission_sig(sid, nonce):
+    return _submission_sig(_CAP08_SUBMISSION_DOMAIN, sid, nonce)
+
+
+def _cap08_submission_for(sid, entry):
+    """The entry's current signed CAP-08 submission identity, issuing and
+    storing one when absent (retained across renders until consumed)."""
+    return _submission_identity_for(sid, entry, _CAP08_SUBMISSION_DOMAIN,
+                                    _CAP08_SUBMISSION_ENTRY_KEY)
+
+
+def _verified_cap08_submission(sid, raw):
+    """The nonce of a submission identity signed for exactly this project, or
+    None (missing, malformed, another project, tampered). Stateless, so an
+    exact retry verifies after a restart. Never raises."""
+    return _verified_submission_identity(sid, raw, _CAP08_SUBMISSION_DOMAIN)
 
 
 def _dependency_action_key(sid, nonce):
@@ -6866,6 +6968,349 @@ def declare_dependency(sid):
         return _publish()
     # Durable commit of the complete batch confirmed: publish it.
     return _publish()
+
+
+# --- Stage 15 Slice 2: Owner-declared interaction between the two parts -------
+# A dedicated action with its OWN server-issued binding (distinct action kind
+# and signature domain; no other binding or a generic answer token authorizes
+# it). The binding commits to the project (sid), the action kind, the effective
+# engine contract version, the answer token rendered on the SAME page and the
+# ONE endpoint pair the form offers: the two parts of THIS project's durable
+# composition. The client never names a part or an interface id — the pair
+# comes from the verified binding and is re-validated against the durable
+# composition INSIDE the write transaction. The submission identity (which
+# durable action attempt a post is) is the shared declared-action identity
+# above, under its own domain; an exact committed retry is recognised before
+# freshness and republishes the STORED declaration (never a newly generated
+# interface id); the same identity with different material fails closed.
+_S15_IFC_BINDING_KIND = "S15_DECLARE_INTERFACE"
+_S15_IFC_BINDING_DOMAIN = "s15-interface-binding-v1"
+_S15_IFC_BINDING_MAX_LEN = 4096
+_S15_IFC_SUBMISSION_DOMAIN = "s15-interface-submission-v1"
+_S15_IFC_SUBMISSION_ENTRY_KEY = "s15_interface_submission"
+
+
+def _s15_interface_focus(sid, state):
+    """The initial analysis focus the interaction form validates the
+    composition against: the live writable state's scalar root or — for a
+    cold-loaded saved project with no writable state (e.g. a COMPLETED project
+    after a restart, which never resumes) — the project's DURABLE, immutable
+    ``confirmed_domain``. It establishes no writable session and touches no
+    progression; None on any failure (the form is then not offered)."""
+    focus = getattr(state, "domain", None)
+    if focus is not None:
+        return focus
+    try:
+        inputs = _get_store().load_reconstruction_inputs(sid)
+    except Exception:
+        return None
+    return (inputs or {}).get("confirmed_domain") or None
+
+
+def _s15_interface_pair(state, focus=None):
+    """The ONE endpoint pair the interaction form offers — the two parts of the
+    state's valid composition, in the composition's part order (no direction)
+    — or None when the form cannot be offered: no focus, no valid composition,
+    or the per-project cap already reached. ``focus`` is the durable focus of
+    a cold-loaded project (``_s15_interface_focus``); without it only a live
+    writable state's scalar root qualifies."""
+    if focus is None:
+        focus = getattr(state, "domain", None)
+    if focus is None:
+        return None
+    try:
+        composition = _subsystem_model.validate_composition(
+            getattr(state, "subsystems", None) or (), focus)
+        if len(composition) != 2:
+            return None
+        interfaces = _subsystem_model.validate_interfaces(
+            getattr(state, "subsystem_interfaces", None) or (), composition)
+        if len(interfaces) >= _subsystem_model.MAX_SUBSYSTEM_INTERFACES_PER_PROJECT:
+            return None
+        return _subsystem_model.canonical_interface_endpoints(
+            composition, composition[0].subsystem_id, composition[1].subsystem_id)
+    except (_subsystem_model.CompositionError, _subsystem_model.InterfaceError):
+        return None
+
+
+def _s15_interface_binding_sig(sid, token, ecv, pair):
+    msg = _canonical_message(_S15_IFC_BINDING_DOMAIN, sid, token,
+                             _S15_IFC_BINDING_KIND, _uqtr_opt(ecv), ",".join(pair))
+    return _p2a_hmac.new(_answer_secret(), msg, _p2a_hashlib.sha256).hexdigest()
+
+
+def _issue_s15_interface_binding(sid, token, state, focus=None):
+    """The signed interaction-form binding for the form rendered with
+    ``token``, or "" when the form cannot be offered."""
+    pair = _s15_interface_pair(state, focus)
+    if pair is None or not token:
+        return ""
+    ecv = getattr(state, "engine_contract_version", None)
+    payload = json.dumps({"k": _S15_IFC_BINDING_KIND, "v": ecv, "p": list(pair)},
+                         sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    body = _p2a_b64.urlsafe_b64encode(payload.encode("ascii")).decode(
+        "ascii").rstrip("=")
+    return body + "." + _s15_interface_binding_sig(sid, token, ecv, pair)
+
+
+def _verified_s15_interface_binding(sid, token, raw):
+    """``(ecv, pair_tuple)`` of a binding signed for exactly this sid and token
+    under the interaction kind and domain, or None (missing, malformed,
+    oversized, another kind, another project, another token, tampered).
+    Constant-time comparison; never raises."""
+    try:
+        if (not isinstance(raw, str) or not raw
+                or len(raw) > _S15_IFC_BINDING_MAX_LEN or not token):
+            return None
+        body, sep, sig = raw.rpartition(".")
+        if not sep or not body or not sig:
+            return None
+        data = json.loads(_p2a_b64.urlsafe_b64decode(
+            (body + "=" * (-len(body) % 4)).encode("ascii")).decode("ascii"))
+        if not isinstance(data, dict) or set(data) != {"k", "v", "p"} \
+                or data["k"] != _S15_IFC_BINDING_KIND:
+            return None
+        ecv, pair = data["v"], data["p"]
+        if ecv is not None and not isinstance(ecv, str):
+            return None
+        if not isinstance(pair, list) or len(pair) != 2 \
+                or not all(_subsystem_model.is_valid_subsystem_id(e) for e in pair) \
+                or pair[0] == pair[1]:
+            return None
+        expected = _s15_interface_binding_sig(sid, token, ecv, pair)
+        if not _p2a_hmac.compare_digest(sig.encode("utf-8"),
+                                        expected.encode("ascii")):
+            return None
+        return ecv, tuple(pair)
+    except Exception:
+        return None
+
+
+def _s15_interface_submission_key(sid, nonce):
+    """The stable durable submission identity of ONE interaction declaration:
+    HMAC over (project, submission nonce) ONLY — never over the material, so
+    the SAME identity with ANY different material is detectable."""
+    msg = _canonical_message("s15-interface-action-v1", sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _s15_interface_material_matches(stored, pair, description):
+    """Confirm-by-reload: the STORED declaration is exactly this material —
+    the same unordered part pair and the same stored description."""
+    return (isinstance(stored, _subsystem_model.SubsystemInterface)
+            and {stored.subsystem_a_id, stored.subsystem_b_id} == set(pair)
+            and stored.description == description)
+
+
+def _s15_interface_text(raw):
+    """``(description, error)`` for the submitted interaction text: stored
+    trimmed and otherwise verbatim; empty -> INVALID, a NUL -> INVALID_CHAR
+    (never stripped), over-limit -> TOO_LONG (never truncated)."""
+    if not isinstance(raw, str) or not raw.strip():
+        return None, S15_INTERFACE_INVALID_MESSAGE
+    description = raw.strip()
+    if "\x00" in description:
+        return None, S15_INTERFACE_INVALID_CHAR_MESSAGE
+    if len(description) > _subsystem_model.MAX_INTERFACE_DESCRIPTION_LENGTH:
+        return None, S15_INTERFACE_TOO_LONG_MESSAGE
+    return description, None
+
+
+# Committed durable truth that WAS read and fails closed — distinct from
+# committed truth that cannot be read at all (IR-01 / any failing required
+# query), whose outcome stays UNKNOWN.
+_S15_DURABLE_INVALID = (_ProjectNotFound, _ProjectSubsystemsCorrupt,
+                        _SubsystemInterfacesCorrupt)
+
+
+def _s15_unknown_response(sid, token, submission, description):
+    """The bounded, truthful UNKNOWN outcome of an interaction declaration.
+    It renders NO project state (the store that could not establish the
+    committed outcome is never read to build it), claims neither SAVED nor NOT
+    SAVED, and offers the SAME signed action again — the same answer token,
+    binding and submission identity, which were not consumed — so a retry is
+    resolved against committed durable truth (an exact committed declaration is
+    acknowledged with its STORED id; nothing is ever recorded twice)."""
+    response = make_response(render_template(
+        "interface_unknown.html", sid=sid, answer_token=token,
+        interface_binding=request.form.get("interface_binding", ""),
+        interface_submission=submission, interface_description=description,
+        message=ui_text.localize_message(S15_INTERFACE_UNKNOWN_MESSAGE,
+                                         _current_ui_lang())), 503)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/declare-interface", methods=["POST"])
+def declare_interface(sid):
+    """Stage 15 Slice 2 — the inventor explicitly records, in their own words,
+    how the two parts of their integrated invention interact.
+
+    A dedicated action, never a question answer, authorized only by its own
+    server-issued binding (see above). It mints ONE Owner-declared interface
+    (system-generated id, OWNER_STATED, UNVALIDATED) between the two parts of
+    this project's durable composition, persists it with both endpoints
+    re-validated INSIDE the durable write transaction, and publishes it to live
+    state only after COMMITTED durable confirmation. The derived Requirement
+    Landscape row and ONE verification-preparation step follow from it. It
+    checks, validates or assesses nothing — no compatibility, feasibility or
+    readiness — and changes no answer, gap, maturity, progression, score,
+    routing, question or the initial analysis focus. A saved project with no
+    writable state (cold-loaded — including a COMPLETED project, which never
+    resumes) declares against its DURABLE focus and composition; nothing
+    establishes or restores a writable question session."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    # The signed action is verified statelessly FIRST (answer token, binding
+    # and submission identity are all HMAC-bound to this sid); nothing below
+    # trusts a runtime entry for authorization.
+    token = request.form.get("answer_token", "")
+    binding = _verified_s15_interface_binding(
+        sid, token, request.form.get("interface_binding", ""))
+    submission = request.form.get("interface_submission", "")
+    nonce = _verified_submission_identity(sid, submission,
+                                          _S15_IFC_SUBMISSION_DOMAIN)
+    signed = (_valid_answer_token(sid, token) and binding is not None
+              and nonce is not None)
+    raw = request.form.get("interface_description")
+    description, text_error = _s15_interface_text(raw)
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        # After process / session loss, a valid signed action FIRST resolves
+        # its committed outcome directly from durable truth — the submission
+        # identity is derived from the signed request alone. A required read
+        # that cannot complete (IR-01 or any failing query) keeps the outcome
+        # UNKNOWN; transaction safety alone is not committed-data readability.
+        # Durable truth that WAS read and fails closed (corrupt / missing)
+        # takes the existing cold-load path below, which fails closed.
+        if (signed and text_error is None
+                and request.form.get("interface_confirm") == "yes"):
+            try:
+                _get_store().committed_subsystem_interface_for_submission(
+                    sid, _s15_interface_submission_key(sid, nonce))
+            except _S15_DURABLE_INVALID:
+                pass
+            except Exception:
+                return _s15_unknown_response(sid, token, submission,
+                                             description)
+        # Then the SAME minimal read-only cold entry a GET builds is rebuilt
+        # (no writable session, no progression), so an exact committed retry
+        # publishes its STORED declaration and a saved project — even a
+        # completed one, which never resumes — can declare from durable truth.
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return redirect(url_for("index"))
+        SESSION_STORE[sid] = entry
+    state = entry["state"]
+    if not signed:
+        entry["_answer_error"] = S15_INTERFACE_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    bound_ecv, bound_pair = binding
+    if (request.form.get("interface_confirm") != "yes"
+            or text_error == S15_INTERFACE_INVALID_MESSAGE):
+        entry["_answer_error"] = S15_INTERFACE_INVALID_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    if text_error is not None:
+        entry["_answer_error"] = text_error
+        return redirect(url_for("show_session", sid=sid))
+    submission_key = _s15_interface_submission_key(sid, nonce)
+
+    def _consume_submission():
+        # The identity is spent: the next render issues a fresh one, so a new
+        # legitimate declaration always needs a new server-issued identity.
+        if entry.get(_S15_IFC_SUBMISSION_ENTRY_KEY) == submission:
+            entry.pop(_S15_IFC_SUBMISSION_ENTRY_KEY, None)
+
+    def _publish(stored):
+        # Only a declaration CONFIRMED from committed durable state is
+        # published — always with its STORED id and material.
+        interfaces = list(getattr(state, "subsystem_interfaces", None) or ())
+        if not any(i.interface_id == stored.interface_id for i in interfaces):
+            interfaces.append(stored)
+            state.subsystem_interfaces = interfaces
+        _consume_submission()
+        entry["_interaction_ack"] = S15_INTERFACE_DECLARED_ACK
+        return redirect(url_for("show_session", sid=sid))
+
+    def _committed_prior():
+        # IR-01: confirmation is read ONLY from committed durable state; a
+        # connection left inside an unresolved transaction refuses the read.
+        return _get_store().committed_subsystem_interface_for_submission(
+            sid, submission_key)
+
+    # EXACT committed retry (refresh, double-submit, restart) is recognised
+    # BEFORE freshness and changes nothing; the SAME identity with any other
+    # material fails closed. Committed state that cannot be read (IR-01, or
+    # any storage failure) never becomes NOT SAVED: whether an earlier attempt
+    # of this action committed stays UNKNOWN, answered by a bounded response
+    # that does not render project state, and the action identity is kept so
+    # the same retry resolves once committed truth is readable.
+    try:
+        prior = _committed_prior()
+    except _S15_DURABLE_INVALID:
+        # Committed durable truth WAS read and fails closed (corrupt or
+        # missing): this request wrote nothing, and nothing is confirmed.
+        entry["_answer_error"] = S15_INTERFACE_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    except Exception:
+        return _s15_unknown_response(sid, token, submission, description)
+    if prior is not None:
+        if _s15_interface_material_matches(prior, bound_pair, description):
+            return _publish(prior)
+        _consume_submission()
+        entry["_answer_error"] = S15_INTERFACE_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    # NEW declaration: the binding must still describe the live form context —
+    # the entry's CURRENT token and CURRENT submission identity, the current
+    # engine version and exactly the current offered part pair.
+    if (token != entry.get("answer_token")
+            or submission != entry.get(_S15_IFC_SUBMISSION_ENTRY_KEY)
+            or bound_ecv != getattr(state, "engine_contract_version", None)
+            or _s15_interface_pair(state, _s15_interface_focus(sid, state))
+            != tuple(bound_pair)):
+        entry["_answer_error"] = S15_INTERFACE_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    # Staged mint (nothing published yet): a fresh system-generated id.
+    try:
+        interface = _subsystem_model.declared_interface(
+            getattr(state, "subsystems", None) or (), bound_pair[0],
+            bound_pair[1], description)
+    except _subsystem_model.InterfaceError:
+        entry["_answer_error"] = S15_INTERFACE_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        _outcome, stored = _get_store().append_subsystem_interface(
+            sid, interface, submission_key)
+    except _SubsystemInterfaceRejected:
+        entry["_answer_error"] = S15_INTERFACE_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    except _SubsystemInterfaceConflict:
+        _consume_submission()
+        entry["_answer_error"] = S15_INTERFACE_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    except (sqlite3.IntegrityError, StoreError, sqlite3.Error):
+        # Never assume an outcome: only the exact declaration CONFIRMED from
+        # committed durable state is published (with its STORED id); an
+        # unconfirmable outcome says so and changes nothing in live state.
+        try:
+            prior = _committed_prior()
+        except _S15_DURABLE_INVALID:
+            entry["_answer_error"] = S15_INTERFACE_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        except Exception:
+            return _s15_unknown_response(sid, token, submission, description)
+        if prior is None:
+            entry["_answer_error"] = S15_INTERFACE_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        if not _s15_interface_material_matches(prior, bound_pair, description):
+            _consume_submission()
+            entry["_answer_error"] = S15_INTERFACE_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        return _publish(prior)
+    return _publish(stored)
 
 
 @app.route("/session/<sid>/correct", methods=["POST"])

@@ -24,6 +24,9 @@ MUTATIONS = (
     "/session/<sid>/declare-conflict",
     # CAP-08 Slice 1: the inventor's explicit assumption dependency declaration.
     "/session/<sid>/declare-dependency",
+    # Stage 15 Slice 2: the inventor's explicit declaration of how the two
+    # parts of an integrated invention interact.
+    "/session/<sid>/declare-interface",
     "/session/<sid>/decision/declare-context", "/session/<sid>/decision/declare-alternative",
     "/session/<sid>/decision/refine-alternative", "/session/<sid>/decision/withdraw-alternative",
     "/session/<sid>/keep-snapshot", "/session/<sid>/success-criteria", "/session/<sid>",

@@ -46,6 +46,22 @@ system-generated (``new_subsystem_id``), opaque, immutable and never derived
 from a name, a function text, a domain id or a list position; a client never
 supplies one. Declared part text is PRIVATE inventor / project information —
 never shared technical knowledge, never logged, never sent to any provider.
+
+Stage 15 Slice 2 — Subsystem Interface Declaration (additive): this module is
+ALSO the semantic owner of an Owner-declared INTERFACE between two parts of the
+SAME project's durable composition — a bounded relation between existing
+subsystem identities, never an answer, assumption, contradiction, decision,
+gap, evidence, readiness or compatibility fact, and never a ledger record.
+An interface carries a system-generated, opaque, immutable ``interface_id``;
+exactly two DISTINCT endpoints naming parts of that composition; the Owner's
+own free-text description; OWNER_STATED provenance and UNVALIDATED state.
+The two endpoints are an UNORDERED pair: they are stored in the composition's
+own fixed part order purely for determinism, which carries NO direction, flow,
+dependency, source / target or compatibility meaning. Several distinct
+interfaces may join the same two parts. A part's name, function and domain are
+never copied into an interface — they stay owned by the part itself. There is
+no interface category or taxonomy, no inference of an interface from part
+names or domains, no generic graph and no relation engine.
 """
 
 import re
@@ -153,6 +169,129 @@ def validate_composition(subsystems, confirmed_domain):
         if sub.provenance != OWNER_STATED or sub.validation_state != UNVALIDATED:
             raise CompositionError("subsystem provenance / validation state is invalid")
     return subs
+
+
+# --- Stage 15 Slice 2: Owner-declared interfaces between composed parts ---------
+# Explicit bound (characters), the same bound the Owner's part function text
+# already uses. Over-limit input is rejected, never truncated.
+MAX_INTERFACE_DESCRIPTION_LENGTH = 300
+# Bounded growth: a project cannot accumulate an unbounded interface list.
+MAX_SUBSYSTEM_INTERFACES_PER_PROJECT = 20
+_INTERFACE_ID_RE = re.compile(r"^ifc-[0-9a-f]{32}$")
+
+
+@dataclass(frozen=True)
+class SubsystemInterface:
+    """ONE Owner-declared interface between two DISTINCT parts of the same
+    project's composition. ``subsystem_a_id`` / ``subsystem_b_id`` are the
+    UNORDERED endpoint pair written in the composition's part order (for
+    determinism only — no direction, flow, dependency or source / target
+    meaning). ``description`` is the Owner's own trimmed text. It is never
+    evidence, a gap, a validation, a readiness input or a compatibility fact."""
+    interface_id: str
+    subsystem_a_id: str
+    subsystem_b_id: str
+    description: str
+    provenance: str
+    validation_state: str
+
+
+class InterfaceError(ValueError):
+    """A proposed or durable interface declaration violates the bounded
+    Stage-15 Slice-2 contract. Structural message only — never user text."""
+
+
+def new_interface_id():
+    """A system-generated, opaque, collision-safe interface identity, derived
+    from nothing the Owner typed, no part and no list position."""
+    return "ifc-" + uuid.uuid4().hex
+
+
+def is_valid_interface_id(value):
+    """True only for an id of the exact system-generated shape."""
+    return isinstance(value, str) and bool(_INTERFACE_ID_RE.match(value))
+
+
+def interface_description(raw):
+    """The storable form of an Owner-typed interface description: trimmed,
+    and otherwise verbatim. Raises ``InterfaceError`` for an empty, NUL-bearing
+    or over-limit description (never truncated, never stripped of a NUL)."""
+    if not isinstance(raw, str):
+        raise InterfaceError("interface description is not text")
+    text = raw.strip()
+    if not valid_subsystem_text(text, MAX_INTERFACE_DESCRIPTION_LENGTH):
+        raise InterfaceError("interface description is empty, invalid or too long")
+    return text
+
+
+def canonical_interface_endpoints(composition, endpoint_x, endpoint_y):
+    """The UNORDERED endpoint pair ``{endpoint_x, endpoint_y}`` as the
+    ``(subsystem_a_id, subsystem_b_id)`` tuple in the composition's own part
+    order. Both must be DISTINCT parts of ``composition`` (the project's own
+    durable composition); anything else raises ``InterfaceError``. The
+    ordering exists for determinism only and carries no direction."""
+    order = [sub.subsystem_id for sub in (composition or ())]
+    if endpoint_x == endpoint_y:
+        raise InterfaceError("an interface joins two different parts")
+    if endpoint_x not in order or endpoint_y not in order:
+        raise InterfaceError("an interface endpoint is not a part of this project")
+    first, second = sorted((endpoint_x, endpoint_y), key=order.index)
+    return first, second
+
+
+def declared_interface(composition, endpoint_x, endpoint_y, raw_description):
+    """Build ONE Owner-declared interface with a fresh system-generated id,
+    OWNER_STATED provenance and UNVALIDATED state, joining two distinct parts
+    of ``composition``. A client never supplies the id."""
+    first, second = canonical_interface_endpoints(composition, endpoint_x, endpoint_y)
+    return SubsystemInterface(
+        interface_id=new_interface_id(), subsystem_a_id=first,
+        subsystem_b_id=second, description=interface_description(raw_description),
+        provenance=OWNER_STATED, validation_state=UNVALIDATED)
+
+
+def same_interface_material(stored, interface):
+    """True when two declarations carry the SAME Owner material: the same
+    unordered endpoint pair and the same stored description. The id, the
+    provenance and the validation state are not material."""
+    return ({stored.subsystem_a_id, stored.subsystem_b_id}
+            == {interface.subsystem_a_id, interface.subsystem_b_id}
+            and stored.description == interface.description)
+
+
+def validate_interfaces(interfaces, composition):
+    """Validate a project's interface declarations against its OWN durable
+    composition and return them as a tuple, or raise ``InterfaceError``.
+
+    Empty is valid (every ordinary, pre-slice or undeclared project). Every
+    entry must carry a system-shaped, distinct id; two distinct endpoints that
+    are parts of ``composition`` written in its part order; a valid bounded
+    description; OWNER_STATED provenance and UNVALIDATED state. Interfaces
+    without a composition are invalid. Used identically before the durable
+    write and on every load."""
+    items = tuple(interfaces or ())
+    if not items:
+        return ()
+    if len(items) > MAX_SUBSYSTEM_INTERFACES_PER_PROJECT:
+        raise InterfaceError("too many interface declarations")
+    if not composition:
+        raise InterfaceError("interfaces exist without a composition")
+    seen = set()
+    for item in items:
+        if not isinstance(item, SubsystemInterface):
+            raise InterfaceError("interface entry is not an interface declaration")
+        if not is_valid_interface_id(item.interface_id) or item.interface_id in seen:
+            raise InterfaceError("interface identity is malformed or duplicated")
+        seen.add(item.interface_id)
+        if canonical_interface_endpoints(
+                composition, item.subsystem_a_id, item.subsystem_b_id) != (
+                item.subsystem_a_id, item.subsystem_b_id):
+            raise InterfaceError("interface endpoints are not in canonical order")
+        if not valid_subsystem_text(item.description, MAX_INTERFACE_DESCRIPTION_LENGTH):
+            raise InterfaceError("interface description is invalid")
+        if item.provenance != OWNER_STATED or item.validation_state != UNVALIDATED:
+            raise InterfaceError("interface provenance / validation state is invalid")
+    return items
 
 
 def project_subsystems(state):

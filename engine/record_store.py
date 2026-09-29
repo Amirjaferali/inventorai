@@ -72,6 +72,9 @@ from engine.need_routing import (
 from engine.subsystem_model import (
     CompositionError, Subsystem, validate_composition,
     MAX_SUBSYSTEM_NAME_LENGTH, MAX_SUBSYSTEM_FUNCTION_LENGTH,
+    InterfaceError, SubsystemInterface, validate_interfaces,
+    same_interface_material, MAX_INTERFACE_DESCRIPTION_LENGTH,
+    MAX_SUBSYSTEM_INTERFACES_PER_PROJECT,
 )
 from engine.evidence_reference import (
     EvidenceReference, validate_reference_history, validate_new_reference,
@@ -187,6 +190,27 @@ class ProjectSubsystemsInvalid(StoreError):
 class ProjectSubsystemsCorrupt(StoreError):
     """Stage 15 Slice 1: a project's durable subsystem rows are malformed,
     incomplete, out of order or inconsistent with its initial analysis focus.
+    Fail-closed for the WHOLE collection: nothing partial is returned and
+    nothing is repaired, deleted or reinterpreted."""
+
+
+class SubsystemInterfaceRejected(StoreError):
+    """Stage 15 Slice 2: an interface declaration is not valid against the
+    project's DURABLE composition inside the write transaction (no
+    composition, an endpoint that is not one of this project's parts, a
+    self-interface, invalid material, or the per-project cap reached).
+    Decided before any row is written; nothing is written."""
+
+
+class SubsystemInterfaceConflict(StoreError):
+    """Stage 15 Slice 2: the durable submission identity is already spent on
+    DIFFERENT material (another endpoint pair or description). Nothing was
+    written; the stored declaration is never altered."""
+
+
+class SubsystemInterfacesCorrupt(StoreError):
+    """Stage 15 Slice 2: a project's durable interface rows are malformed,
+    out of order, orphaned from or inconsistent with its durable composition.
     Fail-closed for the WHOLE collection: nothing partial is returned and
     nothing is repaired, deleted or reinterpreted."""
 
@@ -326,6 +350,14 @@ class RecordStore(Protocol):
     # Stage 15 Slice 1 durable subsystem composition (additive; written only by
     # create_project(subsystems=...); see the project_subsystems note below).
     def load_project_subsystems(self, project_id: str) -> tuple: ...
+    # Stage 15 Slice 2 Owner-declared interfaces between composed parts
+    # (additive; see the subsystem_interfaces note below).
+    def load_subsystem_interfaces(self, project_id: str) -> tuple: ...
+    def load_subsystem_composition(self, project_id: str) -> tuple: ...
+    def committed_subsystem_interface_for_submission(self, project_id: str,
+                                                     submission_key: str): ...
+    def append_subsystem_interface(self, project_id: str, interface,
+                                   submission_key: str) -> tuple: ...
 
 
 _SCHEMA = (
@@ -972,6 +1004,62 @@ _PROJECT_SUBSYSTEMS_SCHEMA = (
     "ON project_subsystems (subsystem_id)",
 )
 
+# Stage 15 Slice 2 — the ``subsystem_interfaces`` sidecar: the Owner-declared
+# interfaces between parts of a project's durable composition. Append-only:
+# never updated or deleted (no such writer exists). Identity is the
+# system-generated ``interface_id`` — unique per project (primary key) AND
+# across the store (unique index). ``interface_seq`` fixes the deterministic
+# display / round-trip order. Both endpoints reference THIS project's own
+# ``project_subsystems`` rows (composite foreign keys), so a row can never name
+# another project's part; the loader re-validates everything against the
+# composition (``engine.subsystem_model.validate_interfaces``). The endpoint
+# pair is UNORDERED — stored in the composition's part order for determinism
+# only (no direction). ``submission_key`` is the durable submission /
+# idempotency identity of the ONE action attempt that wrote the row (unique
+# per project), so an exact retry is recognised and a different material under
+# the same identity fails closed. The CHECKs are a database backstop for the
+# fixed provenance / validation values, distinct endpoints and the text bound.
+# Additive and idempotent (``IF NOT EXISTS``); touches no existing table,
+# column or row; nothing is backfilled (an existing project simply has no
+# rows). Rollback is disable-and-ignore (stop reading the table).
+_SUBSYSTEM_INTERFACES_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS subsystem_interfaces (
+        project_id        TEXT    NOT NULL,
+        interface_seq     INTEGER NOT NULL,
+        interface_id      TEXT    NOT NULL,
+        subsystem_a_id    TEXT    NOT NULL,
+        subsystem_b_id    TEXT    NOT NULL,
+        description       TEXT    NOT NULL,
+        provenance        TEXT    NOT NULL,
+        validation_state  TEXT    NOT NULL,
+        submission_key    TEXT    NOT NULL,
+        PRIMARY KEY (project_id, interface_id),
+        UNIQUE (project_id, interface_seq),
+        UNIQUE (project_id, submission_key),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, subsystem_a_id)
+            REFERENCES project_subsystems(project_id, subsystem_id),
+        FOREIGN KEY (project_id, subsystem_b_id)
+            REFERENCES project_subsystems(project_id, subsystem_id),
+        CHECK (interface_seq >= 0),
+        CHECK (provenance = 'OWNER_STATED'),
+        CHECK (validation_state = 'UNVALIDATED'),
+        CHECK (typeof(interface_id) = 'text' AND length(interface_id) = 36),
+        CHECK (subsystem_a_id <> subsystem_b_id),
+        CHECK (typeof(description) = 'text'
+               AND length(description) BETWEEN 1 AND %d
+               AND instr(CAST(description AS BLOB), X'00') = 0),
+        CHECK (typeof(submission_key) = 'text' AND length(submission_key) > 0)
+    )
+    """ % MAX_INTERFACE_DESCRIPTION_LENGTH,
+    "CREATE UNIQUE INDEX IF NOT EXISTS subsystem_interfaces_id_uq "
+    "ON subsystem_interfaces (interface_id)",
+)
+
+SUBSYSTEM_INTERFACE_INSERTED = "INSERTED"
+SUBSYSTEM_INTERFACE_EXACT_REPLAY = "EXACT_REPLAY"
+
 NEED_ROUTING_INSERTED = "INSERTED"
 NEED_ROUTING_EXACT_REPLAY = "EXACT_REPLAY"
 
@@ -1081,6 +1169,7 @@ class SqliteRecordStore:
             self._migrate_prototype_test_variables(self._conn)
             self._migrate_need_routing(self._conn)
             self._migrate_project_subsystems(self._conn)
+            self._migrate_subsystem_interfaces(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -1304,6 +1393,16 @@ class SqliteRecordStore:
         for stmt in _PROJECT_SUBSYSTEMS_SCHEMA:
             conn.execute(stmt)
 
+    def _migrate_subsystem_interfaces(self, conn) -> None:
+        """Stage 15 Slice 2 forward migration: additively create the
+        ``subsystem_interfaces`` sidecar. Idempotent (``IF NOT EXISTS``) on a
+        fresh and on an existing populated database; touches no existing
+        table, column or row; nothing is backfilled or inferred for an
+        existing project. Rollback is disable-and-ignore (stop reading the
+        table)."""
+        for stmt in _SUBSYSTEM_INTERFACES_SCHEMA:
+            conn.execute(stmt)
+
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
         """A durability-safe, collision-safe identifier for a NEWLY created
@@ -1450,6 +1549,141 @@ class SqliteRecordStore:
             return validate_composition(subs, project[0])
         except CompositionError as exc:
             raise ProjectSubsystemsCorrupt(str(exc)) from None
+
+    # --- Stage 15 Slice 2: Owner-declared interfaces (append-only) -----------
+    _INTERFACE_COLUMNS = (
+        "interface_seq, interface_id, subsystem_a_id, subsystem_b_id, "
+        "description, provenance, validation_state, submission_key")
+
+    def _interface_rows(self, project_id):
+        return self._conn.execute(
+            "SELECT " + self._INTERFACE_COLUMNS + " FROM subsystem_interfaces "
+            "WHERE project_id = ? ORDER BY interface_seq ASC",
+            (project_id,)).fetchall()
+
+    def _validated_interfaces(self, project_id, composition):
+        """``(interfaces_tuple, submission_keys_tuple)`` of this project's
+        durable interface rows, validated WHOLE against its durable
+        ``composition``; ``SubsystemInterfacesCorrupt`` on anything malformed,
+        out of order, orphaned or duplicated (nothing partial)."""
+        rows = self._interface_rows(project_id)
+        if not rows:
+            return (), ()
+        if [row[0] for row in rows] != list(range(len(rows))):
+            raise SubsystemInterfacesCorrupt("durable interface order is not contiguous")
+        keys = tuple(row[7] for row in rows)
+        if any(not isinstance(k, str) or not k for k in keys) \
+                or len(set(keys)) != len(keys):
+            raise SubsystemInterfacesCorrupt("durable submission identity is malformed")
+        items = tuple(
+            SubsystemInterface(interface_id=row[1], subsystem_a_id=row[2],
+                               subsystem_b_id=row[3], description=row[4],
+                               provenance=row[5], validation_state=row[6])
+            for row in rows)
+        try:
+            return validate_interfaces(items, composition), keys
+        except InterfaceError as exc:
+            raise SubsystemInterfacesCorrupt(str(exc)) from None
+
+    def load_subsystem_composition(self, project_id: str) -> tuple:
+        """``(subsystems, interfaces)``: this project's durable composition and
+        its Owner-declared interfaces, read inside ONE consistent read snapshot
+        (``read_snapshot``) so a reader never combines a composition and an
+        interface list from different durable moments. Both are validated
+        WHOLE (``ProjectSubsystemsCorrupt`` / ``SubsystemInterfacesCorrupt``;
+        nothing partial). No project -> ``ProjectNotFound``. IR-01: a
+        connection left UNSAFE by a failed write refuses BEFORE any SELECT
+        (``RecordStoreConnectionUnsafe``), exactly like
+        ``load_project_subsystems``; a healthy snapshot is never refused.
+        Read-only; project-scoped; logs nothing."""
+        if self._connection_unsafe:
+            raise RecordStoreConnectionUnsafe(
+                "connection is inside an unresolved transaction; its reads are "
+                "not committed durable state")
+        with self.read_snapshot():
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _keys = self._validated_interfaces(project_id, subsystems)
+        return subsystems, interfaces
+
+    def load_subsystem_interfaces(self, project_id: str) -> tuple:
+        """This project's durable Owner-declared interfaces in
+        ``interface_seq`` order (``()`` for every project without any),
+        validated against its durable composition. See
+        ``load_subsystem_composition``."""
+        return self.load_subsystem_composition(project_id)[1]
+
+    def committed_subsystem_interface_for_submission(self, project_id: str,
+                                                     submission_key: str):
+        """The COMMITTED interface declaration written under
+        ``submission_key``, or ``None`` — the confirm-by-reload seam of the
+        declaration route. Read ONLY from committed durable state: on a
+        connection inside an unresolved transaction (IR-01) it refuses with
+        ``RecordStoreConnectionUnsafe`` instead of confirming anything. The
+        whole durable collection is validated first, so a corrupt history
+        fails closed instead of confirming a row out of it."""
+        self._refuse_uncommitted_reads()
+        if not isinstance(submission_key, str) or not submission_key:
+            return None
+        with self.read_snapshot():            # one durable moment for both reads
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, keys = self._validated_interfaces(project_id, subsystems)
+        if submission_key not in keys:
+            return None
+        return interfaces[keys.index(submission_key)]
+
+    def append_subsystem_interface(self, project_id: str, interface,
+                                   submission_key: str) -> tuple:
+        """Atomically append ONE Owner-declared interface and return
+        ``(outcome, stored_interface)``: ``SUBSYSTEM_INTERFACE_EXACT_REPLAY``
+        with the ALREADY-COMMITTED declaration when ``submission_key`` already
+        names this exact material (the caller's newly generated id is then
+        discarded, never published), ``SUBSYSTEM_INTERFACE_INSERTED`` with the
+        declaration this call committed.
+
+        ONE serialized write transaction (``BEGIN IMMEDIATE``); full rollback
+        on any failure. Inside it, against DURABLE truth: the project exists;
+        its composition and existing interfaces validate; the submission
+        identity is unused or names exactly this material
+        (``SubsystemInterfaceConflict`` otherwise); both endpoints are
+        distinct parts of THIS project's composition, the material is valid
+        and the per-project cap is not reached (``SubsystemInterfaceRejected``
+        otherwise). The store assigns ``interface_seq``. There is no update or
+        delete path. IR-01: never writes on top of an unresolved
+        connection."""
+        if not isinstance(interface, SubsystemInterface):
+            raise SubsystemInterfaceRejected("not an interface declaration")
+        if not isinstance(submission_key, str) or not submission_key:
+            raise SubsystemInterfaceRejected("a submission identity is required")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            if self._conn.execute(
+                    "SELECT 1 FROM projects WHERE project_id = ?",
+                    (project_id,)).fetchone() is None:
+                raise ProjectNotFound(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            existing, keys = self._validated_interfaces(project_id, subsystems)
+            if submission_key in keys:
+                stored = existing[keys.index(submission_key)]
+                if same_interface_material(stored, interface):
+                    return SUBSYSTEM_INTERFACE_EXACT_REPLAY, stored
+                raise SubsystemInterfaceConflict(
+                    "the submission identity already names a different declaration")
+            if len(existing) >= MAX_SUBSYSTEM_INTERFACES_PER_PROJECT:
+                raise SubsystemInterfaceRejected("the interface cap is reached")
+            try:
+                validate_interfaces(existing + (interface,), subsystems)
+            except InterfaceError:
+                raise SubsystemInterfaceRejected(
+                    "the declaration is not valid against the durable composition"
+                ) from None
+            self._conn.execute(
+                "INSERT INTO subsystem_interfaces (project_id, "
+                + self._INTERFACE_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (project_id, len(existing), interface.interface_id,
+                 interface.subsystem_a_id, interface.subsystem_b_id,
+                 interface.description, interface.provenance,
+                 interface.validation_state, submission_key))
+        return SUBSYSTEM_INTERFACE_INSERTED, interface
 
     # --- Safe Question Reduction Slice 1: NeedRouting (append-only) ----------
     _ROUTING_COLUMNS = (

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="{{ ui_lang }}" dir="{{ ui_dir }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ t('UI_S15_IFC_UNKNOWN_TITLE') }} — InventorAI</title>
+  <style>
+    body{font-family:sans-serif;max-width:38rem;margin:3rem auto;padding:0 1.25rem;line-height:1.6;color:#263b4b}
+    button{padding:.7rem 1rem;background:#263b4b;color:#fff;border:0;border-radius:6px;font:inherit;cursor:pointer}
+    button:focus-visible,a:focus-visible{outline:3px solid #2c6fbb;outline-offset:4px}
+  </style>
+</head>
+<body>
+{#- Stage 15 Slice 2 — the bounded UNKNOWN outcome of an interaction
+    declaration. It renders NO project state (the store could not establish
+    the committed outcome) and claims neither saved nor not saved. The form
+    re-submits the SAME signed action, which is resolved against committed
+    durable truth and can never record the interaction twice. -#}
+<main>
+  <h1>{{ t('UI_S15_IFC_UNKNOWN_TITLE') }}</h1>
+  <p role="alert" data-interface-unknown>{{ message }}</p>
+  <form method="POST" action="/session/{{ sid }}/declare-interface">
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <input type="hidden" name="answer_token" value="{{ answer_token }}">
+    <input type="hidden" name="interface_binding" value="{{ interface_binding }}">
+    <input type="hidden" name="interface_submission" value="{{ interface_submission }}">
+    <input type="hidden" name="interface_description" value="{{ interface_description }}">
+    <input type="hidden" name="interface_confirm" value="yes">
+    <button type="submit" id="interface-unknown-retry">{{ t('UI_S15_IFC_UNKNOWN_RETRY') }}</button>
+  </form>
+  <p><a href="/session/{{ sid }}">{{ t('UI_S15_IFC_UNKNOWN_BACK') }}</a></p>
+</main>
+</body>
+</html>
