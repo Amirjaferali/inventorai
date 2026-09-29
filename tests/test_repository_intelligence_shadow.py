@@ -420,13 +420,23 @@ def test_candidate_tests_run_only_in_the_advisory_fast_job():
 
 def test_fast_job_is_parallel_non_required_and_cannot_control_verify():
     jobs = _jobs(_workflow())
-    assert set(jobs) == {"verify", "fast", "required"}
+    # the two sharding-pilot jobs are evidence only (tests/test_ci_full_suite.py pins them)
+    assert set(jobs) == {"verify", "fast", "required", "full_shard", "full_audit"}
     assert "needs:" not in jobs["verify"] and "needs:" not in jobs["fast"]
     assert "continue-on-error: true" in jobs["fast"].split("steps:")[0]
     assert "fast" not in jobs["verify"].lower().replace("fail-open", "")
     required = jobs["required"]
     assert re.findall(r"needs: \[(.*)\]", required) == ["verify"]
     assert 'test "$VERIFY_RESULT" = success' in required and "fast" not in required.lower()
+
+
+def test_sharding_pilot_jobs_carry_no_rig_or_candidate_input():
+    jobs = _jobs(_workflow())
+    for name in ("full_shard", "full_audit"):
+        code = "\n".join(line for line in jobs[name].splitlines() if not line.lstrip().startswith("#"))
+        body = code.lower().replace("fail-fast", "")
+        for word in (r"\brig\b", "repository_intelligence", "candidate", r"\bfast\b", "continue-on-error"):
+            assert re.search(word, body) is None, (name, word)
 
 
 def test_unavailable_rig_cannot_prevent_the_full_regression():
