@@ -1375,7 +1375,9 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       "question_feedback", "engine_version_adoptions",
                       "prototype_plan_metadata", "prototype_measurement_methods",
                       "prototype_test_hypotheses", "prototype_test_variables",
-                      "need_routing_revisions"}
+                      "need_routing_revisions",
+                      # Stage 15 Slice 1: the Owner-declared subsystem sidecar.
+                      "project_subsystems"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()
