@@ -7118,20 +7118,10 @@ def _s15_interface_text(raw):
 
 
 # Committed durable truth that WAS read and fails closed — distinct from
-# committed truth that cannot be read at all (IR-01 / storage failure), whose
-# outcome stays UNKNOWN.
+# committed truth that cannot be read at all (IR-01 / any failing required
+# query), whose outcome stays UNKNOWN.
 _S15_DURABLE_INVALID = (_ProjectNotFound, _ProjectSubsystemsCorrupt,
                         _SubsystemInterfacesCorrupt)
-
-
-def _s15_committed_state_readable():
-    """True unless the store says its reads are NOT committed durable state
-    (IR-01) or cannot answer at all."""
-    try:
-        check = getattr(_get_store(), "committed_state_readable", None)
-        return bool(check()) if callable(check) else True
-    except Exception:
-        return False
 
 
 def _s15_unknown_response(sid, token, submission, description):
@@ -7187,19 +7177,29 @@ def declare_interface(sid):
     description, text_error = _s15_interface_text(raw)
     entry = SESSION_STORE.get(sid)
     if not entry:
-        # After process / session loss the SAME minimal read-only cold entry a
-        # GET builds is rebuilt (no writable session, no progression), so an
-        # exact committed retry resolves directly and a saved project — even a
+        # After process / session loss, a valid signed action FIRST resolves
+        # its committed outcome directly from durable truth — the submission
+        # identity is derived from the signed request alone. A required read
+        # that cannot complete (IR-01 or any failing query) keeps the outcome
+        # UNKNOWN; transaction safety alone is not committed-data readability.
+        # Durable truth that WAS read and fails closed (corrupt / missing)
+        # takes the existing cold-load path below, which fails closed.
+        if (signed and text_error is None
+                and request.form.get("interface_confirm") == "yes"):
+            try:
+                _get_store().committed_subsystem_interface_for_submission(
+                    sid, _s15_interface_submission_key(sid, nonce))
+            except _S15_DURABLE_INVALID:
+                pass
+            except Exception:
+                return _s15_unknown_response(sid, token, submission,
+                                             description)
+        # Then the SAME minimal read-only cold entry a GET builds is rebuilt
+        # (no writable session, no progression), so an exact committed retry
+        # publishes its STORED declaration and a saved project — even a
         # completed one, which never resumes — can declare from durable truth.
         entry = _cold_load_entry(sid)
         if not entry:
-            if (signed and text_error is None
-                    and request.form.get("interface_confirm") == "yes"
-                    and not _s15_committed_state_readable()):
-                # Committed truth cannot be read at all: the outcome of an
-                # earlier attempt of this action stays UNKNOWN.
-                return _s15_unknown_response(sid, token, submission,
-                                             description)
             return redirect(url_for("index"))
         SESSION_STORE[sid] = entry
     state = entry["state"]

@@ -1520,3 +1520,74 @@ def test_f3_unknown_response_is_localized(client):
         real.close()
         appmod._STORE = None
         client.post("/ui-language", data={"lang": "en"})
+
+
+class _CommitThenInterfaceReadsFail:
+    """The COMMIT really happens and then raises (acknowledgement lost); from
+    then on every durable SELECT touching ``subsystem_interfaces`` fails while
+    the connection itself stays transaction-safe (no unresolved transaction,
+    no IR-01 flag) — a required committed read that cannot complete."""
+
+    def __init__(self, conn):
+        self._conn = conn
+        self.committed = False
+
+    def execute(self, sql, *args):
+        if sql == "COMMIT" and not self.committed:
+            self._conn.execute(sql, *args)
+            self.committed = True
+            raise sqlite3.OperationalError("injected: acknowledgement lost")
+        if self.committed and "subsystem_interfaces" in sql:
+            raise sqlite3.OperationalError("injected: interface read failing")
+        return self._conn.execute(sql, *args)
+
+    def __getattr__(self, name):
+        return getattr(self._conn, name)
+
+
+def test_f3_residual_unknown_survives_session_loss_while_the_required_read_fails(client):
+    sid = _integrated(client)
+    form = _form(_page(client, sid))
+    store = _store()
+    real = store._conn
+    store._conn = _CommitThenInterfaceReadsFail(real)
+    minted = []
+    real_new = sm.new_interface_id
+    try:
+        r = _declare(client, sid, form=form)                  # committed, unconfirmable
+        assert r.status_code == 503
+        assert store._connection_unsafe is False and not real.in_transaction
+        assert store.committed_state_readable() is True        # transaction-safe ...
+        [row] = _ifc_rows(sid)                                 # ... and it DID commit
+        retry = _retry_fields(r.get_data(as_text=True))
+        # retry with the runtime entry present: UNKNOWN
+        again = client.post(f"/session/{sid}/declare-interface", data=retry)
+        assert again.status_code == 503
+        # the runtime entry is lost; the SAME signed retry, read still failing
+        appmod.SESSION_STORE.clear()
+        sm.new_interface_id = lambda: minted.append(1) or real_new()
+        lost = client.post(f"/session/{sid}/declare-interface", data=retry)
+        body = _html.unescape(lost.get_data(as_text=True))
+        assert lost.status_code == 503                         # never a redirect to /
+        assert "Location" not in lost.headers
+        assert appmod.S15_INTERFACE_UNKNOWN_MESSAGE in body
+        assert appmod.S15_INTERFACE_DECLARED_ACK not in body   # not SAVED
+        assert appmod.S15_INTERFACE_NOT_SAVED_MESSAGE not in body  # not NOT SAVED
+        assert sid not in appmod.SESSION_STORE                 # nothing half-built
+    finally:
+        store._conn = real                                     # durable reads restored
+    try:
+        resolved = client.post(f"/session/{sid}/declare-interface", data=retry)
+    finally:
+        sm.new_interface_id = real_new
+    assert resolved.status_code == 302
+    assert resolved.headers["Location"].endswith(f"/session/{sid}")
+    assert _entry(sid).get("_interaction_ack") == appmod.S15_INTERFACE_DECLARED_ACK
+    assert [i.interface_id for i in _live(sid).subsystem_interfaces] == [row[2]]
+    assert _ifc_rows(sid) == [row] and minted == []            # stored id; no new row
+    # control: durable history READ and found corrupt still fails closed —
+    # never UNKNOWN — with no runtime entry
+    _raw("UPDATE subsystem_interfaces SET interface_seq = 3 WHERE project_id = ?", (sid,))
+    appmod.SESSION_STORE.clear()
+    corrupt = client.post(f"/session/{sid}/declare-interface", data=retry)
+    assert corrupt.status_code == 302 and corrupt.headers["Location"].endswith("/")
