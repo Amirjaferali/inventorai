@@ -1412,8 +1412,21 @@ class SqliteRecordStore:
         missing, extra, out-of-order or inconsistent row ->
         ``ProjectSubsystemsCorrupt`` (nothing partial, nothing repaired).
         Read-only; project-scoped (it can only ever read rows keyed by THIS
-        project id); logs nothing. Like ``load_need_routing`` it applies no
-        IR-01 refusal of its own, so it is safe inside ``read_snapshot``."""
+        project id); logs nothing.
+
+        IR-01 (F1 correction): a connection a failed write left UNSAFE (a
+        failed COMMIT whose defensive ROLLBACK also failed — the persistent
+        ``_connection_unsafe`` flag) raises ``RecordStoreConnectionUnsafe``
+        BEFORE any SELECT, so that connection's own uncommitted composition is
+        never returned as durable truth. The guard reads the persistent flag
+        only — NOT ``_refuse_uncommitted_reads()``, whose open-transaction limb
+        would also reject the healthy ``read_snapshot()`` SAVEPOINT that
+        reconstruction reads this loader inside. The flag is never cleared
+        here; nothing is repaired, rolled back or reconnected."""
+        if self._connection_unsafe:
+            raise RecordStoreConnectionUnsafe(
+                "connection is inside an unresolved transaction; its reads are "
+                "not committed durable state")
         project = self._conn.execute(
             "SELECT confirmed_domain FROM projects WHERE project_id = ?",
             (project_id,)).fetchone()

@@ -865,3 +865,139 @@ def test_cold_load_owner_itself_reattaches_and_fails_closed(client):
     conn.close()
     with appmod.app.test_request_context("/"):
         assert appmod._cold_load_entry(sid) is None
+
+
+# ==========================================================================
+# F. F1 / IR01-A correction — an UNSAFE connection never exposes its own
+#    uncommitted composition; a healthy read snapshot still reads it.
+# ==========================================================================
+from engine.record_store import RecordStoreConnectionUnsafe  # noqa: E402
+
+
+class _CommitAndRollbackFail:
+    """Wraps the store's real connection: the next COMMIT fails and the
+    defensive ROLLBACK that follows ALSO fails, leaving the write transaction
+    unresolved (the IR-01 condition). Every other statement passes through."""
+
+    def __init__(self, conn):
+        self._conn = conn
+        self.armed = True
+
+    def execute(self, sql, *args):
+        if self.armed and sql in ("COMMIT", "ROLLBACK"):
+            if sql == "ROLLBACK":
+                self.armed = False
+            raise sqlite3.OperationalError("injected: %s failed" % sql)
+        return self._conn.execute(sql, *args)
+
+    def __getattr__(self, name):
+        return getattr(self._conn, name)
+
+
+def _independent_counts(pid):
+    conn = sqlite3.connect(_db_path())
+    try:
+        return tuple(conn.execute(sql, (pid,)).fetchone()[0] for sql in (
+            "SELECT COUNT(*) FROM projects WHERE project_id = ?",
+            "SELECT COUNT(*) FROM project_subsystems WHERE project_id = ?",
+            "SELECT COUNT(*) FROM need_routing_revisions WHERE project_id = ?"))
+    finally:
+        conn.close()
+
+
+def _failed_integrated_creation(client):
+    """A REAL integrated /start whose creation transaction (envelope + creation
+    routing + both subsystem rows) hits a failed COMMIT and a failed defensive
+    ROLLBACK. Returns (store, real_connection, sid)."""
+    store = _store()
+    real = store._conn
+    before = set(appmod.SESSION_STORE)
+    store._conn = _CommitAndRollbackFail(real)
+    try:
+        r = _compose(client, TIE_IDEA, focus=MECH)     # Mechanical focus: routing too
+    finally:
+        store._conn = real
+    assert r.status_code == 503                       # the existing generic unavailable
+    assert set(appmod.SESSION_STORE) == before        # no live session advertised
+    assert store._connection_unsafe is True           # IR-01: marked unsafe
+    assert real.in_transaction                        # the write is unresolved
+    sid = real.execute("SELECT project_id FROM projects").fetchone()[0]
+    # the hazard is real: THIS connection sees its own uncommitted rows ...
+    assert real.execute("SELECT COUNT(*) FROM project_subsystems WHERE project_id = ?",
+                        (sid,)).fetchone()[0] == 2
+    assert real.execute("SELECT COUNT(*) FROM need_routing_revisions WHERE project_id = ?",
+                        (sid,)).fetchone()[0] >= 1
+    # ... while an independent connection sees NOTHING committed
+    assert _independent_counts(sid) == (0, 0, 0)
+    return store, real, sid
+
+
+def test_f1_unsafe_connection_never_exposes_the_uncommitted_composition(client):
+    store, real, sid = _failed_integrated_creation(client)
+    try:
+        # direct loader: refused BEFORE any row is trusted (no tuple, no ())
+        with pytest.raises(RecordStoreConnectionUnsafe):
+            store.load_project_subsystems(sid)
+        # A. attachment refuses and attaches nothing
+        probe = IdeaState(idea_id="probe")
+        sentinel = []
+        probe.subsystems = sentinel
+        assert appmod._attach_project_subsystems(sid, probe) is False
+        assert probe.subsystems is sentinel and probe.subsystems == []
+        # B. cold load yields no usable project
+        with appmod.app.test_request_context("/"):
+            assert appmod._cold_load_entry(sid) is None
+        # C. canonical reconstruction fails with the existing store refusal
+        with pytest.raises(RecordStoreConnectionUnsafe):
+            SR.reconstruct_readonly_state(store, sid)
+        with pytest.raises(RecordStoreConnectionUnsafe):
+            SR.reconstruct_review_state(store, sid)
+        # D. writable resume establishes nothing
+        client.post(f"/session/{sid}/resume", data={})
+        assert sid not in appmod.SESSION_STORE
+        # E. the session page renders no scope from those rows
+        page = client.get(f"/session/{sid}")
+        assert page.status_code == 302
+        assert _scope_block(page.get_data(as_text=True)) is None
+        assert sid not in appmod.SESSION_STORE
+        report = client.get(f"/session/{sid}/deliverable")
+        assert report.status_code == 302
+        # the flag is persistent: never cleared, never repaired, no reconnect
+        assert store._connection_unsafe is True and store._conn is real
+        assert real.in_transaction
+        assert _independent_counts(sid) == (0, 0, 0)
+    finally:
+        # abandon the unsafe connection (closing discards its open transaction)
+        real.close()
+        appmod._STORE = None
+    # a FRESH store reads only what was actually committed: nothing
+    fresh = _store()
+    with pytest.raises(ProjectNotFound):
+        fresh.load_project_subsystems(sid)
+    assert _independent_counts(sid) == (0, 0, 0)
+    assert _subsystem_rows() == []
+
+
+def test_f1_healthy_read_snapshot_still_reads_the_committed_composition(client):
+    sid = _created(_compose(client, TIE_IDEA, focus=ELEC))
+    ids = [r[2] for r in _subsystem_rows(sid)]
+    store = _store()
+    assert store._connection_unsafe is False
+    with store.read_snapshot():
+        # the snapshot IS an open read transaction: the unconditional IR-01
+        # refusal would reject it — the loader's persistent-flag guard does not
+        assert store._conn.in_transaction
+        with pytest.raises(RecordStoreConnectionUnsafe):
+            store._refuse_uncommitted_reads()
+        subs = store.load_project_subsystems(sid)
+    assert [s.subsystem_id for s in subs] == ids
+    assert [s.domain for s in subs] == [MECH, ELEC]
+    session = SR.reconstruct_readonly_state(store, sid)
+    assert session.review.level == 1 and session.review.reconstructed
+    assert session.state.domain == ELEC
+    assert [s.subsystem_id for s in session.state.subsystems] == ids
+    appmod.SESSION_STORE.pop(sid)
+    assert client.post(f"/session/{sid}/resume", data={}).status_code == 302
+    assert _live(sid).domain == ELEC
+    assert [s.subsystem_id for s in _live(sid).subsystems] == ids
+    assert store._connection_unsafe is False
