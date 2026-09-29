@@ -117,7 +117,10 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   beyond the delivered Mechanical and Electrical slices. Stage 15 — Integrated Invention Entry & Durable
   Subsystem Composition — Slice 1 (DELIVERED — PR #718 — merge `3f3546a279c7f7020744bcbfee957de84ac2e136`;
   post-merge identity / content verification PASS; independent architecture + implementation review cycle
-  COMPLETE — F1-CLOSED; no product increment is currently authorized) is NOT a CAP-01 slice: it records one Owner-declared
+  COMPLETE — F1-CLOSED) is NOT a CAP-01 slice, and neither is Stage 15 — Subsystem Interface Declaration &
+  Verification Preparation — Slice 2 (the current Owner-authorized implementation candidate, not merged: an
+  Owner-declared interaction between the two parts with ONE verification-preparation step; no technical
+  depth, no source knowledge): it records one Owner-declared
   Mechanical + Electrical / Electronics composition and one initial analysis focus, and adds no CAP-01
   technical depth and no technical-source knowledge. The two Electronics increments are presentation-only; the second
   adds no evidence, retrieval, numeric value, project inspection or specialist. That increment is presentation-only, class-general and
