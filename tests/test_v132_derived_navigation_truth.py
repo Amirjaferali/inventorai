@@ -636,14 +636,18 @@ def test_stages_thirteen_to_sixteen_keep_their_own_dependencies():
         _rejects(deps[14], path, "stage 14",
                  r"Phase[- ]7", r"inbound/write-import")
 
-        # Stage 15 Slice 1 (2026-09-29): entered through ONE bounded slice; the wider stage
-        # stays deferred and every stage-specific dependency stays recorded.
+        # Stage 15 Slice 1 (2026-09-29): entered through ONE bounded slice, now DELIVERED (PR #718);
+        # the wider stage stays deferred and every stage-specific dependency stays recorded.
         _needs(deps[15], path, "stage 15",
                r"ENTERED / PARTIAL / NOT COMPLETE THROUGH ONE BOUNDED SLICE",
-               r"Integrated Invention Entry & Durable Subsystem Composition Slice 1 is IMPLEMENTED "
-               r"CANDIDATE / REVIEW COMPLETE / PR PENDING",
+               r"Integrated Invention Entry & Durable Subsystem Composition Slice 1 is DELIVERED — PR #718 "
+               r"— merge `3f3546a279c7f7020744bcbfee957de84ac2e136`\*\* \(post-merge identity / content "
+               r"verification PASS",
+               r"no IRL level, no complete integration readiness",
                r"(?i)wider Stage-15 work remains DEFERRED / NOT AUTHORIZED",
-               r"wider interface/dependency evidence",
+               r"wider interface/dependency evidence\*\* \(subsystem/interface integration evidence beyond "
+               r"Slice 1\)",
+               r"beyond the delivered bounded Slice-1 use case",
                r"Phase[- ]7 integration/interface foundation",
                r"(?i)EXISTS",
                r"IRL ownership is NOT wholly absent",
@@ -653,7 +657,8 @@ def test_stages_thirteen_to_sixteen_keep_their_own_dependencies():
                r"async/vendor integration",
                r"T2-E")
         _rejects(deps[15], path, "stage 15",
-                 r"PARTIAL / DEFERRED",
+                 r"PARTIAL / DEFERRED", r"IMPLEMENTED CANDIDATE", r"PR PENDING",
+                 r"(?<!no )(?<!not )engineering compatibility (is |was )?(established|confirmed|proven)",
                  r"STAGE 15 — [^.]{0,40}: (?:ENTERED / )?COMPLETE\b",
                  r"(?<!no )(?<!not )\bIRL level \d",
                  r"(?<!no )(?<!not )full IRL (capability )?(is |was )?(authorized|complete|delivered)",
@@ -1788,12 +1793,14 @@ def test_second_increment_status_is_merge_truth_and_the_none_contract_is_superse
             "AND ELECTRICAL SLICES") in raw_checklist
     assert re.search(r"^NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED$",
                      raw_checklist, re.M) is None
-    # Stage 15 Slice 1 (2026-09-29): no plain-text NONE line survives; the Stage-15 active
-    # contract line now sits directly under the Electrical delivery line
-    assert re.search(r"^ACTIVE CONTRACT: NONE$", raw_checklist, re.M) is None
+    # post-PR-#718 (2026-09-29): exactly one plain-text NONE line is live again, directly under the
+    # Electrical delivery line and followed by the post-#718 next-increment line; the pre-merge Stage-15
+    # contract line is gone
+    assert len(re.findall(r"^ACTIVE CONTRACT: NONE$", raw_checklist, re.M)) == 1
     assert re.search(r"^ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #716 — merge "
-                     r"11564b235b056aaf12ca9d5596418f43a2d7e61c\nACTIVE CONTRACT: STAGE 15 — INTEGRATED "
-                     r"INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — SLICE 1$", raw_checklist, re.M)
+                     r"11564b235b056aaf12ca9d5596418f43a2d7e61c\nACTIVE CONTRACT: NONE\nNEXT PRODUCT INCREMENT: "
+                     r"NOT AUTHORIZED$", raw_checklist, re.M)
+    assert re.search(r"^ACTIVE CONTRACT: STAGE 15", raw_checklist, re.M) is None
 
 
 def test_group_two_reads_completed_with_its_residuals_carried():
@@ -1932,7 +1939,7 @@ _PRE_S19_NONE = (r"\*\*ACTIVE CONTRACT: NONE\.\*\* Both",
                  r"NONE AUTHORIZED — `ACTIVE CONTRACT: NONE`",
                  r"`ACTIVE CONTRACT: NONE` stands",
                  r"ACTIVE CONTRACT: NONE` — \*\*no further CAP-01 implementation is",
-                 r"ACTIVE CONTRACT: NONE(?!.{0,1500}PR[ -]#71[46])")
+                 r"ACTIVE CONTRACT: NONE(?!.{0,1500}PR[ -]#71[468])")
 
 
 _SLICE_02_LIVE_REVERSALS = (
@@ -3384,10 +3391,9 @@ def test_mechanical_td_slice1_is_delivered_history_and_the_post_714_none_is_supe
             "(PR #714, merge `" + _TD1_MERGE + "`; post-merge identity / content verification PASS)") in head
     for pat in _POST714_NONE_FORMS + _TD1_LIVE_FORMS:
         assert re.search(pat, head, re.I | re.S) is None, pat
-    assert ("*(Superseded current-authority declarations — the former post-PR-#716 `ACTIVE "
-            "CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the "
-            "former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening "
-            "Slice 1,") in claude
+    assert ("the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics "
+            "Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former "
+            "Mechanical Technical Deepening Slice 1,") in claude
     # checklist plain text: the delivery line stays, the NONE lines are gone
     raw_checklist = _read(CHECKLIST)
     assert re.search(r"^" + re.escape(_TD1_DELIVERED.strip("`")) + r"$", raw_checklist, re.M)
@@ -3516,9 +3522,8 @@ def test_electrical_td_slice1_is_delivered_history_and_its_rules_still_bind():
             "PASS; independent non-authoring review COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS)") in head
     for pat in _EL_LIVE_FORMS:
         assert re.search(pat, head, re.I | re.S) is None, pat
-    assert ("*(Superseded current-authority declarations — the former post-PR-#716 `ACTIVE CONTRACT: "
-            "NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former "
-            "post-PR-#714 `ACTIVE CONTRACT: NONE`,") in claude
+    assert ("the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical "
+            "Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`,") in claude
     raw_checklist = _read(CHECKLIST)
     assert re.search(r"^" + re.escape(_EL_DELIVERED.strip("`")) + r"$", raw_checklist, re.M)
     for stale in (_EL_CONTRACT.strip("`"), _EL_STATUS.strip("`")):
@@ -3551,44 +3556,65 @@ _S15_IMPL = "90322f146a56099a2e6647ba0c53e5195963d41c"
 _S15_IMPL_TREE = "fc3c7890284ca873f26c4b16a29e4bee2649714f"
 _S15_HEAD = "41d06a27ed657a1bf6460c638655f0a6de5447a0"
 _S15_TREE = "02b8c1244000820d2202be905d7325c35af4bc5c"
+_S15_SYNC = "be6ab2c14be34e49300444b4c6c5104e2f9bdf0a"
+_S15_MERGE = "3f3546a279c7f7020744bcbfee957de84ac2e136"
+_S15_MTREE = "c8f201bd4117fd210683fffbd06da8e1a695847a"
+_S15_BASE = "c525f037a23dae16a317fc12d449ce1586852ae1"
+# the pre-merge Stage-15 tokens: history only after PR #718
 _S15_CONTRACT = "`ACTIVE CONTRACT: STAGE 15 — INTEGRATED INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — SLICE 1`"
 _S15_STATUS = ("`STAGE 15 SLICE 1: OWNER-AUTHORIZED — IMPLEMENTATION COMPLETE CANDIDATE (implementation "
                + _S15_IMPL + ", F1 / IR01-A correction " + _S15_HEAD + ") — INDEPENDENT ARCHITECTURE + "
                "IMPLEMENTATION REVIEW CYCLE COMPLETE — F1-CLOSED — PR NOT OPENED / MERGE NOT PERFORMED`")
+_S15_HEAD_TOK = "`CURRENT REVIEWED PRODUCT HEAD: " + _S15_HEAD + " (tree " + _S15_TREE + ")`"
+# the post-merge tokens
+_S15_DELIVERED = "`STAGE 15 SLICE 1: DELIVERED — PR #718 — merge " + _S15_MERGE + "`"
+_S15_PM = "`POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`"
 _S15_REVIEW = ("`FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B "
                "CORRECTED / NO REMAINING MATERIAL DEFECT`")
-_S15_HEAD_TOK = "`CURRENT REVIEWED PRODUCT HEAD: " + _S15_HEAD + " (tree " + _S15_TREE + ")`"
+_S15_ANC = ("`STAGE 15 SLICE 1 ANCESTRY: implementation " + _S15_IMPL + ", F1 / IR01-A correction " + _S15_HEAD
+            + ", current-truth sync / PR head " + _S15_SYNC + ", merge " + _S15_MERGE + "`")
 _S15_ENTERED = "`STAGE 15: ENTERED / PARTIAL / NOT COMPLETE`"
 _S15_MARKER = "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE`"
-_S15_NOT = ("`FULL STAGE 15 / IRL: NOT AUTHORIZED`", "`IRL SCORING / LEVELS: NOT AUTHORIZED`",
+_S15_NOT = ("`ANOTHER STAGE-15 SLICE: NOT AUTHORIZED`", "`FULL STAGE 15 / IRL: NOT AUTHORIZED`",
+            "`IRL SCORING / LEVELS: NOT AUTHORIZED`",
             "`FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED`",
             "`ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED`", "`MECHATRONICS DOMAIN PACK: NOT AUTHORIZED`",
             "`ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED`")
-# A live surface may never: revert to NONE, present Stage-15 Slice 1 as delivered / merged, mark
-# Stage 15 or Stage 18 complete, claim integrated validation or independent evaluation of both
-# domains, authorize a Mechatronics Domain Pack / Robotics / full IRL / deployment, reopen F1, or
-# describe the independent review as a clean full regression.
-_S15_REVERSALS = (
-    r"`ACTIVE CONTRACT: NONE`", r"\*\*ACTIVE CONTRACT: NONE", r"`ACTIVE CONTRACT: (?!STAGE 15 — )",
-    r"STAGE 15 SLICE 1: DELIVERED", r"Stage 15[^.;]{0,60}Slice 1[^.;]{0,20}\b(is|was) (delivered|merged)\b",
-    r"(?<!NOT )\bMERGE PERFORMED\b", r"(?<!NOT )\bPR OPENED\b",
+_NONE718 = "`ACTIVE CONTRACT: NONE`"
+_NEXT_INC_NO = "`NEXT PRODUCT INCREMENT: NOT AUTHORIZED`"
+_NEXT_STEP = "`NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT`"
+# Pre-merge Stage-15 wording that may survive ONLY inside a visibly superseded note.
+_S15_PREMERGE_FORMS = (
+    r"ACTIVE CONTRACT: STAGE 15", r"`ACTIVE CONTRACT: (?!NONE`)", r"\bPR NOT OPENED\b", r"\bMERGE NOT PERFORMED\b",
+    r"PR #718[^.;]{0,40}\bnot (yet )?(opened|merged)", r"\bPR PENDING\b", r"REVIEW COMPLETE / PR PENDING",
+    r"IMPLEMENTATION:? COMPLETE CANDIDATE", r"IMPLEMENTED CANDIDATE",
+    r"Slice 1 \(implementation complete candidate\)", r"CURRENT REVIEWED PRODUCT HEAD",
+    r"CURRENT BOUNDED PRODUCT ACTION — Stage 15", r"current bounded product action is Stage 15")
+# A live surface may never reverse the post-#718 truth.
+_S15_CLOSE_REVERSALS = (
+    r"\bF1(?:-| — | )(OPEN|REMAINS OPEN)\b", r"\bF1 (is|remains) (open|unresolved)\b",
     r"STAGE 15: (?:ENTERED / (?:PARTIAL / )?)?COMPLETE`", r"STAGE 15 COMPLETE: YES",
     r"Stage 15\s+(is|was|has been)\s+(COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b",
     r"STAGE 18 COMPLETE: YES", r"STAGE 18: (?:ENTERED / (?:PARTIAL / )?)?COMPLETE`",
     r"Stage 18\s+(is|was|has been)\s+(COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b",
+    r"FULL STAGE 15 / IRL: AUTHORIZED",
+    r"(?<!no )(?<!not )full IRL (capability )?(is |was )?(authorized|complete|delivered|established)",
+    r"IRL SCORING / LEVELS: AUTHORIZED", r"(?<!no )(?<!not )\bIRL level \d",
+    r"\bIRL level (exists|is assigned|is achieved|was achieved)",
+    r"(?<!no )(?<!not )(integrated )?engineering compatibility (is |was |has been )?(established|confirmed|proven|verified)",
     r"(?<!no )(?<!not )integrated[- ](engineering )?validation (exists|is established|was performed|is complete)",
-    r"both (domains|parts) (were|have been) (independently )?(evaluated|validated)",
+    r"both (domains|parts) (were|have been|are) (independently )?(evaluated|validated)",
+    r"(other|non-focused) (part|domain)[^.;]{0,40}\b(has|have) been (independently )?(evaluated|validated)",
     r"MECHATRONICS DOMAIN PACK: AUTHORIZED",
     r"(?<!no )(?<!not )(?<!a )Mechatronics Domain Pack (is |was )?(authorized|exists|created)",
     r"ROBOTICS[^`]{0,60}: AUTHORIZED", r"(?<!not )(?<!no )Robotics implementation (is )?authorized",
-    r"FULL STAGE 15 / IRL: AUTHORIZED", r"IRL SCORING / LEVELS: AUTHORIZED",
-    r"(?<!no )(?<!not )\bIRL level \d",
-    r"DEPLOYMENT / RELEASE: AUTHORIZED",
-    r"\bF1(?:-| — | )(OPEN|REMAINS OPEN)\b", r"\bF1 (is|remains) (open|unresolved)\b",
-    r"independent (full )?regression[^.]{0,20}\b(PASS|passed|clean)\b",
-    r"reviewer (completed|achieved|ran) a clean full(-| )regression",
-    r"MECHATRONICS INTEGRATION: NOT AUTHORIZED",
-    r"CURRENT MASTER ROADMAP STAGE: Stage 15")
+    r"ANOTHER STAGE-15 SLICE: AUTHORIZED",
+    r"(?<!no )(?<!not )(another|next|further|second) Stage-15 slice (is )?(authorized|approved)",
+    r"NEXT PRODUCT INCREMENT: (?!NOT AUTHORIZED)", r"DEPLOYMENT / RELEASE: AUTHORIZED",
+    r"(?<!not )(?<!no )\b(deployment|release) (is )?authorized\b",
+    r"roadmap is complete\b(?<!NOT mean the roadmap is complete)", r"ROADMAP COMPLETE",
+    r"MECHATRONICS INTEGRATION: NOT AUTHORIZED", r"CURRENT MASTER ROADMAP STAGE: Stage 15")
+_S15_LIVE_FORBIDDEN = _S15_PREMERGE_FORMS + _S15_CLOSE_REVERSALS
 
 
 def test_post_716_no_active_contract_is_superseded_history():
@@ -3615,12 +3641,12 @@ def test_post_716_no_active_contract_is_superseded_history():
     # every routing surface preserves the old routing as a visible note right after its fence
     for path in (ROADMAP, CHECKLIST, CONTRACT):
         raw = _read(path)
-        after = re.sub(r"\s+", " ", raw[raw.index(_CLOSE % "current-routing"):][:1200])
+        after = re.sub(r"\s+", " ", raw[raw.index(_CLOSE % "current-routing"):][:2600])
         assert ("*(Superseded 2026-09-29 by Stage 15 — Integrated Invention Entry & Durable Subsystem "
                 "Composition — Slice 1, preserved so the change is visible rather than silent: the current "
                 "routing read \"**NO ACTIVE CONTRACT — post-PR-#716 (2026-09-29)") in after, path
     state_raw = _read(STATE)
-    after = re.sub(r"\s+", " ", state_raw[state_raw.index(_CLOSE % "current-position"):][:900])
+    after = re.sub(r"\s+", " ", state_raw[state_raw.index(_CLOSE % "current-position"):][:1800])
     assert ("*(Superseded 2026-09-29 by Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — "
             "Slice 1, preserved so the change is visible rather than silent: the current-position entry read "
             "\"`ACTIVE CONTRACT: NONE` — no product increment is currently authorized (post-PR-#716 …)\"") in after
@@ -3631,41 +3657,47 @@ def test_post_716_no_active_contract_is_superseded_history():
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     assert "the former post-PR-#716 `ACTIVE CONTRACT: NONE`" in claude
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    assert "ACTIVE CONTRACT: NONE" not in head
+    # the live NONE in the head is the post-#718 one; the post-#716 wording never returns
+    for stale in ("The last Owner-authorized bounded slice — Electrical / Electronics Technical Deepening Slice 1",
+                  "may evaluate an Electrical ↔ Mechanical / Mechatronics integration slice"):
+        assert stale not in head, stale
 
 
-def test_stage15_slice1_is_the_current_bounded_product_action_on_every_live_surface():
-    """Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 is the
-    ACTIVE CONTRACT: Owner-authorized, implementation complete candidate (original implementation
-    90322f1, F1 / IR01-A correction 41d06a2 = current reviewed product head), the one independent
-    architecture + implementation review cycle COMPLETE with F1 CLOSED, PR NOT OPENED / merge NOT
-    PERFORMED. Stage 15 is ENTERED / PARTIAL / NOT COMPLETE through this one slice (checkbox
-    unticked) while the MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18 (ENTERED / PARTIAL / NOT
-    COMPLETE, checkbox unticked). Full IRL, a Mechatronics Domain Pack, Robotics, deployment and
-    release stay NOT AUTHORIZED."""
+def test_stage15_slice1_is_delivered_history_and_its_rules_still_bind():
+    """Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 is DELIVERED
+    (PR #718, merge 3f3546a; post-merge identity / content verification PASS) with every reviewed rule
+    still recorded: ONE project → ONE scalar root `confirmed_domain` (the immutable initial analysis
+    focus) → subsystems, the unchanged classifier, the durable OWNER_STATED / UNVALIDATED composition,
+    the truthful scope disclosure, F1 CLOSED and S15-N1 / S15-N2 non-blocking. Its pre-merge contract
+    (ACTIVE CONTRACT: STAGE 15 …, PR NOT OPENED, merge NOT PERFORMED) survives ONLY as visibly
+    superseded history."""
     contract = _read(CONTRACT)
-    first = contract.index("## Current authority")
-    assert contract[first:].startswith(
-        "## Current authority — Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — "
-        "Slice 1 (Owner authorization, 2026-09-29)\n"), contract[first:first + 140]
     top = re.sub(r"\s+", " ", _section(contract, "current-authority--stage15-integrated-invention-entry-slice1"))
-    _needs(top, CONTRACT, "stage15 contract",
-           r"\*\*ACTIVE CONTRACT: STAGE 15 — INTEGRATED INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — "
-           r"SLICE 1\.\*\*",
+    _needs(top, CONTRACT, "stage15 delivered",
+           r"## Current authority — Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice "
+           r"1 \(Owner authorization, 2026-09-29\) — DELIVERED \(PR #718\); SUPERSEDED as current authority by the "
+           r"post-PR-#718 no-active-contract declaration",
+           r"\*\*No longer the current authority\.\*\* Stage 15 — Integrated Invention Entry & Durable Subsystem "
+           r"Composition — Slice 1 was delivered \(PR #718, merge `" + _S15_MERGE + r"`; post-merge identity / "
+           r"content verification PASS\)",
+           r"Every rule below still binds, and Stage 15 stays ENTERED / PARTIAL / NOT COMPLETE\.",
+           r"\*\(Superseded 2026-09-29, preserved so the change is visible rather than silent: this opened "
+           r"\"\*\*ACTIVE CONTRACT: STAGE 15 — INTEGRATED INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — SLICE "
+           r"1\.\*\*\" and recorded the slice as \"IMPLEMENTATION: COMPLETE CANDIDATE … F1-CLOSED / PR NOT OPENED / "
+           r"merge NOT PERFORMED\"\.\)\*",
            r"selected by the Owner-controlled Next-Increment Reassessment",
-           r"bounded re-entry into the already-open Stage-15 integration obligation and creates no new Master "
-           r"Roadmap Stage: Stage 15 is ENTERED / PARTIAL / NOT COMPLETE through exactly this slice "
-           r"\(checkbox unticked\)",
+           r"Stage 15 is ENTERED / PARTIAL / NOT COMPLETE through exactly this slice \(checkbox unticked\)",
            r"The MASTER ROADMAP SEQUENTIAL MARKER stays `CURRENT MASTER ROADMAP STAGE: Stage 18 — D13 / "
            r"CAP-01` \(Stage 18 ENTERED / PARTIAL / NOT COMPLETE, checkbox unticked\)",
-           r"does not complete, cancel or renumber Stage 18, does not make Stage 15 the sole incomplete stage "
-           r"and discharges no other residual",
-           r"OWNER AUTHORIZED: YES / IMPLEMENTATION: COMPLETE CANDIDATE — original implementation commit `"
-           + _S15_IMPL + r"` \(tree `" + _S15_IMPL_TREE + r"`",
+           r"does not complete, cancel or renumber Stage 18",
+           r"OWNER AUTHORIZED: YES / IMPLEMENTED — original implementation commit `" + _S15_IMPL + r"` \(tree `"
+           + _S15_IMPL_TREE + r"`; sole parent `" + _S15_BASE + r"`\)",
            r"F1 / IR01-A correction commit `" + _S15_HEAD + r"` \(sole parent `" + _S15_IMPL + r"`\)",
-           r"CURRENT REVIEWED PRODUCT HEAD `" + _S15_HEAD + r"` \(tree `" + _S15_TREE + r"`\)",
-           r"INDEPENDENT ARCHITECTURE \+ IMPLEMENTATION REVIEW CYCLE COMPLETE — F1-CLOSED / PR NOT OPENED / "
-           r"merge NOT PERFORMED / deployment and release NOT AUTHORIZED",
+           r"FINAL REVIEWED PRODUCT HEAD `" + _S15_HEAD + r"` \(tree `" + _S15_TREE + r"`\)",
+           r"INDEPENDENT ARCHITECTURE \+ IMPLEMENTATION REVIEW CYCLE COMPLETE — F1-CLOSED; product-attached "
+           r"current-truth sync / PR head `" + _S15_SYNC + r"` \(tree `" + _S15_MTREE + r"`; sole parent `"
+           + _S15_HEAD + r"`\) / DELIVERED \(PR #718, merge `" + _S15_MERGE + r"`; ordered parents `" + _S15_BASE
+           + r"`, `" + _S15_SYNC + r"`; merge tree = PR-head tree\) / deployment and release NOT AUTHORIZED",
            r"ONE PROJECT → ONE scalar root `confirmed_domain` → ZERO OR MORE SUBSYSTEMS; MULTI-DOMAIN AT "
            r"SUBSYSTEM GRAIN; NO peer root `domains = \[\.\.\.\]`",
            r"`confirmed_domain` is the IMMUTABLE INITIAL ANALYSIS FOCUS \(`mechanical` or "
@@ -3675,8 +3707,6 @@ def test_stage15_slice1_is_the_current_bounded_product_action_on_every_live_surf
            r"ONE additive `project_subsystems` sidecar in the existing SQLite store; no backfill; no "
            r"destructive migration; old projects keep zero subsystem rows; `ProjectRecordContract` unchanged; "
            r"subsystem declarations are NOT AssertionRecords",
-           r"project creation atomically covers the project envelope, accepted records where applicable, "
-           r"creation NeedRouting rows and the subsystem composition rows",
            r"the other part and the integration between the parts have NOT yet been independently evaluated "
            r"or validated; no automatic \"Mechatronics\" label",
            r"C\. FAIL — one material finding, F1 / P2 / IR01-A",
@@ -3685,87 +3715,49 @@ def test_stage15_slice1_is_the_current_bounded_product_action_on_every_live_surf
            r"NO REMAINING MATERIAL FINDING; the ONE required independent architecture \+ implementation review "
            r"cycle is COMPLETE; no second architecture review is required",
            r"author full regression 8790 passed / 2 skipped / 1 xfailed / 0 failed / 0 errors",
-           r"focused Stage-15 58 passed", r"mutation probes 2 / 2 caught",
-           r"Independent targeted evidence: 437 passed / 0 failed / 0 errors / 0 skipped",
            r"The independent full regression was ENVIRONMENT-LIMITED on Windows",
            r"the independent reviewer did NOT complete a clean full regression",
-           r"hosted CI on the eventual PR is the mandatory final full-suite merge gate",
+           r"hosted CI on the PR was the mandatory final full-suite merge gate — on PR #718 \(run 36597956066, "
+           r"head `" + _S15_SYNC + r"`\) CI required, Verify candidate and RIG fast feedback all passed before the "
+           r"merge",
            r"S15-N1 — stale `IdeaState\.subsystems` commentary",
            r"S15-N2 — the self-service structured export omits the subsystem composition — EXPORT-A — "
            r"ACCEPTABLE NON-BLOCKING OMISSION",
            r"subsystem names and functions are PRIVATE INVENTOR / PROJECT INFORMATION",
-           r"no current Technical Deepening subtask is authorized and this Stage-15 work authorizes no "
-           r"additional CAP-01 technical-depth slice",
-           r"\*\*Deferred / not authorized:\*\* full Stage-15 / IRL completion; IRL scoring / levels; full D4 "
-           r"compatibility evaluation",
-           r"a Mechatronics Domain Pack; Robotics implementation; a Robotics Domain Pack; IoT; Drone / "
-           r"Unmanned; Renewable; Satellite / Space",
+           r"\*\*Deferred / not authorized:\*\* another Stage-15 slice; full Stage-15 / IRL completion; IRL "
+           r"scoring / levels; full D4 compatibility evaluation",
            r"Mechatronics remains a cross-domain integration perspective first, NOT automatically a Domain Pack",
            r"a Robotics capability assessment precedes any decision among reuse, composition, extension, a "
            r"bounded reasoning layer, a genuine separate domain or deferral",
-           re.escape(_S15_CONTRACT), _tok(_S15_STATUS), _tok(_S15_REVIEW), _tok(_S15_HEAD_TOK),
+           r"\*\(Superseded 2026-09-29, preserved — this token line began \"" + re.escape(_S15_CONTRACT),
+           re.escape(_S15_DELIVERED), re.escape(_S15_PM), re.escape(_S15_REVIEW), re.escape(_S15_ANC),
            re.escape(_S15_ENTERED), re.escape(_S15_MARKER), *(re.escape(t) for t in _S15_NOT))
-    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "stage15 contract", *_S15_REVERSALS)
-    # every live surface: the Stage-15 current truth, the preserved Stage-18 marker, nothing wider
-    for path, block in _live_surfaces():
-        _needs(block, path, "stage15 live", _tok(_S15_CONTRACT), _tok(_S15_STATUS), _tok(_S15_REVIEW),
-               _tok(_S15_HEAD_TOK), _tok(_S15_ENTERED), _tok(_S15_MARKER),
-               _tok("`STAGE 18: ENTERED / PARTIAL / NOT COMPLETE`"), _tok(_NO_TD_SUBTASK), _tok(_TD1_NEXT_NO),
-               _tok(_MECH_BOUNDARY), _tok("`FULL CAP-01 / FULL STG: NOT AUTHORIZED`"),
-               _tok("`DEPLOYMENT / RELEASE: NOT AUTHORIZED`"), _tok(_EL_DELIVERED), _tok(_TD1_DELIVERED),
-               _tok(_MECH_DELIVERED), *(_tok(t) for t in _S15_NOT),
-               r"Stage\s+15\s+Slice\s+1\s+\(implementation\s+complete\s+candidate\)\.\s+One\s+genuine\s+"
-               r"invention\s+containing\s+both\s+a\s+Mechanical\s+part",
-               r"The\s+other\s+part\s+and\s+the\s+integration\s+between\s+the\s+parts\s+have\s+NOT\s+yet\s+"
-               r"been\s+independently\s+evaluated\s+or\s+validated")
-        _rejects(block, path, "stage15 live", *_S15_REVERSALS)
-    # the routing distinguishes the SEQUENTIAL MARKER (Stage 18) from the CURRENT BOUNDED ACTION
-    for path, routing in _surfaces("current-routing"):
-        _needs(routing, path, "stage15 routing",
-               r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18", r"`STAGE 18 STARTED: YES`",
-               r"`STAGE 18 COMPLETE: NO`",
-               r"\*\*CURRENT BOUNDED PRODUCT ACTION — Stage 15 / Integrated Invention Entry & Durable Subsystem "
-               r"Composition — Slice 1 \(a bounded re-entry into the already-open Stage-15 integration obligation, "
-               r"selected by the Owner-controlled Next-Increment Reassessment; no new Master Roadmap Stage; the "
-               r"MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18 — ENTERED / PARTIAL / NOT COMPLETE\):\*\*")
-        marker = re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18", routing).start()
-        action = routing.index("**CURRENT BOUNDED PRODUCT ACTION — Stage 15")
-        assert marker < action, path
-    state = _current(STATE, "current-position")
-    assert state.startswith(
-        " **Current position (2026-09-29): " + _S15_CONTRACT + " — current bounded product action: Stage 15 — "
-        "Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (one Owner-authorized bounded "
-        "product slice selected by the Owner-controlled Next-Increment Reassessment;"), state[:240]
-    for needle in ("MASTER ROADMAP SEQUENTIAL MARKER: Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE",
-                   "Stage 15 ENTERED / PARTIAL / NOT COMPLETE, checkbox unticked",
-                   "PR NOT OPENED — merge NOT PERFORMED",
-                   "F1 / IR01-A correction `" + _S15_HEAD + "` = current reviewed product head"):
-        assert needle in state, needle
-    # CLAUDE.md opens with the Stage-15 contract; the #716 principles stay live
+    live_top = re.sub(r"\*\(Superseded.*?\)\*", "", top)
+    _rejects(live_top, CONTRACT, "stage15 delivered", *_S15_LIVE_FORBIDDEN)
+    # every routing surface / the state file preserve the pre-merge routing as a visible note after the fence
+    for path in (ROADMAP, CHECKLIST, CONTRACT):
+        raw = _read(path)
+        after = re.sub(r"\s+", " ", raw[raw.index(_CLOSE % "current-routing"):][:1400])
+        assert ("*(Superseded 2026-09-29 by the post-PR-#718 closure, preserved so the change is visible rather "
+                "than silent: the current routing read \"**CURRENT BOUNDED PRODUCT ACTION — Stage 15 / Integrated "
+                "Invention Entry & Durable Subsystem Composition — Slice 1 (…):** `ACTIVE CONTRACT: STAGE 15 —") in after, path
+        assert "That was true until PR #718 merged (merge `" + _S15_MERGE + "`).)*" in after, path
+    state_raw = _read(STATE)
+    after = re.sub(r"\s+", " ", state_raw[state_raw.index(_CLOSE % "current-position"):][:900])
+    assert ("*(Superseded 2026-09-29 by the post-PR-#718 closure, preserved so the change is visible rather than "
+            "silent: the current-position entry read \"" + _S15_CONTRACT + " — current bounded product action:") in after
+    flat_checklist = _flat(CHECKLIST)
+    assert ("*(Superseded 2026-09-29 by the post-PR-#718 closure, preserved — was: \"**CURRENT SUBTASK:** STAGE 15 "
+            "— INTEGRATED INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — SLICE 1 (current bounded product "
+            "action; …)") in flat_checklist
+    raw_checklist = _read(CHECKLIST)
+    for stale in (_S15_CONTRACT, _S15_STATUS, _S15_HEAD_TOK):
+        assert re.search(r"^" + re.escape(stale.strip("`")) + r"$", raw_checklist, re.M) is None, stale
+    # CLAUDE.md: the pre-merge contract is a named superseded declaration; the continuity rules still bind
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
-    head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    assert head.startswith("## Current authority **ACTIVE CONTRACT: STAGE 15 — INTEGRATED INVENTION ENTRY & "
-                           "DURABLE SUBSYSTEM COMPOSITION — SLICE 1.**"), head[:160]
-    for needle in ("Stage 15 is ENTERED / PARTIAL / NOT COMPLETE through exactly this slice (checkbox unticked); "
-                   "the MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18 — ENTERED / PARTIAL / NOT COMPLETE "
-                   "(checkbox unticked)",
-                   "the classifier is unchanged (AMBIGUOUS_TIE ≠ GENUINE MULTI-DOMAIN; MULTI_DOMAIN_NEEDS_D4 is "
-                   "not manufactured)",
-                   "The other part and the integration between the parts have NOT yet been independently "
-                   "evaluated or validated",
-                   "original implementation `" + _S15_IMPL + "`",
-                   "F1 / IR01-A correction `" + _S15_HEAD + "` (current reviewed product head",
-                   "F1-CLOSED, final targeted PASS WITH NON-BLOCKING OBSERVATIONS / PR NOT OPENED / merge NOT "
-                   "PERFORMED / deployment and release NOT AUTHORIZED",
-                   "a Mechatronics Domain Pack, Robotics, IoT, Drone / Unmanned, Renewable and Satellite / Space "
-                   "stay NOT AUTHORIZED",
-                   "this Stage-15 work authorizes no additional CAP-01 technical depth",
-                   "the current bounded product action is Stage 15 — Integrated Invention Entry & Durable "
-                   "Subsystem Composition — Slice 1, which re-enters the already-open Stage 15",
-                   "Stage 18 remains STARTED / PARTIAL / NOT COMPLETE"):
-        assert needle in head, needle
-    for pat in _S15_REVERSALS:
-        assert re.search(pat, head, re.I | re.S) is None, pat
+    assert ("*(Superseded current-authority declarations — the former Stage 15 — Integrated Invention Entry & "
+            "Durable Subsystem Composition — Slice 1 (pre-merge, \"PR NOT OPENED / merge NOT PERFORMED\"), the "
+            "former post-PR-#716 `ACTIVE CONTRACT: NONE`,") in claude
     cont = claude[claude.index("## Lead execution continuity"):claude.index("### Lead Operating Method")]
     for needle in ("NO TECHNICAL DEPTH WITHOUT SOURCE AUTHORITY.", "UNKNOWN RIGHTS = DO NOT INGEST BY DEFAULT.",
                    "AI ANSWER ≠ SOURCE LICENSE.", "THE USER SUBMITS AN INVENTION, NOT A DOMAIN",
@@ -3774,68 +3766,251 @@ def test_stage15_slice1_is_the_current_bounded_product_action_on_every_live_surf
                    "a Robotics capability assessment precedes any Robotics decision",
                    "that reassessment selected Stage 15 — Integrated Invention Entry & Durable Subsystem "
                    "Composition — Slice 1, the FIRST real bounded Mechanical ↔ Electrical / Electronics "
-                   "integrated-invention product slice; it performs no full engineering integration analysis",
-                   "no Stage 15 implementation beyond the bounded Integrated Invention Entry & Durable Subsystem "
-                   "Composition Slice 1 is authorized now",
+                   "integrated-invention product slice, delivered in PR #718; it performs no full engineering "
+                   "integration analysis",
+                   "no Stage 15 implementation beyond the delivered bounded Integrated Invention Entry & Durable "
+                   "Subsystem Composition Slice 1 (PR #718) is authorized now",
                    "is not a Mechatronics domain and applies no Mechatronics label",
                    "**WATCH — Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 "
                    "(non-blocking, no repair cycle).**",
                    "(S15-N1) STALE `IdeaState.subsystems` COMMENTARY",
                    "(S15-N2) EXPORT OMITS THE COMPOSITION: EXPORT-A — ACCEPTABLE NON-BLOCKING OMISSION",
-                   "The independent FULL regression was ENVIRONMENT-LIMITED on Windows"):
+                   "The independent FULL regression was ENVIRONMENT-LIMITED on Windows",
+                   "the slice is DELIVERED (PR #718, merge `" + _S15_MERGE[:7] + "`)",
+                   "(O-3) carried invention text / reclassification — NO MATERIAL FINDING",
+                   "(O-4) integrated-entry / clarification UX — NO MATERIAL FINDING",
+                   "S15-N1 / S15-N2 are not fixed now; no repair cycle"):
         assert needle in cont, needle
-    # the checklist: the Stage-15 subtask, the tokens, the plain-text mirrors
+    assert "hosted CI on the PR is the mandatory final full-suite merge gate" not in cont
+    # the register records the delivered slice as NOT a CAP-01 slice
+    register = _flat(CAPABILITIES)
+    assert ("Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (DELIVERED — PR #718 "
+            "— merge `" + _S15_MERGE + "`; post-merge identity / content verification PASS; independent "
+            "architecture + implementation review cycle COMPLETE — F1-CLOSED; no product increment is currently "
+            "authorized) is NOT a CAP-01 slice") in register
+    for pat in _S15_PREMERGE_FORMS:
+        assert re.search(pat, register) is None, pat
+    assert re.search(r"CAP-01[^|]{0,200}\| *RECORDED — AUTHORIZED", register) is None
+
+
+def test_post_718_no_active_contract_is_the_current_truth_on_every_live_surface():
+    """After PR #718 no product increment is authorized: `ACTIVE CONTRACT: NONE`. This does NOT mean the
+    roadmap, Stage 15, Stage 18 or integration is complete or that a next slice is authorized. Stage 15
+    stays ENTERED / PARTIAL / NOT COMPLETE (checkbox unticked) with wider Stage-15 / IRL work deferred;
+    the MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18 (ENTERED / PARTIAL / NOT COMPLETE, checkbox
+    unticked); the next step is a read-only LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT that
+    pre-authorizes nothing."""
+    contract = _read(CONTRACT)
+    first = contract.index("## Current authority")
+    assert contract[first:].startswith("## Current authority — post-PR-#718: no active contract (2026-09-29)\n"), (
+        contract[first:first + 140])
+    top = re.sub(r"\s+", " ", _section(contract, "current-authority--post-pr-718-no-active-contract"))
+    _needs(top, CONTRACT, "post-718 none",
+           r"\*\*ACTIVE CONTRACT: NONE\.\*\* NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED\. Stage 15 — Integrated "
+           r"Invention Entry & Durable Subsystem Composition — Slice 1, the last Owner-authorized bounded product "
+           r"slice, is DELIVERED \(PR #718, merge `" + _S15_MERGE + r"`; post-merge identity / content "
+           r"verification PASS",
+           r"historical delivered work never fills the active-contract slot",
+           r"This does NOT mean the roadmap, Stage 15, Stage 18 or integration is complete, or that a next slice "
+           r"is authorized\.",
+           r"The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT — read-only planning / selection over "
+           r"live repository and product evidence until the Owner separately authorizes another product increment",
+           r"\*\*ANCESTRY\*\* \| original implementation `" + _S15_IMPL + r"` → F1 / IR01-A correction `"
+           + _S15_HEAD + r"` → product-attached current-truth sync / PR head `" + _S15_SYNC + r"` → merge `"
+           + _S15_MERGE + r"` \(ordered parents `" + _S15_BASE + r"`, `" + _S15_SYNC + r"`; merge tree `"
+           + _S15_MTREE + r"` = PR-head tree\)",
+           r"initial review C\. FAIL — one material finding F1 / P2 / IR01-A; correction F1-CLOSED; targeted "
+           r"re-review B\. TARGETED PASS WITH NON-BLOCKING OBSERVATIONS; IR01-B — CORRECTED / NO REMAINING "
+           r"MATERIAL DEFECT; EXPORT-A — ACCEPTABLE NON-BLOCKING OMISSION; NO REMAINING MATERIAL FINDING; review "
+           r"cycle COMPLETE; no second architecture review required",
+           r"the Owner confirms the two parts genuinely belong to the same invention, identifies one Mechanical "
+           r"part and one Electrical / Electronic part and selects one initial analysis focus",
+           r"InventorAI durably preserves both subsystem identities, the Owner-stated part names / functions, the "
+           r"OWNER_STATED / UNVALIDATED composition and the selected initial analysis focus",
+           r"the project cold-loads, reconstructs and resumes with the same composition and identities",
+           r"disclose that only the selected initial focus is currently evaluated and that the other part and "
+           r"their integration have NOT yet been independently evaluated or validated",
+           r"`confirmed_domain` is the IMMUTABLE INITIAL ANALYSIS FOCUS for this slice — NOT a claim that the "
+           r"entire invention belongs exclusively to that domain; no focus-switch behaviour and no historical "
+           r"answer reinterpretation exist",
+           r"AMBIGUOUS_TIE remains ambiguity, AMBIGUOUS_TIE ≠ GENUINE MULTI-DOMAIN, MULTI_DOMAIN_NEEDS_D4 is not "
+           r"manufactured",
+           r"\*\*STAGE 15\*\* \| \*\*ENTERED / PARTIAL / NOT COMPLETE\*\*; its checkbox stays UNTICKED; the "
+           r"Phase-7 integration / interface foundation still EXISTS",
+           r"it does NOT complete the wider Stage-15 obligation; wider Stage-15 work stays DEFERRED / NOT "
+           r"AUTHORIZED \(broader per-project integration evidence; wider interface / dependency evidence; "
+           r"subsystem / interface integration evidence beyond Slice 1; wider durable subsystem semantics beyond "
+           r"the delivered bounded use case; inbound / write-import; async / vendor integration; T2-E writer "
+           r"reachability\); no full IRL capability, no IRL level, no complete integration readiness and no "
+           r"engineering compatibility is claimed",
+           r"`CURRENT MASTER ROADMAP STAGE: Stage 18 — D13 / CAP-01` · `STAGE 18 STARTED: YES` · `STAGE 18 "
+           r"COMPLETE: NO` · \*\*ENTERED / PARTIAL / NOT COMPLETE\*\*",
+           r"no current Technical Deepening subtask; no additional CAP-01 implementation authorized; FULL CAP-01 / "
+           r"FULL STG NOT AUTHORIZED; the Stage-15 delivery does not complete, cancel or renumber Stage 18",
+           r"it pre-authorizes no further Stage-15 slice, interface engineering, Robotics assessment "
+           r"implementation, IoT, other Domain Pack or other Technical Deepening slice",
+           r"no Mechatronics Domain Pack exists or is authorized",
+           r"Robotics is NOT started automatically and stays a future capability assessment only — a Robotics "
+           r"capability assessment must precede any later decision among reuse, composition, extension, a bounded "
+           r"reasoning layer, a separate domain or deferral; this closure authorizes none of those",
+           r"S15-N1 — NON-BLOCKING: `IdeaState\.subsystems` commentary is stale regarding persistence",
+           r"S15-N2 — EXPORT-A / NON-BLOCKING: the self-service structured export omits the subsystem composition",
+           r"O-3 carried invention text / reclassification — NO MATERIAL FINDING\. O-4 integrated-entry / "
+           r"clarification UX — NO MATERIAL FINDING\. No repair cycle",
+           r"NO SOURCE INGESTION WITHOUT A KNOWN AND COMPATIBLE USE BASIS; UNKNOWN RIGHTS = DO NOT INGEST BY "
+           r"DEFAULT; AI ANSWER ≠ SOURCE LICENSE; THE USER SUBMITS AN INVENTION, NOT A DOMAIN; NOT EVERY NAMED "
+           r"TECHNOLOGY REQUIRES A DOMAIN PACK",
+           r"subsystem names / functions stay PRIVATE INVENTOR / PROJECT INFORMATION; external transmission of "
+           r"real invention / project / user data NOT AUTHORIZED",
+           re.escape(_NONE718), re.escape(_NEXT_INC_NO), re.escape(_NEXT_STEP), re.escape(_S15_DELIVERED),
+           re.escape(_S15_PM), re.escape(_S15_REVIEW), re.escape(_S15_ANC), re.escape(_S15_ENTERED),
+           re.escape(_S15_MARKER), *(re.escape(t) for t in _S15_NOT))
+    _rejects(top, CONTRACT, "post-718 none", *_S15_LIVE_FORBIDDEN)
+    # every live surface carries the post-#718 truth and nothing wider
+    for path, block in _live_surfaces():
+        _needs(block, path, "post-718 live", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP),
+               _tok(_S15_DELIVERED), _tok(_S15_PM), _tok(_S15_REVIEW), _tok(_S15_ANC), _tok(_S15_ENTERED),
+               _tok(_S15_MARKER), _tok(_NO_TD_SUBTASK), _tok(_EL_DELIVERED), *(_tok(t) for t in _S15_NOT),
+               r"Stage\s+15\s+Slice\s+1\s+\(delivered\)\.\s+One\s+genuine\s+invention\s+containing\s+both\s+a\s+"
+               r"Mechanical\s+part\s+and\s+an\s+Electrical\s+/\s+Electronics\s+part\s+can\s+enter\s+InventorAI\s+"
+               r"as\s+ONE\s+project",
+               r"Only\s+the\s+selected\s+initial\s+analysis\s+focus\s+is\s+currently\s+evaluated\.\s+The\s+other\s+"
+               r"part\s+and\s+the\s+integration\s+between\s+the\s+parts\s+have\s+NOT\s+yet\s+been\s+independently\s+"
+               r"evaluated\s+or\s+validated",
+               r"Delivered\s+in\s+PR\s+#718\s+\(merge\s+`" + _S15_MERGE + r"`;\s+original\s+implementation\s+`"
+               + _S15_IMPL + r"`,\s+F1\s+/\s+IR01-A\s+correction\s+`" + _S15_HEAD + r"`\s+and\s+product-attached\s+"
+               r"current-truth\s+sync\s+/\s+PR\s+head\s+`" + _S15_SYNC + r"`\s+preserved\s+in\s+ancestry\)",
+               r"F1-CLOSED\s+\(IR01-B\s+—\s+CORRECTED\s+/\s+NO\s+REMAINING\s+MATERIAL\s+DEFECT;\s+EXPORT-A\s+—\s+"
+               r"ACCEPTABLE\s+NON-BLOCKING\s+OMISSION\)",
+               r"S15-N1\s+/\s+S15-N2\s+stay\s+non-blocking")
+        _rejects(block, path, "post-718 live", *_S15_LIVE_FORBIDDEN)
+    # the routing: the SEQUENTIAL MARKER (Stage 18) precedes the NONE declaration; nothing is pre-authorized
+    for path, routing in _surfaces("current-routing"):
+        _needs(routing, path, "post-718 routing", _tok(_TD1_DELIVERED), _tok(_MECH_DELIVERED), _tok(_TD1_NEXT_NO),
+               _tok(_MECH_BOUNDARY), _tok("`STAGE 18: ENTERED / PARTIAL / NOT COMPLETE`"),
+               _tok("`FULL CAP-01 / FULL STG: NOT AUTHORIZED`"), _tok("`DEPLOYMENT / RELEASE: NOT AUTHORIZED`"),
+               r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18", r"`STAGE 18 STARTED: YES`",
+               r"`STAGE 18 COMPLETE: NO`",
+               r"\*\*NO ACTIVE CONTRACT — post-PR-#718 \(2026-09-29\); Stage 15 and Stage 18 both stay ENTERED / "
+               r"PARTIAL / NOT COMPLETE:\*\*",
+               r"This does NOT mean the roadmap, Stage 15, Stage 18 or integration is complete, or that a next "
+               r"slice is authorized",
+               r"The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT: read-only planning / selection "
+               r"over live repository and product evidence until the Owner separately authorizes another product "
+               r"increment\. It pre-authorizes no further Stage-15 slice, interface engineering, Robotics "
+               r"assessment implementation, IoT, other Domain Pack or Technical Deepening slice\.",
+               r"\*\*DELIVERED — Stage 15 / Integrated Invention Entry & Durable Subsystem Composition — Slice 1 "
+               r"\(a bounded re-entry into the already-open Stage-15 integration obligation; no new Master Roadmap "
+               r"Stage; the MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18\):\*\*")
+        marker = re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18", routing).start()
+        none = routing.index("**NO ACTIVE CONTRACT — post-PR-#718")
+        assert marker < none, path
+    state = _current(STATE, "current-position")
+    assert state.startswith(
+        " **Current position (2026-09-29): `ACTIVE CONTRACT: NONE` — no product increment is currently authorized "
+        "(post-PR-#718; this does NOT mean the roadmap, Stage 15, Stage 18 or integration is complete, and no next "
+        "slice is authorized); Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 — "
+        "delivered, PR #718 (merge `" + _S15_MERGE + "`; post-merge identity / content verification PASS;"), state[:300]
+    for needle in ("Stage 15 stays ENTERED / PARTIAL / NOT COMPLETE, checkbox unticked (wider Stage-15 work DEFERRED "
+                   "/ NOT AUTHORIZED;",
+                   "MASTER ROADMAP SEQUENTIAL MARKER: Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE",
+                   "next step: a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT — read-only planning / selection until "
+                   "the Owner separately authorizes another product increment"):
+        assert needle in state, needle
+    # CLAUDE.md opens with the post-#718 NONE; the head carries the delivered truth and nothing wider
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
+    assert head.startswith(
+        "## Current authority **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The last "
+        "Owner-authorized bounded product slice — Stage 15 — Integrated Invention Entry & Durable Subsystem "
+        "Composition — Slice 1 — is DELIVERED (PR #718, merge `" + _S15_MERGE + "`; post-merge identity / content "
+        "verification PASS;"), head[:260]
+    for needle in ("original implementation `" + _S15_IMPL + "`, F1 / IR01-A correction `" + _S15_HEAD + "`, "
+                   "product-attached current-truth sync / PR head `" + _S15_SYNC + "`",
+                   "initial C. FAIL with one material finding F1 / P2 / IR01-A, F1-CLOSED, targeted PASS WITH "
+                   "NON-BLOCKING OBSERVATIONS; IR01-B — CORRECTED / NO REMAINING MATERIAL DEFECT; EXPORT-A — "
+                   "ACCEPTABLE NON-BLOCKING OMISSION; no remaining material finding",
+                   "This does NOT mean the roadmap, Stage 15, Stage 18 or integration is complete, or that a next "
+                   "slice is authorized",
+                   "The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT — read-only planning / selection "
+                   "over live repository and product evidence until the Owner separately authorizes another product "
+                   "increment; it pre-authorizes no further Stage-15 slice, interface engineering, Robotics "
+                   "assessment implementation, IoT, other Domain Pack or Technical Deepening slice",
+                   "the session, HTML report and PDF disclose that only the selected initial focus is currently "
+                   "evaluated. The other part and the integration between the parts have NOT yet been "
+                   "independently evaluated or validated",
+                   "the IMMUTABLE INITIAL ANALYSIS FOCUS for this slice, not a claim that the entire invention "
+                   "belongs exclusively to that domain",
+                   "MULTI-DOMAIN AT SUBSYSTEM GRAIN; NO peer root `domains = [...]`; no focus switch and no "
+                   "historical answer reinterpretation",
+                   "(AMBIGUOUS_TIE ≠ GENUINE MULTI-DOMAIN; MULTI_DOMAIN_NEEDS_D4 is not manufactured)",
+                   "Stage 15 stays ENTERED / PARTIAL / NOT COMPLETE (checkbox unticked): the Phase-7 integration / "
+                   "interface foundation still exists and wider Stage-15 work stays DEFERRED / NOT AUTHORIZED",
+                   "Another Stage-15 slice, full Stage 15 / IRL, IRL scoring / levels",
+                   "a Mechatronics Domain Pack, Robotics, IoT, Drone / Unmanned, Renewable and Satellite / Space "
+                   "stay NOT AUTHORIZED; deployment and release NOT AUTHORIZED",
+                   "The MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18 — D13 / CAP-01 (STAGE 18 STARTED: YES; "
+                   "STAGE 18 COMPLETE: NO; ENTERED / PARTIAL / NOT COMPLETE, checkbox unticked)",
+                   "Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 is delivered "
+                   "(PR #718); Stage 15 stays ENTERED / PARTIAL / NOT COMPLETE through that one slice while the "
+                   "Master Roadmap sequential marker stays Stage 18; ACTIVE CONTRACT: NONE — no product increment "
+                   "and no other Stage is authorized",
+                   "Stage 18 remains STARTED / PARTIAL / NOT COMPLETE"):
+        assert needle in head, needle
+    for pat in _S15_LIVE_FORBIDDEN:
+        assert re.search(pat, head, re.I | re.S) is None, pat
+    # the checklist: the NONE subtask, the tokens, the plain-text mirrors
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
-    marker = ("**CURRENT SUBTASK:** STAGE 15 — INTEGRATED INVENTION ENTRY & DURABLE SUBSYSTEM COMPOSITION — "
-              "SLICE 1 (current bounded product action; the Master Roadmap sequential marker stays Stage 18)")
+    marker = ("**CURRENT SUBTASK:** NONE (post-PR-#718) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — NO CURRENT "
+              "AUTHORIZED TECHNICAL DEEPENING SUBTASK —")
     assert flat_checklist.count(marker) == 1
     subtask = flat_checklist[flat_checklist.index(marker):]
     subtask = subtask[:subtask.index("*(Superseded")]
-    _needs(subtask, CHECKLIST, "stage15 subtask", _tok(_S15_CONTRACT), _tok(_S15_STATUS), _tok(_S15_REVIEW),
-           _tok(_S15_ENTERED), _tok(_S15_MARKER), _tok(_NO_TD_SUBTASK), *(_tok(t) for t in _S15_NOT))
-    _rejects(subtask, CHECKLIST, "stage15 subtask", *_S15_REVERSALS)
-    for line in [t.strip("`") for t in (_S15_CONTRACT, _S15_STATUS, _S15_REVIEW, _S15_HEAD_TOK, _S15_ENTERED,
-                                        _S15_MARKER) + _S15_NOT]:
+    _needs(subtask, CHECKLIST, "post-718 subtask", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP),
+           _tok(_S15_DELIVERED), _tok(_S15_PM), _tok(_S15_REVIEW), _tok(_S15_ANC), _tok(_S15_ENTERED),
+           _tok(_S15_MARKER), _tok(_NO_TD_SUBTASK), *(_tok(t) for t in _S15_NOT))
+    _rejects(subtask, CHECKLIST, "post-718 subtask", *_S15_LIVE_FORBIDDEN)
+    for line in [t.strip("`") for t in (_NONE718, _NEXT_INC_NO, _NEXT_STEP, _S15_DELIVERED, _S15_REVIEW, _S15_ANC,
+                                        _S15_ENTERED, _S15_MARKER) + _S15_NOT]:
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
-    for stale in ("ACTIVE CONTRACT: NONE", "ELECTRICAL ↔ MECHANICAL / MECHATRONICS INTEGRATION: NOT AUTHORIZED",
-                  "MECHATRONICS / ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED"):
-        assert re.search(r"^" + re.escape(stale) + r"$", raw_checklist, re.M) is None, stale
-    assert ("STAGE 15: ENTERED / PARTIAL / NOT COMPLETE THROUGH ONE BOUNDED SLICE — Phase-7"
-            in raw_checklist)
-    # the roadmap: 45 stages; Stage 15 and Stage 18 both unticked; both rows record the bounded truth
+    assert "STAGE 15: ENTERED / PARTIAL / NOT COMPLETE THROUGH ONE BOUNDED SLICE — Phase-7" in raw_checklist
+    assert ("Stage 15 entered / partial / not complete — Integrated Invention Entry & Durable Subsystem Composition "
+            "Slice 1 delivered (PR #718, merge " + _S15_MERGE + ";") in raw_checklist
+    # the roadmap: 45 stages; Stage 15 and Stage 18 both unticked; both rows record the delivered truth
     roadmap = _read(ROADMAP)
     numbers = [int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)]
     assert sorted(numbers) == list(range(1, 46)), numbers
+    for n in ("15", "18"):
+        assert re.search(r"^- \[x\] \*\*" + n + r" — ", roadmap, re.M) is None, n
     [row15] = re.findall(r"^- \[ \] \*\*15 — IRL-compatible view:\*\*.*$", roadmap, re.M)
     live15 = re.sub(r"\*\(Superseded.*?\)\*", "", row15)
     for needle in ("**ENTERED / PARTIAL / NOT COMPLETE (2026-09-29) through ONE bounded slice:** Stage 15 — "
                    "Integrated Invention Entry & Durable Subsystem Composition — Slice 1",
-                   "implementation complete candidate `" + _S15_HEAD + "`",
+                   "— DELIVERED — PR #718 — merge `" + _S15_MERGE + "` (post-merge identity / content verification "
+                   "PASS; reviewed product head `" + _S15_HEAD + "`",
+                   "it establishes no full IRL capability, no complete integration readiness and no engineering "
+                   "compatibility",
                    "it claims no IRL level, wider Stage-15 work stays DEFERRED / NOT AUTHORIZED, the Master "
                    "Roadmap sequential marker stays Stage 18 and the checkbox stays unticked"):
         assert needle in live15, needle
-    for pat in _S15_REVERSALS:
+    for pat in _S15_LIVE_FORBIDDEN:
         assert re.search(pat, live15, re.I) is None, pat
     [row18] = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
-    live18 = row18[:row18.index("*(Superseded")]
-    for needle in ("no current authorized Technical Deepening subtask (the current bounded product action is "
-                   "Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1, outside "
-                   "Stage 18)",
-                   "the Lead-controlled Next-Increment Reassessment then selected Stage 15 — Integrated Invention "
-                   "Entry & Durable Subsystem Composition — Slice 1 as the current bounded product action "
-                   "(2026-09-29), which leaves Stage 18 ENTERED / PARTIAL / NOT COMPLETE and authorizes no "
-                   "further CAP-01 work; the checkbox stays unticked"):
+    live18 = re.sub(r"\*\(Superseded.*?\)\*", "", row18)
+    for needle in ("no current authorized Technical Deepening subtask (Stage 15 — Integrated Invention Entry & "
+                   "Durable Subsystem Composition — Slice 1, outside Stage 18, is delivered in PR #718 and no "
+                   "product increment is currently authorized)",
+                   "delivered in PR #718 (merge `" + _S15_MERGE + "`), which leaves Stage 18 ENTERED / PARTIAL / "
+                   "NOT COMPLETE and authorizes no further CAP-01 work; no product increment is currently "
+                   "authorized and the next step is a Lead-controlled Next-Increment Reassessment; the checkbox "
+                   "stays unticked"):
         assert needle in live18, needle
-    assert "ACTIVE CONTRACT: NONE" not in live18
-    assert ("**Stage 15 is ENTERED / PARTIAL / NOT COMPLETE (2026-09-29) through ONE bounded slice**"
-            in _flat(ROADMAP))
-    # the register: Stage 15 Slice 1 is recorded as NOT a CAP-01 slice; NONE is recorded nowhere
-    register = _flat(CAPABILITIES)
-    assert ("Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (the current "
-            "bounded product action: implementation complete candidate `" + _S15_HEAD + "`") in register
-    assert "is NOT a CAP-01 slice" in register
-    assert "ACTIVE CONTRACT: NONE" not in register
-    assert re.search(r"CAP-01[^|]{0,200}\| *RECORDED — AUTHORIZED", register) is None
+    for pat in _S15_PREMERGE_FORMS:
+        assert re.search(pat, live18) is None, pat
+    group = _flat(ROADMAP)
+    assert ("**Stage 15 is ENTERED / PARTIAL / NOT COMPLETE (2026-09-29) through ONE bounded slice** — Integrated "
+            "Invention Entry & Durable Subsystem Composition Slice 1 (DELIVERED — PR #718 — merge `" + _S15_MERGE
+            + "`; post-merge identity / content verification PASS;") in group
 
 
 def test_source_ip_boundary_invention_first_and_portfolio_reassessment_are_continuity_only():
@@ -3903,7 +4078,8 @@ def test_source_ip_boundary_invention_first_and_portfolio_reassessment_are_conti
     assert "Robotics is NOT automatically a new Domain Pack" in live28
     assert "Mechatronics is first treated as a cross-domain integration perspective" in rows["15"]
     live15 = re.sub(r"\*\(Superseded.*?\)\*", "", rows["15"])
-    assert "no Stage 15 implementation is authorized beyond ONE bounded slice" in live15
+    assert ("no Stage 15 implementation is authorized beyond the ONE delivered bounded slice (no further "
+            "Stage-15 slice is authorized)") in live15
     assert "no Stage 15 implementation is authorized now" not in live15
     assert ("that reassessment selected Stage 15 Slice 1, the FIRST real bounded Mechanical ↔ Electrical / "
             "Electronics integrated-invention product slice, which performs no full engineering integration "
@@ -3998,8 +4174,8 @@ def test_read_before_build_and_multi_domain_deepening_are_operating_method_not_g
                    "cross-domain dependencies, integration evidence and durable subsystem identity / "
                    "persistence when required",
                    "no Stage 15 implementation is authorized beyond the bounded Stage 15 — Integrated "
-                   "Invention Entry & Durable Subsystem Composition — Slice 1 (the current bounded product "
-                   "action) and no new integration Stage or capability is created",
+                   "Invention Entry & Durable Subsystem Composition — Slice 1 (delivered, PR #718; no further "
+                   "Stage-15 slice is authorized) and no new integration Stage or capability is created",
                    "Portfolio sequencing is RE-ASSESSED, not a permanently hard-coded order",
                    "Add → Qualify → Activate → Establish Useful Baseline → Deepen — a preferred "
                    "model, not a universal mandatory lifecycle",
