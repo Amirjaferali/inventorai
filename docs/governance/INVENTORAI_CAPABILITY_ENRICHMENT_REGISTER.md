@@ -118,7 +118,8 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   Subsystem Composition — Slice 1 (DELIVERED — PR #718 — merge `3f3546a279c7f7020744bcbfee957de84ac2e136`;
   post-merge identity / content verification PASS; independent architecture + implementation review cycle
   COMPLETE — F1-CLOSED) is NOT a CAP-01 slice, and neither is Stage 15 — Subsystem Interface Declaration &
-  Verification Preparation — Slice 2 (the current Owner-authorized implementation candidate, not merged: an
+  Verification Preparation — Slice 2 (delivered, PR #720, merge `2418f7e`; no product increment is currently
+  authorized: an
   Owner-declared interaction between the two parts with ONE verification-preparation step; no technical
   depth, no source knowledge): it records one Owner-declared
   Mechanical + Electrical / Electronics composition and one initial analysis focus, and adds no CAP-01
