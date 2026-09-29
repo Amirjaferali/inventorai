@@ -2,24 +2,27 @@
 
 ## Current authority
 
-**ACTIVE CONTRACT: ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1 — BASIC ELECTRICAL REFERENCE FUNDAMENTALS.**
-ONE Owner-authorized bounded slice inside the already-entered Stage 18 (D13 / CAP-01; no new Master
-Roadmap Stage; Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06 NOT
-ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED). Electrical / Electronics only: for the exact CURRENT
-canonical `electronics_electrical` `PHYSICAL_FEASIBILITY` gap in exact state OPEN or PARTIAL, the report /
-deliverable and PDF may show three source-backed reference fundamentals — (V = I × R), (P = V × I) and SI
-unit discipline (V / A / Ω / W) — from electronics_electrical:PR004–PR007 (DOE-HDBK-1011/1-92, archived —
-canceled April 2016, historical / fundamentals reference only; NIST SP 811 Appendix B.9 unit facts only).
-Reference fundamentals only: no applicability inference, no project calculation, no gap closure, no
-compatibility verdict, no safe-limit determination, no component / power / battery sizing, no
-circuit-operation proof, no electrical-safety conclusion, no readiness / progression / validation effect,
-and no AI / LLM / provider call. Status: OWNER-AUTHORIZED / IMPLEMENTED — candidate
-`10e2210dc2f427f2feeee80ea808ca8d91387ad0` (tree `b4b9831e36b386919569922aa365d61b152c8a68`) / INDEPENDENT
-NON-AUTHORING REVIEW COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS / PR NOT OPENED / merge NOT PERFORMED /
-deployment and release NOT AUTHORIZED. No next slice beyond this Electrical slice is authorized;
-Mechatronics / Robotics / IoT / Drone / Renewable / Satellite implementation and Stage 15 / IRL
-implementation are NOT AUTHORIZED; no further CAP-01 implementation is authorized beyond the delivered
-Mechanical slices and the current Electrical slice.
+**ACTIVE CONTRACT: NONE.** No product increment is currently authorized. The last Owner-authorized
+bounded slice — Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference
+Fundamentals — is DELIVERED (PR #716, merge `11564b235b056aaf12ca9d5596418f43a2d7e61c`; post-merge identity / content
+verification PASS; independent non-authoring review COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS), and no
+subsequent increment has been authorized. This does NOT mean the roadmap is complete; delivered history never
+fills the active-contract slot. Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 NOT ENTERED; CAP-06
+NOT ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED; there is no current authorized Technical Deepening
+subtask and no next Technical Deepening slice is authorized; Stage 15 / IRL, Electrical ↔ Mechanical /
+Mechatronics integration, Robotics, IoT, Drone / Unmanned, Renewable and Satellite / Space implementation stay
+NOT AUTHORIZED; deployment and release NOT AUTHORIZED. The next step is a Lead-controlled Next-Increment
+Reassessment, which may evaluate an Electrical ↔ Mechanical / Mechatronics integration slice but authorizes no
+implementation. Electrical Slice 1 (delivered, inside Stage 18 — D13 / CAP-01; no new Master Roadmap Stage):
+for the exact CURRENT canonical `electronics_electrical` `PHYSICAL_FEASIBILITY` gap in exact state OPEN or
+PARTIAL, the report / deliverable and PDF may show three source-backed reference fundamentals — (V = I × R),
+(P = V × I) and SI unit discipline (V / A / Ω / W) — from electronics_electrical:PR004–PR007
+(DOE-HDBK-1011/1-92, archived — canceled April 2016, historical / fundamentals reference only; NIST SP 811
+Appendix B.9 unit facts only). Reference fundamentals only: no applicability inference, no project
+calculation, no gap closure, no compatibility verdict, no safe-limit determination, no component / power /
+battery sizing, no circuit-operation proof, no electrical-safety conclusion, no readiness / progression /
+validation effect, and no AI / LLM / provider call. No further CAP-01 implementation is authorized beyond the
+delivered Mechanical and Electrical slices.
 Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals — DELIVERED (PR #714, merge
 `dd445183a110da4ef707226e3ff9121f6c315e5b`; post-merge identity / content verification PASS) — is the
 preceding bounded slice inside Stage 18: four source-backed reference fundamentals (T = F × L⊥;
@@ -149,16 +152,16 @@ history, and is the file to read for authority — this paragraph routes, it doe
 authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded Electronics CAP-01
 increments are delivered (PR #678, PR #679), the bounded Mechanical Open-Gap Technical Context is
 delivered (PR #713), Mechanical Technical Deepening Slice 1 is delivered (PR #714) and Electrical /
-Electronics Technical Deepening Slice 1 (above) is its current bounded action, no further CAP-01
-implementation is authorized beyond the delivered Mechanical slices and the current Electrical slice, no
-next slice beyond this Electrical slice is authorized, full CAP-01 / full STG is not authorized, no other
-Stage is authorized — the bounded Electrical Technical Deepening slice sits inside the already-entered
-Stage 18 and enters no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
+Electronics Technical Deepening Slice 1 is delivered (PR #716); ACTIVE CONTRACT: NONE — there is no current
+authorized Technical Deepening subtask, no further CAP-01 implementation is authorized beyond the delivered
+Mechanical and Electrical slices, no next Technical Deepening slice is authorized, full CAP-01 / full STG is
+not authorized, no other Stage is authorized — the delivered Electrical Technical Deepening slice sat inside
+the already-entered Stage 18 and entered no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
 Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, the former post-PR-#679 `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -311,7 +314,7 @@ domain keeps authority over its own technical truth; Stage 15 / IRL stays the ex
 subsystem interfaces, cross-domain dependencies, integration evidence and durable subsystem identity /
 persistence when required — no Stage 15 implementation is authorized now and no new integration Stage or
 capability is created. Portfolio sequencing is RE-ASSESSED, not a permanently hard-coded order: after the
-current Electrical slice and a useful Mechanical + Electrical baseline, the NEXT REASSESSMENT considers the
+delivered Electrical slice and a useful Mechanical + Electrical baseline, the NEXT REASSESSMENT considers the
 smallest real Electrical ↔ Mechanical / Mechatronics integration slice; after integration evidence exists,
 a Robotics capability assessment precedes any Robotics decision; IoT, Drone / Unmanned, Renewable and
 Satellite / Space remain future portfolio directions ordered by product value, dependencies, overlap, source
@@ -582,8 +585,9 @@ information, not execution authority.
   `white-space: nowrap` and a clear visual separator if still justified. (O-2) ARABIC ELECTRICAL "RATING"
   TERMINOLOGY: the denial copy uses wording closer to "classification" — at the next natural Arabic CAP-01
   copy touch consider a term closer to القيم الاسمية. (O-3) Electronics PF gap-context host: CLOSED — NO
-  DEFECT (explicitly authorized). (O-4) current truth: RESOLVED by the product-attached sync. None of these
-  modifies the reviewed candidate.
+  DEFECT (explicitly authorized). (O-4) current truth: RESOLVED by the product-attached sync; the pre-merge
+  current-truth lag is CLOSED / RESOLVED by the post-PR-#716 closure (the slice is DELIVERED, PR #716). None
+  of these modifies the reviewed candidate.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative

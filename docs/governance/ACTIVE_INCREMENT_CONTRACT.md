@@ -23,18 +23,51 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-<a id="current-authority--electrical-td-slice1-basic-reference"></a>
-## Current authority — Stage 18 / Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals (Owner / Lead authorization, 2026-09-28)
+<a id="current-authority--post-pr-716-no-active-contract"></a>
+## Current authority — post-PR-#716: no active contract (2026-09-29)
 
-**ACTIVE CONTRACT: ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1 — BASIC ELECTRICAL REFERENCE FUNDAMENTALS.**
+**ACTIVE CONTRACT: NONE.** Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical
+Reference Fundamentals, the last Owner-authorized bounded slice, is DELIVERED (PR #716, merge
+`11564b235b056aaf12ca9d5596418f43a2d7e61c`; post-merge identity / content verification PASS; independent non-authoring
+review COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS), and no subsequent product increment has been
+authorized. Only the Owner may issue one; nothing in this file, the roadmap or the checklist fills the gap,
+and historical delivered work never fills the active-contract slot. This does NOT mean the roadmap is
+complete. The next step is a Lead-controlled Next-Increment Reassessment, which may evaluate an Electrical
+↔ Mechanical / Mechatronics integration slice but authorizes no implementation.
+
+| | |
+|---|---|
+| **STAGE 18** | `STARTED: YES` · `COMPLETE: NO` · **ENTERED / PARTIAL / NOT COMPLETE**; its roadmap checkbox stays unticked |
+| **ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1** | `ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #716 — merge 11564b235b056aaf12ca9d5596418f43a2d7e61c` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` — for the exact current `electronics_electrical` `PHYSICAL_FEASIBILITY` gap in OPEN or PARTIAL only, three bounded source-backed reference fundamentals (V = I × R; P = V × I; V / A / Ω / W); reference fundamentals only — no applicability inference, no project calculation, no gap closure, no compatibility verdict, no safe-limit determination, no component / power / battery sizing, no circuit-operation proof, no electrical-safety conclusion, no validation / readiness / progression effect; its rules are recorded in its section below and still bind |
+| **MECHANICAL TECHNICAL DEEPENING SLICE 1** | `MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #714 — merge dd445183a110da4ef707226e3ff9121f6c315e5b` |
+| **MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT** | `DELIVERED — PR #713 — merge 225c0d36e6cfa97a25cd58c671b7c4f090627fb5` |
+| **NEXT TECHNICAL DEEPENING SLICE** | **NOT AUTHORIZED** — there is NO current authorized Technical Deepening subtask |
+| **FULL CAP-01 / FULL STG** | **NOT AUTHORIZED** |
+| **STAGE 15 / IRL; ELECTRICAL ↔ MECHANICAL / MECHATRONICS INTEGRATION; ROBOTICS; IoT / DRONE / RENEWABLE / SATELLITE** | implementation **NOT AUTHORIZED**; the portfolio / integration direction and the Source / IP boundary recorded in CLAUDE.md stay live planning / execution continuity truth |
+| **REVIEW OBSERVATIONS** | N-1 PR004 / PR006 `url: null` — non-blocking, next natural provenance / source touch; O-1 equation wrapping / visual separator — non-blocking, next relevant CAP-01 / template presentation touch; O-2 Arabic electrical "rating" terminology — non-blocking, next relevant Arabic CAP-01 copy touch; O-3 Electronics PF gap-context host — CLOSED, NO DEFECT; O-4 pre-merge current-truth lag — CLOSED / RESOLVED by this post-merge closure |
+
+`ACTIVE CONTRACT: NONE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #716 — merge 11564b235b056aaf12ca9d5596418f43a2d7e61c` ·
+`NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL AND ELECTRICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` ·
+`MECHATRONICS / ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `ELECTRICAL ↔ MECHANICAL / MECHATRONICS INTEGRATION: NOT AUTHORIZED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+
+<a id="current-authority--electrical-td-slice1-basic-reference"></a>
+## Current authority — Stage 18 / Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals (Owner / Lead authorization, 2026-09-28) — DELIVERED (PR #716); SUPERSEDED as current authority by the post-PR-#716 no-active-contract declaration
+
+**No longer the current authority.** Electrical / Electronics Technical Deepening Slice 1 was delivered (PR
+#716, merge `11564b235b056aaf12ca9d5596418f43a2d7e61c`; post-merge identity / content verification PASS); no
+subsequent increment is authorized, so the section above declares a no-active-contract state. Every rule
+below still binds. *(Superseded 2026-09-29, preserved so the change is visible rather than silent: this
+opened "**ACTIVE CONTRACT: ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1 — BASIC ELECTRICAL
+REFERENCE FUNDAMENTALS.**" and recorded the slice as "PR NOT OPENED / merge NOT PERFORMED at the moment of
+this sync".)*
 ONE Owner-authorized bounded slice inside the already-entered Stage 18 (D13 / CAP-01), recorded by the
 Owner authorization itself (no separate contract document). It creates no new Master Roadmap Stage;
 Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE; Stage 23 is NOT ENTERED; CAP-06 is NOT ACTIVATED; FULL
 CAP-01 / FULL STG stay NOT AUTHORIZED. Status: OWNER-AUTHORIZED / IMPLEMENTED — candidate
 `10e2210dc2f427f2feeee80ea808ca8d91387ad0` (tree `b4b9831e36b386919569922aa365d61b152c8a68`; sole parent the authoritative base
 `e4a36cce7dd9127b457e19b163d7bfd36430659e`) / INDEPENDENT NON-AUTHORING REVIEW COMPLETE — PASS WITH
-NON-BLOCKING OBSERVATIONS (no P1 / P2 / P3 finding; no second independent review required) / PR NOT
-OPENED / merge NOT PERFORMED at the moment of this sync / deployment and release NOT AUTHORIZED.
+NON-BLOCKING OBSERVATIONS (no P1 / P2 / P3 finding; no second independent review required) / DELIVERED
+(PR #716, merge `11564b235b056aaf12ca9d5596418f43a2d7e61c`) / deployment and release NOT AUTHORIZED.
 
 | | |
 |---|---|
@@ -44,11 +77,12 @@ OPENED / merge NOT PERFORMED at the moment of this sync / deployment and release
 | **SOURCES** | electronics_electrical:PR004 — DOE-HDBK-1011/1-92, Electrical Science, Volume 1 of 4, Module 1; official status ARCHIVE — Canceled, effective April 2016; historical / fundamentals reference only, NOT current regulatory, safety or compliance authority; DOE source notation E = IR and P = IE, normalized by InventorAI to V = IR and P = VI (DOE is not claimed to print the V-form). PR005 — NIST SP 811 Appendix B.9, bounded unit facts only (V / A / Ω / W). PR006 / PR007 — DOE Web Policies and NIST copyright / licensing statements, recorded as source-use compatibility dispositions, not legal opinions. OpenStax EXCLUDED; IEC / IPC (PR001 / PR002) are NOT the authority for these claims; PR001–PR003 unchanged; Lead-level independent source inspection COMPLETE (executor egress was blocked by environment policy) |
 | **OWNERSHIP / NOT** | the domain-level CAP01_ELECTRONICS_INTERFACE_V1 checklist / research profile and the Mechanical fundamentals are unchanged; Path-N and CAP-04 ownership unchanged; no CAP-12, CAP-13 or THERM-01 scope; no formula engine, calculator, second resolver or framework |
 | **NO STATE CHANGE / AI** | the pack group is inert; no state, persistence, schema, engine or domain-activation change; no AI / LLM / provider call; real invention data NOT AUTHORIZED FOR EXTERNAL TRANSMISSION |
-| **REVIEW OBSERVATIONS** | N-1 source URL traceability (PR004 / PR006 `url: null`) — NON-BLOCKING, complete at the next natural provenance / source touch if the exact authoritative URL remains known and verified; O-1 equation wrapping / separator in the generic fundamentals template — NON-BLOCKING, next natural CAP-01 fundamentals presentation touch (`white-space: nowrap` plus a clear separator if still justified); O-2 Arabic electrical "rating" terminology — NON-BLOCKING, next natural Arabic CAP-01 copy touch (a term closer to القيم الاسمية); O-3 Electronics PF gap-context host — CLOSED, NO DEFECT (explicitly authorized); O-4 current truth — RESOLVED BY THIS SYNC |
+| **REVIEW OBSERVATIONS** | N-1 source URL traceability (PR004 / PR006 `url: null`) — NON-BLOCKING, complete at the next natural provenance / source touch if the exact authoritative URL remains known and verified; O-1 equation wrapping / separator in the generic fundamentals template — NON-BLOCKING, next natural CAP-01 fundamentals presentation touch (`white-space: nowrap` plus a clear separator if still justified); O-2 Arabic electrical "rating" terminology — NON-BLOCKING, next natural Arabic CAP-01 copy touch (a term closer to القيم الاسمية); O-3 Electronics PF gap-context host — CLOSED, NO DEFECT (explicitly authorized); O-4 current truth — resolved by the product-attached sync, and the pre-merge current-truth lag CLOSED / RESOLVED by the post-PR-#716 closure |
 
-`ACTIVE CONTRACT: ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1 — BASIC ELECTRICAL REFERENCE FUNDAMENTALS` · `ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: OWNER-AUTHORIZED — IMPLEMENTED (candidate 10e2210dc2f427f2feeee80ea808ca8d91387ad0) — INDEPENDENT NON-AUTHORING REVIEW COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS — PR NOT OPENED / MERGE NOT PERFORMED` ·
-`MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #714 — merge dd445183a110da4ef707226e3ff9121f6c315e5b` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL SLICES AND THE CURRENT ELECTRICAL SLICE` ·
-`FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `MECHATRONICS / ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+`ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #716 — merge 11564b235b056aaf12ca9d5596418f43a2d7e61c` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` ·
+`MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #714 — merge dd445183a110da4ef707226e3ff9121f6c315e5b` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL AND ELECTRICAL SLICES` ·
+`FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `MECHATRONICS / ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`. *(Superseded 2026-09-29,
+preserved — this token line read "`ACTIVE CONTRACT: ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1 — BASIC ELECTRICAL REFERENCE FUNDAMENTALS` · `… PR NOT OPENED / MERGE NOT PERFORMED`".)*
 
 **Deferred / not authorized:** any next slice beyond this Electrical slice, any project calculation or
 numeric input, formula selection, circuit solving, component / wire / fuse / battery / power-supply / motor
@@ -1303,10 +1337,15 @@ section above; the stage is ENTERED as fact. `FIRST BOUNDED CAP-01 INCREMENT:
 OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3` · `SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge d75075b01e79909ba98ac695abb4f8969e14f753` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED BEYOND THIS BOUNDED SLICE` ·
 `D13 RESEARCH: REMAINS CLOSED`. **Stage 18 remains PARTIAL and its roadmap checkbox stays
 unticked** — one authorized bounded slice is not the stage.
-**CURRENT BOUNDED ACTION — Stage 18 / Electrical / Electronics Technical Deepening Slice 1 — Basic
-Electrical Reference Fundamentals, ONE Owner-authorized bounded slice (no new Master Roadmap Stage; Stage 18
-stays ENTERED / PARTIAL / NOT COMPLETE):** `ACTIVE CONTRACT: ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1 — BASIC ELECTRICAL REFERENCE FUNDAMENTALS` · `ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: OWNER-AUTHORIZED — IMPLEMENTED (candidate 10e2210dc2f427f2feeee80ea808ca8d91387ad0) — INDEPENDENT NON-AUTHORING REVIEW COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS — PR NOT OPENED / MERGE NOT PERFORMED` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL SLICES AND THE CURRENT ELECTRICAL SLICE` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `MECHATRONICS / ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
-Electrical / Electronics only: for the exact CURRENT canonical electronics_electrical
+**NO ACTIVE CONTRACT — post-PR-#716 (2026-09-29); Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE:**
+`ACTIVE CONTRACT: NONE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL AND ELECTRICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `MECHATRONICS / ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `ELECTRICAL ↔ MECHANICAL / MECHATRONICS INTEGRATION: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+No product increment is authorized after PR #716; this does NOT mean the roadmap is complete, and delivered
+history never fills the active-contract slot. The next step is a Lead-controlled Next-Increment Reassessment,
+which may evaluate an Electrical ↔ Mechanical / Mechatronics integration slice but authorizes no
+implementation. Stage 15 / IRL and IoT / Drone / Renewable / Satellite implementation stay NOT AUTHORIZED.
+**DELIVERED — Stage 18 / Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference
+Fundamentals (inside Stage 18; no new Master Roadmap Stage):** `ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #716 — merge 11564b235b056aaf12ca9d5596418f43a2d7e61c` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`.
+Electrical / Electronics Technical Deepening Slice 1 (delivered). Electrical / Electronics only: for the exact CURRENT canonical electronics_electrical
 PHYSICAL_FEASIBILITY gap in exact state OPEN or PARTIAL, the existing report / deliverable and PDF may
 show three source-backed reference fundamentals — V = I × R (Ohm's-law / resistive reference), P = V × I
 (basic power reference) and SI unit discipline (V / A / Ω / W) — from electronics_electrical:PR004–PR007
@@ -1314,10 +1353,10 @@ show three source-backed reference fundamentals — V = I × R (Ohm's-law / resi
 reference only; NIST SP 811 Appendix B.9, unit facts only). Reference fundamentals only: no applicability
 inference, no project calculation, no gap closure, no compatibility verdict, no safe-limit
 determination, no component / power / battery sizing, no circuit-operation proof, no electrical-safety
-conclusion, no readiness / progression / validation effect and no AI / provider call. Candidate
-`10e2210dc2f427f2feeee80ea808ca8d91387ad0` (tree `b4b9831e36b386919569922aa365d61b152c8a68`); independent non-authoring review
-COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS; PR NOT OPENED, merge NOT PERFORMED; deployment / release
-NOT AUTHORIZED.
+conclusion, no readiness / progression / validation effect and no AI / provider call. Delivered in PR
+#716 (merge `11564b235b056aaf12ca9d5596418f43a2d7e61c`; reviewed candidate `10e2210dc2f427f2feeee80ea808ca8d91387ad0` preserved in
+ancestry); independent non-authoring review COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS; deployment /
+release NOT AUTHORIZED.
 **DELIVERED — Stage 18 / Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals
 (inside Stage 18; no new Master Roadmap Stage):** `MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #714 — merge dd445183a110da4ef707226e3ff9121f6c315e5b` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`.
 Mechanical Technical Deepening Slice 1 (delivered). Mechanical only: for the exact CURRENT canonical PHYSICAL_FEASIBILITY gap in exact state OPEN or
