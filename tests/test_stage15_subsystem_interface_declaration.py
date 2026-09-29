@@ -991,6 +991,23 @@ def test_a_storage_failure_is_truthful_and_leaks_nothing(client):
             assert secret not in message
 
 
+def test_every_render_reattaches_the_durable_interfaces(client, monkeypatch):
+    """The session page, the report and the PDF show the DURABLE interfaces of
+    the project on every render — never only what the live state happens to
+    hold (a declaration committed by another request is shown too)."""
+    sid = _integrated(client)
+    subs = _live(sid).subsystems
+    _store().append_subsystem_interface(sid, _ifc(subs, "Committed elsewhere."), "other")
+    assert _live(sid).subsystem_interfaces == []             # not in live memory yet
+    assert "Committed elsewhere." in _visible(_ifc_block(_page(client, sid)))
+    assert [i.description for i in _live(sid).subsystem_interfaces] == ["Committed elsewhere."]
+    _store().append_subsystem_interface(sid, _ifc(subs, "Second elsewhere."), "other-2")
+    report = client.get(f"/session/{sid}/deliverable").get_data(as_text=True)
+    assert "Second elsewhere." in _visible(_ifc_block(report))
+    _store().append_subsystem_interface(sid, _ifc(subs, "Third elsewhere."), "other-3")
+    assert "Third elsewhere." in _visible(_ifc_block(_pdf_source(client, sid, monkeypatch)))
+
+
 def test_committed_but_unrenderable_state_fails_the_page_closed(client):
     sid = _integrated(client)
     _declare(client, sid)
