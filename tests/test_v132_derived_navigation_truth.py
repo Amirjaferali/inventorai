@@ -4574,13 +4574,18 @@ _ACTIVE_BOLD = r"\*\*ACTIVE CONTRACT: ([^*]+?)\.\*\*"
 _ACTIVE_TOKEN = r"`ACTIVE CONTRACT: ([^`]+)`"
 
 
-# ---- F1: every `## Current authority` section is classified by its own repository wording ----------
-# A section is HISTORICAL when its heading says so (SUPERSEDED, or a completed "— DELIVERED" record).
-# Ten declarations written before that heading convention are historical by their position in the
-# record, not their heading; they are allowed ONLY under their exact existing heading, each exactly
-# once and never as the first section. Every other section is LIVE, and exactly one LIVE section —
-# the first authority section — must exist; an extra, unclassifiable section fails closed.
-_HISTORICAL_HEADING = r"\bSUPERSEDED\b|— DELIVERED\b"
+# ---- F1: every `## Current authority` record is classified by its own repository wording ----------
+# A record runs from one `## Current authority` heading to the NEXT `## Current authority` heading (or
+# EOF): ordinary `##` headings inside that interval stay part of the record and are inspected with it.
+# A record is HISTORICAL only when its OWN heading ends with an affirmative status segment in the
+# repository's heading convention — " — DELIVERED[ (…)][; SUPERSEDED as current authority by …]",
+# " — SUPERSEDED (<date>) by …" or " — SUPERSEDED FOR PRESENT ROUTING BY …"; a negated or referential
+# SUPERSEDED ("NOT SUPERSEDED", "(previous mandate SUPERSEDED)") is not a status. Ten declarations
+# written before that convention are allowed ONLY under their exact existing heading, each exactly once
+# and never first. Every other record is LIVE, and exactly one LIVE record — the first — must exist; an
+# extra, unclassifiable record fails closed.
+_HISTORICAL_HEADING = (r" — (?:DELIVERED(?: \([^)]*\))?(?:; SUPERSEDED as current authority by .+)?"
+                       r"|SUPERSEDED \(\d{4}-\d{2}-\d{2}\) by .+|SUPERSEDED FOR PRESENT ROUTING BY .+)$")
 _LEGACY_UNMARKED_AUTHORITY_HEADINGS = frozenset({
     "## Current authority — Stage 10 / T2-C′ differential product-value assessment (Owner acceptance, 2026-09-20)",
     "## Current authority — post-PR-664 declaration (v1.32 synchronization, 2026-09-19)",
@@ -4596,13 +4601,12 @@ _LEGACY_UNMARKED_AUTHORITY_HEADINGS = frozenset({
 
 
 def _authority_sections(contract):
-    """[(heading, flattened section, kind)] for EVERY `## Current authority` section, in file order;
-    kind is "live", "historical" or "legacy". A section runs to the next `## ` heading of any kind."""
-    starts = [m.start() for m in re.finditer(r"^## ", contract, re.M)] + [len(contract)]
+    """[(heading, flattened record, kind)] for EVERY `## Current authority` record, in file order; kind
+    is "live", "historical" or "legacy". A record ends only at the next `## Current authority` heading
+    or EOF, never at an ordinary `##` heading."""
+    starts = [m.start() for m in re.finditer(r"^## Current authority", contract, re.M)] + [len(contract)]
     sections = []
     for s, e in zip(starts, starts[1:]):
-        if not contract.startswith("## Current authority", s):
-            continue
         heading = contract[s:contract.index("\n", s)]
         kind = ("historical" if re.search(_HISTORICAL_HEADING, heading)
                 else "legacy" if heading in _LEGACY_UNMARKED_AUTHORITY_HEADINGS else "live")
@@ -4628,31 +4632,77 @@ def _live_declaration(contract):
 # ---- F2: no newly authored post-merge / post-integration success claim on a live surface ----------
 # A candidate carries the durable final-state truth, but it cannot truthfully claim that its merge or
 # post-merge verification has already happened; that evidence belongs to Git/GitHub and a read-only
-# check. Every such claim on a live surface must therefore be a LEGACY claim: immediately preceded (once
-# transient PR / merge identity is ignored) by the exact attribution of a delivery that already carries
-# one, and occurring no more often than it does in the preserved record. A new or copied claim has no
-# such attribution, or exceeds its count, and fails. Omission is always valid.
+# check. Every such claim on a live surface must be a LEGACY claim, owned by its complete preserved
+# record: on the same live surface, the whole delivery record that carries it (transient PR / merge
+# identity ignored) plus the claim itself must be exactly one of the records below, and no more often
+# than it occurs there. A record starts at a list / table separator — or, for prose, a sentence or
+# clause boundary — so a new subject, a wrapper ("This candidate: …") or a borrowed tail of an old
+# subject changes the record and fails. Omission is always valid; nothing requires the wording.
 _POST_MERGE_CLAIM = (r"\bPOST[- ](?:MERGE|INTEGRATION)\b[^.;`()]{0,60}?\b(?:PASS(?:ED)?|VERIFIED|CONFIRMED|"
                      r"SUCCEEDED)\b|\b(?:MERGE|INTEGRATION)(?: IDENTITY)? VERIFICATION\s*:\s*PASS\b|"
                      r"\b(?:MERGED?|INTEGRAT(?:ED|ION)) (?:AND |& )?(?:VERIFIED|CONFIRMED)\b")
-_LEGACY_POST_MERGE_ATTRIBUTIONS = {
-    "`FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / ": 4,
-    "`SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / ": 4,
-    "`MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED` · `": 3,
-    "`MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED` · `": 4,
-    "`ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED` · `": 4,
-    "`STAGE 15 SLICE 1: DELIVERED` · `": 8,
-    "`STAGE 15 SLICE 2: DELIVERED` · `": 9,
-    "Mechanical CAP-01 — Open-Gap Technical Context — DELIVERED (": 1,
-    "Force, Moment & Pressure Fundamentals — DELIVERED (": 1,
-    "Force, Moment & Pressure Fundamentals — delivered, ": 1,
-    "Basic Electrical Reference Fundamentals — is DELIVERED (": 1,
-    "Basic Electrical Reference Fundamentals — delivered, ": 1,
-    "Durable Subsystem Composition — Slice 1 is DELIVERED (": 1,
-    "Durable Subsystem Composition — Slice 1 — delivered, ": 1,
-    "Verification Preparation — Slice 2 — is DELIVERED (": 1,
-    "Verification Preparation — Slice 2 — delivered, ": 1,
+_RECORD_SEPARATORS = (" · ", ":** ", "** ", " | ", ". ")
+_SENTENCE_SEPARATORS = ("; ",)
+_PM_TOKEN = " · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS"
+_PM_PROSE = "post-merge identity / content verification PASS"
+_CAP01_RECORDS = {
+    "`FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED": 1,
+    "`SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE "
+    "VERIFIED": 1,
+    "`ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+    "`MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
 }
+_ROUTING_RECORDS = dict(_CAP01_RECORDS, **{
+    "`MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED`" + _PM_TOKEN: 1,
+    "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 2,
+    "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 2,
+})
+_LEGACY_POST_MERGE_RECORDS = {
+    "routing:" + ROADMAP: _ROUTING_RECORDS,
+    "routing:" + CHECKLIST: _ROUTING_RECORDS,
+    "routing:" + CONTRACT: _ROUTING_RECORDS,
+    "declaration:" + CONTRACT: {
+        "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+        "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 2,
+    },
+    "position:" + STATE: dict(_CAP01_RECORDS, **{
+        "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+        "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 1,
+        "Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — delivered, " + _PM_PROSE: 1,
+        "Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 — delivered, " + _PM_PROSE: 1,
+        "Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals — "
+        "delivered, " + _PM_PROSE: 1,
+        "Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals — delivered, " + _PM_PROSE: 1,
+    }),
+    "head:CLAUDE.md": {
+        "The last Owner-authorized bounded product slice — Stage 15 — Subsystem Interface Declaration & "
+        "Verification Preparation — Slice 2 — is DELIVERED (" + _PM_PROSE: 1,
+        "Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 is DELIVERED ("
+        + _PM_PROSE: 1,
+        "Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals — is "
+        "DELIVERED (" + _PM_PROSE: 1,
+        "Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals — DELIVERED ("
+        + _PM_PROSE: 1,
+        "Mechanical CAP-01 — Open-Gap Technical Context — DELIVERED (" + _PM_PROSE: 1,
+    },
+}
+
+
+def _claim_record(before):
+    """The complete delivery record a claim at the end of `before` belongs to. A claim inside a backticked
+    token belongs to that token's record; a claim token without a subject (`…MERGED / …` or a bare PASS
+    token) also owns the complete token before it. A token record starts only at a list / table
+    separator or a sentence end; a prose record may also start at a clause boundary (`; `)."""
+    cut, token = len(before), before.count("`") % 2 == 1
+    if token:
+        cut = before.rfind("`")
+        if ":" not in before[cut:]:
+            prev = re.search(r"`[^`]*` · $", before[:cut])
+            if prev:
+                cut = prev.start()
+    separators = _RECORD_SEPARATORS if token else _RECORD_SEPARATORS + _SENTENCE_SEPARATORS
+    starts = [before.rfind(s, 0, cut) + len(s) for s in separators if before.rfind(s, 0, cut) != -1]
+    return before[max(starts, default=0):]
 
 
 def _without_transient_identity(text):
@@ -4665,18 +4715,17 @@ def _unsupported_post_merge_claims(texts):
     problems, used = [], {}
     for label, text in texts.items():
         flat = _without_transient_identity(text)
+        allowed = _LEGACY_POST_MERGE_RECORDS.get(label, {})
         for m in re.finditer(_POST_MERGE_CLAIM, flat, re.I):
-            before = flat[:m.start()]
-            owners = [a for a in _LEGACY_POST_MERGE_ATTRIBUTIONS if before.endswith(a)]
-            if not owners:
-                problems.append("%s: unsupported post-merge success claim %r after %r"
-                                % (label, m.group(0), before[-80:]))
+            record = _claim_record(flat[:m.start()]) + m.group(0)
+            if record not in allowed:
+                problems.append("%s: unsupported post-merge success claim in record %r" % (label, record))
             else:
-                used[owners[0]] = used.get(owners[0], 0) + 1
-    for attribution, count in used.items():
-        if count > _LEGACY_POST_MERGE_ATTRIBUTIONS[attribution]:
-            problems.append("legacy post-merge claim %r repeated %d times (preserved record: %d)"
-                            % (attribution, count, _LEGACY_POST_MERGE_ATTRIBUTIONS[attribution]))
+                used[(label, record)] = used.get((label, record), 0) + 1
+    for (label, record), count in used.items():
+        if count > _LEGACY_POST_MERGE_RECORDS[label][record]:
+            problems.append("%s: legacy post-merge record %r repeated %d times (preserved record: %d)"
+                            % (label, record, count, _LEGACY_POST_MERGE_RECORDS[label][record]))
     return problems
 
 
@@ -4847,10 +4896,11 @@ def test_the_live_authority_owners_pin_no_transient_identity():
     import inspect
     sources = [inspect.getsource(f) for f in (
         _live_authority_texts, _live_authority_problems, _status, _after_fence, _authority_sections,
-        _live_declaration, _unsupported_post_merge_claims, _without_transient_identity,
+        _live_declaration, _unsupported_post_merge_claims, _without_transient_identity, _claim_record,
         test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface)]
-    sources.append(repr((_LIVE_CLAIM_REVERSALS, _PREMERGE_LIFECYCLE, _HISTORICAL_HEADING, _POST_MERGE_CLAIM,
-                         sorted(_LEGACY_UNMARKED_AUTHORITY_HEADINGS), sorted(_LEGACY_POST_MERGE_ATTRIBUTIONS))))
+    sources.append(repr((_LIVE_CLAIM_REVERSALS, _PREMERGE_LIFECYCLE, _HISTORICAL_HEADING, _POST_MERGE_CLAIM)))
+    legacy = repr((sorted(_LEGACY_UNMARKED_AUTHORITY_HEADINGS), sorted(_LEGACY_POST_MERGE_RECORDS.items())))
+    assert re.search(r"\b[0-9a-f]{40}\b", legacy) is None and re.search(r"PR ?-?#\d", legacy) is None
     for source in sources:
         assert re.search(r"\b[0-9a-f]{40}\b", source) is None
         assert re.search(r"PR ?-?#\d", source) is None
@@ -4983,3 +5033,150 @@ def test_f2_omission_and_identity_removal_stay_valid(monkeypatch):
     monkeypatch.undo()
     # transient identity removed from delivered tokens (candidate form)
     _assert_accepted(monkeypatch, {path: _without_identity(_read(path)) for path in _LIVE_DOCS}, "identity absent")
+
+
+# ---- residual F1-A / F1-B / F2 proofs ----------------------------------------------------------------
+def _in_live_interval(contract, block):
+    """`contract` with `block` inserted inside the live record, just before the next authority heading."""
+    i = contract.index(_live_declaration(contract)[0])
+    k = contract.index("\n## Current authority", i + 5) + 1
+    return contract[:k] + block + contract[k:]
+
+
+_ORDINARY_H2 = {
+    "review example": "## Release authorization\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n\nDeployment is authorized.\n\n",
+    "second contract": "## Notes\n\n**ACTIVE CONTRACT: STAGE 16 — SLICE 1.**\n\n",
+    "deployment": "## Operations\n\nDeployment is authorized.\n\n",
+    "release": "## Operations\n\nRelease is authorized.\n\n",
+    "successor": "## Next increment\n\n`NEXT PRODUCT INCREMENT: AUTHORIZED` · `ANOTHER STAGE-15 SLICE: AUTHORIZED`\n\n",
+}
+
+
+@pytest.mark.parametrize("name", sorted(_ORDINARY_H2))
+def test_f1a_an_ordinary_heading_cannot_hide_live_authority(monkeypatch, name):
+    mutated = _in_live_interval(_read(CONTRACT), _ORDINARY_H2[name])
+    assert _ORDINARY_H2[name].split("\n")[0] in _live_declaration(mutated)[1]
+    _assert_rejected(monkeypatch, {CONTRACT: mutated}, name)
+
+
+def test_f1a_legitimate_ordinary_subsections_stay_green(monkeypatch):
+    benign = "## Notes\n\nThe declaration above is unchanged; nothing further is authorized.\n\n"
+    _assert_accepted(monkeypatch, {CONTRACT: _in_live_interval(_read(CONTRACT), benign)}, "benign subsection")
+    # existing records already span ordinary `##` headings (e.g. the historical-authority entries)
+    spans = [text for _h, text, _k in _authority_sections(_read(CONTRACT)) if " ## " in text]
+    assert spans
+
+
+_BODY = "\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n\nDeployment is authorized.\n"
+
+
+@pytest.mark.parametrize("heading", [
+    "## Current authority — successor increment — NOT SUPERSEDED",
+    "## Current authority — successor increment (previous mandate SUPERSEDED)",
+    "## Current authority — successor increment — references a SUPERSEDED contract",
+    "## Current authority — successor increment — UNSUPERSEDED",
+    "## Current authority — successor increment — SUPERSEDED contract replaced",
+    "## Current authority — successor (the DELIVERED Slice 2 is superseded)",
+])
+def test_f1b_a_negated_or_referential_status_is_not_historical(monkeypatch, heading):
+    mutated = _read(CONTRACT).rstrip("\n") + "\n\n" + heading + _BODY
+    assert [k for h, _t, k in _authority_sections(mutated) if h == heading] == ["live"]
+    _assert_rejected(monkeypatch, {CONTRACT: mutated}, heading)
+
+
+@pytest.mark.parametrize("heading", [
+    "## Current authority — Stage 99 example slice (Owner authorization, 2026-10-01) — DELIVERED",
+    "## Current authority — Stage 99 example slice (Owner authorization, 2026-10-01) — DELIVERED; SUPERSEDED as "
+    "current authority by the next declaration",
+    "## Current authority — example: no active contract (2026-10-01) — SUPERSEDED (2026-10-02) by Stage 99",
+])
+def test_f1b_a_genuinely_self_labelled_historical_record_is_accepted(monkeypatch, heading):
+    mutated = _read(CONTRACT).rstrip("\n") + "\n\n" + heading + "\n\nPreserved history.\n"
+    assert [k for h, _t, k in _authority_sections(mutated) if h == heading] == ["historical"]
+    _assert_accepted(monkeypatch, {CONTRACT: mutated}, heading)
+
+
+def test_f1b_unmodified_repository_counts():
+    kinds = [k for _h, _t, k in _authority_sections(_read(CONTRACT))]
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 30, 10)
+
+
+def _flat_doc(path):
+    return re.sub(r"\s+", " ", _read(path))
+
+
+def _replace_once(text, old, new):
+    assert old in text, old
+    return text.replace(old, new, 1)
+
+
+def _raw_replace(path, old, new):
+    """One replacement in the RAW document, tolerant of the line wrapping inside `old`."""
+    pattern = re.escape(old).replace(r"\ ", r"\s+")
+    raw, n = re.subn(pattern, lambda _m: new, _read(path), count=1)
+    assert n == 1, old
+    return raw
+
+
+_S2_TOKEN_CLAIM = " · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`"
+
+
+def test_f2_existing_records_are_owned_and_counted_per_surface():
+    assert _live_authority_problems() == []
+    texts = _live_authority_texts(_read)
+    texts.pop("heading:" + CONTRACT)
+    found = {}
+    for label, text in texts.items():
+        flat = _without_transient_identity(text)
+        for m in re.finditer(_POST_MERGE_CLAIM, flat, re.I):
+            key = (label, _claim_record(flat[:m.start()]) + m.group(0))
+            found[key] = found.get(key, 0) + 1
+    assert found == {(label, record): n for label, records in _LEGACY_POST_MERGE_RECORDS.items()
+                     for record, n in records.items()}
+
+
+def test_f2_omega_cannot_inherit_a_vacated_allowance(monkeypatch):
+    claude = _flat_doc("CLAUDE.md")
+    vacated = _replace_once(claude, "post-merge identity / content verification PASS; reviewed", "reviewed")
+    omega = _replace_once(vacated, "**ACTIVE CONTRACT: NONE.**", "**ACTIVE CONTRACT: NONE.** New delivery Omega — "
+                          "Verification Preparation — Slice 2 — is DELIVERED (post-merge identity / content "
+                          "verification PASS).")
+    _assert_rejected(monkeypatch, {"CLAUDE.md": omega}, "omega")
+
+
+def test_f2_a_new_subject_with_the_old_suffix_or_tail_fails(monkeypatch):
+    vacated = _raw_replace(ROADMAP, "merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca`" + _S2_TOKEN_CLAIM,
+                           "merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca`")
+    suffix = _replace_once(vacated, _NS, _NS + " · `NEW STAGE 15 SLICE 2: DELIVERED`" + _S2_TOKEN_CLAIM)
+    _assert_rejected(monkeypatch, {ROADMAP: suffix}, "same suffix, new subject")
+    monkeypatch.undo()
+    state = _flat_doc(STATE)
+    tail = _replace_once(state, "; Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — "
+                         "delivered", "; Omega — Stage 15 — Subsystem Interface Declaration & Verification Preparation"
+                         " — Slice 2 — delivered")
+    _assert_rejected(monkeypatch, {STATE: tail}, "whole old tail under a new subject")
+
+
+def test_f2_a_this_candidate_wrapper_cannot_take_an_old_claim(monkeypatch):
+    state = _flat_doc(STATE)
+    vacated = _replace_once(state, _S2_TOKEN_CLAIM, "")
+    wrapped = _replace_once(vacated, _NS, _NS + " · This candidate: `STAGE 15 SLICE 2: DELIVERED`" + _S2_TOKEN_CLAIM)
+    _assert_rejected(monkeypatch, {STATE: wrapped}, "this candidate wrapper")
+
+
+def test_f2_a_legacy_record_cannot_move_to_another_surface_or_exceed_its_count(monkeypatch):
+    moved = _replace_once(_flat_doc(STATE), _NS, _NS + " · `MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED`"
+                          + _S2_TOKEN_CLAIM)
+    _assert_rejected(monkeypatch, {STATE: moved}, "record owned by another surface")
+    monkeypatch.undo()
+    claude = _flat_doc("CLAUDE.md")
+    doubled = _replace_once(claude, "**ACTIVE CONTRACT: NONE.**", "**ACTIVE CONTRACT: NONE.** Mechanical CAP-01 — "
+                            "Open-Gap Technical Context — DELIVERED (post-merge identity / content verification PASS).")
+    _assert_rejected(monkeypatch, {"CLAUDE.md": doubled}, "record beyond its preserved count")
+
+
+def test_f2_the_same_unchanged_record_may_move_within_its_surface(monkeypatch):
+    vacated = _raw_replace(ROADMAP, "merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca`" + _S2_TOKEN_CLAIM,
+                           "merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca`")
+    moved = _replace_once(vacated, _NS, _NS + " · `STAGE 15 SLICE 2: DELIVERED`" + _S2_TOKEN_CLAIM)
+    _assert_accepted(monkeypatch, {ROADMAP: moved}, "same record relocated")
