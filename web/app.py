@@ -10769,16 +10769,22 @@ def _result_action_key(sid, nonce):
 def _result_context_for(item):
     """The CONTEXT AT RECORDING of one CURRENT plan item: what the canonical
     experiment carries right now, frozen verbatim (``None`` = absent). Only
-    the inventor's own planning values are frozen, never generated defaults."""
-    def own(key):
-        if item.get(key + "_provenance", "user_defined") != "user_defined":
+    the inventor's own planning values are frozen, never generated defaults.
+    The Success Criterion is the canonical CAPTURED criterion, whether the
+    inventor saved it (user_defined) or wrote it in the source
+    (source_stated); the required-criterion placeholder is absence."""
+    def own(key, provenances=("user_defined",)):
+        if item.get(key + "_provenance", "user_defined") not in provenances:
             return None
         value = item.get(key)
         return value if isinstance(value, str) and value else None
+    criterion = None
+    if item.get("success_criterion_status", "captured") == "captured":
+        criterion = own("success_criterion", ("user_defined", "source_stated"))
     return _experiment_result.ResultContext(
         experiment_title=item.get("experiment_title") or item["experiment_id"],
         source_basis=item.get("source_basis") or None,
-        success_criterion=own("success_criterion"),
+        success_criterion=criterion,
         measurement_method=own("measurement_method"),
         test_hypothesis=own("test_hypothesis"),
         test_variable=own("test_variable"))
@@ -10895,21 +10901,32 @@ def record_experiment_result(sid):
     """CAP-09 Result Event Slice 1 — record (new root) or correct (successor
     of one chain head) the inventor's own report of what actually happened in
     one CURRENT canonical experiment. Order: request integrity (global guard)
-    -> authorization -> CURRENT durable plan -> signed submission identity ->
-    exact committed retry resolved first -> validation -> ONE durable append
-    (correction integrity re-checked inside it) -> confirm-by-reload."""
+    -> authorization -> signed submission identity -> validation -> the
+    committed outcome of THIS submission resolved first (UNKNOWN / SAVED /
+    conflict never depend on the plan) -> CURRENT durable plan (required only
+    for a new append) -> ONE durable append (correction integrity re-checked
+    inside it) -> confirm-by-reload."""
     if not _project_authorized(sid):
         return _deny_project()
-    status, plan = _current_criteria_context(sid)
-    if status != _SC_OK:
-        return _criteria_unavailable(sid, status)
     experiment_id = request.form.get("experiment_id", "")
     target = request.form.get("supersedes", "") or None
     raw = request.form.get("result_text", "")
     draft_key = ("fix:" + target) if target else ("new:" + experiment_id)
     drafts = {draft_key: raw}
+    loaded = []
+
+    def current_plan():
+        if not loaded:
+            loaded.append(_current_criteria_context(sid))
+        return loaded[0]
 
     def refuse(message, code=400, keep=True):
+        # A refusal is truthful whether or not the plan can be offered; an
+        # unavailable plan is disclosed beside it, never in its place.
+        status, plan = current_plan()
+        if status != _SC_OK:
+            return _render_criteria(sid, None, status=code, error=message,
+                                    notice=_SC_STATUS_MESSAGE[status][0])
         return _render_criteria(sid, plan, status=code, error=message,
                                 result_drafts=drafts if keep else None)
 
@@ -10936,17 +10953,24 @@ def record_experiment_result(sid):
                 and stored.result_text == text)
 
     # An EXACT committed retry (refresh, double submit, restart) is resolved
-    # from committed durable truth BEFORE anything else and changes nothing;
-    # the SAME identity with a different payload fails closed. Unreadable
-    # committed truth never becomes NOT SAVED: it stays UNKNOWN.
+    # from committed durable truth BEFORE the plan is required and changes
+    # nothing; the SAME identity with a different payload fails closed.
+    # Unreadable committed truth never becomes NOT SAVED or planning-
+    # unavailable: it stays UNKNOWN.
     try:
         prior = committed()
     except Exception:
         return _render_criteria(sid, None, status=503, notice=_RESULT_UNKNOWN_MESSAGE)
     if prior is not None:
         if matches(prior):
-            return _render_criteria(sid, plan, notice=_RESULT_SAVED_MESSAGE)
+            status, plan = current_plan()
+            return _render_criteria(sid, plan if status == _SC_OK else None,
+                                    notice=_RESULT_SAVED_MESSAGE)
         return refuse(_RESULT_NOT_SAVED_MESSAGE, keep=False)
+    # Only a NEW append needs CURRENT canonical planning truth.
+    status, plan = current_plan()
+    if status != _SC_OK:
+        return _criteria_unavailable(sid, status)
     items = {it["experiment_id"]: it for it in plan["items"]}
     if experiment_id not in items:
         return refuse(_RESULT_NOT_CURRENT_MESSAGE)

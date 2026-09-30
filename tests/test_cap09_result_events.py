@@ -23,8 +23,8 @@ from engine.record_store import (
 from tests.csrf_client import csrf_client
 from tests.test_stage19_durable_success_criteria import (
     ELEC_DISPLACING_ANSWER, PREFIX, _journey, _restart, _live_ids, _answer,
-    _criteria_page, _db_path, _progression_snapshot, _CommitThenRaise,
-    _CommitAndRollbackFail)
+    _criteria_page, _db_path, _progression_snapshot, _plan_items, _CommitThenRaise,
+    _CommitAndRollbackFail, ELEC_ANSWERS)
 
 OBS = "The lid opened in about 3 seconds, twice out of three tries."
 OBS2 = "On a retest the lid opened every time."
@@ -260,6 +260,19 @@ def test_committed_but_unconfirmed_resolves_saved_and_unresolved_stays_unknown(c
         assert webapp._RESULT_SAVED_MESSAGE not in body
         with pytest.raises(RecordStoreConnectionUnsafe):
             store.load_result_events(sid)
+        # F725-2: the SAME retry while the transaction is still unresolved
+        # (connection open, store intact) stays UNKNOWN — it is never masked
+        # by the planning read's "Nothing was changed" copy.
+        assert webapp._STORE is store and store._conn is real
+        retry = _post(client, sid, form2, OBS2)
+        assert retry.status_code == 503
+        body = html.unescape(retry.get_data(as_text=True))
+        assert webapp._RESULT_UNKNOWN_MESSAGE in body
+        assert "Nothing was changed" not in body
+        assert webapp._RESULT_SAVED_MESSAGE not in body
+        assert len(_rows(sid)) == 1                               # no duplicate, no advance
+        with pytest.raises(RecordStoreConnectionUnsafe):
+            store.load_result_events(sid)                         # still truthfully unsafe
     finally:
         real.close()
         webapp._STORE = None
@@ -293,6 +306,28 @@ def test_context_is_frozen_at_first_recording_and_never_rewritten(client):
     _post(client, sid, _record_form(client, sid, eid), "A later execution.")
     assert _events(sid)[2].context.success_criterion == "Opens within 1 second"
     assert _events(sid)[2].context.measurement_method is None
+
+
+def test_a_source_stated_criterion_is_frozen_in_the_root_context(client):
+    # F725-1: the inventor's criterion written in the source (no planning
+    # override) is canonical captured truth and is frozen, never as absent.
+    answers = list(ELEC_ANSWERS)
+    answers[2] = ("I do not know how much deceleration should count as braking, "
+                  "success criterion: Opens within 5 seconds. I assume the battery "
+                  "will last a full ride.")
+    sid = _journey(client, answers=tuple(answers))
+    [item] = [it for it in _plan_items(SESSION_STORE[sid]["state"])
+              if it.get("success_criterion_provenance") == "source_stated"]
+    assert item["success_criterion_status"] == "captured"
+    _post(client, sid, _record_form(client, sid, item["experiment_id"]), OBS)
+    [root] = _events(sid)
+    assert root.context.success_criterion == "Opens within 5 seconds."
+    assert root.context.measurement_method is None                # still user-defined only
+    others = [it for it in _plan_items(SESSION_STORE[sid]["state"])
+              if it["experiment_id"] != item["experiment_id"]]
+    _post(client, sid, _record_form(client, sid, others[0]["experiment_id"]), OBS2)
+    assert others[0]["success_criterion_status"] == "required"
+    assert _events(sid)[1].context.success_criterion is None      # placeholder never frozen
 
 
 # ==========================================================================
