@@ -241,6 +241,30 @@ _MESSAGE_KEYS = {
      "shown as saved until that can be confirmed. Submitting it again from "
      "here is safe: it will never be recorded twice."):
         "UI_S15_IFC_ERR_UNKNOWN",
+    # Stage 15 Slice 3 (web/app.py save_interface_preparation): its outcomes
+    # render through the page's error / notice slots, so they are registered.
+    ("Verification-preparation inputs can only be kept for a saved project. "
+     "This session is not saved as a project, so nothing can be saved here. "
+     "Nothing was changed."): "UI_S15_PREP_MSG_NO_PROJECT",
+    ("Your saved interactions and their preparation could not be read, so "
+     "they cannot be shown or changed from this page. Nothing was changed."):
+        "UI_S15_PREP_MSG_UNAVAILABLE",
+    ("A submitted interaction is not part of this project. No changes were "
+     "saved."): "UI_S15_PREP_MSG_UNKNOWN_INTERFACE",
+    ("A preparation input exceeds the 1000-character limit. No changes were "
+     "saved."): "UI_S15_PREP_MSG_TOO_LONG",
+    ("Your preparation could not be saved just now. Nothing was changed."):
+        "UI_S15_PREP_MSG_NOT_SAVED",
+    ("Your preparation was saved to your project. It has not been checked, "
+     "and saving it does not verify the interaction."): "UI_S15_PREP_MSG_SAVED",
+    ("Your project already holds exactly these inputs, so nothing needed to "
+     "change."): "UI_S15_PREP_MSG_UNCHANGED",
+    ("Your preparation was saved to your project, but this page could not "
+     "show it. Reload this page to see what your project holds."):
+        "UI_S15_PREP_MSG_SAVED_NOT_SHOWN",
+    ("We could not confirm whether your preparation was saved. Reload this "
+     "page to see what your project currently holds before entering it "
+     "again."): "UI_S15_PREP_MSG_UNKNOWN",
 }
 
 
@@ -554,6 +578,110 @@ UI_STRINGS = {
         "ar": "هذا وصفي الخاص. وأفهم أنه لا يُفحص، وأن التوافق بين الجزأين لا يُقيَّم.",
     },
     "UI_S15_IFC_BUTTON": {"en": "Record the interaction", "ar": "تسجيل التفاعل"},
+    # Stage 15 Slice 3 — the inventor's verification-preparation inputs.
+    "UI_S15_PREP_TITLE": {
+        "en": "Prepare how each interaction will be checked",
+        "ar": "حضّر كيف سيُفحص كل تفاعل",
+    },
+    "UI_S15_PREP_INTRO": {
+        "en": "For each interaction you declared between the two parts, you can record in your own words the intended operating conditions, an observable acceptance criterion and the evidence or review that will be needed. You can fill in one, two or all three, and change or clear them later. They are saved exactly as you write them and are not checked.",
+        "ar": "لكل تفاعل أعلنته بين الجزأين، يمكنك أن تسجّل بكلماتك ظروف التشغيل المقصودة، ومعيار قبول يمكن ملاحظته، وما سيلزم من أدلة أو مراجعة. يمكنك تعبئة حقل واحد أو اثنين أو الثلاثة، وتعديلها أو مسحها لاحقًا. تُحفظ كما تكتبها تمامًا، ولا تُفحص.",
+    },
+    "UI_S15_PREP_CONDITIONS": {
+        "en": "Intended operating conditions",
+        "ar": "ظروف التشغيل المقصودة",
+    },
+    "UI_S15_PREP_ACCEPTANCE": {
+        "en": "Observable acceptance criterion",
+        "ar": "معيار قبول يمكن ملاحظته",
+    },
+    "UI_S15_PREP_EVIDENCE": {
+        "en": "Evidence or review needed",
+        "ar": "الأدلة أو المراجعة اللازمة",
+    },
+    "UI_S15_PREP_CONDITIONS_HINT": {
+        "en": "Under which conditions is this interaction meant to work?",
+        "ar": "في أي ظروف يُفترض أن يعمل هذا التفاعل؟",
+    },
+    "UI_S15_PREP_ACCEPTANCE_HINT": {
+        "en": "What could someone observe that would show the interaction works as you intend?",
+        "ar": "ما الذي يمكن ملاحظته ليُظهر أن التفاعل يعمل كما تقصد؟",
+    },
+    "UI_S15_PREP_EVIDENCE_HINT": {
+        "en": "What evidence, or whose review, will be needed to check it?",
+        "ar": "ما الأدلة، أو مراجعة مَن، التي ستلزم لفحصه؟",
+    },
+    "UI_S15_PREP_LIMIT": {
+        "en": "Each field holds up to {limit} characters (a line break counts as two). Leave a field empty to clear it.",
+        "ar": "يتسع كل حقل حتى {limit} حرف (يُحسب سطر جديد حرفين). اترك الحقل فارغًا لمسحه.",
+    },
+    "UI_S15_PREP_SAVE": {"en": "Save preparation", "ar": "حفظ التحضير"},
+    "UI_S15_PREP_BACK": {"en": "Back to your project", "ar": "العودة إلى مشروعك"},
+    "UI_S15_PREP_LINK": {
+        "en": "Record or edit how each interaction will be checked",
+        "ar": "سجّل أو عدّل كيف سيُفحص كل تفاعل",
+    },
+    "UI_S15_PREP_NOT_RECORDED": {"en": "Not recorded yet", "ar": "لم يُسجَّل بعد"},
+    "UI_S15_PREP_NONE": {
+        "en": "Preparation: none of the three inputs is recorded yet.",
+        "ar": "التحضير: لم يُسجَّل أي من المُدخلات الثلاثة بعد.",
+    },
+    "UI_S15_PREP_PARTIAL": {
+        "en": "Preparation: partly recorded; the inputs marked below as not recorded yet are still missing.",
+        "ar": "التحضير: مُسجَّل جزئيًا؛ ما زالت المُدخلات المشار إليها أدناه بأنها لم تُسجَّل بعد ناقصة.",
+    },
+    "UI_S15_PREP_ALL": {
+        "en": "Preparation: all three inputs are recorded. They have not been checked, and this does not verify the interaction.",
+        "ar": "التحضير: المُدخلات الثلاثة مُسجَّلة. لم تُفحص، وهذا لا يعني التحقق من التفاعل.",
+    },
+    "UI_S15_PREP_OWNER_STATED": {
+        "en": "Recorded by you as preparation; not checked, not a result.",
+        "ar": "سجّلته أنت كتحضير؛ لم يُفحص، وليس نتيجة.",
+    },
+    "UI_S15_PREP_DRAFT_UNSAVED": {
+        "en": "What you typed is shown below, but it has NOT been saved.",
+        "ar": "ما كتبته معروض أدناه، لكنه لم يُحفظ.",
+    },
+    "UI_S15_PREP_NO_INTERFACES": {
+        "en": "No interaction between the parts has been recorded yet. Record an interaction on your project page first.",
+        "ar": "لم يُسجَّل أي تفاعل بين الجزأين بعد. سجّل تفاعلًا في صفحة مشروعك أولًا.",
+    },
+    "UI_S15_PREP_MSG_NO_PROJECT": {
+        "en": "Verification-preparation inputs can only be kept for a saved project. This session is not saved as a project, so nothing can be saved here. Nothing was changed.",
+        "ar": "لا يمكن الاحتفاظ بمُدخلات التحضير للتحقق إلا لمشروع محفوظ. هذه الجلسة غير محفوظة كمشروع، لذا لا يمكن حفظ شيء هنا. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_PREP_MSG_UNAVAILABLE": {
+        "en": "Your saved interactions and their preparation could not be read, so they cannot be shown or changed from this page. Nothing was changed.",
+        "ar": "تعذّرت قراءة تفاعلاتك المحفوظة وتحضيرها، لذا لا يمكن عرضها أو تغييرها من هذه الصفحة. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_PREP_MSG_UNKNOWN_INTERFACE": {
+        "en": "A submitted interaction is not part of this project. No changes were saved.",
+        "ar": "أحد التفاعلات المُرسلة ليس جزءًا من هذا المشروع. لم يُحفظ أي تغيير.",
+    },
+    "UI_S15_PREP_MSG_TOO_LONG": {
+        "en": "A preparation input exceeds the 1000-character limit. No changes were saved.",
+        "ar": "أحد مُدخلات التحضير يتجاوز حد 1000 حرف. لم يُحفظ أي تغيير.",
+    },
+    "UI_S15_PREP_MSG_NOT_SAVED": {
+        "en": "Your preparation could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ تحضيرك الآن. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_PREP_MSG_SAVED": {
+        "en": "Your preparation was saved to your project. It has not been checked, and saving it does not verify the interaction.",
+        "ar": "حُفظ تحضيرك في مشروعك. لم يُفحص، وحفظه لا يعني التحقق من التفاعل.",
+    },
+    "UI_S15_PREP_MSG_UNCHANGED": {
+        "en": "Your project already holds exactly these inputs, so nothing needed to change.",
+        "ar": "مشروعك يحتفظ بهذه المُدخلات نفسها تمامًا، لذا لم يلزم أي تغيير.",
+    },
+    "UI_S15_PREP_MSG_SAVED_NOT_SHOWN": {
+        "en": "Your preparation was saved to your project, but this page could not show it. Reload this page to see what your project holds.",
+        "ar": "حُفظ تحضيرك في مشروعك، لكن تعذّر على هذه الصفحة عرضه. أعد تحميل الصفحة لترى ما يحتفظ به مشروعك.",
+    },
+    "UI_S15_PREP_MSG_UNKNOWN": {
+        "en": "We could not confirm whether your preparation was saved. Reload this page to see what your project currently holds before entering it again.",
+        "ar": "تعذّر علينا التأكد مما إذا كان تحضيرك قد حُفظ. أعد تحميل الصفحة لترى ما يحتفظ به مشروعك حاليًا قبل إدخاله مرة أخرى.",
+    },
     "UI_S15_IFC_ERR_NOT_SAVED": {
         "en": "That interaction could not be saved just now. Nothing was changed.",
         "ar": "تعذّر حفظ هذا التفاعل الآن. لم يتم تغيير أي شيء.",

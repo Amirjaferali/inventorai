@@ -75,6 +75,10 @@ from engine.subsystem_model import (
     InterfaceError, SubsystemInterface, validate_interfaces,
     same_interface_material, MAX_INTERFACE_DESCRIPTION_LENGTH,
     MAX_SUBSYSTEM_INTERFACES_PER_PROJECT,
+    # Stage 15 Slice 3: the inventor's verification-preparation inputs.
+    InterfacePreparation, PREPARATION_FIELDS, MAX_INTERFACE_PREPARATION_LENGTH,
+    merged_preparation, preparation_for, valid_preparation_text,
+    validate_interface_preparations,
 )
 from engine.evidence_reference import (
     EvidenceReference, validate_reference_history, validate_new_reference,
@@ -213,6 +217,20 @@ class SubsystemInterfacesCorrupt(StoreError):
     out of order, orphaned from or inconsistent with its durable composition.
     Fail-closed for the WHOLE collection: nothing partial is returned and
     nothing is repaired, deleted or reinterpreted."""
+
+
+class InterfacePreparationRejected(StoreError):
+    """Stage 15 Slice 3: a submitted preparation change names no interface of
+    THIS project's durable interface collection (inside the write
+    transaction), or carries an unknown field or invalid text. Decided before
+    any row is written; the whole submission is rolled back."""
+
+
+class InterfacePreparationsCorrupt(StoreError):
+    """Stage 15 Slice 3: a project's durable preparation rows are malformed,
+    empty, duplicated or orphaned from its durable interfaces. Fail-closed for
+    the WHOLE collection: nothing partial is returned and nothing is
+    repaired, deleted, remapped or reinterpreted."""
 
 
 class AdoptionCapReached(StoreError):
@@ -358,6 +376,11 @@ class RecordStore(Protocol):
                                                      submission_key: str): ...
     def append_subsystem_interface(self, project_id: str, interface,
                                    submission_key: str) -> tuple: ...
+    # Stage 15 Slice 3 the inventor's current verification-preparation inputs
+    # per interface (additive; see the subsystem_interface_preparations note).
+    def load_subsystem_integration(self, project_id: str) -> tuple: ...
+    def load_interface_preparations(self, project_id: str) -> tuple: ...
+    def apply_interface_preparation_delta(self, project_id: str, delta) -> None: ...
 
 
 _SCHEMA = (
@@ -1057,6 +1080,50 @@ _SUBSYSTEM_INTERFACES_SCHEMA = (
     "ON subsystem_interfaces (interface_id)",
 )
 
+# Stage 15 Slice 3 — the ``subsystem_interface_preparations`` sidecar: the
+# inventor's CURRENT verification-preparation inputs for ONE existing durable
+# interface (intended operating conditions, an observable acceptance criterion,
+# the evidence or review needed). A CURRENT-VALUE sidecar (upsert / delete; no
+# revision history), keyed ONLY by the existing ``(project_id, interface_id)``
+# and anchored by a composite foreign key to that exact durable interface row,
+# so a row can never name another project's interface or an interface that
+# does not exist. Each input is independently optional (NULL = not recorded);
+# a row always records at least one (clearing every input deletes the row —
+# no semantically empty record). No provenance column: a stored row is by
+# construction the inventor's own text (OWNER_STATED, UNVALIDATED), never
+# evidence, a result, a validation or a readiness value. The append-only
+# ``subsystem_interfaces`` table is NOT widened or updated. The CHECKs are a
+# database backstop only; the loader re-validates every row against the
+# durable interfaces. Additive and idempotent (``IF NOT EXISTS``); touches no
+# existing table, column or row; nothing is backfilled. Rollback is
+# disable-and-ignore (stop reading the table).
+_PREPARATION_TEXT_CHECK = (
+    "({col} IS NULL OR (typeof({col}) = 'text' AND length({col}) BETWEEN 1 AND "
+    + str(MAX_INTERFACE_PREPARATION_LENGTH)
+    + " AND instr(CAST({col} AS BLOB), X'00') = 0))")
+_INTERFACE_PREPARATIONS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS subsystem_interface_preparations (
+        project_id            TEXT NOT NULL,
+        interface_id          TEXT NOT NULL,
+        operating_conditions  TEXT,
+        acceptance_criterion  TEXT,
+        evidence_needed       TEXT,
+        PRIMARY KEY (project_id, interface_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, interface_id)
+            REFERENCES subsystem_interfaces(project_id, interface_id),
+        CHECK (typeof(interface_id) = 'text' AND length(interface_id) = 36),
+        CHECK (%s),
+        CHECK (%s),
+        CHECK (%s),
+        CHECK (operating_conditions IS NOT NULL
+               OR acceptance_criterion IS NOT NULL
+               OR evidence_needed IS NOT NULL)
+    )
+    """ % tuple(_PREPARATION_TEXT_CHECK.format(col=c) for c in PREPARATION_FIELDS),
+)
+
 SUBSYSTEM_INTERFACE_INSERTED = "INSERTED"
 SUBSYSTEM_INTERFACE_EXACT_REPLAY = "EXACT_REPLAY"
 
@@ -1170,6 +1237,7 @@ class SqliteRecordStore:
             self._migrate_need_routing(self._conn)
             self._migrate_project_subsystems(self._conn)
             self._migrate_subsystem_interfaces(self._conn)
+            self._migrate_interface_preparations(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -1403,6 +1471,15 @@ class SqliteRecordStore:
         for stmt in _SUBSYSTEM_INTERFACES_SCHEMA:
             conn.execute(stmt)
 
+    def _migrate_interface_preparations(self, conn) -> None:
+        """Stage 15 Slice 3 forward migration: additively create the
+        ``subsystem_interface_preparations`` sidecar. Idempotent (``IF NOT
+        EXISTS``) on a fresh and on an existing populated database; touches no
+        existing table, column or row; nothing is backfilled or inferred.
+        Rollback is disable-and-ignore (stop reading the table)."""
+        for stmt in _INTERFACE_PREPARATIONS_SCHEMA:
+            conn.execute(stmt)
+
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
         """A durability-safe, collision-safe identifier for a NEWLY created
@@ -1604,6 +1681,129 @@ class SqliteRecordStore:
             subsystems = self.load_project_subsystems(project_id)
             interfaces, _keys = self._validated_interfaces(project_id, subsystems)
         return subsystems, interfaces
+
+    # --- Stage 15 Slice 3: interface verification preparation (current value) --
+    _PREPARATION_COLUMNS = ("interface_id, " + ", ".join(PREPARATION_FIELDS))
+
+    def _validated_preparations(self, project_id, interfaces):
+        """This project's durable preparation rows validated WHOLE against its
+        durable ``interfaces`` (by exact id); ``InterfacePreparationsCorrupt``
+        on anything malformed, empty, duplicated or orphaned (nothing
+        partial, nothing remapped)."""
+        rows = self._conn.execute(
+            "SELECT " + self._PREPARATION_COLUMNS + " FROM "
+            "subsystem_interface_preparations WHERE project_id = ? "
+            "ORDER BY interface_id ASC", (project_id,)).fetchall()
+        if not rows:
+            return ()
+        items = tuple(
+            InterfacePreparation(interface_id=row[0], operating_conditions=row[1],
+                                 acceptance_criterion=row[2], evidence_needed=row[3])
+            for row in rows)
+        try:
+            return validate_interface_preparations(items, interfaces)
+        except InterfaceError as exc:
+            raise InterfacePreparationsCorrupt(str(exc)) from None
+
+    def load_subsystem_integration(self, project_id: str) -> tuple:
+        """``(subsystems, interfaces, preparations)``: this project's durable
+        composition, its Owner-declared interfaces AND the inventor's current
+        verification-preparation inputs, read inside ONE consistent read
+        snapshot. Each collection is validated WHOLE (``ProjectSubsystemsCorrupt``
+        / ``SubsystemInterfacesCorrupt`` / ``InterfacePreparationsCorrupt``;
+        nothing partial). No project -> ``ProjectNotFound``. IR-01: a
+        connection left UNSAFE refuses BEFORE any SELECT
+        (``RecordStoreConnectionUnsafe``). Read-only; project-scoped; logs
+        nothing."""
+        if self._connection_unsafe:
+            raise RecordStoreConnectionUnsafe(
+                "connection is inside an unresolved transaction; its reads are "
+                "not committed durable state")
+        with self.read_snapshot():
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _keys = self._validated_interfaces(project_id, subsystems)
+            preparations = self._validated_preparations(project_id, interfaces)
+        return subsystems, interfaces, preparations
+
+    def load_interface_preparations(self, project_id: str) -> tuple:
+        """This project's durable verification-preparation inputs (``()`` for
+        every project without any), in interface order. See
+        ``load_subsystem_integration``."""
+        return self.load_subsystem_integration(project_id)[2]
+
+    def apply_interface_preparation_delta(self, project_id: str, delta) -> None:
+        """Apply ONE complete submitted preparation delta atomically.
+
+        ``delta`` maps an ``interface_id`` to a mapping of preparation field ->
+        trimmed text (record / edit that field) or ``None`` (clear that field
+        only). Fields absent from a change, and interfaces absent from
+        ``delta``, are never touched — this is not a replace-the-whole-map
+        write. When a change leaves every field of an interface cleared its row
+        is deleted (nothing recorded -> no stored value).
+
+        The delta is validated structurally BEFORE the transaction opens
+        (``InterfacePreparationRejected``, nothing written). Then ONE ``BEGIN
+        IMMEDIATE`` transaction, against DURABLE truth: the project exists
+        (``ProjectNotFound``); its composition, interfaces and existing
+        preparations validate (the corrupt errors); EVERY submitted id is an
+        interface of THIS project's durable collection by exact identity
+        (``InterfacePreparationRejected`` otherwise — never matched by list
+        position, endpoints or text); only then is each interface's merged
+        value upserted or deleted. Any failure before COMMIT rolls the ENTIRE
+        delta back: no partial save. An exact retry of a committed submission
+        writes the same current values and creates nothing new. IR-01: never
+        writes on top of an unresolved connection."""
+        try:
+            items = list(delta.items())
+        except AttributeError:
+            raise InterfacePreparationRejected("delta must be a mapping") from None
+        for interface_id, changes in items:
+            if not isinstance(interface_id, str) or not interface_id:
+                raise InterfacePreparationRejected("malformed interface identity")
+            try:
+                change_items = list(changes.items())
+            except AttributeError:
+                raise InterfacePreparationRejected("changes must be a mapping") from None
+            if not change_items:
+                raise InterfacePreparationRejected("an empty change is not a change")
+            for field_name, text in change_items:
+                if field_name not in PREPARATION_FIELDS:
+                    raise InterfacePreparationRejected("unknown preparation field")
+                if text is not None and not valid_preparation_text(text):
+                    raise InterfacePreparationRejected("malformed preparation text")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _keys = self._validated_interfaces(project_id, subsystems)
+            current = self._validated_preparations(project_id, interfaces)
+            known = {item.interface_id for item in interfaces}
+            for interface_id, changes in items:
+                if interface_id not in known:
+                    raise InterfacePreparationRejected(
+                        "the change names no interface of this project")
+                try:
+                    merged = merged_preparation(
+                        interface_id, preparation_for(current, interface_id),
+                        changes)
+                except InterfaceError:
+                    raise InterfacePreparationRejected(
+                        "the change is not a valid preparation") from None
+                if merged is None:
+                    self._conn.execute(
+                        "DELETE FROM subsystem_interface_preparations "
+                        "WHERE project_id = ? AND interface_id = ?",
+                        (project_id, interface_id))
+                    continue
+                self._conn.execute(
+                    "INSERT INTO subsystem_interface_preparations (project_id, "
+                    + self._PREPARATION_COLUMNS + ") VALUES (?, ?, ?, ?, ?) "
+                    "ON CONFLICT (project_id, interface_id) DO UPDATE SET "
+                    "operating_conditions = excluded.operating_conditions, "
+                    "acceptance_criterion = excluded.acceptance_criterion, "
+                    "evidence_needed = excluded.evidence_needed",
+                    (project_id, interface_id, merged.operating_conditions,
+                     merged.acceptance_criterion, merged.evidence_needed))
 
     def load_subsystem_interfaces(self, project_id: str) -> tuple:
         """This project's durable Owner-declared interfaces in

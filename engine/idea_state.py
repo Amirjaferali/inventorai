@@ -732,6 +732,15 @@ class IdeaState:
     # replay: they never change the root domain, a question, a gap, maturity,
     # progression, scoring or domain activation. Empty by default.
     subsystem_interfaces : list = field(default_factory=list)
+    # Stage 15 Slice 3: the inventor's CURRENT verification-preparation
+    # inputs per interface (frozen ``engine.subsystem_model.InterfacePreparation``
+    # values), attached from the durable `subsystem_interface_preparations`
+    # sidecar by the web layer's ONE composition attachment seam. ``None``
+    # means NOT ATTACHED (no surface may then claim that nothing is recorded);
+    # a list — possibly empty — is the attached durable truth. Planning inputs
+    # only: outside the answer replay, never evidence, a result, a gap, a
+    # readiness, progression or compatibility input.
+    subsystem_interface_preparations : Optional[list] = None
 
     # T2-A Quantified Requirements Slice 1: the in-memory CARRIER of the
     # project's validated durable requirement-quantity history (a list of

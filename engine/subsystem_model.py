@@ -62,6 +62,19 @@ interfaces may join the same two parts. A part's name, function and domain are
 never copied into an interface — they stay owned by the part itself. There is
 no interface category or taxonomy, no inference of an interface from part
 names or domains, no generic graph and no relation engine.
+
+Stage 15 Slice 3 — Interface Verification Preparation (additive): this module
+is ALSO the semantic owner of the inventor's own CURRENT verification-
+preparation inputs for ONE existing durable interface — the intended operating
+conditions, an observable acceptance criterion and the evidence or review
+needed, each independently optional while the inventor is still preparing.
+They are attributes of that ONE interface, keyed ONLY by its existing
+``interface_id`` (no second identity), OWNER_STATED and UNVALIDATED by
+construction; the append-only ``SubsystemInterface`` declaration itself is NOT
+changed. They are planning inputs, never evidence, a verification result, a
+compatibility, feasibility or readiness fact, a gap closure or an IRL input,
+and nothing here parses, grades, infers or generates any of them. The only
+derived statement is factual presence (none / some / all three recorded).
 """
 
 import re
@@ -330,3 +343,127 @@ def subsystem_domains(state):
     """Ordered list of the non-``None`` domain references across the project's
     subsystems (metadata; not root domains)."""
     return [s.domain for s in project_subsystems(state) if getattr(s, "domain", None) is not None]
+
+
+# --- Stage 15 Slice 3: the inventor's verification-preparation inputs --------
+# The three preparation inputs the Slice-2 Validation Plan step already asks
+# for, in that step's own order. Canonical field names are internal only.
+PREPARATION_OPERATING_CONDITIONS = "operating_conditions"
+PREPARATION_ACCEPTANCE_CRITERION = "acceptance_criterion"
+PREPARATION_EVIDENCE_NEEDED = "evidence_needed"
+PREPARATION_FIELDS = (PREPARATION_OPERATING_CONDITIONS,
+                      PREPARATION_ACCEPTANCE_CRITERION,
+                      PREPARATION_EVIDENCE_NEEDED)
+# Explicit per-field bound (characters), the bound the other Owner-authored
+# planning fields already use. Over-limit input is rejected, never truncated.
+MAX_INTERFACE_PREPARATION_LENGTH = 1000
+
+# Derived presence of the three inputs — a factual statement about which
+# fields hold text, never a status, a PASS, a completion award or a verdict.
+PREPARATION_NONE_RECORDED = "none_recorded"
+PREPARATION_PARTLY_RECORDED = "partly_recorded"
+PREPARATION_ALL_RECORDED = "all_recorded"
+
+
+@dataclass(frozen=True)
+class InterfacePreparation:
+    """The inventor's CURRENT verification-preparation inputs for ONE existing
+    interface, identified ONLY by that interface's ``interface_id``. Each
+    field is the Owner's own trimmed text or ``None`` (not recorded). A value
+    with every field ``None`` is never stored — it means nothing is recorded."""
+    interface_id: str
+    operating_conditions: Optional[str] = None
+    acceptance_criterion: Optional[str] = None
+    evidence_needed: Optional[str] = None
+
+    def value(self, field_name):
+        if field_name not in PREPARATION_FIELDS:
+            raise InterfaceError("unknown preparation field")
+        return getattr(self, field_name)
+
+    def recorded_fields(self):
+        """The fields that hold text, in the canonical field order."""
+        return tuple(f for f in PREPARATION_FIELDS if getattr(self, f) is not None)
+
+    def missing_fields(self):
+        """The fields not recorded yet, in the canonical field order."""
+        return tuple(f for f in PREPARATION_FIELDS if getattr(self, f) is None)
+
+
+def valid_preparation_text(value):
+    """A stored preparation input is exactly what the route stores: a
+    non-empty, already-trimmed string (internal line breaks kept) within the
+    bound and free of NUL."""
+    return valid_subsystem_text(value, MAX_INTERFACE_PREPARATION_LENGTH)
+
+
+def preparation_presence(preparation):
+    """The derived presence of the three inputs for ONE interface
+    (``preparation`` may be ``None``: nothing recorded). Factual only: all
+    three present never means verified, sufficient, correct or compatible."""
+    count = 0 if preparation is None else len(preparation.recorded_fields())
+    if count == 0:
+        return PREPARATION_NONE_RECORDED
+    if count == len(PREPARATION_FIELDS):
+        return PREPARATION_ALL_RECORDED
+    return PREPARATION_PARTLY_RECORDED
+
+
+def merged_preparation(interface_id, current, changes):
+    """The preparation that results from applying ``changes`` (a mapping of
+    field name -> trimmed text, or ``None`` to clear that field) to
+    ``current`` (the stored ``InterfacePreparation`` or ``None``). Fields
+    absent from ``changes`` keep their current value. Returns ``None`` when
+    every field ends up cleared (nothing recorded -> no stored value). Raises
+    ``InterfaceError`` for an unknown field or invalid text."""
+    values = {f: (None if current is None else getattr(current, f))
+              for f in PREPARATION_FIELDS}
+    try:
+        items = list(changes.items())
+    except AttributeError:
+        raise InterfaceError("preparation changes must be a mapping") from None
+    for field_name, text in items:
+        if field_name not in PREPARATION_FIELDS:
+            raise InterfaceError("unknown preparation field")
+        if text is not None and not valid_preparation_text(text):
+            raise InterfaceError("preparation text is empty, invalid or too long")
+        values[field_name] = text
+    if all(v is None for v in values.values()):
+        return None
+    return InterfacePreparation(interface_id=interface_id, **values)
+
+
+def validate_interface_preparations(preparations, interfaces):
+    """Validate a project's stored preparation inputs against its OWN durable
+    interfaces and return them as a tuple in the interfaces' order, or raise
+    ``InterfaceError``. Empty is valid. Every entry must name a DISTINCT
+    interface of ``interfaces`` by its exact id (never by position, endpoint
+    or text), hold at least one input, and every present input must be valid
+    stored text. A preparation for an interface that is not in the collection
+    is an orphan and invalid — it is never remapped or dropped."""
+    items = tuple(preparations or ())
+    if not items:
+        return ()
+    order = [item.interface_id for item in (interfaces or ())]
+    seen = set()
+    for item in items:
+        if not isinstance(item, InterfacePreparation):
+            raise InterfaceError("preparation entry is not a preparation")
+        if item.interface_id not in order or item.interface_id in seen:
+            raise InterfaceError("preparation names no distinct interface of this project")
+        seen.add(item.interface_id)
+        if not item.recorded_fields():
+            raise InterfaceError("a stored preparation records nothing")
+        for field_name in item.recorded_fields():
+            if not valid_preparation_text(getattr(item, field_name)):
+                raise InterfaceError("preparation text is invalid")
+    return tuple(sorted(items, key=lambda p: order.index(p.interface_id)))
+
+
+def preparation_for(preparations, interface_id):
+    """The preparation of exactly ``interface_id`` in ``preparations`` or
+    ``None`` — resolution by identity only."""
+    for item in preparations or ():
+        if item.interface_id == interface_id:
+            return item
+    return None

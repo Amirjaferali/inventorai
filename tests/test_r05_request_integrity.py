@@ -27,6 +27,9 @@ MUTATIONS = (
     # Stage 15 Slice 2: the inventor's explicit declaration of how the two
     # parts of an integrated invention interact.
     "/session/<sid>/declare-interface",
+    # Stage 15 Slice 3: the inventor's current verification-preparation inputs
+    # per declared interaction (current-value planning save).
+    "/session/<sid>/interface-preparation",
     "/session/<sid>/decision/declare-context", "/session/<sid>/decision/declare-alternative",
     "/session/<sid>/decision/refine-alternative", "/session/<sid>/decision/withdraw-alternative",
     "/session/<sid>/keep-snapshot", "/session/<sid>/success-criteria", "/session/<sid>",

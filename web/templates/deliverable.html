@@ -201,6 +201,20 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
       <p style="margin:2px 0 0 0;font-size:13px;color:#555" data-interface-provenance>{{ t('UI_S15_IFC_PROVENANCE') }}</p>
       <p style="margin:2px 0 0 0;font-size:13px" data-interface-action><strong>{{ t('UI_S15_IFC_ACTION_LABEL') }}</strong> {{ t('UI_S15_IFC_ACTION') }}</p>
       <p style="margin:2px 0 0 0;font-size:13px" data-interface-not-established>{{ t('UI_S15_IFC_NOT_ESTABLISHED') }}</p>
+      {#- Stage 15 Slice 3: the inventor's own preparation inputs for THIS
+          interaction (verbatim, escaped), with the derived presence line.
+          Absent when the preparation was not read — never "not recorded". -#}
+      {% if ifc.preparation %}
+      <div class="interface-preparation" data-interface-preparation style="margin:4px 0 0 0;font-size:13px">
+        <p style="margin:0" data-prep-presence>{{ t(ifc.preparation.presence_key) }}</p>
+        <dl style="margin:2px 0 0 0">
+          {% for fld in ifc.preparation.fields %}
+          <dt style="font-weight:bold;margin-top:2px">{{ t(fld.label_key) }}</dt>
+          <dd style="margin:0 12px;white-space:pre-wrap" data-prep-value>{% if fld.text is not none %}<bdi dir="auto">{{ fld.text }}</bdi>{% else %}<span style="color:#555">{{ t('UI_S15_PREP_NOT_RECORDED') }}</span>{% endif %}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+      {% endif %}
     </div>
     {% endfor %}
     {% else %}
@@ -923,7 +937,9 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
      untouched, all metadata is preserved verbatim, and confidence is unchanged. #}
   {% set ns = namespace(seen=[]) %}
   {% for st in grp[1] %}
-  {% set key = [st.statement, st.responsibility_label, st.evidence_category, st.closure_condition, st.provenance, st.confidence_label] %}
+  {# Stage 15 Slice 3: an interface step's recorded preparation inputs are part
+     of its visible row, so they are part of the collapse key too. #}
+  {% set key = [st.statement, st.responsibility_label, st.evidence_category, st.closure_condition, st.provenance, st.confidence_label, st.interface_preparation] %}
   {% if key not in ns.seen %}
   {% set _ = ns.seen.append(key) %}
   {% set cnt = grp[1]
@@ -932,7 +948,8 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         | selectattr('evidence_category', 'equalto', st.evidence_category)
         | selectattr('closure_condition', 'equalto', st.closure_condition)
         | selectattr('provenance', 'equalto', st.provenance)
-        | selectattr('confidence_label', 'equalto', st.confidence_label) | list | length %}
+        | selectattr('confidence_label', 'equalto', st.confidence_label)
+        | selectattr('interface_preparation', 'equalto', st.interface_preparation) | list | length %}
   <div class="field-label">{{ st.statement }}{% if cnt > 1 %} <span class="vp-count" style="font-weight:normal;color:#667">{{ t('UI_B_DELIV_091A') }}{{ cnt }}{{ t('UI_B_DELIV_091B') }}</span>{% endif %}</div>
   {# Workstream 7 (contract §3.2 D5/C3): for the UNDETERMINED responsibility
      token the public presentation is the exact owner wording rendered as two
@@ -946,6 +963,17 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="vp-meta">{% if st.responsibility_label != 'Responsibility undetermined' %}{{ t('UI_B_DELIV_094') }} {{ st.responsibility_label }} &nbsp;&middot;&nbsp; {% endif %}{{ t('UI_B_DELIV_095') }} {{ st.evidence_category }} &nbsp;&middot;&nbsp; {{ t('UI_B_DELIV_096') }} {{ st.closure_condition }} &nbsp;&middot;&nbsp; {{ t('UI_B_DELIV_018') }} {{ st.provenance }}{% if st.confidence_label != 'Confidence undetermined' %} &nbsp;&middot;&nbsp; {{ t('UI_B_DELIV_097') }} {{ st.confidence_label }}{% endif %}</div>
   {# Workstream 7 (contract §3.4 D7/D8 per C2): render the per-step advisory
      verbatim when present (the two pending kinds only), one line per div. #}
+  {# Stage 15 Slice 3: the inventor's own recorded preparation inputs for a
+     declared-interface step, verbatim under fixed bilingual labels. #}
+  {% if st.interface_preparation %}
+  {% set prep_labels = {'operating_conditions': 'UI_S15_PREP_CONDITIONS', 'acceptance_criterion': 'UI_S15_PREP_ACCEPTANCE', 'evidence_needed': 'UI_S15_PREP_EVIDENCE'} %}
+  <div class="vp-preparation" data-vp-preparation style="font-size:12px;color:#445;line-height:1.5;margin:0 0 4px 0">
+    {% for item in st.interface_preparation %}
+    <div><strong>{{ t(prep_labels[item.field]) }}:</strong> <bdi dir="auto" style="white-space:pre-wrap">{{ item.text }}</bdi></div>
+    {% endfor %}
+    <div style="color:#667">{{ t('UI_S15_PREP_OWNER_STATED') }}</div>
+  </div>
+  {% endif %}
   {% if st.advisory %}
   {% for advisory_line in st.advisory.split('\n') %}
   <div class="vp-advisory" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">{{ advisory_line }}</div>
