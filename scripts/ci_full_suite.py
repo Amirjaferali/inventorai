@@ -5,7 +5,8 @@ three independent runners, proven complete by a fail-closed central audit.
 
   * ``--mode shard``: verify the tested-merge identity, run the NORMAL full
     pytest collection, keep only the whole test files deterministically assigned
-    to this shard (``1 + int(SHA256(repo-relative POSIX path)[:8], 16) % 3``),
+    to this shard (the static ``BROWSER_SHARD`` placement for the current
+    real-browser files, else ``1 + int(SHA256(repo-relative POSIX path)[:8], 16) % 3``),
     execute them serially and write JUnit plus a structured evidence JSON.
   * ``--mode audit``: accept the three shard evidence packages only when they
     prove, for the current run / attempt / tested merge / tree, that the three
@@ -33,6 +34,7 @@ import subprocess
 import sys
 import time
 import xml.etree.ElementTree as ET
+from types import MappingProxyType
 
 SHARD_COUNT = 3
 SCHEMA = "inventorai-ci-full-suite-shard-v1"
@@ -73,9 +75,49 @@ def file_of(nodeid):
     return nodeid.split("::", 1)[0]
 
 
-def shard_of(path, count=SHARD_COUNT):
-    """Deterministic whole-file shard (1..count) from the file path alone."""
+# Performance-only placement of the current real-browser test files (each drives
+# Playwright Chromium itself or through the fixtures of
+# tests/test_draft_l2_local_continuity.py), chosen once from the Pilot-01 hosted
+# timings so the three shards carry similar wall time. It never decides WHETHER a
+# file runs: a file missing from this mapping (a new browser file included) falls
+# back to the SHA-256 rule, and completeness is proven by the audit either way.
+BROWSER_SHARD = MappingProxyType({
+    "tests/test_a1_saved_journey_browser.py": 3,
+    "tests/test_cap02_project_compass_browser.py": 3,
+    "tests/test_cap04_gap_action_pack_browser.py": 1,
+    "tests/test_cap08_assumption_dependency_browser.py": 1,
+    "tests/test_cap09_slice3_test_hypothesis_browser.py": 1,
+    "tests/test_cap09_slice4_test_variable_browser.py": 3,
+    "tests/test_cap10_declared_contradiction_browser.py": 1,
+    "tests/test_cap11_evidence_details_browser.py": 1,
+    "tests/test_correction_preview_browser.py": 2,
+    "tests/test_deliverable_navigation_browser.py": 3,
+    "tests/test_draft_l2_local_continuity.py": 3,
+    "tests/test_draft_preview_browser.py": 3,
+    "tests/test_f09_planning_form_draft_recovery.py": 2,
+    "tests/test_p5_2_draft_account_switch.py": 1,
+    "tests/test_r05_browser_request_integrity.py": 3,
+    "tests/test_safe_question_routing_pf_q2_weak_recovery_browser.py": 3,
+    "tests/test_saved_project_filter_browser.py": 2,
+    "tests/test_stage22_action_summary_browser.py": 2,
+    "tests/test_stage22_decision_trace_browser.py": 2,
+    "tests/test_success_criteria_workflow_browser.py": 1,
+    "tests/test_uqtr01_core_serving.py": 3,
+    "tests/test_uqtr01_mechanical_path_n_owner_friendly.py": 2,
+    "tests/test_uqtr01_target_binding_browser.py": 3,
+})
+
+
+def hash_shard(path, count=SHARD_COUNT):
+    """The default whole-file shard (1..count) from the SHA-256 of the path alone."""
     return 1 + int(hashlib.sha256(path.encode("utf-8")).hexdigest()[:8], 16) % count
+
+
+def shard_of(path, count=SHARD_COUNT):
+    """The canonical whole-file shard (1..count): BROWSER_SHARD, else hash_shard."""
+    if count == SHARD_COUNT and path in BROWSER_SHARD:
+        return BROWSER_SHARD[path]
+    return hash_shard(path, count)
 
 
 def collection_digest(nodeids):

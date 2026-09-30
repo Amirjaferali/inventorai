@@ -1,7 +1,8 @@
 """CI FULL-suite sharding pilot — scripts/ci_full_suite.py and its workflow jobs.
 
 Pins the bounded pilot contract:
-  * the deterministic whole-file SHA-256 partition over exactly three shards;
+  * the deterministic whole-file partition over exactly three shards: the static
+    performance-only BROWSER_SHARD placement, else the SHA-256 rule;
   * the shard plugin: normal full collection, deselection of other shards'
     files only, per-node outcomes, collection errors, exit status;
   * the fail-closed central audit, including every adversarial case the pilot
@@ -50,7 +51,8 @@ EXPECTED = {"run_id": "1001", "run_attempt": "2", "expected_base": BASE, "expect
 ])
 def test_known_sha256_vectors(path, prefix, shard):
     assert hashlib.sha256(path.encode("utf-8")).hexdigest()[:8] == prefix
-    assert cfs.shard_of(path) == shard == 1 + int(prefix, 16) % 3
+    assert cfs.hash_shard(path) == shard == 1 + int(prefix, 16) % 3
+    assert cfs.shard_of(path) == cfs.BROWSER_SHARD.get(path, shard)
 
 
 def test_partition_is_deterministic_across_interpreters_and_hash_seeds():
@@ -63,11 +65,85 @@ def test_partition_is_deterministic_across_interpreters_and_hash_seeds():
                              text=True, env=dict(os.environ, PYTHONHASHSEED=seed), check=True).stdout
         assert json.loads(out) == here
     assert set(here) == {1, 2, 3}
+    assert set(cfs.BROWSER_SHARD) <= set(paths)
 
 
 def test_shard_range_is_one_to_three():
     for i in range(2000):
         assert 1 <= cfs.shard_of(f"tests/test_{i}.py") <= 3
+    assert set(cfs.BROWSER_SHARD.values()) == {1, 2, 3}
+    assert all(type(v) is int for v in cfs.BROWSER_SHARD.values())
+
+
+def _browser_shard_literal():
+    tree = ast.parse((ROOT / "scripts" / "ci_full_suite.py").read_text(encoding="utf-8"))
+    (node,) = [n for n in tree.body if isinstance(n, ast.Assign)
+               and [t.id for t in n.targets if isinstance(t, ast.Name)] == ["BROWSER_SHARD"]]
+    return node.value
+
+
+def test_browser_override_is_one_immutable_static_literal_without_duplicates():
+    call = _browser_shard_literal()
+    assert isinstance(call, ast.Call) and call.func.id == "MappingProxyType" and len(call.args) == 1
+    literal = call.args[0]
+    assert isinstance(literal, ast.Dict)
+    assert all(isinstance(k, ast.Constant) and isinstance(v, ast.Constant)
+               for k, v in zip(literal.keys, literal.values))              # no runtime / timing input
+    keys = [k.value for k in literal.keys]
+    assert len(keys) == len(set(keys)) == len(cfs.BROWSER_SHARD)           # no path listed twice
+    assert keys == sorted(keys)
+    with pytest.raises(TypeError):
+        cfs.BROWSER_SHARD["tests/test_alpha.py"] = 1
+
+
+def test_browser_override_lists_only_current_real_browser_files():
+    for path in cfs.BROWSER_SHARD:
+        assert re.fullmatch(r"tests/test_[a-z0-9_]+\.py", path), path
+        source = (ROOT / path).read_text(encoding="utf-8")
+        assert ("playwright" in source                                      # drives Chromium itself
+                or "from tests.test_draft_l2_local_continuity import" in source), path   # or its fixture
+
+
+@pytest.mark.parametrize("path", sorted(cfs.BROWSER_SHARD))
+def test_browser_override_files_map_to_their_intended_shard(path):
+    assert cfs.shard_of(path) == cfs.BROWSER_SHARD[path]
+    assert cfs.shard_of(path) == cfs.shard_of(path)
+
+
+def test_every_other_file_keeps_the_sha256_rule():
+    paths = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "tests").glob("test_*.py"))
+    others = [p for p in paths if p not in cfs.BROWSER_SHARD]
+    assert len(others) == len(paths) - len(cfs.BROWSER_SHARD) > 0
+    for p in others + [f"tests/test_{i}.py" for i in range(500)]:
+        assert cfs.shard_of(p) == cfs.hash_shard(p) == 1 + int(hashlib.sha256(p.encode()).hexdigest()[:8], 16) % 3
+
+
+def test_a_new_or_unlisted_browser_file_falls_back_to_hashing():
+    for path in ("tests/test_brand_new_feature_browser.py", "tests/test_cap99_future_browser.py",
+                 "tests/../tests/test_draft_preview_browser.py", "tests/test_draft_preview_browser.py ",
+                 "Tests/test_draft_preview_browser.py"):
+        assert path not in cfs.BROWSER_SHARD
+        assert cfs.shard_of(path) == cfs.hash_shard(path)
+
+
+def test_browser_override_applies_only_to_the_three_shard_pilot():
+    for path in cfs.BROWSER_SHARD:
+        for count in (1, 2, 4, 5):
+            assert cfs.shard_of(path, count) == cfs.hash_shard(path, count)
+
+
+def test_override_placement_keeps_whole_files_and_the_assignment_complete_and_disjoint():
+    paths = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "tests").glob("test_*.py"))
+    nodes = [f"{p}::{n}" for p in paths
+             for n in ("test_a", "TestX::test_b[1]", "TestX::test_b[two words-2]", "test_c[a::b]")]
+    shards = {s: cfs.assigned_for(nodes, s) for s in (1, 2, 3)}
+    assert sorted(sum(shards.values(), [])) == sorted(nodes)                # complete
+    for a, b in ((1, 2), (1, 3), (2, 3)):
+        assert not set(shards[a]) & set(shards[b])                           # disjoint
+    for s, assigned in shards.items():
+        assert {cfs.shard_of(cfs.file_of(n)) for n in assigned} == {s}       # whole files only
+    for path, s in cfs.BROWSER_SHARD.items():
+        assert {n for n in nodes if cfs.file_of(n) == path} <= set(shards[s])
 
 
 def test_whole_file_placement_keeps_classes_and_parameterizations_together():
@@ -353,6 +429,16 @@ def _move(packages, node, src, dst):
             ev["outcomes"] = [o for o in ev["outcomes"] if o["nodeid"] != node]
             cases[:] = [c for c in cases if cfs.file_of(node).replace("/", ".")[:-3] != c.get("classname")
                         or c.get("name") != node.split("::")[-1]]
+
+
+def test_assignment_under_the_pilot_01_hash_only_rule_is_rejected():
+    packages = _packages()
+    node = "tests/test_draft_l2_local_continuity.py::test_browser_draft"
+    canonical, hashed = cfs.shard_of(cfs.file_of(node)), cfs.hash_shard(cfs.file_of(node))
+    assert canonical != hashed and node in _shard(packages, canonical)[1]["assigned"]
+    _move(packages, node, canonical, hashed)
+    text = _audit(packages)
+    assert f"shard {canonical}: assignment differs" in text and f"shard {hashed}: assignment differs" in text
 
 
 def test_wrong_deterministic_assignment_is_rejected():
