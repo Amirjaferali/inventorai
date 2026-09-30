@@ -4677,7 +4677,10 @@ _LEGACY_POST_MERGE_RECORDS = {
     "routing:" + CONTRACT: _ROUTING_RECORDS,
     "declaration:" + CONTRACT: {
         "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
-        "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 2,
+        "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 1,
+        "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN + " — for ONE integrated Mechanical + Electrical / Electronics "
+        "project the inventor can durably record, in their own words, how the two existing parts are intended to "
+        "interact": 1,
     },
     "position:" + STATE: dict(_CAP01_RECORDS, **{
         "`ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
@@ -4727,12 +4730,14 @@ def _without_transient_identity(text):
 
 
 def _claim_end(flat, m):
-    """End of the COMPLETE claim that `m` starts: through the closing backtick of its token, or to the
-    end of its prose clause, so any trailing qualifier belongs to the claim."""
+    """End of the COMPLETE claim that `m` starts: its semantic clause end. A closing backtick is only
+    formatting — it never ends the claim — so a claim inside a token runs through that backtick AND on
+    to the next clause boundary, and any trailing qualifier (inside or after the token) belongs to it."""
+    start = m.end()
     if flat[:m.start()].count("`") % 2:
         close = flat.find("`", m.end())
-        return len(flat) if close == -1 else close + 1
-    ends = [flat.find(s, m.end()) for s in _CLAUSE_ENDS]
+        start = len(flat) if close == -1 else close + 1
+    ends = [flat.find(s, start) for s in _CLAUSE_ENDS]
     return min((e for e in ends if e != -1), default=len(flat))
 
 
@@ -5251,3 +5256,31 @@ def test_f2_complete_claims_end_at_their_token_or_clause():
     prose = "Omega is DELIVERED (post-merge identity / content verification PASS for Omega; next clause"
     m = re.search(_POST_MERGE_CLAIM, prose, re.I)
     assert prose[m.start():_claim_end(prose, m)] == "post-merge identity / content verification PASS for Omega"
+
+
+# ---- F2 semantic claim end: a closing backtick is formatting, not the end of the evidence clause ---------
+_AFTER_TOKEN = {
+    "PASS` for New delivery Omega": ("`POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`", " for New delivery Omega"),
+    "PASS` — New delivery Omega": ("`POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`", " — New delivery Omega"),
+    "PASS` (successor slice)": ("`POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`", " (successor slice)"),
+    "VERIFIED` for candidate X": ("MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3`",
+                                  " for candidate X"),
+}
+
+
+@pytest.mark.parametrize("name", sorted(_AFTER_TOKEN))
+def test_f2_a_qualifier_after_the_closing_backtick_is_part_of_the_claim(monkeypatch, name):
+    token, qualifier = _AFTER_TOKEN[name]
+    state = _replace_once(_flat_doc(STATE), token, token + qualifier)
+    _assert_rejected(monkeypatch, {STATE: state}, name)
+    assert any(qualifier.strip(" ()") in p for p in _live_authority_problems(lambda p: state if p == STATE else _read(p)))
+
+
+def test_f2_a_closing_backtick_does_not_end_the_claim():
+    text = "`X: DELIVERED` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` for New delivery Omega · `NEXT`"
+    m = re.search(_POST_MERGE_CLAIM, text, re.I)
+    assert text[m.start():_claim_end(text, m)] == ("POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` for New "
+                                                   "delivery Omega")
+    text = "`X: DELIVERED` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `NEXT`"
+    m = re.search(_POST_MERGE_CLAIM, text, re.I)
+    assert text[m.start():_claim_end(text, m)] == "POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`"
