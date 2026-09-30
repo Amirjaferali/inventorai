@@ -1813,7 +1813,8 @@ def test_second_increment_status_is_merge_truth_and_the_none_contract_is_superse
     assert len(re.findall(r"^ACTIVE CONTRACT: NONE$", raw_checklist, re.M)) == 1
     assert re.search(r"^ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED" + _DELIVERY_IDENTITY
                      + r"\nACTIVE CONTRACT: NONE\nNEXT PRODUCT INCREMENT: NOT AUTHORIZED\nNEXT STEP: "
-                     r"LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT\nSTAGE 15 SLICE 2: DELIVERED"
+                     r"LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT\nSTAGE 15 SLICE 3: DELIVERED"
+                     + _DELIVERY_IDENTITY + r"\nSTAGE 15 SLICE 2: DELIVERED"
                      + _DELIVERY_IDENTITY + r"$", raw_checklist, re.M)
     assert re.search(r"^ACTIVE CONTRACT: STAGE 15", raw_checklist, re.M) is None
 
@@ -3811,7 +3812,8 @@ def test_stage15_slice1_is_delivered_history_and_its_rules_still_bind():
                    "integration analysis",
                    "no Stage 15 implementation beyond the delivered bounded Integrated Invention Entry & Durable "
                    "Subsystem Composition Slice 1 (PR #718) and the Owner-authorized Subsystem Interface Declaration "
-                   "& Verification Preparation Slice 2 (delivered, PR #720) is authorized now",
+                   "& Verification Preparation Slice 2 (delivered, PR #720) and Interface Verification Preparation "
+                   "Metadata Slice 3 (delivered) is authorized now",
                    "is not a Mechatronics domain and applies no Mechatronics label",
                    "**WATCH — Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 "
                    "(non-blocking, no repair cycle).**",
@@ -3875,10 +3877,10 @@ def test_post_718_no_active_contract_is_superseded_history():
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     assert "the former post-PR-#718 `ACTIVE CONTRACT: NONE`" in claude
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    # the live NONE is the one after Stage 15 Slice 2, never the post-PR-#718 one
+    # the live NONE is the one after Stage 15 Slice 3, never the post-PR-#718 one
     assert head.startswith("## Current authority **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY "
-                           "AUTHORIZED. The last Owner-authorized bounded product slice — Stage 15 — Subsystem "
-                           "Interface Declaration & Verification Preparation — Slice 2 — is DELIVERED"), head[:260]
+                           "AUTHORIZED. The last Owner-authorized bounded product slice — Stage 15 — Interface "
+                           "Verification Preparation Metadata — Slice 3 — is DELIVERED"), head[:260]
     assert "post-PR-#718" not in head
 
 
@@ -3896,6 +3898,8 @@ _S2_MERGE = "2418f7e583b3535d48970cf0989689bb2f8ef2ca"
 _S2_HEAD = "fc3d47ed6184a54b0d2323910f6341e4bbf9b73f"
 _S2_MTREE = "a4ffba8452d2945d4dabdaf14f3431695087ddb6"
 _S2_DELIVERED = "`STAGE 15 SLICE 2: DELIVERED — PR #720 — merge " + _S2_MERGE + "`"
+# Stage 15 Slice 3: delivered on its candidate (Priority-2 lifecycle) — identity optional, never required.
+_S3_DELIVERED = "`STAGE 15 SLICE 3: DELIVERED`"
 _S2_REVIEW = "`STAGE 15 SLICE 2 FINAL INDEPENDENT REVIEW: PASS — F1 / F2 / F3 CLOSED`"
 _S2_ANC = ("`STAGE 15 SLICE 2 ANCESTRY: implementation 470bb90004b17229206fdd17fe3eaf3dd7867939, render-reattachment "
            "test d2f16a16e0a7ac3f11b72c669970afad6dae0ff9, current-truth sync b61422b4f229668af792f2cbed2e5a770afae43b, "
@@ -3915,7 +3919,10 @@ _S2_CLOSE_REVERSALS = tuple(_S15_LIVE_FORBIDDEN) + (
     r"GENERIC RELATIONSHIP GRAPH / ENGINE: AUTHORIZED", r"\bIRL (score|scoring) (is |was )?(assigned|computed)",
     r"(?<!no )(?<!not )(the )?interaction (is|was|has been) (verified|validated|checked)\b",
     r"(?<!no )(?<!not )compatibility (is|was|has been) (established|verified|confirmed)\b",
-    r"current bounded product action", r"CURRENT BOUNDED PRODUCT ACTION")
+    r"current bounded product action", r"CURRENT BOUNDED PRODUCT ACTION",
+    # Stage 15 Slice 3 may never read as a candidate / pending / not merged / active contract on a live surface
+    r"STAGE 15 SLICE 3: (?!DELIVERED)", r"Slice 3[^.;]{0,120}\bimplementation candidate\b",
+    r"Slice 3[^.;]{0,160}\bNOT MERGED\b", r"Slice 3[^.;]{0,160}\breview (is )?pending\b")
 
 
 def _current_declaration(contract):
@@ -3923,9 +3930,9 @@ def _current_declaration(contract):
     return _live_declaration(contract)[1]
 
 
-def test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface():
-    """CURRENT STATE, merge-invariant: Stage 15 — Subsystem Interface Declaration & Verification Preparation —
-    Slice 2 is DELIVERED and no product increment is authorized (`ACTIVE CONTRACT: NONE`). Stage 15 stays
+def test_stage15_slice3_is_delivered_and_no_active_contract_is_current_on_every_live_surface():
+    """CURRENT STATE, merge-invariant: Stage 15 — Interface Verification Preparation Metadata — Slice 3 is
+    DELIVERED (after Slice 2, still delivered) and no product increment is authorized (`ACTIVE CONTRACT: NONE`). Stage 15 stays
     ENTERED / PARTIAL / NOT COMPLETE, the MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18, and no
     compatibility, verification, IRL score / level, deployment, release or further Stage-15 slice is claimed
     or authorized. This guard requires no PR number, SHA, ancestry, review verdict or post-merge result:
@@ -3938,20 +3945,23 @@ def test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_
     top = _live_only(_current_declaration(contract))
     _needs(top, CONTRACT, "live none",
            r"\*\*ACTIVE CONTRACT: NONE\.\*\* NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED\.",
-           r"Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2, the last "
+           r"Stage 15 — Interface Verification Preparation Metadata — Slice 3, the last "
            r"Owner-authorized bounded product slice, is DELIVERED\b",
+           r"\*\*STAGE 15 SLICE 3\*\* \| `STAGE 15 SLICE 3: DELIVERED`", r"it verifies nothing",
            r"delivered history never fills the active-contract slot",
            r"\*\*STAGE 15\*\* \| \*\*ENTERED / PARTIAL / NOT COMPLETE\*\*; its checkbox stays UNTICKED",
            r"no IRL score or level", r"another Stage-15 slice is NOT AUTHORIZED",
            r"it remains the MASTER ROADMAP SEQUENTIAL MARKER",
            r"\*\*NEXT STEP\*\* \| LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT — READ-ONLY",
-           _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP), _status(_S2_DELIVERED), _status(_S15_DELIVERED),
-           _tok(_S15_ENTERED), _tok(_S15_MARKER), *(_tok(t) for t in _S15_NOT + _S2_NOT))
+           _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP), _status(_S3_DELIVERED), _status(_S2_DELIVERED),
+           _status(_S15_DELIVERED), _tok(_S15_ENTERED), _tok(_S15_MARKER), *(_tok(t) for t in _S15_NOT + _S2_NOT))
     _rejects(top, CONTRACT, "live none", *_S2_CLOSE_REVERSALS)
     for path, block in _live_surfaces():
         _needs(block, path, "live none", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP),
-               _status(_S2_DELIVERED), _status(_S15_DELIVERED), _status(_EL_DELIVERED), _tok(_S15_ENTERED),
+               _status(_S3_DELIVERED), _status(_S2_DELIVERED), _status(_S15_DELIVERED), _status(_EL_DELIVERED), _tok(_S15_ENTERED),
                _tok(_S15_MARKER), _tok(_NO_TD_SUBTASK), *(_tok(t) for t in _S15_NOT + _S2_NOT),
+               r"Stage\s+15\s+Slice\s+3\s+\(delivered\)\.\s+For\s+each\s+CURRENT\s+durable\s+Owner-declared",
+               r"all\s+three\s+recorded\s+means\s+only\s+that\s+the\s+inputs\s+are\s+recorded",
                r"Stage\s+15\s+Slice\s+2\s+\(delivered\)\.\s+For\s+ONE\s+integrated\s+Mechanical",
                r"engineering\s+compatibility\s+has\s+NOT\s+been\s+established",
                r"completing\s+the\s+preparation\s+does\s+not\s+verify\s+the\s+interaction",
@@ -3963,6 +3973,7 @@ def test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_
                r"\*\*NO ACTIVE CONTRACT — [^*]{0,80}; Stage 15 and Stage 18 both stay ENTERED / PARTIAL / NOT "
                r"COMPLETE:\*\*",
                r"The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT",
+               r"\*\*DELIVERED — Stage 15 / Interface Verification Preparation Metadata — Slice 3",
                r"\*\*DELIVERED — Stage 15 / Subsystem Interface Declaration & Verification Preparation — Slice 2",
                r"\*\*DELIVERED — Stage 15 / Integrated Invention Entry & Durable Subsystem Composition — Slice 1")
         marker = re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18", routing).start()
@@ -3972,6 +3983,7 @@ def test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_
                     r"currently authorized \(", state)
     for needle in ("this does NOT mean the roadmap, Stage 15, Stage 18 or integration is complete, and no next "
                    "slice is authorized",
+                   "Stage 15 — Interface Verification Preparation Metadata — Slice 3 — delivered",
                    "Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — delivered",
                    "it establishes no compatibility, IRL level or readiness",
                    "Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 — delivered",
@@ -3983,8 +3995,11 @@ def test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
     assert head.startswith("## Current authority **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY "
-                           "AUTHORIZED.")
-    for needle in ("Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — is DELIVERED",
+                           "AUTHORIZED. The last Owner-authorized bounded product slice — Stage 15 — Interface "
+                           "Verification Preparation Metadata — Slice 3 — is DELIVERED")
+    for needle in ("Stage 15 Slice 3 (delivered; a bounded continuation inside the already-open Stage-15",
+                   "all three recorded means only that the inputs are recorded",
+"Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — is DELIVERED",
                    "The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT",
                    "It verifies nothing: engineering compatibility has NOT been established.",
                    "Another Stage-15 slice, engineering compatibility analysis",
@@ -3998,23 +4013,25 @@ def test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_
     cont = claude[claude.index("## Lead execution continuity"):claude.index("### Lead Operating Method")]
     for pat in (r"FIRED and evaluated at Stage 15 Slice 2",
                 r"Evaluated at Stage 15 Slice 2: NO SHARED GENERIC RELATIONSHIP MODEL",
-                r"Slice 2 \(delivered(?:, PR #\d+)?; no further Stage-15 slice is authorized\)"):
+                r"Slice 3 \(delivered(?:, PR #\d+)?; no further Stage-15 slice is authorized\)",
+                r"NOT FIRED by Stage 15 Slice 3"):
         assert re.search(pat, cont), pat
     assert "(the current implementation candidate)" not in cont
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
     subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \([^)]{0,40}\) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — "
-                    r"Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 DELIVERED")
+                    r"Stage 15 — Interface Verification Preparation Metadata — Slice 3 DELIVERED — Stage 15 — "
+                    r"Subsystem Interface Declaration & Verification Preparation — Slice 2 DELIVERED")
     [found] = [m.start() for m in re.finditer(subtask_head, flat_checklist)]
     subtask = flat_checklist[found:]
     subtask = subtask[:subtask.index("*(Superseded")]
     _needs(subtask, CHECKLIST, "live subtask", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP),
-           _status(_S2_DELIVERED), _status(_S15_DELIVERED), _tok(_S15_ENTERED), _tok(_S15_MARKER),
+           _status(_S3_DELIVERED), _status(_S2_DELIVERED), _status(_S15_DELIVERED), _tok(_S15_ENTERED), _tok(_S15_MARKER),
            *(_tok(t) for t in _S15_NOT + _S2_NOT), r"No product increment is authorized after\b")
     _rejects(subtask, CHECKLIST, "live subtask", *_S2_CLOSE_REVERSALS)
     for line in [t.strip("`") for t in (_NONE718, _NEXT_INC_NO, _NEXT_STEP, _S15_ENTERED, _S15_MARKER)
                  + _S15_NOT + _S2_NOT]:
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
-    for token in (_S2_DELIVERED, _S15_DELIVERED):
+    for token in (_S3_DELIVERED, _S2_DELIVERED, _S15_DELIVERED):
         assert re.search(r"^" + _status_line(token) + r"$", raw_checklist, re.M), token
     for stale in (_S2_CONTRACT.strip("`"), _S2_STATUS.strip("`")):
         assert re.search(r"^" + re.escape(stale) + r"$", raw_checklist, re.M) is None, stale
@@ -4027,11 +4044,15 @@ def test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_
     live15 = _live_only(row15)
     assert ("the Owner-authorized Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 "
             "(delivered") in live15
+    assert ("the Owner-authorized Stage 15 — Interface Verification Preparation Metadata — Slice 3 "
+            "(delivered") in live15
     assert "no further Stage-15 slice is authorized" in live15
     [row18] = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
     live18 = _live_only(row18)
     assert ("that reassessment then selected Stage 15 — Subsystem Interface Declaration & Verification "
             "Preparation — Slice 2, delivered") in live18
+    assert ("the next reassessment selected Stage 15 — Interface Verification Preparation Metadata — Slice 3, "
+            "delivered") in live18
     assert "no product increment is currently authorized and the next step is a Lead-controlled" in live18
     for live in (live15, live18):
         for pat in _S2_CLOSE_REVERSALS:
@@ -4039,6 +4060,7 @@ def test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_
     register = _flat(CAPABILITIES)
     assert ("and neither is Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 "
             "(delivered") in register
+    assert "Nor is Stage 15 — Interface Verification Preparation Metadata — Slice 3 (delivered" in register
     assert "current Owner-authorized implementation candidate, not merged" not in register
 
 
@@ -4061,6 +4083,13 @@ def test_stage15_slice2_delivery_record_is_preserved_history():
            r"completing the preparation does not verify the interaction or establish compatibility; no risk row",
            _tok(_S2_DELIVERED), _tok(_S2_REVIEW), _tok(_S2_ANC))
     _rejects(_live_only(s2), CONTRACT, "slice2 delivered section", *_S2_CLOSE_REVERSALS)
+    none720 = re.sub(r"\s+", " ", _section(contract, "current-authority--post-pr-720-no-active-contract"))
+    _needs(none720, CONTRACT, "post-720 none superseded",
+           r"^<a id=\"current-authority--post-pr-720-no-active-contract\"></a> ## Current authority — post-PR-#720: "
+           r"no active contract \(2026-09-29\) — SUPERSEDED \(2026-09-30\) by Stage 15 — Interface Verification "
+           r"Preparation Metadata — Slice 3 ",
+           r"\*\*No longer the current authority\.\*\*",
+           r"\*\(Superseded 2026-09-30, preserved so the change is visible rather than silent: this opened ")
     for path in (ROADMAP, CHECKLIST, CONTRACT):
         assert ("*(Superseded 2026-09-29 by the post-PR-#720 closure, preserved so the change is visible rather "
                 "than silent: the current routing read \"**CURRENT BOUNDED PRODUCT ACTION — Stage 15 / Subsystem "
@@ -4239,8 +4268,9 @@ def test_read_before_build_and_multi_domain_deepening_are_operating_method_not_g
                    "no Stage 15 implementation is authorized beyond the bounded Stage 15 — Integrated "
                    "Invention Entry & Durable Subsystem Composition — Slice 1 (delivered, PR #718) and the "
                    "Owner-authorized Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 "
-                   "(delivered, PR #720; no further Stage-15 slice is authorized) and no new integration Stage or "
-                   "capability is created",
+                   "(delivered, PR #720) and the Owner-authorized Stage 15 — Interface Verification Preparation "
+                   "Metadata — Slice 3 (delivered; no further Stage-15 slice is authorized) and no new integration "
+                   "Stage or capability is created",
                    "Portfolio sequencing is RE-ASSESSED, not a permanently hard-coded order",
                    "Add → Qualify → Activate → Establish Useful Baseline → Deepen — a preferred "
                    "model, not a universal mandatory lifecycle",
@@ -4678,9 +4708,8 @@ _LEGACY_POST_MERGE_RECORDS = {
     "declaration:" + CONTRACT: {
         "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
         "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 1,
-        "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN + " — for ONE integrated Mechanical + Electrical / Electronics "
-        "project the inventor can durably record, in their own words, how the two existing parts are intended to "
-        "interact": 1,
+        # the post-Stage-15-Slice-3 declaration's Slice-2 row carries no post-merge claim (its token line
+        # still does, preserved from the post-PR-#720 declaration)
     },
     "position:" + STATE: dict(_CAP01_RECORDS, **{
         "`ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
@@ -4692,7 +4721,7 @@ _LEGACY_POST_MERGE_RECORDS = {
         "Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals — delivered, " + _PM_PROSE: 1,
     }),
     "head:CLAUDE.md": {
-        "The last Owner-authorized bounded product slice — Stage 15 — Subsystem Interface Declaration & "
+        "The preceding bounded slice — Stage 15 — Subsystem Interface Declaration & "
         "Verification Preparation — Slice 2 — is DELIVERED (" + _PM_PROSE: 1,
         "Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 is DELIVERED ("
         + _PM_PROSE: 1,
@@ -4850,7 +4879,7 @@ def test_transient_identity_is_never_a_live_prerequisite(monkeypatch, transform)
     fake = lambda path: docs[path] if path in docs else real(path)       # noqa: E731
     assert _live_authority_problems(fake) == []
     monkeypatch.setattr(sys.modules[__name__], "_read", fake)
-    test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
+    test_stage15_slice3_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
     assert _live_authority_problems() == []
 
 
@@ -4919,7 +4948,7 @@ def test_every_material_reversal_is_caught(monkeypatch, name):
     assert _live_authority_problems(fake), name
     monkeypatch.setattr(sys.modules[__name__], "_read", fake)
     with pytest.raises(AssertionError):
-        test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
+        test_stage15_slice3_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
 
 
 def test_the_live_authority_owners_pin_no_transient_identity():
@@ -4927,7 +4956,7 @@ def test_the_live_authority_owners_pin_no_transient_identity():
     sources = [inspect.getsource(f) for f in (
         _live_authority_texts, _live_authority_problems, _status, _after_fence, _authority_sections,
         _live_declaration, _unsupported_post_merge_claims, _without_transient_identity, _claim_record, _claim_end,
-        test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface)]
+        test_stage15_slice3_is_delivered_and_no_active_contract_is_current_on_every_live_surface)]
     sources.append(repr((_LIVE_CLAIM_REVERSALS, _PREMERGE_LIFECYCLE, _HISTORICAL_HEADING, _POST_MERGE_CLAIM)))
     legacy = repr((sorted(_LEGACY_UNMARKED_AUTHORITY_HEADINGS), sorted(_LEGACY_POST_MERGE_RECORDS.items())))
     assert re.search(r"\b[0-9a-f]{40}\b", legacy) is None and re.search(r"PR ?-?#\d", legacy) is None
@@ -4947,7 +4976,7 @@ def _assert_rejected(monkeypatch, docs, name):
     assert _live_authority_problems(fake), name
     monkeypatch.setattr(sys.modules[__name__], "_read", fake)
     with pytest.raises((AssertionError, ValueError)):
-        test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
+        test_stage15_slice3_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
 
 
 def _assert_accepted(monkeypatch, docs, name):
@@ -4955,7 +4984,7 @@ def _assert_accepted(monkeypatch, docs, name):
     fake = lambda p: docs[p] if p in docs else real(p)                   # noqa: E731
     assert _live_authority_problems(fake) == [], name
     monkeypatch.setattr(sys.modules[__name__], "_read", fake)
-    test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
+    test_stage15_slice3_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
 
 
 def _second_heading(contract):
@@ -5128,7 +5157,7 @@ def test_f1b_a_genuinely_self_labelled_historical_record_is_accepted(monkeypatch
 
 def test_f1b_unmodified_repository_counts():
     kinds = [k for _h, _t, k in _authority_sections(_read(CONTRACT))]
-    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 30, 10)
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 32, 10)
 
 
 def _flat_doc(path):

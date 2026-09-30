@@ -3,17 +3,30 @@
 ## Current authority
 
 **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The last Owner-authorized bounded
-product slice — Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — is DELIVERED
+product slice — Stage 15 — Interface Verification Preparation Metadata — Slice 3 — is DELIVERED (Git / GitHub own
+its PR, merge and review identity), and no subsequent increment has been authorized. This does NOT mean the
+roadmap, Stage 15, Stage 18 or integration is complete, or that a next slice is authorized; delivered history never
+fills the active-contract slot. The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT — read-only planning
+/ selection over live repository and product evidence until the Owner separately authorizes another product
+increment; it pre-authorizes no further Stage-15 slice, compatibility analysis, IRL scoring, interface
+engineering, Robotics assessment implementation, IoT, other Domain Pack or Technical Deepening slice.
+Stage 15 Slice 3 (delivered; a bounded continuation inside the already-open Stage-15 integration obligation, no
+new Master Roadmap Stage): for each CURRENT durable Owner-declared interaction between the two parts, the inventor
+can durably record, edit and clear, in their own words, the three inputs its Validation Plan
+verification-preparation step already asks for — the intended operating conditions, an observable acceptance
+criterion and the evidence or review needed — each independently optional (partial preparation stays visibly
+partial). They are OWNER_STATED / UNVALIDATED planning inputs owned by `engine/subsystem_model.py`, keyed ONLY by
+the existing `interface_id`, in ONE additive current-value `subsystem_interface_preparations` sidecar (composite
+foreign key to that exact durable interface; clearing every input deletes the row); the write re-validates the
+interface identities inside ONE transaction and keeps SAVED / NOT SAVED / UNKNOWN truthful. The Validation Plan
+step states which inputs are recorded; all three recorded means only that the inputs are recorded. It verifies
+nothing: engineering compatibility has NOT been established, and no readiness, progression, gap, IRL or
+Structured Export effect exists.
+The preceding bounded slice — Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — is DELIVERED
 (PR #720, merge `2418f7e583b3535d48970cf0989689bb2f8ef2ca`; post-merge identity / content verification PASS; reviewed
 PR head `fc3d47ed6184a54b0d2323910f6341e4bbf9b73f`; merge tree = reviewed-head tree; independent Level-1 review
 cycle COMPLETE — initial FAIL with three material findings F1 / F2 / F3, bounded correction and one F3 residual
-correction, final PASS — F1 / F2 / F3 CLOSED; no remaining material finding), and no subsequent increment has
-been authorized. This does NOT mean the roadmap, Stage 15, Stage 18 or integration is complete, or that a next
-slice is authorized; delivered history never fills the active-contract slot. The next step is a LEAD-CONTROLLED
-NEXT-INCREMENT REASSESSMENT — read-only planning / selection over live repository and product evidence until the
-Owner separately authorizes another product increment; it pre-authorizes no further Stage-15 slice,
-compatibility analysis, IRL scoring, interface engineering, Robotics assessment implementation, IoT, other
-Domain Pack or Technical Deepening slice.
+correction, final PASS — F1 / F2 / F3 CLOSED; no remaining material finding).
 Stage 15 Slice 2 (delivered; a bounded continuation inside the already-open Stage-15 integration obligation, no
 new Master Roadmap Stage): for ONE integrated Mechanical + Electrical / Electronics project the inventor can
 durably record, in their own words, how the two existing parts are intended to interact; each Owner-declared
@@ -202,13 +215,14 @@ Electrical slices, no next Technical Deepening slice is authorized, full CAP-01 
 Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 is delivered (PR #718); Stage 15
 stays ENTERED / PARTIAL / NOT COMPLETE through that one slice while the Master Roadmap sequential marker stays
 Stage 18; Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 is delivered (PR #720);
+Stage 15 — Interface Verification Preparation Metadata — Slice 3 is delivered;
 ACTIVE CONTRACT: NONE — no product increment is authorized and no other Stage is authorized — the delivered Electrical Technical Deepening slice sat inside
 the already-entered Stage 18 and entered no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
 Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, the former post-PR-#679 `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -361,8 +375,9 @@ domain keeps authority over its own technical truth; Stage 15 / IRL stays the ex
 subsystem interfaces, cross-domain dependencies, integration evidence and durable subsystem identity /
 persistence when required — no Stage 15 implementation is authorized beyond the bounded Stage 15 — Integrated
 Invention Entry & Durable Subsystem Composition — Slice 1 (delivered, PR #718) and the Owner-authorized Stage 15
-— Subsystem Interface Declaration & Verification Preparation — Slice 2 (delivered, PR #720; no further Stage-15
-slice is authorized) and no new integration Stage or capability is created. Portfolio sequencing is RE-ASSESSED, not a permanently hard-coded order: after the
+— Subsystem Interface Declaration & Verification Preparation — Slice 2 (delivered, PR #720) and the Owner-authorized
+Stage 15 — Interface Verification Preparation Metadata — Slice 3 (delivered; no further Stage-15 slice is authorized)
+and no new integration Stage or capability is created. Portfolio sequencing is RE-ASSESSED, not a permanently hard-coded order: after the
 delivered Electrical slice and a useful Mechanical + Electrical baseline, the NEXT REASSESSMENT considers the
 smallest real Electrical ↔ Mechanical / Mechatronics integration slice (that reassessment selected Stage 15 —
 Integrated Invention Entry & Durable Subsystem Composition — Slice 1, the FIRST real bounded Mechanical ↔
@@ -397,7 +412,8 @@ subsystem interfaces; no generic Mechatronics framework is built ahead of an act
 Stage 15 / IRL stays the home for durable subsystem identity, interfaces, dependencies, integration evidence
 and related persistence when separately authorized (no Stage 15 implementation beyond the delivered bounded Integrated
 Invention Entry & Durable Subsystem Composition Slice 1 (PR #718) and the Owner-authorized Subsystem Interface
-Declaration & Verification Preparation Slice 2 (delivered, PR #720) is authorized now; that slice records one Owner-declared
+Declaration & Verification Preparation Slice 2 (delivered, PR #720) and Interface Verification Preparation
+Metadata Slice 3 (delivered) is authorized now; Slice 1 records one Owner-declared
 Mechanical + Electrical / Electronics composition and one initial analysis focus, is not a Mechatronics domain
 and applies no Mechatronics label).
 **Robotics (planning / future reassessment only):** Robotics is NOT automatically a new Domain Pack; before
@@ -497,13 +513,16 @@ information, not execution authority.
   durable append → committed-state confirmation → retry / recovery. Evaluation only; a
   capability without such a write path does not fire it. FIRED and evaluated at Stage 15 Slice 2
   (a new signed durable declaration path): only the signed submission identity is shared (CAP-08
-  keeps mechanically identical wrappers); no framework, no CAP-08 / CAP-10 refactor.
+  keeps mechanically identical wrappers); no framework, no CAP-08 / CAP-10 refactor. NOT FIRED by
+  Stage 15 Slice 3: it adds no signed durable declaration path — it reuses the CAP-09 current-value
+  planning-save semantics (request-integrity guard + project authorization + confirm-by-reload).
 - **NEXT TRIGGER — analytical relationship primitive.** CAP-10 (contradiction) and CAP-08
   (assumption → answer dependency) are two durable relation types. Before a THIRD, inspect
   whether a shared Relationship Primitive is justified. No generic graph in advance; separate from
   the declared-action trigger. Evaluated at Stage 15 Slice 2: NO SHARED GENERIC RELATIONSHIP MODEL —
   CAP-08 / CAP-10 keep their distinct ledger semantics, and the Owner-declared subsystem interface
-  stays with the subsystem composition (`engine/subsystem_model.py`), not the ledger.
+  stays with the subsystem composition (`engine/subsystem_model.py`), not the ledger. Stage 15 Slice 3
+  adds no relation type: its preparation inputs are attributes of ONE existing interface.
 - **NEXT TRIGGER — language direction.** MSNL local-only shadow foundation (PR #693) and
   Evaluation Pack V1 (PR #694) are delivered; its synthetic evaluation covers English, MSA,
   Kuwaiti-Gulf and Egyptian and proves no general dialect support. Canonical English technical
