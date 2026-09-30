@@ -4634,28 +4634,42 @@ def _live_declaration(contract):
 # post-merge verification has already happened; that evidence belongs to Git/GitHub and a read-only
 # check. Every such claim on a live surface must be a LEGACY claim, owned by its complete preserved
 # record: on the same live surface, the whole delivery record that carries it (transient PR / merge
-# identity ignored) plus the claim itself must be exactly one of the records below, and no more often
-# than it occurs there. A record starts at a list / table separator — or, for prose, a sentence or
-# clause boundary — so a new subject, a wrapper ("This candidate: …") or a borrowed tail of an old
-# subject changes the record and fails. Omission is always valid; nothing requires the wording.
+# identity ignored) plus the COMPLETE claim must be exactly one of the records below, and no more often
+# than it occurs there. A record starts only at a structural boundary — a list separator, a table cell,
+# a sentence end or (prose) a clause end — never at Markdown emphasis, so a new subject, a plain or
+# formatted wrapper ("This candidate:", "**New delivery:**") or a borrowed tail of an old subject stays
+# in the record and fails. A claim runs to its closing backtick (token) or its clause end (prose), so a
+# trailing qualifier ("PASS for New delivery Omega") stays in the claim and fails. Omission is always
+# valid; nothing requires the wording.
 _POST_MERGE_CLAIM = (r"\bPOST[- ](?:MERGE|INTEGRATION)\b[^.;`()]{0,60}?\b(?:PASS(?:ED)?|VERIFIED|CONFIRMED|"
                      r"SUCCEEDED)\b|\b(?:MERGE|INTEGRATION)(?: IDENTITY)? VERIFICATION\s*:\s*PASS\b|"
                      r"\b(?:MERGED?|INTEGRAT(?:ED|ION)) (?:AND |& )?(?:VERIFIED|CONFIRMED)\b")
-_RECORD_SEPARATORS = (" · ", ":** ", "** ", " | ", ". ")
+_RECORD_SEPARATORS = (" · ", " | ", ". ")
 _SENTENCE_SEPARATORS = ("; ",)
-_PM_TOKEN = " · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS"
+_CLAUSE_ENDS = (";", ")", ". ", " · ", " | ")
+_PM_TOKEN = " · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`"
 _PM_PROSE = "post-merge identity / content verification PASS"
+_S15_DELIVERED_HEADING = " (a bounded {} the already-open Stage-15 integration obligation; no new Master Roadmap Stage; the " \
+            "MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18):** "
+_S18_DELIVERED_HEADING = " (inside Stage 18; no new Master Roadmap Stage):** "
 _CAP01_RECORDS = {
-    "`FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED": 1,
+    "`FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED`": 1,
     "`SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE "
-    "VERIFIED": 1,
-    "`ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
-    "`MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+    "VERIFIED`": 1,
+    "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+    "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 1,
 }
 _ROUTING_RECORDS = dict(_CAP01_RECORDS, **{
-    "`MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED`" + _PM_TOKEN: 1,
-    "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 2,
-    "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 2,
+    "**DELIVERED — Stage 15 / Subsystem Interface Declaration & Verification Preparation — Slice 2"
+    + _S15_DELIVERED_HEADING.format("continuation inside") + "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 1,
+    "**DELIVERED — Stage 15 / Integrated Invention Entry & Durable Subsystem Composition — Slice 1"
+    + _S15_DELIVERED_HEADING.format("re-entry into") + "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+    "**DELIVERED — Stage 18 / Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference "
+    "Fundamentals" + _S18_DELIVERED_HEADING + "`ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+    "**DELIVERED — Stage 18 / Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals"
+    + _S18_DELIVERED_HEADING + "`MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+    "**DELIVERED — Stage 18 / Mechanical CAP-01 — Open-Gap Technical Context" + _S18_DELIVERED_HEADING
+    + "`MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED`" + _PM_TOKEN: 1,
 })
 _LEGACY_POST_MERGE_RECORDS = {
     "routing:" + ROADMAP: _ROUTING_RECORDS,
@@ -4666,8 +4680,8 @@ _LEGACY_POST_MERGE_RECORDS = {
         "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 2,
     },
     "position:" + STATE: dict(_CAP01_RECORDS, **{
-        "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
-        "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 1,
+        "`ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+        "`MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
         "Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — delivered, " + _PM_PROSE: 1,
         "Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 — delivered, " + _PM_PROSE: 1,
         "Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals — "
@@ -4692,7 +4706,8 @@ def _claim_record(before):
     """The complete delivery record a claim at the end of `before` belongs to. A claim inside a backticked
     token belongs to that token's record; a claim token without a subject (`…MERGED / …` or a bare PASS
     token) also owns the complete token before it. A token record starts only at a list / table
-    separator or a sentence end; a prose record may also start at a clause boundary (`; `)."""
+    separator or a sentence end; a prose record may also start at a clause boundary (`; `). Markdown
+    emphasis is never a boundary, so formatted wrapper text stays in the record."""
     cut, token = len(before), before.count("`") % 2 == 1
     if token:
         cut = before.rfind("`")
@@ -4711,13 +4726,23 @@ def _without_transient_identity(text):
     return re.sub(r"PR #\d+,? \(?merge `[0-9a-f]{40}`;\s*", "", text)
 
 
+def _claim_end(flat, m):
+    """End of the COMPLETE claim that `m` starts: through the closing backtick of its token, or to the
+    end of its prose clause, so any trailing qualifier belongs to the claim."""
+    if flat[:m.start()].count("`") % 2:
+        close = flat.find("`", m.end())
+        return len(flat) if close == -1 else close + 1
+    ends = [flat.find(s, m.end()) for s in _CLAUSE_ENDS]
+    return min((e for e in ends if e != -1), default=len(flat))
+
+
 def _unsupported_post_merge_claims(texts):
     problems, used = [], {}
     for label, text in texts.items():
         flat = _without_transient_identity(text)
         allowed = _LEGACY_POST_MERGE_RECORDS.get(label, {})
         for m in re.finditer(_POST_MERGE_CLAIM, flat, re.I):
-            record = _claim_record(flat[:m.start()]) + m.group(0)
+            record = _claim_record(flat[:m.start()]) + flat[m.start():_claim_end(flat, m)]
             if record not in allowed:
                 problems.append("%s: unsupported post-merge success claim in record %r" % (label, record))
             else:
@@ -4896,7 +4921,7 @@ def test_the_live_authority_owners_pin_no_transient_identity():
     import inspect
     sources = [inspect.getsource(f) for f in (
         _live_authority_texts, _live_authority_problems, _status, _after_fence, _authority_sections,
-        _live_declaration, _unsupported_post_merge_claims, _without_transient_identity, _claim_record,
+        _live_declaration, _unsupported_post_merge_claims, _without_transient_identity, _claim_record, _claim_end,
         test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface)]
     sources.append(repr((_LIVE_CLAIM_REVERSALS, _PREMERGE_LIFECYCLE, _HISTORICAL_HEADING, _POST_MERGE_CLAIM)))
     legacy = repr((sorted(_LEGACY_UNMARKED_AUTHORITY_HEADINGS), sorted(_LEGACY_POST_MERGE_RECORDS.items())))
@@ -5129,7 +5154,7 @@ def test_f2_existing_records_are_owned_and_counted_per_surface():
     for label, text in texts.items():
         flat = _without_transient_identity(text)
         for m in re.finditer(_POST_MERGE_CLAIM, flat, re.I):
-            key = (label, _claim_record(flat[:m.start()]) + m.group(0))
+            key = (label, _claim_record(flat[:m.start()]) + flat[m.start():_claim_end(flat, m)])
             found[key] = found.get(key, 0) + 1
     assert found == {(label, record): n for label, records in _LEGACY_POST_MERGE_RECORDS.items()
                      for record, n in records.items()}
@@ -5180,3 +5205,49 @@ def test_f2_the_same_unchanged_record_may_move_within_its_surface(monkeypatch):
                            "merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca`")
     moved = _replace_once(vacated, _NS, _NS + " · `STAGE 15 SLICE 2: DELIVERED`" + _S2_TOKEN_CLAIM)
     _assert_accepted(monkeypatch, {ROADMAP: moved}, "same record relocated")
+
+
+# ---- F2 record-binding residual: Markdown wrappers and trailing qualifiers ------------------------------
+_S2_TOKEN = "`STAGE 15 SLICE 2: DELIVERED`"
+
+
+@pytest.mark.parametrize("wrapper", ["This candidate:", "**This candidate:**", "**New delivery:**",
+                                     "**Successor:**", "_Successor:_", "***_This candidate_:***",
+                                     "**This candidate:** *new delivery*"])
+def test_f2_a_markdown_wrapper_stays_part_of_the_record(monkeypatch, wrapper):
+    state = _flat_doc(STATE)
+    vacated = _replace_once(state, _S2_TOKEN_CLAIM, "")
+    wrapped = _replace_once(vacated, _NS, _NS + " · " + wrapper + " " + _S2_TOKEN + _S2_TOKEN_CLAIM)
+    _assert_rejected(monkeypatch, {STATE: wrapped}, wrapper)
+    assert any(wrapper in p for p in _live_authority_problems(lambda p: wrapped if p == STATE else _read(p)))
+
+
+_TRAILING = {
+    "PASS for New delivery Omega": ("VERIFICATION: PASS`", "VERIFICATION: PASS for New delivery Omega`"),
+    "PASS — New delivery Omega": ("VERIFICATION: PASS`", "VERIFICATION: PASS — New delivery Omega`"),
+    "VERIFIED for candidate X": ("POST-MERGE VERIFIED", "POST-MERGE VERIFIED for candidate X"),
+}
+
+
+@pytest.mark.parametrize("name", sorted(_TRAILING))
+def test_f2_a_trailing_qualifier_inside_the_token_is_part_of_the_claim(monkeypatch, name):
+    old, new = _TRAILING[name]
+    state = _replace_once(_flat_doc(STATE), old, new)
+    _assert_rejected(monkeypatch, {STATE: state}, name)
+    assert any(new.rstrip("`") in p for p in _live_authority_problems(lambda p: state if p == STATE else _read(p)))
+
+
+@pytest.mark.parametrize("qualifier", [" for New delivery Omega", " — candidate X", " (successor slice)"])
+def test_f2_a_trailing_qualifier_in_prose_is_part_of_the_claim(monkeypatch, qualifier):
+    claude = _replace_once(_flat_doc("CLAUDE.md"), "post-merge identity / content verification PASS; reviewed",
+                           "post-merge identity / content verification PASS" + qualifier + "; reviewed")
+    _assert_rejected(monkeypatch, {"CLAUDE.md": claude}, qualifier)
+
+
+def test_f2_complete_claims_end_at_their_token_or_clause():
+    token = "`X: DELIVERED` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS for Omega` · `NEXT`"
+    m = re.search(_POST_MERGE_CLAIM, token, re.I)
+    assert token[m.start():_claim_end(token, m)] == "POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS for Omega`"
+    prose = "Omega is DELIVERED (post-merge identity / content verification PASS for Omega; next clause"
+    m = re.search(_POST_MERGE_CLAIM, prose, re.I)
+    assert prose[m.start():_claim_end(prose, m)] == "post-merge identity / content verification PASS for Omega"
