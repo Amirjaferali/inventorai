@@ -2136,7 +2136,7 @@ def test_stage_19_slice_02_is_delivered_history_and_still_bounded():
     assert _absent(live_row, "no further CAP-09 implementation is currently authorized"), live_row
     assert _absent(live_row, "beyond Slice 3 is currently authorized"), live_row
     assert re.search(r"^- \[ \] \*\*20 — CAP-08:", _read(ROADMAP), re.M), "stage 20 row changed"
-    # the register records FOUR bounded CAP-09 exceptions, not an opening of CAP-09
+    # the register records FIVE bounded CAP-09 exceptions, not an opening of CAP-09
     register = _read(CAPABILITIES)
     reg_rows = [l for l in register.splitlines() if l.startswith("| CAP-09 Experiment Designer |")]
     assert len(reg_rows) == 2, reg_rows
@@ -2145,16 +2145,26 @@ def test_stage_19_slice_02_is_delivered_history_and_still_bounded():
         assert "durable SuccessCriterion remediation" in r, r
         assert "SLICE-02 durable measurement method" in r, r
         assert "Slice 3 durable Test Hypothesis (delivered, PR #711)" in r, r
-        assert "Slice 4 durable Test Variable / Condition" in r, r
+        assert "Slice 4 durable Test Variable / Condition (delivered, PR #712)" in r, r
+        assert "Result Event Slice 1 append-only owner-stated result history (delivered)" in r, r
     flat_register = _flat(CAPABILITIES)
     assert ("It does NOT authorize full CAP-09, full WS-PFV-001 or a formal experimental "
             "variable model") in flat_register
-    assert "**with FOUR bounded exceptions**" in flat_register
-    assert "**with THREE bounded exceptions**" not in flat_register
+    assert "**with FIVE bounded exceptions**" in flat_register
+    for stale in ("**with FOUR bounded exceptions**", "**with THREE bounded exceptions**"):
+        assert stale not in flat_register, stale
+    assert "(delivered, PR #712, merge `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`); and (5) CAP-09 Result Event" \
+        in flat_register
+    assert "Astra architecture and UX / behaviour reviews PASS, PR / merge pending" not in flat_register
+    assert ("OWNER-STATED / UNVALIDATED with no automatic judgement (delivered)") in flat_register
     assert ("`BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION: AUTHORIZED WITHIN CAP-09 SLICE 4` · "
             "`FORMAL EXPERIMENTAL VARIABLE MODEL: NOT AUTHORIZED`") in flat_register
+    # Result RECORDING is delivered; only the outcome / judgement stays unauthorized
+    assert "`RESULT OUTCOME / PASS-FAIL JUDGEMENT: NOT AUTHORIZED`" in flat_register
+    assert ("A Failure Criterion as a new inventor field and Risks as CAP-09 fields are NOT "
+            "authorized") in flat_register
     assert ("Result, a Failure Criterion as a new inventor field and Risks as CAP-09 fields are "
-            "NOT authorized") in flat_register
+            "NOT authorized") not in flat_register
     assert ("Variable, Result, a Failure Criterion as a new inventor field and Risks as CAP-09 "
             "fields are NOT authorized") not in flat_register
     assert "Variable, hypothesis, risks and a result category are NOT authorized" not in flat_register
