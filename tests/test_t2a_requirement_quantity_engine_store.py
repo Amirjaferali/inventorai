@@ -617,6 +617,7 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
                       "prototype_test_variables", "question_feedback",
                       "readiness_evidence", "records",
                       "requirement_quantities",
+                      "subsystem_interface_observations",   # Stage 15 Slice 4
                       "subsystem_interface_preparations",   # Stage 15 Slice 3
                       "subsystem_interfaces"]   # Stage 15 Slice 2 sidecar
     cols = [r[1] for r in conn.execute("PRAGMA table_info(requirement_quantities)")]

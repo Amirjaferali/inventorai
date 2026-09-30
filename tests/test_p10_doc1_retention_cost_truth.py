@@ -157,6 +157,12 @@ def test_retention_doc_matches_source_truth():
     assert "this slice provides NO result clear / delete" in flat
     assert "Recording or correcting a result is NOT account or project erasure" in flat
     assert not any("prototype_test_results" in line for _p, line in deletes)
+    # Stage 15 Slice 4: append-only interface observations with no DELETE path,
+    # so they are in neither deletion set above; the document states exactly that.
+    assert "`subsystem_interface_observations`" in flat
+    assert "this slice provides NO observation clear / delete" in flat
+    assert "Recording or correcting an observation is NOT account or project erasure" in flat
+    assert not any("subsystem_interface_observations" in line for _p, line in deletes)
     assert "It is NOT an automatic deletion, NOT an erasure capability" in flat
     # the 7-day client TTL claim must keep matching the real script
     with open(os.path.join("web", "static", "js", "local_draft.js"),

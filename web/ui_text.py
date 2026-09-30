@@ -283,6 +283,28 @@ _MESSAGE_KEYS = {
     ("We could not confirm whether your preparation was saved. Reload this "
      "page to see what your project currently holds before entering it "
      "again."): "UI_S15_PREP_MSG_UNKNOWN",
+    # Stage 15 Slice 4 (web/app.py record_interface_observation).
+    ("Your observation could not be saved just now. Nothing was changed."):
+        "UI_S15_OBS_MSG_NOT_SAVED",
+    ("Your observation was saved to your project. It has not been checked or "
+     "validated by InventorAI, and InventorAI does not decide whether the "
+     "acceptance criterion was met."): "UI_S15_OBS_MSG_SAVED",
+    ("Describe in your own words what actually happened when you checked this "
+     "interaction. Nothing was changed."): "UI_S15_OBS_MSG_INVALID",
+    ("An observation can be at most 1000 characters. Nothing was changed."):
+        "UI_S15_OBS_MSG_TOO_LONG",
+    ("That interaction is not part of this project, so no observation can be "
+     "recorded or corrected for it here. Nothing was changed."):
+        "UI_S15_OBS_MSG_NOT_CURRENT",
+    ("That observation has already been corrected, or this page no longer "
+     "matches what your project holds, so nothing was saved. Review the page "
+     "and try again."): "UI_S15_OBS_MSG_STALE",
+    ("This project already holds the maximum of 200 recorded observations, so "
+     "no new one can be added. Nothing was changed and no earlier entry was "
+     "removed."): "UI_S15_OBS_MSG_CAP",
+    ("We could not confirm whether your observation was saved. Reload this "
+     "page to see what your project holds before entering it again."):
+        "UI_S15_OBS_MSG_UNKNOWN",
 }
 
 
@@ -733,8 +755,8 @@ UI_STRINGS = {
     "UI_S15_PREP_SAVE": {"en": "Save preparation", "ar": "حفظ التحضير"},
     "UI_S15_PREP_BACK": {"en": "Back to your project", "ar": "العودة إلى مشروعك"},
     "UI_S15_PREP_LINK": {
-        "en": "Record or edit how each interaction will be checked",
-        "ar": "سجّل أو عدّل كيف سيُفحص كل تفاعل",
+        "en": "Record or edit how each interaction will be checked, and record what happened when you checked it",
+        "ar": "سجّل أو عدّل كيف سيُفحص كل تفاعل، وسجّل ما الذي حدث عندما فحصته",
     },
     "UI_S15_PREP_NOT_RECORDED": {"en": "Not recorded yet", "ar": "لم يُسجَّل بعد"},
     "UI_S15_PREP_NONE": {
@@ -796,6 +818,99 @@ UI_STRINGS = {
     "UI_S15_PREP_MSG_UNKNOWN": {
         "en": "We could not confirm whether your preparation was saved. Reload this page to see what your project currently holds before entering it again.",
         "ar": "تعذّر علينا التأكد مما إذا كان تحضيرك قد حُفظ. أعد تحميل الصفحة لترى ما يحتفظ به مشروعك حاليًا قبل إدخاله مرة أخرى.",
+    },
+    # Stage 15 Slice 4 — the inventor's own observation of what actually
+    # happened when they tested or checked a declared interaction.
+    "UI_S15_OBS_HEADING": {
+        "en": "What actually happened when you checked each interaction",
+        "ar": "ما الذي حدث فعلًا عندما فحصت كل تفاعل",
+    },
+    "UI_S15_OBS_INTRO": {
+        "en": "After you test or check an interaction, record in your own words what actually happened. Each time you check it again, record it as a new check. Your observations are kept as history: a correction adds a new entry and keeps the earlier ones.",
+        "ar": "بعد أن تختبر تفاعلًا أو تفحصه، سجّل بكلماتك ما الذي حدث فعلًا. وفي كل مرة تفحصه من جديد، سجّله كفحص جديد. تُحفظ ملاحظاتك كسجلّ: التصحيح يضيف إدخالًا جديدًا ويُبقي الإدخالات السابقة.",
+    },
+    "UI_S15_OBS_SEPARATE": {
+        "en": "Recording an observation is separate from the preparation above: it does not save, change or clear anything in the preparation fields. Use \"Save preparation\" for those.",
+        "ar": "تسجيل ملاحظة منفصل عن التحضير أعلاه: فهو لا يحفظ أي شيء في حقول التحضير ولا يغيّره ولا يمسحه. استخدم «حفظ التحضير» لذلك.",
+    },
+    "UI_S15_OBS_LABEL": {
+        "en": "Recorded by you; not checked or validated by InventorAI. InventorAI does not decide whether the acceptance criterion was met.",
+        "ar": "سجّلته أنت؛ لم يفحصه InventorAI ولم يتحقق من صحته. ولا يقرّر InventorAI ما إذا كان معيار القبول قد استُوفي.",
+    },
+    "UI_S15_OBS_NONE": {
+        "en": "No observation has been recorded for this interaction yet.",
+        "ar": "لم تُسجَّل أي ملاحظة لهذا التفاعل بعد.",
+    },
+    "UI_S15_OBS_CHECK": {"en": "Check", "ar": "الفحص"},
+    "UI_S15_OBS_EARLIER": {
+        "en": "Earlier entries of this check (kept as history)",
+        "ar": "إدخالات سابقة لهذا الفحص (محفوظة كسجلّ)",
+    },
+    "UI_S15_OBS_CONTEXT": {
+        "en": "Preparation recorded at that time",
+        "ar": "التحضير المُسجَّل في ذلك الوقت",
+    },
+    "UI_S15_OBS_CONTEXT_NOTE": {
+        "en": "The preparation your project held when you first recorded this check: planning context at that time, not the current preparation above. It is not a claim about the conditions actually used in the check, and later changes to the preparation do not change it.",
+        "ar": "التحضير الذي كان يحتفظ به مشروعك عندما سجّلت هذا الفحص أول مرة: سياق تخطيط في ذلك الوقت، وليس التحضير الحالي أعلاه. ولا يعني أن الفحص أُجري فعلًا في هذه الظروف، ولا تغيّره أي تعديلات لاحقة على التحضير.",
+    },
+    "UI_S15_OBS_CONTEXT_ABSENT": {
+        "en": "Not recorded at that time",
+        "ar": "لم يكن مُسجَّلًا في ذلك الوقت",
+    },
+    "UI_S15_OBS_CORRECT": {
+        "en": "Correct this observation",
+        "ar": "صحّح هذه الملاحظة",
+    },
+    "UI_S15_OBS_CORRECT_NOTE": {
+        "en": "A correction is added as a new entry; the earlier text stays in the history. It is not checked or validated by InventorAI.",
+        "ar": "يُضاف التصحيح كإدخال جديد؛ ويبقى النص السابق في السجلّ. ولا يفحصه InventorAI ولا يتحقق من صحته.",
+    },
+    "UI_S15_OBS_CORRECT_BUTTON": {"en": "Save correction", "ar": "حفظ التصحيح"},
+    "UI_S15_OBS_RECORD": {
+        "en": "Record what actually happened when you checked this interaction",
+        "ar": "سجّل ما الذي حدث فعلًا عندما فحصت هذا التفاعل",
+    },
+    "UI_S15_OBS_RECORD_NOTE": {
+        "en": "Up to {limit} characters (a line break counts as two). Your observation is kept exactly as you write it. It is not checked or validated by InventorAI, and InventorAI does not decide whether the acceptance criterion was met.",
+        "ar": "حتى {limit} حرف (يُحسب سطر جديد حرفين). تُحفظ ملاحظتك كما تكتبها تمامًا. لا يفحصها InventorAI ولا يتحقق من صحتها، ولا يقرّر InventorAI ما إذا كان معيار القبول قد استُوفي.",
+    },
+    "UI_S15_OBS_RECORD_BUTTON": {"en": "Record observation", "ar": "تسجيل الملاحظة"},
+    "UI_S15_OBS_UNAVAILABLE": {
+        "en": "Your recorded observations could not be read, so they cannot be shown or added to from this page. Your preparation above is not affected.",
+        "ar": "تعذّرت قراءة الملاحظات التي سجّلتها، لذا لا يمكن عرضها أو الإضافة إليها من هذه الصفحة. ولا يتأثر تحضيرك أعلاه.",
+    },
+    "UI_S15_OBS_MSG_NOT_SAVED": {
+        "en": "Your observation could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ ملاحظتك الآن. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_OBS_MSG_SAVED": {
+        "en": "Your observation was saved to your project. It has not been checked or validated by InventorAI, and InventorAI does not decide whether the acceptance criterion was met.",
+        "ar": "حُفظت ملاحظتك في مشروعك. لم يفحصها InventorAI ولم يتحقق من صحتها، ولا يقرّر InventorAI ما إذا كان معيار القبول قد استُوفي.",
+    },
+    "UI_S15_OBS_MSG_INVALID": {
+        "en": "Describe in your own words what actually happened when you checked this interaction. Nothing was changed.",
+        "ar": "صِف بكلماتك ما الذي حدث فعلًا عندما فحصت هذا التفاعل. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_OBS_MSG_TOO_LONG": {
+        "en": "An observation can be at most 1000 characters. Nothing was changed.",
+        "ar": "يمكن أن تكون الملاحظة 1000 حرف كحدّ أقصى. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_OBS_MSG_NOT_CURRENT": {
+        "en": "That interaction is not part of this project, so no observation can be recorded or corrected for it here. Nothing was changed.",
+        "ar": "هذا التفاعل ليس جزءًا من هذا المشروع، لذا لا يمكن تسجيل ملاحظة له أو تصحيحها هنا. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_OBS_MSG_STALE": {
+        "en": "That observation has already been corrected, or this page no longer matches what your project holds, so nothing was saved. Review the page and try again.",
+        "ar": "صُحّحت هذه الملاحظة من قبل، أو أن هذه الصفحة لم تعد تطابق ما يحتفظ به مشروعك، لذا لم يُحفظ شيء. راجع الصفحة وحاول مرة أخرى.",
+    },
+    "UI_S15_OBS_MSG_CAP": {
+        "en": "This project already holds the maximum of 200 recorded observations, so no new one can be added. Nothing was changed and no earlier entry was removed.",
+        "ar": "يحتفظ هذا المشروع بالحدّ الأقصى وهو 200 ملاحظة مُسجَّلة، لذا لا يمكن إضافة ملاحظة جديدة. لم يتم تغيير أي شيء ولم يُحذف أي إدخال سابق.",
+    },
+    "UI_S15_OBS_MSG_UNKNOWN": {
+        "en": "We could not confirm whether your observation was saved. Reload this page to see what your project holds before entering it again.",
+        "ar": "تعذّر علينا التأكد مما إذا كانت ملاحظتك قد حُفظت. أعد تحميل الصفحة لترى ما يحتفظ به مشروعك قبل إدخالها مرة أخرى.",
     },
     "UI_S15_IFC_ERR_NOT_SAVED": {
         "en": "That interaction could not be saved just now. Nothing was changed.",

@@ -20,6 +20,7 @@ from flask import (
 from engine.domain_rules import classify_domain, DomainResultKind, is_known_domain
 from engine import subsystem_model as _subsystem_model  # Stage 15 Slice 1: the ONE subsystem owner
 from engine import experiment_result as _experiment_result  # CAP-09 Result Event Slice 1
+from engine import interface_observation as _interface_observation  # Stage 15 Slice 4
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState, SuccessCriterion, MeasurementMethod, TestHypothesis, TestVariable,
@@ -102,6 +103,9 @@ from engine.record_store import (
     InterfacePreparationsCorrupt as _InterfacePreparationsCorrupt,
     ResultEventRejected as _ResultEventRejected,
     ResultEventConflict as _ResultEventConflict,
+    InterfaceObservationRejected as _InterfaceObservationRejected,
+    InterfaceObservationCapReached as _InterfaceObservationCapReached,
+    InterfaceObservationConflict as _InterfaceObservationConflict,
     MAX_SUCCESS_CRITERION_LENGTH, MAX_MEASUREMENT_METHOD_LENGTH,
     MAX_TEST_HYPOTHESIS_LENGTH, MAX_TEST_VARIABLE_LENGTH,
     QuantityChainConflict as _QuantityChainConflict,
@@ -1569,6 +1573,37 @@ S15_PREP_SAVED_NOT_SHOWN_MESSAGE = (
 S15_PREP_UNKNOWN_MESSAGE = (
     "We could not confirm whether your preparation was saved. Reload this "
     "page to see what your project currently holds before entering it again.")
+
+# Stage 15 Slice 4: the inventor's own observation of what actually happened
+# when they tested or checked one declared interaction
+# (record_interface_observation). Truthful: never checked or validated by
+# InventorAI, and no decision on the acceptance criterion; "saved" means
+# durably stored only. Registered in `ui_text._MESSAGE_KEYS`.
+S15_OBS_NOT_SAVED_MESSAGE = (
+    "Your observation could not be saved just now. Nothing was changed.")
+S15_OBS_SAVED_MESSAGE = (
+    "Your observation was saved to your project. It has not been checked or "
+    "validated by InventorAI, and InventorAI does not decide whether the "
+    "acceptance criterion was met.")
+S15_OBS_INVALID_MESSAGE = (
+    "Describe in your own words what actually happened when you checked this "
+    "interaction. Nothing was changed.")
+S15_OBS_TOO_LONG_MESSAGE = (
+    "An observation can be at most 1000 characters. Nothing was changed.")
+S15_OBS_NOT_CURRENT_MESSAGE = (
+    "That interaction is not part of this project, so no observation can be "
+    "recorded or corrected for it here. Nothing was changed.")
+S15_OBS_STALE_MESSAGE = (
+    "That observation has already been corrected, or this page no longer "
+    "matches what your project holds, so nothing was saved. Review the page "
+    "and try again.")
+S15_OBS_CAP_MESSAGE = (
+    "This project already holds the maximum of 200 recorded observations, so "
+    "no new one can be added. Nothing was changed and no earlier entry was "
+    "removed.")
+S15_OBS_UNKNOWN_MESSAGE = (
+    "We could not confirm whether your observation was saved. Reload this "
+    "page to see what your project holds before entering it again.")
 
 CORRECTION_APPLIED_ACK = (
     "Your earlier answer was withdrawn and kept in the project history. "
@@ -7521,7 +7556,8 @@ def _s15_preparation_context(sid):
 
 
 def _render_interface_preparation(sid, context, status=200, error=None,
-                                  notice=None, drafts=None, baselines=None):
+                                  notice=None, drafts=None, baselines=None,
+                                  observation_drafts=None):
     """Render the preparation page. ``context`` None renders no interaction
     at all (the notice says why) — never "no interactions". ``drafts`` (a
     REJECTED submission, request-local only) maps form field name -> the text
@@ -7529,7 +7565,9 @@ def _render_interface_preparation(sid, context, status=200, error=None,
     UNSAVED notice and is never written anywhere. NUL is never echoed.
     ``baselines`` (F724-1) maps baseline field name -> the baseline that
     refused form carried; it is re-emitted unchanged so a retry of the same
-    form keeps judging its edits against what that form first displayed."""
+    form keeps judging its edits against what that form first displayed.
+    ``observation_drafts`` (Stage 15 Slice 4) is the refused observation text,
+    request-local only, keyed like the observation forms."""
     lang = _current_ui_lang()
     shown = None if drafts is None else {
         name: raw.replace("\x00", "") for name, raw in drafts.items()}
@@ -7542,6 +7580,9 @@ def _render_interface_preparation(sid, context, status=200, error=None,
             name: raw.replace("\x00", "") for name, raw in baselines.items()},
         draft_notice=drafts is not None,
         max_length=_subsystem_model.MAX_INTERFACE_PREPARATION_LENGTH,
+        observations=None if context is None else _s15_observations_view(
+            sid, context, observation_drafts),
+        observation_max_length=_interface_observation.MAX_OBSERVATION_TEXT_LENGTH,
         error=ui_text.localize_message(error, lang),
         notice=ui_text.localize_message(notice, lang),
     ), status)
@@ -7687,6 +7728,194 @@ def save_interface_preparation(sid):
     except Exception:
         return _render_interface_preparation(
             sid, None, notice=S15_PREP_SAVED_NOT_SHOWN_MESSAGE)
+
+
+# --- Stage 15 Slice 4: Interface Verification Observation Event -------------
+# For each durable Owner-declared interaction the inventor records, in their
+# own words, what actually happened when they tested or checked it.
+# APPEND-ONLY events (engine/interface_observation.py): every separately
+# reported check is a new ROOT freezing the interaction's DURABLE preparation
+# values at recording; a correction supersedes the current HEAD of one chain.
+# OWNER-STATED / UNVALIDATED: nothing here judges, compares, grades or
+# interprets an observation; no verdict, criterion comparison, compatibility,
+# validation, evidence, readiness, IRL, progression or gap state changes, and
+# the preparation save is a separate action this route never performs. Each
+# form carries its own freshly signed submission identity (the shared
+# stateless signed submission seam), so an exact retry resolves to the SAME
+# stored event while identical text from a new form is a new, real retest.
+_S15_OBS_SUBMISSION_DOMAIN = "s15-observation-submission-v1"
+
+
+def _s15_observation_submission_identity(sid):
+    """A fresh signed submission identity for ONE rendered observation form."""
+    nonce = secrets.token_hex(16)
+    return nonce + "." + _submission_sig(_S15_OBS_SUBMISSION_DOMAIN, sid, nonce)
+
+
+def _s15_observation_action_key(sid, nonce):
+    """The durable idempotent identity of ONE observation submission: HMAC
+    over (project, submission nonce) ONLY — never over the text, so the SAME
+    identity with ANY different material is detectable."""
+    msg = _canonical_message("s15-observation-action-v1", sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _s15_observations_view(sid, context, drafts=None):
+    """The observation presentation of the preparation page, read from
+    committed durable truth: per durable interaction its check chains in root
+    order (head, earlier entries, frozen preparation context) and one fresh
+    record form. ``None`` when the history could not be read — the
+    observation section then fails closed while the preparation form stays
+    usable. Carries no identifier to visible text."""
+    try:
+        events = _get_store().load_interface_observations(sid)
+    except Exception:
+        return None
+    # A refused draft is shown back request-locally; NUL (a refusal reason)
+    # is never echoed.
+    drafts = {k: v.replace("\x00", "") for k, v in (drafts or {}).items()}
+
+    def chain_view(chain):
+        head, ctx = chain["head"], chain["root"].context
+        return {
+            "text": head.observation_text,
+            "earlier": [e.observation_text for e in chain["history"][:-1]],
+            "context": [{"label_key": _S15_PREP_LABEL_KEYS[f],
+                         "text": getattr(ctx, f)}
+                        for f in _interface_observation.CONTEXT_FIELDS],
+            "head_id": head.observation_id,
+            "submission": _s15_observation_submission_identity(sid),
+            "draft": drafts.get("fix:" + head.observation_id),
+        }
+    view = {}
+    for item in context["items"]:
+        iid = item["interface_id"]
+        view[iid] = {
+            "chains": [chain_view(c) for c in
+                       _interface_observation.observation_chains(events, iid)],
+            "submission": _s15_observation_submission_identity(sid),
+            "draft": drafts.get("new:" + iid),
+        }
+    return view
+
+
+@app.route("/session/<sid>/interface-observation", methods=["POST"])
+def record_interface_observation(sid):
+    """Stage 15 Slice 4 — record (new root) or correct (successor of one
+    chain head) the inventor's own observation of what actually happened when
+    they checked one durable declared interaction. Order: request integrity
+    (global guard) -> authorization -> signed submission identity ->
+    validation -> the committed outcome of THIS submission resolved first
+    (UNKNOWN / SAVED / conflict never depend on current page or preparation
+    reads) -> CURRENT durable interactions and preparation (required only for
+    a new append) -> ONE durable append (membership, correction head and the
+    root's frozen durable preparation re-checked inside it) ->
+    confirm-by-reload. Never saves, changes or clears preparation."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    interface_id = request.form.get("interface_id", "")
+    target = request.form.get("supersedes", "") or None
+    raw = request.form.get("observation_text", "")
+    drafts = {(("fix:" + target) if target else ("new:" + interface_id)): raw}
+    loaded = []
+
+    def current_context():
+        if not loaded:
+            loaded.append(_s15_preparation_context(sid))
+        return loaded[0]
+
+    def refuse(message, code=400, keep=True):
+        # A refusal is truthful whether or not the page can be offered; an
+        # unavailable page is disclosed beside it, never in its place.
+        status, context = current_context()
+        if status != _S15_PREP_OK:
+            return _render_interface_preparation(
+                sid, None, status=code, error=message,
+                notice=_S15_PREP_STATUS_MESSAGE[status][0])
+        return _render_interface_preparation(
+            sid, context, status=code, error=message,
+            observation_drafts=drafts if keep else None)
+
+    nonce = _verified_submission_identity(
+        sid, request.form.get("observation_submission", ""),
+        _S15_OBS_SUBMISSION_DOMAIN)
+    if nonce is None:
+        return refuse(S15_OBS_NOT_SAVED_MESSAGE)
+    text = raw.strip()
+    if not text:
+        return refuse(S15_OBS_INVALID_MESSAGE)
+    invalid = _free_text_error(text, _current_ui_lang())
+    if invalid is not None:
+        return refuse(invalid)
+    if len(text) > _interface_observation.MAX_OBSERVATION_TEXT_LENGTH:
+        return refuse(S15_OBS_TOO_LONG_MESSAGE)
+    key = _s15_observation_action_key(sid, nonce)
+
+    def committed():
+        return _get_store().committed_interface_observation_for_submission(sid, key)
+
+    def matches(stored):
+        return (stored.interface_id == interface_id
+                and stored.supersedes_observation_id == target
+                and stored.observation_text == text)
+
+    # An EXACT committed retry (refresh, double submit, restart, a later
+    # preparation edit or chain correction) resolves from committed durable
+    # truth BEFORE any current read and changes nothing; the SAME identity
+    # with different material fails closed. Unreadable committed truth never
+    # becomes NOT SAVED or page-unavailable: it stays UNKNOWN.
+    try:
+        prior = committed()
+    except Exception:
+        return _render_interface_preparation(sid, None, status=503,
+                                             notice=S15_OBS_UNKNOWN_MESSAGE)
+    if prior is not None:
+        if matches(prior):
+            status, context = current_context()
+            return _render_interface_preparation(
+                sid, context if status == _S15_PREP_OK else None,
+                notice=S15_OBS_SAVED_MESSAGE)
+        return refuse(S15_OBS_NOT_SAVED_MESSAGE, keep=False)
+    # Only a NEW append needs CURRENT durable interactions and preparation.
+    status, context = current_context()
+    if status != _S15_PREP_OK:
+        message, code = _S15_PREP_STATUS_MESSAGE[status]
+        return _render_interface_preparation(sid, None, status=code,
+                                             notice=message)
+    if interface_id not in {item["interface_id"] for item in context["items"]}:
+        return refuse(S15_OBS_NOT_CURRENT_MESSAGE)
+    try:
+        if target is None:
+            # The DURABLE preparation read with this page's context — never
+            # anything typed (and unsaved) in the preparation form.
+            event = _interface_observation.recorded_root(
+                interface_id, text, _interface_observation.context_from_preparation(
+                    context["current"].get(interface_id)))
+        else:
+            event = _interface_observation.recorded_correction(
+                interface_id, text, target)
+    except _interface_observation.ObservationError:
+        return refuse(S15_OBS_STALE_MESSAGE)
+    try:
+        _get_store().append_interface_observation(sid, event, key)
+    except _InterfaceObservationCapReached:
+        return refuse(S15_OBS_CAP_MESSAGE)
+    except _InterfaceObservationRejected:
+        return refuse(S15_OBS_STALE_MESSAGE)
+    except _InterfaceObservationConflict:
+        return refuse(S15_OBS_NOT_SAVED_MESSAGE, keep=False)
+    except Exception:
+        # Never assume an outcome: decide from committed durable truth only.
+        try:
+            prior = committed()
+        except Exception:
+            return _render_interface_preparation(sid, None, status=503,
+                                                 notice=S15_OBS_UNKNOWN_MESSAGE)
+        if prior is None or not matches(prior):
+            return refuse(S15_OBS_NOT_SAVED_MESSAGE, code=503)
+    return _render_interface_preparation(sid, context,
+                                         notice=S15_OBS_SAVED_MESSAGE)
 
 
 @app.route("/session/<sid>/correct", methods=["POST"])

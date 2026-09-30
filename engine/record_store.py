@@ -87,6 +87,9 @@ from engine.experiment_result import (
     MAX_RESULT_EVENTS_PER_PROJECT, head_ids, same_result_material,
     validate_result_history,
 )
+# Stage 15 Slice 4: the inventor's append-only report of what actually
+# happened when they tested or checked one Owner-declared interface.
+from engine import interface_observation as _observation
 from engine.evidence_reference import (
     EvidenceReference, validate_reference_history, validate_new_reference,
     active_reference_for_anchor, REFERENCE_INSERTED, REFERENCE_EXACT_REPLAY,
@@ -259,6 +262,32 @@ class ResultEventsCorrupt(StoreError):
     for the WHOLE history: nothing partial, nothing repaired or remapped."""
 
 
+class InterfaceObservationRejected(StoreError):
+    """Stage 15 Slice 4: an observation event is not valid against the
+    project's DURABLE truth inside the write transaction (an interface that
+    is not a member of THIS project's durable interfaces, a correction whose
+    target is missing, of another project or interface, or no longer the
+    head, a root whose frozen context is not the interface's durable
+    preparation, or the cap reached). Decided before any row is written;
+    nothing is written."""
+
+
+class InterfaceObservationCapReached(InterfaceObservationRejected):
+    """Stage 15 Slice 4: the project already holds the maximum number of
+    observation events. Refused; nothing is pruned, rewritten or dropped."""
+
+
+class InterfaceObservationConflict(StoreError):
+    """Stage 15 Slice 4: the durable submission identity is already spent on
+    DIFFERENT material. Nothing was written."""
+
+
+class InterfaceObservationsCorrupt(StoreError):
+    """Stage 15 Slice 4: a project's durable observation rows are malformed,
+    out of order, forked, cross-interface or orphaned. Fail-closed for the
+    WHOLE history: nothing partial, nothing repaired, dropped or remapped."""
+
+
 class AdoptionCapReached(StoreError):
     """T2-G legacy migration: the per-project adoption row cap was reached.
     Refused clearly inside the transaction; history is never truncated."""
@@ -413,6 +442,12 @@ class RecordStore(Protocol):
                                               submission_key: str): ...
     def append_result_event(self, project_id: str, event,
                             submission_key: str) -> tuple: ...
+    # Stage 15 Slice 4 (append-only; see the subsystem_interface_observations note).
+    def load_interface_observations(self, project_id: str) -> tuple: ...
+    def committed_interface_observation_for_submission(self, project_id: str,
+                                                       submission_key: str): ...
+    def append_interface_observation(self, project_id: str, observation,
+                                     submission_key: str) -> tuple: ...
 
 
 _SCHEMA = (
@@ -1225,6 +1260,83 @@ _RESULT_EVENTS_SCHEMA = (
     "WHERE supersedes_result_event_id IS NOT NULL",
 )
 
+# Stage 15 Slice 4 — the ``subsystem_interface_observations`` sidecar: the
+# inventor's APPEND-ONLY report of what actually happened when they tested or
+# checked ONE Owner-declared interface (``interface_id``, the only interface
+# identity; composite foreign key to that exact durable interface row). Every
+# row is one immutable event with an opaque server-generated
+# ``observation_id``; a separately reported check is an independent ROOT row
+# (``supersedes_observation_id`` NULL) carrying the interface's durable
+# preparation values frozen at recording — each the exact text or NULL, and
+# all three NULL is a valid root; a correction is a row superseding the
+# current head of ONE chain and carries no context. There is NO update or
+# delete path. ``observation_seq`` fixes durable order; ``submission_key`` is
+# the idempotent identity of the ONE action attempt that wrote the row
+# (unique per project). The composite self foreign key keeps a correction
+# inside THIS project; the partial unique index forbids forks; the loader
+# re-validates the whole history (same interface, earlier target, no fork).
+# No outcome, status, verdict, validation, readiness, compatibility or score
+# column exists. ``recorded_at`` is when InventorAI recorded the event, never
+# the check time. Additive and idempotent (``IF NOT EXISTS``); touches no
+# existing table, column or row; nothing is backfilled. Rollback is
+# disable-and-ignore (stop reading the table); user history is never removed.
+_OBSERVATION_ID_CHECK = (
+    "({col} IS NULL OR (typeof({col}) = 'text' AND length({col}) = 36 "
+    "AND substr({col}, 1, 4) = 'obs-' AND substr({col}, 5) NOT GLOB '*[^0-9a-f]*'))")
+_INTERFACE_OBSERVATIONS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS subsystem_interface_observations (
+        project_id                 TEXT    NOT NULL,
+        observation_seq            INTEGER NOT NULL,
+        observation_id             TEXT    NOT NULL,
+        interface_id               TEXT    NOT NULL,
+        observation_text           TEXT    NOT NULL,
+        supersedes_observation_id  TEXT,
+        submission_key             TEXT    NOT NULL,
+        recorded_at                TEXT    NOT NULL,
+        ctx_operating_conditions   TEXT,
+        ctx_acceptance_criterion   TEXT,
+        ctx_evidence_needed        TEXT,
+        PRIMARY KEY (project_id, observation_id),
+        UNIQUE (project_id, observation_seq),
+        UNIQUE (project_id, submission_key),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, interface_id)
+            REFERENCES subsystem_interfaces(project_id, interface_id),
+        FOREIGN KEY (project_id, supersedes_observation_id)
+            REFERENCES subsystem_interface_observations(project_id, observation_id),
+        CHECK (observation_seq >= 0),
+        CHECK (observation_id IS NOT NULL AND %s),
+        CHECK (%s),
+        CHECK (supersedes_observation_id IS NULL
+               OR supersedes_observation_id <> observation_id),
+        CHECK (typeof(interface_id) = 'text' AND length(interface_id) = 36),
+        CHECK (typeof(observation_text) = 'text'
+               AND length(observation_text) BETWEEN 1 AND %d
+               AND instr(CAST(observation_text AS BLOB), X'00') = 0),
+        CHECK (typeof(submission_key) = 'text' AND length(submission_key) > 0),
+        CHECK (typeof(recorded_at) = 'text' AND length(recorded_at) > 0),
+        CHECK (%s), CHECK (%s), CHECK (%s),
+        CHECK (supersedes_observation_id IS NULL
+               OR (ctx_operating_conditions IS NULL
+                   AND ctx_acceptance_criterion IS NULL
+                   AND ctx_evidence_needed IS NULL))
+    )
+    """ % ((_OBSERVATION_ID_CHECK.format(col="observation_id"),
+            _OBSERVATION_ID_CHECK.format(col="supersedes_observation_id"),
+            _observation.MAX_OBSERVATION_TEXT_LENGTH)
+           + tuple(_PREPARATION_TEXT_CHECK.format(col="ctx_" + f)
+                   for f in _observation.CONTEXT_FIELDS)),
+    "CREATE UNIQUE INDEX IF NOT EXISTS subsystem_interface_observations_id_uq "
+    "ON subsystem_interface_observations (observation_id)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS subsystem_interface_observations_successor_uq "
+    "ON subsystem_interface_observations (project_id, supersedes_observation_id) "
+    "WHERE supersedes_observation_id IS NOT NULL",
+)
+
+INTERFACE_OBSERVATION_INSERTED = "INSERTED"
+INTERFACE_OBSERVATION_EXACT_REPLAY = "EXACT_REPLAY"
+
 RESULT_EVENT_INSERTED = "INSERTED"
 RESULT_EVENT_EXACT_REPLAY = "EXACT_REPLAY"
 
@@ -1343,6 +1455,7 @@ class SqliteRecordStore:
             self._migrate_subsystem_interfaces(self._conn)
             self._migrate_interface_preparations(self._conn)
             self._migrate_result_events(self._conn)
+            self._migrate_interface_observations(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -1592,6 +1705,15 @@ class SqliteRecordStore:
         existing table, column or row; nothing is backfilled. Rollback is
         disable-and-ignore (stop reading the table)."""
         for stmt in _RESULT_EVENTS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_interface_observations(self, conn) -> None:
+        """Stage 15 Slice 4 forward migration: additively create the
+        append-only ``subsystem_interface_observations`` sidecar. Idempotent
+        (``IF NOT EXISTS``) on a fresh and on an existing populated database;
+        touches no existing table, column or row; nothing is backfilled.
+        Rollback is disable-and-ignore (stop reading the table)."""
+        for stmt in _INTERFACE_OBSERVATIONS_SCHEMA:
             conn.execute(stmt)
 
     # --- identifiers --------------------------------------------------------
@@ -2043,6 +2165,170 @@ class SqliteRecordStore:
                 + tuple(None if ctx is None else getattr(ctx, f)
                         for f in CONTEXT_FIELDS))
         return RESULT_EVENT_INSERTED, event
+
+    # --- Stage 15 Slice 4: Interface Verification Observation Event -----------
+    _OBSERVATION_COLUMNS = (
+        "observation_seq, observation_id, interface_id, observation_text, "
+        "supersedes_observation_id, submission_key, recorded_at, "
+        + ", ".join("ctx_" + f for f in _observation.CONTEXT_FIELDS))
+
+    def _validated_observations(self, project_id, interfaces=None):
+        """``(events, submission_keys)`` of this project's durable observation
+        rows, validated WHOLE; ``InterfaceObservationsCorrupt`` on anything
+        malformed, out of order, forked, cross-interface or orphaned (nothing
+        partial). With ``interfaces`` (the project's validated durable
+        interfaces) every event must also name one of them by exact id."""
+        rows = self._conn.execute(
+            "SELECT " + self._OBSERVATION_COLUMNS + " FROM "
+            "subsystem_interface_observations WHERE project_id = ? "
+            "ORDER BY observation_seq ASC", (project_id,)).fetchall()
+        if not rows:
+            return (), ()
+        if [row[0] for row in rows] != list(range(len(rows))):
+            raise InterfaceObservationsCorrupt(
+                "durable observation order is not contiguous")
+        keys = tuple(row[5] for row in rows)
+        if any(not isinstance(k, str) or not k for k in keys) \
+                or len(set(keys)) != len(keys):
+            raise InterfaceObservationsCorrupt(
+                "durable submission identity is malformed")
+        events = []
+        for row in rows:
+            ctx_values = row[7:]
+            if row[4] is None:
+                context = _observation.ObservationContext(*ctx_values)
+            else:
+                if any(v is not None for v in ctx_values):
+                    raise InterfaceObservationsCorrupt("a correction carries context")
+                context = None
+            events.append(_observation.InterfaceObservation(
+                observation_id=row[1], interface_id=row[2],
+                observation_text=row[3], supersedes_observation_id=row[4],
+                recorded_at=row[6], context=context))
+        try:
+            events = _observation.validate_observation_history(events)
+        except _observation.ObservationError as exc:
+            raise InterfaceObservationsCorrupt(str(exc)) from None
+        if interfaces is not None:
+            self._require_observed_interfaces(events, interfaces)
+        return events, keys
+
+    @staticmethod
+    def _require_observed_interfaces(events, interfaces):
+        """Every durable observation names an interface of ``interfaces`` by
+        exact id; an orphan fails the whole history closed (never dropped)."""
+        known = {item.interface_id for item in interfaces}
+        if any(e.interface_id not in known for e in events):
+            raise InterfaceObservationsCorrupt(
+                "an observation names no interface of this project")
+
+    def load_interface_observations(self, project_id: str) -> tuple:
+        """This project's durable observation events in ``observation_seq``
+        order (``()`` for every project without any), validated WHOLE and
+        against its durable interfaces, inside ONE read snapshot. No project
+        -> ``ProjectNotFound``; corrupt composition / interfaces fail closed
+        with their own errors. IR-01: a connection inside an unresolved
+        transaction refuses (``RecordStoreConnectionUnsafe``). Read-only;
+        project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _keys = self._validated_interfaces(project_id, subsystems)
+            events, _keys = self._validated_observations(project_id, interfaces)
+        return events
+
+    def committed_interface_observation_for_submission(self, project_id: str,
+                                                       submission_key: str):
+        """The COMMITTED observation event written under ``submission_key``,
+        or ``None`` — the confirm-by-reload seam of the observation route,
+        read ONLY from committed durable state (IR-01 refuses otherwise). The
+        whole observation history is validated first, so a corrupt history
+        fails closed. It needs no current interface or preparation read, so
+        THIS submission's committed outcome is reconciled first."""
+        self._refuse_uncommitted_reads()
+        if not isinstance(submission_key, str) or not submission_key:
+            return None
+        with self.read_snapshot():
+            self._require_project(project_id)
+            events, keys = self._validated_observations(project_id)
+        if submission_key not in keys:
+            return None
+        return events[keys.index(submission_key)]
+
+    def append_interface_observation(self, project_id: str, observation,
+                                     submission_key: str) -> tuple:
+        """Atomically append ONE observation event and return ``(outcome,
+        stored_event)``: ``INTERFACE_OBSERVATION_EXACT_REPLAY`` with the
+        ALREADY-COMMITTED event when ``submission_key`` already names this
+        exact material (the caller's new id and context are discarded),
+        ``INTERFACE_OBSERVATION_INSERTED`` otherwise.
+
+        ONE ``BEGIN IMMEDIATE`` transaction; full rollback on any failure.
+        Inside it, against DURABLE truth: the project exists; its observation
+        history validates; the submission identity is unused or names exactly
+        this material (``InterfaceObservationConflict`` otherwise); then, for
+        a NEW event only, the composition and interfaces validate and the
+        interface is a member of THIS project's durable interfaces by exact
+        id; the cap is not reached; a correction's target is an event of THIS
+        project and interface that is still a chain HEAD; a root's frozen
+        context equals the interface's durable preparation read in this same
+        transaction (``InterfaceObservationRejected`` otherwise — never
+        matched by position, endpoints or text). The store assigns
+        ``observation_seq``. There is no update or delete path. IR-01: never
+        writes on top of an unresolved connection."""
+        if not isinstance(observation, _observation.InterfaceObservation):
+            raise InterfaceObservationRejected("not an observation event")
+        if not isinstance(submission_key, str) or not submission_key:
+            raise InterfaceObservationRejected("a submission identity is required")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            self._require_project(project_id)
+            existing, keys = self._validated_observations(project_id)
+            if submission_key in keys:
+                stored = existing[keys.index(submission_key)]
+                if _observation.same_observation_material(stored, observation):
+                    return INTERFACE_OBSERVATION_EXACT_REPLAY, stored
+                raise InterfaceObservationConflict(
+                    "the submission identity already names a different event")
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _keys = self._validated_interfaces(project_id, subsystems)
+            self._require_observed_interfaces(existing, interfaces)
+            if observation.interface_id not in {i.interface_id for i in interfaces}:
+                raise InterfaceObservationRejected(
+                    "the interface is not a member of this project")
+            if len(existing) >= _observation.MAX_OBSERVATIONS_PER_PROJECT:
+                raise InterfaceObservationCapReached("the observation cap is reached")
+            target = observation.supersedes_observation_id
+            if target is None:
+                preparations = self._validated_preparations(project_id, interfaces)
+                durable = _observation.context_from_preparation(
+                    preparation_for(preparations, observation.interface_id))
+                if observation.context != durable:
+                    raise InterfaceObservationRejected(
+                        "the frozen context is not the durable preparation")
+            else:
+                prior = {e.observation_id: e for e in existing}.get(target)
+                if prior is None or prior.interface_id != observation.interface_id \
+                        or target not in _observation.head_ids(existing):
+                    raise InterfaceObservationRejected(
+                        "a correction must supersede the current head of one "
+                        "chain of the same interface in this project")
+            try:
+                _observation.validate_observation_history(existing + (observation,))
+            except _observation.ObservationError:
+                raise InterfaceObservationRejected("the event is not valid") from None
+            ctx = observation.context
+            self._conn.execute(
+                "INSERT INTO subsystem_interface_observations (project_id, "
+                + self._OBSERVATION_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, "
+                "?, ?, ?)",
+                (project_id, len(existing), observation.observation_id,
+                 observation.interface_id, observation.observation_text, target,
+                 submission_key, observation.recorded_at)
+                + tuple(None if ctx is None else getattr(ctx, f)
+                        for f in _observation.CONTEXT_FIELDS))
+        return INTERFACE_OBSERVATION_INSERTED, observation
 
     def load_subsystem_interfaces(self, project_id: str) -> tuple:
         """This project's durable Owner-declared interfaces in
