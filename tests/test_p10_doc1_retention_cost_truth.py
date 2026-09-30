@@ -110,11 +110,15 @@ _AUTOMATIC_DELETION_TABLES = ("auth_rate_limits", "email_outbox")
 # Stage 19 / CAP-09 SLICE 3 extended the SAME kind once more (the owner clearing
 # their own test hypothesis); the automatic set is still unchanged. Stage 19 /
 # CAP-09 SLICE 4 extended it to the owner clearing their own test variable /
-# condition; the automatic set is still unchanged.
+# condition; the automatic set is still unchanged. Stage 15 Slice 3 extended it to
+# the owner clearing all three of their own interface verification-preparation
+# inputs (that one current-value row is removed); the automatic set is still
+# unchanged.
 _USER_INITIATED_DELETION_TABLES = ("prototype_plan_metadata",
                                    "prototype_measurement_methods",
                                    "prototype_test_hypotheses",
-                                   "prototype_test_variables")
+                                   "prototype_test_variables",
+                                   "subsystem_interface_preparations")
 
 
 def test_retention_doc_matches_source_truth():
@@ -144,6 +148,8 @@ def test_retention_doc_matches_source_truth():
     assert "`prototype_measurement_methods`" in flat
     assert "`prototype_test_hypotheses`" in flat
     assert "`prototype_test_variables`" in flat
+    assert "`subsystem_interface_preparations`" in flat
+    assert "clearing all three inputs removes that single current-value row" in flat
     assert "It is NOT an automatic deletion, NOT an erasure capability" in flat
     # the 7-day client TTL claim must keep matching the real script
     with open(os.path.join("web", "static", "js", "local_draft.js"),

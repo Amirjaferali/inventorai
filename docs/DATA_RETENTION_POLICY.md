@@ -23,6 +23,7 @@ notably LQ-09/LQ-10/TQ-07) and separate Owner acceptance.
 | Prototype & Test Plan measurement methods (user-written descriptions of how the inventor plans to measure or check an experiment; Stage 19 / CAP-09 SLICE-02) | Durable SQLite (`prototype_measurement_methods`) — ONE current value per project and experiment: an edit replaces the text and clearing the box removes that row; no history is kept | YES |
 | Prototype & Test Plan test hypotheses (user-written statements of what the inventor expects to happen in an experiment; Stage 19 / CAP-09 SLICE 3) | Durable SQLite (`prototype_test_hypotheses`) — ONE current value per project and experiment: an edit replaces the text and clearing the box removes that row; no history is kept | YES |
 | Prototype & Test Plan test variables / conditions (user-written descriptions of what the inventor plans to change or compare in an experiment; Stage 19 / CAP-09 SLICE 4) | Durable SQLite (`prototype_test_variables`) — ONE current value per project and experiment: an edit replaces the text and clearing the box removes that row; no history is kept | YES |
+| Interface verification-preparation inputs (the inventor's own intended operating conditions, observable acceptance criterion and evidence / review needed per declared interaction; Stage 15 Slice 3) | Durable SQLite (`subsystem_interface_preparations`) — ONE current value per project and declared interaction, each input independently optional: an edit replaces the text, clearing one input empties that field, and clearing all three removes that row; no history is kept | YES |
 | Audit / commercial scaffolding (`access_audit`, `commercial_audit`, lifecycle, dedupe, usage) | Durable SQLite, append-only; NO live billing data | Partly |
 | Auth rate-limit counters | Durable SQLite (`auth_rate_limits`) — privacy-digest keys, no raw email | NO |
 | Outbound email outbox (OD-INFRA-6) | Durable SQLite (`email_outbox`) — recipient address + token-bearing verification/reset body, TRANSIENT: deleted on confirmed provider acceptance, scrubbed (recipient/subject/body nulled) when the bounded retry budget is exhausted; never logged, never exported | YES (while pending) |
@@ -71,6 +72,14 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
   `prototype_test_variables`, and editing it replaces the text in place. It is likewise NOT an
   automatic deletion, NOT an erasure capability and NOT account or project erasure; it decides
   no retention rule, and earlier values may persist in backups.
+  Stage 15 Slice 3 extends the same user-initiated behaviour, unchanged in kind, to the owner's
+  own interface verification-preparation inputs (intended operating conditions, observable
+  acceptance criterion, evidence / review needed) for one declared interaction: editing an input
+  replaces its text in place, and clearing all three inputs removes that single current-value row
+  from `subsystem_interface_preparations`. This is the owner editing / clearing their own planning
+  metadata. It is likewise NOT an automatic deletion, NOT physical erasure, NOT an erasure
+  capability and NOT account or project erasure; it decides no retention period or other
+  retention-policy substance, and earlier values may persist in backups.
 * Browser drafts expire client-side after a 7-day lazy TTL (`web/static/js/local_draft.js`,
   `TTL_MS = 7 days`) — a client mechanism, not a server retention rule.
 * Self-service export is project-scoped only (P10-D3a); account-wide export DEFERRED (OD-DR2).
