@@ -215,8 +215,23 @@ body{overflow-wrap:anywhere}
       <p style="margin:2px 0 0 0;font-size:13px;color:#555" data-interface-provenance>{{ t('UI_S15_IFC_PROVENANCE') }}</p>
       <p style="margin:2px 0 0 0;font-size:13px" data-interface-action><strong>{{ t('UI_S15_IFC_ACTION_LABEL') }}</strong> {{ t('UI_S15_IFC_ACTION') }}</p>
       <p style="margin:2px 0 0 0;font-size:13px" data-interface-not-established>{{ t('UI_S15_IFC_NOT_ESTABLISHED') }}</p>
+      {#- Stage 15 Slice 3: the inventor's own preparation inputs for THIS
+          interaction (verbatim, escaped), with the derived presence line.
+          Absent when the preparation was not read — never "not recorded". -#}
+      {% if ifc.preparation %}
+      <div class="interface-preparation" data-interface-preparation style="margin:4px 0 0 0;font-size:13px">
+        <p style="margin:0" data-prep-presence>{{ t(ifc.preparation.presence_key) }}</p>
+        <dl style="margin:2px 0 0 0">
+          {% for fld in ifc.preparation.fields %}
+          <dt style="font-weight:bold;margin-top:2px">{{ t(fld.label_key) }}</dt>
+          <dd style="margin:0 12px;white-space:pre-wrap" data-prep-value>{% if fld.text is not none %}<bdi dir="auto">{{ fld.text }}</bdi>{% else %}<span style="color:#555">{{ t('UI_S15_PREP_NOT_RECORDED') }}</span>{% endif %}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+      {% endif %}
     </div>
     {% endfor %}
+    <p style="margin:4px 0 8px 0;font-size:13px" data-prep-link><a href="{{ url_for('interface_preparation', sid=sid) }}">{{ t('UI_S15_PREP_LINK') }}</a></p>
     {% else %}
     <p style="margin:0;font-size:13px;color:#555" data-interfaces-none>{{ t('UI_S15_IFC_NONE') }}</p>
     {% endif %}

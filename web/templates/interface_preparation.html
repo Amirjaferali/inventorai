@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}{{ t('UI_S15_PREP_TITLE') }}{% endblock %}
+{% block head %}
+<style>
+body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+.intro{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444;line-height:1.5}
+.error{background:#fdecea;color:#b71c1c;border:1px solid #f5c6cb;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px}
+.notice{background:#eef3f8;color:#1f3b57;border:1px solid #c9d6e3;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px}
+.ifc{border:1px solid #e2e6ea;border-radius:4px;padding:12px 14px;margin-bottom:16px;min-width:0;overflow-wrap:anywhere}
+.ifc-title{font-weight:bold;color:#2c3e50;font-size:14px;margin-bottom:4px}
+.ifc-desc{font-size:13px;color:#444;margin:0 0 6px 0;white-space:pre-wrap}
+.ifc-presence{font-size:12px;color:#555;margin:0 0 8px 0}
+label{display:block;font-size:13px;color:#2c3e50;margin:12px 0 4px 0}
+textarea{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
+.guidance{font-size:12px;line-height:1.6;color:#555;margin:4px 0 0}
+button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer;max-width:100%;box-sizing:border-box}
+.links{margin-top:24px;font-size:13px}
+@media(max-width:520px){body{margin:18px auto;padding:0 14px}.ifc{padding:12px}}
+</style>
+{% endblock %}
+{% block content %}
+{#- Stage 15 Slice 3 — the inventor's own verification-preparation inputs for
+    each declared interaction: planning inputs only, never checked, never a
+    result; saving verifies nothing and assesses no compatibility. -#}
+<h1>{{ t('UI_S15_PREP_TITLE') }}</h1>
+<div class="intro" data-prep-intro>
+  <p style="margin:0 0 6px 0">{{ t('UI_S15_PREP_INTRO') }}</p>
+  <p style="margin:0">{{ t('UI_S15_IFC_NOT_ESTABLISHED') }}</p>
+</div>
+
+{% if error %}<div class="error" role="alert">{{ error }}</div>{% endif %}
+{% if draft_notice %}<div class="notice" role="status" id="draft-unsaved">{{ t('UI_S15_PREP_DRAFT_UNSAVED') }}</div>{% endif %}
+{% if notice %}<div class="notice" role="status" data-prep-notice>{{ notice }}</div>{% endif %}
+
+{#- items is None when durable truth could not be offered (the notice says
+    why); that must never read as "no interactions". -#}
+{% if items is none %}
+{% elif items %}
+<form method="POST" action="{{ url_for('save_interface_preparation', sid=sid) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+  {% for ifc in items %}
+  {% set n = loop.index %}
+  <div class="ifc" data-prep-interface>
+    <div class="ifc-title" id="ifc-title-{{ n }}">{{ t('UI_S15_IFC_BETWEEN') }} <bdi dir="auto">{{ ifc.a }}</bdi> {{ t('UI_S15_IFC_AND') }} <bdi dir="auto">{{ ifc.b }}</bdi></div>
+    <p class="ifc-desc">{{ t('UI_S15_IFC_DESCRIPTION') }} <bdi dir="auto">{{ ifc.description }}</bdi></p>
+    <p class="ifc-presence" data-prep-presence>{{ t(ifc.preparation.presence_key) }}</p>
+    {% for fld in ifc.prefixes %}
+    <label for="prep-{{ n }}-{{ loop.index }}">{{ t(fld.label_key) }}</label>
+    <textarea id="prep-{{ n }}-{{ loop.index }}" name="{{ fld.name }}" rows="2"
+              maxlength="{{ max_length }}" dir="auto"
+              aria-describedby="ifc-title-{{ n }} prep-guidance-{{ n }}-{{ loop.index }}">{% if drafts is not none and fld.name in drafts %}{{ drafts[fld.name] }}{% elif fld.value is not none %}{{ fld.value }}{% endif %}</textarea>
+    {#- F724-1: what THIS form displayed for the field; a refused retry keeps the
+        baseline it was submitted with, never a newer durable value. -#}
+    <input type="hidden" name="{{ fld.base_name }}" value="{% if baselines is not none and fld.base_name in baselines %}{{ baselines[fld.base_name] }}{% elif fld.value is not none %}{{ fld.value }}{% endif %}">
+    <p class="guidance" id="prep-guidance-{{ n }}-{{ loop.index }}">{{ t(fld.hint_key) }}</p>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  <p class="guidance">{{ t('UI_S15_PREP_LIMIT').format(limit=max_length) }}</p>
+  <button type="submit">{{ t('UI_S15_PREP_SAVE') }}</button>
+</form>
+{% else %}
+<div class="intro" data-prep-no-interfaces>{{ t('UI_S15_PREP_NO_INTERFACES') }}</div>
+{% endif %}
+
+<p class="links"><a href="{{ url_for('show_session', sid=sid) }}#integrated-interfaces">{{ t('UI_S15_PREP_BACK') }}</a></p>
+{% endblock %}

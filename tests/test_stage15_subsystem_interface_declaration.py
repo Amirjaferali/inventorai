@@ -1136,7 +1136,10 @@ def test_focus_is_immutable_and_no_focus_route_exists(client):
     assert _store().load_reconstruction_inputs(sid)["confirmed_domain"] == ELEC
     rules = [str(r) for r in appmod.app.url_map.iter_rules()]
     assert not any("focus" in r for r in rules)
-    assert [r for r in rules if "interface" in r] == ["/session/<sid>/declare-interface"]
+    # Stage 15 Slice 3 adds exactly ONE more interface path (its GET page and
+    # POST save); still no focus route.
+    assert sorted({r for r in rules if "interface" in r}) == [
+        "/session/<sid>/declare-interface", "/session/<sid>/interface-preparation"]
 
 
 def test_the_extracted_submission_identity_is_mechanically_identical_for_cap08():

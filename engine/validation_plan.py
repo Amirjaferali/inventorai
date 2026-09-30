@@ -28,6 +28,14 @@ empirical-test or Owner-competence inference); no number, threshold or test
 procedure is invented, and its closure wording states that completing the
 preparation does not verify the interaction or establish compatibility.
 
+Stage 15 Slice 3: that step now states truthfully which of its three
+preparation inputs the inventor has recorded for that exact interface (read
+from ``state.subsystem_interface_preparations`` by the interface's own id) and
+carries the recorded text verbatim (``ValidationStep.interface_preparation``).
+All three recorded means only that the inputs are recorded — never verified,
+sufficient, correct, compatible or ready; responsibility and confidence stay
+``UNDETERMINED`` and nothing here reads, grades or parses the inventor's text.
+
 The module-level name ``derive_requirement_landscape`` is the authorized §19 test
 seam: tests may monkeypatch it at this import site to construct BLOCKED / mixed /
 malformed cases. Production behavior is driven by the real Increment 4 derivation.
@@ -102,6 +110,58 @@ _INTERFACE_CLOSURE = (
     "observable acceptance criterion and the evidence or review needed are "
     "defined; none is recorded yet. Completing this preparation does not "
     "verify the interaction or establish compatibility.")
+# Stage 15 Slice 3: the SAME closure when the preparation carrier was not
+# attached — it states what completes the preparation and claims nothing
+# about what is or is not recorded.
+_INTERFACE_CLOSURE_UNREAD = (
+    "This preparation is complete when the intended operating conditions, an "
+    "observable acceptance criterion and the evidence or review needed are "
+    "defined. Completing this preparation does not verify the interaction or "
+    "establish compatibility.")
+_INTERFACE_CLOSURE_PARTIAL = (
+    "This preparation is complete when the intended operating conditions, an "
+    "observable acceptance criterion and the evidence or review needed are "
+    "defined. Recorded so far: {recorded}. Not recorded yet: {missing}. "
+    "Completing this preparation does not verify the interaction or establish "
+    "compatibility.")
+_INTERFACE_CLOSURE_ALL = (
+    "You have recorded the intended operating conditions, an observable "
+    "acceptance criterion and the evidence or review needed for this "
+    "interaction, so its verification-preparation inputs are recorded. They "
+    "have not been checked; recording them does not verify the interaction "
+    "or establish compatibility.")
+# Wording per preparation input, keyed by the canonical field names that
+# ``engine.subsystem_model`` (the semantic owner, not imported here: this
+# module's import boundary stays idea_state + requirement_landscape) exposes
+# through ``recorded_fields()`` / ``missing_fields()``.
+_PREPARATION_NAMES = {
+    "operating_conditions": "the intended operating conditions",
+    "acceptance_criterion": "an observable acceptance criterion",
+    "evidence_needed": "the evidence or review needed",
+}
+
+
+def _interface_preparation(state, interface_id):
+    """``(closure_condition, recorded_pairs)`` for ONE declared interface,
+    resolved from the attached preparation carrier by the interface's exact
+    id. An unattached carrier (``None``) claims nothing about what is
+    recorded. Presence only — the inventor's text is carried verbatim and
+    never read for meaning."""
+    carrier = getattr(state, "subsystem_interface_preparations", None)
+    if carrier is None:
+        return _INTERFACE_CLOSURE_UNREAD, ()
+    preparation = next((p for p in carrier
+                        if getattr(p, "interface_id", None) == interface_id), None)
+    recorded = () if preparation is None else tuple(preparation.recorded_fields())
+    if not recorded:
+        return _INTERFACE_CLOSURE, ()
+    pairs = tuple((f, getattr(preparation, f)) for f in recorded)
+    missing = tuple(preparation.missing_fields())
+    if not missing:
+        return _INTERFACE_CLOSURE_ALL, pairs
+    return _INTERFACE_CLOSURE_PARTIAL.format(
+        recorded="; ".join(_PREPARATION_NAMES[f] for f in recorded),
+        missing="; ".join(_PREPARATION_NAMES[f] for f in missing)), pairs
 
 # Fixed, generic wording for a blocked item (contract §8 / §12; no fabrication).
 _BLOCKED_REASON = (
@@ -126,6 +186,11 @@ class ValidationStep:
     closure_condition: str
     provenance: ProvenanceRef
     confidence: str
+    # Stage 15 Slice 3: for a declared-interface step only, the inventor's
+    # recorded preparation inputs as ``(field_name, text)`` pairs in the
+    # canonical field order (verbatim; empty when none is recorded or the
+    # step is not an interface step).
+    interface_preparation: Tuple[Tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -275,12 +340,14 @@ def derive_validation_plan(state):
             responsibility, evidence_category = _classify(req, state)
             statement = req.resolving_action.statement
             closure_condition = _closure_condition(evidence_category)
+            interface_preparation = ()
             if kind == "subsystem_interface":
                 context = interface_context(state, req.primary_anchor.anchor_reference)
                 if context is not None:
                     statement = _INTERFACE_STEP_STATEMENT.format(
                         a=context[0], b=context[1], d=context[2])
-                closure_condition = _INTERFACE_CLOSURE
+                closure_condition, interface_preparation = _interface_preparation(
+                    state, req.primary_anchor.anchor_reference)
             if kind == "assertion":
                 record = _active_record(state, req.primary_anchor.anchor_reference)
                 if record is not None and \
@@ -295,6 +362,7 @@ def derive_validation_plan(state):
                 closure_condition=closure_condition,
                 provenance=_provenance(req),
                 confidence=CONFIDENCE_UNDETERMINED,
+                interface_preparation=interface_preparation,
             ))
         else:
             item_id = "vblock:" + req.requirement_id

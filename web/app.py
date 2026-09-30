@@ -98,6 +98,7 @@ from engine.record_store import (
     SqliteRecordStore, StoreError, ProjectNotFound as _ProjectNotFound,
     ProjectSubsystemsCorrupt as _ProjectSubsystemsCorrupt,
     SubsystemInterfacesCorrupt as _SubsystemInterfacesCorrupt,
+    InterfacePreparationsCorrupt as _InterfacePreparationsCorrupt,
     MAX_SUCCESS_CRITERION_LENGTH, MAX_MEASUREMENT_METHOD_LENGTH,
     MAX_TEST_HYPOTHESIS_LENGTH, MAX_TEST_VARIABLE_LENGTH,
     QuantityChainConflict as _QuantityChainConflict,
@@ -1534,6 +1535,38 @@ S15_INTERFACE_UNKNOWN_MESSAGE = (
     "as saved until that can be confirmed. Submitting it again from here is "
     "safe: it will never be recorded twice.")
 
+# Stage 15 Slice 3: the inventor's verification-preparation inputs per declared
+# interaction (save_interface_preparation). Truthful: the inventor's own
+# planning inputs, never checked; saving verifies nothing. Rendered through
+# localize_message (registered in `ui_text._MESSAGE_KEYS`).
+S15_PREP_NO_PROJECT_MESSAGE = (
+    "Verification-preparation inputs can only be kept for a saved project. "
+    "This session is not saved as a project, so nothing can be saved here. "
+    "Nothing was changed.")
+S15_PREP_UNAVAILABLE_MESSAGE = (
+    "Your saved interactions and their preparation could not be read, so they "
+    "cannot be shown or changed from this page. Nothing was changed.")
+S15_PREP_UNKNOWN_INTERFACE_MESSAGE = (
+    "A submitted interaction is not part of this project. No changes were "
+    "saved.")
+S15_PREP_TOO_LONG_MESSAGE = (
+    "A preparation input exceeds the 1000-character limit. No changes were "
+    "saved.")
+S15_PREP_NOT_SAVED_MESSAGE = (
+    "Your preparation could not be saved just now. Nothing was changed.")
+S15_PREP_SAVED_MESSAGE = (
+    "Your preparation was saved to your project. It has not been checked, "
+    "and saving it does not verify the interaction.")
+S15_PREP_UNCHANGED_MESSAGE = (
+    "Your project already holds exactly these inputs, so nothing needed to "
+    "change.")
+S15_PREP_SAVED_NOT_SHOWN_MESSAGE = (
+    "Your preparation was saved to your project, but this page could not show "
+    "it. Reload this page to see what your project holds.")
+S15_PREP_UNKNOWN_MESSAGE = (
+    "We could not confirm whether your preparation was saved. Reload this "
+    "page to see what your project currently holds before entering it again.")
+
 CORRECTION_APPLIED_ACK = (
     "Your earlier answer was withdrawn and kept in the project history. "
     "Everything shown has been recomputed from your remaining answers."
@@ -1695,13 +1728,21 @@ def _attach_project_subsystems(sid, state):
     composition or any storage failure, so the caller fails closed. A context
     with no durable project keeps its carrier as it is."""
     try:
-        subsystems, interfaces = _load_composition_and_interfaces(sid)
+        subsystems, interfaces, preparations = _load_subsystem_integration(sid)
     except _ProjectNotFound:
         return True
     except Exception:
         return False
     state.subsystems = list(subsystems)
     state.subsystem_interfaces = list(interfaces)
+    # Stage 15 Slice 3: the inventor's preparation inputs, from the SAME
+    # durable snapshot; ``None`` when this store has no preparation carrier
+    # (nothing is then claimed about what is recorded).
+    # A project with no declared interaction and no carrier yet keeps its
+    # carrier untouched, so rendering changes nothing for ordinary projects.
+    if interfaces or getattr(state, "subsystem_interface_preparations", None) is not None:
+        state.subsystem_interface_preparations = (
+            None if preparations is None else list(preparations))
     return True
 
 
@@ -1716,6 +1757,46 @@ def _load_composition_and_interfaces(sid):
         subsystems, interfaces = loader(sid)
         return tuple(subsystems), tuple(interfaces)
     return tuple(store.load_project_subsystems(sid)), ()
+
+
+def _load_subsystem_integration(sid):
+    """Stage 15 Slice 3: ``(subsystems, interfaces, preparations)`` of ``sid``
+    from ONE consistent durable snapshot (the store's combined reader). A
+    store without the preparation carrier yields ``preparations=None`` (not
+    attached), never an invented empty collection."""
+    loader = getattr(_get_store(), "load_subsystem_integration", None)
+    if callable(loader):
+        subsystems, interfaces, preparations = loader(sid)
+        return tuple(subsystems), tuple(interfaces), tuple(preparations)
+    subsystems, interfaces = _load_composition_and_interfaces(sid)
+    return subsystems, interfaces, None
+
+
+# Stage 15 Slice 3: the fixed bilingual label key of each preparation input,
+# in the canonical field order (no internal field name reaches the page).
+_S15_PREP_LABEL_KEYS = {
+    _subsystem_model.PREPARATION_OPERATING_CONDITIONS: "UI_S15_PREP_CONDITIONS",
+    _subsystem_model.PREPARATION_ACCEPTANCE_CRITERION: "UI_S15_PREP_ACCEPTANCE",
+    _subsystem_model.PREPARATION_EVIDENCE_NEEDED: "UI_S15_PREP_EVIDENCE",
+}
+_S15_PREP_PRESENCE_KEYS = {
+    _subsystem_model.PREPARATION_NONE_RECORDED: "UI_S15_PREP_NONE",
+    _subsystem_model.PREPARATION_PARTLY_RECORDED: "UI_S15_PREP_PARTIAL",
+    _subsystem_model.PREPARATION_ALL_RECORDED: "UI_S15_PREP_ALL",
+}
+
+
+def _s15_preparation_view(preparation):
+    """The presentation of ONE interface's preparation inputs: each input's
+    label key and verbatim text (``None`` = not recorded), plus the derived
+    presence key. Carries no identifier."""
+    return {
+        "fields": [{"label_key": _S15_PREP_LABEL_KEYS[f],
+                    "text": None if preparation is None else preparation.value(f)}
+                   for f in _subsystem_model.PREPARATION_FIELDS],
+        "presence_key": _S15_PREP_PRESENCE_KEYS[
+            _subsystem_model.preparation_presence(preparation)],
+    }
 
 
 def _integrated_scope_context(state):
@@ -1747,6 +1828,17 @@ def _integrated_scope_context(state):
     except _subsystem_model.InterfaceError:
         return None
     names = {sub.subsystem_id: sub.display_name for sub in composition}
+    # Stage 15 Slice 3: each interaction's preparation inputs, resolved by
+    # the interface's exact id. An unattached carrier shows no preparation
+    # (never "not recorded"); a carrier that does not validate against THESE
+    # interfaces fails the whole view closed.
+    carrier = getattr(state, "subsystem_interface_preparations", None)
+    try:
+        preparations = (None if carrier is None else
+                        _subsystem_model.validate_interface_preparations(
+                            carrier, interfaces))
+    except _subsystem_model.InterfaceError:
+        return None
     return {
         "mechanical": {"name": mech.display_name, "function": mech.function_text},
         "electrical": {"name": elec.display_name, "function": elec.function_text},
@@ -1754,7 +1846,11 @@ def _integrated_scope_context(state):
                       else "UI_S15_SCOPE_FOCUS_ELEC"),
         "interfaces": [{"a": names[item.subsystem_a_id],
                         "b": names[item.subsystem_b_id],
-                        "description": item.description}
+                        "description": item.description,
+                        "preparation": (None if preparations is None else
+                                        _s15_preparation_view(
+                                            _subsystem_model.preparation_for(
+                                                preparations, item.interface_id)))}
                        for item in interfaces],
     }
 
@@ -6080,8 +6176,32 @@ def _deliverable_context(sid):
     _quantities = _requirement_quantities_meta(state)
     if _quantities is not None:
         package["_session_meta"][_REQUIREMENT_QUANTITIES_META_KEY] = _quantities
+    # Stage 15 Slice 3: the same seam (the assembler stays pinned) carries each
+    # declared-interface Validation Plan step's recorded preparation inputs.
+    _attach_section_14_interface_preparation(package, state)
     eligible = package["_session_meta"]["deliverable_eligible"]
     return entry, package, eligible, reconstructed_deliverable, state
+
+
+def _attach_section_14_interface_preparation(package, state):
+    """Stage 15 Slice 3: add ``interface_preparation`` (the inventor's recorded
+    preparation inputs, verbatim, as ``{"field", "text"}`` items) to each
+    Section-14 step that carries any. The assembler emits its steps in the
+    canonical Validation Plan's own order, so step N of the package IS step N
+    of the plan; a step with nothing recorded (and every non-interface step)
+    gets no key, so its payload is unchanged. If the two ever disagree in
+    length nothing is attached (never a misaligned value)."""
+    from engine.validation_plan import derive_validation_plan
+    section = package.get("section_14_validation_plan") or {}
+    rendered = section.get("steps") or []
+    steps = derive_validation_plan(state).steps
+    if len(steps) != len(rendered):
+        return
+    for step, row in zip(steps, rendered):
+        if step.interface_preparation and row.get("statement") == step.statement:
+            row["interface_preparation"] = [
+                {"field": field_name, "text": text}
+                for field_name, text in step.interface_preparation]
 
 
 def _quantity_statements(package, state):
@@ -7311,6 +7431,259 @@ def declare_interface(sid):
             return redirect(url_for("show_session", sid=sid))
         return _publish(prior)
     return _publish(stored)
+
+
+# --- Stage 15 Slice 3: Interface Verification Preparation ------------------
+# For each CURRENT durable interaction the inventor declared between the two
+# parts, the inventor records, edits or clears — in their own words — the
+# intended operating conditions, an observable acceptance criterion and the
+# evidence or review needed: the three inputs the interaction's Validation
+# Plan step already asks for. Current-value planning inputs (the CAP-09
+# planning-save semantics): the request-integrity guard and the central
+# project authorization protect the write; the whole submitted delta is
+# validated, bound to exact durable interface identities, committed in ONE
+# transaction that re-validates those identities against THIS project's
+# durable interfaces, and confirmed by reload (SAVED / NOT SAVED / UNKNOWN).
+# Saving verifies nothing: no compatibility, feasibility, readiness,
+# progression, gap or IRL effect, and nothing is parsed, graded or generated.
+# Form field names carry the interface identity; the page never shows it.
+_S15_PREP_FIELD_PREFIXES = {
+    _subsystem_model.PREPARATION_OPERATING_CONDITIONS: "prep_conditions__",
+    _subsystem_model.PREPARATION_ACCEPTANCE_CRITERION: "prep_acceptance__",
+    _subsystem_model.PREPARATION_EVIDENCE_NEEDED: "prep_evidence__",
+}
+# F724-1: each visible field travels with the value that SAME form originally
+# displayed (a hidden baseline). Changed-vs-unchanged is decided against that
+# baseline, never against durable state loaded at POST time, so an untouched
+# field of a stale form can never clear, restore or overwrite a newer value.
+_S15_PREP_BASE_PREFIXES = {
+    field_name: "prep_base_" + prefix[len("prep_"):]
+    for field_name, prefix in _S15_PREP_FIELD_PREFIXES.items()}
+_S15_PREP_OK = "ok"
+_S15_PREP_NO_PROJECT = "no_project"
+_S15_PREP_UNAVAILABLE = "unavailable"
+_S15_PREP_STATUS_MESSAGE = {
+    _S15_PREP_NO_PROJECT: (S15_PREP_NO_PROJECT_MESSAGE, 409),
+    _S15_PREP_UNAVAILABLE: (S15_PREP_UNAVAILABLE_MESSAGE, 503),
+}
+_S15_PREP_WRITE_SAVED = "saved"
+_S15_PREP_WRITE_NOT_SAVED = "not_saved"
+_S15_PREP_WRITE_UNKNOWN = "unknown"
+
+
+def _s15_preparation_context(sid):
+    """``(status, context)`` of the preparation page from CURRENT durable
+    truth (never a cached session): the durable composition, interfaces and
+    preparation inputs read in ONE snapshot. ``context`` is present only for
+    ``_S15_PREP_OK``: ``{"items": [...], "current": {interface_id: prep}}``,
+    each item carrying the interface id (for the form), the part names, the
+    description and the preparation view. Corrupt or unreadable durable
+    truth fails closed (``_S15_PREP_UNAVAILABLE``)."""
+    try:
+        exists, _owner = _get_store().load_owner(sid)
+    except Exception:
+        return _S15_PREP_UNAVAILABLE, None
+    if not exists:
+        return _S15_PREP_NO_PROJECT, None
+    try:
+        subsystems, interfaces, preparations = _load_subsystem_integration(sid)
+    except Exception:
+        return _S15_PREP_UNAVAILABLE, None
+    if preparations is None:
+        return _S15_PREP_UNAVAILABLE, None
+    names = {sub.subsystem_id: sub.display_name for sub in subsystems}
+    items = []
+    for item in interfaces:
+        preparation = _subsystem_model.preparation_for(preparations,
+                                                       item.interface_id)
+        items.append({
+            "interface_id": item.interface_id,
+            "a": names[item.subsystem_a_id],
+            "b": names[item.subsystem_b_id],
+            "description": item.description,
+            "preparation": _s15_preparation_view(preparation),
+            "prefixes": [
+                {"name": _S15_PREP_FIELD_PREFIXES[f] + item.interface_id,
+                 "base_name": _S15_PREP_BASE_PREFIXES[f] + item.interface_id,
+                 "label_key": _S15_PREP_LABEL_KEYS[f],
+                 "hint_key": _S15_PREP_LABEL_KEYS[f] + "_HINT",
+                 "value": None if preparation is None else preparation.value(f),
+                 "field": f}
+                for f in _subsystem_model.PREPARATION_FIELDS],
+        })
+    return _S15_PREP_OK, {
+        "items": items,
+        "current": {p.interface_id: p for p in preparations},
+    }
+
+
+def _render_interface_preparation(sid, context, status=200, error=None,
+                                  notice=None, drafts=None, baselines=None):
+    """Render the preparation page. ``context`` None renders no interaction
+    at all (the notice says why) — never "no interactions". ``drafts`` (a
+    REJECTED submission, request-local only) maps form field name -> the text
+    as submitted; it is shown instead of the durable value under an explicit
+    UNSAVED notice and is never written anywhere. NUL is never echoed.
+    ``baselines`` (F724-1) maps baseline field name -> the baseline that
+    refused form carried; it is re-emitted unchanged so a retry of the same
+    form keeps judging its edits against what that form first displayed."""
+    lang = _current_ui_lang()
+    shown = None if drafts is None else {
+        name: raw.replace("\x00", "") for name, raw in drafts.items()}
+    response = make_response(render_template(
+        "interface_preparation.html",
+        sid=sid,
+        items=None if context is None else context["items"],
+        drafts=shown,
+        baselines=None if baselines is None else {
+            name: raw.replace("\x00", "") for name, raw in baselines.items()},
+        draft_notice=drafts is not None,
+        max_length=_subsystem_model.MAX_INTERFACE_PREPARATION_LENGTH,
+        error=ui_text.localize_message(error, lang),
+        notice=ui_text.localize_message(notice, lang),
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+def _resolve_interface_preparation_write(sid, delta):
+    """Bounded confirm-by-reload after ``apply_interface_preparation_delta``
+    RAISED: read the COMMITTED preparation inputs (the store's IR-01 guard
+    refuses an unresolved transaction) and compare ONLY the submitted delta —
+    a submitted text is confirmed iff the durable value of that exact field
+    of that exact interface equals it; a submitted clear iff that field is not
+    recorded. Every submitted field matching -> SAVED; one demonstrable
+    mismatch -> NOT SAVED; unreadable durable truth -> UNKNOWN."""
+    try:
+        committed = _get_store().load_interface_preparations(sid)
+    except Exception:
+        return _S15_PREP_WRITE_UNKNOWN
+    for interface_id, changes in delta.items():
+        preparation = _subsystem_model.preparation_for(committed, interface_id)
+        for field_name, text in changes.items():
+            durable = None if preparation is None else preparation.value(field_name)
+            if durable != text:
+                return _S15_PREP_WRITE_NOT_SAVED
+    return _S15_PREP_WRITE_SAVED
+
+
+@app.route("/session/<sid>/interface-preparation", methods=["GET"])
+def interface_preparation(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    status, context = _s15_preparation_context(sid)
+    if status != _S15_PREP_OK:
+        message, code = _S15_PREP_STATUS_MESSAGE[status]
+        return _render_interface_preparation(sid, None, status=code,
+                                             notice=message)
+    return _render_interface_preparation(sid, context)
+
+
+@app.route("/session/<sid>/interface-preparation", methods=["POST"])
+def save_interface_preparation(sid):
+    # Order: request integrity (global guard) -> authorization -> CURRENT
+    # durable truth -> exact interface identities -> validate the WHOLE
+    # submitted delta -> ONE atomic durable commit (identities re-validated
+    # inside it) -> confirm -> only then refresh memory. Live state is never
+    # changed before the durable outcome is known, and no writable
+    # progression session is required or created.
+    if not _project_authorized(sid):
+        return _deny_project()
+    status, context = _s15_preparation_context(sid)
+    if status != _S15_PREP_OK:
+        message, code = _S15_PREP_STATUS_MESSAGE[status]
+        return _render_interface_preparation(sid, None, status=code,
+                                             notice=message)
+    known = {item["interface_id"] for item in context["items"]}
+    drafts = {}
+    baselines = {}                      # baseline field name -> raw (F724-1)
+    submitted = {}                      # interface_id -> {field: raw}
+    for name, raw in request.form.items():
+        for field_name, prefix in _S15_PREP_FIELD_PREFIXES.items():
+            if name.startswith(prefix):
+                drafts[name] = raw
+                submitted.setdefault(name[len(prefix):], {})[field_name] = raw
+        for field_name, prefix in _S15_PREP_BASE_PREFIXES.items():
+            if name.startswith(prefix):
+                baselines[name] = raw
+    # Exact identity only: an id that is not one of THIS project's current
+    # durable interactions (another project's, malformed, or unknown)
+    # rejects the WHOLE submission — never matched by position or text.
+    for interface_id in submitted:
+        if interface_id not in known:
+            return _render_interface_preparation(
+                sid, context, status=400, drafts=drafts, baselines=baselines,
+                error=S15_PREP_UNKNOWN_INTERFACE_MESSAGE)
+    # F724-1: every submitted visible field must carry the baseline its own
+    # form displayed; without it the form state is malformed and fails closed
+    # (it is never compared against durable truth instead).
+    for interface_id, fields in submitted.items():
+        for field_name in fields:
+            if _S15_PREP_BASE_PREFIXES[field_name] + interface_id not in baselines:
+                return _render_interface_preparation(
+                    sid, context, status=400, error=S15_PREP_NOT_SAVED_MESSAGE)
+    # A field is edited only when it differs from what THIS form displayed
+    # (line-break encoding aside, `_same_planning_text`); an untouched field
+    # is omitted from the sparse delta whatever the project holds now. An edit
+    # whose value the project already holds is a no-op and is not re-written.
+    edits = {}
+    for interface_id, fields in submitted.items():
+        preparation = context["current"].get(interface_id)
+        for field_name, raw in fields.items():
+            baseline = baselines[_S15_PREP_BASE_PREFIXES[field_name] + interface_id]
+            if _same_planning_text(raw, baseline.strip() or None):
+                continue
+            durable = None if preparation is None else preparation.value(field_name)
+            if not _same_planning_text(raw, durable):
+                edits.setdefault(interface_id, {})[field_name] = raw
+    lang = _current_ui_lang()
+    for fields in edits.values():
+        for raw in fields.values():
+            if len(raw.strip()) > _subsystem_model.MAX_INTERFACE_PREPARATION_LENGTH:
+                return _render_interface_preparation(
+                    sid, context, status=400, drafts=drafts, baselines=baselines,
+                    error=S15_PREP_TOO_LONG_MESSAGE)
+            invalid = _free_text_error(raw, lang)
+            if invalid is not None:
+                return _render_interface_preparation(
+                    sid, context, status=400, drafts=drafts, baselines=baselines, error=invalid)
+    if not edits:
+        # Nothing differs from committed durable truth (this includes an
+        # exact retry of a submission that already committed).
+        return _render_interface_preparation(sid, context,
+                                             notice=S15_PREP_UNCHANGED_MESSAGE)
+    # Trim only; an emptied field clears that one input.
+    delta = {interface_id: {f: (raw.strip() or None) for f, raw in fields.items()}
+             for interface_id, fields in edits.items()}
+    try:
+        _get_store().apply_interface_preparation_delta(sid, delta)
+    except Exception:
+        # Never turn an unknown durable outcome into a failure (or a
+        # success): decide from committed durable truth only.
+        outcome = _resolve_interface_preparation_write(sid, delta)
+        if outcome == _S15_PREP_WRITE_NOT_SAVED:
+            return _render_interface_preparation(
+                sid, context, status=503, drafts=drafts, baselines=baselines,
+                error=S15_PREP_NOT_SAVED_MESSAGE)
+        if outcome == _S15_PREP_WRITE_UNKNOWN:
+            return _render_interface_preparation(
+                sid, None, status=503, notice=S15_PREP_UNKNOWN_MESSAGE)
+        # SAVED: the requested values ARE durably present; continue.
+    # COMMITTED (or confirmed durably present). A failure from here is a
+    # presentation failure, never a failed save.
+    try:
+        entry = SESSION_STORE.get(sid)
+        if entry is not None:
+            _attach_project_subsystems(sid, entry["state"])
+        status, context = _s15_preparation_context(sid)
+        if status != _S15_PREP_OK:
+            return _render_interface_preparation(
+                sid, None, notice=S15_PREP_SAVED_NOT_SHOWN_MESSAGE)
+        return _render_interface_preparation(sid, context,
+                                             notice=S15_PREP_SAVED_MESSAGE)
+    except Exception:
+        return _render_interface_preparation(
+            sid, None, notice=S15_PREP_SAVED_NOT_SHOWN_MESSAGE)
 
 
 @app.route("/session/<sid>/correct", methods=["POST"])

@@ -1380,7 +1380,10 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       "project_subsystems",
                       # Stage 15 Slice 2: the Owner-declared interface sidecar
                       # (between existing parts; not a commercial owner).
-                      "subsystem_interfaces"}
+                      "subsystem_interfaces",
+                      # Stage 15 Slice 3: the inventor's current preparation
+                      # inputs per interface (not a commercial owner).
+                      "subsystem_interface_preparations"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()
