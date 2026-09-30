@@ -50,6 +50,9 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
     <textarea id="prep-{{ n }}-{{ loop.index }}" name="{{ fld.name }}" rows="2"
               maxlength="{{ max_length }}" dir="auto"
               aria-describedby="ifc-title-{{ n }} prep-guidance-{{ n }}-{{ loop.index }}">{% if drafts is not none and fld.name in drafts %}{{ drafts[fld.name] }}{% elif fld.value is not none %}{{ fld.value }}{% endif %}</textarea>
+    {#- F724-1: what THIS form displayed for the field; a refused retry keeps the
+        baseline it was submitted with, never a newer durable value. -#}
+    <input type="hidden" name="{{ fld.base_name }}" value="{% if baselines is not none and fld.base_name in baselines %}{{ baselines[fld.base_name] }}{% elif fld.value is not none %}{{ fld.value }}{% endif %}">
     <p class="guidance" id="prep-guidance-{{ n }}-{{ loop.index }}">{{ t(fld.hint_key) }}</p>
     {% endfor %}
   </div>

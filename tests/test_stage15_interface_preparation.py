@@ -92,8 +92,19 @@ def _field(field_name, interface_id):
 
 
 def _save(c, sid, values):
-    """POST the preparation page. ``values`` maps (field, interface_id) -> text."""
-    data = {_field(f, i): text for (f, i), text in values.items()}
+    """POST the preparation page as a user who just opened it and typed
+    ``values`` ((field, interface_id) -> text): each submitted field carries
+    the baseline that fresh page displayed (F724-1). A field the page does not
+    offer (an unknown interface) has no baseline."""
+    raw = c.get(f"/session/{sid}/interface-preparation").get_data(as_text=True)
+    shown = {n: _html.unescape(v) for n, v in re.findall(
+        r'<input type="hidden" name="(prep_base_[^"]+)" value="([^"]*)"', raw)}
+    data = {}
+    for (f, i), text in values.items():
+        data[_field(f, i)] = text
+        base = appmod._S15_PREP_BASE_PREFIXES[f] + i
+        if base in shown:
+            data[base] = shown[base]
     return c.post(f"/session/{sid}/interface-preparation", data=data)
 
 
@@ -706,3 +717,108 @@ def test_every_new_catalogue_key_is_bilingual():
                     appmod.S15_PREP_UNKNOWN_MESSAGE):
         assert ui_text.localize_message(message, "en") == message
         assert ui_text.localize_message(message, "ar") != message
+
+
+# ==========================================================================
+# 6. F724-1 — a stale full-form submission never overwrites untouched fields
+# ==========================================================================
+def _browser_form(c, sid):
+    """Everything a browser would submit from a freshly rendered preparation
+    page: every visible textarea (its rendered content) and every hidden
+    ``prep_*`` input, as ONE full-form snapshot."""
+    raw = c.get(f"/session/{sid}/interface-preparation").get_data(as_text=True)
+    form = {}
+    for name, body in re.findall(
+            r'<textarea[^>]*name="(prep_[^"]+)"[^>]*>(.*?)</textarea>', raw, re.S):
+        form[name] = _html.unescape(body)
+    for name, value in re.findall(
+            r'<input type="hidden" name="(prep_[^"]+)" value="([^"]*)"', raw):
+        form[name] = _html.unescape(value)
+    return form
+
+
+def _submit_full(c, sid, form, edits):
+    """Submit the WHOLE stale form with only ``edits`` ((field, iid) -> text)
+    typed into it, exactly as a browser does."""
+    data = dict(form)
+    for (f, i), text in edits.items():
+        data[_field(f, i)] = text
+    return c.post(f"/session/{sid}/interface-preparation", data=data)
+
+
+def test_f724_stale_blank_never_clears_a_newer_value(client):
+    sid, ifc = _integrated_with_interface(client)
+    iid = ifc.interface_id
+    tab_a, tab_b = _browser_form(client, sid), _browser_form(client, sid)
+    assert _submit_full(client, sid, tab_a, {(F_C, iid): COND}).status_code == 200
+    r = _submit_full(client, sid, tab_b, {(F_A, iid): ACCEPT})     # B edits ONLY this
+    assert r.status_code == 200
+    assert _prep_rows(sid) == [(iid, COND, ACCEPT, None)]           # A's value kept
+
+
+def test_f724_stale_value_never_restores_a_cleared_value(client):
+    sid, ifc = _integrated_with_interface(client)
+    iid = ifc.interface_id
+    _submit_full(client, sid, _browser_form(client, sid), {(F_C, iid): COND})
+    tab_a, tab_b = _browser_form(client, sid), _browser_form(client, sid)
+    _submit_full(client, sid, tab_a, {(F_C, iid): ""})              # A clears it
+    assert _prep_rows(sid) == []
+    _submit_full(client, sid, tab_b, {(F_A, iid): ACCEPT})
+    assert _prep_rows(sid) == [(iid, None, ACCEPT, None)]           # stays cleared
+
+
+def test_f724_untouched_fields_of_another_interface_are_never_overwritten(client):
+    sid, first = _integrated_with_interface(client)
+    assert _declare(client, sid, "Bolted mounting.").status_code == 302
+    second = [i for i in _store().load_subsystem_interfaces(sid)
+              if i.interface_id != first.interface_id][0]
+    tab_a, tab_b = _browser_form(client, sid), _browser_form(client, sid)
+    _submit_full(client, sid, tab_a, {(F_E, second.interface_id): EVID,
+                                      (F_C, first.interface_id): COND})
+    _submit_full(client, sid, tab_b, {(F_A, first.interface_id): ACCEPT})
+    rows = {r[0]: r[1:] for r in _prep_rows(sid)}
+    assert rows[first.interface_id] == (COND, ACCEPT, None)
+    assert rows[second.interface_id] == (None, None, EVID)
+
+
+def test_f724_an_explicit_clear_still_clears(client):
+    sid, ifc = _integrated_with_interface(client)
+    iid = ifc.interface_id
+    _submit_full(client, sid, _browser_form(client, sid),
+                 {(F_C, iid): COND, (F_A, iid): ACCEPT})
+    form = _browser_form(client, sid)
+    assert form[_field(F_C, iid)] == COND
+    _submit_full(client, sid, form, {(F_C, iid): ""})
+    assert _prep_rows(sid) == [(iid, None, ACCEPT, None)]
+
+
+def test_f724_a_visible_field_without_its_baseline_fails_closed(client):
+    sid, ifc = _integrated_with_interface(client)
+    iid = ifc.interface_id
+    _submit_full(client, sid, _browser_form(client, sid), {(F_C, iid): COND})
+    r = client.post(f"/session/{sid}/interface-preparation",
+                    data={_field(F_A, iid): ACCEPT})                 # no baseline
+    assert r.status_code == 400
+    assert appmod.S15_PREP_NOT_SAVED_MESSAGE in _text(r)
+    assert _prep_rows(sid) == [(iid, COND, None, None)]
+
+
+def test_f724_a_refused_retry_keeps_the_original_baseline(client):
+    sid, ifc = _integrated_with_interface(client)
+    iid = ifc.interface_id
+    tab_b = _browser_form(client, sid)                               # rendered empty
+    _submit_full(client, sid, _browser_form(client, sid), {(F_C, iid): COND})
+    r = _submit_full(client, sid, tab_b, {(F_A, iid): "x" * 1001})  # refused
+    assert r.status_code == 400
+    raw = r.get_data(as_text=True)
+    base = re.search(r'name="%s" value="([^"]*)"'
+                     % re.escape(appmod._S15_PREP_BASE_PREFIXES[F_C] + iid), raw)
+    assert base is not None and base.group(1) == ""                  # not the newer "COND"
+    retry = {name: _html.unescape(v) for name, v in re.findall(
+        r'<input type="hidden" name="(prep_[^"]+)" value="([^"]*)"', raw)}
+    retry.update({n: _html.unescape(b) for n, b in re.findall(
+        r'<textarea[^>]*name="(prep_[^"]+)"[^>]*>(.*?)</textarea>', raw, re.S)})
+    retry[_field(F_A, iid)] = ACCEPT
+    assert client.post(f"/session/{sid}/interface-preparation",
+                       data=retry).status_code == 200
+    assert _prep_rows(sid) == [(iid, COND, ACCEPT, None)]

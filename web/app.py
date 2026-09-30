@@ -7452,6 +7452,13 @@ _S15_PREP_FIELD_PREFIXES = {
     _subsystem_model.PREPARATION_ACCEPTANCE_CRITERION: "prep_acceptance__",
     _subsystem_model.PREPARATION_EVIDENCE_NEEDED: "prep_evidence__",
 }
+# F724-1: each visible field travels with the value that SAME form originally
+# displayed (a hidden baseline). Changed-vs-unchanged is decided against that
+# baseline, never against durable state loaded at POST time, so an untouched
+# field of a stale form can never clear, restore or overwrite a newer value.
+_S15_PREP_BASE_PREFIXES = {
+    field_name: "prep_base_" + prefix[len("prep_"):]
+    for field_name, prefix in _S15_PREP_FIELD_PREFIXES.items()}
 _S15_PREP_OK = "ok"
 _S15_PREP_NO_PROJECT = "no_project"
 _S15_PREP_UNAVAILABLE = "unavailable"
@@ -7497,6 +7504,7 @@ def _s15_preparation_context(sid):
             "preparation": _s15_preparation_view(preparation),
             "prefixes": [
                 {"name": _S15_PREP_FIELD_PREFIXES[f] + item.interface_id,
+                 "base_name": _S15_PREP_BASE_PREFIXES[f] + item.interface_id,
                  "label_key": _S15_PREP_LABEL_KEYS[f],
                  "hint_key": _S15_PREP_LABEL_KEYS[f] + "_HINT",
                  "value": None if preparation is None else preparation.value(f),
@@ -7510,12 +7518,15 @@ def _s15_preparation_context(sid):
 
 
 def _render_interface_preparation(sid, context, status=200, error=None,
-                                  notice=None, drafts=None):
+                                  notice=None, drafts=None, baselines=None):
     """Render the preparation page. ``context`` None renders no interaction
     at all (the notice says why) — never "no interactions". ``drafts`` (a
     REJECTED submission, request-local only) maps form field name -> the text
     as submitted; it is shown instead of the durable value under an explicit
-    UNSAVED notice and is never written anywhere. NUL is never echoed."""
+    UNSAVED notice and is never written anywhere. NUL is never echoed.
+    ``baselines`` (F724-1) maps baseline field name -> the baseline that
+    refused form carried; it is re-emitted unchanged so a retry of the same
+    form keeps judging its edits against what that form first displayed."""
     lang = _current_ui_lang()
     shown = None if drafts is None else {
         name: raw.replace("\x00", "") for name, raw in drafts.items()}
@@ -7524,6 +7535,8 @@ def _render_interface_preparation(sid, context, status=200, error=None,
         sid=sid,
         items=None if context is None else context["items"],
         drafts=shown,
+        baselines=None if baselines is None else {
+            name: raw.replace("\x00", "") for name, raw in baselines.items()},
         draft_notice=drafts is not None,
         max_length=_subsystem_model.MAX_INTERFACE_PREPARATION_LENGTH,
         error=ui_text.localize_message(error, lang),
@@ -7583,26 +7596,43 @@ def save_interface_preparation(sid):
                                              notice=message)
     known = {item["interface_id"] for item in context["items"]}
     drafts = {}
+    baselines = {}                      # baseline field name -> raw (F724-1)
     submitted = {}                      # interface_id -> {field: raw}
     for name, raw in request.form.items():
         for field_name, prefix in _S15_PREP_FIELD_PREFIXES.items():
             if name.startswith(prefix):
                 drafts[name] = raw
                 submitted.setdefault(name[len(prefix):], {})[field_name] = raw
+        for field_name, prefix in _S15_PREP_BASE_PREFIXES.items():
+            if name.startswith(prefix):
+                baselines[name] = raw
     # Exact identity only: an id that is not one of THIS project's current
     # durable interactions (another project's, malformed, or unknown)
     # rejects the WHOLE submission — never matched by position or text.
     for interface_id in submitted:
         if interface_id not in known:
             return _render_interface_preparation(
-                sid, context, status=400, drafts=drafts,
+                sid, context, status=400, drafts=drafts, baselines=baselines,
                 error=S15_PREP_UNKNOWN_INTERFACE_MESSAGE)
-    # A value left exactly as the project holds it (line-break encoding
-    # aside, `_same_planning_text`) is not an edit and is never re-written.
+    # F724-1: every submitted visible field must carry the baseline its own
+    # form displayed; without it the form state is malformed and fails closed
+    # (it is never compared against durable truth instead).
+    for interface_id, fields in submitted.items():
+        for field_name in fields:
+            if _S15_PREP_BASE_PREFIXES[field_name] + interface_id not in baselines:
+                return _render_interface_preparation(
+                    sid, context, status=400, error=S15_PREP_NOT_SAVED_MESSAGE)
+    # A field is edited only when it differs from what THIS form displayed
+    # (line-break encoding aside, `_same_planning_text`); an untouched field
+    # is omitted from the sparse delta whatever the project holds now. An edit
+    # whose value the project already holds is a no-op and is not re-written.
     edits = {}
     for interface_id, fields in submitted.items():
         preparation = context["current"].get(interface_id)
         for field_name, raw in fields.items():
+            baseline = baselines[_S15_PREP_BASE_PREFIXES[field_name] + interface_id]
+            if _same_planning_text(raw, baseline.strip() or None):
+                continue
             durable = None if preparation is None else preparation.value(field_name)
             if not _same_planning_text(raw, durable):
                 edits.setdefault(interface_id, {})[field_name] = raw
@@ -7611,12 +7641,12 @@ def save_interface_preparation(sid):
         for raw in fields.values():
             if len(raw.strip()) > _subsystem_model.MAX_INTERFACE_PREPARATION_LENGTH:
                 return _render_interface_preparation(
-                    sid, context, status=400, drafts=drafts,
+                    sid, context, status=400, drafts=drafts, baselines=baselines,
                     error=S15_PREP_TOO_LONG_MESSAGE)
             invalid = _free_text_error(raw, lang)
             if invalid is not None:
                 return _render_interface_preparation(
-                    sid, context, status=400, drafts=drafts, error=invalid)
+                    sid, context, status=400, drafts=drafts, baselines=baselines, error=invalid)
     if not edits:
         # Nothing differs from committed durable truth (this includes an
         # exact retry of a submission that already committed).
@@ -7633,7 +7663,7 @@ def save_interface_preparation(sid):
         outcome = _resolve_interface_preparation_write(sid, delta)
         if outcome == _S15_PREP_WRITE_NOT_SAVED:
             return _render_interface_preparation(
-                sid, context, status=503, drafts=drafts,
+                sid, context, status=503, drafts=drafts, baselines=baselines,
                 error=S15_PREP_NOT_SAVED_MESSAGE)
         if outcome == _S15_PREP_WRITE_UNKNOWN:
             return _render_interface_preparation(
