@@ -3,13 +3,21 @@
 ## Current authority
 
 **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The last Owner-authorized bounded
-product slice — Stage 15 — Interface Verification Preparation Metadata — Slice 3 — is DELIVERED (Git / GitHub own
-its PR, merge and review identity), and no subsequent increment has been authorized. This does NOT mean the
+product slice — Stage 19 / CAP-09 — Result Event Slice 1 — is DELIVERED (Git / GitHub own its PR, merge and review
+identity), and no subsequent increment has been authorized. This does NOT mean the
 roadmap, Stage 15, Stage 18 or integration is complete, or that a next slice is authorized; delivered history never
 fills the active-contract slot. The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT — read-only planning
 / selection over live repository and product evidence until the Owner separately authorizes another product
 increment; it pre-authorizes no further Stage-15 slice, compatibility analysis, IRL scoring, interface
 engineering, Robotics assessment implementation, IoT, other Domain Pack or Technical Deepening slice.
+CAP-09 Result Event Slice 1 (delivered; inside Stage 19, no new Master Roadmap Stage; Stage 19 stays ENTERED / NOT
+COMPLETE): for ONE current canonical Section-11 experiment the inventor can record, in their own words, what actually
+happened when they performed it — OWNER-STATED / UNVALIDATED append-only history (`prototype_test_results`): every
+separately reported execution is an independent root, a correction appends a successor to one chain head and never
+rewrites earlier entries, and each root freezes its CONTEXT AT RECORDING. Planning page only; no PASS / FAIL outcome,
+criterion comparison, validation, evidence, readiness, progression, maturity or gap effect; report, PDF and Structured
+Export unchanged; Withdraw deferred.
+The preceding bounded slice — Stage 15 — Interface Verification Preparation Metadata — Slice 3 — is DELIVERED.
 Stage 15 Slice 3 (delivered; a bounded continuation inside the already-open Stage-15 integration obligation, no
 new Master Roadmap Stage): for each CURRENT durable Owner-declared interaction between the two parts, the inventor
 can durably record, edit and clear, in their own words, the three inputs its Validation Plan
@@ -200,7 +208,8 @@ question reduction beyond Slice 1. Target-Aware Question / Answer Binding is COM
 Designer) is ENTERED / NOT COMPLETE: the durable SuccessCriterion remediation (PR #682) and
 CAP-09 SLICE-02, the durable user-written measurement method (PR #683), are delivered, and
 SLICE-02 is not the active contract; CAP-09 Slice 3 (PR #711) and CAP-09 Slice 4 (PR #712, above)
-are delivered, and no CAP-09 implementation beyond Slice 4 is authorized. Full
+are delivered, CAP-09 Result Event Slice 1 is delivered, and no CAP-09 implementation beyond Slice 4 and the Result
+Event Slice 1 is authorized. Full
 CAP-09 and full WS-PFV-001 are NOT AUTHORIZED. Any
 other product, readiness, governance or automation work requires a new explicit Owner
 authorization.
@@ -222,7 +231,7 @@ Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former post-Stage-15-Slice-3 `ACTIVE CONTRACT: NONE`, the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, the former post-PR-#679 `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
