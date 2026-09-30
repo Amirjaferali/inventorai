@@ -13,20 +13,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  verify:
-    name: Verify candidate
+  scope:
+    name: Select test scope
+    # Always runs first. Verifies the exact tested merge, requires a non-empty
+    # diff and exposes exactly `smoke` or `full`. The selection below is the
+    # existing minimum-scope rule, moved here unchanged. Nothing reads RIG here.
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 10
     defaults:
       run:
         shell: bash
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
-      PYTHONUNBUFFERED: '1'
-      INVENTORAI_DRAFT_L2_REQUIRE_BROWSER: '1'
       EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
       EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
       EXPECTED_MERGE: ${{ github.sha }}
+    outputs:
+      scope: ${{ steps.scope.outputs.scope }}
     steps:
       - name: Check out the exact proposed merge
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -87,6 +89,43 @@ jobs:
               summary.write(f'Base: `{base}`\n\nPR head: `{head}`\n\nTested merge: `{merge}`\n\nTest floor: **{scope}**\n')
           PY
 
+  verify:
+    name: Verify candidate (SMOKE route)
+    # Authoritative for SMOKE only: the existing smoke floor for a change confined
+    # to the six passive authority documents. Skipped for FULL, where the sharded
+    # FULL suite and its central audit are authoritative instead.
+    needs: [scope]
+    if: needs.scope.result == 'success' && needs.scope.outputs.scope == 'smoke'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      INVENTORAI_DRAFT_L2_REQUIRE_BROWSER: '1'
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_MERGE: ${{ github.sha }}
+    steps:
+      - name: Check out the exact proposed merge
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify the tested-merge identity
+        run: |
+          python3 - <<'PY'
+          import os, re, subprocess
+          base, head, merge = (os.environ[k] for k in ('EXPECTED_BASE', 'EXPECTED_HEAD', 'EXPECTED_MERGE'))
+          assert all(re.fullmatch(r'[0-9a-f]{40}', sha) for sha in (base, head, merge))
+          parents = subprocess.check_output(['git', 'rev-list', '--parents', '-n', '1', 'HEAD']).decode().split()
+          assert parents == [merge, base, head], 'The checked-out merge must contain the event base and exact PR head'
+          PY
+
       - name: Set up the repository-required Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -130,77 +169,6 @@ jobs:
       - name: Universal guardrail smoke
         run: python scripts/run_universal_smoke.py
 
-      # RIG-2A SHADOW (advisory only). Repository intelligence analyses the exact
-      # tested merge (EXPECTED_BASE -> EXPECTED_MERGE) and writes a proposal as DATA
-      # in $RUNNER_TEMP. It has ZERO authority here: no step reads its output, it
-      # never selects or skips a test, and it is fail-open telemetry. The FULL
-      # regression below is unchanged and alone decides red/green. This
-      # continue-on-error exception applies ONLY to shadow telemetry and must
-      # never be reused once RIG receives any authority.
-      - name: RIG shadow plan (advisory only; selects nothing)
-        if: steps.scope.outputs.scope == 'full'
-        continue-on-error: true
-        run: |
-          echo "RIG shadow analysis: $EXPECTED_BASE -> tested merge $EXPECTED_MERGE (PR head $EXPECTED_HEAD is identity only)"
-          python scripts/repository_intelligence.py --base "$EXPECTED_BASE" --head "$EXPECTED_MERGE" \
-            > "$RUNNER_TEMP/rig-shadow.json" \
-            || echo "RIG shadow evidence unavailable (advisory only; FULL regression still runs)"
-
-      - name: Full regression and mandatory-check audit
-        if: steps.scope.outputs.scope == 'full'
-        run: |
-          python - <<'PY'
-          import os, pathlib, subprocess, sys, xml.etree.ElementTree as ET
-
-          report = pathlib.Path(os.environ['RUNNER_TEMP']) / 'inventorai-pytest.xml'
-          result = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider',
-                                   '--junitxml=' + str(report)])
-          assert report.is_file(), 'Missing test evidence'
-          cases = ET.parse(report).findall('.//testcase')
-          assert cases, 'No collected test evidence'
-          # Existing conditional semantic cases only; never browser/server skips.
-          allowed = {
-              ('tests.test_fdc001_contract.TestFDC001_S7_CategoriesBC_Deferred', name): {'ODS-001 exists'}
-              for name in ('test_category_b_deferred', 'test_category_c_deferred',
-                           'test_category_b_note_references_ods001')
-          }
-          allowed[('tests.test_wps001_invariants.TestWPS001_INV004_GapLifecycle',
-                   'test_closed_gap_does_not_reopen')] = {'No gaps reached CLOSED — cannot test forward-only'}
-          allowed[('tests.test_w2c_rvr6b_web', 'test_electronics_covered_intent_suppressed')] = {
-              'electronics journey did not open MECHANISM first',
-              'journey advanced differently — covered elsewhere'}
-          known_xfail = ('tests.test_f011_progression_quality_gate',
-                         'test_f011_hall_sensor_alone_does_not_advance_level_0')
-          passed = set()
-          for case in cases:
-              key = (case.get('classname'), case.get('name'))
-              skipped = case.find('skipped')
-              if skipped is not None:
-                  reason = skipped.get('message', '')
-                  expected = (key == known_xfail and skipped.get('type') == 'pytest.xfail' and
-                              reason == 'ADR-003 Step 6: component label only — no claim/basis/relationship')
-                  expected = expected or (skipped.get('type') == 'pytest.skip' and reason in allowed.get(key, set()))
-                  assert expected, f'Unexpected skip/xfail: {key}: {reason}'
-                  print('Existing conditional result:', key, reason)
-              elif case.find('failure') is None and case.find('error') is None:
-                  passed.add(key)
-          for module in ('tests.test_draft_l2_local_continuity', 'tests.test_p5_2_draft_account_switch'):
-              assert any(key[0] == module for key in passed), f'Mandatory browser module did not pass: {module}'
-          assert ('tests.test_email_h1_access_log_token_redaction',
-                  'test_real_gunicorn_access_log_contains_no_raw_token') in passed, 'Real server security proof missing'
-          assert result.returncode == 0, f'pytest failed: exit {result.returncode}'
-          PY
-
-      - name: RIG shadow comparison (advisory only; never affects CI status)
-        if: always() && steps.scope.outputs.scope == 'full'
-        continue-on-error: true
-        run: |
-          python scripts/repository_intelligence_shadow.py --mode compare \
-            --rig "$RUNNER_TEMP/rig-shadow.json" \
-            --junit "$RUNNER_TEMP/inventorai-pytest.xml" \
-            --pr-head "$EXPECTED_HEAD" --tested-merge "$EXPECTED_MERGE" \
-            --summary "$GITHUB_STEP_SUMMARY"
-
       - name: Confirm repository data was not changed
         if: always()
         run: |
@@ -210,12 +178,13 @@ jobs:
 
   fast:
     name: RIG fast feedback (advisory)
-    # RIG-2A FAST FEEDBACK (advisory only). Runs in PARALLEL with `verify`, never
-    # gates a merge and is NOT a dependency of `required`. Only when RIG proposes
-    # AFFECTED-CANDIDATE for the exact tested merge does it run RIG's validated
-    # candidate test files early; FULL/SMOKE/unavailable run nothing. A pass means
-    # only "the proposed candidate tests passed early" — FULL CI in `verify`
-    # remains the only authoritative regression. Fail-open by design.
+    # RIG-2A FAST FEEDBACK (advisory only). Runs in PARALLEL with the gate, never
+    # gates a merge and is NOT a direct or transitive dependency of `required`.
+    # Only when RIG proposes AFFECTED-CANDIDATE for the exact tested merge does it
+    # run RIG's validated candidate test files early; FULL/SMOKE/unavailable run
+    # nothing. A pass means only "the proposed candidate tests passed early" — the
+    # sharded FULL suite and its central audit remain the only authoritative
+    # regression. Fail-open by design.
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     continue-on-error: true
@@ -305,13 +274,14 @@ jobs:
             --summary "$GITHUB_STEP_SUMMARY"
 
   full_shard:
-    name: Sharded FULL pilot ${{ matrix.shard }}/3 (non-authoritative)
-    # SHARDING PILOT (evidence only; NOT a merge gate and NOT a dependency of
-    # `required`). The monolithic FULL regression in `verify` stays the only
-    # authoritative run. Each shard runs the NORMAL full pytest collection and
-    # executes only the whole test files deterministically assigned to it by
-    # scripts/ci_full_suite.py (SHA-256 of the file path; no RIG, changed-file,
-    # -k or marker input). Failures are left visible: no continue-on-error.
+    name: Sharded FULL ${{ matrix.shard }}/3
+    # AUTHORITATIVE for FULL (with `full_audit`). Each shard runs the NORMAL full
+    # pytest collection and executes only the whole test files deterministically
+    # assigned to it by scripts/ci_full_suite.py (static BROWSER_SHARD placement,
+    # else SHA-256 of the file path; no RIG, changed-file, -k or marker input).
+    # Failures stay visible: no continue-on-error, no fail-fast.
+    needs: [scope]
+    if: needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     strategy:
@@ -336,7 +306,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Verify the tested-merge identity (pilot)
+      - name: Verify the tested-merge identity
         run: |
           python3 - <<'PY'
           import os, re, subprocess
@@ -387,7 +357,7 @@ jobs:
       - name: Universal guardrail smoke
         run: python scripts/run_universal_smoke.py
 
-      - name: Run this shard of the FULL suite (pilot)
+      - name: Run this shard of the FULL suite
         run: |
           python scripts/ci_full_suite.py --mode shard --shard ${{ matrix.shard }} --count 3 \
             --out "$RUNNER_TEMP/full-shard-evidence"
@@ -409,12 +379,13 @@ jobs:
           retention-days: 7
 
   full_audit:
-    name: Sharded FULL pilot audit (non-authoritative)
-    # Fail-closed completeness and mandatory-semantics audit over the three
-    # current-attempt shard evidence packages. Evidence only: NOT a merge gate
-    # and NOT a dependency of `required`.
-    needs: [full_shard]
-    if: always()
+    name: Sharded FULL audit
+    # AUTHORITATIVE for FULL. Fail-closed completeness and mandatory-semantics
+    # audit over the three current-attempt shard evidence packages. It runs for
+    # FULL even when a shard failed, so missing or incomplete evidence fails
+    # closed here and in `required`.
+    needs: [scope, full_shard]
+    if: always() && needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     defaults:
@@ -445,7 +416,7 @@ jobs:
           pattern: full-shard-evidence-${{ github.run_id }}-${{ github.run_attempt }}-shard-*
           path: ${{ runner.temp }}/full-shard-evidence
 
-      - name: Audit FULL-suite completeness and mandatory semantics (pilot)
+      - name: Audit FULL-suite completeness and mandatory semantics
         run: |
           python scripts/ci_full_suite.py --mode audit --evidence-dir "$RUNNER_TEMP/full-shard-evidence" \
             --summary "$GITHUB_STEP_SUMMARY"
@@ -457,18 +428,174 @@ jobs:
           git diff --cached --exit-code
           test -z "$(git ls-files --others --exclude-standard)"
 
+  full_monolithic_telemetry:
+    name: TEMPORARY monolithic FULL + RIG shadow telemetry (advisory; not a gate)
+    # TEMPORARY / ADVISORY / NON-AUTHORITATIVE. Keeps the former monolithic FULL
+    # run and the RIG-2A shadow plan / comparison as telemetry only, so RIG needs
+    # no new integration now. It is NOT a direct or transitive dependency of
+    # `scope`, `verify`, `full_shard`, `full_audit` or `required`, is fail-open,
+    # and never decides CI status: the sharded FULL suite and `full_audit` feeding
+    # `CI required` do. This is not the intended permanent CI architecture.
+    needs: [scope]
+    if: needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    continue-on-error: true
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      INVENTORAI_DRAFT_L2_REQUIRE_BROWSER: '1'
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_MERGE: ${{ github.sha }}
+    steps:
+      - name: Check out the exact proposed merge
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify the tested-merge identity
+        run: |
+          python3 - <<'PY'
+          import os, re, subprocess
+          base, head, merge = (os.environ[k] for k in ('EXPECTED_BASE', 'EXPECTED_HEAD', 'EXPECTED_MERGE'))
+          assert all(re.fullmatch(r'[0-9a-f]{40}', sha) for sha in (base, head, merge))
+          parents = subprocess.check_output(['git', 'rev-list', '--parents', '-n', '1', 'HEAD']).decode().split()
+          assert parents == [merge, base, head], 'The checked-out merge must contain the event base and exact PR head'
+          PY
+
+      - name: Set up the repository-required Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version-file: .python-version
+
+      - name: Install existing pinned inputs into an isolated environment
+        run: |
+          echo "INVENTORAI_DB_PATH=$RUNNER_TEMP/inventorai-ci.sqlite" >> "$GITHUB_ENV"
+          echo "PLAYWRIGHT_BROWSERS_PATH=$RUNNER_TEMP/playwright" >> "$GITHUB_ENV"
+          python -m venv "$RUNNER_TEMP/inventorai-venv"
+          echo "$RUNNER_TEMP/inventorai-venv/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip install --disable-pip-version-check --no-input -r requirements.txt -r tests/requirements-draft-l2.txt
+          "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip check
+          # Direct requirements are pinned; repository inputs intentionally leave
+          # transitives pip-resolved. Record them; do not claim a hermetic lock.
+          "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip freeze
+
+      - name: Install the matching Chromium and Linux prerequisites
+        run: python -m playwright install --with-deps chromium
+
+      # RIG-2A SHADOW (advisory only). Repository intelligence analyses the exact
+      # tested merge (EXPECTED_BASE -> EXPECTED_MERGE) and writes a proposal as DATA
+      # in $RUNNER_TEMP. It has ZERO authority: no gate reads its output, it never
+      # selects or skips a test, and it is fail-open telemetry. The continue-on-error
+      # exception applies ONLY to shadow telemetry and must never be reused once RIG
+      # receives any authority.
+      - name: RIG shadow plan (advisory only; selects nothing)
+        continue-on-error: true
+        run: |
+          echo "RIG shadow analysis: $EXPECTED_BASE -> tested merge $EXPECTED_MERGE (PR head $EXPECTED_HEAD is identity only)"
+          python scripts/repository_intelligence.py --base "$EXPECTED_BASE" --head "$EXPECTED_MERGE" \
+            > "$RUNNER_TEMP/rig-shadow.json" \
+            || echo "RIG shadow evidence unavailable (advisory only; FULL regression still runs)"
+
+      - name: Full regression and mandatory-check audit
+        run: |
+          python - <<'PY'
+          import os, pathlib, subprocess, sys, xml.etree.ElementTree as ET
+
+          report = pathlib.Path(os.environ['RUNNER_TEMP']) / 'inventorai-pytest.xml'
+          result = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider',
+                                   '--junitxml=' + str(report)])
+          assert report.is_file(), 'Missing test evidence'
+          cases = ET.parse(report).findall('.//testcase')
+          assert cases, 'No collected test evidence'
+          # Existing conditional semantic cases only; never browser/server skips.
+          allowed = {
+              ('tests.test_fdc001_contract.TestFDC001_S7_CategoriesBC_Deferred', name): {'ODS-001 exists'}
+              for name in ('test_category_b_deferred', 'test_category_c_deferred',
+                           'test_category_b_note_references_ods001')
+          }
+          allowed[('tests.test_wps001_invariants.TestWPS001_INV004_GapLifecycle',
+                   'test_closed_gap_does_not_reopen')] = {'No gaps reached CLOSED — cannot test forward-only'}
+          allowed[('tests.test_w2c_rvr6b_web', 'test_electronics_covered_intent_suppressed')] = {
+              'electronics journey did not open MECHANISM first',
+              'journey advanced differently — covered elsewhere'}
+          known_xfail = ('tests.test_f011_progression_quality_gate',
+                         'test_f011_hall_sensor_alone_does_not_advance_level_0')
+          passed = set()
+          for case in cases:
+              key = (case.get('classname'), case.get('name'))
+              skipped = case.find('skipped')
+              if skipped is not None:
+                  reason = skipped.get('message', '')
+                  expected = (key == known_xfail and skipped.get('type') == 'pytest.xfail' and
+                              reason == 'ADR-003 Step 6: component label only — no claim/basis/relationship')
+                  expected = expected or (skipped.get('type') == 'pytest.skip' and reason in allowed.get(key, set()))
+                  assert expected, f'Unexpected skip/xfail: {key}: {reason}'
+                  print('Existing conditional result:', key, reason)
+              elif case.find('failure') is None and case.find('error') is None:
+                  passed.add(key)
+          for module in ('tests.test_draft_l2_local_continuity', 'tests.test_p5_2_draft_account_switch'):
+              assert any(key[0] == module for key in passed), f'Mandatory browser module did not pass: {module}'
+          assert ('tests.test_email_h1_access_log_token_redaction',
+                  'test_real_gunicorn_access_log_contains_no_raw_token') in passed, 'Real server security proof missing'
+          assert result.returncode == 0, f'pytest failed: exit {result.returncode}'
+          PY
+
+      - name: RIG shadow comparison (advisory only; never affects CI status)
+        if: always()
+        continue-on-error: true
+        run: |
+          python scripts/repository_intelligence_shadow.py --mode compare \
+            --rig "$RUNNER_TEMP/rig-shadow.json" \
+            --junit "$RUNNER_TEMP/inventorai-pytest.xml" \
+            --pr-head "$EXPECTED_HEAD" --tested-merge "$EXPECTED_MERGE" \
+            --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Confirm repository data was not changed
+        if: always()
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+
   required:
     name: CI required
-    needs: [verify]
+    # The protected verdict. Scope-aware and explicit: a skipped job passes only
+    # when it belongs to the route the successful scope did NOT select. Any other
+    # skip, failure, cancellation, missing result or unknown scope fails.
+    needs: [scope, verify, full_shard, full_audit]
     if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions: {}
     steps:
-      - name: Reject failed, cancelled, skipped or missing verification
+      - name: Require the complete authoritative route for the selected scope
         env:
+          SCOPE_RESULT: ${{ needs.scope.result }}
+          SCOPE: ${{ needs.scope.outputs.scope }}
           VERIFY_RESULT: ${{ needs.verify.result }}
-        run: test "$VERIFY_RESULT" = success
+          SHARD_RESULT: ${{ needs.full_shard.result }}
+          AUDIT_RESULT: ${{ needs.full_audit.result }}
+        run: |
+          echo "scope=$SCOPE_RESULT/$SCOPE verify=$VERIFY_RESULT full_shard=$SHARD_RESULT full_audit=$AUDIT_RESULT"
+          verdict=fail
+          if [ "$SCOPE_RESULT" = success ] && [ "$SCOPE" = smoke ]; then
+            if [ "$VERIFY_RESULT" = success ] && [ "$SHARD_RESULT" = skipped ] && [ "$AUDIT_RESULT" = skipped ]; then
+              verdict=pass
+            fi
+          elif [ "$SCOPE_RESULT" = success ] && [ "$SCOPE" = full ]; then
+            if [ "$VERIFY_RESULT" = skipped ] && [ "$SHARD_RESULT" = success ] && [ "$AUDIT_RESULT" = success ]; then
+              verdict=pass
+            fi
+          fi
+          echo "CI required verdict: $verdict"
+          test "$verdict" = pass
 
 # Require "CI required" on the authoritative branch, disallow bypass/force-push/
 # deletion, and bind reviews/checks to the latest PR head. The execution Lead must
