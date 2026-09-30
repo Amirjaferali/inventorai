@@ -503,6 +503,7 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       "projects",
                       "prototype_measurement_methods",
                       "prototype_plan_metadata", "prototype_test_hypotheses",
+                      "prototype_test_results",   # CAP-09 Result Event Slice 1 (not a ledger)
                       "prototype_test_variables", "question_feedback",
                       "readiness_evidence", "records",
                       "requirement_quantities",

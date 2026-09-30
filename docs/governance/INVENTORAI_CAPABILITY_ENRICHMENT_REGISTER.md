@@ -327,7 +327,9 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   `SuccessCriterion` planning-metadata precedent.
 - **Proposed workstream / activation gate:** **WS-PFV-001** (separately owner-gated future workstream).
 - **Overlap risks:** CAP-01, CAP-04, CAP-06 (prototype readiness); D13.
-- **Protected boundaries:** planning metadata only; never a result; never graded; never executed.
+- **Protected boundaries:** planning metadata only; never a result; never graded; never executed. Bounded
+  exception: CAP-09 Result Event Slice 1 (delivered) records the inventor's own append-only report of what
+  actually happened — OWNER-STATED / UNVALIDATED, never graded, judged or turned into an outcome.
 - **Proposed acceptance criteria:** deterministic structure; explicit non-execution and non-validity
   disclaimers; specialist review preserved.
 - **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (governed by

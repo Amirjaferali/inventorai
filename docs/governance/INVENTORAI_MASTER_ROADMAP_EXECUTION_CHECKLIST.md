@@ -147,9 +147,9 @@ Read those before acting on any stage; this table is a locator, not a status sou
   AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`. **Stage 18
   remains PARTIAL and its roadmap checkbox stays unticked** — one authorized bounded slice
   is not the stage.
-    **NO ACTIVE CONTRACT — post-Stage-15-Slice-3 (2026-09-30); Stage 15 and Stage 18 both stay ENTERED / PARTIAL / NOT
-  COMPLETE:** `ACTIVE CONTRACT: NONE` · `NEXT PRODUCT INCREMENT: NOT AUTHORIZED` · `NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT` · `STAGE 15 SLICE 3: DELIVERED` · `STAGE 15 SLICE 2: DELIVERED — PR #720 — merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `STAGE 15 SLICE 2 FINAL INDEPENDENT REVIEW: PASS — F1 / F2 / F3 CLOSED` · `STAGE 15 SLICE 2 ANCESTRY: implementation 470bb90004b17229206fdd17fe3eaf3dd7867939, render-reattachment test d2f16a16e0a7ac3f11b72c669970afad6dae0ff9, current-truth sync b61422b4f229668af792f2cbed2e5a770afae43b, F1 / F2 / F3 correction 7d965480ac721bd75d99e6a25b9c2549a1e85566, F3 residual correction / reviewed PR head fc3d47ed6184a54b0d2323910f6341e4bbf9b73f, merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca` · `STAGE 15 SLICE 1: DELIVERED — PR #718 — merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B CORRECTED / NO REMAINING MATERIAL DEFECT` · `STAGE 15 SLICE 1 ANCESTRY: implementation 90322f146a56099a2e6647ba0c53e5195963d41c, F1 / IR01-A correction 41d06a27ed657a1bf6460c638655f0a6de5447a0, current-truth sync / PR head be6ab2c14be34e49300444b4c6c5104e2f9bdf0a, merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `STAGE 15: ENTERED / PARTIAL / NOT COMPLETE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL AND ELECTRICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `ANOTHER STAGE-15 SLICE: NOT AUTHORIZED` · `FULL STAGE 15 / IRL: NOT AUTHORIZED` · `IRL SCORING / LEVELS: NOT AUTHORIZED` · `FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED` · `ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED` · `ENGINEERING COMPATIBILITY ANALYSIS: NOT AUTHORIZED` · `SUBSYSTEM-SPECIFIC GAP / EVIDENCE / READINESS ENGINES: NOT AUTHORIZED` · `GENERIC RELATIONSHIP GRAPH / ENGINE: NOT AUTHORIZED` · `MECHATRONICS DOMAIN PACK: NOT AUTHORIZED` · `ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
-  No product increment is authorized after Stage 15 Slice 3. This does NOT mean that the roadmap, Stage 15, Stage 18 or
+    **NO ACTIVE CONTRACT — post-CAP-09-Result-Event-Slice-1 (2026-09-30); Stage 15 and Stage 18 both stay ENTERED / PARTIAL / NOT
+  COMPLETE:** `ACTIVE CONTRACT: NONE` · `NEXT PRODUCT INCREMENT: NOT AUTHORIZED` · `NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT` · `CAP-09 RESULT EVENT SLICE 1: DELIVERED` · `STAGE 15 SLICE 3: DELIVERED` · `STAGE 15 SLICE 2: DELIVERED — PR #720 — merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `STAGE 15 SLICE 2 FINAL INDEPENDENT REVIEW: PASS — F1 / F2 / F3 CLOSED` · `STAGE 15 SLICE 2 ANCESTRY: implementation 470bb90004b17229206fdd17fe3eaf3dd7867939, render-reattachment test d2f16a16e0a7ac3f11b72c669970afad6dae0ff9, current-truth sync b61422b4f229668af792f2cbed2e5a770afae43b, F1 / F2 / F3 correction 7d965480ac721bd75d99e6a25b9c2549a1e85566, F3 residual correction / reviewed PR head fc3d47ed6184a54b0d2323910f6341e4bbf9b73f, merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca` · `STAGE 15 SLICE 1: DELIVERED — PR #718 — merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B CORRECTED / NO REMAINING MATERIAL DEFECT` · `STAGE 15 SLICE 1 ANCESTRY: implementation 90322f146a56099a2e6647ba0c53e5195963d41c, F1 / IR01-A correction 41d06a27ed657a1bf6460c638655f0a6de5447a0, current-truth sync / PR head be6ab2c14be34e49300444b4c6c5104e2f9bdf0a, merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `STAGE 15: ENTERED / PARTIAL / NOT COMPLETE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL AND ELECTRICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `ANOTHER STAGE-15 SLICE: NOT AUTHORIZED` · `FULL STAGE 15 / IRL: NOT AUTHORIZED` · `IRL SCORING / LEVELS: NOT AUTHORIZED` · `FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED` · `ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED` · `ENGINEERING COMPATIBILITY ANALYSIS: NOT AUTHORIZED` · `SUBSYSTEM-SPECIFIC GAP / EVIDENCE / READINESS ENGINES: NOT AUTHORIZED` · `GENERIC RELATIONSHIP GRAPH / ENGINE: NOT AUTHORIZED` · `MECHATRONICS DOMAIN PACK: NOT AUTHORIZED` · `ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+  No product increment is authorized after CAP-09 Result Event Slice 1. This does NOT mean that the roadmap, Stage 15, Stage 18 or
   integration is complete, or that a next slice is authorized, and delivered history never fills
   the active-contract slot. The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT: read-only planning /
   selection over live repository and product evidence until the Owner separately authorizes another product
@@ -262,10 +262,21 @@ Deployment / release NOT AUTHORIZED.
   CAP-09 Slice 3 — the inventor-written Test Hypothesis — is delivered (PR #711), and CAP-09 Slice 4
   — the inventor-written Test Variable / Condition, below — is delivered (PR #712, merge `c0faedcd3bff317d9439a7561c220a6ca97f7f4a`); a formal
   variable model, Result and every other CAP-09 field stay NOT AUTHORIZED, and no CAP-09
-  implementation beyond Slice 4 is currently authorized. The Stage-19 checkbox stays unticked, and
+  implementation beyond Slice 4 and the Result Event Slice 1 is currently authorized. The Stage-19 checkbox stays unticked, and
   entering Stage 19 completes nothing in Stage 18.
-  **DELIVERED — CAP-09 Slice 4 — Owner-Defined Test Variable / Condition (inside Stage 19; no new Master
-Roadmap Stage; Stage 19 stays ENTERED / NOT COMPLETE):** `CAP-09 SLICE 4: DELIVERED — PR #712 — merge c0faedcd3bff317d9439a7561c220a6ca97f7f4a` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED` · `BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION: AUTHORIZED WITHIN CAP-09 SLICE 4` · `FORMAL EXPERIMENTAL VARIABLE MODEL: NOT AUTHORIZED` · `RESULT: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
+  **DELIVERED — CAP-09 Result Event Slice 1 (inside Stage 19; no new Master Roadmap Stage; Stage 19 stays ENTERED / NOT COMPLETE):** `CAP-09 RESULT EVENT SLICE 1: DELIVERED` · `RESULT OUTCOME / PASS-FAIL JUDGEMENT: NOT AUTHORIZED`.
+CAP-09 Result Event Slice 1 (delivered): for ONE current canonical Section-11 experiment the inventor can record,
+in their own words, what actually happened when they performed it — OWNER-STATED / UNVALIDATED historical
+reporting in ONE additive append-only `prototype_test_results` table. Every separately reported execution (a
+retest, even with identical text) is an independent root with an opaque server-generated `result_event_id`; a
+correction appends a successor to the current head of one chain and never rewrites earlier entries; each root
+freezes its CONTEXT AT RECORDING (the experiment and the inventor's Success Criterion, Measurement Method, Test
+Hypothesis and Test Variable / Condition, or explicit absence), which later planning edits never rewrite. The
+canonical `experiment_id` stays the only experiment identity. Planning page only; the report, PDF and Structured
+Export are unchanged. No PASS / FAIL / PARTIAL / INCONCLUSIVE outcome, criterion comparison, validation,
+evidence, readiness, progression, maturity or gap effect; Withdraw is deferred.
+**DELIVERED — CAP-09 Slice 4 — Owner-Defined Test Variable / Condition (inside Stage 19; no new Master
+Roadmap Stage; Stage 19 stays ENTERED / NOT COMPLETE):** `CAP-09 SLICE 4: DELIVERED — PR #712 — merge c0faedcd3bff317d9439a7561c220a6ca97f7f4a` · `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED` · `BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION: AUTHORIZED WITHIN CAP-09 SLICE 4` · `FORMAL EXPERIMENTAL VARIABLE MODEL: NOT AUTHORIZED` · `RESULT OUTCOME / PASS-FAIL JUDGEMENT: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED`.
 CAP-09 Slice 4 (delivered): for each CURRENT Section-11 experiment the inventor can record, edit or clear their own Test
 Variable / Condition — what they intend to change, compare or set differently in that test. It
 stays distinct from the system-generated Objective (purpose / context) and What to Observe
@@ -422,6 +433,8 @@ recovery PR #702) routes ONLY mechanical PHYSICAL_FEASIBILITY:Q2 to specialist i
   prior evidence where applicable, and new human activity requires separate authorization
   and the existing consent/custody boundaries.
 <!-- END CURRENT-BLOCK: current-routing -->
+
+*(Superseded 2026-09-30 by CAP-09 Result Event Slice 1, preserved so the change is visible rather than silent: the current routing read "**NO ACTIVE CONTRACT — post-Stage-15-Slice-3 (2026-09-30); …** No product increment is authorized after Stage 15 Slice 3." That was true until the Owner authorized CAP-09 Result Event Slice 1.)*
 
 *(Superseded 2026-09-30 by Stage 15 — Interface Verification Preparation Metadata — Slice 3, preserved so the
 change is visible rather than silent: the current routing read "**NO ACTIVE CONTRACT — post-PR-#720 (2026-09-29);
@@ -663,13 +676,15 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   **Stage 44 lineage gate** — PRESERVED · **Stage 45 deployment gate** — PRESERVED ·
   **WATCH-01** — PRESERVED / PLANNED / NOT YET IMPLEMENTED · **WATCH-04** — PRESERVED.
 <!-- END CURRENT-BLOCK: material-residuals -->
-- **CURRENT SUBTASK:** NONE (post-Stage-15-Slice-3) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — Stage 15 —
+- **CURRENT SUBTASK:** NONE (post-CAP-09-Result-Event-Slice-1) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — CAP-09
+  Result Event Slice 1 DELIVERED — Stage 15 —
   Interface Verification Preparation Metadata — Slice 3 DELIVERED — Stage 15 — Subsystem Interface Declaration &
   Verification Preparation — Slice 2 DELIVERED (PR #720) — NO CURRENT
   AUTHORIZED TECHNICAL DEEPENING SUBTASK —
   `ACTIVE CONTRACT: NONE` ·
   `NEXT PRODUCT INCREMENT: NOT AUTHORIZED` ·
   `NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT` ·
+  `CAP-09 RESULT EVENT SLICE 1: DELIVERED` ·
   `STAGE 15 SLICE 3: DELIVERED` ·
   `STAGE 15 SLICE 2: DELIVERED — PR #720 — merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca` ·
   `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` ·
@@ -700,7 +715,7 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   `CAP-09 SLICE 4: DELIVERED — PR #712 — merge c0faedcd3bff317d9439a7561c220a6ca97f7f4a` ·
   `FULL CAP-09: NOT AUTHORIZED` · `FULL WS-PFV-001: NOT AUTHORIZED` ·
   `BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION: AUTHORIZED WITHIN CAP-09 SLICE 4` ·
-  `FORMAL EXPERIMENTAL VARIABLE MODEL: NOT AUTHORIZED` · `RESULT: NOT AUTHORIZED` ·
+  `FORMAL EXPERIMENTAL VARIABLE MODEL: NOT AUTHORIZED` · `RESULT OUTCOME / PASS-FAIL JUDGEMENT: NOT AUTHORIZED` ·
   `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` ·
   `CAP-09 SLICE 3: DELIVERED — PR #711 — merge e393e29cd0ba4f568cf1fd1a0d4c2e0e7742eabd` ·
   `CAP-11 SLICE 1: DELIVERED — PR #710 — merge 7d2e9ab011a0bbf17b577f354e2b47ab09114add` ·
@@ -770,6 +785,8 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   after restart, F3 UNKNOWN preservation), corrected in `7d96548`; bounded re-review F1 / F2 CLOSED with one
   F3 residual, corrected in `fc3d47e`; final bounded review PASS — F1 / F2 / F3 CLOSED. Deployment /
   release NOT AUTHORIZED.
+  *(Superseded 2026-09-30 by CAP-09 Result Event Slice 1, preserved — was: "**CURRENT SUBTASK:** NONE
+  (post-Stage-15-Slice-3) — … Stage 15 — Interface Verification Preparation Metadata — Slice 3 DELIVERED …".)*
   *(Superseded 2026-09-30 by Stage 15 — Interface Verification Preparation Metadata — Slice 3, preserved — was:
   "**CURRENT SUBTASK:** NONE (post-PR-#720) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — Stage 15 — Subsystem
   Interface Declaration & Verification Preparation — Slice 2 DELIVERED (PR #720) …"; the Owner then authorized

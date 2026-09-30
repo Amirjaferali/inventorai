@@ -107,6 +107,69 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   {% endfor %}
   <button type="submit">{{ t('UI_B_SC_004') }}</button>
 </form>
+
+{#- CAP-09 Result Event Slice 1: what actually happened, in the inventor's own
+    words. Append-only history; a correction keeps every earlier entry; each
+    execution keeps the context frozen when it was first recorded. Nothing
+    here is a pass/fail judgement. Its own forms (never nested in the
+    planning form), each with its own signed submission identity. -#}
+<h2 id="results-heading">{{ t('UI_R_HEADING') }}</h2>
+<div class="results-intro" data-results-intro style="background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:12px;font-size:13px;color:#444;line-height:1.5">{{ t('UI_R_INTRO') }}</div>
+{% if results is not defined %}
+{% elif results is none %}
+<div class="notice" role="status" data-results-unavailable>{{ t('UI_R_UNAVAILABLE') }}</div>
+{% else %}
+{% for exp in experiments %}
+{% set res = results.by_experiment[exp.experiment_id] %}
+<div class="result-exp" data-result-experiment style="border:1px solid #e2e6ea;border-radius:4px;padding:12px 14px;margin-bottom:16px;min-width:0;overflow-wrap:anywhere">
+  <div class="result-exp-title" dir="auto" style="font-weight:bold;color:#2c3e50;font-size:14px">{{ exp.experiment_title }}</div>
+  {% for ch in res.chains %}
+  <div class="result-chain" data-result-chain style="border-top:1px solid #e2e6ea;margin-top:8px;padding-top:8px">
+    <div style="font-size:13px;font-weight:bold">{{ t('UI_R_EXECUTION') }} {{ loop.index }}</div>
+    <p style="margin:4px 0;white-space:pre-wrap;font-size:13px" data-result-text><bdi dir="auto">{{ ch.text }}</bdi></p>
+    <p class="criterion-guidance" data-result-label>{{ t('UI_R_LABEL') }}</p>
+    {% if ch.earlier %}
+    <details style="font-size:12px"><summary>{{ t('UI_R_EARLIER') }}</summary>
+      {% for old in ch.earlier %}<p style="white-space:pre-wrap;color:#555;margin:4px 0" data-result-earlier><bdi dir="auto">{{ old }}</bdi></p>{% endfor %}
+    </details>
+    {% endif %}
+    <details style="font-size:12px" data-result-context><summary>{{ t('UI_R_CONTEXT') }}</summary>
+      <p class="criterion-guidance">{{ t('UI_R_CONTEXT_NOTE') }}</p>
+      <dl style="margin:4px 0">
+        <dt style="font-weight:bold">{{ t('UI_R_CONTEXT_EXPERIMENT') }}</dt><dd dir="auto" style="margin:0 12px">{{ ch.context_title }}{% if ch.context_source %} — {{ ch.context_source }}{% endif %}</dd>
+        {% for c in ch.context %}<dt style="font-weight:bold">{{ t(c.label_key) }}</dt><dd style="margin:0 12px;white-space:pre-wrap">{% if c.text is not none %}<bdi dir="auto">{{ c.text }}</bdi>{% else %}{{ t('UI_R_CONTEXT_ABSENT') }}{% endif %}</dd>{% endfor %}
+      </dl>
+    </details>
+    <details style="font-size:13px"><summary>{{ t('UI_R_CORRECT') }}</summary>
+      <form method="POST" action="{{ url_for('record_experiment_result', sid=sid) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+        <input type="hidden" name="result_submission" value="{{ ch.submission }}">
+        <input type="hidden" name="experiment_id" value="{{ exp.experiment_id }}">
+        <input type="hidden" name="supersedes" value="{{ ch.head_id }}">
+        <input type="text" name="result_text" maxlength="{{ result_max_length }}" dir="auto" aria-label="{{ t('UI_R_CORRECT') }}" style="width:100%;box-sizing:border-box;padding:8px;font-size:13px" value="{% if ch.draft is not none %}{{ ch.draft }}{% else %}{{ ch.text }}{% endif %}">
+        <p class="criterion-guidance">{{ t('UI_R_CORRECT_NOTE') }}</p>
+        <button type="submit">{{ t('UI_R_CORRECT_BUTTON') }}</button>
+      </form>
+    </details>
+  </div>
+  {% endfor %}
+  <form method="POST" action="{{ url_for('record_experiment_result', sid=sid) }}" data-result-record style="margin-top:10px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <input type="hidden" name="result_submission" value="{{ res.submission }}">
+    <input type="hidden" name="experiment_id" value="{{ exp.experiment_id }}">
+    <label>{{ t('UI_R_RECORD') }}
+    <input type="text" name="result_text" maxlength="{{ result_max_length }}" dir="auto" style="width:100%;box-sizing:border-box;padding:8px;font-size:13px" value="{% if res.draft is not none %}{{ res.draft }}{% endif %}"></label>
+    <p class="criterion-guidance">{{ t('UI_R_RECORD_NOTE') }}</p>
+    <button type="submit">{{ t('UI_R_RECORD_BUTTON') }}</button>
+  </form>
+</div>
+{% endfor %}
+{% if results.stale %}
+<div class="stale" data-results-stale>{{ t('UI_R_STALE') }}
+  {% for ch in results.stale %}<p style="white-space:pre-wrap;margin:6px 0"><bdi dir="auto">{{ ch.context_title }}</bdi>: <bdi dir="auto">{{ ch.text }}</bdi></p>{% endfor %}
+</div>
+{% endif %}
+{% endif %}
 {% else %}
 <div class="intro">{{ t('UI_B_SC_005') }}</div>
 {% endif %}

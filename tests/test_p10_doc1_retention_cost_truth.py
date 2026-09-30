@@ -150,6 +150,13 @@ def test_retention_doc_matches_source_truth():
     assert "`prototype_test_variables`" in flat
     assert "`subsystem_interface_preparations`" in flat
     assert "clearing all three inputs removes that single current-value row" in flat
+    # CAP-09 Result Event Slice 1: append-only history with no DELETE path, so it
+    # is in neither deletion set above; the document must state exactly that.
+    assert "`prototype_test_results`" in flat
+    assert "a correction appends a new entry and neither rewrites nor deletes the earlier observation" in flat
+    assert "this slice provides NO result clear / delete" in flat
+    assert "Recording or correcting a result is NOT account or project erasure" in flat
+    assert not any("prototype_test_results" in line for _p, line in deletes)
     assert "It is NOT an automatic deletion, NOT an erasure capability" in flat
     # the 7-day client TTL claim must keep matching the real script
     with open(os.path.join("web", "static", "js", "local_draft.js"),
