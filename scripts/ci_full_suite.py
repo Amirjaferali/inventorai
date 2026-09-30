@@ -14,8 +14,10 @@ three independent runners, proven complete by a fail-closed central audit.
     assigned node ran exactly once, and that the existing authoritative skip /
     xfail / browser / real-Gunicorn / cleanliness semantics hold.
 
-Pilot status: NON-AUTHORITATIVE. The monolithic ``verify`` job stays the only
-input to the protected ``CI required`` check. Nothing here reads repository
+Status: AUTHORITATIVE for FULL. The three shards and ``--mode audit`` (the
+``full_shard`` and ``full_audit`` jobs) feed the protected ``CI required`` check,
+and this module is the permanent owner of the FULL-audit semantics below; no
+other FULL run duplicates or mirrors them. Nothing here reads repository
 intelligence (RIG) output, a changed-file list, ``-k`` or markers: every shard
 collects the whole suite and the partition depends on the file path alone.
 
@@ -45,9 +47,9 @@ _SHA_RE = re.compile(r"[0-9a-f]{40}")
 _RUN_RE = re.compile(r"[1-9][0-9]*")
 
 # ---------------------------------------------------------------------------
-# The authoritative mandatory semantics, mirrored from the inline audit in the
-# `verify` job of .github/workflows/ci.yml. tests/test_ci_full_suite.py parses
-# that inline step and fails if these constants drift from it.
+# The authoritative mandatory FULL-audit semantics. This module is their only
+# owner (no inline workflow copy exists); tests/test_ci_full_suite.py pins their
+# expected values independently and fails on any unintended change.
 # ---------------------------------------------------------------------------
 ALLOWED_SKIPS = {
     ('tests.test_fdc001_contract.TestFDC001_S7_CategoriesBC_Deferred', name): {'ODS-001 exists'}
@@ -229,7 +231,7 @@ def expected_identity(env=os.environ):
 
 def verified_tree(repo, ident):
     """The checked-out tree after requiring HEAD == tested merge with parents
-    exactly [base, head] (the same proof as the authoritative `verify` job)."""
+    exactly [base, head] (the same proof every CI job checking out the merge makes)."""
     parents = _git(repo, "rev-list", "--parents", "-n", "1", "HEAD").split()
     if parents != [ident["tested_merge"], ident["expected_base"], ident["expected_head"]]:
         raise ValueError("the checked-out merge must contain the event base and exact PR head")
@@ -291,7 +293,7 @@ def junit_cases(path):
 
 
 def junit_problems(cases):
-    """The authoritative inline `verify` semantics over JUnit test cases:
+    """The authoritative mandatory FULL semantics over JUnit test cases:
     (problems, passed keys)."""
     problems, passed = [], set()
     for case in cases:

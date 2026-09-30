@@ -7,14 +7,14 @@ Pins the adopted contract (Pilot-02 partition, evidence and audit, now authorita
     files only, per-node outcomes, collection errors, exit status;
   * the fail-closed central audit, including every adversarial case the pilot
     must reject;
-  * parity of the audit's mandatory skip / xfail / browser / real-Gunicorn
-    constants with the inline audit of the temporary monolithic telemetry job;
+  * the audit's mandatory skip / xfail / browser / real-Gunicorn constants,
+    pinned independently on their one permanent owner (no inline workflow copy);
   * the workflow topology: an always-running `scope` job with the unchanged
     six-path SMOKE exemption and fail-closed FULL fallback; SMOKE decided by
     `verify`; FULL decided by the three-shard matrix plus the fail-closed
     `full_audit`; the scope-aware `CI required` verdict (executed over its whole
-    truth table, never accepting a generic skip); RIG, the `fast` lane and the
-    temporary monolithic telemetry outside the required dependency chain; and
+    truth table, never accepting a generic skip); RIG and the advisory `fast`
+    lane outside the required dependency chain; no monolithic FULL job; and
     every external action pinned to a full SHA.
 
 Synthetic data only; temporary directories only; the real repository is read,
@@ -639,7 +639,6 @@ def _heredoc(block):
 
 
 GATE = ("scope", "verify", "full_shard", "full_audit", "required")
-TELEMETRY = "full_monolithic_telemetry"
 PASSIVE_SIX = frozenset({
     "CLAUDE.md",
     "docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md",
@@ -651,43 +650,45 @@ PASSIVE_SIX = frozenset({
 
 
 # ==========================================================================
-# parity with the inline audit of the temporary monolithic telemetry job
+# the permanent owner of the mandatory FULL-audit semantics
 # ==========================================================================
-def _monolithic_rules():
-    block = _step(_jobs()[TELEMETRY], "Full regression and mandatory-check audit")
-    tree = ast.parse(_heredoc(block))
-    env, found = {}, {}
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name) \
-                and node.targets[0].id in ("allowed", "known_xfail"):
-            env[node.targets[0].id] = eval(compile(ast.Expression(node.value), "<verify>", "eval"),
-                                           {"__builtins__": {}})
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Subscript):
-            key = eval(compile(ast.Expression(node.targets[0].slice), "<verify>", "eval"), {"__builtins__": {}})
-            env["allowed"][key] = eval(compile(ast.Expression(node.value), "<verify>", "eval"), {"__builtins__": {}})
-        if isinstance(node, ast.Compare) and isinstance(node.left, ast.Name) and node.left.id == "reason" \
-                and isinstance(node.comparators[0], ast.Constant):
-            found["xfail_reason"] = node.comparators[0].value
-        if isinstance(node, ast.For) and isinstance(node.target, ast.Name) and node.target.id == "module":
-            found["browser"] = ast.literal_eval(node.iter)
-        if isinstance(node, ast.Compare) and isinstance(node.left, ast.Tuple) \
-                and isinstance(node.ops[0], ast.In) and getattr(node.comparators[0], "id", "") == "passed":
-            found["server"] = ast.literal_eval(node.left)
-    return env, found
+# Independently pinned expected values: a material change to any of them in
+# scripts/ci_full_suite.py must come with an intentional change here.
+EXPECTED_ALLOWED_SKIPS = {
+    ("tests.test_fdc001_contract.TestFDC001_S7_CategoriesBC_Deferred", "test_category_b_deferred"):
+        {"ODS-001 exists"},
+    ("tests.test_fdc001_contract.TestFDC001_S7_CategoriesBC_Deferred", "test_category_c_deferred"):
+        {"ODS-001 exists"},
+    ("tests.test_fdc001_contract.TestFDC001_S7_CategoriesBC_Deferred", "test_category_b_note_references_ods001"):
+        {"ODS-001 exists"},
+    ("tests.test_wps001_invariants.TestWPS001_INV004_GapLifecycle", "test_closed_gap_does_not_reopen"):
+        {"No gaps reached CLOSED — cannot test forward-only"},
+    ("tests.test_w2c_rvr6b_web", "test_electronics_covered_intent_suppressed"):
+        {"electronics journey did not open MECHANISM first",
+         "journey advanced differently — covered elsewhere"},
+}
+EXPECTED_KNOWN_XFAIL = ("tests.test_f011_progression_quality_gate",
+                        "test_f011_hall_sensor_alone_does_not_advance_level_0")
+EXPECTED_KNOWN_XFAIL_REASON = "ADR-003 Step 6: component label only — no claim/basis/relationship"
+EXPECTED_BROWSER_MODULES = ("tests.test_draft_l2_local_continuity", "tests.test_p5_2_draft_account_switch")
+EXPECTED_SERVER_PROOF = ("tests.test_email_h1_access_log_token_redaction",
+                         "test_real_gunicorn_access_log_contains_no_raw_token")
 
 
-def test_mandatory_constants_match_the_monolithic_telemetry_audit():
-    env, found = _monolithic_rules()
-    assert env["allowed"] == cfs.ALLOWED_SKIPS
-    assert env["known_xfail"] == cfs.KNOWN_XFAIL
-    assert found["xfail_reason"] == cfs.KNOWN_XFAIL_REASON
-    assert found["browser"] == cfs.MANDATORY_BROWSER_MODULES
-    assert found["server"] == cfs.MANDATORY_SERVER_PROOF
-    assert cfs.MANDATORY_BROWSER_MODULES == ("tests.test_draft_l2_local_continuity",
-                                             "tests.test_p5_2_draft_account_switch")
-    assert cfs.MANDATORY_SERVER_PROOF == ("tests.test_email_h1_access_log_token_redaction",
-                                          "test_real_gunicorn_access_log_contains_no_raw_token")
+def test_mandatory_constants_are_pinned_on_the_permanent_owner():
+    assert cfs.ALLOWED_SKIPS == EXPECTED_ALLOWED_SKIPS
+    assert cfs.KNOWN_XFAIL == EXPECTED_KNOWN_XFAIL
+    assert cfs.KNOWN_XFAIL_REASON == EXPECTED_KNOWN_XFAIL_REASON
+    assert cfs.MANDATORY_BROWSER_MODULES == EXPECTED_BROWSER_MODULES
+    assert cfs.MANDATORY_SERVER_PROOF == EXPECTED_SERVER_PROOF
+
+
+def test_the_mandatory_semantics_have_one_owner_and_no_inline_workflow_copy():
+    text = _workflow()
+    for literal in (EXPECTED_KNOWN_XFAIL_REASON, EXPECTED_KNOWN_XFAIL[1], EXPECTED_SERVER_PROOF[1],
+                    *EXPECTED_BROWSER_MODULES, "ODS-001 exists"):
+        assert literal not in text, literal
+    assert "python scripts/ci_full_suite.py --mode audit" in _jobs()["full_audit"]
 
 
 # ==========================================================================
@@ -695,7 +696,8 @@ def test_mandatory_constants_match_the_monolithic_telemetry_audit():
 # ==========================================================================
 def test_job_set_and_the_exact_protected_gate():
     jobs = _jobs()
-    assert set(jobs) == {"scope", "verify", "fast", "full_shard", "full_audit", TELEMETRY, "required"}
+    assert set(jobs) == {"scope", "verify", "fast", "full_shard", "full_audit", "required"}
+    assert "full_monolithic_telemetry" not in _workflow() and "monolithic" not in _workflow().lower()
     required = jobs["required"]
     assert re.findall(r"^    name: (.+)$", required, re.M) == ["CI required"]
     assert _job_if(required) == "always()"
@@ -704,7 +706,7 @@ def test_job_set_and_the_exact_protected_gate():
     assert "continue-on-error" not in _code(required)
 
 
-def test_the_required_dependency_chain_excludes_rig_fast_and_telemetry():
+def test_the_required_dependency_chain_excludes_rig_fast():
     jobs = _jobs()
     closure, frontier = set(), ["required"]
     while frontier:
@@ -716,10 +718,10 @@ def test_the_required_dependency_chain_excludes_rig_fast_and_telemetry():
                 frontier.append(dep)
     assert closure == {"scope", "verify", "full_shard", "full_audit"}
     for name in GATE:
-        assert "fast" not in _needs(jobs[name]) and TELEMETRY not in _needs(jobs[name]), name
-    assert _needs(jobs[TELEMETRY]) == ["scope"] and _needs(jobs["fast"]) == []
-    for name in jobs:                                   # nothing may wait on the advisory lanes
-        assert not {"fast", TELEMETRY} & set(_needs(jobs[name])), name
+        assert "fast" not in _needs(jobs[name]), name
+    assert _needs(jobs["fast"]) == []
+    for name in jobs:                                   # nothing may wait on the advisory lane
+        assert "fast" not in _needs(jobs[name]), name
 
 
 def test_rig_cannot_influence_scope_shards_audit_or_verdict():
@@ -982,20 +984,6 @@ def test_evidence_transfer_is_scoped_to_the_current_run_and_attempt():
     download = _step(jobs["full_audit"], "Download the current attempt's shard evidence only")
     assert "pattern: full-shard-evidence-${{ github.run_id }}-${{ github.run_attempt }}-shard-*" in download
     assert "merge-multiple" not in download and "run-id" not in download and "github-token" not in download
-
-
-def test_the_temporary_monolithic_telemetry_is_advisory_and_full_only():
-    tel = _jobs()[TELEMETRY]
-    head = _header(tel)
-    assert re.findall(r"^    name: (.+)$", head, re.M) == [
-        "TEMPORARY monolithic FULL + RIG shadow telemetry (advisory; not a gate)"]
-    assert "    continue-on-error: true\n" in head
-    assert _needs(tel) == ["scope"]
-    assert _job_if(tel) == "needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'"
-    assert "outputs:" not in head
-    block = _step(tel, "Full regression and mandatory-check audit")
-    assert "result = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider'," in block
-    assert "ci_full_suite" not in tel
 
 
 def test_every_external_action_is_pinned_to_a_full_commit_sha():
