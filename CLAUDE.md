@@ -497,7 +497,9 @@ information, not execution authority.
 
 **Current Lead Watchlist (2026-09-26).** Continuity state only; none of it authorizes work.
 - **RIG (advisory only; FULL and mandatory CI keep authority).** RIG-0, RIG-1A/1B/1C and RIG-2A
-  COMPLETE; RIG-2B PASSIVE on natural PRs. **RIG-3A PREMATURE / BLOCKED** under the current
+  COMPLETE; RIG-2B hosted monolithic natural-PR sampling CONCLUDED / ON HOLD (the temporary
+  monolithic FULL telemetry job is retired; no further identical FULL observations are collected;
+  the shadow `compare` mode stays a manual / offline diagnostic only). **RIG-3A PREMATURE / BLOCKED** under the current
   file-level topology: the central / autouse test topology makes paths such as `web/app.py` reach
   essentially the full test set, so file-level scoping has shown no safe useful FULL reduction.
   Do not wait for more identical FULL observations, weaken CI or refactor `web/app.py` to make

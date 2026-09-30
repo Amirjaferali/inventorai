@@ -9,11 +9,11 @@ File-creation contract:
     scored) and the fast-feedback plan/report (only a validated
     AFFECTED-CANDIDATE proposal may run, PASS/FAIL carry no merge claim) —
     and that `.github/workflows/ci.yml` keeps RIG strictly non-authoritative:
-    the smoke/full floor (now the `scope` job) never reads RIG output, RIG and
-    its monolithic FULL comparison run only in the TEMPORARY advisory telemetry
-    job, RIG analyses EXPECTED_BASE -> EXPECTED_MERGE, candidate tests run only
-    in the separate advisory fast job, and neither advisory lane is a direct or
-    transitive dependency of `CI required`. Also exercises RIG's
+    the smoke/full floor (now the `scope` job) never reads RIG output, hosted
+    CI runs no monolithic FULL and no shadow comparison (compare stays a
+    manual / offline diagnostic), RIG analyses EXPECTED_BASE -> EXPECTED_MERGE,
+    candidate tests run only in the separate advisory fast job, and that lane
+    is no direct or transitive dependency of `CI required`. Also exercises RIG's
     self-certification for the shadow files.
   Input contract: synthetic JUnit/RIG files and throwaway git repositories
     under `tmp_path`; the workflow is read as text (no YAML parser).
@@ -360,7 +360,6 @@ def _step(job, name):
     return job[start:] if nxt == -1 else job[start:nxt]
 
 
-TELEMETRY = "full_monolithic_telemetry"
 GATE = ("scope", "verify", "full_shard", "full_audit", "required")
 
 
@@ -377,24 +376,19 @@ def test_smoke_full_floor_authority_is_unchanged():
     assert "needs:" not in scope
 
 
-def test_full_regression_runs_only_on_the_existing_floor_and_never_reads_rig():
-    tel = _jobs(_workflow())[TELEMETRY]
-    assert "    if: needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'\n" in tel
-    block = _step(tel, "Full regression and mandatory-check audit")
-    assert re.findall(r"^\s+if: (.+)$", block, re.M) == []
+def test_full_regression_runs_only_in_the_sharded_gate_and_never_reads_rig():
+    jobs = _jobs(_workflow())
+    run = _step(jobs["full_shard"], "Run this shard of the FULL suite")
+    assert "python scripts/ci_full_suite.py --mode shard" in run
     for word in ("rig", "candidate", "shadow", "fast"):
-        assert word not in block.lower(), word
-    assert "result = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider'," in block
-    assert "'--junitxml=' + str(report)])" in block
-    assert "assert result.returncode == 0, f'pytest failed: exit {result.returncode}'" in block
+        assert word not in run.lower(), word
+    assert "full_monolithic_telemetry" not in jobs and "monolithic" not in _workflow().lower()
 
 
 def test_rig_analyses_the_tested_merge_and_head_is_identity_only():
     text = _workflow()
     assert "merge-base" not in text
     assert '--head "$EXPECTED_HEAD"' not in text and "--head $EXPECTED_HEAD" not in text
-    plan = _step(_jobs(text)[TELEMETRY], "RIG shadow plan (advisory only; selects nothing)")
-    assert '--base "$EXPECTED_BASE" --head "$EXPECTED_MERGE"' in plan
     fast = _step(_jobs(text)["fast"], "RIG fast plan (advisory; decides only whether this lane runs)")
     assert '--base "$EXPECTED_BASE" --tested-merge "$EXPECTED_MERGE" --pr-head "$EXPECTED_HEAD"' in fast
     for line in text.splitlines():                                # EXPECTED_HEAD: identity / reporting only
@@ -402,26 +396,18 @@ def test_rig_analyses_the_tested_merge_and_head_is_identity_only():
             assert "--pr-head" in line or "PR head" in line, line
 
 
-def test_shadow_steps_are_advisory_fail_open_and_ordered():
-    tel = _jobs(_workflow())[TELEMETRY]
-    plan = _step(tel, "RIG shadow plan (advisory only; selects nothing)")
-    comp = _step(tel, "RIG shadow comparison (advisory only; never affects CI status)")
-    assert "continue-on-error: true" in plan and "continue-on-error: true" in comp
-    assert "    continue-on-error: true\n" in tel.split("    steps:\n")[0]
-    assert re.findall(r"^\s+if: (.+)$", plan, re.M) == []
-    assert re.findall(r"^\s+if: (.+)$", comp, re.M) == ["always()"]
-    assert '"$RUNNER_TEMP/rig-shadow.json"' in plan and "FULL regression still runs" in plan
-    assert tel.index("RIG shadow plan") < tel.index("- name: Full regression and mandatory-check audit") \
-        < tel.index("RIG shadow comparison") < tel.index("- name: Confirm repository data was not changed")
-    for block in (plan, comp):
-        assert "id:" not in block and "pytest" not in block.replace("inventorai-pytest.xml", "")
+def test_compare_is_a_manual_offline_diagnostic_not_a_hosted_ci_step():
+    text = _workflow()
+    assert "--mode compare" not in text and "rig-shadow.json" not in text
+    assert "RIG shadow plan" not in text and "RIG shadow comparison" not in text
+    assert "manual/offline" in shadow.AUTHORITY and "not part of normal hosted CI" in shadow.AUTHORITY
+    assert "MANUAL / OFFLINE" in shadow.__doc__ and "Normal\n      hosted CI runs no compare step" in shadow.__doc__
 
 
 def test_candidate_tests_run_only_in_the_advisory_fast_job():
     jobs = _jobs(_workflow())
-    for name in GATE + (TELEMETRY,):
+    for name in GATE:
         assert "candidates" not in jobs[name] and "rig-fast" not in jobs[name], name
-    assert jobs[TELEMETRY].count("'-m', 'pytest'") == 1                # the unchanged monolithic FULL run only
     assert "'-m', 'pytest'" not in jobs["verify"]
     run = _step(jobs["fast"], "Run RIG candidate tests early (advisory; NOT A MERGE GATE)")
     assert "if: steps.fastplan.outputs.run_fast == 'true'" in run
@@ -437,7 +423,7 @@ def test_candidate_tests_run_only_in_the_advisory_fast_job():
 def test_fast_job_is_parallel_non_required_and_cannot_control_verify():
     jobs = _jobs(_workflow())
     # tests/test_ci_full_suite.py pins the sharded FULL authority and the full gate truth table
-    assert set(jobs) == {"scope", "verify", "fast", "full_shard", "full_audit", TELEMETRY, "required"}
+    assert set(jobs) == {"scope", "verify", "fast", "full_shard", "full_audit", "required"}
     assert "needs:" not in jobs["fast"] and _needs(jobs["verify"]) == ["scope"]
     assert "continue-on-error: true" in jobs["fast"].split("steps:")[0]
     closure, frontier = set(), ["required"]
@@ -448,7 +434,7 @@ def test_fast_job_is_parallel_non_required_and_cannot_control_verify():
                 frontier.append(dep)
     assert closure == {"scope", "verify", "full_shard", "full_audit"}
     for name in jobs:
-        assert not {"fast", TELEMETRY} & set(_needs(jobs[name])), name
+        assert "fast" not in _needs(jobs[name]), name
     required = jobs["required"]
     assert "name: CI required" in required and "fast" not in required.lower() and "telemetry" not in required.lower()
 
@@ -464,10 +450,10 @@ def test_gate_jobs_carry_no_rig_or_candidate_input():
 
 
 def test_unavailable_rig_cannot_prevent_the_full_regression():
-    tel = _jobs(_workflow())[TELEMETRY]
-    plan = _step(tel, "RIG shadow plan (advisory only; selects nothing)")
-    assert "|| echo" in plan and "continue-on-error: true" in plan
-    assert "steps.rig" not in _workflow() and "outputs.run_fast" not in tel
+    jobs = _jobs(_workflow())
+    for name in ("full_shard", "full_audit"):
+        assert "repository_intelligence" not in jobs[name] and "steps.fastplan" not in jobs[name], name
+    assert "steps.rig" not in _workflow()
 
 
 def test_shadow_authority_text_names_the_sharded_gate_not_verify():

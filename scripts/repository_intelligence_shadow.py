@@ -3,13 +3,14 @@
 File-creation contract:
   Path: scripts/repository_intelligence_shadow.py
   Purpose: ADVISORY telemetry around the authoritative FULL CI. Three modes:
-    `compare` (default) — after the monolithic FULL pytest run in the
-      temporary, non-authoritative telemetry job, compare RIG's proposal
-      (`scripts/repository_intelligence.py` JSON) with that FULL JUnit XML
-      (the sharded FULL suite and its audit feeding `CI required` decide CI
-      status): failing identities, whether each failing test's file was in
-      RIG's candidate set, omitted and unmappable failures, and failure recall
-      ONLY when failure evidence exists.
+    `compare` (default) — MANUAL / OFFLINE diagnostic only. When a RIG
+      proposal (`scripts/repository_intelligence.py` JSON) and a FULL JUnit
+      XML are explicitly supplied, report failing identities, whether each
+      failing test's file was in RIG's candidate set, omitted and unmappable
+      failures, and failure recall ONLY when failure evidence exists. Normal
+      hosted CI runs no compare step and supplies no monolithic FULL JUnit
+      (hosted monolithic sampling is concluded); the sharded FULL suite and
+      its audit feeding `CI required` decide CI status.
     `fast-plan` — for the separate, non-required fast-feedback job: analyse
       EXPECTED_BASE → EXPECTED_MERGE with RIG and, only for an
       AFFECTED-CANDIDATE proposal whose every candidate is a tracked test file
@@ -40,9 +41,9 @@ if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
 SHADOW_VERSION = "rig-shadow-2a.2"
-AUTHORITY = ("advisory-only: the monolithic FULL pytest compared here is non-authoritative telemetry; the sharded "
-             "FULL suite and its fail-closed audit feeding 'CI required' decide CI status; RIG selected and skipped "
-             "nothing")
+AUTHORITY = ("advisory-only: a manual/offline comparison of explicitly supplied RIG and FULL JUnit evidence, not "
+             "part of normal hosted CI; the sharded FULL suite and its fail-closed audit feeding 'CI required' "
+             "decide CI status; RIG selected and skipped nothing")
 
 # Shadow comparison statuses (closed vocabulary).
 NO_FAILURE_EVIDENCE = "NO_FAILURE_EVIDENCE"
@@ -193,8 +194,8 @@ def compare_summary(r):
             "uncertainty_count", "failures_total", "failures_in_candidate", "failures_omitted",
             "failure_recall", "failure_recall_evidence", "shadow_status")
     lines = ["", "### RIG SHADOW — ADVISORY ONLY", "",
-             "The monolithic FULL pytest here is advisory telemetry; the sharded FULL suite and its audit feeding "
-             "`CI required` decide CI status. RIG selected and skipped nothing.", "",
+             "Manual/offline diagnostic over explicitly supplied evidence; the sharded FULL suite and its audit "
+             "feeding `CI required` decide CI status. RIG selected and skipped nothing.", "",
              "| field | value |", "|---|---|"]
     lines += [f"| {k} | `{r.get(k)}` |" for k in keys if k in r]
     if r.get("rig_status") != "available":
