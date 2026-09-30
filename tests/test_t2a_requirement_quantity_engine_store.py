@@ -613,6 +613,7 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
                       "projects",
                       "prototype_measurement_methods",
                       "prototype_plan_metadata", "prototype_test_hypotheses",
+                      "prototype_test_results",   # CAP-09 Result Event Slice 1
                       "prototype_test_variables", "question_feedback",
                       "readiness_evidence", "records",
                       "requirement_quantities",

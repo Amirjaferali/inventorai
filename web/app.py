@@ -19,6 +19,7 @@ from flask import (
 )
 from engine.domain_rules import classify_domain, DomainResultKind, is_known_domain
 from engine import subsystem_model as _subsystem_model  # Stage 15 Slice 1: the ONE subsystem owner
+from engine import experiment_result as _experiment_result  # CAP-09 Result Event Slice 1
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState, SuccessCriterion, MeasurementMethod, TestHypothesis, TestVariable,
@@ -99,6 +100,8 @@ from engine.record_store import (
     ProjectSubsystemsCorrupt as _ProjectSubsystemsCorrupt,
     SubsystemInterfacesCorrupt as _SubsystemInterfacesCorrupt,
     InterfacePreparationsCorrupt as _InterfacePreparationsCorrupt,
+    ResultEventRejected as _ResultEventRejected,
+    ResultEventConflict as _ResultEventConflict,
     MAX_SUCCESS_CRITERION_LENGTH, MAX_MEASUREMENT_METHOD_LENGTH,
     MAX_TEST_HYPOTHESIS_LENGTH, MAX_TEST_VARIABLE_LENGTH,
     QuantityChainConflict as _QuantityChainConflict,
@@ -10710,7 +10713,122 @@ def _same_planning_text(raw, durable):
     return lines(text) == lines(durable)
 
 
-def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None):
+# --- Stage 19 / CAP-09 Result Event Slice 1 ----------------------------------
+# The inventor reports, in their own words, what actually happened when they
+# performed ONE current canonical Section-11 experiment. APPEND-ONLY events
+# (engine/experiment_result.py): every separately reported execution is a new
+# ROOT carrying its frozen CONTEXT AT RECORDING; a correction supersedes the
+# current HEAD of one chain. OWNER-STATED / UNVALIDATED: nothing here judges,
+# compares, grades or interprets a result, and no validation, evidence,
+# readiness, maturity, progression or gap state changes. Each form carries its
+# own freshly signed submission identity (the shared stateless signed
+# submission seam), so an exact retry resolves to the SAME stored event while
+# identical text submitted from a new form is a new, legitimate retest.
+_RESULT_SUBMISSION_DOMAIN = "cap09-result-submission-v1"
+_RESULT_NOT_SAVED_MESSAGE = (
+    "Your result could not be saved just now. Nothing was changed.")
+_RESULT_SAVED_MESSAGE = (
+    "Your result was recorded. It has not been checked by InventorAI and is "
+    "not a pass/fail judgement.")
+_RESULT_INVALID_MESSAGE = (
+    "Describe what actually happened in your own words. Nothing was changed.")
+_RESULT_TOO_LONG_MESSAGE = (
+    "A result can be at most 1000 characters. Nothing was changed.")
+_RESULT_NOT_CURRENT_MESSAGE = (
+    "That experiment is not part of the current plan, so no result can be "
+    "recorded or corrected for it here. Nothing was changed.")
+_RESULT_STALE_TARGET_MESSAGE = (
+    "That result has already been corrected, or it does not belong to this "
+    "experiment, so nothing was saved. Review the page and try again.")
+_RESULT_UNKNOWN_MESSAGE = (
+    "We could not confirm whether your result was saved. Reload this page to "
+    "see what your project holds before entering it again.")
+_RESULT_CONTEXT_KEYS = (
+    ("success_criterion", "UI_B_SC_002"),
+    ("measurement_method", "UI_SC_METHOD_LABEL"),
+    ("test_hypothesis", "UI_SC_HYPOTHESIS_LABEL"),
+    ("test_variable", "UI_SC_VARIABLE_LABEL"),
+)
+
+
+def _result_submission_identity(sid):
+    """A fresh signed submission identity for ONE rendered Result form."""
+    nonce = secrets.token_hex(16)
+    return nonce + "." + _submission_sig(_RESULT_SUBMISSION_DOMAIN, sid, nonce)
+
+
+def _result_action_key(sid, nonce):
+    """The durable idempotent identity of ONE Result submission: HMAC over
+    (project, submission nonce) ONLY — never over the text, so the SAME
+    identity with ANY different payload is detectable."""
+    msg = _canonical_message("cap09-result-action-v1", sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _result_context_for(item):
+    """The CONTEXT AT RECORDING of one CURRENT plan item: what the canonical
+    experiment carries right now, frozen verbatim (``None`` = absent). Only
+    the inventor's own planning values are frozen, never generated defaults."""
+    def own(key):
+        if item.get(key + "_provenance", "user_defined") != "user_defined":
+            return None
+        value = item.get(key)
+        return value if isinstance(value, str) and value else None
+    return _experiment_result.ResultContext(
+        experiment_title=item.get("experiment_title") or item["experiment_id"],
+        source_basis=item.get("source_basis") or None,
+        success_criterion=own("success_criterion"),
+        measurement_method=own("measurement_method"),
+        test_hypothesis=own("test_hypothesis"),
+        test_variable=own("test_variable"))
+
+
+def _results_view(sid, plan, drafts=None):
+    """The Result presentation of the planning page, read from committed
+    durable truth: per CURRENT experiment its execution chains in root order
+    and one fresh record form; every chain of an experiment no longer in the
+    plan is shown as preserved history only (no form). ``None`` when the
+    history could not be read — the Result section then fails closed while
+    the planning form stays usable."""
+    try:
+        events = _get_store().load_result_events(sid)
+    except Exception:
+        return None
+    drafts = drafts or {}
+
+    def chain_view(chain, current):
+        root, head = chain["root"], chain["head"]
+        ctx = root.context
+        return {
+            "text": head.result_text,
+            "earlier": [e.result_text for e in chain["history"][:-1]],
+            "context_title": ctx.experiment_title,
+            "context_source": ctx.source_basis,
+            "context": [{"label_key": key, "text": getattr(ctx, field)}
+                        for field, key in _RESULT_CONTEXT_KEYS],
+            "head_id": head.result_event_id,
+            "submission": _result_submission_identity(sid) if current else None,
+            "draft": drafts.get("fix:" + head.result_event_id),
+        }
+    current_ids = [it["experiment_id"] for it in (plan or {}).get("items", [])]
+    by_experiment = {}
+    for item in (plan or {}).get("items", []):
+        eid = item["experiment_id"]
+        by_experiment[eid] = {
+            "chains": [chain_view(c, True)
+                       for c in _experiment_result.result_chains(events, eid)],
+            "submission": _result_submission_identity(sid),
+            "draft": drafts.get("new:" + eid),
+        }
+    stale = [dict(chain_view(c, False), experiment_id=c["root"].experiment_id)
+             for c in _experiment_result.result_chains(events)
+             if c["root"].experiment_id not in current_ids]
+    return {"by_experiment": by_experiment, "stale": stale}
+
+
+def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None,
+                     result_drafts=None):
     """``drafts`` (F-09): the REJECTED submission, request-local only, as
     ``(criteria, methods, hypotheses, variables)`` maps of ``experiment_id ->
     submitted text``. Each
@@ -10737,6 +10855,8 @@ def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None
         stale_methods=bool(plan and plan.get("stale_measurement_methods")),
         stale_hypotheses=bool(plan and plan.get("stale_test_hypotheses")),
         stale_variables=bool(plan and plan.get("stale_test_variables")),
+        results=None if plan is None else _results_view(sid, plan, result_drafts),
+        result_max_length=_experiment_result.MAX_RESULT_TEXT_LENGTH,
         field_prefix=_CRITERION_FIELD_PREFIX,
         method_prefix=_METHOD_FIELD_PREFIX,
         hypothesis_prefix=_HYPOTHESIS_FIELD_PREFIX,
@@ -10768,6 +10888,92 @@ def success_criteria(sid):
     if status != _SC_OK:
         return _criteria_unavailable(sid, status)
     return _render_criteria(sid, plan)
+
+
+@app.route("/session/<sid>/experiment-result", methods=["POST"])
+def record_experiment_result(sid):
+    """CAP-09 Result Event Slice 1 — record (new root) or correct (successor
+    of one chain head) the inventor's own report of what actually happened in
+    one CURRENT canonical experiment. Order: request integrity (global guard)
+    -> authorization -> CURRENT durable plan -> signed submission identity ->
+    exact committed retry resolved first -> validation -> ONE durable append
+    (correction integrity re-checked inside it) -> confirm-by-reload."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    status, plan = _current_criteria_context(sid)
+    if status != _SC_OK:
+        return _criteria_unavailable(sid, status)
+    experiment_id = request.form.get("experiment_id", "")
+    target = request.form.get("supersedes", "") or None
+    raw = request.form.get("result_text", "")
+    draft_key = ("fix:" + target) if target else ("new:" + experiment_id)
+    drafts = {draft_key: raw}
+
+    def refuse(message, code=400, keep=True):
+        return _render_criteria(sid, plan, status=code, error=message,
+                                result_drafts=drafts if keep else None)
+
+    nonce = _verified_submission_identity(
+        sid, request.form.get("result_submission", ""), _RESULT_SUBMISSION_DOMAIN)
+    if nonce is None:
+        return refuse(_RESULT_NOT_SAVED_MESSAGE)
+    text = raw.strip()
+    if not text:
+        return refuse(_RESULT_INVALID_MESSAGE)
+    invalid = _free_text_error(text, _current_ui_lang())
+    if invalid is not None:
+        return refuse(invalid)
+    if len(text) > _experiment_result.MAX_RESULT_TEXT_LENGTH:
+        return refuse(_RESULT_TOO_LONG_MESSAGE)
+    key = _result_action_key(sid, nonce)
+
+    def committed():
+        return _get_store().committed_result_event_for_submission(sid, key)
+
+    def matches(stored):
+        return (stored.experiment_id == experiment_id
+                and stored.supersedes_result_event_id == target
+                and stored.result_text == text)
+
+    # An EXACT committed retry (refresh, double submit, restart) is resolved
+    # from committed durable truth BEFORE anything else and changes nothing;
+    # the SAME identity with a different payload fails closed. Unreadable
+    # committed truth never becomes NOT SAVED: it stays UNKNOWN.
+    try:
+        prior = committed()
+    except Exception:
+        return _render_criteria(sid, None, status=503, notice=_RESULT_UNKNOWN_MESSAGE)
+    if prior is not None:
+        if matches(prior):
+            return _render_criteria(sid, plan, notice=_RESULT_SAVED_MESSAGE)
+        return refuse(_RESULT_NOT_SAVED_MESSAGE, keep=False)
+    items = {it["experiment_id"]: it for it in plan["items"]}
+    if experiment_id not in items:
+        return refuse(_RESULT_NOT_CURRENT_MESSAGE)
+    try:
+        if target is None:
+            event = _experiment_result.recorded_root(
+                experiment_id, text, _result_context_for(items[experiment_id]))
+        else:
+            event = _experiment_result.recorded_correction(experiment_id, text, target)
+    except _experiment_result.ResultEventError:
+        return refuse(_RESULT_STALE_TARGET_MESSAGE)
+    try:
+        _get_store().append_result_event(sid, event, key)
+    except _ResultEventRejected:
+        return refuse(_RESULT_STALE_TARGET_MESSAGE)
+    except _ResultEventConflict:
+        return refuse(_RESULT_NOT_SAVED_MESSAGE, keep=False)
+    except Exception:
+        # Never assume an outcome: decide from committed durable truth only.
+        try:
+            prior = committed()
+        except Exception:
+            return _render_criteria(sid, None, status=503,
+                                    notice=_RESULT_UNKNOWN_MESSAGE)
+        if prior is None or not matches(prior):
+            return refuse(_RESULT_NOT_SAVED_MESSAGE, code=503)
+    return _render_criteria(sid, plan, notice=_RESULT_SAVED_MESSAGE)
 
 
 @app.route("/session/<sid>/success-criteria", methods=["POST"])

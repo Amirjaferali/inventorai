@@ -262,6 +262,24 @@ _MESSAGE_KEYS = {
     ("Your preparation was saved to your project, but this page could not "
      "show it. Reload this page to see what your project holds."):
         "UI_S15_PREP_MSG_SAVED_NOT_SHOWN",
+    # CAP-09 Result Event Slice 1 (web/app.py record_experiment_result).
+    ("Your result could not be saved just now. Nothing was changed."):
+        "UI_R_MSG_NOT_SAVED",
+    ("Your result was recorded. It has not been checked by InventorAI and is "
+     "not a pass/fail judgement."): "UI_R_MSG_SAVED",
+    ("Describe what actually happened in your own words. Nothing was "
+     "changed."): "UI_R_MSG_INVALID",
+    ("A result can be at most 1000 characters. Nothing was changed."):
+        "UI_R_MSG_TOO_LONG",
+    ("That experiment is not part of the current plan, so no result can be "
+     "recorded or corrected for it here. Nothing was changed."):
+        "UI_R_MSG_NOT_CURRENT",
+    ("That result has already been corrected, or it does not belong to this "
+     "experiment, so nothing was saved. Review the page and try again."):
+        "UI_R_MSG_STALE_TARGET",
+    ("We could not confirm whether your result was saved. Reload this page to "
+     "see what your project holds before entering it again."):
+        "UI_R_MSG_UNKNOWN",
     ("We could not confirm whether your preparation was saved. Reload this "
      "page to see what your project currently holds before entering it "
      "again."): "UI_S15_PREP_MSG_UNKNOWN",
@@ -579,6 +597,103 @@ UI_STRINGS = {
     },
     "UI_S15_IFC_BUTTON": {"en": "Record the interaction", "ar": "تسجيل التفاعل"},
     # Stage 15 Slice 3 — the inventor's verification-preparation inputs.
+    # CAP-09 Result Event Slice 1.
+    'UI_R_HEADING': {
+        "en": 'What actually happened — your recorded results',
+        "ar": 'ما الذي حدث فعلًا — النتائج التي سجّلتها',
+    },
+    'UI_R_INTRO': {
+        "en": 'After you perform an experiment, record in your own words what actually happened. Each time you perform it again, record it as a new execution. Your results are kept as history: a correction adds a new entry and keeps the earlier ones. InventorAI does not check your results and does not judge them as a pass or a fail.',
+        "ar": 'بعد أن تُجري تجربة، سجّل بكلماتك ما الذي حدث فعلًا. وفي كل مرة تُجريها من جديد، سجّلها كتنفيذ جديد. تُحفظ نتائجك كسجلّ: التصحيح يضيف إدخالًا جديدًا ويُبقي الإدخالات السابقة. لا يفحص InventorAI نتائجك ولا يحكم عليها بالنجاح أو الفشل.',
+    },
+    'UI_R_LABEL': {
+        "en": 'Recorded by you; not checked by InventorAI and not a pass/fail judgement.',
+        "ar": 'سجّلته أنت؛ لم يفحصه InventorAI، وليس حكمًا بالنجاح أو الفشل.',
+    },
+    'UI_R_EXECUTION': {
+        "en": 'Execution',
+        "ar": 'التنفيذ',
+    },
+    'UI_R_EARLIER': {
+        "en": 'Earlier entries of this execution (kept as history)',
+        "ar": 'إدخالات سابقة لهذا التنفيذ (محفوظة كسجلّ)',
+    },
+    'UI_R_CONTEXT': {
+        "en": 'Context at recording',
+        "ar": 'السياق عند التسجيل',
+    },
+    'UI_R_CONTEXT_NOTE': {
+        "en": 'What this experiment carried when you first recorded this execution. It does not show that the test was performed with these values.',
+        "ar": 'ما كانت تتضمنه هذه التجربة عندما سجّلت هذا التنفيذ أول مرة. ولا يُثبت أن الاختبار أُجري بهذه القيم.',
+    },
+    'UI_R_CONTEXT_EXPERIMENT': {
+        "en": 'Experiment',
+        "ar": 'التجربة',
+    },
+    'UI_R_CONTEXT_ABSENT': {
+        "en": 'Not recorded at that time',
+        "ar": 'لم يكن مُسجَّلًا في ذلك الوقت',
+    },
+    'UI_R_CORRECT': {
+        "en": 'Correct this result',
+        "ar": 'صحّح هذه النتيجة',
+    },
+    'UI_R_CORRECT_NOTE': {
+        "en": 'A correction is added as a new entry; the earlier text stays in the history.',
+        "ar": 'يُضاف التصحيح كإدخال جديد؛ ويبقى النص السابق في السجلّ.',
+    },
+    'UI_R_CORRECT_BUTTON': {
+        "en": 'Save correction',
+        "ar": 'حفظ التصحيح',
+    },
+    'UI_R_RECORD': {
+        "en": 'Record what actually happened',
+        "ar": 'سجّل ما الذي حدث فعلًا',
+    },
+    'UI_R_RECORD_NOTE': {
+        "en": 'Up to 1000 characters. Recording a result does not mark the experiment as passed or failed.',
+        "ar": 'حتى 1000 حرف. تسجيل نتيجة لا يعني أن التجربة نجحت أو فشلت.',
+    },
+    'UI_R_RECORD_BUTTON': {
+        "en": 'Record result',
+        "ar": 'تسجيل النتيجة',
+    },
+    'UI_R_STALE': {
+        "en": 'Results you recorded for experiments that are no longer in the current plan are kept as history:',
+        "ar": 'النتائج التي سجّلتها لتجارب لم تعد في الخطة الحالية محفوظة كسجلّ:',
+    },
+    'UI_R_UNAVAILABLE': {
+        "en": 'Your recorded results could not be read, so they cannot be shown or changed from this page.',
+        "ar": 'تعذّرت قراءة النتائج التي سجّلتها، لذا لا يمكن عرضها أو تغييرها من هذه الصفحة.',
+    },
+    'UI_R_MSG_NOT_SAVED': {
+        "en": 'Your result could not be saved just now. Nothing was changed.',
+        "ar": 'تعذّر حفظ نتيجتك الآن. لم يتم تغيير أي شيء.',
+    },
+    'UI_R_MSG_SAVED': {
+        "en": 'Your result was recorded. It has not been checked by InventorAI and is not a pass/fail judgement.',
+        "ar": 'سُجّلت نتيجتك. لم يفحصها InventorAI، وليست حكمًا بالنجاح أو الفشل.',
+    },
+    'UI_R_MSG_INVALID': {
+        "en": 'Describe what actually happened in your own words. Nothing was changed.',
+        "ar": 'صِف بكلماتك ما الذي حدث فعلًا. لم يتم تغيير أي شيء.',
+    },
+    'UI_R_MSG_TOO_LONG': {
+        "en": 'A result can be at most 1000 characters. Nothing was changed.',
+        "ar": 'يمكن أن تكون النتيجة 1000 حرف كحدّ أقصى. لم يتم تغيير أي شيء.',
+    },
+    'UI_R_MSG_NOT_CURRENT': {
+        "en": 'That experiment is not part of the current plan, so no result can be recorded or corrected for it here. Nothing was changed.',
+        "ar": 'هذه التجربة ليست جزءًا من الخطة الحالية، لذا لا يمكن تسجيل نتيجة لها أو تصحيحها هنا. لم يتم تغيير أي شيء.',
+    },
+    'UI_R_MSG_STALE_TARGET': {
+        "en": 'That result has already been corrected, or it does not belong to this experiment, so nothing was saved. Review the page and try again.',
+        "ar": 'صُحّحت هذه النتيجة من قبل، أو أنها لا تخص هذه التجربة، لذا لم يُحفظ شيء. راجع الصفحة وحاول مرة أخرى.',
+    },
+    'UI_R_MSG_UNKNOWN': {
+        "en": 'We could not confirm whether your result was saved. Reload this page to see what your project holds before entering it again.',
+        "ar": 'تعذّر علينا التأكد مما إذا كانت نتيجتك قد حُفظت. أعد تحميل الصفحة لترى ما يحتفظ به مشروعك قبل إدخالها مرة أخرى.',
+    },
     "UI_S15_PREP_TITLE": {
         "en": "Prepare how each interaction will be checked",
         "ar": "حضّر كيف سيُفحص كل تفاعل",

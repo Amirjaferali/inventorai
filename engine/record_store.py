@@ -80,6 +80,13 @@ from engine.subsystem_model import (
     merged_preparation, preparation_for, valid_preparation_text,
     validate_interface_preparations,
 )
+# Stage 19 / CAP-09 Result Event Slice 1: the inventor's append-only report of
+# what actually happened in one canonical Section-11 experiment.
+from engine.experiment_result import (
+    ResultContext, ResultEvent, ResultEventError, CONTEXT_FIELDS,
+    MAX_RESULT_EVENTS_PER_PROJECT, head_ids, same_result_material,
+    validate_result_history,
+)
 from engine.evidence_reference import (
     EvidenceReference, validate_reference_history, validate_new_reference,
     active_reference_for_anchor, REFERENCE_INSERTED, REFERENCE_EXACT_REPLAY,
@@ -233,6 +240,25 @@ class InterfacePreparationsCorrupt(StoreError):
     repaired, deleted, remapped or reinterpreted."""
 
 
+class ResultEventRejected(StoreError):
+    """CAP-09 Result Event Slice 1: an event is not valid against the
+    project's DURABLE result history inside the write transaction (a
+    correction whose target is missing, of another project or experiment, or
+    no longer the head; a root without context; the cap reached). Decided
+    before any row is written; nothing is written."""
+
+
+class ResultEventConflict(StoreError):
+    """CAP-09 Result Event Slice 1: the durable submission identity is already
+    spent on DIFFERENT material. Nothing was written."""
+
+
+class ResultEventsCorrupt(StoreError):
+    """CAP-09 Result Event Slice 1: a project's durable result rows are
+    malformed, out of order, forked, cross-experiment or orphaned. Fail-closed
+    for the WHOLE history: nothing partial, nothing repaired or remapped."""
+
+
 class AdoptionCapReached(StoreError):
     """T2-G legacy migration: the per-project adoption row cap was reached.
     Refused clearly inside the transaction; history is never truncated."""
@@ -381,6 +407,12 @@ class RecordStore(Protocol):
     def load_subsystem_integration(self, project_id: str) -> tuple: ...
     def load_interface_preparations(self, project_id: str) -> tuple: ...
     def apply_interface_preparation_delta(self, project_id: str, delta) -> None: ...
+    # CAP-09 Result Event Slice 1 (append-only; see the prototype_test_results note).
+    def load_result_events(self, project_id: str) -> tuple: ...
+    def committed_result_event_for_submission(self, project_id: str,
+                                              submission_key: str): ...
+    def append_result_event(self, project_id: str, event,
+                            submission_key: str) -> tuple: ...
 
 
 _SCHEMA = (
@@ -1124,6 +1156,78 @@ _INTERFACE_PREPARATIONS_SCHEMA = (
     """ % tuple(_PREPARATION_TEXT_CHECK.format(col=c) for c in PREPARATION_FIELDS),
 )
 
+# Stage 19 / CAP-09 Result Event Slice 1 — the ``prototype_test_results``
+# sidecar: the inventor's APPEND-ONLY report of what actually happened in one
+# canonical Section-11 experiment (``experiment_id``, the only experiment
+# identity). Every row is one immutable event with an opaque server-generated
+# ``result_event_id``; a separately reported execution is an independent ROOT
+# row (``supersedes_result_event_id`` NULL, carrying its frozen CONTEXT AT
+# RECORDING); a correction is a row superseding the current head of ONE chain
+# (no context: the root's frozen context is never replaced). There is NO
+# update or delete path. ``result_seq`` fixes durable order; ``submission_key``
+# is the idempotent identity of the ONE action attempt that wrote the row
+# (unique per project). The composite self foreign key keeps a correction
+# inside THIS project; the partial unique index forbids forks; the loader
+# re-validates the whole history (same experiment, earlier target, no fork).
+# No outcome, status, validation, quality, readiness, confidence or score
+# column exists. ``recorded_at`` is when InventorAI recorded the event, never
+# the test execution time. Additive and idempotent (``IF NOT EXISTS``);
+# touches no existing table, column or row; nothing is backfilled. Rollback is
+# disable-and-ignore (stop reading the table).
+_RESULT_CONTEXT_CHECK = (
+    "({col} IS NULL OR (typeof({col}) = 'text' AND length({col}) BETWEEN 1 AND 4000 "
+    "AND instr(CAST({col} AS BLOB), X'00') = 0))")
+_RESULT_EVENTS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS prototype_test_results (
+        project_id                  TEXT    NOT NULL,
+        result_seq                  INTEGER NOT NULL,
+        result_event_id             TEXT    NOT NULL,
+        experiment_id               TEXT    NOT NULL,
+        result_text                 TEXT    NOT NULL,
+        supersedes_result_event_id  TEXT,
+        submission_key              TEXT    NOT NULL,
+        recorded_at                 TEXT    NOT NULL,
+        ctx_experiment_title        TEXT,
+        ctx_source_basis            TEXT,
+        ctx_success_criterion       TEXT,
+        ctx_measurement_method      TEXT,
+        ctx_test_hypothesis         TEXT,
+        ctx_test_variable           TEXT,
+        PRIMARY KEY (project_id, result_event_id),
+        UNIQUE (project_id, result_seq),
+        UNIQUE (project_id, submission_key),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, supersedes_result_event_id)
+            REFERENCES prototype_test_results(project_id, result_event_id),
+        CHECK (result_seq >= 0),
+        CHECK (typeof(result_event_id) = 'text' AND length(result_event_id) = 36),
+        CHECK (typeof(experiment_id) = 'text'
+               AND length(experiment_id) BETWEEN 1 AND 128),
+        CHECK (typeof(result_text) = 'text'
+               AND length(result_text) BETWEEN 1 AND 1000
+               AND instr(CAST(result_text AS BLOB), X'00') = 0),
+        CHECK (typeof(submission_key) = 'text' AND length(submission_key) > 0),
+        CHECK (%s), CHECK (%s), CHECK (%s), CHECK (%s), CHECK (%s), CHECK (%s),
+        CHECK ((supersedes_result_event_id IS NULL
+                AND ctx_experiment_title IS NOT NULL)
+               OR (supersedes_result_event_id IS NOT NULL
+                   AND ctx_experiment_title IS NULL AND ctx_source_basis IS NULL
+                   AND ctx_success_criterion IS NULL
+                   AND ctx_measurement_method IS NULL
+                   AND ctx_test_hypothesis IS NULL AND ctx_test_variable IS NULL))
+    )
+    """ % tuple(_RESULT_CONTEXT_CHECK.format(col="ctx_" + f) for f in CONTEXT_FIELDS),
+    "CREATE UNIQUE INDEX IF NOT EXISTS prototype_test_results_id_uq "
+    "ON prototype_test_results (result_event_id)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS prototype_test_results_successor_uq "
+    "ON prototype_test_results (project_id, supersedes_result_event_id) "
+    "WHERE supersedes_result_event_id IS NOT NULL",
+)
+
+RESULT_EVENT_INSERTED = "INSERTED"
+RESULT_EVENT_EXACT_REPLAY = "EXACT_REPLAY"
+
 SUBSYSTEM_INTERFACE_INSERTED = "INSERTED"
 SUBSYSTEM_INTERFACE_EXACT_REPLAY = "EXACT_REPLAY"
 
@@ -1238,6 +1342,7 @@ class SqliteRecordStore:
             self._migrate_project_subsystems(self._conn)
             self._migrate_subsystem_interfaces(self._conn)
             self._migrate_interface_preparations(self._conn)
+            self._migrate_result_events(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -1478,6 +1583,15 @@ class SqliteRecordStore:
         existing table, column or row; nothing is backfilled or inferred.
         Rollback is disable-and-ignore (stop reading the table)."""
         for stmt in _INTERFACE_PREPARATIONS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_result_events(self, conn) -> None:
+        """CAP-09 Result Event Slice 1 forward migration: additively create the
+        append-only ``prototype_test_results`` sidecar. Idempotent (``IF NOT
+        EXISTS``) on a fresh and on an existing populated database; touches no
+        existing table, column or row; nothing is backfilled. Rollback is
+        disable-and-ignore (stop reading the table)."""
+        for stmt in _RESULT_EVENTS_SCHEMA:
             conn.execute(stmt)
 
     # --- identifiers --------------------------------------------------------
@@ -1804,6 +1918,131 @@ class SqliteRecordStore:
                     "evidence_needed = excluded.evidence_needed",
                     (project_id, interface_id, merged.operating_conditions,
                      merged.acceptance_criterion, merged.evidence_needed))
+
+    # --- CAP-09 Result Event Slice 1 (append-only) ------------------------------
+    _RESULT_COLUMNS = (
+        "result_seq, result_event_id, experiment_id, result_text, "
+        "supersedes_result_event_id, submission_key, recorded_at, "
+        + ", ".join("ctx_" + f for f in CONTEXT_FIELDS))
+
+    def _validated_result_events(self, project_id):
+        """``(events, submission_keys)`` of this project's durable result rows,
+        validated WHOLE; ``ResultEventsCorrupt`` on anything malformed, out of
+        order, forked, cross-experiment or orphaned (nothing partial)."""
+        rows = self._conn.execute(
+            "SELECT " + self._RESULT_COLUMNS + " FROM prototype_test_results "
+            "WHERE project_id = ? ORDER BY result_seq ASC", (project_id,)).fetchall()
+        if not rows:
+            return (), ()
+        if [row[0] for row in rows] != list(range(len(rows))):
+            raise ResultEventsCorrupt("durable result order is not contiguous")
+        keys = tuple(row[5] for row in rows)
+        if any(not isinstance(k, str) or not k for k in keys) \
+                or len(set(keys)) != len(keys):
+            raise ResultEventsCorrupt("durable submission identity is malformed")
+        events = []
+        for row in rows:
+            ctx_values = row[7:]
+            if row[4] is None:
+                context = ResultContext(*ctx_values)
+            else:
+                if any(v is not None for v in ctx_values):
+                    raise ResultEventsCorrupt("a correction carries context")
+                context = None
+            events.append(ResultEvent(result_event_id=row[1], experiment_id=row[2],
+                                      result_text=row[3],
+                                      supersedes_result_event_id=row[4],
+                                      recorded_at=row[6], context=context))
+        try:
+            return validate_result_history(events), keys
+        except ResultEventError as exc:
+            raise ResultEventsCorrupt(str(exc)) from None
+
+    def load_result_events(self, project_id: str) -> tuple:
+        """This project's durable Result events in ``result_seq`` order (``()``
+        for every project without any), validated WHOLE. No project ->
+        ``ProjectNotFound``. IR-01: a connection inside an unresolved
+        transaction refuses (``RecordStoreConnectionUnsafe``). Read-only;
+        project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            self._require_project(project_id)
+            events, _keys = self._validated_result_events(project_id)
+        return events
+
+    def committed_result_event_for_submission(self, project_id: str,
+                                              submission_key: str):
+        """The COMMITTED Result event written under ``submission_key``, or
+        ``None`` — the confirm-by-reload seam of the Result route, read ONLY
+        from committed durable state (IR-01 refuses otherwise). The whole
+        history is validated first, so a corrupt history fails closed."""
+        self._refuse_uncommitted_reads()
+        if not isinstance(submission_key, str) or not submission_key:
+            return None
+        with self.read_snapshot():
+            self._require_project(project_id)
+            events, keys = self._validated_result_events(project_id)
+        if submission_key not in keys:
+            return None
+        return events[keys.index(submission_key)]
+
+    def append_result_event(self, project_id: str, event,
+                            submission_key: str) -> tuple:
+        """Atomically append ONE Result event and return ``(outcome,
+        stored_event)``: ``RESULT_EVENT_EXACT_REPLAY`` with the ALREADY-COMMITTED
+        event when ``submission_key`` already names this exact material (the
+        caller's new id is discarded), ``RESULT_EVENT_INSERTED`` otherwise.
+
+        ONE ``BEGIN IMMEDIATE`` transaction; full rollback on any failure.
+        Inside it, against DURABLE truth: the project exists; its history
+        validates; the submission identity is unused or names exactly this
+        material (``ResultEventConflict`` otherwise); a correction's target is
+        an event of THIS project and experiment that is still a chain HEAD
+        (``ResultEventRejected`` otherwise — never matched by position or
+        text); the cap is not reached. The store assigns ``result_seq``. There
+        is no update or delete path. IR-01: never writes on top of an
+        unresolved connection. It does not decide which experiments are
+        current: the caller checks a new root against the current plan."""
+        if not isinstance(event, ResultEvent):
+            raise ResultEventRejected("not a result event")
+        if not isinstance(submission_key, str) or not submission_key:
+            raise ResultEventRejected("a submission identity is required")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            self._require_project(project_id)
+            existing, keys = self._validated_result_events(project_id)
+            if submission_key in keys:
+                stored = existing[keys.index(submission_key)]
+                if same_result_material(stored, event):
+                    return RESULT_EVENT_EXACT_REPLAY, stored
+                raise ResultEventConflict(
+                    "the submission identity already names a different event")
+            if len(existing) >= MAX_RESULT_EVENTS_PER_PROJECT:
+                raise ResultEventRejected("the result cap is reached")
+            target = event.supersedes_result_event_id
+            if target is not None:
+                by_id = {e.result_event_id: e for e in existing}
+                prior = by_id.get(target)
+                if prior is None or prior.experiment_id != event.experiment_id \
+                        or target not in head_ids(existing):
+                    raise ResultEventRejected(
+                        "a correction must supersede the current head of one "
+                        "chain of the same experiment in this project")
+            try:
+                validate_result_history(existing + (event,))
+            except ResultEventError:
+                raise ResultEventRejected("the event is not valid") from None
+            ctx = event.context
+            self._conn.execute(
+                "INSERT INTO prototype_test_results (project_id, "
+                + self._RESULT_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, "
+                "?, ?, ?, ?, ?, ?)",
+                (project_id, len(existing), event.result_event_id,
+                 event.experiment_id, event.result_text, target, submission_key,
+                 event.recorded_at)
+                + tuple(None if ctx is None else getattr(ctx, f)
+                        for f in CONTEXT_FIELDS))
+        return RESULT_EVENT_INSERTED, event
 
     def load_subsystem_interfaces(self, project_id: str) -> tuple:
         """This project's durable Owner-declared interfaces in
