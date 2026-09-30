@@ -3919,9 +3919,8 @@ _S2_CLOSE_REVERSALS = tuple(_S15_LIVE_FORBIDDEN) + (
 
 
 def _current_declaration(contract):
-    """The FIRST `## Current authority` section — the live declaration — found by position."""
-    i = contract.index("## Current authority")
-    return re.sub(r"\s+", " ", contract[i:contract.index("\n## Current authority", i + 5)])
+    """The ONE live `## Current authority` section, selected by the shared classifier below."""
+    return _live_declaration(contract)[1]
 
 
 def test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface():
@@ -3933,8 +3932,7 @@ def test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_
     Git/GitHub own them, so the same text is correct on the candidate that carries it and after its merge."""
     assert _live_authority_problems() == []
     contract = _read(CONTRACT)
-    first = contract.index("## Current authority")
-    heading = contract[first:contract.index("\n", first)]
+    heading = _live_declaration(contract)[0]
     assert heading.startswith("## Current authority — ") and "no active contract" in heading, heading
     assert "SUPERSEDED" not in heading and "DELIVERED" not in heading, heading
     top = _live_only(_current_declaration(contract))
@@ -4576,6 +4574,112 @@ _ACTIVE_BOLD = r"\*\*ACTIVE CONTRACT: ([^*]+?)\.\*\*"
 _ACTIVE_TOKEN = r"`ACTIVE CONTRACT: ([^`]+)`"
 
 
+# ---- F1: every `## Current authority` section is classified by its own repository wording ----------
+# A section is HISTORICAL when its heading says so (SUPERSEDED, or a completed "— DELIVERED" record).
+# Ten declarations written before that heading convention are historical by their position in the
+# record, not their heading; they are allowed ONLY under their exact existing heading, each exactly
+# once and never as the first section. Every other section is LIVE, and exactly one LIVE section —
+# the first authority section — must exist; an extra, unclassifiable section fails closed.
+_HISTORICAL_HEADING = r"\bSUPERSEDED\b|— DELIVERED\b"
+_LEGACY_UNMARKED_AUTHORITY_HEADINGS = frozenset({
+    "## Current authority — Stage 10 / T2-C′ differential product-value assessment (Owner acceptance, 2026-09-20)",
+    "## Current authority — post-PR-664 declaration (v1.32 synchronization, 2026-09-19)",
+    "## Current authority — MG-8: truthful capture of the seed problem statement",
+    "## Current authority — T3-A \"Project record\": narrowed input-history rendering",
+    "## Current authority — T2-G legacy migration: explicit confirmed adoption",
+    "## Current authority — T2-D contextual question feedback (Stage 6)",
+    "## Current authority — T2-G partial versioned mechanism slice (Stage 7)",
+    "## Current authority — T2-G-2 concise and mixed mechanism explanations (Stage 7)",
+    "## Current authority — T2-E Option B + T2-F (one combined bounded candidate)",
+    "## Current authority — T1-D + residual T2-B′ (one combined bounded candidate)",
+})
+
+
+def _authority_sections(contract):
+    """[(heading, flattened section, kind)] for EVERY `## Current authority` section, in file order;
+    kind is "live", "historical" or "legacy". A section runs to the next `## ` heading of any kind."""
+    starts = [m.start() for m in re.finditer(r"^## ", contract, re.M)] + [len(contract)]
+    sections = []
+    for s, e in zip(starts, starts[1:]):
+        if not contract.startswith("## Current authority", s):
+            continue
+        heading = contract[s:contract.index("\n", s)]
+        kind = ("historical" if re.search(_HISTORICAL_HEADING, heading)
+                else "legacy" if heading in _LEGACY_UNMARKED_AUTHORITY_HEADINGS else "live")
+        sections.append((heading, re.sub(r"\s+", " ", contract[s:e]), kind))
+    return sections
+
+
+def _live_declaration(contract):
+    """(heading, flattened section) of the ONE live authority section; ValueError otherwise."""
+    sections = _authority_sections(contract)
+    live = [s for s in sections if s[2] == "live"]
+    if len(live) != 1:
+        raise ValueError("%d live current-authority sections, exactly one required: %s"
+                         % (len(live), [s[0] for s in live]))
+    if not sections or sections[0][2] != "live":
+        raise ValueError("the first current-authority section is not the live one")
+    legacy = [s[0] for s in sections if s[2] == "legacy"]
+    if len(legacy) != len(set(legacy)):
+        raise ValueError("a legacy authority heading is duplicated")
+    return live[0][0], live[0][1]
+
+
+# ---- F2: no newly authored post-merge / post-integration success claim on a live surface ----------
+# A candidate carries the durable final-state truth, but it cannot truthfully claim that its merge or
+# post-merge verification has already happened; that evidence belongs to Git/GitHub and a read-only
+# check. Every such claim on a live surface must therefore be a LEGACY claim: immediately preceded (once
+# transient PR / merge identity is ignored) by the exact attribution of a delivery that already carries
+# one, and occurring no more often than it does in the preserved record. A new or copied claim has no
+# such attribution, or exceeds its count, and fails. Omission is always valid.
+_POST_MERGE_CLAIM = (r"\bPOST[- ](?:MERGE|INTEGRATION)\b[^.;`()]{0,60}?\b(?:PASS(?:ED)?|VERIFIED|CONFIRMED|"
+                     r"SUCCEEDED)\b|\b(?:MERGE|INTEGRATION)(?: IDENTITY)? VERIFICATION\s*:\s*PASS\b|"
+                     r"\b(?:MERGED?|INTEGRAT(?:ED|ION)) (?:AND |& )?(?:VERIFIED|CONFIRMED)\b")
+_LEGACY_POST_MERGE_ATTRIBUTIONS = {
+    "`FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / ": 4,
+    "`SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / ": 4,
+    "`MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED` · `": 3,
+    "`MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED` · `": 4,
+    "`ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED` · `": 4,
+    "`STAGE 15 SLICE 1: DELIVERED` · `": 8,
+    "`STAGE 15 SLICE 2: DELIVERED` · `": 9,
+    "Mechanical CAP-01 — Open-Gap Technical Context — DELIVERED (": 1,
+    "Force, Moment & Pressure Fundamentals — DELIVERED (": 1,
+    "Force, Moment & Pressure Fundamentals — delivered, ": 1,
+    "Basic Electrical Reference Fundamentals — is DELIVERED (": 1,
+    "Basic Electrical Reference Fundamentals — delivered, ": 1,
+    "Durable Subsystem Composition — Slice 1 is DELIVERED (": 1,
+    "Durable Subsystem Composition — Slice 1 — delivered, ": 1,
+    "Verification Preparation — Slice 2 — is DELIVERED (": 1,
+    "Verification Preparation — Slice 2 — delivered, ": 1,
+}
+
+
+def _without_transient_identity(text):
+    """Flattened text with PR numbers / merge SHAs removed from delivery records."""
+    text = re.sub(r"\s+—\s+PR\s+#\d+\s+—\s+merge\s+[0-9a-f]{40}", "", text)
+    return re.sub(r"PR #\d+,? \(?merge `[0-9a-f]{40}`;\s*", "", text)
+
+
+def _unsupported_post_merge_claims(texts):
+    problems, used = [], {}
+    for label, text in texts.items():
+        flat = _without_transient_identity(text)
+        for m in re.finditer(_POST_MERGE_CLAIM, flat, re.I):
+            before = flat[:m.start()]
+            owners = [a for a in _LEGACY_POST_MERGE_ATTRIBUTIONS if before.endswith(a)]
+            if not owners:
+                problems.append("%s: unsupported post-merge success claim %r after %r"
+                                % (label, m.group(0), before[-80:]))
+            else:
+                used[owners[0]] = used.get(owners[0], 0) + 1
+    for attribution, count in used.items():
+        if count > _LEGACY_POST_MERGE_ATTRIBUTIONS[attribution]:
+            problems.append("legacy post-merge claim %r repeated %d times (preserved record: %d)"
+                            % (attribution, count, _LEGACY_POST_MERGE_ATTRIBUTIONS[attribution]))
+    return problems
+
+
 def _fenced_text(raw, name):
     o, c = _OPEN % name, _CLOSE % name
     if raw.count(o) != 1 or raw.count(c) != 1:
@@ -4589,11 +4693,9 @@ def _live_authority_texts(read):
     texts = {"routing:" + path: _live_only(_fenced_text(read(path), "current-routing"))
              for path in (ROADMAP, CHECKLIST, CONTRACT)}
     texts["position:" + STATE] = _live_only(_fenced_text(read(STATE), "current-position"))
-    contract = read(CONTRACT)
-    i = contract.index("## Current authority")
-    texts["heading:" + CONTRACT] = contract[i:contract.index("\n", i)]
-    texts["declaration:" + CONTRACT] = _live_only(
-        re.sub(r"\s+", " ", contract[i:contract.index("\n## Current authority", i + 5)]))
+    heading, declaration = _live_declaration(read(CONTRACT))
+    texts["heading:" + CONTRACT] = heading
+    texts["declaration:" + CONTRACT] = _live_only(declaration)
     claude = re.sub(r"\s+", " ", read("CLAUDE.md"))
     texts["head:CLAUDE.md"] = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
     return texts
@@ -4637,7 +4739,7 @@ def _live_authority_problems(read=None):
             m = re.search(pat, text, re.I | re.S)
             if m:
                 problems.append("%s: forbidden live claim %r" % (label, m.group(0)))
-    return problems
+    return problems + _unsupported_post_merge_claims(texts)
 
 
 def test_live_material_invariants_hold():
@@ -4744,12 +4846,140 @@ def test_every_material_reversal_is_caught(monkeypatch, name):
 def test_the_live_authority_owners_pin_no_transient_identity():
     import inspect
     sources = [inspect.getsource(f) for f in (
-        _live_authority_texts, _live_authority_problems, _status, _after_fence,
+        _live_authority_texts, _live_authority_problems, _status, _after_fence, _authority_sections,
+        _live_declaration, _unsupported_post_merge_claims, _without_transient_identity,
         test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface)]
-    sources.append(repr((_LIVE_CLAIM_REVERSALS, _PREMERGE_LIFECYCLE)))
+    sources.append(repr((_LIVE_CLAIM_REVERSALS, _PREMERGE_LIFECYCLE, _HISTORICAL_HEADING, _POST_MERGE_CLAIM,
+                         sorted(_LEGACY_UNMARKED_AUTHORITY_HEADINGS), sorted(_LEGACY_POST_MERGE_ATTRIBUTIONS))))
     for source in sources:
         assert re.search(r"\b[0-9a-f]{40}\b", source) is None
         assert re.search(r"PR ?-?#\d", source) is None
         assert re.search(r"\[:\d{3,}\]", source) is None
         for word in ("POST-MERGE", "post-merge identity", "REVIEW: PASS", "ANCESTRY", "merge tree"):
             assert word not in source, word
+
+
+# ---- F1 / F2 adversarial proofs ----------------------------------------------------------------------
+def _assert_rejected(monkeypatch, docs, name):
+    """Both the live-invariant owner and the current-state guard must reject these documents."""
+    real = _read
+    fake = lambda p: docs[p] if p in docs else real(p)                   # noqa: E731
+    assert _live_authority_problems(fake), name
+    monkeypatch.setattr(sys.modules[__name__], "_read", fake)
+    with pytest.raises((AssertionError, ValueError)):
+        test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
+
+
+def _assert_accepted(monkeypatch, docs, name):
+    real = _read
+    fake = lambda p: docs[p] if p in docs else real(p)                   # noqa: E731
+    assert _live_authority_problems(fake) == [], name
+    monkeypatch.setattr(sys.modules[__name__], "_read", fake)
+    test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
+
+
+def _second_heading(contract):
+    """Start of the section that follows the live one."""
+    live_heading = _live_declaration(contract)[0]
+    i = contract.index(live_heading)
+    return contract.index("\n## ", i + 5) + 1
+
+
+_EXTRA_SECTIONS = {
+    "successor contract": "## Current authority — successor increment\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n\n",
+    "second none": ("## Current authority — another declaration\n\n**ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS "
+                    "CURRENTLY AUTHORIZED.\n\n"),
+    "deployment": ("## Current authority — release\n\n**ACTIVE CONTRACT: NONE.** Deployment is authorized. Release "
+                   "is authorized.\n\n"),
+    "astra example": ("## Current authority — successor increment\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n\n"
+                      "Deployment is authorized.\n\n"),
+}
+
+
+@pytest.mark.parametrize("where", ["after the live declaration", "appended later"])
+@pytest.mark.parametrize("name", sorted(_EXTRA_SECTIONS))
+def test_f1_a_second_live_authority_section_is_rejected(monkeypatch, where, name):
+    contract = _read(CONTRACT)
+    section = _EXTRA_SECTIONS[name]
+    if where == "after the live declaration":
+        k = _second_heading(contract)
+        mutated = contract[:k] + section + contract[k:]
+    else:
+        mutated = contract.rstrip("\n") + "\n\n" + section
+    with pytest.raises(ValueError, match="live current-authority sections"):
+        _live_declaration(mutated)
+    _assert_rejected(monkeypatch, {CONTRACT: mutated}, name)
+
+
+def test_f1_legacy_headings_cannot_be_copied_or_lead_and_live_cannot_be_hidden(monkeypatch):
+    contract = _read(CONTRACT)
+    legacy = sorted(_LEGACY_UNMARKED_AUTHORITY_HEADINGS)[0]
+    copied = contract.rstrip("\n") + "\n\n" + legacy + "\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n"
+    _assert_rejected(monkeypatch, {CONTRACT: copied}, "copied legacy heading")
+    i = contract.index("## Current authority")
+    leading = contract[:i] + legacy + "\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n\n" + contract[i:]
+    _assert_rejected(monkeypatch, {CONTRACT: leading}, "legacy heading placed first")
+    heading = _live_declaration(contract)[0]
+    hidden = contract.replace(heading, heading + " — SUPERSEDED", 1)
+    _assert_rejected(monkeypatch, {CONTRACT: hidden}, "live section relabelled as history")
+
+
+def test_f1_every_existing_authority_section_is_classified():
+    sections = _authority_sections(_read(CONTRACT))
+    kinds = [s[2] for s in sections]
+    assert kinds.count("live") == 1 and kinds[0] == "live"
+    assert kinds.count("legacy") == len(_LEGACY_UNMARKED_AUTHORITY_HEADINGS)
+    assert {s[0] for s in sections if s[2] == "legacy"} == _LEGACY_UNMARKED_AUTHORITY_HEADINGS
+    assert kinds.count("historical") >= 30
+    for heading, _text, kind in sections:
+        assert kind != "historical" or re.search(_HISTORICAL_HEADING, heading), heading
+
+
+_PM = "`POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`"
+_F2_NEW_CLAIMS = {
+    "new candidate token": " `STAGE 15 SLICE 3: DELIVERED` · " + _PM,
+    "this candidate": " This candidate: POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS.",
+    "bare token": " " + _PM,
+    "prose pass": " Post-merge verification PASS for this slice.",
+    "post-integration": " `POST-INTEGRATION VERIFICATION: PASS`",
+    "merge verification": " Merge verification: PASS.",
+    "post-merge verified": " The delivery was post-merge verified",
+    "merged and verified": " Stage 15 Slice 3 was merged and verified.",
+}
+
+
+@pytest.mark.parametrize("name", sorted(_F2_NEW_CLAIMS))
+@pytest.mark.parametrize("path, region", [(STATE, "current-position"), (ROADMAP, "current-routing"),
+                                          (CONTRACT, "declaration"), ("CLAUDE.md", "head")])
+def test_f2_a_newly_authored_post_merge_claim_is_rejected(monkeypatch, path, region, name):
+    anchor = "**ACTIVE CONTRACT: NONE.**" if region in ("declaration", "head") else _NS
+    docs = _mutate(path, region, anchor, anchor + _F2_NEW_CLAIMS[name])
+    _assert_rejected(monkeypatch, docs, name)
+
+
+def test_f2_a_legacy_claim_cannot_be_reassigned_or_copied(monkeypatch):
+    legacy = "`STAGE 15 SLICE 2: DELIVERED — PR #720 — merge "
+    raw = _read(ROADMAP)
+    i, j = _span(raw, "current-routing")
+    k = raw.index(legacy, i, j)
+    reassigned = raw[:k] + "`STAGE 15 SLICE 3: DELIVERED" + raw[raw.index("`", k + 1):]
+    _assert_rejected(monkeypatch, {ROADMAP: reassigned}, "reassigned to a new subject")
+    copied = _mutate(STATE, "current-position", _NS, _NS + " `STAGE 15 SLICE 2: DELIVERED` · " + _PM)
+    _assert_rejected(monkeypatch, copied, "legacy claim copied beyond the preserved record")
+
+
+def test_f2_omission_and_identity_removal_stay_valid(monkeypatch):
+    # a candidate adds its own delivery with NO post-merge wording
+    candidate = _mutate(STATE, "current-position", _NS, _NS + " `NEW BOUNDED SLICE: DELIVERED`")
+    _assert_accepted(monkeypatch, candidate, "candidate without post-merge wording")
+    monkeypatch.undo()
+    # the whole repository with every legacy post-merge claim removed (post-merge state, no such wording)
+    claims = (r"\s+·\s+`POST-MERGE\s+IDENTITY\s+/\s+CONTENT\s+VERIFICATION:\s+PASS`|;?\s*post-merge\s+identity\s+/\s+"
+              r"content\s+verification\s+PASS|\s+/\s+POST-MERGE\s+VERIFIED")
+    bare = {path: re.sub(claims, "", _read(path)) for path in _LIVE_DOCS}
+    texts = _live_authority_texts(lambda p: bare[p] if p in bare else _read(p))
+    assert not any(re.search(_POST_MERGE_CLAIM, text, re.I) for text in texts.values())
+    _assert_accepted(monkeypatch, bare, "no post-merge wording on any live surface")
+    monkeypatch.undo()
+    # transient identity removed from delivered tokens (candidate form)
+    _assert_accepted(monkeypatch, {path: _without_identity(_read(path)) for path in _LIVE_DOCS}, "identity absent")
