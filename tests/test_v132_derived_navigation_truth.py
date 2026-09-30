@@ -19,9 +19,23 @@ engineering provider is named as adopted; and the withdrawn spliced deployed
 SHA appears nowhere in the repository.
 Prohibited behaviors: MUST NOT weaken to pass; MUST NOT grant either artifact
 authority it does not have.
+
+Live truth vs preserved history: the CURRENT-authority guards (the live material
+invariants and the current-state guard) enforce material, merge-invariant truth
+only. They never require a PR number, merge / head / tree SHA, ancestry chain,
+review verdict, post-merge verification result or pre-/post-merge lifecycle
+wording: Git/GitHub own that transient identity. An implementation candidate can
+therefore carry the durable post-integration truth itself, and a merge alone
+never needs a follow-up current-truth PR. Per-delivery "delivered history"
+guards may still pin identities that ALREADY exist as preserved history; no
+guard may require the identity of a delivery that has not merged yet.
 """
+import hashlib
 import os
 import re
+import sys
+
+import pytest
 
 ROADMAP = os.path.join("docs", "governance",
                        "INVENTORAI_MASTER_EXECUTION_ROADMAP.md")
@@ -1793,14 +1807,14 @@ def test_second_increment_status_is_merge_truth_and_the_none_contract_is_superse
             "AND ELECTRICAL SLICES") in raw_checklist
     assert re.search(r"^NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED$",
                      raw_checklist, re.M) is None
-    # post-PR-#720 (2026-09-29): exactly one plain-text NONE line is live again, directly under the
-    # Electrical delivery line and followed by the next-increment line and the Slice-2 delivery line;
-    # no plain-text Stage-15 contract line survives
+    # exactly one plain-text NONE line is live, directly under the Electrical delivery line and followed
+    # by the next-increment line and the Slice-2 delivery line (identity optional); no plain-text Stage-15
+    # contract line survives
     assert len(re.findall(r"^ACTIVE CONTRACT: NONE$", raw_checklist, re.M)) == 1
-    assert re.search(r"^ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #716 — merge "
-                     r"11564b235b056aaf12ca9d5596418f43a2d7e61c\nACTIVE CONTRACT: NONE\nNEXT PRODUCT INCREMENT: "
-                     r"NOT AUTHORIZED\nNEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT\nSTAGE 15 SLICE 2: "
-                     r"DELIVERED — PR #720 — merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca$", raw_checklist, re.M)
+    assert re.search(r"^ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED" + _DELIVERY_IDENTITY
+                     + r"\nACTIVE CONTRACT: NONE\nNEXT PRODUCT INCREMENT: NOT AUTHORIZED\nNEXT STEP: "
+                     r"LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT\nSTAGE 15 SLICE 2: DELIVERED"
+                     + _DELIVERY_IDENTITY + r"$", raw_checklist, re.M)
     assert re.search(r"^ACTIVE CONTRACT: STAGE 15", raw_checklist, re.M) is None
 
 
@@ -1930,6 +1944,36 @@ def test_stage_19_implementation_01_rules_still_bind_after_slice_02():
 def _tok(token):
     """A backticked routing token, tolerant only of line wrapping."""
     return re.escape(token).replace(r"\ ", r"\s+")
+
+
+# The transient Git/GitHub identity a delivered-status token may carry: " — PR #<n> — merge <sha>".
+_DELIVERY_IDENTITY = r"(?:\s+—\s+PR\s+#\d+\s+—\s+merge\s+[0-9a-f]{40})?"
+
+
+def _status(token):
+    """A backticked DELIVERED status token as a live requirement: the status itself is required,
+    the PR / merge identity after it is optional (Git/GitHub own it)."""
+    status = re.sub(r" — PR #\d+ — merge [0-9a-f]{40}(?=`$)", "", token)
+    assert status.endswith(": DELIVERED`"), token
+    return _tok(status[:-1]) + _DELIVERY_IDENTITY + "`"
+
+
+def _status_line(token):
+    """The same requirement for a plain-text checklist line (no backticks)."""
+    return _status(token)[1:-1]
+
+
+def _live_only(text):
+    """Text with every visibly superseded note removed."""
+    return re.sub(r"\*\(Superseded.*?\)\*", "", text)
+
+
+def _after_fence(path, name):
+    """Everything after a current block's closing fence, whitespace-flattened. Superseded notes
+    are searched here as a whole, never inside a fixed-size window that each new delivery would
+    have to widen."""
+    raw = _read(path)
+    return re.sub(r"\s+", " ", raw[raw.index(_CLOSE % name):])
 
 
 # A live surface may never present SLICE-02 as the current contract again.
@@ -3641,13 +3685,11 @@ def test_post_716_no_active_contract_is_superseded_history():
              r"`ACTIVE CONTRACT: NONE`", r"`NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK`")
     # every routing surface preserves the old routing as a visible note right after its fence
     for path in (ROADMAP, CHECKLIST, CONTRACT):
-        raw = _read(path)
-        after = re.sub(r"\s+", " ", raw[raw.index(_CLOSE % "current-routing"):][:4200])
+        after = _after_fence(path, "current-routing")
         assert ("*(Superseded 2026-09-29 by Stage 15 — Integrated Invention Entry & Durable Subsystem "
                 "Composition — Slice 1, preserved so the change is visible rather than silent: the current "
                 "routing read \"**NO ACTIVE CONTRACT — post-PR-#716 (2026-09-29)") in after, path
-    state_raw = _read(STATE)
-    after = re.sub(r"\s+", " ", state_raw[state_raw.index(_CLOSE % "current-position"):][:3000])
+    after = _after_fence(STATE, "current-position")
     assert ("*(Superseded 2026-09-29 by Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — "
             "Slice 1, preserved so the change is visible rather than silent: the current-position entry read "
             "\"`ACTIVE CONTRACT: NONE` — no product increment is currently authorized (post-PR-#716 …)\"") in after
@@ -3737,14 +3779,12 @@ def test_stage15_slice1_is_delivered_history_and_its_rules_still_bind():
     _rejects(live_top, CONTRACT, "stage15 delivered", *_S15_LIVE_FORBIDDEN)
     # every routing surface / the state file preserve the pre-merge routing as a visible note after the fence
     for path in (ROADMAP, CHECKLIST, CONTRACT):
-        raw = _read(path)
-        after = re.sub(r"\s+", " ", raw[raw.index(_CLOSE % "current-routing"):][:2400])
+        after = _after_fence(path, "current-routing")
         assert ("*(Superseded 2026-09-29 by the post-PR-#718 closure, preserved so the change is visible rather "
                 "than silent: the current routing read \"**CURRENT BOUNDED PRODUCT ACTION — Stage 15 / Integrated "
                 "Invention Entry & Durable Subsystem Composition — Slice 1 (…):** `ACTIVE CONTRACT: STAGE 15 —") in after, path
         assert "That was true until PR #718 merged (merge `" + _S15_MERGE + "`).)*" in after, path
-    state_raw = _read(STATE)
-    after = re.sub(r"\s+", " ", state_raw[state_raw.index(_CLOSE % "current-position"):][:1800])
+    after = _after_fence(STATE, "current-position")
     assert ("*(Superseded 2026-09-29 by the post-PR-#718 closure, preserved so the change is visible rather than "
             "silent: the current-position entry read \"" + _S15_CONTRACT + " — current bounded product action:") in after
     flat_checklist = _flat(CHECKLIST)
@@ -3820,13 +3860,11 @@ def test_post_718_no_active_contract_is_superseded_history():
              r"`NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT`",
              r"`ANOTHER STAGE-15 SLICE: NOT AUTHORIZED`")
     for path in (ROADMAP, CHECKLIST, CONTRACT):
-        raw = _read(path)
-        after = re.sub(r"\s+", " ", raw[raw.index(_CLOSE % "current-routing"):][:3000])
+        after = _after_fence(path, "current-routing")
         assert ("*(Superseded 2026-09-29 by Stage 15 — Subsystem Interface Declaration & Verification "
                 "Preparation — Slice 2, preserved so the change is visible rather than silent: the current routing "
                 "read \"**NO ACTIVE CONTRACT — post-PR-#718 (2026-09-29);") in after, path
-    state_raw = _read(STATE)
-    after = re.sub(r"\s+", " ", state_raw[state_raw.index(_CLOSE % "current-position"):][:2500])
+    after = _after_fence(STATE, "current-position")
     assert ("*(Superseded 2026-09-29 by Stage 15 — Subsystem Interface Declaration & Verification Preparation — "
             "Slice 2, preserved so the change is visible rather than silent: the current-position entry read "
             "\"`ACTIVE CONTRACT: NONE` — no product increment is currently authorized (post-PR-#718 …)\"") in after
@@ -3837,10 +3875,11 @@ def test_post_718_no_active_contract_is_superseded_history():
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     assert "the former post-PR-#718 `ACTIVE CONTRACT: NONE`" in claude
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    # the live NONE is the post-PR-#720 one, never the post-PR-#718 one
+    # the live NONE is the one after Stage 15 Slice 2, never the post-PR-#718 one
     assert head.startswith("## Current authority **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY "
                            "AUTHORIZED. The last Owner-authorized bounded product slice — Stage 15 — Subsystem "
-                           "Interface Declaration & Verification Preparation — Slice 2 — is DELIVERED (PR #720"), head[:260]
+                           "Interface Declaration & Verification Preparation — Slice 2 — is DELIVERED"), head[:260]
+    assert "post-PR-#718" not in head
 
 
 _S2_BRANCH = "stage15/subsystem-interface-verification-01"
@@ -3867,7 +3906,7 @@ _S2_ANC = ("`STAGE 15 SLICE 2 ANCESTRY: implementation 470bb90004b17229206fdd17f
 # marker, claim compatibility, verification or an IRL score / level, authorize deployment / release or
 # (implicitly or explicitly) another Stage-15 slice.
 _S2_CLOSE_REVERSALS = tuple(_S15_LIVE_FORBIDDEN) + (
-    r"STAGE 15 SLICE 2: (?!DELIVERED — PR #720)", r"ACTIVE CONTRACT: STAGE 15",
+    r"STAGE 15 SLICE 2: (?!DELIVERED)", r"ACTIVE CONTRACT: STAGE 15",
     r"Slice 2[^.;]{0,120}\bimplementation candidate\b", r"Slice-2 candidate",
     r"INDEPENDENT LEVEL-1 IMPLEMENTATION REVIEW PENDING", r"Slice 2[^.;]{0,160}\breview (is )?pending\b",
     r"Slice 2[^.;]{0,160}\bNOT MERGED\b", r"STAGE 15 SLICE 1: (?!DELIVERED)",
@@ -3879,32 +3918,135 @@ _S2_CLOSE_REVERSALS = tuple(_S15_LIVE_FORBIDDEN) + (
     r"current bounded product action", r"CURRENT BOUNDED PRODUCT ACTION")
 
 
-def test_stage15_slice2_is_delivered_and_post_720_none_is_current_on_every_live_surface():
-    """Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 is DELIVERED (PR #720,
-    merge 2418f7e; reviewed head fc3d47e; final independent review PASS — F1 / F2 / F3 CLOSED) and no product
-    increment is authorized (`ACTIVE CONTRACT: NONE`). Stage 15 stays ENTERED / PARTIAL / NOT COMPLETE, the
-    MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18, no compatibility, IRL score / level, deployment,
-    release or further Stage-15 slice is claimed or authorized, and the pre-merge candidate wording survives
-    only as visibly superseded history."""
+def _current_declaration(contract):
+    """The ONE live `## Current authority` section, selected by the shared classifier below."""
+    return _live_declaration(contract)[1]
+
+
+def test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface():
+    """CURRENT STATE, merge-invariant: Stage 15 — Subsystem Interface Declaration & Verification Preparation —
+    Slice 2 is DELIVERED and no product increment is authorized (`ACTIVE CONTRACT: NONE`). Stage 15 stays
+    ENTERED / PARTIAL / NOT COMPLETE, the MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18, and no
+    compatibility, verification, IRL score / level, deployment, release or further Stage-15 slice is claimed
+    or authorized. This guard requires no PR number, SHA, ancestry, review verdict or post-merge result:
+    Git/GitHub own them, so the same text is correct on the candidate that carries it and after its merge."""
+    assert _live_authority_problems() == []
     contract = _read(CONTRACT)
-    first = contract.index("## Current authority")
-    assert contract[first:].startswith(
-        "## Current authority — post-PR-#720: no active contract (2026-09-29)\n"), contract[first:first + 160]
-    top = re.sub(r"\s+", " ", _section(contract, "current-authority--post-pr-720-no-active-contract"))
-    _needs(top, CONTRACT, "post-720 none",
+    heading = _live_declaration(contract)[0]
+    assert heading.startswith("## Current authority — ") and "no active contract" in heading, heading
+    assert "SUPERSEDED" not in heading and "DELIVERED" not in heading, heading
+    top = _live_only(_current_declaration(contract))
+    _needs(top, CONTRACT, "live none",
            r"\*\*ACTIVE CONTRACT: NONE\.\*\* NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED\.",
-           r"is DELIVERED \(PR #720, merge `" + _S2_MERGE + r"`; reviewed PR head `" + _S2_HEAD + r"`",
+           r"Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2, the last "
+           r"Owner-authorized bounded product slice, is DELIVERED\b",
            r"delivered history never fills the active-contract slot",
-           r"merge tree `" + _S2_MTREE + r"` = reviewed-head tree",
-           r"F1 / F2 / F3 ALL CLOSED; no remaining material finding",
            r"\*\*STAGE 15\*\* \| \*\*ENTERED / PARTIAL / NOT COMPLETE\*\*; its checkbox stays UNTICKED",
            r"no IRL score or level", r"another Stage-15 slice is NOT AUTHORIZED",
            r"it remains the MASTER ROADMAP SEQUENTIAL MARKER",
            r"\*\*NEXT STEP\*\* \| LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT — READ-ONLY",
-           _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP), _tok(_S2_DELIVERED), _tok(_S15_PM),
-           _tok(_S2_REVIEW), _tok(_S2_ANC), _tok(_S15_DELIVERED), _tok(_S15_ENTERED), _tok(_S15_MARKER),
-           *(_tok(t) for t in _S15_NOT + _S2_NOT))
-    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", top), CONTRACT, "post-720 none", *_S2_CLOSE_REVERSALS)
+           _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP), _status(_S2_DELIVERED), _status(_S15_DELIVERED),
+           _tok(_S15_ENTERED), _tok(_S15_MARKER), *(_tok(t) for t in _S15_NOT + _S2_NOT))
+    _rejects(top, CONTRACT, "live none", *_S2_CLOSE_REVERSALS)
+    for path, block in _live_surfaces():
+        _needs(block, path, "live none", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP),
+               _status(_S2_DELIVERED), _status(_S15_DELIVERED), _status(_EL_DELIVERED), _tok(_S15_ENTERED),
+               _tok(_S15_MARKER), _tok(_NO_TD_SUBTASK), *(_tok(t) for t in _S15_NOT + _S2_NOT),
+               r"Stage\s+15\s+Slice\s+2\s+\(delivered\)\.\s+For\s+ONE\s+integrated\s+Mechanical",
+               r"engineering\s+compatibility\s+has\s+NOT\s+been\s+established",
+               r"completing\s+the\s+preparation\s+does\s+not\s+verify\s+the\s+interaction",
+               r"Stage\s+15\s+Slice\s+1\s+\(delivered\)\.")
+        _rejects(block, path, "live none", *_S2_CLOSE_REVERSALS)
+    for path, routing in _surfaces("current-routing"):
+        _needs(routing, path, "live routing", r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18",
+               r"`STAGE 18 STARTED: YES`", r"`STAGE 18 COMPLETE: NO`",
+               r"\*\*NO ACTIVE CONTRACT — [^*]{0,80}; Stage 15 and Stage 18 both stay ENTERED / PARTIAL / NOT "
+               r"COMPLETE:\*\*",
+               r"The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT",
+               r"\*\*DELIVERED — Stage 15 / Subsystem Interface Declaration & Verification Preparation — Slice 2",
+               r"\*\*DELIVERED — Stage 15 / Integrated Invention Entry & Durable Subsystem Composition — Slice 1")
+        marker = re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18", routing).start()
+        assert marker < routing.index("**NO ACTIVE CONTRACT — "), path
+    state = _current(STATE, "current-position")
+    assert re.match(r" \*\*Current position \([^)]{0,40}\): `ACTIVE CONTRACT: NONE` — no product increment is "
+                    r"currently authorized \(", state)
+    for needle in ("this does NOT mean the roadmap, Stage 15, Stage 18 or integration is complete, and no next "
+                   "slice is authorized",
+                   "Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — delivered",
+                   "it establishes no compatibility, IRL level or readiness",
+                   "Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 — delivered",
+                   "Stage 15 stays ENTERED / PARTIAL / NOT COMPLETE, checkbox unticked",
+                   "another Stage-15 slice, full Stage 15 / IRL",
+                   "MASTER ROADMAP SEQUENTIAL MARKER: Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE",
+                   "next step: a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT"):
+        assert needle in state, needle
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
+    assert head.startswith("## Current authority **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY "
+                           "AUTHORIZED.")
+    for needle in ("Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — is DELIVERED",
+                   "The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT",
+                   "It verifies nothing: engineering compatibility has NOT been established.",
+                   "Another Stage-15 slice, engineering compatibility analysis",
+                   "deployment and release NOT AUTHORIZED",
+                   "Stage 15 stays ENTERED / PARTIAL / NOT COMPLETE (checkbox unticked)",
+                   "The MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18",
+                   "Stage 18 remains STARTED / PARTIAL / NOT COMPLETE"):
+        assert needle in head, needle
+    for pat in _S2_CLOSE_REVERSALS:
+        assert re.search(pat, head, re.I | re.S) is None, pat
+    cont = claude[claude.index("## Lead execution continuity"):claude.index("### Lead Operating Method")]
+    for pat in (r"FIRED and evaluated at Stage 15 Slice 2",
+                r"Evaluated at Stage 15 Slice 2: NO SHARED GENERIC RELATIONSHIP MODEL",
+                r"Slice 2 \(delivered(?:, PR #\d+)?; no further Stage-15 slice is authorized\)"):
+        assert re.search(pat, cont), pat
+    assert "(the current implementation candidate)" not in cont
+    flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
+    subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \([^)]{0,40}\) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — "
+                    r"Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 DELIVERED")
+    [found] = [m.start() for m in re.finditer(subtask_head, flat_checklist)]
+    subtask = flat_checklist[found:]
+    subtask = subtask[:subtask.index("*(Superseded")]
+    _needs(subtask, CHECKLIST, "live subtask", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP),
+           _status(_S2_DELIVERED), _status(_S15_DELIVERED), _tok(_S15_ENTERED), _tok(_S15_MARKER),
+           *(_tok(t) for t in _S15_NOT + _S2_NOT), r"No product increment is authorized after\b")
+    _rejects(subtask, CHECKLIST, "live subtask", *_S2_CLOSE_REVERSALS)
+    for line in [t.strip("`") for t in (_NONE718, _NEXT_INC_NO, _NEXT_STEP, _S15_ENTERED, _S15_MARKER)
+                 + _S15_NOT + _S2_NOT]:
+        assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
+    for token in (_S2_DELIVERED, _S15_DELIVERED):
+        assert re.search(r"^" + _status_line(token) + r"$", raw_checklist, re.M), token
+    for stale in (_S2_CONTRACT.strip("`"), _S2_STATUS.strip("`")):
+        assert re.search(r"^" + re.escape(stale) + r"$", raw_checklist, re.M) is None, stale
+    roadmap = _read(ROADMAP)
+    numbers = [int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)]
+    assert sorted(numbers) == list(range(1, 46)), numbers
+    for n in ("15", "18"):
+        assert re.search(r"^- \[x\] \*\*" + n + r" — ", roadmap, re.M) is None, n
+    [row15] = re.findall(r"^- \[ \] \*\*15 — IRL-compatible view:\*\*.*$", roadmap, re.M)
+    live15 = _live_only(row15)
+    assert ("the Owner-authorized Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 "
+            "(delivered") in live15
+    assert "no further Stage-15 slice is authorized" in live15
+    [row18] = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
+    live18 = _live_only(row18)
+    assert ("that reassessment then selected Stage 15 — Subsystem Interface Declaration & Verification "
+            "Preparation — Slice 2, delivered") in live18
+    assert "no product increment is currently authorized and the next step is a Lead-controlled" in live18
+    for live in (live15, live18):
+        for pat in _S2_CLOSE_REVERSALS:
+            assert re.search(pat, live, re.I) is None, pat
+    register = _flat(CAPABILITIES)
+    assert ("and neither is Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 "
+            "(delivered") in register
+    assert "current Owner-authorized implementation candidate, not merged" not in register
+
+
+def test_stage15_slice2_delivery_record_is_preserved_history():
+    """PRESERVED HISTORY (not a live prerequisite): the Stage 15 Slice 2 contract section stays a visibly
+    superseded, DELIVERED record with every rule still binding, and the pre-merge candidate wording it
+    replaced survives only inside superseded notes. The identities pinned here already exist in history."""
+    contract = _read(CONTRACT)
     s2 = re.sub(r"\s+", " ", _section(contract, "current-authority--stage15-subsystem-interface-slice2"))
     _needs(s2, CONTRACT, "slice2 delivered section",
            r"## Current authority — Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 "
@@ -3918,116 +4060,19 @@ def test_stage15_slice2_is_delivered_and_post_720_none_is_current_on_every_live_
            r"\*\*SEMANTIC OWNER\*\* \| `engine/subsystem_model\.py`",
            r"completing the preparation does not verify the interaction or establish compatibility; no risk row",
            _tok(_S2_DELIVERED), _tok(_S2_REVIEW), _tok(_S2_ANC))
-    _rejects(re.sub(r"\*\(Superseded.*?\)\*", "", s2), CONTRACT, "slice2 delivered section", *_S2_CLOSE_REVERSALS)
-    for path, block in _live_surfaces():
-        _needs(block, path, "post-720 live", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP),
-               _tok(_S2_DELIVERED), _tok(_S15_PM), _tok(_S2_REVIEW), _tok(_S2_ANC), _tok(_S15_DELIVERED),
-               _tok(_S15_REVIEW), _tok(_S15_ANC), _tok(_S15_ENTERED), _tok(_S15_MARKER), _tok(_NO_TD_SUBTASK),
-               _tok(_EL_DELIVERED), *(_tok(t) for t in _S15_NOT + _S2_NOT),
-               r"Stage\s+15\s+Slice\s+2\s+\(delivered\)\.\s+For\s+ONE\s+integrated\s+Mechanical",
-               r"engineering\s+compatibility\s+has\s+NOT\s+been\s+established",
-               r"completing\s+the\s+preparation\s+does\s+not\s+verify\s+the\s+interaction",
-               r"final\s+bounded\s+review\s+PASS\s+—\s+F1\s+/\s+F2\s+/\s+F3\s+CLOSED",
-               r"Stage\s+15\s+Slice\s+1\s+\(delivered\)\.")
-        _rejects(block, path, "post-720 live", *_S2_CLOSE_REVERSALS)
-    for path, routing in _surfaces("current-routing"):
-        _needs(routing, path, "post-720 routing", r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18",
-               r"`STAGE 18 STARTED: YES`", r"`STAGE 18 COMPLETE: NO`",
-               r"\*\*NO ACTIVE CONTRACT — post-PR-#720 \(2026-09-29\); Stage 15 and Stage 18 both stay ENTERED / "
-               r"PARTIAL / NOT COMPLETE:\*\*",
-               r"The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT",
-               r"\*\*DELIVERED — Stage 15 / Subsystem Interface Declaration & Verification Preparation — Slice 2",
-               r"\*\*DELIVERED — Stage 15 / Integrated Invention Entry & Durable Subsystem Composition — Slice 1")
-        marker = re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18", routing).start()
-        assert marker < routing.index("**NO ACTIVE CONTRACT — post-PR-#720"), path
-        raw = _read(path)
-        after = re.sub(r"\s+", " ", raw[raw.index(_CLOSE % "current-routing"):][:1400])
+    _rejects(_live_only(s2), CONTRACT, "slice2 delivered section", *_S2_CLOSE_REVERSALS)
+    for path in (ROADMAP, CHECKLIST, CONTRACT):
         assert ("*(Superseded 2026-09-29 by the post-PR-#720 closure, preserved so the change is visible rather "
                 "than silent: the current routing read \"**CURRENT BOUNDED PRODUCT ACTION — Stage 15 / Subsystem "
-                "Interface Declaration & Verification Preparation — Slice 2 (…):**") in after, path
-    state = _current(STATE, "current-position")
-    assert state.startswith(
-        " **Current position (2026-09-29): `ACTIVE CONTRACT: NONE` — no product increment is currently authorized "
-        "(post-PR-#720; this does NOT mean the roadmap, Stage 15, Stage 18 or integration is complete, and no next "
-        "slice is authorized); Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — "
-        "delivered, PR #720 (merge `" + _S2_MERGE + "`;"), state[:400]
-    for needle in ("final independent review PASS — F1 / F2 / F3 CLOSED",
-                   "it establishes no compatibility, IRL level or readiness",
-                   "Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 — delivered, PR #718",
-                   "Stage 15 stays ENTERED / PARTIAL / NOT COMPLETE, checkbox unticked",
-                   "another Stage-15 slice, full Stage 15 / IRL",
-                   "MASTER ROADMAP SEQUENTIAL MARKER: Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE",
-                   "next step: a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT"):
-        assert needle in state, needle
-    state_raw = _read(STATE)
-    after = re.sub(r"\s+", " ", state_raw[state_raw.index(_CLOSE % "current-position"):][:900])
+                "Interface Declaration & Verification Preparation — Slice 2 (…):**") in _after_fence(path, "current-routing"), path
     assert ("*(Superseded 2026-09-29 by the post-PR-#720 closure, preserved so the change is visible rather than "
-            "silent: the current-position entry read \"" + _S2_CONTRACT) in after
+            "silent: the current-position entry read \"" + _S2_CONTRACT) in _after_fence(STATE, "current-position")
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
-    head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    for needle in ("(PR #720, merge `" + _S2_MERGE + "`; post-merge identity / content verification PASS; "
-                   "reviewed PR head `" + _S2_HEAD + "`",
-                   "final PASS — F1 / F2 / F3 CLOSED; no remaining material finding",
-                   "The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT",
-                   "It verifies nothing: engineering compatibility has NOT been established.",
-                   "Another Stage-15 slice, engineering compatibility analysis",
-                   "deployment and release NOT AUTHORIZED",
-                   "Stage 15 stays ENTERED / PARTIAL / NOT COMPLETE (checkbox unticked)",
-                   "The MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18",
-                   "Stage 18 remains STARTED / PARTIAL / NOT COMPLETE"):
-        assert needle in head, needle
-    for pat in _S2_CLOSE_REVERSALS:
-        assert re.search(pat, head, re.I | re.S) is None, pat
-    assert ("*(Superseded current-authority declarations — the former Stage 15 — Subsystem Interface Declaration & "
-            "Verification Preparation — Slice 2 (pre-merge, \"IMPLEMENTATION CANDIDATE … NOT MERGED\"), the former "
-            "post-PR-#718 `ACTIVE CONTRACT: NONE`,") in claude
-    cont = claude[claude.index("## Lead execution continuity"):claude.index("### Lead Operating Method")]
-    for needle in ("FIRED and evaluated at Stage 15 Slice 2",
-                   "Evaluated at Stage 15 Slice 2: NO SHARED GENERIC RELATIONSHIP MODEL",
-                   "Slice 2 (delivered, PR #720; no further Stage-15 slice is authorized)"):
-        assert needle in cont, needle
-    assert "(the current implementation candidate)" not in cont
-    flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
-    marker = ("**CURRENT SUBTASK:** NONE (post-PR-#720) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — Stage 15 — "
-              "Subsystem Interface Declaration & Verification Preparation — Slice 2 DELIVERED (PR #720)")
-    assert flat_checklist.count(marker) == 1
-    subtask = flat_checklist[flat_checklist.index(marker):]
-    subtask = subtask[:subtask.index("*(Superseded")]
-    _needs(subtask, CHECKLIST, "post-720 subtask", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP),
-           _tok(_S2_DELIVERED), _tok(_S2_REVIEW), _tok(_S2_ANC), _tok(_S15_DELIVERED), _tok(_S15_ENTERED),
-           _tok(_S15_MARKER), *(_tok(t) for t in _S15_NOT + _S2_NOT),
-           r"No product increment is authorized after PR #720")
-    _rejects(subtask, CHECKLIST, "post-720 subtask", *_S2_CLOSE_REVERSALS)
+    assert ("the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 "
+            "(pre-merge, \"IMPLEMENTATION CANDIDATE … NOT MERGED\")") in claude
     assert ("*(Superseded 2026-09-29 by the post-PR-#720 closure, preserved — was: \"**CURRENT SUBTASK:** STAGE 15 — "
             "SUBSYSTEM INTERFACE DECLARATION & VERIFICATION PREPARATION — SLICE 2 (current bounded product action; "
-            "implementation candidate; …)\"") in flat_checklist
-    for line in [t.strip("`") for t in (_NONE718, _NEXT_INC_NO, _NEXT_STEP, _S2_DELIVERED, _S2_REVIEW,
-                                        _S15_DELIVERED, _S15_ENTERED, _S15_MARKER) + _S15_NOT + _S2_NOT]:
-        assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
-    for stale in (_S2_CONTRACT.strip("`"), _S2_STATUS.strip("`")):
-        assert re.search(r"^" + re.escape(stale) + r"$", raw_checklist, re.M) is None, stale
-    roadmap = _read(ROADMAP)
-    numbers = [int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)]
-    assert sorted(numbers) == list(range(1, 46)), numbers
-    for n in ("15", "18"):
-        assert re.search(r"^- \[x\] \*\*" + n + r" — ", roadmap, re.M) is None, n
-    [row15] = re.findall(r"^- \[ \] \*\*15 — IRL-compatible view:\*\*.*$", roadmap, re.M)
-    live15 = re.sub(r"\*\(Superseded.*?\)\*", "", row15)
-    assert ("the Owner-authorized Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 "
-            "(delivered, PR #720, merge `" + _S2_MERGE + "`;") in live15
-    assert "no further Stage-15 slice is authorized" in live15
-    [row18] = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
-    live18 = re.sub(r"\*\(Superseded.*?\)\*", "", row18)
-    assert ("that reassessment then selected Stage 15 — Subsystem Interface Declaration & Verification "
-            "Preparation — Slice 2, delivered in PR #720") in live18
-    assert "no product increment is currently authorized and the next step is a Lead-controlled" in live18
-    for live in (live15, live18):
-        for pat in _S2_CLOSE_REVERSALS:
-            assert re.search(pat, live, re.I) is None, pat
-    register = _flat(CAPABILITIES)
-    assert ("and neither is Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 "
-            "(delivered, PR #720") in register
-    assert "current Owner-authorized implementation candidate, not merged" not in register
+            "implementation candidate; …)\"") in _flat(CHECKLIST)
 
 
 def test_source_ip_boundary_invention_first_and_portfolio_reassessment_are_continuity_only():
@@ -4492,3 +4537,750 @@ def test_continuity_addendum_lenses_cap06_and_fraud_routing_authorize_nothing():
     assert ("the existing PSRR / Stage-38 / Stage-40 path must explicitly account for the "
             "production-abuse / fraud surface") in rows[0]
     assert "no new gate, no provider selected, nothing authorized" in rows[0]
+
+
+# ==========================================================================
+# LIVE MATERIAL INVARIANTS — merge-invariant current-authority truth
+#
+# One slice-agnostic owner of what must be true on every live authority surface,
+# whatever delivery is current: exactly one live declaration, one consistent
+# active contract across every surface, correct Stage 15 / 18 status and
+# sequential marker, and no false completion, compatibility, verification, IRL,
+# deployment / release, successor or domain claim. It reads no PR number, SHA,
+# ancestry, review verdict or post-merge result, and it forbids the pre-merge
+# lifecycle wording that becomes false the moment a candidate merges — so an
+# implementation candidate carries its own final-state truth and a merge alone
+# never needs a follow-up current-truth PR.
+# ==========================================================================
+_LIVE_CLAIM_REVERSALS = _S15_CLOSE_REVERSALS + (
+    r"\bIRL (score|scoring) (is |was |has been )?(assigned|computed|achieved)",
+    r"(?<!no )(?<!not )(the )?interactions? (is|are|was|were|has been|have been) (verified|validated|checked)\b",
+    r"(?<!no )(?<!not )compatibility (is|was|has been) (established|verified|confirmed)\b",
+    r"ENGINEERING COMPATIBILITY ANALYSIS: AUTHORIZED",
+    r"FULL CAP-01 / FULL STG: AUTHORIZED",
+    r"(IOT|DRONE|RENEWABLE|SATELLITE)[^`.;]{0,60}: AUTHORIZED",
+    r"NEW DOMAIN ACTIVATION: AUTHORIZED",
+    r"(?<!no )(?<!not )new domain activation (is |was )?authorized",
+    r"CURRENT MASTER ROADMAP STAGE: Stage (?!18\b)\d+",
+    r"MASTER ROADMAP SEQUENTIAL MARKER(?::| stays| is| moves to| becomes)? Stage (?!18\b)\d+")
+# Lifecycle states that are true only BEFORE a merge. On a live surface they make the authoritative
+# text false the moment the candidate merges, which is what used to force a closure PR.
+_PREMERGE_LIFECYCLE = (
+    r"\bIMPLEMENTATION (COMPLETE )?CANDIDATE\b", r"\bIMPLEMENTED CANDIDATE\b", r"\bIN CANDIDATE\b",
+    r"\bPR NOT OPENED\b", r"\bMERGE NOT PERFORMED\b", r"\bNOT MERGED\b", r"\bPR PENDING\b",
+    r"\bPR / MERGE PENDING\b", r"\bREVIEW (IS )?PENDING\b", r"\bcurrent bounded product action\b",
+    r"\bCURRENT REVIEWED PRODUCT HEAD\b")
+_ACTIVE_BOLD = r"\*\*ACTIVE CONTRACT: ([^*]+?)\.\*\*"
+_ACTIVE_TOKEN = r"`ACTIVE CONTRACT: ([^`]+)`"
+
+
+# ---- F1: every `## Current authority` record is classified by its own repository wording ----------
+# A record runs from one `## Current authority` heading to the NEXT `## Current authority` heading (or
+# EOF): ordinary `##` headings inside that interval stay part of the record and are inspected with it.
+# A record is HISTORICAL only when its OWN heading ends with an affirmative status segment in the
+# repository's heading convention — " — DELIVERED[ (…)][; SUPERSEDED as current authority by …]",
+# " — SUPERSEDED (<date>) by …" or " — SUPERSEDED FOR PRESENT ROUTING BY …"; a negated or referential
+# SUPERSEDED ("NOT SUPERSEDED", "(previous mandate SUPERSEDED)") is not a status. Ten declarations
+# written before that convention are allowed ONLY under their exact existing heading, each exactly once
+# and never first. Every other record is LIVE, and exactly one LIVE record — the first — must exist; an
+# extra, unclassifiable record fails closed.
+_HISTORICAL_HEADING = (r" — (?:DELIVERED(?: \([^)]*\))?(?:; SUPERSEDED as current authority by .+)?"
+                       r"|SUPERSEDED \(\d{4}-\d{2}-\d{2}\) by .+|SUPERSEDED FOR PRESENT ROUTING BY .+)$")
+_LEGACY_UNMARKED_AUTHORITY_HEADINGS = frozenset({
+    "## Current authority — Stage 10 / T2-C′ differential product-value assessment (Owner acceptance, 2026-09-20)",
+    "## Current authority — post-PR-664 declaration (v1.32 synchronization, 2026-09-19)",
+    "## Current authority — MG-8: truthful capture of the seed problem statement",
+    "## Current authority — T3-A \"Project record\": narrowed input-history rendering",
+    "## Current authority — T2-G legacy migration: explicit confirmed adoption",
+    "## Current authority — T2-D contextual question feedback (Stage 6)",
+    "## Current authority — T2-G partial versioned mechanism slice (Stage 7)",
+    "## Current authority — T2-G-2 concise and mixed mechanism explanations (Stage 7)",
+    "## Current authority — T2-E Option B + T2-F (one combined bounded candidate)",
+    "## Current authority — T1-D + residual T2-B′ (one combined bounded candidate)",
+})
+
+
+def _authority_sections(contract):
+    """[(heading, flattened record, kind)] for EVERY `## Current authority` record, in file order; kind
+    is "live", "historical" or "legacy". A record ends only at the next `## Current authority` heading
+    or EOF, never at an ordinary `##` heading."""
+    starts = [m.start() for m in re.finditer(r"^## Current authority", contract, re.M)] + [len(contract)]
+    sections = []
+    for s, e in zip(starts, starts[1:]):
+        heading = contract[s:contract.index("\n", s)]
+        kind = ("historical" if re.search(_HISTORICAL_HEADING, heading)
+                else "legacy" if heading in _LEGACY_UNMARKED_AUTHORITY_HEADINGS else "live")
+        sections.append((heading, re.sub(r"\s+", " ", contract[s:e]), kind))
+    return sections
+
+
+def _live_declaration(contract):
+    """(heading, flattened section) of the ONE live authority section; ValueError otherwise."""
+    sections = _authority_sections(contract)
+    live = [s for s in sections if s[2] == "live"]
+    if len(live) != 1:
+        raise ValueError("%d live current-authority sections, exactly one required: %s"
+                         % (len(live), [s[0] for s in live]))
+    if not sections or sections[0][2] != "live":
+        raise ValueError("the first current-authority section is not the live one")
+    legacy = [s[0] for s in sections if s[2] == "legacy"]
+    if len(legacy) != len(set(legacy)):
+        raise ValueError("a legacy authority heading is duplicated")
+    return live[0][0], live[0][1]
+
+
+# ---- F2: no newly authored post-merge / post-integration success claim on a live surface ----------
+# A candidate carries the durable final-state truth, but it cannot truthfully claim that its merge or
+# post-merge verification has already happened; that evidence belongs to Git/GitHub and a read-only
+# check. Every such claim on a live surface must be a LEGACY claim, owned by its complete preserved
+# record: on the same live surface, the whole delivery record that carries it (transient PR / merge
+# identity ignored) plus the COMPLETE claim must be exactly one of the records below, and no more often
+# than it occurs there. A record starts only at a structural boundary — a list separator, a table cell,
+# a sentence end or (prose) a clause end — never at Markdown emphasis, so a new subject, a plain or
+# formatted wrapper ("This candidate:", "**New delivery:**") or a borrowed tail of an old subject stays
+# in the record and fails. A claim runs to its closing backtick (token) or its clause end (prose), so a
+# trailing qualifier ("PASS for New delivery Omega") stays in the claim and fails. Omission is always
+# valid; nothing requires the wording.
+_POST_MERGE_CLAIM = (r"\bPOST[- ](?:MERGE|INTEGRATION)\b[^.;`()]{0,60}?\b(?:PASS(?:ED)?|VERIFIED|CONFIRMED|"
+                     r"SUCCEEDED)\b|\b(?:MERGE|INTEGRATION)(?: IDENTITY)? VERIFICATION\s*:\s*PASS\b|"
+                     r"\b(?:MERGED?|INTEGRAT(?:ED|ION)) (?:AND |& )?(?:VERIFIED|CONFIRMED)\b")
+_RECORD_SEPARATORS = (" · ", " | ", ". ")
+_SENTENCE_SEPARATORS = ("; ",)
+_CLAUSE_ENDS = (";", ")", ". ", " · ", " | ")
+_PM_TOKEN = " · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`"
+_PM_PROSE = "post-merge identity / content verification PASS"
+_S15_DELIVERED_HEADING = " (a bounded {} the already-open Stage-15 integration obligation; no new Master Roadmap Stage; the " \
+            "MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18):** "
+_S18_DELIVERED_HEADING = " (inside Stage 18; no new Master Roadmap Stage):** "
+_CAP01_RECORDS = {
+    "`FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED` · `IMPLEMENTED / MERGED / POST-MERGE VERIFIED`": 1,
+    "`SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED / IMPLEMENTED / MERGED / POST-MERGE "
+    "VERIFIED`": 1,
+    "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+    "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 1,
+}
+_ROUTING_RECORDS = dict(_CAP01_RECORDS, **{
+    "**DELIVERED — Stage 15 / Subsystem Interface Declaration & Verification Preparation — Slice 2"
+    + _S15_DELIVERED_HEADING.format("continuation inside") + "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 1,
+    "**DELIVERED — Stage 15 / Integrated Invention Entry & Durable Subsystem Composition — Slice 1"
+    + _S15_DELIVERED_HEADING.format("re-entry into") + "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+    "**DELIVERED — Stage 18 / Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference "
+    "Fundamentals" + _S18_DELIVERED_HEADING + "`ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+    "**DELIVERED — Stage 18 / Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals"
+    + _S18_DELIVERED_HEADING + "`MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+    "**DELIVERED — Stage 18 / Mechanical CAP-01 — Open-Gap Technical Context" + _S18_DELIVERED_HEADING
+    + "`MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED`" + _PM_TOKEN: 1,
+})
+_LEGACY_POST_MERGE_RECORDS = {
+    "routing:" + ROADMAP: _ROUTING_RECORDS,
+    "routing:" + CHECKLIST: _ROUTING_RECORDS,
+    "routing:" + CONTRACT: _ROUTING_RECORDS,
+    "declaration:" + CONTRACT: {
+        "`STAGE 15 SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+        "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN: 1,
+        "`STAGE 15 SLICE 2: DELIVERED`" + _PM_TOKEN + " — for ONE integrated Mechanical + Electrical / Electronics "
+        "project the inventor can durably record, in their own words, how the two existing parts are intended to "
+        "interact": 1,
+    },
+    "position:" + STATE: dict(_CAP01_RECORDS, **{
+        "`ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+        "`MECHANICAL TECHNICAL DEEPENING SLICE 1: DELIVERED`" + _PM_TOKEN: 1,
+        "Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — delivered, " + _PM_PROSE: 1,
+        "Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 — delivered, " + _PM_PROSE: 1,
+        "Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals — "
+        "delivered, " + _PM_PROSE: 1,
+        "Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals — delivered, " + _PM_PROSE: 1,
+    }),
+    "head:CLAUDE.md": {
+        "The last Owner-authorized bounded product slice — Stage 15 — Subsystem Interface Declaration & "
+        "Verification Preparation — Slice 2 — is DELIVERED (" + _PM_PROSE: 1,
+        "Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 is DELIVERED ("
+        + _PM_PROSE: 1,
+        "Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals — is "
+        "DELIVERED (" + _PM_PROSE: 1,
+        "Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals — DELIVERED ("
+        + _PM_PROSE: 1,
+        "Mechanical CAP-01 — Open-Gap Technical Context — DELIVERED (" + _PM_PROSE: 1,
+    },
+}
+
+
+def _claim_record(before):
+    """The complete delivery record a claim at the end of `before` belongs to. A claim inside a backticked
+    token belongs to that token's record; a claim token without a subject (`…MERGED / …` or a bare PASS
+    token) also owns the complete token before it. A token record starts only at a list / table
+    separator or a sentence end; a prose record may also start at a clause boundary (`; `). Markdown
+    emphasis is never a boundary, so formatted wrapper text stays in the record."""
+    cut, token = len(before), before.count("`") % 2 == 1
+    if token:
+        cut = before.rfind("`")
+        if ":" not in before[cut:]:
+            prev = re.search(r"`[^`]*` · $", before[:cut])
+            if prev:
+                cut = prev.start()
+    separators = _RECORD_SEPARATORS if token else _RECORD_SEPARATORS + _SENTENCE_SEPARATORS
+    starts = [before.rfind(s, 0, cut) + len(s) for s in separators if before.rfind(s, 0, cut) != -1]
+    return before[max(starts, default=0):]
+
+
+def _without_transient_identity(text):
+    """Flattened text with PR numbers / merge SHAs removed from delivery records."""
+    text = re.sub(r"\s+—\s+PR\s+#\d+\s+—\s+merge\s+[0-9a-f]{40}", "", text)
+    return re.sub(r"PR #\d+,? \(?merge `[0-9a-f]{40}`;\s*", "", text)
+
+
+def _claim_end(flat, m):
+    """End of the COMPLETE claim that `m` starts: its semantic clause end. A closing backtick is only
+    formatting — it never ends the claim — so a claim inside a token runs through that backtick AND on
+    to the next clause boundary, and any trailing qualifier (inside or after the token) belongs to it."""
+    start = m.end()
+    if flat[:m.start()].count("`") % 2:
+        close = flat.find("`", m.end())
+        start = len(flat) if close == -1 else close + 1
+    ends = [flat.find(s, start) for s in _CLAUSE_ENDS]
+    return min((e for e in ends if e != -1), default=len(flat))
+
+
+def _unsupported_post_merge_claims(texts):
+    problems, used = [], {}
+    for label, text in texts.items():
+        flat = _without_transient_identity(text)
+        allowed = _LEGACY_POST_MERGE_RECORDS.get(label, {})
+        for m in re.finditer(_POST_MERGE_CLAIM, flat, re.I):
+            record = _claim_record(flat[:m.start()]) + flat[m.start():_claim_end(flat, m)]
+            if record not in allowed:
+                problems.append("%s: unsupported post-merge success claim in record %r" % (label, record))
+            else:
+                used[(label, record)] = used.get((label, record), 0) + 1
+    for (label, record), count in used.items():
+        if count > _LEGACY_POST_MERGE_RECORDS[label][record]:
+            problems.append("%s: legacy post-merge record %r repeated %d times (preserved record: %d)"
+                            % (label, record, count, _LEGACY_POST_MERGE_RECORDS[label][record]))
+    return problems
+
+
+def _fenced_text(raw, name):
+    o, c = _OPEN % name, _CLOSE % name
+    if raw.count(o) != 1 or raw.count(c) != 1:
+        raise ValueError(name + " fence is not unique")
+    i = raw.index(o) + len(o)
+    return re.sub(r"\s+", " ", raw[i:raw.index(c, i)])
+
+
+def _live_authority_texts(read):
+    """{label: live text} for every current-authority surface, superseded notes removed."""
+    texts = {"routing:" + path: _live_only(_fenced_text(read(path), "current-routing"))
+             for path in (ROADMAP, CHECKLIST, CONTRACT)}
+    texts["position:" + STATE] = _live_only(_fenced_text(read(STATE), "current-position"))
+    heading, declaration = _live_declaration(read(CONTRACT))
+    texts["heading:" + CONTRACT] = heading
+    texts["declaration:" + CONTRACT] = _live_only(declaration)
+    claude = re.sub(r"\s+", " ", read("CLAUDE.md"))
+    texts["head:CLAUDE.md"] = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
+    return texts
+
+
+def _live_authority_problems(read=None):
+    """Every material live-authority violation; [] when the live truth holds."""
+    try:
+        texts = _live_authority_texts(read or _read)
+    except ValueError as exc:
+        return ["live authority structure unreadable: %s" % exc]
+    problems = []
+    heading = texts.pop("heading:" + CONTRACT)
+    if re.search(r"SUPERSEDED|DELIVERED", heading):
+        problems.append("the first current-authority section is marked as history: " + heading)
+    declared = re.findall(_ACTIVE_BOLD, texts["declaration:" + CONTRACT])
+    if len(declared) != 1:
+        problems.append("the live contract section holds %d declarations, not exactly one" % len(declared))
+    current = declared[0] if len(declared) == 1 else None
+    if re.findall(_ACTIVE_BOLD, texts["head:CLAUDE.md"]) != [current]:
+        problems.append("CLAUDE.md does not declare the same single active contract")
+    fenced = [label for label in texts if label.split(":")[0] in ("routing", "position", "declaration")]
+    for label in fenced:
+        text = texts[label]
+        tokens = set(re.findall(_ACTIVE_TOKEN, text))
+        if tokens != {current}:
+            problems.append("%s: active-contract tokens %s disagree with %r" % (label, sorted(tokens), current))
+        if current == "NONE" and "`NEXT PRODUCT INCREMENT: NOT AUTHORIZED`" not in text:
+            problems.append(label + ": NONE without `NEXT PRODUCT INCREMENT: NOT AUTHORIZED`")
+        for token in ("`STAGE 18 COMPLETE: NO`", "`STAGE 15: ENTERED / PARTIAL / NOT COMPLETE`"):
+            if token not in text:
+                problems.append(label + ": missing " + token)
+        marker = (r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18\b" if not label.startswith("position")
+                  else r"MASTER ROADMAP SEQUENTIAL MARKER: Stage 18\b")
+        if not re.search(marker, text):
+            problems.append(label + ": the Stage-18 sequential marker is missing")
+    if not re.search(r"MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18\b", texts["head:CLAUDE.md"]):
+        problems.append("head:CLAUDE.md: the Stage-18 sequential marker is missing")
+    for label, text in texts.items():
+        for pat in _LIVE_CLAIM_REVERSALS + _PREMERGE_LIFECYCLE:
+            m = re.search(pat, text, re.I | re.S)
+            if m:
+                problems.append("%s: forbidden live claim %r" % (label, m.group(0)))
+    return problems + _unsupported_post_merge_claims(texts)
+
+
+def test_live_material_invariants_hold():
+    assert _live_authority_problems() == []
+
+
+_LIVE_DOCS = (ROADMAP, CHECKLIST, CONTRACT, STATE, CAPABILITIES, "CLAUDE.md")
+
+
+def _other_identity(raw):
+    """The same text with every PR number and 40-hex identity replaced by a different one."""
+    raw = re.sub(r"\b[0-9a-f]{40}\b", lambda m: hashlib.sha1(m.group(0).encode()).hexdigest(), raw)
+    return re.sub(r"(PR ?-?#)(\d+)", lambda m: m.group(1) + "9" + m.group(2), raw)
+
+
+def _without_identity(raw):
+    """The same text written the way a candidate writes it: delivered status tokens and lines carry no
+    PR / merge identity."""
+    return re.sub(r" — PR #\d+ — merge [0-9a-f]{40}(?=`|$)", "", raw, flags=re.M)
+
+
+@pytest.mark.parametrize("transform", [_other_identity, _without_identity], ids=["changed", "absent"])
+def test_transient_identity_is_never_a_live_prerequisite(monkeypatch, transform):
+    """Changing or omitting every PR number / SHA on every live document changes no live verdict, so
+    recording the identity a merge creates never needs a repository current-truth mutation."""
+    real = _read
+    docs = {path: transform(real(path)) for path in _LIVE_DOCS}
+    assert docs[CONTRACT] != real(CONTRACT)
+    fake = lambda path: docs[path] if path in docs else real(path)       # noqa: E731
+    assert _live_authority_problems(fake) == []
+    monkeypatch.setattr(sys.modules[__name__], "_read", fake)
+    test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
+    assert _live_authority_problems() == []
+
+
+def _span(raw, region):
+    if region == "head":
+        return 0, raw.index("*(Superseded")
+    if region == "declaration":
+        i = raw.index("## Current authority")
+        return i, raw.index("\n## Current authority", i + 5)
+    i = raw.index(_OPEN % region)
+    return i, raw.index(_CLOSE % region, i)
+
+
+def _mutate(path, region, old, new):
+    raw = _read(path)
+    i, j = _span(raw, region)
+    k = raw.find(old, i, j)
+    assert k != -1, (path, region, old)
+    return {path: raw[:k] + new + raw[k + len(old):]}
+
+
+_NS = "`NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT`"
+_MATERIAL_REVERSALS = {
+    "stage 15 complete": (CHECKLIST, "current-routing", "`STAGE 15: ENTERED / PARTIAL / NOT COMPLETE`",
+                          "`STAGE 15: COMPLETE`"),
+    "stage 15 complete in prose": (STATE, "current-position", _NS, _NS + " Stage 15 is complete."),
+    "stage 18 complete": (ROADMAP, "current-routing", "`STAGE 18 COMPLETE: NO`", "`STAGE 18 COMPLETE: YES`"),
+    "marker moved": (CONTRACT, "current-routing", "CURRENT MASTER ROADMAP STAGE: Stage 18",
+                     "CURRENT MASTER ROADMAP STAGE: Stage 19"),
+    "marker moved in position": (STATE, "current-position", "MASTER ROADMAP SEQUENTIAL MARKER: Stage 18",
+                                 "MASTER ROADMAP SEQUENTIAL MARKER: Stage 15"),
+    "successor increment": (STATE, "current-position", "`NEXT PRODUCT INCREMENT: NOT AUTHORIZED`",
+                            "`NEXT PRODUCT INCREMENT: AUTHORIZED`"),
+    "successor contract on one surface": (ROADMAP, "current-routing", "`ACTIVE CONTRACT: NONE`",
+                                          "`ACTIVE CONTRACT: STAGE 15 — SLICE 3`"),
+    "compatibility established": (CHECKLIST, "current-routing", "engineering compatibility has NOT been established",
+                                  "engineering compatibility has been established"),
+    "interaction verified": (STATE, "current-position", _NS, _NS + " The interaction has been verified."),
+    "irl level": (ROADMAP, "current-routing", _NS, _NS + " IRL level 3 is assigned."),
+    "irl score": (CONTRACT, "declaration", _NS, _NS + " An IRL score is assigned."),
+    "deployment authorized": (CONTRACT, "declaration", _NS, _NS + " Deployment is authorized."),
+    "release authorized": ("CLAUDE.md", "head", "**ACTIVE CONTRACT: NONE.**",
+                           "**ACTIVE CONTRACT: NONE.** Release is authorized."),
+    "another stage-15 slice": (CHECKLIST, "current-routing", "`ANOTHER STAGE-15 SLICE: NOT AUTHORIZED`",
+                               "`ANOTHER STAGE-15 SLICE: AUTHORIZED`"),
+    "new domain": (STATE, "current-position", _NS, _NS + " `NEW DOMAIN ACTIVATION: AUTHORIZED`"),
+    "live section marked as history": (CONTRACT, "declaration", "no active contract",
+                                       "no active contract — SUPERSEDED"),
+    "second live declaration": (CONTRACT, "declaration", _NS,
+                                _NS + " **ACTIVE CONTRACT: STAGE 15 — SLICE 1.**"),
+    "claude declares a historical contract": ("CLAUDE.md", "head", "**ACTIVE CONTRACT: NONE.**",
+                                              "**ACTIVE CONTRACT: STAGE 15 — SUBSYSTEM INTERFACE DECLARATION & "
+                                              "VERIFICATION PREPARATION — SLICE 2.**"),
+    "pre-merge lifecycle live": (STATE, "current-position", _NS, _NS + " Stage 15 Slice 2 is NOT MERGED."),
+    "candidate wording live": (ROADMAP, "current-routing", _NS, _NS + " IMPLEMENTATION CANDIDATE."),
+    "stage status dropped": (CONTRACT, "current-routing", "`STAGE 18 COMPLETE: NO`", "`STAGE 18 STATUS`"),
+}
+
+
+@pytest.mark.parametrize("name", sorted(_MATERIAL_REVERSALS))
+def test_every_material_reversal_is_caught(monkeypatch, name):
+    path, region, old, new = _MATERIAL_REVERSALS[name]
+    real = _read
+    docs = _mutate(path, region, old, new)
+    fake = lambda p: docs[p] if p in docs else real(p)                   # noqa: E731
+    assert _live_authority_problems(fake), name
+    monkeypatch.setattr(sys.modules[__name__], "_read", fake)
+    with pytest.raises(AssertionError):
+        test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
+
+
+def test_the_live_authority_owners_pin_no_transient_identity():
+    import inspect
+    sources = [inspect.getsource(f) for f in (
+        _live_authority_texts, _live_authority_problems, _status, _after_fence, _authority_sections,
+        _live_declaration, _unsupported_post_merge_claims, _without_transient_identity, _claim_record, _claim_end,
+        test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface)]
+    sources.append(repr((_LIVE_CLAIM_REVERSALS, _PREMERGE_LIFECYCLE, _HISTORICAL_HEADING, _POST_MERGE_CLAIM)))
+    legacy = repr((sorted(_LEGACY_UNMARKED_AUTHORITY_HEADINGS), sorted(_LEGACY_POST_MERGE_RECORDS.items())))
+    assert re.search(r"\b[0-9a-f]{40}\b", legacy) is None and re.search(r"PR ?-?#\d", legacy) is None
+    for source in sources:
+        assert re.search(r"\b[0-9a-f]{40}\b", source) is None
+        assert re.search(r"PR ?-?#\d", source) is None
+        assert re.search(r"\[:\d{3,}\]", source) is None
+        for word in ("POST-MERGE", "post-merge identity", "REVIEW: PASS", "ANCESTRY", "merge tree"):
+            assert word not in source, word
+
+
+# ---- F1 / F2 adversarial proofs ----------------------------------------------------------------------
+def _assert_rejected(monkeypatch, docs, name):
+    """Both the live-invariant owner and the current-state guard must reject these documents."""
+    real = _read
+    fake = lambda p: docs[p] if p in docs else real(p)                   # noqa: E731
+    assert _live_authority_problems(fake), name
+    monkeypatch.setattr(sys.modules[__name__], "_read", fake)
+    with pytest.raises((AssertionError, ValueError)):
+        test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
+
+
+def _assert_accepted(monkeypatch, docs, name):
+    real = _read
+    fake = lambda p: docs[p] if p in docs else real(p)                   # noqa: E731
+    assert _live_authority_problems(fake) == [], name
+    monkeypatch.setattr(sys.modules[__name__], "_read", fake)
+    test_stage15_slice2_is_delivered_and_no_active_contract_is_current_on_every_live_surface()
+
+
+def _second_heading(contract):
+    """Start of the section that follows the live one."""
+    live_heading = _live_declaration(contract)[0]
+    i = contract.index(live_heading)
+    return contract.index("\n## ", i + 5) + 1
+
+
+_EXTRA_SECTIONS = {
+    "successor contract": "## Current authority — successor increment\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n\n",
+    "second none": ("## Current authority — another declaration\n\n**ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS "
+                    "CURRENTLY AUTHORIZED.\n\n"),
+    "deployment": ("## Current authority — release\n\n**ACTIVE CONTRACT: NONE.** Deployment is authorized. Release "
+                   "is authorized.\n\n"),
+    "astra example": ("## Current authority — successor increment\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n\n"
+                      "Deployment is authorized.\n\n"),
+}
+
+
+@pytest.mark.parametrize("where", ["after the live declaration", "appended later"])
+@pytest.mark.parametrize("name", sorted(_EXTRA_SECTIONS))
+def test_f1_a_second_live_authority_section_is_rejected(monkeypatch, where, name):
+    contract = _read(CONTRACT)
+    section = _EXTRA_SECTIONS[name]
+    if where == "after the live declaration":
+        k = _second_heading(contract)
+        mutated = contract[:k] + section + contract[k:]
+    else:
+        mutated = contract.rstrip("\n") + "\n\n" + section
+    with pytest.raises(ValueError, match="live current-authority sections"):
+        _live_declaration(mutated)
+    _assert_rejected(monkeypatch, {CONTRACT: mutated}, name)
+
+
+def test_f1_legacy_headings_cannot_be_copied_or_lead_and_live_cannot_be_hidden(monkeypatch):
+    contract = _read(CONTRACT)
+    legacy = sorted(_LEGACY_UNMARKED_AUTHORITY_HEADINGS)[0]
+    copied = contract.rstrip("\n") + "\n\n" + legacy + "\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n"
+    _assert_rejected(monkeypatch, {CONTRACT: copied}, "copied legacy heading")
+    i = contract.index("## Current authority")
+    leading = contract[:i] + legacy + "\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n\n" + contract[i:]
+    _assert_rejected(monkeypatch, {CONTRACT: leading}, "legacy heading placed first")
+    heading = _live_declaration(contract)[0]
+    hidden = contract.replace(heading, heading + " — SUPERSEDED", 1)
+    _assert_rejected(monkeypatch, {CONTRACT: hidden}, "live section relabelled as history")
+
+
+def test_f1_every_existing_authority_section_is_classified():
+    sections = _authority_sections(_read(CONTRACT))
+    kinds = [s[2] for s in sections]
+    assert kinds.count("live") == 1 and kinds[0] == "live"
+    assert kinds.count("legacy") == len(_LEGACY_UNMARKED_AUTHORITY_HEADINGS)
+    assert {s[0] for s in sections if s[2] == "legacy"} == _LEGACY_UNMARKED_AUTHORITY_HEADINGS
+    assert kinds.count("historical") >= 30
+    for heading, _text, kind in sections:
+        assert kind != "historical" or re.search(_HISTORICAL_HEADING, heading), heading
+
+
+_PM = "`POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`"
+_F2_NEW_CLAIMS = {
+    "new candidate token": " `STAGE 15 SLICE 3: DELIVERED` · " + _PM,
+    "this candidate": " This candidate: POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS.",
+    "bare token": " " + _PM,
+    "prose pass": " Post-merge verification PASS for this slice.",
+    "post-integration": " `POST-INTEGRATION VERIFICATION: PASS`",
+    "merge verification": " Merge verification: PASS.",
+    "post-merge verified": " The delivery was post-merge verified",
+    "merged and verified": " Stage 15 Slice 3 was merged and verified.",
+}
+
+
+@pytest.mark.parametrize("name", sorted(_F2_NEW_CLAIMS))
+@pytest.mark.parametrize("path, region", [(STATE, "current-position"), (ROADMAP, "current-routing"),
+                                          (CONTRACT, "declaration"), ("CLAUDE.md", "head")])
+def test_f2_a_newly_authored_post_merge_claim_is_rejected(monkeypatch, path, region, name):
+    anchor = "**ACTIVE CONTRACT: NONE.**" if region in ("declaration", "head") else _NS
+    docs = _mutate(path, region, anchor, anchor + _F2_NEW_CLAIMS[name])
+    _assert_rejected(monkeypatch, docs, name)
+
+
+def test_f2_a_legacy_claim_cannot_be_reassigned_or_copied(monkeypatch):
+    legacy = "`STAGE 15 SLICE 2: DELIVERED — PR #720 — merge "
+    raw = _read(ROADMAP)
+    i, j = _span(raw, "current-routing")
+    k = raw.index(legacy, i, j)
+    reassigned = raw[:k] + "`STAGE 15 SLICE 3: DELIVERED" + raw[raw.index("`", k + 1):]
+    _assert_rejected(monkeypatch, {ROADMAP: reassigned}, "reassigned to a new subject")
+    copied = _mutate(STATE, "current-position", _NS, _NS + " `STAGE 15 SLICE 2: DELIVERED` · " + _PM)
+    _assert_rejected(monkeypatch, copied, "legacy claim copied beyond the preserved record")
+
+
+def test_f2_omission_and_identity_removal_stay_valid(monkeypatch):
+    # a candidate adds its own delivery with NO post-merge wording
+    candidate = _mutate(STATE, "current-position", _NS, _NS + " `NEW BOUNDED SLICE: DELIVERED`")
+    _assert_accepted(monkeypatch, candidate, "candidate without post-merge wording")
+    monkeypatch.undo()
+    # the whole repository with every legacy post-merge claim removed (post-merge state, no such wording)
+    claims = (r"\s+·\s+`POST-MERGE\s+IDENTITY\s+/\s+CONTENT\s+VERIFICATION:\s+PASS`|;?\s*post-merge\s+identity\s+/\s+"
+              r"content\s+verification\s+PASS|\s+/\s+POST-MERGE\s+VERIFIED")
+    bare = {path: re.sub(claims, "", _read(path)) for path in _LIVE_DOCS}
+    texts = _live_authority_texts(lambda p: bare[p] if p in bare else _read(p))
+    assert not any(re.search(_POST_MERGE_CLAIM, text, re.I) for text in texts.values())
+    _assert_accepted(monkeypatch, bare, "no post-merge wording on any live surface")
+    monkeypatch.undo()
+    # transient identity removed from delivered tokens (candidate form)
+    _assert_accepted(monkeypatch, {path: _without_identity(_read(path)) for path in _LIVE_DOCS}, "identity absent")
+
+
+# ---- residual F1-A / F1-B / F2 proofs ----------------------------------------------------------------
+def _in_live_interval(contract, block):
+    """`contract` with `block` inserted inside the live record, just before the next authority heading."""
+    i = contract.index(_live_declaration(contract)[0])
+    k = contract.index("\n## Current authority", i + 5) + 1
+    return contract[:k] + block + contract[k:]
+
+
+_ORDINARY_H2 = {
+    "review example": "## Release authorization\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n\nDeployment is authorized.\n\n",
+    "second contract": "## Notes\n\n**ACTIVE CONTRACT: STAGE 16 — SLICE 1.**\n\n",
+    "deployment": "## Operations\n\nDeployment is authorized.\n\n",
+    "release": "## Operations\n\nRelease is authorized.\n\n",
+    "successor": "## Next increment\n\n`NEXT PRODUCT INCREMENT: AUTHORIZED` · `ANOTHER STAGE-15 SLICE: AUTHORIZED`\n\n",
+}
+
+
+@pytest.mark.parametrize("name", sorted(_ORDINARY_H2))
+def test_f1a_an_ordinary_heading_cannot_hide_live_authority(monkeypatch, name):
+    mutated = _in_live_interval(_read(CONTRACT), _ORDINARY_H2[name])
+    assert _ORDINARY_H2[name].split("\n")[0] in _live_declaration(mutated)[1]
+    _assert_rejected(monkeypatch, {CONTRACT: mutated}, name)
+
+
+def test_f1a_legitimate_ordinary_subsections_stay_green(monkeypatch):
+    benign = "## Notes\n\nThe declaration above is unchanged; nothing further is authorized.\n\n"
+    _assert_accepted(monkeypatch, {CONTRACT: _in_live_interval(_read(CONTRACT), benign)}, "benign subsection")
+    # existing records already span ordinary `##` headings (e.g. the historical-authority entries)
+    spans = [text for _h, text, _k in _authority_sections(_read(CONTRACT)) if " ## " in text]
+    assert spans
+
+
+_BODY = "\n\n**ACTIVE CONTRACT: STAGE 15 — SLICE 3.**\n\nDeployment is authorized.\n"
+
+
+@pytest.mark.parametrize("heading", [
+    "## Current authority — successor increment — NOT SUPERSEDED",
+    "## Current authority — successor increment (previous mandate SUPERSEDED)",
+    "## Current authority — successor increment — references a SUPERSEDED contract",
+    "## Current authority — successor increment — UNSUPERSEDED",
+    "## Current authority — successor increment — SUPERSEDED contract replaced",
+    "## Current authority — successor (the DELIVERED Slice 2 is superseded)",
+])
+def test_f1b_a_negated_or_referential_status_is_not_historical(monkeypatch, heading):
+    mutated = _read(CONTRACT).rstrip("\n") + "\n\n" + heading + _BODY
+    assert [k for h, _t, k in _authority_sections(mutated) if h == heading] == ["live"]
+    _assert_rejected(monkeypatch, {CONTRACT: mutated}, heading)
+
+
+@pytest.mark.parametrize("heading", [
+    "## Current authority — Stage 99 example slice (Owner authorization, 2026-10-01) — DELIVERED",
+    "## Current authority — Stage 99 example slice (Owner authorization, 2026-10-01) — DELIVERED; SUPERSEDED as "
+    "current authority by the next declaration",
+    "## Current authority — example: no active contract (2026-10-01) — SUPERSEDED (2026-10-02) by Stage 99",
+])
+def test_f1b_a_genuinely_self_labelled_historical_record_is_accepted(monkeypatch, heading):
+    mutated = _read(CONTRACT).rstrip("\n") + "\n\n" + heading + "\n\nPreserved history.\n"
+    assert [k for h, _t, k in _authority_sections(mutated) if h == heading] == ["historical"]
+    _assert_accepted(monkeypatch, {CONTRACT: mutated}, heading)
+
+
+def test_f1b_unmodified_repository_counts():
+    kinds = [k for _h, _t, k in _authority_sections(_read(CONTRACT))]
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 30, 10)
+
+
+def _flat_doc(path):
+    return re.sub(r"\s+", " ", _read(path))
+
+
+def _replace_once(text, old, new):
+    assert old in text, old
+    return text.replace(old, new, 1)
+
+
+def _raw_replace(path, old, new):
+    """One replacement in the RAW document, tolerant of the line wrapping inside `old`."""
+    pattern = re.escape(old).replace(r"\ ", r"\s+")
+    raw, n = re.subn(pattern, lambda _m: new, _read(path), count=1)
+    assert n == 1, old
+    return raw
+
+
+_S2_TOKEN_CLAIM = " · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`"
+
+
+def test_f2_existing_records_are_owned_and_counted_per_surface():
+    assert _live_authority_problems() == []
+    texts = _live_authority_texts(_read)
+    texts.pop("heading:" + CONTRACT)
+    found = {}
+    for label, text in texts.items():
+        flat = _without_transient_identity(text)
+        for m in re.finditer(_POST_MERGE_CLAIM, flat, re.I):
+            key = (label, _claim_record(flat[:m.start()]) + flat[m.start():_claim_end(flat, m)])
+            found[key] = found.get(key, 0) + 1
+    assert found == {(label, record): n for label, records in _LEGACY_POST_MERGE_RECORDS.items()
+                     for record, n in records.items()}
+
+
+def test_f2_omega_cannot_inherit_a_vacated_allowance(monkeypatch):
+    claude = _flat_doc("CLAUDE.md")
+    vacated = _replace_once(claude, "post-merge identity / content verification PASS; reviewed", "reviewed")
+    omega = _replace_once(vacated, "**ACTIVE CONTRACT: NONE.**", "**ACTIVE CONTRACT: NONE.** New delivery Omega — "
+                          "Verification Preparation — Slice 2 — is DELIVERED (post-merge identity / content "
+                          "verification PASS).")
+    _assert_rejected(monkeypatch, {"CLAUDE.md": omega}, "omega")
+
+
+def test_f2_a_new_subject_with_the_old_suffix_or_tail_fails(monkeypatch):
+    vacated = _raw_replace(ROADMAP, "merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca`" + _S2_TOKEN_CLAIM,
+                           "merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca`")
+    suffix = _replace_once(vacated, _NS, _NS + " · `NEW STAGE 15 SLICE 2: DELIVERED`" + _S2_TOKEN_CLAIM)
+    _assert_rejected(monkeypatch, {ROADMAP: suffix}, "same suffix, new subject")
+    monkeypatch.undo()
+    state = _flat_doc(STATE)
+    tail = _replace_once(state, "; Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — "
+                         "delivered", "; Omega — Stage 15 — Subsystem Interface Declaration & Verification Preparation"
+                         " — Slice 2 — delivered")
+    _assert_rejected(monkeypatch, {STATE: tail}, "whole old tail under a new subject")
+
+
+def test_f2_a_this_candidate_wrapper_cannot_take_an_old_claim(monkeypatch):
+    state = _flat_doc(STATE)
+    vacated = _replace_once(state, _S2_TOKEN_CLAIM, "")
+    wrapped = _replace_once(vacated, _NS, _NS + " · This candidate: `STAGE 15 SLICE 2: DELIVERED`" + _S2_TOKEN_CLAIM)
+    _assert_rejected(monkeypatch, {STATE: wrapped}, "this candidate wrapper")
+
+
+def test_f2_a_legacy_record_cannot_move_to_another_surface_or_exceed_its_count(monkeypatch):
+    moved = _replace_once(_flat_doc(STATE), _NS, _NS + " · `MECHANICAL CAP-01 OPEN-GAP TECHNICAL CONTEXT: DELIVERED`"
+                          + _S2_TOKEN_CLAIM)
+    _assert_rejected(monkeypatch, {STATE: moved}, "record owned by another surface")
+    monkeypatch.undo()
+    claude = _flat_doc("CLAUDE.md")
+    doubled = _replace_once(claude, "**ACTIVE CONTRACT: NONE.**", "**ACTIVE CONTRACT: NONE.** Mechanical CAP-01 — "
+                            "Open-Gap Technical Context — DELIVERED (post-merge identity / content verification PASS).")
+    _assert_rejected(monkeypatch, {"CLAUDE.md": doubled}, "record beyond its preserved count")
+
+
+def test_f2_the_same_unchanged_record_may_move_within_its_surface(monkeypatch):
+    vacated = _raw_replace(ROADMAP, "merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca`" + _S2_TOKEN_CLAIM,
+                           "merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca`")
+    moved = _replace_once(vacated, _NS, _NS + " · `STAGE 15 SLICE 2: DELIVERED`" + _S2_TOKEN_CLAIM)
+    _assert_accepted(monkeypatch, {ROADMAP: moved}, "same record relocated")
+
+
+# ---- F2 record-binding residual: Markdown wrappers and trailing qualifiers ------------------------------
+_S2_TOKEN = "`STAGE 15 SLICE 2: DELIVERED`"
+
+
+@pytest.mark.parametrize("wrapper", ["This candidate:", "**This candidate:**", "**New delivery:**",
+                                     "**Successor:**", "_Successor:_", "***_This candidate_:***",
+                                     "**This candidate:** *new delivery*"])
+def test_f2_a_markdown_wrapper_stays_part_of_the_record(monkeypatch, wrapper):
+    state = _flat_doc(STATE)
+    vacated = _replace_once(state, _S2_TOKEN_CLAIM, "")
+    wrapped = _replace_once(vacated, _NS, _NS + " · " + wrapper + " " + _S2_TOKEN + _S2_TOKEN_CLAIM)
+    _assert_rejected(monkeypatch, {STATE: wrapped}, wrapper)
+    assert any(wrapper in p for p in _live_authority_problems(lambda p: wrapped if p == STATE else _read(p)))
+
+
+_TRAILING = {
+    "PASS for New delivery Omega": ("VERIFICATION: PASS`", "VERIFICATION: PASS for New delivery Omega`"),
+    "PASS — New delivery Omega": ("VERIFICATION: PASS`", "VERIFICATION: PASS — New delivery Omega`"),
+    "VERIFIED for candidate X": ("POST-MERGE VERIFIED", "POST-MERGE VERIFIED for candidate X"),
+}
+
+
+@pytest.mark.parametrize("name", sorted(_TRAILING))
+def test_f2_a_trailing_qualifier_inside_the_token_is_part_of_the_claim(monkeypatch, name):
+    old, new = _TRAILING[name]
+    state = _replace_once(_flat_doc(STATE), old, new)
+    _assert_rejected(monkeypatch, {STATE: state}, name)
+    assert any(new.rstrip("`") in p for p in _live_authority_problems(lambda p: state if p == STATE else _read(p)))
+
+
+@pytest.mark.parametrize("qualifier", [" for New delivery Omega", " — candidate X", " (successor slice)"])
+def test_f2_a_trailing_qualifier_in_prose_is_part_of_the_claim(monkeypatch, qualifier):
+    claude = _replace_once(_flat_doc("CLAUDE.md"), "post-merge identity / content verification PASS; reviewed",
+                           "post-merge identity / content verification PASS" + qualifier + "; reviewed")
+    _assert_rejected(monkeypatch, {"CLAUDE.md": claude}, qualifier)
+
+
+def test_f2_complete_claims_end_at_their_token_or_clause():
+    token = "`X: DELIVERED` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS for Omega` · `NEXT`"
+    m = re.search(_POST_MERGE_CLAIM, token, re.I)
+    assert token[m.start():_claim_end(token, m)] == "POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS for Omega`"
+    prose = "Omega is DELIVERED (post-merge identity / content verification PASS for Omega; next clause"
+    m = re.search(_POST_MERGE_CLAIM, prose, re.I)
+    assert prose[m.start():_claim_end(prose, m)] == "post-merge identity / content verification PASS for Omega"
+
+
+# ---- F2 semantic claim end: a closing backtick is formatting, not the end of the evidence clause ---------
+_AFTER_TOKEN = {
+    "PASS` for New delivery Omega": ("`POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`", " for New delivery Omega"),
+    "PASS` — New delivery Omega": ("`POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`", " — New delivery Omega"),
+    "PASS` (successor slice)": ("`POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`", " (successor slice)"),
+    "VERIFIED` for candidate X": ("MERGED / POST-MERGE VERIFIED — PR #678 — merge 84c45cec89f5348f279c591dd739ded0d0db24b3`",
+                                  " for candidate X"),
+}
+
+
+@pytest.mark.parametrize("name", sorted(_AFTER_TOKEN))
+def test_f2_a_qualifier_after_the_closing_backtick_is_part_of_the_claim(monkeypatch, name):
+    token, qualifier = _AFTER_TOKEN[name]
+    state = _replace_once(_flat_doc(STATE), token, token + qualifier)
+    _assert_rejected(monkeypatch, {STATE: state}, name)
+    assert any(qualifier.strip(" ()") in p for p in _live_authority_problems(lambda p: state if p == STATE else _read(p)))
+
+
+def test_f2_a_closing_backtick_does_not_end_the_claim():
+    text = "`X: DELIVERED` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` for New delivery Omega · `NEXT`"
+    m = re.search(_POST_MERGE_CLAIM, text, re.I)
+    assert text[m.start():_claim_end(text, m)] == ("POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` for New "
+                                                   "delivery Omega")
+    text = "`X: DELIVERED` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `NEXT`"
+    m = re.search(_POST_MERGE_CLAIM, text, re.I)
+    assert text[m.start():_claim_end(text, m)] == "POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`"
