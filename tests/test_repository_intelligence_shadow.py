@@ -9,10 +9,12 @@ File-creation contract:
     scored) and the fast-feedback plan/report (only a validated
     AFFECTED-CANDIDATE proposal may run, PASS/FAIL carry no merge claim) —
     and that `.github/workflows/ci.yml` keeps RIG strictly non-authoritative:
-    the smoke/full floor and FULL regression are unchanged and never read RIG
-    output, RIG analyses EXPECTED_BASE -> EXPECTED_MERGE, candidate tests run
-    only in the separate advisory fast job, and `CI required` still depends on
-    `verify` alone. Also exercises RIG's self-certification for the shadow files.
+    the smoke/full floor (now the `scope` job) never reads RIG output, RIG and
+    its monolithic FULL comparison run only in the TEMPORARY advisory telemetry
+    job, RIG analyses EXPECTED_BASE -> EXPECTED_MERGE, candidate tests run only
+    in the separate advisory fast job, and neither advisory lane is a direct or
+    transitive dependency of `CI required`. Also exercises RIG's
+    self-certification for the shadow files.
   Input contract: synthetic JUnit/RIG files and throwaway git repositories
     under `tmp_path`; the workflow is read as text (no YAML parser).
   Output contract: pass/fail evidence only.
@@ -358,16 +360,28 @@ def _step(job, name):
     return job[start:] if nxt == -1 else job[start:nxt]
 
 
+TELEMETRY = "full_monolithic_telemetry"
+GATE = ("scope", "verify", "full_shard", "full_audit", "required")
+
+
+def _needs(job):
+    found = re.findall(r"^    needs: \[(.*)\]$", job.split("    steps:\n")[0], re.M)
+    return [n.strip() for n in found[0].split(",")] if found else []
+
+
 def test_smoke_full_floor_authority_is_unchanged():
-    verify = _jobs(_workflow())["verify"]
-    assert "scope = 'smoke' if all(map(documentation_only, paths)) else 'full'" in verify
-    assert "output.write('scope=' + scope + '\\n')" in verify
-    assert "rig" not in _step(verify, "Verify identity and select the minimum test scope").lower()
+    scope = _jobs(_workflow())["scope"]
+    assert "scope = 'smoke' if all(map(documentation_only, paths)) else 'full'" in scope
+    assert "output.write('scope=' + scope + '\\n')" in scope
+    assert "rig" not in _step(scope, "Verify identity and select the minimum test scope").lower()
+    assert "needs:" not in scope
 
 
 def test_full_regression_runs_only_on_the_existing_floor_and_never_reads_rig():
-    block = _step(_jobs(_workflow())["verify"], "Full regression and mandatory-check audit")
-    assert re.findall(r"^\s+if: (.+)$", block, re.M) == ["steps.scope.outputs.scope == 'full'"]
+    tel = _jobs(_workflow())[TELEMETRY]
+    assert "    if: needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'\n" in tel
+    block = _step(tel, "Full regression and mandatory-check audit")
+    assert re.findall(r"^\s+if: (.+)$", block, re.M) == []
     for word in ("rig", "candidate", "shadow", "fast"):
         assert word not in block.lower(), word
     assert "result = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider'," in block
@@ -379,7 +393,7 @@ def test_rig_analyses_the_tested_merge_and_head_is_identity_only():
     text = _workflow()
     assert "merge-base" not in text
     assert '--head "$EXPECTED_HEAD"' not in text and "--head $EXPECTED_HEAD" not in text
-    plan = _step(_jobs(text)["verify"], "RIG shadow plan (advisory only; selects nothing)")
+    plan = _step(_jobs(text)[TELEMETRY], "RIG shadow plan (advisory only; selects nothing)")
     assert '--base "$EXPECTED_BASE" --head "$EXPECTED_MERGE"' in plan
     fast = _step(_jobs(text)["fast"], "RIG fast plan (advisory; decides only whether this lane runs)")
     assert '--base "$EXPECTED_BASE" --tested-merge "$EXPECTED_MERGE" --pr-head "$EXPECTED_HEAD"' in fast
@@ -389,24 +403,26 @@ def test_rig_analyses_the_tested_merge_and_head_is_identity_only():
 
 
 def test_shadow_steps_are_advisory_fail_open_and_ordered():
-    verify = _jobs(_workflow())["verify"]
-    plan = _step(verify, "RIG shadow plan (advisory only; selects nothing)")
-    comp = _step(verify, "RIG shadow comparison (advisory only; never affects CI status)")
+    tel = _jobs(_workflow())[TELEMETRY]
+    plan = _step(tel, "RIG shadow plan (advisory only; selects nothing)")
+    comp = _step(tel, "RIG shadow comparison (advisory only; never affects CI status)")
     assert "continue-on-error: true" in plan and "continue-on-error: true" in comp
-    assert "if: steps.scope.outputs.scope == 'full'" in plan
-    assert "if: always() && steps.scope.outputs.scope == 'full'" in comp
+    assert "    continue-on-error: true\n" in tel.split("    steps:\n")[0]
+    assert re.findall(r"^\s+if: (.+)$", plan, re.M) == []
+    assert re.findall(r"^\s+if: (.+)$", comp, re.M) == ["always()"]
     assert '"$RUNNER_TEMP/rig-shadow.json"' in plan and "FULL regression still runs" in plan
-    assert verify.index("RIG shadow plan") < verify.index("- name: Full regression and mandatory-check audit") \
-        < verify.index("RIG shadow comparison") < verify.index("- name: Confirm repository data was not changed")
+    assert tel.index("RIG shadow plan") < tel.index("- name: Full regression and mandatory-check audit") \
+        < tel.index("RIG shadow comparison") < tel.index("- name: Confirm repository data was not changed")
     for block in (plan, comp):
         assert "id:" not in block and "pytest" not in block.replace("inventorai-pytest.xml", "")
 
 
 def test_candidate_tests_run_only_in_the_advisory_fast_job():
     jobs = _jobs(_workflow())
-    assert "candidates" not in jobs["verify"] and "rig-fast" not in jobs["verify"]
-    assert jobs["verify"].count("'-m', 'pytest'") == 1                 # the unchanged FULL run only
-    assert "candidates" not in jobs["required"]
+    for name in GATE + (TELEMETRY,):
+        assert "candidates" not in jobs[name] and "rig-fast" not in jobs[name], name
+    assert jobs[TELEMETRY].count("'-m', 'pytest'") == 1                # the unchanged monolithic FULL run only
+    assert "'-m', 'pytest'" not in jobs["verify"]
     run = _step(jobs["fast"], "Run RIG candidate tests early (advisory; NOT A MERGE GATE)")
     assert "if: steps.fastplan.outputs.run_fast == 'true'" in run
     assert "argv = [sys.executable, '-m', 'pytest'" in run and "'--', *candidates]" in run
@@ -420,17 +436,41 @@ def test_candidate_tests_run_only_in_the_advisory_fast_job():
 
 def test_fast_job_is_parallel_non_required_and_cannot_control_verify():
     jobs = _jobs(_workflow())
-    assert set(jobs) == {"verify", "fast", "required"}
-    assert "needs:" not in jobs["verify"] and "needs:" not in jobs["fast"]
+    # tests/test_ci_full_suite.py pins the sharded FULL authority and the full gate truth table
+    assert set(jobs) == {"scope", "verify", "fast", "full_shard", "full_audit", TELEMETRY, "required"}
+    assert "needs:" not in jobs["fast"] and _needs(jobs["verify"]) == ["scope"]
     assert "continue-on-error: true" in jobs["fast"].split("steps:")[0]
-    assert "fast" not in jobs["verify"].lower().replace("fail-open", "")
+    closure, frontier = set(), ["required"]
+    while frontier:
+        for dep in _needs(jobs[frontier.pop()]):
+            if dep not in closure:
+                closure.add(dep)
+                frontier.append(dep)
+    assert closure == {"scope", "verify", "full_shard", "full_audit"}
+    for name in jobs:
+        assert not {"fast", TELEMETRY} & set(_needs(jobs[name])), name
     required = jobs["required"]
-    assert re.findall(r"needs: \[(.*)\]", required) == ["verify"]
-    assert 'test "$VERIFY_RESULT" = success' in required and "fast" not in required.lower()
+    assert "name: CI required" in required and "fast" not in required.lower() and "telemetry" not in required.lower()
+
+
+def test_gate_jobs_carry_no_rig_or_candidate_input():
+    jobs = _jobs(_workflow())
+    for name in GATE:
+        code = "\n".join(line for line in jobs[name].splitlines() if not line.lstrip().startswith("#"))
+        body = code.lower().replace("fail-fast", "").replace("name: verify candidate (smoke route)", "")
+        for word in (r"\brig\b", "repository_intelligence", "candidate", r"\bfast\b", "shadow", "telemetry",
+                     "continue-on-error"):
+            assert re.search(word, body) is None, (name, word)
 
 
 def test_unavailable_rig_cannot_prevent_the_full_regression():
-    verify = _jobs(_workflow())["verify"]
-    plan = _step(verify, "RIG shadow plan (advisory only; selects nothing)")
+    tel = _jobs(_workflow())[TELEMETRY]
+    plan = _step(tel, "RIG shadow plan (advisory only; selects nothing)")
     assert "|| echo" in plan and "continue-on-error: true" in plan
-    assert "steps.rig" not in _workflow() and "outputs.run_fast" not in verify
+    assert "steps.rig" not in _workflow() and "outputs.run_fast" not in tel
+
+
+def test_shadow_authority_text_names_the_sharded_gate_not_verify():
+    assert "Verify candidate" not in shadow.AUTHORITY and "decide CI status" in shadow.AUTHORITY
+    assert "sharded FULL suite" in shadow.AUTHORITY and "'CI required'" in shadow.AUTHORITY
+    assert shadow.AUTHORITY.startswith("advisory-only:")
