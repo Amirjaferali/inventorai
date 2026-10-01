@@ -1386,7 +1386,10 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       "subsystem_interface_preparations",
                       # CAP-09 Result Event Slice 1: append-only experiment
                       # results (not a commercial owner).
-                      "prototype_test_results"}
+                      "prototype_test_results",
+                      # Stage 15 Slice 4: append-only interface observations
+                      # (not a commercial owner).
+                      "subsystem_interface_observations"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()

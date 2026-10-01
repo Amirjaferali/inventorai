@@ -509,6 +509,9 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       "requirement_quantities",
                       # Stage 15 Slice 2 sidecar: Owner-declared interfaces
                       # (no payload, no disposition) — not a second ledger.
+                      # Stage 15 Slice 4 append-only interface observations
+                      # (no payload, no disposition) — not a ledger either.
+                      "subsystem_interface_observations",
                       # Stage 15 Slice 3 current-value sidecar (preparation
                       # inputs per interface) — not a second ledger either.
                       "subsystem_interface_preparations",

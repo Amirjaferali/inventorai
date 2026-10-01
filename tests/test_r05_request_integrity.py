@@ -32,6 +32,8 @@ MUTATIONS = (
     "/session/<sid>/interface-preparation",
     # CAP-09 Result Event Slice 1: the inventor's append-only experiment result.
     "/session/<sid>/experiment-result",
+    # Stage 15 Slice 4: the inventor's append-only interface observation.
+    "/session/<sid>/interface-observation",
     "/session/<sid>/decision/declare-context", "/session/<sid>/decision/declare-alternative",
     "/session/<sid>/decision/refine-alternative", "/session/<sid>/decision/withdraw-alternative",
     "/session/<sid>/keep-snapshot", "/session/<sid>/success-criteria", "/session/<sid>",

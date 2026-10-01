@@ -16,6 +16,13 @@ textarea{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radi
 .guidance{font-size:12px;line-height:1.6;color:#555;margin:4px 0 0}
 button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer;max-width:100%;box-sizing:border-box}
 .links{margin-top:24px;font-size:13px}
+h2{color:#2c3e50;font-size:18px;margin:28px 0 8px 0}
+.obs-chain{border-top:1px solid #e2e6ea;margin-top:8px;padding-top:8px}
+.obs-text{margin:4px 0;white-space:pre-wrap;font-size:13px}
+.obs-earlier{white-space:pre-wrap;color:#555;margin:4px 0;font-size:12px}
+.obs-context{background:#f7f5ee;border-inline-start:3px solid #b8a97a;padding:6px 10px;margin:6px 0;font-size:12px}
+.obs-context dd{margin:0 12px 4px 12px;white-space:pre-wrap}
+details{font-size:12px;margin:4px 0}
 @media(max-width:520px){body{margin:18px auto;padding:0 14px}.ifc{padding:12px}}
 </style>
 {% endblock %}
@@ -60,6 +67,73 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   <p class="guidance">{{ t('UI_S15_PREP_LIMIT').format(limit=max_length) }}</p>
   <button type="submit">{{ t('UI_S15_PREP_SAVE') }}</button>
 </form>
+
+{#- Stage 15 Slice 4 — what actually happened when the inventor tested or
+    checked each interaction, in their own words. Append-only history; a
+    correction keeps every earlier entry; each check keeps the preparation
+    frozen when it was first recorded (planning context, never the conditions
+    actually used). Nothing here is a verdict, a criterion comparison or a
+    verification. Its own forms (never nested in the preparation form), each
+    with its own signed submission identity; they never save preparation. -#}
+<h2 id="observations-heading">{{ t('UI_S15_OBS_HEADING') }}</h2>
+<div class="intro" data-obs-intro>
+  <p style="margin:0 0 6px 0">{{ t('UI_S15_OBS_INTRO') }}</p>
+  <p style="margin:0">{{ t('UI_S15_OBS_SEPARATE') }}</p>
+</div>
+{% if observations is none %}
+<div class="notice" role="status" data-obs-unavailable>{{ t('UI_S15_OBS_UNAVAILABLE') }}</div>
+{% else %}
+{% for ifc in items %}
+{% set obs = observations[ifc.interface_id] %}
+{% set n = loop.index %}
+<div class="ifc" data-obs-interface>
+  <div class="ifc-title" id="obs-title-{{ n }}">{{ t('UI_S15_IFC_BETWEEN') }} <bdi dir="auto">{{ ifc.a }}</bdi> {{ t('UI_S15_IFC_AND') }} <bdi dir="auto">{{ ifc.b }}</bdi></div>
+  <p class="ifc-desc">{{ t('UI_S15_IFC_DESCRIPTION') }} <bdi dir="auto">{{ ifc.description }}</bdi></p>
+  {% if not obs.chains %}<p class="guidance" data-obs-none>{{ t('UI_S15_OBS_NONE') }}</p>{% endif %}
+  {% for ch in obs.chains %}
+  <div class="obs-chain" data-obs-chain>
+    <div style="font-size:13px;font-weight:bold">{{ t('UI_S15_OBS_CHECK') }} {{ loop.index }}</div>
+    <p class="obs-text" data-obs-text><bdi dir="auto">{{ ch.text }}</bdi></p>
+    <p class="guidance" data-obs-label>{{ t('UI_S15_OBS_LABEL') }}</p>
+    {% if ch.earlier %}
+    <details><summary>{{ t('UI_S15_OBS_EARLIER') }}</summary>
+      {% for old in ch.earlier %}<p class="obs-earlier" data-obs-earlier><bdi dir="auto">{{ old }}</bdi></p>{% endfor %}
+    </details>
+    {% endif %}
+    <details data-obs-context><summary>{{ t('UI_S15_OBS_CONTEXT') }}</summary>
+      <div class="obs-context">
+        <p class="guidance" style="margin:0 0 4px 0">{{ t('UI_S15_OBS_CONTEXT_NOTE') }}</p>
+        <dl style="margin:4px 0">
+          {% for c in ch.context %}<dt style="font-weight:bold">{{ t(c.label_key) }}</dt><dd>{% if c.text is not none %}<bdi dir="auto">{{ c.text }}</bdi>{% else %}{{ t('UI_S15_OBS_CONTEXT_ABSENT') }}{% endif %}</dd>{% endfor %}
+        </dl>
+      </div>
+    </details>
+    <details><summary>{{ t('UI_S15_OBS_CORRECT') }}</summary>
+      <form method="POST" action="{{ url_for('record_interface_observation', sid=sid) }}" data-obs-correct>
+        <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+        <input type="hidden" name="observation_submission" value="{{ ch.submission }}">
+        <input type="hidden" name="interface_id" value="{{ ifc.interface_id }}">
+        <input type="hidden" name="supersedes" value="{{ ch.head_id }}">
+        <textarea name="observation_text" rows="3" maxlength="{{ observation_max_length }}" dir="auto" aria-label="{{ t('UI_S15_OBS_CORRECT') }}">{% if ch.draft is not none %}{{ ch.draft }}{% else %}{{ ch.text }}{% endif %}</textarea>
+        <p class="guidance">{{ t('UI_S15_OBS_CORRECT_NOTE') }}</p>
+        <button type="submit">{{ t('UI_S15_OBS_CORRECT_BUTTON') }}</button>
+      </form>
+    </details>
+  </div>
+  {% endfor %}
+  <form method="POST" action="{{ url_for('record_interface_observation', sid=sid) }}" data-obs-record style="margin-top:10px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <input type="hidden" name="observation_submission" value="{{ obs.submission }}">
+    <input type="hidden" name="interface_id" value="{{ ifc.interface_id }}">
+    <label for="obs-new-{{ n }}">{{ t('UI_S15_OBS_RECORD') }}</label>
+    <textarea id="obs-new-{{ n }}" name="observation_text" rows="3" maxlength="{{ observation_max_length }}" dir="auto"
+              aria-describedby="obs-title-{{ n }} obs-note-{{ n }}">{% if obs.draft is not none %}{{ obs.draft }}{% endif %}</textarea>
+    <p class="guidance" id="obs-note-{{ n }}" data-obs-record-note>{{ t('UI_S15_OBS_RECORD_NOTE').format(limit=observation_max_length) }}</p>
+    <button type="submit">{{ t('UI_S15_OBS_RECORD_BUTTON') }}</button>
+  </form>
+</div>
+{% endfor %}
+{% endif %}
 {% else %}
 <div class="intro" data-prep-no-interfaces>{{ t('UI_S15_PREP_NO_INTERFACES') }}</div>
 {% endif %}
