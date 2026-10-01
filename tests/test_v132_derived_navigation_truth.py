@@ -411,7 +411,7 @@ def test_every_surface_declares_the_same_current_state_blocks():
                                             marker)
 
 
-def test_stage_eighteen_is_entered_and_still_completes_nothing():
+def test_stage_eighteen_is_complete_for_the_current_scope_and_routing_past_completes_nothing():
     """The CURRENT routing, asserted where preserved history cannot reach it.
 
     This guard has been wrong-but-green four times, and the shape never
@@ -435,15 +435,18 @@ def test_stage_eighteen_is_entered_and_still_completes_nothing():
     PAST, not completed. Routing forward must never read as a discharge, and
     entering Stage 18 discharges nothing behind it either.
     """
+    # AMENDED at the Stage 18 closure (2026-10-01): the guard flips with the fact once more. Stage 18 is
+    # COMPLETE for the current Mechanical + Electrical / Electronics scope only, the sequential marker is
+    # Stage 19 for navigation only, and routing past Stages 11, 13, 14, 16 and 17 completes none of them.
     for path, routing in _surfaces("current-routing"):
         _needs(routing, path, "routing",
-               r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18",
-               r"`STAGE 18 STARTED: YES`",
-               r"`STAGE 18 COMPLETE: NO`",
+               r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 19",
+               re.escape("`STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`"),
+               re.escape("`NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE`"),
+               r"routing past Stages 11, 13, 14, 16 and 17 completes none of them",
                r"`FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED`",
                r"FULL CAP-01 / FULL STG:\s*NOT\s+AUTHORIZED",
                r"`D13 RESEARCH: REMAINS CLOSED`",
-               r"(?i)Stage 18\s+remains PARTIAL",
                r"(?i)checkbox stays unticked",
                r"`STAGE 11 STARTED: NO`",
                r"Stage 11[^.]{0,200}DEFERRED",
@@ -457,11 +460,13 @@ def test_stage_eighteen_is_entered_and_still_completes_nothing():
                  r"STAGE 18 STARTED: NO",
                  r"Stage 18 is `NOT AUTHORIZED FOR IMPLEMENTATION`",
                  # entry is not completion, and the slice is not the capability
-                 r"STAGE 18 COMPLETE: YES",
+                 r"STAGE 18 COMPLETE: YES", r"`STAGE 18 COMPLETE: NO`",
                  # tight on purpose: "entering Stage 18 is not the next
                  # obligation discharged" is TRUE and must stay sayable, so the
-                 # forbidden shape is the predicate, not the bare co-occurrence
-                 r"Stage 18\s+(is|was|has been)\s+(COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b",
+                 # forbidden shape is the predicate, not the bare co-occurrence;
+                 # only the scoped completion is true
+                 r"Stage 18\s+(is|was|has been)\s+(COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b"
+                 r"(?!\s+for\s+the\s+current\s+Mechanical)",
                  r"Stage 18[^.]{0,30}\bmarked (complete|completed|closed)\b",
                  r"FULL (CAP-01|STG)[^.]{0,40}: *AUTHORIZED",
                  r"D13 RESEARCH: (REOPENED|OPEN)",
@@ -492,8 +497,9 @@ def test_stage_eighteen_is_entered_and_still_completes_nothing():
     # and neither stage's checkbox has been ticked by routing
     assert re.search(r"^- \[ \] \*\*11 — T1-C′/A2 human evidence:",
                      _read(ROADMAP), re.M), "stage 11 checkbox is not empty"
-    assert re.search(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:",
-                     _read(ROADMAP), re.M), "stage 18 checkbox is not empty"
+    # Stage 18's checkbox is ticked for the current Mechanical + Electrical / Electronics scope only
+    assert re.search(r"^- \[x\] \*\*18 — D13/CAP-01 guidance:",
+                     _read(ROADMAP), re.M), "stage 18 checkbox is not ticked"
 
 
 # The safeguard set, as one canonical run. Asserting the whole run at once is
@@ -909,7 +915,9 @@ NEVER_TRUE_ANYWHERE = (
     # still does not license takes its place: completing the stage, authorizing
     # full CAP-01/STG, reopening D13, or activating another domain's profile.
     r"STAGE 18 COMPLETE: YES",
-    r"STAGE 18: (COMPLETE|COMPLETED)",
+    # the Stage 18 closure made the SCOPED completion true; an unscoped one stays false everywhere
+    r"STAGE 18: (COMPLETE|COMPLETED)(?! — CURRENT MECHANICAL \+ ELECTRICAL / ELECTRONICS SCOPE)",
+    r"STAGE 19 COMPLETE: YES", r"STAGE 19: (COMPLETE|COMPLETED)",
     r"FULL (CAP-01|STG)[^.\n]{0,40}: *AUTHORIZED",
     r"CAP-01: FULLY AUTHORIZED",
     r"D13 RESEARCH: (REOPENED|OPEN)\b",
@@ -1140,11 +1148,13 @@ def test_no_completed_stage_is_left_reading_as_the_current_stage():
     behind.
     """
     checklist = _flat(CHECKLIST)
-    assert "**CURRENT STAGE:** Stage 18" in checklist
+    # AMENDED at the Stage 18 closure: the marker is Stage 19, for navigation only
+    assert ("**CURRENT STAGE:** Stage 19 — WS-PFV-001 / CAP-09 experiment-plan designer — ENTERED / NOT COMPLETE — "
+            "NAVIGATION ONLY.") in checklist
     # AMENDED at the Stage-17 product-depth disposition: Stage 11 joins this
     # list. It was routed PAST, not completed, so its old current-stage wording
     # must now sit inside a supersession note exactly like a completed stage's.
-    for stage in (9, 10, 11):
+    for stage in (9, 10, 11, 18):
         for match in re.finditer(r"CURRENT STAGE:\*{0,2} Stage %d" % stage,
                                  checklist):
             window = checklist[max(0, match.start() - 600):match.start()]
@@ -1154,7 +1164,9 @@ def test_no_completed_stage_is_left_reading_as_the_current_stage():
     # AMENDED post-PR-#678: Stage 18 is ENTERED, so "Stage 18 if authorized" is
     # history now. The live frontier must say so, and the old wording may survive
     # only inside the supersession note that preserves it.
-    assert "CURRENT PRODUCT-DEPTH FRONTIER: Stage 18 — ENTERED / PARTIAL" in checklist
+    assert ("CURRENT PRODUCT-DEPTH FRONTIER: Stage 19 — ENTERED / NOT COMPLETE — NAVIGATION ONLY (NO STAGE-19 "
+            "IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE); Stage 18 — COMPLETE for the current Mechanical + "
+            "Electrical / Electronics scope") in checklist
     for match in re.finditer(r"Stage 18 if authorized", checklist):
         window = checklist[max(0, match.start() - 200):match.start()]
         assert "Superseded" in window, "a live 'Stage 18 if authorized' frontier survives"
@@ -1559,18 +1571,20 @@ def test_the_current_state_file_routes_to_the_entered_stage_and_authorizes_nothi
     carrying authority: the mandate lives in the contract, and this file routes.
     """
     block = _current(STATE, "current-position")
-    for pat in (r"`STAGE 18 STARTED: YES`", r"`STAGE 18 COMPLETE: NO`",
+    for pat in (re.escape("`STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`"),
+                re.escape("`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 19 — ENTERED / NOT COMPLETE — NAVIGATION ONLY`"),
+                re.escape("`NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE`"),
                 r"FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED",
                 r"FULL CAP-01\s*/\s*FULL STG: NOT AUTHORIZED",
                 r"`D13 RESEARCH: REMAINS CLOSED`",
-                r"(?i)Stage 18 stays \*\*PARTIAL\*\*",
+                r"Stage 18 is now \*\*COMPLETE for the current Mechanical \+ Electrical / Electronics scope\*\*",
                 r"(?i)this entry routes and does not\s+authorize",
                 r"electronics_electrical` only",
                 r"(?i)FIRST\s+authorized profile, not the definition of CAP-01",
                 r"(?i)`mechanical` remains a fully activated"):
         assert re.search(pat, block, re.S), ("current-position", "MISSING", pat)
-    for pat in (r"STAGE 18 STARTED: NO", r"STAGE 18 COMPLETE: YES",
-                r"(?i)mechanical[^.]{0,60}unsupported"):
+    for pat in (r"STAGE 18 STARTED: NO", r"STAGE 18 COMPLETE: YES", r"`STAGE 18 COMPLETE: NO`",
+                r"Stage 18 stays \*\*PARTIAL\*\*", r"(?i)mechanical[^.]{0,60}unsupported"):
         assert re.search(pat, block, re.I | re.S) is None, ("current-position",
                                                             "FORBIDDEN", pat)
     # the stale ACTIVE CONTRACT: NONE claim may survive ONLY as preserved history
@@ -1599,7 +1613,7 @@ def test_the_capability_register_records_one_bounded_exception_not_a_general_ope
                 r"(?i)CAP-02 \u2026 CAP-18, which remain `RECORDED \u2014 NOT AUTHORIZED",
                 r"`FULL CAP-01 / FULL STG: NOT AUTHORIZED`",
                 r"`D13 RESEARCH: REMAINS CLOSED`",
-                r"`STAGE 18 COMPLETE: NO`",
+                r"`STAGE 18: COMPLETE — CURRENT\s+MECHANICAL \+ ELECTRICAL / ELECTRONICS SCOPE`",
                 r"(?i)intended full future scope of CAP-01 above is NOT reduced",
                 r"(?i)Domain activation is NOT CAP-01 profile availability",
                 r"(?i)a missing profile, never an unsupported domain"):
@@ -1731,7 +1745,7 @@ def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
     assert "current bounded action" not in row5[0], row5
     assert "22–25 not authorized" not in row5[0], row5
     row = [l for l in raw_checklist.splitlines() if l.startswith("| 4 | 16–20 |")]
-    assert len(row) == 1 and "18 entered / partial" in row[0], row
+    assert len(row) == 1 and "18 COMPLETE for the current Mechanical + Electrical / Electronics scope" in row[0], row
     assert "19 entered / not complete" in row[0], row
     assert "19 entered for foundation / contract work only" not in row[0], row
     assert "16, 18–20 not authorized" not in row[0]
@@ -1771,7 +1785,7 @@ def test_second_increment_status_is_merge_truth_and_the_none_contract_is_superse
              "IMPLEMENTED / MERGED / POST-MERGE VERIFIED — PR #679 — merge " + merge)
     for path, routing in _surfaces("current-routing"):
         assert token in routing, path
-        assert "`STAGE 18 COMPLETE: NO`" in routing, path
+        assert "`STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`" in routing, path
     assert token in _current(STATE, "current-position")
     for path in (ROADMAP, CHECKLIST, CONTRACT, STATE, CAPABILITIES):
         flat = _flat(path)
@@ -1790,7 +1804,7 @@ def test_second_increment_status_is_merge_truth_and_the_none_contract_is_superse
     assert ("no further CAP-01 implementation is authorized beyond the delivered Mechanical and "
             "Electrical slices") in head
     assert "no further CAP-01 implementation is authorized," not in head
-    assert "Stage 18 remains STARTED / PARTIAL / NOT COMPLETE" in head
+    assert "Stage 18 is COMPLETE for the current Mechanical + Electrical / Electronics scope: its two bounded" in head
     contract = _read(CONTRACT)
     i = contract.index("## Current authority — post-PR-#679: no active contract")
     heading = contract[i:contract.index("\n", i)]
@@ -1821,7 +1835,7 @@ def test_second_increment_status_is_merge_truth_and_the_none_contract_is_superse
     assert len(re.findall(r"^ACTIVE CONTRACT: NONE$", raw_checklist, re.M)) == 1
     assert re.search(r"^ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED" + _DELIVERY_IDENTITY
                      + r"\nACTIVE CONTRACT: NONE\nNEXT PRODUCT INCREMENT: NOT AUTHORIZED\nNEXT STEP: "
-                     r"LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT\nSTAGE 15 CLOSURE: DELIVERED"
+                     r"LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT\nSTAGE 15 CLOSURE: DELIVERED"
                      + _DELIVERY_IDENTITY + r"\nSTAGE 15 SLICE 4: DELIVERED"
                      + _DELIVERY_IDENTITY + r"\nSTAGE 15 SLICE 3: DELIVERED"
                      + _DELIVERY_IDENTITY + r"\nSTAGE 15 SLICE 2: DELIVERED"
@@ -2206,7 +2220,7 @@ _MSNL_REVERSALS = (
     r"AUTONOMOUS TECHNICAL ORCHESTRATION\W{0,8}(IS )?(AUTHORIZED|ACTIVE|ACTIVATED|CURRENT)\b",
     r"question (hiding|reduction)[^.;]{0,30}\b(is|are) (authorized|allowed|permitted|active)",
     r"STAGE 18 COMPLETE: YES", r"STAGE 19 COMPLETE: YES", r"STAGE 19: COMPLETE",
-    r"Stage 18\s+(is|was|has been)\s+(COMPLETE|COMPLETED|CLOSED)\b",
+    r"Stage 18\s+(is|was|has been)\s+(COMPLETE|COMPLETED|CLOSED)\b(?!\s+for\s+the\s+current\s+Mechanical)",
     r"Stage 19\s+(is|was|has been)\s+(COMPLETE|COMPLETED|CLOSED)\b",
     r"FULL (CAP-09|WS-PFV-001)\W{0,8}(IS )?AUTHORIZED\b",
     r"\bStage (4[6-9]|[5-9]\d)\b", r"\bSTAGE (4[6-9]|[5-9]\d)\b")
@@ -2494,8 +2508,8 @@ def test_safe_question_reduction_slice_1_is_delivered_history_and_its_rules_stil
                  "ROUTING (SLICE 1)"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
     assert re.search(r"^ACTIVE CONTRACT: SAFE QUESTION REDUCTION", raw_checklist, re.M) is None
-    rows = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", _read(ROADMAP), re.M)
-    assert len(rows) == 1, "stage 18 row missing, duplicated or ticked"
+    rows = re.findall(r"^- \[x\] \*\*18 — D13/CAP-01 guidance:\*\*.*$", _read(ROADMAP), re.M)
+    assert len(rows) == 1, "stage 18 row missing, duplicated or not ticked (Stage 18 closure)"
     assert ("Safe Question Reduction Slice 1 — mechanical PF:Q2 routed to specialist input on "
             "new routing-aware projects while the requirement stays outstanding — is delivered "
             "(PR #701; the bounded weak-PF recovery PR #702 followed), and the current bounded "
@@ -3307,7 +3321,7 @@ def test_mechanical_cap01_open_gap_context_is_delivered_history_and_its_rules_st
     assert "**CURRENT SUBTASK:** MECHANICAL CAP-01" not in live_checklist
     # the roadmap Stage-18 row and group state: delivered, never current again
     roadmap = _read(ROADMAP)
-    [row] = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
+    [row] = re.findall(r"^- \[x\] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
     live_row = row[:row.index("*(Superseded")]
     assert ("(NOT a Mechanical domain-level checklist profile) — is delivered (PR #713, merge `"
             + _MECH_MERGE + "`)") in live_row
@@ -3470,7 +3484,7 @@ def test_mechanical_td_slice1_is_delivered_history_and_the_post_714_none_is_supe
         assert re.search(pat, live_checklist) is None, pat
     # roadmap row 18 and group state: delivered, never NONE again
     roadmap = _read(ROADMAP)
-    [row] = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
+    [row] = re.findall(r"^- \[x\] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
     live_row = row[:row.index("*(Superseded")]
     assert ("Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals, four "
             "source-backed reference fundamentals for a current PHYSICAL_FEASIBILITY gap (no "
@@ -3598,7 +3612,7 @@ def test_electrical_td_slice1_is_delivered_history_and_its_rules_still_bind():
     for pat in _EL_LIVE_FORMS:
         assert re.search(pat, live_checklist) is None, pat
     roadmap = _read(ROADMAP)
-    [row] = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
+    [row] = re.findall(r"^- \[x\] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
     live_row = row[:row.index("*(Superseded")]
     assert ("Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals, "
             "three source-backed reference fundamentals for a current Electronics PHYSICAL_FEASIBILITY gap (no "
@@ -3658,7 +3672,19 @@ _S15C_NOT = ("`ANOTHER STAGE-15 SLICE: NOT AUTHORIZED`", "`VALIDATED IRL / IRL L
              "`ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED`")
 _NONE718 = "`ACTIVE CONTRACT: NONE`"
 _NEXT_INC_NO = "`NEXT PRODUCT INCREMENT: NOT AUTHORIZED`"
-_NEXT_STEP = "`NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT`"
+_NEXT_STEP = "`NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT`"     # history only after the Stage 18 closure
+# Stage 18 closure (2026-10-01): STAGE 18 — COMPLETE for the current Mechanical + Electrical / Electronics scope only;
+# the sequential marker moves to Stage 19 for NAVIGATION ONLY — the closure authorizes no Stage-19 implementation.
+_S18_COMPLETE = "`STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`"
+_S18C_DELIVERED = "`STAGE 18 CLOSURE: DELIVERED`"
+_S19_MARKER = "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 19 — ENTERED / NOT COMPLETE — NAVIGATION ONLY`"
+_NO_S19 = "`NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE`"
+_MSNL_FUTURE = "`MSNL: FUTURE / DEFERRED / NOT ACTIVATED`"
+_NEXT_STAGE_STEP = "`NEXT STEP: LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT`"
+# After the Stage 18 closure a live surface may no longer carry the pre-closure Stage-18 status, marker or next step.
+_S18C_STALE = (r"`STAGE 18 COMPLETE: NO`", _tok("`STAGE 18: ENTERED / PARTIAL / NOT COMPLETE`"), _tok(_S15_MARKER),
+               _tok(_NEXT_STEP), r"Stage 18 (?:stays|remains) (?:\*\*)?(?:ENTERED|PARTIAL|STARTED)",
+               r"MASTER ROADMAP SEQUENTIAL MARKER:? Stage 18 stays")
 # Pre-merge Stage-15 wording that may survive ONLY inside a visibly superseded note.
 _S15_PREMERGE_FORMS = (
     r"ACTIVE CONTRACT: STAGE 15", r"`ACTIVE CONTRACT: (?!NONE`)", r"\bPR NOT OPENED\b", r"\bMERGE NOT PERFORMED\b",
@@ -3679,7 +3705,15 @@ _S15_CLOSE_REVERSALS = (
     r"(?<!no )(?<!not )\bvalidated (IRL|integration) (is |was |has been )?(established|achieved|claimed)",
     r"Stage 15 (is |was )?complete for (all|every|any|arbitrary)",
     r"STAGE 18 COMPLETE: YES", r"STAGE 18: (?:ENTERED / (?:PARTIAL / )?)?COMPLETE`",
-    r"Stage 18\s+(is|was|has been)\s+(COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b",
+    # Stage 18 closure: complete ONLY for the current Mechanical + Electrical / Electronics scope; Stage 19 is the
+    # marker for navigation only — its completion, an authorized Stage-19 implementation or an activated MSNL
+    # stays a reversal.
+    r"Stage 18\s+(is|was|has been)\s+(now\s+)?(COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b"
+    r"(?!\s+for\s+the\s+current\s+Mechanical)",
+    r"STAGE 19 COMPLETE: YES", r"STAGE 19: (?:ENTERED / )?COMPLETE`",
+    r"Stage 19\s+(is|was|has been)\s+(now\s+)?(COMPLETE|COMPLETED|CLOSED)\b",
+    r"(?<!NO )STAGE-19 IMPLEMENTATION (IS )?AUTHORIZED", r"`MSNL: (?!FUTURE / DEFERRED / NOT ACTIVATED`)",
+    r"(?<!no )(?<!not )\bMSNL (is |was )?(now )?(activated|implemented)\b",
     r"FULL STAGE 15 / IRL: AUTHORIZED",
     r"(?<!no )(?<!not )full IRL (capability )?(is |was )?(authorized|complete|delivered|established)",
     r"IRL SCORING / LEVELS: AUTHORIZED", r"(?<!no )(?<!not )\bIRL level \d",
@@ -3916,10 +3950,10 @@ def test_post_718_no_active_contract_is_superseded_history():
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     assert "the former post-PR-#718 `ACTIVE CONTRACT: NONE`" in claude
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    # the live NONE is the one after the Stage 15 closure, never the post-PR-#718 one
+    # the live NONE is the one after the Stage 18 closure, never the post-PR-#718 one
     assert head.startswith("## Current authority **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY "
-                           "AUTHORIZED. The last Owner-authorized bounded product slice — Stage 15 — Integration "
-                           "Evidence & IRL-Compatible View — Closure — is DELIVERED"), head[:260]
+                           "AUTHORIZED. The last Owner-authorized bounded product slice — Stage 18 — Gap-Scoped "
+                           "Technical Next-Step Guidance — Closure — is DELIVERED"), head[:260]
     assert "post-PR-#718" not in head
 
 
@@ -3988,16 +4022,17 @@ def _current_declaration(contract):
     return _live_declaration(contract)[1]
 
 
-def test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surface():
-    """CURRENT STATE, merge-invariant: Stage 15 — Integration Evidence & IRL-Compatible View — Closure is
-    DELIVERED (after Stage 15 Slice 4, CAP-09 Result Event Slice 1 and Stage 15 Slices 1-3, still delivered), no
-    product increment is authorized (`ACTIVE CONTRACT: NONE`) and STAGE 15 is COMPLETE for the current
-    Mechanical + Electrical / Electronics scope ONLY (checkbox ticked for that scope). The MASTER ROADMAP
-    SEQUENTIAL MARKER stays Stage 18, Phase-7 integration residuals remain Phase 7, D4 stays the future
-    compatibility gate, and no validated IRL, IRL score / level, compatibility, N-domain integration,
-    deployment, release or further Stage-15 slice is claimed or authorized. This guard requires no PR number,
-    SHA, ancestry, review verdict or post-merge result: Git/GitHub own them, so the same text is correct on the
-    candidate that carries it and after its merge."""
+def test_stage18_closure_is_delivered_and_stage18_is_complete_on_every_live_surface():
+    """CURRENT STATE, merge-invariant: Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure is DELIVERED
+    (after the Stage 15 closure, Stage 15 Slices 1-4 and CAP-09 Result Event Slice 1, still delivered), no product
+    increment is authorized (`ACTIVE CONTRACT: NONE`) and STAGE 18 is COMPLETE for the current Mechanical +
+    Electrical / Electronics scope ONLY (checkbox ticked for that scope). The MASTER ROADMAP SEQUENTIAL MARKER
+    moves to Stage 19 for NAVIGATION ONLY — the closure authorizes no Stage-19 implementation — Stage 15 stays
+    COMPLETE for the same scope only, MSNL stays FUTURE / DEFERRED / NOT ACTIVATED, full CAP-01 stays NOT
+    AUTHORIZED, and no validated IRL, IRL score / level, compatibility, N-domain integration, deployment, release
+    or further slice is claimed or authorized. This guard requires no PR number, SHA, ancestry, review verdict or
+    post-merge result: Git/GitHub own them, so the same text is correct on the candidate that carries it and after
+    its merge."""
     assert _live_authority_problems() == []
     contract = _read(CONTRACT)
     heading = _live_declaration(contract)[0]
@@ -4006,78 +4041,118 @@ def test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surf
     top = _live_only(_current_declaration(contract))
     _needs(top, CONTRACT, "live none",
            r"\*\*ACTIVE CONTRACT: NONE\.\*\* NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED\.",
-           r"Stage 15 — Integration Evidence &\s+IRL-Compatible View — Closure, the last Owner-authorized bounded "
+           r"Stage 18 — Gap-Scoped Technical Next-Step\s+Guidance — Closure, the last Owner-authorized bounded "
            r"product slice, is DELIVERED\b",
-           r"Stage 15 is COMPLETE for the\s+current Mechanical \+ Electrical / Electronics scope only\.",
-           r"\*\*STAGE 15 CLOSURE\*\* \| `STAGE 15 CLOSURE: DELIVERED`",
-           r"\*\*STAGE 15 SLICE 4\*\* \| the preceding bounded slice: `STAGE 15 SLICE 4: DELIVERED`",
-           r"InventorAI does not decide\s+whether the acceptance criterion was met",
-           r"it verifies nothing", r"observations are not evidence",
-           r"delivered history never fills the active-contract slot",
+           r"Stage 18 is COMPLETE for the current\s+Mechanical \+ Electrical / Electronics scope only, and Stage 15 "
+           r"stays COMPLETE for that scope only\.",
+           r"\*\*STAGE 18 CLOSURE\*\* \| `STAGE 18 CLOSURE: DELIVERED`",
+           r"\*\*STAGE 18\*\* \| `STAGE 18: COMPLETE — CURRENT MECHANICAL \+ ELECTRICAL / ELECTRONICS SCOPE`; its "
+           r"checkbox is TICKED for that scope only",
+           r"full future CAP-01 \(typed parameters, calculations, specialist mapping, further domains\) stays NOT "
+           r"AUTHORIZED", r"MSNL stays FUTURE / DEFERRED / NOT ACTIVATED",
+           r"\*\*MARKER\*\* \| " + _tok(_S19_MARKER) + "; " + _tok(_NO_S19),
+           r"routing past Stages 11, 13, 14, 16 and 17 completes none of them",
            r"\*\*STAGE 15\*\* \| `STAGE 15: COMPLETE — CURRENT MECHANICAL \+ ELECTRICAL / ELECTRONICS SCOPE`; its "
            r"checkbox is TICKED for that scope only",
-           r"no IRL score or level", r"another Stage-15 slice is NOT AUTHORIZED",
-           r"D4 stays the future compatibility gate", r"Phase-7 integration residuals remain Phase 7",
-           r"it remains the MASTER ROADMAP SEQUENTIAL MARKER",
-           r"\*\*NEXT STEP\*\* \| LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT — READ-ONLY",
-           _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP), _status(_S15C_DELIVERED), _status(_S4_DELIVERED),
+           r"another Stage-15 slice is NOT AUTHORIZED", r"D4 stays the future compatibility gate",
+           r"Phase-7 integration residuals remain Phase 7", r"no IRL score or level",
+           r"delivered history never fills the active-contract slot",
+           r"\*\*NEXT STEP\*\* \| LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — READ-ONLY",
+           _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), _status(_S18C_DELIVERED), _tok(_S18_COMPLETE),
+           _tok(_S19_MARKER), _tok(_NO_S19), _tok(_MSNL_FUTURE), _status(_S15C_DELIVERED), _status(_S4_DELIVERED),
            _status(_R1_DELIVERED), _status(_S3_DELIVERED), _status(_S2_DELIVERED), _status(_S15_DELIVERED),
-           _tok(_S15_COMPLETE), _tok(_S15_MARKER), *(_tok(t) for t in _S15C_NOT + _S2_NOT))
-    _rejects(top, CONTRACT, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE)
+           _tok(_S15_COMPLETE), *(_tok(t) for t in _S15C_NOT + _S2_NOT))
+    _rejects(top, CONTRACT, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE)
     for path, block in _live_surfaces():
-        _needs(block, path, "live none", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP),
+        _needs(block, path, "live none", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP),
+               _status(_S18C_DELIVERED), _tok(_S18_COMPLETE), _tok(_S19_MARKER), _tok(_NO_S19), _tok(_MSNL_FUTURE),
                _status(_S15C_DELIVERED), _status(_S4_DELIVERED), _status(_R1_DELIVERED), _status(_S3_DELIVERED),
                _status(_S2_DELIVERED), _status(_S15_DELIVERED), _status(_EL_DELIVERED), _tok(_S15_COMPLETE),
-               _tok(_S15_MARKER), _tok(_NO_TD_SUBTASK), *(_tok(t) for t in _S15C_NOT + _S2_NOT),
+               _tok(_NO_TD_SUBTASK), *(_tok(t) for t in _S15C_NOT + _S2_NOT),
+               r"Stage\s+18\s+closure\s+\(delivered\)\.\s+For\s+each\s+current\s+canonical\s+MECHANISM_COMPLETENESS",
+               r"technical\s+next-steps\s+sub-view\s+owned\s+by\s+`web/cap01_guidance\.py`",
+               r"the\s+canonical\s+questions\s+and\s+Path-N\s+stay\s+the\s+missing-information\s+owner",
+               r"an\s+explicit\s+specialist\s+abstention",
+               r"no\s+inventor\s+text,\s+answer,\s+keyword,\s+label,\s+signal\s+or\s+list\s+position",
+               r"`CAP01_GAP_NEXT_STEPS`\s+traceability\s+table",
+               r"No\s+value,\s+range,\s+threshold,\s+formula\s+selection,\s+calculation,\s+test\s+protocol,\s+pass\s+/\s+"
+               r"fail\s+criterion",
+               r"the\s+domain\s+packs\s+and\s+provenance\s+are\s+byte-unchanged",
+               r"Research\s+Gate\s+3\s+prerequisites\s+applied\s+to\s+research-backed\s+knowledge\s+expansion",
+               r"MSNL\s+stays\s+FUTURE\s+/\s+DEFERRED\s+/\s+NOT\s+ACTIVATED",
+               r"Full\s+future\s+CAP-01\s+\(typed\s+parameters,\s+calculations,\s+specialist\s+mapping,\s+further\s+"
+               r"domains\)\s+stays\s+NOT\s+AUTHORIZED",
                r"Stage\s+15\s+closure\s+\(delivered\)\.\s+For\s+each\s+durable\s+Owner-declared\s+interface",
                r"the\s+exact\s+dependent\s+and\s+depends-on\s+part\s+identities\s+are\s+persisted",
-               r"each\s+relies\s+on\s+the\s+other\s+\(explicit,\s+never\s+inferred\s+from\s+endpoint\s+order\)",
                r"exactly\s+ONE\s+immutable\s+interface\s+anchor",
                r"fourth\s+row,\s+Integration\s+—\s+INSUFFICIENT_EVIDENCE\s+only",
                r"Observations,\s+preparation\s+inputs\s+and\s+dependencies\s+are\s+never\s+converted\s+into\s+evidence",
                r"D4\s+stays\s+the\s+future\s+compatibility\s+gate",
                r"Phase-7\s+integration\s+residuals\s+remain\s+Phase\s+7",
                r"Stage\s+15\s+Slice\s+4\s+\(delivered\)\.\s+For\s+each\s+durable\s+Owner-declared\s+interface",
-               r"each\s+root\s+freezes\s+the\s+interface's\s+durable\s+preparation\s+at\s+recording",
                r"InventorAI\s+does\s+not\s+decide\s+whether\s+the\s+acceptance\s+criterion\s+was\s+met",
                r"CAP-09\s+Result\s+Event\s+Slice\s+1\s+\(delivered\):\s+for\s+ONE\s+current\s+canonical",
-               r"never\s+rewrites\s+earlier\s+entries", r"CONTEXT\s+AT\s+RECORDING",
-               r"No\s+PASS\s+/\s+FAIL\s+/\s+PARTIAL\s+/\s+INCONCLUSIVE\s+outcome",
                r"Stage\s+15\s+Slice\s+3\s+\(delivered\)\.\s+For\s+each\s+CURRENT\s+durable\s+Owner-declared",
-               r"all\s+three\s+recorded\s+means\s+only\s+that\s+the\s+inputs\s+are\s+recorded",
                r"Stage\s+15\s+Slice\s+2\s+\(delivered\)\.\s+For\s+ONE\s+integrated\s+Mechanical",
                r"engineering\s+compatibility\s+has\s+NOT\s+been\s+established",
-               r"completing\s+the\s+preparation\s+does\s+not\s+verify\s+the\s+interaction",
                r"Stage\s+15\s+Slice\s+1\s+\(delivered\)\.")
-        _rejects(_live_only(block), path, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE)
+        _rejects(_live_only(block), path, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE)
     for path, routing in _surfaces("current-routing"):
-        _needs(routing, path, "live routing", r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18",
-               r"`STAGE 18 STARTED: YES`", r"`STAGE 18 COMPLETE: NO`",
-               r"\*\*NO ACTIVE CONTRACT — [^*]{0,80}; Stage 15 COMPLETE for the current Mechanical \+ Electrical / "
-               r"Electronics scope;\s+Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE:\*\*",
-               r"No product increment is authorized after the Stage 15 closure\. Stage 15 is COMPLETE for the "
-               r"current Mechanical \+\s+Electrical / Electronics scope only",
-               r"The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT",
+        _needs(routing, path, "live routing",
+               r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 19 — WS-PFV-001 / CAP-09 experiment-plan designer — ENTERED / "
+               r"NOT COMPLETE — NAVIGATION ONLY",
+               r"Stage 18 — D13 / CAP-01 structured technical guidance — is COMPLETE for the current Mechanical \+ "
+               r"Electrical / Electronics scope \(its checkbox is ticked for that scope only\)",
+               r"routing past Stages 11, 13, 14, 16 and 17 completes none of them",
+               r"\*\*NO ACTIVE CONTRACT — [^*]{0,80}; Stage 18 COMPLETE for the current Mechanical \+ Electrical / "
+               r"Electronics scope;\s+Stage 15 COMPLETE for the current Mechanical \+ Electrical / Electronics scope; "
+               r"Stage 19 ENTERED / NOT COMPLETE — navigation only:\*\*",
+               r"No product increment is authorized after the Stage 18 closure\. Stage 18 is COMPLETE for the current "
+               r"Mechanical \+ Electrical / Electronics scope only",
+               r"The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT",
+               r"\*\*DELIVERED — Stage 18 / Gap-Scoped Technical Next-Step Guidance — Closure \(completes Stage 18 for "
+               r"the current Mechanical \+ Electrical / Electronics scope",
                r"\*\*DELIVERED — Stage 15 / Integration Evidence & IRL-Compatible View — Closure",
                r"\*\*DELIVERED — Stage 15 / Interface Verification Observation Event — Slice 4",
                r"\*\*DELIVERED — CAP-09 Result Event Slice 1 \(inside Stage 19",
                r"\*\*DELIVERED — Stage 15 / Interface Verification Preparation Metadata — Slice 3",
                r"\*\*DELIVERED — Stage 15 / Subsystem Interface Declaration & Verification Preparation — Slice 2",
                r"\*\*DELIVERED — Stage 15 / Integrated Invention Entry & Durable Subsystem Composition — Slice 1")
-        marker = re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18", routing).start()
+        marker = re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 19", routing).start()
         assert marker < routing.index("**NO ACTIVE CONTRACT — "), path
+        assert routing.index("**DELIVERED — Stage 18 / Gap-Scoped") < routing.index(
+            "**DELIVERED — Stage 15 / Integration Evidence"), path
     for path in (ROADMAP, CHECKLIST, CONTRACT):
+        after = _after_fence(path, "current-routing")
+        assert ("*(Superseded 2026-10-01 by Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure, preserved so "
+                "the change is visible rather than silent: the current routing read \"**NO ACTIVE CONTRACT — "
+                "post-Stage-15-closure (2026-10-01); Stage 15 COMPLETE for the current Mechanical + Electrical / "
+                "Electronics scope; Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE:**") in after, path
         assert ("*(Superseded 2026-10-01 by Stage 15 — Integration Evidence & IRL-Compatible View — Closure, "
                 "preserved so the change is visible rather than silent: the current routing read \"**NO ACTIVE "
                 "CONTRACT — post-Stage-15-Slice-4 (2026-09-30); Stage 15 and Stage 18 both stay ENTERED / PARTIAL / "
-                "NOT COMPLETE:** …\"") in _after_fence(path, "current-routing"), path
+                "NOT COMPLETE:** …\"") in after, path
+        note = _current(path, "stage-18-semantic-normalization")
+        assert ("**STAGE-18 CLOSURE RECONCILIATION (2026-10-01) — `MSNL: FUTURE / DEFERRED / NOT ACTIVATED`.**"
+                in note), path
+        for needle in ("MSNL was NOT a Stage-18 completion blocker",
+                       "Stage 18 completion neither implements it nor attaches it to a new Stage",
+                       "any activation still needs its own Owner authorization and data boundary"):
+            assert needle in note, (path, needle)
     state = _current(STATE, "current-position")
     assert re.match(r" \*\*Current position \([^)]{0,40}\): `ACTIVE CONTRACT: NONE` — no product increment is "
                     r"currently authorized \(", state)
-    for needle in ("(post-Stage-15-closure; Stage 15 — entered through Slice 1, ",
-                   "— is COMPLETE for the current Mechanical + Electrical / Electronics scope only — this does NOT "
-                   "mean the roadmap, Stage 18 or integration in general is complete, that any integration is "
-                   "validated, or that a next slice is authorized",
+    for needle in ("(post-Stage-18-closure; Stage 18 — D13 / CAP-01 structured technical guidance — is COMPLETE for the "
+                   "current Mechanical + Electrical / Electronics scope only, checkbox ticked for that scope only — "
+                   "this does NOT mean the roadmap, Stage 19 or any other Stage is complete, that full CAP-01 is "
+                   "authorized, or that a next slice is authorized)",
+                   "Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure — delivered",
+                   "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 19 — ENTERED / NOT COMPLETE — NAVIGATION ONLY (NO "
+                   "STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE; routing past Stages 11, 13, 14, 16 and 17 "
+                   "completes none of them; MSNL stays FUTURE / DEFERRED / NOT ACTIVATED",
+                   "next step: a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT",
+                   "Stage 15 — entered through Slice 1, ",
+                   "stays COMPLETE for the current Mechanical + Electrical / Electronics scope only",
                    "Stage 15 — Integration Evidence & IRL-Compatible View — Closure — delivered",
                    "Stage 15 — Interface Verification Observation Event — Slice 4 — delivered",
                    "CAP-09 Result Event Slice 1 — delivered",
@@ -4089,19 +4164,36 @@ def test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surf
                    "for that scope only",
                    "another Stage-15 slice, validated IRL, IRL scoring / levels",
                    "Phase-7 integration residuals remain Phase 7",
-                   "MASTER ROADMAP SEQUENTIAL MARKER: Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE",
-                   "next step: a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT"):
+                   "Stage 18 is now **COMPLETE for the current Mechanical + Electrical / Electronics scope**"):
         assert needle in state, needle
+    after = _after_fence(STATE, "current-position")
+    assert ("*(Superseded 2026-10-01 by Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure, preserved so the "
+            "change is visible rather than silent: the current-position entry read \"`ACTIVE CONTRACT: NONE` — no "
+            "product increment is currently authorized (post-Stage-15-closure …)\"") in after
     assert ("*(Superseded 2026-10-01 by Stage 15 — Integration Evidence & IRL-Compatible View — Closure, preserved "
             "so the change is visible rather than silent: the current-position entry read \"`ACTIVE CONTRACT: NONE` — "
-            "no product increment is currently authorized (post-Stage-15-Slice-4 …)\"") in _after_fence(
-                STATE, "current-position")
+            "no product increment is currently authorized (post-Stage-15-Slice-4 …)\"") in after
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
     assert head.startswith("## Current authority **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY "
-                           "AUTHORIZED. The last Owner-authorized bounded product slice — Stage 15 — Integration "
-                           "Evidence & IRL-Compatible View — Closure — is DELIVERED")
-    for needle in ("STAGE 15 — COMPLETE for the current Mechanical + Electrical / Electronics scope only.",
+                           "AUTHORIZED. The last Owner-authorized bounded product slice — Stage 18 — Gap-Scoped "
+                           "Technical Next-Step Guidance — Closure — is DELIVERED")
+    for needle in ("STAGE 18 — COMPLETE for the current Mechanical + Electrical / Electronics scope only (`STAGE 18: "
+                   "COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`; checkbox ticked for that scope "
+                   "only).",
+                   "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 19 — ENTERED / NOT COMPLETE — NAVIGATION ONLY`; NO "
+                   "STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE; routing past Stages 11, 13, 14, 16 and 17 "
+                   "completes none of them.",
+                   "The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT",
+                   "Stage 18 closure (delivered; completes Stage 18 for the current Mechanical + Electrical / "
+                   "Electronics scope, no new Master Roadmap Stage)",
+                   "the information still missing (summarized only from the gap's own canonical questions, which with "
+                   "Path-N stay the owner)",
+                   "MSNL stays FUTURE / DEFERRED / NOT ACTIVATED (not a Stage-18 blocker)",
+                   "Full future CAP-01 (typed parameters, calculations, specialist mapping, further domains) stays NOT "
+                   "AUTHORIZED.",
+                   "The preceding bounded slice — Stage 15 — Integration Evidence & IRL-Compatible View — Closure — is "
+                   "DELIVERED.",
                    "Stage 15 closure (delivered; completes Stage 15 for the current Mechanical + Electrical / "
                    "Electronics scope",
                    "observations, preparation and dependencies are never converted into evidence",
@@ -4115,17 +4207,22 @@ def test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surf
                    "The preceding bounded slice — Stage 15 — Interface Verification Preparation Metadata — Slice 3",
                    "all three recorded means only that the inputs are recorded",
                    "Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 — is DELIVERED",
-                   "The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT",
                    "It verifies nothing: engineering compatibility has NOT been established.",
                    "Another Stage-15 slice, engineering compatibility analysis",
                    "deployment and release NOT AUTHORIZED",
                    "Stage 15 is now COMPLETE for the current Mechanical + Electrical / Electronics scope (checkbox "
                    "ticked for that scope only",
-                   "The MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18",
-                   "Stage 18 remains STARTED / PARTIAL / NOT COMPLETE"):
+                   "Stage 18 — D13 / CAP-01 — is COMPLETE for the current Mechanical + Electrical / Electronics scope "
+                   "(checkbox ticked for that scope only; the Stage 18 closure above), and the MASTER ROADMAP "
+                   "SEQUENTIAL MARKER is Stage 19 for navigation only",
+                   "Stage 18 is COMPLETE for the current Mechanical + Electrical / Electronics scope: its two bounded "
+                   "Electronics CAP-01 increments are delivered",
+                   "the Master Roadmap sequential marker is Stage 19 for navigation only (NO STAGE-19 IMPLEMENTATION "
+                   "AUTHORIZED BY STAGE-18 CLOSURE)"):
         assert needle in head, needle
-    for pat in _S2_CLOSE_REVERSALS + _S15C_STALE:
+    for pat in _S2_CLOSE_REVERSALS + _S15C_STALE + _S18C_STALE:
         assert re.search(pat, head, re.I | re.S) is None, pat
+    assert "the former post-Stage-15-closure `ACTIVE CONTRACT: NONE`" in claude
     assert "the former post-Stage-15-Slice-4 `ACTIVE CONTRACT: NONE`" in claude
     cont = claude[claude.index("## Lead execution continuity"):claude.index("### Lead Operating Method")]
     for pat in (r"FIRED and evaluated at Stage 15 Slice 2",
@@ -4135,11 +4232,16 @@ def test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surf
                 r"NOT FIRED by Stage 15 Slice 3", r"FIRED and evaluated at Stage 15 Slice 4",
                 r"NOT FIRED by Stage 15 Slice 4", r"Evaluated at the Stage 15 closure",
                 r"NOT FIRED by the Stage 15 closure",
-                r"\*\*WATCH — Stage 15 closure \(non-blocking, no repair cycle\)\.\*\*"):
+                r"\*\*WATCH — Stage 15 closure \(non-blocking, no repair cycle\)\.\*\*",
+                r"\*\*WATCH — Stage 18 closure \(non-blocking, no repair cycle\)\.\*\*",
+                r"The Stage 18 closure \(2026-10-01\) neither used nor required MSNL: MSNL stays FUTURE / DEFERRED / "
+                r"NOT ACTIVATED"):
         assert re.search(pat, cont), pat
     assert "(the current implementation candidate)" not in cont
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
     subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \([^)]{0,40}\) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — "
+                    r"Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure DELIVERED — STAGE 18 COMPLETE for the "
+                    r"current Mechanical \+ Electrical / Electronics scope — "
                     r"Stage 15 — Integration Evidence & IRL-Compatible View — Closure DELIVERED — STAGE 15 COMPLETE "
                     r"for the current Mechanical \+ Electrical / Electronics scope — "
                     r"Stage 15 — Interface Verification Observation Event — Slice 4 DELIVERED — "
@@ -4149,33 +4251,33 @@ def test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surf
     [found] = [m.start() for m in re.finditer(subtask_head, flat_checklist)]
     subtask = flat_checklist[found:]
     subtask = subtask[:subtask.index("*(Superseded")]
-    _needs(subtask, CHECKLIST, "live subtask", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STEP),
+    _needs(subtask, CHECKLIST, "live subtask", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP),
+           _status(_S18C_DELIVERED), _tok(_S18_COMPLETE), _tok(_S19_MARKER), _tok(_NO_S19), _tok(_MSNL_FUTURE),
            _status(_S15C_DELIVERED), _status(_S4_DELIVERED), _status(_R1_DELIVERED), _status(_S3_DELIVERED),
-           _status(_S2_DELIVERED), _status(_S15_DELIVERED), _tok(_S15_COMPLETE), _tok(_S15_MARKER),
-           *(_tok(t) for t in _S15C_NOT + _S2_NOT), r"No product increment is authorized after the Stage 15 closure\b")
-    _rejects(subtask, CHECKLIST, "live subtask", *_S2_CLOSE_REVERSALS, *_S15C_STALE)
-    for line in [t.strip("`") for t in (_NONE718, _NEXT_INC_NO, _NEXT_STEP, _S15_COMPLETE, _S15_MARKER)
-                 + _S15C_NOT + _S2_NOT]:
+           _status(_S2_DELIVERED), _status(_S15_DELIVERED), _tok(_S15_COMPLETE),
+           *(_tok(t) for t in _S15C_NOT + _S2_NOT), r"No product increment is authorized after the Stage 18 closure\b")
+    _rejects(subtask, CHECKLIST, "live subtask", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE)
+    for line in [t.strip("`") for t in (_NONE718, _NEXT_INC_NO, _NEXT_STAGE_STEP, _S18_COMPLETE, _S19_MARKER, _NO_S19,
+                                        _MSNL_FUTURE, _S15_COMPLETE) + _S15C_NOT + _S2_NOT]:
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
-    for token in (_S15C_DELIVERED, _S4_DELIVERED, _S3_DELIVERED, _S2_DELIVERED, _S15_DELIVERED):
+    for token in (_S18C_DELIVERED, _S15C_DELIVERED, _S4_DELIVERED, _S3_DELIVERED, _S2_DELIVERED, _S15_DELIVERED):
         assert re.search(r"^" + _status_line(token) + r"$", raw_checklist, re.M), token
     for stale in (_S2_CONTRACT.strip("`"), _S2_STATUS.strip("`"), _S15_ENTERED.strip("`"),
-                  "FULL STAGE 15 / IRL: NOT AUTHORIZED"):
+                  "FULL STAGE 15 / IRL: NOT AUTHORIZED", _S15_MARKER.strip("`"), _NEXT_STEP.strip("`"),
+                  "STAGE 18 COMPLETE: NO", "STAGE 18: ENTERED / PARTIAL / NOT COMPLETE"):
         assert re.search(r"^" + re.escape(stale) + r"$", raw_checklist, re.M) is None, stale
+    assert "**CURRENT PRODUCT-DEPTH FRONTIER: Stage 19 — ENTERED / NOT COMPLETE — NAVIGATION ONLY" in flat_checklist
     roadmap = _read(ROADMAP)
     numbers = [int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)]
     assert sorted(numbers) == list(range(1, 46)), numbers
-    # Stage 15 is ticked (COMPLETE for the current Mechanical + Electrical / Electronics scope); Stage 18 is not
-    assert re.search(r"^- \[ \] \*\*15 — ", roadmap, re.M) is None
-    assert re.search(r"^- \[x\] \*\*18 — ", roadmap, re.M) is None
+    # Stages 15 and 18 are ticked (COMPLETE for the current Mechanical + Electrical / Electronics scope); the
+    # stages routed past (11, 13, 14, 16, 17) and the navigation-only Stage 19 stay unticked
+    for n in (15, 18):
+        assert re.search(r"^- \[ \] \*\*%d — " % n, roadmap, re.M) is None, n
+    for n in (11, 13, 14, 16, 17, 19):
+        assert re.search(r"^- \[ \] \*\*%d — " % n, roadmap, re.M), n
     [row15] = re.findall(r"^- \[x\] \*\*15 — IRL-compatible view:\*\*.*$", roadmap, re.M)
     live15 = _live_only(row15)
-    assert ("the Owner-authorized Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 "
-            "(delivered") in live15
-    assert ("the Owner-authorized Stage 15 — Interface Verification Preparation Metadata — Slice 3 "
-            "(delivered") in live15
-    assert ("the Owner-authorized Stage 15 — Interface Verification Observation Event — Slice 4 "
-            "(delivered") in live15
     assert "the Owner-authorized Stage 15 — Integration Evidence & IRL-Compatible View — Closure (delivered" in live15
     assert ("**COMPLETE (2026-10-01) for the current Mechanical + Electrical / Electronics scope — checkbox ticked "
             "for that scope only:**") in live15
@@ -4183,28 +4285,46 @@ def test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surf
     assert "no further Stage-15 slice is authorized" in live15
     for stale in ("checkbox stays unticked", "wider Stage-15 work stays DEFERRED", "ENTERED / PARTIAL / NOT COMPLETE"):
         assert stale not in live15, stale
-    [row18] = re.findall(r"^- \[ \] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
+    [row18] = re.findall(r"^- \[x\] \*\*18 — D13/CAP-01 guidance:\*\*.*$", roadmap, re.M)
     live18 = _live_only(row18)
-    assert ("that reassessment then selected Stage 15 — Subsystem Interface Declaration & Verification "
-            "Preparation — Slice 2, delivered") in live18
-    assert ("the next reassessment selected Stage 15 — Interface Verification Preparation Metadata — Slice 3, "
-            "delivered") in live18
-    assert "the next reassessment then selected CAP-09 Result Event Slice 1 (Stage 19), delivered" in live18
-    assert ("the next reassessment then selected Stage 15 — Interface Verification Observation Event — Slice 4, "
-            "delivered") in live18
-    assert ("the next reassessment then selected Stage 15 — Integration Evidence & IRL-Compatible View — Closure, "
-            "delivered, which completes Stage 15 for the current Mechanical + Electrical / Electronics scope") in live18
-    assert "no product increment is currently authorized and the next step is a Lead-controlled" in live18
+    for needle in ("**COMPLETE (2026-10-01) for the current Mechanical + Electrical / Electronics scope — checkbox "
+                   "ticked for that scope only:** `STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS "
+                   "SCOPE` through the Owner-authorized Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure "
+                   "(delivered",
+                   "Research Gate 3 reconciliation: its prerequisites applied to research-backed knowledge expansion",
+                   "Research Gate 3 is not reopened", "MSNL stays FUTURE / DEFERRED / NOT ACTIVATED",
+                   "NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE",
+                   "routing past Stages 11, 13, 14, 16 and 17 completes none of them",
+                   "that reassessment then selected Stage 15 — Subsystem Interface Declaration & Verification "
+                   "Preparation — Slice 2, delivered",
+                   "the next reassessment then selected CAP-09 Result Event Slice 1 (Stage 19), delivered",
+                   "the next reassessment then selected Stage 15 — Integration Evidence & IRL-Compatible View — "
+                   "Closure, delivered, which completes Stage 15 for the current Mechanical + Electrical / Electronics "
+                   "scope",
+                   "the next reassessment then selected Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure, "
+                   "delivered, which completes Stage 18 for the current Mechanical + Electrical / Electronics scope",
+                   "no product increment is currently authorized and the next step is a Lead-controlled next-stage "
+                   "closure reassessment"):
+        assert needle in live18, needle
+    for stale in ("checkbox stays unticked", "Stage 18 stays ENTERED", "leaves Stage 18 ENTERED",
+                  "the next step is a Lead-controlled Next-Increment Reassessment"):
+        assert stale not in live18, stale
+    [row19] = re.findall(r"^- \[ \] \*\*19 — WS-PFV-001/CAP-09:\*\*.*$", roadmap, re.M)
+    assert "NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE" in _live_only(row19)
+    # the historical Research Gate 3 language is preserved, and reconciled rather than erased
+    assert "Research Gate 3 appointments and activation remain prerequisites; AI is not technical authority." in roadmap
+    assert "and any future research-backed knowledge expansion stays separately gated by them" in roadmap
     for live in (live15, live18):
-        for pat in _S2_CLOSE_REVERSALS + _S15C_STALE:
+        for pat in _S2_CLOSE_REVERSALS + _S15C_STALE + _S18C_STALE:
             assert re.search(pat, live, re.I) is None, pat
     register = _flat(CAPABILITIES)
-    assert ("and neither is Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 "
-            "(delivered") in register
-    assert "Nor is Stage 15 — Interface Verification Preparation Metadata — Slice 3 (delivered" in register
-    assert "Bounded exception: CAP-09 Result Event Slice 1 (delivered)" in register
-    assert "Nor is Stage 15 — Interface Verification Observation Event — Slice 4 (delivered" in register
     assert "Nor is Stage 15 — Integration Evidence & IRL-Compatible View — Closure (delivered" in register
+    assert "A sixth bounded slice — Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure: delivered" in register
+    for token in (_S18_COMPLETE, _S19_MARKER, _NO_S19):
+        assert token in register, token
+    assert "`STAGE 18 COMPLETE: NO`" not in _live_only(register)
+    assert ("nor by the Stage 18 closure: full future CAP-01 (typed parameters, calculations, specialist mapping, "
+            "further domains) stays NOT AUTHORIZED") in register
     assert "current Owner-authorized implementation candidate, not merged" not in register
 
 
@@ -4741,8 +4861,10 @@ _LIVE_CLAIM_REVERSALS = _S15_CLOSE_REVERSALS + (
     r"(IOT|DRONE|RENEWABLE|SATELLITE)[^`.;]{0,60}: AUTHORIZED",
     r"NEW DOMAIN ACTIVATION: AUTHORIZED",
     r"(?<!no )(?<!not )new domain activation (is |was )?authorized",
-    r"CURRENT MASTER ROADMAP STAGE: Stage (?!18\b)\d+",
-    r"MASTER ROADMAP SEQUENTIAL MARKER(?::| stays| is| moves to| becomes)? Stage (?!18\b)\d+",
+    r"CURRENT MASTER ROADMAP STAGE: Stage (?!19\b)\d+",
+    r"MASTER ROADMAP SEQUENTIAL MARKER(?::| is| moves to| becomes)? Stage (?!19\b)\d+",
+    # "stays Stage N" is a reversal unless it closes a preserved delivery heading "(…; the … MARKER stays Stage 18)"
+    r"MASTER ROADMAP SEQUENTIAL MARKER stays Stage (?!19\b)\d+\b(?!\))",
     _S4_VERDICT, r"INTERFACE OBSERVATION VERDICT / CRITERION-MET JUDGEMENT: AUTHORIZED")
 # Lifecycle states that are true only BEFORE a merge. On a live surface they make the authoritative
 # text false the moment the candidate merges, which is what used to force a closure PR.
@@ -4984,17 +5106,19 @@ def _live_authority_problems(read=None):
             problems.append("%s: active-contract tokens %s disagree with %r" % (label, sorted(tokens), current))
         if current == "NONE" and "`NEXT PRODUCT INCREMENT: NOT AUTHORIZED`" not in text:
             problems.append(label + ": NONE without `NEXT PRODUCT INCREMENT: NOT AUTHORIZED`")
-        for token in ("`STAGE 18 COMPLETE: NO`", _S15_COMPLETE):
+        for token in (_S18_COMPLETE, _S15_COMPLETE, _S19_MARKER, _NO_S19):
             if token not in text:
                 problems.append(label + ": missing " + token)
         if _S15_ENTERED in text:
             problems.append(label + ": stale " + _S15_ENTERED)
-        marker = (r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 18\b" if not label.startswith("position")
-                  else r"MASTER ROADMAP SEQUENTIAL MARKER: Stage 18\b")
-        if not re.search(marker, text):
-            problems.append(label + ": the Stage-18 sequential marker is missing")
-    if not re.search(r"MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18\b", texts["head:CLAUDE.md"]):
-        problems.append("head:CLAUDE.md: the Stage-18 sequential marker is missing")
+        for pat in _S18C_STALE:
+            if re.search(pat, text):
+                problems.append(label + ": stale pre-Stage-18-closure status " + pat)
+        if label.startswith("routing") and not re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 19\b", text):
+            problems.append(label + ": the Stage-19 navigation marker is missing")
+    for needle in (_S19_MARKER, "NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE"):
+        if needle not in texts["head:CLAUDE.md"]:
+            problems.append("head:CLAUDE.md: missing " + needle)
     for label, text in texts.items():
         for pat in _LIVE_CLAIM_REVERSALS + _PREMERGE_LIFECYCLE:
             m = re.search(pat, text, re.I | re.S)
@@ -5032,7 +5156,7 @@ def test_transient_identity_is_never_a_live_prerequisite(monkeypatch, transform)
     fake = lambda path: docs[path] if path in docs else real(path)       # noqa: E731
     assert _live_authority_problems(fake) == []
     monkeypatch.setattr(sys.modules[__name__], "_read", fake)
-    test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surface()
+    test_stage18_closure_is_delivered_and_stage18_is_complete_on_every_live_surface()
     assert _live_authority_problems() == []
 
 
@@ -5046,25 +5170,37 @@ def _span(raw, region):
     return i, raw.index(_CLOSE % region, i)
 
 
-def _mutate(path, region, old, new):
+def _mutate(path, region, old, new, every=None):
     raw = _read(path)
     i, j = _span(raw, region)
     k = raw.find(old, i, j)
     assert k != -1, (path, region, old)
+    if every == "all":                   # replace every occurrence inside the region
+        return {path: raw[:i] + raw[i:j].replace(old, new) + raw[j:]}
     return {path: raw[:k] + new + raw[k + len(old):]}
 
 
-_NS = "`NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT`"
+_NS = "`NEXT STEP: LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT`"
 _MATERIAL_REVERSALS = {
     # Stage 15 closure: dropping the scope, or reopening the stage, is a reversal of the live truth.
     "stage 15 complete": (CHECKLIST, "current-routing", _S15_COMPLETE, "`STAGE 15: COMPLETE`"),
     "stage 15 reopened": (ROADMAP, "current-routing", _S15_COMPLETE, _S15_ENTERED),
     "stage 15 complete in prose": (STATE, "current-position", _NS, _NS + " Stage 15 is complete."),
-    "stage 18 complete": (ROADMAP, "current-routing", "`STAGE 18 COMPLETE: NO`", "`STAGE 18 COMPLETE: YES`"),
-    "marker moved": (CONTRACT, "current-routing", "CURRENT MASTER ROADMAP STAGE: Stage 18",
-                     "CURRENT MASTER ROADMAP STAGE: Stage 19"),
-    "marker moved in position": (STATE, "current-position", "MASTER ROADMAP SEQUENTIAL MARKER: Stage 18",
-                                 "MASTER ROADMAP SEQUENTIAL MARKER: Stage 15"),
+    # Stage 18 closure: dropping the scope, reopening the stage, moving the marker, completing Stage 19 or
+    # authorizing Stage-19 implementation / MSNL is a reversal of the live truth.
+    "stage 18 complete": (ROADMAP, "current-routing", _S18_COMPLETE, "`STAGE 18 COMPLETE: YES`"),
+    "stage 18 unscoped": (CHECKLIST, "current-routing", _S18_COMPLETE, "`STAGE 18: COMPLETE`"),
+    "stage 18 reopened": (CONTRACT, "current-routing", _S18_COMPLETE, "`STAGE 18 COMPLETE: NO`"),
+    "stage 18 partial in prose": (STATE, "current-position", _NS, _NS + " Stage 18 remains PARTIAL."),
+    "marker moved": (CONTRACT, "current-routing", "CURRENT MASTER ROADMAP STAGE: Stage 19",
+                     "CURRENT MASTER ROADMAP STAGE: Stage 20"),
+    "marker moved in position": (STATE, "current-position", "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 19",
+                                 "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18"),
+    "marker back in prose": (CHECKLIST, "current-routing", _NS, _NS + " The MASTER ROADMAP SEQUENTIAL MARKER stays "
+                             "Stage 18."),
+    "stage 19 complete": (ROADMAP, "current-routing", _NS, _NS + " `STAGE 19: COMPLETE`"),
+    "stage 19 implementation": (STATE, "current-position", _NS, _NS + " Stage-19 implementation authorized."),
+    "msnl activated": (CONTRACT, "declaration", _NS, _NS + " `MSNL: ACTIVATED`"),
     "successor increment": (STATE, "current-position", "`NEXT PRODUCT INCREMENT: NOT AUTHORIZED`",
                             "`NEXT PRODUCT INCREMENT: AUTHORIZED`"),
     "successor contract on one surface": (ROADMAP, "current-routing", "`ACTIVE CONTRACT: NONE`",
@@ -5089,7 +5225,7 @@ _MATERIAL_REVERSALS = {
                                               "VERIFICATION PREPARATION — SLICE 2.**"),
     "pre-merge lifecycle live": (STATE, "current-position", _NS, _NS + " Stage 15 Slice 2 is NOT MERGED."),
     "candidate wording live": (ROADMAP, "current-routing", _NS, _NS + " IMPLEMENTATION CANDIDATE."),
-    "stage status dropped": (CONTRACT, "current-routing", "`STAGE 18 COMPLETE: NO`", "`STAGE 18 STATUS`"),
+    "stage status dropped": (CONTRACT, "current-routing", _S18_COMPLETE, "`STAGE 18 STATUS`", "all"),
     "observation read as a verdict": (STATE, "current-position", _NS,
                                       _NS + " The acceptance criterion was met."),
     "observation verdict authorized": (CHECKLIST, "current-routing",
@@ -5100,14 +5236,14 @@ _MATERIAL_REVERSALS = {
 
 @pytest.mark.parametrize("name", sorted(_MATERIAL_REVERSALS))
 def test_every_material_reversal_is_caught(monkeypatch, name):
-    path, region, old, new = _MATERIAL_REVERSALS[name]
+    path, region, old, new, *every = _MATERIAL_REVERSALS[name]
     real = _read
-    docs = _mutate(path, region, old, new)
+    docs = _mutate(path, region, old, new, *every)
     fake = lambda p: docs[p] if p in docs else real(p)                   # noqa: E731
     assert _live_authority_problems(fake), name
     monkeypatch.setattr(sys.modules[__name__], "_read", fake)
     with pytest.raises(AssertionError):
-        test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surface()
+        test_stage18_closure_is_delivered_and_stage18_is_complete_on_every_live_surface()
 
 
 def test_the_live_authority_owners_pin_no_transient_identity():
@@ -5115,7 +5251,7 @@ def test_the_live_authority_owners_pin_no_transient_identity():
     sources = [inspect.getsource(f) for f in (
         _live_authority_texts, _live_authority_problems, _status, _after_fence, _authority_sections,
         _live_declaration, _unsupported_post_merge_claims, _without_transient_identity, _claim_record, _claim_end,
-        test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surface)]
+        test_stage18_closure_is_delivered_and_stage18_is_complete_on_every_live_surface)]
     sources.append(repr((_LIVE_CLAIM_REVERSALS, _PREMERGE_LIFECYCLE, _HISTORICAL_HEADING, _POST_MERGE_CLAIM)))
     legacy = repr((sorted(_LEGACY_UNMARKED_AUTHORITY_HEADINGS), sorted(_LEGACY_POST_MERGE_RECORDS.items())))
     assert re.search(r"\b[0-9a-f]{40}\b", legacy) is None and re.search(r"PR ?-?#\d", legacy) is None
@@ -5135,7 +5271,7 @@ def _assert_rejected(monkeypatch, docs, name):
     assert _live_authority_problems(fake), name
     monkeypatch.setattr(sys.modules[__name__], "_read", fake)
     with pytest.raises((AssertionError, ValueError)):
-        test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surface()
+        test_stage18_closure_is_delivered_and_stage18_is_complete_on_every_live_surface()
 
 
 def _assert_accepted(monkeypatch, docs, name):
@@ -5143,7 +5279,7 @@ def _assert_accepted(monkeypatch, docs, name):
     fake = lambda p: docs[p] if p in docs else real(p)                   # noqa: E731
     assert _live_authority_problems(fake) == [], name
     monkeypatch.setattr(sys.modules[__name__], "_read", fake)
-    test_stage15_closure_is_delivered_and_stage15_is_complete_on_every_live_surface()
+    test_stage18_closure_is_delivered_and_stage18_is_complete_on_every_live_surface()
 
 
 def _second_heading(contract):
@@ -5316,8 +5452,9 @@ def test_f1b_a_genuinely_self_labelled_historical_record_is_accepted(monkeypatch
 
 def test_f1b_unmodified_repository_counts():
     kinds = [k for _h, _t, k in _authority_sections(_read(CONTRACT))]
-    # +2 at the Stage 15 closure: its own delivered record and the superseded post-Slice-4 NONE
-    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 38, 10)
+    # +2 at the Stage 15 closure: its own delivered record and the superseded post-Slice-4 NONE; +2 at the
+    # Stage 18 closure: its own delivered record and the superseded post-Stage-15-closure NONE
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 40, 10)
 
 
 def _flat_doc(path):

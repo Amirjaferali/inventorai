@@ -3,14 +3,37 @@
 ## Current authority
 
 **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The last Owner-authorized bounded
-product slice — Stage 15 — Integration Evidence & IRL-Compatible View — Closure — is DELIVERED (Git / GitHub own its
-PR, merge and review identity), and no subsequent increment has been authorized. STAGE 15 — COMPLETE for the current
-Mechanical + Electrical / Electronics scope only. This does NOT mean the roadmap, Stage 18 or integration in general
-is complete, that any integration is validated, or that a next slice is authorized; delivered history never fills
-the active-contract slot. The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT — read-only planning
-/ selection over live repository and product evidence until the Owner separately authorizes another product
-increment; it pre-authorizes no further Stage-15 slice, compatibility analysis, IRL scoring, interface
-engineering, Robotics assessment implementation, IoT, other Domain Pack or Technical Deepening slice.
+product slice — Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure — is DELIVERED (Git / GitHub own its
+PR, merge and review identity), and no subsequent increment has been authorized. STAGE 18 — COMPLETE for the current
+Mechanical + Electrical / Electronics scope only (`STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS
+SCOPE`; checkbox ticked for that scope only). This does NOT mean the roadmap, Stage 19 or any other Stage is
+complete, that full CAP-01 is authorized, or that a next slice is authorized; delivered history never fills the
+active-contract slot. `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 19 — ENTERED / NOT COMPLETE — NAVIGATION ONLY`;
+NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE; routing past Stages 11, 13, 14, 16 and 17 completes none
+of them. The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — read-only planning / selection over
+live repository and product evidence until the Owner separately authorizes another product increment; it
+pre-authorizes no Stage-19 or other Stage work, CAP-09 work, further CAP-01 or Technical Deepening slice, MSNL
+activation, compatibility analysis, IRL scoring, interface engineering, Robotics assessment implementation, IoT or
+other Domain Pack.
+Stage 18 closure (delivered; completes Stage 18 for the current Mechanical + Electrical / Electronics scope, no new
+Master Roadmap Stage): for each current canonical MECHANISM_COMPLETENESS / PHYSICAL_FEASIBILITY / BOUNDARY_AMBIGUITY
+gap in state exactly OPEN or PARTIAL, for both active domains, the report / deliverable and PDF show the gap's
+CAP-01 technical context (the Electronics MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY contexts added from the
+existing pack questions) plus ONE optional, all-or-nothing technical next-steps sub-view owned by
+`web/cap01_guidance.py` (`CAP01_GAP_NEXT_STEPS`): the information still missing (summarized only from the gap's own
+canonical questions, which with Path-N stay the owner), bounded topics plus generic search terms, class-level
+measure / check / document categories, what InventorAI cannot determine and an explicit specialist abstention. The
+binding is unchanged (trusted domain id + exact gap id + exact OPEN / PARTIAL; no inventor text, answer, keyword,
+label, signal or list position) and every statement is traceable to existing governed pack truth (question ids,
+rule nuances, coverage / capability declarations, reference-fundamental claim ids, the committed Mechanical PF:Q2
+routing fact) — no new D13 research, external source, pack / provenance change, value, threshold, protocol,
+pass / fail, standard, laboratory, vendor, specialist category, calculation, typed parameter, NeedRouting / CAP-04 /
+CAP-09 / readiness / progression change, session / Structured Export / API change or AI / provider call. The
+Research Gate 3 prerequisites applied to research-backed knowledge expansion; the closure uses only existing
+governed pack truth and future knowledge expansion stays separately gated. MSNL stays FUTURE / DEFERRED / NOT
+ACTIVATED (not a Stage-18 blocker). Full future CAP-01 (typed parameters, calculations, specialist mapping, further
+domains) stays NOT AUTHORIZED.
+The preceding bounded slice — Stage 15 — Integration Evidence & IRL-Compatible View — Closure — is DELIVERED.
 Stage 15 closure (delivered; completes Stage 15 for the current Mechanical + Electrical / Electronics scope, no new
 Master Roadmap Stage; the MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18): for each durable Owner-declared interface
 the inventor can optionally declare a dependency — one part relies on the other (exact dependent / depends-on part
@@ -100,8 +123,9 @@ validated IRL, IRL scoring /
 levels, full D4 compatibility evaluation, interface engineering, subsystem-level gap / evidence / readiness
 engines, analysis-focus switching, peer root domains, generic N-domain composition, a Mechatronics Domain Pack,
 Robotics, IoT, Drone / Unmanned, Renewable and Satellite / Space stay NOT AUTHORIZED; deployment and release
-NOT AUTHORIZED. The MASTER ROADMAP SEQUENTIAL MARKER stays Stage 18 — D13 / CAP-01 (STAGE 18 STARTED: YES; STAGE
-18 COMPLETE: NO; ENTERED / PARTIAL / NOT COMPLETE, checkbox unticked): there is no current authorized Technical
+NOT AUTHORIZED. Stage 18 — D13 / CAP-01 — is COMPLETE for the current Mechanical + Electrical / Electronics scope
+(checkbox ticked for that scope only; the Stage 18 closure above), and the MASTER ROADMAP SEQUENTIAL MARKER is Stage
+19 for navigation only: there is no current authorized Technical
 Deepening subtask, no next Technical Deepening slice is authorized and no additional CAP-01 implementation is
 authorized; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED.
 Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals — is DELIVERED
@@ -244,10 +268,11 @@ other product, readiness, governance or automation work requires a new explicit 
 authorization.
 docs/governance/ACTIVE_INCREMENT_CONTRACT.md owns that declaration and the delivered
 history, and is the file to read for authority — this paragraph routes, it does not
-authorize. Stage 18 remains STARTED / PARTIAL / NOT COMPLETE: its two bounded Electronics CAP-01
-increments are delivered (PR #678, PR #679), the bounded Mechanical Open-Gap Technical Context is
-delivered (PR #713), Mechanical Technical Deepening Slice 1 is delivered (PR #714) and Electrical /
-Electronics Technical Deepening Slice 1 is delivered (PR #716); there is no current authorized Technical
+authorize. Stage 18 is COMPLETE for the current Mechanical + Electrical / Electronics scope: its two bounded
+Electronics CAP-01 increments are delivered (PR #678, PR #679), the bounded Mechanical Open-Gap Technical Context is
+delivered (PR #713), Mechanical Technical Deepening Slice 1 is delivered (PR #714), Electrical / Electronics
+Technical Deepening Slice 1 is delivered (PR #716) and Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure
+is delivered; there is no current authorized Technical
 Deepening subtask, no further CAP-01 implementation is authorized beyond the delivered Mechanical and
 Electrical slices, no next Technical Deepening slice is authorized, full CAP-01 / full STG is not authorized;
 Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 is delivered (PR #718);
@@ -255,14 +280,15 @@ Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slic
 Stage 15 — Interface Verification Preparation Metadata — Slice 3 is delivered;
 Stage 15 — Interface Verification Observation Event — Slice 4 is delivered;
 Stage 15 — Integration Evidence & IRL-Compatible View — Closure is delivered, and Stage 15 is COMPLETE for the current
-Mechanical + Electrical / Electronics scope while the Master Roadmap sequential marker stays Stage 18;
+Mechanical + Electrical / Electronics scope; the Master Roadmap sequential marker is Stage 19 for navigation only
+(NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE);
 ACTIVE CONTRACT: NONE — no product increment is authorized and no other Stage is authorized — the delivered Electrical Technical Deepening slice sat inside
 the already-entered Stage 18 and entered no new Stage (Stage 19 stays ENTERED / NOT COMPLETE through its delivered Slices; Stage 22 stays ENTERED / PARTIAL through its delivered
 Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former post-Stage-15-Slice-4 `ACTIVE CONTRACT: NONE`, the former post-CAP-09-Result-Event-Slice-1 `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-3 `ACTIVE CONTRACT: NONE`, the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former post-Stage-15-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-4 `ACTIVE CONTRACT: NONE`, the former post-CAP-09-Result-Event-Slice-1 `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-3 `ACTIVE CONTRACT: NONE`, the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, the former post-PR-#679 `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -594,7 +620,9 @@ information, not execution authority.
   mutation, evidence promotion or decision selection; canonical meaning and deterministic
   decisions stay authoritative, and it fails closed to the deterministic fallback. External /
   provider MSNL and any external transmission of real invention, project or user data remain
-  NOT AUTHORIZED; activation needs its own authorization and data boundary.
+  NOT AUTHORIZED; activation needs its own authorization and data boundary. The Stage 18 closure
+  (2026-10-01) neither used nor required MSNL: MSNL stays FUTURE / DEFERRED / NOT ACTIVATED, preserved in the
+  roadmap's Stage-18 semantic-normalization note, and is attached to no new Stage.
   **Owner language policy (2026-09-27): Arabic-first UX, not Arabic-only terminology.** Arabic
   UX chrome, navigation, explanatory prose and user guidance are normally Arabic. Precise
   canonical technical terms, established engineering terminology, acronyms and identifiers MAY
@@ -749,6 +777,16 @@ information, not execution authority.
   Export, report and PDF are unchanged by authority. (C) D4 stays the future compatibility gate,
   Phase-7 integration residuals remain Phase 7 and Stage 28 / 30 stay the home of any further domain;
   none of these is reopened by the closure.
+- **WATCH — Stage 18 closure (non-blocking, no repair cycle).** STAGE 18 — COMPLETE for the current
+  Mechanical + Electrical / Electronics scope only; the MASTER ROADMAP SEQUENTIAL MARKER is Stage 19 for navigation
+  only and no Stage-19 implementation is authorized by the closure. (A) The gap-scoped next steps render on the
+  report / deliverable and PDF only; the optional session-page link proposed by the read-only analysis was NOT
+  implemented. (B) Each "information still missing" summary was written against its gap's exact canonical
+  questions (pinned by question digest in `tests/test_stage18_gap_next_steps_closure.py`); a governed question change
+  must re-review that summary. (C) The Electronics BOUNDARY_AMBIGUITY row is anchored only to its three canonical
+  questions (the Electronics pack carries no boundary rule nuance or coverage line) — truthful, not a defect.
+  (D) Full future CAP-01 (typed parameters, calculations, specialist mapping, further domains), MSNL and any
+  research-backed knowledge expansion under Research Gate 3 stay separately gated; none is reopened by the closure.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative

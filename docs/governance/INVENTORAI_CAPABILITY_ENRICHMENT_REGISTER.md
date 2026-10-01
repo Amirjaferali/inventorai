@@ -56,7 +56,7 @@ IMPLEMENTATION`** and require **separate explicit owner authorization** before a
 §R5/§R6), **with ONE bounded exception recorded in the CAP-01 entry below: the Owner has explicitly
 authorized two bounded deterministic Stage-18 CAP-01 guidance increments — the first IMPLEMENTED / MERGED /
 POST-MERGE VERIFIED (PR #678), the second a research-direction addendum likewise IMPLEMENTED / MERGED / POST-MERGE
-VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`) — and, separately, ONE bounded gap-scoped Mechanical CAP-01 Open-Gap Technical Context (DELIVERED — PR #713, merge `225c0d36e6cfa97a25cd58c671b7c4f090627fb5`; not a Mechanical domain-level checklist profile), and ONE bounded Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals (DELIVERED — PR #714, merge `dd445183a110da4ef707226e3ff9121f6c315e5b`; four source-backed reference fundamentals only), and ONE bounded Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals (DELIVERED — PR #716, merge `11564b235b056aaf12ca9d5596418f43a2d7e61c`; three source-backed reference fundamentals only for the exact Electronics PHYSICAL_FEASIBILITY gap). Those authorizations are confined to those increments and those slices. They do NOT authorize full CAP-01 / full STG, and they change nothing for
+VERIFIED (PR #679, merge `d75075b01e79909ba98ac695abb4f8969e14f753`) — and, separately, ONE bounded gap-scoped Mechanical CAP-01 Open-Gap Technical Context (DELIVERED — PR #713, merge `225c0d36e6cfa97a25cd58c671b7c4f090627fb5`; not a Mechanical domain-level checklist profile), and ONE bounded Mechanical Technical Deepening Slice 1 — Force, Moment & Pressure Fundamentals (DELIVERED — PR #714, merge `dd445183a110da4ef707226e3ff9121f6c315e5b`; four source-backed reference fundamentals only), and ONE bounded Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals (DELIVERED — PR #716, merge `11564b235b056aaf12ca9d5596418f43a2d7e61c`; three source-backed reference fundamentals only for the exact Electronics PHYSICAL_FEASIBILITY gap), and ONE bounded Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure (delivered; bounded gap-scoped technical next steps for the three governed technical gaps in both active domains from existing governed pack truth only; it completes Stage 18 for the current Mechanical + Electrical / Electronics scope — `STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`). Those authorizations are confined to those increments and those slices. They do NOT authorize full CAP-01 / full STG, and they change nothing for
 CAP-02 … CAP-18, which remain `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` unless already governed
 otherwise by their own authority.** **A second, separately bounded exception is recorded in the
 CAP-09 entry below: the Owner authorized ONE Stage-19 durable SuccessCriterion remediation
@@ -125,14 +125,30 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   technical depth and no technical-source knowledge. Nor is Stage 15 — Interface Verification Preparation
   Metadata — Slice 3 (delivered: the inventor's own intended operating conditions, observable acceptance
   criterion and evidence / review needed per declared interaction; no technical depth, no source knowledge). Nor is Stage 15 — Interface Verification Observation Event — Slice 4 (delivered: the inventor's own append-only record of what actually happened when they checked a declared interaction; InventorAI does not decide whether the acceptance criterion was met; no technical depth, no source knowledge). Nor is Stage 15 — Integration Evidence & IRL-Compatible View — Closure (delivered: an optional Owner-declared dependency per interface, Integration evidence anchored to one interface through the existing evidence owner and a fourth readiness-snapshot row, Integration — INSUFFICIENT_EVIDENCE only; it completes Stage 15 for the current Mechanical + Electrical / Electronics scope only; no technical depth, no source knowledge, no IRL level and no compatibility verdict).
+  A sixth bounded slice — Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure: delivered — shows, for
+  each CURRENT (OPEN / PARTIAL) canonical MECHANISM_COMPLETENESS / PHYSICAL_FEASIBILITY / BOUNDARY_AMBIGUITY gap
+  in both active domains, the gap's context (the Electronics MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY
+  contexts added) plus ONE optional technical next-steps sub-view in the report / deliverable and PDF: the
+  information still missing (summarized from the gap's own canonical questions, which with Path-N stay the
+  owner), bounded topics and generic search terms, class-level measure / check / document categories, what
+  InventorAI cannot determine and an explicit specialist abstention, each traceable to existing governed pack
+  truth — no value, threshold, protocol, pass / fail, standard, laboratory, vendor, specialist category,
+  calculation, typed parameter or new source, and `CAP01_ELECTRONICS_INTERFACE_V1` is unchanged. It completes
+  Stage 18 for the current Mechanical + Electrical / Electronics scope only:
+  `STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE` ·
+  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 19 — ENTERED / NOT COMPLETE — NAVIGATION ONLY` ·
+  `NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE`.
   The two Electronics increments are presentation-only; the second
   adds no evidence, retrieval, numeric value, project inspection or specialist. That increment is presentation-only, class-general and
   conditional, with one authorized domain guidance profile (`electronics_electrical`), bounded EN/AR
   copy, and no concept-class assertion, record inspection, numeric value, compatibility or safety
   verdict, specialist classification, AI/provider integration, schema or persistence.
-  `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `D13 RESEARCH: REMAINS CLOSED` · `STAGE 18 COMPLETE: NO`.
+  `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `D13 RESEARCH: REMAINS CLOSED` · `STAGE 18: COMPLETE — CURRENT
+  MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`. *(Superseded 2026-10-01 by the Stage 18 closure, preserved — was:
+  "`STAGE 18 COMPLETE: NO`".)*
   **The intended full future scope of CAP-01 above is NOT reduced by that first slice** — the slice is
-  a first increment, not the capability's ceiling.
+  a first increment, not the capability's ceiling — nor by the Stage 18 closure: full future CAP-01 (typed
+  parameters, calculations, specialist mapping, further domains) stays NOT AUTHORIZED.
 - **Activation conditions:** the D13 Source Review and D13 owner-gated authorization chain for anything
   beyond the one authorized bounded increment.
 - **Separate owner authorization requirement:** yes — via the D13 authority, and separately for each

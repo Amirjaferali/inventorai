@@ -5323,26 +5323,28 @@ UI_STRINGS = {
     # owned by web/cap01_guidance.py by exact canonical gap identity + lifecycle
     # state; these entries bind nothing. Equations and unit symbols live in their
     # own EQUATION keys (language-neutral, identical in EN and AR) so the template
-    # isolates them with dir="ltr".
+    # isolates them with dir="ltr". The Stage-18 closure adds the
+    # MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY contexts of this group (at the end
+    # of this catalogue), so the group title and intro now speak of the gaps.
     "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_TITLE": {
-        "en": "Technical context for the unresolved electrical feasibility gap",
-        "ar": "سياق فني لفجوة الجدوى الكهربائية غير المحسومة",
+        "en": "Technical context for the unresolved electrical / electronics gaps",
+        "ar": "سياق فني للفجوات الكهربائية / الإلكترونية غير المحسومة",
     },
     "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_INTRO": {
         "en": (
-            "The note below explains, at concept level only, what the currently open or "
-            "partially addressed electrical feasibility gap concerns within InventorAI's "
-            "electronics / electrical coverage, and what InventorAI does not conclude from it. "
-            "It is explanatory context only: it adds no question, action, responsibility or "
-            "closure rule, and it does not replace the technical-information checklist, the gap "
-            "action packs or the Validation Plan."
+            "Each note below explains, at concept level only, what one currently open or "
+            "partially addressed gap concerns within InventorAI's electronics / electrical "
+            "coverage, and what InventorAI does not conclude from it. These notes are explanatory "
+            "context only: they add no question, action, responsibility or closure rule, and they "
+            "do not replace the technical-information checklist, the gap action packs or the "
+            "Validation Plan."
         ),
         "ar": (
-            "توضّح الملاحظة أدناه، على المستوى المفاهيمي فقط، ما تتعلق به فجوة الجدوى الكهربائية "
-            "المفتوحة حاليًا أو المُعالَجة جزئيًا ضمن تغطية الإلكترونيات / الكهرباء في InventorAI، "
-            "وما الذي لا يستنتجه InventorAI منها. هذه الملاحظة سياق توضيحي فقط: لا تضيف سؤالًا ولا "
-            "إجراءً ولا مسؤولية ولا شرط إغلاق، ولا تحل محل قائمة المعلومات الفنية أو حِزم إجراءات "
-            "الفجوات أو خطة التحقق (Validation Plan)."
+            "توضّح كل ملاحظة أدناه، على المستوى المفاهيمي فقط، ما تتعلق به فجوة واحدة مفتوحة حاليًا "
+            "أو مُعالَجة جزئيًا ضمن تغطية الإلكترونيات / الكهرباء في InventorAI، وما الذي لا "
+            "يستنتجه InventorAI منها. هذه الملاحظات سياق توضيحي فقط: لا تضيف سؤالًا ولا إجراءً ولا "
+            "مسؤولية ولا شرط إغلاق، ولا تحل محل قائمة المعلومات الفنية أو حِزم إجراءات الفجوات أو "
+            "خطة التحقق (Validation Plan)."
         ),
     },
     "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_TITLE": {
@@ -5475,6 +5477,358 @@ UI_STRINGS = {
             "التوافق أو حدود الجهد / التيار الآمنة، ولا تثبت أن الدائرة تعمل، ولا تحدد مقاسات أي "
             "مكوّن، ولا تثبت السلامة الكهربائية، ولا تثبت أن الاختراع تم التحقق منه."
         ),
+    },
+    # Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure. The Electronics
+    # MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY contexts (grounded only in the
+    # governed Electronics pack questions) and, per authorized (domain, gap), ONE
+    # optional next-steps sub-view: a bounded summary of the gap's own canonical
+    # questions, what to look into, generic search terms (language-neutral English
+    # tokens, identical in EN and AR, rendered dir="ltr"), class-level measure /
+    # check / document categories and an explicit specialist abstention. Selection
+    # and source anchors live in web/cap01_guidance.py; these entries bind nothing.
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_TITLE": {
+        "en": "Circuit mechanism completeness — what this gap concerns",
+        "ar": "اكتمال آلية الدائرة (Mechanism Completeness) — ما تتعلق به هذه الفجوة",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_MEANING": {
+        "en": "This gap concerns, at concept level, how the circuit achieves its intended function: what happens electrically from input to output, the signal or energy transformation it performs, and the electronic components central to it and the role each plays. Where that electrical sequence or those roles are not yet described, circuit mechanism completeness remains unresolved at concept level.",
+        "ar": "تتعلق هذه الفجوة، على المستوى المفاهيمي، بكيفية تحقيق الدائرة لوظيفتها المقصودة: ما الذي يحدث كهربائيًا من المدخل إلى المخرج، وتحويل الإشارة أو الطاقة الذي تؤديه، والمكوّنات الإلكترونية المحورية فيها ودور كل منها. وحيث لم يُوصف هذا التسلسل الكهربائي أو هذه الأدوار بعد، يبقى اكتمال آلية الدائرة غير محسوم على المستوى المفاهيمي.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LIMIT": {
+        "en": "InventorAI does not conclude from this gap, or from its later closure, that the circuit works, is correctly designed, uses suitable components or is ready to build, and it makes no safety determination. Circuit mechanism completeness here is a concept-level reasoning assessment, not circuit design or verification.",
+        "ar": "لا يستنتج InventorAI من هذه الفجوة، ولا من إغلاقها لاحقًا، أن الدائرة تعمل، أو أنها مصممة بشكل صحيح، أو أنها تستخدم مكوّنات مناسبة، أو أنها جاهزة للبناء، ولا يُصدر أي حكم بشأن السلامة. اكتمال آلية الدائرة هنا تقييم استدلالي على المستوى المفاهيمي، وليس تصميمًا للدائرة أو تحققًا منها.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_BOUNDARY_AMBIGUITY_TITLE": {
+        "en": "Electronic design boundaries — what this gap concerns",
+        "ar": "حدود التصميم الإلكتروني (Boundary Ambiguity) — ما تتعلق به هذه الفجوة",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_BOUNDARY_AMBIGUITY_MEANING": {
+        "en": "This gap concerns, at concept level, what the electronic design does and does not do or handle, where it stops and another system or component begins, and which external systems, components or interfaces it depends on to function. Where that scope or those dependencies are not yet stated, the design's boundary remains ambiguous at concept level.",
+        "ar": "تتعلق هذه الفجوة، على المستوى المفاهيمي، بما يفعله التصميم الإلكتروني وما لا يفعله أو لا يتعامل معه، وبالنقطة التي يتوقف عندها ويبدأ نظام أو مكوّن آخر، وبالأنظمة أو المكوّنات أو الواجهات الخارجية التي يعتمد عليها ليعمل. وحيث لم يُذكر هذا النطاق أو هذه الاعتمادات بعد، يبقى حدّ التصميم غامضًا على المستوى المفاهيمي.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_BOUNDARY_AMBIGUITY_LIMIT": {
+        "en": "InventorAI does not conclude from this gap, or from its later closure, that the design is compatible with any external system, component or interface, meets any regulation or standard, is novel or is ready for production. The boundary described is the inventor's own concept-level statement.",
+        "ar": "لا يستنتج InventorAI من هذه الفجوة، ولا من إغلاقها لاحقًا، أن التصميم متوافق مع أي نظام أو مكوّن أو واجهة خارجية، أو أنه يستوفي أي لائحة أو معيار، أو أنه جديد، أو جاهز للإنتاج. والحدّ الموصوف هو بيان المخترع نفسه على المستوى المفاهيمي.",
+    },
+    "UI_CAP01_NEXT_STEPS_V1_TITLE": {
+        "en": "Technical next steps for this gap",
+        "ar": "خطوات فنية تالية لهذه الفجوة",
+    },
+    "UI_CAP01_NEXT_STEPS_V1_MISSING_LABEL": {
+        "en": "Information still missing:",
+        "ar": "المعلومات التي لا تزال ناقصة:",
+    },
+    "UI_CAP01_NEXT_STEPS_V1_LOOK_LABEL": {
+        "en": "What to look into",
+        "ar": "ما الذي يمكن البحث فيه",
+    },
+    "UI_CAP01_NEXT_STEPS_V1_SEARCH_LABEL": {
+        "en": "Generic search terms (in English)",
+        "ar": "مصطلحات بحث عامة (بالإنجليزية)",
+    },
+    "UI_CAP01_NEXT_STEPS_V1_MEASURE_LABEL": {
+        "en": "What could be measured, checked or documented",
+        "ar": "ما الذي يمكن قياسه أو فحصه أو توثيقه",
+    },
+    "UI_CAP01_NEXT_STEPS_V1_SPECIALIST_LABEL": {
+        "en": "Specialist input:",
+        "ar": "المدخلات المتخصصة:",
+    },
+    "UI_CAP01_NEXT_STEPS_V1_BOUNDARY": {
+        "en": "These next steps are navigation aids for this gap only. InventorAI has not determined that any topic or category applies to your design, retrieves nothing, and sets no value, range, threshold or pass / fail criterion. They add no question, action, responsibility or closure rule — the gap action packs and the Validation Plan keep those — and they do not plan a test: your own experiment planning stays in the Prototype & Test Plan.",
+        "ar": "هذه الخطوات التالية أدوات إرشاد لهذه الفجوة فقط. لم يحدد InventorAI أن أي موضوع أو فئة ينطبق على تصميمك، ولا يسترجع أي شيء، ولا يضع أي قيمة أو نطاق أو حدّ أو معيار نجاح / فشل. ولا تضيف سؤالًا ولا إجراءً ولا مسؤولية ولا شرط إغلاق — فهذه تبقى لحِزم إجراءات الفجوات ولخطة التحقق (Validation Plan) — ولا تخطط لاختبار: يبقى تخطيطك لتجاربك في خطة النموذج الأولي والاختبار.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_MISSING": {
+        "en": "The questions for this gap ask for the physical steps the mechanism takes, what moves, connects or transfers force, each component and how it contributes, and any physical detail still missing for someone to build it.",
+        "ar": "تسأل أسئلة هذه الفجوة عن الخطوات الفيزيائية التي تتخذها الآلية، وما الذي يتحرك أو يتصل أو ينقل القوة، وكل مكوّن وكيف يساهم، وأي تفصيل فيزيائي لا يزال ناقصًا ليتمكن شخص من بنائها.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_TOPIC_1": {
+        "en": "The sequence of physical steps from the input motion or force to the intended function.",
+        "ar": "تسلسل الخطوات الفيزيائية من الحركة أو القوة الداخلة إلى الوظيفة المقصودة.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_TOPIC_2": {
+        "en": "The force-transfer path: which parts move, connect or pass force to the next part.",
+        "ar": "مسار نقل القوة: أي الأجزاء تتحرك أو تتصل أو تنقل القوة إلى الجزء التالي.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_TOPIC_3": {
+        "en": "The role of each mechanical component in the overall motion or function.",
+        "ar": "دور كل مكوّن ميكانيكي في الحركة أو الوظيفة الكلية.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_SEARCH_1": {
+        "en": "mechanism motion sequence",
+        "ar": "mechanism motion sequence",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_SEARCH_2": {
+        "en": "force transfer path",
+        "ar": "force transfer path",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_SEARCH_3": {
+        "en": "mechanical component function",
+        "ar": "mechanical component function",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_MEASURE_1": {
+        "en": "A step-by-step description or sketch of the mechanism showing each component and how motion or force passes between them.",
+        "ar": "وصف خطوة بخطوة أو رسم تخطيطي للآلية يُظهر كل مكوّن وكيف تنتقل الحركة أو القوة بينها.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_MEASURE_2": {
+        "en": "An observation record of how the mechanism, or a simple model of it, moves through those steps.",
+        "ar": "سجل ملاحظة لكيفية تحرك الآلية، أو نموذج بسيط منها، عبر تلك الخطوات.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_MEASURE_3": {
+        "en": "A note of any physical detail that is still missing for someone to build the mechanism.",
+        "ar": "ملاحظة بأي تفصيل فيزيائي لا يزال ناقصًا ليتمكن شخص من بناء الآلية.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_SPECIALIST": {
+        "en": "InventorAI does not name a specialist category for this gap: no governed mapping supports one from this guidance alone.",
+        "ar": "لا يسمّي InventorAI فئة مختصين لهذه الفجوة: لا يوجد ربط خاضع للحوكمة يدعم ذلك من هذا الإرشاد وحده.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_MISSING": {
+        "en": "The questions for this gap ask which physical principle the mechanism relies on, and which material or force constraints it must operate within.",
+        "ar": "تسأل أسئلة هذه الفجوة عن المبدأ الفيزيائي الذي تعتمد عليه الآلية، وعن قيود المواد أو القوى التي يجب أن تعمل ضمنها.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_TOPIC_1": {
+        "en": "The physical principle the mechanism relies on, such as leverage, spring tension, gear ratio or friction.",
+        "ar": "المبدأ الفيزيائي الذي تعتمد عليه الآلية، مثل الرافعة أو شدّ النابض أو نسبة التروس أو الاحتكاك.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_TOPIC_2": {
+        "en": "The operating constraints: the forces the mechanism must produce or withstand and the material constraints it depends on.",
+        "ar": "قيود التشغيل: القوى التي يجب أن تُنتجها الآلية أو تتحملها، وقيود المواد التي تعتمد عليها.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_TOPIC_3": {
+        "en": "Where they match your actual mechanism, the reference fundamentals above for torque / moment, static moment balance and pressure / force / area.",
+        "ar": "حيث تطابق آليتك الفعلية، الأساسيات المرجعية أعلاه للعزم، واتزان العزوم الساكن، والضغط / القوة / المساحة.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SEARCH_1": {
+        "en": "leverage principle",
+        "ar": "leverage principle",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SEARCH_2": {
+        "en": "spring tension",
+        "ar": "spring tension",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SEARCH_3": {
+        "en": "gear ratio",
+        "ar": "gear ratio",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SEARCH_4": {
+        "en": "friction force",
+        "ar": "friction force",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SEARCH_5": {
+        "en": "torque moment arm",
+        "ar": "torque moment arm",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SEARCH_6": {
+        "en": "pressure force area",
+        "ar": "pressure force area",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_MEASURE_1": {
+        "en": "A statement of the forces the mechanism must produce or withstand under its intended use conditions.",
+        "ar": "بيان بالقوى التي يجب أن تُنتجها الآلية أو تتحملها في ظروف الاستخدام المقصودة.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_MEASURE_2": {
+        "en": "Measured or documented force, torque or pressure quantities relevant to the stated principle, recorded with their units.",
+        "ar": "كميات قوة أو عزم أو ضغط مقيسة أو موثّقة ذات صلة بالمبدأ المذكور، مسجّلة مع وحداتها.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_MEASURE_3": {
+        "en": "Documentation of the material or force constraints the mechanism depends on, noting where each came from.",
+        "ar": "توثيق لقيود المواد أو القوى التي تعتمد عليها الآلية، مع ذكر مصدر كل منها.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_MEASURE_4": {
+        "en": "Observation evidence of real-world loads, wear or environmental conditions, where you have it.",
+        "ar": "أدلة ملاحظة عن الأحمال الواقعية أو التآكل أو الظروف البيئية، حيثما توفرت لديك.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SPECIALIST": {
+        "en": "InventorAI does not name a specialist category for this gap: no governed mapping supports one from this guidance alone. If specialist input has already been requested for this gap's operating limits, that request appears in this gap's action pack; this guidance does not change it or identify which specialist.",
+        "ar": "لا يسمّي InventorAI فئة مختصين لهذه الفجوة: لا يوجد ربط خاضع للحوكمة يدعم ذلك من هذا الإرشاد وحده. وإذا كانت مدخلات متخصصة قد طُلبت بالفعل لحدود التشغيل في هذه الفجوة، فإن هذا الطلب يظهر في حزمة إجراءات هذه الفجوة؛ ولا يغيّره هذا الإرشاد ولا يحدد المختص.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_MISSING": {
+        "en": "The questions for this gap ask what the mechanism does not do or cover, at least one clear mechanical boundary, one similar existing mechanical approach, and what makes yours different in a concrete, physical way.",
+        "ar": "تسأل أسئلة هذه الفجوة عمّا لا تفعله الآلية أو لا تغطيه، وعن حدّ ميكانيكي واضح واحد على الأقل، وعن نهج ميكانيكي قائم مشابه، وعمّا يجعل آليتك مختلفة بطريقة فيزيائية ملموسة.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_TOPIC_1": {
+        "en": "The scope of the mechanism: what it does and does not do or cover.",
+        "ar": "نطاق الآلية: ما تفعله وما لا تفعله أو لا تغطيه.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_TOPIC_2": {
+        "en": "Its mechanical boundary: where the mechanism ends and another part or system begins.",
+        "ar": "حدّها الميكانيكي: أين تنتهي الآلية ويبدأ جزء أو نظام آخر.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_TOPIC_3": {
+        "en": "An existing mechanical approach similar to yours, and the concrete physical way yours differs.",
+        "ar": "نهج ميكانيكي قائم مشابه لآليتك، والطريقة الفيزيائية الملموسة التي تختلف بها آليتك.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_SEARCH_1": {
+        "en": "mechanism scope boundary",
+        "ar": "mechanism scope boundary",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_SEARCH_2": {
+        "en": "system boundary definition",
+        "ar": "system boundary definition",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_SEARCH_3": {
+        "en": "existing mechanism comparison",
+        "ar": "existing mechanism comparison",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_MEASURE_1": {
+        "en": "A written scope statement listing what the mechanism does and does not do or cover.",
+        "ar": "بيان نطاق مكتوب يذكر ما تفعله الآلية وما لا تفعله أو لا تغطيه.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_MEASURE_2": {
+        "en": "A sketch or description marking where the mechanism ends and what lies outside it.",
+        "ar": "رسم تخطيطي أو وصف يحدد أين تنتهي الآلية وما يقع خارجها.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_MEASURE_3": {
+        "en": "A side-by-side description of one similar existing mechanical approach and the concrete physical difference of yours, as your own concept-level statement — not a novelty or patentability assessment.",
+        "ar": "وصف متقابل لنهج ميكانيكي قائم مشابه وللاختلاف الفيزيائي الملموس في آليتك، بوصفه بيانك أنت على المستوى المفاهيمي — وليس تقييمًا للجِدّة أو لقابلية الحماية ببراءة اختراع.",
+    },
+    "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_SPECIALIST": {
+        "en": "InventorAI does not name a specialist category for this gap: no governed mapping supports one from this guidance alone.",
+        "ar": "لا يسمّي InventorAI فئة مختصين لهذه الفجوة: لا يوجد ربط خاضع للحوكمة يدعم ذلك من هذا الإرشاد وحده.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_MISSING": {
+        "en": "The questions for this gap ask what happens electrically from input to output, which components are central and what role each plays, what signal or energy transformation the circuit performs, and which part is most critical and why.",
+        "ar": "تسأل أسئلة هذه الفجوة عمّا يحدث كهربائيًا من المدخل إلى المخرج، وعن المكوّنات المحورية ودور كل منها، وعن تحويل الإشارة أو الطاقة الذي تؤديه الدائرة، وعن الجزء الأكثر أهمية ولماذا.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_TOPIC_1": {
+        "en": "The circuit's input-to-output function: what happens electrically from input to output.",
+        "ar": "وظيفة الدائرة من المدخل إلى المخرج: ما الذي يحدث كهربائيًا من المدخل إلى المخرج.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_TOPIC_2": {
+        "en": "The signal or energy transformation the circuit performs.",
+        "ar": "تحويل الإشارة أو الطاقة الذي تؤديه الدائرة.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_TOPIC_3": {
+        "en": "The role of each central component, described by its underlying principle rather than only by a platform or product name.",
+        "ar": "دور كل مكوّن محوري، موصوفًا بمبدئه الأساسي لا باسم منصة أو منتج فقط.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_SEARCH_1": {
+        "en": "circuit input output function",
+        "ar": "circuit input output function",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_SEARCH_2": {
+        "en": "signal transformation circuit",
+        "ar": "signal transformation circuit",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_SEARCH_3": {
+        "en": "electronic component role",
+        "ar": "electronic component role",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_MEASURE_1": {
+        "en": "A block description or simple diagram of the circuit from input to output, naming each central component and its role.",
+        "ar": "وصف بالكتل أو مخطط بسيط للدائرة من المدخل إلى المخرج، يسمّي كل مكوّن محوري ودوره.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_MEASURE_2": {
+        "en": "The technical documentation of each central component describing what it does.",
+        "ar": "الوثائق الفنية لكل مكوّن محوري التي تصف ما يفعله.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_MEASURE_3": {
+        "en": "A note of which part is most critical to the intended function, and why.",
+        "ar": "ملاحظة بالجزء الأكثر أهمية لتحقيق الوظيفة المقصودة، ولماذا.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_MECHANISM_COMPLETENESS_SPECIALIST": {
+        "en": "InventorAI does not name a specialist category for this gap: no governed mapping supports one from this guidance alone.",
+        "ar": "لا يسمّي InventorAI فئة مختصين لهذه الفجوة: لا يوجد ربط خاضع للحوكمة يدعم ذلك من هذا الإرشاد وحده.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_MISSING": {
+        "en": "The questions for this gap ask what provides the energy or power, which electrical requirements the design depends on — such as voltage, current or frequency — and which electrical constraints it must stay within.",
+        "ar": "تسأل أسئلة هذه الفجوة عمّا يوفّر الطاقة أو القدرة، وعن المتطلبات الكهربائية التي يعتمد عليها التصميم — مثل الجهد أو التيار أو التردد — وعن القيود الكهربائية التي يجب أن يبقى ضمنها.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_TOPIC_1": {
+        "en": "The power or energy source the design relies on, and its energy budget where energy is converted or delivered.",
+        "ar": "مصدر القدرة أو الطاقة الذي يعتمد عليه التصميم، وميزانية الطاقة حيث تُحوَّل الطاقة أو تُوصَّل.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_TOPIC_2": {
+        "en": "The electrical requirements the design depends on, such as voltage, current or frequency.",
+        "ar": "المتطلبات الكهربائية التي يعتمد عليها التصميم، مثل الجهد أو التيار أو التردد.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_TOPIC_3": {
+        "en": "The electrical constraints the design must stay within to function, and where the information to determine them would come from.",
+        "ar": "القيود الكهربائية التي يجب أن يبقى التصميم ضمنها ليعمل، ومن أين ستأتي المعلومات اللازمة لتحديدها.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_TOPIC_4": {
+        "en": "Where they match your actual circuit, the reference fundamentals above for Ohm's law, basic electrical power and SI units.",
+        "ar": "حيث تطابق دائرتك الفعلية، الأساسيات المرجعية أعلاه لقانون أوم، والقدرة الكهربائية الأساسية، ووحدات النظام الدولي (SI).",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SEARCH_1": {
+        "en": "power source energy budget",
+        "ar": "power source energy budget",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SEARCH_2": {
+        "en": "operating voltage current requirements",
+        "ar": "operating voltage current requirements",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SEARCH_3": {
+        "en": "electrical operating constraints",
+        "ar": "electrical operating constraints",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SEARCH_4": {
+        "en": "Ohm's law",
+        "ar": "Ohm's law",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SEARCH_5": {
+        "en": "electrical power voltage current",
+        "ar": "electrical power voltage current",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_MEASURE_1": {
+        "en": "A statement of the power or energy source and the energy budget the design needs, where energy is converted or delivered.",
+        "ar": "بيان بمصدر القدرة أو الطاقة وميزانية الطاقة التي يحتاجها التصميم، حيث تُحوَّل الطاقة أو تُوصَّل.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_MEASURE_2": {
+        "en": "Measured or documented voltage, current or frequency quantities the design depends on, recorded with their units.",
+        "ar": "كميات جهد أو تيار أو تردد مقيسة أو موثّقة يعتمد عليها التصميم، مسجّلة مع وحداتها.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_MEASURE_3": {
+        "en": "Documentation of the electrical constraints the design must stay within, such as the technical documentation of the components or power source involved, noting where each came from.",
+        "ar": "توثيق للقيود الكهربائية التي يجب أن يبقى التصميم ضمنها، مثل الوثائق الفنية للمكوّنات أو لمصدر القدرة المعنيّ، مع ذكر مصدر كل منها.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_PHYSICAL_FEASIBILITY_SPECIALIST": {
+        "en": "InventorAI does not name a specialist category for this gap: no governed mapping supports one from this guidance alone.",
+        "ar": "لا يسمّي InventorAI فئة مختصين لهذه الفجوة: لا يوجد ربط خاضع للحوكمة يدعم ذلك من هذا الإرشاد وحده.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_MISSING": {
+        "en": "The questions for this gap ask what the design does not do or handle, where it stops and another system or component begins, and which external systems, components or interfaces it depends on.",
+        "ar": "تسأل أسئلة هذه الفجوة عمّا لا يفعله التصميم أو لا يتعامل معه، وعن النقطة التي يتوقف عندها ويبدأ نظام أو مكوّن آخر، وعن الأنظمة أو المكوّنات أو الواجهات الخارجية التي يعتمد عليها.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_TOPIC_1": {
+        "en": "The scope of the electronic design: what it does and does not do or handle.",
+        "ar": "نطاق التصميم الإلكتروني: ما يفعله وما لا يفعله أو لا يتعامل معه.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_TOPIC_2": {
+        "en": "The interface boundary: where the design stops and another system or component begins.",
+        "ar": "حدّ الواجهة: أين يتوقف التصميم ويبدأ نظام أو مكوّن آخر.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_TOPIC_3": {
+        "en": "The external systems, components or interfaces the design depends on to function.",
+        "ar": "الأنظمة أو المكوّنات أو الواجهات الخارجية التي يعتمد عليها التصميم ليعمل.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_SEARCH_1": {
+        "en": "system boundary definition",
+        "ar": "system boundary definition",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_SEARCH_2": {
+        "en": "electronic interface description",
+        "ar": "electronic interface description",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_SEARCH_3": {
+        "en": "external interface dependency",
+        "ar": "external interface dependency",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_MEASURE_1": {
+        "en": "A written scope statement of what the design does and does not do or handle.",
+        "ar": "بيان نطاق مكتوب بما يفعله التصميم وما لا يفعله أو لا يتعامل معه.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_MEASURE_2": {
+        "en": "A boundary sketch or description marking where the design stops and each external system or component begins.",
+        "ar": "رسم تخطيطي أو وصف للحدود يحدد أين يتوقف التصميم ويبدأ كل نظام أو مكوّن خارجي.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_MEASURE_3": {
+        "en": "Interface information for each external system, component or interface the design depends on, such as its technical documentation.",
+        "ar": "معلومات الواجهة لكل نظام أو مكوّن أو واجهة خارجية يعتمد عليها التصميم، مثل وثائقها الفنية.",
+    },
+    "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_BOUNDARY_AMBIGUITY_SPECIALIST": {
+        "en": "InventorAI does not name a specialist category for this gap: no governed mapping supports one from this guidance alone.",
+        "ar": "لا يسمّي InventorAI فئة مختصين لهذه الفجوة: لا يوجد ربط خاضع للحوكمة يدعم ذلك من هذا الإرشاد وحده.",
     },
 }
 

@@ -70,6 +70,8 @@ PROFILE_DOMAIN = "electronics_electrical"
 MECH_GAP_CONTEXT_ID = "CAP01_MECHANICAL_GAP_CONTEXT_V1"
 MECH_GAP_CONTEXT_PREFIX = "UI_%s_" % MECH_GAP_CONTEXT_ID
 ELEC_GAP_CONTEXT_PREFIX = "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_"
+NEXT_STEPS_PREFIXES = ("UI_CAP01_NEXT_STEPS_V1_", "UI_CAP01_MECHANICAL_NEXT_STEPS_V1_",
+                       "UI_CAP01_ELECTRONICS_NEXT_STEPS_V1_")
 
 
 def _electronics_keys():
@@ -477,20 +479,27 @@ def test_08a_profile_selection_is_table_driven_not_hard_coded_branching(monkeypa
 def test_08b_the_probe_leaves_no_residue_and_no_unused_future_row_is_shipped():
     assert tuple(cap01_guidance.CAP01_PROFILE_BY_DOMAIN) == (PROFILE_DOMAIN,)
     # The only other ``UI_CAP01_`` keys are the separately-authorized Mechanical
-    # gap-context group's and the separately-authorized Electronics
-    # PHYSICAL_FEASIBILITY gap-context group's (Electrical / Electronics Technical
-    # Deepening Slice 1); no unused future profile row or key is shipped.
+    # gap-context group's, the separately-authorized Electronics gap-context
+    # group's (Electrical / Electronics Technical Deepening Slice 1, extended by
+    # the Stage-18 closure) and the Stage-18 closure's gap-scoped next-steps
+    # copy (shared labels plus one group per domain); no unused future profile
+    # row or key is shipped.
     assert not [k for k in ui_text.UI_STRINGS
                 if k.startswith("UI_CAP01_") and PROFILE_ID not in k
                 and not k.startswith(MECH_GAP_CONTEXT_PREFIX)
-                and not k.startswith(ELEC_GAP_CONTEXT_PREFIX)]
-    # ...and every Electronics gap-context key is consumed by its one resolved row.
+                and not k.startswith(ELEC_GAP_CONTEXT_PREFIX)
+                and not k.startswith(NEXT_STEPS_PREFIXES)]
+    # ...and every Electronics gap-context key is consumed by its resolved rows.
     view = cap01_guidance.gap_contexts_for_gaps(
-        PROFILE_DOMAIN, [Gap(gap_type="PHYSICAL_FEASIBILITY", status="OPEN", opened_at=0)])
-    ctx = view["contexts"][0]
-    used = {view["title_key"], view["intro_key"], ctx["title_key"], ctx["meaning_key"],
-            ctx["limit_key"]} | {v for k, v in ctx["fundamentals"].items() if k.endswith("_key")} | {
-        v for c in ctx["fundamentals"]["claims"] for k, v in c.items() if k.endswith("_key")}
+        PROFILE_DOMAIN, [Gap(gap_type=g, status="OPEN", opened_at=0)
+                         for g in ("MECHANISM_COMPLETENESS", "PHYSICAL_FEASIBILITY",
+                                   "BOUNDARY_AMBIGUITY")])
+    used = {view["title_key"], view["intro_key"]}
+    for ctx in view["contexts"]:
+        used |= {ctx["title_key"], ctx["meaning_key"], ctx["limit_key"]}
+        if ctx["fundamentals"]:
+            used |= {v for k, v in ctx["fundamentals"].items() if k.endswith("_key")} | {
+                v for c in ctx["fundamentals"]["claims"] for k, v in c.items() if k.endswith("_key")}
     assert used == {k for k in ui_text.UI_STRINGS if k.startswith(ELEC_GAP_CONTEXT_PREFIX)}
 
 
@@ -1257,6 +1266,10 @@ def test_24_current_state_says_first_merged_second_authorized_stage_partial():
         assert "IMPLEMENTED / MERGED / POST-MERGE VERIFIED" in block
         assert "PR #678" in block and _MERGE_678 in block
         assert "SECOND BOUNDED CAP-01 RESEARCH-DIRECTION INCREMENT: OWNER-AUTHORIZED" in block
-        assert "`STAGE 18 COMPLETE: NO`" in block
+        # Stage-18 closure (2026-10-01): complete for the current Mechanical + Electrical /
+        # Electronics scope only — never an unscoped completion, never "not complete" again
+        assert ("`STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`"
+                in re.sub(r"\s+", " ", block))
+        assert "`STAGE 18 COMPLETE: NO`" not in block
         assert re.search(r"FULL CAP-01\s*/\s*FULL STG: NOT AUTHORIZED", block)
         assert "STAGE 18 COMPLETE: YES" not in block
