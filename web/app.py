@@ -6016,6 +6016,9 @@ def show_session(sid):
                                if _cap08_eligible_assumptions(state)
                                and _cap10_eligible_endpoints(state) else ""),
         dependency_view=_assumption_dependency_view(state),
+        # Stage 21 closure: the read-only view of the conflicts the inventor
+        # declared (active pairs; history stays in the project record).
+        declared_conflicts=_declared_conflict_view(state),
         # Stage 20 closure: revise / replace forms, one per ACTIVE provisional
         # assumption, each with its own signed binding (writable pages only).
         assumption_actions=_assumption_actions_context(sid, entry, state),
@@ -6812,6 +6815,65 @@ def declare_conflict(sid):
     _project_declared_contradictions(state.assertions)
     entry["_interaction_ack"] = CONTRADICTION_DECLARED_ACK
     return redirect(url_for("show_session", sid=sid))
+
+
+# Stage 21 closure — the ONE read-only session view of the contradictions the
+# inventor declared (CAP-10). It reads only existing CAP-10 truth: the stored
+# `contradiction_declared` records and `active_declared_contradiction_pairs`.
+# Nothing is detected, validated, resolved or chosen; the existing correction
+# path stays the only way answer truth changes.
+DECLARED_CONFLICTS_AVAILABLE = "available"
+DECLARED_CONFLICTS_UNAVAILABLE = "unavailable"
+
+
+def _declared_conflict_view(state):
+    """``{status, conflicts, declared_count, inactive_declarations}``.
+
+    ``conflicts`` holds one item per ACTIVE declared pair (both answers still
+    current), in ledger order: the declaration's verbatim note and each answer
+    resolved from its OWN record — its step (the ledger ordinal the project
+    record uses), question area and verbatim text. ``inactive_declarations``
+    names the declarations whose pair is no longer active (history only).
+    Only owner declarations are shown: a contradiction edge that no
+    declaration projected is never attributed to the inventor. ``unavailable``
+    — never "no conflicts" — when the view cannot be derived."""
+    unavailable = {"status": DECLARED_CONFLICTS_UNAVAILABLE, "conflicts": [],
+                   "declared_count": None, "inactive_declarations": frozenset()}
+    try:
+        from engine.idea_state import active_declared_contradiction_pairs
+        assertions = list(getattr(state, "assertions", None) or ())
+        ordinal_of, by_id = {}, {}
+        for index, record in enumerate(assertions):
+            ordinal_of[record.record_id] = index + 1
+            by_id[record.record_id] = record
+        active_pairs = active_declared_contradiction_pairs(assertions)
+        declarations = [r for r in assertions
+                        if r.disposition == _DISP_CONTRADICTION_DECLARED]
+        conflicts, inactive, shown = [], set(), set()
+        for declaration in declarations:
+            pair = tuple(declaration.contradiction_endpoints or ())
+            if len(pair) != 2:
+                return unavailable
+            if pair not in active_pairs:
+                inactive.add(declaration.record_id)
+                continue
+            if pair in shown:
+                continue
+            shown.add(pair)
+            answers = []
+            for rid in pair:
+                record = by_id[rid]
+                answers.append({"record_id": rid, "step": ordinal_of[rid],
+                                "context": getattr(record, "gap_context", None),
+                                "text": getattr(record, "content", "") or ""})
+            conflicts.append({"declaration_id": declaration.record_id,
+                              "note": declaration.content or "",
+                              "answers": answers})
+        return {"status": DECLARED_CONFLICTS_AVAILABLE, "conflicts": conflicts,
+                "declared_count": len(declarations),
+                "inactive_declarations": frozenset(inactive)}
+    except Exception:
+        return unavailable
 
 
 # --- CAP-08 Slice 1: owner-declared assumption -> answer dependency -----------
@@ -9428,6 +9490,9 @@ def _project_record_context(state, sid):
     # reads; it only says which declarations are no longer active.
     inactive_dependencies = _assumption_dependency_view(state)[
         "inactive_declarations"]
+    # Stage 21 closure: the same read-only CAP-10 view says which conflict
+    # declarations are no longer active (kept as history, never "resolved").
+    inactive_conflicts = _declared_conflict_view(state)["inactive_declarations"]
     entries = []
     for record in assertions:
         kind = _t3a_event_kind(record)
@@ -9473,6 +9538,7 @@ def _project_record_context(state, sid):
             "reason_missing": reason_missing,
             "withdrawn_answer": kind == "answer_withdrawn_replaced",
             "dependency_inactive": record.record_id in inactive_dependencies,
+            "conflict_inactive": record.record_id in inactive_conflicts,
             "links": links,
             "attached": attached.get(record.record_id, []),
         })

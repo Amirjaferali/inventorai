@@ -865,7 +865,9 @@ def test_k02_truthful_copy_claims_no_validation_or_resolution():
 # ==========================================================================
 _COMPLETE = "STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE"
 _DELIVERED = "STAGE 20 CLOSURE: DELIVERED"
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 21 — ENTERED / PARTIAL — NAVIGATION ONLY"
+# The later Owner-authorized Stage 21 closure moved the marker on to Stage 22 (navigation only); the Stage-20
+# completion and the "no Stage-21 implementation by the Stage-20 closure" fact stay true history.
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22 — ENTERED / PARTIAL — NAVIGATION ONLY"
 _NO_S21 = "NO STAGE-21 IMPLEMENTATION AUTHORIZED BY STAGE-20 CLOSURE"
 
 
@@ -883,10 +885,16 @@ def test_l01_closure_truth_on_every_current_surface():
                  "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md"):
         surfaces[name] = _doc(name)
     for name, text in surfaces.items():
-        for token in (_COMPLETE, _MARKER, _NO_S21, "FULL CAP-08: NOT AUTHORIZED"):
+        for token in (_COMPLETE, _MARKER, "FULL CAP-08: NOT AUTHORIZED"):
             assert token in text, (name, token)
-    for name in ("CLAUDE.md", "ACTIVE_INCREMENT_CONTRACT.md", "CURRENT_PROJECT_STATE.md"):
+    for name in ("ACTIVE_INCREMENT_CONTRACT.md", "INVENTORAI_MASTER_EXECUTION_ROADMAP.md",
+                 "INVENTORAI_MASTER_ROADMAP_EXECUTION_CHECKLIST.md", "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md"):
+        assert _NO_S21 in surfaces[name], name
+    for name in ("ACTIVE_INCREMENT_CONTRACT.md", "CURRENT_PROJECT_STATE.md"):
         assert _DELIVERED in surfaces[name], name
+    # the later Stage 21 closure took over the CLAUDE.md head; the Stage-20 delivery stays recorded there as history
+    assert ("Stage 20 closure (delivered; completes Stage 20 for the current Owner-declared assumption scope"
+            in surfaces["CLAUDE.md"])
     assert "**ACTIVE CONTRACT: NONE.**" in surfaces["CLAUDE.md"]
     assert "Assumption Revision & Replacement" not in _doc("OWNER_DECISION_REGISTER.md")
 
@@ -894,9 +902,10 @@ def test_l01_closure_truth_on_every_current_surface():
 def test_l02_only_stage_20_is_newly_ticked():
     roadmap = io.open(os.path.join(_DOCS, "INVENTORAI_MASTER_EXECUTION_ROADMAP.md"),
                       encoding="utf-8").read()
-    for stage in (15, 18, 19, 20):
+    # Stage 21 was ticked later by its own Owner-authorized closure, not by this one
+    for stage in (15, 18, 19, 20, 21):
         assert re.search(r"^- \[x\] \*\*%d — " % stage, roadmap, re.M), stage
-    for stage in (11, 13, 14, 16, 17, 21, 22):
+    for stage in (11, 13, 14, 16, 17, 22):
         assert re.search(r"^- \[ \] \*\*%d — " % stage, roadmap, re.M), stage
     flat = re.sub(r"\s+", " ", roadmap)
     for limit in ("FULL CAP-08: NOT AUTHORIZED", "FULL CAP-10: NOT AUTHORIZED"):

@@ -4375,6 +4375,48 @@ UI_STRINGS = {
         "ar": ("لم نتمكّن من التأكد مما إذا كان هذا التعارض قد حُفظ. أعد تحميل "
                "هذه الصفحة لترى ما يحتويه مشروعك قبل تسجيله مرة أخرى."),
     },
+    # Stage 21 closure — the read-only session view of the conflicts the
+    # inventor declared (CAP-10). Truthful: declared by the inventor, not
+    # validated, neither answer assumed correct, no winner chosen.
+    "UI_S21_HEADING": {
+        "en": "Conflicts you declared",
+        "ar": "التعارضات التي أعلنتها",
+    },
+    "UI_S21_NOTE": {
+        "en": ("You declared that the two answers in each pair below conflict. "
+               "These declarations have not been validated, neither answer is "
+               "assumed correct, and InventorAI does not choose which answer "
+               "is right."),
+        "ar": ("أعلنتَ أن الإجابتين في كل زوج أدناه متعارضتان. هذه الإعلانات غير "
+               "مُتحقَّق منها، ولا تُعدّ أيٌّ من الإجابتين صحيحة، ولا يختار "
+               "InventorAI أيّ الإجابتين هي الصحيحة."),
+    },
+    "UI_S21_STEP": {"en": "Step", "ar": "الخطوة"},
+    "UI_S21_NOTE_LABEL": {"en": "Your note", "ar": "ملاحظتك"},
+    "UI_S21_CORRECT_INTRO": {
+        "en": "If one answer no longer reflects your intent, correct it here:",
+        "ar": "إذا لم تعد إحدى الإجابتين تعبّر عن قصدك، صحّحها هنا:",
+    },
+    "UI_S21_INACTIVE_N": {
+        "en": ("Earlier conflict declarations that are no longer active (kept "
+               "in your project record):"),
+        "ar": "إعلانات تعارض سابقة لم تعد نشطة (محفوظة في سجل مشروعك):",
+    },
+    "UI_S21_UNAVAILABLE": {
+        "en": ("Your declared conflicts cannot be shown right now. This does "
+               "not mean there are none."),
+        "ar": ("لا يمكن عرض التعارضات التي أعلنتها الآن. ولا يعني ذلك أنه لا "
+               "توجد تعارضات."),
+    },
+    "UI_S21_COMPASS_LINK": {
+        "en": "See the conflicts you declared",
+        "ar": "عرض التعارضات التي أعلنتها",
+    },
+    "UI_T3A_CONFLICT_INACTIVE": {
+        "en": ("No longer active: one of its two answers was later replaced. "
+               "Kept as history."),
+        "ar": "لم يعد نشطًا: استُبدلت إحدى إجابتيه لاحقًا. محفوظ ضمن السجل.",
+    },
     # CAP-08 Slice 1 — the inventor's explicit assumption -> answer dependency
     # declaration. Truthful: declared by the inventor, not validated, never a
     # confirmation or rejection of the assumption, no progress effect.

@@ -280,6 +280,9 @@ body{overflow-wrap:anywhere}
     {% if gap_action_packs is defined and gap_action_packs.status == 'available' and gap_action_packs.packs %}
     <p class="pc-note"><a class="pc-link" href="#gap-action-packs">{{ t('UI_PC_SEE_PACKS') }}</a></p>
     {% endif %}
+    {% if state.domain and declared_conflicts is defined and declared_conflicts.status == 'available' and declared_conflicts.conflicts %}
+    <p class="pc-note"><a class="pc-link" data-pc-conflicts-link href="#declared-conflicts">{{ t('UI_S21_COMPASS_LINK') }}</a></p>
+    {% endif %}
     {% else %}
     <p class="pc-value pc-none" data-pc-none>{{ t('UI_PC_UNRESOLVED_NONE') }}</p>
     {% endif %}
@@ -1113,6 +1116,44 @@ body{overflow-wrap:anywhere}
   </form>
 </details>
 {% endif %}
+{#- Stage 21 closure: the read-only view of the conflicts the inventor declared
+    (CAP-10). ACTIVE pairs only, each answer shown from its own record (step,
+    question area, verbatim text) with the declaration's verbatim note;
+    declarations that are no longer active stay in the project record. Nothing
+    is detected, validated, resolved or chosen; correcting an answer is the
+    existing correction form's job. Unavailable is never shown as "none".
+    Like the CAP-08 view and the correction form, it sits on the writable page;
+    a cold read-only page keeps the project record and its history markers. -#}
+{% if declared_conflicts is defined and (declared_conflicts.status == 'unavailable' or declared_conflicts.declared_count) %}
+<section class="declared-conflicts" id="declared-conflicts" data-declared-conflicts-status="{{ declared_conflicts.status }}" style="margin-top:14px;border:1px solid #c9d6e8;border-radius:4px;background:#f4f8fd;padding:10px 14px">
+  <h3 style="font-size:13px;color:#2c5a8c;margin:0 0 6px 0">{{ t('UI_S21_HEADING') }}</h3>
+  {% if declared_conflicts.status == 'available' %}
+  {% if declared_conflicts.conflicts %}
+  <p class="journey-note" style="margin:0 0 6px 0">{{ t('UI_S21_NOTE') }}</p>
+  {% for c in declared_conflicts.conflicts %}
+  <div class="declared-conflict" data-declared-conflict="{{ c.answers[0].record_id }}|{{ c.answers[1].record_id }}" style="margin:0 0 8px 0;border-inline-start:3px solid #b3c8e6;padding-inline-start:8px">
+    <ul style="margin:0;padding-inline-start:18px;font-size:13px">
+      {% for a in c.answers %}
+      <li data-conflict-answer="{{ a.record_id }}">{{ t('UI_S21_STEP') }} {{ a.step }}{% if a.context %} · {{ a.context | gap_display }}{% endif %} · <bdi class="declared-conflict-text" dir="auto">{{ a.text }}</bdi></li>
+      {% endfor %}
+    </ul>
+    {% if c.note %}
+    <p class="journey-note" style="margin:2px 0 0 0">{{ t('UI_S21_NOTE_LABEL') }}: <span data-conflict-note dir="auto">{{ c.note }}</span></p>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% if active_answers and state.domain %}
+  <p class="journey-note" data-declared-conflicts-correct style="margin:0">{{ t('UI_S21_CORRECT_INTRO') }} <a href="#correct-answer">{{ t('UI_RVR5_CORRECT_HEADING') }}</a></p>
+  {% endif %}
+  {% endif %}
+  {% if declared_conflicts.inactive_declarations %}
+  <p class="journey-note" data-declared-conflicts-inactive="{{ declared_conflicts.inactive_declarations | length }}" style="margin:6px 0 0 0">{{ t('UI_S21_INACTIVE_N') }} <span class="pc-count">{{ declared_conflicts.inactive_declarations | length }}</span></p>
+  {% endif %}
+  {% else %}
+  <p class="journey-note" data-declared-conflicts-unavailable style="margin:0">{{ t('UI_S21_UNAVAILABLE') }}</p>
+  {% endif %}
+</section>
+{% endif %}
 {#- CAP-08 Slice 1: the inventor's explicit declaration that recorded answers
     depend on ONE of their own provisional assumptions (a dedicated action with
     its own binding, never a question answer), and the compact view of what
@@ -1532,7 +1573,7 @@ body{overflow-wrap:anywhere}
   {% if decision_capture and decision_project_context is defined %}
   {% set dt_record = ('#t3a-project-record', 'UI_T3A_HEADING') if project_record else None %}
   {% set dt_links = {
-      'declared_contradictions': dt_record,
+      'declared_contradictions': (('#declared-conflicts', 'UI_S21_HEADING') if (active_answers and state.domain and declared_conflicts is defined and (declared_conflicts.status == 'unavailable' or declared_conflicts.declared_count)) else dt_record),
       'assumption_dependencies': (('#assumption-dependencies', 'UI_CAP08_VIEW_HEADING') if (active_answers and state.domain and (dependency_binding or dependency_view.declared_count)) else dt_record),
       'provisional_assumptions': dt_record,
       'recorded_unknowns': dt_record,
@@ -1884,6 +1925,9 @@ body{overflow-wrap:anywhere}
       {% endif %}
       {% if e.dependency_inactive %}
       <p class="journey-note" data-record-dependency-inactive style="margin:2px 0">{{ t('UI_T3A_DEPENDENCY_INACTIVE') }}</p>
+      {% endif %}
+      {% if e.conflict_inactive %}
+      <p class="journey-note" data-record-conflict-inactive style="margin:2px 0">{{ t('UI_T3A_CONFLICT_INACTIVE') }}</p>
       {% endif %}
       {% for link in e.links %}
       <p class="journey-note project-record-link" data-record-relation="{{ link.relation }}" data-record-target="{{ link.record_id }}" style="margin:2px 0">{% if link.relation == 'replaces' %}{{ t('UI_T3A_REPLACES') }}{% elif link.relation == 'replaced_by' %}{{ t('UI_T3A_REPLACED_BY') }}{% elif link.relation == 'withdraws' %}{{ t('UI_T3A_WITHDRAWS') }}{% elif link.relation == 'declares_conflict' %}{{ t('UI_T3A_DECLARES_CONFLICT') }}{% elif link.relation == 'depends_on_assumption' %}{{ t('UI_T3A_DEPENDS_ON_ASSUMPTION') }}{% elif link.relation == 'declares_dependent' %}{{ t('UI_T3A_DECLARES_DEPENDENT') }}{% else %}{{ t('UI_T3A_WITHDRAWN_IN') }}{% endif %} {% if link.step %}{{ link.step }}{% else %}<bdi>{{ link.record_id }}</bdi>{% endif %}</p>
