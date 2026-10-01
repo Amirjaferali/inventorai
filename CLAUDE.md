@@ -3,26 +3,43 @@
 ## Current authority
 
 **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The last Owner-authorized bounded
-product slice — Stage 21 — Owner-Declared Contradiction Visibility — Closure — is DELIVERED (`STAGE 21 CLOSURE:
-DELIVERED`; Git / GitHub own its PR, merge and review identity), and no subsequent increment has been authorized.
-STAGE 21 — COMPLETE for the current Owner-declared contradiction scope only (`STAGE 21: COMPLETE — CURRENT
-OWNER-DECLARED CONTRADICTION SCOPE`; checkbox ticked for that scope only); STAGE 20 stays COMPLETE for the current
-Owner-declared assumption scope only (`STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE`); STAGE 19 stays
-COMPLETE for the current planning-only scope only (`STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE`); STAGE 18 stays
-COMPLETE for the current Mechanical + Electrical / Electronics scope only (`STAGE 18: COMPLETE — CURRENT MECHANICAL +
-ELECTRICAL / ELECTRONICS SCOPE`). This does NOT mean the roadmap, Stage 22 or any other Stage is complete, that a next
-slice is authorized, or that full CAP-10, full CAP-08, full CAP-05 / CAP-07, full CAP-09, full WS-PFV-001 or full
-CAP-01 has been opened (each stays NOT AUTHORIZED; `FULL CAP-10: NOT AUTHORIZED`; `AUTOMATIC / AI CONTRADICTION
-DETECTION: NOT AUTHORIZED`; `SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED`; `FULL CAP-08: NOT AUTHORIZED`);
-delivered history never fills the active-contract slot. `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22 — ENTERED /
-PARTIAL — NAVIGATION ONLY`; NO STAGE-22 IMPLEMENTATION AUTHORIZED BY STAGE-21 CLOSURE (Stage 22 / CAP-05 + CAP-07
-stays ENTERED / PARTIAL through its delivered Slices 1–2 only); routing past Stages 11, 13, 14, 16 and 17 completes
-none of them.
+closure — Stage 22 — Decision Trace + Decision Room — Closure — is DELIVERED with no product change required
+(`STAGE 22 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED`; Git / GitHub own its PR, merge and review identity), and
+no subsequent increment has been authorized. STAGE 22 — COMPLETE for the current bounded decision trace + decision
+room scope only (`STAGE 22: COMPLETE — CURRENT BOUNDED DECISION TRACE + DECISION ROOM SCOPE`; checkbox ticked for that
+scope only; delivered basis: CAP-05 + CAP-07 Slices 1–2, PR #706 and PR #707, only); STAGE 21 stays COMPLETE for the
+current Owner-declared contradiction scope only (`STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE`);
+STAGE 20 stays COMPLETE for the current Owner-declared assumption scope only (`STAGE 20: COMPLETE — CURRENT
+OWNER-DECLARED ASSUMPTION SCOPE`); STAGE 19 stays COMPLETE for the current planning-only scope only (`STAGE 19:
+COMPLETE — CURRENT PLANNING-ONLY SCOPE`); STAGE 18 stays COMPLETE for the current Mechanical + Electrical /
+Electronics scope only (`STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`). This does NOT
+mean the roadmap, Stage 23 or any other Stage is complete or entered, that a next slice is authorized, or that full
+CAP-05, full CAP-07, full CAP-10, full CAP-08, full CAP-09, full WS-PFV-001 or full CAP-01 has been opened (each
+stays NOT AUTHORIZED; `FULL CAP-05: NOT AUTHORIZED`; `FULL CAP-07: NOT AUTHORIZED`; `FULL CAP-10: NOT AUTHORIZED`;
+`AUTOMATIC / AI CONTRADICTION DETECTION: NOT AUTHORIZED`; `SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED`;
+`FULL CAP-08: NOT AUTHORIZED`); delivered history never fills the active-contract slot. `MASTER ROADMAP SEQUENTIAL
+MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY`; NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE (Stage
+23 / CAP-06 stays NOT ENTERED and NOT AUTHORIZED until separately assessed and authorized; `STAGE 23: NOT ENTERED`;
+`CAP-06: NOT ACTIVATED`); routing past Stages 11, 13, 14, 16 and 17 completes none of them.
 The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — read-only planning / selection over live
 repository and product evidence until the Owner separately authorizes another product increment; it pre-authorizes
-no Stage-22 or other Stage work, CAP-05 / CAP-07, CAP-08, CAP-09 or CAP-10 work, further CAP-01 or Technical Deepening
-slice, MSNL activation, compatibility analysis, IRL scoring, interface engineering, Robotics assessment
+no Stage-23 / CAP-06 or other Stage work, CAP-05 / CAP-07, CAP-08, CAP-09 or CAP-10 work, further CAP-01 or Technical
+Deepening slice, MSNL activation, compatibility analysis, IRL scoring, interface engineering, Robotics assessment
 implementation, IoT or other Domain Pack.
+Stage 22 closure (delivered; completes Stage 22 for the current bounded decision trace + decision room scope with no
+product change, no new Master Roadmap Stage): the read-only closure reassessment found that the delivered CAP-05 +
+CAP-07 Slice 1 (PR #706; `engine/decision_composition.py` `decision_trace_view`, `web/app.py`
+`_decision_project_context`) and Slice 2 (PR #707; `web/app.py` `_decision_action_summary`), with the existing owners
+they reuse, already let the inventor see each recorded decision with its alternatives, their complete recorded
+history and active / withdrawn state, the existing comparison / readiness semantics with no recommended winner, a
+project-context panel explicitly NOT LINKED to any specific decision, a project-level action summary grouped strictly
+by the canonical Validation Plan responsibility tokens, the existing next development step and links to the
+detailed owners (genuine closure gap NONE; architecture trigger NONE). Nothing in runtime, templates, engine, UI
+text, schema, persistence, routes, replay, readiness, progression, report / PDF, Structured Export or AI / provider
+use changed. Recommendation, winner selection, confidence / evidence-strength / readiness scoring, inferred decision
+↔ context linkage, an accepted decision / go-no-go outcome or any new decision lifecycle and AI decision advice stay
+NOT AUTHORIZED. Full CAP-05 and full CAP-07 stay NOT AUTHORIZED.
+The preceding bounded slice — Stage 21 — Owner-Declared Contradiction Visibility — Closure — is DELIVERED.
 Stage 21 closure (delivered; completes Stage 21 for the current Owner-declared contradiction scope, no new Master
 Roadmap Stage): the working session page carries ONE read-only view of the contradictions the inventor declared
 (`web/app.py` `_declared_conflict_view`, over the unchanged CAP-10 truth — the stored `contradiction_declared` records
@@ -180,7 +197,7 @@ levels, full D4 compatibility evaluation, interface engineering, subsystem-level
 engines, analysis-focus switching, peer root domains, generic N-domain composition, a Mechatronics Domain Pack,
 Robotics, IoT, Drone / Unmanned, Renewable and Satellite / Space stay NOT AUTHORIZED; deployment and release
 NOT AUTHORIZED. Stage 18 — D13 / CAP-01 — is COMPLETE for the current Mechanical + Electrical / Electronics scope
-(checkbox ticked for that scope only; the Stage 18 closure above), and the MASTER ROADMAP SEQUENTIAL MARKER is now Stage 22 for navigation only (the Stage 21 closure above): there is no current authorized Technical
+(checkbox ticked for that scope only; the Stage 18 closure above), and the MASTER ROADMAP SEQUENTIAL MARKER is now Stage 23 for navigation only (the Stage 22 closure above): there is no current authorized Technical
 Deepening subtask, no next Technical Deepening slice is authorized and no additional CAP-01 implementation is
 authorized; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED.
 Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals — is DELIVERED
@@ -261,8 +278,9 @@ none) joining the Requirement Landscape gap requirement and required action, the
 Validation Plan gap step and active NeedRouting routes by exact identity with the committed
 RoutingPolicy (RETRACTED routes do not render; a mismatch fails closed) — no new question, form,
 POST, writer, persistence, schema, replay or state mutation, no ranking, score, severity,
-feasibility, readiness or progression authority and no AI / LLM / provider call. Stage 22 / CAP-05 + CAP-07 is ENTERED / PARTIAL through bounded slices (no new Master
-Roadmap Stage; CAP-05, CAP-07 and Stage 22 are not complete). Slice 2 — DELIVERED (PR #707,
+feasibility, readiness or progression authority and no AI / LLM / provider call. Stage 22 / CAP-05 + CAP-07 was ENTERED / PARTIAL through bounded slices (no new Master
+Roadmap Stage); the Stage 22 closure (above) completes Stage 22 for the current bounded decision trace + decision
+room scope with no product change, while full CAP-05 and full CAP-07 stay NOT AUTHORIZED. Slice 2 — DELIVERED (PR #707,
 merge `d5068f83d46bdf2b3b28ceeb3f0e4e78fd32cdbe`) — adds one read-only, project-level
 action summary to the Decision Room that answers what the project currently calls for without
 asking the inventor anything new: the canonical Validation Plan grouped strictly by its own
@@ -335,15 +353,15 @@ Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slic
 Stage 15 — Interface Verification Preparation Metadata — Slice 3 is delivered;
 Stage 15 — Interface Verification Observation Event — Slice 4 is delivered;
 Stage 15 — Integration Evidence & IRL-Compatible View — Closure is delivered, and Stage 15 is COMPLETE for the current
-Mechanical + Electrical / Electronics scope; Stage 19 — Experiment Execution-State Disclosure — Closure is delivered, and Stage 19 is COMPLETE for the current planning-only scope; Stage 20 — Assumption Revision & Replacement — Closure is delivered, and Stage 20 is COMPLETE for the current Owner-declared assumption scope; Stage 21 — Owner-Declared Contradiction Visibility — Closure is delivered, and Stage 21 is COMPLETE for the current Owner-declared contradiction scope; the Master Roadmap sequential marker is Stage 22 for navigation only (NO STAGE-22 IMPLEMENTATION AUTHORIZED BY STAGE-21 CLOSURE);
+Mechanical + Electrical / Electronics scope; Stage 19 — Experiment Execution-State Disclosure — Closure is delivered, and Stage 19 is COMPLETE for the current planning-only scope; Stage 20 — Assumption Revision & Replacement — Closure is delivered, and Stage 20 is COMPLETE for the current Owner-declared assumption scope; Stage 21 — Owner-Declared Contradiction Visibility — Closure is delivered, and Stage 21 is COMPLETE for the current Owner-declared contradiction scope; Stage 22 — Decision Trace + Decision Room — Closure is delivered with no product change required, and Stage 22 is COMPLETE for the current bounded decision trace + decision room scope; the Master Roadmap sequential marker is Stage 23 for navigation only (NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE; Stage 23 NOT ENTERED);
 ACTIVE CONTRACT: NONE — no product increment is authorized and no other Stage is authorized — the delivered Electrical Technical Deepening slice sat inside
-the already-entered Stage 18 and entered no new Stage (Stage 19 is COMPLETE for the current planning-only scope through its delivered Slices and closure; Stage 22 stays ENTERED / PARTIAL through its delivered
-Slices 1–2; Stage 20 is COMPLETE for the current Owner-declared assumption scope through CAP-08 Slice 1 and
+the already-entered Stage 18 and entered no new Stage (Stage 19 is COMPLETE for the current planning-only scope through its delivered Slices and closure; Stage 22 is COMPLETE for the current bounded decision trace + decision room scope through its
+delivered Slices 1–2 and its closure; Stage 20 is COMPLETE for the current Owner-declared assumption scope through CAP-08 Slice 1 and
 its closure; Stage 21 is COMPLETE for the current Owner-declared contradiction scope through CAP-10 Slice 1 and its
 closure), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former post-Stage-20-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-19-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-18-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-4 `ACTIVE CONTRACT: NONE`, the former post-CAP-09-Result-Event-Slice-1 `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-3 `ACTIVE CONTRACT: NONE`, the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former post-Stage-21-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-20-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-19-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-18-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-4 `ACTIVE CONTRACT: NONE`, the former post-CAP-09-Result-Event-Slice-1 `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-3 `ACTIVE CONTRACT: NONE`, the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, the former post-PR-#679 `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -867,8 +885,8 @@ information, not execution authority.
   field, decision linkage, dependency transfer / propagation and AI inference stay NOT AUTHORIZED; none is reopened
   by the closure.
 - **WATCH — Stage 21 closure (non-blocking, no repair cycle).** STAGE 21 — COMPLETE for the current
-  Owner-declared contradiction scope only; the MASTER ROADMAP SEQUENTIAL MARKER is Stage 22 for navigation only and no
-  Stage-22 implementation is authorized by the closure. Neither NEXT TRIGGER fired: no write path, no new relation
+  Owner-declared contradiction scope only; the closure moved the MASTER ROADMAP SEQUENTIAL MARKER to Stage 22 for
+  navigation only and authorized no Stage-22 implementation (the later Stage 22 closure moved it to Stage 23). Neither NEXT TRIGGER fired: no write path, no new relation
   type. (A) The declared-conflict view sits on the writable session page, like the CAP-08 view and the correction
   form it links to; a cold read-only page keeps the project record and its "No longer active" marker. (B) The only
   way a declared conflict becomes inactive is still the correction of one answer; withdrawing a declaration made by
@@ -876,6 +894,16 @@ information, not execution authority.
   Automatic, rule-based or AI contradiction detection, a SYSTEM_INFERRED contradiction writer, a resolution
   workflow, winner selection and contradictions over assumptions, quantities, commercial items, success criteria or
   decisions stay NOT AUTHORIZED; none is reopened by the closure.
+- **WATCH — Stage 22 closure (non-blocking, no repair cycle).** STAGE 22 — COMPLETE for the current bounded
+  decision trace + decision room scope only, recorded with NO PRODUCT CHANGE (the delivered CAP-05 + CAP-07 Slices
+  1–2 already provided it); the MASTER ROADMAP SEQUENTIAL MARKER is Stage 23 for navigation only, Stage 23 / CAP-06
+  is NOT ENTERED and no Stage-23 implementation is authorized by the closure. Neither NEXT TRIGGER fired: no write
+  path, no new relation type. (A) The Stage 22 Slice 2 WATCH items above stay non-blocking polish. (B) The action
+  summary renders only when a decision is declared and reads unavailable on a cold read-only page; the Compass, Gap
+  Action Packs and Section 14 stay the project-level owners otherwise. (C) Per-decision supporting evidence or
+  assumptions, a confidence / uncertainty basis, "what could change the decision", an accepted decision / go-no-go
+  outcome, recommendation or winner selection, confidence / evidence-strength / readiness scoring and inferred
+  decision ↔ context linkage stay NOT AUTHORIZED (full CAP-05 / full CAP-07); none is reopened by the closure.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative
