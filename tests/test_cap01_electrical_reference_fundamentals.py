@@ -182,21 +182,31 @@ def test_e02_closed_accepted_risk_and_unknown_states_render_nothing(status):
 @pytest.mark.parametrize("pairs", (
     ((MECHANISM_COMPLETENESS, OPEN),), ((BOUNDARY_AMBIGUITY, PARTIAL),),
     ((MECHANISM_COMPLETENESS, OPEN), (BOUNDARY_AMBIGUITY, OPEN)), ()))
-def test_e03_other_electronics_gaps_never_carry_a_context_or_the_fundamentals(pairs):
-    assert _resolve(*pairs) is None
+def test_e03_other_electronics_gaps_never_carry_the_fundamentals(pairs):
+    """Since the Stage-18 closure MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY carry
+    their OWN context; the reference fundamentals stay PHYSICAL_FEASIBILITY-only."""
+    view = _resolve(*pairs)
     html = _render_state(*pairs)
-    assert "cap01-gap-block" not in html and "cap01-fundamentals" not in html
+    assert "cap01-fundamentals" not in html
+    if not pairs:
+        assert view is None and "cap01-gap-block" not in html
+        return
+    assert [(c["gap_type"], c["gap_state"]) for c in view["contexts"]] == list(pairs)
+    assert all(c["fundamentals"] is None for c in view["contexts"])
 
 
-def test_e04_only_physical_feasibility_is_supported_even_beside_other_current_gaps():
+def test_e04_the_fundamentals_stay_physical_feasibility_only_beside_other_current_gaps():
     view = _resolve((MECHANISM_COMPLETENESS, OPEN), (PHYSICAL_FEASIBILITY, OPEN),
                     (BOUNDARY_AMBIGUITY, OPEN))
-    assert [c["gap_type"] for c in view["contexts"]] == [PHYSICAL_FEASIBILITY]
-    assert cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN[DOMAIN] == (GROUP_ID, (PHYSICAL_FEASIBILITY,))
+    assert [c["gap_type"] for c in view["contexts"]] == [
+        MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY]
+    assert [c["gap_type"] for c in view["contexts"] if c["fundamentals"]] == [PHYSICAL_FEASIBILITY]
+    assert cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN[DOMAIN] == (
+        GROUP_ID, (MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY))
     for gap in (MECHANISM_COMPLETENESS, BOUNDARY_AMBIGUITY):
-        assert cap01_guidance.gap_context_copy(DOMAIN, gap) is None
+        assert cap01_guidance.gap_context_copy(DOMAIN, gap)["fundamentals"] is None
         assert (DOMAIN, gap) not in cap01_guidance.CAP01_GAP_FUNDAMENTALS
-        assert not [k for k in ui_text.UI_STRINGS if k.startswith(PREFIX + gap)]
+        assert not [k for k in ui_text.UI_STRINGS if k.startswith(PREFIX + gap + "_FUNDAMENTALS")]
 
 
 @pytest.mark.parametrize("domain", ("Electronics_Electrical", "ELECTRONICS_ELECTRICAL", "electronics",
@@ -234,7 +244,8 @@ def test_e08_inventor_text_and_signals_cannot_trigger_the_fundamentals():
     words = " ".join(s["signal"] for s in pack["classification_signals"] + pack["substance_signals"])
     for text in (_TRIGGER_TEXT, words):
         html = _render_state((MECHANISM_COMPLETENESS, OPEN), idea_text=text)
-        assert "cap01-fundamentals" not in html and "cap01-gap-block" not in html
+        assert "cap01-fundamentals" not in html
+        assert 'data-cap01-gap="physical-feasibility"' not in html
     assert cap01_guidance.gap_contexts_for_gaps(DOMAIN, [(w, OPEN) for w in words.split()]) is None
     # a real Electronics session with those words but no current PF gap renders none either
     state = _s18_state(ELECTRONICS_IDEA, _TRIGGER_TEXT)
@@ -553,9 +564,12 @@ def test_e25_an_electronics_report_without_a_current_pf_gap_is_byte_identical_to
     state = _s18_state(ELECTRONICS_IDEA, OPEN_GAP_INPUT)
     package = assemble_deliverable(state)
     with_rows = _mask_csrf(_render(package, state))
-    assert "cap01-gap-block" not in with_rows
-    monkeypatch.setattr(cap01_guidance, "CAP01_GAP_CONTEXT_BY_DOMAIN",
-                        {k: v for k, v in cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN.items() if k != DOMAIN})
+    assert PHYSICAL_FEASIBILITY not in {g.gap_type for g in state.gaps if g.status in (OPEN, PARTIAL)}
+    # Stage-18 closure: the current MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY
+    # contexts may render, but no fundamentals; removing the fundamentals row
+    # changes nothing.
+    assert "cap01-fundamentals" not in with_rows
+    assert 'data-cap01-gap="physical-feasibility"' not in with_rows
     monkeypatch.setattr(cap01_guidance, "CAP01_GAP_FUNDAMENTALS",
                         {k: v for k, v in cap01_guidance.CAP01_GAP_FUNDAMENTALS.items() if k[0] != DOMAIN})
     assert _mask_csrf(_render(package, state)) == with_rows
@@ -588,7 +602,8 @@ def test_e27_no_state_gap_action_pack_or_readiness_change_and_no_new_framework()
 # ==========================================================================
 def test_e28_en_report_route_renders_the_full_english_context_and_sub_view(client):
     sid = _start(client, seed=ELEC_SEED, domain=DOMAIN)
-    _set_gaps(sid, (PHYSICAL_FEASIBILITY, OPEN))
+    _set_gaps(sid, (MECHANISM_COMPLETENESS, OPEN), (PHYSICAL_FEASIBILITY, OPEN),
+              (BOUNDARY_AMBIGUITY, PARTIAL))
     page = _report(client, sid)
     [block] = _blocks(page)
     visible = _visible(page)
@@ -603,7 +618,8 @@ def test_e28_en_report_route_renders_the_full_english_context_and_sub_view(clien
 
 def test_e29_ar_rtl_report_route_renders_arabic_with_ltr_isolated_equations(client):
     sid = _start(client, seed=ELEC_SEED, domain=DOMAIN)
-    _set_gaps(sid, (PHYSICAL_FEASIBILITY, PARTIAL))
+    _set_gaps(sid, (MECHANISM_COMPLETENESS, PARTIAL), (PHYSICAL_FEASIBILITY, PARTIAL),
+              (BOUNDARY_AMBIGUITY, OPEN))
     page = _report(client, sid, lang="ar")
     assert 'dir="rtl"' in page
     [block] = _blocks(page)
@@ -654,7 +670,9 @@ def test_e32_pdf_source_excludes_the_sub_view_when_pf_is_closed(client, monkeypa
     sid = _start(client, seed=ELEC_SEED, domain=DOMAIN)
     _set_gaps(sid, (PHYSICAL_FEASIBILITY, CLOSED), (MECHANISM_COMPLETENESS, OPEN))
     source = _pdf_source(client, sid, monkeypatch)
-    assert "cap01-fundamentals" not in source and "cap01-gap-block" not in source
+    assert "cap01-fundamentals" not in source
+    assert 'data-cap01-gap="physical-feasibility"' not in source
+    assert 'data-cap01-gap="mechanism-completeness"' in source    # its own context only
 
 
 def test_e33_session_page_never_carries_the_context_or_the_fundamentals(client):

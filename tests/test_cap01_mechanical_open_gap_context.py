@@ -376,10 +376,11 @@ def test_08b_the_supported_set_is_exactly_the_governed_packages_supported_gap_ty
     assert group_id == GROUP_ID
     assert gap_ids == governed == mapped == SUPPORTED
     # Electrical / Electronics Technical Deepening Slice 1 added exactly ONE other
-    # row: the Electronics PHYSICAL_FEASIBILITY context (its own group, one gap).
+    # row (its own group); the Stage-18 closure extends it to the same three
+    # governed technical gaps, in the Electronics package's own source order.
     assert tuple(cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN) == ("mechanical", ELEC_DOMAIN)
     assert cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN[ELEC_DOMAIN] == (
-        ELEC_GROUP_ID, (PHYSICAL_FEASIBILITY,))
+        ELEC_GROUP_ID, (MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY))
 
 
 # ==========================================================================
@@ -393,12 +394,14 @@ def test_09a_electronics_profile_table_copy_and_resolver_are_unchanged():
     elec = cap01_guidance.gap_contexts_for_gaps("electronics_electrical",
                                                 _gaps(*[(g, OPEN) for g in SUPPORTED]))
     assert elec["group_id"] == ELEC_GROUP_ID != GROUP_ID
-    assert _rendered_gaps(elec) == ((PHYSICAL_FEASIBILITY, OPEN),)
+    # Stage-18 closure: the Electronics row carries its own three gap contexts.
+    assert _rendered_gaps(elec) == tuple((g, OPEN) for g in SUPPORTED)
     assert not any(v.startswith(PREFIX) for c in elec["contexts"] for v in c.values()
                    if isinstance(v, str))
-    assert cap01_guidance.gap_contexts_for_gaps(
+    assert _rendered_gaps(cap01_guidance.gap_contexts_for_gaps(
         "electronics_electrical", _gaps((MECHANISM_COMPLETENESS, OPEN),
-                                        (BOUNDARY_AMBIGUITY, OPEN))) is None
+                                        (BOUNDARY_AMBIGUITY, OPEN)))) == (
+        (MECHANISM_COMPLETENESS, OPEN), (BOUNDARY_AMBIGUITY, OPEN))
 
 
 def test_09b_electronics_report_is_byte_identical_with_the_mechanical_table_removed(monkeypatch):
@@ -407,8 +410,11 @@ def test_09b_electronics_report_is_byte_identical_with_the_mechanical_table_remo
     assert package["section_3_assessment_overview"]["capabilities_assessed"][0]["gaps_open"] >= 1
     with_table = _mask_csrf(_render(package, state))
     assert 'data-cap01-profile="%s"' % PROFILE_ID in with_table
-    assert "cap01-gap-block" not in with_table
-    monkeypatch.setattr(cap01_guidance, "CAP01_GAP_CONTEXT_BY_DOMAIN", {})
+    # Stage-18 closure: an open Electronics gap now renders the Electronics group
+    # (never the Mechanical one); removing the Mechanical row changes nothing.
+    assert 'data-cap01-gap-group="%s"' % GROUP_ID not in with_table
+    monkeypatch.setattr(cap01_guidance, "CAP01_GAP_CONTEXT_BY_DOMAIN",
+                        {ELEC_DOMAIN: cap01_guidance.CAP01_GAP_CONTEXT_BY_DOMAIN[ELEC_DOMAIN]})
     assert _mask_csrf(_render(package, state)) == with_table
 
 
@@ -425,12 +431,15 @@ def test_10_non_mechanical_domain_never_resolves_a_context(domain):
 
 
 def test_10c_electronics_never_resolves_a_mechanical_context():
-    """Electrical / Electronics Technical Deepening Slice 1: the Electronics domain
-    resolves ONLY its own PHYSICAL_FEASIBILITY context, never a Mechanical one."""
+    """The Electronics domain resolves ONLY its own contexts (PHYSICAL_FEASIBILITY
+    since Technical Deepening Slice 1; MECHANISM_COMPLETENESS and BOUNDARY_AMBIGUITY
+    since the Stage-18 closure), never a Mechanical one."""
     view = _resolve(*[(g, OPEN) for g in SUPPORTED], domain=ELEC_DOMAIN)
     assert view["group_id"] == ELEC_GROUP_ID
-    assert _rendered_gaps(view) == ((PHYSICAL_FEASIBILITY, OPEN),)
-    assert view["contexts"][0]["fundamentals"]["group_id"] != FUND_GROUP
+    assert _rendered_gaps(view) == tuple((g, OPEN) for g in SUPPORTED)
+    assert not any(v.startswith(PREFIX) for c in view["contexts"] for v in c.values()
+                   if isinstance(v, str))
+    assert view["contexts"][1]["fundamentals"]["group_id"] != FUND_GROUP
 
 
 def test_10b_the_package_supplies_only_the_trusted_domain_and_never_the_binding():
@@ -446,7 +455,7 @@ def test_10b_the_package_supplies_only_the_trusted_domain_and_never_the_binding(
         "electronics_electrical"
     foreign_view = cap01_guidance.gap_contexts_for_package(foreign, state.gaps)
     assert foreign_view["group_id"] == ELEC_GROUP_ID          # never the Mechanical group
-    assert _rendered_gaps(foreign_view) == ((PHYSICAL_FEASIBILITY, OPEN),)
+    assert _rendered_gaps(foreign_view) == tuple((g, OPEN) for g in SUPPORTED)
     foreign["section_3_assessment_overview"]["capabilities_assessed"][0]["capability_id"] = \
         "software"
     assert cap01_guidance.gap_contexts_for_package(foreign, state.gaps) is None

@@ -531,7 +531,14 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
      an intro, four reference items (title / lead / language-neutral equation or unit symbols
      isolated in a dir="ltr" bdi so RTL never reorders them / note), a neutral source
      acknowledgement and a boundary line. The template renders it passively and decides no
-     applicability; no relationship is selected for the project, nothing is calculated. #}
+     applicability; no relationship is selected for the project, nothing is calculated.
+     Stage 18 closure — gap-scoped technical next steps: a gap context MAY also carry an
+     OPTIONAL `next_steps` sub-view (same module, same binding, copy KEYS only) — the
+     information still missing (a summary of the gap's own canonical questions), what to look
+     into, generic search terms (language-neutral English tokens isolated in a dir="ltr" bdi),
+     class-level measure / check / document categories, the specialist abstention and a
+     boundary line. Rendered passively: no value, threshold, protocol, pass / fail, standard,
+     laboratory, vendor or specialist category; nothing is selected for the project. #}
   {%- for cap01 in cap01_profiles(package) %}
   <div class="cap01-block" data-cap01-profile="{{ cap01.profile_id }}">
     <h3 class="cap01-title" data-cap01-title>{{ t(cap01.title_key) }}</h3>
@@ -585,6 +592,33 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         </ul>
         <p class="group-lede cap01-fund-source" data-cap01-fund-source>{{ t(_cap01_fund.source_key) }}</p>
         <p class="group-lede cap01-fund-boundary" data-cap01-fund-boundary>{{ t(_cap01_fund.boundary_key) }}</p>
+      </div>
+      {%- endif %}
+      {%- if _cap01_gap.next_steps %}
+      {%- set _cap01_next = _cap01_gap.next_steps %}
+      <div class="cap01-next-steps" data-cap01-next-steps="{{ _cap01_next.group_id|lower|replace('_', '-') }}">
+        <h5 class="cap01-next-title" data-cap01-next-title>{{ t(_cap01_next.title_key) }}</h5>
+        <p class="group-lede cap01-next-missing" data-cap01-next-missing><strong>{{ t(_cap01_next.missing_label_key) }}</strong> {{ t(_cap01_next.missing_key) }}</p>
+        <p class="group-lede cap01-next-label" data-cap01-next-look-label><strong>{{ t(_cap01_next.look_label_key) }}</strong></p>
+        <ul class="cap01-next-topics">
+          {%- for _cap01_topic_key in _cap01_next.topic_keys %}
+          <li class="cap01-next-topic" data-cap01-next-topic>{{ t(_cap01_topic_key) }}</li>
+          {%- endfor %}
+        </ul>
+        <p class="group-lede cap01-next-label" data-cap01-next-search-label><strong>{{ t(_cap01_next.search_label_key) }}</strong></p>
+        <ul class="cap01-next-search">
+          {%- for _cap01_search_key in _cap01_next.search_keys %}
+          <li class="cap01-next-search-term" data-cap01-next-search-term><bdi dir="ltr">{{ t(_cap01_search_key) }}</bdi></li>
+          {%- endfor %}
+        </ul>
+        <p class="group-lede cap01-next-label" data-cap01-next-measure-label><strong>{{ t(_cap01_next.measure_label_key) }}</strong></p>
+        <ul class="cap01-next-measures">
+          {%- for _cap01_measure_key in _cap01_next.measure_keys %}
+          <li class="cap01-next-measure" data-cap01-next-measure>{{ t(_cap01_measure_key) }}</li>
+          {%- endfor %}
+        </ul>
+        <p class="group-lede cap01-next-specialist" data-cap01-next-specialist><strong>{{ t(_cap01_next.specialist_label_key) }}</strong> {{ t(_cap01_next.specialist_key) }}</p>
+        <p class="group-lede cap01-next-boundary" data-cap01-next-boundary>{{ t(_cap01_next.boundary_key) }}</p>
       </div>
       {%- endif %}
     </div>

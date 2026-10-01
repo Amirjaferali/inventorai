@@ -220,11 +220,13 @@ def profiles_for_package(package):
 # Trusted canonical domain id -> (context group id, canonical gap ids in the
 # deterministic SOURCE order the governed package declares them). ONE row per
 # authorized domain; ONE context per supported canonical gap; nothing else.
-# The ``electronics_electrical`` row (Electrical / Electronics Technical Deepening
-# Slice 1) carries EXACTLY ONE gap, PHYSICAL_FEASIBILITY, grounded in the
-# governed Electronics package (``domains/electronics_electrical/domain.json``);
-# it is separate from, and changes nothing in, the domain-level
-# CAP01_ELECTRONICS_INTERFACE_V1 checklist / research profile above.
+# The ``electronics_electrical`` row began (Electrical / Electronics Technical
+# Deepening Slice 1) with PHYSICAL_FEASIBILITY only; the Stage-18 closure adds
+# MECHANISM_COMPLETENESS and BOUNDARY_AMBIGUITY, so both active domains now carry
+# all three governed technical gaps, each grounded only in its own governed
+# package (``domains/<pack>/domain.json``). It stays separate from, and changes
+# nothing in, the domain-level CAP01_ELECTRONICS_INTERFACE_V1 checklist /
+# research profile above.
 CAP01_GAP_CONTEXT_BY_DOMAIN = {
     "mechanical": (
         "CAP01_MECHANICAL_GAP_CONTEXT_V1",
@@ -232,7 +234,7 @@ CAP01_GAP_CONTEXT_BY_DOMAIN = {
     ),
     "electronics_electrical": (
         "CAP01_ELECTRONICS_GAP_CONTEXT_V1",
-        ("PHYSICAL_FEASIBILITY",),
+        ("MECHANISM_COMPLETENESS", "PHYSICAL_FEASIBILITY", "BOUNDARY_AMBIGUITY"),
     ),
 }
 
@@ -306,6 +308,117 @@ _FUNDAMENTALS_ITEM_PARTS = {
 }
 
 
+# STAGE 18 — GAP-SCOPED TECHNICAL NEXT-STEP GUIDANCE — CLOSURE. An OPTIONAL
+# next-steps sub-view attached to ONE already-resolved gap context: the
+# information still missing (a bounded summary of the gap's OWN canonical
+# questions), what to look into (bounded topics plus generic search terms),
+# what could be measured, checked or documented (class-level categories only)
+# and the specialist boundary (an explicit abstention). Same rules as the
+# fundamentals sub-view above: the gap context's own binding (trusted domain id
+# + exact canonical gap id + exact OPEN / PARTIAL state) is the ONLY authority
+# for whether anything renders; this table adds no second binding, reads no
+# inventor text, answer, keyword, label, classification signal or list
+# position, and selects nothing for a project. No value, range, threshold,
+# formula selection, calculation, test protocol, pass / fail criterion,
+# material / thickness / specification / safety statement, named standard,
+# laboratory, vendor or specialist category exists here or in its copy.
+#
+# Each row: (trusted canonical domain id, EXACT canonical gap id) ->
+# (next-steps group id, source anchors). The anchors are traceability only —
+# never rendered and never used to choose anything — and every one names
+# EXISTING governed truth that the tests resolve:
+#   ("question", <question id>)   a governed question of that exact gap in the
+#                                 pack's gap_type_mappings (the missing-
+#                                 information owner stays Path-N);
+#   ("rule", <rule id>)           a governed rule_nuances entry of the pack;
+#   ("coverage", <path>)          "<declaration>.<field>.<index>" of the pack's
+#                                 capability / coverage declaration (the last
+#                                 segment is the list position);
+#   ("fundamental", <claim id>)   a reference_fundamentals claim whose
+#                                 applicable_gap_type is that exact gap;
+#   ("routing", <policy ref>)     the committed Path-N RoutingPolicy of a
+#                                 question of that exact gap (fact only; no
+#                                 routing is read, written or changed here).
+CAP01_GAP_NEXT_STEPS = {
+    ("mechanical", "MECHANISM_COMPLETENESS"): ("CAP01_MECHANICAL_NEXT_STEPS_V1", (
+        ("question", "mechanical:MECHANISM_COMPLETENESS:Q1"),
+        ("question", "mechanical:MECHANISM_COMPLETENESS:Q2"),
+        ("question", "mechanical:MECHANISM_COMPLETENESS:Q3"),
+        ("question", "mechanical:MECHANISM_COMPLETENESS:Q4"),
+        ("rule", "mechanical:RN001"),
+        ("coverage", "coverage_declaration.covered_areas.0"),
+    )),
+    ("mechanical", "PHYSICAL_FEASIBILITY"): ("CAP01_MECHANICAL_NEXT_STEPS_V1", (
+        ("question", "mechanical:PHYSICAL_FEASIBILITY:Q1"),
+        ("question", "mechanical:PHYSICAL_FEASIBILITY:Q2"),
+        ("rule", "mechanical:RN002"),
+        ("coverage", "coverage_declaration.covered_areas.1"),
+        ("coverage", "capability_declaration.known_unknowns.1"),
+        ("fundamental", "torque_moment_perpendicular"),
+        ("fundamental", "ideal_static_moment_balance"),
+        ("fundamental", "pressure_force_area_uniform"),
+        ("fundamental", "si_quantity_unit_discipline"),
+        ("routing", "mechanical-path-n-routing-v1:PHYSICAL_FEASIBILITY:Q2"),
+    )),
+    ("mechanical", "BOUNDARY_AMBIGUITY"): ("CAP01_MECHANICAL_NEXT_STEPS_V1", (
+        ("question", "mechanical:BOUNDARY_AMBIGUITY:Q1"),
+        ("question", "mechanical:BOUNDARY_AMBIGUITY:Q2"),
+        ("question", "mechanical:BOUNDARY_AMBIGUITY:Q3"),
+        ("question", "mechanical:BOUNDARY_AMBIGUITY:Q4"),
+        ("rule", "mechanical:RN003"),
+        ("coverage", "coverage_declaration.covered_areas.2"),
+    )),
+    ("electronics_electrical", "MECHANISM_COMPLETENESS"): ("CAP01_ELECTRONICS_NEXT_STEPS_V1", (
+        ("question", "electronics_electrical:MECHANISM_COMPLETENESS:Q1"),
+        ("question", "electronics_electrical:MECHANISM_COMPLETENESS:Q2"),
+        ("question", "electronics_electrical:MECHANISM_COMPLETENESS:Q3"),
+        ("question", "electronics_electrical:MECHANISM_COMPLETENESS:Q4"),
+        ("rule", "electronics_electrical:RN001"),
+        ("rule", "electronics_electrical:RN003"),
+        ("coverage", "coverage_declaration.covered_areas.0"),
+        ("coverage", "coverage_declaration.covered_areas.2"),
+    )),
+    ("electronics_electrical", "PHYSICAL_FEASIBILITY"): ("CAP01_ELECTRONICS_NEXT_STEPS_V1", (
+        ("question", "electronics_electrical:PHYSICAL_FEASIBILITY:Q1"),
+        ("question", "electronics_electrical:PHYSICAL_FEASIBILITY:Q2"),
+        ("question", "electronics_electrical:PHYSICAL_FEASIBILITY:Q3"),
+        ("rule", "electronics_electrical:RN002"),
+        ("coverage", "coverage_declaration.covered_areas.1"),
+        ("fundamental", "ohms_law_reference"),
+        ("fundamental", "electrical_power_vi_reference"),
+        ("fundamental", "si_electrical_unit_discipline"),
+    )),
+    ("electronics_electrical", "BOUNDARY_AMBIGUITY"): ("CAP01_ELECTRONICS_NEXT_STEPS_V1", (
+        ("question", "electronics_electrical:BOUNDARY_AMBIGUITY:Q1"),
+        ("question", "electronics_electrical:BOUNDARY_AMBIGUITY:Q2"),
+        ("question", "electronics_electrical:BOUNDARY_AMBIGUITY:Q3"),
+    )),
+}
+
+# The shared, domain-neutral sub-view labels (one set for every row), then the
+# per-gap parts: one MISSING summary, numbered TOPIC / SEARCH / MEASURE lines
+# (discovered by the ``_<n>`` convention) and one SPECIALIST boundary line.
+_NEXT_STEPS_LABEL_PREFIX = "UI_CAP01_NEXT_STEPS_V1_"
+_NEXT_STEPS_LABEL_PARTS = {
+    "title_key":            "TITLE",
+    "missing_label_key":    "MISSING_LABEL",
+    "look_label_key":       "LOOK_LABEL",
+    "search_label_key":     "SEARCH_LABEL",
+    "measure_label_key":    "MEASURE_LABEL",
+    "specialist_label_key": "SPECIALIST_LABEL",
+    "boundary_key":         "BOUNDARY",
+}
+_NEXT_STEPS_PARTS = {
+    "missing_key":    "MISSING",
+    "specialist_key": "SPECIALIST",
+}
+_NEXT_STEPS_LISTS = {
+    "topic_keys":   "TOPIC_",
+    "search_keys":  "SEARCH_",
+    "measure_keys": "MEASURE_",
+}
+
+
 def _gap_identity(gap):
     """``(gap_type, status)`` of one canonical gap record, or ``None``.
 
@@ -369,6 +482,7 @@ def gap_context_copy(domain_id, gap_type):
     view["group_id"] = group_id
     view["gap_type"] = gap_type
     view["fundamentals"] = _fundamentals(domain_id.strip(), gap_type, prefix)
+    view["next_steps"] = _next_steps(domain_id.strip(), gap_type)
     return view
 
 
@@ -402,6 +516,33 @@ def _fundamentals(domain_id, gap_type, prefix):
     # Named ``claims`` (never ``items``): a template attribute lookup on a dict
     # would otherwise resolve to the dict method and iterate nothing.
     view["claims"] = tuple(claims)
+    return view
+
+
+def _next_steps(domain_id, gap_type):
+    """The OPTIONAL technical next-steps sub-view of one gap context, as copy
+    KEYS plus its group id and source anchors, or ``None``.
+
+    All-or-nothing: every shared label, the gap's MISSING and SPECIALIST lines
+    and at least one TOPIC, SEARCH and MEASURE line must exist in the catalogue,
+    or nothing renders — half a set of next steps would be a different (and
+    untruthful) statement. ``None`` never removes the gap context itself."""
+    row = CAP01_GAP_NEXT_STEPS.get((domain_id, gap_type))
+    if row is None:
+        return None
+    group_id, anchors = row
+    view = {name: _NEXT_STEPS_LABEL_PREFIX + part
+            for name, part in _NEXT_STEPS_LABEL_PARTS.items()}
+    prefix = "UI_" + group_id + "_" + gap_type + "_"
+    view.update({name: prefix + part for name, part in _NEXT_STEPS_PARTS.items()})
+    if not all(ui_text.has_string(key) for key in view.values()):
+        return None
+    for name, stem in _NEXT_STEPS_LISTS.items():
+        view[name] = _numbered(prefix + stem)
+        if not view[name]:
+            return None
+    view["group_id"] = group_id
+    view["anchors"] = anchors
     return view
 
 
