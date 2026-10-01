@@ -6340,6 +6340,12 @@ def show_deliverable(sid):
         # Mechanical CAP-01 open-gap technical context: copy keys resolved from
         # the trusted package domain + exact canonical gap states (read-only).
         cap01_gap_contexts=_cap01_gap_contexts(package, state),
+        # Stage 19 closure: per CURRENT experiment, whether the inventor recorded
+        # executions (read-only; not part of the canonical package). The state
+        # wording and the Section-11 note are generated content: English only.
+        experiment_execution_states=_experiment_execution_states(sid, package),
+        s11_execution_text=S11_EXECUTION_TEXT,
+        s11_plan_note=S11_PLAN_NOTE,
         # CAP-08 Slice 1: the inventor-declared dependency view (derived on
         # demand; not part of the canonical package — the assembler is
         # untouched). Rendered only when a declaration exists.
@@ -6501,6 +6507,12 @@ def download_deliverable_pdf(sid):
             # as the HTML report, so the PDF cannot say something the screen
             # does not).
             cap01_gap_contexts=_cap01_gap_contexts(package, state),
+            # Stage 19 closure: the SAME execution-state projection and English
+            # copy as the HTML report, so the PDF cannot say something the screen
+            # does not.
+            experiment_execution_states=_experiment_execution_states(sid, package),
+            s11_execution_text=S11_EXECUTION_TEXT,
+            s11_plan_note=S11_PLAN_NOTE,
             assumption_dependencies=_assumption_dependency_view(state),
             snapshot_kept_ack=None,
         )
@@ -11543,6 +11555,58 @@ def _results_view(sid, plan, drafts=None):
              for c in _experiment_result.result_chains(events)
              if c["root"].experiment_id not in current_ids]
     return {"by_experiment": by_experiment, "stale": stale}
+
+
+# Stage 19 — Experiment Execution-State Disclosure — Closure. The report and the
+# PDF state, for each CURRENT Section-11 experiment, whether the inventor has
+# recorded executions of it — and nothing more. A read-only projection over the
+# SAME committed, wholly validated Result history the planning page reads, keyed
+# ONLY by the canonical ``experiment_id``; it never enters the canonical
+# deliverable package and never discloses result text, earlier entries, frozen
+# context or identifiers. ``count`` is the number of execution ROOTS
+# (``result_chains``): a correction never adds one, an independent retest does.
+# Nothing here compares, grades or interprets a result.
+_EXECUTION_NONE = "none"
+_EXECUTION_RECORDED = "recorded"
+_EXECUTION_UNAVAILABLE = "unavailable"
+
+# The execution-state wording and the Section-11 advisory note are generated
+# substantive Deliverable content: under the current generated-output language
+# rule they stay ENGLISH in every UI locale (Stage 18 / CAP-01 is the only
+# Category-C exception), so they are deliberately NOT in the web/ui_text.py
+# catalogue. Only the row label is interface chrome (UI_S11_EXECUTION_LABEL).
+S11_EXECUTION_TEXT = {
+    _EXECUTION_NONE: "No result recorded.",
+    _EXECUTION_RECORDED: ("You recorded {n} execution(s). These are your own recorded observations. "
+                          "InventorAI has not checked them and they are not a pass/fail judgement."),
+    _EXECUTION_UNAVAILABLE: ("Your recorded results could not be read, so whether this experiment has "
+                             "recorded executions cannot be shown."),
+}
+S11_PLAN_NOTE = ("Proposed experiments synthesized from your own captured evidence. Advisory only: "
+                 "InventorAI has not itself performed, checked or validated any of these experiments. "
+                 "A recorded execution is your own report of what happened and has not been validated; "
+                 "recording a result does not create a pass/fail judgement and does not establish "
+                 "feasibility. You define the success criteria.")
+
+
+def _experiment_execution_states(sid, package):
+    """``{experiment_id: {"state": ..., "count": ...}}`` for every CURRENT
+    Section-11 experiment of ``package``. Unreadable or invalid history fails
+    closed to UNAVAILABLE for every experiment — never to "no result" or zero.
+    Stale results (experiments no longer current) give no current-plan state.
+    Never raises."""
+    items = ((package or {}).get("section_11_prototype_test_plan") or {}).get("items") or []
+    ids = [it["experiment_id"] for it in items]
+    if not ids:
+        return {}
+    try:
+        events = _get_store().load_result_events(sid)
+        counts = {eid: len(_experiment_result.result_chains(events, eid)) for eid in ids}
+    except Exception:
+        return {eid: {"state": _EXECUTION_UNAVAILABLE, "count": None} for eid in ids}
+    return {eid: ({"state": _EXECUTION_RECORDED, "count": n} if n
+                  else {"state": _EXECUTION_NONE, "count": 0})
+            for eid, n in counts.items()}
 
 
 def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None,
