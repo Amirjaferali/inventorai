@@ -138,10 +138,15 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
     Stage-19 implementation). The later Stage 19 closure (CAP-09 entry below) completed Stage 19 for the current
   planning-only scope — `STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE`, with
   `NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE` — and the later Stage 20 closure (CAP-08 entry
-  below) completed Stage 20 for the current Owner-declared assumption scope and moved the marker on:
-  `STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE` ·
-  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 21 — ENTERED / PARTIAL — NAVIGATION ONLY` ·
-  `NO STAGE-21 IMPLEMENTATION AUTHORIZED BY STAGE-20 CLOSURE`.
+    below) completed Stage 20 for the current Owner-declared assumption scope — `STAGE 20: COMPLETE — CURRENT
+  OWNER-DECLARED ASSUMPTION SCOPE`, with `NO STAGE-21 IMPLEMENTATION AUTHORIZED BY STAGE-20 CLOSURE` — and the later
+  Stage 21 closure (CAP-10 entry below) completed Stage 21 for the current Owner-declared contradiction scope and
+  moved the marker on:
+  `STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE` ·
+  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22 — ENTERED / PARTIAL — NAVIGATION ONLY` ·
+  `NO STAGE-22 IMPLEMENTATION AUTHORIZED BY STAGE-21 CLOSURE`.
+  *(Superseded 2026-10-01 by the Stage 21 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 21 —
+  ENTERED / PARTIAL — NAVIGATION ONLY`".)*
   *(Superseded 2026-10-01 by the Stage 20 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 20 —
   ENTERED / PARTIAL — NAVIGATION ONLY`".)*
   *(Superseded 2026-10-01 by the Stage 19 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 19 —
@@ -420,13 +425,21 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
 - **Protected boundaries:** report-only with provenance; never auto-resolve or pick a winner.
 - **Proposed acceptance criteria:** deterministic contradiction detection with provenance; no silent
   resolution.
-- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, **with ONE bounded
-  exception**: CAP-10 Slice 1 (Stage 21, 2026-09-26) — the inventor explicitly declares that exactly
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, **with TWO bounded
+  exceptions**: (1) CAP-10 Slice 1 (Stage 21, 2026-09-26) — the inventor explicitly declares that exactly
   two of their own active recorded answers conflict, as one OWNER_STATED, UNVALIDATED
   `contradiction_declared` record on the existing ledger, with the contradiction a deterministic
   derived projection. It is a capture of the inventor's statement, not detection: automatic or AI
   detection, contradictions over assumptions / quantities / commercial items / success criteria /
-  decisions, and any resolution workflow stay NOT AUTHORIZED. `FULL CAP-10: NOT AUTHORIZED`.
+    decisions, and any resolution workflow stay NOT AUTHORIZED (delivered, PR #703); and (2) the Stage 21 —
+  Owner-Declared Contradiction Visibility — Closure (delivered): ONE read-only session view of each ACTIVE declared
+  conflict with both current answers (step, question area, verbatim text), the inventor's verbatim note, the
+  existing limitation wording and a link to the existing correction form, plus a "No longer active" history marker
+  in the project record — derived only from the existing CAP-10 truth, with no write path, persistence or replay
+  change. It completes Stage 21 for the current Owner-declared contradiction scope only — `STAGE 21: COMPLETE —
+  CURRENT OWNER-DECLARED CONTRADICTION SCOPE`. `FULL CAP-10: NOT AUTHORIZED` · `AUTOMATIC / AI CONTRADICTION
+  DETECTION: NOT AUTHORIZED` · `SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED`; withdrawal of a declaration,
+  a resolution workflow and winner selection stay NOT AUTHORIZED.
 - **Activation conditions:** a separately authorized contradiction-detection increment.
 - **Separate owner authorization requirement:** yes.
 
@@ -781,7 +794,7 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED |
 | CAP-08 Assumption Register | Assumption-tracking increment | WS12, CAP-05, CAP-10, CAP-11 | SLICE 1 DELIVERED (PR #704; Owner-declared assumption → answer dependency) and the bounded Stage 20 closure (append-only assumption revision and replacement; delivered; Stage 20 COMPLETE for the current Owner-declared assumption scope) — FULL CAP-08 NOT AUTHORIZED |
 | CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) one bounded Slice 4 durable Test Variable / Condition (delivered, PR #712) and one bounded Result Event Slice 1 append-only owner-stated result history (delivered) and the bounded Stage 19 closure read-only execution-state disclosure (delivered; Stage 19 COMPLETE for the current planning-only scope) (full CAP-09 still NOT AUTHORIZED) |
-| CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED |
+| CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | SLICE 1 DELIVERED (PR #703; Owner-declared contradiction) and the bounded Stage 21 closure (read-only session view of the declared conflicts; delivered; Stage 21 COMPLETE for the current Owner-declared contradiction scope) — FULL CAP-10 NOT AUTHORIZED |
 | CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | Dedicated materials-and-manufacturing feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14 | RECORDED — NOT AUTHORIZED |
 | CAP-13 Component Thickness, Specification, and Safety Advisory | Dedicated thickness-and-safety feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14 | RECORDED — NOT AUTHORIZED |
@@ -930,7 +943,7 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | CAP-07 Invention Decision Room | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
 | CAP-08 Assumption Register | SLICE 1 DELIVERED (PR #704; Owner-declared assumption → answer dependency) and the bounded Stage 20 closure (append-only assumption revision and replacement; delivered; Stage 20 COMPLETE for the current Owner-declared assumption scope) — FULL CAP-08 NOT AUTHORIZED | Assumption-tracking increment | Provenance/validation axes; ledger; WS12; CAP-11 | Yes | — | At the assumption increment / WS12–WS16 closure |
 | CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) one bounded Slice 4 durable Test Variable / Condition (delivered, PR #712) and one bounded Result Event Slice 1 append-only owner-stated result history (delivered) and the bounded Stage 19 closure read-only execution-state disclosure (delivered; Stage 19 COMPLETE for the current planning-only scope) | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
-| CAP-10 Contradiction Detector | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
+| CAP-10 Contradiction Detector | SLICE 1 DELIVERED (PR #703; Owner-declared contradiction) and the bounded Stage 21 closure (read-only session view of the declared conflicts; delivered; Stage 21 COMPLETE for the current Owner-declared contradiction scope) — FULL CAP-10 NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
 | CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | RECORDED — NOT AUTHORIZED | Materials-and-manufacturing feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the materials feasibility gate / WS12–WS16 closure |
 | CAP-13 Component Thickness, Specification, and Safety Advisory | RECORDED — NOT AUTHORIZED | Thickness-and-safety feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the thickness feasibility gate / WS12–WS16 closure |
