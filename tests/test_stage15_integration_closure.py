@@ -32,7 +32,7 @@ from engine import readiness_snapshot as rs
 from engine import subsystem_model as sm
 from engine.idea_state import IdeaState
 from engine.record_store import (
-    EVIDENCE_EXACT_REPLAY, IntegrationEvidenceConflict,
+    EVIDENCE_EXACT_REPLAY, SubsystemInterfacesCorrupt, IntegrationEvidenceConflict,
     IntegrationEvidenceRejected, InterfaceDependenciesCorrupt,
     InterfacePreparationRejected, StoreError)
 from engine.requirement_landscape import derive_requirement_landscape
@@ -847,3 +847,163 @@ def test_report_pdf_and_export_carry_no_dependency_or_integration_evidence(owner
         for needle in ("Dependency note text.", ITEM["statement_text"],
                        ITEM["limitation_text"], "interface_test", "INTEGRATION"):
             assert needle not in body, needle
+
+
+# ==========================================================================
+# 7. Bounded correction F1 — committed replay never depends on CURRENT
+#    interface reads; F2 — a supersession chain never crosses dimensions
+# ==========================================================================
+_CURRENT_READS = ("load_project_subsystems", "_validated_interfaces")
+
+
+def _break_current_interface_truth(monkeypatch, store, calls=None):
+    """Every CURRENT composition / interface read of ``store`` fails (and is
+    recorded in ``calls``); committed evidence + anchor rows stay readable."""
+    def broken(name):
+        def fail(*_a, **_k):
+            if calls is not None:
+                calls.append(name)
+            raise SubsystemInterfacesCorrupt("injected: current interface truth unavailable")
+        return fail
+    for name in _CURRENT_READS:
+        monkeypatch.setattr(store, name, broken(name))
+
+
+@pytest.mark.parametrize("restart", [False, True])
+def test_f1_an_exact_retry_is_saved_although_current_interface_truth_is_unavailable(
+        owner, monkeypatch, restart):
+    c, sid, ifc = owner
+    _r, data = _record(c, sid, ifc.interface_id)
+    before = _evidence_rows(sid), _anchor_rows(sid)
+    assert len(before[0]) == 1 and len(before[1]) == 1
+    if restart:
+        _restart()
+    _break_current_interface_truth(monkeypatch, _store())
+    again = c.post(IEV % sid, data=data)
+    assert again.status_code == 200, again.status_code
+    assert appmod.S15_IEV_SAVED_MESSAGE in _body(again)
+    assert appmod.S15_IEV_UNKNOWN_MESSAGE not in _body(again)
+    assert (_evidence_rows(sid), _anchor_rows(sid)) == before          # no duplicate row or anchor
+
+
+def test_f1_direct_store_replay_and_conflict_read_no_current_interface_truth(owner, monkeypatch):
+    import dataclasses
+    c, sid, ifc = owner
+    second = _second_interface(c, sid, ifc)
+    _record(c, sid, ifc.interface_id)
+    [row], _ = _history(sid)
+    store = _store()
+    calls = []
+    _break_current_interface_truth(monkeypatch, store, calls)
+    found = store.committed_integration_evidence_for_event_key(sid, row.event_key)
+    assert found[0] == row and found[1] == ifc.interface_id
+    assert store.append_integration_evidence(sid, row, ifc.interface_id) == (EVIDENCE_EXACT_REPLAY, row)
+    with pytest.raises(IntegrationEvidenceConflict):                  # changed material
+        store.append_integration_evidence(
+            sid, dataclasses.replace(row, statement_text="Something else."), ifc.interface_id)
+    with pytest.raises(IntegrationEvidenceConflict):                  # changed anchor
+        store.append_integration_evidence(sid, row, second.interface_id)
+    assert calls == []                                                # the key was resolved first
+    assert len(_evidence_rows(sid)) == 1 and len(_anchor_rows(sid)) == 1
+
+
+def test_f1_a_new_append_still_requires_current_interface_membership(owner, monkeypatch):
+    c, sid, ifc = owner
+    form = _form(c, sid, "record", interface_id=ifc.interface_id)
+    store = _store()
+    fresh = ce.make_readiness_evidence(
+        evidence_id=store.new_readiness_evidence_id(), evidence_seq=0,
+        dimension="INTEGRATION", topic="interface_test", **{k: ITEM[k] for k in TEXT},
+        provenance=appmod._CEV_PROVENANCE, event_key="n" * 32, recorded_iteration=0,
+        recorded_at="2026-10-01T00:00:00.000000Z")
+    _break_current_interface_truth(monkeypatch, store)
+    with pytest.raises(SubsystemInterfacesCorrupt):
+        store.append_integration_evidence(sid, fresh, ifc.interface_id)
+    r = c.post(IEV % sid, data=dict(form, **ITEM))
+    assert r.status_code != 200 and appmod.S15_IEV_SAVED_MESSAGE not in _body(r)
+    assert _evidence_rows(sid) == [] and _anchor_rows(sid) == []
+
+
+def test_f1_presentation_still_fails_closed_without_current_interface_truth(owner, monkeypatch):
+    c, sid, ifc = owner
+    _record(c, sid, ifc.interface_id)
+    store = _store()
+    _break_current_interface_truth(monkeypatch, store)
+    with pytest.raises(SubsystemInterfacesCorrupt):
+        store.load_integration_evidence(sid)
+    assert appmod._readiness_snapshot_context(sid, _live(sid)) is None   # snapshot suppressed
+    assert appmod._s15_integration_view(sid, {"items": []}) is None      # status / list unavailable
+
+
+def test_f1_unreadable_committed_evidence_truth_stays_unknown(owner):
+    c, sid, ifc = owner
+    form = _form(c, sid, "record", interface_id=ifc.interface_id)
+    _record(c, sid, ifc.interface_id, subject_text="Earlier item")
+    _raw("DELETE FROM %s WHERE project_id = ?" % ANCHORS, (sid,))     # committed anchor truth broken
+    before = _evidence_rows(sid)
+    r = c.post(IEV % sid, data=dict(form, **ITEM))
+    assert r.status_code == 503 and appmod.S15_IEV_UNKNOWN_MESSAGE in _body(r)
+    assert appmod.S15_IEV_SAVED_MESSAGE not in _body(r)
+    assert _evidence_rows(sid) == before and _anchor_rows(sid) == []
+
+
+_DIMENSION_TOPICS = {"COMMERCIAL": "target_customer", "MANUFACTURING": "material",
+                     "INTEGRATION": "interface_test"}
+
+
+def _chain_row(dimension, key, supersedes=None, withdrawn=False, seq=0):
+    return ce.make_readiness_evidence(
+        evidence_id="rev-" + key * 32, evidence_seq=seq, dimension=dimension,
+        topic=_DIMENSION_TOPICS[dimension], **{k: ITEM[k] for k in TEXT},
+        provenance=appmod._CEV_PROVENANCE, withdrawn=withdrawn,
+        supersedes_evidence_id=supersedes, event_key=key * 32, recorded_iteration=0,
+        recorded_at="2026-10-01T00:00:00.000000Z")
+
+
+@pytest.mark.parametrize("successor", ["COMMERCIAL", "MANUFACTURING"])
+@pytest.mark.parametrize("withdrawn", [False, True])
+def test_f2_the_shared_history_rejects_a_cross_dimension_supersession(successor, withdrawn):
+    first = _chain_row("INTEGRATION", "a")
+    crossed = _chain_row(successor, "b", supersedes=first.evidence_id, withdrawn=withdrawn, seq=1)
+    with pytest.raises(ce.CommercialEvidenceHistoryError, match="different dimension"):
+        ce.validate_evidence_history([first, crossed])
+    with pytest.raises(ce.CommercialEvidenceError):                   # the write rule it now matches
+        ce.validate_new_evidence([first], crossed)
+
+
+@pytest.mark.parametrize("dimension", ["COMMERCIAL", "MANUFACTURING", "INTEGRATION"])
+def test_f2_same_dimension_chains_stay_valid(dimension):
+    first = _chain_row(dimension, "a")
+    fixed = _chain_row(dimension, "b", supersedes=first.evidence_id, seq=1)
+    gone = _chain_row(dimension, "c", supersedes=fixed.evidence_id, withdrawn=True, seq=2)
+    assert ce.validate_evidence_history([first, fixed, gone]) == (first, fixed, gone)
+    assert ce.active_evidence([first, fixed, gone], dimension) == ()
+    assert ce.validate_evidence_history([first, fixed]) == (first, fixed)
+    assert ce.active_evidence([first, fixed], dimension) == (fixed,)
+
+
+@pytest.mark.parametrize("dimension", ["COMMERCIAL", "MANUFACTURING"])
+def test_f2_a_corrupted_cross_dimension_chain_reaches_no_integration_surface(owner, dimension):
+    c, sid, ifc = owner
+    _record(c, sid, ifc.interface_id)
+    [first], _ = _history(sid)
+    _correct(c, sid, first.evidence_id, statement_text="Corrected.")
+    successor = _history(sid)[0][1]
+    # Corrupt the durable successor into another dimension (and drop its anchor so the
+    # anchor rules alone cannot catch it): only the shared history rule stands in the way.
+    _raw("UPDATE readiness_evidence SET dimension = ?, topic = ? WHERE evidence_id = ?",
+         (dimension, _DIMENSION_TOPICS[dimension], successor.evidence_id))
+    _raw("DELETE FROM %s WHERE evidence_id = ?" % ANCHORS, (successor.evidence_id,))
+    store = _store()
+    for load in (lambda: store.load_readiness_evidence(sid), lambda: _history(sid),
+                 lambda: store.committed_integration_evidence_for_event_key(sid, successor.event_key)):
+        with pytest.raises(ce.CommercialEvidenceHistoryError):
+            load()
+    session = c.get("/session/%s" % sid).get_data(as_text=True)
+    assert 'data-rs-dimension="integration"' not in session           # no Integration snapshot row
+    page = _html.unescape(_raw_page(c, sid))
+    assert ui_text.text("UI_S15_IEV_UNAVAILABLE", "en") in page
+    status = _section(page, "UI_S15_ST_HEADING").split(
+        ui_text.text("UI_S15_PREP_FORM_HEADING", "en"))[0]
+    assert ui_text.text("UI_S15_ST_UNAVAILABLE", "en") in status
+    assert ui_text.text("UI_S15_ST_EVIDENCE_COUNT", "en").format(count=0) not in status

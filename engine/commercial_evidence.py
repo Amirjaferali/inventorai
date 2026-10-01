@@ -742,9 +742,10 @@ def validate_evidence_history(rows):
 
     Valid when every row carries an activated dimension and a topic of that
     dimension, every ``supersedes_evidence_id`` names an EARLIER row of the same
-    project exactly once (no fork), no row supersedes itself, and every
-    withdrawal supersedes something. An empty history is valid. Raises
-    ``CommercialEvidenceHistoryError`` with a structural message only."""
+    project AND the same dimension exactly once (no fork), no row supersedes
+    itself, and every withdrawal supersedes something. An empty history is
+    valid. Raises ``CommercialEvidenceHistoryError`` with a structural message
+    only."""
     rows = list(rows)
     seen = {}
     superseded = set()
@@ -766,6 +767,13 @@ def validate_evidence_history(rows):
             if prior not in seen:
                 raise CommercialEvidenceHistoryError(
                     "superseded item is not an earlier item")
+            # Read parity with `validate_new_evidence`: a chain never crosses
+            # dimensions, so a corrupted cross-dimension correction or
+            # withdrawal fails closed instead of silently retiring an item of
+            # another dimension.
+            if seen[prior].dimension != row.dimension:
+                raise CommercialEvidenceHistoryError(
+                    "superseded item belongs to a different dimension")
             if prior in superseded:
                 raise CommercialEvidenceHistoryError(
                     "superseded item already has a successor")
@@ -1056,18 +1064,17 @@ def integration_evidence_view(rows):
 # durable interface ids, and they repair nothing.
 
 
-def validate_integration_anchors(rows, anchors, interface_ids):
-    """Validate the anchors of ONE project's (already validated) evidence
-    history and return ``{evidence_id: interface_id}``, or raise
-    ``CommercialEvidenceHistoryError``.
+def validate_integration_anchor_structure(rows, anchors):
+    """COMMITTED anchor integrity of ONE project's (already validated) evidence
+    history, independent of any CURRENT interface read: return
+    ``{evidence_id: interface_id}`` or raise ``CommercialEvidenceHistoryError``.
 
-    Valid only when every pair is unique, names a row of THIS history that is
-    an INTEGRATION row, and names one of ``interface_ids`` (the project's own
-    current durable interfaces); every INTEGRATION row has exactly one anchor;
-    and every superseding INTEGRATION row is anchored to the same interface as
-    the row it supersedes."""
+    Valid only when every pair is unique and names a row of THIS history that
+    is an INTEGRATION row; every INTEGRATION row has exactly one anchor; and
+    every superseding INTEGRATION row is anchored to the same interface as the
+    row it supersedes. Whether an anchored interface is still a CURRENT
+    interface of the project is `validate_integration_anchors`' question."""
     by_id = {r.evidence_id: r for r in rows}
-    known = set(interface_ids)
     anchored = {}
     for pair in anchors:
         evidence_id, interface_id = pair
@@ -1080,9 +1087,6 @@ def validate_integration_anchors(rows, anchors, interface_ids):
         if row.dimension != DIMENSION_INTEGRATION:
             raise CommercialEvidenceHistoryError(
                 "only Integration evidence carries an interface anchor")
-        if interface_id not in known:
-            raise CommercialEvidenceHistoryError(
-                "an anchor names no interface of this project")
         anchored[evidence_id] = interface_id
     for row in rows:
         if row.dimension != DIMENSION_INTEGRATION:
@@ -1094,6 +1098,19 @@ def validate_integration_anchors(rows, anchors, interface_ids):
         if prior is not None and anchored.get(prior) != anchored[row.evidence_id]:
             raise CommercialEvidenceHistoryError(
                 "a correction or withdrawal changes the interface")
+    return anchored
+
+
+def validate_integration_anchors(rows, anchors, interface_ids):
+    """`validate_integration_anchor_structure` PLUS current membership: every
+    anchor must also name one of ``interface_ids`` (the project's own CURRENT
+    durable interfaces). Used for presentation and for a genuinely new append;
+    the committed-replay seam uses the structural check alone."""
+    anchored = validate_integration_anchor_structure(rows, anchors)
+    known = set(interface_ids)
+    if any(interface_id not in known for interface_id in anchored.values()):
+        raise CommercialEvidenceHistoryError(
+            "an anchor names no interface of this project")
     return anchored
 
 

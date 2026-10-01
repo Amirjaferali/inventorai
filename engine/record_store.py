@@ -43,7 +43,8 @@ from engine.commercial_evidence import (
     validate_evidence_row, validate_new_evidence,
     # Stage 15 closure: Integration evidence anchored to one interface.
     CommercialEvidenceError, CommercialEvidenceHistoryError,
-    DIMENSION_INTEGRATION, validate_integration_anchors,
+    DIMENSION_INTEGRATION, validate_integration_anchor_structure,
+    validate_integration_anchors,
 )
 from engine.requirement_quantity import (
     RequirementQuantity, validate_quantity_history, validate_new_quantity,
@@ -3631,25 +3632,43 @@ class SqliteRecordStore:
             [self._evidence_from_row(r) for r in rows])
 
     # --- Stage 15 closure: Integration evidence + its interface anchor -------
-    def _validated_integration_evidence(self, project_id):
-        """``(history, anchored)`` of this project: its WHOLE validated
-        readiness-evidence history and ``{evidence_id: interface_id}`` for its
-        Integration rows, every anchor validated against the project's durable
-        interfaces (composition + interfaces validated first). Corruption
-        raises ``CommercialEvidenceHistoryError`` (or the composition /
-        interface corrupt error); nothing partial."""
-        subsystems = self.load_project_subsystems(project_id)
-        interfaces, _keys = self._validated_interfaces(project_id, subsystems)
+    def _committed_integration_history(self, project_id):
+        """``(history, anchored)`` from COMMITTED evidence + anchor truth ONLY:
+        the WHOLE structurally validated readiness-evidence history and
+        ``{evidence_id: interface_id}`` with anchor integrity checked (one
+        anchor per Integration row, none on another dimension, a chain keeps
+        its interface). It reads NO composition, NO interface and NO
+        preparation state, so an exact committed replay never depends on a
+        current interface read. Corruption raises
+        ``CommercialEvidenceHistoryError``; nothing partial."""
         history = validate_evidence_history(
             [self._evidence_from_row(r) for r in self._evidence_rows(project_id)])
         pairs = self._conn.execute(
             "SELECT evidence_id, interface_id FROM "
             "integration_evidence_anchors WHERE project_id = ? "
             "ORDER BY evidence_id ASC", (project_id,)).fetchall()
-        anchored = validate_integration_anchors(
-            history, [(p[0], p[1]) for p in pairs],
-            [item.interface_id for item in interfaces])
+        anchored = validate_integration_anchor_structure(
+            history, [(p[0], p[1]) for p in pairs])
         return tuple(history), anchored
+
+    def _current_interface_ids(self, project_id):
+        """The project's CURRENT durable interface ids (composition +
+        interfaces validated; their corrupt errors propagate)."""
+        subsystems = self.load_project_subsystems(project_id)
+        interfaces, _keys = self._validated_interfaces(project_id, subsystems)
+        return [item.interface_id for item in interfaces]
+
+    def _validated_integration_evidence(self, project_id):
+        """``(history, anchored)`` of this project for PRESENTATION: the
+        committed history + anchor integrity, PLUS every anchor validated
+        against the project's CURRENT durable interfaces (composition +
+        interfaces validated first). Corruption or unreadable current truth
+        raises (``CommercialEvidenceHistoryError`` or the composition /
+        interface corrupt error); nothing partial."""
+        interface_ids = self._current_interface_ids(project_id)
+        history, anchored = self._committed_integration_history(project_id)
+        validate_integration_anchors(history, list(anchored.items()), interface_ids)
+        return history, anchored
 
     def load_integration_evidence(self, project_id: str) -> tuple:
         """``(history, anchored)``: this project's WHOLE readiness-evidence
@@ -3671,13 +3690,16 @@ class SqliteRecordStore:
         of the Integration route, read ONLY from committed durable state
         (IR-01 refuses otherwise) after validating the whole history and its
         anchors. A row under that key of another dimension is returned with
-        ``interface_id`` ``None`` so the caller treats it as a conflict."""
+        ``interface_id`` ``None`` so the caller treats it as a conflict. It
+        reads committed evidence + anchor truth ONLY (never the current
+        composition or interfaces), so reconciling a committed submission does
+        not depend on a later current-interface read."""
         self._refuse_uncommitted_reads()
         if not isinstance(event_key, str) or not event_key:
             return None
         with self.read_snapshot():
             self._require_project(project_id)
-            history, anchored = self._validated_integration_evidence(project_id)
+            history, anchored = self._committed_integration_history(project_id)
         for row in history:
             if row.event_key == event_key:
                 return row, anchored.get(row.evidence_id), history
@@ -3707,7 +3729,10 @@ class SqliteRecordStore:
         self._refuse_uncommitted_reads()      # IR-01: never write on top of it
         with self._write():
             self._require_project(project_id)
-            history, anchored = self._validated_integration_evidence(project_id)
+            # 1-3: committed evidence + anchor truth only; the durable key is
+            # resolved FIRST, so an exact replay (or a conflict) never waits on
+            # a current interface read.
+            history, anchored = self._committed_integration_history(project_id)
             for row in history:
                 if row.event_key == evidence.event_key:
                     if is_same_evidence_event(row, evidence) \
@@ -3715,11 +3740,14 @@ class SqliteRecordStore:
                         return EVIDENCE_EXACT_REPLAY, row
                     raise IntegrationEvidenceConflict(
                         "the submission identity already names a different event")
-            subsystems = self.load_project_subsystems(project_id)
-            interfaces, _keys = self._validated_interfaces(project_id, subsystems)
-            if interface_id not in {item.interface_id for item in interfaces}:
+            # 4: a genuinely NEW event needs CURRENT interface truth: exact
+            # membership, and the whole anchored history valid against it.
+            interface_ids = self._current_interface_ids(project_id)
+            if interface_id not in interface_ids:
                 raise IntegrationEvidenceRejected(
                     "the interface is not a member of this project")
+            validate_integration_anchors(history, list(anchored.items()),
+                                         interface_ids)
             if len(history) >= MAX_READINESS_EVIDENCE_PER_PROJECT:
                 raise EvidenceCapExceeded(
                     "readiness-evidence cap reached for this project")
@@ -3740,7 +3768,7 @@ class SqliteRecordStore:
             after = validate_evidence_history(tuple(history) + (stored,))
             validate_integration_anchors(
                 after, list(anchored.items()) + [(stored.evidence_id, interface_id)],
-                [item.interface_id for item in interfaces])
+                interface_ids)
             self._conn.execute(
                 "INSERT INTO readiness_evidence (project_id, "
                 + self._EVIDENCE_COLUMNS + ") "
