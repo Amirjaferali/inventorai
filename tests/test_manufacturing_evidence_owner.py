@@ -467,7 +467,7 @@ def test_ten_recorded_items_still_reach_no_positive_disposition(owner):
     assert "Recorded items: 10" in mfg_row
     for token in ("PASS_WITH_CONDITIONS", "PASS", "HOLD"):
         assert token not in mfg_row, token
-    assert snapshot.count('data-rs-disposition="INSUFFICIENT_EVIDENCE"') == 3
+    assert snapshot.count('data-rs-disposition="INSUFFICIENT_EVIDENCE"') == 4  # + Integration (Stage 15 closure)
 
 
 def test_the_snapshot_reports_evidence_activation_without_implying_readiness():

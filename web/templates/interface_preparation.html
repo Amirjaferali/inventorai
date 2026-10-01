@@ -23,10 +23,33 @@ h2{color:#2c3e50;font-size:18px;margin:28px 0 8px 0}
 .obs-context{background:#f7f5ee;border-inline-start:3px solid #b8a97a;padding:6px 10px;margin:6px 0;font-size:12px}
 .obs-context dd{margin:0 12px 4px 12px;white-space:pre-wrap}
 details{font-size:12px;margin:4px 0}
+.status-list{margin:6px 0;font-size:13px}
+.status-list dt{font-weight:bold;color:#2c3e50;margin-top:4px}
+.status-list dd{margin:0 12px 2px 12px}
+fieldset.dep{border:1px solid #e2e6ea;border-radius:4px;margin:12px 0 0 0;padding:6px 10px;min-width:0}
+fieldset.dep legend{font-size:13px;color:#2c3e50}
+label.dep-opt{display:block;margin:4px 0;font-size:13px}
+.iev-input{width:100%;padding:6px;font-size:13px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
 @media(max-width:520px){body{margin:18px auto;padding:0 14px}.ifc{padding:12px}}
 </style>
 {% endblock %}
 {% block content %}
+{#- Stage 15 closure: the six owner text fields of ONE Integration evidence
+    form, prefilled from ``v`` (a refused draft or the item being corrected). -#}
+{% macro iev_fields(prefix, v) %}
+    <label for="{{ prefix }}-subject">{{ t('UI_MEV_FIELD_SUBJECT') }}</label>
+    <input class="iev-input" type="text" id="{{ prefix }}-subject" name="subject_text" dir="auto" required value="{{ v.subject_text if v else '' }}">
+    <label for="{{ prefix }}-statement">{{ t('UI_MEV_FIELD_STATEMENT') }}</label>
+    <textarea class="iev-input" id="{{ prefix }}-statement" name="statement_text" rows="2" dir="auto" required>{{ v.statement_text if v else '' }}</textarea>
+    <label for="{{ prefix }}-source">{{ t('UI_MEV_FIELD_SOURCE') }}</label>
+    <input class="iev-input" type="text" id="{{ prefix }}-source" name="source_identity" dir="auto" required value="{{ v.source_identity if v else '' }}">
+    <label for="{{ prefix }}-date">{{ t('UI_MEV_FIELD_DATE') }}</label>
+    <input class="iev-input" type="text" id="{{ prefix }}-date" name="occurred_on" dir="ltr" value="{{ v.occurred_on if v else '' }}">
+    <label for="{{ prefix }}-scope">{{ t('UI_MEV_FIELD_SCOPE') }}</label>
+    <input class="iev-input" type="text" id="{{ prefix }}-scope" name="scope_text" dir="auto" required value="{{ v.scope_text if v else '' }}">
+    <label for="{{ prefix }}-limitation">{{ t('UI_MEV_FIELD_LIMITATION') }}</label>
+    <input class="iev-input" type="text" id="{{ prefix }}-limitation" name="limitation_text" dir="auto" required value="{{ v.limitation_text if v else '' }}">
+{% endmacro %}
 {#- Stage 15 Slice 3 — the inventor's own verification-preparation inputs for
     each declared interaction: planning inputs only, never checked, never a
     result; saving verifies nothing and assesses no compatibility. -#}
@@ -44,6 +67,30 @@ details{font-size:12px;margin:4px 0}
     why); that must never read as "no interactions". -#}
 {% if items is none %}
 {% elif items %}
+{#- Stage 15 closure — the read-only current status of each declared
+    interaction (the IRL-compatible view on this page): factual presence only.
+    It never decides whether an interaction works; unavailable data reads as
+    unavailable, never as absence. -#}
+<h2 id="status-heading">{{ t('UI_S15_ST_HEADING') }}</h2>
+<div class="intro" data-status-intro><p style="margin:0">{{ t('UI_S15_ST_INTRO') }}</p></div>
+{% for ifc in items %}
+<div class="ifc" data-status-interface>
+  <div class="ifc-title">{{ t('UI_S15_IFC_BETWEEN') }} <bdi dir="auto">{{ ifc.a }}</bdi> {{ t('UI_S15_IFC_AND') }} <bdi dir="auto">{{ ifc.b }}</bdi></div>
+  <p class="ifc-desc">{{ t('UI_S15_IFC_DESCRIPTION') }} <bdi dir="auto">{{ ifc.description }}</bdi></p>
+  <p class="guidance" data-status-preparation>{{ t(ifc.preparation.presence_key) }}</p>
+  <dl class="status-list">
+    <dt>{{ t('UI_S15_ST_DEPENDENCY') }}</dt>
+    <dd data-status-dependency>{% if ifc.dependency is none %}{{ t('UI_S15_ST_UNAVAILABLE') }}{% elif not ifc.dependency.declared %}{{ t('UI_S15_DEP_NOT_DECLARED') }}{% elif ifc.dependency.kind == 'mutual' %}{{ t('UI_S15_DEP_MUTUAL') }}{% else %}<bdi dir="auto">{{ ifc.dependency.dependent }}</bdi> {{ t('UI_S15_DEP_RELIES_ON') }} <bdi dir="auto">{{ ifc.dependency.depends_on }}</bdi>{% endif %}{% if ifc.dependency and ifc.dependency.note %} — <bdi dir="auto">{{ ifc.dependency.note }}</bdi>{% endif %}</dd>
+    <dt>{{ t('UI_S15_ST_CHECKS') }}</dt>
+    <dd data-status-checks>{% if observations is none %}{{ t('UI_S15_ST_UNAVAILABLE') }}{% else %}{{ t('UI_S15_ST_CHECKS_COUNT').format(count=observations[ifc.interface_id].chains|length) }}{% endif %} {{ t('UI_S15_ST_CHECKS_NOT_EVIDENCE') }}</dd>
+    <dt>{{ t('UI_S15_ST_EVIDENCE') }}</dt>
+    <dd data-status-evidence>{% if integration is none %}{{ t('UI_S15_ST_UNAVAILABLE') }}{% else %}{% set ev = integration.by_interface[ifc.interface_id] %}{{ t('UI_S15_ST_EVIDENCE_COUNT').format(count=ev.active|length) }}{% if ev.history %} {{ t('UI_S15_ST_EVIDENCE_HISTORY').format(count=ev.history) }}{% endif %}{% endif %}</dd>
+  </dl>
+  <p class="guidance" data-status-not-a-verdict>{{ t('UI_S15_ST_NOT_A_VERDICT') }}</p>
+</div>
+{% endfor %}
+
+<h2 id="preparation-heading">{{ t('UI_S15_PREP_FORM_HEADING') }}</h2>
 <form method="POST" action="{{ url_for('save_interface_preparation', sid=sid) }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   {% for ifc in items %}
@@ -62,6 +109,27 @@ details{font-size:12px;margin:4px 0}
     <input type="hidden" name="{{ fld.base_name }}" value="{% if baselines is not none and fld.base_name in baselines %}{{ baselines[fld.base_name] }}{% elif fld.value is not none %}{{ fld.value }}{% endif %}">
     <p class="guidance" id="prep-guidance-{{ n }}-{{ loop.index }}">{{ t(fld.hint_key) }}</p>
     {% endfor %}
+    {#- Stage 15 closure — the Owner-declared dependency (optional; current
+        value; saved by this same Save). The endpoint order means nothing:
+        both directions are offered and each choice names its own parts. -#}
+    <fieldset class="dep" data-dep-fieldset>
+      <legend>{{ t('UI_S15_DEP_LEGEND') }}</legend>
+      {% if ifc.dependency_value is none %}
+      <p class="guidance" data-dep-unavailable>{{ t('UI_S15_ST_UNAVAILABLE') }}</p>
+      {% else %}
+      {% set dn = ifc.dep_names %}
+      {% set chosen = drafts[dn.choice] if drafts is not none and dn.choice in drafts else ifc.dependency_value %}
+      {% set current_note = ifc.dependency.note if ifc.dependency.declared and ifc.dependency.note else '' %}
+      {% for opt in ifc.dependency_options %}
+      <label class="dep-opt"><input type="radio" name="{{ dn.choice }}" value="{{ opt.value }}"{% if opt.value == chosen %} checked{% endif %}> {% if opt.label_key %}{{ t(opt.label_key) }}{% else %}<bdi dir="auto">{{ opt.dependent }}</bdi> {{ t('UI_S15_DEP_RELIES_ON') }} <bdi dir="auto">{{ opt.depends_on }}</bdi>{% endif %}</label>
+      {% endfor %}
+      <input type="hidden" name="{{ dn.base_choice }}" value="{% if baselines is not none and dn.base_choice in baselines %}{{ baselines[dn.base_choice] }}{% else %}{{ ifc.dependency_value }}{% endif %}">
+      <label for="dep-note-{{ n }}">{{ t('UI_S15_DEP_NOTE') }}</label>
+      <textarea id="dep-note-{{ n }}" name="{{ dn.note }}" rows="2" maxlength="{{ dependency_note_max }}" dir="auto">{% if drafts is not none and dn.note in drafts %}{{ drafts[dn.note] }}{% else %}{{ current_note }}{% endif %}</textarea>
+      <input type="hidden" name="{{ dn.base_note }}" value="{% if baselines is not none and dn.base_note in baselines %}{{ baselines[dn.base_note] }}{% else %}{{ current_note }}{% endif %}">
+      <p class="guidance" data-dep-guidance>{{ t('UI_S15_DEP_GUIDANCE').format(limit=dependency_note_max) }}</p>
+      {% endif %}
+    </fieldset>
   </div>
   {% endfor %}
   <p class="guidance">{{ t('UI_S15_PREP_LIMIT').format(limit=max_length) }}</p>
@@ -131,6 +199,76 @@ details{font-size:12px;margin:4px 0}
     <p class="guidance" id="obs-note-{{ n }}" data-obs-record-note>{{ t('UI_S15_OBS_RECORD_NOTE').format(limit=observation_max_length) }}</p>
     <button type="submit">{{ t('UI_S15_OBS_RECORD_BUTTON') }}</button>
   </form>
+</div>
+{% endfor %}
+{% endif %}
+
+{#- Stage 15 closure — Integration evidence on each declared interaction: the
+    existing shared evidence owner's INTEGRATION dimension. Every item is the
+    inventor's own UNVALIDATED statement anchored to exactly this interaction;
+    corrections and withdrawals append and keep it. Nothing here grades,
+    promotes or interprets evidence or judges compatibility. -#}
+<h2 id="evidence-heading">{{ t('UI_S15_IEV_HEADING') }}</h2>
+<div class="intro" data-iev-intro><p style="margin:0">{{ t('UI_S15_IEV_INTRO') }}</p></div>
+{% if integration is none %}
+<div class="notice" role="status" data-iev-unavailable>{{ t('UI_S15_IEV_UNAVAILABLE') }}</div>
+{% else %}
+{% if not integration.writable %}<p class="guidance" data-iev-readonly>{{ t('UI_S15_IEV_READONLY') }}</p>{% endif %}
+{% for ifc in items %}
+{% set ev = integration.by_interface[ifc.interface_id] %}
+{% set n = loop.index %}
+<div class="ifc" data-iev-interface>
+  <div class="ifc-title">{{ t('UI_S15_IFC_BETWEEN') }} <bdi dir="auto">{{ ifc.a }}</bdi> {{ t('UI_S15_IFC_AND') }} <bdi dir="auto">{{ ifc.b }}</bdi></div>
+  <p class="ifc-desc">{{ t('UI_S15_IFC_DESCRIPTION') }} <bdi dir="auto">{{ ifc.description }}</bdi></p>
+  {% if not ev.active %}<p class="guidance" data-iev-none>{{ t('UI_S15_IEV_NONE') }}</p>{% endif %}
+  {% for item in ev.active %}
+  <div class="obs-chain" data-iev-item data-iev-topic="{{ item.topic }}" data-iev-claim-status="{{ item.claim_status }}">
+    <p style="margin:0;font-size:13px"><strong>{{ t('UI_IEV_TOPIC_' ~ item.topic|upper) }}</strong> · <bdi dir="auto">{{ item.subject_text }}</bdi></p>
+    <p class="obs-text" data-iev-statement><bdi dir="auto">{{ item.statement_text }}</bdi></p>
+    <p class="guidance">{{ t('UI_MEV_META_SOURCE') }}: <bdi dir="auto">{{ item.source_identity }}</bdi>{% if item.occurred_on %} · {{ t('UI_MEV_META_DATE') }}: <bdi>{{ item.occurred_on }}</bdi>{% endif %}</p>
+    <p class="guidance">{{ t('UI_MEV_META_SCOPE') }}: <bdi dir="auto">{{ item.scope_text }}</bdi></p>
+    <p class="guidance">{{ t('UI_MEV_META_LIMITATION') }}: <bdi dir="auto">{{ item.limitation_text }}</bdi></p>
+    <p class="guidance" data-iev-label>{{ t('UI_S15_IEV_LABEL') }}</p>
+    {% if integration.writable %}
+    <details><summary>{{ t('UI_S15_IEV_CORRECT') }}</summary>
+      <form method="POST" action="{{ url_for('record_integration_evidence', sid=sid) }}" data-iev-correct>
+        <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+        <input type="hidden" name="evidence_submission" value="{{ item.correct_submission }}">
+        <input type="hidden" name="interface_id" value="{{ ifc.interface_id }}">
+        <input type="hidden" name="action" value="correct">
+        <input type="hidden" name="supersedes_evidence_id" value="{{ item.evidence_id }}">
+        {{ iev_fields('iev-fix-' ~ n ~ '-' ~ loop.index, item.draft if item.draft else item) }}
+        <p class="guidance">{{ t('UI_S15_IEV_CORRECT_NOTE') }}</p>
+        <button type="submit">{{ t('UI_S15_IEV_CORRECT_BUTTON') }}</button>
+      </form>
+    </details>
+    <form method="POST" action="{{ url_for('record_integration_evidence', sid=sid) }}" data-iev-withdraw>
+      <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+      <input type="hidden" name="evidence_submission" value="{{ item.withdraw_submission }}">
+      <input type="hidden" name="interface_id" value="{{ ifc.interface_id }}">
+      <input type="hidden" name="action" value="withdraw">
+      <input type="hidden" name="supersedes_evidence_id" value="{{ item.evidence_id }}">
+      <button type="submit">{{ t('UI_S15_IEV_WITHDRAW_BUTTON') }}</button>
+    </form>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% if ev.history %}<p class="guidance" data-iev-history>{{ t('UI_S15_IEV_HISTORY').format(count=ev.history) }}</p>{% endif %}
+  {% if integration.writable %}
+  <form method="POST" action="{{ url_for('record_integration_evidence', sid=sid) }}" data-iev-record style="margin-top:10px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <input type="hidden" name="evidence_submission" value="{{ ev.submission }}">
+    <input type="hidden" name="interface_id" value="{{ ifc.interface_id }}">
+    <input type="hidden" name="action" value="record">
+    <label for="iev-new-{{ n }}-topic">{{ t('UI_S15_IEV_RECORD') }}</label>
+    <select id="iev-new-{{ n }}-topic" name="topic" required>
+      {% for topic in integration_topics %}<option value="{{ topic }}"{% if ev.draft and ev.draft.topic == topic %} selected{% endif %}>{{ t('UI_IEV_TOPIC_' ~ topic|upper) }}</option>{% endfor %}
+    </select>
+    {{ iev_fields('iev-new-' ~ n, ev.draft) }}
+    <p class="guidance" data-iev-record-note>{{ t('UI_S15_IEV_RECORD_NOTE') }}</p>
+    <button type="submit">{{ t('UI_S15_IEV_RECORD_BUTTON') }}</button>
+  </form>
+  {% endif %}
 </div>
 {% endfor %}
 {% endif %}

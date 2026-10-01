@@ -34,6 +34,8 @@ MUTATIONS = (
     "/session/<sid>/experiment-result",
     # Stage 15 Slice 4: the inventor's append-only interface observation.
     "/session/<sid>/interface-observation",
+    # Stage 15 closure: Integration evidence anchored to one declared interaction.
+    "/session/<sid>/integration-evidence",
     "/session/<sid>/decision/declare-context", "/session/<sid>/decision/declare-alternative",
     "/session/<sid>/decision/refine-alternative", "/session/<sid>/decision/withdraw-alternative",
     "/session/<sid>/keep-snapshot", "/session/<sid>/success-criteria", "/session/<sid>",

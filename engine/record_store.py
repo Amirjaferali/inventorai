@@ -41,6 +41,9 @@ from engine.commercial_evidence import (
     MAX_READINESS_EVIDENCE_PER_PROJECT, ReadinessEvidence,
     is_same_evidence_event, validate_evidence_history,
     validate_evidence_row, validate_new_evidence,
+    # Stage 15 closure: Integration evidence anchored to one interface.
+    CommercialEvidenceError, CommercialEvidenceHistoryError,
+    DIMENSION_INTEGRATION, validate_integration_anchors,
 )
 from engine.requirement_quantity import (
     RequirementQuantity, validate_quantity_history, validate_new_quantity,
@@ -79,6 +82,9 @@ from engine.subsystem_model import (
     InterfacePreparation, PREPARATION_FIELDS, MAX_INTERFACE_PREPARATION_LENGTH,
     merged_preparation, preparation_for, valid_preparation_text,
     validate_interface_preparations,
+    # Stage 15 closure: the Owner-declared interface dependency.
+    InterfaceDependency, check_interface_dependency,
+    validate_interface_dependencies, MAX_INTERFACE_DEPENDENCY_NOTE_LENGTH,
 )
 # Stage 19 / CAP-09 Result Event Slice 1: the inventor's append-only report of
 # what actually happened in one canonical Section-11 experiment.
@@ -243,6 +249,29 @@ class InterfacePreparationsCorrupt(StoreError):
     repaired, deleted, remapped or reinterpreted."""
 
 
+class InterfaceDependenciesCorrupt(StoreError):
+    """Stage 15 closure: a project's durable interface-dependency rows are
+    malformed, duplicated, orphaned from its durable interfaces or name parts
+    that are not that interface's endpoints. Fail-closed for the WHOLE
+    collection: nothing partial is returned and nothing is repaired, deleted,
+    remapped or reinterpreted."""
+
+
+class IntegrationEvidenceRejected(StoreError):
+    """Stage 15 closure: an Integration evidence event is not valid against
+    the project's DURABLE truth inside the write transaction (the interface is
+    not a member of THIS project's durable interfaces, the superseded item is
+    missing, already superseded, of another dimension or anchored to another
+    interface, or the row breaks an owner rule). Decided before any row is
+    written; neither the row nor its anchor is written."""
+
+
+class IntegrationEvidenceConflict(StoreError):
+    """Stage 15 closure: the durable submission identity is already spent on a
+    DIFFERENT Integration event (other material or another interface anchor).
+    Nothing was written."""
+
+
 class ResultEventRejected(StoreError):
     """CAP-09 Result Event Slice 1: an event is not valid against the
     project's DURABLE result history inside the write transaction (a
@@ -402,6 +431,12 @@ class RecordStore(Protocol):
     def new_readiness_evidence_id(self) -> str: ...
     def append_readiness_evidence(self, project_id: str, evidence) -> str: ...
     def load_readiness_evidence(self, project_id: str) -> tuple: ...
+    # Stage 15 closure: Integration evidence with its interface anchor.
+    def load_integration_evidence(self, project_id: str) -> tuple: ...
+    def committed_integration_evidence_for_event_key(self, project_id: str,
+                                                      event_key: str): ...
+    def append_integration_evidence(self, project_id: str, evidence,
+                                    interface_id: str) -> tuple: ...
     def readiness_evidence_for_event_key(self, project_id: str, event_key: str): ...
     # Stage 19 / CAP-09 durable SuccessCriterion (additive; see the
     # prototype_plan_metadata note below).
@@ -435,7 +470,10 @@ class RecordStore(Protocol):
     # per interface (additive; see the subsystem_interface_preparations note).
     def load_subsystem_integration(self, project_id: str) -> tuple: ...
     def load_interface_preparations(self, project_id: str) -> tuple: ...
-    def apply_interface_preparation_delta(self, project_id: str, delta) -> None: ...
+    def apply_interface_preparation_delta(self, project_id: str, delta,
+                                          dependency_delta=None) -> None: ...
+    # Stage 15 closure: the Owner-declared interface dependency (current value).
+    def load_interface_dependencies(self, project_id: str) -> tuple: ...
     # CAP-09 Result Event Slice 1 (append-only; see the prototype_test_results note).
     def load_result_events(self, project_id: str) -> tuple: ...
     def committed_result_event_for_submission(self, project_id: str,
@@ -1191,6 +1229,79 @@ _INTERFACE_PREPARATIONS_SCHEMA = (
     """ % tuple(_PREPARATION_TEXT_CHECK.format(col=c) for c in PREPARATION_FIELDS),
 )
 
+# Stage 15 closure — the ``subsystem_interface_dependencies`` sidecar: the
+# inventor's CURRENT Owner-declared dependency for ONE existing durable
+# interface (one-way: the exact dependent part and the exact part it relies
+# on; or mutual). A CURRENT-VALUE sidecar (upsert / delete; no history), keyed
+# ONLY by the existing ``(project_id, interface_id)`` and anchored by a
+# composite foreign key to that exact durable interface row; a one-way row's
+# two part ids reference THIS project's own ``project_subsystems`` rows, and
+# the loader re-validates that they are exactly that interface's two distinct
+# endpoints. No row means "not declared", never "independent". The
+# append-only ``subsystem_interfaces`` table is NOT widened or updated. The
+# CHECKs are a database backstop only. Additive and idempotent (``IF NOT
+# EXISTS``); nothing is backfilled. Rollback is disable-and-ignore.
+_INTERFACE_DEPENDENCIES_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS subsystem_interface_dependencies (
+        project_id               TEXT NOT NULL,
+        interface_id             TEXT NOT NULL,
+        dependency_kind          TEXT NOT NULL,
+        dependent_subsystem_id   TEXT,
+        depends_on_subsystem_id  TEXT,
+        note                     TEXT,
+        PRIMARY KEY (project_id, interface_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, interface_id)
+            REFERENCES subsystem_interfaces(project_id, interface_id),
+        FOREIGN KEY (project_id, dependent_subsystem_id)
+            REFERENCES project_subsystems(project_id, subsystem_id),
+        FOREIGN KEY (project_id, depends_on_subsystem_id)
+            REFERENCES project_subsystems(project_id, subsystem_id),
+        CHECK (typeof(interface_id) = 'text' AND length(interface_id) = 36),
+        CHECK ((dependency_kind = 'one_way'
+                AND dependent_subsystem_id IS NOT NULL
+                AND depends_on_subsystem_id IS NOT NULL
+                AND dependent_subsystem_id <> depends_on_subsystem_id)
+               OR (dependency_kind = 'mutual'
+                   AND dependent_subsystem_id IS NULL
+                   AND depends_on_subsystem_id IS NULL)),
+        CHECK (note IS NULL OR (typeof(note) = 'text'
+               AND length(note) BETWEEN 1 AND %d
+               AND instr(CAST(note AS BLOB), X'00') = 0))
+    )
+    """ % MAX_INTERFACE_DEPENDENCY_NOTE_LENGTH,
+)
+
+# Stage 15 closure — the ``integration_evidence_anchors`` sidecar: the
+# ONE immutable interface anchor of every INTEGRATION readiness-evidence event
+# (record, correction and withdrawal rows alike). INSERT-only, written in the
+# SAME transaction as its evidence row; nothing ever rewrites or removes one. The
+# composite foreign keys tie it to exactly one evidence row of THIS project and
+# exactly one durable interface of THIS project; the primary key allows at
+# most one anchor per evidence row. Commercial and Manufacturing rows carry no
+# anchor. The loader re-validates the whole history (every Integration row
+# exactly one anchor, no anchor on another dimension, a correction / withdrawal
+# keeps its chain's interface). Additive and idempotent (``IF NOT EXISTS``);
+# the shared evidence table is not altered; nothing is
+# backfilled. Rollback is disable-and-ignore.
+_INTEGRATION_EVIDENCE_ANCHORS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS integration_evidence_anchors (
+        project_id    TEXT NOT NULL,
+        evidence_id   TEXT NOT NULL,
+        interface_id  TEXT NOT NULL,
+        PRIMARY KEY (project_id, evidence_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, evidence_id)
+            REFERENCES readiness_evidence(project_id, evidence_id),
+        FOREIGN KEY (project_id, interface_id)
+            REFERENCES subsystem_interfaces(project_id, interface_id),
+        CHECK (typeof(interface_id) = 'text' AND length(interface_id) = 36)
+    )
+    """,
+)
+
 # Stage 19 / CAP-09 Result Event Slice 1 — the ``prototype_test_results``
 # sidecar: the inventor's APPEND-ONLY report of what actually happened in one
 # canonical Section-11 experiment (``experiment_id``, the only experiment
@@ -1456,6 +1567,8 @@ class SqliteRecordStore:
             self._migrate_interface_preparations(self._conn)
             self._migrate_result_events(self._conn)
             self._migrate_interface_observations(self._conn)
+            self._migrate_interface_dependencies(self._conn)
+            self._migrate_integration_evidence_anchors(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -1716,6 +1829,23 @@ class SqliteRecordStore:
         for stmt in _INTERFACE_OBSERVATIONS_SCHEMA:
             conn.execute(stmt)
 
+    def _migrate_interface_dependencies(self, conn) -> None:
+        """Stage 15 closure forward migration: additively create the
+        current-value ``subsystem_interface_dependencies`` sidecar. Idempotent
+        (``IF NOT EXISTS``); touches no existing table, column or row; nothing
+        is backfilled. Rollback is disable-and-ignore."""
+        for stmt in _INTERFACE_DEPENDENCIES_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_integration_evidence_anchors(self, conn) -> None:
+        """Stage 15 closure forward migration: additively create the
+        INSERT-only ``integration_evidence_anchors`` sidecar.
+        Idempotent (``IF NOT EXISTS``); the shared ``readiness_evidence``
+        table and its rows are untouched; nothing is backfilled. Rollback is
+        disable-and-ignore."""
+        for stmt in _INTEGRATION_EVIDENCE_ANCHORS_SCHEMA:
+            conn.execute(stmt)
+
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
         """A durability-safe, collision-safe identifier for a NEWLY created
@@ -1967,7 +2097,84 @@ class SqliteRecordStore:
         ``load_subsystem_integration``."""
         return self.load_subsystem_integration(project_id)[2]
 
-    def apply_interface_preparation_delta(self, project_id: str, delta) -> None:
+    # --- Stage 15 closure: Owner-declared interface dependency (current value) --
+    def _apply_dependency_changes(self, project_id, interfaces, changes):
+        """Inside the caller's write transaction: validate the existing
+        dependency collection, then upsert (declare / replace) or delete
+        (clear) each named interface's current-value row. Every named id must
+        be an interface of THIS project and every declaration valid for
+        exactly that interface; nothing is matched by position or text."""
+        by_id = {item.interface_id: item for item in interfaces}
+        self._validated_dependencies(project_id, interfaces)
+        for interface_id, dependency in changes:
+            if interface_id not in by_id:
+                raise InterfacePreparationRejected(
+                    "the change names no interface of this project")
+            if dependency is None:
+                self._conn.execute(
+                    "DELETE FROM subsystem_interface_dependencies "
+                    "WHERE project_id = ? AND interface_id = ?",
+                    (project_id, interface_id))
+                continue
+            try:
+                check_interface_dependency(dependency, by_id[interface_id])
+            except InterfaceError:
+                raise InterfacePreparationRejected(
+                    "the change is not a valid dependency") from None
+            self._conn.execute(
+                "INSERT INTO subsystem_interface_dependencies (project_id, "
+                + self._DEPENDENCY_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?) "
+                "ON CONFLICT (project_id, interface_id) DO UPDATE SET "
+                "dependency_kind = excluded.dependency_kind, "
+                "dependent_subsystem_id = excluded.dependent_subsystem_id, "
+                "depends_on_subsystem_id = excluded.depends_on_subsystem_id, "
+                "note = excluded.note",
+                (project_id, interface_id, dependency.kind,
+                 dependency.dependent_subsystem_id,
+                 dependency.depends_on_subsystem_id, dependency.note))
+
+    _DEPENDENCY_COLUMNS = (
+        "interface_id, dependency_kind, dependent_subsystem_id, "
+        "depends_on_subsystem_id, note")
+
+    def _validated_dependencies(self, project_id, interfaces):
+        """This project's durable dependency rows validated WHOLE against its
+        durable ``interfaces`` (exact id; one-way parts must be that
+        interface's two distinct endpoints); ``InterfaceDependenciesCorrupt``
+        on anything malformed, duplicated or orphaned (nothing partial)."""
+        rows = self._conn.execute(
+            "SELECT " + self._DEPENDENCY_COLUMNS + " FROM "
+            "subsystem_interface_dependencies WHERE project_id = ? "
+            "ORDER BY interface_id ASC", (project_id,)).fetchall()
+        if not rows:
+            return ()
+        items = tuple(
+            InterfaceDependency(interface_id=row[0], kind=row[1],
+                                dependent_subsystem_id=row[2],
+                                depends_on_subsystem_id=row[3], note=row[4])
+            for row in rows)
+        try:
+            return validate_interface_dependencies(items, interfaces)
+        except InterfaceError as exc:
+            raise InterfaceDependenciesCorrupt(str(exc)) from None
+
+    def load_interface_dependencies(self, project_id: str) -> tuple:
+        """This project's durable Owner-declared interface dependencies (``()``
+        when none is declared), in interface order, read with its composition
+        and interfaces inside ONE snapshot and validated WHOLE. No project ->
+        ``ProjectNotFound``. IR-01: a connection inside an unresolved
+        transaction refuses (``RecordStoreConnectionUnsafe``). Read-only;
+        project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _keys = self._validated_interfaces(project_id, subsystems)
+            dependencies = self._validated_dependencies(project_id, interfaces)
+        return dependencies
+
+    def apply_interface_preparation_delta(self, project_id: str, delta,
+                                          dependency_delta=None) -> None:
         """Apply ONE complete submitted preparation delta atomically.
 
         ``delta`` maps an ``interface_id`` to a mapping of preparation field ->
@@ -1988,7 +2195,16 @@ class SqliteRecordStore:
         value upserted or deleted. Any failure before COMMIT rolls the ENTIRE
         delta back: no partial save. An exact retry of a committed submission
         writes the same current values and creates nothing new. IR-01: never
-        writes on top of an unresolved connection."""
+        writes on top of an unresolved connection.
+
+        Stage 15 closure: ``dependency_delta`` (optional; omitted or empty is
+        no dependency edit) maps an ``interface_id`` to an
+        ``InterfaceDependency`` (declare / replace) or ``None`` (clear — the
+        current-value row is removed). It is applied in the SAME transaction:
+        every named interface must be a member of THIS project's durable
+        interfaces and every declaration valid for exactly that interface
+        (``InterfacePreparationRejected`` otherwise); the existing dependency
+        collection must validate (``InterfaceDependenciesCorrupt``)."""
         try:
             items = list(delta.items())
         except AttributeError:
@@ -2007,6 +2223,18 @@ class SqliteRecordStore:
                     raise InterfacePreparationRejected("unknown preparation field")
                 if text is not None and not valid_preparation_text(text):
                     raise InterfacePreparationRejected("malformed preparation text")
+        try:
+            dependency_items = list((dependency_delta or {}).items())
+        except AttributeError:
+            raise InterfacePreparationRejected(
+                "dependency delta must be a mapping") from None
+        for interface_id, dependency in dependency_items:
+            if not isinstance(interface_id, str) or not interface_id:
+                raise InterfacePreparationRejected("malformed interface identity")
+            if dependency is not None and (
+                    not isinstance(dependency, InterfaceDependency)
+                    or dependency.interface_id != interface_id):
+                raise InterfacePreparationRejected("malformed dependency")
         self._refuse_uncommitted_reads()      # IR-01: never write on top of it
         with self._write():
             self._require_project(project_id)
@@ -2014,6 +2242,9 @@ class SqliteRecordStore:
             interfaces, _keys = self._validated_interfaces(project_id, subsystems)
             current = self._validated_preparations(project_id, interfaces)
             known = {item.interface_id for item in interfaces}
+            if dependency_items:
+                self._apply_dependency_changes(project_id, interfaces,
+                                               dependency_items)
             for interface_id, changes in items:
                 if interface_id not in known:
                     raise InterfacePreparationRejected(
@@ -3326,6 +3557,10 @@ class SqliteRecordStore:
         risk record or any commercial conclusion."""
         if not isinstance(evidence, ReadinessEvidence):
             raise StoreError("evidence must be a ReadinessEvidence")
+        if evidence.dimension == DIMENSION_INTEGRATION:
+            # Stage 15 closure: an Integration item is only ever written WITH
+            # its interface anchor, by `append_integration_evidence`.
+            raise StoreError("Integration evidence requires an interface anchor")
         with self._write():
             row = self._conn.execute(
                 "SELECT COUNT(*) FROM projects WHERE project_id = ?", (project_id,)
@@ -3394,6 +3629,141 @@ class SqliteRecordStore:
             return ()
         return validate_evidence_history(
             [self._evidence_from_row(r) for r in rows])
+
+    # --- Stage 15 closure: Integration evidence + its interface anchor -------
+    def _validated_integration_evidence(self, project_id):
+        """``(history, anchored)`` of this project: its WHOLE validated
+        readiness-evidence history and ``{evidence_id: interface_id}`` for its
+        Integration rows, every anchor validated against the project's durable
+        interfaces (composition + interfaces validated first). Corruption
+        raises ``CommercialEvidenceHistoryError`` (or the composition /
+        interface corrupt error); nothing partial."""
+        subsystems = self.load_project_subsystems(project_id)
+        interfaces, _keys = self._validated_interfaces(project_id, subsystems)
+        history = validate_evidence_history(
+            [self._evidence_from_row(r) for r in self._evidence_rows(project_id)])
+        pairs = self._conn.execute(
+            "SELECT evidence_id, interface_id FROM "
+            "integration_evidence_anchors WHERE project_id = ? "
+            "ORDER BY evidence_id ASC", (project_id,)).fetchall()
+        anchored = validate_integration_anchors(
+            history, [(p[0], p[1]) for p in pairs],
+            [item.interface_id for item in interfaces])
+        return tuple(history), anchored
+
+    def load_integration_evidence(self, project_id: str) -> tuple:
+        """``(history, anchored)``: this project's WHOLE readiness-evidence
+        history and the interface anchor of every Integration row, read inside
+        ONE snapshot and validated WHOLE (missing / duplicate / foreign /
+        cross-dimension anchors, an anchor to an interface that is not this
+        project's, or a correction / withdrawal changing interface all fail
+        closed). No project -> ``ProjectNotFound``. IR-01: an unresolved
+        connection refuses (``RecordStoreConnectionUnsafe``). Read-only."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            self._require_project(project_id)
+            return self._validated_integration_evidence(project_id)
+
+    def committed_integration_evidence_for_event_key(self, project_id: str,
+                                                      event_key: str):
+        """``(row, interface_id, history)`` for the COMMITTED Integration event
+        written under ``event_key``, or ``None`` — the confirm-by-reload seam
+        of the Integration route, read ONLY from committed durable state
+        (IR-01 refuses otherwise) after validating the whole history and its
+        anchors. A row under that key of another dimension is returned with
+        ``interface_id`` ``None`` so the caller treats it as a conflict."""
+        self._refuse_uncommitted_reads()
+        if not isinstance(event_key, str) or not event_key:
+            return None
+        with self.read_snapshot():
+            self._require_project(project_id)
+            history, anchored = self._validated_integration_evidence(project_id)
+        for row in history:
+            if row.event_key == event_key:
+                return row, anchored.get(row.evidence_id), history
+        return None
+
+    def append_integration_evidence(self, project_id: str, evidence,
+                                    interface_id: str) -> tuple:
+        """Atomically append ONE Integration evidence row AND its interface
+        anchor; return ``(outcome, stored_row)``.
+
+        ONE ``BEGIN IMMEDIATE`` transaction: both rows commit together or
+        neither does. Inside it, against DURABLE truth: the project exists;
+        the stable ``event_key`` (the route's material-independent submission
+        identity) is resolved FIRST — the same canonical event under the same
+        anchor is ``EVIDENCE_EXACT_REPLAY`` with the stored row, anything else
+        under that key is ``IntegrationEvidenceConflict``; the whole history and
+        its anchors validate; the interface is a member of THIS project's
+        durable interfaces; the cap holds; the row passes every owner rule and
+        the history-with-candidate rules; a correction / withdrawal supersedes
+        an item anchored to the SAME interface. Nothing is updated, repaired or
+        remapped. IR-01: never writes on top of an unresolved connection."""
+        if not isinstance(evidence, ReadinessEvidence) \
+                or evidence.dimension != DIMENSION_INTEGRATION:
+            raise IntegrationEvidenceRejected("not an Integration evidence row")
+        if not isinstance(interface_id, str) or not interface_id:
+            raise IntegrationEvidenceRejected("an interface anchor is required")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            self._require_project(project_id)
+            history, anchored = self._validated_integration_evidence(project_id)
+            for row in history:
+                if row.event_key == evidence.event_key:
+                    if is_same_evidence_event(row, evidence) \
+                            and anchored.get(row.evidence_id) == interface_id:
+                        return EVIDENCE_EXACT_REPLAY, row
+                    raise IntegrationEvidenceConflict(
+                        "the submission identity already names a different event")
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _keys = self._validated_interfaces(project_id, subsystems)
+            if interface_id not in {item.interface_id for item in interfaces}:
+                raise IntegrationEvidenceRejected(
+                    "the interface is not a member of this project")
+            if len(history) >= MAX_READINESS_EVIDENCE_PER_PROJECT:
+                raise EvidenceCapExceeded(
+                    "readiness-evidence cap reached for this project")
+            prior = evidence.supersedes_evidence_id
+            if prior is not None and anchored.get(prior) != interface_id:
+                raise IntegrationEvidenceRejected(
+                    "a correction or withdrawal keeps its interface")
+            try:
+                validate_evidence_row(evidence)
+                validate_new_evidence(history, evidence)
+            except CommercialEvidenceError:
+                raise IntegrationEvidenceRejected("the event is not valid") from None
+            seq = self._conn.execute(
+                "SELECT COALESCE(MAX(evidence_seq), -1) + 1 FROM "
+                "readiness_evidence WHERE project_id = ?", (project_id,)
+            ).fetchone()[0]
+            stored = dataclasses.replace(evidence, evidence_seq=seq)
+            after = validate_evidence_history(tuple(history) + (stored,))
+            validate_integration_anchors(
+                after, list(anchored.items()) + [(stored.evidence_id, interface_id)],
+                [item.interface_id for item in interfaces])
+            self._conn.execute(
+                "INSERT INTO readiness_evidence (project_id, "
+                + self._EVIDENCE_COLUMNS + ") "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                "?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (project_id, seq, stored.evidence_id, stored.dimension,
+                 stored.topic, stored.subject_text, stored.statement_text,
+                 stored.source_identity, stored.provenance,
+                 stored.occurred_on, stored.scope_text,
+                 stored.limitation_text, stored.claim_status,
+                 1 if stored.withdrawn else 0,
+                 stored.supersedes_evidence_id, stored.event_key,
+                 stored.recorded_iteration, stored.recorded_at,
+                 stored.value_state, stored.value_exact,
+                 stored.value_min, stored.value_max, stored.currency,
+                 stored.value_basis, stored.estimate_basis,
+                 stored.estimate_rationale,
+                 stored.supporting_evidence_id))
+            self._conn.execute(
+                "INSERT INTO integration_evidence_anchors (project_id, "
+                "evidence_id, interface_id) VALUES (?, ?, ?)",
+                (project_id, stored.evidence_id, interface_id))
+        return EVIDENCE_INSERTED, stored
 
     # --- T2-D contextual question feedback -----------------------------------
     _FEEDBACK_COLUMNS = (

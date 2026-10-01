@@ -305,6 +305,37 @@ _MESSAGE_KEYS = {
     ("We could not confirm whether your observation was saved. Reload this "
      "page to see what your project holds before entering it again."):
         "UI_S15_OBS_MSG_UNKNOWN",
+    # Stage 15 closure (web/app.py: the dependency on save_interface_preparation
+    # and record_integration_evidence).
+    ("A dependency must name the two parts of that interaction, or both. No "
+     "changes were saved."): "UI_S15_DEP_MSG_INVALID",
+    ("A dependency explanation can be at most 300 characters. No changes were "
+     "saved."): "UI_S15_DEP_MSG_TOO_LONG",
+    ("An explanation can only accompany a declared dependency. Choose who "
+     "relies on whom, or clear the explanation. No changes were saved."):
+        "UI_S15_DEP_MSG_NOTE_ALONE",
+    ("Your integration evidence was saved to your project. It is your own "
+     "statement: InventorAI has not checked it, and it does not show that the "
+     "parts are compatible."): "UI_S15_IEV_MSG_SAVED",
+    ("Your correction was saved as a new entry; the earlier entry stays in the "
+     "history. InventorAI has not checked it."): "UI_S15_IEV_MSG_CORRECTED",
+    ("That evidence item was withdrawn. It stays in the history and no longer "
+     "counts as current evidence."): "UI_S15_IEV_MSG_WITHDRAWN",
+    ("Your integration evidence could not be saved just now. Nothing was "
+     "changed."): "UI_S15_IEV_MSG_NOT_SAVED",
+    ("Some of the text could not be accepted. Fill in every required field "
+     "within its length limit. Nothing was changed."):
+        "UI_S15_IEV_MSG_TEXT_REJECTED",
+    ("That interaction is not part of this project, so no evidence can be "
+     "recorded for it here. Nothing was changed."): "UI_S15_IEV_MSG_NOT_CURRENT",
+    ("That evidence item has already been corrected or withdrawn, or this page "
+     "no longer matches what your project holds, so nothing was saved. Review "
+     "the page and try again."): "UI_S15_IEV_MSG_STALE",
+    ("This project already holds the maximum number of evidence items, so no "
+     "new one can be added. Nothing was changed."): "UI_S15_IEV_MSG_CAP",
+    ("We could not confirm whether your integration evidence was saved. Reload "
+     "this page to see what your project holds before entering it again."):
+        "UI_S15_IEV_MSG_UNKNOWN",
 }
 
 
@@ -879,6 +910,164 @@ UI_STRINGS = {
     "UI_S15_OBS_UNAVAILABLE": {
         "en": "Your recorded observations could not be read, so they cannot be shown or added to from this page. Your preparation above is not affected.",
         "ar": "تعذّرت قراءة الملاحظات التي سجّلتها، لذا لا يمكن عرضها أو الإضافة إليها من هذه الصفحة. ولا يتأثر تحضيرك أعلاه.",
+    },
+    # Stage 15 closure — the per-interaction status view, the Owner-declared
+    # dependency and Integration evidence. Factual presence only: no string
+    # says compatible, integrated, verified or ready, and absence and
+    # unavailability never read as a finding.
+    "UI_S15_ST_HEADING": {
+        "en": "Where each interaction stands",
+        "ar": "أين يقف كل تفاعل",
+    },
+    "UI_S15_ST_INTRO": {
+        "en": "A factual summary of what your project currently holds for each interaction you declared. It lists what has been recorded; it does not decide whether the parts work together.",
+        "ar": "ملخّص وقائعي لما يحتفظ به مشروعك حاليًا عن كل تفاعل صرّحت به. يذكر ما سُجِّل فقط؛ ولا يقرّر ما إذا كان الجزآن يعملان معًا.",
+    },
+    "UI_S15_ST_DEPENDENCY": {"en": "Dependency", "ar": "الاعتماد"},
+    "UI_S15_ST_CHECKS": {"en": "Your recorded checks", "ar": "الفحوص التي سجّلتها"},
+    "UI_S15_ST_CHECKS_COUNT": {"en": "{count} recorded", "ar": "المُسجَّل: {count}"},
+    "UI_S15_ST_CHECKS_NOT_EVIDENCE": {
+        "en": "(your observations — not evidence, and not counted as evidence)",
+        "ar": "(ملاحظاتك — ليست أدلة، ولا تُحتسب أدلة)",
+    },
+    "UI_S15_ST_EVIDENCE": {"en": "Current integration evidence", "ar": "أدلة التكامل الحالية"},
+    "UI_S15_ST_EVIDENCE_COUNT": {
+        "en": "{count} current item(s), each your own statement, not checked by InventorAI",
+        "ar": "العناصر الحالية: {count}، وكل منها قولك أنت ولم يفحصه InventorAI",
+    },
+    "UI_S15_ST_EVIDENCE_HISTORY": {
+        "en": "· {count} earlier or withdrawn entry(ies) kept as history",
+        "ar": "· إدخالات سابقة أو مسحوبة محفوظة كسجلّ: {count}",
+    },
+    "UI_S15_ST_UNAVAILABLE": {
+        "en": "Could not be read just now. This is not the same as nothing recorded.",
+        "ar": "تعذّرت قراءته الآن. وهذا لا يعني أنه لم يُسجَّل شيء.",
+    },
+    "UI_S15_ST_NOT_A_VERDICT": {
+        "en": "This shows only what has been recorded. It is not a compatibility or integration verdict: InventorAI has not established that these parts work together.",
+        "ar": "يعرض هذا ما سُجِّل فقط. وليس حكمًا على التوافق أو التكامل: لم يُثبت InventorAI أن هذين الجزأين يعملان معًا.",
+    },
+    "UI_S15_PREP_FORM_HEADING": {
+        "en": "Prepare each interaction",
+        "ar": "حضّر كل تفاعل",
+    },
+    "UI_S15_DEP_LEGEND": {
+        "en": "Does one part rely on the other through this interaction? (optional)",
+        "ar": "هل يعتمد أحد الجزأين على الآخر عبر هذا التفاعل؟ (اختياري)",
+    },
+    "UI_S15_DEP_NOT_DECLARED": {"en": "Not declared", "ar": "لم يُصرَّح به"},
+    "UI_S15_DEP_RELIES_ON": {"en": "relies on", "ar": "يعتمد على"},
+    "UI_S15_DEP_MUTUAL": {
+        "en": "Each part relies on the other",
+        "ar": "كل جزء يعتمد على الآخر",
+    },
+    "UI_S15_DEP_NOTE": {
+        "en": "Explain the dependency in your own words (optional)",
+        "ar": "اشرح الاعتماد بكلماتك (اختياري)",
+    },
+    "UI_S15_DEP_GUIDANCE": {
+        "en": "Up to {limit} characters. This records what you state about who relies on whom; InventorAI does not check it, and it does not show that the parts are compatible. It is saved, changed or cleared with \"Save preparation\".",
+        "ar": "حتى {limit} حرف. يسجّل هذا ما تذكره عن أيّ الجزأين يعتمد على الآخر؛ لا يفحصه InventorAI، ولا يعني أن الجزأين متوافقان. يُحفظ أو يُغيَّر أو يُمسح بزر «حفظ التحضير».",
+    },
+    "UI_S15_IEV_HEADING": {
+        "en": "Integration evidence you recorded",
+        "ar": "أدلة التكامل التي سجّلتها",
+    },
+    "UI_S15_IEV_INTRO": {
+        "en": "Evidence about how the two parts work together through each interaction — for example a test, an inspection, a specification or a review. Each item is your own statement, tied to exactly one interaction. A correction or a withdrawal adds a new entry and keeps the earlier one in the history. Your observations above are not evidence and are not counted here.",
+        "ar": "أدلة عن كيفية عمل الجزأين معًا عبر كل تفاعل — مثل اختبار أو فحص أو مواصفة أو مراجعة. كل عنصر هو قولك أنت، ومرتبط بتفاعل واحد بالضبط. التصحيح أو السحب يضيف إدخالًا جديدًا ويُبقي السابق في السجلّ. ملاحظاتك أعلاه ليست أدلة ولا تُحتسب هنا.",
+    },
+    "UI_S15_IEV_UNAVAILABLE": {
+        "en": "Your integration evidence could not be read, so it cannot be shown or added to from this page. Nothing else on this page is affected.",
+        "ar": "تعذّرت قراءة أدلة التكامل التي سجّلتها، لذا لا يمكن عرضها أو الإضافة إليها من هذه الصفحة. ولا يتأثر أي شيء آخر في هذه الصفحة.",
+    },
+    "UI_S15_IEV_READONLY": {
+        "en": "Only the owner of this project, signed in with a confirmed email address, can record, correct or withdraw integration evidence here.",
+        "ar": "لا يمكن تسجيل أدلة التكامل أو تصحيحها أو سحبها هنا إلا لمالك هذا المشروع بعد تسجيل دخوله ببريد إلكتروني مؤكَّد.",
+    },
+    "UI_S15_IEV_NONE": {
+        "en": "No integration evidence has been recorded for this interaction yet. That is a blank page, not a finding about whether the parts work together.",
+        "ar": "لم تُسجَّل أي أدلة تكامل لهذا التفاعل بعد. هذه صفحة فارغة، وليست نتيجة بشأن ما إذا كان الجزآن يعملان معًا.",
+    },
+    "UI_S15_IEV_LABEL": {
+        "en": "Your own statement; not checked by InventorAI. It does not show that the parts are compatible.",
+        "ar": "قولك أنت؛ لم يفحصه InventorAI. ولا يعني أن الجزأين متوافقان.",
+    },
+    "UI_S15_IEV_CORRECT": {"en": "Correct this evidence item", "ar": "صحّح عنصر الأدلة هذا"},
+    "UI_S15_IEV_CORRECT_NOTE": {
+        "en": "A correction is added as a new entry for the same interaction; the earlier one stays in the history.",
+        "ar": "يُضاف التصحيح كإدخال جديد للتفاعل نفسه؛ ويبقى الإدخال السابق في السجلّ.",
+    },
+    "UI_S15_IEV_CORRECT_BUTTON": {"en": "Save correction", "ar": "حفظ التصحيح"},
+    "UI_S15_IEV_WITHDRAW_BUTTON": {"en": "Withdraw this item", "ar": "اسحب هذا العنصر"},
+    "UI_S15_IEV_HISTORY": {
+        "en": "{count} earlier or withdrawn entry(ies) are kept as history and are not counted as current evidence.",
+        "ar": "إدخالات سابقة أو مسحوبة: {count}، محفوظة كسجلّ ولا تُحتسب أدلةً حالية.",
+    },
+    "UI_S15_IEV_RECORD": {
+        "en": "Record evidence for this interaction — what kind of evidence is it?",
+        "ar": "سجّل دليلًا لهذا التفاعل — ما نوع هذا الدليل؟",
+    },
+    "UI_S15_IEV_RECORD_NOTE": {
+        "en": "Every field except the date is required, including what your evidence does not cover. It is kept exactly as you write it and is not checked by InventorAI.",
+        "ar": "كل الحقول مطلوبة ما عدا التاريخ، بما فيها ما لا يغطّيه دليلك. يُحفظ كما تكتبه تمامًا ولا يفحصه InventorAI.",
+    },
+    "UI_S15_IEV_RECORD_BUTTON": {"en": "Record evidence", "ar": "تسجيل الدليل"},
+    "UI_IEV_TOPIC_INTERFACE_TEST": {
+        "en": "A test of this interaction", "ar": "اختبار لهذا التفاعل"},
+    "UI_IEV_TOPIC_INTERFACE_INSPECTION": {
+        "en": "An inspection or measurement", "ar": "فحص أو قياس"},
+    "UI_IEV_TOPIC_INTERFACE_SPECIFICATION": {
+        "en": "A specification or datasheet", "ar": "مواصفة أو ورقة بيانات"},
+    "UI_IEV_TOPIC_INTERFACE_REVIEW": {
+        "en": "A design or specialist review", "ar": "مراجعة تصميم أو مراجعة متخصص"},
+    "UI_S15_DEP_MSG_INVALID": {
+        "en": "A dependency must name the two parts of that interaction, or both. No changes were saved.",
+        "ar": "يجب أن يسمّي الاعتماد جزأي ذلك التفاعل، أو كليهما معًا. لم يُحفظ أي تغيير.",
+    },
+    "UI_S15_DEP_MSG_TOO_LONG": {
+        "en": "A dependency explanation can be at most 300 characters. No changes were saved.",
+        "ar": "يمكن أن يكون شرح الاعتماد 300 حرف كحدّ أقصى. لم يُحفظ أي تغيير.",
+    },
+    "UI_S15_DEP_MSG_NOTE_ALONE": {
+        "en": "An explanation can only accompany a declared dependency. Choose who relies on whom, or clear the explanation. No changes were saved.",
+        "ar": "لا يمكن إرفاق شرح إلا مع اعتماد مُصرَّح به. اختر أيّ الجزأين يعتمد على الآخر، أو امسح الشرح. لم يُحفظ أي تغيير.",
+    },
+    "UI_S15_IEV_MSG_SAVED": {
+        "en": "Your integration evidence was saved to your project. It is your own statement: InventorAI has not checked it, and it does not show that the parts are compatible.",
+        "ar": "حُفظ دليل التكامل في مشروعك. إنه قولك أنت: لم يفحصه InventorAI، ولا يعني أن الجزأين متوافقان.",
+    },
+    "UI_S15_IEV_MSG_CORRECTED": {
+        "en": "Your correction was saved as a new entry; the earlier entry stays in the history. InventorAI has not checked it.",
+        "ar": "حُفظ تصحيحك كإدخال جديد؛ ويبقى الإدخال السابق في السجلّ. لم يفحصه InventorAI.",
+    },
+    "UI_S15_IEV_MSG_WITHDRAWN": {
+        "en": "That evidence item was withdrawn. It stays in the history and no longer counts as current evidence.",
+        "ar": "سُحب عنصر الأدلة ذلك. يبقى في السجلّ ولم يعد يُحتسب دليلًا حاليًا.",
+    },
+    "UI_S15_IEV_MSG_NOT_SAVED": {
+        "en": "Your integration evidence could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ دليل التكامل الآن. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_IEV_MSG_TEXT_REJECTED": {
+        "en": "Some of the text could not be accepted. Fill in every required field within its length limit. Nothing was changed.",
+        "ar": "تعذّر قبول بعض النص. املأ كل حقل مطلوب ضمن حدّ طوله. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_IEV_MSG_NOT_CURRENT": {
+        "en": "That interaction is not part of this project, so no evidence can be recorded for it here. Nothing was changed.",
+        "ar": "هذا التفاعل ليس جزءًا من هذا المشروع، لذا لا يمكن تسجيل أدلة له هنا. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_IEV_MSG_STALE": {
+        "en": "That evidence item has already been corrected or withdrawn, or this page no longer matches what your project holds, so nothing was saved. Review the page and try again.",
+        "ar": "سبق تصحيح عنصر الأدلة ذلك أو سحبه، أو لم تعد هذه الصفحة تطابق ما يحتفظ به مشروعك، لذا لم يُحفظ شيء. راجع الصفحة وحاول مرة أخرى.",
+    },
+    "UI_S15_IEV_MSG_CAP": {
+        "en": "This project already holds the maximum number of evidence items, so no new one can be added. Nothing was changed.",
+        "ar": "يحتوي هذا المشروع بالفعل على أقصى عدد من عناصر الأدلة، لذا لا يمكن إضافة عنصر جديد. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_IEV_MSG_UNKNOWN": {
+        "en": "We could not confirm whether your integration evidence was saved. Reload this page to see what your project holds before entering it again.",
+        "ar": "تعذّر علينا التأكد مما إذا كان دليل التكامل قد حُفظ. أعد تحميل الصفحة لترى ما يحتفظ به مشروعك قبل إدخاله مرة أخرى.",
     },
     "UI_S15_OBS_MSG_NOT_SAVED": {
         "en": "Your observation could not be saved just now. Nothing was changed.",
@@ -3462,17 +3651,18 @@ UI_STRINGS = {
         "ar": "الأدلة غير كافية",
     },
     "UI_RS_NO_OVERALL": {
-        "en": ("These three are reported separately and are not added up. There "
-               "is no overall readiness result, because none of the three is a "
+        "en": ("These rows are reported separately and are not added up. There "
+               "is no overall readiness result, because none of them is a "
                "score and combining them would invent a judgement none of them "
                "makes."),
-        "ar": ("تُعرض هذه الثلاثة بشكل منفصل ولا تُجمع. لا توجد نتيجة جاهزية "
+        "ar": ("تُعرض هذه الصفوف بشكل منفصل ولا تُجمع. لا توجد نتيجة جاهزية "
                "إجمالية، لأن أيًا منها ليس درجة، وجمعها سيخترع حكمًا لا يصدر "
                "عن أي منها."),
     },
     "UI_RS_DIM_TECHNICAL": {"en": "Technical", "ar": "التقني"},
     "UI_RS_DIM_COMMERCIAL": {"en": "Commercial", "ar": "التجاري"},
     "UI_RS_DIM_MANUFACTURING": {"en": "Manufacturing", "ar": "التصنيع"},
+    "UI_RS_DIM_INTEGRATION": {"en": "Integration", "ar": "التكامل"},
     # --- Technical -----------------------------------------------------------
     "UI_RS_TECHNICAL_WHY": {
         "en": ("You have recorded technical reasoning, and it is kept at the "
@@ -3576,6 +3766,51 @@ UI_STRINGS = {
         "ar": ("هذا يحصي ما سجّلته. وليس رأيًا في ما إذا كان يمكن صنع فكرتك، "
                "ولا في مدى سهولة ذلك، ولا في تكلفته — هذه النسخة لا تحكم في "
                "ذلك إطلاقًا."),
+    },
+    # --- Integration (Stage 15 closure — the IRL-compatible view) ------------
+    # The risk is a reader hearing "insufficient integration evidence" as "the
+    # parts do not work together", or reading the row as an integration
+    # readiness level. Every string below is written against both readings.
+    "UI_RS_INTEGRATION_NOTHING": {
+        "en": "No integration evidence has been recorded yet.",
+        "ar": "لم تُسجَّل أي أدلة تكامل بعد.",
+    },
+    "UI_RS_INTEGRATION_NOTHING_NOT_A_VERDICT": {
+        "en": ("Nothing has been recorded here yet, which says nothing about "
+               "whether the parts of your invention work together. It is a "
+               "blank page, not a finding. Integration evidence applies only "
+               "when your invention combines a mechanical and an electrical / "
+               "electronic part and you have declared how they interact."),
+        "ar": ("لم يُسجَّل شيء هنا بعد، وهذا لا يقول شيئًا عن ما إذا كانت "
+               "أجزاء اختراعك تعمل معًا. إنها صفحة فارغة، وليست نتيجة. أدلة "
+               "التكامل تخصّ فقط اختراعًا يجمع جزءًا ميكانيكيًا وجزءًا "
+               "كهربائيًا / إلكترونيًا صرّحتَ بكيفية تفاعلهما."),
+    },
+    "UI_RS_INTEGRATION_RECORDED": {
+        "en": ("Integration evidence has been recorded, but it has not yet been "
+               "independently checked."),
+        "ar": "سُجِّلت أدلة تكامل، لكنها لم تخضع بعد لفحص مستقل.",
+    },
+    "UI_RS_INTEGRATION_COUNTS": {
+        "en": "Recorded items: %(items)s · Topics covered: %(topics)s",
+        "ar": "العناصر المسجَّلة: %(items)s · المواضيع المشمولة: %(topics)s",
+    },
+    "UI_RS_INTEGRATION_ALL_UNCHECKED": {
+        "en": "Every item is your own statement, recorded as you gave it.",
+        "ar": "كل عنصر هو قولك أنت، مسجَّل كما قدّمته.",
+    },
+    "UI_RS_INTEGRATION_TOPICS_LABEL": {
+        "en": "Topics recorded", "ar": "المواضيع المسجَّلة"},
+    "UI_RS_INTEGRATION_NOT_A_CONCLUSION": {
+        "en": ("This counts what you recorded. It is not an integration "
+               "readiness level and not a view on whether the parts are "
+               "compatible — this version does not judge that at all. Your "
+               "recorded checks of each interaction are not evidence and are "
+               "not counted here."),
+        "ar": ("هذا يحصي ما سجّلته. وليس مستوى جاهزية للتكامل، ولا رأيًا في "
+               "ما إذا كان الجزآن متوافقين — هذه النسخة لا تحكم في ذلك "
+               "إطلاقًا. الفحوص التي سجّلتها لكل تفاعل ليست أدلة ولا تُحتسب "
+               "هنا."),
     },
     # --- Manufacturing -------------------------------------------------------
     # Commercial Evidence Capture (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01).

@@ -467,3 +467,107 @@ def preparation_for(preparations, interface_id):
         if item.interface_id == interface_id:
             return item
     return None
+
+
+# --- Stage 15 closure: the Owner-declared interface dependency (current value) --
+# For ONE existing durable interface the inventor may declare, in their own
+# terms, which part relies on the other through that interaction. It is a
+# SEPARATE current-value attribute keyed ONLY by the existing ``interface_id``:
+# the append-only ``SubsystemInterface`` stays exactly as declared — its
+# endpoint pair is still UNORDERED and its stored order still carries no
+# direction, flow or dependency meaning. A dependency is OWNER_STATED and
+# UNVALIDATED by construction; absence means "not declared", never
+# "independent". A ONE-WAY dependency names the exact dependent part and the
+# exact part it relies on, both distinct endpoints of that interface; MUTUAL is
+# its own explicit declaration and is never inferred from endpoint order.
+# Nothing here evaluates consistency, carries effects onward, derives a
+# requirement, a plan step, a gap, readiness or compatibility, or creates a
+# relationship graph: that evaluation stays with the future D4 gate.
+DEPENDENCY_ONE_WAY = "one_way"
+DEPENDENCY_MUTUAL = "mutual"
+DEPENDENCY_KINDS = (DEPENDENCY_ONE_WAY, DEPENDENCY_MUTUAL)
+# Explicit bound (characters), the bound the Owner's interface description
+# already uses. Over-limit input is rejected, never truncated.
+MAX_INTERFACE_DEPENDENCY_NOTE_LENGTH = 300
+
+
+@dataclass(frozen=True)
+class InterfaceDependency:
+    """The inventor's CURRENT dependency declaration for ONE existing
+    interface, identified ONLY by its ``interface_id``. ``kind`` is one-way or
+    mutual; a one-way declaration carries the exact dependent subsystem id and
+    the exact subsystem id it relies on; ``note`` is the Owner's optional own
+    explanation. Never evidence, a requirement, a verification or a
+    compatibility fact."""
+    interface_id: str
+    kind: str
+    dependent_subsystem_id: Optional[str] = None
+    depends_on_subsystem_id: Optional[str] = None
+    note: Optional[str] = None
+
+
+def valid_dependency_note(value):
+    """A stored note is exactly what the route stores: ``None`` (no note) or a
+    non-empty, already-trimmed string within the bound and free of NUL."""
+    return value is None or valid_subsystem_text(
+        value, MAX_INTERFACE_DEPENDENCY_NOTE_LENGTH)
+
+
+def check_interface_dependency(dependency, interface):
+    """Return ``dependency`` iff it is a valid declaration for exactly
+    ``interface`` (the project's durable ``SubsystemInterface``), or raise
+    ``InterfaceError``. A one-way declaration must name the interface's two
+    DISTINCT endpoints, one as the dependent part and the other as the part it
+    relies on — by exact identity, never by position; a mutual declaration
+    names no direction."""
+    if not isinstance(dependency, InterfaceDependency):
+        raise InterfaceError("dependency entry is not a dependency declaration")
+    if not isinstance(interface, SubsystemInterface) \
+            or dependency.interface_id != interface.interface_id:
+        raise InterfaceError("dependency names another interface")
+    if dependency.kind == DEPENDENCY_ONE_WAY:
+        pair = (dependency.dependent_subsystem_id,
+                dependency.depends_on_subsystem_id)
+        if pair[0] == pair[1] or set(pair) != {interface.subsystem_a_id,
+                                               interface.subsystem_b_id}:
+            raise InterfaceError(
+                "a one-way dependency joins the two parts of this interface")
+    elif dependency.kind == DEPENDENCY_MUTUAL:
+        if dependency.dependent_subsystem_id is not None \
+                or dependency.depends_on_subsystem_id is not None:
+            raise InterfaceError("a mutual dependency names no direction")
+    else:
+        raise InterfaceError("unknown dependency kind")
+    if not valid_dependency_note(dependency.note):
+        raise InterfaceError("dependency note is invalid")
+    return dependency
+
+
+def validate_interface_dependencies(dependencies, interfaces):
+    """Validate a project's stored dependency declarations against its OWN
+    durable interfaces and return them in the interfaces' order, or raise
+    ``InterfaceError``. Empty is valid. Every entry must name a DISTINCT
+    interface of ``interfaces`` by exact id and be a valid declaration for it;
+    an orphan is invalid — never remapped or dropped."""
+    items = tuple(dependencies or ())
+    if not items:
+        return ()
+    by_id = {item.interface_id: item for item in (interfaces or ())}
+    order = list(by_id)
+    seen = set()
+    for item in items:
+        interface_id = getattr(item, "interface_id", None)
+        if interface_id not in by_id or interface_id in seen:
+            raise InterfaceError("dependency names no distinct interface of this project")
+        seen.add(interface_id)
+        check_interface_dependency(item, by_id[interface_id])
+    return tuple(sorted(items, key=lambda d: order.index(d.interface_id)))
+
+
+def dependency_for(dependencies, interface_id):
+    """The dependency declaration of exactly ``interface_id`` or ``None`` (not
+    declared) — resolution by identity only."""
+    for item in dependencies or ():
+        if item.interface_id == interface_id:
+            return item
+    return None

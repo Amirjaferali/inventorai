@@ -79,8 +79,16 @@ class EvidenceCapExceeded(CommercialEvidenceError):
 # `ACTIVE_DIMENSIONS` is what this increment permits a writer to use.
 DIMENSION_COMMERCIAL = "COMMERCIAL"
 DIMENSION_MANUFACTURING = "MANUFACTURING"
-DIMENSIONS = (DIMENSION_COMMERCIAL, DIMENSION_MANUFACTURING)
-ACTIVE_DIMENSIONS = (DIMENSION_COMMERCIAL, DIMENSION_MANUFACTURING)
+# Stage 15 closure: INTEGRATION evidence — what the inventor recorded about how
+# the parts of an integrated invention were tested, inspected, specified or
+# reviewed TOGETHER, each item anchored to exactly one durable Owner-declared
+# interface (see the anchor rules below). The same substrate, provenance axis,
+# single UNVALIDATED claim status and append-only lifecycle; activating it is
+# evidence ownership only and assesses no integration readiness.
+DIMENSION_INTEGRATION = "INTEGRATION"
+DIMENSIONS = (DIMENSION_COMMERCIAL, DIMENSION_MANUFACTURING, DIMENSION_INTEGRATION)
+ACTIVE_DIMENSIONS = (DIMENSION_COMMERCIAL, DIMENSION_MANUFACTURING,
+                     DIMENSION_INTEGRATION)
 
 # --- Commercial topic vocabulary (closed; Owner instruction §4) --------------
 # Commercial RISK is INTENTIONALLY ABSENT: it routes to the canonical risk
@@ -166,9 +174,30 @@ MANUFACTURING_TOPICS = (
 # evaluation, and the Readiness Snapshot still gives Manufacturing no
 # disposition. Recording what you know about making something is not an
 # assessment of whether it can be made.
+# --- Integration topics (Stage 15 closure) ---------------------------------
+# The smallest closed vocabulary for evidence about ONE declared interaction
+# between two parts: a test or measurement of it, an inspection or fit check,
+# a specification or datasheet statement about it, and a review of it by
+# someone. Each describes WHAT THE INVENTOR RECORDED; none asserts that the
+# parts are compatible, that the interaction works, or that anything was
+# verified. Compatibility evaluation belongs to the future D4 gate, never to
+# a topic here.
+TOPIC_INTERFACE_TEST = "interface_test"
+TOPIC_INTERFACE_INSPECTION = "interface_inspection"
+TOPIC_INTERFACE_SPECIFICATION = "interface_specification"
+TOPIC_INTERFACE_REVIEW = "interface_review"
+
+INTEGRATION_TOPICS = (
+    TOPIC_INTERFACE_TEST,
+    TOPIC_INTERFACE_INSPECTION,
+    TOPIC_INTERFACE_SPECIFICATION,
+    TOPIC_INTERFACE_REVIEW,
+)
+
 TOPICS_BY_DIMENSION = {
     DIMENSION_COMMERCIAL: COMMERCIAL_TOPICS,
     DIMENSION_MANUFACTURING: MANUFACTURING_TOPICS,
+    DIMENSION_INTEGRATION: INTEGRATION_TOPICS,
 }
 
 # --- D2: bounded quantitative structure -------------------------------------
@@ -1002,3 +1031,82 @@ def manufacturing_evidence_view(rows):
     recorded evidence counts; neither is closer to being manufacturable, because
     nothing here judges that."""
     return evidence_view(rows, DIMENSION_MANUFACTURING)
+
+
+
+def integration_evidence_view(rows):
+    """The Integration projection — the same projection, third dimension.
+
+    It carries no integration-readiness meaning whatsoever: a count of what the
+    inventor recorded about how the parts were tested, inspected, specified or
+    reviewed together. Nothing here judges whether the parts are compatible or
+    whether the interaction works."""
+    return evidence_view(rows, DIMENSION_INTEGRATION)
+
+
+# --- Stage 15 closure: the Integration interface anchor ----------------------
+# Every INTEGRATION evidence EVENT (record, correction and withdrawal alike)
+# carries exactly ONE immutable anchor to ONE durable Owner-declared interface,
+# stored in an additive association sidecar beside the row. Commercial and
+# Manufacturing rows carry NO anchor and acquire no anchor requirement. A
+# correction or withdrawal keeps the SAME interface as the item it supersedes:
+# an anchor is never remapped by position, text, endpoint similarity or a
+# replacement interface. The rules below judge a WHOLE history: they read the
+# anchors as ``(evidence_id, interface_id)`` pairs and the project's current
+# durable interface ids, and they repair nothing.
+
+
+def validate_integration_anchors(rows, anchors, interface_ids):
+    """Validate the anchors of ONE project's (already validated) evidence
+    history and return ``{evidence_id: interface_id}``, or raise
+    ``CommercialEvidenceHistoryError``.
+
+    Valid only when every pair is unique, names a row of THIS history that is
+    an INTEGRATION row, and names one of ``interface_ids`` (the project's own
+    current durable interfaces); every INTEGRATION row has exactly one anchor;
+    and every superseding INTEGRATION row is anchored to the same interface as
+    the row it supersedes."""
+    by_id = {r.evidence_id: r for r in rows}
+    known = set(interface_ids)
+    anchored = {}
+    for pair in anchors:
+        evidence_id, interface_id = pair
+        if evidence_id in anchored:
+            raise CommercialEvidenceHistoryError("an evidence item has two anchors")
+        row = by_id.get(evidence_id)
+        if row is None:
+            raise CommercialEvidenceHistoryError(
+                "an anchor names no evidence item of this project")
+        if row.dimension != DIMENSION_INTEGRATION:
+            raise CommercialEvidenceHistoryError(
+                "only Integration evidence carries an interface anchor")
+        if interface_id not in known:
+            raise CommercialEvidenceHistoryError(
+                "an anchor names no interface of this project")
+        anchored[evidence_id] = interface_id
+    for row in rows:
+        if row.dimension != DIMENSION_INTEGRATION:
+            continue
+        if row.evidence_id not in anchored:
+            raise CommercialEvidenceHistoryError(
+                "an Integration evidence item has no interface anchor")
+        prior = row.supersedes_evidence_id
+        if prior is not None and anchored.get(prior) != anchored[row.evidence_id]:
+            raise CommercialEvidenceHistoryError(
+                "a correction or withdrawal changes the interface")
+    return anchored
+
+
+def integration_evidence_by_interface(rows, anchored, interface_id):
+    """For ONE interface: ``{"active": [canonical rows], "history": int}`` —
+    its CURRENT Integration items (append order) and how many of its rows are
+    retained history (replaced or withdrawal rows). Pure; derives no status,
+    strength or conclusion."""
+    lifecycle = evidence_lifecycle(rows, DIMENSION_INTEGRATION)
+    mine = [(row, state) for row, state, _prior in lifecycle
+            if anchored.get(row.evidence_id) == interface_id]
+    return {
+        "active": [canonical_evidence_dict(row) for row, state in mine
+                   if state == LIFECYCLE_CURRENT],
+        "history": sum(1 for _row, state in mine if state != LIFECYCLE_CURRENT),
+    }

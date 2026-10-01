@@ -113,12 +113,15 @@ _AUTOMATIC_DELETION_TABLES = ("auth_rate_limits", "email_outbox")
 # condition; the automatic set is still unchanged. Stage 15 Slice 3 extended it to
 # the owner clearing all three of their own interface verification-preparation
 # inputs (that one current-value row is removed); the automatic set is still
-# unchanged.
+# unchanged. The Stage 15 closure extended it to the owner clearing their own
+# interface dependency declaration (that one current-value row is removed); the
+# automatic set is still unchanged.
 _USER_INITIATED_DELETION_TABLES = ("prototype_plan_metadata",
                                    "prototype_measurement_methods",
                                    "prototype_test_hypotheses",
                                    "prototype_test_variables",
-                                   "subsystem_interface_preparations")
+                                   "subsystem_interface_preparations",
+                                   "subsystem_interface_dependencies")
 
 
 def test_retention_doc_matches_source_truth():
@@ -163,6 +166,13 @@ def test_retention_doc_matches_source_truth():
     assert "this slice provides NO observation clear / delete" in flat
     assert "Recording or correcting an observation is NOT account or project erasure" in flat
     assert not any("subsystem_interface_observations" in line for _p, line in deletes)
+    # Stage 15 closure: clearing a dependency declaration removes its one
+    # current-value row (user-initiated); Integration evidence anchors are
+    # INSERT-only and have no DELETE path.
+    assert "`subsystem_interface_dependencies`" in flat
+    assert "clearing a dependency declaration removes that single current-value row" in flat
+    assert "`integration_evidence_anchors`" in flat
+    assert not any("integration_evidence_anchors" in line for _p, line in deletes)
     assert "It is NOT an automatic deletion, NOT an erasure capability" in flat
     # the 7-day client TTL claim must keep matching the real script
     with open(os.path.join("web", "static", "js", "local_draft.js"),

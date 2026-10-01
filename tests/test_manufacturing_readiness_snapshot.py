@@ -260,7 +260,7 @@ def test_no_score_composite_or_overall_result_exists(owner):
     c, sid = owner
     _record(c, sid)
     snapshot = _snapshot(_page(c, sid))
-    assert snapshot.count('data-rs-disposition="INSUFFICIENT_EVIDENCE"') == 3
+    assert snapshot.count('data-rs-disposition="INSUFFICIENT_EVIDENCE"') == 4  # + Integration (Stage 15 closure)
     assert _shown("UI_RS_NO_OVERALL") in snapshot
     assert not re.search(r"\b\d{1,3}\s?%", _prose(snapshot))
 

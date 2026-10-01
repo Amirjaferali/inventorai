@@ -147,14 +147,39 @@ Read those before acting on any stage; this table is a locator, not a status sou
   AUTHORIZED BEYOND THIS BOUNDED SLICE` · `D13 RESEARCH: REMAINS CLOSED`. **Stage 18
   remains PARTIAL and its roadmap checkbox stays unticked** — one authorized bounded slice
   is not the stage.
-    **NO ACTIVE CONTRACT — post-Stage-15-Slice-4 (2026-09-30); Stage 15 and Stage 18 both stay ENTERED / PARTIAL / NOT
-  COMPLETE:** `ACTIVE CONTRACT: NONE` · `NEXT PRODUCT INCREMENT: NOT AUTHORIZED` · `NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT` · `STAGE 15 SLICE 4: DELIVERED` · `INTERFACE OBSERVATION VERDICT / CRITERION-MET JUDGEMENT: NOT AUTHORIZED` · `CAP-09 RESULT EVENT SLICE 1: DELIVERED` · `STAGE 15 SLICE 3: DELIVERED` · `STAGE 15 SLICE 2: DELIVERED — PR #720 — merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `STAGE 15 SLICE 2 FINAL INDEPENDENT REVIEW: PASS — F1 / F2 / F3 CLOSED` · `STAGE 15 SLICE 2 ANCESTRY: implementation 470bb90004b17229206fdd17fe3eaf3dd7867939, render-reattachment test d2f16a16e0a7ac3f11b72c669970afad6dae0ff9, current-truth sync b61422b4f229668af792f2cbed2e5a770afae43b, F1 / F2 / F3 correction 7d965480ac721bd75d99e6a25b9c2549a1e85566, F3 residual correction / reviewed PR head fc3d47ed6184a54b0d2323910f6341e4bbf9b73f, merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca` · `STAGE 15 SLICE 1: DELIVERED — PR #718 — merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B CORRECTED / NO REMAINING MATERIAL DEFECT` · `STAGE 15 SLICE 1 ANCESTRY: implementation 90322f146a56099a2e6647ba0c53e5195963d41c, F1 / IR01-A correction 41d06a27ed657a1bf6460c638655f0a6de5447a0, current-truth sync / PR head be6ab2c14be34e49300444b4c6c5104e2f9bdf0a, merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `STAGE 15: ENTERED / PARTIAL / NOT COMPLETE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL AND ELECTRICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `ANOTHER STAGE-15 SLICE: NOT AUTHORIZED` · `FULL STAGE 15 / IRL: NOT AUTHORIZED` · `IRL SCORING / LEVELS: NOT AUTHORIZED` · `FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED` · `ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED` · `ENGINEERING COMPATIBILITY ANALYSIS: NOT AUTHORIZED` · `SUBSYSTEM-SPECIFIC GAP / EVIDENCE / READINESS ENGINES: NOT AUTHORIZED` · `GENERIC RELATIONSHIP GRAPH / ENGINE: NOT AUTHORIZED` · `MECHATRONICS DOMAIN PACK: NOT AUTHORIZED` · `ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
-  No product increment is authorized after Stage 15 Slice 4. This does NOT mean that the roadmap, Stage 15, Stage 18 or
-  integration is complete, or that a next slice is authorized, and delivered history never fills
+    **NO ACTIVE CONTRACT — post-Stage-15-closure (2026-10-01); Stage 15 COMPLETE for the current Mechanical + Electrical / Electronics scope;
+  Stage 18 stays ENTERED / PARTIAL / NOT COMPLETE:** `ACTIVE CONTRACT: NONE` · `NEXT PRODUCT INCREMENT: NOT AUTHORIZED` · `NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT` · `STAGE 15 CLOSURE: DELIVERED` · `STAGE 15 SLICE 4: DELIVERED` · `INTERFACE OBSERVATION VERDICT / CRITERION-MET JUDGEMENT: NOT AUTHORIZED` · `CAP-09 RESULT EVENT SLICE 1: DELIVERED` · `STAGE 15 SLICE 3: DELIVERED` · `STAGE 15 SLICE 2: DELIVERED — PR #720 — merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `STAGE 15 SLICE 2 FINAL INDEPENDENT REVIEW: PASS — F1 / F2 / F3 CLOSED` · `STAGE 15 SLICE 2 ANCESTRY: implementation 470bb90004b17229206fdd17fe3eaf3dd7867939, render-reattachment test d2f16a16e0a7ac3f11b72c669970afad6dae0ff9, current-truth sync b61422b4f229668af792f2cbed2e5a770afae43b, F1 / F2 / F3 correction 7d965480ac721bd75d99e6a25b9c2549a1e85566, F3 residual correction / reviewed PR head fc3d47ed6184a54b0d2323910f6341e4bbf9b73f, merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca` · `STAGE 15 SLICE 1: DELIVERED — PR #718 — merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B CORRECTED / NO REMAINING MATERIAL DEFECT` · `STAGE 15 SLICE 1 ANCESTRY: implementation 90322f146a56099a2e6647ba0c53e5195963d41c, F1 / IR01-A correction 41d06a27ed657a1bf6460c638655f0a6de5447a0, current-truth sync / PR head be6ab2c14be34e49300444b4c6c5104e2f9bdf0a, merge 3f3546a279c7f7020744bcbfee957de84ac2e136` · `STAGE 15: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE` · `STAGE 18: ENTERED / PARTIAL / NOT COMPLETE` · `NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK` · `NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED` · `MECHANICAL DOMAIN-LEVEL CHECKLIST PROFILE: NOT AUTHORIZED` · `NO FURTHER CAP-01 IMPLEMENTATION IS AUTHORIZED BEYOND THE DELIVERED MECHANICAL AND ELECTRICAL SLICES` · `FULL CAP-01 / FULL STG: NOT AUTHORIZED` · `ANOTHER STAGE-15 SLICE: NOT AUTHORIZED` · `VALIDATED IRL / IRL LEVEL CLAIM: NOT AUTHORIZED` · `N-DOMAIN / ARBITRARY-DOMAIN INTEGRATION: NOT AUTHORIZED` · `PHASE-7 INTEGRATION RESIDUALS: REMAIN PHASE 7` · `IRL SCORING / LEVELS: NOT AUTHORIZED` · `FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED` · `ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED` · `ENGINEERING COMPATIBILITY ANALYSIS: NOT AUTHORIZED` · `SUBSYSTEM-SPECIFIC GAP / EVIDENCE / READINESS ENGINES: NOT AUTHORIZED` · `GENERIC RELATIONSHIP GRAPH / ENGINE: NOT AUTHORIZED` · `MECHATRONICS DOMAIN PACK: NOT AUTHORIZED` · `ROBOTICS / IOT / DRONE / RENEWABLE / SATELLITE IMPLEMENTATION: NOT AUTHORIZED` · `STAGE 23: NOT ENTERED` · `CAP-06: NOT ACTIVATED` · `DEPLOYMENT / RELEASE: NOT AUTHORIZED`.
+  No product increment is authorized after the Stage 15 closure. Stage 15 is COMPLETE for the current Mechanical +
+  Electrical / Electronics scope only; this does NOT mean that the roadmap, Stage 18 or integration in general is
+  complete, that any integration is validated, or that a next slice is authorized, and delivered history never fills
   the active-contract slot. The next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT: read-only planning /
   selection over live repository and product evidence until the Owner separately authorizes another product
   increment. It pre-authorizes no further Stage-15 slice, compatibility analysis, IRL scoring, Robotics
   assessment implementation, IoT, other Domain Pack or Technical Deepening slice.
+  **DELIVERED — Stage 15 / Integration Evidence & IRL-Compatible View — Closure (completes Stage 15 for the
+current Mechanical + Electrical / Electronics scope; no new Master Roadmap Stage; the MASTER ROADMAP
+SEQUENTIAL MARKER stays Stage 18):** `STAGE 15 CLOSURE: DELIVERED` · `STAGE 15: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`.
+Stage 15 closure (delivered). For each durable Owner-declared interface between the two parts of an integrated
+Mechanical + Electrical / Electronics project, the inventor can optionally declare, in their own words, a
+dependency — one part relies on the other (the exact dependent and depends-on part identities are persisted) or
+each relies on the other (explicit, never inferred from endpoint order) — an OWNER_STATED / UNVALIDATED
+current-value attribute owned by `engine/subsystem_model.py` in ONE additive `subsystem_interface_dependencies`
+sidecar keyed by the existing `interface_id` (absence means not declared; clearing removes the row), saved by the
+existing preparation Save. The inventor can record, correct and withdraw INTEGRATION evidence for an interface
+through the existing shared evidence owner `engine/commercial_evidence.py` (closed topics: interface test,
+inspection, specification, review; UNVALIDATED only; append-only supersession and withdrawal); every Integration
+event carries exactly ONE immutable interface anchor in ONE additive INSERT-only `integration_evidence_anchors`
+sidecar committed atomically with its row, and a missing, duplicate, cross-project, non-Integration or
+chain-moving anchor fails closed. A fresh signed submission identity makes an exact retry (also after a restart)
+return the stored item, the same identity with other material is a conflict and an unconfirmable outcome stays
+UNKNOWN. The readiness snapshot gains a fourth row, Integration — INSUFFICIENT_EVIDENCE only, counting current
+items only — and the interface page shows a read-only per-interface status (declaration, preparation,
+dependency, recorded checks labelled not evidence, current Integration evidence and its history; unavailable is
+never shown as absent). Observations, preparation inputs and dependencies are never converted into evidence. No
+IRL level or score, no compatibility verdict, no validated integration, no aggregate, no D4 evaluation (D4 stays
+the future compatibility gate), no N-domain or arbitrary-domain claim and no production claim; Phase-7
+integration residuals remain Phase 7; Stage 28 / 30 boundaries are unchanged; the report, PDF and Structured
+Export are unchanged. Deployment / release NOT AUTHORIZED.
   **DELIVERED — Stage 15 / Interface Verification Observation Event — Slice 4 (a bounded continuation
 inside the already-open Stage-15 integration obligation; no new Master Roadmap Stage; the MASTER ROADMAP
 SEQUENTIAL MARKER stays Stage 18):** `STAGE 15 SLICE 4: DELIVERED` · `INTERFACE OBSERVATION VERDICT / CRITERION-MET JUDGEMENT: NOT AUTHORIZED`.
@@ -451,6 +476,8 @@ recovery PR #702) routes ONLY mechanical PHYSICAL_FEASIBILITY:Q2 to specialist i
   and the existing consent/custody boundaries.
 <!-- END CURRENT-BLOCK: current-routing -->
 
+*(Superseded 2026-10-01 by Stage 15 — Integration Evidence & IRL-Compatible View — Closure, preserved so the change is visible rather than silent: the current routing read "**NO ACTIVE CONTRACT — post-Stage-15-Slice-4 (2026-09-30); Stage 15 and Stage 18 both stay ENTERED / PARTIAL / NOT COMPLETE:** …" and "No product increment is authorized after Stage 15 Slice 4." That was true until the Owner authorized the Stage 15 closure.)*
+
 *(Superseded 2026-09-30 by Stage 15 — Interface Verification Observation Event — Slice 4, preserved so the change is visible rather than silent: the current routing read "**NO ACTIVE CONTRACT — post-CAP-09-Result-Event-Slice-1 (2026-09-30); …** No product increment is authorized after CAP-09 Result Event Slice 1." That was true until the Owner authorized Stage 15 Slice 4.)*
 
 *(Superseded 2026-09-30 by CAP-09 Result Event Slice 1, preserved so the change is visible rather than silent: the current routing read "**NO ACTIVE CONTRACT — post-Stage-15-Slice-3 (2026-09-30); …** No product increment is authorized after Stage 15 Slice 3." That was true until the Owner authorized CAP-09 Result Event Slice 1.)*
@@ -535,15 +562,15 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
     `INSUFFICIENT_EVIDENCE`.
   - **STAGE 14 — PARTIAL / DEFERRED.** **CAP-12**, **CAP-13**, **WS-PFV-001**, plus shared
     **T2-E**.
-  - **STAGE 15 — ENTERED / PARTIAL / NOT COMPLETE THROUGH ONE BOUNDED SLICE.** **Phase-7
+  - **STAGE 15 — COMPLETE FOR THE CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE (2026-10-01).** **Phase-7
     integration/interface foundation EXISTS**, so **IRL ownership is NOT wholly absent**.
     **Integrated Invention Entry & Durable Subsystem Composition Slice 1 is DELIVERED — PR
     #718 — merge `3f3546a279c7f7020744bcbfee957de84ac2e136`** (post-merge identity / content verification
     PASS; bounded use case only — no full IRL capability, no IRL level, no complete integration
-    readiness, no engineering compatibility); **Subsystem Interface Declaration & Verification Preparation Slice 2 is DELIVERED (PR #720, merge `2418f7e583b3535d48970cf0989689bb2f8ef2ca`): Owner-declared interactions between the two parts with ONE verification-preparation step each; it establishes no compatibility, no IRL level and no readiness.** **wider Stage-15 work remains DEFERRED / NOT
-    AUTHORIZED**. Remaining: **broader per-project integration evidence**, **wider
-    interface/dependency evidence** (subsystem/interface integration evidence beyond Slice 1),
-    **durable subsystem identity** beyond the delivered bounded Slice-1 use case, **inbound/write-import**, **async/vendor integration**, plus **T2-E**
+    readiness, no engineering compatibility); **Subsystem Interface Declaration & Verification Preparation Slice 2 is DELIVERED (PR #720, merge `2418f7e583b3535d48970cf0989689bb2f8ef2ca`): Owner-declared interactions between the two parts with ONE verification-preparation step each; it establishes no compatibility, no IRL level and no readiness.** **Interface Verification Preparation Metadata Slice 3, Interface Verification Observation Event Slice 4 and the Integration Evidence & IRL-Compatible View Closure are DELIVERED:** the closure adds an optional Owner-declared dependency per interface, Integration evidence anchored to one interface (UNVALIDATED only) and a fourth readiness-snapshot row, Integration (INSUFFICIENT_EVIDENCE only), with a per-interface status view; it claims no IRL level or score, no validated integration and no engineering compatibility, and D4 stays the future compatibility gate. **Stage 15 is complete for the current Mechanical + Electrical / Electronics scope only; no N-domain or arbitrary-domain integration is claimed.** **Phase-7 residuals remain Phase 7 and are NOT discharged here:** **broader per-project integration evidence** (validated, beyond the
+    inventor's own unvalidated items), **wider interface/dependency evidence** (validated subsystem/interface
+    integration evidence beyond the delivered scope), **durable subsystem identity** beyond the delivered bounded
+    Mechanical + Electrical / Electronics use case, **inbound/write-import**, **async/vendor integration**, plus **T2-E**
     reachability.
   - **STAGE 16 — DEFERRED.** Primarily **Stage 13 technical measurement** and the **Stage 15
     integration axis**; **Stage 14 is relevant IF manufacturing participates** in a future
@@ -695,7 +722,9 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   **Stage 44 lineage gate** — PRESERVED · **Stage 45 deployment gate** — PRESERVED ·
   **WATCH-01** — PRESERVED / PLANNED / NOT YET IMPLEMENTED · **WATCH-04** — PRESERVED.
 <!-- END CURRENT-BLOCK: material-residuals -->
-- **CURRENT SUBTASK:** NONE (post-Stage-15-Slice-4) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — Stage 15 —
+- **CURRENT SUBTASK:** NONE (post-Stage-15-closure) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — Stage 15 —
+  Integration Evidence & IRL-Compatible View — Closure DELIVERED — STAGE 15 COMPLETE for the current Mechanical +
+  Electrical / Electronics scope — Stage 15 —
   Interface Verification Observation Event — Slice 4 DELIVERED — CAP-09 Result Event Slice 1 DELIVERED — Stage 15 —
   Interface Verification Preparation Metadata — Slice 3 DELIVERED — Stage 15 — Subsystem Interface Declaration &
   Verification Preparation — Slice 2 DELIVERED (PR #720) — NO CURRENT
@@ -703,6 +732,7 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   `ACTIVE CONTRACT: NONE` ·
   `NEXT PRODUCT INCREMENT: NOT AUTHORIZED` ·
   `NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT` ·
+  `STAGE 15 CLOSURE: DELIVERED` ·
   `STAGE 15 SLICE 4: DELIVERED` ·
   `INTERFACE OBSERVATION VERDICT / CRITERION-MET JUDGEMENT: NOT AUTHORIZED` ·
   `CAP-09 RESULT EVENT SLICE 1: DELIVERED` ·
@@ -715,9 +745,11 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` ·
   `FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B CORRECTED / NO REMAINING MATERIAL DEFECT` ·
   `STAGE 15 SLICE 1 ANCESTRY: implementation 90322f146a56099a2e6647ba0c53e5195963d41c, F1 / IR01-A correction 41d06a27ed657a1bf6460c638655f0a6de5447a0, current-truth sync / PR head be6ab2c14be34e49300444b4c6c5104e2f9bdf0a, merge 3f3546a279c7f7020744bcbfee957de84ac2e136` ·
-  `STAGE 15: ENTERED / PARTIAL / NOT COMPLETE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE` ·
+  `STAGE 15: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE` ·
   `ANOTHER STAGE-15 SLICE: NOT AUTHORIZED` ·
-  `FULL STAGE 15 / IRL: NOT AUTHORIZED` · `IRL SCORING / LEVELS: NOT AUTHORIZED` ·
+  `VALIDATED IRL / IRL LEVEL CLAIM: NOT AUTHORIZED` ·
+  `N-DOMAIN / ARBITRARY-DOMAIN INTEGRATION: NOT AUTHORIZED` ·
+  `PHASE-7 INTEGRATION RESIDUALS: REMAIN PHASE 7` · `IRL SCORING / LEVELS: NOT AUTHORIZED` ·
   `FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED` · `ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED` ·
   `ENGINEERING COMPATIBILITY ANALYSIS: NOT AUTHORIZED` ·
   `SUBSYSTEM-SPECIFIC GAP / EVIDENCE / READINESS ENGINES: NOT AUTHORIZED` ·
@@ -766,9 +798,33 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   fundamentals only — no applicability inference, calculation, gap closure, compatibility verdict,
   safe-limit determination, sizing, circuit-operation proof or electrical-safety conclusion; independent
   review PASS WITH NON-BLOCKING OBSERVATIONS.
-  No product increment is authorized after PR #720; this does NOT mean the roadmap, Stage 15, Stage 18 or
-  integration is complete, and the next step is a LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT (read-only
-  planning / selection until the Owner separately authorizes another product increment).
+  No product increment is authorized after the Stage 15 closure; Stage 15 is COMPLETE for the current Mechanical +
+  Electrical / Electronics scope only — this does NOT mean the roadmap, Stage 18 or integration in general is
+  complete or that any integration is validated — and the next step is a LEAD-CONTROLLED NEXT-INCREMENT
+  REASSESSMENT (read-only planning / selection until the Owner separately authorizes another product increment).
+  *(Superseded 2026-10-01 by the Stage 15 closure, preserved — was: "No product increment is authorized after
+  PR #720; this does NOT mean the roadmap, Stage 15, Stage 18 or integration is complete …".)*
+  Stage 15 closure (delivered). For each durable Owner-declared interface between the two parts of an integrated
+  Mechanical + Electrical / Electronics project, the inventor can optionally declare, in their own words, a
+  dependency — one part relies on the other (the exact dependent and depends-on part identities are persisted) or
+  each relies on the other (explicit, never inferred from endpoint order) — an OWNER_STATED / UNVALIDATED
+  current-value attribute owned by `engine/subsystem_model.py` in ONE additive `subsystem_interface_dependencies`
+  sidecar keyed by the existing `interface_id` (absence means not declared; clearing removes the row), saved by the
+  existing preparation Save. The inventor can record, correct and withdraw INTEGRATION evidence for an interface
+  through the existing shared evidence owner `engine/commercial_evidence.py` (closed topics: interface test,
+  inspection, specification, review; UNVALIDATED only; append-only supersession and withdrawal); every Integration
+  event carries exactly ONE immutable interface anchor in ONE additive INSERT-only `integration_evidence_anchors`
+  sidecar committed atomically with its row, and a missing, duplicate, cross-project, non-Integration or
+  chain-moving anchor fails closed. A fresh signed submission identity makes an exact retry (also after a restart)
+  return the stored item, the same identity with other material is a conflict and an unconfirmable outcome stays
+  UNKNOWN. The readiness snapshot gains a fourth row, Integration — INSUFFICIENT_EVIDENCE only, counting current
+  items only — and the interface page shows a read-only per-interface status (declaration, preparation,
+  dependency, recorded checks labelled not evidence, current Integration evidence and its history; unavailable is
+  never shown as absent). Observations, preparation inputs and dependencies are never converted into evidence. No
+  IRL level or score, no compatibility verdict, no validated integration, no aggregate, no D4 evaluation (D4 stays
+  the future compatibility gate), no N-domain or arbitrary-domain claim and no production claim; Phase-7
+  integration residuals remain Phase 7; Stage 28 / 30 boundaries are unchanged; the report, PDF and Structured
+  Export are unchanged. Deployment / release NOT AUTHORIZED.
   Stage 15 Slice 4 (delivered). For each durable Owner-declared interface between the two parts of an integrated
   Mechanical + Electrical / Electronics project, the inventor can record, in their own words, what actually happened
   when they tested or checked it — OWNER_STATED / UNVALIDATED append-only history owned by
@@ -817,6 +873,9 @@ FOR IMPLEMENTATION`". Accurate until the authorization; false as present truth.)
   after restart, F3 UNKNOWN preservation), corrected in `7d96548`; bounded re-review F1 / F2 CLOSED with one
   F3 residual, corrected in `fc3d47e`; final bounded review PASS — F1 / F2 / F3 CLOSED. Deployment /
   release NOT AUTHORIZED.
+  *(Superseded 2026-10-01 by Stage 15 — Integration Evidence & IRL-Compatible View — Closure, preserved — was:
+  "**CURRENT SUBTASK:** NONE (post-Stage-15-Slice-4) — … Stage 15 — Interface Verification Observation Event —
+  Slice 4 DELIVERED …".)*
   *(Superseded 2026-09-30 by Stage 15 — Interface Verification Observation Event — Slice 4, preserved — was:
   "**CURRENT SUBTASK:** NONE (post-CAP-09-Result-Event-Slice-1) — … CAP-09 Result Event Slice 1 DELIVERED …".)*
   *(Superseded 2026-09-30 by CAP-09 Result Event Slice 1, preserved — was: "**CURRENT SUBTASK:** NONE
@@ -1275,6 +1334,8 @@ ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED — PR #716 — 
 ACTIVE CONTRACT: NONE
 NEXT PRODUCT INCREMENT: NOT AUTHORIZED
 NEXT STEP: LEAD-CONTROLLED NEXT-INCREMENT REASSESSMENT
+STAGE 15 CLOSURE: DELIVERED
+STAGE 15 SLICE 4: DELIVERED
 STAGE 15 SLICE 3: DELIVERED
 STAGE 15 SLICE 2: DELIVERED — PR #720 — merge 2418f7e583b3535d48970cf0989689bb2f8ef2ca
 STAGE 15 SLICE 2 FINAL INDEPENDENT REVIEW: PASS — F1 / F2 / F3 CLOSED
@@ -1282,7 +1343,7 @@ STAGE 15 SLICE 1: DELIVERED — PR #718 — merge 3f3546a279c7f7020744bcbfee957d
 POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS
 FINAL INDEPENDENT REVIEW: TARGETED PASS WITH NON-BLOCKING OBSERVATIONS — F1-CLOSED — IR01-B CORRECTED / NO REMAINING MATERIAL DEFECT
 STAGE 15 SLICE 1 ANCESTRY: implementation 90322f146a56099a2e6647ba0c53e5195963d41c, F1 / IR01-A correction 41d06a27ed657a1bf6460c638655f0a6de5447a0, current-truth sync / PR head be6ab2c14be34e49300444b4c6c5104e2f9bdf0a, merge 3f3546a279c7f7020744bcbfee957de84ac2e136
-STAGE 15: ENTERED / PARTIAL / NOT COMPLETE
+STAGE 15: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE
 MASTER ROADMAP SEQUENTIAL MARKER: STAGE 18 — ENTERED / PARTIAL / NOT COMPLETE
 NO CURRENT AUTHORIZED TECHNICAL DEEPENING SUBTASK
 NEXT TECHNICAL DEEPENING SLICE: NOT AUTHORIZED
@@ -1292,7 +1353,9 @@ ANOTHER STAGE-15 SLICE: NOT AUTHORIZED
 ENGINEERING COMPATIBILITY ANALYSIS: NOT AUTHORIZED
 SUBSYSTEM-SPECIFIC GAP / EVIDENCE / READINESS ENGINES: NOT AUTHORIZED
 GENERIC RELATIONSHIP GRAPH / ENGINE: NOT AUTHORIZED
-FULL STAGE 15 / IRL: NOT AUTHORIZED
+VALIDATED IRL / IRL LEVEL CLAIM: NOT AUTHORIZED
+N-DOMAIN / ARBITRARY-DOMAIN INTEGRATION: NOT AUTHORIZED
+PHASE-7 INTEGRATION RESIDUALS: REMAIN PHASE 7
 IRL SCORING / LEVELS: NOT AUTHORIZED
 FULL D4 / CROSS-DOMAIN COMPATIBILITY EVALUATION: NOT AUTHORIZED
 ANALYSIS-FOCUS SWITCHING: NOT AUTHORIZED

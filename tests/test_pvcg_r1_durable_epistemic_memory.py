@@ -498,6 +498,9 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
     # `prototype_test_variables` (current value, no payload, no disposition) is
     # not a ledger either.
     assert tables == ["engine_version_adoptions", "evidence_references",
+                      # Stage 15 closure: INSERT-only interface anchor of each
+                      # Integration evidence row (no payload) — not a ledger.
+                      "integration_evidence_anchors",
                       "need_routing_revisions",
                       "project_subsystems",   # Stage 15 Slice 1 sidecar
                       "projects",
@@ -509,6 +512,9 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       "requirement_quantities",
                       # Stage 15 Slice 2 sidecar: Owner-declared interfaces
                       # (no payload, no disposition) — not a second ledger.
+                      # Stage 15 closure current-value dependency per
+                      # interface (no payload, no disposition) — not a ledger.
+                      "subsystem_interface_dependencies",
                       # Stage 15 Slice 4 append-only interface observations
                       # (no payload, no disposition) — not a ledger either.
                       "subsystem_interface_observations",
