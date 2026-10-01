@@ -135,11 +135,15 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   calculation, typed parameter or new source, and `CAP01_ELECTRONICS_INTERFACE_V1` is unchanged. It completes
   Stage 18 for the current Mechanical + Electrical / Electronics scope only:
   `STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE` (the Stage 18 closure authorized no
-  Stage-19 implementation). The later Stage 19 closure (CAP-09 entry below) completed Stage 19 for the current
-  planning-only scope and moved the marker on:
-  `STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE` ·
-  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 20 — ENTERED / PARTIAL — NAVIGATION ONLY` ·
-  `NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE`.
+    Stage-19 implementation). The later Stage 19 closure (CAP-09 entry below) completed Stage 19 for the current
+  planning-only scope — `STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE`, with
+  `NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE` — and the later Stage 20 closure (CAP-08 entry
+  below) completed Stage 20 for the current Owner-declared assumption scope and moved the marker on:
+  `STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE` ·
+  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 21 — ENTERED / PARTIAL — NAVIGATION ONLY` ·
+  `NO STAGE-21 IMPLEMENTATION AUTHORIZED BY STAGE-20 CLOSURE`.
+  *(Superseded 2026-10-01 by the Stage 20 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 20 —
+  ENTERED / PARTIAL — NAVIGATION ONLY`".)*
   *(Superseded 2026-10-01 by the Stage 19 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 19 —
   ENTERED / NOT COMPLETE — NAVIGATION ONLY` · `NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE`".)*
   The two Electronics increments are presentation-only; the second
@@ -324,15 +328,29 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
 - **Protected boundaries:** assumptions are never Evidence; append-only, non-destructive history.
 - **Proposed acceptance criteria:** deterministic; assumptions never auto-promote to evidence; full
   provenance and supersession history.
-- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, **with ONE bounded
-  exception**: CAP-08 Slice 1 (Stage 20, 2026-09-26) — the inventor explicitly declares that one or
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, **with TWO bounded
+  exceptions**: (1) CAP-08 Slice 1 (Stage 20, 2026-09-26) — the inventor explicitly declares that one or
   more of their own active recorded answers depend on ONE of their own active provisional
   assumptions, as one OWNER_STATED, UNVALIDATED `assumption_dependency_declared` record per
   directed assumption → answer edge on the existing ledger, with the dependency a deterministic
   derived projection. It is a capture of the inventor's statement, not inference: automatic or AI
   dependency inference, evidence-needed / confirm-or-reject metadata, impact or risk scoring,
-  readiness / progression use, dependency propagation, assumption correction UI and dependency
-  retraction stay NOT AUTHORIZED. `FULL CAP-08: NOT AUTHORIZED`.
+    readiness / progression use, dependency propagation and dependency retraction stay NOT AUTHORIZED
+  (delivered, PR #704); and (2) the Stage 20 — Assumption Revision & Replacement — Closure (delivered): for each
+  ACTIVE Owner-declared provisional assumption with a gap context, explicit append-only Revise (provisional →
+  provisional) and Replace with my answer (provisional → answered) successors that inherit the gap and question
+  target verbatim and stay OWNER_STATED / UNVALIDATED; Replace is refused for a current outstanding routed need and
+  otherwise runs the existing full deterministic reconstruction, where an assumption-origin answer is replayed through
+  the ordinary progression only when its historical gap exists, is selected and its exact question is not routed
+  (otherwise a disclosed skip; a malformed ancestry fails closed); dependency edges on the superseded assumption
+  become inactive with no transfer. It completes Stage 20 for the current Owner-declared assumption scope only —
+  `STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE` (durable assumption identity / source / status,
+  the affected gap / question, inventor-declared dependent answers, append-only revision, append-only replacement and
+  retained supersession history). Automatic assumption detection or resolution, validation confirmation / rejection,
+  impact scoring, risk scoring or new CAP-08 risk fields, an inventor-authored evidence-needed field, decision
+  linkage, dependency transfer / propagation and AI inference stay NOT AUTHORIZED. `FULL CAP-08: NOT AUTHORIZED`.
+  *(Superseded 2026-10-01 by the Stage 20 closure, preserved — Slice 1 listed "assumption correction UI" as NOT
+  AUTHORIZED; the closure delivers only the bounded revision / replacement above.)*
 - **Activation conditions:** a separately authorized assumption-register increment.
 - **Separate owner authorization requirement:** yes.
 
@@ -375,7 +393,7 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   Slice 1, which lets the inventor record what actually happened when they performed ONE current
   Section-11 experiment as APPEND-ONLY Result Event history: each separately reported execution or
   retest is an independent root, a correction appends a successor and preserves earlier entries, and
-  every entry is OWNER-STATED / UNVALIDATED with no automatic judgement (delivered); and (6) the Stage 19 — Experiment Execution-State Disclosure — Closure (delivered): for each CURRENT Section-11 experiment the report / deliverable and PDF state exactly ONE execution state bound only by the canonical `experiment_id` — NO RESULT, RECORDED N (N = execution roots; a correction never adds one, an independent retest does; the inventor's own recorded observations, not checked by InventorAI and not a pass/fail judgement) or UNAVAILABLE (never "no result" or zero on a read failure) — as a read-only web-layer projection with no result text, frozen context or identifier, no outcome or criterion comparison and no change to the canonical package, the Result owner, persistence, state, evidence, readiness or progression; the Section-11 note separates the inventor's own unvalidated recorded executions from InventorAI. It completes Stage 19 for the current planning-only scope only: `STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 20 — ENTERED / PARTIAL — NAVIGATION ONLY` · `NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE`; it claims no scientific validity, validated result, prototype validation, readiness, risk resolution or feasibility.
+  every entry is OWNER-STATED / UNVALIDATED with no automatic judgement (delivered); and (6) the Stage 19 — Experiment Execution-State Disclosure — Closure (delivered): for each CURRENT Section-11 experiment the report / deliverable and PDF state exactly ONE execution state bound only by the canonical `experiment_id` — NO RESULT, RECORDED N (N = execution roots; a correction never adds one, an independent retest does; the inventor's own recorded observations, not checked by InventorAI and not a pass/fail judgement) or UNAVAILABLE (never "no result" or zero on a read failure) — as a read-only web-layer projection with no result text, frozen context or identifier, no outcome or criterion comparison and no change to the canonical package, the Result owner, persistence, state, evidence, readiness or progression; the Section-11 note separates the inventor's own unvalidated recorded executions from InventorAI. It completes Stage 19 for the current planning-only scope only: `STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE` · `NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE` (the closure moved the marker to Stage 20 for navigation only; the later Stage 20 closure moved it to Stage 21) *(Superseded 2026-10-01 by the Stage 20 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 20 — ENTERED / PARTIAL — NAVIGATION ONLY`")*; it claims no scientific validity, validated result, prototype validation, readiness, risk resolution or feasibility.
   `BOUNDED OWNER-DEFINED TEST VARIABLE / CONDITION: AUTHORIZED WITHIN CAP-09 SLICE 4` ·
   `FORMAL EXPERIMENTAL VARIABLE MODEL: NOT AUTHORIZED` (no independent / dependent / controlled
   variable structure, variable taxonomy, units, ranges, formal treatment / control groups or
@@ -761,7 +779,7 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-05 Decision Trace | Decision-support increment | CAP-07, CAP-08, CAP-11 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-05 NOT AUTHORIZED |
 | CAP-06 Readiness Dashboard | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-02, CAP-07, CAP-11 | RECORDED — NOT AUTHORIZED |
 | CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED |
-| CAP-08 Assumption Register | Assumption-tracking increment | WS12, CAP-05, CAP-10, CAP-11 | SLICE 1 AUTHORIZED (Owner-declared assumption → answer dependency only) — FULL CAP-08 NOT AUTHORIZED |
+| CAP-08 Assumption Register | Assumption-tracking increment | WS12, CAP-05, CAP-10, CAP-11 | SLICE 1 DELIVERED (PR #704; Owner-declared assumption → answer dependency) and the bounded Stage 20 closure (append-only assumption revision and replacement; delivered; Stage 20 COMPLETE for the current Owner-declared assumption scope) — FULL CAP-08 NOT AUTHORIZED |
 | CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) one bounded Slice 4 durable Test Variable / Condition (delivered, PR #712) and one bounded Result Event Slice 1 append-only owner-stated result history (delivered) and the bounded Stage 19 closure read-only execution-state disclosure (delivered; Stage 19 COMPLETE for the current planning-only scope) (full CAP-09 still NOT AUTHORIZED) |
 | CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED |
 | CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED |
@@ -910,7 +928,7 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | CAP-05 Decision Trace | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-05 NOT AUTHORIZED | Decision-support increment | Decision workspace; evidence axes; CAP-08; CAP-11 | Yes | — | At the decision-support increment / WS12–WS16 closure |
 | CAP-06 Readiness Dashboard | RECORDED — NOT AUTHORIZED | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-11; Patent Export decision; WS-PFV-001 | Yes | — | At the readiness increment / WS12–WS16 closure |
 | CAP-07 Invention Decision Room | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
-| CAP-08 Assumption Register | SLICE 1 AUTHORIZED (Owner-declared assumption → answer dependency only) — FULL CAP-08 NOT AUTHORIZED | Assumption-tracking increment | Provenance/validation axes; ledger; WS12; CAP-11 | Yes | — | At the assumption increment / WS12–WS16 closure |
+| CAP-08 Assumption Register | SLICE 1 DELIVERED (PR #704; Owner-declared assumption → answer dependency) and the bounded Stage 20 closure (append-only assumption revision and replacement; delivered; Stage 20 COMPLETE for the current Owner-declared assumption scope) — FULL CAP-08 NOT AUTHORIZED | Assumption-tracking increment | Provenance/validation axes; ledger; WS12; CAP-11 | Yes | — | At the assumption increment / WS12–WS16 closure |
 | CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) one bounded Slice 4 durable Test Variable / Condition (delivered, PR #712) and one bounded Result Event Slice 1 append-only owner-stated result history (delivered) and the bounded Stage 19 closure read-only execution-state disclosure (delivered; Stage 19 COMPLETE for the current planning-only scope) | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
 | CAP-10 Contradiction Detector | SLICE 1 AUTHORIZED (Owner-declared contradiction only) — FULL CAP-10 NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
 | CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |

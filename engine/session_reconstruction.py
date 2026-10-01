@@ -28,6 +28,13 @@ What it does (and only this):
   * builds a FRESH canonical `IdeaState`, sets the persisted domain/path, and
     replays the seed FIRST then the accepted-answer contents through the UNCHANGED
     canonical progression path (`engine.progression_loop.run_iteration`);
+  * Stage 20 closure: classifies every ACTIVE answer by its supersession
+    ancestry. An answer that replaced an inventor's provisional assumption
+    (valid bounded shape) runs ordinary progression at its own durable position
+    ONLY when its inherited gap exists, the canonical `select_next_gap` selects
+    it and its exact question is not an outstanding routed need; otherwise it is
+    skipped there and reported (`assumption_origin_outcomes`). A malformed
+    assumption ancestry fails the reconstruction closed;
   * returns an IMMUTABLE `ReconstructedReviewState`.
 
 Hard boundaries (fail-closed, no false-green):
@@ -62,7 +69,9 @@ from typing import Optional
 from engine import need_routing
 from engine import progression_loop
 from engine.idea_state import (IdeaState, DISPOSITION_ANSWERED,
-    DISPOSITION_RISK_ACCEPTED)
+    DISPOSITION_RISK_ACCEPTED, OPEN, PARTIAL, ANCESTRY_ASSUMPTION_ORIGIN,
+    ANCESTRY_MALFORMED, classify_assumption_ancestry)
+from engine.record_contract import ContractError
 from engine.record_store import ProjectNotFound
 
 # One explicit deterministic reconstruction version. It identifies the supported
@@ -160,6 +169,76 @@ class ReconstructionReplayLimitError(Exception):
     produced. The message carries only a count — never user content."""
 
 
+class MalformedAssumptionAncestryError(ContractError):
+    """Stage 20 closure: an ACTIVE answered record has a `provisional_assumption`
+    in its supersession ancestry, but not in the closed bounded shape (see
+    ``engine.idea_state.classify_assumption_ancestry``). Reconstruction fails
+    closed: no partial or writable state, no positional fallback, durable rows
+    untouched. The message names no user content."""
+
+
+# The canonical served-question identity carried by ``question_target``.
+_PATHN_IDENTITY_PREFIX = "PATHN:"
+
+
+def question_excluded_by_routing(state, gap_type, question_target):
+    """Stage 20 closure — QUESTION-level NeedRouting exclusion. True when the
+    exact question ``question_target`` names is an OUTSTANDING routed need of
+    ``gap_type`` in ``state`` (whose ``need_routing`` carries the applied
+    committed revisions). A target that names no canonical question
+    (``None`` / not ``PATHN:``) cannot be shown to be unrouted, so it is
+    excluded whenever that gap has any outstanding routed need (fail safe).
+    Pure; reads typed routing metadata only, never text."""
+    routed = need_routing.outstanding_routed_question_ids(state, gap_type)
+    if not routed:
+        return False
+    if isinstance(question_target, str) \
+            and question_target.startswith(_PATHN_IDENTITY_PREFIX):
+        return question_target[len(_PATHN_IDENTITY_PREFIX):] in routed
+    return True
+
+
+# Bounded reasons a VALID assumption-origin answer was not replayed.
+ASSUMPTION_SKIP_GAP_NOT_PRESENT = "gap_not_present"
+ASSUMPTION_SKIP_GAP_NOT_SELECTED = "gap_not_selected"
+ASSUMPTION_SKIP_QUESTION_ROUTED = "question_routed"
+
+
+def assumption_answer_skip_reason(state, gap_type, question_target):
+    """The applicability law for ONE valid assumption-origin answer at its
+    exact durable replay position: None when it may run ordinary progression
+    (its inherited gap exists, the canonical ``select_next_gap`` selects that
+    gap, and its exact question is not excluded by an outstanding routed need),
+    else the first failing reason (``gap_status_<STATUS>`` for a gap that exists
+    but is not OPEN/PARTIAL). Pure; it creates, injects or targets nothing."""
+    gap = state.get_gap(gap_type)
+    if gap is None:
+        return ASSUMPTION_SKIP_GAP_NOT_PRESENT
+    if gap.status not in (OPEN, PARTIAL):
+        return "gap_status_" + gap.status
+    if progression_loop.select_next_gap(state) != gap_type:
+        return ASSUMPTION_SKIP_GAP_NOT_SELECTED
+    if question_excluded_by_routing(state, gap_type, question_target):
+        return ASSUMPTION_SKIP_QUESTION_ROUTED
+    return None
+
+
+@dataclass(frozen=True)
+class AssumptionOriginReplayOutcome:
+    """Stage 20 closure — the NON-DURABLE replay outcome of ONE active answered
+    record whose ancestry is a valid assumption-origin chain: ``applied`` when
+    it ran ordinary progression at its durable position, else ``reason`` says
+    why it did not. Skipped means ONLY that no progression iteration ran there;
+    the record stays active ledger truth (OWNER_STATED, UNVALIDATED) and
+    ledger-derived views may still change. Derived anew on every
+    reconstruction; never persisted."""
+    record_id: str
+    gap_context: Optional[str]
+    question_target: Optional[str]
+    applied: bool
+    reason: Optional[str] = None
+
+
 @dataclass(frozen=True)
 class ReconstructedReviewState:
     """Immutable, read-only review snapshot. It is deliberately NOT an
@@ -204,6 +283,10 @@ class ReconstructedReviewState:
     # unchanged; render-only, never persisted, never a request input.
     effective_engine_contract_version: Optional[str] = None
     adoption_count: int = 0
+    # Stage 20 closure: one `AssumptionOriginReplayOutcome` per ACTIVE answered
+    # record with a valid assumption-origin ancestry, in seq order (applied or
+    # skipped). Additive and defaulted; derived, never persisted.
+    assumption_origin_outcomes: tuple = field(default_factory=tuple)
 
 
 @dataclass(frozen=True)
@@ -504,8 +587,39 @@ def _reconstruct(store, project_id: str):
     # UX can truthfully explain the lapse. Derived report only; nothing is
     # persisted and no record is mutated.
     _risk_outcomes = []
-    for _position, record in enumerate(contract_assertions_seq(contract)):
+    # Stage 20 closure: classify every ACTIVE answered record by its complete
+    # validated supersession ancestry BEFORE any replay. An ordinary ancestry
+    # (no provisional assumption anywhere) replays exactly as before. A MALFORMED
+    # assumption-origin ancestry fails the WHOLE reconstruction: no positional
+    # fallback and no usable state, because even an unreplayed active answer
+    # would still feed ledger consumers (e.g. the risk-attempt gate).
+    _ledger = contract_assertions_seq(contract)
+    _by_id = {r.record_id: r for r in _ledger}
+    _assumption_origin = set()
+    for record in amended:
+        _kind = classify_assumption_ancestry(record, _by_id)
+        if _kind == ANCESTRY_MALFORMED:
+            raise MalformedAssumptionAncestryError(
+                "an active answer has a malformed assumption ancestry")
+        if _kind == ANCESTRY_ASSUMPTION_ORIGIN:
+            _assumption_origin.add(record.record_id)
+    _assumption_outcomes = []
+    for _position, record in enumerate(_ledger):
         if (record.disposition == DISPOSITION_ANSWERED
+                and record.record_id in _assumption_origin):
+            # A valid assumption-origin answer stays at its own durable
+            # position and runs the UNCHANGED canonical progression only when
+            # the applicability law holds there; otherwise no iteration runs
+            # for it (nothing is created, injected, moved or retargeted).
+            _skip = assumption_answer_skip_reason(
+                state, record.gap_context, record.question_target)
+            if _skip is None:
+                last_result = progression_loop.run_iteration(state, record.content)
+            _assumption_outcomes.append(AssumptionOriginReplayOutcome(
+                record_id=record.record_id, gap_context=record.gap_context,
+                question_target=record.question_target,
+                applied=_skip is None, reason=_skip))
+        elif (record.disposition == DISPOSITION_ANSWERED
                 and record.record_id in _amended_ids):
             last_result = progression_loop.run_iteration(state, record.content)
         elif record.disposition == DISPOSITION_RISK_ACCEPTED:
@@ -578,4 +692,5 @@ def _reconstruct(store, project_id: str):
         risk_acceptance_outcomes=tuple(_risk_outcomes),
         effective_engine_contract_version=version,
         adoption_count=adoption_count,
+        assumption_origin_outcomes=tuple(_assumption_outcomes),
     ), state

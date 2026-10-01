@@ -214,6 +214,22 @@ _MESSAGE_KEYS = {
         "UI_CAP10_ERR_UNKNOWN",
     # CAP-08 Slice 1 (web/app.py declare_dependency): its refusals render
     # through the `_answer_error` slot, so they are registered here.
+    # Stage 20 closure (web/app.py assumption_action): refusals render through
+    # the `_answer_error` slot, so they are registered here.
+    'That change to your assumption could not be saved just now. Nothing was changed.':
+        'UI_S20_ERR_NOT_SAVED',
+    'Enter your revised assumption or your answer. Nothing was changed.':
+        'UI_S20_ERR_INVALID',
+    'That assumption is no longer current, or this page no longer matches what your project holds, so nothing was saved. Review your current assumptions and try again.':
+        'UI_S20_ERR_STALE',
+    'This assumption is your note on a question that is waiting for specialist or evidence input, so it cannot be replaced by your own answer. You can still revise it. Nothing was changed.':
+        'UI_S20_ERR_ROUTED',
+    'We could not confirm whether that change was saved. Reload this page to see what your project holds before trying again.':
+        'UI_S20_ERR_UNKNOWN',
+    'Your revised assumption was saved to your project, but this page could not show it just now. Reload this page to see what your project holds.':
+        'UI_S20_ERR_REVISION_NOT_SHOWN',
+    'Your replacement was saved, but it could not be applied to this page just now. What you see below has not changed yet. The saved replacement will be reflected whenever this project can be rebuilt successfully.':
+        'UI_S20_ERR_REPLACEMENT_NOT_APPLIED',
     ("That dependency could not be saved just now. Nothing was changed."):
         "UI_CAP08_ERR_NOT_SAVED",
     ("Choose one of your provisional assumptions and at least one of your "
@@ -4462,6 +4478,79 @@ UI_STRINGS = {
         "ar": ("لم نتمكّن من معرفة ما إذا كان هذا الاعتماد قد حُفظ. أعد تحميل "
                "هذه الصفحة لترى ما يحتويه مشروعك قبل تسجيله مرة أخرى."),
     },
+    # --- Stage 20 closure: revise / replace a provisional assumption ---
+    'UI_S20_HEADING': {
+        "en": 'Your provisional assumptions',
+        "ar": 'افتراضاتك المؤقتة',
+    },
+    'UI_S20_EXPLAIN': {
+        "en": 'You can revise one of your provisional assumptions, or replace it with your own answer. The earlier entry stays in your project history, nothing is validated, and any dependency you declared on it stops applying and is not moved to the new entry.',
+        "ar": 'يمكنك تعديل أحد افتراضاتك المؤقتة، أو استبداله بإجابتك. يبقى الإدخال السابق في سجل مشروعك، ولا يُتحقَّق من شيء، وأي اعتماد أعلنته عليه يتوقف عن الانطباق ولا يُنقل إلى الإدخال الجديد.',
+    },
+    'UI_S20_REVISE_SUMMARY': {
+        "en": 'Revise this assumption',
+        "ar": 'تعديل هذا الافتراض',
+    },
+    'UI_S20_REVISE_LABEL': {
+        "en": 'Your revised assumption',
+        "ar": 'افتراضك المعدَّل',
+    },
+    'UI_S20_REVISE_BUTTON': {
+        "en": 'Save revised assumption',
+        "ar": 'حفظ الافتراض المعدَّل',
+    },
+    'UI_S20_REPLACE_SUMMARY': {
+        "en": 'Replace it with my answer',
+        "ar": 'استبداله بإجابتي',
+    },
+    'UI_S20_REPLACE_NOTE': {
+        "en": 'Your answer replaces this assumption as your response to the same question. It is recorded as your own answer and is not validated.',
+        "ar": 'تحلّ إجابتك محلّ هذا الافتراض كردّك على السؤال نفسه. وتُسجَّل كإجابتك أنت ولا يُتحقَّق منها.',
+    },
+    'UI_S20_REPLACE_LABEL': {
+        "en": 'Your answer',
+        "ar": 'إجابتك',
+    },
+    'UI_S20_REPLACE_BUTTON': {
+        "en": 'Replace with my answer',
+        "ar": 'الاستبدال بإجابتي',
+    },
+    'UI_S20_REPLACE_ROUTED': {
+        "en": 'This assumption is your note on a question that is waiting for specialist or evidence input, so it cannot be replaced by your own answer. You can still revise it.',
+        "ar": 'هذا الافتراض هو ملاحظتك على سؤال ينتظر مدخلات متخصّص أو دليلًا، لذلك لا يمكن استبداله بإجابتك. لا يزال بإمكانك تعديله.',
+    },
+    'UI_S20_REPLACE_UNAVAILABLE': {
+        "en": 'Replacing this assumption with your answer is not available just now. You can still revise it.',
+        "ar": 'استبدال هذا الافتراض بإجابتك غير متاح الآن. لا يزال بإمكانك تعديله.',
+    },
+    'UI_S20_ERR_NOT_SAVED': {
+        "en": 'That change to your assumption could not be saved just now. Nothing was changed.',
+        "ar": 'تعذّر حفظ هذا التغيير على افتراضك الآن. لم يتم تغيير أي شيء.',
+    },
+    'UI_S20_ERR_INVALID': {
+        "en": 'Enter your revised assumption or your answer. Nothing was changed.',
+        "ar": 'أدخل افتراضك المعدَّل أو إجابتك. لم يتم تغيير أي شيء.',
+    },
+    'UI_S20_ERR_STALE': {
+        "en": 'That assumption is no longer current, or this page no longer matches what your project holds, so nothing was saved. Review your current assumptions and try again.',
+        "ar": 'لم يعد هذا الافتراض حاليًا، أو لم تعد هذه الصفحة مطابقة لما يحتويه مشروعك، لذلك لم يُحفظ شيء. راجع افتراضاتك الحالية وحاول مجددًا.',
+    },
+    'UI_S20_ERR_ROUTED': {
+        "en": 'This assumption is your note on a question that is waiting for specialist or evidence input, so it cannot be replaced by your own answer. You can still revise it. Nothing was changed.',
+        "ar": 'هذا الافتراض هو ملاحظتك على سؤال ينتظر مدخلات متخصّص أو دليلًا، لذلك لا يمكن استبداله بإجابتك. لا يزال بإمكانك تعديله. لم يتم تغيير أي شيء.',
+    },
+    'UI_S20_ERR_UNKNOWN': {
+        "en": 'We could not confirm whether that change was saved. Reload this page to see what your project holds before trying again.',
+        "ar": 'لم نتمكّن من التأكد مما إذا كان هذا التغيير قد حُفظ. أعد تحميل هذه الصفحة لترى ما يحتويه مشروعك قبل المحاولة مرة أخرى.',
+    },
+    'UI_S20_ERR_REVISION_NOT_SHOWN': {
+        "en": 'Your revised assumption was saved to your project, but this page could not show it just now. Reload this page to see what your project holds.',
+        "ar": 'حُفظ افتراضك المعدَّل في مشروعك، لكن تعذّر عرضه في هذه الصفحة الآن. أعد تحميل هذه الصفحة لترى ما يحتويه مشروعك.',
+    },
+    'UI_S20_ERR_REPLACEMENT_NOT_APPLIED': {
+        "en": 'Your replacement was saved, but it could not be applied to this page just now. What you see below has not changed yet. The saved replacement will be reflected whenever this project can be rebuilt successfully.',
+        "ar": 'حُفظ الاستبدال، لكن تعذّر تطبيقه على هذه الصفحة الآن. ما تراه أدناه لم يتغيّر بعد. سيظهر الاستبدال المحفوظ متى أمكن إعادة بناء هذا المشروع بنجاح.',
+    },
     "UI_CAP08_REPORT_HEADING": {
         "en": "Dependencies you declared on your provisional assumptions",
         "ar": "اعتمادات أعلنتها على افتراضاتك المؤقتة",
@@ -5894,6 +5983,15 @@ _DEEP_AR = {
         "تم الحفظ. سجّلتَ كيف يتفاعل هذان الجزآن. هذا الإعلان غير مُتحقَّق منه، "
         "ولم يُقيَّم التوافق بين الجزأين. وأُضيفت خطوة تحضير واحدة إلى خطة "
         "التحقق (Validation Plan).",
+    # --- Stage 20 closure assumption-action acknowledgements (web.app) ---
+    'Saved. Your provisional assumption was revised, and the earlier wording is kept in your project history. It is still a provisional assumption and has not been validated.':
+        'تم الحفظ. عُدِّل افتراضك المؤقت، والصياغة السابقة محفوظة في سجل مشروعك. لا يزال افتراضًا مؤقتًا ولم يُتحقَّق منه.',
+    'Saved. Your provisional assumption was replaced by your answer, and the assumption is kept in your project history. Everything shown has been recomputed. Your answer has not been validated.':
+        'تم الحفظ. استُبدل افتراضك المؤقت بإجابتك، والافتراض محفوظ في سجل مشروعك. أُعيد حساب كل ما يظهر هنا. لم يُتحقَّق من إجابتك.',
+    'Replacement recorded. This answer was not replayed for progression because its historical question/area was not currently eligible. It remains unvalidated.':
+        'سُجّل الاستبدال. لم تُعَد معالجة هذه الإجابة للتقدّم لأن سؤالها أو مجالها التاريخي لم يكن مؤهلًا حاليًا. ولا تزال غير مُتحقَّق منها.',
+    'Your replacement is already recorded in your project. It has not been validated.':
+        'استبدالك مسجّل بالفعل في مشروعك. ولم يُتحقَّق منه.',
     # --- CAP-08 Slice 1 dependency-declaration acknowledgement (web.app) ---
     "Saved. You declared that these recorded answers depend on this "
     "provisional assumption. This dependency has not been validated.":

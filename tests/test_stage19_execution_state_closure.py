@@ -428,7 +428,9 @@ def test_e32_a_project_without_experiments_still_carries_the_truthful_note(clien
 # E5. Stage-19 closure truth
 # ==========================================================================
 _COMPLETE = "STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE"
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 20 — ENTERED / PARTIAL — NAVIGATION ONLY"
+# The later Owner-authorized Stage 20 closure moved the marker on to Stage 21 (navigation only); the Stage-19
+# completion and the "no Stage-20 implementation by the Stage-19 closure" fact stay true history.
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 21 — ENTERED / PARTIAL — NAVIGATION ONLY"
 _NO_S20 = "NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE"
 
 
@@ -448,7 +450,9 @@ def test_e40_the_closure_truth_is_recorded_on_every_current_surface():
     for name, text in surfaces.items():
         assert _COMPLETE in text, name
         assert _MARKER in text, name
-        assert _NO_S20 in text, name
+    for name in ("ACTIVE_INCREMENT_CONTRACT.md", "INVENTORAI_MASTER_EXECUTION_ROADMAP.md",
+                 "INVENTORAI_MASTER_ROADMAP_EXECUTION_CHECKLIST.md", "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md"):
+        assert _NO_S20 in surfaces[name], name
     assert "**ACTIVE CONTRACT: NONE.**" in surfaces["CLAUDE.md"]
     assert "Execution-State Disclosure" not in _doc("OWNER_DECISION_REGISTER.md")
 
@@ -456,9 +460,10 @@ def test_e40_the_closure_truth_is_recorded_on_every_current_surface():
 def test_e41_only_stage_19_is_ticked_and_the_limits_are_preserved():
     roadmap = io.open(os.path.join(_DOCS, "INVENTORAI_MASTER_EXECUTION_ROADMAP.md"), encoding="utf-8").read()
     assert re.search(r"^- \[x\] \*\*19 — WS-PFV-001/CAP-09:\*\*", roadmap, re.M)
-    for stage in (15, 18):
+    # Stage 20 was ticked later by its own Owner-authorized closure (Owner-declared assumption scope), not by this one
+    for stage in (15, 18, 20):
         assert re.search(r"^- \[x\] \*\*%d — " % stage, roadmap, re.M), stage
-    for stage in (11, 13, 14, 16, 17, 20, 21, 22):
+    for stage in (11, 13, 14, 16, 17, 21, 22):
         assert re.search(r"^- \[ \] \*\*%d — " % stage, roadmap, re.M), stage
     flat = re.sub(r"\s+", " ", roadmap)
     for limit in ("FULL CAP-09: NOT AUTHORIZED", "FULL WS-PFV-001: NOT AUTHORIZED",
