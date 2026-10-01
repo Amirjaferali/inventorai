@@ -119,6 +119,15 @@ class ContradictionDeclarationRejected(StoreError):
     Decided before any row is written; nothing is written."""
 
 
+class AssumptionSuccessorRejected(StoreError):
+    """Stage 20 closure: a revised-assumption or replacement-answer append is
+    not valid against the DURABLE ledger inside the write transaction (the
+    target unknown, not a provisional assumption, already superseded, without
+    a gap, or the successor not inheriting its gap / question target, or the
+    resulting ancestry not the closed bounded shape). Decided before any row is
+    written; nothing is written."""
+
+
 class AssumptionDependencyDeclarationRejected(StoreError):
     """CAP-08 Slice 1: an `assumption_dependency_declared` batch is not valid
     against the DURABLE ledger inside the write transaction (an endpoint
@@ -2941,6 +2950,84 @@ class SqliteRecordStore:
                     "idempotency_key) VALUES (?, ?, ?, ?, ?)",
                     (project_id, seq + offset, record.record_id,
                      json.dumps(payload, sort_keys=True), key))
+
+    def append_assumption_successor(self, project_id: str, record,
+                                    idempotency_key: str) -> None:
+        """Stage 20 closure — append ONE record that supersedes ONE of the
+        inventor's provisional assumptions: a revised `provisional_assumption`
+        or the inventor's own `answered` replacement. Its target is re-resolved
+        against the DURABLE ledger INSIDE the same serialized write transaction
+        (``BEGIN IMMEDIATE``): the target must be a `provisional_assumption` of
+        THIS project that nothing supersedes yet, with a non-null gap; the
+        successor must inherit that gap and question target verbatim; the
+        whole history plus this record must pass the record contract's own
+        validation and the closed assumption-ancestry shape. Anything else
+        fails closed (``AssumptionSuccessorRejected``) with nothing written —
+        so two racing successors of one assumption can never both commit. The
+        durable idempotency key is required and rides the existing partial
+        UNIQUE index; a duplicate raises ``sqlite3.IntegrityError``."""
+        from engine.idea_state import (
+            ANCESTRY_ASSUMPTION_ORIGIN, DISPOSITION_PROVISIONAL_ASSUMPTION,
+            classify_assumption_ancestry)
+        from engine.record_contract import (
+            ContractError, assertion_from_dict, reconcile_supersession_edges)
+        if getattr(record, "disposition", None) not in (
+                DISPOSITION_PROVISIONAL_ASSUMPTION, DISPOSITION_ANSWERED):
+            raise AssumptionSuccessorRejected("not an assumption successor")
+        supersedes = list(getattr(record, "supersedes", None) or ())
+        if len(supersedes) != 1:
+            raise AssumptionSuccessorRejected("exactly one target is required")
+        if not idempotency_key:
+            raise AssumptionSuccessorRejected("an idempotency key is required")
+        target_id = supersedes[0]
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            proj = self._conn.execute(
+                "SELECT idea_id, contract_version FROM projects WHERE project_id = ?",
+                (project_id,)).fetchone()
+            if proj is None:
+                raise ProjectNotFound(project_id)
+            rows = self._conn.execute(
+                "SELECT payload FROM records WHERE project_id = ? ORDER BY seq ASC",
+                (project_id,)).fetchall()
+            payload = assertion_to_dict(record)
+            try:
+                history = [assertion_from_dict(json.loads(p)) for (p,) in rows]
+                reconcile_supersession_edges(history)
+            except ContractError:
+                raise AssumptionSuccessorRejected(
+                    "the durable ledger is not valid") from None
+            target = next((r for r in history if r.record_id == target_id), None)
+            if (target is None
+                    or target.disposition != DISPOSITION_PROVISIONAL_ASSUMPTION
+                    or target.superseded_by is not None
+                    or target.gap_context is None
+                    or record.gap_context != target.gap_context
+                    or record.question_target != target.question_target):
+                raise AssumptionSuccessorRejected(
+                    "the target is not a current provisional assumption")
+            try:
+                history.append(assertion_from_dict(payload))
+                reconcile_supersession_edges(history)
+                ProjectRecordContract(idea_id=proj[0], assertions=history,
+                                      contract_version=proj[1]).validate()
+            except ContractError:
+                raise AssumptionSuccessorRejected(
+                    "the successor is not valid against the durable ledger"
+                ) from None
+            if classify_assumption_ancestry(
+                    history[-1], {r.record_id: r for r in history}) \
+                    != ANCESTRY_ASSUMPTION_ORIGIN:
+                raise AssumptionSuccessorRejected(
+                    "the successor's assumption ancestry is not valid")
+            seq = self._conn.execute(
+                "SELECT COALESCE(MAX(seq), -1) + 1 FROM records WHERE project_id = ?",
+                (project_id,)).fetchone()[0]
+            self._conn.execute(
+                "INSERT INTO records (project_id, seq, record_id, payload, idempotency_key) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (project_id, seq, record.record_id,
+                 json.dumps(payload, sort_keys=True), idempotency_key))
 
     def committed_records_for_idempotency_key_prefix(self, project_id: str,
                                                      prefix: str):

@@ -102,6 +102,7 @@ from engine.record_store import (
     SubsystemInterfacesCorrupt as _SubsystemInterfacesCorrupt,
     InterfacePreparationsCorrupt as _InterfacePreparationsCorrupt,
     ResultEventRejected as _ResultEventRejected,
+    AssumptionSuccessorRejected as _AssumptionSuccessorRejected,
     ResultEventConflict as _ResultEventConflict,
     InterfaceObservationRejected as _InterfaceObservationRejected,
     InterfaceObservationCapReached as _InterfaceObservationCapReached,
@@ -295,6 +296,10 @@ from engine.session_reconstruction import (
     SUPPORTED_PATH as _RECON_SUPPORTED_PATH,
     MAX_ACCEPTED_ANSWER_REPLAY as _RECON_MAX_ANSWER_REPLAY,
     reconstruct_readonly_state,
+    # Stage 20 closure: the ONE question-level routing exclusion and the ONE
+    # effective-version resolution, shared with reconstruction.
+    question_excluded_by_routing as _question_excluded_by_routing,
+    effective_engine_contract_version as _effective_engine_contract_version,
 )
 # MSNL local-only shadow Candidate 01: the web layer may reach ONLY the capture
 # seam (`_msnl_capture` below). Adapters and evaluation are never called here.
@@ -1518,6 +1523,50 @@ DEPENDENCY_STALE_MESSAGE = (
 DEPENDENCY_UNKNOWN_MESSAGE = (
     "We could not tell whether that dependency was saved. Reload this page "
     "to see what your project holds before recording it again.")
+
+# Stage 20 closure — the inventor's explicit revision of one of their own
+# provisional assumptions, or its replacement by their own answer
+# (assumption_action). Truthful: nothing is validated, confirmed or rejected,
+# and a skipped replacement never claims progress. Acks render through
+# `_interaction_ack` (localize_deep); refusals through `_answer_error`.
+ASSUMPTION_REVISED_ACK = (
+    "Saved. Your provisional assumption was revised, and the earlier wording "
+    "is kept in your project history. It is still a provisional assumption "
+    "and has not been validated.")
+ASSUMPTION_REPLACED_ACK = (
+    "Saved. Your provisional assumption was replaced by your answer, and the "
+    "assumption is kept in your project history. Everything shown has been "
+    "recomputed. Your answer has not been validated.")
+ASSUMPTION_REPLACED_SKIPPED_ACK = (
+    "Replacement recorded. This answer was not replayed for progression "
+    "because its historical question/area was not currently eligible. It "
+    "remains unvalidated.")
+ASSUMPTION_REPLACEMENT_RECORDED_ACK = (
+    "Your replacement is already recorded in your project. It has not been "
+    "validated.")
+ASSUMPTION_ACTION_NOT_SAVED_MESSAGE = (
+    "That change to your assumption could not be saved just now. Nothing was "
+    "changed.")
+ASSUMPTION_ACTION_INVALID_MESSAGE = (
+    "Enter your revised assumption or your answer. Nothing was changed.")
+ASSUMPTION_ACTION_STALE_MESSAGE = (
+    "That assumption is no longer current, or this page no longer matches "
+    "what your project holds, so nothing was saved. Review your current "
+    "assumptions and try again.")
+ASSUMPTION_REPLACE_ROUTED_MESSAGE = (
+    "This assumption is your note on a question that is waiting for "
+    "specialist or evidence input, so it cannot be replaced by your own "
+    "answer. You can still revise it. Nothing was changed.")
+ASSUMPTION_ACTION_UNKNOWN_MESSAGE = (
+    "We could not confirm whether that change was saved. Reload this page to "
+    "see what your project holds before trying again.")
+ASSUMPTION_REVISION_SAVED_NOT_SHOWN_MESSAGE = (
+    "Your revised assumption was saved to your project, but this page could "
+    "not show it just now. Reload this page to see what your project holds.")
+ASSUMPTION_REPLACEMENT_SAVED_NOT_APPLIED_MESSAGE = (
+    "Your replacement was saved, but it could not be applied to this page "
+    "just now. What you see below has not changed yet. The saved replacement "
+    "will be reflected whenever this project can be rebuilt successfully.")
 
 # Stage 15 Slice 2 — the inventor's explicit declaration of how the two parts
 # of an integrated invention interact (declare_interface). Truthful: the
@@ -5967,6 +6016,9 @@ def show_session(sid):
                                if _cap08_eligible_assumptions(state)
                                and _cap10_eligible_endpoints(state) else ""),
         dependency_view=_assumption_dependency_view(state),
+        # Stage 20 closure: revise / replace forms, one per ACTIVE provisional
+        # assumption, each with its own signed binding (writable pages only).
+        assumption_actions=_assumption_actions_context(sid, entry, state),
         # Stage 15 Slice 2: the dedicated signed binding of the interaction
         # form and its separate submission identity (issued and held on the
         # entry ONLY while the form is actually offered).
@@ -7189,6 +7241,414 @@ def declare_dependency(sid):
         return _publish()
     # Durable commit of the complete batch confirmed: publish it.
     return _publish()
+
+
+# --- Stage 20 closure: revise / replace ONE provisional assumption -------------
+# Two explicit Owner actions on ONE of the inventor's own ACTIVE provisional
+# assumptions, through the canonical append-only supersession relation only:
+#   revise_assumption   -> a NEW `provisional_assumption` (a non-answer: no
+#                          progression, no replay, no reconstruction);
+#   replace_with_answer -> a NEW `answered` record at its own new durable
+#                          position, then the UNCHANGED full reconstruction,
+#                          whose assumption-ancestry applicability law decides
+#                          whether it ran progression there.
+# Both inherit the target's gap and question target verbatim, stay
+# OWNER_STATED / UNVALIDATED, keep the old assumption as history and transfer
+# no dependency. Nothing is inferred from a later answer and nothing is
+# validated, confirmed or rejected. Ordinary /correct is untouched.
+ASSUMPTION_ACTION_REVISE = "revise_assumption"
+ASSUMPTION_ACTION_REPLACE = "replace_with_answer"
+_ASSUMPTION_ACTIONS = {ASSUMPTION_ACTION_REVISE: _DISP_PROVISIONAL,
+                       ASSUMPTION_ACTION_REPLACE: _DISP_ANSWERED}
+_ASSUMPTION_BINDING_KIND = "CAP08_ASSUMPTION_ACTION"
+_ASSUMPTION_BINDING_DOMAIN = "cap08-assumption-action-binding-v1"
+_ASSUMPTION_IDENTITY_DOMAIN = "cap08-assumption-action-identity-v1"
+_ASSUMPTION_BINDING_MAX_LEN = 2048
+
+
+def _assumption_binding_sig(sid, token, ecv, target_id, actions):
+    msg = _canonical_message(_ASSUMPTION_BINDING_DOMAIN, sid, token,
+                             _ASSUMPTION_BINDING_KIND, _uqtr_opt(ecv),
+                             target_id, ",".join(actions))
+    return _p2a_hmac.new(_answer_secret(), msg, _p2a_hashlib.sha256).hexdigest()
+
+
+def _issue_assumption_binding(sid, token, state, target_id, actions):
+    """The signed binding ONE assumption's forms carry: this project, the
+    answer token rendered on the SAME page, the effective engine version, the
+    exact target assumption and the closed actions offered for it."""
+    ecv = getattr(state, "engine_contract_version", None)
+    actions = sorted(actions)
+    payload = json.dumps({"k": _ASSUMPTION_BINDING_KIND, "v": ecv,
+                          "t": target_id, "x": actions},
+                         sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    body = _p2a_b64.urlsafe_b64encode(payload.encode("ascii")).decode(
+        "ascii").rstrip("=")
+    return body + "." + _assumption_binding_sig(sid, token, ecv, target_id, actions)
+
+
+def _verified_assumption_binding(sid, token, raw):
+    """``(ecv, target_id, actions)`` of a binding signed for exactly this sid
+    and token under the assumption-action kind and domain, or None (missing,
+    malformed, oversized, another kind / project / token, tampered, an action
+    outside the closed vocabulary). Constant-time comparison; never raises."""
+    try:
+        if (not isinstance(raw, str) or not raw
+                or len(raw) > _ASSUMPTION_BINDING_MAX_LEN or not token):
+            return None
+        body, sep, sig = raw.rpartition(".")
+        if not sep or not body or not sig:
+            return None
+        data = json.loads(_p2a_b64.urlsafe_b64decode(
+            (body + "=" * (-len(body) % 4)).encode("ascii")).decode("ascii"))
+        if not isinstance(data, dict) or set(data) != {"k", "v", "t", "x"} \
+                or data["k"] != _ASSUMPTION_BINDING_KIND:
+            return None
+        ecv, target_id, actions = data["v"], data["t"], data["x"]
+        if (ecv is not None and not isinstance(ecv, str)) \
+                or not isinstance(target_id, str) or not target_id \
+                or not isinstance(actions, list) or not actions \
+                or len(set(actions)) != len(actions) \
+                or any(a not in _ASSUMPTION_ACTIONS for a in actions) \
+                or actions != sorted(actions):
+            return None
+        expected = _assumption_binding_sig(sid, token, ecv, target_id, actions)
+        if not _p2a_hmac.compare_digest(sig.encode("utf-8"),
+                                        expected.encode("ascii")):
+            return None
+        return ecv, target_id, tuple(actions)
+    except Exception:
+        return None
+
+
+def _assumption_action_key(sid, action, target_id, gap_context,
+                           question_target, content):
+    """The durable identity of ONE assumption action, separated by action:
+    HMAC over (project, action, target assumption, inherited gap, inherited
+    question target with an explicit None encoding, exact content). Live
+    `state.iteration` is deliberately NOT material: a target can be superseded
+    exactly once, so these fields name the one allowed event, while the live
+    iteration may change after it commits."""
+    msg = _canonical_message(_ASSUMPTION_IDENTITY_DOMAIN, sid, action,
+                             target_id, gap_context or "",
+                             _uqtr_opt(question_target), content)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _assumption_successor_matches(payload, action, target):
+    """The STORED successor is exactly this event's material (``target`` is
+    the immutable target assumption; its gap / question target are the ones a
+    successor must inherit)."""
+    return (isinstance(payload, dict)
+            and payload.get("disposition") == _ASSUMPTION_ACTIONS[action]
+            and payload.get("supersedes") == [target.record_id]
+            and payload.get("gap_context") == target.gap_context
+            and payload.get("question_target") == target.question_target)
+
+
+def _committed_routing_carrier(sid, state):
+    """A read-only carrier whose ``need_routing`` holds the project's COMMITTED
+    NeedRouting history (validated against the committed policy and applied in
+    order), or one with none when the project's effective engine version is not
+    routing-aware. Raises when committed state cannot be read or validated, so
+    every caller fails closed (Replace is then neither offered nor accepted)."""
+    import types
+    store = _get_store()
+    if not store.committed_state_readable():
+        raise StoreError("committed state is not readable")
+    carrier = types.SimpleNamespace(need_routing=[])
+    inputs = store.load_reconstruction_inputs(sid) or {}
+    stamp = inputs.get("engine_contract_version")
+    if stamp is None:
+        return carrier
+    version = _effective_engine_contract_version(store, sid, stamp)[0]
+    routing = tuple(store.load_need_routing(sid))
+    if not routing:
+        return carrier
+    if not _need_routing.is_routing_aware(version):
+        raise _need_routing.NeedRoutingError("routing on a non-aware version")
+    _need_routing.validate_against_policy(
+        routing, inputs.get("confirmed_domain") or getattr(state, "domain", None))
+    for rev in routing:
+        _need_routing.apply_revision(carrier, rev)
+    return carrier
+
+
+def _assumption_actions_context(sid, entry, state):
+    """Render context for the Stage-20 actions: one item per ACTIVE provisional
+    assumption with a gap, in ledger order, each with its own signed binding.
+    Replace is offered only when committed routing truth does not exclude the
+    assumption's exact question (and never when that truth is unreadable).
+    Empty on a non-writable page."""
+    if getattr(state, "domain", None) is None:
+        return []
+    assumptions = [r for r in getattr(state, "assertions", []) or []
+                   if r.disposition == _DISP_PROVISIONAL
+                   and getattr(r, "superseded_by", None) is None
+                   and r.gap_context is not None]
+    if not assumptions:
+        return []
+    try:
+        carrier = _committed_routing_carrier(sid, state)
+    except Exception:
+        carrier = None
+    token = _answer_token_for(sid, entry)
+    items = []
+    for rec in assumptions:
+        replace_ok = carrier is not None and not _question_excluded_by_routing(
+            carrier, rec.gap_context, rec.question_target)
+        actions = [ASSUMPTION_ACTION_REVISE] + (
+            [ASSUMPTION_ACTION_REPLACE] if replace_ok else [])
+        items.append({"record": rec, "replace": replace_ok,
+                      "replace_blocked": (None if replace_ok else
+                                          "unreadable" if carrier is None
+                                          else "routed"),
+                      "binding": _issue_assumption_binding(
+                          sid, token, state, rec.record_id, actions)})
+    return items
+
+
+def _assumption_lapse_notice(entry, pre_state, review, new_state):
+    """W2-D transparency for a replacement, exactly as the correction route
+    reports it: a gap that was ACCEPTED_RISK immediately before this action and
+    is no longer covered after the rebuild is announced. Display-only."""
+    pre_accepted = {g.gap_type for g in getattr(pre_state, "gaps", [])
+                    if g.status == "ACCEPTED_RISK"}
+    lapsed, resolved, seen = [], [], set()
+    for oc in getattr(review, "risk_acceptance_outcomes", ()):
+        if oc.applied or oc.gap_context in seen:
+            continue
+        seen.add(oc.gap_context)
+        if oc.gap_context not in pre_accepted:
+            continue
+        gap = new_state.get_gap(oc.gap_context)
+        status = gap.status if gap is not None else None
+        if status == "ACCEPTED_RISK":
+            continue
+        (resolved if status == "CLOSED" else lapsed).append(oc.gap_context)
+    if lapsed or resolved:
+        entry["_risk_lapse_notice"] = {"action": lapsed, "resolved": resolved}
+
+
+@app.route("/session/<sid>/assumption-action", methods=["POST"])
+def assumption_action(sid):
+    """Stage 20 closure — revise ONE of the inventor's own active provisional
+    assumptions, or replace it with their own answer.
+
+    Order: project authorization -> request authenticity (current-format
+    answer token for this project + the signed assumption binding + a closed
+    action) -> the EXACT committed retry of this event, read from committed
+    durable state only (recognised even though its target is now superseded;
+    it never appends, captures or republishes) -> for a NEW event only: the
+    live form context and an ACTIVE target -> (Replace) committed routing truth
+    and quantity-history prevalidation -> a deep-copy staged mint -> ONE
+    durable append re-validated inside its transaction -> publication.
+    Revision publishes the staged ledger; replacement rebuilds through the
+    UNCHANGED full reconstruction and reattaches quantities before replacing
+    live state atomically. Store failures leave live state unchanged and say
+    only what committed state establishes."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    token = request.form.get("answer_token", "")
+    binding = _verified_assumption_binding(
+        sid, token, request.form.get("assumption_binding", ""))
+    action = request.form.get("assumption_action", "")
+    if (getattr(state, "domain", None) is None
+            or not _valid_answer_token(sid, token) or binding is None
+            or action not in _ASSUMPTION_ACTIONS or action not in binding[2]):
+        entry["_answer_error"] = ASSUMPTION_ACTION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    bound_ecv, target_id, _bound_actions = binding
+    content = (request.form.get("content") or "").strip()
+    _input_error = _free_text_error(content, _current_ui_lang())
+    if _input_error is not None:
+        return (_input_error, 400)
+    if not content:
+        entry["_answer_error"] = ASSUMPTION_ACTION_INVALID_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # The target is immutable ledger truth: its gap and question target are
+    # what any successor inherits, so they also key the committed identity.
+    target = next((r for r in getattr(state, "assertions", []) or []
+                   if r.record_id == target_id), None)
+    if (target is None or target.disposition != _DISP_PROVISIONAL
+            or target.gap_context is None):
+        entry["_answer_error"] = ASSUMPTION_ACTION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    idem_key = _assumption_action_key(sid, action, target_id, target.gap_context,
+                                      target.question_target, content)
+
+    def _committed_prior():
+        # IR-01: confirmation is read ONLY from committed durable state.
+        return _get_store().committed_record_payload_for_idempotency_key(
+            sid, idem_key)
+
+    def _successor_in_live(payload):
+        rid = payload.get("record_id") if isinstance(payload, dict) else None
+        return any(r.record_id == rid for r in state.assertions)
+
+    def _exact_retry(payload):
+        # The committed event is exactly this one: confirm ONLY that it is
+        # durably recorded. Never append, capture or republish, and never
+        # upgrade a saved-but-not-applied outcome into an applied one.
+        if not _assumption_successor_matches(payload, action, target) \
+                or payload.get("content") != content:
+            entry["_answer_error"] = ASSUMPTION_ACTION_NOT_SAVED_MESSAGE
+        elif not _successor_in_live(payload):
+            entry["_answer_error"] = (
+                ASSUMPTION_REVISION_SAVED_NOT_SHOWN_MESSAGE
+                if action == ASSUMPTION_ACTION_REVISE
+                else ASSUMPTION_REPLACEMENT_SAVED_NOT_APPLIED_MESSAGE)
+        else:
+            entry["_interaction_ack"] = (
+                ASSUMPTION_REVISED_ACK if action == ASSUMPTION_ACTION_REVISE
+                else ASSUMPTION_REPLACEMENT_RECORDED_ACK)
+        return redirect(url_for("show_session", sid=sid))
+
+    # EXACT committed retry, recognised BEFORE any freshness check (after a
+    # success the target is correctly superseded).
+    try:
+        prior = _committed_prior()
+    except Exception:
+        entry["_answer_error"] = ASSUMPTION_ACTION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    if prior is not None:
+        return _exact_retry(prior)
+
+    # NEW event: the binding must describe the CURRENT live form context and
+    # the target must still be ACTIVE. An old token or signature alone never
+    # authorizes a new write.
+    if (token != entry.get("answer_token")
+            or bound_ecv != getattr(state, "engine_contract_version", None)
+            or target.superseded_by is not None):
+        entry["_answer_error"] = ASSUMPTION_ACTION_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    if action == ASSUMPTION_ACTION_REPLACE:
+        # Safe Question Reduction: a note on an OUTSTANDING routed question is
+        # not an Owner answer that may substitute for specialist / evidence
+        # input. Resolved from committed routing truth for the exact question.
+        try:
+            carrier = _committed_routing_carrier(sid, state)
+        except Exception:
+            entry["_answer_error"] = ASSUMPTION_ACTION_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        if _question_excluded_by_routing(carrier, target.gap_context,
+                                         target.question_target):
+            entry["_answer_error"] = ASSUMPTION_REPLACE_ROUTED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        # T2-A ordering: the quantity history must be loadable BEFORE an
+        # answered append, so the rebuild can reattach it afterwards.
+        try:
+            _get_store().load_requirement_quantities(sid)
+        except Exception:
+            entry["_answer_error"] = ASSUMPTION_ACTION_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+
+    # Staged mint against DEEP COPIES: the canonical mint writes the inverse
+    # supersession edge, so the live assumption must not be reachable from the
+    # staging ledger before the durable append commits.
+    import copy
+    _minter = IdeaState(idea_id=state.idea_id)
+    _minter.assertions = [copy.deepcopy(r) for r in state.assertions]
+    staged_ids = [r.record_id for r in state.assertions]
+    try:
+        new_record = _minter.record_interaction(
+            action=_ASSUMPTION_ACTIONS[action], content=content,
+            gap_context=target.gap_context, iteration=state.iteration,
+            supersedes=[target_id], question_target=target.question_target)
+    except ValueError:
+        entry["_answer_error"] = ASSUMPTION_ACTION_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    newly_appended = False
+    try:
+        _get_store().append_assumption_successor(
+            sid, new_record, idempotency_key=idem_key)
+        newly_appended = True
+    except _AssumptionSuccessorRejected:
+        # Nothing was written by THIS request. An identical concurrent
+        # submission may have committed this exact event first (the target is
+        # then superseded): answer as its exact retry, never as "not saved".
+        try:
+            prior = _committed_prior()
+        except Exception:
+            prior = None
+        if prior is not None:
+            return _exact_retry(prior)
+        entry["_answer_error"] = ASSUMPTION_ACTION_STALE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    except (sqlite3.IntegrityError, StoreError, sqlite3.Error):
+        # Never assume an outcome: continue only when committed state shows
+        # EXACTLY this event under this identity.
+        try:
+            prior = _committed_prior()
+        except Exception:
+            entry["_answer_error"] = ASSUMPTION_ACTION_UNKNOWN_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        if prior is None:
+            entry["_answer_error"] = ASSUMPTION_ACTION_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        if prior.get("record_id") != new_record.record_id:
+            # Committed by another identical submission: an exact retry.
+            return _exact_retry(prior)
+        if not _assumption_successor_matches(prior, action, target) \
+                or prior.get("content") != content:
+            entry["_answer_error"] = ASSUMPTION_ACTION_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+
+    if action == ASSUMPTION_ACTION_REVISE:
+        # A revision is a non-answer: no progression, no replay, no
+        # reconstruction, no quantity reattachment, no MSNL capture. Publish
+        # the COMPLETE staged ledger (successor + inverse edge) only when live
+        # state is still exactly the ledger it was staged from.
+        if [r.record_id for r in state.assertions] != staged_ids:
+            entry["_answer_error"] = ASSUMPTION_REVISION_SAVED_NOT_SHOWN_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        state.assertions = _minter.assertions
+        entry["_interaction_ack"] = ASSUMPTION_REVISED_ACK
+        return redirect(url_for("show_session", sid=sid))
+
+    def _msnl_capture_replacement(status):
+        # Only the NEWLY committed answered successor, through the existing
+        # correction observation; never a retry, a replay or a revision.
+        if newly_appended:
+            _msnl_capture(
+                project_ref=sid, record_id=new_record.record_id,
+                accepted_text=content, gap_type=target.gap_context,
+                question_target=target.question_target,
+                domain=getattr(state, "domain", None),
+                kind=_msnl_shadow.EVENT_CORRECTION, correction_status=status)
+
+    # Replacement: the UNCHANGED full deterministic reconstruction decides, at
+    # the answer's own durable position, whether it ran progression.
+    try:
+        _recon = reconstruct_readonly_state(_get_store(), sid)
+    except Exception:
+        _recon = None
+    if _recon is None or _recon.review.level != 1 or _recon.state is None \
+            or not _attach_quantity_history(sid, _recon.state):
+        entry["_answer_error"] = ASSUMPTION_REPLACEMENT_SAVED_NOT_APPLIED_MESSAGE
+        _msnl_capture_replacement(_msnl_shadow.CORRECTION_SAVED_NOT_APPLIED)
+        return redirect(url_for("show_session", sid=sid))
+    outcome = next((o for o in _recon.review.assumption_origin_outcomes
+                    if o.record_id == new_record.record_id), None)
+    if outcome is None:
+        entry["_answer_error"] = ASSUMPTION_REPLACEMENT_SAVED_NOT_APPLIED_MESSAGE
+        _msnl_capture_replacement(_msnl_shadow.CORRECTION_SAVED_NOT_APPLIED)
+        return redirect(url_for("show_session", sid=sid))
+    _pre_state = state
+    entry["state"] = _recon.state
+    entry["last_result"] = None
+    entry.pop("answer_token", None)
+    entry["_interaction_ack"] = (ASSUMPTION_REPLACED_ACK if outcome.applied
+                                 else ASSUMPTION_REPLACED_SKIPPED_ACK)
+    _assumption_lapse_notice(entry, _pre_state, _recon.review, _recon.state)
+    _msnl_capture_replacement(_msnl_shadow.CORRECTION_APPLIED)
+    return redirect(url_for("show_session", sid=sid))
 
 
 # --- Stage 15 Slice 2: Owner-declared interaction between the two parts -------

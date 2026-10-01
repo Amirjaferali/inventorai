@@ -3,20 +3,41 @@
 ## Current authority
 
 **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The last Owner-authorized bounded
-product slice — Stage 19 — Experiment Execution-State Disclosure — Closure — is DELIVERED (Git / GitHub own its PR,
-merge and review identity), and no subsequent increment has been authorized. STAGE 19 — COMPLETE for the current
-planning-only scope only (`STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE`; checkbox ticked for that scope only);
-STAGE 18 stays COMPLETE for the current Mechanical + Electrical / Electronics scope only (`STAGE 18: COMPLETE —
-CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`). This does NOT mean the roadmap, Stage 20 or any other Stage
-is complete, that a next slice is authorized, or that full CAP-09, full WS-PFV-001 or full CAP-01 has been opened (each stays NOT AUTHORIZED);
-delivered history never fills the active-contract slot. `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 20 — ENTERED /
-PARTIAL — NAVIGATION ONLY`; NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE (Stage 20 / CAP-08 stays
-ENTERED / PARTIAL through CAP-08 Slice 1 only); routing past Stages 11, 13, 14, 16 and 17 completes none of them.
+product slice — Stage 20 — Assumption Revision & Replacement — Closure — is DELIVERED (`STAGE 20 CLOSURE:
+DELIVERED`; Git / GitHub own its PR, merge and review identity), and no subsequent increment has been authorized. STAGE 20 — COMPLETE for the current
+Owner-declared assumption scope only (`STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE`; checkbox
+ticked for that scope only); STAGE 19 stays COMPLETE for the current planning-only scope only (`STAGE 19: COMPLETE —
+CURRENT PLANNING-ONLY SCOPE`); STAGE 18 stays COMPLETE for the current Mechanical + Electrical / Electronics scope
+only (`STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`). This does NOT mean the roadmap,
+Stage 21 or any other Stage is complete, that a next slice is authorized, or that full CAP-08, full CAP-10, full
+CAP-09, full WS-PFV-001 or full CAP-01 has been opened (each stays NOT AUTHORIZED; `FULL CAP-08: NOT AUTHORIZED`;
+`FULL CAP-10: NOT AUTHORIZED`); delivered history never fills the active-contract slot. `MASTER ROADMAP SEQUENTIAL
+MARKER: STAGE 21 — ENTERED / PARTIAL — NAVIGATION ONLY`; NO STAGE-21 IMPLEMENTATION AUTHORIZED BY STAGE-20 CLOSURE
+(Stage 21 / CAP-10 stays ENTERED / PARTIAL through CAP-10 Slice 1 only); routing past Stages 11, 13, 14, 16 and 17
+completes none of them.
 The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — read-only planning / selection over live
 repository and product evidence until the Owner separately authorizes another product increment; it pre-authorizes
-no Stage-20 or other Stage work, CAP-08 or CAP-09 work, further CAP-01 or Technical Deepening slice, MSNL
+no Stage-21 or other Stage work, CAP-08, CAP-09 or CAP-10 work, further CAP-01 or Technical Deepening slice, MSNL
 activation, compatibility analysis, IRL scoring, interface engineering, Robotics assessment implementation, IoT or
 other Domain Pack.
+Stage 20 closure (delivered; completes Stage 20 for the current Owner-declared assumption scope, no new Master
+Roadmap Stage): for each ACTIVE Owner-declared provisional assumption with a gap context the session page offers two
+explicit Owner actions on the existing CAP-08 ledger write path (`web/app.py` `assumption_action`,
+`engine/record_store.py` `append_assumption_successor`) — Revise (provisional → provisional) and Replace with my
+answer (provisional → answered). Each appends ONE `supersedes` successor that inherits the gap and question target
+verbatim, is OWNER_STATED / UNVALIDATED, is staged on a deep copy and is re-validated inside the write transaction;
+earlier entries stay as history and dependency edges on the superseded assumption become inactive (no transfer, no
+inferred edge). Revise runs no progression, replay or reconstruction. Replace is refused while the target's exact
+question is a CURRENT outstanding routed need (revision stays allowed); otherwise the EXISTING full deterministic
+reconstruction runs and classifies every active answered record by its ancestry (`engine/idea_state.py`
+`classify_assumption_ancestry`): ordinary → the unchanged replay; assumption-origin (assumption then answer, one
+predecessor per link, identical gap and question target) → the ordinary `run_iteration` only when the historical gap
+exists, is the selected gap and its exact question is not routed, otherwise a disclosed skip (no progression
+iteration ran; no gap is created or injected; routing revisions still apply in order); malformed → reconstruction
+fails closed. `run_iteration`, gap selection, ordinary `/correct`, NeedRouting, the accepted-risk lifecycle, CAP-10,
+decisions and evidence are unchanged; no schema, disposition, risk revocation, validation, automatic resolution,
+inference from later answers or AI / provider call. Full CAP-08 stays NOT AUTHORIZED.
+The preceding bounded slice — Stage 19 — Experiment Execution-State Disclosure — Closure — is DELIVERED.
 Stage 19 closure (delivered; completes Stage 19 for the current planning-only scope, no new Master Roadmap Stage):
 for each CURRENT Section-11 experiment the report / deliverable and PDF state exactly ONE execution state bound only
 by the canonical `experiment_id` — NO RESULT, RECORDED N (N = execution roots via the canonical `result_chains`; a
@@ -143,7 +164,7 @@ levels, full D4 compatibility evaluation, interface engineering, subsystem-level
 engines, analysis-focus switching, peer root domains, generic N-domain composition, a Mechatronics Domain Pack,
 Robotics, IoT, Drone / Unmanned, Renewable and Satellite / Space stay NOT AUTHORIZED; deployment and release
 NOT AUTHORIZED. Stage 18 — D13 / CAP-01 — is COMPLETE for the current Mechanical + Electrical / Electronics scope
-(checkbox ticked for that scope only; the Stage 18 closure above), and the MASTER ROADMAP SEQUENTIAL MARKER is now Stage 20 for navigation only (the Stage 19 closure above): there is no current authorized Technical
+(checkbox ticked for that scope only; the Stage 18 closure above), and the MASTER ROADMAP SEQUENTIAL MARKER is now Stage 21 for navigation only (the Stage 20 closure above): there is no current authorized Technical
 Deepening subtask, no next Technical Deepening slice is authorized and no additional CAP-01 implementation is
 authorized; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED.
 Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals — is DELIVERED
@@ -246,7 +267,8 @@ through the Owner-declared assumption → answer dependency (one OWNER_STATED, U
 `assumption_dependency_declared` record per directed assumption → answer edge; domain-neutral, no
 automatic or AI dependency inference, no validation, no evidence-needed metadata and no readiness,
 gap, maturity, progression, scoring, NeedRouting or validation-award authority) — is DELIVERED
-(PR #704, merge `56eea683138a7880e836c7d577faf3f289beb22b`). CAP-10 Slice 1 — Stage 21 / CAP-10 ENTERED / PARTIAL through the
+(PR #704, merge `56eea683138a7880e836c7d577faf3f289beb22b`); the Stage 20 closure (above) completes Stage 20 for the
+current Owner-declared assumption scope. CAP-10 Slice 1 — Stage 21 / CAP-10 ENTERED / PARTIAL through the
 Owner-declared contradiction between two recorded answers (one OWNER_STATED, UNVALIDATED
 `contradiction_declared` record; no automatic or AI detection, no validation, no winner, no
 resolution, no SYSTEM_INFERRED contradiction writer) — is DELIVERED (PR #703, merge
@@ -296,14 +318,14 @@ Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slic
 Stage 15 — Interface Verification Preparation Metadata — Slice 3 is delivered;
 Stage 15 — Interface Verification Observation Event — Slice 4 is delivered;
 Stage 15 — Integration Evidence & IRL-Compatible View — Closure is delivered, and Stage 15 is COMPLETE for the current
-Mechanical + Electrical / Electronics scope; Stage 19 — Experiment Execution-State Disclosure — Closure is delivered, and Stage 19 is COMPLETE for the current planning-only scope; the Master Roadmap sequential marker is Stage 20 for navigation only (NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE);
+Mechanical + Electrical / Electronics scope; Stage 19 — Experiment Execution-State Disclosure — Closure is delivered, and Stage 19 is COMPLETE for the current planning-only scope; Stage 20 — Assumption Revision & Replacement — Closure is delivered, and Stage 20 is COMPLETE for the current Owner-declared assumption scope; the Master Roadmap sequential marker is Stage 21 for navigation only (NO STAGE-21 IMPLEMENTATION AUTHORIZED BY STAGE-20 CLOSURE);
 ACTIVE CONTRACT: NONE — no product increment is authorized and no other Stage is authorized — the delivered Electrical Technical Deepening slice sat inside
 the already-entered Stage 18 and entered no new Stage (Stage 19 is COMPLETE for the current planning-only scope through its delivered Slices and closure; Stage 22 stays ENTERED / PARTIAL through its delivered
-Slices 1–2; Stages 20 and 21 stay ENTERED / PARTIAL through the delivered CAP-08 and CAP-10
-Slice 1 only), and deployment, public release
+Slices 1–2; Stage 20 is COMPLETE for the current Owner-declared assumption scope through CAP-08 Slice 1 and
+its closure; Stage 21 stays ENTERED / PARTIAL through the delivered CAP-10 Slice 1 only), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former post-Stage-18-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-4 `ACTIVE CONTRACT: NONE`, the former post-CAP-09-Result-Event-Slice-1 `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-3 `ACTIVE CONTRACT: NONE`, the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former post-Stage-19-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-18-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-4 `ACTIVE CONTRACT: NONE`, the former post-CAP-09-Result-Event-Slice-1 `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-3 `ACTIVE CONTRACT: NONE`, the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, the former post-PR-#679 `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -612,7 +634,10 @@ information, not execution authority.
   Stage 15 closure (a new anchored append path inside the EXISTING evidence owner's supersession /
   withdrawal history — not a third chain owner): reuse ONLY the signed submission identity, the HMAC
   key seam, the committed-read / retry pattern and the existing `_write()` transaction; no shared
-  framework, no generic chain primitive, no Commercial / Manufacturing refactor.
+  framework, no generic chain primitive, no Commercial / Manufacturing refactor. Evaluated at the Stage 20
+  closure (a new signed supersession path inside the EXISTING assertion ledger, the same `supersedes` history that
+  `/correct` uses — not a third chain owner): reuse ONLY the HMAC key seam, the committed-read / retry pattern and
+  the existing `_write()` transaction; no shared framework and no CAP-08 / CAP-10 refactor.
 - **NEXT TRIGGER — analytical relationship primitive.** CAP-10 (contradiction) and CAP-08
   (assumption → answer dependency) are two durable relation types. Before a THIRD, inspect
   whether a shared Relationship Primitive is justified. No generic graph in advance; separate from
@@ -803,8 +828,8 @@ information, not execution authority.
   (D) Full future CAP-01 (typed parameters, calculations, specialist mapping, further domains), MSNL and any
   research-backed knowledge expansion under Research Gate 3 stay separately gated; none is reopened by the closure.
 - **WATCH — Stage 19 closure (non-blocking, no repair cycle).** STAGE 19 — COMPLETE for the current
-  planning-only scope only; the MASTER ROADMAP SEQUENTIAL MARKER is Stage 20 for navigation only and no Stage-20
-  implementation is authorized by the closure. (A) The execution state renders on the report / deliverable and PDF
+  planning-only scope only; the closure moved the MASTER ROADMAP SEQUENTIAL MARKER to Stage 20 for navigation only
+  and authorized no Stage-20 implementation (the later Stage 20 closure moved it to Stage 21). (A) The execution state renders on the report / deliverable and PDF
   only; the planning page keeps the existing per-experiment Result Event history unchanged. (B) The canonical
   package's own Section-11 `note` string (`engine/deliverable_assembler.py`) still carries the older English
   wording; the report / PDF now render the corrected English note — reconcile at the next natural package touch, not
@@ -812,6 +837,17 @@ information, not execution authority.
   owner but are not counted on any current row — truthful by design. (D) Full CAP-09 / full WS-PFV-001, a Result
   outcome / pass-fail judgement, a formal experimental variable model, a Failure Criterion field and per-experiment
   risk fields stay NOT AUTHORIZED; none is reopened by the closure.
+- **WATCH — Stage 20 closure (non-blocking, no repair cycle).** STAGE 20 — COMPLETE for the current
+  Owner-declared assumption scope only; the MASTER ROADMAP SEQUENTIAL MARKER is Stage 21 for navigation only and no
+  Stage-21 implementation is authorized by the closure. (A) A replacement whose historical gap / question is not
+  currently eligible is recorded but not replayed for progression; the skip outcome is non-durable (recomputed by
+  every reconstruction) and the copy says so — it claims only that no progression iteration ran, while
+  ledger-derived views (e.g. the Requirement Landscape) may still recompute. (B) Replace is withheld for a routed
+  need note and whenever committed routing cannot be read; revision stays available. (C) The revise / replace
+  section sits on the session page only; the report, PDF and Structured Export are unchanged. (D) Automatic
+  assumption detection or resolution, validation confirmation / rejection, impact or risk scoring, an evidence-needed
+  field, decision linkage, dependency transfer / propagation and AI inference stay NOT AUTHORIZED; none is reopened
+  by the closure.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative

@@ -1171,6 +1171,51 @@ body{overflow-wrap:anywhere}
 </section>
 {% endif %}
 {% endif %}
+{#- Stage 20 closure: revise one of your own provisional assumptions, or replace
+    it with your own answer (a dedicated action with its own signed binding per
+    assumption, never a question answer). The old assumption stays in history;
+    nothing is validated and no dependency moves to the new entry. -#}
+{% if assumption_actions %}
+<section class="assumption-actions" id="assumption-actions" style="margin-top:14px;border:1px solid #d8d2e6;border-radius:4px;background:#fbfaff;padding:10px 14px">
+  <h3 style="font-size:13px;color:#4a3c78;margin:0 0 6px 0">{{ t('UI_S20_HEADING') }}</h3>
+  <p class="journey-note" style="margin:0 0 8px 0">{{ t('UI_S20_EXPLAIN') }}</p>
+  {% for item in assumption_actions %}
+  {% set rec = item.record %}
+  <div class="assumption-action-item" data-assumption-action="{{ rec.record_id }}" style="margin:0 0 10px 0;border-top:1px solid #ece8f4;padding-top:6px">
+    <p style="margin:0;font-size:13px"><bdi>{{ rec.record_id }}</bdi> · {{ rec.gap_context | gap_display }} · <span dir="auto">{{ rec.content }}</span></p>
+    <details class="assumption-revise" style="margin-top:6px">
+      <summary style="cursor:pointer;font-size:13px;color:#4a3c78">{{ t('UI_S20_REVISE_SUMMARY') }}</summary>
+      <form method="POST" action="/session/{{ sid }}/assumption-action">
+        <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+        <input type="hidden" name="answer_token" value="{{ answer_token }}">
+        <input type="hidden" name="assumption_binding" value="{{ item.binding }}">
+        <input type="hidden" name="assumption_action" value="revise_assumption">
+        <label for="revise-{{ rec.record_id }}" style="display:block;font-size:12px;color:#888;margin:6px 0 4px 0">{{ t('UI_S20_REVISE_LABEL') }}</label>
+        <textarea id="revise-{{ rec.record_id }}" name="content" rows="2" required dir="auto" style="width:100%;box-sizing:border-box"></textarea>
+        <button type="submit" style="margin-top:6px">{{ t('UI_S20_REVISE_BUTTON') }}</button>
+      </form>
+    </details>
+    {% if item.replace %}
+    <details class="assumption-replace" style="margin-top:6px">
+      <summary style="cursor:pointer;font-size:13px;color:#4a3c78">{{ t('UI_S20_REPLACE_SUMMARY') }}</summary>
+      <form method="POST" action="/session/{{ sid }}/assumption-action">
+        <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+        <input type="hidden" name="answer_token" value="{{ answer_token }}">
+        <input type="hidden" name="assumption_binding" value="{{ item.binding }}">
+        <input type="hidden" name="assumption_action" value="replace_with_answer">
+        <p class="journey-note" style="margin:6px 0 4px 0">{{ t('UI_S20_REPLACE_NOTE') }}</p>
+        <label for="replace-{{ rec.record_id }}" style="display:block;font-size:12px;color:#888;margin:6px 0 4px 0">{{ t('UI_S20_REPLACE_LABEL') }}</label>
+        <textarea id="replace-{{ rec.record_id }}" name="content" rows="2" required dir="auto" style="width:100%;box-sizing:border-box"></textarea>
+        <button type="submit" style="margin-top:6px">{{ t('UI_S20_REPLACE_BUTTON') }}</button>
+      </form>
+    </details>
+    {% else %}
+    <p class="journey-note" data-assumption-replace-unavailable="{{ item.replace_blocked }}" style="margin:6px 0 0 0">{{ t('UI_S20_REPLACE_ROUTED') if item.replace_blocked == 'routed' else t('UI_S20_REPLACE_UNAVAILABLE') }}</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
 
 {#- EVA-BLOCK-BEGIN — T2-G legacy migration: EXPLICIT CONFIRMED engine-version
     adoption (`T2G-LEGACY-MIGRATION-IMPLEMENT-01`, Owner policy B). Rendered

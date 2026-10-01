@@ -526,6 +526,91 @@ def project_assumption_dependencies(assertions):
         by_assumption=by_assumption)
 
 
+# Stage 20 — Assumption Revision & Replacement — Closure. An inventor may
+# supersede ONE of their own active provisional assumptions with a revised
+# provisional assumption or with their own answer, through the canonical
+# `supersedes` relation only (no new disposition, field or store). Whether a
+# record descends from an assumption is DERIVED here from its validated
+# supersession ancestry — never stored, never inferred from text.
+ANCESTRY_ORDINARY = "ordinary"                 # no assumption anywhere in ancestry
+ANCESTRY_ASSUMPTION_ORIGIN = "assumption_origin"
+ANCESTRY_MALFORMED = "malformed"
+
+
+def classify_assumption_ancestry(record, by_id):
+    """Classify ``record`` by its COMPLETE supersession ancestry (``by_id``:
+    record_id -> record over the whole ledger). Pure; never raises.
+
+    * ORDINARY — no `provisional_assumption` in the record or its ancestry
+      (existing answers and answer corrections: nothing here changes them);
+    * ASSUMPTION_ORIGIN — the closed bounded shape: ONE OR MORE consecutive
+      `provisional_assumption` records followed by zero or more `answered`
+      records (one or more when ``record`` is an answer), linked by exactly one
+      predecessor each, the predecessor naming this successor, every member
+      with the identical non-null ``gap_context`` and identical
+      ``question_target`` (None included);
+    * MALFORMED — an assumption is in the ancestry but that shape or those
+      invariants do not hold (ambiguous or dangling links, a cycle, another
+      disposition, an answer before an assumption, a gap or question mismatch).
+    """
+    # The COMPLETE ancestry (every transitive predecessor). A dangling link is
+    # remembered, not followed; each record is visited once, so any shape
+    # (diamond, cycle) terminates and nothing deeper is missed.
+    seen, frontier, ancestry, dangling = set(), [record], [], False
+    while frontier:
+        node = frontier.pop()
+        rid = getattr(node, "record_id", None)
+        if rid in seen:
+            continue
+        seen.add(rid)
+        ancestry.append(node)
+        for prior_id in getattr(node, "supersedes", None) or ():
+            prior = by_id.get(prior_id)
+            if prior is None:
+                dangling = True
+            else:
+                frontier.append(prior)
+    if not _has_assumption(ancestry):
+        return ANCESTRY_ORDINARY
+    if dangling:
+        return ANCESTRY_MALFORMED
+    # The bounded shape is a single linear chain walked from the record back to
+    # its root: every link names exactly one predecessor, and that predecessor
+    # names this successor back.
+    chain, node, walked = [record], record, {getattr(record, "record_id", None)}
+    while getattr(node, "supersedes", None):
+        if len(node.supersedes) != 1:
+            return ANCESTRY_MALFORMED
+        prior = by_id.get(node.supersedes[0])
+        if prior is None or prior.record_id in walked \
+                or getattr(prior, "superseded_by", None) != node.record_id:
+            return ANCESTRY_MALFORMED
+        walked.add(prior.record_id)
+        chain.append(prior)
+        node = prior
+    if len(chain) != len(ancestry):
+        return ANCESTRY_MALFORMED
+    chain.reverse()                                   # root -> record
+    kinds = [getattr(r, "disposition", None) for r in chain]
+    leading = 0
+    while leading < len(kinds) and kinds[leading] == DISPOSITION_PROVISIONAL_ASSUMPTION:
+        leading += 1
+    if leading == 0 or any(k != DISPOSITION_ANSWERED for k in kinds[leading:]):
+        return ANCESTRY_MALFORMED
+    gap = getattr(chain[0], "gap_context", None)
+    target = getattr(chain[0], "question_target", None)
+    if gap is None or any(getattr(r, "gap_context", None) != gap
+                          or getattr(r, "question_target", None) != target
+                          for r in chain):
+        return ANCESTRY_MALFORMED
+    return ANCESTRY_ASSUMPTION_ORIGIN
+
+
+def _has_assumption(records):
+    return any(getattr(r, "disposition", None) == DISPOSITION_PROVISIONAL_ASSUMPTION
+               for r in records)
+
+
 @dataclass(frozen=True)
 class CriticalityConfirmation:
     """Workstream 4 (contract §6.1): one frozen record per explicit inventor
