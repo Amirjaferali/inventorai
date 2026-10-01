@@ -1588,11 +1588,11 @@ body{overflow-wrap:anywhere}
       {% endif %}
       <p class="journey-note" data-rs-not-a-verdict style="margin:2px 0;color:#777">{{ t('UI_RS_TECHNICAL_NOT_A_VERDICT') }}</p>
       {% else %}
-      {#- ONE branch for both evidence dimensions. The wording keys and the topic
-          label namespace are selected by dimension, so Commercial and
-          Manufacturing cannot drift apart in structure while each still speaks
-          about its own evidence in its own words. -#}
-      {% set topic_ns = 'UI_CEV_TOPIC_' if row.dimension == 'commercial' else 'UI_MEV_TOPIC_' %}
+      {#- ONE branch for every evidence dimension. The wording keys and the
+          topic label namespace are selected by dimension, so Commercial,
+          Manufacturing and Integration cannot drift apart in structure while
+          each still speaks about its own evidence in its own words. -#}
+      {% set topic_ns = {'commercial': 'UI_CEV_TOPIC_', 'integration': 'UI_IEV_TOPIC_'}.get(row.dimension, 'UI_MEV_TOPIC_') %}
       {% if row.recorded_items %}
       <p class="journey-note" data-rs-why style="margin:2px 0">{{ t('UI_RS_' ~ d ~ '_RECORDED') }}</p>
       <p class="journey-note" data-rs-counts style="margin:2px 0">{{ t('UI_RS_' ~ d ~ '_COUNTS') % {'items': row.recorded_items, 'topics': row.topics_covered} }}</p>

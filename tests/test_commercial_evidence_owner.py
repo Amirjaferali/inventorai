@@ -955,7 +955,9 @@ def test_every_active_dimension_can_be_asked_and_nothing_else_can():
     for dimension in ACTIVE_DIMENSIONS:
         assert uncovered_topics(dimension, _view_with(())) == tuple(
             TOPICS_BY_DIMENSION[dimension])
-    for bogus in ("INTEGRATION", "TECHNICAL", "", None):
+    # Stage 15 closure: INTEGRATION is now a real evidence dimension of this
+    # owner, so it moved from the bogus list into ACTIVE_DIMENSIONS above.
+    for bogus in ("IRL", "TECHNICAL", "", None):
         with pytest.raises(ValueError):
             uncovered_topics(bogus, _view_with(()))
 
@@ -1389,7 +1391,14 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       "prototype_test_results",
                       # Stage 15 Slice 4: append-only interface observations
                       # (not a commercial owner).
-                      "subsystem_interface_observations"}
+                      "subsystem_interface_observations",
+                      # Stage 15 closure: the current-value dependency per
+                      # interface and the INSERT-only interface anchor of each
+                      # Integration evidence row (neither stores evidence
+                      # content; the evidence itself stays in
+                      # `readiness_evidence`).
+                      "subsystem_interface_dependencies",
+                      "integration_evidence_anchors"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()

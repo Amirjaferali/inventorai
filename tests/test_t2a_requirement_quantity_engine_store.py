@@ -608,6 +608,7 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
     # and CAP-09 SLICE 3 the current-value `prototype_test_hypotheses` sibling,
     # and CAP-09 SLICE 4 the current-value `prototype_test_variables` sibling.
     assert tables == ["engine_version_adoptions", "evidence_references",
+                      "integration_evidence_anchors",   # Stage 15 closure
                       "need_routing_revisions",
                       "project_subsystems",   # Stage 15 Slice 1 sidecar
                       "projects",
@@ -617,6 +618,7 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
                       "prototype_test_variables", "question_feedback",
                       "readiness_evidence", "records",
                       "requirement_quantities",
+                      "subsystem_interface_dependencies",   # Stage 15 closure
                       "subsystem_interface_observations",   # Stage 15 Slice 4
                       "subsystem_interface_preparations",   # Stage 15 Slice 3
                       "subsystem_interfaces"]   # Stage 15 Slice 2 sidecar

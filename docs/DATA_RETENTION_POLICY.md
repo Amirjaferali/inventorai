@@ -26,6 +26,8 @@ notably LQ-09/LQ-10/TQ-07) and separate Owner acceptance.
 | Interface verification-preparation inputs (the inventor's own intended operating conditions, observable acceptance criterion and evidence / review needed per declared interaction; Stage 15 Slice 3) | Durable SQLite (`subsystem_interface_preparations`) — ONE current value per project and declared interaction, each input independently optional: an edit replaces the text, clearing one input empties that field, and clearing all three removes that row; no history is kept | YES |
 | Prototype & Test Plan results (the inventor's own report of what actually happened when an experiment was performed; Stage 19 / CAP-09 Result Event Slice 1) | Durable SQLite (`prototype_test_results`) — APPEND-ONLY history: each recorded execution and each correction is a new row; a correction does not rewrite or delete the earlier observation; no clear or delete path exists | YES |
 | Interface verification observations (the inventor's own report of what actually happened when they tested or checked a declared interaction; Stage 15 Slice 4) | Durable SQLite (`subsystem_interface_observations`) — APPEND-ONLY history: each recorded check and each correction is a new row; a correction does not rewrite or delete the earlier observation; no clear or delete path exists | YES |
+| Interface dependency declarations (the inventor's own statement of which part relies on the other through a declared interaction, or that each relies on the other, with an optional note; Stage 15 closure) | Durable SQLite (`subsystem_interface_dependencies`) — ONE current value per project and declared interaction: an edit replaces it and clearing the declaration removes that row; no history is kept | YES |
+| Integration evidence anchors (which declared interaction each Integration evidence item belongs to; Stage 15 closure — the evidence itself is in `readiness_evidence`) | Durable SQLite (`integration_evidence_anchors`) — INSERT-only: one immutable anchor per Integration evidence row, written with that row; no update, clear or delete path exists | YES |
 | Audit / commercial scaffolding (`access_audit`, `commercial_audit`, lifecycle, dedupe, usage) | Durable SQLite, append-only; NO live billing data | Partly |
 | Auth rate-limit counters | Durable SQLite (`auth_rate_limits`) — privacy-digest keys, no raw email | NO |
 | Outbound email outbox (OD-INFRA-6) | Durable SQLite (`email_outbox`) — recipient address + token-bearing verification/reset body, TRANSIENT: deleted on confirmed provider acceptance, scrubbed (recipient/subject/body nulled) when the bounded retry budget is exhausted; never logged, never exported | YES (while pending) |
@@ -93,6 +95,15 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
   delete. Recording or correcting an observation is NOT account or project erasure and decides no
   retention period; the existing broader project / account retention and deletion rules are
   unchanged, and earlier values may persist in backups.
+* Stage 15 closure extends the same user-initiated current-value behaviour, unchanged in kind, to
+  the owner's own interface dependency declarations (`subsystem_interface_dependencies`): editing a
+  declaration replaces it in place, and clearing a dependency declaration removes that single
+  current-value row. It is NOT an automatic deletion, NOT an erasure capability and NOT account or
+  project erasure; it decides no retention period, and earlier values may persist in backups.
+  Integration evidence items are rows of the existing `readiness_evidence` history (append-only
+  correction and withdrawal, unchanged), and their interface anchors (`integration_evidence_anchors`)
+  are INSERT-only with no clear or delete path; recording, correcting or withdrawing Integration
+  evidence is NOT account or project erasure and decides no retention period.
 * Browser drafts expire client-side after a 7-day lazy TTL (`web/static/js/local_draft.js`,
   `TTL_MS = 7 days`) — a client mechanism, not a server retention rule.
 * Self-service export is project-scoped only (P10-D3a); account-wide export DEFERRED (OD-DR2).

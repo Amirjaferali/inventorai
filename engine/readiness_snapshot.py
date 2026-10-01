@@ -33,6 +33,14 @@ WHY EACH DIMENSION SAYS WHAT IT SAYS
 * MANUFACTURING — not assessed at all, so it receives NO disposition, not even
   `INSUFFICIENT_EVIDENCE`. Saying "insufficient evidence" would imply somebody
   looked; nobody has.
+* INTEGRATION (Stage 15 closure — the IRL-compatible view) — insufficient
+  because every recorded Integration item is the inventor's own unchecked
+  statement about how the parts were tested, inspected, specified or reviewed
+  together, and no authorized path can check one. It means "this version holds
+  no validated integration evidence", NEVER "the invention cannot integrate".
+  There is no IRL number or level, no compatibility verdict and no weakest-link
+  logic; observations, preparation inputs and dependency declarations are not
+  evidence and are never counted here.
 
 ABSENCE IS NOT NEGATIVE EVIDENCE. A project with no Commercial evidence has a
 blank page, not a poor market. An unassessed Manufacturing dimension is not a
@@ -44,6 +52,7 @@ from engine.commercial_evidence import (
     ACTIVE_DIMENSIONS,
     CLAIM_STATUS_UNVALIDATED,
     commercial_evidence_view,
+    integration_evidence_view,
     manufacturing_evidence_view,
 )
 from engine.derived_readiness import READINESS_GAP_CONTEXTS, derive_readiness
@@ -61,6 +70,7 @@ EMITTABLE_DISPOSITIONS = (DISPOSITION_INSUFFICIENT_EVIDENCE,)
 ROW_TECHNICAL = "technical"
 ROW_COMMERCIAL = "commercial"
 ROW_MANUFACTURING = "manufacturing"
+ROW_INTEGRATION = "integration"
 
 # Why a dimension is insufficient — a closed set of REASON CODES the caller
 # renders into its own bilingual wording. A reason explains the state of the
@@ -162,8 +172,22 @@ def manufacturing_row(rows):
     return _evidence_row(ROW_MANUFACTURING, manufacturing_evidence_view(rows))
 
 
+def integration_row(rows):
+    """Compose the Integration row (Stage 15 closure — the IRL-compatible
+    view) from the AUTHORITATIVE shared evidence owner's Integration view and
+    nothing else. Pure.
+
+    Exactly the Commercial / Manufacturing evidence-sufficiency pattern: what
+    was recorded (CURRENT items only — superseded and withdrawn rows are
+    retained history and never counted) and that none of it has been checked.
+    It reads NOTHING from the interface declarations, the preparation inputs,
+    the dependency declarations or the observation history: none of those is
+    evidence. It assigns no IRL level and judges no compatibility."""
+    return _evidence_row(ROW_INTEGRATION, integration_evidence_view(rows))
+
+
 def readiness_snapshot(state, evidence_rows):
-    """The whole snapshot: three rows in presentation order. Pure.
+    """The whole snapshot: four rows in presentation order. Pure.
 
     Composes the existing authoritative owners and nothing else. Creates no
     record, writes nothing, and can emit no disposition other than
@@ -174,16 +198,18 @@ def readiness_snapshot(state, evidence_rows):
     a Commercial item can never reach the Manufacturing count or the reverse.
 
     There is deliberately NO aggregate. No overall disposition, no weakest link,
-    no percentage, no traffic light, no weighted anything: three independent
-    statements about three independent bodies of evidence. Combining them would
-    invent a judgement none of the owners made, and the fact that all three
-    currently read the same is a fact about this version's validation paths
-    rather than a finding that the three are equally far along."""
+    no percentage, no traffic light, no weighted anything: independent
+    statements about independent bodies of evidence. Combining them would
+    invent a judgement none of the owners made, and the fact that every row
+    currently reads the same is a fact about this version's validation paths
+    rather than a finding that the dimensions are equally far along."""
     return {
         "rows": (technical_row(state),
                  commercial_row(evidence_rows),
-                 manufacturing_row(evidence_rows)),
-        "dimensions": (ROW_TECHNICAL, ROW_COMMERCIAL, ROW_MANUFACTURING),
+                 manufacturing_row(evidence_rows),
+                 integration_row(evidence_rows)),
+        "dimensions": (ROW_TECHNICAL, ROW_COMMERCIAL, ROW_MANUFACTURING,
+                       ROW_INTEGRATION),
         # Which dimensions accept EVIDENCE, composed from the canonical owner
         # rather than restated, so this can never drift from the truth again.
         # Named `evidence_*` deliberately: Manufacturing accepting evidence says

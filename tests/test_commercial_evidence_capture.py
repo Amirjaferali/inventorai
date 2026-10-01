@@ -527,9 +527,12 @@ def test_the_commercial_owner_remains_the_sole_durable_store(owner):
     # The pre-existing `commercial_*` tables are the P8 billing/quota lane — a
     # different concern this slice neither reads, writes nor duplicates. What
     # must not exist is a SECOND store for commercial EVIDENCE.
+    # Stage 15 closure: `integration_evidence_anchors` holds only the interface
+    # anchor of each Integration row (no evidence content), not a second store.
     assert not [t for t in tables
                 if "evidence" in t.lower() and t != "readiness_evidence"
-                and t != "evidence_references"]
+                and t != "evidence_references"
+                and t != "integration_evidence_anchors"]
     entry = SESSION_STORE.get(sid) or {}
     assert not [k for k in entry if "commercial" in str(k).lower()
                 and k not in ("_cev_ack", "_cev_error")]

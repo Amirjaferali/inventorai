@@ -344,7 +344,7 @@ def test_no_positive_readiness_disposition_is_rendered(owner):
         snapshot = re.search(r'id="rs-readiness-snapshot".*?</details>', body, re.S).group(0)
         for token in POSITIVE:
             assert token not in snapshot, (lang, token)
-        assert snapshot.count('data-rs-disposition="INSUFFICIENT_EVIDENCE"') == 3
+        assert snapshot.count('data-rs-disposition="INSUFFICIENT_EVIDENCE"') == 4  # + Integration (Stage 15 closure)
 
 
 # ==========================================================================

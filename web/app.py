@@ -106,6 +106,8 @@ from engine.record_store import (
     InterfaceObservationRejected as _InterfaceObservationRejected,
     InterfaceObservationCapReached as _InterfaceObservationCapReached,
     InterfaceObservationConflict as _InterfaceObservationConflict,
+    IntegrationEvidenceRejected as _IntegrationEvidenceRejected,
+    IntegrationEvidenceConflict as _IntegrationEvidenceConflict,
     MAX_SUCCESS_CRITERION_LENGTH, MAX_MEASUREMENT_METHOD_LENGTH,
     MAX_TEST_HYPOTHESIS_LENGTH, MAX_TEST_VARIABLE_LENGTH,
     QuantityChainConflict as _QuantityChainConflict,
@@ -155,6 +157,9 @@ from engine.commercial_evidence import (
     TEXT_FIELD_CAPS as _CEV_TEXT_FIELD_CAPS,
     DEFAULT_PROVENANCE as _CEV_PROVENANCE,
     DIMENSION_COMMERCIAL as _DIMENSION_COMMERCIAL,
+    DIMENSION_INTEGRATION as _DIMENSION_INTEGRATION,
+    INTEGRATION_TOPICS as _INTEGRATION_TOPICS,
+    integration_evidence_by_interface as _integration_evidence_by_interface,
     CLAIM_STATUS_UNVALIDATED as _CEV_CLAIM_STATUS,
     EVIDENCE_INSERTED as _CEV_INSERTED,
     EVIDENCE_EXACT_REPLAY as _CEV_EXACT_REPLAY,
@@ -1573,6 +1578,52 @@ S15_PREP_SAVED_NOT_SHOWN_MESSAGE = (
 S15_PREP_UNKNOWN_MESSAGE = (
     "We could not confirm whether your preparation was saved. Reload this "
     "page to see what your project currently holds before entering it again.")
+
+# Stage 15 closure: the Owner-declared interface dependency, saved by the SAME
+# preparation Save. Registered in `ui_text._MESSAGE_KEYS`.
+S15_DEP_INVALID_MESSAGE = (
+    "A dependency must name the two parts of that interaction, or both. No "
+    "changes were saved.")
+S15_DEP_TOO_LONG_MESSAGE = (
+    "A dependency explanation can be at most 300 characters. No changes were "
+    "saved.")
+S15_DEP_NOTE_ALONE_MESSAGE = (
+    "An explanation can only accompany a declared dependency. Choose who "
+    "relies on whom, or clear the explanation. No changes were saved.")
+
+# Stage 15 closure: Integration evidence recorded against ONE declared
+# interaction (record_integration_evidence). Truthful: the inventor's own
+# unchecked statement, never a compatibility or integration verdict; "saved"
+# means durably stored only. Registered in `ui_text._MESSAGE_KEYS`.
+S15_IEV_SAVED_MESSAGE = (
+    "Your integration evidence was saved to your project. It is your own "
+    "statement: InventorAI has not checked it, and it does not show that the "
+    "parts are compatible.")
+S15_IEV_CORRECTED_MESSAGE = (
+    "Your correction was saved as a new entry; the earlier entry stays in the "
+    "history. InventorAI has not checked it.")
+S15_IEV_WITHDRAWN_MESSAGE = (
+    "That evidence item was withdrawn. It stays in the history and no longer "
+    "counts as current evidence.")
+S15_IEV_NOT_SAVED_MESSAGE = (
+    "Your integration evidence could not be saved just now. Nothing was "
+    "changed.")
+S15_IEV_TEXT_REJECTED_MESSAGE = (
+    "Some of the text could not be accepted. Fill in every required field "
+    "within its length limit. Nothing was changed.")
+S15_IEV_NOT_CURRENT_MESSAGE = (
+    "That interaction is not part of this project, so no evidence can be "
+    "recorded for it here. Nothing was changed.")
+S15_IEV_STALE_MESSAGE = (
+    "That evidence item has already been corrected or withdrawn, or this page "
+    "no longer matches what your project holds, so nothing was saved. Review "
+    "the page and try again.")
+S15_IEV_CAP_MESSAGE = (
+    "This project already holds the maximum number of evidence items, so no "
+    "new one can be added. Nothing was changed.")
+S15_IEV_UNKNOWN_MESSAGE = (
+    "We could not confirm whether your integration evidence was saved. Reload "
+    "this page to see what your project holds before entering it again.")
 
 # Stage 15 Slice 4: the inventor's own observation of what actually happened
 # when they tested or checked one declared interaction
@@ -7509,6 +7560,138 @@ _S15_PREP_WRITE_NOT_SAVED = "not_saved"
 _S15_PREP_WRITE_UNKNOWN = "unknown"
 
 
+# --- Stage 15 closure: Owner-declared interface dependency -----------------
+# Form fields of the dependency attribute on the SAME preparation form (the
+# interface identity is in the field name; the page never shows it). Each
+# carries the value its form displayed as a hidden baseline (the F724-1
+# discipline): untouched fields of a stale form never overwrite newer truth.
+_S15_DEP_PREFIXES = {
+    "choice": "dep_choice__", "note": "dep_note__",
+    "base_choice": "dep_base_choice__", "base_note": "dep_base_note__",
+}
+_S15_DEP_NOT_DECLARED = ""
+_S15_DEP_MUTUAL = "mutual"
+
+
+def _s15_dependency_value(dependency):
+    """The form value of ``dependency`` (``None`` = not declared): ``""``,
+    ``"mutual"`` or ``"one_way:<dependent id>:<depends-on id>"`` — explicit
+    identities, never derived from the endpoints' stored order."""
+    if dependency is None:
+        return _S15_DEP_NOT_DECLARED
+    if dependency.kind == _subsystem_model.DEPENDENCY_MUTUAL:
+        return _S15_DEP_MUTUAL
+    return "one_way:%s:%s" % (dependency.dependent_subsystem_id,
+                              dependency.depends_on_subsystem_id)
+
+
+def _s15_dependency_options(item, names):
+    """The four explicit choices for ONE interface: not declared, each part
+    relying on the other (both directions offered, each naming its own exact
+    ids), and both relying on each other."""
+    a, b = item.subsystem_a_id, item.subsystem_b_id
+    return [
+        {"value": _S15_DEP_NOT_DECLARED, "label_key": "UI_S15_DEP_NOT_DECLARED"},
+        {"value": "one_way:%s:%s" % (a, b), "dependent": names[a],
+         "depends_on": names[b]},
+        {"value": "one_way:%s:%s" % (b, a), "dependent": names[b],
+         "depends_on": names[a]},
+        {"value": _S15_DEP_MUTUAL, "label_key": "UI_S15_DEP_MUTUAL"},
+    ]
+
+
+def _s15_dependency_view(dependency, names):
+    """The read-only presentation of ONE declaration (``None`` = not
+    declared): part names resolved from the parts by identity, and the note."""
+    if dependency is None:
+        return {"declared": False}
+    view = {"declared": True, "kind": dependency.kind, "note": dependency.note}
+    if dependency.kind == _subsystem_model.DEPENDENCY_ONE_WAY:
+        view["dependent"] = names.get(dependency.dependent_subsystem_id)
+        view["depends_on"] = names.get(dependency.depends_on_subsystem_id)
+    return view
+
+
+def _s15_parse_dependency(interface, choice, note):
+    """The ``InterfaceDependency`` a submitted choice + note declares for
+    ``interface`` (``None`` = not declared), or raise ``InterfaceError``. A
+    one-way choice must carry the interface's own two distinct endpoint ids."""
+    if choice == _S15_DEP_NOT_DECLARED:
+        if note is not None:
+            raise _subsystem_model.InterfaceError("a note needs a declaration")
+        return None
+    if choice == _S15_DEP_MUTUAL:
+        dependency = _subsystem_model.InterfaceDependency(
+            interface_id=interface.interface_id,
+            kind=_subsystem_model.DEPENDENCY_MUTUAL, note=note)
+    else:
+        kind, sep, rest = choice.partition(":")
+        dependent, sep2, depends_on = rest.partition(":")
+        if kind != _subsystem_model.DEPENDENCY_ONE_WAY or not sep or not sep2:
+            raise _subsystem_model.InterfaceError("unknown dependency choice")
+        dependency = _subsystem_model.InterfaceDependency(
+            interface_id=interface.interface_id,
+            kind=_subsystem_model.DEPENDENCY_ONE_WAY,
+            dependent_subsystem_id=dependent, depends_on_subsystem_id=depends_on,
+            note=note)
+    return _subsystem_model.check_interface_dependency(dependency, interface)
+
+
+def _s15_dependency_edits(context, form, lang):
+    """``(dependency_delta, drafts, baselines, error)`` from a submitted
+    preparation form. Only an interface whose choice or note differs from
+    what THAT form displayed is edited (F724-1); an edit equal to the durable
+    value is a no-op. ``error`` is ``(message, status)`` when the WHOLE
+    submission must be refused."""
+    prefixes = _S15_DEP_PREFIXES
+    submitted, drafts, baselines = {}, {}, {}
+    for name, raw in form.items():
+        for key in ("choice", "note"):
+            if name.startswith(prefixes[key]):
+                drafts[name] = raw
+                submitted.setdefault(name[len(prefixes[key]):], {})[key] = raw
+        for key in ("base_choice", "base_note"):
+            if name.startswith(prefixes[key]):
+                baselines[name] = raw
+    delta = {}
+    for interface_id, fields in submitted.items():
+        interface = context["interfaces"].get(interface_id)
+        if interface is None:
+            return None, drafts, baselines, (S15_PREP_UNKNOWN_INTERFACE_MESSAGE, 400)
+        base = {key: baselines.get(prefixes["base_" + key] + interface_id)
+                for key in ("choice", "note")}
+        # The form always renders the choice, the note and both baselines; a
+        # submission missing any of them is malformed and fails closed (it is
+        # never completed from durable truth instead).
+        if set(fields) != {"choice", "note"} or any(v is None for v in base.values()):
+            return None, drafts, baselines, (S15_PREP_NOT_SAVED_MESSAGE, 400)
+        choice, note_raw = fields["choice"], fields["note"]
+        if choice == base["choice"] and _same_planning_text(
+                note_raw, base["note"].strip() or None):
+            continue                                   # untouched by this form
+        if len(note_raw.strip()) > _subsystem_model.MAX_INTERFACE_DEPENDENCY_NOTE_LENGTH:
+            return None, drafts, baselines, (S15_DEP_TOO_LONG_MESSAGE, 400)
+        invalid = _free_text_error(note_raw, lang)
+        if invalid is not None:
+            return None, drafts, baselines, (invalid, 400)
+        if context["dependencies"] is None:
+            return None, drafts, baselines, (S15_PREP_NOT_SAVED_MESSAGE, 503)
+        note = note_raw.strip() or None
+        durable = context["dependencies"].get(interface_id)
+        if durable is not None and durable.note is not None and note is not None \
+                and _same_planning_text(note_raw, durable.note):
+            note = durable.note              # line-break encoding only
+        try:
+            dependency = _s15_parse_dependency(interface, choice, note)
+        except _subsystem_model.InterfaceError:
+            message = (S15_DEP_NOTE_ALONE_MESSAGE
+                       if choice == _S15_DEP_NOT_DECLARED else S15_DEP_INVALID_MESSAGE)
+            return None, drafts, baselines, (message, 400)
+        if dependency != durable:
+            delta[interface_id] = dependency
+    return delta, drafts, baselines, None
+
+
 def _s15_preparation_context(sid):
     """``(status, context)`` of the preparation page from CURRENT durable
     truth (never a cached session): the durable composition, interfaces and
@@ -7530,16 +7713,33 @@ def _s15_preparation_context(sid):
     if preparations is None:
         return _S15_PREP_UNAVAILABLE, None
     names = {sub.subsystem_id: sub.display_name for sub in subsystems}
+    # Stage 15 closure: the Owner-declared dependencies, read on their own so
+    # an unreadable dependency collection is shown as unavailable (never as
+    # "not declared") without taking the preparation inputs down with it.
+    try:
+        dependencies = _get_store().load_interface_dependencies(sid)
+    except Exception:
+        dependencies = None
     items = []
     for item in interfaces:
         preparation = _subsystem_model.preparation_for(preparations,
                                                        item.interface_id)
+        dependency = (None if dependencies is None else
+                      _subsystem_model.dependency_for(dependencies,
+                                                      item.interface_id))
         items.append({
             "interface_id": item.interface_id,
             "a": names[item.subsystem_a_id],
             "b": names[item.subsystem_b_id],
             "description": item.description,
             "preparation": _s15_preparation_view(preparation),
+            "dependency": (None if dependencies is None
+                           else _s15_dependency_view(dependency, names)),
+            "dependency_options": _s15_dependency_options(item, names),
+            "dependency_value": (None if dependencies is None
+                                 else _s15_dependency_value(dependency)),
+            "dep_names": {key: prefix + item.interface_id
+                          for key, prefix in _S15_DEP_PREFIXES.items()},
             "prefixes": [
                 {"name": _S15_PREP_FIELD_PREFIXES[f] + item.interface_id,
                  "base_name": _S15_PREP_BASE_PREFIXES[f] + item.interface_id,
@@ -7552,12 +7752,15 @@ def _s15_preparation_context(sid):
     return _S15_PREP_OK, {
         "items": items,
         "current": {p.interface_id: p for p in preparations},
+        "interfaces": {item.interface_id: item for item in interfaces},
+        "dependencies": (None if dependencies is None else
+                         {d.interface_id: d for d in dependencies}),
     }
 
 
 def _render_interface_preparation(sid, context, status=200, error=None,
                                   notice=None, drafts=None, baselines=None,
-                                  observation_drafts=None):
+                                  observation_drafts=None, evidence_drafts=None):
     """Render the preparation page. ``context`` None renders no interaction
     at all (the notice says why) — never "no interactions". ``drafts`` (a
     REJECTED submission, request-local only) maps form field name -> the text
@@ -7567,7 +7770,9 @@ def _render_interface_preparation(sid, context, status=200, error=None,
     refused form carried; it is re-emitted unchanged so a retry of the same
     form keeps judging its edits against what that form first displayed.
     ``observation_drafts`` (Stage 15 Slice 4) is the refused observation text,
-    request-local only, keyed like the observation forms."""
+    request-local only, keyed like the observation forms.
+    ``evidence_drafts`` (Stage 15 closure) is a refused Integration evidence
+    submission, request-local only, keyed like the evidence forms."""
     lang = _current_ui_lang()
     shown = None if drafts is None else {
         name: raw.replace("\x00", "") for name, raw in drafts.items()}
@@ -7583,6 +7788,10 @@ def _render_interface_preparation(sid, context, status=200, error=None,
         observations=None if context is None else _s15_observations_view(
             sid, context, observation_drafts),
         observation_max_length=_interface_observation.MAX_OBSERVATION_TEXT_LENGTH,
+        integration=None if context is None else _s15_integration_view(
+            sid, context, evidence_drafts),
+        integration_topics=list(_INTEGRATION_TOPICS),
+        dependency_note_max=_subsystem_model.MAX_INTERFACE_DEPENDENCY_NOTE_LENGTH,
         error=ui_text.localize_message(error, lang),
         notice=ui_text.localize_message(notice, lang),
     ), status)
@@ -7590,7 +7799,7 @@ def _render_interface_preparation(sid, context, status=200, error=None,
     return response
 
 
-def _resolve_interface_preparation_write(sid, delta):
+def _resolve_interface_preparation_write(sid, delta, dependency_delta=None):
     """Bounded confirm-by-reload after ``apply_interface_preparation_delta``
     RAISED: read the COMMITTED preparation inputs (the store's IR-01 guard
     refuses an unresolved transaction) and compare ONLY the submitted delta —
@@ -7607,6 +7816,17 @@ def _resolve_interface_preparation_write(sid, delta):
         for field_name, text in changes.items():
             durable = None if preparation is None else preparation.value(field_name)
             if durable != text:
+                return _S15_PREP_WRITE_NOT_SAVED
+    if dependency_delta:
+        # Stage 15 closure: the same confirm-by-reload for the dependency
+        # part of the SAME atomic save.
+        try:
+            dependencies = _get_store().load_interface_dependencies(sid)
+        except Exception:
+            return _S15_PREP_WRITE_UNKNOWN
+        for interface_id, dependency in dependency_delta.items():
+            if _subsystem_model.dependency_for(dependencies,
+                                               interface_id) != dependency:
                 return _S15_PREP_WRITE_NOT_SAVED
     return _S15_PREP_WRITE_SAVED
 
@@ -7681,6 +7901,16 @@ def save_interface_preparation(sid):
             if not _same_planning_text(raw, durable):
                 edits.setdefault(interface_id, {})[field_name] = raw
     lang = _current_ui_lang()
+    # Stage 15 closure: the dependency attribute is part of the SAME form and
+    # the SAME atomic save; its fields follow the same baseline discipline.
+    dependency_delta, dep_drafts, dep_baselines, dep_error = _s15_dependency_edits(
+        context, request.form, lang)
+    drafts.update(dep_drafts)
+    baselines.update(dep_baselines)
+    if dep_error is not None:
+        return _render_interface_preparation(
+            sid, context, status=dep_error[1], drafts=drafts, baselines=baselines,
+            error=dep_error[0])
     for fields in edits.values():
         for raw in fields.values():
             if len(raw.strip()) > _subsystem_model.MAX_INTERFACE_PREPARATION_LENGTH:
@@ -7691,7 +7921,7 @@ def save_interface_preparation(sid):
             if invalid is not None:
                 return _render_interface_preparation(
                     sid, context, status=400, drafts=drafts, baselines=baselines, error=invalid)
-    if not edits:
+    if not edits and not dependency_delta:
         # Nothing differs from committed durable truth (this includes an
         # exact retry of a submission that already committed).
         return _render_interface_preparation(sid, context,
@@ -7700,11 +7930,13 @@ def save_interface_preparation(sid):
     delta = {interface_id: {f: (raw.strip() or None) for f, raw in fields.items()}
              for interface_id, fields in edits.items()}
     try:
-        _get_store().apply_interface_preparation_delta(sid, delta)
+        _get_store().apply_interface_preparation_delta(
+            sid, delta, dependency_delta=dependency_delta)
     except Exception:
         # Never turn an unknown durable outcome into a failure (or a
         # success): decide from committed durable truth only.
-        outcome = _resolve_interface_preparation_write(sid, delta)
+        outcome = _resolve_interface_preparation_write(sid, delta,
+                                                       dependency_delta)
         if outcome == _S15_PREP_WRITE_NOT_SAVED:
             return _render_interface_preparation(
                 sid, context, status=503, drafts=drafts, baselines=baselines,
@@ -7916,6 +8148,252 @@ def record_interface_observation(sid):
             return refuse(S15_OBS_NOT_SAVED_MESSAGE, code=503)
     return _render_interface_preparation(sid, context,
                                          notice=S15_OBS_SAVED_MESSAGE)
+
+
+# --- Stage 15 closure: Integration evidence on ONE declared interaction ------
+# The EXISTING shared readiness-evidence owner (engine/commercial_evidence.py)
+# with its INTEGRATION dimension: the same provenance axis, the single
+# UNVALIDATED claim status, the bounded text policy and the append-only
+# record / correct / withdraw lifecycle. Every Integration event carries ONE
+# immutable interface anchor, committed in the SAME transaction as its row.
+# Writing needs the verified durable-owner account, exactly as the other
+# evidence dimensions do. Each form carries its own freshly signed submission
+# identity; the durable event key is HMAC(project, nonce) ONLY, so it never
+# depends on the material and the SAME identity with ANY different material
+# (text, topic, target or interface) fails closed. Nothing here grades,
+# promotes or interprets evidence, and nothing judges compatibility.
+_S15_IEV_SUBMISSION_DOMAIN = "s15-integration-evidence-submission-v1"
+# The owner's own text fields, in the same order the Manufacturing capture
+# uses (its `_mfg_stored_fields` applies the owner's text policy to them).
+_S15_IEV_TEXT_FIELDS = ("subject_text", "statement_text", "source_identity",
+                        "occurred_on", "scope_text", "limitation_text")
+_S15_IEV_BASE_FIELDS = frozenset({"csrf_token", "evidence_submission",
+                                  "interface_id", "action"})
+_S15_IEV_FIELDS = {
+    "record": _S15_IEV_BASE_FIELDS | {"topic"} | set(_S15_IEV_TEXT_FIELDS),
+    "correct": (_S15_IEV_BASE_FIELDS | {"supersedes_evidence_id"}
+                | set(_S15_IEV_TEXT_FIELDS)),
+    "withdraw": _S15_IEV_BASE_FIELDS | {"supersedes_evidence_id"},
+}
+_S15_IEV_ACK = {"record": S15_IEV_SAVED_MESSAGE,
+                "correct": S15_IEV_CORRECTED_MESSAGE,
+                "withdraw": S15_IEV_WITHDRAWN_MESSAGE}
+
+
+def _s15_evidence_submission_identity(sid):
+    """A fresh signed submission identity for ONE rendered evidence form."""
+    nonce = secrets.token_hex(16)
+    return nonce + "." + _submission_sig(_S15_IEV_SUBMISSION_DOMAIN, sid, nonce)
+
+
+def _s15_evidence_action_key(sid, nonce):
+    """The durable event key of ONE Integration evidence submission: HMAC over
+    (project, submission nonce) ONLY — never over the material."""
+    msg = _canonical_message("s15-integration-evidence-action-v1", sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _s15_integration_view(sid, context, drafts=None):
+    """The Integration evidence presentation of the interface page, read from
+    committed durable truth with every anchor validated: per durable
+    interface its CURRENT items (each with its own correct / withdraw forms
+    when writable) and how many of its rows are retained history. ``None``
+    when the evidence or its anchors cannot be read — the section is then
+    shown as unavailable, never as "nothing recorded"."""
+    try:
+        history, anchored = _get_store().load_integration_evidence(sid)
+    except Exception:
+        return None
+    writable = _quantity_writer_account(sid) is not None
+    drafts = drafts or {}
+    view = {"writable": writable, "by_interface": {}}
+    for item in context["items"]:
+        iid = item["interface_id"]
+        mine = _integration_evidence_by_interface(history, anchored, iid)
+        view["by_interface"][iid] = {
+            "active": [dict(row,
+                            correct_submission=(_s15_evidence_submission_identity(sid)
+                                                if writable else None),
+                            withdraw_submission=(_s15_evidence_submission_identity(sid)
+                                                 if writable else None),
+                            draft=drafts.get("fix:" + row["evidence_id"]))
+                       for row in mine["active"]],
+            "history": mine["history"],
+            "submission": _s15_evidence_submission_identity(sid) if writable else None,
+            "draft": drafts.get("new:" + iid),
+        }
+    return view
+
+
+def _s15_evidence_matches(found, action, interface_id, topic, stored, target):
+    """True iff the COMMITTED ``found`` = ``(row, anchor, history)`` is exactly
+    THIS submission's material: the same interface anchor, dimension, action
+    (withdrawal flag), superseded target and — for a record or correction —
+    topic and stored text. Identity, sequence and recording time are not
+    material."""
+    row, anchor, _history = found
+    if anchor != interface_id or row.dimension != _DIMENSION_INTEGRATION:
+        return False
+    if row.supersedes_evidence_id != target:
+        return False
+    if action == "withdraw":
+        return bool(row.withdrawn)
+    if row.withdrawn or (action == "record" and row.topic != topic):
+        return False
+    return all(getattr(row, name) == stored[name] for name in _S15_IEV_TEXT_FIELDS)
+
+
+@app.route("/session/<sid>/integration-evidence", methods=["POST"])
+def record_integration_evidence(sid):
+    """Stage 15 closure — record, correct (append-only supersession) or
+    withdraw (append-only superseding withdrawal) ONE Integration evidence
+    item anchored to ONE durable declared interaction. Order: request
+    integrity (global guard) -> authorization -> verified durable-owner
+    account -> strict field allowlist -> signed submission identity -> owner
+    text policy -> the committed outcome of THIS submission resolved first
+    (UNKNOWN / SAVED / conflict never depend on current page reads) -> CURRENT
+    durable interactions and evidence (required only for a new append) -> ONE
+    atomic evidence + anchor append (membership, chain anchor and owner rules
+    re-checked inside it) -> confirm-by-reload."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    if _quantity_writer_account(sid) is None:
+        return _deny_project()
+    lang = _current_ui_lang()
+    action = request.form.get("action", "")
+    interface_id = request.form.get("interface_id", "")
+    target = request.form.get("supersedes_evidence_id", "") or None
+    draft_key = ("fix:" + target) if (action == "correct" and target) \
+        else ("new:" + interface_id)
+    drafts = {draft_key: {name: request.form.get(name, "").replace("\x00", "")
+                          for name in _S15_IEV_TEXT_FIELDS + ("topic",)}}
+    loaded = []
+
+    def current_context():
+        if not loaded:
+            loaded.append(_s15_preparation_context(sid))
+        return loaded[0]
+
+    def refuse(message, code=400, keep=True):
+        status, context = current_context()
+        if status != _S15_PREP_OK:
+            return _render_interface_preparation(
+                sid, None, status=code, error=message,
+                notice=_S15_PREP_STATUS_MESSAGE[status][0])
+        return _render_interface_preparation(
+            sid, context, status=code, error=message,
+            evidence_drafts=drafts if keep and action != "withdraw" else None)
+
+    allowed = _S15_IEV_FIELDS.get(action)
+    if allowed is None or set(request.form.keys()) - allowed or any(
+            len(request.form.getlist(k)) != 1 for k in request.form.keys()):
+        return refuse(S15_IEV_NOT_SAVED_MESSAGE)
+    nonce = _verified_submission_identity(
+        sid, request.form.get("evidence_submission", ""), _S15_IEV_SUBMISSION_DOMAIN)
+    if nonce is None:
+        return refuse(S15_IEV_NOT_SAVED_MESSAGE)
+    topic = request.form.get("topic", "") if action == "record" else None
+    if action == "record" and topic not in _INTEGRATION_TOPICS:
+        return refuse(S15_IEV_NOT_SAVED_MESSAGE)
+    if action != "record" and not target:
+        return refuse(S15_IEV_NOT_SAVED_MESSAGE)
+    stored = None
+    if action != "withdraw":
+        fields = {name: request.form.get(name, "") for name in _S15_IEV_TEXT_FIELDS}
+        if any(_free_text_error(value, lang) is not None for value in fields.values()):
+            return refuse(S15_IEV_TEXT_REJECTED_MESSAGE)
+        stored = _mfg_stored_fields(fields)        # the owner's own text policy
+        if stored is None:
+            return refuse(S15_IEV_TEXT_REJECTED_MESSAGE)
+    key = _s15_evidence_action_key(sid, nonce)
+
+    def committed():
+        return _get_store().committed_integration_evidence_for_event_key(sid, key)
+
+    def matches(found):
+        return _s15_evidence_matches(found, action, interface_id, topic, stored,
+                                     target)
+
+    # An EXACT committed retry resolves from committed durable truth BEFORE
+    # any current read; the SAME identity with different material fails
+    # closed; unreadable committed truth stays UNKNOWN.
+    try:
+        prior = committed()
+    except Exception:
+        return _render_interface_preparation(sid, None, status=503,
+                                             notice=S15_IEV_UNKNOWN_MESSAGE)
+    if prior is not None:
+        if matches(prior):
+            status, context = current_context()
+            return _render_interface_preparation(
+                sid, context if status == _S15_PREP_OK else None,
+                notice=_S15_IEV_ACK[action])
+        return refuse(S15_IEV_NOT_SAVED_MESSAGE, keep=False)
+    status, context = current_context()
+    if status != _S15_PREP_OK:
+        message, code = _S15_PREP_STATUS_MESSAGE[status]
+        return _render_interface_preparation(sid, None, status=code,
+                                             notice=message)
+    if interface_id not in context["interfaces"]:
+        return refuse(S15_IEV_NOT_CURRENT_MESSAGE)
+    prior_row = None
+    if action != "record":
+        try:
+            history, anchored = _get_store().load_integration_evidence(sid)
+        except Exception:
+            return refuse(S15_IEV_NOT_SAVED_MESSAGE, code=503)
+        current_ids = {row["evidence_id"] for row in
+                       _integration_evidence_by_interface(
+                           history, anchored, interface_id)["active"]}
+        if target in current_ids:
+            prior_row = next(r for r in history if r.evidence_id == target)
+        if prior_row is None:
+            return refuse(S15_IEV_STALE_MESSAGE)
+    entry = SESSION_STORE.get(sid)
+    iteration = int(getattr(entry["state"], "iteration", 0) or 0) if entry else 0
+    if action == "withdraw":
+        # A withdrawal carries the item's own words forward verbatim; it
+        # states that the chain no longer stands and invents no new text.
+        stored = {name: getattr(prior_row, name) for name in _S15_IEV_TEXT_FIELDS}
+    try:
+        evidence = _make_readiness_evidence(
+            evidence_id=_get_store().new_readiness_evidence_id(),
+            evidence_seq=0,
+            dimension=_DIMENSION_INTEGRATION,
+            topic=topic if action == "record" else prior_row.topic,
+            subject_text=stored["subject_text"],
+            statement_text=stored["statement_text"],
+            source_identity=stored["source_identity"],
+            occurred_on=stored["occurred_on"],
+            scope_text=stored["scope_text"],
+            limitation_text=stored["limitation_text"],
+            provenance=_CEV_PROVENANCE,
+            withdrawn=(action == "withdraw"),
+            supersedes_evidence_id=target if action != "record" else None,
+            event_key=key,
+            recorded_iteration=iteration,
+            recorded_at=_quantity_recorded_at())
+    except _CommercialEvidenceError:
+        return refuse(S15_IEV_TEXT_REJECTED_MESSAGE)
+    try:
+        _get_store().append_integration_evidence(sid, evidence, interface_id)
+    except _CevCapExceeded:
+        return refuse(S15_IEV_CAP_MESSAGE)
+    except _IntegrationEvidenceRejected:
+        return refuse(S15_IEV_STALE_MESSAGE)
+    except _IntegrationEvidenceConflict:
+        return refuse(S15_IEV_NOT_SAVED_MESSAGE, keep=False)
+    except Exception:
+        # Never assume an outcome: decide from committed durable truth only.
+        try:
+            found = committed()
+        except Exception:
+            return _render_interface_preparation(sid, None, status=503,
+                                                 notice=S15_IEV_UNKNOWN_MESSAGE)
+        if found is None or not matches(found):
+            return refuse(S15_IEV_NOT_SAVED_MESSAGE, code=503)
+    return _render_interface_preparation(sid, context, notice=_S15_IEV_ACK[action])
 
 
 @app.route("/session/<sid>/correct", methods=["POST"])
@@ -9524,7 +10002,12 @@ def _readiness_snapshot_context(sid, state):
     inactive state. Nothing is persisted, nothing is cached, and this runs on GET
     without mutating anything."""
     try:
-        rows = _get_store().load_readiness_evidence(sid)
+        # Stage 15 closure: the history is read WITH its Integration anchors
+        # validated, so a missing / foreign / remapped anchor suppresses the
+        # block (fail closed) instead of counting an unanchored item.
+        rows, _anchored = _get_store().load_integration_evidence(sid)
+    except _ProjectNotFound:
+        rows = ()               # a session not saved as a project holds none
     except Exception:
         return None
     try:
