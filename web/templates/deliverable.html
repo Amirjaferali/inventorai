@@ -850,6 +850,16 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
   <div class="field-value"><strong>{{ t('UI_B_DELIV_081') }}</strong> {{ exp.failure_or_revision_condition }}</div>
   <div class="field-value"><strong>{{ t('UI_B_DELIV_082') }}</strong> {{ exp.expected_evidence_upgrade }}</div>
+  {#- Stage 19 closure: whether the inventor recorded executions of THIS current
+      experiment (bound by experiment_id only), from the committed Result history.
+      Count / state only — never the result text, earlier entries, frozen context
+      or identifiers; unreadable history reads UNAVAILABLE, never "no result".
+      The label is chrome; the state wording is generated content (English). #}
+  {%- if experiment_execution_states is defined and experiment_execution_states is not none and s11_execution_text is defined %}
+  {%- set _exec = experiment_execution_states.get(exp.experiment_id) or {} %}
+  {%- set _state = _exec.state if _exec.state in s11_execution_text else 'unavailable' %}
+  <div class="field-value" data-execution-state="{{ _state }}"><strong>{{ t('UI_S11_EXECUTION_LABEL') }}</strong> {{ s11_execution_text[_state].format(n=_exec.count) }}</div>
+  {%- endif %}
   {% if not pdf_mode %}<p class="experiment-criterion-link"><a href="{{ url_for('success_criteria', sid=sid) }}#criterion-{{ nav_id }}" aria-describedby="report-experiment-source-{{ nav_id }}">{{ t('UI_SC_EDIT_EXPERIMENT') }}</a></p>{% endif %}
   {% endfor %}
   {% if package.section_11_prototype_test_plan.shared_required_expertise %}
@@ -874,7 +884,10 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if package.section_11_prototype_test_plan["items"] and not pdf_mode %}
   <div class="field-value"><a href="{{ url_for('success_criteria', sid=sid) }}">{{ t('UI_B_DELIV_084') }}</a></div>
   {% endif %}
-  <div class="field-value"><em>{{ package.section_11_prototype_test_plan.note }}</em></div>
+  {#- Stage 19 closure: the corrected advisory note replaces the package's note on
+      this surface (the package is unchanged): it never says nothing was tested,
+      because the inventor may have recorded executions. Generated content: English. #}
+  <div class="field-value" data-s11-note><em>{{ s11_plan_note if s11_plan_note is defined else package.section_11_prototype_test_plan.note }}</em></div>
 
   {#- Stage 22 Slice 2: presentation-only anchor for the Decision Room link; the
       heading itself stays byte-identical. -#}

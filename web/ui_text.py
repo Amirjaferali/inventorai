@@ -719,6 +719,14 @@ UI_STRINGS = {
         "en": 'Your recorded results could not be read, so they cannot be shown or changed from this page.',
         "ar": 'تعذّرت قراءة النتائج التي سجّلتها، لذا لا يمكن عرضها أو تغييرها من هذه الصفحة.',
     },
+    # Stage 19 — Experiment Execution-State Disclosure — Closure: the Section-11
+    # row LABEL only (interface chrome, like the sibling Section-11 field labels).
+    # The execution-state wording and the Section-11 note are generated content
+    # and stay English (web/app.py); they are not part of this catalogue.
+    'UI_S11_EXECUTION_LABEL': {
+        "en": 'Recorded executions:',
+        "ar": 'التنفيذات المسجّلة:',
+    },
     'UI_R_MSG_NOT_SAVED': {
         "en": 'Your result could not be saved just now. Nothing was changed.',
         "ar": 'تعذّر حفظ نتيجتك الآن. لم يتم تغيير أي شيء.',
