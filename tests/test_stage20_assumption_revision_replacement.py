@@ -865,9 +865,9 @@ def test_k02_truthful_copy_claims_no_validation_or_resolution():
 # ==========================================================================
 _COMPLETE = "STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE"
 _DELIVERED = "STAGE 20 CLOSURE: DELIVERED"
-# The later Owner-authorized Stage 21 closure moved the marker on to Stage 22 (navigation only); the Stage-20
-# completion and the "no Stage-21 implementation by the Stage-20 closure" fact stay true history.
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22 — ENTERED / PARTIAL — NAVIGATION ONLY"
+# The later Owner-authorized Stage 21 and Stage 22 closures moved the marker on to Stage 23 (navigation only); the
+# Stage-20 completion and the "no Stage-21 implementation by the Stage-20 closure" fact stay true history.
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY"
 _NO_S21 = "NO STAGE-21 IMPLEMENTATION AUTHORIZED BY STAGE-20 CLOSURE"
 
 
@@ -902,10 +902,10 @@ def test_l01_closure_truth_on_every_current_surface():
 def test_l02_only_stage_20_is_newly_ticked():
     roadmap = io.open(os.path.join(_DOCS, "INVENTORAI_MASTER_EXECUTION_ROADMAP.md"),
                       encoding="utf-8").read()
-    # Stage 21 was ticked later by its own Owner-authorized closure, not by this one
-    for stage in (15, 18, 19, 20, 21):
+    # Stages 21 and 22 were ticked later by their own Owner-authorized closures, not by this one
+    for stage in (15, 18, 19, 20, 21, 22):
         assert re.search(r"^- \[x\] \*\*%d — " % stage, roadmap, re.M), stage
-    for stage in (11, 13, 14, 16, 17, 22):
+    for stage in (11, 13, 14, 16, 17, 23):
         assert re.search(r"^- \[ \] \*\*%d — " % stage, roadmap, re.M), stage
     flat = re.sub(r"\s+", " ", roadmap)
     for limit in ("FULL CAP-08: NOT AUTHORIZED", "FULL CAP-10: NOT AUTHORIZED"):

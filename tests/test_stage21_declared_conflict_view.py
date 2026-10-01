@@ -317,7 +317,9 @@ def test_13_no_new_mutation_route_and_render_is_read_only(client):
 # ==========================================================================
 _COMPLETE = "STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE"
 _DELIVERED = "STAGE 21 CLOSURE: DELIVERED"
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22 — ENTERED / PARTIAL — NAVIGATION ONLY"
+# The later Owner-authorized Stage 22 closure moved the marker on to Stage 23 (navigation only); the Stage-21
+# completion and the "no Stage-22 implementation by the Stage-21 closure" fact stay true history.
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY"
 _NO_S22 = "NO STAGE-22 IMPLEMENTATION AUTHORIZED BY STAGE-21 CLOSURE"
 _LIMITS = ("FULL CAP-10: NOT AUTHORIZED",
            "AUTOMATIC / AI CONTRADICTION DETECTION: NOT AUTHORIZED",
@@ -338,10 +340,16 @@ def test_14_closure_truth_on_every_current_surface():
                  "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md"):
         surfaces[name] = _doc(name)
     for name, text in surfaces.items():
-        for token in (_COMPLETE, _MARKER, _NO_S22) + _LIMITS:
+        for token in (_COMPLETE, _MARKER) + _LIMITS:
             assert token in text, (name, token)
-    for name in ("CLAUDE.md", "ACTIVE_INCREMENT_CONTRACT.md", "CURRENT_PROJECT_STATE.md"):
+    for name in ("ACTIVE_INCREMENT_CONTRACT.md", "INVENTORAI_MASTER_EXECUTION_ROADMAP.md",
+                 "INVENTORAI_MASTER_ROADMAP_EXECUTION_CHECKLIST.md", "INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md"):
+        assert _NO_S22 in surfaces[name], name
+    for name in ("ACTIVE_INCREMENT_CONTRACT.md", "CURRENT_PROJECT_STATE.md"):
         assert _DELIVERED in surfaces[name], name
+    # the later Stage 22 closure took over the CLAUDE.md head; the Stage-21 delivery stays recorded there as history
+    assert ("Stage 21 closure (delivered; completes Stage 21 for the current Owner-declared contradiction scope"
+            in surfaces["CLAUDE.md"])
     assert "**ACTIVE CONTRACT: NONE.**" in surfaces["CLAUDE.md"]
     assert "Owner-Declared Contradiction Visibility" not in _doc("OWNER_DECISION_REGISTER.md")
 
@@ -349,7 +357,8 @@ def test_14_closure_truth_on_every_current_surface():
 def test_15_only_stage_21_is_newly_ticked():
     roadmap = io.open(os.path.join(_DOCS, "INVENTORAI_MASTER_EXECUTION_ROADMAP.md"),
                       encoding="utf-8").read()
-    for stage in (15, 18, 19, 20, 21):
+    # Stage 22 was ticked later by its own Owner-authorized closure (no product change), not by this one
+    for stage in (15, 18, 19, 20, 21, 22):
         assert re.search(r"^- \[x\] \*\*%d — " % stage, roadmap, re.M), stage
-    for stage in (11, 13, 14, 16, 17, 22):
+    for stage in (11, 13, 14, 16, 17, 23):
         assert re.search(r"^- \[ \] \*\*%d — " % stage, roadmap, re.M), stage

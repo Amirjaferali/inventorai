@@ -140,11 +140,15 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   `NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE` — and the later Stage 20 closure (CAP-08 entry
     below) completed Stage 20 for the current Owner-declared assumption scope — `STAGE 20: COMPLETE — CURRENT
   OWNER-DECLARED ASSUMPTION SCOPE`, with `NO STAGE-21 IMPLEMENTATION AUTHORIZED BY STAGE-20 CLOSURE` — and the later
-  Stage 21 closure (CAP-10 entry below) completed Stage 21 for the current Owner-declared contradiction scope and
-  moved the marker on:
-  `STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE` ·
-  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22 — ENTERED / PARTIAL — NAVIGATION ONLY` ·
-  `NO STAGE-22 IMPLEMENTATION AUTHORIZED BY STAGE-21 CLOSURE`.
+  Stage 21 closure (CAP-10 entry below) completed Stage 21 for the current Owner-declared contradiction scope —
+  `STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE`, with `NO STAGE-22 IMPLEMENTATION AUTHORIZED BY
+  STAGE-21 CLOSURE` — and the later Stage 22 closure (CAP-05 / CAP-07 entries below; no product change) completed
+  Stage 22 for the current bounded decision trace + decision room scope and moved the marker on:
+  `STAGE 22: COMPLETE — CURRENT BOUNDED DECISION TRACE + DECISION ROOM SCOPE` ·
+  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY` ·
+  `NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE`.
+  *(Superseded 2026-10-01 by the Stage 22 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22 —
+  ENTERED / PARTIAL — NAVIGATION ONLY`".)*
   *(Superseded 2026-10-01 by the Stage 21 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 21 —
   ENTERED / PARTIAL — NAVIGATION ONLY`".)*
   *(Superseded 2026-10-01 by the Stage 20 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 20 —
@@ -269,7 +273,10 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   project-level Actionable Decision Room Summary: the canonical Validation Plan grouped strictly
   by its responsibility tokens beside the existing next development step, reused unchanged — no
   ranking, decision linkage, recommendation, confidence, evidence-strength or readiness
-  semantics, and no form, route, writer or persistence. Supporting evidence, assumptions, confidence / uncertainty basis,
+  semantics, and no form, route, writer or persistence. The Stage 22 — Decision Trace + Decision Room — Closure
+  (delivered with no product change required — `STAGE 22 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED`) records that these two slices
+  complete Stage 22 for the current bounded decision trace + decision room scope only — `STAGE 22: COMPLETE —
+  CURRENT BOUNDED DECISION TRACE + DECISION ROOM SCOPE`. Supporting evidence, assumptions, confidence / uncertainty basis,
   what could change a decision and a durable decision-trace writer stay NOT AUTHORIZED.
   `FULL CAP-05: NOT AUTHORIZED`.
 - **Activation conditions:** a separately authorized decision-support increment.
@@ -314,7 +321,11 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
 - **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, **with ONE bounded
   exception**: the same Stage 22 / CAP-05 + CAP-07 Slice 1 (2026-09-26; delivered, PR #706) and
   Slice 2 (the read-only Actionable Decision Room Summary; delivered, PR #707), whose decision view composes canonical
-  records without creating truth and mutates nothing.
+  records without creating truth and mutates nothing; the Stage 22 — Decision Trace + Decision Room — Closure
+  (delivered with no product change required) records that they complete Stage 22 for the current bounded
+  decision trace + decision room scope only. An accepted decision, go / no-go outcome or any new decision
+  lifecycle, recommendation or winner selection and confidence, evidence-strength or readiness scoring stay NOT
+  AUTHORIZED.
   `FULL CAP-07: NOT AUTHORIZED`.
 - **Activation conditions:** a separately authorized consolidation increment.
 - **Separate owner authorization requirement:** yes.
@@ -789,9 +800,9 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-02 Simplified One-Step Journey | WS8 / later UX increment | CAP-06, CAP-07 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (delivered, PR #709) — FULL CAP-02 NOT AUTHORIZED |
 | CAP-03 Adaptive Assistance | WS13 / WS14 | CAP-02, AI Coach | RECORDED — NOT AUTHORIZED |
 | CAP-04 Gap Action Packs | WS12 (+ D13 for technical) | CAP-01, CAP-09 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (delivered, PR #708) — FULL CAP-04 NOT AUTHORIZED |
-| CAP-05 Decision Trace | Decision-support increment | CAP-07, CAP-08, CAP-11 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-05 NOT AUTHORIZED |
+| CAP-05 Decision Trace | Decision-support increment | CAP-07, CAP-08, CAP-11 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) and the bounded Stage 22 closure (no product change; Stage 22 COMPLETE for the current bounded decision trace + decision room scope) — FULL CAP-05 NOT AUTHORIZED |
 | CAP-06 Readiness Dashboard | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-02, CAP-07, CAP-11 | RECORDED — NOT AUTHORIZED |
-| CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED |
+| CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) and the bounded Stage 22 closure (no product change; Stage 22 COMPLETE for the current bounded decision trace + decision room scope) — FULL CAP-07 NOT AUTHORIZED |
 | CAP-08 Assumption Register | Assumption-tracking increment | WS12, CAP-05, CAP-10, CAP-11 | SLICE 1 DELIVERED (PR #704; Owner-declared assumption → answer dependency) and the bounded Stage 20 closure (append-only assumption revision and replacement; delivered; Stage 20 COMPLETE for the current Owner-declared assumption scope) — FULL CAP-08 NOT AUTHORIZED |
 | CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) one bounded Slice 4 durable Test Variable / Condition (delivered, PR #712) and one bounded Result Event Slice 1 append-only owner-stated result history (delivered) and the bounded Stage 19 closure read-only execution-state disclosure (delivered; Stage 19 COMPLETE for the current planning-only scope) (full CAP-09 still NOT AUTHORIZED) |
 | CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | SLICE 1 DELIVERED (PR #703; Owner-declared contradiction) and the bounded Stage 21 closure (read-only session view of the declared conflicts; delivered; Stage 21 COMPLETE for the current Owner-declared contradiction scope) — FULL CAP-10 NOT AUTHORIZED |
@@ -938,9 +949,9 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | CAP-02 Simplified One-Step Journey | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Project Compass (delivered, PR #709) — FULL CAP-02 NOT AUTHORIZED | WS8 / later UX increment | Committed state; WS8; WS12 unknowns; CAP-04 | Yes | — | At the UX increment / WS12–WS16 closure |
 | CAP-03 Adaptive Assistance | RECORDED — NOT AUTHORIZED | WS13 / WS14 | Deterministic sufficiency; WS12; WS13/WS14 | Yes | — | At WS13/WS14 authorization / WS12–WS16 closure |
 | CAP-04 Gap Action Packs | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 read-only Actionable Gap Pack (delivered, PR #708) — FULL CAP-04 NOT AUTHORIZED | WS12 (+ D13 for technical) | WS12 closure paths; D13; gap/blocker model | Yes | — | At WS12 closure and any D13 gate |
-| CAP-05 Decision Trace | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-05 NOT AUTHORIZED | Decision-support increment | Decision workspace; evidence axes; CAP-08; CAP-11 | Yes | — | At the decision-support increment / WS12–WS16 closure |
+| CAP-05 Decision Trace | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-07: read-only decision trace, project context panel and actionable Decision Room summary only) and the bounded Stage 22 closure (no product change; Stage 22 COMPLETE for the current bounded decision trace + decision room scope) — FULL CAP-05 NOT AUTHORIZED | Decision-support increment | Decision workspace; evidence axes; CAP-08; CAP-11 | Yes | — | At the decision-support increment / WS12–WS16 closure |
 | CAP-06 Readiness Dashboard | RECORDED — NOT AUTHORIZED | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-11; Patent Export decision; WS-PFV-001 | Yes | — | At the readiness increment / WS12–WS16 closure |
-| CAP-07 Invention Decision Room | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) — FULL CAP-07 NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
+| CAP-07 Invention Decision Room | SLICES 1–2 DELIVERED (PR #706, PR #707) (with CAP-05: read-only decision trace, project context panel and actionable Decision Room summary only) and the bounded Stage 22 closure (no product change; Stage 22 COMPLETE for the current bounded decision trace + decision room scope) — FULL CAP-07 NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
 | CAP-08 Assumption Register | SLICE 1 DELIVERED (PR #704; Owner-declared assumption → answer dependency) and the bounded Stage 20 closure (append-only assumption revision and replacement; delivered; Stage 20 COMPLETE for the current Owner-declared assumption scope) — FULL CAP-08 NOT AUTHORIZED | Assumption-tracking increment | Provenance/validation axes; ledger; WS12; CAP-11 | Yes | — | At the assumption increment / WS12–WS16 closure |
 | CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) one bounded Slice 4 durable Test Variable / Condition (delivered, PR #712) and one bounded Result Event Slice 1 append-only owner-stated result history (delivered) and the bounded Stage 19 closure read-only execution-state disclosure (delivered; Stage 19 COMPLETE for the current planning-only scope) | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
 | CAP-10 Contradiction Detector | SLICE 1 DELIVERED (PR #703; Owner-declared contradiction) and the bounded Stage 21 closure (read-only session view of the declared conflicts; delivered; Stage 21 COMPLETE for the current Owner-declared contradiction scope) — FULL CAP-10 NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |

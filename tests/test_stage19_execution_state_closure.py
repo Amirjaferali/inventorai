@@ -428,9 +428,9 @@ def test_e32_a_project_without_experiments_still_carries_the_truthful_note(clien
 # E5. Stage-19 closure truth
 # ==========================================================================
 _COMPLETE = "STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE"
-# The later Owner-authorized Stage 20 and Stage 21 closures moved the marker on to Stage 22 (navigation only); the Stage-19
+# The later Owner-authorized Stage 20, 21 and 22 closures moved the marker on to Stage 23 (navigation only); the Stage-19
 # completion and the "no Stage-20 implementation by the Stage-19 closure" fact stay true history.
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22 — ENTERED / PARTIAL — NAVIGATION ONLY"
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY"
 _NO_S20 = "NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE"
 
 
@@ -461,10 +461,10 @@ def test_e41_only_stage_19_is_ticked_and_the_limits_are_preserved():
     roadmap = io.open(os.path.join(_DOCS, "INVENTORAI_MASTER_EXECUTION_ROADMAP.md"), encoding="utf-8").read()
     assert re.search(r"^- \[x\] \*\*19 — WS-PFV-001/CAP-09:\*\*", roadmap, re.M)
     # Stage 20 was ticked later by its own Owner-authorized closure (Owner-declared assumption scope), not by this one
-    # Stages 20 and 21 were ticked later by their own Owner-authorized closures, not by this one
-    for stage in (15, 18, 20, 21):
+    # Stages 20, 21 and 22 were ticked later by their own Owner-authorized closures, not by this one
+    for stage in (15, 18, 20, 21, 22):
         assert re.search(r"^- \[x\] \*\*%d — " % stage, roadmap, re.M), stage
-    for stage in (11, 13, 14, 16, 17, 22):
+    for stage in (11, 13, 14, 16, 17, 23):
         assert re.search(r"^- \[ \] \*\*%d — " % stage, roadmap, re.M), stage
     flat = re.sub(r"\s+", " ", roadmap)
     for limit in ("FULL CAP-09: NOT AUTHORIZED", "FULL WS-PFV-001: NOT AUTHORIZED",
