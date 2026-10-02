@@ -75,6 +75,13 @@ changed. They are planning inputs, never evidence, a verification result, a
 compatibility, feasibility or readiness fact, a gap closure or an IRL input,
 and nothing here parses, grades, infers or generates any of them. The only
 derived statement is factual presence (none / some / all three recorded).
+
+Stage 28 — Control-Loop Optional Part — Slice 1 (additive, dormant): the
+composition may additionally hold ONE optional part (``OPTIONAL_COMPOSITION_
+DOMAINS``) after the required pair, reusing the same descriptor, identity,
+provenance and persistence. It is never the initial analysis focus, and it is
+admitted at entry only while the canonical policy lists it as part-eligible;
+interfaces may then join any two DISTINCT parts of the composition.
 """
 
 import re
@@ -110,6 +117,15 @@ class Subsystem:
 # reordered by classifier output). Canonical pack ids only — an alias is never
 # stored. Extending the set is a separately-authorized slice.
 COMPOSITION_DOMAINS = ("mechanical", "electronics_electrical")
+# Stage 28 — Control-Loop Optional Part — Slice 1: the ONE optional part slot a
+# composition may additionally hold, AFTER the required pair and in this fixed
+# order. A part here is never the initial analysis focus (the scalar root stays
+# a ``COMPOSITION_DOMAINS`` domain) and is admitted at entry only while the
+# canonical policy lists it as part-eligible
+# (``engine.domain_activation.is_part_eligible``); its presence here grants no
+# activation, evaluation or specialist behaviour. Not an N-domain model:
+# extending this tuple is a separately-authorized slice.
+OPTIONAL_COMPOSITION_DOMAINS = ("control_loop",)
 # Explicit bounds (characters). Over-limit input is rejected, never truncated.
 MAX_SUBSYSTEM_NAME_LENGTH = 80
 MAX_SUBSYSTEM_FUNCTION_LENGTH = 300
@@ -154,20 +170,25 @@ def validate_composition(subsystems, confirmed_domain):
 
     An empty collection is valid (every ordinary / pre-slice project). Otherwise
     it must be EXACTLY one Mechanical part followed by one Electrical /
-    Electronics part (``COMPOSITION_DOMAINS`` order), each with a
-    system-shaped, distinct id, canonical domain id, valid bounded texts,
-    OWNER_STATED provenance and UNVALIDATED validation state — and the project's
-    scalar root (the initial analysis focus) must be one of the two parts'
-    domains. Used identically before the durable write and on every load."""
+    Electronics part (``COMPOSITION_DOMAINS`` order), optionally followed by
+    exactly ONE part of the optional slot (``OPTIONAL_COMPOSITION_DOMAINS``),
+    each with a system-shaped, distinct id, canonical domain id, valid bounded
+    texts, OWNER_STATED provenance and UNVALIDATED validation state — and the
+    project's scalar root (the initial analysis focus) must be one of the two
+    REQUIRED parts' domains, never the optional part's. Structural only: part
+    eligibility is decided at entry by the canonical policy, never here. Used
+    identically before the durable write and on every load."""
     subs = tuple(subsystems or ())
     if not subs:
         return ()
-    if len(subs) != len(COMPOSITION_DOMAINS):
-        raise CompositionError("composition must hold exactly the two declared parts")
+    expected = COMPOSITION_DOMAINS + OPTIONAL_COMPOSITION_DOMAINS
+    if len(subs) not in (len(COMPOSITION_DOMAINS), len(expected)):
+        raise CompositionError(
+            "composition must hold the two required parts and at most the optional part")
     if confirmed_domain not in COMPOSITION_DOMAINS:
         raise CompositionError("initial analysis focus is not a composed part domain")
     seen = set()
-    for sub, expected_domain in zip(subs, COMPOSITION_DOMAINS):
+    for sub, expected_domain in zip(subs, expected):
         if not isinstance(sub, Subsystem):
             raise CompositionError("composition entry is not a subsystem descriptor")
         if not is_valid_subsystem_id(sub.subsystem_id) or sub.subsystem_id in seen:

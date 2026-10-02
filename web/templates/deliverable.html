@@ -182,17 +182,21 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     <dd style="margin:0 0 6px 0" data-scope-part="mechanical"><bdi dir="auto">{{ integrated_scope.mechanical.name }}</bdi> &mdash; {{ t('UI_S15_SCOPE_FUNCTION') }} <bdi dir="auto">{{ integrated_scope.mechanical.function }}</bdi></dd>
     <dt style="font-weight:bold">{{ t('UI_S15_SCOPE_ELEC') }}</dt>
     <dd style="margin:0 0 6px 0" data-scope-part="electrical"><bdi dir="auto">{{ integrated_scope.electrical.name }}</bdi> &mdash; {{ t('UI_S15_SCOPE_FUNCTION') }} <bdi dir="auto">{{ integrated_scope.electrical.function }}</bdi></dd>
+    {% if integrated_scope.control %}
+    <dt style="font-weight:bold">{{ t('UI_S15_SCOPE_CTRL') }}</dt>
+    <dd style="margin:0 0 6px 0" data-scope-part="control"><bdi dir="auto">{{ integrated_scope.control.name }}</bdi> &mdash; {{ t('UI_S15_SCOPE_FUNCTION') }} <bdi dir="auto">{{ integrated_scope.control.function }}</bdi></dd>
+    {% endif %}
     <dt style="font-weight:bold">{{ t('UI_S15_SCOPE_FOCUS') }}</dt>
     <dd style="margin:0 0 6px 0" data-scope-focus>{{ t(integrated_scope.focus_key) }}</dd>
   </dl>
-  <p style="margin:6px 0 0 0" data-scope-statement>{{ t('UI_S15_SCOPE_STATEMENT') }}</p>
-  <p style="margin:6px 0 0 0;font-size:13px;color:#555">{{ t('UI_S15_SCOPE_PROVENANCE') }}</p>
+  <p style="margin:6px 0 0 0" data-scope-statement>{% if integrated_scope.control %}{{ t('UI_S15_SCOPE_STATEMENT_3') }}{% else %}{{ t('UI_S15_SCOPE_STATEMENT') }}{% endif %}</p>
+  <p style="margin:6px 0 0 0;font-size:13px;color:#555">{% if integrated_scope.control %}{{ t('UI_S15_SCOPE_PROVENANCE_3') }}{% else %}{{ t('UI_S15_SCOPE_PROVENANCE') }}{% endif %}</p>
   {#- Stage 15 Slice 2 — HOW THE PARTS INTERACT: the Owner's own declared
       interactions (verbatim, escaped; part names resolved from the parts),
       each with its ONE verification-preparation action and the explicit
       statement that compatibility has NOT been established. -#}
   <div class="integrated-interfaces" id="integrated-interfaces" data-integrated-interfaces style="margin-top:10px;border-top:1px solid #dbe4ec;padding-top:8px">
-    <h3 style="font-size:14px;margin:0 0 6px 0">{{ t('UI_S15_IFC_TITLE') }}</h3>
+    <h3 style="font-size:14px;margin:0 0 6px 0">{% if integrated_scope.control %}{{ t('UI_S15_IFC_TITLE_3') }}{% else %}{{ t('UI_S15_IFC_TITLE') }}{% endif %}</h3>
     {% if integrated_scope.interfaces %}
     {% for ifc in integrated_scope.interfaces %}
     <div class="integrated-interface" data-integrated-interface style="margin:0 0 8px 0">
@@ -218,7 +222,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     </div>
     {% endfor %}
     {% else %}
-    <p style="margin:0;font-size:13px;color:#555" data-interfaces-none>{{ t('UI_S15_IFC_NONE') }}</p>
+    <p style="margin:0;font-size:13px;color:#555" data-interfaces-none>{% if integrated_scope.control %}{{ t('UI_S15_IFC_NONE_3') }}{% else %}{{ t('UI_S15_IFC_NONE') }}{% endif %}</p>
     {% endif %}
   </div>
 </section>

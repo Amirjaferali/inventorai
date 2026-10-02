@@ -58,6 +58,19 @@
     <textarea id="{{ function_field }}" name="{{ function_field }}" dir="auto" rows="2" style="box-sizing:border-box">{{ cv[function_field] }}</textarea>
   </fieldset>
   {% endfor %}
+  {#- Stage 28 — Control-Loop Optional Part — Slice 1: the ONE optional part
+      slot, rendered only while its domain is part-eligible (dormant today).
+      Optional and all-or-nothing; it is never offered as the focus below. -#}
+  {% for name_field, function_field in start_composition['optional_fields'] %}
+  <fieldset style="margin-top:8px;border:1px solid #ccc;border-radius:4px;padding:8px 12px" data-optional-part>
+    <legend style="font-size:14px">{{ t('UI_S15_CTRL_LEGEND') }}</legend>
+    <p style="font-size:13px;color:#555;margin:0 0 4px 0">{{ t('UI_S15_CTRL_NOTE') }}</p>
+    <label for="{{ name_field }}" style="display:block;margin-top:4px;font-size:13px">{{ t('UI_S15_PART_NAME') }}</label>
+    <input type="text" id="{{ name_field }}" name="{{ name_field }}" dir="auto" value="{{ cv[name_field] }}" style="width:100%;padding:8px;font-size:15px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box">
+    <label for="{{ function_field }}" style="display:block;margin-top:8px;font-size:13px">{{ t('UI_S15_PART_FUNCTION') }}</label>
+    <textarea id="{{ function_field }}" name="{{ function_field }}" dir="auto" rows="2" style="box-sizing:border-box">{{ cv[function_field] }}</textarea>
+  </fieldset>
+  {% endfor %}
   <fieldset style="margin-top:12px;border:1px solid #ccc;border-radius:4px;padding:8px 12px">
     <legend style="font-size:14px">{{ t('UI_S15_FOCUS_PROMPT') }}</legend>
     {% for value, key in [('mechanical', 'UI_S15_FOCUS_MECH'), ('electronics_electrical', 'UI_S15_FOCUS_ELEC')] %}
@@ -66,9 +79,9 @@
     {{ t(key) }}
     </label>
     {% endfor %}
-    <p style="font-size:13px;color:#555;margin:8px 0 0 0">{{ t('UI_S15_FOCUS_NOTE') }}</p>
+    <p style="font-size:13px;color:#555;margin:8px 0 0 0">{% if start_composition['optional_fields'] %}{{ t('UI_S15_FOCUS_NOTE_OPTIONAL') }}{% else %}{{ t('UI_S15_FOCUS_NOTE') }}{% endif %}</p>
   </fieldset>
-  <p style="font-size:13px;color:#555">{{ t('UI_S15_NOTHING_SAVED') }}</p>
+  <p style="font-size:13px;color:#555">{% if start_composition['optional_fields'] %}{{ t('UI_S15_NOTHING_SAVED_OPTIONAL') }}{% else %}{{ t('UI_S15_NOTHING_SAVED') }}{% endif %}</p>
   <button type="submit">{{ t('UI_S15_SUBMIT') }}</button>
 </form>
 {% else %}

@@ -55,7 +55,7 @@ label.dep-opt{display:block;margin:4px 0;font-size:13px}
     result; saving verifies nothing and assesses no compatibility. -#}
 <h1>{{ t('UI_S15_PREP_TITLE') }}</h1>
 <div class="intro" data-prep-intro>
-  <p style="margin:0 0 6px 0">{{ t('UI_S15_PREP_INTRO') }}</p>
+  <p style="margin:0 0 6px 0">{% if optional_part %}{{ t('UI_S15_PREP_INTRO_3') }}{% else %}{{ t('UI_S15_PREP_INTRO') }}{% endif %}</p>
   <p style="margin:0">{{ t('UI_S15_IFC_NOT_ESTABLISHED') }}</p>
 </div>
 
@@ -209,7 +209,7 @@ label.dep-opt{display:block;margin:4px 0;font-size:13px}
     corrections and withdrawals append and keep it. Nothing here grades,
     promotes or interprets evidence or judges compatibility. -#}
 <h2 id="evidence-heading">{{ t('UI_S15_IEV_HEADING') }}</h2>
-<div class="intro" data-iev-intro><p style="margin:0">{{ t('UI_S15_IEV_INTRO') }}</p></div>
+<div class="intro" data-iev-intro><p style="margin:0">{% if optional_part %}{{ t('UI_S15_IEV_INTRO_3') }}{% else %}{{ t('UI_S15_IEV_INTRO') }}{% endif %}</p></div>
 {% if integration is none %}
 <div class="notice" role="status" data-iev-unavailable>{{ t('UI_S15_IEV_UNAVAILABLE') }}</div>
 {% else %}
@@ -273,7 +273,7 @@ label.dep-opt{display:block;margin:4px 0;font-size:13px}
 {% endfor %}
 {% endif %}
 {% else %}
-<div class="intro" data-prep-no-interfaces>{{ t('UI_S15_PREP_NO_INTERFACES') }}</div>
+<div class="intro" data-prep-no-interfaces>{% if optional_part %}{{ t('UI_S15_PREP_NO_INTERFACES_3') }}{% else %}{{ t('UI_S15_PREP_NO_INTERFACES') }}{% endif %}</div>
 {% endif %}
 
 <p class="links"><a href="{{ url_for('show_session', sid=sid) }}#integrated-interfaces">{{ t('UI_S15_PREP_BACK') }}</a></p>
