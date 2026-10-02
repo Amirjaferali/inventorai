@@ -298,7 +298,7 @@ def test_capability_declaration_carries_the_option_b_safety_statement():
     limitations = " ".join(_pack()["coverage_declaration"]["known_limitations"])
     for needle in ("Concept level only", "No project-specific calculation", "No stability analysis",
                    "No embedded execution", "No safety determination", "controller's action or update rate",
-                   "No prediction of physical", "not activated and not declared qualified"):
+                   "No prediction of physical", "P9-QS qualified with activation blockers; not activated"):
         assert needle in limitations, needle
 
 
