@@ -39,6 +39,9 @@ MUTATIONS = (
     "/session/<sid>/interface-observation",
     # Stage 15 closure: Integration evidence anchored to one declared interaction.
     "/session/<sid>/integration-evidence",
+    # Stage 28 Optional Part Slice 2: the inventor's current answers about an
+    # optional part (current-value save; dormant while no part is eligible).
+    "/session/<sid>/part-questions",
     "/session/<sid>/decision/declare-context", "/session/<sid>/decision/declare-alternative",
     "/session/<sid>/decision/refine-alternative", "/session/<sid>/decision/withdraw-alternative",
     "/session/<sid>/keep-snapshot", "/session/<sid>/success-criteria", "/session/<sid>",

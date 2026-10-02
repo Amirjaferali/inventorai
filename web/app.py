@@ -18,6 +18,7 @@ from flask import (
     g, has_request_context, session as flask_session,
 )
 from engine.domain_rules import classify_domain, DomainResultKind, is_known_domain
+from engine.domain_rules import get_domain_questions  # Stage 28 Optional Part Slice 2
 from engine import subsystem_model as _subsystem_model  # Stage 15 Slice 1: the ONE subsystem owner
 from engine import experiment_result as _experiment_result  # CAP-09 Result Event Slice 1
 from engine import interface_observation as _interface_observation  # Stage 15 Slice 4
@@ -1628,6 +1629,41 @@ S15_PREP_UNKNOWN_MESSAGE = (
     "We could not confirm whether your preparation was saved. Reload this "
     "page to see what your project currently holds before entering it again.")
 
+# Stage 28 — Control-Loop Optional Part — Slice 2: the inventor's answers to the
+# governed questions of the optional control-loop part (save_part_answers).
+# Truthful: the inventor's own statements, never checked; saving them changes
+# no gap, focus, progression, readiness or Integration evidence. Rendered
+# through localize_message (registered in `ui_text._MESSAGE_KEYS`).
+PQ_NO_PROJECT_MESSAGE = (
+    "Answers about a part can only be kept for a saved project. This session "
+    "is not saved as a project, so nothing can be saved here. Nothing was "
+    "changed.")
+PQ_NOT_OFFERED_MESSAGE = (
+    "Questions about an optional part are not offered for this project. "
+    "Nothing was changed.")
+PQ_UNAVAILABLE_MESSAGE = (
+    "The questions for this part or your saved answers could not be read, so "
+    "they cannot be shown or changed from this page. Nothing was changed.")
+PQ_UNKNOWN_QUESTION_MESSAGE = (
+    "A submitted answer does not belong to a current question about this "
+    "part of this project. No changes were saved.")
+PQ_TOO_LONG_MESSAGE = (
+    "An answer exceeds the 1000-character limit. No changes were saved.")
+PQ_NOT_SAVED_MESSAGE = (
+    "Your answers could not be saved just now. Nothing was changed.")
+PQ_SAVED_MESSAGE = (
+    "Your answers were saved to your project. They have not been checked, and "
+    "saving them changes no gap, analysis focus, progression or readiness.")
+PQ_UNCHANGED_MESSAGE = (
+    "Your project already holds exactly these answers, so nothing needed to "
+    "change.")
+PQ_SAVED_NOT_SHOWN_MESSAGE = (
+    "Your answers were saved to your project, but this page could not show "
+    "them. Reload this page to see what your project holds.")
+PQ_UNKNOWN_MESSAGE = (
+    "We could not confirm whether your answers were saved. Reload this page "
+    "to see what your project currently holds before entering them again.")
+
 # Stage 15 closure: the Owner-declared interface dependency, saved by the SAME
 # preparation Save. Registered in `ui_text._MESSAGE_KEYS`.
 S15_DEP_INVALID_MESSAGE = (
@@ -1986,6 +2022,10 @@ def _integrated_scope_context(state):
         "control": (None if optional is None else
                     {"name": optional.display_name,
                      "function": optional.function_text}),
+        # Stage 28 Optional Part Slice 2: the link to that part's governed
+        # questions, offered only while the part is part-eligible (dormant).
+        "control_questions": (optional is not None
+                              and domain_activation.is_part_eligible(optional.domain)),
         "focus_key": ("UI_S15_SCOPE_FOCUS_MECH" if focus == "mechanical"
                       else "UI_S15_SCOPE_FOCUS_ELEC"),
         "interfaces": [{"a": names[item.subsystem_a_id],
@@ -8593,6 +8633,244 @@ def save_interface_preparation(sid):
     except Exception:
         return _render_interface_preparation(
             sid, None, notice=S15_PREP_SAVED_NOT_SHOWN_MESSAGE)
+
+
+# --- Stage 28 — Control-Loop Optional Part — Slice 2: part questions -------
+# DORMANT: for a project whose DURABLE composition holds the optional
+# control-loop part, and only while the canonical policy lists that part as
+# part-eligible (``domain_activation.is_part_eligible`` — the allowlist ships
+# EMPTY), the inventor may record, edit and clear their own answers to that
+# part's governed MECHANISM_COMPLETENESS and BOUNDARY_AMBIGUITY questions,
+# served verbatim from its domain pack (``get_domain_questions``; no generic,
+# Path-N or generated fallback — an unreadable set reads unavailable). The
+# answers are OWNER_STATED / UNVALIDATED current values of THAT part
+# (``subsystem_part_answers``): they never touch the root focus, a root gap,
+# progression, maturity, readiness, interface preparation, observations,
+# dependencies or Integration evidence. Same current-value save semantics as
+# the preparation page: request-integrity guard + project authorization, the
+# F724-1 baseline discipline, ONE atomic commit that re-validates the part and
+# question identities, confirm-by-reload (SAVED / NOT SAVED / UNKNOWN).
+_PQ_OK = "ok"
+_PQ_NO_PROJECT = "no_project"
+_PQ_NOT_OFFERED = "not_offered"
+_PQ_UNAVAILABLE = "unavailable"
+_PQ_STATUS_MESSAGE = {
+    _PQ_NO_PROJECT: (PQ_NO_PROJECT_MESSAGE, 409),
+    _PQ_NOT_OFFERED: (PQ_NOT_OFFERED_MESSAGE, 404),
+    _PQ_UNAVAILABLE: (PQ_UNAVAILABLE_MESSAGE, 503),
+}
+_PQ_ANSWER_PREFIX = "part_answer__"
+_PQ_BASE_PREFIX = "part_base__"
+_PQ_FAMILY_LABEL_KEYS = {
+    "MECHANISM_COMPLETENESS": "UI_PQ_FAMILY_MECHANISM",
+    "BOUNDARY_AMBIGUITY": "UI_PQ_FAMILY_BOUNDARY",
+}
+_PQ_FAMILY_PRESENCE_KEYS = {
+    _subsystem_model.PART_FAMILY_NONE_RECORDED: "UI_PQ_FAMILY_NONE",
+    _subsystem_model.PART_FAMILY_SOME_RECORDED: "UI_PQ_FAMILY_SOME",
+    _subsystem_model.PART_FAMILY_ALL_RECORDED: "UI_PQ_FAMILY_ALL",
+}
+
+
+def _offered_question_part(subsystems):
+    """The optional part of the durable composition whose questions may be
+    offered — present in ``subsystems`` AND part-eligible by the canonical
+    policy — or ``None`` (always ``None`` while the allowlist is empty)."""
+    for sub in subsystems:
+        if sub.domain in _subsystem_model.OPTIONAL_COMPOSITION_DOMAINS \
+                and domain_activation.is_part_eligible(sub.domain):
+            return sub
+    return None
+
+
+def _part_question_context(sid):
+    """``(status, context)`` of the part-question page from CURRENT durable
+    truth: the offered optional part, its governed questions per family (pack
+    order, verbatim) and the inventor's current answers. Anything unreadable
+    fails closed (``_PQ_UNAVAILABLE``) — never generic questions and never
+    "nothing recorded"."""
+    store = _get_store()
+    try:
+        exists, _owner = store.load_owner(sid)
+    except Exception:
+        return _PQ_UNAVAILABLE, None
+    if not exists:
+        return _PQ_NO_PROJECT, None
+    try:
+        subsystems = tuple(store.load_project_subsystems(sid))
+    except Exception:
+        return _PQ_UNAVAILABLE, None
+    part = _offered_question_part(subsystems)
+    if part is None:
+        return _PQ_NOT_OFFERED, None
+    loader = getattr(store, "load_part_answers", None)
+    families = [(gap_type, get_domain_questions(part.domain, gap_type))
+                for gap_type in _subsystem_model.PART_QUESTION_GAP_TYPES]
+    if not callable(loader) or any(qs is None for _g, qs in families):
+        return _PQ_UNAVAILABLE, None
+    try:
+        answers = tuple(loader(sid, part.subsystem_id))
+    except Exception:
+        return _PQ_UNAVAILABLE, None
+    current = {a.question_id: a.answer_text for a in answers}
+    question_ids = {qid for _g, qs in families for qid, _text in qs}
+    view = []
+    for gap_type, questions in families:
+        view.append({
+            "label_key": _PQ_FAMILY_LABEL_KEYS[gap_type],
+            "presence_key": _PQ_FAMILY_PRESENCE_KEYS[
+                _subsystem_model.part_family_presence(
+                    [qid for qid, _text in questions], answers,
+                    part.subsystem_id)],
+            "questions": [{"text": text,
+                           "name": _PQ_ANSWER_PREFIX + qid,
+                           "base_name": _PQ_BASE_PREFIX + qid,
+                           "value": current.get(qid)}
+                          for qid, text in questions],
+        })
+    return _PQ_OK, {
+        "part": {"name": part.display_name, "function": part.function_text},
+        "subsystem_id": part.subsystem_id,
+        "families": view,
+        "current": current,
+        "question_ids": question_ids,
+        # An answer to a question the pack no longer asks is preserved but
+        # attached to no current question (the CAP-09 stale precedent).
+        "stale": any(qid not in question_ids for qid in current),
+    }
+
+
+def _render_part_questions(sid, context, status=200, error=None, notice=None,
+                           drafts=None, baselines=None):
+    """Render the part-question page. ``context`` None renders no question
+    (the notice says why). ``drafts`` / ``baselines`` are a REFUSED
+    submission's text and form baselines, request-local only, shown under an
+    explicit UNSAVED notice and never written. NUL is never echoed."""
+    lang = _current_ui_lang()
+    response = make_response(render_template(
+        "part_questions.html",
+        sid=sid,
+        part=None if context is None else context["part"],
+        part_id=None if context is None else context["subsystem_id"],
+        families=None if context is None else context["families"],
+        stale=False if context is None else context["stale"],
+        drafts=None if drafts is None else {
+            name: raw.replace("\x00", "") for name, raw in drafts.items()},
+        baselines=None if baselines is None else {
+            name: raw.replace("\x00", "") for name, raw in baselines.items()},
+        draft_notice=drafts is not None,
+        max_length=_subsystem_model.MAX_PART_ANSWER_LENGTH,
+        error=ui_text.localize_message(error, lang),
+        notice=ui_text.localize_message(notice, lang),
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+def _resolve_part_answer_write(sid, subsystem_id, delta):
+    """Bounded confirm-by-reload after ``apply_part_answer_delta`` RAISED:
+    read the COMMITTED answers of that exact part (the store's IR-01 guard
+    refuses an unresolved transaction) and compare ONLY the submitted delta.
+    Every submitted answer durably equal (a clear: not recorded) -> SAVED; one
+    demonstrable mismatch -> NOT SAVED; unreadable durable truth -> UNKNOWN."""
+    try:
+        committed = _get_store().load_part_answers(sid, subsystem_id)
+    except Exception:
+        return _S15_PREP_WRITE_UNKNOWN
+    for question_id, text in delta.items():
+        answer = _subsystem_model.part_answer_for(committed, subsystem_id,
+                                                  question_id)
+        if (None if answer is None else answer.answer_text) != text:
+            return _S15_PREP_WRITE_NOT_SAVED
+    return _S15_PREP_WRITE_SAVED
+
+
+@app.route("/session/<sid>/part-questions", methods=["GET"])
+def part_questions(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    status, context = _part_question_context(sid)
+    if status != _PQ_OK:
+        message, code = _PQ_STATUS_MESSAGE[status]
+        return _render_part_questions(sid, None, status=code, notice=message)
+    return _render_part_questions(sid, context)
+
+
+@app.route("/session/<sid>/part-questions", methods=["POST"])
+def save_part_answers(sid):
+    # Order: request integrity (global guard) -> authorization -> CURRENT
+    # durable truth (offered part + governed questions) -> exact part and
+    # question identities -> validate the WHOLE delta -> ONE atomic durable
+    # commit (identities re-validated inside it) -> confirm. No live session
+    # state, root gap, progression or readiness is touched.
+    if not _project_authorized(sid):
+        return _deny_project()
+    status, context = _part_question_context(sid)
+    if status != _PQ_OK:
+        message, code = _PQ_STATUS_MESSAGE[status]
+        return _render_part_questions(sid, None, status=code, notice=message)
+    drafts, baselines, submitted = {}, {}, {}
+    for name, raw in request.form.items():
+        if name.startswith(_PQ_ANSWER_PREFIX):
+            drafts[name] = raw
+            submitted[name[len(_PQ_ANSWER_PREFIX):]] = raw
+        elif name.startswith(_PQ_BASE_PREFIX):
+            baselines[name] = raw
+    # Exact identity only: the form must name THIS project's offered part and
+    # current governed questions of it — never matched by position or text,
+    # and a question no longer asked is never remapped to another.
+    if request.form.get("part_id") != context["subsystem_id"] or any(
+            qid not in context["question_ids"] for qid in submitted):
+        return _render_part_questions(sid, context, status=400,
+                                      error=PQ_UNKNOWN_QUESTION_MESSAGE)
+    if any(_PQ_BASE_PREFIX + qid not in baselines for qid in submitted):
+        return _render_part_questions(sid, context, status=400,
+                                      error=PQ_NOT_SAVED_MESSAGE)
+    # F724-1: a field is edited only when it differs from what THIS form
+    # displayed; an edit the project already holds is not re-written.
+    edits = {}
+    for qid, raw in submitted.items():
+        baseline = baselines[_PQ_BASE_PREFIX + qid]
+        if _same_planning_text(raw, baseline.strip() or None):
+            continue
+        if not _same_planning_text(raw, context["current"].get(qid)):
+            edits[qid] = raw
+    lang = _current_ui_lang()
+    for raw in edits.values():
+        if len(raw.strip()) > _subsystem_model.MAX_PART_ANSWER_LENGTH:
+            return _render_part_questions(
+                sid, context, status=400, drafts=drafts, baselines=baselines,
+                error=PQ_TOO_LONG_MESSAGE)
+        invalid = _free_text_error(raw, lang)
+        if invalid is not None:
+            return _render_part_questions(
+                sid, context, status=400, drafts=drafts, baselines=baselines,
+                error=invalid)
+    if not edits:
+        return _render_part_questions(sid, context, notice=PQ_UNCHANGED_MESSAGE)
+    # Trim only; an emptied answer clears that one answer.
+    delta = {qid: (raw.strip() or None) for qid, raw in edits.items()}
+    try:
+        _get_store().apply_part_answer_delta(sid, context["subsystem_id"], delta)
+    except Exception:
+        outcome = _resolve_part_answer_write(sid, context["subsystem_id"], delta)
+        if outcome == _S15_PREP_WRITE_NOT_SAVED:
+            return _render_part_questions(
+                sid, context, status=503, drafts=drafts, baselines=baselines,
+                error=PQ_NOT_SAVED_MESSAGE)
+        if outcome == _S15_PREP_WRITE_UNKNOWN:
+            return _render_part_questions(sid, None, status=503,
+                                          notice=PQ_UNKNOWN_MESSAGE)
+        # SAVED: the requested values ARE durably present; continue.
+    try:
+        status, context = _part_question_context(sid)
+        if status != _PQ_OK:
+            return _render_part_questions(sid, None,
+                                          notice=PQ_SAVED_NOT_SHOWN_MESSAGE)
+        return _render_part_questions(sid, context, notice=PQ_SAVED_MESSAGE)
+    except Exception:
+        return _render_part_questions(sid, None,
+                                      notice=PQ_SAVED_NOT_SHOWN_MESSAGE)
 
 
 # --- Stage 15 Slice 4: Interface Verification Observation Event -------------

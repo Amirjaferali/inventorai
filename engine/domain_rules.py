@@ -387,3 +387,27 @@ def get_domain_question(domain: str, gap_type: str, iterations_open: int) -> str
             index = min(iterations_open, len(questions) - 1)
             return questions[index].get("text")
     return None
+
+
+def get_domain_questions(domain: str, gap_type: str) -> tuple | None:
+    """Stage 28 — Control-Loop Optional Part — Slice 2: the ORDERED governed
+    questions of ONE domain pack for ONE gap type, as ``(question_id, text)``
+    pairs exactly as the pack declares them (pack order, ids and text
+    verbatim). Read-only. Returns ``None`` — never a substitute — when the
+    pack, the gap type or a well-formed question list is absent: no generic,
+    Path-N or other-domain fallback and nothing generated."""
+    pack = _REGISTRY.get(domain)
+    if not pack:
+        return None
+    for mapping in pack.get("gap_type_mappings", []):
+        if mapping.get("gap_type_id") != gap_type:
+            continue
+        pairs = tuple((q.get("question_id"), q.get("text"))
+                      for q in mapping.get("questions", []))
+        ids = [qid for qid, _text in pairs]
+        if not pairs or len(set(ids)) != len(ids) or any(
+                not isinstance(value, str) or not value.strip()
+                for pair in pairs for value in pair):
+            return None
+        return pairs
+    return None

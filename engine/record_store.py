@@ -86,6 +86,11 @@ from engine.subsystem_model import (
     # Stage 15 closure: the Owner-declared interface dependency.
     InterfaceDependency, check_interface_dependency,
     validate_interface_dependencies, MAX_INTERFACE_DEPENDENCY_NOTE_LENGTH,
+    # Stage 28 Optional Part Slice 2: the inventor's part-scoped answers.
+    PartAnswer, PartAnswerError, part_question_owner, check_part_answer_target,
+    validate_part_answers, valid_part_answer_text, is_valid_part_question_id,
+    MAX_PART_ANSWER_LENGTH,
+    MAX_PART_QUESTION_ID_LENGTH,
 )
 # Stage 19 / CAP-09 Result Event Slice 1: the inventor's append-only report of
 # what actually happened in one canonical Section-11 experiment.
@@ -265,6 +270,21 @@ class InterfaceDependenciesCorrupt(StoreError):
     that are not that interface's endpoints. Fail-closed for the WHOLE
     collection: nothing partial is returned and nothing is repaired, deleted,
     remapped or reinterpreted."""
+
+
+class PartAnswerRejected(StoreError):
+    """Stage 28 Optional Part Slice 2: a submitted part-answer change names no
+    optional part of THIS project's durable composition (inside the write
+    transaction), a question id outside that part's own pack, or invalid
+    text. Decided before any row is written; the whole submission is rolled
+    back."""
+
+
+class PartAnswersCorrupt(StoreError):
+    """Stage 28 Optional Part Slice 2: a project's durable part-answer rows
+    are malformed, duplicated or orphaned from its durable composition.
+    Fail-closed for the WHOLE collection: nothing partial is returned and
+    nothing is repaired, deleted, remapped or reinterpreted."""
 
 
 class IntegrationEvidenceRejected(StoreError):
@@ -484,6 +504,11 @@ class RecordStore(Protocol):
                                           dependency_delta=None) -> None: ...
     # Stage 15 closure: the Owner-declared interface dependency (current value).
     def load_interface_dependencies(self, project_id: str) -> tuple: ...
+    # Stage 28 Optional Part Slice 2: part answers (current value; see the
+    # subsystem_part_answers note).
+    def load_part_answers(self, project_id: str, subsystem_id: str) -> tuple: ...
+    def apply_part_answer_delta(self, project_id: str, subsystem_id: str,
+                                delta) -> None: ...
     # CAP-09 Result Event Slice 1 (append-only; see the prototype_test_results note).
     def load_result_events(self, project_id: str) -> tuple: ...
     def committed_result_event_for_submission(self, project_id: str,
@@ -1239,6 +1264,42 @@ _INTERFACE_PREPARATIONS_SCHEMA = (
     """ % tuple(_PREPARATION_TEXT_CHECK.format(col=c) for c in PREPARATION_FIELDS),
 )
 
+# Stage 28 — Control-Loop Optional Part — Slice 2 — the ``subsystem_part_answers``
+# sidecar: the inventor's CURRENT answer to ONE governed question for ONE
+# optional composed part. A CURRENT-VALUE sidecar (upsert / delete; no history),
+# keyed by ``(project_id, subsystem_id, question_id)`` and anchored by a
+# composite foreign key to that exact durable ``project_subsystems`` row, so a
+# row can never name another project's part or a part that does not exist.
+# Clearing an answer deletes its row (no semantically empty record). No
+# provenance column: a stored row is by construction the inventor's own text
+# (OWNER_STATED, UNVALIDATED) — never a gap, a gap state, evidence, a
+# readiness, progression or Integration value. A stored question id is never
+# remapped: an answer to a question the pack no longer asks stays as history.
+# The CHECKs are a database backstop only; the loader re-validates every row
+# against the durable composition. Additive and idempotent (``IF NOT
+# EXISTS``); touches no existing table, column or row; nothing is backfilled.
+# Rollback is disable-and-ignore (stop reading the table).
+_PART_ANSWERS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS subsystem_part_answers (
+        project_id    TEXT NOT NULL,
+        subsystem_id  TEXT NOT NULL,
+        question_id   TEXT NOT NULL,
+        answer_text   TEXT NOT NULL,
+        PRIMARY KEY (project_id, subsystem_id, question_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, subsystem_id)
+            REFERENCES project_subsystems(project_id, subsystem_id),
+        CHECK (typeof(subsystem_id) = 'text' AND length(subsystem_id) = 36),
+        CHECK (typeof(question_id) = 'text'
+               AND length(question_id) BETWEEN 1 AND %d),
+        CHECK (typeof(answer_text) = 'text'
+               AND length(answer_text) BETWEEN 1 AND %d
+               AND instr(CAST(answer_text AS BLOB), X'00') = 0)
+    )
+    """ % (MAX_PART_QUESTION_ID_LENGTH, MAX_PART_ANSWER_LENGTH),
+)
+
 # Stage 15 closure — the ``subsystem_interface_dependencies`` sidecar: the
 # inventor's CURRENT Owner-declared dependency for ONE existing durable
 # interface (one-way: the exact dependent part and the exact part it relies
@@ -1579,6 +1640,7 @@ class SqliteRecordStore:
             self._migrate_interface_observations(self._conn)
             self._migrate_interface_dependencies(self._conn)
             self._migrate_integration_evidence_anchors(self._conn)
+            self._migrate_part_answers(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -1819,6 +1881,15 @@ class SqliteRecordStore:
         existing table, column or row; nothing is backfilled or inferred.
         Rollback is disable-and-ignore (stop reading the table)."""
         for stmt in _INTERFACE_PREPARATIONS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_part_answers(self, conn) -> None:
+        """Stage 28 Optional Part Slice 2 forward migration: additively create
+        the ``subsystem_part_answers`` sidecar. Idempotent (``IF NOT EXISTS``)
+        on a fresh and on an existing populated database; touches no existing
+        table, column or row; nothing is backfilled or inferred. Rollback is
+        disable-and-ignore (stop reading the table)."""
+        for stmt in _PART_ANSWERS_SCHEMA:
             conn.execute(stmt)
 
     def _migrate_result_events(self, conn) -> None:
@@ -2281,6 +2352,107 @@ class SqliteRecordStore:
                     "evidence_needed = excluded.evidence_needed",
                     (project_id, interface_id, merged.operating_conditions,
                      merged.acceptance_criterion, merged.evidence_needed))
+
+    # --- Stage 28 Optional Part Slice 2: part answers (current value) ---------
+    def _validated_part_answers(self, project_id, subsystems):
+        """This project's durable part-answer rows validated WHOLE against its
+        durable composition (exact optional-part id; question id of that
+        part's own pack); ``PartAnswersCorrupt`` on anything malformed,
+        duplicated or orphaned (nothing partial, nothing remapped)."""
+        rows = self._conn.execute(
+            "SELECT subsystem_id, question_id, answer_text FROM "
+            "subsystem_part_answers WHERE project_id = ? "
+            "ORDER BY subsystem_id ASC, question_id ASC", (project_id,)).fetchall()
+        if not rows:
+            return ()
+        items = tuple(PartAnswer(subsystem_id=row[0], question_id=row[1],
+                                 answer_text=row[2]) for row in rows)
+        try:
+            return validate_part_answers(items, subsystems)
+        except PartAnswerError as exc:
+            raise PartAnswersCorrupt(str(exc)) from None
+
+    def load_part_answers(self, project_id: str, subsystem_id: str) -> tuple:
+        """The inventor's current answers for exactly ONE optional part of
+        this project (``()`` when none is recorded), read with the durable
+        composition inside ONE snapshot; the WHOLE project's answer
+        collection is validated (``PartAnswersCorrupt``; nothing partial). An
+        id that is not an optional part of THIS project raises
+        ``PartAnswerRejected``. No project -> ``ProjectNotFound``. IR-01: a
+        connection inside an unresolved transaction refuses
+        (``RecordStoreConnectionUnsafe``). Read-only; project-scoped; logs
+        nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            answers = self._validated_part_answers(project_id, subsystems)
+            try:
+                part_question_owner(subsystems, subsystem_id)
+            except PartAnswerError:
+                raise PartAnswerRejected(
+                    "the id names no optional part of this project") from None
+        return tuple(a for a in answers if a.subsystem_id == subsystem_id)
+
+    def apply_part_answer_delta(self, project_id: str, subsystem_id: str,
+                                delta) -> None:
+        """Apply ONE complete submitted part-answer delta atomically.
+
+        ``delta`` maps a governed ``question_id`` to the trimmed answer text
+        (record / edit) or ``None`` (clear — that current-value row is
+        removed). Questions absent from ``delta`` are never touched.
+
+        The delta is validated structurally BEFORE the transaction opens
+        (``PartAnswerRejected``, nothing written). Then ONE ``BEGIN
+        IMMEDIATE`` transaction, against DURABLE truth: the project exists
+        (``ProjectNotFound``); its composition and existing answers validate
+        (the corrupt errors); ``subsystem_id`` is an OPTIONAL part of THIS
+        project's durable composition by exact identity and every question id
+        belongs to that part's own pack (``PartAnswerRejected`` otherwise);
+        only then is each answer upserted or deleted. Any failure before
+        COMMIT rolls the ENTIRE delta back: no partial save. Writes nothing
+        but this sidecar: no gap, ledger, progression, readiness, evidence or
+        Integration row. IR-01: never writes on top of an unresolved
+        connection."""
+        if not isinstance(subsystem_id, str) or not subsystem_id:
+            raise PartAnswerRejected("malformed part identity")
+        try:
+            items = list(delta.items())
+        except AttributeError:
+            raise PartAnswerRejected("delta must be a mapping") from None
+        if not items:
+            raise PartAnswerRejected("an empty delta is not a change")
+        for question_id, text in items:
+            if not is_valid_part_question_id(question_id):
+                raise PartAnswerRejected("malformed question identity")
+            if text is not None and not valid_part_answer_text(text):
+                raise PartAnswerRejected("malformed answer text")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            self._validated_part_answers(project_id, subsystems)
+            try:
+                part = part_question_owner(subsystems, subsystem_id)
+                for question_id, _text in items:
+                    check_part_answer_target(part, question_id)
+            except PartAnswerError:
+                raise PartAnswerRejected(
+                    "the change names no question of an optional part of "
+                    "this project") from None
+            for question_id, text in items:
+                if text is None:
+                    self._conn.execute(
+                        "DELETE FROM subsystem_part_answers WHERE project_id = ? "
+                        "AND subsystem_id = ? AND question_id = ?",
+                        (project_id, subsystem_id, question_id))
+                    continue
+                self._conn.execute(
+                    "INSERT INTO subsystem_part_answers (project_id, "
+                    "subsystem_id, question_id, answer_text) VALUES (?, ?, ?, ?) "
+                    "ON CONFLICT (project_id, subsystem_id, question_id) "
+                    "DO UPDATE SET answer_text = excluded.answer_text",
+                    (project_id, subsystem_id, question_id, text))
 
     # --- CAP-09 Result Event Slice 1 (append-only) ------------------------------
     _RESULT_COLUMNS = (

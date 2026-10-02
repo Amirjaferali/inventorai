@@ -299,6 +299,33 @@ _MESSAGE_KEYS = {
     ("We could not confirm whether your preparation was saved. Reload this "
      "page to see what your project currently holds before entering it "
      "again."): "UI_S15_PREP_MSG_UNKNOWN",
+    # Stage 28 Optional Part Slice 2 (web/app.py save_part_answers).
+    ("Answers about a part can only be kept for a saved project. This session "
+     "is not saved as a project, so nothing can be saved here. Nothing was "
+     "changed."): "UI_PQ_MSG_NO_PROJECT",
+    ("Questions about an optional part are not offered for this project. "
+     "Nothing was changed."): "UI_PQ_MSG_NOT_OFFERED",
+    ("The questions for this part or your saved answers could not be read, so "
+     "they cannot be shown or changed from this page. Nothing was changed."):
+        "UI_PQ_MSG_UNAVAILABLE",
+    ("A submitted answer does not belong to a current question about this "
+     "part of this project. No changes were saved."):
+        "UI_PQ_MSG_UNKNOWN_QUESTION",
+    ("An answer exceeds the 1000-character limit. No changes were saved."):
+        "UI_PQ_MSG_TOO_LONG",
+    ("Your answers could not be saved just now. Nothing was changed."):
+        "UI_PQ_MSG_NOT_SAVED",
+    ("Your answers were saved to your project. They have not been checked, and "
+     "saving them changes no gap, analysis focus, progression or readiness."):
+        "UI_PQ_MSG_SAVED",
+    ("Your project already holds exactly these answers, so nothing needed to "
+     "change."): "UI_PQ_MSG_UNCHANGED",
+    ("Your answers were saved to your project, but this page could not show "
+     "them. Reload this page to see what your project holds."):
+        "UI_PQ_MSG_SAVED_NOT_SHOWN",
+    ("We could not confirm whether your answers were saved. Reload this page "
+     "to see what your project currently holds before entering them again."):
+        "UI_PQ_MSG_UNKNOWN",
     # Stage 15 Slice 4 (web/app.py record_interface_observation).
     ("Your observation could not be saved just now. Nothing was changed."):
         "UI_S15_OBS_MSG_NOT_SAVED",
@@ -683,6 +710,101 @@ UI_STRINGS = {
     "UI_S15_IEV_INTRO_3": {
         "en": "Evidence about how two parts work together through each interaction — for example a test, an inspection, a specification or a review. Each item is your own statement, tied to exactly one interaction. A correction or a withdrawal adds a new entry and keeps the earlier one in the history. Your observations above are not evidence and are not counted here.",
         "ar": "أدلة عن كيفية عمل جزأين معًا عبر كل تفاعل — مثل اختبار أو فحص أو مواصفة أو مراجعة. كل عنصر هو قولك أنت، ومرتبط بتفاعل واحد بالضبط. التصحيح أو السحب يضيف إدخالًا جديدًا ويُبقي السابق في السجلّ. ملاحظاتك أعلاه ليست أدلة ولا تُحتسب هنا.",
+    },
+    # --- Stage 28 Optional Part Slice 2 — questions about the control-loop part
+    # (dormant). Plain user-facing copy only: the governed question text itself
+    # is NOT in this catalogue (it is the pack text, verbatim, in its own
+    # language — no canonical Arabic wording exists for it yet).
+    "UI_PQ_TITLE": {"en": "Questions about the control-loop part",
+                    "ar": "أسئلة عن جزء حلقة التحكم"},
+    "UI_PQ_LINK": {"en": "Answer the questions about this part",
+                   "ar": "أجب عن الأسئلة الخاصة بهذا الجزء"},
+    "UI_PQ_INTRO": {
+        "en": "These questions are about the control-loop part of your invention only. Answer in your own words; you can answer some now and the rest later, and change or clear an answer at any time. Your answers are saved exactly as you write them and are not checked.",
+        "ar": "تتعلق هذه الأسئلة بجزء حلقة التحكم في اختراعك فقط. أجب بكلماتك؛ يمكنك الإجابة عن بعضها الآن والبقية لاحقًا، وتعديل أي إجابة أو مسحها في أي وقت. تُحفظ إجاباتك كما تكتبها تمامًا، ولا تُفحص.",
+    },
+    "UI_PQ_NOT_ROOT": {
+        "en": "They do not apply to the project's initial analysis focus, which stays unchanged. Your answers do not close or change any gap of the project, and they do not change its progression, its readiness or its Integration evidence.",
+        "ar": "ولا تنطبق على محور التحليل الأولي للمشروع، الذي يبقى دون تغيير. ولا تُغلق إجاباتك أي فجوة في المشروع ولا تغيّرها، ولا تغيّر تقدّمه ولا جاهزيته ولا أدلة التكامل (Integration evidence) الخاصة به.",
+    },
+    "UI_PQ_SOURCE_NOTE": {
+        "en": "Each question is shown exactly as written in InventorAI's governed question set for this part.",
+        "ar": "يُعرض كل سؤال كما ورد حرفيًا في مجموعة الأسئلة المعتمدة لهذا الجزء في InventorAI، وبلغته الأصلية الإنجليزية؛ إذ لا تتوفر بعدُ صياغة عربية معتمدة لهذه الأسئلة.",
+    },
+    "UI_PQ_PART": {"en": "Control-loop part:", "ar": "جزء حلقة التحكم:"},
+    "UI_PQ_FAMILY_MECHANISM": {
+        "en": "How the control loop works (mechanism completeness of this part)",
+        "ar": "كيف تعمل حلقة التحكم (اكتمال آلية هذا الجزء — Mechanism Completeness)",
+    },
+    "UI_PQ_FAMILY_BOUNDARY": {
+        "en": "What the control loop covers (boundary of this part)",
+        "ar": "ما الذي تشمله حلقة التحكم (حدود هذا الجزء — Boundary Ambiguity)",
+    },
+    "UI_PQ_FAMILY_NONE": {"en": "None of these answers is recorded yet.",
+                          "ar": "لم تُسجَّل أي إجابة من هذه الإجابات بعد."},
+    "UI_PQ_FAMILY_SOME": {"en": "Some of these answers are recorded.",
+                          "ar": "سُجّل بعض هذه الإجابات."},
+    "UI_PQ_FAMILY_ALL": {"en": "All of these answers are recorded.",
+                         "ar": "سُجّلت جميع هذه الإجابات."},
+    "UI_PQ_RECORDED": {"en": "Answer recorded", "ar": "الإجابة مسجّلة"},
+    "UI_PQ_NOT_RECORDED": {"en": "Not recorded yet", "ar": "لم تُسجَّل بعد"},
+    "UI_PQ_PRESENCE_NOTE": {
+        "en": "\"Recorded\" only means that an answer is saved. It does not mean the answer was checked, that anything is resolved, or that the part works.",
+        "ar": "تعني «مسجّلة» فقط أن الإجابة محفوظة، ولا تعني أنها فُحصت، ولا أن شيئًا قد حُسم، ولا أن الجزء يعمل.",
+    },
+    "UI_PQ_LIMIT": {
+        "en": "Each answer can be up to {limit} characters. Leave an answer empty to clear it.",
+        "ar": "يمكن أن تصل كل إجابة إلى {limit} حرف. اترك الإجابة فارغة لمسحها.",
+    },
+    "UI_PQ_SAVE": {"en": "Save my answers", "ar": "احفظ إجاباتي"},
+    "UI_PQ_BACK": {"en": "Back to your project", "ar": "العودة إلى مشروعك"},
+    "UI_PQ_DRAFT_UNSAVED": {
+        "en": "The text below was NOT saved. It is shown so you can correct it and submit again.",
+        "ar": "لم يُحفظ النص أدناه. يُعرض لكي تتمكن من تصحيحه وإرساله مجددًا.",
+    },
+    "UI_PQ_STALE": {
+        "en": "One or more answers you entered earlier belong to a question that is no longer asked for this part. They have been preserved but are not attached to any current question.",
+        "ar": "تعود إجابة أو أكثر أدخلتها سابقًا إلى سؤال لم يعد يُطرح لهذا الجزء. وقد حُفظت، لكنها غير مرتبطة بأي سؤال حالي.",
+    },
+    "UI_PQ_MSG_NO_PROJECT": {
+        "en": "Answers about a part can only be kept for a saved project. This session is not saved as a project, so nothing can be saved here. Nothing was changed.",
+        "ar": "لا يمكن الاحتفاظ بالإجابات الخاصة بجزء إلا لمشروع محفوظ. هذه الجلسة غير محفوظة كمشروع، لذا لا يمكن حفظ أي شيء هنا. لم يتغيّر شيء.",
+    },
+    "UI_PQ_MSG_NOT_OFFERED": {
+        "en": "Questions about an optional part are not offered for this project. Nothing was changed.",
+        "ar": "لا تُعرض أسئلة عن جزء اختياري لهذا المشروع. لم يتغيّر شيء.",
+    },
+    "UI_PQ_MSG_UNAVAILABLE": {
+        "en": "The questions for this part or your saved answers could not be read, so they cannot be shown or changed from this page. Nothing was changed.",
+        "ar": "تعذّرت قراءة أسئلة هذا الجزء أو إجاباتك المحفوظة، لذا لا يمكن عرضها أو تغييرها من هذه الصفحة. لم يتغيّر شيء.",
+    },
+    "UI_PQ_MSG_UNKNOWN_QUESTION": {
+        "en": "A submitted answer does not belong to a current question about this part of this project. No changes were saved.",
+        "ar": "إحدى الإجابات المُرسلة لا تخص سؤالًا حاليًا عن هذا الجزء من هذا المشروع. لم يُحفظ أي تغيير.",
+    },
+    "UI_PQ_MSG_TOO_LONG": {
+        "en": "An answer exceeds the 1000-character limit. No changes were saved.",
+        "ar": "إحدى الإجابات تتجاوز حد 1000 حرف. لم يُحفظ أي تغيير.",
+    },
+    "UI_PQ_MSG_NOT_SAVED": {
+        "en": "Your answers could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ إجاباتك الآن. لم يتغيّر شيء.",
+    },
+    "UI_PQ_MSG_SAVED": {
+        "en": "Your answers were saved to your project. They have not been checked, and saving them changes no gap, analysis focus, progression or readiness.",
+        "ar": "حُفظت إجاباتك في مشروعك. لم تُفحص، وحفظها لا يغيّر أي فجوة ولا محور التحليل ولا التقدّم ولا الجاهزية.",
+    },
+    "UI_PQ_MSG_UNCHANGED": {
+        "en": "Your project already holds exactly these answers, so nothing needed to change.",
+        "ar": "يحتوي مشروعك بالفعل على هذه الإجابات نفسها تمامًا، لذا لم يلزم أي تغيير.",
+    },
+    "UI_PQ_MSG_SAVED_NOT_SHOWN": {
+        "en": "Your answers were saved to your project, but this page could not show them. Reload this page to see what your project holds.",
+        "ar": "حُفظت إجاباتك في مشروعك، لكن هذه الصفحة تعذّر عليها عرضها. أعد تحميل الصفحة لترى ما يحتويه مشروعك.",
+    },
+    "UI_PQ_MSG_UNKNOWN": {
+        "en": "We could not confirm whether your answers were saved. Reload this page to see what your project currently holds before entering them again.",
+        "ar": "لم نتمكن من التأكد مما إذا كانت إجاباتك قد حُفظت. أعد تحميل الصفحة لترى ما يحتويه مشروعك حاليًا قبل إدخالها مجددًا.",
     },
     # --- Stage 15 Slice 2 — how the two parts interact (Owner declarations) --
     # Plain user-facing language only (same boundary as the Slice-1 keys).

@@ -184,7 +184,13 @@ _PROV_PATH = os.path.join(_DOMAINS, "domain_provenance.json")
 #   pre-UQTR-01 progression_loop.py =
 #       da2c405d3f7b4995f43141d0b89720f97e94b731345b1ad054c77b821f58ab90
 _FROZEN_ENGINE_SHA256 = {
-    "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
+    # Stage 28 — Control-Loop Optional Part — Slice 2 re-freeze (disclosed; Owner-authorized
+    # governed gate): ONE additive read-only accessor `get_domain_questions` (a pack's
+    # ordered governed questions for one gap type, verbatim; None, never a fallback).
+    # classify_domain, get_domain_question and every existing function are byte-unchanged.
+    #   pre-Slice-2 domain_rules.py =
+    #       0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab
+    "engine/domain_rules.py": "9135181d38bca429f0f84a1f0978752af040a4a5dcb8c5d6d75c4dc2ab3103f8",
     # CAP-08 Slice 1 re-freeze: the relationship-metadata serving containment
     # in _alternatives_crossing_context (pre-CAP-08 = 70ce71fb...8874).
     "engine/progression_loop.py": "b8ba596c9315df592f358cd2230e6102c13ea1ed292527e19da6c18b64014f50",
