@@ -813,10 +813,12 @@ def test_composition_page_ar_is_rtl_and_bilingual(client):
     raw = r.get_data(as_text=True)
     assert re.search(r'<html[^>]*dir="rtl"', raw)
     text = _html.unescape(raw)
+    # AMENDED at the Stage 28 part-only enablement: the form now offers the optional part slot, so its focus
+    # note is the optional-part variant; the two-part note stays defined for a withdrawn policy
     for key in ("UI_S15_TITLE", "UI_S15_QUESTION", "UI_S15_YES", "UI_S15_NO",
-                "UI_S15_NOT_SURE", "UI_S15_FOCUS_PROMPT", "UI_S15_FOCUS_NOTE"):
+                "UI_S15_NOT_SURE", "UI_S15_FOCUS_PROMPT", "UI_S15_FOCUS_NOTE_OPTIONAL"):
         assert ui_text.text(key, "ar") in text
-    for key in ("UI_S15_OFFER_LABEL", "UI_S15_GUIDE_NO", "UI_S15_GUIDE_NOT_SURE",
+    for key in ("UI_S15_OFFER_LABEL", "UI_S15_GUIDE_NO", "UI_S15_GUIDE_NOT_SURE", "UI_S15_FOCUS_NOTE",
                 "UI_S15_SCOPE_STATEMENT", "UI_S15_ERR_TOO_LONG"):
         assert ui_text.has_string(key)
     # plain user-facing language: no internal architecture words in the copy

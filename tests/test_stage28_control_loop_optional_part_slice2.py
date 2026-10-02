@@ -464,9 +464,9 @@ def test_two_part_projects_get_no_part_questions_even_when_eligible(client, part
 def test_three_part_functionality_is_dormant_while_the_allowlist_is_empty(client, part_eligible, monkeypatch):
     sid = _three_part_project(client)
     link = 'data-scope-part-questions'
-    assert link in client.get("/session/%s" % sid).get_data(as_text=True)          # eligible double: offered
+    assert link in client.get("/session/%s" % sid).get_data(as_text=True)          # live policy: offered
     form = _form(client, sid)
-    monkeypatch.setattr(domain_activation, "_PART_ONLY_DOMAINS", frozenset())        # the SHIPPED state
+    monkeypatch.setattr(domain_activation, "_PART_ONLY_DOMAINS", frozenset())        # a WITHDRAWN allowlist
     assert domain_activation.is_part_eligible(CL) is False
     # AMENDED at Stage 30 Slice 1 (Owner-authorized withdrawal readability): an already-saved part stays
     # READABLE (read-only view, read-only link); recording stays refused and nothing is written.
@@ -521,10 +521,11 @@ def test_new_sidecar_is_additive_and_existing_rows_survive_reopening(tmp_path):
     reopened.close()
 
 
-def test_control_loop_stays_not_root_activated_and_not_part_enabled():
-    assert domain_activation._PART_ONLY_DOMAINS == frozenset()
+def test_control_loop_is_part_enabled_but_never_root_activated():
+    # AMENDED at the Stage 28 part-only enablement: part-enabled now; root activation unchanged
+    assert domain_activation._PART_ONLY_DOMAINS == frozenset({CL})
     assert domain_activation._ACTIVATED_DOMAINS == frozenset({"electronics_electrical", "mechanical"})
-    assert domain_activation.is_part_eligible(CL) is False
+    assert domain_activation.is_part_eligible(CL) is True
     assert domain_activation.is_activated(CL) is False
     assert domain_activation.support_state(CL) == domain_activation.RECOGNIZED_NOT_ACTIVATED
     assert CL not in domain_activation.activated_domains()

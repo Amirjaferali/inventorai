@@ -42,7 +42,8 @@ HAZARD = {MECH: MECH_HAZARD, ELEC: ELEC_HAZARD}
 
 
 def _withdraw(monkeypatch):
-    """The SHIPPED state: the part-only allowlist is empty again."""
+    """A WITHDRAWN policy: the part-only allowlist is empty again (it shipped empty; since the Stage 28 part-only
+    enablement it lists ``control_loop``)."""
     monkeypatch.setattr(domain_activation, "_PART_ONLY_DOMAINS", frozenset())
     assert domain_activation.is_part_eligible(CL) is False
 
@@ -152,10 +153,11 @@ def test_two_part_projects_still_get_no_part_page_either_way(client, part_eligib
     assert "data-scope-part-questions" not in client.get("/session/%s" % sid).get_data(as_text=True)
 
 
-def test_root_activation_and_the_shipped_allowlist_are_unchanged():
-    assert domain_activation._PART_ONLY_DOMAINS == frozenset()
+def test_root_activation_is_unchanged_and_the_allowlist_enables_only_the_optional_part():
+    # AMENDED at the Stage 28 part-only enablement: the allowlist lists exactly the optional part
+    assert domain_activation._PART_ONLY_DOMAINS == frozenset({CL})
     assert domain_activation._ACTIVATED_DOMAINS == frozenset({"electronics_electrical", "mechanical"})
-    assert domain_activation.is_part_eligible(CL) is False
+    assert domain_activation.is_part_eligible(CL) is True
     assert domain_activation.is_activated(CL) is False
 
 
