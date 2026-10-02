@@ -4475,10 +4475,11 @@ _COMPOSITION_FIELDS = (
 )
 # Stage 28 — Control-Loop Optional Part — Slice 1: the ONE optional part slot
 # (``OPTIONAL_COMPOSITION_DOMAINS``). Offered only while the canonical policy
-# lists its domain as PART-ONLY eligible (dormant today: that allowlist ships
-# empty). All-or-nothing, never the initial analysis focus, never filled from
-# classifier output; posted values are ignored whenever the slot is not
-# offered, so no part can be created through a form that was not rendered.
+# lists its domain as PART-ONLY eligible (today ``control_loop`` is: an
+# optional part only, never root-admissible). All-or-nothing, never the
+# initial analysis focus, never filled from classifier output; posted values
+# are ignored whenever the slot is not offered, so no part can be created
+# through a form that was not rendered.
 _COMPOSITION_OPTIONAL_FIELDS = (
     (_subsystem_model.OPTIONAL_COMPOSITION_DOMAINS[0],
      "ctrl_part_name", "ctrl_part_function"),
@@ -4525,11 +4526,11 @@ def _composition_classification_eligible(classification):
 
     Stage 28 — Control-Loop Optional Part — Slice 1: a SINGLE result naming an
     OPTIONAL part domain is also eligible, but only while the canonical policy
-    lists that domain as part-eligible (dormant today). A SINGLE result never
-    forms Case A, so this applies only to the Owner's explicit integrated
-    declaration (Case B); it is never root admission, never the focus, and the
-    Owner must still declare the required parts — nothing is created from the
-    classifier result."""
+    lists that domain as part-eligible (``control_loop`` is, today). A
+    SINGLE result never forms Case A, so this applies only to the Owner's
+    explicit integrated declaration (Case B); it is never root admission,
+    never the focus, and the Owner must still declare the required parts —
+    nothing is created from the classifier result."""
     kind = classification.kind
     if kind is DomainResultKind.AMBIGUOUS_TIE:
         return _is_exact_composition_tie(classification)
@@ -8644,11 +8645,13 @@ def save_interface_preparation(sid):
 
 
 # --- Stage 28 — Control-Loop Optional Part — Slice 2: part questions -------
-# DORMANT: for a project whose DURABLE composition holds the optional
-# control-loop part, and only while the canonical policy lists that part as
-# part-eligible (``domain_activation.is_part_eligible`` — the allowlist ships
-# EMPTY), the inventor may record, edit and clear their own answers to that
-# part's governed MECHANISM_COMPLETENESS and BOUNDARY_AMBIGUITY questions,
+# For a project whose DURABLE composition holds the optional control-loop
+# part, and only while the canonical policy lists that part as part-eligible
+# (``domain_activation.is_part_eligible`` — ``control_loop`` is PART-ONLY
+# enabled today; if that eligibility is withdrawn the saved answers stay
+# readable, read-only — Stage 30 Slice 1), the inventor may record, edit
+# and clear their own answers to that part's governed MECHANISM_COMPLETENESS
+# and BOUNDARY_AMBIGUITY questions,
 # served verbatim from its domain pack (``get_domain_questions``; no generic,
 # Path-N or generated fallback — an unreadable set reads unavailable). The
 # answers are OWNER_STATED / UNVALIDATED current values of THAT part
