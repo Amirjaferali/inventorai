@@ -30,9 +30,11 @@ WHY EACH DIMENSION SAYS WHAT IT SAYS
   counts below report WHAT WAS RECORDED and never interpret it: no demand, no
   market size, no attractiveness, no willingness to pay, no profitability and no
   investment judgement is inferred from them, ever.
-* MANUFACTURING — not assessed at all, so it receives NO disposition, not even
-  `INSUFFICIENT_EVIDENCE`. Saying "insufficient evidence" would imply somebody
-  looked; nobody has.
+* MANUFACTURING — insufficient because every recorded Manufacturing item is the
+  inventor's own unchecked statement (it has had its own evidence owner since
+  MANUFACTURING-READINESS-SNAPSHOT-01). This is evidence sufficiency, NOT a
+  manufacturability conclusion: it says nothing about whether the thing can be
+  made, made affordably, or made at all.
 * INTEGRATION (Stage 15 closure — the IRL-compatible view) — insufficient
   because every recorded Integration item is the inventor's own unchecked
   statement about how the parts were tested, inspected, specified or reviewed
@@ -43,7 +45,7 @@ WHY EACH DIMENSION SAYS WHAT IT SAYS
   evidence and are never counted here.
 
 ABSENCE IS NOT NEGATIVE EVIDENCE. A project with no Commercial evidence has a
-blank page, not a poor market. An unassessed Manufacturing dimension is not a
+blank page, not a poor market. Insufficient Manufacturing evidence is not a
 manufacturing problem. Unverified technical evidence is not a technical
 impossibility. The wording each row carries is chosen so a reader cannot take
 the opposite meaning.
@@ -213,8 +215,9 @@ def readiness_snapshot(state, evidence_rows):
         # Which dimensions accept EVIDENCE, composed from the canonical owner
         # rather than restated, so this can never drift from the truth again.
         # Named `evidence_*` deliberately: Manufacturing accepting evidence says
-        # NOTHING about Manufacturing readiness, which remains unassessed and
-        # undispositioned. Reading this as a readiness state would be exactly
-        # the confusion the Manufacturing row is worded to prevent.
+        # NOTHING about Manufacturing readiness (manufacturability), which remains
+        # unassessed — its row reports evidence sufficiency only. Reading this as
+        # a readiness state would be exactly the confusion the Manufacturing row
+        # is worded to prevent.
         "evidence_dimensions_active": tuple(ACTIVE_DIMENSIONS),
     }

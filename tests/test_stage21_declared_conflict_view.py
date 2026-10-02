@@ -319,7 +319,8 @@ _COMPLETE = "STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE"
 _DELIVERED = "STAGE 21 CLOSURE: DELIVERED"
 # The later Owner-authorized Stage 22 closure moved the marker on to Stage 23 (navigation only); the Stage-21
 # completion and the "no Stage-22 implementation by the Stage-21 closure" fact stay true history.
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY"
+# The later Owner-authorized Stage 23 closure (no product change) moved the marker on to Stage 24 (navigation only).
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY"
 _NO_S22 = "NO STAGE-22 IMPLEMENTATION AUTHORIZED BY STAGE-21 CLOSURE"
 _LIMITS = ("FULL CAP-10: NOT AUTHORIZED",
            "AUTOMATIC / AI CONTRADICTION DETECTION: NOT AUTHORIZED",
@@ -360,5 +361,7 @@ def test_15_only_stage_21_is_newly_ticked():
     # Stage 22 was ticked later by its own Owner-authorized closure (no product change), not by this one
     for stage in (15, 18, 19, 20, 21, 22):
         assert re.search(r"^- \[x\] \*\*%d — " % stage, roadmap, re.M), stage
-    for stage in (11, 13, 14, 16, 17, 23):
+    # Stage 23 was ticked later by its own Owner-authorized closure (bounded four-axis scope, no product change)
+    assert re.search(r"^- \[x\] \*\*23 — ", roadmap, re.M)
+    for stage in (11, 13, 14, 16, 17, 24):
         assert re.search(r"^- \[ \] \*\*%d — " % stage, roadmap, re.M), stage

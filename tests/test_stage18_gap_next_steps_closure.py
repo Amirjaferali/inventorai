@@ -732,7 +732,8 @@ _COMPLETE = "STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONIC
 _NO_S19 = "NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE"
 # The later Owner-authorized Stage 19, 20, 21 and 22 closures moved the marker on to Stage 23 (navigation only); the
 # Stage-18 completion and the "no Stage-19 implementation by the Stage-18 closure" fact stay true history.
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY"
+# The later Owner-authorized Stage 23 closure (no product change) moved the marker on to Stage 24 (navigation only).
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY"
 
 
 def _flat(text):
@@ -771,10 +772,13 @@ def test_n91_only_stage_18_is_ticked_by_the_closure_and_earlier_unfinished_stage
     # scope), not by this one
     for stage in (19, 20, 21, 22):
         assert re.search(r"^- \[x\] \*\*%d — " % stage, roadmap, re.M), stage
-    for stage in (11, 13, 14, 16, 17, 23):
+    # Stage 23 was ticked later by its own Owner-authorized closure (bounded four-axis scope, no product change)
+    assert re.search(r"^- \[x\] \*\*23 — ", roadmap, re.M)
+    for stage in (11, 13, 14, 16, 17, 24):
         assert re.search(r"^- \[ \] \*\*%d — " % stage, roadmap, re.M), stage
     checklist = _flat(_doc("INVENTORAI_MASTER_ROADMAP_EXECUTION_CHECKLIST.md"))
-    assert "**CURRENT STAGE:** Stage 23 — CAP-06 multi-axis readiness dashboard — NOT ENTERED — NAVIGATION ONLY." in checklist
+    assert ("**CURRENT STAGE:** Stage 24 — CAP-12 bounded materials / manufacturing advice — NOT ENTERED — "
+            "NAVIGATION ONLY.") in checklist
     assert _NO_S19 in checklist
 
 
