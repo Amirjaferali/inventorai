@@ -5,10 +5,12 @@
 **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The last Owner-authorized bounded
 closure — Stage 22 — Decision Trace + Decision Room — Closure — is DELIVERED with no product change required
 (`STAGE 22 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED`; Git / GitHub own its PR, merge and review identity); the
-only increments authorized after it — Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slices 1 and 2 — are
-also DELIVERED (`STAGE 28 — BOUNDED CONTROL-LOOP CONCEPT OWNER — QUALIFICATION SLICE 1: DELIVERED`;
-`STAGE 28 — BOUNDED CONTROL-LOOP CONCEPT OWNER — QUALIFICATION SLICE 2: DELIVERED`; Git / GitHub own their PR, merge and
-review identity): one standalone `control_loop` pack registered and declared qualified by its qualification record
+only increments authorized after it — Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slices 1 and 2, and
+Stage 28 — Control-Loop Optional Part — Slice 1 — are also DELIVERED (`STAGE 28 — BOUNDED CONTROL-LOOP CONCEPT OWNER —
+QUALIFICATION SLICE 1: DELIVERED`; `STAGE 28 — BOUNDED CONTROL-LOOP CONCEPT OWNER — QUALIFICATION SLICE 2: DELIVERED`;
+`STAGE 28 — CONTROL-LOOP OPTIONAL PART — SLICE 1: DELIVERED`; Git / GitHub own their PR, merge and review identity):
+the dormant optional-part foundation exists (`CONTROL-LOOP PART ELIGIBILITY: NOT ENABLED — PART-ONLY ALLOWLIST EMPTY`),
+and one standalone `control_loop` pack is registered and declared qualified by its qualification record
 (`control_loop: P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED`; `CONTROL-LOOP OWNER: P9-QS QUALIFIED — WITH
 ACTIVATION BLOCKERS`; `CONTROL-LOOP OWNER: NOT ACTIVATED`; `STAGE 30 REQUIRED BEFORE ANY FUTURE ACTIVATION`;
 `STAGE 28: ENTERED / PARTIAL — CONTROL-LOOP OWNER QUALIFIED, NOT ACTIVATED` — Stage 28 is NOT complete), and no
@@ -30,10 +32,23 @@ MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY`; NO STAGE-23 IMPLEMENTATIO
 `CAP-06: NOT ACTIVATED`); routing past Stages 11, 13, 14, 16 and 17 completes none of them.
 The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — read-only planning / selection over live
 repository and product evidence until the Owner separately authorizes another product increment; it pre-authorizes
-no `control_loop` activation, activation-blocker work (activation-time safety-cue decision, runtime Tier-1 label,
-Path-N service), Stage-15 composition change or Stage-30 work, no Stage-23 / CAP-06 or other Stage work, CAP-05 / CAP-07, CAP-08, CAP-09 or CAP-10 work, further CAP-01 or Technical
+no Optional Part Slice 2 (part-scoped question service / part answers), `control_loop` part enablement, `control_loop`
+activation, activation-blocker work (activation-time safety-cue decision, runtime Tier-1 label, Path-N service), further
+Stage-15 composition change or Stage-30 work, no Stage-23 / CAP-06 or other Stage work, CAP-05 / CAP-07, CAP-08, CAP-09 or CAP-10 work, further CAP-01 or Technical
 Deepening slice, MSNL activation, compatibility analysis, IRL scoring, interface engineering, Robotics assessment
 implementation, IoT or other Domain Pack.
+Stage 28 Optional Part Slice 1 (delivered; Stage 28 stays ENTERED / PARTIAL and NOT complete; the MASTER ROADMAP SEQUENTIAL
+MARKER stays Stage 23 for navigation only): under the accepted bounded design (`control_loop` is an OPTIONAL composable
+part of a Mechanical + Electrical / Electronics integrated invention, never root-admissible), the dormant foundation is in
+place — a PART-ONLY eligibility allowlist `_PART_ONLY_DOMAINS` shipped EMPTY with `is_part_eligible` in
+`engine/domain_activation.py` (root activation, `_ACTIVATED_DOMAINS` and `support_state` unchanged),
+`OPTIONAL_COMPOSITION_DOMAINS = ("control_loop",)` with `validate_composition` accepting the required pair optionally
+followed by exactly ONE `control_loop` part (the scalar `confirmed_domain` always one of the required pair) in
+`engine/subsystem_model.py`, and the part-eligibility-gated composition-form slot, Case-B SINGLE `control_loop` entry and
+per-pair interface bindings in `web/app.py`, with truthful three-part EN / AR copy. `control_loop` is NOT part-enabled and
+NOT root-activated; no schema change, question service, part answers, progression, Path-N, classifier / root-admission,
+label, safety-cue or Stage-30 change, deployment or release.
+The preceding bounded slice — Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 2 — is DELIVERED.
 Stage 28 Qualification Slice 2 (delivered; Stage 28 ENTERED / PARTIAL — control-loop owner qualified, NOT activated, NOT
 complete; the MASTER ROADMAP SEQUENTIAL MARKER stays Stage 23 for navigation only): ONE documents-only qualification
 record (`docs/governance/STAGE28_CONTROL_LOOP_P9_QS_QUALIFICATION_RECORD.md`) maps every qualification obligation of the
@@ -392,7 +407,7 @@ its closure; Stage 21 is COMPLETE for the current Owner-declared contradiction s
 closure), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former post-Stage-28-Qualification-Slice-1 `ACTIVE CONTRACT: NONE`, the former Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 2, the former post-Stage-22-closure `ACTIVE CONTRACT: NONE`, the former Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 1, the former post-Stage-21-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-20-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-19-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-18-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-4 `ACTIVE CONTRACT: NONE`, the former post-CAP-09-Result-Event-Slice-1 `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-3 `ACTIVE CONTRACT: NONE`, the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former post-Stage-28-Qualification-Slice-2 `ACTIVE CONTRACT: NONE`, the former Stage 28 — Control-Loop Optional Part — Slice 1, the former post-Stage-28-Qualification-Slice-1 `ACTIVE CONTRACT: NONE`, the former Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 2, the former post-Stage-22-closure `ACTIVE CONTRACT: NONE`, the former Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 1, the former post-Stage-21-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-20-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-19-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-18-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-4 `ACTIVE CONTRACT: NONE`, the former post-CAP-09-Result-Event-Slice-1 `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-3 `ACTIVE CONTRACT: NONE`, the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, the former post-PR-#679 `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
