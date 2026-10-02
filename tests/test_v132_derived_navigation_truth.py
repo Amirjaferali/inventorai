@@ -2080,9 +2080,10 @@ _PRE_S19_NONE = (r"\*\*ACTIVE CONTRACT: NONE\.\*\* Both",
                  # AMENDED at Stage 28 Optional Part Slice 1: the post-Optional-Part-Slice-1 delivery fact counts as well
                  # AMENDED at Stage 28 Optional Part Slice 2: the post-Optional-Part-Slice-2 delivery fact counts as well
                  # AMENDED at Stage 30 Part Safeguards Slice 1: the post-Stage-30-Slice-1 delivery fact counts as well
+                 # AMENDED at the Stage 30 closure: the post-Stage-30-closure delivery fact counts as well
                  r"ACTIVE CONTRACT: NONE(?!.{0,1500}(?:PR[ -]#71[468]|Stage[ -]2[012][ -]closure|"
                  r"Stage[ -]28[ -]Qualification[ -]Slice[ -][12]|Stage[ -]28[ -]Optional[ -]Part[ -]Slice[ -][12]|"
-                 r"Stage[ -]30[ -]Part[ -]Safeguards[ -]Slice[ -]1))")
+                 r"Stage[ -]30[ -]Part[ -]Safeguards[ -]Slice[ -]1|Stage[ -]30[ -]closure))")
 
 
 _SLICE_02_LIVE_REVERSALS = (
@@ -3840,6 +3841,29 @@ _S22C_STALE = (_tok("`STAGE 22: ENTERED / PARTIAL`"), _tok(_S22_MARKER),
                r"CURRENT MASTER ROADMAP STAGE: Stage 22\b", r"Stage-22 checkbox stays unticked",
                r"Stage 22 ENTERED / PARTIAL — navigation only",
                r"MASTER ROADMAP SEQUENTIAL MARKER:? is (?:now )?Stage 22 for navigation only")
+# Stage 30 closure (2026-10-02): STAGE 30 — COMPLETE for the current optional-part enablement safeguard scope ONLY,
+# recorded with no further product change (Bounded Slice 1 is its product basis) and NOT a global Stage-30 discharge:
+# a future domain or root activation needs a new proportional reassessment. The owner name is split out of every
+# literal here so no governance needle reads as idea text in the Stage-28 vocabulary sweep.
+_CL = "CONTROL-" + "LOOP"
+_S30C_DELIVERED = "`STAGE 30 CLOSURE: DELIVERED — NO FURTHER PRODUCT CHANGE REQUIRED`"
+_S30_COMPLETE = "`STAGE 30: COMPLETE — CURRENT %s PART-ENABLEMENT SAFEGUARD SCOPE ONLY`" % _CL
+_S30_PREREQ = "`CURRENT %s PART-ENABLEMENT STAGE-30 PREREQUISITE: SATISFIED`" % _CL
+_S30_NOT_GLOBAL = "`STAGE 30 IS NOT GLOBALLY DISCHARGED FOR FUTURE DOMAINS OR FUTURE ROOT ACTIVATIONS`"
+_S30_FUTURE = "`FUTURE DOMAIN / ROOT-ACTIVATION STAGE-30 REASSESSMENT: STILL REQUIRED WHEN APPLICABLE`"
+_S30_SAFETY = ("`CURRENT BOUNDED SAFETY DISPOSITION: OPTIONAL-PART ANSWERS EXCLUDED FROM AUTOMATED SAFETYSIGNAL "
+               "DERIVATION — EXPLICITLY DISCLOSED`")
+_S30_FUTURE_SAFETY = "`FUTURE PART-AWARE %s SAFETY CAPABILITY: SEPARATELY QUALIFIABLE — NOT PROHIBITED`" % _CL
+_S30C_TOKENS = (_S30C_DELIVERED, _S30_COMPLETE, _S30_PREREQ, _S30_NOT_GLOBAL, _S30_FUTURE, _S30_SAFETY,
+                _S30_FUTURE_SAFETY)
+# What the closure keeps true: Stage 28 partial, the part NOT enabled, the part-only allowlist empty.
+_S30C_KEPT = ("`STAGE 28: ENTERED / PARTIAL — %s OWNER QUALIFIED, NOT ACTIVATED`" % _CL,
+              "`%s PART ELIGIBILITY: NOT ENABLED — PART-ONLY ALLOWLIST EMPTY`" % _CL, "`_PART_ONLY_DOMAINS: EMPTY`")
+# After the Stage 30 closure a live surface may no longer carry the pre-closure Stage-30 status, and no surface may
+# widen the scope-qualified completion into a global one.
+_S30C_STALE = (_tok("`STAGE 30: ENTERED / PARTIAL — %s PART-ENABLEMENT SAFEGUARDS ONLY`" % _CL),
+               r"Stage 30 (?:is )?ENTERED / PARTIAL for (?:these|the)", r"Stage 30 is NOT complete",
+               r"STAGE 30: COMPLETE(?! — CURRENT)", r"Stage 30 (?:is )?(?:globally discharged|COMPLETE\.)")
 # After the Stage 21 closure a live surface may no longer carry the pre-closure Stage-21 status or marker.
 _S21C_STALE = (_tok("`STAGE 21: ENTERED / PARTIAL`"), _tok("`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 21 — ENTERED / "
                                                          "PARTIAL — NAVIGATION ONLY`"),
@@ -4165,10 +4189,11 @@ def test_post_718_no_active_contract_is_superseded_history():
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     assert "the former post-PR-#718 `ACTIVE CONTRACT: NONE`" in claude
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    # the live NONE is the one after the Stage 22 closure, never the post-PR-#718 one
+    # the live NONE is the one after the Stage 30 closure, never the post-PR-#718 one (ADVANCED at the Stage 30
+    # closure: the last bounded closure is now the Stage 30 one)
     assert head.startswith("## Current authority **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY "
-                           "AUTHORIZED. The last Owner-authorized bounded closure — Stage 22 — Decision Trace + Decision "
-                           "Room — Closure — is DELIVERED"), head[:260]
+                           "AUTHORIZED. The last Owner-authorized bounded closure — Stage 30 — " + _CL.title() +
+                           " Part-Enablement Safeguards — Closure — is DELIVERED"), head[:260]
     assert "post-PR-#718" not in head
 
 
@@ -4271,8 +4296,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     top = _live_only(_current_declaration(contract))
     _needs(top, CONTRACT, "live none",
            r"\*\*ACTIVE CONTRACT: NONE\.\*\* NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED\.",
-           r"Stage 22 — Decision Trace \+ Decision Room\s+— Closure, the last Owner-authorized bounded closure, is "
-           r"DELIVERED with no product change required\b",
+           # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
+           r"Stage 30 — " + _CL.title() + r" Part-Enablement Safeguards\s+— Closure, the last Owner-authorized "
+           r"bounded closure, is DELIVERED with no further product change required\b",
+           r"Stage 22 — Decision Trace \+ Decision Room — Closure, the\s+preceding\s+Owner-authorized bounded "
+           r"closure, is DELIVERED with no product change required\b",
            r"Stage 22 is\s+COMPLETE for the current bounded decision trace \+ decision room scope only; Stage 21 stays "
            r"COMPLETE for the current\s+Owner-declared contradiction scope only; Stage 20 stays COMPLETE for the "
            r"current Owner-declared assumption scope\s+only; Stage 19 stays COMPLETE for the current planning-only "
@@ -4408,7 +4436,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"Stage 18 — D13 / CAP-01 structured technical guidance — is COMPLETE for the current Mechanical \+ "
                r"Electrical / Electronics scope \(its checkbox is ticked for that scope only\)",
                r"routing past Stages 11, 13, 14, 16 and 17 completes none of them",
-               r"\*\*NO ACTIVE CONTRACT — [^*]{0,80}; Stage 22 COMPLETE for the current bounded decision trace \+ "
+               # ADVANCED at the Stage 30 closure: the head now also names Stage 30 COMPLETE for its bounded scope
+               r"\*\*NO ACTIVE CONTRACT — [^*]{0,200}; Stage 22 COMPLETE for the current bounded decision trace \+ "
                r"decision room scope; Stage 21 COMPLETE for the current Owner-declared contradiction "
                r"scope; Stage 20 COMPLETE for the current Owner-declared assumption scope; Stage 19 COMPLETE for the "
                r"current planning-only scope; Stage 18 COMPLETE for the current Mechanical \+ Electrical / Electronics "
@@ -4417,8 +4446,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # ADVANCED at Stage 28 Qualification Slices 1 and 2 and Optional Part Slices 1 and 2: the last delivery
                # is now Optional Part Slice 2
                # ADVANCED at Stage 30 Part Safeguards Slice 1: the last delivery is now that Stage-30 slice
-               r"No product increment is authorized after Stage 30 — Control-Loop Part-Enablement Safeguards — "
-               r"Bounded Slice 1 \(delivered: [^)]*\)\. Stage 22 is COMPLETE for the current bounded decision trace \+ decision "
+               # ADVANCED at the Stage 30 closure: the last delivery is now the Stage 30 closure
+               r"No product increment is authorized after Stage 30 — " + _CL.title() + r" Part-Enablement Safeguards — "
+               r"Closure \(delivered: [^)]*\)\. Stage 22 is COMPLETE for the current bounded decision trace \+ decision "
                r"room scope only",
                r"\*\*DELIVERED — Stage 22 / Decision Trace \+ Decision Room — Closure \(completes Stage 22 for the "
                r"current bounded decision trace \+ decision room scope with no product change",
@@ -4500,7 +4530,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ADVANCED at Stage 28 Optional Part Slice 1: the current position is post-Optional-Part-Slice-1
     # ADVANCED at Stage 28 Optional Part Slice 2: the current position is post-Optional-Part-Slice-2
     # ADVANCED at Stage 30 Part Safeguards Slice 1: the current position is post-Stage-30-Slice-1
-    for needle in ("(post-Stage-30-Part-Safeguards-Slice-1; Stage 30 — ",
+    # ADVANCED at the Stage 30 closure: the current position is post-Stage-30-closure, Slice 1 follows it
+    for needle in ("(post-Stage-30-closure; Stage 30 — ",
+                   "Part-Enablement Safeguards — Closure — delivered with no further product change: Stage 30 is "
+                   "COMPLETE for the current ",
                    "Part-Enablement Safeguards — Bounded Slice 1 — delivered: saved ",
                    "Optional Part — Slice 2 — delivered: the dormant part-scoped governed question service",
                    "Optional Part — Slice 1 — delivered: the dormant optional-part foundation",
@@ -4569,9 +4602,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             "no product increment is currently authorized (post-Stage-15-Slice-4 …)\"") in after
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
+    # ADVANCED at the Stage 30 closure: the Stage 30 closure is now the last one; Stage 22's is the preceding one
     assert head.startswith("## Current authority **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY "
-                           "AUTHORIZED. The last Owner-authorized bounded closure — Stage 22 — Decision Trace + Decision "
-                           "Room — Closure — is DELIVERED with no product change required")
+                           "AUTHORIZED. The last Owner-authorized bounded closure — Stage 30 — " + _CL.title() +
+                           " Part-Enablement Safeguards — Closure — is DELIVERED with no further product change required")
+    assert ("The preceding bounded closure — Stage 22 — Decision Trace + Decision Room — Closure — is DELIVERED with "
+            "no product change required") in head
     assert re.search(r"STAGE 22 — COMPLETE for the current bounded decision trace \+ decision room scope only \(`STAGE "
                      r"22: COMPLETE — CURRENT BOUNDED DECISION TRACE \+ DECISION ROOM SCOPE`; checkbox ticked for that "
                      r"scope only; delivered basis: CAP-05 \+ CAP-07 Slices 1–2, PR #\d+ and PR #\d+, only\);", head)
@@ -4684,7 +4720,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     assert "(the current implementation candidate)" not in cont
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
     # ADVANCED at Stage 28 Qualification Slices 1 and 2: the delivered slices now lead the delivered history
+    # ADVANCED at the Stage 30 closure: the closure now leads, Stage 30 COMPLETE for its bounded scope only
     subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \([^)]{0,40}\) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — "
+                    r"Stage 30 — " + _CL.title() + r" Part-Enablement Safeguards — Closure DELIVERED \([^)]*\) — "
+                    r"STAGE 30 COMPLETE for the current " + _CL.lower() + r" part-enablement safeguard scope only — "
                     r"Stage 30 — Control-Loop Part-Enablement Safeguards — Bounded Slice 1 DELIVERED \([^)]*\) — "
                     r"Stage 28 — Control-Loop Optional Part — Slice 2 DELIVERED \([^)]*\) — "
                     r"Stage 28 — Control-Loop Optional Part — Slice 1 DELIVERED \([^)]*\) — "
@@ -4718,7 +4757,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            _status(_S18C_DELIVERED), _tok(_S18_COMPLETE), _tok(_MSNL_FUTURE),
            _status(_S15C_DELIVERED), _status(_S4_DELIVERED), _status(_R1_DELIVERED), _status(_S3_DELIVERED),
            _status(_S2_DELIVERED), _status(_S15_DELIVERED), _tok(_S15_COMPLETE),
-           *(_tok(t) for t in _S15C_NOT + _S2_NOT), r"No product increment is authorized after Stage 30 Part Safeguards Slice 1\b")
+           *(_tok(t) for t in _S15C_NOT + _S2_NOT), r"No product increment is authorized after the Stage 30 closure\b")
     _rejects(subtask, CHECKLIST, "live subtask", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
              *_S20C_STALE, *_S21C_STALE, *_S22C_STALE)
     for line in [t.strip("`") for t in (_NONE718, _NEXT_INC_NO, _NEXT_STAGE_STEP, _S22C_DELIVERED, _S22_COMPLETE,
@@ -5049,9 +5088,13 @@ def test_read_before_build_and_multi_domain_deepening_are_operating_method_not_g
                 r"(?i)(IoT|drone|renewable|satellite)[^.]{0,40}\b(ACTIVATED|AUTHORIZED)\b"):
         assert re.search(pat, claims) is None, pat
     roadmap = _read(ROADMAP)
-    for stage in ("28 — Additional-domain program:", "30 — Cross-domain safeguards:",
-                  "31 — IoT architecture:"):
+    # ADVANCED at the Stage 30 closure: row 30 is ticked for the current optional-part enablement safeguard scope
+    # ONLY (never globally); rows 28 and 31 stay unticked
+    for stage in ("28 — Additional-domain program:", "31 — IoT architecture:"):
         assert re.search(r"^- \[ \] \*\*" + re.escape(stage), roadmap, re.M), stage
+    assert re.search(r"^- \[x\] \*\*30 — Cross-domain safeguards:\*\*[^\n]*\*\*COMPLETE \(2026-10-02\) for the "
+                     r"current " + _CL.lower() + r" part-enablement safeguard scope ONLY — checkbox ticked for that "
+                     r"scope only:\*\*", roadmap, re.M), "30 — Cross-domain safeguards:"
     # the Owner-accepted portfolio / integration direction extends the SAME paragraph and
     # is planning direction only: no domain, Stage, slice or Stage 15 work is authorized
     for needle in ("**Owner-accepted portfolio / integration direction (planning direction only; it "
@@ -5112,9 +5155,10 @@ def test_read_before_build_and_multi_domain_deepening_are_operating_method_not_g
         for at in hits:
             assert re.search(r"(?i)\bnot a\b|\bnor\b|, a mandatory", dom[max(0, at - 80):at]), \
                 dom[at - 80:at + 20]
-    # roadmap Stage 15 / 28 / 30 rows carry the same planning direction; 28 / 30 stay unticked and Stage 15
-    # is ticked for the current Mechanical + Electrical / Electronics scope only
-    rows = {n: re.search(r"^- \[" + ("x" if n == "15" else " ") + r"\] \*\*" + n + r" — .*$", roadmap,
+    # roadmap Stage 15 / 28 / 30 rows carry the same planning direction; 28 stays unticked, Stage 15 is ticked for
+    # the current Mechanical + Electrical / Electronics scope only and (ADVANCED at the Stage 30 closure) Stage 30
+    # for the current optional-part enablement safeguard scope only
+    rows = {n: re.search(r"^- \[" + (" " if n == "28" else "x") + r"\] \*\*" + n + r" — .*$", roadmap,
                          re.M).group(0) for n in ("15", "28", "30")}
     assert "no Stage 15 implementation is authorized now" in rows["15"]
     assert "Add → Qualify → Activate → Establish Useful Baseline → Deepen" in rows["28"]
@@ -5667,15 +5711,24 @@ def _live_authority_problems(read=None):
         for pat in _S22C_STALE:
             if re.search(pat, text):
                 problems.append(label + ": stale pre-Stage-22-closure status " + pat)
+        for token in _S30C_TOKENS + _S30C_KEPT:
+            if token not in text:
+                problems.append(label + ": missing Stage-30 closure fact " + token)
+        for pat in _S30C_STALE:
+            if re.search(pat, text):
+                problems.append(label + ": stale pre-Stage-30-closure status " + pat)
         if label.startswith("routing") and not re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 23\b", text):
             problems.append(label + ": the Stage-23 navigation marker is missing")
     for needle in (_S23_MARKER, "NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE",
                    "STAGE 22: COMPLETE — CURRENT BOUNDED DECISION TRACE + DECISION ROOM SCOPE",
                    "STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE",
                    "STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE",
-                   "STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE"):
+                   "STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE", *_S30C_TOKENS, *_S30C_KEPT):
         if needle not in texts["head:CLAUDE.md"]:
             problems.append("head:CLAUDE.md: missing " + needle)
+    for pat in _S30C_STALE:
+        if re.search(pat, texts["head:CLAUDE.md"]):
+            problems.append("head:CLAUDE.md: stale pre-Stage-30-closure status " + pat)
     for label, text in texts.items():
         for pat in _LIVE_CLAIM_REVERSALS + _PREMERGE_LIFECYCLE:
             m = re.search(pat, text, re.I | re.S)
@@ -5686,6 +5739,31 @@ def _live_authority_problems(read=None):
 
 def test_live_material_invariants_hold():
     assert _live_authority_problems() == []
+
+
+def test_stage30_closure_is_scope_qualified_and_discharges_nothing_else():
+    """The Stage 30 closure ticks row 30 for the current optional-part enablement safeguard scope ONLY, records it as
+    NO global discharge (a future domain or root activation needs a new proportional reassessment) and keeps the
+    safety exclusion as the current bounded disposition, not a prohibition; Stage 28 stays unticked; the part-only
+    allowlist stays empty in the engine source; every replaced live statement survives as a superseded note. The
+    same facts on every live surface are enforced by _live_authority_problems above."""
+    roadmap = _read(ROADMAP)
+    rows = re.findall(r"^- \[x\] \*\*30 — Cross-domain safeguards:\*\*.*$", roadmap, re.M)
+    assert len(rows) == 1, "the Stage 30 checkbox is not ticked"
+    for needle in ("checkbox ticked for that scope only:** " + _S30_COMPLETE, *_S30C_TOKENS,
+                   "needs a NEW proportional Stage-30 reassessment at that future gate; no universal waiver",
+                   "part enablement needs its own exact Owner authorization"):
+        assert needle in rows[0], needle
+    assert re.search(r"^- \[ \] \*\*28 — Additional-domain program:\*\*", roadmap, re.M), "Stage 28 must stay unticked"
+    assert ("Stage 30 is COMPLETE for the current " + _CL.lower() + " part-enablement safeguard scope only — checkbox "
+            "ticked for that scope only — and NOT globally discharged") in _flat(ROADMAP)
+    assert re.search(r"^_PART_ONLY_DOMAINS = frozenset\(\)$", _read("engine/domain_activation.py"), re.M)
+    note = ("*(Superseded 2026-10-02 by Stage 30 — " + _CL.title() + " Part-Enablement Safeguards — Closure, preserved "
+            "so the change is visible rather than silent: the ")
+    for path in (ROADMAP, CHECKLIST, CONTRACT):
+        assert note + "current routing read \"**NO ACTIVE CONTRACT — post-Stage-30-Part-Safeguards-Slice-1" in _after_fence(
+            path, "current-routing"), path
+    assert note + "current-position entry read" in _after_fence(STATE, "current-position")
 
 
 _LIVE_DOCS = (ROADMAP, CHECKLIST, CONTRACT, STATE, CAPABILITIES, "CLAUDE.md")
@@ -6067,7 +6145,8 @@ def test_f1b_unmodified_repository_counts():
     # Stage 28 Optional Part Slice 1: + its delivered record and the superseded post-Qualification-Slice-2 NONE record
     # Stage 28 Optional Part Slice 2: + its delivered record and the superseded post-Optional-Part-Slice-1 NONE record
     # Stage 30 Part Safeguards Slice 1: + its delivered record and the superseded post-Optional-Part-Slice-2 NONE record
-    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 58, 10)
+    # Stage 30 closure: + its delivered record and the superseded post-Stage-30-Part-Safeguards-Slice-1 NONE record
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 60, 10)
 
 
 def _flat_doc(path):
