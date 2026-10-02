@@ -867,7 +867,8 @@ _COMPLETE = "STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE"
 _DELIVERED = "STAGE 20 CLOSURE: DELIVERED"
 # The later Owner-authorized Stage 21 and Stage 22 closures moved the marker on to Stage 23 (navigation only); the
 # Stage-20 completion and the "no Stage-21 implementation by the Stage-20 closure" fact stay true history.
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY"
+# The later Owner-authorized Stage 23 closure (no product change) moved the marker on to Stage 24 (navigation only).
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY"
 _NO_S21 = "NO STAGE-21 IMPLEMENTATION AUTHORIZED BY STAGE-20 CLOSURE"
 
 
@@ -905,7 +906,9 @@ def test_l02_only_stage_20_is_newly_ticked():
     # Stages 21 and 22 were ticked later by their own Owner-authorized closures, not by this one
     for stage in (15, 18, 19, 20, 21, 22):
         assert re.search(r"^- \[x\] \*\*%d — " % stage, roadmap, re.M), stage
-    for stage in (11, 13, 14, 16, 17, 23):
+    # Stage 23 was ticked later by its own Owner-authorized closure (bounded four-axis scope, no product change)
+    assert re.search(r"^- \[x\] \*\*23 — ", roadmap, re.M)
+    for stage in (11, 13, 14, 16, 17, 24):
         assert re.search(r"^- \[ \] \*\*%d — " % stage, roadmap, re.M), stage
     flat = re.sub(r"\s+", " ", roadmap)
     for limit in ("FULL CAP-08: NOT AUTHORIZED", "FULL CAP-10: NOT AUTHORIZED"):

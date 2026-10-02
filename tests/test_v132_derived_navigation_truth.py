@@ -445,9 +445,12 @@ def test_stage_eighteen_is_complete_for_the_current_scope_and_routing_past_compl
     # AMENDED at the Stage 21 closure (2026-10-01): the marker was Stage 22 for navigation only.
     # AMENDED at the Stage 22 closure (2026-10-01): the marker is Stage 23 (NOT ENTERED) for navigation only; the
     # Stage-21 closure's own `NO STAGE-22 …` token survives as true history in its delivered record.
+    # AMENDED at the Stage 23 closure (2026-10-02): the marker is Stage 24 (NOT ENTERED) for navigation only and
+    # Stage 23 is COMPLETE for its bounded four-axis scope; the Stage-22 closure's `NO STAGE-23 …` stays history.
     for path, routing in _surfaces("current-routing"):
         _needs(routing, path, "routing",
-               r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 23",
+               r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 24",
+               re.escape(_S23_COMPLETE), re.escape(_NO_S24),
                re.escape("`STAGE 22: COMPLETE — CURRENT BOUNDED DECISION TRACE + DECISION ROOM SCOPE`"),
                re.escape("`NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE`"),
                re.escape("`STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE`"),
@@ -946,7 +949,11 @@ NEVER_TRUE_ANYWHERE = (
     r"STAGE 22 COMPLETE: YES",
     # the Stage 22 closure made the SCOPED completion true; an unscoped one stays false everywhere
     r"STAGE 22: (COMPLETE|COMPLETED)(?! — CURRENT BOUNDED DECISION TRACE \+ DECISION ROOM SCOPE)",
-    r"STAGE 23 COMPLETE: YES", r"STAGE 23: (ENTERED|COMPLETE|COMPLETED)",
+    r"STAGE 23 COMPLETE: YES", r"STAGE 23: ENTERED",
+    # the Stage 23 closure made the SCOPED completion true; an unscoped one stays false everywhere
+    r"STAGE 23: (COMPLETE|COMPLETED)(?! — CURRENT BOUNDED FOUR-AXIS READINESS-SNAPSHOT SCOPE ONLY)",
+    r"STAGE 24 COMPLETE: YES", r"STAGE 24: (ENTERED|COMPLETE|COMPLETED)",
+    r"FULL CAP-06: AUTHORIZED", r"FULL EIGHT-AXIS CAP-06: (?!NOT IMPLEMENTED / NOT CLOSED)",
     r"FULL (CAP-05|CAP-07): AUTHORIZED",
     r"(AUTOMATIC / AI CONTRADICTION DETECTION|SYSTEM_INFERRED CONTRADICTION WRITER): AUTHORIZED",
     r"FULL (CAP-08|CAP-10): AUTHORIZED",
@@ -1185,13 +1192,14 @@ def test_no_completed_stage_is_left_reading_as_the_current_stage():
     # closure: the marker was Stage 20, for navigation only, and Stage 19 joins the list below; AMENDED again at the
     # Stage 20 closure: the marker was Stage 21, for navigation only, and Stage 20 joins the list below; AMENDED again
     # at the Stage 21 closure: the marker was Stage 22, for navigation only, and Stage 21 joins the list below; AMENDED
-    # again at the Stage 22 closure: the marker is Stage 23 (NOT ENTERED), for navigation only, and Stage 22 joins
-    assert ("**CURRENT STAGE:** Stage 23 — CAP-06 multi-axis readiness dashboard — NOT ENTERED — NAVIGATION ONLY."
-            in checklist)
+    # again at the Stage 22 closure: the marker was Stage 23 (NOT ENTERED), for navigation only, and Stage 22 joins;
+    # AMENDED again at the Stage 23 closure: the marker is Stage 24 (NOT ENTERED), and Stage 23 joins the list
+    assert ("**CURRENT STAGE:** Stage 24 — CAP-12 bounded materials / manufacturing advice — NOT ENTERED — "
+            "NAVIGATION ONLY." in checklist)
     # AMENDED at the Stage-17 product-depth disposition: Stage 11 joins this
     # list. It was routed PAST, not completed, so its old current-stage wording
     # must now sit inside a supersession note exactly like a completed stage's.
-    for stage in (9, 10, 11, 18, 19, 20, 21, 22):
+    for stage in (9, 10, 11, 18, 19, 20, 21, 22, 23):
         for match in re.finditer(r"CURRENT STAGE:\*{0,2} Stage %d" % stage,
                                  checklist):
             window = checklist[max(0, match.start() - 600):match.start()]
@@ -1201,10 +1209,12 @@ def test_no_completed_stage_is_left_reading_as_the_current_stage():
     # AMENDED post-PR-#678: Stage 18 is ENTERED, so "Stage 18 if authorized" is
     # history now. The live frontier must say so, and the old wording may survive
     # only inside the supersession note that preserves it.
-    assert ("CURRENT PRODUCT-DEPTH FRONTIER: Stage 23 — NOT ENTERED — NAVIGATION ONLY (NO STAGE-23 IMPLEMENTATION "
-            "AUTHORIZED BY STAGE-22 CLOSURE; Stage 23 / CAP-06 stays NOT ENTERED and NOT AUTHORIZED until separately "
-            "assessed and authorized); Stage 22 — COMPLETE for the current bounded decision trace + decision room "
+    # AMENDED at the Stage 23 closure: the frontier is Stage 24, Stage 23 COMPLETE for its bounded four-axis scope
+    assert ("CURRENT PRODUCT-DEPTH FRONTIER: Stage 24 — NOT ENTERED — NAVIGATION ONLY (NO STAGE-24 IMPLEMENTATION "
+            "AUTHORIZED BY STAGE-23 CLOSURE; Stage 24 / CAP-12 stays NOT ENTERED and NOT AUTHORIZED until separately "
+            "assessed and authorized); Stage 23 — COMPLETE for the current bounded four-axis Readiness Snapshot "
             "scope") in checklist
+    assert "Stage 22 — COMPLETE for the current bounded decision trace + decision room scope" in checklist
     assert "Stage 21 — COMPLETE for the current Owner-declared contradiction scope" in checklist
     assert "Stage 20 — COMPLETE for the current Owner-declared assumption scope" in checklist
     assert "Stage 19 — COMPLETE for the current planning-only scope" in checklist
@@ -1620,8 +1630,10 @@ def test_the_current_state_file_routes_to_the_entered_stage_and_authorizes_nothi
                 re.escape("`STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE`"),
                 re.escape("`STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE`"),
                 re.escape("`STAGE 22: COMPLETE — CURRENT BOUNDED DECISION TRACE + DECISION ROOM SCOPE`"),
-                re.escape("`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY`"),
-                re.escape("`NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE`"),
+                # AMENDED at the Stage 23 closure: Stage 23 complete for its bounded scope, the marker is Stage 24
+                re.escape("`STAGE 23: COMPLETE — CURRENT BOUNDED FOUR-AXIS READINESS-SNAPSHOT SCOPE ONLY`"),
+                re.escape("`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY`"),
+                re.escape("`NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE`"),
                 r"FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED",
                 r"FULL CAP-01\s*/\s*FULL STG: NOT AUTHORIZED",
                 r"`D13 RESEARCH: REMAINS CLOSED`",
@@ -1772,6 +1784,9 @@ def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
         # made history in turn by the Stage 22 closure (2026-10-01)
         (roadmap, "**Stage 21 is ENTERED / PARTIAL**"),
         (roadmap, "**Stage 22 is ENTERED / PARTIAL** (2026-09-26)"),
+        # made history in turn by the Stage 23 closure (2026-10-02)
+        (roadmap, "Stages 23–25 remain recorded, NOT AUTHORIZED, zero merged runtime code"),
+        (checklist, "Stages 23–27 preserved, NOT ENTERED / NOT AUTHORIZED"),
     )
     for text, sentence in stale:
         for m in re.finditer(re.escape(sentence), text):
@@ -1780,25 +1795,35 @@ def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
                 "live stale Stage-18 wording survives", sentence)
     assert "Stage 18 is ENTERED / PARTIAL" in roadmap
     assert "**Stage 20 is ENTERED / PARTIAL** (2026-09-26)" in roadmap
-    assert "**Stages 23–27 preserved, NOT ENTERED / NOT AUTHORIZED" in checklist
+    # AMENDED at the Stage 23 closure: Stage 23 is complete for its bounded four-axis scope; 24–27 stay preserved
+    assert ("**Stage 23 COMPLETE for the current bounded four-axis Readiness Snapshot scope only (full CAP-06 NOT "
+            "AUTHORIZED); Stages 24–27 preserved, NOT ENTERED / NOT AUTHORIZED") in checklist
     assert "**Stage 22 is ENTERED / PARTIAL** (2026-09-26)" in roadmap
     # AMENDED at the Stage 22 closure: the Group 5 state reads Stage 21 and Stage 22 COMPLETE for their scopes
     assert ("**Stage 22 is COMPLETE (2026-10-01) for the current bounded decision trace + decision room scope**"
             in roadmap)
     assert "**Stage 21 is COMPLETE (2026-10-01) for the current Owner-declared contradiction scope**" in roadmap
-    assert "**Stages 23–25 remain recorded, NOT AUTHORIZED, zero merged runtime code**" in roadmap
+    # AMENDED at the Stage 23 closure: the Group 5 state reads Stage 23 COMPLETE for its bounded four-axis scope
+    assert ("**Stage 23 is COMPLETE (2026-10-02) for the current bounded four-axis Readiness Snapshot scope only**"
+            in roadmap)
+    assert "**Stages 24–25 remain recorded, NOT AUTHORIZED, zero merged runtime code**" in roadmap
     raw_checklist = _read(CHECKLIST)
     assert _absent(raw_checklist, "Stages 18–27 preserved, not entered / not authorized")
     assert _absent(raw_checklist, "Stages 19–27 preserved, not entered / not authorized")
     assert _absent(raw_checklist, "Stages 20–27 preserved, not entered / not authorized")
     assert _absent(raw_checklist, "Stage 20 and Stages 22–27 preserved, not entered / not authorized")
     assert _absent(raw_checklist, "Stages 22–27 preserved, not entered / not authorized")
-    assert re.search(r"^Stages 23–27 preserved, not entered / not authorized$", raw_checklist, re.M)
+    assert _absent(raw_checklist, "Stages 23–27 preserved, not entered / not authorized")
+    assert re.search(r"^Stages 24–27 preserved, not entered / not authorized$", raw_checklist, re.M)
     row5 = [l for l in raw_checklist.splitlines() if l.startswith("| 5 | 21–25 |")]
     # AMENDED at the Stage 22 closure: Stage 22 is complete for the current bounded decision trace + decision room scope
     assert len(row5) == 1 and ("22 COMPLETE for the current bounded decision trace + decision room scope — checkbox "
                                "ticked for that scope only") in row5[0], row5
     assert "22 entered / partial" not in row5[0], row5
+    # AMENDED at the Stage 23 closure: Stage 23 is complete for the current bounded four-axis scope only
+    assert ("23 COMPLETE for the current bounded four-axis Readiness Snapshot scope only — checkbox ticked for "
+            "that scope only") in row5[0], row5
+    assert "23 not entered" not in row5[0], row5
     assert "CAP-05 + CAP-07 Slice 1 — read-only decision trace + project context panel; delivered, PR #706" in row5[0]
     assert "Slice 2 — Actionable Decision Room Summary; delivered, PR #707" in row5[0], row5
     assert "current bounded action" not in row5[0], row5
@@ -2086,7 +2111,9 @@ _PRE_S19_NONE = (r"\*\*ACTIVE CONTRACT: NONE\.\*\* Both",
                  # AMENDED at the Stage 28 part-only enablement: the post-enablement delivery fact counts as well
                  r"Stage[ -]30[ -]Part[ -]Safeguards[ -]Slice[ -]1|Stage[ -]30[ -]closure|Part[ -]Only[ -]Enablement|"
                  # AMENDED at the Stage 28 closure: the post-Stage-28-closure delivery fact counts as well
-                 r"Stage[ -]28[ -]closure))")
+                 r"Stage[ -]28[ -]closure|"
+                 # AMENDED at the Stage 23 closure: the post-Stage-23-closure delivery fact counts as well
+                 r"Stage[ -]23[ -]closure))")
 
 
 _SLICE_02_LIVE_REVERSALS = (
@@ -2880,7 +2907,8 @@ _STAGE22_SLICE2_REVERSALS = _STAGE22_REVERSALS + (
     re.escape(_STAGE22_CONTRACT),
     r"(?<!no )(?<!not )actions? (is |are )?(ranked|prioriti[sz]ed)\b",
     r"(?<!no )(?<!not )(STAGE 23|Stage 23)(:| is)?\W{0,4}(ENTERED|AUTHORIZED)\b",
-    r"(?<!no )readiness score\b")
+    # AMENDED at the Stage 23 closure: the negated token `NO SINGLE READINESS SCORE …` is not a score claim
+    r"(?<!no )(?<!no single )readiness score\b")
 
 
 _STAGE22_SLICE2_DELIVERED = ("`CAP-05 + CAP-07 SLICE 2: DELIVERED — PR #707 — merge "
@@ -2945,7 +2973,8 @@ def test_stage22_slice_2_is_delivered_history_and_its_rules_still_bind():
     for line in ("STAGE 22: COMPLETE — CURRENT BOUNDED DECISION TRACE + DECISION ROOM SCOPE",
                  _STAGE22_SLICE2_DELIVERED.strip("`"),
                  "FULL CAP-05: NOT AUTHORIZED", "FULL CAP-07: NOT AUTHORIZED",
-                 "Stages 23–27 preserved, not entered / not authorized"):
+                 # AMENDED at the Stage 23 closure: Stage 23 is complete for its bounded four-axis scope
+                 "Stages 24–27 preserved, not entered / not authorized"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
     for stale in ("ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2", _STAGE22_SLICE2_STATUS.strip("`"),
                   "STAGE 22: ENTERED / PARTIAL — CAP-05 + CAP-07 SLICES 1–2 ONLY"):
@@ -3839,6 +3868,23 @@ _S22C_DELIVERED = "`STAGE 22 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED`"
 _S23_MARKER = "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY`"
 _NO_S23 = "`NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE`"
 _S22_LIMITS = ("`FULL CAP-05: NOT AUTHORIZED`", "`FULL CAP-07: NOT AUTHORIZED`")
+# Stage 23 closure (2026-10-02): STAGE 23 — COMPLETE for the current bounded four-axis Readiness Snapshot scope ONLY,
+# recorded with NO PRODUCT CHANGE (the existing user-facing snapshot is its whole basis); full CAP-06 stays NOT
+# AUTHORIZED and its eight-axis expansion is not implemented or closed; the sequential marker moves to Stage 24
+# (NOT ENTERED) for NAVIGATION ONLY. The Stage-22 closure's own `NO STAGE-23 IMPLEMENTATION ...` token stays TRUE
+# history inside its delivered record.
+_S23_COMPLETE = "`STAGE 23: COMPLETE — CURRENT BOUNDED FOUR-AXIS READINESS-SNAPSHOT SCOPE ONLY`"
+_S23C_DELIVERED = "`STAGE 23 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED`"
+_S23_LIMITS = ("`CURRENT READINESS SNAPSHOT AXES: TECHNICAL / COMMERCIAL / MANUFACTURING / INTEGRATION`",
+               "`NO SINGLE READINESS SCORE OR HIDDEN WEIGHTING AUTHORIZED`", "`FULL CAP-06: NOT AUTHORIZED`",
+               "`FULL EIGHT-AXIS CAP-06: NOT IMPLEMENTED / NOT CLOSED`")
+_S24_MARKER = "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY`"
+_NO_S24 = "`NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE`"
+# After the Stage 23 closure a live surface may no longer carry the pre-closure Stage-23 marker or NONE position.
+_S23C_STALE = (_tok(_S23_MARKER), r"CURRENT MASTER ROADMAP STAGE: Stage 23\b",
+               r"Stage 23 NOT ENTERED — navigation only",
+               r"MASTER ROADMAP SEQUENTIAL MARKER:? is (?:now )?Stage 23 for navigation only",
+               r"NO ACTIVE CONTRACT — post-Stage-28-closure", r"\(post-Stage-28-closure;")
 # After the Stage 22 closure a live surface may no longer carry the pre-closure Stage-22 status or marker.
 _S22C_STALE = (_tok("`STAGE 22: ENTERED / PARTIAL`"), _tok(_S22_MARKER),
                r"CURRENT MASTER ROADMAP STAGE: Stage 22\b", r"Stage-22 checkbox stays unticked",
@@ -3959,9 +4005,21 @@ _S15_CLOSE_REVERSALS = (
     r"(?!\s+(?:\(\d{4}-\d{2}-\d{2}\)\s+)?for\s+the\s+current\s+bounded\s+decision\s+trace)",
     r"Stage 22 (is |was )?complete for (all|every|any|arbitrary)",
     r"(?<!NO )STAGE-22 IMPLEMENTATION (IS )?AUTHORIZED", r"STAGE 21 CLOSURE: (?!DELIVERED)",
-    r"STAGE 23 COMPLETE: YES", r"STAGE 23: (?:ENTERED|COMPLETE)",
-    r"Stage 23\s+(is|was|has been)\s+(now\s+)?(ENTERED|COMPLETE|COMPLETED|CLOSED)\b",
+    # Stage 23 closure: complete ONLY for the current bounded four-axis Readiness Snapshot scope, with no product
+    # change; Stage 24 is the marker for navigation only and NOT ENTERED — its entry or completion, an authorized
+    # Stage-24 implementation, full CAP-06 or a claimed eight-axis CAP-06 stays a reversal.
+    r"STAGE 23 COMPLETE: YES",
+    r"STAGE 23: (?:ENTERED|COMPLETE(?! — CURRENT BOUNDED FOUR-AXIS READINESS-SNAPSHOT SCOPE ONLY))",
+    r"Stage 23\s+(is|was|has been)\s+(now\s+)?ENTERED\b",
+    r"Stage 23\s+(is|was|has been)\s+(now\s+)?(COMPLETE|COMPLETED|CLOSED)\b"
+    r"(?!\s+(?:\(\d{4}-\d{2}-\d{2}\)\s+)?for\s+the\s+current\s+bounded\s+four-axis)",
+    r"Stage 23 (is |was )?complete for (all|every|any|arbitrary)",
     r"(?<!NO )STAGE-23 IMPLEMENTATION (IS )?AUTHORIZED", r"STAGE 22 CLOSURE: (?!DELIVERED — NO PRODUCT CHANGE REQUIRED)",
+    r"STAGE 24 COMPLETE: YES", r"STAGE 24: (?:ENTERED|COMPLETE)",
+    r"Stage 24\s+(is|was|has been)\s+(now\s+)?(ENTERED|COMPLETE|COMPLETED|CLOSED)\b",
+    r"(?<!NO )STAGE-24 IMPLEMENTATION (IS )?AUTHORIZED", r"STAGE 23 CLOSURE: (?!DELIVERED — NO PRODUCT CHANGE REQUIRED)",
+    r"FULL CAP-06: AUTHORIZED", r"FULL EIGHT-AXIS CAP-06: (?!NOT IMPLEMENTED / NOT CLOSED)",
+    r"`CAP-12: (?!NOT AUTHORIZED`)",
     r"FULL (CAP-05|CAP-07): AUTHORIZED", r"`CAP-06: (?!NOT ACTIVATED`)",
     r"(AUTOMATIC / AI CONTRADICTION DETECTION|SYSTEM_INFERRED CONTRADICTION WRITER): AUTHORIZED",
     r"FULL (CAP-08|CAP-10): AUTHORIZED",
@@ -4207,11 +4265,11 @@ def test_post_718_no_active_contract_is_superseded_history():
     claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
     assert "the former post-PR-#718 `ACTIVE CONTRACT: NONE`" in claude
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
-    # the live NONE is the one after the Stage 28 closure, never the post-PR-#718 one (ADVANCED at the Stage 30
-    # and Stage 28 closures: the last bounded closure is now the Stage 28 one)
+    # the live NONE is the one after the Stage 23 closure, never the post-PR-#718 one (ADVANCED at the Stage 30,
+    # Stage 28 and Stage 23 closures: the last bounded closure is now the Stage 23 one)
     assert head.startswith("## Current authority **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY "
-                           "AUTHORIZED. The last Owner-authorized bounded closure — Stage 28 — " + _CL.title() +
-                           " Optional Part — Closure — is DELIVERED"), head[:260]
+                           "AUTHORIZED. The last Owner-authorized bounded closure — Stage 23 — CAP-06 Four-Axis "
+                           "Readiness Snapshot — Closure — is DELIVERED"), head[:260]
     assert "post-PR-#718" not in head
 
 
@@ -4281,7 +4339,12 @@ def _current_declaration(contract):
 
 
 def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surface():
-    """CURRENT STATE, merge-invariant: Stage 22 — Decision Trace + Decision Room — Closure is DELIVERED with NO PRODUCT
+    """CURRENT STATE, merge-invariant: Stage 23 — CAP-06 Four-Axis Readiness Snapshot — Closure is DELIVERED with NO
+    PRODUCT CHANGE REQUIRED and STAGE 23 is COMPLETE for the current bounded four-axis Readiness Snapshot scope ONLY
+    (checkbox ticked for that scope; the existing user-facing Readiness Snapshot is its whole basis); full CAP-06
+    stays NOT AUTHORIZED and its eight-axis expansion is not implemented or closed; the MASTER ROADMAP SEQUENTIAL
+    MARKER moves to Stage 24 (NOT ENTERED) for NAVIGATION ONLY. (Advanced at the Stage 23 closure; the Stage 22
+    record follows.) Stage 22 — Decision Trace + Decision Room — Closure is DELIVERED with NO PRODUCT
     CHANGE REQUIRED and STAGE 22 is COMPLETE for the current bounded decision trace + decision room scope ONLY (checkbox
     ticked for that scope; the delivered basis is CAP-05 + CAP-07 Slices 1–2 only); the MASTER ROADMAP SEQUENTIAL
     MARKER moves to Stage 23 (NOT ENTERED) for NAVIGATION ONLY — the closure authorizes no Stage-23 implementation and
@@ -4316,8 +4379,20 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            r"\*\*ACTIVE CONTRACT: NONE\.\*\* NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED\.",
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
            # ADVANCED at the Stage 28 closure: the Stage 28 closure is now the last one, Stage 30's precedes it
-           r"Stage 28 — " + _CL.title() + r" Optional Part\s+— Closure, the last Owner-authorized "
+           # ADVANCED at the Stage 23 closure: the Stage 23 closure is now the last one, Stage 28's precedes it
+           r"Stage 23 — CAP-06 Four-Axis Readiness\s+Snapshot\s+— Closure, the last Owner-authorized bounded "
+           r"closure, is DELIVERED with no product change required\b",
+           r"Stage 23 is COMPLETE for the current bounded four-axis\s+Readiness Snapshot scope\s+ONLY; full CAP-06 "
+           r"stays NOT AUTHORIZED and its eight-axis expansion is not implemented\s+or closed\.",
+           r"Stage 28 — " + _CL.title() + r" Optional Part\s+— Closure, the preceding Owner-authorized "
            r"bounded closure, is DELIVERED with no further product change required\b",
+           r"\*\*STAGE 23 CLOSURE\*\* \| `STAGE 23 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED` — a "
+           r"current-truth closure with no product change",
+           r"\*\*STAGE 23\*\* \| `STAGE 23: COMPLETE — CURRENT BOUNDED FOUR-AXIS READINESS-SNAPSHOT SCOPE ONLY`; "
+           r"its checkbox is TICKED for that scope only",
+           r"problem clarity, mechanism completeness, physical feasibility, evidence strength as its own axis, "
+           r"assumption integrity, testability, prototype readiness and patent-disclosure readiness stay outside "
+           r"this closure",
            r"Stage 30 — " + _CL.title() + r" Part-Enablement Safeguards\s+— Closure, the preceding Owner-authorized "
            r"bounded closure, is DELIVERED with no further product change required\b",
            r"Stage 22 — Decision Trace \+ Decision Room — Closure, the\s+preceding\s+Owner-authorized bounded "
@@ -4336,9 +4411,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            r"a project-context panel explicitly NOT LINKED to any specific decision",
            r"recommendation, best-option or winner selection, confidence, evidence-strength or readiness scoring, "
            r"inferred decision ↔ context linkage and AI decision advice stay NOT AUTHORIZED",
-           r"\*\*MARKER\*\* \| " + _tok(_S23_MARKER) + "; " + _tok(_NO_S23),
-           r"Stage 23 / CAP-06 \(multi-axis readiness dashboard\) stays NOT ENTERED and NOT AUTHORIZED until "
-           r"separately assessed and authorized",
+           r"\*\*MARKER\*\* \| " + _tok(_S24_MARKER) + "; " + _tok(_NO_S24),
+           r"Stage 24 / CAP-12 \(bounded materials / manufacturing advice\) stays NOT ENTERED and NOT AUTHORIZED "
+           r"until separately assessed and authorized",
            r"\*\*STAGE 21 CLOSURE\*\* \| `STAGE 21 CLOSURE: DELIVERED`",
            r"\*\*STAGE 21\*\* \| `STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE`; its checkbox "
            r"is TICKED for that scope only",
@@ -4367,8 +4442,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            r"Phase-7 integration residuals remain Phase 7", r"no IRL score or level",
            r"delivered history never fills the active-contract slot",
            r"\*\*NEXT STEP\*\* \| LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — READ-ONLY",
-           _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), _tok(_S22C_DELIVERED), _tok(_S22_COMPLETE),
-           _tok(_S23_MARKER), _tok(_NO_S23), *(_tok(t) for t in _S22_LIMITS), _status(_S21C_DELIVERED),
+           _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), _tok(_S23C_DELIVERED), _tok(_S23_COMPLETE),
+           *(_tok(t) for t in _S23_LIMITS), _tok(_S24_MARKER), _tok(_NO_S24), _tok(_S22C_DELIVERED),
+           _tok(_S22_COMPLETE), *(_tok(t) for t in _S22_LIMITS), _status(_S21C_DELIVERED),
            _tok(_S21_COMPLETE), *(_tok(t) for t in _S21_LIMITS), _status(_S20C_DELIVERED),
            _tok(_S20_COMPLETE), _tok("`FULL CAP-08: NOT AUTHORIZED`"), _status(_S19C_DELIVERED),
            _tok(_S19_COMPLETE), *(_tok(t) for t in _S19_LIMITS), _status(_S18C_DELIVERED),
@@ -4376,10 +4452,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            _status(_R1_DELIVERED), _status(_S3_DELIVERED), _status(_S2_DELIVERED), _status(_S15_DELIVERED),
            _tok(_S15_COMPLETE), *(_tok(t) for t in _S15C_NOT + _S2_NOT))
     _rejects(top, CONTRACT, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
-             *_S20C_STALE, *_S21C_STALE, *_S22C_STALE)
+             *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE)
     for path, block in _live_surfaces():
         _needs(block, path, "live none", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP),
-               _tok(_S22C_DELIVERED), _tok(_S22_COMPLETE), _tok(_S23_MARKER), _tok(_NO_S23),
+               _tok(_S23C_DELIVERED), _tok(_S23_COMPLETE), *(_tok(t) for t in _S23_LIMITS),
+               _tok(_S24_MARKER), _tok(_NO_S24),
+               _tok(_S22C_DELIVERED), _tok(_S22_COMPLETE),
                *(_tok(t) for t in _S22_LIMITS),
                _status(_S21C_DELIVERED), _tok(_S21_COMPLETE),
                *(_tok(t) for t in _S21_LIMITS[:2]),
@@ -4440,12 +4518,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"engineering\s+compatibility\s+has\s+NOT\s+been\s+established",
                r"Stage\s+15\s+Slice\s+1\s+\(delivered\)\.")
         _rejects(_live_only(block), path, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE,
-                 *_S19C_STALE, *_S20C_STALE, *_S21C_STALE, *_S22C_STALE)
+                 *_S19C_STALE, *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE)
     for path, routing in _surfaces("current-routing"):
         _needs(routing, path, "live routing",
-               r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 23 — CAP-06 multi-axis readiness dashboard — NOT ENTERED — "
-               r"NAVIGATION ONLY",
-               r"Stage 23 / CAP-06 stays NOT ENTERED and NOT AUTHORIZED until separately assessed and authorized",
+               r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 24 — CAP-12 bounded materials / manufacturing advice — "
+               r"NOT ENTERED — NAVIGATION ONLY",
+               r"Stage 24 / CAP-12 stays NOT ENTERED and NOT AUTHORIZED until separately assessed and authorized",
+               r"Stage 23 — CAP-06 multi-axis readiness dashboard — is COMPLETE for the current bounded four-axis "
+               r"Readiness Snapshot scope \(its checkbox is ticked for that scope only\)",
                r"Stage 22 — CAP-05 decision trace \+ CAP-07 decision room — is COMPLETE for the current bounded "
                r"decision trace \+ decision room scope \(its checkbox is ticked for that scope only\)",
                r"Stage 21 — CAP-10 contradiction detector — is COMPLETE for the current Owner-declared contradiction "
@@ -4459,11 +4539,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"routing past Stages 11, 13, 14, 16 and 17 completes none of them",
                # ADVANCED at the Stage 30 closure: the head now also names Stage 30 COMPLETE for its bounded scope
                # ADVANCED at the Stage 28 part-only enablement: the head also names the part-only enablement
-               r"\*\*NO ACTIVE CONTRACT — [^*]{0,260}; Stage 22 COMPLETE for the current bounded decision trace \+ "
+               # ADVANCED at the Stage 23 closure: the head now leads with Stage 23 COMPLETE for its bounded scope
+               r"\*\*NO ACTIVE CONTRACT — post-Stage-23-closure \(2026-10-02\); Stage 23 COMPLETE for the current "
+               r"bounded four-axis Readiness Snapshot scope only;",
+               r"\*\*NO ACTIVE CONTRACT — [^*]{0,400}; Stage 22 COMPLETE for the current bounded decision trace \+ "
                r"decision room scope; Stage 21 COMPLETE for the current Owner-declared contradiction "
                r"scope; Stage 20 COMPLETE for the current Owner-declared assumption scope; Stage 19 COMPLETE for the "
                r"current planning-only scope; Stage 18 COMPLETE for the current Mechanical \+ Electrical / Electronics "
-               r"scope; Stage 15 COMPLETE for the current Mechanical \+ Electrical / Electronics scope; Stage 23 "
+               r"scope; Stage 15 COMPLETE for the current Mechanical \+ Electrical / Electronics scope; Stage 24 "
                r"NOT ENTERED — navigation only:\*\*",
                # ADVANCED at Stage 28 Qualification Slices 1 and 2 and Optional Part Slices 1 and 2: the last delivery
                # is now Optional Part Slice 2
@@ -4471,9 +4554,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # ADVANCED at the Stage 30 closure: the last delivery is now the Stage 30 closure
                # ADVANCED at the Stage 28 part-only enablement: the last delivery is now that enablement
                # ADVANCED at the Stage 28 closure: the last delivery is now the Stage 28 closure
-               r"No product increment is authorized after Stage 28 — " + _CL.title() + r" Optional Part — "
+               # ADVANCED at the Stage 23 closure: the last delivery is now the Stage 23 closure
+               r"No product increment is authorized after Stage 23 — CAP-06 Four-Axis Readiness Snapshot — "
                r"Closure \(delivered: [^)]*\)\. Stage 22 is COMPLETE for the current bounded decision trace \+ decision "
                r"room scope only",
+               r"\*\*DELIVERED — Stage 23 / CAP-06 Four-Axis Readiness Snapshot — Closure \(completes Stage 23 for "
+               r"the current bounded four-axis Readiness Snapshot scope ONLY with no product change",
                r"\*\*DELIVERED — Stage 22 / Decision Trace \+ Decision Room — Closure \(completes Stage 22 for the "
                r"current bounded decision trace \+ decision room scope with no product change",
                r"the Stage-22 checkbox is ticked for the current bounded decision trace \+ decision room scope only",
@@ -4495,8 +4581,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"\*\*DELIVERED — Stage 15 / Interface Verification Preparation Metadata — Slice 3",
                r"\*\*DELIVERED — Stage 15 / Subsystem Interface Declaration & Verification Preparation — Slice 2",
                r"\*\*DELIVERED — Stage 15 / Integrated Invention Entry & Durable Subsystem Composition — Slice 1")
-        marker = re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 23", routing).start()
+        marker = re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 24", routing).start()
         assert marker < routing.index("**NO ACTIVE CONTRACT — "), path
+        assert routing.index("**DELIVERED — Stage 23 / CAP-06 Four-Axis") < routing.index(
+            "**DELIVERED — Stage 28 / " + _CL.title() + " Optional Part — Closure"), path
         assert routing.index("**DELIVERED — Stage 22 / Decision Trace") < routing.index(
             "**DELIVERED — Stage 21 / Owner-Declared Contradiction"), path
         assert routing.index("**DELIVERED — Stage 21 / Owner-Declared Contradiction") < routing.index(
@@ -4509,6 +4597,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             "**DELIVERED — Stage 15 / Integration Evidence"), path
     for path in (ROADMAP, CHECKLIST, CONTRACT):
         after = _after_fence(path, "current-routing")
+        assert ("*(Superseded 2026-10-02 by Stage 23 — CAP-06 Four-Axis Readiness Snapshot — Closure, preserved so the "
+                "change is visible rather than silent: the current routing read \"**NO ACTIVE CONTRACT — "
+                "post-Stage-28-closure (2026-10-02);") in after, path
         assert ("*(Superseded 2026-10-01 by Stage 22 — Decision Trace + Decision Room — Closure, preserved so the change "
                 "is visible rather than silent: the current routing read \"**NO ACTIVE CONTRACT — post-Stage-21-closure "
                 "(2026-10-01); Stage 21 COMPLETE for the current Owner-declared contradiction scope; Stage 20 COMPLETE for "
@@ -4557,7 +4648,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ADVANCED at the Stage 30 closure: the current position is post-Stage-30-closure, Slice 1 follows it
     # ADVANCED at the Stage 28 part-only enablement: the current position is post-enablement, the closure follows it
     # ADVANCED at the Stage 28 closure: the current position is post-Stage-28-closure, the enablement follows it
-    for needle in ("(post-Stage-28-closure; Stage 28 — ",
+    # ADVANCED at the Stage 23 closure: the current position is post-Stage-23-closure, the Stage 28 closure follows it
+    for needle in ("(post-Stage-23-closure; Stage 23 — CAP-06 Four-Axis Readiness Snapshot — Closure — delivered with "
+                   "no product change required: Stage 23 is COMPLETE for the current bounded four-axis Readiness "
+                   "Snapshot scope only, checkbox ticked for that scope only",
+                   "full CAP-06 stays NOT AUTHORIZED and its eight-axis expansion is not implemented or closed; "
+                   "Stage 28 — " + _CL.title() + " Optional Part — Closure — delivered with no further product "
+                   "change",
                    "Part-Enablement Safeguards — Closure — delivered with no further product change: Stage 30 is "
                    "COMPLETE for the current ",
                    "Part-Enablement Safeguards — Bounded Slice 1 — delivered: saved ",
@@ -4585,8 +4682,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "Stage 19 — WS-PFV-001 / CAP-09 — stays COMPLETE for the current planning-only scope only "
                    "(Experiment Execution-State Disclosure — Closure — delivered; full CAP-09 / full WS-PFV-001 stay NOT "
                    "AUTHORIZED)",
-                   "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY (NO STAGE-23 "
-                   "IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE; Stage 23 / CAP-06 NOT AUTHORIZED until separately "
+                   "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY (NO STAGE-24 "
+                   "IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE; Stage 24 / CAP-12 NOT AUTHORIZED until separately "
                    "assessed and authorized; routing past Stages 11, 13, 14, 16 and 17 completes none of them)",
                    "next step: a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT",
                    "Stage 18 — D13 / CAP-01 — stays COMPLETE for the current Mechanical + Electrical / Electronics "
@@ -4608,6 +4705,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "Stage 18 is now **COMPLETE for the current Mechanical + Electrical / Electronics scope**"):
         assert needle in state, needle
     after = _after_fence(STATE, "current-position")
+    assert ("*(Superseded 2026-10-02 by Stage 23 — CAP-06 Four-Axis Readiness Snapshot — Closure, preserved so the "
+            "change is visible rather than silent: the current-position entry read \"`ACTIVE CONTRACT: NONE` — no "
+            "product increment is currently authorized (post-Stage-28-closure …)\"") in after
     assert ("*(Superseded 2026-10-01 by Stage 22 — Decision Trace + Decision Room — Closure, preserved so the change is "
             "visible rather than silent: the current-position entry read \"`ACTIVE CONTRACT: NONE` — no product "
             "increment is currently authorized (post-Stage-21-closure …)\"") in after
@@ -4630,9 +4730,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     head = claude[claude.index("## Current authority"):claude.index("*(Superseded")]
     # ADVANCED at the Stage 30 closure: the Stage 30 closure is now the last one; Stage 22's is the preceding one
     # ADVANCED at the Stage 28 closure: the Stage 28 closure is now the last one; Stage 30's precedes it
+    # ADVANCED at the Stage 23 closure: the Stage 23 closure is now the last one; Stage 28's precedes it
     assert head.startswith("## Current authority **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY "
-                           "AUTHORIZED. The last Owner-authorized bounded closure — Stage 28 — " + _CL.title() +
-                           " Optional Part — Closure — is DELIVERED with no further product change required")
+                           "AUTHORIZED. The last Owner-authorized bounded closure — Stage 23 — CAP-06 Four-Axis "
+                           "Readiness Snapshot — Closure — is DELIVERED with no product change required")
+    assert ("The preceding bounded closure — Stage 28 — " + _CL.title() + " Optional Part — Closure — is DELIVERED "
+            "with no further product change required") in head
     assert ("The preceding bounded closure — Stage 30 — " + _CL.title() + " Part-Enablement Safeguards — Closure — "
             "is DELIVERED with no further product change required") in head
     assert ("The preceding bounded closure — Stage 22 — Decision Trace + Decision Room — Closure — is DELIVERED with "
@@ -4648,10 +4751,16 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "(`STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE`); STAGE 18 stays COMPLETE for the current "
                    "Mechanical + Electrical / Electronics scope only (`STAGE 18: COMPLETE — CURRENT MECHANICAL + "
                    "ELECTRICAL / ELECTRONICS SCOPE`).",
-                   "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY`; NO STAGE-23 "
-                   "IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE (Stage 23 / CAP-06 stays NOT ENTERED and NOT "
-                   "AUTHORIZED until separately assessed and authorized; `STAGE 23: NOT ENTERED`; `CAP-06: NOT "
-                   "ACTIVATED`); routing past Stages 11, 13, 14, 16 and 17 completes none of them.",
+                   "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY`; NO STAGE-24 "
+                   "IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE (Stage 24 / CAP-12 stays NOT ENTERED and NOT "
+                   "AUTHORIZED until separately assessed and authorized; `STAGE 24: NOT ENTERED`; `CAP-12: NOT "
+                   "AUTHORIZED`); routing past Stages 11, 13, 14, 16 and 17 completes none of them.",
+                   _S23C_DELIVERED, _S23_COMPLETE, *_S23_LIMITS,
+                   "Stage 23 closure (delivered; a current-truth closure with no product change; completes Stage 23 "
+                   "for the current bounded four-axis Readiness Snapshot scope ONLY; full CAP-06 stays NOT "
+                   "AUTHORIZED; the MASTER ROADMAP SEQUENTIAL MARKER moves to Stage 24 for navigation only)",
+                   "The preceding bounded closure — Stage 28 — " + _CL.title() + " Optional Part — Closure — is "
+                   "DELIVERED.",
                    "`FULL CAP-05: NOT AUTHORIZED`", "`FULL CAP-07: NOT AUTHORIZED`",
                    "`STAGE 22 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED`",
                    "Stage 22 closure (delivered; completes Stage 22 for the current bounded decision trace + decision "
@@ -4708,11 +4817,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "ticked for that scope only",
                    "Stage 18 — D13 / CAP-01 — is COMPLETE for the current Mechanical + Electrical / Electronics scope "
                    "(checkbox ticked for that scope only; the Stage 18 closure above), and the MASTER ROADMAP "
-                   "SEQUENTIAL MARKER is now Stage 23 for navigation only (the Stage 22 closure above)",
+                   "SEQUENTIAL MARKER is now Stage 24 for navigation only (the Stage 23 closure above)",
                    "Stage 18 is COMPLETE for the current Mechanical + Electrical / Electronics scope: its two bounded "
                    "Electronics CAP-01 increments are delivered",
-                   "the Master Roadmap sequential marker is Stage 23 for navigation only (NO STAGE-23 IMPLEMENTATION "
-                   "AUTHORIZED BY STAGE-22 CLOSURE; Stage 23 NOT ENTERED)",
+                   "the Master Roadmap sequential marker is Stage 24 for navigation only (NO STAGE-24 IMPLEMENTATION "
+                   "AUTHORIZED BY STAGE-23 CLOSURE; Stage 24 NOT ENTERED)",
+                   "Stage 23 is COMPLETE for the current bounded four-axis Readiness Snapshot scope only (FULL CAP-06 "
+                   "NOT AUTHORIZED; the eight-axis expansion is not implemented or closed)",
                    "Stage 22 is COMPLETE for the current bounded decision trace + decision room scope through its "
                    "delivered Slices 1–2 and its closure",
                    "Stage 20 is COMPLETE for the current Owner-declared assumption scope through CAP-08 Slice 1 and its "
@@ -4720,8 +4831,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "1 and its closure"):
         assert needle in head, needle
     for pat in (_S2_CLOSE_REVERSALS + _S15C_STALE + _S18C_STALE + _S19C_STALE + _S20C_STALE + _S21C_STALE
-                + _S22C_STALE):
+                + _S22C_STALE + _S23C_STALE):
         assert re.search(pat, head, re.I | re.S) is None, pat
+    assert "the former post-Stage-28-closure `ACTIVE CONTRACT: NONE`" in claude
     assert "the former post-Stage-21-closure `ACTIVE CONTRACT: NONE`" in claude
     assert "the former post-Stage-20-closure `ACTIVE CONTRACT: NONE`" in claude
     assert "the former post-Stage-19-closure `ACTIVE CONTRACT: NONE`" in claude
@@ -4742,6 +4854,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                 r"\*\*WATCH — Stage 20 closure \(non-blocking, no repair cycle\)\.\*\*",
                 r"\*\*WATCH — Stage 21 closure \(non-blocking, no repair cycle\)\.\*\*",
                 r"\*\*WATCH — Stage 22 closure \(non-blocking, no repair cycle\)\.\*\*",
+                r"\*\*WATCH — Stage 23 closure \(non-blocking, no repair cycle\)\.\*\*",
                 r"Evaluated at the Stage 20\s+closure",
                 r"The Stage 18 closure \(2026-10-01\) neither used nor required MSNL: MSNL stays FUTURE / DEFERRED / "
                 r"NOT ACTIVATED"):
@@ -4750,7 +4863,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
     # ADVANCED at Stage 28 Qualification Slices 1 and 2: the delivered slices now lead the delivered history
     # ADVANCED at the Stage 30 closure: the closure now leads, Stage 30 COMPLETE for its bounded scope only
+    # ADVANCED at the Stage 23 closure: the Stage 23 closure now leads, Stage 23 COMPLETE for its bounded scope only
     subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \([^)]{0,40}\) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — "
+                    r"Stage 23 — CAP-06 Four-Axis Readiness Snapshot — Closure DELIVERED \([^)]*\) — STAGE 23 "
+                    r"COMPLETE for the current bounded four-axis Readiness Snapshot scope only — "
                     r"Stage 28 — " + _CL.title() + r" Optional Part — Closure DELIVERED \([^)]*\) — STAGE 28 COMPLETE for "
                     r"the current bounded " + _CL.lower() + r" optional-part scope only — "
                     r"Stage 28 — " + _CL.title() + r" Optional Part — Part-Only Enablement DELIVERED \([^)]*\) — "
@@ -4781,7 +4897,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     subtask = flat_checklist[found:]
     subtask = subtask[:subtask.index("*(Superseded")]
     _needs(subtask, CHECKLIST, "live subtask", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP),
-           _tok(_S22C_DELIVERED), _tok(_S22_COMPLETE), _tok(_S23_MARKER), _tok(_NO_S23),
+           _tok(_S23C_DELIVERED), _tok(_S23_COMPLETE), *(_tok(t) for t in _S23_LIMITS),
+           _tok(_S24_MARKER), _tok(_NO_S24),
+           _tok(_S22C_DELIVERED), _tok(_S22_COMPLETE),
            *(_tok(t) for t in _S22_LIMITS),
            _status(_S21C_DELIVERED), _tok(_S21_COMPLETE),
            _status(_S20C_DELIVERED), _tok(_S20_COMPLETE),
@@ -4789,14 +4907,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            _status(_S18C_DELIVERED), _tok(_S18_COMPLETE), _tok(_MSNL_FUTURE),
            _status(_S15C_DELIVERED), _status(_S4_DELIVERED), _status(_R1_DELIVERED), _status(_S3_DELIVERED),
            _status(_S2_DELIVERED), _status(_S15_DELIVERED), _tok(_S15_COMPLETE),
-           *(_tok(t) for t in _S15C_NOT + _S2_NOT), r"No product increment is authorized after the Stage 28 closure\b")
+           *(_tok(t) for t in _S15C_NOT + _S2_NOT), r"No product increment is authorized after the Stage 23 closure\b")
     _rejects(subtask, CHECKLIST, "live subtask", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
-             *_S20C_STALE, *_S21C_STALE, *_S22C_STALE)
-    for line in [t.strip("`") for t in (_NONE718, _NEXT_INC_NO, _NEXT_STAGE_STEP, _S22C_DELIVERED, _S22_COMPLETE,
-                                        _S23_MARKER, _NO_S23, _S21_COMPLETE, _S20_COMPLETE, _S19_COMPLETE,
-                                        _S18_COMPLETE, _MSNL_FUTURE, _S15_COMPLETE)
-                 + _S22_LIMITS + _S21_LIMITS + _S20_LIMITS + _S19_LIMITS[:2] + _S15C_NOT + _S2_NOT
-                 + ("`STAGE 23: NOT ENTERED`", "`CAP-06: NOT ACTIVATED`")]:
+             *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE)
+    for line in [t.strip("`") for t in (_NONE718, _NEXT_INC_NO, _NEXT_STAGE_STEP, _S23C_DELIVERED, _S23_COMPLETE,
+                                        _S24_MARKER, _NO_S24, _S22C_DELIVERED, _S22_COMPLETE, _S21_COMPLETE,
+                                        _S20_COMPLETE, _S19_COMPLETE, _S18_COMPLETE, _MSNL_FUTURE, _S15_COMPLETE)
+                 + _S23_LIMITS + _S22_LIMITS + _S21_LIMITS + _S20_LIMITS + _S19_LIMITS[:2] + _S15C_NOT + _S2_NOT
+                 + ("`STAGE 24: NOT ENTERED`",)]:
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
     for token in (_S21C_DELIVERED, _S20C_DELIVERED, _S19C_DELIVERED, _S18C_DELIVERED, _S15C_DELIVERED, _S4_DELIVERED, _S3_DELIVERED, _S2_DELIVERED,
                   _S15_DELIVERED):
@@ -4807,20 +4925,22 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                   _NO_S19.strip("`"), "STAGE 19: ENTERED / NOT COMPLETE", _S20_MARKER.strip("`"),
                   _NO_S20.strip("`"), "STAGE 20: ENTERED / PARTIAL — CAP-08 SLICE 1 ONLY", _S21_MARKER.strip("`"),
                   _NO_S21.strip("`"), "STAGE 21: ENTERED / PARTIAL — CAP-10 SLICE 1 ONLY", _S22_MARKER.strip("`"),
-                  _NO_S22.strip("`"), "STAGE 22: ENTERED / PARTIAL — CAP-05 + CAP-07 SLICES 1–2 ONLY"):
+                  _NO_S22.strip("`"), "STAGE 22: ENTERED / PARTIAL — CAP-05 + CAP-07 SLICES 1–2 ONLY",
+                  _S23_MARKER.strip("`"), _NO_S23.strip("`"), "STAGE 23: NOT ENTERED", "CAP-06: NOT ACTIVATED"):
         assert re.search(r"^" + re.escape(stale) + r"$", raw_checklist, re.M) is None, stale
-    assert "**CURRENT PRODUCT-DEPTH FRONTIER: Stage 23 — NOT ENTERED — NAVIGATION ONLY" in flat_checklist
+    assert "**CURRENT PRODUCT-DEPTH FRONTIER: Stage 24 — NOT ENTERED — NAVIGATION ONLY" in flat_checklist
     roadmap = _read(ROADMAP)
     numbers = [int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)]
     assert sorted(numbers) == list(range(1, 46)), numbers
     # Stages 15 and 18 are ticked (COMPLETE for the current Mechanical + Electrical / Electronics scope), Stage 19
     # (COMPLETE for the current planning-only scope) and Stage 20 (COMPLETE for the current Owner-declared assumption
     # scope) and Stage 21 (COMPLETE for the current Owner-declared contradiction scope) and Stage 22 (COMPLETE for the
-    # current bounded decision trace + decision room scope); the stages routed past (11, 13, 14, 16, 17) and the
-    # navigation-only, NOT ENTERED Stage 23 stay unticked
-    for n in (15, 18, 19, 20, 21, 22):
+    # current bounded decision trace + decision room scope) and Stage 23 (COMPLETE for the current bounded four-axis
+    # Readiness Snapshot scope); the stages routed past (11, 13, 14, 16, 17) and the navigation-only, NOT ENTERED
+    # Stage 24 stay unticked
+    for n in (15, 18, 19, 20, 21, 22, 23):
         assert re.search(r"^- \[ \] \*\*%d — " % n, roadmap, re.M) is None, n
-    for n in (11, 13, 14, 16, 17, 23):
+    for n in (11, 13, 14, 16, 17, 24):
         assert re.search(r"^- \[ \] \*\*%d — " % n, roadmap, re.M), n
     [row15] = re.findall(r"^- \[x\] \*\*15 — IRL-compatible view:\*\*.*$", roadmap, re.M)
     live15 = _live_only(row15)
@@ -4911,20 +5031,33 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "**ENTERED / PARTIAL (2026-09-26):** CAP-05 + CAP-07 Slice 1"):
         assert needle in live22, needle
     assert "the checkbox stays unticked" not in live22
-    for live in (live15, live18, live19, live20, live21, live22):
+    [row23] = re.findall(r"^- \[x\] \*\*23 — CAP-06:\*\*.*$", roadmap, re.M)
+    live23 = _live_only(row23)
+    for needle in ("**COMPLETE (2026-10-02) for the current bounded four-axis Readiness Snapshot scope ONLY — "
+                   "checkbox ticked for that scope only:** `STAGE 23: COMPLETE — CURRENT BOUNDED FOUR-AXIS "
+                   "READINESS-SNAPSHOT SCOPE ONLY` through the Owner-authorized Stage 23 — CAP-06 Four-Axis Readiness "
+                   "Snapshot — Closure (delivered with no product change required — `STAGE 23 CLOSURE: DELIVERED — NO "
+                   "PRODUCT CHANGE REQUIRED`", *_S23_LIMITS,
+                   "no weighting, score, percentage, average, composite, ranking, weakest-axis calculation, "
+                   "threshold aggregate or overall pass / fail",
+                   "NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE"):
+        assert needle in live23, needle
+    for live in (live15, live18, live19, live20, live21, live22, live23):
         for pat in (_S2_CLOSE_REVERSALS + _S15C_STALE + _S18C_STALE + _S19C_STALE + _S20C_STALE + _S21C_STALE
-                    + _S22C_STALE):
+                    + _S22C_STALE + _S23C_STALE):
             assert re.search(pat, live, re.I) is None, pat
     register = _flat(CAPABILITIES)
     assert "Nor is Stage 15 — Integration Evidence & IRL-Compatible View — Closure (delivered" in register
     assert "A sixth bounded slice — Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure: delivered" in register
     for token in (_S18_COMPLETE, _S19_COMPLETE, _NO_S20, _S20_COMPLETE, _NO_S21, _S21_COMPLETE, _NO_S22,
-                  _S22_COMPLETE, _S23_MARKER, _NO_S23, _S22C_DELIVERED):
+                  _S22_COMPLETE, _NO_S23, _S22C_DELIVERED, _S23_COMPLETE, _S23C_DELIVERED, _S24_MARKER, _NO_S24,
+                  "`FULL CAP-06: NOT AUTHORIZED`", "`FULL EIGHT-AXIS CAP-06: NOT IMPLEMENTED / NOT CLOSED`"):
         assert token in register, token
     assert "and (2) the Stage 21 — Owner-Declared Contradiction Visibility — Closure (delivered)" in register
     assert "the Stage 22 — Decision Trace + Decision Room — Closure (delivered with no product change required" in register
     assert _S21_MARKER not in _live_only(register)
     assert _S22_MARKER not in _live_only(register)
+    assert _S23_MARKER not in _live_only(register)
     assert "(6) the Stage 19 — Experiment Execution-State Disclosure — Closure (delivered)" in register
     assert "and (2) the Stage 20 — Assumption Revision & Replacement — Closure (delivered)" in register
     assert "`STAGE 18 COMPLETE: NO`" not in _live_only(register)
@@ -5407,7 +5540,8 @@ def test_lead_operating_method_and_watchlist_are_preserved_as_continuity_only():
 def test_continuity_addendum_lenses_cap06_and_fraud_routing_authorize_nothing():
     """Continuity addendum: the three product-deepening axes and the
     Domain Profile → … → Readiness direction are a lens, not authority; the
-    BUILD … SHIP lens is non-gating; CAP-06 is PREMATURE / NOT AUTHORIZED NOW and
+    BUILD … SHIP lens is non-gating; FULL CAP-06 is PREMATURE / NOT AUTHORIZED NOW (the bounded four-axis
+    Stage-23 scope is delivered) and
     not cancelled; production abuse / fraud routes through the EXISTING PSRR /
     Stage 38 / Stage 40 owners with no new gate, no provider selection and no
     deployment, payment or paid-activation authority."""
@@ -5429,8 +5563,10 @@ def test_continuity_addendum_lenses_cap06_and_fraud_routing_authorize_nothing():
     watch = claude[claude.index("**Current Lead Watchlist (2026-09-26).**"):
                    claude.index("**Successor Lead (mandatory).**")]
     for needle in (
-            "**CAP-06 — Multi-Axis Invention Readiness Dashboard: PREMATURE / NOT AUTHORIZED "
-            "NOW, not cancelled.**",
+            # AMENDED at the Stage 23 closure: the bounded four-axis scope is delivered; FULL CAP-06 stays premature
+            "**CAP-06 — Multi-Axis Invention Readiness Dashboard: the CURRENT bounded four-axis Stage-23 scope is "
+            "DELIVERED / COMPLETE; FULL CAP-06 stays PREMATURE / NOT AUTHORIZED NOW, not cancelled.**",
+            "The full eight-axis CAP-06 expansion",
             "CAP-11 evidence strength, Patent Export / patent-disclosure readiness, "
             "WS-PFV-001 / prototype readiness",
             "Build no misleading partial \"full dashboard\"",
@@ -5482,10 +5618,11 @@ _LIVE_CLAIM_REVERSALS = _S15_CLOSE_REVERSALS + (
     # marker is Stage 21. A preserved delivery heading may still close with "(…; the … MARKER stays Stage 18)" or
     # "(…; the … MARKER moves to Stage 19 / 20 for navigation only)".
     # AMENDED again at the Stage 21 closure: the live marker was Stage 22; AMENDED again at the Stage 22 closure: the
-    # live marker is Stage 23 (NOT ENTERED).
-    r"CURRENT MASTER ROADMAP STAGE: Stage (?!23\b)\d+",
-    r"MASTER ROADMAP SEQUENTIAL MARKER(?::| is| moves to| becomes)? Stage (?!23\b)\d+\b(?! for navigation only\))",
-    r"MASTER ROADMAP SEQUENTIAL MARKER stays Stage (?!23\b)\d+\b(?!\))",
+    # live marker was Stage 23 (NOT ENTERED); AMENDED again at the Stage 23 closure: the live marker is Stage 24 (NOT
+    # ENTERED), and the preserved Stage 28 / 30 delivery headings still read "… MARKER stays Stage 23 …".
+    r"CURRENT MASTER ROADMAP STAGE: Stage (?!24\b)\d+",
+    r"MASTER ROADMAP SEQUENTIAL MARKER(?::| is| moves to| becomes)? Stage (?!24\b)\d+\b(?! for navigation only\))",
+    r"MASTER ROADMAP SEQUENTIAL MARKER stays Stage (?!2[34]\b)\d+\b(?!\))",
     _S4_VERDICT, r"INTERFACE OBSERVATION VERDICT / CRITERION-MET JUDGEMENT: AUTHORIZED")
 # Lifecycle states that are true only BEFORE a merge. On a live surface they make the authoritative
 # text false the moment the candidate merges, which is what used to force a closure PR.
@@ -5727,8 +5864,8 @@ def _live_authority_problems(read=None):
             problems.append("%s: active-contract tokens %s disagree with %r" % (label, sorted(tokens), current))
         if current == "NONE" and "`NEXT PRODUCT INCREMENT: NOT AUTHORIZED`" not in text:
             problems.append(label + ": NONE without `NEXT PRODUCT INCREMENT: NOT AUTHORIZED`")
-        for token in (_S22_COMPLETE, _S21_COMPLETE, _S20_COMPLETE, _S19_COMPLETE, _S18_COMPLETE, _S15_COMPLETE,
-                      _S23_MARKER, _NO_S23):
+        for token in (_S23_COMPLETE, _S22_COMPLETE, _S21_COMPLETE, _S20_COMPLETE, _S19_COMPLETE, _S18_COMPLETE,
+                      _S15_COMPLETE, _S24_MARKER, _NO_S24, *_S23_LIMITS):
             if token not in text:
                 problems.append(label + ": missing " + token)
         if _S15_ENTERED in text:
@@ -5748,21 +5885,28 @@ def _live_authority_problems(read=None):
         for pat in _S22C_STALE:
             if re.search(pat, text):
                 problems.append(label + ": stale pre-Stage-22-closure status " + pat)
+        for pat in _S23C_STALE:
+            if re.search(pat, text):
+                problems.append(label + ": stale pre-Stage-23-closure status " + pat)
         for token in _S30C_TOKENS + _S30C_KEPT:
             if token not in text:
                 problems.append(label + ": missing Stage-30 closure fact " + token)
         for pat in _S30C_STALE:
             if re.search(pat, text):
                 problems.append(label + ": stale pre-Stage-30-closure status " + pat)
-        if label.startswith("routing") and not re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 23\b", text):
-            problems.append(label + ": the Stage-23 navigation marker is missing")
-    for needle in (_S23_MARKER, "NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE",
+        if label.startswith("routing") and not re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 24\b", text):
+            problems.append(label + ": the Stage-24 navigation marker is missing")
+    for needle in (_S24_MARKER, "NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE", _S23_COMPLETE,
+                   _S23C_DELIVERED, *_S23_LIMITS,
                    "STAGE 22: COMPLETE — CURRENT BOUNDED DECISION TRACE + DECISION ROOM SCOPE",
                    "STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE",
                    "STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE",
                    "STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE", *_S30C_TOKENS, *_S30C_KEPT):
         if needle not in texts["head:CLAUDE.md"]:
             problems.append("head:CLAUDE.md: missing " + needle)
+    for pat in _S23C_STALE:
+        if re.search(pat, texts["head:CLAUDE.md"]):
+            problems.append("head:CLAUDE.md: stale pre-Stage-23-closure status " + pat)
     for pat in _S30C_STALE:
         if re.search(pat, texts["head:CLAUDE.md"]):
             problems.append("head:CLAUDE.md: stale pre-Stage-30-closure status " + pat)
@@ -5867,10 +6011,10 @@ _MATERIAL_REVERSALS = {
     "stage 18 unscoped": (CHECKLIST, "current-routing", _S18_COMPLETE, "`STAGE 18: COMPLETE`"),
     "stage 18 reopened": (CONTRACT, "current-routing", _S18_COMPLETE, "`STAGE 18 COMPLETE: NO`"),
     "stage 18 partial in prose": (STATE, "current-position", _NS, _NS + " Stage 18 remains PARTIAL."),
-    "marker moved": (CONTRACT, "current-routing", "CURRENT MASTER ROADMAP STAGE: Stage 23",
-                     "CURRENT MASTER ROADMAP STAGE: Stage 24"),
-    "marker moved in position": (STATE, "current-position", "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23",
-                                 "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22"),
+    "marker moved": (CONTRACT, "current-routing", "CURRENT MASTER ROADMAP STAGE: Stage 24",
+                     "CURRENT MASTER ROADMAP STAGE: Stage 25"),
+    "marker moved in position": (STATE, "current-position", "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24",
+                                 "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23"),
     "marker back in prose": (CHECKLIST, "current-routing", _NS, _NS + " The MASTER ROADMAP SEQUENTIAL MARKER stays "
                              "Stage 18."),
     "stage 19 complete": (ROADMAP, "current-routing", _NS, _NS + " `STAGE 19: COMPLETE`"),
@@ -5923,6 +6067,17 @@ _MATERIAL_REVERSALS = {
     "full cap-05": (CONTRACT, "declaration", _NS, _NS + " `FULL CAP-05: AUTHORIZED`"),
     "cap-06 activated": ("CLAUDE.md", "head", "**ACTIVE CONTRACT: NONE.**",
                          "**ACTIVE CONTRACT: NONE.** `CAP-06: ACTIVATED`"),
+    # Stage 23 closure: dropping the four-axis scope, reopening Stage 23, moving the marker back, entering or
+    # implementing Stage 24, authorizing full CAP-06 or claiming the eight-axis CAP-06 is a reversal.
+    "stage 23 unscoped": (CHECKLIST, "current-routing", _S23_COMPLETE, "`STAGE 23: COMPLETE`"),
+    "stage 23 reopened": (CONTRACT, "current-routing", _S23_COMPLETE, "`STAGE 23: ENTERED / PARTIAL`"),
+    "stage 23 marker back": (CHECKLIST, "current-routing", _NS, _NS + " The MASTER ROADMAP SEQUENTIAL MARKER is "
+                             "Stage 23 for navigation only."),
+    "stage 24 entered": (ROADMAP, "current-routing", _NS, _NS + " `STAGE 24: ENTERED`"),
+    "stage 24 implementation": (STATE, "current-position", _NS, _NS + " Stage-24 implementation authorized."),
+    "full cap-06": (CONTRACT, "declaration", _NS, _NS + " `FULL CAP-06: AUTHORIZED`"),
+    "eight-axis cap-06 claimed": ("CLAUDE.md", "head", "**ACTIVE CONTRACT: NONE.**",
+                                  "**ACTIVE CONTRACT: NONE.** `FULL EIGHT-AXIS CAP-06: IMPLEMENTED`"),
     "msnl activated": (CONTRACT, "declaration", _NS, _NS + " `MSNL: ACTIVATED`"),
     "successor increment": (STATE, "current-position", "`NEXT PRODUCT INCREMENT: NOT AUTHORIZED`",
                             "`NEXT PRODUCT INCREMENT: AUTHORIZED`"),
@@ -6188,7 +6343,8 @@ def test_f1b_unmodified_repository_counts():
     # Stage 30 closure: + its delivered record and the superseded post-Stage-30-Part-Safeguards-Slice-1 NONE record
     # Stage 28 part-only enablement: + its delivered record and the superseded post-Stage-30-closure NONE record
     # Stage 28 closure: + its delivered record and the superseded post-Stage-28-Part-Only-Enablement NONE record
-    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 64, 10)
+    # Stage 23 closure: + its delivered record and the superseded post-Stage-28-closure NONE record
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 66, 10)
 
 
 def _flat_doc(path):

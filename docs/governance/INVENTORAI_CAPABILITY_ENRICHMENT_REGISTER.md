@@ -145,8 +145,14 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   STAGE-21 CLOSURE` — and the later Stage 22 closure (CAP-05 / CAP-07 entries below; no product change) completed
   Stage 22 for the current bounded decision trace + decision room scope and moved the marker on:
   `STAGE 22: COMPLETE — CURRENT BOUNDED DECISION TRACE + DECISION ROOM SCOPE` ·
-  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY` ·
-  `NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE`.
+  `NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE` — and the later Stage 23 closure (CAP-06 entry below; no product change) completed Stage 23
+  for the current bounded four-axis Readiness Snapshot scope only and moved the marker on:
+  `STAGE 23: COMPLETE — CURRENT BOUNDED FOUR-AXIS READINESS-SNAPSHOT SCOPE ONLY` ·
+  `STAGE 23 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED` ·
+  `FULL CAP-06: NOT AUTHORIZED` ·
+  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY` ·
+  `NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE`.
+  *(Superseded 2026-10-02 by the Stage 23 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY`".)*
   *(Superseded 2026-10-01 by the Stage 22 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22 —
   ENTERED / PARTIAL — NAVIGATION ONLY`".)*
   *(Superseded 2026-10-01 by the Stage 21 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 21 —
@@ -299,7 +305,11 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   records.
 - **Proposed acceptance criteria:** each axis is deterministic and separately sourced; no hidden
   weighting.
-- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`. Master Roadmap Stage 23
+  (the bounded row naming CAP-06) is COMPLETE for the current bounded four-axis Readiness Snapshot scope only,
+  through the existing user-facing Readiness Snapshot (Technical, Commercial, Manufacturing, Integration) with
+  no product change (`STAGE 23 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED`); that closure implements none of the axes above and closes nothing
+  in full CAP-06 (`FULL CAP-06: NOT AUTHORIZED`; `FULL EIGHT-AXIS CAP-06: NOT IMPLEMENTED / NOT CLOSED`).
 - **Activation conditions:** a separately authorized dashboard increment (with Patent Export / WS-PFV-001
   for the respective axes).
 - **Separate owner authorization requirement:** yes.

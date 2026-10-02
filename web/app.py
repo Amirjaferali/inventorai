@@ -10932,11 +10932,11 @@ def _readiness_snapshot_context(sid, state):
     source cannot be read consistently (fail closed: the block is suppressed
     rather than shown with a dimension missing or stale).
 
-    Composition only. The Technical row comes from the existing derived-readiness
-    owner and the ledger it already reads; the Commercial row comes STRICTLY from
-    the authoritative Commercial Evidence Owner; Manufacturing is the fixed
-    inactive state. Nothing is persisted, nothing is cached, and this runs on GET
-    without mutating anything."""
+    Composition only, four independent rows. The Technical row comes from the
+    existing derived-readiness owner and the ledger it already reads; the
+    Commercial, Manufacturing and Integration rows come STRICTLY from the shared
+    evidence owner's own per-dimension views. Nothing is persisted, nothing is
+    cached, and this runs on GET without mutating anything."""
     try:
         # Stage 15 closure: the history is read WITH its Integration anchors
         # validated, so a missing / foreign / remapped anchor suppresses the

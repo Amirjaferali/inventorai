@@ -3,7 +3,14 @@
 ## Current authority
 
 **ACTIVE CONTRACT: NONE.** NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The last Owner-authorized bounded
-closure — Stage 28 — Control-Loop Optional Part — Closure — is DELIVERED with no further product change required,
+closure — Stage 23 — CAP-06 Four-Axis Readiness Snapshot — Closure — is DELIVERED with no product change required,
+for the current bounded four-axis Readiness Snapshot scope ONLY (`STAGE 23 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED`;
+`STAGE 23: COMPLETE — CURRENT BOUNDED FOUR-AXIS READINESS-SNAPSHOT SCOPE ONLY`;
+`CURRENT READINESS SNAPSHOT AXES: TECHNICAL / COMMERCIAL / MANUFACTURING / INTEGRATION`;
+`NO SINGLE READINESS SCORE OR HIDDEN WEIGHTING AUTHORIZED`;
+`FULL CAP-06: NOT AUTHORIZED`;
+`FULL EIGHT-AXIS CAP-06: NOT IMPLEMENTED / NOT CLOSED`; Git / GitHub own its PR, merge and review identity).
+The preceding bounded closure — Stage 28 — Control-Loop Optional Part — Closure — is DELIVERED with no further product change required,
 for the current bounded control-loop optional-part scope ONLY (`STAGE 28 CLOSURE: DELIVERED — NO FURTHER PRODUCT CHANGE REQUIRED`;
 `STAGE 28: COMPLETE — CURRENT BOUNDED CONTROL-LOOP OPTIONAL-PART SCOPE ONLY`;
 `STAGE 28 IS NOT GLOBALLY DISCHARGED FOR FUTURE ADDITIONAL DOMAINS`;
@@ -54,21 +61,26 @@ STAGE 20 stays COMPLETE for the current Owner-declared assumption scope only (`S
 OWNER-DECLARED ASSUMPTION SCOPE`); STAGE 19 stays COMPLETE for the current planning-only scope only (`STAGE 19:
 COMPLETE — CURRENT PLANNING-ONLY SCOPE`); STAGE 18 stays COMPLETE for the current Mechanical + Electrical /
 Electronics scope only (`STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`). This does NOT
-mean the roadmap, Stage 23 or any other Stage is complete or entered, that a next slice is authorized, or that full
-CAP-05, full CAP-07, full CAP-10, full CAP-08, full CAP-09, full WS-PFV-001 or full CAP-01 has been opened (each
+mean the roadmap, Stage 24 or any other Stage is complete or entered, that a next slice is authorized, or that full
+CAP-06, full CAP-05, full CAP-07, full CAP-10, full CAP-08, full CAP-09, full WS-PFV-001 or full CAP-01 has been opened (each
 stays NOT AUTHORIZED; `FULL CAP-05: NOT AUTHORIZED`; `FULL CAP-07: NOT AUTHORIZED`; `FULL CAP-10: NOT AUTHORIZED`;
 `AUTOMATIC / AI CONTRADICTION DETECTION: NOT AUTHORIZED`; `SYSTEM_INFERRED CONTRADICTION WRITER: NOT AUTHORIZED`;
 `FULL CAP-08: NOT AUTHORIZED`); delivered history never fills the active-contract slot. `MASTER ROADMAP SEQUENTIAL
-MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY`; NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE (Stage
-23 / CAP-06 stays NOT ENTERED and NOT AUTHORIZED until separately assessed and authorized; `STAGE 23: NOT ENTERED`;
-`CAP-06: NOT ACTIVATED`); routing past Stages 11, 13, 14, 16 and 17 completes none of them.
+MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY`; NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE (Stage
+24 / CAP-12 stays NOT ENTERED and NOT AUTHORIZED until separately assessed and authorized; `STAGE 24: NOT ENTERED`;
+`CAP-12: NOT AUTHORIZED`); routing past Stages 11, 13, 14, 16 and 17 completes none of them.
 The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — read-only planning / selection over live
 repository and product evidence until the Owner separately authorizes another product increment; it pre-authorizes
 no further `control_loop` change, `control_loop` root
 activation, activation-blocker work (activation-time safety-cue decision, runtime Tier-1 label, Path-N service), further
-Stage-15 composition change or further Stage-28 or Stage-30 work, no Stage-23 / CAP-06 or other Stage work, CAP-05 / CAP-07, CAP-08, CAP-09 or CAP-10 work, further CAP-01 or Technical
+Stage-15 composition change or further Stage-23, Stage-28 or Stage-30 work, no Stage-24 / CAP-12, full CAP-06 or other Stage work, CAP-05 / CAP-07, CAP-08, CAP-09 or CAP-10 work, further CAP-01 or Technical
 Deepening slice, MSNL activation, compatibility analysis, IRL scoring, interface engineering, Robotics assessment
 implementation, IoT or other Domain Pack.
+Stage 23 closure (delivered; a current-truth closure with no product change; completes Stage 23 for the current
+bounded four-axis Readiness Snapshot scope ONLY; full CAP-06 stays NOT AUTHORIZED; the MASTER ROADMAP SEQUENTIAL
+MARKER moves to Stage 24 for navigation only):
+The Lead's read-only Stage-23 reassessment, accepted by the Owner, found genuine closure gap NONE, product change required NONE and architecture trigger NONE: the existing user-facing Readiness Snapshot on the session page (`engine/readiness_snapshot.py`, composed by `web/app.py` `_readiness_snapshot_context`) already satisfies the exact Stage-23 requirement — a multi-axis readiness dashboard only after readiness axes exist, with no hidden weighting. Its four axes — Technical (the existing derived-readiness owner and canonical technical gap / assertion truth), Commercial, Manufacturing and Integration (the shared evidence owner's own per-dimension views) — are each sourced independently, report recorded counts, coverage and explicit limitations, reach only `INSUFFICIENT_EVIDENCE` (an evidence-sufficiency state, never an invention verdict; no positive readiness state is constructible), carry an explicit no-overall-result statement and are shown in EN / AR from a pure read-only composition that persists nothing and adds no readiness owner. There is no weighting, score, percentage, average, composite, ranking, weakest-axis calculation, threshold aggregate or overall pass / fail; `DerivedReadiness.overall_verified()` stays a Technical-only existing mechanism and is not a cross-axis aggregate. Stage 23 is COMPLETE for the current bounded four-axis Readiness Snapshot scope ONLY (checkbox ticked for that scope only). Full CAP-06 stays NOT AUTHORIZED: the register's eight-axis direction — problem clarity, mechanism completeness, physical feasibility, evidence strength as its own axis, assumption integrity, testability, prototype readiness and patent-disclosure readiness — is not implemented, not closed and not claimed, and stays blocked / deferred by its own dependencies (CAP-11, the Patent Export decision, WS-PFV-001). Stages 13, 14, 16 and 17 keep their statuses: no TRL / MRL / SRL level or Commercial Readiness conclusion is computed or claimed. Only stale comment / docstring wording in `engine/readiness_snapshot.py`, `web/app.py` and `web/templates/session.html` was corrected to the current four-axis truth, with no executable or rendered change. No new dashboard, route, axis, owner, aggregation, persistence, schema, score or weighting; no deployment or release.
+The preceding bounded closure — Stage 28 — Control-Loop Optional Part — Closure — is DELIVERED.
 Stage 28 closure (delivered; a current-truth closure with no further product change; completes Stage 28 for the
 current bounded control-loop optional-part scope ONLY and is NOT a global Stage-28 discharge; Stage 30 stays
 COMPLETE for its bounded scope only; the MASTER ROADMAP SEQUENTIAL MARKER stays Stage 23 for navigation only):
@@ -310,9 +322,9 @@ levels, full D4 compatibility evaluation, interface engineering, subsystem-level
 engines, analysis-focus switching, peer root domains, generic N-domain composition, a Mechatronics Domain Pack,
 Robotics, IoT, Drone / Unmanned, Renewable and Satellite / Space stay NOT AUTHORIZED; deployment and release
 NOT AUTHORIZED. Stage 18 — D13 / CAP-01 — is COMPLETE for the current Mechanical + Electrical / Electronics scope
-(checkbox ticked for that scope only; the Stage 18 closure above), and the MASTER ROADMAP SEQUENTIAL MARKER is now Stage 23 for navigation only (the Stage 22 closure above): there is no current authorized Technical
+(checkbox ticked for that scope only; the Stage 18 closure above), and the MASTER ROADMAP SEQUENTIAL MARKER is now Stage 24 for navigation only (the Stage 23 closure above): there is no current authorized Technical
 Deepening subtask, no next Technical Deepening slice is authorized and no additional CAP-01 implementation is
-authorized; Stage 23 NOT ENTERED; CAP-06 NOT ACTIVATED; FULL CAP-01 / FULL STG NOT AUTHORIZED.
+authorized; Stage 23 COMPLETE for the current bounded four-axis Readiness Snapshot scope only; Stage 24 NOT ENTERED; FULL CAP-06 NOT AUTHORIZED; FULL CAP-01 / FULL STG NOT AUTHORIZED.
 Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals — is DELIVERED
 (PR #716, merge `11564b235b056aaf12ca9d5596418f43a2d7e61c`; post-merge identity / content verification PASS;
 independent non-authoring review COMPLETE — PASS WITH NON-BLOCKING OBSERVATIONS) — the preceding bounded slice
@@ -466,7 +478,7 @@ Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slic
 Stage 15 — Interface Verification Preparation Metadata — Slice 3 is delivered;
 Stage 15 — Interface Verification Observation Event — Slice 4 is delivered;
 Stage 15 — Integration Evidence & IRL-Compatible View — Closure is delivered, and Stage 15 is COMPLETE for the current
-Mechanical + Electrical / Electronics scope; Stage 19 — Experiment Execution-State Disclosure — Closure is delivered, and Stage 19 is COMPLETE for the current planning-only scope; Stage 20 — Assumption Revision & Replacement — Closure is delivered, and Stage 20 is COMPLETE for the current Owner-declared assumption scope; Stage 21 — Owner-Declared Contradiction Visibility — Closure is delivered, and Stage 21 is COMPLETE for the current Owner-declared contradiction scope; Stage 22 — Decision Trace + Decision Room — Closure is delivered with no product change required, and Stage 22 is COMPLETE for the current bounded decision trace + decision room scope; the Master Roadmap sequential marker is Stage 23 for navigation only (NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE; Stage 23 NOT ENTERED); Stage 30 — Control-Loop Part-Enablement Safeguards — Closure is delivered, and Stage 30 is COMPLETE for the current control-loop part-enablement safeguard scope only (NOT globally discharged for future domains or future root activations); Stage 28 — Control-Loop Optional Part — Part-Only Enablement is delivered (`control_loop` PART-ONLY enabled as the one optional part, NOT root-activated); Stage 28 — Control-Loop Optional Part — Closure is delivered, and Stage 28 is COMPLETE for the current bounded control-loop optional-part scope only (NOT globally discharged for future additional domains);
+Mechanical + Electrical / Electronics scope; Stage 19 — Experiment Execution-State Disclosure — Closure is delivered, and Stage 19 is COMPLETE for the current planning-only scope; Stage 20 — Assumption Revision & Replacement — Closure is delivered, and Stage 20 is COMPLETE for the current Owner-declared assumption scope; Stage 21 — Owner-Declared Contradiction Visibility — Closure is delivered, and Stage 21 is COMPLETE for the current Owner-declared contradiction scope; Stage 22 — Decision Trace + Decision Room — Closure is delivered with no product change required, and Stage 22 is COMPLETE for the current bounded decision trace + decision room scope; Stage 23 — CAP-06 Four-Axis Readiness Snapshot — Closure is delivered with no product change required, and Stage 23 is COMPLETE for the current bounded four-axis Readiness Snapshot scope only (FULL CAP-06 NOT AUTHORIZED; the eight-axis expansion is not implemented or closed); the Master Roadmap sequential marker is Stage 24 for navigation only (NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE; Stage 24 NOT ENTERED); Stage 30 — Control-Loop Part-Enablement Safeguards — Closure is delivered, and Stage 30 is COMPLETE for the current control-loop part-enablement safeguard scope only (NOT globally discharged for future domains or future root activations); Stage 28 — Control-Loop Optional Part — Part-Only Enablement is delivered (`control_loop` PART-ONLY enabled as the one optional part, NOT root-activated); Stage 28 — Control-Loop Optional Part — Closure is delivered, and Stage 28 is COMPLETE for the current bounded control-loop optional-part scope only (NOT globally discharged for future additional domains);
 ACTIVE CONTRACT: NONE — no product increment is authorized and no other Stage is authorized — the delivered Electrical Technical Deepening slice sat inside
 the already-entered Stage 18 and entered no new Stage (Stage 19 is COMPLETE for the current planning-only scope through its delivered Slices and closure; Stage 22 is COMPLETE for the current bounded decision trace + decision room scope through its
 delivered Slices 1–2 and its closure; Stage 20 is COMPLETE for the current Owner-declared assumption scope through CAP-08 Slice 1 and
@@ -474,7 +486,7 @@ its closure; Stage 21 is COMPLETE for the current Owner-declared contradiction s
 closure), and deployment, public release
 and paid activation remain NOT AUTHORIZED.
 
-*(Superseded current-authority declarations — the former post-Stage-28-Part-Only-Enablement `ACTIVE CONTRACT: NONE`, the former Stage 28 — Control-Loop Optional Part — Closure, the former post-Stage-30-closure `ACTIVE CONTRACT: NONE`, the former Stage 28 — Control-Loop Optional Part — Part-Only Enablement, the former post-Stage-30-Part-Safeguards-Slice-1 `ACTIVE CONTRACT: NONE`, the former Stage 30 — Control-Loop Part-Enablement Safeguards — Closure, the former post-Stage-28-Optional-Part-Slice-2 `ACTIVE CONTRACT: NONE`, the former Stage 30 — Control-Loop Part-Enablement Safeguards — Bounded Slice 1, the former post-Stage-28-Optional-Part-Slice-1 `ACTIVE CONTRACT: NONE`, the former Stage 28 — Control-Loop Optional Part — Slice 2, the former post-Stage-28-Qualification-Slice-2 `ACTIVE CONTRACT: NONE`, the former Stage 28 — Control-Loop Optional Part — Slice 1, the former post-Stage-28-Qualification-Slice-1 `ACTIVE CONTRACT: NONE`, the former Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 2, the former post-Stage-22-closure `ACTIVE CONTRACT: NONE`, the former Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 1, the former post-Stage-21-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-20-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-19-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-18-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-4 `ACTIVE CONTRACT: NONE`, the former post-CAP-09-Result-Event-Slice-1 `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-3 `ACTIVE CONTRACT: NONE`, the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
+*(Superseded current-authority declarations — the former post-Stage-28-closure `ACTIVE CONTRACT: NONE`, the former Stage 23 — CAP-06 Four-Axis Readiness Snapshot — Closure, the former post-Stage-28-Part-Only-Enablement `ACTIVE CONTRACT: NONE`, the former Stage 28 — Control-Loop Optional Part — Closure, the former post-Stage-30-closure `ACTIVE CONTRACT: NONE`, the former Stage 28 — Control-Loop Optional Part — Part-Only Enablement, the former post-Stage-30-Part-Safeguards-Slice-1 `ACTIVE CONTRACT: NONE`, the former Stage 30 — Control-Loop Part-Enablement Safeguards — Closure, the former post-Stage-28-Optional-Part-Slice-2 `ACTIVE CONTRACT: NONE`, the former Stage 30 — Control-Loop Part-Enablement Safeguards — Bounded Slice 1, the former post-Stage-28-Optional-Part-Slice-1 `ACTIVE CONTRACT: NONE`, the former Stage 28 — Control-Loop Optional Part — Slice 2, the former post-Stage-28-Qualification-Slice-2 `ACTIVE CONTRACT: NONE`, the former Stage 28 — Control-Loop Optional Part — Slice 1, the former post-Stage-28-Qualification-Slice-1 `ACTIVE CONTRACT: NONE`, the former Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 2, the former post-Stage-22-closure `ACTIVE CONTRACT: NONE`, the former Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 1, the former post-Stage-21-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-20-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-19-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-18-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-4 `ACTIVE CONTRACT: NONE`, the former post-CAP-09-Result-Event-Slice-1 `ACTIVE CONTRACT: NONE`, the former post-Stage-15-Slice-3 `ACTIVE CONTRACT: NONE`, the former post-PR-#720 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Subsystem Interface Declaration & Verification Preparation — Slice 2 (pre-merge, "IMPLEMENTATION CANDIDATE … NOT MERGED"), the former post-PR-#718 `ACTIVE CONTRACT: NONE`, the former Stage 15 — Integrated Invention Entry & Durable Subsystem Composition — Slice 1 (pre-merge, "PR NOT OPENED / merge NOT PERFORMED"), the former post-PR-#716 `ACTIVE CONTRACT: NONE`, the former Electrical / Electronics Technical Deepening Slice 1, the former post-PR-#714 `ACTIVE CONTRACT: NONE`, the former Mechanical Technical Deepening Slice 1, the former Mechanical CAP-01 Open-Gap Technical Context, the former CAP-09 Slice 4, the former CAP-09 Slice 3, the former CAP-11 Slice 1, the former CAP-02 Slice 1, the former CAP-04 Slice 1, the former Stage-22 CAP-05 + CAP-07 Slice 2, the former Stage-22 CAP-05 + CAP-07 Slice 1, CAP-08 Slice 1, CAP-10 Slice 1, Safe Question Reduction Slice 1, Autonomous Technical Orchestration Implementation 01, Provenance Hardening Step 1, MSNL Step 1, CAP-09 SLICE-02, IMPLEMENTATION-01,
 Foundation-contract, the former post-PR-#679 `ACTIVE CONTRACT: NONE` and ASTRA Milestone 2 / A1 openings — are preserved
 with their dates in `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` and Git history. None is
 live.)*
@@ -829,9 +841,14 @@ information, not execution authority.
   untranslated English explanatory statements, not English technical terms.
 - **Preserved states.** CAP-08, CAP-10 and Safe Question Reduction Slice 1 DELIVERED. CAP-12 and
   CAP-13 NOT AUTHORIZED and distinct; full CAP-09 NOT AUTHORIZED.
-- **CAP-06 — Multi-Axis Invention Readiness Dashboard: PREMATURE / NOT AUTHORIZED NOW, not
-  cancelled.** Its full axes depend on still-unready owners (CAP-11 evidence strength, Patent
-  Export / patent-disclosure readiness, WS-PFV-001 / prototype readiness). Build no misleading
+- **CAP-06 — Multi-Axis Invention Readiness Dashboard: the CURRENT bounded four-axis Stage-23 scope is
+  DELIVERED / COMPLETE; FULL CAP-06 stays PREMATURE / NOT AUTHORIZED NOW, not cancelled.** Stage 23 is COMPLETE
+  for the current bounded four-axis Readiness Snapshot scope only (Technical / Commercial / Manufacturing /
+  Integration; no product change; no single readiness score or hidden weighting). The full eight-axis CAP-06
+  expansion (problem clarity, mechanism completeness, physical feasibility, evidence strength, assumption
+  integrity, testability, prototype readiness, patent-disclosure readiness) is NOT implemented or closed: its
+  further axes depend on still-unready owners (CAP-11 evidence strength, Patent Export / patent-disclosure
+  readiness, WS-PFV-001 / prototype readiness). Build no misleading
   partial "full dashboard" because some readiness surfaces exist; reconsider only when a bounded
   truthful dashboard slice has sufficient canonical axes and its own authorization.
 - **Production abuse / fraud — routed through the EXISTING PSRR + Stage 38 + Stage 40 owners; no
@@ -1009,8 +1026,10 @@ information, not execution authority.
   decisions stay NOT AUTHORIZED; none is reopened by the closure.
 - **WATCH — Stage 22 closure (non-blocking, no repair cycle).** STAGE 22 — COMPLETE for the current bounded
   decision trace + decision room scope only, recorded with NO PRODUCT CHANGE (the delivered CAP-05 + CAP-07 Slices
-  1–2 already provided it); the MASTER ROADMAP SEQUENTIAL MARKER is Stage 23 for navigation only, Stage 23 / CAP-06
-  is NOT ENTERED and no Stage-23 implementation is authorized by the closure. Neither NEXT TRIGGER fired: no write
+  1–2 already provided it); the MASTER ROADMAP SEQUENTIAL MARKER was then Stage 23 for navigation only, Stage 23 / CAP-06
+  was then NOT ENTERED and no Stage-23 implementation was authorized by the closure (the later Stage 23 closure
+  completed Stage 23 for its bounded four-axis Readiness Snapshot scope with no product change and moved the
+  marker to Stage 24). Neither NEXT TRIGGER fired: no write
   path, no new relation type. (A) The Stage 22 Slice 2 WATCH items above stay non-blocking polish. (B) The action
   summary renders only when a decision is declared and reads unavailable on a cold read-only page; the Compass, Gap
   Action Packs and Section 14 stay the project-level owners otherwise. (C) Per-decision supporting evidence or
@@ -1030,6 +1049,15 @@ information, not execution authority.
   Satellite / Space, Robotics and any other future domain work stay separately reassessed and authorized; none is
   implemented. (B) The qualification record's activation blockers stay preserved, not waived, for any FUTURE ROOT
   activation of `control_loop` only. (C) `web/app.py` keeps no stale dormancy wording (Correction 01, PR #742).
+- **WATCH — Stage 23 closure (non-blocking, no repair cycle).** STAGE 23 — COMPLETE for the current bounded
+  four-axis Readiness Snapshot scope ONLY, recorded with NO PRODUCT CHANGE; FULL CAP-06 stays NOT AUTHORIZED and
+  its eight-axis expansion is not implemented or closed; the MASTER ROADMAP SEQUENTIAL MARKER is Stage 24 for
+  navigation only (Stage 24 / CAP-12 NOT ENTERED, NOT AUTHORIZED). (A) The snapshot renders on the session page
+  only, collapsed; the report, PDF and Structured Export do not carry it. (B) An Integration anchor defect hides
+  the whole block (fail closed) with no "unavailable" notice. (C) No test asserts the Arabic Integration row on a
+  rendered page (structural coverage only). (D) `DerivedReadiness.overall_verified()` stays a Technical-only
+  mechanism (report status strip / verdict qualifier), never a cross-axis aggregate. (E) Older test names that
+  still read "three" rows are historical wording, natural-touch only.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative
