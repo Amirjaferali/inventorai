@@ -1398,7 +1398,10 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       # content; the evidence itself stays in
                       # `readiness_evidence`).
                       "subsystem_interface_dependencies",
-                      "integration_evidence_anchors"}
+                      "integration_evidence_anchors",
+                      # Stage 28 Optional Part Slice 2: the inventor's current
+                      # answers about an optional part (not a commercial owner).
+                      "subsystem_part_answers"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()

@@ -521,7 +521,10 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       # Stage 15 Slice 3 current-value sidecar (preparation
                       # inputs per interface) — not a second ledger either.
                       "subsystem_interface_preparations",
-                      "subsystem_interfaces"], tables
+                      "subsystem_interfaces",
+                      # Stage 28 Optional Part Slice 2 current-value part
+                      # answers (no payload, no disposition) — not a ledger.
+                      "subsystem_part_answers"], tables
     assert ledger_like == ["records"], ledger_like
     assert "payload" not in quantity_cols and "disposition" not in quantity_cols
     assert "payload" not in reference_cols and "disposition" not in reference_cols

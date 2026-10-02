@@ -115,13 +115,16 @@ _AUTOMATIC_DELETION_TABLES = ("auth_rate_limits", "email_outbox")
 # inputs (that one current-value row is removed); the automatic set is still
 # unchanged. The Stage 15 closure extended it to the owner clearing their own
 # interface dependency declaration (that one current-value row is removed); the
-# automatic set is still unchanged.
+# automatic set is still unchanged. Stage 28 Optional Part Slice 2 extended it to
+# the owner clearing their own answer about an optional part (that one
+# current-value row is removed); the automatic set is still unchanged.
 _USER_INITIATED_DELETION_TABLES = ("prototype_plan_metadata",
                                    "prototype_measurement_methods",
                                    "prototype_test_hypotheses",
                                    "prototype_test_variables",
                                    "subsystem_interface_preparations",
-                                   "subsystem_interface_dependencies")
+                                   "subsystem_interface_dependencies",
+                                   "subsystem_part_answers")
 
 
 def test_retention_doc_matches_source_truth():
@@ -174,6 +177,10 @@ def test_retention_doc_matches_source_truth():
     assert "`integration_evidence_anchors`" in flat
     assert not any("integration_evidence_anchors" in line for _p, line in deletes)
     assert "It is NOT an automatic deletion, NOT an erasure capability" in flat
+    # Stage 28 Optional Part Slice 2: clearing a part answer removes its one
+    # current-value row (user-initiated, the same kind).
+    assert "`subsystem_part_answers`" in flat
+    assert "clearing an answer removes that single current-value row" in flat
     # the 7-day client TTL claim must keep matching the real script
     with open(os.path.join("web", "static", "js", "local_draft.js"),
               encoding="utf-8") as fh:

@@ -621,7 +621,8 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
                       "subsystem_interface_dependencies",   # Stage 15 closure
                       "subsystem_interface_observations",   # Stage 15 Slice 4
                       "subsystem_interface_preparations",   # Stage 15 Slice 3
-                      "subsystem_interfaces"]   # Stage 15 Slice 2 sidecar
+                      "subsystem_interfaces",   # Stage 15 Slice 2 sidecar
+                      "subsystem_part_answers"]   # Stage 28 Optional Part Slice 2
     cols = [r[1] for r in conn.execute("PRAGMA table_info(requirement_quantities)")]
     assert cols == ["project_id", "quantity_seq", "quantity_id", "anchor_record_id",
                     "requirement_id", "quantity_kind", "value_text",

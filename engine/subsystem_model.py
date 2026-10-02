@@ -82,6 +82,14 @@ DOMAINS``) after the required pair, reusing the same descriptor, identity,
 provenance and persistence. It is never the initial analysis focus, and it is
 admitted at entry only while the canonical policy lists it as part-eligible;
 interfaces may then join any two DISTINCT parts of the composition.
+
+Stage 28 — Control-Loop Optional Part — Slice 2 (additive, dormant): this
+module is ALSO the semantic owner of the inventor's CURRENT answers to the
+governed questions of an OPTIONAL part (``PartAnswer``), keyed by the part's
+existing ``subsystem_id`` and the governed question id. They are attributes of
+that ONE part — never a gap, a gap state, evidence, a readiness, maturity,
+progression or Integration input — and the only derived statement is recording
+completeness (``part_family_presence``).
 """
 
 import re
@@ -592,3 +600,130 @@ def dependency_for(dependencies, interface_id):
         if item.interface_id == interface_id:
             return item
     return None
+
+
+# --- Stage 28 — Control-Loop Optional Part — Slice 2: part answers (dormant) ---
+# The inventor's own CURRENT answers to the governed questions an OPTIONAL
+# composed part is asked. The question set is the part's own pack questions for
+# exactly these gap families, in this order (resolved by the caller through
+# ``engine.domain_rules.get_domain_questions``); PHYSICAL_FEASIBILITY is
+# deliberately absent. A family name here is a grouping of that part's
+# questions only: it shares NO state with the project's root gap of the same
+# name, and nothing here is a gap, a gap state, evidence, a readiness,
+# maturity or progression input, an Integration fact, a validation or a
+# feasibility determination. An answer is keyed by (project, subsystem id,
+# governed question id) and is OWNER_STATED / UNVALIDATED by construction.
+PART_QUESTION_GAP_TYPES = ("MECHANISM_COMPLETENESS", "BOUNDARY_AMBIGUITY")
+# Explicit bound (characters), the bound the other Owner-authored current-value
+# texts of a composed project already use. Over-limit input is rejected.
+MAX_PART_ANSWER_LENGTH = 1000
+# A governed question id: ``<pack id>:<gap type>:Q<n>`` (structure only; a
+# stored id is never checked against, or remapped to, the current pack).
+MAX_PART_QUESTION_ID_LENGTH = 128
+_PART_QUESTION_ID_RE = re.compile(r"^[a-z][a-z0-9_]*:[A-Z][A-Z_]*:Q[1-9][0-9]*$")
+
+# Derived presence — recording completeness only, never a gap state, a
+# resolution, a validation or technical completeness.
+PART_ANSWER_RECORDED = "recorded"
+PART_ANSWER_NOT_RECORDED = "not_recorded"
+PART_FAMILY_NONE_RECORDED = "none_recorded"
+PART_FAMILY_SOME_RECORDED = "some_recorded"
+PART_FAMILY_ALL_RECORDED = "all_recorded"
+
+
+class PartAnswerError(ValueError):
+    """A proposed or durable part answer violates the bounded Slice-2
+    contract. Structural message only — it never carries user text."""
+
+
+@dataclass(frozen=True)
+class PartAnswer:
+    """The inventor's CURRENT answer to ONE governed question for ONE optional
+    composed part: the part's ``subsystem_id``, the governed ``question_id``
+    and the Owner's own trimmed ``answer_text``. Never a gap, evidence, a
+    validation or a readiness, progression or Integration input."""
+    subsystem_id: str
+    question_id: str
+    answer_text: str
+
+
+def is_valid_part_question_id(value):
+    """True only for a structurally valid governed question id."""
+    return (isinstance(value, str) and len(value) <= MAX_PART_QUESTION_ID_LENGTH
+            and bool(_PART_QUESTION_ID_RE.match(value)))
+
+
+def valid_part_answer_text(value):
+    """A stored answer is exactly what the route stores: a non-empty,
+    already-trimmed string (internal line breaks kept) within the bound and
+    free of NUL."""
+    return valid_subsystem_text(value, MAX_PART_ANSWER_LENGTH)
+
+
+def part_question_owner(composition, subsystem_id):
+    """The OPTIONAL part of ``composition`` whose identity is exactly
+    ``subsystem_id``, or raise ``PartAnswerError``. Only an optional part
+    carries part answers; a required part, another project's part or an
+    unknown id never does."""
+    for sub in composition or ():
+        if sub.subsystem_id == subsystem_id \
+                and sub.domain in OPTIONAL_COMPOSITION_DOMAINS:
+            return sub
+    raise PartAnswerError("the answer names no optional part of this project")
+
+
+def check_part_answer_target(part, question_id):
+    """Raise ``PartAnswerError`` unless ``question_id`` is a structurally
+    valid governed id of ``part``'s OWN pack (its ``<pack id>`` prefix is the
+    part's domain), so an answer can never be filed under another domain's
+    question even when the gap-family name is the same."""
+    if not is_valid_part_question_id(question_id) \
+            or question_id.split(":", 1)[0] != part.domain:
+        raise PartAnswerError("the question id is not one of this part's pack")
+
+
+def validate_part_answers(answers, composition):
+    """Validate a project's stored part answers against its OWN durable
+    composition and return them as a tuple, or raise ``PartAnswerError``.
+    Empty is valid. Every entry must name an optional part of ``composition``
+    by exact id, a structurally valid question id of that part's own pack
+    (never checked against or remapped to the CURRENT pack: a stored answer
+    to a question that is no longer asked stays as history), be distinct per
+    (part, question) and hold valid stored text."""
+    items = tuple(answers or ())
+    seen = set()
+    for item in items:
+        if not isinstance(item, PartAnswer):
+            raise PartAnswerError("part answer entry is not a part answer")
+        part = part_question_owner(composition, item.subsystem_id)
+        check_part_answer_target(part, item.question_id)
+        key = (item.subsystem_id, item.question_id)
+        if key in seen:
+            raise PartAnswerError("a part question is answered twice")
+        seen.add(key)
+        if not valid_part_answer_text(item.answer_text):
+            raise PartAnswerError("part answer text is invalid")
+    return items
+
+
+def part_answer_for(answers, subsystem_id, question_id):
+    """The answer of exactly (``subsystem_id``, ``question_id``) or ``None``
+    (not recorded) — resolution by identity only."""
+    for item in answers or ():
+        if item.subsystem_id == subsystem_id and item.question_id == question_id:
+            return item
+    return None
+
+
+def part_family_presence(question_ids, answers, subsystem_id):
+    """The derived recording completeness of ONE family of governed
+    questions for ONE part: none / some / all of ``question_ids`` hold a
+    recorded answer. Presence only — never open, partial, closed, resolved,
+    validated or technically complete."""
+    count = sum(1 for qid in question_ids
+                if part_answer_for(answers, subsystem_id, qid) is not None)
+    if count == 0:
+        return PART_FAMILY_NONE_RECORDED
+    if count == len(question_ids):
+        return PART_FAMILY_ALL_RECORDED
+    return PART_FAMILY_SOME_RECORDED
