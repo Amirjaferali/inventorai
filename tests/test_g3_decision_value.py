@@ -739,6 +739,43 @@ _CAP09_S04_ASSEMBLER_SUBSTITUTIONS = (
 )
 
 
+# Stage 30 — Control-Loop Part-Enablement Safeguards — Bounded Slice 1 bounded pin
+# amendment (Owner authorization "STAGE 30 — CONTROL-LOOP OPTIONAL-PART ENABLEMENT
+# SAFEGUARDS — BOUNDED SLICE 1": make the existing SafetySignal input scope explicit
+# in the existing safety presentation owner `_s15`). The EXHAUSTIVE, ordered table
+# of additional replacements, applied AFTER the SLICE 4 table; the guard still
+# demands byte-equality, so any other assembler change fails as before.
+# Previous behaviour: the safety block never stated its input scope.
+# New behaviour: ONLY when the project's composition holds an optional part, the
+# block gains the fixed marker `input_scope`; every other block is byte-identical,
+# and `derive_inventor_stated_safety_signals` (its inputs and output) is unchanged.
+_STAGE30_S1_ASSEMBLER_SUBSTITUTIONS = (
+    (  # [1]
+        '# section, no criticality, no Section 6 risk, and no RequirementLandscape.risks.\n'
+        'from engine.safety_signal import (\n',
+        '# section, no criticality, no Section 6 risk, and no RequirementLandscape.risks.\n'
+        '# Stage 30 Slice 1: only the optional-part domain set, to scope the safety\n'
+        "# block's input-coverage disclosure (no part answer is ever read here).\n"
+        'from engine.subsystem_model import OPTIONAL_COMPOSITION_DOMAINS\n'
+        'from engine.safety_signal import (\n'),
+    (  # [2]
+        '        block["capability_scope"] = "no_governed_safety_cue_family"\n'
+        '    return block\n',
+        '        block["capability_scope"] = "no_governed_safety_cue_family"\n'
+        '    # Stage 30 — Part-Enablement Safeguards — Slice 1: when the\n'
+        "    # project's composition holds an OPTIONAL part, the derivation above still\n"
+        '    # reads only the root-analysis inputs (``derive_inventor_stated_safety_\n'
+        '    # signals`` is unchanged and never reads part answers), so the block carries\n'
+        '    # a fixed input-scope marker the report / PDF render as a coverage\n'
+        '    # disclosure — whether or not signals were derived. Additive and\n'
+        "    # conditional: every other project's block is exactly as above.\n"
+        '    if any(getattr(sub, "domain", None) in OPTIONAL_COMPOSITION_DOMAINS\n'
+        '           for sub in (getattr(state, "subsystems", None) or ())):\n'
+        '        block["input_scope"] = "root_analysis_only_optional_part_excluded"\n'
+        '    return block\n'),
+)
+
+
 def test_a20_a21_dw_lane_and_assembler_untouched():
     import subprocess
     base = "f96c1900a0f5d0831a7654223ae4e008d4df961e"
@@ -787,6 +824,11 @@ def test_a20_a21_dw_lane_and_assembler_untouched():
     for _old, _new in _CAP09_S04_ASSEMBLER_SUBSTITUTIONS:
         assert expected.count(_old) == 1, (
             "an authorized SLICE 4 anchor is missing or no longer unique")
+        expected = expected.replace(_old, _new)
+    # Stage 30 Part Safeguards Slice 1 bounded amendment: the same rule, applied after.
+    for _old, _new in _STAGE30_S1_ASSEMBLER_SUBSTITUTIONS:
+        assert expected.count(_old) == 1, (
+            "an authorized Stage 30 Slice 1 anchor is missing or no longer unique")
         expected = expected.replace(_old, _new)
     with open(os.path.join(root, "engine", "deliverable_assembler.py"),
               encoding="utf-8") as fh:

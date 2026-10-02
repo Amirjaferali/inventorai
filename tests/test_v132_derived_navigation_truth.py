@@ -4501,7 +4501,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ADVANCED at Stage 28 Optional Part Slice 2: the current position is post-Optional-Part-Slice-2
     # ADVANCED at Stage 30 Part Safeguards Slice 1: the current position is post-Stage-30-Slice-1
     for needle in ("(post-Stage-30-Part-Safeguards-Slice-1; Stage 30 — ",
-                   "Bounded Slice 1 — delivered: saved control-loop part answers stay readable, read-only",
+                   "Part-Enablement Safeguards — Bounded Slice 1 — delivered: saved ",
                    "Optional Part — Slice 2 — delivered: the dormant part-scoped governed question service",
                    "Optional Part — Slice 1 — delivered: the dormant optional-part foundation",
                    "is NOT part-enabled and NOT root-activated; Stage 28 — Bounded ",

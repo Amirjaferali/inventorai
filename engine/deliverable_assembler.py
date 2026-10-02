@@ -630,7 +630,7 @@ def _s15(state):
     if not has_governed_safety_cue_family(_dom):
         block["empty_statement"] = _SAFETY_SIGNALS_NO_FAMILY
         block["capability_scope"] = "no_governed_safety_cue_family"
-    # Stage 30 — Control-Loop Part-Enablement Safeguards — Slice 1: when the
+    # Stage 30 — Part-Enablement Safeguards — Slice 1: when the
     # project's composition holds an OPTIONAL part, the derivation above still
     # reads only the root-analysis inputs (``derive_inventor_stated_safety_
     # signals`` is unchanged and never reads part answers), so the block carries
