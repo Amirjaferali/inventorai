@@ -2075,7 +2075,9 @@ _PRE_S19_NONE = (r"\*\*ACTIVE CONTRACT: NONE\.\*\* Both",
                  # AMENDED at the Stage 20 closure: the live NONE now names the Stage-20 closure as its nearby
                  # delivery fact (the PR #714 / #716 / #718 facts moved further down the longer token line);
                  # AMENDED at the Stage 21 / Stage 22 closures: the Stage-21 / Stage-22 closure fact counts as well
-                 r"ACTIVE CONTRACT: NONE(?!.{0,1500}(?:PR[ -]#71[468]|Stage[ -]2[012][ -]closure))")
+                 # AMENDED at Stage 28 Qualification Slice 1: the post-Slice-1 delivery fact counts as well
+                 r"ACTIVE CONTRACT: NONE(?!.{0,1500}(?:PR[ -]#71[468]|Stage[ -]2[012][ -]closure|"
+                 r"Stage[ -]28[ -]Qualification[ -]Slice[ -]1))")
 
 
 _SLICE_02_LIVE_REVERSALS = (
@@ -4407,8 +4409,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"current planning-only scope; Stage 18 COMPLETE for the current Mechanical \+ Electrical / Electronics "
                r"scope; Stage 15 COMPLETE for the current Mechanical \+ Electrical / Electronics scope; Stage 23 "
                r"NOT ENTERED — navigation only:\*\*",
-               r"No product increment is authorized after the Stage 22 closure\. Stage 22 is COMPLETE for the current "
-               r"bounded decision trace \+ decision room scope only",
+               # ADVANCED at Stage 28 Qualification Slice 1: the last delivery is now that slice
+               r"No product increment is authorized after Stage 28 — Bounded Control-Loop Concept Owner — Qualification "
+               r"Slice 1 \(delivered: [^)]*\)\. Stage 22 is COMPLETE for the current bounded decision trace \+ decision "
+               r"room scope only",
                r"\*\*DELIVERED — Stage 22 / Decision Trace \+ Decision Room — Closure \(completes Stage 22 for the "
                r"current bounded decision trace \+ decision room scope with no product change",
                r"the Stage-22 checkbox is ticked for the current bounded decision trace \+ decision room scope only",
@@ -4484,7 +4488,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     state = _current(STATE, "current-position")
     assert re.match(r" \*\*Current position \([^)]{0,40}\): `ACTIVE CONTRACT: NONE` — no product increment is "
                     r"currently authorized \(", state)
-    for needle in ("(post-Stage-22-closure; Stage 22 — CAP-05 decision trace + CAP-07 decision room — is COMPLETE for "
+    # ADVANCED at Stage 28 Qualification Slice 1: the current position is post-Slice-1; the Stage-22 facts follow it
+    # (split around the owner name so these governance needles never read as control-loop idea text)
+    for needle in ("(post-Stage-28-Qualification-Slice-1; Stage 28 — Bounded ",
+                   "Concept Owner — Qualification Slice 1 — delivered under the Owner-accepted Stage-28 qualification "
+                   "contract: one standalone ",
+                   "pack registered — registry-recognized, NOT qualified",
+                   "Stage 28 ENTERED / PARTIAL — Qualification Slice 1 only, NOT complete",
+                   "Stage 22 — CAP-05 decision trace + CAP-07 decision room — is COMPLETE for "
                    "the current bounded decision trace + decision room scope only, checkbox ticked for that scope only; "
                    "this does NOT mean the roadmap, Stage 23 or any other Stage is complete or entered or that a next "
                    "slice is authorized (full CAP-05 / full CAP-07 stay NOT AUTHORIZED), and it claims no "
@@ -4657,7 +4668,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
         assert re.search(pat, cont), pat
     assert "(the current implementation candidate)" not in cont
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
+    # ADVANCED at Stage 28 Qualification Slice 1: the delivered slice now leads the delivered history
     subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \([^)]{0,40}\) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — "
+                    r"Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 1 DELIVERED \([^)]*\) — "
                     r"Stage 22 — Decision Trace \+ Decision Room — Closure DELIVERED \(no product change required\) — "
                     r"STAGE 22 COMPLETE for the current bounded decision trace \+ decision room scope — "
                     r"Stage 21 — Owner-Declared Contradiction Visibility — Closure DELIVERED — STAGE 21 COMPLETE for "
@@ -4686,7 +4699,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            _status(_S18C_DELIVERED), _tok(_S18_COMPLETE), _tok(_MSNL_FUTURE),
            _status(_S15C_DELIVERED), _status(_S4_DELIVERED), _status(_R1_DELIVERED), _status(_S3_DELIVERED),
            _status(_S2_DELIVERED), _status(_S15_DELIVERED), _tok(_S15_COMPLETE),
-           *(_tok(t) for t in _S15C_NOT + _S2_NOT), r"No product increment is authorized after the Stage 22 closure\b")
+           *(_tok(t) for t in _S15C_NOT + _S2_NOT), r"No product increment is authorized after Stage 28 Qualification Slice 1\b")
     _rejects(subtask, CHECKLIST, "live subtask", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
              *_S20C_STALE, *_S21C_STALE, *_S22C_STALE)
     for line in [t.strip("`") for t in (_NONE718, _NEXT_INC_NO, _NEXT_STAGE_STEP, _S22C_DELIVERED, _S22_COMPLETE,
@@ -6030,7 +6043,8 @@ def test_f1b_unmodified_repository_counts():
     # closure: its own delivered record and the superseded post-Stage-19-closure NONE; +2 at the Stage 21 closure:
     # its own delivered record and the superseded post-Stage-20-closure NONE; +2 at the Stage 22 closure: its own
     # delivered record and the superseded post-Stage-21-closure NONE
-    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 48, 10)
+    # Stage 28 Qualification Slice 1: + the delivered Slice-1 record and the superseded post-Stage-22 NONE record
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 50, 10)
 
 
 def _flat_doc(path):
