@@ -99,8 +99,10 @@ def is_activated(domain, registry=None):
 # it is never root-admissible, never the analysis focus, and it never changes
 # ``support_state`` / ``is_activated`` / ``activated_domains``. Qualification or
 # registry recognition never adds an entry — adding one is its own separately
-# Owner-authorized gate. It ships EMPTY: no domain is part-enabled today.
-_PART_ONLY_DOMAINS = frozenset()
+# Owner-authorized gate. It shipped EMPTY; the Owner-authorized Stage 28
+# part-only enablement (after the Stage 30 part-enablement safeguards) lists
+# exactly ONE domain: ``control_loop``, as an optional part only.
+_PART_ONLY_DOMAINS = frozenset({"control_loop"})
 
 
 def is_part_eligible(domain, registry=None):

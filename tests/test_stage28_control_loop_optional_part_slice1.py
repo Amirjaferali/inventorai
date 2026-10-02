@@ -10,6 +10,10 @@ Electronics integrated invention — never a root-admissible domain. This slice 
   * the bounded integrated-entry / composition-form / interface-pair changes, exercised here only through a
     test-only eligibility double.
 
+AMENDED at the Owner-authorized Stage 28 part-only enablement: the shipped allowlist now lists exactly
+``control_loop`` (still never root-activated), so the behavior tests run against the PRODUCTION policy and an
+explicit empty override appears only where a test proves the withdrawn state.
+
 Root classification, admission, progression and Path-N are untouched; nothing here serves a question or stores a
 part answer.
 """
@@ -47,9 +51,11 @@ def client():
 
 
 @pytest.fixture
-def part_eligible(monkeypatch):
-    """TEST-ONLY eligibility double: the shipped allowlist stays empty."""
-    monkeypatch.setattr(domain_activation, "_PART_ONLY_DOMAINS", frozenset({CL}))
+def part_eligible():
+    """The PRODUCTION policy part-enables ``control_loop`` (Stage 28 part-only enablement) — no override: every
+    test requesting this fixture runs the live path. (It was a test-only eligibility double while the allowlist
+    shipped empty.)"""
+    assert domain_activation.is_part_eligible(CL) is True
 
 
 def _store():
@@ -99,13 +105,18 @@ def _declare(client, sid, binding, description):
 
 # ======================================================================= A. part-eligibility seam
 
-def test_the_part_only_allowlist_ships_empty_and_control_loop_is_not_enabled():
-    assert domain_activation._PART_ONLY_DOMAINS == frozenset()
+def test_the_part_only_allowlist_enables_exactly_control_loop():
+    # AMENDED at the Stage 28 part-only enablement: the allowlist shipped empty; it now lists exactly one domain
+    assert domain_activation._PART_ONLY_DOMAINS == frozenset({CL})
     tree = ast.parse(open(os.path.join(_ROOT, "engine", "domain_activation.py"), encoding="utf-8").read())
     assigned = [n.value for n in tree.body if isinstance(n, ast.Assign)
                 and [t.id for t in n.targets if isinstance(t, ast.Name)] == ["_PART_ONLY_DOMAINS"]]
-    assert len(assigned) == 1 and ast.unparse(assigned[0]) == "frozenset()"
-    assert domain_activation.is_part_eligible(CL) is False
+    assert len(assigned) == 1 and ast.unparse(assigned[0]) == "frozenset({'control_loop'})"
+    assert domain_activation.is_part_eligible(CL) is True
+    registry = domain_activation.load_registry(domain_activation._DEFAULT_DOMAINS_DIR)
+    assert [d for d in sorted(registry) if domain_activation.is_part_eligible(d, registry)] == [CL]
+    for other in (MECH, ELEC, "not_a_pack", None, ""):
+        assert domain_activation.is_part_eligible(other) is False
 
 
 def test_root_activation_is_unchanged_and_control_loop_is_not_root_activated():
@@ -186,9 +197,11 @@ def test_the_store_never_accepts_the_optional_part_as_the_focus(tmp_path):
     store.close()
 
 
-# ======================================================================= C. integrated entry (dormant by default)
+# ======================================================================= C. integrated entry (live; withdrawn where stated)
 
-def test_dormant_form_offers_no_optional_slot_and_ignores_posted_values(client):
+def test_withdrawn_policy_form_offers_no_optional_slot_and_ignores_posted_values(client, monkeypatch):
+    # AMENDED at the Stage 28 part-only enablement: the former shipped (empty) state is now an explicit withdrawal
+    monkeypatch.setattr(domain_activation, "_PART_ONLY_DOMAINS", frozenset())
     raw = client.post("/start", data={"idea": TIE_IDEA}).get_data(as_text=True)
     assert "data-composition-form" in raw
     assert "data-optional-part" not in raw and "ctrl_part_name" not in raw
@@ -235,7 +248,10 @@ def test_the_optional_slot_is_optional_and_all_or_nothing(client, part_eligible)
     assert _project_count() == before
 
 
-def test_a_single_control_loop_result_is_never_root_admission(client):
+def test_a_single_control_loop_result_is_never_root_admission_nor_composes_when_withdrawn(client, monkeypatch):
+    # AMENDED at the Stage 28 part-only enablement: the live policy's Case-B flow is pinned below; this keeps the
+    # withdrawn policy's refusal (an explicit empty override) — root admission is refused either way
+    monkeypatch.setattr(domain_activation, "_PART_ONLY_DOMAINS", frozenset())
     result = classify_domain(CL_IDEA)
     assert (result.kind, result.selected_domain) == (DomainResultKind.SINGLE, CL)
     before = _project_count()
