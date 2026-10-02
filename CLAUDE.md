@@ -45,7 +45,7 @@ record only (`_PUBLIC_DOMAIN_LABELS` unchanged; the runtime label is deferred to
 Option (b) is preserved (an activation-time Owner decision stays required); the activation blockers — Stage 30, that
 safety-cue decision, the runtime label, Path-N / service review, CF-6 / CF-2 applicability, root-domain versus
 optional-part semantics, PHYSICAL_FEASIBILITY progression implications, activation-specific admission verification and an
-exact Owner activation authorization — stay outstanding; no pack, provenance, classifier, activation, composition,
+exact Owner activation authorization — stay outstanding; no pack technical-semantics (only its two Slice-1 lifecycle sentences were updated to the qualified state), provenance, classifier, activation, composition,
 safety-cue, runtime-label, Path-N, schema or persistence change, deployment or release.
 The preceding bounded slice — Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 1 — is DELIVERED.
 Stage 28 Qualification Slice 1 (delivered; it entered Stage 28 as ENTERED / PARTIAL, NOT complete; the

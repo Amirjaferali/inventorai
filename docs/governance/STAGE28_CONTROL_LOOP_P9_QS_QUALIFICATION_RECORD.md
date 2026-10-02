@@ -21,9 +21,10 @@ declaration) and nothing else. It is the qualification evidence package required
 [`STAGE28_BOUNDED_CONTROL_LOOP_CONCEPT_OWNER_QUALIFICATION_CONTRACT.md`](STAGE28_BOUNDED_CONTROL_LOOP_CONCEPT_OWNER_QUALIFICATION_CONTRACT.md)
 §10 item 7 (P9-QS §7), following the Mechanical qualification-record precedent. The declaration it carries is
 authoritative as merged; Git / GitHub own its PR, merge and review identity. It changes no runtime code, test
-behaviour, Domain Pack, provenance record, registry, classifier, activation allowlist, composition, safety-cue code,
-public-label owner, Path-N artifact, schema or persistence. **No evidence was regenerated:** every determination
-below rests on the merged Slice-1 evidence at the exact identities of §1. `OWNER_DECISION_REGISTER.md` is unchanged
+behaviour, Domain Pack technical semantics, provenance record, registry, classifier, activation allowlist, composition,
+safety-cue code, public-label owner, Path-N artifact, schema or persistence; the only pack edit (Slice-2
+Correction 01, §1) replaces the pack's two Slice-1 lifecycle sentences with the qualified state. **No evidence was
+regenerated:** every determination below rests on the merged Slice-1 evidence at the exact identities of §1. `OWNER_DECISION_REGISTER.md` is unchanged
 (P9-QS §2: qualification ≠ Owner authorization ≠ activation).
 
 ## §1. Evidence identity (authoritative merged lineage)
@@ -37,17 +38,30 @@ below rests on the merged Slice-1 evidence at the exact identities of §1. `OWNE
 | Reviewed final head (Correction 01) | `42882ee17aeab22b51a236545eba0c2672bfcff9` — hosted CI run `36949299714` (all required jobs green) |
 | Authoritative Slice-1 merge | `1d282f0e8915284418935fb1090cf4d493c7ba3f` (PR #736; parents `540db53613013baf071515cfdb2e3fdec7e7a4cb` / `42882ee17aeab22b51a236545eba0c2672bfcff9`) |
 | Merge tree | `1e77f04cd7f52fd61318efd8d1c2b1ffa93182ad` (identical to the reviewed final-head tree) |
-| `domains/control_loop/domain.json` | blob `8f3406343f3ee7742d834c12d72bc1c4ccc09dda` |
+| `domains/control_loop/domain.json` — Slice-1 historical evidence | blob `8f3406343f3ee7742d834c12d72bc1c4ccc09dda` |
 | `domains/domain_provenance.json` | blob `07cc8eb381a981b1f2820147c62d2e0bef28f008` (`control_loop:PR001`–`PR007`) |
-| `tests/test_stage28_control_loop_qualification_slice1.py` | blob `39ead26fefe37dc69910ba080086da00e28c741b` (identical at `8cae306` and at the merge) |
+| `tests/test_stage28_control_loop_qualification_slice1.py` — Slice-1 historical evidence | blob `39ead26fefe37dc69910ba080086da00e28c741b` (identical at `8cae306` and at the merge) |
+| `domains/control_loop/domain.json` — final qualified pack (Slice-2 Correction 01) | blob `30c16e75bf4ee7937f3d0ea2e518a6cf3f77aab9` |
+| `tests/test_stage28_control_loop_qualification_slice1.py` — final (Slice-2 Correction 01) | blob `20a364c1f8a9500497d539b81238e2e75b011b98` |
 
-The three evidence blobs are byte-identical at the implementation commit, the reviewed final head and the
-authoritative merge. This qualification is a qualification of exactly that pack blob and provenance blob.
+The three Slice-1 evidence blobs are byte-identical at the implementation commit, the reviewed final head and the
+authoritative merge; they stay the historical evidence on which every determination below rests. Slice-2 Correction 01
+changed the pack in exactly two lifecycle strings — `coverage_declaration.known_limitations[7]` ("Registered for
+qualification only: not activated and not declared qualified; …" → "P9-QS qualified with activation blockers; not
+activated; …") and `_governance_notes.concept_level_scope` ("Registered for qualification only: NOT activated, NOT
+declared qualified, and not part of the Stage-15 composition." → "P9-QS qualified with activation blockers: NOT
+activated, and not part of the Stage-15 composition.") — and the Slice-1 test in the one needle that pins the first
+of them. Every other pack value is identical to blob `8f340634…`: no claim family, gap mapping, question,
+classification or substance signal, rule nuance, coverage or capability scope, provenance binding, not-covered item,
+technical limitation or safety boundary changed, and classification is unaffected (neither string is read by the
+classifier). This qualification is a qualification of the final pack blob `30c16e75…` and provenance blob
+`07cc8eb3…`.
 
 ## §2. Qualification obligation matrix (every obligation mapped to exact merged evidence)
 
 "Slice-1 test" means `tests/test_stage28_control_loop_qualification_slice1.py` at blob `39ead26f…`; "the pack" means
-`domains/control_loop/domain.json` at blob `8f340634…`; "provenance" means `domains/domain_provenance.json` at blob
+`domains/control_loop/domain.json` at the Slice-1 evidence blob `8f340634…` (identical in every technical value to
+the final blob `30c16e75…`, §1); "provenance" means `domains/domain_provenance.json` at blob
 `07cc8eb3…`.
 
 | # | Obligation (contract §10 / P9-QS) | Merged evidence | Status |
@@ -172,11 +186,9 @@ Before any activation of `control_loop`, ALL of the following remain outstanding
   recognized as `control_loop`; this is the deliberate result of the signal-conflict review (§2 item 5), not a defect.
 - **Concept level only.** The pack is not suitable for controller design, detailed engineering or production-ready
   systems (pack known limitation).
-- **Pack lifecycle sentence.** The pack's Slice-1 known limitation "Registered for qualification only: not activated
-  and not declared qualified; …" was true at its recorded commit. This record supersedes its "not declared qualified"
-  clause as to qualification state; its "not activated" clause stays true. The pack is deliberately unchanged because
-  this qualification is a qualification of exactly blob `8f340634…`; the sentence is reconciled at the next separately
-  authorized pack change.
+- **Pack lifecycle sentences.** The pack's two Slice-1 lifecycle sentences ("… not declared qualified …") were true
+  at their recorded commit and would have become false with this declaration; Slice-2 Correction 01 replaced them with
+  the qualified state (§1). The Slice-1 evidence blob `8f340634…` is preserved as historical evidence.
 - **Source identification.** The NASA and NIST page pins were identified by Lead-level independent source inspection
   (executor egress to those hosts was blocked); `control_loop:PR001` and `PR005` carry no URL. Exact source identity
   suffices here; complete URL fields at the next natural provenance touch if the authoritative URL is known and
