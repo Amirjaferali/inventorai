@@ -200,7 +200,7 @@ body{overflow-wrap:anywhere}
     <dt style="font-weight:bold">{{ t('UI_S15_SCOPE_CTRL') }}</dt>
     <dd style="margin:0 0 6px 0" data-scope-part="control"><bdi dir="auto">{{ integrated_scope.control.name }}</bdi> &mdash; {{ t('UI_S15_SCOPE_FUNCTION') }} <bdi dir="auto">{{ integrated_scope.control.function }}</bdi></dd>
     {% if integrated_scope.control_questions %}
-    <dd style="margin:0 0 6px 0;font-size:13px" data-scope-part-questions><a href="{{ url_for('part_questions', sid=sid) }}">{{ t('UI_PQ_LINK') }}</a></dd>
+    <dd style="margin:0 0 6px 0;font-size:13px" data-scope-part-questions><a href="{{ url_for('part_questions', sid=sid) }}">{% if integrated_scope.control_questions_editable %}{{ t('UI_PQ_LINK') }}{% else %}{{ t('UI_PQ_LINK_READ_ONLY') }}{% endif %}</a></dd>
     {% endif %}
     {% endif %}
     <dt style="font-weight:bold">{{ t('UI_S15_SCOPE_FOCUS') }}</dt>

@@ -2079,8 +2079,10 @@ _PRE_S19_NONE = (r"\*\*ACTIVE CONTRACT: NONE\.\*\* Both",
                  # AMENDED at Stage 28 Qualification Slice 2: the post-Slice-2 delivery fact counts as well
                  # AMENDED at Stage 28 Optional Part Slice 1: the post-Optional-Part-Slice-1 delivery fact counts as well
                  # AMENDED at Stage 28 Optional Part Slice 2: the post-Optional-Part-Slice-2 delivery fact counts as well
+                 # AMENDED at Stage 30 Part Safeguards Slice 1: the post-Stage-30-Slice-1 delivery fact counts as well
                  r"ACTIVE CONTRACT: NONE(?!.{0,1500}(?:PR[ -]#71[468]|Stage[ -]2[012][ -]closure|"
-                 r"Stage[ -]28[ -]Qualification[ -]Slice[ -][12]|Stage[ -]28[ -]Optional[ -]Part[ -]Slice[ -][12]))")
+                 r"Stage[ -]28[ -]Qualification[ -]Slice[ -][12]|Stage[ -]28[ -]Optional[ -]Part[ -]Slice[ -][12]|"
+                 r"Stage[ -]30[ -]Part[ -]Safeguards[ -]Slice[ -]1))")
 
 
 _SLICE_02_LIVE_REVERSALS = (
@@ -4414,8 +4416,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"NOT ENTERED — navigation only:\*\*",
                # ADVANCED at Stage 28 Qualification Slices 1 and 2 and Optional Part Slices 1 and 2: the last delivery
                # is now Optional Part Slice 2
-               r"No product increment is authorized after Stage 28 — Control-Loop Optional Part — "
-               r"Slice 2 \(delivered: [^)]*\)\. Stage 22 is COMPLETE for the current bounded decision trace \+ decision "
+               # ADVANCED at Stage 30 Part Safeguards Slice 1: the last delivery is now that Stage-30 slice
+               r"No product increment is authorized after Stage 30 — Control-Loop Part-Enablement Safeguards — "
+               r"Bounded Slice 1 \(delivered: [^)]*\)\. Stage 22 is COMPLETE for the current bounded decision trace \+ decision "
                r"room scope only",
                r"\*\*DELIVERED — Stage 22 / Decision Trace \+ Decision Room — Closure \(completes Stage 22 for the "
                r"current bounded decision trace \+ decision room scope with no product change",
@@ -4496,7 +4499,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # it (split around the owner name so these governance needles never read as control-loop idea text)
     # ADVANCED at Stage 28 Optional Part Slice 1: the current position is post-Optional-Part-Slice-1
     # ADVANCED at Stage 28 Optional Part Slice 2: the current position is post-Optional-Part-Slice-2
-    for needle in ("(post-Stage-28-Optional-Part-Slice-2; Stage 28 — ",
+    # ADVANCED at Stage 30 Part Safeguards Slice 1: the current position is post-Stage-30-Slice-1
+    for needle in ("(post-Stage-30-Part-Safeguards-Slice-1; Stage 30 — ",
+                   "Part-Enablement Safeguards — Bounded Slice 1 — delivered: saved ",
                    "Optional Part — Slice 2 — delivered: the dormant part-scoped governed question service",
                    "Optional Part — Slice 1 — delivered: the dormant optional-part foundation",
                    "is NOT part-enabled and NOT root-activated; Stage 28 — Bounded ",
@@ -4680,6 +4685,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     flat_checklist, raw_checklist = _flat(CHECKLIST), _read(CHECKLIST)
     # ADVANCED at Stage 28 Qualification Slices 1 and 2: the delivered slices now lead the delivered history
     subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \([^)]{0,40}\) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — "
+                    r"Stage 30 — Control-Loop Part-Enablement Safeguards — Bounded Slice 1 DELIVERED \([^)]*\) — "
                     r"Stage 28 — Control-Loop Optional Part — Slice 2 DELIVERED \([^)]*\) — "
                     r"Stage 28 — Control-Loop Optional Part — Slice 1 DELIVERED \([^)]*\) — "
                     r"Stage 28 — Bounded Control-Loop Concept Owner — Qualification Slice 2 DELIVERED \([^)]*\) — "
@@ -4712,7 +4718,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            _status(_S18C_DELIVERED), _tok(_S18_COMPLETE), _tok(_MSNL_FUTURE),
            _status(_S15C_DELIVERED), _status(_S4_DELIVERED), _status(_R1_DELIVERED), _status(_S3_DELIVERED),
            _status(_S2_DELIVERED), _status(_S15_DELIVERED), _tok(_S15_COMPLETE),
-           *(_tok(t) for t in _S15C_NOT + _S2_NOT), r"No product increment is authorized after Stage 28 Optional Part Slice 2\b")
+           *(_tok(t) for t in _S15C_NOT + _S2_NOT), r"No product increment is authorized after Stage 30 Part Safeguards Slice 1\b")
     _rejects(subtask, CHECKLIST, "live subtask", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
              *_S20C_STALE, *_S21C_STALE, *_S22C_STALE)
     for line in [t.strip("`") for t in (_NONE718, _NEXT_INC_NO, _NEXT_STAGE_STEP, _S22C_DELIVERED, _S22_COMPLETE,
@@ -6060,7 +6066,8 @@ def test_f1b_unmodified_repository_counts():
     # Stage 28 Qualification Slice 2: + the delivered Slice-2 record and the superseded post-Slice-1 NONE record
     # Stage 28 Optional Part Slice 1: + its delivered record and the superseded post-Qualification-Slice-2 NONE record
     # Stage 28 Optional Part Slice 2: + its delivered record and the superseded post-Optional-Part-Slice-1 NONE record
-    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 56, 10)
+    # Stage 30 Part Safeguards Slice 1: + its delivered record and the superseded post-Optional-Part-Slice-2 NONE record
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 58, 10)
 
 
 def _flat_doc(path):

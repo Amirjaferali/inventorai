@@ -30,6 +30,9 @@ from engine.validation_plan import derive_validation_plan
 # Safety-Aware first increment (PR #120 contract): additive, read-only,
 # advisory-only inventor-stated safety-signal derivation. Changes no prior
 # section, no criticality, no Section 6 risk, and no RequirementLandscape.risks.
+# Stage 30 Slice 1: only the optional-part domain set, to scope the safety
+# block's input-coverage disclosure (no part answer is ever read here).
+from engine.subsystem_model import OPTIONAL_COMPOSITION_DOMAINS
 from engine.safety_signal import (
     derive_inventor_stated_safety_signals, has_governed_safety_cue_family)
 
@@ -627,6 +630,16 @@ def _s15(state):
     if not has_governed_safety_cue_family(_dom):
         block["empty_statement"] = _SAFETY_SIGNALS_NO_FAMILY
         block["capability_scope"] = "no_governed_safety_cue_family"
+    # Stage 30 — Part-Enablement Safeguards — Slice 1: when the
+    # project's composition holds an OPTIONAL part, the derivation above still
+    # reads only the root-analysis inputs (``derive_inventor_stated_safety_
+    # signals`` is unchanged and never reads part answers), so the block carries
+    # a fixed input-scope marker the report / PDF render as a coverage
+    # disclosure — whether or not signals were derived. Additive and
+    # conditional: every other project's block is exactly as above.
+    if any(getattr(sub, "domain", None) in OPTIONAL_COMPOSITION_DOMAINS
+           for sub in (getattr(state, "subsystems", None) or ())):
+        block["input_scope"] = "root_analysis_only_optional_part_excluded"
     return block
 
 

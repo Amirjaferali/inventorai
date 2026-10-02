@@ -16,6 +16,7 @@ textarea{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radi
 .guidance{font-size:12px;line-height:1.6;color:#555;margin:4px 0 0}
 button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer;max-width:100%;box-sizing:border-box}
 .links{margin-top:24px;font-size:13px}
+.answer{font-size:13px;margin:4px 0 0 0;white-space:pre-wrap}
 @media(max-width:520px){body{margin:18px auto;padding:0 14px}.fam{padding:12px}}
 </style>
 {% endblock %}
@@ -28,8 +29,10 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
     analysis focus of the project is never changed. -#}
 <h1>{{ t('UI_PQ_TITLE') }}</h1>
 <div class="intro" data-pq-intro>
-  <p style="margin:0 0 6px 0">{{ t('UI_PQ_INTRO') }}</p>
+  <p style="margin:0 0 6px 0">{% if editable or families is none %}{{ t('UI_PQ_INTRO') }}{% else %}{{ t('UI_PQ_INTRO_READ_ONLY') }}{% endif %}</p>
   <p style="margin:0 0 6px 0">{{ t('UI_PQ_NOT_ROOT') }}</p>
+  {#- Stage 30 Slice 1: the Safety Signal input scope, stated plainly. -#}
+  <p style="margin:0 0 6px 0" data-pq-safety-scope>{{ t('UI_PQ_SAFETY_SCOPE') }}</p>
   <p style="margin:0">{{ t('UI_PQ_SOURCE_NOTE') }}</p>
 </div>
 
@@ -42,6 +45,29 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 {% if families is not none %}
 <p class="part" data-pq-part><strong>{{ t('UI_PQ_PART') }}</strong> <bdi dir="auto">{{ part.name }}</bdi> &mdash; {{ t('UI_S15_SCOPE_FUNCTION') }} <bdi dir="auto">{{ part.function }}</bdi></p>
 {% if stale %}<div class="notice" data-pq-stale>{{ t('UI_PQ_STALE') }}</div>{% endif %}
+{% if not editable %}
+{#- Stage 30 Slice 1: the part is saved but its questions are not currently
+    offered — the saved answers are shown read-only; nothing can be recorded,
+    edited or cleared, and nothing has been removed. -#}
+<div class="notice" role="status" data-pq-read-only>{{ t('UI_PQ_READ_ONLY') }}</div>
+{% for fam in families %}
+{% set f = loop.index %}
+<section class="fam" data-pq-family aria-labelledby="pq-family-{{ f }}">
+  <h2 id="pq-family-{{ f }}">{{ t(fam.label_key) }}</h2>
+  <p class="presence" data-pq-family-presence>{{ t(fam.presence_key) }}</p>
+  {% for q in fam.questions %}
+  <p style="font-size:13px;color:#2c3e50;margin:12px 0 0 0"><span dir="ltr" lang="en" data-pq-question>{{ q.text }}</span></p>
+  {% if q.value is not none %}
+  <p class="guidance" data-pq-question-presence>{{ t('UI_PQ_RECORDED') }}</p>
+  <p class="answer" dir="auto" data-pq-answer>{{ q.value }}</p>
+  {% else %}
+  <p class="guidance" data-pq-question-presence>{{ t('UI_PQ_NOT_RECORDED') }}</p>
+  {% endif %}
+  {% endfor %}
+</section>
+{% endfor %}
+<p class="guidance" data-pq-presence-note>{{ t('UI_PQ_PRESENCE_NOTE') }}</p>
+{% else %}
 <form method="POST" action="{{ url_for('save_part_answers', sid=sid) }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <input type="hidden" name="part_id" value="{{ part_id }}">
@@ -64,6 +90,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   <p class="guidance" data-pq-presence-note>{{ t('UI_PQ_PRESENCE_NOTE') }}</p>
   <button type="submit">{{ t('UI_PQ_SAVE') }}</button>
 </form>
+{% endif %}
 {% endif %}
 
 <p class="links"><a href="{{ url_for('show_session', sid=sid) }}#integrated-scope">{{ t('UI_PQ_BACK') }}</a></p>
