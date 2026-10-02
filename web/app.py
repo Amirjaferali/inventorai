@@ -1956,6 +1956,9 @@ def _integrated_scope_context(state):
     parts = {sub.domain: sub for sub in composition}
     mech = parts["mechanical"]
     elec = parts["electronics_electrical"]
+    # Stage 28 Slice 1: the optional part, when the composition holds one.
+    optional = next((parts[d] for d in _subsystem_model.OPTIONAL_COMPOSITION_DOMAINS
+                     if d in parts), None)
     # Stage 15 Slice 2: the Owner-declared interactions between the parts,
     # each resolved to the parts' own names by identity (never copied into
     # the declaration). Anything that does not validate against THIS
@@ -1980,6 +1983,9 @@ def _integrated_scope_context(state):
     return {
         "mechanical": {"name": mech.display_name, "function": mech.function_text},
         "electrical": {"name": elec.display_name, "function": elec.function_text},
+        "control": (None if optional is None else
+                    {"name": optional.display_name,
+                     "function": optional.function_text}),
         "focus_key": ("UI_S15_SCOPE_FOCUS_MECH" if focus == "mechanical"
                       else "UI_S15_SCOPE_FOCUS_ELEC"),
         "interfaces": [{"a": names[item.subsystem_a_id],
@@ -4419,6 +4425,24 @@ _COMPOSITION_FIELDS = (
     ("mechanical", "mech_part_name", "mech_part_function"),
     ("electronics_electrical", "elec_part_name", "elec_part_function"),
 )
+# Stage 28 — Control-Loop Optional Part — Slice 1: the ONE optional part slot
+# (``OPTIONAL_COMPOSITION_DOMAINS``). Offered only while the canonical policy
+# lists its domain as PART-ONLY eligible (dormant today: that allowlist ships
+# empty). All-or-nothing, never the initial analysis focus, never filled from
+# classifier output; posted values are ignored whenever the slot is not
+# offered, so no part can be created through a form that was not rendered.
+_COMPOSITION_OPTIONAL_FIELDS = (
+    (_subsystem_model.OPTIONAL_COMPOSITION_DOMAINS[0],
+     "ctrl_part_name", "ctrl_part_function"),
+)
+
+
+def _offered_optional_parts():
+    """The optional part slots the composition form may offer NOW: only those
+    whose domain the canonical policy currently lists as part-eligible (read at
+    request time; never cached)."""
+    return tuple(field for field in _COMPOSITION_OPTIONAL_FIELDS
+                 if domain_activation.is_part_eligible(field[0]))
 
 
 def _integrated_entry_requested(form):
@@ -4449,12 +4473,23 @@ def _composition_classification_eligible(classification):
     composed domains (a real integrated invention often scores one family
     higher), or NONE. Every other result — a recognized-but-not-activated
     SINGLE, another tie, MULTI_DOMAIN_NEEDS_D4, UNRESOLVED_NON_ACTIVATED_TIE —
-    stays on the existing fail-closed path."""
+    stays on the existing fail-closed path.
+
+    Stage 28 — Control-Loop Optional Part — Slice 1: a SINGLE result naming an
+    OPTIONAL part domain is also eligible, but only while the canonical policy
+    lists that domain as part-eligible (dormant today). A SINGLE result never
+    forms Case A, so this applies only to the Owner's explicit integrated
+    declaration (Case B); it is never root admission, never the focus, and the
+    Owner must still declare the required parts — nothing is created from the
+    classifier result."""
     kind = classification.kind
     if kind is DomainResultKind.AMBIGUOUS_TIE:
         return _is_exact_composition_tie(classification)
     if kind is DomainResultKind.SINGLE:
-        return classification.selected_domain in _subsystem_model.COMPOSITION_DOMAINS
+        selected = classification.selected_domain
+        return (selected in _subsystem_model.COMPOSITION_DOMAINS
+                or (selected in _subsystem_model.OPTIONAL_COMPOSITION_DOMAINS
+                    and domain_activation.is_part_eligible(selected)))
     return kind is DomainResultKind.NONE
 
 
@@ -4463,7 +4498,8 @@ def _composition_submitted_values(form):
     after a validation error (escaped by the template; never logged)."""
     values = {"answer": form.get("composition_answer") or "",
               "focus": form.get("initial_focus") or ""}
-    for _domain, name_field, function_field in _COMPOSITION_FIELDS:
+    for _domain, name_field, function_field in (_COMPOSITION_FIELDS
+                                                + _offered_optional_parts()):
         values[name_field] = form.get(name_field) or ""
         values[function_field] = form.get(function_field) or ""
     return values
@@ -4473,14 +4509,28 @@ def _composition_parts_error(form):
     """Validate the four part fields. Returns ``(parts, error_key)``: ``parts``
     maps each composed domain to its trimmed ``(name, function)`` when every
     field is valid, else ``error_key`` names the bounded rejection. Over-limit
-    input is rejected, never truncated; a NUL is rejected, never stripped."""
+    input is rejected, never truncated; a NUL is rejected, never stripped.
+
+    Stage 28 Slice 1: an OFFERED optional part slot is all-or-nothing — both of
+    its fields empty means no optional part; exactly one filled is rejected; a
+    complete pair is validated with the same bounds. A slot that is not
+    offered is never read."""
     parts = {}
-    too_long = invalid = missing = False
-    for domain, name_field, function_field in _COMPOSITION_FIELDS:
+    too_long = invalid = missing = partial = False
+    fields = [(domain, name_field, function_field, True)
+              for domain, name_field, function_field in _COMPOSITION_FIELDS]
+    fields += [(domain, name_field, function_field, False)
+               for domain, name_field, function_field in _offered_optional_parts()]
+    for domain, name_field, function_field, required in fields:
         name = (form.get(name_field) or "").strip()
         function = (form.get(function_field) or "").strip()
+        if not required and not name and not function:
+            continue
         if not name or not function:
-            missing = True
+            if required:
+                missing = True
+            else:
+                partial = True
         if (len(name) > _subsystem_model.MAX_SUBSYSTEM_NAME_LENGTH
                 or len(function) > _subsystem_model.MAX_SUBSYSTEM_FUNCTION_LENGTH):
             too_long = True
@@ -4493,6 +4543,8 @@ def _composition_parts_error(form):
         return None, "UI_S15_ERR_TOO_LONG"
     if missing:
         return None, "UI_S15_ERR_FIELDS"
+    if partial:
+        return None, "UI_S15_ERR_OPTIONAL_FIELDS"
     return parts, None
 
 
@@ -4509,6 +4561,10 @@ def _render_composition_page(idea_text, classification, error_key=None,
                           if _is_exact_composition_tie(classification)
                           else "UI_S15_INTRO_DECLARED"),
             "values": values or _composition_submitted_values({}),
+            # Stage 28 Slice 1: the optional part slot(s) offered NOW (empty
+            # while no domain is part-eligible — the historical form).
+            "optional_fields": [(name_field, function_field) for _domain, name_field,
+                                function_field in _offered_optional_parts()],
         })
 
 
@@ -4549,7 +4605,9 @@ def _integrated_invention_start(idea_text, classification, activated, lang):
                                         "UI_S15_ERR_FOCUS", values, 400)
     subsystems = tuple(
         _subsystem_model.declared_subsystem(domain, *parts[domain])
-        for domain in _subsystem_model.COMPOSITION_DOMAINS)
+        for domain in (_subsystem_model.COMPOSITION_DOMAINS
+                       + _subsystem_model.OPTIONAL_COMPOSITION_DOMAINS)
+        if domain in parts)
     return _create_project_session(idea_text, focus, subsystems=subsystems)
 
 
@@ -6029,10 +6087,15 @@ def show_session(sid):
         # form against its DURABLE focus — never by establishing a session.
         interface_binding=_issue_s15_interface_binding(
             sid, _answer_token_for(sid, entry), state, s15_focus),
+        # Stage 28 Slice 1: a composition holding the optional part offers
+        # each pair of parts, every choice with its OWN signed binding (empty
+        # for the two-part composition, which keeps the single binding above).
+        interface_pair_choices=_s15_interface_pair_choices(
+            sid, _answer_token_for(sid, entry), state, s15_focus),
         interface_submission=(
             _submission_identity_for(sid, entry, _S15_IFC_SUBMISSION_DOMAIN,
                                      _S15_IFC_SUBMISSION_ENTRY_KEY)
-            if _s15_interface_pair(state, s15_focus) is not None else ""),
+            if _s15_interface_pairs(state, s15_focus) else ""),
         # Workstream 4: read-only render context for the completion-stage
         # structured criticality step (None while the journey is in progress
         # or when no contextually supported unconfirmed requirement remains).
@@ -7718,10 +7781,11 @@ def assumption_action(sid):
 # and signature domain; no other binding or a generic answer token authorizes
 # it). The binding commits to the project (sid), the action kind, the effective
 # engine contract version, the answer token rendered on the SAME page and the
-# ONE endpoint pair the form offers: the two parts of THIS project's durable
-# composition. The client never names a part or an interface id — the pair
-# comes from the verified binding and is re-validated against the durable
-# composition INSIDE the write transaction. The submission identity (which
+# ONE endpoint pair it was issued for: the two parts of THIS project's durable
+# composition (Stage 28 Slice 1: a composition holding the optional part offers
+# each of its pairs, every pair with its OWN binding). The client never names a
+# part or an interface id — the pair comes from the verified binding and is
+# re-validated against the durable composition INSIDE the write transaction. The submission identity (which
 # durable action attempt a post is) is the shared declared-action identity
 # above, under its own domain; an exact committed retry is recognised before
 # freshness and republishes the STORED declaration (never a newly generated
@@ -7750,30 +7814,34 @@ def _s15_interface_focus(sid, state):
     return (inputs or {}).get("confirmed_domain") or None
 
 
-def _s15_interface_pair(state, focus=None):
-    """The ONE endpoint pair the interaction form offers — the two parts of the
-    state's valid composition, in the composition's part order (no direction)
-    — or None when the form cannot be offered: no focus, no valid composition,
-    or the per-project cap already reached. ``focus`` is the durable focus of
-    a cold-loaded project (``_s15_interface_focus``); without it only a live
+def _s15_interface_pairs(state, focus=None):
+    """The endpoint pairs the interaction form offers — every UNORDERED pair of
+    distinct parts of the state's valid composition, each in the composition's
+    part order (no direction): exactly ONE pair for the two-part composition;
+    the three pairs of a composition holding the Stage 28 optional part — or
+    ``()`` when the form cannot be offered: no focus, no valid composition, or
+    the per-project cap already reached. ``focus`` is the durable focus of a
+    cold-loaded project (``_s15_interface_focus``); without it only a live
     writable state's scalar root qualifies."""
     if focus is None:
         focus = getattr(state, "domain", None)
     if focus is None:
-        return None
+        return ()
     try:
         composition = _subsystem_model.validate_composition(
             getattr(state, "subsystems", None) or (), focus)
-        if len(composition) != 2:
-            return None
+        if len(composition) < 2:
+            return ()
         interfaces = _subsystem_model.validate_interfaces(
             getattr(state, "subsystem_interfaces", None) or (), composition)
         if len(interfaces) >= _subsystem_model.MAX_SUBSYSTEM_INTERFACES_PER_PROJECT:
-            return None
-        return _subsystem_model.canonical_interface_endpoints(
-            composition, composition[0].subsystem_id, composition[1].subsystem_id)
+            return ()
+        ids = [sub.subsystem_id for sub in composition]
+        return tuple(
+            _subsystem_model.canonical_interface_endpoints(composition, ids[i], ids[j])
+            for i in range(len(ids)) for j in range(i + 1, len(ids)))
     except (_subsystem_model.CompositionError, _subsystem_model.InterfaceError):
-        return None
+        return ()
 
 
 def _s15_interface_binding_sig(sid, token, ecv, pair):
@@ -7782,10 +7850,16 @@ def _s15_interface_binding_sig(sid, token, ecv, pair):
     return _p2a_hmac.new(_answer_secret(), msg, _p2a_hashlib.sha256).hexdigest()
 
 
-def _issue_s15_interface_binding(sid, token, state, focus=None):
+def _issue_s15_interface_binding(sid, token, state, focus=None, pair=None):
     """The signed interaction-form binding for the form rendered with
-    ``token``, or "" when the form cannot be offered."""
-    pair = _s15_interface_pair(state, focus)
+    ``token``, or "" when the form cannot be offered. Without ``pair`` it signs
+    the ONE pair of a two-part composition (the historical single form) and
+    is "" otherwise; with ``pair`` it signs that pair only if it is offered."""
+    pairs = _s15_interface_pairs(state, focus)
+    if pair is None:
+        pair = pairs[0] if len(pairs) == 1 else None
+    elif tuple(pair) not in pairs:
+        pair = None
     if pair is None or not token:
         return ""
     ecv = getattr(state, "engine_contract_version", None)
@@ -7794,6 +7868,27 @@ def _issue_s15_interface_binding(sid, token, state, focus=None):
     body = _p2a_b64.urlsafe_b64encode(payload.encode("ascii")).decode(
         "ascii").rstrip("=")
     return body + "." + _s15_interface_binding_sig(sid, token, ecv, pair)
+
+
+def _s15_interface_pair_choices(sid, token, state, focus=None):
+    """Stage 28 Slice 1: the pair choices of the interaction form when the
+    composition offers MORE than one pair (it holds the optional part) — each
+    the two parts' own names (resolved by identity) and that pair's signed
+    binding — or ``[]`` for the two-part composition and whenever the form
+    cannot be offered. The chosen pair travels only inside its binding."""
+    pairs = _s15_interface_pairs(state, focus)
+    if len(pairs) < 2 or not token:
+        return []
+    names = {sub.subsystem_id: sub.display_name
+             for sub in (getattr(state, "subsystems", None) or ())}
+    choices = []
+    for pair in pairs:
+        binding = _issue_s15_interface_binding(sid, token, state, focus, pair)
+        if not binding:
+            return []
+        choices.append({"a": names[pair[0]], "b": names[pair[1]],
+                        "binding": binding})
+    return choices
 
 
 def _verified_s15_interface_binding(sid, token, raw):
@@ -8011,8 +8106,8 @@ def declare_interface(sid):
     if (token != entry.get("answer_token")
             or submission != entry.get(_S15_IFC_SUBMISSION_ENTRY_KEY)
             or bound_ecv != getattr(state, "engine_contract_version", None)
-            or _s15_interface_pair(state, _s15_interface_focus(sid, state))
-            != tuple(bound_pair)):
+            or tuple(bound_pair) not in _s15_interface_pairs(
+                state, _s15_interface_focus(sid, state))):
         entry["_answer_error"] = S15_INTERFACE_STALE_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 
@@ -8289,6 +8384,9 @@ def _s15_preparation_context(sid):
         "interfaces": {item.interface_id: item for item in interfaces},
         "dependencies": (None if dependencies is None else
                          {d.interface_id: d for d in dependencies}),
+        # Stage 28 Slice 1: the composition holds the optional part (page-level
+        # copy then speaks of the parts, never of "the two parts").
+        "optional_part": len(subsystems) > len(_subsystem_model.COMPOSITION_DOMAINS),
     }
 
 
@@ -8314,6 +8412,7 @@ def _render_interface_preparation(sid, context, status=200, error=None,
         "interface_preparation.html",
         sid=sid,
         items=None if context is None else context["items"],
+        optional_part=False if context is None else context.get("optional_part", False),
         drafts=shown,
         baselines=None if baselines is None else {
             name: raw.replace("\x00", "") for name, raw in baselines.items()},

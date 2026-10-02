@@ -92,6 +92,30 @@ def is_activated(domain, registry=None):
     return support_state(domain, registry) == ACTIVATED
 
 
+# Stage 28 — Control-Loop Optional Part — Slice 1: the PART-ONLY eligibility
+# allowlist, deliberately separate from root activation. A domain listed here
+# may occupy an OPTIONAL part slot of an Owner-declared integrated composition
+# (``engine.subsystem_model.OPTIONAL_COMPOSITION_DOMAINS``) and NOTHING more:
+# it is never root-admissible, never the analysis focus, and it never changes
+# ``support_state`` / ``is_activated`` / ``activated_domains``. Qualification or
+# registry recognition never adds an entry — adding one is its own separately
+# Owner-authorized gate. It ships EMPTY: no domain is part-enabled today.
+_PART_ONLY_DOMAINS = frozenset()
+
+
+def is_part_eligible(domain, registry=None):
+    """True only when ``domain`` resolves (canonical id or alias) to a
+    registry-recognized pack that is explicitly listed as PART-ONLY eligible
+    and is NOT root-activated. An entry that is unknown to the registry, or
+    that overlaps the root activation allowlist, is never part-eligible, so
+    part eligibility can never grant — or masquerade as — root admission."""
+    if registry is None:
+        registry = load_registry(_DEFAULT_DOMAINS_DIR)
+    pack_id = _resolve_pack_id(domain, registry)
+    return (pack_id is not None and pack_id in _PART_ONLY_DOMAINS
+            and pack_id not in _ACTIVATED_DOMAINS)
+
+
 def activated_domains(registry=None):
     """The sorted list of currently activated domains that are ALSO canonically
     recognized by the Domain Registry.

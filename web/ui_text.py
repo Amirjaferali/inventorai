@@ -617,6 +617,73 @@ UI_STRINGS = {
         "en": "Both parts are recorded as you described them; they have not been checked or verified.",
         "ar": "سُجّل الجزآن كما وصفتهما، ولم يُفحصا ولم يُتحقَّق منهما.",
     },
+    # --- Stage 28 — Control-Loop Optional Part — Slice 1 (dormant) ----------
+    # Shown ONLY when the composition offers or holds the optional part slot
+    # (no domain is part-eligible today, so none of these renders yet); every
+    # two-part page keeps the keys above. Plain user-facing language only.
+    "UI_S15_CTRL_LEGEND": {"en": "Control-loop part (optional)", "ar": "جزء حلقة التحكم (اختياري)"},
+    "UI_S15_CTRL_NOTE": {
+        "en": "Optional. If one part of your invention measures something, compares it with a target and acts on the result, you can describe that part here. Give both a short name and what it does, or leave both empty. It is recorded as you describe it; it cannot be the part examined first, and it is not evaluated in this project.",
+        "ar": "اختياري. إذا كان أحد أجزاء اختراعك يقيس شيئًا ويقارنه بهدف ثم يتصرّف بناءً على النتيجة، فيمكنك وصف ذلك الجزء هنا. اكتب اسمًا مختصرًا وما يفعله معًا، أو اترك الحقلين فارغين. يُسجَّل كما تصفه؛ ولا يمكن أن يكون الجزء الذي يُفحص أولًا، ولا يُقيَّم في هذا المشروع.",
+    },
+    "UI_S15_ERR_OPTIONAL_FIELDS": {
+        "en": "For the optional control-loop part, give both a short name and what it does, or leave both empty. Nothing was saved.",
+        "ar": "بالنسبة إلى جزء حلقة التحكم الاختياري، اكتب اسمًا مختصرًا وما يفعله معًا، أو اترك الحقلين فارغين. لم يُحفظ أي شيء.",
+    },
+    "UI_S15_FOCUS_NOTE_OPTIONAL": {
+        "en": "InventorAI will examine your invention through this part first, and this choice cannot be changed later for this project. The other parts are recorded, but they are not evaluated in this project yet.",
+        "ar": "سيفحص InventorAI اختراعك من خلال هذا الجزء أولًا، ولا يمكن تغيير هذا الاختيار لاحقًا في هذا المشروع. تُسجَّل الأجزاء الأخرى، لكنها لا تُقيَّم في هذا المشروع بعد.",
+    },
+    "UI_S15_NOTHING_SAVED_OPTIONAL": {
+        "en": "Nothing is saved until you answer Yes and complete every field for the mechanical and the electrical / electronic part.",
+        "ar": "لا يُحفظ أي شيء إلا بعد أن تجيب بـ«نعم» وتكمل جميع حقول الجزء الميكانيكي والجزء الكهربائي / الإلكتروني.",
+    },
+    "UI_S15_SCOPE_CTRL": {"en": "Control-loop part", "ar": "جزء حلقة التحكم"},
+    "UI_S15_SCOPE_STATEMENT_3": {
+        "en": "This project records all three parts as belonging to the same invention. InventorAI is currently evaluating the invention through the selected initial analysis focus. The other parts and the integration between the parts have not yet been independently evaluated or validated.",
+        "ar": "يسجّل هذا المشروع الأجزاء الثلاثة بوصفها أجزاءً من الاختراع نفسه. يقيّم InventorAI الاختراع حاليًا من خلال محور التحليل الأولي المختار. أما الأجزاء الأخرى والتكامل بين الأجزاء فلم تُقيَّم بعدُ ولم يُتحقَّق منها بشكل مستقل.",
+    },
+    "UI_S15_SCOPE_PROVENANCE_3": {
+        "en": "All three parts are recorded as you described them; they have not been checked or verified.",
+        "ar": "سُجّلت الأجزاء الثلاثة كما وصفتها، ولم تُفحص ولم يُتحقَّق منها.",
+    },
+    "UI_S15_IFC_TITLE_3": {"en": "How the parts interact", "ar": "كيف تتفاعل الأجزاء"},
+    "UI_S15_IFC_NONE_3": {
+        "en": "No interaction between the parts has been recorded yet.",
+        "ar": "لم يُسجَّل أي تفاعل بين الأجزاء بعد.",
+    },
+    "UI_S15_IFC_FORM_SUMMARY_3": {
+        "en": "Record how the parts interact",
+        "ar": "سجّل كيف تتفاعل الأجزاء",
+    },
+    "UI_S15_IFC_INTRO_3": {
+        "en": "Record, in your own words, how two parts of your invention are intended to interact — for example, what one part provides to, receives from or does to the other. For each interaction, InventorAI adds one preparation step to your Validation Plan. It does not check or assess the interaction.",
+        "ar": "سجّل بكلماتك كيف يُفترض أن يتفاعل جزآن من أجزاء اختراعك — مثلًا: ما الذي يقدّمه أحد الجزأين للآخر، أو يستقبله منه، أو يُحدثه فيه. ولكل تفاعل يضيف InventorAI خطوة تحضير واحدة إلى خطة التحقق (Validation Plan). ولا يفحص InventorAI التفاعل ولا يقيّمه.",
+    },
+    "UI_S15_IFC_PAIR_LEGEND": {
+        "en": "Which two parts does this interaction join?",
+        "ar": "ما الجزآن اللذان يربط بينهما هذا التفاعل؟",
+    },
+    "UI_S15_IFC_FIELD_3": {
+        "en": "Describe one interaction between the two chosen parts (up to 300 characters)",
+        "ar": "صِف تفاعلًا واحدًا بين الجزأين المختارين (حتى 300 حرف)",
+    },
+    "UI_S15_IFC_CONFIRM_3": {
+        "en": "This is my own description. I understand it is not checked, and that compatibility between the parts is not assessed.",
+        "ar": "هذا وصفي الخاص. وأفهم أنه لا يُفحص، وأن التوافق بين الأجزاء لا يُقيَّم.",
+    },
+    "UI_S15_PREP_INTRO_3": {
+        "en": "For each interaction you declared between two parts, you can record in your own words the intended operating conditions, an observable acceptance criterion and the evidence or review that will be needed. You can fill in one, two or all three, and change or clear them later. They are saved exactly as you write them and are not checked.",
+        "ar": "لكل تفاعل أعلنته بين جزأين، يمكنك أن تسجّل بكلماتك ظروف التشغيل المقصودة، ومعيار قبول يمكن ملاحظته، وما سيلزم من أدلة أو مراجعة. يمكنك تعبئة حقل واحد أو اثنين أو الثلاثة، وتعديلها أو مسحها لاحقًا. تُحفظ كما تكتبها تمامًا، ولا تُفحص.",
+    },
+    "UI_S15_PREP_NO_INTERFACES_3": {
+        "en": "No interaction between the parts has been recorded yet. Record an interaction on your project page first.",
+        "ar": "لم يُسجَّل أي تفاعل بين الأجزاء بعد. سجّل تفاعلًا في صفحة مشروعك أولًا.",
+    },
+    "UI_S15_IEV_INTRO_3": {
+        "en": "Evidence about how two parts work together through each interaction — for example a test, an inspection, a specification or a review. Each item is your own statement, tied to exactly one interaction. A correction or a withdrawal adds a new entry and keeps the earlier one in the history. Your observations above are not evidence and are not counted here.",
+        "ar": "أدلة عن كيفية عمل جزأين معًا عبر كل تفاعل — مثل اختبار أو فحص أو مواصفة أو مراجعة. كل عنصر هو قولك أنت، ومرتبط بتفاعل واحد بالضبط. التصحيح أو السحب يضيف إدخالًا جديدًا ويُبقي السابق في السجلّ. ملاحظاتك أعلاه ليست أدلة ولا تُحتسب هنا.",
+    },
     # --- Stage 15 Slice 2 — how the two parts interact (Owner declarations) --
     # Plain user-facing language only (same boundary as the Slice-1 keys).
     # The Owner's own interaction text is never in this catalogue (it is
