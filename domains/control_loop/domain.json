@@ -1,0 +1,275 @@
+{
+  "schema_version": "1.0",
+  "schema_date": "2026-06-01",
+  "pack_id": "control_loop",
+  "version": "1.0",
+  "status": "registered",
+  "display_name": "Control Loop",
+  "aliases": [
+    "control_loop"
+  ],
+  "schema_version_ref": "1.0",
+  "activated_date": null,
+  "deprecated_date": null,
+  "parent_pack_id": null,
+  "domain_family_role": "standalone",
+  "classification_signals": [
+    {
+      "signal": "setpoint",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "control_loop:PR001"
+    },
+    {
+      "signal": "set point",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "control_loop:PR001"
+    },
+    {
+      "signal": "closed loop",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "control_loop:PR001"
+    },
+    {
+      "signal": "open loop",
+      "weight": 0.8,
+      "layer": 1,
+      "provenance_ref": "control_loop:PR001"
+    },
+    {
+      "signal": "control loop",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "control_loop:PR001"
+    },
+    {
+      "signal": "manipulated variable",
+      "weight": 0.9,
+      "layer": 2,
+      "provenance_ref": "control_loop:PR001"
+    }
+  ],
+  "substance_signals": [
+    {
+      "signal": "setpoint",
+      "layer": 1,
+      "context": "the reference (target) value a control loop compares the measured value with",
+      "provenance_ref": "control_loop:PR001"
+    },
+    {
+      "signal": "reference",
+      "layer": 1,
+      "context": "CROSS-DOMAIN: control-loop context = the target value used for the comparison; the word also has ordinary and mechanical datum meanings. Context ownership here: control-loop comparison only.",
+      "provenance_ref": "control_loop:PR001"
+    },
+    {
+      "signal": "feedback",
+      "layer": 1,
+      "context": "the measured result returned and compared with the reference, which closes the loop",
+      "provenance_ref": "control_loop:PR001"
+    },
+    {
+      "signal": "disturbance",
+      "layer": 2,
+      "context": "an outside influence that pushes the controlled quantity away from its reference",
+      "provenance_ref": "control_loop:PR001"
+    }
+  ],
+  "gap_type_mappings": [
+    {
+      "gap_type_id": "MECHANISM_COMPLETENESS",
+      "domain_label": "Control-Loop Mechanism Completeness",
+      "layer": 1,
+      "questions": [
+        {
+          "question_id": "control_loop:MECHANISM_COMPLETENESS:Q1",
+          "text": "What quantity is your invention trying to keep at a target (for example a temperature, position, speed or level)?",
+          "layer": 1,
+          "order": 1,
+          "provenance_ref": "control_loop:PR001"
+        },
+        {
+          "question_id": "control_loop:MECHANISM_COMPLETENESS:Q2",
+          "text": "What is the target value (the setpoint) for that quantity, and who or what sets it?",
+          "layer": 1,
+          "order": 2,
+          "provenance_ref": "control_loop:PR001"
+        },
+        {
+          "question_id": "control_loop:MECHANISM_COMPLETENESS:Q3",
+          "text": "Which measured value is compared with the target, and what does the comparison tell your invention?",
+          "layer": 1,
+          "order": 3,
+          "provenance_ref": "control_loop:PR001"
+        },
+        {
+          "question_id": "control_loop:MECHANISM_COMPLETENESS:Q4",
+          "text": "When the measured value and the target differ, what action follows, and which part carries out that action on the quantity?",
+          "layer": 1,
+          "order": 4,
+          "provenance_ref": "control_loop:PR001"
+        },
+        {
+          "question_id": "control_loop:MECHANISM_COMPLETENESS:Q5",
+          "text": "After that action, is the quantity measured again and compared with the target again (a closed loop), or does the action happen without checking the result (an open loop)?",
+          "layer": 2,
+          "order": 5,
+          "provenance_ref": "control_loop:PR001"
+        },
+        {
+          "question_id": "control_loop:MECHANISM_COMPLETENESS:Q6",
+          "text": "What outside influences could push the quantity away from its target?",
+          "layer": 2,
+          "order": 6,
+          "provenance_ref": "control_loop:PR001"
+        },
+        {
+          "question_id": "control_loop:MECHANISM_COMPLETENESS:Q7",
+          "text": "Roughly how often is the measured value observed (for example once per second)? If you do not know yet, say so.",
+          "layer": 2,
+          "order": 7,
+          "provenance_ref": "control_loop:PR003"
+        }
+      ]
+    },
+    {
+      "gap_type_id": "BOUNDARY_AMBIGUITY",
+      "domain_label": "Control-Loop Boundary Ambiguity",
+      "layer": 2,
+      "questions": [
+        {
+          "question_id": "control_loop:BOUNDARY_AMBIGUITY:Q1",
+          "text": "What does the control loop in your invention NOT decide or handle?",
+          "layer": 2,
+          "order": 1,
+          "provenance_ref": "control_loop:PR007"
+        },
+        {
+          "question_id": "control_loop:BOUNDARY_AMBIGUITY:Q2",
+          "text": "Which part of your invention makes the comparison and decides the action, and which mechanical or electrical parts only carry out the action or provide the measurement?",
+          "layer": 2,
+          "order": 2,
+          "provenance_ref": "control_loop:PR007"
+        },
+        {
+          "question_id": "control_loop:BOUNDARY_AMBIGUITY:Q3",
+          "text": "Name one existing product or approach that keeps the same kind of quantity at a target, and say concretely how your control loop differs.",
+          "layer": 2,
+          "order": 3,
+          "provenance_ref": "control_loop:PR007"
+        }
+      ]
+    }
+  ],
+  "rule_nuances": [
+    {
+      "rule_id": "control_loop:RN001",
+      "description": "Active gap rule marking the Control-Loop Mechanism Completeness gap type: the inventor's description is examined, at concept level only, for the quantity kept at a target, the reference (setpoint), the comparison of the measured value with the reference, the resulting action on the controlled element, the feedback that closes the loop (or its absence in an open loop), outside disturbances and how often the measured value is observed, using the pack's governed questions for this gap type.",
+      "layer": 1,
+      "modifier_type": "active_gap_rule_marker",
+      "modifier_value": "MECHANISM_COMPLETENESS",
+      "provenance_ref": "control_loop:PR001"
+    },
+    {
+      "rule_id": "control_loop:RN002",
+      "description": "Active gap rule marking the Control-Loop Boundary Ambiguity gap type: what the control loop does not decide or handle, which part makes the comparison and decides the action as opposed to the mechanical or electrical parts that carry it out or provide the measurement, and its concrete differentiation from existing approaches, are examined at concept level only, using the pack's governed questions for this gap type.",
+      "layer": 2,
+      "modifier_type": "active_gap_rule_marker",
+      "modifier_value": "BOUNDARY_AMBIGUITY",
+      "provenance_ref": "control_loop:PR007"
+    }
+  ],
+  "capability_declaration": {
+    "supported_analysis_categories": [
+      "concept_level_control_loop_completeness",
+      "concept_level_control_loop_boundary_differentiation",
+      "governed_gap_type_question_service"
+    ],
+    "unsupported_categories": [
+      "Safety determination of any kind is NOT COVERED: no governed control-loop safety-cue family exists; fail-safe or fallback behaviour is never determined; inventor-stated hazards stay the inventor's own unvalidated statements",
+      "SIL / ASIL determination, safety certification and regulatory compliance",
+      "Real-time scheduling, deadlines and jitter",
+      "Embedded execution architecture and firmware implementation",
+      "Discrete state-machine design",
+      "Control-law design, PID design or tuning, controller tuning and stability analysis",
+      "Actuator saturation or rate calculations and any project-specific control calculation",
+      "Software / hardware interface design",
+      "Sensor physics, filtering, signal conditioning and electrical characteristics (owned by Electronics / Electrical)",
+      "Mechanical response, motion, load and force (owned by Mechanical)",
+      "The controller's own action or update rate",
+      "Any physical-feasibility verdict: this pack carries no PHYSICAL_FEASIBILITY gap"
+    ],
+    "supported_gap_types": [
+      "MECHANISM_COMPLETENESS",
+      "BOUNDARY_AMBIGUITY"
+    ],
+    "evidence_expectations": [
+      "Inventor-stated descriptions of the controlled quantity, its target, the comparison, the resulting action, the feedback path and outside disturbances, in the inventor's own words",
+      "Evidence is distinguished from assumption by the existing record and decision owners; provenance is preserved verbatim",
+      "Open points are served as questions from the pack's governed gap types; unanswered points remain recorded gaps, never inferred answers"
+    ],
+    "known_unknowns": [
+      "Whether the described control loop actually holds the quantity at its target cannot be established in software; it remains a known unknown requiring later physical or specialist validation",
+      "Whether the stated observation rate is adequate for how fast the quantity changes is not determined; only the concept and its unit are recorded"
+    ],
+    "provenance_ref": "control_loop:PR007"
+  },
+  "coverage_declaration": {
+    "covered_areas": [
+      "Concept-level control-loop fundamentals: a quantity kept at, or within a range around, a target by monitoring it and causing action; open loop versus closed loop",
+      "Concept-level feedback: the measured result returned and compared with the reference, which closes the loop",
+      "Concept-level comparison of a measured value with a reference (setpoint)",
+      "Concept-level control action: the result of the comparison acting on the controlled element (the concept only, never a control law)",
+      "Concept-level relationship between the controlled element, the manipulated variable and the controlled output",
+      "Concept-level outside disturbances acting on the controlled quantity",
+      "Concept-level measurement observation rate: the measured value is observed at discrete times, and observing too slowly for how fast it changes loses information",
+      "Time and frequency unit discipline (second; hertz as the unit of frequency) as shared reference knowledge",
+      "Explicit limits, abstention and specialist boundary for everything listed as not covered",
+      "Gap detection for the pack's governed gap types (MECHANISM_COMPLETENESS, BOUNDARY_AMBIGUITY)"
+    ],
+    "not_covered_areas": [
+      "Real-time scheduling",
+      "Deadlines",
+      "Jitter",
+      "Embedded execution architecture",
+      "Firmware implementation",
+      "Discrete state-machine design",
+      "Control-law design",
+      "PID design or tuning",
+      "Stability analysis",
+      "Controller tuning",
+      "Actuator saturation or rate calculations",
+      "Software / hardware interface design",
+      "Sensor physics",
+      "Filtering",
+      "Signal conditioning",
+      "Electrical characteristics",
+      "Mechanical response",
+      "Project-specific control calculations",
+      "Fail-safe or safety determination",
+      "SIL / ASIL",
+      "Regulatory compliance",
+      "Controller action or update rate"
+    ],
+    "known_limitations": [
+      "Concept level only: not suitable for controller design, detailed engineering or production-ready systems",
+      "No project-specific calculation of any kind",
+      "No stability analysis and no controller tuning",
+      "No embedded execution, real-time or firmware authority",
+      "No safety determination: no governed control-loop safety-cue family exists",
+      "No claim about the controller's action or update rate; only the measurement observation rate concept is covered",
+      "No prediction of physical, mechanical or electrical response",
+      "Registered for qualification only: not activated and not declared qualified; what cannot be established in software remains an explicit unknown"
+    ]
+  },
+  "_governance_notes": {
+    "physical_feasibility_absent": "PHYSICAL_FEASIBILITY is intentionally absent (accepted Stage-28 qualification contract §3 and §4; Qualification Slice 1 authorization). The narrowed source basis supports no feasibility verdict: stability, actuator limits, timing adequacy and the controller's action rate are NOT COVERED, so a feasibility gap would close trivially and give unwarranted confidence (the ADR-002 false-positive concern). Omitting it needs no ADR-002 amendment: MECHANISM_COMPLETENESS and BOUNDARY_AMBIGUITY, the universal gaps, are both present. The observation-rate concept is asked only as a completeness question and never yields a feasibility verdict.",
+    "standalone_owner": "domain_family_role is 'standalone' (independent peer; accepted contract §8). Software is in a different ADR-002 class and is standalone, so it cannot authorize children; an Electronics child would need the first child-schema decision and would blur Electronics' explicit firmware exclusion. This pack is not a Software or Electronics child, not a Robotics or Mechatronics pack and not a firmware or embedded-execution owner.",
+    "concept_level_scope": "Concept level only, limited to the nine claim families of the accepted contract §3. Owner separation (contract §5): Electronics keeps electrical sensor / device characteristics, electrical signals, filtering / signal conditioning, voltage / current / power, electrical constraints and actuator electrical characteristics; Mechanical keeps mechanism, motion, load, force and physical actuation response; Stage 15 keeps subsystem interfaces, interface preparation, observations, Integration evidence and Integration status. This pack owns only the loop relationship, reference / comparison semantics, the control-action relationship, the feedback relationship, the conceptual measurement observation rate and bounded control-side interpretation. Registered for qualification only: NOT activated, NOT declared qualified, and not part of the Stage-15 composition.",
+    "signal_conflict_dispositions": "Classification signals are six control-loop terms bound to DOE-HDBK-1013/2-92 IC-07 pages 4-10 (setpoint, set point, closed loop, open loop, control loop, manipulated variable). Excluded on purpose: every Electronics classification / substance signal (microcontroller, arduino, esp32, sensor, controls, calculates, samples, threshold, filter, signal, measures, detects, triggers, activates, processes, monitors, outputs) and Mechanical 'actuator'; phrases containing them (feedback signal, error signal, actuating signal, controlled output); 'reference point' (also a mechanical datum term); and the generic single words control, loop and feedback. Slice-1 differential at base 540db53613013baf071515cfdb2e3fdec7e7a4cb over 11,619 test-corpus strings (every string literal in tests/*.py plus the replay-case inputs): the six terms hit 3 strings and changed 0 classification outcomes, while the generic words control / loop / feedback would have hit 105 and changed 82. The canonical classifier counts distinct signals (weights are not used); a tie with an activated domain resolves to the activated domain (D3-D). No classifier, tie-policy, matcher or unsupported-word-family change.",
+    "source_use_limitations": "DOE-HDBK-1013/2-92 (control_loop:PR001 / PR002): archived handbook, fundamentals / historical reference only, IC-07 pages 4-10 only, paraphrase only, no figures or tables, contractor-material caution. NASA TM-101739 (control_loop:PR003 / PR004): section 1.2.2 only (printed page 1-3, PDF page 16), the observation / sampling concept only; never the controller's action rate, aliasing, filtering, encoding / transmission or real-time execution; no figures. NIST SP 811 (control_loop:PR005 / PR006): section 8.1 (page 23), the second and the hertz only as the unit of frequency; no timing adequacy and no calculation authority. The second / hertz facts are recorded once here; no existing record held them.",
+    "safety_cue_option_b": "Owner Option (b): no control-loop safety-cue family in Qualification Slice 1. Safety determination stays NOT COVERED; the capability declaration carries the truthful capability-scope statement; inventor-stated hazards stay unvalidated; no SIL / ASIL or certification claim. Before activation a separate Owner decision determines whether a dedicated control-loop safety-cue family is needed or the existing Mechanical / Electronics families suffice."
+  }
+}

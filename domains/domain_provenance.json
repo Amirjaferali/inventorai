@@ -286,6 +286,97 @@
       "cross_domain_usage": [
         "token: also used in security/cryptography context as authentication token — separate context ownership"
       ]
+    },
+    {
+      "record_id": "control_loop:PR001",
+      "pack_id": "control_loop",
+      "tier": 1,
+      "source_name": "U.S. Department of Energy — DOE Fundamentals Handbook: Instrumentation and Control, Volume 2 of 2, Module IC-07 — Principles of Control Systems (DOE-HDBK-1013/2-92)",
+      "source_type": "government_reference_publication",
+      "standard_number": "DOE-HDBK-1013/2-92",
+      "jurisdiction": "US",
+      "version_or_edition": "DOE-HDBK-1013/2-92, Volume 2 of 2, Module IC-07 — handbook pages 4-6 (automatic-control functions and elements; comparison; feedback; open- and closed-loop definitions) and pages 7-10 (Control Loop Diagrams: controlled system, control elements, feedback elements, reference / setpoint, controlled output, feedback signal, actuating / error signal, manipulated variable, disturbance); official DOE record status: archived handbook — as identified by Lead-level independent source inspection, 2026-10-01 (executor egress to the source host was blocked by environment policy)",
+      "url": null,
+      "notes": "Source for the control_loop pack's concept-level claim families 1-6 of the accepted Stage-28 qualification contract (control-loop fundamentals; feedback; measured-input / reference comparison; controller-side control action; controlled element / manipulated variable relationship; disturbance), for its six classification signals, its four substance signals, its MECHANISM_COMPLETENESS questions Q1-Q6 and rule nuance control_loop:RN001. Bound ONLY to handbook pages 4-10 of Module IC-07; the later control-mode sections (two-position, proportional, reset, rate, PID), controller and device-detail sections and any design, tuning or stability material are NOT bound. STATUS BOUNDARY: archived handbook, used ONLY as a historical / fundamentals reference for these bounded concepts and NOT as current regulatory, safety or compliance guidance, and never as proof that a user design works, is safe or is compliant. InventorAI-authored paraphrase only; no DOE paragraph, explanatory prose, figure, diagram or table is reproduced. Source-use disposition: control_loop:PR002.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "control_loop:PR002",
+      "pack_id": "control_loop",
+      "tier": 1,
+      "source_name": "U.S. Department of Energy — Web Policies — Copyright, Restrictions and Permissions Notice",
+      "source_type": "source_use_policy",
+      "standard_number": null,
+      "jurisdiction": "US",
+      "version_or_edition": "Web page — the same DOE policy recorded in electronics_electrical:PR006, applied here to control_loop:PR001",
+      "url": null,
+      "notes": "SOURCE-USE COMPATIBILITY DISPOSITION (not a legal opinion or legal determination) for control_loop:PR001. The DOE Web Policies state that government information on DOE websites is in the public domain and may be freely distributed / copied, with appropriate DOE acknowledgement requested; the same policy warns that documents, illustrations, photographs and other resources contributed or licensed by private parties may remain copyright-protected (contractor-material caution). No blanket claim is made that every expressive element of the handbook is public-domain material. Conservative disposition: concept-level facts only; InventorAI-authored paraphrase only; no copied explanatory prose; no figures, diagrams, tables, photographs or logos; no third-party-attributed material; neutral source acknowledgement only (\"Reference source material: U.S. Department of Energy — Instrumentation and Control, DOE-HDBK-1013/2-92\"); no statement or implication that DOE endorses, reviewed or approved InventorAI or any user project. InventorAI remains responsible for its own presented output.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "control_loop:PR003",
+      "pack_id": "control_loop",
+      "tier": 1,
+      "source_name": "NASA Technical Memorandum 101739 — Digital Signal Conditioning for Flight Test (Glenn A. Bever, NASA Ames Research Center, Dryden Flight Research Facility)",
+      "source_type": "government_reference_publication",
+      "standard_number": "NASA TM-101739",
+      "jurisdiction": "US",
+      "version_or_edition": "NASA TM-101739, section 1.2.2 (printed page 1-3; PDF page 16); NTRS copyright metadata: Work of the US Gov. Public Use Permitted — as identified by Lead-level independent source inspection, 2026-10-01 (executor egress to the source host was blocked by environment policy)",
+      "url": "https://ntrs.nasa.gov/citations/19910011822",
+      "notes": "Source for the control_loop pack's claim family 7 of the accepted Stage-28 qualification contract (measurement observation / sampling-rate concept only) and its MECHANISM_COMPLETENESS question Q7: a measured signal is observed at discrete moments, and observing too slowly for how fast the signal changes loses information. Bound ONLY to section 1.2.2. NOT bound: the controller's own action or update rate, aliasing or anti-alias filter design, filtering, encoding / transmission and real-time execution. Concept only; no rate is recommended and no timing adequacy is determined. InventorAI-authored paraphrase only; no NASA prose, figure or table is reproduced. Source-use disposition: control_loop:PR004.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "control_loop:PR004",
+      "pack_id": "control_loop",
+      "tier": 1,
+      "source_name": "NASA STI Program — Disclaimers, Copyright Notice, and Terms and Conditions of Use (Use of NASA STI)",
+      "source_type": "source_use_policy",
+      "standard_number": null,
+      "jurisdiction": "US",
+      "version_or_edition": "Web page — the same NASA STI policy recorded in mechanical:PR010, applied here to control_loop:PR003; NTRS record copyright metadata for NASA TM-101739: Work of the US Gov. Public Use Permitted",
+      "url": "https://sti.nasa.gov/disclaimers/",
+      "notes": "Source-use compatibility disposition (not a legal opinion or legal determination) for control_loop:PR003: factual, paraphrased use only; no copied NASA explanatory prose; no NASA figure, image, logo, insignia or media; neutral source acknowledgement only (\"Reference source material: NASA Technical Memorandum 101739\"); no statement or implication that NASA endorses, reviewed or approved InventorAI or any user project; third-party-rights caution — material bearing an explicit third-party copyright attribution is not relied upon. InventorAI remains responsible for its own presented output.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "control_loop:PR005",
+      "pack_id": "control_loop",
+      "tier": 1,
+      "source_name": "NIST Guide for the Use of the International System of Units (SI) — Special Publication 811 — section 8.1 (time and frequency)",
+      "source_type": "government_reference_publication",
+      "standard_number": "NIST SP 811",
+      "jurisdiction": "US",
+      "version_or_edition": "NIST SP 811, section 8.1 (page 23) — as identified by Lead-level independent source inspection, 2026-10-01 (executor egress to the source host was blocked by environment policy)",
+      "url": null,
+      "notes": "Source for the control_loop pack's claim family 8 of the accepted Stage-28 qualification contract (time / frequency unit discipline as shared reference knowledge): the second (s) as the SI unit of time, and the hertz (Hz) only as the SI unit of frequency. No existing record bound these two facts (electronics_electrical:PR005 binds V / A / Ω / W; mechanical:PR009 binds N·m and Pa / kPa), so they are recorded once here and are not a duplicate. Unit identification only: no timing adequacy, no rate recommendation and no calculation authority; no conversion table or unrelated NIST content is reproduced; NIST acknowledgement is preserved; no endorsement implied. Source-use disposition: control_loop:PR006.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "control_loop:PR006",
+      "pack_id": "control_loop",
+      "tier": 1,
+      "source_name": "NIST — Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "source_type": "source_use_policy",
+      "standard_number": null,
+      "jurisdiction": "US",
+      "version_or_edition": "Web page — the same NIST statement recorded in electronics_electrical:PR007 and mechanical:PR011, applied here to control_loop:PR005",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "notes": "SOURCE-USE COMPATIBILITY DISPOSITION (not a legal opinion or legal determination) for control_loop:PR005. NIST employee-authored Technical Series works are not subject to U.S. copyright protection; appropriate NIST acknowledgement / citation is required; some NIST works may contain third-party-authored protected material, which is not relied upon. Use is limited to the bounded unit facts (second; hertz as the unit of frequency) with source acknowledgement; no unrelated content is reproduced; no endorsement implied.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "control_loop:PR007",
+      "pack_id": "control_loop",
+      "tier": 1,
+      "source_name": "InventorAI governance records — Stage 28 Bounded Control-Loop Concept Owner qualification contract (Owner-accepted) and Qualification Slice 1 declared-scope baseline",
+      "source_type": "governance_record",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": "docs/governance/STAGE28_BOUNDED_CONTROL_LOOP_CONCEPT_OWNER_QUALIFICATION_CONTRACT.md (Owner-accepted at merge 540db53613013baf071515cfdb2e3fdec7e7a4cb); Owner authorization of Qualification Slice 1 (pack id control_loop; safety-cue Option (b))",
+      "url": null,
+      "notes": "Provenance for the control_loop pack's claim family 9 (explicit limits / abstention / specialist boundary), its capability_declaration, its BOUNDARY_AMBIGUITY questions, rule nuance control_loop:RN002 and its governance notes. The declared scope is grounded exclusively in the accepted contract's nine claim families, its not-covered list and its owner separation from Electronics, Mechanical and Stage 15; every other capability is declared NOT COVERED or a known unknown. Declaration-only metadata: registered for qualification, NOT activated and NOT declared qualified; adds no runtime capability.",
+      "cross_domain_usage": []
     }
   ]
 }
