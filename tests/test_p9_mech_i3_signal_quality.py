@@ -486,8 +486,9 @@ def test_recognized_set_and_activation_unchanged():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         registry = load_registry(_DOMAINS)
+    # Stage 28 Qualification Slice 1 (Owner-authorized): control_loop is registered, NOT activated.
     assert sorted(registry) == [
-        "electronics_electrical", "mechanical", "medical_device", "software",
+        "control_loop", "electronics_electrical", "mechanical", "medical_device", "software",
     ]
     assert "iot_electronics" not in registry
     assert activated_domains() == ["electronics_electrical", "mechanical"]

@@ -196,10 +196,11 @@ class TestProvenanceCoverage:
 # --- GREEN scope guards: real registry + legacy IoT unchanged --------------
 
 class TestRealRegistryUnchanged:
-    def test_real_registry_still_four_packs(self):
+    def test_real_registry_still_five_packs(self):
+        # Stage 28 Qualification Slice 1 (Owner-authorized): control_loop is registered, NOT activated.
         reg = load_registry(_repo_domains_dir())
         assert list_domains(reg) == sorted(
-            ["electronics_electrical", "mechanical", "medical_device", "software"]
+            ["control_loop", "electronics_electrical", "mechanical", "medical_device", "software"]
         )
 
     def test_legacy_iot_still_skipped(self):

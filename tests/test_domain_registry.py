@@ -150,7 +150,9 @@ class TestRealRegistryLatencyGuard:
     # Read-only regression against the real domains/ directory. Its purpose is to
     # make accidental fifth-domain activation visible as a failing test that
     # requires an explicit owner decision. No domain JSON is modified.
+    # Stage 28 Qualification Slice 1 (Owner-authorized): control_loop is registered, NOT activated.
     EXPECTED_ACTIVE_PACKS = [
+        "control_loop",
         "electronics_electrical",
         "mechanical",
         "medical_device",
@@ -161,7 +163,7 @@ class TestRealRegistryLatencyGuard:
         registry = load_registry(_domains_dir())
         assert "iot_electronics" not in registry
 
-    def test_real_registry_has_exactly_four_active_packs(self):
+    def test_real_registry_has_exactly_five_registered_packs(self):
         registry = load_registry(_domains_dir())
         assert list_domains(registry) == sorted(self.EXPECTED_ACTIVE_PACKS)
 
