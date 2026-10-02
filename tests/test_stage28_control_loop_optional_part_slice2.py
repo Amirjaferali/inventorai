@@ -468,10 +468,14 @@ def test_three_part_functionality_is_dormant_while_the_allowlist_is_empty(client
     form = _form(client, sid)
     monkeypatch.setattr(domain_activation, "_PART_ONLY_DOMAINS", frozenset())        # the SHIPPED state
     assert domain_activation.is_part_eligible(CL) is False
-    assert link not in client.get("/session/%s" % sid).get_data(as_text=True)
-    assert _page(client, sid).status_code == 404
+    # AMENDED at Stage 30 Slice 1 (Owner-authorized withdrawal readability): an already-saved part stays
+    # READABLE (read-only view, read-only link); recording stays refused and nothing is written.
+    assert ui_text.text("UI_PQ_LINK_READ_ONLY", "en") in _html.unescape(
+        client.get("/session/%s" % sid).get_data(as_text=True))
+    page = _page(client, sid)
+    assert page.status_code == 200 and "part_answer__" not in page.get_data(as_text=True)
     r = client.post("/session/%s/part-questions" % sid, data=dict(form, **{"part_answer__" + Q1: "x"}))
-    assert r.status_code == 404
+    assert r.status_code == 409
     assert _answers_rows(sid) == []
 
 

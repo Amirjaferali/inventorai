@@ -326,6 +326,10 @@ _MESSAGE_KEYS = {
     ("We could not confirm whether your answers were saved. Reload this page "
      "to see what your project currently holds before entering them again."):
         "UI_PQ_MSG_UNKNOWN",
+    # Stage 30 Slice 1 (web/app.py save_part_answers, read-only part page).
+    ("Recording, editing or clearing answers about this part is not available "
+     "now. Your saved answers are shown below, unchanged. Nothing was changed."):
+        "UI_PQ_MSG_READ_ONLY",
     # Stage 15 Slice 4 (web/app.py record_interface_observation).
     ("Your observation could not be saved just now. Nothing was changed."):
         "UI_S15_OBS_MSG_NOT_SAVED",
@@ -801,6 +805,32 @@ UI_STRINGS = {
     "UI_PQ_MSG_SAVED_NOT_SHOWN": {
         "en": "Your answers were saved to your project, but this page could not show them. Reload this page to see what your project holds.",
         "ar": "حُفظت إجاباتك في مشروعك، لكن هذه الصفحة تعذّر عليها عرضها. أعد تحميل الصفحة لترى ما يحتويه مشروعك.",
+    },
+    # --- Stage 30 — Control-Loop Part-Enablement Safeguards — Slice 1 --------
+    # Read-only view of saved part answers, and the Safety Signal input scope.
+    "UI_PQ_INTRO_READ_ONLY": {
+        "en": "These are the answers you recorded about the control-loop part of your invention, shown exactly as you wrote them. They are your own statements and have not been checked.",
+        "ar": "هذه هي الإجابات التي سجّلتها عن جزء حلقة التحكم في اختراعك، معروضةً كما كتبتها تمامًا. وهي أقوالك أنت ولم تُفحص.",
+    },
+    "UI_PQ_READ_ONLY": {
+        "en": "Recording, editing or clearing answers about this part is not available now. Your saved answers are shown below, read-only; nothing has been removed.",
+        "ar": "تسجيل الإجابات عن هذا الجزء أو تعديلها أو مسحها غير متاح حاليًا. تُعرض إجاباتك المحفوظة أدناه للقراءة فقط، ولم يُحذف منها شيء.",
+    },
+    "UI_PQ_LINK_READ_ONLY": {"en": "View your saved answers about this part",
+                             "ar": "اعرض إجاباتك المحفوظة عن هذا الجزء"},
+    "UI_PQ_SAFETY_SCOPE": {
+        "en": "InventorAI does not read your answers about this part when it looks for inventor-stated safety signals. If no safety signal is shown, that does not mean this part has been reviewed for safety or is safe.",
+        "ar": "لا يقرأ InventorAI إجاباتك عن هذا الجزء عند البحث عن إشارات السلامة كما ذكرها المخترِع. وإذا لم تظهر أي إشارة سلامة، فهذا لا يعني أن هذا الجزء قد رُوجع من حيث السلامة أو أنه آمن.",
+    },
+    "UI_PQ_MSG_READ_ONLY": {
+        "en": "Recording, editing or clearing answers about this part is not available now. Your saved answers are shown below, unchanged. Nothing was changed.",
+        "ar": "تسجيل الإجابات عن هذا الجزء أو تعديلها أو مسحها غير متاح حاليًا. تُعرض إجاباتك المحفوظة أدناه دون تغيير. لم يتغيّر شيء.",
+    },
+    # Report / PDF safety block: shown only when the project's composition holds
+    # an optional part, beside the unchanged empty statement or signals.
+    "UI_SS_OPTIONAL_PART_SCOPE": {
+        "en": "These safety signals are derived only from your idea description and what you recorded in the main analysis (your answers and the unknowns you noted). Your answers about an optional part of the invention, such as a control-loop part, are not read for safety signals, so the absence of a signal says nothing about that part's safety.",
+        "ar": "تُستخرج إشارات السلامة هذه فقط من وصف فكرتك ومما سجّلته في التحليل الرئيسي (إجاباتك والمجهولات التي دوّنتها). أما إجاباتك عن جزء اختياري من الاختراع، مثل جزء حلقة التحكم، فلا تُقرأ لاستخراج إشارات السلامة، ولذلك فإن عدم ظهور إشارة لا يدل على شيء بشأن سلامة ذلك الجزء.",
     },
     "UI_PQ_MSG_UNKNOWN": {
         "en": "We could not confirm whether your answers were saved. Reload this page to see what your project currently holds before entering them again.",

@@ -1663,6 +1663,12 @@ PQ_SAVED_NOT_SHOWN_MESSAGE = (
 PQ_UNKNOWN_MESSAGE = (
     "We could not confirm whether your answers were saved. Reload this page "
     "to see what your project currently holds before entering them again.")
+# Stage 30 — Control-Loop Part-Enablement Safeguards — Slice 1: a write while the
+# part's questions are not currently offered (eligibility withdrawn after the
+# part was saved). The saved answers stay readable, read-only.
+PQ_READ_ONLY_MESSAGE = (
+    "Recording, editing or clearing answers about this part is not available "
+    "now. Your saved answers are shown below, unchanged. Nothing was changed.")
 
 # Stage 15 closure: the Owner-declared interface dependency, saved by the SAME
 # preparation Save. Registered in `ui_text._MESSAGE_KEYS`.
@@ -2023,9 +2029,11 @@ def _integrated_scope_context(state):
                     {"name": optional.display_name,
                      "function": optional.function_text}),
         # Stage 28 Optional Part Slice 2: the link to that part's governed
-        # questions, offered only while the part is part-eligible (dormant).
-        "control_questions": (optional is not None
-                              and domain_activation.is_part_eligible(optional.domain)),
+        # questions; Stage 30 Slice 1: shown whenever the durable composition
+        # holds the part (read-only while it is not currently part-eligible).
+        "control_questions": optional is not None,
+        "control_questions_editable": (optional is not None
+                                       and domain_activation.is_part_eligible(optional.domain)),
         "focus_key": ("UI_S15_SCOPE_FOCUS_MECH" if focus == "mechanical"
                       else "UI_S15_SCOPE_FOCUS_ELEC"),
         "interfaces": [{"a": names[item.subsystem_a_id],
@@ -8672,13 +8680,14 @@ _PQ_FAMILY_PRESENCE_KEYS = {
 }
 
 
-def _offered_question_part(subsystems):
-    """The optional part of the durable composition whose questions may be
-    offered — present in ``subsystems`` AND part-eligible by the canonical
-    policy — or ``None`` (always ``None`` while the allowlist is empty)."""
+def _durable_question_part(subsystems):
+    """The optional part held by the DURABLE composition, or ``None``. Stage 30
+    Slice 1: its saved answers stay readable whatever the part's CURRENT
+    eligibility (eligibility gates new use, never access to what the inventor
+    already recorded); recording / editing / clearing still requires
+    ``domain_activation.is_part_eligible`` (see ``editable``)."""
     for sub in subsystems:
-        if sub.domain in _subsystem_model.OPTIONAL_COMPOSITION_DOMAINS \
-                and domain_activation.is_part_eligible(sub.domain):
+        if sub.domain in _subsystem_model.OPTIONAL_COMPOSITION_DOMAINS:
             return sub
     return None
 
@@ -8700,7 +8709,7 @@ def _part_question_context(sid):
         subsystems = tuple(store.load_project_subsystems(sid))
     except Exception:
         return _PQ_UNAVAILABLE, None
-    part = _offered_question_part(subsystems)
+    part = _durable_question_part(subsystems)
     if part is None:
         return _PQ_NOT_OFFERED, None
     loader = getattr(store, "load_part_answers", None)
@@ -8737,6 +8746,9 @@ def _part_question_context(sid):
         # An answer to a question the pack no longer asks is preserved but
         # attached to no current question (the CAP-09 stale precedent).
         "stale": any(qid not in question_ids for qid in current),
+        # Stage 30 Slice 1: recording is offered only while the part is
+        # CURRENTLY part-eligible; otherwise the page is read-only.
+        "editable": domain_activation.is_part_eligible(part.domain),
     }
 
 
@@ -8754,6 +8766,7 @@ def _render_part_questions(sid, context, status=200, error=None, notice=None,
         part_id=None if context is None else context["subsystem_id"],
         families=None if context is None else context["families"],
         stale=False if context is None else context["stale"],
+        editable=False if context is None else context["editable"],
         drafts=None if drafts is None else {
             name: raw.replace("\x00", "") for name, raw in drafts.items()},
         baselines=None if baselines is None else {
@@ -8809,6 +8822,11 @@ def save_part_answers(sid):
     if status != _PQ_OK:
         message, code = _PQ_STATUS_MESSAGE[status]
         return _render_part_questions(sid, None, status=code, notice=message)
+    if not context["editable"]:
+        # Stage 30 Slice 1: the part is saved but not currently part-eligible —
+        # no record / edit / clear; the saved answers are shown read-only.
+        return _render_part_questions(sid, context, status=409,
+                                      error=PQ_READ_ONLY_MESSAGE)
     drafts, baselines, submitted = {}, {}, {}
     for name, raw in request.form.items():
         if name.startswith(_PQ_ANSWER_PREFIX):

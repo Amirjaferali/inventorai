@@ -143,6 +143,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 {% set ss = package["_session_meta"].inventor_stated_safety_signals %}
 <div class="safety-signals">
   <div class="status-title">{{ t('UI_B_DELIV_013') }}</div>
+  {#- Stage 30 Slice 1: present only when the composition holds an optional part —
+      the signals (or their absence) cover the root-analysis inputs only. -#}
+  {% if ss.input_scope == 'root_analysis_only_optional_part_excluded' %}
+  <p class="ss-note" data-ss-input-scope>{{ t('UI_SS_OPTIONAL_PART_SCOPE') }}</p>
+  {% endif %}
   {% if ss.signals %}
   <p class="ss-note">{{ ss.advisory_note }}</p>
   {% for sig in ss.signals %}
