@@ -498,8 +498,15 @@ def test_every_reference_resolves_and_every_source_is_exactly_identified():
         assert claim["source_ref"] in sources
         assert claim["source_use_policy_ref"] in sources
         assert claim["claim_id"] in sources[claim["source_ref"]]["supports_claim_ids"]
+    urls = {s["ntrs_document_id"]: s["url"] for s in data["sources"]
+            if s["record_type"] == "source"}
+    assert urls == {
+        "19950012552": "https://ntrs.nasa.gov/citations/19950012552",
+        "20160000818": "https://ntrs.nasa.gov/citations/20160000818",
+        "20170000214": "https://ntrs.nasa.gov/citations/20170000214"}
     for source in sources.values():
         assert source["inspection_basis"] == "LEAD_SUPPLIED"
+        assert source["inspection_date"] == "2026-10-03"
         assert source["paraphrase_only_limitation"]
         assert source["third_party_material_exclusion"]
         assert source["no_endorsement_limitation"]
@@ -548,6 +555,13 @@ def _mut_blank_limitation(d): d["claims"][3]["limitation"] = "  "
 def _mut_ref_to_limitation_family(d): d["claims"][2]["process_family_refs"] = ["manual_cut_and_join"]
 
 
+def _mut_null_source_url(d): d["sources"][0]["url"] = None
+def _mut_missing_source_url(d): del d["sources"][1]["url"]
+def _mut_blank_source_url(d): d["sources"][2]["url"] = "  "
+def _mut_missing_inspection_date(d): del d["sources"][1]["inspection_date"]
+def _mut_bad_inspection_date(d): d["sources"][3]["inspection_date"] = "yesterday"
+
+
 TAMPERS = [v for k, v in sorted(globals().items()) if k.startswith("_mut_")]
 
 
@@ -559,6 +573,18 @@ def test_tampering_fails_closed(mutate):
         validate_artifact(data)
     assert resolve_advisory("mechanical", "form_mockup", artifact=data) == {
         "state": STATE_UNABLE, "reason": "KNOWLEDGE_UNAVAILABLE"}
+
+
+def test_a_source_without_a_url_renders_no_advisory(mech, tmp_path, monkeypatch):
+    c, _aid, sid = mech
+    data = _artifact()
+    data["sources"][1]["url"] = None
+    path = tmp_path / "no_url.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setattr(cap12, "ARTIFACT_PATH", path)
+    body = _post(c, sid).get_data(as_text=True)
+    assert 'data-cap12-result="unable"' in body
+    assert "data-cap12-alternative" not in body
 
 
 def test_a_missing_or_corrupt_artifact_file_fails_closed(tmp_path, monkeypatch):
@@ -640,6 +666,22 @@ def test_the_link_is_optional_and_only_offered_for_a_mechanical_root(mech, elec)
     assert "data-cap12-link" not in _page(ec, esid)
     # the link is plain navigation: no CAP-12 advice on the session page itself
     assert "data-cap12-result" not in mbody and "data-cap12-alternative" not in mbody
+
+
+def test_link_and_advisory_share_the_durable_root_domain_owner(mech, elec, monkeypatch):
+    """The link and the resolver both read the durable `confirmed_domain`; a
+    differing transient `state.domain` never makes a project eligible."""
+    ec, _b, esid = elec
+    monkeypatch.setattr(SESSION_STORE[esid]["state"], "domain", "mechanical")
+    assert webapp._cap12_root_domain(esid) == "electronics_electrical"
+    assert webapp._cap12_link_offered(esid) is False
+    assert "data-cap12-link" not in _page(ec, esid)
+    assert 'data-cap12-result="unable"' in _post(ec, esid).get_data(as_text=True)
+    mc, _a, msid = mech
+    monkeypatch.setattr(SESSION_STORE[msid]["state"], "domain", None)
+    assert webapp._cap12_link_offered(msid) is True
+    assert 'data-cap12-result="available"' in _post(mc, msid).get_data(as_text=True)
+    assert list(inspect.signature(webapp._cap12_link_offered).parameters) == ["sid"]
 
 
 def test_the_journey_progresses_and_the_report_is_unchanged_without_cap12(

@@ -6208,7 +6208,7 @@ def show_session(sid):
         # mock-up advisory, offered only where the CAP-12 owner says the trusted
         # root domain is applicable. A link is not a requirement and never gates
         # the journey.
-        cap12_form_mockup_link=_cap12_link_offered(sid, state),
+        cap12_form_mockup_link=_cap12_link_offered(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -10990,12 +10990,14 @@ def _cap12_root_domain(sid):
     return value if isinstance(value, str) and value else None
 
 
-def _cap12_link_offered(sid, state):
+def _cap12_link_offered(sid):
     """True iff the session page should offer the advisory link: the CAP-12
-    owner supports the trusted root domain. Presentation only; fails closed."""
+    owner supports the project's durable root domain. It reads the SAME single
+    owner the advisory POST uses (``_cap12_root_domain``, the durable
+    ``confirmed_domain``) and never live session state, so the link and the
+    advisory cannot disagree. Presentation only; fails closed."""
     try:
-        focus = getattr(state, "domain", None) or _cap12_root_domain(sid)
-        return _cap12.supports(focus)
+        return _cap12.supports(_cap12_root_domain(sid))
     except Exception:
         return False
 

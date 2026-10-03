@@ -319,8 +319,9 @@ _COMPLETE = "STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE"
 _DELIVERED = "STAGE 21 CLOSURE: DELIVERED"
 # The later Owner-authorized Stage 22 closure moved the marker on to Stage 23 (navigation only); the Stage-21
 # completion and the "no Stage-22 implementation by the Stage-21 closure" fact stay true history.
-# The later Owner-authorized Stage 23 closure (no product change) moved the marker on to Stage 24 (navigation only).
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY"
+# The later Owner-authorized Stage 23 closure (no product change) moved the marker on to Stage 24 (navigation only);
+# the later delivered CAP-12 Form Mock-up Advisory Slice 1 entered Stage 24 as ENTERED / PARTIAL (marker unchanged).
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — ENTERED / PARTIAL — NAVIGATION ONLY"
 _NO_S22 = "NO STAGE-22 IMPLEMENTATION AUTHORIZED BY STAGE-21 CLOSURE"
 _LIMITS = ("FULL CAP-10: NOT AUTHORIZED",
            "AUTOMATIC / AI CONTRADICTION DETECTION: NOT AUTHORIZED",

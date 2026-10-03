@@ -867,8 +867,9 @@ _COMPLETE = "STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE"
 _DELIVERED = "STAGE 20 CLOSURE: DELIVERED"
 # The later Owner-authorized Stage 21 and Stage 22 closures moved the marker on to Stage 23 (navigation only); the
 # Stage-20 completion and the "no Stage-21 implementation by the Stage-20 closure" fact stay true history.
-# The later Owner-authorized Stage 23 closure (no product change) moved the marker on to Stage 24 (navigation only).
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY"
+# The later Owner-authorized Stage 23 closure (no product change) moved the marker on to Stage 24 (navigation only);
+# the later delivered CAP-12 Form Mock-up Advisory Slice 1 entered Stage 24 as ENTERED / PARTIAL (marker unchanged).
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — ENTERED / PARTIAL — NAVIGATION ONLY"
 _NO_S21 = "NO STAGE-21 IMPLEMENTATION AUTHORIZED BY STAGE-20 CLOSURE"
 
 

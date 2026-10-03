@@ -37,6 +37,7 @@ Boundaries
 """
 import copy
 import json
+import re
 from pathlib import Path
 
 ROLE_FORM_MOCKUP = "form_mockup"
@@ -81,6 +82,7 @@ ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
                  / "cap12_content_config" / "form_mockup_advisory_v1.json")
 
 _MAX_TEXT = 700
+_ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 # Provenance narrative fields (governance note, inspected content) may be longer
 # than a product-facing claim, which stays tightly bounded.
 _MAX_LONG_TEXT = 2000
@@ -94,9 +96,9 @@ _SOURCE_KEYS = frozenset({
     "record_id", "record_type", "source_type", "publisher", "report_number",
     "ntrs_document_id", "source_title", "url", "inspected_location",
     "distribution", "copyright_status", "source_use_policy_ref",
-    "inspection_basis", "inspected_content", "supports_claim_ids",
-    "paraphrase_only_limitation", "third_party_material_exclusion",
-    "no_endorsement_limitation"})
+    "inspection_basis", "inspection_date", "inspected_content",
+    "supports_claim_ids", "paraphrase_only_limitation",
+    "third_party_material_exclusion", "no_endorsement_limitation"})
 _POLICY_EXTRA_KEYS = frozenset({"acknowledgement"})
 _CLAIM_KEYS = frozenset({
     "claim_id", "advisory_type", "role_category", "applicable_domain",
@@ -105,9 +107,9 @@ _CLAIM_KEYS = frozenset({
 _SOURCE_TEXT_FIELDS = (
     "record_id", "source_type", "publisher", "source_title",
     "inspected_location", "distribution", "copyright_status",
-    "source_use_policy_ref", "inspection_basis", "inspected_content",
-    "paraphrase_only_limitation", "third_party_material_exclusion",
-    "no_endorsement_limitation")
+    "source_use_policy_ref", "inspection_basis", "inspection_date",
+    "inspected_content", "paraphrase_only_limitation",
+    "third_party_material_exclusion", "no_endorsement_limitation")
 _SOURCE_OPTIONAL_TEXT = ("report_number", "ntrs_document_id", "url")
 
 
@@ -153,11 +155,16 @@ def _validate_sources(sources):
         for field in _SOURCE_OPTIONAL_TEXT:
             _text(record[field], field, allow_none=True)
         if record_type == "source":
-            # A source record must be traceable to the exact NASA report.
+            # A source record must be traceable to the exact NASA report and
+            # its record locator: a missing or blank URL invalidates the
+            # artifact, so no advisory can render from it.
             _text(record["report_number"], "report_number")
             _text(record["ntrs_document_id"], "ntrs_document_id")
+            _text(record["url"], "url")
         else:
             _text(record["acknowledgement"], "acknowledgement")
+        if not _ISO_DATE.fullmatch(record["inspection_date"]):
+            raise Cap12KnowledgeError("sources: inspection date malformed")
         if record["inspection_basis"] != "LEAD_SUPPLIED":
             raise Cap12KnowledgeError("sources: unknown inspection basis")
         ids = record["supports_claim_ids"]
