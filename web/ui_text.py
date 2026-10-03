@@ -3866,6 +3866,279 @@ UI_STRINGS = {
     "UI_MEV_TOPIC_MANUFACTURABILITY": {
         "en": "Something that makes it harder or easier to make",
         "ar": "ما يجعل صنعها أصعب أو أسهل"},
+    # Stage 24 / CAP-12 - Form Mock-up Advisory - Slice 1 (session-only,
+    # optional, advisory, non-binding). Copy for the request-local advisory
+    # page. The governed claim wording lives in the CAP-12 artifact; the
+    # UI_CAP12_CLAIM_<id>_FACT / _LIMITATION entries carry the same claims in
+    # EN / AR (the English entries are pinned equal to the artifact by test).
+    # Nothing here ranks, selects a grade or states suitability.
+    "UI_CAP12_TITLE": {
+        "en": "Form mock-up advisory (optional)",
+        "ar": "إرشادات المجسَّم الشكلي (Form Mock-up) — اختيارية"},
+    "UI_CAP12_INTRO": {
+        "en": ("This page is optional. If you are planning a non-working "
+               "physical model of ONE component, only to look at its overall "
+               "form, appearance and general handling, it lists the material "
+               "families and building-method families that NASA material "
+               "describes for early prototype work. It is advice to think "
+               "with. It is not saved, it tests nothing and it never blocks "
+               "your project."),
+        "ar": ("هذه الصفحة اختيارية. إذا كنت تخطّط لنموذج مادي غير عامل لمكوّن "
+               "واحد، لمراجعة شكله العام ومظهره والتعامل معه عمومًا فقط، فهي "
+               "تعرض عائلات المواد وعائلات طرق البناء التي تصفها مواد ناسا "
+               "(NASA) للأعمال النموذجية المبكرة. هي نصيحة للتفكير لا أكثر. لا "
+               "تُحفَظ، ولا تختبر شيئًا، ولا تُعيق مشروعك أبدًا.")},
+    "UI_CAP12_FIELD_NAME": {"en": "Component name", "ar": "اسم المكوّن"},
+    "UI_CAP12_FIELD_FUNCTION": {
+        "en": "What the component does", "ar": "ما وظيفة المكوّن"},
+    "UI_CAP12_FIELD_ROLE": {
+        "en": "What this component is for", "ar": "الغرض من هذا المكوّن"},
+    "UI_CAP12_ROLE_PLACEHOLDER": {"en": "Choose one", "ar": "اختر واحدًا"},
+    "UI_CAP12_ROLE_FORM_MOCKUP": {
+        "en": ("Form mock-up: a non-working model for reviewing overall form, "
+               "appearance and general handling"),
+        "ar": ("مجسَّم شكلي: نموذج غير عامل لمراجعة الشكل العام والمظهر "
+               "والتعامل العام")},
+    "UI_CAP12_ROLE_DEFINITION": {
+        "en": ("A form mock-up is a non-functional physical model. It is used "
+               "only to review and communicate overall form, appearance and "
+               "general physical handling. It does not test or establish "
+               "function, fit, tolerance, strength, load capability, "
+               "structural, electrical, thermal or chemical suitability, "
+               "material safety, skin-contact, food or medical suitability, "
+               "regulatory compliance or production suitability. Handling it "
+               "is fine; no suitability conclusion may be drawn from handling "
+               "it."),
+        "ar": ("المجسَّم الشكلي نموذج مادي غير وظيفي. يُستخدم فقط لمراجعة الشكل "
+               "العام والمظهر والتعامل المادي العام ولإيصالها للآخرين. لا "
+               "يختبر ولا يثبت الوظيفة أو الملاءمة الهندسية أو التفاوت أو "
+               "المتانة أو القدرة على تحمّل الأحمال أو الملاءمة الإنشائية أو "
+               "الكهربائية أو الحرارية أو الكيميائية، ولا سلامة المادة، ولا "
+               "ملاءمتها للتلامس مع الجلد أو للغذاء أو للاستخدام الطبي، ولا "
+               "الامتثال التنظيمي أو الملاءمة للإنتاج. لا مانع من التعامل مع "
+               "النموذج، لكن لا يجوز استنتاج أي ملاءمة منه.")},
+    "UI_CAP12_DESCRIPTOR_NOTE": {
+        "en": ("The name and description are shown back to you for reference "
+               "only. They do not change which advisory you get, and nothing "
+               "you type here is saved."),
+        "ar": ("يُعرض الاسم والوصف لك للرجوع إليهما فقط. لا يغيّران الإرشاد "
+               "الذي تحصل عليه، ولا يُحفَظ شيء مما تكتبه هنا.")},
+    "UI_CAP12_SUBMIT": {"en": "Show the advisory", "ar": "اعرض الإرشاد"},
+    "UI_CAP12_BACK": {
+        "en": "Back to your project", "ar": "العودة إلى مشروعك"},
+    "UI_CAP12_BOUNDARY": {
+        "en": ("This advisory does not establish engineering suitability. It "
+               "is not a material or manufacturing specification, it makes no "
+               "claim about function, fit, tolerance, strength, load, "
+               "structural, electrical, thermal or chemical suitability, "
+               "material safety, skin-contact, food or medical use, "
+               "regulatory compliance or production use, and it replaces no "
+               "specialist review. Questions of that kind are outside this "
+               "page and need specialist input and evidence from your own "
+               "project."),
+        "ar": ("لا يثبت هذا الإرشاد الملاءمة الهندسية. وهو ليس مواصفة للمادة "
+               "أو للتصنيع، ولا يدّعي شيئًا عن الوظيفة أو التركيب أو التفاوت "
+               "أو المتانة أو الأحمال أو الملاءمة الإنشائية أو الكهربائية أو "
+               "الحرارية أو الكيميائية، ولا عن سلامة المادة أو التلامس مع "
+               "الجلد أو الاستخدام الغذائي أو الطبي، ولا عن الامتثال التنظيمي "
+               "أو الإنتاج، ولا يحلّ محل مراجعة المتخصصين. أسئلة من هذا النوع "
+               "خارج هذه الصفحة وتحتاج إلى مدخلات متخصصة وأدلة من مشروعك أنت.")},
+    "UI_CAP12_PROTOTYPE_WARNING": {
+        "en": ("Prototype, not production: a material family or building "
+               "method listed here is for early mock-up work only. It is not "
+               "a production material or process, and nothing here says what "
+               "a production version should use."),
+        "ar": ("نموذج أولي لا إنتاج: عائلة المادة أو طريقة البناء المذكورة هنا "
+               "للأعمال النموذجية المبكرة فقط. ليست مادة إنتاج ولا عملية "
+               "إنتاج، ولا يقول هذا الإرشاد ما الذي ينبغي أن تستخدمه نسخة "
+               "الإنتاج.")},
+    "UI_CAP12_RESULT_HEADING": {
+        "en": "Advisory (non-binding)", "ar": "إرشاد (غير مُلزِم)"},
+    "UI_CAP12_RESULT_SCOPE": {
+        "en": ("Scope: one non-working form mock-up component. You may ignore "
+               "this advice; nothing is saved."),
+        "ar": ("النطاق: مكوّن واحد من مجسَّم شكلي غير عامل. يمكنك تجاهل هذا "
+               "الإرشاد؛ لا يُحفَظ شيء.")},
+    "UI_CAP12_SHOWN_COMPONENT": {
+        "en": "Component you described", "ar": "المكوّن الذي وصفته"},
+    "UI_CAP12_ROLE_BOUNDARY_HEADING": {
+        "en": "What a form mock-up is", "ar": "ما هو المجسَّم الشكلي"},
+    "UI_CAP12_ALTERNATIVES_HEADING": {
+        "en": "Material families and building methods",
+        "ar": "عائلات المواد وطرق البناء"},
+    "UI_CAP12_ALTERNATIVES_NOTE": {
+        "en": ("These are alternatives. The order shown has no meaning, and "
+               "none is placed above another."),
+        "ar": ("هذه بدائل. ترتيب العرض لا معنى له، ولا يُرتَّب أيٌّ منها فوق "
+               "الآخر.")},
+    "UI_CAP12_LABEL_MATERIAL": {
+        "en": "Material family", "ar": "عائلة المادة"},
+    "UI_CAP12_LABEL_PROCESS": {
+        "en": "Building method", "ar": "طريقة البناء"},
+    "UI_CAP12_LABEL_WHY": {
+        "en": "Why it may be useful", "ar": "لماذا قد تكون مفيدة"},
+    "UI_CAP12_LABEL_LIMIT": {"en": "Limitation", "ar": "قيد"},
+    "UI_CAP12_SOURCES_HEADING": {"en": "Sources", "ar": "المصادر"},
+    "UI_CAP12_SOURCES_NOTE": {
+        "en": ("Paraphrased from the NASA reports below. NASA does not "
+               "endorse InventorAI or this advisory. Third-party material "
+               "inside a NASA document is not used."),
+        "ar": ("مُعاد صياغتها من تقارير ناسا (NASA) أدناه. لا تؤيّد ناسا "
+               "إنفنتوراي ولا هذا الإرشاد. لا تُستخدم أي مواد تعود لجهات "
+               "خارجية داخل وثائق ناسا.")},
+    "UI_CAP12_ACK": {
+        "en": "Reference source material: NASA",
+        "ar": "المادة المرجعية: ناسا (NASA)"},
+    "UI_CAP12_UNABLE_HEADING": {
+        "en": "No advisory could be produced", "ar": "تعذّر إنتاج إرشاد"},
+    "UI_CAP12_UNABLE_NOTE": {
+        "en": ("Nothing was chosen for you and no general advice was "
+               "substituted. Your project is not affected."),
+        "ar": ("لم يُختر لك شيء ولم يُستبدل ذلك بنصيحة عامة. مشروعك لم "
+               "يتأثر.")},
+    "UI_CAP12_REASON_NO_CATEGORY": {
+        "en": ("You did not choose what the component is for. Choose it and "
+               "try again."),
+        "ar": "لم تختر الغرض من المكوّن. اخترْه وأعد المحاولة."},
+    "UI_CAP12_REASON_INVALID_CATEGORY": {
+        "en": "The choice you sent is not one this page offers.",
+        "ar": "الاختيار الذي أُرسل ليس من الخيارات التي تعرضها هذه الصفحة."},
+    "UI_CAP12_REASON_UNSUPPORTED_DOMAIN": {
+        "en": ("This advisory currently covers only projects whose main "
+               "analysis focus is Mechanical. It is not available for this "
+               "project."),
+        "ar": ("يغطي هذا الإرشاد حاليًا المشاريع التي محور تحليلها الرئيسي "
+               "ميكانيكي فقط. وهو غير متاح لهذا المشروع.")},
+    "UI_CAP12_REASON_APPLICABILITY_NOT_ESTABLISHED": {
+        "en": ("We could not establish the main analysis focus of this "
+               "project, so no advisory was produced."),
+        "ar": ("تعذّر تحديد محور التحليل الرئيسي لهذا المشروع، لذلك لم "
+               "يُنتَج إرشاد.")},
+    "UI_CAP12_REASON_KNOWLEDGE_UNAVAILABLE": {
+        "en": ("The reference knowledge for this advisory is not available or "
+               "did not pass its checks. Nothing was produced."),
+        "ar": ("المعرفة المرجعية لهذا الإرشاد غير متاحة أو لم تجتز فحوصها. لم "
+               "يُنتَج شيء.")},
+    "UI_CAP12_REASON_INSUFFICIENT_ALTERNATIVES": {
+        "en": ("The reference knowledge does not hold enough independently "
+               "sourced alternatives to offer a choice. Nothing was "
+               "produced."),
+        "ar": ("لا تحوي المعرفة المرجعية بدائل كافية مستندة إلى مصادر مستقلة "
+               "لتقديم خيار. لم يُنتَج شيء.")},
+    "UI_CAP12_ERR_FIELDS": {
+        "en": ("Please give the component a name and say what it does, each "
+               "within the length limit and without control characters. "
+               "Nothing was produced."),
+        "ar": ("يُرجى إعطاء المكوّن اسمًا وبيان وظيفته، ضمن الحد المسموح "
+               "للطول ودون رموز تحكّم. لم يُنتَج شيء.")},
+    "UI_CAP12_ERR_REQUEST": {
+        "en": "That request could not be read. Nothing was produced.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُنتَج شيء."},
+    "UI_CAP12_LINK_TEXT": {
+        "en": "Optional: material and building-method families for a form mock-up",
+        "ar": "اختياري: عائلات المواد وطرق البناء لمجسَّم شكلي"},
+    "UI_CAP12_LINK_NOTE": {
+        "en": ("Advice for a non-working model of one component. Not saved; "
+               "never required."),
+        "ar": ("إرشاد لنموذج غير عامل لمكوّن واحد. لا يُحفَظ ولا يكون مطلوبًا "
+               "أبدًا.")},
+    "UI_CAP12_FAMILY_FOAM_CORE": {
+        "en": "Foam core", "ar": "قلب رغوي (Foam core)"},
+    "UI_CAP12_FAMILY_THERMOPLASTIC": {
+        "en": "Thermoplastic", "ar": "لدائن حرارية (Thermoplastic)"},
+    "UI_CAP12_PROCESS_MANUAL_CUT_AND_JOIN": {
+        "en": "Manual cut-and-join mock-up construction",
+        "ar": "بناء المجسَّم يدويًا بالقص والتوصيل"},
+    "UI_CAP12_PROCESS_ADDITIVE_FFF_FDM": {
+        "en": "Additive manufacturing (3D printing): FFF / FDM",
+        "ar": "التصنيع الإضافي (الطباعة ثلاثية الأبعاد): FFF / FDM"},
+    "UI_CAP12_CLAIM_C001_FACT": {
+        "en": ("A form mock-up is a non-functional model used to review "
+               "overall form and general physical design. NASA material "
+               "separates show-and-tell, form-and-fit and functional "
+               "prototypes, and describes only the functional level as "
+               "suitable for field testing, so a form mock-up is never "
+               "evidence that a design works."),
+        "ar": ("المجسَّم الشكلي نموذج غير وظيفي يُستخدم لمراجعة الشكل العام "
+               "والتصميم المادي العام. وتفرّق مواد ناسا بين النماذج الأولية من "
+               "نوع العرض والشرح، ونوع الشكل والتركيب، والنوع الوظيفي، وتصف "
+               "المستوى الوظيفي وحده بأنه مناسب للاختبار الميداني؛ لذلك لا "
+               "يكون المجسَّم الشكلي دليلًا على أن التصميم يعمل.")},
+    "UI_CAP12_CLAIM_C001_LIMITATION": {
+        "en": ("This distinguishes the role of a mock-up only. It does not "
+               "test or establish function, fit, tolerance, strength, safety "
+               "or production suitability."),
+        "ar": ("هذا يميّز دور المجسَّم فقط. وهو لا يختبر ولا يثبت الوظيفة أو "
+               "التركيب أو التفاوت أو المتانة أو السلامة أو الملاءمة "
+               "للإنتاج.")},
+    "UI_CAP12_CLAIM_C002_FACT": {
+        "en": ("Foam core is described by NASA as readily available for "
+               "prototyping, easy to cut and able to be joined with tape or "
+               "adhesive, which makes it useful for low-fidelity, "
+               "non-functional mock-up construction."),
+        "ar": ("تصف ناسا القلب الرغوي بأنه متوافر بسهولة للنماذج الأولية، "
+               "وسهل القص، ويمكن وصله بشريط لاصق أو بمادة لاصقة، ما يجعله "
+               "مفيدًا في بناء مجسَّمات منخفضة الدقة وغير وظيفية.")},
+    "UI_CAP12_CLAIM_C002_LIMITATION": {
+        "en": ("Names a material family for a non-functional mock-up only. It "
+               "says nothing about strength, durability, thermal "
+               "performance, acoustic performance, safety, load capability, "
+               "environmental suitability or production use. The NASA "
+               "example used foam core in an acoustic proof-of-concept; no "
+               "acoustic advice is given here."),
+        "ar": ("يسمّي عائلة مادة لمجسَّم غير وظيفي فقط. ولا يقول شيئًا عن "
+               "المتانة أو التحمّل أو الأداء الحراري أو الصوتي أو السلامة أو "
+               "القدرة على تحمّل الأحمال أو الملاءمة البيئية أو الاستخدام في "
+               "الإنتاج. استخدم المثال من ناسا القلب الرغوي في نموذج إثبات "
+               "مفهوم صوتي؛ ولا يُقدَّم هنا أي إرشاد صوتي.")},
+    "UI_CAP12_CLAIM_C003_FACT": {
+        "en": ("Manual cut-and-join construction means cutting foam-core "
+               "pieces to shape and joining them with tape or adhesive to "
+               "build a low-fidelity mock-up."),
+        "ar": ("يعني البناء اليدوي بالقص والتوصيل قصَّ قطع من القلب الرغوي إلى "
+               "الشكل المطلوب ووصلها بشريط لاصق أو بمادة لاصقة لبناء مجسَّم "
+               "منخفض الدقة.")},
+    "UI_CAP12_CLAIM_C003_LIMITATION": {
+        "en": ("Describes a way of building a mock-up only. It does not "
+               "establish accuracy, fit, tolerance or that the result is "
+               "suitable for any function."),
+        "ar": ("يصف طريقة لبناء المجسَّم فقط. ولا يثبت الدقة أو التركيب أو "
+               "التفاوت أو ملاءمة النتيجة لأي وظيفة.")},
+    "UI_CAP12_CLAIM_C004_FACT": {
+        "en": ("Thermoplastic filament is the feed material for Fused "
+               "Filament Fabrication (FFF, also called FDM) 3D printing, "
+               "which NASA describes as building parts layer by layer and "
+               "which is commonly used for prototype parts."),
+        "ar": ("الخيط من اللدائن الحرارية هو مادة التغذية في الطباعة ثلاثية "
+               "الأبعاد بترسيب الخيط المنصهر (FFF، ويُسمّى أيضًا FDM)، وتصفها "
+               "ناسا بأنها تبني القطع طبقةً بعد طبقة وبأنها شائعة الاستخدام "
+               "لصنع قطع النماذج الأولية.")},
+    "UI_CAP12_CLAIM_C004_LIMITATION": {
+        "en": ("Names a material family only. It selects no specific polymer, "
+               "grade, brand or filament, and says nothing about functional "
+               "suitability, load capacity, heat resistance, mechanical "
+               "performance or production readiness. Specific polymers named "
+               "in the NASA source are source context, not a selection."),
+        "ar": ("يسمّي عائلة مادة فقط. ولا يختار بوليمرًا أو درجة أو علامة "
+               "تجارية أو خيطًا بعينه، ولا يقول شيئًا عن الملاءمة الوظيفية أو "
+               "القدرة على تحمّل الأحمال أو مقاومة الحرارة أو الأداء "
+               "الميكانيكي أو الجاهزية للإنتاج. والبوليمرات المحددة التي "
+               "تذكرها مصادر ناسا سياق مصدري وليست اختيارًا.")},
+    "UI_CAP12_CLAIM_C005_FACT": {
+        "en": ("FFF / FDM additive manufacturing extrudes thermoplastic "
+               "filament to build a part layer by layer, and desktop "
+               "printers of this kind are commonly used to make prototype "
+               "parts."),
+        "ar": ("يدفع التصنيع الإضافي بترسيب الخيط المنصهر (FFF / FDM) خيطًا "
+               "من اللدائن الحرارية لبناء القطعة طبقةً بعد طبقة، وتُستخدم "
+               "الطابعات المكتبية من هذا النوع عادةً لصنع قطع النماذج "
+               "الأولية.")},
+    "UI_CAP12_CLAIM_C005_LIMITATION": {
+        "en": ("Describes a prototyping process family only. It does not "
+               "establish dimensional accuracy, fit, tolerance, durability "
+               "or production use."),
+        "ar": ("يصف عائلة عملية للنماذج الأولية فقط. ولا يثبت دقة الأبعاد أو "
+               "التركيب أو التفاوت أو المتانة أو الاستخدام في الإنتاج.")},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

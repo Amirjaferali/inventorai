@@ -1787,6 +1787,15 @@ body{overflow-wrap:anywhere}
 </details>
 {% endif %}
 {#- MEV-BLOCK-END -#}
+{#- CAP12-LINK-BEGIN — Stage 24 / CAP-12 Form Mock-up Advisory Slice 1. ONE
+    optional link to the request-local advisory page, offered only when the CAP-12
+    owner supports the trusted root domain. It is not a journey action, gates
+    nothing and carries no CAP-12 content: the advisory itself is never rendered on
+    this page and nothing about it is saved. -#}
+{% if cap12_form_mockup_link %}
+<p class="journey-note" data-cap12-link style="margin-top:14px"><a href="{{ url_for('cap12_form_mockup_advisory', sid=sid) }}">{{ t('UI_CAP12_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_CAP12_LINK_NOTE') }}</span></p>
+{% endif %}
+{#- CAP12-LINK-END -#}
 {#- CEV-BLOCK-BEGIN — Commercial Evidence Capture
     (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01). Read: the items already recorded
     for this project, straight from the authoritative Manufacturing Evidence Owner.
