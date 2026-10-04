@@ -53,6 +53,20 @@ issue; this correction does not resolve it. Correction 03 does NOT authorize pro
 migration, export history, Stage 35 entry, deployment or the merge of any product change; it only fixes the authority
 boundary so that a later implementation contract may describe the reviewed R1 solution. The pre-correction text is
 preserved in Git history (PR #753, merge `2ef9ad9508253418f2018fec2999e5a12788467c`).
+CORRECTION 04: 2026-10-04, by Owner decision on the review of the first-slice implementation contract candidate (PR #755;
+the Astra architecture review fast-stopped on one failure-class defect of that candidate, and the independent Claude
+reviewer returned PASS WITH CONDITIONS). Documentation only. It changes only: §5 (the Problem addressed and Materials,
+dimensions, parameters and operating conditions rows), §6 (the problem-capture limitation, the requirement-quantity
+bullet and the CAP-09 objective exception), §7 (the `RAW_TEXT_ONLY` bullet and the `reasoned_leading_claim` objective
+exclusion) and §17 (decisions 2 and 3 ACCEPTED). Owner dispositions recorded with it: OD-A — owner-recorded requirement
+quantities are carried in the first slice as opaque quoted inventor content; OD-B — Stage 15 interface observations are
+omitted from the first slice (no seventh snapshot reader); OD-C — technical evidence stays as mapped (no Stage-3 reasoning
+evidence or known boundaries are added to it); OD-D — the existing problem-resolution boundary stays, with a fixed
+problem-capture limitation. Every other clause, the acceptance and decisions 1 and 4–10 are unchanged, and the status
+stays ACCEPTED WORKSTREAM CONTRACT OF RECORD. Correction 04 does NOT authorize implementation, enter Stage 35, activate
+CAP-13 or any calculation / units owner, create a typed-parameter owner, authorize export history, or authorize any
+route, page, download, schema, persistence, migration, deployment or release. The pre-correction text is preserved in
+Git history (PR #754, merge `0ab87dca9ab5abebc03da791d288d661727d7858`).
 *(Superseded 2026-10-04 by the Owner's acceptance, preserved — was: "STATUS: CONTRACT CANDIDATE — DOCUMENTATION ONLY —
 NO IMPLEMENTATION AUTHORIZED."; the title read "(CANDIDATE)" and the authority level read "subordinate governance
 workstream contract candidate".)*
@@ -253,7 +267,7 @@ replaces `NOT_CAPTURED` or `NOTHING_RECORDED`. `UNAVAILABLE` is never rendered a
 | Owner decision §2 field | First-slice disposition |
 |---|---|
 | Invention title | `NOT_CAPTURED` (never generated; see §17 decision 4) |
-| Problem addressed | `RECORDED` through the existing problem-resolution boundary (§6) |
+| Problem addressed | `RECORDED` through the existing problem-resolution boundary, with the fixed problem-capture limitation (§6) |
 | Background and existing limitations | `NOT_CAPTURED` (never generated; no prior-art search) |
 | Invention objective | `NOT_CAPTURED` |
 | Technical concept | `RECORDED` from the known mechanism (§6) |
@@ -261,7 +275,7 @@ replaces `NOT_CAPTURED` or `NOTHING_RECORDED`. `UNAVAILABLE` is never rendered a
 | Relationships between components | Integrated project: `RECORDED` from Owner-declared interfaces and dependencies, or `NOTHING_RECORDED` when none is declared. Any other project: `NOT_CAPTURED` with the same reason as the row above |
 | Operating sequence or workflow | `NOT_CAPTURED` |
 | Alternative embodiments | `NOT_CAPTURED` |
-| Materials, dimensions, parameters and operating conditions | `NOT_CAPTURED` as typed values; `RAW_TEXT_ONLY` where the inventor's own wording appears inside a Requirement Landscape statement, reproduced there unparsed. Interface verification-preparation inputs: `EXCLUDED_FROM_FIRST_SLICE` (planning metadata) |
+| Materials, dimensions, parameters and operating conditions | `NOT_CAPTURED` as typed values (no typed-parameter owner exists). Owner-recorded requirement quantities: `RECORDED` as opaque quoted inventor content (§6), never parsed, normalized, converted, calculated or typed. Only when the requirement-quantity owner holds no quantity for the project: `RAW_TEXT_ONLY` where the inventor's own wording appears inside a Requirement Landscape statement, reproduced there unparsed. Interface verification-preparation inputs: `EXCLUDED_FROM_FIRST_SLICE` (planning metadata) |
 | Novelty and differentiation statements | `NOT_CAPTURED` |
 | Unresolved technical issues | `RECORDED` from unresolved gaps (OPEN or PARTIAL) and active Owner-declared contradictions |
 | Assumptions | `RECORDED` from CAP-08 |
@@ -315,7 +329,14 @@ Composed verbatim, each item with its envelope:
 - **the known problem**, read only through the existing problem-resolution boundary that the report's Section 2 uses
   (`engine/deliverable_assembler.py` `_resolved_problem`, which deliberately does not use `state.known_problem` because
   RISK-002 can populate that field from a mechanism answer). Reading `state.known_problem` directly is not authorized; the
-  §4 seam rule governs how the boundary is reached. **The known mechanism** is read through the same Section-2 resolution;
+  §4 seam rule governs how the boundary is reached. The problem item always carries, next to the problem text, ONE fixed
+  system-assertion limitation (exact English wording): "InventorAI captures the problem statement at the step where the
+  inventor describes the problem and may shorten it at a 500-character limit. The text shown here may therefore have been
+  shortened; an ellipsis (…) at its end may indicate that shortening." It discloses the existing capture behaviour of
+  that boundary (`engine/progression_loop.py` `_trim_idea_summary`) and is not new engineering truth. It is unconditional:
+  truncation is never detected from the text, missing content is never reconstructed, the limitation never states that
+  shortening occurred, and the problem text stays quoted inventor content exactly as the owner holds it. **The known
+  mechanism** is read through the same Section-2 resolution;
 - the Owner-stated parts, interfaces and dependencies of an integrated project (Stage 15);
 - CAP-08 Owner-declared assumptions, with superseded entries as history;
 - CAP-10 Owner-declared contradictions — active pairs, and declarations no longer active marked as history;
@@ -323,12 +344,20 @@ Composed verbatim, each item with its envelope:
   needs, as missing information;
 - the Requirement Landscape: each statement with its provenance, status and resolving action. Criticality grades are not
   carried (§8);
+- owner-recorded requirement quantities (`engine/requirement_quantity.py`, read through the existing store reader
+  `load_requirement_quantities`, which takes part in the existing `read_snapshot()` today and is not one of the six §4
+  readers): each stored `value_text` as opaque quoted inventor content exactly as the owner holds it, with its closed
+  `quantity_kind` token, the owner's own provenance, validation state and chain state, and a reference to the Requirement
+  Landscape row of its anchoring answer while that answer is active. The value is never parsed, unit-split, normalized,
+  converted, calculated, typed or interpreted, and it is not repeated inside any Requirement Landscape item. No
+  typed-parameter owner, calculation / units owner or CAP-13 behaviour is created or activated;
 - technical evidence items, with their CAP-11 Source and Validation rows kept as two separate rows where the owner holds
   them. The CAP-11 Form row is `EXCLUDED_FROM_FIRST_SLICE` with the fixed reason "Excluded from this first slice because
   the Form row is derived from the evidence-quality field, and this disclosure export does not carry evidence-quality
   grades." Commercial, Manufacturing and Integration evidence is not carried (§12);
 - CAP-09 experiments, attributed per value: the objective and what to observe are system-generated (system assertions from
-  the existing Section-11 generator); each planning field (success criterion, measurement method, test hypothesis, test
+  the existing Section-11 generator), except that the objective of a `reasoned_leading_claim` experiment is
+  `EXCLUDED_FROM_FIRST_SLICE` (§7); each planning field (success criterion, measurement method, test hypothesis, test
   variable / condition) carries the attribution its owner records, so an inventor-written value is quoted inventor content
   and a system-provided value is a system assertion; and the Stage 19 execution state (`NO RESULT`, `RECORDED N` or
   `UNAVAILABLE`), a system-derived count of the inventor's own unvalidated records;
@@ -346,9 +375,16 @@ Composed verbatim, each item with its envelope:
   commercial differentiation evidence is never relabelled as technical novelty); diagrams, files and attachments;
   validation results; inventor approval.
 - `RAW_TEXT_ONLY`: materials, dimensions, parameters and operating conditions that appear only inside Requirement Landscape
-  statements as the inventor's own wording.
+  statements as the inventor's own wording — used only when the requirement-quantity owner holds no quantity for the
+  project; when it holds one, its quantities are `RECORDED` (§6) and no "only in the Requirement Landscape" statement is
+  made.
 - `EXCLUDED_FROM_FIRST_SLICE`: the CAP-11 Form row of technical evidence items; Commercial, Manufacturing and
-  Integration evidence; inventor-recorded experiment result text; interface verification-preparation inputs.
+  Integration evidence; inventor-recorded experiment result text; interface verification-preparation inputs; and the
+  generated objective of a `reasoned_leading_claim` experiment (`reasoned_leading_claim.objective`), with the fixed reason
+  "Excluded from this first slice because this generated objective names an evidence-quality level, and this disclosure
+  export does not carry evidence-quality grades." — the source objective names evidence-quality levels (§8). Only that
+  slot is excluded; the rest of the experiment is carried. Rewording, sanitizing or replacing that source text stays
+  prohibited, and no grade value is exported.
 
 ## 8. Data excluded entirely
 
@@ -559,11 +595,13 @@ Stage 35.
   for this candidate's journey wording).
 - **Legal adviser review:** an Owner decision, not a blocker to drafting or accepting this candidate.
 
-Owner decisions (state as of the ACCEPTANCE, 2026-10-04):
+Owner decisions (state as of CORRECTION 04, 2026-10-04):
 
 1. ACCEPTED (2026-10-04) — Acceptance of this candidate as the workstream contract of record.
-2. OPEN — Export history: accept the first-slice deferral (§11), or require export history now.
-3. OPEN — The two first-slice renderings and their file types (PDF excluded from the first slice).
+2. ACCEPTED (2026-10-04, recorded by CORRECTION 04) — Export history: the first-slice deferral (§11) is accepted, limited
+   to the local-download first slice; any future external transfer still requires export history before activation.
+3. ACCEPTED (2026-10-04, recorded by CORRECTION 04) — The two first-slice renderings: one versioned JSON file and one
+   self-contained HTML document generated solely from the same projection; PDF excluded from the first slice.
 4. OPEN — Whether a later slice adds an invention title or the inventor's own original description, only if an existing canonical
    owner already holds it verbatim; never generated.
 5. OPEN — Whether a later slice carries the inventor's recorded experiment result text.
