@@ -39,6 +39,20 @@ authorization; (2) an implementation contract; (3) the §5 source-to-envelope ma
 rule; (5) the UX / behaviour review before implementation; (6) independent verification; and (7) successful focused /
 local checks plus hosted mandatory CI and the Sharded FULL suite on the implementation head. Stage 35 may be entered only
 when an Owner-authorized product slice is delivered, and only by explicit Owner decision.
+CORRECTION 03: 2026-10-04, by Owner authorization of a documentation-only snapshot-coherence authority clarification of
+the accepted contract. It changes only §4 (the seam rule gains the bounded snapshot-participation adjustment and its
+IR-01 invariant), §4A (coherence means one stable, observed, committed SQLite snapshot) and §15 requirement 6; every
+other clause, the acceptance and the §17 decision states are unchanged, and the status stays ACCEPTED WORKSTREAM
+CONTRACT OF RECORD. Basis: preparation of the first-slice implementation contract found that six readers the first slice
+needs refuse inside the existing `read_snapshot()`, and no implementation contract was written; the Astra architecture
+review and the independent non-authoring Claude reviewer each returned PASS WITH CONDITIONS on the bounded store-owned
+snapshot-participation option (R1), and both rejected a second consistency mechanism (R2) and a narrowed first slice
+(R3). Both preserved the Section 11 evidence-quality wording issue as a separate, later source-to-envelope mapping
+issue; this correction does not resolve it. Correction 03 does NOT authorize product implementation, any modification of
+`engine/record_store.py`, creation of the Stage 35 composer, a route, page or download, a runtime schema, a persistence
+migration, export history, Stage 35 entry, deployment or the merge of any product change; it only fixes the authority
+boundary so that a later implementation contract may describe the reviewed R1 solution. The pre-correction text is
+preserved in Git history (PR #753, merge `2ef9ad9508253418f2018fec2999e5a12788467c`).
 *(Superseded 2026-10-04 by the Owner's acceptance, preserved — was: "STATUS: CONTRACT CANDIDATE — DOCUMENTATION ONLY —
 NO IMPLEMENTATION AUTHORIZED."; the title read "(CANDIDATE)" and the authority level read "subordinate governance
 workstream contract candidate".)*
@@ -146,28 +160,75 @@ Shape:
 2. Inside a future authorized implementation slice, and only there, a behaviour-preserving extraction of such a pure
    helper into an engine-level function is permitted under the existing opportunistic-modularization rule, provided the
    report, the PDF and every other surface that already uses the helper stay byte-identical for the same fixtures.
-3. Anything beyond that — changed semantics, new derivation, a second implementation of the same logic, a new owner or a
-   change to an owner's write path — STOPS, and the gap is reported instead.
+3. Anything beyond that and the bounded snapshot-participation adjustment below — changed semantics, new derivation, a
+   second implementation of the same logic, a new owner or a change to an owner's write path — STOPS, and the gap is
+   reported instead.
 4. Public labels for canonical tokens stay with their existing label owner. The export emits canonical tokens and reuses
    those labels; it creates no second label vocabulary. Only the export's own fixed text (headings, section status
    markers, disclaimers, scope label) is new.
 
+**Bounded snapshot-participation adjustment (Correction 03).** The existing `engine/record_store.py` `read_snapshot()`
+stays the only coherence mechanism (§4A). Six existing readers the first slice needs refuse inside it today, because
+their `_refuse_uncommitted_reads()` guard treats the store's own healthy read snapshot as an open transaction:
+
+1. `load_interface_dependencies`
+2. `load_success_criteria`
+3. `load_measurement_methods`
+4. `load_test_hypotheses`
+5. `load_test_variables`
+6. `load_result_events`
+
+Inside the separately authorized first-slice implementation, and only there, a narrowly bounded adjustment of that
+persistence owner is permitted so that exactly these six readers can take part in ONE store-owned healthy read snapshot.
+It may consist only of private, store-owned evidence of the lifetime and ownership of a snapshot that `read_snapshot()`
+itself opened; one private snapshot-aware reader admission guard; and the use of that guard by the six readers above and
+by no other reader, writer or confirmation reader. Each of the six keeps its query semantics, ordering, validation,
+project binding and corruption / failure behaviour. No second consistency mechanism is introduced — no change counter,
+revision token, re-read-and-compare or retry. The adjustment governs reader admission only: no new store, sidecar or
+durable state, and no table, schema, migration, data-model or storage-layout change.
+
+**IR-01 invariant (binding).** Never expose this connection's uncommitted or unsafe write state as durable truth. The
+adjustment therefore:
+
+- refuses whenever the sticky unsafe state (`_connection_unsafe`) is set;
+- refuses inside a write transaction the caller opened;
+- never treats `_connection_unsafe == False` alone as proof that a read is safe, and does not copy the flag-only guard
+  of `load_project_subsystems` onto the six readers;
+- grants snapshot-aware admission only after `read_snapshot()` has itself acquired a store-owned read snapshot from a
+  safe, transaction-resolved connection — never on its no-op branch, which opens nothing when the connection is not
+  committed-state-readable;
+- keeps every writer and every `committed_*` confirmation reader exactly as strict as today;
+- keeps each of the six readers' existing refusal of a bare open transaction when no store-owned snapshot is held;
+- never reconnects, repairs, retries or silently switches to another snapshot to hide a snapshot failure; and
+- refuses the export when snapshot integrity is lost.
+
+`_refuse_uncommitted_reads()` and `committed_state_readable()` are not relaxed globally. This adjustment is a boundary
+for a future authorized implementation only; Correction 03 itself changes no code (see the header).
+
 ## 4A. Coherent source snapshot and failure classes
 
-- The projection represents ONE coherent source snapshot of the ONE requested project: every section is read from the same
-  committed project state, and the implementation proves that the state did not change between the first and the last
-  read. If coherence cannot be shown, the download is refused. Records from different project revisions are never combined
-  into one apparently coherent document.
+- The projection represents ONE coherent source snapshot of the ONE requested project: the export reflects one stable,
+  observed, committed SQLite snapshot for all included source reads, acquired through the existing `read_snapshot()`
+  (§4, bounded snapshot-participation adjustment). Every value in one export comes from that same snapshot; values from
+  different committed states are never mixed into one apparently coherent document; this connection's own uncommitted
+  state is never read; and nothing is read for the export after the snapshot ends.
+- A commit by another connection after the snapshot is established does not make the in-progress export switch to the
+  newer state and does not by itself refuse the export: newer committed state is not an error. Whether the store's
+  SQLite locking makes that commit wait for the snapshot to end or lets it complete alongside the snapshot, the
+  in-progress export does not see it. A later export, in a new snapshot, may observe the later committed state.
+- If the snapshot cannot be acquired from a safe, transaction-resolved connection, or its integrity is lost before the
+  last source read, the download is refused; it is never continued, retried on another snapshot or silently repaired.
+- "Snapshot" names a read view only. No legal, durable or per-project revision identity exists or is implied.
 - **Export-level refusal** (bounded error, no file, no partial output): authentication or authorization failure;
-  project-binding failure (any record not bound to the requested project); snapshot incoherence; an inconsistent source
-  history (for example a broken supersession chain or an anchor defect); a global integrity or schema failure (an unknown
-  token, a schema violation).
+  project-binding failure (any record not bound to the requested project); failure to acquire or maintain the snapshot;
+  an inconsistent source history (for example a broken supersession chain or an anchor defect); a global integrity or
+  schema failure (an unknown token, a schema violation).
 - **Section-level `UNAVAILABLE`** is limited to a section-local read failure of one source that leaves every other section
   coherent and correctly bound. A refusal-class failure never degrades to a section-level `UNAVAILABLE`. A document with
   any `UNAVAILABLE` section may carry one fixed top-level sentence: "One or more sections of this document could not be
   read and are marked Unavailable."
-- Source tokens, revision identities and the content digest (§9) let the owner compare later exports. They do not imply
-  authenticity, approval, validation, notarization, a legal timestamp or priority.
+- Source tokens and the content digest (§9) let the owner compare later exports. They do not imply authenticity,
+  approval, validation, notarization, a legal timestamp, priority or a durable project revision identity.
 
 ## 5. Disclosure schema (conceptual; no frozen field names)
 
@@ -444,7 +505,16 @@ A future implementation must first show these failing, then passing:
 5. **Project separation and failure classes:** another account's project and a missing project are denied
    byte-identically; a projection never contains a record from another project; every §4A refusal-class failure refuses
    the download with no partial file and never degrades to a section-level `UNAVAILABLE`.
-6. **Coherent snapshot:** a change to the project state between the first and the last read refuses the download.
+6. **Coherent snapshot:** (a) every source value in one export, including those from the six readers named in §4, comes
+   from the same established store-owned snapshot; (b) a commit by another connection attempted after that snapshot is
+   established never produces a mixed-state projection — the in-progress export reflects only the snapshot state,
+   whether that commit waits for the snapshot to end or completes alongside it; (c) a later export, in a new snapshot,
+   observes the later committed state; (d) failure to acquire the snapshot (the sticky unsafe state, a caller-owned open
+   write transaction, the no-op branch of `read_snapshot()`) or loss of its integrity before the last source read
+   refuses the export; (e) no partial file is produced in any refused case; and (f) the §4 IR-01 invariant holds — each
+   of the six readers still refuses the sticky unsafe state and a bare open transaction when no store-owned snapshot is
+   held, and writers and `committed_*` confirmation readers are unchanged. Newer committed state alone never refuses the
+   download.
 7. **Envelope fidelity:** every `RECORDED` item carries its content class, source owner and owner-held metadata, and the
    human rendering shows them next to the item; no default value is substituted for missing metadata; no per-item approval
    field or line exists.
