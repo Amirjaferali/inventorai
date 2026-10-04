@@ -1022,6 +1022,14 @@ security; and architectural compatibility with the current application. CAP-14 r
 only; **video, animation, and AI-generated-video analysis are excluded** (including frame extraction to
 bypass the exclusion).
 
+**Calculation / units boundary — cross-reference only (2026-10-04).** The ownership boundary of the future shared
+deterministic calculation and units owner, on which CAP-13 numerical output and THERM-01 thermal analysis would depend, is
+recorded as a documentation-only contract candidate in
+[`SHARED_DETERMINISTIC_CALCULATION_AND_UNITS_OWNER_BOUNDARY_CONTRACT.md`](SHARED_DETERMINISTIC_CALCULATION_AND_UNITS_OWNER_BOUNDARY_CONTRACT.md).
+It implements nothing, assigns no CAP number, changes none of the CAP-12 / CAP-13 / CAP-14 entries or the THERM-01 section,
+and leaves every statement above unchanged: CAP-13 implementation feasibility remains unproven and CAP-13 stays
+`RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+
 ## 5. Non-authorization (restated)
 
 This register records capability concepts and their boundaries only. It authorizes no production code,
