@@ -431,8 +431,10 @@ _COMPLETE = "STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE"
 # The later Owner-authorized Stage 20, 21 and 22 closures moved the marker on to Stage 23 (navigation only); the Stage-19
 # completion and the "no Stage-20 implementation by the Stage-19 closure" fact stay true history.
 # The later Owner-authorized Stage 23 closure (no product change) moved the marker on to Stage 24 (navigation only);
-# the later delivered CAP-12 Form Mock-up Advisory Slice 1 entered Stage 24 as ENTERED / PARTIAL (marker unchanged).
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — ENTERED / PARTIAL — NAVIGATION ONLY"
+# the later delivered CAP-12 Form Mock-up Advisory Slice 1 entered Stage 24 as ENTERED / PARTIAL (marker unchanged);
+# the later Owner-authorized Stage 24 closure (no product change) completed Stage 24 for its bounded CAP-12 Form Mock-up
+# Advisory Slice 1 scope only and moved the marker on to Stage 25 (NOT ENTERED, navigation only).
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 25 — NOT ENTERED — NAVIGATION ONLY"
 _NO_S20 = "NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE"
 
 
@@ -468,7 +470,10 @@ def test_e41_only_stage_19_is_ticked_and_the_limits_are_preserved():
         assert re.search(r"^- \[x\] \*\*%d — " % stage, roadmap, re.M), stage
     # Stage 23 was ticked later by its own Owner-authorized closure (bounded four-axis scope, no product change)
     assert re.search(r"^- \[x\] \*\*23 — ", roadmap, re.M)
-    for stage in (11, 13, 14, 16, 17, 24):
+    # Stage 24 was ticked later by its own Owner-authorized closure (bounded CAP-12 Form Mock-up Advisory Slice 1 scope
+    # only, no product change); Stage 25 stays NOT ENTERED and unticked
+    assert re.search(r"^- \[x\] \*\*24 — ", roadmap, re.M)
+    for stage in (11, 13, 14, 16, 17, 25):
         assert re.search(r"^- \[ \] \*\*%d — " % stage, roadmap, re.M), stage
     flat = re.sub(r"\s+", " ", roadmap)
     for limit in ("FULL CAP-09: NOT AUTHORIZED", "FULL WS-PFV-001: NOT AUTHORIZED",

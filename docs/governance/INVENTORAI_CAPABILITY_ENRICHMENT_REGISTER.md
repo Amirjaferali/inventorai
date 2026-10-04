@@ -146,14 +146,19 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   Stage 22 for the current bounded decision trace + decision room scope and moved the marker on:
   `STAGE 22: COMPLETE — CURRENT BOUNDED DECISION TRACE + DECISION ROOM SCOPE` ·
   `NO STAGE-23 IMPLEMENTATION AUTHORIZED BY STAGE-22 CLOSURE` — and the later Stage 23 closure (CAP-06 entry below; no product change) completed Stage 23
-  for the current bounded four-axis Readiness Snapshot scope only and moved the marker on:
+  for the current bounded four-axis Readiness Snapshot scope only and moved the marker on — and the later delivered CAP-12 Form
+  Mock-up Advisory Slice 1 entered Stage 24, after which the later Stage 24 closure (CAP-12 entry below; no product change)
+  completed Stage 24 for the current bounded CAP-12 Form Mock-up Advisory Slice 1 scope only and moved the marker on:
   `STAGE 23: COMPLETE — CURRENT BOUNDED FOUR-AXIS READINESS-SNAPSHOT SCOPE ONLY` ·
   `STAGE 23 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED` ·
   `FULL CAP-06: NOT AUTHORIZED` ·
-  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — ENTERED / PARTIAL — NAVIGATION ONLY` ·
   `STAGE 24 — CAP-12 FORM MOCK-UP ADVISORY SLICE 1: DELIVERED` ·
-  `STAGE 24: ENTERED / PARTIAL — CAP-12 FORM MOCK-UP ADVISORY SLICE 1 ONLY` ·
-  `FULL CAP-12: NOT AUTHORIZED` · `CAP-13: NOT ACTIVATED` · `STAGE 25: NOT AUTHORIZED`.
+  `STAGE 24 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED` ·
+  `STAGE 24: COMPLETE — CURRENT BOUNDED CAP-12 FORM MOCK-UP ADVISORY SLICE 1 SCOPE ONLY` ·
+  `FULL CAP-12: NOT AUTHORIZED` · `FURTHER CAP-12 SLICES: NOT AUTHORIZED` · `CAP-13: NOT ACTIVATED` ·
+  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 25 — NOT ENTERED — NAVIGATION ONLY` ·
+  `NO STAGE-25 IMPLEMENTATION AUTHORIZED BY STAGE-24 CLOSURE` · `STAGE 25: NOT ENTERED` · `STAGE 25: NOT AUTHORIZED`.
+  *(Superseded 2026-10-04 by the Stage 24 closure (CAP-12 entry below; no product change), preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — ENTERED / PARTIAL — NAVIGATION ONLY` · `STAGE 24: ENTERED / PARTIAL — CAP-12 FORM MOCK-UP ADVISORY SLICE 1 ONLY`".)*
   *(Superseded 2026-10-03 by the delivered Stage 24 / CAP-12 Form Mock-up Advisory Slice 1, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY` · `NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE`".)*
   *(Superseded 2026-10-02 by the Stage 23 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY`".)*
   *(Superseded 2026-10-01 by the Stage 22 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22 —
@@ -539,8 +544,14 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   `form_mockup` role, request-local and non-persistent, offering only the source-governed foam-core / manual cut-and-join
   and thermoplastic / FFF-FDM alternatives. It makes no material specification and no engineering-suitability claim, has no
   evidence / readiness / progression authority, activates no CAP-13 / CAP-14 / WS-PFV-001 and has no AI / provider
-  dependency. **FULL CAP-12: NOT AUTHORIZED.** Stage 24 remains ENTERED / PARTIAL and unticked; that slice is an entry
-  increment, not this capability's ceiling, and the wider intended behavior above stays the future direction.
+  dependency. **FULL CAP-12: NOT AUTHORIZED.** **FURTHER CAP-12 SLICES: NOT AUTHORIZED.** Stage 24 is COMPLETE for the
+  current bounded CAP-12 Form Mock-up Advisory Slice 1 scope ONLY (Stage 24 — CAP-12 Form Mock-up Advisory — Closure,
+  2026-10-04, no product change; row 24 ticked for that scope only): that slice satisfies the bounded Stage-24 row
+  requirement, is not this capability's ceiling, and the wider intended behavior above stays the future direction — not
+  implemented, not closed, not claimed; CAP-13 stays NOT ACTIVATED and Stage 25 NOT ENTERED / NOT AUTHORIZED.
+  *(Superseded 2026-10-04 by the Stage 24 closure, preserved — was: "Stage 24 remains ENTERED / PARTIAL and unticked; that
+  slice is an entry increment, not this capability's ceiling, and the wider intended behavior above stays the future
+  direction.")*
 - **Earliest activation:** a dedicated materials-and-manufacturing feasibility gate (§6), followed by:
   governed source review; data licensing review; knowledge-source contract; deterministic rule and
   calculation boundary; increment contract; owner decisions; separate owner authorization; BASE RED where
