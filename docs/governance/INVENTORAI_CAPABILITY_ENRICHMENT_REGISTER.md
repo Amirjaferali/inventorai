@@ -28,7 +28,8 @@ their capabilities:
 - **Patent Export** is governed by `STRUCTURED_INVENTION_DISCLOSURE_AND_PATENT_EXPORT_OWNER_DECISION.md`
   (non-activating owner decision, associated with PR #229). CAP-06's patent-disclosure-readiness axis
   and any patent capability defer to it. Cross-reference only (2026-10-04): the workstream boundary and bounded first-slice
-  shape that its §10 requires are recorded as a documentation-only contract CANDIDATE in
+  shape that its §10 requires are recorded as the accepted workstream contract of record (documentation only; accepted by
+  the Owner on 2026-10-04) in
   `STAGE35_STRUCTURED_INVENTION_DISCLOSURE_AND_PATENT_EXPORT_WORKSTREAM_CONTRACT.md`; it implements nothing, authorizes
   no implementation, enters no Master Roadmap stage and changes no entry of this register.
 - **WS-PFV-001 — Prototype Feasibility and Validation** is governed by

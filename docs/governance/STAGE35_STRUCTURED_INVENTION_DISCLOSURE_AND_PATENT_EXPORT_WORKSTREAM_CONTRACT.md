@@ -1,10 +1,10 @@
-# STAGE 35 — STRUCTURED INVENTION DISCLOSURE AND PATENT EXPORT — WORKSTREAM CONTRACT (CANDIDATE)
+# STAGE 35 — STRUCTURED INVENTION DISCLOSURE AND PATENT EXPORT — WORKSTREAM CONTRACT (ACCEPTED)
 
-STATUS: CONTRACT CANDIDATE — DOCUMENTATION ONLY — NO IMPLEMENTATION AUTHORIZED. Records the workstream boundary and the
-bounded first-slice shape that the existing Owner decision requires before any implementation. It implements nothing and
-authorizes no implementation: no route, page, file generation, export, schema, store, persistence, API, provider, test or
-user-facing behaviour is created by this document.
-AUTHORITY LEVEL: subordinate governance workstream contract candidate under
+STATUS: ACCEPTED WORKSTREAM CONTRACT OF RECORD — DOCUMENTATION ONLY — NO IMPLEMENTATION AUTHORIZED. Records the
+workstream boundary and the bounded first-slice shape that the existing Owner decision requires before any
+implementation. It implements nothing and authorizes no implementation: no route, page, file generation, export, schema,
+store, persistence, API, provider, test or user-facing behaviour is created by this document.
+AUTHORITY LEVEL: subordinate governance workstream contract under
 [`STRUCTURED_INVENTION_DISCLOSURE_AND_PATENT_EXPORT_OWNER_DECISION.md`](STRUCTURED_INVENTION_DISCLOSURE_AND_PATENT_EXPORT_OWNER_DECISION.md)
 (the "Owner decision"), whose §10 requires a separate Owner-authorized workstream or contract before implementation. It
 amends neither the Owner decision nor any Register entry, roadmap row or existing export contract.
@@ -19,6 +19,29 @@ contradictions found by the Lead's acceptance-readiness re-read: the CAP-11 Form
 (§5, §6, §7, §8, §12, §15), and system-metadata exclusions versus verbatim quoted inventor content (§8, §11, §15). The
 status stays CONTRACT CANDIDATE. The Correction 01 text is preserved in Git history (PR #751, merge
 `09000bf63ec56853906c259a6096e6102fce11c6`).
+ACCEPTANCE: 2026-10-04, by Owner decision accepting the corrected Stage 35 workstream contract (PR #750 as corrected by
+PR #751 and PR #752, merge `bf01bbd1d3bca4a03c87e7cec0b5b892bedc731d`) as the workstream contract of record, recorded
+documentation-only; no boundary clause (§§0–16, §18) was changed by the acceptance. This acceptance does NOT enter
+Stage 35; does NOT authorize implementation; does NOT authorize the first slice; does NOT activate patent export; does NOT
+authorize export history; does NOT create or activate an approval workflow; does NOT authorize external transfer; does
+NOT authorize API, provider or AI use; does NOT authorize email delivery (Stage 33); does NOT activate Stage 34, Stage 36
+or Stage 39; does NOT authorize attachment processing; gives no legal advice; authorizes no patent claims drafting; makes
+no patentability, prior-art, freedom-to-operate, legal-validity or filing-ready claim; assigns no CAP number; and changes
+no Master Roadmap checkbox, marker or stage count. Of the §17 Owner decisions only decision 1 (acceptance) is taken;
+decisions 2–10 stay OPEN.
+VERIFICATION BASIS (truthful): the Astra architecture review returned PASS WITH CONDITIONS; the non-authoring Level-1
+semantic review returned PASS WITH CONDITIONS; CORRECTION 01 (PR #751) addressed those conditions; CORRECTION 02
+(PR #752) closed the final two internal contradictions; the final acceptance-readiness verification was a Lead / executor
+re-read by the author of the corrections, not a new independent architecture review; and no additional full review was
+required under the bounded-correction / no-review-recursion disposition.
+FUTURE IMPLEMENTATION PREREQUISITES: any first implementation increment still requires (1) a separate Owner implementation
+authorization; (2) an implementation contract; (3) the §5 source-to-envelope mapping; (4) compliance with the §4 seam
+rule; (5) the UX / behaviour review before implementation; (6) independent verification; and (7) successful focused /
+local checks plus hosted mandatory CI and the Sharded FULL suite on the implementation head. Stage 35 may be entered only
+when an Owner-authorized product slice is delivered, and only by explicit Owner decision.
+*(Superseded 2026-10-04 by the Owner's acceptance, preserved — was: "STATUS: CONTRACT CANDIDATE — DOCUMENTATION ONLY —
+NO IMPLEMENTATION AUTHORIZED."; the title read "(CANDIDATE)" and the authority level read "subordinate governance
+workstream contract candidate".)*
 BASIS: the Lead's read-only post-CAP-13 roadmap selection reassessment and the Lead's read-only Stage 35 reassessment
 (Stage 35 viable as the next bounded product direction; the disclosure package is distinct from the report, PDF and
 Structured Export; a documentation-only workstream contract is the smallest safe next step), and the two reviews named in
@@ -460,24 +483,26 @@ Stage 35.
 
 - **Before acceptance of this candidate:** a targeted verification of CORRECTION 01 against the conditions of the Astra
   architecture review and the non-authoring Level-1 review — not a full review restart, unless the scope has expanded.
+  DONE before the acceptance as a Lead / executor re-read (see VERIFICATION BASIS in the header), followed by CORRECTION
+  02.
 - **Before implementation:** a UX / behaviour review of the journey, labels, markers and disclaimers in EN / AR (optional
   for this candidate's journey wording).
 - **Legal adviser review:** an Owner decision, not a blocker to drafting or accepting this candidate.
 
-Owner decisions still required:
+Owner decisions (state as of the ACCEPTANCE, 2026-10-04):
 
-1. Acceptance of this candidate as the workstream contract of record.
-2. Export history: accept the first-slice deferral (§11), or require export history now.
-3. The two first-slice renderings and their file types (PDF excluded from the first slice).
-4. Whether a later slice adds an invention title or the inventor's own original description, only if an existing canonical
+1. ACCEPTED (2026-10-04) — Acceptance of this candidate as the workstream contract of record.
+2. OPEN — Export history: accept the first-slice deferral (§11), or require export history now.
+3. OPEN — The two first-slice renderings and their file types (PDF excluded from the first slice).
+4. OPEN — Whether a later slice adds an invention title or the inventor's own original description, only if an existing canonical
    owner already holds it verbatim; never generated.
-5. Whether a later slice carries the inventor's recorded experiment result text.
-6. Any approval owner, and with it any use of the reserved approval extension point (a later, separately reviewed
+5. OPEN — Whether a later slice carries the inventor's recorded experiment result text.
+6. OPEN — Any approval owner, and with it any use of the reserved approval extension point (a later, separately reviewed
    decision).
-7. Whether a later slice carries Commercial, Manufacturing or Integration evidence.
-8. Implementation authorization of the first slice, and with its delivery the decision whether to enter Stage 35.
-9. Legal adviser review of the disclaimer wording before any user release.
-10. Separately and not now: any external transfer, API surface, email delivery, provider or AI use, or attachment handling.
+7. OPEN — Whether a later slice carries Commercial, Manufacturing or Integration evidence.
+8. OPEN — Implementation authorization of the first slice, and with its delivery the decision whether to enter Stage 35.
+9. OPEN — Legal adviser review of the disclaimer wording before any user release.
+10. OPEN — separately unauthorized, and not now: any external transfer, API surface, email delivery, provider or AI use, or attachment handling.
 
 ## 18. Non-authorization (restated)
 
