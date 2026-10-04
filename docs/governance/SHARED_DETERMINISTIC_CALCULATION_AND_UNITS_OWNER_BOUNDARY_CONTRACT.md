@@ -1,9 +1,10 @@
-# SHARED DETERMINISTIC CALCULATION AND UNITS OWNER — BOUNDARY CONTRACT (CANDIDATE)
+# SHARED DETERMINISTIC CALCULATION AND UNITS OWNER — BOUNDARY CONTRACT (ACCEPTED)
 
-STATUS: CONTRACT CANDIDATE — DOCUMENTATION ONLY. Records the ownership boundary of a FUTURE shared owner. It implements
+STATUS: ACCEPTED BOUNDARY CONTRACT OF RECORD — DOCUMENTATION ONLY — NO IMPLEMENTATION AUTHORIZED. Records the ownership
+boundary of a FUTURE shared owner. It implements
 nothing and authorizes no implementation: no runtime owner, adapter, method, unit vocabulary, conversion, schema, store,
 persistence, route, test or user-facing behaviour is created by this document.
-AUTHORITY LEVEL: subordinate governance contract candidate under the existing P9-QS future deterministic-calculation
+AUTHORITY LEVEL: subordinate governance boundary contract under the existing P9-QS future deterministic-calculation
 adapter gate lineage — [`P9_QS_PHASE_9_TECHNICAL_QUALITY_STANDARD_CONTRACT.md`](P9_QS_PHASE_9_TECHNICAL_QUALITY_STANDARD_CONTRACT.md)
 §12 (Units & Dimensional Integrity), §13 (future deterministic-calculation adapter gate) and §22 (gate sequence) — and bound
 by the [Technical Realization Evidence and Artifact Model](TECHNICAL_REALIZATION_EVIDENCE_AND_ARTIFACT_MODEL.md). It amends
@@ -12,6 +13,14 @@ neither document, the THERM-01 Register section, the CAP-13 Register entry nor t
 DESIGNATION: descriptive only — "the shared calculation and units owner". UNNUMBERED: no CAP number is assigned and `CAP-06`
 is not reused (P9-QS §13); assigning any identifier is a separate Owner decision.
 RECORDED: 2026-10-04, by Owner authorization of a documentation-only contract candidate.
+ACCEPTANCE: 2026-10-04, by Owner decision accepting the merged candidate as the boundary contract of record, recorded
+documentation-only; no boundary clause (§§2–15, §17) was changed by the acceptance. This acceptance does not enter Stage 25, does not activate CAP-13, does not authorize THERM-01, does not implement the shared owner, does not authorize any first increment, and does not assign a CAP number. A future first
+increment still requires a separate Owner authorization, a named authorized consumer (§13), the source inspection and
+unit-source qualification of §9, and an implementation contract or a bounded implementation authorization.
+Implementation, a named consumer and any method admission stay unauthorized; no CAP number is assigned and `CAP-06` is
+not reused.
+*(Superseded 2026-10-04 by the Owner's acceptance, preserved — was: "STATUS: CONTRACT CANDIDATE — DOCUMENTATION ONLY.";
+the title read "(CANDIDATE)" and the authority level read "subordinate governance contract candidate".)*
 BASIS: the Lead's read-only Stage 25 / CAP-13 feasibility gate (finding B — CAP-13 is feasible only after calculation and
 units ownership is decided); the Lead's read-only calculation and units ownership gate (finding B — a new shared calculation
 and units owner is required before CAP-13); an Astra architecture review and an independent Claude architecture / semantic
@@ -20,9 +29,9 @@ review inputs held in Git / GitHub and the Owner's records, not committed reposi
 
 ---
 
-## 0. Preserved truth (binding; unchanged by this candidate)
+## 0. Preserved truth (binding; unchanged by this contract and its acceptance)
 
-- `ACTIVE CONTRACT: NONE`. This candidate is not a product increment and fills no active-contract slot.
+- `ACTIVE CONTRACT: NONE`. This contract is not a product increment and fills no active-contract slot.
 - Stage 25 / CAP-13: `STAGE 25: NOT ENTERED` · `STAGE 25: NOT AUTHORIZED` · `CAP-13: NOT ACTIVATED`. CAP-13 stays blocked
   until this owner is implemented under a later, separate authorization, and even then needs its own contract.
 - Stage 27 / THERM-01 stays NOT AUTHORIZED; its own thermal feasibility / contract gate (Register THERM-01 section) stays
@@ -33,7 +42,7 @@ review inputs held in Git / GitHub and the Owner's records, not committed reposi
 - Stage 14 stays blocked where the Master Roadmap records it as blocked.
 - The Master Roadmap keeps 45 top-level stages with 23 / 45 incomplete; no checkbox, marker or count changes. This owner
   enters no Master Roadmap stage unless the Owner separately decides otherwise.
-- This candidate is not CAP-13, THERM-01, Technical Realization or Stage-36 implementation.
+- This contract is not CAP-13, THERM-01, Technical Realization or Stage-36 implementation.
 
 ## 1. Purpose
 
@@ -284,13 +293,13 @@ and partial recommendations.
 
 ## 16. Reviewer path and Owner decisions
 
-- This document is a candidate. The Astra review and the independent Claude architecture / semantic review are sufficient
-  to draft it.
+- The Astra review and the independent Claude architecture / semantic review were sufficient to draft the candidate. The
+  Owner accepted it on 2026-10-04 as the boundary contract of record without changing any boundary clause.
 - If the contract changes materially before implementation, one adequate non-authoring Level-1 semantic review is required.
 - Any implementation needs risk-appropriate independent verification.
 - A UX / behaviour review is required only when a consuming capability first shows calculated values to users.
-- Owner decisions still required: acceptance of this candidate; any identifier for the owner; and, separately, any first
-  increment, its named consumer and each method admission.
+- Owner decisions still required: any identifier for the owner; and, separately, any first increment, its named consumer
+  and each method admission. Acceptance of the candidate is recorded in the header (ACCEPTANCE).
 
 ## 17. Non-authorization (restated)
 
