@@ -184,7 +184,8 @@ It may consist only of private, store-owned evidence of the lifetime and ownersh
 itself opened; one private snapshot-aware reader admission guard; and the use of that guard by the six readers above and
 by no other reader, writer or confirmation reader. Each of the six keeps its query semantics, ordering, validation,
 project binding and corruption / failure behaviour. No second consistency mechanism is introduced — no change counter,
-revision token, re-read-and-compare or retry — and no table, schema, migration or other persistence changes.
+revision token, re-read-and-compare or retry. The adjustment governs reader admission only: no new store, sidecar or
+durable state, and no table, schema, migration, data-model or storage-layout change.
 
 **IR-01 invariant (binding).** Never expose this connection's uncommitted or unsafe write state as durable truth. The
 adjustment therefore:
