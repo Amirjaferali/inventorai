@@ -38,6 +38,13 @@ wording (§12.8), C3 one "How to read this document" block and one Risks clarifi
 wrapping and direction rules (§10), with UX obligations #29–#32 (§14) and a targeted re-check package (§16). No token,
 marker, mapping, source, owner, schema, snapshot, failure or authorization rule changes. The Correction 03 text is
 preserved in Git history (PR #755, commit `adffbbf6b695e866dc80bfc4381fca5e66edb8d4`).
+CORRECTION 05 (final UX): 2026-10-04, by Owner authorization of ONE final documentation-only UX correction after the
+targeted UX re-check returned PASS WITH CONDITIONS (C2 and C3 closed; Correction 05 authority, Arabic / RTL handling and
+the narrow regression check passed; no further UX or architecture review required). It closes only R-C1 (one legend
+sentence explaining existing owner-held "you" / "your" wording, §12.7, §12.9; #29 narrowed) and R-C4 (page-level
+wrapping for the header digest and version identifiers, §10; #32 extended). No owner-held string, JSON value, token,
+label semantics or other rule changes. The Correction 04 (UX) text is preserved in Git history (PR #755, commit
+`c10da9014977d8cdb9ba9c53e977bb6be9eeaf6b`).
 BASE: `feature/atomic-json-session-persistence` at `0ab87dca9ab5abebc03da791d288d661727d7858` (tree
 `8cfd87c026298df7f31fd13cf082c6efe470ee7e`); `ACTIVE CONTRACT: NONE`; Stage 35 NOT ENTERED / NOT AUTHORIZED; the Master
 Roadmap at 23 / 45 incomplete.
@@ -642,7 +649,13 @@ key. A v1 reader rejects unknown keys.
 - Every value sits in its own direction-isolated container (`dir="auto"`, `<bdi>` for inline values) with
   `white-space: pre-wrap` and `overflow-wrap: anywhere` (C4), so a long unbroken value wraps inside its container and
   never forces horizontal page overflow at phone width; nothing is trimmed or normalized, and wrapping changes only the
-  display, never the value. Labels sit outside the `dir="auto"` value element. A quoted value carries the adjacent label "Inventor's own
+  display, never the value. Labels sit outside the `dir="auto"` value element.
+- **Page-level wrapping (Correction 05, R-C4).** `overflow-wrap: anywhere` also applies at the document `body` level, so
+  the header's content digest (`sha256:` + 64 lowercase hex), the disclosure-schema and export-format version
+  identifiers and every other long generated string wrap within the viewport; `white-space: pre-wrap` stays on
+  projection values only. The digest and version strings are emitted unchanged — no soft hyphen, zero-width or other
+  character is inserted — so selecting and copying the digest yields the exact original; wrapping is presentation
+  only. A quoted value carries the adjacent label "Inventor's own
   words"; a system value carries "InventorAI statement". The Source and Validation labels (CAP-11 `UI_ED_*`), the
   currency label and any marker wording sit inside the same item container, next to the value they describe.
 - **Attribution invariant (Correction 02).** For every truth-bearing item, each `RECORDED` slot — a value-`null`
@@ -799,8 +812,9 @@ occurred, and it is never chosen, varied or omitted by inspecting the problem te
 
 ### 12.7 Neutral export labels (Correction 04, C1; new `UI_S35_*` keys; HTML only)
 
-The downloaded document may be read by people other than the inventor, so its copy never addresses the reader as the
-inventor. These keys replace, in the disclosure HTML only, the reused labels named; the reused keys, every other surface
+The downloaded document may be read by people other than the inventor, so its Stage-35-authored copy never addresses
+the reader as the inventor. Existing owner-held statements keep their canonical wording; where they say "you" or
+"your", the §12.9 legend explains it (Correction 05, R-C1). These keys replace, in the disclosure HTML only, the reused labels named; the reused keys, every other surface
 and every JSON token are unchanged. The neutral field headings 12 and 26 and the neutral `RESULT_TEXT_NOT_CARRIED`
 reason are fixed in §12.4 and §12.5. The pre-download page (§13) is addressed to the signed-in inventor and keeps its
 second-person wording.
@@ -845,6 +859,8 @@ EN:
 - "Each section shows either the items InventorAI holds for this project or one status."
 - "“Inventor's own words”: text quoted exactly as the inventor recorded it. InventorAI has not checked or assessed it."
 - "“InventorAI statement”: fixed or system-generated wording from InventorAI."
+- "When an existing InventorAI statement uses “you” or “your”, it refers to the inventor who recorded this project."
+  (Correction 05, R-C1: explanatory only; the owner-held statements are not rewritten.)
 - "Items listed: records InventorAI holds for this project. Each item shows its source and validation details."
 - "“Nothing recorded in this project”: InventorAI holds no record of this in this project. It does not mean that none
   exists."
@@ -864,6 +880,7 @@ AR:
 - «يعرض كل قسم إما العناصر التي يحتفظ بها InventorAI لهذا المشروع، وإما حالة واحدة.»
 - «"كلمات المخترع كما كتبها": نص منقول حرفيًا كما سجّله المخترع، ولم يتحقق منه InventorAI ولم يقيّمه.»
 - «"عبارة من InventorAI": صياغة ثابتة أو مولَّدة من InventorAI.»
+- «عندما تستخدم عبارةٌ قائمةٌ من InventorAI كلمتَي "أنت" أو "لك"، فإنها تشير إلى المخترع الذي سجّل هذا المشروع.»
 - «العناصر المدرجة: سجلات يحتفظ بها InventorAI لهذا المشروع، ويعرض كل عنصر تفاصيل مصدره والتحقق منه.»
 - «"لا شيء مسجّل في هذا المشروع": لا يحتفظ InventorAI بأي سجل لذلك في هذا المشروع، ولا يعني ذلك أنه غير موجود.»
 - «"لا يلتقط InventorAI هذه المعلومة": لا يلتقط InventorAI هذا النوع من المعلومات.»
@@ -940,10 +957,10 @@ Each obligation must first fail on the implementation base, then pass. Files:
 | 26 | S1 DENIAL versus REFUSAL (Condition C) | W, P | no routes | §3.4, §4 | (1) missing project, (2) another account's project, (3) NULL owner and (4) an ownership-lookup failure that `_is_authorized` converts to `ProjectAccessDenied` (an exception injected into `store.load_owner`, a storage error included) each give the same byte-identical `_deny_project()` response; (5) a storage, schema or integrity failure injected into `store.load_contract` after authorization succeeded gives the empty 503; (6) every case produces no file; `get_authorized_project_read`, `_is_authorized` and `_deny_project()` are unchanged | §4, P10-D3a |
 | 27 | attribution coverage (Condition B) | P, H | no projection | §8.1, §8.3, §9.6, §10 | in a fully populated fixture: every `RECORDED` item of a truth-bearing kind has a `RECORDED` slot with `content_class`, `source_owner` and a four-field envelope whose values equal the owner-held fields or are `NOT_APPLICABLE` where the owner holds none (`unresolved_gap`, `routed_specialist_need`, `recorded_unknown` and both declared-contradiction kinds included); only `gap_reference` and `evidence_reference` are reference-only, each with exactly one ref to a valid item of the kind §8.1 names and no slot of its own carrying metadata; the schema check refuses a truth-bearing item without attribution, a reference-only item with its own metadata or a dangling ref, and an injected default value; the HTML shows Source, Validation and Limitation (and Currency where recorded) inside each truth-bearing item's container, and the inherited rows next to each reference | §5, workstream §15.7 |
 | 28 | canonical field-29 representation (F1) | P | no projection | §7, §8.3, live `derive_requirement_landscape` | (1) `assumption → answer A` with A an endpoint of an active declared contradiction: no REFUSAL; the assumption's ref resolves to the one `active_contradiction` row naming A; A has no own row and none is created; (2) `assumption → answer A → corrected answer B` with the terminal B in an active declared contradiction: no REFUSAL and every successor / history ref resolves (A and B in field 26; B carried in the contradiction row); (3) A an endpoint of two active pairs: the ref lists both rows in owner order; (4) an active `unknown` record joined by a legacy `contradicts` edge: its `recorded_unknown` ref resolves to the legacy `active_contradiction` row; (5) the ordinary fixtures without contradictions still resolve to own `assertion` rows; (6) an `anchor_active` quantity resolves to its anchor's own `assertion` row, and a quantity whose anchor became a contradiction endpoint refuses through the owner's `QuantityHistoryError` (owner semantics, §8.3), not through an export reference defect; no case uses text matching or a second Landscape derivation | §5, §7 |
-| 29 | C1 neutral wording | H | no template | §12.4, §12.5, §12.7 | an `OWNER_STATED` (and `user_defined`) Source renders "Inventor" / "المخترع", never "You" / "أنت"; fields 12 and 26, the `RESULT_TEXT_NOT_CARRIED` reason, the withdrawn-answer note and the execution-state text use the neutral §12.7 wording; a scan of every fixed-text string of the EN and AR documents (excluding quoted inventor content, located structurally) finds no second-person "you" / "your" (EN) or second-person address (AR) other than the exact workstream disclaimers' imperatives; the reused keys and other surfaces are unchanged, and the JSON is byte-identical | workstream §4 rule 4 |
+| 29 | C1 neutral wording | H | no template | §12.4, §12.5, §12.7 | an `OWNER_STATED` (and `user_defined`) Source renders "Inventor" / "المخترع", never "You" / "أنت"; fields 12 and 26, the `RESULT_TEXT_NOT_CARRIED` reason, the withdrawn-answer note and the execution-state text use the neutral §12.7 wording; a scan of every Stage-35-authored fixed-text string — the §12 copy and the new `UI_S35_*` keys — in the EN and AR documents finds no ambiguous second-person "you" / "your" (EN) or second-person address (AR) other than the exact workstream disclaimers' imperatives; existing owner-held / owner-generated strings keep their canonical wording, and the ONLY allowed families are (i) Requirement Landscape owner statements (the exported `label`, `status`, `resolving_action` and `statement` slots, e.g. "Contradiction you declared", "Interface you declared", "declared by you; not validated", "You indicated that this is not known yet.", "You chose to defer this item.") and (ii) Section-11 owner / system-generated experiment text (e.g. `what_to_observe` "… under conditions you control."); when any rendered string of those families contains "you" / "your", the §12.9 legend sentence explaining it is present in both locales; no other copy is exempt; quoted inventor content (located structurally) is out of scope; the reused keys, the owner strings and other surfaces are unchanged, and the JSON is byte-identical (Correction 05, R-C1) | workstream §4 rule 4 |
 | 30 | C2 envelope context | H | no template | §10, §12.8 | every `NOT_APPLICABLE` Source, Validation and Limitation row of a truth-bearing item renders its §12.8 sentence (EN and AR), never a bare "Not applicable"; each sentence states that no separate value is held and its second sentence rules out "no source", "validated / validation unnecessary" and "no limitations"; field-level `NOT_APPLICABLE` (fields 25, 28) still renders "Not applicable"; the JSON marker is unchanged | workstream §5 |
 | 31 | C3 legend and Risks clarification | H | no template | §10, §12.9, §12.10 | the one "How to read this document" block appears after the disclaimers and before field 1, in EN and AR, and explains both content classes and all seven markers with the §12.3 wording; with fixtures where fields 15, 16, 17 and 24 are each `NOTHING_RECORDED`, the legend line for that marker states that it does not mean none exists; the §12.10 clarification sits under the field-24 heading whatever its marker; neither text contains a severity, probability, score, ranking or assessment word, and the field-24 items are unchanged | workstream §13 |
-| 32 | C4 phone width and long values | H | no template | §10 | the document has the viewport meta; at a 360–390 px viewport a 2,000-character unbroken inventor value (no spaces) causes no horizontal page overflow, wraps inside its container and still decodes to the exact owner-held value; `white-space: pre-wrap`, `dir="auto"` / `<bdi>`, escaping and labels outside the value element are unchanged; in the Arabic document each exact English disclaimer, the English scope label and the English `capture_limitation` carry `lang="en" dir="ltr"`, and Arabic mixed-direction fixtures keep each value next to its own labels | workstream §13 |
+| 32 | C4 phone width and long values | H | no template | §10 | the document has the viewport meta; at a 360–390 px viewport: (A) a 2,000-character unbroken inventor value (no spaces) causes no horizontal page overflow, wraps inside its container and still decodes to the exact owner-held value; (B) a normal generated header with the disclosure-schema version, the export-format version and the full `sha256:` content digest keeps the page width within the viewport with no horizontal document overflow, the digest text in the document is byte-identical to the JSON `content_digest`, and selecting / copying it yields exactly that digest (no inserted soft hyphen or zero-width character; the digest is never altered to make the test pass) (Correction 05, R-C4); `white-space: pre-wrap`, `dir="auto"` / `<bdi>`, escaping and labels outside the value element are unchanged; in the Arabic document each exact English disclaimer, the English scope label and the English `capture_limitation` carry `lang="en" dir="ltr"`, and Arabic mixed-direction fixtures keep each value next to its own labels | workstream §13 |
 
 R1-focused obligations (file R):
 
@@ -1007,7 +1024,8 @@ wording and presentation only, so the next reviewer performs only this targeted 
 
 - **C1 — neutral wording:** a third-party reader sees "Inventor" / "المخترع" as the Source of the inventor's records, the
   neutral field-12 and field-26 headings, the neutral `RESULT_TEXT_NOT_CARRIED` reason, withdrawn-answer note and
-  execution-state text (§12.4, §12.5, §12.7); no document copy addresses the reader as the inventor.
+  execution-state text (§12.4, §12.5, §12.7); no Stage-35-authored copy addresses the reader as the inventor, and
+  owner-held "you" / "your" is explained by the §12.9 legend sentence (Correction 05).
 - **C2 — envelope `NOT_APPLICABLE`:** the §12.8 sentences cannot be read as "no source", "validated", "validation
   unnecessary" or "no limitations", and field-level "Not applicable" (fields 25, 28) still reads correctly.
 - **C3 — legend and Risks:** the "How to read this document" block (§12.9) correctly explains both content classes and
@@ -1018,6 +1036,9 @@ wording and presentation only, so the next reviewer performs only this targeted 
   stays readable and exact; English fixed text inside the Arabic document reads left-to-right (§10); mixed-direction
   fixtures keep each value next to its own labels.
 - **Not in scope:** anything outside C1–C4, and the legal sufficiency of the disclaimer wording (Owner decision 9).
+
+Outcome: the targeted re-check returned PASS WITH CONDITIONS (C2 and C3 closed); its two residuals, R-C1 and R-C4, are
+closed by Correction 05 (final UX), and the reviewer recorded that no further UX or architecture review is required.
 
 ## 17. Unresolved issues and pre-implementation Owner decisions
 
@@ -1042,9 +1063,12 @@ F1 (a contradiction endpoint has no own field-29 row), is addressed by Correctio
 The targeted non-authoring delta verification of Correction 03 returned PASS. The UX / behaviour review returned PASS
 WITH CONDITIONS C1–C4, addressed by Correction 04 (UX) under workstream contract Correction 05.
 
+The targeted UX re-check returned PASS WITH CONDITIONS (C2, C3 closed); Correction 05 (final UX) closes R-C1 and R-C4.
+No further UX or architecture review is required.
+
 Still open:
 
-- **Targeted UX copy / presentation re-check** of C1–C4 (§16).
+- **Final Lead diff verification** of Correction 05 and hosted CI on the final head.
 - **Owner decision** on accepting and merging this implementation contract.
 - **Implementation authorization** (workstream contract §17 decision 8) has not been given.
 - **Owner-level note (no export change):** a requirement quantity whose anchoring answer later becomes an endpoint of an
