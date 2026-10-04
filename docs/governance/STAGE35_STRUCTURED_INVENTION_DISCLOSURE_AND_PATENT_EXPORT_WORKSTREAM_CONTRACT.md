@@ -67,6 +67,15 @@ stays ACCEPTED WORKSTREAM CONTRACT OF RECORD. Correction 04 does NOT authorize i
 CAP-13 or any calculation / units owner, create a typed-parameter owner, authorize export history, or authorize any
 route, page, download, schema, persistence, migration, deployment or release. The pre-correction text is preserved in
 Git history (PR #754, merge `0ab87dca9ab5abebc03da791d288d661727d7858`).
+CORRECTION 05: 2026-10-04, by Owner authorization of a documentation-only UX correction after the UX / behaviour review
+of the first-slice implementation contract candidate (PR #755) returned PASS WITH CONDITIONS (C1–C4); the architecture
+review and the non-authoring semantic verification of that candidate are complete. It changes only §4 rule 4
+(neutral export-only labels), §5 (contextual wording for envelope `NOT_APPLICABLE` rows) and §13 (one "How to read this
+document" block and one fixed Risks clarification). These are presentation and explanation only: no token, marker,
+truth, data, source, owner, persistence, mapping, legal conclusion, risk assessment or architecture changes, and no
+label of any other product surface changes. Every other clause and every §17 decision state is unchanged, and the
+status stays ACCEPTED WORKSTREAM CONTRACT OF RECORD. The pre-correction text is preserved in Git history (PR #755,
+commit `adffbbf6b695e866dc80bfc4381fca5e66edb8d4`).
 *(Superseded 2026-10-04 by the Owner's acceptance, preserved — was: "STATUS: CONTRACT CANDIDATE — DOCUMENTATION ONLY —
 NO IMPLEMENTATION AUTHORIZED."; the title read "(CANDIDATE)" and the authority level read "subordinate governance
 workstream contract candidate".)*
@@ -179,7 +188,13 @@ Shape:
    reported instead.
 4. Public labels for canonical tokens stay with their existing label owner. The export emits canonical tokens and reuses
    those labels; it creates no second label vocabulary. Only the export's own fixed text (headings, section status
-   markers, disclaimers, scope label) is new.
+   markers, disclaimers, scope label, and the Correction 05 explanatory text of §5 and §13) is new.
+   **Exception (Correction 05).** Because the human-readable rendering can be shared with third parties, it may show a
+   neutral, export-only label for an existing canonical source or content token, and a neutral export-only equivalent
+   of a reused product label whose wording addresses the reader in the second person (for example `OWNER_STATED`
+   rendered as "Inventor" / "المخترع" instead of the product label "You" / "أنت"). This is presentation only: the
+   token, its canonical owner, its provenance and validation meaning, the machine-readable file and every other product
+   surface's labels are unchanged.
 
 **Bounded snapshot-participation adjustment (Correction 03).** The existing `engine/record_store.py` `read_snapshot()`
 stays the only coherence mechanism (§4A). Six existing readers the first slice needs refuse inside it today, because
@@ -261,6 +276,11 @@ is ever rendered as "none", empty, zero, blank or omitted:
 
 `NOT_APPLICABLE` is used for envelope metadata and only for the section cases the implementation contract names; it never
 replaces `NOT_CAPTURED` or `NOTHING_RECORDED`. `UNAVAILABLE` is never rendered as nothing recorded or not captured.
+
+**Envelope-row context (Correction 05).** In the human rendering, a `NOT_APPLICABLE` envelope-metadata row (Source,
+Validation, Limitation, Currency) may carry a fixed contextual explanation that no separate value of that kind is held
+for the item, so that the marker is not read as "no limitation", "no source needed" or "no validation needed". The
+marker token and its field-level wording "Not applicable" are unchanged, and no new marker or state is created.
 
 **Field map.** Every disclosure field of the Owner decision §2 has exactly one first-slice disposition:
 
@@ -514,6 +534,17 @@ experiment result text is `EXCLUDED_FROM_FIRST_SLICE` (only the execution state 
 - Machine-readable keys are language-neutral and versioned (§9); file names contain no inventor-authored text.
 - Labels state the scope (this project only) and the non-legal nature plainly; no label, filename or help text may suggest
   a patent application, a filing, legal review or validation.
+- **"How to read this document" (Correction 05).** The human rendering may carry exactly ONE fixed explanatory block,
+  after the scope label and disclaimers and before the disclosure fields. It explains only the difference between quoted
+  inventor content and InventorAI statements (§5) and the existing seven section status markers in their §5 meanings —
+  in particular that `NOTHING_RECORDED` means InventorAI holds no record of it in this project, not that it does not
+  exist; that `NOT_CAPTURED` means InventorAI does not capture that information; that `EXCLUDED_FROM_FIRST_SLICE` means
+  InventorAI holds related information that this bounded export deliberately leaves out; and that `UNAVAILABLE` means
+  the information could not be read. It states no conclusion or assessment and adds no marker.
+- **Risks clarification (Correction 05).** The Risks field may carry ONE fixed clarification that it only references
+  unresolved technical issues already carried in the export and is not an InventorAI risk assessment. No risk score,
+  severity, probability, ranking, classification or assessment is added, and the field's source mapping (§5, §6) is
+  unchanged.
 
 ## 14. Integration boundary
 

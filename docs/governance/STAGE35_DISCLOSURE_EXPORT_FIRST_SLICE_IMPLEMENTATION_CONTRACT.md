@@ -30,6 +30,14 @@ canonically representing a record, applied in §8.3 to the assumption, `recorded
 references, with BASE RED #28. Every other clause, including Conditions B, C and D, is unchanged; the workstream contract
 is not changed. The Correction 02 text is preserved in Git history (PR #755, commit
 `6d470767dbc9133be5ce35b858d5ff8a2aaf1ad0`).
+CORRECTION 04 (UX): 2026-10-04, by Owner authorization of ONE documentation-only UX correction pass after the UX /
+behaviour review returned PASS WITH CONDITIONS (C1–C4); the architecture review and the non-authoring semantic
+verification (including the Correction 03 delta) are complete. Under workstream contract Correction 05 it changes only
+HTML copy and presentation: C1 neutral export labels (§12.4, §12.5, §12.7), C2 contextual envelope `NOT_APPLICABLE`
+wording (§12.8), C3 one "How to read this document" block and one Risks clarification (§12.9, §12.10), C4 viewport,
+wrapping and direction rules (§10), with UX obligations #29–#32 (§14) and a targeted re-check package (§16). No token,
+marker, mapping, source, owner, schema, snapshot, failure or authorization rule changes. The Correction 03 text is
+preserved in Git history (PR #755, commit `adffbbf6b695e866dc80bfc4381fca5e66edb8d4`).
 BASE: `feature/atomic-json-session-persistence` at `0ab87dca9ab5abebc03da791d288d661727d7858` (tree
 `8cfd87c026298df7f31fd13cf082c6efe470ee7e`); `ACTIVE CONTRACT: NONE`; Stage 35 NOT ENTERED / NOT AUTHORIZED; the Master
 Roadmap at 23 / 45 incomplete.
@@ -609,7 +617,9 @@ key. A v1 reader rejects unknown keys.
   store, state or request data beyond the locale. It adds no substantive content: every substantive value comes from the
   projection; the only other text is fixed chrome (headings, labels, marker and reason wording, retention lines) from
   existing label owners (§2.2 S17–S21) or new `UI_S35_*` keys (§12).
-- Self-contained: `<!doctype html>`, `<meta charset="utf-8">`, one inline `<style>` and this policy meta element:
+- Self-contained: `<!doctype html>`, `<meta charset="utf-8">`,
+  `<meta name="viewport" content="width=device-width, initial-scale=1">` (Correction 04, C4), one inline `<style>` and
+  this policy meta element:
 
   ```html
   <meta http-equiv="Content-Security-Policy"
@@ -622,19 +632,25 @@ key. A v1 reader rejects unknown keys.
   tokens.
 - Locale: `<html lang="en" dir="ltr">` or `<html lang="ar" dir="rtl">`, from the UI locale at download. In the Arabic
   locale every exact English disclaimer stays present, each followed by its Arabic supplement; the scope label shows
-  English and Arabic. English digits for versions, dates, counts and item keys.
-- Order: scope label; versions, `generated_at`, digest; the disclaimers; the optional `UNAVAILABLE` sentence; the 29
-  fields in §8.2 order, each with its heading and either its marker wording (+ reason, + pointer) or its items.
+  English and Arabic. English digits for versions, dates, counts and item keys. In the Arabic document every exact
+  English fixed-text element — each English disclaimer, the English scope label and the English `capture_limitation` —
+  sits in its own element with `lang="en" dir="ltr"` (C4).
+- Order: scope label; versions, `generated_at`, digest; the disclaimers; the optional `UNAVAILABLE` sentence; the one
+  fixed "How to read this document" block (§12.9, C3); the 29 fields in §8.2 order, each with its heading and either
+  its marker wording (+ reason, + pointer) or its items. Field 24 (Risks) always carries the fixed §12.10 clarification
+  directly under its heading, whatever its marker (C3).
 - Every value sits in its own direction-isolated container (`dir="auto"`, `<bdi>` for inline values) with
-  `white-space: pre-wrap`; nothing is trimmed or normalized. A quoted value carries the adjacent label "Inventor's own
+  `white-space: pre-wrap` and `overflow-wrap: anywhere` (C4), so a long unbroken value wraps inside its container and
+  never forces horizontal page overflow at phone width; nothing is trimmed or normalized, and wrapping changes only the
+  display, never the value. Labels sit outside the `dir="auto"` value element. A quoted value carries the adjacent label "Inventor's own
   words"; a system value carries "InventorAI statement". The Source and Validation labels (CAP-11 `UI_ED_*`), the
   currency label and any marker wording sit inside the same item container, next to the value they describe.
 - **Attribution invariant (Correction 02).** For every truth-bearing item, each `RECORDED` slot — a value-`null`
   `SYSTEM_ASSERTION` slot such as `gap_state`, `routed_need`, `unknown_disposition`, `declaration` or `execution_state`
   included, which renders through its existing label owners (§2.2 S11, S18, S20, S21) or the label of its referenced
   field-29 row — shows inside the item container its content-class label and its Source, Validation and Limitation
-  rows (the owner-held value's label, or the `NOT_APPLICABLE` wording "Not applicable"), plus Currency when that is
-  `RECORDED`. A reference-only item shows its link and, next to it, the rows inherited from the referenced slot,
+  rows (the owner-held value's label, or, for `NOT_APPLICABLE`, that row's fixed §12.8 contextual wording — C2), plus
+  Currency when that is `RECORDED`. A reference-only item shows its link and, next to it, the rows inherited from the referenced slot,
   labelled as belonging to that target. No row is ever filled with a default.
 - The `resolved_problem` item shows its `capture_limitation` inside the same item container, directly after the problem
   text, labelled "InventorAI statement": the exact English text, followed in the Arabic locale by its §12.6 Arabic
@@ -645,6 +661,9 @@ key. A v1 reader rejects unknown keys.
   with `UI_T2A_WITHDRAWN_NOTE` when `anchor_active` is false) and, when it has one, a `#<item_key>` link to its field-29
   row.
 - Canonical English system statements stay English in both locales (Stage 34 rule) and are direction-isolated.
+- **Neutral export labels (Correction 04, C1; workstream contract §4 rule 4 exception).** Where §12.7 defines a
+  Stage-35 label, it replaces, in this HTML only, the reused label named in §2.2 (S17, S20, S24) for the same token or
+  state; the reused label and every other surface stay unchanged, and the JSON emits the same tokens as before.
 
 ## 11. Existing owners not read by the first slice
 
@@ -724,7 +743,7 @@ statements are never altered for this export.
 | `OBJECTIVE_NAMES_EVIDENCE_LEVEL` | Excluded from this first slice because this generated objective names an evidence-quality level, and this disclosure export does not carry evidence-quality grades. (exact, workstream contract §7) | مُستبعَد من هذه الشريحة الأولى لأن هذا الهدف المولَّد يذكر مستوى جودة الدليل، وهذا التصدير لا يحمل درجات جودة الأدلة. |
 | `PLANNING_INPUTS` | Excluded from this first slice because these are planning inputs for checking an interaction between parts, not a description of the invention. | مُستبعَد من هذه الشريحة الأولى لأن هذه مدخلات تخطيط للتحقق من تفاعل بين الأجزاء، وليست وصفًا للاختراع. |
 | `CONFIDENTIAL_EVIDENCE_CATEGORIES` | Excluded from this first slice because commercial, manufacturing and integration evidence can be confidential. | مُستبعَد من هذه الشريحة الأولى لأن الأدلة التجارية وأدلة التصنيع والتكامل قد تكون سرية. |
-| `RESULT_TEXT_NOT_CARRIED` | Excluded from this first slice: this export shows whether you recorded executions, not the text of your recorded results. | مُستبعَد من هذه الشريحة الأولى: يُظهر هذا التصدير ما إذا كنت قد سجّلت تنفيذات، لا نص النتائج التي سجّلتها. |
+| `RESULT_TEXT_NOT_CARRIED` | Excluded from this first slice: this export shows whether the inventor recorded executions, not the text of the recorded results. | مُستبعَد من هذه الشريحة الأولى: يُظهر هذا التصدير ما إذا كان المخترع قد سجّل تنفيذات، لا نص النتائج المسجّلة. |
 | `CARRIED_ON_EVERY_ITEM` | Not applicable as a separate section: each item in this document carries its own source, validation and limitation details. | لا ينطبق كقسم مستقل: يحمل كل عنصر في هذه الوثيقة تفاصيل مصدره والتحقق منه وقيوده. |
 
 ### 12.5 Journey, retention and document labels (`UI_S35_*`)
@@ -757,14 +776,14 @@ Background and existing limitations / الخلفية والقيود القائم
 أوصاف أخرى للنظام والمكوّنات والعمليات والطرق; Relationships between parts / العلاقات بين الأجزاء; Operating sequence or
 workflow / تسلسل التشغيل أو سير العمل; Alternative embodiments / التجسيدات البديلة; Materials, dimensions, parameters
 and operating conditions as typed values / المواد والأبعاد والمعاملات وظروف التشغيل كقيم محدَّدة النوع; Materials,
-dimensions, parameters and operating conditions in your own wording / المواد والأبعاد والمعاملات وظروف التشغيل بصياغتك;
+dimensions, parameters and operating conditions in the inventor's own wording / المواد والأبعاد والمعاملات وظروف التشغيل بصياغة المخترع;
 Interface verification-preparation inputs / مدخلات التحضير للتحقق من التفاعل بين الأجزاء; Novelty and differentiation
 statements / عبارات الجِدّة والتمايز; Unresolved technical issues / المسائل التقنية غير المحسومة; Assumptions /
 الافتراضات; Missing information / المعلومات الناقصة; Technical evidence / الأدلة التقنية; Commercial, manufacturing and
 integration evidence / الأدلة التجارية وأدلة التصنيع والتكامل; Diagrams and files / الرسومات والملفات; Proposed
 experiments and their execution state / التجارب المقترحة وحالة تنفيذها; Text of recorded experiment results / نص نتائج
 التجارب المسجّلة; Validation results / نتائج التحقق; Risks / المخاطر; Uncertainty and abstentions / عدم اليقين والامتناع
-عن الحكم; Your corrections / تصحيحاتك; Inventor approvals / موافقات المخترع; Source and provenance references / مراجع
+عن الحكم; Inventor's corrections / تصحيحات المخترع; Inventor approvals / موافقات المخترع; Source and provenance references / مراجع
 المصدر والأصل; Requirement Landscape (existing `UI_B_DELIV_036`).
 
 ### 12.6 Problem-capture limitation (`capture_limitation` slot; OD-D)
@@ -777,6 +796,93 @@ occurred, and it is never chosen, varied or omitted by inspecting the problem te
   been shortened; an ellipsis (…) at its end may indicate that shortening."
 - AR (supplement, a new `UI_S35_*` key; HTML only): "يُلتقَط بيان المشكلة في الخطوة التي يصف فيها المخترع المشكلة، وقد
   يُختصَر عند حدّ 500 حرف. لذلك قد يكون النص المعروض هنا مختصرًا، وقد تدلّ علامة الحذف (…) في نهايته على هذا الاختصار."
+
+### 12.7 Neutral export labels (Correction 04, C1; new `UI_S35_*` keys; HTML only)
+
+The downloaded document may be read by people other than the inventor, so its copy never addresses the reader as the
+inventor. These keys replace, in the disclosure HTML only, the reused labels named; the reused keys, every other surface
+and every JSON token are unchanged. The neutral field headings 12 and 26 and the neutral `RESULT_TEXT_NOT_CARRIED`
+reason are fixed in §12.4 and §12.5. The pre-download page (§13) is addressed to the signed-in inventor and keeps its
+second-person wording.
+
+| Purpose | Replaces in the HTML | EN | AR |
+|---|---|---|---|
+| Source label, `OWNER_STATED` | `UI_ED_SOURCE_OWNER_STATED` ("You" / "أنت") | Inventor | المخترع |
+| Source label, Section-11 planning provenance `user_defined` | — (no existing label) | Inventor | المخترع |
+| Source label, Section-11 planning provenance `source_stated` | — (no existing label) | Taken from the inventor's recorded text | مأخوذ من نص المخترع المسجّل |
+| Withdrawn-answer note (`anchor_active` false) | `UI_T2A_WITHDRAWN_NOTE` | The answer this value was attached to has been withdrawn. The value is kept in the project history and is no longer current. | سُحبت الإجابة التي كانت هذه القيمة مرتبطة بها. تُحفظ القيمة في سجل المشروع ولم تعد حالية. |
+| Execution state `none` | `web/app.py` `S11_EXECUTION_TEXT` (none) | No result recorded. | لا توجد نتيجة مسجّلة. |
+| Execution state `recorded` | `web/app.py` `S11_EXECUTION_TEXT` (recorded) | The inventor recorded {n} execution(s). These are the inventor's own recorded observations. InventorAI has not checked them and they are not a pass/fail judgement. | عدد التنفيذات التي سجّلها المخترع: {n}. هذه ملاحظات سجّلها المخترع بنفسه، ولم يتحقق منها InventorAI، وليست حكمًا بالنجاح أو الإخفاق. |
+
+Every other source and validation token keeps its existing `UI_ED_*` label, which is already neutral.
+
+### 12.8 Envelope `NOT_APPLICABLE` context (Correction 04, C2)
+
+Shown in a truth-bearing item's Source, Validation, Limitation or Currency row when that envelope field is
+`NOT_APPLICABLE` (§10 attribution invariant). The JSON marker stays `NOT_APPLICABLE`, and the field-level marker
+wording "Not applicable" (§12.3) is unchanged. Each sentence states only that no separate value is held; none implies
+that the item is validated, unlimited, approved or complete, or that a source or validation is unnecessary.
+
+| Row | EN | AR |
+|---|---|---|
+| Source | No separate source value is held for this item. This does not mean the item has no source. | لا توجد قيمة مصدر مستقلة محفوظة لهذا العنصر. ولا يعني ذلك أن العنصر بلا مصدر. |
+| Validation | No separate validation value is held for this item. This does not mean the item was validated or that validation is unnecessary. | لا توجد قيمة تحقق مستقلة محفوظة لهذا العنصر. ولا يعني ذلك أنه جرى التحقق منه أو أن التحقق غير لازم. |
+| Limitation | No separate limitation note is held for this item. This does not mean the item has no limitations. | لا توجد ملاحظة قيود مستقلة محفوظة لهذا العنصر. ولا يعني ذلك أن العنصر بلا قيود. |
+| Currency | No separate current-or-earlier status is held for this item. | لا توجد حالة مستقلة محفوظة تبيّن ما إذا كان هذا العنصر حاليًا أو سابقًا. |
+
+Under the unchanged §10 invariant the Currency row is rendered only when `RECORDED`, so the Currency sentence is defined
+for completeness and is not shown in version 1.
+
+### 12.9 "How to read this document" (Correction 04, C3; workstream contract §13)
+
+ONE fixed block, after the disclaimers (and the optional `UNAVAILABLE` sentence) and before field 1. It uses the
+existing content-class labels (§12.5) and marker wording (§12.3) and their workstream §5 meanings; it adds no marker,
+conclusion or assessment.
+
+EN:
+
+- Heading: "How to read this document"
+- "Each section shows either the items InventorAI holds for this project or one status."
+- "“Inventor's own words”: text quoted exactly as the inventor recorded it. InventorAI has not checked or assessed it."
+- "“InventorAI statement”: fixed or system-generated wording from InventorAI."
+- "Items listed: records InventorAI holds for this project. Each item shows its source and validation details."
+- "“Nothing recorded in this project”: InventorAI holds no record of this in this project. It does not mean that none
+  exists."
+- "“Not captured by InventorAI”: InventorAI does not capture this kind of information."
+- "“Only as the inventor's own wording in …”: this information appears only inside the inventor's own text in the named
+  section. It has not been separated out or interpreted."
+- "“Not included in this export”: InventorAI holds related information, but this first export deliberately leaves it
+  out, for the reason shown."
+- "“Not applicable”: the section does not apply to this kind of item. Next to an item, a detail that is not held is
+  explained in place; this never means that the item has no limitations."
+- "“Unavailable — this information could not be read”: the information could not be read when this document was
+  created."
+
+AR:
+
+- العنوان: «كيفية قراءة هذه الوثيقة»
+- «يعرض كل قسم إما العناصر التي يحتفظ بها InventorAI لهذا المشروع، وإما حالة واحدة.»
+- «"كلمات المخترع كما كتبها": نص منقول حرفيًا كما سجّله المخترع، ولم يتحقق منه InventorAI ولم يقيّمه.»
+- «"عبارة من InventorAI": صياغة ثابتة أو مولَّدة من InventorAI.»
+- «العناصر المدرجة: سجلات يحتفظ بها InventorAI لهذا المشروع، ويعرض كل عنصر تفاصيل مصدره والتحقق منه.»
+- «"لا شيء مسجّل في هذا المشروع": لا يحتفظ InventorAI بأي سجل لذلك في هذا المشروع، ولا يعني ذلك أنه غير موجود.»
+- «"لا يلتقط InventorAI هذه المعلومة": لا يلتقط InventorAI هذا النوع من المعلومات.»
+- «"فقط بصياغة المخترع نفسه في …": ترد هذه المعلومة فقط داخل نص المخترع نفسه في القسم المذكور، ولم تُفصَل عنه ولم
+  تُفسَّر.»
+- «"غير مُضمَّن في هذا التصدير": يحتفظ InventorAI بمعلومات ذات صلة، لكن هذا التصدير الأول يستبعدها عمدًا للسبب المبيّن.»
+- «"لا ينطبق": لا ينطبق هذا القسم على هذا النوع من العناصر. وإلى جانب كل عنصر، يُوضَّح في موضعه أي تفصيل غير محفوظ،
+  ولا يعني ذلك أبدًا أن العنصر بلا قيود.»
+- «"غير متاح — تعذّرت قراءة هذه المعلومة": تعذّرت قراءة هذه المعلومة عند إنشاء هذه الوثيقة.»
+
+### 12.10 Risks clarification (Correction 04, C3; workstream contract §13)
+
+Always shown directly under the field-24 heading, whatever its marker. Explanatory chrome only: field 24's mapping
+(`gap_reference` items, §8.2) is unchanged and no severity, probability, score, ranking, classification or assessment
+is added.
+
+- EN: "This section references unresolved technical issues listed in this export. InventorAI has not performed a risk
+  assessment here."
+- AR: «يشير هذا القسم إلى المسائل التقنية غير المحسومة الواردة في هذا التصدير. لم يُجرِ InventorAI تقييمًا للمخاطر هنا.»
 
 ## 13. Routes and journey (frozen)
 
@@ -834,6 +940,10 @@ Each obligation must first fail on the implementation base, then pass. Files:
 | 26 | S1 DENIAL versus REFUSAL (Condition C) | W, P | no routes | §3.4, §4 | (1) missing project, (2) another account's project, (3) NULL owner and (4) an ownership-lookup failure that `_is_authorized` converts to `ProjectAccessDenied` (an exception injected into `store.load_owner`, a storage error included) each give the same byte-identical `_deny_project()` response; (5) a storage, schema or integrity failure injected into `store.load_contract` after authorization succeeded gives the empty 503; (6) every case produces no file; `get_authorized_project_read`, `_is_authorized` and `_deny_project()` are unchanged | §4, P10-D3a |
 | 27 | attribution coverage (Condition B) | P, H | no projection | §8.1, §8.3, §9.6, §10 | in a fully populated fixture: every `RECORDED` item of a truth-bearing kind has a `RECORDED` slot with `content_class`, `source_owner` and a four-field envelope whose values equal the owner-held fields or are `NOT_APPLICABLE` where the owner holds none (`unresolved_gap`, `routed_specialist_need`, `recorded_unknown` and both declared-contradiction kinds included); only `gap_reference` and `evidence_reference` are reference-only, each with exactly one ref to a valid item of the kind §8.1 names and no slot of its own carrying metadata; the schema check refuses a truth-bearing item without attribution, a reference-only item with its own metadata or a dangling ref, and an injected default value; the HTML shows Source, Validation and Limitation (and Currency where recorded) inside each truth-bearing item's container, and the inherited rows next to each reference | §5, workstream §15.7 |
 | 28 | canonical field-29 representation (F1) | P | no projection | §7, §8.3, live `derive_requirement_landscape` | (1) `assumption → answer A` with A an endpoint of an active declared contradiction: no REFUSAL; the assumption's ref resolves to the one `active_contradiction` row naming A; A has no own row and none is created; (2) `assumption → answer A → corrected answer B` with the terminal B in an active declared contradiction: no REFUSAL and every successor / history ref resolves (A and B in field 26; B carried in the contradiction row); (3) A an endpoint of two active pairs: the ref lists both rows in owner order; (4) an active `unknown` record joined by a legacy `contradicts` edge: its `recorded_unknown` ref resolves to the legacy `active_contradiction` row; (5) the ordinary fixtures without contradictions still resolve to own `assertion` rows; (6) an `anchor_active` quantity resolves to its anchor's own `assertion` row, and a quantity whose anchor became a contradiction endpoint refuses through the owner's `QuantityHistoryError` (owner semantics, §8.3), not through an export reference defect; no case uses text matching or a second Landscape derivation | §5, §7 |
+| 29 | C1 neutral wording | H | no template | §12.4, §12.5, §12.7 | an `OWNER_STATED` (and `user_defined`) Source renders "Inventor" / "المخترع", never "You" / "أنت"; fields 12 and 26, the `RESULT_TEXT_NOT_CARRIED` reason, the withdrawn-answer note and the execution-state text use the neutral §12.7 wording; a scan of every fixed-text string of the EN and AR documents (excluding quoted inventor content, located structurally) finds no second-person "you" / "your" (EN) or second-person address (AR) other than the exact workstream disclaimers' imperatives; the reused keys and other surfaces are unchanged, and the JSON is byte-identical | workstream §4 rule 4 |
+| 30 | C2 envelope context | H | no template | §10, §12.8 | every `NOT_APPLICABLE` Source, Validation and Limitation row of a truth-bearing item renders its §12.8 sentence (EN and AR), never a bare "Not applicable"; each sentence states that no separate value is held and its second sentence rules out "no source", "validated / validation unnecessary" and "no limitations"; field-level `NOT_APPLICABLE` (fields 25, 28) still renders "Not applicable"; the JSON marker is unchanged | workstream §5 |
+| 31 | C3 legend and Risks clarification | H | no template | §10, §12.9, §12.10 | the one "How to read this document" block appears after the disclaimers and before field 1, in EN and AR, and explains both content classes and all seven markers with the §12.3 wording; with fixtures where fields 15, 16, 17 and 24 are each `NOTHING_RECORDED`, the legend line for that marker states that it does not mean none exists; the §12.10 clarification sits under the field-24 heading whatever its marker; neither text contains a severity, probability, score, ranking or assessment word, and the field-24 items are unchanged | workstream §13 |
+| 32 | C4 phone width and long values | H | no template | §10 | the document has the viewport meta; at a 360–390 px viewport a 2,000-character unbroken inventor value (no spaces) causes no horizontal page overflow, wraps inside its container and still decodes to the exact owner-held value; `white-space: pre-wrap`, `dir="auto"` / `<bdi>`, escaping and labels outside the value element are unchanged; in the Arabic document each exact English disclaimer, the English scope label and the English `capture_limitation` carry `lang="en" dir="ltr"`, and Arabic mixed-direction fixtures keep each value next to its own labels | workstream §13 |
 
 R1-focused obligations (file R):
 
@@ -887,31 +997,27 @@ settled and is not re-opened. Questions for the reviewer:
     seventh R1 reader, and is the `requirement_quantity` item (owner tokens only; `currency` `NOT_APPLICABLE`; no ref for
     a withdrawn-anchor row) faithful to the owner?
 
-## 16. UX / behaviour review package (UX PASS NOT CLAIMED)
+## 16. UX / behaviour review package (targeted C1–C4 re-check; UX PASS NOT YET CLAIMED)
 
-The required pre-implementation UX review (workstream contract §17) should cover, in EN and AR (RTL):
+Review status: the architecture review is complete; the non-authoring semantic verification, including the Correction 03
+delta, is complete; the broad UX / behaviour review (journey, download controls, disclaimers, scope label, markers and
+reasons, retention wording, inventor-text association, requirement quantities, system statements, attribution rows, EN
+/ AR and RTL) is complete with PASS WITH CONDITIONS C1–C4. That broad review is NOT repeated. Correction 04 changes UX
+wording and presentation only, so the next reviewer performs only this targeted copy / presentation check, in EN and AR:
 
-- **Journey:** account-page link → pre-download page → two downloads; no other step; nothing recorded on view.
-- **Download controls:** the JSON vs HTML choice and the same-data line; whether a non-technical inventor understands
-  which file to choose.
-- **Disclaimers:** comprehension of the eleven notices before the controls; in AR, English followed by Arabic for each.
-- **Scope label:** "this project only — not legal advice" prominence on the page and in both files.
-- **Markers and reasons:** whether "Not captured by InventorAI", "Nothing recorded in this project", "Not included in
-  this export" and "Unavailable" are distinguishable; the Form-row and objective exclusions; the field-12 pointer
-  wording.
-- **Retention wording:** the four retention lines, especially "creates no record of your exports" next to the
-  access-log sentence.
-- **Inventor text association:** each quoted value inside its own isolated container with "Inventor's own words", Source
-  and Validation labels adjacent; mixed-direction and long values; the trimmed problem statement ending in "…" with the
-  §12.6 problem-capture limitation directly after it (§11 OD-D).
-- **Requirement quantities:** a short value with a unit (for example "12 V") in its own isolated container next to its
-  kind, Source / Validation and current / replaced / withdrawn-answer labels and the link to its Requirement Landscape
-  row; whether field 12's heading reads correctly in both its `RECORDED` and `RAW_TEXT_ONLY` cases.
-- **System statements:** English canonical statements inside the Arabic document (Stage 34 rule).
-- **Attribution rows (Correction 02):** the Source / Validation / Limitation rows on every truth-bearing item, many of
-  them "Not applicable", and the inherited rows next to each reference — whether they stay readable and correctly
-  associated on long documents and at phone width.
-- **Not in scope of the review:** legal sufficiency of the disclaimer wording (Owner decision 9).
+- **C1 — neutral wording:** a third-party reader sees "Inventor" / "المخترع" as the Source of the inventor's records, the
+  neutral field-12 and field-26 headings, the neutral `RESULT_TEXT_NOT_CARRIED` reason, withdrawn-answer note and
+  execution-state text (§12.4, §12.5, §12.7); no document copy addresses the reader as the inventor.
+- **C2 — envelope `NOT_APPLICABLE`:** the §12.8 sentences cannot be read as "no source", "validated", "validation
+  unnecessary" or "no limitations", and field-level "Not applicable" (fields 25, 28) still reads correctly.
+- **C3 — legend and Risks:** the "How to read this document" block (§12.9) correctly explains both content classes and
+  all seven markers, so that "Nothing recorded in this project" on unresolved technical issues, assumptions, missing
+  information and risks cannot reasonably be read as "none exist"; the §12.10 Risks clarification is present and reads
+  as no risk assessment.
+- **C4 — phone width and direction:** at 360–390 px a long unbroken inventor value causes no horizontal page overflow and
+  stays readable and exact; English fixed text inside the Arabic document reads left-to-right (§10); mixed-direction
+  fixtures keep each value next to its own labels.
+- **Not in scope:** anything outside C1–C4, and the legal sufficiency of the disclaimer wording (Owner decision 9).
 
 ## 17. Unresolved issues and pre-implementation Owner decisions
 
@@ -933,10 +1039,12 @@ The independent non-authoring verification of Correction 02 (PASS WITH CONDITION
 F1 (a contradiction endpoint has no own field-29 row), is addressed by Correction 03 (§7 canonical representation rule,
 §8.3, #28), so conditions A–D are intended closed.
 
+The targeted non-authoring delta verification of Correction 03 returned PASS. The UX / behaviour review returned PASS
+WITH CONDITIONS C1–C4, addressed by Correction 04 (UX) under workstream contract Correction 05.
+
 Still open:
 
-- **Reviews:** a targeted non-authoring delta verification of Correction 03 and the UX / behaviour review (§16) have not
-  been performed.
+- **Targeted UX copy / presentation re-check** of C1–C4 (§16).
 - **Owner decision** on accepting and merging this implementation contract.
 - **Implementation authorization** (workstream contract §17 decision 8) has not been given.
 - **Owner-level note (no export change):** a requirement quantity whose anchoring answer later becomes an endpoint of an
