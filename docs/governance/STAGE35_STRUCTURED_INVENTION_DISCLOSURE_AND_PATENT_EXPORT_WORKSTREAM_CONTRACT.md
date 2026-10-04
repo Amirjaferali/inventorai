@@ -14,6 +14,11 @@ CORRECTION 01: 2026-10-04, by Owner authorization of a documentation-only correc
 and the non-authoring Level-1 review, each PASS WITH CONDITIONS; their conditions are folded into §§2–17. The status stays
 CONTRACT CANDIDATE. The uncorrected candidate is preserved in Git history (PR #750, merge
 `7e32dcb0c9c5d76efb9382f8b9886b2f8f767f8a`).
+CORRECTION 02: 2026-10-04, by Owner authorization of a documentation-only correction that removes two internal
+contradictions found by the Lead's acceptance-readiness re-read: the CAP-11 Form row versus the evidence-quality grade ban
+(§5, §6, §7, §8, §12, §15), and system-metadata exclusions versus verbatim quoted inventor content (§8, §11, §15). The
+status stays CONTRACT CANDIDATE. The Correction 01 text is preserved in Git history (PR #751, merge
+`09000bf63ec56853906c259a6096e6102fce11c6`).
 BASIS: the Lead's read-only post-CAP-13 roadmap selection reassessment and the Lead's read-only Stage 35 reassessment
 (Stage 35 viable as the next bounded product direction; the disclosure package is distinct from the report, PDF and
 Structured Export; a documentation-only workstream contract is the smallest safe next step), and the two reviews named in
@@ -135,7 +140,9 @@ Shape:
   history (for example a broken supersession chain or an anchor defect); a global integrity or schema failure (an unknown
   token, a schema violation).
 - **Section-level `UNAVAILABLE`** is limited to a section-local read failure of one source that leaves every other section
-  coherent and correctly bound. A refusal-class failure never degrades to a section-level `UNAVAILABLE`.
+  coherent and correctly bound. A refusal-class failure never degrades to a section-level `UNAVAILABLE`. A document with
+  any `UNAVAILABLE` section may carry one fixed top-level sentence: "One or more sections of this document could not be
+  read and are marked Unavailable."
 - Source tokens, revision identities and the content digest (§9) let the owner compare later exports. They do not imply
   authenticity, approval, validation, notarization, a legal timestamp or priority.
 
@@ -175,7 +182,7 @@ replaces `NOT_CAPTURED` or `NOTHING_RECORDED`. `UNAVAILABLE` is never rendered a
 | Unresolved technical issues | `RECORDED` from unresolved gaps (OPEN or PARTIAL) and active Owner-declared contradictions |
 | Assumptions | `RECORDED` from CAP-08 |
 | Missing information | `RECORDED` from unresolved gaps, inventor-marked unknowns and outstanding routed specialist needs |
-| Supporting measurements, tests, diagrams, files and evidence | Technical evidence `RECORDED` (§6); Commercial, Manufacturing and Integration evidence `EXCLUDED_FROM_FIRST_SLICE` (§12); diagrams and files `NOT_CAPTURED` |
+| Supporting measurements, tests, diagrams, files and evidence | Technical evidence `RECORDED` with its CAP-11 Source and Validation rows (§6); the CAP-11 Form row `EXCLUDED_FROM_FIRST_SLICE` (§6); Commercial, Manufacturing and Integration evidence `EXCLUDED_FROM_FIRST_SLICE` (§12); diagrams and files `NOT_CAPTURED` |
 | Prototype status and validation results | Experiments and their execution state `RECORDED`; inventor-recorded result text `EXCLUDED_FROM_FIRST_SLICE`; validation results `NOT_CAPTURED` |
 | Risks, uncertainty and abstentions | Risks `RECORDED` only as references to unresolved gaps (§6); uncertainty only as each item's owner-held validation state and limitation text |
 | Inventor-entered corrections and approvals | Corrections `RECORDED` as supersession history; approvals `NOT_CAPTURED` with the sentence "InventorAI holds no inventor-approval record; this is not a statement that approval was withheld." |
@@ -202,7 +209,7 @@ treatment of inventor text as markup, script, link, formula or template are forb
 content); its source owner (closed token); and its provenance, validation state, limitation text and currency exactly as
 the owner holds them — `LEGACY_UNSPECIFIED` stays as it is and nothing is upgraded or reclassified. For each envelope field
 the value is the owner-held value, `NOT_APPLICABLE` (the owner holds no such metadata for this kind of item) or
-`UNAVAILABLE` (the read failed). Owner-specific metadata — for example the CAP-11 Form, Source and Validation rows or the
+`UNAVAILABLE` (the read failed). Owner-specific metadata — for example the CAP-11 Source and Validation rows or the
 Stage 19 execution state — travels under that owner's own tokens and is never mapped into a generic field. `UNVALIDATED`,
 `OWNER_STATED`, `CURRENT` or any other value is never substituted merely to fill a field. Uncertainty is represented only by
 owner-held validation state and limitation text; no uncertainty scale, score or level is derived.
@@ -232,8 +239,10 @@ Composed verbatim, each item with its envelope:
   needs, as missing information;
 - the Requirement Landscape: each statement with its provenance, status and resolving action. Criticality grades are not
   carried (§8);
-- technical evidence items, with their CAP-11 Form, Source and Validation rows kept as three separate rows where the owner
-  holds them. Commercial, Manufacturing and Integration evidence is not carried (§12);
+- technical evidence items, with their CAP-11 Source and Validation rows kept as two separate rows where the owner holds
+  them. The CAP-11 Form row is `EXCLUDED_FROM_FIRST_SLICE` with the fixed reason "Excluded from this first slice because
+  the Form row is derived from the evidence-quality field, and this disclosure export does not carry evidence-quality
+  grades." Commercial, Manufacturing and Integration evidence is not carried (§12);
 - CAP-09 experiments, attributed per value: the objective and what to observe are system-generated (system assertions from
   the existing Section-11 generator); each planning field (success criterion, measurement method, test hypothesis, test
   variable / condition) carries the attribution its owner records, so an inventor-written value is quoted inventor content
@@ -254,20 +263,28 @@ Composed verbatim, each item with its envelope:
   validation results; inventor approval.
 - `RAW_TEXT_ONLY`: materials, dimensions, parameters and operating conditions that appear only inside Requirement Landscape
   statements as the inventor's own wording.
-- `EXCLUDED_FROM_FIRST_SLICE`: Commercial, Manufacturing and Integration evidence; inventor-recorded experiment result
-  text; interface verification-preparation inputs.
+- `EXCLUDED_FROM_FIRST_SLICE`: the CAP-11 Form row of technical evidence items; Commercial, Manufacturing and
+  Integration evidence; inventor-recorded experiment result text; interface verification-preparation inputs.
 
 ## 8. Data excluded entirely
 
 Never present in either rendering: patent claims or claim-like text authored by InventorAI; novelty, inventive-step,
 patentability or freedom-to-operate opinions; any prior-art statement by InventorAI; AI-written or generated legal or
-descriptive prose; the report's proceed / revise verdict; maturity, readiness, Readiness Snapshot and assessment-completeness
-states; evidence-quality grades; risk severity grades; Requirement Landscape criticality grades (their authority labels and
-heuristic warnings stay with the Requirement Landscape owner); Technical Realization artifacts; calculated values (no
-calculation owner is implemented — the shared deterministic calculation and units owner exists only as an accepted
-boundary contract of record); the CAP-12 Form Mock-up Advisory (session-only and non-binding); CAP-01 guidance prose;
-inventor-stated safety-signal output presented as a safety determination; internal identifiers, account data, e-mail
-addresses, credentials, tokens or storage paths; anything belonging to another project or another account.
+descriptive prose; the report's proceed / revise verdict; maturity, readiness, Readiness Snapshot and
+assessment-completeness states; evidence-quality grades, including any CAP-11 Form value (derived from the
+evidence-quality field; its place shows only the §7 `EXCLUDED_FROM_FIRST_SLICE` marker); risk severity grades;
+Requirement Landscape criticality grades (their authority labels and heuristic warnings stay with the Requirement
+Landscape owner); Technical Realization artifacts; calculated values (no calculation owner is implemented — the shared
+deterministic calculation and units owner exists only as an accepted boundary contract of record); the CAP-12 Form
+Mock-up Advisory (session-only and non-binding); CAP-01 guidance prose; inventor-stated safety-signal output presented
+as a safety determination; system-held metadata — account metadata, session metadata, storage metadata, internal
+identifiers, system-held credentials, system-held tokens, system-held storage paths and system-owned e-mail or account
+data, and any other InventorAI-authored or system-owned field outside the §6 data; anything belonging to another project
+or another account.
+
+The system-held metadata exclusion never filters, redacts, scans or classifies quoted inventor content. Inventor text
+that itself contains an e-mail address, a token-like string, a path or similar wording is reproduced verbatim under the
+§5 quoted-content rules, with safe escaping and neutral quoting.
 
 ## 9. Export schema and versioning
 
@@ -330,7 +347,9 @@ behaviour review (§13, §16). Whether a legal adviser reviews this wording befo
 - **Access:** authenticated owner only, through the existing project-ownership check; a request for a missing project and a
   request for another account's project receive byte-identical denials (P10-D3a precedent); no other project or account is
   ever read into the projection. Existing authentication and session behaviour is preserved.
-- **Data minimization:** only the §6 data; none of the §8 identifiers or account data.
+- **Data minimization:** only the §6 data; none of the §8 system-held metadata. Data minimization selects which owner
+  data is read; it never filters, redacts, scans or classifies quoted inventor content, which is reproduced verbatim under
+  §5.
 - **Consent for the download itself:** the owner's explicit request is the trigger; the disclaimers are shown first;
   viewing them records nothing.
 - **Retention, logs and export history (exact):**
@@ -351,9 +370,10 @@ behaviour review (§13, §16). Whether a legal adviser reviews this wording befo
 
 ## 12. Evidence and attachment handling
 
-Technical evidence is carried as the owners' recorded text with its CAP-11 rows and envelope. Commercial, Manufacturing and
-Integration evidence is `EXCLUDED_FROM_FIRST_SLICE`, because of its confidentiality exposure and because no Owner decision
-covers a patent handoff for these categories in the first slice. No attachment, file, image or diagram is uploaded,
+Technical evidence is carried as the owners' recorded text with its CAP-11 Source and Validation rows and its envelope;
+the CAP-11 Form row is `EXCLUDED_FROM_FIRST_SLICE` (§6) because it is derived from the evidence-quality field.
+Commercial, Manufacturing and Integration evidence is `EXCLUDED_FROM_FIRST_SLICE`, because of its confidentiality
+exposure and because no Owner decision covers a patent handoff for these categories in the first slice. No attachment, file, image or diagram is uploaded,
 processed, read, embedded, linked for fetching or interpreted; those fields are `NOT_CAPTURED`. Inventor-recorded
 experiment result text is `EXCLUDED_FROM_FIRST_SLICE` (only the execution state is carried; §17 decision 5).
 
@@ -406,8 +426,9 @@ A future implementation must first show these failing, then passing:
    human rendering shows them next to the item; no default value is substituted for missing metadata; no per-item approval
    field or line exists.
 8. **Excluded content absent:** with every §8 source populated, none of it appears — in particular no proceed / revise
-   verdict, no maturity, readiness, evidence-quality, severity or criticality grade, and no Commercial, Manufacturing or
-   Integration evidence; risks appear only as references to unresolved gaps.
+   verdict, no maturity, readiness, evidence-quality, severity or criticality grade, no CAP-11 Form row, and no Commercial,
+   Manufacturing or Integration evidence; risks appear only as references to unresolved gaps; technical evidence carries
+   only its CAP-11 Source and Validation rows.
 9. **Known-problem seam:** a state in which `state.known_problem` was populated from a mechanism answer still exports the
    problem resolved by the existing Section-2 boundary.
 10. **No mutation:** stored state is identical before and after composition and download; no export-history record exists.
@@ -418,7 +439,9 @@ A future implementation must first show these failing, then passing:
     digest excludes the timestamp; both version identities are present.
 13. **Hostile inventor text:** inventor text containing markup, script, links, template syntax, bidirectional control
     characters, control characters and very long values is safely escaped, never interpreted as markup or script, keeps
-    its association with its source and validation labels, and round-trips to the identical owner-held value.
+    its association with its source and validation labels, and round-trips to the identical owner-held value; inventor
+    text that contains an e-mail address, a token-like string or a path is reproduced verbatim, never redacted, while no
+    system-held metadata (§8) appears.
 14. **Both locale outputs:** the English and the Arabic human renderings are both produced and both meet requirements 1–3,
     7 and 13.
 15. **File names:** no file name contains inventor-authored text.
