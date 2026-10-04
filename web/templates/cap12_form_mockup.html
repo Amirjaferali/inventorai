@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}{{ t('UI_CAP12_TITLE') }}{% endblock %}
+{% block head %}
+<style>
+body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+h2{color:#2c3e50;font-size:16px;margin:0 0 4px 0}
+.intro{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444;line-height:1.5}
+.error{background:#fdecea;color:#b71c1c;border:1px solid #f5c6cb;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px}
+.notice{background:#eef3f8;color:#1f3b57;border:1px solid #c9d6e3;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px}
+.boundary{background:#fff8e6;border:1px solid #ecd9a4;color:#4a3b00;padding:10px 14px;border-radius:4px;margin:0 0 16px 0;font-size:13px;line-height:1.5}
+.fam{border:1px solid #e2e6ea;border-radius:4px;padding:12px 14px;margin-bottom:16px;min-width:0;overflow-wrap:anywhere}
+.label{font-size:12px;color:#555;margin:10px 0 2px 0}
+.copy{font-size:13px;margin:0;line-height:1.5;overflow-wrap:anywhere}
+label{display:block;font-size:13px;color:#2c3e50;margin:12px 0 4px 0}
+input[type=text],textarea,select{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
+.guidance{font-size:12px;line-height:1.6;color:#555;margin:4px 0 0}
+button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer;max-width:100%;box-sizing:border-box}
+.links{margin-top:24px;font-size:13px}
+ul.sources{font-size:13px;padding-inline-start:20px;margin:6px 0}
+@media(max-width:520px){body{margin:18px auto;padding:0 14px}.fam{padding:12px}}
+</style>
+{% endblock %}
+{% block content %}
+{#- Stage 24 / CAP-12 - Form Mock-up Advisory, Slice 1. OPTIONAL, ADVISORY,
+    NON-BINDING and request-local: nothing on this page is saved. The advisory is
+    composed by the CAP-12 owner from committed governed knowledge for the
+    selected role and the project's trusted root domain only; the component name
+    and function are shown back for reference and never choose anything. Nothing
+    here is evidence, a gap, a readiness or progression input, a specification
+    or a suitability statement. -#}
+<h1>{{ t('UI_CAP12_TITLE') }}</h1>
+<div class="intro" data-cap12-intro>
+  <p style="margin:0">{{ t('UI_CAP12_INTRO') }}</p>
+</div>
+
+{% if error_key %}<div class="error" role="alert" data-cap12-error>{{ t(error_key) }}</div>{% endif %}
+
+{% if shown %}
+{% if advisory_available %}
+<section aria-labelledby="cap12-result" data-cap12-result="available">
+  <h2 id="cap12-result">{{ t('UI_CAP12_RESULT_HEADING') }}</h2>
+  <p class="copy" data-cap12-scope>{{ t('UI_CAP12_RESULT_SCOPE') }}</p>
+  <p class="guidance" data-cap12-shown><strong>{{ t('UI_CAP12_SHOWN_COMPONENT') }}:</strong> <bdi dir="auto" data-cap12-shown-name>{{ component_name }}</bdi> &mdash; {{ t('UI_CAP12_FIELD_FUNCTION') }}: <bdi dir="auto" data-cap12-shown-function>{{ component_function }}</bdi></p>
+  <div class="boundary" data-cap12-boundary>{{ t('UI_CAP12_BOUNDARY') }}</div>
+  <div class="fam" data-cap12-role-boundary>
+    <h2>{{ t('UI_CAP12_ROLE_BOUNDARY_HEADING') }}</h2>
+    <p class="copy">{{ t(view.role_boundary.fact_key) }}</p>
+    <p class="label">{{ t('UI_CAP12_LABEL_LIMIT') }}</p>
+    <p class="copy">{{ t(view.role_boundary.limitation_key) }}</p>
+  </div>
+  <h2>{{ t('UI_CAP12_ALTERNATIVES_HEADING') }}</h2>
+  <p class="guidance" data-cap12-order-note>{{ t('UI_CAP12_ALTERNATIVES_NOTE') }}</p>
+  {% for alt in view.alternatives %}
+  <section class="fam" data-cap12-alternative>
+    <p class="label">{{ t('UI_CAP12_LABEL_MATERIAL') }}</p>
+    <h2 data-cap12-material>{{ t(alt.label_key) }}</h2>
+    <p class="label">{{ t('UI_CAP12_LABEL_WHY') }}</p>
+    <p class="copy">{{ t(alt.material.fact_key) }}</p>
+    <p class="label">{{ t('UI_CAP12_LABEL_LIMIT') }}</p>
+    <p class="copy">{{ t(alt.material.limitation_key) }}</p>
+    {% for proc in alt.processes %}
+    <p class="label">{{ t('UI_CAP12_LABEL_PROCESS') }}</p>
+    <h2 data-cap12-process>{{ t(proc.label_key) }}</h2>
+    <p class="copy">{{ t(proc.fact_key) }}</p>
+    <p class="label">{{ t('UI_CAP12_LABEL_LIMIT') }}</p>
+    <p class="copy">{{ t(proc.limitation_key) }}</p>
+    {% endfor %}
+  </section>
+  {% endfor %}
+  <div class="boundary" data-cap12-prototype-warning>{{ t('UI_CAP12_PROTOTYPE_WARNING') }}</div>
+  <h2>{{ t('UI_CAP12_SOURCES_HEADING') }}</h2>
+  <p class="guidance">{{ t('UI_CAP12_SOURCES_NOTE') }}</p>
+  <ul class="sources" data-cap12-sources>
+    {% for src in view.sources %}
+    <li><bdi dir="ltr" lang="en">{{ src.title }} &mdash; {{ src.report }} (NTRS {{ src.ntrs }})</bdi></li>
+    {% endfor %}
+  </ul>
+  <p class="guidance" data-cap12-ack>{{ t('UI_CAP12_ACK') }}</p>
+</section>
+{% else %}
+<section aria-labelledby="cap12-unable" data-cap12-result="unable">
+  <h2 id="cap12-unable">{{ t('UI_CAP12_UNABLE_HEADING') }}</h2>
+  <p class="copy" data-cap12-reason>{{ t(unable_key) }}</p>
+  <p class="guidance">{{ t('UI_CAP12_UNABLE_NOTE') }}</p>
+  <div class="boundary" data-cap12-boundary>{{ t('UI_CAP12_BOUNDARY') }}</div>
+</section>
+{% endif %}
+{% else %}
+<div class="boundary" data-cap12-boundary>{{ t('UI_CAP12_BOUNDARY') }}</div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('cap12_form_mockup_advisory_post', sid=sid) }}" data-cap12-form>
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+  <label for="cap12-name">{{ t('UI_CAP12_FIELD_NAME') }}</label>
+  <input type="text" id="cap12-name" name="component_name" dir="auto" maxlength="{{ name_max }}" value="{{ component_name }}" required>
+  <label for="cap12-function">{{ t('UI_CAP12_FIELD_FUNCTION') }}</label>
+  <textarea id="cap12-function" name="component_function" dir="auto" rows="3" maxlength="{{ function_max }}" required>{{ component_function }}</textarea>
+  <p class="guidance" data-cap12-descriptor-note>{{ t('UI_CAP12_DESCRIPTOR_NOTE') }}</p>
+  <label for="cap12-role">{{ t('UI_CAP12_FIELD_ROLE') }}</label>
+  <select id="cap12-role" name="role_category">
+    <option value="" {% if not role %}selected{% endif %}>{{ t('UI_CAP12_ROLE_PLACEHOLDER') }}</option>
+    {% for choice in role_choices %}
+    <option value="{{ choice }}" {% if role == choice %}selected{% endif %}>{{ t('UI_CAP12_ROLE_' ~ choice|upper) }}</option>
+    {% endfor %}
+  </select>
+  <p class="guidance" data-cap12-role-definition>{{ t('UI_CAP12_ROLE_DEFINITION') }}</p>
+  <button type="submit">{{ t('UI_CAP12_SUBMIT') }}</button>
+</form>
+
+<p class="links"><a href="{{ url_for('show_session', sid=sid) }}">{{ t('UI_CAP12_BACK') }}</a></p>
+{% endblock %}

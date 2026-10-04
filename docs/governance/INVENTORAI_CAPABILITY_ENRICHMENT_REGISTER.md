@@ -150,8 +150,11 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   `STAGE 23: COMPLETE — CURRENT BOUNDED FOUR-AXIS READINESS-SNAPSHOT SCOPE ONLY` ·
   `STAGE 23 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED` ·
   `FULL CAP-06: NOT AUTHORIZED` ·
-  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY` ·
-  `NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE`.
+  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — ENTERED / PARTIAL — NAVIGATION ONLY` ·
+  `STAGE 24 — CAP-12 FORM MOCK-UP ADVISORY SLICE 1: DELIVERED` ·
+  `STAGE 24: ENTERED / PARTIAL — CAP-12 FORM MOCK-UP ADVISORY SLICE 1 ONLY` ·
+  `FULL CAP-12: NOT AUTHORIZED` · `CAP-13: NOT ACTIVATED` · `STAGE 25: NOT AUTHORIZED`.
+  *(Superseded 2026-10-03 by the delivered Stage 24 / CAP-12 Form Mock-up Advisory Slice 1, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY` · `NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE`".)*
   *(Superseded 2026-10-02 by the Stage 23 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY`".)*
   *(Superseded 2026-10-01 by the Stage 22 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 22 —
   ENTERED / PARTIAL — NAVIGATION ONLY`".)*
@@ -531,7 +534,13 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   WS-PFV-001 automatically.
 - **Dependencies and overlaps:** CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, **CAP-13**, **CAP-14**,
   WS-PFV-001. Technical-guidance content defers to D13; prototype/validation content defers to WS-PFV-001.
-- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, **with ONE bounded delivered
+  exception**: Stage 24 / CAP-12 Form Mock-up Advisory Slice 1 is DELIVERED. It is Mechanical-root only, with the single
+  `form_mockup` role, request-local and non-persistent, offering only the source-governed foam-core / manual cut-and-join
+  and thermoplastic / FFF-FDM alternatives. It makes no material specification and no engineering-suitability claim, has no
+  evidence / readiness / progression authority, activates no CAP-13 / CAP-14 / WS-PFV-001 and has no AI / provider
+  dependency. **FULL CAP-12: NOT AUTHORIZED.** Stage 24 remains ENTERED / PARTIAL and unticked; that slice is an entry
+  increment, not this capability's ceiling, and the wider intended behavior above stays the future direction.
 - **Earliest activation:** a dedicated materials-and-manufacturing feasibility gate (§6), followed by:
   governed source review; data licensing review; knowledge-source contract; deterministic rule and
   calculation boundary; increment contract; owner decisions; separate owner authorization; BASE RED where
@@ -817,7 +826,7 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED, except one bounded Stage-19 durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) one bounded Slice 4 durable Test Variable / Condition (delivered, PR #712) and one bounded Result Event Slice 1 append-only owner-stated result history (delivered) and the bounded Stage 19 closure read-only execution-state disclosure (delivered; Stage 19 COMPLETE for the current planning-only scope) (full CAP-09 still NOT AUTHORIZED) |
 | CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | SLICE 1 DELIVERED (PR #703; Owner-declared contradiction) and the bounded Stage 21 closure (read-only session view of the declared conflicts; delivered; Stage 21 COMPLETE for the current Owner-declared contradiction scope) — FULL CAP-10 NOT AUTHORIZED |
 | CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED |
-| CAP-12 Prototype Materials and Manufacturing Recommendation | Dedicated materials-and-manufacturing feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14 | RECORDED — NOT AUTHORIZED |
+| CAP-12 Prototype Materials and Manufacturing Recommendation | Dedicated materials-and-manufacturing feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14 | RECORDED — NOT AUTHORIZED (full CAP-12; one bounded delivered exception: Form Mock-up Advisory Slice 1) |
 | CAP-13 Component Thickness, Specification, and Safety Advisory | Dedicated thickness-and-safety feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14 | RECORDED — NOT AUTHORIZED |
 | CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | Dedicated static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13 | RECORDED — NOT AUTHORIZED |
 
@@ -966,7 +975,7 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED, except one bounded durable SuccessCriterion remediation (delivered, PR #682), one bounded SLICE-02 durable measurement method (delivered, PR #683), one bounded Slice 3 durable Test Hypothesis (delivered, PR #711) one bounded Slice 4 durable Test Variable / Condition (delivered, PR #712) and one bounded Result Event Slice 1 append-only owner-stated result history (delivered) and the bounded Stage 19 closure read-only execution-state disclosure (delivered; Stage 19 COMPLETE for the current planning-only scope) | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
 | CAP-10 Contradiction Detector | SLICE 1 DELIVERED (PR #703; Owner-declared contradiction) and the bounded Stage 21 closure (read-only session view of the declared conflicts; delivered; Stage 21 COMPLETE for the current Owner-declared contradiction scope) — FULL CAP-10 NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
 | CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |
-| CAP-12 Prototype Materials and Manufacturing Recommendation | RECORDED — NOT AUTHORIZED | Materials-and-manufacturing feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the materials feasibility gate / WS12–WS16 closure |
+| CAP-12 Prototype Materials and Manufacturing Recommendation | RECORDED — NOT AUTHORIZED (full CAP-12; one bounded delivered exception: Form Mock-up Advisory Slice 1) | Materials-and-manufacturing feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the materials feasibility gate / WS12–WS16 closure |
 | CAP-13 Component Thickness, Specification, and Safety Advisory | RECORDED — NOT AUTHORIZED | Thickness-and-safety feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the thickness feasibility gate / WS12–WS16 closure |
 | CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | RECORDED — NOT AUTHORIZED | Static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13; static-image/2D feasibility gate (§6) | Yes | — | At the static-visual feasibility gate / WS12–WS16 closure |
 

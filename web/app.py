@@ -22,6 +22,7 @@ from engine.domain_rules import get_domain_questions  # Stage 28 Optional Part S
 from engine import subsystem_model as _subsystem_model  # Stage 15 Slice 1: the ONE subsystem owner
 from engine import experiment_result as _experiment_result  # CAP-09 Result Event Slice 1
 from engine import interface_observation as _interface_observation  # Stage 15 Slice 4
+from engine import cap12_form_mockup as _cap12  # Stage 24 / CAP-12 Form Mock-up Advisory Slice 1
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState, SuccessCriterion, MeasurementMethod, TestHypothesis, TestVariable,
@@ -6203,6 +6204,11 @@ def show_session(sid):
         manufacturing_evidence=_manufacturing_evidence_context(
             sid, _quantity_writer_account(sid) is not None
             and getattr(state, "domain", None) is not None),
+        # Stage 24 / CAP-12 Slice 1: an OPTIONAL link to the request-local form
+        # mock-up advisory, offered only where the CAP-12 owner says the trusted
+        # root domain is applicable. A link is not a requirement and never gates
+        # the journey.
+        cap12_form_mockup_link=_cap12_link_offered(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -10950,6 +10956,149 @@ def _readiness_snapshot_context(sid, state):
         return _readiness_snapshot(state, rows)
     except Exception:
         return None
+
+
+# =============================================================================
+# Stage 24 / CAP-12 — Form Mock-up Advisory, Slice 1 (session-only, optional)
+# =============================================================================
+# ONE request-local advisory. The inventor describes ONE component (name and
+# function, display only) and explicitly selects the closed role category; the
+# CAP-12 owner (`engine/cap12_form_mockup.py`) answers from committed governed
+# knowledge, or declines. Nothing is persisted: no descriptor, no advisory, no
+# selection, no evidence row, no session or progression state. The POST renders
+# its answer directly and never redirects, so there is nothing to confirm.
+#
+# The component name and function never reach the resolver. Its only inputs are
+# the trusted durable root domain and the selected role token, so no text can
+# steer a material or process into the advisory.
+_CAP12_FIELDS = frozenset({"csrf_token", "component_name",
+                           "component_function", "role_category"})
+_CAP12_NAME_MAX = 120
+_CAP12_FUNCTION_MAX = 500
+_CAP12_ROLE_CHOICES = tuple(_cap12.ROLE_CATEGORIES)
+
+
+def _cap12_root_domain(sid):
+    """The project's trusted ROOT domain from durable, immutable reconstruction
+    inputs (works for a cold-loaded session too), or None when it cannot be
+    read. Never taken from the request."""
+    try:
+        inputs = _get_store().load_reconstruction_inputs(sid)
+    except Exception:
+        return None
+    value = (inputs or {}).get("confirmed_domain")
+    return value if isinstance(value, str) and value else None
+
+
+def _cap12_link_offered(sid):
+    """True iff the session page should offer the advisory link: the CAP-12
+    owner supports the project's durable root domain. It reads the SAME single
+    owner the advisory POST uses (``_cap12_root_domain``, the durable
+    ``confirmed_domain``) and never live session state, so the link and the
+    advisory cannot disagree. Presentation only; fails closed."""
+    try:
+        return _cap12.supports(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+def _cap12_descriptor_text(raw, limit, multiline):
+    """The stripped descriptor text, or None when empty, over ``limit`` or
+    carrying a control character (a NUL included). Kept verbatim otherwise."""
+    import unicodedata
+    if not isinstance(raw, str):
+        return None
+    value = raw.strip()
+    if not value or len(value) > limit:
+        return None
+    allowed = ("\n", "\r", "\t") if multiline else ()
+    for ch in value:
+        if unicodedata.category(ch) == "Cc" and ch not in allowed:
+            return None
+    return value
+
+
+def _cap12_view(advisory):
+    """Template view of an AVAILABLE advisory: label keys only, so no internal
+    token or claim id is shown where a user label exists."""
+    def claim_view(claim):
+        suffix = claim["claim_id"].rsplit(":", 1)[-1]
+        return {"fact_key": "UI_CAP12_CLAIM_%s_FACT" % suffix,
+                "limitation_key": "UI_CAP12_CLAIM_%s_LIMITATION" % suffix}
+    return {
+        "role_boundary": claim_view(advisory["role_boundary"]),
+        "alternatives": [{
+            "label_key": "UI_CAP12_FAMILY_%s" % alt["family_token"].upper(),
+            "material": claim_view(alt["material"]),
+            "processes": [dict(
+                claim_view(p),
+                label_key="UI_CAP12_PROCESS_%s" % p["family_token"].upper())
+                for p in alt["processes"]],
+        } for alt in advisory["alternatives"]],
+        "sources": [{"title": s["source_title"], "report": s["report_number"],
+                     "ntrs": s["ntrs_document_id"]}
+                    for s in advisory["sources"]],
+    }
+
+
+def _render_cap12(sid, status=200, advisory=None, error=None, name="",
+                  function="", role=""):
+    lang = _current_ui_lang()
+    unable_key = None
+    view = None
+    if advisory is not None:
+        if advisory["state"] == _cap12.STATE_AVAILABLE:
+            view = _cap12_view(advisory)
+        else:
+            unable_key = "UI_CAP12_REASON_%s" % advisory["reason"]
+    response = make_response(render_template(
+        "cap12_form_mockup.html",
+        sid=sid,
+        advisory_available=view is not None,
+        view=view,
+        unable_key=unable_key,
+        shown=advisory is not None,
+        error_key=error,
+        component_name=name.replace("\x00", ""),
+        component_function=function.replace("\x00", ""),
+        role=role if role in _CAP12_ROLE_CHOICES else "",
+        role_choices=_CAP12_ROLE_CHOICES,
+        name_max=_CAP12_NAME_MAX,
+        function_max=_CAP12_FUNCTION_MAX,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/form-mockup-advisory", methods=["GET"])
+def cap12_form_mockup_advisory(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_cap12(sid)
+
+
+@app.route("/session/<sid>/form-mockup-advisory", methods=["POST"])
+def cap12_form_mockup_advisory_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # strict field allowlist -> bounded descriptor text -> resolver. Nothing is
+    # read from or written to the project beyond the trusted root domain.
+    if not _project_authorized(sid):
+        return _deny_project()
+    form = request.form
+    if set(form.keys()) - _CAP12_FIELDS \
+            or any(len(form.getlist(k)) != 1 for k in form.keys()):
+        return _render_cap12(sid, status=400, error="UI_CAP12_ERR_REQUEST")
+    raw_name = form.get("component_name", "")
+    raw_function = form.get("component_function", "")
+    role = form.get("role_category", "")
+    name = _cap12_descriptor_text(raw_name, _CAP12_NAME_MAX, False)
+    function = _cap12_descriptor_text(raw_function, _CAP12_FUNCTION_MAX, True)
+    if name is None or function is None:
+        return _render_cap12(sid, status=400, error="UI_CAP12_ERR_FIELDS",
+                             name=raw_name, function=raw_function, role=role)
+    advisory = _cap12.resolve_advisory(_cap12_root_domain(sid), role)
+    return _render_cap12(sid, advisory=advisory, name=name, function=function,
+                         role=role)
 
 
 # =============================================================================

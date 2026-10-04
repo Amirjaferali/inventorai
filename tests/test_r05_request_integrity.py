@@ -71,6 +71,10 @@ MUTATIONS = (
     # Manufacturing Evidence Capture: the single-step Manufacturing evidence
     # write, covered by the same evidence matrix below.
     "/session/<sid>/manufacturing-evidence",
+    # Stage 24 / CAP-12 Slice 1: the request-local form mock-up advisory. It
+    # persists nothing (the POST renders its answer), but it accepts a POST, so
+    # it takes the same CSRF / authorization integrity matrix.
+    "/session/<sid>/form-mockup-advisory",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

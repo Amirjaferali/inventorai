@@ -430,8 +430,9 @@ def test_e32_a_project_without_experiments_still_carries_the_truthful_note(clien
 _COMPLETE = "STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE"
 # The later Owner-authorized Stage 20, 21 and 22 closures moved the marker on to Stage 23 (navigation only); the Stage-19
 # completion and the "no Stage-20 implementation by the Stage-19 closure" fact stay true history.
-# The later Owner-authorized Stage 23 closure (no product change) moved the marker on to Stage 24 (navigation only).
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY"
+# The later Owner-authorized Stage 23 closure (no product change) moved the marker on to Stage 24 (navigation only);
+# the later delivered CAP-12 Form Mock-up Advisory Slice 1 entered Stage 24 as ENTERED / PARTIAL (marker unchanged).
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — ENTERED / PARTIAL — NAVIGATION ONLY"
 _NO_S20 = "NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE"
 
 
