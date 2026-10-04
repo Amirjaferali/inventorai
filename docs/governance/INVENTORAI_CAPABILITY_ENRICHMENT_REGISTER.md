@@ -27,7 +27,10 @@ their capabilities:
   CONTRACT.md` §4 D13; `D13_FORMAL_CLOSURE_RECORD.md` and the `D13_*` records). CAP-01 defers to D13.
 - **Patent Export** is governed by `STRUCTURED_INVENTION_DISCLOSURE_AND_PATENT_EXPORT_OWNER_DECISION.md`
   (non-activating owner decision, associated with PR #229). CAP-06's patent-disclosure-readiness axis
-  and any patent capability defer to it.
+  and any patent capability defer to it. Cross-reference only (2026-10-04): the workstream boundary and bounded first-slice
+  shape that its §10 requires are recorded as a documentation-only contract CANDIDATE in
+  `STAGE35_STRUCTURED_INVENTION_DISCLOSURE_AND_PATENT_EXPORT_WORKSTREAM_CONTRACT.md`; it implements nothing, authorizes
+  no implementation, enters no Master Roadmap stage and changes no entry of this register.
 - **WS-PFV-001 — Prototype Feasibility and Validation** is governed by
   `PROTOTYPE_FEASIBILITY_AND_VALIDATION_FUTURE_WORKSTREAM_OWNER_DECISION.md` (non-activating future
   workstream reservation, associated with PR #227). CAP-09 defers to it.
