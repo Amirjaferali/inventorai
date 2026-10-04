@@ -16,6 +16,12 @@ omitted; OD-C technical evidence unchanged; OD-D problem-capture limitation; the
 exclusion; decisions 2 and 3 ACCEPTED), corrects the failure classification (§3.4: no downgrade of an unclassified
 storage failure to `UNAVAILABLE`), fixes the E2 / `ProjectNotFound` consistency rule and extends the BASE RED plan. The
 uncorrected candidate is preserved in Git history (PR #755, commit `749d2febf0afda0abd1673beeeeed8bb11c3cb2b`).
+CONSOLIDATED CORRECTION 02: 2026-10-04, by Owner authorization of ONE documentation-only correction pass closing the four
+remaining conditions of the completed Astra architecture review (PASS WITH CONDITIONS): (A) assumption-origin history
+references (§8.3); (B) attribution for truth-bearing items and explicit reference-only inheritance (§8.1, §8.3, §9, §10);
+(C) S1 authorization DENIAL versus post-authorization storage REFUSAL (§3.4, §4); (D) §5 aligned with the §3.1 sequence.
+Every item that review closed is unchanged; the workstream contract is not changed. The Correction 01 text is preserved
+in Git history (PR #755, commit `6538ad24340405decbcbe32711ce08bb5495f901`).
 BASE: `feature/atomic-json-session-persistence` at `0ab87dca9ab5abebc03da791d288d661727d7858` (tree
 `8cfd87c026298df7f31fd13cf082c6efe470ee7e`); `ACTIVE CONTRACT: NONE`; Stage 35 NOT ENTERED / NOT AUTHORIZED; the Master
 Roadmap at 23 / 45 incomplete.
@@ -85,7 +91,7 @@ behaviour-preserving extraction (workstream contract §4 rule 2), performed only
 | S10 | Unresolved gaps | `state.gaps` filtered to status `OPEN` / `PARTIAL` | PUBLIC |
 | S11 | Gap status label | `engine.deliverable_assembler._STATUS_LABELS` → public `gap_status_label(status)` | EXTRACT (E4) |
 | S12 | Declared contradictions | `engine.idea_state.active_declared_contradiction_pairs(state.assertions)` + `contradiction_declared` records in `state.assertions` | PUBLIC |
-| S13 | Assumptions, corrections, unknown dispositions | `state.assertions` (`AssertionRecord`: `disposition`, `content`, `provenance`, `validation_status`, `gap_context`, `superseded_by`, `supersedes`) | PUBLIC |
+| S13 | Assumptions, corrections, unknown dispositions | `state.assertions` (`AssertionRecord`: `disposition`, `content`, `provenance`, `validation_status`, `gap_context`, `superseded_by`, `supersedes`); chain shape classified only by the existing `engine.idea_state.classify_assumption_ancestry` | PUBLIC |
 | S14 | Acknowledged unknowns | `state.acknowledged_unknowns` (`AcknowledgedUnknown.verbatim`, `.gap_context`) | PUBLIC |
 | S15 | Routed needs | `engine.need_routing.active_routes(state)` (`NeedRoutingRevision.gap_type`, `.required_input`, `.provenance`) | PUBLIC |
 | S16 | Requirement Landscape | `engine.requirement_landscape.derive_requirement_landscape(state).requirements` (`DerivedRequirement` fields) | PUBLIC |
@@ -194,7 +200,8 @@ names a read view only; no revision identity is created or implied.
 
 | Condition | Class |
 |---|---|
-| No account; `ProjectAccessDenied` from S1 (missing project, another account's project, NULL owner, ownership-lookup failure) | DENIAL (`_deny_project()`) |
+| No account; `ProjectAccessDenied` from S1 — raised by the existing authorization owner for a missing project, another account's project, a NULL owner and any ownership-lookup failure, which `_is_authorized` deliberately converts (every exception from `store.load_owner`, storage errors included) | DENIAL (`_deny_project()`; byte-identical, non-enumerating; no file) |
+| Any failure that propagates from S1 AFTER authorization succeeded (from `store.load_contract`: `ContractError`, `ProjectNotFound`, any `sqlite3.Error`) | REFUSAL (never converted to a denial) |
 | Step 2 or step 6 false; `SAVEPOINT` failure; `RecordStoreConnectionUnsafe` anywhere; the step-5 check `True` (snapshot lost) | REFUSAL (snapshot acquisition / loss) |
 | `review.level != 1`; `ContractError`; `MalformedAssumptionAncestryError`; `ReconstructionReplayLimitError` | REFUSAL |
 | `ProjectNotFound` from any reader inside the snapshot; a `None` collection from E2 `load_planning_metadata` (§2.3 composer rule) | REFUSAL (project binding) |
@@ -203,7 +210,7 @@ names a read view only; no revision identity is created or implied.
 | A ledger anchor, endpoint, part or quantity-anchor reference that does not resolve by identity in the same snapshot | REFUSAL (project-binding / anchor defect) |
 | Missing table; missing column; malformed or invalid schema (for example `sqlite3.OperationalError` "no such table" / "no such column") | REFUSAL (schema failure) |
 | Database integrity failure or corruption (for example `sqlite3.DatabaseError` "database disk image is malformed", `sqlite3.IntegrityError`) | REFUSAL (integrity failure) |
-| Any other `sqlite3.Error`, from any source read (S1, S2, S22, E2 planning load, `load_interface_dependencies`, `load_result_events`) | REFUSAL (unclassified storage failure) |
+| Any other `sqlite3.Error`, from any source read (S1 after authorization, S2, S22, E2 planning load, `load_interface_dependencies`, `load_result_events`) | REFUSAL (unclassified storage failure) |
 | Any other exception whose section locality is not positively proven, or any failure that could affect more than one source or the meaning of a source | REFUSAL |
 
 **`UNAVAILABLE` admission rule.** A source failure may be shown as section-local `UNAVAILABLE` only when ALL of the
@@ -237,6 +244,12 @@ source failure, corruption included, as workstream contract §4A and the admissi
   project, another account's project, a project with a NULL (anonymous / legacy) durable owner and any ownership-lookup
   failure identically; every such denial maps to the same `_deny_project()` response, so a missing project and another
   account's project are indistinguishable.
+- **DENIAL versus REFUSAL at S1.** Only what the authorization owner itself converts to `ProjectAccessDenied` is a
+  DENIAL — including a storage failure during the ownership lookup, which `_is_authorized` deliberately swallows. A
+  failure that propagates after authorization succeeded (from `store.load_contract`) is a REFUSAL (empty 503, §3.4) and
+  is never re-mapped to a denial; a denial is never re-mapped to a 503. A refusal raised before S1 (steps 2–3) depends
+  only on the connection, never on the project, so it discloses nothing about the project.
+  `get_authorized_project_read`, `_is_authorized` and `_deny_project()` are unchanged.
 - The pre-download page uses the same two seams (outside any snapshot; it composes nothing). No new authentication,
   session, capability or API-credential mechanism is introduced, and the permissive `_project_authorized` capability
   helper is never used.
@@ -250,8 +263,12 @@ source failure, corruption included, as workstream contract §4A and the admissi
   generator's structured data, not rendered presentation text, and the canonical `experiment_id` keys the planning and
   execution joins exactly as the Stage-19 helper does.
 - No extraction of `_s11` is made, so no second derivation exists and the report and PDF cannot change.
-- `assemble_deliverable` is called on the reconstructed state after `attach_planning_metadata` succeeded; its
-  `generated_at` and every non-Section-11 key are ignored.
+- Sequence (exactly §3.1): `load_planning_metadata(store, project_id)` runs INSIDE the outer snapshot (step 4d) and its
+  result is materialized; after the snapshot exits, the pure `apply_planning_metadata(state, metadata)` applies that
+  already-loaded object to the in-memory reconstructed state, and `assemble_deliverable(state)` then runs (step 7) with
+  no further store read. The composer never calls the store-reading `attach_planning_metadata` or any web wrapper
+  (`_attach_planning_metadata`, `_durable_*`); those keep their existing behaviour for the existing web surfaces.
+  `generated_at` and every non-Section-11 key of the package are ignored.
 - Allow-list per item: `experiment_id` (join key only; never exported), `experiment_title`, `objective`,
   `what_to_observe`, `traceability.source_type` (decision input for §6 only; never exported), `success_criterion`,
   `success_criterion_provenance`, `success_criterion_status`, `measurement_method`, `measurement_method_provenance`,
@@ -342,6 +359,25 @@ such metadata for this kind of item) or `{"marker": "UNAVAILABLE", "value": null
 Owner-specific metadata travels in an item's `tokens` map under closed keys (§9.3), never in a generic field.
 `LEGACY_UNSPECIFIED` stays as it is.
 
+**Attribution coverage (Correction 02).** Every `RECORDED` item is exactly one of:
+
+- **Truth-bearing** — it carries at least one source fact. Every such item has at least one `RECORDED` slot with
+  `content_class`, `source_owner` and the four-field envelope above, filled only with values the canonical owner holds
+  and `NOT_APPLICABLE` where the owner holds no such metadata; nothing is defaulted. A fact the owner states without
+  text is carried as a `SYSTEM_ASSERTION` slot with value `null` whose `tokens` hold that fact (as `execution_state`
+  already does), so the fact and its attribution travel together. Item-level tokens are only (i) fields of the same
+  owner object as one of the item's `RECORDED` slots, attributed by that slot's envelope, or (ii) the export's
+  structural ordering tokens `chain` and `position`, which state no source fact.
+- **Reference-only** — exactly two kinds, `gap_reference` and `evidence_reference`. Such an item has no `RECORDED` slot
+  of its own (`evidence_reference`'s only slot is the `EXCLUDED_FROM_FIRST_SLICE` `cap11_form` marker), creates no
+  independent source fact, and has exactly one ref. It inherits, structurally through that ref and never from text,
+  exactly the referenced slot's `content_class`, `source_owner` and envelope: `gap_reference` from the `gap_state`
+  slot of its field-15 `unresolved_gap` item; `evidence_reference` from the `text` slot of `problem_addressed.1` or
+  `technical_concept.1`, whose provenance and validation state are the CAP-11 Source and Validation rows. Its
+  placement in field 17, 18 or 24 is the export's fixed field map, not a source fact. A dangling ref refuses (§3.4).
+
+No other kind is reference-only, and a truth-bearing kind is never labelled reference-only to avoid an envelope.
+
 ### 8.2 Field map (29 fields, fixed order)
 
 Each Owner-decision §2 row with more than one first-slice disposition is split into fields that each carry exactly one
@@ -366,7 +402,7 @@ non-empty).
 | 14 | `novelty_and_differentiation` | `NOT_CAPTURED` | — | — |
 | 15 | `unresolved_technical_issues` | `RECORDED` / `NOTHING_RECORDED` | S10 + S12 | kinds `unresolved_gap`, `declared_contradiction`, `declared_contradiction_history` |
 | 16 | `assumptions` | `RECORDED` / `NOTHING_RECORDED` | S13 | kind `assumption` |
-| 17 | `missing_information` | `RECORDED` / `NOTHING_RECORDED` | S10 + S13 + S14 + S15 | kinds `gap_reference`, `acknowledged_unknown`, `recorded_unknown_reference`, `routed_specialist_need` |
+| 17 | `missing_information` | `RECORDED` / `NOTHING_RECORDED` | S10 + S13 + S14 + S15 | kinds `gap_reference`, `acknowledged_unknown`, `recorded_unknown`, `routed_specialist_need` |
 | 18 | `technical_evidence` | `RECORDED` / `NOTHING_RECORDED` | S3 + S4 | kind `evidence_reference` |
 | 19 | `commercial_manufacturing_integration_evidence` | `EXCLUDED_FROM_FIRST_SLICE`, reason `CONFIDENTIAL_EVIDENCE_CATEGORIES` | — (not read) | — |
 | 20 | `diagrams_and_files` | `NOT_CAPTURED` | — | — |
@@ -398,17 +434,17 @@ currency (limitation is always `NOT_APPLICABLE`; §8.1).
 | `known_mechanism` | `text` (Q) = `state.known_mechanism.content` | `Evidence.provenance` / `.validation_status` / NA | — | field `NOTHING_RECORDED` when `known_mechanism` is `None` |
 | `part` | `name` (Q) `display_name`; `function` (Q) `function_text` | `Subsystem.provenance` / `.validation_state` / NA | `part_domain` (`mechanical`, `electronics_electrical`, `control_loop`) | — |
 | `interface` | `description` (Q); `dependency` (S, value `null`); `dependency_note` (Q) | `SubsystemInterface.provenance` / `.validation_state` / NA on `description`; NA on the dependency slots | refs `[part_a, part_b]`; `dependency` tokens `dependency_kind` (`one_way` / `mutual`), `dependent_part`, `depends_on_part` (item keys; one-way only) | no declaration → `dependency` and `dependency_note` `NOTHING_RECORDED`; declaration without note → `dependency_note` `NOTHING_RECORDED`; any read failure refuses (§3.4) |
-| `unresolved_gap` | none | — | `gap_type`, `gap_status` (`OPEN` / `PARTIAL`) | — |
-| `declared_contradiction` | `answer_a`, `answer_b` (Q) = endpoint `content` | each endpoint record's provenance / validation / currency | `active: true`; ref to the matching field-29 row | — |
-| `declared_contradiction_history` | `answer_a`, `answer_b` (Q) | each endpoint record's provenance / validation / currency | `active: false` | — |
-| `assumption` | `text` (Q) = record `content` (every `provisional_assumption` record, ledger order) | record provenance / validation / currency | `gap_type` (= `gap_context`); ref to the successor's item (an `assumption` item, or the field-29 row of an active successor) | — |
+| `unresolved_gap` | `gap_state` (S, value `null`), source owner `GAP_LIFECYCLE` (the reconstructed state's gap lifecycle, `state.gaps`) | NA / NA / NA (`Gap` holds no provenance, validation-state or currency field; an unresolved gap holds no `resolution_source`) | `gap_state` tokens `gap_type`, `gap_status` (`OPEN` / `PARTIAL`) | — |
+| `declared_contradiction` | `declaration` (S, value `null`), source owner `LEDGER`; `answer_a`, `answer_b` (Q) = endpoint `content` | `declaration`: the `contradiction_declared` record's own provenance / validation / currency; each answer: its endpoint record's provenance / validation / currency | `declaration` token `active: true`; ref to the matching field-29 row | — |
+| `declared_contradiction_history` | `declaration` (S, value `null`), source owner `LEDGER`; `answer_a`, `answer_b` (Q) | as `declared_contradiction` | `declaration` token `active: false` | — |
+| `assumption` | `text` (Q) = record `content` (every `provisional_assumption` record, ledger order) | record provenance / validation / currency | `gap_type` (= `gap_context`); ref to the item of its immediate successor (`superseded_by`): a `provisional_assumption` successor → its field-16 `assumption` item; an `answered` successor that is still active (the only answer of its chain) → the field-29 `requirement` row of that answer; an `answered` successor that was itself corrected → its field-26 `correction_version` item; no successor → `[]` | — |
 | `acknowledged_unknown` | `text` (Q) = `verbatim` | NA / NA / NA | `gap_type` (= `gap_context`) | — |
-| `recorded_unknown_reference` | none | — | ref to the field-29 row of each ACTIVE `unknown`-disposition record | — |
-| `routed_specialist_need` | none | provenance = `NeedRoutingRevision.provenance` carried in tokens | `gap_type`, `required_input` (`SPECIALIST` only, per the workstream contract's "routed specialist needs"); ref to the field-29 routing row | — |
-| `gap_reference` | none | — | ref to the field-15 `unresolved_gap` item | — |
-| `evidence_reference` | `cap11_form` → `EXCLUDED_FROM_FIRST_SLICE`, reason `FORM_ROW_QUALITY_DERIVED` | none on the item: the CAP-11 Source and Validation rows are the referenced `text` slot's provenance and validation_state, which the HTML shows inside this item's container as two separate rows | ref to `problem_addressed.1` or `technical_concept.1` | one item per present Evidence; none → field `NOTHING_RECORDED` |
+| `recorded_unknown` | `unknown_disposition` (S, value `null`), source owner `LEDGER` (every ACTIVE `unknown`-disposition record, ledger order) | the record's own provenance / validation / currency | `unknown_disposition` tokens `disposition` (`unknown`), `gap_type` (= `gap_context`); ref to the record's field-29 row | — |
+| `routed_specialist_need` | `routed_need` (S, value `null`), source owner `NEED_ROUTING` | `NeedRoutingRevision.provenance` / NA / NA (the revision holds no validation-state or currency field) | `routed_need` tokens `gap_type`, `required_input` (`SPECIALIST` only, per the workstream contract's "routed specialist needs"); ref to the field-29 routing row | — |
+| `gap_reference` | none (REFERENCE-ONLY, §8.1) | inherited from the referenced `gap_state` slot | ref to the field-15 `unresolved_gap` item | — |
+| `evidence_reference` | `cap11_form` → `EXCLUDED_FROM_FIRST_SLICE`, reason `FORM_ROW_QUALITY_DERIVED` (REFERENCE-ONLY, §8.1) | inherited from the referenced `text` slot: the CAP-11 Source and Validation rows are its provenance and validation_state, which the HTML shows inside this item's container as two separate rows | ref to `problem_addressed.1` or `technical_concept.1` | one item per present Evidence; none → field `NOTHING_RECORDED` |
 | `experiment` | `title` (S); `objective` (S, or `EXCLUDED_FROM_FIRST_SLICE` reason `OBJECTIVE_NAMES_EVIDENCE_LEVEL`, §6); `what_to_observe` (S); `success_criterion` (Q); `measurement_method` (Q); `test_hypothesis` (Q); `test_variable` (Q); `execution_state` (S, value `null`) | planning slots: provenance = the item's `*_provenance` token; others NA | `execution_state` tokens `state` (`none` / `recorded`), `count` | `success_criterion_status == "required"` → `NOTHING_RECORDED`; an absent method / hypothesis / variable → `NOTHING_RECORDED`; any planning or execution read failure refuses (§3.4) |
-| `correction_version` | `text` (Q) = record `content` | record provenance / validation / currency | `chain`, `position` (1-based), `gap_type` | — |
+| `correction_version` | `text` (Q) = record `content` | record provenance / validation / currency | `chain`, `position` (1-based), `gap_type`, `disposition` (the record's own disposition, e.g. `answered`); ref: the first member of an assumption-origin answered segment → the field-16 `assumption` item it supersedes; otherwise `[]` | — |
 | `requirement` | per §7 | per §7 | `anchor_kind`; refs per §7 | per §7 |
 | `requirement_quantity` | `value_text` (Q) = `RequirementQuantity.value_text`, verbatim and opaque | `RequirementQuantity.provenance` / `.validation_status` / NA | `quantity_kind` (the owner's six closed tokens); `active`, `anchor_active` (the owner's booleans); ref: `anchor_active` true → exactly the field-29 `requirement` item whose `assertion` anchor is the row's anchoring answer, resolved by `requirement_id` identity; `anchor_active` false → `[]` (the owner derives no Landscape row for a withdrawn answer) | owner holds no row → field 12 per §8.2; `QuantityHistoryError`, or an `anchor_active` row whose field-29 item does not resolve, refuses (§3.4) |
 
@@ -419,9 +455,21 @@ Selection rules, all by owner tokens:
 - Declared contradictions: every `contradiction_declared` record in ledger order; `active` if its endpoint pair is in
   `active_declared_contradiction_pairs`, otherwise history. Legacy undeclared edges are not Owner-declared and appear
   only through the Landscape.
-- `correction_version`: every supersession chain of length two or more over interaction-disposition records
-  (`INTERACTION_DISPOSITIONS` minus `DECISION_ACTION_DISPOSITIONS`) that contains no `provisional_assumption` record;
-  chains that contain one are carried in field 16. Chain order = order of the chain root in the ledger.
+- `correction_version` (Correction 02 — assumption-origin history). Chains are the ledger's own supersession chains
+  over interaction-disposition records (`INTERACTION_DISPOSITIONS` minus `DECISION_ACTION_DISPOSITIONS`), followed only
+  through `supersedes` / `superseded_by`; nothing is inferred from text.
+  - A chain with no `provisional_assumption` record and two or more members: every member, positions 1..n (unchanged).
+  - A chain with a `provisional_assumption` record is classified by the existing `classify_assumption_ancestry` on its
+    head. `ANCESTRY_ASSUMPTION_ORIGIN` (one or more assumptions, then zero or more answers) is valid history: its
+    `provisional_assumption` members are field-16 `assumption` items, and its answered segment — the `answered`
+    records after the last assumption, each keeping its own disposition — is carried here as one chain, positions 1..n,
+    whenever that segment has two or more members (assumption → answer A → corrected answer B gives A at position 1,
+    `SUPERSEDED`, and B at position 2, `CURRENT`). A one-answer segment is not a correction; that answer is reached
+    through its field-29 row. `ANCESTRY_MALFORMED` refuses (inconsistent source history), as reconstruction already
+    does for such ledgers; valid multi-answer ancestry is never treated as corruption.
+  - No record is relabelled: assumptions stay `assumption` items, answers stay answers in correction history, and no
+    chain owner, lifecycle or persisted state is created.
+  - Chain order = ledger order of each carried chain's first carried member.
 - Field 18 carries the Section-2 evidence registry only (the resolved problem and the known mechanism, the evidence
   CAP-11 already describes with Source and Validation rows). See §11 for evidence owners not carried.
 - `requirement_quantity`: every row of `requirement_quantities_meta(state)["rows"]` — the owner's canonical rows in
@@ -473,16 +521,17 @@ Closed token sets:
 - reasons: `NON_INTEGRATED_PROJECT`, `PLANNING_INPUTS`, `CONFIDENTIAL_EVIDENCE_CATEGORIES`, `RESULT_TEXT_NOT_CARRIED`,
   `CARRIED_ON_EVERY_ITEM`, `NO_APPROVAL_RECORD`, `FORM_ROW_QUALITY_DERIVED`, `OBJECTIVE_NAMES_EVIDENCE_LEVEL`;
 - source owners: `SECTION2_RESOLUTION`, `LEDGER`, `SUBSYSTEM_COMPOSITION`, `INTERFACE_DEPENDENCY`,
-  `ACKNOWLEDGED_UNKNOWNS`, `NEED_ROUTING`, `REQUIREMENT_LANDSCAPE`, `REQUIREMENT_QUANTITY`, `PROTOTYPE_TEST_PLAN`,
+  `ACKNOWLEDGED_UNKNOWNS`, `NEED_ROUTING`, `GAP_LIFECYCLE`, `REQUIREMENT_LANDSCAPE`, `REQUIREMENT_QUANTITY`,
+  `PROTOTYPE_TEST_PLAN`,
   `PLANNING_METADATA`, `EXPERIMENT_RESULTS`, `DISCLOSURE_EXPORT` (the export's own fixed text; used only for the
   `capture_limitation` slot);
 - item kinds: the seventeen kinds of §8.3;
 - slot tokens: `text`, `name`, `function`, `description`, `dependency`, `dependency_note`, `answer_a`, `answer_b`,
   `part_a`, `part_b`, `label`, `status`, `resolving_action`, `statement`, `cap11_form`, `title`, `objective`,
   `what_to_observe`, `success_criterion`, `measurement_method`, `test_hypothesis`, `test_variable`, `execution_state`,
-  `value_text`, `capture_limitation`;
+  `value_text`, `capture_limitation`, `gap_state`, `routed_need`, `unknown_disposition`, `declaration`;
 - token keys: `part_domain`, `gap_type`, `gap_status`, `active`, `anchor_active`, `quantity_kind`, `dependency_kind`,
-  `dependent_part`, `depends_on_part`, `required_input`, `provenance`, `anchor_kind`, `chain`, `position`, `state`,
+  `dependent_part`, `depends_on_part`, `required_input`, `disposition`, `anchor_kind`, `chain`, `position`, `state`,
   `count`;
 - `quantity_kind` values: exactly the owner's `QUANTITY_KINDS` (`target_value`, `minimum_value`, `maximum_value`,
   `range`, `count`, `other_quantity`);
@@ -523,8 +572,11 @@ Before serialization the module validates the finished projection against §9.2�
 reason or kind refuses the export (global schema failure). The check also refuses when a `requirement_quantity` item
 carries any slot or token outside §8.3 (so no parsed, numeric, unit or calculated field can be emitted), when a
 `resolved_problem` item lacks its `capture_limitation` slot or that slot's value differs from the exact §12.6 English
-text, or when any ref does not name an existing item key. The module never emits an unknown key. A v1 reader rejects
-unknown keys.
+text, or when any ref does not name an existing item key. It also refuses (Correction 02) when a `RECORDED` item of a
+truth-bearing kind has no `RECORDED` slot with `content_class`, `source_owner` and a four-field envelope; when a
+reference-only item (`gap_reference`, `evidence_reference`) has a `RECORDED` slot of its own or not exactly one ref to
+an item of the kind §8.1 names; or when an item-level token is not one §8.1 allows. The module never emits an unknown
+key. A v1 reader rejects unknown keys.
 
 ## 10. Self-contained HTML contract
 
@@ -552,6 +604,13 @@ unknown keys.
   `white-space: pre-wrap`; nothing is trimmed or normalized. A quoted value carries the adjacent label "Inventor's own
   words"; a system value carries "InventorAI statement". The Source and Validation labels (CAP-11 `UI_ED_*`), the
   currency label and any marker wording sit inside the same item container, next to the value they describe.
+- **Attribution invariant (Correction 02).** For every truth-bearing item, each `RECORDED` slot — a value-`null`
+  `SYSTEM_ASSERTION` slot such as `gap_state`, `routed_need`, `unknown_disposition`, `declaration` or `execution_state`
+  included, which renders through its existing label owners (§2.2 S11, S18, S20, S21) or the label of its referenced
+  field-29 row — shows inside the item container its content-class label and its Source, Validation and Limitation
+  rows (the owner-held value's label, or the `NOT_APPLICABLE` wording "Not applicable"), plus Currency when that is
+  `RECORDED`. A reference-only item shows its link and, next to it, the rows inherited from the referenced slot,
+  labelled as belonging to that target. No row is ever filled with a default.
 - The `resolved_problem` item shows its `capture_limitation` inside the same item container, directly after the problem
   text, labelled "InventorAI statement": the exact English text, followed in the Arabic locale by its §12.6 Arabic
   supplement. It is shown whatever the problem text is.
@@ -721,7 +780,7 @@ Each obligation must first fail on the implementation base, then pass. Files:
 | 2 | §15.2 disclaimers present and before the controls | H, W | no page | page + template | eleven EN disclaimers verbatim in JSON, HTML (both locales) and page; AR supplements in AR; all precede the download controls | §10 |
 | 3 | §15.3 markers | P, H | no projection | field map | each marker renders its §12.3 wording; the section-local `UNAVAILABLE` case is #24; non-integrated project → fields 6–8 `NOT_CAPTURED` + reason, never `NOTHING_RECORDED`; no marker renders empty | §5 |
 | 4 | §15.4 no external transfer | P | no module | module | import-graph and socket-blocking tests: no network call, no provider / API / e-mail import | §11 |
-| 5 | §15.5 project separation and failure classes | W, P | no routes | routes + §3.4 | missing and foreign projects give byte-identical denials; a NULL-owner project is denied; no record of another project appears; every refusal-class fault (unsafe connection, corrupt history, level 0, anchor defect, schema failure and every case of #23) returns 503 with no file | §4A |
+| 5 | §15.5 project separation and failure classes | W, P | no routes | routes + §3.4 | missing and foreign projects give byte-identical denials; a NULL-owner project is denied (the S1 split is #26); no record of another project appears; every refusal-class fault (unsafe connection, corrupt history, level 0, anchor defect, schema failure and every case of #23) returns 503 with no file | §4A |
 | 6a | §15.6(a) one snapshot | P | no composer | §3.1 | instrumented store shows every source read, S22 included, between one SAVEPOINT and its RELEASE, R1 reads last | §4A |
 | 6b | §15.6(b) concurrent commit | P | no composer | §3.1 | a second connection's commit attempted mid-composition never yields mixed state; the export equals the pre-commit state whether the commit waits or completes | §4A |
 | 6c | §15.6(c) later snapshot | P | no composer | §3.1 | a second export after that commit reflects it | §4A |
@@ -743,9 +802,12 @@ Each obligation must first fail on the implementation base, then pass. Files:
 | 19 | Landscape classes | P | no projection | §7 | composed rows never exported as one string; parts resolved by identity; unresolvable anchor refuses | §5 |
 | 20 | OD-A requirement quantities | P, H | no projection | S22, S23, §8.3 | (a) each owner row's `value_text` is carried verbatim as a `QUOTED_INVENTOR_CONTENT` `value_text` slot with the owner's `quantity_kind`, `active`, `anchor_active`, provenance and validation, in owner order; (b) values such as "12 V", "0.5–0.8 mm", "≈3 kg", "1,5 bar", "10^3 N" and "about 20" round-trip unchanged, and no parsed, numeric, unit, normalized, converted or calculated field exists anywhere in `content` (the §9.6 check refuses one); (c) an `anchor_active` row refs exactly the field-29 `requirement` item of its anchoring answer, and a withdrawn-anchor row has `refs` `[]` and renders the existing withdrawn-answer note; (d) no field-29 item carries a quantity value, and each quantity value is emitted once; (e) field 12 is `RECORDED` when any row exists, `RAW_TEXT_ONLY` + pointer only when none exists and field 29 holds a quoted slot, otherwise `NOTHING_RECORDED`, and never renders the "Only as the inventor's own wording in" pointer wording while a row exists; (f) `QuantityHistoryError` and an `anchor_active` row whose field-29 item does not resolve each refuse | OD-A, workstream §6 |
 | 21 | OD-D problem limitation | P, H | no projection | S3, §8.3, §12.6 | every `resolved_problem` item carries `capture_limitation` with the exact §12.6 English text, for a short text, a text of exactly 500 characters, a trimmed text ending in "…" and a text the inventor ended with "…" alike; the HTML shows it inside the problem item's container directly after the text, with the Arabic supplement after it in the Arabic locale; the limitation never states that shortening occurred (it asserts possibility only, and no variant wording exists); the `text` slot equals the owner-held value exactly; the projection module's source never references `known_problem`, and a `known_problem` sentinel held by no other owner appears nowhere in `content` | OD-D, RISK-002 |
-| 22 | reference integrity | P | no projection | §7, §8.3, §9.6 | in populated fixtures (assumption chains with assumption and answered successors, acknowledged unknowns, active `unknown` records, routed specialist needs, open and partial gaps, active and withdrawn-anchor quantities), every ref of every field-16 and field-17 item resolves to exactly one existing item of the kind the mapping names; the same holds for the refs of fields 12, 15, 18, 24 and 29; a fixture with a dangling ref refuses | §8 |
-| 23 | failure classes (Astra) | P, W | no composer | §3.4 | each of the following refuses with an empty 503, no JSON, no HTML, no file and never `UNAVAILABLE`: a missing table and a missing column, each injected for every first-slice store read (S1, S2, S22, the four E2 readers, `load_interface_dependencies`, `load_result_events`); database corruption / integrity failure (`sqlite3.DatabaseError` "malformed", `sqlite3.IntegrityError`); a snapshot lost mid-composition; `ProjectNotFound` inside the snapshot; a `None` E2 collection; an unclassified `sqlite3.Error`; an unclassified exception | §3.4, workstream §4A |
+| 22 | reference integrity | P | no projection | §7, §8.3, §9.6 | in populated fixtures (assumption chains with assumption and answered successors, including `provisional assumption → answer A → corrected answer B` (#25); acknowledged unknowns; active `unknown` records, routed specialist needs, open and partial gaps, active and withdrawn-anchor quantities), every ref of every field-16 and field-17 item resolves to exactly one existing item of the kind the mapping names; the same holds for the refs of fields 12, 15, 18, 24 and 29; a fixture with a dangling ref refuses | §8 |
+| 23 | failure classes (Astra) | P, W | no composer | §3.4 | each of the following refuses with an empty 503, no JSON, no HTML, no file and never `UNAVAILABLE`: a missing table and a missing column, each injected for every first-slice store read after authorization (S1's `load_contract`, S2, S22, the four E2 readers, `load_interface_dependencies`, `load_result_events`; a failure inside S1's ownership lookup is a DENIAL, #26); database corruption / integrity failure (`sqlite3.DatabaseError` "malformed", `sqlite3.IntegrityError`); a snapshot lost mid-composition; `ProjectNotFound` inside the snapshot; a `None` E2 collection; an unclassified `sqlite3.Error`; an unclassified exception | §3.4, workstream §4A |
 | 24 | `UNAVAILABLE` admission | P, H | no composer | §3.4 | (a) the composer's failure classification maps no first-slice source failure to `UNAVAILABLE` (exhaustive source × failure table); (b) a demonstrably section-local outcome — supplied at the composer's section-outcome seam as already-materialized projection data, because no first-slice source has a positively local failure class at this base (§3.4) — renders `UNAVAILABLE` in its own slots only, sets `unavailable_notice`, renders the top sentence, leaves every other section byte-identical to the unfailed projection and passes the §9.6 check | workstream §4A, §15.3 |
+| 25 | assumption-origin history (Condition A) | P | no projection | S13, §8.3 | with a populated fixture `provisional assumption → answer A → corrected answer B` (and the variants assumption → assumption → answer, and assumption → answer only): no REFUSAL; the assumption is a field-16 `assumption` item and nothing else; A and B are a field-26 `correction_version` chain (positions 1 and 2, `disposition` `answered`, currency `SUPERSEDED` / `CURRENT`), never `assumption` items; the assumption's ref resolves to A's field-26 item (to the field-29 row of the answer when it is the only answer); A's ref resolves to the assumption item; B's field-29 row exists; every ref resolves; a ledger the owner classifies `ANCESTRY_MALFORMED` refuses | §6, §8 |
+| 26 | S1 DENIAL versus REFUSAL (Condition C) | W, P | no routes | §3.4, §4 | (1) missing project, (2) another account's project, (3) NULL owner and (4) an ownership-lookup failure that `_is_authorized` converts to `ProjectAccessDenied` (an exception injected into `store.load_owner`, a storage error included) each give the same byte-identical `_deny_project()` response; (5) a storage, schema or integrity failure injected into `store.load_contract` after authorization succeeded gives the empty 503; (6) every case produces no file; `get_authorized_project_read`, `_is_authorized` and `_deny_project()` are unchanged | §4, P10-D3a |
+| 27 | attribution coverage (Condition B) | P, H | no projection | §8.1, §8.3, §9.6, §10 | in a fully populated fixture: every `RECORDED` item of a truth-bearing kind has a `RECORDED` slot with `content_class`, `source_owner` and a four-field envelope whose values equal the owner-held fields or are `NOT_APPLICABLE` where the owner holds none (`unresolved_gap`, `routed_specialist_need`, `recorded_unknown` and both declared-contradiction kinds included); only `gap_reference` and `evidence_reference` are reference-only, each with exactly one ref to a valid item of the kind §8.1 names and no slot of its own carrying metadata; the schema check refuses a truth-bearing item without attribution, a reference-only item with its own metadata or a dangling ref, and an injected default value; the HTML shows Source, Validation and Limitation (and Currency where recorded) inside each truth-bearing item's container, and the inherited rows next to each reference | §5, workstream §15.7 |
 
 R1-focused obligations (file R):
 
@@ -820,6 +882,9 @@ The required pre-implementation UX review (workstream contract §17) should cove
   kind, Source / Validation and current / replaced / withdrawn-answer labels and the link to its Requirement Landscape
   row; whether field 12's heading reads correctly in both its `RECORDED` and `RAW_TEXT_ONLY` cases.
 - **System statements:** English canonical statements inside the Arabic document (Stage 34 rule).
+- **Attribution rows (Correction 02):** the Source / Validation / Limitation rows on every truth-bearing item, many of
+  them "Not applicable", and the inherited rows next to each reference — whether they stay readable and correctly
+  associated on long documents and at phone width.
 - **Not in scope of the review:** legal sufficiency of the disclaimer wording (Owner decision 9).
 
 ## 17. Unresolved issues and pre-implementation Owner decisions
@@ -833,11 +898,14 @@ Resolved by Owner decision and workstream contract Correction 04 (2026-10-04):
 - **§6 objective exclusion:** authorized by workstream contract §7.
 - **Decisions 2 and 3:** ACCEPTED in workstream contract §17 (§0).
 
+Closed by the completed Astra architecture review (PASS WITH CONDITIONS): `UNAVAILABLE` reachability (§3.4, #24) and the
+withdrawn-answer quantity mapping (§8.3). Its four conditions are addressed by Correction 02: (A) assumption-origin
+history (§8.3, #25); (B) attribution coverage (§8.1, §8.3, §9.6, §10, #27); (C) S1 DENIAL versus REFUSAL (§3.4, §4,
+#26); (D) §5 aligned with §3.1.
+
 Still open:
 
-- **`UNAVAILABLE` reachability:** reviewer confirmation of §15 question 10 (empty first-slice positively-local set;
-  #24 projection-seam case).
-- **Reviews:** the targeted architecture re-verification of this correction (§15) and the UX / behaviour review (§16)
+- **Reviews:** the targeted verification of Correction 02 against conditions A–D and the UX / behaviour review (§16)
   have not been performed.
 - **Implementation authorization** (workstream contract §17 decision 8) has not been given.
 
