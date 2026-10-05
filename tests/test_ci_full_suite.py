@@ -11,16 +11,19 @@ Pins the adopted contract (Pilot-02 partition, evidence and audit, now authorita
     pinned independently on their one permanent owner (no inline workflow copy);
   * the workflow topology: an always-running `scope` job with the unchanged
     six-path SMOKE exemption and fail-closed FULL fallback; SMOKE decided by
-    `verify`; FULL decided by the three-shard matrix plus the fail-closed
-    `full_audit`; the scope-aware `CI required` verdict (executed over its whole
-    truth table, never accepting a generic skip); RIG and the advisory `fast`
-    lane outside the required dependency chain; no monolithic FULL job; and
-    every external action pinned to a full SHA.
+    `verify`; FULL decided by the three-shard matrix plus the fail-closed audit,
+    which runs inside the protected `CI required` job (no separate audit job);
+    the scope-aware `CI required` verdict over the job results and the audit /
+    cleanliness step outcomes (executed over its whole truth table, never
+    accepting a generic skip); RIG and the advisory `fast` lane outside the
+    required dependency chain; no monolithic FULL job; and every external action
+    pinned to a full SHA.
 
 Synthetic data only; temporary directories only; the real repository is read,
 never modified.
 """
 import ast
+import concurrent.futures
 import copy
 import hashlib
 import json
@@ -638,7 +641,7 @@ def _heredoc(block):
     return textwrap.dedent(block[block.index("<<'PY'\n") + 7:block.rindex("\n          PY")])
 
 
-GATE = ("scope", "verify", "full_shard", "full_audit", "required")
+GATE = ("scope", "verify", "full_shard", "required")
 PASSIVE_SIX = frozenset({
     "CLAUDE.md",
     "docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md",
@@ -688,7 +691,12 @@ def test_the_mandatory_semantics_have_one_owner_and_no_inline_workflow_copy():
     for literal in (EXPECTED_KNOWN_XFAIL_REASON, EXPECTED_KNOWN_XFAIL[1], EXPECTED_SERVER_PROOF[1],
                     *EXPECTED_BROWSER_MODULES, "ODS-001 exists"):
         assert literal not in text, literal
-    assert "python scripts/ci_full_suite.py --mode audit" in _jobs()["full_audit"]
+    jobs = _jobs()
+    assert "python scripts/ci_full_suite.py --mode audit" in jobs["required"]
+    assert text.count("--mode audit") == 1                     # the audit owner runs only in `required`
+    for name, body in jobs.items():
+        if name != "required":
+            assert "--mode audit" not in body, name
 
 
 # ==========================================================================
@@ -696,13 +704,17 @@ def test_the_mandatory_semantics_have_one_owner_and_no_inline_workflow_copy():
 # ==========================================================================
 def test_job_set_and_the_exact_protected_gate():
     jobs = _jobs()
-    assert set(jobs) == {"scope", "verify", "fast", "full_shard", "full_audit", "required"}
+    assert set(jobs) == {"scope", "verify", "fast", "full_shard", "required"}
+    assert "full_audit" not in _code(_workflow()) and "Sharded FULL audit" not in _workflow()
     assert "full_monolithic_telemetry" not in _workflow() and "monolithic" not in _workflow().lower()
     required = jobs["required"]
     assert re.findall(r"^    name: (.+)$", required, re.M) == ["CI required"]
     assert _job_if(required) == "always()"
-    assert _needs(required) == ["scope", "verify", "full_shard", "full_audit"]
-    assert "    permissions: {}\n" in required
+    assert _needs(required) == ["scope", "verify", "full_shard"]
+    head = _header(required)
+    assert re.findall(r"^    permissions:\n((?:      .*\n)*)", head, re.M) == ["      contents: read\n"]
+    assert "write" not in head and "permissions: {}" not in head
+    assert re.findall(r"^    timeout-minutes: (\d+)$", head, re.M) == ["15"]  # former audit 10 + verdict 5
     assert "continue-on-error" not in _code(required)
 
 
@@ -716,7 +728,7 @@ def test_the_required_dependency_chain_excludes_rig_fast():
             if dep not in closure:
                 closure.add(dep)
                 frontier.append(dep)
-    assert closure == {"scope", "verify", "full_shard", "full_audit"}
+    assert closure == {"scope", "verify", "full_shard"}
     for name in GATE:
         assert "fast" not in _needs(jobs[name]), name
     assert _needs(jobs["fast"]) == []
@@ -857,43 +869,61 @@ def _gate_script():
 
 
 def _gate(rows):
-    """Run the literal `CI required` script (bash -e, as GitHub does) for each row."""
+    """Run the literal `CI required` script (bash -e, as GitHub does) for each row:
+    (scope result, scope, verify result, shard result, audit outcome, cleanliness outcome)."""
     script = _gate_script()
-    driver = "\n".join(
-        f"( export SCOPE_RESULT='{r[0]}' SCOPE='{r[1]}' VERIFY_RESULT='{r[2]}' SHARD_RESULT='{r[3]}' "
-        f"AUDIT_RESULT='{r[4]}'; bash --noprofile --norc -eo pipefail -c \"$GATE\" >/dev/null 2>&1 ) "
-        f"&& echo P || echo F" for r in rows)
-    out = subprocess.run(["bash", "-s"], input=driver, env=dict(os.environ, GATE=script), capture_output=True,
-                         text=True, check=True).stdout.split()
+    lines = [f"( export SCOPE_RESULT='{r[0]}' SCOPE='{r[1]}' VERIFY_RESULT='{r[2]}' SHARD_RESULT='{r[3]}' "
+             f"AUDIT_OUTCOME='{r[4]}' CLEAN_OUTCOME='{r[5]}'; "
+             f"bash --noprofile --norc -eo pipefail -c \"$GATE\" >/dev/null 2>&1 ) "
+             f"&& echo P || echo F" for r in rows]
+
+    def drive(chunk):                                   # one fresh bash per row, as before
+        return subprocess.run(["bash", "-s"], input="\n".join(chunk), env=dict(os.environ, GATE=script),
+                              capture_output=True, text=True, check=True).stdout.split()
+
+    size = -(-len(lines) // (os.cpu_count() or 1))      # contiguous chunks keep the row order
+    with concurrent.futures.ThreadPoolExecutor() as pool:
+        out = [o for part in pool.map(drive, [lines[i:i + size] for i in range(0, len(lines), size)])
+               for o in part]
     assert len(out) == len(rows)
     return dict(zip(rows, (o == "P" for o in out)))
 
 
 def test_gate_truth_table_passes_only_the_complete_selected_route():
-    rows = [(sr, sc, v, s, a) for sr in _RESULTS for sc in _SCOPES
-            for v in _RESULTS for s in _RESULTS for a in _RESULTS]
+    rows = [(sr, sc, v, s, a, c) for sr in _RESULTS for sc in _SCOPES
+            for v in _RESULTS for s in _RESULTS for a in _RESULTS for c in _RESULTS]
     passing = {row for row, ok in _gate(rows).items() if ok}
-    assert passing == {("success", "smoke", "success", "skipped", "skipped"),
-                       ("success", "full", "skipped", "success", "success")}
+    assert passing == {("success", "smoke", "success", "skipped", "skipped", "skipped"),
+                       ("success", "full", "skipped", "success", "success", "success")}
 
 
 @pytest.mark.parametrize("row, ok", [
-    (("success", "smoke", "success", "skipped", "skipped"), True),
-    (("success", "full", "skipped", "success", "success"), True),
-    (("success", "full", "skipped", "failure", "failure"), False),     # a shard failed; audit fails closed
-    (("success", "full", "skipped", "failure", "success"), False),     # matrix failure is never masked
-    (("success", "full", "skipped", "cancelled", "failure"), False),
-    (("success", "full", "skipped", "success", "failure"), False),     # audit failure
-    (("success", "full", "skipped", "success", "skipped"), False),     # audit missing
-    (("success", "full", "skipped", "skipped", "skipped"), False),     # FULL route skipped
-    (("success", "full", "success", "success", "success"), False),     # SMOKE route ran on a FULL change
-    (("success", "smoke", "skipped", "skipped", "skipped"), False),    # SMOKE route skipped
-    (("success", "smoke", "success", "success", "success"), False),    # FULL route ran on a SMOKE change
-    (("success", "smoke", "failure", "skipped", "skipped"), False),
-    (("failure", "smoke", "success", "skipped", "skipped"), False),    # failed scope job
-    (("skipped", "", "skipped", "skipped", "skipped"), False),         # everything skipped
-    (("success", "", "skipped", "skipped", "skipped"), False),         # missing scope
-    (("success", "unknown", "success", "success", "success"), False),  # invalid scope
+    (("success", "smoke", "success", "skipped", "skipped", "skipped"), True),
+    (("success", "full", "skipped", "success", "success", "success"), True),
+    (("success", "full", "skipped", "failure", "failure", "success"), False),     # a shard failed; audit fails closed
+    (("success", "full", "skipped", "failure", "success", "success"), False),     # evidence never masks a failed shard
+    (("success", "full", "skipped", "cancelled", "success", "success"), False),   # nor a cancelled shard
+    (("success", "full", "skipped", "cancelled", "failure", "success"), False),   # missing shard evidence
+    (("success", "full", "skipped", "success", "failure", "success"), False),     # audit failure
+    (("success", "full", "skipped", "success", "skipped", "success"), False),     # checkout / setup / download failed
+    (("success", "full", "skipped", "success", "skipped", "failure"), False),     # checkout failed
+    (("success", "full", "skipped", "success", "cancelled", "success"), False),   # audit cancelled
+    (("success", "full", "skipped", "success", "success", "failure"), False),     # dirty checkout
+    (("success", "full", "skipped", "success", "success", "skipped"), False),     # cleanliness never checked
+    (("success", "full", "skipped", "success", "failure", "failure"), False),
+    (("success", "full", "skipped", "skipped", "skipped", "skipped"), False),     # FULL route skipped
+    (("success", "full", "success", "success", "success", "success"), False),     # SMOKE route ran on a FULL change
+    (("success", "smoke", "skipped", "skipped", "skipped", "skipped"), False),    # SMOKE route skipped
+    (("success", "smoke", "success", "success", "skipped", "skipped"), False),    # FULL route ran on a SMOKE change
+    (("success", "smoke", "success", "skipped", "success", "success"), False),    # the audit ran on a SMOKE change
+    (("success", "smoke", "success", "skipped", "skipped", "success"), False),
+    (("success", "smoke", "failure", "skipped", "skipped", "skipped"), False),
+    (("failure", "smoke", "success", "skipped", "skipped", "skipped"), False),    # failed scope job
+    (("failure", "full", "skipped", "success", "success", "success"), False),
+    (("cancelled", "full", "skipped", "success", "success", "success"), False),
+    (("skipped", "", "skipped", "skipped", "skipped", "skipped"), False),         # everything skipped
+    (("success", "", "skipped", "skipped", "skipped", "skipped"), False),         # missing scope
+    (("success", "unknown", "success", "success", "success", "success"), False),  # invalid scope
 ])
 def test_gate_named_rows(row, ok):
     assert _gate([row])[row] is ok
@@ -901,13 +931,15 @@ def test_gate_named_rows(row, ok):
 
 def test_the_gate_never_accepts_skipped_generically():
     script = _gate_script()
-    assert script.count("= skipped") == 3 and "!= skipped" not in script and "|| true" not in script
+    assert script.count("= skipped") == 4 and "!= skipped" not in script and "|| true" not in script
     assert "verdict=fail\n" in script and script.rstrip().endswith('test "$verdict" = pass')
     env = _step(_jobs()["required"], "Require the complete authoritative route for the selected scope")
+    assert "        if: always()\n" in env
     for line in ("SCOPE_RESULT: ${{ needs.scope.result }}", "SCOPE: ${{ needs.scope.outputs.scope }}",
                  "VERIFY_RESULT: ${{ needs.verify.result }}", "SHARD_RESULT: ${{ needs.full_shard.result }}",
-                 "AUDIT_RESULT: ${{ needs.full_audit.result }}"):
+                 "AUDIT_OUTCOME: ${{ steps.audit.outcome }}", "CLEAN_OUTCOME: ${{ steps.audit_clean.outcome }}"):
         assert line in env, line
+    assert "needs.full_audit" not in _workflow()
 
 
 # ==========================================================================
@@ -944,7 +976,7 @@ def test_full_route_is_the_unmasked_three_shard_matrix_after_scope():
     assert _job_if(shard) == "needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'"
     assert "      fail-fast: false\n" in head and "        shard: [1, 2, 3]\n" in head
     assert "runs-on: ubuntu-24.04" in head
-    for name in ("full_shard", "full_audit"):
+    for name in ("full_shard", "required"):
         assert "continue-on-error" not in _code(_jobs()[name]), name
     run = _step(shard, "Run this shard of the FULL suite")
     assert "python scripts/ci_full_suite.py --mode shard --shard ${{ matrix.shard }} --count 3" in run
@@ -963,16 +995,40 @@ def test_every_shard_keeps_the_verify_environment_and_mandatory_proofs():
     assert "ref: ${{ github.sha }}" in shard and "assert parents == [merge, base, head]" in shard
 
 
-def test_full_audit_runs_for_full_even_after_a_shard_failure_and_is_fail_closed():
-    audit = _jobs()["full_audit"]
-    assert _needs(audit) == ["scope", "full_shard"]
-    assert _job_if(audit) == ("always() && needs.scope.result == 'success' && "
-                              "needs.scope.outputs.scope == 'full'")
-    run = _step(audit, "Audit FULL-suite completeness and mandatory semantics")
-    assert "python scripts/ci_full_suite.py --mode audit --evidence-dir" in run
-    assert "|| true" not in run and "|| echo" not in run
-    assert "ref: ${{ github.sha }}" in audit
-    assert "git ls-files --others --exclude-standard" in _step(audit, "Confirm repository data was not changed")
+_FULL_ONLY = "needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'"
+_REQUIRED_STEPS = ("Check out the exact proposed merge", "Set up the repository-required Python",
+                   "Download the current attempt's shard evidence only",
+                   "Audit FULL-suite completeness and mandatory semantics", "Confirm repository data was not changed",
+                   "Require the complete authoritative route for the selected scope")
+
+
+def test_the_full_audit_in_required_runs_for_full_even_after_a_shard_failure_and_is_fail_closed():
+    required = _jobs()["required"]
+    assert _job_if(required) == "always()"              # runs after a failed or cancelled shard
+    assert re.findall(r"^      - name: (.+)$", required, re.M) == list(_REQUIRED_STEPS)
+    # The FULL-only steps depend on the selected scope only, never on the shard
+    # result, and keep the implicit success(): a failed checkout, setup or
+    # download leaves the audit `skipped`, which the verdict rejects.
+    for name in _REQUIRED_STEPS[:4]:
+        step = _step(required, name)
+        assert re.findall(r"^        if: (.+)$", step, re.M) == [_FULL_ONLY], name
+        assert "full_shard" not in step and "always()" not in step, name
+    audit = _step(required, "Audit FULL-suite completeness and mandatory semantics")
+    assert "        id: audit\n" in audit
+    assert "python scripts/ci_full_suite.py --mode audit --evidence-dir" in audit
+    assert "|| true" not in audit and "|| echo" not in audit
+    clean = _step(required, "Confirm repository data was not changed")
+    assert "        id: audit_clean\n" in clean
+    assert f"        if: always() && {_FULL_ONLY}\n" in clean     # a failed audit cannot hide the cleanliness state
+    assert _code(clean).split("run: |\n")[1] == _code(
+        _step(_jobs()["full_shard"], "Confirm repository data was not changed")).split("run: |\n")[1]
+    checkout = _step(required, "Check out the exact proposed merge")
+    for line in ("ref: ${{ github.sha }}", "fetch-depth: 0", "persist-credentials: false"):
+        assert line in checkout, line
+    head = _header(required)                            # the audit's run / attempt / merge identity inputs
+    for line in ("EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}",
+                 "EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}", "EXPECTED_MERGE: ${{ github.sha }}"):
+        assert line in head, line
 
 
 def test_evidence_transfer_is_scoped_to_the_current_run_and_attempt():
@@ -981,7 +1037,7 @@ def test_evidence_transfer_is_scoped_to_the_current_run_and_attempt():
     assert "if: always()" in upload and "if-no-files-found: error" in upload
     assert "name: full-shard-evidence-${{ github.run_id }}-${{ github.run_attempt }}-shard-${{ matrix.shard }}" \
         in upload
-    download = _step(jobs["full_audit"], "Download the current attempt's shard evidence only")
+    download = _step(jobs["required"], "Download the current attempt's shard evidence only")
     assert "pattern: full-shard-evidence-${{ github.run_id }}-${{ github.run_attempt }}-shard-*" in download
     assert "merge-multiple" not in download and "run-id" not in download and "github-token" not in download
 
