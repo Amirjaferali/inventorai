@@ -275,7 +275,7 @@ jobs:
 
   full_shard:
     name: Sharded FULL ${{ matrix.shard }}/3
-    # AUTHORITATIVE for FULL (with `full_audit`). Each shard runs the NORMAL full
+    # AUTHORITATIVE for FULL (with the audit in `required`). Each shard runs the NORMAL full
     # pytest collection and executes only the whole test files deterministically
     # assigned to it by scripts/ci_full_suite.py (static BROWSER_SHARD placement,
     # else SHA-256 of the file path; no RIG, changed-file, -k or marker input).
@@ -378,16 +378,22 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  full_audit:
-    name: Sharded FULL audit
-    # AUTHORITATIVE for FULL. Fail-closed completeness and mandatory-semantics
-    # audit over the three current-attempt shard evidence packages. It runs for
-    # FULL even when a shard failed, so missing or incomplete evidence fails
-    # closed here and in `required`.
-    needs: [scope, full_shard]
-    if: always() && needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'
+  required:
+    name: CI required
+    # The protected verdict, and for FULL the fail-closed completeness and
+    # mandatory-semantics audit over the three current-attempt shard evidence
+    # packages (formerly the separate `full_audit` job; one runner fewer on the
+    # FULL route). The audit runs for a selected FULL route even when a shard
+    # failed or was cancelled, so missing or incomplete evidence fails closed.
+    # Scope-aware and explicit: a skipped job or step passes only when it
+    # belongs to the route the successful scope did NOT select. Any other skip,
+    # failure, cancellation, missing result or unknown scope fails.
+    needs: [scope, verify, full_shard]
+    if: always()
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
+    permissions:
+      contents: read
     defaults:
       run:
         shell: bash
@@ -399,6 +405,7 @@ jobs:
       EXPECTED_MERGE: ${{ github.sha }}
     steps:
       - name: Check out the exact proposed merge
+        if: needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.sha }}
@@ -406,55 +413,53 @@ jobs:
           persist-credentials: false
 
       - name: Set up the repository-required Python
+        if: needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version-file: .python-version
 
       - name: Download the current attempt's shard evidence only
+        if: needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: full-shard-evidence-${{ github.run_id }}-${{ github.run_attempt }}-shard-*
           path: ${{ runner.temp }}/full-shard-evidence
 
       - name: Audit FULL-suite completeness and mandatory semantics
+        id: audit
+        if: needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'
         run: |
           python scripts/ci_full_suite.py --mode audit --evidence-dir "$RUNNER_TEMP/full-shard-evidence" \
             --summary "$GITHUB_STEP_SUMMARY"
 
       - name: Confirm repository data was not changed
-        if: always()
+        id: audit_clean
+        if: always() && needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'
         run: |
           git diff --exit-code
           git diff --cached --exit-code
           test -z "$(git ls-files --others --exclude-standard)"
 
-  required:
-    name: CI required
-    # The protected verdict. Scope-aware and explicit: a skipped job passes only
-    # when it belongs to the route the successful scope did NOT select. Any other
-    # skip, failure, cancellation, missing result or unknown scope fails.
-    needs: [scope, verify, full_shard, full_audit]
-    if: always()
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    permissions: {}
-    steps:
       - name: Require the complete authoritative route for the selected scope
+        if: always()
         env:
           SCOPE_RESULT: ${{ needs.scope.result }}
           SCOPE: ${{ needs.scope.outputs.scope }}
           VERIFY_RESULT: ${{ needs.verify.result }}
           SHARD_RESULT: ${{ needs.full_shard.result }}
-          AUDIT_RESULT: ${{ needs.full_audit.result }}
+          AUDIT_OUTCOME: ${{ steps.audit.outcome }}
+          CLEAN_OUTCOME: ${{ steps.audit_clean.outcome }}
         run: |
-          echo "scope=$SCOPE_RESULT/$SCOPE verify=$VERIFY_RESULT full_shard=$SHARD_RESULT full_audit=$AUDIT_RESULT"
+          echo "scope=$SCOPE_RESULT/$SCOPE verify=$VERIFY_RESULT full_shard=$SHARD_RESULT audit=$AUDIT_OUTCOME audit_clean=$CLEAN_OUTCOME"
           verdict=fail
           if [ "$SCOPE_RESULT" = success ] && [ "$SCOPE" = smoke ]; then
-            if [ "$VERIFY_RESULT" = success ] && [ "$SHARD_RESULT" = skipped ] && [ "$AUDIT_RESULT" = skipped ]; then
+            if [ "$VERIFY_RESULT" = success ] && [ "$SHARD_RESULT" = skipped ] && [ "$AUDIT_OUTCOME" = skipped ] \
+              && [ "$CLEAN_OUTCOME" = skipped ]; then
               verdict=pass
             fi
           elif [ "$SCOPE_RESULT" = success ] && [ "$SCOPE" = full ]; then
-            if [ "$VERIFY_RESULT" = skipped ] && [ "$SHARD_RESULT" = success ] && [ "$AUDIT_RESULT" = success ]; then
+            if [ "$VERIFY_RESULT" = skipped ] && [ "$SHARD_RESULT" = success ] && [ "$AUDIT_OUTCOME" = success ] \
+              && [ "$CLEAN_OUTCOME" = success ]; then
               verdict=pass
             fi
           fi
