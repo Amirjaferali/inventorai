@@ -1956,16 +1956,15 @@ def test_second_increment_status_is_merge_truth_and_the_none_contract_is_superse
             "AND ELECTRICAL SLICES") in raw_checklist
     assert re.search(r"^NO FURTHER CAP-01 IMPLEMENTATION IS CURRENTLY AUTHORIZED$",
                      raw_checklist, re.M) is None
-    # ROTATED at the Stage 35 first bounded slice: exactly one plain-text Stage-35 contract line is live, directly
-    # under the Electrical delivery line and followed by the Stage-35 status lines and the Slice-2 delivery line
-    # (identity optional); no plain-text NONE, next-increment or next-step line survives, and no plain-text
-    # Stage-15 contract line survives
-    assert re.search(r"^ACTIVE CONTRACT: NONE$", raw_checklist, re.M) is None
-    assert re.search(r"^NEXT PRODUCT INCREMENT: NOT AUTHORIZED$", raw_checklist, re.M) is None
-    assert re.search(r"^NEXT STEP: LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT$", raw_checklist, re.M) is None
-    assert len(re.findall(r"^" + re.escape(_S35_ACTIVE.strip("`")) + r"$", raw_checklist, re.M)) == 1
+    # ROTATED at the Stage 35 closure: exactly one plain-text NONE line is live again, directly under the Electrical
+    # delivery line and followed by the next-increment, next-step and Stage-35 closure lines and the Slice-2 delivery
+    # line (identity optional); no plain-text Stage-35 active-increment line survives, and no plain-text Stage-15
+    # contract line survives
+    assert len(re.findall(r"^ACTIVE CONTRACT: NONE$", raw_checklist, re.M)) == 1
+    for retired in _S35_ACTIVE_ONLY:
+        assert re.search(r"^" + re.escape(retired.strip("`")) + r"$", raw_checklist, re.M) is None, retired
     assert re.search(r"^ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED" + _DELIVERY_IDENTITY
-                     + "".join(r"\n" + re.escape(t.strip("`")) for t in _S35_TOKENS)
+                     + "".join(r"\n" + re.escape(t.strip("`")) for t in _S35C_TOKENS)
                      + r"\nSTAGE 15 CLOSURE: DELIVERED"
                      + _DELIVERY_IDENTITY + r"\nSTAGE 15 SLICE 4: DELIVERED"
                      + _DELIVERY_IDENTITY + r"\nSTAGE 15 SLICE 3: DELIVERED"
@@ -2158,7 +2157,9 @@ _PRE_S19_NONE = (r"\*\*ACTIVE CONTRACT: NONE\.\*\* Both",
                  # AMENDED at the Stage 23 closure: the post-Stage-23-closure delivery fact counts as well
                  r"Stage[ -]23[ -]closure|"
                  # AMENDED at the delivered CAP-12 Form Mock-up Advisory Slice 1: its delivery fact counts as well
-                 r"Stage[ -]24[ -]—[ -]CAP-12[ -]Form[ -]Mock-up[ -]Advisory[ -]—[ -]Slice[ -]1))")
+                 r"Stage[ -]24[ -]—[ -]CAP-12[ -]Form[ -]Mock-up[ -]Advisory[ -]—[ -]Slice[ -]1|"
+                 # AMENDED at the Stage 35 closure: the post-Stage-35-closure delivery fact counts as well
+                 r"Stage[ -]35[ -]closure))")
 
 
 _SLICE_02_LIVE_REVERSALS = (
@@ -3984,32 +3985,68 @@ _S35_LIMITS = ("`STAGE 35 PDF / EMAIL DELIVERY / API EXPOSURE / EXTERNAL TRANSFE
                "`PATENT-CLAIM DRAFTING / PATENTABILITY / FTO / LEGAL-VALIDITY CONCLUSIONS: NOT AUTHORIZED`")
 # The live token sequence, in surface order; the checklist's plain-text state block carries the same lines.
 _S35_TOKENS = (_S35_ACTIVE,) + _S35_FACTS + _S35_LIMITS + (_S35_FURTHER_NO,)
-# After the Stage 35 authorization a live surface may no longer carry the post-Stage-24-closure NONE.
-_S35_STALE = (_tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), r"NO ACTIVE CONTRACT — post-Stage-24-closure",
-              r"\(post-Stage-24-closure;", r"NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED",
-              r"no product increment is currently authorized", r"No product increment is authorized after",
-              r"[Nn]o subsequent (?:product )?increment has been authorized",
-              r"The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT",
-              r"next step: a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT",
-              # ADVANCED at the delivery of the first bounded slice: its pre-merge status is stale too
-              r"STAGE 35 MERGE AUTHORIZATION: NO", r"STAGE 35 FIRST BOUNDED SLICE: NOT DELIVERED",
-              r"merge authorization NO", r"first bounded slice only[,;] NOT delivered", r"owns (?:its|the) candidate identity",
-              r"its merge needs its own Lead / Owner decision")
-# Stage 35 is ENTERED / PARTIAL for its first bounded slice ONLY: a delivery, completion or closure claim, an
-# authorized merge, closure or later slice, a lifted exclusion or a Stage-36 advance is a reversal of the live truth.
-_S35_REVERSALS = (
-    r"STAGE 35: (?!ENTERED / PARTIAL — FIRST BOUNDED SLICE ONLY\b|NOT COMPLETE\b|NOT CLOSED\b)",
-    r"STAGE 35 COMPLETE: YES", r"STAGE 35 CLOSURE: (?!NOT AUTHORIZED)",
-    # ROTATED at the delivery of the first bounded slice: the slice is DELIVERED, and any merge-authorization token
-    # (a pending NO as much as a YES) is a reversal of the delivered state
+# ADVANCED at the Stage 35 closure (2026-10-05): STAGE 35 — COMPLETE for the current bounded Structured Invention
+# Disclosure Export first-slice scope ONLY (row 35 ticked for that scope only; 22 of 45 rows stay unticked), recorded with
+# no product change; ACTIVE CONTRACT is NONE again with its next-increment and next-step tokens; the first bounded slice
+# stays DELIVERED; later Stage-35 slices, PDF / e-mail / API / external transfer / AI or provider use and patent-claim /
+# patentability / FTO / legal-validity conclusions stay NOT AUTHORIZED; the legal-adviser / release triggers stay
+# preserved; Stage 36 stays NOT ENTERED and NOT AUTHORIZED; the MASTER ROADMAP SEQUENTIAL MARKER is unchanged. The
+# Stage-35 active-increment wording survives only as superseded history. Git / GitHub own the closure's PR, merge and
+# review identity, so no PR number or SHA is pinned here.
+_NONE_BOLD = "**ACTIVE CONTRACT: NONE.**"
+_S35C_NAME = "Stage 35 — Structured Invention Disclosure Export — Closure"
+_S35C_HEADING = "## Current authority — post-Stage-35-closure: no active contract (2026-10-05)"
+_S35C_DELIVERED = "`STAGE 35 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED`"
+_S35_COMPLETE = "`STAGE 35: COMPLETE — CURRENT BOUNDED STRUCTURED INVENTION DISCLOSURE EXPORT FIRST-SLICE SCOPE ONLY`"
+_S35_SLICE_DELIVERED = "`STAGE 35 FIRST BOUNDED SLICE: DELIVERED`"
+_S35_LATER_NO = "`LATER STAGE-35 SLICES: NOT AUTHORIZED`"
+_S35_TRIGGERS = "`STAGE 35 LEGAL-ADVISER / RELEASE TRIGGERS: PRESERVED`"
+_S36_NOT = ("`STAGE 36: NOT ENTERED`", "`STAGE 36: NOT AUTHORIZED`")
+_S35C_FACTS = ((_S35C_DELIVERED, _S35_COMPLETE, _S35_SLICE_DELIVERED, _S35_LATER_NO) + _S35_LIMITS + (_S35_TRIGGERS,)
+               + _S36_NOT)
+# The live token sequence, in surface order; the checklist's plain-text state block carries the same lines.
+_S35C_TOKENS = (_NONE718, _NEXT_INC_NO, _NEXT_STAGE_STEP) + _S35C_FACTS
+# The Stage-35 active-increment tokens that the closure retired (the slice delivery, later-slice and limit tokens stay).
+_S35_ACTIVE_ONLY = tuple(t for t in _S35_TOKENS if t not in _S35C_TOKENS)
+# After the Stage 35 closure a live surface may no longer carry the Stage-35 active-increment state, its pre-merge
+# status or the post-Stage-24-closure NONE heading.
+_S35C_STALE = tuple(_tok(t) for t in _S35_ACTIVE_ONLY) + (
+    r"ACTIVE CONTRACT: STAGE 35\b", r"ACTIVE BOUNDED PRODUCT INCREMENT — Stage 35",
+    r"is the active bounded product increment", r"ONE Owner-authorized bounded product increment is\s+active",
+    r"Stage 35 is ENTERED / PARTIAL", r"Stage 35 ENTERED / PARTIAL —",
+    r"active contract stays (?:this|that) first bounded slice", r"until a separate Owner closure decision",
+    r"Stage 35 roadmap checkbox stays UNTICKED", r"closure authorization NO",
+    r"the Owner has since separately authorized ONE bounded product increment",
+    r"After the Stage 24 closure the Owner separately authorized ONE bounded product increment",
+    r"Before it, no product increment was authorized after Stage 24",
+    r"NO ACTIVE CONTRACT — post-Stage-24-closure", r"\(post-Stage-24-closure;",
+    r"STAGE 35 MERGE AUTHORIZATION: NO", r"STAGE 35 FIRST BOUNDED SLICE: NOT DELIVERED",
+    r"merge authorization NO", r"first bounded slice only[,;] NOT delivered", r"owns (?:its|the) candidate identity",
+    r"its merge needs its own Lead / Owner decision")
+# Stage 35 is COMPLETE for its current bounded first-slice scope ONLY: an unscoped or global completion, a stage-level
+# delivery / merge claim, a reopened or undone closure, the slice back to not delivered, an authorized later slice, a
+# lifted exclusion, dropped legal-adviser / release triggers or a Stage-36 advance is a reversal of the live truth.
+_S35C_REVERSALS = (
+    r"STAGE 35: (?!COMPLETE — CURRENT BOUNDED STRUCTURED INVENTION DISCLOSURE EXPORT FIRST-SLICE SCOPE ONLY\b)",
+    r"STAGE 35 COMPLETE: YES", r"STAGE 35 CLOSURE: (?!DELIVERED — NO PRODUCT CHANGE REQUIRED\b)",
     r"STAGE 35 FIRST BOUNDED SLICE: (?!DELIVERED\b)", r"STAGE 35 MERGE AUTHORIZATION: ",
-    r"STAGE 35 OWNER IMPLEMENTATION AUTHORIZATION: (?!YES\b)", r"LATER STAGE-35 SLICES: (?!NOT AUTHORIZED)",
-    r"FURTHER PRODUCT INCREMENT: (?!NOT AUTHORIZED)", r"AI OR PROVIDER CALLS: (?!NOT AUTHORIZED)",
-    r"LEGAL-VALIDITY CONCLUSIONS: (?!NOT AUTHORIZED)",
-    r"Stage 35\s+(?:is|was|has been)\s+(?:now\s+)?(?:COMPLETE|COMPLETED|CLOSED|DELIVERED|DISCHARGED|MERGED)\b",
-    r"(?<!no )(?<!not )\bStage[- ]35 (?:closure|merge) (?:is |was |has been )?authorized\b",
-    r"STAGE 36: (?:ENTERED|COMPLETE)", r"Stage 36\s+(?:is|was|has been)\s+(?:now\s+)?(?:ENTERED|COMPLETE)\b",
-    r"(?<!NO )STAGE-36 IMPLEMENTATION (?:IS )?AUTHORIZED")
+    # kept from the active-increment state: a reversed owner authorization or implementation token stays a reversal
+    # (their affirmative forms are retired, stale tokens above)
+    r"STAGE 35 OWNER IMPLEMENTATION AUTHORIZATION: (?!YES\b)", r"STAGE 35 FIRST BOUNDED SLICE IMPLEMENTATION: (?!EXISTS\b)",
+    r"(?<!no )(?<!not )\bStage[- ]35 merge (?:is |was |has been )?authorized\b",
+    r"LATER STAGE-35 SLICES: (?!NOT AUTHORIZED)", r"FURTHER PRODUCT INCREMENT: (?!NOT AUTHORIZED)",
+    r"NEXT PRODUCT INCREMENT: (?!NOT AUTHORIZED)", r"AI OR PROVIDER CALLS: (?!NOT AUTHORIZED)",
+    r"LEGAL-VALIDITY CONCLUSIONS: (?!NOT AUTHORIZED)", r"LEGAL-ADVISER / RELEASE TRIGGERS: (?!PRESERVED\b)",
+    r"Stage 35\s+(?:is|was|has been)\s+(?:now\s+)?(?:COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b"
+    r"(?!\s+(?:\(\d{4}-\d{2}-\d{2}\)\s+)?for\s+(?:the|its)\s+current\s+bounded\b)",
+    r"Stage 35\s+(?:is|was|has been)\s+(?:now\s+)?(?:fully|globally)\s+(?:COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b",
+    r"Stage 35\s+(?:is|was|has been)\s+(?:now\s+)?(?:DELIVERED|MERGED)\b",
+    r"Stage 35 COMPLETE\b(?!\s+for\s+(?:the|its)\s+current\s+bounded\b)",
+    r"(?<!no )(?<!not )\blater Stage[- ]35 slices? (?:is |are |was |were |has been |have been )?(?:now )?authorized\b",
+    r"STAGE 36: (?!NOT ENTERED\b|NOT AUTHORIZED\b)",
+    r"Stage 36\s+(?:is|was|has been)\s+(?:now\s+)?(?:ENTERED|COMPLETE|AUTHORIZED)\b",
+    r"(?<!NO )STAGE-36 IMPLEMENTATION (?:IS )?AUTHORIZED",
+    r"(?<!no )(?<!not )\bStage-36 (?:work|implementation) (?:is |was |has been )?(?:now )?authorized\b")
 # After the Stage 23 closure a live surface may no longer carry the pre-closure Stage-23 marker or NONE position.
 _S23C_STALE = (_tok(_S23_MARKER), r"CURRENT MASTER ROADMAP STAGE: Stage 23\b",
                r"Stage 23 NOT ENTERED — navigation only",
@@ -4080,9 +4117,10 @@ _S18C_STALE = (r"`STAGE 18 COMPLETE: NO`", _tok("`STAGE 18: ENTERED / PARTIAL / 
                r"MASTER ROADMAP SEQUENTIAL MARKER:? Stage 18 stays")
 # Pre-merge Stage-15 wording that may survive ONLY inside a visibly superseded note.
 _S15_PREMERGE_FORMS = (
-    # ROTATED at the Stage 35 first bounded slice: the live contract token is the Stage-35 one; any other
-    # active-contract token (NONE included) is a reversal
-    r"ACTIVE CONTRACT: STAGE 15", r"`ACTIVE CONTRACT: (?!" + re.escape(_S35_CONTRACT) + r"`)", r"\bPR NOT OPENED\b", r"\bMERGE NOT PERFORMED\b",
+    # ROTATED at the Stage 35 first bounded slice: the live contract token was the Stage-35 one
+    # ROTATED back at the Stage 35 closure: the live contract token is NONE again; any other active-contract token (the
+    # Stage-35 one included) is a reversal
+    r"ACTIVE CONTRACT: STAGE 15", r"`ACTIVE CONTRACT: (?!NONE`)", r"\bPR NOT OPENED\b", r"\bMERGE NOT PERFORMED\b",
     r"PR #718[^.;]{0,40}\bnot (yet )?(opened|merged)", r"\bPR PENDING\b", r"REVIEW COMPLETE / PR PENDING",
     r"IMPLEMENTATION:? COMPLETE CANDIDATE", r"IMPLEMENTED CANDIDATE",
     r"Slice 1 \(implementation complete candidate\)", r"CURRENT REVIEWED PRODUCT HEAD",
@@ -4414,13 +4452,15 @@ def test_post_718_no_active_contract_is_superseded_history():
     # Stage 30, Stage 28 and Stage 23 closures, and again at the delivered CAP-12 Form Mock-up Advisory Slice 1: the
     # last bounded increment is now that slice, recorded in its after-merge form)
     # ADVANCED at the Stage 24 closure: the last bounded closure is now the Stage 24 closure
-    # ROTATED at the Stage 35 first bounded slice: the head opens with the live Stage-35 declaration; the Stage 24
-    # closure stays the last bounded closure
-    assert head.startswith("## Current authority " + _S35_BOLD + " ONE Owner-authorized bounded product increment is "
-                           "active: " + _S35_NAME), head[:260]
-    assert ("The last Owner-authorized bounded closure — Stage 24 — CAP-12 Form Mock-up Advisory — Closure — is "
+    # ROTATED at the Stage 35 first bounded slice: the head opened with the live Stage-35 declaration
+    # ROTATED at the Stage 35 closure: the head opens with the live NONE again; the Stage 35 closure is the last bounded
+    # closure and the Stage 24 closure precedes it
+    assert head.startswith("## Current authority " + _NONE_BOLD + " NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The "
+                           "last Owner-authorized bounded closure — " + _S35C_NAME + " — is DELIVERED with no product "
+                           "change required"), head[:260]
+    assert ("The preceding bounded closure — Stage 24 — CAP-12 Form Mock-up Advisory — Closure — is "
             "DELIVERED with no product change required") in head
-    assert "**ACTIVE CONTRACT: NONE.**" not in head
+    assert _S35_BOLD not in head
     assert "post-PR-#718" not in head
 
 
@@ -4521,46 +4561,70 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     contract is no longer NONE but the Owner-authorized Stage 35 first bounded structured invention disclosure export
     slice — ENTERED / PARTIAL for that slice only, not delivered, not complete, not closed, its merge and closure not
     authorized, its checkbox unticked (23 of 45 rows unticked) — and the post-Stage-24-closure NONE survives only as
-    superseded history. This guard requires no PR number, SHA, ancestry, review verdict or
+    superseded history. ADVANCED at the Stage 35 closure: Stage 35 is COMPLETE for the current bounded first-slice
+    scope only (row 35 ticked for that scope only; 22 of 45 rows unticked) with no product change, the live contract
+    is NONE again, the first bounded slice stays DELIVERED, later Stage-35 slices stay NOT AUTHORIZED, the
+    legal-adviser / release triggers stay preserved and Stage 36 stays NOT ENTERED / NOT AUTHORIZED; the Stage-35
+    active-increment wording survives only as superseded history. This guard requires no PR number, SHA, ancestry,
+    review verdict or
     post-merge result: Git/GitHub own them, so the same text is correct on the candidate that carries it and after
     its merge."""
     assert _live_authority_problems() == []
     contract = _read(CONTRACT)
     heading = _live_declaration(contract)[0]
-    # ROTATED at the Stage 35 first bounded slice: the live section is the Stage-35 declaration
-    assert heading == _S35_HEADING, heading
+    # ROTATED at the Stage 35 first bounded slice: the live section was the Stage-35 declaration
+    # ROTATED at the Stage 35 closure: the live section is the post-Stage-35-closure NONE declaration; the closure record
+    # and the Stage 35 slice section (with its pre-merge note) follow it as preserved history
+    assert heading == _S35C_HEADING, heading
     assert "SUPERSEDED" not in heading and "DELIVERED" not in heading, heading
     top = _live_only(_current_declaration(contract))
-    assert re.findall(_ACTIVE_BOLD, top) == [_S35_CONTRACT], re.findall(_ACTIVE_BOLD, top)
-    # ADVANCED at the delivery of the first bounded slice: the section keeps its pre-merge wording only as a note
+    assert re.findall(_ACTIVE_BOLD, top) == ["NONE"], re.findall(_ACTIVE_BOLD, top)
+    assert "*(Superseded" not in _current_declaration(contract)
+    assert ("## Current authority — " + _S35C_NAME + " (Owner authorization, 2026-10-05) — DELIVERED; SUPERSEDED as "
+            "current authority by the post-Stage-35-closure no-active-contract declaration") in contract
+    assert (_S35_HEADING + " — DELIVERED; SUPERSEDED as current authority by the post-Stage-35-closure "
+            "no-active-contract declaration") in contract
     assert ("*(Superseded 2026-10-05 by the delivery of the Stage 35 first bounded slice, preserved so the change is "
-            "visible rather than silent: before it this section read \"… the first bounded implementation EXISTS") in (
-        _current_declaration(contract))
-    _needs(top, CONTRACT, "live stage 35",
-           re.escape(_S35_BOLD) + r" ONE Owner-authorized bounded\s+product increment, governed by the merged\s+"
+            "visible rather than silent: before it this section read \"… the first bounded implementation EXISTS") in contract
+    order = [contract.index('<a id="current-authority--' + anchor + '"></a>') for anchor in (
+        "post-stage35-closure-no-active-contract", "stage35-disclosure-export-closure",
+        "stage35-disclosure-export-first-slice", "post-stage24-closure-no-active-contract")]
+    assert order == sorted(order), order
+    _needs(top, CONTRACT, "live none",
+           r"\*\*ACTIVE CONTRACT: NONE\.\*\* NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED\.",
+           # ADVANCED at the Stage 35 closure: the Stage 35 closure is the last bounded closure, the delivered first
+           # bounded slice the preceding increment and the Stage 24 closure the preceding closure
+           r"Stage 35 — Structured Invention Disclosure Export\s+— Closure, the last Owner-authorized bounded closure, "
+           r"is DELIVERED with no product change required\b",
+           r"Stage 35 is COMPLETE for the current bounded first-slice scope ONLY and its checkbox is ticked for that "
+           r"scope only; later Stage-35 slices stay NOT AUTHORIZED; PDF, e-mail artifact delivery, API exposure, "
+           r"external transfer, AI / provider calls, patent-claim drafting and patentability / FTO / legal-validity "
+           r"conclusions stay outside this closure and NOT AUTHORIZED; the legal-adviser review of the disclaimer "
+           r"wording before any user release \(workstream contract §17, decision 9\) stays OPEN and the release "
+           r"triggers stay preserved; Stage 36 stays NOT ENTERED and NOT AUTHORIZED\.",
+           re.escape(_S35_NAME) + r", the preceding Owner-authorized bounded increment, governed by the merged\s+"
            r"implementation contract",
-           r"Stage 35 is ENTERED / PARTIAL for this first bounded slice ONLY: Owner implementation authorization YES; "
-           r"the first bounded slice is DELIVERED",
-           # ROTATED at the delivery of the first bounded slice
-           r"the first bounded slice is DELIVERED \(Git / GitHub own its PR, merge and review identity\); Stage 35 is "
-           r"NOT complete and NOT closed; closure authorization NO, and the active contract stays this first bounded "
-           r"slice until a separate Owner closure decision; the Stage 35 roadmap checkbox stays UNTICKED",
+           r"it entered Stage 35 as ENTERED / PARTIAL for that slice ONLY until the Stage 35 closure completed Stage "
+           r"35 for that bounded scope",
            r"no export-history record and no retained export artifact",
-           r"PDF, e-mail artifact delivery, API exposure, external transfer, AI / provider calls, patent-claim "
-           r"drafting, patentability / FTO / legal-validity conclusions, later Stage-35 slices, the Stage-35 closure, "
-           r"deployment and release stay NOT AUTHORIZED",
-           r"\*\*STAGE 35\*\* \| " + _tok(_S35_ENTERED),
-           r"\*\*NEXT STEP\*\* \| the Stage 35 first bounded slice is DELIVERED and the active contract stays that "
-           r"slice until a separate Owner closure decision",
-           r"\*\*STAGE 35\*\* \| [^|]*— ONE bounded product increment under the merged implementation contract, "
-           r"DELIVERED;",
-           r"The only product increment authorized after it is the Stage 35 first bounded slice \(above\)\.",
-           _tok(_S35_ACTIVE), *(_tok(t) for t in _S35_FACTS + _S35_LIMITS), _tok(_S35_FURTHER_NO),
+           r"\*\*STAGE 35 CLOSURE\*\* \| " + _tok(_S35C_DELIVERED) + r" — a current-truth closure with no product "
+           r"change",
+           r"\*\*STAGE 35\*\* \| " + _tok(_S35_COMPLETE) + r"; its checkbox is TICKED for that scope only",
+           r"\*\*STAGE 35 NOT AUTHORIZED\*\* \| " + _tok(_S35_LIMITS[0]),
+           r"\*\*STAGE 35 PRESERVED TRIGGERS\*\* \| " + _tok(_S35_TRIGGERS),
+           r"\*\*STAGE 36\*\* \| " + _tok(_S36_NOT[0]) + r" · " + _tok(_S36_NOT[1]),
+           r"\*\*NEXT STEP\*\* \| LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — READ-ONLY",
+           r"it pre-authorizes no later Stage-35 slice, no Stage-36 work,",
+           r"The only product increment authorized after it was the Stage 35 first bounded slice \(above\), completed "
+           r"for that bounded scope by the Stage 35 closure \(above\); no subsequent product increment has been "
+           r"authorized\.",
+           _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
            # ADVANCED at the Stage 28 closure: the Stage 28 closure is now the last one, Stage 30's precedes it
            # ADVANCED at the Stage 23 closure: the Stage 23 closure is now the last one, Stage 28's precedes it
            # ADVANCED at the Stage 24 closure: the Stage 24 closure is now the last one, Stage 23's precedes it
-           r"Stage 24 — CAP-12 Form Mock-up Advisory\s+— Closure, the last Owner-authorized bounded closure, is "
+           # ADVANCED at the Stage 35 closure: the Stage 35 closure is now the last one, Stage 24's precedes it
+           r"Stage 24 — CAP-12 Form Mock-up Advisory\s+— Closure, the preceding Owner-authorized bounded closure, is "
            r"DELIVERED with no product change required\b",
            r"Stage 24 is COMPLETE for the current bounded CAP-12 Form Mock-up Advisory Slice 1 scope\s+ONLY, its "
            r"checkbox is ticked for that scope only, full CAP-12 stays NOT AUTHORIZED, further CAP-12 slices stay NOT "
@@ -4642,12 +4706,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            _tok(_S18_COMPLETE), _tok(_MSNL_FUTURE), _status(_S15C_DELIVERED), _status(_S4_DELIVERED),
            _status(_R1_DELIVERED), _status(_S3_DELIVERED), _status(_S2_DELIVERED), _status(_S15_DELIVERED),
            _tok(_S15_COMPLETE), *(_tok(t) for t in _S15C_NOT + _S2_NOT))
-    _rejects(top, CONTRACT, "live stage 35", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
-             *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE, *_S24C_STALE, *_S24CL_STALE, *_S35_STALE,
-             *_S35_REVERSALS)
+    _rejects(top, CONTRACT, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
+             *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE, *_S24C_STALE, *_S24CL_STALE, *_S35C_STALE,
+             *_S35C_REVERSALS)
     for path, block in _live_surfaces():
-        _needs(block, path, "live stage 35", _tok(_S35_ACTIVE), *(_tok(t) for t in _S35_FACTS + _S35_LIMITS),
-               _tok(_S35_FURTHER_NO),
+        _needs(block, path, "live none", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP),
+               *(_tok(t) for t in _S35C_FACTS),
                _tok(_S23C_DELIVERED), _tok(_S23_COMPLETE), *(_tok(t) for t in _S23_LIMITS),
                _tok(_S25_MARKER), _tok(_NO_S25), _tok(_S24C_DELIVERED), _tok(_S24_COMPLETE), _tok(_S24_DELIVERED),
                *(_tok(t) for t in _S24C_LIMITS),
@@ -4711,9 +4775,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"Stage\s+15\s+Slice\s+2\s+\(delivered\)\.\s+For\s+ONE\s+integrated\s+Mechanical",
                r"engineering\s+compatibility\s+has\s+NOT\s+been\s+established",
                r"Stage\s+15\s+Slice\s+1\s+\(delivered\)\.")
-        _rejects(_live_only(block), path, "live stage 35", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE,
+        _rejects(_live_only(block), path, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE,
                  *_S19C_STALE, *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE, *_S24C_STALE,
-                 *_S24CL_STALE, *_S35_STALE, *_S35_REVERSALS)
+                 *_S24CL_STALE, *_S35C_STALE, *_S35C_REVERSALS)
     for path, routing in _surfaces("current-routing"):
         _needs(routing, path, "live routing",
                # AMENDED at the delivered CAP-12 Form Mock-up Advisory Slice 1: Stage 24 ENTERED / PARTIAL for it only;
@@ -4741,12 +4805,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # ADVANCED at the Stage 23 closure: the head now leads with Stage 23 COMPLETE for its bounded scope
                # ADVANCED at the delivered CAP-12 Form Mock-up Advisory Slice 1: the head leads with that delivery
                # ADVANCED at the Stage 24 closure: the head leads with Stage 24 COMPLETE for its bounded scope
-               # ROTATED at the Stage 35 first bounded slice: the head names the active Stage-35 increment first
-               r"\*\*ACTIVE BOUNDED PRODUCT INCREMENT — " + re.escape(_S35_NAME) + r" \(Owner-authorized "
-               r"2026-10-05\); Stage 35 ENTERED / PARTIAL — first bounded slice only, first bounded slice DELIVERED, "
-               r"Stage 35 NOT complete, NOT closed; Stage 24 COMPLETE for the current bounded CAP-12 Form Mock-up Advisory Slice 1 scope only; "
-               r"Stage 23 COMPLETE for the current bounded four-axis Readiness Snapshot scope only;",
-               r"\*\*ACTIVE BOUNDED PRODUCT INCREMENT — [^*]{0,600}; Stage 22 COMPLETE for the current bounded "
+               # ROTATED at the Stage 35 first bounded slice: the head named the active Stage-35 increment first
+               # ROTATED at the Stage 35 closure: the head is NO ACTIVE CONTRACT again and leads with Stage 35 COMPLETE
+               # for its bounded first-slice scope
+               r"\*\*NO ACTIVE CONTRACT — post-Stage-35-closure \(2026-10-05\); Stage 35 COMPLETE for the current "
+               r"bounded first-slice scope only; Stage 24 COMPLETE for the current bounded CAP-12 Form Mock-up Advisory "
+               r"Slice 1 scope only; Stage 23 COMPLETE for the current bounded four-axis Readiness Snapshot scope only;",
+               r"\*\*NO ACTIVE CONTRACT — [^*]{0,600}; Stage 22 COMPLETE for the current bounded "
                r"decision trace \+ "
                r"decision room scope; Stage 21 COMPLETE for the current Owner-declared contradiction "
                r"scope; Stage 20 COMPLETE for the current Owner-declared assumption scope; Stage 19 COMPLETE for the "
@@ -4762,13 +4827,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # ADVANCED at the Stage 23 closure: the last delivery is now the Stage 23 closure
                # ADVANCED at the delivered CAP-12 Form Mock-up Advisory Slice 1: the last delivery is now that slice
                # ADVANCED at the Stage 24 closure: the last delivery is now the Stage 24 closure
-               # ROTATED at the Stage 35 first bounded slice: the Stage-35 increment is the active one; the earlier
-               # "no product increment" statement is now past tense
-               re.escape(_S35_NAME) + r" is the active bounded product increment \(Owner-authorized; governed by the "
-               r"merged implementation contract `docs/governance/STAGE35_DISCLOSURE_EXPORT_FIRST_SLICE_IMPLEMENTATION_"
-               r"CONTRACT\.md`\): for ONE authenticated owner and ONE owned project",
-               r"Stage 35 is ENTERED / PARTIAL for this first bounded slice ONLY: Owner implementation authorization YES",
-               r"Before it, no product increment was authorized after Stage 24 — CAP-12 Form Mock-up Advisory — Closure "
+               # ROTATED at the Stage 35 first bounded slice: the Stage-35 increment was the active one
+               # ROTATED at the Stage 35 closure: no product increment is authorized after the Stage 35 closure; the
+               # delivered first bounded slice precedes it and the Stage 24 closure follows
+               r"No product increment is authorized after " + re.escape(_S35C_NAME) + r" \(delivered: Stage 35 is "
+               r"COMPLETE for the current bounded first-slice scope only with no product change — closure gap NONE — "
+               r"[^)]*; Stage 36 stays NOT ENTERED and NOT AUTHORIZED\) or after the preceding " + re.escape(_S35_NAME)
+               + r" \(delivered: for ONE authenticated owner and ONE owned project[^)]*\) or after Stage 24 — CAP-12 "
+               r"Form Mock-up Advisory — Closure "
                r"\(delivered: [^)]*\) or after the preceding Stage 24 — CAP-12 Form Mock-up Advisory — Slice 1 "
                r"\(delivered: [^)]*\) or after the preceding Stage 23 — CAP-06 Four-Axis Readiness Snapshot — "
                r"Closure \(delivered: [^)]*\)\. Stage 22 is COMPLETE for the current bounded decision trace \+ decision "
@@ -4789,12 +4855,19 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"checkbox is ticked for the current Owner-declared assumption scope only",
                r"\*\*DELIVERED — Stage 19 / Experiment Execution-State Disclosure — Closure \(completes Stage 19 for "
                r"the current planning-only scope",
-               r"After the Stage 24 closure the Owner separately authorized ONE bounded product increment — the "
-               r"Stage 35 first bounded slice \(above\); neither that authorization nor this routing pre-authorizes a "
-               r"later Stage-35 slice or the Stage-35 closure",
+               # ROTATED at the Stage 35 closure: the next step is the Lead-controlled reassessment again
+               r"The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT: read-only planning / selection "
+               r"over live repository and product evidence until the Owner separately authorizes another product "
+               r"increment\. It pre-authorizes no later Stage-35 slice, no Stage-36 work,",
+               r"the legal-adviser review of the disclaimer wording before any user release and the release triggers "
+               r"stay preserved",
                r"Stage 25 or any other Stage is complete or entered \(Stage 24 is COMPLETE for its current bounded "
-               r"CAP-12 Form Mock-up Advisory Slice 1 scope only; Stage 35 is ENTERED / PARTIAL for its first bounded "
-               r"slice only\)",
+               r"CAP-12 Form Mock-up Advisory Slice 1 scope only; Stage 35 is COMPLETE for its current bounded "
+               r"first-slice scope only\)",
+               r"\*\*DELIVERED — Stage 35 / Structured Invention Disclosure Export — Closure \(completes Stage 35 for "
+               r"the current bounded first-slice scope ONLY with no product change",
+               r"\*\*DELIVERED — Stage 35 / Structured Invention Disclosure Export — First Bounded Product Slice \(it "
+               r"entered Stage 35 as ENTERED / PARTIAL for that slice ONLY until the Stage 35 closure",
                r"\*\*DELIVERED — Stage 18 / Gap-Scoped Technical Next-Step Guidance — Closure \(completes Stage 18 for "
                r"the current Mechanical \+ Electrical / Electronics scope",
                r"\*\*DELIVERED — Stage 15 / Integration Evidence & IRL-Compatible View — Closure",
@@ -4804,8 +4877,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"\*\*DELIVERED — Stage 15 / Subsystem Interface Declaration & Verification Preparation — Slice 2",
                r"\*\*DELIVERED — Stage 15 / Integrated Invention Entry & Durable Subsystem Composition — Slice 1")
         marker = re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 25", routing).start()
-        assert marker < routing.index("**ACTIVE BOUNDED PRODUCT INCREMENT — "), path
-        assert "**NO ACTIVE CONTRACT — " not in _live_only(routing), path
+        # ROTATED at the Stage 35 closure: the NO ACTIVE CONTRACT head is live again; no active-increment head
+        # survives, and the two Stage-35 delivered records lead the delivered list
+        assert marker < routing.index("**NO ACTIVE CONTRACT — "), path
+        assert "**ACTIVE BOUNDED PRODUCT INCREMENT — " not in _live_only(routing), path
+        assert routing.index("**DELIVERED — Stage 35 / Structured Invention Disclosure Export — Closure") < routing.index(
+            "**DELIVERED — Stage 35 / Structured Invention Disclosure Export — First Bounded Product Slice"), path
+        assert routing.index("**DELIVERED — Stage 35 / Structured Invention Disclosure Export — First Bounded Product "
+                             "Slice") < routing.index("**DELIVERED — Stage 24 / CAP-12 Form Mock-up Advisory — Closure"), path
         assert routing.index("**DELIVERED — Stage 24 / CAP-12 Form Mock-up Advisory — Closure") < routing.index(
             "**DELIVERED — Stage 23 / CAP-06 Four-Axis"), path
         assert routing.index("**DELIVERED — Stage 23 / CAP-06 Four-Axis") < routing.index(
@@ -4822,6 +4901,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             "**DELIVERED — Stage 15 / Integration Evidence"), path
     for path in (ROADMAP, CHECKLIST, CONTRACT):
         after = _after_fence(path, "current-routing")
+        # ADVANCED at the Stage 35 closure: the Stage-35 active-increment routing is preserved history
+        assert ("*(Superseded 2026-10-05 by " + _S35C_NAME + ", preserved so the change is visible rather than silent: "
+                "the current routing read \"**ACTIVE BOUNDED PRODUCT INCREMENT — " + _S35_NAME + " (Owner-authorized "
+                "2026-10-05); Stage 35 ENTERED / PARTIAL — first bounded slice only, first bounded slice DELIVERED, "
+                "Stage 35 NOT complete, NOT closed; …:** " + _S35_ACTIVE + " · " + _S35_ENTERED) in after, path
+        assert "That was true until the Owner authorized the Stage 35 closure.)*" in after, path
         # ADVANCED at the delivery of the first bounded slice: the pre-merge Stage-35 routing is preserved history
         assert ("*(Superseded 2026-10-05 by the delivery of the Stage 35 first bounded slice, preserved so the change is "
                 "visible rather than silent: the current routing read \"**ACTIVE BOUNDED PRODUCT INCREMENT — " + _S35_NAME
@@ -4879,10 +4964,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                        "any activation still needs its own Owner authorization and data boundary"):
             assert needle in note, (path, needle)
     state = _current(STATE, "current-position")
-    # ROTATED at the Stage 35 first bounded slice: the current position names the active Stage-35 increment
-    assert re.match(r" \*\*Current position \([^)]{0,40}\): " + re.escape(_S35_ACTIVE) + r" — ONE Owner-authorized "
-                    r"bounded product increment is active: " + re.escape(_S35_NAME) + r" \(Stage 35 is ENTERED / "
-                    r"PARTIAL for this first bounded slice ONLY", state)
+    # ROTATED at the Stage 35 first bounded slice: the current position named the active Stage-35 increment
+    # ROTATED at the Stage 35 closure: the current position is NONE again, post-Stage-35-closure
+    assert re.match(r" \*\*Current position \([^)]{0,40}\): `ACTIVE CONTRACT: NONE` — no product increment is "
+                    r"currently authorized \(post-Stage-35-closure; " + re.escape(_S35C_NAME) + r" — delivered with no "
+                    r"product change required: Stage 35 is COMPLETE for the current bounded first-slice scope only, "
+                    r"checkbox ticked for that scope only", state)
     # ADVANCED at Stage 28 Qualification Slices 1 and 2: the current position is post-Slice-2; the Stage-22 facts follow
     # it (split around the owner name so these governance needles never read as control-loop idea text)
     # ADVANCED at Stage 28 Optional Part Slice 1: the current position is post-Optional-Part-Slice-1
@@ -4895,8 +4982,16 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ADVANCED at the delivered CAP-12 Form Mock-up Advisory Slice 1: the current position is post-Slice-1, the
     # Stage 23 closure follows it
     # ADVANCED at the Stage 24 closure: the current position is post-Stage-24-closure, Slice 1 follows it
-    # ROTATED at the Stage 35 first bounded slice: the Stage-24-closure state is the one the Stage-35 increment succeeds
-    for needle in ("the state it succeeds, after the Stage 24 closure (Stage 24 — CAP-12 Form Mock-up Advisory — "
+    # ROTATED at the Stage 35 first bounded slice: the Stage-24-closure state was the one the Stage-35 increment
+    # succeeded
+    # ROTATED at the Stage 35 closure: the Stage 35 closure and the delivered first bounded slice lead; the Stage 24
+    # closure follows them
+    for needle in ("Stage 35 — Structured Invention Disclosure Export — First Bounded Product Slice — delivered: it "
+                   "entered Stage 35 as ENTERED / PARTIAL for that slice only until the Stage 35 closure — for ONE "
+                   "authenticated owner and ONE owned project",
+                   "the legal-adviser review of the disclaimer wording before any user release and the release triggers "
+                   "stay preserved; Stage 36 stays NOT ENTERED and NOT AUTHORIZED",
+                   "no retained export artifact; Stage 24 — CAP-12 Form Mock-up Advisory — "
                    "Closure — delivered with no "
                    "product change required: Stage 24 is COMPLETE for the current bounded CAP-12 Form Mock-up Advisory "
                    "Slice 1 scope only, checkbox ticked for that scope only",
@@ -4941,8 +5036,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "AUTHORIZED; Stage 24 / CAP-12 was entered only by the separately Owner-authorized, delivered Form "
                    "Mock-up Advisory Slice 1 and completed for that bounded scope only by the Stage 24 closure; full "
                    "CAP-12 NOT AUTHORIZED; routing past Stages 11, 13, 14, 16 and 17 completes none of them)",
-                   "the Owner has since separately authorized ONE bounded product increment, the Stage 35 first "
-                   "bounded slice (above), which pre-authorizes no later Stage-35 slice and no Stage-35 closure",
+                   "next step: a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — read-only planning / selection "
+                   "until the Owner separately authorizes another product increment (no later Stage-35 slice, no "
+                   "Stage-36 work and no further Stage-24 / CAP-12 slice is authorized)",
                    "Stage 18 — D13 / CAP-01 — stays COMPLETE for the current Mechanical + Electrical / Electronics "
                    "scope only (Gap-Scoped Technical Next-Step Guidance — Closure — delivered; MSNL stays FUTURE / "
                    "DEFERRED / NOT ACTIVATED",
@@ -4962,6 +5058,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "Stage 18 is now **COMPLETE for the current Mechanical + Electrical / Electronics scope**"):
         assert needle in state, needle
     after = _after_fence(STATE, "current-position")
+    # ADVANCED at the Stage 35 closure: the Stage-35 active-increment position is preserved history
+    assert ("*(Superseded 2026-10-05 by " + _S35C_NAME + ", preserved so the change is visible rather than silent: the "
+            "current-position entry read \"" + _S35_ACTIVE + " — ONE Owner-authorized bounded product increment is "
+            "active: " + _S35_NAME + " (Stage 35 is ENTERED / PARTIAL for this first bounded slice ONLY: …") in after
+    assert "That was true until the Owner authorized the Stage 35 closure.)*" in after
     # ADVANCED at the delivery of the first bounded slice: the pre-merge Stage-35 position is preserved history
     assert ("*(Superseded 2026-10-05 by the delivery of the Stage 35 first bounded slice, preserved so the change is "
             "visible rather than silent: the current-position entry read \"… the first bounded implementation EXISTS (PR "
@@ -5010,18 +5111,27 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ADVANCED at the delivered CAP-12 Form Mock-up Advisory Slice 1: that slice is the last increment; the Stage 23
     # closure precedes it
     # ADVANCED at the Stage 24 closure: the Stage 24 closure is the last one; the Slice 1 increment precedes it
-    # ROTATED at the Stage 35 first bounded slice: the head opens with the live Stage-35 declaration, then the Stage 24
-    # closure as the last bounded closure
-    assert head.startswith("## Current authority " + _S35_BOLD + " ONE Owner-authorized bounded product increment is "
-                           "active: " + _S35_NAME + ", governed by the merged implementation contract "
-                           "`docs/governance/STAGE35_DISCLOSURE_EXPORT_FIRST_SLICE_IMPLEMENTATION_CONTRACT.md`")
-    assert re.findall(_ACTIVE_BOLD, head) == [_S35_CONTRACT]
-    assert ("The last Owner-authorized bounded closure — Stage 24 — CAP-12 Form Mock-up Advisory — Closure — is "
-            "DELIVERED with no product change required, completing Stage 24 for the current bounded CAP-12 Form "
-            "Mock-up Advisory Slice 1 scope ONLY") in head
-    assert ("the only increment authorized after that closure is the Stage 35 first bounded slice (above).") in head
-    assert ("ACTIVE CONTRACT: " + _S35_CONTRACT + " — no other product increment is authorized and no other Stage is "
-            "authorized (Stage 35 is ENTERED / PARTIAL for its first bounded slice only)") in head
+    # ROTATED at the Stage 35 first bounded slice: the head opened with the live Stage-35 declaration
+    # ROTATED at the Stage 35 closure: the head opens with the live NONE, the Stage 35 closure as the last bounded
+    # closure, the delivered first bounded slice as the preceding increment and the Stage 24 closure before it
+    assert head.startswith("## Current authority " + _NONE_BOLD + " NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The "
+                           "last Owner-authorized bounded closure — " + _S35C_NAME + " — is DELIVERED with no product "
+                           "change required, completing Stage 35 for the current bounded first-slice scope ONLY")
+    assert re.findall(_ACTIVE_BOLD, head) == ["NONE"]
+    assert ("The preceding bounded increment — " + _S35_NAME + " — is DELIVERED (" + _S35_SLICE_DELIVERED + "; governed "
+            "by the merged implementation contract `docs/governance/STAGE35_DISCLOSURE_EXPORT_FIRST_SLICE_IMPLEMENTATION_"
+            "CONTRACT.md`; it entered Stage 35 as ENTERED / PARTIAL for that slice ONLY until the Stage 35 closure") in head
+    assert ("The preceding bounded closure — Stage 24 — CAP-12 Form Mock-up Advisory — Closure — is DELIVERED with no "
+            "product change required, completing Stage 24 for the current bounded CAP-12 Form Mock-up Advisory Slice 1 "
+            "scope ONLY") in head
+    assert ("the only increment authorized after that closure — the Stage 35 first bounded slice (above) — is DELIVERED, "
+            "and the Stage 35 closure (above) then completed Stage 35 for that bounded first-slice scope only with no "
+            "product change; no subsequent increment has been authorized.") in head
+    assert ("ACTIVE CONTRACT: NONE — no product increment is authorized and no other Stage is authorized (Stage 35 is "
+            "COMPLETE for its current bounded first-slice scope only; Stage 36 is NOT ENTERED)") in head
+    assert ("Stage 35 closure (delivered; a current-truth closure with no product change; completes Stage 35 for the "
+            "current bounded first-slice scope ONLY; later Stage-35 slices stay NOT AUTHORIZED; Stage 36 stays NOT "
+            "ENTERED and NOT AUTHORIZED; the MASTER ROADMAP SEQUENTIAL MARKER is unchanged):") in head
     assert ("The preceding bounded increment — Stage 24 — CAP-12 Form Mock-up Advisory — Slice 1 — is DELIVERED "
             "(`STAGE 24 — CAP-12 FORM MOCK-UP ADVISORY SLICE 1: DELIVERED`; it entered Stage 24 as ENTERED / PARTIAL "
             "for that slice ONLY until the Stage 24 closure") in head
@@ -5080,9 +5190,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "The preceding bounded slice — Stage 20 — Assumption Revision & Replacement — Closure — is "
                    "DELIVERED.",
                    "`FULL CAP-08: NOT AUTHORIZED`",
-                   "After the Stage 24 closure the Owner separately authorized ONE bounded product increment — the "
-                   "Stage 35 first bounded slice (above); neither that authorization nor this paragraph pre-authorizes "
-                   "a later Stage-35 slice or the Stage-35 closure",
+                   # ROTATED at the Stage 35 closure: the next step is the Lead-controlled reassessment again
+                   "The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — read-only planning / selection "
+                   "over live repository and product evidence until the Owner separately authorizes another product "
+                   "increment; it pre-authorizes no later Stage-35 slice, no Stage-36 work,",
                    "Stage 20 closure (delivered; completes Stage 20 for the current Owner-declared assumption scope, no "
                    "new Master Roadmap Stage)",
                    "Revise runs no progression, replay or reconstruction.",
@@ -5144,11 +5255,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "1 and its closure"):
         assert needle in head, needle
     for pat in (_S2_CLOSE_REVERSALS + _S15C_STALE + _S18C_STALE + _S19C_STALE + _S20C_STALE + _S21C_STALE
-                + _S22C_STALE + _S23C_STALE + _S24C_STALE + _S24CL_STALE + _S35_STALE + _S35_REVERSALS):
+                + _S22C_STALE + _S23C_STALE + _S24C_STALE + _S24CL_STALE + _S35C_STALE + _S35C_REVERSALS):
         assert re.search(pat, head, re.I | re.S) is None, pat
     # ROTATED at the Stage 35 first bounded slice: the post-Stage-24-closure NONE is a named superseded declaration
-    assert ("*(Superseded current-authority declarations — the former post-Stage-24-closure `ACTIVE CONTRACT: NONE`, "
-            "the former post-Stage-24-CAP-12-Slice-1 `ACTIVE CONTRACT: NONE`") in claude
+    # ADVANCED at the Stage 35 closure: the Stage 35 first bounded slice and the Stage 35 closure lead the list
+    assert ("*(Superseded current-authority declarations — the former " + _S35_NAME + ", the former " + _S35C_NAME
+            + ", the former post-Stage-24-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-24-CAP-12-Slice-1 "
+            "`ACTIVE CONTRACT: NONE`") in claude
+    assert "**WATCH — Stage 35 closure (non-blocking, no repair cycle).**" in claude
     assert "the former post-Stage-28-closure `ACTIVE CONTRACT: NONE`" in claude
     # ADVANCED at the Stage 24 closure: the post-Slice-1 NONE and the Stage 24 closure itself are now history
     assert "the former post-Stage-24-CAP-12-Slice-1 `ACTIVE CONTRACT: NONE`" in claude
@@ -5186,13 +5300,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ADVANCED at the Stage 23 closure: the Stage 23 closure now leads, Stage 23 COMPLETE for its bounded scope only
     # ADVANCED at Stage 24 — CAP-12 Form Mock-up Advisory — Slice 1: the delivered slice now leads, Stage 24 ENTERED / PARTIAL
     # ADVANCED at the Stage 24 closure: the closure now leads, Stage 24 COMPLETE for its bounded scope only
-    # ROTATED at the Stage 35 first bounded slice: the live subtask is the Stage-35 increment; the Stage 24 closure
-    # and the earlier deliveries follow it as "before it"
-    subtask_head = (r"\*\*CURRENT SUBTASK:\*\* " + re.escape(_S35_CONTRACT) + r" \(Owner-authorized 2026-10-05\) — "
-                    # ADVANCED at the delivery of the first bounded slice
-                    r"Stage 35 ENTERED / PARTIAL — first bounded slice only; first bounded slice DELIVERED; Stage 35 NOT "
-                    r"complete, NOT closed; closure NOT AUTHORIZED; checkbox UNTICKED; Git / GitHub own its PR, merge and "
-                    r"review identity — before it, "
+    # ROTATED at the Stage 35 first bounded slice: the live subtask was the Stage-35 increment
+    # ROTATED at the Stage 35 closure: the live subtask is NONE again; the Stage 35 closure, the delivered first bounded
+    # slice, the Stage 24 closure and the earlier deliveries follow it
+    subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \(post-Stage-35-closure\) — NO PRODUCT INCREMENT IS CURRENTLY "
+                    r"AUTHORIZED — " + re.escape(_S35C_NAME) + r" DELIVERED \([^)]*\) — STAGE 35 COMPLETE for the "
+                    r"current bounded first-slice scope only — " + re.escape(_S35_NAME) + r" DELIVERED \([^)]*\) — "
+                    r"Stage 35 was ENTERED / PARTIAL for that slice only until the Stage 35 closure — "
                     r"Stage 24 — CAP-12 Form Mock-up Advisory — Closure DELIVERED \([^)]*\) — STAGE 24 COMPLETE for the "
                     r"current bounded CAP-12 Form Mock-up Advisory Slice 1 scope only — Stage 25 NOT ENTERED / NOT "
                     r"AUTHORIZED — "
@@ -5229,8 +5343,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     [found] = [m.start() for m in re.finditer(subtask_head, flat_checklist)]
     subtask = flat_checklist[found:]
     subtask = subtask[:subtask.index("*(Superseded")]
-    _needs(subtask, CHECKLIST, "live subtask", _tok(_S35_ACTIVE), *(_tok(t) for t in _S35_FACTS + _S35_LIMITS),
-           _tok(_S35_FURTHER_NO), _tok(_S23C_DELIVERED), _tok(_S23_COMPLETE), *(_tok(t) for t in _S23_LIMITS),
+    _needs(subtask, CHECKLIST, "live subtask", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP),
+           *(_tok(t) for t in _S35C_FACTS), _tok(_S23C_DELIVERED), _tok(_S23_COMPLETE), *(_tok(t) for t in _S23_LIMITS),
            _tok(_S25_MARKER), _tok(_NO_S25), _tok(_S24C_DELIVERED), _tok(_S24_COMPLETE), _tok(_S24_DELIVERED),
            *(_tok(t) for t in _S24C_LIMITS),
            _tok(_S22C_DELIVERED), _tok(_S22_COMPLETE),
@@ -5242,18 +5356,28 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            _status(_S15C_DELIVERED), _status(_S4_DELIVERED), _status(_R1_DELIVERED), _status(_S3_DELIVERED),
            _status(_S2_DELIVERED), _status(_S15_DELIVERED), _tok(_S15_COMPLETE),
            *(_tok(t) for t in _S15C_NOT + _S2_NOT),
-           re.escape(_S35_NAME) + r" is the active bounded product increment \(scope: for ONE authenticated owner",
-           r"Before it, no product increment was authorized after Stage 24 — CAP-12 Form Mock-up Advisory — Closure "
+           # ROTATED at the Stage 35 closure: no product increment is authorized after the Stage 35 closure
+           r"No product increment is authorized after " + re.escape(_S35C_NAME) + r" \(delivered; Stage 35 COMPLETE "
+           r"for the current bounded first-slice scope only with no product change; later Stage-35 slices NOT "
+           r"AUTHORIZED;",
+           r"or after the preceding " + re.escape(_S35_NAME) + r" \(delivered; scope: for ONE authenticated owner",
+           r"or after Stage 24 — CAP-12 Form Mock-up Advisory — Closure "
            r"\(delivered; Stage 24 COMPLETE for the current bounded CAP-12 Form Mock-up Advisory Slice 1 scope only",
            r"\(Stage 24 is COMPLETE for the current bounded CAP-12 Form Mock-up Advisory Slice 1 scope only; Stage 35 is "
-           r"ENTERED / PARTIAL for its first bounded slice only\)",
-           r"the Owner has since separately authorized ONE bounded product increment, the Stage 35 first bounded "
-           r"slice \(no later Stage-35 slice and no Stage-35 closure is authorized\)\.",
+           r"COMPLETE for its current bounded first-slice scope only\)",
+           r"the next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT \(read-only planning / selection until "
+           r"the Owner separately authorizes another product increment; no later Stage-35 slice and no Stage-36 work "
+           r"is authorized\)\.",
            r"or after the preceding Stage 24 — CAP-12 Form Mock-up Advisory — Slice 1 \(delivered; Stage 24 was then "
            r"ENTERED / PARTIAL for that slice only", r"or after the preceding Stage 23 closure \(delivered;")
     _rejects(subtask, CHECKLIST, "live subtask", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
-             *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE, *_S24C_STALE, *_S24CL_STALE, *_S35_STALE,
-             *_S35_REVERSALS)
+             *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE, *_S24C_STALE, *_S24CL_STALE, *_S35C_STALE,
+             *_S35C_REVERSALS)
+    # ADVANCED at the Stage 35 closure: the Stage-35 active-increment subtask is preserved history
+    assert ("*(Superseded 2026-10-05 by " + _S35C_NAME + ", preserved — was: \"**CURRENT SUBTASK:** STAGE 35 — FIRST "
+            "BOUNDED STRUCTURED INVENTION DISCLOSURE EXPORT SLICE (Owner-authorized 2026-10-05) — Stage 35 ENTERED / "
+            "PARTIAL — first bounded slice only; first bounded slice DELIVERED; Stage 35 NOT complete, NOT closed;") in (
+        flat_checklist)
     # ADVANCED at the delivery of the first bounded slice: the pre-merge Stage-35 subtask is preserved history
     assert ("*(Superseded 2026-10-05 by the delivery of the Stage 35 first bounded slice, preserved — was: \"**CURRENT "
             "SUBTASK:** STAGE 35 — FIRST BOUNDED STRUCTURED INVENTION DISCLOSURE EXPORT SLICE … — Stage 35 ENTERED / "
@@ -5263,7 +5387,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             "(post-Stage-24-closure) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — Stage 24 — CAP-12 Form Mock-up "
             "Advisory — Closure DELIVERED (…) — …\" with `ACTIVE CONTRACT: NONE` · `NEXT PRODUCT INCREMENT: NOT "
             "AUTHORIZED` · `NEXT STEP: LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT`") in flat_checklist
-    for line in [t.strip("`") for t in _S35_TOKENS + (_S23C_DELIVERED, _S23_COMPLETE,
+    for line in [t.strip("`") for t in _S35C_TOKENS + (_S23C_DELIVERED, _S23_COMPLETE,
                                         _S25_MARKER, _NO_S25, _S24C_DELIVERED, _S24_COMPLETE, _S24_DELIVERED,
                                         _S22C_DELIVERED,
                                         _S22_COMPLETE, _S21_COMPLETE,
@@ -5285,8 +5409,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                   _S24_PRE_MARKER.strip("`"), _NO_S24.strip("`"), "STAGE 24: NOT ENTERED",
                   # AMENDED at the Stage 24 closure: the ENTERED / PARTIAL forms are stale lines too
                   _S24_MARKER.strip("`"), _S24_PARTIAL.strip("`"),
-                  # ROTATED at the Stage 35 first bounded slice: the post-Stage-24-closure NONE lines are stale too
-                  _NONE718.strip("`"), _NEXT_INC_NO.strip("`"), _NEXT_STAGE_STEP.strip("`"),
+                  # ROTATED at the Stage 35 first bounded slice: the post-Stage-24-closure NONE lines were stale
+                  # ROTATED at the Stage 35 closure: the NONE lines are live again; the retired Stage-35 active-increment
+                  # lines are stale
+                  *(t.strip("`") for t in _S35_ACTIVE_ONLY),
                   # ADVANCED at the delivery of the first bounded slice: its pre-merge status lines are stale too
                   "STAGE 35 MERGE AUTHORIZATION: NO", "STAGE 35 FIRST BOUNDED SLICE: NOT DELIVERED"):
         assert re.search(r"^" + re.escape(stale) + r"$", raw_checklist, re.M) is None, stale
@@ -5301,14 +5427,27 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # current bounded decision trace + decision room scope) and Stage 23 (COMPLETE for the current bounded four-axis
     # Readiness Snapshot scope) and Stage 24 (COMPLETE for the current bounded CAP-12 Form Mock-up Advisory Slice 1
     # scope); the stages routed past (11, 13, 14, 16, 17) and the navigation-only, NOT ENTERED Stage 25 stay unticked
-    for n in (15, 18, 19, 20, 21, 22, 23, 24):
+    # ADVANCED at the Stage 35 closure: Stage 35 (COMPLETE for the current bounded first-slice scope) is ticked too;
+    # Stage 36 stays unticked
+    for n in (15, 18, 19, 20, 21, 22, 23, 24, 35):
         assert re.search(r"^- \[ \] \*\*%d — " % n, roadmap, re.M) is None, n
-    for n in (11, 13, 14, 16, 17, 25, 35):
+    for n in (11, 13, 14, 16, 17, 25, 36):
         assert re.search(r"^- \[ \] \*\*%d — " % n, roadmap, re.M), n
-    # ADDED at the Stage 35 first bounded slice: Stage 35 is ENTERED / PARTIAL only, so its row stays unticked and the
-    # roadmap keeps exactly 23 of its 45 rows unticked
-    assert len(re.findall(r"^- \[ \] \*\*\d+ — ", roadmap, re.M)) == 23
-    assert len(re.findall(r"^- \[x\] \*\*\d+ — ", roadmap, re.M)) == 22
+    # ADDED at the Stage 35 first bounded slice (row 35 then unticked, 23 of 45 rows unticked); ADVANCED at the Stage 35
+    # closure: row 35 is ticked for its bounded scope only and the roadmap keeps exactly 22 of its 45 rows unticked
+    assert len(re.findall(r"^- \[ \] \*\*\d+ — ", roadmap, re.M)) == 22
+    assert len(re.findall(r"^- \[x\] \*\*\d+ — ", roadmap, re.M)) == 23
+    # ADDED at the Stage 35 closure: row 35 is ticked for the current bounded first-slice scope only, names its closure,
+    # its limits and its preserved triggers, and keeps no live ENTERED / PARTIAL wording
+    [row35] = re.findall(r"^- \[x\] \*\*35 — Patent export:\*\*.*$", roadmap, re.M)
+    live35 = _live_only(row35)
+    assert ("**COMPLETE (2026-10-05) for the current bounded first-slice scope ONLY — checkbox ticked for that scope "
+            "only:** " + _S35_COMPLETE + " through the Owner-authorized " + _S35C_NAME) in live35
+    for needle in (_S35C_DELIVERED, _S35_SLICE_DELIVERED, _S35_LATER_NO, *_S35_LIMITS, _S35_TRIGGERS, *_S36_NOT,
+                   "documentation assistance only; no patentability, FTO or legal-validity claim"):
+        assert needle in live35, needle
+    for stale in ("checkbox stays UNTICKED", "ENTERED / PARTIAL", "NOT complete"):
+        assert stale not in live35, stale
     # AMENDED at the Stage 24 closure: row 24 is ticked for the current bounded CAP-12 Form Mock-up Advisory Slice 1
     # scope only, names its closure and its limits, and keeps no live ENTERED / PARTIAL wording
     [row24] = re.findall(r"^- \[x\] \*\*24 — CAP-12:\*\*.*$", roadmap, re.M)
@@ -6004,7 +6143,7 @@ _LIVE_CLAIM_REVERSALS = _S15_CLOSE_REVERSALS + (
     r"CURRENT MASTER ROADMAP STAGE: Stage (?!25\b)\d+",
     r"MASTER ROADMAP SEQUENTIAL MARKER(?::| is| moves to| becomes)? Stage (?!25\b)\d+\b(?! for navigation only\))",
     r"MASTER ROADMAP SEQUENTIAL MARKER stays Stage (?!2[34]\b)\d+\b(?!\))",
-    _S4_VERDICT, r"INTERFACE OBSERVATION VERDICT / CRITERION-MET JUDGEMENT: AUTHORIZED") + _S35_REVERSALS
+    _S4_VERDICT, r"INTERFACE OBSERVATION VERDICT / CRITERION-MET JUDGEMENT: AUTHORIZED") + _S35C_REVERSALS
 # Lifecycle states that are true only BEFORE a merge. On a live surface they make the authoritative
 # text false the moment the candidate merges, which is what used to force a closure PR.
 _PREMERGE_LIFECYCLE = (
@@ -6285,14 +6424,16 @@ def _live_authority_problems(read=None):
                 problems.append(label + ": stale pre-Stage-30-closure status " + pat)
         if label.startswith("routing") and not re.search(r"(?i)CURRENT MASTER ROADMAP STAGE: Stage 25\b", text):
             problems.append(label + ": the Stage-25 navigation marker is missing")
-        # ADVANCED at the Stage 35 first bounded slice: every surface carries the Stage-35 status and limits, the
-        # further-increment exclusion, and none of the superseded post-Stage-24-closure NONE wording
-        for token in _S35_FACTS + _S35_LIMITS + (_S35_FURTHER_NO,):
+        # ADVANCED at the Stage 35 first bounded slice: every surface carried the Stage-35 status and limits
+        # ADVANCED at the Stage 35 closure: every surface carries the live next step, the Stage-35 closure facts,
+        # limits and preserved triggers, the Stage-36 exclusion, and none of the retired Stage-35 active-increment
+        # wording (the NONE token and the next-increment exclusion are checked above)
+        for token in (_NEXT_STAGE_STEP,) + _S35C_FACTS:
             if token not in text:
-                problems.append(label + ": missing Stage-35 fact " + token)
-        for pat in _S35_STALE:
+                problems.append(label + ": missing Stage-35 closure fact " + token)
+        for pat in _S35C_STALE:
             if re.search(pat, text):
-                problems.append(label + ": stale post-Stage-24-closure NONE " + pat)
+                problems.append(label + ": stale Stage-35 active-increment wording " + pat)
     for needle in (_S25_MARKER, "NO STAGE-25 IMPLEMENTATION AUTHORIZED BY STAGE-24 CLOSURE",
                    "NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE", _S23_COMPLETE,
                    _S23C_DELIVERED, *_S23_LIMITS,
@@ -6300,12 +6441,13 @@ def _live_authority_problems(read=None):
                    "STAGE 21: COMPLETE — CURRENT OWNER-DECLARED CONTRADICTION SCOPE",
                    "STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE",
                    "STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE", *_S30C_TOKENS, *_S30C_KEPT,
-                   _S24_DELIVERED, _S24C_DELIVERED, _S24_COMPLETE, *_S24C_LIMITS, *_S35_FACTS, _S35_FURTHER_NO):
+                   _S24_DELIVERED, _S24C_DELIVERED, _S24_COMPLETE, *_S24C_LIMITS, *_S35C_FACTS, _NEXT_INC_NO,
+                   _NEXT_STAGE_STEP):
         if needle not in texts["head:CLAUDE.md"]:
             problems.append("head:CLAUDE.md: missing " + needle)
-    for pat in _S35_STALE:
+    for pat in _S35C_STALE:
         if re.search(pat, texts["head:CLAUDE.md"]):
-            problems.append("head:CLAUDE.md: stale post-Stage-24-closure NONE " + pat)
+            problems.append("head:CLAUDE.md: stale Stage-35 active-increment wording " + pat)
     for pat in _S23C_STALE + _S24C_STALE + _S24CL_STALE:
         if re.search(pat, texts["head:CLAUDE.md"]):
             problems.append("head:CLAUDE.md: stale pre-Stage-23-closure / pre-Stage-24 status " + pat)
@@ -6401,10 +6543,12 @@ def _mutate(path, region, old, new, every=None):
     return {path: raw[:k] + new + raw[k + len(old):]}
 
 
-# ROTATED at the Stage 35 first bounded slice: the routing / position / declaration anchor is the live Stage-35 status
-# token (formerly the superseded `NEXT STEP: LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT` token) and the head /
-# declaration anchor is the live Stage-35 bold declaration (formerly `**ACTIVE CONTRACT: NONE.**`)
-_NS = _S35_ENTERED
+# ROTATED at the Stage 35 first bounded slice: the routing / position / declaration anchor was the live Stage-35 status
+# token and the head / declaration anchor the live Stage-35 bold declaration
+# ROTATED back at the Stage 35 closure: the routing / position / declaration anchor is the live
+# `NEXT STEP: LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT` token again and the head / declaration anchor is the live
+# `**ACTIVE CONTRACT: NONE.**`
+_NS = _NEXT_STAGE_STEP
 _MATERIAL_REVERSALS = {
     # Stage 15 closure: dropping the scope, or reopening the stage, is a reversal of the live truth.
     "stage 15 complete": (CHECKLIST, "current-routing", _S15_COMPLETE, "`STAGE 15: COMPLETE`"),
@@ -6433,8 +6577,8 @@ _MATERIAL_REVERSALS = {
     "stage 20 complete": (ROADMAP, "current-routing", _NS, _NS + " `STAGE 20: COMPLETE`"),
     "stage 20 implementation": (STATE, "current-position", _NS, _NS + " Stage-20 implementation authorized."),
     "full cap-09": (CONTRACT, "declaration", _NS, _NS + " `FULL CAP-09: AUTHORIZED`"),
-    "result outcome": ("CLAUDE.md", "head", _S35_BOLD,
-                       _S35_BOLD + " `RESULT OUTCOME / PASS-FAIL JUDGEMENT: AUTHORIZED`"),
+    "result outcome": ("CLAUDE.md", "head", _NONE_BOLD,
+                       _NONE_BOLD + " `RESULT OUTCOME / PASS-FAIL JUDGEMENT: AUTHORIZED`"),
     "prototype validated": (STATE, "current-position", _NS, _NS + " The prototype has been validated."),
     # Stage 20 closure: dropping the scope, reopening Stage 20, completing Stage 21, authorizing Stage-21
     # implementation or full CAP-08 / CAP-10, or claiming an automatically resolved assumption is a reversal.
@@ -6445,8 +6589,8 @@ _MATERIAL_REVERSALS = {
     "stage 21 complete": (ROADMAP, "current-routing", _NS, _NS + " `STAGE 21: COMPLETE`"),
     "stage 21 implementation": (STATE, "current-position", _NS, _NS + " Stage-21 implementation authorized."),
     "full cap-08": (CONTRACT, "declaration", _NS, _NS + " `FULL CAP-08: AUTHORIZED`"),
-    "full cap-10": ("CLAUDE.md", "head", _S35_BOLD,
-                    _S35_BOLD + " `FULL CAP-10: AUTHORIZED`"),
+    "full cap-10": ("CLAUDE.md", "head", _NONE_BOLD,
+                    _NONE_BOLD + " `FULL CAP-10: AUTHORIZED`"),
     "assumption auto-resolved": (STATE, "current-position", _NS, _NS + " The assumption was automatically resolved."),
     # Stage 21 closure: dropping the scope, reopening Stage 21, completing Stage 22, authorizing Stage-22
     # implementation, automatic / AI detection or a SYSTEM_INFERRED contradiction writer is a reversal.
@@ -6458,8 +6602,8 @@ _MATERIAL_REVERSALS = {
     "stage 22 implementation": (STATE, "current-position", _NS, _NS + " Stage-22 implementation authorized."),
     "ai contradiction detection": (CONTRACT, "declaration", _NS,
                                    _NS + " `AUTOMATIC / AI CONTRADICTION DETECTION: AUTHORIZED`"),
-    "system-inferred contradiction writer": ("CLAUDE.md", "head", _S35_BOLD,
-                                             _S35_BOLD + " `SYSTEM_INFERRED CONTRADICTION WRITER: "
+    "system-inferred contradiction writer": ("CLAUDE.md", "head", _NONE_BOLD,
+                                             _NONE_BOLD + " `SYSTEM_INFERRED CONTRADICTION WRITER: "
                                              "AUTHORIZED`"),
     # Stage 22 closure: dropping the scope, reopening Stage 22, moving the marker back, entering or implementing Stage
     # 23, activating CAP-06 or opening full CAP-05 / CAP-07 is a reversal.
@@ -6470,8 +6614,8 @@ _MATERIAL_REVERSALS = {
     "stage 23 entered": (ROADMAP, "current-routing", _NS, _NS + " `STAGE 23: ENTERED`"),
     "stage 23 implementation": (STATE, "current-position", _NS, _NS + " Stage-23 implementation authorized."),
     "full cap-05": (CONTRACT, "declaration", _NS, _NS + " `FULL CAP-05: AUTHORIZED`"),
-    "cap-06 activated": ("CLAUDE.md", "head", _S35_BOLD,
-                         _S35_BOLD + " `CAP-06: ACTIVATED`"),
+    "cap-06 activated": ("CLAUDE.md", "head", _NONE_BOLD,
+                         _NONE_BOLD + " `CAP-06: ACTIVATED`"),
     # Stage 23 closure: dropping the four-axis scope, reopening Stage 23, moving the marker back, entering or
     # implementing Stage 24, authorizing full CAP-06 or claiming the eight-axis CAP-06 is a reversal.
     "stage 23 unscoped": (CHECKLIST, "current-routing", _S23_COMPLETE, "`STAGE 23: COMPLETE`"),
@@ -6494,16 +6638,16 @@ _MATERIAL_REVERSALS = {
     "stage 25 implementation": (STATE, "current-position", _NS, _NS + " Stage-25 implementation authorized."),
     "full cap-12": (CONTRACT, "declaration", _NS, _NS + " `FULL CAP-12: AUTHORIZED`"),
     "further cap-12 slice": (ROADMAP, "current-routing", _NS, _NS + " `FURTHER CAP-12 SLICES: AUTHORIZED`"),
-    "cap-13 activated": ("CLAUDE.md", "head", _S35_BOLD,
-                         _S35_BOLD + " `CAP-13: ACTIVATED`"),
+    "cap-13 activated": ("CLAUDE.md", "head", _NONE_BOLD,
+                         _NONE_BOLD + " `CAP-13: ACTIVATED`"),
     "full cap-06": (CONTRACT, "declaration", _NS, _NS + " `FULL CAP-06: AUTHORIZED`"),
-    "eight-axis cap-06 claimed": ("CLAUDE.md", "head", _S35_BOLD,
-                                  _S35_BOLD + " `FULL EIGHT-AXIS CAP-06: IMPLEMENTED`"),
+    "eight-axis cap-06 claimed": ("CLAUDE.md", "head", _NONE_BOLD,
+                                  _NONE_BOLD + " `FULL EIGHT-AXIS CAP-06: IMPLEMENTED`"),
     "msnl activated": (CONTRACT, "declaration", _NS, _NS + " `MSNL: ACTIVATED`"),
-    # ROTATED at the Stage 35 first bounded slice: the successor-increment anchor is the live further-increment
-    # exclusion and the one-surface contract anchor is the live Stage-35 contract token
-    "successor increment": (STATE, "current-position", _S35_FURTHER_NO, "`FURTHER PRODUCT INCREMENT: AUTHORIZED`"),
-    "successor contract on one surface": (ROADMAP, "current-routing", _S35_ACTIVE,
+    # ROTATED at the Stage 35 first bounded slice: the anchors were the further-increment exclusion and the Stage-35
+    # contract token; ROTATED back at the Stage 35 closure: the next-increment exclusion and the NONE token
+    "successor increment": (STATE, "current-position", _NEXT_INC_NO, "`NEXT PRODUCT INCREMENT: AUTHORIZED`"),
+    "successor contract on one surface": (ROADMAP, "current-routing", _NONE718,
                                           "`ACTIVE CONTRACT: STAGE 15 — SLICE 3`"),
     "compatibility established": (CHECKLIST, "current-routing", "engineering compatibility has NOT been established",
                                   "engineering compatibility has been established"),
@@ -6511,16 +6655,16 @@ _MATERIAL_REVERSALS = {
     "irl level": (ROADMAP, "current-routing", _NS, _NS + " IRL level 3 is assigned."),
     "irl score": (CONTRACT, "declaration", _NS, _NS + " An IRL score is assigned."),
     "deployment authorized": (CONTRACT, "declaration", _NS, _NS + " Deployment is authorized."),
-    "release authorized": ("CLAUDE.md", "head", _S35_BOLD,
-                           _S35_BOLD + " Release is authorized."),
+    "release authorized": ("CLAUDE.md", "head", _NONE_BOLD,
+                           _NONE_BOLD + " Release is authorized."),
     "another stage-15 slice": (CHECKLIST, "current-routing", "`ANOTHER STAGE-15 SLICE: NOT AUTHORIZED`",
                                "`ANOTHER STAGE-15 SLICE: AUTHORIZED`"),
     "new domain": (STATE, "current-position", _NS, _NS + " `NEW DOMAIN ACTIVATION: AUTHORIZED`"),
-    "live section marked as history": (CONTRACT, "declaration", "(Owner authorization, 2026-10-05)",
-                                       "(Owner authorization, 2026-10-05) — SUPERSEDED"),
+    "live section marked as history": (CONTRACT, "declaration", "no active contract",
+                                       "no active contract — SUPERSEDED"),
     "second live declaration": (CONTRACT, "declaration", _NS,
                                 _NS + " **ACTIVE CONTRACT: STAGE 15 — SLICE 1.**"),
-    "claude declares a historical contract": ("CLAUDE.md", "head", _S35_BOLD,
+    "claude declares a historical contract": ("CLAUDE.md", "head", _NONE_BOLD,
                                               "**ACTIVE CONTRACT: STAGE 15 — SUBSYSTEM INTERFACE DECLARATION & "
                                               "VERIFICATION PREPARATION — SLICE 2.**"),
     "pre-merge lifecycle live": (STATE, "current-position", _NS, _NS + " Stage 15 Slice 2 is NOT MERGED."),
@@ -6531,46 +6675,53 @@ _MATERIAL_REVERSALS = {
     "observation verdict authorized": (CHECKLIST, "current-routing",
                                        "`INTERFACE OBSERVATION VERDICT / CRITERION-MET JUDGEMENT: NOT AUTHORIZED`",
                                        "`INTERFACE OBSERVATION VERDICT / CRITERION-MET JUDGEMENT: AUTHORIZED`"),
-    # ADDED at the Stage 35 first bounded slice: a NONE return on any one surface, a delivery / completion / closure
-    # claim, an authorized merge, closure or later slice, a lifted exclusion, a Stage-36 advance or the superseded
-    # "no product increment" wording back on a live surface is a reversal of the live truth.
-    "none restored in the position": (STATE, "current-position", _S35_ACTIVE, _NONE718),
-    "none restored in the routing": (CHECKLIST, "current-routing", _S35_ACTIVE, _NONE718),
-    "none restored in the declaration": (CONTRACT, "declaration", _S35_BOLD, "**ACTIVE CONTRACT: NONE.**"),
-    "none restored in the head": ("CLAUDE.md", "head", _S35_BOLD, "**ACTIVE CONTRACT: NONE.**"),
-    "none heading restored": (ROADMAP, "current-routing", "**ACTIVE BOUNDED PRODUCT INCREMENT — ",
-                              "**NO ACTIVE CONTRACT — post-Stage-24-closure (2026-10-04); "),
-    "stale none prose back": (CHECKLIST, "current-routing", _S35_ENTERED,
-                              _S35_ENTERED + " No product increment is authorized after Stage 24."),
-    "stale next step back": (STATE, "current-position", _S35_ENTERED, _S35_ENTERED + " " + _NEXT_STAGE_STEP),
-    "stage 35 back to not entered": (CONTRACT, "current-routing", _S35_ENTERED, "`STAGE 35: NOT ENTERED`"),
-    "stage 35 complete": (ROADMAP, "current-routing", "`STAGE 35: NOT COMPLETE`", "`STAGE 35: COMPLETE`"),
-    "stage 35 complete in prose": (STATE, "current-position", _S35_ENTERED, _S35_ENTERED + " Stage 35 is complete."),
-    # INVERTED at the delivery of the first bounded slice: the slice is DELIVERED; a return to the pre-merge status
-    # or a pending merge authorization on a live surface is the reversal now
-    "stage 35 slice back to not delivered": (CHECKLIST, "current-routing", "`STAGE 35 FIRST BOUNDED SLICE: DELIVERED`",
+    # ADDED at the Stage 35 first bounded slice; ROTATED at the Stage 35 closure: the Stage-35 active contract back on
+    # any one surface, the active-increment heading or prose back, Stage 35 back to ENTERED / PARTIAL or NOT COMPLETE,
+    # an unscoped or global completion, a stage-level delivery claim, the slice back to not delivered, a pending merge
+    # authorization, the closure undone, a later slice authorized, a lifted exclusion, dropped legal-adviser / release
+    # triggers or a Stage-36 advance is a reversal of the live truth.
+    "stage 35 contract restored in the position": (STATE, "current-position", _NONE718, _S35_ACTIVE),
+    "stage 35 contract restored in the routing": (CHECKLIST, "current-routing", _NONE718, _S35_ACTIVE),
+    "stage 35 contract restored in the declaration": (CONTRACT, "declaration", _NONE_BOLD, _S35_BOLD),
+    "stage 35 contract restored in the head": ("CLAUDE.md", "head", _NONE_BOLD, _S35_BOLD),
+    "active increment heading restored": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-35-closure "
+                                          "(2026-10-05); ", "**ACTIVE BOUNDED PRODUCT INCREMENT — " + _S35_NAME
+                                          + " (Owner-authorized 2026-10-05); "),
+    "stale active-increment prose back": (CHECKLIST, "current-routing", _NS,
+                                          _NS + " " + _S35_NAME + " is the active bounded product increment."),
+    "stale closure-pending prose back": (STATE, "current-position", _NS, _NS + " The active contract stays this first "
+                                         "bounded slice until a separate Owner closure decision."),
+    "stage 35 back to entered": (CONTRACT, "current-routing", _S35_COMPLETE, _S35_ENTERED),
+    "stage 35 not complete": (ROADMAP, "current-routing", _S35_COMPLETE, "`STAGE 35: NOT COMPLETE`"),
+    "stage 35 unscoped": (CHECKLIST, "current-routing", _S35_COMPLETE, "`STAGE 35: COMPLETE`"),
+    "stage 35 closed unscoped": (CONTRACT, "current-routing", _S35_COMPLETE, "`STAGE 35: CLOSED`"),
+    "stage 35 back to not entered": (STATE, "current-position", _S35_COMPLETE, "`STAGE 35: NOT ENTERED`"),
+    "stage 35 complete globally in prose": (STATE, "current-position", _NS, _NS + " Stage 35 is complete."),
+    "stage 35 fully complete in prose": (CONTRACT, "declaration", _NS,
+                                         _NS + " Stage 35 is fully complete for every scope."),
+    "stage 35 delivered in prose": ("CLAUDE.md", "head", _NONE_BOLD, _NONE_BOLD + " Stage 35 is delivered."),
+    "stage 35 slice back to not delivered": (CHECKLIST, "current-routing", _S35_SLICE_DELIVERED,
                                              "`STAGE 35 FIRST BOUNDED SLICE: NOT DELIVERED`"),
-    "stage 35 pre-merge status in prose": (CONTRACT, "declaration", _S35_ENTERED,
-                                           _S35_ENTERED + " merge authorization NO; NOT delivered."),
-    "stage 35 delivered in prose": ("CLAUDE.md", "head", _S35_BOLD, _S35_BOLD + " Stage 35 is delivered."),
-    "stage 35 closed": (CONTRACT, "current-routing", "`STAGE 35: NOT CLOSED`", "`STAGE 35: CLOSED`"),
-    "stage 35 closure authorized": (CONTRACT, "declaration", _S35_ENTERED,
-                                    _S35_ENTERED + " `STAGE 35 CLOSURE: AUTHORIZED`"),
-    "stage 35 closure authorized in prose": (STATE, "current-position", _S35_ENTERED,
-                                             _S35_ENTERED + " The Stage-35 closure is authorized."),
-    "stage 35 merge authorization back": (ROADMAP, "current-routing", _S35_ENTERED,
-                                          _S35_ENTERED + " `STAGE 35 MERGE AUTHORIZATION: NO`"),
-    "stage 35 merge authorized": (STATE, "current-position", _S35_ENTERED,
-                                  _S35_ENTERED + " `STAGE 35 MERGE AUTHORIZATION: YES`"),
-    "later stage-35 slice": (STATE, "current-position", "`LATER STAGE-35 SLICES: NOT AUTHORIZED`",
-                             "`LATER STAGE-35 SLICES: AUTHORIZED`"),
+    "stage 35 pre-merge status in prose": (CONTRACT, "declaration", _NS, _NS + " merge authorization NO; NOT delivered."),
+    "stage 35 merge authorization back": (ROADMAP, "current-routing", _NS,
+                                          _NS + " `STAGE 35 MERGE AUTHORIZATION: NO`"),
+    "stage 35 merge authorized": (STATE, "current-position", _NS, _NS + " `STAGE 35 MERGE AUTHORIZATION: YES`"),
+    "stage 35 owner authorization reversed": (ROADMAP, "current-routing", _NS,
+                                              _NS + " `STAGE 35 OWNER IMPLEMENTATION AUTHORIZATION: NO`"),
+    "stage 35 closure undone": (CONTRACT, "current-routing", _S35C_DELIVERED, "`STAGE 35 CLOSURE: NOT AUTHORIZED`"),
+    "stage 35 closure dropped in the position": (STATE, "current-position", _S35C_DELIVERED,
+                                                 "`STAGE 35 CLOSURE: NOT DELIVERED`"),
+    "later stage-35 slice": (STATE, "current-position", _S35_LATER_NO, "`LATER STAGE-35 SLICES: AUTHORIZED`"),
+    "later stage-35 slice in prose": (ROADMAP, "current-routing", _NS, _NS + " Later Stage-35 slices are authorized."),
     "stage 35 pdf / provider": (CHECKLIST, "current-routing", _S35_LIMITS[0],
                                 _S35_LIMITS[0].replace(": NOT AUTHORIZED", ": AUTHORIZED")),
-    "patent claims": ("CLAUDE.md", "head", _S35_BOLD,
-                      _S35_BOLD + " " + _S35_LIMITS[1].replace(": NOT AUTHORIZED", ": AUTHORIZED")),
-    "stage 36 entered": (ROADMAP, "current-routing", _S35_ENTERED, _S35_ENTERED + " `STAGE 36: ENTERED`"),
-    "stage 36 implementation": (STATE, "current-position", _S35_ENTERED,
-                                _S35_ENTERED + " Stage-36 implementation authorized."),
+    "patent claims": ("CLAUDE.md", "head", _NONE_BOLD,
+                      _NONE_BOLD + " " + _S35_LIMITS[1].replace(": NOT AUTHORIZED", ": AUTHORIZED")),
+    "legal-adviser / release triggers dropped": (CONTRACT, "declaration", _S35_TRIGGERS,
+                                                 "`STAGE 35 LEGAL-ADVISER / RELEASE TRIGGERS: WAIVED`"),
+    "stage 36 entered": (ROADMAP, "current-routing", _S36_NOT[0], "`STAGE 36: ENTERED`"),
+    "stage 36 authorized": (STATE, "current-position", _S36_NOT[1], "`STAGE 36: AUTHORIZED`"),
+    "stage 36 implementation": (STATE, "current-position", _NS, _NS + " Stage-36 implementation authorized."),
 }
 
 
@@ -6586,13 +6737,14 @@ def test_every_material_reversal_is_caught(monkeypatch, name):
         test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surface()
 
 
-@pytest.mark.parametrize("name", ["stage 35 ticked", "another row ticked", "stage 35 row removed"])
+@pytest.mark.parametrize("name", ["stage 35 unticked", "another row ticked", "stage 35 row removed"])
 def test_stage35_checkbox_and_count_drift_is_caught(monkeypatch, name):
-    """ADDED at the Stage 35 first bounded slice: Stage 35 is ENTERED / PARTIAL only, so ticking its row, ticking any
-    other open row or dropping its row is checkbox / count drift the current-state guard rejects."""
+    """ADDED at the Stage 35 first bounded slice; ROTATED at the Stage 35 closure: row 35 is ticked for the current
+    bounded first-slice scope only, so unticking it, ticking any other open row or dropping it is checkbox / count drift
+    the current-state guard rejects."""
     roadmap = _read(ROADMAP)
-    [row] = re.findall(r"^- \[ \] \*\*35 — .*$", roadmap, re.M)
-    mutated = {"stage 35 ticked": roadmap.replace(row, row.replace("- [ ]", "- [x]", 1), 1),
+    [row] = re.findall(r"^- \[x\] \*\*35 — .*$", roadmap, re.M)
+    mutated = {"stage 35 unticked": roadmap.replace(row, row.replace("- [x]", "- [ ]", 1), 1),
                "another row ticked": re.sub(r"^- \[ \] (\*\*36 — )", r"- [x] \1", roadmap, count=1, flags=re.M),
                "stage 35 row removed": roadmap.replace(row + "\n", "", 1)}[name]
     assert mutated != roadmap
@@ -6712,7 +6864,7 @@ _F2_NEW_CLAIMS = {
 @pytest.mark.parametrize("path, region", [(STATE, "current-position"), (ROADMAP, "current-routing"),
                                           (CONTRACT, "declaration"), ("CLAUDE.md", "head")])
 def test_f2_a_newly_authored_post_merge_claim_is_rejected(monkeypatch, path, region, name):
-    anchor = _S35_BOLD if region in ("declaration", "head") else _NS      # ROTATED at the Stage 35 slice
+    anchor = _NONE_BOLD if region in ("declaration", "head") else _NS      # ROTATED back at the Stage 35 closure
     docs = _mutate(path, region, anchor, anchor + _F2_NEW_CLAIMS[name])
     _assert_rejected(monkeypatch, docs, name)
 
@@ -6825,7 +6977,8 @@ def test_f1b_unmodified_repository_counts():
     # Stage 24 / CAP-12 Form Mock-up Advisory Slice 1: + its delivered record and the superseded post-Stage-23 NONE record
     # Stage 24 closure: + its delivered record and the superseded post-Stage-24-CAP-12-Slice-1 NONE record
     # Stage 35 first bounded slice: + the superseded post-Stage-24-closure NONE record (the live record is the slice)
-    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 71, 10)
+    # Stage 35 closure: + its delivered record and the superseded Stage 35 slice record (the live record is NONE again)
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 73, 10)
 
 
 def _flat_doc(path):
@@ -6865,7 +7018,7 @@ def test_f2_existing_records_are_owned_and_counted_per_surface():
 def test_f2_omega_cannot_inherit_a_vacated_allowance(monkeypatch):
     claude = _flat_doc("CLAUDE.md")
     vacated = _replace_once(claude, "post-merge identity / content verification PASS; reviewed", "reviewed")
-    omega = _replace_once(vacated, _S35_BOLD, _S35_BOLD + " New delivery Omega — "
+    omega = _replace_once(vacated, _NONE_BOLD, _NONE_BOLD + " New delivery Omega — "
                           "Verification Preparation — Slice 2 — is DELIVERED (post-merge identity / content "
                           "verification PASS).")
     _assert_rejected(monkeypatch, {"CLAUDE.md": omega}, "omega")
@@ -6897,7 +7050,7 @@ def test_f2_a_legacy_record_cannot_move_to_another_surface_or_exceed_its_count(m
     _assert_rejected(monkeypatch, {STATE: moved}, "record owned by another surface")
     monkeypatch.undo()
     claude = _flat_doc("CLAUDE.md")
-    doubled = _replace_once(claude, _S35_BOLD, _S35_BOLD + " Mechanical CAP-01 — "
+    doubled = _replace_once(claude, _NONE_BOLD, _NONE_BOLD + " Mechanical CAP-01 — "
                             "Open-Gap Technical Context — DELIVERED (post-merge identity / content verification PASS).")
     _assert_rejected(monkeypatch, {"CLAUDE.md": doubled}, "record beyond its preserved count")
 

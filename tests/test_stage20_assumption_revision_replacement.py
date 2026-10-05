@@ -899,10 +899,11 @@ def test_l01_closure_truth_on_every_current_surface():
     # the later Stage 21 closure took over the CLAUDE.md head; the Stage-20 delivery stays recorded there as history
     assert ("Stage 20 closure (delivered; completes Stage 20 for the current Owner-declared assumption scope"
             in surfaces["CLAUDE.md"])
-    # ROTATED at the Stage 35 first bounded slice: the live CLAUDE.md declaration is the Stage-35 increment and the
-    # post-Stage-24-closure NONE is no longer live
-    assert "**ACTIVE CONTRACT: STAGE 35 — FIRST BOUNDED STRUCTURED INVENTION DISCLOSURE EXPORT SLICE.**" in surfaces["CLAUDE.md"]
-    assert "**ACTIVE CONTRACT: NONE.**" not in surfaces["CLAUDE.md"]
+    # ROTATED at the Stage 35 first bounded slice: the live CLAUDE.md declaration was the Stage-35 increment
+    # ROTATED back at the Stage 35 closure: the live CLAUDE.md declaration is NONE again and the Stage-35 increment is
+    # no longer live
+    assert "**ACTIVE CONTRACT: NONE.**" in surfaces["CLAUDE.md"]
+    assert "**ACTIVE CONTRACT: STAGE 35 — FIRST BOUNDED STRUCTURED INVENTION DISCLOSURE EXPORT SLICE.**" not in surfaces["CLAUDE.md"]
     assert "Assumption Revision & Replacement" not in _doc("OWNER_DECISION_REGISTER.md")
 
 
