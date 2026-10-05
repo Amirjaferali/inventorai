@@ -761,12 +761,13 @@ def test_n90_the_closure_truth_is_recorded_on_every_current_surface():
     for name in ("ACTIVE_INCREMENT_CONTRACT.md", "INVENTORAI_MASTER_EXECUTION_ROADMAP.md",
                  "INVENTORAI_MASTER_ROADMAP_EXECUTION_CHECKLIST.md"):
         assert _NO_S19 in surfaces[name], name
-    # ROTATED at the Stage 35 first bounded slice: the live CLAUDE.md declaration is the Stage-35 increment and the
-    # post-Stage-24-closure NONE is no longer live
-    assert "**ACTIVE CONTRACT: STAGE 35 — FIRST BOUNDED STRUCTURED INVENTION DISCLOSURE EXPORT SLICE.**" in surfaces["CLAUDE.md"]
-    assert "**ACTIVE CONTRACT: NONE.**" not in surfaces["CLAUDE.md"]
-    assert "**ACTIVE CONTRACT: STAGE 35 — FIRST BOUNDED STRUCTURED INVENTION DISCLOSURE EXPORT SLICE.**" in surfaces["ACTIVE_INCREMENT_CONTRACT.md"]
-    assert "ACTIVE CONTRACT: NONE" in surfaces["ACTIVE_INCREMENT_CONTRACT.md"]      # preserved superseded history
+    # ROTATED at the Stage 35 first bounded slice: the live CLAUDE.md declaration was the Stage-35 increment
+    # ROTATED back at the Stage 35 closure: the live CLAUDE.md declaration is NONE again and the Stage-35 increment is
+    # no longer live
+    assert "**ACTIVE CONTRACT: NONE.**" in surfaces["CLAUDE.md"]
+    assert "**ACTIVE CONTRACT: STAGE 35 — FIRST BOUNDED STRUCTURED INVENTION DISCLOSURE EXPORT SLICE.**" not in surfaces["CLAUDE.md"]
+    assert "**ACTIVE CONTRACT: NONE.**" in surfaces["ACTIVE_INCREMENT_CONTRACT.md"]
+    assert "**ACTIVE CONTRACT: STAGE 35 — FIRST BOUNDED STRUCTURED INVENTION DISCLOSURE EXPORT SLICE.**" in surfaces["ACTIVE_INCREMENT_CONTRACT.md"]      # preserved superseded history
     # no new governance document and no decision-register entry for this closure
     assert "Gap-Scoped Technical Next-Step Guidance" not in _doc("OWNER_DECISION_REGISTER.md")
 
