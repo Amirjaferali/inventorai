@@ -1695,6 +1695,13 @@ body{overflow-wrap:anywhere}
       {% else %}
       <p class="journey-note" data-rs-none style="margin:2px 0">{{ t('UI_RS_TECHNICAL_NONE') }}</p>
       {% endif %}
+      {#- Stage 16 (bounded presentation residual): on an INTEGRATED invention
+          this row is composed from the selected initial analysis focus alone,
+          so it says so here, from the same `integrated_scope` the top-of-page
+          scope disclosure reads. Absent for every ordinary project. -#}
+      {% if integrated_scope is defined and integrated_scope %}
+      <p class="journey-note" data-rs-technical-scope style="margin:2px 0">{% if integrated_scope.control %}{{ t('UI_RS_TECHNICAL_SCOPE_3') }}{% else %}{{ t('UI_RS_TECHNICAL_SCOPE') }}{% endif %}</p>
+      {% endif %}
       <p class="journey-note" data-rs-not-a-verdict style="margin:2px 0;color:#777">{{ t('UI_RS_TECHNICAL_NOT_A_VERDICT') }}</p>
       {% else %}
       {#- ONE branch for every evidence dimension. The wording keys and the

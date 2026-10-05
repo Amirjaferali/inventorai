@@ -478,3 +478,113 @@ def test_topic_labels_are_used_not_raw_tokens(owner):
     assert _shown("UI_CEV_TOPIC_WILLINGNESS_TO_PAY") in row
     for topic in COMMERCIAL_TOPICS:
         assert topic not in row, topic
+
+
+# ==========================================================================
+# 8. Stage 16 — the Technical row states its scope on an integrated invention
+# ==========================================================================
+# Bounded presentation-only residual. On an integrated invention the Technical
+# row is composed from the selected initial analysis focus alone; the row now
+# says so, from the same `integrated_scope` the top-of-page disclosure reads.
+# No owner, composer, disposition, persistence or aggregate changes.
+from tests.test_stage15_integrated_invention_entry import (  # noqa: E402
+    ELEC, MECH, TIE_IDEA, _compose, _created)
+from tests.test_stage28_control_loop_optional_part_slice1 import CTRL  # noqa: E402
+
+SCOPE_MARK = "data-rs-technical-scope"
+
+
+def _integrated(client, focus=MECH, **extra):
+    return _created(_compose(client, TIE_IDEA, focus=focus, **extra))
+
+
+def _snapshot_block(body):
+    return re.search(r'id="rs-readiness-snapshot".*?</details>', body, re.S).group(0)
+
+
+def _assert_snapshot_semantics_unchanged(body):
+    snapshot = _snapshot_block(body)
+    assert snapshot.count('data-rs-disposition="INSUFFICIENT_EVIDENCE"') == 4
+    for token in POSITIVE:
+        assert token not in snapshot, token
+    assert _shown("UI_RS_NO_OVERALL") in snapshot
+    assert [d for d in re.findall(r'data-rs-dimension="([a-z]+)"', snapshot)] == [
+        "technical", "commercial", "manufacturing", "integration"]
+
+
+@pytest.mark.parametrize("focus", [MECH, ELEC])
+def test_stage16_two_part_technical_row_states_its_focus_scope(focus):
+    c = _new_client()
+    sid = _integrated(c, focus=focus)
+    body = _page(c, sid)
+    row = _row(body, "technical")
+    assert SCOPE_MARK in row
+    assert _shown("UI_RS_TECHNICAL_SCOPE") in row
+    assert _shown("UI_RS_TECHNICAL_SCOPE_3") not in row
+    # exactly once, inside the Technical row only
+    assert body.count(SCOPE_MARK) == 1
+    for other in ("commercial", "manufacturing", "integration"):
+        assert SCOPE_MARK not in _row(body, other), other
+    # the earlier scope disclosure is unchanged and still present
+    assert "data-integrated-scope" in body
+    _assert_snapshot_semantics_unchanged(body)
+
+
+def test_stage16_three_part_technical_row_names_the_other_parts():
+    c = _new_client()
+    sid = _integrated(c, **CTRL)
+    assert [s.domain for s in SESSION_STORE[sid]["state"].subsystems] == [
+        MECH, ELEC, "control_loop"]
+    body = _page(c, sid)
+    row = _row(body, "technical")
+    assert _shown("UI_RS_TECHNICAL_SCOPE_3") in row
+    assert _shown("UI_RS_TECHNICAL_SCOPE") not in row
+    assert body.count(SCOPE_MARK) == 1
+    _assert_snapshot_semantics_unchanged(body)
+    c.post("/ui-language", data={"lang": "ar"})
+    ar = _row(_page(c, sid), "technical")
+    assert _shown("UI_RS_TECHNICAL_SCOPE_3", "ar") in ar
+    assert _shown("UI_RS_TECHNICAL_SCOPE_3", "en") not in ar
+
+
+def test_stage16_single_domain_project_has_no_scope_line(owner):
+    c, sid = owner
+    for lang in ("en", "ar"):
+        c.post("/ui-language", data={"lang": lang})
+        body = _page(c, sid)
+        assert SCOPE_MARK not in body
+        for key in ("UI_RS_TECHNICAL_SCOPE", "UI_RS_TECHNICAL_SCOPE_3"):
+            assert _shown(key, lang) not in body, (key, lang)
+        assert "data-integrated-scope" not in body
+
+
+def test_stage16_arabic_two_part_scope_line():
+    c = _new_client()
+    sid = _integrated(c)
+    c.post("/ui-language", data={"lang": "ar"})
+    row = _row(_page(c, sid), "technical")
+    assert _shown("UI_RS_TECHNICAL_SCOPE", "ar") in row
+    assert _shown("UI_RS_TECHNICAL_SCOPE", "en") not in row
+
+
+def test_stage16_cold_read_only_page_carries_the_same_line():
+    c = _new_client()
+    sid = _integrated(c)
+    SESSION_STORE.clear()                      # memory loss -> cold load
+    body = _page(c, sid)
+    cold = SESSION_STORE[sid]["state"]
+    assert getattr(cold, "domain", None) is None   # still the non-resumable cold entry
+    row = _row(body, "technical")
+    assert _shown("UI_RS_TECHNICAL_SCOPE") in row
+    assert body.count(SCOPE_MARK) == 1
+    _assert_snapshot_semantics_unchanged(body)
+
+
+def test_stage16_scope_wording_makes_no_readiness_claim():
+    for key in ("UI_RS_TECHNICAL_SCOPE", "UI_RS_TECHNICAL_SCOPE_3"):
+        en = ui_text.text(key, "en").lower()
+        assert "initial analysis focus" in en and "does not represent" in en
+        for banned in ("srl", "weakest", "score", "percent", "overall",
+                       "readiness", "ready", "feasib", "compatib", "validat",
+                       "verified", "rank", "weight"):
+            assert banned not in en, (key, banned)
