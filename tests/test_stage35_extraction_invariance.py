@@ -131,8 +131,9 @@ def test_e3_web_helper_keeps_its_catch_all(monkeypatch):
 
 def test_e3_engine_function_never_reads_the_store_or_swallows():
     import inspect
-    src = inspect.getsource(er.execution_states)
-    assert "store" not in src and "except" not in src
+    import re
+    code = re.sub(r'(?s)"{3}.*?"{3}', "", inspect.getsource(er.execution_states))
+    assert "store" not in code and "except" not in code and "try" not in code
 
 
 # ---------------------------------------------------------------------------

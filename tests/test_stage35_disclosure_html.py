@@ -10,6 +10,7 @@ import html as _html
 import re
 from html.parser import HTMLParser
 
+import markupsafe
 import pytest
 
 import web.app as webapp
@@ -59,6 +60,11 @@ LEGEND_YOU_EN = ("When an existing InventorAI statement uses “you” or “you
                  "the inventor who recorded this project.")
 RISKS_EN = ("This section references unresolved technical issues listed in this export. "
             "InventorAI has not performed a risk assessment here.")
+
+
+def _esc(text):
+    """``text`` exactly as the template engine escapes it."""
+    return str(markupsafe.escape(text))
 
 
 def _doc(content=None):
@@ -137,15 +143,15 @@ def test_02_disclaimers_scope_and_direction(lang):
                           else {"lang": "ar", "dir": "rtl"})
     positions = []
     for n, en in enumerate(DISCLAIMERS_EN):
-        assert _html.escape(en, quote=False) in markup or en in markup
-        positions.append(markup.index(_html.escape(en, quote=False)))
+        assert _esc(en) in markup
+        positions.append(markup.index(_esc(en)))
         if lang == "ar":
             ar_pos = markup.index(AR_DISCLAIMERS[n])
             assert ar_pos > positions[-1]
             if n + 1 < len(DISCLAIMERS_EN):
-                assert ar_pos < markup.index(_html.escape(DISCLAIMERS_EN[n + 1], quote=False))
+                assert ar_pos < markup.index(_esc(DISCLAIMERS_EN[n + 1]))
             assert re.search(r'<p lang="en" dir="ltr"[^>]*>' + re.escape(
-                _html.escape(en, quote=False)) + "</p>", markup)
+                _esc(en)) + "</p>", markup)
         else:
             assert AR_DISCLAIMERS[n] not in markup
     assert positions == sorted(positions)
@@ -189,22 +195,22 @@ def test_03_markers_reasons_and_legend(lang):
     i = 0 if lang == "en" else 1
     for marker in ("NOTHING_RECORDED", "NOT_CAPTURED", "EXCLUDED_FROM_FIRST_SLICE",
                    "NOT_APPLICABLE"):
-        assert MARKER_WORDING[marker][i] in empty
+        assert _esc(MARKER_WORDING[marker][i]) in empty
     for key in ("NON_INTEGRATED_PROJECT", "NO_APPROVAL_RECORD", "PLANNING_INPUTS",
                 "CONFIDENTIAL_EVIDENCE_CATEGORIES", "RESULT_TEXT_NOT_CARRIED",
                 "CARRIED_ON_EVERY_ITEM"):
-        assert _html.escape(ui_text.text("UI_S35_REASON_" + key, lang), quote=False) in empty
+        assert _esc(ui_text.text("UI_S35_REASON_" + key, lang)) in empty
     for key in ("FORM_ROW_QUALITY_DERIVED", "OBJECTIVE_NAMES_EVIDENCE_LEVEL"):
-        assert _html.escape(ui_text.text("UI_S35_REASON_" + key, lang), quote=False) in rich
+        assert _esc(ui_text.text("UI_S35_REASON_" + key, lang)) in rich
     for markup in (rich, empty):
         legend = markup.index('id="how-to-read"')
-        assert markup.index(_html.escape(DISCLAIMERS_EN[-1], quote=False)) < legend
+        assert markup.index(_esc(DISCLAIMERS_EN[-1])) < legend
         assert legend < markup.index('id="field-invention_title"')
         for marker, wording in MARKER_WORDING.items():
-            assert wording[i] in markup[legend:markup.index('id="field-invention_title"')]
+            assert _esc(wording[i]) in markup[legend:markup.index('id="field-invention_title"')]
         assert TOP_UNAVAILABLE not in markup
         risks = markup.index('id="field-risks"')
-        clar = _html.escape(ui_text.text("UI_S35_RISKS_CLARIFICATION", lang), quote=False)
+        clar = _esc(ui_text.text("UI_S35_RISKS_CLARIFICATION", lang))
         assert markup.index(clar, risks) < markup.index('id="field-uncertainty_and_abstentions"')
     if lang == "en":
         assert RISKS_EN in rich
@@ -213,7 +219,7 @@ def test_03_markers_reasons_and_legend(lang):
     # #30: envelope NOT_APPLICABLE rows carry the contextual sentence, never bare.
     na = [ui_text.text("UI_S35_NA_" + k, lang) for k in ("SOURCE", "VALIDATION", "LIMITATION")]
     for sentence in na:
-        assert _html.escape(sentence, quote=False) in rich
+        assert _esc(sentence) in rich
     if lang == "en":
         for sentence in NA_ROWS_EN:
             assert sentence in rich
@@ -228,12 +234,12 @@ def test_03_raw_text_only_pointer(lang):
     i = 0 if lang == "en" else 1
     section = markup[markup.index('id="field-raw_materials_dimensions_parameters_conditions"'):
                      markup.index('id="field-interface_verification_preparation_inputs"')]
-    assert MARKER_WORDING["RAW_TEXT_ONLY"][i] in section
+    assert _esc(MARKER_WORDING["RAW_TEXT_ONLY"][i]) in section
     assert ui_text.text("UI_B_DELIV_036", lang) in section
     rich = _render(_doc(_compose(_rich(), quantities=(_q(0, "rec_1", "12 V"),))), lang)
     section = rich[rich.index('id="field-raw_materials_dimensions_parameters_conditions"'):
                    rich.index('id="field-interface_verification_preparation_inputs"')]
-    assert MARKER_WORDING["RAW_TEXT_ONLY"][i] not in section
+    assert _esc(MARKER_WORDING["RAW_TEXT_ONLY"][i]) not in section
 
 
 def test_24_unavailable_rendering():
@@ -265,7 +271,7 @@ def test_27_every_item_carries_its_rows(lang):
     assert len(arts) > 20
     src_label = ui_text.text("UI_ED_SOURCE", lang)
     val_label = ui_text.text("UI_ED_VALIDATION", lang)
-    na_lim = _html.escape(ui_text.text("UI_S35_NA_LIMITATION", lang), quote=False)
+    na_lim = _esc(ui_text.text("UI_S35_NA_LIMITATION", lang))
     for body, key, kind in arts:
         assert src_label in body and val_label in body and na_lim in body, key
         if kind in ("gap_reference", "evidence_reference"):
@@ -276,12 +282,12 @@ def test_27_every_item_carries_its_rows(lang):
     for body, key, kind in arts:
         if kind == "correction_version":
             assert (ui_text.text("UI_S35_CURRENT", lang) in body
-                    or _html.escape(ui_text.text("UI_S35_SUPERSEDED", lang), quote=False) in body)
+                    or _esc(ui_text.text("UI_S35_SUPERSEDED", lang)) in body)
 
 
 def test_07_content_class_labels_adjacent_to_values(lang):
     markup = _render(_doc(), lang)
-    quoted = _html.escape(ui_text.text("UI_S35_QUOTED", lang), quote=False)
+    quoted = _esc(ui_text.text("UI_S35_QUOTED", lang))
     system = ui_text.text("UI_S35_SYSTEM", lang)
     for m in re.finditer(r'<div class="slot"[^>]*>(.*?)</div>\s*<!-- /slot -->', markup, re.S):
         block = m.group(1)
@@ -322,9 +328,9 @@ def test_20_quantity_rendering(lang):
     assert "0.5–0.8 mm" in section and "≈3 kg" in section
     assert ui_text.text("UI_T2A_KIND_TARGET_VALUE", lang) in section
     assert ui_text.text("UI_T2A_KIND_MAXIMUM_VALUE", lang) in section
-    assert _html.escape(ui_text.text("UI_T2A_WITHDRAWN_ANCHOR", lang), quote=False) in section
-    assert _html.escape(ui_text.text("UI_S35_WITHDRAWN_NOTE", lang), quote=False) in section
-    assert _html.escape(ui_text.text("UI_T2A_WITHDRAWN_NOTE", lang), quote=False) not in section
+    assert _esc(ui_text.text("UI_T2A_WITHDRAWN_ANCHOR", lang)) in section
+    assert _esc(ui_text.text("UI_S35_WITHDRAWN_NOTE", lang)) in section
+    assert _esc(ui_text.text("UI_T2A_WITHDRAWN_NOTE", lang)) not in section
     assert 'href="#requirement_landscape.' in section
 
 
@@ -333,13 +339,13 @@ def test_21_capture_limitation_inside_the_problem_item(lang):
     [problem] = [a for a in _articles(markup) if a[2] == "resolved_problem"]
     body = problem[0]
     text_at = body.index("Wheelchair users cannot cross")
-    lim_at = body.index(_html.escape(CAPTURE_LIMITATION, quote=False))
+    lim_at = body.index(_esc(CAPTURE_LIMITATION))
     assert text_at < lim_at
     if lang == "ar":
-        ar = _html.escape(ui_text.text("UI_S35_CAPTURE_LIMITATION", "ar"), quote=False)
+        ar = _esc(ui_text.text("UI_S35_CAPTURE_LIMITATION", "ar"))
         assert lim_at < body.index(ar)
         assert re.search(r'lang="en" dir="ltr"[^>]*>' + re.escape(
-            _html.escape(CAPTURE_LIMITATION, quote=False)), body)
+            _esc(CAPTURE_LIMITATION)), body)
 
 
 def test_29_neutral_wording(lang):
@@ -348,11 +354,11 @@ def test_29_neutral_wording(lang):
     assert not re.search(r'data-row="source"[^>]*>[^<]*<[^>]*>[^<]*</[^>]*>\s*'
                          + re.escape(you) + r"\s*<", markup)
     assert ui_text.text("UI_S35_SOURCE_OWNER_STATED", lang) in markup
-    assert _html.escape(ui_text.text("UI_S35_FIELD_RAW_MATERIALS_DIMENSIONS_PARAMETERS_CONDITIONS",
-                                     lang), quote=False) in markup
-    assert ui_text.text("UI_S35_FIELD_CORRECTIONS", lang) in markup
+    assert _esc(ui_text.text("UI_S35_FIELD_RAW_MATERIALS_DIMENSIONS_PARAMETERS_CONDITIONS",
+                                     lang)) in markup
+    assert _esc(ui_text.text("UI_S35_FIELD_CORRECTIONS", lang)) in markup
     rec_text = ui_text.text("UI_S35_EXECUTION_RECORDED", lang).replace("{n}", "1")
-    assert _html.escape(rec_text, quote=False) in markup
+    assert _esc(rec_text) in markup
     assert "You recorded" not in markup and "Your recorded" not in markup
     # Stage-35-authored fixed copy addresses no reader as the inventor.
     for key, pair in ui_text.UI_STRINGS.items():
@@ -365,7 +371,7 @@ def test_29_neutral_wording(lang):
             "“you” or “your”", ""), re.I), key
     text = _text(_without_quoted(markup))
     if re.search(r"\byou(r)?\b", text.replace("“you” or “your”", ""), re.I):
-        assert _html.escape(ui_text.text("UI_S35_HOWTO_YOU", lang), quote=False) in markup
+        assert _esc(ui_text.text("UI_S35_HOWTO_YOU", lang)) in markup
     if lang == "en":
         assert LEGEND_YOU_EN in markup
 

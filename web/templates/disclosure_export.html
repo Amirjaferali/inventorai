@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ t('UI_S35_ACCOUNT_LINK') }}{% endblock %}
+{% block head %}
+<style>
+.disclosure-wrap{max-width:720px;margin:32px auto;padding:0 16px;color:#222;font-family:sans-serif;line-height:1.5;overflow-wrap:anywhere}
+.disclosure-wrap h1{font-size:20px;color:#2c3e50;margin-bottom:6px}
+.disclosure-wrap h2{font-size:16px;color:#2c3e50;margin-top:22px}
+.disclosure-notice{margin:8px 0;padding:8px 12px;border:1px solid #d9c9a3;background:#fdf8ec;border-radius:4px}
+.disclosure-notice p{margin:2px 0}
+.disclosure-controls{display:flex;flex-wrap:wrap;gap:14px;margin:18px 0 8px}
+.disclosure-controls a{display:inline-block;padding:8px 14px;border:1px solid #2c3e50;border-radius:4px;color:#2c3e50;text-decoration:none}
+.disclosure-small{font-size:14px;color:#444}
+</style>
+{% endblock %}
+{% block content %}
+<div class="disclosure-wrap">
+<h1><span lang="en" dir="ltr">{{ scope_label.en }}</span>{% if ui_lang == 'ar' %}<br><span>{{ scope_label.ar }}</span>{% endif %}</h1>
+<p>{{ t('UI_S35_PAGE_INTRO') }}</p>
+<section aria-labelledby="disclosure-notices-h">
+<h2 id="disclosure-notices-h">{{ t('UI_S35_NOTICES_HEADING') }}</h2>
+{% for disclaimer_id, en, ar in disclaimers %}
+<div class="disclosure-notice" data-disclaimer="{{ disclaimer_id }}"><p lang="en" dir="ltr">{{ en }}</p>{% if ui_lang == 'ar' %}<p>{{ ar }}</p>{% endif %}</div>
+{% endfor %}
+</section>
+<div class="disclosure-controls">
+<a href="{{ json_url }}">{{ t('UI_S35_JSON_CONTROL') }}</a>
+<a href="{{ html_url }}">{{ t('UI_S35_HTML_CONTROL') }}</a>
+</div>
+<p class="disclosure-small">{{ t('UI_S35_SAME_DATA') }}</p>
+<section aria-labelledby="disclosure-retention-h">
+<h2 id="disclosure-retention-h">{{ t('UI_S35_RETENTION_HEADING') }}</h2>
+<ul class="disclosure-small">
+<li>{{ t('UI_S35_RETENTION_1') }}</li>
+<li>{{ t('UI_S35_RETENTION_2') }}</li>
+<li>{{ t('UI_S35_RETENTION_3') }}</li>
+<li>{{ t('UI_S35_RETENTION_4') }}</li>
+</ul>
+</section>
+</div>
+{% endblock %}

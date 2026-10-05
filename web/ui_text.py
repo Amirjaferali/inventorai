@@ -6461,6 +6461,360 @@ UI_STRINGS = {
         "en": "InventorAI does not name a specialist category for this gap: no governed mapping supports one from this guidance alone.",
         "ar": "لا يسمّي InventorAI فئة مختصين لهذه الفجوة: لا يوجد ربط خاضع للحوكمة يدعم ذلك من هذا الإرشاد وحده.",
     },
+    # --- Stage 35 — Structured Invention Disclosure Export — first bounded slice
+    # (implementation contract §12). Fixed export chrome only: the disclaimers,
+    # the scope label and the English problem-capture limitation travel inside the
+    # projection (engine/disclosure_export.py); inventor text is never here.
+    # Pre-download page copy (§12.5) addresses the signed-in inventor; every key
+    # used inside the downloaded document is neutral (§12.7, Correction 04 / 05).
+    "UI_S35_ACCOUNT_LINK": {
+        "en": "Invention disclosure export",
+        "ar": "تصدير الإفصاح عن الاختراع",
+    },
+    "UI_S35_PAGE_INTRO": {
+        "en": "This export describes your invention using only what you have recorded in this project, with its source and validation details. Read the notices below before downloading.",
+        "ar": "يصف هذا التصدير اختراعك باستخدام ما سجّلته في هذا المشروع فقط، مع تفاصيل المصدر والتحقق. اقرأ التنبيهات أدناه قبل التنزيل.",
+    },
+    "UI_S35_NOTICES_HEADING": {
+        "en": "Before you download",
+        "ar": "قبل التنزيل",
+    },
+    "UI_S35_JSON_CONTROL": {
+        "en": "Download machine-readable file (JSON)",
+        "ar": "تنزيل الملف المقروء آليًا (JSON)",
+    },
+    "UI_S35_HTML_CONTROL": {
+        "en": "Download readable document (HTML)",
+        "ar": "تنزيل المستند المقروء (HTML)",
+    },
+    "UI_S35_SAME_DATA": {
+        "en": "The readable document is generated from the same data as the machine-readable file and adds nothing to it.",
+        "ar": "يُولَّد المستند المقروء من البيانات نفسها التي في الملف المقروء آليًا، ولا يضيف إليها شيئًا.",
+    },
+    "UI_S35_RETENTION_HEADING": {
+        "en": "What InventorAI keeps",
+        "ar": "ما يحتفظ به InventorAI",
+    },
+    "UI_S35_RETENTION_1": {
+        "en": "InventorAI keeps no copy of this export file. Each download is composed when you request it.",
+        "ar": "لا يحتفظ InventorAI بأي نسخة من ملف التصدير هذا؛ يُنشأ كل تنزيل عند طلبك له.",
+    },
+    "UI_S35_RETENTION_2": {
+        "en": "InventorAI creates no record of your exports. Ordinary access logs, which do not contain your invention content, may still record the request.",
+        "ar": "لا ينشئ InventorAI سجلًا لعمليات التصدير التي تجريها. وقد تسجّل سجلات الوصول الاعتيادية الطلب، وهي لا تتضمن محتوى اختراعك.",
+    },
+    "UI_S35_RETENTION_3": {
+        "en": "InventorAI cannot delete copies you have downloaded.",
+        "ar": "لا يستطيع InventorAI حذف النسخ التي نزّلتها.",
+    },
+    "UI_S35_RETENTION_4": {
+        "en": "Creating this export does not change your project.",
+        "ar": "إنشاء هذا التصدير لا يغيّر مشروعك.",
+    },
+    "UI_S35_QUOTED": {
+        "en": "Inventor's own words",
+        "ar": "كلمات المخترع كما كتبها",
+    },
+    "UI_S35_SYSTEM": {
+        "en": "InventorAI statement",
+        "ar": "عبارة من InventorAI",
+    },
+    "UI_S35_CURRENT": {
+        "en": "Current",
+        "ar": "حالي",
+    },
+    "UI_S35_SUPERSEDED": {
+        "en": "Earlier version, kept as history",
+        "ar": "نسخة سابقة محفوظة ضمن السجل",
+    },
+    "UI_S35_REFERENCE": {
+        "en": "See",
+        "ar": "انظر",
+    },
+    "UI_S35_SCHEMA_VERSION": {
+        "en": "Disclosure schema version",
+        "ar": "إصدار مخطط الإفصاح",
+    },
+    "UI_S35_FORMAT_VERSION": {
+        "en": "Format version",
+        "ar": "إصدار التنسيق",
+    },
+    "UI_S35_GENERATED": {
+        "en": "Generated (UTC)",
+        "ar": "وقت الإنشاء (UTC)",
+    },
+    "UI_S35_DIGEST": {
+        "en": "Content digest",
+        "ar": "البصمة الرقمية للمحتوى",
+    },
+    "UI_S35_FIELD_INVENTION_TITLE": {
+        "en": "Invention title",
+        "ar": "عنوان الاختراع",
+    },
+    "UI_S35_FIELD_PROBLEM_ADDRESSED": {
+        "en": "Problem addressed",
+        "ar": "المشكلة التي يعالجها",
+    },
+    "UI_S35_FIELD_BACKGROUND_AND_EXISTING_LIMITATIONS": {
+        "en": "Background and existing limitations",
+        "ar": "الخلفية والقيود القائمة",
+    },
+    "UI_S35_FIELD_INVENTION_OBJECTIVE": {
+        "en": "Invention objective",
+        "ar": "هدف الاختراع",
+    },
+    "UI_S35_FIELD_TECHNICAL_CONCEPT": {
+        "en": "Technical concept",
+        "ar": "المفهوم التقني",
+    },
+    "UI_S35_FIELD_PARTS": {
+        "en": "Parts of the invention",
+        "ar": "أجزاء الاختراع",
+    },
+    "UI_S35_FIELD_COMPONENT_DESCRIPTIONS_BEYOND_PARTS": {
+        "en": "Other system, component, process and method descriptions",
+        "ar": "أوصاف أخرى للنظام والمكوّنات والعمليات والطرق",
+    },
+    "UI_S35_FIELD_RELATIONSHIPS": {
+        "en": "Relationships between parts",
+        "ar": "العلاقات بين الأجزاء",
+    },
+    "UI_S35_FIELD_OPERATING_SEQUENCE_OR_WORKFLOW": {
+        "en": "Operating sequence or workflow",
+        "ar": "تسلسل التشغيل أو سير العمل",
+    },
+    "UI_S35_FIELD_ALTERNATIVE_EMBODIMENTS": {
+        "en": "Alternative embodiments",
+        "ar": "التجسيدات البديلة",
+    },
+    "UI_S35_FIELD_TYPED_MATERIALS_DIMENSIONS_PARAMETERS_CONDITIONS": {
+        "en": "Materials, dimensions, parameters and operating conditions as typed values",
+        "ar": "المواد والأبعاد والمعاملات وظروف التشغيل كقيم محدَّدة النوع",
+    },
+    "UI_S35_FIELD_RAW_MATERIALS_DIMENSIONS_PARAMETERS_CONDITIONS": {
+        "en": "Materials, dimensions, parameters and operating conditions in the inventor's own wording",
+        "ar": "المواد والأبعاد والمعاملات وظروف التشغيل بصياغة المخترع",
+    },
+    "UI_S35_FIELD_INTERFACE_VERIFICATION_PREPARATION_INPUTS": {
+        "en": "Interface verification-preparation inputs",
+        "ar": "مدخلات التحضير للتحقق من التفاعل بين الأجزاء",
+    },
+    "UI_S35_FIELD_NOVELTY_AND_DIFFERENTIATION": {
+        "en": "Novelty and differentiation statements",
+        "ar": "عبارات الجِدّة والتمايز",
+    },
+    "UI_S35_FIELD_UNRESOLVED_TECHNICAL_ISSUES": {
+        "en": "Unresolved technical issues",
+        "ar": "المسائل التقنية غير المحسومة",
+    },
+    "UI_S35_FIELD_ASSUMPTIONS": {
+        "en": "Assumptions",
+        "ar": "الافتراضات",
+    },
+    "UI_S35_FIELD_MISSING_INFORMATION": {
+        "en": "Missing information",
+        "ar": "المعلومات الناقصة",
+    },
+    "UI_S35_FIELD_TECHNICAL_EVIDENCE": {
+        "en": "Technical evidence",
+        "ar": "الأدلة التقنية",
+    },
+    "UI_S35_FIELD_COMMERCIAL_MANUFACTURING_INTEGRATION_EVIDENCE": {
+        "en": "Commercial, manufacturing and integration evidence",
+        "ar": "الأدلة التجارية وأدلة التصنيع والتكامل",
+    },
+    "UI_S35_FIELD_DIAGRAMS_AND_FILES": {
+        "en": "Diagrams and files",
+        "ar": "الرسومات والملفات",
+    },
+    "UI_S35_FIELD_EXPERIMENTS": {
+        "en": "Proposed experiments and their execution state",
+        "ar": "التجارب المقترحة وحالة تنفيذها",
+    },
+    "UI_S35_FIELD_EXPERIMENT_RESULT_TEXT": {
+        "en": "Text of recorded experiment results",
+        "ar": "نص نتائج التجارب المسجّلة",
+    },
+    "UI_S35_FIELD_VALIDATION_RESULTS": {
+        "en": "Validation results",
+        "ar": "نتائج التحقق",
+    },
+    "UI_S35_FIELD_RISKS": {
+        "en": "Risks",
+        "ar": "المخاطر",
+    },
+    "UI_S35_FIELD_UNCERTAINTY_AND_ABSTENTIONS": {
+        "en": "Uncertainty and abstentions",
+        "ar": "عدم اليقين والامتناع عن الحكم",
+    },
+    "UI_S35_FIELD_CORRECTIONS": {
+        "en": "Inventor's corrections",
+        "ar": "تصحيحات المخترع",
+    },
+    "UI_S35_FIELD_APPROVALS": {
+        "en": "Inventor approvals",
+        "ar": "موافقات المخترع",
+    },
+    "UI_S35_FIELD_SOURCE_AND_PROVENANCE_REFERENCES": {
+        "en": "Source and provenance references",
+        "ar": "مراجع المصدر والأصل",
+    },
+    "UI_S35_MARKER_NOTHING_RECORDED": {
+        "en": "Nothing recorded in this project",
+        "ar": "لا شيء مسجّل في هذا المشروع",
+    },
+    "UI_S35_MARKER_NOT_CAPTURED": {
+        "en": "Not captured by InventorAI",
+        "ar": "لا يلتقط InventorAI هذه المعلومة",
+    },
+    "UI_S35_MARKER_RAW_TEXT_ONLY": {
+        "en": "Only as the inventor's own wording in",
+        "ar": "فقط بصياغة المخترع نفسه في",
+    },
+    "UI_S35_MARKER_EXCLUDED_FROM_FIRST_SLICE": {
+        "en": "Not included in this export",
+        "ar": "غير مُضمَّن في هذا التصدير",
+    },
+    "UI_S35_MARKER_NOT_APPLICABLE": {
+        "en": "Not applicable",
+        "ar": "لا ينطبق",
+    },
+    "UI_S35_MARKER_UNAVAILABLE": {
+        "en": "Unavailable — this information could not be read",
+        "ar": "غير متاح — تعذّرت قراءة هذه المعلومة",
+    },
+    "UI_S35_UNAVAILABLE_TOP": {
+        "en": "One or more sections of this document could not be read and are marked Unavailable.",
+        "ar": "تعذّرت قراءة قسم أو أكثر من هذه الوثيقة، ووُسِم بأنه غير متاح.",
+    },
+    "UI_S35_REASON_NON_INTEGRATED_PROJECT": {
+        "en": "In this first slice, InventorAI captures component descriptions only for integrated Mechanical + Electrical / Electronics projects.",
+        "ar": "في هذه الشريحة الأولى، لا يلتقط InventorAI أوصاف المكوّنات إلا للمشاريع المتكاملة التي تجمع جزءًا ميكانيكيًا وجزءًا كهربائيًا / إلكترونيًا.",
+    },
+    "UI_S35_REASON_NO_APPROVAL_RECORD": {
+        "en": "InventorAI holds no inventor-approval record; this is not a statement that approval was withheld.",
+        "ar": "لا يحتفظ InventorAI بأي سجل لموافقة المخترع، وهذا لا يعني أن الموافقة حُجبت.",
+    },
+    "UI_S35_REASON_FORM_ROW_QUALITY_DERIVED": {
+        "en": "Excluded from this first slice because the Form row is derived from the evidence-quality field, and this disclosure export does not carry evidence-quality grades.",
+        "ar": "مُستبعَد من هذه الشريحة الأولى لأن صف «الصيغة» مشتق من حقل جودة الدليل، وهذا التصدير لا يحمل درجات جودة الأدلة.",
+    },
+    "UI_S35_REASON_OBJECTIVE_NAMES_EVIDENCE_LEVEL": {
+        "en": "Excluded from this first slice because this generated objective names an evidence-quality level, and this disclosure export does not carry evidence-quality grades.",
+        "ar": "مُستبعَد من هذه الشريحة الأولى لأن هذا الهدف المولَّد يذكر مستوى جودة الدليل، وهذا التصدير لا يحمل درجات جودة الأدلة.",
+    },
+    "UI_S35_REASON_PLANNING_INPUTS": {
+        "en": "Excluded from this first slice because these are planning inputs for checking an interaction between parts, not a description of the invention.",
+        "ar": "مُستبعَد من هذه الشريحة الأولى لأن هذه مدخلات تخطيط للتحقق من تفاعل بين الأجزاء، وليست وصفًا للاختراع.",
+    },
+    "UI_S35_REASON_CONFIDENTIAL_EVIDENCE_CATEGORIES": {
+        "en": "Excluded from this first slice because commercial, manufacturing and integration evidence can be confidential.",
+        "ar": "مُستبعَد من هذه الشريحة الأولى لأن الأدلة التجارية وأدلة التصنيع والتكامل قد تكون سرية.",
+    },
+    "UI_S35_REASON_RESULT_TEXT_NOT_CARRIED": {
+        "en": "Excluded from this first slice: this export shows whether the inventor recorded executions, not the text of the recorded results.",
+        "ar": "مُستبعَد من هذه الشريحة الأولى: يُظهر هذا التصدير ما إذا كان المخترع قد سجّل تنفيذات، لا نص النتائج المسجّلة.",
+    },
+    "UI_S35_REASON_CARRIED_ON_EVERY_ITEM": {
+        "en": "Not applicable as a separate section: each item in this document carries its own source, validation and limitation details.",
+        "ar": "لا ينطبق كقسم مستقل: يحمل كل عنصر في هذه الوثيقة تفاصيل مصدره والتحقق منه وقيوده.",
+    },
+    "UI_S35_CAPTURE_LIMITATION": {
+        "en": "InventorAI captures the problem statement at the step where the inventor describes the problem and may shorten it at a 500-character limit. The text shown here may therefore have been shortened; an ellipsis (…) at its end may indicate that shortening.",
+        "ar": "يُلتقَط بيان المشكلة في الخطوة التي يصف فيها المخترع المشكلة، وقد يُختصَر عند حدّ 500 حرف. لذلك قد يكون النص المعروض هنا مختصرًا، وقد تدلّ علامة الحذف (…) في نهايته على هذا الاختصار.",
+    },
+    "UI_S35_SOURCE_OWNER_STATED": {
+        "en": "Inventor",
+        "ar": "المخترع",
+    },
+    "UI_S35_SOURCE_USER_DEFINED": {
+        "en": "Inventor",
+        "ar": "المخترع",
+    },
+    "UI_S35_SOURCE_SOURCE_STATED": {
+        "en": "Taken from the inventor's recorded text",
+        "ar": "مأخوذ من نص المخترع المسجّل",
+    },
+    "UI_S35_WITHDRAWN_NOTE": {
+        "en": "The answer this value was attached to has been withdrawn. The value is kept in the project history and is no longer current.",
+        "ar": "سُحبت الإجابة التي كانت هذه القيمة مرتبطة بها. تُحفظ القيمة في سجل المشروع ولم تعد حالية.",
+    },
+    "UI_S35_EXECUTION_NONE": {
+        "en": "No result recorded.",
+        "ar": "لا توجد نتيجة مسجّلة.",
+    },
+    "UI_S35_EXECUTION_RECORDED": {
+        "en": "The inventor recorded {n} execution(s). These are the inventor's own recorded observations. InventorAI has not checked them and they are not a pass/fail judgement.",
+        "ar": "عدد التنفيذات التي سجّلها المخترع: {n}. هذه ملاحظات سجّلها المخترع بنفسه، ولم يتحقق منها InventorAI، وليست حكمًا بالنجاح أو الإخفاق.",
+    },
+    "UI_S35_NA_SOURCE": {
+        "en": "No separate source value is held for this item. This does not mean the item has no source.",
+        "ar": "لا توجد قيمة مصدر مستقلة محفوظة لهذا العنصر. ولا يعني ذلك أن العنصر بلا مصدر.",
+    },
+    "UI_S35_NA_VALIDATION": {
+        "en": "No separate validation value is held for this item. This does not mean the item was validated or that validation is unnecessary.",
+        "ar": "لا توجد قيمة تحقق مستقلة محفوظة لهذا العنصر. ولا يعني ذلك أنه جرى التحقق منه أو أن التحقق غير لازم.",
+    },
+    "UI_S35_NA_LIMITATION": {
+        "en": "No separate limitation note is held for this item. This does not mean the item has no limitations.",
+        "ar": "لا توجد ملاحظة قيود مستقلة محفوظة لهذا العنصر. ولا يعني ذلك أن العنصر بلا قيود.",
+    },
+    "UI_S35_NA_CURRENCY": {
+        "en": "No separate current-or-earlier status is held for this item.",
+        "ar": "لا توجد حالة مستقلة محفوظة تبيّن ما إذا كان هذا العنصر حاليًا أو سابقًا.",
+    },
+    "UI_S35_HOWTO_HEADING": {
+        "en": "How to read this document",
+        "ar": "كيفية قراءة هذه الوثيقة",
+    },
+    "UI_S35_HOWTO_SECTIONS": {
+        "en": "Each section shows either the items InventorAI holds for this project or one status.",
+        "ar": "يعرض كل قسم إما العناصر التي يحتفظ بها InventorAI لهذا المشروع، وإما حالة واحدة.",
+    },
+    "UI_S35_HOWTO_QUOTED": {
+        "en": "“Inventor's own words”: text quoted exactly as the inventor recorded it. InventorAI has not checked or assessed it.",
+        "ar": "\"كلمات المخترع كما كتبها\": نص منقول حرفيًا كما سجّله المخترع، ولم يتحقق منه InventorAI ولم يقيّمه.",
+    },
+    "UI_S35_HOWTO_SYSTEM": {
+        "en": "“InventorAI statement”: fixed or system-generated wording from InventorAI.",
+        "ar": "\"عبارة من InventorAI\": صياغة ثابتة أو مولَّدة من InventorAI.",
+    },
+    "UI_S35_HOWTO_YOU": {
+        "en": "When an existing InventorAI statement uses “you” or “your”, it refers to the inventor who recorded this project.",
+        "ar": "عندما تستخدم عبارةٌ قائمةٌ من InventorAI كلمتَي \"أنت\" أو \"لك\"، فإنها تشير إلى المخترع الذي سجّل هذا المشروع.",
+    },
+    "UI_S35_HOWTO_ITEMS": {
+        "en": "Items listed: records InventorAI holds for this project. Each item shows its source and validation details.",
+        "ar": "العناصر المدرجة: سجلات يحتفظ بها InventorAI لهذا المشروع، ويعرض كل عنصر تفاصيل مصدره والتحقق منه.",
+    },
+    "UI_S35_HOWTO_NOTHING_RECORDED": {
+        "en": "“Nothing recorded in this project”: InventorAI holds no record of this in this project. It does not mean that none exists.",
+        "ar": "\"لا شيء مسجّل في هذا المشروع\": لا يحتفظ InventorAI بأي سجل لذلك في هذا المشروع، ولا يعني ذلك أنه غير موجود.",
+    },
+    "UI_S35_HOWTO_NOT_CAPTURED": {
+        "en": "“Not captured by InventorAI”: InventorAI does not capture this kind of information.",
+        "ar": "\"لا يلتقط InventorAI هذه المعلومة\": لا يلتقط InventorAI هذا النوع من المعلومات.",
+    },
+    "UI_S35_HOWTO_RAW_TEXT_ONLY": {
+        "en": "“Only as the inventor's own wording in …”: this information appears only inside the inventor's own text in the named section. It has not been separated out or interpreted.",
+        "ar": "\"فقط بصياغة المخترع نفسه في …\": ترد هذه المعلومة فقط داخل نص المخترع نفسه في القسم المذكور، ولم تُفصَل عنه ولم تُفسَّر.",
+    },
+    "UI_S35_HOWTO_EXCLUDED_FROM_FIRST_SLICE": {
+        "en": "“Not included in this export”: InventorAI holds related information, but this first export deliberately leaves it out, for the reason shown.",
+        "ar": "\"غير مُضمَّن في هذا التصدير\": يحتفظ InventorAI بمعلومات ذات صلة، لكن هذا التصدير الأول يستبعدها عمدًا للسبب المبيّن.",
+    },
+    "UI_S35_HOWTO_NOT_APPLICABLE": {
+        "en": "“Not applicable”: the section does not apply to this kind of item. Next to an item, a detail that is not held is explained in place; this never means that the item has no limitations.",
+        "ar": "\"لا ينطبق\": لا ينطبق هذا القسم على هذا النوع من العناصر. وإلى جانب كل عنصر، يُوضَّح في موضعه أي تفصيل غير محفوظ، ولا يعني ذلك أبدًا أن العنصر بلا قيود.",
+    },
+    "UI_S35_HOWTO_UNAVAILABLE": {
+        "en": "“Unavailable — this information could not be read”: the information could not be read when this document was created.",
+        "ar": "\"غير متاح — تعذّرت قراءة هذه المعلومة\": تعذّرت قراءة هذه المعلومة عند إنشاء هذه الوثيقة.",
+    },
+    "UI_S35_RISKS_CLARIFICATION": {
+        "en": "This section references unresolved technical issues listed in this export. InventorAI has not performed a risk assessment here.",
+        "ar": "يشير هذا القسم إلى المسائل التقنية غير المحسومة الواردة في هذا التصدير. لم يُجرِ InventorAI تقييمًا للمخاطر هنا.",
+    },
 }
 
 

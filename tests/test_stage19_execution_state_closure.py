@@ -342,6 +342,13 @@ def test_e23_the_canonical_owners_are_untouched_by_the_closure():
     assembler = open(os.path.join(_ROOT, "engine", "deliverable_assembler.py"), encoding="utf-8").read()
     assert "experiment_result" not in assembler and "execution_state" not in assembler
     owner = open(os.path.join(_ROOT, "engine", "experiment_result.py"), encoding="utf-8").read()
+    # Stage 35 first slice (implementation contract §2.3 E3): the ONE authorized later
+    # addition to the Result owner is the moved execution-state derivation, appended as
+    # one marked block (two constants' worth of tokens and ONE function). Everything
+    # before it stays exactly as the Stage-19 closure left it.
+    assert owner.count("# Stage 35 E3") == 1
+    owner, e3 = owner.split("# Stage 35 E3")
+    assert e3.count("\ndef ") == 1 and "def execution_states(events, experiment_ids):" in e3
     assert "execution_state" not in owner and "_EXECUTION_" not in owner
 
 
@@ -362,7 +369,11 @@ def test_e30_the_note_and_states_are_english_generated_content_outside_the_catal
         assert not _ARABIC.search(text), text
     # no Stage-19 Category-C localization exception: the generated wording is absent from the
     # catalogue; only the row label is (bilingual) interface chrome
-    catalogue = json.dumps(ui_text.UI_STRINGS, ensure_ascii=False)
+    # Stage 35 first slice (implementation contract §12.7): the disclosure export's own
+    # neutral execution-state labels are export-only ``UI_S35_*`` keys; they localize
+    # nothing on the Stage-19 report / PDF surfaces, which stay English.
+    catalogue = json.dumps({k: v for k, v in ui_text.UI_STRINGS.items()
+                            if not k.startswith("UI_S35_")}, ensure_ascii=False)
     for text in (_NOTE, _NONE, _UNAVAILABLE, "These are your own recorded observations"):
         assert text not in catalogue, text
     assert [k for k in ui_text.UI_STRINGS if k.startswith("UI_S11_")] == ["UI_S11_EXECUTION_LABEL"]

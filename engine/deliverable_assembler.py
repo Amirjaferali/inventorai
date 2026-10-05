@@ -181,6 +181,14 @@ _STATUS_LABELS = {
     OPEN: "Open", PARTIAL: "Partially addressed",
     CLOSED: "Answered (not yet validated)", "ACCEPTED_RISK": "Accepted risk",
 }
+
+
+def gap_status_label(status):
+    """Stage 35 E4: the canonical gap-status label of ``status`` (``None`` when
+    it has none). Read-only over the unchanged ``_STATUS_LABELS``."""
+    return _STATUS_LABELS.get(status)
+
+
 _RECOMMENDATION_A = {
     (2, False): ("PROCEED",
         "Mechanism established and all identified gaps resolved."),
@@ -1602,7 +1610,7 @@ def _ev(ev):
             "validation_status": validation,
             "validation_label": _VALIDATION_LABELS.get(validation, "Not validated")}
 
-def _resolved_problem(state):
+def resolved_problem(state):
     """
     The Evidence to display as the inventor's actual *problem*, selected by
     PROVENANCE (capture origin) — never by keyword or string analysis, and
@@ -1641,6 +1649,9 @@ def _resolved_problem(state):
             if e and (getattr(e, "content", "") or "").strip():
                 return e
     return None
+
+# Stage 35 E1: the existing private name stays bound to the public function.
+_resolved_problem = resolved_problem
 
 def _txt(ev):
     return getattr(ev, "content", str(ev)) if ev else ""
