@@ -360,7 +360,7 @@ def _step(job, name):
     return job[start:] if nxt == -1 else job[start:nxt]
 
 
-GATE = ("scope", "verify", "full_shard", "full_audit", "required")
+GATE = ("scope", "verify", "full_shard", "required")
 
 
 def _needs(job):
@@ -423,7 +423,7 @@ def test_candidate_tests_run_only_in_the_advisory_fast_job():
 def test_fast_job_is_parallel_non_required_and_cannot_control_verify():
     jobs = _jobs(_workflow())
     # tests/test_ci_full_suite.py pins the sharded FULL authority and the full gate truth table
-    assert set(jobs) == {"scope", "verify", "fast", "full_shard", "full_audit", "required"}
+    assert set(jobs) == {"scope", "verify", "fast", "full_shard", "required"}
     assert "needs:" not in jobs["fast"] and _needs(jobs["verify"]) == ["scope"]
     assert "continue-on-error: true" in jobs["fast"].split("steps:")[0]
     closure, frontier = set(), ["required"]
@@ -432,7 +432,7 @@ def test_fast_job_is_parallel_non_required_and_cannot_control_verify():
             if dep not in closure:
                 closure.add(dep)
                 frontier.append(dep)
-    assert closure == {"scope", "verify", "full_shard", "full_audit"}
+    assert closure == {"scope", "verify", "full_shard"}
     for name in jobs:
         assert "fast" not in _needs(jobs[name]), name
     required = jobs["required"]
@@ -451,7 +451,7 @@ def test_gate_jobs_carry_no_rig_or_candidate_input():
 
 def test_unavailable_rig_cannot_prevent_the_full_regression():
     jobs = _jobs(_workflow())
-    for name in ("full_shard", "full_audit"):
+    for name in ("full_shard", "required"):              # `required` runs the FULL audit
         assert "repository_intelligence" not in jobs[name] and "steps.fastplan" not in jobs[name], name
     assert "steps.rig" not in _workflow()
 
