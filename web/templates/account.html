@@ -83,7 +83,7 @@ form{display:inline-block;margin:6px 8px 0 0}
         <p class="project-caption" data-project-domain>{{ project_domain[ui_lang] }}</p>
         <p class="project-caption">{{ t('UI_A1_PROJECT_ID') }}: <bdi data-project-id>{{ project.id }}</bdi></p>
         {% if project.unavailable %}<p>{{ t('UI_A1_DETAILS_UNAVAILABLE') }}</p>{% endif %}
-        <div class="project-links"><a href="/session/{{ project.id }}">{{ t('UI_A_ACCOUNT_007') }}</a><a href="/account/projects/{{ project.id }}/export">{{ t('UI_A_ACCOUNT_012') }}</a></div>
+        <div class="project-links"><a href="/session/{{ project.id }}">{{ t('UI_A_ACCOUNT_007') }}</a><a href="/account/projects/{{ project.id }}/export">{{ t('UI_A_ACCOUNT_012') }}</a><a href="/account/projects/{{ project.id }}/disclosure-export">{{ t('UI_S35_ACCOUNT_LINK') }}</a></div>
       </li>
       {% endfor %}
     </ul>

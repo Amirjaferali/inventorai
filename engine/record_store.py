@@ -1602,6 +1602,10 @@ class SqliteRecordStore:
         # IR-01: set only when a failed write leaves the connection inside an
         # unresolved transaction. Never cleared automatically.
         self._connection_unsafe = False
+        # Stage 35 R1: in-memory evidence that THIS store currently owns the
+        # read transaction it opened in ``read_snapshot()``. Written only there
+        # (and here); never durable.
+        self._read_snapshot_owned = False
         # ``isolation_level=None`` puts the connection in autocommit mode so EVERY
         # write goes through the explicit ``_write()`` transaction below, which
         # opens with ``BEGIN IMMEDIATE``. Taking the RESERVED write lock up front
@@ -1691,6 +1695,21 @@ class SqliteRecordStore:
             raise RecordStoreConnectionUnsafe(
                 "connection is inside an unresolved transaction; its reads are "
                 "not committed durable state")
+
+    def _admit_snapshot_read(self) -> None:
+        """Stage 35 R1: admit a read inside a snapshot this store itself
+        acquired; refuse the sticky unsafe state and a snapshot lost underneath
+        its owner; otherwise decide exactly as ``_refuse_uncommitted_reads``."""
+        if self._connection_unsafe:
+            raise RecordStoreConnectionUnsafe(
+                "connection is inside an unresolved transaction; its reads are "
+                "not committed durable state")
+        if self._read_snapshot_owned:
+            if self._transaction_resolved():
+                raise RecordStoreConnectionUnsafe(
+                    "the read snapshot ended before the read")
+            return
+        self._refuse_uncommitted_reads()
 
     # --- migration (additive, idempotent, forward + safe rollback) ----------
     @staticmethod
@@ -2246,7 +2265,7 @@ class SqliteRecordStore:
         ``ProjectNotFound``. IR-01: a connection inside an unresolved
         transaction refuses (``RecordStoreConnectionUnsafe``). Read-only;
         project-scoped; logs nothing."""
-        self._refuse_uncommitted_reads()
+        self._admit_snapshot_read()
         with self.read_snapshot():
             self._require_project(project_id)
             subsystems = self.load_project_subsystems(project_id)
@@ -2499,7 +2518,7 @@ class SqliteRecordStore:
         ``ProjectNotFound``. IR-01: a connection inside an unresolved
         transaction refuses (``RecordStoreConnectionUnsafe``). Read-only;
         project-scoped; logs nothing."""
-        self._refuse_uncommitted_reads()
+        self._admit_snapshot_read()
         with self.read_snapshot():
             self._require_project(project_id)
             events, _keys = self._validated_result_events(project_id)
@@ -2954,9 +2973,11 @@ class SqliteRecordStore:
         # mode (one consistent snapshot for every read inside) and RELEASE ends
         # it; nothing is ever written through it.
         self._conn.execute("SAVEPOINT need_routing_read_snapshot")
+        self._read_snapshot_owned = True
         try:
             yield
         finally:
+            self._read_snapshot_owned = False
             try:
                 self._conn.execute("RELEASE SAVEPOINT need_routing_read_snapshot")
             except sqlite3.OperationalError:
@@ -4380,7 +4401,7 @@ class SqliteRecordStore:
         its OWN uncommitted changes, which are not durable truth.
 
         Read-only; project-scoped (never reads another project); logs nothing."""
-        self._refuse_uncommitted_reads()
+        self._admit_snapshot_read()
         self._require_project(project_id)
         rows = self._conn.execute(
             "SELECT experiment_id, success_criterion FROM prototype_plan_metadata "
@@ -4423,7 +4444,7 @@ class SqliteRecordStore:
         left inside an unresolved transaction raises
         ``RecordStoreConnectionUnsafe`` instead of reading its own uncommitted
         changes. Read-only; project-scoped; logs nothing."""
-        self._refuse_uncommitted_reads()
+        self._admit_snapshot_read()
         self._require_project(project_id)
         rows = self._conn.execute(
             "SELECT experiment_id, measurement_method FROM prototype_measurement_methods "
@@ -4446,7 +4467,7 @@ class SqliteRecordStore:
         left inside an unresolved transaction raises
         ``RecordStoreConnectionUnsafe`` instead of reading its own uncommitted
         changes. Read-only; project-scoped; logs nothing."""
-        self._refuse_uncommitted_reads()
+        self._admit_snapshot_read()
         self._require_project(project_id)
         rows = self._conn.execute(
             "SELECT experiment_id, test_hypothesis FROM prototype_test_hypotheses "
@@ -4470,7 +4491,7 @@ class SqliteRecordStore:
         left inside an unresolved transaction raises
         ``RecordStoreConnectionUnsafe`` instead of reading its own uncommitted
         changes. Read-only; project-scoped; logs nothing."""
-        self._refuse_uncommitted_reads()
+        self._admit_snapshot_read()
         self._require_project(project_id)
         rows = self._conn.execute(
             "SELECT experiment_id, test_variable FROM prototype_test_variables "

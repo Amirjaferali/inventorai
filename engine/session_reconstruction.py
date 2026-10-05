@@ -70,7 +70,8 @@ from engine import need_routing
 from engine import progression_loop
 from engine.idea_state import (IdeaState, DISPOSITION_ANSWERED,
     DISPOSITION_RISK_ACCEPTED, OPEN, PARTIAL, ANCESTRY_ASSUMPTION_ORIGIN,
-    ANCESTRY_MALFORMED, classify_assumption_ancestry)
+    ANCESTRY_MALFORMED, classify_assumption_ancestry, MeasurementMethod,
+    SuccessCriterion, TestHypothesis, TestVariable)
 from engine.record_contract import ContractError
 from engine.record_store import ProjectNotFound
 
@@ -694,3 +695,60 @@ def _reconstruct(store, project_id: str):
         adoption_count=adoption_count,
         assumption_origin_outcomes=tuple(_assumption_outcomes),
     ), state
+
+
+# --- Stage 35 E2: durable Section-11 planning metadata ------------------------
+# Moved unchanged from the web layer (``_durable_*`` / ``_attach_planning_metadata``
+# in web/app.py, which stay as thin wrappers) so the disclosure export can load the
+# four collections inside its own read snapshot and classify a failure itself.
+# Planning metadata only: never a progression, replay or record-contract input.
+# Provenance is never stored: a durable row is the inventor's own value, so it is
+# re-derived as the existing truthful ``user_defined``.
+_PLANNING_COLLECTIONS = (
+    ("success_criteria", "load_success_criteria",
+     lambda text: SuccessCriterion(criterion=text)),
+    ("measurement_methods", "load_measurement_methods",
+     lambda text: MeasurementMethod(method=text)),
+    ("test_hypotheses", "load_test_hypotheses",
+     lambda text: TestHypothesis(hypothesis=text)),
+    ("test_variables", "load_test_variables",
+     lambda text: TestVariable(variable=text)),
+)
+
+
+def _load_planning_collection(store, project_id, concept):
+    """ONE collection as ``{experiment_id: carrier}`` (genuine absence -> ``{}``),
+    or ``None`` when the project does not exist. Every other failure RAISES."""
+    [(reader, build)] = [(r, b) for c, r, b in _PLANNING_COLLECTIONS if c == concept]
+    try:
+        rows = getattr(store, reader)(project_id)
+    except ProjectNotFound:
+        return None
+    return {eid: build(text) for eid, text in rows}
+
+
+def load_planning_metadata(store, project_id):
+    """All four planning collections of ``project_id``, keyed by concept, each
+    loaded before any is used (``None`` per collection only on
+    ``ProjectNotFound``; every other failure RAISES)."""
+    return {concept: _load_planning_collection(store, project_id, concept)
+            for concept, _reader, _build in _PLANNING_COLLECTIONS}
+
+
+def apply_planning_metadata(state, metadata):
+    """Assign already-loaded planning metadata to ``state``. Pure: a ``None``
+    collection leaves its carrier as it is."""
+    for concept, _reader, _build in _PLANNING_COLLECTIONS:
+        if metadata[concept] is not None:
+            setattr(state, concept, metadata[concept])
+
+
+def attach_planning_metadata(store, project_id, state):
+    """Load and apply with all-or-nothing semantics: any failure returns
+    ``False`` and leaves ``state`` untouched; success returns ``True``."""
+    try:
+        metadata = load_planning_metadata(store, project_id)
+    except Exception:
+        return False
+    apply_planning_metadata(state, metadata)
+    return True

@@ -776,6 +776,47 @@ _STAGE30_S1_ASSEMBLER_SUBSTITUTIONS = (
 )
 
 
+# Stage 35 — Structured Invention Disclosure Export — first bounded slice bounded pin
+# amendment (Owner implementation authorization; implementation contract §2.3 E1 and
+# E4: behaviour-preserving extractions only). The EXHAUSTIVE, ordered table of
+# additional replacements, applied AFTER the Stage 30 table; the guard still demands
+# byte-equality, so any other assembler change fails as before.
+# Previous behaviour: `_resolved_problem` and `_STATUS_LABELS` were private only.
+# New behaviour: a public `resolved_problem` (the same function; `_resolved_problem`
+# stays bound to it) and a public `gap_status_label` reading the unchanged dict. The
+# report, the PDF and the canonical package are unchanged.
+_STAGE35_S1_ASSEMBLER_SUBSTITUTIONS = (
+    (  # [1] E4
+        '    CLOSED: "Answered (not yet validated)", "ACCEPTED_RISK": "Accepted risk",\n'
+        '}\n'
+        '_RECOMMENDATION_A = {\n',
+        '    CLOSED: "Answered (not yet validated)", "ACCEPTED_RISK": "Accepted risk",\n'
+        '}\n'
+        '\n'
+        '\n'
+        'def gap_status_label(status):\n'
+        '    """Stage 35 E4: the canonical gap-status label of ``status`` (``None`` when\n'
+        '    it has none). Read-only over the unchanged ``_STATUS_LABELS``."""\n'
+        '    return _STATUS_LABELS.get(status)\n'
+        '\n'
+        '\n'
+        '_RECOMMENDATION_A = {\n'),
+    (  # [2] E1
+        'def _resolved_problem(state):\n',
+        'def resolved_problem(state):\n'),
+    (  # [3] E1
+        '    return None\n'
+        '\n'
+        'def _txt(ev):\n',
+        '    return None\n'
+        '\n'
+        '# Stage 35 E1: the existing private name stays bound to the public function.\n'
+        '_resolved_problem = resolved_problem\n'
+        '\n'
+        'def _txt(ev):\n'),
+)
+
+
 def test_a20_a21_dw_lane_and_assembler_untouched():
     import subprocess
     base = "f96c1900a0f5d0831a7654223ae4e008d4df961e"
@@ -829,6 +870,11 @@ def test_a20_a21_dw_lane_and_assembler_untouched():
     for _old, _new in _STAGE30_S1_ASSEMBLER_SUBSTITUTIONS:
         assert expected.count(_old) == 1, (
             "an authorized Stage 30 Slice 1 anchor is missing or no longer unique")
+        expected = expected.replace(_old, _new)
+    # Stage 35 first-slice bounded amendment (E1, E4): the same rule, applied after.
+    for _old, _new in _STAGE35_S1_ASSEMBLER_SUBSTITUTIONS:
+        assert expected.count(_old) == 1, (
+            "an authorized Stage 35 first-slice anchor is missing or no longer unique")
         expected = expected.replace(_old, _new)
     with open(os.path.join(root, "engine", "deliverable_assembler.py"),
               encoding="utf-8") as fh:

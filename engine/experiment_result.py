@@ -235,3 +235,22 @@ def result_chains(events, experiment_id=None):
             history.append(successor[history[-1].result_event_id])
         chains.append({"root": event, "head": history[-1], "history": history})
     return chains
+
+
+# Stage 35 E3 — the Stage-19 execution state of each CURRENT Section-11
+# experiment, moved unchanged from the web layer so the disclosure export uses
+# the same derivation. ``count`` is the number of execution ROOTS
+# (``result_chains``): a correction never adds one, an independent retest does.
+EXECUTION_NONE = "none"
+EXECUTION_RECORDED = "recorded"
+EXECUTION_UNAVAILABLE = "unavailable"
+
+
+def execution_states(events, experiment_ids):
+    """``{experiment_id: {"state": ..., "count": ...}}`` over an already-read,
+    validated Result history. Pure: it never reads a store and never swallows
+    a failure (a caller decides what an unreadable history means)."""
+    counts = {eid: len(result_chains(events, eid)) for eid in experiment_ids}
+    return {eid: ({"state": EXECUTION_RECORDED, "count": n} if n
+                  else {"state": EXECUTION_NONE, "count": 0})
+            for eid, n in counts.items()}

@@ -25,7 +25,7 @@ from engine import interface_observation as _interface_observation  # Stage 15 S
 from engine import cap12_form_mockup as _cap12  # Stage 24 / CAP-12 Form Mock-up Advisory Slice 1
 from engine import domain_activation
 from engine.idea_state import (
-    IdeaState, SuccessCriterion, MeasurementMethod, TestHypothesis, TestVariable,
+    IdeaState,
     CRITICALITY_FEASIBILITY_THREATENING, CRITICALITY_VALUE_ENHANCING,
     CRITICALITY_REFINEMENT, CRITICALITY_ACTION_CONFIRMED,
     CRITICALITY_ACTION_DEFERRED,
@@ -86,7 +86,7 @@ from engine.idea_state import (
 )
 from web.gap_labels import (
     GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE,
-    get_session_disclosure, friendly_gap_name,
+    get_session_disclosure, friendly_gap_name, GAP_DISPLAY_NAMES, GAP_DISPLAY_NAMES_AR,
 )
 from web import ui_text
 from web import observability as _obs
@@ -250,6 +250,10 @@ from engine.record_store import (
 # P10-D3a (established contract, PR #510): the canonical internal read/export
 # seam (P7-I1), consumed UNMODIFIED by the browser self-service export route.
 from engine import read_export_service as _read_export
+# Stage 35 — Structured Invention Disclosure Export — first bounded slice: the ONE
+# projection owner; the web layer only authorizes, renders and serves its result.
+from engine import disclosure_export as _disclosure
+from engine.deliverable_assembler import gap_status_label as _gap_status_label
 # P5-1 — Account & Credential Foundation (Phase 5, Option A). Additive account
 # persistence + pure credential helpers + a development email sink. NO login /
 # authenticated session / project ownership here (those are P5-2 / P5-3).
@@ -298,6 +302,8 @@ from engine.session_reconstruction import (
     SUPPORTED_PATH as _RECON_SUPPORTED_PATH,
     MAX_ACCEPTED_ANSWER_REPLAY as _RECON_MAX_ANSWER_REPLAY,
     reconstruct_readonly_state,
+    attach_planning_metadata,
+    _load_planning_collection,
     # Stage 20 closure: the ONE question-level routing exclusion and the ONE
     # effective-version resolution, shared with reconstruction.
     question_excluded_by_routing as _question_excluded_by_routing,
@@ -2069,12 +2075,9 @@ def _durable_success_criteria(sid):
     at all (a memory-only context, which has no durable sidecar). Provenance is
     never stored: a durable row is the inventor's own criterion, so it is
     re-derived as the existing truthful ``user_defined``. Storage failure and
-    corruption RAISE — they are never collapsed into an empty collection."""
-    try:
-        rows = _get_store().load_success_criteria(sid)
-    except _ProjectNotFound:
-        return None
-    return {eid: SuccessCriterion(criterion=text) for eid, text in rows}
+    corruption RAISE — they are never collapsed into an empty collection.
+    Stage 35 E2: a thin wrapper over the engine-level loader."""
+    return _load_planning_collection(_get_store(), sid, "success_criteria")
 
 
 def _durable_measurement_methods(sid):
@@ -2083,11 +2086,7 @@ def _durable_measurement_methods(sid):
     ``_durable_success_criteria`` (absence ``{}``, no durable project ``None``,
     storage failure / corruption RAISE). Provenance is re-derived as the
     truthful ``user_defined``."""
-    try:
-        rows = _get_store().load_measurement_methods(sid)
-    except _ProjectNotFound:
-        return None
-    return {eid: MeasurementMethod(method=text) for eid, text in rows}
+    return _load_planning_collection(_get_store(), sid, "measurement_methods")
 
 
 def _durable_test_hypotheses(sid):
@@ -2096,11 +2095,7 @@ def _durable_test_hypotheses(sid):
     ``_durable_measurement_methods`` (absence ``{}``, no durable project
     ``None``, storage failure / corruption RAISE). Provenance is re-derived as
     the truthful ``user_defined``."""
-    try:
-        rows = _get_store().load_test_hypotheses(sid)
-    except _ProjectNotFound:
-        return None
-    return {eid: TestHypothesis(hypothesis=text) for eid, text in rows}
+    return _load_planning_collection(_get_store(), sid, "test_hypotheses")
 
 
 def _durable_test_variables(sid):
@@ -2109,11 +2104,7 @@ def _durable_test_variables(sid):
     ``_durable_test_hypotheses`` (absence ``{}``, no durable project ``None``,
     storage failure / corruption RAISE). Provenance is re-derived as the
     truthful ``user_defined``."""
-    try:
-        rows = _get_store().load_test_variables(sid)
-    except _ProjectNotFound:
-        return None
-    return {eid: TestVariable(variable=text) for eid, text in rows}
+    return _load_planning_collection(_get_store(), sid, "test_variables")
 
 
 def _attach_planning_metadata(sid, state):
@@ -2124,23 +2115,13 @@ def _attach_planning_metadata(sid, state):
     assigned: on a storage failure or a corrupt row of any of them, it returns
     False and leaves ``state`` UNTOUCHED (never a partial or silently empty
     set), so every caller fails closed. A memory-only context (no durable
-    project) has nothing durable to attach and leaves the carrier as it is."""
+    project) has nothing durable to attach and leaves the carrier as it is.
+    Stage 35 E2: a thin wrapper over the engine-level seam."""
     try:
-        criteria = _durable_success_criteria(sid)
-        methods = _durable_measurement_methods(sid)
-        hypotheses = _durable_test_hypotheses(sid)
-        variables = _durable_test_variables(sid)
+        store = _get_store()
     except Exception:
         return False
-    if criteria is not None:
-        state.success_criteria = criteria
-    if methods is not None:
-        state.measurement_methods = methods
-    if hypotheses is not None:
-        state.test_hypotheses = hypotheses
-    if variables is not None:
-        state.test_variables = variables
-    return True
+    return attach_planning_metadata(store, sid, state)
 
 
 def _same_quantity_event(stored, quantity):
@@ -4122,6 +4103,140 @@ def account_project_export(project_id):
     )
     response.headers["Content-Disposition"] = (
         'attachment; filename="inventorai-project-%s-export.json"' % project_id)
+    return response
+
+
+# Stage 35 — Structured Invention Disclosure Export — first bounded slice
+# (implementation contract
+# ``docs/governance/STAGE35_DISCLOSURE_EXPORT_FIRST_SLICE_IMPLEMENTATION_CONTRACT.md``
+# §4, §10, §13). ONE pre-download page and TWO owner-private local downloads of
+# ONE project, for the signed-in durable owner only. The projection is composed by
+# ``engine.disclosure_export`` inside one store-owned read snapshot; these routes
+# only resolve the account, map the two failure classes and serve the result:
+# DENIAL -> the unchanged ``_deny_project()``; REFUSAL -> a bare, empty 503 (no
+# file, no partial output). Nothing is retained, cached, logged or mutated, and no
+# API, e-mail, provider or AI path exists.
+_DISCLOSURE_HTML_CSP = "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+_DISCLOSURE_PART_LABELS = {"mechanical": "UI_S15_SCOPE_MECH",
+                           "electronics_electrical": "UI_S15_SCOPE_ELEC",
+                           "control_loop": "UI_S15_SCOPE_CTRL"}
+# Neutral Source labels inside the downloaded document only (§12.7, C1); every
+# other provenance token keeps its existing CAP-11 ``UI_ED_SOURCE_*`` label.
+_DISCLOSURE_SOURCE_LABELS = {"OWNER_STATED": "UI_S35_SOURCE_OWNER_STATED",
+                             "user_defined": "UI_S35_SOURCE_USER_DEFINED",
+                             "source_stated": "UI_S35_SOURCE_SOURCE_STATED"}
+
+
+def _disclosure_document_html(document, lang):
+    """The self-contained HTML document for ONE finished disclosure document,
+    rendered from the projection and the locale only (§10). A label the
+    catalogue does not hold fails closed instead of rendering a key."""
+    lang = ui_text.normalize(lang)
+    content = document["content"]
+    index = {item["item_key"]: item for f in content["fields"] for item in f["items"]}
+    gap_names = GAP_DISPLAY_NAMES_AR if lang == "ar" else GAP_DISPLAY_NAMES
+
+    def label(key):
+        if not ui_text.has_string(key):
+            raise KeyError(key)
+        return ui_text.text(key, lang)
+
+    def heading(token):
+        return label("UI_B_DELIV_036" if token == "requirement_landscape"
+                     else "UI_S35_FIELD_" + token.upper())
+
+    def ref_label(ref):
+        token, number = ref.rsplit(".", 1)
+        return "%s (%s)" % (heading(token), number)
+
+    def source_label(token):
+        return label(_DISCLOSURE_SOURCE_LABELS.get(token, "UI_ED_SOURCE_%s" % token))
+
+    def gap_status(status):
+        value = _gap_status_label(status)
+        if value is None:
+            raise KeyError(status)
+        return value
+
+    template = app.jinja_env.get_template("disclosure_export_document.html")
+    return template.render(
+        doc=document, c=content, lang=lang, index=index, L=label, heading=heading,
+        ref_label=ref_label, source_label=source_label, gap_status=gap_status,
+        gap_name=lambda gap_type: gap_names[gap_type],
+        part_label=lambda domain: label(_DISCLOSURE_PART_LABELS[domain]))
+
+
+def _disclosure_document(project_id, export_format_version):
+    """``(document, None)`` for the signed-in owner, or ``(None, response)``:
+    the unchanged denial for every DENIAL, a bare empty 503 for every REFUSAL."""
+    account = _current_account()
+    if account is None:
+        return None, _deny_project()
+    try:
+        content = _disclosure.compose_disclosure_projection(
+            _get_store(), project_id, account["account_id"])
+    except _read_export.ProjectAccessDenied:
+        return None, _deny_project()
+    except Exception:
+        return None, app.response_class(status=503)
+    return _disclosure.export_document(
+        content, _disclosure.generated_at_now(), export_format_version), None
+
+
+def _disclosure_attachment(body, content_type, filename):
+    response = app.response_class(response=body, status=200, content_type=content_type)
+    response.headers["Content-Disposition"] = 'attachment; filename="%s"' % filename
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    return response
+
+
+@app.route("/account/projects/<project_id>/disclosure-export", methods=["GET"])
+def account_disclosure_export(project_id):
+    """The pre-download page: scope label, notices, the two download controls and
+    the retention statements. It composes nothing and records nothing (§13)."""
+    account = _current_account()
+    if account is None:
+        return _deny_project()
+    try:
+        _read_export.get_authorized_project_read(
+            _get_store(), project_id, account["account_id"])
+    except _read_export.ProjectAccessDenied:
+        return _deny_project()
+    except Exception:
+        return app.response_class(status=503)
+    return render_template(
+        "disclosure_export.html", scope_label=_disclosure.SCOPE_LABEL,
+        disclaimers=_disclosure.DISCLAIMERS,
+        json_url=url_for("account_disclosure_export_json", project_id=project_id),
+        html_url=url_for("account_disclosure_export_html", project_id=project_id))
+
+
+@app.route("/account/projects/<project_id>/disclosure-export/json", methods=["GET"])
+def account_disclosure_export_json(project_id):
+    document, failure = _disclosure_document(project_id, _disclosure.JSON_FORMAT_VERSION)
+    if failure is not None:
+        return failure
+    try:
+        body = _disclosure.serialize_json(document).encode("utf-8")
+    except Exception:
+        return app.response_class(status=503)
+    return _disclosure_attachment(body, "application/json; charset=utf-8",
+                                  _disclosure.JSON_FILE_NAME)
+
+
+@app.route("/account/projects/<project_id>/disclosure-export/html", methods=["GET"])
+def account_disclosure_export_html(project_id):
+    document, failure = _disclosure_document(project_id, _disclosure.HTML_FORMAT_VERSION)
+    if failure is not None:
+        return failure
+    try:
+        body = _disclosure_document_html(document, _current_ui_lang()).encode("utf-8")
+    except Exception:
+        return app.response_class(status=503)
+    response = _disclosure_attachment(body, "text/html; charset=utf-8",
+                                      _disclosure.HTML_FILE_NAME)
+    response.headers["Content-Security-Policy"] = _DISCLOSURE_HTML_CSP
     return response
 
 
@@ -12639,9 +12754,9 @@ def _results_view(sid, plan, drafts=None):
 # context or identifiers. ``count`` is the number of execution ROOTS
 # (``result_chains``): a correction never adds one, an independent retest does.
 # Nothing here compares, grades or interprets a result.
-_EXECUTION_NONE = "none"
-_EXECUTION_RECORDED = "recorded"
-_EXECUTION_UNAVAILABLE = "unavailable"
+_EXECUTION_NONE = _experiment_result.EXECUTION_NONE
+_EXECUTION_RECORDED = _experiment_result.EXECUTION_RECORDED
+_EXECUTION_UNAVAILABLE = _experiment_result.EXECUTION_UNAVAILABLE
 
 # The execution-state wording and the Section-11 advisory note are generated
 # substantive Deliverable content: under the current generated-output language
@@ -12674,12 +12789,9 @@ def _experiment_execution_states(sid, package):
         return {}
     try:
         events = _get_store().load_result_events(sid)
-        counts = {eid: len(_experiment_result.result_chains(events, eid)) for eid in ids}
+        return _experiment_result.execution_states(events, ids)
     except Exception:
         return {eid: {"state": _EXECUTION_UNAVAILABLE, "count": None} for eid in ids}
-    return {eid: ({"state": _EXECUTION_RECORDED, "count": n} if n
-                  else {"state": _EXECUTION_NONE, "count": 0})
-            for eid, n in counts.items()}
 
 
 def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None,

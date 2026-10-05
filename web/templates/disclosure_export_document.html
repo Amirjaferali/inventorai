@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="{{ lang }}" dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'none'; base-uri 'none'; form-action 'none'">
+<title>{{ L('UI_S35_ACCOUNT_LINK') }}</title>
+<style>
+body{margin:0 auto;max-width:860px;padding:16px;font-family:sans-serif;font-size:15px;line-height:1.5;color:#1f2a33;background:#fff;overflow-wrap:anywhere}
+h1{font-size:20px;margin:0 0 8px}
+h2{font-size:17px;margin:28px 0 8px;padding-top:8px;border-top:1px solid #cbd6df}
+h3{font-size:15px;margin:0 0 6px}
+.head{margin:0;font-size:13px}
+.head dt{font-weight:bold;margin-top:4px}
+.head dd{margin:0}
+.disclaimer{margin:8px 0;padding:8px 12px;border:1px solid #d9c9a3;background:#fdf8ec;border-radius:4px}
+.disclaimer p{margin:2px 0}
+.howto{margin:16px 0;padding:10px 14px;border:1px solid #cbd6df;border-radius:4px;background:#f5f8fa}
+.howto ul{margin:4px 0;padding-inline-start:20px}
+.unavailable-top{padding:8px 12px;border:1px solid #c98b8b;background:#fbeeee}
+.item{margin:10px 0;padding:10px 12px;border:1px solid #d4dde6;border-radius:6px}
+.slot{margin:6px 0}
+.slot-label,.class-label{margin:2px 0;font-size:13px;color:#4a5a68}
+.value{white-space:pre-wrap;overflow-wrap:anywhere;margin:2px 0;padding:4px 8px;border-inline-start:3px solid #9fb3c4}
+.value[data-content-class="QUOTED_INVENTOR_CONTENT"]{background:#f7f7f2}
+.env{margin:4px 0 0;font-size:12px;color:#4a5a68}
+.env .row{display:block;margin:1px 0}
+.env dt{display:inline;font-weight:bold}
+.env dd{display:inline;margin:0}
+.marker,.reason,.clarification,.ref,.note{margin:4px 0}
+.clarification{font-size:13px;color:#4a5a68}
+</style>
+</head>
+<body>
+{%- macro envelope(env) -%}
+<dl class="env">
+<div class="row" data-row="source"><dt>{{ L('UI_ED_SOURCE') }}:</dt> <dd>{% if env.provenance.marker == 'RECORDED' %}{{ source_label(env.provenance.value) }}{% elif env.provenance.marker == 'UNAVAILABLE' %}{{ L('UI_S35_MARKER_UNAVAILABLE') }}{% else %}{{ L('UI_S35_NA_SOURCE') }}{% endif %}</dd></div>
+<div class="row" data-row="validation"><dt>{{ L('UI_ED_VALIDATION') }}:</dt> <dd>{% if env.validation_state.marker == 'RECORDED' %}{{ L('UI_ED_VALIDATION_' ~ env.validation_state.value) }}{% elif env.validation_state.marker == 'UNAVAILABLE' %}{{ L('UI_S35_MARKER_UNAVAILABLE') }}{% else %}{{ L('UI_S35_NA_VALIDATION') }}{% endif %}</dd></div>
+<div class="row" data-row="limitation"><dd>{% if env.limitation.marker == 'UNAVAILABLE' %}{{ L('UI_S35_MARKER_UNAVAILABLE') }}{% else %}{{ L('UI_S35_NA_LIMITATION') }}{% endif %}</dd></div>
+{%- if env.currency.marker == 'RECORDED' %}
+<div class="row" data-row="currency"><dd>{{ L('UI_S35_CURRENT') if env.currency.value == 'CURRENT' else L('UI_S35_SUPERSEDED') }}</dd></div>
+{%- endif %}
+</dl>
+{%- endmacro -%}
+{%- macro marker(value) -%}
+<p class="marker" data-marker="{{ value.marker }}">{{ L('UI_S35_MARKER_' ~ value.marker) }}</p>
+{%- if value.reason %}<p class="reason">{{ L('UI_S35_REASON_' ~ value.reason) }}</p>{% endif -%}
+{%- endmacro -%}
+{%- macro slot(item, name, label=None) -%}
+{%- set v = item.slots[name] -%}
+<div class="slot" data-slot="{{ name }}"{% if v.marker == 'RECORDED' %} data-content-class="{{ v.content_class }}"{% endif %}>
+{%- if label %}<p class="slot-label">{{ label }}</p>{% endif %}
+{%- if v.marker == 'RECORDED' %}
+<p class="class-label">{{ L('UI_S35_QUOTED') if v.content_class == 'QUOTED_INVENTOR_CONTENT' else L('UI_S35_SYSTEM') }}</p>
+{%- if v.value is not none %}
+<div class="value" dir="auto" data-content-class="{{ v.content_class }}">{% if name == 'capture_limitation' %}<span lang="en" dir="ltr">{{ v.value }}</span>{% else %}{{ v.value }}{% endif %}</div>
+{%- endif %}
+{%- if caller is defined %}{{ caller() }}{% endif %}
+{{ envelope(v.envelope) }}
+{%- else %}
+{{ marker(v) }}
+{%- endif %}
+</div><!-- /slot -->
+{%- endmacro -%}
+{%- macro refs(item) -%}
+{%- for ref in item.refs %}
+<p class="ref">{{ L('UI_S35_REFERENCE') }} <a href="#{{ ref }}"><bdi>{{ ref_label(ref) }}</bdi></a></p>
+{%- endfor -%}
+{%- endmacro -%}
+{%- macro row_labels(item) -%}
+{%- for ref in item.refs %}<p class="note" dir="auto">{{ index[ref].slots.label.value }}</p>{% endfor -%}
+{%- endmacro -%}
+<header>
+<h1 class="scope" data-scope-label><span lang="en" dir="ltr">{{ c.scope_label.en }}</span>{% if lang == 'ar' %}<br><span>{{ c.scope_label.ar }}</span>{% endif %}</h1>
+<dl class="head">
+<dt>{{ L('UI_S35_SCHEMA_VERSION') }}</dt><dd><bdi>{{ doc.disclosure_schema_version }}</bdi></dd>
+<dt>{{ L('UI_S35_FORMAT_VERSION') }}</dt><dd><bdi>{{ doc.export_format_version }}</bdi></dd>
+<dt>{{ L('UI_S35_GENERATED') }}</dt><dd><bdi>{{ doc.generated_at }}</bdi></dd>
+<dt>{{ L('UI_S35_DIGEST') }}</dt><dd><bdi data-digest>{{ doc.content_digest }}</bdi></dd>
+</dl>
+</header>
+<section class="disclaimers">
+{%- for d in c.disclaimers %}
+<div class="disclaimer" data-disclaimer="{{ d.id }}"><p lang="en" dir="ltr">{{ d.en }}</p>{% if lang == 'ar' %}<p>{{ d.ar }}</p>{% endif %}</div>
+{%- endfor %}
+</section>
+{%- if c.unavailable_notice %}
+<p class="unavailable-top">{{ L('UI_S35_UNAVAILABLE_TOP') }}</p>
+{%- endif %}
+<section class="howto" id="how-to-read">
+<h2>{{ L('UI_S35_HOWTO_HEADING') }}</h2>
+<p>{{ L('UI_S35_HOWTO_SECTIONS') }}</p>
+<ul>
+<li>{{ L('UI_S35_HOWTO_QUOTED') }}</li>
+<li>{{ L('UI_S35_HOWTO_SYSTEM') }}</li>
+<li>{{ L('UI_S35_HOWTO_YOU') }}</li>
+<li>{{ L('UI_S35_HOWTO_ITEMS') }}</li>
+<li>{{ L('UI_S35_HOWTO_NOTHING_RECORDED') }}</li>
+<li>{{ L('UI_S35_HOWTO_NOT_CAPTURED') }}</li>
+<li>{{ L('UI_S35_HOWTO_RAW_TEXT_ONLY') }}</li>
+<li>{{ L('UI_S35_HOWTO_EXCLUDED_FROM_FIRST_SLICE') }}</li>
+<li>{{ L('UI_S35_HOWTO_NOT_APPLICABLE') }}</li>
+<li>{{ L('UI_S35_HOWTO_UNAVAILABLE') }}</li>
+</ul>
+</section>
+{%- for f in c.fields %}
+<section class="field" id="field-{{ f.field }}">
+<h2>{{ heading(f.field) }}</h2>
+{%- if f.field == 'risks' %}
+<p class="clarification">{{ L('UI_S35_RISKS_CLARIFICATION') }}</p>
+{%- endif %}
+{%- if f.marker == 'RECORDED' %}
+{%- for item in f['items'] %}
+<article class="item" id="{{ item.item_key }}" data-kind="{{ item.kind }}">
+{%- set kind = item.kind %}
+{%- if kind in ('resolved_problem', 'known_mechanism', 'assumption', 'acknowledged_unknown', 'correction_version') %}
+{{ slot(item, 'text') }}
+{%- if kind == 'resolved_problem' %}
+{{ slot(item, 'capture_limitation') }}
+{%- if lang == 'ar' %}<p class="note">{{ L('UI_S35_CAPTURE_LIMITATION') }}</p>{% endif %}
+{%- endif %}
+{%- if item.tokens.gap_type %}<p class="note">{{ gap_name(item.tokens.gap_type) }}</p>{% endif %}
+{{ refs(item) }}
+{%- elif kind == 'part' %}
+<h3>{{ part_label(item.tokens.part_domain) }}</h3>
+{{ slot(item, 'name') }}
+{{ slot(item, 'function', L('UI_S15_SCOPE_FUNCTION')) }}
+{%- elif kind == 'interface' %}
+{{ slot(item, 'description') }}
+{%- set dep = item.slots.dependency %}
+{%- call slot(item, 'dependency') %}
+{%- if dep.tokens.dependency_kind == 'one_way' %}
+<p class="note"><a href="#{{ dep.tokens.dependent_part }}">{{ part_label(index[dep.tokens.dependent_part].tokens.part_domain) }}</a> {{ L('UI_S15_DEP_RELIES_ON') }} <a href="#{{ dep.tokens.depends_on_part }}">{{ part_label(index[dep.tokens.depends_on_part].tokens.part_domain) }}</a></p>
+{%- else %}
+<p class="note">{{ L('UI_S15_DEP_MUTUAL') }}</p>
+{%- endif %}
+{%- endcall %}
+{{ slot(item, 'dependency_note') }}
+{{ refs(item) }}
+{%- elif kind == 'unresolved_gap' %}
+{%- set g = item.slots.gap_state.tokens %}
+{%- call slot(item, 'gap_state') %}<p class="note">{{ gap_name(g.gap_type) }} — {{ gap_status(g.gap_status) }}</p>{% endcall %}
+{%- elif kind in ('declared_contradiction', 'declared_contradiction_history') %}
+{%- call slot(item, 'declaration') %}{% if kind == 'declared_contradiction' %}{{ row_labels(item) }}{% else %}<p class="note">{{ L('UI_T3A_CONFLICT_INACTIVE') }}</p>{% endif %}{% endcall %}
+{{ slot(item, 'answer_a') }}
+{{ slot(item, 'answer_b') }}
+{{ refs(item) }}
+{%- elif kind == 'recorded_unknown' %}
+{%- call slot(item, 'unknown_disposition') %}{{ row_labels(item) }}<p class="note">{{ gap_name(item.slots.unknown_disposition.tokens.gap_type) }}</p>{% endcall %}
+{{ refs(item) }}
+{%- elif kind == 'routed_specialist_need' %}
+{%- call slot(item, 'routed_need') %}{{ row_labels(item) }}<p class="note">{{ gap_name(item.slots.routed_need.tokens.gap_type) }}</p>{% endcall %}
+{{ refs(item) }}
+{%- elif kind in ('gap_reference', 'evidence_reference') %}
+{%- if kind == 'evidence_reference' %}
+{{ slot(item, 'cap11_form', L('UI_ED_FORM')) }}
+{%- endif %}
+{%- set target = index[item.refs[0]] %}
+{{ refs(item) }}
+<div class="inherited" data-inherited-from="{{ item.refs[0] }}">
+{{ envelope(target.slots['gap_state' if kind == 'gap_reference' else 'text'].envelope) }}
+</div>
+{%- elif kind == 'experiment' %}
+{{ slot(item, 'title') }}
+{{ slot(item, 'objective', L('UI_B_DELIV_075')) }}
+{{ slot(item, 'what_to_observe', L('UI_B_DELIV_078')) }}
+{{ slot(item, 'success_criterion', L('UI_B_DELIV_080')) }}
+{{ slot(item, 'measurement_method', L('UI_DELIV_METHOD_ABSENT_LABEL')) }}
+{{ slot(item, 'test_hypothesis', L('UI_DELIV_HYPOTHESIS_ABSENT_LABEL')) }}
+{{ slot(item, 'test_variable', L('UI_DELIV_VARIABLE_ABSENT_LABEL')) }}
+{%- set ex = item.slots.execution_state.tokens %}
+{%- call slot(item, 'execution_state', L('UI_S11_EXECUTION_LABEL')) %}<p class="note">{% if ex.state == 'recorded' %}{{ L('UI_S35_EXECUTION_RECORDED') | replace('{n}', ex.count) }}{% else %}{{ L('UI_S35_EXECUTION_NONE') }}{% endif %}</p>{% endcall %}
+{%- elif kind == 'requirement' %}
+{%- for name in ('label', 'status', 'resolving_action', 'statement', 'answer_a', 'answer_b', 'part_a', 'part_b', 'description') %}
+{%- if name in item.slots %}
+{{ slot(item, name) }}
+{%- endif %}
+{%- endfor %}
+{{ refs(item) }}
+{%- elif kind == 'requirement_quantity' %}
+<p class="note">{{ L('UI_T2A_KIND_' ~ item.tokens.quantity_kind | upper) }}</p>
+{{ slot(item, 'value_text', L('UI_T2A_CURRENT') if item.tokens.active else L('UI_T2A_REPLACED')) }}
+{%- if not item.tokens.anchor_active %}
+<p class="note">{{ L('UI_T2A_WITHDRAWN_ANCHOR') }}</p>
+<p class="note">{{ L('UI_S35_WITHDRAWN_NOTE') }}</p>
+{%- endif %}
+{{ refs(item) }}
+{%- endif %}
+</article>
+{%- endfor %}
+{%- else %}
+<p class="marker" data-marker="{{ f.marker }}">{{ L('UI_S35_MARKER_' ~ f.marker) }}{% if f.pointer %} <a href="#field-{{ f.pointer }}">{{ heading(f.pointer) }}</a>{% endif %}</p>
+{%- if f.reason %}
+<p class="reason">{{ L('UI_S35_REASON_' ~ f.reason) }}</p>
+{%- endif %}
+{%- endif %}
+</section>
+{%- endfor %}
+</body>
+</html>
