@@ -1,13 +1,25 @@
-# STAGE 25 / CAP-13 — BOUNDED STIFFNESS METHOD CONTRACT (CANDIDATE)
+# STAGE 25 / CAP-13 — BOUNDED STIFFNESS METHOD CONTRACT (ACCEPTED)
 
-STATUS: CONTRACT CANDIDATE — DOCUMENTATION ONLY — NOT ACCEPTED — NO IMPLEMENTATION AUTHORIZED — STAGE 25 NOT ENTERED —
-CAP-13 NOT ACTIVATED.
+STATUS: ACCEPTED BOUNDED METHOD CONTRACT OF RECORD — DOCUMENTATION ONLY — NO IMPLEMENTATION AUTHORIZED — STAGE 25 NOT
+ENTERED — CAP-13 NOT ACTIVATED.
 AUTHORITY LEVEL: subordinate to the CAP-13 entry of the
 [Capability Enrichment Register](INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md) and to the accepted
 [shared deterministic calculation and units owner boundary contract](SHARED_DETERMINISTIC_CALCULATION_AND_UNITS_OWNER_BOUNDARY_CONTRACT.md)
 (the "calc/units contract"). It amends neither. Where this document and either of them differ, they win and the difference
 is a defect of this document.
 RECORDED: 2026-10-06, by Owner authorization of ONE documentation-only CAP-13 bounded method contract candidate.
+ACCEPTANCE: 2026-10-06, by Owner decision after one non-authoring Level-1 semantic / technical review and the targeted
+delta review returned B — DELTA PASS WITH NON-BLOCKING NOTES; recorded documentation-only. No technical or method clause
+(§§0–14) was changed by the acceptance; references in the body to "this candidate" read as this accepted contract. D-1,
+D-5 and D-7 remain OPEN, and `METHOD ADMISSION: BLOCKED UNTIL D-5 AND D-7 ARE CLOSED` stands. The review's non-blocking
+notes remain future-touch / future-UX considerations and do not change the accepted contract boundary. This acceptance
+does not enter Stage 25, does not activate CAP-13, does not admit the method to runtime execution, does not implement the
+calculation and units owner or authorize its first increment, authorizes no numerical result, no user-facing CAP-13 slice
+and no thickness recommendation, establishes no safety, strength or production suitability, and authorizes no
+deployment or release. `STAGE 25: NOT ENTERED` · `STAGE 25: NOT AUTHORIZED` · `CAP-13: NOT ACTIVATED` ·
+`ACTIVE CONTRACT: NONE` are unchanged.
+*(Superseded 2026-10-06 by the Owner's acceptance, preserved — was: "STATUS: CONTRACT CANDIDATE — DOCUMENTATION ONLY — NOT
+ACCEPTED — NO IMPLEMENTATION AUTHORIZED — STAGE 25 NOT ENTERED — CAP-13 NOT ACTIVATED."; the title read "(CANDIDATE)".)*
 BASE: `feature/atomic-json-session-persistence` at `3a65e91642b9669bd5e80f5ac78b00b60dcdd2f6`; `ACTIVE CONTRACT: NONE`;
 Stage 25 NOT ENTERED / NOT AUTHORIZED; CAP-13 NOT ACTIVATED; the Master Roadmap at 20 / 45 incomplete.
 BASIS: the Lead's read-only Stage-25 reassessment (blocked on source / IP: no qualified method / material source pair); a
