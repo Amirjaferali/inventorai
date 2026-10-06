@@ -488,7 +488,10 @@ def test_e41_only_stage_19_is_ticked_and_the_limits_are_preserved():
     # Stage 24 was ticked later by its own Owner-authorized closure (bounded CAP-12 Form Mock-up Advisory Slice 1 scope
     # only, no product change); Stage 25 stays NOT ENTERED and unticked
     assert re.search(r"^- \[x\] \*\*24 — ", roadmap, re.M)
-    for stage in (11, 13, 14, 16, 17, 25):
+    # Stage 16 was ticked later by its own Owner-authorized closure (bounded Technical + Integration
+    # evidence-sufficiency composition scope only), not by this one; Stages 13 and 14 stay PARTIAL / DEFERRED
+    assert re.search(r"^- \[x\] \*\*16 — ", roadmap, re.M)
+    for stage in (11, 13, 14, 17, 25):
         assert re.search(r"^- \[ \] \*\*%d — " % stage, roadmap, re.M), stage
     flat = re.sub(r"\s+", " ", roadmap)
     for limit in ("FULL CAP-09: NOT AUTHORIZED", "FULL WS-PFV-001: NOT AUTHORIZED",

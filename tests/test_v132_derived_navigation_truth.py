@@ -465,7 +465,8 @@ def test_stage_eighteen_is_complete_for_the_current_scope_and_routing_past_compl
                re.escape("`NO STAGE-20 IMPLEMENTATION AUTHORIZED BY STAGE-19 CLOSURE`"),
                re.escape("`STAGE 18: COMPLETE — CURRENT MECHANICAL + ELECTRICAL / ELECTRONICS SCOPE`"),
                re.escape("`NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE`"),
-               r"routing past Stages 11, 13, 14, 16 and 17 completes none of them",
+               # ROTATED at the Stage 16 closure: Stage 16 is COMPLETE for its bounded scope and no longer routed past
+               r"routing past Stages 11, 13, 14 and 17 completes none of them",
                r"`FIRST BOUNDED CAP-01 INCREMENT: OWNER-AUTHORIZED`",
                r"FULL CAP-01 / FULL STG:\s*NOT\s+AUTHORIZED",
                r"`D13 RESEARCH: REMAINS CLOSED`",
@@ -720,11 +721,27 @@ def test_stages_thirteen_to_sixteen_keep_their_own_dependencies():
                  r"IRL ownership is wholly absent",
                  r"ownership (is|remains) absent")
 
-        _needs(deps[16], path, "stage 16",
-               r"DEFERRED",
+        # ROTATED at the Stage 16 closure (2026-10-06): Stage 16 is COMPLETE for the current bounded Technical +
+        # Integration evidence-sufficiency composition scope only; its own dependencies stay recorded for any future
+        # level-based or validated SRL composition, which stays NOT AUTHORIZED; the DEFERRED status survives only in the
+        # superseded note, and Stages 13 and 14 above stay PARTIAL / DEFERRED.
+        live16 = _live_only(deps[16])
+        _needs(live16, path, "stage 16",
+               r"COMPLETE FOR THE CURRENT BOUNDED TECHNICAL \+ INTEGRATION EVIDENCE-SUFFICIENCY COMPOSITION SCOPE ONLY "
+               r"\(2026-10-06\)",
+               _tok(_S16_COMPLETE), _tok(_S16C_DELIVERED), _tok(_S16_SRL_NO),
                r"Stage 13 technical measurement",
                r"Stage 15 integration axis",
-               r"Stage 14 is relevant IF manufacturing participates")
+               r"independently visible and never aggregated",
+               r"PR #\d+",
+               r"Stage 14 is relevant IF manufacturing participates",
+               r"needs its own later evidence and authorization")
+        _rejects(live16, path, "stage 16",
+                 r"DEFERRED", r"PARTIAL", r"CAP-12", r"WS-PFV-001", r"Phase[- ]7",
+                 r"(?<!no )(?<!NO )\bSRL (?:level|score) (?:\d|is\b)", r"weakest[- ]axis (?:is|was) (?:computed|identified)")
+        assert re.search(r"\*\(Superseded 2026-10-06 by the Stage 16 closure, preserved so the change is visible rather "
+                         r"than silent: this block (?:read|recorded) [^)]*Stage 16 as (?:SRL-compatible composition )?"
+                         r"DEFERRED", _after_fence(path, "stages-13-16-dependencies")), path
 
 
 def test_the_d3_fk_hardening_note_survives_with_its_conditions():
@@ -1964,7 +1981,7 @@ def test_second_increment_status_is_merge_truth_and_the_none_contract_is_superse
     for retired in _S35_ACTIVE_ONLY:
         assert re.search(r"^" + re.escape(retired.strip("`")) + r"$", raw_checklist, re.M) is None, retired
     assert re.search(r"^ELECTRICAL / ELECTRONICS TECHNICAL DEEPENING SLICE 1: DELIVERED" + _DELIVERY_IDENTITY
-                     + "".join(r"\n" + re.escape(t.strip("`")) for t in _S36C_TOKENS)      # ROTATED at Stage 36
+                     + "".join(r"\n" + re.escape(t.strip("`")) for t in _S16C_TOKENS)      # ROTATED at Stage 16
                      + r"\nSTAGE 15 CLOSURE: DELIVERED"
                      + _DELIVERY_IDENTITY + r"\nSTAGE 15 SLICE 4: DELIVERED"
                      + _DELIVERY_IDENTITY + r"\nSTAGE 15 SLICE 3: DELIVERED"
@@ -2161,7 +2178,9 @@ _PRE_S19_NONE = (r"\*\*ACTIVE CONTRACT: NONE\.\*\* Both",
                  # AMENDED at the Stage 35 closure: the post-Stage-35-closure delivery fact counts as well
                  r"Stage[ -]35[ -]closure|"
                  # AMENDED at the Stage 36 closure: the post-Stage-36-closure delivery fact counts as well
-                 r"Stage[ -]36[ -]closure))")
+                 r"Stage[ -]36[ -]closure|"
+                 # AMENDED at the Stage 16 closure: the post-Stage-16-closure delivery fact counts as well
+                 r"Stage[ -]16[ -]closure))")
 
 
 _SLICE_02_LIVE_REVERSALS = (
@@ -4096,6 +4115,58 @@ _S36C_REVERSALS = (
     r"Stage 37\s+(?:is|was|has been)\s+(?:now\s+)?(?:ENTERED|COMPLETE|AUTHORIZED)\b",
     r"(?<!NO )STAGE-37 IMPLEMENTATION (?:IS )?AUTHORIZED",
     r"(?<!no )(?<!not )\bStage-37 (?:work|implementation) (?:is |was |has been )?(?:now )?authorized\b")
+# ADVANCED at the Stage 16 closure (2026-10-06): STAGE 16 — COMPLETE for the current bounded Technical + Integration
+# evidence-sufficiency composition scope ONLY (row 16 ticked for that scope only; 20 of 45 rows stay unticked), recorded
+# with no further product change after the Owner-authorized bounded presentation residual (the Technical-Row Focus-Scope
+# Disclosure) was delivered; ACTIVE CONTRACT stays NONE; Technical and Integration stay independently visible from their own
+# owners and nothing is aggregated; no SRL number or level, single score or weakest-axis computation exists or is
+# authorized; Stages 13 and 14 stay PARTIAL / DEFERRED; the MASTER ROADMAP SEQUENTIAL MARKER is unchanged. The
+# post-Stage-36-closure NONE and the "routing past … 16 and 17" wording survive only as history.
+_S16C_NAME = "Stage 16 — SRL-Compatible Composition — Closure"
+_S16_NAME = "Stage 16 — SRL-Compatible Composition — Technical-Row Focus-Scope Disclosure"
+_S16C_HEADING = "## Current authority — post-Stage-16-closure: no active contract (2026-10-06)"
+_S16C_DELIVERED = "`STAGE 16 CLOSURE: DELIVERED — NO FURTHER PRODUCT CHANGE REQUIRED`"
+_S16_COMPLETE = "`STAGE 16: COMPLETE — CURRENT BOUNDED TECHNICAL + INTEGRATION EVIDENCE-SUFFICIENCY COMPOSITION SCOPE ONLY`"
+_S16_DELIVERED = "`STAGE 16 — TECHNICAL-ROW FOCUS-SCOPE DISCLOSURE: DELIVERED`"
+_S16_SRL_NO = "`SRL LEVEL / SINGLE SCORE / WEAKEST-AXIS COMPUTATION: NOT AUTHORIZED`"
+_S13_14_PARTIAL = ("`STAGE 13: PARTIAL / DEFERRED`", "`STAGE 14: PARTIAL / DEFERRED`")
+_S16C_FACTS = (_S16C_DELIVERED, _S16_COMPLETE, _S16_DELIVERED, _S16_SRL_NO) + _S13_14_PARTIAL
+# The live token sequence, in surface order; the checklist's plain-text state block carries the same lines.
+_S16C_TOKENS = (_NONE718, _NEXT_INC_NO, _NEXT_STAGE_STEP) + _S16C_FACTS + _S36C_FACTS + _S35C_FACTS
+# After the Stage 16 closure a live surface may no longer carry the post-Stage-36-closure NONE heading, Stage 16 among
+# the stages routed past, the deferred Stage-16 dependency status or the "Stages 13–16 remain PARTIAL / OPEN" intro.
+_S16C_STALE = (r"NO ACTIVE CONTRACT — post-Stage-36-closure", r"\(post-Stage-36-closure;",
+               r"routing past Stages 11, 13, 14, 16 and 17", r"STAGE 16 — SRL-COMPATIBLE COMPOSITION: DEFERRED",
+               r"Stages 13[–-]16 remain PARTIAL / OPEN", r"Stage 16 is unchanged\.")
+# Stage 16 is COMPLETE for its current bounded Technical + Integration evidence-sufficiency composition scope ONLY: an
+# undone closure, an unscoped or global completion, an SRL number / level, single score or weakest-axis computation, or
+# Stage 13 / Stage 14 advanced beyond PARTIAL / DEFERRED is a reversal of the live truth.
+_S16C_REVERSALS = (
+    r"STAGE 16 CLOSURE: (?!DELIVERED — NO FURTHER PRODUCT CHANGE REQUIRED\b)",
+    r"STAGE 16: (?!COMPLETE — CURRENT BOUNDED TECHNICAL \+ INTEGRATION EVIDENCE-SUFFICIENCY COMPOSITION SCOPE ONLY\b)",
+    r"STAGE 16 — TECHNICAL-ROW FOCUS-SCOPE DISCLOSURE: (?!DELIVERED\b)",
+    r"SRL LEVEL / SINGLE SCORE / WEAKEST-AXIS COMPUTATION: (?!NOT AUTHORIZED\b)",
+    r"STAGE 1[34]: (?!PARTIAL / DEFERRED\b)",
+    r"Stage 16\s+(?:is|was|has been)\s+(?:now\s+)?(?:COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b"
+    r"(?!\s+(?:\(\d{4}-\d{2}-\d{2}\)\s+)?for\s+(?:the|its)\s+current\s+bounded\s+Technical\b)",
+    r"Stage 16\s+(?:is|was|has been)\s+(?:now\s+)?(?:fully|globally)\s+(?:COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b",
+    r"Stage 16 COMPLETE\b(?!\s+for\s+(?:the|its)\s+current\s+bounded\s+Technical\b)",
+    r"Stages? 1[34](?: and 1[34])?\s+(?:is|are|was|were|has been|have been)\s+(?:now\s+)?(?:COMPLETE|COMPLETED|CLOSED)\b",
+    r"(?<!no )(?<!not )(?<!No )\b(?:an? )?SRL (?:number|level|score) (?:is |was |has been )?(?:now )?"
+    r"(?:computed|calculated|assigned|authorized|implemented)\b",
+    r"(?<!no )(?<!not )\bweakest[- ]axis (?:calculation|computation) (?:is |was |has been )?(?:now )?"
+    r"(?:computed|implemented|authorized)\b",
+    r"(?<!NO )STAGE-16 (?:FURTHER )?IMPLEMENTATION (?:IS )?AUTHORIZED",
+    r"(?<!no )(?<!not )\bfurther Stage-16 (?:/ SRL )?(?:work|implementation) (?:is |was |has been )?(?:now )?"
+    r"authorized\b")
+
+
+def _any_pr(needle):
+    """A literal Stage-16 needle as a regex in which the placeholder "PR #N" stands for any PR number: Git / GitHub own
+    the PR identity, so the live text is never required to carry one particular number."""
+    return re.escape(needle).replace(re.escape("PR #N"), r"PR #\d+")
+
+
 # After the Stage 23 closure a live surface may no longer carry the pre-closure Stage-23 marker or NONE position.
 _S23C_STALE = (_tok(_S23_MARKER), r"CURRENT MASTER ROADMAP STAGE: Stage 23\b",
                r"Stage 23 NOT ENTERED — navigation only",
@@ -4505,9 +4576,14 @@ def test_post_718_no_active_contract_is_superseded_history():
     # ROTATED at the Stage 35 closure: the head opens with the live NONE again; the Stage 35 closure is the last bounded
     # closure and the Stage 24 closure precedes it
     # ADVANCED at the Stage 36 closure: the Stage 36 closure is the last bounded closure, the Stage 35 closure precedes it
+    # ADVANCED at the Stage 16 closure: the Stage 16 closure is the last bounded closure; the delivered Stage 16 residual
+    # and the Stage 36 closure precede it
     assert head.startswith("## Current authority " + _NONE_BOLD + " NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The "
-                           "last Owner-authorized bounded closure — " + _S36C_NAME + " — is DELIVERED with no product "
-                           "change required"), head[:260]
+                           "last Owner-authorized bounded closure — " + _S16C_NAME + " — is DELIVERED with no further "
+                           "product change required"), head[:260]
+    assert re.search(_any_pr("The preceding bounded increment — " + _S16_NAME + " — is DELIVERED (" + _S16_DELIVERED
+                             + "; PR #N;"), head)
+    assert ("The preceding bounded closure — " + _S36C_NAME + " — is DELIVERED with no product change required") in head
     assert ("The preceding bounded closure — " + _S35C_NAME + " — is DELIVERED with no product change required") in head
     assert ("The preceding bounded closure — Stage 24 — CAP-12 Form Mock-up Advisory — Closure — is "
             "DELIVERED with no product change required") in head
@@ -4632,7 +4708,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ROTATED at the Stage 35 closure: the live section is the post-Stage-35-closure NONE declaration; the closure record
     # and the Stage 35 slice section (with its pre-merge note) follow it as preserved history
     # ROTATED at the Stage 36 closure: the live section is the post-Stage-36-closure NONE declaration
-    assert heading == _S36C_HEADING, heading
+    # ROTATED at the Stage 16 closure: the live section is the post-Stage-16-closure NONE declaration
+    assert heading == _S16C_HEADING, heading
     assert "SUPERSEDED" not in heading and "DELIVERED" not in heading, heading
     top = _live_only(_current_declaration(contract))
     assert re.findall(_ACTIVE_BOLD, top) == ["NONE"], re.findall(_ACTIVE_BOLD, top)
@@ -4647,7 +4724,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     assert ("## Current authority — " + _S36C_NAME + " (Owner authorization, 2026-10-05) — DELIVERED; SUPERSEDED as "
             "current authority by the post-Stage-36-closure no-active-contract declaration") in contract
     assert (_S35C_HEADING + " — SUPERSEDED (2026-10-05) by " + _S36C_NAME) in contract
+    # ADVANCED at the Stage 16 closure: its closure record and the superseded post-Stage-36-closure NONE lead history; the
+    # delivered Stage 16 residual carried no contract section of its own (a Lead-accepted governance deviation)
+    assert ("## Current authority — " + _S16C_NAME + " (Owner authorization, 2026-10-06) — DELIVERED; SUPERSEDED as "
+            "current authority by the post-Stage-16-closure no-active-contract declaration") in contract
+    assert (_S36C_HEADING + " — SUPERSEDED (2026-10-06) by " + _S16C_NAME) in contract
     order = [contract.index('<a id="current-authority--' + anchor + '"></a>') for anchor in (
+        "post-stage16-closure-no-active-contract", "stage16-srl-composition-closure",
         "post-stage36-closure-no-active-contract", "stage36-cap15-cap17-closure",
         "post-stage35-closure-no-active-contract", "stage35-disclosure-export-closure",
         "stage35-disclosure-export-first-slice", "post-stage24-closure-no-active-contract")]
@@ -4657,8 +4740,26 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at the Stage 35 closure: the Stage 35 closure is the last bounded closure, the delivered first
            # bounded slice the preceding increment and the Stage 24 closure the preceding closure
            # ADVANCED at the Stage 36 closure: the Stage 36 closure is the last bounded closure, Stage 35's precedes it
-           r"Stage 36 — CAP-15 \+ CAP-17\s+— Closure, the last Owner-authorized bounded closure, is DELIVERED with no "
-           r"product change required\b",
+           # ADVANCED at the Stage 16 closure: the Stage 16 closure is the last bounded closure; the delivered Stage 16
+           # residual and the Stage 36 closure precede it
+           r"Stage 16 — SRL-Compatible Composition\s+— Closure, the last Owner-authorized bounded closure, is DELIVERED "
+           r"with no further product change required\b",
+           r"Stage 16 is COMPLETE for the current bounded Technical \+ Integration evidence-sufficiency composition scope "
+           r"ONLY and its checkbox is ticked for that scope only; \"without hiding the weakest material axis\" is "
+           r"satisfied in that bounded scope by independent visible source truth and the explicit focus-scope "
+           r"disclosure, and no weakest axis is computed;",
+           r"each from its own canonical owner, independently visible and never aggregated",
+           r"Stage 13 and Stage 14 stay PARTIAL / DEFERRED",
+           re.escape(_S16_NAME) + r", the preceding Owner-authorized bounded increment, is DELIVERED \(PR #\d+;",
+           r"\*\*STAGE 16 CLOSURE\*\* \| " + _tok(_S16C_DELIVERED) + r" — a current-truth closure after the delivered "
+           r"bounded presentation residual",
+           r"\*\*STAGE 16\*\* \| " + _tok(_S16_COMPLETE) + r"; its checkbox is TICKED for that scope only",
+           r"\*\*STAGE 16 PRESENTATION RESIDUAL\*\* \| " + _tok(_S16_DELIVERED) + r" — PR #\d+",
+           r"\*\*STAGE 16 NOT AUTHORIZED\*\* \| " + _tok(_S16_SRL_NO),
+           r"\*\*STAGES 13 / 14\*\* \| " + _tok(_S13_14_PARTIAL[0]) + r" · " + _tok(_S13_14_PARTIAL[1]),
+           *(_tok(t) for t in _S16C_FACTS),
+           r"Stage 36 — CAP-15 \+ CAP-17\s+— Closure, the preceding Owner-authorized bounded closure, is DELIVERED with "
+           r"no product change required\b",
            r"Stage 36 is COMPLETE for the current no-live-AI / provider scope ONLY and its checkbox is ticked for that "
            r"scope only; no production live AI / provider selection exists and none is active",
            r"CAP-15 / CAP-17 stay RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION; the External Engineering Tools "
@@ -4690,12 +4791,15 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            r"\*\*STAGE 35 NOT AUTHORIZED\*\* \| " + _tok(_S35_LIMITS[0]),
            r"\*\*STAGE 35 PRESERVED TRIGGERS\*\* \| " + _tok(_S35_TRIGGERS),
            r"\*\*NEXT STEP\*\* \| LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — READ-ONLY",
-           # ROTATED at the Stage 36 closure
-           r"it pre-authorizes no later Stage-35 slice, no CAP-15 / CAP-17 implementation, no live AI / provider "
-           r"selection, no External Engineering Tools activation, no Stage-37 work,",
+           # ROTATED at the Stage 36 closure; ADVANCED at the Stage 16 closure (no further Stage-16 / SRL work)
+           r"it pre-authorizes no further Stage-16 / SRL work, no later Stage-35 slice, no CAP-15 / CAP-17 "
+           r"implementation, no live AI / provider selection, no External Engineering Tools activation, no Stage-37 "
+           r"work,",
            r"The only product increment authorized after it was the Stage 35 first bounded slice \(above\), completed "
            r"for that bounded scope by the Stage 35 closure \(above\), and the Stage 36 closure \(above\) then "
-           r"completed Stage 36 for its current no-live-AI / provider scope only; no subsequent product increment has "
+           r"completed Stage 36 for its current no-live-AI / provider scope only; the only product increment authorized "
+           r"after that closure was the Stage 16 bounded presentation residual \(above\), delivered by PR #\d+ and "
+           r"completed for its bounded scope by the Stage 16 closure \(above\); no subsequent product increment has "
            r"been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
@@ -4769,7 +4873,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            r"checkbox is TICKED for that scope only",
            r"full future CAP-01 \(typed parameters, calculations, specialist mapping, further domains\) stays NOT "
            r"AUTHORIZED", r"MSNL stays FUTURE / DEFERRED / NOT ACTIVATED",
-           r"routing past Stages 11, 13, 14, 16 and 17 completes none of them",
+           # ROTATED at the Stage 16 closure: Stage 16 is COMPLETE for its bounded scope and no longer routed past
+           r"routing past Stages 11, 13, 14 and 17 completes none of them",
            r"\*\*STAGE 15\*\* \| `STAGE 15: COMPLETE — CURRENT MECHANICAL \+ ELECTRICAL / ELECTRONICS SCOPE`; its "
            r"checkbox is TICKED for that scope only",
            r"another Stage-15 slice is NOT AUTHORIZED", r"D4 stays the future compatibility gate",
@@ -4787,10 +4892,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            _tok(_S15_COMPLETE), *(_tok(t) for t in _S15C_NOT + _S2_NOT))
     _rejects(top, CONTRACT, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
              *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE, *_S24C_STALE, *_S24CL_STALE, *_S35C_STALE,
-             *_S35C_REVERSALS, *_S36C_STALE, *_S36C_REVERSALS)
+             *_S35C_REVERSALS, *_S36C_STALE, *_S36C_REVERSALS,
+             *_S16C_STALE, *_S16C_REVERSALS)
     for path, block in _live_surfaces():
         _needs(block, path, "live none", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP),
-               *(_tok(t) for t in _S35C_FACTS), *(_tok(t) for t in _S36C_FACTS),
+               *(_tok(t) for t in _S35C_FACTS), *(_tok(t) for t in _S36C_FACTS), *(_tok(t) for t in _S16C_FACTS),
                _tok(_S23C_DELIVERED), _tok(_S23_COMPLETE), *(_tok(t) for t in _S23_LIMITS),
                _tok(_S25_MARKER), _tok(_NO_S25), _tok(_S24C_DELIVERED), _tok(_S24_COMPLETE), _tok(_S24_DELIVERED),
                *(_tok(t) for t in _S24C_LIMITS),
@@ -4856,7 +4962,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"Stage\s+15\s+Slice\s+1\s+\(delivered\)\.")
         _rejects(_live_only(block), path, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE,
                  *_S19C_STALE, *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE, *_S24C_STALE,
-                 *_S24CL_STALE, *_S35C_STALE, *_S35C_REVERSALS, *_S36C_STALE, *_S36C_REVERSALS)
+                 *_S24CL_STALE, *_S35C_STALE, *_S35C_REVERSALS, *_S36C_STALE, *_S36C_REVERSALS,
+                 *_S16C_STALE, *_S16C_REVERSALS)
     for path, routing in _surfaces("current-routing"):
         _needs(routing, path, "live routing",
                # AMENDED at the delivered CAP-12 Form Mock-up Advisory Slice 1: Stage 24 ENTERED / PARTIAL for it only;
@@ -4878,7 +4985,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"scope \(its checkbox is ticked for that scope only\)",
                r"Stage 18 — D13 / CAP-01 structured technical guidance — is COMPLETE for the current Mechanical \+ "
                r"Electrical / Electronics scope \(its checkbox is ticked for that scope only\)",
-               r"routing past Stages 11, 13, 14, 16 and 17 completes none of them",
+               # ROTATED at the Stage 16 closure: Stage 16 is COMPLETE for its bounded scope, so it is no longer routed past
+               r"routing past Stages 11, 13, 14 and 17 completes none of them",
                # ADVANCED at the Stage 30 closure: the head now also names Stage 30 COMPLETE for its bounded scope
                # ADVANCED at the Stage 28 part-only enablement: the head also names the part-only enablement
                # ADVANCED at the Stage 23 closure: the head now leads with Stage 23 COMPLETE for its bounded scope
@@ -4888,11 +4996,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # ROTATED at the Stage 35 closure: the head is NO ACTIVE CONTRACT again and leads with Stage 35 COMPLETE
                # for its bounded first-slice scope
                # ADVANCED at the Stage 36 closure: the head leads with Stage 36 COMPLETE for its bounded scope
-               r"\*\*NO ACTIVE CONTRACT — post-Stage-36-closure \(2026-10-05\); Stage 36 COMPLETE for the current "
-               r"no-live-AI / provider scope only; Stage 35 COMPLETE for the current "
+               # ADVANCED at the Stage 16 closure: the head leads with Stage 16 COMPLETE for its bounded scope
+               r"\*\*NO ACTIVE CONTRACT — post-Stage-16-closure \(2026-10-06\); Stage 16 COMPLETE for the current "
+               r"bounded Technical \+ Integration evidence-sufficiency composition scope only; Stage 36 COMPLETE for the "
+               r"current no-live-AI / provider scope only; Stage 35 COMPLETE for the current "
                r"bounded first-slice scope only; Stage 24 COMPLETE for the current bounded CAP-12 Form Mock-up Advisory "
                r"Slice 1 scope only; Stage 23 COMPLETE for the current bounded four-axis Readiness Snapshot scope only;",
-               r"\*\*NO ACTIVE CONTRACT — [^*]{0,600}; Stage 22 COMPLETE for the current bounded "
+               # WIDENED at the Stage 16 closure (length only): the head now also leads with the Stage 16 clause
+               r"\*\*NO ACTIVE CONTRACT — [^*]{0,800}; Stage 22 COMPLETE for the current bounded "
                r"decision trace \+ "
                r"decision room scope; Stage 21 COMPLETE for the current Owner-declared contradiction "
                r"scope; Stage 20 COMPLETE for the current Owner-declared assumption scope; Stage 19 COMPLETE for the "
@@ -4913,7 +5024,16 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # delivered first bounded slice precedes it and the Stage 24 closure follows
                # ADVANCED at the Stage 36 closure: no product increment is authorized after the Stage 36 closure; the
                # Stage 35 closure, whose Stage-36 statement is now history, precedes it
-               r"No product increment is authorized after " + re.escape(_S36C_NAME) + r" \(delivered: Stage 36 is "
+               # ADVANCED at the Stage 16 closure: no product increment is authorized after the Stage 16 closure; the
+               # delivered Stage 16 residual and the Stage 36 closure precede it
+               r"No product increment is authorized after " + re.escape(_S16C_NAME) + r" \(delivered: Stage 16 is "
+               r"COMPLETE for the current bounded Technical \+ Integration evidence-sufficiency composition scope only "
+               r"with no further product change — closure gap NONE after the delivered bounded presentation residual: "
+               r"[^)]*\(s\); no single score, weighting, composite, overall readiness result, weakest-axis calculation, SRL "
+               r"number or level, engineering compatibility conclusion or validated system-readiness conclusion; Stage "
+               r"13 and Stage 14 stay PARTIAL / DEFERRED\) or after the preceding " + re.escape(_S16_NAME)
+               + r" \(delivered by PR #\d+: ONE Owner-authorized bounded presentation-only residual[^)]*\(s\)[^)]*\) or "
+               r"after the preceding " + re.escape(_S36C_NAME) + r" \(delivered: Stage 36 is "
                r"COMPLETE for the current no-live-AI / provider scope only with no product change — closure gap NONE: "
                r"[^)]*; Stage 37 stays NOT ENTERED and NOT AUTHORIZED\) or after the preceding " + re.escape(_S35C_NAME)
                + r" \(delivered: Stage 35 is "
@@ -4944,13 +5064,22 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # ROTATED at the Stage 35 closure: the next step is the Lead-controlled reassessment again
                r"The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT: read-only planning / selection "
                r"over live repository and product evidence until the Owner separately authorizes another product "
-               r"increment\. It pre-authorizes no later Stage-35 slice, no CAP-15 / CAP-17 implementation, no live AI / "
-               r"provider selection, no External Engineering Tools activation, no Stage-37 work,",      # ROTATED at 36
+               r"increment\. It pre-authorizes no further Stage-16 / SRL work, no later Stage-35 slice, no CAP-15 / CAP-17 "
+               r"implementation, no live AI / provider selection, no External Engineering Tools activation, no Stage-37 "
+               r"work,",      # ROTATED at 36; ADVANCED at the Stage 16 closure
                r"the legal-adviser review of the disclaimer wording before any user release and the release triggers "
                r"stay preserved",
                r"Stage 25 or any other Stage is complete or entered \(Stage 24 is COMPLETE for its current bounded "
                r"CAP-12 Form Mock-up Advisory Slice 1 scope only; Stage 35 is COMPLETE for its current bounded "
-               r"first-slice scope only; Stage 36 is COMPLETE for its current no-live-AI / provider scope only\)",
+               r"first-slice scope only; Stage 36 is COMPLETE for its current no-live-AI / provider scope only; Stage 16 is "
+               r"COMPLETE for its current bounded Technical \+ Integration evidence-sufficiency composition scope only\)",
+               # ADDED at the Stage 16 closure: its closure record and the delivered residual lead the delivered list
+               r"\*\*DELIVERED — Stage 16 / SRL-Compatible Composition — Closure \(completes Stage 16 for the current "
+               r"bounded Technical \+ Integration evidence-sufficiency composition scope ONLY with no further product "
+               r"change; no SRL level, score or weakest-axis computation; Stages 13 and 14 stay PARTIAL / DEFERRED",
+               r"\*\*DELIVERED — Stage 16 / SRL-Compatible Composition — Technical-Row Focus-Scope Disclosure \(PR #\d+; "
+               r"ONE Owner-authorized bounded presentation-only residual; it entered no other Stage\):\*\* "
+               + _tok(_S16_DELIVERED),
                r"\*\*DELIVERED — Stage 36 / CAP-15 \+ CAP-17 — Closure \(completes Stage 36 for the current no-live-AI "
                r"/ provider scope ONLY with no product change",
                r"\*\*DELIVERED — Stage 35 / Structured Invention Disclosure Export — Closure \(completes Stage 35 for "
@@ -4969,8 +5098,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
         # ROTATED at the Stage 35 closure: the NO ACTIVE CONTRACT head is live again; no active-increment head
         # survives, and the two Stage-35 delivered records lead the delivered list
         # ADVANCED at the Stage 36 closure: the Stage 36 closure record leads them
+        # ADVANCED at the Stage 16 closure: the Stage 16 closure record and the delivered residual lead them
         assert marker < routing.index("**NO ACTIVE CONTRACT — "), path
         assert "**ACTIVE BOUNDED PRODUCT INCREMENT — " not in _live_only(routing), path
+        assert routing.index("**DELIVERED — Stage 16 / SRL-Compatible Composition — Closure") < routing.index(
+            "**DELIVERED — Stage 16 / SRL-Compatible Composition — Technical-Row Focus-Scope Disclosure"), path
+        assert routing.index("**DELIVERED — Stage 16 / SRL-Compatible Composition — Technical-Row Focus-Scope "
+                             "Disclosure") < routing.index("**DELIVERED — Stage 36 / CAP-15 + CAP-17 — Closure"), path
         assert routing.index("**DELIVERED — Stage 36 / CAP-15 + CAP-17 — Closure") < routing.index(
             "**DELIVERED — Stage 35 / Structured Invention Disclosure Export — Closure"), path
         assert routing.index("**DELIVERED — Stage 35 / Structured Invention Disclosure Export — Closure") < routing.index(
@@ -4993,6 +5127,15 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             "**DELIVERED — Stage 15 / Integration Evidence"), path
     for path in (ROADMAP, CHECKLIST, CONTRACT):
         after = _after_fence(path, "current-routing")
+        # ADVANCED at the Stage 16 closure: the post-Stage-36-closure NONE routing is preserved history
+        assert ("*(Superseded 2026-10-06 by " + _S16C_NAME + ", preserved so the change is visible rather than silent: "
+                "the current routing read \"**NO ACTIVE CONTRACT — post-Stage-36-closure (2026-10-05); Stage 36 "
+                "COMPLETE for the current no-live-AI / provider scope only; …:** " + _NONE718 + " · " + _NEXT_INC_NO + " · "
+                + _NEXT_STAGE_STEP + " · " + _S36C_DELIVERED + " · …\"") in after, path
+        assert re.search(_any_pr("\"… routing past Stages 11, 13, 14, 16 and 17 completes none of them\", with Stage 16 "
+                                 "unticked and recorded as DEFERRED. That was true until the Owner authorized the Stage "
+                                 "16 bounded presentation residual (delivered by PR #N) and the Stage 16 closure.)*"),
+                         after), path
         # ADVANCED at the Stage 36 closure: the post-Stage-35-closure NONE routing is preserved history
         assert ("*(Superseded 2026-10-05 by " + _S36C_NAME + ", preserved so the change is visible rather than silent: "
                 "the current routing read \"**NO ACTIVE CONTRACT — post-Stage-35-closure (2026-10-05); Stage 35 "
@@ -5065,10 +5208,19 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ROTATED at the Stage 35 first bounded slice: the current position named the active Stage-35 increment
     # ROTATED at the Stage 35 closure: the current position is NONE again, post-Stage-35-closure
     # ADVANCED at the Stage 36 closure: the current position is post-Stage-36-closure; the Stage 35 closure follows it
+    # ADVANCED at the Stage 16 closure: the current position is post-Stage-16-closure; the delivered Stage 16 residual and
+    # the Stage 36 closure follow it
     assert re.match(r" \*\*Current position \([^)]{0,40}\): `ACTIVE CONTRACT: NONE` — no product increment is "
-                    r"currently authorized \(post-Stage-36-closure; " + re.escape(_S36C_NAME) + r" — delivered with no "
-                    r"product change required: Stage 36 is COMPLETE for the current no-live-AI / provider scope only, "
-                    r"checkbox ticked for that scope only", state)
+                    r"currently authorized \(post-Stage-16-closure; " + re.escape(_S16C_NAME) + r" — delivered with no "
+                    r"further product change required: Stage 16 is COMPLETE for the current bounded Technical \+ "
+                    r"Integration evidence-sufficiency composition scope only, checkbox ticked for that scope only", state)
+    for needle in ("Stage 13 and Stage 14 stay PARTIAL / DEFERRED; no Stage-16 SRL engine and no level-based SRL work is "
+                   "authorized; " + _S16_NAME + " — delivered (PR #N): ONE Owner-authorized bounded presentation-only "
+                   "residual",
+                   "no engine, owner, composer, persistence, schema, score or SRL level; " + _S36C_NAME + " — delivered "
+                   "with no product change required: Stage 36 is COMPLETE for the current no-live-AI / provider scope "
+                   "only, checkbox ticked for that scope only"):
+        assert re.search(_any_pr(needle), state), needle
     # ADVANCED at Stage 28 Qualification Slices 1 and 2: the current position is post-Slice-2; the Stage-22 facts follow
     # it (split around the owner name so these governance needles never read as control-loop idea text)
     # ADVANCED at Stage 28 Optional Part Slice 1: the current position is post-Optional-Part-Slice-1
@@ -5137,11 +5289,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "IMPLEMENTATION AUTHORIZED BY STAGE-24 CLOSURE; Stage 25 / CAP-13 stays NOT ENTERED and NOT "
                    "AUTHORIZED; Stage 24 / CAP-12 was entered only by the separately Owner-authorized, delivered Form "
                    "Mock-up Advisory Slice 1 and completed for that bounded scope only by the Stage 24 closure; full "
-                   "CAP-12 NOT AUTHORIZED; routing past Stages 11, 13, 14, 16 and 17 completes none of them)",
+                   # ROTATED at the Stage 16 closure: Stage 16 is no longer routed past
+                   "CAP-12 NOT AUTHORIZED; routing past Stages 11, 13, 14 and 17 completes none of them)",
                    "next step: a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — read-only planning / selection "
-                   "until the Owner separately authorizes another product increment (no later Stage-35 slice, no "
-                   "CAP-15 / CAP-17 implementation, no Stage-37 work and no further Stage-24 / CAP-12 slice is "
-                   "authorized)",
+                   # ADVANCED at the Stage 16 closure: no further Stage-16 / SRL work is authorized either
+                   "until the Owner separately authorizes another product increment (no further Stage-16 / SRL work, "
+                   "no later Stage-35 slice, no CAP-15 / CAP-17 implementation, no Stage-37 work and no further "
+                   "Stage-24 / CAP-12 slice is authorized)",
                    "Stage 18 — D13 / CAP-01 — stays COMPLETE for the current Mechanical + Electrical / Electronics "
                    "scope only (Gap-Scoped Technical Next-Step Guidance — Closure — delivered; MSNL stays FUTURE / "
                    "DEFERRED / NOT ACTIVATED",
@@ -5161,6 +5315,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "Stage 18 is now **COMPLETE for the current Mechanical + Electrical / Electronics scope**"):
         assert needle in state, needle
     after = _after_fence(STATE, "current-position")
+    # ADVANCED at the Stage 16 closure: the post-Stage-36-closure NONE position is preserved history
+    assert ("*(Superseded 2026-10-06 by " + _S16C_NAME + ", preserved so the change is visible rather than silent: the "
+            "current-position entry read \"`ACTIVE CONTRACT: NONE` — no product increment is currently authorized "
+            "(post-Stage-36-closure; " + _S36C_NAME + " — delivered with no product change required: …)\" with \"… "
+            "routing past Stages 11, 13, 14, 16 and 17 completes none of them …\" and Stage 16 then unticked.") in after
+    assert re.search(_any_pr("That was true until the Owner authorized the Stage 16 bounded presentation residual "
+                             "(delivered by PR #N) and the Stage 16 closure.)*"), after)
     # ADVANCED at the Stage 36 closure: the post-Stage-35-closure NONE position is preserved history
     assert ("*(Superseded 2026-10-05 by " + _S36C_NAME + ", preserved so the change is visible rather than silent: the "
             "current-position entry read \"`ACTIVE CONTRACT: NONE` — no product increment is currently authorized "
@@ -5225,9 +5386,19 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # closure, the delivered first bounded slice as the preceding increment and the Stage 24 closure before it
     # ADVANCED at the Stage 36 closure: the Stage 36 closure is the last bounded closure; the Stage 35 closure, the
     # delivered first bounded slice and the Stage 24 closure precede it
+    # ADVANCED at the Stage 16 closure: the Stage 16 closure is the last bounded closure; the delivered Stage 16 residual,
+    # the Stage 36 closure, the Stage 35 closure and the earlier closures precede it
     assert head.startswith("## Current authority " + _NONE_BOLD + " NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The "
-                           "last Owner-authorized bounded closure — " + _S36C_NAME + " — is DELIVERED with no product "
-                           "change required, completing Stage 36 for the current no-live-AI / provider scope ONLY")
+                           "last Owner-authorized bounded closure — " + _S16C_NAME + " — is DELIVERED with no further "
+                           "product change required, completing Stage 16 for the current bounded Technical + Integration "
+                           "evidence-sufficiency composition scope ONLY (" + "; ".join(_S16C_FACTS) + "; Git / GitHub own "
+                           "its PR, merge and review identity).")
+    assert ("\"without hiding the weakest material axis\" is satisfied in that bounded scope by independent visible source "
+            "truth and the explicit focus-scope disclosure, and no weakest axis is computed;") in head
+    assert re.search(_any_pr("The preceding bounded increment — " + _S16_NAME + " — is DELIVERED (" + _S16_DELIVERED
+                             + "; PR #N; Git / GitHub own its merge and review identity)"), head)
+    assert ("The preceding bounded closure — " + _S36C_NAME + " — is DELIVERED with no product change required, "
+            "completing Stage 36 for the current no-live-AI / provider scope ONLY") in head
     assert ("The preceding bounded closure — " + _S35C_NAME + " — is DELIVERED with no product change required, "
             "completing Stage 35 for the current bounded first-slice scope ONLY") in head
     assert re.findall(_ACTIVE_BOLD, head) == ["NONE"]
@@ -5237,13 +5408,25 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     assert ("The preceding bounded closure — Stage 24 — CAP-12 Form Mock-up Advisory — Closure — is DELIVERED with no "
             "product change required, completing Stage 24 for the current bounded CAP-12 Form Mock-up Advisory Slice 1 "
             "scope ONLY") in head
-    assert ("the only increment authorized after that closure — the Stage 35 first bounded slice (above) — is DELIVERED, "
+    assert re.search(_any_pr("the only increment authorized after that closure — the Stage 35 first bounded slice (above) — is DELIVERED, "
             "and the Stage 35 closure (above) then completed Stage 35 for that bounded first-slice scope only with no "
             "product change, and the Stage 36 closure (above) then completed Stage 36 for its current no-live-AI / "
-            "provider scope only with no product change; no subsequent increment has been authorized.") in head
-    assert ("ACTIVE CONTRACT: NONE — no product increment is authorized and no other Stage is authorized (Stage 35 is "
-            "COMPLETE for its current bounded first-slice scope only; Stage 36 is COMPLETE for its current no-live-AI / "
-            "provider scope only; Stage 37 is NOT ENTERED)") in head
+            "provider scope only with no product change; the only increment authorized after that closure — the Stage "
+            "16 bounded presentation residual (above) — is DELIVERED (PR #N), and the Stage 16 closure (above) then "
+            "completed Stage 16 for its current bounded Technical + Integration evidence-sufficiency composition scope "
+            "only with no further product change; no subsequent increment has been authorized."), head)
+    assert ("ACTIVE CONTRACT: NONE — no product increment is authorized and no other Stage is authorized (Stage 16 is "
+            "COMPLETE for its current bounded Technical + Integration evidence-sufficiency composition scope only; Stage "
+            "35 is COMPLETE for its current bounded first-slice scope only; Stage 36 is COMPLETE for its current "
+            "no-live-AI / provider scope only; Stage 37 is NOT ENTERED)") in head
+    assert ("Stage 16 closure (delivered; a current-truth closure with no further product change; completes Stage 16 for "
+            "the current bounded Technical + Integration evidence-sufficiency composition scope ONLY; Stages 13 and 14 "
+            "stay PARTIAL / DEFERRED; no SRL level, score or weakest-axis computation; the MASTER ROADMAP SEQUENTIAL "
+            "MARKER is unchanged):") in head
+    assert ("Stage 25 or any other Stage is complete or entered (Stage 24 is COMPLETE for its current bounded CAP-12 "
+            "Form Mock-up Advisory Slice 1 scope only; Stage 35 is COMPLETE for its current bounded first-slice scope "
+            "only; Stage 36 is COMPLETE for its current no-live-AI / provider scope only; Stage 16 is COMPLETE for its "
+            "current bounded Technical + Integration evidence-sufficiency composition scope only)") in head
     assert ("Stage 36 closure (delivered; a current-truth closure with no product change; completes Stage 36 for the "
             "current no-live-AI / provider scope ONLY; CAP-15 / CAP-17 stay NOT AUTHORIZED FOR IMPLEMENTATION; Stage 37 "
             "stays NOT ENTERED and NOT AUTHORIZED; the MASTER ROADMAP SEQUENTIAL MARKER is unchanged):") in head
@@ -5282,7 +5465,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "Form Mock-up Advisory Slice 1 and completed for that bounded scope only by the Stage 24 closure; "
                    "`STAGE 24 — CAP-12 FORM MOCK-UP ADVISORY SLICE 1: DELIVERED`; `STAGE 24: COMPLETE — CURRENT "
                    "BOUNDED CAP-12 FORM MOCK-UP ADVISORY SLICE 1 SCOPE ONLY`; `FULL CAP-12: NOT AUTHORIZED`; `FURTHER "
-                   "CAP-12 SLICES: NOT AUTHORIZED`); routing past Stages 11, 13, 14, 16 and 17 completes none of them.",
+                   # ROTATED at the Stage 16 closure: Stage 16 is no longer routed past
+                   "CAP-12 SLICES: NOT AUTHORIZED`); routing past Stages 11, 13, 14 and 17 completes none of them.",
                    _S24C_DELIVERED, _S24_COMPLETE, *_S24C_LIMITS,
                    "Stage 24 closure (delivered; a current-truth closure with no product change; completes Stage 24 for "
                    "the current bounded CAP-12 Form Mock-up Advisory Slice 1 scope ONLY; full CAP-12 and further CAP-12 "
@@ -5311,8 +5495,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    # ROTATED at the Stage 35 closure: the next step is the Lead-controlled reassessment again
                    "The next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — read-only planning / selection "
                    "over live repository and product evidence until the Owner separately authorizes another product "
-                   "increment; it pre-authorizes no later Stage-35 slice, no CAP-15 / CAP-17 implementation, no live "
-                   "AI / provider selection, no External Engineering Tools activation, no Stage-37 work,",
+                   # ADVANCED at the Stage 16 closure: no further Stage-16 / SRL work is pre-authorized either
+                   "increment; it pre-authorizes no further Stage-16 / SRL work, no later Stage-35 slice, no CAP-15 / "
+                   "CAP-17 implementation, no live AI / provider selection, no External Engineering Tools activation, no "
+                   "Stage-37 work,",
                    "Stage 20 closure (delivered; completes Stage 20 for the current Owner-declared assumption scope, no "
                    "new Master Roadmap Stage)",
                    "Revise runs no progression, replay or reconstruction.",
@@ -5375,13 +5561,16 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
         assert needle in head, needle
     for pat in (_S2_CLOSE_REVERSALS + _S15C_STALE + _S18C_STALE + _S19C_STALE + _S20C_STALE + _S21C_STALE
                 + _S22C_STALE + _S23C_STALE + _S24C_STALE + _S24CL_STALE + _S35C_STALE + _S35C_REVERSALS
-                + _S36C_STALE + _S36C_REVERSALS):
+                + _S36C_STALE + _S36C_REVERSALS + _S16C_STALE + _S16C_REVERSALS):
         assert re.search(pat, head, re.I | re.S) is None, pat
     # ROTATED at the Stage 35 first bounded slice: the post-Stage-24-closure NONE is a named superseded declaration
     # ADVANCED at the Stage 35 closure: the Stage 35 first bounded slice and the Stage 35 closure lead the list
     # ADVANCED at the Stage 36 closure: the post-Stage-35-closure NONE and the Stage 36 closure lead it
+    # ADVANCED at the Stage 16 closure: the post-Stage-36-closure NONE and the Stage 16 closure lead it
     assert "**WATCH — Stage 36 closure (non-blocking, no repair cycle).**" in claude
-    assert ("*(Superseded current-authority declarations — the former post-Stage-35-closure `ACTIVE CONTRACT: NONE`, the "
+    assert "**WATCH — Stage 16 closure (non-blocking, no repair cycle).**" in claude
+    assert ("*(Superseded current-authority declarations — the former post-Stage-36-closure `ACTIVE CONTRACT: NONE`, the "
+            "former " + _S16C_NAME + ", the former post-Stage-35-closure `ACTIVE CONTRACT: NONE`, the "
             "former " + _S36C_NAME + ", the former " + _S35_NAME + ", the former " + _S35C_NAME
             + ", the former post-Stage-24-closure `ACTIVE CONTRACT: NONE`, the former post-Stage-24-CAP-12-Slice-1 "
             "`ACTIVE CONTRACT: NONE`") in claude
@@ -5427,8 +5616,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ROTATED at the Stage 35 closure: the live subtask is NONE again; the Stage 35 closure, the delivered first bounded
     # slice, the Stage 24 closure and the earlier deliveries follow it
     # ADVANCED at the Stage 36 closure: the Stage 36 closure leads the delivered history
-    subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \(post-Stage-36-closure\) — NO PRODUCT INCREMENT IS CURRENTLY "
-                    r"AUTHORIZED — " + re.escape(_S36C_NAME) + r" DELIVERED \([^)]*\) — STAGE 36 COMPLETE for the "
+    # ADVANCED at the Stage 16 closure: the Stage 16 closure and the delivered Stage 16 residual lead the delivered history
+    subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \(post-Stage-16-closure\) — NO PRODUCT INCREMENT IS CURRENTLY "
+                    r"AUTHORIZED — " + re.escape(_S16C_NAME) + r" DELIVERED \(no further product change required; "
+                    r"closure gap NONE after PR #\d+; no SRL level, score or weakest-axis computation; Stages 13 and 14 "
+                    r"stay PARTIAL / DEFERRED\) — STAGE 16 COMPLETE for the current bounded Technical \+ Integration "
+                    r"evidence-sufficiency composition scope only — " + re.escape(_S16_NAME) + r" DELIVERED \(PR #\d+; "
+                    r"[^)]*\) — " + re.escape(_S36C_NAME) + r" DELIVERED \([^)]*\) — STAGE 36 COMPLETE for the "
                     r"current no-live-AI / provider scope only — " + re.escape(_S35C_NAME) + r" DELIVERED \([^)]*\) — "
                     r"STAGE 35 COMPLETE for the "
                     r"current bounded first-slice scope only — " + re.escape(_S35_NAME) + r" DELIVERED \([^)]*\) — "
@@ -5470,7 +5664,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     subtask = flat_checklist[found:]
     subtask = subtask[:subtask.index("*(Superseded")]
     _needs(subtask, CHECKLIST, "live subtask", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP),
-           *(_tok(t) for t in _S35C_FACTS), *(_tok(t) for t in _S36C_FACTS), _tok(_S23C_DELIVERED), _tok(_S23_COMPLETE), *(_tok(t) for t in _S23_LIMITS),
+           *(_tok(t) for t in _S35C_FACTS), *(_tok(t) for t in _S36C_FACTS), *(_tok(t) for t in _S16C_FACTS), _tok(_S23C_DELIVERED), _tok(_S23_COMPLETE), *(_tok(t) for t in _S23_LIMITS),
            _tok(_S25_MARKER), _tok(_NO_S25), _tok(_S24C_DELIVERED), _tok(_S24_COMPLETE), _tok(_S24_DELIVERED),
            *(_tok(t) for t in _S24C_LIMITS),
            _tok(_S22C_DELIVERED), _tok(_S22_COMPLETE),
@@ -5484,7 +5678,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            *(_tok(t) for t in _S15C_NOT + _S2_NOT),
            # ROTATED at the Stage 35 closure: no product increment is authorized after the Stage 35 closure
            # ADVANCED at the Stage 36 closure: ... after the Stage 36 closure; the Stage 35 closure precedes it
-           r"No product increment is authorized after " + re.escape(_S36C_NAME) + r" \(delivered; Stage 36 COMPLETE "
+           # ADVANCED at the Stage 16 closure: ... after the Stage 16 closure; the delivered residual and Stage 36 precede it
+           r"No product increment is authorized after " + re.escape(_S16C_NAME) + r" \(delivered; Stage 16 COMPLETE for "
+           r"the current bounded Technical \+ Integration evidence-sufficiency composition scope only with no further "
+           r"product change; no SRL level, score or weakest-axis computation; Stages 13 and 14 PARTIAL / DEFERRED\) or "
+           r"after the preceding " + re.escape(_S16_NAME) + r" \(delivered; PR #\d+; one conditional Technical-row "
+           r"focus-scope line on integrated inventions; no engine, owner, persistence, score or SRL level\) or after the "
+           r"preceding " + re.escape(_S36C_NAME) + r" \(delivered; Stage 36 COMPLETE "
            r"for the current no-live-AI / provider scope only with no product change; no production live AI / provider "
            r"selected or active;",
            r"Stage 36 then NOT ENTERED / NOT AUTHORIZED\) or after the preceding " + re.escape(_S35_NAME),
@@ -5496,15 +5696,21 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            r"\(delivered; Stage 24 COMPLETE for the current bounded CAP-12 Form Mock-up Advisory Slice 1 scope only",
            r"\(Stage 24 is COMPLETE for the current bounded CAP-12 Form Mock-up Advisory Slice 1 scope only; Stage 35 is "
            r"COMPLETE for its current bounded first-slice scope only; Stage 36 is COMPLETE for its current no-live-AI / "
-           r"provider scope only\)",
+           r"provider scope only; Stage 16 is COMPLETE for its current bounded Technical \+ Integration "
+           r"evidence-sufficiency composition scope only\)",      # ADVANCED at the Stage 16 closure
            r"the next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT \(read-only planning / selection until "
-           r"the Owner separately authorizes another product increment; no later Stage-35 slice, no CAP-15 / CAP-17 "
-           r"implementation and no Stage-37 work is authorized\)\.",
+           r"the Owner separately authorizes another product increment; no further Stage-16 / SRL work, no later "
+           r"Stage-35 slice, no CAP-15 / CAP-17 implementation and no Stage-37 work is authorized\)\.",
            r"or after the preceding Stage 24 — CAP-12 Form Mock-up Advisory — Slice 1 \(delivered; Stage 24 was then "
            r"ENTERED / PARTIAL for that slice only", r"or after the preceding Stage 23 closure \(delivered;")
     _rejects(subtask, CHECKLIST, "live subtask", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
              *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE, *_S24C_STALE, *_S24CL_STALE, *_S35C_STALE,
-             *_S35C_REVERSALS, *_S36C_STALE, *_S36C_REVERSALS)
+             *_S35C_REVERSALS, *_S36C_STALE, *_S36C_REVERSALS,
+             *_S16C_STALE, *_S16C_REVERSALS)
+    # ADVANCED at the Stage 16 closure: the post-Stage-36-closure NONE subtask is preserved history
+    assert ("*(Superseded 2026-10-06 by " + _S16C_NAME + ", preserved — was: \"**CURRENT SUBTASK:** NONE "
+            "(post-Stage-36-closure) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — " + _S36C_NAME + " DELIVERED (…) — "
+            "…\" with Stage 16 then unticked and recorded as DEFERRED.)*") in flat_checklist
     # ADVANCED at the Stage 36 closure: the post-Stage-35-closure NONE subtask is preserved history
     assert ("*(Superseded 2026-10-05 by " + _S36C_NAME + ", preserved — was: \"**CURRENT SUBTASK:** NONE "
             "(post-Stage-35-closure) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — " + _S35C_NAME + " DELIVERED (…; "
@@ -5523,7 +5729,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             "(post-Stage-24-closure) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — Stage 24 — CAP-12 Form Mock-up "
             "Advisory — Closure DELIVERED (…) — …\" with `ACTIVE CONTRACT: NONE` · `NEXT PRODUCT INCREMENT: NOT "
             "AUTHORIZED` · `NEXT STEP: LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT`") in flat_checklist
-    for line in [t.strip("`") for t in _S36C_TOKENS + (_S23C_DELIVERED, _S23_COMPLETE,
+    for line in [t.strip("`") for t in _S16C_TOKENS + (_S23C_DELIVERED, _S23_COMPLETE,
                                         _S25_MARKER, _NO_S25, _S24C_DELIVERED, _S24_COMPLETE, _S24_DELIVERED,
                                         _S22C_DELIVERED,
                                         _S22_COMPLETE, _S21_COMPLETE,
@@ -5568,15 +5774,44 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ADVANCED at the Stage 35 closure: Stage 35 (COMPLETE for the current bounded first-slice scope) is ticked too
     # ADVANCED at the Stage 36 closure: Stage 36 (COMPLETE for the current no-live-AI / provider scope) is ticked too;
     # Stage 37 stays unticked
-    for n in (15, 18, 19, 20, 21, 22, 23, 24, 35, 36):
+    # ADVANCED at the Stage 16 closure: Stage 16 (COMPLETE for the current bounded Technical + Integration
+    # evidence-sufficiency composition scope) is ticked too; Stages 13 and 14 (PARTIAL / DEFERRED) stay unticked
+    for n in (15, 16, 18, 19, 20, 21, 22, 23, 24, 35, 36):
         assert re.search(r"^- \[ \] \*\*%d — " % n, roadmap, re.M) is None, n
-    for n in (11, 13, 14, 16, 17, 25, 37):
+    for n in (11, 13, 14, 17, 25, 37):
         assert re.search(r"^- \[ \] \*\*%d — " % n, roadmap, re.M), n
     # ADDED at the Stage 35 first bounded slice (row 35 then unticked, 23 of 45 rows unticked); ADVANCED at the Stage 35
-    # closure (22 of 45 unticked); ADVANCED at the Stage 36 closure: row 36 is ticked for its bounded scope only and the
-    # roadmap keeps exactly 21 of its 45 rows unticked
-    assert len(re.findall(r"^- \[ \] \*\*\d+ — ", roadmap, re.M)) == 21
-    assert len(re.findall(r"^- \[x\] \*\*\d+ — ", roadmap, re.M)) == 24
+    # closure (22 of 45 unticked); ADVANCED at the Stage 36 closure (21 of 45 unticked); ADVANCED at the Stage 16 closure:
+    # row 16 is ticked for its bounded scope only and the roadmap keeps exactly 20 of its 45 rows unticked — the remaining
+    # stages are exactly 11, 13, 14, 17, 25, 26, 27, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43, 44 and 45
+    assert len(re.findall(r"^- \[ \] \*\*\d+ — ", roadmap, re.M)) == 20
+    assert len(re.findall(r"^- \[x\] \*\*\d+ — ", roadmap, re.M)) == 25
+    assert [int(n) for n in re.findall(r"^- \[ \] \*\*(\d+) — ", roadmap, re.M)] == [
+        11, 13, 14, 17, 25, 26, 27, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43, 44, 45]
+    # ADDED at the Stage 16 closure: row 16 is ticked for the current bounded Technical + Integration evidence-sufficiency
+    # composition scope only, names its closure and the delivered residual, keeps Stages 13 / 14 PARTIAL / DEFERRED and
+    # computes no SRL level, single score or weakest axis
+    [row16] = re.findall(r"^- \[x\] \*\*16 — SRL-compatible composition:\*\*.*$", roadmap, re.M)
+    live16 = _live_only(row16)
+    assert ("**COMPLETE (2026-10-06) for the current bounded Technical + Integration evidence-sufficiency composition "
+            "scope ONLY — checkbox ticked for that scope only:** " + _S16_COMPLETE + " through the Owner-authorized "
+            + _S16C_NAME + " (" + _S16C_DELIVERED + ") after the delivered bounded presentation-only residual "
+            + _S16_NAME + " (" + _S16_DELIVERED + "; PR #") in live16
+    for needle in (_S16_SRL_NO, *_S13_14_PARTIAL, "each from its own canonical owner and independently visible",
+                   "insufficiency is never hidden by aggregation",
+                   "on an integrated invention the Technical row states that it reflects only the selected initial "
+                   "analysis focus",
+                   "\"Without hiding the weakest axis\" is satisfied in this bounded scope by that independent visible "
+                   "source truth and the explicit focus-scope disclosure; no weakest axis is computed.",
+                   "no single score, weighting, composite, overall readiness result, SRL number or level, engineering "
+                   "compatibility conclusion or validated system-readiness conclusion, and no SRL engine",
+                   "Stage 15 keeps its bounded completion and Stage 17 its partial truth",
+                   "full TRL, MRL and SRL, positive readiness and validated Technical or Integration evidence stay NOT "
+                   "AUTHORIZED"):
+        assert needle in live16, needle
+    for stale in ("checkbox stays UNTICKED", "ENTERED / PARTIAL", "NOT complete", "DEFERRED.", "weakest axis is "
+                  "identified", "SRL level is"):
+        assert stale not in live16, stale
     # ADDED at the Stage 36 closure: row 36 is ticked for the current no-live-AI / provider scope only and names its
     # closure, its limits and the fresh-reassessment condition
     [row36] = re.findall(r"^- \[x\] \*\*36 — CAP-15 \+ CAP-17:\*\*.*$", roadmap, re.M)
@@ -6298,7 +6533,7 @@ _LIVE_CLAIM_REVERSALS = _S15_CLOSE_REVERSALS + (
     r"MASTER ROADMAP SEQUENTIAL MARKER(?::| is| moves to| becomes)? Stage (?!25\b)\d+\b(?! for navigation only\))",
     r"MASTER ROADMAP SEQUENTIAL MARKER stays Stage (?!2[34]\b)\d+\b(?!\))",
     _S4_VERDICT, r"INTERFACE OBSERVATION VERDICT / CRITERION-MET JUDGEMENT: AUTHORIZED") + _S35C_REVERSALS + (
-    _S36C_REVERSALS)
+    _S36C_REVERSALS + _S16C_REVERSALS)
 # Lifecycle states that are true only BEFORE a merge. On a live surface they make the authoritative
 # text false the moment the candidate merges, which is what used to force a closure PR.
 _PREMERGE_LIFECYCLE = (
@@ -6597,6 +6832,14 @@ def _live_authority_problems(read=None):
         for pat in _S36C_STALE:
             if re.search(pat, text):
                 problems.append(label + ": stale pre-Stage-36-closure wording " + pat)
+        # ADVANCED at the Stage 16 closure: every surface carries the Stage-16 closure facts, the SRL exclusion and the
+        # Stage-13 / Stage-14 PARTIAL / DEFERRED status, and none of the pre-Stage-16-closure wording
+        for token in _S16C_FACTS:
+            if token not in text:
+                problems.append(label + ": missing Stage-16 closure fact " + token)
+        for pat in _S16C_STALE:
+            if re.search(pat, text):
+                problems.append(label + ": stale pre-Stage-16-closure wording " + pat)
     for needle in (_S25_MARKER, "NO STAGE-25 IMPLEMENTATION AUTHORIZED BY STAGE-24 CLOSURE",
                    "NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE", _S23_COMPLETE,
                    _S23C_DELIVERED, *_S23_LIMITS,
@@ -6605,9 +6848,12 @@ def _live_authority_problems(read=None):
                    "STAGE 20: COMPLETE — CURRENT OWNER-DECLARED ASSUMPTION SCOPE",
                    "STAGE 19: COMPLETE — CURRENT PLANNING-ONLY SCOPE", *_S30C_TOKENS, *_S30C_KEPT,
                    _S24_DELIVERED, _S24C_DELIVERED, _S24_COMPLETE, *_S24C_LIMITS, *_S35C_FACTS, _NEXT_INC_NO,
-                   _NEXT_STAGE_STEP, *_S36C_FACTS):
+                   _NEXT_STAGE_STEP, *_S36C_FACTS, *_S16C_FACTS):
         if needle not in texts["head:CLAUDE.md"]:
             problems.append("head:CLAUDE.md: missing " + needle)
+    for pat in _S16C_STALE:
+        if re.search(pat, texts["head:CLAUDE.md"]):
+            problems.append("head:CLAUDE.md: stale pre-Stage-16-closure wording " + pat)
     for pat in _S36C_STALE:
         if re.search(pat, texts["head:CLAUDE.md"]):
             problems.append("head:CLAUDE.md: stale pre-Stage-36-closure wording " + pat)
@@ -6850,8 +7096,8 @@ _MATERIAL_REVERSALS = {
     "stage 35 contract restored in the routing": (CHECKLIST, "current-routing", _NONE718, _S35_ACTIVE),
     "stage 35 contract restored in the declaration": (CONTRACT, "declaration", _NONE_BOLD, _S35_BOLD),
     "stage 35 contract restored in the head": ("CLAUDE.md", "head", _NONE_BOLD, _S35_BOLD),
-    "active increment heading restored": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-36-closure "
-                                          "(2026-10-05); ", "**ACTIVE BOUNDED PRODUCT INCREMENT — " + _S35_NAME
+    "active increment heading restored": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-16-closure "
+                                          "(2026-10-06); ", "**ACTIVE BOUNDED PRODUCT INCREMENT — " + _S35_NAME
                                           + " (Owner-authorized 2026-10-05); "),
     "stale active-increment prose back": (CHECKLIST, "current-routing", _NS,
                                           _NS + " " + _S35_NAME + " is the active bounded product increment."),
@@ -6899,8 +7145,8 @@ _MATERIAL_REVERSALS = {
     "stage 36 not-entered prose back": (CONTRACT, "declaration", _NS,
                                         _NS + " Stage 36 stays NOT ENTERED and NOT AUTHORIZED."),
     "stage 36 closure undone": (CONTRACT, "current-routing", _S36C_DELIVERED, "`STAGE 36 CLOSURE: NOT AUTHORIZED`"),
-    "post-stage-35 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-36-closure "
-                                     "(2026-10-05); ", "**NO ACTIVE CONTRACT — post-Stage-35-closure (2026-10-05); "),
+    "post-stage-35 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-16-closure "
+                                     "(2026-10-06); ", "**NO ACTIVE CONTRACT — post-Stage-35-closure (2026-10-05); "),
     "live provider selected": (STATE, "current-position", _S36_LIMITS[0],
                                "`PRODUCTION LIVE AI / PROVIDER: SELECTED — ACTIVE`"),
     "live provider active in prose": (ROADMAP, "current-routing", _NS,
@@ -6914,6 +7160,32 @@ _MATERIAL_REVERSALS = {
     "stage 37 entered": (ROADMAP, "current-routing", _S37_NOT[0], "`STAGE 37: ENTERED`"),
     "stage 37 authorized": (STATE, "current-position", _S37_NOT[1], "`STAGE 37: AUTHORIZED`"),
     "stage 37 implementation": (CHECKLIST, "current-routing", _NS, _NS + " Stage-37 implementation authorized."),
+    # ADDED at the Stage 16 closure: an undone closure or residual, Stage 16 back to deferred, unscoped or globally
+    # complete, the post-Stage-36-closure head back, Stage 16 routed past again, an SRL number / level, single score or
+    # weakest-axis computation, Stage 13 / Stage 14 advanced beyond PARTIAL / DEFERRED, or further Stage-16 work
+    # authorized is a reversal of the live truth.
+    "stage 16 closure undone": (CONTRACT, "current-routing", _S16C_DELIVERED, "`STAGE 16 CLOSURE: NOT AUTHORIZED`"),
+    "stage 16 residual undone": (CHECKLIST, "current-routing", _S16_DELIVERED,
+                                 "`STAGE 16 — TECHNICAL-ROW FOCUS-SCOPE DISCLOSURE: NOT DELIVERED`"),
+    "stage 16 back to deferred": (ROADMAP, "current-routing", _S16_COMPLETE, "`STAGE 16: DEFERRED`"),
+    "stage 16 unscoped": (STATE, "current-position", _S16_COMPLETE, "`STAGE 16: COMPLETE`"),
+    "stage 16 complete globally in prose": (STATE, "current-position", _NS, _NS + " Stage 16 is complete."),
+    "stage 16 fully complete in prose": (CONTRACT, "declaration", _NS,
+                                         _NS + " Stage 16 is fully complete for every scope."),
+    "post-stage-36 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-16-closure "
+                                     "(2026-10-06); ", "**NO ACTIVE CONTRACT — post-Stage-36-closure (2026-10-05); "),
+    "stage 16 routed past again": (CONTRACT, "current-routing", "routing past Stages 11, 13, 14 and 17",
+                                   "routing past Stages 11, 13, 14, 16 and 17"),
+    "srl computation authorized": (ROADMAP, "current-routing", _S16_SRL_NO,
+                                   "`SRL LEVEL / SINGLE SCORE / WEAKEST-AXIS COMPUTATION: AUTHORIZED`"),
+    "srl level computed in prose": (STATE, "current-position", _NS, _NS + " An SRL level is computed."),
+    "weakest axis computed in prose": (CHECKLIST, "current-routing", _NS,
+                                       _NS + " The weakest-axis calculation is implemented."),
+    "stage 13 complete": (CONTRACT, "declaration", _S13_14_PARTIAL[0], "`STAGE 13: COMPLETE`"),
+    "stage 14 complete": (STATE, "current-position", _S13_14_PARTIAL[1], "`STAGE 14: COMPLETE`"),
+    "stages 13 and 14 complete in prose": (ROADMAP, "current-routing", _NS, _NS + " Stages 13 and 14 are complete."),
+    "further stage 16 work authorized": (CHECKLIST, "current-routing", _NS,
+                                         _NS + " and further Stage-16 / SRL work is authorized."),
 }
 
 
@@ -6940,6 +7212,26 @@ def test_stage35_checkbox_and_count_drift_is_caught(monkeypatch, name):
                # ROTATED at the Stage 36 closure: row 36 is ticked now, so the next open row is 37
                "another row ticked": re.sub(r"^- \[ \] (\*\*37 — )", r"- [x] \1", roadmap, count=1, flags=re.M),
                "stage 35 row removed": roadmap.replace(row + "\n", "", 1)}[name]
+    assert mutated != roadmap
+    real = _read
+    monkeypatch.setattr(sys.modules[__name__], "_read", lambda p: mutated if p == ROADMAP else real(p))
+    with pytest.raises(AssertionError):
+        test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surface()
+
+
+@pytest.mark.parametrize("name", ["stage 16 unticked", "another row ticked", "stage 16 row removed",
+                                  "stage 13 ticked", "stage 14 ticked"])
+def test_stage16_checkbox_and_count_drift_is_caught(monkeypatch, name):
+    """ADDED at the Stage 16 closure: row 16 is ticked for the current bounded Technical + Integration
+    evidence-sufficiency composition scope only, so unticking it, ticking any other open row (Stages 13 and 14 above all,
+    which stay PARTIAL / DEFERRED) or dropping it is checkbox / count drift the current-state guard rejects."""
+    roadmap = _read(ROADMAP)
+    [row] = re.findall(r"^- \[x\] \*\*16 — .*$", roadmap, re.M)
+    mutated = {"stage 16 unticked": roadmap.replace(row, row.replace("- [x]", "- [ ]", 1), 1),
+               "another row ticked": re.sub(r"^- \[ \] (\*\*17 — )", r"- [x] \1", roadmap, count=1, flags=re.M),
+               "stage 16 row removed": roadmap.replace(row + "\n", "", 1),
+               "stage 13 ticked": re.sub(r"^- \[ \] (\*\*13 — )", r"- [x] \1", roadmap, count=1, flags=re.M),
+               "stage 14 ticked": re.sub(r"^- \[ \] (\*\*14 — )", r"- [x] \1", roadmap, count=1, flags=re.M)}[name]
     assert mutated != roadmap
     real = _read
     monkeypatch.setattr(sys.modules[__name__], "_read", lambda p: mutated if p == ROADMAP else real(p))
@@ -7188,7 +7480,9 @@ def test_f1b_unmodified_repository_counts():
     # Stage 35 first bounded slice: + the superseded post-Stage-24-closure NONE record (the live record is the slice)
     # Stage 35 closure: + its delivered record and the superseded Stage 35 slice record (the live record is NONE again)
     # Stage 36 closure: + its delivered record and the superseded post-Stage-35-closure NONE record
-    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 75, 10)
+    # Stage 16 closure: + its delivered record and the superseded post-Stage-36-closure NONE record (the delivered Stage 16
+    # residual carried no contract section of its own)
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 77, 10)
 
 
 def _flat_doc(path):
@@ -7344,3 +7638,186 @@ def test_f2_a_closing_backtick_does_not_end_the_claim():
     text = "`X: DELIVERED` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `NEXT`"
     m = re.search(_POST_MERGE_CLAIM, text, re.I)
     assert text[m.start():_claim_end(text, m)] == "POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`"
+
+
+# ==========================================================================
+# Stage 28 — named future technical-responsibility assessments (recorded 2026-10-05)
+# ==========================================================================
+# Documentation-only recording. Three PRIMARY named assessments sit beside 28-T1…28-T5 in the
+# Stage-28 future portfolio under descriptive names, with no `28-T` number. One checker returns every
+# material regression; the live documents must return none, and each guarded risk is proven caught.
+_S28_NAMED = ("Wireless / RF Connectivity", "Battery / Electrochemical Energy Storage / BMS",
+              "Perception / Edge Inference")
+_S28_STATUS = "`RECORDED — PLANNING / NAVIGATION ONLY — NOT AUTHORIZED`"
+_S28_INVARIANT = "`TECHNICAL RESPONSIBILITY ≠ PHYSICAL COMPONENT ≠ ROOT DOMAIN`"
+_S28_NONE_LIVE = "none is implemented, qualified, activated, part-eligible or root-admissible"
+_S28_NAMES_RE = "(?:" + "|".join(re.escape(n) for n in _S28_NAMED) + ")"
+# ADDED at the Stage 16 closure sync (Owner-reconfirmed 2026-10-06): the cross-cutting Technical Deepening source / IP
+# invariant recorded beside the named assessments — lawful reuse, not website accessibility, controls; unclear basis
+# abstains; it covers every future Technical Deepening, not only Wireless / RF.
+_S28_SOURCE_RULE = "`TECHNICAL DEEPENING SOURCE RULE: OPEN / LAWFULLY REUSABLE SOURCES ONLY`"
+_S28_VIEWABLE = "`PUBLICLY VIEWABLE ≠ OPENLY REUSABLE`"
+_S28_UNCLEAR = "`DEFER / ABSTAIN / UNABLE TO SUPPORT`"
+_S28_SOURCE_NEEDLES = {
+    "roadmap": ("only where an explicit lawful reuse basis is recorded",
+                "Technical authority alone does not authorize copying, ingesting or republishing",
+                "never ingested into governed technical content unless its license or permission clearly authorizes "
+                "that use",
+                "source-use / license basis, claim scope and limitations",
+                "The rule applies proportionally across ALL future Technical Deepening", "not only Wireless / RF"),
+    "checklist": ("a lawful, explicit source-use basis only",
+                  "never ingested into governed technical content without a license or permission that clearly "
+                  "authorizes it",
+                  "source-use / license basis, claim scope and limitations",
+                  "a cross-cutting invariant for ALL future Technical Deepening",
+                  "28-T1…28-T5 and any later Technical Deepening", "not only Wireless / RF")}
+_S28_SOURCE_SCOPE = ("Wireless / RF Connectivity", "Battery / Electrochemical Energy Storage / BMS",
+                     "Perception / Edge Inference", "28-T1 Sensors", "28-T2 Embedded", "28-T3 Power Electronics",
+                     "28-T4 PLC / Industrial Automation", "28-T5 Mechatronics / Robotics", "any later Technical Deepening")
+_S28_SOURCE_REVERSALS = (
+    r"TECHNICAL DEEPENING SOURCE RULE: (?!OPEN / LAWFULLY REUSABLE SOURCES ONLY\b)",
+    r"PUBLICLY VIEWABLE\s*(?:=|==|is)\s*OPENLY REUSABLE",
+    r"\b(?:free[- ]to[- ]read|publicly (?:viewable|available))\b[^.]{0,30}\b(?:is|means|counts as)\s+"
+    r"(?:openly |lawfully )?reusable",
+    r"(?:proprietary|standards-body|vendor)[^.]{0,120}\bmay be (?:freely )?(?:ingested|copied|republished)\b",
+    r"(?<!never )\bingested into governed technical content (?:freely|without)",
+    r"unclear[^.]{0,80}\b(?:may|can|should) (?:still )?(?:be )?(?:use|used|ingest|ingested|rely|relied)\b",
+    r"(?:SOURCE RULE|source / IP (?:invariant|rule))[^.]{0,200}\bapplies only to\b",
+    r"\brule applies only to Wireless")
+
+
+def _stage28_named_assessment_problems(roadmap, checklist):
+    """Every material regression of the named Stage-28 assessments; [] when the recording holds."""
+    problems = []
+    flat = {"roadmap": re.sub(r"\s+", " ", roadmap), "checklist": re.sub(r"\s+", " ", checklist)}
+    for name in _S28_NAMED:                                                     # 1 + 2: name and status
+        if "**%s** — %s" % (name, _S28_STATUS) not in flat["roadmap"]:
+            problems.append("roadmap: %s lost its name or planning-only status" % name)
+        if "- [ ] %s — %s" % (name, _S28_STATUS) not in checklist:
+            problems.append("checklist: %s lost its name or planning-only status" % name)
+    for label, text in flat.items():
+        if _S28_NONE_LIVE not in text:                                          # 3: nothing live
+            problems.append(label + ": the not-implemented / not-activated statement is missing")
+        claim = re.search(_S28_NAMES_RE + r"(?: assessment)?(?: is| are|:)? (?:now )?(?:fully )?"
+                          r"(?:implemented|qualified|activated|root-admissible|part-eligible|authorized)\b",
+                          text, re.I)
+        if claim:
+            problems.append(label + ": live-status claim: " + claim.group(0))
+        if _S28_INVARIANT not in text:                                          # 4: three meanings stay apart
+            problems.append(label + ": the responsibility / component / root-domain invariant is missing")
+        if re.search(r"technical responsibilit(?:y|ies)\s*(?:=|==|is|are)\s*(?:a |the )?physical (?:component|part)",
+                     text, re.I):
+            problems.append(label + ": technical responsibility equated with a physical component")
+        for m in re.finditer(r"28-T(\d+)", text):                               # 5: no minted 28-T6/7/8…
+            n = int(m.group(1))
+            if n <= 5:
+                continue
+            ctx = text[max(0, m.start() - 5):m.end() + 17]
+            if n != 6 or not ("NOT `28-T6`" in ctx or "`28-T6` does not exist" in ctx):
+                problems.append(label + ": minted identifier " + m.group(0))
+        if re.search(r"\bT[78]\b", text):
+            problems.append(label + ": minted T7 / T8 label")
+        if re.search(r"STAGE 28: COMPLETE(?! — CURRENT BOUNDED CONTROL-LOOP OPTIONAL-PART SCOPE ONLY)", text):
+            problems.append(label + ": unscoped Stage-28 completion")   # 6: never globally discharged
+        for m in re.finditer(r"globally discharged", text, re.I):
+            if not re.search(r"not $", text[max(0, m.start() - 4):m.start()], re.I):
+                problems.append(label + ": Stage-28 discharge claim: " + text[max(0, m.start() - 40):m.end()])
+        if re.search(r"IoT(?: \([^)]*\))? (?:now |will |shall )?(?:owns?|absorbs?) (?:the )?(?:future )?(?:Wireless|RF)",
+                     text, re.I):                                               # 7: IoT never owns RF
+            problems.append(label + ": IoT owns or absorbs Wireless / RF truth")
+        if re.search(r"Robotics (?:owns?|holds?) (?:the )?perception|(?<!second )Robotics-owned perception",
+                     text, re.I):                                               # 8: no Robotics perception owner
+            problems.append(label + ": Robotics owns a perception authority")
+        for token in (_S28_SOURCE_RULE, _S28_VIEWABLE, _S28_UNCLEAR) + _S28_SOURCE_NEEDLES[label]:  # 9: source / IP
+            if token not in text:
+                problems.append(label + ": the Technical Deepening source / IP invariant lost: " + token)
+        for pat in _S28_SOURCE_REVERSALS:
+            m = re.search(pat, text, re.I)
+            if m:
+                problems.append(label + ": source / IP invariant reversed: " + m.group(0))
+    if "`STAGE 28 IS NOT GLOBALLY DISCHARGED FOR FUTURE ADDITIONAL DOMAINS`" not in flat["roadmap"]:
+        problems.append("roadmap: Stage 28 is no longer recorded as not globally discharged")
+    if "They do not reopen or globally complete Stage 28" not in flat["roadmap"]:
+        problems.append("roadmap: the named assessments no longer state they leave Stage 28 open")
+    if "IoT (Stage 31) may CONSUME future Wireless / RF truth but must not own or absorb it." not in flat["roadmap"]:
+        problems.append("roadmap: the Wireless / RF entry lost its IoT consume-not-absorb boundary")
+    row31 = re.search(r"^- \[ \] \*\*31 — IoT architecture:\*\*.*$", roadmap, re.M)
+    if not row31 or "IoT may CONSUME future Wireless / RF Connectivity truth" not in row31.group(0) \
+            or "but must not own or absorb it." not in row31.group(0):
+        problems.append("roadmap row 31: the consume-not-absorb Wireless / RF boundary is missing")
+    rule = flat["roadmap"].find(_S28_SOURCE_RULE)                              # 9: cross-cutting scope
+    rule_text = flat["roadmap"][rule:flat["roadmap"].find("**Secondary future portfolio notes", rule)] if rule >= 0 else ""
+    for target in _S28_SOURCE_SCOPE:
+        if target not in rule_text:
+            problems.append("roadmap: the source / IP invariant no longer covers " + target)
+    t5 = re.search(r"\*\*28-T5 — [^\n]*", roadmap)
+    if not t5 or "never to a second Robotics-owned perception authority" not in t5.group(0):
+        problems.append("roadmap 28-T5: the shared Perception / Edge Inference cross-reference is missing")
+    return problems
+
+
+def test_stage28_named_assessments_are_recorded_planning_only():
+    assert _stage28_named_assessment_problems(_read(ROADMAP), _read(CHECKLIST)) == []
+
+
+def test_stage28_named_assessments_add_no_stage_and_keep_28_t1_to_t5():
+    roadmap, checklist = _read(ROADMAP), _read(CHECKLIST)
+    # ROTATED at the Stage 16 closure (row 16 ticked for its bounded scope only): 21 -> 20 unticked rows; the Stage 28
+    # recording still adds zero top-level stages, so all 45 rows stay exactly 1..45
+    assert len(re.findall(r"^- \[ \] \*\*\d+ — ", roadmap, re.M)) == 20
+    assert sorted(int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)) == list(range(1, 46))
+    for n, title in ((1, "Sensors, Instrumentation & Data Acquisition"), (2, "Embedded Systems & Firmware"),
+                     (3, "Power Electronics & Motion Control"), (4, "PLC / Industrial Automation & Control"),
+                     (5, "Mechatronics / Robotics — Shared Composition Reuse & Residual-Capability Reassessment")):
+        assert roadmap.count("**28-T%d — %s.**" % (n, title)) == 1, n
+        assert checklist.count("- [ ] 28-T%d — %s — %s" % (n, title, _S28_STATUS)) == 1, n
+
+
+_S28_MUTATIONS = {
+    "name disappears": ("roadmap", "**Perception / Edge Inference** — ", "**Computer Vision** — "),
+    "status lost": ("checklist", "- [ ] Wireless / RF Connectivity — " + _S28_STATUS,
+                    "- [ ] Wireless / RF Connectivity — `RECORDED`"),
+    "activation claimed": ("roadmap", "**Wireless / RF Connectivity** — ",
+                           "Wireless / RF Connectivity is activated. **Wireless / RF Connectivity** — "),
+    "part-eligibility claimed": ("checklist", "- [ ] Perception / Edge Inference — ",
+                                 "Perception / Edge Inference: part-eligible. - [ ] Perception / Edge Inference — "),
+    "not-live statement dropped": ("checklist", _S28_NONE_LIVE, "they are recorded"),
+    "responsibility = component": ("roadmap", _S28_INVARIANT,
+                                   "`TECHNICAL RESPONSIBILITY = PHYSICAL COMPONENT ≠ ROOT DOMAIN`"),
+    "28-T6 minted": ("roadmap", "**Wireless / RF Connectivity** — ", "**28-T6 — Wireless / RF Connectivity** — "),
+    "28-T8 minted": ("checklist", "- [ ] Perception / Edge Inference — ", "- [ ] 28-T8 Perception / Edge Inference — "),
+    "Stage 28 globally discharged": ("roadmap", "They do not reopen or globally complete Stage 28",
+                                     "Stage 28 is now globally discharged; they complete Stage 28"),
+    "IoT absorbs RF": ("roadmap", "IoT (Stage 31) may CONSUME future Wireless / RF truth",
+                       "IoT (Stage 31) owns the Wireless / RF truth"),
+    "row 31 boundary dropped": ("roadmap", " IoT may CONSUME future Wireless / RF Connectivity truth", " IoT"),
+    "Robotics perception owner": ("roadmap", "never to a second Robotics-owned perception authority.\n",
+                                  "and Robotics owns perception as its own authority.\n"),
+    # ADDED with the cross-cutting Technical Deepening source / IP invariant
+    "source rule weakened": ("roadmap", _S28_SOURCE_RULE, "`TECHNICAL DEEPENING SOURCE RULE: ANY PUBLIC SOURCE`"),
+    "viewable equals reusable": ("checklist", _S28_VIEWABLE, "`PUBLICLY VIEWABLE = OPENLY REUSABLE`"),
+    "free-to-read treated as reusable": ("roadmap", "the controlling principle is lawful reuse, not website "
+                                         "accessibility", "free-to-read means reusable"),
+    "lawful basis dropped": ("roadmap", "only where an explicit lawful reuse basis is recorded",
+                             "that is publicly available"),
+    "vendor text ingestion allowed": ("roadmap", "is never ingested into governed technical content unless its "
+                                      "license or permission clearly authorizes that use",
+                                      "may be ingested into governed technical content freely"),
+    "checklist ingestion allowed": ("checklist", "never ingested into governed technical content without a license",
+                                    "ingested into governed technical content without a license"),
+    "unclear basis filled": ("checklist", _S28_UNCLEAR, "the best available source may still be used"),
+    "rule narrowed to Wireless": ("roadmap", "The rule applies proportionally across ALL future Technical Deepening",
+                                  "The rule applies only to Wireless / RF Connectivity"),
+    "28-T3 dropped from source scope": ("roadmap", "28-T3 Power Electronics, ", ""),
+    "checklist scope narrowed": ("checklist", "a cross-cutting invariant for ALL future Technical Deepening",
+                                 "a Wireless / RF-only rule"),
+}
+
+
+@pytest.mark.parametrize("name", sorted(_S28_MUTATIONS))
+def test_stage28_named_assessment_regressions_are_caught(name):
+    doc, old, new = _S28_MUTATIONS[name]
+    texts = {"roadmap": _read(ROADMAP), "checklist": _read(CHECKLIST)}
+    assert texts[doc].count(old) >= 1, (name, "mutation anchor missing")
+    texts[doc] = texts[doc].replace(old, new, 1)
+    assert _stage28_named_assessment_problems(texts["roadmap"], texts["checklist"]), name
