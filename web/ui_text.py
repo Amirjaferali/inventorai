@@ -4211,6 +4211,24 @@ UI_STRINGS = {
         "en": "No technical reasoning has been recorded yet.",
         "ar": "لم يُسجَّل أي تعليل تقني بعد.",
     },
+    # Stage 16 (bounded presentation residual): shown inside the Technical row
+    # ONLY for an integrated invention, whose Technical row is composed from the
+    # selected initial analysis focus alone. `_3` is the optional-part variant,
+    # mirroring UI_S15_SCOPE_STATEMENT / UI_S15_SCOPE_STATEMENT_3.
+    "UI_RS_TECHNICAL_SCOPE": {
+        "en": ("This Technical row reflects only the selected initial analysis "
+               "focus. It does not represent a technical evaluation of the other "
+               "recorded part."),
+        "ar": ("لا يعكس هذا الصف التقني سوى محور التحليل الأولي المختار، ولا "
+               "يمثّل تقييمًا تقنيًا للجزء الآخر المسجَّل."),
+    },
+    "UI_RS_TECHNICAL_SCOPE_3": {
+        "en": ("This Technical row reflects only the selected initial analysis "
+               "focus. It does not represent a technical evaluation of the other "
+               "recorded parts."),
+        "ar": ("لا يعكس هذا الصف التقني سوى محور التحليل الأولي المختار، ولا "
+               "يمثّل تقييمًا تقنيًا للأجزاء الأخرى المسجَّلة."),
+    },
     # --- Commercial ----------------------------------------------------------
     "UI_RS_COMMERCIAL_NOTHING": {
         "en": "No Commercial evidence has been recorded yet.",
