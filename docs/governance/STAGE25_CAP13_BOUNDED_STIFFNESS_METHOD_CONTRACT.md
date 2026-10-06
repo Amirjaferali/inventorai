@@ -162,7 +162,7 @@ defaulted. A missing or different answer refuses (§9).
 | species | `LOBLOLLY_PINE` (S2 row `Loblolly`) |
 | material condition | clear, straight-grained (the source-property basis) |
 | moisture condition | approximately 12% (the source condition) |
-| environment | no elevated-temperature use and no unusual environmental or temperature exposure |
+| environment | no elevated-temperature use; no outdoor, wet or unusual-moisture use; no ultraviolet, chemical or corrosive exposure; no environmental aging outside the source condition; no other unusual environmental or temperature exposure |
 | high-risk screen | all nine items answered (§9) |
 
 Elastic behaviour is an assumption of the method, disclosed and not verified: no strength check is made, so the member may
@@ -212,7 +212,13 @@ warning meanings, adapted only in grammar because v1 proposes no thickness. The 
 categories — *Electrical and battery*, *Heat and pressure*, *Medical, food-contact, or human-contact*, and *Children and
 consumer safety* — remain binding whenever applicable. Where v1's §9 high-risk screen covers the class concerned
 (battery containment, pressure, high temperature, medical use, food contact, use by or for children), v1 abstains before
-any calculation; none of these categories is turned into a calculation.
+any calculation; none of these categories is turned into a calculation. *Chemical and outdoor exposure* — corrosion,
+ultraviolet exposure, moisture, chemical compatibility, aging, sealing and environmental degradation require
+verification. For v1, outdoor, wet or unusual-moisture use, ultraviolet exposure, chemical or corrosive exposure and
+environmental aging outside the source-governed condition are out of scope: v1 abstains through the existing
+environment and moisture declarations (§7), with the existing refusal reasons `ENVIRONMENT_EXCLUDED` or
+`MOISTURE_CONDITION_NOT_SUPPORTED` (§9). None of them is calculated, no threshold is introduced and no environmental
+suitability is implied.
 
 **Variability treatment.** Disclosure only: no percentile, interval, safety factor, margin or probability; no adjustment
 to `E`; no uncertainty propagated inside the calculation owner. Any treatment beyond disclosure needs separate method
