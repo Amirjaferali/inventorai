@@ -34,6 +34,8 @@ activate CAP-13, recommends no thickness and assigns no identifier globally.
 - `CALCULATION RESULT ≠ THICKNESS RECOMMENDATION ≠ SAFETY CONCLUSION`.
 - `DEFORMATION CONSTRAINT SATISFIED ≠ SAFE ≠ STRUCTURALLY ADEQUATE`.
 - `TECHNICAL DEEPENING SOURCE RULE: OPEN / LAWFULLY REUSABLE SOURCES ONLY` · `PUBLICLY VIEWABLE ≠ OPENLY REUSABLE`.
+- `METHOD ADMISSION: BLOCKED UNTIL D-5 AND D-7 ARE CLOSED` (§12). This contract may be accepted as documentation while
+  either is open; the method is then not admitted for runtime execution and no numerical CAP-13 result is shown.
 
 ## 1. Purpose and scope
 
@@ -117,13 +119,15 @@ No inversion: `h` is never solved for in v1 (deferred; §11).
 - **Source property basis:** clear, straight-grained wood; source moisture condition approximately 12%.
 - **Tabulated bending modulus:** `E_tab = 12,300 MPa` (S2 Table 5-3a, 12% moisture).
 - **Shear-correction rule (S2):** tabulated bending `EL` includes a shear-deflection effect and may be increased by
-  approximately 10% to remove it. Because Equation 9-2 carries its own explicit shear term, the method uses the
-  shear-corrected modulus `E = E_tab × (1 + c)` with the source-stated `c` of approximately 0.10, so the shear effect is
-  not counted twice. That reasoning — pairing the Chapter-5 correction with the Chapter-9 shear term — is this contract's
-  interpretation and is review item R-2. `E` is derived deterministically at execution from the record; no rounded
-  derived value is stored or stated as source truth, and the correction is disclosed as approximate.
+  approximately 10% to remove it. The method uses the corrected modulus `E = E_tab × (1 + c)`, with the source-stated
+  `c` of approximately 0.10, so that it does not intentionally combine an apparent bending modulus containing test shear
+  effects with Equation 9-2's separate explicit shear term. Because the source correction is approximate, no exact
+  cancellation of shear influence is claimed. That pairing of the Chapter-5 correction with the Chapter-9 shear term is
+  this contract's interpretation (review item R-2; D-5 items 3 and 5). `E` is derived deterministically at execution
+  from the record; no rounded derived value is stored or stated as source truth, and the correction is disclosed as
+  approximate.
 - **Shear modulus (orientation `EDGE_GRAINED_VERTICAL_FACES` only):** `G = (GLR / EL) × E = 0.082 × E`. Whether the
-  Table 5-1 ratio is to be applied to the shear-corrected `E` is review item R-2.
+  Table 5-1 ratio is to be applied to the corrected `E` is review item R-2 and stays open under D-5 item 4.
 - **Not admitted in v1:** `GLT / EL = 0.081` is present in the same S2 Table 5-1 row and is recorded here only to show the
   row identity; v1 does not use it (§6).
 - **Variability (S2 Table 5-6):** a representative coefficient of variation of approximately 22% for clear-wood bending
@@ -168,6 +172,11 @@ use and unusual exposure are abstentions only.
 **Numeric inputs (v1):** `W` (N), `L` (mm), `b` (mm), `h` (mm) — scalar, finite, strictly positive, typed numbers. No
 deflection limit is taken in v1. No unit other than N and mm is accepted in v1.
 
+**Method regime (open — D-7).** Unconstrained inputs can produce a numerical result outside the regime in which this
+simplified model should be trusted. This contract sets no numeric regime criterion: no deflection-to-span ratio,
+slenderness ratio, span-to-depth limit, load limit or safety factor is defined here, and none may be substituted. The
+criterion must come from source authority under D-7 (§12) before the method may be admitted.
+
 ## 8. Output, result states and fixed disclosure
 
 - **Calculated:** `Δ` in mm, with its provenance: method identity and version, source records S0–S2, the property record,
@@ -187,10 +196,23 @@ deflection limit is taken in v1. No unit other than N and mm is accepted in v1.
 
 > This is a model estimate of short-term elastic deflection at midspan for the inputs and conditions you declared, using
 > the average stiffness of clear, straight-grained Loblolly pine from the USDA Forest Products Laboratory *Wood Handbook*
-> (2010). It is not a thickness recommendation. It is not a strength, safety, buckling, fatigue, impact, connection,
-> code-compliance, production-suitability or certification result. No strength check was made: the member may yield or
-> fail before this deflection is reached. The source values are averages for clear wood; stiffness varies (about 22%
-> coefficient of variation in the source), and real stock can differ materially.
+> (2010). It is preliminary and advisory, not a final engineering or manufacturing specification. It is not a thickness
+> recommendation. Do not rely on this estimate, or on any thickness or section you choose with its help, before
+> verifying loads, supports, stress, deformation, joints, fatigue, impact, and safety factor. It is not a strength,
+> safety, buckling, fatigue, impact, connection, code-compliance, production-suitability or certification result. No
+> strength check was made: the member may yield or fail before this deflection is reached. The model does not include
+> the member's own weight (it could enter only as a separately source-qualified load case), bearing or local
+> indentation at the supports or at the load point, support compliance or flexibility, connection deformation, or local
+> stress effects; these are outside this estimate, and they are not claimed to be negligible. The source values are
+> averages for clear wood; stiffness varies (about 22% coefficient of variation in the source), and real stock can
+> differ materially.
+
+**Register warning categories.** The disclosure carries the CAP-13 register's *General* and *Structural* mandatory
+warning meanings, adapted only in grammar because v1 proposes no thickness. The register's other mandatory warning
+categories — *Electrical and battery*, *Heat and pressure*, *Medical, food-contact, or human-contact*, and *Children and
+consumer safety* — remain binding whenever applicable. Where v1's §9 high-risk screen covers the class concerned
+(battery containment, pressure, high temperature, medical use, food contact, use by or for children), v1 abstains before
+any calculation; none of these categories is turned into a calculation.
 
 **Variability treatment.** Disclosure only: no percentile, interval, safety factor, margin or probability; no adjustment
 to `E`; no uncertainty propagated inside the calculation owner. Any treatment beyond disclosure needs separate method
@@ -247,8 +269,9 @@ v1 method can then reach execution only through (i) a genuine CASE-A need decide
 genuine consumer of a first conversion increment, or (iii) a separately decided change to the calc/units contract, which
 that contract's §16 routes through one Level-1 semantic review. This candidate chooses none of them.
 
-**Later method admission (described, not authorized).** After a calculation owner exists, a separate increment may admit
-this ONE closed method record and pair it with the first CAP-13 user slice — the point at which Stage 25 would be
+**Later method admission (described, not authorized).** After a calculation owner exists, and only once D-5 and D-7
+are closed (§12), a separate increment may admit this ONE closed method record and pair it with the first CAP-13 user
+slice — the point at which Stage 25 would be
 entered. It would execute the source-structured equation with the section relations and the §5 derivations, over the
 quantity kinds force (N), length (mm) and modulus (MPa); carry the guard strategy of calc/units contract §14 in full
 (among it: independent expected numerical results — the §4 cross-check form may serve as one; invalid-value and
@@ -275,15 +298,29 @@ admitted.
 - **R-8 Calculation-owner separation and the CASE A / CASE B sequencing** of §10 and §11.
 - **R-9 Source / IP fidelity**, including the third-party-credit status of the specific table entries used.
 
-**Open Owner decisions before any implementation.**
+**Open Owner decisions and pre-admission blockers before any implementation.**
 
 - **D-1** Calculation-owner sequencing (§11).
 - **D-2** The journey gate for the future user slice (for example, CAP-12's durable mechanical root-domain gate).
 - **D-3** The final method identifier.
 - **D-4** Whether a later user slice compares `Δ` with an Owner-stated deformation limit.
-- **D-5** Completion of the inspection record: inspection date, page / table markers and the per-entry third-party-credit
-  check.
+- **D-5** Completion of the inspection record — OPEN. Before method admission it must verify and record, without closing
+  any item by assumption: (1) the exact page / table location of every admitted value and statement, with the
+  inspection date; (2) the third-party-credit status of each entry used; (3) the Chapter-5 wording that defines the
+  relevant `EL` basis; (4) whether the Table 5-1 `GLR / EL` ratio is intended against the corrected, shear-free `EL` this
+  contract uses; (5) whether Chapter 9 prescribes or constrains which `E` is used in Equation 9-2; (6) the unit-source
+  inspection records that the calc/units contract requires for the admitted quantities and units (N, mm, MPa), if and
+  when method admission is later authorized.
 - **D-6** The Arabic disclosure wording, settled under the UX review.
+- **D-7 — METHOD-REGIME QUALIFICATION** — OPEN. Before this method may ever be admitted to the calculation owner, a
+  technically authoritative and lawfully reusable source must establish the applicability / validity criterion needed
+  to reject inputs outside the method's bounded regime. D-7 determines, from source authority only: whether the
+  governing issue is small-deflection validity, short / deep-member applicability or another source-defined regime
+  condition; and the exact machine-checkable criterion, if one exists. Until D-7 is closed, this contract may be accepted
+  as documentation, the method must not be admitted for runtime execution, no numerical CAP-13 result may be shown, and
+  no arbitrary threshold may be substituted.
+
+`METHOD ADMISSION: BLOCKED UNTIL D-5 AND D-7 ARE CLOSED.`
 
 ## 13. Duplication check
 
