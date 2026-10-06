@@ -21,14 +21,15 @@ Implementation, a named consumer and any method admission stay unauthorized; no 
 not reused.
 *(Superseded 2026-10-04 by the Owner's acceptance, preserved — was: "STATUS: CONTRACT CANDIDATE — DOCUMENTATION ONLY.";
 the title read "(CANDIDATE)" and the authority level read "subordinate governance contract candidate".)*
-CORRECTION 01: `CORRECTION 01 CANDIDATE — METHOD-FIRST FIRST-INCREMENT SHAPE — DOCUMENTATION ONLY — NOT ACCEPTED — NO
-IMPLEMENTATION AUTHORIZED`. Proposed 2026-10-06 after an architecture review (PASS WITH CONDITIONS; Option A — two
-mutually exclusive first-increment shapes, A1 conversion-first and A2 method-first). It changes only the §3
-"First-increment method" paragraph and the §13 first-increment shape and exclusion list; every other clause, including
-§9, §14 and §16, is unchanged. It is not accepted: the text of record before this correction (preserved beside each
-changed passage) governs until the Owner accepts the correction after one non-authoring Level-1 semantic review (§16).
-It implements nothing, authorizes no first increment, admits no method or conversion, and does not enter Stage 25 or
-activate CAP-13.
+CORRECTION 01: `CORRECTION 01 — METHOD-FIRST FIRST-INCREMENT SHAPE — ACCEPTED 2026-10-07 — DOCUMENTATION ONLY — NO
+IMPLEMENTATION AUTHORIZED`. Proposed 2026-10-06 as a candidate after an architecture review (PASS WITH CONDITIONS; Option
+A — two mutually exclusive first-increment shapes, A1 conversion-first and A2 method-first), reviewed by one independent
+non-authoring Level-1 semantic review (§16; PASS WITH NON-BLOCKING NOTES, no blocking finding) and ACCEPTED by the Owner
+on 2026-10-07 under Option A. It changed only the §3 "First-increment method" paragraph and the §13 first-increment shape
+and exclusion list; every other clause, including §9, §14 and §16, is unchanged. The accepted Correction 01 wording is now
+the applicable contract wording of record; the text of record before the correction stays preserved beside each changed
+passage as history only. Acceptance implements nothing, authorizes no first increment, admits no method or conversion,
+and does not enter Stage 25 or activate CAP-13.
 BASIS: the Lead's read-only Stage 25 / CAP-13 feasibility gate (finding B — CAP-13 is feasible only after calculation and
 units ownership is decided); the Lead's read-only calculation and units ownership gate (finding B — a new shared calculation
 and units owner is required before CAP-13); an Astra architecture review and an independent Claude architecture / semantic
@@ -86,13 +87,13 @@ owner's governed artifact is structural only: it checks that the authority's rec
 (§9); it does not judge technical correctness. Each method admission requires its own Owner authorization tied to a named
 consumer (§13).
 
-**First-increment method (Correction 01 candidate wording — not accepted).** A separately authorized first increment
+**First-increment method (Correction 01 — accepted 2026-10-07).** A separately authorized first increment
 selects exactly ONE of the two mutually exclusive shapes of §13: (A1) one unit conversion whose authority is the unit source
 itself; or (A2) one deterministic method whose technical authority stays outside this owner. This contract itself admits
 neither shape and supplies no method, conversion factor, constant or unit vocabulary; each enters only through the owner's
 governed artifact with its own inspection record (§9), and only under a separate Owner authorization tied to a named
 consumer (§13).
-*(Text of record before Correction 01, preserved; it governs until Correction 01 is accepted — "**First-increment
+*(Text of record before Correction 01, preserved as history; superseded by the accepted Correction 01 — "**First-increment
 method.** In a future first increment the only admitted method may be a unit conversion whose authority is the unit source
 itself. This contract documents no conversion factor, no constant and no unit vocabulary; each enters only through the
 owner's governed artifact with its own inspection record (§9).")*
@@ -261,7 +262,7 @@ A future implementation must define and enforce:
 
 ## 13. Minimum viable future first increment (only if separately authorized)
 
-*(Correction 01 candidate wording — not accepted; the text of record preserved below governs until it is accepted.)*
+*(Correction 01 wording — accepted 2026-10-07; the earlier text of record is preserved below as history only.)*
 
 A first increment must have exactly one named, authorized consumer and must not be built as a consumer-less library.
 Possible triggers: the first authorized method consumer, a CAP-13 feasibility-gate increment, or a THERM-01 contract. It
@@ -299,7 +300,7 @@ access; clock dependence; randomness; provider calls; external tools; AI fallbac
 partial recommendations; a second method; a second consumer; any conversion not independently justified by the named
 consumer; a generic solver; and a generic unit registry or conversion graph.
 
-*(Text of record before Correction 01, preserved; it governs until Correction 01 is accepted — "A first increment must have
+*(Text of record before Correction 01, preserved as history; superseded by the accepted Correction 01 — "A first increment must have
 a named, authorized consumer and must not be built as a consumer-less library. Possible triggers: the first authorized method
 consumer, a CAP-13 feasibility-gate increment, or a THERM-01 contract. It is bounded to: one physical quantity kind; a very
 small governed unit vocabulary; explicit scalar numeric input, with ranges refused; one independently checked,
