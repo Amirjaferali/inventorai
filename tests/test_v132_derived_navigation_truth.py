@@ -7344,3 +7344,121 @@ def test_f2_a_closing_backtick_does_not_end_the_claim():
     text = "`X: DELIVERED` · `POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS` · `NEXT`"
     m = re.search(_POST_MERGE_CLAIM, text, re.I)
     assert text[m.start():_claim_end(text, m)] == "POST-MERGE IDENTITY / CONTENT VERIFICATION: PASS`"
+
+
+# ==========================================================================
+# Stage 28 — named future technical-responsibility assessments (recorded 2026-10-05)
+# ==========================================================================
+# Documentation-only recording. Three PRIMARY named assessments sit beside 28-T1…28-T5 in the
+# Stage-28 future portfolio under descriptive names, with no `28-T` number. One checker returns every
+# material regression; the live documents must return none, and each guarded risk is proven caught.
+_S28_NAMED = ("Wireless / RF Connectivity", "Battery / Electrochemical Energy Storage / BMS",
+              "Perception / Edge Inference")
+_S28_STATUS = "`RECORDED — PLANNING / NAVIGATION ONLY — NOT AUTHORIZED`"
+_S28_INVARIANT = "`TECHNICAL RESPONSIBILITY ≠ PHYSICAL COMPONENT ≠ ROOT DOMAIN`"
+_S28_NONE_LIVE = "none is implemented, qualified, activated, part-eligible or root-admissible"
+_S28_NAMES_RE = "(?:" + "|".join(re.escape(n) for n in _S28_NAMED) + ")"
+
+
+def _stage28_named_assessment_problems(roadmap, checklist):
+    """Every material regression of the named Stage-28 assessments; [] when the recording holds."""
+    problems = []
+    flat = {"roadmap": re.sub(r"\s+", " ", roadmap), "checklist": re.sub(r"\s+", " ", checklist)}
+    for name in _S28_NAMED:                                                     # 1 + 2: name and status
+        if "**%s** — %s" % (name, _S28_STATUS) not in flat["roadmap"]:
+            problems.append("roadmap: %s lost its name or planning-only status" % name)
+        if "- [ ] %s — %s" % (name, _S28_STATUS) not in checklist:
+            problems.append("checklist: %s lost its name or planning-only status" % name)
+    for label, text in flat.items():
+        if _S28_NONE_LIVE not in text:                                          # 3: nothing live
+            problems.append(label + ": the not-implemented / not-activated statement is missing")
+        claim = re.search(_S28_NAMES_RE + r"(?: assessment)?(?: is| are|:)? (?:now )?(?:fully )?"
+                          r"(?:implemented|qualified|activated|root-admissible|part-eligible|authorized)\b",
+                          text, re.I)
+        if claim:
+            problems.append(label + ": live-status claim: " + claim.group(0))
+        if _S28_INVARIANT not in text:                                          # 4: three meanings stay apart
+            problems.append(label + ": the responsibility / component / root-domain invariant is missing")
+        if re.search(r"technical responsibilit(?:y|ies)\s*(?:=|==|is|are)\s*(?:a |the )?physical (?:component|part)",
+                     text, re.I):
+            problems.append(label + ": technical responsibility equated with a physical component")
+        for m in re.finditer(r"28-T(\d+)", text):                               # 5: no minted 28-T6/7/8…
+            n = int(m.group(1))
+            if n <= 5:
+                continue
+            ctx = text[max(0, m.start() - 5):m.end() + 17]
+            if n != 6 or not ("NOT `28-T6`" in ctx or "`28-T6` does not exist" in ctx):
+                problems.append(label + ": minted identifier " + m.group(0))
+        if re.search(r"\bT[78]\b", text):
+            problems.append(label + ": minted T7 / T8 label")
+        if re.search(r"STAGE 28: COMPLETE(?! — CURRENT BOUNDED CONTROL-LOOP OPTIONAL-PART SCOPE ONLY)", text):
+            problems.append(label + ": unscoped Stage-28 completion")   # 6: never globally discharged
+        for m in re.finditer(r"globally discharged", text, re.I):
+            if not re.search(r"not $", text[max(0, m.start() - 4):m.start()], re.I):
+                problems.append(label + ": Stage-28 discharge claim: " + text[max(0, m.start() - 40):m.end()])
+        if re.search(r"IoT(?: \([^)]*\))? (?:now |will |shall )?(?:owns?|absorbs?) (?:the )?(?:future )?(?:Wireless|RF)",
+                     text, re.I):                                               # 7: IoT never owns RF
+            problems.append(label + ": IoT owns or absorbs Wireless / RF truth")
+        if re.search(r"Robotics (?:owns?|holds?) (?:the )?perception|(?<!second )Robotics-owned perception",
+                     text, re.I):                                               # 8: no Robotics perception owner
+            problems.append(label + ": Robotics owns a perception authority")
+    if "`STAGE 28 IS NOT GLOBALLY DISCHARGED FOR FUTURE ADDITIONAL DOMAINS`" not in flat["roadmap"]:
+        problems.append("roadmap: Stage 28 is no longer recorded as not globally discharged")
+    if "They do not reopen or globally complete Stage 28" not in flat["roadmap"]:
+        problems.append("roadmap: the named assessments no longer state they leave Stage 28 open")
+    if "IoT (Stage 31) may CONSUME future Wireless / RF truth but must not own or absorb it." not in flat["roadmap"]:
+        problems.append("roadmap: the Wireless / RF entry lost its IoT consume-not-absorb boundary")
+    row31 = re.search(r"^- \[ \] \*\*31 — IoT architecture:\*\*.*$", roadmap, re.M)
+    if not row31 or "IoT may CONSUME future Wireless / RF Connectivity truth" not in row31.group(0) \
+            or "but must not own or absorb it." not in row31.group(0):
+        problems.append("roadmap row 31: the consume-not-absorb Wireless / RF boundary is missing")
+    t5 = re.search(r"\*\*28-T5 — [^\n]*", roadmap)
+    if not t5 or "never to a second Robotics-owned perception authority" not in t5.group(0):
+        problems.append("roadmap 28-T5: the shared Perception / Edge Inference cross-reference is missing")
+    return problems
+
+
+def test_stage28_named_assessments_are_recorded_planning_only():
+    assert _stage28_named_assessment_problems(_read(ROADMAP), _read(CHECKLIST)) == []
+
+
+def test_stage28_named_assessments_add_no_stage_and_keep_28_t1_to_t5():
+    roadmap, checklist = _read(ROADMAP), _read(CHECKLIST)
+    assert len(re.findall(r"^- \[ \] \*\*\d+ — ", roadmap, re.M)) == 21
+    for n, title in ((1, "Sensors, Instrumentation & Data Acquisition"), (2, "Embedded Systems & Firmware"),
+                     (3, "Power Electronics & Motion Control"), (4, "PLC / Industrial Automation & Control"),
+                     (5, "Mechatronics / Robotics — Shared Composition Reuse & Residual-Capability Reassessment")):
+        assert roadmap.count("**28-T%d — %s.**" % (n, title)) == 1, n
+        assert checklist.count("- [ ] 28-T%d — %s — %s" % (n, title, _S28_STATUS)) == 1, n
+
+
+_S28_MUTATIONS = {
+    "name disappears": ("roadmap", "**Perception / Edge Inference** — ", "**Computer Vision** — "),
+    "status lost": ("checklist", "- [ ] Wireless / RF Connectivity — " + _S28_STATUS,
+                    "- [ ] Wireless / RF Connectivity — `RECORDED`"),
+    "activation claimed": ("roadmap", "**Wireless / RF Connectivity** — ",
+                           "Wireless / RF Connectivity is activated. **Wireless / RF Connectivity** — "),
+    "part-eligibility claimed": ("checklist", "- [ ] Perception / Edge Inference — ",
+                                 "Perception / Edge Inference: part-eligible. - [ ] Perception / Edge Inference — "),
+    "not-live statement dropped": ("checklist", _S28_NONE_LIVE, "they are recorded"),
+    "responsibility = component": ("roadmap", _S28_INVARIANT,
+                                   "`TECHNICAL RESPONSIBILITY = PHYSICAL COMPONENT ≠ ROOT DOMAIN`"),
+    "28-T6 minted": ("roadmap", "**Wireless / RF Connectivity** — ", "**28-T6 — Wireless / RF Connectivity** — "),
+    "28-T8 minted": ("checklist", "- [ ] Perception / Edge Inference — ", "- [ ] 28-T8 Perception / Edge Inference — "),
+    "Stage 28 globally discharged": ("roadmap", "They do not reopen or globally complete Stage 28",
+                                     "Stage 28 is now globally discharged; they complete Stage 28"),
+    "IoT absorbs RF": ("roadmap", "IoT (Stage 31) may CONSUME future Wireless / RF truth",
+                       "IoT (Stage 31) owns the Wireless / RF truth"),
+    "row 31 boundary dropped": ("roadmap", " IoT may CONSUME future Wireless / RF Connectivity truth", " IoT"),
+    "Robotics perception owner": ("roadmap", "never to a second Robotics-owned perception authority.\n",
+                                  "and Robotics owns perception as its own authority.\n"),
+}
+
+
+@pytest.mark.parametrize("name", sorted(_S28_MUTATIONS))
+def test_stage28_named_assessment_regressions_are_caught(name):
+    doc, old, new = _S28_MUTATIONS[name]
+    texts = {"roadmap": _read(ROADMAP), "checklist": _read(CHECKLIST)}
+    assert texts[doc].count(old) >= 1, (name, "mutation anchor missing")
+    texts[doc] = texts[doc].replace(old, new, 1)
+    assert _stage28_named_assessment_problems(texts["roadmap"], texts["checklist"]), name
