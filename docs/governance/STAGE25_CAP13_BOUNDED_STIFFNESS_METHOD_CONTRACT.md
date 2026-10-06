@@ -12,8 +12,10 @@ ACCEPTANCE: 2026-10-06, by Owner decision after one non-authoring Level-1 semant
 delta review returned B — DELTA PASS WITH NON-BLOCKING NOTES; recorded documentation-only. No technical or method clause
 (§§0–14) was changed by the acceptance; references in the body to "this candidate" read as this accepted contract. At
 that acceptance D-1, D-5 and D-7 were OPEN; D-1 was later CLOSED 2026-10-07 by repository reconciliation after the calc/units
-Correction 01 was reviewed, accepted and merged (see CONFORMING SYNC below and §12). D-5 and D-7 remain OPEN, and
-`METHOD ADMISSION: BLOCKED UNTIL D-5 AND D-7 ARE CLOSED` stands. The review's non-blocking
+Correction 01 was reviewed, accepted and merged (see CONFORMING SYNC below and §12); D-5 was later CLOSED 2026-10-07 by
+the source-inspection record completion (see D-5 SOURCE-INSPECTION RECORD below, §3A and §12). D-7 remains OPEN, and
+`METHOD ADMISSION: BLOCKED UNTIL D-7 IS CLOSED` stands (at acceptance it read `METHOD ADMISSION: BLOCKED UNTIL D-5 AND
+D-7 ARE CLOSED`). The review's non-blocking
 notes remain future-touch / future-UX considerations and do not change the accepted contract boundary. This acceptance
 does not enter Stage 25, does not activate CAP-13, does not admit the method to runtime execution, does not implement the
 calculation and units owner or authorize its first increment, authorizes no numerical result, no user-facing CAP-13 slice
@@ -26,7 +28,12 @@ CONFORMING SYNC: `D-1 / CALC-OWNER CORRECTION 01 CONFORMING SYNC — CORRECTION 
 IMPLEMENTATION AUTHORIZED`. Only the calc/units sequencing wording in §0, §11 and the §12 D-1 entry is synchronized with
 the calc/units Correction 01, now accepted by the Owner; no technical or method clause changes. D-1 RECONCILIATION:
 `D-1: CLOSED` (2026-10-07) — the accepted Correction 01 was merged through PR #764 as merge commit
-`a5c66edbc620befcd4a31f07115f08df56874d04`. D-5 and D-7 stay OPEN.
+`a5c66edbc620befcd4a31f07115f08df56874d04`. D-5 and D-7 stayed OPEN at that reconciliation.
+D-5 SOURCE-INSPECTION RECORD: `D-5: CLOSED` (2026-10-07) — the official USDA Chapter 5 / Chapter 9 primary-source
+inspection record is completed with exact locations, entry-level third-party-credit checks, the `EL` and `GLR / EL` basis,
+the Chapter-9 `E` basis and the NIST SP 811 unit-source basis (§3A). No equation, constant, section relation, property
+value, orientation, input, refusal, disclosure, A1 / A2 or role-envelope clause changes; no new method version is created.
+D-7 stays OPEN.
 BASE: `feature/atomic-json-session-persistence` at `3a65e91642b9669bd5e80f5ac78b00b60dcdd2f6`; `ACTIVE CONTRACT: NONE`;
 Stage 25 NOT ENTERED / NOT AUTHORIZED; CAP-13 NOT ACTIVATED; the Master Roadmap at 20 / 45 incomplete.
 BASIS: the Lead's read-only Stage-25 reassessment (blocked on source / IP: no qualified method / material source pair); a
@@ -55,8 +62,8 @@ activate CAP-13, recommends no thickness and assigns no identifier globally.
 - `CALCULATION RESULT ≠ THICKNESS RECOMMENDATION ≠ SAFETY CONCLUSION`.
 - `DEFORMATION CONSTRAINT SATISFIED ≠ SAFE ≠ STRUCTURALLY ADEQUATE`.
 - `TECHNICAL DEEPENING SOURCE RULE: OPEN / LAWFULLY REUSABLE SOURCES ONLY` · `PUBLICLY VIEWABLE ≠ OPENLY REUSABLE`.
-- `METHOD ADMISSION: BLOCKED UNTIL D-5 AND D-7 ARE CLOSED` (§12). This contract may be accepted as documentation while
-  either is open; the method is then not admitted for runtime execution and no numerical CAP-13 result is shown.
+- `METHOD ADMISSION: BLOCKED UNTIL D-7 IS CLOSED` (§12; D-1 and D-5 are CLOSED). While D-7 is open the method is not
+  admitted for runtime execution and no numerical CAP-13 result is shown.
 
 ## 1. Purpose and scope
 
@@ -87,7 +94,7 @@ against any limit, recommends no thickness and reaches no strength, safety, comp
 **Inspection basis.** Every value and statement above was supplied by the Lead's own inspection of the official USDA
 primary PDFs and is recorded as Lead-supplied, following the CAP-12 precedent (its governed artifact records sources "as
 verified by the Lead" / "as inspected by the Lead"). It was reported to the drafting session on 2026-10-06. The exact
-inspection date and page / table markers for each claim must be added to the record before any admission (§12, D-5).
+inspection dates and page / table markers for each claim are recorded in §3A (D-5, CLOSED 2026-10-07).
 
 **Source-use basis (not a legal opinion).** Both chapters are works of federal employees made in their official duties at
 the USDA Forest Service Forest Products Laboratory; GovInfo records the handbook as a USDA Forest Service government
@@ -104,8 +111,67 @@ shear-correction statement and the variability statement, each recorded as a fac
 based on — that report creates no dependency on, and no licence to, the ASTM text); NDS / AWC text and design values;
 any figure, photograph or table in either chapter credited to a third party; vendor data; and any other external
 copyrighted handbook material. A credited third-party item inside a source chapter is excluded even though the chapter is
-federal work. Before admission, the specific Table 9-1, 5-1, 5-3a and 5-6 entries used must be confirmed free of a
-third-party credit (§12, D-5).
+federal work. The specific Table 9-1, 5-1, 5-3a and 5-6 entries used were checked for a third-party credit (§3A, D5-2).
+
+## 3A. D-5 source-inspection record (Lead-supplied; D-5 CLOSED 2026-10-07)
+
+Inspection: the prior Lead's inspection of the official primary sources on 2026-10-06, and the successor Lead's
+re-verification on 2026-10-07; recorded here as Lead-supplied, on the §3 basis. The S0 / S1 / S2 identities and the §3
+source-use basis are unchanged; this record adds locations and qualifications only, and broadens no licence conclusion.
+
+**D5-1 — Exact locations.**
+
+- S1, Chapter 9, page 9-1: the straight-beam deflection context in which Equation 9-2 begins — a straight beam,
+  elastically stressed, with a constant cross section.
+- S1, Chapter 9, page 9-2: the Equation 9-2 symbol definitions; `E = EL` where the grain direction is parallel to the beam
+  axis; flat-grained vertical faces → `G = GLT`; edge-grained vertical faces → `G = GLR`; the first Equation-9-2 term is the
+  bending deflection and the second the shear deflection; the rectangular-section relations `I = b·h³/12` and
+  `A′ = 5·b·h/6`; Table 9-1.
+- S1, Table 9-1, page 9-2: the one admitted row — concentrated load at midspan; both ends simply supported; deflection at
+  midspan; `kb = 1/48`; `ks = 1/4`.
+- S2, Chapter 5, page 5-1: the presented mechanical properties are based on pieces termed clear and straight-grained; the
+  chapter values represent average species properties; material / property variability is real and must be considered.
+- S2, Chapter 5, page 5-2: Table 5-1, `Loblolly` row — `GLR / EL = 0.082`, `GLT / EL = 0.081`; approximately 12% moisture
+  basis; bending `EL` includes a shear-deflection effect and may be increased by approximately 10% to remove that effect
+  approximately; that adjusted bending `EL` is the basis associated with the Table-5-1 elastic ratios; the Table-5-1
+  footnote states that `EL` may be approximated by increasing the Table-5-3 modulus of elasticity by 10%.
+- S2, Table 5-3a, chapter page 5-7: `Loblolly` row, moisture condition 12%, modulus of elasticity `12,300 MPa`.
+- S2, Table 5-6, chapter page 5-26: a representative coefficient of variation of approximately 22% for clear-wood
+  static-bending modulus of elasticity. It stays disclosure only (§8): it is not a probability, a confidence interval, a
+  design factor, a safety factor, a percentile or an adjustment to `E`.
+
+**D5-2 — Third-party credit.** No separate third-party credit was observed for the exact federal-authored content used:
+Equation 9-2; the admitted Table 9-1 row; the rectangular-section relations; the Table 5-1 `Loblolly` elastic-ratio row; the
+Table 5-3a `Loblolly` modulus entry; and the Table 5-6 modulus-variability entry. This is not a claim that every item in
+Chapters 5 or 9 is reusable: separately credited third-party material elsewhere in the publication stays excluded (§3), and
+no ASTM / AWC / NDS wording is ingested.
+
+**D5-3 — `EL` basis.** S2 page 5-2 states that bending `EL` contains a shear-deflection effect and may be increased by
+approximately 10% to remove that effect approximately. The accepted §5 rule therefore stands unchanged:
+`E = E_tab × 1.10` approximately, with `E_tab = 12,300 MPa`. The correction stays approximate and no exact cancellation of
+shear effects is claimed.
+
+**D5-4 — `GLR / EL` against the corrected `EL`.** Table 5-1 expresses `GLR / EL` and `GLT / EL` as ratios to `EL`; its
+footnote ties `EL` to the approximately +10% adjustment of the Table-5-3 bending modulus; and the surrounding page-5-2 text
+explains the approximately shear-corrected bending `EL`. For the one admitted orientation `EDGE_GRAINED_VERTICAL_FACES`,
+`G = GLR` and `G = 0.082 × E`, with `E` the approximately corrected `EL`, are therefore source-supported. No precision
+beyond the source is claimed.
+
+**D5-5 — The `E` used in Equation 9-2.** S1 page 9-2 states `E = EL` for beams with grain parallel to their axis, and S2
+page 5-2 defines the relevant bending `EL` basis and its approximately +10% shear-effect correction. Using the
+approximately corrected `EL` as `E` in Equation 9-2 is therefore source-supported within this contract's explicitly
+approximate interpretation. This is not a strength, safety, suitability or elastic-regime conclusion; D-7 stays separate
+and OPEN.
+
+**D5-6 — Unit-source basis.** National Institute of Standards and Technology, *NIST Special Publication 811 — Guide for
+the Use of the International System of Units (SI)*, 2008 Edition, Ambler Thompson and Barry N. Taylor,
+DOI `10.6028/NIST.SP.811e2008`; inspected by the prior Lead 2026-10-06 and re-verified by the successor Lead 2026-10-07
+(Lead-supplied). Chapter 4: Table 1 — metre, symbol `m`; Table 3 — force, newton, `N`; pressure / stress, pascal,
+`Pa = N/m²`; Table 5 — milli, `10^-3`, symbol `m`; mega, `10^6`, symbol `M`. Hence `mm = 10^-3 m`, `MPa = 10^6 Pa` and
+`Pa = N/m²`, so dimensionally `1 MPa = 1 N/mm²`. That dimensional equivalence does NOT make `N/mm²` an admitted alias
+token of `MPa`; the exact-token rule (§11) stands. This is source-inspection evidence only: it creates none of the future
+shared owner's governed unit records, which calc/units contract §9 still requires the future owner / artifact to carry
+before implementation or admission.
 
 ## 4. Method definition
 
@@ -144,11 +210,11 @@ No inversion: `h` is never solved for in v1 (deferred; §11).
   `c` of approximately 0.10, so that it does not intentionally combine an apparent bending modulus containing test shear
   effects with Equation 9-2's separate explicit shear term. Because the source correction is approximate, no exact
   cancellation of shear influence is claimed. That pairing of the Chapter-5 correction with the Chapter-9 shear term is
-  this contract's interpretation (review item R-2; D-5 items 3 and 5). `E` is derived deterministically at execution
+  this contract's interpretation (review item R-2), source-supported within its approximate reading (§3A, D5-3 and D5-5). `E` is derived deterministically at execution
   from the record; no rounded derived value is stored or stated as source truth, and the correction is disclosed as
   approximate.
-- **Shear modulus (orientation `EDGE_GRAINED_VERTICAL_FACES` only):** `G = (GLR / EL) × E = 0.082 × E`. Whether the
-  Table 5-1 ratio is to be applied to the corrected `E` is review item R-2 and stays open under D-5 item 4.
+- **Shear modulus (orientation `EDGE_GRAINED_VERTICAL_FACES` only):** `G = (GLR / EL) × E = 0.082 × E`. Applying the
+  Table 5-1 ratio to the approximately corrected `E` is source-supported (§3A, D5-4).
 - **Not admitted in v1:** `GLT / EL = 0.081` is present in the same S2 Table 5-1 row and is recorded here only to show the
   row identity; v1 does not use it (§6).
 - **Variability (S2 Table 5-6):** a representative coefficient of variation of approximately 22% for clear-wood bending
@@ -302,7 +368,7 @@ change to the calc/units contract, which that contract's §16 routes through one
 that route (iii) and resolved this sequencing deadlock: it was reviewed, accepted by the Owner (2026-10-07) and merged
 (PR #764, merge commit `a5c66edbc620befcd4a31f07115f08df56874d04`), so D-1 is CLOSED. Closing D-1 changes no CASE A /
 CASE B semantics and authorizes nothing: the shared owner is NOT implemented, no first increment is authorized, the CAP-13 method is NOT admitted (method admission
-stays blocked until D-5 and D-7 are closed), Stage 25 is NOT entered and CAP-13 is NOT activated.
+stays blocked until D-7 is closed; D-5 is CLOSED, §3A), Stage 25 is NOT entered and CAP-13 is NOT activated.
 
 **Method-first envelope this method would bring under the accepted Correction 01 (sequencing statement only; the method
 itself is unchanged).** Roles, each bound to one quantity kind and one exact unit token:
@@ -315,8 +381,8 @@ itself is unchanged).** Roles, each bound to one quantity kind and one exact uni
 `N/mm²` dimensional equivalence does not make it an admitted alias of `MPa`. The shared owner would validate exact role →
 quantity kind → unit token consistency only; the equation's dimensional derivation (§4) stays with this method authority.
 
-**Later method admission (described, not authorized).** After a calculation owner exists, and only once D-5 and D-7
-are closed (§12), a separate increment may admit this ONE closed method record and pair it with the first CAP-13 user
+**Later method admission (described, not authorized).** After a calculation owner exists, and only once D-7 is closed
+(§12; D-5 is CLOSED), a separate increment may admit this ONE closed method record and pair it with the first CAP-13 user
 slice — the point at which Stage 25 would be
 entered. It would execute the source-structured equation with the section relations and the §5 derivations, over the
 quantity kinds force (N), length (mm) and modulus (MPa); carry the guard strategy of calc/units contract §14 in full
@@ -352,7 +418,11 @@ admitted.
 - **D-2** The journey gate for the future user slice (for example, CAP-12's durable mechanical root-domain gate).
 - **D-3** The final method identifier.
 - **D-4** Whether a later user slice compares `Δ` with an Owner-stated deformation limit.
-- **D-5** Completion of the inspection record — OPEN. Before method admission it must verify and record, without closing
+- **D-5** Completion of the inspection record — CLOSED 2026-10-07. Basis: the official USDA Chapter 5 / Chapter 9
+  primary-source inspection record is completed (§3A): exact locations with inspection dates (D5-1), entry-level
+  third-party-credit checks (D5-2), the `EL` and `GLR / EL` basis resolved (D5-3, D5-4), the Chapter-9 `E` basis recorded
+  (D5-5) and the NIST SP 811 unit-source basis recorded (D5-6). Its closure admits no method. The requirement as it stood
+  while OPEN (preserved): before method admission it must verify and record, without closing
   any item by assumption: (1) the exact page / table location of every admitted value and statement, with the
   inspection date; (2) the third-party-credit status of each entry used; (3) the Chapter-5 wording that defines the
   relevant `EL` basis; (4) whether the Table 5-1 `GLR / EL` ratio is intended against the corrected, shear-free `EL` this
@@ -368,7 +438,9 @@ admitted.
   as documentation, the method must not be admitted for runtime execution, no numerical CAP-13 result may be shown, and
   no arbitrary threshold may be substituted.
 
-`METHOD ADMISSION: BLOCKED UNTIL D-5 AND D-7 ARE CLOSED.`
+`METHOD ADMISSION: BLOCKED UNTIL D-7 IS CLOSED.`
+*(Earlier text, preserved: "`METHOD ADMISSION: BLOCKED UNTIL D-5 AND D-7 ARE CLOSED.`" — superseded 2026-10-07 when D-5
+was CLOSED.)*
 
 ## 13. Duplication check
 
