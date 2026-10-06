@@ -10,8 +10,10 @@ is a defect of this document.
 RECORDED: 2026-10-06, by Owner authorization of ONE documentation-only CAP-13 bounded method contract candidate.
 ACCEPTANCE: 2026-10-06, by Owner decision after one non-authoring Level-1 semantic / technical review and the targeted
 delta review returned B — DELTA PASS WITH NON-BLOCKING NOTES; recorded documentation-only. No technical or method clause
-(§§0–14) was changed by the acceptance; references in the body to "this candidate" read as this accepted contract. D-1,
-D-5 and D-7 remain OPEN, and `METHOD ADMISSION: BLOCKED UNTIL D-5 AND D-7 ARE CLOSED` stands. The review's non-blocking
+(§§0–14) was changed by the acceptance; references in the body to "this candidate" read as this accepted contract. At
+that acceptance D-1, D-5 and D-7 were OPEN; D-1 was later CLOSED 2026-10-07 by repository reconciliation after the calc/units
+Correction 01 was reviewed, accepted and merged (see CONFORMING SYNC below and §12). D-5 and D-7 remain OPEN, and
+`METHOD ADMISSION: BLOCKED UNTIL D-5 AND D-7 ARE CLOSED` stands. The review's non-blocking
 notes remain future-touch / future-UX considerations and do not change the accepted contract boundary. This acceptance
 does not enter Stage 25, does not activate CAP-13, does not admit the method to runtime execution, does not implement the
 calculation and units owner or authorize its first increment, authorizes no numerical result, no user-facing CAP-13 slice
@@ -22,8 +24,9 @@ deployment or release. `STAGE 25: NOT ENTERED` · `STAGE 25: NOT AUTHORIZED` · 
 ACCEPTED — NO IMPLEMENTATION AUTHORIZED — STAGE 25 NOT ENTERED — CAP-13 NOT ACTIVATED."; the title read "(CANDIDATE)".)*
 CONFORMING SYNC: `D-1 / CALC-OWNER CORRECTION 01 CONFORMING SYNC — CORRECTION 01 ACCEPTED BY THE OWNER 2026-10-07 — NO
 IMPLEMENTATION AUTHORIZED`. Only the calc/units sequencing wording in §0, §11 and the §12 D-1 entry is synchronized with
-the calc/units Correction 01, now accepted by the Owner; no technical or method clause changes, and D-1 (pending
-repository reconciliation after the accepted correction is merged), D-5 and D-7 stay OPEN.
+the calc/units Correction 01, now accepted by the Owner; no technical or method clause changes. D-1 RECONCILIATION:
+`D-1: CLOSED` (2026-10-07) — the accepted Correction 01 was merged through PR #764 as merge commit
+`a5c66edbc620befcd4a31f07115f08df56874d04`. D-5 and D-7 stay OPEN.
 BASE: `feature/atomic-json-session-persistence` at `3a65e91642b9669bd5e80f5ac78b00b60dcdd2f6`; `ACTIVE CONTRACT: NONE`;
 Stage 25 NOT ENTERED / NOT AUTHORIZED; CAP-13 NOT ACTIVATED; the Master Roadmap at 20 / 45 incomplete.
 BASIS: the Lead's read-only Stage-25 reassessment (blocked on source / IP: no qualified method / material source pair); a
@@ -296,9 +299,9 @@ was no calculation owner on which the v1 method could be admitted, because the o
 conversion and none is genuinely needed. The v1 method could then reach execution only through (i) a genuine CASE-A need
 decided on product grounds, (ii) another genuine consumer of a first conversion increment, or (iii) a separately decided
 change to the calc/units contract, which that contract's §16 routes through one Level-1 semantic review. Correction 01 is
-that route (iii); it has been reviewed and accepted by the Owner (2026-10-07). The Owner acceptance satisfies the decision
-condition for D-1, but D-1 stays OPEN pending repository reconciliation after the accepted Correction 01 is merged; the
-shared owner is NOT implemented, no first increment is authorized, the CAP-13 method is NOT admitted (method admission
+that route (iii) and resolved this sequencing deadlock: it was reviewed, accepted by the Owner (2026-10-07) and merged
+(PR #764, merge commit `a5c66edbc620befcd4a31f07115f08df56874d04`), so D-1 is CLOSED. Closing D-1 changes no CASE A /
+CASE B semantics and authorizes nothing: the shared owner is NOT implemented, no first increment is authorized, the CAP-13 method is NOT admitted (method admission
 stays blocked until D-5 and D-7 are closed), Stage 25 is NOT entered and CAP-13 is NOT activated.
 
 **Method-first envelope this method would bring under the accepted Correction 01 (sequencing statement only; the method
@@ -341,10 +344,11 @@ admitted.
 - **R-8 Calculation-owner separation and the CASE A / CASE B sequencing** of §10 and §11.
 - **R-9 Source / IP fidelity**, including the third-party-credit status of the specific table entries used.
 
-**Open Owner decisions and pre-admission blockers before any implementation.**
+**Owner decisions and pre-admission blockers before any implementation.**
 
-- **D-1** Calculation-owner sequencing (§11) — OPEN, pending repository reconciliation. The calc/units Correction 01 is the
-  resolution path and the Owner accepted it on 2026-10-07; D-1 is reconciled only after the accepted correction is merged.
+- **D-1** Calculation-owner sequencing (§11) — CLOSED 2026-10-07. Basis: the calc/units Correction 01 completed its required
+  review and Owner acceptance (2026-10-07) and was merged through PR #764 / merge commit
+  `a5c66edbc620befcd4a31f07115f08df56874d04`. Its closure admits no method and authorizes no first increment.
 - **D-2** The journey gate for the future user slice (for example, CAP-12's durable mechanical root-domain gate).
 - **D-3** The final method identifier.
 - **D-4** Whether a later user slice compares `Δ` with an Owner-stated deformation limit.
