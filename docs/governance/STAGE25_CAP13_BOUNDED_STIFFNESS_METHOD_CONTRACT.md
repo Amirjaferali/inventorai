@@ -20,6 +20,9 @@ deployment or release. `STAGE 25: NOT ENTERED` · `STAGE 25: NOT AUTHORIZED` · 
 `ACTIVE CONTRACT: NONE` are unchanged.
 *(Superseded 2026-10-06 by the Owner's acceptance, preserved — was: "STATUS: CONTRACT CANDIDATE — DOCUMENTATION ONLY — NOT
 ACCEPTED — NO IMPLEMENTATION AUTHORIZED — STAGE 25 NOT ENTERED — CAP-13 NOT ACTIVATED."; the title read "(CANDIDATE)".)*
+CONFORMING SYNC: `D-1 / CALC-OWNER CORRECTION 01 CONFORMING SYNC CANDIDATE — NOT ACCEPTED — NO IMPLEMENTATION AUTHORIZED`.
+Only the calc/units sequencing wording in §0, §11 and the §12 D-1 entry is synchronized with the proposed calc/units
+Correction 01; no technical or method clause changes, and D-1, D-5 and D-7 stay OPEN.
 BASE: `feature/atomic-json-session-persistence` at `3a65e91642b9669bd5e80f5ac78b00b60dcdd2f6`; `ACTIVE CONTRACT: NONE`;
 Stage 25 NOT ENTERED / NOT AUTHORIZED; CAP-13 NOT ACTIVATED; the Master Roadmap at 20 / 45 incomplete.
 BASIS: the Lead's read-only Stage-25 reassessment (blocked on source / IP: no qualified method / material source pair); a
@@ -40,8 +43,10 @@ activate CAP-13, recommends no thickness and assigns no identifier globally.
 - `ACTIVE CONTRACT: NONE`. This candidate fills no active-contract slot and is not a product increment.
 - `STAGE 25: NOT ENTERED` · `STAGE 25: NOT AUTHORIZED` · `CAP-13: NOT ACTIVATED`. No roadmap checkbox, marker or count
   changes.
-- The calc/units contract stays exactly as accepted and stays unimplemented. Its first increment may admit only one unit
-  conversion (calc/units contract §3, §13); nothing here changes that.
+- The calc/units contract stays as accepted and stays unimplemented; its accepted text of record governs until its
+  Correction 01 is accepted. Correction 01 is proposed alongside this sync as a candidate: two mutually exclusive
+  first-increment shapes, conversion-first (A1) or method-first (A2) (calc/units contract §3, §13). Nothing here
+  implements the owner, authorizes a first increment or admits the CAP-13 method.
 - Stage 14 stays PARTIAL / DEFERRED; THERM-01 stays NOT AUTHORIZED; CAP-12 and CAP-14 are unchanged.
 - `CALCULATION RESULT ≠ THICKNESS RECOMMENDATION ≠ SAFETY CONCLUSION`.
 - `DEFORMATION CONSTRAINT SATISFIED ≠ SAFE ≠ STRUCTURALLY ADEQUATE`.
@@ -269,23 +274,40 @@ shown and specialist engineering review is named. All NO never implies safe; it 
 - **Not created, now or later, by this method:** a formula registry framework, a generic structural solver, a materials
   database or a general engineering calculator.
 
-## 11. Calculation / units sequencing (calc/units contract unchanged)
+## 11. Calculation / units sequencing (calc/units contract as accepted; Correction 01 proposed)
 
-The calc/units contract's first increment may admit only ONE unit conversion and must have a genuine named consumer
-(§3, §13). The CAP-13 deflection method is therefore never part of that first increment.
+Under the calc/units contract's accepted text of record, its first increment may admit only ONE unit conversion and must
+have a genuine named consumer (§3, §13), so the CAP-13 deflection method can never be part of that first increment. The
+proposed calc/units Correction 01 (a candidate, NOT accepted) would let a first increment select exactly one of two
+mutually exclusive shapes: A1 conversion-first or A2 method-first.
 
 - **CASE A — a later authorized CAP-13 user slice genuinely supports inch input.** Then `in → mm` (with its own NIST SP 811
   inspection record; the repository's `mechanical:PR009` / `mechanical:PR011` records are context only) is a real
-  named-consumer requirement, and the first calc increment may become eligible.
-- **CASE B — the authorized first CAP-13 slice is metric-only (as v1 here is: N and mm).** Then a unit-conversion first
-  increment is NOT justified by CAP-13 and stays unimplemented until a genuine consumer need exists. Inch input is never
-  added merely to create such a need.
+  named-consumer requirement, and a conversion-first first increment (A1) may become eligible if separately authorized.
+- **CASE B — the authorized first CAP-13 slice is metric-only (as v1 here is: N and mm).** Then the metric-only method has
+  no genuine conversion need: a unit-conversion first increment is NOT justified by CAP-13, and inch input is never added
+  merely to create such a need. IF Correction 01 is later accepted, CASE B could use the method-first shape (A2) instead
+  — this one method as the one admitted method and the first CAP-13 user slice as the one named consumer — without
+  inventing a conversion.
 
-**Consequence recorded truthfully (Owner decision D-1).** Under CASE B there is no calculation owner on which the v1
-method could be admitted, because the owner's first increment may only be a conversion and none is genuinely needed. The
-v1 method can then reach execution only through (i) a genuine CASE-A need decided on product grounds, (ii) another
-genuine consumer of a first conversion increment, or (iii) a separately decided change to the calc/units contract, which
-that contract's §16 routes through one Level-1 semantic review. This candidate chooses none of them.
+**Consequence recorded truthfully (Owner decision D-1).** Under the accepted text of record and CASE B there is no
+calculation owner on which the v1 method could be admitted, because the owner's first increment may only be a conversion
+and none is genuinely needed. The v1 method can then reach execution only through (i) a genuine CASE-A need decided on
+product grounds, (ii) another genuine consumer of a first conversion increment, or (iii) a separately decided change to the
+calc/units contract, which that contract's §16 routes through one Level-1 semantic review. Correction 01 is the proposed
+route (iii). In this sync it is NOT accepted: D-1 stays OPEN, the shared owner is NOT implemented, no first increment is
+authorized, the CAP-13 method is NOT admitted, Stage 25 is NOT entered and CAP-13 is NOT activated.
+
+**Method-first envelope this method would bring, IF Correction 01 is accepted (sequencing statement only; the method
+itself is unchanged).** Roles, each bound to one quantity kind and one exact unit token:
+
+- user numeric capture (§7, §10): `W` — force — `N`; `L`, `b`, `h` — length — `mm`;
+- method-derived (§5): `E`, `G` — elastic modulus — `MPa`, derived by this method from its CAP-13-owned, source-governed
+  property record and its accepted deterministic derivations; they are never user numeric inputs;
+- output (§4, §8): `Δ` — length — `mm`.
+
+`N/mm²` dimensional equivalence does not make it an admitted alias of `MPa`. The shared owner would validate exact role →
+quantity kind → unit token consistency only; the equation's dimensional derivation (§4) stays with this method authority.
 
 **Later method admission (described, not authorized).** After a calculation owner exists, and only once D-5 and D-7
 are closed (§12), a separate increment may admit this ONE closed method record and pair it with the first CAP-13 user
@@ -318,7 +340,8 @@ admitted.
 
 **Open Owner decisions and pre-admission blockers before any implementation.**
 
-- **D-1** Calculation-owner sequencing (§11).
+- **D-1** Calculation-owner sequencing (§11) — OPEN. The proposed calc/units Correction 01 is the resolution path; D-1
+  can close only after the Owner accepts that correction once it has been reviewed.
 - **D-2** The journey gate for the future user slice (for example, CAP-12's durable mechanical root-domain gate).
 - **D-3** The final method identifier.
 - **D-4** Whether a later user slice compares `Δ` with an Owner-stated deformation limit.
