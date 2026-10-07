@@ -69,11 +69,18 @@ conversion or conversion graph.
 
 ## 2. Method identity and version
 
-- Working identity (descriptive only; not globally registered): `CAP-13-STATIC-REACTIONS-TWO-SUPPORT-V1`. The final
-  runtime / admission identifier is a later admission decision.
+- Final method identifier (Owner decision 2026-10-07; closes A-2, §15): `method_id = "cap13:static_reactions_two_support"`
+  — exact and case-sensitive, with NO aliases.
+- Initial method version: `method_version = "1.0"`, carried separately from the identifier (calc/units contract); the
+  version is not encoded in the identifier.
+- Historical working identity (descriptive / pre-admission history only; not a runtime alias):
+  `CAP-13-STATIC-REACTIONS-TWO-SUPPORT-V1`.
+- The identifier and version are recorded only; no registry, artifact or implementation exists, and the method is NOT
+  admitted.
 - Version rule: any material change to the equations, the applicability, the declarations, the numeric domain, the
   refusal or abstention semantics, the source authority or a role meaning is a new version. A result always carries the
-  version it was produced under.
+  version it was produced under. `method_id` stays stable while it remains the same method identity; such a material
+  change takes a new `method_version`.
 
 ## 3. Source and source-use records (Lead-supplied inspection, 2026-10-07)
 
@@ -320,7 +327,8 @@ A2 first increment admitting it with the first CAP-13 user slice.
 
 - **A-1** Owner acceptance of this contract after the §14 review — CLOSED 2026-10-07 (the Owner acceptance above). Method
   admission stays blocked by A-2 to A-5.
-- **A-2** The final method identifier.
+- **A-2** The final method identifier — CLOSED 2026-10-07 by Owner decision: `method_id =
+  "cap13:static_reactions_two_support"`, `method_version = "1.0"` (§2). Method admission stays blocked by A-3 to A-5.
 - **A-3** The journey gate for the future user slice.
 - **A-4** The Arabic disclosure wording, settled under the UX review.
 - **A-5** A separately authorized first increment of the shared owner (A2) with this method and its named consumer,
