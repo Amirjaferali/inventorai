@@ -208,10 +208,21 @@ and the owner must not be called after it.
 | --- | --- |
 | `REFUSAL` / `INVALID_NUMERIC_INPUT` | `INVALID_NUMERIC_INPUT` |
 | `REFUSAL` / `UNIT_NOT_ADMITTED` or `REFUSAL` / `UNKNOWN_UNIT` | `UNIT_NOT_SUPPORTED` (the first consumer passes the fixed §5 unit tokens; the inventor chooses no unit) |
-| `UNABLE_TO_DETERMINE` / `SOURCE_UNAVAILABLE` (governed method, source or version record unavailable) | `KNOWLEDGE_UNAVAILABLE` |
-| `FAILURE` / `EXECUTION_INTEGRITY_FAILURE` (method, source or version record missing, malformed or tampered after admission) | `KNOWLEDGE_UNAVAILABLE` may be displayed; no numerical payload; the owner `FAILURE` is preserved internally and is never rewritten as `REFUSAL` |
+| `REFUSAL` / `METHOD_NOT_REGISTERED` | `KNOWLEDGE_UNAVAILABLE` (the governed admitted method basis is unavailable, so the capability cannot execute); the owner `REFUSAL` and its exact token are preserved internally |
+| `REFUSAL` / `VERSION_MISMATCH` | `KNOWLEDGE_UNAVAILABLE`; the owner `REFUSAL` and its exact token are preserved internally |
+| `UNABLE_TO_DETERMINE` / `SOURCE_UNAVAILABLE` (source unavailable only) | `KNOWLEDGE_UNAVAILABLE`; the owner `UNABLE_TO_DETERMINE` and its exact token are preserved internally |
+| `FAILURE` / `EXECUTION_INTEGRITY_FAILURE` (the calc/units contract's post-admission integrity failure, including a tampered or integrity-failing governed record) | `KNOWLEDGE_UNAVAILABLE` may be displayed; no numerical payload; the owner `FAILURE` is preserved internally and is never rewritten as `REFUSAL` |
 
-`KNOWLEDGE_UNAVAILABLE` therefore does not fix one owner state.
+`SOURCE_UNAVAILABLE`, `METHOD_NOT_REGISTERED` and `VERSION_MISMATCH` stay distinct owner conditions, and
+`EXECUTION_INTEGRITY_FAILURE` is never used in place of any of them. `KNOWLEDGE_UNAVAILABLE` is a CAP-13 display reason
+only and therefore does not fix one owner state; no owner-local state or token is rewritten.
+
+**Unmapped owner outcomes.** The table covers the expected first-consumer cases only; it does not redefine every
+shared-owner token. Any owner-local state / token not mapped above stays authoritative as returned by the shared owner:
+CAP-13 fails closed with no numerical payload, preserves that state / token for diagnosis, invents no CAP-13 reason, does
+not map it to `KNOWLEDGE_UNAVAILABLE` by default and creates no new generic status. A later implementation contract must
+not admit this consumer unless every owner-local outcome reachable from its exact fixed request shape has a deterministic
+handling rule.
 
 **Defence in depth.** The owner may itself fail closed on range or applicability. An owner `INPUT_OUTSIDE_ADMITTED_RANGE`
 or `APPLICABILITY_REFUSED_BY_METHOD_AUTHORITY` is never relabelled `CG_OUTSIDE_SUPPORT_SPAN`; if one reaches the capability
