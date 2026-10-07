@@ -27,11 +27,18 @@ acceptance does not implement anything, admit the method, authorize a numerical 
 behaviour, enter Stage 25 or activate CAP-13.
 ACCEPTANCE PATH: COMPLETE — one non-authoring Level-1 semantic / technical review, its bounded corrections and targeted
 delta review, then the Owner acceptance above. No new governance mechanism is created.
-CORRECTION 01: `CORRECTION 01 — DOCUMENTATION-ONLY CORRECTION CANDIDATE — NOT YET ACCEPTED`. It addresses ONLY the
-refusal / owner-state layering in §8 (the former sentence mapping every refusal to the shared owner's `REFUSAL` state
+CORRECTION 01: `CORRECTION 01 — ACCEPTED DOCUMENTATION-ONLY CORRECTION OF RECORD`. It addresses ONLY the refusal /
+shared-owner-state layering in §8 (the former sentence mapping every refusal to the shared owner's `REFUSAL` state
 contradicted calc/units contract §7 / §8). The accepted method, its sources, numeric domain, declarations, screen,
-disclosure, ownership and blockers are unchanged. It needs one non-authoring Level-1 semantic review before a separate
-Owner acceptance; the accepted contract of record stays as accepted until then.
+disclosure, ownership and blockers are unchanged.
+CORRECTION 01 ACCEPTANCE: 2026-10-07, by Owner decision after the independent non-authoring Level-1 semantic review
+(`B — LEVEL-1 PASS WITH REQUIRED BOUNDED CORRECTIONS`), the one required pre-owner invalid-numeric correction (applied),
+and the targeted delta review (`A — TARGETED DELTA PASS`; `NO FURTHER REVIEW`); architecture verdict
+`NO ARCHITECTURE IMPACT`. Recorded documentation-only: it implements nothing, admits no method, closes no further
+admission blocker, enters no Stage and activates nothing.
+*(Superseded 2026-10-07 by the Owner's acceptance of Correction 01, preserved — was: "CORRECTION 01: `CORRECTION 01 —
+DOCUMENTATION-ONLY CORRECTION CANDIDATE — NOT YET ACCEPTED`. … It needs one non-authoring Level-1 semantic review before
+a separate Owner acceptance; the accepted contract of record stays as accepted until then.")*
 *(Superseded 2026-10-07 by the Owner's acceptance, preserved — was: "STATUS: DOCUMENTATION-ONLY CONTRACT CANDIDATE — NOT
 ACCEPTED — NO IMPLEMENTATION AUTHORIZED — NO METHOD ADMISSION — NO NUMERICAL RESULT AUTHORIZED."; the title read
 "(CANDIDATE)".)*
