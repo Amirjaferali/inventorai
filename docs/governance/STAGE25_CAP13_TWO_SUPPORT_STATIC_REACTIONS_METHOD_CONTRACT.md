@@ -197,16 +197,21 @@ small-deflection, displacement, stiffness or deformation validity threshold is i
 | Load not as declared in §6 | `LOAD_NOT_SUPPORTED` |
 | Supports not as declared in §6 | `SUPPORT_NOT_SUPPORTED` |
 | Any YES on the §9 screen | `ENGINEERING REVIEW REQUIRED` (abstention) |
-| `x < 0` or `x > L` (§7) | `CG_OUTSIDE_SUPPORT_SPAN` |
+| `P`, `L` or `x` violates the §7 numeric-type requirement — a string, a boolean, NaN, an infinity or any other non-finite or non-numeric value | `INVALID_NUMERIC_INPUT` |
+| `P ≤ 0` or `L ≤ 0` (§7) | `INVALID_NUMERIC_INPUT` |
+| A finite numeric `x` with `x < 0` or `x > L` (§7) | `CG_OUTSIDE_SUPPORT_SPAN` |
 
-`CG_OUTSIDE_SUPPORT_SPAN` is a CAP-13 method-domain refusal: it is not `INVALID_NUMERIC_INPUT`, not an owner-local state,
-and the owner must not be called after it.
+This pre-owner CAP-13 validation applies the inventor-facing §7 numeric domain before the shared owner is invoked; the
+owner is not called after any of these outcomes. For `x`, an invalid type or non-finite value is `INVALID_NUMERIC_INPUT`,
+while a finite numeric value outside `[0, L]` is `CG_OUTSIDE_SUPPORT_SPAN`; these stay distinct, and `x = 0` and `x = L`
+stay valid. `CG_OUTSIDE_SUPPORT_SPAN` is a CAP-13 method-domain refusal: it is not `INVALID_NUMERIC_INPUT`, not an
+owner-local state, and the owner must not be called after it.
 
 **Requests that reach the owner.** The owner's §7 / §8 state controls, unchanged; CAP-13 only selects its display reason:
 
 | Shared-owner local state / token (Layer B) | CAP-13 display (Layer A) |
 | --- | --- |
-| `REFUSAL` / `INVALID_NUMERIC_INPUT` | `INVALID_NUMERIC_INPUT` |
+| `REFUSAL` / `INVALID_NUMERIC_INPUT` | `INVALID_NUMERIC_INPUT` — defence in depth only for this first consumer: the inventor-facing §7 invalid-numeric cases are resolved by CAP-13 before the owner is called; if the owner nevertheless returns this, its exact state / token is preserved internally |
 | `REFUSAL` / `UNIT_NOT_ADMITTED` or `REFUSAL` / `UNKNOWN_UNIT` | `UNIT_NOT_SUPPORTED` (the first consumer passes the fixed §5 unit tokens; the inventor chooses no unit) |
 | `REFUSAL` / `METHOD_NOT_REGISTERED` | `KNOWLEDGE_UNAVAILABLE` (the governed admitted method basis is unavailable, so the capability cannot execute); the owner `REFUSAL` and its exact token are preserved internally |
 | `REFUSAL` / `VERSION_MISMATCH` | `KNOWLEDGE_UNAVAILABLE`; the owner `REFUSAL` and its exact token are preserved internally |
