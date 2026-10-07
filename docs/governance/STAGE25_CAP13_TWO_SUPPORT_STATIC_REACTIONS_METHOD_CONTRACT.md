@@ -42,6 +42,9 @@ a separate Owner acceptance; the accepted contract of record stays as accepted u
 *(Superseded 2026-10-07 by the Owner's acceptance, preserved — was: "STATUS: DOCUMENTATION-ONLY CONTRACT CANDIDATE — NOT
 ACCEPTED — NO IMPLEMENTATION AUTHORIZED — NO METHOD ADMISSION — NO NUMERICAL RESULT AUTHORIZED."; the title read
 "(CANDIDATE)".)*
+A-3 JOURNEY GATE: `A-3 JOURNEY GATE — DOCUMENTATION-ONLY CANDIDATE — NOT YET ACCEPTED`. §12A records the journey gate
+for the first user slice and §15 records A-3 as closed by it, effective only on Owner acceptance and merge. It changes
+no clause of §§1–12 and enables no user-facing capability.
 
 ---
 
@@ -306,6 +309,67 @@ Request-local / session-only. No store, schema, migration, report, PDF, Structur
 readiness, maturity, progression or deliverable effect. `engine/requirement_quantity.py` is neither read nor written, and
 no requirement-quantity text is parsed.
 
+## 12A. Journey gate for the first user slice (A-3)
+
+Journey decision only. It adds no clause to §§4–11, no reason token, no state, no source and no owner; it reuses the
+existing optional CAP-12 advisory pattern (`web/app.py` form-mockup advisory routes) without changing CAP-12 and without a
+generic journey framework. Nothing here is implemented or enabled: a user-facing slice exists only after A-4 and A-5.
+
+**Entry and eligibility.**
+- ONE optional entry on the session page, beside the CAP-12 advisory entry, offered only while the project is eligible.
+  It is never required, has no progression, readiness or answer-state dependency, and declining or ignoring it never
+  blocks the core invention journey. It is not offered from the report, PDF, Structured Export or API.
+- Eligible means: the request passes the existing project authorization (`_project_authorized`) AND the project's
+  durable `confirmed_domain`, read from the durable reconstruction inputs as the CAP-12 gate reads it and never from the
+  request, is `mechanical`. The entry and the submission read that same single value.
+- An unreadable or any other root domain fails closed: no entry is offered and a submission is not evaluated (no
+  calculation, no CAP-13 reason token).
+- Gate-scope limitation, recorded explicitly: an integrated invention whose initial analysis focus is Electrical /
+  Electronics is excluded even when it records a Mechanical part. This is a scope limit of this first slice, not a
+  technical incompatibility verdict; widening it needs its own decision.
+
+**Capture (one page; nothing inferred, defaulted or pre-answered).**
+- Each §6 declaration is presented with its exact accepted v1 meaning, and the inventor explicitly answers whether the
+  configuration matches that exact statement or differs from it. No generic confirmation replaces the individual
+  declarations, no choice is pre-selected, and nothing is taken from classifier output, session answers, requirement
+  quantities or any other project data.
+- The centre-of-gravity declaration is satisfied only by the inventor's own entry of `x`; it is never defaulted to
+  midspan.
+- All nine §9 screen items are answered explicitly yes / no, none pre-selected.
+- `P`, `L` and `x` are entered as numbers in the fixed units of §5 (`N`, `mm`); the units are displayed, not chosen.
+- The existing request-integrity (CSRF) guard and project authorization apply; the form has a strict field allowlist
+  and each field must occur exactly once, otherwise the request is rejected as malformed (no CAP-13 reason token, no
+  calculation).
+
+**Pre-owner evaluation order (deterministic, fail closed).** Evaluated in this order; the FIRST failing stage alone
+determines the outcome, so a request carries exactly one reason (§8) and no later stage is evaluated:
+
+1. Request integrity, project authorization and eligibility (above).
+2. Completeness: any §6 declaration, any of the nine §9 items, or any of `P`, `L`, `x` left unanswered or empty →
+   `NOT_DECLARED`.
+3. High-risk screen: any YES → `ENGINEERING REVIEW REQUIRED`; the calculation owner is not invoked.
+4. Load declarations (condition, applied load, weight) differing from §6 → `LOAD_NOT_SUPPORTED`.
+5. Support declarations (count, geometry, action, direction, moment, load paths) differing from §6 →
+   `SUPPORT_NOT_SUPPORTED`.
+6. Numeric type and positivity (§7): any of `P`, `L`, `x` present but not a finite number, or `P ≤ 0` or `L ≤ 0` →
+   `INVALID_NUMERIC_INPUT`.
+7. Centre-of-gravity span (§7): a finite numeric `x` with `x < 0` or `x > L` → `CG_OUTSIDE_SUPPORT_SPAN`; `x = 0` and
+   `x = L` are valid.
+8. Only after stages 1–7 all pass is the shared calculation owner invoked, with the exact §11 role / unit request; its
+   outcome is handled exactly as §8 states (Layer B owner states preserved; Layer A display reasons only; unmapped owner
+   outcomes fail closed).
+
+This order only fixes precedence among the existing outcomes; their meanings in §§7–9 are unchanged.
+
+**Result presentation.** As the CAP-12 advisory does: rendered in the response to the submission itself, with no redirect
+and nothing stored. On success it shows only `R_L` and `R_R` in `N`, the echoed declared inputs and declarations,
+`method_id` and `method_version` (§2), the NASA-S1, NASA-S2 and NIST unit references (§3), the `UNVALIDATED` status and the
+fixed disclosure (§10). A refusal or abstention shows its one reason and no numerical payload. §12 applies unchanged: no
+persistence, evidence, readiness, progression, report, PDF, Structured Export or API effect.
+
+**Language.** This section records the journey decision only. The Arabic disclosure and UX wording stay with A-4; no
+Arabic display of the capability or its result is authorized before A-4 is closed.
+
 ## 13. Stage and lifecycle
 
 This candidate, its later acceptance or both together do not enter Stage 25, activate CAP-13, implement the shared owner,
@@ -329,7 +393,8 @@ A2 first increment admitting it with the first CAP-13 user slice.
   admission stays blocked by A-2 to A-5.
 - **A-2** The final method identifier — CLOSED 2026-10-07 by Owner decision: `method_id =
   "cap13:static_reactions_two_support"`, `method_version = "1.0"` (§2). Method admission stays blocked by A-3 to A-5.
-- **A-3** The journey gate for the future user slice.
+- **A-3** The journey gate for the future user slice — CLOSED by §12A (candidate wording; effective only on Owner
+  acceptance and merge). Method admission stays blocked by A-4 and A-5.
 - **A-4** The Arabic disclosure wording, settled under the UX review.
 - **A-5** A separately authorized first increment of the shared owner (A2) with this method and its named consumer,
   carrying the guard strategy of calc/units contract §14 and the CAP-13-owned governed artifact with its source and unit
