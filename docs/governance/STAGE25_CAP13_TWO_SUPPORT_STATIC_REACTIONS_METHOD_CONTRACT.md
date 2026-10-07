@@ -27,6 +27,18 @@ acceptance does not implement anything, admit the method, authorize a numerical 
 behaviour, enter Stage 25 or activate CAP-13.
 ACCEPTANCE PATH: COMPLETE — one non-authoring Level-1 semantic / technical review, its bounded corrections and targeted
 delta review, then the Owner acceptance above. No new governance mechanism is created.
+CORRECTION 01: `CORRECTION 01 — ACCEPTED DOCUMENTATION-ONLY CORRECTION OF RECORD`. It addresses ONLY the refusal /
+shared-owner-state layering in §8 (the former sentence mapping every refusal to the shared owner's `REFUSAL` state
+contradicted calc/units contract §7 / §8). The accepted method, its sources, numeric domain, declarations, screen,
+disclosure, ownership and blockers are unchanged.
+CORRECTION 01 ACCEPTANCE: 2026-10-07, by Owner decision after the independent non-authoring Level-1 semantic review
+(`B — LEVEL-1 PASS WITH REQUIRED BOUNDED CORRECTIONS`), the one required pre-owner invalid-numeric correction (applied),
+and the targeted delta review (`A — TARGETED DELTA PASS`; `NO FURTHER REVIEW`); architecture verdict
+`NO ARCHITECTURE IMPACT`. Recorded documentation-only: it implements nothing, admits no method, closes no further
+admission blocker, enters no Stage and activates nothing.
+*(Superseded 2026-10-07 by the Owner's acceptance of Correction 01, preserved — was: "CORRECTION 01: `CORRECTION 01 —
+DOCUMENTATION-ONLY CORRECTION CANDIDATE — NOT YET ACCEPTED`. … It needs one non-authoring Level-1 semantic review before
+a separate Owner acceptance; the accepted contract of record stays as accepted until then.")*
 *(Superseded 2026-10-07 by the Owner's acceptance, preserved — was: "STATUS: DOCUMENTATION-ONLY CONTRACT CANDIDATE — NOT
 ACCEPTED — NO IMPLEMENTATION AUTHORIZED — NO METHOD ADMISSION — NO NUMERICAL RESULT AUTHORIZED."; the title read
 "(CANDIDATE)".)*
@@ -174,8 +186,60 @@ small-deflection, displacement, stiffness or deformation validity threshold is i
 `LOAD_NOT_SUPPORTED` · `SUPPORT_NOT_SUPPORTED` · `INVALID_NUMERIC_INPUT` · `UNIT_NOT_SUPPORTED` · `KNOWLEDGE_UNAVAILABLE`
 (a governed record missing, malformed or failing its integrity check). Added — exactly one method-level token:
 `CG_OUTSIDE_SUPPORT_SPAN`. A refusal carries one reason and no numerical payload; nothing falls back to generic advice.
-A future executing owner maps each refusal to its `REFUSAL` state (calc/units contract §7, §8); this contract adds no
-owner status value.
+
+**Two layers (Correction 01).** These tokens are distinct from the shared owner's states and never redefine them:
+
+- **Layer A — CAP-13 capability semantics (this contract).** Applicability, the method numeric domain (§7), the
+  user-facing refusal reasons above, the abstention below and the fixed disclosure (§10). The tokens above are CAP-13
+  display reasons, NOT shared-owner states or shared-owner reason tokens.
+- **Layer B — shared-owner local states (calc/units contract §7, §8, unchanged and authoritative).** `SUCCESS` ·
+  `UNABLE_TO_DETERMINE` · `FAILURE` · `REFUSAL` and their §8 reason tokens. This contract adds no owner state or token,
+  changes no owner mapping and does not force any owner outcome to `REFUSAL`.
+
+**Pre-owner outcomes (CAP-13 only; the owner is not called; no numerical payload).**
+
+| Condition | CAP-13 outcome |
+| --- | --- |
+| A §6 declaration missing | `NOT_DECLARED` |
+| Load not as declared in §6 | `LOAD_NOT_SUPPORTED` |
+| Supports not as declared in §6 | `SUPPORT_NOT_SUPPORTED` |
+| Any YES on the §9 screen | `ENGINEERING REVIEW REQUIRED` (abstention) |
+| `P`, `L` or `x` violates the §7 numeric-type requirement — a string, a boolean, NaN, an infinity or any other non-finite or non-numeric value | `INVALID_NUMERIC_INPUT` |
+| `P ≤ 0` or `L ≤ 0` (§7) | `INVALID_NUMERIC_INPUT` |
+| A finite numeric `x` with `x < 0` or `x > L` (§7) | `CG_OUTSIDE_SUPPORT_SPAN` |
+
+This pre-owner CAP-13 validation applies the inventor-facing §7 numeric domain before the shared owner is invoked; the
+owner is not called after any of these outcomes. For `x`, an invalid type or non-finite value is `INVALID_NUMERIC_INPUT`,
+while a finite numeric value outside `[0, L]` is `CG_OUTSIDE_SUPPORT_SPAN`; these stay distinct, and `x = 0` and `x = L`
+stay valid. `CG_OUTSIDE_SUPPORT_SPAN` is a CAP-13 method-domain refusal: it is not `INVALID_NUMERIC_INPUT`, not an
+owner-local state, and the owner must not be called after it.
+
+**Requests that reach the owner.** The owner's §7 / §8 state controls, unchanged; CAP-13 only selects its display reason:
+
+| Shared-owner local state / token (Layer B) | CAP-13 display (Layer A) |
+| --- | --- |
+| `REFUSAL` / `INVALID_NUMERIC_INPUT` | `INVALID_NUMERIC_INPUT` — defence in depth only for this first consumer: the inventor-facing §7 invalid-numeric cases are resolved by CAP-13 before the owner is called; if the owner nevertheless returns this, its exact state / token is preserved internally |
+| `REFUSAL` / `UNIT_NOT_ADMITTED` or `REFUSAL` / `UNKNOWN_UNIT` | `UNIT_NOT_SUPPORTED` (the first consumer passes the fixed §5 unit tokens; the inventor chooses no unit) |
+| `REFUSAL` / `METHOD_NOT_REGISTERED` | `KNOWLEDGE_UNAVAILABLE` (the governed admitted method basis is unavailable, so the capability cannot execute); the owner `REFUSAL` and its exact token are preserved internally |
+| `REFUSAL` / `VERSION_MISMATCH` | `KNOWLEDGE_UNAVAILABLE`; the owner `REFUSAL` and its exact token are preserved internally |
+| `UNABLE_TO_DETERMINE` / `SOURCE_UNAVAILABLE` (source unavailable only) | `KNOWLEDGE_UNAVAILABLE`; the owner `UNABLE_TO_DETERMINE` and its exact token are preserved internally |
+| `FAILURE` / `EXECUTION_INTEGRITY_FAILURE` (the calc/units contract's post-admission integrity failure, including a tampered or integrity-failing governed record) | `KNOWLEDGE_UNAVAILABLE` may be displayed; no numerical payload; the owner `FAILURE` is preserved internally and is never rewritten as `REFUSAL` |
+
+`SOURCE_UNAVAILABLE`, `METHOD_NOT_REGISTERED` and `VERSION_MISMATCH` stay distinct owner conditions, and
+`EXECUTION_INTEGRITY_FAILURE` is never used in place of any of them. `KNOWLEDGE_UNAVAILABLE` is a CAP-13 display reason
+only and therefore does not fix one owner state; no owner-local state or token is rewritten.
+
+**Unmapped owner outcomes.** The table covers the expected first-consumer cases only; it does not redefine every
+shared-owner token. Any owner-local state / token not mapped above stays authoritative as returned by the shared owner:
+CAP-13 fails closed with no numerical payload, preserves that state / token for diagnosis, invents no CAP-13 reason, does
+not map it to `KNOWLEDGE_UNAVAILABLE` by default and creates no new generic status. A later implementation contract must
+not admit this consumer unless every owner-local outcome reachable from its exact fixed request shape has a deterministic
+handling rule.
+
+**Defence in depth.** The owner may itself fail closed on range or applicability. An owner `INPUT_OUTSIDE_ADMITTED_RANGE`
+or `APPLICABILITY_REFUSED_BY_METHOD_AUTHORITY` is never relabelled `CG_OUTSIDE_SUPPORT_SPAN`; if one reaches the capability
+despite the pre-owner gate, CAP-13 fails closed with no numerical payload and preserves the owner-local state for
+diagnosis. No new generic status and no second calculation engine is introduced.
 
 **Abstention (`ENGINEERING REVIEW REQUIRED`).** Any YES on the §9 screen: no calculation, no numerical payload, and
 specialist engineering review is named.
