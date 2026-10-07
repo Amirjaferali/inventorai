@@ -27,6 +27,11 @@ acceptance does not implement anything, admit the method, authorize a numerical 
 behaviour, enter Stage 25 or activate CAP-13.
 ACCEPTANCE PATH: COMPLETE — one non-authoring Level-1 semantic / technical review, its bounded corrections and targeted
 delta review, then the Owner acceptance above. No new governance mechanism is created.
+CORRECTION 01: `CORRECTION 01 — DOCUMENTATION-ONLY CORRECTION CANDIDATE — NOT YET ACCEPTED`. It addresses ONLY the
+refusal / owner-state layering in §8 (the former sentence mapping every refusal to the shared owner's `REFUSAL` state
+contradicted calc/units contract §7 / §8). The accepted method, its sources, numeric domain, declarations, screen,
+disclosure, ownership and blockers are unchanged. It needs one non-authoring Level-1 semantic review before a separate
+Owner acceptance; the accepted contract of record stays as accepted until then.
 *(Superseded 2026-10-07 by the Owner's acceptance, preserved — was: "STATUS: DOCUMENTATION-ONLY CONTRACT CANDIDATE — NOT
 ACCEPTED — NO IMPLEMENTATION AUTHORIZED — NO METHOD ADMISSION — NO NUMERICAL RESULT AUTHORIZED."; the title read
 "(CANDIDATE)".)*
@@ -174,8 +179,44 @@ small-deflection, displacement, stiffness or deformation validity threshold is i
 `LOAD_NOT_SUPPORTED` · `SUPPORT_NOT_SUPPORTED` · `INVALID_NUMERIC_INPUT` · `UNIT_NOT_SUPPORTED` · `KNOWLEDGE_UNAVAILABLE`
 (a governed record missing, malformed or failing its integrity check). Added — exactly one method-level token:
 `CG_OUTSIDE_SUPPORT_SPAN`. A refusal carries one reason and no numerical payload; nothing falls back to generic advice.
-A future executing owner maps each refusal to its `REFUSAL` state (calc/units contract §7, §8); this contract adds no
-owner status value.
+
+**Two layers (Correction 01).** These tokens are distinct from the shared owner's states and never redefine them:
+
+- **Layer A — CAP-13 capability semantics (this contract).** Applicability, the method numeric domain (§7), the
+  user-facing refusal reasons above, the abstention below and the fixed disclosure (§10). The tokens above are CAP-13
+  display reasons, NOT shared-owner states or shared-owner reason tokens.
+- **Layer B — shared-owner local states (calc/units contract §7, §8, unchanged and authoritative).** `SUCCESS` ·
+  `UNABLE_TO_DETERMINE` · `FAILURE` · `REFUSAL` and their §8 reason tokens. This contract adds no owner state or token,
+  changes no owner mapping and does not force any owner outcome to `REFUSAL`.
+
+**Pre-owner outcomes (CAP-13 only; the owner is not called; no numerical payload).**
+
+| Condition | CAP-13 outcome |
+| --- | --- |
+| A §6 declaration missing | `NOT_DECLARED` |
+| Load not as declared in §6 | `LOAD_NOT_SUPPORTED` |
+| Supports not as declared in §6 | `SUPPORT_NOT_SUPPORTED` |
+| Any YES on the §9 screen | `ENGINEERING REVIEW REQUIRED` (abstention) |
+| `x < 0` or `x > L` (§7) | `CG_OUTSIDE_SUPPORT_SPAN` |
+
+`CG_OUTSIDE_SUPPORT_SPAN` is a CAP-13 method-domain refusal: it is not `INVALID_NUMERIC_INPUT`, not an owner-local state,
+and the owner must not be called after it.
+
+**Requests that reach the owner.** The owner's §7 / §8 state controls, unchanged; CAP-13 only selects its display reason:
+
+| Shared-owner local state / token (Layer B) | CAP-13 display (Layer A) |
+| --- | --- |
+| `REFUSAL` / `INVALID_NUMERIC_INPUT` | `INVALID_NUMERIC_INPUT` |
+| `REFUSAL` / `UNIT_NOT_ADMITTED` or `REFUSAL` / `UNKNOWN_UNIT` | `UNIT_NOT_SUPPORTED` (the first consumer passes the fixed §5 unit tokens; the inventor chooses no unit) |
+| `UNABLE_TO_DETERMINE` / `SOURCE_UNAVAILABLE` (governed method, source or version record unavailable) | `KNOWLEDGE_UNAVAILABLE` |
+| `FAILURE` / `EXECUTION_INTEGRITY_FAILURE` (method, source or version record missing, malformed or tampered after admission) | `KNOWLEDGE_UNAVAILABLE` may be displayed; no numerical payload; the owner `FAILURE` is preserved internally and is never rewritten as `REFUSAL` |
+
+`KNOWLEDGE_UNAVAILABLE` therefore does not fix one owner state.
+
+**Defence in depth.** The owner may itself fail closed on range or applicability. An owner `INPUT_OUTSIDE_ADMITTED_RANGE`
+or `APPLICABILITY_REFUSED_BY_METHOD_AUTHORITY` is never relabelled `CG_OUTSIDE_SUPPORT_SPAN`; if one reaches the capability
+despite the pre-owner gate, CAP-13 fails closed with no numerical payload and preserves the owner-local state for
+diagnosis. No new generic status and no second calculation engine is introduced.
 
 **Abstention (`ENGINEERING REVIEW REQUIRED`).** Any YES on the §9 screen: no calculation, no numerical payload, and
 specialist engineering review is named.
