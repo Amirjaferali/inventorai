@@ -995,6 +995,28 @@ def test_every_shard_keeps_the_verify_environment_and_mandatory_proofs():
     assert "ref: ${{ github.sha }}" in shard and "assert parents == [merge, base, head]" in shard
 
 
+def test_chromium_prerequisite_install_is_bounded_and_fail_closed():
+    # CI Correction 01: an unbounded apt-get update inside `--with-deps` hung a runner
+    # for the whole job. Every lane installs the same packages and browser with hard
+    # deadlines, a fixed try budget, apt-lock cleanup and a visible failure.
+    jobs = _jobs()
+    name = "Install the matching Chromium and Linux prerequisites"
+    authoritative = _code(_step(jobs["full_shard"], name))
+    assert "python -m playwright install --with-deps" not in _workflow()
+    for line in ("        timeout-minutes: 20",
+                 'sudo timeout --kill-after=20s 240s env LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}"',
+                 '"$PY" -m playwright install-deps chromium || rc=$?',
+                 "timeout --kill-after=20s 180s python -m playwright install chromium || rc=$?",
+                 "for try in 1 2 3; do", "for try in 1 2; do", "release_apt",
+                 "::error::Linux prerequisites for Chromium were not installed after 3 bounded tries",
+                 "::error::Chromium was not installed after 2 bounded tries"):
+        assert line in authoritative, line
+    assert "continue-on-error" not in authoritative and "|| true\n          done" not in authoritative
+    fast = _code(_step(jobs["fast"], name + " (fast lane)"))
+    assert fast.replace("        if: steps.fastplan.outputs.run_fast == 'true'\n", "").replace(
+        " (fast lane)", "") == authoritative
+
+
 _FULL_ONLY = "needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'"
 _REQUIRED_STEPS = ("Check out the exact proposed merge", "Set up the repository-required Python",
                    "Download the current attempt's shard evidence only",

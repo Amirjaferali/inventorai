@@ -144,7 +144,68 @@ jobs:
           "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip freeze
 
       - name: Install the matching Chromium and Linux prerequisites
-        run: python -m playwright install --with-deps chromium
+        # Bounded, fail-closed install (CI Correction 01). An unbounded apt-get
+        # update inside `playwright install --with-deps` once hung a runner for the
+        # whole job. Linux prerequisites install as root under a root-owned hard
+        # deadline that kills the whole process group; any process still holding
+        # an apt / dpkg lock is then killed before a retry. The browser installs as
+        # the runner user into the existing PLAYWRIGHT_BROWSERS_PATH. Same packages
+        # and browser as `--with-deps`; fixed try budget; never skipped.
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          PY="$(command -v python)"
+          printf '%s\n' 'Acquire::Retries "2";' 'Acquire::http::Timeout "30";' \
+            'Acquire::https::Timeout "30";' 'DPkg::Lock::Timeout "60";' \
+            | sudo tee /etc/apt/apt.conf.d/99inventorai-ci-bounded >/dev/null
+          apt_lock_holders() {
+            { sudo find /proc -mindepth 3 -maxdepth 3 -path '/proc/[0-9]*/fd/*' \( \
+                -lname /var/lib/dpkg/lock -o -lname /var/lib/dpkg/lock-frontend \
+                -o -lname /var/lib/apt/lists/lock -o -lname /var/cache/apt/archives/lock \) \
+                2>/dev/null || true; } | cut -d/ -f3 | sort -u
+          }
+          release_apt() {
+            local pids
+            pids="$(apt_lock_holders)"
+            if [ -n "$pids" ]; then
+              echo "::warning::Killing leftover apt/dpkg lock holders: $pids"
+              sudo kill -KILL $pids 2>/dev/null || true
+              sleep 2
+            fi
+            if [ -n "$(apt_lock_holders)" ]; then
+              echo "::error::apt/dpkg locks are still held after cleanup"
+              ps -eo pid,pgid,user,etime,args | grep -E 'apt|dpkg' || true
+              return 1
+            fi
+            sudo dpkg --configure -a
+          }
+          install_ok=0
+          for try in 1 2 3; do
+            echo "::group::Linux prerequisites for Chromium (try $try of 3)"
+            rc=0
+            # sudo drops LD_LIBRARY_PATH, which the shared setup-python interpreter needs.
+            sudo timeout --kill-after=20s 240s env LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}" \
+              "$PY" -m playwright install-deps chromium || rc=$?
+            echo "::endgroup::"
+            if [ "$rc" -eq 0 ]; then install_ok=1; break; fi
+            echo "::warning::Linux prerequisites try $try failed (exit $rc; 124 or 137 = deadline reached)"
+            release_apt
+          done
+          if [ "$install_ok" -ne 1 ]; then
+            echo "::error::Linux prerequisites for Chromium were not installed after 3 bounded tries"
+            exit 1
+          fi
+          install_ok=0
+          for try in 1 2; do
+            rc=0
+            timeout --kill-after=20s 180s python -m playwright install chromium || rc=$?
+            if [ "$rc" -eq 0 ]; then install_ok=1; break; fi
+            echo "::warning::Chromium download try $try failed (exit $rc; 124 or 137 = deadline reached)"
+          done
+          if [ "$install_ok" -ne 1 ]; then
+            echo "::error::Chromium was not installed after 2 bounded tries"
+            exit 1
+          fi
 
       - name: Require a working interpreter, server and real browser
         run: |
@@ -242,7 +303,68 @@ jobs:
 
       - name: Install the matching Chromium and Linux prerequisites (fast lane)
         if: steps.fastplan.outputs.run_fast == 'true'
-        run: python -m playwright install --with-deps chromium
+        # Bounded, fail-closed install (CI Correction 01). An unbounded apt-get
+        # update inside `playwright install --with-deps` once hung a runner for the
+        # whole job. Linux prerequisites install as root under a root-owned hard
+        # deadline that kills the whole process group; any process still holding
+        # an apt / dpkg lock is then killed before a retry. The browser installs as
+        # the runner user into the existing PLAYWRIGHT_BROWSERS_PATH. Same packages
+        # and browser as `--with-deps`; fixed try budget; never skipped.
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          PY="$(command -v python)"
+          printf '%s\n' 'Acquire::Retries "2";' 'Acquire::http::Timeout "30";' \
+            'Acquire::https::Timeout "30";' 'DPkg::Lock::Timeout "60";' \
+            | sudo tee /etc/apt/apt.conf.d/99inventorai-ci-bounded >/dev/null
+          apt_lock_holders() {
+            { sudo find /proc -mindepth 3 -maxdepth 3 -path '/proc/[0-9]*/fd/*' \( \
+                -lname /var/lib/dpkg/lock -o -lname /var/lib/dpkg/lock-frontend \
+                -o -lname /var/lib/apt/lists/lock -o -lname /var/cache/apt/archives/lock \) \
+                2>/dev/null || true; } | cut -d/ -f3 | sort -u
+          }
+          release_apt() {
+            local pids
+            pids="$(apt_lock_holders)"
+            if [ -n "$pids" ]; then
+              echo "::warning::Killing leftover apt/dpkg lock holders: $pids"
+              sudo kill -KILL $pids 2>/dev/null || true
+              sleep 2
+            fi
+            if [ -n "$(apt_lock_holders)" ]; then
+              echo "::error::apt/dpkg locks are still held after cleanup"
+              ps -eo pid,pgid,user,etime,args | grep -E 'apt|dpkg' || true
+              return 1
+            fi
+            sudo dpkg --configure -a
+          }
+          install_ok=0
+          for try in 1 2 3; do
+            echo "::group::Linux prerequisites for Chromium (try $try of 3)"
+            rc=0
+            # sudo drops LD_LIBRARY_PATH, which the shared setup-python interpreter needs.
+            sudo timeout --kill-after=20s 240s env LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}" \
+              "$PY" -m playwright install-deps chromium || rc=$?
+            echo "::endgroup::"
+            if [ "$rc" -eq 0 ]; then install_ok=1; break; fi
+            echo "::warning::Linux prerequisites try $try failed (exit $rc; 124 or 137 = deadline reached)"
+            release_apt
+          done
+          if [ "$install_ok" -ne 1 ]; then
+            echo "::error::Linux prerequisites for Chromium were not installed after 3 bounded tries"
+            exit 1
+          fi
+          install_ok=0
+          for try in 1 2; do
+            rc=0
+            timeout --kill-after=20s 180s python -m playwright install chromium || rc=$?
+            if [ "$rc" -eq 0 ]; then install_ok=1; break; fi
+            echo "::warning::Chromium download try $try failed (exit $rc; 124 or 137 = deadline reached)"
+          done
+          if [ "$install_ok" -ne 1 ]; then
+            echo "::error::Chromium was not installed after 2 bounded tries"
+            exit 1
+          fi
 
       - name: Run RIG candidate tests early (advisory; NOT A MERGE GATE)
         id: fastrun
@@ -332,7 +454,68 @@ jobs:
           "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip freeze
 
       - name: Install the matching Chromium and Linux prerequisites
-        run: python -m playwright install --with-deps chromium
+        # Bounded, fail-closed install (CI Correction 01). An unbounded apt-get
+        # update inside `playwright install --with-deps` once hung a runner for the
+        # whole job. Linux prerequisites install as root under a root-owned hard
+        # deadline that kills the whole process group; any process still holding
+        # an apt / dpkg lock is then killed before a retry. The browser installs as
+        # the runner user into the existing PLAYWRIGHT_BROWSERS_PATH. Same packages
+        # and browser as `--with-deps`; fixed try budget; never skipped.
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          PY="$(command -v python)"
+          printf '%s\n' 'Acquire::Retries "2";' 'Acquire::http::Timeout "30";' \
+            'Acquire::https::Timeout "30";' 'DPkg::Lock::Timeout "60";' \
+            | sudo tee /etc/apt/apt.conf.d/99inventorai-ci-bounded >/dev/null
+          apt_lock_holders() {
+            { sudo find /proc -mindepth 3 -maxdepth 3 -path '/proc/[0-9]*/fd/*' \( \
+                -lname /var/lib/dpkg/lock -o -lname /var/lib/dpkg/lock-frontend \
+                -o -lname /var/lib/apt/lists/lock -o -lname /var/cache/apt/archives/lock \) \
+                2>/dev/null || true; } | cut -d/ -f3 | sort -u
+          }
+          release_apt() {
+            local pids
+            pids="$(apt_lock_holders)"
+            if [ -n "$pids" ]; then
+              echo "::warning::Killing leftover apt/dpkg lock holders: $pids"
+              sudo kill -KILL $pids 2>/dev/null || true
+              sleep 2
+            fi
+            if [ -n "$(apt_lock_holders)" ]; then
+              echo "::error::apt/dpkg locks are still held after cleanup"
+              ps -eo pid,pgid,user,etime,args | grep -E 'apt|dpkg' || true
+              return 1
+            fi
+            sudo dpkg --configure -a
+          }
+          install_ok=0
+          for try in 1 2 3; do
+            echo "::group::Linux prerequisites for Chromium (try $try of 3)"
+            rc=0
+            # sudo drops LD_LIBRARY_PATH, which the shared setup-python interpreter needs.
+            sudo timeout --kill-after=20s 240s env LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}" \
+              "$PY" -m playwright install-deps chromium || rc=$?
+            echo "::endgroup::"
+            if [ "$rc" -eq 0 ]; then install_ok=1; break; fi
+            echo "::warning::Linux prerequisites try $try failed (exit $rc; 124 or 137 = deadline reached)"
+            release_apt
+          done
+          if [ "$install_ok" -ne 1 ]; then
+            echo "::error::Linux prerequisites for Chromium were not installed after 3 bounded tries"
+            exit 1
+          fi
+          install_ok=0
+          for try in 1 2; do
+            rc=0
+            timeout --kill-after=20s 180s python -m playwright install chromium || rc=$?
+            if [ "$rc" -eq 0 ]; then install_ok=1; break; fi
+            echo "::warning::Chromium download try $try failed (exit $rc; 124 or 137 = deadline reached)"
+          done
+          if [ "$install_ok" -ne 1 ]; then
+            echo "::error::Chromium was not installed after 2 bounded tries"
+            exit 1
+          fi
 
       - name: Require a working interpreter, server and real browser
         run: |
