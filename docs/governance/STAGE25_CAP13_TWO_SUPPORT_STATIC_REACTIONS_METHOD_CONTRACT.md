@@ -11,7 +11,11 @@ differ, they win and the difference is a defect of this document.
 RECORDED: 2026-10-07, by Owner authorization of ONE documentation-only contract candidate. The Owner selected
 `CAP-13-STATIC-REACTIONS-TWO-SUPPORT-V1` as the FIRST-INCREMENT CANDIDATE for Stage 25 / CAP-13. That selection authorizes
 only this documentation; it enters no Stage, activates nothing, implements nothing and admits nothing.
-BASE: `feature/atomic-json-session-persistence` at `daca52aaab6e2ff9da7b6d6969434d81fd1595f6`.
+BASE: originally cut from `feature/atomic-json-session-persistence` at `daca52aaab6e2ff9da7b6d6969434d81fd1595f6`;
+reconciled for review with the current authoritative base at `4a2620e3be7f2c0d63e5b0386e1f24e7be1b956e` (which adds only
+the merged CI test-sharding correction).
+LEVEL-1 REVIEW: `B — LEVEL-1 PASS WITH REQUIRED BOUNDED CORRECTIONS`; corrections C-1 (NASA source-use scope, §3) and C-2
+(mandatory General and Structural disclosure meanings, §10) are applied. The method itself is unchanged.
 RELATED: the [bounded stiffness method contract](STAGE25_CAP13_BOUNDED_STIFFNESS_METHOD_CONTRACT.md) stays
 `ACCEPTED DOCUMENTATION-ONLY FUTURE METHOD CANDIDATE — NOT ADMITTED`, with D-1 and D-5 CLOSED and `D-7: OPEN`; nothing here
 changes its technical clauses or closes or weakens its D-7.
@@ -70,9 +74,14 @@ as `mechanical:PR006` in `domains/domain_provenance.json`; it is cited here only
 torque relationship. The Mechanical Domain Pack's reference fundamentals stay inert reference content and are not
 calculation authority for this method.
 
-**NASA source-use basis (not a legal opinion).** The NASA STI Program "Disclaimers, Copyright Notice, and Terms and
-Conditions of Use" (https://sti.nasa.gov/disclaimers/) — the source-use disposition already recorded as
-`mechanical:PR010`, reused here by reference — supports, in substance: U.S. Government works are generally not protected
+**NASA source-use assessment for NASA-S1 and NASA-S2 (not a legal opinion).** The policy basis is the NASA STI Program
+"Disclaimers, Copyright Notice, and Terms and Conditions of Use" (https://sti.nasa.gov/disclaimers/). The same policy page
+is already identified in repository record `mechanical:PR010`, whose existing disposition stays scoped to
+`mechanical:PR006`, `mechanical:PR007` and `mechanical:PR008` only; it does not cover NASA-S1 or NASA-S2. CAP-12 used the
+same policy page through its own record `cap12:SU001`. This contract therefore records its OWN bounded, Lead-supplied
+assessment for NASA-S1 and NASA-S2, inspected 2026-10-07: no third-party attribution was observed attached to the textual
+mathematical relationships relied upon, and images, graphics, multimedia, branding and any unidentified or third-party
+material stay excluded. The policy page supports, in substance: U.S. Government works are generally not protected
 by copyright in the U.S. (17 U.S.C. §105); NASA-hosted pages may contain privately created copyrighted content; public
 availability does not transfer third-party rights; and NASA material may not be used to imply endorsement. Use is
 therefore factual and paraphrased only: no copied NASA explanatory prose; no NASA image, graphic, multimedia, logo,
@@ -180,10 +189,16 @@ second safety engine is created or called. The CAP-13 register's mandatory warni
 - **No thickness or recommendation level:** v1 recommends nothing and assigns neither `CONCEPTUAL` nor
   `PROTOTYPE-SUITABLE`.
 
-**Fixed disclosure (English; the Arabic wording is settled under the UX review before any display):**
+**Fixed disclosure (English; the Arabic wording is settled under the UX review before any display).** It carries the
+CAP-13 register's mandatory *General* and *Structural* warning meanings, adapted only in grammar to reaction outputs; it
+adds no capacity, allowable-stress, design-value, safety-factor-value, adequacy or pass / fail statement.
 
 > These are the vertical support reactions required by the static equilibrium model you declared: two parallel,
-> horizontal, push-only supports carrying your stated total weight through your stated centre of gravity. They are not
+> horizontal, push-only supports carrying your stated total weight through your stated centre of gravity. This result is
+> preliminary and advisory, not a final engineering or manufacturing specification. Do not rely on these reactions to
+> size, select, approve or validate any support or attachment before independently verifying the real configuration,
+> including, as applicable, the actual loads and load paths, the supports and attachments, joints, stress, deformation,
+> fatigue, impact and safety factor. They are not
 > validated and are not evidence. They do not establish support capacity, attachment adequacy, bearing adequacy, material
 > adequacy, structural safety, code compliance, certification or production suitability, and they do not show that the
 > configuration will not deflect, buckle, fracture, tip or detach. Deformation, support movement, geometry change under
@@ -236,7 +251,8 @@ A2 first increment admitting it with the first CAP-13 user slice.
 - **A-4** The Arabic disclosure wording, settled under the UX review.
 - **A-5** A separately authorized first increment of the shared owner (A2) with this method and its named consumer,
   carrying the guard strategy of calc/units contract §14 and the CAP-13-owned governed artifact with its source and unit
-  records (calc/units contract §9).
+  records (calc/units contract §9). That artifact must carry its OWN bounded `source_use_policy` record for NASA-S1 and
+  NASA-S2 on the established `cap12:SU001` pattern; no such record exists now.
 
 ## 16. Non-authorization (restated)
 
