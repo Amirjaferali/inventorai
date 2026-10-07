@@ -1,6 +1,6 @@
-# STAGE 25 / CAP-13 — TWO-SUPPORT STATIC REACTIONS METHOD CONTRACT (CANDIDATE)
+# STAGE 25 / CAP-13 — TWO-SUPPORT STATIC REACTIONS METHOD CONTRACT (ACCEPTED)
 
-STATUS: DOCUMENTATION-ONLY CONTRACT CANDIDATE — NOT ACCEPTED — NO IMPLEMENTATION AUTHORIZED — NO METHOD ADMISSION — NO
+STATUS: ACCEPTED DOCUMENTATION-ONLY CONTRACT OF RECORD — NO IMPLEMENTATION AUTHORIZED — NO METHOD ADMISSION — NO
 NUMERICAL RESULT AUTHORIZED. `STAGE 25: NOT ENTERED` · `STAGE 25: NOT AUTHORIZED` · `CAP-13: NOT ACTIVATED` ·
 `ACTIVE CONTRACT: NONE`.
 AUTHORITY LEVEL: subordinate to the CAP-13 entry of the
@@ -19,8 +19,17 @@ LEVEL-1 REVIEW: `B — LEVEL-1 PASS WITH REQUIRED BOUNDED CORRECTIONS`; correcti
 RELATED: the [bounded stiffness method contract](STAGE25_CAP13_BOUNDED_STIFFNESS_METHOD_CONTRACT.md) stays
 `ACCEPTED DOCUMENTATION-ONLY FUTURE METHOD CANDIDATE — NOT ADMITTED`, with D-1 and D-5 CLOSED and `D-7: OPEN`; nothing here
 changes its technical clauses or closes or weakens its D-7.
-ACCEPTANCE PATH: one non-authoring Level-1 semantic / technical review, then a separate Owner acceptance. No new governance
-mechanism is created.
+ACCEPTANCE: 2026-10-07, by Owner decision after the independent non-authoring Level-1 semantic / technical review
+(initial verdict `B — LEVEL-1 PASS WITH REQUIRED BOUNDED CORRECTIONS`), the applied corrections C-1 and C-2, and the
+targeted delta review (`A — TARGETED DELTA PASS`; `NO FURTHER REVIEW`). Recorded documentation-only: the technical method
+is unchanged by the acceptance, and references in the body to "this candidate" read as this accepted contract. The
+acceptance does not implement anything, admit the method, authorize a numerical result or any user-facing CAP-13
+behaviour, enter Stage 25 or activate CAP-13.
+ACCEPTANCE PATH: COMPLETE — one non-authoring Level-1 semantic / technical review, its bounded corrections and targeted
+delta review, then the Owner acceptance above. No new governance mechanism is created.
+*(Superseded 2026-10-07 by the Owner's acceptance, preserved — was: "STATUS: DOCUMENTATION-ONLY CONTRACT CANDIDATE — NOT
+ACCEPTED — NO IMPLEMENTATION AUTHORIZED — NO METHOD ADMISSION — NO NUMERICAL RESULT AUTHORIZED."; the title read
+"(CANDIDATE)".)*
 
 ---
 
@@ -245,7 +254,8 @@ A2 first increment admitting it with the first CAP-13 user slice.
 
 ## 15. Admission blockers (before any method admission)
 
-- **A-1** Owner acceptance of this contract after the §14 review.
+- **A-1** Owner acceptance of this contract after the §14 review — CLOSED 2026-10-07 (the Owner acceptance above). Method
+  admission stays blocked by A-2 to A-5.
 - **A-2** The final method identifier.
 - **A-3** The journey gate for the future user slice.
 - **A-4** The Arabic disclosure wording, settled under the UX review.
