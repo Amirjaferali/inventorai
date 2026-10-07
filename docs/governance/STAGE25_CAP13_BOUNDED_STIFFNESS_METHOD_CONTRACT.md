@@ -2,6 +2,11 @@
 
 STATUS: ACCEPTED BOUNDED METHOD CONTRACT OF RECORD — DOCUMENTATION ONLY — NO IMPLEMENTATION AUTHORIZED — STAGE 25 NOT
 ENTERED — CAP-13 NOT ACTIVATED.
+METHOD STATUS: `ACCEPTED DOCUMENTATION-ONLY FUTURE METHOD CANDIDATE — NOT ADMITTED` (2026-10-07). The Owner selected
+`CAP-13-STATIC-REACTIONS-TWO-SUPPORT-V1`
+([two-support static reactions method contract candidate](STAGE25_CAP13_TWO_SUPPORT_STATIC_REACTIONS_METHOD_CONTRACT.md))
+as the first-increment candidate for Stage 25 / CAP-13; this method is no longer described as the unique first CAP-13
+method. Its accepted technical clauses, its history and `D-7: OPEN` are unchanged.
 AUTHORITY LEVEL: subordinate to the CAP-13 entry of the
 [Capability Enrichment Register](INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md) and to the accepted
 [shared deterministic calculation and units owner boundary contract](SHARED_DETERMINISTIC_CALCULATION_AND_UNITS_OWNER_BOUNDARY_CONTRACT.md)
@@ -68,7 +73,7 @@ activate CAP-13, recommends no thickness and assigns no identifier globally.
 ## 1. Purpose and scope
 
 CAP-13 is recorded as an optional, advisory, non-binding thickness / specification / safety capability whose numerical
-output depends on the shared calculation and units owner. This candidate defines the smallest first technical method that
+output depends on the shared calculation and units owner. This candidate defines a bounded technical method that
 CAP-13 could later own: ONE stiffness / deformation method with ONE source-governed material-property record.
 
 The v1 method produces an ESTIMATED SHORT-TERM MIDSPAN DEFLECTION ONLY. It does not solve for a thickness, does not compare
@@ -354,11 +359,13 @@ increment select exactly one of two mutually exclusive shapes: A1 conversion-fir
 - **CASE A — a later authorized CAP-13 user slice genuinely supports inch input.** Then `in → mm` (with its own NIST SP 811
   inspection record; the repository's `mechanical:PR009` / `mechanical:PR011` records are context only) is a real
   named-consumer requirement, and a conversion-first first increment (A1) may become eligible if separately authorized.
-- **CASE B — the authorized first CAP-13 slice is metric-only (as v1 here is: N and mm).** Then the metric-only method has
+- **CASE B — the authorized CAP-13 user slice using this method is metric-only (as v1 here is: N and mm).** Then the metric-only method has
   no genuine conversion need: a unit-conversion first increment is NOT justified by CAP-13, and inch input is never added
   merely to create such a need. With Correction 01 now accepted, CASE B could use the method-first shape (A2) instead, if
-  separately authorized — this one method as the one admitted method and the first CAP-13 user slice as the one named consumer — without
-  inventing a conversion.
+  separately authorized — this one method as the one admitted method and a CAP-13 user slice as the one named consumer — without
+  inventing a conversion. Because the Owner has selected `CAP-13-STATIC-REACTIONS-TWO-SUPPORT-V1` as the first-increment
+  candidate (2026-10-07), this method, if ever admitted, may instead be admitted by a later, separately authorized method
+  admission (calc/units contract §3).
 
 **Consequence recorded truthfully (Owner decision D-1).** Under the text of record before Correction 01 and CASE B there
 was no calculation owner on which the v1 method could be admitted, because the owner's first increment could only be a
@@ -382,9 +389,9 @@ itself is unchanged).** Roles, each bound to one quantity kind and one exact uni
 quantity kind → unit token consistency only; the equation's dimensional derivation (§4) stays with this method authority.
 
 **Later method admission (described, not authorized).** After a calculation owner exists, and only once D-7 is closed
-(§12; D-5 is CLOSED), a separate increment may admit this ONE closed method record and pair it with the first CAP-13 user
-slice — the point at which Stage 25 would be
-entered. It would execute the source-structured equation with the section relations and the §5 derivations, over the
+(§12; D-5 is CLOSED), a separate increment may admit this ONE closed method record and pair it with a CAP-13 user
+slice. Stage 25 is entered when whichever separately authorized CAP-13 method is first admitted together with its named
+consumer. It would execute the source-structured equation with the section relations and the §5 derivations, over the
 quantity kinds force (N), length (mm) and modulus (MPa); carry the guard strategy of calc/units contract §14 in full
 (among it: independent expected numerical results — the §4 cross-check form may serve as one; invalid-value and
 out-of-scope rejection; failure on a tampered method, source or version record; no mutation; no network or model
