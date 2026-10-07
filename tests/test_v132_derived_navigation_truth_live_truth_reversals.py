@@ -249,8 +249,12 @@ _MATERIAL_REVERSALS = {
                                          _NS + " and further Stage-16 / SRL work is authorized."),
 }
 
+# The reversal cases are split for CI shard balance: the first half (by sorted name) runs here, the rest in
+# tests/test_v132_derived_navigation_truth_live_truth_reversals_continued.py with the same test body.
+_FIRST_HALF = (len(_MATERIAL_REVERSALS) + 1) // 2
 
-@pytest.mark.parametrize("name", sorted(_MATERIAL_REVERSALS))
+
+@pytest.mark.parametrize("name", sorted(_MATERIAL_REVERSALS)[:_FIRST_HALF])
 def test_every_material_reversal_is_caught(monkeypatch, name):
     path, region, old, new, *every = _MATERIAL_REVERSALS[name]
     real = _nav._read

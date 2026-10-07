@@ -597,7 +597,8 @@ def test_the_stage_eighteen_semantic_normalization_note_survives_routing():
 
 # The parts of this module split into their own files for CI shard balance stay inside the scan below.
 _SPLIT_FILES = tuple(os.path.join(os.path.dirname(__file__), "test_v132_derived_navigation_truth_%s.py" % part)
-                     for part in ("live_truth_reversals", "authority_and_stage28_proofs"))
+                     for part in ("live_truth_reversals", "live_truth_reversals_continued",
+                                  "authority_and_stage28_proofs"))
 
 
 def test_the_carried_stage_18_note_carries_no_tracking_identifier():
