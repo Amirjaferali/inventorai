@@ -234,22 +234,52 @@ SafetySignal and creates no second safety engine; CAP-13's screen is not changed
 
 ## 11. Source and source-use status (truthful; qualification NOT closed)
 
-| Item | Status |
-|---|---|
-| DOE-HDBK-1012/2-92, *Thermodynamics, Heat Transfer, and Fluid Flow*, Vol. 2 of 3, Module 2 (Heat Transfer), HT-02 p. 9, eq. (2-6) | **LEAD-INSPECTED** (Lead-supplied; not independently re-inspected by the executor, whose egress to DOE hosts was blocked by environment policy). **Claim binding: the per-area steady-state relation `ΔT = q'' × R''` ONLY.** Still to record before admission: the official DOE URL, the exact official status and its date, the inspection date and the inspected wording location. |
-| DOE status limitation | Archived DOE fundamentals handbook: historical fundamentals reference only; never a current-practice, compliance, rating or design basis. English engineering units in the source; SI presentation is InventorAI's notation normalization with no conversion factor. |
-| InventorAI derivation (`Qdot = q'' × A`, `Rθ = R'' / A`, `ΔT = Qdot × Rθ`) | InventorAI's own bounded derivation under D-1 to D-6 — NOT a source claim and never attributed to DOE. |
-| DOE source-use basis | **OPEN.** A THERM-01-scoped record restating the DOE Web Policies disposition on the `electronics_electrical:PR006` pattern (government information public domain with acknowledgement requested; privately contributed or contractor material may remain protected; the handbook was prepared with a DOE contractor training programme) — factual relation only, InventorAI-authored paraphrase only, no copied prose, worked examples, figures or tables, no endorsement implied. The Electrical pack record is NOT cited across domains. |
-| NIST SP 330 (2019) — `K` as SI base unit (kelvin) | **LEAD-INSPECTED; NOT QUALIFIED.** Exact inspected location, URL / DOI and inspection date not yet recorded. |
-| NIST SP 330 (2019) — `W` as SI derived unit (watt) | **LEAD-INSPECTED; NOT QUALIFIED.** Exact location not yet recorded. (`W` is already identified for Electrical reference use in `electronics_electrical:PR005` from NIST SP 811 Appendix B.9; that pack-scoped record is not an owner unit record.) |
-| NIST SP 330 (2019) — `K/W` as a quotient of SI units | **LEAD-INSPECTED; NOT QUALIFIED.** The exact clause on forming derived units by products / quotients is not yet recorded. |
-| NIST SP 330 (2019) — a temperature difference expressed in kelvin | **LEAD-INSPECTED; NOT QUALIFIED.** Exact location not yet recorded. |
-| NIST source-use basis for SP 330 | **OPEN.** `dcu:SU001` was inspected for the owner's SP 811 unit identification; whether the same NIST Technical Series basis covers SP 330 must be confirmed and recorded (extend or add a record). |
-| SP 811 / SP 330 reconciliation | **OPEN.** The owner's `dcu:U001` / `dcu:U002` cite SP 811 (2008); whether the new unit records cite SP 330 while those stay on SP 811 is an owner-artifact decision (§12, AD-6). |
-| Any second source for a general lumped "total thermal resistance" | Not sought and not needed: the method does not admit general datasheet resistance. |
+**Inspection basis (applies to every row marked LEAD-INSPECTED).** The three official references below were inspected by
+the Lead and supplied to the executor with their URLs and inspected locations on 2026-10-08 (Blocker 2 source-qualification
+task, base `0a519210d523cd118153792dc64c82271f3d9ddf`). The precise date of the Lead's own inspection was not stated and is
+recorded here only as "on or before 2026-10-08". The executor did not independently re-inspect any of them: its egress to
+`energy.gov` and `nist.gov` was refused by the environment network policy. No row below rests on model memory.
 
-No source fact above is marked qualified. **Source qualification must be CLOSED — every row recorded with its exact
-location, URL, date, inspection basis and use basis — before any runtime admission.**
+**Sources and supported claims.**
+
+| ID | Source and inspected location | Exact supported claim (InventorAI's own factual paraphrase) | Status |
+|---|---|---|---|
+| THERM-S1 | U.S. Department of Energy, DOE-HDBK-1012/2-92, *DOE Fundamentals Handbook: Thermodynamics, Heat Transfer, and Fluid Flow*, Volume 2 of 3, Module 2 (Heat Transfer), HT-02, page 9, equation (2-6). URL: https://www.energy.gov/documents/doe-hdbk-1012-92vol2 | For steady-state heat transfer through a layered path, the heat flux equals the overall temperature difference divided by the area-normalized (per-unit-area) thermal resistance of the path; written by InventorAI as `ΔT = q'' × R''`. Bound to this per-area relation ONLY. | **LEAD-INSPECTED — identity, URL, location and claim RECORDED.** |
+| THERM-S1 limitation | Same source. | Archived DOE fundamentals handbook: historical fundamentals reference only; never a current-practice, compliance, rating or design basis. The source uses English engineering units; InventorAI's SI presentation is a notation normalization with no conversion factor, and it is NOT claimed that DOE wrote the SI form. | **PRESERVED.** The exact official status label and its date as shown on the official DOE record were not supplied with this inspection and are not recorded here (see remaining gap G-2). |
+| THERM-D1 | InventorAI's own derivation (§3): `Qdot = q'' × A`, `Rθ = R'' / A`, therefore `ΔT = Qdot × Rθ`, valid only under D-1 to D-6. | — | **InventorAI derivation — NOT a source claim, never attributed to DOE.** |
+| THERM-U1 | NIST Special Publication 330, *The International System of Units (SI)*, 2019 edition, Section 2. URL: https://www.nist.gov/pml/special-publication-330/sp-330-section-2 | The kelvin, symbol `K`, is the SI base unit of thermodynamic temperature. | **LEAD-INSPECTED — RECORDED** (location: SP 330 Section 2, as supplied; no finer subsection reference was supplied). |
+| THERM-U2 | Same, Section 2. | The watt, symbol `W`, is the SI coherent derived unit with a special name for power (one joule per second). | **LEAD-INSPECTED — RECORDED** (Section 2). |
+| THERM-U3 | Same, Section 2. | Coherent SI derived units are formed as products and quotients of SI units; hence kelvin per watt, written `K/W`, is a coherent SI unit (used here for thermal resistance). `K/W` is not a named SI unit; the quantity name "thermal resistance" is InventorAI's usage. | **LEAD-INSPECTED — RECORDED** (Section 2). |
+| THERM-U4 | Same, Section 2. | A temperature difference (interval) may be expressed in kelvin; a difference of one kelvin equals a difference of one degree Celsius. Used only to justify the `K` output token for a temperature difference; no Celsius scale, offset or conversion is admitted. | **LEAD-INSPECTED — RECORDED** (Section 2). |
+
+**Source-use dispositions (not legal opinions).**
+
+| ID | Basis | Disposition | Status |
+|---|---|---|---|
+| THERM-SU-NIST | NIST — *Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications*. URL: https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications | Lead-inspected (same basis as above). NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded from that statement. SP 330 is a NIST Special Publication (Technical Series). THERM-01 use is limited to the four unit facts THERM-U1 to THERM-U4, stated in InventorAI's own words, with NIST acknowledgement; no SP 330 prose, table, figure or symbol list is reproduced; no endorsement is implied. SP 330 is NIST's edition of the SI as defined by the BIPM: any BIPM-originated wording or tables in it are treated as third-party material and are NOT reproduced; only the unit facts themselves are used. | **RECORDED — THERM-01-SCOPED.** This is a separate THERM-01 record on the same NIST policy page that `dcu:SU001` and `electronics_electrical:PR007` already cite; it does NOT extend the scope of either of those records, which stay bound to their own unit facts. |
+| THERM-SU-DOE | DOE source-use basis for DOE-HDBK-1012/2-92. | Intended disposition, on the `electronics_electrical:PR006` pattern but scoped to THERM-01 only: government information on DOE websites is in the public domain with acknowledgement requested; privately contributed or contractor-prepared material may remain protected (the handbook was prepared with a DOE contractor training programme); use = the one factual relation THERM-S1, InventorAI-authored paraphrase only, no copied prose, worked examples, figures or tables, no endorsement implied. `electronics_electrical:PR006` is NOT cited across domains and its scope is NOT extended. | **OPEN** — no DOE copyright / use statement was among the references inspected for this task (see G-1). |
+
+**SP 811 / SP 330 reconciliation (decision of record).** The shared owner's existing unit records `dcu:U001` (`N`) and
+`dcu:U002` (`mm`) and their source-use record `dcu:SU001` stay on NIST SP 811 (2008) exactly as used by CAP-13; nothing here
+changes, re-cites or re-dates them. The THERM-01 unit facts `W`, `K`, `K/W` and temperature difference cite NIST SP 330
+(2019) (THERM-U1 to THERM-U4). Where the future owner artifact (AD-6) records these new unit records is an implementation
+detail of that separately authorized change; it may not alter the SP 811 records. **RECORDED.**
+
+**Not sought:** any second source for a general lumped "total thermal resistance" — not needed, because the method does not
+admit general datasheet resistance.
+
+**Remaining gaps (Blocker 2 stays OPEN until each is closed):**
+
+- **G-1 — DOE source-use basis.** Inspect and record the official DOE copyright / use statement that applies to
+  DOE-HDBK-1012/2-92 (for example the DOE web-policy copyright notice), then complete THERM-SU-DOE.
+- **G-2 — DOE official status.** Record the exact status label and its date as shown on the official DOE record of
+  DOE-HDBK-1012/2-92 (the archived / historical limitation is preserved meanwhile).
+- **G-3 — Inspection date.** Record the precise date of the Lead's inspection of the three references (currently "on or
+  before 2026-10-08").
+
+No source fact above becomes a runtime authority until Blocker 2 is CLOSED. **Source qualification must be CLOSED — every
+source and source-use row recorded with its exact location, URL, date, inspection basis and use basis — before any runtime
+admission.**
 
 ## 12. Architecture decision record (reviewed future implementation boundary; NOT implemented here)
 
@@ -311,9 +341,10 @@ Stop and return to the Lead / Owner if any of these arises:
 
 1. **Acceptance of this contract** — `CLOSED`: accepted by Lead / Owner decision as the documentation decision of record
    after PR #775 (merge `1b587da5c3555dda487be02589fa618f7a5a7cb8`).
-2. **Source qualification closed** — `OPEN`: every §11 row recorded with exact location, URL, date, inspection basis and
-   use basis (DOE record, DOE source-use record, NIST SP 330 unit facts for `K`, `W`, `K/W` and temperature difference, the
-   NIST use basis for SP 330, and the SP 811 / SP 330 reconciliation).
+2. **Source qualification closed** — `OPEN`: recorded in §11 — the DOE relation THERM-S1 (identity, URL, location, claim
+   binding), the InventorAI derivation THERM-D1, the NIST SP 330 unit facts THERM-U1 to THERM-U4, the THERM-01-scoped NIST
+   source-use record THERM-SU-NIST and the SP 811 / SP 330 reconciliation. Still open: G-1 (DOE source-use basis), G-2 (DOE
+   official status label and date) and G-3 (precise Lead inspection date).
 3. **Shared-owner contract amendment accepted** — `OPEN`: a calc/units contract amendment admitting a second method and a
    second consumer under AD-1 to AD-11, with architecture review of AD-2 to AD-7 and AD-10.
 4. **Arabic wording and UX** — `OPEN`: Arabic disclosure and journey wording settled before any display.
