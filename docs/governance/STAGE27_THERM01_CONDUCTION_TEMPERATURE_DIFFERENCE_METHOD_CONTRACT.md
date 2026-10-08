@@ -253,10 +253,10 @@ location, URL, date, inspection basis and use basis — before any runtime admis
 | AD-5 | Added exact unit tokens: `W`, `K/W`, `K`. No aliases, no dimensional equivalence, no conversion. |
 | AD-6 | Owner artifact `docs/governance/deterministic_calculation_config/deterministic_calculation_owner_v1.json` content version moves to future `2`, adding the THERM-01 method record, kinds, unit records and an owner-local source-qualification snapshot (the `dcu:SU002` pattern); the SP 811 / SP 330 citation choice is settled there. |
 | AD-7 | Owner implementation version moves to future `1.1.0`. |
-| AD-8 | CAP-13 method and artifact semantics stay unchanged: its method record, roles, tokens, pinned digests, behaviour and tests stay identical. |
+| AD-8 | CAP-13 compatibility: the CAP-13 method `cap13:static_reactions_two_support` version `1.0`, its CAP-13 authority artifact version `1`, its equations, roles, units, semantic pins (`_SEMANTIC_DIGESTS`) and user-facing behaviour stay unchanged. No CAP-13 method-semantic change is authorized. This does NOT claim that every CAP-13 test or every shared-owner identity stays byte-identical: bounded updates to assertions on the shared-owner artifact content version, the owner implementation version and the shared-owner closed-inventory / digest identities, caused only by the separately reviewed second admission (AD-3 to AD-7), are expected and allowed. |
 | AD-9 | A separate THERM-01 method-authority artifact (proposed: `docs/governance/therm01_content_config/conduction_temperature_difference_single_path_v1.json`) holds the method authority, declarations, screen, numeric domain, disclosure and THERM-01 source / source-use records. Not a Domain Pack; not in `domains/domain_provenance.json`. Neither artifact loads the other at execution. |
 | AD-10 | Consumers stay separate: a THERM-01 consumer module and request-local page, gated on the durable `confirmed_domain == "electronics_electrical"` read the same way the CAP-12 / CAP-13 gates read it. THERM-01 never imports CAP-13 and CAP-13 never imports THERM-01. |
-| AD-11 | No registry, discovery, conversion, generic unit vocabulary or request-selected method, ever, under this contract. |
+| AD-11 | No registry, discovery mechanism, generic conversion, generic unit vocabulary or request-selected method is authorized by this contract or by this bounded second admission. Any future architecture beyond it stays subject to a separate decision; nothing here pre-authorizes it. |
 
 AD-3, AD-4, AD-5 and AD-7 change the shared owner beyond the calc/units contract §13 first increment (which excludes "a
 second method; a second consumer"): they require a separately accepted shared-owner contract amendment before any
@@ -273,7 +273,8 @@ implementation.
   unmapped owner outcomes fail closed.
 - **Gating:** Electrical / Electronics root only; Mechanical and other roots refused; ownership isolation and CSRF.
 - **Artifacts:** both artifacts validated with pinned digests; tampering, version mismatch or a missing source / source-use
-  record fails closed; CAP-13 digests and behaviour unchanged.
+  record fails closed; the CAP-13 method `1.0`, its authority artifact version `1`, its semantic pins and its behaviour
+  unchanged (bounded shared-owner version / identity assertion updates allowed per AD-8).
 - **No side effects:** nothing persisted (database dump and session snapshot); no report, PDF, export, evidence, readiness
   or SafetySignal effect; import isolation (no network, clock, randomness or provider).
 - **Wording and layout:** EN disclosure equals §9 meanings; AR from its accepted UX section; RTL `bdi` isolation of
@@ -291,7 +292,8 @@ Stop and return to the Lead / Owner if any of these arises:
 - a material-property or coefficient dataset, or general datasheet-resistance admission;
 - a source fact that cannot be inspected and bound with a compatible use basis;
 - a second calculation framework, a THERM-01-owned calculation owner, a registry or a request-selected method;
-- any change to CAP-13 behaviour, artifacts or digests;
+- any change to CAP-13 method semantics, behaviour, its authority artifact or its semantic pins (beyond the bounded
+  shared-owner assertion updates AD-8 allows);
 - thermal output routed into SafetySignal, evidence, readiness, progression, report or export;
 - any AI or provider call;
 - any implementation step before every open blocker in §15 is closed.
