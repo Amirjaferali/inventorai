@@ -1,7 +1,7 @@
-# STAGE 27 / THERM-01 — SINGLE-PATH CONDUCTION TEMPERATURE-DIFFERENCE METHOD CONTRACT (CANDIDATE)
+# STAGE 27 / THERM-01 — SINGLE-PATH CONDUCTION TEMPERATURE-DIFFERENCE METHOD CONTRACT (ACCEPTED)
 
-STATUS: DOCUMENTATION-ONLY CONTRACT CANDIDATE — NOT ACCEPTED — NO IMPLEMENTATION AUTHORIZED — NO METHOD ADMISSION — NO
-NUMERICAL RESULT AUTHORIZED. `STAGE 27: NOT ENTERED` · `STAGE 27: NOT AUTHORIZED` · `THERM-01: NOT AUTHORIZED FOR
+STATUS: ACCEPTED DOCUMENTATION DECISION OF RECORD — NO IMPLEMENTATION AUTHORIZED — NO METHOD ADMISSION — NO NUMERICAL
+RESULT AUTHORIZED. `STAGE 27: NOT ENTERED` · `STAGE 27: NOT AUTHORIZED` · `THERM-01: NOT AUTHORIZED FOR
 IMPLEMENTATION` · `SHARED-OWNER SECOND ADMISSION: NOT AUTHORIZED` · `ACTIVE CONTRACT: NONE`.
 AUTHORITY LEVEL: subordinate to the THERM-01 section of the
 [Capability Enrichment Register](INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md) (ODR `D-THERM-01`) and to the accepted
@@ -12,8 +12,17 @@ PURPOSE: this candidate is the Register's mandatory THERM-01 feasibility / contr
 it selects the supported physics, inputs, units, uncertainty, validation and solver boundary before any implementation,
 as Master Roadmap row 27 requires. It enters no Stage, admits nothing and implements nothing.
 BASE: cut from `feature/atomic-json-session-persistence` at `67f113d369a9909848c6eeda23c0b21113e2f3ba`.
-ACCEPTANCE PATH (not started): one non-authoring Level-1 semantic / technical review of this candidate, any bounded
-corrections with a targeted delta review, then a separate Owner acceptance. No new governance mechanism is created.
+MERGED: PR #775, merge `1b587da5c3555dda487be02589fa618f7a5a7cb8` (reviewed head `9c1033c435949c854b45fa3d2fc9f2c98db671cd`,
+carrying the bounded AD-8 / AD-11 corrections; merge tree = reviewed-head tree).
+ACCEPTANCE: by Lead / Owner decision after the merge of PR #775, this contract is the ACCEPTED DOCUMENTATION DECISION OF
+RECORD for the THERM-01 method / feasibility gate. Recorded documentation-only: the technical method, sources, scope,
+declarations, screen, exclusions, architecture decisions and blockers are unchanged by the acceptance, and references in
+the body to "this candidate" read as this accepted contract. The acceptance closes §15 blocker 1 only; blockers 2, 3, 4
+and 5 stay OPEN. It implements nothing, admits no method, closes no source qualification, enters no Stage and authorizes
+no THERM-01 runtime or shared-owner second admission.
+*(Superseded by this acceptance, preserved — was: "STATUS: DOCUMENTATION-ONLY CONTRACT CANDIDATE — NOT ACCEPTED — …" and
+"ACCEPTANCE PATH (not started): one non-authoring Level-1 semantic / technical review of this candidate, any bounded
+corrections with a targeted delta review, then a separate Owner acceptance. No new governance mechanism is created.")*
 
 ---
 
@@ -300,7 +309,8 @@ Stop and return to the Lead / Owner if any of these arises:
 
 ## 15. Open blockers (before any method admission)
 
-1. **Acceptance of this contract** — `OPEN`: Level-1 review, any bounded corrections and the Owner acceptance.
+1. **Acceptance of this contract** — `CLOSED`: accepted by Lead / Owner decision as the documentation decision of record
+   after PR #775 (merge `1b587da5c3555dda487be02589fa618f7a5a7cb8`).
 2. **Source qualification closed** — `OPEN`: every §11 row recorded with exact location, URL, date, inspection basis and
    use basis (DOE record, DOE source-use record, NIST SP 330 unit facts for `K`, `W`, `K/W` and temperature difference, the
    NIST use basis for SP 330, and the SP 811 / SP 330 reconciliation).
