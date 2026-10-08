@@ -306,7 +306,8 @@ and 5, and any display needs blocker 4.
 
 AD-3, AD-4, AD-5 and AD-7 change the shared owner beyond the calc/units contract §13 first increment (which excludes "a
 second method; a second consumer"): they require a separately accepted shared-owner contract amendment before any
-implementation.
+implementation. That amendment is the calc/units contract's accepted Correction 02 (§13A); implementation still needs
+blocker 5.
 
 ## 13. Future focused tests (for a separately authorized implementation; none is written now)
 
@@ -352,8 +353,9 @@ Stop and return to the Lead / Owner if any of these arises:
    claim binding, official Archive status and dates), the InventorAI derivation THERM-D1, the NIST SP 330 unit facts
    THERM-U1 to THERM-U4, the THERM-01-scoped source-use records THERM-SU-NIST and THERM-SU-DOE, the SP 811 / SP 330
    reconciliation and the inspection dates (2026-10-08 and 2026-10-09); G-1, G-2 and G-3 closed.
-3. **Shared-owner contract amendment accepted** — `OPEN`: a calc/units contract amendment admitting a second method and a
-   second consumer under AD-1 to AD-11, with architecture review of AD-2 to AD-7 and AD-10.
+3. **Shared-owner contract amendment accepted** — `CLOSED`: the calc/units contract's Correction 02 (§13A), accepted as a
+   documentation-only boundary for exactly this bounded second admission under AD-1 to AD-11. It implements nothing and
+   admits no method; the second admission stays NOT IMPLEMENTED.
 4. **Arabic wording and UX** — `OPEN`: Arabic disclosure and journey wording settled before any display.
 5. **Separate Owner implementation authorization** — `OPEN`.
 

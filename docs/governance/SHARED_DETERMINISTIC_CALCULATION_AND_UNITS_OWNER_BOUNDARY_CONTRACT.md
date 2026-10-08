@@ -30,6 +30,19 @@ and exclusion list; every other clause, including §9, §14 and §16, is unchang
 the applicable contract wording of record; the text of record before the correction stays preserved beside each changed
 passage as history only. Acceptance implements nothing, authorizes no first increment, admits no method or conversion,
 and does not enter Stage 25 or activate CAP-13.
+CORRECTION 02: `CORRECTION 02 — BOUNDED SECOND ADMISSION (THERM-01) — ACCEPTED — DOCUMENTATION ONLY — NO IMPLEMENTATION
+AUTHORIZED — NO METHOD ADMISSION`. It records the already-reviewed bounded expansion of the delivered CAP-13 first admission
+(the A2 shape of §13, delivered as Stage 25 — CAP-13 Two-Support Static Reactions — Slice 1) to exactly two methods and two
+consumers, as fixed by the architecture decision record (AD-1 to AD-11) of the accepted
+[THERM-01 method contract](STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md) (PR #775, merge
+`1b587da5c3555dda487be02589fa618f7a5a7cb8`; source qualification closed by PR #777, merge
+`a72d25fe011582b4a0176722a1b1810daca6e683`). Review basis: the architecture reviews reconciled into that decision record
+(Lead-reported; session-level review inputs held in Git / GitHub and the Owner's records, as for Correction 01). Accepted by
+Owner authorization of this documentation-only record. It ADDS §13A and a short addition each to §3, §16 and §17; Correction 01
+and every other clause — including §§7–10, §13 and §14 — are unchanged, and §13 stays the delivered first-increment shape
+of record. Correction 02 authorizes the contract boundary only: it implements nothing, admits no method, changes no
+runtime, artifact or test, enters no Stage and activates nothing. The shared-owner second admission stays NOT IMPLEMENTED
+and NOT AUTHORIZED for implementation until a separate Owner implementation authorization.
 BASIS: the Lead's read-only Stage 25 / CAP-13 feasibility gate (finding B — CAP-13 is feasible only after calculation and
 units ownership is decided); the Lead's read-only calculation and units ownership gate (finding B — a new shared calculation
 and units owner is required before CAP-13); an Astra architecture review and an independent Claude architecture / semantic
@@ -93,6 +106,9 @@ itself; or (A2) one deterministic method whose technical authority stays outside
 neither shape and supplies no method, conversion factor, constant or unit vocabulary; each enters only through the owner's
 governed artifact with its own inspection record (§9), and only under a separate Owner authorization tied to a named
 consumer (§13).
+**Bounded second admission (Correction 02 — accepted).** Beyond the delivered first increment, the only further admission
+this contract permits is the one bounded second admission of §13A; each method in it still needs its own separate Owner
+authorization before it is admitted at runtime.
 *(Text of record before Correction 01, preserved as history; superseded by the accepted Correction 01 — "**First-increment
 method.** In a future first increment the only admitted method may be a unit conversion whose authority is the unit source
 itself. This contract documents no conversion factor, no constant and no unit vocabulary; each enters only through the
@@ -312,6 +328,45 @@ scales; logarithmic units such as decibels; symbol aliases; case folding; Unicod
 access; clock dependence; randomness; provider calls; external tools; AI fallback; stale-value fallback; zero substitutes;
 and partial recommendations.")*
 
+## 13A. Bounded second admission — THERM-01 (Correction 02 — accepted; documentation only)
+
+The delivered first increment (§13, shape A2) may be expanded, under a separate Owner implementation authorization, to
+EXACTLY the following and nothing more. This section authorizes the contract boundary only; it implements nothing and
+admits no method.
+
+- **Owner.** The one existing shared owner (`engine/deterministic_calculation.py`). No second owner, solver, framework or
+  calculation path is created.
+- **Methods — exactly two:** `cap13:static_reactions_two_support` version `1.0` and
+  `therm01:conduction_temperature_difference_single_path` version `1.0`. Each keeps its technical authority outside this
+  owner (§3): CAP-13 in its own method-authority artifact, THERM-01 in its own separate method-authority artifact.
+- **Consumers — exactly two:** the existing CAP-13 consumer and one THERM-01 consumer. Neither consumer imports the other,
+  and neither method-authority artifact loads the other at execution.
+- **Quantity kinds:** the existing `force` and `length`, plus exactly `power`, `thermal_resistance` and
+  `temperature_difference`. No absolute `temperature` kind is admitted.
+- **Exact unit tokens:** the existing `N` and `mm`, plus exactly `W`, `K/W` and `K`. No alias, no case folding, no
+  dimensional equivalence, no °C token and no conversion of any kind (§13's exclusion of offset conversions such as
+  temperature scales stands).
+- **Closed inventory.** The admitted methods, kinds and tokens stay closed, exact sets validated on load; anything outside
+  them is refused as today.
+- **Method-local bindings.** Each method's roles are bound to its own kinds and exact tokens; one method's tokens never
+  satisfy another method's roles, and the dimensional derivation stays method-authority content.
+- **Bindings.** One additional immutable, application-wired method binding for the THERM-01 consumer, beside the existing
+  CAP-13 binding; each consumer holds exactly its own binding. No registry, discovery mechanism, dynamic module path,
+  generic conversion, generic unit vocabulary or request-selected method is authorized under this admission; any later
+  architecture stays subject to a separate decision.
+- **Versions.** One shared-owner governed artifact (§9), whose content version moves to future `2`; owner implementation
+  version future `1.1.0`. Every unit and method record in it keeps the §9 source and inspection requirements; the existing
+  SP 811 unit records `N` / `mm` and their source-use record stay as they are.
+- **CAP-13 preserved.** The CAP-13 method `1.0`, its authority artifact version `1`, its equations, roles, units, semantic
+  pins and user-facing behaviour stay unchanged; no CAP-13 method-semantic change is authorized. Bounded updates to
+  assertions on the shared-owner artifact content version, the implementation version and the owner's closed-inventory /
+  digest identities, caused only by this second admission, are expected and allowed.
+- **States and failure semantics unchanged.** §7 states, §8 reason tokens and their mapping, §10 numerical policy and §12
+  persistence rule apply unchanged; an overflow or non-finite result stays `FAILURE / EXECUTION_INTEGRITY_FAILURE` with no
+  numerical payload, and an owner `FAILURE` is never rewritten as `REFUSAL`.
+- **Still excluded:** a third method or consumer; ranges; string parsing; any conversion; a generic solver; a generic unit
+  registry or conversion graph; persistence; provider, AI or external-tool execution; and every other §13 exclusion.
+
 ## 14. Required guard strategy for a future implementation
 
 - independent expected numerical results;
@@ -348,9 +403,13 @@ and partial recommendations.")*
 - A UX / behaviour review is required only when a consuming capability first shows calculated values to users.
 - Owner decisions still required: any identifier for the owner; and, separately, any first increment, its named consumer
   and each method admission. Acceptance of the candidate is recorded in the header (ACCEPTANCE).
+- Correction 02 (§13A) is recorded as accepted on the reconciled architecture reviews of the THERM-01 decision record; an
+  implementation of it still needs its own Owner authorization and risk-appropriate independent verification.
 
 ## 17. Non-authorization (restated)
 
 This document authorizes no implementation, runtime owner, adapter, method, unit vocabulary, conversion factor, constant,
 equation, schema, store, persistence, test, route or user-facing behaviour; no CAP-13, THERM-01, Technical Realization or
 Stage-36 work; no Master Roadmap stage entry, checkbox, marker or count change; no CAP number; and no deployment or release.
+Correction 02 (§13A) authorizes the bounded second-admission contract boundary only: no THERM-01 method admission, runtime,
+artifact or test change, and no Stage 27 entry.
