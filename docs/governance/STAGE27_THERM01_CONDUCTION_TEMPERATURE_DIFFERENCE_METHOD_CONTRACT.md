@@ -232,20 +232,27 @@ SafetySignal and creates no second safety engine; CAP-13's screen is not changed
 - No Domain Pack, `domains/domain_provenance.json`, domain-activation, CAP-12, CAP-13, CAP-14 or WS-PFV-001 change.
 - Mechanical and every other root domain stay out of scope for v1.
 
-## 11. Source and source-use status (truthful; qualification NOT closed)
+## 11. Source and source-use status (truthful; qualification CLOSED for the recorded claims only)
 
-**Inspection basis (applies to every row marked LEAD-INSPECTED).** The three official references below were inspected by
-the Lead and supplied to the executor with their URLs and inspected locations on 2026-10-08 (Blocker 2 source-qualification
-task, base `0a519210d523cd118153792dc64c82271f3d9ddf`). The precise date of the Lead's own inspection was not stated and is
-recorded here only as "on or before 2026-10-08". The executor did not independently re-inspect any of them: its egress to
-`energy.gov` and `nist.gov` was refused by the environment network policy. No row below rests on model memory.
+**Inspection basis.** Two Lead inspections, recorded with their own dates and never backdated:
+
+- **Inspection A (supplied 2026-10-08).** DOE-HDBK-1012/2-92 HT-02 p. 9 eq. (2-6), NIST SP 330 (2019) Section 2 and the
+  NIST Technical Series source-use policy were inspected by the Lead and supplied to the executor with their URLs and
+  inspected locations on 2026-10-08 (base `0a519210d523cd118153792dc64c82271f3d9ddf`). No earlier or more precise
+  inspection date was stated, and none is claimed: these rows carry the supply date 2026-10-08.
+- **Inspection B (2026-10-09).** The Lead independently verified the DOE Web Policies page and the official
+  DOE-HDBK-1012/2-92 record on 2026-10-09.
+
+The executor did not independently re-inspect any reference: its egress to `energy.gov` and `nist.gov` was refused by the
+environment network policy. No row below rests on model memory.
 
 **Sources and supported claims.**
 
 | ID | Source and inspected location | Exact supported claim (InventorAI's own factual paraphrase) | Status |
 |---|---|---|---|
 | THERM-S1 | U.S. Department of Energy, DOE-HDBK-1012/2-92, *DOE Fundamentals Handbook: Thermodynamics, Heat Transfer, and Fluid Flow*, Volume 2 of 3, Module 2 (Heat Transfer), HT-02, page 9, equation (2-6). URL: https://www.energy.gov/documents/doe-hdbk-1012-92vol2 | For steady-state heat transfer through a layered path, the heat flux equals the overall temperature difference divided by the area-normalized (per-unit-area) thermal resistance of the path; written by InventorAI as `ΔT = q'' × R''`. Bound to this per-area relation ONLY. | **LEAD-INSPECTED — identity, URL, location and claim RECORDED.** |
-| THERM-S1 limitation | Same source. | Archived DOE fundamentals handbook: historical fundamentals reference only; never a current-practice, compliance, rating or design basis. The source uses English engineering units; InventorAI's SI presentation is a notation normalization with no conversion factor, and it is NOT claimed that DOE wrote the SI form. | **PRESERVED.** The exact official status label and its date as shown on the official DOE record were not supplied with this inspection and are not recorded here (see remaining gap G-2). |
+| THERM-S1 status | Official DOE record of DOE-HDBK-1012/2-92: https://www.energy.gov/ehss/articles/doe-hdbk-10122-92 (Inspection B, 2026-10-09). | Status: **Archive**. Approved: **1996-01-22**. Last updated: **2014-12-29**. These are the record's approval and last-update dates; neither is the date the handbook moved to Archive. The date of transition to Archive is **NOT established** and no cancellation or archive date is recorded or inferred. | **RECORDED (G-2 CLOSED).** |
+| THERM-S1 limitation | Same source. | Archived DOE fundamentals handbook: historical fundamentals reference only; never a current-practice, compliance, rating or design basis. The source uses English engineering units; InventorAI's SI presentation is a notation normalization with no conversion factor, and it is NOT claimed that DOE wrote the SI form. | **PRESERVED.** |
 | THERM-D1 | InventorAI's own derivation (§3): `Qdot = q'' × A`, `Rθ = R'' / A`, therefore `ΔT = Qdot × Rθ`, valid only under D-1 to D-6. | — | **InventorAI derivation — NOT a source claim, never attributed to DOE.** |
 | THERM-U1 | NIST Special Publication 330, *The International System of Units (SI)*, 2019 edition, Section 2. URL: https://www.nist.gov/pml/special-publication-330/sp-330-section-2 | The kelvin, symbol `K`, is the SI base unit of thermodynamic temperature. | **LEAD-INSPECTED — RECORDED** (location: SP 330 Section 2, as supplied; no finer subsection reference was supplied). |
 | THERM-U2 | Same, Section 2. | The watt, symbol `W`, is the SI coherent derived unit with a special name for power (one joule per second). | **LEAD-INSPECTED — RECORDED** (Section 2). |
@@ -257,7 +264,7 @@ recorded here only as "on or before 2026-10-08". The executor did not independen
 | ID | Basis | Disposition | Status |
 |---|---|---|---|
 | THERM-SU-NIST | NIST — *Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications*. URL: https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications | Lead-inspected (same basis as above). NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded from that statement. SP 330 is a NIST Special Publication (Technical Series). THERM-01 use is limited to the four unit facts THERM-U1 to THERM-U4, stated in InventorAI's own words, with NIST acknowledgement; no SP 330 prose, table, figure or symbol list is reproduced; no endorsement is implied. SP 330 is NIST's edition of the SI as defined by the BIPM: any BIPM-originated wording or tables in it are treated as third-party material and are NOT reproduced; only the unit facts themselves are used. | **RECORDED — THERM-01-SCOPED.** This is a separate THERM-01 record on the same NIST policy page that `dcu:SU001` and `electronics_electrical:PR007` already cite; it does NOT extend the scope of either of those records, which stay bound to their own unit facts. |
-| THERM-SU-DOE | DOE source-use basis for DOE-HDBK-1012/2-92. | Intended disposition, on the `electronics_electrical:PR006` pattern but scoped to THERM-01 only: government information on DOE websites is in the public domain with acknowledgement requested; privately contributed or contractor-prepared material may remain protected (the handbook was prepared with a DOE contractor training programme); use = the one factual relation THERM-S1, InventorAI-authored paraphrase only, no copied prose, worked examples, figures or tables, no endorsement implied. `electronics_electrical:PR006` is NOT cited across domains and its scope is NOT extended. | **OPEN** — no DOE copyright / use statement was among the references inspected for this task (see G-1). |
+| THERM-SU-DOE | DOE Web Policies. URL: https://www.energy.gov/web-policies (Inspection B, 2026-10-09). | Government information is generally in the public domain, and DOE acknowledgement is requested; third-party and contractor material may remain protected. THERM-01 disposition: the handbook was prepared with a DOE contractor training programme, so no blanket public-domain claim is made for its expressive content. Use is limited to the one factual relation THERM-S1, stated in InventorAI's own paraphrase with DOE acknowledgement; no handbook prose, worked example, figure or table is copied; no endorsement is implied. This is a separate THERM-01 record: `electronics_electrical:PR006` is NOT cited across domains and its scope is NOT extended. | **RECORDED — THERM-01-SCOPED (G-1 CLOSED).** |
 
 **SP 811 / SP 330 reconciliation (decision of record).** The shared owner's existing unit records `dcu:U001` (`N`) and
 `dcu:U002` (`mm`) and their source-use record `dcu:SU001` stay on NIST SP 811 (2008) exactly as used by CAP-13; nothing here
@@ -268,18 +275,18 @@ detail of that separately authorized change; it may not alter the SP 811 records
 **Not sought:** any second source for a general lumped "total thermal resistance" — not needed, because the method does not
 admit general datasheet resistance.
 
-**Remaining gaps (Blocker 2 stays OPEN until each is closed):**
+**Gap closure:**
 
-- **G-1 — DOE source-use basis.** Inspect and record the official DOE copyright / use statement that applies to
-  DOE-HDBK-1012/2-92 (for example the DOE web-policy copyright notice), then complete THERM-SU-DOE.
-- **G-2 — DOE official status.** Record the exact status label and its date as shown on the official DOE record of
-  DOE-HDBK-1012/2-92 (the archived / historical limitation is preserved meanwhile).
-- **G-3 — Inspection date.** Record the precise date of the Lead's inspection of the three references (currently "on or
-  before 2026-10-08").
+- **G-1 — DOE source-use basis: CLOSED** by THERM-SU-DOE (Inspection B, 2026-10-09).
+- **G-2 — DOE official status: CLOSED** by the THERM-S1 status row (Archive; approved 1996-01-22; last updated
+  2014-12-29; archive-transition date not established and not inferred).
+- **G-3 — Inspection dates: CLOSED** by the inspection-basis statement above: Inspection A carries its supply date
+  2026-10-08 and Inspection B its verification date 2026-10-09; nothing is backdated.
 
-No source fact above becomes a runtime authority until Blocker 2 is CLOSED. **Source qualification must be CLOSED — every
-source and source-use row recorded with its exact location, URL, date, inspection basis and use basis — before any runtime
-admission.**
+Every source and source-use row now carries its URL, inspected location, date, inspection basis and use basis, so source
+qualification is **CLOSED** for exactly the recorded claims (THERM-S1, THERM-U1 to THERM-U4) under their recorded
+limitations. It qualifies nothing else, admits no method and authorizes no runtime: method admission still needs blockers 3
+and 5, and any display needs blocker 4.
 
 ## 12. Architecture decision record (reviewed future implementation boundary; NOT implemented here)
 
@@ -341,10 +348,10 @@ Stop and return to the Lead / Owner if any of these arises:
 
 1. **Acceptance of this contract** — `CLOSED`: accepted by Lead / Owner decision as the documentation decision of record
    after PR #775 (merge `1b587da5c3555dda487be02589fa618f7a5a7cb8`).
-2. **Source qualification closed** — `OPEN`: recorded in §11 — the DOE relation THERM-S1 (identity, URL, location, claim
-   binding), the InventorAI derivation THERM-D1, the NIST SP 330 unit facts THERM-U1 to THERM-U4, the THERM-01-scoped NIST
-   source-use record THERM-SU-NIST and the SP 811 / SP 330 reconciliation. Still open: G-1 (DOE source-use basis), G-2 (DOE
-   official status label and date) and G-3 (precise Lead inspection date).
+2. **Source qualification closed** — `CLOSED`: recorded in §11 — the DOE relation THERM-S1 (identity, URL, location,
+   claim binding, official Archive status and dates), the InventorAI derivation THERM-D1, the NIST SP 330 unit facts
+   THERM-U1 to THERM-U4, the THERM-01-scoped source-use records THERM-SU-NIST and THERM-SU-DOE, the SP 811 / SP 330
+   reconciliation and the inspection dates (2026-10-08 and 2026-10-09); G-1, G-2 and G-3 closed.
 3. **Shared-owner contract amendment accepted** — `OPEN`: a calc/units contract amendment admitting a second method and a
    second consumer under AD-1 to AD-11, with architecture review of AD-2 to AD-7 and AD-10.
 4. **Arabic wording and UX** — `OPEN`: Arabic disclosure and journey wording settled before any display.
