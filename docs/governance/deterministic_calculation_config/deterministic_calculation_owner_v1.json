@@ -57,6 +57,19 @@
       "acknowledgement": "Unit identification follows NIST Special Publication 811 (2008 Edition), National Institute of Standards and Technology.",
       "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
       "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
+    },
+    {
+      "record_id": "dcu:SU002",
+      "source_title": "NASA STI Program - Disclaimers, Copyright Notice, and Terms and Conditions of Use",
+      "publisher": "National Aeronautics and Space Administration (NASA), STI Program",
+      "url": "https://sti.nasa.gov/disclaimers/",
+      "inspected_content": "Owner-local qualification snapshot for the method sources NASA-S1 and NASA-S2 only (not a legal opinion): U.S. Government works are generally not protected by copyright in the U.S. (17 U.S.C. 105); NASA-hosted pages may contain privately created copyrighted content; NASA material may not be used to imply endorsement. Use is factual and paraphrased only. No NASA prose, image or branding is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspection_reference": "Version-bound snapshot of cap13:SU001 in the CAP-13 method-authority artifact cap13_static_reactions_two_support version 1 (Lead-supplied inspection 2026-10-07); held here so the owner method record validates from this artifact alone, with no runtime loading of the CAP-13 artifact.",
+      "acknowledgement": "Reference source material: NASA Glenn Research Center (equilibrium and centre-of-gravity principles); the two-support equations are InventorAI's own derivation.",
+      "third_party_material_exclusion": "No third-party or unidentified page content.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI, this owner or any result."
     }
   ],
   "methods": [
@@ -72,7 +85,7 @@
           "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Equilibrium",
           "publisher": "National Aeronautics and Space Administration (NASA)",
           "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/equilibrium/",
-          "source_use_policy_ref": "cap13:SU001",
+          "source_use_policy_ref": "dcu:SU002",
           "inspection_basis": "LEAD_SUPPLIED",
           "inspection_date": "2026-10-07"
         },
@@ -81,7 +94,7 @@
           "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Center of Gravity",
           "publisher": "National Aeronautics and Space Administration (NASA)",
           "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/center-of-gravity/",
-          "source_use_policy_ref": "cap13:SU001",
+          "source_use_policy_ref": "dcu:SU002",
           "inspection_basis": "LEAD_SUPPLIED",
           "inspection_date": "2026-10-07"
         }

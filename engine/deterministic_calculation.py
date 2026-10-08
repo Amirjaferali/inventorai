@@ -92,6 +92,13 @@ CONDITION_GREATER_THAN_ZERO = "greater_than_zero"
 CONDITION_WITHIN_ZERO_AND_ROLE = "within_zero_and_role"
 _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_WITHIN_ZERO_AND_ROLE)
 
+# The closed inventory of this first increment (A2: ONE method, ONE consumer).
+# A structurally valid extra method, quantity kind or unit fails closed: widening
+# the inventory is a separately authorized change, never an artifact edit alone.
+ADMITTED_METHODS = frozenset({("cap13:static_reactions_two_support", "1.0")})
+ADMITTED_QUANTITY_KINDS = frozenset({"force", "length"})
+ADMITTED_UNIT_TOKENS = frozenset({"N", "mm"})
+
 _ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _MAX_TEXT = 700
 _MAX_LONG_TEXT = 2000
@@ -211,6 +218,8 @@ def validate_artifact(data):
         if kind["quantity_kind"] in kinds:
             raise CalculationArtifactError("quantity_kinds: duplicate")
         kinds[kind["quantity_kind"]] = kind
+    if set(kinds) != ADMITTED_QUANTITY_KINDS:
+        raise CalculationArtifactError("quantity_kinds: not the admitted inventory")
 
     policies = {}
     if not isinstance(data["source_use_policies"], list) \
@@ -253,10 +262,15 @@ def validate_artifact(data):
             raise CalculationArtifactError("unit_records: alias or second unit for a kind")
         seen_ids.add(unit["record_id"])
         units[unit["unit_token"]] = unit
+    if set(units) != ADMITTED_UNIT_TOKENS:
+        raise CalculationArtifactError("unit_records: not the admitted inventory")
 
     methods = data["methods"]
     if not isinstance(methods, list) or not methods:
         raise CalculationArtifactError("methods: missing")
+    if {(m.get("method_id"), m.get("method_version")) if isinstance(m, dict) else None
+            for m in methods} != ADMITTED_METHODS or len(methods) != len(ADMITTED_METHODS):
+        raise CalculationArtifactError("methods: not the admitted inventory")
     seen_methods = set()
     for method in methods:
         if not isinstance(method, dict) or set(method) != _METHOD_KEYS:
@@ -285,6 +299,9 @@ def validate_artifact(data):
             _date(entry["inspection_date"])
             if entry["inspection_basis"] != "LEAD_SUPPLIED":
                 raise CalculationArtifactError("methods: unknown inspection basis")
+            # self-contained: the qualification resolves in THIS artifact only
+            if entry["source_use_policy_ref"] not in policies:
+                raise CalculationArtifactError("methods: source-use unresolved")
         inputs = _roles(method["input_roles"], kinds, units, "input_roles")
         outputs = _roles(method["output_roles"], kinds, units, "output_roles")
         if set(inputs) & set(outputs):

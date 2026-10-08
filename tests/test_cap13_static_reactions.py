@@ -387,7 +387,9 @@ def test_source_use_records_are_present_and_bound():
         assert by_id[ref]["url"].startswith("https://www1.grc.nasa.gov/")
     owner = dc.load_artifact()
     policies = {p["record_id"] for p in owner["source_use_policies"]}
-    assert policies == {"dcu:SU001"}
+    # dcu:SU001 binds the NIST unit records; dcu:SU002 is the owner-local, version-bound
+    # snapshot that the method source qualification resolves to
+    assert policies == {"dcu:SU001", "dcu:SU002"}
     for unit in owner["unit_records"]:
         assert unit["source_use_policy_ref"] == "dcu:SU001"
         assert unit["doi"] == "10.6028/NIST.SP.811e2008"
@@ -444,13 +446,106 @@ def test_owner_artifact_missing_or_unreadable(tmp_path):
     assert result["reason"] == dc.EXECUTION_INTEGRITY_FAILURE
 
 
-def test_owner_artifact_version_mismatch(tmp_path):
+def test_owner_artifact_version_edit_fails_closed_and_binding_mismatch_refuses(tmp_path):
+    # the admitted inventory pins (method id, version): an artifact carrying another
+    # version is not the admitted artifact; a binding / request version mismatch
+    # against the admitted record stays a REFUSAL / VERSION_MISMATCH
     data = _owner_artifact()
     data["methods"][0]["method_version"] = "1.1"
     path = _write(tmp_path, data)
+    with pytest.raises(dc.CalculationArtifactError, match="not the admitted inventory"):
+        dc.load_artifact(path)
     result = dc.execute(BINDING, _request(), artifact_path=path)
     assert (result["state"], result["reason"]) == (
-        dc.STATE_REFUSAL, dc.VERSION_MISMATCH)
+        dc.STATE_FAILURE, dc.EXECUTION_INTEGRITY_FAILURE)
+    stale = dc.bind_method(method.METHOD_ID, "1.1", method.evaluate)
+    result = dc.execute(stale, _request(method_version="1.1"))
+    assert (result["state"], result["reason"]) == (dc.STATE_REFUSAL, dc.VERSION_MISMATCH)
+
+
+def _extra_kind(data, kind="mass"):
+    data["quantity_kinds"].append({"quantity_kind": kind, "dimension": "M"})
+
+
+def _extra_unit(data):
+    data["unit_records"].append(dict(data["unit_records"][0], record_id="dcu:U003",
+                                     unit_token="kg", unit_name="kilogram",
+                                     quantity_kind="mass"))
+
+
+@pytest.mark.parametrize("name,message", [
+    ("extra_method", "methods: not the admitted inventory"),
+    ("extra_kind", "quantity_kinds: not the admitted inventory"),
+    ("extra_unit", "unit_records: not the admitted inventory"),
+])
+def test_owner_closed_inventory_rejects_structurally_valid_extras(tmp_path, monkeypatch,
+                                                                  name, message):
+    data = _owner_artifact()
+    if name == "extra_method":
+        extra = copy.deepcopy(data["methods"][0])
+        extra["method_id"] = "cap13:static_reactions_three_support"
+        data["methods"].append(extra)
+    elif name == "extra_kind":
+        _extra_kind(data)
+    else:
+        # admit the extra kind for this test only, so the UNIT inventory alone decides
+        monkeypatch.setattr(dc, "ADMITTED_QUANTITY_KINDS",
+                            dc.ADMITTED_QUANTITY_KINDS | {"mass"})
+        _extra_kind(data)
+        _extra_unit(data)
+    path = _write(tmp_path, data)
+    with pytest.raises(dc.CalculationArtifactError, match=message):
+        dc.load_artifact(path)
+    result = dc.execute(BINDING, _request(), artifact_path=path)
+    assert (result["state"], result["reason"], result["outputs"]) == (
+        dc.STATE_FAILURE, dc.EXECUTION_INTEGRITY_FAILURE, None)
+
+
+def test_owner_closed_inventory_constants():
+    assert dc.ADMITTED_METHODS == frozenset({("cap13:static_reactions_two_support", "1.0")})
+    assert dc.ADMITTED_QUANTITY_KINDS == frozenset({"force", "length"})
+    assert dc.ADMITTED_UNIT_TOKENS == frozenset({"N", "mm"})
+
+
+def test_owner_method_source_qualification_is_self_contained():
+    data = dc.load_artifact()
+    policies = {p["record_id"]: p for p in data["source_use_policies"]}
+    (record,) = data["methods"]
+    for entry in record["source_qualification"]:
+        assert entry["source_use_policy_ref"] in policies
+        assert entry["source_use_policy_ref"] == "dcu:SU002"
+    snapshot = policies["dcu:SU002"]
+    assert snapshot["url"] == "https://sti.nasa.gov/disclaimers/"
+    assert "cap13:SU001" in snapshot["inspection_reference"]
+    assert "version 1" in snapshot["inspection_reference"]
+    owner_source = Path(dc.__file__).read_text(encoding="utf-8")
+    assert "cap13_content_config" not in owner_source
+
+
+@pytest.mark.parametrize("name", ["foreign_ref", "unknown_ref", "snapshot_removed",
+                                  "basis_altered", "ref_missing", "date_altered"])
+def test_owner_method_source_use_tamper_fails_closed(tmp_path, name):
+    data = _owner_artifact()
+    entry = data["methods"][0]["source_qualification"][0]
+    if name == "foreign_ref":
+        entry["source_use_policy_ref"] = "cap13:SU001"      # not resolvable locally
+    elif name == "unknown_ref":
+        entry["source_use_policy_ref"] = "dcu:SU999"
+    elif name == "snapshot_removed":
+        data["source_use_policies"] = [p for p in data["source_use_policies"]
+                                       if p["record_id"] != "dcu:SU002"]
+    elif name == "basis_altered":
+        entry["inspection_basis"] = "SELF_ASSERTED"
+    elif name == "ref_missing":
+        del entry["source_use_policy_ref"]
+    elif name == "date_altered":
+        entry["inspection_date"] = "recently"
+    path = _write(tmp_path, data)
+    with pytest.raises(dc.CalculationArtifactError):
+        dc.load_artifact(path)
+    result = dc.execute(BINDING, _request(), artifact_path=path)
+    assert (result["state"], result["reason"], result["outputs"]) == (
+        dc.STATE_FAILURE, dc.EXECUTION_INTEGRITY_FAILURE, None)
 
 
 def _cap13_tamper(name):
@@ -493,6 +588,65 @@ def test_cap13_artifact_tamper_fails_closed_before_any_calculation(name, monkeyp
     assert result == {"outcome": cap13.KNOWLEDGE_UNAVAILABLE, "owner_state": None,
                       "owner_reason": None, "result": None}
     assert not called
+
+
+def _semantic_tamper(name):
+    data = _cap13_artifact()
+    if name == "declaration_meaning":
+        data["declarations"][0]["accepted_value"] = "static or slowly varying"
+    elif name == "centre_of_gravity_meaning":
+        data["declarations"][-1]["accepted_value"] = "defaulted to midspan when not declared"
+    elif name == "screen_meaning":
+        data["screen_items"][0]["item"] = "supports light objects"
+    elif name == "numeric_rule":
+        data["numeric_domain"]["rules"][0] = data["numeric_domain"]["rules"][0] + " (tolerance 1%)"
+    elif name == "role_meaning":
+        data["numeric_domain"]["roles"][0]["meaning"] = "any force"
+    elif name == "limitation":
+        data["limitations"][0] = "Support capacity is checked."
+    elif name == "disclosure":
+        data["disclosure"] = data["disclosure"].replace("are not evidence", "are evidence")
+    elif name == "executed_form":
+        data["method"]["executed_form"] = "R_R = P * x / L; R_L = P - R_R"
+    elif name == "method_model":
+        data["method"]["model"] = data["method"]["model"] + " with a third support"
+    elif name == "source_url":
+        data["sources"][0]["url"] = "https://example.com/equilibrium"
+    elif name == "source_use_content":
+        policy = [s for s in data["sources"] if s["record_id"] == "cap13:SU001"][0]
+        policy["inspected_content"] = "Freely reusable."
+    elif name == "artifact_version":
+        data["artifact_version"] = "2"
+    return data
+
+
+@pytest.mark.parametrize("name", ["declaration_meaning", "centre_of_gravity_meaning",
+                                  "screen_meaning", "numeric_rule", "role_meaning",
+                                  "limitation", "disclosure", "executed_form",
+                                  "method_model", "source_url", "source_use_content",
+                                  "artifact_version"])
+def test_cap13_semantic_tamper_fails_closed(name, monkeypatch):
+    data = _semantic_tamper(name)
+    assert data != _cap13_artifact()
+    with pytest.raises(cap13.Cap13KnowledgeError):
+        cap13.validate_artifact(data)
+    called = []
+    monkeypatch.setattr(cap13._dc, "execute", lambda *a, **k: called.append(1) or {})
+    captured = cap13.capture_form({k: [v] for k, v in _form().items()})
+    assert cap13.evaluate(captured, BINDING, artifact=data)["outcome"] \
+        == cap13.KNOWLEDGE_UNAVAILABLE
+    assert not called
+
+
+def test_cap13_semantic_pins_cover_the_governed_sections():
+    assert set(cap13._SEMANTIC_DIGESTS) == {"method", "numeric_domain", "declarations",
+                                           "screen_items", "limitations", "disclosure",
+                                           "sources"}
+    data = cap13.load_artifact()
+    for section, digest in cap13._SEMANTIC_DIGESTS.items():
+        assert cap13._section_digest(data[section]) == digest, section
+    assert data["method"]["method_id"] == method.METHOD_ID
+    assert data["method"]["method_version"] == method.METHOD_VERSION
 
 
 def test_cap13_artifact_missing(monkeypatch, tmp_path):

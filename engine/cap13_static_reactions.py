@@ -26,6 +26,7 @@ no network, provider, model, clock or randomness dependency. Nothing here is
 evidence, a specification or a capacity, adequacy or safety statement.
 """
 import copy
+import hashlib
 import json
 import math
 import re
@@ -151,6 +152,29 @@ _EXPECTED_REFUSAL = {GROUP_LOAD: LOAD_NOT_SUPPORTED,
 _METHOD_SOURCES = ("NASA-S1", "NASA-S2")
 _POLICY_ID = "cap13:SU001"
 
+# The accepted governed meaning of artifact version "1", pinned per section: the
+# SHA-256 of each section's canonical JSON (sorted keys, compact, ASCII). Any
+# semantic edit — a declaration or screen meaning, a numeric-domain rule, the
+# executed form, a limitation, the disclosure or a source record — fails closed
+# even when every key and id survives. Changing them needs a new artifact
+# version under its own authorization, not an edit here alone.
+_SEMANTIC_DIGESTS = {
+    "method": "f52754476a56f7050295c202fdc7e6bc6fa4ea7c42438a449f2b7ea6073a575d",
+    "numeric_domain": "2860131e8ab5d40d88c94d74dfc8f82e50fe1aded03b0e00986d057fb4357ed0",
+    "declarations": "f4965de51aca6925d28978888cae6e29cb1f83074a8f435ea828f24df2ef1c6f",
+    "screen_items": "9afd531ae5d2b462bf82545c32394d22dc3c584abbfb8a7da0626cf2b1a00504",
+    "limitations": "db74ed95ad80295b28bec1af2ef05fcf8716a5841182e6579321b149c8a13269",
+    "disclosure": "7232ad9bdeb81b34aa5ed83bb7aade6d8dd10c6d24c0cebc92d26962b12126bd",
+    "sources": "1ceb835a71dd346550818afeab5d5fe809bf6fd3c38ec1c77ea6d34065b81123",
+}
+_PINNED_ARTIFACT_VERSION = "1"
+
+
+def _section_digest(value):
+    canonical = json.dumps(value, sort_keys=True, separators=(",", ":"),
+                           ensure_ascii=True)
+    return hashlib.sha256(canonical.encode("ascii")).hexdigest()
+
 
 class Cap13KnowledgeError(ValueError):
     """The CAP-13 governed artifact is missing, unreadable or not valid. The
@@ -264,6 +288,11 @@ def validate_artifact(data):
         if record is None or record["record_type"] != "source" \
                 or record["source_use_policy_ref"] != _POLICY_ID:
             raise Cap13KnowledgeError("sources: method source unresolved")
+    if data["artifact_version"] != _PINNED_ARTIFACT_VERSION:
+        raise Cap13KnowledgeError("artifact: unpinned version")
+    for section, expected in _SEMANTIC_DIGESTS.items():
+        if _section_digest(data[section]) != expected:
+            raise Cap13KnowledgeError("%s: governed content changed" % section)
     return data
 
 
