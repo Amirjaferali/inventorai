@@ -1,0 +1,211 @@
+{
+  "artifact_id": "cap13_static_reactions_two_support",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "CAP-13 - Component Thickness, Specification, and Safety Advisory (method authority for this one method only)",
+  "slice": "Stage 25 / CAP-13 - Two-Support Static Reactions - Slice 1",
+  "governance_note": "The ONE CAP-13-owned governed artifact of the first CAP-13 user slice, under the accepted STAGE25_CAP13_TWO_SUPPORT_STATIC_REACTIONS_METHOD_CONTRACT.md. It carries the method authority (identity, version, model and executed form), the declarations, the numeric domain, the high-risk screen, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Calculation execution belongs to the shared deterministic calculation and units owner; nothing here is evidence, a specification, a capacity, adequacy or safety statement, or a readiness, progression or validation input.",
+  "method": {
+    "method_id": "cap13:static_reactions_two_support",
+    "method_version": "1.0",
+    "contract": "docs/governance/STAGE25_CAP13_TWO_SUPPORT_STATIC_REACTIONS_METHOD_CONTRACT.md",
+    "model": "One declared loaded configuration, represented by its declared total weight acting through its declared centre of gravity, resting on exactly two declared parallel, horizontal, push-only support reaction lines, in a planar static equilibrium model.",
+    "executed_form": "R_R = P * x / L; R_L = P * (L - x) / L. Each output is computed from its own expression; the force balance R_L + R_R = P is the derivation and a disclosed identity, not a runtime equality check, and no tolerance is authorized.",
+    "derivation": "Vertical force balance R_L + R_R = P and moment balance about the left reaction line R_R * L = P * x, from the equilibrium and centre-of-gravity principles of NASA-S1 and NASA-S2. The two-support equations are CAP-13's own derivation; NASA does not publish this method."
+  },
+  "numeric_domain": {
+    "roles": [
+      {
+        "role": "P",
+        "meaning": "total weight force of everything included in the declared modelled configuration",
+        "quantity_kind": "force",
+        "unit_token": "N"
+      },
+      {
+        "role": "L",
+        "meaning": "horizontal separation between the two declared support reaction lines",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      },
+      {
+        "role": "x",
+        "meaning": "horizontal position of the declared centre of gravity, measured perpendicular to the reaction lines from the left line",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      },
+      {
+        "role": "R_L",
+        "meaning": "left vertical reaction",
+        "quantity_kind": "force",
+        "unit_token": "N"
+      },
+      {
+        "role": "R_R",
+        "meaning": "right vertical reaction",
+        "quantity_kind": "force",
+        "unit_token": "N"
+      }
+    ],
+    "rules": [
+      "All values are finite typed numbers; no strings, booleans, NaN or infinities (INVALID_NUMERIC_INPUT).",
+      "P > 0 and L > 0; zero or negative P or L is INVALID_NUMERIC_INPUT.",
+      "0 <= x <= L, the closed domain; no tolerance is authorized; the endpoints are valid.",
+      "x < 0 or x > L returns CG_OUTSIDE_SUPPORT_SPAN with no numerical payload: the declared model uses push-only supports with no hold-down, and a negative reaction would contradict it."
+    ]
+  },
+  "declarations": [
+    {
+      "declaration_id": "condition",
+      "group": "load",
+      "accepted_value": "static",
+      "refusal": "LOAD_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "applied_load",
+      "group": "load",
+      "accepted_value": "gravity is the only modelled applied load",
+      "refusal": "LOAD_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "weight",
+      "group": "load",
+      "accepted_value": "P is the total weight force for everything included in the declared modelled configuration",
+      "refusal": "LOAD_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "support_count",
+      "group": "support",
+      "accepted_value": "exactly two support reaction lines",
+      "refusal": "SUPPORT_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "support_geometry",
+      "group": "support",
+      "accepted_value": "the two support lines are parallel and horizontal within the planar model, and x is measured perpendicular to them from the left line",
+      "refusal": "SUPPORT_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "support_action",
+      "group": "support",
+      "accepted_value": "both supports vertical, force-only",
+      "refusal": "SUPPORT_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "support_direction",
+      "group": "support",
+      "accepted_value": "both supports push-only / bearing; no hold-down tension",
+      "refusal": "SUPPORT_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "support_moment",
+      "group": "support",
+      "accepted_value": "no support moment or couple",
+      "refusal": "SUPPORT_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "load_paths",
+      "group": "support",
+      "accepted_value": "no third support and no additional load path",
+      "refusal": "SUPPORT_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "centre_of_gravity",
+      "group": "centre_of_gravity",
+      "accepted_value": "its position is explicitly declared by the inventor — never inferred and never defaulted to midspan",
+      "refusal": "NOT_DECLARED"
+    }
+  ],
+  "screen_items": [
+    {
+      "item_id": "supports_people",
+      "item": "supports people"
+    },
+    {
+      "item_id": "overhead_or_falling_hazard",
+      "item": "overhead or falling hazard"
+    },
+    {
+      "item_id": "children",
+      "item": "use by or for children"
+    },
+    {
+      "item_id": "safety_critical_load_path",
+      "item": "safety-critical load path"
+    },
+    {
+      "item_id": "pressure",
+      "item": "pressure"
+    },
+    {
+      "item_id": "high_temperature",
+      "item": "high temperature"
+    },
+    {
+      "item_id": "battery_containment",
+      "item": "battery containment"
+    },
+    {
+      "item_id": "medical_use",
+      "item": "medical use"
+    },
+    {
+      "item_id": "food_contact",
+      "item": "food contact"
+    }
+  ],
+  "limitations": [
+    "No support capacity, attachment adequacy, bearing check, material check, deformation, deflection, buckling, fracture, tipping or detachment analysis; no thickness or specification; no stability or safety conclusion; no torque output; no inference of any declaration.",
+    "Deformation, support movement, geometry change under load and load redistribution caused by deformation are outside this calculation; no deformation validity threshold is introduced.",
+    "All NO answers on the high-risk screen only allow this bounded calculation to proceed; they never mean safe. The screen neither reads nor feeds SafetySignal.",
+    "The result is UNVALIDATED and is not evidence; it is request-local and is not stored, reported, exported or used for readiness, progression or validation."
+  ],
+  "disclosure": "These are the vertical support reactions required by the static equilibrium model you declared: two parallel, horizontal, push-only supports carrying your stated total weight through your stated centre of gravity. This result is preliminary and advisory, not a final engineering or manufacturing specification. Do not rely on these reactions to size, select, approve or validate any support or attachment before independently verifying the real configuration, including, as applicable, the actual loads and load paths, the supports and attachments, joints, stress, deformation, fatigue, impact and safety factor. They are not validated and are not evidence. They do not establish support capacity, attachment adequacy, bearing adequacy, material adequacy, structural safety, code compliance, certification or production suitability, and they do not show that the configuration will not deflect, buckle, fracture, tip or detach. Deformation, support movement, geometry change under load and load redistribution caused by deformation are outside this calculation. InventorAI does not check that your declarations match the physical configuration. A zero reaction is a boundary case of this idealized model and does not establish physical stability. Reference source material: NASA Glenn Research Center (equilibrium and centre-of-gravity principles); the two-support equations are InventorAI's own derivation.",
+  "sources": [
+    {
+      "record_id": "NASA-S1",
+      "record_type": "source",
+      "source_type": "government_reference_web_page",
+      "publisher": "National Aeronautics and Space Administration (NASA), Glenn Research Center",
+      "source_title": "Beginners Guide to Aeronautics - Equilibrium",
+      "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/equilibrium/",
+      "source_use_policy_ref": "cap13:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspected_content": "Supports only: equilibrium requires zero net force; equilibrium requires zero net torque; torque / moment is force multiplied by perpendicular distance; opposing moments balance at equilibrium. No third-party attribution was observed attached to the textual mathematical relationships relied upon.",
+      "paraphrase_only_limitation": "Factual paraphrase only; no NASA explanatory prose is copied.",
+      "third_party_material_exclusion": "Images, graphics, multimedia, branding and any unidentified or third-party page content are excluded.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI or any project."
+    },
+    {
+      "record_id": "NASA-S2",
+      "record_type": "source",
+      "source_type": "government_reference_web_page",
+      "publisher": "National Aeronautics and Space Administration (NASA), Glenn Research Center",
+      "source_title": "Beginners Guide to Aeronautics - Center of Gravity",
+      "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/center-of-gravity/",
+      "source_use_policy_ref": "cap13:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspected_content": "Supports only: the centre of gravity is the average location of an object's weight; the total weight acts through the centre of gravity; the weight-moment relationship represented by cg * total weight. No third-party attribution was observed attached to the textual mathematical relationships relied upon.",
+      "paraphrase_only_limitation": "Factual paraphrase only; no NASA explanatory prose is copied.",
+      "third_party_material_exclusion": "Images, graphics, multimedia, branding and any unidentified or third-party page content are excluded.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI or any project."
+    },
+    {
+      "record_id": "cap13:SU001",
+      "record_type": "source_use_policy",
+      "source_type": "source_use_policy",
+      "publisher": "National Aeronautics and Space Administration (NASA), STI Program",
+      "source_title": "NASA STI Program - Disclaimers, Copyright Notice, and Terms and Conditions of Use",
+      "url": "https://sti.nasa.gov/disclaimers/",
+      "source_use_policy_ref": "cap13:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspected_content": "CAP-13's own bounded source-use assessment for NASA-S1 and NASA-S2 only (not a legal opinion): U.S. Government works are generally not protected by copyright in the U.S. (17 U.S.C. 105); NASA-hosted pages may contain privately created copyrighted content; public availability does not transfer third-party rights; NASA material may not be used to imply endorsement. Use is factual and paraphrased only. PUBLICLY VIEWABLE IS NOT OPENLY REUSABLE.",
+      "paraphrase_only_limitation": "No copied NASA explanatory prose; no NASA image, graphic, multimedia, logo, insignia or branding.",
+      "third_party_material_exclusion": "No third-party or unidentified page content.",
+      "no_endorsement_limitation": "Neutral source acknowledgement only; no statement or implication that NASA endorses, reviewed or approved InventorAI or any project.",
+      "acknowledgement": "Reference source material: NASA Glenn Research Center (equilibrium and centre-of-gravity principles); the two-support equations are InventorAI's own derivation."
+    }
+  ]
+}

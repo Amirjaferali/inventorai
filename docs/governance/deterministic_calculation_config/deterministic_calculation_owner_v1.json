@@ -1,0 +1,109 @@
+{
+  "artifact_id": "deterministic_calculation_owner",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, first increment, shape A2 (method-first), under the accepted calc/units boundary contract (with its accepted Correction 01) and the accepted CAP-13 two-support static reactions contract. It admits exactly one method and exactly the two unit tokens that method requires; it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. The method's equations, applicability, numeric domain, declarations, screen and limitations stay with the CAP-13 method authority; this artifact carries only the structural method record and a small version-bound source-qualification snapshot.",
+  "quantity_kinds": [
+    {"quantity_kind": "force", "dimension": "M L T^-2"},
+    {"quantity_kind": "length", "dimension": "L"}
+  ],
+  "unit_records": [
+    {
+      "record_id": "dcu:U001",
+      "unit_token": "N",
+      "unit_name": "newton",
+      "quantity_kind": "force",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "2008 Edition (Ambler Thompson and Barry N. Taylor)",
+      "doi": "10.6028/NIST.SP.811e2008",
+      "url": "https://doi.org/10.6028/NIST.SP.811e2008",
+      "inspected_location": "Chapter 4, Table 3",
+      "inspected_content": "Table 3 lists the SI derived unit for force: the newton, symbol N. Unit identification only; no conversion factor or table is reproduced.",
+      "source_use_policy_ref": "dcu:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspection_reference": "STAGE25_CAP13_BOUNDED_STIFFNESS_METHOD_CONTRACT.md §3A D5-6 (inspected by the prior Lead 2026-10-06, re-verified by the successor Lead 2026-10-07)"
+    },
+    {
+      "record_id": "dcu:U002",
+      "unit_token": "mm",
+      "unit_name": "millimetre",
+      "quantity_kind": "length",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "2008 Edition (Ambler Thompson and Barry N. Taylor)",
+      "doi": "10.6028/NIST.SP.811e2008",
+      "url": "https://doi.org/10.6028/NIST.SP.811e2008",
+      "inspected_location": "Chapter 4, Table 1 and Table 5",
+      "inspected_content": "Table 1 lists the SI base unit of length, the metre, symbol m; Table 5 lists the SI prefix milli, symbol m, factor 10^-3; hence the millimetre, symbol mm. Unit identification only; the token is admitted for direct use and no conversion is admitted.",
+      "source_use_policy_ref": "dcu:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspection_reference": "STAGE25_CAP13_BOUNDED_STIFFNESS_METHOD_CONTRACT.md §3A D5-6 (inspected by the prior Lead 2026-10-06, re-verified by the successor Lead 2026-10-07)"
+    }
+  ],
+  "source_use_policies": [
+    {
+      "record_id": "dcu:SU001",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Source-use basis (not a legal opinion): NIST employee-authored Technical Series works are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material is excluded. This owner's use is limited to identifying the two unit tokens N and mm with source acknowledgement; no NIST text, table or conversion factor is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Policy page inspected 2026-09-28 (Lead-level inspection recorded as mechanical:PR011, whose disposition stays scoped to its own records); basis restated in the accepted calc/units contract §9. This record is this owner's own bounded disposition for dcu:U001 and dcu:U002 only.",
+      "acknowledgement": "Unit identification follows NIST Special Publication 811 (2008 Edition), National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
+    }
+  ],
+  "methods": [
+    {
+      "method_id": "cap13:static_reactions_two_support",
+      "method_version": "1.0",
+      "adapter_identity": "engine.cap13_static_reactions_method.evaluate",
+      "technical_authority": "CAP-13 - STAGE25_CAP13_TWO_SUPPORT_STATIC_REACTIONS_METHOD_CONTRACT.md (accepted; §4 method definition, §7 numeric domain)",
+      "method_authority_artifact": {"artifact_id": "cap13_static_reactions_two_support", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "NASA-S1",
+          "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Equilibrium",
+          "publisher": "National Aeronautics and Space Administration (NASA)",
+          "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/equilibrium/",
+          "source_use_policy_ref": "cap13:SU001",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-07"
+        },
+        {
+          "source_ref": "NASA-S2",
+          "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Center of Gravity",
+          "publisher": "National Aeronautics and Space Administration (NASA)",
+          "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/center-of-gravity/",
+          "source_use_policy_ref": "cap13:SU001",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-07"
+        }
+      ],
+      "input_roles": [
+        {"role": "P", "quantity_kind": "force", "unit_token": "N"},
+        {"role": "L", "quantity_kind": "length", "unit_token": "mm"},
+        {"role": "x", "quantity_kind": "length", "unit_token": "mm"}
+      ],
+      "output_roles": [
+        {"role": "R_L", "quantity_kind": "force", "unit_token": "N"},
+        {"role": "R_R", "quantity_kind": "force", "unit_token": "N"}
+      ],
+      "applicability": [
+        {"role": "P", "condition": "greater_than_zero", "bound_role": null},
+        {"role": "L", "condition": "greater_than_zero", "bound_role": null},
+        {"role": "x", "condition": "within_zero_and_role", "bound_role": "L"}
+      ],
+      "result_range": [
+        {"role": "R_L", "condition": "within_zero_and_role", "bound_role": "P"},
+        {"role": "R_R", "condition": "within_zero_and_role", "bound_role": "P"}
+      ]
+    }
+  ]
+}

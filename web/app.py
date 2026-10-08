@@ -23,6 +23,9 @@ from engine import subsystem_model as _subsystem_model  # Stage 15 Slice 1: the 
 from engine import experiment_result as _experiment_result  # CAP-09 Result Event Slice 1
 from engine import interface_observation as _interface_observation  # Stage 15 Slice 4
 from engine import cap12_form_mockup as _cap12  # Stage 24 / CAP-12 Form Mock-up Advisory Slice 1
+from engine import deterministic_calculation as _dcalc  # Stage 25: shared calculation / units owner
+from engine import cap13_static_reactions_method as _cap13_method  # Stage 25 / CAP-13 Slice 1 method
+from engine import cap13_static_reactions as _cap13  # Stage 25 / CAP-13 Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -6324,6 +6327,10 @@ def show_session(sid):
         # root domain is applicable. A link is not a requirement and never gates
         # the journey.
         cap12_form_mockup_link=_cap12_link_offered(sid),
+        # Stage 25 / CAP-13 Slice 1: an OPTIONAL link to the request-local
+        # two-support static reactions calculation, offered only on an eligible
+        # (Mechanical-root) project. It never gates the journey.
+        cap13_support_reactions_link=_cap13_link_offered(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -11214,6 +11221,146 @@ def cap12_form_mockup_advisory_post(sid):
     advisory = _cap12.resolve_advisory(_cap12_root_domain(sid), role)
     return _render_cap12(sid, advisory=advisory, name=name, function=function,
                          role=role)
+
+
+# =============================================================================
+# Stage 25 / CAP-13 — Two-Support Static Reactions, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory calculation for ONE configuration the inventor
+# declares (contract §12A). The consumer (`engine/cap13_static_reactions.py`)
+# owns capture and the pre-owner order; the shared calculation / units owner
+# (`engine/deterministic_calculation.py`) owns execution; the method adapter
+# (`engine/cap13_static_reactions_method.py`) owns the equations. Nothing is
+# persisted and nothing is read from the project beyond the trusted durable root
+# domain: no answer, requirement quantity, evidence or SafetySignal. The POST
+# renders its answer directly and never redirects.
+#
+# The ONE immutable trusted binding, created here by application wiring. There
+# is no registry, discovery, dynamic module path or request-selectable callable.
+_CAP13_REACTIONS_BINDING = _dcalc.bind_method(
+    _cap13_method.METHOD_ID, _cap13_method.METHOD_VERSION, _cap13_method.evaluate)
+
+
+def _cap13_eligible(sid):
+    """True iff the project's durable root domain, read exactly as the CAP-12
+    gate reads it (never from the request), makes it eligible. Fails closed."""
+    try:
+        return _cap13.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+def _cap13_link_offered(sid):
+    """The session-page link reads the SAME single value the submission reads,
+    so the link and the calculation cannot disagree. Presentation only."""
+    return _cap13_eligible(sid)
+
+
+def _cap13_result_view(result):
+    """Template view of a SUCCESS owner result: the two reactions shown exactly
+    as produced (``format_value``), the method identity and the source and unit
+    references the owner carried. No rounding, no other field."""
+    outputs = result["outputs"]
+    return {
+        "reactions": [
+            {"label_key": "UI_CAP13_RESULT_R_L",
+             "value": _cap13.format_value(outputs["R_L"]["value"]),
+             "unit": outputs["R_L"]["unit"]},
+            {"label_key": "UI_CAP13_RESULT_R_R",
+             "value": _cap13.format_value(outputs["R_R"]["value"]),
+             "unit": outputs["R_R"]["unit"]},
+        ],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+_CAP13_LTR_RUN = re.compile(r"[A-Za-z0-9_](?:[A-Za-z0-9_.:/ -]*[A-Za-z0-9_])?")
+
+
+def _cap13_isolate(text, lang):
+    """Escaped ``text`` for display. On an Arabic page every run of Latin
+    letters, digits, unit tokens, role symbols or identifiers is wrapped in its
+    own ``<bdi dir="ltr">`` so no digit, sign, token or identifier is reordered
+    (contract §12B B-7). The wording itself is unchanged."""
+    from markupsafe import Markup, escape
+    if lang != "ar":
+        return Markup(escape(text))
+    out = []
+    last = 0
+    for match in _CAP13_LTR_RUN.finditer(text):
+        out.append(str(escape(text[last:match.start()])))
+        out.append('<bdi dir="ltr">%s</bdi>' % escape(match.group(0)))
+        last = match.end()
+    out.append(str(escape(text[last:])))
+    return Markup("".join(out))
+
+
+def _render_cap13(sid, status=200, eligible=True, captured=None,
+                  evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _cap13.OUTCOME_SUCCESS:
+            view = _cap13_result_view(evaluation["result"])
+        else:
+            outcome_key = "UI_CAP13_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "cap13_support_reactions.html",
+        sid=sid,
+        iso=lambda key: _cap13_isolate(ui_text.text(key, lang), lang),
+        disclosure_paragraphs=[
+            _cap13_isolate(part, lang) for part in
+            ui_text.text("UI_CAP13_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_cap13.DECLARATION_IDS,
+        screen_items=_cap13.SCREEN_ITEMS,
+        value_roles=_cap13.VALUE_ROLES,
+        decl_field=_cap13.DECLARATION_FIELD,
+        screen_field=_cap13.SCREEN_FIELD,
+        value_field=_cap13.VALUE_FIELD,
+        answer_matches=_cap13.ANSWER_MATCHES,
+        answer_differs=_cap13.ANSWER_DIFFERS,
+        screen_yes=_cap13.SCREEN_YES,
+        screen_no=_cap13.SCREEN_NO,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/support-reactions", methods=["GET"])
+def cap13_support_reactions(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_cap13(sid, eligible=_cap13_eligible(sid))
+
+
+@app.route("/session/<sid>/support-reactions", methods=["POST"])
+def cap13_support_reactions_post(sid):
+    # §12A order: request integrity (global CSRF guard) -> project authorization
+    # -> eligibility (durable root domain) -> strict capture (malformed: 400, no
+    # reason token) -> the consumer's pre-owner order -> the shared owner.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _cap13_eligible(sid):
+        return _render_cap13(sid, eligible=False)
+    form = request.form
+    captured = _cap13.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_cap13(sid, status=400, error="UI_CAP13_ERR_REQUEST")
+    evaluation = _cap13.evaluate(captured, _CAP13_REACTIONS_BINDING)
+    return _render_cap13(sid, captured=captured, evaluation=evaluation)
 
 
 # =============================================================================

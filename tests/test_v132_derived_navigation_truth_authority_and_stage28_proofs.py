@@ -248,7 +248,9 @@ def test_f1b_unmodified_repository_counts():
     # Stage 36 closure: + its delivered record and the superseded post-Stage-35-closure NONE record
     # Stage 16 closure: + its delivered record and the superseded post-Stage-36-closure NONE record (the delivered Stage 16
     # residual carried no contract section of its own)
-    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 77, 10)
+    # Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: + its delivered record and the superseded
+    # post-Stage-16-closure NONE record (recorded in its after-merge form; the live record is the post-slice NONE)
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 79, 10)
 
 
 def _flat_doc(path):

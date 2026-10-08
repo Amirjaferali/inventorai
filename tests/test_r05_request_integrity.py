@@ -75,6 +75,9 @@ MUTATIONS = (
     # persists nothing (the POST renders its answer), but it accepts a POST, so
     # it takes the same CSRF / authorization integrity matrix.
     "/session/<sid>/form-mockup-advisory",
+    # Stage 25 / CAP-13 Slice 1: the request-local two-support static reactions
+    # calculation. It persists nothing, but it accepts a POST.
+    "/session/<sid>/support-reactions",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

@@ -735,8 +735,9 @@ _NO_S19 = "NO STAGE-19 IMPLEMENTATION AUTHORIZED BY STAGE-18 CLOSURE"
 # The later Owner-authorized Stage 23 closure (no product change) moved the marker on to Stage 24 (navigation only);
 # the later delivered CAP-12 Form Mock-up Advisory Slice 1 entered Stage 24 as ENTERED / PARTIAL (marker unchanged);
 # the later Owner-authorized Stage 24 closure (no product change) completed Stage 24 for its bounded CAP-12 Form Mock-up
-# Advisory Slice 1 scope only and moved the marker on to Stage 25 (NOT ENTERED, navigation only).
-_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 25 — NOT ENTERED — NAVIGATION ONLY"
+# Advisory Slice 1 scope only and moved the marker on to Stage 25 (NOT ENTERED, navigation only); the later delivered
+# Stage 25 / CAP-13 Two-Support Static Reactions Slice 1 entered Stage 25 as ENTERED / PARTIAL (marker unchanged).
+_MARKER = "MASTER ROADMAP SEQUENTIAL MARKER: STAGE 25 — ENTERED / PARTIAL — NAVIGATION ONLY"
 
 
 def _flat(text):
@@ -783,7 +784,7 @@ def test_n91_only_stage_18_is_ticked_by_the_closure_and_earlier_unfinished_stage
     # Stage 23 was ticked later by its own Owner-authorized closure (bounded four-axis scope, no product change)
     assert re.search(r"^- \[x\] \*\*23 — ", roadmap, re.M)
     # Stage 24 was ticked later by its own Owner-authorized closure (bounded CAP-12 Form Mock-up Advisory Slice 1 scope
-    # only, no product change); Stage 25 stays NOT ENTERED and unticked
+    # only, no product change); Stage 25 is ENTERED / PARTIAL (CAP-13 Slice 1 only) and stays unticked
     assert re.search(r"^- \[x\] \*\*24 — ", roadmap, re.M)
     # Stage 16 was ticked later by its own Owner-authorized closure (bounded Technical + Integration
     # evidence-sufficiency composition scope only), not by this one; Stages 13 and 14 stay PARTIAL / DEFERRED
@@ -791,7 +792,7 @@ def test_n91_only_stage_18_is_ticked_by_the_closure_and_earlier_unfinished_stage
     for stage in (11, 13, 14, 17, 25):
         assert re.search(r"^- \[ \] \*\*%d — " % stage, roadmap, re.M), stage
     checklist = _flat(_doc("INVENTORAI_MASTER_ROADMAP_EXECUTION_CHECKLIST.md"))
-    assert ("**CURRENT STAGE:** Stage 25 — CAP-13 thickness / specification / safety capability — NOT ENTERED — "
+    assert ("**CURRENT STAGE:** Stage 25 — CAP-13 thickness / specification / safety capability — ENTERED / PARTIAL — "
             "NAVIGATION ONLY.") in checklist
     assert _NO_S19 in checklist
 
