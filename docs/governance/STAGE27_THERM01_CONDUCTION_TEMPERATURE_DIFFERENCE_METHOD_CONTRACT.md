@@ -201,7 +201,7 @@ SafetySignal and creates no second safety engine; CAP-13's screen is not changed
 - **Calculated:** `ΔT` in K across the declared path only. `UNVALIDATED`; NOT evidence.
 - **Provenance carried with a result:** method identity and version; the DOE source record and the InventorAI derivation
   statement; the NIST unit records once qualified (§11); the echoed inputs, declarations and screen answers.
-- **Fixed disclosure requirements (EN; the Arabic wording is settled under a separate UX review before any display).** The
+- **Fixed disclosure requirements (EN; the Arabic wording is settled in §9A).** The
   disclosure must state, without weakening:
   1. this is the temperature difference across the one path the inventor declared, under the declared steady-state,
      single-path, uniform one-dimensional, constant-area conditions, using the inventor's own `P` and `Rθ`;
@@ -216,6 +216,142 @@ SafetySignal and creates no second safety engine; CAP-13's screen is not changed
   6. convection, radiation, spreading, transient behaviour and every other path are outside this calculation;
   7. reference source material: U.S. DOE Fundamentals Handbook (archived; historical fundamentals reference only); the
      total-resistance form is InventorAI's own derivation.
+
+## 9A. Arabic disclosure and UX wording for the future THERM-01 page (Blocker 4)
+
+Wording decision only. The accepted English of §§1–9 stays the sole authority for technical meaning; this section adds no
+clause, declaration, screen item, reason token, state, source, owner, route or store, and changes no calculation
+semantics. Any divergence between the Arabic below and the English is a defect of the Arabic, and the English wins. The
+wording is Modern Standard Arabic under the Arabic-first policy: precise English technical terms may stay in parentheses.
+Identifiers, the method identifier and version, unit tokens, role symbols, equations and reason tokens are never
+translated. Nothing here is implemented or displayed: no template, `web/ui_text.py` key or runtime exists, and display still
+needs blocker 5 and the implementation's own UX / browser verification.
+
+**A-1 Fixed disclosure (Arabic rendering of the seven §9 requirements; shown in full wherever the result is shown).**
+
+> 1. هذا هو فرق درجة الحرارة عبر المسار الواحد الذي صرّحت به، في ظل الشروط التي صرّحت بها: حالة مستقرة، ومسار واحد،
+>    وتدفق حراري منتظم أحادي البعد، ومساحة ثابتة، باستخدام قيمتي P و Rθ اللتين أدخلتهما أنت.
+> 2. هذه القيمة ليست درجة حرارة أي مكوّن أو وصلة (junction) أو غلاف (case) أو سطح، وليست درجة الحرارة المحيطة، ولا تبيّن
+>    درجة الحرارة التي يصل إليها أي شيء.
+> 3. لا تُقارَن هذه القيمة بأي تصنيف أو حدّ أو هامش، ولا تقول شيئًا عن كون أي شيء آمنًا أو مقبولًا أو ملائمًا أو ممتثلًا
+>    أو موثوقًا.
+> 4. هذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا، ويجب تأكيدها بالقياس أو بمراجعة متخصص
+>    حراري قبل الاعتماد عليها.
+> 5. لا يتحقق InventorAI من قيمة Rθ، ولا من مطابقة تصريحاتك للعتاد الفعلي. والقيمة المأخوذة من ورقة بيانات (datasheet)
+>    لا تنطبق إلا حيث يطابق المسار الفعلي الظروف التي عُرِّفت فيها تلك القيمة.
+> 6. الحمل الحراري (convection) والإشعاع والانتشار الحراري (spreading) والسلوك العابر (transient) وأي مسار آخر كلها
+>    خارج نطاق هذا الحساب.
+> 7. **المراجع:** كتيّب أساسيات وزارة الطاقة الأمريكية (U.S. DOE Fundamentals Handbook) — مؤرشف، ومرجع تاريخي للأساسيات
+>    فقط. أما صيغة المقاومة الكلية فهي اشتقاق خاص بـInventorAI.
+
+Parity with §9, item by item: (1) the one declared path under the declared steady-state, single-path, uniform
+one-dimensional, constant-area conditions, using the inventor's own `P` and `Rθ` · (2) not a component, junction, case,
+surface or ambient temperature, and not what temperature anything reaches · (3) not compared with any rating, limit or
+margin, and silent on safe, acceptable, suitable, compliant or reliable · (4) preliminary, advisory, `UNVALIDATED`, not
+evidence, confirm by measurement or a thermal specialist before reliance · (5) InventorAI checks neither `Rθ` nor the
+declarations against the real hardware; a datasheet figure applies only where the real path matches its defining
+conditions · (6) convection, radiation, spreading, transient behaviour and every other path excluded · (7) DOE handbook as an
+archived, historical fundamentals reference only, and the total-resistance form as InventorAI's own derivation. No meaning
+is added, removed or softened, and no source text is copied.
+
+**A-2 Applicability declarations (§5).** Each is shown as its exact statement; the inventor answers «ينطبق على مساري» or
+«لا ينطبق على مساري», none pre-selected. A missing answer is `NOT_DECLARED`; «لا ينطبق» is `PATH_NOT_SUPPORTED`. The four
+geometric / temporal conditions D-1 to D-4 stay four separate statements and are never merged.
+
+| §5 | Arabic statement |
+|---|---|
+| D-1 condition | الحالة مستقرة (steady state): التدفق الحراري P ثابت، ودرجات الحرارة على امتداد المسار لم تعد تتغيّر. |
+| D-2 heat path | مسار واحد: كل التدفق الحراري P يمرّ عبر هذا المسار؛ لا يوجد مسار موازٍ، ولا فقد جانبي، ولا مصدر حرارة آخر على امتداده. |
+| D-3 heat-flow geometry | تدفق حراري منتظم أحادي البعد: يعبر التدفق الحراري نفسه كل طبقة من طبقات المسار بانتظام. |
+| D-4 area | مساحة ثابتة واحدة على امتداد المسار كله: لا انتشار، ولا تضيّق، ولا تغيّر في المساحة. |
+| D-5 resistance meaning | Rθ هي قيمتك أنت للمقاومة الحرارية الكلية لهذا المسار تحديدًا (المقاومة لكل وحدة مساحة لطبقاته مقسومةً على تلك المساحة المشتركة الواحدة)، وتشمل مسبقًا كل طبقة وواجهة تلامس وطبقة سطحية تقصد تغطيتها؛ ولا يتحقق InventorAI منها. |
+| D-6 resistance constancy | لا تتغيّر Rθ مع P ولا مع درجة الحرارة ضمن الحالة المعنيّة. |
+
+Datasheet note (always shown with D-5): «إذا أخذت قيمة Rθ من ورقة بيانات (datasheet) أو تصنيف أو وثيقة مورّد، فهي تُقبَل
+فقط بوصفها قيمتك أنت، وبعد أن تصرّح بأنها تستوفي D-1 إلى D-6 لهذا المسار تحديدًا. لا يعتمد InventorAI قيم أوراق البيانات
+عمومًا، ولا يبحث عنها، ولا يتحقق منها، ولا يجعلها قيمًا مُتحقَّقًا منها.»
+
+**A-3 High-risk screen (§8).** Stem: «هل يتضمن المسار أو مصدر الحرارة فيه أيًّا مما يلي؟ أجب عن كل بند بـ«نعم» أو
+«لا».» — none pre-selected. An unanswered item is `NOT_DECLARED`; any «نعم» is `THERMAL SPECIALIST REVIEW REQUIRED`.
+
+| §8 item | Arabic |
+|---|---|
+| 1 | بطارية أو خلية لتخزين الطاقة |
+| 2 | جهد الشبكة الكهربائية (mains) أو جهد عالٍ |
+| 3 | خطر حريق أو اشتعال |
+| 4 | سطح يلمسه الناس، أو تلامس مع الجلد، أو استخدام طبي |
+| 5 | حاوية مضغوطة أو محكمة الإغلاق |
+| 6 | وظيفة حرجة للسلامة أو داعمة للحياة |
+| 7 | استخدام في الطيران والفضاء (aerospace) أو في المركبات |
+| 8 | مصدر حرارة غير التبديد الكهربائي المستقر (احتراق أو تفاعل كيميائي أو ما يشبههما) |
+| 9 | درجات حرارة شديدة الانخفاض (cryogenic) |
+| 10 | أحمال عابرة أو نبضية أو أحمال بدء التشغيل |
+
+Screen note (always shown with the screen): «الإجابة بـ«لا» عن جميع البنود العشرة تعني فقط أنه يمكن متابعة هذا الحساب
+المحدود؛ ولا تعني أبدًا أن أي شيء آمن.»
+
+**A-4 Outcome wording (§7).** One message per outcome; no numerical payload with any of them. The refusal display heading
+is «تعذّر التحديد (UNABLE TO DETERMINE)».
+
+| Outcome | Arabic |
+|---|---|
+| `NOT_DECLARED` | لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء. |
+| `THERMAL SPECIALIST REVIEW REQUIRED` | تتطلب مراجعة متخصص حراري (THERMAL SPECIALIST REVIEW REQUIRED): أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية، لذلك لم يُحسب شيء. |
+| `PATH_NOT_SUPPORTED` | أحد تصريحات المسار لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء. |
+| `INVALID_NUMERIC_INPUT` | يجب أن تكون قيمتا P و Rθ رقمين محدودين أكبر من الصفر، مكتوبين بصيغة عشرية صحيحة. لم يُحسب شيء. |
+| `UNIT_NOT_SUPPORTED` | الوحدة غير مدعومة؛ تقبل هذه الطريقة الواط (W) والكلفن لكل واط (K/W) فقط، وتعرض النتيجة بالكلفن (K). لم يُحسب شيء. |
+| `KNOWLEDGE_UNAVAILABLE` | المعرفة المرجعية لهذه الطريقة غير متاحة أو لم تجتز فحوصها. لم يُحسب شيء. |
+| Owner outcome not mapped by §7 (no reason token) | تعذّر إكمال الحساب. لم يُحسب شيء. |
+
+The unmapped-outcome line is neutral fail-closed wording, not a reason token: the exact shared-owner state and token stay
+preserved internally as §7 requires, are not shown and are not mapped to any THERM-01 reason.
+
+**A-5 Entry, input, result, status and provenance labels.**
+
+| Use | Arabic |
+|---|---|
+| Session-page link | اختياري: فرق درجة الحرارة عبر مسار توصيل حراري واحد |
+| Link note | حساب إرشادي لمسار تصرّح به أنت. لا يُحفَظ، ولا يكون مطلوبًا أبدًا. |
+| Page title | فرق درجة الحرارة عبر مسار واحد (اختياري، غير مُلزِم) |
+| Page intro | هذه الصفحة اختيارية. تحسب فرق درجة الحرارة عبر مسار توصيل حراري واحد تصرّح به، من التدفق الحراري P والمقاومة الحرارية الكلية Rθ اللتين تدخلهما أنت. لا يُحفَظ شيء. |
+| `P` input | التدفق الحراري المستقر عبر المسار المصرَّح به (P) — واط (W) |
+| `Rθ` input | المقاومة الحرارية الكلية للمسار المصرَّح به تحديدًا (Rθ) — كلفن لكل واط (K/W) |
+| Declaration answers | ينطبق على مساري / لا ينطبق على مساري |
+| Screen answers | نعم / لا |
+| Submit | احسب فرق درجة الحرارة |
+| `ΔT` result | فرق درجة الحرارة عبر المسار المصرَّح به (ΔT) — كلفن (K) |
+| Status | غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE) |
+| Echoed inputs heading | القيم والتصريحات التي أدخلتها |
+| Method line | الطريقة وإصدارها |
+| Sources heading | المصادر |
+| Sources note | علاقة المقاومة الحرارية لكل وحدة مساحة من كتيّب أساسيات وزارة الطاقة الأمريكية (U.S. DOE) — مؤرشف، ومرجع تاريخي للأساسيات فقط — ومرجع الوحدات من المعهد الوطني للمعايير والتقنية (NIST). صيغة المقاومة الكلية اشتقاق خاص بـInventorAI. لا تؤيّد وزارة الطاقة الأمريكية ولا NIST InventorAI ولا هذا الحساب. |
+| Back link | العودة إلى مشروعك |
+| Eligibility note (Electrical / Electronics first slice) | يغطي هذا الحساب حاليًا المشاريع التي محور تحليلها الرئيسي كهربائي/إلكتروني فقط. هذا قيد في نطاق هذه الشريحة الأولى فقط. |
+
+**A-6 Terminology.**
+
+| English | Arabic | Note |
+|---|---|---|
+| temperature difference | فرق درجة الحرارة | never shortened to «درجة الحرارة»; kept distinct from any absolute, component, junction, case, surface or ambient temperature |
+| steady state | حالة مستقرة | D-1 only |
+| one heat path | مسار واحد | D-2 only |
+| uniform one-dimensional heat flow | تدفق حراري منتظم أحادي البعد | D-3 only |
+| constant area | مساحة ثابتة | D-4 only; kept separate from D-3 |
+| heat flow | تدفق حراري | the role `P`; not «قدرة كهربائية» |
+| total thermal resistance | المقاومة الحرارية الكلية | the role `Rθ`; kept distinct from per-area resistance «المقاومة لكل وحدة مساحة» |
+| datasheet | ورقة بيانات (datasheet) | never implies a validated value |
+| thermal specialist | متخصص حراري | |
+| convection / radiation / spreading / transient | الحمل الحراري / الإشعاع / الانتشار الحراري / السلوك العابر | |
+| archived; historical fundamentals reference | مؤرشف؛ مرجع تاريخي للأساسيات | DOE handbook only |
+| InventorAI's own derivation | اشتقاق خاص بـInventorAI | the total-resistance form only |
+| advisory / non-binding | إرشادي / غير مُلزِم | CAP-12 / CAP-13 precedent |
+| unvalidated / not evidence | غير مُتحقَّق منه / ليس دليلًا | existing UI precedent |
+
+**A-7 Right-to-left rendering (requirement for the future implementation).** Numbers, the role symbols `P`, `Rθ` and `ΔT`,
+the unit tokens `W`, `K/W` and `K`, `method_id`, `method_version`, reason tokens shown in parentheses and every English
+source or term in parentheses (including U.S. DOE, NIST, datasheet, junction and case) are rendered with direction isolation
+inside Arabic text, so that no digit, sign, symbol, token or identifier is reordered; numerical values are never translated
+or reformatted into a different meaning. `K/W` is always rendered as one isolated token.
 
 ## 10. Exclusions (binding)
 
@@ -356,7 +492,9 @@ Stop and return to the Lead / Owner if any of these arises:
 3. **Shared-owner contract amendment accepted** — `CLOSED`: the calc/units contract's Correction 02 (§13A), accepted as a
    documentation-only boundary for exactly this bounded second admission under AD-1 to AD-11. It implements nothing and
    admits no method; the second admission stays NOT IMPLEMENTED.
-4. **Arabic wording and UX** — `OPEN`: Arabic disclosure and journey wording settled before any display.
+4. **Arabic wording and UX** — `CLOSED`: the Arabic disclosure, declarations, screen, outcome, label and eligibility
+   wording is settled in §9A with item-by-item parity to the English; the English stays authoritative, and the implemented
+   page still needs its own UX / browser verification under blocker 5.
 5. **Separate Owner implementation authorization** — `OPEN`.
 
 `SHARED-OWNER SECOND ADMISSION: NOT AUTHORIZED` until blockers 1, 2, 3 and 5 are all closed.
