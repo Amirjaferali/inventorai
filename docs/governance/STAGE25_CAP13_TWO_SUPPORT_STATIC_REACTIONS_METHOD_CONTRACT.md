@@ -42,9 +42,17 @@ a separate Owner acceptance; the accepted contract of record stays as accepted u
 *(Superseded 2026-10-07 by the Owner's acceptance, preserved — was: "STATUS: DOCUMENTATION-ONLY CONTRACT CANDIDATE — NOT
 ACCEPTED — NO IMPLEMENTATION AUTHORIZED — NO METHOD ADMISSION — NO NUMERICAL RESULT AUTHORIZED."; the title read
 "(CANDIDATE)".)*
-A-3 JOURNEY GATE: `A-3 JOURNEY GATE — DOCUMENTATION-ONLY CANDIDATE — NOT YET ACCEPTED`. §12A records the journey gate
-for the first user slice and §15 records A-3 as closed by it, effective only on Owner acceptance and merge. It changes
-no clause of §§1–12 and enables no user-facing capability.
+A-3 JOURNEY GATE: `A-3 JOURNEY GATE — ACCEPTED DOCUMENTATION-ONLY DECISION OF RECORD`. Accepted 2026-10-07 by Owner
+decision after the Lead review (`B — PASS WITH NON-BLOCKING NOTES`); merged in PR #772 (merge
+`0acc6bca3337c2734aaecae5d3e3434841e70fd8`). §12A is the journey gate for the first user slice; it changes no clause of
+§§1–12 and enables no user-facing capability.
+*(Superseded 2026-10-07 by the Owner's acceptance and the PR #772 merge, preserved — was: "A-3 JOURNEY GATE: `A-3 JOURNEY
+GATE — DOCUMENTATION-ONLY CANDIDATE — NOT YET ACCEPTED`. §12A records the journey gate for the first user slice and §15
+records A-3 as closed by it, effective only on Owner acceptance and merge.")*
+A-4 ARABIC UX: `A-4 ARABIC DISCLOSURE AND UX WORDING — DOCUMENTATION-ONLY CANDIDATE — NOT YET ACCEPTED`. §12B records the
+Arabic fixed disclosure and the Arabic wording of the first user slice, consolidated from the independent Arabic review;
+§15 records A-4 as closed by it, effective only on separate Owner acceptance and a verified merge. It changes no clause of
+§§1–12A, keeps the English as the authority for meaning and enables no user-facing capability.
 
 ---
 
@@ -370,6 +378,157 @@ persistence, evidence, readiness, progression, report, PDF, Structured Export or
 **Language.** This section records the journey decision only. The Arabic disclosure and UX wording stay with A-4; no
 Arabic display of the capability or its result is authorized before A-4 is closed.
 
+## 12B. Arabic disclosure and UX wording for the first user slice (A-4)
+
+Wording decision only. The English of §§5–10 and §12A stays the authority for meaning; this section adds no clause, reason
+token, state, source, owner, route or store, and changes no calculation semantics. Any divergence between the Arabic below
+and the English is a defect of the Arabic, and the English wins. The wording is Modern Standard Arabic and follows the
+Arabic-first policy (precise English technical terms may stay in parentheses). It reuses the CAP-12 advisory wording
+precedents (`web/ui_text.py`, `UI_CAP12_*`) by copying into future CAP-13-owned keys, never by changing CAP-12. Nothing
+here is implemented or displayed: Arabic display needs this section accepted and merged, and a user-facing slice needs A-5.
+
+**B-1 Fixed disclosure (Arabic rendering of §10, Lead-approved; shown in full wherever §10 is shown).**
+
+> هذه هي ردود الأفعال الرأسية للمسندين التي يتطلبها نموذج الاتزان الساكن الذي صرّحت به: مسندان متوازيان أفقيان يعملان
+> بالدفع فقط، ويحملان الوزن الكلي الذي ذكرته، والمؤثر عند مركز الثقل الذي حددته.
+>
+> هذه النتيجة أولية وإرشادية، وليست مواصفة هندسية أو تصنيعية نهائية.
+>
+> لا تعتمد على ردود الأفعال هذه لتحديد أبعاد أي مسند أو وسيلة تثبيت، أو اختيارهما أو اعتمادهما أو التحقق من صلاحيتهما،
+> قبل التحقق المستقل من التكوين الفعلي، بما في ذلك، حسب الحالة: الأحمال الفعلية ومسارات انتقالها، والمساند ووسائل
+> التثبيت، والوصلات، والإجهاد، والتشوّه، والكلال، والصدم، ومعامل الأمان.
+>
+> هذه النتائج غير مُتحقَّق منها وليست أدلة.
+>
+> ولا تثبت قدرة المسند على تحمل الأحمال، ولا كفاية وسائل التثبيت أو أسطح الارتكاز أو المواد، ولا السلامة الإنشائية، ولا
+> الامتثال للأكواد والمعايير، ولا الحصول على شهادة اعتماد، ولا الملاءمة للإنتاج.
+>
+> كذلك لا تثبت أن التكوين لن يترخّم أو ينبعج أو ينكسر أو ينقلب أو ينفصل.
+>
+> التشوّه، وحركة المساند، وتغيّر الشكل الهندسي تحت الحمل، وإعادة توزيع الأحمال الناتجة عن التشوّه، كلها خارج نطاق هذا
+> الحساب.
+>
+> لا يتحقق InventorAI من أن تصريحاتك تطابق التكوين المادي الفعلي.
+>
+> رد الفعل الصفري حالة حدّية في هذا النموذج المثالي، ولا يثبت الاستقرار الفيزيائي الفعلي.
+>
+> **المراجع:** مركز غلين للأبحاث التابع لناسا (NASA Glenn Research Center)، لمبادئ الاتزان ومركز الثقل. أما معادلتا
+> حساب ردود أفعال المسندين فهما اشتقاق خاص بـInventorAI.
+
+Parity with §10, sentence by sentence: the declared model (vertical reactions; two parallel, horizontal, push-only
+supports; stated total weight through the stated centre of gravity) · preliminary and advisory, not a final engineering or
+manufacturing specification · no sizing, selection, approval or validation of any support or attachment before independent
+verification of the actual loads and load paths, supports and attachments, joints, stress, deformation, fatigue, impact and
+safety factor · not validated, not evidence · no support capacity, attachment, bearing or material adequacy, structural
+safety, code / standard compliance, certification or production suitability · no assurance against deflection, buckling,
+fracture, tipping or detachment · deformation, support movement, geometry change under load and deformation-driven load
+redistribution excluded · declarations not checked against the physical configuration · a zero reaction does not establish
+physical stability · NASA Glenn principles distinguished from InventorAI's own derivation. No meaning is added, removed or
+softened, and no source text is copied.
+
+**B-2 Applicability declarations (§6).** Each is shown as its exact statement; the inventor answers «يطابق تكويني» or
+«يختلف تكويني», none pre-selected. "Differs" yields the §6 refusal of that row.
+
+| §6 declaration | Arabic statement |
+|---|---|
+| condition | الحالة ساكنة. |
+| applied load | الجاذبية هي الحمل المطبَّق الوحيد في النموذج. |
+| weight | الوزن الكلي هو قوة الوزن الكلية لكل ما يشمله التكوين المصرَّح به في النموذج. |
+| support count | يوجد خطّان اثنان بالضبط لردود أفعال المسندين. |
+| support geometry | خطّا ردّ فعل المسندين متوازيان وأفقيان ضمن النموذج المستوي، ويُقاس موضع مركز الثقل عموديًا عليهما ابتداءً من الخط الأيسر. |
+| support action | يؤثر كل مسند بقوة ردّ فعل رأسية، وينقل قوة فقط. |
+| support direction | يعمل كل مسند بالدفع فقط (ارتكاز)، ولا يوجد أي تثبيت يقاوم الارتفاع بالشد. |
+| support moment | لا ينقل أي مسند عزمًا أو ازدواجًا. |
+| load paths | لا يوجد مسند ثالث ولا أي مسار إضافي لانتقال الحمل. |
+| centre of gravity | تُدخل موضع مركز الثقل بنفسك؛ لا يُستنتج ولا يُوضع في المنتصف تلقائيًا. |
+
+**B-3 High-risk screen (§9).** Stem: «هل ينطبق أيٌّ مما يلي على التكوين؟ أجب عن كل بند بـ«نعم» أو «لا».» — none
+pre-selected.
+
+| §9 item | Arabic |
+|---|---|
+| supports people | يحمل أشخاصًا أو يسندهم |
+| overhead or falling hazard | خطر علوي أو خطر سقوط |
+| use by or for children | يستخدمه الأطفال أو صُمِّم لهم |
+| safety-critical load path | مسار حمل حرج للسلامة |
+| pressure | ينطوي على ضغط |
+| high temperature | درجة حرارة عالية |
+| battery containment | احتواء بطارية |
+| medical use | استخدام طبي |
+| food contact | تلامس مع الغذاء |
+
+Screen note (always shown with the screen): «الإجابة بـ«لا» عن جميع البنود التسعة تستوفي هذا الفحص فقط؛ ولا تعني أن
+التكوين آمن، ولا تُغني عن بقية شروط التطبيق والقيم الرقمية.»
+
+**B-4 Outcome wording (§8, §12A).** One message per outcome, no numerical payload with any of them.
+
+| Outcome | Arabic |
+|---|---|
+| `NOT_DECLARED` | لم تُجب عن جميع التصريحات وبنود الفحص والقيم المطلوبة. لم يُحسب شيء. |
+| `ENGINEERING REVIEW REQUIRED` | أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. هذه الحالة تتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء. |
+| `LOAD_NOT_SUPPORTED` | الحمل الذي صرّحت به خارج ما تغطيه هذه الطريقة. لم يُحسب شيء. |
+| `SUPPORT_NOT_SUPPORTED` | المساند التي صرّحت بها خارج ما تغطيه هذه الطريقة. لم يُحسب شيء. |
+| `INVALID_NUMERIC_INPUT` | يجب أن تكون القيم أرقامًا محدودة، وأن يكون الوزن الكلي والمسافة بين خطّي ردّ فعل المسندين أكبر من الصفر. لم يُحسب شيء. |
+| `CG_OUTSIDE_SUPPORT_SPAN` | موضع مركز الثقل يقع خارج المسافة بين خطّي ردّ فعل المسندين. يتطلب ذلك ردّ فعل سالبًا (شدًّا) عند أحد المسندين، وهذا خارج النموذج المعتمد هنا الذي يفترض مساند تعمل بالدفع فقط. لم يُحسب شيء. |
+| `UNIT_NOT_SUPPORTED` | الوحدة غير مدعومة؛ تقبل هذه الطريقة النيوتن (N) والملّيمتر (mm) فقط. لم يُحسب شيء. |
+| `KNOWLEDGE_UNAVAILABLE` | المعرفة المرجعية لهذه الطريقة غير متاحة أو لم تجتز فحوصها. لم يُحسب شيء. |
+| Owner outcome not mapped by §8 (no reason token) | تعذّر إكمال الحساب. لم يُحسب شيء. |
+| Malformed request (§12A; no reason token) | تعذّرت قراءة هذا الطلب. لم يُحسب شيء. |
+
+The unmapped-outcome line is neutral fail-closed wording, not a reason token: the exact shared-owner state and token stay
+preserved internally as §8 requires, are not shown and are not mapped to any CAP-13 reason.
+
+**B-5 Entry, input, result and provenance labels.**
+
+| Use | Arabic |
+|---|---|
+| Session-page link | اختياري: ردود أفعال المسندين لحمل ساكن |
+| Link note | حساب إرشادي لنموذج تصرّح به أنت. لا يُحفَظ ولا يكون مطلوبًا أبدًا. |
+| Page title | ردود أفعال المسندين (اختياري، غير مُلزِم) |
+| Page intro | هذه الصفحة اختيارية. تحسب ردّي الفعل الرأسيين للمسندين اللذين يتطلبهما نموذج الاتزان الساكن الذي تصرّح به. لا يُحفَظ شيء، ولا تُعيق مشروعك أبدًا. |
+| Total weight input | الوزن الكلي — نيوتن (N) |
+| Separation input | المسافة بين خطّي ردّ فعل المسندين — ملّيمتر (mm) |
+| Centre-of-gravity input | موضع مركز الثقل مقيسًا من خط المسند الأيسر — ملّيمتر (mm) |
+| Declaration answers | يطابق تكويني / يختلف تكويني |
+| Screen answers | نعم / لا |
+| Submit | احسب ردود الأفعال |
+| Left reaction | ردّ فعل المسند الأيسر (R_L) — نيوتن (N) |
+| Right reaction | ردّ فعل المسند الأيمن (R_R) — نيوتن (N) |
+| Status | غير مُتحقَّق منه (UNVALIDATED) — ليست أدلة |
+| Echoed inputs heading | القيم والتصريحات التي أدخلتها |
+| Method line | الطريقة وإصدارها |
+| Sources heading | المصادر |
+| Sources note | مبادئ الاتزان ومركز الثقل من مواد ناسا (NASA)، ومرجع الوحدات من المعهد الوطني للمعايير والتقنية (NIST). لا تؤيّد ناسا InventorAI ولا هذا الحساب. |
+| Back link | العودة إلى مشروعك |
+| Scope note (Mechanical-only first slice) | يغطي هذا الحساب حاليًا المشاريع التي محور تحليلها الرئيسي ميكانيكي فقط. قد لا يتاح لاختراع متكامل محور تحليله الأولي كهربائي/إلكتروني حتى لو تضمّن جزءًا ميكانيكيًا؛ هذا قيد في نطاق هذه الشريحة الأولى، وليس حكمًا بعدم التوافق التقني. |
+
+**B-6 Terminology.**
+
+| English | Arabic | Note |
+|---|---|---|
+| support | مسند (مساند) | used throughout; «وسيلة تثبيت» is reserved for attachment |
+| attachment | وسيلة تثبيت | |
+| support reaction | ردّ فعل المسند | "vertical" qualifies the reaction force, never the physical member |
+| push-only / bearing | يعمل بالدفع فقط (ارتكاز) | «الدفع» is kept distinct from «ضغط» (pressure) |
+| no hold-down | لا يوجد تثبيت يقاوم الارتفاع بالشد | |
+| force-only | ينقل قوة فقط | kept separate from push-only and no-moment |
+| moment / couple | عزم / ازدواج | |
+| centre of gravity | مركز الثقل | |
+| static | ساكن | §6 meaning only; no added condition |
+| pressure | ضغط | generic, not limited to pressure vessels |
+| overhead or falling hazard | خطر علوي أو خطر سقوط | not limited to people beneath |
+| approve | اعتماد | the verb for a support or attachment |
+| certification | شهادة اعتماد | kept separate from code / standard compliance |
+| code / standard compliance | الامتثال للأكواد والمعايير | |
+| deflect / buckle / fatigue | يترخّم / ينبعج / الكلال | |
+| advisory / non-binding | إرشادي / غير مُلزِم | CAP-12 precedent |
+| unvalidated / not evidence | غير مُتحقَّق منه / ليست أدلة | existing UI precedent |
+
+**B-7 Right-to-left rendering (requirement for the future implementation, A-5).** Numbers, the unit tokens `N` and `mm`,
+the role symbols `R_L` and `R_R`, `method_id`, `method_version` and the English names in parentheses are rendered with
+direction isolation inside Arabic text, so that no digit, sign, token or identifier is reordered; numerical values are
+never translated or reformatted into a different meaning.
+
 ## 13. Stage and lifecycle
 
 This candidate, its later acceptance or both together do not enter Stage 25, activate CAP-13, implement the shared owner,
@@ -393,9 +552,10 @@ A2 first increment admitting it with the first CAP-13 user slice.
   admission stays blocked by A-2 to A-5.
 - **A-2** The final method identifier — CLOSED 2026-10-07 by Owner decision: `method_id =
   "cap13:static_reactions_two_support"`, `method_version = "1.0"` (§2). Method admission stays blocked by A-3 to A-5.
-- **A-3** The journey gate for the future user slice — CLOSED by §12A (candidate wording; effective only on Owner
-  acceptance and merge). Method admission stays blocked by A-4 and A-5.
-- **A-4** The Arabic disclosure wording, settled under the UX review.
+- **A-3** The journey gate for the future user slice — CLOSED 2026-10-07 by §12A (accepted by Owner decision; merged in
+  PR #772, merge `0acc6bca3337c2734aaecae5d3e3434841e70fd8`). Method admission stays blocked by A-4 and A-5.
+- **A-4** The Arabic disclosure wording, settled under the UX review — CLOSED by §12B (candidate wording; effective only on
+  separate Owner acceptance and a verified merge). Method admission stays blocked by A-5.
 - **A-5** A separately authorized first increment of the shared owner (A2) with this method and its named consumer,
   carrying the guard strategy of calc/units contract §14 and the CAP-13-owned governed artifact with its source and unit
   records (calc/units contract §9). That artifact must carry its OWN bounded `source_use_policy` record for NASA-S1 and
