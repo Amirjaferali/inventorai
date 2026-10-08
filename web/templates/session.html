@@ -1803,6 +1803,14 @@ body{overflow-wrap:anywhere}
 <p class="journey-note" data-cap12-link style="margin-top:14px"><a href="{{ url_for('cap12_form_mockup_advisory', sid=sid) }}">{{ t('UI_CAP12_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_CAP12_LINK_NOTE') }}</span></p>
 {% endif %}
 {#- CAP12-LINK-END -#}
+{#- CAP13-LINK-BEGIN — Stage 25 / CAP-13 Two-Support Static Reactions Slice 1.
+    ONE optional link to the request-local calculation page, offered only on an
+    eligible (Mechanical-root) project. It is not a journey action, gates nothing
+    and carries no CAP-13 content: nothing is calculated or saved on this page. -#}
+{% if cap13_support_reactions_link %}
+<p class="journey-note" data-cap13-link style="margin-top:14px"><a href="{{ url_for('cap13_support_reactions', sid=sid) }}">{{ t('UI_CAP13_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_CAP13_LINK_NOTE') }}</span></p>
+{% endif %}
+{#- CAP13-LINK-END -#}
 {#- CEV-BLOCK-BEGIN — Commercial Evidence Capture
     (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01). Read: the items already recorded
     for this project, straight from the authoritative Manufacturing Evidence Owner.

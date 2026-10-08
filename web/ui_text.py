@@ -4139,6 +4139,170 @@ UI_STRINGS = {
                "or production use."),
         "ar": ("يصف عائلة عملية للنماذج الأولية فقط. ولا يثبت دقة الأبعاد أو "
                "التركيب أو التفاوت أو المتانة أو الاستخدام في الإنتاج.")},
+    # Stage 25 / CAP-13 - Two-Support Static Reactions - Slice 1 (request-local,
+    # optional, advisory, non-binding). Arabic is contract §12B verbatim (the
+    # English of §§5-10 / §12A stays the authority for meaning). The English
+    # declaration, screen and disclosure entries are pinned equal to the CAP-13
+    # artifact by test. Nothing here states capacity, adequacy or safety.
+    "UI_CAP13_LINK_TEXT": {
+        "en": "Optional: support reactions for a static load",
+        "ar": "اختياري: ردود أفعال المسندين لحمل ساكن"},
+    "UI_CAP13_LINK_NOTE": {
+        "en": "An advisory calculation for a model you declare. It is not saved and is never required.",
+        "ar": "حساب إرشادي لنموذج تصرّح به أنت. لا يُحفَظ ولا يكون مطلوبًا أبدًا."},
+    "UI_CAP13_TITLE": {
+        "en": "Support reactions (optional, non-binding)",
+        "ar": "ردود أفعال المسندين (اختياري، غير مُلزِم)"},
+    "UI_CAP13_INTRO": {
+        "en": "This page is optional. It calculates the two vertical support reactions required by the static equilibrium model you declare. Nothing is saved, and it never blocks your project.",
+        "ar": "هذه الصفحة اختيارية. تحسب ردّي الفعل الرأسيين للمسندين اللذين يتطلبهما نموذج الاتزان الساكن الذي تصرّح به. لا يُحفَظ شيء، ولا تُعيق مشروعك أبدًا."},
+    "UI_CAP13_SCOPE_NOTE": {
+        "en": "This calculation currently covers only projects whose main analysis focus is Mechanical. An integrated invention whose initial analysis focus is Electrical / Electronics may not be offered it even when it includes a Mechanical part; this is a scope limit of this first slice, not a verdict of technical incompatibility.",
+        "ar": "يغطي هذا الحساب حاليًا المشاريع التي محور تحليلها الرئيسي ميكانيكي فقط. قد لا يتاح لاختراع متكامل محور تحليله الأولي كهربائي/إلكتروني حتى لو تضمّن جزءًا ميكانيكيًا؛ هذا قيد في نطاق هذه الشريحة الأولى، وليس حكمًا بعدم التوافق التقني."},
+    "UI_CAP13_ANSWER_MATCHES": {
+        "en": "My configuration matches",
+        "ar": "يطابق تكويني"},
+    "UI_CAP13_ANSWER_DIFFERS": {
+        "en": "My configuration differs",
+        "ar": "يختلف تكويني"},
+    "UI_CAP13_DECL_CONDITION": {
+        "en": "Static.",
+        "ar": "الحالة ساكنة."},
+    "UI_CAP13_DECL_APPLIED_LOAD": {
+        "en": "Gravity is the only modelled applied load.",
+        "ar": "الجاذبية هي الحمل المطبَّق الوحيد في النموذج."},
+    "UI_CAP13_DECL_WEIGHT": {
+        "en": "P is the total weight force for everything included in the declared modelled configuration.",
+        "ar": "الوزن الكلي هو قوة الوزن الكلية لكل ما يشمله التكوين المصرَّح به في النموذج."},
+    "UI_CAP13_DECL_SUPPORT_COUNT": {
+        "en": "Exactly two support reaction lines.",
+        "ar": "يوجد خطّان اثنان بالضبط لردود أفعال المسندين."},
+    "UI_CAP13_DECL_SUPPORT_GEOMETRY": {
+        "en": "The two support lines are parallel and horizontal within the planar model, and x is measured perpendicular to them from the left line.",
+        "ar": "خطّا ردّ فعل المسندين متوازيان وأفقيان ضمن النموذج المستوي، ويُقاس موضع مركز الثقل عموديًا عليهما ابتداءً من الخط الأيسر."},
+    "UI_CAP13_DECL_SUPPORT_ACTION": {
+        "en": "Both supports vertical, force-only.",
+        "ar": "يؤثر كل مسند بقوة ردّ فعل رأسية، وينقل قوة فقط."},
+    "UI_CAP13_DECL_SUPPORT_DIRECTION": {
+        "en": "Both supports push-only / bearing; no hold-down tension.",
+        "ar": "يعمل كل مسند بالدفع فقط (ارتكاز)، ولا يوجد أي تثبيت يقاوم الارتفاع بالشد."},
+    "UI_CAP13_DECL_SUPPORT_MOMENT": {
+        "en": "No support moment or couple.",
+        "ar": "لا ينقل أي مسند عزمًا أو ازدواجًا."},
+    "UI_CAP13_DECL_LOAD_PATHS": {
+        "en": "No third support and no additional load path.",
+        "ar": "لا يوجد مسند ثالث ولا أي مسار إضافي لانتقال الحمل."},
+    "UI_CAP13_DECL_CENTRE_OF_GRAVITY": {
+        "en": "Its position is explicitly declared by the inventor — never inferred and never defaulted to midspan.",
+        "ar": "تُدخل موضع مركز الثقل بنفسك؛ لا يُستنتج ولا يُوضع في المنتصف تلقائيًا."},
+    "UI_CAP13_SCREEN_STEM": {
+        "en": "Does any of the following apply to the configuration? Answer each item yes or no.",
+        "ar": "هل ينطبق أيٌّ مما يلي على التكوين؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_CAP13_SCREEN_SUPPORTS_PEOPLE": {
+        "en": "Supports people",
+        "ar": "يحمل أشخاصًا أو يسندهم"},
+    "UI_CAP13_SCREEN_OVERHEAD_OR_FALLING_HAZARD": {
+        "en": "Overhead or falling hazard",
+        "ar": "خطر علوي أو خطر سقوط"},
+    "UI_CAP13_SCREEN_CHILDREN": {
+        "en": "Use by or for children",
+        "ar": "يستخدمه الأطفال أو صُمِّم لهم"},
+    "UI_CAP13_SCREEN_SAFETY_CRITICAL_LOAD_PATH": {
+        "en": "Safety-critical load path",
+        "ar": "مسار حمل حرج للسلامة"},
+    "UI_CAP13_SCREEN_PRESSURE": {
+        "en": "Pressure",
+        "ar": "ينطوي على ضغط"},
+    "UI_CAP13_SCREEN_HIGH_TEMPERATURE": {
+        "en": "High temperature",
+        "ar": "درجة حرارة عالية"},
+    "UI_CAP13_SCREEN_BATTERY_CONTAINMENT": {
+        "en": "Battery containment",
+        "ar": "احتواء بطارية"},
+    "UI_CAP13_SCREEN_MEDICAL_USE": {
+        "en": "Medical use",
+        "ar": "استخدام طبي"},
+    "UI_CAP13_SCREEN_FOOD_CONTACT": {
+        "en": "Food contact",
+        "ar": "تلامس مع الغذاء"},
+    "UI_CAP13_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_CAP13_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_CAP13_SCREEN_NOTE": {
+        "en": "Answering no to all nine items only satisfies this screen; it does not mean the configuration is safe, and it does not replace the other applicability conditions and numerical values.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود التسعة تستوفي هذا الفحص فقط؛ ولا تعني أن التكوين آمن، ولا تُغني عن بقية شروط التطبيق والقيم الرقمية."},
+    "UI_CAP13_FIELD_P": {
+        "en": "Total weight — newton (N)",
+        "ar": "الوزن الكلي — نيوتن (N)"},
+    "UI_CAP13_FIELD_L": {
+        "en": "Distance between the two support reaction lines — millimetre (mm)",
+        "ar": "المسافة بين خطّي ردّ فعل المسندين — ملّيمتر (mm)"},
+    "UI_CAP13_FIELD_X": {
+        "en": "Centre-of-gravity position measured from the left support line — millimetre (mm)",
+        "ar": "موضع مركز الثقل مقيسًا من خط المسند الأيسر — ملّيمتر (mm)"},
+    "UI_CAP13_SUBMIT": {
+        "en": "Calculate the reactions",
+        "ar": "احسب ردود الأفعال"},
+    "UI_CAP13_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_CAP13_RESULT_R_L": {
+        "en": "Left support reaction (R_L) — newton (N)",
+        "ar": "ردّ فعل المسند الأيسر (R_L) — نيوتن (N)"},
+    "UI_CAP13_RESULT_R_R": {
+        "en": "Right support reaction (R_R) — newton (N)",
+        "ar": "ردّ فعل المسند الأيمن (R_R) — نيوتن (N)"},
+    "UI_CAP13_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليست أدلة"},
+    "UI_CAP13_ECHO_HEADING": {
+        "en": "The values and declarations you entered",
+        "ar": "القيم والتصريحات التي أدخلتها"},
+    "UI_CAP13_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_CAP13_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_CAP13_SOURCES_NOTE": {
+        "en": "Equilibrium and centre-of-gravity principles from NASA material, and the unit reference from the National Institute of Standards and Technology (NIST). NASA does not endorse InventorAI or this calculation.",
+        "ar": "مبادئ الاتزان ومركز الثقل من مواد ناسا (NASA)، ومرجع الوحدات من المعهد الوطني للمعايير والتقنية (NIST). لا تؤيّد ناسا InventorAI ولا هذا الحساب."},
+    "UI_CAP13_DISCLOSURE": {
+        "en": "These are the vertical support reactions required by the static equilibrium model you declared: two parallel, horizontal, push-only supports carrying your stated total weight through your stated centre of gravity. This result is preliminary and advisory, not a final engineering or manufacturing specification. Do not rely on these reactions to size, select, approve or validate any support or attachment before independently verifying the real configuration, including, as applicable, the actual loads and load paths, the supports and attachments, joints, stress, deformation, fatigue, impact and safety factor. They are not validated and are not evidence. They do not establish support capacity, attachment adequacy, bearing adequacy, material adequacy, structural safety, code compliance, certification or production suitability, and they do not show that the configuration will not deflect, buckle, fracture, tip or detach. Deformation, support movement, geometry change under load and load redistribution caused by deformation are outside this calculation. InventorAI does not check that your declarations match the physical configuration. A zero reaction is a boundary case of this idealized model and does not establish physical stability. Reference source material: NASA Glenn Research Center (equilibrium and centre-of-gravity principles); the two-support equations are InventorAI's own derivation.",
+        "ar": "هذه هي ردود الأفعال الرأسية للمسندين التي يتطلبها نموذج الاتزان الساكن الذي صرّحت به: مسندان متوازيان أفقيان يعملان بالدفع فقط، ويحملان الوزن الكلي الذي ذكرته، والمؤثر عند مركز الثقل الذي حددته.\n\nهذه النتيجة أولية وإرشادية، وليست مواصفة هندسية أو تصنيعية نهائية.\n\nلا تعتمد على ردود الأفعال هذه لتحديد أبعاد أي مسند أو وسيلة تثبيت، أو اختيارهما أو اعتمادهما أو التحقق من صلاحيتهما، قبل التحقق المستقل من التكوين الفعلي، بما في ذلك، حسب الحالة: الأحمال الفعلية ومسارات انتقالها، والمساند ووسائل التثبيت، والوصلات، والإجهاد، والتشوّه، والكلال، والصدم، ومعامل الأمان.\n\nهذه النتائج غير مُتحقَّق منها وليست أدلة.\n\nولا تثبت قدرة المسند على تحمل الأحمال، ولا كفاية وسائل التثبيت أو أسطح الارتكاز أو المواد، ولا السلامة الإنشائية، ولا الامتثال للأكواد والمعايير، ولا الحصول على شهادة اعتماد، ولا الملاءمة للإنتاج.\n\nكذلك لا تثبت أن التكوين لن يترخّم أو ينبعج أو ينكسر أو ينقلب أو ينفصل.\n\nالتشوّه، وحركة المساند، وتغيّر الشكل الهندسي تحت الحمل، وإعادة توزيع الأحمال الناتجة عن التشوّه، كلها خارج نطاق هذا الحساب.\n\nلا يتحقق InventorAI من أن تصريحاتك تطابق التكوين المادي الفعلي.\n\nرد الفعل الصفري حالة حدّية في هذا النموذج المثالي، ولا يثبت الاستقرار الفيزيائي الفعلي.\n\nالمراجع: مركز غلين للأبحاث التابع لناسا (NASA Glenn Research Center)، لمبادئ الاتزان ومركز الثقل. أما معادلتا حساب ردود أفعال المسندين فهما اشتقاق خاص بـInventorAI."},
+    "UI_CAP13_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration, screen item and required value. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص والقيم المطلوبة. لم يُحسب شيء."},
+    "UI_CAP13_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. هذه الحالة تتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_CAP13_OUTCOME_LOAD_NOT_SUPPORTED": {
+        "en": "The load you declared is outside what this method covers. Nothing was calculated.",
+        "ar": "الحمل الذي صرّحت به خارج ما تغطيه هذه الطريقة. لم يُحسب شيء."},
+    "UI_CAP13_OUTCOME_SUPPORT_NOT_SUPPORTED": {
+        "en": "The supports you declared are outside what this method covers. Nothing was calculated.",
+        "ar": "المساند التي صرّحت بها خارج ما تغطيه هذه الطريقة. لم يُحسب شيء."},
+    "UI_CAP13_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "The values must be finite numbers, and the total weight and the distance between the two support reaction lines must be greater than zero. Nothing was calculated.",
+        "ar": "يجب أن تكون القيم أرقامًا محدودة، وأن يكون الوزن الكلي والمسافة بين خطّي ردّ فعل المسندين أكبر من الصفر. لم يُحسب شيء."},
+    "UI_CAP13_OUTCOME_CG_OUTSIDE_SUPPORT_SPAN": {
+        "en": "The centre-of-gravity position lies outside the distance between the two support reaction lines. That would need a negative (tension) reaction at one support, which is outside the model accepted here, which assumes push-only supports. Nothing was calculated.",
+        "ar": "موضع مركز الثقل يقع خارج المسافة بين خطّي ردّ فعل المسندين. يتطلب ذلك ردّ فعل سالبًا (شدًّا) عند أحد المسندين، وهذا خارج النموذج المعتمد هنا الذي يفترض مساند تعمل بالدفع فقط. لم يُحسب شيء."},
+    "UI_CAP13_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the newton (N) and the millimetre (mm). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة النيوتن (N) والملّيمتر (mm) فقط. لم يُحسب شيء."},
+    "UI_CAP13_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable or did not pass its checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة أو لم تجتز فحوصها. لم يُحسب شيء."},
+    "UI_CAP13_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_CAP13_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

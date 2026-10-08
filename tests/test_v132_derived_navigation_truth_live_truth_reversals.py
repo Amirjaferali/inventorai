@@ -18,7 +18,7 @@ from test_v132_derived_navigation_truth import (
     _S20_COMPLETE, _S21_COMPLETE, _S22_COMPLETE, _S23_COMPLETE, _S24_COMPLETE, _S24_PARTIAL, _S24_PRE_MARKER,
     _S35C_DELIVERED, _S35_ACTIVE, _S35_BOLD, _S35_COMPLETE, _S35_ENTERED, _S35_LATER_NO, _S35_LIMITS, _S35_NAME,
     _S35_SLICE_DELIVERED, _S35_TRIGGERS, _S36C_DELIVERED, _S36_COMPLETE, _S36_LIMITS, _S36_NOT, _S37_NOT,
-    _live_authority_problems, _mutate,
+    _S25_DELIVERED, _S25_FULL_NO, _S25_PARTIAL, _S25_PRE_MARKER, _live_authority_problems, _mutate,
 )
 
 
@@ -157,8 +157,8 @@ _MATERIAL_REVERSALS = {
     "stage 35 contract restored in the routing": (CHECKLIST, "current-routing", _NONE718, _S35_ACTIVE),
     "stage 35 contract restored in the declaration": (CONTRACT, "declaration", _NONE_BOLD, _S35_BOLD),
     "stage 35 contract restored in the head": ("CLAUDE.md", "head", _NONE_BOLD, _S35_BOLD),
-    "active increment heading restored": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-16-closure "
-                                          "(2026-10-06); ", "**ACTIVE BOUNDED PRODUCT INCREMENT — " + _S35_NAME
+    "active increment heading restored": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-25-CAP-13-Slice-1 "
+                                          "(2026-10-08); ", "**ACTIVE BOUNDED PRODUCT INCREMENT — " + _S35_NAME
                                           + " (Owner-authorized 2026-10-05); "),
     "stale active-increment prose back": (CHECKLIST, "current-routing", _NS,
                                           _NS + " " + _S35_NAME + " is the active bounded product increment."),
@@ -206,8 +206,8 @@ _MATERIAL_REVERSALS = {
     "stage 36 not-entered prose back": (CONTRACT, "declaration", _NS,
                                         _NS + " Stage 36 stays NOT ENTERED and NOT AUTHORIZED."),
     "stage 36 closure undone": (CONTRACT, "current-routing", _S36C_DELIVERED, "`STAGE 36 CLOSURE: NOT AUTHORIZED`"),
-    "post-stage-35 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-16-closure "
-                                     "(2026-10-06); ", "**NO ACTIVE CONTRACT — post-Stage-35-closure (2026-10-05); "),
+    "post-stage-35 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-25-CAP-13-Slice-1 "
+                                     "(2026-10-08); ", "**NO ACTIVE CONTRACT — post-Stage-35-closure (2026-10-05); "),
     "live provider selected": (STATE, "current-position", _S36_LIMITS[0],
                                "`PRODUCTION LIVE AI / PROVIDER: SELECTED — ACTIVE`"),
     "live provider active in prose": (ROADMAP, "current-routing", _NS,
@@ -233,8 +233,8 @@ _MATERIAL_REVERSALS = {
     "stage 16 complete globally in prose": (STATE, "current-position", _NS, _NS + " Stage 16 is complete."),
     "stage 16 fully complete in prose": (CONTRACT, "declaration", _NS,
                                          _NS + " Stage 16 is fully complete for every scope."),
-    "post-stage-36 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-16-closure "
-                                     "(2026-10-06); ", "**NO ACTIVE CONTRACT — post-Stage-36-closure (2026-10-05); "),
+    "post-stage-36 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-25-CAP-13-Slice-1 "
+                                     "(2026-10-08); ", "**NO ACTIVE CONTRACT — post-Stage-36-closure (2026-10-05); "),
     "stage 16 routed past again": (CONTRACT, "current-routing", "routing past Stages 11, 13, 14 and 17",
                                    "routing past Stages 11, 13, 14, 16 and 17"),
     "srl computation authorized": (ROADMAP, "current-routing", _S16_SRL_NO,
@@ -247,6 +247,23 @@ _MATERIAL_REVERSALS = {
     "stages 13 and 14 complete in prose": (ROADMAP, "current-routing", _NS, _NS + " Stages 13 and 14 are complete."),
     "further stage 16 work authorized": (CHECKLIST, "current-routing", _NS,
                                          _NS + " and further Stage-16 / SRL work is authorized."),
+    # ADDED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: an undone slice, Stage 25 back to
+    # NOT ENTERED, the pre-slice marker or NONE head back, an unscoped or completed Stage 25, full CAP-13, a second method
+    # or consumer, a unit conversion or a broad CAP-13 activation is a reversal of the live truth.
+    "stage 25 slice undone": (CHECKLIST, "current-routing", _S25_DELIVERED,
+                              "`STAGE 25 — CAP-13 TWO-SUPPORT STATIC REACTIONS SLICE 1: NOT DELIVERED`"),
+    "stage 25 back to not entered": (STATE, "current-position", _NS, _NS + " `STAGE 25: NOT ENTERED`"),
+    "stage 25 pre-slice marker back": (CHECKLIST, "current-routing", _NS, _NS + " " + _S25_PRE_MARKER),
+    "stage 25 complete": (ROADMAP, "current-routing", _S25_PARTIAL, "`STAGE 25: COMPLETE`"),
+    "stage 25 complete in prose": (CONTRACT, "declaration", _NS, _NS + " Stage 25 is complete."),
+    "full cap-13 authorized": (CONTRACT, "declaration", _S25_FULL_NO, "`FULL CAP-13: AUTHORIZED`"),
+    "second cap-13 method admitted in prose": (ROADMAP, "current-routing", _NS,
+                                               _NS + " A second CAP-13 method is admitted."),
+    "cap-13 consumer added in prose": (CHECKLIST, "current-routing", _NS, _NS + " Another consumer is authorized."),
+    "unit conversion authorized in prose": (STATE, "current-position", _NS, _NS + " Unit conversion is authorized."),
+    "cap-13 broadly activated": ("CLAUDE.md", "head", _NONE_BOLD, _NONE_BOLD + " CAP-13 is fully activated."),
+    "post-stage-16 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-25-CAP-13-Slice-1 "
+                                     "(2026-10-08); ", "**NO ACTIVE CONTRACT — post-Stage-16-closure (2026-10-06); "),
 }
 
 # The reversal cases are split for CI shard balance: the first half (by sorted name) runs here, the rest in

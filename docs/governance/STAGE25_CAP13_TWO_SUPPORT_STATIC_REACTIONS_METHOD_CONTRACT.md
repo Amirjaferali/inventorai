@@ -49,10 +49,24 @@ decision after the Lead review (`B — PASS WITH NON-BLOCKING NOTES`); merged in
 *(Superseded 2026-10-07 by the Owner's acceptance and the PR #772 merge, preserved — was: "A-3 JOURNEY GATE: `A-3 JOURNEY
 GATE — DOCUMENTATION-ONLY CANDIDATE — NOT YET ACCEPTED`. §12A records the journey gate for the first user slice and §15
 records A-3 as closed by it, effective only on Owner acceptance and merge.")*
-A-4 ARABIC UX: `A-4 ARABIC DISCLOSURE AND UX WORDING — DOCUMENTATION-ONLY CANDIDATE — NOT YET ACCEPTED`. §12B records the
-Arabic fixed disclosure and the Arabic wording of the first user slice, consolidated from the independent Arabic review;
-§15 records A-4 as closed by it, effective only on separate Owner acceptance and a verified merge. It changes no clause of
-§§1–12A, keeps the English as the authority for meaning and enables no user-facing capability.
+A-4 ARABIC UX: `A-4 ARABIC DISCLOSURE AND UX WORDING — ACCEPTED DOCUMENTATION-ONLY DECISION OF RECORD`. Accepted by Owner
+decision after the Lead review; merged in PR #773 (merge `65f771d5f3b4820b8d2513797cd3f2d4b05c575d`). §12B is the Arabic
+fixed disclosure and the Arabic wording of the first user slice; it changes no clause of §§1–12A and keeps the English as the
+authority for meaning.
+*(Superseded by the Owner's acceptance and the PR #773 merge, preserved — was: "A-4 ARABIC UX: `A-4 ARABIC DISCLOSURE AND UX
+WORDING — DOCUMENTATION-ONLY CANDIDATE — NOT YET ACCEPTED`. §12B records the Arabic fixed disclosure and the Arabic wording of
+the first user slice, consolidated from the independent Arabic review; §15 records A-4 as closed by it, effective only on
+separate Owner acceptance and a verified merge. It changes no clause of §§1–12A, keeps the English as the authority for
+meaning and enables no user-facing capability.")*
+A-5 FIRST IMPLEMENTATION: `STAGE 25 — CAP-13 TWO-SUPPORT STATIC REACTIONS SLICE 1: DELIVERED` (recorded in its after-merge
+form; Git / GitHub own its PR, merge and review identity). The separately Owner-authorized A2 first increment implements this
+method with its ONE named consumer: the shared owner `engine/deterministic_calculation.py` (unnumbered) with its artifact
+`docs/governance/deterministic_calculation_config/deterministic_calculation_owner_v1.json`, the method adapter
+`engine/cap13_static_reactions_method.py`, the consumer `engine/cap13_static_reactions.py` with the CAP-13-owned artifact
+`docs/governance/cap13_content_config/static_reactions_two_support_v1.json`, and the request-local page of §12A
+(`/session/<sid>/support-reactions`). `STAGE 25: ENTERED / PARTIAL — CAP-13 TWO-SUPPORT STATIC REACTIONS SLICE 1 ONLY`;
+`FULL CAP-13: NOT AUTHORIZED`. The STATUS line above and §§13 / 16 are this document's acceptance-time record; this
+paragraph is the current state.
 
 ---
 
@@ -554,12 +568,16 @@ A2 first increment admitting it with the first CAP-13 user slice.
   "cap13:static_reactions_two_support"`, `method_version = "1.0"` (§2). Method admission stays blocked by A-3 to A-5.
 - **A-3** The journey gate for the future user slice — CLOSED 2026-10-07 by §12A (accepted by Owner decision; merged in
   PR #772, merge `0acc6bca3337c2734aaecae5d3e3434841e70fd8`). Method admission stays blocked by A-4 and A-5.
-- **A-4** The Arabic disclosure wording, settled under the UX review — CLOSED by §12B (candidate wording; effective only on
-  separate Owner acceptance and a verified merge). Method admission stays blocked by A-5.
+- **A-4** The Arabic disclosure wording, settled under the UX review — CLOSED by §12B (accepted by Owner decision; merged in
+  PR #773, merge `65f771d5f3b4820b8d2513797cd3f2d4b05c575d`). *(Superseded, preserved — was: "CLOSED by §12B (candidate
+  wording; effective only on separate Owner acceptance and a verified merge). Method admission stays blocked by A-5.")*
 - **A-5** A separately authorized first increment of the shared owner (A2) with this method and its named consumer,
   carrying the guard strategy of calc/units contract §14 and the CAP-13-owned governed artifact with its source and unit
   records (calc/units contract §9). That artifact must carry its OWN bounded `source_use_policy` record for NASA-S1 and
-  NASA-S2 on the established `cap12:SU001` pattern; no such record exists now.
+  NASA-S2 on the established `cap12:SU001` pattern; no such record exists now. — CLOSED by the delivered
+  Stage 25 — CAP-13 Two-Support Static Reactions — Slice 1 (header, "A-5 FIRST IMPLEMENTATION"): the CAP-13 artifact carries
+  its own bounded `cap13:SU001` source-use record for NASA-S1 and NASA-S2, and the method is admitted for that one consumer
+  only.
 
 ## 16. Non-authorization (restated)
 

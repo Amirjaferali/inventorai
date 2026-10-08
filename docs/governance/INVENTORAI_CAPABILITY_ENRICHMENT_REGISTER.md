@@ -159,9 +159,13 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   `STAGE 24 — CAP-12 FORM MOCK-UP ADVISORY SLICE 1: DELIVERED` ·
   `STAGE 24 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED` ·
   `STAGE 24: COMPLETE — CURRENT BOUNDED CAP-12 FORM MOCK-UP ADVISORY SLICE 1 SCOPE ONLY` ·
-  `FULL CAP-12: NOT AUTHORIZED` · `FURTHER CAP-12 SLICES: NOT AUTHORIZED` · `CAP-13: NOT ACTIVATED` ·
-  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 25 — NOT ENTERED — NAVIGATION ONLY` ·
-  `NO STAGE-25 IMPLEMENTATION AUTHORIZED BY STAGE-24 CLOSURE` · `STAGE 25: NOT ENTERED` · `STAGE 25: NOT AUTHORIZED`.
+  `FULL CAP-12: NOT AUTHORIZED` · `FURTHER CAP-12 SLICES: NOT AUTHORIZED` ·
+  `NO STAGE-25 IMPLEMENTATION AUTHORIZED BY STAGE-24 CLOSURE` — and the later delivered Stage 25 — CAP-13 Two-Support Static Reactions — Slice 1 (CAP-13
+  entry below) entered Stage 25 for that slice only:
+  `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 25 — ENTERED / PARTIAL — NAVIGATION ONLY` ·
+  `STAGE 25 — CAP-13 TWO-SUPPORT STATIC REACTIONS SLICE 1: DELIVERED` ·
+  `STAGE 25: ENTERED / PARTIAL — CAP-13 TWO-SUPPORT STATIC REACTIONS SLICE 1 ONLY` · `FULL CAP-13: NOT AUTHORIZED`.
+  *(Superseded 2026-10-08 by the delivered Stage 25 — CAP-13 Two-Support Static Reactions — Slice 1, preserved — was: "`CAP-13: NOT ACTIVATED` · `MASTER ROADMAP SEQUENTIAL MARKER: STAGE 25 — NOT ENTERED — NAVIGATION ONLY` · `NO STAGE-25 IMPLEMENTATION AUTHORIZED BY STAGE-24 CLOSURE` · `STAGE 25: NOT ENTERED` · `STAGE 25: NOT AUTHORIZED`".)*
   *(Superseded 2026-10-04 by the Stage 24 closure (CAP-12 entry below; no product change), preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — ENTERED / PARTIAL — NAVIGATION ONLY` · `STAGE 24: ENTERED / PARTIAL — CAP-12 FORM MOCK-UP ADVISORY SLICE 1 ONLY`".)*
   *(Superseded 2026-10-03 by the delivered Stage 24 / CAP-12 Form Mock-up Advisory Slice 1, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 24 — NOT ENTERED — NAVIGATION ONLY` · `NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE`".)*
   *(Superseded 2026-10-02 by the Stage 23 closure, preserved — was: "`MASTER ROADMAP SEQUENTIAL MARKER: STAGE 23 — NOT ENTERED — NAVIGATION ONLY`".)*
@@ -552,7 +556,8 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   current bounded CAP-12 Form Mock-up Advisory Slice 1 scope ONLY (Stage 24 — CAP-12 Form Mock-up Advisory — Closure,
   2026-10-04, no product change; row 24 ticked for that scope only): that slice satisfies the bounded Stage-24 row
   requirement, is not this capability's ceiling, and the wider intended behavior above stays the future direction — not
-  implemented, not closed, not claimed; CAP-13 stays NOT ACTIVATED and Stage 25 NOT ENTERED / NOT AUTHORIZED.
+  implemented, not closed, not claimed; the Stage 24 closure activated no CAP-13 and entered no Stage 25 (Stage 25 was
+  later entered only by the delivered Stage 25 — CAP-13 Two-Support Static Reactions — Slice 1, CAP-13 entry below).
   *(Superseded 2026-10-04 by the Stage 24 closure, preserved — was: "Stage 24 remains ENTERED / PARTIAL and unticked; that
   slice is an entry increment, not this capability's ceiling, and the wider intended behavior above stays the future
   direction.")*
@@ -609,7 +614,19 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   not activate CAP-12, CAP-14, or WS-PFV-001 automatically.
 - **Dependencies and overlaps:** CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, **CAP-12**, **CAP-14**,
   WS-PFV-001. Technical-guidance content defers to D13; prototype/validation content defers to WS-PFV-001.
-- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, **with ONE bounded delivered
+  exception**: Stage 25 — CAP-13 Two-Support Static Reactions — Slice 1 is DELIVERED (`STAGE 25 — CAP-13 TWO-SUPPORT STATIC REACTIONS SLICE 1: DELIVERED`; `STAGE 25: ENTERED / PARTIAL — CAP-13 TWO-SUPPORT STATIC REACTIONS SLICE 1 ONLY`). It is
+  Mechanical-root only and request-local: for ONE inventor-declared two-support static configuration (every applicability
+  declaration and the nine-item high-risk screen answered explicitly, nothing inferred) it reports the two vertical support
+  reactions `R_L` and `R_R` in N from the ONE admitted method `cap13:static_reactions_two_support` 1.0, executed by the
+  unnumbered shared deterministic calculation / units owner for its ONE consumer, `UNVALIDATED` and not evidence, with the
+  fixed General and Structural disclosure meanings in EN / AR, or exactly one refusal / abstention reason and no number. It
+  proposes no material, grade or thickness, assigns no recommendation level (neither `CONCEPTUAL` nor `PROTOTYPE-SUITABLE`),
+  states no capacity, adequacy or safety, persists nothing, has no evidence / readiness / progression / SafetySignal
+  authority and no AI / provider dependency. `FULL CAP-13: NOT AUTHORIZED`. Stage 25 is ENTERED / PARTIAL and unticked; that slice is
+  an entry increment, not this capability's ceiling, and the thickness / specification / safety behaviour above stays the
+  future direction. *(Superseded 2026-10-08 by the delivered Stage 25 — CAP-13 Two-Support Static Reactions — Slice 1, preserved — was: "`RECORDED — NOT AUTHORIZED
+  FOR IMPLEMENTATION`".)*
 - **Earliest activation:** a dedicated thickness-and-safety feasibility gate (§6), followed by a separate
   owner-approved increment. CAP-12 and CAP-13 may later be coordinated only through a separate,
   owner-approved contract; their registration here does not authorize consolidation or implementation.
@@ -842,7 +859,7 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | SLICE 1 DELIVERED (PR #703; Owner-declared contradiction) and the bounded Stage 21 closure (read-only session view of the declared conflicts; delivered; Stage 21 COMPLETE for the current Owner-declared contradiction scope) — FULL CAP-10 NOT AUTHORIZED |
 | CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | Dedicated materials-and-manufacturing feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14 | RECORDED — NOT AUTHORIZED (full CAP-12; one bounded delivered exception: Form Mock-up Advisory Slice 1) |
-| CAP-13 Component Thickness, Specification, and Safety Advisory | Dedicated thickness-and-safety feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14 | RECORDED — NOT AUTHORIZED |
+| CAP-13 Component Thickness, Specification, and Safety Advisory | Dedicated thickness-and-safety feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14 | RECORDED — NOT AUTHORIZED (full CAP-13; one bounded delivered exception: Two-Support Static Reactions Slice 1) |
 | CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | Dedicated static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13 | RECORDED — NOT AUTHORIZED |
 
 The matrix is indicative sequencing only; it activates nothing. All eighteen capabilities (CAP-01…CAP-18) remain
@@ -991,7 +1008,7 @@ mentioned in the latest user message or handover. All eighteen entries (CAP-01�
 | CAP-10 Contradiction Detector | SLICE 1 DELIVERED (PR #703; Owner-declared contradiction) and the bounded Stage 21 closure (read-only session view of the declared conflicts; delivered; Stage 21 COMPLETE for the current Owner-declared contradiction scope) — FULL CAP-10 NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
 | CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED, except one bounded Slice 1 Evidence Details under the approved entry contract (delivered, PR #710) — FULL CAP-11 NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |
 | CAP-12 Prototype Materials and Manufacturing Recommendation | RECORDED — NOT AUTHORIZED (full CAP-12; one bounded delivered exception: Form Mock-up Advisory Slice 1) | Materials-and-manufacturing feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the materials feasibility gate / WS12–WS16 closure |
-| CAP-13 Component Thickness, Specification, and Safety Advisory | RECORDED — NOT AUTHORIZED | Thickness-and-safety feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the thickness feasibility gate / WS12–WS16 closure |
+| CAP-13 Component Thickness, Specification, and Safety Advisory | RECORDED — NOT AUTHORIZED (full CAP-13; one bounded delivered exception: Two-Support Static Reactions Slice 1) | Thickness-and-safety feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the thickness feasibility gate / WS12–WS16 closure |
 | CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | RECORDED — NOT AUTHORIZED | Static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13; static-image/2D feasibility gate (§6) | Yes | — | At the static-visual feasibility gate / WS12–WS16 closure |
 
 "Last reviewed Workstream" is `—` at registration; each future agent performing a §B activation review
@@ -1034,7 +1051,9 @@ accepted by the Owner on 2026-10-04 as the boundary contract of record (document
 It implements nothing, authorizes no first increment, assigns no CAP number, changes none of the CAP-12 / CAP-13 / CAP-14
 entries or the THERM-01 section,
 and leaves every statement above unchanged: CAP-13 implementation feasibility remains unproven and CAP-13 stays
-`RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+`RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`. **Later (2026-10-08):** the delivered Stage 25 — CAP-13 Two-Support Static Reactions — Slice 1 implements
+that owner's first A2 increment (`engine/deterministic_calculation.py`, unnumbered) for ONE method and ONE consumer only (CAP-13
+entry above); full CAP-13 stays NOT AUTHORIZED and no other consumer (THERM-01 included) is admitted.
 
 ## 5. Non-authorization (restated)
 
