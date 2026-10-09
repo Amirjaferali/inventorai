@@ -927,9 +927,12 @@ def test_csrf_is_enforced(client):
 def test_tampered_or_stale_forms_write_nothing(client):
     sid = _integrated(client)
     form = _form(_page(client, sid))
-    # tampered binding / submission / missing confirmation
+    # tampered binding / submission / missing confirmation. The binding tamper
+    # flips the final hex character of the HMAC: always a different, well-formed
+    # signature (``[:-2] + "00"`` was a no-op when the genuine one ended in 00).
+    binding = form["interface_binding"]
     for over, message in (
-            ({"interface_binding": form["interface_binding"][:-2] + "00"},
+            ({"interface_binding": binding[:-1] + ("0" if binding[-1] != "0" else "1")},
              appmod.S15_INTERFACE_NOT_SAVED_MESSAGE),
             ({"interface_submission": "0" * 32 + ".bad"},
              appmod.S15_INTERFACE_NOT_SAVED_MESSAGE),

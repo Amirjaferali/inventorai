@@ -674,7 +674,10 @@ def test_h03_committed_lookup_only_after_authenticity(client, monkeypatch):
     monkeypatch.setattr(type(_store()), "committed_record_payload_for_idempotency_key",
                         lambda self, *x: calls.append(x) or real(self, *x))
     form = _item(client, sid, a.record_id)
-    for bad in ({"answer_token": "nope"}, {"assumption_binding": form[1][:-2] + "00"},
+    # flip the final hex character of the HMAC: always a different, well-formed signature
+    # (``[:-2] + "00"`` was a no-op whenever the genuine signature already ended in 00)
+    for bad in ({"answer_token": "nope"},
+                {"assumption_binding": form[1][:-1] + ("0" if form[1][-1] != "0" else "1")},
                 {"assumption_action": "withdraw"}):
         _act(client, sid, a.record_id, "revise_assumption", REVISED, form=form, **bad)
         assert _notice(sid)[1] == appmod.ASSUMPTION_ACTION_NOT_SAVED_MESSAGE
