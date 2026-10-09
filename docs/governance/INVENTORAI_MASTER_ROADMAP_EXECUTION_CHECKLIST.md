@@ -1565,6 +1565,32 @@ Sequencing is NOT a serial chain: after Stage 27 is an important planning window
 
 **Owner working label `T6 — Technical Realization / Preliminary Component & Prototype Realization` — a FUTURE Technical Realization direction, NOT a Stage-28 subitem, NOT `28-T6`, NOT a top-level stage, NOT a domain, NOT a new Capability Register number; NOT AUTHORIZED.** Its home is the existing Technical Realization architecture: `docs/governance/TECHNICAL_REALIZATION_ANCHOR_COMPANION.md` §9 (direction, flow, component / contribution / package boundaries) and `docs/governance/TECHNICAL_REALIZATION_EVIDENCE_AND_ARTIFACT_MODEL.md` §11 (alignment with the existing independent state dimensions), cross-referenced from roadmap §8C C. It does not require 28-T1…28-T5 to be implemented first. Do not duplicate it here.
 
+### K.2 Technology coverage & first-release traceability — pointer (recorded 2026-10-09; navigation only; none authorized)
+
+The consolidated per-technology traceability lives in ONE place: Master Roadmap **§8D — Technology Coverage &
+First-Release Traceability**. It is derived navigation like this checklist — no Stage, subitem, tracking ID, register
+number, owner, gate or implementation authority; no change to any Stage identifier, count, checkbox or completion
+declaration; no domain activation, method admission or shared-owner expansion. Read it, do not duplicate it here.
+
+- **Initial-release technology set: NOT RECORDED IN THE REPOSITORY.** Every §8D row carries
+  `OWNER RELEASE DECISION RECONCILIATION REQUIRED`: the latest Owner release decision for that technology cannot be
+  recovered from repository evidence. The marker is neither a deferral nor an approval; for the two activated roots it
+  asks the Owner to record a decision already acted on, for every other row it asks for the decision itself. Absence of
+  evidence is not evidence that the Owner never approved a technology.
+- **State ladder:** `RECORDED` → `QUALIFIED` → `IMPLEMENTED` → `ACTIVATED` → `TESTED` → `RELEASE-READY`, each distinct.
+  `RELEASE-READY` is asserted for no technology. A pack, equation, classification signal or unit test is never release
+  readiness, and classification signals are never qualified engineering guidance.
+- **Preserved by §8D, relaxed by nothing:** CAP-13 two-support reactions stays the only admitted Mechanical method and the
+  bounded stiffness method stays `NOT ADMITTED` with `D-7: OPEN`; the shared calc / units owner holds exactly two admitted
+  methods (Correction 02); Stage 27 COMPLETE for its single-path bounded scope only, `FULL THERM-01: NOT AUTHORIZED`;
+  Mechatronics / Robotics composition-first with no automatic compatibility or safety claim; Stage 28's bounded
+  completion is NOT completion of the future-domain program and Stage 30 stays mandatory before any new-domain
+  activation; no second component database, procurement platform or unlicensed external catalog ingestion; outbound
+  interchange ≠ live integration and automatic CAD / PCB generation stays excluded; `PUBLICLY VIEWABLE ≠ OPENLY REUSABLE`.
+- **Anti-disappearance routing:** FCORA (Stage 43) remains the audit gate; §8D is the inventory it audits, not a second
+  gate. Before any release-gate step (Stages 42–45) the §8D release-decision column must have been reconciled by the
+  Owner through the existing decision surfaces; this pointer adds no gate and decides nothing.
+
 ## L. Anti-drift rules — binding as operating practice
 
 These are operating practice for agents. They are not a new authorization model and
