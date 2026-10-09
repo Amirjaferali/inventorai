@@ -26,6 +26,8 @@ from engine import cap12_form_mockup as _cap12  # Stage 24 / CAP-12 Form Mock-up
 from engine import deterministic_calculation as _dcalc  # Stage 25: shared calculation / units owner
 from engine import cap13_static_reactions_method as _cap13_method  # Stage 25 / CAP-13 Slice 1 method
 from engine import cap13_static_reactions as _cap13  # Stage 25 / CAP-13 Slice 1 consumer
+from engine import therm01_conduction_method as _therm01_method  # Stage 27 / THERM-01 Slice 1 method
+from engine import therm01_temperature_difference as _therm01  # Stage 27 / THERM-01 Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -6331,6 +6333,11 @@ def show_session(sid):
         # two-support static reactions calculation, offered only on an eligible
         # (Mechanical-root) project. It never gates the journey.
         cap13_support_reactions_link=_cap13_link_offered(sid),
+        # Stage 27 / THERM-01 Slice 1: an OPTIONAL link to the request-local
+        # single-path temperature-difference calculation, offered only on an
+        # eligible (Electrical / Electronics-root) project. It never gates the
+        # journey.
+        therm01_temperature_difference_link=_therm01_link_offered(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -11283,22 +11290,28 @@ def _cap13_result_view(result):
 _CAP13_LTR_RUN = re.compile(r"[A-Za-z0-9_](?:[A-Za-z0-9_.:/ -]*[A-Za-z0-9_])?")
 
 
-def _cap13_isolate(text, lang):
-    """Escaped ``text`` for display. On an Arabic page every run of Latin
-    letters, digits, unit tokens, role symbols or identifiers is wrapped in its
-    own ``<bdi dir="ltr">`` so no digit, sign, token or identifier is reordered
-    (contract §12B B-7). The wording itself is unchanged."""
+def _ltr_isolate(text, lang, run):
+    """Escaped ``text`` for display. On an Arabic page every match of ``run``
+    (a run of Latin letters, digits, unit tokens, role symbols or identifiers)
+    is wrapped in its own ``<bdi dir="ltr">`` so no digit, sign, token or
+    identifier is reordered. The wording itself is unchanged. Shared by the
+    CAP-13 and THERM-01 request-local calculation pages."""
     from markupsafe import Markup, escape
     if lang != "ar":
         return Markup(escape(text))
     out = []
     last = 0
-    for match in _CAP13_LTR_RUN.finditer(text):
+    for match in run.finditer(text):
         out.append(str(escape(text[last:match.start()])))
         out.append('<bdi dir="ltr">%s</bdi>' % escape(match.group(0)))
         last = match.end()
     out.append(str(escape(text[last:])))
     return Markup("".join(out))
+
+
+def _cap13_isolate(text, lang):
+    """CAP-13 direction isolation (contract §12B B-7), unchanged in behaviour."""
+    return _ltr_isolate(text, lang, _CAP13_LTR_RUN)
 
 
 def _render_cap13(sid, status=200, eligible=True, captured=None,
@@ -11361,6 +11374,133 @@ def cap13_support_reactions_post(sid):
         return _render_cap13(sid, status=400, error="UI_CAP13_ERR_REQUEST")
     evaluation = _cap13.evaluate(captured, _CAP13_REACTIONS_BINDING)
     return _render_cap13(sid, captured=captured, evaluation=evaluation)
+
+
+# =============================================================================
+# Stage 27 / THERM-01 — Single-Path Temperature-Difference, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory calculation for ONE heat path the inventor declares
+# (THERM-01 contract §1, §7). The consumer (`engine/therm01_temperature_difference.py`)
+# owns capture and the pre-owner order; the shared calculation / units owner
+# (`engine/deterministic_calculation.py`) owns execution; the method adapter
+# (`engine/therm01_conduction_method.py`) owns the equation. Nothing is persisted
+# and nothing is read from the project beyond the trusted durable root domain:
+# no answer, requirement quantity, evidence or SafetySignal. The POST renders
+# its answer directly and never redirects. Nothing here touches CAP-13.
+#
+# The SECOND immutable trusted binding (calc/units Correction 02 §13A), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_THERM01_TEMPERATURE_BINDING = _dcalc.bind_method(
+    _therm01_method.METHOD_ID, _therm01_method.METHOD_VERSION,
+    _therm01_method.evaluate)
+
+# Latin letters, digits and the Greek role letters Δ / θ (``ΔT``, ``Rθ``), plus
+# unit tokens such as ``K/W`` and identifiers: each run is direction-isolated on
+# an Arabic page (contract §9A A-7).
+_THERM01_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u0394\u03b8](?:[A-Za-z0-9_\u0394\u03b8.:/ -]*[A-Za-z0-9_\u0394\u03b8])?")
+
+
+def _therm01_eligible(sid):
+    """True iff the project's durable root domain, read exactly as the CAP-12 /
+    CAP-13 gates read it (never from the request), makes it eligible. Fails
+    closed."""
+    try:
+        return _therm01.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+def _therm01_link_offered(sid):
+    """The session-page link reads the SAME single value the submission reads,
+    so the link and the calculation cannot disagree. Presentation only."""
+    return _therm01_eligible(sid)
+
+
+def _therm01_isolate(text, lang):
+    return _ltr_isolate(text, lang, _THERM01_LTR_RUN)
+
+
+def _therm01_result_view(result):
+    """Template view of a SUCCESS owner result: the temperature difference shown
+    exactly as produced (``format_value``), the method identity and the source
+    and unit references the owner carried. No rounding, no other field."""
+    output = result["outputs"]["delta_T"]
+    return {
+        "value": _therm01.format_value(output["value"]),
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_therm01(sid, status=200, eligible=True, captured=None,
+                    evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _therm01.OUTCOME_SUCCESS:
+            view = _therm01_result_view(evaluation["result"])
+        else:
+            outcome_key = "UI_THERM01_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "therm01_temperature_difference.html",
+        sid=sid,
+        iso=lambda key: _therm01_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _therm01_isolate(part, lang) for part in
+            ui_text.text("UI_THERM01_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_therm01.DECLARATION_IDS,
+        screen_items=_therm01.SCREEN_ITEMS,
+        value_roles=_therm01.VALUE_ROLES,
+        decl_field=_therm01.DECLARATION_FIELD,
+        screen_field=_therm01.SCREEN_FIELD,
+        value_field=_therm01.VALUE_FIELD,
+        answer_applies=_therm01.ANSWER_APPLIES,
+        answer_does_not_apply=_therm01.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_therm01.SCREEN_YES,
+        screen_no=_therm01.SCREEN_NO,
+        max_value_chars=_therm01.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/temperature-difference", methods=["GET"])
+def therm01_temperature_difference(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_therm01(sid, eligible=_therm01_eligible(sid))
+
+
+@app.route("/session/<sid>/temperature-difference", methods=["POST"])
+def therm01_temperature_difference_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain) -> strict capture (malformed: 400, no
+    # reason token) -> the consumer's §7 pre-owner order -> the shared owner.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _therm01_eligible(sid):
+        return _render_therm01(sid, eligible=False)
+    form = request.form
+    captured = _therm01.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_therm01(sid, status=400, error="UI_THERM01_ERR_REQUEST")
+    evaluation = _therm01.evaluate(captured, _THERM01_TEMPERATURE_BINDING)
+    return _render_therm01(sid, captured=captured, evaluation=evaluation)
 
 
 # =============================================================================

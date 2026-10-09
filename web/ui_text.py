@@ -4303,6 +4303,156 @@ UI_STRINGS = {
     "UI_CAP13_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # Stage 27 / THERM-01 - Single-Path Temperature-Difference - Slice 1 (request-local,
+    # optional, advisory, non-binding). Arabic is contract §9A verbatim (the English of
+    # §§1-9 stays the authority for meaning); the malformed-request line reuses the
+    # accepted CAP-13 wording. The English declaration, screen and disclosure entries
+    # are pinned to the THERM-01 artifact by test. Nothing here states a temperature,
+    # rating, margin, safety or suitability.
+    "UI_THERM01_LINK_TEXT": {
+        "en": "Optional: temperature difference across one heat-conduction path",
+        "ar": "اختياري: فرق درجة الحرارة عبر مسار توصيل حراري واحد"},
+    "UI_THERM01_LINK_NOTE": {
+        "en": "An advisory calculation for a path you declare. It is not saved and is never required.",
+        "ar": "حساب إرشادي لمسار تصرّح به أنت. لا يُحفَظ، ولا يكون مطلوبًا أبدًا."},
+    "UI_THERM01_TITLE": {
+        "en": "Temperature difference across one path (optional, non-binding)",
+        "ar": "فرق درجة الحرارة عبر مسار واحد (اختياري، غير مُلزِم)"},
+    "UI_THERM01_INTRO": {
+        "en": "This page is optional. It calculates the temperature difference across one heat-conduction path you declare, from the heat flow P and the total thermal resistance Rθ that you enter. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. تحسب فرق درجة الحرارة عبر مسار توصيل حراري واحد تصرّح به، من التدفق الحراري P والمقاومة الحرارية الكلية Rθ اللتين تدخلهما أنت. لا يُحفَظ شيء."},
+    "UI_THERM01_SCOPE_NOTE": {
+        "en": "This calculation currently covers only projects whose main analysis focus is Electrical / Electronics. This is a scope limit of this first slice only.",
+        "ar": "يغطي هذا الحساب حاليًا المشاريع التي محور تحليلها الرئيسي كهربائي/إلكتروني فقط. هذا قيد في نطاق هذه الشريحة الأولى فقط."},
+    "UI_THERM01_ANSWER_APPLIES": {
+        "en": "Applies to my path",
+        "ar": "ينطبق على مساري"},
+    "UI_THERM01_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my path",
+        "ar": "لا ينطبق على مساري"},
+    "UI_THERM01_DECL_STEADY_STATE": {
+        "en": "Steady state: P is constant and temperatures along the path are no longer changing.",
+        "ar": "الحالة مستقرة (steady state): التدفق الحراري P ثابت، ودرجات الحرارة على امتداد المسار لم تعد تتغيّر."},
+    "UI_THERM01_DECL_SINGLE_PATH": {
+        "en": "ONE path: all of P flows through this path; no parallel path, side loss or other heat source along it.",
+        "ar": "مسار واحد: كل التدفق الحراري P يمرّ عبر هذا المسار؛ لا يوجد مسار موازٍ، ولا فقد جانبي، ولا مصدر حرارة آخر على امتداده."},
+    "UI_THERM01_DECL_UNIFORM_ONE_DIMENSIONAL_FLOW": {
+        "en": "Uniform one-dimensional heat flow: the same heat flow crosses every layer of the path evenly.",
+        "ar": "تدفق حراري منتظم أحادي البعد: يعبر التدفق الحراري نفسه كل طبقة من طبقات المسار بانتظام."},
+    "UI_THERM01_DECL_CONSTANT_AREA": {
+        "en": "ONE constant area through the whole path: no spreading, constriction or change of area.",
+        "ar": "مساحة ثابتة واحدة على امتداد المسار كله: لا انتشار، ولا تضيّق، ولا تغيّر في المساحة."},
+    "UI_THERM01_DECL_TOTAL_RESISTANCE": {
+        "en": "Rθ is the inventor's own total thermal resistance of exactly this path (the per-area resistance of its layers divided by that one common area), and already includes every layer, interface and surface film the inventor means to cover; InventorAI does not check it.",
+        "ar": "Rθ هي قيمتك أنت للمقاومة الحرارية الكلية لهذا المسار تحديدًا (المقاومة لكل وحدة مساحة لطبقاته مقسومةً على تلك المساحة المشتركة الواحدة)، وتشمل مسبقًا كل طبقة وواجهة تلامس وطبقة سطحية تقصد تغطيتها؛ ولا يتحقق InventorAI منها."},
+    "UI_THERM01_DECL_CONSTANT_RESISTANCE": {
+        "en": "Rθ does not change with P or with temperature over the condition being considered.",
+        "ar": "لا تتغيّر Rθ مع P ولا مع درجة الحرارة ضمن الحالة المعنيّة."},
+    "UI_THERM01_DATASHEET_NOTE": {
+        "en": "If you took Rθ from a datasheet, rating or vendor document, it is accepted only as your own value, and only after you declare that it meets D-1 to D-6 for this exact path. InventorAI admits no datasheet value in general, does not look one up, does not check it and does not make it a validated value.",
+        "ar": "إذا أخذت قيمة Rθ من ورقة بيانات (datasheet) أو تصنيف أو وثيقة مورّد، فهي تُقبَل فقط بوصفها قيمتك أنت، وبعد أن تصرّح بأنها تستوفي D-1 إلى D-6 لهذا المسار تحديدًا. لا يعتمد InventorAI قيم أوراق البيانات عمومًا، ولا يبحث عنها، ولا يتحقق منها، ولا يجعلها قيمًا مُتحقَّقًا منها."},
+    "UI_THERM01_SCREEN_STEM": {
+        "en": "Does the path or its heat source involve any of the following? Answer each item yes or no.",
+        "ar": "هل يتضمن المسار أو مصدر الحرارة فيه أيًّا مما يلي؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_THERM01_SCREEN_BATTERY_OR_STORAGE_CELL": {
+        "en": "A battery or energy-storage cell",
+        "ar": "بطارية أو خلية لتخزين الطاقة"},
+    "UI_THERM01_SCREEN_MAINS_OR_HIGH_VOLTAGE": {
+        "en": "Mains or high voltage",
+        "ar": "جهد الشبكة الكهربائية (mains) أو جهد عالٍ"},
+    "UI_THERM01_SCREEN_FIRE_OR_IGNITION": {
+        "en": "Fire or ignition risk",
+        "ar": "خطر حريق أو اشتعال"},
+    "UI_THERM01_SCREEN_TOUCH_SKIN_OR_MEDICAL": {
+        "en": "A surface people touch, skin contact or medical use",
+        "ar": "سطح يلمسه الناس، أو تلامس مع الجلد، أو استخدام طبي"},
+    "UI_THERM01_SCREEN_PRESSURIZED_OR_SEALED": {
+        "en": "A pressurized or sealed enclosure",
+        "ar": "حاوية مضغوطة أو محكمة الإغلاق"},
+    "UI_THERM01_SCREEN_SAFETY_CRITICAL_OR_LIFE_SUPPORTING": {
+        "en": "A safety-critical or life-supporting function",
+        "ar": "وظيفة حرجة للسلامة أو داعمة للحياة"},
+    "UI_THERM01_SCREEN_AEROSPACE_OR_VEHICLE": {
+        "en": "Aerospace or vehicle use",
+        "ar": "استخدام في الطيران والفضاء (aerospace) أو في المركبات"},
+    "UI_THERM01_SCREEN_NON_ELECTRICAL_HEAT_SOURCE": {
+        "en": "A heat source other than steady electrical dissipation (combustion, chemical or similar)",
+        "ar": "مصدر حرارة غير التبديد الكهربائي المستقر (احتراق أو تفاعل كيميائي أو ما يشبههما)"},
+    "UI_THERM01_SCREEN_CRYOGENIC": {
+        "en": "Cryogenic temperatures",
+        "ar": "درجات حرارة شديدة الانخفاض (cryogenic)"},
+    "UI_THERM01_SCREEN_TRANSIENT_OR_PULSED": {
+        "en": "Transient, pulsed or start-up loads",
+        "ar": "أحمال عابرة أو نبضية أو أحمال بدء التشغيل"},
+    "UI_THERM01_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_THERM01_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_THERM01_SCREEN_NOTE": {
+        "en": "Answering no to all ten items only means this bounded calculation may proceed; it never means that anything is safe.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود العشرة تعني فقط أنه يمكن متابعة هذا الحساب المحدود؛ ولا تعني أبدًا أن أي شيء آمن."},
+    "UI_THERM01_FIELD_P": {
+        "en": "Steady heat flow through the declared path (P) — watt (W)",
+        "ar": "التدفق الحراري المستقر عبر المسار المصرَّح به (P) — واط (W)"},
+    "UI_THERM01_FIELD_R_THETA": {
+        "en": "Total thermal resistance of exactly the declared path (Rθ) — kelvin per watt (K/W)",
+        "ar": "المقاومة الحرارية الكلية للمسار المصرَّح به تحديدًا (Rθ) — كلفن لكل واط (K/W)"},
+    "UI_THERM01_SUBMIT": {
+        "en": "Calculate the temperature difference",
+        "ar": "احسب فرق درجة الحرارة"},
+    "UI_THERM01_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_THERM01_RESULT_DELTA_T": {
+        "en": "Temperature difference across the declared path (ΔT) — kelvin (K)",
+        "ar": "فرق درجة الحرارة عبر المسار المصرَّح به (ΔT) — كلفن (K)"},
+    "UI_THERM01_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_THERM01_ECHO_HEADING": {
+        "en": "The values and declarations you entered",
+        "ar": "القيم والتصريحات التي أدخلتها"},
+    "UI_THERM01_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_THERM01_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_THERM01_SOURCES_NOTE": {
+        "en": "The per-unit-area thermal resistance relation from the U.S. Department of Energy (U.S. DOE) Fundamentals Handbook — archived, a historical fundamentals reference only — and the unit reference from the National Institute of Standards and Technology (NIST). The total-resistance form is InventorAI's own derivation. Neither the U.S. DOE nor NIST endorses InventorAI or this calculation.",
+        "ar": "علاقة المقاومة الحرارية لكل وحدة مساحة من كتيّب أساسيات وزارة الطاقة الأمريكية (U.S. DOE) — مؤرشف، ومرجع تاريخي للأساسيات فقط — ومرجع الوحدات من المعهد الوطني للمعايير والتقنية (NIST). صيغة المقاومة الكلية اشتقاق خاص بـInventorAI. لا تؤيّد وزارة الطاقة الأمريكية ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_THERM01_DISCLOSURE": {
+        "en": "This is the temperature difference across the one path you declared, under the declared steady-state, single-path, uniform one-dimensional and constant-area conditions, using your own P and Rθ.\n\nIt is not a component, junction, case, surface or ambient temperature, and it does not tell what temperature anything reaches.\n\nIt is not compared with any rating, limit or margin, and it says nothing about whether anything is safe, acceptable, suitable, compliant or reliable.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement or a thermal specialist before any reliance.\n\nInventorAI does not check Rθ or that your declarations match the real hardware, and a datasheet figure applies only where the real path matches the conditions it was defined under.\n\nConvection, radiation, spreading, transient behaviour and every other path are outside this calculation.\n\nReference source material: U.S. DOE Fundamentals Handbook (archived; historical fundamentals reference only); the total-resistance form is InventorAI's own derivation.",
+        "ar": "هذا هو فرق درجة الحرارة عبر المسار الواحد الذي صرّحت به، في ظل الشروط التي صرّحت بها: حالة مستقرة، ومسار واحد، وتدفق حراري منتظم أحادي البعد، ومساحة ثابتة، باستخدام قيمتي P و Rθ اللتين أدخلتهما أنت.\n\nهذه القيمة ليست درجة حرارة أي مكوّن أو وصلة (junction) أو غلاف (case) أو سطح، وليست درجة الحرارة المحيطة، ولا تبيّن درجة الحرارة التي يصل إليها أي شيء.\n\nلا تُقارَن هذه القيمة بأي تصنيف أو حدّ أو هامش، ولا تقول شيئًا عن كون أي شيء آمنًا أو مقبولًا أو ملائمًا أو ممتثلًا أو موثوقًا.\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا، ويجب تأكيدها بالقياس أو بمراجعة متخصص حراري قبل الاعتماد عليها.\n\nلا يتحقق InventorAI من قيمة Rθ، ولا من مطابقة تصريحاتك للعتاد الفعلي. والقيمة المأخوذة من ورقة بيانات (datasheet) لا تنطبق إلا حيث يطابق المسار الفعلي الظروف التي عُرِّفت فيها تلك القيمة.\n\nالحمل الحراري (convection) والإشعاع والانتشار الحراري (spreading) والسلوك العابر (transient) وأي مسار آخر كلها خارج نطاق هذا الحساب.\n\nالمراجع: كتيّب أساسيات وزارة الطاقة الأمريكية (U.S. DOE Fundamentals Handbook) — مؤرشف، ومرجع تاريخي للأساسيات فقط. أما صيغة المقاومة الكلية فهي اشتقاق خاص بـInventorAI."},
+    "UI_THERM01_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_THERM01_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_THERM01_OUTCOME_THERMAL_SPECIALIST_REVIEW_REQUIRED": {
+        "en": "Thermal specialist review required (THERMAL SPECIALIST REVIEW REQUIRED): you answered yes to at least one item of the high-risk screen, so nothing was calculated.",
+        "ar": "تتطلب مراجعة متخصص حراري (THERMAL SPECIALIST REVIEW REQUIRED): أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية، لذلك لم يُحسب شيء."},
+    "UI_THERM01_OUTCOME_PATH_NOT_SUPPORTED": {
+        "en": "One of the path declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد تصريحات المسار لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_THERM01_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "P and Rθ must be finite numbers greater than zero, written as plain decimals. Nothing was calculated.",
+        "ar": "يجب أن تكون قيمتا P و Rθ رقمين محدودين أكبر من الصفر، مكتوبين بصيغة عشرية صحيحة. لم يُحسب شيء."},
+    "UI_THERM01_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the watt (W) and the kelvin per watt (K/W), and shows the result in kelvin (K). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة الواط (W) والكلفن لكل واط (K/W) فقط، وتعرض النتيجة بالكلفن (K). لم يُحسب شيء."},
+    "UI_THERM01_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable or did not pass its checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة أو لم تجتز فحوصها. لم يُحسب شيء."},
+    "UI_THERM01_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_THERM01_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

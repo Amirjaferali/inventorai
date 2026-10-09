@@ -1855,11 +1855,14 @@ def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
     # AMENDED at the delivered CAP-12 Form Mock-up Advisory Slice 1: Stage 24 ENTERED / PARTIAL, 25–27 preserved
     # AMENDED at the Stage 24 closure: Stage 24 COMPLETE for its bounded scope; 25–27 preserved;
     # AMENDED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL; 26–27
+    # AMENDED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: Stage 27 ENTERED / PARTIAL;
+    # Stage 26 preserved
     assert ("**Stage 23 COMPLETE for the current bounded four-axis Readiness Snapshot scope only (full CAP-06 NOT "
             "AUTHORIZED); Stage 24 COMPLETE for the current bounded CAP-12 Form Mock-up Advisory Slice 1 scope only "
             "(full CAP-12 NOT AUTHORIZED; further CAP-12 slices NOT AUTHORIZED); Stage 25 ENTERED / PARTIAL through its "
-            "delivered CAP-13 Two-Support Static Reactions Slice 1 only (full CAP-13 NOT AUTHORIZED); Stages 26–27 "
-            "preserved, NOT ENTERED / NOT AUTHORIZED") in checklist
+            "delivered CAP-13 Two-Support Static Reactions Slice 1 only (full CAP-13 NOT AUTHORIZED); Stage 27 ENTERED / "
+            "PARTIAL through its delivered THERM-01 Single-Path Temperature-Difference Slice 1 only (full THERM-01 NOT "
+            "AUTHORIZED); Stage 26 preserved, NOT ENTERED / NOT AUTHORIZED") in checklist
     assert "**Stage 22 is ENTERED / PARTIAL** (2026-09-26)" in roadmap
     # AMENDED at the Stage 22 closure: the Group 5 state reads Stage 21 and Stage 22 COMPLETE for their scopes
     assert ("**Stage 22 is COMPLETE (2026-10-01) for the current bounded decision trace + decision room scope**"
@@ -1896,7 +1899,11 @@ def test_post_pr_678_stage_18_status_is_current_on_every_live_surface():
     assert _absent(raw_checklist, "Stages 25–27 preserved, not entered / not authorized\n")
     assert re.search(r"^Stage 25 entered / partial — CAP-13 Two-Support Static Reactions Slice 1 delivered; full CAP-13 "
                      r"not authorized$", raw_checklist, re.M)
-    assert re.search(r"^Stages 26–27 preserved, not entered / not authorized$", raw_checklist, re.M)
+    # AMENDED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: Stage 27 entered / partial
+    assert _absent(raw_checklist, "Stages 26–27 preserved, not entered / not authorized\n")
+    assert re.search(r"^Stage 26 preserved, not entered / not authorized$", raw_checklist, re.M)
+    assert re.search(r"^Stage 27 entered / partial — THERM-01 Single-Path Temperature-Difference Slice 1 delivered; full "
+                     r"THERM-01 not authorized$", raw_checklist, re.M)
     row5 = [l for l in raw_checklist.splitlines() if l.startswith("| 5 | 21–25 |")]
     # AMENDED at the Stage 22 closure: Stage 22 is complete for the current bounded decision trace + decision room scope
     assert len(row5) == 1 and ("22 COMPLETE for the current bounded decision trace + decision room scope — checkbox "
@@ -2217,7 +2224,10 @@ _PRE_S19_NONE = (r"\*\*ACTIVE CONTRACT: NONE\.\*\* Both",
                  r"Stage[ -]16[ -]closure|"
                  # AMENDED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: its delivery fact
                  r"Stage[ -]25[ -]—[ -]CAP-13[ -]Two-Support[ -]Static[ -]Reactions[ -]—[ -]Slice[ -]1|"
-                 r"post-Stage-25-CAP-13-Slice-1))")
+                 r"post-Stage-25-CAP-13-Slice-1|"
+                 # AMENDED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: its delivery fact
+                 r"Stage[ -]27[ -]—[ -]THERM-01[ -]Single-Path[ -]Temperature-Difference[ -]—[ -]Slice[ -]1|"
+                 r"post-Stage-27-THERM-01-Slice-1))")
 
 
 _SLICE_02_LIVE_REVERSALS = (
@@ -3086,7 +3096,11 @@ def test_stage22_slice_2_is_delivered_history_and_its_rules_still_bind():
                  # partial for that slice only; 26–27 preserved
                  "Stage 25 entered / partial — CAP-13 Two-Support Static Reactions Slice 1 delivered; full CAP-13 not "
                  "authorized",
-                 "Stages 26–27 preserved, not entered / not authorized"):
+                 # AMENDED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: Stage 27 entered /
+                 # partial for that slice only; 26 preserved
+                 "Stage 26 preserved, not entered / not authorized",
+                 "Stage 27 entered / partial — THERM-01 Single-Path Temperature-Difference Slice 1 delivered; full "
+                 "THERM-01 not authorized"):
         assert re.search(r"^" + re.escape(line) + r"$", raw_checklist, re.M), line
     for stale in ("ACTIVE CONTRACT: CAP-05 + CAP-07 SLICE 2", _STAGE22_SLICE2_STATUS.strip("`"),
                   "STAGE 22: ENTERED / PARTIAL — CAP-05 + CAP-07 SLICES 1–2 ONLY"):
@@ -4206,6 +4220,34 @@ _S25_REVERSALS = (
     r"(?:is |was |has been )?(?:now )?(?:admitted|authorized)\b",
     r"(?<!no )(?<!not )\bunit conversion (?:is |was |has been )?(?:now )?(?:admitted|authorized|implemented)\b",
     r"(?<!no )(?<!not )\bCAP-13 (?:is |has been )(?:now )?(?:fully |globally )?(?:activated|authorized)\b")
+# ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1 (2026-10-09, recorded in its
+# after-merge form): Stage 27 is ENTERED / PARTIAL for that slice ONLY (row 27 unticked, NOT complete; the count stays 25
+# of 45 ticked, 20 unticked); ACTIVE CONTRACT stays NONE; the MASTER ROADMAP SEQUENTIAL MARKER is unchanged (Stage 25);
+# full THERM-01 stays NOT AUTHORIZED. The shared owner admits exactly two methods under the accepted Correction 02. The
+# post-Stage-25-CAP-13-Slice-1 NONE heading survives only as history. Git / GitHub own the slice's PR and merge identity.
+_S27_NAME = "Stage 27 — THERM-01 Single-Path Temperature-Difference — Slice 1"
+_S27_HEADING = "## Current authority — post-Stage-27-THERM-01-Slice-1: no active contract (2026-10-09)"
+_S27_DELIVERED = "`STAGE 27 — THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SLICE 1: DELIVERED`"
+_S27_PARTIAL = "`STAGE 27: ENTERED / PARTIAL — THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SLICE 1 ONLY`"
+_S27_FULL_NO = "`FULL THERM-01: NOT AUTHORIZED`"
+_S27_FACTS = (_S27_DELIVERED, _S27_PARTIAL, _S27_FULL_NO)
+# After the delivered Stage 27 slice a live surface may no longer carry the post-Stage-25-CAP-13-Slice-1 NONE heading or
+# the pre-slice "Stages 26–27 preserved" / Stage-27 NOT-ENTERED state.
+_S27_STALE = (r"NO ACTIVE CONTRACT — post-Stage-25-CAP-13-Slice-1", r"\(post-Stage-25-CAP-13-Slice-1;",
+              r"CURRENT SUBTASK:\*\* NONE \(post-Stage-25-CAP-13-Slice-1\)", _tok("`STAGE 27: NOT ENTERED`"),
+              _tok("`STAGE 27: NOT AUTHORIZED`"), r"Stages 26–27 preserved", r"26–27 not authorized")
+# Stage 27 is ENTERED / PARTIAL for the THERM-01 Single-Path Temperature-Difference Slice 1 ONLY: an unscoped entry, any
+# completion or closure, full THERM-01, a third method, a temperature / rating / margin claim or a unit conversion is a
+# reversal.
+_S27_REVERSALS = (
+    r"STAGE 27: (?!ENTERED / PARTIAL — THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SLICE 1 ONLY\b)",
+    r"STAGE 27 COMPLETE: YES", r"STAGE 27 — THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SLICE 1: (?!DELIVERED\b)",
+    r"FULL THERM-01: (?!NOT AUTHORIZED\b)",
+    r"Stage 27\s+(?:is|was|has been)\s+(?:now\s+)?(?:COMPLETE|COMPLETED|CLOSED|DISCHARGED)\b",
+    r"(?<!no )(?<!not )\b(?:a |any )?(?:third|another|further) (?:THERM-01 )?(?:method|consumer) "
+    r"(?:is |was |has been )?(?:now )?(?:admitted|authorized)\b",
+    r"(?<!no )(?<!not )\bTHERM-01 (?:is |has been )(?:now )?(?:fully |globally )?(?:activated|authorized)\b",
+    r"(?<!no )(?<!not )\b(?:absolute|junction) temperature (?:is |was )?(?:now )?(?:computed|predicted|authorized)\b")
 # After the Stage 16 closure a live surface may no longer carry the post-Stage-36-closure NONE heading, Stage 16 among
 # the stages routed past, the deferred Stage-16 dependency status or the "Stages 13–16 remain PARTIAL / OPEN" intro.
 _S16C_STALE = (r"NO ACTIVE CONTRACT — post-Stage-36-closure", r"\(post-Stage-36-closure;",
@@ -4657,10 +4699,14 @@ def test_post_718_no_active_contract_is_superseded_history():
     # and the Stage 36 closure precede it
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: that slice is the last bounded
     # increment, recorded in its after-merge form; the Stage 16 closure precedes it
+    # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: that slice is the last
+    # bounded increment, recorded in its after-merge form; the Stage 25 slice precedes it
     assert head.startswith("## Current authority " + _NONE_BOLD + " NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The "
-                           "last Owner-authorized bounded increment — " + _S25_NAME + " — is DELIVERED, entering Stage 25 "
-                           "as ENTERED / PARTIAL for that slice ONLY (" + "; ".join(_S25_FACTS) + "; Git / GitHub own its "
-                           "PR, merge and review identity)"), head[:260]
+                           "last Owner-authorized bounded increment — " + _S27_NAME + " — is DELIVERED, entering Stage 27 "
+                           "as ENTERED / PARTIAL for that slice ONLY (" + "; ".join(_S27_FACTS + (_S25_MARKER,))
+                           + "; Git / GitHub own its PR, merge and review identity)"), head[:260]
+    assert ("The preceding bounded increment — " + _S25_NAME + " — is DELIVERED, entering Stage 25 as ENTERED / PARTIAL "
+            "for that slice ONLY (" + "; ".join(_S25_FACTS) + "; Git / GitHub own its PR, merge and review identity)") in head
     assert ("The preceding bounded closure — " + _S16C_NAME + " — is DELIVERED with no further product change "
             "required") in head
     assert re.search(_any_pr("The preceding bounded increment — " + _S16_NAME + " — is DELIVERED (" + _S16_DELIVERED
@@ -4793,7 +4839,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ROTATED at the Stage 16 closure: the live section was the post-Stage-16-closure NONE declaration
     # ROTATED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: the live section is the
     # post-Stage-25-CAP-13-Slice-1 NONE declaration; the post-Stage-16-closure NONE and the slice record follow as history
-    assert heading == _S25_HEADING, heading
+    # ROTATED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: the live section is the
+    # post-Stage-27-THERM-01-Slice-1 NONE declaration; the post-Stage-25-CAP-13-Slice-1 NONE and the slice record follow
+    assert heading == _S27_HEADING, heading
+    assert (_S25_HEADING + " — SUPERSEDED (2026-10-09) by " + _S27_NAME) in contract
+    assert ("## Current authority — " + _S27_NAME + " (Owner authorization, 2026-10-09) — DELIVERED; SUPERSEDED as "
+            "current authority by the post-Stage-27-THERM-01-Slice-1 no-active-contract declaration") in contract
     assert (_S16C_HEADING + " — SUPERSEDED (2026-10-08) by " + _S25_NAME) in contract
     assert ("## Current authority — " + _S25_NAME + " (Owner authorization, 2026-10-08) — DELIVERED; SUPERSEDED as "
             "current authority by the post-Stage-25-CAP-13-Slice-1 no-active-contract declaration") in contract
@@ -4817,6 +4868,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             "current authority by the post-Stage-16-closure no-active-contract declaration") in contract
     assert (_S36C_HEADING + " — SUPERSEDED (2026-10-06) by " + _S16C_NAME) in contract
     order = [contract.index('<a id="current-authority--' + anchor + '"></a>') for anchor in (
+        "post-stage27-therm01-slice1-no-active-contract", "stage27-therm01-single-path-temperature-difference-slice1",
         "post-stage25-cap13-slice1-no-active-contract", "stage25-cap13-two-support-static-reactions-slice1",
         "post-stage16-closure-no-active-contract", "stage16-srl-composition-closure",
         "post-stage36-closure-no-active-contract", "stage36-cap15-cap17-closure",
@@ -4832,8 +4884,16 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # residual and the Stage 36 closure precede it
            # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: that slice is the last
            # bounded increment and the Stage 16 closure the preceding closure
-           re.escape(_S25_NAME) + r", the last Owner-authorized\s+bounded increment, is DELIVERED \(Git / GitHub own its "
-           r"PR, merge and review identity\): it entered Stage 25 as ENTERED / PARTIAL for\s+that slice ONLY",
+           # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: that slice is the
+           # last bounded increment and the Stage 25 slice the preceding one
+           re.escape(_S27_NAME) + r", the last Owner-authorized\s+bounded increment, is DELIVERED \(Git / GitHub own its "
+           r"PR, merge and review identity\): it entered Stage 27 as ENTERED / PARTIAL for\s+that slice ONLY",
+           r"\*\*STAGE 27 / THERM-01 SLICE 1\*\* \| " + _tok(_S27_DELIVERED),
+           r"\*\*STAGE 27\*\* \| " + _tok(_S27_PARTIAL) + r"; its checkbox stays UNTICKED; Stage 27 is NOT complete; "
+           + _tok(_S27_FULL_NO),
+           *(_tok(t) for t in _S27_FACTS),
+           re.escape(_S25_NAME) + r", the preceding Owner-authorized\s+bounded increment, is DELIVERED \(Git / GitHub own "
+           r"its PR, merge and review identity\): it entered Stage 25 as ENTERED / PARTIAL for\s+that slice ONLY",
            r"\*\*STAGE 25 / CAP-13 SLICE 1\*\* \| " + _tok(_S25_DELIVERED),
            r"\*\*STAGE 25\*\* \| " + _tok(_S25_PARTIAL) + r"; its checkbox stays UNTICKED; Stage 25 is NOT complete; "
            + _tok(_S25_FULL_NO),
@@ -4993,7 +5053,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     _rejects(top, CONTRACT, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
              *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE, *_S24C_STALE, *_S24CL_STALE, *_S35C_STALE,
              *_S35C_REVERSALS, *_S36C_STALE, *_S36C_REVERSALS,
-             *_S16C_STALE, *_S16C_REVERSALS, *_S25_STALE, *_S25_REVERSALS)
+             *_S16C_STALE, *_S16C_REVERSALS, *_S25_STALE, *_S25_REVERSALS,
+             *_S27_STALE, *_S27_REVERSALS)
     for path, block in _live_surfaces():
         _needs(block, path, "live none", _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP),
                *(_tok(t) for t in _S35C_FACTS), *(_tok(t) for t in _S36C_FACTS), *(_tok(t) for t in _S16C_FACTS),
@@ -5063,7 +5124,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
         _rejects(_live_only(block), path, "live none", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE,
                  *_S19C_STALE, *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE, *_S24C_STALE,
                  *_S24CL_STALE, *_S35C_STALE, *_S35C_REVERSALS, *_S36C_STALE, *_S36C_REVERSALS,
-                 *_S16C_STALE, *_S16C_REVERSALS, *_S25_STALE, *_S25_REVERSALS)
+                 *_S16C_STALE, *_S16C_REVERSALS, *_S25_STALE, *_S25_REVERSALS,
+             *_S27_STALE, *_S27_REVERSALS)
     for path, routing in _surfaces("current-routing"):
         _needs(routing, path, "live routing",
                # AMENDED at the delivered CAP-12 Form Mock-up Advisory Slice 1: Stage 24 ENTERED / PARTIAL for it only;
@@ -5103,14 +5165,18 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # ADVANCED at the Stage 16 closure: the head leads with Stage 16 COMPLETE for its bounded scope
                # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: the head leads with
                # Stage 25 ENTERED / PARTIAL through that slice only
-               r"\*\*NO ACTIVE CONTRACT — post-Stage-25-CAP-13-Slice-1 \(2026-10-08\); Stage 25 ENTERED / PARTIAL "
+               # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: the head leads
+               # with Stage 27 ENTERED / PARTIAL through that slice only, then Stage 25
+               r"\*\*NO ACTIVE CONTRACT — post-Stage-27-THERM-01-Slice-1 \(2026-10-09\); Stage 27 ENTERED / PARTIAL "
+               r"through its delivered THERM-01 Single-Path Temperature-Difference Slice 1 only; Stage 25 ENTERED / PARTIAL "
                r"through its delivered CAP-13 Two-Support Static Reactions Slice 1 only; Stage 16 COMPLETE for the current "
                r"bounded Technical \+ Integration evidence-sufficiency composition scope only; Stage 36 COMPLETE for the "
                r"current no-live-AI / provider scope only; Stage 35 COMPLETE for the current "
                r"bounded first-slice scope only; Stage 24 COMPLETE for the current bounded CAP-12 Form Mock-up Advisory "
                r"Slice 1 scope only; Stage 23 COMPLETE for the current bounded four-axis Readiness Snapshot scope only;",
                # WIDENED at the Stage 16 closure (length only): the head now also leads with the Stage 16 clause
-               r"\*\*NO ACTIVE CONTRACT — [^*]{0,1000}; Stage 22 COMPLETE for the current bounded "
+               # WIDENED at the delivered Stage 27 / THERM-01 slice (length only): the head also leads with the Stage 27 clause
+               r"\*\*NO ACTIVE CONTRACT — [^*]{0,1200}; Stage 22 COMPLETE for the current bounded "
                r"decision trace \+ "
                r"decision room scope; Stage 21 COMPLETE for the current Owner-declared contradiction "
                r"scope; Stage 20 COMPLETE for the current Owner-declared assumption scope; Stage 19 COMPLETE for the "
@@ -5135,7 +5201,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # delivered Stage 16 residual and the Stage 36 closure precede it
                # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: no product
                # increment is authorized after that slice; the Stage 16 closure precedes it
-               r"No product increment is authorized after " + re.escape(_S25_NAME) + r" \(delivered: ONE optional, "
+               # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: no product
+               # increment is authorized after that slice; the Stage 25 slice precedes it
+               r"No product increment is authorized after " + re.escape(_S27_NAME) + r" \(delivered: ONE optional, "
+               r"advisory, non-binding, request-local calculation on a project whose durable root domain is "
+               r"`electronics_electrical`.*?; Stage 27 ENTERED / PARTIAL through it only, NOT complete; full THERM-01 stays "
+               r"NOT AUTHORIZED\) or after the preceding " + re.escape(_S25_NAME) + r" \(delivered: ONE optional, "
                r"advisory, non-binding, request-local calculation on a project whose durable root domain is `mechanical`"
                r".*?; Stage 25 ENTERED / PARTIAL through it only, NOT complete; full CAP-13 stays NOT AUTHORIZED\) or "
                r"after the preceding " + re.escape(_S16C_NAME) + r" \(delivered: Stage 16 is "
@@ -5183,11 +5254,17 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                r"stay preserved",
                # AMENDED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 is ENTERED /
                # PARTIAL for that slice only and nothing is complete beyond the scoped completions
-               r"Stage 25 or any other Stage is complete, or that any other Stage is entered \(Stage 25 is ENTERED / "
+               # AMENDED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads the parenthetical
+               r"Stage 25 or any other Stage is complete, or that any other Stage is entered \(Stage 27 is ENTERED / "
+               r"PARTIAL for its THERM-01 Single-Path Temperature-Difference Slice 1 only; Stage 25 is ENTERED / "
                r"PARTIAL for its CAP-13 Two-Support Static Reactions Slice 1 only; Stage 24 is COMPLETE for its current bounded "
                r"CAP-12 Form Mock-up Advisory Slice 1 scope only; Stage 35 is COMPLETE for its current bounded "
                r"first-slice scope only; Stage 36 is COMPLETE for its current no-live-AI / provider scope only; Stage 16 is "
                r"COMPLETE for its current bounded Technical \+ Integration evidence-sufficiency composition scope only\)",
+               # ADDED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: its record leads
+               r"\*\*DELIVERED — Stage 27 / THERM-01 Single-Path Temperature-Difference — Slice 1 \(it entered Stage 27 "
+               r"as ENTERED / PARTIAL for that slice ONLY; Stage 27 NOT complete, checkbox UNTICKED; full THERM-01 NOT "
+               r"AUTHORIZED",
                # ADDED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: its record leads the list
                r"\*\*DELIVERED — Stage 25 / CAP-13 Two-Support Static Reactions — Slice 1 \(it entered Stage 25 as "
                r"ENTERED / PARTIAL for that slice ONLY; Stage 25 NOT complete, checkbox UNTICKED; full CAP-13 NOT "
@@ -5331,9 +5408,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # the Stage 36 closure follow it
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: the current position is
     # post-Stage-25-CAP-13-Slice-1; the Stage 16 closure follows it ("before it")
+    # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: the current position is
+    # post-Stage-27-THERM-01-Slice-1; the Stage 25 slice follows it ("before it")
     assert re.match(r" \*\*Current position \([^)]{0,40}\): `ACTIVE CONTRACT: NONE` — no product increment is "
-                    r"currently authorized \(post-Stage-25-CAP-13-Slice-1; " + re.escape(_S25_NAME) + r" — delivered: "
-                    r"Stage 25 is ENTERED / PARTIAL for that slice only, checkbox unticked, NOT complete — ", state)
+                    r"currently authorized \(post-Stage-27-THERM-01-Slice-1; " + re.escape(_S27_NAME) + r" — delivered: "
+                    r"Stage 27 is ENTERED / PARTIAL for that slice only, checkbox unticked, NOT complete — ", state)
+    assert re.search(r"; full THERM-01 NOT AUTHORIZED; before it, " + re.escape(_S25_NAME) + r" — delivered: "
+                     r"Stage 25 is ENTERED / PARTIAL for that slice only, checkbox unticked, NOT complete — ", state)
     assert re.search(r"; full CAP-13 NOT AUTHORIZED; before it, " + re.escape(_S16C_NAME) + r" — delivered with no "
                     r"further product change required: Stage 16 is COMPLETE for the current bounded Technical \+ "
                     r"Integration evidence-sufficiency composition scope only, checkbox ticked for that scope only", state)
@@ -5421,7 +5502,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                    "next step: a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT — read-only planning / selection "
                    # ADVANCED at the Stage 16 closure: no further Stage-16 / SRL work is authorized either
                    # ADVANCED at the delivered Stage 25 / CAP-13 slice: no further Stage-25 / CAP-13 work either
-                   "until the Owner separately authorizes another product increment (no further Stage-25 / CAP-13 "
+                   # ADVANCED at the delivered Stage 27 / THERM-01 slice: no further Stage-27 / THERM-01 work either
+                   "until the Owner separately authorizes another product increment (no further Stage-27 / THERM-01 "
+                   "slice, method, consumer or unit conversion, no full THERM-01, no further Stage-25 / CAP-13 "
                    "method, consumer or unit conversion, no full CAP-13, no further Stage-16 / SRL work, "
                    "no later Stage-35 slice, no CAP-15 / CAP-17 implementation, no Stage-37 work and no further "
                    "Stage-24 / CAP-12 slice is authorized)",
@@ -5519,10 +5602,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # the Stage 36 closure, the Stage 35 closure and the earlier closures precede it
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: that slice is the last bounded
     # increment, recorded in its after-merge form; the Stage 16 closure precedes it
+    # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: that slice is the last
+    # bounded increment, recorded in its after-merge form; the Stage 25 slice precedes it
     assert head.startswith("## Current authority " + _NONE_BOLD + " NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The "
-                           "last Owner-authorized bounded increment — " + _S25_NAME + " — is DELIVERED, entering Stage 25 "
-                           "as ENTERED / PARTIAL for that slice ONLY (" + "; ".join(_S25_FACTS) + "; Git / GitHub own its "
-                           "PR, merge and review identity)")
+                           "last Owner-authorized bounded increment — " + _S27_NAME + " — is DELIVERED, entering Stage 27 "
+                           "as ENTERED / PARTIAL for that slice ONLY (" + "; ".join(_S27_FACTS + (_S25_MARKER,))
+                           + "; Git / GitHub own its PR, merge and review identity)")
+    assert ("The preceding bounded increment — " + _S25_NAME + " — is DELIVERED, entering Stage 25 as ENTERED / PARTIAL "
+            "for that slice ONLY (" + "; ".join(_S25_FACTS) + "; Git / GitHub own its PR, merge and review identity)") in head
     assert ("The preceding bounded closure — " + _S16C_NAME + " — is DELIVERED with no further "
             "product change required, completing Stage 16 for the current bounded Technical + Integration "
             "evidence-sufficiency composition scope ONLY (" + "; ".join(_S16C_FACTS) + "; Git / GitHub own "
@@ -5551,10 +5638,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: it follows the Stage 16
             # closure in the chain
             "only with no further product change; the only increment authorized after that closure — " + _S25_NAME
-            + " (above) — is DELIVERED, entering Stage 25 as ENTERED / PARTIAL for that slice only; no subsequent "
-            "increment has been authorized."), head)
+            + " (above) — is DELIVERED, entering Stage 25 as ENTERED / PARTIAL for that slice only; "
+            # ADVANCED at the delivered Stage 27 / THERM-01 slice: it follows the Stage 25 slice in the chain
+            "the only increment authorized after it — " + _S27_NAME + " (above) — is DELIVERED, entering Stage 27 as "
+            "ENTERED / PARTIAL for that slice only; no subsequent increment has been authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
-    assert ("ACTIVE CONTRACT: NONE — no product increment is authorized and no other Stage is authorized (Stage 25 is "
+    # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
+    assert ("ACTIVE CONTRACT: NONE — no product increment is authorized and no other Stage is authorized (Stage 27 is "
+            "ENTERED / PARTIAL for its delivered THERM-01 Single-Path Temperature-Difference Slice 1 only; Stage 25 is "
             "ENTERED / PARTIAL for its delivered CAP-13 Two-Support Static Reactions Slice 1 only; Stage 16 is "
             "COMPLETE for its current bounded Technical + Integration evidence-sufficiency composition scope only; Stage "
             "35 is COMPLETE for its current bounded first-slice scope only; Stage 36 is COMPLETE for its current "
@@ -5563,7 +5654,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             "the current bounded Technical + Integration evidence-sufficiency composition scope ONLY; Stages 13 and 14 "
             "stay PARTIAL / DEFERRED; no SRL level, score or weakest-axis computation; the MASTER ROADMAP SEQUENTIAL "
             "MARKER is unchanged):") in head
-    assert ("Stage 25 or any other Stage is complete, or that any other Stage is entered (Stage 25 is ENTERED / "
+    # AMENDED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads the parenthetical
+    assert ("Stage 25 or any other Stage is complete, or that any other Stage is entered (Stage 27 is ENTERED / PARTIAL "
+            "for its THERM-01 Single-Path Temperature-Difference Slice 1 only; Stage 25 is ENTERED / "
             "PARTIAL for its CAP-13 Two-Support Static Reactions Slice 1 only; Stage 24 is COMPLETE for its current bounded CAP-12 "
             "Form Mock-up Advisory Slice 1 scope only; Stage 35 is COMPLETE for its current bounded first-slice scope "
             "only; Stage 36 is COMPLETE for its current no-live-AI / provider scope only; Stage 16 is COMPLETE for its "
@@ -5706,7 +5799,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
         assert needle in head, needle
     for pat in (_S2_CLOSE_REVERSALS + _S15C_STALE + _S18C_STALE + _S19C_STALE + _S20C_STALE + _S21C_STALE
                 + _S22C_STALE + _S23C_STALE + _S24C_STALE + _S24CL_STALE + _S35C_STALE + _S35C_REVERSALS
-                + _S36C_STALE + _S36C_REVERSALS + _S16C_STALE + _S16C_REVERSALS + _S25_STALE + _S25_REVERSALS):
+                + _S36C_STALE + _S36C_REVERSALS + _S16C_STALE + _S16C_REVERSALS + _S25_STALE + _S25_REVERSALS
+                + _S27_STALE + _S27_REVERSALS):
         assert re.search(pat, head, re.I | re.S) is None, pat
     # ROTATED at the Stage 35 first bounded slice: the post-Stage-24-closure NONE is a named superseded declaration
     # ADVANCED at the Stage 35 closure: the Stage 35 first bounded slice and the Stage 35 closure lead the list
@@ -5716,7 +5810,9 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     assert "**WATCH — Stage 16 closure (non-blocking, no repair cycle).**" in claude
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: the post-Stage-16-closure NONE
     # leads the superseded declarations
-    assert ("*(Superseded current-authority declarations — the former post-Stage-16-closure `ACTIVE CONTRACT: NONE`, the "
+    # ADVANCED at the delivered Stage 27 / THERM-01 slice: the post-Stage-25-CAP-13-Slice-1 NONE and the Stage 25 slice lead
+    assert ("*(Superseded current-authority declarations — the former post-Stage-25-CAP-13-Slice-1 `ACTIVE CONTRACT: "
+            "NONE`, the former " + _S25_NAME + ", the former post-Stage-16-closure `ACTIVE CONTRACT: NONE`, the "
             "former post-Stage-36-closure `ACTIVE CONTRACT: NONE`, the "
             "former " + _S16C_NAME + ", the former post-Stage-35-closure `ACTIVE CONTRACT: NONE`, the "
             "former " + _S36C_NAME + ", the former " + _S35_NAME + ", the former " + _S35C_NAME
@@ -5767,8 +5863,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ADVANCED at the Stage 16 closure: the Stage 16 closure and the delivered Stage 16 residual lead the delivered history
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: the slice leads the subtask;
     # Stage 25 ENTERED / PARTIAL for it only; the Stage 16 closure follows
-    subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \(post-Stage-25-CAP-13-Slice-1\) — NO PRODUCT INCREMENT IS "
-                    r"CURRENTLY AUTHORIZED — " + re.escape(_S25_NAME) + r" DELIVERED \([^)]*\) — STAGE 25 ENTERED / "
+    # ADVANCED at the delivered Stage 27 / THERM-01 slice: the slice leads the subtask; the Stage 25 slice follows
+    subtask_head = (r"\*\*CURRENT SUBTASK:\*\* NONE \(post-Stage-27-THERM-01-Slice-1\) — NO PRODUCT INCREMENT IS "
+                    r"CURRENTLY AUTHORIZED — " + re.escape(_S27_NAME) + r" DELIVERED \([^)]*\) — STAGE 27 ENTERED / "
+                    r"PARTIAL for that slice only, checkbox UNTICKED, NOT complete; full THERM-01 NOT AUTHORIZED — "
+                    + re.escape(_S25_NAME) + r" DELIVERED \([^)]*\) — STAGE 25 ENTERED / "
                     r"PARTIAL for that slice only, checkbox UNTICKED, NOT complete; full CAP-13 NOT AUTHORIZED — "
                     + re.escape(_S16C_NAME) + r" DELIVERED \(no further product change required; "
                     r"closure gap NONE after PR #\d+; no SRL level, score or weakest-axis computation; Stages 13 and 14 "
@@ -5832,7 +5931,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at the Stage 16 closure: ... after the Stage 16 closure; the delivered residual and Stage 36 precede it
            # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: ... after that slice; the
            # Stage 16 closure precedes it
-           r"No product increment is authorized after " + re.escape(_S25_NAME) + r" \(delivered; [^)]*; Stage 25 ENTERED "
+           # ADVANCED at the delivered Stage 27 / THERM-01 slice: ... after that slice; the Stage 25 slice precedes it
+           r"No product increment is authorized after " + re.escape(_S27_NAME) + r" \(delivered; [^)]*; Stage 27 ENTERED "
+           r"/ PARTIAL through it only, NOT complete; full THERM-01 NOT AUTHORIZED\) or after the preceding "
+           + re.escape(_S25_NAME) + r" \(delivered; [^)]*; Stage 25 ENTERED "
            r"/ PARTIAL through it only, NOT complete; full CAP-13 NOT AUTHORIZED\) or after the preceding "
            + re.escape(_S16C_NAME) + r" \(delivered; Stage 16 COMPLETE for "
            r"the current bounded Technical \+ Integration evidence-sufficiency composition scope only with no further "
@@ -5850,13 +5952,17 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            r"or after Stage 24 — CAP-12 Form Mock-up Advisory — Closure "
            r"\(delivered; Stage 24 COMPLETE for the current bounded CAP-12 Form Mock-up Advisory Slice 1 scope only",
            # AMENDED at the delivered Stage 25 / CAP-13 slice: Stage 25 ENTERED / PARTIAL leads the parenthetical
-           r"\(Stage 25 is ENTERED / PARTIAL for its CAP-13 Two-Support Static Reactions Slice 1 only; Stage 24 is "
+           # AMENDED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads the parenthetical
+           r"\(Stage 27 is ENTERED / PARTIAL for its THERM-01 Single-Path Temperature-Difference Slice 1 only; Stage 25 is "
+           r"ENTERED / PARTIAL for its CAP-13 Two-Support Static Reactions Slice 1 only; Stage 24 is "
            r"COMPLETE for the current bounded CAP-12 Form Mock-up Advisory Slice 1 scope only; Stage 35 is "
            r"COMPLETE for its current bounded first-slice scope only; Stage 36 is COMPLETE for its current no-live-AI / "
            r"provider scope only; Stage 16 is COMPLETE for its current bounded Technical \+ Integration "
            r"evidence-sufficiency composition scope only\)",      # ADVANCED at the Stage 16 closure
            r"the next step is a LEAD-CONTROLLED NEXT-STAGE CLOSURE REASSESSMENT \(read-only planning / selection until "
-           r"the Owner separately authorizes another product increment; no further Stage-25 / CAP-13 method, consumer "
+           # ADVANCED at the delivered Stage 27 / THERM-01 slice: no further Stage-27 / THERM-01 work either
+           r"the Owner separately authorizes another product increment; no further Stage-27 / THERM-01 slice, method, "
+           r"consumer or unit conversion, no full THERM-01, no further Stage-25 / CAP-13 method, consumer "
            r"or unit conversion, no full CAP-13, no further Stage-16 / SRL work, no later "
            r"Stage-35 slice, no CAP-15 / CAP-17 implementation and no Stage-37 work is authorized\)\.",
            r"or after the preceding Stage 24 — CAP-12 Form Mock-up Advisory — Slice 1 \(delivered; Stage 24 was then "
@@ -5864,7 +5970,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     _rejects(subtask, CHECKLIST, "live subtask", *_S2_CLOSE_REVERSALS, *_S15C_STALE, *_S18C_STALE, *_S19C_STALE,
              *_S20C_STALE, *_S21C_STALE, *_S22C_STALE, *_S23C_STALE, *_S24C_STALE, *_S24CL_STALE, *_S35C_STALE,
              *_S35C_REVERSALS, *_S36C_STALE, *_S36C_REVERSALS,
-             *_S16C_STALE, *_S16C_REVERSALS, *_S25_STALE, *_S25_REVERSALS)
+             *_S16C_STALE, *_S16C_REVERSALS, *_S25_STALE, *_S25_REVERSALS,
+             *_S27_STALE, *_S27_REVERSALS)
     # ADVANCED at the Stage 16 closure: the post-Stage-36-closure NONE subtask is preserved history
     assert ("*(Superseded 2026-10-06 by " + _S16C_NAME + ", preserved — was: \"**CURRENT SUBTASK:** NONE "
             "(post-Stage-36-closure) — NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED — " + _S36C_NAME + " DELIVERED (…) — "
@@ -7013,7 +7120,15 @@ def _live_authority_problems(read=None):
         for pat in _S25_STALE:
             if re.search(pat, text):
                 problems.append(label + ": stale pre-Stage-25-slice wording " + pat)
-    for needle in (*_S25_FACTS, "NO STAGE-25 IMPLEMENTATION AUTHORIZED BY STAGE-24 CLOSURE",
+        # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: every surface carries
+        # its delivered / ENTERED / PARTIAL facts and none of the pre-slice NONE or Stage-27 NOT-ENTERED wording
+        for token in _S27_FACTS:
+            if token not in text:
+                problems.append(label + ": missing Stage-27 slice fact " + token)
+        for pat in _S27_STALE:
+            if re.search(pat, text):
+                problems.append(label + ": stale pre-Stage-27-slice wording " + pat)
+    for needle in (*_S27_FACTS, *_S25_FACTS, "NO STAGE-25 IMPLEMENTATION AUTHORIZED BY STAGE-24 CLOSURE",
                    "NO STAGE-24 IMPLEMENTATION AUTHORIZED BY STAGE-23 CLOSURE", _S23_COMPLETE,
                    _S23C_DELIVERED, *_S23_LIMITS,
                    "STAGE 22: COMPLETE — CURRENT BOUNDED DECISION TRACE + DECISION ROOM SCOPE",
@@ -7030,6 +7145,9 @@ def _live_authority_problems(read=None):
     for pat in _S25_STALE:
         if re.search(pat, texts["head:CLAUDE.md"]):
             problems.append("head:CLAUDE.md: stale pre-Stage-25-slice wording " + pat)
+    for pat in _S27_STALE:
+        if re.search(pat, texts["head:CLAUDE.md"]):
+            problems.append("head:CLAUDE.md: stale pre-Stage-27-slice wording " + pat)
     for pat in _S36C_STALE:
         if re.search(pat, texts["head:CLAUDE.md"]):
             problems.append("head:CLAUDE.md: stale pre-Stage-36-closure wording " + pat)
@@ -7044,7 +7162,8 @@ def _live_authority_problems(read=None):
             problems.append("head:CLAUDE.md: stale pre-Stage-30-closure status " + pat)
     for label, text in texts.items():
         # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: its reversals are live claims
-        for pat in _LIVE_CLAIM_REVERSALS + _PREMERGE_LIFECYCLE + _S25_REVERSALS:
+        # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: so are its reversals
+        for pat in _LIVE_CLAIM_REVERSALS + _PREMERGE_LIFECYCLE + _S25_REVERSALS + _S27_REVERSALS:
             m = re.search(pat, text, re.I | re.S)
             if m:
                 problems.append("%s: forbidden live claim %r" % (label, m.group(0)))

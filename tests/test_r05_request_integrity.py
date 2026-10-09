@@ -78,6 +78,9 @@ MUTATIONS = (
     # Stage 25 / CAP-13 Slice 1: the request-local two-support static reactions
     # calculation. It persists nothing, but it accepts a POST.
     "/session/<sid>/support-reactions",
+    # Stage 27 / THERM-01 Slice 1: the request-local single-path temperature-
+    # difference calculation. It persists nothing, but it accepts a POST.
+    "/session/<sid>/temperature-difference",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

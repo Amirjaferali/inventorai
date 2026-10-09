@@ -1,0 +1,129 @@
+{
+  "artifact_id": "therm01_conduction_temperature_difference_single_path",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "THERM-01 - Future Thermal Analysis capability (method authority for this one method only)",
+  "slice": "Stage 27 / THERM-01 - Single-Path Temperature-Difference - Slice 1",
+  "governance_note": "The ONE THERM-01-owned governed artifact of the first THERM-01 user slice, under the accepted STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md. It carries the method authority (identity, version, model, executed form and derivation), the applicability declarations, the numeric domain, the high-risk screen, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json, and it is never loaded by, and never loads, the CAP-13 artifact. Calculation execution belongs to the shared deterministic calculation and units owner; nothing here is evidence, a specification, a temperature, rating, margin, safety or suitability statement, or a readiness, progression or validation input.",
+  "method": {
+    "method_id": "therm01:conduction_temperature_difference_single_path",
+    "method_version": "1.0",
+    "contract": "docs/governance/STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md",
+    "model": "ONE declared heat path in steady state, with uniform one-dimensional heat flow through ONE constant area, carrying the inventor's own steady heat flow P through the inventor's own total thermal resistance R_theta of exactly that path.",
+    "executed_form": "delta_T = P * R_theta. One multiplication of the two typed inputs; no subtraction, no tolerance, no rounding, no clamping and no magnitude ceiling.",
+    "derivation": "The DOE authority THERM-S1 is the per-area steady-state relation delta_T = q'' * R'' only. The total form is InventorAI's own bounded derivation, valid only under declarations D-1 to D-6: Qdot = q'' * A and R_theta = R'' / A, therefore delta_T = q'' * R'' = (Qdot / A) * R'' = Qdot * (R'' / A) = Qdot * R_theta, with P taken as Qdot. The area, the flux and the per-area resistance are never inputs, outputs or stored values, and no area normalization is performed."
+  },
+  "numeric_domain": {
+    "roles": [
+      {"role": "P", "meaning": "steady heat flow through the declared path", "quantity_kind": "power", "unit_token": "W"},
+      {"role": "R_theta", "meaning": "inventor-supplied total thermal resistance of exactly the declared path (the role written R-theta)", "quantity_kind": "thermal_resistance", "unit_token": "K/W"},
+      {"role": "delta_T", "meaning": "temperature difference across the declared path (the role written Delta-T); never an absolute or component temperature", "quantity_kind": "temperature_difference", "unit_token": "K"}
+    ],
+    "rules": [
+      "P and R_theta are finite numbers strictly greater than zero; a string, boolean, NaN, infinity, zero, negative value or any other non-finite or non-numeric value is INVALID_NUMERIC_INPUT, resolved before the shared owner is called.",
+      "No physical magnitude ceiling exists, and none is part of the admitted engineering domain.",
+      "An overflow or a non-finite delta_T from a finite admitted pair is FAILURE / EXECUTION_INTEGRITY_FAILURE with no numerical payload; it is never rewritten as a refusal.",
+      "Each typed numeric field is capped at 64 characters for abuse and resource protection only; that bound is NON-PHYSICAL, is NOT the admitted engineering domain and is never described as a range of valid heat flows or resistances. Over-length text is INVALID_NUMERIC_INPUT.",
+      "Grammar: strict ASCII decimal digits with an optional single fractional part; no sign, exponent, separator, Unicode digit, unit suffix or normalization."
+    ]
+  },
+  "declarations": [
+    {"declaration_id": "steady_state", "contract_ref": "D-1", "accepted_value": "steady state: P is constant and temperatures along the path are no longer changing", "refusal": "PATH_NOT_SUPPORTED"},
+    {"declaration_id": "single_path", "contract_ref": "D-2", "accepted_value": "ONE path: all of P flows through this path; no parallel path, side loss or other heat source along it", "refusal": "PATH_NOT_SUPPORTED"},
+    {"declaration_id": "uniform_one_dimensional_flow", "contract_ref": "D-3", "accepted_value": "uniform one-dimensional heat flow: the same heat flow crosses every layer of the path evenly", "refusal": "PATH_NOT_SUPPORTED"},
+    {"declaration_id": "constant_area", "contract_ref": "D-4", "accepted_value": "ONE constant area through the whole path: no spreading, constriction or change of area", "refusal": "PATH_NOT_SUPPORTED"},
+    {"declaration_id": "total_resistance", "contract_ref": "D-5", "accepted_value": "R_theta is the inventor's own total thermal resistance of exactly this path (the per-area resistance of its layers divided by that one common area), and already includes every layer, interface and surface film the inventor means to cover; InventorAI does not check it", "refusal": "PATH_NOT_SUPPORTED"},
+    {"declaration_id": "constant_resistance", "contract_ref": "D-6", "accepted_value": "R_theta does not change with P or with temperature over the condition being considered", "refusal": "PATH_NOT_SUPPORTED"}
+  ],
+  "screen_items": [
+    {"item_id": "battery_or_storage_cell", "item": "a battery or energy-storage cell"},
+    {"item_id": "mains_or_high_voltage", "item": "mains or high voltage"},
+    {"item_id": "fire_or_ignition", "item": "fire or ignition risk"},
+    {"item_id": "touch_skin_or_medical", "item": "a surface people touch, skin contact or medical use"},
+    {"item_id": "pressurized_or_sealed", "item": "a pressurized or sealed enclosure"},
+    {"item_id": "safety_critical_or_life_supporting", "item": "a safety-critical or life-supporting function"},
+    {"item_id": "aerospace_or_vehicle", "item": "aerospace or vehicle use"},
+    {"item_id": "non_electrical_heat_source", "item": "a heat source other than steady electrical dissipation (combustion, chemical or similar)"},
+    {"item_id": "cryogenic", "item": "cryogenic temperatures"},
+    {"item_id": "transient_or_pulsed", "item": "transient, pulsed or start-up loads"}
+  ],
+  "limitations": [
+    "No absolute, ambient, junction, case, surface or component temperature; no Celsius and no offset handling; no rating, limit, margin, pass / fail, safety, acceptability, suitability, compliance or specification statement.",
+    "No general admission of datasheet R_theta; no lookup, default or inference of R_theta; no material-property, conductivity, convection-coefficient or emissivity data; no convection or radiation modelling, transient analysis, thermal network, parallel paths, spreading resistance, geometry, CFD, FEA or numerical solver.",
+    "All NO answers on the high-risk screen only allow this bounded calculation to proceed; they never mean safe. The screen neither reads nor feeds SafetySignal.",
+    "The result is UNVALIDATED and is not evidence; it is request-local and is not stored, reported, exported or used for readiness, progression or validation."
+  ],
+  "disclosure": [
+    "This is the temperature difference across the one path you declared, under the declared steady-state, single-path, uniform one-dimensional and constant-area conditions, using your own P and Rθ.",
+    "It is not a component, junction, case, surface or ambient temperature, and it does not tell what temperature anything reaches.",
+    "It is not compared with any rating, limit or margin, and it says nothing about whether anything is safe, acceptable, suitable, compliant or reliable.",
+    "It is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement or a thermal specialist before any reliance.",
+    "InventorAI does not check Rθ or that your declarations match the real hardware, and a datasheet figure applies only where the real path matches the conditions it was defined under.",
+    "Convection, radiation, spreading, transient behaviour and every other path are outside this calculation.",
+    "Reference source material: U.S. DOE Fundamentals Handbook (archived; historical fundamentals reference only); the total-resistance form is InventorAI's own derivation."
+  ],
+  "sources": [
+    {
+      "record_id": "THERM-S1",
+      "record_type": "source",
+      "source_type": "government_reference_publication",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "source_title": "DOE-HDBK-1012/2-92, DOE Fundamentals Handbook: Thermodynamics, Heat Transfer, and Fluid Flow, Volume 2 of 3, Module 2 (Heat Transfer), HT-02 page 9, equation (2-6)",
+      "url": "https://www.energy.gov/documents/doe-hdbk-1012-92vol2",
+      "source_use_policy_ref": "THERM-SU-DOE",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-08",
+      "inspected_content": "Supports only: for steady-state heat transfer through a layered path, the heat flux equals the overall temperature difference divided by the area-normalized (per-unit-area) thermal resistance of the path, written by InventorAI as delta_T = q'' * R''. Official record https://www.energy.gov/ehss/articles/doe-hdbk-10122-92 (Lead inspection B, 2026-10-09): status Archive; approved 1996-01-22; last updated 2014-12-29; the date of transition to Archive is not established and none is inferred. Archived historical fundamentals reference only; English engineering units in the source, presented by InventorAI in SI with no conversion factor.",
+      "paraphrase_only_limitation": "Factual paraphrase of the one per-area relation only; no DOE prose, worked example, figure or table is copied, and the total-resistance form is InventorAI's own derivation, never attributed to DOE.",
+      "third_party_material_exclusion": "Contractor-contributed or third-party expressive content of the handbook is not used.",
+      "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI or this calculation."
+    },
+    {
+      "record_id": "THERM-U",
+      "record_type": "source",
+      "source_type": "government_reference_web_page",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST Special Publication 330 (2019 Edition) - The International System of Units (SI), Section 2",
+      "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "source_use_policy_ref": "THERM-SU-NIST",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-08",
+      "inspected_content": "Supports only the unit facts THERM-U1 to THERM-U4: the kelvin, symbol K, is the SI base unit of thermodynamic temperature; the watt, symbol W, is the SI coherent derived unit with a special name for power; coherent SI derived units are formed as products and quotients of SI units, hence K/W; a temperature difference may be expressed in kelvin. Location recorded at section level (no finer subsection was supplied).",
+      "paraphrase_only_limitation": "Unit facts only, in InventorAI's own words; no SP 330 prose, table, figure or symbol list is reproduced.",
+      "third_party_material_exclusion": "BIPM-originated wording or tables inside SP 330 are treated as third-party material and are not reproduced.",
+      "no_endorsement_limitation": "No statement or implication that NIST endorses InventorAI or this calculation."
+    },
+    {
+      "record_id": "THERM-SU-DOE",
+      "record_type": "source_use_policy",
+      "source_type": "government_web_policy",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "source_title": "U.S. Department of Energy - Web Policies",
+      "url": "https://www.energy.gov/web-policies",
+      "source_use_policy_ref": "THERM-SU-DOE",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-09",
+      "inspected_content": "Source-use basis (not a legal opinion): government information is generally in the public domain and DOE acknowledgement is requested; third-party and contractor material may remain protected. THERM-01 disposition: the handbook was prepared with a DOE contractor training programme, so no blanket public-domain claim is made for its expressive content; use is limited to the one factual relation THERM-S1 in InventorAI's own paraphrase with DOE acknowledgement. electronics_electrical:PR006 is not cited and its scope is not extended.",
+      "paraphrase_only_limitation": "Factual relation only; no copied prose, worked examples, figures or tables.",
+      "third_party_material_exclusion": "Third-party and contractor material is not used.",
+      "no_endorsement_limitation": "No DOE endorsement is stated or implied.",
+      "acknowledgement": "Reference source material: U.S. DOE Fundamentals Handbook DOE-HDBK-1012/2-92 (archived; historical fundamentals reference only)."
+    },
+    {
+      "record_id": "THERM-SU-NIST",
+      "record_type": "source_use_policy",
+      "source_type": "government_web_policy",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "source_use_policy_ref": "THERM-SU-NIST",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-08",
+      "inspected_content": "Source-use basis (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. SP 330 is a NIST Special Publication; use is limited to the four unit facts THERM-U1 to THERM-U4 with NIST acknowledgement. A separate THERM-01 record: dcu:SU001 and electronics_electrical:PR007 keep their own scopes and are not extended.",
+      "paraphrase_only_limitation": "Unit facts only, in InventorAI's own words.",
+      "third_party_material_exclusion": "BIPM-originated wording or tables are treated as third-party material and are not reproduced.",
+      "no_endorsement_limitation": "No NIST endorsement is stated or implied.",
+      "acknowledgement": "Unit identification follows NIST Special Publication 330 (2019 Edition), National Institute of Standards and Technology."
+    }
+  ]
+}
