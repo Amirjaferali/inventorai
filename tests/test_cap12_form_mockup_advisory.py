@@ -699,9 +699,37 @@ def test_the_journey_progresses_and_the_report_is_unchanged_without_cap12(
     after = c.get("/session/%s/deliverable" % sid)
     assert before.status_code == after.status_code
     for response in (before, after):
-        text = _text_of(response.get_data(as_text=True)).lower()
-        for banned in ("form mock-up", "foam core", "thermoplastic", "fff", "cap-12"):
-            assert banned not in text, banned
+        assert _cap12_content_in(_text_of(response.get_data(as_text=True))) == []
+
+
+# "FFF" is a CAP-12 process token (FFF / FDM, `additive_fff_fdm`); it is matched only as a
+# standalone token, never inside an unrelated alphanumeric identifier such as a hex session id
+# ("2fff94e4-…"), which made the former bare-substring check fail at random.
+_CAP12_FFF = re.compile(r"(?<![0-9a-z])fff(?![0-9a-z])")
+
+
+def _cap12_content_in(text):
+    """The CAP-12 content markers found in ``text`` (empty when none)."""
+    low = text.lower()
+    found = [banned for banned in ("form mock-up", "foam core", "thermoplastic", "cap-12")
+             if banned in low]
+    if _CAP12_FFF.search(low):
+        found.append("fff")
+    return found
+
+
+def test_cap12_content_check_ignores_identifiers_but_catches_real_fff_content():
+    # an unrelated identifier containing "fff" (the hosted-CI flake) is not CAP-12 content
+    for unrelated in ("Session 2fff94e4-1dfc-4337-b2c3-bb7affc68ede", "id fffa01", "0xFFF0",
+                      "#ffffff"):
+        assert _cap12_content_in(unrelated) == [], unrelated
+    # genuine CAP-12 FFF content is still detected, in each form it can take
+    for genuine in ("Thermoplastic with additive FFF / FDM 3D printing", "FFF", "(FFF)",
+                    "additive_fff_fdm", "FFF/FDM"):
+        assert "fff" in _cap12_content_in(genuine), genuine
+    # the other markers stay plain substring checks, unweakened
+    for marker in ("Form mock-up", "foam core", "THERMOPLASTIC", "CAP-12"):
+        assert _cap12_content_in("x " + marker + " y"), marker
 
 
 def test_no_cap12_content_in_the_session_report_or_export_surfaces():
