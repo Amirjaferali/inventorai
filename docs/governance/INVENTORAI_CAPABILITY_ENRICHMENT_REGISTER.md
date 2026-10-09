@@ -867,6 +867,19 @@ The matrix is indicative sequencing only; it activates nothing. All eighteen cap
 CAP-01 guidance increments noted in the CAP-01 row. That CAP-01-only exception authorizes no other capability,
 no other CAP-01 scope and no additional domain**, and nothing in this matrix becomes authorized by it.
 
+**Technology coverage cross-reference (recorded 2026-10-09; navigation only; activates nothing).** The consolidated
+per-technology traceability — owning Stage / technical owner, implemented baseline, demonstrated depth, missing
+user-facing capability, smallest next increment, dependencies, source / IP gate, acceptance criterion and release-decision
+state — is Master Roadmap **§8D — Technology Coverage & First-Release Traceability** (derived navigation, no authority).
+For this register it means only: the CAP-12, CAP-13, CAP-14 and CAP-18 rows there, the THERM-01 row and the cross-cutting
+rows for component inventory, BOM / Make-Buy, supplier assistance, CAD / PCB-EDA interoperability and commercial
+feasibility are navigation over the entries this register and the Technical Realization documents already own; they
+create no new Capability Register number (the Technical Realization "T6" direction remains NOT a register number), no new
+owner and no implementation authority. `RECORDED ≠ AUTHORIZED` holds for every §8D row; the delivered CAP-13 two-support
+reactions exception, the bounded stiffness method's `NOT ADMITTED` / `D-7: OPEN` state and the §1A legacy exclusions
+(among them 5, 6 and 10) are unchanged. The initial-release technology set is NOT RECORDED in the repository, so every
+§8D row reads `OWNER RELEASE DECISION RECONCILIATION REQUIRED`; that marker is not an approval of any capability here.
+
 ## 3. Dependency map
 
 - **D13** → CAP-01 → (feeds) CAP-04, CAP-06 (technical axes), CAP-09.
