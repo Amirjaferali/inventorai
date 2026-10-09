@@ -18,7 +18,7 @@ from test_v132_derived_navigation_truth import (
     _S20_COMPLETE, _S21_COMPLETE, _S22_COMPLETE, _S23_COMPLETE, _S24_COMPLETE, _S24_PARTIAL, _S24_PRE_MARKER,
     _S35C_DELIVERED, _S35_ACTIVE, _S35_BOLD, _S35_COMPLETE, _S35_ENTERED, _S35_LATER_NO, _S35_LIMITS, _S35_NAME,
     _S35_SLICE_DELIVERED, _S35_TRIGGERS, _S36C_DELIVERED, _S36_COMPLETE, _S36_LIMITS, _S36_NOT, _S37_NOT,
-    _S25_DELIVERED, _S25_FULL_NO, _S25_PARTIAL, _S25_PRE_MARKER, _S27_DELIVERED, _S27_FULL_NO, _S27_PARTIAL,
+    _S25_DELIVERED, _S25_FULL_NO, _S25_PARTIAL, _S25_PRE_MARKER, _S27_DELIVERED, _S27_FULL_NO, _S27_PARTIAL, _S27_COMPLETE, _S27C_DELIVERED,
     _live_authority_problems, _mutate,
 )
 
@@ -158,7 +158,7 @@ _MATERIAL_REVERSALS = {
     "stage 35 contract restored in the routing": (CHECKLIST, "current-routing", _NONE718, _S35_ACTIVE),
     "stage 35 contract restored in the declaration": (CONTRACT, "declaration", _NONE_BOLD, _S35_BOLD),
     "stage 35 contract restored in the head": ("CLAUDE.md", "head", _NONE_BOLD, _S35_BOLD),
-    "active increment heading restored": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-27-THERM-01-Slice-1 "
+    "active increment heading restored": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-27-closure "
                                           "(2026-10-09); ", "**ACTIVE BOUNDED PRODUCT INCREMENT — " + _S35_NAME
                                           + " (Owner-authorized 2026-10-05); "),
     "stale active-increment prose back": (CHECKLIST, "current-routing", _NS,
@@ -207,7 +207,7 @@ _MATERIAL_REVERSALS = {
     "stage 36 not-entered prose back": (CONTRACT, "declaration", _NS,
                                         _NS + " Stage 36 stays NOT ENTERED and NOT AUTHORIZED."),
     "stage 36 closure undone": (CONTRACT, "current-routing", _S36C_DELIVERED, "`STAGE 36 CLOSURE: NOT AUTHORIZED`"),
-    "post-stage-35 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-27-THERM-01-Slice-1 "
+    "post-stage-35 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-27-closure "
                                      "(2026-10-09); ", "**NO ACTIVE CONTRACT — post-Stage-35-closure (2026-10-05); "),
     "live provider selected": (STATE, "current-position", _S36_LIMITS[0],
                                "`PRODUCTION LIVE AI / PROVIDER: SELECTED — ACTIVE`"),
@@ -234,7 +234,7 @@ _MATERIAL_REVERSALS = {
     "stage 16 complete globally in prose": (STATE, "current-position", _NS, _NS + " Stage 16 is complete."),
     "stage 16 fully complete in prose": (CONTRACT, "declaration", _NS,
                                          _NS + " Stage 16 is fully complete for every scope."),
-    "post-stage-36 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-27-THERM-01-Slice-1 "
+    "post-stage-36 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-27-closure "
                                      "(2026-10-09); ", "**NO ACTIVE CONTRACT — post-Stage-36-closure (2026-10-05); "),
     "stage 16 routed past again": (CONTRACT, "current-routing", "routing past Stages 11, 13, 14 and 17",
                                    "routing past Stages 11, 13, 14, 16 and 17"),
@@ -263,7 +263,7 @@ _MATERIAL_REVERSALS = {
     "cap-13 consumer added in prose": (CHECKLIST, "current-routing", _NS, _NS + " Another consumer is authorized."),
     "unit conversion authorized in prose": (STATE, "current-position", _NS, _NS + " Unit conversion is authorized."),
     "cap-13 broadly activated": ("CLAUDE.md", "head", _NONE_BOLD, _NONE_BOLD + " CAP-13 is fully activated."),
-    "post-stage-16 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-27-THERM-01-Slice-1 "
+    "post-stage-16 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-27-closure "
                                      "(2026-10-09); ", "**NO ACTIVE CONTRACT — post-Stage-16-closure (2026-10-06); "),
     # ADDED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: an undone slice, Stage 27
     # back to NOT ENTERED, the pre-slice NONE head back, an unscoped or completed Stage 27, full THERM-01, a third method
@@ -271,13 +271,22 @@ _MATERIAL_REVERSALS = {
     "stage 27 slice undone": (CHECKLIST, "current-routing", _S27_DELIVERED,
                               "`STAGE 27 — THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SLICE 1: NOT DELIVERED`"),
     "stage 27 back to not entered": (STATE, "current-position", _NS, _NS + " `STAGE 27: NOT ENTERED`"),
-    "stage 27 complete": (ROADMAP, "current-routing", _S27_PARTIAL, "`STAGE 27: COMPLETE`"),
+    # AMENDED at the Stage 27 closure: Stage 27 is COMPLETE for its current bounded scope only; an unscoped completion,
+    # the slice's ENTERED / PARTIAL state back, an undone closure or a global completion claim is a reversal
+    "stage 27 complete unscoped": (ROADMAP, "current-routing", _S27_COMPLETE, "`STAGE 27: COMPLETE`"),
     "stage 27 complete in prose": (CONTRACT, "declaration", _NS, _NS + " Stage 27 is complete."),
+    "stage 27 back to partial": (CHECKLIST, "current-routing", _S27_COMPLETE, _S27_PARTIAL),
+    "stage 27 closure undone": (CONTRACT, "current-routing", _S27C_DELIVERED, "`STAGE 27 CLOSURE: NOT AUTHORIZED`"),
+    "stage 27 complete for everything": (STATE, "current-position", _NS, _NS + " Stage 27 is complete for all thermal work."),
+    "thermal engineering complete": (ROADMAP, "current-routing", _NS, _NS + " Thermal engineering is now complete."),
     "full therm-01 authorized": (CONTRACT, "declaration", _S27_FULL_NO, "`FULL THERM-01: AUTHORIZED`"),
     "third method admitted in prose": (ROADMAP, "current-routing", _NS, _NS + " A third method is admitted."),
     "therm-01 broadly activated": ("CLAUDE.md", "head", _NONE_BOLD, _NONE_BOLD + " THERM-01 is fully activated."),
     "absolute temperature claimed": (STATE, "current-position", _NS, _NS + " Absolute temperature is now computed."),
-    "post-stage-25 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-27-THERM-01-Slice-1 "
+    "post-stage-27-slice none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-27-closure "
+                                           "(2026-10-09); ", "**NO ACTIVE CONTRACT — post-Stage-27-THERM-01-Slice-1 "
+                                           "(2026-10-09); "),
+    "post-stage-25 none head back": (ROADMAP, "current-routing", "**NO ACTIVE CONTRACT — post-Stage-27-closure "
                                      "(2026-10-09); ", "**NO ACTIVE CONTRACT — post-Stage-25-CAP-13-Slice-1 (2026-10-08); "),
 }
 
