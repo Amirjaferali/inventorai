@@ -687,7 +687,10 @@ def test_a_forged_or_cross_project_identity_is_refused(owner):
     c, sid, ifc = owner
     form = _form(c, sid, "record", interface_id=ifc.interface_id)
     forged = dict(form, **ITEM)
-    forged["evidence_submission"] = form["evidence_submission"][:-2] + "00"
+    # flip the final hex character of the HMAC: always a different, well-formed signature
+    # (``[:-2] + "00"`` was a no-op whenever the genuine signature already ended in 00)
+    genuine = form["evidence_submission"]
+    forged["evidence_submission"] = genuine[:-1] + ("0" if genuine[-1] != "0" else "1")
     assert c.post(IEV % sid, data=forged).status_code == 400
     other_sid, _other = _integrated_with_interface(c)
     foreign = dict(forged, evidence_submission=appmod._s15_evidence_submission_identity(other_sid))
