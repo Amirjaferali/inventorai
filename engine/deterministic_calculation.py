@@ -1,9 +1,12 @@
-"""Shared deterministic calculation and units owner - first increment (A2 method-first).
+"""Shared deterministic calculation and units owner - A2 method-first, bounded second admission.
 
-Gate: Stage 25 / CAP-13 A-5 first bounded implementation, under the accepted
+Gates: Stage 25 / CAP-13 A-5 first bounded implementation, under the accepted
 docs/governance/SHARED_DETERMINISTIC_CALCULATION_AND_UNITS_OWNER_BOUNDARY_CONTRACT.md
 (with its accepted Correction 01, shape A2) and the accepted
-docs/governance/STAGE25_CAP13_TWO_SUPPORT_STATIC_REACTIONS_METHOD_CONTRACT.md.
+docs/governance/STAGE25_CAP13_TWO_SUPPORT_STATIC_REACTIONS_METHOD_CONTRACT.md; then
+Stage 27 / THERM-01 Slice 1, the bounded second admission of the same contract's
+accepted Correction 02 (§13A) under the accepted
+docs/governance/STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md.
 The owner is descriptive and unnumbered: it carries no CAP identifier.
 
 What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
@@ -18,8 +21,8 @@ What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
 
 What it does NOT own: the method's equations, applicability, numeric domain,
 declarations, screen, limitations or source authority. Those belong to the
-method authority (CAP-13) and reach this module only as one immutable binding
-created by application wiring (``bind_method``). This module imports no consumer
+method authority (CAP-13 or THERM-01) and reach this module only as one immutable binding per
+method, created by application wiring (``bind_method``). This module imports no consumer
 or method-authority module, reads no project, session, ledger, store, answer or
 requirement quantity, writes nothing and has no clock, randomness, network,
 provider or model dependency.
@@ -78,7 +81,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.0.0"
+IMPLEMENTATION_VERSION = "1.1.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -92,12 +95,18 @@ CONDITION_GREATER_THAN_ZERO = "greater_than_zero"
 CONDITION_WITHIN_ZERO_AND_ROLE = "within_zero_and_role"
 _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_WITHIN_ZERO_AND_ROLE)
 
-# The closed inventory of this first increment (A2: ONE method, ONE consumer).
-# A structurally valid extra method, quantity kind or unit fails closed: widening
-# the inventory is a separately authorized change, never an artifact edit alone.
-ADMITTED_METHODS = frozenset({("cap13:static_reactions_two_support", "1.0")})
-ADMITTED_QUANTITY_KINDS = frozenset({"force", "length"})
-ADMITTED_UNIT_TOKENS = frozenset({"N", "mm"})
+# The closed inventory: the delivered first increment (CAP-13) plus exactly the
+# bounded second admission of Correction 02 (§13A, THERM-01) - TWO methods, each
+# with its own consumer. A structurally valid extra method, quantity kind or unit
+# fails closed: widening the inventory is a separately authorized change, never an
+# artifact edit alone. No absolute temperature kind and no conversion exist.
+ADMITTED_METHODS = frozenset({
+    ("cap13:static_reactions_two_support", "1.0"),
+    ("therm01:conduction_temperature_difference_single_path", "1.0"),
+})
+ADMITTED_QUANTITY_KINDS = frozenset({
+    "force", "length", "power", "thermal_resistance", "temperature_difference"})
+ADMITTED_UNIT_TOKENS = frozenset({"N", "mm", "W", "K/W", "K"})
 
 _ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _MAX_TEXT = 700
@@ -339,8 +348,9 @@ def load_artifact(path=None):
 # ---------------------------------------------------------------------------
 class MethodBinding:
     """One immutable binding of ONE method identity and version to ONE trusted
-    adapter function, created once by application wiring. Not a registry: there
-    is no lookup by name, no discovery, no module path and no mutation."""
+    adapter function, created once per method by application wiring. Not a
+    registry: there is no lookup by name, no discovery, no module path and no
+    mutation, and a binding executes only its own method's record."""
     __slots__ = ("_method_id", "_method_version", "_adapter")
 
     def __init__(self, method_id, method_version, adapter):
@@ -374,7 +384,7 @@ def _adapter_identity(adapter):
 
 
 def bind_method(method_id, method_version, adapter):
-    """Create the ONE immutable binding. Pure: it reads no artifact and never
+    """Create one immutable binding. Pure: it reads no artifact and never
     raises for a wrong adapter - a binding whose adapter does not match the
     governed method record fails closed at execution (``EXECUTION_INTEGRITY_FAILURE``)."""
     return MethodBinding(method_id, method_version, adapter)

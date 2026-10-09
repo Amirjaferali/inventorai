@@ -1,12 +1,15 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "1",
+  "artifact_version": "2",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, first increment, shape A2 (method-first), under the accepted calc/units boundary contract (with its accepted Correction 01) and the accepted CAP-13 two-support static reactions contract. It admits exactly one method and exactly the two unit tokens that method requires; it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. The method's equations, applicability, numeric domain, declarations, screen and limitations stay with the CAP-13 method authority; this artifact carries only the structural method record and a small version-bound source-qualification snapshot.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its accepted Correction 01 and Correction 02 / section 13A), the accepted CAP-13 two-support static reactions contract and the accepted THERM-01 single-path conduction temperature-difference contract. Content version 2 admits exactly two methods and exactly the five unit tokens those methods require (N and mm for CAP-13; W, K/W and K for THERM-01); it holds no conversion, no alias, no dimensional equivalence, no absolute temperature kind and no unit vocabulary beyond these records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The CAP-13 records dcu:U001, dcu:U002, dcu:SU001 and dcu:SU002 and the CAP-13 method record are unchanged from content version 1.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
-    {"quantity_kind": "length", "dimension": "L"}
+    {"quantity_kind": "length", "dimension": "L"},
+    {"quantity_kind": "power", "dimension": "M L^2 T^-3"},
+    {"quantity_kind": "thermal_resistance", "dimension": "Theta M^-1 L^-2 T^3"},
+    {"quantity_kind": "temperature_difference", "dimension": "Theta"}
   ],
   "unit_records": [
     {
@@ -42,6 +45,57 @@
       "inspection_basis": "LEAD_SUPPLIED",
       "inspection_date": "2026-10-07",
       "inspection_reference": "STAGE25_CAP13_BOUNDED_STIFFNESS_METHOD_CONTRACT.md §3A D5-6 (inspected by the prior Lead 2026-10-06, re-verified by the successor Lead 2026-10-07)"
+    },
+    {
+      "record_id": "dcu:U003",
+      "unit_token": "W",
+      "unit_name": "watt",
+      "quantity_kind": "power",
+      "source_title": "NIST Special Publication 330 - The International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "2019 Edition",
+      "doi": "not recorded - no DOI was supplied with the Lead inspection; the inspected URL is recorded",
+      "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "inspected_location": "Section 2 (no finer subsection reference was supplied)",
+      "inspected_content": "SP 330 Section 2 identifies the watt, symbol W, as the SI coherent derived unit with a special name for power (one joule per second). Unit identification only; no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU003",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-08",
+      "inspection_reference": "STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md section 11, THERM-U2 (Lead inspection A, supplied 2026-10-08; not independently re-inspected by the executor)"
+    },
+    {
+      "record_id": "dcu:U004",
+      "unit_token": "K/W",
+      "unit_name": "kelvin per watt",
+      "quantity_kind": "thermal_resistance",
+      "source_title": "NIST Special Publication 330 - The International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "2019 Edition",
+      "doi": "not recorded - no DOI was supplied with the Lead inspection; the inspected URL is recorded",
+      "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "inspected_location": "Section 2 (no finer subsection reference was supplied)",
+      "inspected_content": "SP 330 Section 2 states that coherent SI derived units are formed as products and quotients of SI units; hence kelvin per watt, written K/W, is a coherent SI unit, used here for total thermal resistance. K/W is not a named SI unit and the quantity name is InventorAI's usage. Unit identification only; no conversion is admitted.",
+      "source_use_policy_ref": "dcu:SU003",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-08",
+      "inspection_reference": "STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md section 11, THERM-U3 (Lead inspection A, supplied 2026-10-08; not independently re-inspected by the executor)"
+    },
+    {
+      "record_id": "dcu:U005",
+      "unit_token": "K",
+      "unit_name": "kelvin",
+      "quantity_kind": "temperature_difference",
+      "source_title": "NIST Special Publication 330 - The International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "2019 Edition",
+      "doi": "not recorded - no DOI was supplied with the Lead inspection; the inspected URL is recorded",
+      "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "inspected_location": "Section 2 (no finer subsection reference was supplied)",
+      "inspected_content": "SP 330 Section 2 identifies the kelvin, symbol K, as the SI base unit of thermodynamic temperature, and a temperature difference (interval) may be expressed in kelvin. Admitted here ONLY for a temperature difference: no absolute temperature, no Celsius scale, no offset and no conversion.",
+      "source_use_policy_ref": "dcu:SU003",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-08",
+      "inspection_reference": "STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md section 11, THERM-U1 and THERM-U4 (Lead inspection A, supplied 2026-10-08; not independently re-inspected by the executor)"
     }
   ],
   "source_use_policies": [
@@ -70,6 +124,32 @@
       "acknowledgement": "Reference source material: NASA Glenn Research Center (equilibrium and centre-of-gravity principles); the two-support equations are InventorAI's own derivation.",
       "third_party_material_exclusion": "No third-party or unidentified page content.",
       "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU003",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local snapshot of THERM-SU-NIST (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. SP 330 is a NIST Special Publication; any BIPM-originated wording or tables in it are treated as third-party material and are not reproduced. Use is limited to identifying the three unit tokens W, K/W and K for the THERM-01 method; no NIST or SP 330 text, table or symbol list is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-08",
+      "inspection_reference": "Version-bound snapshot of THERM-SU-NIST in STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md section 11 (Lead inspection A, supplied 2026-10-08). A separate record: dcu:SU001 keeps its own scope (dcu:U001 and dcu:U002 only) and is not extended.",
+      "acknowledgement": "Unit identification for W, K/W and K follows NIST Special Publication 330 (2019 Edition), National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party (including BIPM-originated) material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
+    },
+    {
+      "record_id": "dcu:SU004",
+      "source_title": "U.S. Department of Energy - Web Policies",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "url": "https://www.energy.gov/web-policies",
+      "inspected_content": "Owner-local qualification snapshot for the THERM-01 method source THERM-S1 only (not a legal opinion): government information is generally in the public domain and DOE acknowledgement is requested; third-party and contractor material may remain protected. The handbook was prepared with a DOE contractor training programme, so no blanket public-domain claim is made for its expressive content. Use is the one factual per-area relation only, in InventorAI's own paraphrase; no handbook prose, worked example, figure or table is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-09",
+      "inspection_reference": "Version-bound snapshot of THERM-SU-DOE in STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md section 11 (Lead inspection B, 2026-10-09); held here so the owner method record validates from this artifact alone, with no runtime loading of the THERM-01 artifact.",
+      "acknowledgement": "Reference source material: U.S. DOE Fundamentals Handbook DOE-HDBK-1012/2-92 (archived; historical fundamentals reference only); the total-resistance form is InventorAI's own derivation.",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
+      "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this owner or any result."
     }
   ],
   "methods": [
@@ -116,6 +196,38 @@
       "result_range": [
         {"role": "R_L", "condition": "within_zero_and_role", "bound_role": "P"},
         {"role": "R_R", "condition": "within_zero_and_role", "bound_role": "P"}
+      ]
+    },
+    {
+      "method_id": "therm01:conduction_temperature_difference_single_path",
+      "method_version": "1.0",
+      "adapter_identity": "engine.therm01_conduction_method.evaluate",
+      "technical_authority": "THERM-01 - STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md (accepted; section 3 method definition and derivation, section 6 numeric domain)",
+      "method_authority_artifact": {"artifact_id": "therm01_conduction_temperature_difference_single_path", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "THERM-S1",
+          "source_title": "DOE-HDBK-1012/2-92, DOE Fundamentals Handbook: Thermodynamics, Heat Transfer, and Fluid Flow, Volume 2 of 3, Module 2 (Heat Transfer), HT-02 page 9, equation (2-6) - per-area relation only",
+          "publisher": "U.S. Department of Energy (DOE)",
+          "url": "https://www.energy.gov/documents/doe-hdbk-1012-92vol2",
+          "source_use_policy_ref": "dcu:SU004",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-08"
+        }
+      ],
+      "input_roles": [
+        {"role": "P", "quantity_kind": "power", "unit_token": "W"},
+        {"role": "R_theta", "quantity_kind": "thermal_resistance", "unit_token": "K/W"}
+      ],
+      "output_roles": [
+        {"role": "delta_T", "quantity_kind": "temperature_difference", "unit_token": "K"}
+      ],
+      "applicability": [
+        {"role": "P", "condition": "greater_than_zero", "bound_role": null},
+        {"role": "R_theta", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": [
+        {"role": "delta_T", "condition": "greater_than_zero", "bound_role": null}
       ]
     }
   ]

@@ -242,18 +242,26 @@ def test_exact_unit_tokens_only_no_alias_no_conversion(units, reason):
     assert result["outputs"] is None
 
 
+def _cap13_record(data):
+    # Correction 02 (calc / units contract §13A): the shared owner artifact now carries
+    # exactly two method records; CAP-13 selects its own record by identity
+    (record,) = [r for r in data["methods"] if r["method_id"] == method.METHOD_ID]
+    return record
+
+
 def test_role_kind_unit_bindings_are_exactly_the_governed_set():
     data = dc.load_artifact()
-    (record,) = data["methods"]
+    record = _cap13_record(data)
     assert [(r["role"], r["quantity_kind"], r["unit_token"])
             for r in record["input_roles"]] == [
         ("P", "force", "N"), ("L", "length", "mm"), ("x", "length", "mm")]
     assert [(r["role"], r["quantity_kind"], r["unit_token"])
             for r in record["output_roles"]] == [
         ("R_L", "force", "N"), ("R_R", "force", "N")]
-    assert sorted(u["unit_token"] for u in data["unit_records"]) == ["N", "mm"]
+    assert sorted(u["unit_token"] for u in data["unit_records"]) == [
+        "K", "K/W", "N", "W", "mm"]
     assert sorted(k["quantity_kind"] for k in data["quantity_kinds"]) == [
-        "force", "length"]
+        "force", "length", "power", "temperature_difference", "thermal_resistance"]
 
 
 def test_missing_and_extra_roles():
@@ -308,10 +316,11 @@ def test_binding_is_immutable_and_not_a_registry():
     for banned in ("importlib", "__import__", "getattr(", "eval(", "exec(",
                    "entry_points", "pkgutil", "globals()", "REGISTRY"):
         assert banned not in source, banned
-    # the app wires exactly ONE binding, to the method's own function
+    # the app wires exactly ONE CAP-13 binding, to the method's own function; the
+    # only other binding is THERM-01's (Correction 02: one immutable binding per method)
     assert webapp._CAP13_REACTIONS_BINDING.adapter_identity == BINDING.adapter_identity
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 1
+    assert app_source.count("_dcalc.bind_method(") == 2
 
 
 def test_deterministic_identity_and_no_input_mutation():
@@ -363,7 +372,7 @@ def test_both_artifacts_load_and_cross_reference_without_circular_loading(
         monkeypatch, tmp_path):
     owner = dc.load_artifact()
     content = cap13.load_artifact()
-    (record,) = owner["methods"]
+    record = _cap13_record(owner)
     assert record["method_id"] == content["method"]["method_id"] == method.METHOD_ID
     assert record["method_version"] == content["method"]["method_version"] == "1.0"
     assert record["method_authority_artifact"] == {
@@ -387,26 +396,29 @@ def test_source_use_records_are_present_and_bound():
         assert by_id[ref]["url"].startswith("https://www1.grc.nasa.gov/")
     owner = dc.load_artifact()
     policies = {p["record_id"] for p in owner["source_use_policies"]}
-    # dcu:SU001 binds the NIST unit records; dcu:SU002 is the owner-local, version-bound
-    # snapshot that the method source qualification resolves to
-    assert policies == {"dcu:SU001", "dcu:SU002"}
-    for unit in owner["unit_records"]:
+    # dcu:SU001 binds the NIST unit records N / mm; dcu:SU002 is the owner-local,
+    # version-bound snapshot that the CAP-13 source qualification resolves to;
+    # dcu:SU003 / dcu:SU004 are THERM-01's own (Correction 02) and bind nothing of CAP-13
+    assert policies == {"dcu:SU001", "dcu:SU002", "dcu:SU003", "dcu:SU004"}
+    cap13_units = [u for u in owner["unit_records"] if u["unit_token"] in ("N", "mm")]
+    assert len(cap13_units) == 2
+    for unit in cap13_units:
         assert unit["source_use_policy_ref"] == "dcu:SU001"
         assert unit["doi"] == "10.6028/NIST.SP.811e2008"
-    (record,) = owner["methods"]
+    record = _cap13_record(owner)
     assert [q["source_ref"] for q in record["source_qualification"]] == [
         "NASA-S1", "NASA-S2"]
 
 
 def _owner_tamper(name):
     data = _owner_artifact()
-    (record,) = data["methods"]
+    record = _cap13_record(data)
     if name == "extra_field":
         data["grade"] = "A"
     elif name == "unit_token":
         data["unit_records"][0]["unit_token"] = "kN"
     elif name == "alias_unit":
-        extra = dict(data["unit_records"][1], record_id="dcu:U003", unit_token="MM")
+        extra = dict(data["unit_records"][1], record_id="dcu:U999", unit_token="MM")
         data["unit_records"].append(extra)
     elif name == "missing_policy":
         data["source_use_policies"] = []
@@ -451,7 +463,7 @@ def test_owner_artifact_version_edit_fails_closed_and_binding_mismatch_refuses(t
     # version is not the admitted artifact; a binding / request version mismatch
     # against the admitted record stays a REFUSAL / VERSION_MISMATCH
     data = _owner_artifact()
-    data["methods"][0]["method_version"] = "1.1"
+    _cap13_record(data)["method_version"] = "1.1"
     path = _write(tmp_path, data)
     with pytest.raises(dc.CalculationArtifactError, match="not the admitted inventory"):
         dc.load_artifact(path)
@@ -468,7 +480,7 @@ def _extra_kind(data, kind="mass"):
 
 
 def _extra_unit(data):
-    data["unit_records"].append(dict(data["unit_records"][0], record_id="dcu:U003",
+    data["unit_records"].append(dict(data["unit_records"][0], record_id="dcu:U999",
                                      unit_token="kg", unit_name="kilogram",
                                      quantity_kind="mass"))
 
@@ -482,7 +494,7 @@ def test_owner_closed_inventory_rejects_structurally_valid_extras(tmp_path, monk
                                                                   name, message):
     data = _owner_artifact()
     if name == "extra_method":
-        extra = copy.deepcopy(data["methods"][0])
+        extra = copy.deepcopy(_cap13_record(data))
         extra["method_id"] = "cap13:static_reactions_three_support"
         data["methods"].append(extra)
     elif name == "extra_kind":
@@ -502,15 +514,19 @@ def test_owner_closed_inventory_rejects_structurally_valid_extras(tmp_path, monk
 
 
 def test_owner_closed_inventory_constants():
-    assert dc.ADMITTED_METHODS == frozenset({("cap13:static_reactions_two_support", "1.0")})
-    assert dc.ADMITTED_QUANTITY_KINDS == frozenset({"force", "length"})
-    assert dc.ADMITTED_UNIT_TOKENS == frozenset({"N", "mm"})
+    # Correction 02 (calc / units contract §13A): exactly two methods, closed
+    assert dc.ADMITTED_METHODS == frozenset({
+        ("cap13:static_reactions_two_support", "1.0"),
+        ("therm01:conduction_temperature_difference_single_path", "1.0")})
+    assert dc.ADMITTED_QUANTITY_KINDS == frozenset({
+        "force", "length", "power", "thermal_resistance", "temperature_difference"})
+    assert dc.ADMITTED_UNIT_TOKENS == frozenset({"N", "mm", "W", "K/W", "K"})
 
 
 def test_owner_method_source_qualification_is_self_contained():
     data = dc.load_artifact()
     policies = {p["record_id"]: p for p in data["source_use_policies"]}
-    (record,) = data["methods"]
+    record = _cap13_record(data)
     for entry in record["source_qualification"]:
         assert entry["source_use_policy_ref"] in policies
         assert entry["source_use_policy_ref"] == "dcu:SU002"
@@ -526,7 +542,7 @@ def test_owner_method_source_qualification_is_self_contained():
                                   "basis_altered", "ref_missing", "date_altered"])
 def test_owner_method_source_use_tamper_fails_closed(tmp_path, name):
     data = _owner_artifact()
-    entry = data["methods"][0]["source_qualification"][0]
+    entry = _cap13_record(data)["source_qualification"][0]
     if name == "foreign_ref":
         entry["source_use_policy_ref"] = "cap13:SU001"      # not resolvable locally
     elif name == "unknown_ref":

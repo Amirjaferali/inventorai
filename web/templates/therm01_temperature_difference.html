@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}{{ t('UI_THERM01_TITLE') }}{% endblock %}
+{% block head %}
+<style>
+body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+.intro{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444;line-height:1.5}
+.error{background:#fdecea;color:#b71c1c;border:1px solid #f5c6cb;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px}
+.error strong{display:block;margin-bottom:4px}
+.notice{background:#eef3f8;color:#1f3b57;border:1px solid #c9d6e3;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;line-height:1.5}
+.boundary{background:#fff8e6;border:1px solid #ecd9a4;color:#4a3b00;padding:10px 14px;border-radius:4px;margin:0 0 16px 0;font-size:13px;line-height:1.5}
+.boundary ol{margin:0;padding-inline-start:20px}
+.boundary li{margin:0 0 6px 0}
+.box{border:1px solid #e2e6ea;border-radius:4px;padding:12px 14px;margin-bottom:16px;min-width:0;overflow-wrap:anywhere}
+.copy{font-size:13px;margin:0 0 6px 0;line-height:1.5;overflow-wrap:anywhere}
+.guidance{font-size:12px;line-height:1.6;color:#555;margin:4px 0 0}
+fieldset{border:1px solid #e2e6ea;border-radius:4px;margin:0 0 10px 0;padding:8px 12px;min-width:0}
+legend{font-size:13px;color:#2c3e50;padding:0 4px;overflow-wrap:anywhere}
+.choice{display:inline-block;font-size:13px;margin:4px 14px 0 0}
+label.field{display:block;font-size:13px;color:#2c3e50;margin:12px 0 4px 0;overflow-wrap:anywhere}
+input[type=text]{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
+button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer;max-width:100%;box-sizing:border-box}
+.links{margin-top:24px;font-size:13px}
+dl.result{margin:0 0 8px 0;font-size:14px}
+dl.result dt{color:#555;font-size:13px;margin-top:6px}
+dl.result dd{margin:2px 0 0 0;font-weight:bold}
+ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:anywhere}
+@media(max-width:520px){body{margin:18px auto;padding:0 14px}.box{padding:12px}}
+</style>
+{% endblock %}
+{% block content %}
+{#- Stage 27 / THERM-01 - Single-Path Temperature-Difference, Slice 1. OPTIONAL,
+    ADVISORY, NON-BINDING and request-local: nothing on this page is saved, and
+    the result is rendered in the response to the submission itself. Nothing is
+    inferred, defaulted or pre-selected: the form only shows back what this same
+    request submitted. The result is a temperature DIFFERENCE only, UNVALIDATED,
+    not evidence, and states no temperature, rating, margin, safety or
+    suitability. The high-risk screen neither reads nor feeds SafetySignal. -#}
+<h1>{{ t('UI_THERM01_TITLE') }}</h1>
+<div class="intro" data-therm01-intro>
+  <p style="margin:0">{{ iso('UI_THERM01_INTRO') }}</p>
+</div>
+<p class="notice" data-therm01-scope-note>{{ iso('UI_THERM01_SCOPE_NOTE') }}</p>
+
+{% if error_key %}<div class="error" role="alert" data-therm01-error>{{ t(error_key) }}</div>{% endif %}
+
+{% if eligible and not error_key %}
+{% if result %}
+<section class="box" data-therm01-result="success">
+  <dl class="result">
+    <dt>{{ iso('UI_THERM01_RESULT_DELTA_T') }}</dt>
+    <dd data-therm01-result-value><bdi dir="ltr">{{ result.value }} {{ result.unit }}</bdi></dd>
+  </dl>
+  <p class="copy" data-therm01-status>{{ iso('UI_THERM01_STATUS') }}</p>
+  <p class="copy" data-therm01-method>{{ t('UI_THERM01_METHOD_LINE') }}: <bdi dir="ltr">{{ result.method_id }}</bdi> &middot; <bdi dir="ltr">{{ result.method_version }}</bdi></p>
+  <p class="copy"><strong>{{ t('UI_THERM01_SOURCES_HEADING') }}</strong></p>
+  <ul class="plain" data-therm01-sources>
+    {% for src in result.sources %}
+    <li><bdi dir="ltr" lang="en">{{ src.title }} &mdash; {{ src.url }}</bdi></li>
+    {% endfor %}
+    {% for u in result.units %}
+    <li><bdi dir="ltr" lang="en">{{ u.token }}: {{ u.title }}, {{ u.edition }} &mdash; {{ u.url }}</bdi></li>
+    {% endfor %}
+  </ul>
+  <p class="guidance" data-therm01-sources-note>{{ iso('UI_THERM01_SOURCES_NOTE') }}</p>
+</section>
+<div class="boundary" data-therm01-disclosure>
+  <ol>{% for item in disclosure_items %}<li>{{ item }}</li>{% endfor %}</ol>
+</div>
+<section class="box" data-therm01-echo>
+  <p class="copy"><strong>{{ t('UI_THERM01_ECHO_HEADING') }}</strong></p>
+  <ul class="plain">
+    {% for role, unit in value_roles %}
+    <li>{{ iso('UI_THERM01_FIELD_' ~ role|upper) }}: <bdi dir="ltr" data-therm01-echo-value>{{ echo['values'][role] }}</bdi></li>
+    {% endfor %}
+    {% for decl in declarations %}
+    <li>{{ iso('UI_THERM01_DECL_' ~ decl|upper) }} &mdash; {{ t('UI_THERM01_ANSWER_APPLIES') if echo['declarations'][decl] == answer_applies else t('UI_THERM01_ANSWER_DOES_NOT_APPLY') }}</li>
+    {% endfor %}
+    {% for item in screen_items %}
+    <li>{{ iso('UI_THERM01_SCREEN_' ~ item|upper) }} &mdash; {{ t('UI_THERM01_SCREEN_YES') if echo['screen'][item] == screen_yes else t('UI_THERM01_SCREEN_NO') }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% elif outcome_key %}
+<div class="error" role="alert" data-therm01-outcome><strong>{{ iso('UI_THERM01_UNABLE_HEADING') }}</strong>{{ iso(outcome_key) }}</div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('therm01_temperature_difference_post', sid=sid) }}" data-therm01-form>
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+  {% for decl in declarations %}
+  {% set field = decl_field|format(decl) %}
+  {% set chosen = captured['declarations'][decl] if captured else '' %}
+  <fieldset data-therm01-declaration="{{ decl }}">
+    <legend>{{ iso('UI_THERM01_DECL_' ~ decl|upper) }}</legend>
+    <label class="choice"><input type="radio" name="{{ field }}" value="{{ answer_applies }}" {% if chosen == answer_applies %}checked{% endif %}> {{ t('UI_THERM01_ANSWER_APPLIES') }}</label>
+    <label class="choice"><input type="radio" name="{{ field }}" value="{{ answer_does_not_apply }}" {% if chosen == answer_does_not_apply %}checked{% endif %}> {{ t('UI_THERM01_ANSWER_DOES_NOT_APPLY') }}</label>
+    {% if decl == 'total_resistance' %}<p class="guidance" data-therm01-datasheet-note>{{ iso('UI_THERM01_DATASHEET_NOTE') }}</p>{% endif %}
+  </fieldset>
+  {% endfor %}
+  <p class="copy" data-therm01-screen-stem>{{ t('UI_THERM01_SCREEN_STEM') }}</p>
+  {% for item in screen_items %}
+  {% set field = screen_field|format(item) %}
+  {% set chosen = captured['screen'][item] if captured else '' %}
+  <fieldset data-therm01-screen="{{ item }}">
+    <legend>{{ iso('UI_THERM01_SCREEN_' ~ item|upper) }}</legend>
+    <label class="choice"><input type="radio" name="{{ field }}" value="{{ screen_yes }}" {% if chosen == screen_yes %}checked{% endif %}> {{ t('UI_THERM01_SCREEN_YES') }}</label>
+    <label class="choice"><input type="radio" name="{{ field }}" value="{{ screen_no }}" {% if chosen == screen_no %}checked{% endif %}> {{ t('UI_THERM01_SCREEN_NO') }}</label>
+  </fieldset>
+  {% endfor %}
+  <p class="guidance" data-therm01-screen-note>{{ t('UI_THERM01_SCREEN_NOTE') }}</p>
+  {% for role, unit in value_roles %}
+  {% set field = value_field|format(role) %}
+  <label class="field" for="therm01-{{ role }}">{{ iso('UI_THERM01_FIELD_' ~ role|upper) }}</label>
+  <input type="text" id="therm01-{{ role }}" name="{{ field }}" dir="ltr" inputmode="decimal" autocomplete="off" maxlength="{{ max_value_chars }}" value="{{ captured['values'][role] if captured else '' }}">
+  {% endfor %}
+  <button type="submit">{{ t('UI_THERM01_SUBMIT') }}</button>
+</form>
+{% endif %}
+
+<p class="links"><a href="{{ url_for('show_session', sid=sid) }}">{{ t('UI_THERM01_BACK') }}</a></p>
+{% endblock %}

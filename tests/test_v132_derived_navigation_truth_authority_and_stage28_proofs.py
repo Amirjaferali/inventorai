@@ -250,7 +250,9 @@ def test_f1b_unmodified_repository_counts():
     # residual carried no contract section of its own)
     # Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: + its delivered record and the superseded
     # post-Stage-16-closure NONE record (recorded in its after-merge form; the live record is the post-slice NONE)
-    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 79, 10)
+    # Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: + its delivered record and the superseded
+    # post-Stage-25-CAP-13-Slice-1 NONE record (recorded in its after-merge form; the live record is the post-slice NONE)
+    assert (kinds.count("live"), kinds.count("historical"), kinds.count("legacy")) == (1, 81, 10)
 
 
 def _flat_doc(path):

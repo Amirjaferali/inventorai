@@ -1811,6 +1811,15 @@ body{overflow-wrap:anywhere}
 <p class="journey-note" data-cap13-link style="margin-top:14px"><a href="{{ url_for('cap13_support_reactions', sid=sid) }}">{{ t('UI_CAP13_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_CAP13_LINK_NOTE') }}</span></p>
 {% endif %}
 {#- CAP13-LINK-END -#}
+{#- THERM01-LINK-BEGIN — Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1.
+    ONE optional link to the request-local calculation page, offered only on an
+    eligible (Electrical / Electronics-root) project. It is not a journey action,
+    gates nothing and carries no THERM-01 content: nothing is calculated or saved
+    on this page. -#}
+{% if therm01_temperature_difference_link %}
+<p class="journey-note" data-therm01-link style="margin-top:14px"><a href="{{ url_for('therm01_temperature_difference', sid=sid) }}">{{ t('UI_THERM01_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_THERM01_LINK_NOTE') }}</span></p>
+{% endif %}
+{#- THERM01-LINK-END -#}
 {#- CEV-BLOCK-BEGIN — Commercial Evidence Capture
     (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01). Read: the items already recorded
     for this project, straight from the authoritative Manufacturing Evidence Owner.
