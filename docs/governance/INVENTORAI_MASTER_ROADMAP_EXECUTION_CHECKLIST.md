@@ -1572,11 +1572,13 @@ First-Release Traceability**. It is derived navigation like this checklist — n
 number, owner, gate or implementation authority; no change to any Stage identifier, count, checkbox or completion
 declaration; no domain activation, method admission or shared-owner expansion. Read it, do not duplicate it here.
 
-- **Initial-release technology set: NOT RECORDED IN THE REPOSITORY.** Every §8D row carries
-  `OWNER RELEASE DECISION RECONCILIATION REQUIRED`: the latest Owner release decision for that technology cannot be
-  recovered from repository evidence. The marker is neither a deferral nor an approval; for the two activated roots it
-  asks the Owner to record a decision already acted on, for every other row it asks for the decision itself. Absence of
-  evidence is not evidence that the Owner never approved a technology.
+- **First-release decisions follow the Owner release policy (received 2026-10-09):** technologies explicitly approved
+  for the first release must be implemented, sufficiently deepened and tested before release; proposals and studies are
+  deferred until explicitly approved. §8D gives each row one evidence-bound value (R1 first-release required on explicit
+  evidence · R2 approved, first-release inclusion unresolved · R3 proposed / study only · R4 explicitly deferred or
+  excluded · R5 evidence not available). No row is R1; IoT, Drone / UAV, Renewable and Satellite / Space are R4 (DOMEX-D1,
+  deferred until after first release); the R2 rows await the Owner's first-release reconciliation. Approval is never
+  inferred from inclusion in the roadmap, register or a planning portfolio.
 - **State ladder:** `RECORDED` → `QUALIFIED` → `IMPLEMENTED` → `ACTIVATED` → `TESTED` → `RELEASE-READY`, each distinct.
   `RELEASE-READY` is asserted for no technology. A pack, equation, classification signal or unit test is never release
   readiness, and classification signals are never qualified engineering guidance.

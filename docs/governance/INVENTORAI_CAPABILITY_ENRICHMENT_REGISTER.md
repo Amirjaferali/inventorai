@@ -877,8 +877,9 @@ feasibility are navigation over the entries this register and the Technical Real
 create no new Capability Register number (the Technical Realization "T6" direction remains NOT a register number), no new
 owner and no implementation authority. `RECORDED ≠ AUTHORIZED` holds for every §8D row; the delivered CAP-13 two-support
 reactions exception, the bounded stiffness method's `NOT ADMITTED` / `D-7: OPEN` state and the §1A legacy exclusions
-(among them 5, 6 and 10) are unchanged. The initial-release technology set is NOT RECORDED in the repository, so every
-§8D row reads `OWNER RELEASE DECISION RECONCILIATION REQUIRED`; that marker is not an approval of any capability here.
+(among them 5, 6 and 10) are unchanged. §8D release decisions follow the Owner release policy received 2026-10-09: no row is first-release
+required on explicit evidence, CAP-14 and CAP-18 read `R3 — PROPOSED / STUDY ONLY` (deferred until explicitly approved),
+and no release value is an approval of any capability here.
 
 ## 3. Dependency map
 
