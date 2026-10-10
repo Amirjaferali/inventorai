@@ -69,6 +69,22 @@ def test_energy_time_group_renders_second_and_fits_phone_width(server, page, lan
     expect(group.locator("[data-cap01-fund-boundary]")).to_have_text(text(ET + "BOUNDARY", lang))
     assert group.locator("a, button, form, input, select, textarea").count() == 0
 
+    # each note starts below its equation, and each equation stays on one line, at
+    # desktop and phone width; the original groups keep their inline notes
+    base_note = groups.nth(0).locator("[data-cap01-fund-item-note]").first
+    assert base_note.evaluate("e => getComputedStyle(e).display") == "inline"
+    for width in (1280, 390):
+        page.set_viewport_size({"width": width, "height": 900})
+        for i in range(2):
+            item = group.locator("[data-cap01-fund-claim]").nth(i)
+            eq = item.locator("[data-cap01-fund-equation]")
+            note = item.locator("[data-cap01-fund-item-note]")
+            assert note.evaluate("e => getComputedStyle(e).display") == "block"
+            assert eq.evaluate("e => getComputedStyle(e).whiteSpace") == "nowrap"
+            eq_box, note_box = eq.bounding_box(), note.bounding_box()
+            assert note_box["y"] >= eq_box["y"] + eq_box["height"] - 1, (width, i)
+            assert eq.evaluate("e => e.getClientRects().length") == 1, (width, i)
+
     # layout: coherent at phone width, no horizontal overflow; RTL on Arabic
     page.set_viewport_size({"width": 390, "height": 900})
     width = page.evaluate("document.documentElement.clientWidth")

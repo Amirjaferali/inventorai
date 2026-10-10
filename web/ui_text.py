@@ -6492,12 +6492,12 @@ UI_STRINGS = {
         "ar": "J = W · s",
     },
     "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_ITEM_2_NOTE": {
-        "en": "Correct units do not establish that this relationship applies to your invention.",
-        "ar": "صحة الوحدات لا تثبت أن هذه العلاقة تنطبق على اختراعك.",
+        "en": "Correct units do not validate a design or establish that the constant-power energy relationship applies to your invention.",
+        "ar": "صحة الوحدات لا تثبت صحة التصميم أو انطباق علاقة الطاقة عند ثبات القدرة على اختراعك.",
     },
     "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_SOURCE": {
         "en": "Reference source material: U.S. Department of Energy — Classical Physics, DOE-HDBK-1010-92 (archived; fundamentals reference only); NIST Guide to the SI, SP 811 Chapter 4 and Appendix B.9.",
-        "ar": "مواد مرجعية: وزارة الطاقة الأمريكية (U.S. Department of Energy) — Classical Physics، DOE-HDBK-1010-92 (مؤرشف؛ مرجع للأساسيات فقط)؛ ودليل NIST للنظام الدولي للوحدات، SP 811 Chapter 4 وAppendix B.9.",
+        "ar": "مواد مرجعية: وزارة الطاقة الأمريكية (U.S. Department of Energy) — Classical Physics، DOE-HDBK-1010-92 (مؤرشف؛ مرجع للأساسيات فقط)؛ ودليل NIST للنظام الدولي للوحدات، SP 811 الفصل 4 والملحق B.9.",
     },
     "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_BOUNDARY": {
         "en": "This group performs no project-specific calculation and determines no battery capacity, runtime, component suitability or safety.",

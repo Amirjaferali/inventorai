@@ -82,6 +82,14 @@ ACCEPTED = {
                  "constant or that this relationship applies to your invention.",
         "BOUNDARY": "This group performs no project-specific calculation and determines no battery "
                     "capacity, runtime, component suitability or safety.",
+        # PR787-REVIEW-CLOSURE-01: the four executor-authored strings, pinned exactly.
+        "ITEM_1_TITLE": "Energy at constant power",
+        "ITEM_2_TITLE": "Units of energy, power and time",
+        "ITEM_2_NOTE": "Correct units do not validate a design or establish that the constant-power "
+                       "energy relationship applies to your invention.",
+        "SOURCE": "Reference source material: U.S. Department of Energy — Classical Physics, "
+                  "DOE-HDBK-1010-92 (archived; fundamentals reference only); NIST Guide to the SI, "
+                  "SP 811 Chapter 4 and Appendix B.9.",
     },
     "ar": {
         "TITLE": "الطاقة والقدرة خلال مدة زمنية",
@@ -94,6 +102,13 @@ ACCEPTED = {
                  "تنطبق على اختراعك.",
         "BOUNDARY": "لا تُجري هذه المجموعة حسابًا خاصًا بمشروعك، ولا تحدد سعة البطارية أو مدة "
                     "تشغيلها أو ملاءمة المكونات أو سلامتها.",
+        "ITEM_1_TITLE": "الطاقة عند قدرة ثابتة",
+        "ITEM_2_TITLE": "وحدات الطاقة والقدرة والزمن",
+        "ITEM_2_NOTE": "صحة الوحدات لا تثبت صحة التصميم أو انطباق علاقة الطاقة عند ثبات القدرة على "
+                       "اختراعك.",
+        "SOURCE": "مواد مرجعية: وزارة الطاقة الأمريكية (U.S. Department of Energy) — Classical Physics، "
+                  "DOE-HDBK-1010-92 (مؤرشف؛ مرجع للأساسيات فقط)؛ ودليل NIST للنظام الدولي للوحدات، "
+                  "SP 811 الفصل 4 والملحق B.9.",
     },
 }
 
@@ -149,7 +164,7 @@ def _et_texts(lang):
 
 def _equations(block):
     return re.findall(
-        r'<bdi class="cap01-fund-equation" dir="ltr" data-cap01-fund-equation>(.*?)</bdi>', block)
+        r'<bdi class="cap01-fund-equation" dir="ltr" data-cap01-fund-equation[^>]*>(.*?)</bdi>', block)
 
 
 # ==========================================================================
@@ -389,8 +404,10 @@ def test_t15_exclusions_hold_and_disclaimer_words_are_negative_disclosures_only(
 
 def test_t16_attribution_is_neutral_and_names_exactly_the_recorded_sources():
     en, ar = _et_texts("en")["SOURCE"], _et_texts("ar")["SOURCE"]
-    for token in ("DOE-HDBK-1010-92", "Classical Physics", "SP 811", "Chapter 4", "Appendix B.9"):
+    for token in ("DOE-HDBK-1010-92", "Classical Physics", "SP 811"):
         assert token in en and token in ar, token
+    assert "Chapter 4" in en and "Appendix B.9" in en
+    assert "الفصل 4 والملحق B.9" in ar and "Chapter" not in ar and "Appendix" not in ar
     assert en.startswith("Reference source material:") and ar.startswith("مواد مرجعية:")
     for word in ("endorse", "approved", "certified", "recommended"):
         assert word not in en.lower(), word
@@ -422,3 +439,18 @@ def test_t18_session_page_carries_no_group(client):
     page = client.get(f"/session/{sid}").get_data(as_text=True)
     assert "cap01-fund" not in page and "E = P × t" not in page
     assert _et_texts("en")["TITLE"] not in page
+
+
+def test_t19_the_note_separation_is_scoped_to_the_new_group_only():
+    for pdf in (False, True):
+        html = _html((PHYSICAL_FEASIBILITY, OPEN), pdf=pdf)
+        [et] = _ET_RE.findall(html)
+        assert et.count('data-cap01-fund-equation style="white-space:nowrap">') == 2
+        assert et.count('data-cap01-fund-item-note style="display:block;margin-top:2px">') == 2
+        # the original group's markup carries no new attribute
+        [base] = _base_blocks(html)
+        assert "white-space:nowrap" not in base and "display:block" not in base
+        assert base.count('data-cap01-fund-equation>') == 3
+        assert base.count('data-cap01-fund-item-note>') == 3
+    mech = _html((PHYSICAL_FEASIBILITY, OPEN), domain="mechanical")
+    assert "white-space:nowrap" not in mech.split('class="cap01-fundamentals"', 1)[1].split("</ul>", 1)[0]
