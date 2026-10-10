@@ -125,6 +125,9 @@ from engine.record_store import (
     AssumptionDependencyDeclarationRejected as _DependencyDeclarationRejected,
     SubsystemInterfaceRejected as _SubsystemInterfaceRejected,
     SubsystemInterfaceConflict as _SubsystemInterfaceConflict,
+    ProjectComponentRejected as _ProjectComponentRejected,
+    ProjectComponentConflict as _ProjectComponentConflict,
+    ProjectComponentsCorrupt as _ProjectComponentsCorrupt,
 )
 from engine.record_contract import ProjectRecordContract
 # T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate): the
@@ -6318,6 +6321,10 @@ def show_session(sid):
         # Readiness Snapshot: evidence sufficiency per dimension, composed
         # read-only from the existing owners. None when a source cannot be read.
         readiness_snapshot=_readiness_snapshot_context(sid, state),
+        # COMPONENT-INVENTORY-DECLARE-LIST-01: the inventor's declared
+        # components, read from durable storage on every render (never from
+        # IdeaState); None for a project without a durable record.
+        component_inventory=_component_inventory_context(sid, entry),
         # Manufacturing evidence: the second live dimension, read from the same
         # authoritative owner, scoped so the two blocks never show each other's
         # rows.
@@ -8335,6 +8342,219 @@ def declare_interface(sid):
             return redirect(url_for("show_session", sid=sid))
         return _publish(prior)
     return _publish(stored)
+
+
+# --- COMPONENT-INVENTORY-DECLARE-LIST-01: declared components ------------------
+# The inventor manually declares the physical components their invention
+# includes — ONE entry per component — and may link each to zero or more of the
+# project's OWN durable parts. Declare and list only: no edit, delete, inference,
+# quantity, specification, rating, supplier or validation. The semantic owner is
+# ``engine.subsystem_model`` and the persistence owner the record store
+# (``project_components``); nothing enters ``IdeaState``, the accepted-input
+# history or replay. The session page reads the inventory from ONE consistent
+# durable snapshot on every render. Authorization is the central project check
+# plus the global request-integrity (CSRF) guard; the signed submission identity
+# only says WHICH durable action attempt a post is (an exact retry returns the
+# committed component, the same identity with other material fails closed) and
+# is never an authorization credential. Part references are re-validated against
+# the durable composition INSIDE the write transaction and again on every load.
+# Inventor text is private project information: never logged, never sent to a
+# provider, never shared knowledge, never exported.
+_COMPONENT_SUBMISSION_DOMAIN = "component-submission-v1"
+_COMPONENT_SUBMISSION_ENTRY_KEY = "component_submission"
+# The component notice namespace: two ephemeral per-session slots holding ONE
+# catalogue key each, popped once by the render (never persisted). They never
+# touch the shared ``_interaction_ack`` / ``_answer_error`` slots.
+COMPONENT_ACK_SLOT = "_component_ack"
+COMPONENT_ERROR_SLOT = "_component_error"
+_COMPONENT_MAX_PART_FIELDS = 8
+
+
+def _component_submission_key(sid, nonce):
+    """The stable durable submission identity of ONE component declaration:
+    HMAC over (project, submission nonce) ONLY — never over the material, so
+    the SAME identity with ANY different material is detectable."""
+    msg = _canonical_message("component-action-v1", sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _component_text(raw, limit):
+    """``(text, error_key)`` for one submitted component field: stored trimmed
+    and otherwise verbatim; empty -> INVALID, a NUL -> INVALID_CHAR (never
+    stripped), over-limit -> TOO_LONG (never truncated)."""
+    if not isinstance(raw, str) or not raw.strip():
+        return None, "UI_CI_MSG_INVALID"
+    text = raw.strip()
+    if "\x00" in text:
+        return None, "UI_CI_MSG_INVALID_CHAR"
+    if len(text) > limit:
+        return None, "UI_CI_MSG_TOO_LONG"
+    return text, None
+
+
+def _component_notice(sid, entry, ack=None, error=None):
+    """Publish exactly ONE current component notice and return to the list."""
+    entry.pop(COMPONENT_ACK_SLOT, None)
+    entry.pop(COMPONENT_ERROR_SLOT, None)
+    if ack is not None:
+        entry[COMPONENT_ACK_SLOT] = ack
+    if error is not None:
+        entry[COMPONENT_ERROR_SLOT] = error
+    return redirect(url_for("show_session", sid=sid) + "#component-inventory")
+
+
+def _component_inventory_context(sid, entry):
+    """The session-page view of the inventor's declared components, read from
+    ONE consistent durable snapshot (composition + COMPLETE inventory), or
+    ``None`` when the project has no durable record (nothing is claimed).
+    Unreadable or invalid storage yields ``status="unavailable"`` with NO list
+    and NO form — never an empty or partial inventory. Part names are resolved
+    by identity from the same snapshot; nothing carries an identifier except
+    the form's own part choices."""
+    ack = entry.pop(COMPONENT_ACK_SLOT, None)
+    error = entry.pop(COMPONENT_ERROR_SLOT, None)
+    loader = getattr(_get_store(), "load_component_inventory", None)
+    if not callable(loader):
+        return None
+    try:
+        subsystems, components = loader(sid)
+    except _ProjectNotFound:
+        return None
+    except Exception:
+        return {"status": "unavailable", "ack": None, "error": error}
+    names = {sub.subsystem_id: sub.display_name for sub in subsystems}
+    can_add = len(components) < _subsystem_model.MAX_PROJECT_COMPONENTS_PER_PROJECT
+    return {
+        "status": "available",
+        "has_parts": bool(subsystems),
+        "components": [
+            {"name": item.display_name, "function": item.function_text,
+             "parts": [names[ref] for ref in item.subsystem_ids]}
+            for item in components],
+        "part_choices": [{"id": sub.subsystem_id, "name": sub.display_name}
+                         for sub in subsystems],
+        "can_add": can_add,
+        "submission": (_submission_identity_for(
+            sid, entry, _COMPONENT_SUBMISSION_DOMAIN,
+            _COMPONENT_SUBMISSION_ENTRY_KEY) if can_add else ""),
+        "max_name": _subsystem_model.MAX_COMPONENT_NAME_LENGTH,
+        "max_function": _subsystem_model.MAX_COMPONENT_FUNCTION_LENGTH,
+        "ack": ack, "error": error,
+    }
+
+
+# Committed durable truth that WAS read and fails closed — distinct from
+# committed truth that cannot be read at all, whose outcome stays UNKNOWN.
+_COMPONENT_DURABLE_INVALID = (_ProjectNotFound, _ProjectSubsystemsCorrupt,
+                              _ProjectComponentsCorrupt)
+
+
+@app.route("/session/<sid>/declare-component", methods=["POST"])
+def declare_component(sid):
+    """COMPONENT-INVENTORY-DECLARE-LIST-01 — the inventor explicitly declares
+    ONE physical component of their invention: its name, what it does and,
+    optionally, which of the project's own parts it belongs to. One
+    OWNER_STATED / UNVALIDATED record with a system-generated id is appended
+    to the project's durable inventory; SAVED is reported only for a
+    declaration CONFIRMED from committed durable state. It checks, infers or
+    validates nothing and changes no answer, gap, readiness, progression,
+    evidence, SafetySignal, export, calculation eligibility or composition."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return redirect(url_for("index"))
+        SESSION_STORE[sid] = entry
+    submission = request.form.get("component_submission", "")
+    nonce = _verified_submission_identity(sid, submission,
+                                          _COMPONENT_SUBMISSION_DOMAIN)
+    if nonce is None:
+        return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+    name, name_error = _component_text(
+        request.form.get("component_name"),
+        _subsystem_model.MAX_COMPONENT_NAME_LENGTH)
+    function, function_error = _component_text(
+        request.form.get("component_function"),
+        _subsystem_model.MAX_COMPONENT_FUNCTION_LENGTH)
+    if name_error or function_error:
+        return _component_notice(sid, entry, error=name_error or function_error)
+    parts = request.form.getlist("component_part")
+    if len(parts) > _COMPONENT_MAX_PART_FIELDS or not all(
+            _subsystem_model.is_valid_subsystem_id(ref) for ref in parts) \
+            or len(set(parts)) != len(parts):
+        return _component_notice(sid, entry, error="UI_CI_MSG_REJECTED")
+    store = _get_store()
+    submission_key = _component_submission_key(sid, nonce)
+
+    def _consume_submission():
+        # The identity is spent: the next render issues a fresh one.
+        if entry.get(_COMPONENT_SUBMISSION_ENTRY_KEY) == submission:
+            entry.pop(_COMPONENT_SUBMISSION_ENTRY_KEY, None)
+
+    def _settle(prior):
+        # Confirm-by-reload: only the STORED declaration of exactly this
+        # material is acknowledged; the same identity with other material
+        # fails closed.
+        _consume_submission()
+        if (prior.display_name == name and prior.function_text == function
+                and set(prior.subsystem_ids) == set(parts)):
+            return _component_notice(sid, entry, ack="UI_CI_MSG_SAVED")
+        return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+
+    def _unknown():
+        # Whether an earlier attempt committed cannot be read: never NOT
+        # SAVED, never SAVED; the identity is kept so the same retry resolves
+        # once committed truth is readable.
+        return _component_notice(sid, entry, error="UI_CI_MSG_UNKNOWN")
+
+    # EXACT committed retry (refresh, double-submit, restart) is recognised
+    # first and changes nothing.
+    try:
+        prior = store.committed_project_component_for_submission(
+            sid, submission_key)
+    except _COMPONENT_DURABLE_INVALID:
+        return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+    except Exception:
+        return _unknown()
+    if prior is not None:
+        return _settle(prior)
+
+    # NEW declaration, staged against the durable composition (re-validated
+    # again inside the write transaction).
+    try:
+        composition = store.load_project_subsystems(sid)
+        component = _subsystem_model.declared_component(
+            composition, name, function, parts)
+    except _subsystem_model.ComponentError:
+        return _component_notice(sid, entry, error="UI_CI_MSG_REJECTED")
+    except Exception:
+        # The committed read above just established that nothing is stored
+        # under this identity, and this request has written nothing.
+        return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+    try:
+        _outcome, stored = store.append_project_component(
+            sid, component, submission_key)
+    except _ProjectComponentRejected:
+        return _component_notice(sid, entry, error="UI_CI_MSG_REJECTED")
+    except _ProjectComponentConflict:
+        _consume_submission()
+        return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+    except (sqlite3.Error, StoreError):
+        # Never assume an outcome: re-read committed durable state.
+        try:
+            prior = store.committed_project_component_for_submission(
+                sid, submission_key)
+        except _COMPONENT_DURABLE_INVALID:
+            return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+        except Exception:
+            return _unknown()
+        if prior is None:
+            return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+        return _settle(prior)
+    return _settle(stored)
 
 
 # --- Stage 15 Slice 3: Interface Verification Preparation ------------------

@@ -502,6 +502,10 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       # Integration evidence row (no payload) — not a ledger.
                       "integration_evidence_anchors",
                       "need_routing_revisions",
+                      # COMPONENT-INVENTORY-DECLARE-LIST-01: the inventor's
+                      # declared components (no payload, no disposition) — not
+                      # a ledger.
+                      "project_components",
                       "project_subsystems",   # Stage 15 Slice 1 sidecar
                       "projects",
                       "prototype_measurement_methods",

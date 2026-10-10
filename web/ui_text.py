@@ -836,6 +836,92 @@ UI_STRINGS = {
         "en": "We could not confirm whether your answers were saved. Reload this page to see what your project currently holds before entering them again.",
         "ar": "لم نتمكن من التأكد مما إذا كانت إجاباتك قد حُفظت. أعد تحميل الصفحة لترى ما يحتويه مشروعك حاليًا قبل إدخالها مجددًا.",
     },
+    # --- COMPONENT-INVENTORY-DECLARE-LIST-01 — the inventor's declared components
+    # Plain user-facing language. The inventor's own component names, function
+    # texts and part names are never in this catalogue (rendered verbatim,
+    # escaped). The copy keeps three things apart: the inventor declared the
+    # component; InventorAI does not support it technically; nothing validated it.
+    "UI_CI_HEADING": {
+        "en": "Components you have declared",
+        "ar": "المكوّنات التي أعلنتها",
+    },
+    "UI_CI_EXPLAIN": {
+        "en": "List the physical components you say your invention includes — one entry for each component.",
+        "ar": "سجّل المكوّنات المادية التي تقول إن اختراعك يتضمّنها — إدخال واحد لكل مكوّن.",
+    },
+    "UI_CI_BOUNDARY": {
+        "en": "An entry records only that you said your invention includes this component. It does not mean InventorAI supports the component technically, and it is not a validation: nothing has checked it. Linking a component to a part is your own association: it does not establish that the component sits in that part, works with it or suits it.",
+        "ar": "يسجّل كل إدخال فقط أنك ذكرت أن اختراعك يتضمّن هذا المكوّن. ولا يعني ذلك أن InventorAI يدعم هذا المكوّن تقنيًا، ولم يُفحص ولم يُتحقَّق منه. وربط المكوّن بجزء هو ربط من عندك فقط: لا يثبت أن المكوّن موجود في ذلك الجزء أو يعمل معه أو يناسبه.",
+    },
+    "UI_CI_NONE": {
+        "en": "No components declared yet.",
+        "ar": "لم تُعلَن أي مكوّنات بعد.",
+    },
+    "UI_CI_UNAVAILABLE": {
+        "en": "Your declared components cannot be shown right now. No list is shown rather than an incomplete one. Reload the page later.",
+        "ar": "لا يمكن عرض المكوّنات التي أعلنتها الآن. لا تُعرض القائمة بدلًا من عرضها ناقصة. أعد تحميل الصفحة لاحقًا.",
+    },
+    "UI_CI_ITEM_STATUS": {
+        "en": "declared by you · no validation",
+        "ar": "أعلنتَه أنت · غير مُتحقَّق منه",
+    },
+    "UI_CI_FUNCTION_LABEL": {"en": "What it does:", "ar": "ما يفعله:"},
+    "UI_CI_PARTS_LABEL": {"en": "Linked by you to:", "ar": "ربطتَه أنت بـ:"},
+    "UI_CI_PART_SEP": {"en": ", ", "ar": "، "},
+    "UI_CI_UNASSIGNED": {
+        "en": "Not linked to a part (project level).",
+        "ar": "غير مرتبط بجزء (على مستوى المشروع).",
+    },
+    "UI_CI_FORM_TITLE": {"en": "Declare a component", "ar": "أعلن مكوّنًا"},
+    "UI_CI_FIELD_NAME": {
+        "en": "Component name (up to 80 characters)",
+        "ar": "اسم المكوّن (حتى 80 حرفًا)",
+    },
+    "UI_CI_FIELD_FUNCTION": {
+        "en": "What it does in your invention (up to 300 characters)",
+        "ar": "ما الذي يفعله في اختراعك (حتى 300 حرف)",
+    },
+    "UI_CI_PARTS_LEGEND": {
+        "en": "Parts it belongs to (optional)",
+        "ar": "الأجزاء التي ينتمي إليها (اختياري)",
+    },
+    "UI_CI_PARTS_HINT": {
+        "en": "Tick every part this component belongs to, or none. One component linked to several parts stays one entry.",
+        "ar": "اختر كل جزء ينتمي إليه هذا المكوّن، أو لا تختر شيئًا. المكوّن المرتبط بعدة أجزاء يبقى إدخالًا واحدًا.",
+    },
+    "UI_CI_BUTTON": {"en": "Save component", "ar": "احفظ المكوّن"},
+    "UI_CI_CAP": {
+        "en": "This project already holds the maximum number of declared components, so no new one can be added.",
+        "ar": "يحتوي هذا المشروع بالفعل على الحد الأقصى من المكوّنات المُعلنة، فلا يمكن إضافة مكوّن جديد.",
+    },
+    "UI_CI_MSG_SAVED": {
+        "en": "Saved. The component is recorded as you described it. Nothing has checked it, and this is not a validation.",
+        "ar": "تم الحفظ. سُجّل المكوّن كما وصفته، ولم يُفحص ولم يُتحقَّق منه.",
+    },
+    "UI_CI_MSG_INVALID": {
+        "en": "Enter both a component name and what it does. Nothing was saved.",
+        "ar": "أدخل اسم المكوّن وما الذي يفعله معًا. لم يُحفظ شيء.",
+    },
+    "UI_CI_MSG_TOO_LONG": {
+        "en": "The name can be up to 80 characters and the description up to 300. Shorten the text and try again. Nothing was saved.",
+        "ar": "يمكن أن يصل الاسم إلى 80 حرفًا والوصف إلى 300 حرف. اختصر النص وحاول مجددًا. لم يُحفظ شيء.",
+    },
+    "UI_CI_MSG_INVALID_CHAR": {
+        "en": "The text contains a character that cannot be saved. Nothing was saved.",
+        "ar": "يحتوي النص على حرف لا يمكن حفظه. لم يُحفظ شيء.",
+    },
+    "UI_CI_MSG_REJECTED": {
+        "en": "The selected parts no longer match this project, or the component list is full. Reload the page and try again. Nothing was saved.",
+        "ar": "الأجزاء المختارة لم تعد مطابقة لهذا المشروع، أو أن قائمة المكوّنات ممتلئة. أعد تحميل الصفحة وحاول مجددًا. لم يُحفظ شيء.",
+    },
+    "UI_CI_MSG_NOT_SAVED": {
+        "en": "That component could not be saved. Nothing was changed. Reload the page and try again.",
+        "ar": "تعذّر حفظ هذا المكوّن. لم يتغيّر شيء. أعد تحميل الصفحة وحاول مجددًا.",
+    },
+    "UI_CI_MSG_UNKNOWN": {
+        "en": "We could not confirm whether that component was saved. Reload this page to see your list before entering it again; saving the same entry again from this page will not create a duplicate.",
+        "ar": "لم نتمكن من التأكد مما إذا كان هذا المكوّن قد حُفظ. أعد تحميل الصفحة لترى قائمتك قبل إدخاله مجددًا؛ وإعادة حفظ الإدخال نفسه من هذه الصفحة لن تُنشئ نسخة مكرّرة.",
+    },
     # --- Stage 15 Slice 2 — how the two parts interact (Owner declarations) --
     # Plain user-facing language only (same boundary as the Slice-1 keys).
     # The Owner's own interaction text is never in this catalogue (it is
