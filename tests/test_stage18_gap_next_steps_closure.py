@@ -351,8 +351,13 @@ def test_n22_the_electronics_interface_profile_is_unchanged_and_not_broadened():
 def test_n23_existing_contexts_and_reference_fundamentals_copy_are_unchanged():
     assert _copy_digest(lambda k: k.startswith("UI_CAP01_MECHANICAL_GAP_CONTEXT_V1_")) == \
         _MECH_CONTEXT_COPY_DIGEST
+    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 adds a separately namespaced second group
+    # (..._PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_*); the pre-existing PF copy
+    # stays pinned exactly as before.
     assert _copy_digest(
-        lambda k: k.startswith("UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_")) == \
+        lambda k: k.startswith("UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_")
+        and not k.startswith("UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_"
+                             "ENERGY_TIME_FUNDAMENTALS_")) == \
         _ELEC_PF_COPY_DIGEST
     assert tuple(cap01_guidance.CAP01_GAP_FUNDAMENTALS) == (
         (MECH, PHYSICAL_FEASIBILITY), (ELEC, PHYSICAL_FEASIBILITY))

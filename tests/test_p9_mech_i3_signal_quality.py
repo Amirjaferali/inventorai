@@ -222,7 +222,12 @@ _FROZEN_PACK_SHA256 = {
     # (classification / substance signals, plural aliases, gap_type_mappings and their
     # questions, rule_nuances, aliases, coverage_declaration); no classifier, rule,
     # activation, question-serving or progression change is authorized or implied.
-    "electronics_electrical": "188f63ddc8dfa493b5885bc4afc6b17b742e1fefd4f3915efbc2c81d2dde13dc",
+    # ELECTRICAL-ENERGY-TIME-REFERENCE-01: re-frozen again after adding ONE further bounded,
+    # inert, additive `reference_fundamentals` group (electrical_energy_time_reference_v1)
+    # plus its governance-note entry (provenance electronics_electrical:PR008–PR011). The
+    # pack minus exactly those two additions is canonically identical to the previous
+    # pack (proven in tests/test_cap01_electrical_energy_time_reference.py).
+    "electronics_electrical": "4505405b38692f6af176066c84148e00d6f4c8073a38dc85f572b81e27ea0757",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",

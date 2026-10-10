@@ -497,9 +497,11 @@ def test_08b_the_probe_leaves_no_residue_and_no_unused_future_row_is_shipped():
     used = {view["title_key"], view["intro_key"]}
     for ctx in view["contexts"]:
         used |= {ctx["title_key"], ctx["meaning_key"], ctx["limit_key"]}
-        if ctx["fundamentals"]:
-            used |= {v for k, v in ctx["fundamentals"].items() if k.endswith("_key")} | {
-                v for c in ctx["fundamentals"]["claims"] for k, v in c.items() if k.endswith("_key")}
+        # Every reference-fundamentals group of the context (ELECTRICAL-ENERGY-TIME-
+        # REFERENCE-01: the fixed ordered collection), not only the first.
+        for fund in ctx["fundamentals_groups"]:
+            used |= {v for k, v in fund.items() if k.endswith("_key")} | {
+                v for c in fund["claims"] for k, v in c.items() if k.endswith("_key")}
     assert used == {k for k in ui_text.UI_STRINGS if k.startswith(ELEC_GAP_CONTEXT_PREFIX)}
 
 

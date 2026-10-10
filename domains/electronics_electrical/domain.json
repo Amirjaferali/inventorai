@@ -188,11 +188,37 @@
         }
       ]
     }
+  ,
+    {
+      "group_id": "electrical_energy_time_reference_v1",
+      "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+      "claims": [
+        {
+          "claim_id": "constant_power_energy_reference",
+          "relationship": "E = P × t (constant P throughout t)",
+          "fact": "Power is the rate at which energy is transferred or used. When the power P remains constant throughout the stated duration t, the energy transferred E equals P multiplied by t (E = P × t), where E is the energy transferred, P the constant power and t the duration. The DOE handbook supplies the factual definition of power as a rate of energy transfer / use; E = P × t is InventorAI's own algebraic restatement of that definition under the explicit constant-power restriction, not an equation quoted verbatim from DOE.",
+          "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+          "source_ref": "electronics_electrical:PR008",
+          "source_use_policy_ref": "electronics_electrical:PR010",
+          "limitation": "Constant-power reference relationship only. InventorAI does not establish that power is constant or that this relationship applies to the inventor's invention, and never infers constant power from inventor text, classification signals, component names or a project value. No varying-power treatment, average-power substitution, integration formula, efficiency assumption, battery capacity / runtime, charging, rating, sizing, safety assessment or project-specific calculation."
+        },
+        {
+          "claim_id": "energy_time_unit_discipline",
+          "relationship": "energy: J; power: W; duration: s; J = W · s",
+          "fact": "SI units: energy — joule (J); power — watt (W), expressed as joules per second (W = J/s); duration (time) — second (s). The corresponding unit relationship is J = W · s.",
+          "applicable_gap_type": "PHYSICAL_FEASIBILITY",
+          "source_ref": "electronics_electrical:PR009",
+          "source_use_policy_ref": "electronics_electrical:PR011",
+          "limitation": "Unit discipline only (reference text). J and s are not added as units, quantities, bindings or methods of the shared deterministic calculation / units owner; no conversion factor or other quantity is presented. Correct units do not validate a design."
+        }
+      ]
+    }
   ],
   "_governance_notes": {
     "arabic_classification_signals": "DEFERRED — Arabic tokens from ELECTRONICS_SIGNALS in domain_rules.py could not be verified as uncorrupted during Step 2a. Must be re-read directly from source and validated before admission. Flagged for Stage 3 review.",
     "iot_pcb_weight_reduction": "iot and pcb set to weight 0.15, below recognition floor 0.3, to preserve fail-closed behavior for future dedicated IoT and PCB packs.",
     "electronics_questions": "DEFERRED — ELECTRONICS_QUESTIONS not found in domain_rules.py. Question banks empty. Engine uses generic fallback. To be authored in Stage 3.",
-    "electrical_td_slice1_reference_fundamentals": "Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals (Owner-authorized bounded reference fundamentals): reference_fundamentals is ONE additive, declaration-only group (basic_electrical_reference_v1, applicable gap PHYSICAL_FEASIBILITY) recording three bounded reference claims with exact source provenance (electronics_electrical:PR004–PR005), source-use-policy provenance (electronics_electrical:PR006–PR007) and explicit limitations. It is inert for the classifier, get_active_rules, Path-N question serving, NeedRouting, progression, readiness, evidence state and the domain registry loader (no loader or schema change); it is not a classification or substance signal and carries no executable formula selection, user-input variable, calculation procedure, threshold or applicability logic. Its only consumer is the presentation layer's bounded gap-scoped CAP-01 context (web/cap01_guidance.py, catalogue copy in web/ui_text.py), which shows the same bounded reference set only while the exact canonical PHYSICAL_FEASIBILITY gap is OPEN or PARTIAL and never selects which relationship applies to a project. It does not change the domain-level CAP-01 checklist / research profile (CAP01_ELECTRONICS_INTERFACE_V1). Existing provenance electronics_electrical:PR001–PR003 are unchanged, and IEC 60050 / IPC-2221B (PR001 / PR002) are not the claim authority for these reference fundamentals."
+    "electrical_td_slice1_reference_fundamentals": "Electrical / Electronics Technical Deepening Slice 1 — Basic Electrical Reference Fundamentals (Owner-authorized bounded reference fundamentals): reference_fundamentals is ONE additive, declaration-only group (basic_electrical_reference_v1, applicable gap PHYSICAL_FEASIBILITY) recording three bounded reference claims with exact source provenance (electronics_electrical:PR004–PR005), source-use-policy provenance (electronics_electrical:PR006–PR007) and explicit limitations. It is inert for the classifier, get_active_rules, Path-N question serving, NeedRouting, progression, readiness, evidence state and the domain registry loader (no loader or schema change); it is not a classification or substance signal and carries no executable formula selection, user-input variable, calculation procedure, threshold or applicability logic. Its only consumer is the presentation layer's bounded gap-scoped CAP-01 context (web/cap01_guidance.py, catalogue copy in web/ui_text.py), which shows the same bounded reference set only while the exact canonical PHYSICAL_FEASIBILITY gap is OPEN or PARTIAL and never selects which relationship applies to a project. It does not change the domain-level CAP-01 checklist / research profile (CAP01_ELECTRONICS_INTERFACE_V1). Existing provenance electronics_electrical:PR001–PR003 are unchanged, and IEC 60050 / IPC-2221B (PR001 / PR002) are not the claim authority for these reference fundamentals.",
+    "electrical_energy_time_reference_fundamentals": "Electrical / Electronics — Energy-Time Reference Fundamentals (ELECTRICAL-ENERGY-TIME-REFERENCE-01; Owner-authorized bounded extension of the Stage 18 / CAP-01 reference fundamentals): reference_fundamentals gains ONE further additive, declaration-only group (electrical_energy_time_reference_v1, applicable gap PHYSICAL_FEASIBILITY) recording exactly two bounded reference claims — constant_power_energy_reference (E = P × t, ONLY when P remains constant throughout t; InventorAI's algebraic restatement of the DOE definition of power as an energy transfer / use rate) and energy_time_unit_discipline (J, W, s; J = W · s) — with exact source provenance (electronics_electrical:PR008–PR009), source-use-policy provenance (electronics_electrical:PR010–PR011) and explicit limitations. The existing group basic_electrical_reference_v1 and its claims, sources and wording are unchanged and render first. Same inertness as that group: inert for the classifier, get_active_rules, Path-N question serving, NeedRouting, progression, readiness, evidence state and the domain registry loader (no loader or schema change); no classification or substance signal, executable formula selection, user-input variable, calculation procedure, threshold or applicability logic; nothing is added to the shared deterministic calculation / units owner. Its only consumer is the same bounded gap-scoped CAP-01 presentation (exact canonical PHYSICAL_FEASIBILITY gap OPEN or PARTIAL). No charge / current / time, coulomb, Ah / Wh, battery capacity, runtime, charging, chemistry, rating, sizing or safety content. Existing provenance electronics_electrical:PR001–PR007 are unchanged."
   }
 }

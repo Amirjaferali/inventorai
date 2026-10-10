@@ -584,25 +584,32 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
       <h4 class="cap01-gap-title" data-cap01-gap-title>{{ t(_cap01_gap.title_key) }}</h4>
       <p class="group-lede cap01-gap-meaning" data-cap01-gap-meaning>{{ t(_cap01_gap.meaning_key) }}</p>
       <p class="group-lede cap01-gap-limit" data-cap01-gap-limit>{{ t(_cap01_gap.limit_key) }}</p>
-      {%- if _cap01_gap.fundamentals %}
-      {%- set _cap01_fund = _cap01_gap.fundamentals %}
+      {#- The fixed ordered collection of reference-fundamentals groups of this
+          context (the context's own group first, then any fixed extension group,
+          e.g. electrical_energy_time_reference_v1); each group is
+          all-or-nothing on its own copy. -#}
+      {%- for _cap01_fund in _cap01_gap.fundamentals_groups %}
       <div class="cap01-fundamentals" data-cap01-fundamentals="{{ _cap01_fund.group_id|replace('_', '-') }}">
         <h5 class="cap01-fund-title" data-cap01-fund-title>{{ t(_cap01_fund.title_key) }}</h5>
         <p class="group-lede cap01-fund-intro" data-cap01-fund-intro>{{ t(_cap01_fund.intro_key) }}</p>
         <ul class="cap01-fund-items">
+          {#- ELECTRICAL-ENERGY-TIME-REFERENCE-01: for THAT group only, each short equation
+              stays one unbroken LTR expression and its note starts on its own line; every
+              other group's markup is unchanged. -#}
+          {%- set _cap01_sep = _cap01_fund.group_id == 'electrical_energy_time_reference_v1' %}
           {%- for _cap01_claim in _cap01_fund.claims %}
           <li class="cap01-fund-item" data-cap01-fund-claim="{{ _cap01_claim.claim_id|replace('_', '-') }}">
             <strong class="cap01-fund-item-title" data-cap01-fund-item-title>{{ t(_cap01_claim.title_key) }}</strong>
             <span class="cap01-fund-item-lead" data-cap01-fund-item-lead>{{ t(_cap01_claim.lead_key) }}</span>
-            <bdi class="cap01-fund-equation" dir="ltr" data-cap01-fund-equation>{{ t(_cap01_claim.equation_key) }}</bdi>
-            <span class="cap01-fund-item-note" data-cap01-fund-item-note>{{ t(_cap01_claim.note_key) }}</span>
+            <bdi class="cap01-fund-equation" dir="ltr" data-cap01-fund-equation{% if _cap01_sep %} style="white-space:nowrap"{% endif %}>{{ t(_cap01_claim.equation_key) }}</bdi>
+            <span class="cap01-fund-item-note" data-cap01-fund-item-note{% if _cap01_sep %} style="display:block;margin-top:2px"{% endif %}>{{ t(_cap01_claim.note_key) }}</span>
           </li>
           {%- endfor %}
         </ul>
         <p class="group-lede cap01-fund-source" data-cap01-fund-source>{{ t(_cap01_fund.source_key) }}</p>
         <p class="group-lede cap01-fund-boundary" data-cap01-fund-boundary>{{ t(_cap01_fund.boundary_key) }}</p>
       </div>
-      {%- endif %}
+      {%- endfor %}
       {%- if _cap01_gap.next_steps %}
       {%- set _cap01_next = _cap01_gap.next_steps %}
       <div class="cap01-next-steps" data-cap01-next-steps="{{ _cap01_next.group_id|lower|replace('_', '-') }}">

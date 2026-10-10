@@ -5006,7 +5006,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            + r" \(above\), delivered, entering Stage 27 as ENTERED / PARTIAL for that slice only, and the Stage 27 "
            r"closure \(above\) then completed Stage 27 for its current bounded scope only with no product change; the "
            r"only product increment authorized after that closure was CAP13-THERM01-INTEGRATED-PART-01 \(below\), "
-           r"delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
+           # ADVANCED at ELECTRICAL-ENERGY-TIME-REFERENCE-01 (merge-effective delivery record): it follows the
+           # integrated-part increment in the chain
+           r"delivered \(PR #\d+\); the only product increment authorized after it was "
+           r"ELECTRICAL-ENERGY-TIME-REFERENCE-01 \(below\), delivered \(PR #\d+\); no subsequent product increment "
+           r"has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
            # ADVANCED at the Stage 28 closure: the Stage 28 closure is now the last one, Stage 30's precedes it
@@ -5256,7 +5260,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # precedes it
                # ADVANCED at the CAP13-THERM01-INTEGRATED-PART-01 current-truth sync: no product increment is
                # authorized after that delivered increment; the Stage 27 closure precedes it
-               r"No product increment is authorized after CAP13-THERM01-INTEGRATED-PART-01 \(delivered: PR #\d+, merge "
+               # ADVANCED at ELECTRICAL-ENERGY-TIME-REFERENCE-01 (merge-effective delivery record): no product
+               # increment is authorized after it; the integrated-part increment precedes it
+               r"No product increment is authorized after ELECTRICAL-ENERGY-TIME-REFERENCE-01 \(delivered: PR #\d+; "
+               r"[^)]*constant P[^)]*reference only, no calculation; no Stage entered, completed or reopened; effective "
+               r"only on the verified merge of PR #\d+\) or after the preceding "
+               r"CAP13-THERM01-INTEGRATED-PART-01 \(delivered: PR #\d+, merge "
                r"`[0-9a-f]{40}`; [^)]*eligibility to offer only, never applicability, "
                r"validation or safety; no Stage entered, completed or reopened\) or after the preceding "
                + re.escape(_S27C_NAME) + r" \(delivered: Stage 27 is "
@@ -5721,7 +5730,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # ADVANCED at the CAP13-THERM01-INTEGRATED-PART-01 current-truth sync: the delivered integrated-part
             # increment follows the Stage 27 closure in the chain
             "the only increment authorized after that closure — CAP13-THERM01-INTEGRATED-PART-01 (above) — is "
-            "DELIVERED (PR #N); no subsequent increment has been authorized."), head)
+            # ADVANCED at ELECTRICAL-ENERGY-TIME-REFERENCE-01 (merge-effective delivery record): it follows the
+            # integrated-part increment in the chain
+            "DELIVERED (PR #N); the only increment authorized after it — ELECTRICAL-ENERGY-TIME-REFERENCE-01 (above) "
+            "— is DELIVERED (PR #N); no subsequent increment has been authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
     # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
     # ROTATED at the Stage 27 closure: Stage 27 COMPLETE for its current bounded scope leads
@@ -6022,7 +6034,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ROTATED at the Stage 27 closure: ... after the Stage 27 closure; the slice precedes it
            # ADVANCED at the CAP13-THERM01-INTEGRATED-PART-01 current-truth sync: ... after that delivered increment;
            # the Stage 27 closure precedes it
-           r"No product increment is authorized after CAP13-THERM01-INTEGRATED-PART-01 \(delivered; PR #\d+; [^)]*"
+           # ADVANCED at ELECTRICAL-ENERGY-TIME-REFERENCE-01 (merge-effective delivery record): ... after it; the
+           # integrated-part increment precedes it
+           r"No product increment is authorized after ELECTRICAL-ENERGY-TIME-REFERENCE-01 \(delivered; PR #\d+; "
+           r"[^)]*constant P only; reference only; no Stage change; effective only on merge\) or after the preceding "
+           r"CAP13-THERM01-INTEGRATED-PART-01 \(delivered; PR #\d+; [^)]*"
            r"eligibility to offer only; methods and semantics unchanged; no Stage change\) or after the preceding "
            + re.escape(_S27C_NAME) + r" \(delivered; Stage 27 COMPLETE for "
            r"the current bounded THERM-01 single-path temperature-difference scope only with no product change; full "

@@ -6453,6 +6453,56 @@ UI_STRINGS = {
             "مكوّن، ولا تثبت السلامة الكهربائية، ولا تثبت أن الاختراع تم التحقق منه."
         ),
     },
+    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 — the second, separately namespaced reference-fundamentals
+    # group of the Electronics PHYSICAL_FEASIBILITY context (electrical_energy_time_reference_v1).
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_TITLE": {
+        "en": "Energy and power over time",
+        "ar": "الطاقة والقدرة خلال مدة زمنية",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_INTRO": {
+        "en": "Reference information only. InventorAI has not established that power is constant or that this relationship applies to your invention.",
+        "ar": "هذه معلومات مرجعية فقط. لم يثبت InventorAI أن القدرة ثابتة أو أن هذه العلاقة تنطبق على اختراعك.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_ITEM_1_TITLE": {
+        "en": "Energy at constant power",
+        "ar": "الطاقة عند قدرة ثابتة",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_ITEM_1_LEAD": {
+        "en": "When power P remains constant throughout a time interval t, the energy transferred E is:",
+        "ar": "عندما تبقى القدرة P ثابتة طوال مدة زمنية t، تكون الطاقة المنقولة E وفق العلاقة:",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_ITEM_1_EQUATION": {
+        "en": "E = P × t",
+        "ar": "E = P × t",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_ITEM_1_NOTE": {
+        "en": "E is the energy transferred, P is the constant power, and t is the duration.",
+        "ar": "ترمز E إلى الطاقة المنقولة، وP إلى القدرة الثابتة، وt إلى المدة الزمنية.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_ITEM_2_TITLE": {
+        "en": "Units of energy, power and time",
+        "ar": "وحدات الطاقة والقدرة والزمن",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_ITEM_2_LEAD": {
+        "en": "E is measured in joules J, P in watts W, and t in seconds s. The corresponding unit relationship is:",
+        "ar": "تُقاس E بالجول J، وP بالواط W، وt بالثانية s. والعلاقة بين الوحدات هي:",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_ITEM_2_EQUATION": {
+        "en": "J = W · s",
+        "ar": "J = W · s",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_ITEM_2_NOTE": {
+        "en": "Correct units do not validate a design or establish that the constant-power energy relationship applies to your invention.",
+        "ar": "صحة الوحدات لا تثبت صحة التصميم أو انطباق علاقة الطاقة عند ثبات القدرة على اختراعك.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_SOURCE": {
+        "en": "Reference source material: U.S. Department of Energy — Classical Physics, DOE-HDBK-1010-92 (archived; fundamentals reference only); NIST Guide to the SI, SP 811 Chapter 4 and Appendix B.9.",
+        "ar": "مواد مرجعية: وزارة الطاقة الأمريكية (U.S. Department of Energy) — Classical Physics، DOE-HDBK-1010-92 (مؤرشف؛ مرجع للأساسيات فقط)؛ ودليل NIST للنظام الدولي للوحدات، SP 811 الفصل 4 والملحق B.9.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_ENERGY_TIME_FUNDAMENTALS_BOUNDARY": {
+        "en": "This group performs no project-specific calculation and determines no battery capacity, runtime, component suitability or safety.",
+        "ar": "لا تُجري هذه المجموعة حسابًا خاصًا بمشروعك، ولا تحدد سعة البطارية أو مدة تشغيلها أو ملاءمة المكونات أو سلامتها.",
+    },
     # Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure. The Electronics
     # MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY contexts (grounded only in the
     # governed Electronics pack questions) and, per authorized (domain, gap), ONE

@@ -78,7 +78,10 @@ _UNSUPPORTED_EXPERTISE = re.compile(
 _PRIOR_RECORD_IDS = [
     "electronics_electrical:PR001", "electronics_electrical:PR002", "electronics_electrical:PR003",
     "electronics_electrical:PR004", "electronics_electrical:PR005", "electronics_electrical:PR006",
-    "electronics_electrical:PR007", "mechanical:PR001", "mechanical:PR002", "mechanical:PR003", "mechanical:PR004",
+    "electronics_electrical:PR007",
+    # ELECTRICAL-ENERGY-TIME-REFERENCE-01: four additive Electronics records after PR007.
+    "electronics_electrical:PR008", "electronics_electrical:PR009", "electronics_electrical:PR010",
+    "electronics_electrical:PR011", "mechanical:PR001", "mechanical:PR002", "mechanical:PR003", "mechanical:PR004",
     "mechanical:PR005", "mechanical:PR006", "mechanical:PR007", "mechanical:PR008", "mechanical:PR009",
     "mechanical:PR010", "mechanical:PR011", "medical_device:PR001", "medical_device:PR002", "software:PR001",
 ]
