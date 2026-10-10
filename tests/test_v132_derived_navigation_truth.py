@@ -5000,7 +5000,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            r"after that closure was the Stage 16 bounded presentation residual \(above\), delivered by PR #\d+ and "
            r"completed for its bounded scope by the Stage 16 closure \(above\); the only product increment authorized "
            r"after that closure was " + re.escape(_S25_NAME) + r" \(above\), delivered, entering Stage 25 as ENTERED / "
-           r"PARTIAL for that slice only; no subsequent product increment has been authorized\.",
+           # ADVANCED at the CAP13-THERM01-INTEGRATED-PART-01 current-truth sync: the Stage 27 slice, the Stage 27
+           # closure and the delivered integrated-part increment follow the Stage 25 slice in the chain
+           r"PARTIAL for that slice only; the only product increment authorized after it was " + re.escape(_S27_NAME)
+           + r" \(above\), delivered, entering Stage 27 as ENTERED / PARTIAL for that slice only, and the Stage 27 "
+           r"closure \(above\) then completed Stage 27 for its current bounded scope only with no product change; the "
+           r"only product increment authorized after that closure was CAP13-THERM01-INTEGRATED-PART-01 \(below\), "
+           r"delivered \(PR #785\); no subsequent product increment has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
            # ADVANCED at the Stage 28 closure: the Stage 28 closure is now the last one, Stage 30's precedes it
@@ -5248,7 +5254,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # increment is authorized after that slice; the Stage 25 slice precedes it
                # ROTATED at the Stage 27 closure: no product increment is authorized after the Stage 27 closure; the slice
                # precedes it
-               r"No product increment is authorized after " + re.escape(_S27C_NAME) + r" \(delivered: Stage 27 is "
+               # ADVANCED at the CAP13-THERM01-INTEGRATED-PART-01 current-truth sync: no product increment is
+               # authorized after that delivered increment; the Stage 27 closure precedes it
+               r"No product increment is authorized after CAP13-THERM01-INTEGRATED-PART-01 \(delivered: PR #785, merge "
+               r"`4c6e851e5a768248a527b3c3c196009ff154e8e8`; [^)]*eligibility to offer only, never applicability, "
+               r"validation or safety; no Stage entered, completed or reopened\) or after the preceding "
+               + re.escape(_S27C_NAME) + r" \(delivered: Stage 27 is "
                r"COMPLETE for the current bounded THERM-01 single-path temperature-difference scope only with no product "
                r"change[^)]*; full THERM-01 NOT AUTHORIZED\) or after the preceding " + re.escape(_S27_NAME)
                + r" \(delivered: ONE optional, "
@@ -5706,8 +5717,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             "the only increment authorized after it — " + _S27_NAME + " (above) — is DELIVERED, entering Stage 27 as "
             # ADVANCED at the Stage 27 closure: the closure then completed Stage 27 for its current bounded scope
             "ENTERED / PARTIAL for that slice only, and the Stage 27 closure (above) then completed Stage 27 for its "
-            "current bounded THERM-01 single-path temperature-difference scope only with no product change; no "
-            "subsequent increment has been authorized."), head)
+            "current bounded THERM-01 single-path temperature-difference scope only with no product change; "
+            # ADVANCED at the CAP13-THERM01-INTEGRATED-PART-01 current-truth sync: the delivered integrated-part
+            # increment follows the Stage 27 closure in the chain
+            "the only increment authorized after that closure — CAP13-THERM01-INTEGRATED-PART-01 (above) — is "
+            "DELIVERED (PR #N); no subsequent increment has been authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
     # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
     # ROTATED at the Stage 27 closure: Stage 27 COMPLETE for its current bounded scope leads
@@ -6006,7 +6020,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # Stage 16 closure precedes it
            # ADVANCED at the delivered Stage 27 / THERM-01 slice: ... after that slice; the Stage 25 slice precedes it
            # ROTATED at the Stage 27 closure: ... after the Stage 27 closure; the slice precedes it
-           r"No product increment is authorized after " + re.escape(_S27C_NAME) + r" \(delivered; Stage 27 COMPLETE for "
+           # ADVANCED at the CAP13-THERM01-INTEGRATED-PART-01 current-truth sync: ... after that delivered increment;
+           # the Stage 27 closure precedes it
+           r"No product increment is authorized after CAP13-THERM01-INTEGRATED-PART-01 \(delivered; PR #785; [^)]*"
+           r"eligibility to offer only; methods and semantics unchanged; no Stage change\) or after the preceding "
+           + re.escape(_S27C_NAME) + r" \(delivered; Stage 27 COMPLETE for "
            r"the current bounded THERM-01 single-path temperature-difference scope only with no product change; full "
            r"THERM-01 NOT AUTHORIZED\) or after the preceding "
            + re.escape(_S27_NAME) + r" \(delivered; [^)]*; it entered Stage 27 as ENTERED "
