@@ -1572,11 +1572,15 @@ First-Release Traceability**. It is derived navigation like this checklist — n
 number, owner, gate or implementation authority; no change to any Stage identifier, count, checkbox or completion
 declaration; no domain activation, method admission or shared-owner expansion. Read it, do not duplicate it here.
 
-- **Initial-release technology set: NOT RECORDED IN THE REPOSITORY.** Every §8D row carries
-  `OWNER RELEASE DECISION RECONCILIATION REQUIRED`: the latest Owner release decision for that technology cannot be
-  recovered from repository evidence. The marker is neither a deferral nor an approval; for the two activated roots it
-  asks the Owner to record a decision already acted on, for every other row it asks for the decision itself. Absence of
-  evidence is not evidence that the Owner never approved a technology.
+- **First-release decisions follow the Owner policy clarification (supplied through the Lead; confirmed 2026-10-10;
+  recorded once in `ACTIVE_INCREMENT_CONTRACT.md`):** a technology with an evidenced approval to deliver must be
+  implemented, deepened, integrated where relevant and tested before public launch, within its approved bounded scope;
+  study, architecture review, recorded direction or a preserved future option is not delivery approval. §8D reads R1 for
+  the delivered bounded scopes with evidenced delivery approval (Mechanical and Electrical / Electronics roots with their
+  delivered slices, `control_loop` part-only, Stage 15 composition, Stage 17 capture, the existing exports) and R2
+  (delivery approval unresolved) for the further technologies, including IoT, Drone / UAV, Renewable and Satellite / Space,
+  whose DOMEX-D1 post-release schedule is preserved as history, not asserted as settled. Approval is never inferred from
+  inclusion in the roadmap, register or a planning portfolio, and no value authorizes or activates anything.
 - **State ladder:** `RECORDED` → `QUALIFIED` → `IMPLEMENTED` → `ACTIVATED` → `TESTED` → `RELEASE-READY`, each distinct.
   `RELEASE-READY` is asserted for no technology. A pack, equation, classification signal or unit test is never release
   readiness, and classification signals are never qualified engineering guidance.
