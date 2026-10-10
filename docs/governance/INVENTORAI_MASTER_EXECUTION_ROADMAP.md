@@ -1903,8 +1903,9 @@ owner wins and the difference is a defect of this table. FCORA (Stage 43) remain
 disappearance; this table is the inventory it can audit, not a second gate.
 
 **First-release decision basis — Owner policy clarification (supplied through the Lead; confirmed 2026-10-10).** The
-policy is recorded once, verbatim with its clarification, in the current-authority section of
-[`ACTIVE_INCREMENT_CONTRACT.md`](ACTIVE_INCREMENT_CONTRACT.md) as an Owner policy clarification (not an active increment).
+policy is recorded once in the current-authority section of [`ACTIVE_INCREMENT_CONTRACT.md`](ACTIVE_INCREMENT_CONTRACT.md)
+as an Owner policy clarification (not an active increment), with the direct Owner wording distinguished from the Lead's
+non-verbatim interpretation.
 Applied here: a technology with an **evidenced approval to deliver** must be implemented, deepened, integrated where
 relevant and tested before public launch, within the bounded scope that approval names; the latest policy supplies that
 pre-launch timing, so an older approval need not contain the words "first release". Approval to study, review
