@@ -143,9 +143,24 @@ def _texts(lang):
     # ELECTRICAL-ENERGY-TIME-REFERENCE-01 owns its own separately namespaced group
     # (tests/test_cap01_electrical_energy_time_reference.py); this slice's strings
     # are everything else under the context prefix, unchanged.
+    # 28-T1-SENSING-VALUE-THRESHOLD-01 likewise owns its own namespace under the
+    # MECHANISM_COMPLETENESS context (tests/test_cap01_sensing_value_threshold_reference.py).
     return {k[len(PREFIX):]: ui_text.UI_STRINGS[k][lang]
             for k in sorted(ui_text.UI_STRINGS) if k.startswith(PREFIX)
-            and not k.startswith(PREFIX + PHYSICAL_FEASIBILITY + "_ENERGY_TIME_FUNDAMENTALS_")}
+            and not k.startswith(PREFIX + PHYSICAL_FEASIBILITY + "_ENERGY_TIME_FUNDAMENTALS_")
+            and not k.startswith(PREFIX + MECHANISM_COMPLETENESS + "_SENSING_FUNDAMENTALS_")}
+
+
+# 28-T1-SENSING-VALUE-THRESHOLD-01: the ONE separately bound prose-only group of the
+# MECHANISM_COMPLETENESS context. The absence checks below concern the
+# PHYSICAL_FEASIBILITY reference fundamentals; that group is excluded from them.
+_SENSING_FUND_RE = re.compile(
+    r'<div class="cap01-fundamentals" data-cap01-fundamentals="sensing-value-threshold-reference-v1">'
+    r'.*?\n      </div>', re.S)
+
+
+def _without_sensing(html):
+    return _SENSING_FUND_RE.sub("", html)
 
 
 def _fund_texts(lang):
@@ -195,7 +210,7 @@ def test_e03_other_electronics_gaps_never_carry_the_fundamentals(pairs):
     their OWN context; the reference fundamentals stay PHYSICAL_FEASIBILITY-only."""
     view = _resolve(*pairs)
     html = _render_state(*pairs)
-    assert "cap01-fundamentals" not in html
+    assert "cap01-fundamentals" not in _without_sensing(html)
     if not pairs:
         assert view is None and "cap01-gap-block" not in html
         return
@@ -252,13 +267,13 @@ def test_e08_inventor_text_and_signals_cannot_trigger_the_fundamentals():
     words = " ".join(s["signal"] for s in pack["classification_signals"] + pack["substance_signals"])
     for text in (_TRIGGER_TEXT, words):
         html = _render_state((MECHANISM_COMPLETENESS, OPEN), idea_text=text)
-        assert "cap01-fundamentals" not in html
+        assert "cap01-fundamentals" not in _without_sensing(html)
         assert 'data-cap01-gap="physical-feasibility"' not in html
     assert cap01_guidance.gap_contexts_for_gaps(DOMAIN, [(w, OPEN) for w in words.split()]) is None
     # a real Electronics session with those words but no current PF gap renders none either
     state = _s18_state(ELECTRONICS_IDEA, _TRIGGER_TEXT)
     assert PHYSICAL_FEASIBILITY not in {g.gap_type for g in state.gaps if g.status in (OPEN, PARTIAL)}
-    assert "cap01-fundamentals" not in _render(assemble_deliverable(state), state)
+    assert "cap01-fundamentals" not in _without_sensing(_render(assemble_deliverable(state), state))
 
 
 def test_e09_the_same_bounded_set_renders_regardless_of_project_content():
@@ -386,8 +401,9 @@ def test_e16_four_new_provenance_records_with_the_exact_authorized_identities():
     assert all(r in recs for r in NEW_RECORDS)
     ids = [r for r in recs if r.startswith("electronics_electrical:")]
     assert ids[:7] == ["electronics_electrical:PR00%d" % n for n in range(1, 8)]
-    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 appends exactly four further records.
-    assert ids[7:] == ["electronics_electrical:PR%03d" % n for n in range(8, 12)]
+    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 appends exactly four further records, and
+    # 28-T1-SENSING-VALUE-THRESHOLD-01 two more (PR012–PR013).
+    assert ids[7:] == ["electronics_electrical:PR%03d" % n for n in range(8, 14)]
     doe, nist, doe_pol, nist_pol = (recs[r] for r in NEW_RECORDS)
     assert doe["standard_number"] == "DOE-HDBK-1011/1-92" and doe["source_type"] == "government_reference_publication"
     assert "Electrical Science" in doe["source_name"] and "Volume 1 of 4" in doe["source_name"]
@@ -459,9 +475,11 @@ def test_e18_existing_provenance_pr001_to_pr003_are_unchanged():
 
 def test_e19_the_pack_group_declares_the_three_claims_with_exact_source_and_policy_linkage():
     pack, recs = _pack(), _provenance()
-    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 appends one further group AFTER this one.
+    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 appends one further group AFTER this one, and
+    # 28-T1-SENSING-VALUE-THRESHOLD-01 one more (MECHANISM_COMPLETENESS).
     groups = pack["reference_fundamentals"]
-    assert [g["group_id"] for g in groups] == [FUND_GROUP, "electrical_energy_time_reference_v1"]
+    assert [g["group_id"] for g in groups] == [FUND_GROUP, "electrical_energy_time_reference_v1",
+                                               "sensing_value_threshold_reference_v1"]
     group = groups[0]
     assert sorted(group) == ["applicable_gap_type", "claims", "group_id"]
     assert group["group_id"] == FUND_GROUP and group["applicable_gap_type"] == PHYSICAL_FEASIBILITY
@@ -488,6 +506,7 @@ def test_e20_every_pre_existing_pack_field_is_unchanged_and_the_group_is_declare
     note = pre["_governance_notes"].pop("electrical_td_slice1_reference_fundamentals")
     # ...and the later, separately authorized energy-time group's own note.
     pre["_governance_notes"].pop("electrical_energy_time_reference_fundamentals")
+    pre["_governance_notes"].pop("sensing_value_threshold_reference")
     assert _digest(pre) == _PRE_SLICE_PACK_DIGEST
     for phrase in ("inert", "classifier", "Path-N", "evidence state", "no loader or schema change",
                    "CAP01_ELECTRONICS_INTERFACE_V1", "PR001–PR003 are unchanged",
@@ -583,7 +602,7 @@ def test_e25_an_electronics_report_without_a_current_pf_gap_is_byte_identical_to
     # Stage-18 closure: the current MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY
     # contexts may render, but no fundamentals; removing the fundamentals row
     # changes nothing.
-    assert "cap01-fundamentals" not in with_rows
+    assert "cap01-fundamentals" not in _without_sensing(with_rows)
     assert 'data-cap01-gap="physical-feasibility"' not in with_rows
     monkeypatch.setattr(cap01_guidance, "CAP01_GAP_FUNDAMENTALS",
                         {k: v for k, v in cap01_guidance.CAP01_GAP_FUNDAMENTALS.items() if k[0] != DOMAIN})
@@ -685,7 +704,7 @@ def test_e32_pdf_source_excludes_the_sub_view_when_pf_is_closed(client, monkeypa
     sid = _start(client, seed=ELEC_SEED, domain=DOMAIN)
     _set_gaps(sid, (PHYSICAL_FEASIBILITY, CLOSED), (MECHANISM_COMPLETENESS, OPEN))
     source = _pdf_source(client, sid, monkeypatch)
-    assert "cap01-fundamentals" not in source
+    assert "cap01-fundamentals" not in _without_sensing(source)
     assert 'data-cap01-gap="physical-feasibility"' not in source
     assert 'data-cap01-gap="mechanism-completeness"' in source    # its own context only
 

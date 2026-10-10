@@ -146,6 +146,32 @@
       "cross_domain_usage": []
     },
     {
+      "record_id": "electronics_electrical:PR012",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "Tony R. Kuphaldt — Sensors Overview (Modular Electronics Learning (ModEL) project)",
+      "source_type": "openly_licensed_educational_text",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": "Text version dated 23 October 2025, © 2017–2025 Tony R. Kuphaldt — Section 2.1 \"Signals, sensors, and switches\", printed pages 12–13 (PDF viewer pages 15–16) — as recorded from the Lead's textual source check (Lead-supplied inspection of the text version dated 23 October 2025; not independently re-inspected by the executor)",
+      "url": "https://ibiblio.org/kuphaldt/socratic/model/mod_sensors.pdf",
+      "notes": "Source for the sensing reference claim sensed_value_versus_threshold_indication (reference_fundamentals group sensing_value_threshold_reference_v1). CLAIM MAPPING: printed page 12 distinguishes a shaft-speed reading from a threshold comparison; printed page 13 explains that the speed-switch indication does not report the precise rotational-speed value. InventorAI uses ONLY that bounded distinction, in its own paraphrased wording approved by the Lead (an adaptation), with an InventorAI Arabic translation of that adaptation; it presents the above-threshold indication as a state, never as a temporal crossing or event detector. No passage, diagram, figure, photograph, worked example, third-party quotation, standard or vendor data is copied; no other claim of the source is used. Attribution (author, copyright, source title and link, license name and link) and the adaptation / translation notice are shown with the explanation in the report and PDF. No endorsement by the author is stated or implied. Source-use disposition: electronics_electrical:PR013. Conceptual reference only — no sensor or threshold selection, calibration, accuracy, performance, calculation or safety statement and no applicability inference.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "electronics_electrical:PR013",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "Creative Commons Attribution 4.0 International (CC BY 4.0) — legal code",
+      "source_type": "source_use_policy",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": "CC BY 4.0 legal code, as stated on the cover of the source text version dated 23 October 2025 — as recorded from the Lead's textual source check (Lead-supplied inspection of the text version dated 23 October 2025; not independently re-inspected by the executor)",
+      "url": "https://creativecommons.org/licenses/by/4.0/legalcode.en",
+      "notes": "SOURCE-USE COMPATIBILITY DISPOSITION (not a legal opinion or legal determination) for electronics_electrical:PR012 (claim sensed_value_versus_threshold_indication) ONLY. The source's cover states the CC BY 4.0 license; the Lead accepted this evidence for the approved paraphrase only. Conditions applied: attribution to the author with the copyright notice, the source title and link, the license name and link, and a notice that the explanation is adapted (paraphrased) and that the Arabic text is InventorAI's translation of that adaptation — all shown with the explanation in the report and PDF; no endorsement is stated or implied; no additional terms or technological measures restrict the adapted explanation. The admission does not extend to any other claim, to the source's diagrams, third-party quotations, standards or vendor data, or to InventorAI as a whole. InventorAI remains responsible for its own presented output.",
+      "cross_domain_usage": []
+    },
+    {
       "record_id": "mechanical:PR001",
       "pack_id": "mechanical",
       "tier": 1,

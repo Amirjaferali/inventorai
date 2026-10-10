@@ -6589,6 +6589,38 @@ UI_STRINGS = {
         "en": "This group performs no project-specific calculation and determines no battery capacity, runtime, component suitability or safety.",
         "ar": "لا تُجري هذه المجموعة حسابًا خاصًا بمشروعك، ولا تحدد سعة البطارية أو مدة تشغيلها أو ملاءمة المكونات أو سلامتها.",
     },
+    # 28-T1-SENSING-VALUE-THRESHOLD-01 — ONE prose-only conceptual group attached to the
+    # Electronics MECHANISM_COMPLETENESS context (sensing_value_threshold_reference_v1; provenance
+    # electronics_electrical:PR012–PR013). ITEM_1_TEXT is the Lead-approved EN / AR wording verbatim;
+    # SOURCE carries the CC BY 4.0 attribution, license link and adaptation / translation notice.
+    # No EQUATION part by design (the group is prose-only).
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_SENSING_FUNDAMENTALS_TITLE": {
+        "en": "Sensing: a value or an above-threshold indication",
+        "ar": "الاستشعار: قيمة أم إشارة تجاوز حدّ",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_SENSING_FUNDAMENTALS_INTRO": {
+        "en": "Reference information only. InventorAI has not determined that your design senses a quantity or uses a threshold.",
+        "ar": "معلومات مرجعية فقط. لم يحدّد InventorAI أن تصميمك يستشعر كمية ما أو يستخدم حدًّا معينًا.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_SENSING_FUNDAMENTALS_ITEM_1_TITLE": {
+        "en": "Value versus above-threshold indication",
+        "ar": "القيمة مقابل إشارة تجاوز الحدّ",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_SENSING_FUNDAMENTALS_ITEM_1_TEXT": {
+        "en": "If your design senses a physical quantity, reporting its value and indicating whether it is above a threshold provide different information. For example, a rotational-speed reading gives a speed value; an above-threshold indication alone does not.",
+        "ar": "إذا كان تصميمك يستشعر كمية فيزيائية، فإن بيان قيمتها والإشارة إلى كونها أعلى من حدّ معين يقدّمان معلومات مختلفة. مثلًا، قراءة سرعة الدوران تعطي قيمة للسرعة؛ أما إشارة تجاوز الحد وحدها فلا تعطي تلك القيمة.",
+    },
+    # The Arabic attribution wraps each URL in a left-to-right isolate (U+2066 … U+2069) so a
+    # URL wrapped across lines keeps its LTR order in the PDF renderer, which resolves
+    # direction per line; the visible text is unchanged.
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_SENSING_FUNDAMENTALS_SOURCE": {
+        "en": "Source: Tony R. Kuphaldt, “Sensors Overview”, Modular Electronics Learning (ModEL) project, text version of 23 October 2025, section 2.1 “Signals, sensors, and switches”, pp. 12–13, © 2017–2025 Tony R. Kuphaldt, https://ibiblio.org/kuphaldt/socratic/model/mod_sensors.pdf — licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/legalcode.en). Adapted: InventorAI paraphrased this explanation; the Arabic version is InventorAI's translation of that adaptation. No endorsement by the author is implied. See the license for its terms, including its disclaimer of warranties.",
+        "ar": "المصدر: الوثيقة التعليمية Sensors Overview من إعداد Tony R. Kuphaldt ضمن مشروع Modular Electronics Learning المعروف اختصارًا بـ ModEL، نسخة النص المؤرخة 23 أكتوبر 2025، القسم 2.1 بعنوان Signals, sensors, and switches، الصفحتان 12–13. حقوق النشر © 2017–2025 للمؤلف Tony R. Kuphaldt. رابط الوثيقة: \u2066https://ibiblio.org/kuphaldt/socratic/model/mod_sensors.pdf\u2069، وهي مرخّصة بموجب الترخيص CC BY 4.0 المنشور نصه القانوني على الرابط: \u2066https://creativecommons.org/licenses/by/4.0/legalcode.en\u2069، مع إشعار الاقتباس التالي. مُقتبَس: صاغ InventorAI هذا الشرح بكلماته، والنص العربي ترجمة InventorAI لهذه الصياغة. ولا يُقصد أي إيحاء بتأييد المؤلف. راجع الترخيص لمعرفة شروطه، بما فيها إخلاء المسؤولية عن الضمانات.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_SENSING_FUNDAMENTALS_BOUNDARY": {
+        "en": "This explanation does not select a sensor or a threshold, set any value, calibrate anything, or establish accuracy, performance or safety.",
+        "ar": "لا يختار هذا الشرح مستشعرًا أو حدًّا، ولا يحدّد أي قيمة، ولا يُجري أي معايرة، ولا يثبت الدقة أو الأداء أو السلامة.",
+    },
     # Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure. The Electronics
     # MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY contexts (grounded only in the
     # governed Electronics pack questions) and, per authorized (domain, gap), ONE
