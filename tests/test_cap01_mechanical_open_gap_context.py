@@ -844,10 +844,28 @@ def test_s2_each_limit_traces_to_the_governed_boundary_or_the_owner_boundary():
         assert phrase in ba_limit, phrase
 
 
+_SENSING_ENTRY_RE = re.compile(
+    r'    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_SENSING_FUNDAMENTALS_[A-Z0-9_]+": \{'
+    r'.*?\n    \},\n', re.S)
+
+
+def _non_sensing_fundamentals(html):
+    """Fundamentals groups other than the 28-T1-SENSING-VALUE-THRESHOLD-01 Electronics
+    MECHANISM_COMPLETENESS group, which binds to that exact current gap only (pinned by
+    tests/test_cap01_sensing_value_threshold_reference.py)."""
+    return [g for g in re.findall(r'data-cap01-fundamentals="([^"]+)"', html)
+            if g != "sensing-value-threshold-reference-v1"]
+
+
 def test_s3_the_d13_electronics_tkp_is_not_a_mechanical_source():
     ui = _source(_UI_TEXT_PATH)
     region = ui[ui.index('"' + PREFIX + "TITLE" + '"'):]
     region = region[:region.index("\n}\n")]
+    # 28-T1-SENSING-VALUE-THRESHOLD-01 later appended ONE Electronics MECHANISM_COMPLETENESS
+    # group whose own copy and CC BY 4.0 attribution name sensors; it is Electronics copy
+    # (pinned by tests/test_cap01_sensing_value_threshold_reference.py), not Mechanical
+    # copy, so exactly its entries are excluded here.
+    region = _SENSING_ENTRY_RE.sub("", region)
     for marker in ("D13", "d13", "tkp", "TKP", "research/", "datasheet", "sensor",
                    "microcontroller", "ADC"):
         assert marker not in region, marker
@@ -1108,7 +1126,7 @@ def test_f06b_electronics_report_is_byte_identical_with_the_fundamentals_table_r
     state = _s18_state(ELECTRONICS_IDEA, OPEN_GAP_INPUT)
     package = assemble_deliverable(state)
     with_table = _mask_csrf(_render(package, state))
-    assert "cap01-fundamentals" not in with_table
+    assert _non_sensing_fundamentals(with_table) == []
     monkeypatch.setattr(cap01_guidance, "CAP01_GAP_FUNDAMENTALS", {})
     assert _mask_csrf(_render(package, state)) == with_table
 
@@ -1151,7 +1169,7 @@ def test_f08_inventor_text_with_torque_pressure_lever_words_cannot_trigger_the_f
         assert eq not in _visible(_block(html))
     # ... and an Electronics project with the same words renders none either
     e_state = _s18_state(ELECTRONICS_IDEA, _TRIGGER_WORDS_IDEA)
-    assert "cap01-fundamentals" not in _render(assemble_deliverable(e_state), e_state)
+    assert _non_sensing_fundamentals(_render(assemble_deliverable(e_state), e_state)) == []
 
 
 def test_f09_classification_and_substance_signals_cannot_trigger_the_fundamentals():

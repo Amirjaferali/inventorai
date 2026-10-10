@@ -598,15 +598,25 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
               other group's markup is unchanged. -#}
           {%- set _cap01_sep = _cap01_fund.group_id == 'electrical_energy_time_reference_v1' %}
           {%- for _cap01_claim in _cap01_fund.claims %}
+          {#- 28-T1-SENSING-VALUE-THRESHOLD-01: a prose-only group (named by exact
+              group id in the resolver) renders a title and ONE explanation — no
+              equation element at all; every other group's markup is unchanged. -#}
+          {%- if _cap01_fund.prose_only %}
+          <li class="cap01-fund-item" data-cap01-fund-claim="{{ _cap01_claim.claim_id|replace('_', '-') }}">
+            <strong class="cap01-fund-item-title" data-cap01-fund-item-title>{{ t(_cap01_claim.title_key) }}</strong>
+            <span class="cap01-fund-item-text" data-cap01-fund-item-text>{{ t(_cap01_claim.text_key) }}</span>
+          </li>
+          {%- else %}
           <li class="cap01-fund-item" data-cap01-fund-claim="{{ _cap01_claim.claim_id|replace('_', '-') }}">
             <strong class="cap01-fund-item-title" data-cap01-fund-item-title>{{ t(_cap01_claim.title_key) }}</strong>
             <span class="cap01-fund-item-lead" data-cap01-fund-item-lead>{{ t(_cap01_claim.lead_key) }}</span>
             <bdi class="cap01-fund-equation" dir="ltr" data-cap01-fund-equation{% if _cap01_sep %} style="white-space:nowrap"{% endif %}>{{ t(_cap01_claim.equation_key) }}</bdi>
             <span class="cap01-fund-item-note" data-cap01-fund-item-note{% if _cap01_sep %} style="display:block;margin-top:2px"{% endif %}>{{ t(_cap01_claim.note_key) }}</span>
           </li>
+          {%- endif %}
           {%- endfor %}
         </ul>
-        <p class="group-lede cap01-fund-source" data-cap01-fund-source>{{ t(_cap01_fund.source_key) }}</p>
+        <p class="group-lede cap01-fund-source" data-cap01-fund-source{% if _cap01_fund.prose_only %} style="overflow-wrap:anywhere"{% endif %}>{{ t(_cap01_fund.source_key) }}</p>
         <p class="group-lede cap01-fund-boundary" data-cap01-fund-boundary>{{ t(_cap01_fund.boundary_key) }}</p>
       </div>
       {%- endfor %}

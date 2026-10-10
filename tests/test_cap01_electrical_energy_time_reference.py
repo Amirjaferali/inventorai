@@ -112,6 +112,18 @@ ACCEPTED = {
     },
 }
 
+# 28-T1-SENSING-VALUE-THRESHOLD-01 later added ONE Electronics MECHANISM_COMPLETENESS
+# group (pack group + note, PR012 / PR013); this file's base-digest and inventory
+# checks exclude exactly that later addition, which is pinned by
+# tests/test_cap01_sensing_value_threshold_reference.py.
+SENSING_GROUP = "sensing_value_threshold_reference_v1"
+SENSING_NOTE = "sensing_value_threshold_reference"
+SENSING_RECORDS = ("electronics_electrical:PR012", "electronics_electrical:PR013")
+SENSING_EXTENSION = (
+    (DOMAIN, MECHANISM_COMPLETENESS),
+    (("sensing_value_threshold_reference_v1", ("sensed_value_versus_threshold_indication",),
+      "SENSING_FUNDAMENTALS_"),))
+
 _ET_RE = re.compile(
     r'<div class="cap01-fundamentals" data-cap01-fundamentals="electrical-energy-time-reference-v1">'
     r'.*?\n      </div>', re.S)
@@ -193,12 +205,13 @@ def test_t02_ineligible_states_render_no_group(status):
 
 def test_t03_other_gaps_domains_and_text_grant_no_access():
     groups = _groups((MECHANISM_COMPLETENESS, OPEN), (BOUNDARY_AMBIGUITY, PARTIAL))
-    assert groups and all(v == () for v in groups.values())
+    assert groups and all(ET_GROUP not in [g["group_id"] for g in v] for v in groups.values())
     mech = _groups((PHYSICAL_FEASIBILITY, OPEN), domain="mechanical")[PHYSICAL_FEASIBILITY]
     assert [g["group_id"] for g in mech] == [MECH_FUND_GROUP]
     for domain in ("control_loop", "software", "medical_device", "Electronics_Electrical", ""):
         assert cap01_guidance.CAP01_GAP_FUNDAMENTALS_EXTENSIONS.get((domain, PHYSICAL_FEASIBILITY)) is None
-    assert tuple(cap01_guidance.CAP01_GAP_FUNDAMENTALS_EXTENSIONS) == ((DOMAIN, PHYSICAL_FEASIBILITY),)
+    assert tuple(cap01_guidance.CAP01_GAP_FUNDAMENTALS_EXTENSIONS) == (
+        (DOMAIN, PHYSICAL_FEASIBILITY), SENSING_EXTENSION[0])
     # battery / energy words in the inventor's text never add or reorder a group
     battery = "A battery pack with a BMS; runtime 4 hours at constant 10 W; capacity in Wh and Ah"
     for pairs in (((PHYSICAL_FEASIBILITY, CLOSED),), ((MECHANISM_COMPLETENESS, OPEN),)):
@@ -214,7 +227,8 @@ def test_t04_the_binding_is_a_fixed_table_without_discovery_or_inference():
     for token in ("import", "glob", "listdir", "json.load", "reference_fundamentals", "idea_text"):
         assert token not in table, token
     assert cap01_guidance.CAP01_GAP_FUNDAMENTALS_EXTENSIONS == {
-        (DOMAIN, PHYSICAL_FEASIBILITY): ((ET_GROUP, ET_CLAIMS, "ENERGY_TIME_FUNDAMENTALS_"),)}
+        (DOMAIN, PHYSICAL_FEASIBILITY): ((ET_GROUP, ET_CLAIMS, "ENERGY_TIME_FUNDAMENTALS_"),),
+        SENSING_EXTENSION[0]: SENSING_EXTENSION[1]}
 
 
 # ==========================================================================
@@ -252,10 +266,12 @@ def test_t07_a_missing_group_part_suppresses_the_whole_group_never_partial_claim
 def test_t08_the_pack_change_is_exactly_one_group_and_one_note():
     pack = _pack()
     pre = copy.deepcopy(pack)
-    pre["reference_fundamentals"] = [g for g in pre["reference_fundamentals"] if g["group_id"] != ET_GROUP]
+    pre["reference_fundamentals"] = [g for g in pre["reference_fundamentals"]
+                                     if g["group_id"] not in (ET_GROUP, SENSING_GROUP)]
     note = pre["_governance_notes"].pop("electrical_energy_time_reference_fundamentals")
+    pre["_governance_notes"].pop(SENSING_NOTE)
     assert _digest(pre) == _PRE_PACK_DIGEST
-    assert [g["group_id"] for g in pack["reference_fundamentals"]] == [BASE_GROUP, ET_GROUP]
+    assert [g["group_id"] for g in pack["reference_fundamentals"]] == [BASE_GROUP, ET_GROUP, SENSING_GROUP]
     for phrase in ("inert", "exactly two bounded reference claims", "ONLY when P remains constant",
                    "PR008–PR009", "PR010–PR011", "PR001–PR007 are unchanged",
                    "nothing is added to the shared deterministic calculation / units owner"):
@@ -293,7 +309,7 @@ def test_t10_four_new_records_appended_after_pr007_with_exact_locations_and_hone
     ids = [r["record_id"] for r in records]
     i = ids.index("electronics_electrical:PR007")
     assert tuple(ids[i + 1:i + 5]) == ET_RECORDS
-    pre = [r for r in records if r["record_id"] not in ET_RECORDS]
+    pre = [r for r in records if r["record_id"] not in ET_RECORDS + SENSING_RECORDS]
     assert _digest(pre) == _PRE_PROVENANCE_DIGEST                  # PR001–PR007 and others unchanged
     recs = {r["record_id"]: r for r in records}
     doe, nist, doe_pol, nist_pol = (recs[r] for r in ET_RECORDS)
@@ -429,8 +445,8 @@ def test_t17_report_and_pdf_carry_the_group_with_attribution_and_limitations(cli
     assert block.count('<bdi class="cap01-fund-equation" dir="ltr"') == 2
     source = _pdf_source(client, sid, monkeypatch)
     assert _ET_RE.findall(source) == [block]
-    assert _ANY_FUND_RE.findall(source) == ["basic-electrical-reference-v1",
-                                            "electrical-energy-time-reference-v1"]
+    assert [g for g in _ANY_FUND_RE.findall(source) if g != "sensing-value-threshold-reference-v1"] == [
+        "basic-electrical-reference-v1", "electrical-energy-time-reference-v1"]
 
 
 def test_t18_session_page_carries_no_group(client):

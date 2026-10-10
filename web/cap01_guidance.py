@@ -304,11 +304,22 @@ CAP01_GAP_FUNDAMENTALS = {
 # limitation truth lives in ``domains/electronics_electrical/domain.json``
 # (electrical_energy_time_reference_v1) with provenance
 # electronics_electrical:PR008–PR011.
+# 28-T1-SENSING-VALUE-THRESHOLD-01 adds ONE row on the same seam: the exact
+# Electronics MECHANISM_COMPLETENESS context (which has no group of its own above)
+# carries ONE prose-only conceptual group, sensing_value_threshold_reference_v1
+# (``domains/electronics_electrical/domain.json``; provenance
+# electronics_electrical:PR012–PR013) — reporting a sensed quantity's value
+# versus indicating whether it is above a threshold. Same rules as above.
 CAP01_GAP_FUNDAMENTALS_EXTENSIONS = {
     ("electronics_electrical", "PHYSICAL_FEASIBILITY"): (
         ("electrical_energy_time_reference_v1",
          ("constant_power_energy_reference", "energy_time_unit_discipline"),
          "ENERGY_TIME_FUNDAMENTALS_"),
+    ),
+    ("electronics_electrical", "MECHANISM_COMPLETENESS"): (
+        ("sensing_value_threshold_reference_v1",
+         ("sensed_value_versus_threshold_indication",),
+         "SENSING_FUNDAMENTALS_"),
     ),
 }
 
@@ -326,6 +337,17 @@ _FUNDAMENTALS_ITEM_PARTS = {
     "lead_key":     "LEAD",
     "equation_key": "EQUATION",
     "note_key":     "NOTE",
+}
+
+# The ONLY groups whose items carry no relationship / equation: a conceptual
+# explanation, never a placeholder equation. Named by exact group id; every
+# other group keeps requiring all four parts above and still fails closed when
+# any of them is missing. A prose-only item carries a title and ONE text part,
+# both required (all-or-nothing on the group, exactly as above).
+_FUNDAMENTALS_PROSE_ONLY_GROUPS = frozenset({"sensing_value_threshold_reference_v1"})
+_FUNDAMENTALS_PROSE_ITEM_PARTS = {
+    "title_key": "TITLE",
+    "text_key":  "TEXT",
 }
 
 
@@ -546,10 +568,12 @@ def _fundamentals_group(group_id, claim_ids, stem):
     view = {name: stem + part for name, part in _FUNDAMENTALS_PARTS.items()}
     if not all(ui_text.has_string(key) for key in view.values()):
         return None
+    prose_only = group_id in _FUNDAMENTALS_PROSE_ONLY_GROUPS
+    item_parts = _FUNDAMENTALS_PROSE_ITEM_PARTS if prose_only else _FUNDAMENTALS_ITEM_PARTS
     claims = []
     for number, claim_id in enumerate(claim_ids, 1):
         item = {name: stem + "ITEM_%d_" % number + part
-                for name, part in _FUNDAMENTALS_ITEM_PARTS.items()}
+                for name, part in item_parts.items()}
         if not all(ui_text.has_string(key) for key in item.values()):
             return None
         item["claim_id"] = claim_id
@@ -557,6 +581,7 @@ def _fundamentals_group(group_id, claim_ids, stem):
     if not claims:
         return None
     view["group_id"] = group_id
+    view["prose_only"] = prose_only
     # Named ``claims`` (never ``items``): a template attribute lookup on a dict
     # would otherwise resolve to the dict method and iterate nothing.
     view["claims"] = tuple(claims)

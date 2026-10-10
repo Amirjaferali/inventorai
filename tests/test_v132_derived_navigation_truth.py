@@ -5013,6 +5013,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at COMPONENT-INVENTORY-DECLARE-LIST-01 (merge-effective delivery record): it follows the
            # energy-time reference increment in the chain
            r"the only product increment authorized after it was COMPONENT-INVENTORY-DECLARE-LIST-01 \(below\), "
+           r"delivered \(PR #\d+\); "
+           # ADVANCED at 28-T1-SENSING-VALUE-THRESHOLD-01 (merge-effective delivery record): it follows the
+           # component-inventory increment in the chain
+           r"the only product increment authorized after it was 28-T1-SENSING-VALUE-THRESHOLD-01 \(below\), "
            r"delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
@@ -5267,7 +5271,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # increment is authorized after it; the integrated-part increment precedes it
                # ADVANCED at COMPONENT-INVENTORY-DECLARE-LIST-01 (merge-effective delivery record): no product
                # increment is authorized after it; the energy-time reference increment precedes it
-               r"No product increment is authorized after COMPONENT-INVENTORY-DECLARE-LIST-01 \(delivered: PR #\d+; "
+               # ADVANCED at 28-T1-SENSING-VALUE-THRESHOLD-01 (merge-effective delivery record): no product
+               # increment is authorized after it; the component-inventory increment precedes it
+               r"No product increment is authorized after 28-T1-SENSING-VALUE-THRESHOLD-01 \(delivered: PR #\d+; "
+               r"[^)]*value versus above-threshold indication[^)]*explanation only[^)]*no Stage entered, completed or "
+               r"reopened; effective only on the verified merge of PR #\d+\) or after the preceding "
+               r"COMPONENT-INVENTORY-DECLARE-LIST-01 \(delivered: PR #\d+; "
                r"[^)]*declare and list only[^)]*one OWNER_STATED / UNVALIDATED record per physical component[^)]*no "
                r"Stage entered, completed or reopened; effective only on the verified merge of PR #\d+\) or after the "
                r"preceding ELECTRICAL-ENERGY-TIME-REFERENCE-01 \(delivered: PR #\d+; "
@@ -5744,7 +5753,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # ADVANCED at COMPONENT-INVENTORY-DECLARE-LIST-01 (merge-effective delivery record): it follows the
             # energy-time reference increment in the chain
             "— is DELIVERED (PR #N); the only increment authorized after it — COMPONENT-INVENTORY-DECLARE-LIST-01 "
-            "(above) — is DELIVERED (PR #N); no subsequent increment has been authorized."), head)
+            # ADVANCED at 28-T1-SENSING-VALUE-THRESHOLD-01 (merge-effective delivery record): it follows the
+            # component-inventory increment in the chain
+            "(above) — is DELIVERED (PR #N); the only increment authorized after it — "
+            "28-T1-SENSING-VALUE-THRESHOLD-01 (above) — is DELIVERED (PR #N); no subsequent increment has been "
+            "authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
     # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
     # ROTATED at the Stage 27 closure: Stage 27 COMPLETE for its current bounded scope leads
@@ -6049,7 +6062,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # integrated-part increment precedes it
            # ADVANCED at COMPONENT-INVENTORY-DECLARE-LIST-01 (merge-effective delivery record): ... after it; the
            # energy-time reference increment precedes it
-           r"No product increment is authorized after COMPONENT-INVENTORY-DECLARE-LIST-01 \(delivered; PR #\d+; "
+           # ADVANCED at 28-T1-SENSING-VALUE-THRESHOLD-01 (merge-effective delivery record): ... after it; the
+           # component-inventory increment precedes it
+           r"No product increment is authorized after 28-T1-SENSING-VALUE-THRESHOLD-01 \(delivered; PR #\d+; "
+           r"[^)]*value versus above-threshold indication; explanation only[^)]*no Stage change; effective only on "
+           r"merge\) or after the preceding COMPONENT-INVENTORY-DECLARE-LIST-01 \(delivered; PR #\d+; "
            r"[^)]*one record per component, parts referenced; declared only, not validated; no Stage change; effective "
            r"only on merge\) or after the preceding ELECTRICAL-ENERGY-TIME-REFERENCE-01 \(delivered; PR #\d+; "
            r"[^)]*constant P only; reference only; no Stage change; effective only on merge\) or after the preceding "
