@@ -41,7 +41,15 @@ Electrical / Electronics part (``COMPOSITION_DOMAINS``); the scalar root domain
 stays the Owner-selected INITIAL ANALYSIS FOCUS and is still never changed
 here. A declared composition is an OWNER-STATED, UNVALIDATED fact: it is not a
 classification, it evaluates nothing, validates nothing, activates nothing and
-grants no specialist behaviour to the non-focused part. Subsystem identity is
+grants no specialist behaviour to the non-focused part — with ONE narrow,
+Owner-authorized exception (CAP13-THERM01-INTEGRATED-PART-01, 2026-10-10): the
+two admitted request-local calculations, ``cap13:static_reactions_two_support``
+v1.0 and ``therm01:conduction_temperature_difference_single_path`` v1.0, may be
+OFFERED for the declared Mechanical and Electrical / Electronics part
+respectively whatever the initial analysis focus (eligibility is decided in the
+web layer from this validated durable composition). Offering a calculation for a
+declared part establishes no applicability, validation or safety and changes
+nothing here; no other specialist behaviour is granted. Subsystem identity is
 system-generated (``new_subsystem_id``), opaque, immutable and never derived
 from a name, a function text, a domain id or a list position; a client never
 supplies one. Declared part text is PRIVATE inventor / project information —

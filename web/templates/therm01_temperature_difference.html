@@ -41,6 +41,13 @@ ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:any
   <p style="margin:0">{{ iso('UI_THERM01_INTRO') }}</p>
 </div>
 <p class="notice" data-therm01-scope-note>{{ iso('UI_THERM01_SCOPE_NOTE') }}</p>
+{#- CAP13-THERM01-INTEGRATED-PART-01: on an integrated project, the ONE
+    inventor-declared part this calculation is offered for, by its durable
+    Owner-declared name (escaped, direction-auto). Offering the calculation for
+    a recorded part does not establish that its model applies. -#}
+{% if eligible and part_name %}
+<p class="notice" data-therm01-part><strong>{{ iso('UI_THERM01_PART_LABEL') }}</strong> <bdi dir="auto" data-therm01-part-name>{{ part_name }}</bdi><br>{{ iso('UI_THERM01_PART_NOTE') }}</p>
+{% endif %}
 
 {% if error_key %}<div class="error" role="alert" data-therm01-error>{{ t(error_key) }}</div>{% endif %}
 

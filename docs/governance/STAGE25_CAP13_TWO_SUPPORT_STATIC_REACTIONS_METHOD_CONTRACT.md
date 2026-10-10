@@ -67,6 +67,15 @@ method with its ONE named consumer: the shared owner `engine/deterministic_calcu
 (`/session/<sid>/support-reactions`). `STAGE 25: ENTERED / PARTIAL — CAP-13 TWO-SUPPORT STATIC REACTIONS SLICE 1 ONLY`;
 `FULL CAP-13: NOT AUTHORIZED`. The STATUS line above and §§13 / 16 are this document's acceptance-time record; this
 paragraph is the current state.
+INTEGRATED-PART ELIGIBILITY AMENDMENT: `CAP13-THERM01-INTEGRATED-PART-01 — OWNER-AUTHORIZED AMENDMENT` (2026-10-10). The
+Owner authorized a narrow exception to the Stage 15 Slice 1 rule that a declared composition grants no specialist behaviour
+to the non-focused part, for this method (`cap13:static_reactions_two_support` version `1.0`) and the THERM-01 method only,
+and the matching amendment of §12A eligibility and the §12B scope-note wording. The calculation may now also be offered for
+the declared Mechanical part of a valid durable integrated Mechanical + Electrical / Electronics invention whose initial
+analysis focus is Electrical / Electronics. The method, its version, sources, declarations, screen, numeric domain,
+refusal / abstention order, disclosure and the shared owner are unchanged; a declared part makes the calculation OFFERED for
+that part only and establishes no physical applicability, suitability, validation or safety. It enables no new method,
+consumer, unit, focus switching or domain activation.
 
 ---
 
@@ -341,14 +350,30 @@ generic journey framework. Nothing here is implemented or enabled: a user-facing
 - ONE optional entry on the session page, beside the CAP-12 advisory entry, offered only while the project is eligible.
   It is never required, has no progression, readiness or answer-state dependency, and declining or ignoring it never
   blocks the core invention journey. It is not offered from the report, PDF, Structured Export or API.
-- Eligible means: the request passes the existing project authorization (`_project_authorized`) AND the project's
-  durable `confirmed_domain`, read from the durable reconstruction inputs as the CAP-12 gate reads it and never from the
-  request, is `mechanical`. The entry and the submission read that same single value.
-- An unreadable or any other root domain fails closed: no entry is offered and a submission is not evaluated (no
-  calculation, no CAP-13 reason token).
-- Gate-scope limitation, recorded explicitly: an integrated invention whose initial analysis focus is Electrical /
-  Electronics is excluded even when it records a Mechanical part. This is a scope limit of this first slice, not a
-  technical incompatibility verdict; widening it needs its own decision.
+- Eligible means: the request passes the existing project authorization (`_project_authorized`) AND EITHER (a) the
+  project's durable `confirmed_domain`, read from the durable reconstruction inputs as the CAP-12 gate reads it and never
+  from the request, is `mechanical` (root eligibility, unchanged), OR (b) the project's durable integrated composition,
+  read through the record store's own project-scoped whole-composition validation (`load_project_subsystems`, checked
+  against the project's own `confirmed_domain`) and never from the request, holds the declared Mechanical part
+  (integrated-part eligibility; amendment `CAP13-THERM01-INTEGRATED-PART-01`). The entry and the submission read that same
+  single rule.
+- Root eligibility never depends on the composition: a `mechanical` root stays eligible with no composition, and an
+  unreadable composition never removes it. Integrated-part eligibility fails closed: a missing, malformed, corrupt or
+  unreadable composition, or one without a Mechanical part, grants nothing. With neither path satisfied, no entry is
+  offered and a submission is not evaluated (no calculation, no CAP-13 reason token).
+- Offering the calculation for a declared part is not a claim that this method applies to that part. Physical
+  applicability is decided only by the inventor's explicit §6 declarations, the §9 screen and the §8 / §12A order; nothing
+  is inferred from the composition, the part's name or its function.
+- Part attribution: on a project with an integrated composition, the page names the declared Mechanical part by its
+  durable Owner-declared name (escaped, direction-isolated) on every eligible rendering, with the §12B part note. The name
+  is display text only: it is not persisted again, logged, sent anywhere or passed to the shared owner (`subject_ref` stays
+  `None`; the request digest is unchanged).
+*(Superseded 2026-10-10 by amendment `CAP13-THERM01-INTEGRATED-PART-01`, preserved — was: "Eligible means: the request
+passes the existing project authorization (`_project_authorized`) AND the project's durable `confirmed_domain` … is
+`mechanical`. The entry and the submission read that same single value." / "An unreadable or any other root domain fails
+closed …" / "Gate-scope limitation, recorded explicitly: an integrated invention whose initial analysis focus is Electrical
+/ Electronics is excluded even when it records a Mechanical part. This is a scope limit of this first slice, not a technical
+incompatibility verdict; widening it needs its own decision.")*
 
 **Capture (one page; nothing inferred, defaulted or pre-answered).**
 - Each §6 declaration is presented with its exact accepted v1 meaning, and the inventor explicitly answers whether the
@@ -514,7 +539,21 @@ preserved internally as §8 requires, are not shown and are not mapped to any CA
 | Sources heading | المصادر |
 | Sources note | مبادئ الاتزان ومركز الثقل من مواد ناسا (NASA)، ومرجع الوحدات من المعهد الوطني للمعايير والتقنية (NIST). لا تؤيّد ناسا InventorAI ولا هذا الحساب. |
 | Back link | العودة إلى مشروعك |
-| Scope note (Mechanical-only first slice) | يغطي هذا الحساب حاليًا المشاريع التي محور تحليلها الرئيسي ميكانيكي فقط. قد لا يتاح لاختراع متكامل محور تحليله الأولي كهربائي/إلكتروني حتى لو تضمّن جزءًا ميكانيكيًا؛ هذا قيد في نطاق هذه الشريحة الأولى، وليس حكمًا بعدم التوافق التقني. |
+| Scope note (Mechanical root or declared Mechanical part) | يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. وجود الجزء الميكانيكي لا يثبت انطباق نموذج الاتزان الساكن ذي المسندين. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة غير مُتحقَّق منها، وليست حكمًا على قدرة التحمل أو السلامة. |
+| Declared-part label | الجزء الميكانيكي المصرّح به: |
+| Declared-part note | يتاح هذا الحساب للجزء المسجل؛ ووجوده لا يثبت انطباق نموذج الحساب عليه. |
+
+English wording of the three amended rows (amendment `CAP13-THERM01-INTEGRATED-PART-01`; the English stays the authority
+for meaning): scope note — «This optional calculation is available for a Mechanical-focus project or for its declared
+Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Recording a Mechanical part does not
+establish that the two-support static-equilibrium model applies. You must confirm the method's conditions and screening
+items. The result is UNVALIDATED and is not a capacity or safety conclusion.»; declared-part label — «Declared Mechanical
+part:»; declared-part note — «This calculation is offered for the recorded part; its presence does not establish that the
+calculation model applies.» The part name follows the label verbatim, escaped and direction-isolated.
+*(Superseded 2026-10-10 by amendment `CAP13-THERM01-INTEGRATED-PART-01`, preserved — the row was "Scope note
+(Mechanical-only first slice)": «يغطي هذا الحساب حاليًا المشاريع التي محور تحليلها الرئيسي ميكانيكي فقط. قد لا يتاح لاختراع متكامل
+محور تحليله الأولي كهربائي/إلكتروني حتى لو تضمّن جزءًا ميكانيكيًا؛ هذا قيد في نطاق هذه الشريحة الأولى، وليس حكمًا بعدم التوافق
+التقني.»)*
 
 **B-6 Terminology.**
 

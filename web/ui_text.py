@@ -4157,8 +4157,14 @@ UI_STRINGS = {
         "en": "This page is optional. It calculates the two vertical support reactions required by the static equilibrium model you declare. Nothing is saved, and it never blocks your project.",
         "ar": "هذه الصفحة اختيارية. تحسب ردّي الفعل الرأسيين للمسندين اللذين يتطلبهما نموذج الاتزان الساكن الذي تصرّح به. لا يُحفَظ شيء، ولا تُعيق مشروعك أبدًا."},
     "UI_CAP13_SCOPE_NOTE": {
-        "en": "This calculation currently covers only projects whose main analysis focus is Mechanical. An integrated invention whose initial analysis focus is Electrical / Electronics may not be offered it even when it includes a Mechanical part; this is a scope limit of this first slice, not a verdict of technical incompatibility.",
-        "ar": "يغطي هذا الحساب حاليًا المشاريع التي محور تحليلها الرئيسي ميكانيكي فقط. قد لا يتاح لاختراع متكامل محور تحليله الأولي كهربائي/إلكتروني حتى لو تضمّن جزءًا ميكانيكيًا؛ هذا قيد في نطاق هذه الشريحة الأولى، وليس حكمًا بعدم التوافق التقني."},
+        "en": "This optional calculation is available for a Mechanical-focus project or for its declared Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Recording a Mechanical part does not establish that the two-support static-equilibrium model applies. You must confirm the method's conditions and screening items. The result is UNVALIDATED and is not a capacity or safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. وجود الجزء الميكانيكي لا يثبت انطباق نموذج الاتزان الساكن ذي المسندين. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة غير مُتحقَّق منها، وليست حكمًا على قدرة التحمل أو السلامة."},
+    "UI_CAP13_PART_LABEL": {
+        "en": "Declared Mechanical part:",
+        "ar": "الجزء الميكانيكي المصرّح به:"},
+    "UI_CAP13_PART_NOTE": {
+        "en": "This calculation is offered for the recorded part; its presence does not establish that the calculation model applies.",
+        "ar": "يتاح هذا الحساب للجزء المسجل؛ ووجوده لا يثبت انطباق نموذج الحساب عليه."},
     "UI_CAP13_ANSWER_MATCHES": {
         "en": "My configuration matches",
         "ar": "يطابق تكويني"},
@@ -4322,8 +4328,14 @@ UI_STRINGS = {
         "en": "This page is optional. It calculates the temperature difference across one heat-conduction path you declare, from the heat flow P and the total thermal resistance Rθ that you enter. Nothing is saved.",
         "ar": "هذه الصفحة اختيارية. تحسب فرق درجة الحرارة عبر مسار توصيل حراري واحد تصرّح به، من التدفق الحراري P والمقاومة الحرارية الكلية Rθ اللتين تدخلهما أنت. لا يُحفَظ شيء."},
     "UI_THERM01_SCOPE_NOTE": {
-        "en": "This calculation currently covers only projects whose main analysis focus is Electrical / Electronics. This is a scope limit of this first slice only.",
-        "ar": "يغطي هذا الحساب حاليًا المشاريع التي محور تحليلها الرئيسي كهربائي/إلكتروني فقط. هذا قيد في نطاق هذه الشريحة الأولى فقط."},
+        "en": "This optional calculation is available for an Electrical / Electronics-focus project or for its declared Electrical / Electronics part in a valid integrated Mechanical and Electrical / Electronics project. Recording that part does not establish that the single-path conduction model applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED temperature difference, not an absolute temperature, rating or safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله كهربائي/إلكتروني، أو لجزئه الكهربائي/الإلكتروني المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. وجود الجزء لا يثبت انطباق نموذج التوصيل الحراري عبر مسار واحد. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة فرق درجة حرارة غير مُتحقَّق منه، وليست درجة حرارة مطلقة أو تصنيفًا أو حكمًا بشأن السلامة."},
+    "UI_THERM01_PART_LABEL": {
+        "en": "Declared Electrical / Electronics part:",
+        "ar": "الجزء الكهربائي/الإلكتروني المصرّح به:"},
+    "UI_THERM01_PART_NOTE": {
+        "en": "This calculation is offered for the recorded part; its presence does not establish that the calculation model applies.",
+        "ar": "يتاح هذا الحساب للجزء المسجل؛ ووجوده لا يثبت انطباق نموذج الحساب عليه."},
     "UI_THERM01_ANSWER_APPLIES": {
         "en": "Applies to my path",
         "ar": "ينطبق على مساري"},
