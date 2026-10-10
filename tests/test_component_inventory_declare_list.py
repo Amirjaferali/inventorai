@@ -125,6 +125,14 @@ def _new_store_project(store, integrated=True):
     return pid, tuple(subs)
 
 
+def _stable(report):
+    """A report render with its per-render values masked: form token values and
+    the package's second-resolution ``generated_at`` timestamp."""
+    report = re.sub(r'value="[^"]*"', "", report)
+    return re.sub(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|[+-]\d\d:\d\d)?", "",
+                  report)
+
+
 def _component(subs=(), name=NAME, function=FUNCTION, parts=()):
     return sm.declared_component(subs, name, function, parts)
 
@@ -506,7 +514,7 @@ def test_x01_no_state_report_pdf_export_or_progression_effect(client, monkeypatc
     assert not hasattr(appmod.SESSION_STORE[sid]["state"], "project_components")
     report = client.get(f"/session/{sid}/deliverable").get_data(as_text=True)
     assert SECRET not in report
-    assert re.sub(r'value="[^"]*"', "", report) == re.sub(r'value="[^"]*"', "", report_before)
+    assert _stable(report) == _stable(report_before)
     assert SECRET not in _pdf_source(client, sid, monkeypatch)
     assert SECRET not in caplog.text
     for path in ("engine/read_export_service.py", "web/api_v1.py",
