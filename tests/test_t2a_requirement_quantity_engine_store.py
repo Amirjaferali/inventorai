@@ -610,6 +610,7 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
     assert tables == ["engine_version_adoptions", "evidence_references",
                       "integration_evidence_anchors",   # Stage 15 closure
                       "need_routing_revisions",
+                      "project_components",   # COMPONENT-INVENTORY-DECLARE-LIST-01
                       "project_subsystems",   # Stage 15 Slice 1 sidecar
                       "projects",
                       "prototype_measurement_methods",

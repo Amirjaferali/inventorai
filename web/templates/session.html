@@ -1657,6 +1657,70 @@ body{overflow-wrap:anywhere}
 </details>
 {% endif %}
 
+{#- CI-BLOCK-BEGIN — COMPONENT-INVENTORY-DECLARE-LIST-01. The inventor's own
+    declared components: ONE entry per physical component, optionally linked to
+    the project's own parts. Declare and list only (no edit / delete). Read from
+    ONE durable snapshot on every render; an unreadable or invalid inventory
+    shows NO list and NO form, never an empty or partial one. Inventor text is
+    escaped and direction-isolated. Declaring a component is NOT technical
+    support and NOT validation, and a part link is the inventor's association
+    only — the copy says so. -#}
+{% if component_inventory %}
+{% set ci = component_inventory %}
+<details id="component-inventory" class="component-inventory" data-ci-status="{{ ci.status }}"{% if ci.ack or ci.error %} open{% endif %} style="margin-top:14px;border:1px solid #d6dde8;border-radius:4px;background:#f7f9fc;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#2c3e50;font-weight:bold">{{ t('UI_CI_HEADING') }}</summary>
+  {% if ci.ack %}<p class="ci-ack" data-ci-ack role="status" style="font-size:13px;color:#1e5631;margin:8px 0">{{ t(ci.ack) }}</p>{% endif %}
+  {% if ci.error %}<p class="ci-error" data-ci-error role="alert" style="font-size:13px;color:#8a1f11;margin:8px 0">{{ t(ci.error) }}</p>{% endif %}
+  {% if ci.status == 'available' %}
+  <p style="font-size:13px;color:#555;margin:8px 0">{{ t('UI_CI_EXPLAIN') }}</p>
+  <p data-ci-boundary style="font-size:13px;color:#555;margin:8px 0">{{ t('UI_CI_BOUNDARY') }}</p>
+  {% if ci.components %}
+  <ul class="ci-list" data-ci-list style="margin:6px 0;padding-inline-start:18px;font-size:13px;color:#333">
+    {% for c in ci.components %}
+    <li data-ci-item style="margin:0 0 8px 0">
+      <strong><bdi dir="auto" data-ci-name>{{ c.name }}</bdi></strong>
+      <span style="color:#666" data-ci-item-status>· {{ t('UI_CI_ITEM_STATUS') }}</span><br>
+      {{ t('UI_CI_FUNCTION_LABEL') }} <bdi dir="auto" data-ci-function>{{ c.function }}</bdi>
+      {% if ci.has_parts %}<br>
+      {% if c.parts %}{{ t('UI_CI_PARTS_LABEL') }} {% for pname in c.parts %}<bdi dir="auto" data-ci-part>{{ pname }}</bdi>{% if not loop.last %}{{ t('UI_CI_PART_SEP') }}{% endif %}{% endfor %}
+      {% else %}<span data-ci-unassigned>{{ t('UI_CI_UNASSIGNED') }}</span>{% endif %}
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p data-ci-none style="font-size:13px;color:#555;margin:6px 0">{{ t('UI_CI_NONE') }}</p>
+  {% endif %}
+  {% if ci.can_add %}
+  <form method="POST" action="/session/{{ sid }}/declare-component" data-ci-form style="margin-top:10px;border-top:1px solid #dbe4ec;padding-top:8px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <input type="hidden" name="component_submission" value="{{ ci.submission }}">
+    <p style="font-size:13px;font-weight:bold;margin:0 0 6px 0">{{ t('UI_CI_FORM_TITLE') }}</p>
+    <label style="display:block;font-size:13px;margin:0 0 4px 0" for="component_name">{{ t('UI_CI_FIELD_NAME') }}</label>
+    <input type="text" id="component_name" name="component_name" maxlength="{{ ci.max_name }}" dir="auto" required autocomplete="off" style="width:100%;box-sizing:border-box">
+    <label style="display:block;font-size:13px;margin:8px 0 4px 0" for="component_function">{{ t('UI_CI_FIELD_FUNCTION') }}</label>
+    <textarea id="component_function" name="component_function" rows="2" maxlength="{{ ci.max_function }}" dir="auto" required style="width:100%;box-sizing:border-box"></textarea>
+    {% if ci.part_choices %}
+    <fieldset data-ci-parts style="margin:8px 0;border:1px solid #ccc;border-radius:4px;padding:6px 10px">
+      <legend style="font-size:13px">{{ t('UI_CI_PARTS_LEGEND') }}</legend>
+      {% for part in ci.part_choices %}
+      <label style="display:block;font-size:13px;margin-top:4px">
+        <input type="checkbox" name="component_part" value="{{ part.id }}"> <bdi dir="auto">{{ part.name }}</bdi>
+      </label>
+      {% endfor %}
+      <p style="font-size:12px;color:#666;margin:4px 0 0 0">{{ t('UI_CI_PARTS_HINT') }}</p>
+    </fieldset>
+    {% endif %}
+    <button type="submit" style="margin-top:8px">{{ t('UI_CI_BUTTON') }}</button>
+  </form>
+  {% else %}
+  <p data-ci-cap style="font-size:13px;color:#555;margin:8px 0">{{ t('UI_CI_CAP') }}</p>
+  {% endif %}
+  {% else %}
+  <p data-ci-unavailable style="font-size:13px;color:#555;margin:8px 0">{{ t('UI_CI_UNAVAILABLE') }}</p>
+  {% endif %}
+</details>
+{% endif %}
 {#- T3A-BLOCK-BEGIN — T3-A "Project record" (T3A-PROJECT-RECORD-IMPLEMENT-01;
     OD-PDVG-02(b) narrowed to input-history rendering). ONE collapsed, read-only
     view of the EXISTING durable history: the ledger in restored order with its

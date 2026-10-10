@@ -91,6 +91,10 @@ from engine.subsystem_model import (
     validate_part_answers, valid_part_answer_text, is_valid_part_question_id,
     MAX_PART_ANSWER_LENGTH,
     MAX_PART_QUESTION_ID_LENGTH,
+    # COMPONENT-INVENTORY-DECLARE-LIST-01: inventor-declared components.
+    ComponentError, ProjectComponent, validate_components,
+    same_component_material, MAX_COMPONENT_NAME_LENGTH,
+    MAX_COMPONENT_FUNCTION_LENGTH, MAX_PROJECT_COMPONENTS_PER_PROJECT,
 )
 # Stage 19 / CAP-09 Result Event Slice 1: the inventor's append-only report of
 # what actually happened in one canonical Section-11 experiment.
@@ -285,6 +289,27 @@ class PartAnswersCorrupt(StoreError):
     are malformed, duplicated or orphaned from its durable composition.
     Fail-closed for the WHOLE collection: nothing partial is returned and
     nothing is repaired, deleted, remapped or reinterpreted."""
+
+
+class ProjectComponentRejected(StoreError):
+    """COMPONENT-INVENTORY-DECLARE-LIST-01: a component declaration is not
+    valid against the project's DURABLE truth inside the write transaction (a
+    referenced part that is not one of THIS project's durable parts, invalid
+    material, or the per-project cap reached). Decided before any row is
+    written; nothing is written."""
+
+
+class ProjectComponentConflict(StoreError):
+    """COMPONENT-INVENTORY-DECLARE-LIST-01: the durable submission identity is
+    already spent on DIFFERENT material. Nothing was written; the stored
+    declaration is never altered."""
+
+
+class ProjectComponentsCorrupt(StoreError):
+    """COMPONENT-INVENTORY-DECLARE-LIST-01: a project's durable component rows
+    are malformed, out of order, duplicated or reference parts outside its
+    durable composition. Fail-closed for the WHOLE inventory: nothing partial
+    is returned and nothing is repaired, deleted or reinterpreted."""
 
 
 class IntegrationEvidenceRejected(StoreError):
@@ -521,6 +546,13 @@ class RecordStore(Protocol):
                                                        submission_key: str): ...
     def append_interface_observation(self, project_id: str, observation,
                                      submission_key: str) -> tuple: ...
+    # COMPONENT-INVENTORY-DECLARE-LIST-01 (append-only; see the
+    # project_components note).
+    def load_component_inventory(self, project_id: str) -> tuple: ...
+    def committed_project_component_for_submission(self, project_id: str,
+                                                   submission_key: str): ...
+    def append_project_component(self, project_id: str, component,
+                                 submission_key: str) -> tuple: ...
 
 
 _SCHEMA = (
@@ -1516,6 +1548,63 @@ _INTERFACE_OBSERVATIONS_SCHEMA = (
     "WHERE supersedes_observation_id IS NOT NULL",
 )
 
+# COMPONENT-INVENTORY-DECLARE-LIST-01 — the ``project_components`` sidecar:
+# the inventor's manually DECLARED components, ONE row per physical component
+# belonging directly to its project. Append-only: never updated or deleted
+# (no such writer exists). Identity is the system-generated ``component_id`` —
+# unique per project (primary key) AND across the store (unique index).
+# ``component_seq`` fixes the deterministic display order. ``subsystem_ids``
+# is the bounded, canonical JSON array of the project's OWN durable part ids
+# the inventor associated the component with (``[]`` = project-level /
+# unassigned). Serialized members cannot rely on SQL foreign keys, so the
+# store re-validates every member against THIS project's durable composition
+# inside the write transaction and again on every load
+# (``engine.subsystem_model.validate_components``). ``submission_key`` is the
+# durable submission / idempotency identity of the ONE action attempt that
+# wrote the row (unique per project): an exact retry is recognised and a
+# different material under the same identity fails closed. The CHECKs are a
+# database backstop for the fixed provenance / validation values and the text
+# bounds. Additive and idempotent (``IF NOT EXISTS``); touches no existing
+# table, column or row; nothing is backfilled (an existing project simply has
+# no rows). Rollback is disable-and-ignore (stop reading the table).
+_PROJECT_COMPONENTS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS project_components (
+        project_id        TEXT    NOT NULL,
+        component_seq     INTEGER NOT NULL,
+        component_id      TEXT    NOT NULL,
+        display_name      TEXT    NOT NULL,
+        function_text     TEXT    NOT NULL,
+        subsystem_ids     TEXT    NOT NULL,
+        provenance        TEXT    NOT NULL,
+        validation_state  TEXT    NOT NULL,
+        submission_key    TEXT    NOT NULL,
+        PRIMARY KEY (project_id, component_id),
+        UNIQUE (project_id, component_seq),
+        UNIQUE (project_id, submission_key),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        CHECK (component_seq >= 0 AND component_seq < %d),
+        CHECK (provenance = 'OWNER_STATED'),
+        CHECK (validation_state = 'UNVALIDATED'),
+        CHECK (typeof(component_id) = 'text' AND length(component_id) = 36),
+        CHECK (typeof(display_name) = 'text'
+               AND length(display_name) BETWEEN 1 AND %d
+               AND instr(CAST(display_name AS BLOB), X'00') = 0),
+        CHECK (typeof(function_text) = 'text'
+               AND length(function_text) BETWEEN 1 AND %d
+               AND instr(CAST(function_text AS BLOB), X'00') = 0),
+        CHECK (typeof(subsystem_ids) = 'text' AND length(subsystem_ids) <= 512),
+        CHECK (typeof(submission_key) = 'text' AND length(submission_key) > 0)
+    )
+    """ % (MAX_PROJECT_COMPONENTS_PER_PROJECT, MAX_COMPONENT_NAME_LENGTH,
+           MAX_COMPONENT_FUNCTION_LENGTH),
+    "CREATE UNIQUE INDEX IF NOT EXISTS project_components_id_uq "
+    "ON project_components (component_id)",
+)
+
+PROJECT_COMPONENT_INSERTED = "INSERTED"
+PROJECT_COMPONENT_EXACT_REPLAY = "EXACT_REPLAY"
+
 INTERFACE_OBSERVATION_INSERTED = "INSERTED"
 INTERFACE_OBSERVATION_EXACT_REPLAY = "EXACT_REPLAY"
 
@@ -1645,6 +1734,7 @@ class SqliteRecordStore:
             self._migrate_interface_dependencies(self._conn)
             self._migrate_integration_evidence_anchors(self._conn)
             self._migrate_part_answers(self._conn)
+            self._migrate_project_components(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -1909,6 +1999,15 @@ class SqliteRecordStore:
         table, column or row; nothing is backfilled or inferred. Rollback is
         disable-and-ignore (stop reading the table)."""
         for stmt in _PART_ANSWERS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_project_components(self, conn) -> None:
+        """COMPONENT-INVENTORY-DECLARE-LIST-01 forward migration: additively
+        create the ``project_components`` sidecar. Idempotent (``IF NOT
+        EXISTS``) on a fresh and on an existing populated database; touches no
+        existing table, column or row; nothing is backfilled or inferred.
+        Rollback is disable-and-ignore (stop reading the table)."""
+        for stmt in _PROJECT_COMPONENTS_SCHEMA:
             conn.execute(stmt)
 
     def _migrate_result_events(self, conn) -> None:
@@ -2841,6 +2940,153 @@ class SqliteRecordStore:
                  interface.description, interface.provenance,
                  interface.validation_state, submission_key))
         return SUBSYSTEM_INTERFACE_INSERTED, interface
+
+    # --- COMPONENT-INVENTORY-DECLARE-LIST-01: declared components (append-only)
+    _COMPONENT_COLUMNS = (
+        "component_seq, component_id, display_name, function_text, "
+        "subsystem_ids, provenance, validation_state, submission_key")
+
+    @staticmethod
+    def _encode_component_parts(subsystem_ids) -> str:
+        """The ONE canonical storage form of a component's part references."""
+        return json.dumps(list(subsystem_ids), separators=(",", ":"),
+                          ensure_ascii=True)
+
+    @classmethod
+    def _decode_component_parts(cls, raw):
+        """The part references of a stored row as a tuple, or raise
+        ``ProjectComponentsCorrupt`` for anything that is not exactly the
+        canonical JSON array of strings this store writes."""
+        try:
+            refs = json.loads(raw) if isinstance(raw, str) else None
+        except ValueError:
+            refs = None
+        if not isinstance(refs, list) or not all(isinstance(r, str) for r in refs) \
+                or cls._encode_component_parts(refs) != raw:
+            raise ProjectComponentsCorrupt("durable part references are malformed")
+        return tuple(refs)
+
+    def _validated_components(self, project_id, composition):
+        """``(components_tuple, submission_keys_tuple)`` of this project's
+        durable component rows, validated WHOLE against its durable
+        ``composition``; ``ProjectComponentsCorrupt`` on anything malformed,
+        out of order, duplicated or referencing a part outside that
+        composition (nothing partial)."""
+        rows = self._conn.execute(
+            "SELECT " + self._COMPONENT_COLUMNS + " FROM project_components "
+            "WHERE project_id = ? ORDER BY component_seq ASC",
+            (project_id,)).fetchall()
+        if not rows:
+            return (), ()
+        if [row[0] for row in rows] != list(range(len(rows))):
+            raise ProjectComponentsCorrupt("durable component order is not contiguous")
+        keys = tuple(row[7] for row in rows)
+        if any(not isinstance(k, str) or not k for k in keys) \
+                or len(set(keys)) != len(keys):
+            raise ProjectComponentsCorrupt("durable submission identity is malformed")
+        items = tuple(
+            ProjectComponent(component_id=row[1], display_name=row[2],
+                             function_text=row[3],
+                             subsystem_ids=self._decode_component_parts(row[4]),
+                             provenance=row[5], validation_state=row[6])
+            for row in rows)
+        try:
+            return validate_components(items, composition), keys
+        except ComponentError as exc:
+            raise ProjectComponentsCorrupt(str(exc)) from None
+
+    def load_component_inventory(self, project_id: str) -> tuple:
+        """``(subsystems, components)``: this project's durable composition and
+        its COMPLETE inventor-declared component inventory, read inside ONE
+        consistent read snapshot (``read_snapshot``) so a reader never combines
+        a composition and an inventory from different durable moments. Both
+        are validated WHOLE (``ProjectSubsystemsCorrupt`` /
+        ``ProjectComponentsCorrupt``; nothing partial). No project ->
+        ``ProjectNotFound``. IR-01: a connection left UNSAFE by a failed write
+        refuses BEFORE any SELECT (``RecordStoreConnectionUnsafe``).
+        Read-only; project-scoped; logs nothing."""
+        if self._connection_unsafe:
+            raise RecordStoreConnectionUnsafe(
+                "connection is inside an unresolved transaction; its reads are "
+                "not committed durable state")
+        with self.read_snapshot():
+            subsystems = self.load_project_subsystems(project_id)
+            components, _keys = self._validated_components(project_id, subsystems)
+        return subsystems, components
+
+    def committed_project_component_for_submission(self, project_id: str,
+                                                   submission_key: str):
+        """The COMMITTED component declaration written under
+        ``submission_key``, or ``None`` — the confirm-by-reload seam of the
+        declaration route. Read ONLY from committed durable state: on a
+        connection inside an unresolved transaction (IR-01) it refuses with
+        ``RecordStoreConnectionUnsafe`` instead of confirming anything. The
+        whole durable inventory is validated first, so a corrupt history
+        fails closed instead of confirming a row out of it."""
+        self._refuse_uncommitted_reads()
+        if not isinstance(submission_key, str) or not submission_key:
+            return None
+        with self.read_snapshot():            # one durable moment for both reads
+            subsystems = self.load_project_subsystems(project_id)
+            components, keys = self._validated_components(project_id, subsystems)
+        if submission_key not in keys:
+            return None
+        return components[keys.index(submission_key)]
+
+    def append_project_component(self, project_id: str, component,
+                                 submission_key: str) -> tuple:
+        """Atomically append ONE inventor-declared component and return
+        ``(outcome, stored_component)``: ``PROJECT_COMPONENT_EXACT_REPLAY``
+        with the ALREADY-COMMITTED declaration when ``submission_key`` already
+        names this exact material (the caller's newly generated id is then
+        discarded, never published), ``PROJECT_COMPONENT_INSERTED`` with the
+        declaration this call committed.
+
+        ONE serialized write transaction (``BEGIN IMMEDIATE``); full rollback
+        on any failure. Inside it, against DURABLE truth: the project exists;
+        its composition and existing inventory validate; the submission
+        identity is unused or names exactly this material
+        (``ProjectComponentConflict`` otherwise); every referenced part is a
+        part of THIS project's composition, the material is valid and the
+        per-project cap is not reached (``ProjectComponentRejected``
+        otherwise). The store assigns ``component_seq``. There is no update or
+        delete path. IR-01: never writes on top of an unresolved
+        connection."""
+        if not isinstance(component, ProjectComponent):
+            raise ProjectComponentRejected("not a component declaration")
+        if not isinstance(submission_key, str) or not submission_key:
+            raise ProjectComponentRejected("a submission identity is required")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            if self._conn.execute(
+                    "SELECT 1 FROM projects WHERE project_id = ?",
+                    (project_id,)).fetchone() is None:
+                raise ProjectNotFound(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            existing, keys = self._validated_components(project_id, subsystems)
+            if submission_key in keys:
+                stored = existing[keys.index(submission_key)]
+                if same_component_material(stored, component):
+                    return PROJECT_COMPONENT_EXACT_REPLAY, stored
+                raise ProjectComponentConflict(
+                    "the submission identity already names a different declaration")
+            if len(existing) >= MAX_PROJECT_COMPONENTS_PER_PROJECT:
+                raise ProjectComponentRejected("the component cap is reached")
+            try:
+                validate_components(existing + (component,), subsystems)
+            except ComponentError:
+                raise ProjectComponentRejected(
+                    "the declaration is not valid against the durable composition"
+                ) from None
+            self._conn.execute(
+                "INSERT INTO project_components (project_id, "
+                + self._COMPONENT_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (project_id, len(existing), component.component_id,
+                 component.display_name, component.function_text,
+                 self._encode_component_parts(component.subsystem_ids),
+                 component.provenance, component.validation_state,
+                 submission_key))
+        return PROJECT_COMPONENT_INSERTED, component
 
     # --- Safe Question Reduction Slice 1: NeedRouting (append-only) ----------
     _ROUTING_COLUMNS = (

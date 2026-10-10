@@ -98,6 +98,14 @@ existing ``subsystem_id`` and the governed question id. They are attributes of
 that ONE part — never a gap, a gap state, evidence, a readiness, maturity,
 progression or Integration input — and the only derived statement is recording
 completeness (``part_family_presence``).
+
+COMPONENT-INVENTORY-DECLARE-LIST-01 (additive): this module is ALSO the
+semantic owner of the inventor's manually DECLARED components
+(``ProjectComponent``) — ONE record per physical component, belonging to its
+project, optionally referencing zero or more of that project's OWN durable
+parts. The references are inventor-declared associations only, never proof of
+containment, compatibility, contribution or suitability; nothing is inferred,
+edited or deleted, and no component text enters ``IdeaState``.
 """
 
 import re
@@ -735,3 +743,131 @@ def part_family_presence(question_ids, answers, subsystem_id):
     if count == len(question_ids):
         return PART_FAMILY_ALL_RECORDED
     return PART_FAMILY_SOME_RECORDED
+
+
+# --- COMPONENT-INVENTORY-DECLARE-LIST-01: inventor-declared components --------
+# ONE record per PHYSICAL COMPONENT the inventor says the invention includes —
+# never one per part or discipline. It belongs directly to its project; on an
+# integrated project it MAY reference zero or more of that project's OWN durable
+# parts (``subsystem_ids``), stored in the composition's own part order for
+# determinism only. An empty reference collection means project-level /
+# unassigned: nothing is fabricated or defaulted to the root domain. A reference
+# is the inventor's declared association only — never proof of physical
+# containment, compatibility, technical contribution or suitability — and one
+# component referenced by several parts stays ONE component. Equal names never
+# merge two declarations. Declare and list only: no edit, delete, quantity,
+# specification, rating, material, price, supplier, taxonomy or validation.
+MAX_COMPONENT_NAME_LENGTH = MAX_SUBSYSTEM_NAME_LENGTH
+MAX_COMPONENT_FUNCTION_LENGTH = MAX_SUBSYSTEM_FUNCTION_LENGTH
+# Bounded growth: a project cannot accumulate an unbounded inventory.
+MAX_PROJECT_COMPONENTS_PER_PROJECT = 50
+_COMPONENT_ID_RE = re.compile(r"^cmp-[0-9a-f]{32}$")
+
+
+class ComponentError(ValueError):
+    """A proposed or durable component declaration violates the bounded
+    declare-and-list contract. Structural message only — never user text."""
+
+
+@dataclass(frozen=True)
+class ProjectComponent:
+    """ONE inventor-declared physical component of a project. ``component_id``
+    is system-generated, opaque and immutable; ``display_name`` and
+    ``function_text`` are the inventor's own trimmed text; ``subsystem_ids`` is
+    the duplicate-free tuple of the project's OWN durable parts the inventor
+    associated it with, in the composition's part order (``()`` =
+    project-level / unassigned). OWNER_STATED and UNVALIDATED by construction;
+    never evidence, a gap, a readiness input or a technical fact."""
+    component_id: str
+    display_name: str
+    function_text: str
+    subsystem_ids: tuple
+    provenance: str
+    validation_state: str
+
+
+def new_component_id():
+    """A system-generated, opaque, collision-safe component identity, derived
+    from nothing the inventor typed, no part and no list position."""
+    return "cmp-" + uuid.uuid4().hex
+
+
+def is_valid_component_id(value):
+    """True only for an id of the exact system-generated shape."""
+    return isinstance(value, str) and bool(_COMPONENT_ID_RE.match(value))
+
+
+def canonical_component_parts(composition, subsystem_ids):
+    """The inventor-selected part references as a duplicate-free tuple in the
+    composition's own part order. Every reference must name a part of
+    ``composition`` (the project's OWN durable composition) exactly once;
+    anything else raises ``ComponentError``. ``()`` stays ``()`` — it is never
+    defaulted to a part or to the root domain."""
+    refs = tuple(subsystem_ids or ())
+    order = [sub.subsystem_id for sub in (composition or ())]
+    if len(set(refs)) != len(refs):
+        raise ComponentError("a part is referenced twice")
+    if any(ref not in order for ref in refs):
+        raise ComponentError("a referenced part is not a part of this project")
+    return tuple(sorted(refs, key=order.index))
+
+
+def declared_component(composition, display_name, function_text, subsystem_ids):
+    """Build ONE inventor-declared component with a fresh system-generated id,
+    OWNER_STATED provenance and UNVALIDATED state. Texts must already be the
+    stored (trimmed) form; invalid or over-limit text raises ``ComponentError``
+    (never truncated or reinterpreted). A client never supplies the id."""
+    if not valid_subsystem_text(display_name, MAX_COMPONENT_NAME_LENGTH):
+        raise ComponentError("component name is empty, invalid or too long")
+    if not valid_subsystem_text(function_text, MAX_COMPONENT_FUNCTION_LENGTH):
+        raise ComponentError("component function is empty, invalid or too long")
+    return ProjectComponent(
+        component_id=new_component_id(), display_name=display_name,
+        function_text=function_text,
+        subsystem_ids=canonical_component_parts(composition, subsystem_ids),
+        provenance=OWNER_STATED, validation_state=UNVALIDATED)
+
+
+def same_component_material(stored, component):
+    """True when two declarations carry the SAME inventor material: the same
+    name, function text and set of referenced parts. The id, provenance and
+    validation state are not material."""
+    return (stored.display_name == component.display_name
+            and stored.function_text == component.function_text
+            and set(stored.subsystem_ids) == set(component.subsystem_ids))
+
+
+def validate_components(components, composition):
+    """Validate a project's COMPLETE component inventory against its OWN
+    durable composition and return it as a tuple, or raise ``ComponentError``.
+
+    Empty is valid (every ordinary, pre-slice or undeclared project). Every
+    entry must carry a system-shaped, distinct id; valid bounded texts; a
+    duplicate-free tuple of parts of ``composition`` in its part order (``()``
+    is valid — an ordinary project can only hold ``()``); OWNER_STATED
+    provenance and UNVALIDATED state; and the inventory is within the
+    per-project cap. Used identically before the durable write and on every
+    load."""
+    items = tuple(components or ())
+    if len(items) > MAX_PROJECT_COMPONENTS_PER_PROJECT:
+        raise ComponentError("too many component declarations")
+    seen = set()
+    for item in items:
+        if not isinstance(item, ProjectComponent):
+            raise ComponentError("inventory entry is not a component declaration")
+        if not is_valid_component_id(item.component_id) or item.component_id in seen:
+            raise ComponentError("component identity is malformed or duplicated")
+        seen.add(item.component_id)
+        if not valid_subsystem_text(item.display_name, MAX_COMPONENT_NAME_LENGTH):
+            raise ComponentError("component name is invalid")
+        if not valid_subsystem_text(item.function_text, MAX_COMPONENT_FUNCTION_LENGTH):
+            raise ComponentError("component function is invalid")
+        if not isinstance(item.subsystem_ids, tuple) or not all(
+                isinstance(ref, str) for ref in item.subsystem_ids):
+            raise ComponentError("component part references are malformed")
+        if canonical_component_parts(composition, item.subsystem_ids) \
+                != item.subsystem_ids:
+            raise ComponentError("component part references are not in canonical order")
+        if item.provenance != OWNER_STATED or item.validation_state != UNVALIDATED:
+            raise ComponentError("component provenance / validation state is invalid")
+    return items

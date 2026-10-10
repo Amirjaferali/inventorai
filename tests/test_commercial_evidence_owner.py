@@ -1401,7 +1401,11 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       "integration_evidence_anchors",
                       # Stage 28 Optional Part Slice 2: the inventor's current
                       # answers about an optional part (not a commercial owner).
-                      "subsystem_part_answers"}
+                      "subsystem_part_answers",
+                      # COMPONENT-INVENTORY-DECLARE-LIST-01: the inventor's
+                      # declared components (not a commercial owner; no
+                      # supplier, cost or evidence content).
+                      "project_components"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()
