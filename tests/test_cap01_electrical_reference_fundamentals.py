@@ -140,8 +140,12 @@ def _equations(block):
 
 def _texts(lang):
     """Every reader-visible string of this slice in ONE language (context + sub-view)."""
+    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 owns its own separately namespaced group
+    # (tests/test_cap01_electrical_energy_time_reference.py); this slice's strings
+    # are everything else under the context prefix, unchanged.
     return {k[len(PREFIX):]: ui_text.UI_STRINGS[k][lang]
-            for k in sorted(ui_text.UI_STRINGS) if k.startswith(PREFIX)}
+            for k in sorted(ui_text.UI_STRINGS) if k.startswith(PREFIX)
+            and not k.startswith(PREFIX + PHYSICAL_FEASIBILITY + "_ENERGY_TIME_FUNDAMENTALS_")}
 
 
 def _fund_texts(lang):
@@ -169,7 +173,11 @@ def test_e01_pf_open_or_partial_renders_the_context_and_fundamentals_exactly_onc
     assert fund["group_id"] == FUND_GROUP
     assert tuple(c["claim_id"] for c in fund["claims"]) == FUND_CLAIMS
     html = _render_state((PHYSICAL_FEASIBILITY, status))
-    assert len(_blocks(html)) == 1 and len(_ANY_FUND_RE.findall(html)) == 1
+    # This slice's group renders exactly once and FIRST; the one later, separately
+    # authorized group (ELECTRICAL-ENERGY-TIME-REFERENCE-01) follows it.
+    assert len(_blocks(html)) == 1 and len(_ANY_FUND_RE.findall(html)) == 2
+    assert html.index('data-cap01-fundamentals="basic-electrical-reference-v1"') < \
+        html.index('data-cap01-fundamentals="electrical-energy-time-reference-v1"')
     assert html.count('data-cap01-gap-group="%s"' % GROUP_ID) == 1
 
 
@@ -377,7 +385,9 @@ def test_e16_four_new_provenance_records_with_the_exact_authorized_identities():
     recs = _provenance()
     assert all(r in recs for r in NEW_RECORDS)
     ids = [r for r in recs if r.startswith("electronics_electrical:")]
-    assert ids == ["electronics_electrical:PR00%d" % n for n in range(1, 8)]
+    assert ids[:7] == ["electronics_electrical:PR00%d" % n for n in range(1, 8)]
+    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 appends exactly four further records.
+    assert ids[7:] == ["electronics_electrical:PR%03d" % n for n in range(8, 12)]
     doe, nist, doe_pol, nist_pol = (recs[r] for r in NEW_RECORDS)
     assert doe["standard_number"] == "DOE-HDBK-1011/1-92" and doe["source_type"] == "government_reference_publication"
     assert "Electrical Science" in doe["source_name"] and "Volume 1 of 4" in doe["source_name"]
@@ -449,7 +459,10 @@ def test_e18_existing_provenance_pr001_to_pr003_are_unchanged():
 
 def test_e19_the_pack_group_declares_the_three_claims_with_exact_source_and_policy_linkage():
     pack, recs = _pack(), _provenance()
-    [group] = pack["reference_fundamentals"]
+    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 appends one further group AFTER this one.
+    groups = pack["reference_fundamentals"]
+    assert [g["group_id"] for g in groups] == [FUND_GROUP, "electrical_energy_time_reference_v1"]
+    group = groups[0]
     assert sorted(group) == ["applicable_gap_type", "claims", "group_id"]
     assert group["group_id"] == FUND_GROUP and group["applicable_gap_type"] == PHYSICAL_FEASIBILITY
     assert tuple(c["claim_id"] for c in group["claims"]) == FUND_CLAIMS
@@ -473,6 +486,8 @@ def test_e20_every_pre_existing_pack_field_is_unchanged_and_the_group_is_declare
     pre = copy.deepcopy(pack)
     pre.pop("reference_fundamentals")
     note = pre["_governance_notes"].pop("electrical_td_slice1_reference_fundamentals")
+    # ...and the later, separately authorized energy-time group's own note.
+    pre["_governance_notes"].pop("electrical_energy_time_reference_fundamentals")
     assert _digest(pre) == _PRE_SLICE_PACK_DIGEST
     for phrase in ("inert", "classifier", "Path-N", "evidence state", "no loader or schema change",
                    "CAP01_ELECTRONICS_INTERFACE_V1", "PR001–PR003 are unchanged",

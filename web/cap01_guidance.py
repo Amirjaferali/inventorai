@@ -291,6 +291,27 @@ CAP01_GAP_FUNDAMENTALS = {
     ),
 }
 
+# ELECTRICAL-ENERGY-TIME-REFERENCE-01 — the ONE further bounded group a context
+# may carry AFTER its group above, in this fixed order: (trusted canonical domain
+# id, EXACT canonical gap id) -> ordered ((group id, claim ids in the pack's
+# source order, the group's own copy-key namespace under the context prefix),).
+# The group above keeps its own binding, copy namespace ("FUNDAMENTALS_") and
+# content; together they form the fixed ordered collection ``fundamentals_groups``
+# of ``gap_context_copy``. Same rules: the context's own binding (exact gap id +
+# exact OPEN / PARTIAL state) is the only authority; no inventor text, signal,
+# alias or keyword, no runtime discovery, no pack-driven formula selection, no
+# user-controlled group selection and no calculation. The claim / source /
+# limitation truth lives in ``domains/electronics_electrical/domain.json``
+# (electrical_energy_time_reference_v1) with provenance
+# electronics_electrical:PR008–PR011.
+CAP01_GAP_FUNDAMENTALS_EXTENSIONS = {
+    ("electronics_electrical", "PHYSICAL_FEASIBILITY"): (
+        ("electrical_energy_time_reference_v1",
+         ("constant_power_energy_reference", "energy_time_unit_discipline"),
+         "ENERGY_TIME_FUNDAMENTALS_"),
+    ),
+}
+
 # Group-level parts of the fundamentals sub-view, then the four parts every item
 # carries. ``EQUATION`` is deliberately its own part so the template can isolate
 # the language-neutral relationship / unit symbols in a left-to-right span.
@@ -482,6 +503,8 @@ def gap_context_copy(domain_id, gap_type):
     view["group_id"] = group_id
     view["gap_type"] = gap_type
     view["fundamentals"] = _fundamentals(domain_id.strip(), gap_type, prefix)
+    view["fundamentals_groups"] = _fundamentals_groups(
+        domain_id.strip(), gap_type, prefix, view["fundamentals"])
     view["next_steps"] = _next_steps(domain_id.strip(), gap_type)
     return view
 
@@ -498,7 +521,28 @@ def _fundamentals(domain_id, gap_type, prefix):
     if row is None:
         return None
     group_id, claim_ids = row
-    stem = prefix + "FUNDAMENTALS_"
+    return _fundamentals_group(group_id, claim_ids, prefix + "FUNDAMENTALS_")
+
+
+def _fundamentals_groups(domain_id, gap_type, prefix, first):
+    """The fixed ORDERED collection of reference-fundamentals groups of one gap
+    context: the context's own group (``first``, from ``_fundamentals``) and then
+    each ``CAP01_GAP_FUNDAMENTALS_EXTENSIONS`` group in its fixed order. Each
+    group is all-or-nothing on its OWN copy: an incomplete group is left out
+    whole and never removes the other group or the gap context. Empty tuple when
+    no group is available."""
+    groups = [first] if first is not None else []
+    for group_id, claim_ids, namespace in CAP01_GAP_FUNDAMENTALS_EXTENSIONS.get(
+            (domain_id, gap_type), ()):
+        group = _fundamentals_group(group_id, claim_ids, prefix + namespace)
+        if group is not None:
+            groups.append(group)
+    return tuple(groups)
+
+
+def _fundamentals_group(group_id, claim_ids, stem):
+    """ONE reference-fundamentals group as copy KEYS under ``stem`` plus its
+    group / claim identifiers, or ``None`` when any of its copy is missing."""
     view = {name: stem + part for name, part in _FUNDAMENTALS_PARTS.items()}
     if not all(ui_text.has_string(key) for key in view.values()):
         return None

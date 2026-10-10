@@ -584,8 +584,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
       <h4 class="cap01-gap-title" data-cap01-gap-title>{{ t(_cap01_gap.title_key) }}</h4>
       <p class="group-lede cap01-gap-meaning" data-cap01-gap-meaning>{{ t(_cap01_gap.meaning_key) }}</p>
       <p class="group-lede cap01-gap-limit" data-cap01-gap-limit>{{ t(_cap01_gap.limit_key) }}</p>
-      {%- if _cap01_gap.fundamentals %}
-      {%- set _cap01_fund = _cap01_gap.fundamentals %}
+      {#- The fixed ordered collection of reference-fundamentals groups of this
+          context (the context's own group first, then any fixed extension group,
+          e.g. electrical_energy_time_reference_v1); each group is
+          all-or-nothing on its own copy. -#}
+      {%- for _cap01_fund in _cap01_gap.fundamentals_groups %}
       <div class="cap01-fundamentals" data-cap01-fundamentals="{{ _cap01_fund.group_id|replace('_', '-') }}">
         <h5 class="cap01-fund-title" data-cap01-fund-title>{{ t(_cap01_fund.title_key) }}</h5>
         <p class="group-lede cap01-fund-intro" data-cap01-fund-intro>{{ t(_cap01_fund.intro_key) }}</p>
@@ -602,7 +605,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         <p class="group-lede cap01-fund-source" data-cap01-fund-source>{{ t(_cap01_fund.source_key) }}</p>
         <p class="group-lede cap01-fund-boundary" data-cap01-fund-boundary>{{ t(_cap01_fund.boundary_key) }}</p>
       </div>
-      {%- endif %}
+      {%- endfor %}
       {%- if _cap01_gap.next_steps %}
       {%- set _cap01_next = _cap01_gap.next_steps %}
       <div class="cap01-next-steps" data-cap01-next-steps="{{ _cap01_next.group_id|lower|replace('_', '-') }}">
