@@ -1577,7 +1577,8 @@ declaration; no domain activation, method admission or shared-owner expansion. R
   deferred until explicitly approved. §8D gives each row one evidence-bound value (R1 first-release required on explicit
   evidence · R2 approved, first-release inclusion unresolved · R3 proposed / study only · R4 explicitly deferred or
   excluded · R5 evidence not available). No row is R1; IoT, Drone / UAV, Renewable and Satellite / Space are R4 (DOMEX-D1,
-  deferred until after first release); the R2 rows await the Owner's first-release reconciliation. Approval is never
+  deferred until after first release through the Owner's acceptance of P10-CL0; no later explicit Owner release
+  decision recorded); the R2 rows await the Owner's first-release reconciliation. Approval is never
   inferred from inclusion in the roadmap, register or a planning portfolio.
 - **State ladder:** `RECORDED` → `QUALIFIED` → `IMPLEMENTED` → `ACTIVATED` → `TESTED` → `RELEASE-READY`, each distinct.
   `RELEASE-READY` is asserted for no technology. A pack, equation, classification signal or unit test is never release
