@@ -957,7 +957,8 @@ def test_arabic_wording_is_contract_12b_verbatim():
              "STATUS": "Status", "ECHO_HEADING": "Echoed inputs heading",
              "METHOD_LINE": "Method line", "SOURCES_HEADING": "Sources heading",
              "SOURCES_NOTE": "Sources note", "BACK": "Back link",
-             "SCOPE_NOTE": "Scope note (Mechanical-only first slice)"}
+             "SCOPE_NOTE": "Scope note (Mechanical root or declared Mechanical part)",
+             "PART_LABEL": "Declared-part label", "PART_NOTE": "Declared-part note"}
     for key, row in pairs.items():
         assert ui_text.text("UI_CAP13_" + key, "ar") == b5[row], key
     matches, differs = b5["Declaration answers"].split(" / ")
@@ -970,7 +971,7 @@ def test_arabic_wording_is_contract_12b_verbatim():
 
 def test_every_cap13_string_is_bilingual_and_carries_no_verdict_wording():
     keys = [k for k in ui_text.UI_STRINGS if k.startswith("UI_CAP13_")]
-    assert len(keys) == 53
+    assert len(keys) == 55
     for key in keys:
         entry = ui_text.UI_STRINGS[key]
         assert entry.get("en") and entry.get("ar"), key

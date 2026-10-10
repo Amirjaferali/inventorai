@@ -818,7 +818,8 @@ def test_arabic_wording_is_contract_9a_verbatim():
              "ECHO_HEADING": "Echoed inputs heading", "METHOD_LINE": "Method line",
              "SOURCES_HEADING": "Sources heading", "SOURCES_NOTE": "Sources note",
              "BACK": "Back link",
-             "SCOPE_NOTE": "Eligibility note (Electrical / Electronics first slice)"}
+             "SCOPE_NOTE": "Eligibility note (Electrical / Electronics root or declared part)",
+             "PART_LABEL": "Declared-part label", "PART_NOTE": "Declared-part note"}
     a5 = {k.replace("` input", " input").replace("` result", " result"): v
           for k, v in a5.items()}
     for key, row in pairs.items():
@@ -833,7 +834,7 @@ def test_arabic_wording_is_contract_9a_verbatim():
 
 def test_every_therm01_string_is_bilingual_and_carries_no_verdict_wording():
     keys = [k for k in ui_text.UI_STRINGS if k.startswith("UI_THERM01_")]
-    assert len(keys) == 48
+    assert len(keys) == 50
     for key in keys:
         entry = ui_text.UI_STRINGS[key]
         assert entry.get("en") and entry.get("ar"), key

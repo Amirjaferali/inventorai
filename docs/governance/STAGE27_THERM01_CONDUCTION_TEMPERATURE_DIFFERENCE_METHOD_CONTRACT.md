@@ -21,6 +21,16 @@ the body to "this candidate" read as this accepted contract. The acceptance clos
 and 5 stay OPEN. It implements nothing, admits no method, closes no source qualification, enters no Stage and authorizes
 no THERM-01 runtime or shared-owner second admission.
 IMPLEMENTATION (2026-10-09): `STAGE 27 — THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SLICE 1: DELIVERED` · `STAGE 27: ENTERED / PARTIAL — THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SLICE 1 ONLY` · `FULL THERM-01: NOT AUTHORIZED`. By separate Owner implementation authorization, closing §15 blocker 5, the slice is DELIVERED exactly within §§2–9A and §12: ONE optional, advisory, non-binding, request-local calculation on a project whose durable root domain is `electronics_electrical`: for ONE single heat-conduction path the inventor declares — all six applicability declarations D-1 to D-6 and all ten high-risk screen items answered explicitly, nothing inferred or pre-selected, `P` and `Rθ` typed in the fixed units W and K/W — the shared deterministic calculation / units owner (`engine/deterministic_calculation.py`; implementation 1.1.0; owner artifact content version 2 under the accepted Correction 02 — exactly two admitted methods, each with ONE immutable method-local binding created by application wiring; exact W / K/W / K; no conversion, registry or discovery) executes the admitted method `therm01:conduction_temperature_difference_single_path` version `1.0` (`engine/therm01_conduction_method.py`; ΔT = P × Rθ) for its ONE consumer (`engine/therm01_temperature_difference.py`) and returns ONE temperature difference `ΔT` in K — `UNVALIDATED`, not evidence, never an absolute or junction temperature, rating, margin or safety statement — with the fixed EN / AR disclosure, or exactly one refusal / abstention reason and no number; one THERM-01 governed artifact (`docs/governance/therm01_content_config/conduction_temperature_difference_single_path_v1.json`); nothing persisted; no report, PDF, Structured Export, API, evidence, readiness, progression or SafetySignal effect; no AI or provider call; CAP-13 semantics, artifact and behaviour unchanged. Stage 27 is NOT complete and its checkbox stays UNTICKED (the roadmap count is unchanged); full THERM-01, any third method, any other consumer, unit conversion, absolute temperature or °C, thermal rating or margin, datasheet lookup, convection / radiation / transient / multi-path analysis and CFD / FEA stay NOT AUTHORIZED. The STATUS line, §0 and §16 below are preserved as the text of record at acceptance (`STAGE 27: NOT ENTERED` and the non-authorization statements were true until this delivery); this contract itself still implements nothing.
+INTEGRATED-PART ELIGIBILITY AMENDMENT: `CAP13-THERM01-INTEGRATED-PART-01 — OWNER-AUTHORIZED AMENDMENT` (2026-10-10). The
+Owner authorized a narrow exception to the Stage 15 Slice 1 rule that a declared composition grants no specialist behaviour
+to the non-focused part, for this method (`therm01:conduction_temperature_difference_single_path` version `1.0`) and the
+CAP-13 two-support static reactions method only, and the matching amendment of §1 / §10 eligibility and the §9A
+eligibility-note wording. The calculation may now also be offered for the declared Electrical / Electronics part of a valid
+durable integrated Mechanical + Electrical / Electronics invention whose initial analysis focus is Mechanical. The method,
+its version, sources, declarations D-1 to D-6, screen, numeric domain, §7 refusal / abstention order, disclosure and the
+shared owner are unchanged; a declared part makes the calculation OFFERED for that part only and establishes no physical
+applicability, suitability, validation or safety. It enables no new method, consumer, unit, focus switching or domain
+activation.
 *(Superseded by this acceptance, preserved — was: "STATUS: DOCUMENTATION-ONLY CONTRACT CANDIDATE — NOT ACCEPTED — …" and
 "ACCEPTANCE PATH (not started): one non-authoring Level-1 semantic / technical review of this candidate, any bounded
 corrections with a targeted delta review, then a separate Owner acceptance. No new governance mechanism is created.")*
@@ -45,12 +55,31 @@ corrections with a targeted delta review, then a separate Owner acceptance. No n
 ## 1. Purpose and scope
 
 ONE optional, advisory, non-binding, request-local calculation: for ONE heat path the inventor declares on a project whose
-durable root domain (`confirmed_domain`) is `electronics_electrical`, the temperature difference across that path,
+durable root domain (`confirmed_domain`) is `electronics_electrical` — or, under amendment `CAP13-THERM01-INTEGRATED-PART-01`,
+on a valid durable integrated Mechanical + Electrical / Electronics project for its declared Electrical / Electronics part —
+the temperature difference across that path,
 `ΔT = P × Rθ`, from the inventor's own heat flow `P` in W and the inventor's own total thermal resistance `Rθ` in K/W for
 exactly that path. Output: `ΔT` in K — a temperature difference only, `UNVALIDATED`, not evidence.
 
-Locked scope: Electrical / Electronics root only; steady state; one heat path; uniform one-dimensional heat flow; one
+Locked scope: Electrical / Electronics root, or the declared Electrical / Electronics part of a valid durable integrated
+composition (eligibility only — below); steady state; one heat path; uniform one-dimensional heat flow; one
 constant area; inventor-supplied total `Rθ` for exactly that path; `P > 0`, `Rθ > 0`.
+
+**Eligibility (amendment `CAP13-THERM01-INTEGRATED-PART-01`).** Eligible means: the existing project authorization passes
+AND EITHER (a) the durable `confirmed_domain`, read from the durable reconstruction inputs and never from the request, is
+`electronics_electrical` (root eligibility, unchanged and independent of any composition), OR (b) the project's durable
+integrated composition, read through the record store's own project-scoped whole-composition validation
+(`load_project_subsystems`, checked against the project's own `confirmed_domain`) and never from the request, holds the
+declared Electrical / Electronics part. A missing, malformed, corrupt or unreadable composition, or one without that part,
+grants nothing (fail closed); with neither path satisfied no entry is offered and a submission is not evaluated. The entry
+and the submission read the same rule. Offering the calculation for a declared part is not a claim that this method applies
+to that part: applicability is decided only by D-1 to D-6, the §8 screen and the §7 order, and nothing is inferred from the
+composition, the part's name or its function. On a project with an integrated composition the page names the declared part
+by its durable Owner-declared name (escaped, direction-isolated) with the §9A part note; the name is display text only — not
+persisted again, logged, sent anywhere or passed to the shared owner (`subject_ref` stays `None`; the request digest is
+unchanged).
+*(Superseded 2026-10-10 by amendment `CAP13-THERM01-INTEGRATED-PART-01`, preserved — §1 read "on a project whose durable root
+domain (`confirmed_domain`) is `electronics_electrical`" and "Locked scope: Electrical / Electronics root only".)*
 
 ## 2. Method identity and version
 
@@ -327,7 +356,21 @@ preserved internally as §7 requires, are not shown and are not mapped to any TH
 | Sources heading | المصادر |
 | Sources note | علاقة المقاومة الحرارية لكل وحدة مساحة من كتيّب أساسيات وزارة الطاقة الأمريكية (U.S. DOE) — مؤرشف، ومرجع تاريخي للأساسيات فقط — ومرجع الوحدات من المعهد الوطني للمعايير والتقنية (NIST). صيغة المقاومة الكلية اشتقاق خاص بـInventorAI. لا تؤيّد وزارة الطاقة الأمريكية ولا NIST InventorAI ولا هذا الحساب. |
 | Back link | العودة إلى مشروعك |
-| Eligibility note (Electrical / Electronics first slice) | يغطي هذا الحساب حاليًا المشاريع التي محور تحليلها الرئيسي كهربائي/إلكتروني فقط. هذا قيد في نطاق هذه الشريحة الأولى فقط. |
+| Eligibility note (Electrical / Electronics root or declared part) | يتاح هذا الحساب الاختياري لمشروع محور تحليله كهربائي/إلكتروني، أو لجزئه الكهربائي/الإلكتروني المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. وجود الجزء لا يثبت انطباق نموذج التوصيل الحراري عبر مسار واحد. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة فرق درجة حرارة غير مُتحقَّق منه، وليست درجة حرارة مطلقة أو تصنيفًا أو حكمًا بشأن السلامة. |
+| Declared-part label | الجزء الكهربائي/الإلكتروني المصرّح به: |
+| Declared-part note | يتاح هذا الحساب للجزء المسجل؛ ووجوده لا يثبت انطباق نموذج الحساب عليه. |
+
+English wording of the three amended rows (amendment `CAP13-THERM01-INTEGRATED-PART-01`; the English stays the authority
+for meaning): eligibility note — «This optional calculation is available for an Electrical / Electronics-focus project or
+for its declared Electrical / Electronics part in a valid integrated Mechanical and Electrical / Electronics project.
+Recording that part does not establish that the single-path conduction model applies. You must confirm the method's
+conditions and screening items. The result is an UNVALIDATED temperature difference, not an absolute temperature, rating or
+safety conclusion.»; declared-part label — «Declared Electrical / Electronics part:»; declared-part note — «This
+calculation is offered for the recorded part; its presence does not establish that the calculation model applies.» The part
+name follows the label verbatim, escaped and direction-isolated.
+*(Superseded 2026-10-10 by amendment `CAP13-THERM01-INTEGRATED-PART-01`, preserved — the row was "Eligibility note
+(Electrical / Electronics first slice)": «يغطي هذا الحساب حاليًا المشاريع التي محور تحليلها الرئيسي كهربائي/إلكتروني فقط. هذا قيد في
+نطاق هذه الشريحة الأولى فقط.»)*
 
 **A-6 Terminology.**
 
@@ -367,7 +410,11 @@ or reformatted into a different meaning. `K/W` is always rendered as one isolate
   or provider call.
 - No new calculation owner, registry, discovery mechanism, request-selected method or generic unit vocabulary.
 - No Domain Pack, `domains/domain_provenance.json`, domain-activation, CAP-12, CAP-13, CAP-14 or WS-PFV-001 change.
-- Mechanical and every other root domain stay out of scope for v1.
+- Mechanical and every other root domain stay out of scope for v1, except that a Mechanical-focus integrated project may
+  be offered the calculation for its declared Electrical / Electronics part (amendment
+  `CAP13-THERM01-INTEGRATED-PART-01`; §1). No other domain, part or focus is admitted.
+*(Superseded 2026-10-10 by that amendment, preserved — was: "Mechanical and every other root domain stay out of scope for
+v1.")*
 
 ## 11. Source and source-use status (truthful; qualification CLOSED for the recorded claims only)
 

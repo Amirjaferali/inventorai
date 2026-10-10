@@ -6331,12 +6331,14 @@ def show_session(sid):
         cap12_form_mockup_link=_cap12_link_offered(sid),
         # Stage 25 / CAP-13 Slice 1: an OPTIONAL link to the request-local
         # two-support static reactions calculation, offered only on an eligible
-        # (Mechanical-root) project. It never gates the journey.
+        # project (Mechanical root, or a declared Mechanical part of a valid
+        # integrated composition). It never gates the journey.
         cap13_support_reactions_link=_cap13_link_offered(sid),
         # Stage 27 / THERM-01 Slice 1: an OPTIONAL link to the request-local
         # single-path temperature-difference calculation, offered only on an
-        # eligible (Electrical / Electronics-root) project. It never gates the
-        # journey.
+        # eligible project (Electrical / Electronics root, or a declared
+        # Electrical / Electronics part of a valid integrated composition). It
+        # never gates the journey.
         therm01_temperature_difference_link=_therm01_link_offered(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
@@ -11239,8 +11241,9 @@ def cap12_form_mockup_advisory_post(sid):
 # (`engine/deterministic_calculation.py`) owns execution; the method adapter
 # (`engine/cap13_static_reactions_method.py`) owns the equations. Nothing is
 # persisted and nothing is read from the project beyond the trusted durable root
-# domain: no answer, requirement quantity, evidence or SafetySignal. The POST
-# renders its answer directly and never redirects.
+# domain and, for integrated-part eligibility, the validated durable composition
+# (CAP13-THERM01-INTEGRATED-PART-01): no answer, requirement quantity, evidence
+# or SafetySignal. The POST renders its answer directly and never redirects.
 #
 # The ONE immutable trusted binding, created here by application wiring. There
 # is no registry, discovery, dynamic module path or request-selectable callable.
@@ -11248,17 +11251,55 @@ _CAP13_REACTIONS_BINDING = _dcalc.bind_method(
     _cap13_method.METHOD_ID, _cap13_method.METHOD_VERSION, _cap13_method.evaluate)
 
 
-def _cap13_eligible(sid):
-    """True iff the project's durable root domain, read exactly as the CAP-12
-    gate reads it (never from the request), makes it eligible. Fails closed."""
+def _calc_declared_part(sid, part_domain):
+    """CAP13-THERM01-INTEGRATED-PART-01: the ONE inventor-declared part of
+    ``sid``'s durable integrated composition whose canonical domain is
+    ``part_domain``, or None. The composition is read through the store's own
+    project-scoped, whole-composition validation (``load_project_subsystems``,
+    checked against the project's own ``confirmed_domain``) and never from the
+    request; a missing, malformed, corrupt or unreadable composition yields None
+    (fail closed). The bounded composition holds at most one part per domain, so
+    a match is unique. A declared part makes a calculation OFFERED for that part
+    only; it establishes no physical applicability, feasibility, suitability,
+    validation or safety, and supplies no declaration or screen answer."""
     try:
-        return _cap13.is_eligible(_cap12_root_domain(sid))
+        subsystems = tuple(_get_store().load_project_subsystems(sid))
     except Exception:
-        return False
+        return None
+    matches = [sub for sub in subsystems if sub.domain == part_domain]
+    return matches[0] if len(matches) == 1 else None
+
+
+def _calc_gate(sid, consumer):
+    """``(eligible, part)`` for ONE admitted calculation consumer. Root
+    eligibility is exactly the existing rule: the durable root domain, read as
+    the CAP-12 gate reads it, satisfies ``consumer.is_eligible``; it never
+    depends on the composition. Integrated-part eligibility (Owner-authorized,
+    CAP-13 contract §12A and THERM-01 contract §1 / §10 as amended) is offered
+    when that root check fails and the validated durable composition holds the
+    part whose domain is the consumer's ``ELIGIBLE_ROOT_DOMAIN``. ``part`` is
+    that declared part whenever the composition holds it (shown for
+    attribution on an integrated project), else None. The session link
+    and the POST read this same function, so they cannot disagree. Fails
+    closed."""
+    try:
+        root_eligible = consumer.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        root_eligible = False
+    part = _calc_declared_part(sid, consumer.ELIGIBLE_ROOT_DOMAIN)
+    return (root_eligible or part is not None), part
+
+
+def _cap13_eligible(sid):
+    """True iff the project is eligible for CAP-13 under ``_calc_gate``: a
+    Mechanical durable root domain, or a declared Mechanical part of a valid
+    durable integrated composition. Never read from the request; fails
+    closed."""
+    return _calc_gate(sid, _cap13)[0]
 
 
 def _cap13_link_offered(sid):
-    """The session-page link reads the SAME single value the submission reads,
+    """The session-page link reads the SAME single rule the submission reads,
     so the link and the calculation cannot disagree. Presentation only."""
     return _cap13_eligible(sid)
 
@@ -11314,7 +11355,7 @@ def _cap13_isolate(text, lang):
     return _ltr_isolate(text, lang, _CAP13_LTR_RUN)
 
 
-def _render_cap13(sid, status=200, eligible=True, captured=None,
+def _render_cap13(sid, status=200, eligible=True, declared_part=None, captured=None,
                   evaluation=None, error=None):
     lang = _current_ui_lang()
     view = None
@@ -11327,6 +11368,11 @@ def _render_cap13(sid, status=200, eligible=True, captured=None,
     response = make_response(render_template(
         "cap13_support_reactions.html",
         sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
         iso=lambda key: _cap13_isolate(ui_text.text(key, lang), lang),
         disclosure_paragraphs=[
             _cap13_isolate(part, lang) for part in
@@ -11356,24 +11402,29 @@ def _render_cap13(sid, status=200, eligible=True, captured=None,
 def cap13_support_reactions(sid):
     if not _project_authorized(sid):
         return _deny_project()
-    return _render_cap13(sid, eligible=_cap13_eligible(sid))
+    eligible, part = _calc_gate(sid, _cap13)
+    return _render_cap13(sid, eligible=eligible, declared_part=part)
 
 
 @app.route("/session/<sid>/support-reactions", methods=["POST"])
 def cap13_support_reactions_post(sid):
     # §12A order: request integrity (global CSRF guard) -> project authorization
-    # -> eligibility (durable root domain) -> strict capture (malformed: 400, no
-    # reason token) -> the consumer's pre-owner order -> the shared owner.
+    # -> eligibility (durable root domain, or a declared Mechanical part of a
+    # valid durable integrated composition) -> strict capture (malformed: 400,
+    # no reason token) -> the consumer's pre-owner order -> the shared owner.
     if not _project_authorized(sid):
         return _deny_project()
-    if not _cap13_eligible(sid):
+    eligible, part = _calc_gate(sid, _cap13)
+    if not eligible:
         return _render_cap13(sid, eligible=False)
     form = request.form
     captured = _cap13.capture_form({k: form.getlist(k) for k in form.keys()})
     if captured is None:
-        return _render_cap13(sid, status=400, error="UI_CAP13_ERR_REQUEST")
+        return _render_cap13(sid, status=400, declared_part=part,
+                             error="UI_CAP13_ERR_REQUEST")
     evaluation = _cap13.evaluate(captured, _CAP13_REACTIONS_BINDING)
-    return _render_cap13(sid, captured=captured, evaluation=evaluation)
+    return _render_cap13(sid, declared_part=part, captured=captured,
+                         evaluation=evaluation)
 
 
 # =============================================================================
@@ -11384,9 +11435,11 @@ def cap13_support_reactions_post(sid):
 # owns capture and the pre-owner order; the shared calculation / units owner
 # (`engine/deterministic_calculation.py`) owns execution; the method adapter
 # (`engine/therm01_conduction_method.py`) owns the equation. Nothing is persisted
-# and nothing is read from the project beyond the trusted durable root domain:
-# no answer, requirement quantity, evidence or SafetySignal. The POST renders
-# its answer directly and never redirects. Nothing here touches CAP-13.
+# and nothing is read from the project beyond the trusted durable root domain
+# and, for integrated-part eligibility, the validated durable composition
+# (CAP13-THERM01-INTEGRATED-PART-01): no answer, requirement quantity, evidence
+# or SafetySignal. The POST renders its answer directly and never redirects.
+# Nothing here touches CAP-13 semantics.
 #
 # The SECOND immutable trusted binding (calc/units Correction 02 §13A), created
 # here by application wiring for THIS consumer only. There is no registry,
@@ -11403,17 +11456,15 @@ _THERM01_LTR_RUN = re.compile(
 
 
 def _therm01_eligible(sid):
-    """True iff the project's durable root domain, read exactly as the CAP-12 /
-    CAP-13 gates read it (never from the request), makes it eligible. Fails
-    closed."""
-    try:
-        return _therm01.is_eligible(_cap12_root_domain(sid))
-    except Exception:
-        return False
+    """True iff the project is eligible for THERM-01 under ``_calc_gate``: an
+    Electrical / Electronics durable root domain, or a declared Electrical /
+    Electronics part of a valid durable integrated composition. Never read from
+    the request; fails closed."""
+    return _calc_gate(sid, _therm01)[0]
 
 
 def _therm01_link_offered(sid):
-    """The session-page link reads the SAME single value the submission reads,
+    """The session-page link reads the SAME single rule the submission reads,
     so the link and the calculation cannot disagree. Presentation only."""
     return _therm01_eligible(sid)
 
@@ -11440,7 +11491,7 @@ def _therm01_result_view(result):
     }
 
 
-def _render_therm01(sid, status=200, eligible=True, captured=None,
+def _render_therm01(sid, status=200, eligible=True, declared_part=None, captured=None,
                     evaluation=None, error=None):
     lang = _current_ui_lang()
     view = None
@@ -11453,6 +11504,11 @@ def _render_therm01(sid, status=200, eligible=True, captured=None,
     response = make_response(render_template(
         "therm01_temperature_difference.html",
         sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
         iso=lambda key: _therm01_isolate(ui_text.text(key, lang), lang),
         disclosure_items=[
             _therm01_isolate(part, lang) for part in
@@ -11483,24 +11539,30 @@ def _render_therm01(sid, status=200, eligible=True, captured=None,
 def therm01_temperature_difference(sid):
     if not _project_authorized(sid):
         return _deny_project()
-    return _render_therm01(sid, eligible=_therm01_eligible(sid))
+    eligible, part = _calc_gate(sid, _therm01)
+    return _render_therm01(sid, eligible=eligible, declared_part=part)
 
 
 @app.route("/session/<sid>/temperature-difference", methods=["POST"])
 def therm01_temperature_difference_post(sid):
     # Order: request integrity (global CSRF guard) -> project authorization ->
-    # eligibility (durable root domain) -> strict capture (malformed: 400, no
-    # reason token) -> the consumer's §7 pre-owner order -> the shared owner.
+    # eligibility (durable root domain, or a declared Electrical / Electronics
+    # part of a valid durable integrated composition) -> strict capture
+    # (malformed: 400, no reason token) -> the consumer's §7 pre-owner order ->
+    # the shared owner.
     if not _project_authorized(sid):
         return _deny_project()
-    if not _therm01_eligible(sid):
+    eligible, part = _calc_gate(sid, _therm01)
+    if not eligible:
         return _render_therm01(sid, eligible=False)
     form = request.form
     captured = _therm01.capture_form({k: form.getlist(k) for k in form.keys()})
     if captured is None:
-        return _render_therm01(sid, status=400, error="UI_THERM01_ERR_REQUEST")
+        return _render_therm01(sid, status=400, declared_part=part,
+                               error="UI_THERM01_ERR_REQUEST")
     evaluation = _therm01.evaluate(captured, _THERM01_TEMPERATURE_BINDING)
-    return _render_therm01(sid, captured=captured, evaluation=evaluation)
+    return _render_therm01(sid, declared_part=part, captured=captured,
+                           evaluation=evaluation)
 
 
 # =============================================================================
