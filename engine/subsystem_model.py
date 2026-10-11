@@ -629,6 +629,14 @@ def dependency_for(dependencies, interface_id):
 # maturity or progression input, an Integration fact, a validation or a
 # feasibility determination. An answer is keyed by (project, subsystem id,
 # governed question id) and is OWNER_STATED / UNVALIDATED by construction.
+# 28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01: the SAME current-value
+# answers are also kept for exactly ONE more part of a durable composition —
+# the REQUIRED part that is NOT the project's initial analysis focus (the
+# Mechanical part of an Electrical / Electronics-focused project, or the
+# reverse), asked its OWN pack's questions for the same two families. The
+# focused required part is never a question part (its questions are the root
+# analysis), and nothing about the part answers changes: they stay outside the
+# root gaps, progression, readiness, evidence and the focus.
 PART_QUESTION_GAP_TYPES = ("MECHANISM_COMPLETENESS", "BOUNDARY_AMBIGUITY")
 # Explicit bound (characters), the bound the other Owner-authored current-value
 # texts of a composed project already use. Over-limit input is rejected.
@@ -654,8 +662,9 @@ class PartAnswerError(ValueError):
 
 @dataclass(frozen=True)
 class PartAnswer:
-    """The inventor's CURRENT answer to ONE governed question for ONE optional
-    composed part: the part's ``subsystem_id``, the governed ``question_id``
+    """The inventor's CURRENT answer to ONE governed question for ONE question
+    part (the optional part, or the non-focused required part — see
+    ``part_question_owner``): the part's ``subsystem_id``, the governed ``question_id``
     and the Owner's own trimmed ``answer_text``. Never a gap, evidence, a
     validation or a readiness, progression or Integration input."""
     subsystem_id: str
@@ -676,33 +685,71 @@ def valid_part_answer_text(value):
     return valid_subsystem_text(value, MAX_PART_ANSWER_LENGTH)
 
 
-def part_question_owner(composition, subsystem_id):
-    """The OPTIONAL part of ``composition`` whose identity is exactly
-    ``subsystem_id``, or raise ``PartAnswerError``. Only an optional part
-    carries part answers; a required part, another project's part or an
-    unknown id never does."""
+def nonfocused_required_part(composition, focus):
+    """The REQUIRED part of ``composition`` that is NOT the initial analysis
+    focus ``focus``, or ``None`` (no composition, or a focus that is not one
+    of the required pair's domains). Resolution by the durable domain of each
+    part against the durable scalar root only — never by name, text or list
+    position."""
+    if focus not in COMPOSITION_DOMAINS:
+        return None
     for sub in composition or ():
-        if sub.subsystem_id == subsystem_id \
-                and sub.domain in OPTIONAL_COMPOSITION_DOMAINS:
+        if sub.domain in COMPOSITION_DOMAINS and sub.domain != focus:
             return sub
-    raise PartAnswerError("the answer names no optional part of this project")
+    return None
+
+
+def part_question_owner(composition, subsystem_id, focus=None):
+    """The question part of ``composition`` whose identity is exactly
+    ``subsystem_id``, or raise ``PartAnswerError``. A question part is the
+    OPTIONAL part and — only when the durable initial analysis focus
+    ``focus`` is given — the NON-FOCUSED REQUIRED part
+    (``nonfocused_required_part``). The focused required part, another
+    project's part or an unknown id never carries part answers; without
+    ``focus`` only the optional part does (the original contract)."""
+    nonfocused = nonfocused_required_part(composition, focus)
+    for sub in composition or ():
+        if sub.subsystem_id != subsystem_id:
+            continue
+        if sub.domain in OPTIONAL_COMPOSITION_DOMAINS or sub is nonfocused:
+            return sub
+    raise PartAnswerError("the answer names no question part of this project")
+
+
+def question_parts(composition, focus):
+    """The question parts of a durable composition in a fixed order: the
+    non-focused required part first, then the optional part when present.
+    ``()`` for an ordinary project."""
+    parts = []
+    nonfocused = nonfocused_required_part(composition, focus)
+    if nonfocused is not None:
+        parts.append(nonfocused)
+    parts.extend(sub for sub in composition or ()
+                 if sub.domain in OPTIONAL_COMPOSITION_DOMAINS)
+    return tuple(parts)
 
 
 def check_part_answer_target(part, question_id):
     """Raise ``PartAnswerError`` unless ``question_id`` is a structurally
     valid governed id of ``part``'s OWN pack (its ``<pack id>`` prefix is the
-    part's domain), so an answer can never be filed under another domain's
-    question even when the gap-family name is the same."""
+    part's domain) in one of the part question families, so an answer can
+    never be filed under another domain's question even when the gap-family
+    name is the same, nor under a PHYSICAL_FEASIBILITY question."""
     if not is_valid_part_question_id(question_id) \
             or question_id.split(":", 1)[0] != part.domain:
         raise PartAnswerError("the question id is not one of this part's pack")
+    # 28-T5: the question families a part is asked are exactly
+    # ``PART_QUESTION_GAP_TYPES`` — never PHYSICAL_FEASIBILITY — and the store
+    # refuses any other family too, not only the route.
+    if question_id.split(":")[1] not in PART_QUESTION_GAP_TYPES:
+        raise PartAnswerError("the question id is not of a part question family")
 
 
-def validate_part_answers(answers, composition):
+def validate_part_answers(answers, composition, focus=None):
     """Validate a project's stored part answers against its OWN durable
     composition and return them as a tuple, or raise ``PartAnswerError``.
-    Empty is valid. Every entry must name an optional part of ``composition``
-    by exact id, a structurally valid question id of that part's own pack
+    Empty is valid. Every entry must name a question part of ``composition``
+    (``part_question_owner``, with the durable ``focus``) by exact id, a structurally valid question id of that part's own pack
     (never checked against or remapped to the CURRENT pack: a stored answer
     to a question that is no longer asked stays as history), be distinct per
     (part, question) and hold valid stored text."""
@@ -711,7 +758,7 @@ def validate_part_answers(answers, composition):
     for item in items:
         if not isinstance(item, PartAnswer):
             raise PartAnswerError("part answer entry is not a part answer")
-        part = part_question_owner(composition, item.subsystem_id)
+        part = part_question_owner(composition, item.subsystem_id, focus)
         check_part_answer_target(part, item.question_id)
         key = (item.subsystem_id, item.question_id)
         if key in seen:
