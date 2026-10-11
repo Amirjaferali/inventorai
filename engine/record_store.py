@@ -88,6 +88,7 @@ from engine.subsystem_model import (
     validate_interface_dependencies, MAX_INTERFACE_DEPENDENCY_NOTE_LENGTH,
     # Stage 28 Optional Part Slice 2: the inventor's part-scoped answers.
     PartAnswer, PartAnswerError, part_question_owner, check_part_answer_target,
+    nonfocused_required_part,
     validate_part_answers, valid_part_answer_text, is_valid_part_question_id,
     MAX_PART_ANSWER_LENGTH,
     MAX_PART_QUESTION_ID_LENGTH,
@@ -533,6 +534,7 @@ class RecordStore(Protocol):
     # subsystem_part_answers note).
     def load_part_answers(self, project_id: str, subsystem_id: str) -> tuple: ...
     def load_part_question_scope(self, project_id: str) -> tuple: ...
+    def load_nonfocused_part_record(self, project_id: str) -> tuple: ...
     def apply_part_answer_delta(self, project_id: str, subsystem_id: str,
                                 delta) -> None: ...
     # CAP-09 Result Event Slice 1 (append-only; see the prototype_test_results note).
@@ -2523,6 +2525,31 @@ class SqliteRecordStore:
             subsystems = self.load_project_subsystems(project_id)
             focus = self._project_focus(project_id)
         return subsystems, focus
+
+    def load_nonfocused_part_record(self, project_id: str) -> tuple:
+        """28-T5-NONFOCUSED-PART-REPORT-01 — ``(part, answers)``: the project's
+        NON-FOCUSED REQUIRED part (``None`` for an ordinary project) and ONLY
+        that part's current answers, read with the durable composition and the
+        durable focus inside ONE consistent read snapshot. The WHOLE answer
+        collection is validated against both (``PartAnswersCorrupt``; nothing
+        partial), so a report never combines a part and answers from different
+        durable moments. No project -> ``ProjectNotFound``. IR-01: a connection
+        left UNSAFE by a failed write refuses BEFORE any SELECT. Read-only;
+        project-scoped (it can only read rows keyed by THIS project); logs
+        nothing."""
+        if self._connection_unsafe:
+            raise RecordStoreConnectionUnsafe(
+                "connection is inside an unresolved transaction; its reads are "
+                "not committed durable state")
+        with self.read_snapshot():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            focus = self._project_focus(project_id)
+            answers = self._validated_part_answers(project_id, subsystems, focus)
+        part = nonfocused_required_part(subsystems, focus)
+        if part is None:
+            return None, ()
+        return part, tuple(a for a in answers if a.subsystem_id == part.subsystem_id)
 
     def load_part_answers(self, project_id: str, subsystem_id: str) -> tuple:
         """The inventor's current answers for exactly ONE question part of

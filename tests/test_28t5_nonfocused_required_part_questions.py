@@ -99,6 +99,16 @@ def _rows_for(sid, part_id):
     return [(q, t) for s, q, t in _answers_rows(sid) if s == part_id]
 
 
+# AMENDED at 28-T5-NONFOCUSED-PART-REPORT-01: the report / PDF now carry the saved answers about the
+# non-focused part in ONE bounded block (pinned by tests/test_28t5_nonfocused_part_report.py); everything
+# outside that block — including the root safety block — must stay byte-identical.
+_NPR_RE = re.compile(r'<div class="nonfocused-part-answers".*?\n  </div>', re.S)
+
+
+def _without_npr(raw):
+    return _NPR_RE.sub("", raw)
+
+
 def _store(tmp_path, name="s.db"):
     return SqliteRecordStore(str(tmp_path / name))
 
@@ -376,9 +386,9 @@ def test_sf01_a_part_hazard_shows_on_the_part_page_only_and_root_signals_are_unc
     assert HAZARD[other] in _html.unescape(signal)
     assert derive_inventor_stated_safety_signals(_live(sid)) == root_before
     report = client.get("/session/%s/deliverable" % sid).get_data(as_text=True)
-    assert HAZARD[other] not in _html.unescape(report)
+    assert HAZARD[other] not in _html.unescape(_without_npr(report))      # only in the answers block
     strip = lambda raw: re.sub(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ", "<ts>",  # noqa: E731
-                               re.sub(r'name="csrf_token" value="[^"]*"', "", raw))
+                               re.sub(r'name="csrf_token" value="[^"]*"', "", _without_npr(raw)))
     assert strip(report) == strip(report_before)
     assert ui_text.text("UI_SS_PART_PAGE_SCOPE", "en") in _html.unescape(report)
 
@@ -473,8 +483,8 @@ def test_x01_no_state_gap_readiness_export_or_report_effect(client, monkeypatch)
     assert appmod._readiness_snapshot_context(sid, _live(sid)) == readiness_before
     pdf = _pdf_source(client, sid, monkeypatch)
     strip = lambda raw: re.sub(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ", "<ts>",  # noqa: E731
-                               re.sub(r'name="csrf_token" value="[^"]*"', "", raw))
-    assert strip(pdf) == strip(pdf_before) and marker not in pdf
+                               re.sub(r'name="csrf_token" value="[^"]*"', "", _without_npr(raw)))
+    assert strip(pdf) == strip(pdf_before) and marker not in _without_npr(pdf)
     assert ui_text.text("UI_SS_PART_PAGE_SCOPE", "en") in _html.unescape(pdf)
     session = client.get("/session/%s" % sid).get_data(as_text=True)
     assert marker not in session
