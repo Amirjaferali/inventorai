@@ -6853,6 +6853,39 @@ UI_STRINGS = {
         "en": "This explanation does not select or recommend an instrument or sensor, set or assess any accuracy or resolution value, calibrate anything, or establish measurement quality, performance or safety.",
         "ar": "لا يختار هذا الشرح أداة قياس أو مستشعرًا ولا يوصي بأيٍّ منهما، ولا يحدّد أو يقيّم أي قيمة للدقة أو لقدرة التمييز، ولا يُجري أي معايرة، ولا يثبت جودة القياس أو الأداء أو السلامة.",
     },
+    # 28-T2-CONTROLLER-INPUT-LOGIC-OUTPUT-REFERENCE-01 — ONE further prose-only conceptual group attached to
+    # the Electronics MECHANISM_COMPLETENESS context, after the accuracy / resolution group
+    # (controller_input_logic_output_reference_v1; provenance electronics_electrical:PR016–PR017). ITEM_1_TEXT
+    # explains the admitted concept in InventorAI's own words and separates the general capability from what the
+    # inventor's design actually does; SOURCE carries the Apache-2.0 / Caltech attribution, the NOTICE line, the
+    # adaptation / translation notice and the no-endorsement notice. Presentation only; not firmware guidance.
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_CONTROLLER_FUNDAMENTALS_TITLE": {
+        "en": "Microcontroller: inputs, programmed logic and outputs",
+        "ar": "المتحكم الدقيق (microcontroller): المدخلات والمنطق المبرمج والمخرجات",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_CONTROLLER_FUNDAMENTALS_INTRO": {
+        "en": "Reference information only. InventorAI has not determined that your design uses a microcontroller or what its program does.",
+        "ar": "معلومات مرجعية فقط. لم يحدّد InventorAI أن تصميمك يستخدم متحكمًا دقيقًا، ولا ما يفعله برنامجه.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_CONTROLLER_FUNDAMENTALS_ITEM_1_TITLE": {
+        "en": "Inputs, programmed logic and outputs",
+        "ar": "المدخلات والمنطق المبرمج والمخرجات",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_CONTROLLER_FUNDAMENTALS_ITEM_1_TEXT": {
+        "en": "A microcontroller-based design can receive inputs, such as sensor readings, process them using programmed logic, and command outputs, such as motors or other actuators. This describes a general capability; it does not show what your design's program does or that it works as intended.",
+        "ar": "يمكن للتصميم القائم على متحكم دقيق (microcontroller) أن يستقبل مدخلات، مثل قراءات المستشعرات، وأن يعالجها بمنطق مبرمج، وأن يصدر أوامر إلى مخرجات، مثل المحركات أو غيرها من المشغّلات. هذا وصف لقدرة عامة، ولا يبيّن ما يفعله برنامج تصميمك ولا أنه يعمل كما هو مقصود.",
+    },
+    # As for the earlier groups, the Arabic attribution wraps each URL, path and commit identifier — and the
+    # framework name "F´ (F Prime)", whose closing parenthesis otherwise reorders before the Arabic comma — in a
+    # left-to-right isolate (U+2066 … U+2069) so it keeps its LTR order in the PDF renderer.
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_CONTROLLER_FUNDAMENTALS_SOURCE": {
+        "en": "Source: F´ (F Prime) flight software framework documentation, nasa/fprime repository, https://github.com/nasa/fprime, commit d32863dd63952d1085890cc69c1b25ea6edb2257: docs/getting-started/features.md, docs/how-to/develop/develop-device-driver.md and docs/user-manual/design-patterns/app-man-drv.md. © 2026 California Institute of Technology (Caltech); U.S. Government sponsorship acknowledged. Licensed under the Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0). Adapted: InventorAI explains this point in its own words; the Arabic version is InventorAI's translation of that explanation. No code, figure, diagram or third-party material is used. This does not imply that Caltech, the Jet Propulsion Laboratory or NASA has reviewed, approved or endorsed InventorAI or this explanation.",
+        "ar": "المصدر: وثائق إطار برمجيات الطيران \u2066F´ (F Prime)\u2069، المستودع nasa/fprime على الرابط: \u2066https://github.com/nasa/fprime\u2069، الإيداع \u2066d32863dd63952d1085890cc69c1b25ea6edb2257\u2069، الملفات: \u2066docs/getting-started/features.md\u2069 و\u2066docs/how-to/develop/develop-device-driver.md\u2069 و\u2066docs/user-manual/design-patterns/app-man-drv.md\u2069. حقوق النشر © 2026 لمعهد كاليفورنيا للتقنية (Caltech)، مع الإقرار برعاية حكومة الولايات المتحدة، وهي مرخّصة بموجب الترخيص Apache License, Version 2.0 المنشور على الرابط: \u2066https://www.apache.org/licenses/LICENSE-2.0\u2069. مُقتبَس: شرح InventorAI هذه النقطة بكلماته، والنص العربي ترجمة InventorAI لهذا الشرح. ولا تُستخدم أي شيفرة برمجية أو شكل أو مخطط أو مواد لطرف ثالث. ولا يعني ذلك أن Caltech أو مختبر الدفع النفاث (JPL) أو NASA قد راجع InventorAI أو هذا الشرح أو وافق عليه أو أيّده.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_CONTROLLER_FUNDAMENTALS_BOUNDARY": {
+        "en": "This explanation does not describe your design's program, choose a microcontroller, check hardware compatibility, set timing or behaviour, or establish that anything works or is safe.",
+        "ar": "لا يصف هذا الشرح برنامج تصميمك، ولا يختار متحكمًا دقيقًا، ولا يتحقق من توافق المكونات، ولا يحدد توقيتًا أو سلوكًا، ولا يثبت أن أي شيء يعمل أو أنه آمن.",
+    },
     # Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure. The Electronics
     # MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY contexts (grounded only in the
     # governed Electronics pack questions) and, per authorized (domain, gap), ONE

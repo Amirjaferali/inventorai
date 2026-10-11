@@ -32,7 +32,8 @@ def test_sensing_group_renders_prose_only_and_fits_desktop_and_phone_width(serve
     groups = page.locator("[data-cap01-fundamentals]")
     # 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 appends ONE further prose-only group to this
     # context AFTER this one (pinned by tests/test_cap01_accuracy_resolution_reference_browser.py).
-    expect(groups).to_have_count(2)
+    # 28-T2-CONTROLLER-INPUT-LOGIC-OUTPUT-REFERENCE-01 appends a third group after the accuracy group.
+    expect(groups).to_have_count(3)
     group = groups.nth(0)
     assert group.get_attribute("data-cap01-fundamentals") == "sensing-value-threshold-reference-v1"
     expect(group).to_be_visible()
