@@ -1900,6 +1900,7 @@ Stage 35 complete for the current bounded Structured Invention Disclosure Export
 Stage 36 complete for the current no-live-AI / provider scope only (CAP-15 + CAP-17 not implemented; no production live AI / provider selected; External Engineering Tools planned / deferred); Stage 37 not entered / not authorized
 Stage 25 entered / partial — CAP-13 Two-Support Static Reactions Slice 1 delivered; full CAP-13 not authorized
 Stage 26 preserved, not entered / not authorized
+Stage 26 / CAP-14 future-compatibility anchor: architectural invariants recorded 2026-10-11 (Capability Register CAP-14) — documentation only; Stage 26 still not entered; CAP-14 implementation and visual interpretation not authorized
 Stage 27 complete for the current bounded THERM-01 single-path temperature-difference scope only; full THERM-01 not authorized
 
 CURRENT DOMAIN-EXPANSION POSITION:
