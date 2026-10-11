@@ -45,6 +45,13 @@ sentence explaining existing owner-held "you" / "your" wording, §12.7, §12.9; 
 wrapping for the header digest and version identifiers, §10; #32 extended). No owner-held string, JSON value, token,
 label semantics or other rule changes. The Correction 04 (UX) text is preserved in Git history (PR #755, commit
 `c10da9014977d8cdb9ba9c53e977bb6be9eeaf6b`).
+AMENDMENT — STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (export v2): 2026-10-11, by Owner authorization of ONE bounded
+implementation and its Correction 01 Owner decisions (export v2 APPROVED; seventh snapshot admission APPROVED WITH
+COMPATIBILITY CONDITION). Field 7 carries the inventor's declared physical components (PR #788 inventory) as ONE added
+item kind `component`; the schema / format versions become `/2` and the file names `-v2`; `load_component_inventory`
+becomes the seventh R1 reader. Only §2.2 (S25), §3.1, §3.2, §8.2 (field 7), §8.3 (`component`), §9.1, §9.3, §10 and
+§12.7 change; every other clause, field, disclaimer and the closed-vocabulary / strict-reader principle stand. Version
+1 is neither reinterpreted nor made extensible. The pre-amendment text is preserved in Git history.
 BASE: `feature/atomic-json-session-persistence` at `0ab87dca9ab5abebc03da791d288d661727d7858` (tree
 `8cfd87c026298df7f31fd13cf082c6efe470ee7e`); `ACTIVE CONTRACT: NONE`; Stage 35 NOT ENTERED / NOT AUTHORIZED; the Master
 Roadmap at 23 / 45 incomplete.
@@ -126,6 +133,7 @@ behaviour-preserving extraction (workstream contract §4 rule 2), performed only
 | S22 | Requirement quantities (OD-A) | `store.load_requirement_quantities(project_id)` — validated history; no `_refuse_uncommitted_reads()` call (it reads `requirement_quantities` rows and `load_contract`, both admitted inside the snapshot today); NOT a seventh R1 reader and not changed | STORE |
 | S23 | Requirement-quantity rows | `engine.requirement_quantity.requirement_quantities_meta(state)` (pure; the owner's canonical rows with its `active` / `anchor_active` booleans; fails closed on an unresolvable anchor) | PUBLIC |
 | S24 | Requirement-quantity labels | `UI_T2A_KIND_<TOKEN>`, `UI_T2A_CURRENT`, `UI_T2A_REPLACED`, `UI_T2A_WITHDRAWN_ANCHOR`, `UI_T2A_WITHDRAWN_NOTE` | PUBLIC (render only) |
+| S25 | Declared components (v2) | `store.load_component_inventory(project_id)` → `(composition, components)`, both validated WHOLE; the composition must equal `state.subsystems` (S2) or the export refuses | R1 (the seventh reader; §3.2) |
 | P1 | `state.known_problem` | — | PROHIBITED (RISK-002; workstream contract §6) |
 | P2 | `web/app.py` `_declared_conflict_view`, `_evidence_details`, `_experiment_execution_states` called as-is | — | PROHIBITED (web-layer helpers are not canonical seams) |
 | P3 | Any rendered report / PDF / HTML string as source truth | — | PROHIBITED |
@@ -165,7 +173,8 @@ and the five web wrappers keep today's semantics (a `None` collection leaves its
    b. S2 `reconstruct_readonly_state(store, project_id)` — `review.level != 1` refuses;
    c. S22 `load_requirement_quantities(project_id)` (STORE; always called, even for a project with no quantity);
    d. the R1 reads, in this order: E2 `load_planning_metadata` (four R1 readers), S8 `load_interface_dependencies`,
-      S7 `load_result_events` (always called, even for a project with no experiment).
+      S7 `load_result_events` (always called, even for a project with no experiment), S25 `load_component_inventory`
+      (always called, even for a project with no component; v2).
 5. Every source value the projection needs is materialized into memory inside the snapshot. As the last statement of
    the `with` block the composer checks `store.committed_state_readable()`: inside a healthy store-owned snapshot it is
    `False` (the read transaction is open); `True` means the read transaction ended underneath the composer, so the
@@ -199,7 +208,12 @@ Correction 03 is binding. The existing `read_snapshot()` stays the sole coherenc
      bare caller-owned transaction).
 - **Exactly six substitutions.** In `load_interface_dependencies`, `load_success_criteria`, `load_measurement_methods`,
   `load_test_hypotheses`, `load_test_variables` and `load_result_events`, the leading `self._refuse_uncommitted_reads()`
-  call is replaced by `self._admit_snapshot_read()`. Nothing else in those readers changes: query text, ordering,
+  call is replaced by `self._admit_snapshot_read()`. **AMENDED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (Owner-approved export v2; Correction 01).** A SEVENTH admission: in
+  `load_component_inventory` the leading flag-only `_connection_unsafe` check is replaced by `self._admit_snapshot_read()`;
+  its internal `with self.read_snapshot()` (a no-op inside the outer snapshot), its whole-collection validation against the
+  composition read with it, `ProjectNotFound` and `ProjectComponentsCorrupt` are unchanged. Its only other caller (the
+  session-page component list) reads standalone with no transaction open, so its behaviour is unchanged; the one
+  strengthening is that a bare caller-owned transaction is now refused, exactly as for the six readers above. Nothing else in those readers changes: query text, ordering,
   validation, project binding, `ProjectNotFound`, the `*Corrupt` classes and their internal `with self.read_snapshot()`
   (a no-op inside the outer snapshot) stay as they are.
 - **Unchanged.** `_refuse_uncommitted_reads()`, `committed_state_readable()`, `_transaction_resolved()`, `_write()`,
@@ -432,7 +446,7 @@ non-empty).
 | 4 | `invention_objective` | `NOT_CAPTURED` | — | — |
 | 5 | `technical_concept` | `RECORDED` / `NOTHING_RECORDED` | S4 `state.known_mechanism` | 1 item, kind `known_mechanism` |
 | 6 | `parts` | integrated: `RECORDED`; otherwise `NOT_CAPTURED`, reason `NON_INTEGRATED_PROJECT` | S9 | kind `part`, composition order |
-| 7 | `component_descriptions_beyond_parts` | `NOT_CAPTURED` (otherwise-case reason `NON_INTEGRATED_PROJECT`) | — | — |
+| 7 | `component_descriptions_beyond_parts` | v2: `RECORDED` when the component inventory holds at least one component, otherwise `NOTHING_RECORDED` — integrated and ordinary projects alike, never `NOT_CAPTURED` *(v1 was: `NOT_CAPTURED`, otherwise-case reason `NON_INTEGRATED_PROJECT`)* | S25 | kind `component`, durable inventory order |
 | 8 | `relationships` | integrated: `RECORDED` / `NOTHING_RECORDED`; otherwise `NOT_CAPTURED`, reason `NON_INTEGRATED_PROJECT` | S9 + S8 | kind `interface`, interface order |
 | 9 | `operating_sequence_or_workflow` | `NOT_CAPTURED` | — | — |
 | 10 | `alternative_embodiments` | `NOT_CAPTURED` | — | — |
@@ -473,6 +487,7 @@ currency (limitation is always `NOT_APPLICABLE`; §8.1).
 | `resolved_problem` | `text` (Q) = `resolved_problem(state).content`; `capture_limitation` (S) = the exact §12.6 English text, always present, source owner `DISCLOSURE_EXPORT` | `text`: `Evidence.provenance` / `.validation_status` / NA; `capture_limitation`: NA / NA / NA | — | field `NOTHING_RECORDED` when `resolved_problem` is `None` (no item, so no limitation); the limitation never depends on the problem text |
 | `known_mechanism` | `text` (Q) = `state.known_mechanism.content` | `Evidence.provenance` / `.validation_status` / NA | — | field `NOTHING_RECORDED` when `known_mechanism` is `None` |
 | `part` | `name` (Q) `display_name`; `function` (Q) `function_text` | `Subsystem.provenance` / `.validation_state` / NA | `part_domain` (`mechanical`, `electronics_electrical`, `control_loop`) | — |
+| `component` (v2) | `name` (Q) `display_name`; `function` (Q) `function_text`; source owner `SUBSYSTEM_COMPOSITION` (the inventory's semantic owner) | `ProjectComponent.provenance` / `.validation_state` / NA (always `OWNER_STATED` / `UNVALIDATED`) | no token; refs = one field-6 `part` item per declared part, in the component's own part order, no duplicate; no ref = project level; `component_id` never exported | a part reference that does not resolve to a field-6 item refuses (§3.4); the component inventory is inclusion only — never technical support, a specification or a validation |
 | `interface` | `description` (Q); `dependency` (S, value `null`); `dependency_note` (Q) | `SubsystemInterface.provenance` / `.validation_state` / NA on `description`; NA on the dependency slots | refs `[part_a, part_b]`; `dependency` tokens `dependency_kind` (`one_way` / `mutual`), `dependent_part`, `depends_on_part` (item keys; one-way only) | no declaration → `dependency` and `dependency_note` `NOTHING_RECORDED`; declaration without note → `dependency_note` `NOTHING_RECORDED`; any read failure refuses (§3.4) |
 | `unresolved_gap` | `gap_state` (S, value `null`), source owner `GAP_LIFECYCLE` (the reconstructed state's gap lifecycle, `state.gaps`) | NA / NA / NA (`Gap` holds no provenance, validation-state or currency field; an unresolved gap holds no `resolution_source`) | `gap_state` tokens `gap_type`, `gap_status` (`OPEN` / `PARTIAL`) | — |
 | `declared_contradiction` | `declaration` (S, value `null`), source owner `LEDGER`; `answer_a`, `answer_b` (Q) = endpoint `content` | `declaration`: the `contradiction_declared` record's own provenance / validation / currency; each answer: its endpoint record's provenance / validation / currency | `declaration` token `active: true`; ref to the matching field-29 row | — |
@@ -524,10 +539,15 @@ Selection rules, all by owner tokens:
 
 ### 9.1 Version identities and file names
 
-- Disclosure schema version: `inventorai-disclosure/1`.
-- Export format versions: JSON `inventorai-disclosure-json/1`; HTML `inventorai-disclosure-html/1`.
-- File names (constant; no project id, no inventor text): `inventorai-disclosure-export-v1.json` and
-  `inventorai-disclosure-export-v1.html`.
+- Disclosure schema version: `inventorai-disclosure/2` *(v1: `inventorai-disclosure/1`)*.
+- Export format versions: JSON `inventorai-disclosure-json/2`; HTML `inventorai-disclosure-html/2` *(v1: `…-json/1`,
+  `…-html/1`)*.
+- File names (constant; no project id, no inventor text): `inventorai-disclosure-export-v2.json` and
+  `inventorai-disclosure-export-v2.html` *(v1: `-v1`)*.
+- **AMENDED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (Owner-approved export v2; Correction 01).** Version 2 = version 1 plus exactly ONE item kind, `component` (field 7, §8.2 / §8.3). Every
+  other key, token, marker, reason, source owner, field disposition and disclaimer is unchanged; v2 stays a closed
+  vocabulary whose reader rejects unknown keys (§9.6). Version 1 is not reinterpreted or made extensible: a v1 reader
+  rejects a v2 document by its version strings and its added kind.
 
 ### 9.2 JSON top level (exactly five keys)
 
@@ -565,7 +585,7 @@ Closed token sets:
   `PROTOTYPE_TEST_PLAN`,
   `PLANNING_METADATA`, `EXPERIMENT_RESULTS`, `DISCLOSURE_EXPORT` (the export's own fixed text; used only for the
   `capture_limitation` slot);
-- item kinds: the seventeen kinds of §8.3;
+- item kinds: the eighteen kinds of §8.3 (v2 adds `component`; v1: seventeen);
 - slot tokens: `text`, `name`, `function`, `description`, `dependency`, `dependency_note`, `answer_a`, `answer_b`,
   `part_a`, `part_b`, `label`, `status`, `resolving_action`, `statement`, `cap11_form`, `title`, `objective`,
   `what_to_observe`, `success_criterion`, `measurement_method`, `test_hypothesis`, `test_variable`, `execution_state`,
@@ -673,6 +693,11 @@ key. A v1 reader rejects unknown keys.
   through the existing T2-A labels (`UI_T2A_CURRENT` when `active`, `UI_T2A_REPLACED` when not; `UI_T2A_WITHDRAWN_ANCHOR`
   with `UI_T2A_WITHDRAWN_NOTE` when `anchor_active` is false) and, when it has one, a `#<item_key>` link to its field-29
   row.
+- **AMENDED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (Owner-approved export v2; Correction 01).** A `component` item (field 7) shows the fixed heading "Physical component declared by the
+  inventor", its quoted `name` and `function` (function labelled with the existing `UI_S15_SCOPE_FUNCTION`) with their
+  Source / Validation rows, and either "Linked by the inventor to:" followed by one `#<item_key>` link per referenced part
+  (labelled with that part's existing §2.2 S19 part label) or "Not linked to a part (project level)." Field 7, when
+  `RECORDED`, carries one fixed clarification directly under its heading (§12.7).
 - Canonical English system statements stay English in both locales (Stage 34 rule) and are direction-isolated.
 - **Neutral export labels (Correction 04, C1; workstream contract §4 rule 4 exception).** Where §12.7 defines a
   Stage-35 label, it replaces, in this HTML only, the reused label named in §2.2 (S17, S20, S24) for the same token or
@@ -826,6 +851,10 @@ second-person wording.
 | Source label, Section-11 planning provenance `source_stated` | — (no existing label) | Taken from the inventor's recorded text | مأخوذ من نص المخترع المسجّل |
 | Withdrawn-answer note (`anchor_active` false) | `UI_T2A_WITHDRAWN_NOTE` | The answer this value was attached to has been withdrawn. The value is kept in the project history and is no longer current. | سُحبت الإجابة التي كانت هذه القيمة مرتبطة بها. تُحفظ القيمة في سجل المشروع ولم تعد حالية. |
 | Execution state `none` | `web/app.py` `S11_EXECUTION_TEXT` (none) | No result recorded. | لا توجد نتيجة مسجّلة. |
+| Component heading (v2) | — (no existing label) | Physical component declared by the inventor | مكوّن مادي أعلنه المخترع |
+| Component part links (v2) | `UI_CI_PARTS_LABEL` ("Linked by you to:") | Linked by the inventor to: | ربطه المخترع بـ: |
+| Project-level component (v2) | `UI_CI_UNASSIGNED` | Not linked to a part (project level). | غير مرتبط بجزء (على مستوى المشروع). |
+| Field-7 clarification (v2; field 7 `RECORDED` only) | — (no existing label) | Each entry records only that the inventor said the invention includes this component. InventorAI has not checked or validated it, and a link to a part is the inventor's own association: it does not establish that the component sits in that part, works with it or suits it. | يسجّل كل إدخال فقط أن المخترع ذكر أن الاختراع يتضمّن هذا المكوّن. لم يفحصه InventorAI ولم يتحقق منه، وربطه بجزء هو ربط من المخترع نفسه: لا يثبت أن المكوّن موجود في ذلك الجزء أو يعمل معه أو يناسبه. |
 | Execution state `recorded` | `web/app.py` `S11_EXECUTION_TEXT` (recorded) | The inventor recorded {n} execution(s). These are the inventor's own recorded observations. InventorAI has not checked them and they are not a pass/fail judgement. | عدد التنفيذات التي سجّلها المخترع: {n}. هذه ملاحظات سجّلها المخترع بنفسه، ولم يتحقق منها InventorAI، وليست حكمًا بالنجاح أو الإخفاق. |
 
 Every other source and validation token keeps its existing `UI_ED_*` label, which is already neutral.

@@ -7447,6 +7447,24 @@ UI_STRINGS = {
         "en": "Taken from the inventor's recorded text",
         "ar": "مأخوذ من نص المخترع المسجّل",
     },
+    # STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 — field 7 (v2): the inventor's
+    # declared physical components; neutral export wording (Correction 04, C1).
+    "UI_S35_COMPONENT_LABEL": {
+        "en": "Physical component declared by the inventor",
+        "ar": "مكوّن مادي أعلنه المخترع",
+    },
+    "UI_S35_COMPONENT_PARTS": {
+        "en": "Linked by the inventor to:",
+        "ar": "ربطه المخترع بـ:",
+    },
+    "UI_S35_COMPONENT_PROJECT_LEVEL": {
+        "en": "Not linked to a part (project level).",
+        "ar": "غير مرتبط بجزء (على مستوى المشروع).",
+    },
+    "UI_S35_COMPONENTS_CLARIFICATION": {
+        "en": "Each entry records only that the inventor said the invention includes this component. InventorAI has not checked or validated it, and a link to a part is the inventor's own association: it does not establish that the component sits in that part, works with it or suits it.",
+        "ar": "يسجّل كل إدخال فقط أن المخترع ذكر أن الاختراع يتضمّن هذا المكوّن. لم يفحصه InventorAI ولم يتحقق منه، وربطه بجزء هو ربط من المخترع نفسه: لا يثبت أن المكوّن موجود في ذلك الجزء أو يعمل معه أو يناسبه.",
+    },
     "UI_S35_WITHDRAWN_NOTE": {
         "en": "The answer this value was attached to has been withdrawn. The value is kept in the project history and is no longer current.",
         "ar": "سُحبت الإجابة التي كانت هذه القيمة مرتبطة بها. تُحفظ القيمة في سجل المشروع ولم تعد حالية.",

@@ -3102,13 +3102,14 @@ class SqliteRecordStore:
         a composition and an inventory from different durable moments. Both
         are validated WHOLE (``ProjectSubsystemsCorrupt`` /
         ``ProjectComponentsCorrupt``; nothing partial). No project ->
-        ``ProjectNotFound``. IR-01: a connection left UNSAFE by a failed write
-        refuses BEFORE any SELECT (``RecordStoreConnectionUnsafe``).
+        ``ProjectNotFound``. IR-01: a connection left UNSAFE by a failed write,
+        or a bare caller-owned transaction, refuses BEFORE any SELECT
+        (``RecordStoreConnectionUnsafe``). STAGE35-COMPONENT-DISCLOSURE-EXPORT-01
+        (the seventh Stage 35 R1 admission): inside a snapshot this store itself
+        acquired the read is admitted and joins that snapshot (a lost snapshot
+        refuses); standalone it decides exactly as ``_refuse_uncommitted_reads``.
         Read-only; project-scoped; logs nothing."""
-        if self._connection_unsafe:
-            raise RecordStoreConnectionUnsafe(
-                "connection is inside an unresolved transaction; its reads are "
-                "not committed durable state")
+        self._admit_snapshot_read()
         with self.read_snapshot():
             subsystems = self.load_project_subsystems(project_id)
             components, _keys = self._validated_components(project_id, subsystems)

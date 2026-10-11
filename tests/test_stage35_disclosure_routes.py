@@ -103,7 +103,7 @@ def test_15_json_download(owned):
     assert r.status_code == 200
     assert r.headers["Content-Type"] == "application/json; charset=utf-8"
     assert r.headers["Content-Disposition"] == \
-        'attachment; filename="inventorai-disclosure-export-v1.json"'
+        'attachment; filename="inventorai-disclosure-export-v2.json"'
     assert r.headers["Cache-Control"] == "no-store"
     assert r.headers["X-Content-Type-Options"] == "nosniff"
     assert not r.data.startswith(b"\xef\xbb\xbf")
@@ -112,8 +112,9 @@ def test_15_json_download(owned):
     doc = json.loads(body)
     assert set(doc) == {"content", "content_digest", "disclosure_schema_version",
                         "export_format_version", "generated_at"}
-    assert doc["export_format_version"] == "inventorai-disclosure-json/1"
-    assert doc["disclosure_schema_version"] == "inventorai-disclosure/1"
+    # AMENDED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (Owner-approved v2): version 2
+    assert doc["export_format_version"] == "inventorai-disclosure-json/2"
+    assert doc["disclosure_schema_version"] == "inventorai-disclosure/2"
     assert doc["content_digest"] == dx.content_digest(doc["content"])
     assert body == dx.serialize_json(doc)
     assert sid not in body and aid not in body
@@ -129,13 +130,13 @@ def test_15_html_download_same_data(owned, lang):
     assert r.status_code == 200
     assert r.headers["Content-Type"] == "text/html; charset=utf-8"
     assert r.headers["Content-Disposition"] == \
-        'attachment; filename="inventorai-disclosure-export-v1.html"'
+        'attachment; filename="inventorai-disclosure-export-v2.html"'
     assert r.headers["Cache-Control"] == "no-store"
     assert r.headers["X-Content-Type-Options"] == "nosniff"
     assert r.headers["Content-Security-Policy"] == HTML_CSP
     body = r.data.decode("utf-8")
     assert j["content_digest"] in body
-    assert "inventorai-disclosure-html/1" in body
+    assert "inventorai-disclosure-html/2" in body          # v2 (STAGE35-COMPONENT-DISCLOSURE-EXPORT-01)
     assert ('<html lang="ar" dir="rtl">' in body) == (lang == "ar")
     assert sid not in body and aid not in body
 

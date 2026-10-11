@@ -84,7 +84,8 @@ TRUTH_BEARING = {"resolved_problem", "known_mechanism", "part", "interface",
                  "unresolved_gap", "declared_contradiction",
                  "declared_contradiction_history", "assumption", "acknowledged_unknown",
                  "recorded_unknown", "routed_specialist_need", "experiment",
-                 "correction_version", "requirement", "requirement_quantity"}
+                 "correction_version", "requirement", "requirement_quantity",
+                 "component"}     # v2 (STAGE35-COMPONENT-DISCLOSURE-EXPORT-01)
 REFERENCE_ONLY = {"gap_reference": "unresolved_gap",
                   "evidence_reference": ("resolved_problem", "known_mechanism")}
 EMPTY_MD = {"success_criteria": {}, "measurement_methods": {}, "test_hypotheses": {},
@@ -102,11 +103,16 @@ QT = "mechanical:PHYSICAL_FEASIBILITY:Q1"
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
-def _src(state, quantities=(), planning=None, deps=(), events=(), outcomes=None):
+def _src(state, quantities=(), planning=None, deps=(), events=(), outcomes=None,
+         components=()):
+    # v2 (STAGE35-COMPONENT-DISCLOSURE-EXPORT-01): the component inventory and the
+    # composition it was validated against travel with the other snapshot sources.
     return dx.MaterializedSources(
         state=state, requirement_quantities=tuple(quantities),
         planning_metadata=copy.deepcopy(EMPTY_MD) if planning is None else planning,
         interface_dependencies=tuple(deps), result_events=tuple(events),
+        component_composition=tuple(state.subsystems or ()),
+        components=tuple(components),
         section_outcomes=dict(outcomes or {}))
 
 
@@ -247,11 +253,12 @@ def test_12_versions_top_level_and_determinism():
                          "export_format_version", "generated_at"}
     assert doc1["content_digest"] == doc2["content_digest"]          # outside the digest
     assert re.fullmatch(r"sha256:[0-9a-f]{64}", doc1["content_digest"])
-    assert doc1["disclosure_schema_version"] == "inventorai-disclosure/1"
-    assert dx.JSON_FORMAT_VERSION == "inventorai-disclosure-json/1"
-    assert dx.HTML_FORMAT_VERSION == "inventorai-disclosure-html/1"
+    # AMENDED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (Owner-approved v2): version 2 = v1 + the field-7 kind
+    assert doc1["disclosure_schema_version"] == "inventorai-disclosure/2"
+    assert dx.JSON_FORMAT_VERSION == "inventorai-disclosure-json/2"
+    assert dx.HTML_FORMAT_VERSION == "inventorai-disclosure-html/2"
     assert (dx.JSON_FILE_NAME, dx.HTML_FILE_NAME) == (
-        "inventorai-disclosure-export-v1.json", "inventorai-disclosure-export-v1.html")
+        "inventorai-disclosure-export-v2.json", "inventorai-disclosure-export-v2.html")
     import hashlib
     canonical = json.dumps(a, sort_keys=True, ensure_ascii=False, separators=(",", ":"),
                            allow_nan=False).encode("utf-8")
@@ -325,8 +332,10 @@ def test_03_fixed_markers_and_integrated_fields():
         assert (f["marker"], f["reason"], f["pointer"], f["items"]) == (marker, reason, None, [])
     assert _field(c, "parts")["marker"] == "RECORDED"
     assert _field(c, "relationships")["marker"] == "RECORDED"
+    # AMENDED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (Owner-approved v2): field 7 reflects the component
+    # inventory; this fixture declares none, so it is NOTHING_RECORDED (never NOT_CAPTURED).
     assert (_field(c, "component_descriptions_beyond_parts")["marker"],
-            _field(c, "component_descriptions_beyond_parts")["reason"]) == ("NOT_CAPTURED", None)
+            _field(c, "component_descriptions_beyond_parts")["reason"]) == ("NOTHING_RECORDED", None)
     for token in ("problem_addressed", "technical_concept", "unresolved_technical_issues",
                   "assumptions", "missing_information", "technical_evidence",
                   "experiments", "risks", "corrections", "requirement_landscape",
@@ -338,9 +347,13 @@ def test_03_fixed_markers_and_integrated_fields():
 
 def test_03_non_integrated_project_never_nothing_recorded_for_parts():
     c = _compose(_base_state())
-    for token in ("parts", "component_descriptions_beyond_parts", "relationships"):
+    for token in ("parts", "relationships"):
         f = _field(c, token)
         assert (f["marker"], f["reason"]) == ("NOT_CAPTURED", "NON_INTEGRATED_PROJECT")
+    # AMENDED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (Owner-approved v2): components are captured on every
+    # project, so field 7 is NOTHING_RECORDED here, never NOT_CAPTURED.
+    f = _field(c, "component_descriptions_beyond_parts")
+    assert (f["marker"], f["reason"]) == ("NOTHING_RECORDED", None)
 
 
 def test_03_integrated_without_interfaces_is_nothing_recorded():
@@ -766,6 +779,7 @@ _REF_KINDS = {
     "requirement_quantity": {"requirement"},
     "correction_version": {"assumption"},
     "interface": {"part"},
+    "component": {"part"},          # v2 (STAGE35-COMPONENT-DISCLOSURE-EXPORT-01)
     "requirement": {"declared_contradiction", "interface"},
 }
 
@@ -949,6 +963,8 @@ def test_24b_section_local_outcome_renders_only_its_own_section():
         planning_metadata=sources.planning_metadata,
         interface_dependencies=sources.interface_dependencies,
         result_events=sources.result_events,
+        component_composition=sources.component_composition,
+        components=sources.components,
         section_outcomes={"experiments": "UNAVAILABLE"}))
     assert failed["unavailable_notice"] is True and base["unavailable_notice"] is False
     f = _field(failed, "experiments")

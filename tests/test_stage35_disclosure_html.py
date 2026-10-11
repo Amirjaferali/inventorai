@@ -248,7 +248,10 @@ def test_24_unavailable_rendering():
         state=sources.state, requirement_quantities=sources.requirement_quantities,
         planning_metadata=sources.planning_metadata,
         interface_dependencies=sources.interface_dependencies,
-        result_events=sources.result_events, section_outcomes={"experiments": "UNAVAILABLE"}))
+        result_events=sources.result_events,
+        # v2 (STAGE35-COMPONENT-DISCLOSURE-EXPORT-01): the snapshot's component sources.
+        component_composition=sources.component_composition, components=sources.components,
+        section_outcomes={"experiments": "UNAVAILABLE"}))
     markup = _render(_doc(failed), "en")
     assert TOP_UNAVAILABLE in markup
     section = markup[markup.index('id="field-experiments"'):
