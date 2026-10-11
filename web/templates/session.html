@@ -214,6 +214,9 @@ body{overflow-wrap:anywhere}
     <dt style="font-weight:bold">{{ t('UI_S15_SCOPE_FOCUS') }}</dt>
     <dd style="margin:0 0 6px 0" data-scope-focus>{{ t(integrated_scope.focus_key) }}</dd>
   </dl>
+  {#- STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01: the read-only view of the
+      parts, the declared components and the interactions together. -#}
+  <p style="margin:6px 0 0 0;font-size:13px" data-scope-pci-link><a href="{{ url_for('parts_components_interactions', sid=sid) }}">{{ t('UI_PCI_LINK') }}</a></p>
   <p style="margin:6px 0 0 0" data-scope-statement>{% if integrated_scope.control %}{{ t('UI_S15_SCOPE_STATEMENT_3') }}{% else %}{{ t('UI_S15_SCOPE_STATEMENT') }}{% endif %}</p>
   <p style="margin:6px 0 0 0;font-size:13px;color:#555">{% if integrated_scope.control %}{{ t('UI_S15_SCOPE_PROVENANCE_3') }}{% else %}{{ t('UI_S15_SCOPE_PROVENANCE') }}{% endif %}</p>
   {#- Stage 15 Slice 2 — HOW THE PARTS INTERACT: the Owner's own declared
