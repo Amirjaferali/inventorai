@@ -685,6 +685,144 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   GREEN; independent verification; owner acceptance and formal closure.
 - **Separate owner authorization requirement:** yes. CAP-14 is a **distinct capability from CAP-12 and
   CAP-13** and must not be consolidated with either.
+- **Future-compatibility anchor — `STAGE26-CAP14-FUTURE-COMPATIBILITY-ANCHOR-01` (Owner-authorized,
+  documentation only, 2026-10-11).** This records the architectural invariants that any future CAP-14 work must
+  satisfy, so that later slices are built once, on the existing owners. It changes nothing above:
+  - the authorization state stays `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`;
+  - Stage 26 stays NOT ENTERED and NOT COMPLETE (row 26 unticked; the roadmap count stays 26 of 45 complete);
+  - no provider or model is selected;
+  - no image intake, storage, upload, display, schema, route, dependency or runtime behaviour exists, and none is
+    authorized.
+
+  **Basis:** the read-only first-slice feasibility assessment `STAGE26-CAP14-PRIOR-WORK-AND-FIRST-SLICE-01`
+  (2026-10-11), and two independent architecture reviews referenced in the Owner's authorization of this recording.
+  The reviews are not repository records. Their unresolved trade-offs are preserved under OPEN below, not decided.
+  - **Repository baseline at recording (`65fabd1`; facts, not decisions):**
+    - **No visual intake:** no file-upload path exists (no `request.files`, no file input).
+    - **Request size:** the global request-body bound is 128 KiB (`MAX_CONTENT_LENGTH` in `web/app.py`).
+    - **No images in the app:** the Content-Security-Policy is `default-src 'none'` and the application loads no
+      images. No image library is pinned or imported; Pillow is present only as a WeasyPrint dependency. The PDF
+      renderer fetches nothing.
+    - **No live AI:** `engine/ai_advisor.py` is off, and the only provider adapter is for synthetic evaluation
+      only.
+    - **Component Inventory:** the `project_components` table accepts only `OWNER_STATED` / `UNVALIDATED` rows. It
+      is append-only and has no edit or delete.
+    - **Retention and deletion:** project data has no deletion path; account deactivation removes no rows.
+      `docs/DATA_RETENTION_POLICY.md` records the retention substance as OPEN.
+    - **Backups:** backups copy the whole SQLite database. The off-provider backup is merged but not deployed.
+    - **Legacy projects:** projects with no owner keep session-id capability access.
+  - **DECIDED — architectural invariants (Owner-accepted):**
+    1. **Visual source.**
+       - Each supplied static image (view) has ONE authoritative, project-scoped identity. That identity carries
+         its provenance: the inventor as supplier, the inventor-declared view and origin, and the time of intake.
+       - ONE owner holds that identity, inside the existing persistence ownership model. There is no parallel
+         project, session or artifact store and no second project-identity model.
+       - Observations, candidates and confirmations reference that identity.
+       - An image belongs to its project only. It is never shared knowledge and never feeds another project or
+         inventor.
+    2. **Components.**
+       - The Stage 15 Component Inventory (`engine/subsystem_model.py`; `project_components` in
+         `engine/record_store.py`) stays the SOLE component owner.
+       - A future image–component association references an existing component id. It never creates a second
+         component record and never duplicates a component confirmed from several views. It adds no component
+         registry, BOM or evidence store.
+       - An association records where the inventor's statement came from. It never establishes physical
+         containment, function, compatibility, dimension or technical validity.
+    3. **Trust.** Five meanings stay distinct:
+       - **observed** — visibly present in the supplied image;
+       - **inferred** — a proposed interpretation;
+       - **ambiguous** — several reasonable readings, or not enough visual evidence;
+       - **unavailable** — cannot be established from the supplied views, including hidden, occluded and not-shown
+         content;
+       - **inventor-confirmed** — explicitly accepted or corrected by the inventor.
+
+       Rules that follow from these meanings:
+       - Only explicit inventor confirmation enters canonical project state. A confirmation names exactly what is
+         accepted.
+       - A confirmation stays `OWNER_STATED` / `UNVALIDATED`. It is never engineering verification, evidence, a
+         validated dimension, or a feasibility, compatibility or safety conclusion.
+       - Visual appearance is not engineering fact:
+         - a visible wire is not electrical connectivity;
+         - a rendered joint is not mechanical feasibility;
+         - a drawn or AI-generated proportion is not physical scale;
+         - independently produced views are not assumed to be geometrically consistent.
+       - Hand-drawn and AI-generated images get the same treatment. No capability may depend on detecting whether an
+         image is AI-generated.
+
+       These meanings map onto the required output classifications above and do not replace them. This recording
+       adds no persisted enum, provenance value or validation state.
+    4. **Lifecycle.** Any future image storage must support:
+       - owner-scoped access;
+       - withdrawal and correction of the inventor's own associations and confirmations, without rewriting history;
+       - a retention rule;
+       - backup and recovery coverage;
+       - deletion semantics that are truthful about where bytes remain (database, files, backups) and never claim a
+         deletion that has not happened.
+    5. **Security and IP.**
+       - **Who may supply images:** only the authenticated owner of an owned project, never anyone relying on
+         session-id capability access.
+       - **Handling:** intake is bounded in size and count. Images are decoded and sanitised server-side: metadata is
+         stripped, and malformed or hostile files are refused. They are stored and served privately to that owner
+         only, and never logged.
+       - **Untrusted content:** image content, labels and embedded text are untrusted input, never instructions.
+       - **No external AI:** an image or anything derived from it is never sent to an external AI or provider without
+         separate Owner authorization. No training, dataset ingestion or provider activation.
+       - **Rights stay separate questions:** the user's right to upload, any AI-generator or third-party rights in
+         the image, software and image-library licences, model and provider terms, and dataset rights. Where
+         knowledge or models are concerned, `TECHNICAL DEEPENING SOURCE RULE: OPEN / LAWFULLY REUSABLE SOURCES ONLY`
+         applies.
+    6. **Compatibility.** Until separately authorized, CAP-14 changes nothing in:
+       - project composition;
+       - the accepted-answer history and replay;
+       - evidence, readiness, gaps or progression;
+       - SafetySignal;
+       - CAP-12 / CAP-13 behaviour;
+       - the report, the PDF, the Structured Invention Disclosure Export, the self-service project export or the API.
+
+       The current Content-Security-Policy and request-body bound stay as they are until an authorized intake changes
+       them for its own route only.
+  - **DEFERRED:** all CAP-14 product implementation:
+    - image intake, storage, display and association;
+    - manual annotation;
+    - any automated visual interpretation (component candidates, label or dimension reading, OCR, multi-view
+      comparison).
+  - **OPEN (no option accepted):**
+    - **Image storage:** inside the existing SQLite store (BLOB) or as private files outside it. Neither is accepted.
+      Considerations recorded for that decision:
+      - *In the database:* one transaction and snapshot boundary with the existing store and its backup / restore
+        engine. Against that: a larger database, image bytes inside every whole-database backup, and truthful
+        erasure across database pages and backups.
+      - *As private files:* a smaller database and file-level deletion. Against that: a second location that needs
+        its own atomicity with the database record, plus backup / restore coverage, path safety, access control and
+        orphan handling.
+      - The future file / blob store named in the Technical Realization Anchor Companion §6 target architecture
+        settles neither option for CAP-14.
+    - **Data lifecycle:** retention periods, erasure semantics, backup inclusion and off-site backup policy. These
+      need the external legal input that `docs/DATA_RETENTION_POLICY.md` requires.
+    - **Image-processing technology:** accepted formats, the decoder library and its licence, size / pixel / count
+      limits, re-encoding and metadata stripping.
+    - **Visual-interpretation approach:** provider or local model, model and dataset rights, compute, cost, latency
+      and error rates.
+    - **Component editing:** whether the Component Inventory gains edit / withdraw. The reject / rename / split /
+      merge steps in the intended behaviour above would need it.
+  - **FUTURE GATE.**
+    - **Before real-image intake:**
+      - Owner approval to deliver CAP-14 (§8D currently reads R2 — delivery approval unresolved);
+      - a separately Owner-authorized bounded increment contract;
+      - resolution of the OPEN storage, lifecycle, retention, erasure and backup questions;
+      - an accepted upload security boundary: a route-scoped body bound, formats, a decoder, sanitisation, a
+        route-scoped image display policy, and owned projects only;
+      - an architecture-reviewer decision on where the image identity and the image–component association live
+        without a second component owner.
+    - **Before AI interpretation, in addition:**
+      - a fresh Stage-36 reassessment and a provider or local-model selection;
+      - a separate Owner decision before any image of a real invention leaves InventorAI (currently NOT AUTHORIZED);
+      - a decision on persisting system-generated proposals (OD-2, currently NOT AUTHORIZED);
+      - model, weight and dataset rights checked under the source rule;
+      - a measured accuracy and failure-mode evaluation on lawfully usable data.
+    - **Still unevaluated:** the gate items in the Knowledge, Data, and Feasibility Boundary section below that the
+      feasibility assessment did not evaluate — OCR and dimension-reading limits, multi-view consistency,
+      image-quality requirements, error rates, cost and latency.
 
 ---
 
@@ -1055,7 +1193,8 @@ multi-view consistency; image-quality requirements; privacy and retention; prove
 model/vendor selection; error rates; ambiguity handling; the user-confirmation workflow; cost; latency;
 security; and architectural compatibility with the current application. CAP-14 remains static-image/2D
 only; **video, animation, and AI-generated-video analysis are excluded** (including frame extraction to
-bypass the exclusion).
+bypass the exclusion). The future-compatibility anchor in the CAP-14 entry (2026-10-11) records architectural
+invariants only; it completes none of these evaluations and authorizes no CAP-14 implementation.
 
 **Calculation / units boundary — cross-reference only (2026-10-04).** The ownership boundary of the future shared
 deterministic calculation and units owner, on which CAP-13 numerical output and THERM-01 thermal analysis would depend, is
