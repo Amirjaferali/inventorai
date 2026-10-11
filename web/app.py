@@ -2085,6 +2085,51 @@ def _nonfocused_questions_link(composition, focus):
             "editable": domain_activation.is_activated(part.domain)}
 
 
+def _nonfocused_part_report_view(sid, integrated_scope):
+    """28-T5-NONFOCUSED-PART-REPORT-01 — the report / PDF view of the inventor's
+    SAVED answers about the required part outside the initial analysis focus.
+
+    ``None`` when there is no integrated scope or no such part (nothing is
+    shown). Otherwise read from ONE coherent store snapshot
+    (``load_nonfocused_part_record``: composition, durable focus and the
+    validated answer collection together); the durable part must be exactly
+    the part the scope names. Anything unreadable, inconsistent or invalid ->
+    ``{"available": False}`` (UNAVAILABLE — never "none recorded"). Only the
+    part's own governed MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY questions
+    are shown, verbatim in pack order, each with the inventor's saved answer
+    verbatim or "not recorded"; presence is recording presence only. Nothing is
+    derived, judged or written; no safety derivation runs here."""
+    link = (integrated_scope or {}).get("nonfocused_questions") if integrated_scope else None
+    if not link:
+        return None
+    unavailable = {"available": False}
+    try:
+        part, answers = _get_store().load_nonfocused_part_record(sid)
+    except Exception:
+        return unavailable
+    if part is None or part.subsystem_id != link["part_id"]:
+        return unavailable
+    families = [(gap_type, get_domain_questions(part.domain, gap_type))
+                for gap_type in _subsystem_model.PART_QUESTION_GAP_TYPES]
+    if any(qs is None for _g, qs in families):
+        return unavailable
+    current = {a.question_id: a.answer_text for a in answers}
+    question_ids = {qid for _g, qs in families for qid, _t in qs}
+    return {
+        "available": True,
+        "part_key": "mechanical" if part.domain == "mechanical" else "electrical",
+        "families": [{
+            "label_key": _PQ_REQUIRED_FAMILY_LABEL_KEYS[part.domain][gap_type],
+            "presence_key": _PQ_FAMILY_PRESENCE_KEYS[
+                _subsystem_model.part_family_presence(
+                    [qid for qid, _t in questions], answers, part.subsystem_id)],
+            "questions": [{"text": text, "value": current.get(qid)}
+                          for qid, text in questions],
+        } for gap_type, questions in families],
+        "stale": any(qid not in question_ids for qid in current),
+    }
+
+
 # --- Stage 19 / CAP-09 durable SuccessCriterion (planning metadata only) ------
 # The EXISTING user-authored `SuccessCriterion` is durable in the SAME project
 # store (`prototype_plan_metadata`, keyed by the canonical Section-11 stable
@@ -6654,6 +6699,10 @@ def show_deliverable(sid):
         reconstructed_deliverable=reconstructed_deliverable,
         # Stage 15 Slice 1: the same bounded scope disclosure as the session.
         integrated_scope=_integrated_scope_context(state),
+        # 28-T5-NONFOCUSED-PART-REPORT-01: the saved answers about the part
+        # outside the focus (one store snapshot; UNAVAILABLE fails closed).
+        nonfocused_part_report=_nonfocused_part_report_view(
+            sid, _integrated_scope_context(state)),
         # T2-A: statements for the canonical quantity rows (presentation only).
         t2a_statements=_quantity_statements(package, state),
         # T2-E Option B: owner-recorded, explicitly UNVERIFIED evidence
@@ -6827,6 +6876,10 @@ def download_deliverable_pdf(sid):
             # Stage 15 Slice 1: the SAME scope disclosure as the HTML report,
             # so a focused PDF cannot read as a cross-domain assessment.
             integrated_scope=_integrated_scope_context(state),
+            # 28-T5-NONFOCUSED-PART-REPORT-01: the SAME part-answer view as the
+            # HTML report.
+            nonfocused_part_report=_nonfocused_part_report_view(
+                sid, _integrated_scope_context(state)),
             t2a_statements=_quantity_statements(package, state),
             evidence_references=_evref_deliverable_view(sid, state),
             decision_capture=_decision_capture_view_safe(state),

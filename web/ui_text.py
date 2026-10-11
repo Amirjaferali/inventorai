@@ -929,6 +929,30 @@ UI_STRINGS = {
         "en": "Inventor-stated safety signals require independent validation. They are not a determination that the part or the invention is safe or unsafe, are not a complete list of hazards, recommend no mitigation, and are not certification, compliance or engineering approval.",
         "ar": "تتطلب إشارات السلامة كما ذكرها المخترِع تحققًا مستقلًا. وهي ليست حكمًا بأن الجزء أو الاختراع آمن أو غير آمن، وليست قائمة كاملة بالمخاطر، ولا توصي بأي إجراء للحدّ منها، وليست شهادة أو امتثالًا أو اعتمادًا هندسيًا.",
     },
+    # 28-T5-NONFOCUSED-PART-REPORT-01 — the report / PDF view of the saved answers
+    # about the required part outside the initial analysis focus.
+    "UI_PQRR_TITLE": {"en": "Your answers about the other part",
+                      "ar": "إجاباتك عن الجزء الآخر"},
+    "UI_PQRR_TITLE_MECH": {"en": "Your answers about the mechanical part",
+                           "ar": "إجاباتك عن الجزء الميكانيكي"},
+    "UI_PQRR_TITLE_ELEC": {"en": "Your answers about the electrical / electronic part",
+                           "ar": "إجاباتك عن الجزء الكهربائي / الإلكتروني"},
+    "UI_PQRR_INTRO": {
+        "en": "This part is outside the project's initial analysis focus. Below are its governed questions, exactly as written, and the answers you saved, exactly as you wrote them. Your answers have not been checked, and this part has not been technically evaluated.",
+        "ar": "يقع هذا الجزء خارج محور التحليل الأولي للمشروع. تجد أدناه أسئلته المعتمدة كما وردت حرفيًا، والإجابات التي حفظتها كما كتبتها تمامًا. لم تُفحص إجاباتك، ولم يُقيَّم هذا الجزء فنيًا.",
+    },
+    "UI_PQRR_PROVENANCE": {
+        "en": "Your own statement — OWNER_STATED / UNVALIDATED.",
+        "ar": "قولك أنت — OWNER_STATED / UNVALIDATED (غير متحقَّق منه).",
+    },
+    "UI_PQRR_UNAVAILABLE": {
+        "en": "Your saved answers about this part could not be read, so they are not shown here. This does not mean that no answer was recorded.",
+        "ar": "تعذّرت قراءة إجاباتك المحفوظة عن هذا الجزء، لذا لا تُعرض هنا. وهذا لا يعني أنه لم تُسجَّل أي إجابة.",
+    },
+    "UI_PQRR_SAFETY": {
+        "en": "Inventor-stated safety signals for these answers are shown only on this part's question page; they are not included in this report or PDF. The safety signals in this report do not cover these answers, and the absence of a warning here is not evidence that this part or the invention is safe.",
+        "ar": "تظهر إشارات السلامة كما ذكرها المخترِع لهذه الإجابات في صفحة أسئلة هذا الجزء فقط، ولا تُدرج في هذا التقرير أو في ملف PDF. ولا تغطي إشارات السلامة في هذا التقرير هذه الإجابات، وعدم ظهور تحذير هنا ليس دليلًا على أن هذا الجزء أو الاختراع آمن.",
+    },
     # Report / PDF safety block: shown on every integrated invention — the block
     # covers the main (focus) analysis only.
     "UI_SS_PART_PAGE_SCOPE": {
