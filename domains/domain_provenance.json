@@ -198,6 +198,32 @@
       "cross_domain_usage": []
     },
     {
+      "record_id": "electronics_electrical:PR016",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "F´ (F Prime) flight software framework documentation — nasa/fprime repository (Jet Propulsion Laboratory, California Institute of Technology)",
+      "source_type": "openly_licensed_technical_documentation",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": "Repository commit d32863dd63952d1085890cc69c1b25ea6edb2257 (2026-10-09) — docs/getting-started/features.md line 22; docs/how-to/develop/develop-device-driver.md lines 3 and 28–30; docs/user-manual/design-patterns/app-man-drv.md, sections \"Application Component\" and \"Driver Component\"; corroborating docs/user-manual/framework/run-baremetal.md lines 66 and 235 — inspected directly by the executor from a read-only clone of the public repository on 2026-10-11; README.md, LICENSE.txt and NOTICE.txt also inspected independently by the Lead",
+      "url": "https://github.com/nasa/fprime/tree/d32863dd63952d1085890cc69c1b25ea6edb2257/docs",
+      "notes": "Source for the controller reference claim controller_input_logic_output (reference_fundamentals group controller_input_logic_output_reference_v1). CLAIM MAPPING: microcontroller-based design — features.md line 22 states the software runs on processors from microcontrollers to multi-core computers (corroborated by run-baremetal.md lines 66 and 235); receive inputs — develop-device-driver.md lines 3 and 28–30 describe the application obtaining sensor data through a device manager and a bus driver; programmed logic and commanded outputs — app-man-drv.md \"Application Component\" (the application layer represents system logic and uses peripherals to perform behaviours; worked example: a robotic arm driven by servos) and \"Driver Component\" (each driver handles one hardware interface). InventorAI states only the general capability, in its own words (an adaptation), with an InventorAI Arabic translation; it presents a possibility, not a prescribed structure. EXCLUDED and not used, quoted or paraphrased: all code, FPP / C++ / CMake snippets and command lines; the Mermaid diagram and every figure or image (docs/img); the linked third-party MPU6050 / Adafruit datasheet; vendor, platform and product names (MPU6050, Arduino, STM32, Linux, LittleFS, FatFs); googletest and the cryptographic software named in NOTICE.txt; F´-specific architecture (components, ports, topologies, rate groups, the application-manager-driver layering); the device-driver state machine (develop-device-driver.md line 50, stated there as a component-specific design choice), health checking, interrupt-service-routine guidance, asserts and restarts. Attribution (title, repository link, commit, files, Caltech copyright and U.S. Government sponsorship line, license name and link), a notice that the explanation is adapted and that the Arabic is InventorAI's translation, and a no-endorsement notice are shown with the explanation in the report and PDF. Source-use disposition: electronics_electrical:PR017. Conceptual reference only — no firmware, program structure, operating state, timing, controller or hardware selection, compatibility or safety statement and no applicability inference.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "electronics_electrical:PR017",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "Apache License, Version 2.0, with the nasa/fprime repository NOTICE",
+      "source_type": "source_use_policy",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": "LICENSE.txt (Apache License 2.0; appendix copyright line \"Copyright 2026 California Institute of Technology\"), NOTICE.txt and CONTRIBUTING.md lines 110–111 at repository commit d32863dd63952d1085890cc69c1b25ea6edb2257 — inspected directly by the executor on 2026-10-11; LICENSE.txt and NOTICE.txt also inspected independently by the Lead",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0",
+      "notes": "SOURCE-USE COMPATIBILITY DISPOSITION (not a legal opinion or legal determination) for electronics_electrical:PR016 (claim controller_input_logic_output) ONLY. RIGHTS BASIS: the repository, including its documentation (no separate documentation license or per-file notice was found in the four files used), is licensed under the Apache License 2.0 by the copyright holder, the California Institute of Technology (Caltech); NOTICE.txt reads \"Copyright (c) 2026 California Institute of Technology (Caltech). U.S. Government sponsorship acknowledged.\" and states that the names of Caltech, its operating division the Jet Propulsion Laboratory and its contributors may not be used to endorse or promote products derived from this software without specific prior written permission; CONTRIBUTING.md lines 110–111 state that every contribution is affirmed under the Apache-2.0 license. Caltech is not the U.S. Government: the material is NOT treated as a U.S. Government work or as public domain (17 U.S.C. § 105 is not relied upon). The absence of a separate documentation license is not treated as proof of rights for every item in the repository. CONDITIONS APPLIED although the use is an original paraphrase: (4a) the license name and link are given; (4b) a prominent notice states that the explanation is adapted and that the Arabic is InventorAI's translation; (4c/4d) the Caltech copyright notice and the NOTICE attribution line (\"U.S. Government sponsorship acknowledged\") are reproduced in the attribution; the NOTICE line about cryptographic software does not pertain to the use and is not carried; (6) no trademark, service mark or product name of Caltech, JPL, NASA or F´ is used except as neutral source attribution; the no-endorsement condition is honored with an explicit statement that neither Caltech, JPL nor NASA reviewed, approved or endorsed InventorAI or the explanation. EXCLUSIONS: code, figures, diagrams, third-party material and vendor content (as listed in electronics_electrical:PR016). The admission does not extend to any other claim, file or passage, to the repository's software, or to InventorAI as a whole. InventorAI remains responsible for its own presented output.",
+      "cross_domain_usage": []
+    },
+    {
       "record_id": "mechanical:PR001",
       "pack_id": "mechanical",
       "tier": 1,

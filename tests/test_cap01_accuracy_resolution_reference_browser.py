@@ -34,7 +34,8 @@ def test_accuracy_resolution_group_renders_second_prose_only_and_fits_desktop_an
 
     page.goto(f"{server}/session/{sid}/deliverable")
     groups = page.locator("[data-cap01-fundamentals]")
-    expect(groups).to_have_count(2)
+    # 28-T2-CONTROLLER-INPUT-LOGIC-OUTPUT-REFERENCE-01 appends a third group after this one.
+    expect(groups).to_have_count(3)
     assert groups.nth(0).get_attribute("data-cap01-fundamentals") == "sensing-value-threshold-reference-v1"
     group = groups.nth(1)
     assert group.get_attribute("data-cap01-fundamentals") == "measurement-accuracy-resolution-reference-v1"

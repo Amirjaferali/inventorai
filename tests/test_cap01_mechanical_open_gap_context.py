@@ -849,7 +849,7 @@ def test_s2_each_limit_traces_to_the_governed_boundary_or_the_owner_boundary():
 # entries and its group are excluded exactly as the sensing group's are.
 _SENSING_ENTRY_RE = re.compile(
     r'    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_'
-    r'(?:SENSING|ACCURACY_RESOLUTION)_FUNDAMENTALS_[A-Z0-9_]+": \{'
+    r'(?:SENSING|ACCURACY_RESOLUTION|CONTROLLER)_FUNDAMENTALS_[A-Z0-9_]+": \{'
     r'.*?\n    \},\n', re.S)
 
 
@@ -859,7 +859,8 @@ def _non_sensing_fundamentals(html):
     tests/test_cap01_sensing_value_threshold_reference.py)."""
     return [g for g in re.findall(r'data-cap01-fundamentals="([^"]+)"', html)
             if g not in ("sensing-value-threshold-reference-v1",
-                         "measurement-accuracy-resolution-reference-v1")]
+                         "measurement-accuracy-resolution-reference-v1",
+                         "controller-input-logic-output-reference-v1")]
 
 
 def test_s3_the_d13_electronics_tkp_is_not_a_mechanical_source():

@@ -76,7 +76,13 @@ _FROZEN_PACK_SHA256 = {
     # plus its governance-note entry (provenance electronics_electrical:PR014–PR015). The
     # pack minus exactly those two additions is canonically identical to the previous
     # pack (proven in tests/test_cap01_accuracy_resolution_reference.py).
-    "electronics_electrical": "b47762cdd09d1746d94b4bbc60f241d074c5bee80073c9f03884ebca392b1eee",
+    # 28-T2-CONTROLLER-INPUT-LOGIC-OUTPUT-REFERENCE-01: re-frozen again after adding ONE further bounded,
+    # inert, additive `reference_fundamentals` group (controller_input_logic_output_reference_v1), its
+    # governance-note entry and ONE bounded exception clause appended to the existing firmware exclusion of the
+    # coverage declaration (provenance electronics_electrical:PR016–PR017). The pack minus exactly those three
+    # additions is canonically identical to the previous pack (proven in
+    # tests/test_cap01_controller_input_logic_output_reference.py).
+    "electronics_electrical": "efd55a89f1acc2592e0fb460251092d5c557140f7dc1b9cbf5224952b3a1264f",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",

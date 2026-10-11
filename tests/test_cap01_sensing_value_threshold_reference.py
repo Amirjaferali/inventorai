@@ -37,6 +37,10 @@ from tests.test_cap01_mechanical_open_gap_context import _gaps, _pdf_source, _re
 from tests.test_cap01_electrical_energy_time_reference import (
     ET_GROUP, _html, _groups, _equations)
 from tests.test_cap01_electrical_reference_fundamentals import FUND_GROUP as BASE_GROUP
+# 28-T2-CONTROLLER-INPUT-LOGIC-OUTPUT-REFERENCE-01 later appended a third prose-only group to this
+# context; this file's checks exclude exactly that addition (tests/cap01_controller_addition.py).
+from tests.cap01_controller_addition import (
+    CTRL_GROUP, CTRL_NAMESPACE, CTRL_RECORDS, CTRL_ROW, CTRL_SLUG, without_controller_addition)
 
 _ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 _PACK_PATH = os.path.join(_ROOT, "domains", "electronics_electrical", "domain.json")
@@ -137,7 +141,7 @@ def _texts(lang):
 @pytest.mark.parametrize("state", [OPEN, PARTIAL])
 def test_s01_renders_for_the_exact_electronics_mechanism_gap_open_or_partial(state):
     groups = _groups((MECHANISM_COMPLETENESS, state))
-    assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [GROUP, ACCURACY_GROUP]
+    assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [GROUP, ACCURACY_GROUP, CTRL_GROUP]
     group = groups[MECHANISM_COMPLETENESS][0]
     assert group["prose_only"] is True
     assert [c["claim_id"] for c in group["claims"]] == [CLAIM]
@@ -167,9 +171,9 @@ def test_s04_the_extension_table_holds_exactly_the_two_fixed_rows():
         (DOMAIN, PHYSICAL_FEASIBILITY): (
             (ET_GROUP, ("constant_power_energy_reference", "energy_time_unit_discipline"),
              "ENERGY_TIME_FUNDAMENTALS_"),),
-        (DOMAIN, MECHANISM_COMPLETENESS): ((GROUP, (CLAIM,), "SENSING_FUNDAMENTALS_"), ACCURACY_ROW),
+        (DOMAIN, MECHANISM_COMPLETENESS): ((GROUP, (CLAIM,), "SENSING_FUNDAMENTALS_"), ACCURACY_ROW, CTRL_ROW),
     }
-    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({GROUP, ACCURACY_GROUP})
+    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({GROUP, ACCURACY_GROUP, CTRL_GROUP})
 
 
 def test_s05_never_reads_inventor_text_or_signals():
@@ -226,7 +230,7 @@ def test_f01_missing_required_prose_copy_removes_only_this_group(monkeypatch):
         strings.pop(PREFIX + part)
         monkeypatch.setattr(ui_text, "UI_STRINGS", strings)
         groups = _groups((MECHANISM_COMPLETENESS, OPEN), (PHYSICAL_FEASIBILITY, OPEN))
-        assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [ACCURACY_GROUP], part
+        assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [ACCURACY_GROUP, CTRL_GROUP], part
         assert [g["group_id"] for g in groups[PHYSICAL_FEASIBILITY]] == [BASE_GROUP, ET_GROUP]
         monkeypatch.undo()
 
@@ -261,8 +265,8 @@ def test_f03_a_text_key_never_substitutes_an_equation_elsewhere(monkeypatch):
 def test_p01_pack_minus_exactly_this_addition_equals_the_base_pack():
     pack = _pack()
     assert [g["group_id"] for g in pack["reference_fundamentals"]] == [BASE_GROUP, ET_GROUP, GROUP,
-                                                                       ACCURACY_GROUP]
-    pre = copy.deepcopy(pack)
+                                                                       ACCURACY_GROUP, CTRL_GROUP]
+    pre = without_controller_addition(pack)
     pre["reference_fundamentals"] = [g for g in pre["reference_fundamentals"]
                                      if g["group_id"] not in (GROUP, ACCURACY_GROUP)]
     note = pre["_governance_notes"].pop("sensing_value_threshold_reference")
@@ -291,7 +295,7 @@ def test_p03_provenance_is_append_only_with_two_claim_specific_records():
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR011")
     assert tuple(ids[i + 1:i + 3]) == RECORDS
-    pre = [r for r in records if r["record_id"] not in RECORDS + ACCURACY_RECORDS]
+    pre = [r for r in records if r["record_id"] not in RECORDS + ACCURACY_RECORDS + CTRL_RECORDS]
     assert _digest(pre) == _PRE_PROVENANCE_DIGEST
     src, use = (records[ids.index(r)] for r in RECORDS)
     assert src["url"] == SOURCE_URL and use["url"] == LICENSE_URL
