@@ -1045,6 +1045,83 @@ UI_STRINGS = {
         "en": "We could not confirm whether that component was saved. Reload this page to see your list before entering it again; saving the same entry again from this page will not create a duplicate.",
         "ar": "لم نتمكن من التأكد مما إذا كان هذا المكوّن قد حُفظ. أعد تحميل الصفحة لترى قائمتك قبل إدخاله مجددًا؛ وإعادة حفظ الإدخال نفسه من هذه الصفحة لن تُنشئ نسخة مكرّرة.",
     },
+    # --- STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 — the read-only view
+    # of what the inventor recorded about parts, components and interactions.
+    # It states recording presence only and draws no engineering conclusion.
+    "UI_PCI_TITLE": {
+        "en": "Parts, Components & Interactions",
+        "ar": "الأجزاء والمكوّنات والتفاعلات",
+    },
+    "UI_PCI_LINK": {
+        "en": "See your parts, components and interactions together",
+        "ar": "اعرض أجزاءك ومكوّناتك وتفاعلاتها معًا",
+    },
+    "UI_PCI_INTRO": {
+        "en": "This page brings together what you have recorded about your invention: its parts, the physical components you declared, and how you said the parts interact. Everything is shown exactly as you recorded it.",
+        "ar": "تجمع هذه الصفحة ما سجّلته عن اختراعك: أجزاءه، والمكوّنات المادية التي أعلنتها، وكيف ذكرت أن الأجزاء تتفاعل. ويُعرض كل شيء كما سجّلته تمامًا.",
+    },
+    "UI_PCI_BOUNDARY": {
+        "en": "It is not an engineering design, a bill of materials or a technical assessment. InventorAI has not checked or validated any of it. It calculates, selects, sizes and rates nothing here, and it does not judge whether the parts or components are compatible, complete or suitable.",
+        "ar": "وهي ليست تصميمًا هندسيًا ولا قائمة مواد ولا تقييمًا تقنيًا. لم يفحص InventorAI أيًا منها ولم يتحقق منه. ولا يحسب هنا شيئًا ولا يختار أو يحدّد مقاسًا أو قيمة اسمية لأي شيء، ولا يحكم على ما إذا كانت الأجزاء أو المكوّنات متوافقة أو مكتملة أو مناسبة.",
+    },
+    "UI_PCI_PRESENCE_NOTE": {
+        "en": "Where this page says something is recorded, it means only that you wrote it down — not that the information is complete or correct.",
+        "ar": "عندما تذكر هذه الصفحة أن شيئًا مُسجَّل، فهذا يعني فقط أنك كتبته — لا أن المعلومات مكتملة أو صحيحة.",
+    },
+    "UI_PCI_PARTS_TITLE": {"en": "Parts of your invention", "ar": "أجزاء اختراعك"},
+    "UI_PCI_ROLE_FOCUS": {
+        "en": "Initial analysis focus: this part is the one the main analysis covers.",
+        "ar": "محور التحليل الأولي: هذا هو الجزء الذي يغطيه التحليل الرئيسي.",
+    },
+    "UI_PCI_ROLE_REQUIRED": {
+        "en": "Required part outside the initial analysis focus: the main analysis does not evaluate it; it has its own questions.",
+        "ar": "جزء مطلوب خارج محور التحليل الأولي: لا يقيّمه التحليل الرئيسي؛ وله أسئلته الخاصة.",
+    },
+    "UI_PCI_ROLE_OPTIONAL": {
+        "en": "Optional part: the main analysis does not evaluate it; it has its own questions.",
+        "ar": "جزء اختياري: لا يقيّمه التحليل الرئيسي؛ وله أسئلته الخاصة.",
+    },
+    "UI_PCI_LINK_MAIN": {"en": "Go to the main analysis", "ar": "انتقل إلى التحليل الرئيسي"},
+    "UI_PCI_ASSOCIATION_NOTE": {
+        "en": "Each component is listed once. Linking a component to a part is your own association: it does not establish that the component sits in that part, works with it or suits it.",
+        "ar": "يُذكر كل مكوّن مرة واحدة. وربط المكوّن بجزء هو ربط من عندك فقط: لا يثبت أن المكوّن موجود في ذلك الجزء أو يعمل معه أو يناسبه.",
+    },
+    "UI_PCI_LINKED_TITLE": {
+        "en": "Linked by you to one or more parts",
+        "ar": "ربطتَها أنت بجزء أو أكثر",
+    },
+    "UI_PCI_LINKED_NONE": {
+        "en": "No component is linked to a part.",
+        "ar": "لا يوجد مكوّن مرتبط بجزء.",
+    },
+    "UI_PCI_UNASSIGNED_TITLE": {
+        "en": "Not linked to a part (project level)",
+        "ar": "غير مرتبطة بجزء (على مستوى المشروع)",
+    },
+    "UI_PCI_UNASSIGNED_NONE": {
+        "en": "No component is recorded at project level only.",
+        "ar": "لا يوجد مكوّن مُسجَّل على مستوى المشروع فقط.",
+    },
+    "UI_PCI_LINK_COMPONENTS": {
+        "en": "Declare components on your project page",
+        "ar": "أعلن المكوّنات في صفحة مشروعك",
+    },
+    "UI_PCI_LINK_INTERFACES": {
+        "en": "Record how the parts interact on your project page",
+        "ar": "سجّل كيف تتفاعل الأجزاء في صفحة مشروعك",
+    },
+    "UI_PCI_NO_PROJECT": {
+        "en": "This view is available only for a saved project. Nothing is shown.",
+        "ar": "هذا العرض متاح للمشروع المحفوظ فقط. لا يُعرض شيء.",
+    },
+    "UI_PCI_NOT_OFFERED": {
+        "en": "This view is available only for an invention entered with a mechanical part and an electrical / electronic part.",
+        "ar": "هذا العرض متاح فقط لاختراع أُدخل بجزء ميكانيكي وجزء كهربائي / إلكتروني.",
+    },
+    "UI_PCI_UNAVAILABLE": {
+        "en": "This view cannot be shown right now because some of what you recorded could not be read safely. Nothing is shown rather than an incomplete or possibly wrong picture. Your saved records are unchanged; reload the page later.",
+        "ar": "لا يمكن عرض هذه الصفحة الآن لأن بعض ما سجّلته تعذّرت قراءته بأمان. لا يُعرض شيء بدلًا من صورة ناقصة أو قد تكون خاطئة. سجلاتك المحفوظة لم تتغيّر؛ أعد تحميل الصفحة لاحقًا.",
+    },
     # --- Stage 15 Slice 2 — how the two parts interact (Owner declarations) --
     # Plain user-facing language only (same boundary as the Slice-1 keys).
     # The Owner's own interaction text is never in this catalogue (it is

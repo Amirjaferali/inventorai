@@ -9502,6 +9502,147 @@ def _s15_observations_view(sid, context, drafts=None):
     return view
 
 
+# --- STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 ---------------------------
+# ONE read-only Stage 15 composition view for a valid durable Mechanical +
+# Electrical / Electronics integrated composition: each durable part (name,
+# function, role), each declared component ONCE with all its part
+# associations (unassigned components kept apart), each declared interaction
+# with its preparation inputs and dependency, and the recording presence of
+# each part's governed questions — all read from ONE store snapshot
+# (``load_parts_components_interactions``) and shown as recorded. It adds no
+# owner, write path, status vocabulary, calculation or calculation offer, and
+# draws no engineering, compatibility, completeness, validation or safety
+# conclusion; it is not a Technical Realization lane or engineering package.
+# Anything unreadable or invalid shows the WHOLE view as unavailable.
+_PCI_OK = "ok"
+_PCI_NO_PROJECT = "no_project"
+_PCI_NOT_OFFERED = "not_offered"
+_PCI_UNAVAILABLE = "unavailable"
+_PCI_STATUS_NOTICE = {
+    _PCI_NO_PROJECT: ("UI_PCI_NO_PROJECT", 409),
+    _PCI_NOT_OFFERED: ("UI_PCI_NOT_OFFERED", 404),
+    _PCI_UNAVAILABLE: ("UI_PCI_UNAVAILABLE", 503),
+}
+_PCI_PART_LABEL_KEYS = {
+    "mechanical": "UI_S15_SCOPE_MECH",
+    "electronics_electrical": "UI_S15_SCOPE_ELEC",
+    "control_loop": "UI_S15_SCOPE_CTRL",
+}
+_PCI_ROLE_KEYS = {"focus": "UI_PCI_ROLE_FOCUS",
+                  "required": "UI_PCI_ROLE_REQUIRED",
+                  "optional": "UI_PCI_ROLE_OPTIONAL"}
+
+
+def _pci_part_view(part, focus, answers):
+    """The presentation of ONE durable part, or ``None`` when its governed
+    questions cannot be read (the caller then fails the whole view closed).
+    The focus part is evaluated by the main analysis and has no part
+    questions; the other parts show only the RECORDING PRESENCE of their own
+    governed question families and a link to their existing question page —
+    the durable identity travels only in that link's URL."""
+    view = {"name": part.display_name, "function": part.function_text,
+            "label_key": _PCI_PART_LABEL_KEYS[part.domain]}
+    if part.domain == focus:
+        view.update(role_key=_PCI_ROLE_KEYS["focus"], families=None,
+                    questions_link=None)
+        return view
+    required = part.domain in _subsystem_model.COMPOSITION_DOMAINS
+    families = [(gap_type, get_domain_questions(part.domain, gap_type))
+                for gap_type in _subsystem_model.PART_QUESTION_GAP_TYPES]
+    if any(qs is None for _g, qs in families):
+        return None
+    view.update(
+        role_key=_PCI_ROLE_KEYS["required" if required else "optional"],
+        families=[{
+            "label_key": (_PQ_REQUIRED_FAMILY_LABEL_KEYS[part.domain][gap_type]
+                          if required else _PQ_FAMILY_LABEL_KEYS[gap_type]),
+            "presence_key": _PQ_FAMILY_PRESENCE_KEYS[
+                _subsystem_model.part_family_presence(
+                    [qid for qid, _text in questions], answers,
+                    part.subsystem_id)],
+        } for gap_type, questions in families],
+        questions_link={
+            "part_id": part.subsystem_id if required else None,
+            "editable": (domain_activation.is_activated(part.domain) if required
+                         else domain_activation.is_part_eligible(part.domain)),
+        })
+    return view
+
+
+def _pci_context(sid):
+    """``(status, context)`` of the Parts, Components & Interactions page from
+    CURRENT durable truth read in ONE store snapshot. ``context`` exists only
+    for ``_PCI_OK``. A project without a valid durable integrated composition
+    is not offered; anything unreadable, corrupt or inconsistent is
+    ``_PCI_UNAVAILABLE`` — never a partial, empty or apparently complete
+    view. Nothing is written, inferred or judged."""
+    store = _get_store()
+    loader = getattr(store, "load_parts_components_interactions", None)
+    if not callable(loader):
+        return _PCI_UNAVAILABLE, None
+    try:
+        exists, _owner = store.load_owner(sid)
+    except Exception:
+        return _PCI_UNAVAILABLE, None
+    if not exists:
+        return _PCI_NO_PROJECT, None
+    try:
+        record = loader(sid)
+    except _ProjectNotFound:
+        return _PCI_NO_PROJECT, None
+    except Exception:
+        return _PCI_UNAVAILABLE, None
+    focus = record["focus"]
+    try:
+        composition = _subsystem_model.validate_composition(record["subsystems"], focus)
+    except _subsystem_model.CompositionError:
+        return _PCI_UNAVAILABLE, None
+    if not composition:
+        return _PCI_NOT_OFFERED, None
+    names = {sub.subsystem_id: sub.display_name for sub in composition}
+    parts = []
+    for part in composition:
+        view = _pci_part_view(part, focus, record["part_answers"])
+        if view is None:
+            return _PCI_UNAVAILABLE, None
+        parts.append(view)
+    components = [{"name": item.display_name, "function": item.function_text,
+                   "parts": [names[ref] for ref in item.subsystem_ids]}
+                  for item in record["components"]]
+    interfaces = [{
+        "a": names[item.subsystem_a_id],
+        "b": names[item.subsystem_b_id],
+        "description": item.description,
+        "preparation": _s15_preparation_view(_subsystem_model.preparation_for(
+            record["preparations"], item.interface_id)),
+        "dependency": _s15_dependency_view(_subsystem_model.dependency_for(
+            record["dependencies"], item.interface_id), names),
+    } for item in record["interfaces"]]
+    return _PCI_OK, {
+        "parts": parts,
+        "linked_components": [c for c in components if c["parts"]],
+        "unassigned_components": [c for c in components if not c["parts"]],
+        "component_count": len(components),
+        "interfaces": interfaces,
+        "optional_part": len(composition) > len(_subsystem_model.COMPOSITION_DOMAINS),
+    }
+
+
+@app.route("/session/<sid>/parts-components-interactions", methods=["GET"])
+def parts_components_interactions(sid):
+    """STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 — the read-only view.
+    Project-authorized; reads one durable snapshot; writes nothing."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    status, context = _pci_context(sid)
+    notice_key, code = _PCI_STATUS_NOTICE.get(status, (None, 200))
+    response = make_response(render_template(
+        "parts_components_interactions.html", sid=sid, view=context,
+        notice_key=notice_key), code)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @app.route("/session/<sid>/interface-observation", methods=["POST"])
 def record_interface_observation(sid):
     """Stage 15 Slice 4 — record (new root) or correct (successor of one

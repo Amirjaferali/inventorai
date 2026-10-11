@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}{{ t('UI_PCI_TITLE') }}{% endblock %}
+{% block head %}
+<style>
+body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+h2{color:#2c3e50;font-size:16px;margin:0 0 6px 0}
+h3{color:#2c3e50;font-size:14px;margin:0 0 4px 0}
+.intro{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444;line-height:1.5}
+.notice{background:#eef3f8;color:#1f3b57;border:1px solid #c9d6e3;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px}
+.block{border:1px solid #e2e6ea;border-radius:4px;padding:12px 14px;margin-bottom:16px;min-width:0;overflow-wrap:anywhere}
+.item{margin:0 0 12px 0;padding:0 0 10px 0;border-bottom:1px solid #eef1f4}
+.item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.meta{font-size:13px;color:#555;margin:2px 0 0 0}
+.text{font-size:13px;margin:2px 0 0 0;white-space:pre-wrap}
+dl{margin:4px 0 0 0;font-size:13px}
+dt{font-weight:bold;margin-top:4px}
+dd{margin:0 12px}
+.links{margin-top:24px;font-size:13px}
+@media(max-width:520px){body{margin:18px auto;padding:0 14px}.block{padding:12px}}
+</style>
+{% endblock %}
+{% block content %}
+{#- STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 — a read-only Stage 15
+    composition view. Everything shown is the inventor's own recorded
+    statement, verbatim and escaped, read from ONE durable snapshot. No
+    internal identifier is shown as text. Nothing here is calculated,
+    selected, sized, rated, validated or judged for compatibility,
+    completeness or safety; it is not an engineering package or a BOM. -#}
+<h1>{{ t('UI_PCI_TITLE') }}</h1>
+<div class="intro" data-pci-intro>
+  <p style="margin:0 0 6px 0">{{ t('UI_PCI_INTRO') }}</p>
+  <p style="margin:0 0 6px 0" data-pci-boundary>{{ t('UI_PCI_BOUNDARY') }}</p>
+  <p style="margin:0" data-pci-presence-note>{{ t('UI_PCI_PRESENCE_NOTE') }}</p>
+</div>
+
+{% if notice_key %}<div class="notice" role="status" data-pci-notice="{{ notice_key }}">{{ t(notice_key) }}</div>{% endif %}
+
+{% if view %}
+<section class="block" data-pci-parts aria-labelledby="pci-parts-title">
+  <h2 id="pci-parts-title">{{ t('UI_PCI_PARTS_TITLE') }}</h2>
+  {% for part in view.parts %}
+  <div class="item" data-pci-part>
+    <h3>{{ t(part.label_key) }}</h3>
+    <p class="text" style="white-space:normal"><bdi dir="auto" data-pci-part-name>{{ part.name }}</bdi> &mdash; {{ t('UI_S15_SCOPE_FUNCTION') }} <bdi dir="auto" data-pci-part-function>{{ part.function }}</bdi></p>
+    <p class="meta" data-pci-part-role="{{ part.role_key }}">{{ t(part.role_key) }}</p>
+    {% if part.families is none %}
+    <p class="meta"><a href="{{ url_for('show_session', sid=sid) }}" data-pci-main-link>{{ t('UI_PCI_LINK_MAIN') }}</a></p>
+    {% else %}
+    <dl data-pci-part-questions>
+      {% for fam in part.families %}
+      <dt>{{ t(fam.label_key) }}</dt>
+      <dd data-pci-presence="{{ fam.presence_key }}">{{ t(fam.presence_key) }}</dd>
+      {% endfor %}
+    </dl>
+    <p class="meta"><a href="{% if part.questions_link.part_id %}{{ url_for('part_questions', sid=sid, part=part.questions_link.part_id) }}{% else %}{{ url_for('part_questions', sid=sid) }}{% endif %}" data-pci-questions-link>{% if part.questions_link.editable %}{{ t('UI_PQ_LINK') }}{% else %}{{ t('UI_PQ_LINK_READ_ONLY') }}{% endif %}</a></p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+
+<section class="block" data-pci-components aria-labelledby="pci-components-title">
+  <h2 id="pci-components-title">{{ t('UI_CI_HEADING') }}</h2>
+  <p class="meta" style="margin:0 0 8px 0" data-pci-association-note>{{ t('UI_PCI_ASSOCIATION_NOTE') }}</p>
+  {% if view.component_count == 0 %}
+  <p class="meta" data-pci-components-none>{{ t('UI_CI_NONE') }}</p>
+  {% else %}
+  <h3>{{ t('UI_PCI_LINKED_TITLE') }}</h3>
+  {% if view.linked_components %}
+  <ul style="margin:4px 0 12px 0;padding-inline-start:20px" data-pci-linked>
+    {% for c in view.linked_components %}
+    <li class="item" data-pci-component>
+      <bdi dir="auto" style="font-weight:bold" data-pci-component-name>{{ c.name }}</bdi>
+      <p class="text" style="white-space:normal">{{ t('UI_CI_FUNCTION_LABEL') }} <bdi dir="auto">{{ c.function }}</bdi></p>
+      <p class="meta" data-pci-component-parts>{{ t('UI_CI_PARTS_LABEL') }} {% for name in c.parts %}<bdi dir="auto" data-pci-component-part>{{ name }}</bdi>{% if not loop.last %}{{ t('UI_CI_PART_SEP') }}{% endif %}{% endfor %}</p>
+      <p class="meta">{{ t('UI_CI_ITEM_STATUS') }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="meta" style="margin:4px 0 12px 0" data-pci-linked-none>{{ t('UI_PCI_LINKED_NONE') }}</p>
+  {% endif %}
+  <h3>{{ t('UI_PCI_UNASSIGNED_TITLE') }}</h3>
+  {% if view.unassigned_components %}
+  <ul style="margin:4px 0 0 0;padding-inline-start:20px" data-pci-unassigned>
+    {% for c in view.unassigned_components %}
+    <li class="item" data-pci-component>
+      <bdi dir="auto" style="font-weight:bold" data-pci-component-name>{{ c.name }}</bdi>
+      <p class="text" style="white-space:normal">{{ t('UI_CI_FUNCTION_LABEL') }} <bdi dir="auto">{{ c.function }}</bdi></p>
+      <p class="meta">{{ t('UI_CI_UNASSIGNED') }}</p>
+      <p class="meta">{{ t('UI_CI_ITEM_STATUS') }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="meta" style="margin:4px 0 0 0" data-pci-unassigned-none>{{ t('UI_PCI_UNASSIGNED_NONE') }}</p>
+  {% endif %}
+  {% endif %}
+  <p class="meta" style="margin:10px 0 0 0"><a href="{{ url_for('show_session', sid=sid) }}#component-inventory" data-pci-components-link>{{ t('UI_PCI_LINK_COMPONENTS') }}</a></p>
+</section>
+
+<section class="block" data-pci-interfaces aria-labelledby="pci-interfaces-title">
+  <h2 id="pci-interfaces-title">{% if view.optional_part %}{{ t('UI_S15_IFC_TITLE_3') }}{% else %}{{ t('UI_S15_IFC_TITLE') }}{% endif %}</h2>
+  {% if view.interfaces %}
+  {% for ifc in view.interfaces %}
+  <div class="item" data-pci-interface>
+    <p style="margin:0;font-weight:bold;font-size:14px">{{ t('UI_S15_IFC_BETWEEN') }} <bdi dir="auto">{{ ifc.a }}</bdi> {{ t('UI_S15_IFC_AND') }} <bdi dir="auto">{{ ifc.b }}</bdi></p>
+    <p class="text" style="white-space:normal">{{ t('UI_S15_IFC_DESCRIPTION') }} <bdi dir="auto" data-pci-interface-description>{{ ifc.description }}</bdi></p>
+    <p class="meta" data-pci-prep-presence="{{ ifc.preparation.presence_key }}">{{ t(ifc.preparation.presence_key) }}</p>
+    <dl>
+      {% for fld in ifc.preparation.fields %}
+      <dt>{{ t(fld.label_key) }}</dt>
+      <dd style="white-space:pre-wrap" data-pci-prep-value>{% if fld.text is not none %}<bdi dir="auto">{{ fld.text }}</bdi>{% else %}<span style="color:#555">{{ t('UI_S15_PREP_NOT_RECORDED') }}</span>{% endif %}</dd>
+      {% endfor %}
+      <dt>{{ t('UI_S15_ST_DEPENDENCY') }}</dt>
+      <dd data-pci-dependency>{% if not ifc.dependency.declared %}{{ t('UI_S15_DEP_NOT_DECLARED') }}{% elif ifc.dependency.kind == 'mutual' %}{{ t('UI_S15_DEP_MUTUAL') }}{% else %}<bdi dir="auto">{{ ifc.dependency.dependent }}</bdi> {{ t('UI_S15_DEP_RELIES_ON') }} <bdi dir="auto">{{ ifc.dependency.depends_on }}</bdi>{% endif %}{% if ifc.dependency.declared and ifc.dependency.note %} — <bdi dir="auto">{{ ifc.dependency.note }}</bdi>{% endif %}</dd>
+    </dl>
+    <p class="meta" data-pci-not-established>{{ t('UI_S15_IFC_NOT_ESTABLISHED') }}</p>
+  </div>
+  {% endfor %}
+  <p class="meta" style="margin:10px 0 0 0"><a href="{{ url_for('interface_preparation', sid=sid) }}" data-pci-prep-link>{{ t('UI_S15_PREP_LINK') }}</a></p>
+  {% else %}
+  <p class="meta" data-pci-interfaces-none>{% if view.optional_part %}{{ t('UI_S15_IFC_NONE_3') }}{% else %}{{ t('UI_S15_IFC_NONE') }}{% endif %}</p>
+  <p class="meta" style="margin:10px 0 0 0"><a href="{{ url_for('show_session', sid=sid) }}#integrated-interfaces" data-pci-declare-link>{{ t('UI_PCI_LINK_INTERFACES') }}</a></p>
+  {% endif %}
+</section>
+{% endif %}
+
+<p class="links"><a href="{{ url_for('show_session', sid=sid) }}#integrated-scope">{{ t('UI_S15_PREP_BACK') }}</a></p>
+{% endblock %}

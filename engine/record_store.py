@@ -535,6 +535,8 @@ class RecordStore(Protocol):
     def load_part_answers(self, project_id: str, subsystem_id: str) -> tuple: ...
     def load_part_question_scope(self, project_id: str) -> tuple: ...
     def load_nonfocused_part_record(self, project_id: str) -> tuple: ...
+    # STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 (read-only; one snapshot).
+    def load_parts_components_interactions(self, project_id: str) -> dict: ...
     def apply_part_answer_delta(self, project_id: str, subsystem_id: str,
                                 delta) -> None: ...
     # CAP-09 Result Event Slice 1 (append-only; see the prototype_test_results note).
@@ -2550,6 +2552,40 @@ class SqliteRecordStore:
         if part is None:
             return None, ()
         return part, tuple(a for a in answers if a.subsystem_id == part.subsystem_id)
+
+    def load_parts_components_interactions(self, project_id: str) -> dict:
+        """STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 — every collection the
+        read-only Parts, Components & Interactions view presents, read inside
+        ONE consistent read snapshot so the view never combines collections
+        from different durable moments: ``{"subsystems", "focus",
+        "interfaces", "preparations", "dependencies", "components",
+        "part_answers"}``. Each collection is validated WHOLE against the
+        durable composition and focus (``ProjectSubsystemsCorrupt`` /
+        ``SubsystemInterfacesCorrupt`` / ``InterfacePreparationsCorrupt`` /
+        ``InterfaceDependenciesCorrupt`` / ``ProjectComponentsCorrupt`` /
+        ``PartAnswersCorrupt``; nothing partial). No project ->
+        ``ProjectNotFound``. IR-01: a connection left UNSAFE by a failed write
+        refuses BEFORE any SELECT. Read-only; project-scoped (it reads only
+        rows keyed by THIS project); derives, judges and logs nothing."""
+        if self._connection_unsafe:
+            raise RecordStoreConnectionUnsafe(
+                "connection is inside an unresolved transaction; its reads are "
+                "not committed durable state")
+        with self.read_snapshot():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            focus = self._project_focus(project_id)
+            interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
+            preparations = self._validated_preparations(project_id, interfaces)
+            dependencies = self._validated_dependencies(project_id, interfaces)
+            components, _ckeys = self._validated_components(project_id, subsystems)
+            answers = self._validated_part_answers(project_id, subsystems, focus)
+        return {
+            "subsystems": tuple(subsystems), "focus": focus,
+            "interfaces": tuple(interfaces), "preparations": tuple(preparations),
+            "dependencies": tuple(dependencies), "components": tuple(components),
+            "part_answers": tuple(answers),
+        }
 
     def load_part_answers(self, project_id: str, subsystem_id: str) -> tuple:
         """The inventor's current answers for exactly ONE question part of

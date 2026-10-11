@@ -5025,6 +5025,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at 28-T5-NONFOCUSED-PART-REPORT-01 (merge-effective delivery record): it follows the
            # non-focused part-questions increment in the chain
            r"the only product increment authorized after it was 28-T5-NONFOCUSED-PART-REPORT-01 \(below\), "
+           r"delivered \(PR #\d+\); "
+           # ADVANCED at STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 (merge-effective delivery record): it follows the
+           # non-focused part report increment in the chain
+           r"the only product increment authorized after it was STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 \(below\), "
            r"delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
@@ -5285,7 +5289,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # product increment is authorized after it; the 28-T1 sensing reference increment precedes it
                # ADVANCED at 28-T5-NONFOCUSED-PART-REPORT-01 (merge-effective delivery record): no product increment
                # is authorized after it; the non-focused part-questions increment precedes it
-               r"No product increment is authorized after 28-T5-NONFOCUSED-PART-REPORT-01 \(delivered: PR #\d+; "
+               # ADVANCED at STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 (merge-effective delivery record): no product
+               # increment is authorized after it; the non-focused part report increment precedes it
+               r"No product increment is authorized after STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 \(delivered: PR #\d+; "
+               r"[^)]*read-only Parts, Components & Interactions view[^)]*not a T6 activation; no Stage entered, "
+               r"completed or reopened; effective only on the verified merge of PR #\d+\) or after the preceding "
+               r"28-T5-NONFOCUSED-PART-REPORT-01 \(delivered: PR #\d+; "
                r"[^)]*non-focused part answers in the report / PDF[^)]*no Stage entered, completed or reopened; "
                r"effective only on the verified merge of PR #\d+\) or after the preceding "
                r"28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01 \(delivered: PR #\d+; "
@@ -5781,7 +5790,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # ADVANCED at 28-T5-NONFOCUSED-PART-REPORT-01 (merge-effective delivery record): it follows the
             # non-focused part-questions increment in the chain
             "(PR #N); the only increment authorized after it — 28-T5-NONFOCUSED-PART-REPORT-01 (above) — is "
-            "DELIVERED (PR #N); no subsequent increment has been authorized."), head)
+            # ADVANCED at STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 (merge-effective delivery record): it follows the
+            # non-focused part report increment in the chain
+            "DELIVERED (PR #N); the only increment authorized after it — STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 (above) "
+            "— is DELIVERED (PR #N); no subsequent increment has been authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
     # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
     # ROTATED at the Stage 27 closure: Stage 27 COMPLETE for its current bounded scope leads
@@ -6092,7 +6104,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # the 28-T1 sensing reference increment precedes it
            # ADVANCED at 28-T5-NONFOCUSED-PART-REPORT-01 (merge-effective delivery record): ... after it; the
            # non-focused part-questions increment precedes it
-           r"No product increment is authorized after 28-T5-NONFOCUSED-PART-REPORT-01 \(delivered; PR #\d+; "
+           # ADVANCED at STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 (merge-effective delivery record): ... after it; the
+           # non-focused part report increment precedes it
+           r"No product increment is authorized after STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 \(delivered; PR #\d+; "
+           r"[^)]*read-only Parts, Components & Interactions view under Stage 15, unvalidated; no Stage change; "
+           r"effective only on merge\) or after the preceding 28-T5-NONFOCUSED-PART-REPORT-01 \(delivered; PR #\d+; "
            r"[^)]*non-focused part answers in the report / PDF, unvalidated; no Stage change; effective only on "
            r"merge\) or after the preceding 28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01 \(delivered; PR #\d+; "
            r"[^)]*non-focused required part questions with part-local safety signals; recording only; no Stage "
