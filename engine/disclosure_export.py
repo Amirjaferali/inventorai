@@ -11,7 +11,9 @@ values that existing owners produce; it derives no engineering truth, infers,
 summarizes and re-words nothing, renders no legal conclusion, patent claim,
 assessment or HTML, persists nothing, writes no log line and makes no network,
 provider or AI call. It holds only the export's own fixed text (the disclaimers,
-the scope label, the problem-capture limitation) and the closed v1 token sets.
+the scope label, the problem-capture limitation) and the closed v2 token sets
+(version 2 = version 1 plus the field-7 ``component`` kind,
+STAGE35-COMPONENT-DISCLOSURE-EXPORT-01).
 
 Two outcomes besides success, never mixed: ``ProjectAccessDenied`` (raised by the
 unchanged authorization owner, a DENIAL) and ``DisclosureExportRefused`` (every
@@ -43,11 +45,14 @@ from engine.session_reconstruction import (
 from engine.subsystem_model import DEPENDENCY_MUTUAL, DEPENDENCY_ONE_WAY
 
 # --- versions and file names (§9.1) -------------------------------------------
-DISCLOSURE_SCHEMA_VERSION = "inventorai-disclosure/1"
-JSON_FORMAT_VERSION = "inventorai-disclosure-json/1"
-HTML_FORMAT_VERSION = "inventorai-disclosure-html/1"
-JSON_FILE_NAME = "inventorai-disclosure-export-v1.json"
-HTML_FILE_NAME = "inventorai-disclosure-export-v1.html"
+# STAGE35-COMPONENT-DISCLOSURE-EXPORT-01: version 2 = version 1 plus exactly ONE
+# item kind, ``component`` (field 7). The vocabulary stays closed and a reader
+# keeps rejecting unknown keys; v1 is not reinterpreted or made extensible.
+DISCLOSURE_SCHEMA_VERSION = "inventorai-disclosure/2"
+JSON_FORMAT_VERSION = "inventorai-disclosure-json/2"
+HTML_FORMAT_VERSION = "inventorai-disclosure-html/2"
+JSON_FILE_NAME = "inventorai-disclosure-export-v2.json"
+HTML_FILE_NAME = "inventorai-disclosure-export-v2.html"
 
 # --- the export's own fixed text (§10, §12.1, §12.2, §12.6) -------------------
 DISCLAIMERS = (
@@ -101,7 +106,7 @@ CAPTURE_LIMITATION = (
     "therefore have been shortened; an ellipsis (…) at its end may indicate that "
     "shortening.")
 
-# --- closed v1 token sets (§9.3) ----------------------------------------------
+# --- closed v2 token sets (§9.3) ----------------------------------------------
 RECORDED = "RECORDED"
 NOTHING_RECORDED = "NOTHING_RECORDED"
 NOT_CAPTURED = "NOT_CAPTURED"
@@ -159,7 +164,7 @@ _FIELD_DISPOSITIONS = {
     "invention_objective": {_NC},
     "technical_concept": {_REC, _NOTHING},
     "parts": {_REC, _NON_INTEGRATED},
-    "component_descriptions_beyond_parts": {_NC, _NON_INTEGRATED},
+    "component_descriptions_beyond_parts": {_REC, _NOTHING},
     "relationships": {_REC, _NOTHING, _NON_INTEGRATED},
     "operating_sequence_or_workflow": {_NC},
     "alternative_embodiments": {_NC},
@@ -191,6 +196,7 @@ _FIELD_KINDS = {
     "problem_addressed": {"resolved_problem"},
     "technical_concept": {"known_mechanism"},
     "parts": {"part"},
+    "component_descriptions_beyond_parts": {"component"},
     "relationships": {"interface"},
     "raw_materials_dimensions_parameters_conditions": {"requirement_quantity"},
     "unresolved_technical_issues": {"unresolved_gap", "declared_contradiction",
@@ -212,6 +218,7 @@ _KIND_SLOTS = {
     "resolved_problem": {"text": QUOTED, "capture_limitation": SYSTEM},
     "known_mechanism": {"text": QUOTED},
     "part": {"name": QUOTED, "function": QUOTED},
+    "component": {"name": QUOTED, "function": QUOTED},
     "interface": {"description": QUOTED, "dependency": SYSTEM, "dependency_note": QUOTED},
     "unresolved_gap": {"gap_state": SYSTEM},
     "declared_contradiction": {"declaration": SYSTEM, "answer_a": QUOTED, "answer_b": QUOTED},
@@ -258,6 +265,7 @@ _ENVELOPE_FIELDS = {
     ("resolved_problem", "text"): _PV, ("resolved_problem", "capture_limitation"): _NONE,
     ("known_mechanism", "text"): _PV,
     ("part", "name"): _PV, ("part", "function"): _PV,
+    ("component", "name"): _PV, ("component", "function"): _PV,
     ("interface", "description"): _PV, ("interface", "dependency"): _NONE,
     ("interface", "dependency_note"): _NONE,
     ("unresolved_gap", "gap_state"): _NONE,
@@ -308,6 +316,7 @@ TOKEN_KEYS = frozenset(k for keys in list(_ITEM_TOKENS.values())
 # Kinds a ref of each kind may name (§7, §8.3).
 _REF_TARGETS = {
     "interface": frozenset({"part"}),
+    "component": frozenset({"part"}),
     "declared_contradiction": frozenset({"requirement"}),
     "assumption": frozenset({"assumption", "requirement", "correction_version"}),
     "recorded_unknown": frozenset({"requirement"}),
@@ -341,6 +350,11 @@ class MaterializedSources:
     planning_metadata: dict
     interface_dependencies: tuple
     result_events: tuple
+    # STAGE35-COMPONENT-DISCLOSURE-EXPORT-01: the durable composition the
+    # component inventory was validated against and the inventory itself, read
+    # together in the SAME snapshot (S25).
+    component_composition: tuple = ()
+    components: tuple = ()
     section_outcomes: dict = field(default_factory=dict)
 
 
@@ -359,6 +373,7 @@ def materialize_sources(store, project_id, account_id):
         planning = load_planning_metadata(store, project_id)                 # E2
         dependencies = tuple(store.load_interface_dependencies(project_id))  # S8
         events = tuple(store.load_result_events(project_id))                 # S7
+        composition, components = store.load_component_inventory(project_id)  # S25
         if store.committed_state_readable():
             raise DisclosureExportRefused("the read snapshot was lost")
     if not store.committed_state_readable():
@@ -366,7 +381,8 @@ def materialize_sources(store, project_id, account_id):
     return MaterializedSources(
         state=reconstructed.state, requirement_quantities=quantities,
         planning_metadata=planning, interface_dependencies=dependencies,
-        result_events=events)
+        result_events=events, component_composition=tuple(composition),
+        components=tuple(components))
 
 
 def compose_disclosure_projection(store, project_id, account_id):
@@ -463,6 +479,12 @@ class _Composer:
         self.state = state
         self.dependencies = tuple(sources.interface_dependencies)
         self.events = tuple(sources.result_events)
+        # The inventory was validated WHOLE against the composition read with it;
+        # that composition must be exactly the reconstructed state's own parts,
+        # or the export refuses (one coherent snapshot, one composition).
+        if tuple(sources.component_composition) != tuple(state.subsystems or ()):
+            _refuse("the component inventory names a different composition")
+        self.components = tuple(sources.components)
         self.outcomes = dict(sources.section_outcomes or {})
         self.records = list(state.assertions)
         self.by_id = {r.record_id: r for r in self.records}
@@ -577,9 +599,7 @@ class _Composer:
             "invention_objective": _field("invention_objective", NOT_CAPTURED),
             "technical_concept": self._mechanism(),
             "parts": self._parts(),
-            "component_descriptions_beyond_parts": _field(
-                "component_descriptions_beyond_parts", NOT_CAPTURED,
-                reason=None if self.integrated else "NON_INTEGRATED_PROJECT"),
+            "component_descriptions_beyond_parts": self._components(),
             "relationships": self._relationships(),
             "operating_sequence_or_workflow": _field("operating_sequence_or_workflow",
                                                      NOT_CAPTURED),
@@ -665,6 +685,31 @@ class _Composer:
                                                           sub.validation_state))},
                 tokens={"part_domain": sub.domain}))
         return _listed("parts", items)
+
+    def _components(self):
+        """Field 7: every inventor-declared physical component exactly once, in
+        durable order — name and function quoted verbatim under the inventory
+        owner's own provenance / validation state, and one ref per declared
+        part (none = project level). The component id is never exported."""
+        items = []
+        for n, component in enumerate(self.components, 1):
+            refs = []
+            for subsystem_id in component.subsystem_ids:
+                key = self.part_keys.get(subsystem_id)
+                if key is None or key in refs:
+                    _refuse("a component part does not resolve")
+                refs.append(key)
+            env = _envelope(component.provenance, component.validation_state)
+            items.append(_item(
+                _key("component_descriptions_beyond_parts", n), "component",
+                {"name": _recorded(QUOTED, component.display_name,
+                                   "SUBSYSTEM_COMPOSITION", env),
+                 "function": _recorded(QUOTED, component.function_text,
+                                       "SUBSYSTEM_COMPOSITION",
+                                       _envelope(component.provenance,
+                                                 component.validation_state))},
+                refs=refs))
+        return _listed("component_descriptions_beyond_parts", items)
 
     def _relationships(self):
         if not self.integrated:
@@ -1012,7 +1057,7 @@ def _check_scalar(value):
 
 
 def check_projection(content):
-    """Validate the finished projection against the closed v1 schema; any
+    """Validate the finished projection against the closed v2 schema; any
     unknown key, token, marker, reason or kind, any attribution defect and any
     dangling ref refuses (global schema failure)."""
     _check(isinstance(content, dict) and set(content) == _CONTENT_KEYS, "content keys")
@@ -1189,6 +1234,10 @@ def _check_kind(kind, tokens, refs, slots, index):
                and len(refs) <= (1 if tokens["position"] == 1 else 0), "correction item")
     elif kind == "part":
         _check(set(tokens) == {"part_domain"}, "part tokens")
+    elif kind == "component":
+        _check(set(slots) == {"name", "function"}
+               and all(slots[s]["marker"] == RECORDED for s in slots)
+               and tokens == {} and len(set(refs)) == len(refs), "component item")
 
 
 # --- serialization (§9.2, §9.4) --------------------------------------------------

@@ -109,6 +109,9 @@ h3{font-size:15px;margin:0 0 6px}
 {%- if f.field == 'risks' %}
 <p class="clarification">{{ L('UI_S35_RISKS_CLARIFICATION') }}</p>
 {%- endif %}
+{%- if f.field == 'component_descriptions_beyond_parts' and f.marker == 'RECORDED' %}
+<p class="clarification" data-components-clarification>{{ L('UI_S35_COMPONENTS_CLARIFICATION') }}</p>
+{%- endif %}
 {%- if f.marker == 'RECORDED' %}
 {%- for item in f['items'] %}
 <article class="item" id="{{ item.item_key }}" data-kind="{{ item.kind }}">
@@ -125,6 +128,15 @@ h3{font-size:15px;margin:0 0 6px}
 <h3>{{ part_label(item.tokens.part_domain) }}</h3>
 {{ slot(item, 'name') }}
 {{ slot(item, 'function', L('UI_S15_SCOPE_FUNCTION')) }}
+{%- elif kind == 'component' %}
+<h3>{{ L('UI_S35_COMPONENT_LABEL') }}</h3>
+{{ slot(item, 'name') }}
+{{ slot(item, 'function', L('UI_S15_SCOPE_FUNCTION')) }}
+{%- if item.refs %}
+<p class="note" data-component-parts>{{ L('UI_S35_COMPONENT_PARTS') }} {% for ref in item.refs %}<a href="#{{ ref }}">{{ part_label(index[ref].tokens.part_domain) }}</a>{% if not loop.last %}{{ L('UI_CI_PART_SEP') }}{% endif %}{% endfor %}</p>
+{%- else %}
+<p class="note" data-component-project-level>{{ L('UI_S35_COMPONENT_PROJECT_LEVEL') }}</p>
+{%- endif %}
 {%- elif kind == 'interface' %}
 {{ slot(item, 'description') }}
 {%- set dep = item.slots.dependency %}

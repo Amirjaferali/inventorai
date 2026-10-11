@@ -214,8 +214,11 @@ def test_r12_no_global_relaxation():
     assert guard.index("_connection_unsafe") < guard.index("_read_snapshot_owned") \
         < guard.index("_refuse_uncommitted_reads()")
     source = inspect.getsource(SqliteRecordStore)
-    # Exactly six substitutions.
-    assert source.count("self._admit_snapshot_read()") == 6
+    # Exactly six substitutions. AMENDED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (Owner-approved
+    # Correction 01): plus ONE seventh admission, in load_component_inventory (contract §3.2).
+    assert source.count("self._admit_snapshot_read()") == 7
+    seventh = inspect.getsource(SqliteRecordStore.load_component_inventory)
+    assert "self._admit_snapshot_read()" in seventh and "self._refuse_uncommitted_reads()" not in seventh
     for name in SIX:
         body = inspect.getsource(getattr(SqliteRecordStore, name))
         assert "self._admit_snapshot_read()" in body
