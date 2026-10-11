@@ -102,8 +102,11 @@ def test_s01_one_reader_returns_every_collection_of_this_project_only(tmp_path, 
     store.apply_part_answer_delta(pid, nonfocused.subsystem_id, {_ids(nonfocused.domain)[0]: "Ours"})
     store.apply_part_answer_delta(pid, ctrl.subsystem_id, {"control_loop:MECHANISM_COMPLETENESS:Q1": "Loop"})
     record = store.load_parts_components_interactions(pid)
+    # AMENDED at COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: the loader also returns the withdrawn
+    # components (historical, apart from the CURRENT ``components`` projection).
     assert set(record) == {"subsystems", "focus", "interfaces", "preparations", "dependencies",
-                           "components", "part_answers"}
+                           "components", "withdrawn_components", "part_answers"}
+    assert record["withdrawn_components"] == ()
     assert record["subsystems"] == subs and record["focus"] == focus
     assert record["interfaces"] == (ifc,)
     assert [p.interface_id for p in record["preparations"]] == [ifc.interface_id]

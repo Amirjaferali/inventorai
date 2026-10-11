@@ -63,7 +63,7 @@ dd{margin:0 12px}
   <h2 id="pci-components-title">{{ t('UI_CI_HEADING') }}</h2>
   <p class="meta" style="margin:0 0 8px 0" data-pci-association-note>{{ t('UI_PCI_ASSOCIATION_NOTE') }}</p>
   {% if view.component_count == 0 %}
-  <p class="meta" data-pci-components-none>{{ t('UI_CI_NONE') }}</p>
+  <p class="meta" data-pci-components-none>{{ t('UI_CI_NONE_CURRENT') if view.withdrawn_components else t('UI_CI_NONE') }}</p>
   {% else %}
   <h3>{{ t('UI_PCI_LINKED_TITLE') }}</h3>
   {% if view.linked_components %}
@@ -95,6 +95,21 @@ dd{margin:0 12px}
   {% else %}
   <p class="meta" style="margin:4px 0 0 0" data-pci-unassigned-none>{{ t('UI_PCI_UNASSIGNED_NONE') }}</p>
   {% endif %}
+  {% endif %}
+  {#- COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: withdrawn components are shown
+      apart from the current lists above, as history only — never as current. -#}
+  {% if view.withdrawn_components %}
+  <h3 data-pci-withdrawn-title>{{ t('UI_CI_WITHDRAWN_TITLE') }}</h3>
+  <p class="meta" style="margin:0 0 4px 0" data-pci-withdrawn-note>{{ t('UI_CI_WITHDRAWN_NOTE') }}</p>
+  <ul style="margin:4px 0 0 0;padding-inline-start:20px" data-pci-withdrawn>
+    {% for c in view.withdrawn_components %}
+    <li class="item" data-pci-withdrawn-item>
+      <bdi dir="auto" style="font-weight:bold" data-pci-withdrawn-name>{{ c.name }}</bdi>
+      <p class="text" style="white-space:normal">{{ t('UI_CI_LAST_VERSION_LABEL') }} <bdi dir="auto">{{ c.function }}</bdi></p>
+      <p class="meta">{{ t('UI_CI_WITHDRAWN_STATUS') }}</p>
+    </li>
+    {% endfor %}
+  </ul>
   {% endif %}
   <p class="meta" style="margin:10px 0 0 0"><a href="{{ url_for('show_session', sid=sid) }}#component-inventory" data-pci-components-link>{{ t('UI_PCI_LINK_COMPONENTS') }}</a></p>
 </section>

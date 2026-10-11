@@ -77,7 +77,7 @@ def _rows(pid=None):
     if pid is None:
         return _raw("SELECT * FROM project_components")
     return _raw("SELECT * FROM project_components WHERE project_id = ? "
-                "ORDER BY component_seq", (pid,))
+                "ORDER BY declaration_seq", (pid,))   # AMENDED at -CORRECT-WITHDRAW-01: renamed column
 
 
 def _page(c, sid):
@@ -87,8 +87,18 @@ def _page(c, sid):
 
 
 def _block(raw):
-    m = re.search(r'<details id="component-inventory".*?</details>', raw, re.S)
-    return m.group(0) if m else None
+    # AMENDED at COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: the block now nests <details>
+    # (earlier versions, correction and withdrawal forms), so it is cut at its OWN
+    # balanced closing tag instead of the first one.
+    start = raw.find('<details id="component-inventory"')
+    if start < 0:
+        return None
+    depth = 0
+    for m in re.finditer(r"<(/?)details\b", raw[start:]):
+        depth += -1 if m.group(1) else 1
+        if depth == 0:
+            return raw[start:start + m.end() + 1]
+    return None
 
 
 def _form(raw):
@@ -179,7 +189,9 @@ def test_m03_the_complete_inventory_is_validated_whole():
         provenance=OWNER_STATED, validation_state=UNVALIDATED)
     with pytest.raises(sm.ComponentError):
         sm.validate_components((reordered,), subs)
-    many = tuple(_component(subs) for _ in range(sm.MAX_PROJECT_COMPONENTS_PER_PROJECT + 1))
+    # AMENDED at COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: declarations are bounded by the
+    # LIFETIME cap (500); the active cap (50) is a property of the current projection.
+    many = tuple(_component(subs) for _ in range(sm.MAX_DECLARED_COMPONENTS_PER_PROJECT + 1))
     with pytest.raises(sm.ComponentError):
         sm.validate_components(many, subs)
 
@@ -263,7 +275,7 @@ def test_s05_the_inventory_is_bounded():
 
 
 @pytest.mark.parametrize("sql", [
-    "UPDATE project_components SET component_seq = 5",
+    "UPDATE project_components SET declaration_seq = 5",   # AMENDED: renamed column
     "UPDATE project_components SET subsystem_ids = 'not json'",
     "UPDATE project_components SET subsystem_ids = '[ ]'",
     "UPDATE project_components SET subsystem_ids = '[\"sub-%s\"]'" % ("0" * 32),
@@ -274,7 +286,7 @@ def test_s06_invalid_storage_fails_the_whole_inventory_closed(sql):
     pid, subs = _new_store_project(store)
     store.append_project_component(pid, _component(subs, parts=(subs[0].subsystem_id,)), "a")
     store.append_project_component(pid, _component(subs), "b")
-    _raw(sql + " WHERE project_id = ? AND component_seq = 1", (pid,))
+    _raw(sql + " WHERE project_id = ? AND declaration_seq = 1", (pid,))
     with pytest.raises(ProjectComponentsCorrupt):
         store.load_component_inventory(pid)
     with pytest.raises(ProjectComponentsCorrupt):
@@ -378,7 +390,12 @@ def test_w02_one_component_linked_to_both_parts_survives_restart_with_one_id(cli
     assert PARTS["mech_part_name"] in block and PARTS["elec_part_name"] in block
     assert "data-ci-unassigned" in block
     assert [r[2] for r in _rows(sid)] == [linked[2], unlinked[2]]
-    assert linked[2] not in block                          # no identifier shown
+    # AMENDED at COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: the correction / withdrawal forms
+    # carry the component id as a hidden form value (the interface-form precedent); it is
+    # never visible text and appears nowhere else in the block.
+    assert linked[2] not in _visible(block)                # no identifier shown
+    assert block.count(linked[2]) == block.count(
+        'name="component_id" value="%s"' % linked[2]) == 2
 
 
 def test_w03_retry_and_changed_material_under_one_submission(client):
@@ -557,6 +574,8 @@ def test_x03_arabic_copy_is_rendered_and_inventor_text_isolated(client):
 
 def test_x04_every_component_key_has_english_and_arabic_copy():
     keys = [k for k in ui_text.UI_STRINGS if k.startswith("UI_CI_")]
-    assert len(keys) == 24
+    # AMENDED at COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: 24 declare/list keys + 29 for
+    # correction, withdrawal, history and the two capacity bounds.
+    assert len(keys) == 53
     for key in keys:
         assert ui_text.has_string(key), key

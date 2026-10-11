@@ -33,6 +33,10 @@ MUTATIONS = (
     # COMPONENT-INVENTORY-DECLARE-LIST-01: the inventor's explicit declaration of
     # one physical component (declare and list only).
     "/session/<sid>/declare-component",
+    # COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: the inventor's explicit correction or
+    # terminal withdrawal of one current declared component.
+    "/session/<sid>/correct-component",
+    "/session/<sid>/withdraw-component",
     # Stage 15 Slice 3: the inventor's current verification-preparation inputs
     # per declared interaction (current-value planning save).
     "/session/<sid>/interface-preparation",

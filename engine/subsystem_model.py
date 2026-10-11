@@ -802,12 +802,18 @@ def part_family_presence(question_ids, answers, subsystem_id):
 # is the inventor's declared association only — never proof of physical
 # containment, compatibility, technical contribution or suitability — and one
 # component referenced by several parts stays ONE component. Equal names never
-# merge two declarations. Declare and list only: no edit, delete, quantity,
-# specification, rating, material, price, supplier, taxonomy or validation.
+# merge two declarations. No delete, quantity, specification, rating, material,
+# price, supplier, taxonomy or validation. COMPONENT-INVENTORY-CORRECT-WITHDRAW-01
+# adds correction and terminal withdrawal as an append-only revision history
+# over these immutable declarations (the revision section below).
 MAX_COMPONENT_NAME_LENGTH = MAX_SUBSYSTEM_NAME_LENGTH
 MAX_COMPONENT_FUNCTION_LENGTH = MAX_SUBSYSTEM_FUNCTION_LENGTH
-# Bounded growth: a project cannot accumulate an unbounded inventory.
+# Bounded growth. The ACTIVE cap: at most this many components are current
+# (not withdrawn) at once; a withdrawal frees an active slot.
 MAX_PROJECT_COMPONENTS_PER_PROJECT = 50
+# The LIFETIME cap: at most this many component identities are ever declared in
+# one project. Identities and declaration sequence numbers are never recycled.
+MAX_DECLARED_COMPONENTS_PER_PROJECT = 500
 _COMPONENT_ID_RE = re.compile(r"^cmp-[0-9a-f]{32}$")
 
 
@@ -892,11 +898,12 @@ def validate_components(components, composition):
     entry must carry a system-shaped, distinct id; valid bounded texts; a
     duplicate-free tuple of parts of ``composition`` in its part order (``()``
     is valid — an ordinary project can only hold ``()``); OWNER_STATED
-    provenance and UNVALIDATED state; and the inventory is within the
-    per-project cap. Used identically before the durable write and on every
-    load."""
+    provenance and UNVALIDATED state; and the declarations are within the
+    per-project LIFETIME cap (the active cap is a property of the current
+    projection, ``project_component_inventory``). Used identically before the
+    durable write and on every load."""
     items = tuple(components or ())
-    if len(items) > MAX_PROJECT_COMPONENTS_PER_PROJECT:
+    if len(items) > MAX_DECLARED_COMPONENTS_PER_PROJECT:
         raise ComponentError("too many component declarations")
     seen = set()
     for item in items:
@@ -918,3 +925,290 @@ def validate_components(components, composition):
         if item.provenance != OWNER_STATED or item.validation_state != UNVALIDATED:
             raise ComponentError("component provenance / validation state is invalid")
     return items
+
+
+# --- COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: correction and withdrawal -------
+# The inventor may CORRECT a current component's name, function and part links,
+# or WITHDRAW it from the active inventory. Both are append-only REVISIONS over
+# the immutable original declaration: the declaration row, its system-generated
+# ``component_id`` and its declaration order never change, and no revision is
+# ever rewritten or removed. Each component carries ONE contiguous linear
+# history (revision 1, 2, ... k); a WITHDRAWN revision is terminal. The CURRENT
+# component is the original declaration with its latest correction applied; a
+# withdrawn component is historical only and never active. Every revision is
+# OWNER_STATED / UNVALIDATED: a correction is the inventor's restatement, never
+# engineering verification, and a withdrawal removes nothing from the durable
+# record (it is not erasure).
+COMPONENT_REVISION_CORRECTED = "CORRECTED"
+COMPONENT_REVISION_WITHDRAWN = "WITHDRAWN"
+COMPONENT_REVISION_KINDS = (COMPONENT_REVISION_CORRECTED,
+                            COMPONENT_REVISION_WITHDRAWN)
+# Per-component bound: at most this many corrections, plus ONE separately
+# reserved terminal withdrawal (so a component with every correction used can
+# still be withdrawn).
+MAX_CORRECTIONS_PER_COMPONENT = 20
+MAX_REVISIONS_PER_COMPONENT = MAX_CORRECTIONS_PER_COMPONENT + 1
+_COMPONENT_REVISION_ID_RE = re.compile(r"^crv-[0-9a-f]{32}$")
+
+
+class ComponentRevisionError(ComponentError):
+    """A proposed component revision is not admissible against the CURRENT
+    inventory. Structural message only — never user text."""
+
+
+class ComponentUnknown(ComponentRevisionError):
+    """The revision names no component of this project."""
+
+
+class ComponentStale(ComponentRevisionError):
+    """The revision was prepared against an older version of the component."""
+
+
+class ComponentAlreadyWithdrawn(ComponentRevisionError):
+    """The component is withdrawn: withdrawal is terminal."""
+
+
+class ComponentCorrectionLimit(ComponentRevisionError):
+    """The component already holds the maximum number of corrections."""
+
+
+class ComponentUnchanged(ComponentRevisionError):
+    """A correction that restates the current material exactly."""
+
+
+@dataclass(frozen=True)
+class ComponentRevision:
+    """ONE append-only revision of ONE declared component. ``revision_id`` is
+    system-generated and immutable; ``revision_no`` is the component-local
+    position (1 = first revision after the declaration). A CORRECTED revision
+    carries the complete corrected material (``display_name``,
+    ``function_text``, ``subsystem_ids``); a WITHDRAWN revision carries none."""
+    revision_id: str
+    component_id: str
+    revision_no: int
+    kind: str
+    display_name: Optional[str]
+    function_text: Optional[str]
+    subsystem_ids: Optional[tuple]
+    provenance: str
+    validation_state: str
+
+
+@dataclass(frozen=True)
+class ComponentVersion:
+    """One historical version of a component's material: ``revision_no`` 0 is
+    the original declaration, ``n`` the n-th correction."""
+    revision_no: int
+    display_name: str
+    function_text: str
+    subsystem_ids: tuple
+
+
+@dataclass(frozen=True)
+class ComponentRecord:
+    """ONE declared component with its validated history. ``current`` is the
+    latest material as a ``ProjectComponent`` (the stable ``component_id``,
+    OWNER_STATED / UNVALIDATED); ``versions`` is every material version,
+    oldest first; ``head_revision_no`` is 0 when there is no revision."""
+    current: ProjectComponent
+    versions: tuple
+    head_revision_no: int
+    corrections: int
+    withdrawn: bool
+
+    @property
+    def component_id(self):
+        return self.current.component_id
+
+
+@dataclass(frozen=True)
+class ComponentInventory:
+    """The ONE authoritative projection of a project's component inventory:
+    every declared component in declaration order with its history. ``active``
+    is the current inventory every consumer presents; ``withdrawn`` is the
+    historical remainder, never active."""
+    records: tuple
+
+    @property
+    def active(self):
+        return tuple(r.current for r in self.records if not r.withdrawn)
+
+    @property
+    def withdrawn(self):
+        return tuple(r for r in self.records if r.withdrawn)
+
+    @property
+    def declared_count(self):
+        return len(self.records)
+
+    def record_for(self, component_id):
+        for record in self.records:
+            if record.component_id == component_id:
+                return record
+        return None
+
+
+def new_component_revision_id():
+    """A system-generated, opaque, collision-safe revision identity."""
+    return "crv-" + uuid.uuid4().hex
+
+
+def is_valid_component_revision_id(value):
+    """True only for a revision id of the exact system-generated shape."""
+    return isinstance(value, str) and bool(_COMPONENT_REVISION_ID_RE.match(value))
+
+
+def same_revision_material(stored, revision):
+    """True when two revisions carry the SAME material: the same component,
+    kind and position and, for a correction, the same name, function and set
+    of referenced parts. The revision id, provenance and validation state are
+    not material."""
+    if (stored.component_id != revision.component_id
+            or stored.kind != revision.kind
+            or stored.revision_no != revision.revision_no):
+        return False
+    if stored.kind == COMPONENT_REVISION_WITHDRAWN:
+        return True
+    return (stored.display_name == revision.display_name
+            and stored.function_text == revision.function_text
+            and set(stored.subsystem_ids) == set(revision.subsystem_ids))
+
+
+def _validate_revision_shape(rev, composition):
+    if not isinstance(rev, ComponentRevision):
+        raise ComponentError("history entry is not a component revision")
+    if not is_valid_component_revision_id(rev.revision_id):
+        raise ComponentError("revision identity is malformed")
+    if not is_valid_component_id(rev.component_id):
+        raise ComponentError("revision component identity is malformed")
+    if not isinstance(rev.revision_no, int) or isinstance(rev.revision_no, bool) \
+            or not 1 <= rev.revision_no <= MAX_REVISIONS_PER_COMPONENT:
+        raise ComponentError("revision position is out of range")
+    if rev.provenance != OWNER_STATED or rev.validation_state != UNVALIDATED:
+        raise ComponentError("revision provenance / validation state is invalid")
+    if rev.kind == COMPONENT_REVISION_WITHDRAWN:
+        if (rev.display_name is not None or rev.function_text is not None
+                or rev.subsystem_ids is not None):
+            raise ComponentError("a withdrawal carries material")
+        return
+    if rev.kind != COMPONENT_REVISION_CORRECTED:
+        raise ComponentError("revision kind is unknown")
+    if rev.revision_no > MAX_CORRECTIONS_PER_COMPONENT:
+        raise ComponentError("too many corrections")
+    if not valid_subsystem_text(rev.display_name, MAX_COMPONENT_NAME_LENGTH):
+        raise ComponentError("corrected component name is invalid")
+    if not valid_subsystem_text(rev.function_text, MAX_COMPONENT_FUNCTION_LENGTH):
+        raise ComponentError("corrected component function is invalid")
+    if not isinstance(rev.subsystem_ids, tuple) or not all(
+            isinstance(ref, str) for ref in rev.subsystem_ids):
+        raise ComponentError("corrected part references are malformed")
+    if canonical_component_parts(composition, rev.subsystem_ids) != rev.subsystem_ids:
+        raise ComponentError("corrected part references are not in canonical order")
+
+
+def project_component_inventory(declarations, revisions, composition):
+    """Validate a project's COMPLETE declarations and revision history WHOLE
+    against its OWN durable ``composition`` and return the one authoritative
+    ``ComponentInventory``, or raise ``ComponentError`` (nothing partial; a
+    defect anywhere never falls back to the original declarations).
+
+    Declarations: as ``validate_components`` (lifetime cap). Revisions: each
+    well formed, with a distinct revision id; each names a declared component;
+    each component's revisions are exactly 1..k with no gap, fork or
+    duplicate; nothing follows a withdrawal; at most the per-component number
+    of corrections. The projection holds at most the ACTIVE cap of current
+    components."""
+    decls = validate_components(declarations, composition)
+    by_component = {item.component_id: [] for item in decls}
+    seen = set()
+    for rev in tuple(revisions or ()):
+        _validate_revision_shape(rev, composition)
+        if rev.revision_id in seen:
+            raise ComponentError("revision identity is duplicated")
+        seen.add(rev.revision_id)
+        if rev.component_id not in by_component:
+            raise ComponentError("a revision names no declared component")
+        by_component[rev.component_id].append(rev)
+    records = []
+    for item in decls:
+        history = sorted(by_component[item.component_id], key=lambda r: r.revision_no)
+        if [r.revision_no for r in history] != list(range(1, len(history) + 1)):
+            raise ComponentError("revision history is not one contiguous chain")
+        if any(r.kind == COMPONENT_REVISION_WITHDRAWN for r in history[:-1]):
+            raise ComponentError("a revision follows a withdrawal")
+        versions = [ComponentVersion(0, item.display_name, item.function_text,
+                                     item.subsystem_ids)]
+        for rev in history:
+            if rev.kind == COMPONENT_REVISION_CORRECTED:
+                versions.append(ComponentVersion(
+                    rev.revision_no, rev.display_name, rev.function_text,
+                    rev.subsystem_ids))
+        latest = versions[-1]
+        current = ProjectComponent(
+            component_id=item.component_id, display_name=latest.display_name,
+            function_text=latest.function_text, subsystem_ids=latest.subsystem_ids,
+            provenance=OWNER_STATED, validation_state=UNVALIDATED)
+        records.append(ComponentRecord(
+            current=current, versions=tuple(versions),
+            head_revision_no=len(history), corrections=len(versions) - 1,
+            withdrawn=bool(history) and history[-1].kind == COMPONENT_REVISION_WITHDRAWN))
+    inventory = ComponentInventory(records=tuple(records))
+    if len(inventory.active) > MAX_PROJECT_COMPONENTS_PER_PROJECT:
+        raise ComponentError("too many active components")
+    return inventory
+
+
+def _revisable_record(inventory, component_id, expected_revision_no):
+    if not isinstance(inventory, ComponentInventory):
+        raise ComponentError("no validated inventory")
+    record = inventory.record_for(component_id) if isinstance(component_id, str) else None
+    if record is None:
+        raise ComponentUnknown("the component is not a component of this project")
+    if record.withdrawn:
+        raise ComponentAlreadyWithdrawn("the component is withdrawn")
+    if expected_revision_no != record.head_revision_no:
+        raise ComponentStale("the component changed since this version was read")
+    return record
+
+
+def corrected_component_revision(inventory, composition, component_id,
+                                 expected_revision_no, display_name,
+                                 function_text, subsystem_ids):
+    """Build ONE correction of a CURRENT component against the validated
+    ``inventory``: the component exists, is not withdrawn, has not changed
+    since ``expected_revision_no`` and has a correction left; the complete
+    new material is valid and differs from the current material. Raises a
+    ``ComponentRevisionError`` subclass or ``ComponentError`` otherwise."""
+    record = _revisable_record(inventory, component_id, expected_revision_no)
+    if record.corrections >= MAX_CORRECTIONS_PER_COMPONENT:
+        raise ComponentCorrectionLimit("the correction limit is reached")
+    if not valid_subsystem_text(display_name, MAX_COMPONENT_NAME_LENGTH):
+        raise ComponentError("component name is empty, invalid or too long")
+    if not valid_subsystem_text(function_text, MAX_COMPONENT_FUNCTION_LENGTH):
+        raise ComponentError("component function is empty, invalid or too long")
+    parts = canonical_component_parts(composition, subsystem_ids)
+    if same_component_material(record.current, ProjectComponent(
+            component_id=component_id, display_name=display_name,
+            function_text=function_text, subsystem_ids=parts,
+            provenance=OWNER_STATED, validation_state=UNVALIDATED)):
+        raise ComponentUnchanged("the correction changes nothing")
+    return ComponentRevision(
+        revision_id=new_component_revision_id(), component_id=component_id,
+        revision_no=record.head_revision_no + 1,
+        kind=COMPONENT_REVISION_CORRECTED, display_name=display_name,
+        function_text=function_text, subsystem_ids=parts,
+        provenance=OWNER_STATED, validation_state=UNVALIDATED)
+
+
+def withdrawn_component_revision(inventory, component_id, expected_revision_no):
+    """Build the ONE terminal withdrawal of a CURRENT component against the
+    validated ``inventory`` (it exists, is not already withdrawn and has not
+    changed since ``expected_revision_no``). The withdrawal slot is reserved:
+    it is available even when every correction is used."""
+    record = _revisable_record(inventory, component_id, expected_revision_no)
+    return ComponentRevision(
+        revision_id=new_component_revision_id(), component_id=component_id,
+        revision_no=record.head_revision_no + 1,
+        kind=COMPONENT_REVISION_WITHDRAWN, display_name=None,
+        function_text=None, subsystem_ids=None,
+        provenance=OWNER_STATED, validation_state=UNVALIDATED)

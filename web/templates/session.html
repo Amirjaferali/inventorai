@@ -1670,12 +1670,15 @@ body{overflow-wrap:anywhere}
 
 {#- CI-BLOCK-BEGIN — COMPONENT-INVENTORY-DECLARE-LIST-01. The inventor's own
     declared components: ONE entry per physical component, optionally linked to
-    the project's own parts. Declare and list only (no edit / delete). Read from
+    the project's own parts. Declare, list, correct and withdraw (no delete). Read from
     ONE durable snapshot on every render; an unreadable or invalid inventory
     shows NO list and NO form, never an empty or partial one. Inventor text is
     escaped and direction-isolated. Declaring a component is NOT technical
     support and NOT validation, and a part link is the inventor's association
-    only — the copy says so. -#}
+    only — the copy says so. COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: each
+    CURRENT component shows its latest corrected material, its earlier
+    versions, a correction form and a withdrawal form (explicit confirmation);
+    withdrawn components are listed apart as history only. -#}
 {% if component_inventory %}
 {% set ci = component_inventory %}
 <details id="component-inventory" class="component-inventory" data-ci-status="{{ ci.status }}"{% if ci.ack or ci.error %} open{% endif %} style="margin-top:14px;border:1px solid #d6dde8;border-radius:4px;background:#f7f9fc;padding:10px 14px">
@@ -1688,19 +1691,73 @@ body{overflow-wrap:anywhere}
   {% if ci.components %}
   <ul class="ci-list" data-ci-list style="margin:6px 0;padding-inline-start:18px;font-size:13px;color:#333">
     {% for c in ci.components %}
-    <li data-ci-item style="margin:0 0 8px 0">
+    {% set cidx = loop.index %}
+    <li data-ci-item style="margin:0 0 10px 0">
       <strong><bdi dir="auto" data-ci-name>{{ c.name }}</bdi></strong>
-      <span style="color:#666" data-ci-item-status>· {{ t('UI_CI_ITEM_STATUS') }}</span><br>
+      <span style="color:#666" data-ci-item-status>· {{ t('UI_CI_ITEM_STATUS') }}</span>{% if c.corrected %} <span style="color:#666" data-ci-corrected>· {{ t('UI_CI_CORRECTED_MARK') }}</span>{% endif %}<br>
       {{ t('UI_CI_FUNCTION_LABEL') }} <bdi dir="auto" data-ci-function>{{ c.function }}</bdi>
       {% if ci.has_parts %}<br>
       {% if c.parts %}{{ t('UI_CI_PARTS_LABEL') }} {% for pname in c.parts %}<bdi dir="auto" data-ci-part>{{ pname }}</bdi>{% if not loop.last %}{{ t('UI_CI_PART_SEP') }}{% endif %}{% endfor %}
       {% else %}<span data-ci-unassigned>{{ t('UI_CI_UNASSIGNED') }}</span>{% endif %}
       {% endif %}
+      {% if c.earlier %}
+      <details data-ci-history style="margin:4px 0 0 0">
+        <summary style="cursor:pointer;color:#2c3e50">{{ t('UI_CI_HISTORY_SUMMARY') }}</summary>
+        <ul style="margin:4px 0;padding-inline-start:18px;color:#555">
+          {% for v in c.earlier %}
+          <li data-ci-version style="margin:0 0 4px 0">{{ t('UI_CI_VERSION_ORIGINAL') if v.original else t('UI_CI_VERSION_CORRECTION') }} <bdi dir="auto" data-ci-version-name>{{ v.name }}</bdi> — <bdi dir="auto">{{ v.function }}</bdi>{% if ci.has_parts %}<br>{% if v.parts %}{{ t('UI_CI_PARTS_LABEL') }} {% for pname in v.parts %}<bdi dir="auto">{{ pname }}</bdi>{% if not loop.last %}{{ t('UI_CI_PART_SEP') }}{% endif %}{% endfor %}{% else %}{{ t('UI_CI_UNASSIGNED') }}{% endif %}{% endif %}</li>
+          {% endfor %}
+        </ul>
+      </details>
+      {% endif %}
+      {% if c.can_correct %}
+      <details data-ci-correct style="margin:4px 0 0 0">
+        <summary style="cursor:pointer;color:#2c3e50">{{ t('UI_CI_CORRECT_SUMMARY') }}</summary>
+        <form method="POST" action="/session/{{ sid }}/correct-component" data-ci-correct-form style="margin-top:6px">
+          <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+          <input type="hidden" name="component_revision_submission" value="{{ ci.correction_submission }}">
+          <input type="hidden" name="component_id" value="{{ c.id }}">
+          <input type="hidden" name="component_revision" value="{{ c.revision }}">
+          <p style="font-size:12px;color:#555;margin:0 0 6px 0">{{ t('UI_CI_CORRECT_HINT') }}</p>
+          <label style="display:block;font-size:13px;margin:0 0 4px 0" for="ci-correct-name-{{ cidx }}">{{ t('UI_CI_FIELD_NAME') }}</label>
+          <input type="text" id="ci-correct-name-{{ cidx }}" name="correction_name" value="{{ c.name }}" maxlength="{{ ci.max_name }}" dir="auto" required autocomplete="off" style="width:100%;box-sizing:border-box">
+          <label style="display:block;font-size:13px;margin:8px 0 4px 0" for="ci-correct-function-{{ cidx }}">{{ t('UI_CI_FIELD_FUNCTION') }}</label>
+          <textarea id="ci-correct-function-{{ cidx }}" name="correction_function" rows="2" maxlength="{{ ci.max_function }}" dir="auto" required style="width:100%;box-sizing:border-box">{{ c.function }}</textarea>
+          {% if c.part_choices %}
+          <fieldset style="margin:8px 0;border:1px solid #ccc;border-radius:4px;padding:6px 10px">
+            <legend style="font-size:13px">{{ t('UI_CI_PARTS_LEGEND') }}</legend>
+            {% for part in c.part_choices %}
+            <label style="display:block;font-size:13px;margin-top:4px">
+              <input type="checkbox" name="correction_part" value="{{ part.id }}"{% if part.checked %} checked{% endif %}> <bdi dir="auto">{{ part.name }}</bdi>
+            </label>
+            {% endfor %}
+          </fieldset>
+          {% endif %}
+          <button type="submit" style="margin-top:8px">{{ t('UI_CI_CORRECT_BUTTON') }}</button>
+        </form>
+      </details>
+      {% else %}
+      <p data-ci-correct-limit style="font-size:12px;color:#555;margin:4px 0 0 0">{{ t('UI_CI_CORRECT_LIMIT') }}</p>
+      {% endif %}
+      <details data-ci-withdraw style="margin:4px 0 0 0">
+        <summary style="cursor:pointer;color:#2c3e50">{{ t('UI_CI_WITHDRAW_SUMMARY') }}</summary>
+        <form method="POST" action="/session/{{ sid }}/withdraw-component" data-ci-withdraw-form style="margin-top:6px">
+          <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+          <input type="hidden" name="component_revision_submission" value="{{ ci.withdrawal_submission }}">
+          <input type="hidden" name="component_id" value="{{ c.id }}">
+          <input type="hidden" name="component_revision" value="{{ c.revision }}">
+          <p style="font-size:12px;color:#555;margin:0 0 6px 0">{{ t('UI_CI_WITHDRAW_HINT') }}</p>
+          <label style="display:block;font-size:13px;margin:0 0 6px 0">
+            <input type="checkbox" name="withdraw_confirm" value="yes" required> {{ t('UI_CI_WITHDRAW_CONFIRM') }}
+          </label>
+          <button type="submit">{{ t('UI_CI_WITHDRAW_BUTTON') }}</button>
+        </form>
+      </details>
     </li>
     {% endfor %}
   </ul>
   {% else %}
-  <p data-ci-none style="font-size:13px;color:#555;margin:6px 0">{{ t('UI_CI_NONE') }}</p>
+  <p data-ci-none style="font-size:13px;color:#555;margin:6px 0">{{ t('UI_CI_NONE_CURRENT') if ci.withdrawn else t('UI_CI_NONE') }}</p>
   {% endif %}
   {% if ci.can_add %}
   <form method="POST" action="/session/{{ sid }}/declare-component" data-ci-form style="margin-top:10px;border-top:1px solid #dbe4ec;padding-top:8px">
@@ -1725,7 +1782,23 @@ body{overflow-wrap:anywhere}
     <button type="submit" style="margin-top:8px">{{ t('UI_CI_BUTTON') }}</button>
   </form>
   {% else %}
-  <p data-ci-cap style="font-size:13px;color:#555;margin:8px 0">{{ t('UI_CI_CAP') }}</p>
+  <p data-ci-cap style="font-size:13px;color:#555;margin:8px 0">{{ t(ci.cap_key) }}</p>
+  {% endif %}
+  {#- COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: withdrawn components, apart from
+      the current list and never as current — history only, not erasure. -#}
+  {% if ci.withdrawn %}
+  <div data-ci-withdrawn style="margin-top:10px;border-top:1px solid #dbe4ec;padding-top:8px">
+    <p style="font-size:13px;font-weight:bold;margin:0 0 4px 0">{{ t('UI_CI_WITHDRAWN_TITLE') }}</p>
+    <p style="font-size:12px;color:#555;margin:0 0 6px 0" data-ci-withdrawn-note>{{ t('UI_CI_WITHDRAWN_NOTE') }}</p>
+    <ul style="margin:4px 0;padding-inline-start:18px;font-size:13px;color:#555">
+      {% for w in ci.withdrawn %}
+      <li data-ci-withdrawn-item style="margin:0 0 6px 0">
+        <bdi dir="auto" data-ci-withdrawn-name>{{ w.name }}</bdi> <span data-ci-withdrawn-status>· {{ t('UI_CI_WITHDRAWN_STATUS') }}</span><br>
+        {{ t('UI_CI_LAST_VERSION_LABEL') }} <bdi dir="auto">{{ w.function }}</bdi>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
   {% endif %}
   {% else %}
   <p data-ci-unavailable style="font-size:13px;color:#555;margin:8px 0">{{ t('UI_CI_UNAVAILABLE') }}</p>
