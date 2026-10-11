@@ -6821,6 +6821,38 @@ UI_STRINGS = {
         "en": "This explanation does not select a sensor or a threshold, set any value, calibrate anything, or establish accuracy, performance or safety.",
         "ar": "لا يختار هذا الشرح مستشعرًا أو حدًّا، ولا يحدّد أي قيمة، ولا يُجري أي معايرة، ولا يثبت الدقة أو الأداء أو السلامة.",
     },
+    # 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 — ONE further prose-only conceptual group attached to the
+    # Electronics MECHANISM_COMPLETENESS context, after the sensing group
+    # (measurement_accuracy_resolution_reference_v1; provenance electronics_electrical:PR014–PR015).
+    # ITEM_1_TEXT is the Owner-admitted English claim verbatim and its governed Arabic rendering; SOURCE
+    # carries the NIST attribution, both section links, the adaptation / translation notice and the
+    # no-endorsement notice. No EQUATION part by design (the group is prose-only).
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_ACCURACY_RESOLUTION_FUNDAMENTALS_TITLE": {
+        "en": "Measurement: accuracy and resolution",
+        "ar": "القياس: الدقة وقدرة التمييز",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_ACCURACY_RESOLUTION_FUNDAMENTALS_INTRO": {
+        "en": "Reference information only. InventorAI has not determined that your design measures a quantity or what accuracy or resolution it needs.",
+        "ar": "معلومات مرجعية فقط. لم يحدّد InventorAI أن تصميمك يقيس كمية ما، ولا مقدار الدقة أو قدرة التمييز التي يحتاجها.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_ACCURACY_RESOLUTION_FUNDAMENTALS_ITEM_1_TITLE": {
+        "en": "Accuracy, resolution and displayed digits",
+        "ar": "الدقة وقدرة التمييز وعدد الأرقام المعروضة",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_ACCURACY_RESOLUTION_FUNDAMENTALS_ITEM_1_TEXT": {
+        "en": "Measurement accuracy concerns agreement with a true or reference value. Measurement resolution concerns distinguishing small differences. The number of displayed digits does not by itself establish instrument resolution.",
+        "ar": "تتعلق دقة القياس (accuracy) بتوافق القياس مع قيمة حقيقية أو مرجعية. وتتعلق قدرة التمييز في القياس (resolution) بالتمييز بين الفروق الصغيرة. ولا يكفي عدد الأرقام المعروضة وحده لإثبات قدرة التمييز لدى أداة القياس.",
+    },
+    # As for the sensing group, the Arabic attribution wraps each URL in a left-to-right isolate
+    # (U+2066 … U+2069) so a URL wrapped across lines keeps its LTR order in the PDF renderer.
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_ACCURACY_RESOLUTION_FUNDAMENTALS_SOURCE": {
+        "en": "Source: National Institute of Standards and Technology (NIST), NIST/SEMATECH e-Handbook of Statistical Methods, section 2.1.1.3 (accuracy), https://www.itl.nist.gov/div898/handbook/mpc/section1/mpc113.htm, and section 2.4.5.1 (resolution), https://itl.nist.gov/div898/handbook/mpc/section4/mpc451.htm. Adapted: InventorAI restated these points in its own words from NIST's explanatory text; the Arabic version is InventorAI's translation of that restatement. No figure, table or text that the handbook attributes to another source is used. This does not imply that NIST has reviewed, approved or endorsed InventorAI or this explanation.",
+        "ar": "المصدر: المعهد الوطني للمعايير والتقنية في الولايات المتحدة (NIST)، الدليل الإلكتروني NIST/SEMATECH e-Handbook of Statistical Methods، القسم 2.1.1.3 (الدقة) على الرابط: \u2066https://www.itl.nist.gov/div898/handbook/mpc/section1/mpc113.htm\u2069، والقسم 2.4.5.1 (قدرة التمييز) على الرابط: \u2066https://itl.nist.gov/div898/handbook/mpc/section4/mpc451.htm\u2069. مُقتبَس: أعاد InventorAI صياغة هذه النقاط بكلماته استنادًا إلى النص التوضيحي الصادر عن NIST، والنص العربي ترجمة InventorAI لهذه الصياغة. ولا يُستخدم أي شكل أو جدول أو نص ينسبه الدليل إلى مصدر آخر. ولا يعني ذلك أن NIST راجع InventorAI أو هذا الشرح أو وافق عليه أو أيّده.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_ACCURACY_RESOLUTION_FUNDAMENTALS_BOUNDARY": {
+        "en": "This explanation does not select or recommend an instrument or sensor, set or assess any accuracy or resolution value, calibrate anything, or establish measurement quality, performance or safety.",
+        "ar": "لا يختار هذا الشرح أداة قياس أو مستشعرًا ولا يوصي بأيٍّ منهما، ولا يحدّد أو يقيّم أي قيمة للدقة أو لقدرة التمييز، ولا يُجري أي معايرة، ولا يثبت جودة القياس أو الأداء أو السلامة.",
+    },
     # Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure. The Electronics
     # MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY contexts (grounded only in the
     # governed Electronics pack questions) and, per authorized (domain, gap), ONE
