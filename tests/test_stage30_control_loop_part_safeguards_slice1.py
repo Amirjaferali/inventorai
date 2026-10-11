@@ -94,8 +94,12 @@ def test_saved_answers_stay_readable_read_only_after_withdrawal(client, part_eli
     # the session scope keeps the part and links to the read-only view
     session = _text(client.get("/session/%s" % sid))
     assert 'data-scope-part="control"' in client.get("/session/%s" % sid).get_data(as_text=True)
-    assert ui_text.text("UI_PQ_LINK_READ_ONLY", "en") in session
-    assert ui_text.text("UI_PQ_LINK", "en") not in session
+    # AMENDED at 28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01: the session page also links the
+    # non-focused REQUIRED part's questions (editable — its eligibility is not the control-loop
+    # allowlist), so the read-only wording is asserted on the control-loop link itself.
+    control_link = session.split("data-scope-part-questions", 1)[1].split("</dd>", 1)[0]
+    assert ui_text.text("UI_PQ_LINK_READ_ONLY", "en") in control_link
+    assert ui_text.text("UI_PQ_LINK", "en") not in control_link
 
 
 @pytest.mark.parametrize("change", [{Q1: "Water level"}, {Q2: "20 C"}, {B1: ""}])

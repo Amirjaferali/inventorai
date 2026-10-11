@@ -20,6 +20,7 @@ from flask import (
 from engine.domain_rules import classify_domain, DomainResultKind, is_known_domain
 from engine.domain_rules import get_domain_questions  # Stage 28 Optional Part Slice 2
 from engine import subsystem_model as _subsystem_model  # Stage 15 Slice 1: the ONE subsystem owner
+from engine import safety_signal as _safety_signal  # 28-T5: part-local advisory (same owner)
 from engine import experiment_result as _experiment_result  # CAP-09 Result Event Slice 1
 from engine import interface_observation as _interface_observation  # Stage 15 Slice 4
 from engine import cap12_form_mockup as _cap12  # Stage 24 / CAP-12 Form Mock-up Advisory Slice 1
@@ -1684,6 +1685,12 @@ PQ_UNKNOWN_MESSAGE = (
 PQ_READ_ONLY_MESSAGE = (
     "Recording, editing or clearing answers about this part is not available "
     "now. Your saved answers are shown below, unchanged. Nothing was changed.")
+# 28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01: a page that names a part
+# by its durable identity which is not a question part of this project (the
+# focused required part, an unknown or stale id, another project's part).
+PQ_PART_NOT_OFFERED_MESSAGE = (
+    "Questions are not offered for this part of this project. Nothing was "
+    "changed.")
 
 # Stage 15 closure: the Owner-declared interface dependency, saved by the SAME
 # preparation Save. Registered in `ui_text._MESSAGE_KEYS`.
@@ -2049,6 +2056,11 @@ def _integrated_scope_context(state):
         "control_questions": optional is not None,
         "control_questions_editable": (optional is not None
                                        and domain_activation.is_part_eligible(optional.domain)),
+        # 28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01: the link to the
+        # governed questions of the required part that is NOT the focus. Its
+        # durable identity is carried ONLY into that link's URL (the explicit
+        # part selection), never into visible text.
+        "nonfocused_questions": _nonfocused_questions_link(composition, focus),
         "focus_key": ("UI_S15_SCOPE_FOCUS_MECH" if focus == "mechanical"
                       else "UI_S15_SCOPE_FOCUS_ELEC"),
         "interfaces": [{"a": names[item.subsystem_a_id],
@@ -2060,6 +2072,17 @@ def _integrated_scope_context(state):
                                                 preparations, item.interface_id)))}
                        for item in interfaces],
     }
+
+
+def _nonfocused_questions_link(composition, focus):
+    """28-T5: ``{"part": "mechanical" | "electrical", "part_id", "editable"}``
+    for the non-focused required part of a valid composition, else None."""
+    part = _subsystem_model.nonfocused_required_part(composition, focus)
+    if part is None:
+        return None
+    return {"part": "mechanical" if part.domain == "mechanical" else "electrical",
+            "part_id": part.subsystem_id,
+            "editable": domain_activation.is_activated(part.domain)}
 
 
 # --- Stage 19 / CAP-09 durable SuccessCriterion (planning metadata only) ------
@@ -9022,16 +9045,25 @@ _PQ_OK = "ok"
 _PQ_NO_PROJECT = "no_project"
 _PQ_NOT_OFFERED = "not_offered"
 _PQ_UNAVAILABLE = "unavailable"
+_PQ_PART_NOT_OFFERED = "part_not_offered"
 _PQ_STATUS_MESSAGE = {
     _PQ_NO_PROJECT: (PQ_NO_PROJECT_MESSAGE, 409),
     _PQ_NOT_OFFERED: (PQ_NOT_OFFERED_MESSAGE, 404),
     _PQ_UNAVAILABLE: (PQ_UNAVAILABLE_MESSAGE, 503),
+    _PQ_PART_NOT_OFFERED: (PQ_PART_NOT_OFFERED_MESSAGE, 404),
 }
 _PQ_ANSWER_PREFIX = "part_answer__"
 _PQ_BASE_PREFIX = "part_base__"
 _PQ_FAMILY_LABEL_KEYS = {
     "MECHANISM_COMPLETENESS": "UI_PQ_FAMILY_MECHANISM",
     "BOUNDARY_AMBIGUITY": "UI_PQ_FAMILY_BOUNDARY",
+}
+# 28-T5: the non-focused required part's family headings, per part domain.
+_PQ_REQUIRED_FAMILY_LABEL_KEYS = {
+    "mechanical": {"MECHANISM_COMPLETENESS": "UI_PQR_FAMILY_MECHANISM_MECH",
+                   "BOUNDARY_AMBIGUITY": "UI_PQR_FAMILY_BOUNDARY_MECH"},
+    "electronics_electrical": {"MECHANISM_COMPLETENESS": "UI_PQR_FAMILY_MECHANISM_ELEC",
+                               "BOUNDARY_AMBIGUITY": "UI_PQR_FAMILY_BOUNDARY_ELEC"},
 }
 _PQ_FAMILY_PRESENCE_KEYS = {
     _subsystem_model.PART_FAMILY_NONE_RECORDED: "UI_PQ_FAMILY_NONE",
@@ -9052,12 +9084,19 @@ def _durable_question_part(subsystems):
     return None
 
 
-def _part_question_context(sid):
+def _part_question_context(sid, part_id=None):
     """``(status, context)`` of the part-question page from CURRENT durable
-    truth: the offered optional part, its governed questions per family (pack
-    order, verbatim) and the inventor's current answers. Anything unreadable
-    fails closed (``_PQ_UNAVAILABLE``) — never generic questions and never
-    "nothing recorded"."""
+    truth: the offered part, its governed questions per family (pack order,
+    verbatim) and the inventor's current answers. Anything unreadable fails
+    closed (``_PQ_UNAVAILABLE``) — never generic questions and never "nothing
+    recorded".
+
+    ``part_id`` None keeps the original page: the OPTIONAL part. 28-T5: a
+    ``part_id`` names ONE question part by its exact durable identity — the
+    non-focused required part, or the optional part — resolved against the
+    durable composition AND the durable initial analysis focus read in ONE
+    snapshot; the focused required part, an unknown, stale or foreign id is
+    not offered (``_PQ_PART_NOT_OFFERED``)."""
     store = _get_store()
     try:
         exists, _owner = store.load_owner(sid)
@@ -9066,12 +9105,20 @@ def _part_question_context(sid):
     if not exists:
         return _PQ_NO_PROJECT, None
     try:
-        subsystems = tuple(store.load_project_subsystems(sid))
+        subsystems, focus = store.load_part_question_scope(sid)
+        subsystems = tuple(subsystems)
     except Exception:
         return _PQ_UNAVAILABLE, None
-    part = _durable_question_part(subsystems)
-    if part is None:
-        return _PQ_NOT_OFFERED, None
+    if part_id is None:
+        part = _durable_question_part(subsystems)
+        if part is None:
+            return _PQ_NOT_OFFERED, None
+    else:
+        part = next((p for p in _subsystem_model.question_parts(subsystems, focus)
+                     if p.subsystem_id == part_id), None)
+        if part is None:
+            return _PQ_PART_NOT_OFFERED, None
+    required = part.domain in _subsystem_model.COMPOSITION_DOMAINS
     loader = getattr(store, "load_part_answers", None)
     families = [(gap_type, get_domain_questions(part.domain, gap_type))
                 for gap_type in _subsystem_model.PART_QUESTION_GAP_TYPES]
@@ -9086,7 +9133,8 @@ def _part_question_context(sid):
     view = []
     for gap_type, questions in families:
         view.append({
-            "label_key": _PQ_FAMILY_LABEL_KEYS[gap_type],
+            "label_key": (_PQ_REQUIRED_FAMILY_LABEL_KEYS[part.domain][gap_type]
+                          if required else _PQ_FAMILY_LABEL_KEYS[gap_type]),
             "presence_key": _PQ_FAMILY_PRESENCE_KEYS[
                 _subsystem_model.part_family_presence(
                     [qid for qid, _text in questions], answers,
@@ -9100,6 +9148,11 @@ def _part_question_context(sid):
     return _PQ_OK, {
         "part": {"name": part.display_name, "function": part.function_text},
         "subsystem_id": part.subsystem_id,
+        # 28-T5: the page kind — the original optional-part page, or the
+        # non-focused required part's page (its own copy and safety view).
+        "required_domain": part.domain if required else None,
+        # The form posts back to the SAME selection it was rendered from.
+        "explicit": part_id is not None,
         "families": view,
         "current": current,
         "question_ids": question_ids,
@@ -9107,8 +9160,46 @@ def _part_question_context(sid):
         # attached to no current question (the CAP-09 stale precedent).
         "stale": any(qid not in question_ids for qid in current),
         # Stage 30 Slice 1: recording is offered only while the part is
-        # CURRENTLY part-eligible; otherwise the page is read-only.
-        "editable": domain_activation.is_part_eligible(part.domain),
+        # CURRENTLY part-eligible; otherwise the page is read-only. 28-T5: the
+        # non-focused required part is a question part while its domain is a
+        # runtime-activated domain (it always is in a valid composition today);
+        # otherwise its saved answers stay readable, read-only.
+        "editable": (domain_activation.is_activated(part.domain) if required
+                     else domain_activation.is_part_eligible(part.domain)),
+        # 28-T5: the part-local safety view (required part only).
+        "safety": (_part_safety_view(part.domain, families, current)
+                   if required else None),
+    }
+
+
+def _part_safety_view(domain, families, current):
+    """The part-local inventor-stated safety-signal view of the non-focused
+    required part, derived by the SafetySignal owner from the COMMITTED
+    answers only (``current``), each answer on its own, under the part's own
+    governed family. ``{"available": False}`` when the derivation cannot run
+    — unavailable coverage, never an apparently clean result."""
+    order = [qid for _g, qs in families for qid, _text in qs]
+    texts = {qid: text for _g, qs in families for qid, text in qs}
+    ordered = [qid for qid in order if qid in current] + sorted(
+        qid for qid in current if qid not in texts)
+    try:
+        signals = _safety_signal.derive_part_safety_signals(
+            domain, [(qid, current[qid]) for qid in ordered])
+    except Exception:
+        return {"available": False, "signals": ()}
+    prefix = _safety_signal.PART_SIGNAL_SOURCE_PREFIX
+    return {
+        "available": True,
+        "answered": bool(ordered),
+        "signals": tuple({
+            "statement": sig.statement,
+            "subject": sig.safety_subject,
+            "failure": sig.failure_condition,
+            "consequence": sig.possible_consequence,
+            # the governed question the answer belongs to, verbatim; None for
+            # an answer to a question the pack no longer asks
+            "question": texts.get(sig.source[len(prefix):]),
+        } for sig in signals),
     }
 
 
@@ -9122,11 +9213,19 @@ def _render_part_questions(sid, context, status=200, error=None, notice=None,
     response = make_response(render_template(
         "part_questions.html",
         sid=sid,
+        pq=_pq_copy_keys(None if context is None else context["required_domain"],
+                         context is None and _requested_question_part() is not None),
         part=None if context is None else context["part"],
         part_id=None if context is None else context["subsystem_id"],
         families=None if context is None else context["families"],
         stale=False if context is None else context["stale"],
         editable=False if context is None else context["editable"],
+        # 28-T5: the non-focused required part's page (None: the original
+        # optional-part page, rendered exactly as before).
+        required_domain=None if context is None else context["required_domain"],
+        safety=None if context is None else context["safety"],
+        form_part=(None if context is None or not context["explicit"]
+                   else context["subsystem_id"]),
         drafts=None if drafts is None else {
             name: raw.replace("\x00", "") for name, raw in drafts.items()},
         baselines=None if baselines is None else {
@@ -9138,6 +9237,28 @@ def _render_part_questions(sid, context, status=200, error=None, notice=None,
     ), status)
     response.headers["Cache-Control"] = "no-store"
     return response
+
+
+_PQ_OPTIONAL_COPY = {"title": "UI_PQ_TITLE", "intro": "UI_PQ_INTRO",
+                     "intro_read_only": "UI_PQ_INTRO_READ_ONLY",
+                     "safety_scope": "UI_PQ_SAFETY_SCOPE", "part": "UI_PQ_PART"}
+_PQ_GENERIC_COPY = {"title": "UI_PQR_TITLE_GENERIC", "intro": "UI_PQR_INTRO_GENERIC",
+                    "intro_read_only": "UI_PQR_INTRO_GENERIC",
+                    "safety_scope": None, "part": None}
+
+
+def _pq_copy_keys(required_domain, unresolved):
+    """28-T5: the copy keys of one part-question page — the original keys for
+    the optional part (that page is unchanged), the part's own keys for the
+    non-focused required part, and neutral keys when an explicitly named part
+    could not be offered (``unresolved``; never the control-loop wording)."""
+    if required_domain is not None:
+        sfx = "_MECH" if required_domain == "mechanical" else "_ELEC"
+        return {"title": "UI_PQR_TITLE" + sfx, "intro": "UI_PQR_INTRO" + sfx,
+                "intro_read_only": "UI_PQR_INTRO_READ_ONLY",
+                "safety_scope": "UI_PQR_SAFETY_SCOPE" + sfx,
+                "part": "UI_PQR_PART" + sfx}
+    return _PQ_GENERIC_COPY if unresolved else _PQ_OPTIONAL_COPY
 
 
 def _resolve_part_answer_write(sid, subsystem_id, delta):
@@ -9158,11 +9279,17 @@ def _resolve_part_answer_write(sid, subsystem_id, delta):
     return _S15_PREP_WRITE_SAVED
 
 
+def _requested_question_part():
+    """28-T5: the part a part-question request names by its exact durable
+    identity (``?part=``), or ``None`` for the original optional-part page."""
+    return request.args.get("part")
+
+
 @app.route("/session/<sid>/part-questions", methods=["GET"])
 def part_questions(sid):
     if not _project_authorized(sid):
         return _deny_project()
-    status, context = _part_question_context(sid)
+    status, context = _part_question_context(sid, _requested_question_part())
     if status != _PQ_OK:
         message, code = _PQ_STATUS_MESSAGE[status]
         return _render_part_questions(sid, None, status=code, notice=message)
@@ -9178,7 +9305,8 @@ def save_part_answers(sid):
     # state, root gap, progression or readiness is touched.
     if not _project_authorized(sid):
         return _deny_project()
-    status, context = _part_question_context(sid)
+    selection = _requested_question_part()
+    status, context = _part_question_context(sid, selection)
     if status != _PQ_OK:
         message, code = _PQ_STATUS_MESSAGE[status]
         return _render_part_questions(sid, None, status=code, notice=message)
@@ -9241,7 +9369,7 @@ def save_part_answers(sid):
                                           notice=PQ_UNKNOWN_MESSAGE)
         # SAVED: the requested values ARE durably present; continue.
     try:
-        status, context = _part_question_context(sid)
+        status, context = _part_question_context(sid, selection)
         if status != _PQ_OK:
             return _render_part_questions(sid, None,
                                           notice=PQ_SAVED_NOT_SHOWN_MESSAGE)

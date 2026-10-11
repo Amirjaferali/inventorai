@@ -148,6 +148,12 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if ss.input_scope == 'root_analysis_only_optional_part_excluded' %}
   <p class="ss-note" data-ss-input-scope>{{ t('UI_SS_OPTIONAL_PART_SCOPE') }}</p>
   {% endif %}
+  {#- 28-T5: on every integrated invention the block covers the main (focus)
+      analysis only; the other required part's answers are read for safety
+      signals on that part's own question page, never here. -#}
+  {% if integrated_scope is defined and integrated_scope %}
+  <p class="ss-note" data-ss-part-page-scope>{{ t('UI_SS_PART_PAGE_SCOPE') }}</p>
+  {% endif %}
   {% if ss.signals %}
   <p class="ss-note">{{ ss.advisory_note }}</p>
   {% for sig in ss.signals %}
