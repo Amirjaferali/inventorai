@@ -939,6 +939,13 @@ def test_x02_retention_document_states_withdrawal_is_not_erasure():
     assert "`project_component_revisions`" in flat
     assert "Withdrawing a component is NOT deletion, NOT erasure" in flat
     assert "every version may persist in backups" in flat
+    # PR #797 truthfulness correction: the page copy claims durable history, never that backups exist.
+    for key in ("UI_CI_WITHDRAW_HINT", "UI_CI_WITHDRAWN_NOTE"):
+        assert "durable history and may also remain in backups" in ui_text.text(key, "en")
+        assert "السجل الدائم لهذا المشروع" in ui_text.text(key, "ar")
+        assert "النسخ الاحتياطية" in ui_text.text(key, "ar") and "وقد " in ui_text.text(key, "ar")
+        assert "and backups" not in ui_text.text(key, "en")
+        assert "ونسخه الاحتياطية" not in ui_text.text(key, "ar")
     engine_src = "".join(open(os.path.join(_ROOT, "engine", n), encoding="utf-8").read()
                          for n in os.listdir(os.path.join(_ROOT, "engine")) if n.endswith(".py"))
     assert "DELETE FROM project_component" not in engine_src

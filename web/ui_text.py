@@ -1084,8 +1084,8 @@ UI_STRINGS = {
     },
     "UI_CI_WITHDRAW_SUMMARY": {"en": "Withdraw this component", "ar": "اسحب هذا المكوّن"},
     "UI_CI_WITHDRAW_HINT": {
-        "en": "Withdrawing takes this component out of your current list and out of what InventorAI shows as your invention's components. It cannot be undone here. It is not erasure: the original declaration, every correction and the withdrawal stay in this project's records and backups.",
-        "ar": "يُخرج السحب هذا المكوّن من قائمتك الحالية ومما يعرضه InventorAI بوصفه مكوّنات اختراعك. ولا يمكن التراجع عنه هنا. وهو ليس حذفًا: يبقى الإعلان الأصلي وكل تصحيح والسحب نفسه في سجلات هذا المشروع ونسخه الاحتياطية.",
+        "en": "Withdrawing takes this component out of your current list and out of what InventorAI shows as your invention's components. It cannot be undone here. It is not erasure: the original declaration, every correction and the withdrawal stay in this project's durable history and may also remain in backups.",
+        "ar": "يُخرج السحب هذا المكوّن من قائمتك الحالية ومما يعرضه InventorAI بوصفه مكوّنات اختراعك. ولا يمكن التراجع عنه هنا. وهو ليس حذفًا: يبقى الإعلان الأصلي وكل تصحيح والسحب نفسه في السجل الدائم لهذا المشروع، وقد يبقى ذلك كلّه أيضًا في النسخ الاحتياطية.",
     },
     "UI_CI_WITHDRAW_CONFIRM": {
         "en": "I want to withdraw this component",
@@ -1097,8 +1097,8 @@ UI_STRINGS = {
         "ar": "المكوّنات المسحوبة — سجل فقط، وليست حالية",
     },
     "UI_CI_WITHDRAWN_NOTE": {
-        "en": "You withdrew these components, so they are not in your current list. Withdrawal is not erasure: their records stay in this project's history and backups.",
-        "ar": "سحبتَ هذه المكوّنات، فهي ليست ضمن قائمتك الحالية. والسحب ليس حذفًا: تبقى سجلاتها في سجل هذا المشروع ونسخه الاحتياطية.",
+        "en": "You withdrew these components, so they are not in your current list. Withdrawal is not erasure: their records stay in this project's durable history and may also remain in backups.",
+        "ar": "سحبتَ هذه المكوّنات، فهي ليست ضمن قائمتك الحالية. والسحب ليس حذفًا: تبقى سجلاتها في السجل الدائم لهذا المشروع، وقد تبقى أيضًا في النسخ الاحتياطية.",
     },
     "UI_CI_WITHDRAWN_STATUS": {
         "en": "withdrawn by you · history only",
