@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ t('UI_PQ_TITLE') }}{% endblock %}
+{% block title %}{{ t(pq.title) }}{% endblock %}
 {% block head %}
 <style>
 body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
@@ -27,12 +27,16 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
     the inventor's own statements, never checked. Nothing here is a gap, a gap
     state, evidence or a readiness / progression / Integration input, and the
     analysis focus of the project is never changed. -#}
-<h1>{{ t('UI_PQ_TITLE') }}</h1>
+{#- 28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01: the same page also
+    serves the REQUIRED part outside the initial analysis focus (``pq`` holds
+    that page's own copy keys; for the optional part they are the original
+    keys, so that page renders exactly as before). -#}
+<h1>{{ t(pq.title) }}</h1>
 <div class="intro" data-pq-intro>
-  <p style="margin:0 0 6px 0">{% if editable or families is none %}{{ t('UI_PQ_INTRO') }}{% else %}{{ t('UI_PQ_INTRO_READ_ONLY') }}{% endif %}</p>
+  <p style="margin:0 0 6px 0">{% if editable or families is none %}{{ t(pq.intro) }}{% else %}{{ t(pq.intro_read_only) }}{% endif %}</p>
   <p style="margin:0 0 6px 0">{{ t('UI_PQ_NOT_ROOT') }}</p>
   {#- Stage 30 Slice 1: the Safety Signal input scope, stated plainly. -#}
-  <p style="margin:0 0 6px 0" data-pq-safety-scope>{{ t('UI_PQ_SAFETY_SCOPE') }}</p>
+  {% if pq.safety_scope %}<p style="margin:0 0 6px 0" data-pq-safety-scope>{{ t(pq.safety_scope) }}</p>{% endif %}
   <p style="margin:0">{{ t('UI_PQ_SOURCE_NOTE') }}</p>
 </div>
 
@@ -43,7 +47,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 {#- families is None when durable truth or the governed questions could not be
     offered (the notice says why); that never reads as "nothing recorded". -#}
 {% if families is not none %}
-<p class="part" data-pq-part><strong>{{ t('UI_PQ_PART') }}</strong> <bdi dir="auto">{{ part.name }}</bdi> &mdash; {{ t('UI_S15_SCOPE_FUNCTION') }} <bdi dir="auto">{{ part.function }}</bdi></p>
+<p class="part" data-pq-part><strong>{{ t(pq.part) }}</strong> <bdi dir="auto">{{ part.name }}</bdi> &mdash; {{ t('UI_S15_SCOPE_FUNCTION') }} <bdi dir="auto">{{ part.function }}</bdi></p>
 {% if stale %}<div class="notice" data-pq-stale>{{ t('UI_PQ_STALE') }}</div>{% endif %}
 {% if not editable %}
 {#- Stage 30 Slice 1: the part is saved but its questions are not currently
@@ -68,7 +72,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 {% endfor %}
 <p class="guidance" data-pq-presence-note>{{ t('UI_PQ_PRESENCE_NOTE') }}</p>
 {% else %}
-<form method="POST" action="{{ url_for('save_part_answers', sid=sid) }}">
+<form method="POST" action="{% if form_part %}{{ url_for('save_part_answers', sid=sid, part=form_part) }}{% else %}{{ url_for('save_part_answers', sid=sid) }}{% endif %}">
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <input type="hidden" name="part_id" value="{{ part_id }}">
   {% for fam in families %}
@@ -90,6 +94,33 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   <p class="guidance" data-pq-presence-note>{{ t('UI_PQ_PRESENCE_NOTE') }}</p>
   <button type="submit">{{ t('UI_PQ_SAVE') }}</button>
 </form>
+{% endif %}
+{% if safety is not none %}
+{#- 28-T5: the part-local inventor-stated safety signals of the required part
+    outside the focus — derived by the SafetySignal owner from the COMMITTED
+    answers only, each answer on its own, under the part's governed family.
+    Unavailable coverage never reads as a clean result. -#}
+<section class="fam" data-pq-safety aria-labelledby="pq-safety-title">
+  <h2 id="pq-safety-title">{{ t('UI_PQR_SS_TITLE') }}</h2>
+  {% if not safety.available %}
+  <p class="guidance" role="status" data-pq-safety-unavailable>{{ t('UI_PQR_SS_UNAVAILABLE') }}</p>
+  {% elif safety.signals %}
+  <p class="guidance" data-pq-safety-advisory>{{ t('UI_PQR_SS_ADVISORY') }}</p>
+  {% for sig in safety.signals %}
+  <div data-pq-safety-signal style="margin:10px 0 0 0">
+    <p style="font-size:13px;font-weight:bold;margin:0 0 2px 0">{{ t('UI_PQR_SS_LABEL') }}</p>
+    <p class="answer" dir="auto" data-pq-safety-statement>&ldquo;{{ sig.statement }}&rdquo;</p>
+    <p class="guidance">{{ t('UI_B_DELIV_014') }} <bdi dir="ltr" lang="en">{{ sig.subject }}</bdi> &middot; {{ t('UI_B_DELIV_015') }} <bdi dir="ltr" lang="en">{{ sig.failure }}</bdi> &middot; {{ t('UI_B_DELIV_016') }} <bdi dir="ltr" lang="en">{{ sig.consequence }}</bdi></p>
+    <p class="guidance" data-pq-safety-question>{{ t('UI_PQR_SS_FROM') }} {% if sig.question %}<span dir="ltr" lang="en">{{ sig.question }}</span>{% else %}{{ t('UI_PQR_SS_FROM_STALE') }}{% endif %}</p>
+  </div>
+  {% endfor %}
+  {% elif safety.answered %}
+  <p class="guidance" data-pq-safety-none>{{ t('UI_PQR_SS_NONE') }}</p>
+  {% else %}
+  <p class="guidance" data-pq-safety-nothing>{{ t('UI_PQR_SS_NOTHING_SAVED') }}</p>
+  {% endif %}
+  <p class="guidance" data-pq-safety-caution>{{ t('UI_PQR_SS_CAUTION') }}</p>
+</section>
 {% endif %}
 {% endif %}
 

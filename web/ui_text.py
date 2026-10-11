@@ -330,6 +330,9 @@ _MESSAGE_KEYS = {
     ("Recording, editing or clearing answers about this part is not available "
      "now. Your saved answers are shown below, unchanged. Nothing was changed."):
         "UI_PQ_MSG_READ_ONLY",
+    # 28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01 (web/app.py part pages).
+    ("Questions are not offered for this part of this project. Nothing was "
+     "changed."): "UI_PQ_MSG_PART_NOT_OFFERED",
     # Stage 15 Slice 4 (web/app.py record_interface_observation).
     ("Your observation could not be saved just now. Nothing was changed."):
         "UI_S15_OBS_MSG_NOT_SAVED",
@@ -835,6 +838,102 @@ UI_STRINGS = {
     "UI_PQ_MSG_UNKNOWN": {
         "en": "We could not confirm whether your answers were saved. Reload this page to see what your project currently holds before entering them again.",
         "ar": "لم نتمكن من التأكد مما إذا كانت إجاباتك قد حُفظت. أعد تحميل الصفحة لترى ما يحتويه مشروعك حاليًا قبل إدخالها مجددًا.",
+    },
+    # --- 28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01 — questions about the
+    # required part OUTSIDE the initial analysis focus, and its part-local
+    # inventor-stated safety signals. Plain user-facing copy only: the governed
+    # question text itself is the pack text, verbatim, never in this catalogue.
+    "UI_PQ_MSG_PART_NOT_OFFERED": {
+        "en": "Questions are not offered for this part of this project. Nothing was changed.",
+        "ar": "لا تُعرض أسئلة لهذا الجزء من هذا المشروع. لم يتغيّر شيء.",
+    },
+    "UI_PQR_TITLE_GENERIC": {"en": "Questions about a part of your invention",
+                             "ar": "أسئلة عن جزء من اختراعك"},
+    "UI_PQR_INTRO_GENERIC": {
+        "en": "Questions about a part of your invention are shown on this page only when they are offered for that part.",
+        "ar": "تُعرض على هذه الصفحة الأسئلة الخاصة بجزء من اختراعك فقط عندما تكون متاحة لذلك الجزء.",
+    },
+    "UI_PQR_TITLE_MECH": {"en": "Questions about the mechanical part",
+                          "ar": "أسئلة عن الجزء الميكانيكي"},
+    "UI_PQR_TITLE_ELEC": {"en": "Questions about the electrical / electronic part",
+                          "ar": "أسئلة عن الجزء الكهربائي / الإلكتروني"},
+    "UI_PQR_INTRO_MECH": {
+        "en": "These questions are about the mechanical part of your invention — the part outside the project's initial analysis focus. Answer in your own words; you can answer some now and the rest later, and change or clear an answer at any time. Your answers are saved exactly as you write them and are not checked.",
+        "ar": "تتعلق هذه الأسئلة بالجزء الميكانيكي من اختراعك، أي الجزء الواقع خارج محور التحليل الأولي للمشروع. أجب بكلماتك؛ يمكنك الإجابة عن بعضها الآن والبقية لاحقًا، وتعديل أي إجابة أو مسحها في أي وقت. تُحفظ إجاباتك كما تكتبها تمامًا، ولا تُفحص.",
+    },
+    "UI_PQR_INTRO_ELEC": {
+        "en": "These questions are about the electrical / electronic part of your invention — the part outside the project's initial analysis focus. Answer in your own words; you can answer some now and the rest later, and change or clear an answer at any time. Your answers are saved exactly as you write them and are not checked.",
+        "ar": "تتعلق هذه الأسئلة بالجزء الكهربائي / الإلكتروني من اختراعك، أي الجزء الواقع خارج محور التحليل الأولي للمشروع. أجب بكلماتك؛ يمكنك الإجابة عن بعضها الآن والبقية لاحقًا، وتعديل أي إجابة أو مسحها في أي وقت. تُحفظ إجاباتك كما تكتبها تمامًا، ولا تُفحص.",
+    },
+    "UI_PQR_INTRO_READ_ONLY": {
+        "en": "These are the answers you recorded about this part of your invention, shown exactly as you wrote them. They are your own statements and have not been checked.",
+        "ar": "هذه هي الإجابات التي سجّلتها عن هذا الجزء من اختراعك، معروضةً كما كتبتها تمامًا. وهي أقوالك أنت ولم تُفحص.",
+    },
+    "UI_PQR_PART_MECH": {"en": "Mechanical part:", "ar": "الجزء الميكانيكي:"},
+    "UI_PQR_PART_ELEC": {"en": "Electrical / electronic part:",
+                         "ar": "الجزء الكهربائي / الإلكتروني:"},
+    "UI_PQR_FAMILY_MECHANISM_MECH": {
+        "en": "How the mechanical part works (mechanism completeness of this part)",
+        "ar": "كيف يعمل الجزء الميكانيكي (اكتمال آلية هذا الجزء — Mechanism Completeness)",
+    },
+    "UI_PQR_FAMILY_BOUNDARY_MECH": {
+        "en": "What the mechanical part covers (boundary of this part)",
+        "ar": "ما الذي يشمله الجزء الميكانيكي (حدود هذا الجزء — Boundary Ambiguity)",
+    },
+    "UI_PQR_FAMILY_MECHANISM_ELEC": {
+        "en": "How the electrical / electronic part works (mechanism completeness of this part)",
+        "ar": "كيف يعمل الجزء الكهربائي / الإلكتروني (اكتمال آلية هذا الجزء — Mechanism Completeness)",
+    },
+    "UI_PQR_FAMILY_BOUNDARY_ELEC": {
+        "en": "What the electrical / electronic part covers (boundary of this part)",
+        "ar": "ما الذي يشمله الجزء الكهربائي / الإلكتروني (حدود هذا الجزء — Boundary Ambiguity)",
+    },
+    "UI_PQR_SAFETY_SCOPE_MECH": {
+        "en": "InventorAI reads each of your saved answers about this part on its own for inventor-stated safety signals, using its governed mechanical safety cues. These signals are shown only on this page: the report and the PDF cover the main analysis only. If no signal is shown, that does not mean this part has been reviewed for safety or is safe.",
+        "ar": "يقرأ InventorAI كل إجابة من إجاباتك المحفوظة عن هذا الجزء على حدة بحثًا عن إشارات السلامة كما ذكرها المخترِع، مستخدمًا مؤشرات السلامة الميكانيكية المعتمدة لديه. تظهر هذه الإشارات في هذه الصفحة فقط، أما التقرير وملف PDF فيغطيان التحليل الرئيسي فقط. وإذا لم تظهر أي إشارة، فهذا لا يعني أن هذا الجزء قد رُوجع من حيث السلامة أو أنه آمن.",
+    },
+    "UI_PQR_SAFETY_SCOPE_ELEC": {
+        "en": "InventorAI reads each of your saved answers about this part on its own for inventor-stated safety signals, using its governed electrical / electronic safety cues. These signals are shown only on this page: the report and the PDF cover the main analysis only. If no signal is shown, that does not mean this part has been reviewed for safety or is safe.",
+        "ar": "يقرأ InventorAI كل إجابة من إجاباتك المحفوظة عن هذا الجزء على حدة بحثًا عن إشارات السلامة كما ذكرها المخترِع، مستخدمًا مؤشرات السلامة الكهربائية / الإلكترونية المعتمدة لديه. تظهر هذه الإشارات في هذه الصفحة فقط، أما التقرير وملف PDF فيغطيان التحليل الرئيسي فقط. وإذا لم تظهر أي إشارة، فهذا لا يعني أن هذا الجزء قد رُوجع من حيث السلامة أو أنه آمن.",
+    },
+    "UI_PQR_SS_TITLE": {
+        "en": "Inventor-stated safety signals in your saved answers about this part",
+        "ar": "إشارات السلامة كما ذكرها المخترِع في إجاباتك المحفوظة عن هذا الجزء",
+    },
+    "UI_PQR_SS_ADVISORY": {
+        "en": "Each signal below comes from one of your saved answers about this part, as you wrote it. It is advisory only and requires independent validation.",
+        "ar": "تأتي كل إشارة أدناه من إحدى إجاباتك المحفوظة عن هذا الجزء، كما كتبتها. وهي استرشادية فقط وتتطلب تحققًا مستقلًا.",
+    },
+    "UI_PQR_SS_LABEL": {
+        "en": "Potential safety-critical assumption (inventor-stated)",
+        "ar": "افتراض قد يكون حرجًا للسلامة (كما ذكره المخترِع)",
+    },
+    "UI_PQR_SS_FROM": {"en": "From your answer to:", "ar": "من إجابتك عن:"},
+    "UI_PQR_SS_FROM_STALE": {
+        "en": "a question that is no longer asked for this part",
+        "ar": "سؤال لم يعد يُطرح لهذا الجزء",
+    },
+    "UI_PQR_SS_NONE": {
+        "en": "No inventor-stated safety signal was found in your saved answers about this part. This is not a determination that the part is safe: the check is conservative and only finds a statement that names a failure, a safety-relevant subject and a consequence together.",
+        "ar": "لم يُعثر على أي إشارة سلامة كما ذكرها المخترِع في إجاباتك المحفوظة عن هذا الجزء. وهذا ليس حكمًا بأن الجزء آمن: فالفحص متحفّظ ولا يجد إلا عبارة تذكر معًا عطلًا وموضوعًا متصلًا بالسلامة وعاقبةً.",
+    },
+    "UI_PQR_SS_NOTHING_SAVED": {
+        "en": "No answer about this part is saved yet, so there is nothing to check for safety signals.",
+        "ar": "لم تُحفظ أي إجابة عن هذا الجزء بعد، لذا لا يوجد ما يُفحص بحثًا عن إشارات السلامة.",
+    },
+    "UI_PQR_SS_UNAVAILABLE": {
+        "en": "InventorAI could not check your saved answers about this part for safety signals just now. This is not a result: it says nothing about this part's safety. Reload this page to try again.",
+        "ar": "تعذّر على InventorAI الآن فحص إجاباتك المحفوظة عن هذا الجزء بحثًا عن إشارات السلامة. وهذا ليس نتيجة: فهو لا يدل على شيء بشأن سلامة هذا الجزء. أعد تحميل الصفحة للمحاولة مجددًا.",
+    },
+    "UI_PQR_SS_CAUTION": {
+        "en": "Inventor-stated safety signals require independent validation. They are not a determination that the part or the invention is safe or unsafe, are not a complete list of hazards, recommend no mitigation, and are not certification, compliance or engineering approval.",
+        "ar": "تتطلب إشارات السلامة كما ذكرها المخترِع تحققًا مستقلًا. وهي ليست حكمًا بأن الجزء أو الاختراع آمن أو غير آمن، وليست قائمة كاملة بالمخاطر، ولا توصي بأي إجراء للحدّ منها، وليست شهادة أو امتثالًا أو اعتمادًا هندسيًا.",
+    },
+    # Report / PDF safety block: shown on every integrated invention — the block
+    # covers the main (focus) analysis only.
+    "UI_SS_PART_PAGE_SCOPE": {
+        "en": "These safety signals cover only the main analysis of the initial analysis focus. Your answers about the other required part of the invention are checked for inventor-stated safety signals only on that part's question page; they are not read here.",
+        "ar": "تغطي إشارات السلامة هذه التحليل الرئيسي لمحور التحليل الأولي فقط. أما إجاباتك عن الجزء المطلوب الآخر من الاختراع فتُفحص بحثًا عن إشارات السلامة كما ذكرها المخترِع في صفحة أسئلة ذلك الجزء فقط، ولا تُقرأ هنا.",
     },
     # --- COMPONENT-INVENTORY-DECLARE-LIST-01 — the inventor's declared components
     # Plain user-facing language. The inventor's own component names, function

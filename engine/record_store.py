@@ -532,6 +532,7 @@ class RecordStore(Protocol):
     # Stage 28 Optional Part Slice 2: part answers (current value; see the
     # subsystem_part_answers note).
     def load_part_answers(self, project_id: str, subsystem_id: str) -> tuple: ...
+    def load_part_question_scope(self, project_id: str) -> tuple: ...
     def apply_part_answer_delta(self, project_id: str, subsystem_id: str,
                                 delta) -> None: ...
     # CAP-09 Result Event Slice 1 (append-only; see the prototype_test_results note).
@@ -2472,10 +2473,27 @@ class SqliteRecordStore:
                      merged.acceptance_criterion, merged.evidence_needed))
 
     # --- Stage 28 Optional Part Slice 2: part answers (current value) ---------
-    def _validated_part_answers(self, project_id, subsystems):
+    # 28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01: a question part is the
+    # optional part OR the required part that is not the project's DURABLE
+    # initial analysis focus (``projects.confirmed_domain``, immutable); the
+    # focus is read with the composition inside the same snapshot / write
+    # transaction, so a part's eligibility is always decided against durable
+    # truth, never against a request value.
+    def _project_focus(self, project_id):
+        """The project's durable scalar root (initial analysis focus), read
+        inside the caller's snapshot / transaction. No project ->
+        ``ProjectNotFound``."""
+        row = self._conn.execute(
+            "SELECT confirmed_domain FROM projects WHERE project_id = ?",
+            (project_id,)).fetchone()
+        if row is None:
+            raise ProjectNotFound(project_id)
+        return row[0]
+
+    def _validated_part_answers(self, project_id, subsystems, focus=None):
         """This project's durable part-answer rows validated WHOLE against its
-        durable composition (exact optional-part id; question id of that
-        part's own pack); ``PartAnswersCorrupt`` on anything malformed,
+        durable composition and focus (exact question-part id; question id of
+        that part's own pack); ``PartAnswersCorrupt`` on anything malformed,
         duplicated or orphaned (nothing partial, nothing remapped)."""
         rows = self._conn.execute(
             "SELECT subsystem_id, question_id, answer_text FROM "
@@ -2486,17 +2504,33 @@ class SqliteRecordStore:
         items = tuple(PartAnswer(subsystem_id=row[0], question_id=row[1],
                                  answer_text=row[2]) for row in rows)
         try:
-            return validate_part_answers(items, subsystems)
+            return validate_part_answers(items, subsystems, focus)
         except PartAnswerError as exc:
             raise PartAnswersCorrupt(str(exc)) from None
 
+    def load_part_question_scope(self, project_id: str) -> tuple:
+        """``(subsystems, focus)``: this project's durable composition
+        (validated WHOLE, ``ProjectSubsystemsCorrupt``) and its durable
+        initial analysis focus, read inside ONE consistent read snapshot.
+        No project -> ``ProjectNotFound``. IR-01: a connection left UNSAFE by
+        a failed write refuses BEFORE any SELECT. Read-only; project-scoped;
+        logs nothing."""
+        if self._connection_unsafe:
+            raise RecordStoreConnectionUnsafe(
+                "connection is inside an unresolved transaction; its reads are "
+                "not committed durable state")
+        with self.read_snapshot():
+            subsystems = self.load_project_subsystems(project_id)
+            focus = self._project_focus(project_id)
+        return subsystems, focus
+
     def load_part_answers(self, project_id: str, subsystem_id: str) -> tuple:
-        """The inventor's current answers for exactly ONE optional part of
+        """The inventor's current answers for exactly ONE question part of
         this project (``()`` when none is recorded), read with the durable
-        composition inside ONE snapshot; the WHOLE project's answer
+        composition and focus inside ONE snapshot; the WHOLE project's answer
         collection is validated (``PartAnswersCorrupt``; nothing partial). An
-        id that is not an optional part of THIS project raises
-        ``PartAnswerRejected``. No project -> ``ProjectNotFound``. IR-01: a
+        id that is not a question part of THIS project (the optional part or
+        the non-focused required part) raises ``PartAnswerRejected``. No project -> ``ProjectNotFound``. IR-01: a
         connection inside an unresolved transaction refuses
         (``RecordStoreConnectionUnsafe``). Read-only; project-scoped; logs
         nothing."""
@@ -2504,12 +2538,13 @@ class SqliteRecordStore:
         with self.read_snapshot():
             self._require_project(project_id)
             subsystems = self.load_project_subsystems(project_id)
-            answers = self._validated_part_answers(project_id, subsystems)
+            focus = self._project_focus(project_id)
+            answers = self._validated_part_answers(project_id, subsystems, focus)
             try:
-                part_question_owner(subsystems, subsystem_id)
+                part_question_owner(subsystems, subsystem_id, focus)
             except PartAnswerError:
                 raise PartAnswerRejected(
-                    "the id names no optional part of this project") from None
+                    "the id names no question part of this project") from None
         return tuple(a for a in answers if a.subsystem_id == subsystem_id)
 
     def apply_part_answer_delta(self, project_id: str, subsystem_id: str,
@@ -2524,8 +2559,9 @@ class SqliteRecordStore:
         (``PartAnswerRejected``, nothing written). Then ONE ``BEGIN
         IMMEDIATE`` transaction, against DURABLE truth: the project exists
         (``ProjectNotFound``); its composition and existing answers validate
-        (the corrupt errors); ``subsystem_id`` is an OPTIONAL part of THIS
-        project's durable composition by exact identity and every question id
+        (the corrupt errors); ``subsystem_id`` is a question part of THIS
+        project's durable composition and durable focus (the optional part or
+        the non-focused required part) by exact identity and every question id
         belongs to that part's own pack (``PartAnswerRejected`` otherwise);
         only then is each answer upserted or deleted. Any failure before
         COMMIT rolls the ENTIRE delta back: no partial save. Writes nothing
@@ -2549,14 +2585,15 @@ class SqliteRecordStore:
         with self._write():
             self._require_project(project_id)
             subsystems = self.load_project_subsystems(project_id)
-            self._validated_part_answers(project_id, subsystems)
+            focus = self._project_focus(project_id)
+            self._validated_part_answers(project_id, subsystems, focus)
             try:
-                part = part_question_owner(subsystems, subsystem_id)
+                part = part_question_owner(subsystems, subsystem_id, focus)
                 for question_id, _text in items:
                     check_part_answer_target(part, question_id)
             except PartAnswerError:
                 raise PartAnswerRejected(
-                    "the change names no question of an optional part of "
+                    "the change names no question of a question part of "
                     "this project") from None
             for question_id, text in items:
                 if text is None:

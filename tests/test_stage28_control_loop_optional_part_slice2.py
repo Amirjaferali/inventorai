@@ -456,7 +456,11 @@ def test_two_part_projects_get_no_part_questions_even_when_eligible(client, part
     assert r.status_code == 404
     assert ui_text.text("UI_PQ_MSG_NOT_OFFERED", "en") in _html.unescape(r.get_data(as_text=True))
     session = client.get("/session/%s" % sid).get_data(as_text=True)
-    assert "data-scope-part-questions" not in session and "part-questions" not in session
+    # AMENDED at 28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01: a two-part project now links ONLY the
+    # non-focused REQUIRED part's questions (explicit ``?part=`` identity); no optional-part link exists.
+    assert "data-scope-part-questions" not in session
+    assert session.count("/part-questions") == 1 and "/part-questions?part=" in session
+    assert "data-scope-required-part-questions" in session
     assert client.post("/session/%s/part-questions" % sid, data={"part_id": "x"}).status_code == 404
     assert _answers_rows(sid) == []
 

@@ -498,3 +498,66 @@ def derive_inventor_stated_safety_signals(state) -> Tuple[SafetySignal, ...]:
         ))
         n += 1
     return tuple(signals)
+
+
+# --- 28-T5-NONFOCUSED-REQUIRED-PART-QUESTIONS-SAFETY-01 -----------------------------
+# Part-local advisory derivation for the inventor's own saved answers about the
+# REQUIRED part of an integrated invention that is NOT the initial analysis focus.
+# Same owner, same governed cue families, same conservative machinery as the root
+# derivation above (sentence-bounded matching, negation / attribution guards,
+# same-source adjacent condition→consequence pairing only, exact-duplicate
+# suppression) — applied to each saved answer ON ITS OWN, so two separate answers
+# are never combined into one synthetic hazard. The caller passes plain committed
+# texts; this owner reads no store, project or state. The family is the PART's own
+# trusted domain family and its domain context is satisfied by that domain owning
+# the family, exactly as a root session's domain is. There is NO legacy default:
+# a missing or family-less domain raises ``ValueError`` and the caller must show
+# unavailable coverage — never an apparently clean result. The root derivation
+# (``derive_inventor_stated_safety_signals``) and its inputs are unchanged.
+PART_SIGNAL_SOURCE_PREFIX = "part_question:"
+
+
+def derive_part_safety_signals(part_domain, statements) -> Tuple[SafetySignal, ...]:
+    """Return the immutable tuple of inventor-stated safety signals found in
+    ``statements`` — the ordered ``(question_id, text)`` pairs of ONE composed
+    part's committed answers — under ``part_domain``'s governed cue family.
+
+    Pure, deterministic, read-only. Each answer is evaluated alone (pairing
+    never crosses answers). An empty tuple is NOT a statement that the part is
+    safe, unsafe, risk-free or verified. Raises ``ValueError`` when
+    ``part_domain`` owns no governed family or a statement is malformed.
+    """
+    family = (_DOMAIN_CUE_FAMILIES.get(part_domain)
+              if isinstance(part_domain, str) else None)
+    if family is None:
+        raise ValueError("no governed safety cue family for this part domain")
+    signals = []
+    n = 1
+    seen = set()  # exact-duplicate statements: the first answer wins
+    for question_id, text in statements:
+        if not isinstance(question_id, str) or not question_id \
+                or not isinstance(text, str):
+            raise ValueError("malformed part statement")
+        key = _dedup_key(text)
+        if key in seen:
+            continue
+        seen.add(key)
+        hit = _detect(text, part_domain, family)
+        if hit is None:
+            continue
+        subject, failure, consequence, domain_context = hit
+        signals.append(SafetySignal(
+            signal_id="PSIG-%03d" % n,
+            source=PART_SIGNAL_SOURCE_PREFIX + question_id,
+            provenance=PROVENANCE_INVENTOR_STATED,
+            safety_subject=subject,
+            failure_condition=failure,
+            possible_consequence=consequence,
+            domain_context=domain_context,
+            validation_status=VALIDATION_REQUIRES_INDEPENDENT,
+            display_label=_DISPLAY_LABEL,
+            caution_text=_CAUTION_TEXT,
+            statement=_excerpt(text),
+        ))
+        n += 1
+    return tuple(signals)
