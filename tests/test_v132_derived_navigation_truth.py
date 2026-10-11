@@ -5033,6 +5033,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (merge-effective delivery record): it follows the
            # Parts, Components & Interactions view in the chain
            r"the only product increment authorized after it was STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 \(below\), "
+           r"delivered \(PR #\d+\); "
+           # ADVANCED at 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 (merge-effective delivery record): it follows the
+           # Stage 35 component export correction in the chain
+           r"the only product increment authorized after it was 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 \(below\), "
            r"delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
@@ -5297,7 +5301,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # increment is authorized after it; the non-focused part report increment precedes it
                # ADVANCED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (merge-effective delivery record): no product
                # increment is authorized after it; the Parts, Components & Interactions view precedes it
-               r"No product increment is authorized after STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 \(delivered: PR #\d+; "
+               # ADVANCED at 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 (merge-effective delivery record): no product
+               # increment is authorized after it; the Stage 35 component export correction precedes it
+               r"No product increment is authorized after 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 \(delivered: PR #\d+; "
+               r"[^)]*measurement accuracy versus resolution and displayed digits[^)]*explanation only[^)]*no Stage "
+               r"entered, completed or reopened; effective only on the verified merge of PR #\d+\) or after the preceding "
+               r"STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 \(delivered: PR #\d+; "
                r"[^)]*disclosure export v2[^)]*other fields and disclaimers unchanged; no Stage entered, "
                r"completed or reopened; effective only on the verified merge of PR #\d+\) or after the preceding "
                r"STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 \(delivered: PR #\d+; "
@@ -5805,7 +5814,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # ADVANCED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (merge-effective delivery record): it follows the
             # Parts, Components & Interactions view in the chain
             "— is DELIVERED (PR #N); the only increment authorized after it — STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 "
-            "(above) — is DELIVERED (PR #N); no subsequent increment has been authorized."), head)
+            # ADVANCED at 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 (merge-effective delivery record): it follows the
+            # Stage 35 component export correction in the chain
+            "(above) — is DELIVERED (PR #N); the only increment authorized after it — "
+            "28-T1-ACCURACY-RESOLUTION-REFERENCE-01 (above) — is DELIVERED (PR #N); no subsequent increment has been "
+            "authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
     # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
     # ROTATED at the Stage 27 closure: Stage 27 COMPLETE for its current bounded scope leads
@@ -6120,7 +6133,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # non-focused part report increment precedes it
            # ADVANCED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (merge-effective delivery record): ... after it; the
            # Parts, Components & Interactions view precedes it
-           r"No product increment is authorized after STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 \(delivered; PR #\d+; "
+           # ADVANCED at 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 (merge-effective delivery record): ... after it; the
+           # Stage 35 component export correction precedes it
+           r"No product increment is authorized after 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 \(delivered; PR #\d+; "
+           r"[^)]*accuracy versus resolution and displayed digits; explanation only, NIST attributed; no Stage change; "
+           r"effective only on merge\) or after the preceding STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 \(delivered; PR #\d+; "
            r"[^)]*declared components in the disclosure export v2, unvalidated; no Stage change; "
            r"effective only on merge\) or after the preceding STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 \(delivered; PR #\d+; "
            r"[^)]*read-only Parts, Components & Interactions view under Stage 15, unvalidated; no Stage change; "

@@ -844,8 +844,12 @@ def test_s2_each_limit_traces_to_the_governed_boundary_or_the_owner_boundary():
         assert phrase in ba_limit, phrase
 
 
+# 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 appended a second Electronics MECHANISM_COMPLETENESS
+# group of the same kind (pinned by tests/test_cap01_accuracy_resolution_reference.py); its
+# entries and its group are excluded exactly as the sensing group's are.
 _SENSING_ENTRY_RE = re.compile(
-    r'    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_SENSING_FUNDAMENTALS_[A-Z0-9_]+": \{'
+    r'    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_'
+    r'(?:SENSING|ACCURACY_RESOLUTION)_FUNDAMENTALS_[A-Z0-9_]+": \{'
     r'.*?\n    \},\n', re.S)
 
 
@@ -854,7 +858,8 @@ def _non_sensing_fundamentals(html):
     MECHANISM_COMPLETENESS group, which binds to that exact current gap only (pinned by
     tests/test_cap01_sensing_value_threshold_reference.py)."""
     return [g for g in re.findall(r'data-cap01-fundamentals="([^"]+)"', html)
-            if g != "sensing-value-threshold-reference-v1"]
+            if g not in ("sensing-value-threshold-reference-v1",
+                         "measurement-accuracy-resolution-reference-v1")]
 
 
 def test_s3_the_d13_electronics_tkp_is_not_a_mechanical_source():

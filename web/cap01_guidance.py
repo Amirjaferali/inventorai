@@ -310,6 +310,11 @@ CAP01_GAP_FUNDAMENTALS = {
 # (``domains/electronics_electrical/domain.json``; provenance
 # electronics_electrical:PR012–PR013) — reporting a sensed quantity's value
 # versus indicating whether it is above a threshold. Same rules as above.
+# 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 appends ONE further prose-only group to
+# that same context, after the sensing group: measurement_accuracy_resolution_reference_v1
+# (``domains/electronics_electrical/domain.json``; provenance
+# electronics_electrical:PR014–PR015) — accuracy, resolution and displayed digits
+# as distinct notions. Same rules as above.
 CAP01_GAP_FUNDAMENTALS_EXTENSIONS = {
     ("electronics_electrical", "PHYSICAL_FEASIBILITY"): (
         ("electrical_energy_time_reference_v1",
@@ -320,6 +325,9 @@ CAP01_GAP_FUNDAMENTALS_EXTENSIONS = {
         ("sensing_value_threshold_reference_v1",
          ("sensed_value_versus_threshold_indication",),
          "SENSING_FUNDAMENTALS_"),
+        ("measurement_accuracy_resolution_reference_v1",
+         ("measurement_accuracy_resolution_distinction",),
+         "ACCURACY_RESOLUTION_FUNDAMENTALS_"),
     ),
 }
 
@@ -344,7 +352,8 @@ _FUNDAMENTALS_ITEM_PARTS = {
 # other group keeps requiring all four parts above and still fails closed when
 # any of them is missing. A prose-only item carries a title and ONE text part,
 # both required (all-or-nothing on the group, exactly as above).
-_FUNDAMENTALS_PROSE_ONLY_GROUPS = frozenset({"sensing_value_threshold_reference_v1"})
+_FUNDAMENTALS_PROSE_ONLY_GROUPS = frozenset({"sensing_value_threshold_reference_v1",
+                                             "measurement_accuracy_resolution_reference_v1"})
 _FUNDAMENTALS_PROSE_ITEM_PARTS = {
     "title_key": "TITLE",
     "text_key":  "TEXT",

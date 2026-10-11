@@ -144,18 +144,25 @@ def _texts(lang):
     # (tests/test_cap01_electrical_energy_time_reference.py); this slice's strings
     # are everything else under the context prefix, unchanged.
     # 28-T1-SENSING-VALUE-THRESHOLD-01 likewise owns its own namespace under the
-    # MECHANISM_COMPLETENESS context (tests/test_cap01_sensing_value_threshold_reference.py).
+    # MECHANISM_COMPLETENESS context (tests/test_cap01_sensing_value_threshold_reference.py),
+    # and so does 28-T1-ACCURACY-RESOLUTION-REFERENCE-01
+    # (tests/test_cap01_accuracy_resolution_reference.py).
     return {k[len(PREFIX):]: ui_text.UI_STRINGS[k][lang]
             for k in sorted(ui_text.UI_STRINGS) if k.startswith(PREFIX)
             and not k.startswith(PREFIX + PHYSICAL_FEASIBILITY + "_ENERGY_TIME_FUNDAMENTALS_")
-            and not k.startswith(PREFIX + MECHANISM_COMPLETENESS + "_SENSING_FUNDAMENTALS_")}
+            and not k.startswith(PREFIX + MECHANISM_COMPLETENESS + "_SENSING_FUNDAMENTALS_")
+            and not k.startswith(PREFIX + MECHANISM_COMPLETENESS + "_ACCURACY_RESOLUTION_FUNDAMENTALS_")}
 
 
 # 28-T1-SENSING-VALUE-THRESHOLD-01: the ONE separately bound prose-only group of the
 # MECHANISM_COMPLETENESS context. The absence checks below concern the
 # PHYSICAL_FEASIBILITY reference fundamentals; that group is excluded from them.
+# 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 adds a second prose-only group to that same
+# context (pinned by tests/test_cap01_accuracy_resolution_reference.py); it is excluded
+# from them likewise.
 _SENSING_FUND_RE = re.compile(
-    r'<div class="cap01-fundamentals" data-cap01-fundamentals="sensing-value-threshold-reference-v1">'
+    r'<div class="cap01-fundamentals" data-cap01-fundamentals="'
+    r'(?:sensing-value-threshold-reference-v1|measurement-accuracy-resolution-reference-v1)">'
     r'.*?\n      </div>', re.S)
 
 
@@ -401,9 +408,10 @@ def test_e16_four_new_provenance_records_with_the_exact_authorized_identities():
     assert all(r in recs for r in NEW_RECORDS)
     ids = [r for r in recs if r.startswith("electronics_electrical:")]
     assert ids[:7] == ["electronics_electrical:PR00%d" % n for n in range(1, 8)]
-    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 appends exactly four further records, and
-    # 28-T1-SENSING-VALUE-THRESHOLD-01 two more (PR012–PR013).
-    assert ids[7:] == ["electronics_electrical:PR%03d" % n for n in range(8, 14)]
+    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 appends exactly four further records,
+    # 28-T1-SENSING-VALUE-THRESHOLD-01 two more (PR012–PR013) and
+    # 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 two more (PR014–PR015).
+    assert ids[7:] == ["electronics_electrical:PR%03d" % n for n in range(8, 16)]
     doe, nist, doe_pol, nist_pol = (recs[r] for r in NEW_RECORDS)
     assert doe["standard_number"] == "DOE-HDBK-1011/1-92" and doe["source_type"] == "government_reference_publication"
     assert "Electrical Science" in doe["source_name"] and "Volume 1 of 4" in doe["source_name"]
@@ -475,11 +483,13 @@ def test_e18_existing_provenance_pr001_to_pr003_are_unchanged():
 
 def test_e19_the_pack_group_declares_the_three_claims_with_exact_source_and_policy_linkage():
     pack, recs = _pack(), _provenance()
-    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 appends one further group AFTER this one, and
-    # 28-T1-SENSING-VALUE-THRESHOLD-01 one more (MECHANISM_COMPLETENESS).
+    # ELECTRICAL-ENERGY-TIME-REFERENCE-01 appends one further group AFTER this one,
+    # 28-T1-SENSING-VALUE-THRESHOLD-01 one more and 28-T1-ACCURACY-RESOLUTION-REFERENCE-01
+    # one more (both MECHANISM_COMPLETENESS).
     groups = pack["reference_fundamentals"]
     assert [g["group_id"] for g in groups] == [FUND_GROUP, "electrical_energy_time_reference_v1",
-                                               "sensing_value_threshold_reference_v1"]
+                                               "sensing_value_threshold_reference_v1",
+                                               "measurement_accuracy_resolution_reference_v1"]
     group = groups[0]
     assert sorted(group) == ["applicable_gap_type", "claims", "group_id"]
     assert group["group_id"] == FUND_GROUP and group["applicable_gap_type"] == PHYSICAL_FEASIBILITY
@@ -507,6 +517,7 @@ def test_e20_every_pre_existing_pack_field_is_unchanged_and_the_group_is_declare
     # ...and the later, separately authorized energy-time group's own note.
     pre["_governance_notes"].pop("electrical_energy_time_reference_fundamentals")
     pre["_governance_notes"].pop("sensing_value_threshold_reference")
+    pre["_governance_notes"].pop("measurement_accuracy_resolution_reference")
     assert _digest(pre) == _PRE_SLICE_PACK_DIGEST
     for phrase in ("inert", "classifier", "Path-N", "evidence state", "no loader or schema change",
                    "CAP01_ELECTRONICS_INTERFACE_V1", "PR001–PR003 are unchanged",

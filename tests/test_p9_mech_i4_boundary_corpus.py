@@ -239,7 +239,12 @@ _FROZEN_PACK_SHA256 = {
     # plus its governance-note entry (provenance electronics_electrical:PR012–PR013). The
     # pack minus exactly those two additions is canonically identical to the previous
     # pack (proven in tests/test_cap01_sensing_value_threshold_reference.py).
-    "electronics_electrical": "6ab3bcbb08255e2a1c715e570fdc3eb909a55fe124367a1188bbb01f5bf5a369",
+    # 28-T1-ACCURACY-RESOLUTION-REFERENCE-01: re-frozen again after adding ONE further bounded,
+    # inert, additive `reference_fundamentals` group (measurement_accuracy_resolution_reference_v1)
+    # plus its governance-note entry (provenance electronics_electrical:PR014–PR015). The
+    # pack minus exactly those two additions is canonically identical to the previous
+    # pack (proven in tests/test_cap01_accuracy_resolution_reference.py).
+    "electronics_electrical": "b47762cdd09d1746d94b4bbc60f241d074c5bee80073c9f03884ebca392b1eee",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",

@@ -52,6 +52,15 @@ LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/legalcode.en"
 # Canonical digests at base 46ef7f4c2a6a29156a6a95a2c1da67f29e49007b (before this slice).
 _PRE_PACK_DIGEST = "eb4ab6ffafb61dcac3c17ba9647f5bc43efd3440e31c521421bbcb376107b93a"
 _PRE_PROVENANCE_DIGEST = "0ec356a2199ebe5cb2564a4c723c23875da0f29e753fe041c65a85b3a6650787"
+# 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 later appended ONE further prose-only group to the
+# same MECHANISM_COMPLETENESS context (pack group + note, PR014 / PR015), rendered after
+# this one; this file's base-digest and inventory checks exclude exactly that later
+# addition, which is pinned by tests/test_cap01_accuracy_resolution_reference.py.
+ACCURACY_GROUP = "measurement_accuracy_resolution_reference_v1"
+ACCURACY_NOTE = "measurement_accuracy_resolution_reference"
+ACCURACY_RECORDS = ("electronics_electrical:PR014", "electronics_electrical:PR015")
+ACCURACY_ROW = (ACCURACY_GROUP, ("measurement_accuracy_resolution_distinction",),
+                "ACCURACY_RESOLUTION_FUNDAMENTALS_")
 
 APPROVED = {
     "en": ("If your design senses a physical quantity, reporting its value and indicating whether it "
@@ -128,8 +137,8 @@ def _texts(lang):
 @pytest.mark.parametrize("state", [OPEN, PARTIAL])
 def test_s01_renders_for_the_exact_electronics_mechanism_gap_open_or_partial(state):
     groups = _groups((MECHANISM_COMPLETENESS, state))
-    assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [GROUP]
-    [group] = groups[MECHANISM_COMPLETENESS]
+    assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [GROUP, ACCURACY_GROUP]
+    group = groups[MECHANISM_COMPLETENESS][0]
     assert group["prose_only"] is True
     assert [c["claim_id"] for c in group["claims"]] == [CLAIM]
 
@@ -158,9 +167,9 @@ def test_s04_the_extension_table_holds_exactly_the_two_fixed_rows():
         (DOMAIN, PHYSICAL_FEASIBILITY): (
             (ET_GROUP, ("constant_power_energy_reference", "energy_time_unit_discipline"),
              "ENERGY_TIME_FUNDAMENTALS_"),),
-        (DOMAIN, MECHANISM_COMPLETENESS): ((GROUP, (CLAIM,), "SENSING_FUNDAMENTALS_"),),
+        (DOMAIN, MECHANISM_COMPLETENESS): ((GROUP, (CLAIM,), "SENSING_FUNDAMENTALS_"), ACCURACY_ROW),
     }
-    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({GROUP})
+    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({GROUP, ACCURACY_GROUP})
 
 
 def test_s05_never_reads_inventor_text_or_signals():
@@ -217,7 +226,7 @@ def test_f01_missing_required_prose_copy_removes_only_this_group(monkeypatch):
         strings.pop(PREFIX + part)
         monkeypatch.setattr(ui_text, "UI_STRINGS", strings)
         groups = _groups((MECHANISM_COMPLETENESS, OPEN), (PHYSICAL_FEASIBILITY, OPEN))
-        assert MECHANISM_COMPLETENESS in groups and groups[MECHANISM_COMPLETENESS] == (), part
+        assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [ACCURACY_GROUP], part
         assert [g["group_id"] for g in groups[PHYSICAL_FEASIBILITY]] == [BASE_GROUP, ET_GROUP]
         monkeypatch.undo()
 
@@ -251,10 +260,13 @@ def test_f03_a_text_key_never_substitutes_an_equation_elsewhere(monkeypatch):
 # ==========================================================================
 def test_p01_pack_minus_exactly_this_addition_equals_the_base_pack():
     pack = _pack()
-    assert [g["group_id"] for g in pack["reference_fundamentals"]] == [BASE_GROUP, ET_GROUP, GROUP]
+    assert [g["group_id"] for g in pack["reference_fundamentals"]] == [BASE_GROUP, ET_GROUP, GROUP,
+                                                                       ACCURACY_GROUP]
     pre = copy.deepcopy(pack)
-    pre["reference_fundamentals"] = [g for g in pre["reference_fundamentals"] if g["group_id"] != GROUP]
+    pre["reference_fundamentals"] = [g for g in pre["reference_fundamentals"]
+                                     if g["group_id"] not in (GROUP, ACCURACY_GROUP)]
     note = pre["_governance_notes"].pop("sensing_value_threshold_reference")
+    pre["_governance_notes"].pop(ACCURACY_NOTE)
     assert _digest(pre) == _PRE_PACK_DIGEST
     assert "28-T1-SENSING-VALUE-THRESHOLD-01" in note and "PR012" in note and "PR013" in note
 
@@ -279,7 +291,7 @@ def test_p03_provenance_is_append_only_with_two_claim_specific_records():
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR011")
     assert tuple(ids[i + 1:i + 3]) == RECORDS
-    pre = [r for r in records if r["record_id"] not in RECORDS]
+    pre = [r for r in records if r["record_id"] not in RECORDS + ACCURACY_RECORDS]
     assert _digest(pre) == _PRE_PROVENANCE_DIGEST
     src, use = (records[ids.index(r)] for r in RECORDS)
     assert src["url"] == SOURCE_URL and use["url"] == LICENSE_URL

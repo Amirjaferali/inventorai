@@ -83,7 +83,9 @@ _PRIOR_RECORD_IDS = [
     "electronics_electrical:PR008", "electronics_electrical:PR009", "electronics_electrical:PR010",
     "electronics_electrical:PR011",
     # 28-T1-SENSING-VALUE-THRESHOLD-01: two additive Electronics records after PR011.
-    "electronics_electrical:PR012", "electronics_electrical:PR013", "mechanical:PR001", "mechanical:PR002", "mechanical:PR003", "mechanical:PR004",
+    "electronics_electrical:PR012", "electronics_electrical:PR013",
+    # 28-T1-ACCURACY-RESOLUTION-REFERENCE-01: two additive Electronics records after PR013.
+    "electronics_electrical:PR014", "electronics_electrical:PR015", "mechanical:PR001", "mechanical:PR002", "mechanical:PR003", "mechanical:PR004",
     "mechanical:PR005", "mechanical:PR006", "mechanical:PR007", "mechanical:PR008", "mechanical:PR009",
     "mechanical:PR010", "mechanical:PR011", "medical_device:PR001", "medical_device:PR002", "software:PR001",
 ]
