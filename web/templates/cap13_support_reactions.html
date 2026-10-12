@@ -102,7 +102,9 @@ figure.measure p{font-size:12px;line-height:1.6;color:#555;margin:8px 0 0;overfl
     geometry is fixed: it carries no submitted value, default, inference or
     calculation, and it is identical on every eligible rendering. The artwork is
     always laid out left-to-right, so physical left stays left on the Arabic
-    page; only the support-line labels are translated. -#}
+    page; only the two support labels are translated. The dashed vertical lines
+    mark where the support lines are (seen end-on); they do not depict the
+    support lines' direction (CAP13-DECLARATION-GUIDANCE-01). -#}
 <figure class="measure" data-cap13-figure>
   <figcaption id="cap13-figure-title" data-cap13-figure-title>{{ iso('UI_CAP13_FIGURE_TITLE') }}</figcaption>
   <div class="measure-art" dir="ltr" data-cap13-figure-art>
@@ -163,8 +165,12 @@ figure.measure p{font-size:12px;line-height:1.6;color:#555;margin:8px 0 0;overfl
   {% for decl in declarations %}
   {% set field = decl_field|format(decl) %}
   {% set chosen = captured['declarations'][decl] if captured else '' %}
-  <fieldset data-cap13-declaration="{{ decl }}">
+  <fieldset data-cap13-declaration="{{ decl }}" aria-describedby="cap13-help-{{ decl }}">
     <legend>{{ t('UI_CAP13_DECL_' ~ decl|upper) }}</legend>
+    {#- CAP13-DECLARATION-GUIDANCE-01 (contract §12A "Declaration guidance"): the
+        plain-language meaning of this exact declaration, beside it. It adds no
+        condition and selects or suggests no answer. -#}
+    <p class="guidance" id="cap13-help-{{ decl }}" data-cap13-declaration-help="{{ decl }}">{{ iso('UI_CAP13_DECL_HELP_' ~ decl|upper) }}</p>
     <label class="choice"><input type="radio" name="{{ field }}" value="{{ answer_matches }}" {% if chosen == answer_matches %}checked{% endif %}> {{ t('UI_CAP13_ANSWER_MATCHES') }}</label>
     <label class="choice"><input type="radio" name="{{ field }}" value="{{ answer_differs }}" {% if chosen == answer_differs %}checked{% endif %}> {{ t('UI_CAP13_ANSWER_DIFFERS') }}</label>
   </fieldset>

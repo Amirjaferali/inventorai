@@ -82,6 +82,15 @@ ONE static explanatory figure on the §12A capture page, recorded in §12A ("Exp
 method identity and version, equations, roles, units, declarations, screen, numeric domain, refusal / abstention order,
 disclosure, sources, eligibility and the shared owner are unchanged, so §2's version rule is not triggered; no source,
 unit, conversion, material, persistence, export or safety meaning is added.
+DECLARATION GUIDANCE AMENDMENT: `CAP13-DECLARATION-GUIDANCE-01 — OWNER-AUTHORIZED AMENDMENT` (2026-10-12; Owner decision A).
+The Owner authorized ONE plain-language explanation beside each §6 declaration and ONE bounded clarification of the
+support-line terminology, both recorded in §12A ("Declaration guidance") with their Arabic in §12B B-5 and B-8. The
+clarification restates the existing §§4–6 geometry: the support reaction lines are horizontal and are seen end-on in the
+side view, and the dashed vertical lines of the §12A figure mark where they are, not their direction; it corrects the
+figure wording accordingly. The method identity and version, equations, roles, units, declarations and their accepted
+values, screen, numeric domain, refusal / abstention order, disclosure, sources, eligibility and the shared owner are
+unchanged, so §2's version rule is not triggered; no condition, answer, default, inference, source, unit, conversion,
+persistence, export or safety meaning is added.
 
 ---
 
@@ -402,26 +411,72 @@ reason token, state, source, owner, route or store, and it changes no calculatio
 - Its geometry is fixed. It carries no submitted value, default, inference or calculation, places nothing from the
   request, and is identical on every eligible rendering in a given language. The centre of gravity is drawn off midspan as
   an illustration only; it is not a default or suggested value, and the `x` field stays empty until the inventor types it.
-- It shows one body in side view resting on two supports; the left and right support lines as dashed vertical lines through
-  the supports; `P` as a downward arrow through the centre of gravity; `L` as the distance between the two support lines,
+- It shows one body in side view resting on two supports; a dashed vertical line through each support that marks where the
+  left or right support line is, seen end-on (the dashed lines do not depict the support lines' direction; see
+  "Declaration guidance" below); `P` as a downward arrow through the centre of gravity; `L` as the distance between the two support lines,
   with the body drawn overhanging them; `x` as the distance from the left support line to the vertical line through the
   centre of gravity; and `R_L` and `R_R` as upward arrows at the left and right supports. It shows no support moment,
   hold-down, third support, deformation, value, material or capacity, and no stability or safety cue.
 - Physical left stays left in every language: the artwork is laid out left-to-right and never mirrored. Only the two
-  support-line labels are translated; the symbols are not.
+  support labels are translated; the symbols are not.
 - Its accessible name is the title below; its accessible description is the description and the note below.
 - English wording (the authority for meaning; Arabic in §12B B-5):
   - title — «How P, L, x, R_L and R_R are defined in this model»;
-  - description — «Side view of one body resting on two supports. The left support line and the right support line are
-    the dashed vertical lines through the two supports. P is the total weight, drawn as a downward arrow through the
-    centre of gravity. L is the distance between the two support lines, not the length of the body. x is the distance
-    from the left support line to the dashed vertical line through the centre of gravity, measured from the left support
-    line, not from the end of the body. R_L and R_R are the upward reactions at the left and right supports. Left and
-    right are the physical left and right as drawn, in every language.»;
+  - description — «Side view of one body resting on two supports. Each support line is horizontal and runs into the
+    page, so this view sees it end-on, at its support; the dashed vertical line through each support only marks where
+    that support line is, not its direction. P is the total weight, drawn as a downward arrow through the centre of
+    gravity. L is the distance between the two support lines, not the length of the body. x is the distance from the
+    left support line to the dashed vertical line through the centre of gravity, measured from the left support line,
+    not from the end of the body. R_L and R_R are the upward reactions at the left and right supports. Left and right
+    are the physical left and right as drawn, in every language.»;
   - note — «Illustration only, not to scale. It is not your actual configuration, and the centre-of-gravity position
     drawn is not a suggested position: enter your own values. The figure shows no strength, capacity, stability or
     safety, and it validates nothing.»;
-  - support-line labels — «Left support line» and «Right support line».
+  - support labels — «Left support» and «Right support».
+- *(Superseded 2026-10-12 by amendment `CAP13-DECLARATION-GUIDANCE-01`, preserved — the figure was described as showing
+  "the left and right support lines as dashed vertical lines through the supports"; the description began "The left
+  support line and the right support line are the dashed vertical lines through the two supports."; the labels read
+  "Left support line" and "Right support line"; and the label bullet read "Only the two support-line labels are
+  translated".)*
+
+**Declaration guidance (amendment `CAP13-DECLARATION-GUIDANCE-01`).** Presentation only: it adds no clause to §§4–11 and no
+reason token, state, source, owner, route or store, and it changes no declaration, accepted value or calculation semantics.
+- Beside each §6 declaration, inside its group and before its two answers, one plain-language explanation of that exact
+  declaration is shown and is the group's accessible description. The exact statement stays the thing answered and the
+  authority; the explanation adds no condition, answer, default, inference or safety meaning, selects or suggests no
+  answer, and is identical on every eligible rendering. The answers stay unselected until the inventor chooses them.
+- Support-line clarification (restates §§4–6; adds no condition). §5 and §6 make `L` and `x` horizontal distances in the
+  side view, measured at right angles to the support reaction lines; §4 and §6 make those lines parallel and horizontal. A
+  horizontal line at right angles to a horizontal direction that lies in the side view can only run at right angles to
+  the side view itself, so each support reaction line runs into the page and the side view sees it end-on, at its
+  support. The dashed vertical lines of the explanatory figure therefore mark where the support lines are; they do not
+  depict the support lines' direction.
+- The centre-of-gravity explanation restates the NASA-S2 claims of §3 (the average location of the weight; the total
+  weight acts through it), paraphrased; the weight explanation restates §5 (`P` is a force in `N`) and §1 (no unit
+  conversion).
+- English wording (the authority for meaning; Arabic in §12B B-8), in §6 order:
+  - condition — «The object and everything it carries are at rest: nothing is moving, starting, stopping or shaking.»;
+  - applied load — «The only load this model includes is weight (gravity). A push or pull, for example by a hand, a
+    spring, a motor or the wind, is another kind of load that the model does not include.»;
+  - weight — «P is the weight of everything you include in the model, the object and anything it carries, as a force in
+    newtons (N). A mass in kilograms is not a value in newtons, and this page does not convert one into the other.»;
+  - support count — «Exactly two supports carry the object, each along one support line: the left one and the right one,
+    as in the figure. A third support is not part of this model.»;
+  - support geometry — «The calculation uses one flat side view, like the figure. Each support line is horizontal and
+    runs into the page, so the side view sees it end-on, at its support; the two lines are parallel. The dashed vertical
+    lines in the figure only mark where the support lines are. x is measured horizontally, at right angles to the
+    support lines, from the left one.»;
+  - support action — «Each support acts on the object only with a vertical force, with no sideways (horizontal) force.
+    Whether a support can resist turning is the separate support-moment declaration.»;
+  - support direction — «Each support can only push up on the object, which simply rests on it. Nothing holds the object
+    down onto a support, such as a bolt, clamp, strap or glue.»;
+  - support moment — «Neither support can resist the object turning about it. A support that grips the object rigidly,
+    such as a clamp or a welded or built-in joint, can resist turning and is not part of this model.»;
+  - load paths — «Only the two supports carry the weight. Nothing else carries any part of it: no third support, wall,
+    cable, hanger, hand or other contact.»;
+  - centre of gravity — «The centre of gravity is the average location of the weight of everything you model, and the
+    total weight acts through it. You give its position yourself by entering x. InventorAI does not estimate it and
+    never assumes it is in the middle.».
 
 **Pre-owner evaluation order (deterministic, fail closed).** Evaluated in this order; the FIRST failing stage alone
 determines the outcome, so a request carries exactly one reason (§8) and no later stage is evaluated:
@@ -578,10 +633,10 @@ preserved internally as §8 requires, are not shown and are not mapped to any CA
 | Declared-part label | الجزء الميكانيكي المصرّح به: |
 | Declared-part note | يتاح هذا الحساب للجزء المسجل؛ ووجوده لا يثبت انطباق نموذج الحساب عليه. |
 | Figure title | كيف تُعرَّف P و L و x و R_L و R_R في هذا النموذج |
-| Figure description | منظر جانبي لجسم واحد يرتكز على مسندين. خط المسند الأيسر وخط المسند الأيمن هما الخطان الرأسيان المتقطعان المارّان بالمسندين. P هو الوزن الكلي، ويظهر سهمًا متجهًا إلى أسفل يمر بمركز الثقل. L هي المسافة بين خطّي المسندين، وليست طول الجسم. x هي المسافة من خط المسند الأيسر إلى الخط الرأسي المتقطع المار بمركز الثقل، وتُقاس من خط المسند الأيسر لا من طرف الجسم. R_L و R_R هما ردّا الفعل المتجهان إلى أعلى عند المسند الأيسر والمسند الأيمن. اليسار واليمين هنا هما اليسار واليمين الفعليان كما في الرسم، في كل لغة. |
+| Figure description | منظر جانبي لجسم واحد يرتكز على مسندين. كل خط مسند أفقي ويمتد إلى داخل الصفحة، لذلك يظهر في هذا المنظر من طرفه عند مسنده، والخط الرأسي المتقطع المار بكل مسند يبيّن موضع خط المسند فقط لا اتجاهه. P هو الوزن الكلي، ويظهر سهمًا متجهًا إلى أسفل يمر بمركز الثقل. L هي المسافة بين خطّي المسندين، وليست طول الجسم. x هي المسافة من خط المسند الأيسر إلى الخط الرأسي المتقطع المار بمركز الثقل، وتُقاس من خط المسند الأيسر لا من طرف الجسم. R_L و R_R هما ردّا الفعل المتجهان إلى أعلى عند المسند الأيسر والمسند الأيمن. اليسار واليمين هنا هما اليسار واليمين الفعليان كما في الرسم، في كل لغة. |
 | Figure note | رسم توضيحي فقط، وليس وفق مقياس رسم. لا يمثّل تكوينك الفعلي، وموضع مركز الثقل المرسوم ليس موضعًا مقترحًا: أدخل قيمك أنت. لا يبيّن الرسم المتانة ولا قدرة التحمل ولا الاستقرار ولا السلامة، ولا يتحقق من صحة أي شيء. |
-| Figure left support-line label | خط المسند الأيسر |
-| Figure right support-line label | خط المسند الأيمن |
+| Figure left support label | المسند الأيسر |
+| Figure right support label | المسند الأيمن |
 
 English wording of the three amended rows (amendment `CAP13-THERM01-INTEGRATED-PART-01`; the English stays the authority
 for meaning): scope note — «This optional calculation is available for a Mechanical-focus project or for its declared
@@ -621,6 +676,24 @@ calculation model applies.» The part name follows the label verbatim, escaped a
 the role symbols `R_L` and `R_R`, `method_id`, `method_version` and the English names in parentheses are rendered with
 direction isolation inside Arabic text, so that no digit, sign, token or identifier is reordered; numerical values are
 never translated or reformatted into a different meaning.
+
+**B-8 Declaration guidance (amendment `CAP13-DECLARATION-GUIDANCE-01`).** The Arabic of the §12A declaration guidance; the English
+stays the authority for meaning, and the B-6 terminology applies.
+
+| Declaration | Arabic |
+|---|---|
+| condition | الجسم وكل ما يحمله في حالة سكون: لا شيء يتحرك أو يبدأ الحركة أو يتوقف أو يهتز. |
+| applied load | الحمل الوحيد الذي يتضمنه هذا النموذج هو الوزن (الجاذبية). أما الدفع أو السحب، مثلًا باليد أو بنابض أو بمحرك أو بالرياح، فهو نوع آخر من الأحمال لا يتضمنه النموذج. |
+| weight | P هو وزن كل ما تُدخله في النموذج، أي الجسم وكل ما يحمله، بوصفه قوة بالنيوتن (N). الكتلة بالكيلوغرام ليست قيمة بالنيوتن، ولا تحوّل هذه الصفحة إحداهما إلى الأخرى. |
+| support count | يحمل الجسمَ مسندان اثنان فقط، كلٌّ منهما على امتداد خط مسند واحد: الأيسر والأيمن، كما في الرسم. المسند الثالث ليس جزءًا من هذا النموذج. |
+| support geometry | يستخدم الحساب منظرًا جانبيًا مستويًا واحدًا مثل الرسم. كل خط مسند أفقي ويمتد إلى داخل الصفحة، لذلك يظهر في المنظر الجانبي من طرفه عند مسنده، والخطان متوازيان. الخطوط الرأسية المتقطعة في الرسم تبيّن موضع خطَّي المسندين فقط. وتُقاس x أفقيًا وعموديًا على خطَّي المسندين ابتداءً من الخط الأيسر. |
+| support action | يؤثر كل مسند في الجسم بقوة رأسية فقط، دون أي قوة جانبية (أفقية). أما قدرة المسند على مقاومة الدوران فهي تصريح منفصل خاص بعزم المسند. |
+| support direction | يستطيع كل مسند أن يدفع الجسم إلى أعلى فقط، والجسم يرتكز عليه ارتكازًا. لا يوجد ما يثبّت الجسم على المسند ويشدّه إلى أسفل، مثل برغي أو ملزمة أو حزام أو مادة لاصقة. |
+| support moment | لا يستطيع أي من المسندين مقاومة دوران الجسم حوله. أما المسند الذي يمسك الجسم إمساكًا صلبًا، مثل الملزمة أو الوصلة الملحومة أو المدمجة، فيستطيع مقاومة الدوران وليس جزءًا من هذا النموذج. |
+| load paths | يحمل المسندان وحدهما الوزن كله، ولا يحمل أي شيء آخر أي جزء منه: لا مسند ثالث ولا جدار ولا كابل ولا علّاقة ولا يد ولا أي تماس آخر. |
+| centre of gravity | مركز الثقل هو الموضع المتوسط لوزن كل ما تُدخله في النموذج، ويؤثر الوزن الكلي من خلاله. أنت من يحدد موضعه بإدخال x بنفسك، ولا يقدّره InventorAI ولا يفترض أبدًا أنه في المنتصف. |
+
+*(Superseded 2026-10-12 by amendment `CAP13-DECLARATION-GUIDANCE-01`, preserved — the B-5 figure rows read "Figure left support-line label" = خط المسند الأيسر and "Figure right support-line label" = خط المسند الأيمن, and the Arabic figure description named the two dashed vertical lines as the support lines.)*
 
 ## 13. Stage and lifecycle
 

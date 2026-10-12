@@ -4586,6 +4586,39 @@ UI_STRINGS = {
     "UI_CAP13_DECL_CENTRE_OF_GRAVITY": {
         "en": "Its position is explicitly declared by the inventor — never inferred and never defaulted to midspan.",
         "ar": "تُدخل موضع مركز الثقل بنفسك؛ لا يُستنتج ولا يُوضع في المنتصف تلقائيًا."},
+    # CAP13-DECLARATION-GUIDANCE-01: plain-language help beside each §6 declaration
+    # (contract §12A "Declaration guidance"; Arabic §12B B-8). The declaration's exact
+    # statement stays the thing answered; the help adds no condition, answer or default.
+    "UI_CAP13_DECL_HELP_CONDITION": {
+        "en": "The object and everything it carries are at rest: nothing is moving, starting, stopping or shaking.",
+        "ar": "الجسم وكل ما يحمله في حالة سكون: لا شيء يتحرك أو يبدأ الحركة أو يتوقف أو يهتز."},
+    "UI_CAP13_DECL_HELP_APPLIED_LOAD": {
+        "en": "The only load this model includes is weight (gravity). A push or pull, for example by a hand, a spring, a motor or the wind, is another kind of load that the model does not include.",
+        "ar": "الحمل الوحيد الذي يتضمنه هذا النموذج هو الوزن (الجاذبية). أما الدفع أو السحب، مثلًا باليد أو بنابض أو بمحرك أو بالرياح، فهو نوع آخر من الأحمال لا يتضمنه النموذج."},
+    "UI_CAP13_DECL_HELP_WEIGHT": {
+        "en": "P is the weight of everything you include in the model, the object and anything it carries, as a force in newtons (N). A mass in kilograms is not a value in newtons, and this page does not convert one into the other.",
+        "ar": "P هو وزن كل ما تُدخله في النموذج، أي الجسم وكل ما يحمله، بوصفه قوة بالنيوتن (N). الكتلة بالكيلوغرام ليست قيمة بالنيوتن، ولا تحوّل هذه الصفحة إحداهما إلى الأخرى."},
+    "UI_CAP13_DECL_HELP_SUPPORT_COUNT": {
+        "en": "Exactly two supports carry the object, each along one support line: the left one and the right one, as in the figure. A third support is not part of this model.",
+        "ar": "يحمل الجسمَ مسندان اثنان فقط، كلٌّ منهما على امتداد خط مسند واحد: الأيسر والأيمن، كما في الرسم. المسند الثالث ليس جزءًا من هذا النموذج."},
+    "UI_CAP13_DECL_HELP_SUPPORT_GEOMETRY": {
+        "en": "The calculation uses one flat side view, like the figure. Each support line is horizontal and runs into the page, so the side view sees it end-on, at its support; the two lines are parallel. The dashed vertical lines in the figure only mark where the support lines are. x is measured horizontally, at right angles to the support lines, from the left one.",
+        "ar": "يستخدم الحساب منظرًا جانبيًا مستويًا واحدًا مثل الرسم. كل خط مسند أفقي ويمتد إلى داخل الصفحة، لذلك يظهر في المنظر الجانبي من طرفه عند مسنده، والخطان متوازيان. الخطوط الرأسية المتقطعة في الرسم تبيّن موضع خطَّي المسندين فقط. وتُقاس x أفقيًا وعموديًا على خطَّي المسندين ابتداءً من الخط الأيسر."},
+    "UI_CAP13_DECL_HELP_SUPPORT_ACTION": {
+        "en": "Each support acts on the object only with a vertical force, with no sideways (horizontal) force. Whether a support can resist turning is the separate support-moment declaration.",
+        "ar": "يؤثر كل مسند في الجسم بقوة رأسية فقط، دون أي قوة جانبية (أفقية). أما قدرة المسند على مقاومة الدوران فهي تصريح منفصل خاص بعزم المسند."},
+    "UI_CAP13_DECL_HELP_SUPPORT_DIRECTION": {
+        "en": "Each support can only push up on the object, which simply rests on it. Nothing holds the object down onto a support, such as a bolt, clamp, strap or glue.",
+        "ar": "يستطيع كل مسند أن يدفع الجسم إلى أعلى فقط، والجسم يرتكز عليه ارتكازًا. لا يوجد ما يثبّت الجسم على المسند ويشدّه إلى أسفل، مثل برغي أو ملزمة أو حزام أو مادة لاصقة."},
+    "UI_CAP13_DECL_HELP_SUPPORT_MOMENT": {
+        "en": "Neither support can resist the object turning about it. A support that grips the object rigidly, such as a clamp or a welded or built-in joint, can resist turning and is not part of this model.",
+        "ar": "لا يستطيع أي من المسندين مقاومة دوران الجسم حوله. أما المسند الذي يمسك الجسم إمساكًا صلبًا، مثل الملزمة أو الوصلة الملحومة أو المدمجة، فيستطيع مقاومة الدوران وليس جزءًا من هذا النموذج."},
+    "UI_CAP13_DECL_HELP_LOAD_PATHS": {
+        "en": "Only the two supports carry the weight. Nothing else carries any part of it: no third support, wall, cable, hanger, hand or other contact.",
+        "ar": "يحمل المسندان وحدهما الوزن كله، ولا يحمل أي شيء آخر أي جزء منه: لا مسند ثالث ولا جدار ولا كابل ولا علّاقة ولا يد ولا أي تماس آخر."},
+    "UI_CAP13_DECL_HELP_CENTRE_OF_GRAVITY": {
+        "en": "The centre of gravity is the average location of the weight of everything you model, and the total weight acts through it. You give its position yourself by entering x. InventorAI does not estimate it and never assumes it is in the middle.",
+        "ar": "مركز الثقل هو الموضع المتوسط لوزن كل ما تُدخله في النموذج، ويؤثر الوزن الكلي من خلاله. أنت من يحدد موضعه بإدخال x بنفسك، ولا يقدّره InventorAI ولا يفترض أبدًا أنه في المنتصف."},
     "UI_CAP13_SCREEN_STEM": {
         "en": "Does any of the following apply to the configuration? Answer each item yes or no.",
         "ar": "هل ينطبق أيٌّ مما يلي على التكوين؟ أجب عن كل بند بـ«نعم» أو «لا»."},
@@ -4632,17 +4665,17 @@ UI_STRINGS = {
         "en": "How P, L, x, R_L and R_R are defined in this model",
         "ar": "كيف تُعرَّف P و L و x و R_L و R_R في هذا النموذج"},
     "UI_CAP13_FIGURE_DESC": {
-        "en": "Side view of one body resting on two supports. The left support line and the right support line are the dashed vertical lines through the two supports. P is the total weight, drawn as a downward arrow through the centre of gravity. L is the distance between the two support lines, not the length of the body. x is the distance from the left support line to the dashed vertical line through the centre of gravity, measured from the left support line, not from the end of the body. R_L and R_R are the upward reactions at the left and right supports. Left and right are the physical left and right as drawn, in every language.",
-        "ar": "منظر جانبي لجسم واحد يرتكز على مسندين. خط المسند الأيسر وخط المسند الأيمن هما الخطان الرأسيان المتقطعان المارّان بالمسندين. P هو الوزن الكلي، ويظهر سهمًا متجهًا إلى أسفل يمر بمركز الثقل. L هي المسافة بين خطّي المسندين، وليست طول الجسم. x هي المسافة من خط المسند الأيسر إلى الخط الرأسي المتقطع المار بمركز الثقل، وتُقاس من خط المسند الأيسر لا من طرف الجسم. R_L و R_R هما ردّا الفعل المتجهان إلى أعلى عند المسند الأيسر والمسند الأيمن. اليسار واليمين هنا هما اليسار واليمين الفعليان كما في الرسم، في كل لغة."},
+        "en": "Side view of one body resting on two supports. Each support line is horizontal and runs into the page, so this view sees it end-on, at its support; the dashed vertical line through each support only marks where that support line is, not its direction. P is the total weight, drawn as a downward arrow through the centre of gravity. L is the distance between the two support lines, not the length of the body. x is the distance from the left support line to the dashed vertical line through the centre of gravity, measured from the left support line, not from the end of the body. R_L and R_R are the upward reactions at the left and right supports. Left and right are the physical left and right as drawn, in every language.",
+        "ar": "منظر جانبي لجسم واحد يرتكز على مسندين. كل خط مسند أفقي ويمتد إلى داخل الصفحة، لذلك يظهر في هذا المنظر من طرفه عند مسنده، والخط الرأسي المتقطع المار بكل مسند يبيّن موضع خط المسند فقط لا اتجاهه. P هو الوزن الكلي، ويظهر سهمًا متجهًا إلى أسفل يمر بمركز الثقل. L هي المسافة بين خطّي المسندين، وليست طول الجسم. x هي المسافة من خط المسند الأيسر إلى الخط الرأسي المتقطع المار بمركز الثقل، وتُقاس من خط المسند الأيسر لا من طرف الجسم. R_L و R_R هما ردّا الفعل المتجهان إلى أعلى عند المسند الأيسر والمسند الأيمن. اليسار واليمين هنا هما اليسار واليمين الفعليان كما في الرسم، في كل لغة."},
     "UI_CAP13_FIGURE_NOTE": {
         "en": "Illustration only, not to scale. It is not your actual configuration, and the centre-of-gravity position drawn is not a suggested position: enter your own values. The figure shows no strength, capacity, stability or safety, and it validates nothing.",
         "ar": "رسم توضيحي فقط، وليس وفق مقياس رسم. لا يمثّل تكوينك الفعلي، وموضع مركز الثقل المرسوم ليس موضعًا مقترحًا: أدخل قيمك أنت. لا يبيّن الرسم المتانة ولا قدرة التحمل ولا الاستقرار ولا السلامة، ولا يتحقق من صحة أي شيء."},
     "UI_CAP13_FIGURE_LEFT_SUPPORT": {
-        "en": "Left support line",
-        "ar": "خط المسند الأيسر"},
+        "en": "Left support",
+        "ar": "المسند الأيسر"},
     "UI_CAP13_FIGURE_RIGHT_SUPPORT": {
-        "en": "Right support line",
-        "ar": "خط المسند الأيمن"},
+        "en": "Right support",
+        "ar": "المسند الأيمن"},
     "UI_CAP13_FIELD_P": {
         "en": "Total weight — newton (N)",
         "ar": "الوزن الكلي — نيوتن (N)"},
