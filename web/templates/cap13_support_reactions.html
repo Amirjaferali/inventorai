@@ -24,6 +24,10 @@ dl.reactions{margin:0 0 8px 0;font-size:14px}
 dl.reactions dt{color:#555;font-size:13px;margin-top:6px}
 dl.reactions dd{margin:2px 0 0 0;font-weight:bold}
 ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:anywhere}
+figure.measure{border:1px solid #e2e6ea;border-radius:4px;padding:12px 14px;margin:0 0 16px 0;min-width:0}
+.measure-art svg{display:block;width:100%;max-width:480px;height:auto;margin:0 auto}
+figure.measure figcaption{font-size:13px;color:#2c3e50;font-weight:bold;margin:0 0 8px 0;overflow-wrap:anywhere}
+figure.measure p{font-size:12px;line-height:1.6;color:#555;margin:8px 0 0;overflow-wrap:anywhere}
 @media(max-width:520px){body{margin:18px auto;padding:0 14px}.box{padding:12px}}
 </style>
 {% endblock %}
@@ -92,6 +96,67 @@ ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:any
 {% elif outcome_key %}
 <div class="error" role="alert" data-cap13-outcome>{{ iso(outcome_key) }}</div>
 {% endif %}
+
+{#- CAP13-MEASUREMENT-FIGURE-01 (contract §12A "Explanatory figure"): ONE static,
+    original illustration of the model's own terms P, L, x, R_L and R_R. Its
+    geometry is fixed: it carries no submitted value, default, inference or
+    calculation, and it is identical on every eligible rendering. The artwork is
+    always laid out left-to-right, so physical left stays left on the Arabic
+    page; only the support-line labels are translated. -#}
+<figure class="measure" data-cap13-figure>
+  <figcaption id="cap13-figure-title" data-cap13-figure-title>{{ iso('UI_CAP13_FIGURE_TITLE') }}</figcaption>
+  <div class="measure-art" dir="ltr" data-cap13-figure-art>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 240" width="420" height="240" direction="ltr" font-family="sans-serif" role="img" focusable="false" aria-labelledby="cap13-figure-title" aria-describedby="cap13-figure-desc cap13-figure-note">
+      <g fill="none" stroke="#7a8793" stroke-width="1" stroke-dasharray="5 4">
+        <line data-cap13-figure-line="left-support" x1="80" y1="46" x2="80" y2="232"/>
+        <line data-cap13-figure-line="right-support" x1="330" y1="46" x2="330" y2="232"/>
+        <line data-cap13-figure-line="centre-of-gravity" x1="170" y1="100" x2="170" y2="198"/>
+      </g>
+      <text data-cap13-figure-label="left-support" x="80" y="38" font-size="12" text-anchor="middle" fill="#2c3e50">{{ t('UI_CAP13_FIGURE_LEFT_SUPPORT') }}</text>
+      <text data-cap13-figure-label="right-support" x="330" y="38" font-size="12" text-anchor="middle" fill="#2c3e50">{{ t('UI_CAP13_FIGURE_RIGHT_SUPPORT') }}</text>
+      <rect x="20" y="66" width="380" height="34" rx="3" fill="#eef3f8" stroke="#2c3e50" stroke-width="1.5"/>
+      <circle cx="170" cy="83" r="7" fill="#ffffff" stroke="#2c3e50" stroke-width="1.5"/>
+      <path d="M170 83 L177 83 A7 7 0 0 1 170 90 Z M170 83 L163 83 A7 7 0 0 1 170 76 Z" fill="#2c3e50"/>
+      <g fill="#ffffff" stroke="#2c3e50" stroke-width="1.5">
+        <polygon points="80,100 68,122 92,122"/>
+        <polygon points="330,100 318,122 342,122"/>
+      </g>
+      <g stroke="#2c3e50" stroke-width="2">
+        <line x1="62" y1="124" x2="98" y2="124"/>
+        <line x1="312" y1="124" x2="348" y2="124"/>
+      </g>
+      <g data-cap13-figure-symbol="P" fill="#2c3e50">
+        <line x1="170" y1="10" x2="170" y2="54" stroke="#2c3e50" stroke-width="2.5"/>
+        <polygon points="170,64 164,52 176,52"/>
+        <text x="180" y="30" font-size="15" font-weight="bold">P</text>
+      </g>
+      <g data-cap13-figure-symbol="R_L" fill="#2c3e50">
+        <line x1="80" y1="170" x2="80" y2="138" stroke="#2c3e50" stroke-width="2.5"/>
+        <polygon points="80,128 74,140 86,140"/>
+        <text x="90" y="160" font-size="15" font-weight="bold">R_L</text>
+      </g>
+      <g data-cap13-figure-symbol="R_R" fill="#2c3e50">
+        <line x1="330" y1="170" x2="330" y2="138" stroke="#2c3e50" stroke-width="2.5"/>
+        <polygon points="330,128 324,140 336,140"/>
+        <text x="340" y="160" font-size="15" font-weight="bold">R_R</text>
+      </g>
+      <g data-cap13-figure-symbol="x" fill="#2c3e50">
+        <line x1="88" y1="190" x2="162" y2="190" stroke="#2c3e50" stroke-width="1.5"/>
+        <polygon points="80,190 90,185 90,195"/>
+        <polygon points="170,190 160,185 160,195"/>
+        <text x="125" y="183" font-size="15" font-style="italic" text-anchor="middle">x</text>
+      </g>
+      <g data-cap13-figure-symbol="L" fill="#2c3e50">
+        <line x1="88" y1="220" x2="322" y2="220" stroke="#2c3e50" stroke-width="1.5"/>
+        <polygon points="80,220 90,215 90,225"/>
+        <polygon points="330,220 320,215 320,225"/>
+        <text x="205" y="213" font-size="15" font-style="italic" text-anchor="middle">L</text>
+      </g>
+    </svg>
+  </div>
+  <p id="cap13-figure-desc" data-cap13-figure-desc>{{ iso('UI_CAP13_FIGURE_DESC') }}</p>
+  <p id="cap13-figure-note" data-cap13-figure-note>{{ iso('UI_CAP13_FIGURE_NOTE') }}</p>
+</figure>
 
 <form method="POST" action="{{ url_for('cap13_support_reactions_post', sid=sid) }}" data-cap13-form>
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">

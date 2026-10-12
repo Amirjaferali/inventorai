@@ -4625,6 +4625,24 @@ UI_STRINGS = {
     "UI_CAP13_SCREEN_NOTE": {
         "en": "Answering no to all nine items only satisfies this screen; it does not mean the configuration is safe, and it does not replace the other applicability conditions and numerical values.",
         "ar": "الإجابة بـ«لا» عن جميع البنود التسعة تستوفي هذا الفحص فقط؛ ولا تعني أن التكوين آمن، ولا تُغني عن بقية شروط التطبيق والقيم الرقمية."},
+    # CAP13-MEASUREMENT-FIGURE-01: the static explanatory figure on the form
+    # (contract §12A "Explanatory figure"; Arabic §12B B-5). The English stays the
+    # authority for meaning; the figure itself carries no value, default or inference.
+    "UI_CAP13_FIGURE_TITLE": {
+        "en": "How P, L, x, R_L and R_R are defined in this model",
+        "ar": "كيف تُعرَّف P و L و x و R_L و R_R في هذا النموذج"},
+    "UI_CAP13_FIGURE_DESC": {
+        "en": "Side view of one body resting on two supports. The left support line and the right support line are the dashed vertical lines through the two supports. P is the total weight, drawn as a downward arrow through the centre of gravity. L is the distance between the two support lines, not the length of the body. x is the distance from the left support line to the dashed vertical line through the centre of gravity, measured from the left support line, not from the end of the body. R_L and R_R are the upward reactions at the left and right supports. Left and right are the physical left and right as drawn, in every language.",
+        "ar": "منظر جانبي لجسم واحد يرتكز على مسندين. خط المسند الأيسر وخط المسند الأيمن هما الخطان الرأسيان المتقطعان المارّان بالمسندين. P هو الوزن الكلي، ويظهر سهمًا متجهًا إلى أسفل يمر بمركز الثقل. L هي المسافة بين خطّي المسندين، وليست طول الجسم. x هي المسافة من خط المسند الأيسر إلى الخط الرأسي المتقطع المار بمركز الثقل، وتُقاس من خط المسند الأيسر لا من طرف الجسم. R_L و R_R هما ردّا الفعل المتجهان إلى أعلى عند المسند الأيسر والمسند الأيمن. اليسار واليمين هنا هما اليسار واليمين الفعليان كما في الرسم، في كل لغة."},
+    "UI_CAP13_FIGURE_NOTE": {
+        "en": "Illustration only, not to scale. It is not your actual configuration, and the centre-of-gravity position drawn is not a suggested position: enter your own values. The figure shows no strength, capacity, stability or safety, and it validates nothing.",
+        "ar": "رسم توضيحي فقط، وليس وفق مقياس رسم. لا يمثّل تكوينك الفعلي، وموضع مركز الثقل المرسوم ليس موضعًا مقترحًا: أدخل قيمك أنت. لا يبيّن الرسم المتانة ولا قدرة التحمل ولا الاستقرار ولا السلامة، ولا يتحقق من صحة أي شيء."},
+    "UI_CAP13_FIGURE_LEFT_SUPPORT": {
+        "en": "Left support line",
+        "ar": "خط المسند الأيسر"},
+    "UI_CAP13_FIGURE_RIGHT_SUPPORT": {
+        "en": "Right support line",
+        "ar": "خط المسند الأيمن"},
     "UI_CAP13_FIELD_P": {
         "en": "Total weight — newton (N)",
         "ar": "الوزن الكلي — نيوتن (N)"},
