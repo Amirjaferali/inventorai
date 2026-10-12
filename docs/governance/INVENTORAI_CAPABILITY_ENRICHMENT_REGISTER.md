@@ -351,7 +351,12 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
   (delivered with no product change required) records that they complete Stage 22 for the current bounded
   decision trace + decision room scope only. An accepted decision, go / no-go outcome or any new decision
   lifecycle, recommendation or winner selection and confidence, evidence-strength or readiness scoring stay NOT
-  AUTHORIZED.
+  AUTHORIZED. A second bounded exception, effective only on the verified merge of its PR: INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01
+  (Owner-authorized, Option B) lets the inventor declare their own comparison criteria for a decision and record
+  one value per criterion and active alternative, OWNER_STATED / UNVALIDATED and append-only in two additive
+  record-store families, shown in the Decision Room and the report / PDF within a 200-cell display budget. These
+  are the inventor's records, not canonical decision truth: they change no ledger record, FDC-001 input,
+  readiness or evidence, and InventorAI scores, ranks, weighs and chooses nothing.
   `FULL CAP-07: NOT AUTHORIZED`.
 - **Activation conditions:** a separately authorized consolidation increment.
 - **Separate owner authorization requirement:** yes.

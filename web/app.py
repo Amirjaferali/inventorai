@@ -133,8 +133,14 @@ from engine.record_store import (
     ProjectComponentStale as _ProjectComponentStale,
     ProjectComponentAlreadyWithdrawn as _ProjectComponentAlreadyWithdrawn,
     ProjectComponentUnchanged as _ProjectComponentUnchanged,
+    DecisionComparisonCorrupt as _DecisionComparisonCorrupt,
+    DecisionComparisonConflict as _DecisionComparisonConflict,
+    DECISION_COMPARISON_NO_CHANGE as _CMP_NO_CHANGE,
 )
 from engine.record_contract import ProjectRecordContract
+# INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the comparison semantics
+# owner (criteria, values, capacity, the ONE presentation projection).
+from engine import decision_criteria as _criteria
 # T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate): the
 # pure vocabulary / canonical-value / eligibility owner. The web layer performs
 # glue only: authorization, token binding, idempotency, persist-before-
@@ -6397,6 +6403,12 @@ def show_session(sid):
         # components, read from durable storage on every render (never from
         # IdeaState); None for a project without a durable record.
         component_inventory=_component_inventory_context(sid, entry),
+        # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the inventor's
+        # criteria and values, ONE store snapshot, paged at 200 cells; forms
+        # only on the writable (live) surface.
+        decision_comparison=_decision_comparison_context(
+            sid, entry, writable=bool(getattr(state, "domain", None)),
+            page=_cmp_page_arg(request.args.get("cmp_page"))),
         # Manufacturing evidence: the second live dimension, read from the same
         # authoritative owner, scoped so the two blocks never show each other's
         # rows.
@@ -6710,6 +6722,9 @@ def show_deliverable(sid):
         # COMPONENT-DELIVERABLE-VALUE-01: the inventor's CURRENT declared
         # components (one store snapshot; UNAVAILABLE fails closed).
         component_report=_component_report_view(sid),
+        # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: criteria and
+        # values, complete within 200 cells or explicitly omitted.
+        decision_comparison=_comparison_report_view(sid),
         # T2-A: statements for the canonical quantity rows (presentation only).
         t2a_statements=_quantity_statements(package, state),
         # T2-E Option B: owner-recorded, explicitly UNVERIFIED evidence
@@ -6890,6 +6905,9 @@ def download_deliverable_pdf(sid):
             # COMPONENT-DELIVERABLE-VALUE-01: the SAME current-component view
             # as the HTML report.
             component_report=_component_report_view(sid),
+            # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the SAME
+            # comparison projection as the HTML report.
+            decision_comparison=_comparison_report_view(sid),
             t2a_statements=_quantity_statements(package, state),
             evidence_references=_evref_deliverable_view(sid, state),
             decision_capture=_decision_capture_view_safe(state),
@@ -13599,6 +13617,403 @@ def decision_withdraw_alternative(sid):
     return _handle_decision_post(
         sid, lambda m: withdraw_alternative(m, target_id, reason, iteration),
         "w2a:withdraw:" + target_id, reason, needs_supersession=True)
+
+
+# --- INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 -----------------------
+# The inventor's own comparison criteria for a decision and the value they
+# record for each criterion and each ACTIVE alternative. OWNER_STATED /
+# UNVALIDATED; InventorAI parses no number, scores, ranks, weighs or chooses
+# nothing, and nothing here reaches the FDC-001 record, the ledger, readiness,
+# progression, evidence, the deliverable package or any export. Semantics live
+# in ``engine.decision_criteria``; persistence in the record store's two
+# append-only comparison tables. Every read is ONE store-owned snapshot of the
+# decision ledger AND both tables (never values joined to cached
+# SESSION_STORE text). Authorization is the central project check plus the
+# global request-integrity (CSRF) guard. Each form carries a signed BINDING of
+# exactly what it targets (project, decision, criterion / cell, and every
+# version it was prepared against), and a signed submission identity that says
+# WHICH durable action attempt a post is (an exact retry returns the committed
+# event; the same identity with other material fails closed). The store
+# re-plans the action against durable truth inside its write transaction.
+# SAVED is reported only for an event confirmed from committed durable state.
+_CMP_CRITERION_DOMAIN = "cmp-criterion-submission-v1"
+_CMP_CRITERION_ENTRY_KEY = "cmp_criterion_submission"
+_CMP_VALUE_DOMAIN = "cmp-value-submission-v1"
+_CMP_VALUE_ENTRY_KEY = "cmp_value_submission"
+_CMP_BINDING_DOMAIN = "cmp-binding-v1"
+CMP_ACK_SLOT = "_cmp_ack"
+CMP_ERROR_SLOT = "_cmp_error"
+CMP_NOTICE_ROOT_SLOT = "_cmp_notice_root"
+_CMP_PAGE_RE = re.compile(r"^[1-9][0-9]{0,5}$")
+_CMP_SMALL_INT_RE = re.compile(r"^(0|[1-9][0-9]?)$")
+_CMP_REJECT_KEYS = {
+    _criteria.REJECT_TARGET: "UI_CMP_MSG_REJECTED",
+    _criteria.REJECT_TEXT_EMPTY: "UI_CMP_MSG_TEXT_EMPTY",
+    _criteria.REJECT_TEXT_CHAR: "UI_CMP_MSG_TEXT_CHAR",
+    _criteria.REJECT_CRITERION_WITHDRAWN: "UI_CMP_MSG_CRITERION_GONE",
+    _criteria.REJECT_ALTERNATIVE_WITHDRAWN: "UI_CMP_MSG_ALTERNATIVE_GONE",
+    _criteria.REJECT_CELL_CLOSED: "UI_CMP_MSG_CELL_CLOSED",
+    _criteria.REJECT_CONFIRM_CRITERION_FIRST: "UI_CMP_MSG_CONFIRM_CRITERION_FIRST",
+    _criteria.REJECT_NOTHING_TO_RECONFIRM: "UI_CMP_MSG_NOTHING_TO_RECONFIRM",
+}
+_CMP_LIMIT_KEYS = {
+    _criteria.LIMIT_ACTIVE_CRITERIA: "UI_CMP_LIMIT_ACTIVE_CRITERIA",
+    _criteria.LIMIT_DECISION_CRITERIA: "UI_CMP_LIMIT_DECISION_CRITERIA",
+    _criteria.LIMIT_PROJECT_CRITERIA: "UI_CMP_LIMIT_PROJECT_CRITERIA",
+    _criteria.LIMIT_CRITERION_REVISIONS: "UI_CMP_LIMIT_CRITERION_REVISIONS",
+    _criteria.LIMIT_PROJECT_CRITERION_REVISIONS:
+        "UI_CMP_LIMIT_PROJECT_CRITERION_REVISIONS",
+    _criteria.LIMIT_CELL_EVENTS: "UI_CMP_LIMIT_CELL_EVENTS",
+    _criteria.LIMIT_DECISION_VALUE_EVENTS: "UI_CMP_LIMIT_DECISION_VALUE_EVENTS",
+    _criteria.LIMIT_PROJECT_VALUE_EVENTS: "UI_CMP_LIMIT_PROJECT_VALUE_EVENTS",
+    _criteria.LIMIT_PROJECT_CELLS: "UI_CMP_LIMIT_PROJECT_CELLS",
+}
+# The value limits after which the cell's reserved clear stays available.
+_CMP_CLEARABLE_LIMITS = frozenset({
+    _criteria.LIMIT_CELL_EVENTS, _criteria.LIMIT_DECISION_VALUE_EVENTS,
+    _criteria.LIMIT_PROJECT_VALUE_EVENTS})
+_CMP_CRITERION_ACKS = {
+    _criteria.CRITERION_DECLARED: "UI_CMP_MSG_CRITERION_ADDED",
+    _criteria.CRITERION_CORRECTED: "UI_CMP_MSG_CRITERION_CORRECTED",
+    _criteria.CRITERION_RECONFIRMED: "UI_CMP_MSG_CRITERION_RECONFIRMED",
+    _criteria.CRITERION_WITHDRAWN: "UI_CMP_MSG_CRITERION_WITHDRAWN",
+}
+_CMP_VALUE_ACKS = {
+    _criteria.VALUE_SET: "UI_CMP_MSG_VALUE_SAVED",
+    _criteria.VALUE_CORRECTED: "UI_CMP_MSG_VALUE_SAVED",
+    _criteria.VALUE_RECONFIRMED: "UI_CMP_MSG_VALUE_RECONFIRMED",
+    _criteria.VALUE_CLEARED: "UI_CMP_MSG_VALUE_CLEARED",
+}
+
+
+def _cmp_binding(sid, *fields):
+    """The signed binding of ONE form: exactly what it targets and every
+    version it was prepared against, for exactly this project."""
+    return _p2a_hmac.new(
+        _answer_secret(), _canonical_message(_CMP_BINDING_DOMAIN, sid, *fields),
+        _p2a_hashlib.sha256).hexdigest()
+
+
+def _cmp_binding_ok(sid, raw, *fields):
+    try:
+        return isinstance(raw, str) and len(raw) == 64 and _p2a_hmac.compare_digest(
+            raw.encode("ascii"), _cmp_binding(sid, *fields).encode("ascii"))
+    except Exception:
+        return False
+
+
+def _cmp_submission_key(sid, nonce, action):
+    """The stable durable submission identity of ONE comparison action: HMAC
+    over (action, project, submission nonce) ONLY — never over the material."""
+    msg = _canonical_message("cmp-%s-action-v1" % action, sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _cmp_page_arg(raw):
+    return int(raw) if isinstance(raw, str) and _CMP_PAGE_RE.match(raw) else 1
+
+
+def _cmp_notice(sid, entry, page, anchor, ack=None, error=None):
+    """Publish exactly ONE comparison notice (shown beside the decision it
+    concerns) and return to that decision on the same page."""
+    entry.pop(CMP_ACK_SLOT, None)
+    entry.pop(CMP_ERROR_SLOT, None)
+    entry[CMP_NOTICE_ROOT_SLOT] = anchor[len("cmp-"):] if anchor.startswith("cmp-") else None
+    if ack is not None:
+        entry[CMP_ACK_SLOT] = ack
+    if error is not None:
+        entry[CMP_ERROR_SLOT] = error
+    args = {"sid": sid}
+    if page and page > 1:
+        args["cmp_page"] = page
+    return redirect(url_for("show_session", **args) + "#" + anchor)
+
+
+def _cmp_load(sid):
+    """The validated ``ComparisonLedger`` from ONE store snapshot. Raises
+    ``_ProjectNotFound`` when the project has no durable record and anything
+    else when the comparison cannot be read truthfully."""
+    loader = getattr(_get_store(), "load_decision_comparison", None)
+    if not callable(loader):
+        raise _ProjectNotFound(sid)
+    return loader(sid)
+
+
+def _decision_comparison_context(sid, entry, writable, page=1):
+    """The Decision Room view of the inventor's criteria and values, paged at
+    the 200-cell display budget, or ``None`` when the project has no durable
+    record (nothing is claimed). Anything unreadable or invalid — the ledger
+    or either comparison table — yields ``status="unavailable"`` with NO
+    criteria, NO grid and NO form, never an empty or partial comparison.
+    Forms (with their signed bindings) are built only on a writable surface."""
+    ack = entry.pop(CMP_ACK_SLOT, None)
+    error = entry.pop(CMP_ERROR_SLOT, None)
+    notice_root = entry.pop(CMP_NOTICE_ROOT_SLOT, None)
+    unavailable = {"status": _criteria.STATUS_UNAVAILABLE, "ack": None,
+                   "error": error, "notice_root": None, "writable": False}
+    try:
+        ledger = _cmp_load(sid)
+    except _ProjectNotFound:
+        return None
+    except Exception:
+        return unavailable
+    try:
+        view = _criteria.comparison_view(ledger, page=page, writable=writable)
+    except Exception:
+        return unavailable
+    view["ack"], view["error"], view["writable"] = ack, error, bool(writable)
+    view["notice_root"] = notice_root if notice_root in view["decisions"] else None
+    if writable:
+        for root, dview in view["decisions"].items():
+            dview["declare_binding"] = _cmp_binding(
+                sid, "declare", root, dview["question_record"])
+            for crit in dview["criteria"]:
+                crit["binding"] = _cmp_binding(
+                    sid, "criterion", root, crit["criterion_id"],
+                    crit["revision_no"], dview["question_record"])
+            for group in dview["groups"]:
+                for cell in group["cells"]:
+                    cell["binding"] = _cmp_binding(
+                        sid, "value", root, group["criterion_id"],
+                        cell["alternative_root"], cell["event_no"],
+                        group["criterion_revision"], cell["alternative_record"],
+                        dview["question_record"])
+        view["criterion_submission"] = _submission_identity_for(
+            sid, entry, _CMP_CRITERION_DOMAIN, _CMP_CRITERION_ENTRY_KEY)
+        view["value_submission"] = _submission_identity_for(
+            sid, entry, _CMP_VALUE_DOMAIN, _CMP_VALUE_ENTRY_KEY)
+    view["max_label"] = _criteria.MAX_CRITERION_LABEL_LENGTH
+    view["max_value"] = _criteria.MAX_VALUE_TEXT_LENGTH
+    return view
+
+
+def _comparison_report_view(sid):
+    """The report / PDF projection: the SAME presentation projection, read
+    once per render from ONE store snapshot. Every current table is included
+    when all of them together fit the 200-cell budget; otherwise no grid is
+    included and ``status="omitted_size"`` (never a subset presented as
+    complete). ``None`` when the project has no durable record; ``status=
+    "unavailable"`` when anything cannot be read. Read-only; writes nothing."""
+    try:
+        ledger = _cmp_load(sid)
+    except _ProjectNotFound:
+        return None
+    except Exception:
+        return {"status": _criteria.STATUS_UNAVAILABLE}
+    try:
+        return _criteria.comparison_view(ledger, complete_only=True)
+    except Exception:
+        return {"status": _criteria.STATUS_UNAVAILABLE}
+
+
+def _cmp_entry(sid):
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return None
+        SESSION_STORE[sid] = entry
+    return entry
+
+
+def _cmp_refusal(exc, text_limit_key):
+    """The catalogue key for a refusal decided against durable truth."""
+    if isinstance(exc, _criteria.ComparisonStale):
+        return "UI_CMP_MSG_STALE"
+    if isinstance(exc, _criteria.ComparisonLimitReached):
+        key = _CMP_LIMIT_KEYS.get(exc.limit, "UI_CMP_MSG_NOT_SAVED")
+        if exc.can_still_clear and exc.limit in _CMP_CLEARABLE_LIMITS:
+            key += "_CLEAR"
+        return key
+    if isinstance(exc, _criteria.ComparisonRejected):
+        if exc.reason == _criteria.REJECT_TEXT_TOO_LONG:
+            return text_limit_key
+        return _CMP_REJECT_KEYS.get(exc.reason, "UI_CMP_MSG_REJECTED")
+    return "UI_CMP_MSG_NOT_SAVED"
+
+
+def _cmp_run(sid, entry, page, anchor, entry_key, submission, key,
+             committed_for, append, same, ack_for, text_limit_key):
+    """The shared confirm-by-reload skeleton of the two comparison routes."""
+    store = _get_store()
+
+    def _consume():
+        if entry.get(entry_key) == submission:
+            entry.pop(entry_key, None)
+
+    def _settle(prior):
+        _consume()
+        if same(prior):
+            return _cmp_notice(sid, entry, page, anchor, ack=ack_for(prior))
+        return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_NOT_SAVED")
+
+    def _unknown():
+        # Whether an earlier attempt committed cannot be read: never NOT SAVED,
+        # never SAVED; the identity is kept so the same retry resolves once
+        # committed truth is readable.
+        return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_UNKNOWN")
+
+    # EXACT committed retry (refresh, double-submit, restart) first.
+    try:
+        prior = committed_for(store, key)
+    except (_ProjectNotFound, _DecisionComparisonCorrupt):
+        return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_NOT_SAVED")
+    except Exception:
+        return _unknown()
+    if prior is not None:
+        return _settle(prior)
+    try:
+        outcome, stored = append(store)
+    except _criteria.ComparisonError as exc:
+        return _cmp_notice(sid, entry, page, anchor,
+                           error=_cmp_refusal(exc, text_limit_key))
+    except _DecisionComparisonConflict:
+        _consume()
+        return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_NOT_SAVED")
+    except (_ProjectNotFound, _DecisionComparisonCorrupt):
+        return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_NOT_SAVED")
+    except (sqlite3.Error, StoreError):
+        # Never assume an outcome: re-read committed durable state.
+        try:
+            prior = committed_for(store, key)
+        except (_ProjectNotFound, _DecisionComparisonCorrupt):
+            return _cmp_notice(sid, entry, page, anchor,
+                               error="UI_CMP_MSG_NOT_SAVED")
+        except Exception:
+            return _unknown()
+        if prior is None:
+            return _cmp_notice(sid, entry, page, anchor,
+                               error="UI_CMP_MSG_NOT_SAVED")
+        return _settle(prior)
+    if outcome == _CMP_NO_CHANGE:
+        return _cmp_notice(sid, entry, page, anchor, ack="UI_CMP_MSG_NO_CHANGE")
+    return _settle(stored)
+
+
+@app.route("/session/<sid>/decision/criterion", methods=["POST"])
+def decision_criterion_action(sid):
+    """Declare, correct, reconfirm or withdraw ONE comparison criterion."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = _cmp_entry(sid)
+    if entry is None:
+        return redirect(url_for("index"))
+    form = request.form
+    page = _cmp_page_arg(form.get("cmp_page"))
+    root = form.get("context_root", "")
+    anchor = ("cmp-" + root) if _criteria.is_valid_record_id(root) \
+        else "w2b-decision-capture"
+    submission = form.get("cmp_submission", "")
+    nonce = _verified_submission_identity(sid, submission, _CMP_CRITERION_DOMAIN)
+    if nonce is None:
+        return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_NOT_SAVED")
+    action = form.get("cmp_action", "")
+    question = form.get("question_record", "")
+    criterion_id = revision_no = None
+    if action not in _criteria.CRITERION_ACTIONS \
+            or not _criteria.is_valid_record_id(root) \
+            or not _criteria.is_valid_record_id(question):
+        return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_REJECTED")
+    if action == _criteria.ACTION_DECLARE:
+        bound = _cmp_binding_ok(sid, form.get("cmp_binding"), "declare", root,
+                                question)
+    else:
+        criterion_id = form.get("criterion_id", "")
+        raw_no = form.get("revision_no", "")
+        if not _criteria.is_valid_criterion_id(criterion_id) \
+                or not isinstance(raw_no, str) \
+                or not _CMP_SMALL_INT_RE.match(raw_no):
+            return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_REJECTED")
+        revision_no = int(raw_no)
+        bound = _cmp_binding_ok(sid, form.get("cmp_binding"), "criterion", root,
+                                criterion_id, revision_no, question)
+    if not bound:
+        return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_REJECTED")
+    label = None
+    if action in (_criteria.ACTION_DECLARE, _criteria.ACTION_CORRECT):
+        label, reason = _criteria.clean_text(
+            form.get("criterion_label"), _criteria.MAX_CRITERION_LABEL_LENGTH)
+        if reason:
+            return _cmp_notice(sid, entry, page, anchor, error=_cmp_refusal(
+                _criteria.ComparisonRejected(reason), "UI_CMP_MSG_LABEL_TOO_LONG"))
+    if action == _criteria.ACTION_WITHDRAW and form.get("withdraw_confirm") != "yes":
+        return _cmp_notice(sid, entry, page, anchor,
+                           error="UI_CMP_MSG_CONFIRM_WITHDRAW")
+    key = _cmp_submission_key(sid, nonce, "criterion-" + action)
+    return _cmp_run(
+        sid, entry, page, anchor, _CMP_CRITERION_ENTRY_KEY, submission, key,
+        lambda store, k: store.committed_criterion_revision_for_submission(sid, k),
+        lambda store: store.append_criterion_action(
+            sid, key, action, root, question, criterion_id=criterion_id,
+            expected_revision_no=revision_no, label=label),
+        lambda prior: _criteria.same_criterion_submission(
+            prior, action, root, criterion_id, revision_no, label),
+        lambda prior: _CMP_CRITERION_ACKS[prior.kind],
+        "UI_CMP_MSG_LABEL_TOO_LONG")
+
+
+@app.route("/session/<sid>/decision/value", methods=["POST"])
+def decision_value_action(sid):
+    """Save, reconfirm or clear the value of ONE criterion x alternative."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = _cmp_entry(sid)
+    if entry is None:
+        return redirect(url_for("index"))
+    form = request.form
+    page = _cmp_page_arg(form.get("cmp_page"))
+    root = form.get("context_root", "")
+    anchor = ("cmp-" + root) if _criteria.is_valid_record_id(root) \
+        else "w2b-decision-capture"
+    submission = form.get("cmp_submission", "")
+    nonce = _verified_submission_identity(sid, submission, _CMP_VALUE_DOMAIN)
+    if nonce is None:
+        return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_NOT_SAVED")
+    action = form.get("cmp_action", "")
+    criterion_id = form.get("criterion_id", "")
+    alt_root = form.get("alternative_root", "")
+    raw_no = form.get("event_no", "")
+    crit_rev = form.get("criterion_revision", "")
+    alt_record = form.get("alternative_record", "")
+    question = form.get("question_record", "")
+    if (action not in _criteria.VALUE_ACTIONS
+            or not _criteria.is_valid_record_id(root)
+            or not _criteria.is_valid_criterion_id(criterion_id)
+            or not _criteria.is_valid_record_id(alt_root)
+            or not isinstance(raw_no, str) or not _CMP_SMALL_INT_RE.match(raw_no)
+            or not _criteria.is_valid_criterion_revision_id(crit_rev)
+            or not _criteria.is_valid_record_id(alt_record)
+            or not _criteria.is_valid_record_id(question)):
+        return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_REJECTED")
+    event_no = int(raw_no)
+    if not _cmp_binding_ok(sid, form.get("cmp_binding"), "value", root,
+                           criterion_id, alt_root, event_no, crit_rev,
+                           alt_record, question):
+        return _cmp_notice(sid, entry, page, anchor, error="UI_CMP_MSG_REJECTED")
+    text = None
+    if action == _criteria.ACTION_SAVE:
+        text, reason = _criteria.clean_text(
+            form.get("value_text"), _criteria.MAX_VALUE_TEXT_LENGTH)
+        if reason:
+            return _cmp_notice(sid, entry, page, anchor, error=_cmp_refusal(
+                _criteria.ComparisonRejected(reason), "UI_CMP_MSG_VALUE_TOO_LONG"))
+    key = _cmp_submission_key(sid, nonce, "value-" + action)
+
+    def _ack(prior):
+        if prior.kind == _criteria.VALUE_CLEARED and prior.reserved:
+            return "UI_CMP_MSG_VALUE_CLEARED_FINAL"
+        return _CMP_VALUE_ACKS[prior.kind]
+
+    return _cmp_run(
+        sid, entry, page, anchor, _CMP_VALUE_ENTRY_KEY, submission, key,
+        lambda store, k: store.committed_value_event_for_submission(sid, k),
+        lambda store: store.append_value_action(
+            sid, key, action, root, criterion_id, alt_root, event_no, crit_rev,
+            alt_record, question, text=text),
+        lambda prior: _criteria.same_value_submission(
+            prior, action, root, criterion_id, alt_root, event_no, text),
+        _ack, "UI_CMP_MSG_VALUE_TOO_LONG")
 
 
 @app.route("/session/<sid>/keep-snapshot", methods=["POST"])

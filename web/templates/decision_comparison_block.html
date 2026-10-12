@@ -1,0 +1,197 @@
+{#- INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 — the ONE presentation of
+    the inventor's own criteria and values for ONE decision, included inside
+    the decision block of the session page (``cmp_surface == 'session'``;
+    controls only when the page is writable) and of the report / PDF
+    (``cmp_surface == 'report'``; read-only, complete or explicitly omitted).
+    Every value comes from the store snapshot projection
+    ``decision_comparison`` (decision ledger + both comparison tables read
+    together); nothing here reads the cached session state. Inventor text is
+    direction-isolated and rendered verbatim; internal ids travel only as form
+    values and data attributes, never as visible text. InventorAI scores,
+    ranks, weighs and chooses nothing here. -#}
+{% set cmp = decision_comparison %}
+{% set cmp_report = cmp_surface == 'report' %}
+{% set dc = cmp.decisions.get(d.context_root) if cmp.status in ('available', 'omitted_size') else None %}
+{% if cmp.status == 'unavailable' or dc is none or not cmp_report or dc.criteria or dc.withdrawn_criteria %}
+<section class="cmp" id="{{ 'report-cmp-' if cmp_report else 'cmp-' }}{{ d.context_root }}" data-cmp-decision="{{ d.context_root }}" data-cmp-surface="{{ cmp_surface }}" aria-labelledby="{{ 'report-cmp-heading-' if cmp_report else 'cmp-heading-' }}{{ d.context_root }}" style="border-top:1px dashed #d5c9e8;margin:10px 0 4px 0;padding-top:8px;max-width:100%;box-sizing:border-box">
+  <h4 id="{{ 'report-cmp-heading-' if cmp_report else 'cmp-heading-' }}{{ d.context_root }}" style="font-size:13px;color:#4a3c78;margin:0 0 4px 0">{{ t('UI_CMP_HEADING') }}</h4>
+  <p class="cmp-note" data-cmp-note style="font-size:12px;color:#555;margin:0 0 6px 0">{{ t('UI_CMP_NOTE') }}</p>
+  {% if not cmp_report and cmp.notice_root == d.context_root %}
+    {% if cmp.ack %}<p class="cmp-notice" data-cmp-ack role="status" style="font-size:13px;color:#1f5f2c;background:#eef8f0;border:1px solid #b9dcc2;border-radius:4px;padding:6px 8px;margin:4px 0">{{ t(cmp.ack) }}</p>{% endif %}
+    {% if cmp.error %}<p class="cmp-notice cmp-error" data-cmp-error role="alert" style="font-size:13px;color:#8a1f11;background:#fdf1ef;border:1px solid #e8c1ba;border-radius:4px;padding:6px 8px;margin:4px 0">{{ t(cmp.error) }}</p>{% endif %}
+  {% endif %}
+  {% if dc is none %}
+  <p class="cmp-unavailable" data-cmp-unavailable style="font-size:13px;color:#777;margin:4px 0">{{ t('UI_CMP_REPORT_UNAVAILABLE' if cmp_report else 'UI_CMP_UNAVAILABLE') }}</p>
+  {% else %}
+  {% set cmp_writable = (not cmp_report) and cmp.writable %}
+  <h5 style="font-size:12px;color:#4a3c78;margin:6px 0 2px 0">{{ t('UI_CMP_CRITERIA_HEADING') }}</h5>
+  {% if dc.criteria %}
+  <ol class="cmp-criteria" data-cmp-criteria style="margin:2px 0 6px 0;padding-inline-start:20px;font-size:13px">
+    {% for c in dc.criteria %}
+    <li class="cmp-criterion" data-cmp-criterion-item data-cmp-criterion-state="{{ c.state }}" style="margin-bottom:6px;overflow-wrap:anywhere">
+      <bdi dir="auto" class="cmp-label" data-cmp-label>{{ c.label }}</bdi>
+      {% if c.state == 'needs_confirmation' %}
+      <div class="cmp-needs" data-cmp-criterion-needs-confirmation style="font-size:12px;color:#8a5a00;margin:2px 0">{{ t('UI_CMP_CRITERION_NEEDS_CONFIRMATION') }}</div>
+      {% endif %}
+      {% if c.earlier %}
+      {% if cmp_report %}
+      <div class="cmp-earlier" style="font-size:12px;color:#666;margin:2px 0">{{ t('UI_CMP_EARLIER_LABELS') }}: {% for e in c.earlier %}<bdi dir="auto">{{ e }}</bdi>{% if not loop.last %} · {% endif %}{% endfor %}</div>
+      {% else %}
+      <details class="cmp-earlier" style="font-size:12px;margin:2px 0"><summary style="cursor:pointer;color:#5a2c8c">{{ t('UI_CMP_EARLIER_LABELS') }} ({{ c.earlier | length }})</summary>
+        <ol style="margin:2px 0;padding-inline-start:18px">{% for e in c.earlier %}<li><bdi dir="auto">{{ e }}</bdi></li>{% endfor %}</ol>
+      </details>
+      {% endif %}
+      {% endif %}
+      {% if cmp_writable %}
+      <details class="cmp-edit" data-cmp-criterion-edit style="font-size:12px;margin:2px 0">
+        <summary style="cursor:pointer;color:#5a2c8c">{{ t('UI_CMP_CHANGE_CRITERION') }}</summary>
+        {% if c.can_revise %}
+        <form method="POST" action="{{ url_for('decision_criterion_action', sid=sid) }}" data-cmp-criterion-form style="margin:4px 0">
+          <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+          <input type="hidden" name="cmp_submission" value="{{ cmp.criterion_submission }}">
+          <input type="hidden" name="cmp_binding" value="{{ c.binding }}">
+          <input type="hidden" name="context_root" value="{{ d.context_root }}">
+          <input type="hidden" name="criterion_id" value="{{ c.criterion_id }}">
+          <input type="hidden" name="revision_no" value="{{ c.revision_no }}">
+          <input type="hidden" name="question_record" value="{{ dc.question_record }}">
+          <input type="hidden" name="cmp_page" value="{{ cmp.page }}">
+          <label style="display:block;color:#666;margin-bottom:2px" for="cmp-label-{{ c.criterion_id }}">{{ t('UI_CMP_CORRECT_LABEL') }}</label>
+          <textarea id="cmp-label-{{ c.criterion_id }}" name="criterion_label" rows="2" maxlength="{{ cmp.max_label }}" dir="auto" style="width:100%;box-sizing:border-box">{{ c.label }}</textarea>
+          <button type="submit" name="cmp_action" value="correct" style="margin-top:4px">{{ t('UI_CMP_CORRECT_BUTTON') }}</button>
+          {% if c.state == 'needs_confirmation' %}
+          <button type="submit" name="cmp_action" value="reconfirm" style="margin-top:4px">{{ t('UI_CMP_RECONFIRM_CRITERION_BUTTON') }}</button>
+          {% endif %}
+        </form>
+        {% else %}
+        <p class="cmp-cap" data-cmp-criterion-cap style="color:#8a5a00;margin:4px 0">{{ t('UI_CMP_CAP_' ~ (c.revise_limit | upper)) }}</p>
+        {% endif %}
+        <form method="POST" action="{{ url_for('decision_criterion_action', sid=sid) }}" data-cmp-withdraw-form style="margin:4px 0">
+          <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+          <input type="hidden" name="cmp_submission" value="{{ cmp.criterion_submission }}">
+          <input type="hidden" name="cmp_binding" value="{{ c.binding }}">
+          <input type="hidden" name="context_root" value="{{ d.context_root }}">
+          <input type="hidden" name="criterion_id" value="{{ c.criterion_id }}">
+          <input type="hidden" name="revision_no" value="{{ c.revision_no }}">
+          <input type="hidden" name="question_record" value="{{ dc.question_record }}">
+          <input type="hidden" name="cmp_page" value="{{ cmp.page }}">
+          <label style="display:block;margin-bottom:2px"><input type="checkbox" name="withdraw_confirm" value="yes"> {{ t('UI_CMP_WITHDRAW_CONFIRM') }}</label>
+          <button type="submit" name="cmp_action" value="withdraw">{{ t('UI_CMP_WITHDRAW_BUTTON') }}</button>
+        </form>
+      </details>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="cmp-no-criteria" data-cmp-no-criteria style="font-size:13px;color:#777;margin:2px 0 6px 0">{{ t('UI_CMP_NO_CRITERIA') }}</p>
+  {% endif %}
+  {% if dc.withdrawn_criteria %}
+  {% if cmp_report %}
+  <div class="cmp-withdrawn" data-cmp-withdrawn style="font-size:12px;color:#666;margin:2px 0 6px 0"><strong>{{ t('UI_CMP_WITHDRAWN_HEADING') }}:</strong> {% for w in dc.withdrawn_criteria %}<bdi dir="auto">{{ w.label }}</bdi>{% if not loop.last %} · {% endif %}{% endfor %} — {{ t('UI_CMP_WITHDRAWN_NOTE') }}</div>
+  {% else %}
+  <details class="cmp-withdrawn" data-cmp-withdrawn style="font-size:12px;margin:2px 0 6px 0">
+    <summary style="cursor:pointer;color:#5a2c8c">{{ t('UI_CMP_WITHDRAWN_HEADING') }} ({{ dc.withdrawn_criteria | length }})</summary>
+    <p style="color:#666;margin:2px 0">{{ t('UI_CMP_WITHDRAWN_NOTE') }}</p>
+    <ul style="margin:2px 0;padding-inline-start:18px">{% for w in dc.withdrawn_criteria %}<li><bdi dir="auto">{{ w.label }}</bdi></li>{% endfor %}</ul>
+  </details>
+  {% endif %}
+  {% endif %}
+  {% if cmp_writable %}
+  {% if dc.can_declare %}
+  <form method="POST" action="{{ url_for('decision_criterion_action', sid=sid) }}" data-cmp-declare-form style="margin:4px 0 8px 0">
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <input type="hidden" name="cmp_submission" value="{{ cmp.criterion_submission }}">
+    <input type="hidden" name="cmp_binding" value="{{ dc.declare_binding }}">
+    <input type="hidden" name="context_root" value="{{ d.context_root }}">
+    <input type="hidden" name="question_record" value="{{ dc.question_record }}">
+    <input type="hidden" name="cmp_page" value="{{ cmp.page }}">
+    <label for="cmp-declare-{{ d.context_root }}" style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_CMP_DECLARE_LABEL') }}</label>
+    <input type="text" id="cmp-declare-{{ d.context_root }}" name="criterion_label" maxlength="{{ cmp.max_label }}" dir="auto" style="width:100%;max-width:420px;box-sizing:border-box">
+    <button type="submit" name="cmp_action" value="declare" style="margin-top:4px">{{ t('UI_CMP_DECLARE_BUTTON') }}</button>
+  </form>
+  {% else %}
+  <p class="cmp-cap" data-cmp-declare-cap style="font-size:12px;color:#8a5a00;margin:4px 0 8px 0">{{ t('UI_CMP_CAP_' ~ (dc.declare_limit | upper)) }}</p>
+  {% endif %}
+  {% endif %}
+  <h5 style="font-size:12px;color:#4a3c78;margin:8px 0 2px 0">{{ t('UI_CMP_VALUES_HEADING') }}</h5>
+  {% if dc.window == 'empty' %}
+  <p class="cmp-grid-empty" data-cmp-grid-empty style="font-size:13px;color:#777;margin:2px 0">{{ t('UI_CMP_EMPTY_NO_CRITERIA') if not dc.criteria else t('UI_CMP_EMPTY_NO_ALTERNATIVES') }}</p>
+  {% elif dc.window == 'omitted' %}
+  <p class="cmp-report-omitted" data-cmp-report-omitted style="font-size:13px;color:#8a5a00;margin:2px 0">{{ t('UI_CMP_REPORT_VALUES_OMITTED_HERE') }}</p>
+  {% elif dc.window == 'elsewhere' %}
+  <p class="cmp-elsewhere" data-cmp-elsewhere style="font-size:13px;color:#555;margin:2px 0">{{ (t('UI_CMP_ELSEWHERE_ONE') if dc.first_page == dc.last_page else t('UI_CMP_ELSEWHERE_RANGE')) | replace('{a}', dc.first_page) | replace('{b}', dc.last_page) }} <a class="cmp-page-link" data-cmp-page-link href="{{ url_for('show_session', sid=sid, cmp_page=dc.first_page) }}#cmp-{{ d.context_root }}">{{ t('UI_CMP_GO_TO_PAGE') | replace('{n}', dc.first_page) }}</a></p>
+  {% else %}
+  {% if dc.window == 'partial' %}
+  <p class="cmp-partial" data-cmp-partial style="font-size:12px;color:#555;margin:2px 0">{{ t('UI_CMP_PARTIAL') | replace('{a}', dc.first_page) | replace('{b}', dc.last_page) }}</p>
+  {% endif %}
+  {% for g in dc.groups %}
+  <div class="cmp-group" data-cmp-group data-cmp-criterion="{{ g.criterion_id }}" data-cmp-criterion-state="{{ g.criterion_state }}" style="margin:4px 0 8px 0;max-width:100%;overflow-x:auto">
+    <table class="cmp-table" data-cmp-table style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:13px">
+      <caption style="text-align:start;font-weight:bold;color:#333;padding:2px 0;overflow-wrap:anywhere"><bdi dir="auto" data-cmp-group-label>{{ g.label }}</bdi>{% if g.continued_before %} <span class="cmp-continued" data-cmp-continued-before style="font-weight:normal;color:#666">{{ t('UI_CMP_CONTINUED_BEFORE') }}</span>{% endif %}{% if g.continues_after %} <span class="cmp-continued" data-cmp-continues-after style="font-weight:normal;color:#666">{{ t('UI_CMP_CONTINUES_AFTER') }}</span>{% endif %}</caption>
+      <thead><tr>
+        <th scope="col" style="width:34%;text-align:start;border-bottom:1px solid #ccc;padding:3px 4px">{{ t('UI_CMP_COL_ALTERNATIVE') }}</th>
+        <th scope="col" style="text-align:start;border-bottom:1px solid #ccc;padding:3px 4px">{{ t('UI_CMP_COL_VALUE') }}</th>
+      </tr></thead>
+      <tbody>
+        {% for c in g.cells %}
+        <tr class="cmp-cell" data-cmp-cell data-cmp-state="{{ c.state }}" data-cmp-alternative="{{ c.alternative_root }}" style="vertical-align:top">
+          <th scope="row" style="text-align:start;font-weight:normal;border-bottom:1px solid #eee;padding:3px 4px;overflow-wrap:anywhere"><bdi dir="auto" data-cmp-alt-name>{{ c.alternative_name }}</bdi></th>
+          <td style="border-bottom:1px solid #eee;padding:3px 4px;overflow-wrap:anywhere">
+            {% if c.state == 'recorded' %}
+            <div class="cmp-value" data-cmp-value><bdi dir="auto" data-cmp-text style="white-space:pre-wrap">{{ c.text }}</bdi></div>
+            {% elif c.state == 'needs_confirmation' %}
+            <div class="cmp-needs" data-cmp-needs-confirmation style="font-size:12px;color:#8a5a00">{{ t('UI_CMP_STALE_LEAD') }} {% for r in c.stale %}<span data-cmp-stale-reason="{{ r }}">{{ t('UI_CMP_STALE_' ~ (r | upper)) }}</span>{% if not loop.last %}; {% endif %}{% endfor %}. {{ t('UI_CMP_STALE_TAIL') }}</div>
+            <div class="cmp-stale-value" data-cmp-stale-value style="font-size:12px;color:#555;margin-top:2px">{{ t('UI_CMP_STALE_VALUE_LABEL') }} <bdi dir="auto" data-cmp-text style="white-space:pre-wrap">{{ c.text }}</bdi></div>
+            {% elif c.state == 'cleared' %}
+            <div class="cmp-cleared" data-cmp-cleared style="color:#666">{{ t('UI_CMP_CLEARED') }}</div>
+            {% if c.closed %}<div class="cmp-closed" data-cmp-closed style="font-size:12px;color:#666">{{ t('UI_CMP_CLOSED') }}</div>{% endif %}
+            {% else %}
+            <div class="cmp-not-recorded" data-cmp-not-recorded style="color:#888">{{ t('UI_CMP_NOT_RECORDED') }}</div>
+            {% endif %}
+            {% if cmp_writable and not c.closed %}
+            <details class="cmp-cell-edit" data-cmp-cell-edit style="font-size:12px;margin-top:2px">
+              <summary style="cursor:pointer;color:#5a2c8c">{{ t('UI_CMP_EDIT_SUMMARY') }}</summary>
+              {% if not c.criterion_current %}
+              <p data-cmp-confirm-criterion-first style="color:#8a5a00;margin:2px 0">{{ t('UI_CMP_CONFIRM_CRITERION_FIRST_NOTE') }}</p>
+              {% elif c.limit %}
+              <p data-cmp-cell-cap style="color:#8a5a00;margin:2px 0">{{ t('UI_CMP_CAP_' ~ (c.limit | upper)) }}{% if c.can_clear %} {{ t('UI_CMP_CAP_CLEAR_REMAINS') }}{% endif %}</p>
+              {% endif %}
+              {% if c.can_save or c.can_clear %}
+              <form method="POST" action="{{ url_for('decision_value_action', sid=sid) }}" data-cmp-value-form style="margin:4px 0">
+                <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+                <input type="hidden" name="cmp_submission" value="{{ cmp.value_submission }}">
+                <input type="hidden" name="cmp_binding" value="{{ c.binding }}">
+                <input type="hidden" name="context_root" value="{{ d.context_root }}">
+                <input type="hidden" name="criterion_id" value="{{ g.criterion_id }}">
+                <input type="hidden" name="alternative_root" value="{{ c.alternative_root }}">
+                <input type="hidden" name="event_no" value="{{ c.event_no }}">
+                <input type="hidden" name="criterion_revision" value="{{ g.criterion_revision }}">
+                <input type="hidden" name="alternative_record" value="{{ c.alternative_record }}">
+                <input type="hidden" name="question_record" value="{{ dc.question_record }}">
+                <input type="hidden" name="cmp_page" value="{{ cmp.page }}">
+                {% if c.can_save %}
+                <label style="display:block;color:#666;margin-bottom:2px" for="cmp-v-{{ g.criterion_id }}-{{ c.alternative_root }}">{{ t('UI_CMP_VALUE_LABEL') }}</label>
+                <textarea id="cmp-v-{{ g.criterion_id }}-{{ c.alternative_root }}" name="value_text" rows="2" maxlength="{{ cmp.max_value }}" dir="auto" style="width:100%;box-sizing:border-box">{{ c.text or '' }}</textarea>
+                <button type="submit" name="cmp_action" value="save" style="margin-top:4px">{{ t('UI_CMP_SAVE_BUTTON') }}</button>
+                {% endif %}
+                {% if c.can_reconfirm %}
+                <button type="submit" name="cmp_action" value="reconfirm" style="margin-top:4px">{{ t('UI_CMP_RECONFIRM_VALUE_BUTTON') }}</button>
+                {% endif %}
+                {% if c.can_clear %}
+                <button type="submit" name="cmp_action" value="clear" style="margin-top:4px">{{ t('UI_CMP_CLEAR_BUTTON') }}</button>
+                {% endif %}
+              </form>
+              {% endif %}
+            </details>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endif %}
+</section>
+{% endif %}
