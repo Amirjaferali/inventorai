@@ -129,6 +129,10 @@ from engine.record_store import (
     ProjectComponentRejected as _ProjectComponentRejected,
     ProjectComponentConflict as _ProjectComponentConflict,
     ProjectComponentsCorrupt as _ProjectComponentsCorrupt,
+    ProjectComponentLimitReached as _ProjectComponentLimitReached,
+    ProjectComponentStale as _ProjectComponentStale,
+    ProjectComponentAlreadyWithdrawn as _ProjectComponentAlreadyWithdrawn,
+    ProjectComponentUnchanged as _ProjectComponentUnchanged,
 )
 from engine.record_contract import ProjectRecordContract
 # T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate): the
@@ -8435,9 +8439,20 @@ def declare_interface(sid):
 # is never an authorization credential. Part references are re-validated against
 # the durable composition INSIDE the write transaction and again on every load.
 # Inventor text is private project information: never logged, never sent to a
-# provider, never shared knowledge, never exported.
+# provider and never shared knowledge; it leaves the application only in the
+# owner's own Stage 35 disclosure-export download (field 7, current components).
+# COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: the inventor may also correct a
+# current component (name, function, part links) or withdraw it (terminal).
+# Both are append-only revisions over the immutable declaration; every surface
+# shows the ONE current projection, and withdrawn components only as history.
 _COMPONENT_SUBMISSION_DOMAIN = "component-submission-v1"
 _COMPONENT_SUBMISSION_ENTRY_KEY = "component_submission"
+# Action-specific signed submission identities of the two revision actions
+# (separate signature domains, entry slots and durable-key messages).
+_COMPONENT_CORRECTION_DOMAIN = "component-correction-v1"
+_COMPONENT_CORRECTION_ENTRY_KEY = "component_correction_submission"
+_COMPONENT_WITHDRAWAL_DOMAIN = "component-withdrawal-v1"
+_COMPONENT_WITHDRAWAL_ENTRY_KEY = "component_withdrawal_submission"
 # The component notice namespace: two ephemeral per-session slots holding ONE
 # catalogue key each, popped once by the render (never persisted). They never
 # touch the shared ``_interaction_ack`` / ``_answer_error`` slots.
@@ -8482,38 +8497,74 @@ def _component_notice(sid, entry, ack=None, error=None):
 
 def _component_inventory_context(sid, entry):
     """The session-page view of the inventor's declared components, read from
-    ONE consistent durable snapshot (composition + COMPLETE inventory), or
-    ``None`` when the project has no durable record (nothing is claimed).
-    Unreadable or invalid storage yields ``status="unavailable"`` with NO list
-    and NO form — never an empty or partial inventory. Part names are resolved
-    by identity from the same snapshot; nothing carries an identifier except
-    the form's own part choices."""
+    ONE consistent durable snapshot (composition + COMPLETE inventory and its
+    revision history), or ``None`` when the project has no durable record
+    (nothing is claimed). Unreadable or invalid storage — including any defect
+    in the revision history — yields ``status="unavailable"`` with NO list and
+    NO form, never an empty, partial or declaration-only inventory. Part names
+    are resolved by identity from the same snapshot; component ids travel only
+    as form values, never as visible text. CURRENT components show their latest
+    corrected material and their earlier versions; withdrawn components are
+    listed apart, as history only."""
     ack = entry.pop(COMPONENT_ACK_SLOT, None)
     error = entry.pop(COMPONENT_ERROR_SLOT, None)
-    loader = getattr(_get_store(), "load_component_inventory", None)
+    loader = getattr(_get_store(), "load_component_inventory_record", None)
     if not callable(loader):
         return None
     try:
-        subsystems, components = loader(sid)
+        subsystems, inventory = loader(sid)
     except _ProjectNotFound:
         return None
     except Exception:
         return {"status": "unavailable", "ack": None, "error": error}
     names = {sub.subsystem_id: sub.display_name for sub in subsystems}
-    can_add = len(components) < _subsystem_model.MAX_PROJECT_COMPONENTS_PER_PROJECT
+
+    def _material(version):
+        return {"name": version.display_name, "function": version.function_text,
+                "parts": [names[ref] for ref in version.subsystem_ids]}
+
+    current = []
+    for record in inventory.records:
+        if record.withdrawn:
+            continue
+        item = _material(record.versions[-1])
+        item.update({
+            "id": record.component_id,
+            "revision": record.head_revision_no,
+            "corrected": record.corrections > 0,
+            "can_correct": (record.corrections
+                            < _subsystem_model.MAX_CORRECTIONS_PER_COMPONENT),
+            "earlier": [dict(_material(v), original=(v.revision_no == 0))
+                        for v in record.versions[:-1]],
+            "part_choices": [
+                {"id": sub.subsystem_id, "name": sub.display_name,
+                 "checked": sub.subsystem_id in record.current.subsystem_ids}
+                for sub in subsystems],
+        })
+        current.append(item)
+    withdrawn = [_material(record.versions[-1]) for record in inventory.withdrawn]
+    active_room = len(current) < _subsystem_model.MAX_PROJECT_COMPONENTS_PER_PROJECT
+    lifetime_room = (inventory.declared_count
+                     < _subsystem_model.MAX_DECLARED_COMPONENTS_PER_PROJECT)
+    can_add = active_room and lifetime_room
     return {
         "status": "available",
         "has_parts": bool(subsystems),
-        "components": [
-            {"name": item.display_name, "function": item.function_text,
-             "parts": [names[ref] for ref in item.subsystem_ids]}
-            for item in components],
+        "components": current,
+        "withdrawn": withdrawn,
         "part_choices": [{"id": sub.subsystem_id, "name": sub.display_name}
                          for sub in subsystems],
         "can_add": can_add,
+        "cap_key": "UI_CI_CAP" if not active_room else "UI_CI_CAP_LIFETIME",
         "submission": (_submission_identity_for(
             sid, entry, _COMPONENT_SUBMISSION_DOMAIN,
             _COMPONENT_SUBMISSION_ENTRY_KEY) if can_add else ""),
+        "correction_submission": (_submission_identity_for(
+            sid, entry, _COMPONENT_CORRECTION_DOMAIN,
+            _COMPONENT_CORRECTION_ENTRY_KEY) if current else ""),
+        "withdrawal_submission": (_submission_identity_for(
+            sid, entry, _COMPONENT_WITHDRAWAL_DOMAIN,
+            _COMPONENT_WITHDRAWAL_ENTRY_KEY) if current else ""),
         "max_name": _subsystem_model.MAX_COMPONENT_NAME_LENGTH,
         "max_function": _subsystem_model.MAX_COMPONENT_FUNCTION_LENGTH,
         "ack": ack, "error": error,
@@ -8613,6 +8664,10 @@ def declare_component(sid):
     try:
         _outcome, stored = store.append_project_component(
             sid, component, submission_key)
+    except _ProjectComponentLimitReached as exc:
+        return _component_notice(
+            sid, entry, error=("UI_CI_MSG_ACTIVE_LIMIT" if exc.limit == "active"
+                               else "UI_CI_MSG_LIFETIME_LIMIT"))
     except _ProjectComponentRejected:
         return _component_notice(sid, entry, error="UI_CI_MSG_REJECTED")
     except _ProjectComponentConflict:
@@ -8631,6 +8686,199 @@ def declare_component(sid):
             return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
         return _settle(prior)
     return _settle(stored)
+
+
+# --- COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: correct / withdraw a component --
+# Two explicit inventor actions on ONE current declared component, each one
+# append-only revision under the same owners as the declaration
+# (``engine.subsystem_model`` semantics, the record store's
+# ``project_component_revisions``). A correction replaces the CURRENT name,
+# function and part links as a whole; a withdrawal takes the component out of
+# the current inventory and is terminal. The form carries the component id and
+# the revision the inventor was looking at: a revision prepared against an
+# older version is refused (stale), never merged. Authorization is the central
+# project check plus the global request-integrity (CSRF) guard; the signed,
+# action-specific submission identity only says WHICH durable action attempt a
+# post is (an exact retry returns the committed revision; the same identity
+# with other material fails closed). SAVED is reported only for a revision
+# CONFIRMED from committed durable state. Nothing is validated, inferred,
+# erased or rewritten, and no answer, gap, readiness, progression, evidence,
+# SafetySignal, calculation eligibility or composition changes.
+_COMPONENT_REVISION_FIELD_RE = re.compile(r"^(0|[1-9][0-9]?)$")
+
+
+def _component_revision_key(sid, nonce, kind):
+    """The stable durable submission identity of ONE revision action: HMAC
+    over (action, project, submission nonce) ONLY — never over the material."""
+    action = ("component-correction-action-v1"
+              if kind == _subsystem_model.COMPONENT_REVISION_CORRECTED
+              else "component-withdrawal-action-v1")
+    msg = _canonical_message(action, sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _component_revision_route(sid, kind):
+    corrected = kind == _subsystem_model.COMPONENT_REVISION_CORRECTED
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return redirect(url_for("index"))
+        SESSION_STORE[sid] = entry
+    domain, entry_key = (
+        (_COMPONENT_CORRECTION_DOMAIN, _COMPONENT_CORRECTION_ENTRY_KEY) if corrected
+        else (_COMPONENT_WITHDRAWAL_DOMAIN, _COMPONENT_WITHDRAWAL_ENTRY_KEY))
+    submission = request.form.get("component_revision_submission", "")
+    nonce = _verified_submission_identity(sid, submission, domain)
+    if nonce is None:
+        return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+    component_id = request.form.get("component_id", "")
+    raw_revision = request.form.get("component_revision", "")
+    if (not _subsystem_model.is_valid_component_id(component_id)
+            or not isinstance(raw_revision, str)
+            or not _COMPONENT_REVISION_FIELD_RE.match(raw_revision)):
+        return _component_notice(sid, entry, error="UI_CI_MSG_REVISION_REJECTED")
+    expected = int(raw_revision)
+    name = function = None
+    parts = ()
+    if corrected:
+        name, name_error = _component_text(
+            request.form.get("correction_name"),
+            _subsystem_model.MAX_COMPONENT_NAME_LENGTH)
+        function, function_error = _component_text(
+            request.form.get("correction_function"),
+            _subsystem_model.MAX_COMPONENT_FUNCTION_LENGTH)
+        if name_error or function_error:
+            return _component_notice(sid, entry, error=name_error or function_error)
+        parts = request.form.getlist("correction_part")
+        if len(parts) > _COMPONENT_MAX_PART_FIELDS or not all(
+                _subsystem_model.is_valid_subsystem_id(ref) for ref in parts) \
+                or len(set(parts)) != len(parts):
+            return _component_notice(sid, entry,
+                                     error="UI_CI_MSG_REVISION_REJECTED")
+    elif request.form.get("withdraw_confirm") != "yes":
+        return _component_notice(sid, entry, error="UI_CI_MSG_CONFIRM_WITHDRAW")
+    store = _get_store()
+    submission_key = _component_revision_key(sid, nonce, kind)
+
+    def _consume_submission():
+        # The identity is spent: the next render issues a fresh one.
+        if entry.get(entry_key) == submission:
+            entry.pop(entry_key, None)
+
+    def _settle(prior):
+        # Confirm-by-reload: only the STORED revision of exactly this action
+        # (component, kind, position and material) is acknowledged; the same
+        # identity with anything else fails closed.
+        _consume_submission()
+        same = (prior.component_id == component_id and prior.kind == kind
+                and prior.revision_no == expected + 1)
+        if same and corrected:
+            same = (prior.display_name == name and prior.function_text == function
+                    and set(prior.subsystem_ids) == set(parts))
+        if same:
+            return _component_notice(
+                sid, entry,
+                ack="UI_CI_MSG_CORRECTED" if corrected else "UI_CI_MSG_WITHDRAWN")
+        return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+
+    def _unknown():
+        # Whether an earlier attempt committed cannot be read: never NOT
+        # SAVED, never SAVED; the identity is kept so the same retry resolves
+        # once committed truth is readable.
+        return _component_notice(sid, entry, error="UI_CI_MSG_REVISION_UNKNOWN")
+
+    def _refused(exc):
+        # A refusal decided against durable truth; nothing was written.
+        if isinstance(exc, (_ProjectComponentStale, _subsystem_model.ComponentStale)):
+            return _component_notice(sid, entry, error="UI_CI_MSG_STALE")
+        if isinstance(exc, (_ProjectComponentAlreadyWithdrawn,
+                            _subsystem_model.ComponentAlreadyWithdrawn)):
+            return _component_notice(sid, entry, error="UI_CI_MSG_ALREADY_WITHDRAWN")
+        if isinstance(exc, (_ProjectComponentLimitReached,
+                            _subsystem_model.ComponentCorrectionLimit)):
+            return _component_notice(sid, entry, error="UI_CI_MSG_CORRECTION_LIMIT")
+        if isinstance(exc, (_ProjectComponentUnchanged,
+                            _subsystem_model.ComponentUnchanged)):
+            return _component_notice(sid, entry, error="UI_CI_MSG_UNCHANGED")
+        return _component_notice(sid, entry, error="UI_CI_MSG_REVISION_REJECTED")
+
+    # EXACT committed retry (refresh, double-submit, restart) is recognised
+    # first and changes nothing.
+    try:
+        prior = store.committed_component_revision_for_submission(
+            sid, submission_key)
+    except _COMPONENT_DURABLE_INVALID:
+        return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+    except Exception:
+        return _unknown()
+    if prior is not None:
+        return _settle(prior)
+
+    # NEW revision, staged against the durable inventory (re-validated again
+    # inside the write transaction).
+    try:
+        composition, inventory = store.load_component_inventory_record(sid)
+        if corrected:
+            revision = _subsystem_model.corrected_component_revision(
+                inventory, composition, component_id, expected, name, function,
+                parts)
+        else:
+            revision = _subsystem_model.withdrawn_component_revision(
+                inventory, component_id, expected)
+    except _subsystem_model.ComponentError as exc:
+        return _refused(exc)
+    except Exception:
+        # The committed read above just established that nothing is stored
+        # under this identity, and this request has written nothing.
+        return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+    try:
+        _outcome, stored = store.append_component_revision(
+            sid, revision, submission_key)
+    except _ProjectComponentRejected as exc:
+        return _refused(exc)
+    except _ProjectComponentConflict:
+        _consume_submission()
+        return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+    except (sqlite3.Error, StoreError):
+        # Never assume an outcome: re-read committed durable state.
+        try:
+            prior = store.committed_component_revision_for_submission(
+                sid, submission_key)
+        except _COMPONENT_DURABLE_INVALID:
+            return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+        except Exception:
+            return _unknown()
+        if prior is None:
+            return _component_notice(sid, entry, error="UI_CI_MSG_NOT_SAVED")
+        return _settle(prior)
+    return _settle(stored)
+
+
+@app.route("/session/<sid>/correct-component", methods=["POST"])
+def correct_component(sid):
+    """COMPONENT-INVENTORY-CORRECT-WITHDRAW-01 — the inventor corrects ONE
+    current declared component: its name, what it does and its part links,
+    replaced as a whole. One OWNER_STATED / UNVALIDATED correction revision is
+    appended; the original declaration and every earlier version stay in the
+    history. A correction is the inventor's own restatement, never a
+    validation."""
+    return _component_revision_route(
+        sid, _subsystem_model.COMPONENT_REVISION_CORRECTED)
+
+
+@app.route("/session/<sid>/withdraw-component", methods=["POST"])
+def withdraw_component(sid):
+    """COMPONENT-INVENTORY-CORRECT-WITHDRAW-01 — the inventor withdraws ONE
+    current declared component from the current inventory, after an explicit
+    confirmation. One terminal OWNER_STATED / UNVALIDATED withdrawal revision is
+    appended; nothing is erased — the declaration, every correction and the
+    withdrawal stay in the project's records."""
+    return _component_revision_route(
+        sid, _subsystem_model.COMPONENT_REVISION_WITHDRAWN)
 
 
 # --- Stage 15 Slice 3: Interface Verification Preparation ------------------
@@ -9618,11 +9866,17 @@ def _pci_context(sid):
         "dependency": _s15_dependency_view(_subsystem_model.dependency_for(
             record["dependencies"], item.interface_id), names),
     } for item in record["interfaces"]]
+    # COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: ``components`` is the CURRENT
+    # projection (latest corrected material, withdrawn excluded); withdrawn
+    # components are presented apart, as history only.
+    withdrawn = [{"name": item.display_name, "function": item.function_text}
+                 for item in record.get("withdrawn_components", ())]
     return _PCI_OK, {
         "parts": parts,
         "linked_components": [c for c in components if c["parts"]],
         "unassigned_components": [c for c in components if not c["parts"]],
         "component_count": len(components),
+        "withdrawn_components": withdrawn,
         "interfaces": interfaces,
         "optional_part": len(composition) > len(_subsystem_model.COMPOSITION_DOMAINS),
     }

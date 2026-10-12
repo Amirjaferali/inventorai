@@ -980,6 +980,10 @@ UI_STRINGS = {
         "en": "No components declared yet.",
         "ar": "لم تُعلَن أي مكوّنات بعد.",
     },
+    "UI_CI_NONE_CURRENT": {
+        "en": "No current components. Components you withdrew are listed separately as history.",
+        "ar": "لا توجد مكوّنات حالية. تُعرض المكوّنات التي سحبتها منفصلة بوصفها سجلًا.",
+    },
     "UI_CI_UNAVAILABLE": {
         "en": "Your declared components cannot be shown right now. No list is shown rather than an incomplete one. Reload the page later.",
         "ar": "لا يمكن عرض المكوّنات التي أعلنتها الآن. لا تُعرض القائمة بدلًا من عرضها ناقصة. أعد تحميل الصفحة لاحقًا.",
@@ -1014,8 +1018,12 @@ UI_STRINGS = {
     },
     "UI_CI_BUTTON": {"en": "Save component", "ar": "احفظ المكوّن"},
     "UI_CI_CAP": {
-        "en": "This project already holds the maximum number of declared components, so no new one can be added.",
-        "ar": "يحتوي هذا المشروع بالفعل على الحد الأقصى من المكوّنات المُعلنة، فلا يمكن إضافة مكوّن جديد.",
+        "en": "This project already has 50 current components, the most it can hold at once, so no new one can be added. Withdrawing a component frees a place.",
+        "ar": "يحتوي هذا المشروع بالفعل على 50 مكوّنًا حاليًا، وهو الحد الأقصى في وقت واحد، فلا يمكن إضافة مكوّن جديد. سحب مكوّن يُفرغ مكانًا.",
+    },
+    "UI_CI_CAP_LIFETIME": {
+        "en": "This project has reached the limit of 500 components declared over its lifetime, so no new one can be added.",
+        "ar": "بلغ هذا المشروع حد 500 مكوّن مُعلن طوال عمره، فلا يمكن إضافة مكوّن جديد.",
     },
     "UI_CI_MSG_SAVED": {
         "en": "Saved. The component is recorded as you described it. Nothing has checked it, and this is not a validation.",
@@ -1034,8 +1042,16 @@ UI_STRINGS = {
         "ar": "يحتوي النص على حرف لا يمكن حفظه. لم يُحفظ شيء.",
     },
     "UI_CI_MSG_REJECTED": {
-        "en": "The selected parts no longer match this project, or the component list is full. Reload the page and try again. Nothing was saved.",
-        "ar": "الأجزاء المختارة لم تعد مطابقة لهذا المشروع، أو أن قائمة المكوّنات ممتلئة. أعد تحميل الصفحة وحاول مجددًا. لم يُحفظ شيء.",
+        "en": "The selected parts no longer match this project. Reload the page and try again. Nothing was saved.",
+        "ar": "الأجزاء المختارة لم تعد مطابقة لهذا المشروع. أعد تحميل الصفحة وحاول مجددًا. لم يُحفظ شيء.",
+    },
+    "UI_CI_MSG_ACTIVE_LIMIT": {
+        "en": "This project already has 50 current components, the most it can hold at once. Withdraw a component to add another. Nothing was saved.",
+        "ar": "يحتوي هذا المشروع بالفعل على 50 مكوّنًا حاليًا، وهو الحد الأقصى في وقت واحد. اسحب مكوّنًا لتضيف آخر. لم يُحفظ شيء.",
+    },
+    "UI_CI_MSG_LIFETIME_LIMIT": {
+        "en": "This project has reached the limit of 500 components declared over its lifetime. Nothing was saved.",
+        "ar": "بلغ هذا المشروع حد 500 مكوّن مُعلن طوال عمره. لم يُحفظ شيء.",
     },
     "UI_CI_MSG_NOT_SAVED": {
         "en": "That component could not be saved. Nothing was changed. Reload the page and try again.",
@@ -1044,6 +1060,89 @@ UI_STRINGS = {
     "UI_CI_MSG_UNKNOWN": {
         "en": "We could not confirm whether that component was saved. Reload this page to see your list before entering it again; saving the same entry again from this page will not create a duplicate.",
         "ar": "لم نتمكن من التأكد مما إذا كان هذا المكوّن قد حُفظ. أعد تحميل الصفحة لترى قائمتك قبل إدخاله مجددًا؛ وإعادة حفظ الإدخال نفسه من هذه الصفحة لن تُنشئ نسخة مكرّرة.",
+    },
+    # --- COMPONENT-INVENTORY-CORRECT-WITHDRAW-01 — correcting and withdrawing a
+    # declared component. A correction is the inventor's own restatement and
+    # keeps the earlier version as history; a withdrawal takes the component
+    # out of the current list, is final and erases nothing.
+    "UI_CI_CORRECTED_MARK": {"en": "corrected by you", "ar": "صحّحتَه أنت"},
+    "UI_CI_HISTORY_SUMMARY": {
+        "en": "Earlier versions you recorded",
+        "ar": "النسخ السابقة التي سجّلتها",
+    },
+    "UI_CI_VERSION_ORIGINAL": {"en": "As first declared:", "ar": "كما أعلنتَه أول مرة:"},
+    "UI_CI_VERSION_CORRECTION": {"en": "Earlier correction:", "ar": "تصحيح سابق:"},
+    "UI_CI_CORRECT_SUMMARY": {"en": "Correct this component", "ar": "صحّح هذا المكوّن"},
+    "UI_CI_CORRECT_HINT": {
+        "en": "Enter the corrected name, what it does and its part links. The version you replace stays in this project's history. A correction is your own restatement: nothing checks it, and it is not a validation.",
+        "ar": "أدخل الاسم المصحَّح وما يفعله وارتباطاته بالأجزاء. تبقى النسخة التي تستبدلها في سجل هذا المشروع. التصحيح إعادة صياغة من عندك: لا يفحصه شيء، وليس تحقّقًا.",
+    },
+    "UI_CI_CORRECT_BUTTON": {"en": "Save correction", "ar": "احفظ التصحيح"},
+    "UI_CI_CORRECT_LIMIT": {
+        "en": "This component already has 20 corrections, the most allowed. You can still withdraw it.",
+        "ar": "لهذا المكوّن بالفعل 20 تصحيحًا، وهو الحد الأقصى. ما زال بإمكانك سحبه.",
+    },
+    "UI_CI_WITHDRAW_SUMMARY": {"en": "Withdraw this component", "ar": "اسحب هذا المكوّن"},
+    "UI_CI_WITHDRAW_HINT": {
+        "en": "Withdrawing takes this component out of your current list and out of what InventorAI shows as your invention's components. It cannot be undone here. It is not erasure: the original declaration, every correction and the withdrawal stay in this project's durable history and may also remain in backups.",
+        "ar": "يُخرج السحب هذا المكوّن من قائمتك الحالية ومما يعرضه InventorAI بوصفه مكوّنات اختراعك. ولا يمكن التراجع عنه هنا. وهو ليس حذفًا: يبقى الإعلان الأصلي وكل تصحيح والسحب نفسه في السجل الدائم لهذا المشروع، وقد يبقى ذلك كلّه أيضًا في النسخ الاحتياطية.",
+    },
+    "UI_CI_WITHDRAW_CONFIRM": {
+        "en": "I want to withdraw this component",
+        "ar": "أريد سحب هذا المكوّن",
+    },
+    "UI_CI_WITHDRAW_BUTTON": {"en": "Withdraw component", "ar": "اسحب المكوّن"},
+    "UI_CI_WITHDRAWN_TITLE": {
+        "en": "Withdrawn components — history only, not current",
+        "ar": "المكوّنات المسحوبة — سجل فقط، وليست حالية",
+    },
+    "UI_CI_WITHDRAWN_NOTE": {
+        "en": "You withdrew these components, so they are not in your current list. Withdrawal is not erasure: their records stay in this project's durable history and may also remain in backups.",
+        "ar": "سحبتَ هذه المكوّنات، فهي ليست ضمن قائمتك الحالية. والسحب ليس حذفًا: تبقى سجلاتها في السجل الدائم لهذا المشروع، وقد تبقى أيضًا في النسخ الاحتياطية.",
+    },
+    "UI_CI_WITHDRAWN_STATUS": {
+        "en": "withdrawn by you · history only",
+        "ar": "سحبتَه أنت · سجل فقط",
+    },
+    "UI_CI_LAST_VERSION_LABEL": {
+        "en": "Last recorded version:",
+        "ar": "آخر نسخة مسجّلة:",
+    },
+    "UI_CI_MSG_CORRECTED": {
+        "en": "Saved. The correction is recorded as you described it, and the earlier version stays in the history. Nothing has checked it, and this is not a validation.",
+        "ar": "تم الحفظ. سُجّل التصحيح كما وصفته، وتبقى النسخة السابقة في السجل. لم يفحصه شيء، وليس تحقّقًا.",
+    },
+    "UI_CI_MSG_WITHDRAWN": {
+        "en": "Withdrawn. The component is no longer in your current list. Nothing was erased: its records stay in this project's history.",
+        "ar": "تم السحب. لم يعد المكوّن ضمن قائمتك الحالية. ولم يُحذف شيء: تبقى سجلاته في سجل هذا المشروع.",
+    },
+    "UI_CI_MSG_STALE": {
+        "en": "This component changed after this page was opened, so nothing was saved. Review its current version and try again.",
+        "ar": "تغيّر هذا المكوّن بعد فتح هذه الصفحة، فلم يُحفظ شيء. راجع نسخته الحالية وحاول مجددًا.",
+    },
+    "UI_CI_MSG_ALREADY_WITHDRAWN": {
+        "en": "This component is already withdrawn. Nothing was changed.",
+        "ar": "هذا المكوّن مسحوب بالفعل. لم يتغيّر شيء.",
+    },
+    "UI_CI_MSG_UNCHANGED": {
+        "en": "The correction is the same as the current version. Nothing was saved.",
+        "ar": "التصحيح مطابق للنسخة الحالية. لم يُحفظ شيء.",
+    },
+    "UI_CI_MSG_CORRECTION_LIMIT": {
+        "en": "This component already has 20 corrections, the most allowed. Nothing was saved. You can still withdraw it.",
+        "ar": "لهذا المكوّن بالفعل 20 تصحيحًا، وهو الحد الأقصى. لم يُحفظ شيء. ما زال بإمكانك سحبه.",
+    },
+    "UI_CI_MSG_CONFIRM_WITHDRAW": {
+        "en": "Tick the box to confirm that you want to withdraw this component. Nothing was changed.",
+        "ar": "ضع علامة في المربع لتأكيد رغبتك في سحب هذا المكوّن. لم يتغيّر شيء.",
+    },
+    "UI_CI_MSG_REVISION_REJECTED": {
+        "en": "That change does not match this project's current components or parts. Reload the page and try again. Nothing was saved.",
+        "ar": "هذا التغيير لا يطابق مكوّنات هذا المشروع أو أجزاءه الحالية. أعد تحميل الصفحة وحاول مجددًا. لم يُحفظ شيء.",
+    },
+    "UI_CI_MSG_REVISION_UNKNOWN": {
+        "en": "We could not confirm whether that change was saved. Reload this page to see the component's current version before trying again; repeating the same change from this page will not record it twice.",
+        "ar": "لم نتمكن من التأكد مما إذا كان هذا التغيير قد حُفظ. أعد تحميل الصفحة لترى النسخة الحالية للمكوّن قبل المحاولة مجددًا؛ وتكرار التغيير نفسه من هذه الصفحة لن يسجّله مرتين.",
     },
     # --- STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 — the read-only view
     # of what the inventor recorded about parts, components and interactions.

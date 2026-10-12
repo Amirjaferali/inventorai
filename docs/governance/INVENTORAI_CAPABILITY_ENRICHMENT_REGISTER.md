@@ -804,7 +804,9 @@ concepts referenced elsewhere in this register's genesis note are unchanged.)
     - **Visual-interpretation approach:** provider or local model, model and dataset rights, compute, cost, latency
       and error rates.
     - **Component editing:** whether the Component Inventory gains edit / withdraw. The reject / rename / split /
-      merge steps in the intended behaviour above would need it.
+      merge steps in the intended behaviour above would need it. *(Partly resolved, effective only on the verified
+      merge of its PR: COMPONENT-INVENTORY-CORRECT-WITHDRAW-01 adds correction and terminal withdrawal as append-only
+      revisions with a stable `component_id`. Split, merge, reinstatement and bulk editing stay OPEN.)*
   - **FUTURE GATE.**
     - **Before real-image intake:**
       - Owner approval to deliver CAP-14 (§8D currently reads R2 — delivery approval unresolved);

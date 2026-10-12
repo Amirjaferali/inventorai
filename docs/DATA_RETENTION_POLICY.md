@@ -28,6 +28,7 @@ notably LQ-09/LQ-10/TQ-07) and separate Owner acceptance.
 | Interface verification observations (the inventor's own report of what actually happened when they tested or checked a declared interaction; Stage 15 Slice 4) | Durable SQLite (`subsystem_interface_observations`) — APPEND-ONLY history: each recorded check and each correction is a new row; a correction does not rewrite or delete the earlier observation; no clear or delete path exists | YES |
 | Interface dependency declarations (the inventor's own statement of which part relies on the other through a declared interaction, or that each relies on the other, with an optional note; Stage 15 closure) | Durable SQLite (`subsystem_interface_dependencies`) — ONE current value per project and declared interaction: an edit replaces it and clearing the declaration removes that row; no history is kept | YES |
 | Optional-part answers (the inventor's own answers to the governed questions about an optional composed part, such as a control-loop part; Stage 28 — Control-Loop Optional Part — Slice 2, dormant) | Durable SQLite (`subsystem_part_answers`) — ONE current value per project, part and question: an edit replaces the text and clearing an answer removes that row; no history is kept | YES |
+| Declared components and their correction / withdrawal history (the inventor's own list of the physical components their invention includes; COMPONENT-INVENTORY-DECLARE-LIST-01 and COMPONENT-INVENTORY-CORRECT-WITHDRAW-01) | Durable SQLite (`project_components`, `project_component_revisions`) — APPEND-ONLY: each declaration, each correction and each withdrawal is a new row; a correction does not rewrite or delete the earlier version, and a withdrawal removes nothing (the component only leaves the current list); no clear or delete path exists | YES |
 | Integration evidence anchors (which declared interaction each Integration evidence item belongs to; Stage 15 closure — the evidence itself is in `readiness_evidence`) | Durable SQLite (`integration_evidence_anchors`) — INSERT-only: one immutable anchor per Integration evidence row, written with that row; no update, clear or delete path exists | YES |
 | Audit / commercial scaffolding (`access_audit`, `commercial_audit`, lifecycle, dedupe, usage) | Durable SQLite, append-only; NO live billing data | Partly |
 | Auth rate-limit counters | Durable SQLite (`auth_rate_limits`) — privacy-digest keys, no raw email | NO |
@@ -96,6 +97,13 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
   delete. Recording or correcting an observation is NOT account or project erasure and decides no
   retention period; the existing broader project / account retention and deletion rules are
   unchanged, and earlier values may persist in backups.
+* Declared components (`project_components`) and their correction / withdrawal history
+  (`project_component_revisions`) are durable private project data and are APPEND-ONLY: a
+  correction appends a new version and neither rewrites nor deletes the earlier one, and a
+  withdrawal appends a terminal entry that takes the component out of the current list without
+  removing any row. Withdrawing a component is NOT deletion, NOT erasure and NOT account or project
+  erasure, and decides no retention period; the existing broader project / account retention and
+  deletion rules are unchanged, and every version may persist in backups.
 * Stage 15 closure extends the same user-initiated current-value behaviour, unchanged in kind, to
   the owner's own interface dependency declarations (`subsystem_interface_dependencies`): editing a
   declaration replaces it in place, and clearing a dependency declaration removes that single
