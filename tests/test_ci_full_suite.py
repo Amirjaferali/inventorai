@@ -1,8 +1,9 @@
 """Sharded FULL-suite authority — scripts/ci_full_suite.py and the CI workflow.
 
 Pins the adopted contract (Pilot-02 partition, evidence and audit, now authoritative):
-  * the deterministic whole-file partition over exactly three shards: the static
-    performance-only BROWSER_SHARD placement, else the SHA-256 rule;
+  * the deterministic whole-file partition over exactly five shards: the static
+    performance-only DEDICATED_SHARD placement (shards 1-3, one file each), the
+    static BROWSER_SHARD placement, else the SHA-256 rule over the shared shards 4-5;
   * the shard plugin: normal full collection, deselection of other shards'
     files only, per-node outcomes, collection errors, exit status;
   * the fail-closed central audit, including every adversarial case the pilot
@@ -11,7 +12,7 @@ Pins the adopted contract (Pilot-02 partition, evidence and audit, now authorita
     pinned independently on their one permanent owner (no inline workflow copy);
   * the workflow topology: an always-running `scope` job with the unchanged
     six-path SMOKE exemption and fail-closed FULL fallback; SMOKE decided by
-    `verify`; FULL decided by the three-shard matrix plus the fail-closed audit,
+    `verify`; FULL decided by the five-shard matrix plus the fail-closed audit,
     which runs inside the protected `CI required` job (no separate audit job);
     the scope-aware `CI required` verdict over the job results and the audit /
     cleanliness step outcomes (executed over its whole truth table, never
@@ -26,6 +27,7 @@ import ast
 import concurrent.futures
 import copy
 import hashlib
+import itertools
 import json
 import os
 import pathlib
@@ -50,16 +52,18 @@ EXPECTED = {"run_id": "1001", "run_attempt": "2", "expected_base": BASE, "expect
 # ==========================================================================
 # partition
 # ==========================================================================
-@pytest.mark.parametrize("path, prefix, shard", [
-    ("tests/test_draft_l2_local_continuity.py", "6f282c7c", 2),
-    ("tests/test_p5_2_draft_account_switch.py", "67b345c2", 3),
-    ("tests/test_email_h1_access_log_token_redaction.py", "94a42cf2", 2),
-    ("tests/test_delta.py", "88c1a4e0", 1),
+@pytest.mark.parametrize("path, prefix, plain, shared", [
+    ("tests/test_draft_l2_local_continuity.py", "6f282c7c", 5, 4),
+    ("tests/test_p5_2_draft_account_switch.py", "67b345c2", 1, 4),
+    ("tests/test_email_h1_access_log_token_redaction.py", "94a42cf2", 4, 4),
+    ("tests/test_delta.py", "88c1a4e0", 3, 4),
+    ("tests/test_alpha.py", "97b0fa2b", 1, 5),
 ])
-def test_known_sha256_vectors(path, prefix, shard):
+def test_known_sha256_vectors(path, prefix, plain, shared):
     assert hashlib.sha256(path.encode("utf-8")).hexdigest()[:8] == prefix
-    assert cfs.hash_shard(path) == shard == 1 + int(prefix, 16) % 3
-    assert cfs.shard_of(path) == cfs.BROWSER_SHARD.get(path, shard)
+    assert cfs.hash_shard(path) == plain == 1 + int(prefix, 16) % 5
+    assert cfs.shared_shard(path) == shared == (4, 5)[int(prefix, 16) % 2]
+    assert cfs.shard_of(path) == cfs.BROWSER_SHARD.get(path, shared)
 
 
 def test_partition_is_deterministic_across_interpreters_and_hash_seeds():
@@ -71,36 +75,53 @@ def test_partition_is_deterministic_across_interpreters_and_hash_seeds():
         out = subprocess.run([sys.executable, "-c", code], input=json.dumps(paths), capture_output=True,
                              text=True, env=dict(os.environ, PYTHONHASHSEED=seed), check=True).stdout
         assert json.loads(out) == here
-    assert set(here) == {1, 2, 3}
+    assert set(here) == {1, 2, 3, 4, 5}
     assert set(cfs.BROWSER_SHARD) <= set(paths)
 
 
-def test_shard_range_is_one_to_three():
+def test_shard_range_is_one_to_five():
+    assert cfs.SHARD_COUNT == 5 and cfs.SHARED_SHARDS == (4, 5)
     for i in range(2000):
-        assert 1 <= cfs.shard_of(f"tests/test_{i}.py") <= 3
-    assert set(cfs.BROWSER_SHARD.values()) == {1, 2, 3}
-    assert all(type(v) is int for v in cfs.BROWSER_SHARD.values())
+        assert cfs.shard_of(f"tests/test_{i}.py") in cfs.SHARED_SHARDS
+    assert set(cfs.BROWSER_SHARD.values()) == {4, 5}
+    assert sorted(cfs.DEDICATED_SHARD.values()) == [1, 2, 3]
+    assert all(type(v) is int for v in (*cfs.BROWSER_SHARD.values(), *cfs.DEDICATED_SHARD.values()))
 
 
-def _browser_shard_literal():
+def _static_literal(name):
     tree = ast.parse((ROOT / "scripts" / "ci_full_suite.py").read_text(encoding="utf-8"))
     (node,) = [n for n in tree.body if isinstance(n, ast.Assign)
-               and [t.id for t in n.targets if isinstance(t, ast.Name)] == ["BROWSER_SHARD"]]
+               and [t.id for t in n.targets if isinstance(t, ast.Name)] == [name]]
     return node.value
 
 
-def test_browser_override_is_one_immutable_static_literal_without_duplicates():
-    call = _browser_shard_literal()
+@pytest.mark.parametrize("name", ["BROWSER_SHARD", "DEDICATED_SHARD"])
+def test_static_placement_is_one_immutable_literal_without_duplicates(name):
+    call = _static_literal(name)
     assert isinstance(call, ast.Call) and call.func.id == "MappingProxyType" and len(call.args) == 1
     literal = call.args[0]
     assert isinstance(literal, ast.Dict)
     assert all(isinstance(k, ast.Constant) and isinstance(v, ast.Constant)
                for k, v in zip(literal.keys, literal.values))              # no runtime / timing input
     keys = [k.value for k in literal.keys]
-    assert len(keys) == len(set(keys)) == len(cfs.BROWSER_SHARD)           # no path listed twice
+    assert len(keys) == len(set(keys)) == len(getattr(cfs, name))          # no path listed twice
     assert keys == sorted(keys)
     with pytest.raises(TypeError):
-        cfs.BROWSER_SHARD["tests/test_alpha.py"] = 1
+        getattr(cfs, name)["tests/test_alpha.py"] = 1
+
+
+def test_each_dedicated_file_exists_and_runs_alone_on_its_own_shard():
+    paths = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "tests").glob("test_*.py"))
+    assert set(cfs.DEDICATED_SHARD) <= set(paths)                  # a rename must move the placement too
+    assert not set(cfs.DEDICATED_SHARD) & set(cfs.BROWSER_SHARD)
+    for path in cfs.DEDICATED_SHARD:
+        assert re.fullmatch(r"tests/test_[a-z0-9_]+\.py", path), path
+        assert "def test_" in (ROOT / path).read_text(encoding="utf-8"), path   # never an empty shard
+    assert len(set(cfs.DEDICATED_SHARD.values())) == len(cfs.DEDICATED_SHARD)
+    assert not set(cfs.DEDICATED_SHARD.values()) & set(cfs.SHARED_SHARDS)
+    assert sorted({*cfs.DEDICATED_SHARD.values(), *cfs.SHARED_SHARDS}) == list(range(1, cfs.SHARD_COUNT + 1))
+    for path in paths:                                            # nothing else lands on a dedicated shard
+        assert (cfs.shard_of(path) in cfs.DEDICATED_SHARD.values()) == (path in cfs.DEDICATED_SHARD), path
 
 
 def test_browser_override_lists_only_current_real_browser_files():
@@ -117,25 +138,27 @@ def test_browser_override_files_map_to_their_intended_shard(path):
     assert cfs.shard_of(path) == cfs.shard_of(path)
 
 
-def test_every_other_file_keeps_the_sha256_rule():
+def test_every_other_file_keeps_the_sha256_rule_over_the_shared_shards():
     paths = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "tests").glob("test_*.py"))
-    others = [p for p in paths if p not in cfs.BROWSER_SHARD]
-    assert len(others) == len(paths) - len(cfs.BROWSER_SHARD) > 0
+    others = [p for p in paths if p not in cfs.BROWSER_SHARD and p not in cfs.DEDICATED_SHARD]
+    assert len(others) == len(paths) - len(cfs.BROWSER_SHARD) - len(cfs.DEDICATED_SHARD) > 0
     for p in others + [f"tests/test_{i}.py" for i in range(500)]:
-        assert cfs.shard_of(p) == cfs.hash_shard(p) == 1 + int(hashlib.sha256(p.encode()).hexdigest()[:8], 16) % 3
+        assert cfs.shard_of(p) == cfs.shared_shard(p) == (4, 5)[int(hashlib.sha256(p.encode()).hexdigest()[:8], 16) % 2]
 
 
-def test_a_new_or_unlisted_browser_file_falls_back_to_hashing():
+def test_a_new_or_unlisted_file_falls_back_to_hashing_over_the_shared_shards():
     for path in ("tests/test_brand_new_feature_browser.py", "tests/test_cap99_future_browser.py",
                  "tests/../tests/test_draft_preview_browser.py", "tests/test_draft_preview_browser.py ",
-                 "Tests/test_draft_preview_browser.py"):
-        assert path not in cfs.BROWSER_SHARD
-        assert cfs.shard_of(path) == cfs.hash_shard(path)
+                 "Tests/test_draft_preview_browser.py",
+                 "tests/../tests/test_v132_derived_navigation_truth_live_truth_reversals.py",
+                 "tests/test_v132_derived_navigation_truth_live_truth_reversals_more.py"):
+        assert path not in cfs.BROWSER_SHARD and path not in cfs.DEDICATED_SHARD
+        assert cfs.shard_of(path) == cfs.shared_shard(path) in cfs.SHARED_SHARDS
 
 
-def test_browser_override_applies_only_to_the_three_shard_pilot():
-    for path in cfs.BROWSER_SHARD:
-        for count in (1, 2, 4, 5):
+def test_static_placement_applies_only_to_the_configured_five_shard_partition():
+    for path in (*cfs.BROWSER_SHARD, *cfs.DEDICATED_SHARD):
+        for count in (1, 2, 3, 4, 6):
             assert cfs.shard_of(path, count) == cfs.hash_shard(path, count)
 
 
@@ -143,25 +166,28 @@ def test_override_placement_keeps_whole_files_and_the_assignment_complete_and_di
     paths = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "tests").glob("test_*.py"))
     nodes = [f"{p}::{n}" for p in paths
              for n in ("test_a", "TestX::test_b[1]", "TestX::test_b[two words-2]", "test_c[a::b]")]
-    shards = {s: cfs.assigned_for(nodes, s) for s in (1, 2, 3)}
+    shards = {s: cfs.assigned_for(nodes, s) for s in range(1, cfs.SHARD_COUNT + 1)}
     assert sorted(sum(shards.values(), [])) == sorted(nodes)                # complete
-    for a, b in ((1, 2), (1, 3), (2, 3)):
+    for a, b in itertools.combinations(shards, 2):
         assert not set(shards[a]) & set(shards[b])                           # disjoint
     for s, assigned in shards.items():
         assert {cfs.shard_of(cfs.file_of(n)) for n in assigned} == {s}       # whole files only
-    for path, s in cfs.BROWSER_SHARD.items():
+    for path, s in (*cfs.BROWSER_SHARD.items(), *cfs.DEDICATED_SHARD.items()):
         assert {n for n in nodes if cfs.file_of(n) == path} <= set(shards[s])
+    for path, s in cfs.DEDICATED_SHARD.items():
+        assert {cfs.file_of(n) for n in shards[s]} == {path}                 # alone on its shard
 
 
 def test_whole_file_placement_keeps_classes_and_parameterizations_together():
     nodes = ["tests/test_gamma.py::test_a", "tests/test_gamma.py::TestX::test_b[1]",
              "tests/test_gamma.py::TestX::test_b[two words-2]", "tests/test_delta.py::test_c[x]",
              "tests/test_delta.py::TestY::test_d", "tests/test_alpha.py::test_e"]
-    shards = {s: cfs.assigned_for(nodes, s) for s in (1, 2, 3)}
+    shards = {s: cfs.assigned_for(nodes, s) for s in range(1, cfs.SHARD_COUNT + 1)}
     assert sorted(sum(shards.values(), [])) == sorted(nodes)
     for s, assigned in shards.items():
         assert {cfs.shard_of(cfs.file_of(n)) for n in assigned} <= {s}
-    assert shards[2] == sorted(n for n in nodes if n.startswith("tests/test_gamma.py"))
+    gamma = sorted(n for n in nodes if n.startswith("tests/test_gamma.py"))
+    assert set(gamma) <= set(shards[cfs.shard_of("tests/test_gamma.py")])
     assert cfs.file_of("tests/test_gamma.py::TestX::test_b[a::b]") == "tests/test_gamma.py"
 
 
@@ -207,6 +233,9 @@ _PROJECT = {
     """),
     "tests/test_alpha.py": "def test_alpha():\n    pass\n",
 }
+# The same synthetic project with one trivial test at each dedicated path, so that every
+# shard of the configured partition has work (an empty shard is a pytest failure).
+_PROJECT_FULL = dict(_PROJECT, **{path: "def test_dedicated():\n    pass\n" for path in cfs.DEDICATED_SHARD})
 
 
 def _project(root, files=_PROJECT):
@@ -218,7 +247,7 @@ def _project(root, files=_PROJECT):
 
 
 def _shard_run(project, shard, raw):
-    env = dict(os.environ, INVENTORAI_CI_SHARD=str(shard), INVENTORAI_CI_SHARD_COUNT="3",
+    env = dict(os.environ, INVENTORAI_CI_SHARD=str(shard), INVENTORAI_CI_SHARD_COUNT=str(cfs.SHARD_COUNT),
                INVENTORAI_CI_SHARD_RAW=str(raw), PYTHONPATH=str(ROOT), PYTHONDONTWRITEBYTECODE="1")
     proc = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
                            "-p", "scripts.ci_full_suite", "--junitxml=" + str(raw.with_suffix(".xml"))],
@@ -227,10 +256,10 @@ def _shard_run(project, shard, raw):
 
 
 def test_each_shard_collects_everything_and_runs_only_its_own_files(tmp_path):
-    project = _project(tmp_path / "p")
-    records = {s: _shard_run(project, s, tmp_path / f"raw{s}.json") for s in (1, 2, 3)}
+    project = _project(tmp_path / "p", _PROJECT_FULL)
+    records = {s: _shard_run(project, s, tmp_path / f"raw{s}.json") for s in range(1, cfs.SHARD_COUNT + 1)}
     full = records[1][1]["collected"]
-    assert len(full) == 8
+    assert len(full) == 8 + len(cfs.DEDICATED_SHARD)
     union = set()
     for s, (code, rec) in records.items():
         assert code == 0 and rec["session_exitstatus"] == 0
@@ -242,11 +271,14 @@ def test_each_shard_collects_everything_and_runs_only_its_own_files(tmp_path):
         assert len(cases) == len(rec["assigned"])
         union |= set(rec["assigned"])
     assert union == set(full)
-    delta = {o["nodeid"].split("::")[-1]: o for o in records[1][1]["outcomes"]}
+    delta = {o["nodeid"].split("::")[-1]: o for o in records[cfs.shard_of("tests/test_delta.py")][1]["outcomes"]
+             if o["nodeid"].startswith("tests/test_delta.py")}
     assert delta["test_ok"]["outcome"] == "passed"
     assert (delta["test_skip"]["outcome"], delta["test_skip"]["reason"]) == ("skipped", "synthetic reason")
     assert (delta["test_xf"]["outcome"], delta["test_xf"]["reason"]) == ("xfailed", "synthetic xfail")
-    assert len(records[2][1]["assigned"]) == 4 and len(records[3][1]["assigned"]) == 1
+    for path, s in cfs.DEDICATED_SHARD.items():
+        assert records[s][1]["assigned"] == [path + "::test_dedicated"]
+    assert sorted(len(records[s][1]["assigned"]) for s in cfs.SHARED_SHARDS) == [3, 5]
 
 
 def test_plugin_is_inert_without_the_shard_environment(tmp_path):
@@ -261,9 +293,9 @@ def test_plugin_is_inert_without_the_shard_environment(tmp_path):
 
 def test_failure_exit_status_and_outcome_are_preserved(tmp_path):
     files = dict(_PROJECT, **{"tests/test_gamma.py": "def test_bad():\n    assert False\n"})
-    code, rec = _shard_run(_project(tmp_path / "p", files), 2, tmp_path / "raw.json")
+    code, rec = _shard_run(_project(tmp_path / "p", files), cfs.shard_of("tests/test_gamma.py"), tmp_path / "raw.json")
     assert code == 1 and rec["session_exitstatus"] == 1
-    assert [o["outcome"] for o in rec["outcomes"]] == ["failed"]
+    assert [o["outcome"] for o in rec["outcomes"] if o["nodeid"].startswith("tests/test_gamma.py")] == ["failed"]
 
 
 def test_collection_failure_is_surfaced(tmp_path):
@@ -282,7 +314,7 @@ def _git(repo, *args):
 
 
 def _merge_repo(root):
-    repo = _project(root, dict(_PROJECT, **{".gitignore": "__pycache__/\n"}))
+    repo = _project(root, dict(_PROJECT_FULL, **{".gitignore": "__pycache__/\n"}))
     _git(repo, "init", "-q", "-b", "main")
     _git(repo, "add", "-A")
     base = _git(repo, "commit", "-q", "-m", "base")
@@ -300,8 +332,8 @@ def test_run_shard_writes_complete_evidence_and_the_audit_accepts_it(tmp_path, m
     repo, ident = _merge_repo(tmp_path / "repo")
     monkeypatch.setenv("PYTHONPATH", str(ROOT))
     monkeypatch.setenv("PYTHONDONTWRITEBYTECODE", "1")
-    for s in (1, 2, 3):
-        assert cfs.run_shard(repo, tmp_path / "ev" / f"a{s}", s, 3, ident) == 0
+    for s in range(1, cfs.SHARD_COUNT + 1):
+        assert cfs.run_shard(repo, tmp_path / "ev" / f"a{s}", s, cfs.SHARD_COUNT, ident) == 0
     packages = cfs.load_evidence(tmp_path / "ev")
     ev = packages[0][1]
     for key in ("run_id", "run_attempt", "shard", "shard_count", "expected_base", "expected_head", "tested_merge",
@@ -312,9 +344,10 @@ def test_run_shard_writes_complete_evidence_and_the_audit_accepts_it(tmp_path, m
     problems = cfs.audit(packages, dict(ident, tested_tree=tree))
     # complete and consistent: the only findings are the synthetic project's own (correctly
     # unpermitted) skip / xfail and the absent real-repository mandatory proofs
+    delta = cfs.shard_of("tests/test_delta.py")
     assert sorted(problems) == sorted(
-        ["shard 1: unexpected skip/xfail: ('tests.test_delta', 'test_skip'): synthetic reason",
-         "shard 1: unexpected skip/xfail: ('tests.test_delta', 'test_xf'): synthetic xfail"]
+        [f"shard {delta}: unexpected skip/xfail: ('tests.test_delta', 'test_skip'): synthetic reason",
+         f"shard {delta}: unexpected skip/xfail: ('tests.test_delta', 'test_xf'): synthetic xfail"]
         + [f"mandatory browser module did not pass: {m}" for m in cfs.MANDATORY_BROWSER_MODULES]
         + ["real server security proof missing"])
     assert cfs.repository_clean(repo)
@@ -323,9 +356,9 @@ def test_run_shard_writes_complete_evidence_and_the_audit_accepts_it(tmp_path, m
 def test_run_shard_refuses_a_wrong_identity_or_evidence_inside_the_checkout(tmp_path):
     repo, ident = _merge_repo(tmp_path / "repo")
     with pytest.raises(ValueError, match="exact PR head"):
-        cfs.run_shard(repo, tmp_path / "ev", 1, 3, dict(ident, expected_head="e" * 40))
+        cfs.run_shard(repo, tmp_path / "ev", 1, cfs.SHARD_COUNT, dict(ident, expected_head="e" * 40))
     with pytest.raises(ValueError, match="outside the repository"):
-        cfs.run_shard(repo, repo / "ev", 1, 3, ident)
+        cfs.run_shard(repo, repo / "ev", 1, cfs.SHARD_COUNT, ident)
 
 
 @pytest.mark.parametrize("env", [
@@ -349,6 +382,7 @@ _MANDATORY_NODES = {
     "tests/test_wps001_invariants.py::TestWPS001_INV004_GapLifecycle::test_closed_gap_does_not_reopen": "skip",
 }
 _PLAIN = [f"tests/test_{n}.py::test_{i}" for n in ("alpha", "beta", "gamma", "delta") for i in range(2)]
+_DEDICATED_NODES = [f"{path}::test_case" for path in sorted(cfs.DEDICATED_SHARD)]
 
 
 def _junit_case(nodeid, kind):
@@ -368,15 +402,15 @@ def _junit_case(nodeid, kind):
 
 
 def _packages(omit=()):
-    kinds = dict(_MANDATORY_NODES, **{n: "pass" for n in _PLAIN})
+    kinds = dict(_MANDATORY_NODES, **{n: "pass" for n in _PLAIN + _DEDICATED_NODES})
     for n in omit:
         kinds.pop(n)
     full = sorted(kinds)
     packages = []
-    for s in (1, 2, 3):
+    for s in range(1, cfs.SHARD_COUNT + 1):
         assigned = cfs.assigned_for(full, s)
         outcome = {"pass": "passed", "xfail": "xfailed", "skip": "skipped"}
-        ev = dict(EXPECTED, schema=cfs.SCHEMA, shard=s, shard_count=3, collected=list(full),
+        ev = dict(EXPECTED, schema=cfs.SCHEMA, shard=s, shard_count=cfs.SHARD_COUNT, collected=list(full),
                   collection_sha256=cfs.collection_digest(full), assigned=assigned,
                   outcomes=[{"nodeid": n, "outcome": outcome[kinds[n]], "reports": 1} for n in assigned],
                   collection_errors=[], pytest_exit_status=0, repository_clean=True, plugin_record_present=True)
@@ -399,11 +433,11 @@ def test_complete_valid_evidence_passes():
 
 
 def test_missing_shard_is_rejected():
-    assert "exactly [1, 2, 3] required" in _audit([p for p in _packages() if p[1]["shard"] != 3])
+    assert "exactly [1, 2, 3, 4, 5] required" in _audit([p for p in _packages() if p[1]["shard"] != 3])
 
 
 def test_no_evidence_at_all_is_rejected(tmp_path):
-    assert "exactly [1, 2, 3] required" in "\n".join(cfs.audit(cfs.load_evidence(tmp_path), EXPECTED))
+    assert "exactly [1, 2, 3, 4, 5] required" in "\n".join(cfs.audit(cfs.load_evidence(tmp_path), EXPECTED))
 
 
 def test_duplicate_shard_is_rejected():
@@ -438,7 +472,7 @@ def _move(packages, node, src, dst):
                         or c.get("name") != node.split("::")[-1]]
 
 
-def test_assignment_under_the_pilot_01_hash_only_rule_is_rejected():
+def test_assignment_under_the_plain_hash_rule_is_rejected():
     packages = _packages()
     node = "tests/test_draft_l2_local_continuity.py::test_browser_draft"
     canonical, hashed = cfs.shard_of(cfs.file_of(node)), cfs.hash_shard(cfs.file_of(node))
@@ -584,7 +618,7 @@ def test_missing_mandatory_gunicorn_evidence_is_rejected():
 
 
 def test_load_evidence_reads_every_downloaded_package(tmp_path):
-    for s, (_p, ev, cases) in zip((1, 2, 3), _packages()):
+    for s, (_p, ev, cases) in zip(range(1, cfs.SHARD_COUNT + 1), _packages()):
         d = tmp_path / f"full-shard-evidence-1001-2-shard-{s}"
         d.mkdir()
         (d / cfs.EVIDENCE_FILE).write_text(json.dumps(ev), encoding="utf-8")
@@ -594,7 +628,7 @@ def test_load_evidence_reads_every_downloaded_package(tmp_path):
         root.append(suite)
         (d / cfs.JUNIT_FILE).write_bytes(ET.tostring(root))
     packages = cfs.load_evidence(tmp_path)
-    assert [p[1]["shard"] for p in packages] == [1, 2, 3]
+    assert [p[1]["shard"] for p in packages] == [1, 2, 3, 4, 5]
     assert cfs.audit(packages, EXPECTED) == []
 
 
@@ -969,17 +1003,18 @@ def test_smoke_route_keeps_the_existing_smoke_behaviour_only_for_smoke():
         assert line in proof, line
 
 
-def test_full_route_is_the_unmasked_three_shard_matrix_after_scope():
+def test_full_route_is_the_unmasked_five_shard_matrix_after_scope():
     shard = _jobs()["full_shard"]
     head = _header(shard)
     assert _needs(shard) == ["scope"]
     assert _job_if(shard) == "needs.scope.result == 'success' && needs.scope.outputs.scope == 'full'"
-    assert "      fail-fast: false\n" in head and "        shard: [1, 2, 3]\n" in head
+    assert "      fail-fast: false\n" in head and "        shard: [1, 2, 3, 4, 5]\n" in head
+    assert "    name: Sharded FULL ${{ matrix.shard }}/5\n" in head
     assert "runs-on: ubuntu-24.04" in head
     for name in ("full_shard", "required"):
         assert "continue-on-error" not in _code(_jobs()[name]), name
     run = _step(shard, "Run this shard of the FULL suite")
-    assert "python scripts/ci_full_suite.py --mode shard --shard ${{ matrix.shard }} --count 3" in run
+    assert "python scripts/ci_full_suite.py --mode shard --shard ${{ matrix.shard }} --count 5" in run
     for word in ("-k", "-m ", "--deselect", "--lf", "xdist", "pytest-split", "rig"):
         assert word not in run, word
 
