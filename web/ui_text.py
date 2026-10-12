@@ -1104,6 +1104,24 @@ UI_STRINGS = {
         "en": "withdrawn by you · history only",
         "ar": "سحبتَه أنت · سجل فقط",
     },
+    # COMPONENT-DELIVERABLE-VALUE-01 — the report / PDF section (heading,
+    # boundary and labels reuse the UI_CI_* keys above).
+    "UI_DC_PROVENANCE": {
+        "en": "Declared by you — OWNER_STATED / UNVALIDATED.",
+        "ar": "أعلنتَه أنت — OWNER_STATED / UNVALIDATED (غير متحقَّق منه).",
+    },
+    "UI_DC_NONE": {
+        "en": "You have no current declared components.",
+        "ar": "لا توجد لديك مكوّنات حالية مُعلَنة.",
+    },
+    "UI_DC_HISTORY": {
+        "en": "Only your current components are listed, each with its latest wording. Earlier versions and components you withdrew stay in this project's history on the project page: withdrawal is not erasure.",
+        "ar": "تُعرض هنا مكوّناتك الحالية فقط، كلٌّ بآخر صياغة له. وتبقى النسخ السابقة والمكوّنات التي سحبتها في سجل هذا المشروع على صفحة المشروع: فالسحب ليس حذفًا.",
+    },
+    "UI_DC_UNAVAILABLE": {
+        "en": "Your declared components could not be read, so they are not shown here. This does not mean that no component was declared.",
+        "ar": "تعذّرت قراءة المكوّنات التي أعلنتها، لذا لا تُعرض هنا. وهذا لا يعني أنه لم يُعلَن أي مكوّن.",
+    },
     "UI_CI_LAST_VERSION_LABEL": {
         "en": "Last recorded version:",
         "ar": "آخر نسخة مسجّلة:",

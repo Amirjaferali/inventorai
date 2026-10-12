@@ -17,7 +17,8 @@ WITHDRAW it (terminal). What is pinned:
   * the three consumers present the SAME current projection: session page (with earlier versions and a
     separate withdrawn-history list), Parts / Components / Interactions view, Stage 35 export v2 field 7
     (current components only, original surviving order, no id, no revision history; v2 unchanged);
-  * no IdeaState, replay, report, PDF, readiness, evidence, SafetySignal or calculation effect.
+  * no IdeaState, replay, readiness, evidence, SafetySignal or calculation effect (the report / PDF list
+    current components since COMPONENT-DELIVERABLE-VALUE-01).
 """
 import html as _html
 import json
@@ -39,7 +40,8 @@ from engine.record_store import (
     RecordStoreConnectionUnsafe, SqliteRecordStore)
 from tests.csrf_client import csrf_client
 from tests.test_component_inventory_declare_list import (
-    _block, _declare, _form, _integrated, _notice, _ordinary, _page, _rows, _stable)
+    _block, _components_section, _declare, _form, _integrated, _notice, _ordinary,
+    _outside_components_section, _page, _rows, _stable)
 from tests.test_stage15_integrated_invention_entry import (
     MECH, TIE_IDEA, _compose, _contract, _created, _pair, _ri, _visible)
 from web import ui_text
@@ -920,7 +922,11 @@ def test_x01_no_state_report_pdf_readiness_or_progression_effect(client, monkeyp
     assert pickle.dumps(appmod.SESSION_STORE[sid]["state"]) == state_before
     assert _raw("SELECT COUNT(*) FROM records WHERE project_id = ?", (sid,)) == records_before
     report = client.get(f"/session/{sid}/deliverable").get_data(as_text=True)
-    assert SECRET not in report and _stable(report) == _stable(report_before)
+    # COMPONENT-DELIVERABLE-VALUE-01: the report / PDF list CURRENT components only, so the corrected
+    # then withdrawn component appears nowhere; outside the components section nothing changes.
+    assert SECRET not in report and "Motor" not in _components_section(report)
+    assert _stable(_outside_components_section(report)) == _stable(
+        _outside_components_section(report_before))
     assert SECRET not in _pdf_source(client, sid, monkeypatch)
     assert SECRET not in caplog.text
     for path in ("engine/read_export_service.py", "web/api_v1.py", "engine/export_adapter.py",
