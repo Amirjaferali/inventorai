@@ -962,8 +962,9 @@ def test_arabic_wording_is_contract_12b_verbatim():
              # CAP13-MEASUREMENT-FIGURE-01: the explanatory figure's wording
              "FIGURE_TITLE": "Figure title", "FIGURE_DESC": "Figure description",
              "FIGURE_NOTE": "Figure note",
-             "FIGURE_LEFT_SUPPORT": "Figure left support-line label",
-             "FIGURE_RIGHT_SUPPORT": "Figure right support-line label"}
+             # AMENDED at CAP13-DECLARATION-GUIDANCE-01: the labels name the supports
+             "FIGURE_LEFT_SUPPORT": "Figure left support label",
+             "FIGURE_RIGHT_SUPPORT": "Figure right support label"}
     for key, row in pairs.items():
         assert ui_text.text("UI_CAP13_" + key, "ar") == b5[row], key
     matches, differs = b5["Declaration answers"].split(" / ")
@@ -976,7 +977,8 @@ def test_arabic_wording_is_contract_12b_verbatim():
 
 def test_every_cap13_string_is_bilingual_and_carries_no_verdict_wording():
     keys = [k for k in ui_text.UI_STRINGS if k.startswith("UI_CAP13_")]
-    assert len(keys) == 60      # 55 of Slice 1 + 5 of CAP13-MEASUREMENT-FIGURE-01
+    # 55 of Slice 1 + 5 of CAP13-MEASUREMENT-FIGURE-01 + 10 of CAP13-DECLARATION-GUIDANCE-01
+    assert len(keys) == 70
     for key in keys:
         entry = ui_text.UI_STRINGS[key]
         assert entry.get("en") and entry.get("ar"), key
@@ -1157,7 +1159,7 @@ def _points(polygon):
 
 
 def test_figure_english_wording_is_contract_12a_verbatim():
-    section = _norm(_contract_section("**Explanatory figure (amendment", "**Pre-owner evaluation order"))
+    section = _norm(_contract_section("**Explanatory figure (amendment", "**Declaration guidance (amendment"))
     assert re.findall(r"«(.+?)»", section) == [
         ui_text.text("UI_CAP13_FIGURE_" + key, "en") for key in FIGURE_KEYS]
 
@@ -1301,3 +1303,123 @@ def test_arabic_figure_keeps_physical_left_and_isolates_symbols(mech):
     stripped = re.sub(r"<[^>]+>", "", re.sub(r"<svg\b.*?</svg>", "", ar_figure, flags=re.S))
     for key in ("TITLE", "DESC", "NOTE"):
         assert ui_text.text("UI_CAP13_FIGURE_" + key, "ar") in stripped
+
+
+# ==========================================================================
+# 8. CAP13-DECLARATION-GUIDANCE-01: plain-language help beside each declaration
+#    and the support-line terminology (§12A "Declaration guidance", §12B B-5 / B-8)
+# ==========================================================================
+HELP_RE = re.compile(
+    r'<fieldset data-cap13-declaration="([a-z_]+)" aria-describedby="cap13-help-\1">\s*'
+    r'<legend>[^<]*</legend>\s*'
+    r'<p class="guidance" id="cap13-help-\1" data-cap13-declaration-help="\1">(.*?)</p>\s*'
+    r'<label class="choice"><input type="radio"', re.S)
+
+
+def _help(key, lang="en"):
+    return ui_text.text("UI_CAP13_DECL_HELP_" + key.upper(), lang)
+
+
+def test_declaration_guidance_english_is_contract_12a_verbatim():
+    section = _norm(_contract_section("**Declaration guidance (amendment", "**Pre-owner evaluation order"))
+    assert re.findall(r"«(.+?)»", section) == [_help(d) for d in cap13.DECLARATION_IDS]
+
+
+def test_declaration_guidance_arabic_is_contract_12b_b8_verbatim():
+    b8 = _table(_contract_section("**B-8", "## 13."))
+    for decl in cap13.DECLARATION_IDS:
+        assert ui_text.text("UI_CAP13_DECL_HELP_" + decl.upper(), "ar") == b8[decl.replace("_", " ")], decl
+
+
+def test_each_declaration_shows_its_own_guidance_beside_it_and_answers_stay_unselected(mech):
+    c, _aid, sid = mech
+    responses = [c.get(URL % sid)] + [
+        c.post(URL % sid, data=_form(**over)) for over in (
+            {}, {"x": "2500"}, {"decl": {"support_moment": cap13.ANSWER_DIFFERS}})]
+    blocks = []
+    for response in responses:
+        body = response.get_data(as_text=True)
+        found = HELP_RE.findall(body)
+        # one help per declaration, in §6 order, inside its own group, between the
+        # legend and the two answers, and the group's accessible description
+        assert [d for d, _ in found] == list(cap13.DECLARATION_IDS)
+        for decl, text in found:
+            assert html.unescape(text) == _help(decl)
+            assert body.count('id="cap13-help-%s"' % decl) == 1
+        assert body.count("data-cap13-declaration-help=") == len(cap13.DECLARATION_IDS)
+        blocks.append(found)
+    assert all(b == blocks[0] for b in blocks)          # static on every rendering
+    first = responses[0].get_data(as_text=True)          # the first view selects nothing
+    assert " checked" not in first and first.count('type="radio"') == 2 * (10 + 9)
+
+
+def test_guidance_suggests_no_answer_and_adds_no_condition_or_verdict():
+    answers = {ui_text.text(k, lang) for k in ("UI_CAP13_ANSWER_MATCHES", "UI_CAP13_ANSWER_DIFFERS")
+               for lang in ("en", "ar")}
+    for decl in cap13.DECLARATION_IDS:
+        en = _help(decl)
+        for answer in answers:
+            assert answer not in en and answer not in _help(decl, "ar"), decl
+        for word in ("safe", "adequate", "approved", "certified", "passes", "recommend", "you can rely",
+                     "should answer", "choose", "select"):
+            assert word not in en.lower(), (decl, word)
+        assert re.search(r"[؀-ۿ]", _help(decl, "ar")), decl
+    # the weight help restates the force unit and the absence of conversion only
+    weight = _help("weight")
+    assert "newtons (N)" in weight and "does not convert" in weight
+    assert not re.search(r"\d", weight)                 # no constant or factor
+    # the centre-of-gravity help keeps the never-inferred, never-midspan boundary
+    assert "does not estimate it and never assumes it is in the middle" in _help("centre_of_gravity")
+
+
+def test_support_line_terminology_is_corrected_everywhere():
+    """The support reaction lines are horizontal (§§4-6) and seen end-on in the
+    side view; the figure's dashed vertical lines mark where they are, not their
+    direction. Nothing user-facing may again call the dashed lines the lines."""
+    for lang in ("en", "ar"):
+        for key in ui_text.UI_STRINGS:
+            if key.startswith("UI_CAP13_"):
+                value = ui_text.text(key, lang)
+                assert "support line are the dashed vertical lines" not in value, key
+                assert "هما الخطان الرأسيان المتقطعان المارّان بالمسندين" not in value, key
+    assert ui_text.text("UI_CAP13_FIGURE_LEFT_SUPPORT", "en") == "Left support"
+    assert ui_text.text("UI_CAP13_FIGURE_RIGHT_SUPPORT", "en") == "Right support"
+    assert ui_text.text("UI_CAP13_FIGURE_LEFT_SUPPORT", "ar") == "المسند الأيسر"
+    assert ui_text.text("UI_CAP13_FIGURE_RIGHT_SUPPORT", "ar") == "المسند الأيمن"
+    desc = ui_text.text("UI_CAP13_FIGURE_DESC", "en")
+    assert "Each support line is horizontal and runs into the page" in desc
+    assert "only marks where that support line is, not its direction" in desc
+    assert "يبيّن موضع خط المسند فقط لا اتجاهه" in ui_text.text("UI_CAP13_FIGURE_DESC", "ar")
+    geometry = _help("support_geometry")
+    assert "Each support line is horizontal and runs into the page" in geometry
+    assert "The dashed vertical lines in the figure only mark where the support lines are." in geometry
+    # the contract records the clarification and its derivation from §§4-6, and the
+    # current figure clause no longer equates the dashed lines with the support lines
+    guidance = _norm(_contract_section("**Declaration guidance (amendment", "**Pre-owner evaluation order"))
+    assert "can only run at right angles to the side view itself" in guidance
+    assert "they do not depict the support lines' direction" in guidance
+    figure = _norm(_contract_section("**Explanatory figure (amendment", "**Declaration guidance (amendment"))
+    current, _, superseded = figure.partition("*(Superseded 2026-10-12 by amendment `CAP13-DECLARATION-GUIDANCE-01`")
+    assert "the left and right support lines as dashed vertical lines" not in current
+    assert "marks where the left or right support line is, seen end-on" in current
+    assert "the left and right support lines as dashed vertical lines" in superseded     # preserved history
+    # the accepted §4-§6 statements themselves are unchanged
+    content = cap13.load_artifact()
+    accepted = {e["declaration_id"]: e["accepted_value"] for e in content["declarations"]}
+    assert accepted["support_geometry"] == ("the two support lines are parallel and horizontal within the "
+                                            "planar model, and x is measured perpendicular to them from the left line")
+    assert accepted["support_count"] == "exactly two support reaction lines"
+
+
+def test_arabic_guidance_is_rtl_with_isolated_symbols(mech):
+    c, _aid, sid = mech
+    c.post("/ui-language", data={"lang": "ar"})
+    body = c.get(URL % sid).get_data(as_text=True)
+    found = dict(HELP_RE.findall(body))
+    assert set(found) == set(cap13.DECLARATION_IDS)
+    for decl, text in found.items():
+        assert re.sub(r"<[^>]+>", "", text) == _help(decl, "ar"), decl
+    assert '<bdi dir="ltr">P</bdi>' in found["weight"] and '(<bdi dir="ltr">N</bdi>)' in found["weight"]
+    assert '<bdi dir="ltr">x</bdi>' in found["support_geometry"]
+    assert '<bdi dir="ltr">InventorAI</bdi>' in found["centre_of_gravity"]
+    assert " checked" not in body

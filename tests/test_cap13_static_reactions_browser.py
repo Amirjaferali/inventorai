@@ -146,3 +146,40 @@ def test_measurement_figure_in_real_browser(server, page, lang):
     if lang == "ar":
         assert page.locator("html").get_attribute("dir") == "rtl"
     assert not errors
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_declaration_guidance_in_real_browser(server, page, lang):
+    """CAP13-DECLARATION-GUIDANCE-01: each declaration group shows its own
+    plain-language help between its legend and its answers, exposes it as the
+    group's accessible description, selects nothing, and fits at phone width;
+    the figure's labels name the supports, not the support lines."""
+    errors = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    sid = _start_mechanical(page, server, lang)
+    page.goto(f"{server}/session/{sid}/support-reactions")
+    page.wait_for_load_state()
+    groups = page.locator("[data-cap13-form] [data-cap13-declaration]")
+    expect(groups).to_have_count(10)
+    for group in groups.all():
+        decl = group.get_attribute("data-cap13-declaration")
+        help_text = text("UI_CAP13_DECL_HELP_" + decl.upper(), lang)
+        note = group.locator("[data-cap13-declaration-help]")
+        expect(note).to_have_count(1)
+        expect(note).to_be_visible()
+        assert " ".join(note.inner_text().split()) == " ".join(help_text.split())
+        expect(group).to_have_accessible_description(help_text)
+        legend_box = group.locator("legend").bounding_box()
+        note_box = note.bounding_box()
+        first_answer = group.locator("input[type=radio]").first.bounding_box()
+        assert legend_box["y"] < note_box["y"] < first_answer["y"]
+    assert page.locator("[data-cap13-form] input[type=radio]:checked").count() == 0
+    expect(page.locator("[data-cap13-figure-label=left-support]")).to_have_text(
+        text("UI_CAP13_FIGURE_LEFT_SUPPORT", lang))
+    page.set_viewport_size({"width": 390, "height": 900})
+    width = page.evaluate("document.documentElement.clientWidth")
+    assert page.evaluate("document.documentElement.scrollWidth") <= width + 1
+    for note in page.locator("[data-cap13-declaration-help]").all():
+        box = note.bounding_box()
+        assert box["x"] >= 0 and box["x"] + box["width"] <= width
+    assert not errors
