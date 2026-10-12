@@ -15,7 +15,7 @@ durable parts:
     component, the same submission identity with other material fails closed;
   * composition + inventory read under ONE snapshot; never in IdeaState, the
     accepted-input history or replay; no edit / delete;
-  * session page only (EN / AR); report, PDF, exports, evidence, readiness,
+  * session page only (EN / AR) at its delivery; report, PDF, exports, evidence, readiness,
     gaps, progression, SafetySignal and calculation eligibility unchanged.
 """
 import html as _html
@@ -141,6 +141,20 @@ def _stable(report):
     report = re.sub(r'value="[^"]*"', "", report)
     return re.sub(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|[+-]\d\d:\d\d)?", "",
                   report)
+
+
+_COMPONENTS_SECTION_RE = re.compile(r'<section class="declared-components".*?</section>', re.S)
+
+
+def _components_section(report):
+    """The report's ONE "declared components" section (COMPONENT-DELIVERABLE-VALUE-01), or ``""``."""
+    found = _COMPONENTS_SECTION_RE.findall(report)
+    assert len(found) <= 1
+    return found[0] if found else ""
+
+
+def _outside_components_section(report):
+    return _COMPONENTS_SECTION_RE.sub("", report)
 
 
 def _component(subs=(), name=NAME, function=FUNCTION, parts=()):
@@ -530,9 +544,14 @@ def test_x01_no_state_report_pdf_export_or_progression_effect(client, monkeypatc
     assert pickle.dumps(appmod.SESSION_STORE[sid]["state"]) == before
     assert not hasattr(appmod.SESSION_STORE[sid]["state"], "project_components")
     report = client.get(f"/session/{sid}/deliverable").get_data(as_text=True)
-    assert SECRET not in report
-    assert _stable(report) == _stable(report_before)
-    assert SECRET not in _pdf_source(client, sid, monkeypatch)
+    # COMPONENT-DELIVERABLE-VALUE-01: the report / PDF list the CURRENT components in their one
+    # "declared components" section; outside it nothing changes and the declaration appears nowhere.
+    assert SECRET in _components_section(report)
+    assert SECRET not in _outside_components_section(report)
+    assert _stable(_outside_components_section(report)) == _stable(
+        _outside_components_section(report_before))
+    pdf = _pdf_source(client, sid, monkeypatch)
+    assert SECRET in _components_section(pdf) and SECRET not in _outside_components_section(pdf)
     assert SECRET not in caplog.text
     for path in ("engine/read_export_service.py", "web/api_v1.py",
                  "engine/export_adapter.py", "engine/disclosure_export.py",

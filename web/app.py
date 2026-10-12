@@ -6707,6 +6707,9 @@ def show_deliverable(sid):
         # outside the focus (one store snapshot; UNAVAILABLE fails closed).
         nonfocused_part_report=_nonfocused_part_report_view(
             sid, _integrated_scope_context(state)),
+        # COMPONENT-DELIVERABLE-VALUE-01: the inventor's CURRENT declared
+        # components (one store snapshot; UNAVAILABLE fails closed).
+        component_report=_component_report_view(sid),
         # T2-A: statements for the canonical quantity rows (presentation only).
         t2a_statements=_quantity_statements(package, state),
         # T2-E Option B: owner-recorded, explicitly UNVERIFIED evidence
@@ -6884,6 +6887,9 @@ def download_deliverable_pdf(sid):
             # HTML report.
             nonfocused_part_report=_nonfocused_part_report_view(
                 sid, _integrated_scope_context(state)),
+            # COMPONENT-DELIVERABLE-VALUE-01: the SAME current-component view
+            # as the HTML report.
+            component_report=_component_report_view(sid),
             t2a_statements=_quantity_statements(package, state),
             evidence_references=_evref_deliverable_view(sid, state),
             decision_capture=_decision_capture_view_safe(state),
@@ -8569,6 +8575,39 @@ def _component_inventory_context(sid, entry):
         "max_function": _subsystem_model.MAX_COMPONENT_FUNCTION_LENGTH,
         "ack": ack, "error": error,
     }
+
+
+def _component_report_view(sid):
+    """COMPONENT-DELIVERABLE-VALUE-01 — the report / PDF view of the inventor's
+    CURRENT declared components.
+
+    ``None`` when the project has no durable record (no section; nothing is
+    claimed). Otherwise read ONCE per render from ONE consistent store snapshot
+    (``load_component_inventory``: the composition and the current inventory,
+    whose declarations and WHOLE revision history are validated together).
+    Only CURRENT components appear — latest corrected material, original
+    declaration order; earlier versions and withdrawn components never do.
+    Part names are resolved by identity from the same snapshot; no component
+    id is part of the view. Anything unreadable, corrupt or inconsistent ->
+    ``{"available": False}`` (UNAVAILABLE — never "none declared" and never a
+    partial list). Read-only: nothing is derived, judged or written."""
+    loader = getattr(_get_store(), "load_component_inventory", None)
+    if not callable(loader):
+        return None
+    try:
+        subsystems, components = loader(sid)
+    except _ProjectNotFound:
+        return None
+    except Exception:
+        return {"available": False}
+    try:
+        names = {sub.subsystem_id: sub.display_name for sub in subsystems}
+        items = [{"name": c.display_name, "function": c.function_text,
+                  "parts": [names[ref] for ref in c.subsystem_ids]}
+                 for c in components]
+    except Exception:
+        return {"available": False}
+    return {"available": True, "has_parts": bool(subsystems), "components": items}
 
 
 # Committed durable truth that WAS read and fails closed — distinct from

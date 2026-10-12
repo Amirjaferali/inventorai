@@ -274,6 +274,38 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   </div>
 </section>
 {% endif %}
+{#- COMPONENT-DELIVERABLE-VALUE-01 — COMPONENTS YOU HAVE DECLARED: the
+    inventor's CURRENT components only (latest corrected wording, original
+    declaration order; name, function and part links verbatim, escaped and
+    direction-isolated), each OWNER_STATED / UNVALIDATED. Read from one store
+    snapshot; anything unreadable reads UNAVAILABLE, never "none" or a partial
+    list. No earlier version, withdrawn component or component id is shown. -#}
+{% set dcr = component_report if component_report is defined else none %}
+{% if dcr %}
+<section class="declared-components" id="declared-components" data-declared-components aria-labelledby="declared-components-title" style="border:1px solid #c9d6e3;background:#f5f9fc;border-radius:4px;padding:10px 14px;margin:12px 0">
+  <h2 id="declared-components-title" style="font-size:16px;margin:0 0 8px 0">{{ t('UI_CI_HEADING') }}</h2>
+  {% if not dcr.available %}
+  <p style="margin:0;font-size:13px;color:#555" data-dc-unavailable>{{ t('UI_DC_UNAVAILABLE') }}</p>
+  {% else %}
+  <p style="margin:0 0 6px 0;font-size:13px;color:#555" data-dc-boundary>{{ t('UI_CI_BOUNDARY') }}</p>
+  {% if dcr.components %}
+  <ul style="margin:0 0 6px 0;padding-inline-start:20px">
+    {% for c in dcr.components %}
+    <li data-dc-item style="margin:0 0 6px 0;overflow-wrap:anywhere">
+      <strong><bdi dir="auto" data-dc-name>{{ c.name }}</bdi></strong><br>
+      {{ t('UI_CI_FUNCTION_LABEL') }} <bdi dir="auto" data-dc-function>{{ c.function }}</bdi>
+      {% if dcr.has_parts %}<br>{% if c.parts %}{{ t('UI_CI_PARTS_LABEL') }} {% for pname in c.parts %}<bdi dir="auto" data-dc-part>{{ pname }}</bdi>{% if not loop.last %}{{ t('UI_CI_PART_SEP') }}{% endif %}{% endfor %}{% else %}<span data-dc-unassigned>{{ t('UI_CI_UNASSIGNED') }}</span>{% endif %}{% endif %}
+      <br><span style="font-size:12px;color:#555" data-dc-provenance>{{ t('UI_DC_PROVENANCE') }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p style="margin:0 0 6px 0;font-size:13px" data-dc-none>{{ t('UI_DC_NONE') }}</p>
+  {% endif %}
+  <p style="margin:0;font-size:12px;color:#555" data-dc-history>{{ t('UI_DC_HISTORY') }}</p>
+  {% endif %}
+</section>
+{% endif %}
 <nav id="report-contents" class="report-contents" aria-label="{{ t('UI_REPORT_CONTENTS') }}" tabindex="-1">
   <p><strong>{{ t('UI_REPORT_CONTENTS') }}</strong></p>
   <ol>
