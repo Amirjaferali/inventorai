@@ -3764,6 +3764,34 @@ class SqliteRecordStore:
                         record.superseded_by is not None
                         and record.superseded_by not in ids):
                     raise DecisionComparisonCorrupt("decision chains are not closed")
+                if record.superseded_by == record.record_id:
+                    raise DecisionComparisonCorrupt(
+                        "a decision record supersedes itself")
+            # The chain-root walk (``decision_frames``) follows ``supersedes``
+            # to the chain origin, so a self-supersession or a supersession
+            # cycle is refused here first, as the full contract load's
+            # ``validate()`` refuses it. Iterative depth-first walk: each
+            # record is entered once and each edge followed once.
+            by_id = {r.record_id: r for r in decision}
+            done, on_path = set(), set()
+            for record in decision:
+                if record.record_id in done:
+                    continue
+                path, edges = [record.record_id], [iter(record.supersedes)]
+                on_path.add(record.record_id)
+                while path:
+                    ref = next(edges[-1], None)
+                    if ref is None:
+                        on_path.discard(path[-1])
+                        done.add(path.pop())
+                        edges.pop()
+                    elif ref in on_path:
+                        raise DecisionComparisonCorrupt(
+                            "a decision supersession chain is cyclic")
+                    elif ref not in done:
+                        on_path.add(ref)
+                        path.append(ref)
+                        edges.append(iter(by_id[ref].supersedes))
             _reconcile_supersession_edges(decision)
             return decision
         except DecisionComparisonCorrupt:

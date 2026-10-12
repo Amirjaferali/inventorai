@@ -12,6 +12,7 @@ store validates the whole history on every read), then exercised through the
 store API exactly at the bound.
 """
 import html
+import json
 import os
 import re
 import sqlite3
@@ -853,6 +854,77 @@ def test_foreign_binding_is_corrupt(proj):
                       rev, proj.alts[1], proj.ctx))       # binds ANOTHER alternative
     with pytest.raises(DecisionComparisonCorrupt):
         proj.ledger()
+
+
+# A cyclic decision supersession history (written outside the store) must be
+# refused promptly — never walked forever — and leave no transaction or write
+# lock behind.
+def _rewrite_payload(p, record_id, **changes):
+    with sqlite3.connect(p.path) as conn:
+        (payload,) = conn.execute(
+            "SELECT payload FROM records WHERE project_id = ? AND record_id = ?",
+            (p.sid, record_id)).fetchone()
+        conn.execute(
+            "UPDATE records SET payload = ? WHERE project_id = ? AND record_id = ?",
+            (json.dumps(dict(json.loads(payload), **changes)), p.sid, record_id))
+
+
+def _self_cycle(p):
+    _rewrite_payload(p, p.alts[0], supersedes=[p.alts[0]])
+
+
+def _two_record_cycle(p):
+    refined = p.refine(p.alts[0], "Alternative 0.0, refined").record_id
+    _rewrite_payload(p, p.alts[0], supersedes=[refined])
+
+
+def _returns_promptly(path, call, seconds=10):
+    """Run ``call(store)`` on a store opened in its own thread (a store's
+    connection is thread-bound); report the outcome and that connection's
+    state afterwards. A call still running after ``seconds`` fails."""
+    outcome = {}
+
+    def run():
+        store = SqliteRecordStore(path)
+        try:
+            call(store)
+        except BaseException as exc:          # noqa: BLE001 — reported below
+            outcome["error"] = exc
+        outcome["in_transaction"] = store._conn.in_transaction
+        outcome["readable"] = store.committed_state_readable()
+        store.close()
+    worker = threading.Thread(target=run, daemon=True)
+    worker.start()
+    worker.join(seconds)
+    assert not worker.is_alive(), "the call never returned on a cyclic history"
+    return outcome
+
+
+@pytest.mark.parametrize("corrupt", [_self_cycle, _two_record_cycle],
+                         ids=["self-cycle", "two-record-cycle"])
+@pytest.mark.parametrize("entry", ["load", "append"])
+def test_cyclic_decision_supersession_fails_closed_promptly(proj, corrupt, entry):
+    question = proj.frame().question_record_id
+    corrupt(proj)
+    if entry == "load":
+        outcome = _returns_promptly(
+            proj.path, lambda store: store.load_decision_comparison(proj.sid))
+    else:
+        outcome = _returns_promptly(proj.path, lambda store: store.append_criterion_action(
+            proj.sid, "cycle-key", cr.ACTION_DECLARE, proj.ctx, question,
+            label="Cost"))
+    assert isinstance(outcome.get("error"), DecisionComparisonCorrupt)
+    assert proj.rows() == (0, 0)                       # nothing written
+    # no transaction or snapshot left open on the refusing connection ...
+    assert outcome["in_transaction"] is False and outcome["readable"] is True
+    # ... and no write lock held: another writer takes it at once
+    other = sqlite3.connect(proj.path, timeout=0, isolation_level=None)
+    other.execute("BEGIN IMMEDIATE")
+    other.execute("ROLLBACK")
+    other.close()
+    healthy = Project(proj.path, project_id="p2")
+    assert healthy.declare("Cost")[0] == DECISION_COMPARISON_INSERTED
+    assert healthy.ledger().criteria
 
 
 def test_migration_is_additive_idempotent_and_refuses_an_unknown_shape(tmp_path):
