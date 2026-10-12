@@ -1,20 +1,22 @@
 """CI FULL-suite sharding pilot — partition, shard evidence and central audit.
 
 Owner of ONE bounded contract: the governed FULL pytest suite split over exactly
-three independent runners, proven complete by a fail-closed central audit.
+five independent runners, proven complete by a fail-closed central audit.
 
   * ``--mode shard``: verify the tested-merge identity, run the NORMAL full
     pytest collection, keep only the whole test files deterministically assigned
-    to this shard (the static ``BROWSER_SHARD`` placement for the current
-    real-browser files, else ``1 + int(SHA256(repo-relative POSIX path)[:8], 16) % 3``),
+    to this shard (the static ``DEDICATED_SHARD`` placement of the measured
+    slowest files on shards 1-3, the static ``BROWSER_SHARD`` placement for the
+    current real-browser files, else the SHA-256 rule over the shared shards
+    4-5: ``SHARED_SHARDS[int(SHA256(repo-relative POSIX path)[:8], 16) % 2]``),
     execute them serially and write JUnit plus a structured evidence JSON.
-  * ``--mode audit``: accept the three shard evidence packages only when they
-    prove, for the current run / attempt / tested merge / tree, that the three
+  * ``--mode audit``: accept the five shard evidence packages only when they
+    prove, for the current run / attempt / tested merge / tree, that the five
     assignments exactly partition ONE identical full collection, that every
     assigned node ran exactly once, and that the existing authoritative skip /
     xfail / browser / real-Gunicorn / cleanliness semantics hold.
 
-Status: AUTHORITATIVE for FULL. The three shards and ``--mode audit`` (the
+Status: AUTHORITATIVE for FULL. The five shards and ``--mode audit`` (the
 ``full_shard`` and ``full_audit`` jobs) feed the protected ``CI required`` check,
 and this module is the permanent owner of the FULL-audit semantics below; no
 other FULL run duplicates or mirrors them. Nothing here reads repository
@@ -38,7 +40,7 @@ import time
 import xml.etree.ElementTree as ET
 from types import MappingProxyType
 
-SHARD_COUNT = 3
+SHARD_COUNT = 5
 SCHEMA = "inventorai-ci-full-suite-shard-v1"
 EVIDENCE_FILE = "shard-evidence.json"
 JUNIT_FILE = "shard-junit.xml"
@@ -77,49 +79,78 @@ def file_of(nodeid):
     return nodeid.split("::", 1)[0]
 
 
+# Performance-only placement of the three slowest whole test files, each alone on its
+# own shard. From the hosted timestamped progress lines of run 38186202560 (PR #797),
+# normalised by each runner's full-collection time, these three v1.32 navigation-truth
+# proof files cost about 18-21 collection-units each, of about 92 for the whole suite;
+# every other file is far smaller. Whole files cannot be split here, so the shard that
+# holds one of them is the floor of the FULL route, and it must hold nothing else.
+DEDICATED_SHARD = MappingProxyType({
+    "tests/test_v132_derived_navigation_truth_authority_and_stage28_proofs.py": 1,
+    "tests/test_v132_derived_navigation_truth_live_truth_reversals.py": 2,
+    "tests/test_v132_derived_navigation_truth_live_truth_reversals_continued.py": 3,
+})
+# Every other file runs on a shared shard.
+SHARED_SHARDS = (4, 5)
+
 # Performance-only placement of the current real-browser test files (each drives
 # Playwright Chromium itself or through the fixtures of
-# tests/test_draft_l2_local_continuity.py), chosen once from the Pilot-01 hosted
-# timings so the three shards carry similar wall time. It never decides WHETHER a
-# file runs: a file missing from this mapping (a new browser file included) falls
-# back to the SHA-256 rule, and completeness is proven by the audit either way.
+# tests/test_draft_l2_local_continuity.py) over the shared shards. The two browser
+# files whose hosted cost is measurable at the progress-line resolution of the same
+# run (draft-L2 continuity and draft preview) sit on different shards; the others
+# alternate 4 / 5 in sorted path order. It never decides WHETHER a file runs: a file
+# missing from this mapping (a new browser file included) falls back to the SHA-256
+# rule, and completeness is proven by the audit either way.
 BROWSER_SHARD = MappingProxyType({
-    "tests/test_a1_saved_journey_browser.py": 3,
-    "tests/test_cap02_project_compass_browser.py": 3,
-    "tests/test_cap04_gap_action_pack_browser.py": 1,
-    "tests/test_cap08_assumption_dependency_browser.py": 1,
-    "tests/test_cap09_slice3_test_hypothesis_browser.py": 1,
-    "tests/test_cap09_slice4_test_variable_browser.py": 3,
-    "tests/test_cap10_declared_contradiction_browser.py": 1,
-    "tests/test_cap11_evidence_details_browser.py": 1,
-    "tests/test_correction_preview_browser.py": 2,
-    "tests/test_deliverable_navigation_browser.py": 3,
-    "tests/test_draft_l2_local_continuity.py": 3,
-    "tests/test_draft_preview_browser.py": 3,
-    "tests/test_f09_planning_form_draft_recovery.py": 2,
-    "tests/test_p5_2_draft_account_switch.py": 1,
-    "tests/test_r05_browser_request_integrity.py": 3,
-    "tests/test_safe_question_routing_pf_q2_weak_recovery_browser.py": 3,
-    "tests/test_saved_project_filter_browser.py": 2,
-    "tests/test_stage22_action_summary_browser.py": 2,
-    "tests/test_stage22_decision_trace_browser.py": 2,
-    "tests/test_success_criteria_workflow_browser.py": 1,
-    "tests/test_uqtr01_core_serving.py": 3,
-    "tests/test_uqtr01_mechanical_path_n_owner_friendly.py": 2,
-    "tests/test_uqtr01_target_binding_browser.py": 3,
+    "tests/test_a1_saved_journey_browser.py": 4,
+    "tests/test_cap02_project_compass_browser.py": 5,
+    "tests/test_cap04_gap_action_pack_browser.py": 4,
+    "tests/test_cap08_assumption_dependency_browser.py": 5,
+    "tests/test_cap09_slice3_test_hypothesis_browser.py": 4,
+    "tests/test_cap09_slice4_test_variable_browser.py": 5,
+    "tests/test_cap10_declared_contradiction_browser.py": 4,
+    "tests/test_cap11_evidence_details_browser.py": 5,
+    "tests/test_correction_preview_browser.py": 4,
+    "tests/test_deliverable_navigation_browser.py": 5,
+    "tests/test_draft_l2_local_continuity.py": 4,
+    "tests/test_draft_preview_browser.py": 5,
+    "tests/test_f09_planning_form_draft_recovery.py": 4,
+    "tests/test_p5_2_draft_account_switch.py": 5,
+    "tests/test_r05_browser_request_integrity.py": 4,
+    "tests/test_safe_question_routing_pf_q2_weak_recovery_browser.py": 5,
+    "tests/test_saved_project_filter_browser.py": 4,
+    "tests/test_stage22_action_summary_browser.py": 5,
+    "tests/test_stage22_decision_trace_browser.py": 4,
+    "tests/test_success_criteria_workflow_browser.py": 5,
+    "tests/test_uqtr01_core_serving.py": 4,
+    "tests/test_uqtr01_mechanical_path_n_owner_friendly.py": 5,
+    "tests/test_uqtr01_target_binding_browser.py": 4,
 })
 
 
+def _path_hash(path):
+    return int(hashlib.sha256(path.encode("utf-8")).hexdigest()[:8], 16)
+
+
 def hash_shard(path, count=SHARD_COUNT):
-    """The default whole-file shard (1..count) from the SHA-256 of the path alone."""
-    return 1 + int(hashlib.sha256(path.encode("utf-8")).hexdigest()[:8], 16) % count
+    """The plain whole-file shard (1..count) from the SHA-256 of the path alone (any other count)."""
+    return 1 + _path_hash(path) % count
+
+
+def shared_shard(path):
+    """The default whole-file shard for SHARD_COUNT: the SHA-256 of the path over SHARED_SHARDS."""
+    return SHARED_SHARDS[_path_hash(path) % len(SHARED_SHARDS)]
 
 
 def shard_of(path, count=SHARD_COUNT):
-    """The canonical whole-file shard (1..count): BROWSER_SHARD, else hash_shard."""
-    if count == SHARD_COUNT and path in BROWSER_SHARD:
+    """The canonical whole-file shard (1..count): DEDICATED_SHARD, BROWSER_SHARD, else shared_shard."""
+    if count != SHARD_COUNT:
+        return hash_shard(path, count)
+    if path in DEDICATED_SHARD:
+        return DEDICATED_SHARD[path]
+    if path in BROWSER_SHARD:
         return BROWSER_SHARD[path]
-    return hash_shard(path, count)
+    return shared_shard(path)
 
 
 def collection_digest(nodeids):
