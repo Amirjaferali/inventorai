@@ -46,8 +46,9 @@ the Owner instruction and existing current authority surfaces establish executio
 
 Owner execution instructions use the names below as shorthand. Each name points to rules that
 already exist; a name adds no lifecycle, approval stage, boot step or authority and supersedes
-none of its owners. Only PCRA adds behaviour, defined once in §9A.2. A name in an instruction
-is read through its owner; it never widens the instruction's scope.
+none of its owners. Only PCRA (§9A.2) and the execution judgment that applies the names
+(§1A.1) add behaviour. A name in an instruction is read through its owner; it never widens the
+instruction's scope.
 
 | Name | Meaning in an Owner instruction | Existing owner (reused, unchanged) |
 |---|---|---|
@@ -61,6 +62,59 @@ is read through its owner; it never widens the instruction's scope.
 | **FAST-CI v1.0** | The hosted FULL route's sharded partition and its measured latency. Its current status is recorded only in the `CLAUDE.md` Lead Watchlist (§24: this protocol carries no status). | `.github/workflows/ci.yml`, `scripts/ci_full_suite.py`, `tests/test_ci_full_suite.py`; Lean §5B.9 |
 | **PCRA v1.0** (with **ACE** and **SFR**) | Context assurance before proposing new work. | §9A.2 (added); `CLAUDE.md` READ BEFORE BUILD / REUSE BEFORE CREATE; §2.4; Lean §§5, 10 |
 
+### 1A.1 Applying the mechanisms — execution judgment
+
+The names are tools selected for the task, not a checklist applied at maximum intensity. Within
+the §9A preparation, the agent doing the work determines for each material task: the objective
+and the authorized boundary; the nature of the change and its material risk (Lean §3); which
+mechanisms apply and at what depth; the minimum sufficient verification and the evidence it can
+reuse (Lean §5B.2); the stop and escalation triggers and the Owner-reserved decisions (Lean §10);
+and the next smallest authorized action. When material, the judgment shows as a concise plan or
+instruction in the existing return or PR account, not as another document or approval round.
+
+- **Instructions.** The Lead owns the quality, precision and proportionality of an instruction
+  (§9A.1 where it applies): objective, scope, constraints, required evidence, verification, stop
+  conditions and authorization limits — short when complete. The executor owns its
+  interpretation within that scope and its bounded execution, and reports a contradiction,
+  ambiguity or missing authority before acting on it, never resolving one by widening scope. The
+  Lead corrects a defective instruction; the Owner is not asked to re-explain an established
+  workflow.
+- **Verification (FCR).** Layer 1 is local and chosen for the actual risk: focused tests, the
+  affected guards, smoke where the change reaches runtime, and diff hygiene; no automatic
+  all-suites run, and no rerun of a passed check unless a later material change invalidates it.
+  Layer 2 is hosted: on the FULL route, hosted Sharded FULL on the exact head is the
+  authoritative broad regression. A local FULL run is exceptional and needs a stated material
+  reason that hosted FULL cannot serve, such as diagnosing a hosted failure, or an explicit
+  request; Lean §5B.4 and §5B.6 keep their own requirements. Keep apart (1) local tests the
+  executor chooses, (2) broader regression explicitly requested, (3) hosted runs GitHub triggers
+  on its own and (4) the required checks before merge (`CLAUDE.md` CI freshness before merge).
+  Neither blanket FULL execution nor a blanket FULL prohibition is correct, and no required check
+  is weakened. An infrastructure failure is diagnosed, not answered by repeated FULL reruns.
+- **Parallel work.** Broad regression runs on a stable candidate, never against files still
+  being edited unless it uses an isolated, immutable snapshot such as a separate worktree at a
+  fixed commit. Work that cannot change the candidate — the PR description, a review brief,
+  documentation analysis — may run beside the tests. The usual order is bounded implementation →
+  focused verification → stable candidate → hosted verification → independent review where
+  required → the merge gate (Owner-controlled unless the mandate includes the merge); it is a
+  default, not a fixed lifecycle. Polling stops once the authoritative CI result is available.
+- **Findings and review.** Read each finding as a material blocker (§13 BLOCKER or MAJOR), a new
+  material risk (§14), an infrastructure limitation (the cause classification in `CLAUDE.md` CI
+  freshness before merge), previously verified evidence (Lean §5B.2), a non-blocking
+  observation (§13 OBSERVATION, or a MINOR that §13 leaves non-blocking) or advisory output (such
+  as RIG or C1-Lite). Only a material blocker or a new material risk requires a change before the
+  affected work proceeds; an infrastructure limitation is diagnosed and reported, and a failed
+  required check is still never bypassed. Escalation follows §13, §14 and Lean §10. Do not repeat
+  an unchanged review, reopen an accepted decision without new material evidence (§12) or turn an
+  advisory into a blocker.
+- **Continuity (NEXT-LOOP).** Each loop verifies the live state, records its evidence in the
+  existing account and names the next authorized action or the genuine Owner decision; it keeps
+  recorded deferred technologies and roadmap commitments, does not duplicate completed work and
+  stops at Owner boundaries. Independent judgment never authorizes implementation, merge or
+  deployment beyond the approved scope.
+- **Accountability.** When verification costs more than the risk warrants, find the cause — an
+  unclear instruction, a misread rule, an unstable candidate — and correct that cause instead of
+  adding governance.
+
 ## 2. Ownership boundary
 
 ### 2.1 THIS PROTOCOL OWNS (delivery mechanics only)
@@ -69,9 +123,9 @@ Live-base inspection and reconciliation; differential reconstruction; reviewed-h
 ordinary candidate repair; evidence preservation; consolidated correction and closed-finding
 finality; finding disposition and review convergence; optional exact-object transfer;
 execution-reachability checks; concise delivery evidence; live PR verification; deliberate
-expected-head merge; post-merge identity verification; the named-mechanism index (§1A); and
-pre-change context assurance (§9A.2). The product-value review obligation
-is owned here as an obligation only, not as product semantics.
+expected-head merge; post-merge identity verification; the named-mechanism index and the
+execution judgment that applies it (§1A, §1A.1); and pre-change context assurance (§9A.2). The
+product-value review obligation is owned here as an obligation only, not as product semantics.
 
 ### 2.2 THIS PROTOCOL REFERENCES BUT DOES NOT OWN
 
@@ -618,6 +672,22 @@ statements that no rules were weakened describe those earlier amendments only.
   weakened, removed or renumbered; no authority, approval stage, boot step, risk or review-depth
   taxonomy, or current state was created or moved; FAST-CI status stays in the `CLAUDE.md` Lead
   Watchlist.
+
+- **Amendment 5 — execution judgment (§1A.1).** Basis under this section: a **demonstrated
+  workflow defect** plus an **explicit Owner safeguard decision** (task `GOVERNANCE CORRECTION —
+  AGENT EXECUTION JUDGMENT`, 2026-10-12). A local full regression was run while files were still
+  being edited, so its failures had to be re-proven on the final state. Two causes: the run
+  started before the candidate was stable, and the `CLAUDE.md` test proportionality sequence
+  listed a stable full regression before hosted CI without saying that hosted Sharded FULL
+  supplies it on the FULL route. Scope, governance-only: §1A.1 states how an agent selects and
+  applies the named mechanisms (objective, risk, minimum sufficient verification, stop triggers,
+  next action), the instruction responsibilities of Lead and executor, the two FCR verification
+  layers, safe parallel work, finding categories mapped onto §13, §14 and Lean §5B.2, and
+  NEXT-LOOP continuity; the §1A intro and §2.1 name it; the `CLAUDE.md` test proportionality
+  sequence is corrected and its mechanisms paragraph points to §1A.1. No existing rule was
+  removed or renumbered; Lean §5B, §13, §14, the required CI checks and their ownership are
+  unchanged; no authority, approval stage, boot step, register or current state was created or
+  moved.
 
 - **Autonomous-delivery transition amendment.** Explicit Owner safeguard correction:
   replace repeated lifecycle approvals with the Lean-owned milestone authority and risk
