@@ -637,8 +637,9 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         <ul class="cap01-fund-items">
           {#- ELECTRICAL-ENERGY-TIME-REFERENCE-01: for THAT group only, each short equation
               stays one unbroken LTR expression and its note starts on its own line; every
-              other group's markup is unchanged. -#}
-          {%- set _cap01_sep = _cap01_fund.group_id == 'electrical_energy_time_reference_v1' %}
+              other group's markup is unchanged. ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01
+              applies the same separation to electric_charge_reference_v1. -#}
+          {%- set _cap01_sep = _cap01_fund.group_id in ('electrical_energy_time_reference_v1', 'electric_charge_reference_v1') %}
           {%- for _cap01_claim in _cap01_fund.claims %}
           {#- 28-T1-SENSING-VALUE-THRESHOLD-01: a prose-only group (named by exact
               group id in the resolver) renders a title and ONE explanation — no

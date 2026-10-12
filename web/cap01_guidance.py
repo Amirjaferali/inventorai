@@ -321,11 +321,23 @@ CAP01_GAP_FUNDAMENTALS = {
 # provenance electronics_electrical:PR016–PR017) — a microcontroller-based design
 # can receive inputs, process them using programmed logic and command outputs.
 # Presentation only; not firmware guidance. Same rules as above.
+# ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 appends ONE further group to the
+# Electronics PHYSICAL_FEASIBILITY context, after the energy-time group:
+# electric_charge_reference_v1 (``domains/electronics_electrical/domain.json``;
+# provenance electronics_electrical:PR018–PR021) — current as the rate of electric
+# charge flow, the charge relation for a constant current only, the coulomb unit
+# relation and the ampere-hour factor with the milli prefix. Reference only; not
+# Battery / BMS capability and no runtime, energy or charge estimate. Same rules
+# as above.
 CAP01_GAP_FUNDAMENTALS_EXTENSIONS = {
     ("electronics_electrical", "PHYSICAL_FEASIBILITY"): (
         ("electrical_energy_time_reference_v1",
          ("constant_power_energy_reference", "energy_time_unit_discipline"),
          "ENERGY_TIME_FUNDAMENTALS_"),
+        ("electric_charge_reference_v1",
+         ("charge_current_time_reference", "charge_unit_discipline",
+          "ampere_hour_charge_unit"),
+         "CHARGE_FUNDAMENTALS_"),
     ),
     ("electronics_electrical", "MECHANISM_COMPLETENESS"): (
         ("sensing_value_threshold_reference_v1",

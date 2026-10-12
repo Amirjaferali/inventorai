@@ -6939,6 +6939,73 @@ UI_STRINGS = {
         "en": "This group performs no project-specific calculation and determines no battery capacity, runtime, component suitability or safety.",
         "ar": "لا تُجري هذه المجموعة حسابًا خاصًا بمشروعك، ولا تحدد سعة البطارية أو مدة تشغيلها أو ملاءمة المكونات أو سلامتها.",
     },
+    # ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 — the third, separately namespaced reference-fundamentals
+    # group of the Electronics PHYSICAL_FEASIBILITY context (electric_charge_reference_v1; provenance
+    # electronics_electrical:PR018–PR021). Original InventorAI wording; no runtime, energy or charge estimate.
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_TITLE": {
+        "en": "Electric charge, current and time",
+        "ar": "الشحنة الكهربائية والتيار والزمن",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_INTRO": {
+        "en": "Reference information only. It explains units that appear on many batteries. InventorAI has not evaluated your battery, and has not established that the current is constant or that these relationships apply to your invention.",
+        "ar": "هذه معلومات مرجعية فقط، تشرح وحداتٍ تظهر على كثير من البطاريات. لم يقيّم InventorAI بطاريتك، ولم يثبت أن التيار ثابت أو أن هذه العلاقات تنطبق على اختراعك.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_1_TITLE": {
+        "en": "Charge at constant current",
+        "ar": "الشحنة عند تيار ثابت",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_1_LEAD": {
+        "en": "Electric current is the rate of electric charge flow: a current of one ampere means one coulomb of charge passes a given point every second. When the current I remains constant throughout a time interval t, the charge Q that flows is:",
+        "ar": "التيار الكهربائي هو معدل مرور الشحنة الكهربائية: تيار شدته أمبير واحد يعني مرور كولوم واحد من الشحنة عبر نقطة معيّنة في كل ثانية. عندما يبقى التيار I ثابتًا طوال مدة زمنية t، تكون الشحنة المارّة Q وفق العلاقة:",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_1_EQUATION": {
+        "en": "Q = I × t",
+        "ar": "Q = I × t",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_1_NOTE": {
+        "en": "Q is the charge that flows, I is the constant current, and t is the duration. This holds only while the current stays constant.",
+        "ar": "ترمز Q إلى الشحنة المارّة، وI إلى التيار الثابت، وt إلى المدة الزمنية. لا تصحّ هذه العلاقة إلا ما دام التيار ثابتًا.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_2_TITLE": {
+        "en": "The unit of electric charge",
+        "ar": "وحدة الشحنة الكهربائية",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_2_LEAD": {
+        "en": "The SI unit of electric charge is the coulomb C. In SI base units:",
+        "ar": "وحدة الشحنة الكهربائية في النظام الدولي للوحدات هي الكولوم C، وتُكتب بالوحدات الأساسية هكذا:",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_2_EQUATION": {
+        "en": "C = A · s",
+        "ar": "C = A · s",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_2_NOTE": {
+        "en": "A is the ampere and s is the second.",
+        "ar": "ترمز A إلى الأمبير، وs إلى الثانية.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_3_TITLE": {
+        "en": "Ampere-hours and milliampere-hours",
+        "ar": "الأمبير-ساعة والميلي أمبير-ساعة",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_3_LEAD": {
+        "en": "The ampere-hour A · h is also a unit of electric charge:",
+        "ar": "الأمبير-ساعة A · h وحدة للشحنة الكهربائية أيضًا:",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_3_EQUATION": {
+        "en": "1 A · h = 3.6 × 10³ C",
+        "ar": "1 A · h = 3.6 × 10³ C",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_3_NOTE": {
+        "en": "The prefix milli means 10⁻³, one-thousandth, so one milliampere-hour is one-thousandth of an ampere-hour. A value in ampere-hours or milliampere-hours, also written Ah or mAh, is an amount of charge, not an amount of energy; energy is measured in joules J.",
+        "ar": "البادئة «ميلي» تعني 10⁻³، أي جزءًا من ألف، فالميلي أمبير-ساعة جزء من ألف من الأمبير-ساعة. والقيمة المكتوبة بالأمبير-ساعة أو بالميلي أمبير-ساعة، وتُكتب أيضًا Ah أو mAh، كميةُ شحنة لا كميةُ طاقة؛ فالطاقة تُقاس بالجول J.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_SOURCE": {
+        "en": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; fundamentals reference only); NIST Guide to the SI, SP 811 Chapter 4 and Appendix B.9.",
+        "ar": "مواد مرجعية: وزارة الطاقة الأمريكية (U.S. Department of Energy) — Electrical Science، DOE-HDBK-1011/1-92 (مؤرشف؛ مرجع للأساسيات فقط)؛ ودليل NIST للنظام الدولي للوحدات، SP 811 الفصل 4 والملحق B.9.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_BOUNDARY": {
+        "en": "A charge value alone does not tell you how long a battery will last: because current is the rate of electric charge flow, how long a charge lasts also depends on the current drawn, which may change during use. This group performs no project-specific calculation and does not estimate battery runtime, energy, state of charge or how much charge a particular battery can deliver, and it makes no sizing, charging, compatibility or safety assessment.",
+        "ar": "رقم الشحنة وحده لا يحدّد كم ستدوم البطارية: فلأن التيار هو معدل مرور الشحنة الكهربائية، تعتمد المدة أيضًا على التيار المسحوب، وقد يتغيّر أثناء الاستخدام. لا تُجري هذه المجموعة حسابًا خاصًا بمشروعك، ولا تقدّر مدة تشغيل البطارية أو طاقتها أو حالة شحنها أو كمية الشحنة التي تستطيع بطارية معيّنة توفيرها، ولا تقدّم أي تقييم للحجم أو الشحن أو التوافق أو السلامة.",
+    },
     # 28-T1-SENSING-VALUE-THRESHOLD-01 — ONE prose-only conceptual group attached to the
     # Electronics MECHANISM_COMPLETENESS context (sensing_value_threshold_reference_v1; provenance
     # electronics_electrical:PR012–PR013). ITEM_1_TEXT is the Lead-approved EN / AR wording verbatim;

@@ -41,6 +41,10 @@ from tests.test_stage18_cap01_bounded_guidance import _mask_csrf
 # one; this file's checks exclude exactly that addition (tests/cap01_controller_addition.py).
 from tests.cap01_controller_addition import (
     CTRL_GROUP, CTRL_NAMESPACE, CTRL_RECORDS, CTRL_ROW, CTRL_SLUG, without_controller_addition)
+# ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 later appended a third group to the Electronics
+# PHYSICAL_FEASIBILITY context; excluded here likewise (tests/cap01_charge_addition.py).
+from tests.cap01_charge_addition import (
+    CHARGE_GROUP, CHARGE_RECORDS, CHARGE_ROW, without_charge_addition)
 from tests.test_cap01_electrical_energy_time_reference import ET_GROUP, _html, _groups, _equations
 from tests.test_cap01_electrical_reference_fundamentals import FUND_GROUP as BASE_GROUP
 from tests.test_cap01_sensing_value_threshold_reference import (
@@ -175,7 +179,7 @@ def test_b03_absent_for_other_gaps_and_other_domains():
     groups = _groups((PHYSICAL_FEASIBILITY, OPEN), (BOUNDARY_AMBIGUITY, OPEN))
     for gap in (PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY):
         assert GROUP not in [g["group_id"] for g in groups.get(gap, ())]
-    assert [g["group_id"] for g in groups[PHYSICAL_FEASIBILITY]] == [BASE_GROUP, ET_GROUP]
+    assert [g["group_id"] for g in groups[PHYSICAL_FEASIBILITY]] == [BASE_GROUP, ET_GROUP, CHARGE_GROUP]
     mech = _groups((MECHANISM_COMPLETENESS, OPEN), domain="mechanical")
     assert all(GROUP not in [g["group_id"] for g in gs] for gs in (mech or {}).values())
     assert _BLOCK_RE.search(_html((MECHANISM_COMPLETENESS, OPEN), domain="mechanical")) is None
@@ -188,7 +192,7 @@ def test_b04_the_binding_is_one_fixed_row_appended_to_the_sensing_context():
     assert cap01_guidance.CAP01_GAP_FUNDAMENTALS_EXTENSIONS == {
         (DOMAIN, PHYSICAL_FEASIBILITY): (
             (ET_GROUP, ("constant_power_energy_reference", "energy_time_unit_discipline"),
-             "ENERGY_TIME_FUNDAMENTALS_"),),
+             "ENERGY_TIME_FUNDAMENTALS_"), CHARGE_ROW),
         (DOMAIN, MECHANISM_COMPLETENESS): (
             (SENSING_GROUP, (SENSING_CLAIM,), "SENSING_FUNDAMENTALS_"),
             (GROUP, (CLAIM,), "ACCURACY_RESOLUTION_FUNDAMENTALS_"), CTRL_ROW),
@@ -374,7 +378,7 @@ def test_f01_missing_required_prose_copy_removes_only_this_group(monkeypatch):
         monkeypatch.setattr(ui_text, "UI_STRINGS", strings)
         groups = _groups((MECHANISM_COMPLETENESS, OPEN), (PHYSICAL_FEASIBILITY, OPEN))
         assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [SENSING_GROUP, CTRL_GROUP], part
-        assert [g["group_id"] for g in groups[PHYSICAL_FEASIBILITY]] == [BASE_GROUP, ET_GROUP]
+        assert [g["group_id"] for g in groups[PHYSICAL_FEASIBILITY]] == [BASE_GROUP, ET_GROUP, CHARGE_GROUP]
         monkeypatch.undo()
 
 
@@ -392,7 +396,8 @@ def test_f03_existing_groups_keep_requiring_their_equation(monkeypatch):
     strings = dict(ui_text.UI_STRINGS)
     strings.pop(key)
     monkeypatch.setattr(ui_text, "UI_STRINGS", strings)
-    assert [g["group_id"] for g in _groups((PHYSICAL_FEASIBILITY, OPEN))[PHYSICAL_FEASIBILITY]] == [ET_GROUP]
+    assert [g["group_id"] for g in _groups((PHYSICAL_FEASIBILITY, OPEN))[PHYSICAL_FEASIBILITY]] == [
+        ET_GROUP, CHARGE_GROUP]
     monkeypatch.undo()
     for group in _groups((PHYSICAL_FEASIBILITY, OPEN))[PHYSICAL_FEASIBILITY]:
         assert group["prose_only"] is False
@@ -405,8 +410,8 @@ def test_f03_existing_groups_keep_requiring_their_equation(monkeypatch):
 def test_p01_pack_minus_exactly_this_addition_equals_the_base_pack():
     pack = _pack()
     assert [g["group_id"] for g in pack["reference_fundamentals"]] == [BASE_GROUP, ET_GROUP, SENSING_GROUP,
-                                                                       GROUP, CTRL_GROUP]
-    pre = without_controller_addition(pack)
+                                                                       GROUP, CTRL_GROUP, CHARGE_GROUP]
+    pre = without_charge_addition(without_controller_addition(pack))
     pre["reference_fundamentals"] = [g for g in pre["reference_fundamentals"] if g["group_id"] != GROUP]
     note = pre["_governance_notes"].pop(NOTE)
     assert _digest(pre) == _PRE_PACK_DIGEST
@@ -437,7 +442,7 @@ def test_p03_provenance_is_append_only_with_two_claim_specific_records():
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR013")
     assert tuple(ids[i + 1:i + 3]) == RECORDS
-    pre = [r for r in records if r["record_id"] not in RECORDS + CTRL_RECORDS]
+    pre = [r for r in records if r["record_id"] not in RECORDS + CTRL_RECORDS + CHARGE_RECORDS]
     assert _digest(pre) == _PRE_PROVENANCE_DIGEST                     # PR001–PR013 and others unchanged
     src, use = (records[ids.index(r)] for r in RECORDS)
     assert sorted(src) == sorted(use) == sorted(records[i])

@@ -52,7 +52,9 @@ def test_energy_time_group_renders_second_and_fits_phone_width(server, page, lan
 
     page.goto(f"{server}/session/{sid}/deliverable")
     groups = page.locator("[data-cap01-fundamentals]")
-    expect(groups).to_have_count(2)
+    # ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 appends a third group after this one
+    # (tests/test_cap01_electric_charge_reference_browser.py).
+    expect(groups).to_have_count(3)
     assert groups.nth(0).get_attribute("data-cap01-fundamentals") == "basic-electrical-reference-v1"
     group = groups.nth(1)
     assert group.get_attribute("data-cap01-fundamentals") == "electrical-energy-time-reference-v1"
