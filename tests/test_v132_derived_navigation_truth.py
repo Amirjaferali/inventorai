@@ -5053,6 +5053,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at CAP13-DECLARATION-GUIDANCE-01 (merge-effective delivery record): it follows the measurement
            # figure increment in the chain
            r"the only product increment authorized after it was CAP13-DECLARATION-GUIDANCE-01 \(below\), "
+           r"delivered \(PR #\d+\); "
+           # ADVANCED at ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 (merge-effective delivery record): it follows the
+           # declaration guidance increment in the chain
+           r"the only product increment authorized after it was ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 \(below\), "
            r"delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
@@ -5327,7 +5331,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # authorized after it; the component correction / withdrawal increment precedes it
                # ADVANCED at CAP13-DECLARATION-GUIDANCE-01 (merge-effective delivery record): no product increment is
                # authorized after it; the measurement figure increment precedes it
-               r"No product increment is authorized after CAP13-DECLARATION-GUIDANCE-01 \(delivered: PR #\d+; "
+               # ADVANCED at ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 (merge-effective delivery record): no product
+               # increment is authorized after it; the declaration guidance increment precedes it
+               r"No product increment is authorized after ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 \(delivered: "
+               r"PR #\d+; [^)]*one Electrical reference group on electric charge, current and time[^)]*"
+               r"reference only, not Battery / BMS capability, no runtime, energy or charge estimate and nothing added "
+               r"to the calculation owner; no Stage entered, completed or reopened; effective only on the verified "
+               r"merge of PR #\d+\) or after the preceding "
+               r"CAP13-DECLARATION-GUIDANCE-01 \(delivered: PR #\d+; "
                r"[^)]*help beside each of the ten CAP-13 declarations and the corrected support-line terminology[^)]*"
                r"presentation only, method, version, declarations, units and eligibility unchanged; no Stage entered, "
                r"completed or reopened; effective only on the verified merge of PR #\d+\) or after the preceding "
@@ -5870,6 +5881,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # ADVANCED at CAP13-DECLARATION-GUIDANCE-01 (merge-effective delivery record): it follows the measurement
             # figure increment in the chain
             "the only increment authorized after it — CAP13-DECLARATION-GUIDANCE-01 (above) — is DELIVERED (PR #N); "
+            # ADVANCED at ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 (merge-effective delivery record): it follows the
+            # declaration guidance increment in the chain
+            "the only increment authorized after it — ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 (above) — is "
+            "DELIVERED (PR #N); "
             "no subsequent increment has been authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
     # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
@@ -6195,7 +6210,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # correction / withdrawal increment precedes it
            # ADVANCED at CAP13-DECLARATION-GUIDANCE-01 (merge-effective delivery record): ... after it; the
            # measurement figure increment precedes it
-           r"No product increment is authorized after CAP13-DECLARATION-GUIDANCE-01 \(delivered; PR #\d+; "
+           # ADVANCED at ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 (merge-effective delivery record): ... after it;
+           # the declaration guidance increment precedes it
+           r"No product increment is authorized after ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 \(delivered; "
+           r"PR #\d+; [^)]*one Electrical charge and ampere-hour reference group, reference only and not Battery / "
+           r"BMS capability; no Stage change; effective only on merge\) or after the preceding "
+           r"CAP13-DECLARATION-GUIDANCE-01 \(delivered; PR #\d+; "
            r"[^)]*help beside each CAP-13 declaration and corrected support-line terminology, presentation only; no "
            r"Stage change; effective only on merge\) or after the preceding "
            r"CAP13-MEASUREMENT-FIGURE-01 \(delivered; PR #\d+; "

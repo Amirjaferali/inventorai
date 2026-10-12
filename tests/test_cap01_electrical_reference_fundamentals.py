@@ -152,13 +152,18 @@ def _texts(lang):
             and not k.startswith(PREFIX + PHYSICAL_FEASIBILITY + "_ENERGY_TIME_FUNDAMENTALS_")
             and not k.startswith(PREFIX + MECHANISM_COMPLETENESS + "_SENSING_FUNDAMENTALS_")
             and not k.startswith(PREFIX + MECHANISM_COMPLETENESS + "_ACCURACY_RESOLUTION_FUNDAMENTALS_")
-            and not k.startswith(PREFIX + MECHANISM_COMPLETENESS + "_" + CTRL_NAMESPACE)}
+            and not k.startswith(PREFIX + MECHANISM_COMPLETENESS + "_" + CTRL_NAMESPACE)
+            and not k.startswith(PREFIX + PHYSICAL_FEASIBILITY + "_" + CHARGE_NAMESPACE)}
 
 
 # 28-T2-CONTROLLER-INPUT-LOGIC-OUTPUT-REFERENCE-01 adds a third prose-only group to that context and a
 # bounded coverage clause (tests/cap01_controller_addition.py); both are excluded below likewise.
 from tests.cap01_controller_addition import (
     CTRL_GROUP, CTRL_NAMESPACE, CTRL_RECORDS, CTRL_ROW, CTRL_SLUG, without_controller_addition)
+# ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 appends a third group to the PHYSICAL_FEASIBILITY
+# context (tests/cap01_charge_addition.py); it owns its own namespace and is excluded below likewise.
+from tests.cap01_charge_addition import (
+    CHARGE_GROUP, CHARGE_NAMESPACE, CHARGE_RECORDS, without_charge_addition)
 
 
 # 28-T1-SENSING-VALUE-THRESHOLD-01: the ONE separately bound prose-only group of the
@@ -203,9 +208,10 @@ def test_e01_pf_open_or_partial_renders_the_context_and_fundamentals_exactly_onc
     assert fund["group_id"] == FUND_GROUP
     assert tuple(c["claim_id"] for c in fund["claims"]) == FUND_CLAIMS
     html = _render_state((PHYSICAL_FEASIBILITY, status))
-    # This slice's group renders exactly once and FIRST; the one later, separately
-    # authorized group (ELECTRICAL-ENERGY-TIME-REFERENCE-01) follows it.
-    assert len(_blocks(html)) == 1 and len(_ANY_FUND_RE.findall(html)) == 2
+    # This slice's group renders exactly once and FIRST; the two later, separately
+    # authorized groups (ELECTRICAL-ENERGY-TIME-REFERENCE-01, then
+    # ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01) follow it.
+    assert len(_blocks(html)) == 1 and len(_ANY_FUND_RE.findall(html)) == 3
     assert html.index('data-cap01-fundamentals="basic-electrical-reference-v1"') < \
         html.index('data-cap01-fundamentals="electrical-energy-time-reference-v1"')
     assert html.count('data-cap01-gap-group="%s"' % GROUP_ID) == 1
@@ -419,8 +425,10 @@ def test_e16_four_new_provenance_records_with_the_exact_authorized_identities():
     # ELECTRICAL-ENERGY-TIME-REFERENCE-01 appends exactly four further records,
     # 28-T1-SENSING-VALUE-THRESHOLD-01 two more (PR012–PR013) and
     # 28-T1-ACCURACY-RESOLUTION-REFERENCE-01 two more (PR014–PR015) and
-    # 28-T2-CONTROLLER-INPUT-LOGIC-OUTPUT-REFERENCE-01 two more (PR016–PR017).
-    assert ids[7:] == ["electronics_electrical:PR%03d" % n for n in range(8, 18)]
+    # 28-T2-CONTROLLER-INPUT-LOGIC-OUTPUT-REFERENCE-01 two more (PR016–PR017) and
+    # ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 four more (PR018–PR021).
+    assert ids[7:] == ["electronics_electrical:PR%03d" % n for n in range(8, 22)]
+    assert tuple(ids[-4:]) == CHARGE_RECORDS
     doe, nist, doe_pol, nist_pol = (recs[r] for r in NEW_RECORDS)
     assert doe["standard_number"] == "DOE-HDBK-1011/1-92" and doe["source_type"] == "government_reference_publication"
     assert "Electrical Science" in doe["source_name"] and "Volume 1 of 4" in doe["source_name"]
@@ -499,7 +507,7 @@ def test_e19_the_pack_group_declares_the_three_claims_with_exact_source_and_poli
     assert [g["group_id"] for g in groups] == [FUND_GROUP, "electrical_energy_time_reference_v1",
                                                "sensing_value_threshold_reference_v1",
                                                "measurement_accuracy_resolution_reference_v1",
-                                               CTRL_GROUP]
+                                               CTRL_GROUP, CHARGE_GROUP]
     group = groups[0]
     assert sorted(group) == ["applicable_gap_type", "claims", "group_id"]
     assert group["group_id"] == FUND_GROUP and group["applicable_gap_type"] == PHYSICAL_FEASIBILITY
@@ -521,7 +529,7 @@ def test_e19_the_pack_group_declares_the_three_claims_with_exact_source_and_poli
 
 def test_e20_every_pre_existing_pack_field_is_unchanged_and_the_group_is_declared_inert():
     pack = _pack()
-    pre = without_controller_addition(pack)
+    pre = without_charge_addition(without_controller_addition(pack))
     pre.pop("reference_fundamentals")
     note = pre["_governance_notes"].pop("electrical_td_slice1_reference_fundamentals")
     # ...and the later, separately authorized energy-time group's own note.
