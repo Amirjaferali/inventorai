@@ -652,8 +652,10 @@ materially necessary.
 **Named execution mechanisms.** Owner execution instructions use shorthand names — NEXT-LOOP
 v1.0, BMG, FCR — Two Layers, RE-SPE, Review Economy, Instruction Economy, Safe Parallel
 Execution, FAST-CI v1.0 and PCRA v1.0 with ACE and SFR. AHAEP §1A maps each name to the
-existing rule that owns it. AHAEP §9A.2 defines PCRA, context assurance before proposing new
-work: retrieve the current instructions, accepted decisions, implementation evidence and
+existing rule that owns it; AHAEP §1A.1 states how an agent applies them — the mechanisms a task
+actually needs and its minimum sufficient verification, never every mechanism at maximum
+intensity. AHAEP §9A.2 defines PCRA, context assurance before proposing new work: retrieve the
+current instructions, accepted decisions, implementation evidence and
 architecture contracts; ACE checks architecture compatibility and escalates a material
 unresolved issue to Astra and Claude Architect, with reserved decisions staying with the Owner;
 SFR classifies existing behaviour as EXISTS, EXTEND, REUSE, NEW or UNCERTAIN and extends the
@@ -800,8 +802,10 @@ preconditions are satisfied. The accepted T1-C′ V1 study corpus
 product-tuning or regression corpus.
 
 **Test proportionality.** Default sequence where appropriate: focused tests → affected/adjacent
-tests → stable full regression → hosted required CI. Never weaken mandatory CI; do not rerun
-the full suite repeatedly during intermediate work when focused evidence is sufficient.
+tests on a stable candidate → hosted required CI, where hosted Sharded FULL is the broad
+regression on the FULL route; a local full run needs a stated material reason (AHAEP §1A.1).
+Never weaken mandatory CI; do not rerun the full suite repeatedly during intermediate work when
+focused evidence is sufficient.
 
 **Reading boundary.** Diff-first → search-first → exact-function / exact-range. For large
 files, read the smallest relevant range first and expand only to direct material dependencies;
