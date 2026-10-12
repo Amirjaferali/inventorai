@@ -117,7 +117,7 @@ ACCEPTED = {
         "ITEM_3_TITLE": "الأمبير-ساعة والميلي أمبير-ساعة",
         "ITEM_3_LEAD": "الأمبير-ساعة A · h وحدة للشحنة الكهربائية أيضًا:",
         "ITEM_3_EQUATION": "1 A · h = 3.6 × 10³ C",
-        "ITEM_3_NOTE": "البادئة «ميلي» تعني 10⁻³، أي جزءًا من ألف، فالميلي أمبير-ساعة جزء من ألف من "
+        "ITEM_3_NOTE": "البادئة «ميلي» تعني جزءًا من ألف، فالميلي أمبير-ساعة جزء من ألف من "
                        "الأمبير-ساعة. والقيمة المكتوبة بالأمبير-ساعة أو بالميلي أمبير-ساعة، وتُكتب أيضًا Ah أو "
                        "mAh، كميةُ شحنة لا كميةُ طاقة؛ فالطاقة تُقاس بالجول J.",
         "SOURCE": "مواد مرجعية: وزارة الطاقة الأمريكية (U.S. Department of Energy) — Electrical Science، "
@@ -426,7 +426,10 @@ def test_c16_charge_is_not_energy_and_a_charge_value_cannot_give_runtime():
     assert "is an amount of charge, not an amount of energy" in en["ITEM_3_NOTE"]
     assert "كميةُ شحنة لا كميةُ طاقة" in ar["ITEM_3_NOTE"]
     assert "Ah or mAh" in en["ITEM_3_NOTE"] and "Ah أو mAh" in ar["ITEM_3_NOTE"]
-    assert "10⁻³" in en["ITEM_3_NOTE"] and "10⁻³" in ar["ITEM_3_NOTE"]
+    # milli = 10⁻³: the English note shows the power of ten; the Arabic note states the same value in words,
+    # because an inline superscript exponent is visually reordered inside right-to-left text
+    assert "10⁻³, one-thousandth" in en["ITEM_3_NOTE"]
+    assert "تعني جزءًا من ألف" in ar["ITEM_3_NOTE"] and "10" not in ar["ITEM_3_NOTE"]
     assert en["BOUNDARY"].startswith("A charge value alone does not tell you how long a battery will last")
     assert ar["BOUNDARY"].startswith("رقم الشحنة وحده لا يحدّد كم ستدوم البطارية")
     assert "also depends on the current drawn" in en["BOUNDARY"]
@@ -445,7 +448,7 @@ def test_c17_no_runtime_energy_or_charge_estimate_and_digits_only_where_admitted
     digits = {part: re.findall(r"\d+", text) for part, text in texts.items()}
     assert digits.pop("SOURCE") == ["1011", "1", "92", "811", "4", "9"]
     assert digits.pop("ITEM_3_EQUATION") == ["1", "3", "6", "10"]
-    assert digits.pop("ITEM_3_NOTE") == ["10"]
+    assert digits.pop("ITEM_3_NOTE") == (["10"] if lang == "en" else [])
     assert not any(digits.values()), digits
     # runtime / energy / delivered-charge words occur only in the negative disclosures and the
     # charge-versus-energy note

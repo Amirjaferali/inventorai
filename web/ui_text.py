@@ -6996,7 +6996,7 @@ UI_STRINGS = {
     },
     "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_ITEM_3_NOTE": {
         "en": "The prefix milli means 10⁻³, one-thousandth, so one milliampere-hour is one-thousandth of an ampere-hour. A value in ampere-hours or milliampere-hours, also written Ah or mAh, is an amount of charge, not an amount of energy; energy is measured in joules J.",
-        "ar": "البادئة «ميلي» تعني 10⁻³، أي جزءًا من ألف، فالميلي أمبير-ساعة جزء من ألف من الأمبير-ساعة. والقيمة المكتوبة بالأمبير-ساعة أو بالميلي أمبير-ساعة، وتُكتب أيضًا Ah أو mAh، كميةُ شحنة لا كميةُ طاقة؛ فالطاقة تُقاس بالجول J.",
+        "ar": "البادئة «ميلي» تعني جزءًا من ألف، فالميلي أمبير-ساعة جزء من ألف من الأمبير-ساعة. والقيمة المكتوبة بالأمبير-ساعة أو بالميلي أمبير-ساعة، وتُكتب أيضًا Ah أو mAh، كميةُ شحنة لا كميةُ طاقة؛ فالطاقة تُقاس بالجول J.",
     },
     "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_PHYSICAL_FEASIBILITY_CHARGE_FUNDAMENTALS_SOURCE": {
         "en": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; fundamentals reference only); NIST Guide to the SI, SP 811 Chapter 4 and Appendix B.9.",
