@@ -42,6 +42,25 @@ pages, compliance-only candidates or reports about unchanged reports.
 output proves facts, not authority or acceptance. Live Git/GitHub prove transient identity;
 the Owner instruction and existing current authority surfaces establish execution scope.
 
+## 1A. Named execution mechanisms (Owner instruction shorthand)
+
+Owner execution instructions use the names below as shorthand. Each name points to rules that
+already exist; a name adds no lifecycle, approval stage, boot step or authority and supersedes
+none of its owners. Only PCRA adds behaviour, defined once in §9A.2. A name in an instruction
+is read through its owner; it never widens the instruction's scope.
+
+| Name | Meaning in an Owner instruction | Existing owner (reused, unchanged) |
+|---|---|---|
+| **NEXT-LOOP v1.0** | One bounded loop: verify live identity and authority, perform only the included operation, verify its result, return one account naming the next included action or the genuine Owner decision; never start the next task without its authority. | `CLAUDE.md` boot sequence and successor rule; §§5, 10, 14, 20, 21; Lean §§2, 7 |
+| **BMG** | The bounded gate on identity, authority, scope and stop conditions before mutation. For a merge: required checks passed on the exact head, mergeability, no material blocker, expected-head guard, a normal merge commit and post-merge parent / tree verification. | Lean §§2, 10; §§5, 9A, 19, 20; `CLAUDE.md` CI freshness before merge |
+| **FCR — Two Layers** | Layer 1: focused local checks proportionate to the actual risk. Layer 2: the existing hosted required gates on the exact head. Accepted evidence is reused; no redundant local full run. | Lean §5B (5B.1, 5B.2, 5B.6, 5B.9, 5B.10); §7; `CLAUDE.md` test proportionality and CI freshness |
+| **RE-SPE** | No repeated work and no scope expansion: accepted investigations, reviews and tests are not redone without new material evidence; a failure is fixed at its demonstrated defect only; no unrelated edits. | `CLAUDE.md` Lead Operating Method F–H; Lean §§0, 5B.2, 5B.10; §§6, 7, 10 |
+| **Review Economy** | Independent review only where the material risk requires it: once, by a non-authoring separate-session reviewer; no reviewer recursion; a correction is re-checked on the changed claims. | Lean §§3–5, 5B.3, 5B.17; §§14, 15; `CLAUDE.md` review routing and Lead Operating Method E, G |
+| **Instruction Economy** | One bounded operation and one consolidated return; no acknowledgement, status-only or duplicate artifact; the Owner is interrupted only for a reserved decision or stop condition. | §§1, 21; Lean §§5B.12, 7; `CLAUDE.md` authority-document discipline |
+| **Safe Parallel Execution** | Independent bounded work may run in parallel (read-only research, separate-session review, hosted CI, unrelated authorized work during a scoped hold), but only one Lead mutates the repository and no parallel helper holds more authority than the Lead; a same-session helper is assistance, not formal review. | `CLAUDE.md` continue, hold and return; Lean §§5, 8, 10; §9A |
+| **FAST-CI v1.0** | The hosted FULL route's sharded partition and its measured latency. Its current status is recorded only in the `CLAUDE.md` Lead Watchlist (§24: this protocol carries no status). | `.github/workflows/ci.yml`, `scripts/ci_full_suite.py`, `tests/test_ci_full_suite.py`; Lean §5B.9 |
+| **PCRA v1.0** (with **ACE** and **SFR**) | Context assurance before proposing new work. | §9A.2 (added); `CLAUDE.md` READ BEFORE BUILD / REUSE BEFORE CREATE; §2.4; Lean §§5, 10 |
+
 ## 2. Ownership boundary
 
 ### 2.1 THIS PROTOCOL OWNS (delivery mechanics only)
@@ -50,7 +69,8 @@ Live-base inspection and reconciliation; differential reconstruction; reviewed-h
 ordinary candidate repair; evidence preservation; consolidated correction and closed-finding
 finality; finding disposition and review convergence; optional exact-object transfer;
 execution-reachability checks; concise delivery evidence; live PR verification; deliberate
-expected-head merge; and post-merge identity verification. The product-value review obligation
+expected-head merge; post-merge identity verification; the named-mechanism index (§1A); and
+pre-change context assurance (§9A.2). The product-value review obligation
 is owned here as an obligation only, not as product semantics.
 
 ### 2.2 THIS PROTOCOL REFERENCES BUT DOES NOT OWN
@@ -238,6 +258,48 @@ preservation of the prior version, and a corresponding update to the Owner Stand
 Register. The canonical artifact controls the detailed `MC-01` through `MC-18` definitions;
 this subsection integrates ownership and applicability and does not duplicate the full
 checklist.
+
+### 9A.2 PCRA v1.0 — context assurance before proposing new work (with ACE and SFR)
+
+Inside the §9A preparation (the BMG preparation of an Owner instruction), the agent that
+proposes or executes new work first retrieves what governs it: the current instructions and
+authority surfaces, the accepted decisions that apply, the implementation evidence (code,
+tests, merged PRs) and the architecture contracts of the owners it touches. PCRA is done by
+that agent within its own preparation. It is not a separate executor round, artifact, review
+or approval, and it stops once the evidence is sufficient to decide. For a new product
+implementation instruction it is the Lead's READ BEFORE BUILD / REUSE BEFORE CREATE check in
+`CLAUDE.md`, not an addition to it.
+
+**ACE — Architecture Compatibility & Escalation.** Identify the architectural owners and
+contracts the work touches and check compatibility at the persistence, calculation, security
+and consumer boundaries. When the work is compatible and the question is already decided,
+proceed; a routine compatible change receives no architecture review. When a material
+architecture issue is unresolved, escalate it to the appropriate independent architecture
+reviewers, Astra and Claude Architect, when warranted; when either reviews formally, Lean §5
+independence applies. The Execution Lead evaluates their findings, and a reserved decision
+under Lean §10 remains with the Owner. ACE decides no architecture semantics; the owning
+contracts do.
+
+**SFR — Semantic Function Reuse & Extension.** Search for existing behaviour by technical
+synonyms, capabilities, code, tests and contracts, not by names alone, and distinguish
+implemented code from behaviour that is only documented, proposed, deferred or unauthorized.
+Classify the result:
+
+- **EXISTS** — the behaviour is implemented; do not build a duplicate.
+- **REUSE** — an existing owner already provides it; use that owner.
+- **EXTEND** — an existing owner covers it in part; extend that owner with only the missing delta.
+- **NEW** — nothing implemented covers it; propose it within the authorized scope.
+- **UNCERTAIN** — the evidence does not settle it; resolve it with one bounded check or report
+  it, and build nothing on the uncertainty.
+
+These classes refine the READ BEFORE BUILD outcomes (ALREADY EXISTS → EXISTS or REUSE;
+PARTIAL → EXTEND; ABSENT → NEW) and apply §2.4: no duplicate service, store, framework or
+semantic owner.
+
+**Evidence statement.** Record the result concisely in the existing PR description or return
+account: the sources consulted, the owners and contracts touched, the compatibility
+conclusion or escalation, and the SFR class with its evidence. No separate report, register
+or approval cycle is created.
 
 ## 10. Implementation and consolidated self-review
 
@@ -545,6 +607,17 @@ statements that no rules were weakened describe those earlier amendments only.
   duplicated or rewritten; no provider-, agent-, reviewer-, or Lead-specific process owner is
   created. This amendment grants no implementation, publication, PR, merge, pilot, human-study,
   product, runtime, schema, or other downstream authority.
+
+- **Amendment 4 — named execution mechanisms (§1A) and PCRA (§9A.2).** Basis under this
+  section: an **explicit Owner safeguard decision** (task `GOVERNANCE-MECHANISMS-CONSOLIDATION-01`,
+  2026-10-12) to consolidate the Owner's execution-instruction shorthand onto its existing owners
+  and add bounded context assurance before new work. Scope, governance-only and additive: §1A
+  maps NEXT-LOOP v1.0, BMG, FCR — Two Layers, RE-SPE, Review Economy, Instruction Economy, Safe
+  Parallel Execution and FAST-CI v1.0 to existing rules without changing them; §9A.2 adds PCRA
+  v1.0 with ACE and SFR inside the existing §9A preparation; §2.1 lists both. No existing rule was
+  weakened, removed or renumbered; no authority, approval stage, boot step, risk or review-depth
+  taxonomy, or current state was created or moved; FAST-CI status stays in the `CLAUDE.md` Lead
+  Watchlist.
 
 - **Autonomous-delivery transition amendment.** Explicit Owner safeguard correction:
   replace repeated lifecycle approvals with the Lean-owned milestone authority and risk
