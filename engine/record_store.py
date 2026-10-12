@@ -35,7 +35,11 @@ from contextlib import contextmanager
 from typing import List, Protocol, runtime_checkable
 
 from engine.record_contract import ProjectRecordContract, assertion_to_dict
-from engine.idea_state import DISPOSITION_ANSWERED
+from engine.record_contract import (
+    assertion_from_dict as _assertion_from_dict,
+    reconcile_supersession_edges as _reconcile_supersession_edges,
+)
+from engine.idea_state import DISPOSITION_ANSWERED, DECISION_ACTION_DISPOSITIONS
 from engine.commercial_evidence import (
     EVIDENCE_EXACT_REPLAY, EVIDENCE_INSERTED, EvidenceCapExceeded,
     MAX_READINESS_EVIDENCE_PER_PROJECT, ReadinessEvidence,
@@ -3728,17 +3732,51 @@ class SqliteRecordStore:
     _CRITERION_SELECT = ", ".join(_CRITERION_REVISION_COLUMNS[1:])
     _VALUE_SELECT = ", ".join(_VALUE_EVENT_COLUMNS[1:])
 
-    def _comparison_history(self, project_id):
-        """``(ledger, revisions, revision_keys, events, event_keys)`` of this
-        project, validated WHOLE (``DecisionComparisonCorrupt`` on any
-        defect, including an unreadable decision ledger)."""
+    def _decision_ledger_records(self, project_id):
+        """This project's DECISION-chain ledger records only (context,
+        alternative and withdrawal records), restored through the record
+        contract's own ``assertion_from_dict`` and inverse-edge
+        reconciliation. Not a full contract load: the decision chains are
+        closed under supersession (the carrier never lets a decision record
+        supersede, or be superseded by, a record of another class), and that
+        closure is CHECKED here — a reference leaving the decision records, a
+        duplicate id or a malformed payload raises
+        ``DecisionComparisonCorrupt``. Read-only; project-scoped."""
         try:
-            assertions = self.load_contract(project_id).assertions
-        except ProjectNotFound:
+            decision, foreign_refs = [], set()
+            for (payload,) in self._conn.execute(
+                    "SELECT payload FROM records WHERE project_id = ? "
+                    "ORDER BY seq ASC", (project_id,)).fetchall():
+                data = json.loads(payload)
+                if not isinstance(data, dict):
+                    raise DecisionComparisonCorrupt("a ledger payload is malformed")
+                if data.get("disposition") in DECISION_ACTION_DISPOSITIONS:
+                    decision.append(_assertion_from_dict(data))
+                else:
+                    foreign_refs.update(data.get("supersedes") or ())
+                    if data.get("superseded_by"):
+                        foreign_refs.add(data["superseded_by"])
+            ids = {r.record_id for r in decision}
+            if len(ids) != len(decision) or foreign_refs & ids:
+                raise DecisionComparisonCorrupt("decision chains are not closed")
+            for record in decision:
+                if any(ref not in ids for ref in record.supersedes) or (
+                        record.superseded_by is not None
+                        and record.superseded_by not in ids):
+                    raise DecisionComparisonCorrupt("decision chains are not closed")
+            _reconcile_supersession_edges(decision)
+            return decision
+        except DecisionComparisonCorrupt:
             raise
         except Exception:
             raise DecisionComparisonCorrupt(
                 "the decision ledger cannot be read") from None
+
+    def _comparison_history(self, project_id):
+        """``(ledger, revisions, revision_keys, events, event_keys)`` of this
+        project, validated WHOLE (``DecisionComparisonCorrupt`` on any
+        defect, including an unreadable decision ledger)."""
+        assertions = self._decision_ledger_records(project_id)
         crit_rows = self._conn.execute(
             "SELECT " + self._CRITERION_SELECT
             + " FROM decision_criterion_revisions WHERE project_id = ? "

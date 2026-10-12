@@ -497,7 +497,14 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
     # not a ledger either. AMENDED at Stage 19 / CAP-09 SLICE 4: the sibling
     # `prototype_test_variables` (current value, no payload, no disposition) is
     # not a ledger either.
-    assert tables == ["engine_version_adoptions", "evidence_references",
+    assert tables == [
+                      # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the
+                      # inventor's own decision criteria and per-alternative
+                      # values, append-only (typed kinds, no payload, no
+                      # disposition, never replayed) — not a ledger.
+                      "decision_cell_value_events",
+                      "decision_criterion_revisions",
+                      "engine_version_adoptions", "evidence_references",
                       # Stage 15 closure: INSERT-only interface anchor of each
                       # Integration evidence row (no payload) — not a ledger.
                       "integration_evidence_anchors",
