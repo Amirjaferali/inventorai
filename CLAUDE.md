@@ -646,6 +646,17 @@ UX/behaviour reviewer when needed. Architecture, persistence, schema, replay, pr
 state-ownership questions escalate to the designated architecture reviewer (Astra role) when
 materially necessary.
 
+**Named execution mechanisms.** Owner execution instructions use shorthand names — NEXT-LOOP
+v1.0, BMG, FCR — Two Layers, RE-SPE, Review Economy, Instruction Economy, Safe Parallel
+Execution, FAST-CI v1.0 and PCRA v1.0 with ACE and SFR. AHAEP §1A maps each name to the
+existing rule that owns it. AHAEP §9A.2 defines PCRA, context assurance before proposing new
+work: retrieve the current instructions, accepted decisions, implementation evidence and
+architecture contracts; ACE checks architecture compatibility and escalates a material
+unresolved issue to Astra and Claude Architect, with reserved decisions staying with the Owner;
+SFR classifies existing behaviour as EXISTS, EXTEND, REUSE, NEW or UNCERTAIN and extends the
+existing owner instead of duplicating it. The names add no boot step, authority level,
+approval stage or extra agent round.
+
 **Technical-proposal classification.** Every Lead technical proposal carries exactly one
 class: **NOW** (required for the current authorized action); **NEXT TRIGGER** (useful only when
 a named, evidence-based trigger occurs); **WATCH** (monitor, do not implement yet);
@@ -1199,6 +1210,17 @@ information, not execution authority.
   before reliance. (C) Convection, radiation, transient analysis, thermal networks, CFD / FEA, material-property
   datasets, absolute temperature, ratings and margins stay NOT AUTHORIZED; any future thermal method or slice needs its
   own reassessment and Owner authorization; no broader thermal-engineering capability is implied.
+- **FAST-CI v1.0 — FIVE-SHARD PILOT DELIVERED — PERFORMANCE VALIDATION PENDING.** PR #798 runs the
+  hosted FULL suite on five shards: the three slowest whole files (the v1.32 navigation-truth proof
+  files) each run alone on shards 1–3 and every other file runs on shards 4–5
+  (`scripts/ci_full_suite.py`); every test, the full collection on each shard, the fail-closed audit
+  and the required `CI required` gate are unchanged. One hosted observation so far: the gate took
+  10:59 against a 14:42 baseline (the mean of runs 273–276), while total shard-runner time rose from
+  about 37.4 to about 46.9 minutes. The initiative is not permanently validated: take the second
+  observation from the next naturally occurring FULL PR run, and create no PR or CI run solely for
+  measurement. If the improvement fails, revert the PR #798 merge to restore the three-shard
+  partition. The floor is now the largest dedicated file; splitting or speeding it up is a later
+  candidate, not authorized.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative
