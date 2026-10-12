@@ -73,3 +73,76 @@ def test_support_reactions_journey(server, page, lang):
         iso = page.locator("label[for=cap13-P] bdi[dir=ltr]")
         expect(iso).to_have_text("N")
     assert not errors
+
+
+def _figure_markup(page):
+    return page.locator("[data-cap13-figure]").evaluate("el => el.outerHTML")
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_measurement_figure_in_real_browser(server, page, lang):
+    """CAP13-MEASUREMENT-FIGURE-01: one static, accessible figure; physical left
+    stays left on the Arabic page; unchanged by a result or a refusal; no
+    horizontal overflow at phone width."""
+    errors = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    sid = _start_mechanical(page, server, lang)
+    page.goto(f"{server}/session/{sid}/support-reactions")
+    page.wait_for_load_state()
+
+    figure = page.locator("[data-cap13-figure]")
+    expect(figure).to_have_count(1)
+    expect(figure).to_be_visible()
+    image = page.get_by_role("img", name=text("UI_CAP13_FIGURE_TITLE", lang), exact=True)
+    expect(image).to_have_count(1)
+    description = " ".join(text("UI_CAP13_FIGURE_" + k, lang) for k in ("DESC", "NOTE"))
+    expect(image).to_have_accessible_description(description)
+    assert page.locator("[data-cap13-figure-art]").get_attribute("dir") == "ltr"
+
+    def centre(selector):
+        box = page.locator(selector).bounding_box()
+        return box["x"] + box["width"] / 2
+
+    def check_physical_layout():
+        left_line = centre("[data-cap13-figure-line=left-support]")
+        right_line = centre("[data-cap13-figure-line=right-support]")
+        cg_line = centre("[data-cap13-figure-line=centre-of-gravity]")
+        assert left_line < cg_line < right_line
+        assert centre("[data-cap13-figure-label=left-support]") < centre(
+            "[data-cap13-figure-label=right-support]")
+        assert centre("[data-cap13-figure-symbol=R_L]") < centre("[data-cap13-figure-symbol=R_R]")
+        x_box = page.locator("[data-cap13-figure-symbol=x]").bounding_box()
+        assert abs(x_box["x"] - left_line) <= 1 and abs(x_box["x"] + x_box["width"] - cg_line) <= 1
+        assert abs(centre("[data-cap13-figure-symbol=P] line") - cg_line) <= 1
+
+    check_physical_layout()
+    first_view = _figure_markup(page)
+
+    form = page.locator("[data-cap13-form]")
+    for fieldset in form.locator("[data-cap13-declaration]").all():
+        fieldset.locator("input[value=matches]").check()
+    for fieldset in form.locator("[data-cap13-screen]").all():
+        fieldset.locator("input[value=no]").check()
+    page.fill("#cap13-P", "1000")
+    page.fill("#cap13-L", "2000")
+    page.fill("#cap13-x", "500")
+    form.locator("button[type=submit]").click()
+    page.wait_for_load_state()
+    expect(page.locator("[data-cap13-reaction]")).to_have_count(2)
+    assert _figure_markup(page) == first_view          # a result changes nothing in it
+    page.fill("#cap13-x", "2500")
+    page.locator("[data-cap13-form] button[type=submit]").click()
+    page.wait_for_load_state()
+    expect(page.locator("[data-cap13-outcome]")).to_have_count(1)
+    assert _figure_markup(page) == first_view          # nor does a refusal
+
+    page.set_viewport_size({"width": 390, "height": 900})
+    width = page.evaluate("document.documentElement.clientWidth")
+    assert page.evaluate("document.documentElement.scrollWidth") <= width + 1
+    box = figure.bounding_box()
+    assert box["x"] >= 0 and box["x"] + box["width"] <= width
+    assert page.locator("[data-cap13-figure-art] svg").bounding_box()["width"] > 200
+    check_physical_layout()
+    if lang == "ar":
+        assert page.locator("html").get_attribute("dir") == "rtl"
+    assert not errors

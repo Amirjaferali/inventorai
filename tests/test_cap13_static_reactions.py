@@ -958,7 +958,12 @@ def test_arabic_wording_is_contract_12b_verbatim():
              "METHOD_LINE": "Method line", "SOURCES_HEADING": "Sources heading",
              "SOURCES_NOTE": "Sources note", "BACK": "Back link",
              "SCOPE_NOTE": "Scope note (Mechanical root or declared Mechanical part)",
-             "PART_LABEL": "Declared-part label", "PART_NOTE": "Declared-part note"}
+             "PART_LABEL": "Declared-part label", "PART_NOTE": "Declared-part note",
+             # CAP13-MEASUREMENT-FIGURE-01: the explanatory figure's wording
+             "FIGURE_TITLE": "Figure title", "FIGURE_DESC": "Figure description",
+             "FIGURE_NOTE": "Figure note",
+             "FIGURE_LEFT_SUPPORT": "Figure left support-line label",
+             "FIGURE_RIGHT_SUPPORT": "Figure right support-line label"}
     for key, row in pairs.items():
         assert ui_text.text("UI_CAP13_" + key, "ar") == b5[row], key
     matches, differs = b5["Declaration answers"].split(" / ")
@@ -971,7 +976,7 @@ def test_arabic_wording_is_contract_12b_verbatim():
 
 def test_every_cap13_string_is_bilingual_and_carries_no_verdict_wording():
     keys = [k for k in ui_text.UI_STRINGS if k.startswith("UI_CAP13_")]
-    assert len(keys) == 55
+    assert len(keys) == 60      # 55 of Slice 1 + 5 of CAP13-MEASUREMENT-FIGURE-01
     for key in keys:
         entry = ui_text.UI_STRINGS[key]
         assert entry.get("en") and entry.get("ar"), key
@@ -1128,3 +1133,171 @@ def test_arabic_page_is_rtl_and_isolates_tokens(mech):
         assert para in stripped
     for role in ("P", "L", "x"):
         assert re.search(r'name="value_%s" dir="ltr"' % role, body)
+
+
+# ==========================================================================
+# 7. CAP13-MEASUREMENT-FIGURE-01: the static explanatory figure (§12A, §12B B-5)
+# ==========================================================================
+SVG = "{http://www.w3.org/2000/svg}"
+FIGURE_KEYS = ("TITLE", "DESC", "NOTE", "LEFT_SUPPORT", "RIGHT_SUPPORT")
+FIGURE_RE = re.compile(r'<figure class="measure" data-cap13-figure>.*?</figure>', re.S)
+
+
+def _figures(body):
+    return FIGURE_RE.findall(body)
+
+
+def _svg(figure):
+    import xml.etree.ElementTree as ET
+    return ET.fromstring(re.search(r"<svg\b.*?</svg>", figure, re.S).group(0))
+
+
+def _points(polygon):
+    return [tuple(float(v) for v in p.split(",")) for p in polygon.get("points").split()]
+
+
+def test_figure_english_wording_is_contract_12a_verbatim():
+    section = _norm(_contract_section("**Explanatory figure (amendment", "**Pre-owner evaluation order"))
+    assert re.findall(r"«(.+?)»", section) == [
+        ui_text.text("UI_CAP13_FIGURE_" + key, "en") for key in FIGURE_KEYS]
+
+
+def test_figure_is_shown_once_and_identical_on_every_eligible_rendering(mech):
+    c, _aid, sid = mech
+    responses = [c.get(URL % sid)] + [
+        c.post(URL % sid, data=_form(**over)) for over in (
+            {}, {"x": "2500"}, {"screen": {"pressure": cap13.SCREEN_YES}}, {"P": ""},
+            {"decl": {"support_moment": cap13.ANSWER_DIFFERS}})]
+    bodies = [r.get_data(as_text=True) for r in responses]
+    assert all(r.status_code == 200 for r in responses)
+    # first view, result, refusal, abstention, not declared, support refusal
+    assert "data-cap13-result" in bodies[1]
+    for body, outcome in zip(bodies[2:], ("CG_OUTSIDE_SUPPORT_SPAN", "ENGINEERING_REVIEW_REQUIRED",
+                                          "NOT_DECLARED", "SUPPORT_NOT_SUPPORTED")):
+        assert ui_text.text("UI_CAP13_OUTCOME_" + outcome, "en") in body
+    figures = []
+    for body in bodies:
+        found = _figures(body)
+        assert len(found) == 1 and body.count("data-cap13-figure>") == 1
+        # with the form, before the first declaration and the value fields
+        assert (body.index("data-cap13-figure>") < body.index("data-cap13-form")
+                < body.index("data-cap13-declaration=") < body.index('name="value_P"'))
+        figures.append(found[0])
+    assert len(set(figures)) == 1
+
+
+def test_figure_is_static_and_carries_no_submitted_value_or_default(mech):
+    c, _aid, sid = mech
+    body = c.post(URL % sid, data=_form(P="987654", L="3456", x="1234")).get_data(as_text=True)
+    reactions = re.findall(r'data-cap13-reaction><bdi dir="ltr">([^<]+) N</bdi>', body)
+    assert len(reactions) == 2
+    figure = _figures(body)[0]
+    for value in ("987654", "3456", "1234", *reactions):
+        assert value not in figure
+    for banned in ("<script", "<img", "<image", "<use", "<foreignobject", "href", "url(",
+                   "<input", "checked", "value=", "<a "):
+        assert banned not in figure.lower(), banned
+    # the template block holds only the five translated strings: no request data,
+    # no loop, no condition, no computed coordinate
+    template = (ROOT / "web" / "templates" / "cap13_support_reactions.html").read_text(encoding="utf-8")
+    block = FIGURE_RE.search(template).group(0)
+    assert "{%" not in block
+    assert sorted(re.findall(r"\{\{ (.*?) \}\}", block)) == sorted(
+        ["iso('UI_CAP13_FIGURE_TITLE')", "iso('UI_CAP13_FIGURE_DESC')",
+         "iso('UI_CAP13_FIGURE_NOTE')", "t('UI_CAP13_FIGURE_LEFT_SUPPORT')",
+         "t('UI_CAP13_FIGURE_RIGHT_SUPPORT')"])
+    # the form it introduces stays unanswered and empty on the first view
+    first = c.get(URL % sid).get_data(as_text=True)
+    assert " checked" not in first
+    for role in ("P", "L", "x"):
+        assert re.search(r'name="value_%s"[^>]*value=""' % role, first)
+
+
+def test_figure_geometry_states_exactly_the_model_terms(mech):
+    c, _aid, sid = mech
+    figure = _figures(c.get(URL % sid).get_data(as_text=True))[0]
+    svg = _svg(figure)
+    assert {el.tag[len(SVG):] for el in svg.iter()} <= {
+        "svg", "g", "line", "text", "rect", "circle", "path", "polygon"}
+    lines = {el.get("data-cap13-figure-line"): el for el in svg.iter(SVG + "line")
+             if el.get("data-cap13-figure-line")}
+    assert set(lines) == {"left-support", "right-support", "centre-of-gravity"}
+    for el in lines.values():                                   # vertical lines
+        assert el.get("x1") == el.get("x2")
+    left, right, cg = (float(lines[k].get("x1"))
+                       for k in ("left-support", "right-support", "centre-of-gravity"))
+    assert left < cg < right and cg != (left + right) / 2      # off-centre, never midspan
+    body = svg.find(SVG + "rect")                               # the body overhangs both lines
+    assert float(body.get("x")) < left and float(body.get("x")) + float(body.get("width")) > right
+    groups = {g.get("data-cap13-figure-symbol"): g for g in svg.iter(SVG + "g")
+              if g.get("data-cap13-figure-symbol")}
+    assert set(groups) == {"P", "L", "x", "R_L", "R_R"}
+    for symbol, group in groups.items():
+        assert group.find(SVG + "text").text == symbol
+
+    def arrow(symbol):
+        group = groups[symbol]
+        line, (tip, *_rest) = group.find(SVG + "line"), _points(group.find(SVG + "polygon"))
+        return float(line.get("x1")), float(line.get("x2")), float(line.get("y2")), tip
+
+    x1, x2, end, tip = arrow("P")                              # P: down through the CG line
+    assert x1 == x2 == tip[0] == cg and tip[1] > end
+    for symbol, at in (("R_L", left), ("R_R", right)):         # reactions: up at each support
+        x1, x2, end, tip = arrow(symbol)
+        assert x1 == x2 == tip[0] == at and tip[1] < end
+    for symbol, ends in (("x", {left, cg}), ("L", {left, right})):
+        tips = [_points(p)[0] for p in groups[symbol].iter(SVG + "polygon")]
+        assert {t[0] for t in tips} == ends and len({t[1] for t in tips}) == 1
+    labels = {t.get("data-cap13-figure-label"): t for t in svg.iter(SVG + "text")
+              if t.get("data-cap13-figure-label")}
+    assert float(labels["left-support"].get("x")) == left
+    assert float(labels["right-support"].get("x")) == right
+    assert labels["left-support"].text == ui_text.text("UI_CAP13_FIGURE_LEFT_SUPPORT", "en")
+    assert labels["right-support"].text == ui_text.text("UI_CAP13_FIGURE_RIGHT_SUPPORT", "en")
+    assert sorted(t.text for t in svg.iter(SVG + "text")) == sorted(
+        ["P", "L", "x", "R_L", "R_R", labels["left-support"].text, labels["right-support"].text])
+    # accessible name and description, and a left-to-right artwork
+    assert svg.get("role") == "img" and svg.get("aria-labelledby") == "cap13-figure-title"
+    assert svg.get("aria-describedby") == "cap13-figure-desc cap13-figure-note"
+    for ident in ("cap13-figure-title", "cap13-figure-desc", "cap13-figure-note"):
+        assert figure.count('id="%s"' % ident) == 1
+    assert '<div class="measure-art" dir="ltr" data-cap13-figure-art>' in figure
+    text = _norm(html.unescape(re.sub(r"<svg\b.*?</svg>|<[^>]+>", " ", figure, flags=re.S)))
+    for key in ("TITLE", "DESC", "NOTE"):
+        assert _norm(ui_text.text("UI_CAP13_FIGURE_" + key, "en")) in text
+
+
+def test_figure_absent_when_ineligible_or_malformed(mech, elec):
+    c2, _aid2, sid2 = elec
+    for response in (c2.get(URL % sid2), c2.post(URL % sid2, data=_form())):
+        assert "data-cap13-figure" not in response.get_data(as_text=True)
+    c, _aid, sid = mech
+    response = c.post(URL % sid, data=dict(_form(), unexpected="1"))
+    assert response.status_code == 400
+    assert "data-cap13-figure" not in response.get_data(as_text=True)
+
+
+def test_arabic_figure_keeps_physical_left_and_isolates_symbols(mech):
+    c, _aid, sid = mech
+    en_figure = _figures(c.get(URL % sid).get_data(as_text=True))[0]
+    c.post("/ui-language", data={"lang": "ar"})
+    body = c.get(URL % sid).get_data(as_text=True)
+    assert 'dir="rtl"' in body
+    ar_figure = _figures(body)[0]
+    assert '<div class="measure-art" dir="ltr" data-cap13-figure-art>' in ar_figure
+
+    def artwork(figure, lang):
+        art = re.search(r"<svg\b.*?</svg>", figure, re.S).group(0)
+        for key in ("LEFT_SUPPORT", "RIGHT_SUPPORT"):
+            label = ui_text.text("UI_CAP13_FIGURE_" + key, lang)
+            assert art.count(">%s<" % label) == 1
+            art = art.replace(">%s<" % label, ">%s<" % key)
+        return art
+
+    # identical geometry in both languages: never mirrored; only the two labels differ
+    assert artwork(en_figure, "en") == artwork(ar_figure, "ar")
+    for symbol in ("P", "L", "x", "R_L", "R_R"):
+        assert '<bdi dir="ltr">%s</bdi>' % symbol in ar_figure
+    stripped = re.sub(r"<[^>]+>", "", re.sub(r"<svg\b.*?</svg>", "", ar_figure, flags=re.S))
+    for key in ("TITLE", "DESC", "NOTE"):
+        assert ui_text.text("UI_CAP13_FIGURE_" + key, "ar") in stripped

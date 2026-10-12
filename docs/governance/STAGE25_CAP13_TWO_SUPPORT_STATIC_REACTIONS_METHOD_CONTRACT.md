@@ -76,6 +76,12 @@ analysis focus is Electrical / Electronics. The method, its version, sources, de
 refusal / abstention order, disclosure and the shared owner are unchanged; a declared part makes the calculation OFFERED for
 that part only and establishes no physical applicability, suitability, validation or safety. It enables no new method,
 consumer, unit, focus switching or domain activation.
+EXPLANATORY FIGURE AMENDMENT: `CAP13-MEASUREMENT-FIGURE-01 — OWNER-AUTHORIZED AMENDMENT` (2026-10-12). The Owner authorized
+ONE static explanatory figure on the §12A capture page, recorded in §12A ("Explanatory figure") with its Arabic wording in
+§12B B-5. It illustrates only the existing §4 / §5 terms `P`, `L`, `x`, `R_L` and `R_R`; it is presentation only. The
+method identity and version, equations, roles, units, declarations, screen, numeric domain, refusal / abstention order,
+disclosure, sources, eligibility and the shared owner are unchanged, so §2's version rule is not triggered; no source,
+unit, conversion, material, persistence, export or safety meaning is added.
 
 ---
 
@@ -388,6 +394,35 @@ incompatibility verdict; widening it needs its own decision.")*
   and each field must occur exactly once, otherwise the request is rejected as malformed (no CAP-13 reason token, no
   calculation).
 
+**Explanatory figure (amendment `CAP13-MEASUREMENT-FIGURE-01`).** Presentation only: it adds no clause to §§4–11 and no
+reason token, state, source, owner, route or store, and it changes no calculation semantics.
+- Exactly one static, original inline illustration is shown with the form on every eligible rendering (first view, result,
+  refusal and abstention), and never on an ineligible page or a malformed request. It has no script, no external asset and
+  no NASA or other third-party graphic.
+- Its geometry is fixed. It carries no submitted value, default, inference or calculation, places nothing from the
+  request, and is identical on every eligible rendering in a given language. The centre of gravity is drawn off midspan as
+  an illustration only; it is not a default or suggested value, and the `x` field stays empty until the inventor types it.
+- It shows one body in side view resting on two supports; the left and right support lines as dashed vertical lines through
+  the supports; `P` as a downward arrow through the centre of gravity; `L` as the distance between the two support lines,
+  with the body drawn overhanging them; `x` as the distance from the left support line to the vertical line through the
+  centre of gravity; and `R_L` and `R_R` as upward arrows at the left and right supports. It shows no support moment,
+  hold-down, third support, deformation, value, material or capacity, and no stability or safety cue.
+- Physical left stays left in every language: the artwork is laid out left-to-right and never mirrored. Only the two
+  support-line labels are translated; the symbols are not.
+- Its accessible name is the title below; its accessible description is the description and the note below.
+- English wording (the authority for meaning; Arabic in §12B B-5):
+  - title — «How P, L, x, R_L and R_R are defined in this model»;
+  - description — «Side view of one body resting on two supports. The left support line and the right support line are
+    the dashed vertical lines through the two supports. P is the total weight, drawn as a downward arrow through the
+    centre of gravity. L is the distance between the two support lines, not the length of the body. x is the distance
+    from the left support line to the dashed vertical line through the centre of gravity, measured from the left support
+    line, not from the end of the body. R_L and R_R are the upward reactions at the left and right supports. Left and
+    right are the physical left and right as drawn, in every language.»;
+  - note — «Illustration only, not to scale. It is not your actual configuration, and the centre-of-gravity position
+    drawn is not a suggested position: enter your own values. The figure shows no strength, capacity, stability or
+    safety, and it validates nothing.»;
+  - support-line labels — «Left support line» and «Right support line».
+
 **Pre-owner evaluation order (deterministic, fail closed).** Evaluated in this order; the FIRST failing stage alone
 determines the outcome, so a request carries exactly one reason (§8) and no later stage is evaluated:
 
@@ -542,6 +577,11 @@ preserved internally as §8 requires, are not shown and are not mapped to any CA
 | Scope note (Mechanical root or declared Mechanical part) | يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. وجود الجزء الميكانيكي لا يثبت انطباق نموذج الاتزان الساكن ذي المسندين. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة غير مُتحقَّق منها، وليست حكمًا على قدرة التحمل أو السلامة. |
 | Declared-part label | الجزء الميكانيكي المصرّح به: |
 | Declared-part note | يتاح هذا الحساب للجزء المسجل؛ ووجوده لا يثبت انطباق نموذج الحساب عليه. |
+| Figure title | كيف تُعرَّف P و L و x و R_L و R_R في هذا النموذج |
+| Figure description | منظر جانبي لجسم واحد يرتكز على مسندين. خط المسند الأيسر وخط المسند الأيمن هما الخطان الرأسيان المتقطعان المارّان بالمسندين. P هو الوزن الكلي، ويظهر سهمًا متجهًا إلى أسفل يمر بمركز الثقل. L هي المسافة بين خطّي المسندين، وليست طول الجسم. x هي المسافة من خط المسند الأيسر إلى الخط الرأسي المتقطع المار بمركز الثقل، وتُقاس من خط المسند الأيسر لا من طرف الجسم. R_L و R_R هما ردّا الفعل المتجهان إلى أعلى عند المسند الأيسر والمسند الأيمن. اليسار واليمين هنا هما اليسار واليمين الفعليان كما في الرسم، في كل لغة. |
+| Figure note | رسم توضيحي فقط، وليس وفق مقياس رسم. لا يمثّل تكوينك الفعلي، وموضع مركز الثقل المرسوم ليس موضعًا مقترحًا: أدخل قيمك أنت. لا يبيّن الرسم المتانة ولا قدرة التحمل ولا الاستقرار ولا السلامة، ولا يتحقق من صحة أي شيء. |
+| Figure left support-line label | خط المسند الأيسر |
+| Figure right support-line label | خط المسند الأيمن |
 
 English wording of the three amended rows (amendment `CAP13-THERM01-INTEGRATED-PART-01`; the English stays the authority
 for meaning): scope note — «This optional calculation is available for a Mechanical-focus project or for its declared
