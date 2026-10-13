@@ -1241,8 +1241,10 @@ information, not execution authority.
   about 37.4 to about 46.9 minutes. The initiative is not permanently validated: take the second
   observation from the next naturally occurring FULL PR run, and create no PR or CI run solely for
   measurement. If the improvement fails, revert the PR #798 merge to restore the three-shard
-  partition. The floor is now the largest dedicated file; splitting or speeding it up is a later
-  candidate, not authorized.
+  partition. The floor was the largest dedicated file; its live-authority guard now reuses each
+  forbidden-claim scan for an identical live text (cached by exact pattern set and text, never by
+  verdict), which locally cut the three dedicated files from about 9.4 / 7.9 / 8.7 to 2.4 / 1.5 / 2.3
+  minutes with identical collection and outcomes; splitting them is not authorized.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative
