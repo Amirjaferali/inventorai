@@ -1515,6 +1515,26 @@ body{overflow-wrap:anywhere}
 <details id="w2b-decision-capture" class="decision-capture" {% if decision_capture %}open{% endif %} style="margin-top:14px;border:1px solid #d5c9e8;border-radius:4px;background:#f9f5fd;padding:10px 14px">
   <summary style="cursor:pointer;font-size:13px;color:#5a2c8c;font-weight:bold">{{ t('UI_W2A_SECTION_HEADING') }}</summary>
   <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_W2A_SECTION_EXPLAIN') }}</p>
+  {#- INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: a comparison notice
+      not tied to a rendered decision, and the comparison-values pager (at
+      most 200 values per page, in canonical order; nothing is omitted
+      silently — every page is reachable). -#}
+  {% macro cmp_pager(cmpn, where) %}
+  {% if cmpn.status == 'available' and cmpn.pages > 1 %}
+  <nav class="cmp-pager" data-cmp-pager="{{ where }}" aria-label="{{ t('UI_CMP_PAGER_LABEL') }}" style="font-size:12px;color:#444;border:1px solid #e2d9ef;border-radius:4px;background:#ffffff;padding:6px 10px;margin:6px 0">
+    <p data-cmp-pager-position style="margin:0 0 4px 0">{{ t('UI_CMP_PAGER') | replace('{first}', cmpn.first_cell) | replace('{last}', cmpn.last_cell) | replace('{total}', cmpn.total_cells) | replace('{page}', cmpn.page) | replace('{pages}', cmpn.pages) }}</p>
+    {% if cmpn.page > 1 %}<a class="cmp-page-link" data-cmp-prev href="{{ url_for('show_session', sid=sid, cmp_page=cmpn.page - 1) }}#w2b-decision-capture" style="margin-inline-end:12px">{{ t('UI_CMP_PAGER_PREV') }}</a>{% endif %}
+    {% if cmpn.page < cmpn.pages %}<a class="cmp-page-link" data-cmp-next href="{{ url_for('show_session', sid=sid, cmp_page=cmpn.page + 1) }}#w2b-decision-capture">{{ t('UI_CMP_PAGER_NEXT') }}</a>{% endif %}
+  </nav>
+  {% endif %}
+  {% endmacro %}
+  {% if decision_comparison is defined and decision_comparison %}
+  {% if not decision_comparison.notice_root %}
+    {% if decision_comparison.ack %}<p class="cmp-notice" data-cmp-ack role="status" style="font-size:13px;color:#1f5f2c;background:#eef8f0;border:1px solid #b9dcc2;border-radius:4px;padding:6px 8px;margin:4px 0">{{ t(decision_comparison.ack) }}</p>{% endif %}
+    {% if decision_comparison.error %}<p class="cmp-notice cmp-error" data-cmp-error role="alert" style="font-size:13px;color:#8a1f11;background:#fdf1ef;border:1px solid #e8c1ba;border-radius:4px;padding:6px 8px;margin:4px 0">{{ t(decision_comparison.error) }}</p>{% endif %}
+  {% endif %}
+  {{ cmp_pager(decision_comparison, 'top') }}
+  {% endif %}
   {% for d in decision_capture %}
   <div class="w2a-context" style="border:1px solid #e2d9ef;border-radius:4px;background:#ffffff;padding:8px 12px;margin-bottom:10px">
     <p style="margin:4px 0"><strong>{{ t('UI_W2A_QUESTION_LABEL') }}:</strong> {{ d.question }}</p>
@@ -1597,8 +1617,13 @@ body{overflow-wrap:anywhere}
       <button type="submit">{{ t('UI_W2A_DECLARE_ALT_BUTTON') }}</button>
     </form>
     {% endif %}
+    {% if decision_comparison is defined and decision_comparison %}
+    {% set cmp_surface = 'session' %}
+    {% include 'decision_comparison_block.html' %}
+    {% endif %}
   </div>
   {% endfor %}
+  {% if decision_comparison is defined and decision_comparison %}{{ cmp_pager(decision_comparison, 'bottom') }}{% endif %}
   {#- Stage 22 / CAP-07 Slice 1: PROJECT CONTEXT, deliberately outside every
       decision and alternative. Counts come from each category's canonical
       owner; nothing here is linked to a decision. A link is offered only to

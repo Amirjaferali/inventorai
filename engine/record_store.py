@@ -35,7 +35,11 @@ from contextlib import contextmanager
 from typing import List, Protocol, runtime_checkable
 
 from engine.record_contract import ProjectRecordContract, assertion_to_dict
-from engine.idea_state import DISPOSITION_ANSWERED
+from engine.record_contract import (
+    assertion_from_dict as _assertion_from_dict,
+    reconcile_supersession_edges as _reconcile_supersession_edges,
+)
+from engine.idea_state import DISPOSITION_ANSWERED, DECISION_ACTION_DISPOSITIONS
 from engine.commercial_evidence import (
     EVIDENCE_EXACT_REPLAY, EVIDENCE_INSERTED, EvidenceCapExceeded,
     MAX_READINESS_EVIDENCE_PER_PROJECT, ReadinessEvidence,
@@ -104,6 +108,9 @@ from engine.subsystem_model import (
     ComponentAlreadyWithdrawn, ComponentCorrectionLimit, ComponentUnchanged,
     project_component_inventory, same_revision_material,
 )
+# INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the inventor's own
+# comparison criteria and per-alternative values (semantics owner).
+from engine import decision_criteria as _criteria
 # Stage 19 / CAP-09 Result Event Slice 1: the inventor's append-only report of
 # what actually happened in one canonical Section-11 experiment.
 from engine.experiment_result import (
@@ -349,6 +356,20 @@ class ProjectComponentAlreadyWithdrawn(ProjectComponentRejected):
 class ProjectComponentUnchanged(ProjectComponentRejected):
     """COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: a correction that restates
     the current material exactly. Nothing is written."""
+
+
+class DecisionComparisonCorrupt(StoreError):
+    """INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: a project's durable
+    comparison history (criterion revisions and cell value events) is
+    malformed, gapped, forked, foreign to its decision ledger or over a
+    capacity bound — or the ledger itself cannot be read. Fail closed for the
+    WHOLE comparison: nothing partial, nothing repaired, never "none"."""
+
+
+class DecisionComparisonConflict(StoreError):
+    """INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the durable
+    submission identity is already spent on DIFFERENT material. Nothing was
+    written."""
 
 
 class IntegrationEvidenceRejected(StoreError):
@@ -1725,6 +1746,140 @@ _PROJECT_COMPONENT_REVISIONS_SCHEMA = (
     "ON project_component_revisions (revision_id)",
 )
 
+# INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 — the two additive,
+# append-only, project-scoped comparison record families. Never updated or
+# deleted (no such writer exists). ``seq`` is the project's contiguous durable
+# append order of each table; every reader validates the WHOLE history of both
+# tables against the project's decision ledger
+# (``engine.decision_criteria.comparison_ledger``), so a gap, fork, foreign
+# binding or exceeded bound fails the whole comparison closed. The CHECKs are
+# a database backstop for the fixed provenance / validation values, the kind
+# shapes, the text bounds and the physical row bounds per project
+# (1,300 criterion revisions = 150 declared + 1,000 ordinary + 150 withdrawn;
+# 4,500 value events = 3,000 ordinary + 1,500 reserved clears).
+# ``submission_key`` is the durable identity of the ONE action attempt that
+# wrote the row (unique per project): an exact retry is recognised and the
+# same identity with different material fails closed.
+MAX_CRITERION_REVISION_ROWS_PER_PROJECT = (
+    2 * _criteria.MAX_CRITERIA_PER_PROJECT
+    + _criteria.MAX_CRITERION_REVISIONS_PER_PROJECT)
+MAX_VALUE_EVENT_ROWS_PER_PROJECT = (
+    _criteria.MAX_VALUE_EVENTS_PER_PROJECT + _criteria.MAX_CELLS_PER_PROJECT)
+_CRITERION_REVISION_COLUMNS = (
+    "project_id", "seq", "context_root", "criterion_id", "revision_no",
+    "revision_id", "kind", "label", "question_record_id", "provenance",
+    "validation_state", "submission_key")
+_VALUE_EVENT_COLUMNS = (
+    "project_id", "seq", "context_root", "criterion_id", "alternative_root",
+    "event_no", "event_id", "kind", "reserved", "value_text",
+    "criterion_revision_id", "alternative_record_id", "question_record_id",
+    "provenance", "validation_state", "submission_key")
+_RECORD_ID_CHECK = ("(typeof({0}) = 'text' AND length({0}) BETWEEN 5 AND 13 "
+                    "AND {0} GLOB 'rec_[0-9]*')")
+_DECISION_COMPARISON_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS decision_criterion_revisions (
+        project_id          TEXT    NOT NULL,
+        seq                 INTEGER NOT NULL,
+        context_root        TEXT    NOT NULL,
+        criterion_id        TEXT    NOT NULL,
+        revision_no         INTEGER NOT NULL,
+        revision_id         TEXT    NOT NULL,
+        kind                TEXT    NOT NULL,
+        label               TEXT,
+        question_record_id  TEXT    NOT NULL,
+        provenance          TEXT    NOT NULL,
+        validation_state    TEXT    NOT NULL,
+        submission_key      TEXT    NOT NULL,
+        PRIMARY KEY (project_id, criterion_id, revision_no),
+        UNIQUE (project_id, seq),
+        UNIQUE (project_id, submission_key),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        CHECK (typeof(seq) = 'integer' AND seq >= 0 AND seq < %(crit_rows)d),
+        CHECK (typeof(revision_no) = 'integer'
+               AND revision_no >= 1 AND revision_no <= %(crit_rev_no)d),
+        CHECK (kind IN ('DECLARED', 'CORRECTED', 'RECONFIRMED', 'WITHDRAWN')),
+        CHECK ((kind = 'DECLARED') = (revision_no = 1)),
+        CHECK (provenance = 'OWNER_STATED'),
+        CHECK (validation_state = 'UNVALIDATED'),
+        CHECK (typeof(criterion_id) = 'text' AND length(criterion_id) = 36),
+        CHECK (typeof(revision_id) = 'text' AND length(revision_id) = 36),
+        CHECK %(context_root)s,
+        CHECK %(question)s,
+        CHECK ((kind = 'WITHDRAWN' AND label IS NULL)
+               OR (kind <> 'WITHDRAWN' AND typeof(label) = 'text'
+                   AND length(label) BETWEEN 1 AND %(label_max)d
+                   AND instr(CAST(label AS BLOB), X'00') = 0)),
+        CHECK (typeof(submission_key) = 'text' AND length(submission_key) > 0)
+    )
+    """ % {
+        "crit_rows": MAX_CRITERION_REVISION_ROWS_PER_PROJECT,
+        "crit_rev_no": _criteria.MAX_CRITERION_REVISION_NO,
+        "label_max": _criteria.MAX_CRITERION_LABEL_LENGTH,
+        "context_root": _RECORD_ID_CHECK.format("context_root"),
+        "question": _RECORD_ID_CHECK.format("question_record_id")},
+    "CREATE UNIQUE INDEX IF NOT EXISTS decision_criterion_revisions_id_uq "
+    "ON decision_criterion_revisions (revision_id)",
+    """
+    CREATE TABLE IF NOT EXISTS decision_cell_value_events (
+        project_id             TEXT    NOT NULL,
+        seq                    INTEGER NOT NULL,
+        context_root           TEXT    NOT NULL,
+        criterion_id           TEXT    NOT NULL,
+        alternative_root       TEXT    NOT NULL,
+        event_no               INTEGER NOT NULL,
+        event_id               TEXT    NOT NULL,
+        kind                   TEXT    NOT NULL,
+        reserved               INTEGER NOT NULL,
+        value_text             TEXT,
+        criterion_revision_id  TEXT    NOT NULL,
+        alternative_record_id  TEXT    NOT NULL,
+        question_record_id     TEXT    NOT NULL,
+        provenance             TEXT    NOT NULL,
+        validation_state       TEXT    NOT NULL,
+        submission_key         TEXT    NOT NULL,
+        PRIMARY KEY (project_id, criterion_id, alternative_root, event_no),
+        UNIQUE (project_id, seq),
+        UNIQUE (project_id, submission_key),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        CHECK (typeof(seq) = 'integer' AND seq >= 0 AND seq < %(value_rows)d),
+        CHECK (typeof(event_no) = 'integer'
+               AND event_no >= 1 AND event_no <= %(event_no)d),
+        CHECK (kind IN ('SET', 'CORRECTED', 'RECONFIRMED', 'CLEARED')),
+        CHECK (typeof(reserved) = 'integer' AND reserved IN (0, 1)),
+        CHECK (reserved = 0 OR kind = 'CLEARED'),
+        CHECK (provenance = 'OWNER_STATED'),
+        CHECK (validation_state = 'UNVALIDATED'),
+        CHECK (typeof(criterion_id) = 'text' AND length(criterion_id) = 36),
+        CHECK (typeof(event_id) = 'text' AND length(event_id) = 36),
+        CHECK (typeof(criterion_revision_id) = 'text'
+               AND length(criterion_revision_id) = 36),
+        CHECK %(context_root)s,
+        CHECK %(alternative_root)s,
+        CHECK %(alternative_record)s,
+        CHECK %(question)s,
+        CHECK ((kind = 'CLEARED' AND value_text IS NULL)
+               OR (kind <> 'CLEARED' AND typeof(value_text) = 'text'
+                   AND length(value_text) BETWEEN 1 AND %(value_max)d
+                   AND instr(CAST(value_text AS BLOB), X'00') = 0)),
+        CHECK (typeof(submission_key) = 'text' AND length(submission_key) > 0)
+    )
+    """ % {
+        "value_rows": MAX_VALUE_EVENT_ROWS_PER_PROJECT,
+        "event_no": _criteria.MAX_CELL_EVENT_NO,
+        "value_max": _criteria.MAX_VALUE_TEXT_LENGTH,
+        "context_root": _RECORD_ID_CHECK.format("context_root"),
+        "alternative_root": _RECORD_ID_CHECK.format("alternative_root"),
+        "alternative_record": _RECORD_ID_CHECK.format("alternative_record_id"),
+        "question": _RECORD_ID_CHECK.format("question_record_id")},
+    "CREATE UNIQUE INDEX IF NOT EXISTS decision_cell_value_events_id_uq "
+    "ON decision_cell_value_events (event_id)",
+)
+
+DECISION_COMPARISON_INSERTED = "INSERTED"
+DECISION_COMPARISON_EXACT_REPLAY = "EXACT_REPLAY"
+DECISION_COMPARISON_NO_CHANGE = "NO_CHANGE"
+
 PROJECT_COMPONENT_INSERTED = "INSERTED"
 PROJECT_COMPONENT_EXACT_REPLAY = "EXACT_REPLAY"
 
@@ -1858,6 +2013,7 @@ class SqliteRecordStore:
             self._migrate_integration_evidence_anchors(self._conn)
             self._migrate_part_answers(self._conn)
             self._migrate_project_components(self._conn)
+            self._migrate_decision_comparison(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -2160,6 +2316,29 @@ class SqliteRecordStore:
                 "project_components has an unrecognised shape")
         conn.execute(_PROJECT_COMPONENTS_ID_INDEX)
         for stmt in _PROJECT_COMPONENT_REVISIONS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_decision_comparison(self, conn) -> None:
+        """INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 forward migration:
+        additively create the two append-only comparison tables. Runs inside
+        the store's single migration transaction, so it commits whole or not
+        at all; idempotent (``IF NOT EXISTS``) on a fresh and on an existing
+        populated database; touches no existing table, column or row; nothing
+        is backfilled or inferred. A table that already exists in any other
+        shape is refused (``sqlite3.DatabaseError``) rather than read as empty
+        or guessed. Rollback is disable-and-preserve: a build without this
+        capability never reads or writes the two tables, and their rows stay
+        intact for a later re-enable, which re-validates every binding against
+        the ledger as it then stands."""
+        for table, expected in (
+                ("decision_criterion_revisions", _CRITERION_REVISION_COLUMNS),
+                ("decision_cell_value_events", _VALUE_EVENT_COLUMNS)):
+            columns = tuple(row[1] for row in conn.execute(
+                "PRAGMA table_info(%s)" % table).fetchall())
+            if columns and columns != expected:
+                raise sqlite3.DatabaseError(
+                    "%s has an unrecognised shape" % table)
+        for stmt in _DECISION_COMPARISON_SCHEMA:
             conn.execute(stmt)
 
     @staticmethod
@@ -3542,6 +3721,299 @@ class SqliteRecordStore:
                  revision.provenance, revision.validation_state,
                  submission_key))
         return PROJECT_COMPONENT_INSERTED, revision
+
+    # --- INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: criteria + values -
+    # Every reader validates the decision ledger and BOTH comparison tables
+    # together, from ONE durable moment, into ONE ``ComparisonLedger``; every
+    # writer re-plans the inventor's action against that durable truth inside
+    # its serialized write transaction (membership, heads, expected versions
+    # and every capacity bound), so a staged decision never outlives a
+    # concurrent change.
+    _CRITERION_SELECT = ", ".join(_CRITERION_REVISION_COLUMNS[1:])
+    _VALUE_SELECT = ", ".join(_VALUE_EVENT_COLUMNS[1:])
+
+    def _decision_ledger_records(self, project_id):
+        """This project's DECISION-chain ledger records only (context,
+        alternative and withdrawal records), restored through the record
+        contract's own ``assertion_from_dict`` and inverse-edge
+        reconciliation. Not a full contract load: the decision chains are
+        closed under supersession (the carrier never lets a decision record
+        supersede, or be superseded by, a record of another class), and that
+        closure is CHECKED here — a reference leaving the decision records, a
+        duplicate id or a malformed payload raises
+        ``DecisionComparisonCorrupt``. Read-only; project-scoped."""
+        try:
+            decision, foreign_refs = [], set()
+            for (payload,) in self._conn.execute(
+                    "SELECT payload FROM records WHERE project_id = ? "
+                    "ORDER BY seq ASC", (project_id,)).fetchall():
+                data = json.loads(payload)
+                if not isinstance(data, dict):
+                    raise DecisionComparisonCorrupt("a ledger payload is malformed")
+                if data.get("disposition") in DECISION_ACTION_DISPOSITIONS:
+                    decision.append(_assertion_from_dict(data))
+                else:
+                    foreign_refs.update(data.get("supersedes") or ())
+                    if data.get("superseded_by"):
+                        foreign_refs.add(data["superseded_by"])
+            ids = {r.record_id for r in decision}
+            if len(ids) != len(decision) or foreign_refs & ids:
+                raise DecisionComparisonCorrupt("decision chains are not closed")
+            for record in decision:
+                if any(ref not in ids for ref in record.supersedes) or (
+                        record.superseded_by is not None
+                        and record.superseded_by not in ids):
+                    raise DecisionComparisonCorrupt("decision chains are not closed")
+                if record.superseded_by == record.record_id:
+                    raise DecisionComparisonCorrupt(
+                        "a decision record supersedes itself")
+            # The chain-root walk (``decision_frames``) follows ``supersedes``
+            # to the chain origin, so a self-supersession or a supersession
+            # cycle is refused here first, as the full contract load's
+            # ``validate()`` refuses it. Iterative depth-first walk: each
+            # record is entered once and each edge followed once.
+            by_id = {r.record_id: r for r in decision}
+            done, on_path = set(), set()
+            for record in decision:
+                if record.record_id in done:
+                    continue
+                path, edges = [record.record_id], [iter(record.supersedes)]
+                on_path.add(record.record_id)
+                while path:
+                    ref = next(edges[-1], None)
+                    if ref is None:
+                        on_path.discard(path[-1])
+                        done.add(path.pop())
+                        edges.pop()
+                    elif ref in on_path:
+                        raise DecisionComparisonCorrupt(
+                            "a decision supersession chain is cyclic")
+                    elif ref not in done:
+                        on_path.add(ref)
+                        path.append(ref)
+                        edges.append(iter(by_id[ref].supersedes))
+            _reconcile_supersession_edges(decision)
+            return decision
+        except DecisionComparisonCorrupt:
+            raise
+        except Exception:
+            raise DecisionComparisonCorrupt(
+                "the decision ledger cannot be read") from None
+
+    def _comparison_history(self, project_id):
+        """``(ledger, revisions, revision_keys, events, event_keys)`` of this
+        project, validated WHOLE (``DecisionComparisonCorrupt`` on any
+        defect, including an unreadable decision ledger)."""
+        assertions = self._decision_ledger_records(project_id)
+        crit_rows = self._conn.execute(
+            "SELECT " + self._CRITERION_SELECT
+            + " FROM decision_criterion_revisions WHERE project_id = ? "
+            "ORDER BY seq ASC", (project_id,)).fetchall()
+        value_rows = self._conn.execute(
+            "SELECT " + self._VALUE_SELECT
+            + " FROM decision_cell_value_events WHERE project_id = ? "
+            "ORDER BY seq ASC", (project_id,)).fetchall()
+        for rows in (crit_rows, value_rows):
+            if [row[0] for row in rows] != list(range(len(rows))):
+                raise DecisionComparisonCorrupt(
+                    "durable comparison order is not contiguous")
+        rev_keys = tuple(row[-1] for row in crit_rows)
+        ev_keys = tuple(row[-1] for row in value_rows)
+        for group in (rev_keys, ev_keys):
+            if any(not isinstance(k, str) or not k for k in group) \
+                    or len(set(group)) != len(group):
+                raise DecisionComparisonCorrupt(
+                    "durable submission identity is malformed")
+        try:
+            revisions = tuple(
+                _criteria.CriterionRevision(
+                    context_root=row[1], criterion_id=row[2], revision_no=row[3],
+                    revision_id=row[4], kind=row[5], label=row[6],
+                    question_record_id=row[7], provenance=row[8],
+                    validation_state=row[9])
+                for row in crit_rows)
+            events = []
+            for row in value_rows:
+                if row[7] not in (0, 1):
+                    raise _criteria.ComparisonCorrupt("malformed reserved flag")
+                events.append(_criteria.ValueEvent(
+                    context_root=row[1], criterion_id=row[2],
+                    alternative_root=row[3], event_no=row[4], event_id=row[5],
+                    kind=row[6], reserved=bool(row[7]), value_text=row[8],
+                    criterion_revision_id=row[9], alternative_record_id=row[10],
+                    question_record_id=row[11], provenance=row[12],
+                    validation_state=row[13]))
+            ledger = _criteria.build_comparison(assertions, revisions, events)
+        except _criteria.ComparisonError as exc:
+            raise DecisionComparisonCorrupt(str(exc)) from None
+        return ledger, revisions, rev_keys, tuple(events), ev_keys
+
+    def load_decision_comparison(self, project_id: str):
+        """The validated ``ComparisonLedger`` of this project — its decision
+        ledger and its WHOLE criterion / value history — read inside ONE
+        consistent read snapshot (``read_snapshot``), so a reader never joins
+        values to decision or alternative text from another durable moment.
+        No project -> ``ProjectNotFound``; any defect ->
+        ``DecisionComparisonCorrupt`` (nothing partial). IR-01: a connection
+        left unresolved by a failed write refuses BEFORE any SELECT
+        (``RecordStoreConnectionUnsafe``). Read-only; project-scoped; logs
+        nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            self._require_project(project_id)
+            ledger, _r, _rk, _e, _ek = self._comparison_history(project_id)
+        return ledger
+
+    def committed_criterion_revision_for_submission(self, project_id: str,
+                                                    submission_key: str):
+        """The COMMITTED criterion revision written under ``submission_key``,
+        or ``None`` — the confirm-by-reload seam. Read ONLY from committed
+        durable state (IR-01); the whole history is validated first, so a
+        corrupt history fails closed instead of confirming a row out of it."""
+        self._refuse_uncommitted_reads()
+        if not isinstance(submission_key, str) or not submission_key:
+            return None
+        with self.read_snapshot():
+            self._require_project(project_id)
+            _l, revisions, rev_keys, _e, _ek = self._comparison_history(project_id)
+        if submission_key not in rev_keys:
+            return None
+        return revisions[rev_keys.index(submission_key)]
+
+    def committed_value_event_for_submission(self, project_id: str,
+                                             submission_key: str):
+        """The COMMITTED value event written under ``submission_key``, or
+        ``None`` — the confirm-by-reload seam (as above)."""
+        self._refuse_uncommitted_reads()
+        if not isinstance(submission_key, str) or not submission_key:
+            return None
+        with self.read_snapshot():
+            self._require_project(project_id)
+            _l, _r, _rk, events, ev_keys = self._comparison_history(project_id)
+        if submission_key not in ev_keys:
+            return None
+        return events[ev_keys.index(submission_key)]
+
+    def append_criterion_action(self, project_id: str, submission_key: str,
+                                action: str, context_root: str,
+                                expected_question: str, criterion_id=None,
+                                expected_revision_no=None, label=None) -> tuple:
+        """Atomically apply ONE inventor criterion action (declare, correct,
+        reconfirm, withdraw) and return ``(outcome, stored_revision)``:
+        ``DECISION_COMPARISON_EXACT_REPLAY`` with the ALREADY-COMMITTED
+        revision when ``submission_key`` already names this exact action
+        (recognised after the history validates and BEFORE any other check;
+        it consumes no quota and writes nothing), ``DECISION_COMPARISON_NO_CHANGE``
+        with ``None`` for a genuine no-op (nothing written), or
+        ``DECISION_COMPARISON_INSERTED`` with the revision this call committed.
+
+        ONE serialized write transaction (``BEGIN IMMEDIATE``); full rollback
+        on any failure. Inside it, against DURABLE truth: the project exists;
+        the decision ledger and the WHOLE comparison history validate
+        (``DecisionComparisonCorrupt``); the identity is unused or names
+        exactly this action (``DecisionComparisonConflict``); then the action
+        is planned by ``engine.decision_criteria.plan_criterion_action`` —
+        membership, the expected question and criterion revisions
+        (``ComparisonStale``), the text and every Owner-approved bound
+        (``ComparisonRejected`` / ``ComparisonLimitReached``). IR-01: never
+        writes on top of an unresolved connection."""
+        if not isinstance(submission_key, str) or not submission_key:
+            raise _criteria.ComparisonRejected(
+                _criteria.REJECT_TARGET, "a submission identity is required")
+        self._refuse_uncommitted_reads()
+        with self._write():
+            self._require_project(project_id)
+            ledger, revisions, rev_keys, events, _ek = self._comparison_history(
+                project_id)
+            if submission_key in rev_keys:
+                stored = revisions[rev_keys.index(submission_key)]
+                if _criteria.same_criterion_submission(
+                        stored, action, context_root, criterion_id,
+                        expected_revision_no, label):
+                    return DECISION_COMPARISON_EXACT_REPLAY, stored
+                raise DecisionComparisonConflict(
+                    "the submission identity already names a different action")
+            revision = _criteria.plan_criterion_action(
+                ledger, action, context_root, expected_question,
+                criterion_id=criterion_id,
+                expected_revision_no=expected_revision_no, label=label)
+            if revision == _criteria.NO_CHANGE:
+                return DECISION_COMPARISON_NO_CHANGE, None
+            try:
+                _criteria.comparison_ledger(
+                    ledger.frames, revisions + (revision,), events)
+            except _criteria.ComparisonCorrupt:
+                raise _criteria.ComparisonRejected(
+                    _criteria.REJECT_TARGET,
+                    "the revision is not valid against the durable history"
+                ) from None
+            self._conn.execute(
+                "INSERT INTO decision_criterion_revisions ("
+                + ", ".join(_CRITERION_REVISION_COLUMNS)
+                + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (project_id, len(revisions), revision.context_root,
+                 revision.criterion_id, revision.revision_no,
+                 revision.revision_id, revision.kind, revision.label,
+                 revision.question_record_id, revision.provenance,
+                 revision.validation_state, submission_key))
+        return DECISION_COMPARISON_INSERTED, revision
+
+    def append_value_action(self, project_id: str, submission_key: str,
+                            action: str, context_root: str, criterion_id: str,
+                            alternative_root: str, expected_event_no,
+                            expected_criterion_revision, expected_alternative_record,
+                            expected_question, text=None) -> tuple:
+        """Atomically apply ONE inventor value action (save, reconfirm, clear)
+        to ONE cell and return ``(outcome, stored_event)`` exactly as
+        ``append_criterion_action`` (exact replay first; a genuine no-op
+        writes nothing). The action is planned inside the transaction by
+        ``engine.decision_criteria.plan_value_action`` against the durable
+        ledger and history: membership of the criterion and the ACTIVE
+        alternative, the expected cell, criterion, alternative and question
+        versions, the text, and every ordinary bound — while a clear falls
+        back to the cell's ONE reserved terminal clear when an ordinary bound
+        is exhausted. IR-01: never writes on top of an unresolved
+        connection."""
+        if not isinstance(submission_key, str) or not submission_key:
+            raise _criteria.ComparisonRejected(
+                _criteria.REJECT_TARGET, "a submission identity is required")
+        self._refuse_uncommitted_reads()
+        with self._write():
+            self._require_project(project_id)
+            ledger, revisions, _rk, events, ev_keys = self._comparison_history(project_id)
+            if submission_key in ev_keys:
+                stored = events[ev_keys.index(submission_key)]
+                if _criteria.same_value_submission(
+                        stored, action, context_root, criterion_id,
+                        alternative_root, expected_event_no, text):
+                    return DECISION_COMPARISON_EXACT_REPLAY, stored
+                raise DecisionComparisonConflict(
+                    "the submission identity already names a different action")
+            event = _criteria.plan_value_action(
+                ledger, action, context_root, criterion_id, alternative_root,
+                expected_event_no, expected_criterion_revision,
+                expected_alternative_record, expected_question, text=text)
+            if event == _criteria.NO_CHANGE:
+                return DECISION_COMPARISON_NO_CHANGE, None
+            try:
+                _criteria.comparison_ledger(ledger.frames, revisions,
+                                            events + (event,))
+            except _criteria.ComparisonCorrupt:
+                raise _criteria.ComparisonRejected(
+                    _criteria.REJECT_TARGET,
+                    "the event is not valid against the durable history"
+                ) from None
+            self._conn.execute(
+                "INSERT INTO decision_cell_value_events ("
+                + ", ".join(_VALUE_EVENT_COLUMNS)
+                + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (project_id, len(events), event.context_root, event.criterion_id,
+                 event.alternative_root, event.event_no, event.event_id,
+                 event.kind, 1 if event.reserved else 0, event.value_text,
+                 event.criterion_revision_id, event.alternative_record_id,
+                 event.question_record_id, event.provenance,
+                 event.validation_state, submission_key))
+        return DECISION_COMPARISON_INSERTED, event
 
     # --- Safe Question Reduction Slice 1: NeedRouting (append-only) ----------
     _ROUTING_COLUMNS = (

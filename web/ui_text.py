@@ -1122,6 +1122,390 @@ UI_STRINGS = {
         "en": "Your declared components could not be read, so they are not shown here. This does not mean that no component was declared.",
         "ar": "تعذّرت قراءة المكوّنات التي أعلنتها، لذا لا تُعرض هنا. وهذا لا يعني أنه لم يُعلَن أي مكوّن.",
     },
+    # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 — the inventor's own
+    # comparison criteria and values (Decision Room, report and PDF).
+    # Owner-approved capacity is stated where a bound is met; nothing here
+    # scores, ranks, weighs or chooses.
+    "UI_CMP_HEADING": {
+        "en": "Compare these alternatives by your own criteria",
+        "ar": "قارن هذه البدائل بمعاييرك الخاصة",
+    },
+    "UI_CMP_NOTE": {
+        "en": "The criteria and the values are your own words, recorded as stated by you (OWNER_STATED) and not checked by anyone. InventorAI does not score, rank or weigh them, and it does not choose an alternative.",
+        "ar": "المعايير والقيم بكلماتك أنت، وتُسجَّل كما صرّحتَ بها (OWNER_STATED) دون أن يفحصها أحد. لا يمنحها InventorAI درجات ولا يرتّبها ولا يوازن بينها، ولا يختار بديلًا.",
+    },
+    "UI_CMP_CRITERIA_HEADING": {
+        "en": "Your criteria",
+        "ar": "معاييرك",
+    },
+    "UI_CMP_NO_CRITERIA": {
+        "en": "No criteria yet. Add the first thing you want to compare these alternatives by.",
+        "ar": "لا توجد معايير بعد. أضف أول أمر تريد مقارنة هذه البدائل على أساسه.",
+    },
+    "UI_CMP_DECLARE_LABEL": {
+        "en": "Add a criterion (up to 200 characters)",
+        "ar": "أضف معيارًا (حتى 200 حرف)",
+    },
+    "UI_CMP_DECLARE_BUTTON": {
+        "en": "Add criterion",
+        "ar": "أضف المعيار",
+    },
+    "UI_CMP_CRITERION_NEEDS_CONFIRMATION": {
+        "en": "Needs confirmation: the decision question changed after this criterion was written. Confirm it for the current question, or correct it.",
+        "ar": "يحتاج إلى تأكيد: تغيّر سؤال القرار بعد كتابة هذا المعيار. أكّده للسؤال الحالي أو صحّحه.",
+    },
+    "UI_CMP_EARLIER_LABELS": {
+        "en": "Earlier wording",
+        "ar": "الصياغة السابقة",
+    },
+    "UI_CMP_CHANGE_CRITERION": {
+        "en": "Change this criterion",
+        "ar": "غيّر هذا المعيار",
+    },
+    "UI_CMP_CORRECT_LABEL": {
+        "en": "Corrected wording (up to 200 characters)",
+        "ar": "الصياغة المصحَّحة (حتى 200 حرف)",
+    },
+    "UI_CMP_CORRECT_BUTTON": {
+        "en": "Save correction",
+        "ar": "احفظ التصحيح",
+    },
+    "UI_CMP_RECONFIRM_CRITERION_BUTTON": {
+        "en": "Confirm for the current question",
+        "ar": "أكّده للسؤال الحالي",
+    },
+    "UI_CMP_WITHDRAW_CONFIRM": {
+        "en": "I want to withdraw this criterion. Withdrawal is final; the criterion stays in the history.",
+        "ar": "أريد سحب هذا المعيار. السحب نهائي، ويبقى المعيار في السجل.",
+    },
+    "UI_CMP_WITHDRAW_BUTTON": {
+        "en": "Withdraw criterion",
+        "ar": "اسحب المعيار",
+    },
+    "UI_CMP_WITHDRAWN_HEADING": {
+        "en": "Withdrawn criteria (history)",
+        "ar": "المعايير المسحوبة (سجل)",
+    },
+    "UI_CMP_WITHDRAWN_NOTE": {
+        "en": "Withdrawn criteria are no longer compared. Withdrawal is not erasure: they and the values recorded for them stay in this project's history.",
+        "ar": "لم تعد المعايير المسحوبة تُستخدم في المقارنة. والسحب ليس حذفًا: تبقى هي والقيم المسجّلة لها في سجل هذا المشروع.",
+    },
+    "UI_CMP_VALUES_HEADING": {
+        "en": "What you recorded for each alternative",
+        "ar": "ما سجّلته لكل بديل",
+    },
+    "UI_CMP_COL_ALTERNATIVE": {
+        "en": "Alternative",
+        "ar": "البديل",
+    },
+    "UI_CMP_COL_VALUE": {
+        "en": "What you recorded",
+        "ar": "ما سجّلته",
+    },
+    "UI_CMP_EMPTY_NO_CRITERIA": {
+        "en": "Add a criterion to record a value for each alternative.",
+        "ar": "أضف معيارًا لتسجّل قيمة لكل بديل.",
+    },
+    "UI_CMP_EMPTY_NO_ALTERNATIVES": {
+        "en": "Declare at least one alternative to record values for these criteria.",
+        "ar": "أعلن بديلًا واحدًا على الأقل لتسجّل قيمًا لهذه المعايير.",
+    },
+    "UI_CMP_NOT_RECORDED": {
+        "en": "Not recorded.",
+        "ar": "غير مسجَّل.",
+    },
+    "UI_CMP_CLEARED": {
+        "en": "Cleared by you.",
+        "ar": "مسحتَه أنت.",
+    },
+    "UI_CMP_CLOSED": {
+        "en": "This value was cleared with its final, reserved clear and accepts no further entries.",
+        "ar": "مُسحت هذه القيمة بالمسح الأخير المحجوز لها، ولا تقبل أي إدخال آخر.",
+    },
+    "UI_CMP_STALE_LEAD": {
+        "en": "Needs confirmation:",
+        "ar": "تحتاج إلى تأكيد:",
+    },
+    "UI_CMP_STALE_QUESTION": {
+        "en": "the decision question changed",
+        "ar": "تغيّر سؤال القرار",
+    },
+    "UI_CMP_STALE_CRITERION": {
+        "en": "the criterion changed",
+        "ar": "تغيّر المعيار",
+    },
+    "UI_CMP_STALE_ALTERNATIVE": {
+        "en": "the alternative changed",
+        "ar": "تغيّر البديل",
+    },
+    "UI_CMP_STALE_TAIL": {
+        "en": "This happened after the value was recorded, so it is not treated as current until you confirm it or change it.",
+        "ar": "حدث ذلك بعد تسجيل القيمة، لذا لا تُعامَل على أنها حالية حتى تؤكّدها أو تغيّرها.",
+    },
+    "UI_CMP_STALE_VALUE_LABEL": {
+        "en": "Value as recorded before the change:",
+        "ar": "القيمة كما سُجّلت قبل التغيير:",
+    },
+    "UI_CMP_EDIT_SUMMARY": {
+        "en": "Record or change this value",
+        "ar": "سجّل هذه القيمة أو غيّرها",
+    },
+    "UI_CMP_VALUE_LABEL": {
+        "en": "Your value (up to 1,000 characters)",
+        "ar": "قيمتك (حتى 1000 حرف)",
+    },
+    "UI_CMP_SAVE_BUTTON": {
+        "en": "Save value",
+        "ar": "احفظ القيمة",
+    },
+    "UI_CMP_RECONFIRM_VALUE_BUTTON": {
+        "en": "Confirm unchanged",
+        "ar": "أكّدها دون تغيير",
+    },
+    "UI_CMP_CLEAR_BUTTON": {
+        "en": "Clear value",
+        "ar": "امسح القيمة",
+    },
+    "UI_CMP_CONFIRM_CRITERION_FIRST_NOTE": {
+        "en": "Confirm or correct the criterion first. Until then this value can only be cleared.",
+        "ar": "أكّد المعيار أو صحّحه أولًا. وحتى ذلك الحين لا يمكن إلا مسح هذه القيمة.",
+    },
+    "UI_CMP_CONTINUED_BEFORE": {
+        "en": "(continued from the previous page)",
+        "ar": "(تابع من الصفحة السابقة)",
+    },
+    "UI_CMP_CONTINUES_AFTER": {
+        "en": "(continues on the next page)",
+        "ar": "(يتبع في الصفحة التالية)",
+    },
+    "UI_CMP_PAGER_LABEL": {
+        "en": "Comparison values pages",
+        "ar": "صفحات قيم المقارنة",
+    },
+    "UI_CMP_PAGER": {
+        "en": "Showing comparison values {first}–{last} of {total} (page {page} of {pages}). At most 200 values are shown at a time; the others are on the other pages.",
+        "ar": "تُعرض قيم المقارنة من {first} إلى {last} من أصل {total} (الصفحة {page} من {pages}). تُعرض 200 قيمة كحدّ أقصى في كل مرة، والبقية في الصفحات الأخرى.",
+    },
+    "UI_CMP_PAGER_PREV": {
+        "en": "Previous values",
+        "ar": "القيم السابقة",
+    },
+    "UI_CMP_PAGER_NEXT": {
+        "en": "Next values",
+        "ar": "القيم التالية",
+    },
+    "UI_CMP_ELSEWHERE_ONE": {
+        "en": "This decision's values are on page {a} of the comparison values.",
+        "ar": "قيم هذا القرار في الصفحة {a} من قيم المقارنة.",
+    },
+    "UI_CMP_ELSEWHERE_RANGE": {
+        "en": "This decision's values are on pages {a} to {b} of the comparison values.",
+        "ar": "قيم هذا القرار في الصفحات من {a} إلى {b} من قيم المقارنة.",
+    },
+    "UI_CMP_GO_TO_PAGE": {
+        "en": "Go to page {n}",
+        "ar": "انتقل إلى الصفحة {n}",
+    },
+    "UI_CMP_PARTIAL": {
+        "en": "This decision's values run across pages {a} to {b}; only part of them is on this page.",
+        "ar": "تمتد قيم هذا القرار على الصفحات من {a} إلى {b}، ويظهر جزء منها فقط في هذه الصفحة.",
+    },
+    "UI_CMP_UNAVAILABLE": {
+        "en": "Your criteria and values could not be read, so they are not shown and cannot be changed right now. This does not mean that none were recorded.",
+        "ar": "تعذّرت قراءة معاييرك وقيمك، لذا لا تُعرض ولا يمكن تغييرها الآن. وهذا لا يعني أنه لم يُسجَّل شيء.",
+    },
+    "UI_CMP_REPORT_UNAVAILABLE": {
+        "en": "Your criteria and values could not be read, so they are not shown here. This does not mean that none were recorded.",
+        "ar": "تعذّرت قراءة معاييرك وقيمك، لذا لا تُعرض هنا. وهذا لا يعني أنه لم يُسجَّل شيء.",
+    },
+    "UI_CMP_REPORT_OMITTED": {
+        "en": "Your comparison values are not included in this report: together they come to {total} values, more than the 200 a report can hold. Your criteria are still listed, and every value can be read, page by page, in the Decision Room on the project page. Nothing was left out of your records.",
+        "ar": "لم تُدرج قيم المقارنة في هذا التقرير: فمجموعها {total} قيمة، وهو أكثر من 200 قيمة يتّسع لها التقرير. وتبقى معاييرك مدرجة، ويمكن قراءة كل قيمة صفحةً بصفحة في غرفة القرار على صفحة المشروع. ولم يُحذف شيء من سجلاتك.",
+    },
+    "UI_CMP_REPORT_VALUES_OMITTED_HERE": {
+        "en": "Values not included in this report — see the note at the start of this section.",
+        "ar": "لم تُدرج القيم في هذا التقرير — انظر الملاحظة في بداية هذا القسم.",
+    },
+    "UI_CMP_MSG_CRITERION_ADDED": {
+        "en": "Saved. The criterion is recorded in your own words. Nothing has checked it, and InventorAI does not weigh or rank criteria.",
+        "ar": "تم الحفظ. سُجّل المعيار بكلماتك. لم يفحصه شيء، ولا يوازن InventorAI بين المعايير ولا يرتّبها.",
+    },
+    "UI_CMP_MSG_CRITERION_CORRECTED": {
+        "en": "Saved. The corrected wording is recorded and the earlier wording stays in the history. Values recorded before the correction now need confirmation.",
+        "ar": "تم الحفظ. سُجّلت الصياغة المصحَّحة، وتبقى الصياغة السابقة في السجل. والقيم المسجّلة قبل التصحيح تحتاج الآن إلى تأكيد.",
+    },
+    "UI_CMP_MSG_CRITERION_RECONFIRMED": {
+        "en": "Saved. The criterion is confirmed for the current decision question. Values recorded before this still need confirmation.",
+        "ar": "تم الحفظ. أُكّد المعيار لسؤال القرار الحالي. والقيم المسجّلة قبل ذلك ما زالت تحتاج إلى تأكيد.",
+    },
+    "UI_CMP_MSG_CRITERION_WITHDRAWN": {
+        "en": "Withdrawn. The criterion is no longer compared. Nothing was erased: it and its recorded values stay in this project's history.",
+        "ar": "تم السحب. لم يعد المعيار يُستخدم في المقارنة. ولم يُحذف شيء: يبقى هو وقيمه المسجّلة في سجل هذا المشروع.",
+    },
+    "UI_CMP_MSG_VALUE_SAVED": {
+        "en": "Saved. The value is recorded as you wrote it. Nothing has checked it, and it is not a score or a validation.",
+        "ar": "تم الحفظ. سُجّلت القيمة كما كتبتها. لم يفحصها شيء، وهي ليست درجة ولا تحقّقًا.",
+    },
+    "UI_CMP_MSG_VALUE_RECONFIRMED": {
+        "en": "Saved. You confirmed this value, unchanged, for the current question, criterion and alternative.",
+        "ar": "تم الحفظ. أكّدت هذه القيمة دون تغيير للسؤال والمعيار والبديل الحالية.",
+    },
+    "UI_CMP_MSG_VALUE_CLEARED": {
+        "en": "Cleared. The value is no longer shown as current; its earlier entries stay in the history.",
+        "ar": "تم المسح. لم تعد القيمة تُعرض على أنها حالية، وتبقى إدخالاتها السابقة في السجل.",
+    },
+    "UI_CMP_MSG_VALUE_CLEARED_FINAL": {
+        "en": "Cleared with this value's final, reserved clear. It is no longer shown as current, its earlier entries stay in the history, and it accepts no further entries.",
+        "ar": "تم المسح بالمسح الأخير المحجوز لهذه القيمة. لم تعد تُعرض على أنها حالية، وتبقى إدخالاتها السابقة في السجل، ولا تقبل أي إدخال آخر.",
+    },
+    "UI_CMP_MSG_NO_CHANGE": {
+        "en": "Nothing changed: that is already what is recorded, so nothing was saved and no entry was used.",
+        "ar": "لم يتغيّر شيء: هذا هو المسجَّل بالفعل، لذا لم يُحفظ شيء ولم يُستهلك أي إدخال.",
+    },
+    "UI_CMP_MSG_NOT_SAVED": {
+        "en": "Not saved. Nothing was changed. Please try again.",
+        "ar": "لم يُحفظ. لم يتغيّر شيء. يُرجى المحاولة مجددًا.",
+    },
+    "UI_CMP_MSG_UNKNOWN": {
+        "en": "It could not be confirmed whether this was saved. Reload the page to see what is recorded before you try again.",
+        "ar": "تعذّر التأكد مما إذا كان هذا قد حُفظ. أعد تحميل الصفحة لترى ما هو مسجَّل قبل المحاولة مجددًا.",
+    },
+    "UI_CMP_MSG_STALE": {
+        "en": "Something changed after this page was opened — the decision question, the criterion, the alternative or this value — so nothing was saved. Review the current version and try again.",
+        "ar": "تغيّر شيء بعد فتح هذه الصفحة — سؤال القرار أو المعيار أو البديل أو هذه القيمة — لذا لم يُحفظ شيء. راجع النسخة الحالية وحاول مجددًا.",
+    },
+    "UI_CMP_MSG_REJECTED": {
+        "en": "Not saved: this form no longer matches a current criterion or alternative of this decision. Reload the page and try again.",
+        "ar": "لم يُحفظ: لم يعد هذا النموذج يطابق معيارًا أو بديلًا حاليًا لهذا القرار. أعد تحميل الصفحة وحاول مجددًا.",
+    },
+    "UI_CMP_MSG_TEXT_EMPTY": {
+        "en": "Not saved: please write something first.",
+        "ar": "لم يُحفظ: يُرجى كتابة شيء أولًا.",
+    },
+    "UI_CMP_MSG_TEXT_CHAR": {
+        "en": "Not saved: the text contains a character that cannot be stored.",
+        "ar": "لم يُحفظ: يحتوي النص على حرف لا يمكن تخزينه.",
+    },
+    "UI_CMP_MSG_LABEL_TOO_LONG": {
+        "en": "Not saved: a criterion can be at most 200 characters.",
+        "ar": "لم يُحفظ: يجب ألا يتجاوز المعيار 200 حرف.",
+    },
+    "UI_CMP_MSG_VALUE_TOO_LONG": {
+        "en": "Not saved: a value can be at most 1,000 characters.",
+        "ar": "لم يُحفظ: يجب ألا تتجاوز القيمة 1000 حرف.",
+    },
+    "UI_CMP_MSG_CRITERION_GONE": {
+        "en": "Not saved: this criterion has been withdrawn.",
+        "ar": "لم يُحفظ: سُحب هذا المعيار.",
+    },
+    "UI_CMP_MSG_ALTERNATIVE_GONE": {
+        "en": "Not saved: this alternative has been withdrawn. Its earlier values stay in the history.",
+        "ar": "لم يُحفظ: سُحب هذا البديل. وتبقى قيمه السابقة في السجل.",
+    },
+    "UI_CMP_MSG_CELL_CLOSED": {
+        "en": "Not saved: this value was cleared with its final, reserved clear and accepts no further entries.",
+        "ar": "لم يُحفظ: مُسحت هذه القيمة بالمسح الأخير المحجوز لها، ولا تقبل أي إدخال آخر.",
+    },
+    "UI_CMP_MSG_CONFIRM_CRITERION_FIRST": {
+        "en": "Not saved: the decision question changed after this criterion was written. Confirm or correct the criterion first.",
+        "ar": "لم يُحفظ: تغيّر سؤال القرار بعد كتابة هذا المعيار. أكّد المعيار أو صحّحه أولًا.",
+    },
+    "UI_CMP_MSG_NOTHING_TO_RECONFIRM": {
+        "en": "Nothing to confirm: this value holds no recorded text.",
+        "ar": "لا يوجد ما يُؤكَّد: لا تحمل هذه القيمة نصًا مسجّلًا.",
+    },
+    "UI_CMP_MSG_CONFIRM_WITHDRAW": {
+        "en": "Not withdrawn: tick the box to confirm that you want to withdraw this criterion.",
+        "ar": "لم يُسحب: ضع علامة في المربع لتأكيد أنك تريد سحب هذا المعيار.",
+    },
+    "UI_CMP_LIMIT_ACTIVE_CRITERIA": {
+        "en": "Not saved: this decision already has 10 current criteria. Withdraw one before adding another.",
+        "ar": "لم يُحفظ: لدى هذا القرار 10 معايير حالية بالفعل. اسحب أحدها قبل إضافة معيار آخر.",
+    },
+    "UI_CMP_LIMIT_DECISION_CRITERIA": {
+        "en": "Not saved: this decision has reached its lifetime limit of 30 criteria, withdrawn ones included. No new criterion can be added to it.",
+        "ar": "لم يُحفظ: بلغ هذا القرار حدّه الدائم البالغ 30 معيارًا، بما فيها المسحوبة. ولا يمكن إضافة معيار جديد إليه.",
+    },
+    "UI_CMP_LIMIT_PROJECT_CRITERIA": {
+        "en": "Not saved: this project has reached its lifetime limit of 150 criteria, withdrawn ones included. No new criterion can be added.",
+        "ar": "لم يُحفظ: بلغ هذا المشروع حدّه الدائم البالغ 150 معيارًا، بما فيها المسحوبة. ولا يمكن إضافة معيار جديد.",
+    },
+    "UI_CMP_LIMIT_CRITERION_REVISIONS": {
+        "en": "Not saved: this criterion has reached its limit of 10 corrections and confirmations. It can no longer be corrected or confirmed; you can still withdraw it.",
+        "ar": "لم يُحفظ: بلغ هذا المعيار حدّه البالغ 10 تصحيحات وتأكيدات. لم يعد ممكنًا تصحيحه أو تأكيده، ولكن ما زال بإمكانك سحبه.",
+    },
+    "UI_CMP_LIMIT_PROJECT_CRITERION_REVISIONS": {
+        "en": "Not saved: this project has reached its limit of 1,000 criterion corrections and confirmations. No criterion can be corrected or confirmed any more; you can still withdraw a criterion.",
+        "ar": "لم يُحفظ: بلغ هذا المشروع حدّه البالغ 1000 تصحيح وتأكيد للمعايير. لم يعد ممكنًا تصحيح أي معيار أو تأكيده، ولكن ما زال بإمكانك سحب معيار.",
+    },
+    "UI_CMP_LIMIT_CELL_EVENTS": {
+        "en": "Not saved: this value has reached its limit of 10 entries and can no longer be recorded, changed or confirmed.",
+        "ar": "لم يُحفظ: بلغت هذه القيمة حدّها البالغ 10 إدخالات، ولم يعد ممكنًا تسجيلها أو تغييرها أو تأكيدها.",
+    },
+    "UI_CMP_LIMIT_CELL_EVENTS_CLEAR": {
+        "en": "Not saved: this value has reached its limit of 10 entries and can no longer be changed or confirmed. You can still clear it once.",
+        "ar": "لم يُحفظ: بلغت هذه القيمة حدّها البالغ 10 إدخالات، ولم يعد ممكنًا تغييرها أو تأكيدها. وما زال بإمكانك مسحها مرة واحدة.",
+    },
+    "UI_CMP_LIMIT_DECISION_VALUE_EVENTS": {
+        "en": "Not saved: this decision has reached its limit of 500 value entries. No value of this decision can be recorded, changed or confirmed any more.",
+        "ar": "لم يُحفظ: بلغ هذا القرار حدّه البالغ 500 إدخال للقيم. ولم يعد ممكنًا تسجيل أي قيمة لهذا القرار أو تغييرها أو تأكيدها.",
+    },
+    "UI_CMP_LIMIT_DECISION_VALUE_EVENTS_CLEAR": {
+        "en": "Not saved: this decision has reached its limit of 500 value entries. No value of this decision can be changed or confirmed any more; you can still clear this one once.",
+        "ar": "لم يُحفظ: بلغ هذا القرار حدّه البالغ 500 إدخال للقيم. ولم يعد ممكنًا تغيير أي قيمة لهذا القرار أو تأكيدها، وما زال بإمكانك مسح هذه القيمة مرة واحدة.",
+    },
+    "UI_CMP_LIMIT_PROJECT_VALUE_EVENTS": {
+        "en": "Not saved: this project has reached its limit of 3,000 value entries. No value can be recorded, changed or confirmed any more.",
+        "ar": "لم يُحفظ: بلغ هذا المشروع حدّه البالغ 3000 إدخال للقيم. ولم يعد ممكنًا تسجيل أي قيمة أو تغييرها أو تأكيدها.",
+    },
+    "UI_CMP_LIMIT_PROJECT_VALUE_EVENTS_CLEAR": {
+        "en": "Not saved: this project has reached its limit of 3,000 value entries. No value can be changed or confirmed any more; you can still clear this one once.",
+        "ar": "لم يُحفظ: بلغ هذا المشروع حدّه البالغ 3000 إدخال للقيم. ولم يعد ممكنًا تغيير أي قيمة أو تأكيدها، وما زال بإمكانك مسح هذه القيمة مرة واحدة.",
+    },
+    "UI_CMP_LIMIT_PROJECT_CELLS": {
+        "en": "Not saved: this project has reached its limit of 1,500 criterion-and-alternative pairs that have ever held a value. No value can be recorded for a pair that never held one.",
+        "ar": "لم يُحفظ: بلغ هذا المشروع حدّه البالغ 1500 زوج من المعايير والبدائل حملت قيمة في أي وقت. ولا يمكن تسجيل قيمة لزوج لم يحمل قيمة من قبل.",
+    },
+    "UI_CMP_CAP_ACTIVE_CRITERIA": {
+        "en": "This decision has 10 current criteria, the most it can hold. Withdraw one to add another.",
+        "ar": "لدى هذا القرار 10 معايير حالية، وهو الحد الأقصى. اسحب أحدها لتضيف معيارًا آخر.",
+    },
+    "UI_CMP_CAP_DECISION_CRITERIA": {
+        "en": "This decision has reached its lifetime limit of 30 criteria; no new criterion can be added to it.",
+        "ar": "بلغ هذا القرار حدّه الدائم البالغ 30 معيارًا، ولا يمكن إضافة معيار جديد إليه.",
+    },
+    "UI_CMP_CAP_PROJECT_CRITERIA": {
+        "en": "This project has reached its lifetime limit of 150 criteria; no new criterion can be added.",
+        "ar": "بلغ هذا المشروع حدّه الدائم البالغ 150 معيارًا، ولا يمكن إضافة معيار جديد.",
+    },
+    "UI_CMP_CAP_CRITERION_REVISIONS": {
+        "en": "This criterion has reached its limit of 10 corrections and confirmations; you can still withdraw it.",
+        "ar": "بلغ هذا المعيار حدّه البالغ 10 تصحيحات وتأكيدات، وما زال بإمكانك سحبه.",
+    },
+    "UI_CMP_CAP_PROJECT_CRITERION_REVISIONS": {
+        "en": "This project has reached its limit of 1,000 criterion corrections and confirmations; you can still withdraw a criterion.",
+        "ar": "بلغ هذا المشروع حدّه البالغ 1000 تصحيح وتأكيد للمعايير، وما زال بإمكانك سحب معيار.",
+    },
+    "UI_CMP_CAP_CELL_EVENTS": {
+        "en": "This value has reached its limit of 10 entries and can no longer be recorded, changed or confirmed.",
+        "ar": "بلغت هذه القيمة حدّها البالغ 10 إدخالات، ولم يعد ممكنًا تسجيلها أو تغييرها أو تأكيدها.",
+    },
+    "UI_CMP_CAP_DECISION_VALUE_EVENTS": {
+        "en": "This decision has reached its limit of 500 value entries; its values can no longer be recorded, changed or confirmed.",
+        "ar": "بلغ هذا القرار حدّه البالغ 500 إدخال للقيم، ولم يعد ممكنًا تسجيل قيمه أو تغييرها أو تأكيدها.",
+    },
+    "UI_CMP_CAP_PROJECT_VALUE_EVENTS": {
+        "en": "This project has reached its limit of 3,000 value entries; values can no longer be recorded, changed or confirmed.",
+        "ar": "بلغ هذا المشروع حدّه البالغ 3000 إدخال للقيم، ولم يعد ممكنًا تسجيل القيم أو تغييرها أو تأكيدها.",
+    },
+    "UI_CMP_CAP_PROJECT_CELLS": {
+        "en": "This project has reached its limit of 1,500 criterion-and-alternative pairs that have ever held a value; no value can be recorded here.",
+        "ar": "بلغ هذا المشروع حدّه البالغ 1500 زوج من المعايير والبدائل حملت قيمة في أي وقت، ولا يمكن تسجيل قيمة هنا.",
+    },
+    "UI_CMP_CAP_CLEAR_REMAINS": {
+        "en": "You can still clear it once.",
+        "ar": "وما زال بإمكانك مسحها مرة واحدة.",
+    },
     "UI_CI_LAST_VERSION_LABEL": {
         "en": "Last recorded version:",
         "ar": "آخر نسخة مسجّلة:",

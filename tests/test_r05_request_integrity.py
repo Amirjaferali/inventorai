@@ -51,6 +51,9 @@ MUTATIONS = (
     "/session/<sid>/part-questions",
     "/session/<sid>/decision/declare-context", "/session/<sid>/decision/declare-alternative",
     "/session/<sid>/decision/refine-alternative", "/session/<sid>/decision/withdraw-alternative",
+    # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the inventor's own
+    # comparison criteria and per-alternative values (append-only).
+    "/session/<sid>/decision/criterion", "/session/<sid>/decision/value",
     "/session/<sid>/keep-snapshot", "/session/<sid>/success-criteria", "/session/<sid>",
     "/session/<sid>/deliverable.pdf",
     # T2-A Quantified Requirements Slice 1: the two-stage quantity flow (propose

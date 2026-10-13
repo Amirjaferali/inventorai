@@ -5061,6 +5061,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at COMPONENT-DELIVERABLE-VALUE-01 (merge-effective delivery record): it follows the electric
            # charge reference increment in the chain
            r"the only product increment authorized after it was COMPONENT-DELIVERABLE-VALUE-01 \(below\), "
+           r"delivered \(PR #\d+\); "
+           # ADVANCED at INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 (merge-effective delivery
+           # record): it follows the components report increment in the chain
+           r"the only product increment authorized after it was INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 \(below\), "
            r"delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
@@ -5339,7 +5343,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # increment is authorized after it; the declaration guidance increment precedes it
                # ADVANCED at COMPONENT-DELIVERABLE-VALUE-01 (merge-effective delivery record): no product increment is
                # authorized after it; the electric charge reference increment precedes it
-               r"No product increment is authorized after COMPONENT-DELIVERABLE-VALUE-01 \(delivered: PR #\d+; "
+               # ADVANCED at INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 (merge-effective delivery
+               # record): no product increment is authorized after it; the components report increment precedes it
+               r"No product increment is authorized after INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 \(delivered: PR #\d+; "
+               r"[^)]*the inventor's own criteria and per-alternative values in the Decision Room, report and PDF[^)]*"
+               r"Owner-approved capacity and a 200-cell display budget; no score, ranking, winner, ledger, FDC-001 or "
+               r"export change; no Stage entered, completed or reopened; effective only on the verified merge of "
+               r"PR #\d+\) or after the preceding "
+               r"COMPONENT-DELIVERABLE-VALUE-01 \(delivered: PR #\d+; "
                r"[^)]*one read-only section listing the inventor's current declared components in the analysis report "
                r"and PDF[^)]*report audience unchanged, no store, schema or export change; no Stage entered, completed "
                r"or reopened; effective only on the verified merge of PR #\d+\) or after the preceding "
@@ -5898,6 +5909,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # ADVANCED at COMPONENT-DELIVERABLE-VALUE-01 (merge-effective delivery record): it follows the electric
             # charge reference increment in the chain
             "the only increment authorized after it — COMPONENT-DELIVERABLE-VALUE-01 (above) — is DELIVERED (PR #N); "
+            # ADVANCED at INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 (merge-effective delivery
+            # record): it follows the components report increment in the chain
+            "the only increment authorized after it — INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 (above) — is "
+            "DELIVERED (PR #N); "
             "no subsequent increment has been authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
     # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
@@ -6227,7 +6242,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # the declaration guidance increment precedes it
            # ADVANCED at COMPONENT-DELIVERABLE-VALUE-01 (merge-effective delivery record): ... after it; the electric
            # charge reference increment precedes it
-           r"No product increment is authorized after COMPONENT-DELIVERABLE-VALUE-01 \(delivered; PR #\d+; "
+           # ADVANCED at INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 (merge-effective delivery
+           # record): ... after it; the components report increment precedes it
+           r"No product increment is authorized after INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 \(delivered; PR #\d+; "
+           r"[^)]*the inventor's own criteria and per-alternative values in the Decision Room, report and PDF, "
+           r"OWNER_STATED / UNVALIDATED; no Stage change; effective only on merge\) or after the preceding "
+           r"COMPONENT-DELIVERABLE-VALUE-01 \(delivered; PR #\d+; "
            r"[^)]*current declared components in the analysis report and PDF, read-only, OWNER_STATED / UNVALIDATED; "
            r"no Stage change; effective only on merge\) or after the preceding "
            r"ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 \(delivered; "

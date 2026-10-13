@@ -1408,7 +1408,13 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       "project_components",
                       # COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: their append-only
                       # correction / withdrawal history (not a commercial owner).
-                      "project_component_revisions"}
+                      "project_component_revisions",
+                      # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the
+                      # inventor's own decision criteria and per-alternative
+                      # values, append-only (not a commercial owner; no
+                      # evidence content).
+                      "decision_criterion_revisions",
+                      "decision_cell_value_events"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()
