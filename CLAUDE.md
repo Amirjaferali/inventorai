@@ -625,6 +625,10 @@ evidence; the Master Execution Roadmap; the Operating Checklist; the current suc
 handover and Lead Watchlist. Roadmap, checklist, handover and watchlist are continuity aids,
 never independent execution authority.
 
+**Session-start context.** `.claude/settings.json` runs `.claude/hooks/session_context.py` at every
+session start, resume, clear and compaction; it quotes these current sources with their locations
+and adds no authority, and an item it reports UNAVAILABLE must be read directly.
+
 **Product progress over governance.** Use the minimum governance proportionate to material
 risk. Create no new review, document, gate, synchronization cycle or architecture exercise
 unless it addresses a concrete material risk or an explicit current requirement. Do not reopen
@@ -809,7 +813,9 @@ product-tuning or regression corpus.
 tests on a stable candidate → hosted required CI, where hosted Sharded FULL is the broad
 regression on the FULL route; a local full run needs a stated material reason (AHAEP §1A.1).
 Never weaken mandatory CI; do not rerun the full suite repeatedly during intermediate work when
-focused evidence is sufficient.
+focused evidence is sufficient. On the FULL route, a classified failure that warrants the one
+allowed retry reruns the whole FULL workflow as one complete attempt, never a single shard or job:
+`CI required` accepts only the five shard evidence packages of the same attempt.
 
 **Reading boundary.** Diff-first → search-first → exact-function / exact-range. For large
 files, read the smallest relevant range first and expand only to direct material dependencies;
