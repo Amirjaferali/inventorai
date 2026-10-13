@@ -1553,16 +1553,25 @@ _RESULT_EVENTS_SCHEMA = (
 # preparation values frozen at recording — each the exact text or NULL, and
 # all three NULL is a valid root; a correction is a row superseding the
 # current head of ONE chain and carries no context. There is NO update or
-# delete path. ``observation_seq`` fixes durable order; ``submission_key`` is
+# delete path. The order column (``observation_event_seq`` once upgraded) fixes durable order; ``submission_key`` is
 # the idempotent identity of the ONE action attempt that wrote the row
 # (unique per project). The composite self foreign key keeps a correction
 # inside THIS project; the partial unique index forbids forks; the loader
 # re-validates the whole history (same interface, earlier target, no fork).
 # No outcome, status, verdict, validation, readiness, compatibility or score
 # column exists. ``recorded_at`` is when InventorAI recorded the event, never
-# the check time. Additive and idempotent (``IF NOT EXISTS``); touches no
-# existing table, column or row; nothing is backfilled. Rollback is
-# disable-and-ignore (stop reading the table); user history is never removed.
+# the check time. The DDL below is the FIRST (legacy) shape; it is never
+# changed. STAGE15-OBSERVATION-WITHDRAW-01 upgrades it in place, atomically
+# inside the store's single migration transaction (``_OBSERVATION_UPGRADE``):
+# ONE added ``event_kind`` column (``OBSERVATION`` default / ``WITHDRAWAL``;
+# a withdrawal is a successor carrying the owner's fixed internal marker and,
+# by the existing CHECK, no context) and the order column renamed
+# ``observation_seq`` -> ``observation_event_seq`` with every value kept. The
+# rename is the downgrade guard: a withdrawal-unaware build reads and writes
+# ``observation_seq``, so on an upgraded database its observation reads and
+# writes fail closed for EVERY project (``no such column``) instead of
+# presenting a withdrawn check as current. There is no reverse migration, no
+# compatibility alias and no history deletion; user history is never removed.
 _OBSERVATION_ID_CHECK = (
     "({col} IS NULL OR (typeof({col}) = 'text' AND length({col}) = 36 "
     "AND substr({col}, 1, 4) = 'obs-' AND substr({col}, 5) NOT GLOB '*[^0-9a-f]*'))")
@@ -1616,6 +1625,59 @@ _INTERFACE_OBSERVATIONS_SCHEMA = (
     "ON subsystem_interface_observations (project_id, supersedes_observation_id) "
     "WHERE supersedes_observation_id IS NOT NULL",
 )
+# STAGE15-OBSERVATION-WITHDRAW-01 — the in-place upgrade of the legacy shape
+# (see the note above). Applied to a fresh table too, so fresh and migrated
+# databases carry byte-identical schemas and the same enforced semantics.
+_OBSERVATION_UPGRADE = (
+    "ALTER TABLE subsystem_interface_observations ADD COLUMN event_kind TEXT "
+    "NOT NULL DEFAULT '%s' CHECK (event_kind IN ('%s', '%s') AND "
+    "(event_kind = '%s' OR (supersedes_observation_id IS NOT NULL "
+    "AND observation_text = '%s')))" % (
+        _observation.EVENT_OBSERVATION, _observation.EVENT_OBSERVATION,
+        _observation.EVENT_WITHDRAWAL, _observation.EVENT_OBSERVATION,
+        _observation.WITHDRAWAL_MARKER),
+    "ALTER TABLE subsystem_interface_observations RENAME COLUMN observation_seq "
+    "TO observation_event_seq",
+)
+# RENAME COLUMN needs SQLite 3.25.0; checked against the LINKED library.
+_OBSERVATION_UPGRADE_MIN_SQLITE = (3, 25, 0)
+_OBSERVATION_LEGACY_COLUMNS = (
+    "project_id", "observation_seq", "observation_id", "interface_id",
+    "observation_text", "supersedes_observation_id", "submission_key",
+    "recorded_at", "ctx_operating_conditions", "ctx_acceptance_criterion",
+    "ctx_evidence_needed")
+_OBSERVATION_SHAPES = []
+
+
+def _observation_schema_shape(conn):
+    """The complete stored shape of the observation table: every schema object
+    on it (the table with all its columns, keys and CHECKs, its automatic and
+    explicit indexes, any trigger), whitespace-normalised. Empty when absent."""
+    rows = conn.execute(
+        "SELECT type, name, sql FROM sqlite_master "
+        "WHERE tbl_name = 'subsystem_interface_observations' "
+        "ORDER BY type, name").fetchall()
+    return tuple((kind, name, None if sql is None else " ".join(sql.split()))
+                 for kind, name, sql in rows)
+
+
+def _observation_reference_shapes():
+    """``(legacy, current)``: the exact shapes the legacy DDL and the upgraded
+    DDL produce, built ONCE with the linked SQLite on a scratch in-memory
+    database (never on user data)."""
+    if not _OBSERVATION_SHAPES:
+        ref = sqlite3.connect(":memory:", isolation_level=None)
+        try:
+            ref.execute("PRAGMA foreign_keys = ON")
+            for stmt in _INTERFACE_OBSERVATIONS_SCHEMA:
+                ref.execute(stmt)
+            legacy = _observation_schema_shape(ref)
+            for stmt in _OBSERVATION_UPGRADE:
+                ref.execute(stmt)
+            _OBSERVATION_SHAPES[:] = [legacy, _observation_schema_shape(ref)]
+        finally:
+            ref.close()
+    return tuple(_OBSERVATION_SHAPES)
 
 # COMPONENT-INVENTORY-DECLARE-LIST-01 — the ``project_components`` sidecar:
 # the inventor's manually DECLARED components, ONE row per physical component
@@ -2388,13 +2450,60 @@ class SqliteRecordStore:
             conn.execute(stmt)
 
     def _migrate_interface_observations(self, conn) -> None:
-        """Stage 15 Slice 4 forward migration: additively create the
-        append-only ``subsystem_interface_observations`` sidecar. Idempotent
-        (``IF NOT EXISTS``) on a fresh and on an existing populated database;
-        touches no existing table, column or row; nothing is backfilled.
-        Rollback is disable-and-ignore (stop reading the table)."""
-        for stmt in _INTERFACE_OBSERVATIONS_SCHEMA:
+        """Stage 15 Slice 4 / STAGE15-OBSERVATION-WITHDRAW-01 forward-only
+        migration of the observation table. Runs inside the store's single
+        migration transaction (``BEGIN IMMEDIATE``, foreign keys on), so it
+        commits whole or not at all, and is idempotent:
+
+        * no table -> create the legacy shape, then upgrade it (fresh and
+          migrated databases end byte-identical);
+        * EXACTLY the legacy shape (table, columns, keys, CHECKs and indexes)
+          -> upgrade it in place: add ``event_kind`` and rename
+          ``observation_seq`` -> ``observation_event_seq``; every row is
+          verified unchanged value-for-value, every kind is ``OBSERVATION``,
+          foreign keys still hold and the result is EXACTLY the current shape,
+          otherwise the whole migration aborts;
+        * EXACTLY the current shape -> nothing to do;
+        * any other (unknown or partial) shape -> refuse
+          (``sqlite3.DatabaseError``) rather than guess.
+
+        No table rebuild, row copy, ``writable_schema`` or disabled integrity
+        check is used, and there is no reverse migration."""
+        legacy, current = _observation_reference_shapes()
+        found = _observation_schema_shape(conn)
+        if not found:
+            for stmt in _INTERFACE_OBSERVATIONS_SCHEMA:
+                conn.execute(stmt)
+            found = _observation_schema_shape(conn)
+        if found == current:
+            return
+        if found != legacy:
+            raise sqlite3.DatabaseError(
+                "subsystem_interface_observations has an unrecognised shape")
+        if sqlite3.sqlite_version_info < _OBSERVATION_UPGRADE_MIN_SQLITE:
+            raise sqlite3.DatabaseError(
+                "the linked SQLite cannot upgrade subsystem_interface_observations")
+        columns = ", ".join(_OBSERVATION_LEGACY_COLUMNS[2:])
+        before = conn.execute(
+            "SELECT project_id, observation_seq, " + columns + " FROM "
+            "subsystem_interface_observations ORDER BY project_id, observation_seq"
+        ).fetchall()
+        for stmt in _OBSERVATION_UPGRADE:
             conn.execute(stmt)
+        after = conn.execute(
+            "SELECT project_id, observation_event_seq, " + columns + " FROM "
+            "subsystem_interface_observations "
+            "ORDER BY project_id, observation_event_seq").fetchall()
+        kinds = conn.execute(
+            "SELECT DISTINCT event_kind FROM subsystem_interface_observations"
+        ).fetchall()
+        broken = conn.execute(
+            "PRAGMA foreign_key_check(subsystem_interface_observations)").fetchall()
+        if (after != before or broken
+                or kinds not in ([], [(_observation.EVENT_OBSERVATION,)])
+                or _observation_schema_shape(conn) != current):
+            raise sqlite3.DatabaseError(
+                "the observation upgrade did not preserve the table exactly")
 
     def _migrate_interface_dependencies(self, conn) -> None:
         """Stage 15 closure forward migration: additively create the
@@ -3187,9 +3296,10 @@ class SqliteRecordStore:
 
     # --- Stage 15 Slice 4: Interface Verification Observation Event -----------
     _OBSERVATION_COLUMNS = (
-        "observation_seq, observation_id, interface_id, observation_text, "
+        "observation_event_seq, observation_id, interface_id, observation_text, "
         "supersedes_observation_id, submission_key, recorded_at, "
-        + ", ".join("ctx_" + f for f in _observation.CONTEXT_FIELDS))
+        + ", ".join("ctx_" + f for f in _observation.CONTEXT_FIELDS)
+        + ", event_kind")
 
     def _validated_observations(self, project_id, interfaces=None):
         """``(events, submission_keys)`` of this project's durable observation
@@ -3200,7 +3310,7 @@ class SqliteRecordStore:
         rows = self._conn.execute(
             "SELECT " + self._OBSERVATION_COLUMNS + " FROM "
             "subsystem_interface_observations WHERE project_id = ? "
-            "ORDER BY observation_seq ASC", (project_id,)).fetchall()
+            "ORDER BY observation_event_seq ASC", (project_id,)).fetchall()
         if not rows:
             return (), ()
         if [row[0] for row in rows] != list(range(len(rows))):
@@ -3213,7 +3323,7 @@ class SqliteRecordStore:
                 "durable submission identity is malformed")
         events = []
         for row in rows:
-            ctx_values = row[7:]
+            ctx_values = row[7:10]
             if row[4] is None:
                 context = _observation.ObservationContext(*ctx_values)
             else:
@@ -3223,7 +3333,7 @@ class SqliteRecordStore:
             events.append(_observation.InterfaceObservation(
                 observation_id=row[1], interface_id=row[2],
                 observation_text=row[3], supersedes_observation_id=row[4],
-                recorded_at=row[6], context=context))
+                recorded_at=row[6], context=context, event_kind=row[10]))
         try:
             events = _observation.validate_observation_history(events)
         except _observation.ObservationError as exc:
@@ -3242,7 +3352,7 @@ class SqliteRecordStore:
                 "an observation names no interface of this project")
 
     def load_interface_observations(self, project_id: str) -> tuple:
-        """This project's durable observation events in ``observation_seq``
+        """This project's durable observation events in ``observation_event_seq``
         order (``()`` for every project without any), validated WHOLE and
         against its durable interfaces, inside ONE read snapshot. No project
         -> ``ProjectNotFound``; corrupt composition / interfaces fail closed
@@ -3294,7 +3404,11 @@ class SqliteRecordStore:
         context equals the interface's durable preparation read in this same
         transaction (``InterfaceObservationRejected`` otherwise — never
         matched by position, endpoints or text). The store assigns
-        ``observation_seq``. There is no update or delete path. IR-01: never
+        ``observation_event_seq``. There is no update or delete path. A
+        withdrawal (STAGE15-OBSERVATION-WITHDRAW-01) is one more appended
+        successor: an exact retry resolves before every new-action check, the
+        ordinary cap applies to roots and corrections only, and a withdrawn
+        chain is terminal. IR-01: never
         writes on top of an unresolved connection."""
         if not isinstance(observation, _observation.InterfaceObservation):
             raise InterfaceObservationRejected("not an observation event")
@@ -3316,7 +3430,14 @@ class SqliteRecordStore:
             if observation.interface_id not in {i.interface_id for i in interfaces}:
                 raise InterfaceObservationRejected(
                     "the interface is not a member of this project")
-            if len(existing) >= _observation.MAX_OBSERVATIONS_PER_PROJECT:
+            # STAGE15-OBSERVATION-WITHDRAW-01: the ordinary cap counts roots
+            # and corrections only; a withdrawal uses its root's ONE reserved
+            # terminal slot and never frees ordinary capacity.
+            withdrawal = observation.event_kind == _observation.EVENT_WITHDRAWAL
+            if not withdrawal and sum(
+                    1 for e in existing
+                    if e.event_kind != _observation.EVENT_WITHDRAWAL) \
+                    >= _observation.MAX_OBSERVATIONS_PER_PROJECT:
                 raise InterfaceObservationCapReached("the observation cap is reached")
             target = observation.supersedes_observation_id
             if target is None:
@@ -3329,10 +3450,12 @@ class SqliteRecordStore:
             else:
                 prior = {e.observation_id: e for e in existing}.get(target)
                 if prior is None or prior.interface_id != observation.interface_id \
-                        or target not in _observation.head_ids(existing):
+                        or target not in _observation.head_ids(existing) \
+                        or prior.event_kind == _observation.EVENT_WITHDRAWAL:
                     raise InterfaceObservationRejected(
-                        "a correction must supersede the current head of one "
-                        "chain of the same interface in this project")
+                        "a correction or withdrawal must supersede the current "
+                        "head of one chain of the same interface in this "
+                        "project, and a withdrawn check is terminal")
             try:
                 _observation.validate_observation_history(existing + (observation,))
             except _observation.ObservationError:
@@ -3341,12 +3464,13 @@ class SqliteRecordStore:
             self._conn.execute(
                 "INSERT INTO subsystem_interface_observations (project_id, "
                 + self._OBSERVATION_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, "
-                "?, ?, ?)",
+                "?, ?, ?, ?)",
                 (project_id, len(existing), observation.observation_id,
                  observation.interface_id, observation.observation_text, target,
                  submission_key, observation.recorded_at)
                 + tuple(None if ctx is None else getattr(ctx, f)
-                        for f in _observation.CONTEXT_FIELDS))
+                        for f in _observation.CONTEXT_FIELDS)
+                + (observation.event_kind,))
         return INTERFACE_OBSERVATION_INSERTED, observation
 
     def load_subsystem_interfaces(self, project_id: str) -> tuple:

@@ -25,7 +25,28 @@ APPEND-ONLY EVENT MODEL
   retest.
 * A CORRECTION is a new event superseding the current HEAD of ONE existing
   chain of the same interface. At most one successor per event: no forks.
-* Historical events are never rewritten or deleted (no Withdraw here).
+* A WITHDRAWAL (STAGE15-OBSERVATION-WITHDRAW-01) is a new TERMINAL event
+  superseding the current HEAD of ONE chain: the inventor states that this
+  recorded check should no longer count as a current record. It has a fresh
+  ``obs-`` identity, ``event_kind`` ``WITHDRAWAL`` (every other event is
+  ``OBSERVATION``; root and correction stay distinguished by predecessor
+  presence), the owner-local fixed internal ``WITHDRAWAL_MARKER`` as its
+  text, no context and no reason. Nothing may follow it (no correction, no
+  second withdrawal). The action is decided by ``event_kind`` and structure
+  only: ordinary inventor text equal to the marker stays ordinary text.
+* Historical events are never rewritten or deleted; a withdrawal keeps the
+  whole chain in the history and is not erasure.
+
+CAPACITY, FULL HISTORY AND CURRENT CHAINS
+-----------------------------------------
+At most ``MAX_OBSERVATIONS_PER_PROJECT`` (200) ORDINARY events per project
+(roots and corrections), plus ONE reserved terminal withdrawal per root, so
+at most ``MAX_TOTAL_OBSERVATION_EVENTS`` (400) in all; a withdrawal never
+frees ordinary capacity and no identity is reused. ``observation_chains`` is
+the FULL history (withdrawn chains included, each with its ``withdrawal``);
+``current_observation_chains`` is the explicitly named current-chain
+projection that CURRENT check counts use. Every withdrawn chain means zero
+CURRENT records for it, never "nothing was ever recorded".
 
 CONTEXT AT RECORDING
 --------------------
@@ -59,9 +80,19 @@ from engine.subsystem_model import (
 # already use. Over-limit input is rejected, never truncated.
 MAX_OBSERVATION_TEXT_LENGTH = 1000
 # Bounded growth: a project cannot accumulate an unbounded observation
-# history (roots and corrections together). Never pruned at the cap.
+# history. This bounds ORDINARY events (roots and corrections together);
+# never pruned at the cap.
 MAX_OBSERVATIONS_PER_PROJECT = 200
+# STAGE15-OBSERVATION-WITHDRAW-01: plus ONE reserved withdrawal per root.
+MAX_TOTAL_OBSERVATION_EVENTS = 2 * MAX_OBSERVATIONS_PER_PROJECT
 _OBSERVATION_ID_RE = re.compile(r"\Aobs-[0-9a-f]{32}\Z")
+# The closed event-kind vocabulary (the durable ``event_kind`` column).
+EVENT_OBSERVATION = "OBSERVATION"
+EVENT_WITHDRAWAL = "WITHDRAWAL"
+EVENT_KINDS = (EVENT_OBSERVATION, EVENT_WITHDRAWAL)
+# The fixed INTERNAL text of every withdrawal (the text column is NOT NULL).
+# Never shown as an observation; never identifies a withdrawal on its own.
+WITHDRAWAL_MARKER = "s15:observation-withdrawn:v1"
 # The frozen context fields, in the preparation owner's own order.
 CONTEXT_FIELDS = PREPARATION_FIELDS
 
@@ -92,6 +123,7 @@ class InterfaceObservation:
     supersedes_observation_id: Optional[str]
     recorded_at: str
     context: Optional[ObservationContext] = None
+    event_kind: str = EVENT_OBSERVATION
 
 
 def new_observation_id():
@@ -150,11 +182,34 @@ def recorded_correction(interface_id, observation_text, supersedes_observation_i
     return event
 
 
+def recorded_withdrawal(interface_id, supersedes_observation_id):
+    """A NEW terminal withdrawal superseding the current head
+    ``supersedes_observation_id`` of ONE chain: a fresh ``obs-`` identity,
+    the fixed internal marker, no context and no reason."""
+    event = InterfaceObservation(new_observation_id(), interface_id,
+                                 WITHDRAWAL_MARKER, supersedes_observation_id,
+                                 _now(), None, EVENT_WITHDRAWAL)
+    _check_event(event)
+    return event
+
+
+def is_withdrawal(event):
+    """True only for a structurally valid withdrawal event."""
+    try:
+        _check_event(event)
+    except ObservationError:
+        return False
+    return event.event_kind == EVENT_WITHDRAWAL
+
+
 def same_observation_material(stored, event):
-    """True when two events carry the SAME submitted material: interface,
-    superseded target and observation text. Identity, time and the frozen
-    context (captured server-side) are not submitted material."""
-    return (stored.interface_id == event.interface_id
+    """True when two events carry the SAME submitted action and material:
+    event kind, interface, superseded target and observation text. Identity,
+    time and the frozen context (captured server-side) are not submitted
+    material. A correction whose text equals the marker is NOT the same
+    action as a withdrawal of the same head."""
+    return (stored.event_kind == event.event_kind
+            and stored.interface_id == event.interface_id
             and stored.supersedes_observation_id == event.supersedes_observation_id
             and stored.observation_text == event.observation_text)
 
@@ -170,6 +225,13 @@ def _check_event(event):
         raise ObservationError("observation text is empty, invalid or too long")
     if not isinstance(event.recorded_at, str) or not event.recorded_at:
         raise ObservationError("recorded time is missing")
+    if event.event_kind not in EVENT_KINDS:
+        raise ObservationError("event kind is not recognised")
+    if event.event_kind == EVENT_WITHDRAWAL and (
+            event.supersedes_observation_id is None
+            or event.observation_text != WITHDRAWAL_MARKER
+            or event.context is not None):
+        raise ObservationError("a withdrawal is malformed")
     if event.supersedes_observation_id is None:
         if not valid_context(event.context):
             raise ObservationError("a root event carries no valid context")
@@ -182,29 +244,49 @@ def _check_event(event):
 
 def validate_observation_history(events):
     """Validate one project's durable observation events in stored order and
-    return them as a tuple, or raise ``ObservationError``. At most the cap;
-    every event is valid; ids are distinct; a correction supersedes an
-    EARLIER event of the SAME interface (so no cycle is possible) and no event
-    has two successors: only linear correction chains."""
+    return them as a tuple, or raise ``ObservationError``. Every event is
+    valid; ids are distinct; a correction or withdrawal supersedes an EARLIER
+    event of the SAME interface (so no cycle is possible); no event has two
+    successors (only linear chains); nothing supersedes a withdrawal
+    (terminal); and the capacity rule holds — at most
+    ``MAX_OBSERVATIONS_PER_PROJECT`` ordinary events, at most one withdrawal
+    per root and at most ``MAX_TOTAL_OBSERVATION_EVENTS`` events in all."""
     items = tuple(events or ())
-    if len(items) > MAX_OBSERVATIONS_PER_PROJECT:
+    if len(items) > MAX_TOTAL_OBSERVATION_EVENTS:
         raise ObservationError("too many observation events")
     seen = {}
     succeeded = set()
+    root_of = {}
+    withdrawn_roots = set()
+    ordinary = 0
     for event in items:
         _check_event(event)
         if event.observation_id in seen:
             raise ObservationError("observation identity is duplicated")
         target = event.supersedes_observation_id
-        if target is not None:
+        if target is None:
+            root_of[event.observation_id] = event.observation_id
+        else:
             prior = seen.get(target)
             if prior is None:
                 raise ObservationError("a correction supersedes no earlier event")
             if prior.interface_id != event.interface_id:
                 raise ObservationError("a correction crosses interfaces")
+            if prior.event_kind == EVENT_WITHDRAWAL:
+                raise ObservationError("a withdrawn check is terminal")
             if target in succeeded:
                 raise ObservationError("an event has two successors")
             succeeded.add(target)
+            root_of[event.observation_id] = root_of[target]
+        if event.event_kind == EVENT_WITHDRAWAL:
+            root = root_of[event.observation_id]
+            if root in withdrawn_roots:
+                raise ObservationError("a check is withdrawn twice")
+            withdrawn_roots.add(root)
+        else:
+            ordinary += 1
+            if ordinary > MAX_OBSERVATIONS_PER_PROJECT:
+                raise ObservationError("too many ordinary observation events")
         seen[event.observation_id] = event
     return items
 
@@ -217,9 +299,14 @@ def head_ids(events):
 
 
 def observation_chains(events, interface_id=None):
-    """The check chains of an already-validated history, in root order:
-    ``[{"root": ev, "head": ev, "history": [root, ..., head]}]`` (optionally
-    for one interface). Pure; identity only."""
+    """The FULL history: every check chain of an already-validated history,
+    in root order, withdrawn chains included (optionally for one interface):
+    ``[{"root": ev, "head": ev, "history": [root, ..., head],
+    "withdrawal": ev or None}]``. ``history`` holds the chain's ORDINARY
+    events only and ``head`` is its latest observation; a withdrawn chain's
+    terminal withdrawal is ``withdrawal`` (then its durable head) and is never
+    part of ``history``, so the internal marker is never presented as an
+    observation. Pure; identity only."""
     successor = {e.supersedes_observation_id: e for e in events
                  if e.supersedes_observation_id is not None}
     chains = []
@@ -229,7 +316,21 @@ def observation_chains(events, interface_id=None):
         if interface_id is not None and event.interface_id != interface_id:
             continue
         history = [event]
+        withdrawal = None
         while history[-1].observation_id in successor:
-            history.append(successor[history[-1].observation_id])
-        chains.append({"root": event, "head": history[-1], "history": history})
+            nxt = successor[history[-1].observation_id]
+            if nxt.event_kind == EVENT_WITHDRAWAL:
+                withdrawal = nxt
+                break
+            history.append(nxt)
+        chains.append({"root": event, "head": history[-1], "history": history,
+                       "withdrawal": withdrawal})
     return chains
+
+
+def current_observation_chains(events, interface_id=None):
+    """The CURRENT-chain projection: ``observation_chains`` without withdrawn
+    chains. A withdrawn check stays in the full history but is never a
+    current record."""
+    return [c for c in observation_chains(events, interface_id)
+            if c["withdrawal"] is None]

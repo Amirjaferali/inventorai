@@ -147,13 +147,21 @@ def _run(baseline, mode, out_path, *args):
     assert done.returncode == 0, done.stderr[-4000:]
 
 
+# AMENDED at STAGE15-OBSERVATION-WITHDRAW-01: that later increment changes the
+# observation table on purpose (its own downgrade test pins the change), so the
+# CAP-09 "no schema change" proof compares every OTHER schema object.
+_LATER_CHANGED_TABLES = ("subsystem_interface_observations",)
+
+
 def _schema(path):
     con = sqlite3.connect(path)
     try:
-        master = con.execute("SELECT type, name, tbl_name, sql FROM sqlite_master "
-                             "ORDER BY type, name").fetchall()
+        master = [row for row in con.execute(
+            "SELECT type, name, tbl_name, sql FROM sqlite_master ORDER BY type, name")
+            if row[2] not in _LATER_CHANGED_TABLES]
         fks = {t: con.execute("PRAGMA foreign_key_list(%s)" % t).fetchall()
-               for (t,) in con.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+               for (t,) in con.execute("SELECT name FROM sqlite_master WHERE type = 'table'")
+               if t not in _LATER_CHANGED_TABLES}
     finally:
         con.close()
     return master, fks

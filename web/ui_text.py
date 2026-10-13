@@ -370,6 +370,20 @@ _MESSAGE_KEYS = {
     ("We could not confirm whether your observation was saved. Reload this "
      "page to see what your project holds before entering it again."):
         "UI_S15_OBS_MSG_UNKNOWN",
+    # STAGE15-OBSERVATION-WITHDRAW-01 (web/app.py withdraw_interface_observation).
+    ("This check was withdrawn. It is no longer counted as a current record, "
+     "and it stays in your history: withdrawal is not erasure."):
+        "UI_S15_OBS_MSG_WITHDRAW_SAVED",
+    ("This check could not be withdrawn just now. Nothing was changed."):
+        "UI_S15_OBS_MSG_WITHDRAW_NOT_SAVED",
+    ("Confirm that you want to withdraw this check. Nothing was changed."):
+        "UI_S15_OBS_MSG_WITHDRAW_CONFIRM",
+    ("That check was changed or already withdrawn since this page was shown, "
+     "so nothing was changed. Review the page and try again."):
+        "UI_S15_OBS_MSG_WITHDRAW_STALE",
+    ("We could not confirm whether this check was withdrawn. Reload this page "
+     "to see what your project holds before trying again."):
+        "UI_S15_OBS_MSG_WITHDRAW_UNKNOWN",
     # Stage 15 closure (web/app.py: the dependency on save_interface_preparation
     # and record_integration_evidence).
     ("A dependency must name the two parts of that interaction, or both. No "
@@ -2011,7 +2025,8 @@ UI_STRINGS = {
     },
     "UI_S15_ST_DEPENDENCY": {"en": "Dependency", "ar": "الاعتماد"},
     "UI_S15_ST_CHECKS": {"en": "Your recorded checks", "ar": "الفحوص التي سجّلتها"},
-    "UI_S15_ST_CHECKS_COUNT": {"en": "{count} recorded", "ar": "المُسجَّل: {count}"},
+    # AMENDED at STAGE15-OBSERVATION-WITHDRAW-01: CURRENT checks only.
+    "UI_S15_ST_CHECKS_COUNT": {"en": "{count} current", "ar": "الحالية: {count}"},
     "UI_S15_ST_CHECKS_NOT_EVIDENCE": {
         "en": "(your observations — not evidence, and not counted as evidence)",
         "ar": "(ملاحظاتك — ليست أدلة، ولا تُحتسب أدلة)",
@@ -2186,6 +2201,38 @@ UI_STRINGS = {
     "UI_S15_OBS_MSG_UNKNOWN": {
         "en": "We could not confirm whether your observation was saved. Reload this page to see what your project holds before entering it again.",
         "ar": "تعذّر علينا التأكد مما إذا كانت ملاحظتك قد حُفظت. أعد تحميل الصفحة لترى ما يحتفظ به مشروعك قبل إدخالها مرة أخرى.",
+    },
+    # STAGE15-OBSERVATION-WITHDRAW-01: withdrawing one recorded check.
+    "UI_S15_OBS_WITHDRAW": {"en": "Withdraw this check", "ar": "سحب هذا الفحص"},
+    "UI_S15_OBS_WITHDRAW_NOTE": {
+        "en": "Withdraw a check you recorded by mistake or that should no longer count. It will no longer be counted as a current record, it stays in your history and it cannot be corrected afterwards. Withdrawal is not erasure.",
+        "ar": "اسحب فحصًا سجّلته بالخطأ أو لم يعد ينبغي احتسابه. لن يُحتسب بعد ذلك سجلًّا حاليًا، ويبقى في سجلّك، ولا يمكن تصحيحه بعد السحب. السحب ليس حذفًا.",
+    },
+    "UI_S15_OBS_WITHDRAW_CONFIRM": {"en": "I want to withdraw this check.", "ar": "أريد سحب هذا الفحص."},
+    "UI_S15_OBS_WITHDRAW_BUTTON": {"en": "Withdraw check", "ar": "سحب الفحص"},
+    "UI_S15_OBS_WITHDRAWN": {
+        "en": "Withdrawn by you: kept as history and no longer counted as a current record. Withdrawal is not erasure.",
+        "ar": "سحبته أنت: يُحفظ كسجلّ ولم يعد يُحتسب سجلًّا حاليًا. السحب ليس حذفًا.",
+    },
+    "UI_S15_OBS_MSG_WITHDRAW_SAVED": {
+        "en": "This check was withdrawn. It is no longer counted as a current record, and it stays in your history: withdrawal is not erasure.",
+        "ar": "سُحب هذا الفحص. لم يعد يُحتسب سجلًّا حاليًا، ويبقى في سجلّك: السحب ليس حذفًا.",
+    },
+    "UI_S15_OBS_MSG_WITHDRAW_NOT_SAVED": {
+        "en": "This check could not be withdrawn just now. Nothing was changed.",
+        "ar": "تعذّر سحب هذا الفحص الآن. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_OBS_MSG_WITHDRAW_CONFIRM": {
+        "en": "Confirm that you want to withdraw this check. Nothing was changed.",
+        "ar": "أكّد أنك تريد سحب هذا الفحص. لم يتم تغيير أي شيء.",
+    },
+    "UI_S15_OBS_MSG_WITHDRAW_STALE": {
+        "en": "That check was changed or already withdrawn since this page was shown, so nothing was changed. Review the page and try again.",
+        "ar": "تغيّر هذا الفحص أو سُحب من قبل منذ عرض هذه الصفحة، لذا لم يتم تغيير أي شيء. راجع الصفحة وحاول مرة أخرى.",
+    },
+    "UI_S15_OBS_MSG_WITHDRAW_UNKNOWN": {
+        "en": "We could not confirm whether this check was withdrawn. Reload this page to see what your project holds before trying again.",
+        "ar": "تعذّر علينا التأكد مما إذا كان هذا الفحص قد سُحب. أعد تحميل الصفحة لترى ما يحتفظ به مشروعك قبل المحاولة مرة أخرى.",
     },
     "UI_S15_IFC_ERR_NOT_SAVED": {
         "en": "That interaction could not be saved just now. Nothing was changed.",
