@@ -113,6 +113,25 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
     execution keeps the context frozen when it was first recorded. Nothing
     here is a pass/fail judgement. Its own forms (never nested in the
     planning form), each with its own signed submission identity. -#}
+{#- CAP-09 RESULT WITHDRAW-01: one confirmed, signed withdrawal form per
+    non-withdrawn execution chain (current or no-longer-current experiment).
+    A withdrawn chain stays visible as labelled history with no control. -#}
+{% macro result_withdraw_form(ch) %}
+    <details style="font-size:13px" data-result-withdraw><summary>{{ t('UI_R_WITHDRAW') }}</summary>
+      <form method="POST" action="{{ url_for('withdraw_experiment_result', sid=sid) }}" data-result-withdraw-form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+        <input type="hidden" name="result_withdrawal_submission" value="{{ ch.withdrawal }}">
+        <input type="hidden" name="experiment_id" value="{{ ch.experiment_id }}">
+        <input type="hidden" name="supersedes" value="{{ ch.head_id }}">
+        <p class="criterion-guidance">{{ t('UI_R_WITHDRAW_NOTE') }}</p>
+        <label style="display:block;margin:4px 0"><input type="checkbox" name="withdraw_confirm" value="yes" required> {{ t('UI_R_WITHDRAW_CONFIRM') }}</label>
+        <button type="submit">{{ t('UI_R_WITHDRAW_BUTTON') }}</button>
+      </form>
+    </details>
+{% endmacro %}
+{% macro result_withdrawn_label() %}
+    <p class="criterion-guidance" data-result-withdrawn style="color:#8a5a2c;font-weight:bold">{{ t('UI_R_WITHDRAWN') }}</p>
+{% endmacro %}
 <h2 id="results-heading">{{ t('UI_R_HEADING') }}</h2>
 <div class="results-intro" data-results-intro style="background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:12px;font-size:13px;color:#444;line-height:1.5">{{ t('UI_R_INTRO') }}</div>
 {% if results is not defined %}
@@ -124,8 +143,9 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 <div class="result-exp" data-result-experiment style="border:1px solid #e2e6ea;border-radius:4px;padding:12px 14px;margin-bottom:16px;min-width:0;overflow-wrap:anywhere">
   <div class="result-exp-title" dir="auto" style="font-weight:bold;color:#2c3e50;font-size:14px">{{ exp.experiment_title }}</div>
   {% for ch in res.chains %}
-  <div class="result-chain" data-result-chain style="border-top:1px solid #e2e6ea;margin-top:8px;padding-top:8px">
+  <div class="result-chain" data-result-chain{% if ch.withdrawn %} data-result-chain-withdrawn{% endif %} style="border-top:1px solid #e2e6ea;margin-top:8px;padding-top:8px">
     <div style="font-size:13px;font-weight:bold">{{ t('UI_R_EXECUTION') }} {{ loop.index }}</div>
+    {% if ch.withdrawn %}{{ result_withdrawn_label() }}{% endif %}
     <p style="margin:4px 0;white-space:pre-wrap;font-size:13px" data-result-text><bdi dir="auto">{{ ch.text }}</bdi></p>
     <p class="criterion-guidance" data-result-label>{{ t('UI_R_LABEL') }}</p>
     {% if ch.earlier %}
@@ -140,6 +160,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
         {% for c in ch.context %}<dt style="font-weight:bold">{{ t(c.label_key) }}</dt><dd style="margin:0 12px;white-space:pre-wrap">{% if c.text is not none %}<bdi dir="auto">{{ c.text }}</bdi>{% else %}{{ t('UI_R_CONTEXT_ABSENT') }}{% endif %}</dd>{% endfor %}
       </dl>
     </details>
+    {% if not ch.withdrawn %}
     <details style="font-size:13px"><summary>{{ t('UI_R_CORRECT') }}</summary>
       <form method="POST" action="{{ url_for('record_experiment_result', sid=sid) }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
@@ -151,6 +172,8 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
         <button type="submit">{{ t('UI_R_CORRECT_BUTTON') }}</button>
       </form>
     </details>
+    {{ result_withdraw_form(ch) }}
+    {% endif %}
   </div>
   {% endfor %}
   <form method="POST" action="{{ url_for('record_experiment_result', sid=sid) }}" data-result-record style="margin-top:10px">
@@ -166,7 +189,8 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 {% endfor %}
 {% if results.stale %}
 <div class="stale" data-results-stale>{{ t('UI_R_STALE') }}
-  {% for ch in results.stale %}<p style="white-space:pre-wrap;margin:6px 0"><bdi dir="auto">{{ ch.context_title }}</bdi>: <bdi dir="auto">{{ ch.text }}</bdi></p>{% endfor %}
+  {% for ch in results.stale %}<div data-result-stale-chain{% if ch.withdrawn %} data-result-chain-withdrawn{% endif %}><p style="white-space:pre-wrap;margin:6px 0"><bdi dir="auto">{{ ch.context_title }}</bdi>: <bdi dir="auto">{{ ch.text }}</bdi></p>
+  {% if ch.withdrawn %}{{ result_withdrawn_label() }}{% else %}{{ result_withdraw_form(ch) }}{% endif %}</div>{% endfor %}
 </div>
 {% endif %}
 {% endif %}

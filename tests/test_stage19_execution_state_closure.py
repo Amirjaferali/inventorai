@@ -344,8 +344,10 @@ def test_e23_the_canonical_owners_are_untouched_by_the_closure():
     owner = open(os.path.join(_ROOT, "engine", "experiment_result.py"), encoding="utf-8").read()
     # Stage 35 first slice (implementation contract §2.3 E3): the ONE authorized later
     # addition to the Result owner is the moved execution-state derivation, appended as
-    # one marked block (two constants' worth of tokens and ONE function). Everything
-    # before it stays exactly as the Stage-19 closure left it.
+    # one marked block (two constants' worth of tokens and ONE function). The second
+    # authorized change is CAP-09 RESULT WITHDRAW-01 (terminal withdrawal and the
+    # current-chain projection, which the execution-state count now uses); neither
+    # moves execution-state vocabulary out of that block.
     assert owner.count("# Stage 35 E3") == 1
     owner, e3 = owner.split("# Stage 35 E3")
     assert e3.count("\ndef ") == 1 and "def execution_states(events, experiment_ids):" in e3

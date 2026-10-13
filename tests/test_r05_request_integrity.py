@@ -42,6 +42,9 @@ MUTATIONS = (
     "/session/<sid>/interface-preparation",
     # CAP-09 Result Event Slice 1: the inventor's append-only experiment result.
     "/session/<sid>/experiment-result",
+    # CAP-09 RESULT WITHDRAW-01: the inventor's terminal withdrawal of one
+    # recorded execution (append-only; confirmed and target-signed).
+    "/session/<sid>/experiment-result/withdraw",
     # Stage 15 Slice 4: the inventor's append-only interface observation.
     "/session/<sid>/interface-observation",
     # Stage 15 closure: Integration evidence anchored to one declared interaction.

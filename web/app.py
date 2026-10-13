@@ -14249,8 +14249,9 @@ _RESULT_NOT_CURRENT_MESSAGE = (
     "That experiment is not part of the current plan, so no result can be "
     "recorded or corrected for it here. Nothing was changed.")
 _RESULT_STALE_TARGET_MESSAGE = (
-    "That result has already been corrected, or it does not belong to this "
-    "experiment, so nothing was saved. Review the page and try again.")
+    "That result has already been corrected or withdrawn, or it does not "
+    "belong to this experiment, so nothing was saved. Review the page and try "
+    "again.")
 _RESULT_UNKNOWN_MESSAGE = (
     "We could not confirm whether your result was saved. Reload this page to "
     "see what your project holds before entering it again.")
@@ -14273,6 +14274,76 @@ def _result_action_key(sid, nonce):
     (project, submission nonce) ONLY — never over the text, so the SAME
     identity with ANY different payload is detectable."""
     msg = _canonical_message("cap09-result-action-v1", sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+# --- CAP-09 RESULT WITHDRAW-01 ----------------------------------------------
+# The inventor may WITHDRAW one recorded execution — of a current or of a
+# no-longer-current experiment — so it no longer counts as a current record.
+# ONE terminal append-only event (engine/experiment_result.py) superseding the
+# chain's current head; the whole chain stays in the history (withdrawal is not
+# erasure) and nothing may follow it. Each withdrawal form carries its own
+# ACTION-SPECIFIC signed identity bound to (project, nonce, experiment, head),
+# so a tampered or re-targeted form verifies as nothing; its durable key is
+# derived under its own message, never shared with the record action.
+_RESULT_WITHDRAWAL_DOMAIN = "cap09-result-withdrawal-v1"
+_RESULT_WITHDRAW_CONFIRM_VALUE = "yes"
+_RESULT_WITHDRAW_SAVED_MESSAGE = (
+    "This execution was withdrawn. It is no longer counted as a current "
+    "record, and it stays in your history: withdrawal is not erasure.")
+_RESULT_WITHDRAW_NOT_SAVED_MESSAGE = (
+    "This execution could not be withdrawn just now. Nothing was changed.")
+_RESULT_WITHDRAW_CONFIRM_MESSAGE = (
+    "Confirm that you want to withdraw this execution. Nothing was changed.")
+_RESULT_WITHDRAW_STALE_MESSAGE = (
+    "That execution was changed or already withdrawn since this page was "
+    "shown, so nothing was changed. Review the page and try again.")
+_RESULT_WITHDRAW_UNKNOWN_MESSAGE = (
+    "We could not confirm whether this execution was withdrawn. Reload this "
+    "page to see what your project holds before trying again.")
+
+
+def _result_withdrawal_sig(sid, nonce, experiment_id, head_id):
+    return _p2a_hmac.new(
+        _answer_secret(),
+        _canonical_message(_RESULT_WITHDRAWAL_DOMAIN, sid, nonce,
+                           experiment_id, head_id),
+        _p2a_hashlib.sha256).hexdigest()
+
+
+def _result_withdrawal_identity(sid, experiment_id, head_id):
+    """A fresh signed withdrawal identity for ONE rendered withdrawal form,
+    bound to this project, this experiment and this chain head."""
+    nonce = secrets.token_hex(16)
+    return nonce + "." + _result_withdrawal_sig(sid, nonce, experiment_id, head_id)
+
+
+def _verified_result_withdrawal(sid, raw, experiment_id, head_id):
+    """The nonce of a withdrawal identity signed for exactly this project,
+    experiment and head, or None (missing, malformed, tampered, another
+    project, another target). Stateless; never raises."""
+    try:
+        if not (isinstance(raw, str) and len(raw) <= 256
+                and isinstance(experiment_id, str) and isinstance(head_id, str)):
+            return None
+        nonce, sep, sig = raw.partition(".")
+        if not sep or len(nonce) != 32 or any(
+                ch not in "0123456789abcdef" for ch in nonce):
+            return None
+        expected = _result_withdrawal_sig(sid, nonce, experiment_id, head_id)
+        if not _p2a_hmac.compare_digest(sig.encode("utf-8"),
+                                        expected.encode("ascii")):
+            return None
+        return nonce
+    except Exception:
+        return None
+
+
+def _result_withdrawal_key(sid, nonce):
+    """The durable idempotent identity of ONE withdrawal submission, under
+    its own message (never equal to a record-action key)."""
+    msg = _canonical_message("cap09-result-withdrawal-action-v1", sid, nonce)
     return _p2a_hmac.new(_answer_secret(), msg,
                          _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
 
@@ -14315,8 +14386,12 @@ def _results_view(sid, plan, drafts=None):
     drafts = drafts or {}
 
     def chain_view(chain, current):
+        # FULL history: a withdrawn chain is shown, labelled, with its
+        # observations only (the owner never puts the withdrawal event in
+        # ``history``) and with no further correction or withdrawal control.
         root, head = chain["root"], chain["head"]
         ctx = root.context
+        withdrawn = chain["withdrawal"] is not None
         return {
             "text": head.result_text,
             "earlier": [e.result_text for e in chain["history"][:-1]],
@@ -14324,8 +14399,13 @@ def _results_view(sid, plan, drafts=None):
             "context_source": ctx.source_basis,
             "context": [{"label_key": key, "text": getattr(ctx, field)}
                         for field, key in _RESULT_CONTEXT_KEYS],
+            "experiment_id": root.experiment_id,
             "head_id": head.result_event_id,
-            "submission": _result_submission_identity(sid) if current else None,
+            "withdrawn": withdrawn,
+            "submission": (_result_submission_identity(sid)
+                           if current and not withdrawn else None),
+            "withdrawal": (None if withdrawn else _result_withdrawal_identity(
+                sid, root.experiment_id, head.result_event_id)),
             "draft": drafts.get("fix:" + head.result_event_id),
         }
     current_ids = [it["experiment_id"] for it in (plan or {}).get("items", [])]
@@ -14338,7 +14418,7 @@ def _results_view(sid, plan, drafts=None):
             "submission": _result_submission_identity(sid),
             "draft": drafts.get("new:" + eid),
         }
-    stale = [dict(chain_view(c, False), experiment_id=c["root"].experiment_id)
+    stale = [chain_view(c, False)
              for c in _experiment_result.result_chains(events)
              if c["root"].experiment_id not in current_ids]
     return {"by_experiment": by_experiment, "stale": stale}
@@ -14350,8 +14430,11 @@ def _results_view(sid, plan, drafts=None):
 # SAME committed, wholly validated Result history the planning page reads, keyed
 # ONLY by the canonical ``experiment_id``; it never enters the canonical
 # deliverable package and never discloses result text, earlier entries, frozen
-# context or identifiers. ``count`` is the number of execution ROOTS
-# (``result_chains``): a correction never adds one, an independent retest does.
+# context or identifiers. ``count`` is the number of CURRENT execution ROOTS
+# (``current_result_chains``): a correction never adds one, an independent
+# retest does and a withdrawal (CAP-09 RESULT WITHDRAW-01) removes its
+# execution, so NONE means zero CURRENT records, never "nothing was ever
+# recorded"; no withdrawal detail is disclosed here.
 # Nothing here compares, grades or interprets a result.
 _EXECUTION_NONE = _experiment_result.EXECUTION_NONE
 _EXECUTION_RECORDED = _experiment_result.EXECUTION_RECORDED
@@ -14363,8 +14446,8 @@ _EXECUTION_UNAVAILABLE = _experiment_result.EXECUTION_UNAVAILABLE
 # Category-C exception), so they are deliberately NOT in the web/ui_text.py
 # catalogue. Only the row label is interface chrome (UI_S11_EXECUTION_LABEL).
 S11_EXECUTION_TEXT = {
-    _EXECUTION_NONE: "No result recorded.",
-    _EXECUTION_RECORDED: ("You recorded {n} execution(s). These are your own recorded observations. "
+    _EXECUTION_NONE: "No current recorded execution.",
+    _EXECUTION_RECORDED: ("You have {n} current recorded execution(s). These are your own recorded observations. "
                           "InventorAI has not checked them and they are not a pass/fail judgement."),
     _EXECUTION_UNAVAILABLE: ("Your recorded results could not be read, so whether this experiment has "
                              "recorded executions cannot be shown."),
@@ -14508,7 +14591,16 @@ def record_experiment_result(sid):
         return _get_store().committed_result_event_for_submission(sid, key)
 
     def matches(stored):
-        return (stored.experiment_id == experiment_id
+        # The ACTION kind is compared too: a stored withdrawal never confirms
+        # a record or correction, whatever its text.
+        try:
+            kind = _experiment_result.event_kind(stored)
+        except _experiment_result.ResultEventError:
+            return False
+        expected = (_experiment_result.EVENT_ROOT if target is None
+                    else _experiment_result.EVENT_CORRECTION)
+        return (kind == expected
+                and stored.experiment_id == experiment_id
                 and stored.supersedes_result_event_id == target
                 and stored.result_text == text)
 
@@ -14558,6 +14650,85 @@ def record_experiment_result(sid):
         if prior is None or not matches(prior):
             return refuse(_RESULT_NOT_SAVED_MESSAGE, code=503)
     return _render_criteria(sid, plan, notice=_RESULT_SAVED_MESSAGE)
+
+
+@app.route("/session/<sid>/experiment-result/withdraw", methods=["POST"])
+def withdraw_experiment_result(sid):
+    """CAP-09 RESULT WITHDRAW-01 — withdraw ONE recorded execution (of a
+    current OR a no-longer-current experiment) by appending ONE terminal
+    withdrawal event to the current head of its chain. Order: request
+    integrity (global guard) -> authorization -> explicit confirmation ->
+    action-specific signed (project, experiment, head) binding -> the
+    committed outcome of THIS submission, read after the WHOLE committed
+    history validated, resolved first (an exact retry writes nothing and
+    never depends on capacity, head or plan) -> ONE durable append whose
+    target membership, head and terminality are re-checked inside the
+    serialized write transaction -> confirm-by-reload. No current-plan
+    membership is required: withdrawing creates no root and no correction."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    experiment_id = request.form.get("experiment_id", "")
+    target = request.form.get("supersedes", "")
+    loaded = []
+
+    def current_plan():
+        if not loaded:
+            loaded.append(_current_criteria_context(sid))
+        return loaded[0]
+
+    def render(message=None, code=200, notice=None):
+        status, plan = current_plan()
+        if status != _SC_OK:
+            return _render_criteria(sid, None, status=code, error=message,
+                                    notice=notice or _SC_STATUS_MESSAGE[status][0])
+        return _render_criteria(sid, plan, status=code, error=message, notice=notice)
+
+    if request.form.get("withdraw_confirm", "") != _RESULT_WITHDRAW_CONFIRM_VALUE:
+        return render(_RESULT_WITHDRAW_CONFIRM_MESSAGE, code=400)
+    nonce = _verified_result_withdrawal(
+        sid, request.form.get("result_withdrawal_submission", ""),
+        experiment_id, target)
+    if nonce is None:
+        return render(_RESULT_WITHDRAW_NOT_SAVED_MESSAGE, code=400)
+    key = _result_withdrawal_key(sid, nonce)
+
+    def committed():
+        return _get_store().committed_result_event_for_submission(sid, key)
+
+    def matches(stored):
+        return (_experiment_result.is_withdrawal(stored)
+                and stored.experiment_id == experiment_id
+                and stored.supersedes_result_event_id == target)
+
+    try:
+        prior = committed()
+    except Exception:
+        return _render_criteria(sid, None, status=503,
+                                notice=_RESULT_WITHDRAW_UNKNOWN_MESSAGE)
+    if prior is not None:
+        if matches(prior):
+            return render(notice=_RESULT_WITHDRAW_SAVED_MESSAGE)
+        return render(_RESULT_WITHDRAW_NOT_SAVED_MESSAGE, code=400)
+    try:
+        event = _experiment_result.recorded_withdrawal(experiment_id, target)
+    except _experiment_result.ResultEventError:
+        return render(_RESULT_WITHDRAW_STALE_MESSAGE, code=400)
+    try:
+        _get_store().append_result_event(sid, event, key)
+    except _ResultEventRejected:
+        return render(_RESULT_WITHDRAW_STALE_MESSAGE, code=400)
+    except _ResultEventConflict:
+        return render(_RESULT_WITHDRAW_NOT_SAVED_MESSAGE, code=400)
+    except Exception:
+        # Never assume an outcome: decide from committed durable truth only.
+        try:
+            prior = committed()
+        except Exception:
+            return _render_criteria(sid, None, status=503,
+                                    notice=_RESULT_WITHDRAW_UNKNOWN_MESSAGE)
+        if prior is None or not matches(prior):
+            return render(_RESULT_WITHDRAW_NOT_SAVED_MESSAGE, code=503)
+    return render(notice=_RESULT_WITHDRAW_SAVED_MESSAGE)
 
 
 @app.route("/session/<sid>/success-criteria", methods=["POST"])
