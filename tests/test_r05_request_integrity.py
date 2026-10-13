@@ -47,6 +47,9 @@ MUTATIONS = (
     "/session/<sid>/experiment-result/withdraw",
     # Stage 15 Slice 4: the inventor's append-only interface observation.
     "/session/<sid>/interface-observation",
+    # STAGE15-OBSERVATION-WITHDRAW-01: the inventor's terminal withdrawal of
+    # one recorded check (append-only; confirmed and target-signed).
+    "/session/<sid>/interface-observation/withdraw",
     # Stage 15 closure: Integration evidence anchored to one declared interaction.
     "/session/<sid>/integration-evidence",
     # Stage 28 Optional Part Slice 2: the inventor's current answers about an

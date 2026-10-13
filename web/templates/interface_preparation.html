@@ -82,7 +82,7 @@ label.dep-opt{display:block;margin:4px 0;font-size:13px}
     <dt>{{ t('UI_S15_ST_DEPENDENCY') }}</dt>
     <dd data-status-dependency>{% if ifc.dependency is none %}{{ t('UI_S15_ST_UNAVAILABLE') }}{% elif not ifc.dependency.declared %}{{ t('UI_S15_DEP_NOT_DECLARED') }}{% elif ifc.dependency.kind == 'mutual' %}{{ t('UI_S15_DEP_MUTUAL') }}{% else %}<bdi dir="auto">{{ ifc.dependency.dependent }}</bdi> {{ t('UI_S15_DEP_RELIES_ON') }} <bdi dir="auto">{{ ifc.dependency.depends_on }}</bdi>{% endif %}{% if ifc.dependency and ifc.dependency.note %} — <bdi dir="auto">{{ ifc.dependency.note }}</bdi>{% endif %}</dd>
     <dt>{{ t('UI_S15_ST_CHECKS') }}</dt>
-    <dd data-status-checks>{% if observations is none %}{{ t('UI_S15_ST_UNAVAILABLE') }}{% else %}{{ t('UI_S15_ST_CHECKS_COUNT').format(count=observations[ifc.interface_id].chains|length) }}{% endif %} {{ t('UI_S15_ST_CHECKS_NOT_EVIDENCE') }}</dd>
+    <dd data-status-checks>{% if observations is none %}{{ t('UI_S15_ST_UNAVAILABLE') }}{% else %}{{ t('UI_S15_ST_CHECKS_COUNT').format(count=observations[ifc.interface_id].current_count) }}{% endif %} {{ t('UI_S15_ST_CHECKS_NOT_EVIDENCE') }}</dd>
     <dt>{{ t('UI_S15_ST_EVIDENCE') }}</dt>
     <dd data-status-evidence>{% if integration is none %}{{ t('UI_S15_ST_UNAVAILABLE') }}{% else %}{% set ev = integration.by_interface[ifc.interface_id] %}{{ t('UI_S15_ST_EVIDENCE_COUNT').format(count=ev.active|length) }}{% if ev.history %} {{ t('UI_S15_ST_EVIDENCE_HISTORY').format(count=ev.history) }}{% endif %}{% endif %}</dd>
   </dl>
@@ -143,6 +143,9 @@ label.dep-opt{display:block;margin:4px 0;font-size:13px}
     actually used). Nothing here is a verdict, a criterion comparison or a
     verification. Its own forms (never nested in the preparation form), each
     with its own signed submission identity; they never save preparation. -#}
+{#- STAGE15-OBSERVATION-WITHDRAW-01: one confirmed, signed withdrawal form per
+    non-withdrawn check chain; a withdrawn chain stays visible as labelled
+    history with no correction or withdrawal control. -#}
 <h2 id="observations-heading">{{ t('UI_S15_OBS_HEADING') }}</h2>
 <div class="intro" data-obs-intro>
   <p style="margin:0 0 6px 0">{{ t('UI_S15_OBS_INTRO') }}</p>
@@ -159,8 +162,9 @@ label.dep-opt{display:block;margin:4px 0;font-size:13px}
   <p class="ifc-desc">{{ t('UI_S15_IFC_DESCRIPTION') }} <bdi dir="auto">{{ ifc.description }}</bdi></p>
   {% if not obs.chains %}<p class="guidance" data-obs-none>{{ t('UI_S15_OBS_NONE') }}</p>{% endif %}
   {% for ch in obs.chains %}
-  <div class="obs-chain" data-obs-chain>
+  <div class="obs-chain" data-obs-chain{% if ch.withdrawn %} data-obs-chain-withdrawn{% endif %}>
     <div style="font-size:13px;font-weight:bold">{{ t('UI_S15_OBS_CHECK') }} {{ loop.index }}</div>
+    {% if ch.withdrawn %}<p class="guidance" data-obs-withdrawn style="color:#8a5a2c;font-weight:bold">{{ t('UI_S15_OBS_WITHDRAWN') }}</p>{% endif %}
     <p class="obs-text" data-obs-text><bdi dir="auto">{{ ch.text }}</bdi></p>
     <p class="guidance" data-obs-label>{{ t('UI_S15_OBS_LABEL') }}</p>
     {% if ch.earlier %}
@@ -176,6 +180,7 @@ label.dep-opt{display:block;margin:4px 0;font-size:13px}
         </dl>
       </div>
     </details>
+    {% if not ch.withdrawn %}
     <details><summary>{{ t('UI_S15_OBS_CORRECT') }}</summary>
       <form method="POST" action="{{ url_for('record_interface_observation', sid=sid) }}" data-obs-correct>
         <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
@@ -187,6 +192,18 @@ label.dep-opt{display:block;margin:4px 0;font-size:13px}
         <button type="submit">{{ t('UI_S15_OBS_CORRECT_BUTTON') }}</button>
       </form>
     </details>
+    <details data-obs-withdraw><summary>{{ t('UI_S15_OBS_WITHDRAW') }}</summary>
+      <form method="POST" action="{{ url_for('withdraw_interface_observation', sid=sid) }}" data-obs-withdraw-form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+        <input type="hidden" name="observation_withdrawal_submission" value="{{ ch.withdrawal }}">
+        <input type="hidden" name="interface_id" value="{{ ifc.interface_id }}">
+        <input type="hidden" name="supersedes" value="{{ ch.head_id }}">
+        <p class="guidance">{{ t('UI_S15_OBS_WITHDRAW_NOTE') }}</p>
+        <label style="display:block;margin:4px 0"><input type="checkbox" name="withdraw_confirm" value="yes" required> {{ t('UI_S15_OBS_WITHDRAW_CONFIRM') }}</label>
+        <button type="submit">{{ t('UI_S15_OBS_WITHDRAW_BUTTON') }}</button>
+      </form>
+    </details>
+    {% endif %}
   </div>
   {% endfor %}
   <form method="POST" action="{{ url_for('record_interface_observation', sid=sid) }}" data-obs-record style="margin-top:10px">

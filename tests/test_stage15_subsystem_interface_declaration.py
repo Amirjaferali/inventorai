@@ -1140,10 +1140,12 @@ def test_focus_is_immutable_and_no_focus_route_exists(client):
     rules = [str(r) for r in appmod.app.url_map.iter_rules()]
     assert not any("focus" in r for r in rules)
     # Stage 15 Slice 3 adds exactly ONE more interface path (its GET page and
-    # POST save) and Stage 15 Slice 4 exactly one observation POST; still no
+    # POST save) and Stage 15 Slice 4 exactly one observation POST;
+    # STAGE15-OBSERVATION-WITHDRAW-01 exactly one withdrawal POST; still no
     # focus route.
     assert sorted({r for r in rules if "interface" in r}) == [
         "/session/<sid>/declare-interface", "/session/<sid>/interface-observation",
+        "/session/<sid>/interface-observation/withdraw",
         "/session/<sid>/interface-preparation"]
 
 

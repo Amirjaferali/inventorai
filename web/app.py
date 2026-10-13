@@ -1778,6 +1778,21 @@ S15_OBS_CAP_MESSAGE = (
 S15_OBS_UNKNOWN_MESSAGE = (
     "We could not confirm whether your observation was saved. Reload this "
     "page to see what your project holds before entering it again.")
+# STAGE15-OBSERVATION-WITHDRAW-01: withdrawing one recorded check
+# (withdraw_interface_observation). Registered in `ui_text._MESSAGE_KEYS`.
+S15_OBS_WITHDRAW_SAVED_MESSAGE = (
+    "This check was withdrawn. It is no longer counted as a current record, "
+    "and it stays in your history: withdrawal is not erasure.")
+S15_OBS_WITHDRAW_NOT_SAVED_MESSAGE = (
+    "This check could not be withdrawn just now. Nothing was changed.")
+S15_OBS_WITHDRAW_CONFIRM_MESSAGE = (
+    "Confirm that you want to withdraw this check. Nothing was changed.")
+S15_OBS_WITHDRAW_STALE_MESSAGE = (
+    "That check was changed or already withdrawn since this page was shown, "
+    "so nothing was changed. Review the page and try again.")
+S15_OBS_WITHDRAW_UNKNOWN_MESSAGE = (
+    "We could not confirm whether this check was withdrawn. Reload this page "
+    "to see what your project holds before trying again.")
 
 CORRECTION_APPLIED_ACK = (
     "Your earlier answer was withdrawn and kept in the project history. "
@@ -9768,6 +9783,56 @@ def _s15_observation_action_key(sid, nonce):
                          _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
 
 
+# STAGE15-OBSERVATION-WITHDRAW-01 — each withdrawal form carries its own
+# ACTION-SPECIFIC signed identity bound to (project, nonce, interface, expected
+# head), so a tampered or re-targeted form verifies as nothing; its durable key
+# is derived under its own message, never shared with the record action.
+_S15_OBS_WITHDRAWAL_DOMAIN = "s15-observation-withdrawal-v1"
+_S15_OBS_WITHDRAW_CONFIRM_VALUE = "yes"
+
+
+def _s15_obs_withdrawal_sig(sid, nonce, interface_id, head_id):
+    return _p2a_hmac.new(
+        _answer_secret(),
+        _canonical_message(_S15_OBS_WITHDRAWAL_DOMAIN, sid, nonce,
+                           interface_id, head_id),
+        _p2a_hashlib.sha256).hexdigest()
+
+
+def _s15_obs_withdrawal_identity(sid, interface_id, head_id):
+    """A fresh signed withdrawal identity for ONE rendered withdrawal form."""
+    nonce = secrets.token_hex(16)
+    return nonce + "." + _s15_obs_withdrawal_sig(sid, nonce, interface_id, head_id)
+
+
+def _verified_s15_obs_withdrawal(sid, raw, interface_id, head_id):
+    """The nonce of a withdrawal identity signed for exactly this project,
+    interface and expected head, or None. Stateless; never raises."""
+    try:
+        if not (isinstance(raw, str) and len(raw) <= 256
+                and isinstance(interface_id, str) and isinstance(head_id, str)):
+            return None
+        nonce, sep, sig = raw.partition(".")
+        if not sep or len(nonce) != 32 or any(
+                ch not in "0123456789abcdef" for ch in nonce):
+            return None
+        expected = _s15_obs_withdrawal_sig(sid, nonce, interface_id, head_id)
+        if not _p2a_hmac.compare_digest(sig.encode("utf-8"),
+                                        expected.encode("ascii")):
+            return None
+        return nonce
+    except Exception:
+        return None
+
+
+def _s15_obs_withdrawal_key(sid, nonce):
+    """The durable idempotent identity of ONE withdrawal submission, under its
+    own message (never equal to a record-action key)."""
+    msg = _canonical_message("s15-observation-withdrawal-action-v1", sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
 def _s15_observations_view(sid, context, drafts=None):
     """The observation presentation of the preparation page, read from
     committed durable truth: per durable interaction its check chains in root
@@ -9784,7 +9849,12 @@ def _s15_observations_view(sid, context, drafts=None):
     drafts = {k: v.replace("\x00", "") for k, v in (drafts or {}).items()}
 
     def chain_view(chain):
+        # FULL history (STAGE15-OBSERVATION-WITHDRAW-01): a withdrawn chain is
+        # shown, labelled, with its last observation, earlier text and frozen
+        # context, and with no correction or withdrawal control; the owner
+        # never puts the withdrawal event in ``history``.
         head, ctx = chain["head"], chain["root"].context
+        withdrawn = chain["withdrawal"] is not None
         return {
             "text": head.observation_text,
             "earlier": [e.observation_text for e in chain["history"][:-1]],
@@ -9792,7 +9862,11 @@ def _s15_observations_view(sid, context, drafts=None):
                          "text": getattr(ctx, f)}
                         for f in _interface_observation.CONTEXT_FIELDS],
             "head_id": head.observation_id,
-            "submission": _s15_observation_submission_identity(sid),
+            "withdrawn": withdrawn,
+            "submission": (None if withdrawn
+                           else _s15_observation_submission_identity(sid)),
+            "withdrawal": (None if withdrawn else _s15_obs_withdrawal_identity(
+                sid, chain["root"].interface_id, head.observation_id)),
             "draft": drafts.get("fix:" + head.observation_id),
         }
     view = {}
@@ -9801,10 +9875,93 @@ def _s15_observations_view(sid, context, drafts=None):
         view[iid] = {
             "chains": [chain_view(c) for c in
                        _interface_observation.observation_chains(events, iid)],
+            # CURRENT checks only: a withdrawn check is history, not a record.
+            "current_count": len(
+                _interface_observation.current_observation_chains(events, iid)),
             "submission": _s15_observation_submission_identity(sid),
             "draft": drafts.get("new:" + iid),
         }
     return view
+
+
+@app.route("/session/<sid>/interface-observation/withdraw", methods=["POST"])
+def withdraw_interface_observation(sid):
+    """STAGE15-OBSERVATION-WITHDRAW-01 — withdraw ONE recorded check by
+    appending ONE terminal withdrawal to the current head of its chain.
+    Order: request integrity (global guard) -> authorization -> explicit
+    confirmation -> action-specific signed (project, interface, expected head)
+    binding -> the committed outcome of THIS submission, read after the WHOLE
+    committed history validated, resolved first (an exact retry writes
+    nothing and never depends on capacity, head or page reads) -> ONE durable
+    append through the existing writer, whose membership, current head,
+    terminality and capacity are re-checked inside the serialized write ->
+    confirm-by-reload. Never saves, changes or clears preparation."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    interface_id = request.form.get("interface_id", "")
+    target = request.form.get("supersedes", "")
+    loaded = []
+
+    def current_context():
+        if not loaded:
+            loaded.append(_s15_preparation_context(sid))
+        return loaded[0]
+
+    def render(message=None, code=200, notice=None):
+        status, context = current_context()
+        if status != _S15_PREP_OK:
+            return _render_interface_preparation(
+                sid, None, status=code, error=message,
+                notice=notice or _S15_PREP_STATUS_MESSAGE[status][0])
+        return _render_interface_preparation(sid, context, status=code,
+                                             error=message, notice=notice)
+
+    if request.form.get("withdraw_confirm", "") != _S15_OBS_WITHDRAW_CONFIRM_VALUE:
+        return render(S15_OBS_WITHDRAW_CONFIRM_MESSAGE, code=400)
+    nonce = _verified_s15_obs_withdrawal(
+        sid, request.form.get("observation_withdrawal_submission", ""),
+        interface_id, target)
+    if nonce is None:
+        return render(S15_OBS_WITHDRAW_NOT_SAVED_MESSAGE, code=400)
+    key = _s15_obs_withdrawal_key(sid, nonce)
+
+    def committed():
+        return _get_store().committed_interface_observation_for_submission(sid, key)
+
+    def matches(stored):
+        return (stored.event_kind == _interface_observation.EVENT_WITHDRAWAL
+                and stored.interface_id == interface_id
+                and stored.supersedes_observation_id == target)
+
+    try:
+        prior = committed()
+    except Exception:
+        return _render_interface_preparation(
+            sid, None, status=503, notice=S15_OBS_WITHDRAW_UNKNOWN_MESSAGE)
+    if prior is not None:
+        if matches(prior):
+            return render(notice=S15_OBS_WITHDRAW_SAVED_MESSAGE)
+        return render(S15_OBS_WITHDRAW_NOT_SAVED_MESSAGE, code=400)
+    try:
+        event = _interface_observation.recorded_withdrawal(interface_id, target)
+    except _interface_observation.ObservationError:
+        return render(S15_OBS_WITHDRAW_STALE_MESSAGE, code=400)
+    try:
+        _get_store().append_interface_observation(sid, event, key)
+    except _InterfaceObservationRejected:
+        return render(S15_OBS_WITHDRAW_STALE_MESSAGE, code=400)
+    except _InterfaceObservationConflict:
+        return render(S15_OBS_WITHDRAW_NOT_SAVED_MESSAGE, code=400)
+    except Exception:
+        # Never assume an outcome: decide from committed durable truth only.
+        try:
+            prior = committed()
+        except Exception:
+            return _render_interface_preparation(
+                sid, None, status=503, notice=S15_OBS_WITHDRAW_UNKNOWN_MESSAGE)
+        if prior is None or not matches(prior):
+            return render(S15_OBS_WITHDRAW_NOT_SAVED_MESSAGE, code=503)
+    return render(notice=S15_OBS_WITHDRAW_SAVED_MESSAGE)
 
 
 # --- STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 ---------------------------
@@ -10010,7 +10167,10 @@ def record_interface_observation(sid):
         return _get_store().committed_interface_observation_for_submission(sid, key)
 
     def matches(stored):
-        return (stored.interface_id == interface_id
+        # The ACTION kind is compared too: a stored withdrawal never confirms
+        # a record or correction, whatever its text.
+        return (stored.event_kind == _interface_observation.EVENT_OBSERVATION
+                and stored.interface_id == interface_id
                 and stored.supersedes_observation_id == target
                 and stored.observation_text == text)
 

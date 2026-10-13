@@ -116,7 +116,7 @@ def _events(sid):
 
 def _rows(sid):
     _store()
-    return _raw("SELECT * FROM %s WHERE project_id = ? ORDER BY observation_seq" % TABLE,
+    return _raw("SELECT * FROM %s WHERE project_id = ? ORDER BY observation_event_seq" % TABLE,
                 (sid,))
 
 
@@ -433,7 +433,7 @@ def test_a_partial_preparation_freezes_exact_present_and_absent_values(client):
     _observe(client, sid, _record_form(client, sid, iid), OBS)
     [root] = _events(sid)
     assert root.context == io.ObservationContext(None, ACCEPT, None)
-    ctx_cols = _rows(sid)[0][8:]
+    ctx_cols = _rows(sid)[0][8:11]
     assert ctx_cols == (None, ACCEPT, None)                        # explicit NULL absence
 
 
@@ -445,7 +445,7 @@ def test_a_root_with_all_three_preparation_inputs_absent_is_valid(client):
     [root] = _events(sid)
     assert root.supersedes_observation_id is None
     assert root.context == io.ObservationContext(None, None, None)  # no placeholder
-    assert _rows(sid)[0][5] is None and _rows(sid)[0][8:] == (None, None, None)
+    assert _rows(sid)[0][5] is None and _rows(sid)[0][8:11] == (None, None, None)
     assert io.validate_observation_history([root]) == (root,)
     page = _page(client, sid)
     assert page.count(ui_text.text("UI_S15_OBS_CONTEXT_ABSENT", "en")) == 3
@@ -478,7 +478,7 @@ def test_later_preparation_edits_never_rewrite_frozen_context_and_corrections_ad
     _observe(client, sid, _correct_form(client, sid, root.observation_id), OBS2)
     root2, fix = _events(sid)
     assert root2.context == io.ObservationContext(COND, None, EVID)   # history untouched
-    assert fix.context is None and _rows(sid)[1][8:] == (None, None, None)
+    assert fix.context is None and _rows(sid)[1][8:11] == (None, None, None)
     page = _page(client, sid)
     assert COND in page and EVID in page
     assert ui_text.text("UI_S15_OBS_CONTEXT_NOTE", "en") in page
@@ -573,10 +573,10 @@ def test_malformed_history_fails_only_the_observation_surface_closed(client):
 
 
 @pytest.mark.parametrize("mutation", [
-    "UPDATE {t} SET observation_seq = observation_seq + 5 WHERE project_id = ?",
+    "UPDATE {t} SET observation_event_seq = observation_event_seq + 5 WHERE project_id = ?",
     "UPDATE {t} SET ctx_operating_conditions = 'x' WHERE project_id = ? AND supersedes_observation_id IS NOT NULL",
-    "UPDATE {t} SET supersedes_observation_id = observation_id WHERE project_id = ? AND observation_seq = 1",
-    "UPDATE {t} SET observation_id = 'obs-zz' WHERE project_id = ? AND observation_seq = 1",
+    "UPDATE {t} SET supersedes_observation_id = observation_id WHERE project_id = ? AND observation_event_seq = 1",
+    "UPDATE {t} SET observation_id = 'obs-zz' WHERE project_id = ? AND observation_event_seq = 1",
 ])
 def test_every_malformed_durable_row_fails_the_whole_history_closed(client, mutation):
     sid, ifc = _integrated_with_interface(client)
@@ -673,10 +673,12 @@ def test_migration_is_additive_idempotent_and_never_backfills(tmp_path):
         assert conn.execute("SELECT * FROM subsystem_interface_preparations").fetchall() == before
     finally:
         conn.close()
-    assert cols == ["project_id", "observation_seq", "observation_id", "interface_id",
+    # AMENDED at STAGE15-OBSERVATION-WITHDRAW-01: the order column is renamed
+    # (the downgrade guard) and ONE closed ``event_kind`` column is added.
+    assert cols == ["project_id", "observation_event_seq", "observation_id", "interface_id",
                     "observation_text", "supersedes_observation_id", "submission_key",
                     "recorded_at", "ctx_operating_conditions", "ctx_acceptance_criterion",
-                    "ctx_evidence_needed"]
+                    "ctx_evidence_needed", "event_kind"]
     assert {"subsystem_interface_observations_id_uq",
             "subsystem_interface_observations_successor_uq"} <= indexes
     for banned in ("outcome", "status", "verdict", "pass", "fail", "valid", "quality",
@@ -685,6 +687,9 @@ def test_migration_is_additive_idempotent_and_never_backfills(tmp_path):
 
 
 def test_no_update_delete_or_withdraw_writer_exists():
+    # AMENDED at STAGE15-OBSERVATION-WITHDRAW-01: withdrawal is NOT a separate
+    # writer — it is one more row appended through the SAME single INSERT of
+    # ``append_interface_observation``; there is still no UPDATE or DELETE.
     source = open(os.path.join("engine", "record_store.py"), encoding="utf-8").read()
     assert not re.search(r"UPDATE\s+%s" % TABLE, source)
     assert not re.search(r"DELETE\s+FROM\s+%s" % TABLE, source)
