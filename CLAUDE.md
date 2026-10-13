@@ -625,6 +625,10 @@ evidence; the Master Execution Roadmap; the Operating Checklist; the current suc
 handover and Lead Watchlist. Roadmap, checklist, handover and watchlist are continuity aids,
 never independent execution authority.
 
+**Session-start context.** `.claude/settings.json` runs `.claude/hooks/session_context.py` at every
+session start, resume, clear and compaction; it quotes these current sources with their locations
+and adds no authority, and an item it reports UNAVAILABLE must be read directly.
+
 **Product progress over governance.** Use the minimum governance proportionate to material
 risk. Create no new review, document, gate, synchronization cycle or architecture exercise
 unless it addresses a concrete material risk or an explicit current requirement. Do not reopen
