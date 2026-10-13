@@ -30,6 +30,7 @@ never needs a follow-up current-truth PR. Per-delivery "delivered history"
 guards may still pin identities that ALREADY exist as preserved history; no
 guard may require the identity of a delivery that has not merged yet.
 """
+import functools
 import hashlib
 import os
 import re
@@ -7569,11 +7570,20 @@ def _live_authority_problems(read=None):
     for label, text in texts.items():
         # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: its reversals are live claims
         # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: so are its reversals
-        for pat in _LIVE_CLAIM_REVERSALS + _PREMERGE_LIFECYCLE + _S25_REVERSALS + _S27_REVERSALS:
-            m = re.search(pat, text, re.I | re.S)
-            if m:
-                problems.append("%s: forbidden live claim %r" % (label, m.group(0)))
+        for claim in _forbidden_live_claims(
+                _LIVE_CLAIM_REVERSALS + _PREMERGE_LIFECYCLE + _S25_REVERSALS + _S27_REVERSALS, text):
+            problems.append("%s: forbidden live claim %r" % (label, claim))
     return problems + _unsupported_post_merge_claims(texts)
+
+
+@functools.lru_cache(maxsize=64)
+def _forbidden_live_claims(patterns, text):
+    """The first match of every pattern found in ``text``, in pattern order.
+
+    A pure function of its exact arguments, so it is cached by them: the reversal proofs scan the same
+    unchanged live texts again and again, while a mutated text or pattern set is a different key and is
+    scanned afresh. Only these exact inputs are reused, never a verdict."""
+    return tuple(m.group(0) for m in (re.search(pat, text, re.I | re.S) for pat in patterns) if m)
 
 
 def test_live_material_invariants_hold():
