@@ -133,9 +133,9 @@ def _authority():
                sections[0] + 1, _flat(contract[sections[0]])[:200]))
 
 
-def _git(*args):
+def _git(*args, where=ROOT):
     env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "GIT_OPTIONAL_LOCKS": "0", "LC_ALL": "C"}
-    done = subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True, text=True,
+    done = subprocess.run(["git", "-C", str(where), *args], capture_output=True, text=True,
                           timeout=GIT_TIMEOUT_S, env=env, check=False)
     if done.returncode != 0:
         raise Unavailable("git %s failed" % args[0])
@@ -154,6 +154,24 @@ def _checkout():
             "GitHub)" % (top, kind, branch, head, changed))
 
 
+def _same_checkout(cwd):
+    """The session's working checkout must be the one this hook reads. Claude Code keeps
+    $CLAUDE_PROJECT_DIR (and so this script) at the session's starting checkout after the session
+    moves into another worktree, while the hook's working directory follows the session. Only the
+    two checkouts' top-level identities are compared; nothing is read from the working directory."""
+    if isinstance(cwd, str) and 0 < len(cwd) < 4096 and "\0" not in cwd and os.path.isabs(cwd):
+        where = cwd
+    else:
+        where = os.getcwd()
+    if not os.path.isdir(where):
+        raise Unavailable("the session's working directory is not a directory")
+    own = Path(_git("rev-parse", "--show-toplevel").strip()).resolve()
+    working = Path(_git("rev-parse", "--show-toplevel", where=where).strip()).resolve()
+    if working != own:
+        raise Unavailable("the session's working checkout %s is not the checkout this hook reads (%s)"
+                          % (working, own))
+
+
 def _item(fn, *args):
     try:
         return True, fn(*args)
@@ -163,7 +181,15 @@ def _item(fn, *args):
         return False, "UNAVAILABLE — %s; read that source directly." % type(exc).__name__
 
 
-def build_context(source):
+def build_context(source, cwd=None):
+    try:
+        _same_checkout(cwd)
+    except (Unavailable, OSError, ValueError, subprocess.SubprocessError) as exc:
+        reason = str(exc) if isinstance(exc, Unavailable) else type(exc).__name__
+        return ("InventorAI session context (source: %s; RESTORATION INCOMPLETE: the working checkout "
+                "is not confirmed)\n%s\n- UNAVAILABLE — %s. Nothing was restored: no authority or rule "
+                "from %s is presented as this session's context. Read CLAUDE.md and its boot sequence in "
+                "the working checkout directly." % (source, BOUNDARY, reason, ROOT))
     results = []
     sections = []
 
@@ -198,12 +224,13 @@ def build_context(source):
 def main():
     try:
         payload = json.loads(sys.stdin.read(65536) or "{}")
-        source = payload.get("source") if isinstance(payload, dict) else None
+        payload = payload if isinstance(payload, dict) else {}
     except (ValueError, OSError):
-        source = None
-    source = source if source in SOURCES else "unknown"
+        payload = {}
+    source = payload.get("source")
+    source = source if isinstance(source, str) and source in SOURCES else "unknown"
     try:
-        context = build_context(source)
+        context = build_context(source, payload.get("cwd"))
     except Exception as exc:                        # never block a session start
         context = ("InventorAI session context UNAVAILABLE (%s): read CLAUDE.md and its boot sequence "
                    "directly.\n%s" % (type(exc).__name__, BOUNDARY))

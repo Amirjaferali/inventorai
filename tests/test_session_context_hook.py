@@ -42,9 +42,9 @@ def checkout(tmp_path):
     return root
 
 
-def _run(root, stdin='{"source": "startup"}'):
+def _run(root, stdin='{"source": "startup"}', cwd=None):
     done = subprocess.run([sys.executable, "-I", "-B", str(root / HOOK)], input=stdin,
-                          capture_output=True, text=True, timeout=20, cwd=str(root))
+                          capture_output=True, text=True, timeout=20, cwd=str(cwd or root))
     assert done.returncode == 0, done.stderr
     assert done.stderr == ""
     out = json.loads(done.stdout)
@@ -168,18 +168,21 @@ def test_a_malformed_mechanism_row_is_unavailable(checkout):
 
 
 @pytest.mark.parametrize("stdin", ["", "not json", "[]", '{"source": 7}', '{"source": "other"}',
-                                   '{"source": "$(touch PWNED)"}', '{"source": "startup; touch PWNED"}'])
+                                   '{"source": "$(touch PWNED)"}', '{"source": "startup; touch PWNED"}',
+                                   '{"source": []}', '{"source": {}}', '{"cwd": 5}', '{"cwd": "relative/dir"}'])
 def test_malformed_or_hostile_hook_input_is_never_used(checkout, stdin):
     text = _run(checkout, stdin)
     assert text.startswith("InventorAI session context (source: unknown;")
     assert not list(checkout.rglob("PWNED")) and not (Path.cwd() / "PWNED").exists()
 
 
-def test_outside_a_git_checkout_only_the_checkout_item_is_unavailable(checkout):
+def test_outside_a_git_checkout_nothing_is_restored(checkout):
     shutil.rmtree(checkout / ".git")
     text = _run(checkout)
-    assert "RESTORATION INCOMPLETE: 1 of 15 items UNAVAILABLE" in text
-    assert "UNAVAILABLE — git rev-parse failed" in text
+    assert text.startswith("InventorAI session context (source: startup; RESTORATION INCOMPLETE: the working "
+                           "checkout is not confirmed)")
+    assert "UNAVAILABLE — git rev-parse failed. Nothing was restored" in text
+    assert "ACTIVE CONTRACT" not in text and "NEXT-LOOP" not in text
 
 
 # ---- worktree / path handling ---------------------------------------------------------------------
@@ -196,13 +199,57 @@ def test_a_linked_worktree_reads_its_own_sources(checkout, tmp_path):
     assert declaration in _run(checkout)                          # the main checkout is untouched
 
 
-def test_the_hook_reads_its_own_checkout_not_the_working_directory(checkout, tmp_path):
+def test_a_subdirectory_of_the_same_checkout_is_restored(checkout):
+    sub = checkout / "docs" / "governance"
+    for stdin in ('{"source": "startup", "cwd": "%s"}' % sub, '{"source": "startup"}'):
+        text = _run(checkout, stdin, cwd=sub)
+        assert text.startswith("InventorAI session context (source: startup; all 15 items read)")
+        assert "root %s (main checkout)" % checkout.resolve() in text
+
+
+def test_a_working_directory_outside_any_checkout_is_not_confirmed(checkout, tmp_path):
     elsewhere = tmp_path / "elsewhere"
     elsewhere.mkdir()
-    done = subprocess.run([sys.executable, "-I", "-B", str(checkout / HOOK)], input="{}",
-                          capture_output=True, text=True, timeout=20, cwd=str(elsewhere))
-    text = json.loads(done.stdout)["hookSpecificOutput"]["additionalContext"]
-    assert "root %s (main checkout)" % checkout.resolve() in text
+    text = _run(checkout, '{"source": "startup", "cwd": "%s"}' % elsewhere, cwd=elsewhere)
+    assert "RESTORATION INCOMPLETE: the working checkout is not confirmed" in text
+    assert "ACTIVE CONTRACT" not in text
+
+
+def _registered_command(project_dir, working_dir, stdin):
+    """Run the exact command `.claude/settings.json` registers, the way Claude Code does: through a
+    shell, with $CLAUDE_PROJECT_DIR set to the session's starting checkout."""
+    settings = json.loads((REPO / ".claude/settings.json").read_text(encoding="utf-8"))
+    [group] = settings["hooks"]["SessionStart"]
+    [hook] = group["hooks"]
+    env = dict(os.environ, CLAUDE_PROJECT_DIR=str(project_dir))
+    done = subprocess.run(["/bin/sh", "-c", hook["command"]], input=stdin, capture_output=True, text=True,
+                          timeout=20, cwd=str(working_dir), env=env)
+    assert done.returncode == 0 and done.stderr == "", done.stderr
+    return json.loads(done.stdout)["hookSpecificOutput"]["additionalContext"]
+
+
+@pytest.mark.parametrize("with_input_cwd", [True, False])
+def test_a_session_moved_into_another_worktree_is_not_given_the_start_checkouts_authority(
+        checkout, tmp_path, with_input_cwd):
+    """Claude Code keeps $CLAUDE_PROJECT_DIR at the starting checkout after the session enters another
+    worktree, while the hook's working directory (and input cwd) follow the session."""
+    wt = tmp_path / "wt"
+    _git(checkout, "worktree", "add", "-q", "-b", "other", str(wt))
+    for root, marker in ((checkout, "MAIN-ONLY"), (wt, "WORKTREE-ONLY")):
+        claude = root / "CLAUDE.md"
+        raw = claude.read_text(encoding="utf-8")
+        [declaration] = re.findall(r"\*\*ACTIVE CONTRACT: [^*]+?\.\*\*", raw)
+        claude.write_text(raw.replace(declaration, "**ACTIVE CONTRACT: %s.**" % marker, 1), encoding="utf-8")
+    stdin = json.dumps({"source": "resume", "cwd": str(wt)} if with_input_cwd else {"source": "resume"})
+    text = _registered_command(checkout, wt, stdin)
+    assert text.startswith("InventorAI session context (source: resume; RESTORATION INCOMPLETE: the working "
+                           "checkout is not confirmed)")
+    assert ("the session's working checkout %s is not the checkout this hook reads (%s)"
+            % (wt.resolve(), checkout.resolve())) in text
+    assert "MAIN-ONLY" not in text and "WORKTREE-ONLY" not in text and "all 15 items read" not in text
+    # the same registered command from the starting checkout itself is restored normally
+    same = _registered_command(checkout, checkout, json.dumps({"source": "resume", "cwd": str(checkout)}))
+    assert "all 15 items read" in same and "**ACTIVE CONTRACT: MAIN-ONLY.**" in same
 
 
 # ---- read-only behaviour and bounds ---------------------------------------------------------------
