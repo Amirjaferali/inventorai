@@ -536,7 +536,8 @@ def test_stage28_named_assessments_add_no_stage_and_keep_28_t1_to_t5():
     # ROTATED at the Stage 16 closure (row 16 ticked for its bounded scope only): 21 -> 20 unticked rows; the Stage 28
     # recording still adds zero top-level stages, so all 45 rows stay exactly 1..45
     # ROTATED at the Stage 27 closure (row 27 ticked for its bounded scope only): 20 -> 19 unticked rows
-    assert len(re.findall(r"^- \[ \] \*\*\d+ — ", roadmap, re.M)) == 19
+    # ROTATED at the Stage 40 closure (row 40 ticked for its bounded scope only): 19 -> 18 unticked rows
+    assert len(re.findall(r"^- \[ \] \*\*\d+ — ", roadmap, re.M)) == 18
     assert sorted(int(n) for n in re.findall(r"^- \[[ x]\] \*\*(\d+) — ", roadmap, re.M)) == list(range(1, 46))
     for n, title in ((1, "Sensors, Instrumentation & Data Acquisition"), (2, "Embedded Systems & Firmware"),
                      (3, "Power Electronics & Motion Control"), (4, "PLC / Industrial Automation & Control"),
