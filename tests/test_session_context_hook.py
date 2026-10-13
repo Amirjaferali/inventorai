@@ -105,6 +105,9 @@ def test_the_real_checkout_restores_every_item_within_bounds():
     text = json.loads(done.stdout)["hookSpecificOutput"]["additionalContext"]
     assert "(source: compact; all 15 items read)" in text
     assert len(text) <= 9000
+    # the FULL-route retry rule is restored whole, not cut off by the per-item cap
+    assert ("reruns the whole FULL workflow as one complete attempt, never a single shard or job: "
+            "`CI required` accepts only the five shard evidence packages of the same attempt.") in text
 
 
 @pytest.mark.parametrize("source", ["startup", "resume", "clear", "compact"])

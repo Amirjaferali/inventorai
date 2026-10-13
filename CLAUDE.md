@@ -813,7 +813,9 @@ product-tuning or regression corpus.
 tests on a stable candidate → hosted required CI, where hosted Sharded FULL is the broad
 regression on the FULL route; a local full run needs a stated material reason (AHAEP §1A.1).
 Never weaken mandatory CI; do not rerun the full suite repeatedly during intermediate work when
-focused evidence is sufficient.
+focused evidence is sufficient. On the FULL route, a classified failure that warrants the one
+allowed retry reruns the whole FULL workflow as one complete attempt, never a single shard or job:
+`CI required` accepts only the five shard evidence packages of the same attempt.
 
 **Reading boundary.** Diff-first → search-first → exact-function / exact-range. For large
 files, read the smallest relevant range first and expand only to direct material dependencies;
