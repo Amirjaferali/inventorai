@@ -63,6 +63,15 @@ envelope, version strings, file names, closed vocabulary, item kind `component`,
 other field and every disclaimer are unchanged; no component id, revision id, revision count, withdrawn component or
 earlier version is ever exported. A previously generated export stays the historical snapshot of its own moment. Only
 §2.2 (S25), §8.2 (field 7) and §8.3 (`component`) change in meaning, as noted inline; nothing else changes.
+AMENDMENT — CAP09-RESULT-WITHDRAW-01 (execution-state count; Owner-accepted narrow amendment, 2026-10-13): the inventor
+may now withdraw one recorded execution (a terminal append-only event under the same Result owner). The S7 execution
+state counts CURRENT execution roots only (`engine.experiment_result.execution_states` over the owner's
+`current_result_chains`); `none` with count 0 now means zero CURRENT recorded executions, including when every execution
+was withdrawn. The two neutral §12.7 labels read "No current recorded execution." / "The inventor has {n} current
+recorded execution(s). …". Field 22 still carries no result text, and no withdrawal marker, identity, count or other
+withdrawal detail is ever exported. The v2 envelope, version strings, file names, closed vocabulary and the
+`none` / `recorded` tokens are unchanged; a history the owner cannot validate still refuses the whole export. Only S7
+(§2.2) and the two §12.7 label rows change, as noted inline; nothing else changes.
 BASE: `feature/atomic-json-session-persistence` at `0ab87dca9ab5abebc03da791d288d661727d7858` (tree
 `8cfd87c026298df7f31fd13cf082c6efe470ee7e`); `ACTIVE CONTRACT: NONE`; Stage 35 NOT ENTERED / NOT AUTHORIZED; the Master
 Roadmap at 23 / 45 incomplete.
@@ -126,7 +135,7 @@ behaviour-preserving extraction (workstream contract §4 rule 2), performed only
 | S4 | Known mechanism | `state.known_mechanism` (`engine.idea_state.Evidence`) | PUBLIC |
 | S5 | Planning metadata (success criterion, measurement method, test hypothesis, test variable / condition) | `web/app.py` `_durable_success_criteria`, `_durable_measurement_methods`, `_durable_test_hypotheses`, `_durable_test_variables`, `_attach_planning_metadata` → engine-level `load_planning_metadata` / `attach_planning_metadata` | EXTRACT (E2) over R1 readers |
 | S6 | Section-11 experiments | `engine.deliverable_assembler.assemble_deliverable(state)["section_11_prototype_test_plan"]["items"]` (§5) | PUBLIC |
-| S7 | Execution state | `web/app.py` `_experiment_execution_states` → engine-level `engine.experiment_result.execution_states(events, experiment_ids)`; events from `store.load_result_events` | EXTRACT (E3) over R1 reader |
+| S7 | Execution state | `web/app.py` `_experiment_execution_states` → engine-level `engine.experiment_result.execution_states(events, experiment_ids)`; events from `store.load_result_events` (**AMENDED at CAP09-RESULT-WITHDRAW-01:** the count is of CURRENT, non-withdrawn execution roots) | EXTRACT (E3) over R1 reader |
 | S8 | Interface dependencies | `store.load_interface_dependencies(project_id)` | R1 |
 | S9 | Parts and interfaces | `state.subsystems`, `state.subsystem_interfaces` (from S2) | PUBLIC |
 | S10 | Unresolved gaps | `state.gaps` filtered to status `OPEN` / `PARTIAL` | PUBLIC |
@@ -861,12 +870,12 @@ second-person wording.
 | Source label, Section-11 planning provenance `user_defined` | — (no existing label) | Inventor | المخترع |
 | Source label, Section-11 planning provenance `source_stated` | — (no existing label) | Taken from the inventor's recorded text | مأخوذ من نص المخترع المسجّل |
 | Withdrawn-answer note (`anchor_active` false) | `UI_T2A_WITHDRAWN_NOTE` | The answer this value was attached to has been withdrawn. The value is kept in the project history and is no longer current. | سُحبت الإجابة التي كانت هذه القيمة مرتبطة بها. تُحفظ القيمة في سجل المشروع ولم تعد حالية. |
-| Execution state `none` | `web/app.py` `S11_EXECUTION_TEXT` (none) | No result recorded. | لا توجد نتيجة مسجّلة. |
+| Execution state `none` | `web/app.py` `S11_EXECUTION_TEXT` (none) | No current recorded execution. (**AMENDED at CAP09-RESULT-WITHDRAW-01**; was "No result recorded.") | لا يوجد تنفيذ مسجّل حالي. |
 | Component heading (v2) | — (no existing label) | Physical component declared by the inventor | مكوّن مادي أعلنه المخترع |
 | Component part links (v2) | `UI_CI_PARTS_LABEL` ("Linked by you to:") | Linked by the inventor to: | ربطه المخترع بـ: |
 | Project-level component (v2) | `UI_CI_UNASSIGNED` | Not linked to a part (project level). | غير مرتبط بجزء (على مستوى المشروع). |
 | Field-7 clarification (v2; field 7 `RECORDED` only) | — (no existing label) | Each entry records only that the inventor said the invention includes this component. InventorAI has not checked or validated it, and a link to a part is the inventor's own association: it does not establish that the component sits in that part, works with it or suits it. | يسجّل كل إدخال فقط أن المخترع ذكر أن الاختراع يتضمّن هذا المكوّن. لم يفحصه InventorAI ولم يتحقق منه، وربطه بجزء هو ربط من المخترع نفسه: لا يثبت أن المكوّن موجود في ذلك الجزء أو يعمل معه أو يناسبه. |
-| Execution state `recorded` | `web/app.py` `S11_EXECUTION_TEXT` (recorded) | The inventor recorded {n} execution(s). These are the inventor's own recorded observations. InventorAI has not checked them and they are not a pass/fail judgement. | عدد التنفيذات التي سجّلها المخترع: {n}. هذه ملاحظات سجّلها المخترع بنفسه، ولم يتحقق منها InventorAI، وليست حكمًا بالنجاح أو الإخفاق. |
+| Execution state `recorded` | `web/app.py` `S11_EXECUTION_TEXT` (recorded) | The inventor has {n} current recorded execution(s). These are the inventor's own recorded observations. InventorAI has not checked them and they are not a pass/fail judgement. (**AMENDED at CAP09-RESULT-WITHDRAW-01**; was "The inventor recorded {n} execution(s). …") | عدد التنفيذات الحالية التي سجّلها المخترع: {n}. هذه ملاحظات سجّلها المخترع بنفسه، ولم يتحقق منها InventorAI، وليست حكمًا بالنجاح أو الإخفاق. |
 
 Every other source and validation token keeps its existing `UI_ED_*` label, which is already neutral.
 

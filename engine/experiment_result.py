@@ -25,7 +25,34 @@ APPEND-ONLY EVENT MODEL
 * A CORRECTION is a new event superseding the current HEAD of ONE existing
   execution chain of the same experiment. The chain's ROOT identifies the
   reported execution. At most one successor per event: no forks.
+* A WITHDRAWAL (CAP-09 RESULT WITHDRAW-01) is a new TERMINAL event
+  superseding the current HEAD of ONE execution chain: the inventor states
+  that this recorded execution should no longer count as a current record.
+  It carries its own owner-validated identity (``wdr-`` + 32 lowercase hex),
+  one fixed internal marker as its text, no context and no reason. Nothing
+  may follow it (no correction, no second withdrawal). The whole chain stays
+  in the history; withdrawal is not erasure. It is recognised ONLY through
+  its validated identity and structure (``event_kind``): ordinary inventor
+  text equal to the marker stays ordinary text, and consumers never parse
+  identities or markers themselves. A chain of a CURRENT or of a no-longer-
+  current (historical) experiment may be withdrawn.
 * Historical events are never rewritten or deleted.
+
+CAPACITY
+--------
+At most ``MAX_RESULT_EVENTS_PER_PROJECT`` (200) ORDINARY events per project
+(roots and corrections), plus ONE reserved terminal withdrawal per execution
+root, so at most ``MAX_TOTAL_RESULT_EVENTS`` (400) events in all. A
+withdrawal never frees ordinary capacity and no identity is ever reused.
+
+CURRENT VERSUS FULL HISTORY
+---------------------------
+``result_chains`` is the FULL history (withdrawn chains included, each with
+its ``withdrawal``); ``current_result_chains`` is the explicitly named
+current-chain projection (withdrawn chains excluded). The execution-state
+derivation at the end of this module counts CURRENT chains only, so a project
+whose every execution of an experiment was withdrawn holds zero CURRENT
+records — not "nothing was ever recorded".
 
 CONTEXT AT RECORDING
 --------------------
@@ -50,8 +77,19 @@ from typing import Optional
 # fields already use. Over-limit input is rejected, never truncated.
 MAX_RESULT_TEXT_LENGTH = 1000
 # Bounded growth: a project cannot accumulate an unbounded result history.
+# This bounds ORDINARY events (roots and corrections) only.
 MAX_RESULT_EVENTS_PER_PROJECT = 200
+# CAP-09 RESULT WITHDRAW-01: plus ONE reserved terminal withdrawal per root.
+MAX_TOTAL_RESULT_EVENTS = 2 * MAX_RESULT_EVENTS_PER_PROJECT
 _RESULT_EVENT_ID_RE = re.compile(r"\Ares-[0-9a-f]{32}\Z")
+_WITHDRAWAL_EVENT_ID_RE = re.compile(r"\Awdr-[0-9a-f]{32}\Z")
+# The fixed INTERNAL text of every withdrawal event (the column is NOT NULL).
+# It is never shown as an observation and never identifies a withdrawal on
+# its own: only the validated ``wdr-`` identity and structure do.
+WITHDRAWAL_MARKER = "cap09:result-withdrawn:v1"
+EVENT_ROOT = "root"
+EVENT_CORRECTION = "correction"
+EVENT_WITHDRAWAL = "withdrawal"
 # Structural shape of a canonical experiment id (the Section-11 generator
 # owns its semantics; this owner only refuses what can never be one).
 _EXPERIMENT_ID_RE = re.compile(r"\Aexp_[a-z0-9]+(?:_[a-z0-9]+)+\Z")
@@ -101,8 +139,37 @@ def new_result_event_id():
     return "res-" + uuid.uuid4().hex
 
 
+def new_withdrawal_event_id():
+    """A system-generated, opaque identity of ONE terminal withdrawal event."""
+    return "wdr-" + uuid.uuid4().hex
+
+
 def is_valid_result_event_id(value):
+    """The identity of an ORDINARY event (a root or a correction)."""
     return isinstance(value, str) and bool(_RESULT_EVENT_ID_RE.match(value))
+
+
+def is_valid_withdrawal_event_id(value):
+    """The identity of a terminal WITHDRAWAL event."""
+    return isinstance(value, str) and bool(_WITHDRAWAL_EVENT_ID_RE.match(value))
+
+
+def event_kind(event):
+    """``EVENT_ROOT`` / ``EVENT_CORRECTION`` / ``EVENT_WITHDRAWAL`` of ONE
+    structurally valid event, decided by its validated identity and structure
+    only (never by its text). Raises ``ResultEventError`` for anything else."""
+    _check_event(event)
+    if is_valid_withdrawal_event_id(event.result_event_id):
+        return EVENT_WITHDRAWAL
+    return EVENT_ROOT if event.supersedes_result_event_id is None else EVENT_CORRECTION
+
+
+def is_withdrawal(event):
+    """True only for a structurally valid withdrawal event."""
+    try:
+        return event_kind(event) == EVENT_WITHDRAWAL
+    except ResultEventError:
+        return False
 
 
 def is_valid_experiment_id(value):
@@ -153,10 +220,28 @@ def recorded_correction(experiment_id, result_text, supersedes_result_event_id):
     return event
 
 
+def recorded_withdrawal(experiment_id, supersedes_result_event_id):
+    """A NEW terminal withdrawal event superseding the current head
+    ``supersedes_result_event_id`` of ONE execution chain. It carries the
+    fixed internal marker, no context and no reason."""
+    event = ResultEvent(new_withdrawal_event_id(), experiment_id,
+                        WITHDRAWAL_MARKER, supersedes_result_event_id, _now(), None)
+    _check_event(event)
+    return event
+
+
 def same_result_material(stored, event):
-    """True when two events carry the SAME submitted material: experiment,
-    superseded target and observation text. Identity, time and the frozen
-    context (captured server-side) are not submitted material."""
+    """True when two events carry the SAME submitted action and material:
+    event kind (root / correction / withdrawal), experiment, superseded
+    target and observation text. Identity, time and the frozen context
+    (captured server-side) are not submitted material. A correction whose
+    text equals the withdrawal marker is NOT the same action as a withdrawal
+    of the same head."""
+    try:
+        if event_kind(stored) != event_kind(event):
+            return False
+    except ResultEventError:
+        return False
     return (stored.experiment_id == event.experiment_id
             and stored.supersedes_result_event_id == event.supersedes_result_event_id
             and stored.result_text == event.result_text)
@@ -165,7 +250,8 @@ def same_result_material(stored, event):
 def _check_event(event):
     if not isinstance(event, ResultEvent):
         raise ResultEventError("not a result event")
-    if not is_valid_result_event_id(event.result_event_id):
+    withdrawal = is_valid_withdrawal_event_id(event.result_event_id)
+    if not withdrawal and not is_valid_result_event_id(event.result_event_id):
         raise ResultEventError("result event identity is malformed")
     if not is_valid_experiment_id(event.experiment_id):
         raise ResultEventError("experiment identity is malformed")
@@ -173,11 +259,22 @@ def _check_event(event):
         raise ResultEventError("result text is empty, invalid or too long")
     if not isinstance(event.recorded_at, str) or not event.recorded_at:
         raise ResultEventError("recorded time is missing")
+    if withdrawal:
+        # A withdrawal is exactly: a successor of one event, the fixed
+        # marker, no context.
+        if event.result_text != WITHDRAWAL_MARKER:
+            raise ResultEventError("a withdrawal carries no fixed marker")
+        if event.supersedes_result_event_id is None:
+            raise ResultEventError("a withdrawal supersedes no event")
+        if event.context is not None:
+            raise ResultEventError("a withdrawal may not carry context")
     if event.supersedes_result_event_id is None:
         if not valid_context(event.context):
             raise ResultEventError("a root event carries no valid context")
     else:
-        if not is_valid_result_event_id(event.supersedes_result_event_id):
+        target = event.supersedes_result_event_id
+        if not (is_valid_result_event_id(target)
+                or is_valid_withdrawal_event_id(target)):
             raise ResultEventError("superseded identity is malformed")
         if event.context is not None:
             raise ResultEventError("a correction may not carry context")
@@ -186,28 +283,52 @@ def _check_event(event):
 def validate_result_history(events):
     """Validate one project's durable Result events in stored order and return
     them as a tuple, or raise ``ResultEventError``. Every event is valid; ids
-    are distinct; a correction supersedes an EARLIER event of the SAME
-    experiment (so no cycle is possible) and no event has two successors."""
+    are distinct; a correction or withdrawal supersedes an EARLIER event of
+    the SAME experiment (so no cycle is possible); no event has two
+    successors; nothing supersedes a withdrawal (terminal); and the capacity
+    rule holds — at most ``MAX_RESULT_EVENTS_PER_PROJECT`` ordinary events,
+    at most one withdrawal per root (implied by terminality and the single
+    successor, and checked explicitly) and at most ``MAX_TOTAL_RESULT_EVENTS``
+    events in all."""
     items = tuple(events or ())
-    if len(items) > MAX_RESULT_EVENTS_PER_PROJECT:
+    if len(items) > MAX_TOTAL_RESULT_EVENTS:
         raise ResultEventError("too many result events")
     seen = {}
+    kinds = {}
     succeeded = set()
+    root_of = {}
+    withdrawn_roots = set()
+    ordinary = 0
     for event in items:
-        _check_event(event)
+        kind = event_kind(event)
         if event.result_event_id in seen:
             raise ResultEventError("result event identity is duplicated")
         target = event.supersedes_result_event_id
-        if target is not None:
+        if target is None:
+            root_of[event.result_event_id] = event.result_event_id
+        else:
             prior = seen.get(target)
             if prior is None:
                 raise ResultEventError("a correction supersedes no earlier event")
             if prior.experiment_id != event.experiment_id:
                 raise ResultEventError("a correction crosses experiments")
+            if kinds[target] == EVENT_WITHDRAWAL:
+                raise ResultEventError("a withdrawn execution is terminal")
             if target in succeeded:
                 raise ResultEventError("an event has two successors")
             succeeded.add(target)
+            root_of[event.result_event_id] = root_of[target]
+        if kind == EVENT_WITHDRAWAL:
+            root = root_of[event.result_event_id]
+            if root in withdrawn_roots:
+                raise ResultEventError("an execution is withdrawn twice")
+            withdrawn_roots.add(root)
+        else:
+            ordinary += 1
+            if ordinary > MAX_RESULT_EVENTS_PER_PROJECT:
+                raise ResultEventError("too many ordinary result events")
         seen[event.result_event_id] = event
+        kinds[event.result_event_id] = kind
     return items
 
 
@@ -219,9 +340,14 @@ def head_ids(events):
 
 
 def result_chains(events, experiment_id=None):
-    """The execution chains of an already-validated history, in root order:
-    ``[{"root": ev, "head": ev, "history": [root, ..., head]}]`` (optionally
-    for one experiment). Pure; identity only."""
+    """The FULL history: every execution chain of an already-validated
+    history, in root order, withdrawn chains included (optionally for one
+    experiment): ``[{"root": ev, "head": ev, "history": [root, ..., head],
+    "withdrawal": ev or None}]``. ``history`` holds the chain's ORDINARY
+    events only and ``head`` is its latest observation; a withdrawn chain's
+    terminal withdrawal event is ``withdrawal`` (it is then the chain's
+    durable head) and is never part of ``history``, so the internal marker
+    is never presented as an observation. Pure; identity only."""
     successor = {e.supersedes_result_event_id: e for e in events
                  if e.supersedes_result_event_id is not None}
     chains = []
@@ -231,16 +357,32 @@ def result_chains(events, experiment_id=None):
         if experiment_id is not None and event.experiment_id != experiment_id:
             continue
         history = [event]
+        withdrawal = None
         while history[-1].result_event_id in successor:
-            history.append(successor[history[-1].result_event_id])
-        chains.append({"root": event, "head": history[-1], "history": history})
+            nxt = successor[history[-1].result_event_id]
+            if is_withdrawal(nxt):
+                withdrawal = nxt
+                break
+            history.append(nxt)
+        chains.append({"root": event, "head": history[-1], "history": history,
+                       "withdrawal": withdrawal})
     return chains
+
+
+def current_result_chains(events, experiment_id=None):
+    """The CURRENT-chain projection: ``result_chains`` without withdrawn
+    chains. A withdrawn execution stays in the full history but is never a
+    current record."""
+    return [c for c in result_chains(events, experiment_id)
+            if c["withdrawal"] is None]
 
 
 # Stage 35 E3 — the Stage-19 execution state of each CURRENT Section-11
 # experiment, moved unchanged from the web layer so the disclosure export uses
-# the same derivation. ``count`` is the number of execution ROOTS
-# (``result_chains``): a correction never adds one, an independent retest does.
+# the same derivation. ``count`` is the number of CURRENT execution ROOTS
+# (``current_result_chains``): a correction never adds one, an independent
+# retest does, and a withdrawal removes its execution from the count
+# (CAP-09 RESULT WITHDRAW-01). ``none`` therefore means zero CURRENT records.
 EXECUTION_NONE = "none"
 EXECUTION_RECORDED = "recorded"
 EXECUTION_UNAVAILABLE = "unavailable"
@@ -250,7 +392,7 @@ def execution_states(events, experiment_ids):
     """``{experiment_id: {"state": ..., "count": ...}}`` over an already-read,
     validated Result history. Pure: it never reads a store and never swallows
     a failure (a caller decides what an unreadable history means)."""
-    counts = {eid: len(result_chains(events, eid)) for eid in experiment_ids}
+    counts = {eid: len(current_result_chains(events, eid)) for eid in experiment_ids}
     return {eid: ({"state": EXECUTION_RECORDED, "count": n} if n
                   else {"state": EXECUTION_NONE, "count": 0})
             for eid, n in counts.items()}

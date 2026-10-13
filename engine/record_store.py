@@ -115,8 +115,8 @@ from engine import decision_criteria as _criteria
 # what actually happened in one canonical Section-11 experiment.
 from engine.experiment_result import (
     ResultContext, ResultEvent, ResultEventError, CONTEXT_FIELDS,
-    MAX_RESULT_EVENTS_PER_PROJECT, head_ids, same_result_material,
-    validate_result_history,
+    MAX_RESULT_EVENTS_PER_PROJECT, event_kind, head_ids, is_withdrawal,
+    same_result_material, validate_result_history,
 )
 # Stage 15 Slice 4: the inventor's append-only report of what actually
 # happened when they tested or checked one Owner-declared interface.
@@ -1484,7 +1484,12 @@ _INTEGRATION_EVIDENCE_ANCHORS_SCHEMA = (
 # re-validates the whole history (same experiment, earlier target, no fork).
 # No outcome, status, validation, quality, readiness, confidence or score
 # column exists. ``recorded_at`` is when InventorAI recorded the event, never
-# the test execution time. Additive and idempotent (``IF NOT EXISTS``);
+# the test execution time. CAP-09 RESULT WITHDRAW-01 adds NO schema change: a
+# terminal withdrawal is one more successor row (``wdr-`` identity, the
+# owner's fixed internal marker as its text, no context), classified only by
+# the semantic owner; the partial unique successor index and the loader's
+# terminality check keep it final. A build that predates it refuses such a
+# history (unknown identity shape) instead of reading it. Additive and idempotent (``IF NOT EXISTS``);
 # touches no existing table, column or row; nothing is backfilled. Rollback is
 # disable-and-ignore (stop reading the table).
 _RESULT_CONTEXT_CHECK = (
@@ -3114,10 +3119,15 @@ class SqliteRecordStore:
         ONE ``BEGIN IMMEDIATE`` transaction; full rollback on any failure.
         Inside it, against DURABLE truth: the project exists; its history
         validates; the submission identity is unused or names exactly this
-        material (``ResultEventConflict`` otherwise); a correction's target is
-        an event of THIS project and experiment that is still a chain HEAD
-        (``ResultEventRejected`` otherwise — never matched by position or
-        text); the cap is not reached. The store assigns ``result_seq``. There
+        action and material — event kind included (``ResultEventConflict``
+        otherwise); a correction's or withdrawal's target is an event of THIS
+        project and experiment that is still a chain HEAD and not a withdrawal
+        (a withdrawn execution is terminal; ``ResultEventRejected`` otherwise —
+        never matched by position or text); an ORDINARY event (root or
+        correction) does not exceed the ordinary cap, while a withdrawal uses
+        its root's one reserved slot (CAP-09 RESULT WITHDRAW-01). An exact
+        retry resolves before every new-action check. The store assigns
+        ``result_seq``. There
         is no update or delete path. IR-01: never writes on top of an
         unresolved connection. It does not decide which experiments are
         current: the caller checks a new root against the current plan."""
@@ -3135,17 +3145,30 @@ class SqliteRecordStore:
                     return RESULT_EVENT_EXACT_REPLAY, stored
                 raise ResultEventConflict(
                     "the submission identity already names a different event")
-            if len(existing) >= MAX_RESULT_EVENTS_PER_PROJECT:
+            try:
+                withdrawal = is_withdrawal(event)
+                if not withdrawal:
+                    event_kind(event)
+            except ResultEventError:
+                raise ResultEventRejected("the event is not valid") from None
+            # CAP-09 RESULT WITHDRAW-01: the ordinary cap counts roots and
+            # corrections only; a withdrawal uses its root's ONE reserved
+            # terminal slot and never frees ordinary capacity.
+            if not withdrawal and sum(
+                    1 for e in existing if not is_withdrawal(e)) \
+                    >= MAX_RESULT_EVENTS_PER_PROJECT:
                 raise ResultEventRejected("the result cap is reached")
             target = event.supersedes_result_event_id
             if target is not None:
                 by_id = {e.result_event_id: e for e in existing}
                 prior = by_id.get(target)
                 if prior is None or prior.experiment_id != event.experiment_id \
-                        or target not in head_ids(existing):
+                        or target not in head_ids(existing) \
+                        or is_withdrawal(prior):
                     raise ResultEventRejected(
-                        "a correction must supersede the current head of one "
-                        "chain of the same experiment in this project")
+                        "a correction or withdrawal must supersede the current "
+                        "head of one chain of the same experiment in this "
+                        "project, and a withdrawn execution is terminal")
             try:
                 validate_result_history(existing + (event,))
             except ResultEventError:

@@ -290,12 +290,27 @@ _MESSAGE_KEYS = {
     ("That experiment is not part of the current plan, so no result can be "
      "recorded or corrected for it here. Nothing was changed."):
         "UI_R_MSG_NOT_CURRENT",
-    ("That result has already been corrected, or it does not belong to this "
-     "experiment, so nothing was saved. Review the page and try again."):
+    ("That result has already been corrected or withdrawn, or it does not "
+     "belong to this experiment, so nothing was saved. Review the page and try "
+     "again."):
         "UI_R_MSG_STALE_TARGET",
     ("We could not confirm whether your result was saved. Reload this page to "
      "see what your project holds before entering it again."):
         "UI_R_MSG_UNKNOWN",
+    # CAP-09 RESULT WITHDRAW-01 (web/app.py withdraw_experiment_result).
+    ("This execution was withdrawn. It is no longer counted as a current "
+     "record, and it stays in your history: withdrawal is not erasure."):
+        "UI_R_MSG_WITHDRAW_SAVED",
+    ("This execution could not be withdrawn just now. Nothing was changed."):
+        "UI_R_MSG_WITHDRAW_NOT_SAVED",
+    ("Confirm that you want to withdraw this execution. Nothing was changed."):
+        "UI_R_MSG_WITHDRAW_CONFIRM",
+    ("That execution was changed or already withdrawn since this page was "
+     "shown, so nothing was changed. Review the page and try again."):
+        "UI_R_MSG_WITHDRAW_STALE",
+    ("We could not confirm whether this execution was withdrawn. Reload this "
+     "page to see what your project holds before trying again."):
+        "UI_R_MSG_WITHDRAW_UNKNOWN",
     ("We could not confirm whether your preparation was saved. Reload this "
      "page to see what your project currently holds before entering it "
      "again."): "UI_S15_PREP_MSG_UNKNOWN",
@@ -1770,12 +1785,53 @@ UI_STRINGS = {
         "ar": 'هذه التجربة ليست جزءًا من الخطة الحالية، لذا لا يمكن تسجيل نتيجة لها أو تصحيحها هنا. لم يتم تغيير أي شيء.',
     },
     'UI_R_MSG_STALE_TARGET': {
-        "en": 'That result has already been corrected, or it does not belong to this experiment, so nothing was saved. Review the page and try again.',
-        "ar": 'صُحّحت هذه النتيجة من قبل، أو أنها لا تخص هذه التجربة، لذا لم يُحفظ شيء. راجع الصفحة وحاول مرة أخرى.',
+        "en": 'That result has already been corrected or withdrawn, or it does not belong to this experiment, so nothing was saved. Review the page and try again.',
+        "ar": 'صُحّحت هذه النتيجة أو سُحبت من قبل، أو أنها لا تخص هذه التجربة، لذا لم يُحفظ شيء. راجع الصفحة وحاول مرة أخرى.',
     },
     'UI_R_MSG_UNKNOWN': {
         "en": 'We could not confirm whether your result was saved. Reload this page to see what your project holds before entering it again.',
         "ar": 'تعذّر علينا التأكد مما إذا كانت نتيجتك قد حُفظت. أعد تحميل الصفحة لترى ما يحتفظ به مشروعك قبل إدخالها مرة أخرى.',
+    },
+    # CAP-09 RESULT WITHDRAW-01: withdrawing one recorded execution.
+    'UI_R_WITHDRAW': {
+        "en": 'Withdraw this execution',
+        "ar": 'سحب هذا التنفيذ',
+    },
+    'UI_R_WITHDRAW_NOTE': {
+        "en": 'Withdraw an execution you recorded by mistake or that should no longer count. It will no longer be counted as a current record, it stays in your history and it cannot be corrected afterwards. Withdrawal is not erasure.',
+        "ar": 'اسحب تنفيذًا سجّلته بالخطأ أو لم يعد ينبغي احتسابه. لن يُحتسب بعد ذلك سجلًّا حاليًا، ويبقى في سجلّك، ولا يمكن تصحيحه بعد السحب. السحب ليس حذفًا.',
+    },
+    'UI_R_WITHDRAW_CONFIRM': {
+        "en": 'I want to withdraw this execution.',
+        "ar": 'أريد سحب هذا التنفيذ.',
+    },
+    'UI_R_WITHDRAW_BUTTON': {
+        "en": 'Withdraw execution',
+        "ar": 'سحب التنفيذ',
+    },
+    'UI_R_WITHDRAWN': {
+        "en": 'Withdrawn by you: kept as history and no longer counted as a current record. Withdrawal is not erasure.',
+        "ar": 'سحبته أنت: يُحفظ كسجلّ ولم يعد يُحتسب سجلًّا حاليًا. السحب ليس حذفًا.',
+    },
+    'UI_R_MSG_WITHDRAW_SAVED': {
+        "en": 'This execution was withdrawn. It is no longer counted as a current record, and it stays in your history: withdrawal is not erasure.',
+        "ar": 'سُحب هذا التنفيذ. لم يعد يُحتسب سجلًّا حاليًا، ويبقى في سجلّك: السحب ليس حذفًا.',
+    },
+    'UI_R_MSG_WITHDRAW_NOT_SAVED': {
+        "en": 'This execution could not be withdrawn just now. Nothing was changed.',
+        "ar": 'تعذّر سحب هذا التنفيذ الآن. لم يتم تغيير أي شيء.',
+    },
+    'UI_R_MSG_WITHDRAW_CONFIRM': {
+        "en": 'Confirm that you want to withdraw this execution. Nothing was changed.',
+        "ar": 'أكّد أنك تريد سحب هذا التنفيذ. لم يتم تغيير أي شيء.',
+    },
+    'UI_R_MSG_WITHDRAW_STALE': {
+        "en": 'That execution was changed or already withdrawn since this page was shown, so nothing was changed. Review the page and try again.',
+        "ar": 'تغيّر هذا التنفيذ أو سُحب من قبل منذ عرض هذه الصفحة، لذا لم يتم تغيير أي شيء. راجع الصفحة وحاول مرة أخرى.',
+    },
+    'UI_R_MSG_WITHDRAW_UNKNOWN': {
+        "en": 'We could not confirm whether this execution was withdrawn. Reload this page to see what your project holds before trying again.',
+        "ar": 'تعذّر علينا التأكد مما إذا كان هذا التنفيذ قد سُحب. أعد تحميل الصفحة لترى ما يحتفظ به مشروعك قبل المحاولة مرة أخرى.',
     },
     "UI_S15_PREP_TITLE": {
         "en": "Prepare how each interaction will be checked",
@@ -8154,12 +8210,12 @@ UI_STRINGS = {
         "ar": "سُحبت الإجابة التي كانت هذه القيمة مرتبطة بها. تُحفظ القيمة في سجل المشروع ولم تعد حالية.",
     },
     "UI_S35_EXECUTION_NONE": {
-        "en": "No result recorded.",
-        "ar": "لا توجد نتيجة مسجّلة.",
+        "en": "No current recorded execution.",
+        "ar": "لا يوجد تنفيذ مسجّل حالي.",
     },
     "UI_S35_EXECUTION_RECORDED": {
-        "en": "The inventor recorded {n} execution(s). These are the inventor's own recorded observations. InventorAI has not checked them and they are not a pass/fail judgement.",
-        "ar": "عدد التنفيذات التي سجّلها المخترع: {n}. هذه ملاحظات سجّلها المخترع بنفسه، ولم يتحقق منها InventorAI، وليست حكمًا بالنجاح أو الإخفاق.",
+        "en": "The inventor has {n} current recorded execution(s). These are the inventor's own recorded observations. InventorAI has not checked them and they are not a pass/fail judgement.",
+        "ar": "عدد التنفيذات الحالية التي سجّلها المخترع: {n}. هذه ملاحظات سجّلها المخترع بنفسه، ولم يتحقق منها InventorAI، وليست حكمًا بالنجاح أو الإخفاق.",
     },
     "UI_S35_NA_SOURCE": {
         "en": "No separate source value is held for this item. This does not mean the item has no source.",
