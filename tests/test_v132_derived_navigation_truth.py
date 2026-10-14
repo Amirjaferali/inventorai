@@ -4240,6 +4240,16 @@ _S27_NAME = "Stage 27 — THERM-01 Single-Path Temperature-Difference — Slice 
 # and the post-Stage-27-THERM-01-Slice-1 NONE heading survive only as history (_S27_PARTIAL, _S27_SLICE_HEADING).
 _S27_SLICE_HEADING = "## Current authority — post-Stage-27-THERM-01-Slice-1: no active contract (2026-10-09)"
 _S27_HEADING = "## Current authority — post-Stage-27-closure: no active contract (2026-10-09)"
+# ADDED at the Stage 40 closure candidate: the live NONE heading is renamed in place (the earlier heading and anchor are
+# preserved in a note before the section) and every live Stage 40 statement carries the after-merge applicability clause
+_S40_HEADING = "## Current authority — post-Stage-40-closure: no active contract (2026-10-14)"
+_S40_APPLICABILITY = ("Applicability: this closure record takes effect only on the verified merge of PR #N into "
+                      "`feature/atomic-json-session-persistence`; on that PR's proposal branch it is an Owner-authorized "
+                      "closure candidate, not a delivered closure — `STAGE 40 CLOSURE: DELIVERED`, Stage 40 COMPLETE and "
+                      "the 27 of 45 complete count apply only after that merge, and before it the base state stays 26 of "
+                      "45 complete with Stage 40 not yet closed.")
+# Git / GitHub own the PR identity: "PR #N" stands for any PR number, and line wrapping is tolerated
+_S40_APP_RE = re.escape(_S40_APPLICABILITY).replace(re.escape("PR #N"), r"PR #\d+").replace(r"\ ", r"\s+")
 _S27C_NAME = "Stage 27 — THERM-01 Single-Path Temperature-Difference — Closure"
 _S27_DELIVERED = "`STAGE 27 — THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SLICE 1: DELIVERED`"
 _S27_PARTIAL = "`STAGE 27: ENTERED / PARTIAL — THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SLICE 1 ONLY`"
@@ -4740,7 +4750,8 @@ def test_post_718_no_active_contract_is_superseded_history():
                            "last Owner-authorized bounded closure — " + _S40C_NAME + " — is DELIVERED with no product "
                            "change required, completing Stage 40 for the current free-first-release / no-paid-activation "
                            "scope ONLY (" + "; ".join((_S40C_DELIVERED, _S40_COMPLETE, _S40_FREE_NO, _S40_PAID_YES))
-                           + "; Git / GitHub own its PR, merge and review identity)")
+                           + "; Git / GitHub own its PR, merge and review identity; Applicability:")
+    assert re.search(r"review identity; " + _S40_APP_RE + r"\): no payment provider", head)
     assert ("The preceding bounded closure — " + _S27C_NAME + " — is DELIVERED with no product "
             "change required, completing Stage 27 for the current bounded THERM-01 single-path "
             "temperature-difference scope ONLY (" + "; ".join((_S27C_DELIVERED, _S27_COMPLETE, _S27_FULL_NO, _S25_MARKER))
@@ -4886,7 +4897,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # post-Stage-27-THERM-01-Slice-1 NONE declaration; the post-Stage-25-CAP-13-Slice-1 NONE and the slice record follow
     # ROTATED at the Stage 27 closure: the live section is the post-Stage-27-closure NONE declaration; the closure record,
     # the post-Stage-27-THERM-01-Slice-1 NONE and the slice record follow as history
-    assert heading == _S27_HEADING, heading
+    # RENAMED at the Stage 40 closure candidate: the same live NONE section now carries the post-Stage-40-closure heading;
+    # its earlier heading and anchor are preserved in a note before the section
+    assert heading == _S40_HEADING, heading
+    assert ('it read "Current authority — post-Stage-27-closure: no active contract (2026-10-09)" with the anchor '
+            '`current-authority--post-stage27-closure-no-active-contract`') in contract
     assert (_S27_SLICE_HEADING + " — SUPERSEDED (2026-10-09) by " + _S27C_NAME) in contract
     assert ("## Current authority — " + _S27C_NAME + " (Owner authorization, 2026-10-09) — DELIVERED; SUPERSEDED as "
             "current authority by the post-Stage-27-closure no-active-contract declaration") in contract
@@ -4916,7 +4931,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             "current authority by the post-Stage-16-closure no-active-contract declaration") in contract
     assert (_S36C_HEADING + " — SUPERSEDED (2026-10-06) by " + _S16C_NAME) in contract
     order = [contract.index('<a id="current-authority--' + anchor + '"></a>') for anchor in (
-        "post-stage27-closure-no-active-contract", "stage27-therm01-closure",
+        "post-stage40-closure-no-active-contract", "stage27-therm01-closure",
         "post-stage27-therm01-slice1-no-active-contract", "stage27-therm01-single-path-temperature-difference-slice1",
         "post-stage25-cap13-slice1-no-active-contract", "stage25-cap13-two-support-static-reactions-slice1",
         "post-stage16-closure-no-active-contract", "stage16-srl-composition-closure",
@@ -4939,7 +4954,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ROTATED at the Stage 40 closure: the Stage 40 closure is the last bounded closure, Stage 27's precedes it
            re.escape(_S40C_NAME) + r", the last Owner-authorized bounded closure, is DELIVERED with no product change "
            r"required, completing Stage 40 for the current free-first-release / no-paid-activation scope ONLY \("
-           + _tok(_S40C_DELIVERED) + "; " + _tok(_S40_COMPLETE) + "; " + _tok(_S40_FREE_NO) + "; " + _tok(_S40_PAID_YES),
+           + _tok(_S40C_DELIVERED) + "; " + _tok(_S40_COMPLETE) + "; " + _tok(_S40_FREE_NO) + "; " + _tok(_S40_PAID_YES)
+           + r"; Git / GitHub own its PR, merge and review identity; " + _S40_APP_RE,
            re.escape(_S27C_NAME) + r", the preceding Owner-authorized\s+bounded closure, is DELIVERED with no product change "
            r"required \(Git / GitHub own its PR, merge and review identity\): the Stage-27 row requirement",
            re.escape(_S27_NAME) + r", the preceding Owner-authorized\s+bounded increment, is DELIVERED \(Git / GitHub own "
@@ -5658,10 +5674,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ADVANCED at the Stage 40 closure: the Stage 40 closure leads the post-Stage-27-closure position; the Stage 27
     # closure follows it ("before it")
     assert re.match(r" \*\*Current position \([^)]{0,40}\): `ACTIVE CONTRACT: NONE` — no product increment is "
-                    r"currently authorized \(post-Stage-27-closure; " + re.escape(_S40C_NAME) + r" — delivered with no "
+                    r"currently authorized \(post-Stage-40-closure; " + re.escape(_S40C_NAME) + r" — delivered with no "
                     r"product change required: Stage 40 is COMPLETE for the current free-first-release / "
                     r"no-paid-activation scope only \(" + _tok(_S40C_DELIVERED) + "; " + _tok(_S40_COMPLETE) + "; "
-                    + _tok(_S40_FREE_NO) + "; " + _tok(_S40_PAID_YES) + r"\) — ", state)
+                    + _tok(_S40_FREE_NO) + "; " + _tok(_S40_PAID_YES) + "; " + _S40_APP_RE + r"\) — ", state)
     assert re.search(r"; before it, " + re.escape(_S27C_NAME) + r" — delivered with no "
                     r"product change required: Stage 27 is COMPLETE for the current bounded THERM-01 single-path "
                     r"temperature-difference scope only, checkbox ticked for that scope only — ", state)
@@ -5864,7 +5880,8 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                            "last Owner-authorized bounded closure — " + _S40C_NAME + " — is DELIVERED with no product "
                            "change required, completing Stage 40 for the current free-first-release / no-paid-activation "
                            "scope ONLY (" + "; ".join((_S40C_DELIVERED, _S40_COMPLETE, _S40_FREE_NO, _S40_PAID_YES))
-                           + "; Git / GitHub own its PR, merge and review identity)")
+                           + "; Git / GitHub own its PR, merge and review identity; Applicability:")
+    assert re.search(r"review identity; " + _S40_APP_RE + r"\): no payment provider", head)
     assert ("The preceding bounded closure — " + _S27C_NAME + " — is DELIVERED with no product "
             "change required, completing Stage 27 for the current bounded THERM-01 single-path "
             "temperature-difference scope ONLY (" + "; ".join((_S27C_DELIVERED, _S27_COMPLETE, _S27_FULL_NO, _S25_MARKER))
