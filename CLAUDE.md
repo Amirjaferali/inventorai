@@ -796,6 +796,17 @@ is represented once where practical and reused through explicit claim / domain m
 technical fact is not duplicated merely because Mechanical, Electrical, Mechatronics, Robotics or IoT may
 all consume it — and shared knowledge does NOT erase domain-specific technical authority: each context
 stays bounded by its own authority.
+**Research-scout tools (Perplexity Research; standing rule under the boundary above).** Perplexity Research
+is a source-discovery / research-scout tool only. Use it proportionately — not for every research task — when
+source discovery, access or qualification would materially benefit from broader search, especially when
+ordinary access is blocked or insufficient. Perplexity itself is never technical authority, source
+authority, licensing authority or claim-level evidence, and it is never a substitute for the original
+source: a Perplexity citation or summary alone never closes a technical or source gate. Before InventorAI
+relies on any discovered claim, directly inspect and qualify the underlying source for issuing authority /
+authorship, the exact claim and its location, applicability / limitations, and the reuse / licensing basis.
+Prefer U.S. federal / public-domain or clearly open-license authoritative sources; reject or abstain on
+unclear-rights material — publicly viewable does not mean lawfully reusable. Never invent a threshold,
+value, criterion or source claim from a Perplexity summary.
 **Shared knowledge vs private inventor information (standing boundary).** SHARED GOVERNED TECHNICAL
 KNOWLEDGE stays separate from PRIVATE INVENTOR / PROJECT INFORMATION. A user's invention, attachments,
 project facts, measurements, design choices or proprietary material never become shared InventorAI
