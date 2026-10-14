@@ -82,12 +82,16 @@ def test_02_page_order_disclaimers_before_controls(owned, lang):
         order.append(body.index(en))
         if lang == "ar":
             order.append(body.index(AR_DISCLAIMERS[n]))
-    order += [body.index('href="%s"' % (JSON_URL % sid)), body.index('href="%s"' % (HTML_URL % sid)),
+    # AMENDED at STAGE34-OUTPUT-LANGUAGE-01: one HTML control per output language
+    order += [body.index('href="%s"' % (JSON_URL % sid)),
+              body.index('href="%s?lang=en"' % (HTML_URL % sid)),
+              body.index('href="%s?lang=ar"' % (HTML_URL % sid)),
               body.index(esc(t("UI_S35_SAME_DATA"))), body.index(esc(t("UI_S35_RETENTION_HEADING")))]
     for n in range(1, 5):
         order.append(body.index(esc(t("UI_S35_RETENTION_%d" % n))))
     assert order == sorted(order)
-    assert esc(t("UI_S35_JSON_CONTROL")) in body and esc(t("UI_S35_HTML_CONTROL")) in body
+    assert esc(t("UI_S35_JSON_CONTROL")) in body
+    assert esc(t("UI_S35_HTML_CONTROL_EN")) in body and esc(t("UI_S35_HTML_CONTROL_AR")) in body
     assert (SCOPE_AR in body) == (lang == "ar")
     assert _dump() == before                                   # viewing records nothing
     assert "<form" not in body.split(t("UI_S35_NOTICES_HEADING"))[1].split(

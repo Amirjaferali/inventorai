@@ -4226,6 +4226,22 @@ _DISCLOSURE_PART_LABELS = {"mechanical": "UI_S15_SCOPE_MECH",
 _DISCLOSURE_SOURCE_LABELS = {"OWNER_STATED": "UI_S35_SOURCE_OWNER_STATED",
                              "user_defined": "UI_S35_SOURCE_USER_DEFINED",
                              "source_stated": "UI_S35_SOURCE_SOURCE_STATED"}
+# Stage 34 — output-language choice for this ONE document (request-local, nothing
+# stored): the exact values the HTML download accepts in its ``lang`` query value.
+_DISCLOSURE_OUTPUT_LANGS = ("en", "ar")
+
+
+def _disclosure_output_lang():
+    """``(lang, None)`` for the HTML download's output language, or ``(None, 400)``.
+    No ``lang`` value keeps the UI language (unchanged behaviour); exactly one value
+    of ``en`` or ``ar`` selects that language for this download only; anything else
+    (another value, an empty value or a repeated one) is refused, never normalised."""
+    values = request.args.getlist("lang")
+    if not values:
+        return _current_ui_lang(), None
+    if len(values) == 1 and values[0] in _DISCLOSURE_OUTPUT_LANGS:
+        return values[0], None
+    return None, app.response_class(status=400)
 
 
 def _disclosure_document_html(document, lang):
@@ -4310,7 +4326,9 @@ def account_disclosure_export(project_id):
         "disclosure_export.html", scope_label=_disclosure.SCOPE_LABEL,
         disclaimers=_disclosure.DISCLAIMERS,
         json_url=url_for("account_disclosure_export_json", project_id=project_id),
-        html_url=url_for("account_disclosure_export_html", project_id=project_id))
+        html_controls=[(lang, url_for("account_disclosure_export_html", project_id=project_id,
+                                      lang=lang), "UI_S35_HTML_CONTROL_" + lang.upper())
+                       for lang in _DISCLOSURE_OUTPUT_LANGS])
 
 
 @app.route("/account/projects/<project_id>/disclosure-export/json", methods=["GET"])
@@ -4331,8 +4349,13 @@ def account_disclosure_export_html(project_id):
     document, failure = _disclosure_document(project_id, _disclosure.HTML_FORMAT_VERSION)
     if failure is not None:
         return failure
+    # The output language is checked only after the unchanged authorization, so a
+    # denied request is denied whatever it asks for.
+    lang, failure = _disclosure_output_lang()
+    if failure is not None:
+        return failure
     try:
-        body = _disclosure_document_html(document, _current_ui_lang()).encode("utf-8")
+        body = _disclosure_document_html(document, lang).encode("utf-8")
     except Exception:
         return app.response_class(status=503)
     response = _disclosure_attachment(body, "text/html; charset=utf-8",
