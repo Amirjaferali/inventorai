@@ -238,3 +238,29 @@ Limitation: the legal-adviser review of the disclaimer wording before any user r
 **Remaining gaps.** No material test-evidence gap was found for any of the four rows; no new
 test is proposed. Open items: Owner acceptance of S1–S6, E1–E6 and D1–D7; the optional
 `control_loop` part-question browser check; the Stage-35 legal-adviser review.
+
+## Acceptance disposition — R1-FINAL-ACCEPTANCE-SYNC-01 (recorded 2026-10-15)
+
+**Owner acceptance: GRANTED 2026-10-15** for all 19 criteria that Part 2 of the addendum above
+maps to existing evidence: S1–S6 (manual supplier evidence and Stage-17 commercial capture),
+E1–E6 (P7 Structured Export) and D1–D7 (Stage-35 Disclosure Export). Their result is now
+ACCEPTED. **Applicability.** This disposition takes effect only on the verified merge of its PR
+into `feature/atomic-json-session-persistence`; on the proposal branch it is a candidate.
+
+The acceptance rests only on the evidence the addendum records (merged in PR #818, merge
+`0effcfda12360e8fb10f76f66981b313a41a6eb1`); no criterion, test or claim is added. The record
+above, including PR #814's acceptance, the 2026-10-14 `control_loop` P1–P6 acceptance and the
+addendum's wording at the time it was written, stays unchanged as history.
+
+It applies strictly to the delivered, bounded capabilities, and every recorded limitation stays:
+
+- manual supplier capture records the inventor's own statements and does not verify any
+  supplier;
+- commercial capture is not market validation and does not establish commercial readiness;
+- the P7 Structured Export keeps its accepted Stage-15 composition omission (S15-N2);
+- the Stage-35 Disclosure Export keeps the legal-adviser review of its disclaimer wording as an
+  open requirement before any user release.
+
+It implies no R2 approval, no `control_loop` root activation, no release readiness and no
+deployment authorization. With it, every R1 row of roadmap §8D carries Owner-accepted
+criteria and results.
