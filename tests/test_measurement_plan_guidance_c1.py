@@ -342,7 +342,8 @@ def test_p01_the_pack_change_is_exactly_one_group_and_one_note():
                    "NOT bound to the report / PDF gap context",
                    "ONLY consumer is the CAP-09 measurement-planning page", "independent of gap state",
                    "report / PDF eligibility and group count are unchanged", "inert",
-                   "does not read, interpret or grade inventor text",
+                   "this guidance does not analyze, interpret or assess the inventor's entry",
+                   "CAP-09 still receives, saves and displays the inventor's own text",
                    "not imply that a qualitative observation is equivalent to a formally established "
                    "metrological result",
                    "C3 (environmental-condition guidance) stays SOURCE-BLOCKED",
@@ -372,7 +373,9 @@ def test_p02_the_one_claim_has_exact_source_policy_and_limitation_linkage():
         assert phrase in claim["fact"], phrase
     for phrase in ("Measurement-planning guidance only", "ONLY consumer is the CAP-09 measurement-planning page",
                    "independent of any gap state", "NOT bound to the report / PDF gap context",
-                   "does not identify, read, interpret or grade", "never infers the kind of property",
+                   "This guidance does not analyze, interpret or assess the inventor's entry",
+                   "CAP-09 still receives, saves and displays the inventor's own text",
+                   "does not identify what the inventor intends to observe", "never infers the kind of property",
                    "No instrument, sensor or quantity selection or recommendation",
                    "accuracy or resolution requirement", "calibration, uncertainty evaluation, measurement "
                    "standard, mandatory procedure, required input, value, calculation, readiness, validation "
