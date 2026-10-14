@@ -740,12 +740,15 @@ def measurement_planning_references(domain_id):
     gap_type = "MECHANISM_COMPLETENESS"
     group_id, _gaps = CAP01_GAP_CONTEXT_BY_DOMAIN[domain_id]
     prefix = "UI_" + group_id + "_" + gap_type + "_"
-    rows = {row[0]: row for row in
+    # Keyed by group id, never by list position: the selection is by exact id.
+    rows = {group_id: (claim_ids, namespace) for group_id, claim_ids, namespace in
             CAP01_GAP_FUNDAMENTALS_EXTENSIONS.get((domain_id, gap_type), ())}
     groups = []
     for wanted in CAP09_MEASUREMENT_REFERENCE_GROUPS:
-        row = rows.get(wanted)
-        group = None if row is None else _fundamentals_group(row[0], row[1], prefix + row[2])
+        if wanted not in rows:
+            return None
+        claim_ids, namespace = rows[wanted]
+        group = _fundamentals_group(wanted, claim_ids, prefix + namespace)
         if group is None:
             return None
         groups.append(group)
