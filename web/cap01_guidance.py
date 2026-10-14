@@ -375,7 +375,10 @@ _FUNDAMENTALS_ITEM_PARTS = {
 # both required (all-or-nothing on the group, exactly as above).
 _FUNDAMENTALS_PROSE_ONLY_GROUPS = frozenset({"sensing_value_threshold_reference_v1",
                                              "measurement_accuracy_resolution_reference_v1",
-                                             "controller_input_logic_output_reference_v1"})
+                                             "controller_input_logic_output_reference_v1",
+                                             # MEASUREMENT-PLAN-GUIDANCE-01 (C1): the CAP-09-only
+                                             # guidance group below; never a report context group.
+                                             "measurement_quantity_versus_condition_reference_v1"})
 _FUNDAMENTALS_PROSE_ITEM_PARTS = {
     "title_key": "TITLE",
     "text_key":  "TEXT",
@@ -753,3 +756,37 @@ def measurement_planning_references(domain_id):
             return None
         groups.append(group)
     return tuple(groups)
+
+
+# MEASUREMENT-PLAN-GUIDANCE-01 (C1) — ONE visible, optional measurement-planning
+# guidance element on the CAP-09 page: WHAT the inventor intends to observe — a
+# quantity measured and expressed with an appropriate unit, or a condition /
+# state observed without a numerical value — before HOW it is measured or
+# checked. ONE prose-only claim declared in
+# ``domains/electronics_electrical/domain.json``
+# (measurement_quantity_versus_condition_reference_v1; provenance
+# electronics_electrical:PR022–PR023, NIST Technical Note 1900 §2 Note 2.1),
+# built by the SAME ``_fundamentals_group`` builder under its OWN copy
+# namespace. It is deliberately NOT a row of ``CAP01_GAP_FUNDAMENTALS_EXTENSIONS``:
+# the report / PDF gap contexts, their eligibility and their group count are
+# unchanged. Eligibility is the trusted durable root domain alone (never gap
+# state, inventor text or the request); nothing here reads, interprets or
+# grades what the inventor writes.
+CAP09_MEASUREMENT_GUIDANCE_GROUP = "measurement_quantity_versus_condition_reference_v1"
+CAP09_MEASUREMENT_GUIDANCE_CLAIMS = ("measured_quantity_versus_observed_condition",)
+CAP09_MEASUREMENT_GUIDANCE_STEM = "UI_CAP09_MEASUREMENT_PLANNING_GUIDANCE_V1_"
+
+
+def measurement_planning_guidance(domain_id):
+    """The ONE measurement-planning guidance group for the CAP-09 planning page,
+    as copy KEYS plus its group / claim identifiers — or ``None`` unless
+    ``domain_id`` is exactly the Electronics root domain.
+
+    All-or-nothing on its own copy (title, intro, item, source, boundary), so the
+    page never shows the guidance without its source and limits. Pure; never
+    raises; reads no project, text or state."""
+    if domain_id != CAP09_MEASUREMENT_REFERENCE_DOMAIN:
+        return None
+    return _fundamentals_group(CAP09_MEASUREMENT_GUIDANCE_GROUP,
+                               CAP09_MEASUREMENT_GUIDANCE_CLAIMS,
+                               CAP09_MEASUREMENT_GUIDANCE_STEM)

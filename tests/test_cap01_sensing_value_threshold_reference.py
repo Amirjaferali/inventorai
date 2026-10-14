@@ -45,6 +45,10 @@ from tests.cap01_controller_addition import (
 # PHYSICAL_FEASIBILITY context; excluded here likewise (tests/cap01_charge_addition.py).
 from tests.cap01_charge_addition import (
     CHARGE_GROUP, CHARGE_RECORDS, CHARGE_ROW, without_charge_addition)
+# MEASUREMENT-PLAN-GUIDANCE-01 (C1) later appended ONE CAP-09-page-only guidance group to the pack (never a
+# report context row); excluded here likewise (tests/cap01_measurement_guidance_addition.py).
+from tests.cap01_measurement_guidance_addition import (
+    MGUIDE_GROUP, MGUIDE_RECORDS, without_measurement_guidance_addition)
 
 _ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 _PACK_PATH = os.path.join(_ROOT, "domains", "electronics_electrical", "domain.json")
@@ -177,7 +181,7 @@ def test_s04_the_extension_table_holds_exactly_the_two_fixed_rows():
              "ENERGY_TIME_FUNDAMENTALS_"), CHARGE_ROW),
         (DOMAIN, MECHANISM_COMPLETENESS): ((GROUP, (CLAIM,), "SENSING_FUNDAMENTALS_"), ACCURACY_ROW, CTRL_ROW),
     }
-    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({GROUP, ACCURACY_GROUP, CTRL_GROUP})
+    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({GROUP, ACCURACY_GROUP, CTRL_GROUP, MGUIDE_GROUP})
 
 
 def test_s05_never_reads_inventor_text_or_signals():
@@ -269,8 +273,9 @@ def test_f03_a_text_key_never_substitutes_an_equation_elsewhere(monkeypatch):
 def test_p01_pack_minus_exactly_this_addition_equals_the_base_pack():
     pack = _pack()
     assert [g["group_id"] for g in pack["reference_fundamentals"]] == [BASE_GROUP, ET_GROUP, GROUP,
-                                                                       ACCURACY_GROUP, CTRL_GROUP, CHARGE_GROUP]
-    pre = without_charge_addition(without_controller_addition(pack))
+                                                                       ACCURACY_GROUP, CTRL_GROUP, CHARGE_GROUP,
+                                                                       MGUIDE_GROUP]
+    pre = without_measurement_guidance_addition(without_charge_addition(without_controller_addition(pack)))
     pre["reference_fundamentals"] = [g for g in pre["reference_fundamentals"]
                                      if g["group_id"] not in (GROUP, ACCURACY_GROUP)]
     note = pre["_governance_notes"].pop("sensing_value_threshold_reference")
@@ -299,7 +304,7 @@ def test_p03_provenance_is_append_only_with_two_claim_specific_records():
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR011")
     assert tuple(ids[i + 1:i + 3]) == RECORDS
-    pre = [r for r in records if r["record_id"] not in RECORDS + ACCURACY_RECORDS + CTRL_RECORDS + CHARGE_RECORDS]
+    pre = [r for r in records if r["record_id"] not in RECORDS + ACCURACY_RECORDS + CTRL_RECORDS + CHARGE_RECORDS + MGUIDE_RECORDS]
     assert _digest(pre) == _PRE_PROVENANCE_DIGEST
     src, use = (records[ids.index(r)] for r in RECORDS)
     assert src["url"] == SOURCE_URL and use["url"] == LICENSE_URL
