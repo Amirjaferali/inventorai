@@ -5108,6 +5108,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at STAGE15-OBSERVATION-WITHDRAW-01 (merge-effective delivery record): it follows the
            # result withdraw increment in the chain
            r"the only product increment authorized after it was STAGE15-OBSERVATION-WITHDRAW-01 \(below\), "
+           r"delivered \(PR #\d+\); "
+           # ADVANCED at STAGE34-OUTPUT-LANGUAGE-01 (merge-effective delivery record): it follows the
+           # observation withdraw increment in the chain
+           r"the only product increment authorized after it was STAGE34-OUTPUT-LANGUAGE-01 \(below\), "
            r"delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
@@ -5392,7 +5396,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # authorized after it; the decision criteria and values increment precedes it
                # ADVANCED at STAGE15-OBSERVATION-WITHDRAW-01 (merge-effective delivery record): no product
                # increment is authorized after it; the result withdraw increment precedes it
-               r"No product increment is authorized after STAGE15-OBSERVATION-WITHDRAW-01 \(delivered: PR #\d+; "
+               # ADVANCED at STAGE34-OUTPUT-LANGUAGE-01 (merge-effective delivery record): no product increment
+               # is authorized after it; the observation withdraw increment precedes it
+               r"No product increment is authorized after STAGE34-OUTPUT-LANGUAGE-01 \(delivered: PR #\d+; "
+               r"[^)]*disclosure HTML download[^)]*presentation only[^)]*Stage 34 ENTERED / PARTIAL for this "
+               r"slice only; effective only on the verified merge of PR #\d+\) or after the preceding "
+               r"STAGE15-OBSERVATION-WITHDRAW-01 \(delivered: PR #\d+; "
                r"[^)]*terminal withdrawal of one recorded interface check[^)]*not erasure; current check "
                r"counts only[^)]*no Stage entered, completed or reopened; effective only on the verified "
                r"merge of PR #\d+\) or after the preceding "
@@ -5986,6 +5995,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # result withdraw increment in the chain
             "the only increment authorized after it — STAGE15-OBSERVATION-WITHDRAW-01 (above) — is DELIVERED "
             "(PR #N); "
+            # ADVANCED at STAGE34-OUTPUT-LANGUAGE-01 (merge-effective delivery record): it follows the
+            # observation withdraw increment in the chain
+            "the only increment authorized after it — STAGE34-OUTPUT-LANGUAGE-01 (above) — is DELIVERED "
+            "(PR #N); "
             "no subsequent increment has been authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
     # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
@@ -6321,7 +6334,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # criteria and values increment precedes it
            # ADVANCED at STAGE15-OBSERVATION-WITHDRAW-01 (merge-effective delivery record): ... after it; the
            # result withdraw increment precedes it
-           r"No product increment is authorized after STAGE15-OBSERVATION-WITHDRAW-01 \(delivered; PR #\d+; "
+           # ADVANCED at STAGE34-OUTPUT-LANGUAGE-01 (merge-effective delivery record): ... after it; the
+           # observation withdraw increment precedes it
+           r"No product increment is authorized after STAGE34-OUTPUT-LANGUAGE-01 \(delivered; PR #\d+; "
+           r"[^)]*disclosure HTML download, presentation only and nothing stored; Stage 34 ENTERED / PARTIAL "
+           r"for this slice only; effective only on merge\) or after the preceding "
+           r"STAGE15-OBSERVATION-WITHDRAW-01 \(delivered; PR #\d+; "
            r"[^)]*terminal withdrawal of one recorded interface check, append-only and kept as history; "
            r"no Stage change; effective only on merge\) or after the preceding "
            r"CAP09-RESULT-WITHDRAW-01 \(delivered; PR #\d+; "

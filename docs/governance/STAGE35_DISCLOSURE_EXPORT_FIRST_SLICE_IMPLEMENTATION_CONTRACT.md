@@ -72,6 +72,19 @@ recorded execution(s). …". Field 22 still carries no result text, and no withd
 withdrawal detail is ever exported. The v2 envelope, version strings, file names, closed vocabulary and the
 `none` / `recorded` tokens are unchanged; a history the owner cannot validate still refuses the whole export. Only S7
 (§2.2) and the two §12.7 label rows change, as noted inline; nothing else changes.
+AMENDMENT — STAGE34-OUTPUT-LANGUAGE-01 (HTML output language; Owner-authorized narrow amendment, 2026-10-14;
+applicability: this amendment takes effect only on the verified merge of its PR into
+`feature/atomic-json-session-persistence`; on that PR's proposal branch it describes a proposed change, not merged
+behaviour): the pre-download page offers ONE HTML control per output language — English and Arabic — in place of the
+single HTML control, and the existing HTML route accepts an optional `lang` query value of exactly `en` or `ar` that
+selects the document's language for that download only. With no `lang` value the UI locale is used, exactly as before;
+any other value (another value, an empty value or a repeated one) is refused with a bare, empty `400`, never
+normalised, and only AFTER the unchanged authorization, so a denial is the unchanged `_deny_project()` whatever is
+asked. Nothing is stored (no account or project preference). The projection, digest, version strings, file names,
+headers, JSON download, disclaimers, scope label and every substantive value are unchanged; the language changes the
+§10 chrome only (headings, labels, marker / reason wording and the Arabic supplements), and the existing English-output
+rule (§10, Stage 34 rule) is unchanged. Only §10 (locale line), §12.5 (HTML control rows and one page note), §13 (page
+order and HTML route) and §14 (#33) change, as noted inline; nothing else changes.
 BASE: `feature/atomic-json-session-persistence` at `0ab87dca9ab5abebc03da791d288d661727d7858` (tree
 `8cfd87c026298df7f31fd13cf082c6efe470ee7e`); `ACTIVE CONTRACT: NONE`; Stage 35 NOT ENTERED / NOT AUTHORIZED; the Master
 Roadmap at 23 / 45 incomplete.
@@ -677,7 +690,10 @@ key. A v1 reader rejects unknown keys.
   external URL, web font, tracker or `javascript:` URL. In-document fragment links (`#<item_key>`) are allowed.
 - Escaping: autoescape on; no projection value ever passes through `|safe`; attribute values come only from closed
   tokens.
-- Locale: `<html lang="en" dir="ltr">` or `<html lang="ar" dir="rtl">`, from the UI locale at download. In the Arabic
+- Locale: `<html lang="en" dir="ltr">` or `<html lang="ar" dir="rtl">`, from the explicitly selected output language
+  (`en` / `ar`) when the download names one, otherwise from the UI locale at download (**AMENDED at
+  STAGE34-OUTPUT-LANGUAGE-01**; was "from the UI locale at download"; the selection is request-local and changes
+  presentation only — the rendered substantive values, digest and file name are identical in both languages). In the Arabic
   locale every exact English disclaimer stays present, each followed by its Arabic supplement; the scope label shows
   English and Arabic. English digits for versions, dates, counts and item keys. In the Arabic document every exact
   English fixed-text element — each English disclaimer, the English scope label and the English `capture_limitation` —
@@ -812,7 +828,15 @@ statements are never altered for this export.
 | Page intro | This export describes your invention using only what you have recorded in this project, with its source and validation details. Read the notices below before downloading. | يصف هذا التصدير اختراعك باستخدام ما سجّلته في هذا المشروع فقط، مع تفاصيل المصدر والتحقق. اقرأ التنبيهات أدناه قبل التنزيل. |
 | Notices heading | Before you download | قبل التنزيل |
 | JSON control | Download machine-readable file (JSON) | تنزيل الملف المقروء آليًا (JSON) |
-| HTML control | Download readable document (HTML) | تنزيل المستند المقروء (HTML) |
+| HTML control (English output) | Download readable document in English (HTML) | تنزيل المستند المقروء بالإنجليزية (HTML) |
+| HTML control (Arabic output) | Download readable document in Arabic (HTML) | تنزيل المستند المقروء بالعربية (HTML) |
+| Output-language note (page only) | The language you choose changes only the readable document's headings and labels. The English notices are always included, the text InventorAI generated stays in English, your own text stays exactly as you wrote it, and your choice is not saved. | اللغة التي تختارها تغيّر عناوين المستند المقروء وتسمياته فقط. تبقى التنبيهات الإنجليزية مضمّنة دائمًا، ويبقى النص الذي ولّده InventorAI بالإنجليزية، ويبقى نصك كما كتبته تمامًا، ولا يُحفَظ اختيارك. |
+
+(**AMENDED at STAGE34-OUTPUT-LANGUAGE-01**: the two output-language HTML controls and the page-only note replace the
+single row "HTML control | Download readable document (HTML) | تنزيل المستند المقروء (HTML)".)
+
+| Purpose | EN | AR |
+|---|---|---|
 | Same-data line | The readable document is generated from the same data as the machine-readable file and adds nothing to it. | يُولَّد المستند المقروء من البيانات نفسها التي في الملف المقروء آليًا، ولا يضيف إليها شيئًا. |
 | Retention heading | What InventorAI keeps | ما يحتفظ به InventorAI |
 | Retention 1 | InventorAI keeps no copy of this export file. Each download is composed when you request it. | لا يحتفظ InventorAI بأي نسخة من ملف التصدير هذا؛ يُنشأ كل تنزيل عند طلبك له. |
@@ -954,14 +978,20 @@ is added.
 
 - Entry: one link per project row on the account page (`web/templates/account.html`).
 - `GET /account/projects/<project_id>/disclosure-export`: the page. Order: scope label, intro, "Before you download"
-  with the eleven disclaimers (EN exact; AR supplement after each in the Arabic locale), the two download controls, the
-  same-data line, the retention block. Viewing records nothing.
+  with the eleven disclaimers (EN exact; AR supplement after each in the Arabic locale), the download controls — the
+  JSON control and one HTML control per output language, English then Arabic — the same-data line, the output-language
+  note, the retention block. Viewing records nothing. (**AMENDED at STAGE34-OUTPUT-LANGUAGE-01**; was "the two
+  download controls, the same-data line, the retention block".)
 - The two download routes, `GET /account/projects/<project_id>/disclosure-export/json` and
   `GET /account/projects/<project_id>/disclosure-export/html`, compose (§3) and answer `200` with
   `Content-Disposition: attachment; filename="<§9.1 name>"`, `Cache-Control: no-store` and
   `X-Content-Type-Options: nosniff`. The HTML response also carries
   `Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; sandbox`. Denial: `_deny_project()`.
   Refusal: a bare, empty 503.
+- **AMENDED at STAGE34-OUTPUT-LANGUAGE-01.** The HTML route reads one optional `lang` query value AFTER the unchanged
+  authorization: none → the UI locale (unchanged); exactly one `en` or `ar` → that output language for this download
+  only; anything else (another value, an empty value or a repeated one) → a bare, empty `400`, never normalised. A
+  denied request is the unchanged `_deny_project()` whatever `lang` it carries. The JSON route ignores `lang`.
 - No other route, no POST, no API surface, no email, no cache, no temporary file, no log line with invention content.
 
 ## 14. BASE RED plan (future tests; none written by this document)
@@ -1010,6 +1040,7 @@ Each obligation must first fail on the implementation base, then pass. Files:
 | 30 | C2 envelope context | H | no template | §10, §12.8 | every `NOT_APPLICABLE` Source, Validation and Limitation row of a truth-bearing item renders its §12.8 sentence (EN and AR), never a bare "Not applicable"; each sentence states that no separate value is held and its second sentence rules out "no source", "validated / validation unnecessary" and "no limitations"; field-level `NOT_APPLICABLE` (fields 25, 28) still renders "Not applicable"; the JSON marker is unchanged | workstream §5 |
 | 31 | C3 legend and Risks clarification | H | no template | §10, §12.9, §12.10 | the one "How to read this document" block appears after the disclaimers and before field 1, in EN and AR, and explains both content classes and all seven markers with the §12.3 wording; with fixtures where fields 15, 16, 17 and 24 are each `NOTHING_RECORDED`, the legend line for that marker states that it does not mean none exists; the §12.10 clarification sits under the field-24 heading whatever its marker; neither text contains a severity, probability, score, ranking or assessment word, and the field-24 items are unchanged | workstream §13 |
 | 32 | C4 phone width and long values | H | no template | §10 | the document has the viewport meta; at a 360–390 px viewport: (A) a 2,000-character unbroken inventor value (no spaces) causes no horizontal page overflow, wraps inside its container and still decodes to the exact owner-held value; (B) a normal generated header with the disclosure-schema version, the export-format version and the full `sha256:` content digest keeps the page width within the viewport with no horizontal document overflow, the digest text in the document is byte-identical to the JSON `content_digest`, and selecting / copying it yields exactly that digest (no inserted soft hyphen or zero-width character; the digest is never altered to make the test pass) (Correction 05, R-C4); `white-space: pre-wrap`, `dir="auto"` / `<bdi>`, escaping and labels outside the value element are unchanged; in the Arabic document each exact English disclaimer, the English scope label and the English `capture_limitation` carry `lang="en" dir="ltr"`, and Arabic mixed-direction fixtures keep each value next to its own labels | workstream §13 |
+| 33 | STAGE34-OUTPUT-LANGUAGE-01 output language (AMENDED) | W, H | no override | §10, §12.5, §13 | the page shows one HTML control per output language (`?lang=en`, `?lang=ar`) in both UI locales; an explicit `en` / `ar` renders `<html lang dir>` in that language whatever the UI locale and equals the unchanged no-override rendering in that locale byte for byte; both languages carry the same digest, file name, headers and substantive values; an empty, unknown, differently-cased or repeated value is a bare `400`; every denial is unchanged whatever `lang` is asked; the JSON download ignores `lang`; nothing is stored; a real-browser check downloads both languages from both UI locales with no overflow at 390 / 1280 px | Stage 34 |
 
 R1-focused obligations (file R):
 

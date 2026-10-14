@@ -24,9 +24,12 @@
 </section>
 <div class="disclosure-controls">
 <a href="{{ json_url }}">{{ t('UI_S35_JSON_CONTROL') }}</a>
-<a href="{{ html_url }}">{{ t('UI_S35_HTML_CONTROL') }}</a>
+{% for lang, url, label_key in html_controls %}
+<a href="{{ url }}" hreflang="{{ lang }}" data-output-lang="{{ lang }}">{{ t(label_key) }}</a>
+{% endfor %}
 </div>
 <p class="disclosure-small">{{ t('UI_S35_SAME_DATA') }}</p>
+<p class="disclosure-small">{{ t('UI_S35_PAGE_OUTPUT_LANGUAGE_NOTE') }}</p>
 <section aria-labelledby="disclosure-retention-h">
 <h2 id="disclosure-retention-h">{{ t('UI_S35_RETENTION_HEADING') }}</h2>
 <ul class="disclosure-small">

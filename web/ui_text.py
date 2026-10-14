@@ -7982,9 +7982,17 @@ UI_STRINGS = {
         "en": "Download machine-readable file (JSON)",
         "ar": "تنزيل الملف المقروء آليًا (JSON)",
     },
-    "UI_S35_HTML_CONTROL": {
-        "en": "Download readable document (HTML)",
-        "ar": "تنزيل المستند المقروء (HTML)",
+    "UI_S35_HTML_CONTROL_EN": {
+        "en": "Download readable document in English (HTML)",
+        "ar": "تنزيل المستند المقروء بالإنجليزية (HTML)",
+    },
+    "UI_S35_HTML_CONTROL_AR": {
+        "en": "Download readable document in Arabic (HTML)",
+        "ar": "تنزيل المستند المقروء بالعربية (HTML)",
+    },
+    "UI_S35_PAGE_OUTPUT_LANGUAGE_NOTE": {
+        "en": "The language you choose changes only the readable document's headings and labels. The English notices are always included, the text InventorAI generated stays in English, your own text stays exactly as you wrote it, and your choice is not saved.",
+        "ar": "اللغة التي تختارها تغيّر عناوين المستند المقروء وتسمياته فقط. تبقى التنبيهات الإنجليزية مضمّنة دائمًا، ويبقى النص الذي ولّده InventorAI بالإنجليزية، ويبقى نصك كما كتبته تمامًا، ولا يُحفَظ اختيارك.",
     },
     "UI_S35_SAME_DATA": {
         "en": "The readable document is generated from the same data as the machine-readable file and adds nothing to it.",
