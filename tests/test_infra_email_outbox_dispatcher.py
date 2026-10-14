@@ -383,6 +383,22 @@ def test_the_request_path_never_reuses_the_dispatcher_store():
 # Startup / shutdown semantics
 # =============================================================================
 
+def _provisioned_boot_db(tmp_path):
+    """AMENDED at STAGE38-DATABASE-STARTUP-SAFETY-01: production now opens an
+    EXISTING database only (it no longer creates one on first use), so a
+    production cold boot is given a database provisioned through the explicit
+    operator command instead of a path the application would once have created."""
+    import importlib.util as _ilu
+    spec = _ilu.spec_from_file_location(
+        "_inventorai_backup_cli_boot",
+        os.path.join(ROOT, "scripts", "inventorai_backup.py"))
+    cli = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    path = str(tmp_path / "boot.sqlite")
+    assert cli.main(["provision", path]) == 0
+    return path
+
+
 def _cold_boot(extra_env, program):
     env = dict(os.environ)
     env.update({"INVENTORAI_ENV": "production",
@@ -395,7 +411,7 @@ def _cold_boot(extra_env, program):
 
 def test_production_boots_without_email_config_and_starts_no_loop(tmp_path):
     result = _cold_boot(
-        {"INVENTORAI_DB_PATH": str(tmp_path / "boot.sqlite")},
+        {"INVENTORAI_DB_PATH": _provisioned_boot_db(tmp_path)},
         "import threading, web.app as w;"
         "assert w._EMAIL_DISPATCHER_STARTED is False;"
         "assert not w._EMAIL_DISPATCHER.running;"
@@ -408,7 +424,7 @@ def test_production_boots_without_email_config_and_starts_no_loop(tmp_path):
 
 def test_production_with_provider_starts_exactly_one_dispatcher_thread(tmp_path):
     result = _cold_boot(
-        {"INVENTORAI_DB_PATH": str(tmp_path / "boot.sqlite"),
+        {"INVENTORAI_DB_PATH": _provisioned_boot_db(tmp_path),
          "INVENTORAI_EMAIL_PROVIDER": "resend",
          "INVENTORAI_RESEND_API_KEY": "probe-key-not-real",
          "INVENTORAI_EMAIL_FROM": "InventorAI <no-reply@example.test>",

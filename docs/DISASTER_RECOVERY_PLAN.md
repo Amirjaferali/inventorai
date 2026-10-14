@@ -63,6 +63,20 @@ service — no second backup engine, no provider API:
   python scripts/inventorai_backup.py backup  <source> <backup>
   python scripts/inventorai_backup.py restore <backup> <new-target>
   python scripts/inventorai_backup.py parity  <first> <second>
+  python scripts/inventorai_backup.py provision <new-database>
+Production database startup safety (STAGE38-DATABASE-STARTUP-SAFETY-01):
+production opens an EXISTING database only (URI mode=rw; never creates the file
+or its directory) and refuses a missing, unopenable or unrecognised file — the
+process still boots, `/health` answers 503 and no background operation (email
+dispatcher, off-provider backup) starts. A lost database is therefore never
+silently replaced by an empty one, and never backed up as one. Restoring
+(below) or, for a NEW environment only, `provision` (an empty database at a new
+path inside an existing directory; it never replaces a file) are the only ways a
+production database comes into place; both are deliberate operator actions.
+Running either on the hosting platform requires an operator shell on the
+service with its disk mounted while `/health` reads 503 — that provider
+behaviour is UNVERIFIED and must be confirmed by the Owner before it is relied
+on (see the open items of PSRR items 17–19 / RL-B6).
 Procedure:
 1. Validate the most recent backup (validate_sqlite_database / `validate`).
 2. Restore to a NEW target path — never onto the live file blindly (`restore`;

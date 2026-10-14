@@ -46,6 +46,17 @@ Prohibited (binding, inherited from P10-BR1 and this tranche's authorization):
     requires ``--overwrite`` typed by the operator. Repointing
     ``INVENTORAI_DB_PATH`` at a verified restore is a deliberate, separate
     human step (DR plan Scenario 7), never something this CLI performs.
+
+``provision`` (STAGE38-DATABASE-STARTUP-SAFETY-01): production never creates its
+database while serving, so the FIRST, empty canonical database of a new
+environment is created only by this explicit operator command. It refuses an
+existing target and a missing parent directory (it creates no directory), builds
+the schema through the two existing stores' own constructors into a namespaced
+in-progress file beside the target, validates it, and then hard-links it into
+place — a link can never replace a file, so an existing or concurrently created
+database is never overwritten, and an interrupted run leaves only the in-progress
+file, which the next run discards. It is NEVER run automatically, and it is not a
+recovery step: after a database loss, ``restore`` a verified backup instead.
 """
 import argparse
 import datetime
@@ -56,6 +67,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from engine.backup_service import (  # noqa: E402  (path set above)
+    INVENTORAI_ANCHOR_TABLES,
     BackupError,
     backup_database,
     database_parity_report,
@@ -64,6 +76,53 @@ from engine.backup_service import (  # noqa: E402  (path set above)
 )
 
 _EXIT_BACKUP_ERROR = 3
+# Namespaced so an interrupted provisioning run is never mistaken for a database.
+_PROVISION_INPROGRESS_SUFFIX = ".provision-inprogress"
+
+
+def _remove_if_present(path):
+    for candidate in (path, path + "-journal"):
+        if os.path.lexists(candidate):
+            os.remove(candidate)
+
+
+def provision_database(target):
+    """Create a NEW, empty InventorAI database at ``target`` (explicit operator
+    operation; see the module docstring). Raises ``BackupError`` on every
+    refusal and leaves no file at ``target`` unless it fully succeeded."""
+    from engine.account_store import SqliteAccountStore
+    from engine.record_store import SqliteRecordStore
+    if os.path.lexists(target):
+        raise BackupError(
+            "target already exists; provisioning never replaces a database: %s"
+            % target)
+    parent = os.path.dirname(target)
+    if not os.path.isdir(parent):
+        raise BackupError("target directory does not exist: %s" % parent)
+    inprogress = target + _PROVISION_INPROGRESS_SUFFIX
+    _remove_if_present(inprogress)
+    try:
+        try:
+            SqliteRecordStore(inprogress).close()
+            SqliteAccountStore(inprogress).close()
+        except Exception as exc:
+            raise BackupError("building the new database failed: %s"
+                              % type(exc).__name__) from exc
+        report = validate_sqlite_database(
+            inprogress, required_tables=INVENTORAI_ANCHOR_TABLES)
+        try:
+            os.link(inprogress, target)
+        except FileExistsError as exc:
+            raise BackupError(
+                "target appeared during provisioning; nothing was replaced: %s"
+                % target) from exc
+        except OSError as exc:
+            raise BackupError("cannot place the new database at %s: %s"
+                              % (target, type(exc).__name__)) from exc
+    finally:
+        _remove_if_present(inprogress)
+    return {"target_path": target, "quick_check": report["quick_check"],
+            "tables": report["tables"]}
 
 
 def _utc_now():
@@ -111,6 +170,12 @@ def _cmd_restore(args):
     return 0
 
 
+def _cmd_provision(args):
+    target = _abs(args.target)
+    _emit("provision", provision_database(target), target=target)
+    return 0
+
+
 def _cmd_parity(args):
     a, b = _abs(args.first), _abs(args.second)
     _emit("parity", database_parity_report(a, b), first=a, second=b)
@@ -147,6 +212,13 @@ def build_parser():
     restore.add_argument("--overwrite", action="store_true",
                          help="replace an existing target file (off by default)")
     restore.set_defaults(func=_cmd_restore)
+
+    provision = subparsers.add_parser(
+        "provision",
+        help=("create the FIRST, empty database of a new environment at a NEW "
+              "path; never replaces a file and is not a recovery step"))
+    provision.add_argument("target", help="NEW database path inside an existing directory")
+    provision.set_defaults(func=_cmd_provision)
 
     parity = subparsers.add_parser(
         "parity", help="schema-object and row-count parity between two databases")

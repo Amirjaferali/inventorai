@@ -97,6 +97,9 @@ from web.gap_labels import (
 from web import ui_text
 from web import observability as _obs
 from urllib.request import pathname2url as _pathname2url
+from engine.backup_service import (  # STAGE38-DATABASE-STARTUP-SAFETY-01
+    DatabaseNotAdmitted, check_existing_database, open_existing_database,
+)
 from engine.deliverable_assembler import assemble_deliverable
 # P4-1b-1 (G-P4-1B-1-DOC-01 / PR #358): the merged P4-1a durable store and the
 # P4-0 record contract, used ONLY to durably create and cold-load a NEW project
@@ -663,19 +666,76 @@ def _resolve_db_path():
                         "inventorai_p4_1b1.sqlite")
 
 
+# --- STAGE38-DATABASE-STARTUP-SAFETY-01: production opens an EXISTING database only
+#
+# In production every store-opening path — the project store, the account store,
+# the email dispatcher's store and the backup scheduler's store — opens the
+# canonical SQLite file with ``create=False``: URI ``mode=rw``, never a
+# create-capable open, never a created directory, and a missing, unopenable or
+# unrecognised file is refused (``DatabaseNotAdmitted``) before any schema DDL.
+# Creating the production database (initial provisioning) and restoring it are
+# explicit operator operations (`scripts/inventorai_backup.py provision` /
+# `restore`), never a side effect of serving. Development and tests keep the
+# original lazy create-on-first-use behaviour unchanged.
+
+def _prepare_database_open(path):
+    """Return the ``create`` policy for opening ``path``. Development / test:
+    create the parent directory and allow creation (unchanged). Production:
+    create nothing and open the existing database only."""
+    if _is_production():
+        return False
+    directory = os.path.dirname(path)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+    return True
+
+
+def _database_file_identity(path):
+    """``(st_dev, st_ino)`` of the database file, or None when it is absent."""
+    try:
+        status = os.stat(path)
+    except OSError:
+        return None
+    return (status.st_dev, status.st_ino)
+
+
+# The file identity each cached request-path store was opened on, so production
+# `/health` can tell that the file was deleted or replaced underneath an open
+# connection (a cached connection keeps working on the unlinked file).
+_STORE_FILE_IDENTITY = None
+_ACCOUNT_STORE_FILE_IDENTITY = None
+
+
 def _get_store():
     """Return the one application-scoped SqliteRecordStore (single-process MVP),
     building it on first use from the resolved path. Multi-worker topology,
     pooling, per-request connections, WAL tuning, and production datastore
-    selection are deferred. Raises on an unusable path (caller fails closed)."""
-    global _STORE
+    selection are deferred. Raises on an unusable path (caller fails closed);
+    in production a missing or unrecognised database is refused, never created."""
+    global _STORE, _STORE_FILE_IDENTITY
     if _STORE is None:
         path = _resolve_db_path()
-        directory = os.path.dirname(path)
-        if directory:
-            os.makedirs(directory, exist_ok=True)
-        _STORE = SqliteRecordStore(path)
+        store = SqliteRecordStore(path, create=_prepare_database_open(path))
+        _STORE_FILE_IDENTITY = _database_file_identity(path)
+        _STORE = store
     return _STORE
+
+
+def _production_database_admitted():
+    """True outside production. In production: the canonical database file
+    exists, opens read-write (``mode=rw``) and holds a recognised InventorAI
+    schema. Opens and closes one connection; creates and writes nothing. A
+    refusal is reported through the bounded operational seam (exception class
+    only) and keeps every background operation from starting."""
+    if not _is_production():
+        return True
+    try:
+        open_existing_database(_resolve_db_path()).close()
+        return True
+    except Exception as exc:
+        _obs.emit("database.admission_refused", level="error",
+                  component="database", error_class=type(exc).__name__)
+        return False
 
 
 # --- P5-1: account store, development email sink, and bounded policy ----------
@@ -852,12 +912,10 @@ def _email_delivery_available():
 def _open_dispatcher_store():
     """A store instance for the dispatcher ONLY - never the request-scoped
     `_ACCOUNT_STORE`. Opened in whichever thread runs the dispatch and closed by
-    it, so no SQLite connection is ever shared across threads."""
+    it, so no SQLite connection is ever shared across threads. In production it
+    opens the existing database only (refused, never created, when missing)."""
     path = _resolve_db_path()
-    directory = os.path.dirname(path)
-    if directory:
-        os.makedirs(directory, exist_ok=True)
-    return SqliteAccountStore(path)
+    return SqliteAccountStore(path, create=_prepare_database_open(path))
 
 
 _EMAIL_DISPATCHER = EmailDispatcher(
@@ -882,11 +940,18 @@ def _start_email_dispatcher_if_production():
     """Start the ONE dispatcher thread - in production only, and only when a
     sender capable of delivery is configured. Production still boots with no
     provider configured; it then starts no delivery loop at all, so nothing can
-    send without valid configuration. Idempotent within the process."""
-    if _is_production() and _email_delivery_available():
+    send without valid configuration. Nor does it start unless the existing
+    production database was admitted at startup. Idempotent within the process."""
+    if (_is_production() and _PRODUCTION_DATABASE_ADMITTED
+            and _email_delivery_available()):
         return _EMAIL_DISPATCHER.start()
     return False
 
+
+# Production database admission, established ONCE before any background
+# operation starts: neither the dispatcher nor the backup scheduler starts unless
+# the existing canonical database is admitted (`_production_database_admitted`).
+_PRODUCTION_DATABASE_ADMITTED = _production_database_admitted()
 
 _EMAIL_DISPATCHER_STARTED = _start_email_dispatcher_if_production()
 
@@ -909,12 +974,11 @@ _EMAIL_DISPATCHER_STARTED = _start_email_dispatcher_if_production()
 def _open_offsite_backup_store():
     """A store instance for the scheduler ONLY - never the request-scoped
     `_ACCOUNT_STORE`. Opened in whichever thread runs the check and closed by
-    it, so no SQLite connection is ever shared across threads."""
+    it, so no SQLite connection is ever shared across threads. In production it
+    opens the existing database only (refused, never created, when missing), so
+    a lost database can never be replaced by an empty one and backed up."""
     path = _resolve_db_path()
-    directory = os.path.dirname(path)
-    if directory:
-        os.makedirs(directory, exist_ok=True)
-    return SqliteAccountStore(path)
+    return SqliteAccountStore(path, create=_prepare_database_open(path))
 
 
 def _resolve_offsite_backup_settings():
@@ -939,10 +1003,12 @@ _OFFSITE_BACKUP_SCHEDULER = _live_offsite_backup_scheduler() or _OffsiteBackupSc
 def _start_offsite_backup_scheduler_if_production():
     """Start the ONE scheduler thread - in production only, and only when the
     R2 configuration is complete. Production still boots with no configuration;
-    it then starts no scheduler at all, so nothing can upload without it.
-    Idempotent within the process: a live thread (this instance's or a reused
+    it then starts no scheduler at all, so nothing can upload without it. Nor
+    does it start unless the existing production database was admitted at
+    startup. Idempotent within the process: a live thread (this instance's or a reused
     one's) makes this a no-op that returns False."""
-    if _is_production() and _offsite_backup_configured(os.environ):
+    if (_is_production() and _PRODUCTION_DATABASE_ADMITTED
+            and _offsite_backup_configured(os.environ)):
         return _OFFSITE_BACKUP_SCHEDULER.start()
     return False
 
@@ -1004,13 +1070,12 @@ REGISTER_GENERIC_MESSAGE_AR = (
 def _get_account_store():
     """Return the one application-scoped SqliteAccountStore, built on first use
     from the resolved DB path (same file as the project store; separate tables)."""
-    global _ACCOUNT_STORE
+    global _ACCOUNT_STORE, _ACCOUNT_STORE_FILE_IDENTITY
     if _ACCOUNT_STORE is None:
         path = _resolve_db_path()
-        directory = os.path.dirname(path)
-        if directory:
-            os.makedirs(directory, exist_ok=True)
-        _ACCOUNT_STORE = SqliteAccountStore(path)
+        store = SqliteAccountStore(path, create=_prepare_database_open(path))
+        _ACCOUNT_STORE_FILE_IDENTITY = _database_file_identity(path)
+        _ACCOUNT_STORE = store
     return _ACCOUNT_STORE
 
 
@@ -1028,8 +1093,29 @@ def _database_health():
     creates it on first real use, so absence is a normal pre-first-use state, not
     a failure). Returns ``"ok"`` | ``"uninitialized"`` | ``"error"``. It proves
     nothing about external providers, payment, hosting, security, PSRR, legal
-    readiness, or deployment readiness."""
+    readiness, or deployment readiness.
+
+    STAGE38-DATABASE-STARTUP-SAFETY-01 — in production there is no lazy
+    pre-first-use state: the canonical database must already exist (it is
+    provisioned or restored explicitly), so a missing, unopenable or
+    unrecognised file is ``"error"`` (503) — checked read-only BEFORE any cached
+    connection is trusted, and a cached store opened on a file that has since
+    been deleted or replaced is ``"error"`` too. Development and tests are
+    unchanged."""
     try:
+        if _is_production():
+            path = _resolve_db_path()
+            check_existing_database(path)
+            identity = _database_file_identity(path)
+            for store, opened_on in ((_ACCOUNT_STORE, _ACCOUNT_STORE_FILE_IDENTITY),
+                                     (_STORE, _STORE_FILE_IDENTITY)):
+                if store is None:
+                    continue
+                if identity is None or opened_on != identity:
+                    raise DatabaseNotAdmitted(
+                        "the database file changed under an open connection")
+                store.ping()
+            return "ok"
         probed = False
         if _ACCOUNT_STORE is not None:
             _ACCOUNT_STORE.ping()
@@ -1425,12 +1511,19 @@ def _cold_load_entry(sid):
 
 
 # Production fail-fast (mirrors the R16 secret-key policy): in explicit
-# production mode the durable store must be constructable at startup — a missing
-# or unusable INVENTORAI_DB_PATH makes the app refuse to start rather than
-# silently degrade per request. Local/development stays lazy so tests and dev
-# runs are unaffected (no eager database file is created outside production).
+# production mode a missing or blank INVENTORAI_DB_PATH makes the app refuse to
+# start rather than silently degrade per request. Local/development stays lazy so
+# tests and dev runs are unaffected (no eager database file is created outside
+# production). STAGE38-DATABASE-STARTUP-SAFETY-01 — the store is constructed
+# eagerly ONLY for an admitted existing database: this startup step no longer
+# creates a missing database. When admission was refused the process still boots
+# — so `/health` answers 503 and an operator can provision or restore the database
+# explicitly — no background operation starts, and every store-backed request
+# fails closed.
 if _is_production():
-    _get_store()
+    _resolve_db_path()
+    if _PRODUCTION_DATABASE_ADMITTED:
+        _get_store()
 
 # --- Increment 1A: structured owner actions (conformance correction) ---------
 # Non-specialist owners respond through explicit, structured actions instead of

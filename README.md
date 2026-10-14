@@ -202,6 +202,7 @@ python scripts/inventorai_backup.py validate <database>
 python scripts/inventorai_backup.py backup  <source> <backup>
 python scripts/inventorai_backup.py restore <backup> <new-target>
 python scripts/inventorai_backup.py parity  <first> <second>
+python scripts/inventorai_backup.py provision <new-database>   # new environment only
 ```
 
 `restore` writes to a **separate** target and never overwrites an existing file
@@ -209,6 +210,12 @@ without an explicit `--overwrite`. Repointing `INVENTORAI_DB_PATH` at a verified
 restore is a deliberate, separate step — see `docs/DISASTER_RECOVERY_PLAN.md`
 Scenario 7 for the full procedure. A backup produced this way is a portable
 SQLite file and is independent of any hosting provider's own snapshots.
+
+In production the application opens an **existing** database only: it never
+creates a missing database or its directory, refuses an unrecognised file, and
+then boots with `/health` at `503` and no background operation running. A lost
+database is restored, never re-created; `provision` creates the first, empty
+database of a **new** environment and never replaces a file.
 
 ### Off-provider backup (Cloudflare R2)
 

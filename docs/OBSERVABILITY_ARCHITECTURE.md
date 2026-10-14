@@ -11,7 +11,16 @@ nothing in a HISTORICAL/TARGET section is implemented unless a section says so)
   503 `{"database": "error", "status": "unavailable"}`. The probe never
   creates a file/schema/row (initialized stores probed via public read-only
   reads; an existing DB file opened strictly read-only; a missing file is the
-  normal lazy pre-first-use state). Local health is NOT production, security,
+  normal lazy pre-first-use state). **AMENDED at STAGE38-DATABASE-STARTUP-SAFETY-01
+  (production only; development and tests unchanged):** production has no lazy
+  pre-first-use state — the canonical database is provisioned or restored
+  explicitly and the runtime opens an EXISTING database only (URI `mode=rw`,
+  never created) — so production `/health` returns 503 `error` when the file is
+  missing, unopenable or holds no recognised InventorAI schema (read-only check),
+  and also when a cached connection's file was deleted or replaced; it never
+  returns `uninitialized`. A refused startup admission emits
+  `database.admission_refused` (exception class only) and starts no background
+  operation. Local health is NOT production, security,
   legal, PSRR, or deployment readiness, and is no authorization signal.
 - Structured operational-logging seam: `web/observability.py` — stdlib
   `logging` only; JSON lines (stable keys `ts`/`level`/`event` + allowlisted

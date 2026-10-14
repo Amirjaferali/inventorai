@@ -5112,6 +5112,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at STAGE34-OUTPUT-LANGUAGE-01 (merge-effective delivery record): it follows the
            # observation withdraw increment in the chain
            r"the only product increment authorized after it was STAGE34-OUTPUT-LANGUAGE-01 \(below\), "
+           r"delivered \(PR #\d+\); "
+           # ADVANCED at STAGE38-DATABASE-STARTUP-SAFETY-01 (merge-effective delivery record): it follows
+           # the output-language increment in the chain
+           r"the only product increment authorized after it was STAGE38-DATABASE-STARTUP-SAFETY-01 \(below\), "
            r"delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
@@ -5398,7 +5402,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # increment is authorized after it; the result withdraw increment precedes it
                # ADVANCED at STAGE34-OUTPUT-LANGUAGE-01 (merge-effective delivery record): no product increment
                # is authorized after it; the observation withdraw increment precedes it
-               r"No product increment is authorized after STAGE34-OUTPUT-LANGUAGE-01 \(delivered: PR #\d+; "
+               # ADVANCED at STAGE38-DATABASE-STARTUP-SAFETY-01 (merge-effective delivery record): no
+               # product increment is authorized after it; the output-language increment precedes it
+               r"No product increment is authorized after STAGE38-DATABASE-STARTUP-SAFETY-01 \(delivered: PR #\d+; "
+               r"[^)]*production opens an existing database only[^)]*no Stage entered, completed or "
+               r"reopened; effective only on the verified merge of PR #\d+\) or after the preceding "
+               r"STAGE34-OUTPUT-LANGUAGE-01 \(delivered: PR #\d+; "
                r"[^)]*disclosure HTML download[^)]*presentation only[^)]*Stage 34 ENTERED / PARTIAL for this "
                r"slice only; effective only on the verified merge of PR #\d+\) or after the preceding "
                r"STAGE15-OBSERVATION-WITHDRAW-01 \(delivered: PR #\d+; "
@@ -5999,6 +6008,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # observation withdraw increment in the chain
             "the only increment authorized after it — STAGE34-OUTPUT-LANGUAGE-01 (above) — is DELIVERED "
             "(PR #N); "
+            # ADVANCED at STAGE38-DATABASE-STARTUP-SAFETY-01 (merge-effective delivery record): it follows
+            # the output-language increment in the chain
+            "the only increment authorized after it — STAGE38-DATABASE-STARTUP-SAFETY-01 (above) — is "
+            "DELIVERED (PR #N); "
             "no subsequent increment has been authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
     # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
@@ -6336,7 +6349,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # result withdraw increment precedes it
            # ADVANCED at STAGE34-OUTPUT-LANGUAGE-01 (merge-effective delivery record): ... after it; the
            # observation withdraw increment precedes it
-           r"No product increment is authorized after STAGE34-OUTPUT-LANGUAGE-01 \(delivered; PR #\d+; "
+           # ADVANCED at STAGE38-DATABASE-STARTUP-SAFETY-01 (merge-effective delivery record): ... after
+           # it; the output-language increment precedes it
+           r"No product increment is authorized after STAGE38-DATABASE-STARTUP-SAFETY-01 \(delivered; PR #\d+; "
+           r"[^)]*production opens an existing database only, never creating one; no Stage change; "
+           r"effective only on merge\) or after the preceding "
+           r"STAGE34-OUTPUT-LANGUAGE-01 \(delivered; PR #\d+; "
            r"[^)]*disclosure HTML download, presentation only and nothing stored; Stage 34 ENTERED / PARTIAL "
            r"for this slice only; effective only on merge\) or after the preceding "
            r"STAGE15-OBSERVATION-WITHDRAW-01 \(delivered; PR #\d+; "

@@ -4,7 +4,11 @@ File path: ``engine/backup_service.py``
 Purpose:   the smallest reusable seam for creating a CONSISTENT backup of the
            InventorAI durable SQLite datastore, validating a backup, restoring
            it to a SEPARATE explicit target, and producing a schema/row-count
-           parity report. Local-filesystem, standard-library only.
+           parity report. Local-filesystem, standard-library only. It also
+           owns the one admission rule for opening an EXISTING InventorAI
+           database (``open_existing_database`` / ``check_existing_database``,
+           STAGE38-DATABASE-STARTUP-SAFETY-01): read-write or read-only, never
+           create-capable, refusing a missing, unopenable or unrecognised file.
 
 Input contract:
   * every operation takes EXPLICIT source/backup/target paths — nothing is
@@ -44,11 +48,90 @@ class BackupError(Exception):
     failure. Messages carry paths and reasons only — never database contents."""
 
 
+# STAGE38-DATABASE-STARTUP-SAFETY-01 — the tables by which an EXISTING InventorAI
+# database is recognised: every InventorAI database ever written holds at least
+# one of them (the project store's core pair or the account store's core table),
+# and the stores' own additive migrations bring a recognised database up to date.
+# A file holding none of them — an empty SQLite file or a foreign database — is
+# never treated as one to be initialised in place.
+INVENTORAI_ANCHOR_TABLES = ("projects", "records", "accounts")
+
+
+class DatabaseNotAdmitted(Exception):
+    """Refusal to open a database as the EXISTING InventorAI database: the file
+    is missing, SQLite cannot open it, or it holds no recognised InventorAI
+    schema. Messages carry reasons only — never paths' contents or rows."""
+
+
+def _uri(path, mode):
+    """A correctly encoded SQLite URI for ``path`` in the given open ``mode``."""
+    return "file:%s?mode=%s" % (pathname2url(os.path.abspath(path)), mode)
+
+
 def _open_readonly(path):
     """Open an EXISTING SQLite file strictly read-only (URI ``mode=ro``).
     Cannot create a missing file and cannot write to the source."""
-    uri = "file:%s?mode=ro" % pathname2url(os.path.abspath(path))
-    return sqlite3.connect(uri, uri=True, timeout=_BUSY_TIMEOUT_SECONDS)
+    return sqlite3.connect(_uri(path, "ro"), uri=True, timeout=_BUSY_TIMEOUT_SECONDS)
+
+
+def _require_recognised(conn):
+    """Raise ``DatabaseNotAdmitted`` unless ``conn``'s database holds at least one
+    InventorAI anchor table. Reads the catalogue only."""
+    try:
+        tables = {row[0] for row in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table'").fetchall()}
+    except sqlite3.Error as exc:
+        raise DatabaseNotAdmitted(
+            "the file is not a readable SQLite database") from exc
+    if not tables.intersection(INVENTORAI_ANCHOR_TABLES):
+        raise DatabaseNotAdmitted(
+            "the database holds no recognised InventorAI schema")
+
+
+def _reject_non_file(path):
+    if not path or path == ":memory:" or path.startswith("file:"):
+        raise DatabaseNotAdmitted(
+            "an existing database must be named by a plain file path")
+    if not os.path.isfile(path):
+        raise DatabaseNotAdmitted("the database file does not exist")
+
+
+def open_existing_database(path, **connect_kwargs):
+    """Open the EXISTING InventorAI database at ``path`` read-write (URI
+    ``mode=rw``) and return the connection.
+
+    It can never create the file or its directory: a missing file, a file
+    SQLite cannot open, and a database holding none of the InventorAI anchor
+    tables are all refused with ``DatabaseNotAdmitted`` — the recognition runs
+    BEFORE any caller issues schema DDL, so an empty or foreign file is never
+    initialised as a fresh database. There is no fallback to a create-capable
+    open. ``connect_kwargs`` pass through to ``sqlite3.connect``."""
+    _reject_non_file(path)
+    try:
+        conn = sqlite3.connect(_uri(path, "rw"), uri=True, **connect_kwargs)
+    except sqlite3.Error as exc:
+        raise DatabaseNotAdmitted("the database file cannot be opened") from exc
+    try:
+        _require_recognised(conn)
+    except BaseException:
+        conn.close()
+        raise
+    return conn
+
+
+def check_existing_database(path):
+    """Read-only form of the same admission: refuse (``DatabaseNotAdmitted``) a
+    missing file, an unopenable file or one with no recognised InventorAI
+    schema. Opens ``mode=ro``, reads the catalogue only and writes nothing."""
+    _reject_non_file(path)
+    try:
+        conn = _open_readonly(path)
+    except sqlite3.Error as exc:
+        raise DatabaseNotAdmitted("the database file cannot be opened") from exc
+    try:
+        _require_recognised(conn)
+    finally:
+        conn.close()
 
 
 def _quick_check_and_tables(conn):
