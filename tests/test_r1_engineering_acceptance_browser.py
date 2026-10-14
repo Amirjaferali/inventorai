@@ -8,7 +8,7 @@ Only the two user-facing paths that no earlier browser test drives:
   next steps and reference fundamentals; the CAP-12 form mock-up advisory is
   opened from the session page's own link and returns its alternatives.
 * Integrated — a THREE-part invention (Mechanical + Electrical / Electronics +
-  the optional control-loop part) is created through the real composition
+  the one optional third part) is created through the real composition
   form; an interface is declared and its verification preparation is saved
   through the real forms; the read-only Parts, Components & Interactions view
   shows the result.
