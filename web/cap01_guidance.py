@@ -712,3 +712,44 @@ def gap_contexts_for_package(package, gaps):
         if view is not None:
             return view
     return None
+
+
+# 28-T1-MEASUREMENT-PLANNING-REFERENCE-01 — the CAP-09 measurement-planning page
+# shows the SAME two Sensors / Instrumentation reference groups the Electronics
+# MECHANISM_COMPLETENESS report context carries (PR #789, PR #794), where the
+# inventor writes a measurement method. A second DISPLAY CONTEXT only: the
+# groups, claims, copy keys, source notices and order come from the existing
+# ``CAP01_GAP_FUNDAMENTALS_EXTENSIONS`` row and ``_fundamentals_group`` — no
+# second catalogue, claim or interpretation. Eligibility is the trusted durable
+# root domain alone (never gap state, inventor text or the request); the report
+# / PDF binding above is unchanged.
+CAP09_MEASUREMENT_REFERENCE_DOMAIN = "electronics_electrical"
+CAP09_MEASUREMENT_REFERENCE_GROUPS = ("sensing_value_threshold_reference_v1",
+                                      "measurement_accuracy_resolution_reference_v1")
+
+
+def measurement_planning_references(domain_id):
+    """The two measurement reference groups for the CAP-09 planning page, as the
+    same copy-key views the report renders, in their established order — or
+    ``None`` unless ``domain_id`` is exactly the Electronics root domain.
+
+    All-or-nothing: if either group (or its copy) is unavailable, nothing is
+    shown, so the page never presents half of the pair. Pure; never raises."""
+    if domain_id != CAP09_MEASUREMENT_REFERENCE_DOMAIN:
+        return None
+    gap_type = "MECHANISM_COMPLETENESS"
+    group_id, _gaps = CAP01_GAP_CONTEXT_BY_DOMAIN[domain_id]
+    prefix = "UI_" + group_id + "_" + gap_type + "_"
+    # Keyed by group id, never by list position: the selection is by exact id.
+    rows = {group_id: (claim_ids, namespace) for group_id, claim_ids, namespace in
+            CAP01_GAP_FUNDAMENTALS_EXTENSIONS.get((domain_id, gap_type), ())}
+    groups = []
+    for wanted in CAP09_MEASUREMENT_REFERENCE_GROUPS:
+        if wanted not in rows:
+            return None
+        claim_ids, namespace = rows[wanted]
+        group = _fundamentals_group(wanted, claim_ids, prefix + namespace)
+        if group is None:
+            return None
+        groups.append(group)
+    return tuple(groups)
