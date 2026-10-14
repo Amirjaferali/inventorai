@@ -2232,7 +2232,9 @@ _PRE_S19_NONE = (r"\*\*ACTIVE CONTRACT: NONE\.\*\* Both",
                  r"post-Stage-25-CAP-13-Slice-1|"
                  # AMENDED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: its delivery fact
                  r"Stage[ -]27[ -]—[ -]THERM-01[ -]Single-Path[ -]Temperature-Difference[ -]—[ -]Slice[ -]1|"
-                 r"post-Stage-27-THERM-01-Slice-1))")
+                 r"post-Stage-27-THERM-01-Slice-1|"
+                 # AMENDED at the Stage 40 closure: the Stage 40 closure fact counts as well
+                 r"Stage[ -]40[ -]—[ -]Payment[ -]Provider[ -]—[ -]Closure))")
 
 
 _SLICE_02_LIVE_REVERSALS = (
@@ -4238,6 +4240,16 @@ _S27_NAME = "Stage 27 — THERM-01 Single-Path Temperature-Difference — Slice 
 # and the post-Stage-27-THERM-01-Slice-1 NONE heading survive only as history (_S27_PARTIAL, _S27_SLICE_HEADING).
 _S27_SLICE_HEADING = "## Current authority — post-Stage-27-THERM-01-Slice-1: no active contract (2026-10-09)"
 _S27_HEADING = "## Current authority — post-Stage-27-closure: no active contract (2026-10-09)"
+# ADDED at the Stage 40 closure candidate: the live NONE heading is renamed in place (the earlier heading and anchor are
+# preserved in a note before the section) and every live Stage 40 statement carries the after-merge applicability clause
+_S40_HEADING = "## Current authority — post-Stage-40-closure: no active contract (2026-10-14)"
+_S40_APPLICABILITY = ("Applicability: this closure record takes effect only on the verified merge of PR #N into "
+                      "`feature/atomic-json-session-persistence`; on that PR's proposal branch it is an Owner-authorized "
+                      "closure candidate, not a delivered closure — `STAGE 40 CLOSURE: DELIVERED`, Stage 40 COMPLETE and "
+                      "the 27 of 45 complete count apply only after that merge, and before it the base state stays 26 of "
+                      "45 complete with Stage 40 not yet closed.")
+# Git / GitHub own the PR identity: "PR #N" stands for any PR number, and line wrapping is tolerated
+_S40_APP_RE = re.escape(_S40_APPLICABILITY).replace(re.escape("PR #N"), r"PR #\d+").replace(r"\ ", r"\s+")
 _S27C_NAME = "Stage 27 — THERM-01 Single-Path Temperature-Difference — Closure"
 _S27_DELIVERED = "`STAGE 27 — THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SLICE 1: DELIVERED`"
 _S27_PARTIAL = "`STAGE 27: ENTERED / PARTIAL — THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SLICE 1 ONLY`"
@@ -4245,6 +4257,14 @@ _S27C_DELIVERED = "`STAGE 27 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED`"
 _S27_COMPLETE = "`STAGE 27: COMPLETE — CURRENT BOUNDED THERM-01 SINGLE-PATH TEMPERATURE-DIFFERENCE SCOPE ONLY`"
 _S27_FULL_NO = "`FULL THERM-01: NOT AUTHORIZED`"
 _S27_FACTS = (_S27C_DELIVERED, _S27_COMPLETE, _S27_DELIVERED, _S27_FULL_NO)
+# ADDED at the Stage 40 closure: the Stage 40 closure is the last bounded closure on the live heads (CLAUDE.md, the
+# active contract and the current position); the Stage 27 closure precedes it. Stage 40 is COMPLETE for the current
+# free-first-release / no-paid-activation scope ONLY; the active contract stays NONE.
+_S40C_NAME = "Stage 40 — Payment Provider — Closure"
+_S40C_DELIVERED = "`STAGE 40 CLOSURE: DELIVERED — NO PRODUCT CHANGE REQUIRED`"
+_S40_COMPLETE = "`STAGE 40: COMPLETE — CURRENT FREE-FIRST-RELEASE / NO-PAID-ACTIVATION SCOPE ONLY`"
+_S40_FREE_NO = "`FREE PUBLIC RELEASE REQUIRES PAYMENT PROVIDER: NO`"
+_S40_PAID_YES = "`PAID ACTIVATION REQUIRES PAYMENT/MoR: YES`"
 # After the Stage 27 closure a live surface may no longer carry the earlier NONE headings, the slice's ENTERED / PARTIAL
 # state or the pre-slice "Stages 26–27 preserved" / Stage-27 NOT-ENTERED state.
 _S27_STALE = (r"NO ACTIVE CONTRACT — post-Stage-25-CAP-13-Slice-1", r"\(post-Stage-25-CAP-13-Slice-1;",
@@ -4725,12 +4745,17 @@ def test_post_718_no_active_contract_is_superseded_history():
     # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: that slice is the last
     # bounded increment, recorded in its after-merge form; the Stage 25 slice precedes it
     # ROTATED at the Stage 27 closure: the Stage 27 closure is the last bounded closure; the Stage 27 slice precedes it
+    # ROTATED at the Stage 40 closure: the Stage 40 closure is the last bounded closure; the Stage 27 closure precedes it
     assert head.startswith("## Current authority " + _NONE_BOLD + " NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The "
-                           "last Owner-authorized bounded closure — " + _S27C_NAME + " — is DELIVERED with no product "
-                           "change required, completing Stage 27 for the current bounded THERM-01 single-path "
-                           "temperature-difference scope ONLY (" + "; ".join((_S27C_DELIVERED, _S27_COMPLETE, _S27_FULL_NO,
-                                                                               _S25_MARKER))
-                           + "; Git / GitHub own its PR, merge and review identity)")
+                           "last Owner-authorized bounded closure — " + _S40C_NAME + " — is DELIVERED with no product "
+                           "change required, completing Stage 40 for the current free-first-release / no-paid-activation "
+                           "scope ONLY (" + "; ".join((_S40C_DELIVERED, _S40_COMPLETE, _S40_FREE_NO, _S40_PAID_YES))
+                           + "; Git / GitHub own its PR, merge and review identity; Applicability:")
+    assert re.search(r"review identity; " + _S40_APP_RE + r"\): no payment provider", head)
+    assert ("The preceding bounded closure — " + _S27C_NAME + " — is DELIVERED with no product "
+            "change required, completing Stage 27 for the current bounded THERM-01 single-path "
+            "temperature-difference scope ONLY (" + "; ".join((_S27C_DELIVERED, _S27_COMPLETE, _S27_FULL_NO, _S25_MARKER))
+            + "; Git / GitHub own its PR, merge and review identity)") in head
     assert ("The preceding bounded increment — " + _S27_NAME + " — is DELIVERED (" + _S27_DELIVERED + "; Git / GitHub own "
             "its PR, merge and review identity): it entered Stage 27 as ENTERED / PARTIAL for that slice ONLY until the "
             "Stage 27 closure") in head
@@ -4872,7 +4897,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # post-Stage-27-THERM-01-Slice-1 NONE declaration; the post-Stage-25-CAP-13-Slice-1 NONE and the slice record follow
     # ROTATED at the Stage 27 closure: the live section is the post-Stage-27-closure NONE declaration; the closure record,
     # the post-Stage-27-THERM-01-Slice-1 NONE and the slice record follow as history
-    assert heading == _S27_HEADING, heading
+    # RENAMED at the Stage 40 closure candidate: the same live NONE section now carries the post-Stage-40-closure heading;
+    # its earlier heading and anchor are preserved in a note before the section
+    assert heading == _S40_HEADING, heading
+    assert ('it read "Current authority — post-Stage-27-closure: no active contract (2026-10-09)" with the anchor '
+            '`current-authority--post-stage27-closure-no-active-contract`') in contract
     assert (_S27_SLICE_HEADING + " — SUPERSEDED (2026-10-09) by " + _S27C_NAME) in contract
     assert ("## Current authority — " + _S27C_NAME + " (Owner authorization, 2026-10-09) — DELIVERED; SUPERSEDED as "
             "current authority by the post-Stage-27-closure no-active-contract declaration") in contract
@@ -4902,7 +4931,7 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             "current authority by the post-Stage-16-closure no-active-contract declaration") in contract
     assert (_S36C_HEADING + " — SUPERSEDED (2026-10-06) by " + _S16C_NAME) in contract
     order = [contract.index('<a id="current-authority--' + anchor + '"></a>') for anchor in (
-        "post-stage27-closure-no-active-contract", "stage27-therm01-closure",
+        "post-stage40-closure-no-active-contract", "stage27-therm01-closure",
         "post-stage27-therm01-slice1-no-active-contract", "stage27-therm01-single-path-temperature-difference-slice1",
         "post-stage25-cap13-slice1-no-active-contract", "stage25-cap13-two-support-static-reactions-slice1",
         "post-stage16-closure-no-active-contract", "stage16-srl-composition-closure",
@@ -4922,7 +4951,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: that slice is the
            # last bounded increment and the Stage 25 slice the preceding one
            # ROTATED at the Stage 27 closure: the Stage 27 closure is the last bounded closure, the slice precedes it
-           re.escape(_S27C_NAME) + r", the last Owner-authorized\s+bounded closure, is DELIVERED with no product change "
+           # ROTATED at the Stage 40 closure: the Stage 40 closure is the last bounded closure, Stage 27's precedes it
+           re.escape(_S40C_NAME) + r", the last Owner-authorized bounded closure, is DELIVERED with no product change "
+           r"required, completing Stage 40 for the current free-first-release / no-paid-activation scope ONLY \("
+           + _tok(_S40C_DELIVERED) + "; " + _tok(_S40_COMPLETE) + "; " + _tok(_S40_FREE_NO) + "; " + _tok(_S40_PAID_YES)
+           + r"; Git / GitHub own its PR, merge and review identity; " + _S40_APP_RE,
+           re.escape(_S27C_NAME) + r", the preceding Owner-authorized\s+bounded closure, is DELIVERED with no product change "
            r"required \(Git / GitHub own its PR, merge and review identity\): the Stage-27 row requirement",
            re.escape(_S27_NAME) + r", the preceding Owner-authorized\s+bounded increment, is DELIVERED \(Git / GitHub own "
            r"its PR, merge and review identity\): it entered Stage 27 as ENTERED / PARTIAL for\s+that slice ONLY until the "
@@ -5637,8 +5671,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: the current position is
     # post-Stage-27-THERM-01-Slice-1; the Stage 25 slice follows it ("before it")
     # ROTATED at the Stage 27 closure: the current position is post-Stage-27-closure; the Stage 27 slice follows it
+    # ADVANCED at the Stage 40 closure: the Stage 40 closure leads the post-Stage-27-closure position; the Stage 27
+    # closure follows it ("before it")
     assert re.match(r" \*\*Current position \([^)]{0,40}\): `ACTIVE CONTRACT: NONE` — no product increment is "
-                    r"currently authorized \(post-Stage-27-closure; " + re.escape(_S27C_NAME) + r" — delivered with no "
+                    r"currently authorized \(post-Stage-40-closure; " + re.escape(_S40C_NAME) + r" — delivered with no "
+                    r"product change required: Stage 40 is COMPLETE for the current free-first-release / "
+                    r"no-paid-activation scope only \(" + _tok(_S40C_DELIVERED) + "; " + _tok(_S40_COMPLETE) + "; "
+                    + _tok(_S40_FREE_NO) + "; " + _tok(_S40_PAID_YES) + "; " + _S40_APP_RE + r"\) — ", state)
+    assert re.search(r"; before it, " + re.escape(_S27C_NAME) + r" — delivered with no "
                     r"product change required: Stage 27 is COMPLETE for the current bounded THERM-01 single-path "
                     r"temperature-difference scope only, checkbox ticked for that scope only — ", state)
     assert re.search(r"; before it, " + re.escape(_S27_NAME) + r" — delivered: it entered Stage 27 as ENTERED / PARTIAL "
@@ -5835,12 +5875,17 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # ADVANCED at the delivered Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1: that slice is the last
     # bounded increment, recorded in its after-merge form; the Stage 25 slice precedes it
     # ROTATED at the Stage 27 closure: the Stage 27 closure is the last bounded closure; the Stage 27 slice precedes it
+    # ROTATED at the Stage 40 closure: the Stage 40 closure is the last bounded closure; the Stage 27 closure precedes it
     assert head.startswith("## Current authority " + _NONE_BOLD + " NO PRODUCT INCREMENT IS CURRENTLY AUTHORIZED. The "
-                           "last Owner-authorized bounded closure — " + _S27C_NAME + " — is DELIVERED with no product "
-                           "change required, completing Stage 27 for the current bounded THERM-01 single-path "
-                           "temperature-difference scope ONLY (" + "; ".join((_S27C_DELIVERED, _S27_COMPLETE, _S27_FULL_NO,
-                                                                               _S25_MARKER))
-                           + "; Git / GitHub own its PR, merge and review identity)")
+                           "last Owner-authorized bounded closure — " + _S40C_NAME + " — is DELIVERED with no product "
+                           "change required, completing Stage 40 for the current free-first-release / no-paid-activation "
+                           "scope ONLY (" + "; ".join((_S40C_DELIVERED, _S40_COMPLETE, _S40_FREE_NO, _S40_PAID_YES))
+                           + "; Git / GitHub own its PR, merge and review identity; Applicability:")
+    assert re.search(r"review identity; " + _S40_APP_RE + r"\): no payment provider", head)
+    assert ("The preceding bounded closure — " + _S27C_NAME + " — is DELIVERED with no product "
+            "change required, completing Stage 27 for the current bounded THERM-01 single-path "
+            "temperature-difference scope ONLY (" + "; ".join((_S27C_DELIVERED, _S27_COMPLETE, _S27_FULL_NO, _S25_MARKER))
+            + "; Git / GitHub own its PR, merge and review identity)") in head
     assert ("The preceding bounded increment — " + _S27_NAME + " — is DELIVERED (" + _S27_DELIVERED + "; Git / GitHub own "
             "its PR, merge and review identity): it entered Stage 27 as ENTERED / PARTIAL for that slice ONLY until the "
             "Stage 27 closure") in head
@@ -6446,16 +6491,19 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
     # row 16 is ticked for its bounded scope only and the roadmap keeps exactly 20 of its 45 rows unticked — the remaining
     # stages are exactly 11, 13, 14, 17, 25, 26, 27, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43, 44 and 45
     # ADVANCED at the Stage 27 closure: row 27 is ticked for its bounded scope only; 26 of 45 ticked, 19 unticked
-    assert len(re.findall(r"^- \[ \] \*\*\d+ — ", roadmap, re.M)) == 19
-    assert len(re.findall(r"^- \[x\] \*\*\d+ — ", roadmap, re.M)) == 26
+    # ADVANCED at the Stage 40 closure: row 40 is ticked for the free-first-release / no-paid-activation scope only;
+    # 27 of 45 ticked, 18 unticked
+    assert len(re.findall(r"^- \[ \] \*\*\d+ — ", roadmap, re.M)) == 18
+    assert len(re.findall(r"^- \[x\] \*\*\d+ — ", roadmap, re.M)) == 27
     # ADDED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: row 25 stays UNTICKED and records
     # the scoped ENTERED / PARTIAL entry only; the count stays 25 ticked / 20 unticked
     [row25] = re.findall(r"^- \[ \] \*\*25 — CAP-13:\*\*.*$", roadmap, re.M)
     assert ("**ENTERED / PARTIAL (2026-10-08) through the delivered CAP-13 Two-Support Static Reactions Slice 1 ONLY — "
             "checkbox stays UNTICKED; Stage 25 is NOT complete:**") in row25
     assert _S25_PARTIAL in row25 and _S25_FULL_NO in row25
+    # ADVANCED at the Stage 40 closure: row 40 leaves the unticked list
     assert [int(n) for n in re.findall(r"^- \[ \] \*\*(\d+) — ", roadmap, re.M)] == [
-        11, 13, 14, 17, 25, 26, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43, 44, 45]
+        11, 13, 14, 17, 25, 26, 31, 32, 33, 34, 37, 38, 39, 41, 42, 43, 44, 45]
     # ADDED at the Stage 27 closure: row 27 is ticked for the current bounded THERM-01 single-path temperature-difference
     # scope only, names its closure, records the uncertainty selection and keeps full THERM-01 NOT AUTHORIZED
     [row27] = re.findall(r"^- \[x\] \*\*27 — THERM-01:\*\*.*$", roadmap, re.M)
@@ -7171,7 +7219,9 @@ def test_continuity_addendum_lenses_cap06_and_fraud_routing_authorize_nothing():
     for pat in (r"CAP-06[^.]{0,40}\bCANCELLED\b(?<!not cancelled)",
                 r"(?<!no )(?<!NOT )(payment|deployment|paid activation) (is )?authorized\b"):
         assert re.search(pat, claims, re.I) is None, pat
-    rows = re.findall(r"^- \[ \] \*\*40 — Payment provider:\*\*.*$", _read(ROADMAP), re.M)
+    # AMENDED at the Stage 40 closure: row 40 is ticked for the free-first-release / no-paid-activation scope only and
+    # keeps the fraud routing, no provider selection and no authorization
+    rows = re.findall(r"^- \[x\] \*\*40 — Payment provider:\*\*.*$", _read(ROADMAP), re.M)
     assert len(rows) == 1
     assert ("the existing PSRR / Stage-38 / Stage-40 path must explicitly account for the "
             "production-abuse / fraud surface") in rows[0]
