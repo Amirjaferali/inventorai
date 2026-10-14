@@ -2789,10 +2789,10 @@ UI_STRINGS = {
     },
     "UI_CAP09_MEASUREMENT_PLANNING_GUIDANCE_V1_INTRO": {
         "en": ("Guidance to consider while you write your measurement method. It does not say "
-               "what your experiment requires: InventorAI has not identified that, and it does "
-               "not read or check what you write."),
+               "what your experiment requires: InventorAI has not identified that, and this "
+               "guidance does not analyze, interpret or assess what you enter."),
         "ar": ("إرشاد لتأخذه في الاعتبار أثناء كتابة طريقة القياس. وهو لا يحدّد ما تحتاجه "
-               "تجربتك: فلم يحدّد InventorAI ذلك، ولا يقرأ ما تكتبه ولا يتحقق منه."),
+               "تجربتك: فلم يحدّد InventorAI ذلك، ولا يحلّل هذا الإرشاد ما تُدخله ولا يفسّره ولا يقيّمه."),
     },
     "UI_CAP09_MEASUREMENT_PLANNING_GUIDANCE_V1_ITEM_1_TITLE": {
         "en": "A measured quantity or an observed condition",

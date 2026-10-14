@@ -66,8 +66,8 @@ ACCEPTED = {
     "en": {
         "TITLE": "Before you describe how: what will you observe or measure?",
         "INTRO": "Guidance to consider while you write your measurement method. It does not say what "
-                 "your experiment requires: InventorAI has not identified that, and it does not read or "
-                 "check what you write.",
+                 "your experiment requires: InventorAI has not identified that, and this guidance does "
+                 "not analyze, interpret or assess what you enter.",
         "ITEM_1_TITLE": "A measured quantity or an observed condition",
         "ITEM_1_TEXT": "Before describing how you plan to measure or check this experiment, identify what "
                        "you intend to observe. It may be a quantity that you can measure and express with "
@@ -93,7 +93,7 @@ ACCEPTED = {
     "ar": {
         "TITLE": "قبل أن تصف الكيفية: ما الذي ستلاحظه أو تقيسه؟",
         "INTRO": "إرشاد لتأخذه في الاعتبار أثناء كتابة طريقة القياس. وهو لا يحدّد ما تحتاجه تجربتك: فلم "
-                 "يحدّد InventorAI ذلك، ولا يقرأ ما تكتبه ولا يتحقق منه.",
+                 "يحدّد InventorAI ذلك، ولا يحلّل هذا الإرشاد ما تُدخله ولا يفسّره ولا يقيّمه.",
         "ITEM_1_TITLE": "مقدار يُقاس أو حالة تُلاحَظ",
         "ITEM_1_TEXT": "قبل وصف كيفية قياس هذه التجربة أو التحقق منها، حدّد ما الذي تريد ملاحظته. قد يكون "
                        "مقدارًا يمكنك قياسه والتعبير عنه بوحدة مناسبة، أو حالةً يمكنك ملاحظتها دون قياس "
