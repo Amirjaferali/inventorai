@@ -2772,6 +2772,79 @@ UI_STRINGS = {
                "أثناء وصفك لكيفية قياس كل تجربة أو التحقق منها. وهي تشرح مفاهيم فقط: لا "
                "تختار أداة قياس، ولا تحدّد أي قيمة، ولا تتحقق من طريقتك."),
     },
+    # MEASUREMENT-PLAN-GUIDANCE-01 (C1): ONE visible measurement-planning guidance
+    # group on the CAP-09 page (measurement_quantity_versus_condition_reference_v1;
+    # provenance electronics_electrical:PR022–PR023 — NIST Technical Note 1900,
+    # Section 2, Note 2.1). ITEM_1_TEXT is InventorAI's own restatement of the ONE
+    # admitted distinction (a quantity expressed with an appropriate unit versus an
+    # observed condition or state), with the on / off example as InventorAI's own
+    # illustration and the Arabic as InventorAI's translation; SOURCE carries the
+    # NIST / author / publication attribution, the DOI (in an LTR isolate in
+    # Arabic), the adaptation / translation notice and the no-endorsement notice.
+    # No EQUATION part by design (prose-only). CAP-09 page only; never a report /
+    # PDF gap-context group. The one chrome key names the collapsed source block.
+    "UI_CAP09_MEASUREMENT_PLANNING_GUIDANCE_V1_TITLE": {
+        "en": "Before you describe how: what will you observe or measure?",
+        "ar": "قبل أن تصف الكيفية: ما الذي ستلاحظه أو تقيسه؟",
+    },
+    "UI_CAP09_MEASUREMENT_PLANNING_GUIDANCE_V1_INTRO": {
+        "en": ("Guidance to consider while you write your measurement method. It does not say "
+               "what your experiment requires: InventorAI has not identified that, and it does "
+               "not read or check what you write."),
+        "ar": ("إرشاد لتأخذه في الاعتبار أثناء كتابة طريقة القياس. وهو لا يحدّد ما تحتاجه "
+               "تجربتك: فلم يحدّد InventorAI ذلك، ولا يقرأ ما تكتبه ولا يتحقق منه."),
+    },
+    "UI_CAP09_MEASUREMENT_PLANNING_GUIDANCE_V1_ITEM_1_TITLE": {
+        "en": "A measured quantity or an observed condition",
+        "ar": "مقدار يُقاس أو حالة تُلاحَظ",
+    },
+    "UI_CAP09_MEASUREMENT_PLANNING_GUIDANCE_V1_ITEM_1_TEXT": {
+        "en": ("Before describing how you plan to measure or check this experiment, identify what "
+               "you intend to observe. It may be a quantity that you can measure and express with "
+               "an appropriate unit, or a condition or state that you can observe without a "
+               "numerical measurement, such as an indicator being on or off. Saying which of the "
+               "two you mean makes it easier to describe how you will measure or check it."),
+        "ar": ("قبل وصف كيفية قياس هذه التجربة أو التحقق منها، حدّد ما الذي تريد ملاحظته. قد يكون "
+               "مقدارًا يمكنك قياسه والتعبير عنه بوحدة مناسبة، أو حالةً يمكنك ملاحظتها دون قياس "
+               "عددي، مثل كون مصباح البيان مضاءً أو مطفأً. وتحديد أيّ الاثنين تقصد يجعل وصف كيفية "
+               "القياس أو التحقق أسهل."),
+    },
+    "UI_CAP09_MEASUREMENT_PLANNING_GUIDANCE_V1_SOURCE": {
+        "en": ("Source: National Institute of Standards and Technology (NIST), Antonio M. Possolo, "
+               "Simple Guide for Evaluating and Expressing the Uncertainty of NIST Measurement "
+               "Results, NIST Technical Note 1900 (2015), Section 2, Note 2.1, "
+               "https://doi.org/10.6028/NIST.TN.1900. Adapted: InventorAI restated, in its own "
+               "words, only the distinction between a quantitative property and a qualitative "
+               "property; the on / off example is InventorAI's own, and the Arabic version is "
+               "InventorAI's translation of that restatement. No sentence, definition, figure or "
+               "table of the publication, and no text it attributes to another source, is "
+               "reproduced. This does not imply that NIST or the author has reviewed, approved or "
+               "endorsed InventorAI or this guidance."),
+        "ar": ("المصدر: المعهد الوطني للمعايير والتقنية في الولايات المتحدة (NIST)، أنطونيو م. "
+               "بوسولو (Antonio M. Possolo)، Simple Guide for Evaluating and Expressing the "
+               "Uncertainty of NIST Measurement Results، المذكرة التقنية NIST Technical Note 1900 "
+               "(2015)، القسم 2، الملاحظة 2.1، على الرابط: \u2066https://doi.org/10.6028/NIST.TN.1900\u2069. "
+               "مُقتبَس: أعاد InventorAI بكلماته صياغة التمييز بين الخاصية الكمّية والخاصية النوعية "
+               "فقط؛ ومثال المضاء / المطفأ من InventorAI نفسه، والنص العربي ترجمة InventorAI لهذه "
+               "الصياغة. ولا تُعاد أي جملة أو تعريف أو شكل أو جدول من المنشور، ولا أي نص ينسبه إلى "
+               "مصدر آخر. ولا يعني ذلك أن NIST أو المؤلف راجع InventorAI أو هذا الإرشاد أو وافق "
+               "عليه أو أيّده."),
+    },
+    "UI_CAP09_MEASUREMENT_PLANNING_GUIDANCE_V1_BOUNDARY": {
+        "en": ("This guidance does not identify what your experiment requires, select an instrument, "
+               "sensor or quantity, set any accuracy, resolution or value, calibrate anything, or "
+               "check what you write. Observing a condition in this way is a practical observation, "
+               "not by itself a formally established measurement result. Measurement planning stays "
+               "yours."),
+        "ar": ("لا يحدّد هذا الإرشاد ما تحتاجه تجربتك، ولا يختار أداة قياس أو مستشعرًا أو مقدارًا، "
+               "ولا يحدّد أي دقة أو قدرة تمييز أو قيمة، ولا يُجري أي معايرة، ولا يتحقق مما تكتبه. "
+               "وملاحظة حالةٍ على هذا النحو ملاحظة عملية، وليست بذاتها نتيجة قياس مثبتة رسميًا. "
+               "ويبقى تخطيط القياس بيدك."),
+    },
+    "UI_SC_MGUIDE_SOURCE_SUMMARY": {
+        "en": "Source, adaptation and limits",
+        "ar": "المصدر والاقتباس والحدود",
+    },
     "UI_SC_METHOD_LABEL": {
         "en": "Measurement method (how you will measure or check it):",
         "ar": "طريقة القياس (كيف ستقيس ذلك أو تتحقق منه):",

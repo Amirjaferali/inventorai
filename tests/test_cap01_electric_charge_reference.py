@@ -48,6 +48,10 @@ from tests.test_cap01_electrical_energy_time_reference import (
 from tests.cap01_charge_addition import (
     CHARGE_CLAIMS as CLAIMS, CHARGE_EQUATIONS as EQUATIONS, CHARGE_GROUP as GROUP, CHARGE_NOTE as NOTE,
     CHARGE_RECORDS as RECORDS, CHARGE_ROW as ROW, CHARGE_SLUG as SLUG, without_charge_addition)
+# MEASUREMENT-PLAN-GUIDANCE-01 (C1) later appended ONE CAP-09-page-only guidance group to the pack (never a
+# report context row); excluded here likewise (tests/cap01_measurement_guidance_addition.py).
+from tests.cap01_measurement_guidance_addition import (
+    MGUIDE_GROUP, MGUIDE_RECORDS, without_measurement_guidance_addition)
 
 _ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 _PACK_PATH = os.path.join(_ROOT, "domains", "electronics_electrical", "domain.json")
@@ -238,8 +242,9 @@ def test_c06_missing_earlier_copy_never_removes_this_group(monkeypatch):
 # ==========================================================================
 def test_c07_the_pack_change_is_exactly_one_group_and_one_note():
     pack = _pack()
-    assert _digest(without_charge_addition(pack)) == _PRE_PACK_DIGEST
-    assert [g["group_id"] for g in pack["reference_fundamentals"]][-1] == GROUP
+    assert _digest(without_charge_addition(without_measurement_guidance_addition(pack))) == _PRE_PACK_DIGEST
+    # This group is the last REPORT group; the later CAP-09-only guidance group follows it in the pack.
+    assert [g["group_id"] for g in pack["reference_fundamentals"]][-2:] == [GROUP, MGUIDE_GROUP]
     note = pack["_governance_notes"][NOTE]
     for phrase in ("ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01", "NOT Battery / BMS capability", "inert",
                    "exactly three bounded reference claims", "ONLY when the current I remains constant",
@@ -251,7 +256,7 @@ def test_c07_the_pack_change_is_exactly_one_group_and_one_note():
 
 
 def test_c08_the_three_claims_have_exact_source_policy_and_limitation_linkage():
-    group = _pack()["reference_fundamentals"][-1]
+    [group] = [g for g in _pack()["reference_fundamentals"] if g["group_id"] == GROUP]
     assert sorted(group) == ["applicable_gap_type", "claims", "group_id"]
     assert (group["group_id"], group["applicable_gap_type"]) == (GROUP, PHYSICAL_FEASIBILITY)
     recs = {r["record_id"]: r for r in _provenance()}
@@ -294,8 +299,8 @@ def test_c09_four_records_appended_after_pr017_and_every_other_record_unchanged(
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR017")
     assert tuple(ids[i + 1:i + 5]) == RECORDS
-    assert ids[i + 5] == "mechanical:PR001"
-    assert _digest([r for r in records if r["record_id"] not in RECORDS]) == _PRE_PROVENANCE_DIGEST
+    assert tuple(ids[i + 5:i + 7]) == MGUIDE_RECORDS and ids[i + 7] == "mechanical:PR001"
+    assert _digest([r for r in records if r["record_id"] not in RECORDS + MGUIDE_RECORDS]) == _PRE_PROVENANCE_DIGEST
     recs = {r["record_id"]: r for r in records}
     shape = sorted(recs["electronics_electrical:PR004"])
     assert all(sorted(recs[r]) == shape for r in RECORDS)

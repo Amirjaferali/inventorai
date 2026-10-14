@@ -27,6 +27,11 @@ textarea{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radi
 .measurement-reference h2{font-size:14px;color:#2c3e50;margin:14px 0 4px;border:none;padding:0}
 .measurement-reference ul{margin:6px 0;padding-inline-start:20px}
 .measurement-reference p{margin:6px 0}
+.measurement-guidance{margin:0 0 18px;border:1px solid #c9d6e3;border-inline-start:4px solid #2c3e50;border-radius:4px;padding:8px 12px;font-size:13px;line-height:1.6;color:#222;min-width:0;overflow-wrap:anywhere}
+.measurement-guidance h2{font-size:14px;color:#2c3e50;margin:2px 0 4px;border:none;padding:0}
+.measurement-guidance p{margin:6px 0}
+.measurement-guidance details{margin:6px 0 0;font-size:12px;color:#444}
+.measurement-guidance summary{cursor:pointer;color:#2c3e50}
 @media(max-width:520px){body{margin:18px auto;padding:0 14px}.app-header{flex-wrap:wrap}.app-header .temp-session{white-space:normal}.exp{padding:12px}button{max-width:100%;box-sizing:border-box}}
 button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
 .links{margin-top:24px;font-size:13px}
@@ -40,6 +45,29 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   <p>{{ t('UI_SC_HYPOTHESIS_INTRO') }}</p>
   <p>{{ t('UI_SC_VARIABLE_INTRO') }}</p>
 </div>
+{#- MEASUREMENT-PLAN-GUIDANCE-01 (C1): ONE visible, optional planning-guidance
+    element beside the measurement-method introduction — WHAT the inventor
+    intends to observe (a quantity expressed with an appropriate unit, or an
+    observed condition or state) before HOW it is measured or checked. The route
+    decides on the trusted durable root domain; nothing here reads, interprets
+    or grades inventor text, and no input is added. The guidance and its
+    boundary are visible; the source / adaptation / no-endorsement notice is
+    one click away inside the same block. CAP-09 page only; never a report /
+    PDF gap-context group. -#}
+{% if measurement_guidance %}
+<section class="measurement-guidance" data-measurement-guidance="{{ measurement_guidance.group_id|replace('_', '-') }}" aria-labelledby="mguide-title" aria-describedby="mguide-intro">
+  <h2 id="mguide-title" data-mguide-title>{{ t(measurement_guidance.title_key) }}</h2>
+  <p id="mguide-intro" data-mguide-intro>{{ t(measurement_guidance.intro_key) }}</p>
+  {%- for _mclaim in measurement_guidance.claims %}
+  <p data-mguide-claim="{{ _mclaim.claim_id|replace('_', '-') }}"><strong data-mguide-item-title>{{ t(_mclaim.title_key) }}</strong> <span data-mguide-item-text>{{ t(_mclaim.text_key) }}</span></p>
+  {%- endfor %}
+  <p data-mguide-boundary>{{ t(measurement_guidance.boundary_key) }}</p>
+  <details data-mguide-source>
+    <summary>{{ t('UI_SC_MGUIDE_SOURCE_SUMMARY') }}</summary>
+    <p data-mguide-source-text>{{ t(measurement_guidance.source_key) }}</p>
+  </details>
+</section>
+{% endif %}
 {#- 28-T1-MEASUREMENT-PLANNING-REFERENCE-01: the SAME two Sensors /
     Instrumentation reference groups the Electronics report carries, shown
     beside the measurement-method introduction for an Electronics-root project

@@ -255,7 +255,13 @@ _FROZEN_PACK_SHA256 = {
     # governance-note entry (provenance electronics_electrical:PR018–PR021). The pack minus exactly
     # those two additions is canonically identical to the previous pack (proven in
     # tests/test_cap01_electric_charge_reference.py).
-    "electronics_electrical": "f96ef3e191850e61e556ee0f2f4cb2ce31950ac8104e6e037fefb1e71a408e2b",
+    # MEASUREMENT-PLAN-GUIDANCE-01 (C1): re-frozen again after adding ONE further bounded, inert,
+    # additive `reference_fundamentals` group (measurement_quantity_versus_condition_reference_v1;
+    # CAP-09 measurement-planning page only, never a report / PDF gap-context group) plus its
+    # governance-note entry (provenance electronics_electrical:PR022–PR023). The pack minus exactly
+    # those two additions is canonically identical to the previous pack (proven in
+    # tests/test_measurement_plan_guidance_c1.py).
+    "electronics_electrical": "d889ddfac9f68f39595e3d2237a6952610d144e806195f98a3e74ffd55040599",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",
