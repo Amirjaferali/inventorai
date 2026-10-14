@@ -205,6 +205,11 @@ coordinates, DR recovers (§16).
 
 1. Probe `GET /health` and read it precisely: `"ok"` = local dependencies usable; `"uninitialized"` =
    normal lazy pre-first-use state, NOT a failure; `"error"`/503 = real local dependency failure.
+   **AMENDED at STAGE38-DATABASE-STARTUP-SAFETY-01:** in production `"uninitialized"` never occurs — a
+   missing, unrecognised or replaced database file reads `"error"`/503, the operational log carries
+   `database.admission_refused` when startup admission was refused, and no background operation runs.
+   Production never recreates the database: treat it as §7 (restore a verified backup), never as a
+   first start, and never run `provision` against a path that held a database.
 2. Inspect bounded operational-log lines (e.g. `health.db_probe_failed` carries the exception class name
    only). Do NOT begin collecting new sensitive data (IPs, user agents, user content) to diagnose — the
    data-minimization boundary holds during incidents too.

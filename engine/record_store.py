@@ -34,6 +34,8 @@ import uuid
 from contextlib import contextmanager
 from typing import List, Protocol, runtime_checkable
 
+from engine.backup_service import open_existing_database
+
 from engine.record_contract import ProjectRecordContract, assertion_to_dict
 from engine.record_contract import (
     assertion_from_dict as _assertion_from_dict,
@@ -2028,10 +2030,14 @@ class SqliteRecordStore:
     single atomic transaction (commit on success, full rollback on failure).
     """
 
-    def __init__(self, path: str):
+    def __init__(self, path: str, *, create: bool = True):
         # `path` is a real SQLite database file (durable) or ":memory:" (which
         # does NOT survive close — durability tests use a real file path in a
         # pytest tmp_path). No repository-tracked database file is used.
+        # STAGE38-DATABASE-STARTUP-SAFETY-01: ``create=False`` opens ONLY an
+        # existing, recognised InventorAI database (URI ``mode=rw``, never
+        # create-capable; refused with ``DatabaseNotAdmitted`` before any DDL
+        # below); the default ``create=True`` keeps the original behaviour.
         self._path = path
         # IR-01: set only when a failed write leaves the connection inside an
         # unresolved transaction. Never cleared automatically.
@@ -2053,7 +2059,10 @@ class SqliteRecordStore:
         # lock rather than erroring. Single-writer serialization is SQLite's
         # inherent model and matches the P4 threaded=False single-process design;
         # atomicity, rollback, and the additive schema are all unchanged.
-        self._conn = sqlite3.connect(path, isolation_level=None)
+        if create:
+            self._conn = sqlite3.connect(path, isolation_level=None)
+        else:
+            self._conn = open_existing_database(path, isolation_level=None)
         self._conn.execute("PRAGMA foreign_keys = ON")
         with self._write():
             for stmt in _SCHEMA:

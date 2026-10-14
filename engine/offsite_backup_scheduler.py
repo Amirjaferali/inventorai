@@ -71,6 +71,7 @@ import threading
 import uuid
 
 from engine.backup_service import BackupError, backup_database
+from engine.backup_service import INVENTORAI_ANCHOR_TABLES
 from engine.r2_object_upload import R2UploadError, put_object
 
 # Bounded scheduling policy. Small, fixed, deliberately unremarkable.
@@ -207,6 +208,12 @@ def perform_offsite_backup(source_path, settings, filename=None, key=None,
     try:
         staged = os.path.join(workspace, filename)
         backup_report = backup_database(source_path, staged)
+        # STAGE38-DATABASE-STARTUP-SAFETY-01: never upload a backup of an empty
+        # or foreign database as if it were the InventorAI database (a lost
+        # database replaced by an empty file must not become the newest backup).
+        if not set(backup_report["tables"]).intersection(INVENTORAI_ANCHOR_TABLES):
+            raise BackupError(
+                "the backup holds no recognised InventorAI schema; not uploaded")
         upload_report = put_object(
             source_path=staged, bucket=settings["INVENTORAI_R2_BUCKET"],
             object_key=key, account_id=settings["INVENTORAI_R2_ACCOUNT_ID"],

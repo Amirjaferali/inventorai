@@ -835,6 +835,22 @@ def test_the_manual_cli_still_works_over_the_same_pipeline(live_database, capsys
 # Startup semantics: production only, only when configured; never in dev/test
 # =============================================================================
 
+def _provisioned_boot_db(tmp_path):
+    """AMENDED at STAGE38-DATABASE-STARTUP-SAFETY-01: production now opens an
+    EXISTING database only (it no longer creates one on first use), so a
+    production cold boot is given a database provisioned through the explicit
+    operator command instead of a path the application would once have created."""
+    import importlib.util as _ilu
+    spec = _ilu.spec_from_file_location(
+        "_inventorai_backup_cli_boot",
+        os.path.join(ROOT, "scripts", "inventorai_backup.py"))
+    cli = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    path = str(tmp_path / "boot.sqlite")
+    assert cli.main(["provision", path]) == 0
+    return path
+
+
 def _cold_boot(extra_env, program):
     env = dict(os.environ)
     for name in list(env):
@@ -850,7 +866,7 @@ def _cold_boot(extra_env, program):
 
 def test_production_boots_without_r2_config_and_starts_no_scheduler(tmp_path):
     result = _cold_boot(
-        {"INVENTORAI_DB_PATH": str(tmp_path / "boot.sqlite")},
+        {"INVENTORAI_DB_PATH": _provisioned_boot_db(tmp_path)},
         "import threading, web.app as w;"
         "assert w._OFFSITE_BACKUP_SCHEDULER_STARTED is False;"
         "assert not w._OFFSITE_BACKUP_SCHEDULER.running;"
@@ -864,7 +880,7 @@ def test_production_boots_without_r2_config_and_starts_no_scheduler(tmp_path):
 def test_production_with_partial_r2_config_starts_no_scheduler(tmp_path):
     partial = {k: v for k, v in SETTINGS.items()
                if k != "INVENTORAI_R2_SECRET_ACCESS_KEY"}
-    partial["INVENTORAI_DB_PATH"] = str(tmp_path / "boot.sqlite")
+    partial["INVENTORAI_DB_PATH"] = _provisioned_boot_db(tmp_path)
     result = _cold_boot(
         partial,
         "import threading, web.app as w;"
@@ -880,7 +896,7 @@ def test_production_with_complete_r2_config_starts_exactly_one_scheduler_thread(
     """The thread exists and is paced by the default poll interval, so within
     this probe it has not run a cycle and no upload could have been attempted
     (the process exits long before the first 5-minute wake-up)."""
-    env = dict(SETTINGS, INVENTORAI_DB_PATH=str(tmp_path / "boot.sqlite"))
+    env = dict(SETTINGS, INVENTORAI_DB_PATH=_provisioned_boot_db(tmp_path))
     result = _cold_boot(
         env,
         "import threading, web.app as w;"
@@ -1200,7 +1216,7 @@ def test_module_reload_reuses_the_live_scheduler_and_adds_no_thread(tmp_path):
     module is reloaded twice in-process: the live instance is reused and the
     thread count stays at one. (Production never reloads - `reload = False` -
     this pins the invariant regardless.)"""
-    env = dict(SETTINGS, INVENTORAI_DB_PATH=str(tmp_path / "boot.sqlite"))
+    env = dict(SETTINGS, INVENTORAI_DB_PATH=_provisioned_boot_db(tmp_path))
     result = _cold_boot(
         env,
         "import importlib, threading, web.app as w;"

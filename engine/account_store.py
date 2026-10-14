@@ -46,6 +46,8 @@ import sqlite3
 import threading
 from contextlib import contextmanager
 
+from engine.backup_service import open_existing_database
+
 VERIFICATION = "verification"
 RESET = "reset"
 _TOKEN_TYPES = frozenset({VERIFICATION, RESET})
@@ -388,7 +390,11 @@ class SqliteAccountStore:
     transaction. Safe to share across threads. ``self._conn`` remains a real,
     stable connection object for backward compatibility."""
 
-    def __init__(self, path: str):
+    def __init__(self, path: str, *, create: bool = True):
+        # STAGE38-DATABASE-STARTUP-SAFETY-01: ``create=False`` opens ONLY an
+        # existing, recognised InventorAI database (URI ``mode=rw``, never
+        # create-capable; refused with ``DatabaseNotAdmitted`` before the schema
+        # DDL below); the default ``create=True`` keeps the original behaviour.
         self._path = path
         self._lock = threading.RLock()
         # Contract §10 item 6: set only when a defensive rollback itself failed and
@@ -398,7 +404,8 @@ class SqliteAccountStore:
         # explicit BEGIN IMMEDIATE/COMMIT (required for the atomic rate-limit and
         # token critical sections). check_same_thread=False + the lock below make
         # the single shared connection safe under a threaded WSGI server.
-        self._conn = sqlite3.connect(
+        connect = sqlite3.connect if create else open_existing_database
+        self._conn = connect(
             path, timeout=_BUSY_TIMEOUT_SECONDS, isolation_level=None,
             check_same_thread=False)
         with self._lock:

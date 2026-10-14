@@ -116,6 +116,22 @@ def test_unconfigured_sender_refuses_and_captures_nothing():
 
 # --- production boots without an email provider -------------------------------
 
+def _provisioned_boot_db(tmp_path):
+    """AMENDED at STAGE38-DATABASE-STARTUP-SAFETY-01: production now opens an
+    EXISTING database only (it no longer creates one at startup), so a
+    production cold boot is given a database provisioned through the explicit
+    operator command instead of a path the application would once have created."""
+    import importlib.util as _ilu
+    spec = _ilu.spec_from_file_location(
+        "_inventorai_backup_cli_boot",
+        os.path.join(ROOT, "scripts", "inventorai_backup.py"))
+    cli = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    path = str(tmp_path / "boot.sqlite")
+    assert cli.main(["provision", path]) == 0
+    return path
+
+
 def test_production_boots_without_email_configuration(tmp_path):
     """No startup deadlock: a real interpreter imports the application under
     production settings with no email provider configured, and `/health` answers.
@@ -123,7 +139,7 @@ def test_production_boots_without_email_configuration(tmp_path):
     env = dict(os.environ)
     env.update({"INVENTORAI_ENV": "production",
                 "INVENTORAI_SECRET_KEY": "boot-probe-not-a-real-secret",
-                "INVENTORAI_DB_PATH": str(tmp_path / "boot.sqlite"),
+                "INVENTORAI_DB_PATH": _provisioned_boot_db(tmp_path),
                 "PYTHONWARNINGS": "ignore"})
     program = (
         "import json;"
