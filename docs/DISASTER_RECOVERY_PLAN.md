@@ -73,6 +73,9 @@ silently replaced by an empty one, and never backed up as one. Restoring
 (below) or, for a NEW environment only, `provision` (an empty database at a new
 path inside an existing directory; it never replaces a file) are the only ways a
 production database comes into place; both are deliberate operator actions.
+After provisioning or restoring IN PLACE, restart the service: admission is
+established once at startup, so until a restart the email dispatcher and the
+off-provider backup scheduler stay stopped even though `/health` reads `ok`.
 Running either on the hosting platform requires an operator shell on the
 service with its disk mounted while `/health` reads 503 — that provider
 behaviour is UNVERIFIED and must be confirmed by the Owner before it is relied

@@ -71,6 +71,20 @@ def _health(client=None):
     return response.status_code, json.loads(response.get_data(as_text=True))
 
 
+@pytest.fixture(autouse=True)
+def _restore_operational_logger():
+    """The P10-OB1 seam binds its stream handler to the stderr current at the first
+    emit; production refusals here emit events, so restore the logger's handlers
+    afterwards and never leave one bound to this test's captured stream."""
+    import logging
+    logger = logging.getLogger(webapp._obs.OPERATIONAL_LOGGER_NAME)
+    before = list(logger.handlers)
+    yield
+    for handler in list(logger.handlers):
+        if handler not in before:
+            logger.removeHandler(handler)
+
+
 @pytest.fixture
 def production(monkeypatch):
     monkeypatch.setenv("INVENTORAI_ENV", "production")
@@ -440,12 +454,36 @@ def test_interrupted_provisioning_leaves_no_database(tmp_path, monkeypatch):
         cli.provision_database(str(target))
     assert sorted(os.listdir(tmp_path)) == []             # no target, no leftover
     monkeypatch.undo()
-    # a leftover from a hard interruption is discarded by the next run
-    leftover = str(target) + cli._PROVISION_INPROGRESS_SUFFIX
+    # a namespaced leftover from a hard interruption is never a database at the
+    # target path and is left alone by the next run, which uses its own file
+    leftover = str(tmp_path / (".inventorai.sqlite.stale" + cli._PROVISION_INPROGRESS_SUFFIX))
     open(leftover, "wb").write(b"partial")
     cli.provision_database(str(target))
-    assert sorted(os.listdir(tmp_path)) == ["inventorai.sqlite"]
+    assert sorted(os.listdir(tmp_path)) == sorted(["inventorai.sqlite", os.path.basename(leftover)])
+    assert open(leftover, "rb").read() == b"partial"
     check_existing_database(str(target))
+
+
+def test_concurrent_provisioning_runs_use_separate_inprogress_files(tmp_path, monkeypatch):
+    """Review finding (non-blocking): two runs on one target never share an
+    in-progress file — each builds in its own exclusively created file, so one
+    run's cleanup cannot remove or rebuild the other's file before it is linked."""
+    cli = _cli()
+    target = str(tmp_path / "inventorai.sqlite")
+    seen = []
+    real_link = os.link
+
+    def _record_link(src, dst):
+        seen.append(src)
+        if len(seen) == 1:                               # a second run starts mid-flight
+            cli.provision_database(target)               # ... and wins the target
+        return real_link(src, dst)
+    monkeypatch.setattr(cli.os, "link", _record_link)
+    with pytest.raises(BackupError):                     # the first run never replaces it
+        cli.provision_database(target)
+    assert len(seen) == 2 and seen[0] != seen[1]
+    assert sorted(os.listdir(tmp_path)) == ["inventorai.sqlite"]   # both in-progress files gone
+    check_existing_database(target)
 
 
 def test_provision_never_overwrites_a_concurrently_created_target(tmp_path, monkeypatch):

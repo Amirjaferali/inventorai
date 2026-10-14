@@ -54,15 +54,20 @@ existing target and a missing parent directory (it creates no directory), builds
 the schema through the two existing stores' own constructors into a namespaced
 in-progress file beside the target, validates it, and then hard-links it into
 place — a link can never replace a file, so an existing or concurrently created
-database is never overwritten, and an interrupted run leaves only the in-progress
-file, which the next run discards. It is NEVER run automatically, and it is not a
-recovery step: after a database loss, ``restore`` a verified backup instead.
+database is never overwritten. Every run builds in its own exclusively created
+in-progress file (``.<target name>.<random>.provision-inprogress``), so concurrent
+runs never share one; a hard interruption can leave only such a namespaced file,
+which is never a database at the target path and may be deleted by the operator.
+It is NEVER run automatically, and it is not a recovery step: after a database
+loss, ``restore`` a verified backup instead. Restart the service after
+provisioning or restoring in place, so its background operations are admitted.
 """
 import argparse
 import datetime
 import json
 import os
 import sys
+import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -99,8 +104,12 @@ def provision_database(target):
     parent = os.path.dirname(target)
     if not os.path.isdir(parent):
         raise BackupError("target directory does not exist: %s" % parent)
-    inprogress = target + _PROVISION_INPROGRESS_SUFFIX
-    _remove_if_present(inprogress)
+    # Each run builds in its OWN exclusively created in-progress file, so two
+    # concurrent runs can never share, clean up or link each other's file.
+    handle, inprogress = tempfile.mkstemp(
+        dir=parent, prefix="." + os.path.basename(target) + ".",
+        suffix=_PROVISION_INPROGRESS_SUFFIX)
+    os.close(handle)
     try:
         try:
             SqliteRecordStore(inprogress).close()

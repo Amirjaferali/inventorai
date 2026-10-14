@@ -215,7 +215,9 @@ In production the application opens an **existing** database only: it never
 creates a missing database or its directory, refuses an unrecognised file, and
 then boots with `/health` at `503` and no background operation running. A lost
 database is restored, never re-created; `provision` creates the first, empty
-database of a **new** environment and never replaces a file.
+database of a **new** environment and never replaces a file. After provisioning
+or restoring in place, **restart the service** so its background operations (email
+delivery, off-provider backup) are admitted and start again.
 
 ### Off-provider backup (Cloudflare R2)
 
