@@ -2756,6 +2756,22 @@ UI_STRINGS = {
                "اختبار ولا دليلًا — ولا يُعدّ حفظها إثباتًا لأي شيء أو برهانًا عليه "
                "أو موافقةً عليه."),
     },
+    # 28-T1-MEASUREMENT-PLANNING-REFERENCE-01: interface chrome only for the
+    # collapsible panel that shows the two EXISTING measurement reference groups
+    # (their own approved keys below carry every claim, source and boundary).
+    "UI_SC_MREF_SUMMARY": {
+        "en": "Reference: measured value, threshold, accuracy and resolution",
+        "ar": "مرجع: القيمة المقيسة والحدّ والدقة وقدرة التمييز",
+    },
+    "UI_SC_MREF_NOTE": {
+        "en": ("These general reference notes, also used in InventorAI reports, are shown "
+               "here while you describe how you will measure or check each experiment. "
+               "They explain concepts only: they do not choose an instrument, set a value "
+               "or check your method."),
+        "ar": ("تُعرض هنا هذه الملاحظات المرجعية العامة، المستخدمة أيضًا في تقارير InventorAI، "
+               "أثناء وصفك لكيفية قياس كل تجربة أو التحقق منها. وهي تشرح مفاهيم فقط: لا "
+               "تختار أداة قياس، ولا تحدّد أي قيمة، ولا تتحقق من طريقتك."),
+    },
     "UI_SC_METHOD_LABEL": {
         "en": "Measurement method (how you will measure or check it):",
         "ar": "طريقة القياس (كيف ستقيس ذلك أو تتحقق منه):",

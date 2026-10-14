@@ -14752,6 +14752,19 @@ def _experiment_execution_states(sid, package):
         return {eid: {"state": _EXECUTION_UNAVAILABLE, "count": None} for eid in ids}
 
 
+def _measurement_planning_references(sid):
+    """28-T1-MEASUREMENT-PLANNING-REFERENCE-01: the two existing Sensors /
+    Instrumentation reference groups for the CAP-09 planning page, or None.
+    Eligibility is ONLY the trusted durable root domain, read exactly as the
+    CAP-12 / calculation gates read it (``_cap12_root_domain``: durable
+    ``confirmed_domain``, never the request or live gap state). An unreadable
+    domain or any error shows nothing. Presentation only; writes nothing."""
+    try:
+        return cap01_guidance.measurement_planning_references(_cap12_root_domain(sid))
+    except Exception:
+        return None
+
+
 def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None,
                      result_drafts=None):
     """``drafts`` (F-09): the REJECTED submission, request-local only, as
@@ -14781,6 +14794,10 @@ def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None
         stale_hypotheses=bool(plan and plan.get("stale_test_hypotheses")),
         stale_variables=bool(plan and plan.get("stale_test_variables")),
         results=None if plan is None else _results_view(sid, plan, result_drafts),
+        # Shown only on an AVAILABLE planning page (every render path of this
+        # page passes through here, after the route's authorization check).
+        measurement_references=(None if plan is None
+                                else _measurement_planning_references(sid)),
         result_max_length=_experiment_result.MAX_RESULT_TEXT_LENGTH,
         field_prefix=_CRITERION_FIELD_PREFIX,
         method_prefix=_METHOD_FIELD_PREFIX,
