@@ -449,6 +449,45 @@ admitted.
 *(Earlier text, preserved: "`METHOD ADMISSION: BLOCKED UNTIL D-5 AND D-7 ARE CLOSED.`" — superseded 2026-10-07 when D-5
 was CLOSED.)*
 
+**D-7 RESEARCH-SCOUT UPDATE — 2026-10-14 — DISCOVERY LEADS ONLY — NO CLOSURE CLAIM.** A Lead-commissioned
+Perplexity Research pilot (results Lead-supplied) returned verdict B: promising source candidates were discovered, but
+direct primary-source inspection is still required. Perplexity output is discovery evidence, not source authority
+(CLAUDE.md research-scout rule). Every exact page, table, criterion or value must come from direct inspection of the
+underlying primary source, and every authorship, public-domain or open-licence conclusion must be verified separately.
+No number from any pilot summary is recorded here or adopted. The leads, in no order of authority:
+
+1. **NASA TN D-7572** — Christos C. Chamis, NASA Lewis Research Center (1974), *Analysis of the Three-Point-Bend Test
+   for Materials with Unequal Tension and Compression Properties*. Candidate relevance: explicit length-to-depth
+   statements for a simply supported three-point-bend configuration. DISCOVERY LEAD ONLY: exact wording, location,
+   applicability to this wood method and the reuse / authorship basis need direct inspection; no length-to-depth
+   threshold from the pilot summary is adopted.
+2. **NACA Report 180 / FPL Report 1309** — J. A. Newlin and G. W. Trayer, *Deflection of Beams with Special Reference to
+   Shear Deformations* (1924; later FPL reprint). Candidate relevance: historical experimental basis for the beam
+   shear-deflection treatment close to the source lineage of Equation 9-2. STRONG DISCOVERY LEAD ONLY: direct inspection
+   must show whether it supplies a machine-checkable span / depth or other regime criterion; none is inferred from its
+   existence.
+3. **USDA historical proportional-limit material** — including the 1935 *Wood Handbook* / Technical Bulletin 479 lead.
+   Candidate relevance: a possible source-defined elastic-regime route through static-bending proportional-limit
+   information. DISCOVERY LEAD ONLY: no pilot-returned value is recorded as fact. Using such a criterion could also bring
+   in a stress calculation and a property basis that this contract does not admit (§5, §7), so it would need separate
+   technical qualification before any adoption.
+4. **USDA FPL Research Note FPL-0210** — Orosz (1970), *Simplified Method for Calculating Shear Deflections of Beams*.
+   Candidate relevance: a possible criterion for when shear deflection is materially important. DISCOVERY LEAD ONLY; its
+   machine-checkable usefulness is unknown pending direct inspection.
+5. **NIST / NASA qualitative or adjacent leads** from the same pilot — supporting / adjacent discovery context only, not
+   D-7 evidence unless later inspected directly and shown to meet the exact D-7 requirement.
+
+**Analysis note (proposes no threshold and closes nothing).** Equation 9-2 already carries an explicit shear-deflection
+term (§4), so a source threshold whose only purpose is to justify neglecting shear is not automatically the governing
+D-7 criterion for this method. The open qualification questions remain the actual elastic regime, the short / deep-member
+validity of the shear-corrected formulation and any source-defined small-deflection condition.
+
+This record changes nothing above: D-7 remains OPEN and `METHOD ADMISSION: BLOCKED UNTIL D-7 IS CLOSED` stands; the
+binding D-7 requirement is unchanged; no numerical threshold is admitted; no equation, constant, property, method
+version, disclosure or calculation-owner boundary changes; the D-5 record (§3A) is unchanged; nothing is authorized for
+implementation. Stage 25 stays ENTERED / PARTIAL through the delivered Two-Support Static Reactions slice only, and this
+stiffness method stays NOT ADMITTED.
+
 ## 13. Duplication check
 
 | Existing owner | Relationship |
