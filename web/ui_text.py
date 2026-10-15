@@ -5225,6 +5225,14 @@ UI_STRINGS = {
     "UI_CAP13_SCOPE_NOTE": {
         "en": "This optional calculation is available for a Mechanical-focus project or for its declared Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Recording a Mechanical part does not establish that the two-support static-equilibrium model applies. You must confirm the method's conditions and screening items. The result is UNVALIDATED and is not a capacity or safety conclusion.",
         "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. وجود الجزء الميكانيكي لا يثبت انطباق نموذج الاتزان الساكن ذي المسندين. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة غير مُتحقَّق منها، وليست حكمًا على قدرة التحمل أو السلامة."},
+    # CAP12-INTEGRATED-MECHANICAL-PART-01: the declared Mechanical part the
+    # form mock-up advisory is offered for on an integrated invention.
+    "UI_CAP12_PART_LABEL": {
+        "en": "Declared Mechanical part:",
+        "ar": "الجزء الميكانيكي المصرّح به:"},
+    "UI_CAP12_PART_NOTE": {
+        "en": "This advice is offered for the recorded part. Its presence does not establish that any material or building method suits it.",
+        "ar": "تُتاح هذه الإرشادات للجزء المسجل. ووجوده لا يثبت أن أي مادة أو طريقة بناء تناسبه."},
     "UI_CAP13_PART_LABEL": {
         "en": "Declared Mechanical part:",
         "ar": "الجزء الميكانيكي المصرّح به:"},

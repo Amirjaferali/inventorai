@@ -12371,8 +12371,10 @@ def _readiness_snapshot_context(sid, state):
 # its answer directly and never redirects, so there is nothing to confirm.
 #
 # The component name and function never reach the resolver. Its only inputs are
-# the trusted durable root domain and the selected role token, so no text can
-# steer a material or process into the advisory.
+# the trusted durable domain (the root domain, or — CAP12-INTEGRATED-MECHANICAL-
+# PART-01 — the canonical domain of the declared integrated part, see
+# ``_cap12_gate``) and the selected role token, so no text can steer a material
+# or process into the advisory.
 _CAP12_FIELDS = frozenset({"csrf_token", "component_name",
                            "component_function", "role_category"})
 _CAP12_NAME_MAX = 120
@@ -12392,14 +12394,45 @@ def _cap12_root_domain(sid):
     return value if isinstance(value, str) and value else None
 
 
+def _cap12_gate(sid):
+    """``(domain, part)``: the ONE CAP-12 eligibility decision the session-page
+    link, the advisory page and the advisory POST all read, so they cannot
+    disagree. Never taken from the request; fails closed.
+
+    Root eligibility is exactly the existing rule: when the CAP-12 owner
+    supports the project's durable root domain (``_cap12_root_domain``), that
+    domain is used and ``part`` is None — the existing behaviour, unchanged.
+    CAP12-INTEGRATED-MECHANICAL-PART-01 (Owner-authorized): otherwise, when the
+    validated durable integrated composition holds the ONE inventor-declared
+    part whose canonical domain the CAP-12 owner supports (Mechanical — the
+    existing applicability key), that part's canonical domain is used and
+    ``part`` is that declared part, for attribution. The composition is read
+    only through the PR #785 reader (``_calc_declared_part``). Otherwise the
+    root domain is returned unchanged and the owner declines it exactly as
+    before. A declared part makes the advisory OFFERED for that part only; it
+    establishes no suitability, compatibility, validation or safety."""
+    root = _cap12_root_domain(sid)
+    try:
+        if _cap12.supports(root):
+            return root, None
+        for domain, _role in _cap12.SUPPORTED_APPLICABILITY:
+            part = _calc_declared_part(sid, domain)
+            if part is not None and _cap12.supports(part.domain):
+                return part.domain, part
+    except Exception:
+        pass
+    return root, None
+
+
 def _cap12_link_offered(sid):
     """True iff the session page should offer the advisory link: the CAP-12
-    owner supports the project's durable root domain. It reads the SAME single
-    owner the advisory POST uses (``_cap12_root_domain``, the durable
-    ``confirmed_domain``) and never live session state, so the link and the
-    advisory cannot disagree. Presentation only; fails closed."""
+    owner supports the domain of the ONE eligibility decision the advisory
+    POST also reads (``_cap12_gate``: the durable root domain, or the
+    canonical domain of a declared integrated part) and never live session
+    state, so the link and the advisory cannot disagree. Presentation only;
+    fails closed."""
     try:
-        return _cap12.supports(_cap12_root_domain(sid))
+        return _cap12.supports(_cap12_gate(sid)[0])
     except Exception:
         return False
 
@@ -12444,7 +12477,7 @@ def _cap12_view(advisory):
 
 
 def _render_cap12(sid, status=200, advisory=None, error=None, name="",
-                  function="", role=""):
+                  function="", role="", part=None):
     lang = _current_ui_lang()
     unable_key = None
     view = None
@@ -12467,6 +12500,7 @@ def _render_cap12(sid, status=200, advisory=None, error=None, name="",
         role_choices=_CAP12_ROLE_CHOICES,
         name_max=_CAP12_NAME_MAX,
         function_max=_CAP12_FUNCTION_MAX,
+        part_name=(part.display_name if part is not None else ""),
     ), status)
     response.headers["Cache-Control"] = "no-store"
     return response
@@ -12476,20 +12510,24 @@ def _render_cap12(sid, status=200, advisory=None, error=None, name="",
 def cap12_form_mockup_advisory(sid):
     if not _project_authorized(sid):
         return _deny_project()
-    return _render_cap12(sid)
+    return _render_cap12(sid, part=_cap12_gate(sid)[1])
 
 
 @app.route("/session/<sid>/form-mockup-advisory", methods=["POST"])
 def cap12_form_mockup_advisory_post(sid):
     # Order: request integrity (global CSRF guard) -> project authorization ->
     # strict field allowlist -> bounded descriptor text -> resolver. Nothing is
-    # read from or written to the project beyond the trusted root domain.
+    # read from or written to the project beyond the trusted root domain and,
+    # for integrated-part eligibility, the validated durable composition
+    # (``_cap12_gate``, the same decision the link and the GET read).
     if not _project_authorized(sid):
         return _deny_project()
+    domain, part = _cap12_gate(sid)
     form = request.form
     if set(form.keys()) - _CAP12_FIELDS \
             or any(len(form.getlist(k)) != 1 for k in form.keys()):
-        return _render_cap12(sid, status=400, error="UI_CAP12_ERR_REQUEST")
+        return _render_cap12(sid, status=400, error="UI_CAP12_ERR_REQUEST",
+                             part=part)
     raw_name = form.get("component_name", "")
     raw_function = form.get("component_function", "")
     role = form.get("role_category", "")
@@ -12497,10 +12535,11 @@ def cap12_form_mockup_advisory_post(sid):
     function = _cap12_descriptor_text(raw_function, _CAP12_FUNCTION_MAX, True)
     if name is None or function is None:
         return _render_cap12(sid, status=400, error="UI_CAP12_ERR_FIELDS",
-                             name=raw_name, function=raw_function, role=role)
-    advisory = _cap12.resolve_advisory(_cap12_root_domain(sid), role)
+                             name=raw_name, function=raw_function, role=role,
+                             part=part)
+    advisory = _cap12.resolve_advisory(domain, role)
     return _render_cap12(sid, advisory=advisory, name=name, function=function,
-                         role=role)
+                         role=role, part=part)
 
 
 # =============================================================================
@@ -12523,7 +12562,8 @@ _CAP13_REACTIONS_BINDING = _dcalc.bind_method(
 
 
 def _calc_declared_part(sid, part_domain):
-    """CAP13-THERM01-INTEGRATED-PART-01: the ONE inventor-declared part of
+    """CAP13-THERM01-INTEGRATED-PART-01 (reused by CAP12-INTEGRATED-MECHANICAL-
+    PART-01 for the CAP-12 advisory gate): the ONE inventor-declared part of
     ``sid``'s durable integrated composition whose canonical domain is
     ``part_domain``, or None. The composition is read through the store's own
     project-scoped, whole-composition validation (``load_project_subsystems``,

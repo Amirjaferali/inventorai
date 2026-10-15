@@ -49,7 +49,13 @@ OFFERED for the declared Mechanical and Electrical / Electronics part
 respectively whatever the initial analysis focus (eligibility is decided in the
 web layer from this validated durable composition). Offering a calculation for a
 declared part establishes no applicability, validation or safety and changes
-nothing here; no other specialist behaviour is granted. Subsystem identity is
+nothing here. A further narrow, Owner-authorized exception
+(CAP12-INTEGRATED-MECHANICAL-PART-01): the existing CAP-12 form mock-up advisory
+may likewise be OFFERED for the declared Mechanical part whatever the initial
+analysis focus, decided in the web layer from the same validated durable
+composition; it establishes no suitability, compatibility, validation or safety
+and changes nothing here. No other specialist behaviour is granted by these
+exceptions. Subsystem identity is
 system-generated (``new_subsystem_id``), opaque, immutable and never derived
 from a name, a function text, a domain id or a list position; a client never
 supplies one. Declared part text is PRIVATE inventor / project information —

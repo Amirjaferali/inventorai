@@ -34,6 +34,15 @@ ul.sources{font-size:13px;padding-inline-start:20px;margin:6px 0}
   <p style="margin:0">{{ t('UI_CAP12_INTRO') }}</p>
 </div>
 
+{#- CAP12-INTEGRATED-MECHANICAL-PART-01: on an integrated invention whose
+    initial focus is not Mechanical, the advisory is offered for the
+    inventor-declared Mechanical part, named here by its durable identity's
+    stored name. Offering it establishes no suitability, compatibility,
+    validation or safety. -#}
+{% if part_name %}
+<p class="notice" data-cap12-part><strong>{{ t('UI_CAP12_PART_LABEL') }}</strong> <bdi dir="auto" data-cap12-part-name>{{ part_name }}</bdi><br>{{ t('UI_CAP12_PART_NOTE') }}</p>
+{% endif %}
+
 {% if error_key %}<div class="error" role="alert" data-cap12-error>{{ t(error_key) }}</div>{% endif %}
 
 {% if shown %}
