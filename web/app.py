@@ -15012,6 +15012,19 @@ def _measurement_planning_guidance(sid):
         return None
 
 
+def _measurement_planning_conditions(sid):
+    """MEASUREMENT-CONDITIONS-AWARENESS-01: the ONE measurement-conditions
+    awareness group for the CAP-09 planning page, or None. The same eligibility
+    owner as the C1 guidance above (``_cap12_root_domain``: the trusted durable
+    root domain, never the request, the gap state or inventor text). An
+    unreadable domain or any error shows nothing. Presentation only; writes
+    nothing."""
+    try:
+        return cap01_guidance.measurement_planning_conditions(_cap12_root_domain(sid))
+    except Exception:
+        return None
+
+
 def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None,
                      result_drafts=None):
     """``drafts`` (F-09): the REJECTED submission, request-local only, as
@@ -15047,6 +15060,8 @@ def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None
                                 else _measurement_planning_references(sid)),
         measurement_guidance=(None if plan is None
                               else _measurement_planning_guidance(sid)),
+        measurement_conditions=(None if plan is None
+                                else _measurement_planning_conditions(sid)),
         result_max_length=_experiment_result.MAX_RESULT_TEXT_LENGTH,
         field_prefix=_CRITERION_FIELD_PREFIX,
         method_prefix=_METHOD_FIELD_PREFIX,

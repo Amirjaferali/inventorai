@@ -49,6 +49,10 @@ from tests.cap01_charge_addition import (
 # report context row); excluded here likewise (tests/cap01_measurement_guidance_addition.py).
 from tests.cap01_measurement_guidance_addition import (
     MGUIDE_GROUP, MGUIDE_RECORDS, without_measurement_guidance_addition)
+# MEASUREMENT-CONDITIONS-AWARENESS-01 later appended ONE further CAP-09-page-only guidance group (never a
+# report context row); excluded here likewise (tests/cap01_measurement_conditions_addition.py).
+from tests.cap01_measurement_conditions_addition import (
+    MCOND_GROUP, MCOND_RECORDS, without_measurement_conditions_addition)
 from tests.test_cap01_electrical_energy_time_reference import ET_GROUP, _html, _groups, _equations
 from tests.test_cap01_electrical_reference_fundamentals import FUND_GROUP as BASE_GROUP
 from tests.test_cap01_sensing_value_threshold_reference import (
@@ -201,7 +205,7 @@ def test_b04_the_binding_is_one_fixed_row_appended_to_the_sensing_context():
             (SENSING_GROUP, (SENSING_CLAIM,), "SENSING_FUNDAMENTALS_"),
             (GROUP, (CLAIM,), "ACCURACY_RESOLUTION_FUNDAMENTALS_"), CTRL_ROW),
     }
-    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({SENSING_GROUP, GROUP, CTRL_GROUP, MGUIDE_GROUP})
+    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({SENSING_GROUP, GROUP, CTRL_GROUP, MGUIDE_GROUP, MCOND_GROUP})
 
 
 def test_b05_never_reads_inventor_text_or_signals():
@@ -415,8 +419,8 @@ def test_p01_pack_minus_exactly_this_addition_equals_the_base_pack():
     pack = _pack()
     assert [g["group_id"] for g in pack["reference_fundamentals"]] == [BASE_GROUP, ET_GROUP, SENSING_GROUP,
                                                                        GROUP, CTRL_GROUP, CHARGE_GROUP,
-                                                                       MGUIDE_GROUP]
-    pre = without_measurement_guidance_addition(without_charge_addition(without_controller_addition(pack)))
+                                                                       MGUIDE_GROUP, MCOND_GROUP]
+    pre = without_measurement_conditions_addition(without_measurement_guidance_addition(without_charge_addition(without_controller_addition(pack))))
     pre["reference_fundamentals"] = [g for g in pre["reference_fundamentals"] if g["group_id"] != GROUP]
     note = pre["_governance_notes"].pop(NOTE)
     assert _digest(pre) == _PRE_PACK_DIGEST
@@ -447,7 +451,7 @@ def test_p03_provenance_is_append_only_with_two_claim_specific_records():
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR013")
     assert tuple(ids[i + 1:i + 3]) == RECORDS
-    pre = [r for r in records if r["record_id"] not in RECORDS + CTRL_RECORDS + CHARGE_RECORDS + MGUIDE_RECORDS]
+    pre = [r for r in records if r["record_id"] not in RECORDS + CTRL_RECORDS + CHARGE_RECORDS + MGUIDE_RECORDS + MCOND_RECORDS]
     assert _digest(pre) == _PRE_PROVENANCE_DIGEST                     # PR001–PR013 and others unchanged
     src, use = (records[ids.index(r)] for r in RECORDS)
     assert sorted(src) == sorted(use) == sorted(records[i])

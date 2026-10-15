@@ -32,6 +32,11 @@ textarea{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radi
 .measurement-guidance p{margin:6px 0}
 .measurement-guidance details{margin:6px 0 0;font-size:12px;color:#444}
 .measurement-guidance summary{cursor:pointer;color:#2c3e50}
+.measurement-conditions{margin:0 0 18px;border:1px solid #c9d6e3;border-inline-start:4px solid #2c3e50;border-radius:4px;padding:8px 12px;font-size:13px;line-height:1.6;color:#222;min-width:0;overflow-wrap:anywhere}
+.measurement-conditions h2{font-size:14px;color:#2c3e50;margin:2px 0 4px;border:none;padding:0}
+.measurement-conditions p{margin:6px 0}
+.measurement-conditions details{margin:6px 0 0;font-size:12px;color:#444}
+.measurement-conditions summary{cursor:pointer;color:#2c3e50}
 @media(max-width:520px){body{margin:18px auto;padding:0 14px}.app-header{flex-wrap:wrap}.app-header .temp-session{white-space:normal}.exp{padding:12px}button{max-width:100%;box-sizing:border-box}}
 button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
 .links{margin-top:24px;font-size:13px}
@@ -65,6 +70,28 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   <details data-mguide-source>
     <summary>{{ t('UI_SC_MGUIDE_SOURCE_SUMMARY') }}</summary>
     <p data-mguide-source-text>{{ t(measurement_guidance.source_key) }}</p>
+  </details>
+</section>
+{% endif %}
+{#- MEASUREMENT-CONDITIONS-AWARENESS-01: ONE further visible, optional
+    planning element after the C1 guidance — the conditions of use and influence
+    quantities can affect a measurement and whether calibration results apply
+    under them. The route decides on the same trusted durable root domain;
+    nothing here reads, interprets or grades inventor text, no condition, value
+    or requirement is named and no input is added. The note and its boundary are
+    visible; the source / adaptation / no-endorsement notice is one click away
+    inside the same block. CAP-09 page only; never a report / PDF group. -#}
+{% if measurement_conditions %}
+<section class="measurement-conditions" data-measurement-conditions="{{ measurement_conditions.group_id|replace('_', '-') }}" aria-labelledby="mcond-title" aria-describedby="mcond-intro">
+  <h2 id="mcond-title" data-mcond-title>{{ t(measurement_conditions.title_key) }}</h2>
+  <p id="mcond-intro" data-mcond-intro>{{ t(measurement_conditions.intro_key) }}</p>
+  {%- for _cclaim in measurement_conditions.claims %}
+  <p data-mcond-claim="{{ _cclaim.claim_id|replace('_', '-') }}"><strong data-mcond-item-title>{{ t(_cclaim.title_key) }}</strong> <span data-mcond-item-text>{{ t(_cclaim.text_key) }}</span></p>
+  {%- endfor %}
+  <p data-mcond-boundary>{{ t(measurement_conditions.boundary_key) }}</p>
+  <details data-mcond-source>
+    <summary>{{ t('UI_SC_MGUIDE_SOURCE_SUMMARY') }}</summary>
+    <p data-mcond-source-text>{{ t(measurement_conditions.source_key) }}</p>
   </details>
 </section>
 {% endif %}

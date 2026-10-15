@@ -38,6 +38,10 @@ from tests.cap01_measurement_guidance_addition import (
     MGUIDE_CLAIM as CLAIM, MGUIDE_CLAIMS as CLAIMS, MGUIDE_GROUP as GROUP, MGUIDE_NOTE as NOTE,
     MGUIDE_RECORDS as RECORDS, MGUIDE_SLUG as SLUG, MGUIDE_STEM as STEM,
     without_measurement_guidance_addition)
+# MEASUREMENT-CONDITIONS-AWARENESS-01 later appended ONE further CAP-09-page-only guidance group and two
+# records; excluded here likewise (tests/cap01_measurement_conditions_addition.py).
+from tests.cap01_measurement_conditions_addition import (
+    MCOND_GROUP, MCOND_RECORDS, without_measurement_conditions_addition)
 from tests.test_28t1_measurement_planning_reference import (
     GROUPS as REFERENCE_GROUPS, _elec, _group_blocks, _page, _panel, _start, _visible)
 from tests.test_cap12_form_mockup_advisory import _client_for
@@ -330,8 +334,9 @@ def test_g15_viewing_the_page_writes_nothing():
 # ==========================================================================
 def test_p01_the_pack_change_is_exactly_one_group_and_one_note():
     pack = _pack()
-    assert _digest(without_measurement_guidance_addition(pack)) == _PRE_PACK_DIGEST
-    assert [g["group_id"] for g in pack["reference_fundamentals"]][-1] == GROUP
+    assert _digest(without_measurement_guidance_addition(without_measurement_conditions_addition(pack))) \
+        == _PRE_PACK_DIGEST
+    assert [g["group_id"] for g in pack["reference_fundamentals"]][-2:] == [GROUP, MCOND_GROUP]
     note = pack["_governance_notes"][NOTE]
     for phrase in ("MEASUREMENT-PLAN-GUIDANCE-01", "C1 only", "exactly ONE prose-only conceptual claim",
                    "measured_quantity_versus_observed_condition", "electronics_electrical:PR022",
@@ -352,7 +357,7 @@ def test_p01_the_pack_change_is_exactly_one_group_and_one_note():
 
 
 def test_p02_the_one_claim_has_exact_source_policy_and_limitation_linkage():
-    group = _pack()["reference_fundamentals"][-1]
+    [group] = [g for g in _pack()["reference_fundamentals"] if g["group_id"] == GROUP]
     assert sorted(group) == ["applicable_gap_type", "claims", "group_id"]
     assert (group["group_id"], group["applicable_gap_type"]) == (GROUP, MECHANISM_COMPLETENESS)
     [claim] = group["claims"]
@@ -397,8 +402,8 @@ def test_p03_two_records_appended_after_pr021_and_every_other_record_unchanged()
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR021")
     assert tuple(ids[i + 1:i + 3]) == RECORDS
-    assert ids[i + 3] == "mechanical:PR001"
-    assert _digest([r for r in records if r["record_id"] not in RECORDS]) == _PRE_PROVENANCE_DIGEST
+    assert tuple(ids[i + 3:i + 5]) == MCOND_RECORDS and ids[i + 5] == "mechanical:PR001"
+    assert _digest([r for r in records if r["record_id"] not in RECORDS + MCOND_RECORDS]) == _PRE_PROVENANCE_DIGEST
     recs = {r["record_id"]: r for r in records}
     shape = sorted(recs["electronics_electrical:PR014"])
     assert all(sorted(recs[r]) == shape for r in RECORDS)

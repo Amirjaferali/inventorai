@@ -378,7 +378,10 @@ _FUNDAMENTALS_PROSE_ONLY_GROUPS = frozenset({"sensing_value_threshold_reference_
                                              "controller_input_logic_output_reference_v1",
                                              # MEASUREMENT-PLAN-GUIDANCE-01 (C1): the CAP-09-only
                                              # guidance group below; never a report context group.
-                                             "measurement_quantity_versus_condition_reference_v1"})
+                                             "measurement_quantity_versus_condition_reference_v1",
+                                             # MEASUREMENT-CONDITIONS-AWARENESS-01: the second
+                                             # CAP-09-only guidance group; never a report group.
+                                             "measurement_conditions_awareness_reference_v1"})
 _FUNDAMENTALS_PROSE_ITEM_PARTS = {
     "title_key": "TITLE",
     "text_key":  "TEXT",
@@ -790,3 +793,35 @@ def measurement_planning_guidance(domain_id):
     return _fundamentals_group(CAP09_MEASUREMENT_GUIDANCE_GROUP,
                                CAP09_MEASUREMENT_GUIDANCE_CLAIMS,
                                CAP09_MEASUREMENT_GUIDANCE_STEM)
+
+
+# MEASUREMENT-CONDITIONS-AWARENESS-01 — ONE further visible, optional
+# measurement-planning element on the CAP-09 page, after the C1 guidance above:
+# the conditions of use and influence quantities can affect a measurement result
+# and whether an instrument's calibration results apply under those conditions,
+# so identifying the relevant conditions is part of planning the measurement.
+# ONE prose-only claim declared in ``domains/electronics_electrical/domain.json``
+# (measurement_conditions_awareness_reference_v1; provenance
+# electronics_electrical:PR024–PR025, Journal of Research of NIST 106, Sections
+# 2.1 and 2.2), built by the SAME ``_fundamentals_group`` builder under its OWN
+# copy namespace and the SAME exact root-domain rule as the C1 guidance. Not a
+# row of ``CAP01_GAP_FUNDAMENTALS_EXTENSIONS``; names no condition, value or
+# requirement; reads, interprets and grades nothing the inventor writes.
+CAP09_MEASUREMENT_CONDITIONS_GROUP = "measurement_conditions_awareness_reference_v1"
+CAP09_MEASUREMENT_CONDITIONS_CLAIMS = ("conditions_of_use_affect_measurement",)
+CAP09_MEASUREMENT_CONDITIONS_STEM = "UI_CAP09_MEASUREMENT_CONDITIONS_V1_"
+
+
+def measurement_planning_conditions(domain_id):
+    """The ONE measurement-conditions awareness group for the CAP-09 planning
+    page, as copy KEYS plus its group / claim identifiers — or ``None`` unless
+    ``domain_id`` is exactly the Electronics root domain.
+
+    All-or-nothing on its own copy (title, intro, item, source, boundary), so the
+    page never shows the note without its source and limits. Pure; never raises;
+    reads no project, text or state."""
+    if domain_id != CAP09_MEASUREMENT_REFERENCE_DOMAIN:
+        return None
+    return _fundamentals_group(CAP09_MEASUREMENT_CONDITIONS_GROUP,
+                               CAP09_MEASUREMENT_CONDITIONS_CLAIMS,
+                               CAP09_MEASUREMENT_CONDITIONS_STEM)

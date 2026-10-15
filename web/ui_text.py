@@ -2932,6 +2932,77 @@ UI_STRINGS = {
         "en": "Source, adaptation and limits",
         "ar": "المصدر والاقتباس والحدود",
     },
+    # MEASUREMENT-CONDITIONS-AWARENESS-01: ONE further visible CAP-09 planning
+    # element after the C1 guidance (measurement_conditions_awareness_reference_v1;
+    # provenance electronics_electrical:PR024–PR025 — Journal of Research of NIST
+    # 106, Sections 2.1 and 2.2). ITEM_1_TEXT is InventorAI's own restatement of the
+    # ONE admitted awareness, and the Arabic is InventorAI's translation; SOURCE
+    # carries the NIST / author / publication attribution, the URL (in an LTR
+    # isolate in Arabic), the adaptation / translation notice and the no-endorsement
+    # notice. No EQUATION part by design (prose-only). It names no condition, value
+    # or requirement. The collapsed source block reuses UI_SC_MGUIDE_SOURCE_SUMMARY.
+    "UI_CAP09_MEASUREMENT_CONDITIONS_V1_TITLE": {
+        "en": "Under what conditions will you measure?",
+        "ar": "في أيّ ظروف ستقيس؟",
+    },
+    "UI_CAP09_MEASUREMENT_CONDITIONS_V1_INTRO": {
+        "en": ("Guidance to consider while you write your measurement method. It does not say "
+               "which conditions matter for your experiment: InventorAI has not identified that, "
+               "and this guidance does not analyze, interpret or assess what you enter."),
+        "ar": ("إرشاد لتأخذه في الاعتبار أثناء كتابة طريقة القياس. وهو لا يحدّد الظروف المهمة "
+               "لتجربتك: فلم يحدّد InventorAI ذلك، ولا يحلّل هذا الإرشاد ما تُدخله ولا يفسّره ولا يقيّمه."),
+    },
+    "UI_CAP09_MEASUREMENT_CONDITIONS_V1_ITEM_1_TITLE": {
+        "en": "Conditions of use can affect a measurement",
+        "ar": "ظروف الاستخدام قد تؤثّر في القياس",
+    },
+    "UI_CAP09_MEASUREMENT_CONDITIONS_V1_ITEM_1_TEXT": {
+        "en": ("The conditions under which you make a measurement, and other quantities besides "
+               "the one you intend to measure, can affect the measurement result. They can also "
+               "affect whether an instrument's calibration results apply under those conditions. "
+               "Identifying the conditions relevant to your measurement is part of planning it "
+               "soundly; if you wish, you can mention them when you describe how you will measure "
+               "or check this experiment."),
+        "ar": ("قد تؤثّر الظروف التي تُجري فيها القياس، ومقادير أخرى غير المقدار الذي تريد قياسه، "
+               "في نتيجة القياس. وقد تؤثّر أيضًا في مدى انطباق نتائج معايرة أداة القياس في تلك "
+               "الظروف. وتحديد الظروف ذات الصلة بقياسك جزء من التخطيط السليم له؛ ويمكنك، إن شئت، "
+               "ذكرها عند وصف كيفية قياس هذه التجربة أو التحقق منها."),
+    },
+    "UI_CAP09_MEASUREMENT_CONDITIONS_V1_SOURCE": {
+        "en": ("Source: National Institute of Standards and Technology (NIST), Phillips, Estler, "
+               "Doiron, Eberhardt and Levenson, A Careful Consideration of the Calibration Concept, "
+               "Journal of Research of the National Institute of Standards and Technology, Vol. 106 "
+               "(2001), pp. 371–379, Sections 2.1 and 2.2, "
+               "https://nvlpubs.nist.gov/nistpubs/jres/106/2/j62phi.pdf. Adapted: InventorAI "
+               "restated, in its own words, only that the conditions of use and other influencing "
+               "quantities can affect a measurement and whether calibration results apply, and that "
+               "identifying them is part of measurement planning; the Arabic version is "
+               "InventorAI's translation of that restatement. No sentence, definition, figure or "
+               "table of the publication, and no definition or text it takes from another source "
+               "such as the VIM or the GUM, is reproduced. This does not imply that NIST or the "
+               "authors have reviewed, approved or endorsed InventorAI or this guidance."),
+        "ar": ("المصدر: المعهد الوطني للمعايير والتقنية في الولايات المتحدة (NIST)، فيليبس وإستلر "
+               "ودويرون وإيبرهارت وليفنسون (Phillips, Estler, Doiron, Eberhardt, Levenson)، "
+               "A Careful Consideration of the Calibration Concept، مجلة Journal of Research of the "
+               "National Institute of Standards and Technology، المجلد 106 (2001)، الصفحات 371–379، "
+               "القسمان 2.1 و2.2، على الرابط: "
+               "\u2066https://nvlpubs.nist.gov/nistpubs/jres/106/2/j62phi.pdf\u2069. مُقتبَس: أعاد "
+               "InventorAI بكلماته صياغة أن ظروف الاستخدام والمقادير المؤثّرة الأخرى قد تؤثّر في "
+               "القياس وفي مدى انطباق نتائج المعايرة، وأن تحديدها جزء من تخطيط القياس، فقط؛ والنص "
+               "العربي ترجمة InventorAI لهذه الصياغة. ولا تُعاد أي جملة أو تعريف أو شكل أو جدول من "
+               "المنشور، ولا أي تعريف أو نص يأخذه من مصدر آخر مثل VIM أو GUM. ولا يعني ذلك أن NIST "
+               "أو المؤلفين راجعوا InventorAI أو هذا الإرشاد أو وافقوا عليه أو أيّدوه."),
+    },
+    "UI_CAP09_MEASUREMENT_CONDITIONS_V1_BOUNDARY": {
+        "en": ("This guidance does not identify which conditions or quantities matter for your "
+               "experiment, give any condition, value, range or limit, select an instrument, set any "
+               "accuracy, resolution or calibration requirement, describe a calibration procedure, "
+               "evaluate uncertainty, or check what you write. Measurement planning stays yours."),
+        "ar": ("لا يحدّد هذا الإرشاد الظروف أو المقادير المهمة لتجربتك، ولا يعطي أي ظرف أو قيمة أو "
+               "مدى أو حدّ، ولا يختار أداة قياس، ولا يحدّد أي متطلب للدقة أو لقدرة التمييز أو "
+               "للمعايرة، ولا يصف إجراء معايرة، ولا يقيّم عدم اليقين، ولا يتحقق مما تكتبه. ويبقى "
+               "تخطيط القياس بيدك."),
+    },
     "UI_SC_METHOD_LABEL": {
         "en": "Measurement method (how you will measure or check it):",
         "ar": "طريقة القياس (كيف ستقيس ذلك أو تتحقق منه):",

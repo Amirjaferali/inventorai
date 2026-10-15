@@ -52,6 +52,10 @@ from tests.cap01_charge_addition import (
 # report context row); excluded here likewise (tests/cap01_measurement_guidance_addition.py).
 from tests.cap01_measurement_guidance_addition import (
     MGUIDE_GROUP, MGUIDE_RECORDS, without_measurement_guidance_addition)
+# MEASUREMENT-CONDITIONS-AWARENESS-01 later appended ONE further CAP-09-page-only guidance group (never a
+# report context row); excluded here likewise (tests/cap01_measurement_conditions_addition.py).
+from tests.cap01_measurement_conditions_addition import (
+    MCOND_GROUP, MCOND_RECORDS, without_measurement_conditions_addition)
 
 _ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 _PACK_PATH = os.path.join(_ROOT, "domains", "electronics_electrical", "domain.json")
@@ -242,9 +246,10 @@ def test_c06_missing_earlier_copy_never_removes_this_group(monkeypatch):
 # ==========================================================================
 def test_c07_the_pack_change_is_exactly_one_group_and_one_note():
     pack = _pack()
-    assert _digest(without_charge_addition(without_measurement_guidance_addition(pack))) == _PRE_PACK_DIGEST
-    # This group is the last REPORT group; the later CAP-09-only guidance group follows it in the pack.
-    assert [g["group_id"] for g in pack["reference_fundamentals"]][-2:] == [GROUP, MGUIDE_GROUP]
+    assert _digest(without_charge_addition(without_measurement_guidance_addition(
+        without_measurement_conditions_addition(pack)))) == _PRE_PACK_DIGEST
+    # This group is the last REPORT group; the later CAP-09-only guidance groups follow it in the pack.
+    assert [g["group_id"] for g in pack["reference_fundamentals"]][-3:] == [GROUP, MGUIDE_GROUP, MCOND_GROUP]
     note = pack["_governance_notes"][NOTE]
     for phrase in ("ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01", "NOT Battery / BMS capability", "inert",
                    "exactly three bounded reference claims", "ONLY when the current I remains constant",
@@ -299,8 +304,9 @@ def test_c09_four_records_appended_after_pr017_and_every_other_record_unchanged(
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR017")
     assert tuple(ids[i + 1:i + 5]) == RECORDS
-    assert tuple(ids[i + 5:i + 7]) == MGUIDE_RECORDS and ids[i + 7] == "mechanical:PR001"
-    assert _digest([r for r in records if r["record_id"] not in RECORDS + MGUIDE_RECORDS]) == _PRE_PROVENANCE_DIGEST
+    assert tuple(ids[i + 5:i + 7]) == MGUIDE_RECORDS and tuple(ids[i + 7:i + 9]) == MCOND_RECORDS
+    assert ids[i + 9] == "mechanical:PR001"
+    assert _digest([r for r in records if r["record_id"] not in RECORDS + MGUIDE_RECORDS + MCOND_RECORDS]) == _PRE_PROVENANCE_DIGEST
     recs = {r["record_id"]: r for r in records}
     shape = sorted(recs["electronics_electrical:PR004"])
     assert all(sorted(recs[r]) == shape for r in RECORDS)
