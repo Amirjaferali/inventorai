@@ -29,6 +29,7 @@ notably LQ-09/LQ-10/TQ-07) and separate Owner acceptance.
 | Interface dependency declarations (the inventor's own statement of which part relies on the other through a declared interaction, or that each relies on the other, with an optional note; Stage 15 closure) | Durable SQLite (`subsystem_interface_dependencies`) — ONE current value per project and declared interaction: an edit replaces it and clearing the declaration removes that row; no history is kept | YES |
 | Optional-part answers (the inventor's own answers to the governed questions about an optional composed part, such as a control-loop part; Stage 28 — Control-Loop Optional Part — Slice 2, dormant) | Durable SQLite (`subsystem_part_answers`) — ONE current value per project, part and question: an edit replaces the text and clearing an answer removes that row; no history is kept | YES |
 | Declared components and their correction / withdrawal history (the inventor's own list of the physical components their invention includes; COMPONENT-INVENTORY-DECLARE-LIST-01 and COMPONENT-INVENTORY-CORRECT-WITHDRAW-01) | Durable SQLite (`project_components`, `project_component_revisions`) — APPEND-ONLY: each declaration, each correction and each withdrawal is a new row; a correction does not rewrite or delete the earlier version, and a withdrawal removes nothing (the component only leaves the current list); no clear or delete path exists | YES |
+| Component prototype-need notes (the inventor's own optional planning note of what they expect to need of one declared component for one prototype; COMPONENT-PROTOTYPE-NEED-NOTE-01) | Durable SQLite (`component_prototype_needs`) — ONE current value per project and declared component: a save replaces the text and clearing the note removes that row; no history is kept; clearing never removes the component itself, and a withdrawn component's note stays stored but is no longer shown | YES |
 | Integration evidence anchors (which declared interaction each Integration evidence item belongs to; Stage 15 closure — the evidence itself is in `readiness_evidence`) | Durable SQLite (`integration_evidence_anchors`) — INSERT-only: one immutable anchor per Integration evidence row, written with that row; no update, clear or delete path exists | YES |
 | Audit / commercial scaffolding (`access_audit`, `commercial_audit`, lifecycle, dedupe, usage) | Durable SQLite, append-only; NO live billing data | Partly |
 | Auth rate-limit counters | Durable SQLite (`auth_rate_limits`) — privacy-digest keys, no raw email | NO |
@@ -104,6 +105,12 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
   removing any row. Withdrawing a component is NOT deletion, NOT erasure and NOT account or project
   erasure, and decides no retention period; the existing broader project / account retention and
   deletion rules are unchanged, and every version may persist in backups.
+* COMPONENT-PROTOTYPE-NEED-NOTE-01 extends the same user-initiated current-value behaviour,
+  unchanged in kind, to the owner's own prototype-need note for one declared component
+  (`component_prototype_needs`): saving replaces the note in place, and clearing it removes that
+  single current-value row; the component and its append-only history are untouched. It is NOT
+  an automatic deletion, NOT physical erasure, NOT an erasure capability and NOT account or
+  project erasure; it decides no retention period, and earlier values may persist in backups.
 * Stage 15 closure extends the same user-initiated current-value behaviour, unchanged in kind, to
   the owner's own interface dependency declarations (`subsystem_interface_dependencies`): editing a
   declaration replaces it in place, and clearing a dependency declaration removes that single

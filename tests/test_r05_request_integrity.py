@@ -37,6 +37,9 @@ MUTATIONS = (
     # terminal withdrawal of one current declared component.
     "/session/<sid>/correct-component",
     "/session/<sid>/withdraw-component",
+    # COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's current-value prototype-need
+    # note for one current declared component (record / replace / clear).
+    "/session/<sid>/component-prototype-need",
     # Stage 15 Slice 3: the inventor's current verification-preparation inputs
     # per declared interaction (current-value planning save).
     "/session/<sid>/interface-preparation",

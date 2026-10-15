@@ -1575,6 +1575,93 @@ UI_STRINGS = {
         "en": "We could not confirm whether that change was saved. Reload this page to see the component's current version before trying again; repeating the same change from this page will not record it twice.",
         "ar": "لم نتمكن من التأكد مما إذا كان هذا التغيير قد حُفظ. أعد تحميل الصفحة لترى النسخة الحالية للمكوّن قبل المحاولة مجددًا؛ وتكرار التغيير نفسه من هذه الصفحة لن يسجّله مرتين.",
     },
+    # --- COMPONENT-PROTOTYPE-NEED-NOTE-01 — the inventor's optional planning
+    # note of what they expect to need of ONE component for ONE prototype. The
+    # copy keeps it the inventor's own statement: never a count, a quantity
+    # InventorAI checks, a BOM line, an equivalence of components or a
+    # requirement. The inventor's note itself is never in this catalogue.
+    "UI_CI_NEED_LABEL": {
+        "en": "Your prototype need:",
+        "ar": "ما تحتاجه منه للنموذج الأولي:",
+    },
+    "UI_CI_NEED_STATUS": {
+        "en": "your planning note · not checked",
+        "ar": "ملاحظتك التخطيطية · لم يُتحقَّق منها",
+    },
+    "UI_CI_NEED_NOT_STATED": {
+        "en": "Prototype need: not stated.",
+        "ar": "ما تحتاجه منه للنموذج الأولي: لم تذكره.",
+    },
+    "UI_CI_NEED_UNAVAILABLE": {
+        "en": "Prototype need: cannot be shown right now. Reload the page later.",
+        "ar": "ما تحتاجه منه للنموذج الأولي: لا يمكن عرضه الآن. أعد تحميل الصفحة لاحقًا.",
+    },
+    "UI_CI_NEED_SUMMARY_ADD": {
+        "en": "Note what you expect to need for one prototype",
+        "ar": "دوّن ما تتوقع أن تحتاجه منه لنموذج أولي واحد",
+    },
+    "UI_CI_NEED_SUMMARY_CHANGE": {
+        "en": "Change or clear your prototype need",
+        "ar": "غيّر ما تحتاجه منه للنموذج الأولي أو امسحه",
+    },
+    "UI_CI_NEED_HINT": {
+        "en": "Optional. In your own words, what you expect to need of this component for one prototype — for example, \"four similar wheel units\". This is your own planning note: InventorAI does not count, compare, total or check it, does not treat other components as the same, and it is not a verified requirement or a parts list.",
+        "ar": "اختياري. بكلماتك، ما تتوقع أن تحتاجه من هذا المكوّن لنموذج أولي واحد — مثل \"أربع وحدات عجلات متشابهة\". هذه ملاحظتك التخطيطية: لا يعدّها InventorAI ولا يقارنها ولا يجمعها ولا يتحقّق منها، ولا يعامل مكوّنات أخرى على أنها هذا المكوّن نفسه، وليست متطلبًا متحقَّقًا منه ولا قائمة قطع.",
+    },
+    "UI_CI_NEED_FIELD": {
+        "en": "What you expect to need for one prototype (up to 120 characters)",
+        "ar": "ما تتوقع أن تحتاجه لنموذج أولي واحد (حتى 120 حرفًا)",
+    },
+    "UI_CI_NEED_SAVE_BUTTON": {"en": "Save note", "ar": "احفظ الملاحظة"},
+    "UI_CI_NEED_CLEAR_BUTTON": {"en": "Clear note", "ar": "امسح الملاحظة"},
+    "UI_CI_NEED_CLEAR_HINT": {
+        "en": "Clearing removes only this note. The component stays in your list.",
+        "ar": "المسح يزيل هذه الملاحظة فقط. يبقى المكوّن في قائمتك.",
+    },
+    "UI_CI_NEED_MSG_SAVED": {
+        "en": "Saved. Your prototype need is recorded as you wrote it. Nothing has checked it, and it is not a validation.",
+        "ar": "تم الحفظ. سُجّل ما تحتاجه للنموذج الأولي كما كتبته، ولم يُفحص ولم يُتحقَّق منه.",
+    },
+    "UI_CI_NEED_MSG_CLEARED": {
+        "en": "Your prototype need for this component is cleared. The component itself is unchanged.",
+        "ar": "مُسحت ملاحظة احتياجك للنموذج الأولي لهذا المكوّن. المكوّن نفسه لم يتغيّر.",
+    },
+    "UI_CI_NEED_MSG_UNCHANGED": {
+        "en": "Nothing changed: the note is the same as the one already shown.",
+        "ar": "لم يتغيّر شيء: الملاحظة مطابقة للملاحظة المعروضة.",
+    },
+    "UI_CI_NEED_MSG_STALE": {
+        "en": "This note changed after this page was opened, so nothing was saved. Review the current note and try again.",
+        "ar": "تغيّرت هذه الملاحظة بعد فتح هذه الصفحة، فلم يُحفظ شيء. راجع الملاحظة الحالية وحاول مجددًا.",
+    },
+    "UI_CI_NEED_MSG_WITHDRAWN": {
+        "en": "This component is withdrawn, so it takes no prototype need. Nothing was saved.",
+        "ar": "هذا المكوّن مسحوب، فلا تُسجَّل له ملاحظة احتياج. لم يُحفظ شيء.",
+    },
+    "UI_CI_NEED_MSG_REJECTED": {
+        "en": "That note does not match this project's current components. Reload the page and try again. Nothing was saved.",
+        "ar": "هذه الملاحظة لا تطابق مكوّنات هذا المشروع الحالية. أعد تحميل الصفحة وحاول مجددًا. لم يُحفظ شيء.",
+    },
+    "UI_CI_NEED_MSG_EMPTY": {
+        "en": "Write the note before saving it. To remove a note, use Clear note. Nothing was saved.",
+        "ar": "اكتب الملاحظة قبل حفظها. ولإزالة ملاحظة استخدم «امسح الملاحظة». لم يُحفظ شيء.",
+    },
+    "UI_CI_NEED_MSG_TOO_LONG": {
+        "en": "The note is longer than 120 characters. Shorten it and try again. Nothing was saved.",
+        "ar": "الملاحظة أطول من 120 حرفًا. اختصرها وحاول مجددًا. لم يُحفظ شيء.",
+    },
+    "UI_CI_NEED_MSG_INVALID_CHAR": {
+        "en": "The note contains a line break or another control character. Write it on one line and try again. Nothing was saved.",
+        "ar": "تحتوي الملاحظة على فاصل أسطر أو رمز تحكّم آخر. اكتبها في سطر واحد وحاول مجددًا. لم يُحفظ شيء.",
+    },
+    "UI_CI_NEED_MSG_NOT_SAVED": {
+        "en": "Your prototype need could not be saved. Nothing was changed. Reload the page and try again.",
+        "ar": "تعذّر حفظ ما تحتاجه للنموذج الأولي. لم يتغيّر شيء. أعد تحميل الصفحة وحاول مجددًا.",
+    },
+    "UI_CI_NEED_MSG_UNKNOWN": {
+        "en": "We could not confirm whether your note was saved. Reload this page to see the current note before trying again.",
+        "ar": "لم نتمكن من التأكد مما إذا كانت ملاحظتك قد حُفظت. أعد تحميل الصفحة لترى الملاحظة الحالية قبل المحاولة مجددًا.",
+    },
     # --- STAGE15-PARTS-COMPONENTS-INTERACTIONS-VIEW-01 — the read-only view
     # of what the inventor recorded about parts, components and interactions.
     # It states recording presence only and draws no engineering conclusion.
