@@ -10,6 +10,11 @@ Input contract
   * ``resolve_advisory(root_domain, role_category, artifact=None)``.
     ``root_domain`` is the TRUSTED, server-resolved project root domain (the
     durable, immutable ``confirmed_domain``), never request input.
+    CAP12-INTEGRATED-MECHANICAL-PART-01: the web layer may instead pass the
+    canonical domain of ONE inventor-declared part of the project's validated
+    durable integrated composition (still server-resolved, never request
+    input); the resolver, its applicability key and its knowledge are
+    unchanged.
     ``role_category`` is the one closed token the Owner selected. NOTHING ELSE
     is an input: the Owner's component name and function are request-local
     display text owned by the web layer and are never passed here, so no
