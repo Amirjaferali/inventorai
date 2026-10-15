@@ -5132,6 +5132,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at CAP12-INTEGRATED-MECHANICAL-PART-01 (merge-effective delivery record): it follows the
            # component prototype-need note increment in the chain
            r"the only product increment authorized after it was CAP12-INTEGRATED-MECHANICAL-PART-01 \(below\), "
+           r"delivered \(PR #\d+\); "
+           # ADVANCED at INTEGRATED-JOURNEY-GUIDANCE-01 (merge-effective delivery record): it follows the
+           # CAP-12 integrated Mechanical-part increment in the chain
+           r"the only product increment authorized after it was INTEGRATED-JOURNEY-GUIDANCE-01 \(below\), "
            r"delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
@@ -5428,7 +5432,13 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # increment is authorized after it; the measurement-planning guidance increment precedes it
                # ADVANCED at CAP12-INTEGRATED-MECHANICAL-PART-01 (merge-effective delivery record): no product
                # increment is authorized after it; the component prototype-need note increment precedes it
-               r"No product increment is authorized after CAP12-INTEGRATED-MECHANICAL-PART-01 \(delivered: PR #\d+; "
+               # ADVANCED at INTEGRATED-JOURNEY-GUIDANCE-01 (merge-effective delivery record): no product
+               # increment is authorized after it; the CAP-12 integrated Mechanical-part increment precedes it
+               r"No product increment is authorized after INTEGRATED-JOURNEY-GUIDANCE-01 \(delivered: PR #\d+; "
+               r"[^)]*Project Compass[^)]*nothing inferred, assessed or made mandatory[^)]*"
+               r"no Stage entered, completed or reopened; "
+               r"effective only on the verified merge of PR #\d+\) or after the preceding "
+               r"CAP12-INTEGRATED-MECHANICAL-PART-01 \(delivered: PR #\d+; "
                r"[^)]*CAP-12 form mock-up advisory also offered for the declared Mechanical part[^)]*"
                r"claims, sources and resolver unchanged[^)]*no Stage entered, completed or reopened; "
                r"effective only on the verified merge of PR #\d+\) or after the preceding "
@@ -6068,6 +6078,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # component prototype-need note increment in the chain
             "the only product increment authorized after it — CAP12-INTEGRATED-MECHANICAL-PART-01 (above) — "
             "is DELIVERED (PR #N); "
+            # ADVANCED at INTEGRATED-JOURNEY-GUIDANCE-01 (merge-effective delivery record): it follows the
+            # CAP-12 integrated Mechanical-part increment in the chain
+            "the only product increment authorized after it — INTEGRATED-JOURNEY-GUIDANCE-01 (above) — "
+            "is DELIVERED (PR #N); "
             "no subsequent increment has been authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
     # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
@@ -6415,7 +6429,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # measurement-planning guidance increment precedes it
            # ADVANCED at CAP12-INTEGRATED-MECHANICAL-PART-01 (merge-effective delivery record): ... after it; the
            # component prototype-need note increment precedes it
-           r"No product increment is authorized after CAP12-INTEGRATED-MECHANICAL-PART-01 \(delivered; PR #\d+; "
+           # ADVANCED at INTEGRATED-JOURNEY-GUIDANCE-01 (merge-effective delivery record): ... after it; the
+           # CAP-12 integrated Mechanical-part increment precedes it
+           r"No product increment is authorized after INTEGRATED-JOURNEY-GUIDANCE-01 \(delivered; PR #\d+; "
+           r"[^)]*Compass guides an integrated invention[^)]*"
+           r"no Stage change; effective only on merge\) or after the preceding "
+           r"CAP12-INTEGRATED-MECHANICAL-PART-01 \(delivered; PR #\d+; "
            r"[^)]*CAP-12 form mock-up advisory also offered for the declared Mechanical part[^)]*"
            r"no Stage change; effective only on merge\) or after the preceding "
            r"COMPONENT-PROTOTYPE-NEED-NOTE-01 \(delivered; PR #\d+; "

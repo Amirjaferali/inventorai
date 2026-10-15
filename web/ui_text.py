@@ -6814,6 +6814,44 @@ UI_STRINGS = {
     "UI_PC_UNAVAILABLE": {"en": "Not available right now.",
                           "ar": "غير متاح حاليًا."},
     "UI_PC_DO_NOW": {"en": "What to do now", "ar": "ما الذي تفعله الآن"},
+    # INTEGRATED-JOURNEY-GUIDANCE-01: the Compass "What to do now" step for an
+    # integrated invention once every existing primary action is exhausted.
+    # Optional, inventor-owned, recording only; never a check or validation.
+    "UI_IJG_PART_NOTE_MECH": {
+        "en": ("No question is waiting about the part the analysis started with. Your "
+               "mechanical part still has questions you have not answered. Answering them is "
+               "optional and records your own description only; it does not assess or validate "
+               "that part."),
+        "ar": ("لا يوجد سؤال بانتظارك عن الجزء الذي بدأ به التحليل. وما زالت هناك أسئلة لم تُجب "
+               "عنها عن الجزء الميكانيكي. الإجابة عنها اختيارية، وتسجّل وصفك أنت فقط، ولا تقيّم ذلك "
+               "الجزء ولا تتحقق منه."),
+    },
+    "UI_IJG_PART_NOTE_ELEC": {
+        "en": ("No question is waiting about the part the analysis started with. Your "
+               "electrical / electronic part still has questions you have not answered. Answering "
+               "them is optional and records your own description only; it does not assess or "
+               "validate that part."),
+        "ar": ("لا يوجد سؤال بانتظارك عن الجزء الذي بدأ به التحليل. وما زالت هناك أسئلة لم تُجب "
+               "عنها عن الجزء الكهربائي / الإلكتروني. الإجابة عنها اختيارية، وتسجّل وصفك أنت فقط، "
+               "ولا تقيّم ذلك الجزء ولا تتحقق منه."),
+    },
+    "UI_IJG_PART_CTA_MECH": {"en": "Answer the questions about your mechanical part",
+                             "ar": "أجب عن الأسئلة الخاصة بالجزء الميكانيكي"},
+    "UI_IJG_PART_CTA_ELEC": {"en": "Answer the questions about your electrical / electronic part",
+                             "ar": "أجب عن الأسئلة الخاصة بالجزء الكهربائي / الإلكتروني"},
+    "UI_IJG_PREP_NOTE": {
+        "en": ("You described how your parts interact. You can now record how that interaction "
+               "could be checked: the intended conditions, what you would observe, and what "
+               "evidence or review would be needed. This is optional; recording it does not check "
+               "the interaction or show that the parts are compatible."),
+        "ar": ("وصفتَ كيف تتفاعل أجزاء اختراعك. يمكنك الآن تسجيل كيف يمكن فحص هذا التفاعل: الظروف "
+               "المقصودة، وما الذي ستلاحظه، وما الدليل أو المراجعة اللازمة. هذا اختياري؛ وتسجيله لا "
+               "يفحص التفاعل ولا يُثبت توافق الأجزاء."),
+    },
+    "UI_IJG_PREP_CTA": {"en": "Record how the interaction could be checked",
+                        "ar": "سجّل كيف يمكن فحص التفاعل"},
+    "UI_IJG_HANDOFF_NOTE": {"en": "You can also review your handoff now:",
+                            "ar": "يمكنك أيضًا مراجعة حزمة التسليم الآن:"},
     # CAP-11 Slice 1 — Evidence Details (report Section 2 only). Three
     # independent axes, each on its own row; neutral labels with no order,
     # score or strength verdict (docs/governance/

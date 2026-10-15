@@ -280,6 +280,14 @@ _BRANCHES = (
      'href="#response"'),
     ("{% elif routed_recovery %}", 'href="#routed-recovery"'),
     ("{% elif criticality_step %}", 'href="#criticality-review"'),
+    # AMENDED at INTEGRATED-JOURNEY-GUIDANCE-01: two integrated-invention branches
+    # added AFTER every existing branch and before the unchanged handoff fallback
+    # (tests/test_integrated_journey_guidance.py); every earlier branch, its order
+    # and its condition are unchanged.
+    ("{% elif integrated_guidance and integrated_guidance.kind == 'part_questions' %}",
+     'data-ijg-action="part_questions"'),
+    ("{% elif integrated_guidance and integrated_guidance.kind == 'interface_preparation' %}",
+     'data-ijg-action="interface_preparation"'),
     ("{% else %}", "UI_A1_REVIEW_HANDOFF"),
 )
 

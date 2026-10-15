@@ -369,6 +369,18 @@ body{overflow-wrap:anywhere}
     <a class="journey-primary" data-primary-action href="#routed-recovery">{{ t('UI_NR_RECOVERY_CTA') }}</a>
   {% elif criticality_step %}
     <a class="journey-primary" data-primary-action href="#criticality-review">{{ t('UI_A1_REVIEW_REQUIREMENT') }}</a>
+  {#- INTEGRATED-JOURNEY-GUIDANCE-01: after every existing primary action, an
+      integrated invention is guided to ONE optional inventor-owned step across
+      its recorded parts and declared interactions (route-derived; nothing is
+      inferred, assessed or made mandatory). The handoff stays one click away. -#}
+  {% elif integrated_guidance and integrated_guidance.kind == 'part_questions' %}
+    <p class="journey-note" data-ijg-note>{{ t('UI_IJG_PART_NOTE_MECH' if integrated_guidance.part == 'mechanical' else 'UI_IJG_PART_NOTE_ELEC') }}</p>
+    <a class="journey-primary" data-primary-action data-ijg-action="part_questions" href="{{ url_for('part_questions', sid=sid, part=integrated_guidance.part_id) }}">{{ t('UI_IJG_PART_CTA_MECH' if integrated_guidance.part == 'mechanical' else 'UI_IJG_PART_CTA_ELEC') }}</a>
+    <p class="journey-note" data-ijg-handoff>{{ t('UI_IJG_HANDOFF_NOTE') }} <a href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a></p>
+  {% elif integrated_guidance and integrated_guidance.kind == 'interface_preparation' %}
+    <p class="journey-note" data-ijg-note>{{ t('UI_IJG_PREP_NOTE') }}</p>
+    <a class="journey-primary" data-primary-action data-ijg-action="interface_preparation" href="{{ url_for('interface_preparation', sid=sid) }}">{{ t('UI_IJG_PREP_CTA') }}</a>
+    <p class="journey-note" data-ijg-handoff>{{ t('UI_IJG_HANDOFF_NOTE') }} <a href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a></p>
   {% else %}
     <p class="journey-note">{{ t('UI_A1_HANDOFF_NOTE') }}</p>
     <a class="journey-primary" data-primary-action href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a>
