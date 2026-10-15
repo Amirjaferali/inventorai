@@ -5133,8 +5133,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # component prototype-need note increment in the chain
            r"the only product increment authorized after it was CAP12-INTEGRATED-MECHANICAL-PART-01 \(below\), "
            r"delivered \(PR #\d+\); "
-           # ADVANCED at MEASUREMENT-CONDITIONS-AWARENESS-01 (merge-effective delivery record): it follows the
+           # ADVANCED at INTEGRATED-JOURNEY-GUIDANCE-01 (merge-effective delivery record): it follows the
            # CAP-12 integrated Mechanical-part increment in the chain
+           r"the only product increment authorized after it was INTEGRATED-JOURNEY-GUIDANCE-01 \(below\), "
+           r"delivered \(PR #\d+\); "
+           # ADVANCED at MEASUREMENT-CONDITIONS-AWARENESS-01 (merge-effective delivery record): it follows the
+           # integrated journey guidance increment in the chain
            r"the only product increment authorized after it was MEASUREMENT-CONDITIONS-AWARENESS-01 \(below\), "
            r"delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
@@ -5432,11 +5436,17 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # increment is authorized after it; the measurement-planning guidance increment precedes it
                # ADVANCED at CAP12-INTEGRATED-MECHANICAL-PART-01 (merge-effective delivery record): no product
                # increment is authorized after it; the component prototype-need note increment precedes it
-               # ADVANCED at MEASUREMENT-CONDITIONS-AWARENESS-01 (merge-effective delivery record): no product
+               # ADVANCED at INTEGRATED-JOURNEY-GUIDANCE-01 (merge-effective delivery record): no product
                # increment is authorized after it; the CAP-12 integrated Mechanical-part increment precedes it
+               # ADVANCED at MEASUREMENT-CONDITIONS-AWARENESS-01 (merge-effective delivery record): no product
+               # increment is authorized after it; the integrated journey guidance increment precedes it
                r"No product increment is authorized after MEASUREMENT-CONDITIONS-AWARENESS-01 \(delivered: PR #\d+; "
                r"[^)]*measurement-conditions awareness note on the CAP-09 measurement-planning page[^)]*"
                r"not the C3 environmental-condition guidance[^)]*no Stage entered, completed or reopened; "
+               r"effective only on the verified merge of PR #\d+\) or after the preceding "
+               r"INTEGRATED-JOURNEY-GUIDANCE-01 \(delivered: PR #\d+; "
+               r"[^)]*Project Compass[^)]*nothing inferred, assessed or made mandatory[^)]*"
+               r"no Stage entered, completed or reopened; "
                r"effective only on the verified merge of PR #\d+\) or after the preceding "
                r"CAP12-INTEGRATED-MECHANICAL-PART-01 \(delivered: PR #\d+; "
                r"[^)]*CAP-12 form mock-up advisory also offered for the declared Mechanical part[^)]*"
@@ -6078,8 +6088,12 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # component prototype-need note increment in the chain
             "the only product increment authorized after it — CAP12-INTEGRATED-MECHANICAL-PART-01 (above) — "
             "is DELIVERED (PR #N); "
-            # ADVANCED at MEASUREMENT-CONDITIONS-AWARENESS-01 (merge-effective delivery record): it follows the
+            # ADVANCED at INTEGRATED-JOURNEY-GUIDANCE-01 (merge-effective delivery record): it follows the
             # CAP-12 integrated Mechanical-part increment in the chain
+            "the only product increment authorized after it — INTEGRATED-JOURNEY-GUIDANCE-01 (above) — "
+            "is DELIVERED (PR #N); "
+            # ADVANCED at MEASUREMENT-CONDITIONS-AWARENESS-01 (merge-effective delivery record): it follows the
+            # integrated journey guidance increment in the chain
             "the only product increment authorized after it — MEASUREMENT-CONDITIONS-AWARENESS-01 (above) — "
             "is DELIVERED (PR #N); "
             "no subsequent increment has been authorized."), head)
@@ -6429,10 +6443,15 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # measurement-planning guidance increment precedes it
            # ADVANCED at CAP12-INTEGRATED-MECHANICAL-PART-01 (merge-effective delivery record): ... after it; the
            # component prototype-need note increment precedes it
-           # ADVANCED at MEASUREMENT-CONDITIONS-AWARENESS-01 (merge-effective delivery record): ... after it; the
+           # ADVANCED at INTEGRATED-JOURNEY-GUIDANCE-01 (merge-effective delivery record): ... after it; the
            # CAP-12 integrated Mechanical-part increment precedes it
+           # ADVANCED at MEASUREMENT-CONDITIONS-AWARENESS-01 (merge-effective delivery record): ... after it; the
+           # integrated journey guidance increment precedes it
            r"No product increment is authorized after MEASUREMENT-CONDITIONS-AWARENESS-01 \(delivered; PR #\d+; "
            r"[^)]*measurement-conditions awareness note on the CAP-09 planning page[^)]*"
+           r"no Stage change; effective only on merge\) or after the preceding "
+           r"INTEGRATED-JOURNEY-GUIDANCE-01 \(delivered; PR #\d+; "
+           r"[^)]*Compass guides an integrated invention[^)]*"
            r"no Stage change; effective only on merge\) or after the preceding "
            r"CAP12-INTEGRATED-MECHANICAL-PART-01 \(delivered; PR #\d+; "
            r"[^)]*CAP-12 form mock-up advisory also offered for the declared Mechanical part[^)]*"
