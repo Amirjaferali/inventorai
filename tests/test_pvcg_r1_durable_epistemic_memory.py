@@ -531,6 +531,10 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       "requirement_quantities",
                       # Stage 15 Slice 2 sidecar: Owner-declared interfaces
                       # (no payload, no disposition) — not a second ledger.
+                      # COMPONENT-INTERFACE-PARTICIPATION-01: current-value
+                      # components taking part per interface (no payload, no
+                      # disposition) — not a ledger.
+                      "subsystem_interface_components",
                       # Stage 15 closure current-value dependency per
                       # interface (no payload, no disposition) — not a ledger.
                       "subsystem_interface_dependencies",

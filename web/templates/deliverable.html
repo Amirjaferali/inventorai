@@ -303,8 +303,26 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         </dl>
       </div>
       {% endif %}
+      {#- COMPONENT-INTERFACE-PARTICIPATION-01: the CURRENT components the
+          inventor said take part in THIS interaction, resolved by identity
+          from ONE store snapshot whose interactions are exactly the ones
+          above. Unreadable -> unavailable, never "not recorded". -#}
+      {% if participation_report is not none %}
+      <div data-interface-participation style="margin:4px 0 0 0;font-size:13px;overflow-wrap:anywhere">
+        {% if not participation_report.available %}
+        <p style="margin:0;color:#555" data-ifc-participation-unavailable>{{ t('UI_ICP_UNAVAILABLE') }}</p>
+        {% elif participation_report["items"][loop.index0] %}
+        <p style="margin:0" data-ifc-participants>{{ t('UI_ICP_LABEL') }} {% for name in participation_report["items"][loop.index0] %}<bdi dir="auto" data-ifc-participant>{{ name }}</bdi>{% if not loop.last %}{{ t('UI_ICP_SEP') }}{% endif %}{% endfor %}</p>
+        {% else %}
+        <p style="margin:0;color:#555" data-ifc-participants-none>{{ t('UI_ICP_NOT_RECORDED') }}</p>
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
     {% endfor %}
+    {% if participation_report is not none %}
+    <p style="margin:4px 0 0 0;font-size:13px;color:#555" data-ifc-participation-boundary>{{ t('UI_ICP_BOUNDARY') }}</p>
+    {% endif %}
     {% else %}
     <p style="margin:0;font-size:13px;color:#555" data-interfaces-none>{% if integrated_scope.control %}{{ t('UI_S15_IFC_NONE_3') }}{% else %}{{ t('UI_S15_IFC_NONE') }}{% endif %}</p>
     {% endif %}

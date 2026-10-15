@@ -130,9 +130,17 @@ dd{margin:0 12px}
       <dt>{{ t('UI_S15_ST_DEPENDENCY') }}</dt>
       <dd data-pci-dependency>{% if not ifc.dependency.declared %}{{ t('UI_S15_DEP_NOT_DECLARED') }}{% elif ifc.dependency.kind == 'mutual' %}{{ t('UI_S15_DEP_MUTUAL') }}{% else %}<bdi dir="auto">{{ ifc.dependency.dependent }}</bdi> {{ t('UI_S15_DEP_RELIES_ON') }} <bdi dir="auto">{{ ifc.dependency.depends_on }}</bdi>{% endif %}{% if ifc.dependency.declared and ifc.dependency.note %} — <bdi dir="auto">{{ ifc.dependency.note }}</bdi>{% endif %}</dd>
     </dl>
+    {#- COMPONENT-INTERFACE-PARTICIPATION-01: the inventor's own statement of
+        which current components take part (never a connection or a check). -#}
+    {% if ifc.participants %}
+    <p class="meta" data-pci-participants>{{ t('UI_ICP_LABEL') }} {% for name in ifc.participants %}<bdi dir="auto" data-pci-participant>{{ name }}</bdi>{% if not loop.last %}{{ t('UI_ICP_SEP') }}{% endif %}{% endfor %}</p>
+    {% else %}
+    <p class="meta" data-pci-participants-none>{{ t('UI_ICP_NOT_RECORDED') }}</p>
+    {% endif %}
     <p class="meta" data-pci-not-established>{{ t('UI_S15_IFC_NOT_ESTABLISHED') }}</p>
   </div>
   {% endfor %}
+  <p class="meta" style="margin:10px 0 0 0" data-pci-participation-boundary>{{ t('UI_ICP_BOUNDARY') }}</p>
   <p class="meta" style="margin:10px 0 0 0"><a href="{{ url_for('interface_preparation', sid=sid) }}" data-pci-prep-link>{{ t('UI_S15_PREP_LINK') }}</a></p>
   {% else %}
   <p class="meta" data-pci-interfaces-none>{% if view.optional_part %}{{ t('UI_S15_IFC_NONE_3') }}{% else %}{{ t('UI_S15_IFC_NONE') }}{% endif %}</p>

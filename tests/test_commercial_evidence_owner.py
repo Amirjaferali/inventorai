@@ -1419,7 +1419,12 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       # current-value prototype-need note per declared
                       # component (not a commercial owner; no supplier, cost,
                       # quantity or evidence content).
-                      "component_prototype_needs"}
+                      "component_prototype_needs",
+                      # COMPONENT-INTERFACE-PARTICIPATION-01: the components
+                      # the inventor says take part in one interaction,
+                      # current value (not a commercial owner; no supplier,
+                      # cost, quantity or evidence content).
+                      "subsystem_interface_components"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()

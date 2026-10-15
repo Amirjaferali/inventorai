@@ -1142,10 +1142,12 @@ def test_focus_is_immutable_and_no_focus_route_exists(client):
     # Stage 15 Slice 3 adds exactly ONE more interface path (its GET page and
     # POST save) and Stage 15 Slice 4 exactly one observation POST;
     # STAGE15-OBSERVATION-WITHDRAW-01 exactly one withdrawal POST; still no
-    # focus route.
+    # focus route. AMENDED at COMPONENT-INTERFACE-PARTICIPATION-01: exactly one
+    # participation POST (the components taking part in one interaction).
     assert sorted({r for r in rules if "interface" in r}) == [
         "/session/<sid>/declare-interface", "/session/<sid>/interface-observation",
         "/session/<sid>/interface-observation/withdraw",
+        "/session/<sid>/interface-participation",
         "/session/<sid>/interface-preparation"]
 
 

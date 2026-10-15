@@ -278,6 +278,25 @@ _MESSAGE_KEYS = {
     ("Your preparation was saved to your project, but this page could not "
      "show it. Reload this page to see what your project holds."):
         "UI_S15_PREP_MSG_SAVED_NOT_SHOWN",
+    # COMPONENT-INTERFACE-PARTICIPATION-01 (web/app.py interface_participation).
+    "The components you said take part in this interaction were saved to your project. InventorAI has not checked them.":
+        "UI_ICP_MSG_SAVED",
+    "No component is now recorded as taking part in this interaction. Your components themselves are unchanged.":
+        "UI_ICP_MSG_CLEARED",
+    "Your project already holds exactly these components for this interaction, so nothing needed to change.":
+        "UI_ICP_MSG_UNCHANGED",
+    "The components taking part in this interaction changed after this page was shown, so nothing was saved. Review them below and try again.":
+        "UI_ICP_MSG_STALE",
+    "A component you selected has been withdrawn, so nothing was saved. Review the list below and try again.":
+        "UI_ICP_MSG_WITHDRAWN",
+    "That selection does not match this project's interactions and components, so nothing was saved.":
+        "UI_ICP_MSG_REJECTED",
+    "The components taking part could not be saved just now. Nothing was changed.":
+        "UI_ICP_MSG_NOT_SAVED",
+    "We could not confirm whether your selection was saved. Reload this page to see what your project holds before choosing again.":
+        "UI_ICP_MSG_UNKNOWN",
+    "Your selection was saved to your project, but this page could not show it. Reload this page to see what your project holds.":
+        "UI_ICP_MSG_SAVED_NOT_SHOWN",
     # CAP-09 Result Event Slice 1 (web/app.py record_experiment_result).
     ("Your result could not be saved just now. Nothing was changed."):
         "UI_R_MSG_NOT_SAVED",
@@ -1995,6 +2014,93 @@ UI_STRINGS = {
     "UI_S15_PREP_LINK": {
         "en": "Record or edit how each interaction will be checked, and record what happened when you checked it",
         "ar": "سجّل أو عدّل كيف سيُفحص كل تفاعل، وسجّل ما الذي حدث عندما فحصته",
+    },
+    # COMPONENT-INTERFACE-PARTICIPATION-01: the components the inventor says
+    # take part in one declared interaction (preparation page, Parts /
+    # Components / Interactions view, report / PDF). Their own statement only.
+    "UI_ICP_HEADING": {
+        "en": "Components taking part in each interaction",
+        "ar": "المكوّنات المشاركة في كل تفاعل",
+    },
+    "UI_ICP_INTRO": {
+        "en": "For each interaction you declared, you can say which of your declared components take part in it. A component does not need to be linked to either of the interaction's parts.",
+        "ar": "لكل تفاعل أعلنته، يمكنك أن تذكر أيّ مكوّناتك المُعلنة يشارك فيه. لا يلزم أن يكون المكوّن مربوطًا بأحد جزأي التفاعل.",
+    },
+    "UI_ICP_BOUNDARY": {
+        "en": "This is only your own statement, not checked by InventorAI: it has not checked that these components connect, fit, work together, are complete or are safe, and it does not set out how to assemble them.",
+        "ar": "هذا تصريحك أنت فقط، ولم يتحقّق منه InventorAI: لم يتحقّق من أن هذه المكوّنات تتصل أو تتلاءم أو تعمل معًا أو أنها مكتملة أو آمنة، ولا يحدّد طريقة تجميعها.",
+    },
+    "UI_ICP_LABEL": {
+        "en": "Components you said take part:",
+        "ar": "مكوّنات قلت إنها تشارك:",
+    },
+    "UI_ICP_SEP": {
+        "en": ", ",
+        "ar": "، ",
+    },
+    "UI_ICP_NOT_RECORDED": {
+        "en": "Components taking part: not recorded yet.",
+        "ar": "المكوّنات المشاركة: لم تُسجَّل بعد.",
+    },
+    "UI_ICP_UNAVAILABLE": {
+        "en": "Components taking part: cannot be shown right now. Reload the page later.",
+        "ar": "المكوّنات المشاركة: لا يمكن عرضها الآن. أعد تحميل الصفحة لاحقًا.",
+    },
+    "UI_ICP_LEGEND": {
+        "en": "Which of your current components take part in this interaction?",
+        "ar": "أيّ مكوّناتك الحالية يشارك في هذا التفاعل؟",
+    },
+    "UI_ICP_HINT": {
+        "en": "Select each component that takes part, and clear one to remove it. Only your current components are listed; withdrawn components keep their earlier record but cannot be selected.",
+        "ar": "اختر كل مكوّن يشارك، وألغِ اختيار أي مكوّن لإزالته. تظهر مكوّناتك الحالية فقط؛ أما المكوّنات المسحوبة فيبقى سجلّها السابق ولا يمكن اختيارها.",
+    },
+    "UI_ICP_NO_COMPONENTS": {
+        "en": "You have no current declared components. Declare your components on your project page first.",
+        "ar": "ليس لديك مكوّنات مُعلنة حالية. أعلن مكوّناتك في صفحة مشروعك أولًا.",
+    },
+    "UI_ICP_SAVE": {
+        "en": "Save components taking part",
+        "ar": "احفظ المكوّنات المشاركة",
+    },
+    "UI_ICP_LINK_COMPONENTS": {
+        "en": "Declare or change your components",
+        "ar": "أعلن مكوّناتك أو غيّرها",
+    },
+    "UI_ICP_MSG_SAVED": {
+        "en": "The components you said take part in this interaction were saved to your project. InventorAI has not checked them.",
+        "ar": "حُفظت في مشروعك المكوّنات التي قلت إنها تشارك في هذا التفاعل. لم يتحقّق منها InventorAI.",
+    },
+    "UI_ICP_MSG_CLEARED": {
+        "en": "No component is now recorded as taking part in this interaction. Your components themselves are unchanged.",
+        "ar": "لم يعد أي مكوّن مسجَّلًا على أنه يشارك في هذا التفاعل. أما مكوّناتك نفسها فلم تتغيّر.",
+    },
+    "UI_ICP_MSG_UNCHANGED": {
+        "en": "Your project already holds exactly these components for this interaction, so nothing needed to change.",
+        "ar": "يحتوي مشروعك بالفعل على هذه المكوّنات نفسها لهذا التفاعل، فلم يلزم أي تغيير.",
+    },
+    "UI_ICP_MSG_STALE": {
+        "en": "The components taking part in this interaction changed after this page was shown, so nothing was saved. Review them below and try again.",
+        "ar": "تغيّرت المكوّنات المشاركة في هذا التفاعل بعد عرض هذه الصفحة، فلم يُحفظ شيء. راجعها أدناه ثم حاول مرة أخرى.",
+    },
+    "UI_ICP_MSG_WITHDRAWN": {
+        "en": "A component you selected has been withdrawn, so nothing was saved. Review the list below and try again.",
+        "ar": "سُحب مكوّن اخترته، فلم يُحفظ شيء. راجع القائمة أدناه ثم حاول مرة أخرى.",
+    },
+    "UI_ICP_MSG_REJECTED": {
+        "en": "That selection does not match this project's interactions and components, so nothing was saved.",
+        "ar": "هذا الاختيار لا يطابق تفاعلات هذا المشروع ومكوّناته، فلم يُحفظ شيء.",
+    },
+    "UI_ICP_MSG_NOT_SAVED": {
+        "en": "The components taking part could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ المكوّنات المشاركة الآن. لم يتغيّر شيء.",
+    },
+    "UI_ICP_MSG_UNKNOWN": {
+        "en": "We could not confirm whether your selection was saved. Reload this page to see what your project holds before choosing again.",
+        "ar": "لم نتمكّن من التأكّد من حفظ اختيارك. أعد تحميل هذه الصفحة لترى ما يحتويه مشروعك قبل أن تختار مرة أخرى.",
+    },
+    "UI_ICP_MSG_SAVED_NOT_SHOWN": {
+        "en": "Your selection was saved to your project, but this page could not show it. Reload this page to see what your project holds.",
+        "ar": "حُفظ اختيارك في مشروعك، لكن هذه الصفحة لم تتمكّن من عرضه. أعد تحميل الصفحة لترى ما يحتويه مشروعك.",
     },
     "UI_S15_PREP_NOT_RECORDED": {"en": "Not recorded yet", "ar": "لم يُسجَّل بعد"},
     "UI_S15_PREP_NONE": {

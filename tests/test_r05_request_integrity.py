@@ -40,6 +40,9 @@ MUTATIONS = (
     # COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's current-value prototype-need
     # note for one current declared component (record / replace / clear).
     "/session/<sid>/component-prototype-need",
+    # COMPONENT-INTERFACE-PARTICIPATION-01: the components the inventor says
+    # take part in one declared interaction (current value; replace / clear).
+    "/session/<sid>/interface-participation",
     # Stage 15 Slice 3: the inventor's current verification-preparation inputs
     # per declared interaction (current-value planning save).
     "/session/<sid>/interface-preparation",
