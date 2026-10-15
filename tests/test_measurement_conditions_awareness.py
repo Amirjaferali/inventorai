@@ -399,6 +399,9 @@ def test_p03_two_records_appended_after_pr023_and_every_other_record_unchanged()
         assert CLAIM not in recs[earlier]["notes"]
 
 
+PMC_URL = "https://pmc.ncbi.nlm.nih.gov/articles/PMC4862813/"
+
+
 def test_p04_the_source_record_carries_the_exact_passages_the_lead_supplied_status_and_the_exclusions():
     src = {r["record_id"]: r for r in _provenance()}[RECORDS[0]]
     assert src["jurisdiction"] == "US" and src["url"] == URL
@@ -421,6 +424,15 @@ def test_p04_the_source_record_carries_the_exact_passages_the_lead_supplied_stat
                    "Source-use / rights disposition: electronics_electrical:PR025",
                    "electronics_electrical:PR015 and electronics_electrical:PR023 are not broadened"):
         assert phrase in src["notes"], phrase
+    # PR #822 IP-evidence correction: the Lead's confirmed direct inspection and the documented affiliation, with the
+    # residual uncertainty stated, never upgraded to verified government employment
+    assert "the Lead confirmed its direct inspection of the primary NIST publication" in src["version_or_edition"]
+    assert "no expansion of the claim was made" in src["version_or_edition"]
+    for phrase in ("AUTHORSHIP / AFFILIATION EVIDENCE (Lead-supplied", PMC_URL,
+                   "lists all five authors with NIST affiliation",
+                   "U.S. Government employment status at the time of authorship has NOT been independently established"):
+        assert phrase in src["notes"], phrase
+    assert "employment is verified" not in src["notes"] and "employment was verified" not in src["notes"]
 
 
 def test_p05_the_rights_record_is_claim_specific_and_broadens_no_earlier_record():
@@ -440,6 +452,16 @@ def test_p05_the_rights_record_is_claim_specific_and_broadens_no_earlier_record(
                    "no source sentence, definition, figure or table is reproduced", "InventorAI Arabic translation",
                    "no statement or implication that NIST or the authors reviewed, approved, certified or endorse",
                    "no NIST logo or mark", "InventorAI remains responsible for its own presented output"):
+        assert phrase in use["notes"], phrase
+    # PR #822 IP-evidence correction: the article-level notice is recorded as Lead-supplied, bounded to the United
+    # States, with third-party material excluded and the residual uncertainty stated
+    assert PMC_URL in use["version_or_edition"]
+    for phrase in ("ARTICLE-LEVEL EVIDENCE (Lead-supplied)", PMC_URL, "lists all five authors with NIST affiliation",
+                   "public domain within the United States",
+                   "exceptions for independently copyrighted third-party illustrations or material",
+                   "RESIDUAL UNCERTAINTY", "has NOT been independently established, by the Lead or the executor",
+                   "not read as making the whole publication, its third-party material or all NIST material unrestricted",
+                   "every independently copyrighted third-party illustration or material"):
         assert phrase in use["notes"], phrase
 
 
