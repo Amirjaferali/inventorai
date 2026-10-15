@@ -288,6 +288,12 @@ _BRANCHES = (
      'data-ijg-action="part_questions"'),
     ("{% elif integrated_guidance and integrated_guidance.kind == 'interface_preparation' %}",
      'data-ijg-action="interface_preparation"'),
+    # AMENDED at EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: one experiment-planning
+    # branch added after the integrated branches and before the handoff fallback
+    # (tests/test_experiment_planning_journey_guidance.py); every earlier branch,
+    # its order and its condition are unchanged.
+    ("{% elif experiment_planning_step is defined and experiment_planning_step() %}",
+     "data-epg-action"),
     ("{% else %}", "UI_A1_REVIEW_HANDOFF"),
 )
 
@@ -336,11 +342,19 @@ def test_l_routed_recovery_stays_the_primary_action(client):
 
 
 def test_n_handoff_stays_the_primary_action(client):
+    # AMENDED at EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01 (Owner-approved journey change):
+    # this finished journey has proposed experiments with nothing planned yet, so the
+    # ONE primary action is now the optional planning step and the handoff stays one
+    # click away as a plain link. With the planning recorded the handoff is primary again
+    # (tests/test_experiment_planning_journey_guidance.py).
     sid = _start(client)
     for value in (MECH, MECH, PF_STRONG, BA_1, BA_2):
         _answer(client, sid, value)
     page = _raw(client, sid)
-    assert f'href="/session/{sid}/deliverable"' in _primary(page)
+    primary = _primary(page)
+    assert "data-epg-action" in primary and f'href="/session/{sid}/success-criteria"' in primary
+    handoff = re.search(r'<p class="journey-note" data-epg-handoff>.*?</p>', page, re.S).group(0)
+    assert f'href="/session/{sid}/deliverable"' in handoff and "data-primary-action" not in handoff
     _no_overclaim(_compass(page))
 
 

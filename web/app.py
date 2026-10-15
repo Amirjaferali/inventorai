@@ -285,6 +285,9 @@ from engine import read_export_service as _read_export
 # projection owner; the web layer only authorizes, renders and serves its result.
 from engine import disclosure_export as _disclosure
 from engine.deliverable_assembler import gap_status_label as _gap_status_label
+# EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: the current proposed experiments,
+# read from the canonical Section-11 owner (never re-derived here).
+from engine.deliverable_assembler import current_experiment_ids as _current_experiment_ids
 # P5-1 — Account & Credential Foundation (Phase 5, Option A). Additive account
 # persistence + pure credential helpers + a development email sink. NO login /
 # authenticated session / project ownership here (those are P5-2 / P5-3).
@@ -2439,6 +2442,35 @@ def _integrated_journey_guidance(sid, integrated_scope):
     except Exception:
         return None
     return None
+
+def _experiment_planning_guidance(sid, state):
+    """EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01 — True when the Compass may offer
+    its ONE optional experiment-planning step: the CURRENT Section-11 plan of
+    the live state holds at least one proposed experiment (canonical owner,
+    ``current_experiment_ids``) and at least one of them has no SAVED success
+    criterion or no SAVED measurement method (the durable planning readers).
+    Read-only; nothing is inferred, judged or written, and recorded execution
+    results play no part. A project without durable planning storage, an empty
+    plan, or anything unreadable or inconsistent returns False, so the Compass
+    keeps its existing handoff (fail closed)."""
+    try:
+        experiment_ids = _current_experiment_ids(state)
+        if not experiment_ids:
+            return False
+        criteria = _durable_success_criteria(sid)
+        methods = _durable_measurement_methods(sid)
+        if criteria is None or methods is None:
+            return False
+
+        def saved(collection, eid, attr):
+            item = collection.get(eid)
+            return bool(item is not None and (getattr(item, attr, "") or "").strip())
+        return any(not saved(criteria, eid, "criterion")
+                   or not saved(methods, eid, "method")
+                   for eid in experiment_ids)
+    except Exception:
+        return False
+
 
 # --- Stage 19 / CAP-09 durable SuccessCriterion (planning metadata only) ------
 # The EXISTING user-authored `SuccessCriterion` is durable in the SAME project
@@ -6639,6 +6671,10 @@ def show_session(sid):
         # used by the Compass only after every existing primary action.
         integrated_guidance=_integrated_journey_guidance(
             sid, _integrated_scope_context(state)),
+        # EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: evaluated lazily by the Compass
+        # only when every earlier primary action (integrated steps included) is
+        # exhausted, so ordinary renders pay nothing for it.
+        experiment_planning_step=lambda: _experiment_planning_guidance(sid, state),
         # CAP-10 Slice 1: the dedicated signed binding the conflict form carries.
         conflict_binding=_issue_cap10_binding(
             sid, _answer_token_for(sid, entry), state),

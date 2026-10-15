@@ -1595,6 +1595,15 @@ def _s11(state):
     return plan
 
 
+def current_experiment_ids(state):
+    """EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: the stable ``experiment_id`` of
+    every CURRENT proposed Section-11 experiment of ``state``, in plan order —
+    read from the canonical Section-11 owner (``_s11``) itself, so the selection,
+    de-duplication and identity rules exist exactly once. Pure / read-only /
+    deterministic; ``()`` when no experiment can be proposed."""
+    return tuple(item["experiment_id"] for item in _s11(state)["items"])
+
+
 def _now_iso():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
