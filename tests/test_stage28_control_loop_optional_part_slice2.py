@@ -411,11 +411,20 @@ def test_report_pdf_export_readiness_and_session_carry_no_part_answer(client, pa
     assert report.status_code == 200 and export.status_code == 200
     pdf = _pdf_source(client, sid, monkeypatch)
     session = client.get("/session/%s" % sid).get_data(as_text=True)
-    for body in (report.get_data(as_text=True), export.get_data(as_text=True), pdf, session):
+    # Intentionally ADVANCED by CONTROL-LOOP-ENGINEERING-HANDOFF-01: the saved answers now reach the report
+    # and PDF, but ONLY inside their own control-loop section (pinned in
+    # tests/test_control_loop_engineering_handoff.py); everywhere else — the rest of the report / PDF, the
+    # export and the session page — they stay absent, and the report outside that section is unchanged.
+    from tests.test_control_loop_engineering_handoff import _CLR_RE, _clr
+    for body in (report.get_data(as_text=True), pdf):
+        assert marker in _clr(body)
+        assert marker not in _CLR_RE.sub("", body)
+        assert Q1 not in body and "subsystem_part_answers" not in body
+    for body in (export.get_data(as_text=True), session):
         assert marker not in body
         assert Q1 not in body and "subsystem_part_answers" not in body
     strip = lambda raw: re.sub(r'name="csrf_token" value="[^"]*"', "", raw)  # noqa: E731
-    assert strip(report.get_data(as_text=True)) == strip(report_before)
+    assert strip(_CLR_RE.sub("", report.get_data(as_text=True))) == strip(_CLR_RE.sub("", report_before))
     assert export.get_data(as_text=True) == export_before
     assert appmod._readiness_snapshot_context(sid, _live(sid)) == readiness_before
     # another signed-in account is denied the part page and its write

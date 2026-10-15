@@ -2252,6 +2252,64 @@ def _nonfocused_part_report_view(sid, integrated_scope):
     }
 
 
+def _control_loop_part_report_view(sid, state):
+    """CONTROL-LOOP-ENGINEERING-HANDOFF-01 — the report / PDF view of the
+    inventor's SAVED answers about the optional ``control_loop`` part.
+
+    ``None`` when the report's own integrated scope holds no optional part
+    (no section). Otherwise read from ONE store snapshot
+    (``load_parts_components_interactions``: durable composition, durable
+    focus and the WHOLE validated part-answer collection together); the
+    durable composition must validate, its optional part must be exactly the
+    optional part of the composition this report describes (same immutable
+    identity, same focus), and only that part's answers are shown. Anything
+    unreadable, corrupt or inconsistent -> ``{"available": False}``
+    (UNAVAILABLE — never "not recorded"). The part's own governed
+    MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY questions are shown verbatim
+    in pack order, each with the saved answer verbatim or "not recorded";
+    presence is recording presence only. Saved answers stay readable whatever
+    the part's current eligibility (Stage 30 Slice 1). Nothing is derived,
+    judged or written, and no safety derivation reads these answers."""
+    scope = _integrated_scope_context(state)
+    if not scope or not scope.get("control_questions"):
+        return None
+    unavailable = {"available": False}
+    try:
+        focus = getattr(state, "domain", None) or getattr(state, "domain_signal", None)
+        reported = _durable_question_part(_subsystem_model.validate_composition(
+            getattr(state, "subsystems", None) or (), focus))
+        snapshot = _get_store().load_parts_components_interactions(sid)
+        composition = _subsystem_model.validate_composition(
+            snapshot["subsystems"], snapshot["focus"])
+        part = _durable_question_part(composition)
+        if (part is None or reported is None or snapshot["focus"] != focus
+                or part.subsystem_id != reported.subsystem_id
+                or part.domain != reported.domain):
+            return unavailable
+        answers = tuple(a for a in snapshot["part_answers"]
+                        if a.subsystem_id == part.subsystem_id)
+        families = [(gap_type, get_domain_questions(part.domain, gap_type))
+                    for gap_type in _subsystem_model.PART_QUESTION_GAP_TYPES]
+        if any(not qs for _g, qs in families):
+            return unavailable
+        current = {a.question_id: a.answer_text for a in answers}
+        question_ids = {qid for _g, qs in families for qid, _t in qs}
+        return {
+            "available": True,
+            "families": [{
+                "label_key": _PQ_FAMILY_LABEL_KEYS[gap_type],
+                "presence_key": _PQ_FAMILY_PRESENCE_KEYS[
+                    _subsystem_model.part_family_presence(
+                        [qid for qid, _t in questions], answers, part.subsystem_id)],
+                "questions": [{"text": text, "value": current.get(qid)}
+                              for qid, text in questions],
+            } for gap_type, questions in families],
+            "stale": any(qid not in question_ids for qid in current),
+        }
+    except Exception:
+        return unavailable
+
+
 
 # INTEGRATED-JOURNEY-GUIDANCE-01 — the Project Compass "What to do now" for a
 # valid integrated invention once every existing higher-priority primary action
@@ -6907,6 +6965,9 @@ def show_deliverable(sid):
         # outside the focus (one store snapshot; UNAVAILABLE fails closed).
         nonfocused_part_report=_nonfocused_part_report_view(
             sid, _integrated_scope_context(state)),
+        # CONTROL-LOOP-ENGINEERING-HANDOFF-01: the saved answers about the
+        # optional control-loop part (one store snapshot; UNAVAILABLE fails closed).
+        control_loop_report=_control_loop_part_report_view(sid, state),
         # COMPONENT-DELIVERABLE-VALUE-01: the inventor's CURRENT declared
         # components (one store snapshot; UNAVAILABLE fails closed).
         component_report=_component_report_view(sid),
@@ -7090,6 +7151,9 @@ def download_deliverable_pdf(sid):
             # HTML report.
             nonfocused_part_report=_nonfocused_part_report_view(
                 sid, _integrated_scope_context(state)),
+            # CONTROL-LOOP-ENGINEERING-HANDOFF-01: the SAME control-loop
+            # part-answer view as the HTML report.
+            control_loop_report=_control_loop_part_report_view(sid, state),
             # COMPONENT-DELIVERABLE-VALUE-01: the SAME current-component view
             # as the HTML report.
             component_report=_component_report_view(sid),

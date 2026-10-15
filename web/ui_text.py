@@ -960,6 +960,15 @@ UI_STRINGS = {
     },
     # 28-T5-NONFOCUSED-PART-REPORT-01 — the report / PDF view of the saved answers
     # about the required part outside the initial analysis focus.
+    # CONTROL-LOOP-ENGINEERING-HANDOFF-01 — the inventor's saved answers about
+    # the optional control-loop part in the report / PDF: recorded information
+    # only, never a design, analysis, timing, setting or safety conclusion.
+    "UI_CLR_TITLE": {"en": "Control loop — information you recorded",
+                     "ar": "حلقة التحكم — المعلومات التي سجّلتها"},
+    "UI_CLR_INTRO": {
+        "en": "Below are the governed questions about the control-loop part of your invention, exactly as written, and the answers you saved, exactly as you wrote them. They are your own unchecked statements: InventorAI has not designed, analysed or checked this control loop, and it adds no program logic, timing, settings, stability, compatibility or safety conclusion. A question you have not answered is shown as not recorded, and saving answers does not mean the control design is complete.",
+        "ar": "تجد أدناه الأسئلة المعتمدة عن جزء حلقة التحكم في اختراعك كما وردت حرفيًا، والإجابات التي حفظتها كما كتبتها تمامًا. وهي أقوالك أنت ولم يُتحقَّق منها: لم يصمّم InventorAI حلقة التحكم هذه ولم يحلّلها ولم يفحصها، ولا يضيف أي منطق برمجي أو توقيت أو إعدادات أو استنتاج بشأن الاستقرار أو التوافق أو السلامة. ويُعرض السؤال الذي لم تُجب عنه على أنه لم يُسجَّل، وحفظ الإجابات لا يعني أن تصميم التحكم مكتمل.",
+    },
     "UI_PQRR_TITLE": {"en": "Your answers about the other part",
                       "ar": "إجاباتك عن الجزء الآخر"},
     "UI_PQRR_TITLE_MECH": {"en": "Your answers about the mechanical part",

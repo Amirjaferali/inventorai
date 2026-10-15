@@ -9,7 +9,9 @@ What is pinned:
   inconsistent reads UNAVAILABLE, never "none recorded";
 - the report / PDF safety disclosure beside the answers; root SafetySignal derivation, the root safety block and
   the part page are unchanged;
-- no other project's answers, no optional-part answers, no Structured Export / readiness / state effect.
+- no other project's answers in this section and no optional-part answers in it (the optional part's saved
+  answers have their own separate report section, pinned by its own handoff tests), no Structured Export /
+  readiness / state effect.
 """
 import html as _html
 import re
@@ -199,7 +201,14 @@ def test_r06_other_projects_and_control_loop_answers_never_appear(client, part_e
     client.post(_url(sid), data=dict(form, **{"part_answer__control_loop:MECHANISM_COMPLETENESS:Q1":
                                               "ControlLoopAnswerMarker"}))
     raw = _report(client, sid)
-    assert "ControlLoopAnswerMarker" not in raw
+    # Intentionally ADVANCED by CONTROL-LOOP-ENGINEERING-HANDOFF-01: the optional control-loop part's saved
+    # answer now reaches the report, but ONLY inside its own control-loop section — never in this non-focused
+    # required-part section and never in the root safety block (pinned in
+    # tests/test_control_loop_engineering_handoff.py). The other-project isolation above is unchanged.
+    assert "ControlLoopAnswerMarker" not in _block(raw)
+    assert raw.count("ControlLoopAnswerMarker") == 1
+    from tests.test_control_loop_engineering_handoff import _clr
+    assert "ControlLoopAnswerMarker" in _clr(raw)
     assert ui_text.text("UI_SS_OPTIONAL_PART_SCOPE", "en") in _html.unescape(raw)
 
 
