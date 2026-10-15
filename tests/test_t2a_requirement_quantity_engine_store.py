@@ -607,7 +607,8 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
     # Reduction Slice 1 added the append-only `need_routing_revisions` sidecar,
     # and CAP-09 SLICE 3 the current-value `prototype_test_hypotheses` sibling,
     # and CAP-09 SLICE 4 the current-value `prototype_test_variables` sibling.
-    assert tables == ["decision_cell_value_events",   # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01
+    assert tables == ["component_prototype_needs",   # COMPONENT-PROTOTYPE-NEED-NOTE-01
+                      "decision_cell_value_events",   # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01
                       "decision_criterion_revisions",   # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01
                       "engine_version_adoptions", "evidence_references",
                       "integration_evidence_anchors",   # Stage 15 closure

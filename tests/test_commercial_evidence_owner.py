@@ -1414,7 +1414,12 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       # values, append-only (not a commercial owner; no
                       # evidence content).
                       "decision_criterion_revisions",
-                      "decision_cell_value_events"}
+                      "decision_cell_value_events",
+                      # COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's
+                      # current-value prototype-need note per declared
+                      # component (not a commercial owner; no supplier, cost,
+                      # quantity or evidence content).
+                      "component_prototype_needs"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()
