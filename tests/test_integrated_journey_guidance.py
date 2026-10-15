@@ -17,6 +17,10 @@ action; the existing branch order and single-domain journeys are unchanged; unre
 or inconsistent inputs fall back to the handoff; a GET writes nothing; a cold resume
 keeps the behaviour; EN / AR copy states that nothing is assessed or validated.
 Synthetic data only.
+
+AMENDED at EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01 (Owner-approved): past both integrated steps the chain
+now reaches the optional experiment-planning step while a proposed experiment is unplanned, and only then
+the handoff; the integrated steps, their order and their conditions are unchanged (``_after_ijg``).
 """
 import html as _html
 import os
@@ -55,6 +59,17 @@ def _primary(page):
     found = re.findall(r'<(?:a|button) class="journey-primary" data-primary-action[^>]*>', page)
     assert len(found) == 1, found
     return found[0]
+
+
+def _after_ijg(page, sid):
+    """AMENDED at EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: past both integrated steps the
+    chain now reaches the experiment-planning step (these projects have proposed experiments
+    with nothing planned yet); the review handoff stays one click away as a plain link."""
+    primary = _primary(page)
+    assert "data-ijg-action" not in primary
+    assert "data-epg-action" in primary and f'href="/session/{sid}/success-criteria"' in primary
+    handoff = re.search(r'<p class="journey-note" data-epg-handoff>.*?</p>', page, re.S).group(0)
+    assert f'href="/session/{sid}/deliverable"' in handoff and "data-primary-action" not in handoff
 
 
 def _answer(c, sid, text):
@@ -116,9 +131,7 @@ def test_03_no_declared_interaction_is_never_invented_the_handoff_returns(client
     sid = _finished_focus(client)
     _answer_all_part_questions(client, sid)
     page = _raw(client, sid)
-    primary = _primary(page)
-    assert "data-ijg-action" not in primary
-    assert f'href="/session/{sid}/deliverable"' in primary
+    _after_ijg(page, sid)
     assert "data-ijg-handoff" not in page and "data-ijg-note" not in page
 
 
@@ -139,12 +152,11 @@ def test_04_a_declared_interaction_offers_its_optional_preparation_then_the_hand
     r = _save_prep(client, sid, {("operating_conditions", iid): COND})
     assert appmod.S15_PREP_SAVED_MESSAGE in _html.unescape(r.get_data(as_text=True))
     assert 'data-ijg-action="interface_preparation"' in _primary(_raw(client, sid))
-    # all recorded -> the existing handoff fallback
+    # all recorded -> past the integrated steps (AMENDED: the planning step, then the handoff)
     r = _save_prep(client, sid, {("acceptance_criterion", iid): ACCEPT,
                                  ("evidence_needed", iid): EVID})
     assert appmod.S15_PREP_SAVED_MESSAGE in _html.unescape(r.get_data(as_text=True))
-    primary = _primary(_raw(client, sid))
-    assert "data-ijg-action" not in primary and f'href="/session/{sid}/deliverable"' in primary
+    _after_ijg(_raw(client, sid), sid)
 
 
 # ---------------------------------------------------------------------------
@@ -162,7 +174,7 @@ def test_06_single_domain_projects_never_see_the_guidance(client):
     for value in (MECH_ANSWER, MECH_ANSWER, PF_STRONG, BA_1, BA_2):
         _answer(client, sid, value)
     page = _raw(client, sid)
-    assert f'href="/session/{sid}/deliverable"' in _primary(page)
+    _after_ijg(page, sid)                    # AMENDED: no integrated step; the planning step
     assert "data-ijg" not in page
     assert appmod._integrated_journey_guidance(sid, appmod._integrated_scope_context(_live(sid))) is None
 
@@ -190,7 +202,7 @@ def test_08_an_unreadable_part_record_falls_back_to_the_handoff(client, monkeypa
         raise RuntimeError("unreadable")
     monkeypatch.setattr(type(store), "load_nonfocused_part_record", boom)
     page = _raw(client, sid)
-    assert f'href="/session/{sid}/deliverable"' in _primary(page)
+    _after_ijg(page, sid)                    # AMENDED: past the integrated steps
     assert "data-ijg" not in page
 
 

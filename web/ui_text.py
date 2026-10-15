@@ -7049,6 +7049,19 @@ UI_STRINGS = {
                         "ar": "سجّل كيف يمكن فحص التفاعل"},
     "UI_IJG_HANDOFF_NOTE": {"en": "You can also review your handoff now:",
                             "ar": "يمكنك أيضًا مراجعة حزمة التسليم الآن:"},
+    # EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: the Compass step to the existing
+    # experiment-planning page (optional; nothing is checked or validated).
+    "UI_EPG_NOTE": {
+        "en": ("Your idea has proposed experiments. You can now plan how you would check each one: "
+               "what would count as success, and how you would measure or observe it. This is "
+               "optional; InventorAI has not checked or validated these experiments, and planning "
+               "them does not show that the idea works."),
+        "ar": ("لفكرتك تجارب مقترحة. يمكنك الآن أن تخطّط لكيفية فحص كل منها: ما الذي يُعدّ نجاحًا، "
+               "وكيف ستقيسه أو تلاحظه. هذا اختياري؛ لم يتحقّق InventorAI من هذه التجارب ولم يُثبت "
+               "صحتها، والتخطيط لها لا يُثبت أن الفكرة تعمل."),
+    },
+    "UI_EPG_CTA": {"en": "Plan how you will check your proposed experiments",
+                   "ar": "خطّط لكيفية فحص تجاربك المقترحة"},
     # CAP-11 Slice 1 — Evidence Details (report Section 2 only). Three
     # independent axes, each on its own row; neutral labels with no order,
     # score or strength verdict (docs/governance/

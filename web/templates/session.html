@@ -381,6 +381,15 @@ body{overflow-wrap:anywhere}
     <p class="journey-note" data-ijg-note>{{ t('UI_IJG_PREP_NOTE') }}</p>
     <a class="journey-primary" data-primary-action data-ijg-action="interface_preparation" href="{{ url_for('interface_preparation', sid=sid) }}">{{ t('UI_IJG_PREP_CTA') }}</a>
     <p class="journey-note" data-ijg-handoff>{{ t('UI_IJG_HANDOFF_NOTE') }} <a href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a></p>
+  {#- EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: after every earlier primary action
+      (the integrated steps included), ONE optional step to the EXISTING planning
+      page while a current proposed experiment has no saved success criterion or
+      measurement method. Evaluated lazily; anything unreadable keeps the
+      handoff below. Optional, checks nothing; the handoff stays one click away. -#}
+  {% elif experiment_planning_step is defined and experiment_planning_step() %}
+    <p class="journey-note" data-epg-note>{{ t('UI_EPG_NOTE') }}</p>
+    <a class="journey-primary" data-primary-action data-epg-action href="{{ url_for('success_criteria', sid=sid) }}">{{ t('UI_EPG_CTA') }}</a>
+    <p class="journey-note" data-epg-handoff>{{ t('UI_IJG_HANDOFF_NOTE') }} <a href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a></p>
   {% else %}
     <p class="journey-note">{{ t('UI_A1_HANDOFF_NOTE') }}</p>
     <a class="journey-primary" data-primary-action href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a>
