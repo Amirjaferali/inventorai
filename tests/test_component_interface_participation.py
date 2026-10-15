@@ -481,6 +481,24 @@ def test_w02_retry_unchanged_and_stale_forms_write_nothing(client):
     assert [c for _i, c in _rows(sid)] == [ids[0]]
 
 
+def test_w02b_a_resubmitted_baseline_is_decided_by_the_store_never_answered_unchanged(client):
+    sid = _web_project(client)
+    stale = _form(client, sid)                                                 # shows "none"
+    ids = [i for i, _c in stale["options"]]
+    _post(client, sid, stale, [ids[0]])                                        # another tab saves
+    r = _post(client, sid, stale, [])                                          # stale form, unchanged by it
+    assert r.status_code == 409 and _says(r, _t("UI_ICP_MSG_STALE"))
+    assert not _says(r, _t("UI_ICP_MSG_UNCHANGED"))
+    assert [c for _i, c in _rows(sid)] == [ids[0]]
+    other = _web_project(client, names=("Lid",))
+    foreign = _form(client, other)                                             # base "" and no selection
+    r = _post(client, sid, dict(stale, interface=foreign["interface"], base=""), [])
+    assert r.status_code == 400 and _says(r, _t("UI_ICP_MSG_REJECTED"))
+    r = _post(client, sid, dict(stale, interface="ifc-" + "6" * 32, base=""), [])
+    assert r.status_code == 400 and _says(r, _t("UI_ICP_MSG_REJECTED"))
+    assert [c for _i, c in _rows(sid)] == [ids[0]] and _rows(other) == []
+
+
 @pytest.mark.parametrize("override", [
     {"interface_id": "ifc-not-an-id"}, {"interface_id": ["ifc-" + "0" * 32, "ifc-" + "1" * 32]},
     {"participant_base": ["", ""]}, {"participant": ["cmp-x"]}, {"dup": True}, {"no_base": True},

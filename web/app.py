@@ -9879,9 +9879,10 @@ def interface_participation(sid):
                 _subsystem_model.is_valid_component_id(cid) for cid in group):
             return _icp_render(sid, status=400, error=ICP_REJECTED_MESSAGE)
     target = tuple(selected)
-    if frozenset(target) == frozenset(baseline):
-        # Nothing differs from what this form displayed: nothing to write.
-        return _icp_render(sid, notice=ICP_UNCHANGED_MESSAGE)
+    # No route-level shortcut: even a submission equal to the form's own
+    # baseline goes to the store, which alone decides against CURRENT durable
+    # truth (UNCHANGED, STALE or a refused identity), so a stale form or a
+    # foreign interaction is never answered "unchanged".
     saved = ICP_CLEARED_MESSAGE if not target else ICP_SAVED_MESSAGE
     try:
         outcome = _get_store().set_interface_participation(
