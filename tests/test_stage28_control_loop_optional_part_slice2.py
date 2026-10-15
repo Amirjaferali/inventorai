@@ -423,7 +423,10 @@ def test_report_pdf_export_readiness_and_session_carry_no_part_answer(client, pa
     for body in (export.get_data(as_text=True), session):
         assert marker not in body
         assert Q1 not in body and "subsystem_part_answers" not in body
-    strip = lambda raw: re.sub(r'name="csrf_token" value="[^"]*"', "", raw)  # noqa: E731
+    # The report carries a seconds-resolution generation timestamp; two renders may straddle a second
+    # boundary, so it is normalised (as in tests/test_28t5_nonfocused_part_report.py) with the CSRF token.
+    strip = lambda raw: re.sub(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z", "<ts>",  # noqa: E731
+                               re.sub(r'name="csrf_token" value="[^"]*"', "", raw))
     assert strip(_CLR_RE.sub("", report.get_data(as_text=True))) == strip(_CLR_RE.sub("", report_before))
     assert export.get_data(as_text=True) == export_before
     assert appmod._readiness_snapshot_context(sid, _live(sid)) == readiness_before
