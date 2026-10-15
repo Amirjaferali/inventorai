@@ -238,6 +238,43 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     <p style="margin:6px 0 0 0;font-size:12px;color:#555" data-npr-safety>{{ t('UI_PQRR_SAFETY') }}</p>
   </div>
   {% endif %}
+  {#- CONTROL-LOOP-ENGINEERING-HANDOFF-01 — the inventor's SAVED answers about
+      the optional control-loop part: its governed MECHANISM_COMPLETENESS /
+      BOUNDARY_AMBIGUITY questions verbatim in pack order, each answer verbatim
+      (OWNER_STATED / UNVALIDATED) or "not recorded"; per-family recording
+      presence only. Recorded information, never a design, analysis, timing,
+      setting or safety conclusion. Read from one store snapshot; anything
+      unreadable reads UNAVAILABLE, never "not recorded". These answers are not
+      read for safety signals (the safety block discloses the same). -#}
+  {% set clr = control_loop_report if control_loop_report is defined else none %}
+  {% if clr %}
+  <div class="control-loop-answers" data-control-loop-answers style="margin-top:10px;border-top:1px solid #dbe4ec;padding-top:8px">
+    <h3 style="font-size:14px;margin:0 0 6px 0">{{ t('UI_CLR_TITLE') }}</h3>
+    {% if not clr.available %}
+    <p style="margin:0;font-size:13px;color:#555" data-clr-unavailable>{{ t('UI_PQRR_UNAVAILABLE') }}</p>
+    {% else %}
+    <p style="margin:0 0 6px 0;font-size:13px;color:#555" data-clr-intro>{{ t('UI_CLR_INTRO') }}</p>
+    {% for fam in clr.families %}
+    <div data-clr-family style="margin:6px 0 8px 0;overflow-wrap:anywhere">
+      <h4 style="font-size:13px;margin:0 0 2px 0">{{ t(fam.label_key) }}</h4>
+      <p style="margin:0 0 4px 0;font-size:12px;color:#555" data-clr-family-presence>{{ t(fam.presence_key) }}</p>
+      {% for q in fam.questions %}
+      <p style="margin:6px 0 0 0;font-size:13px"><span dir="ltr" lang="en" data-clr-question>{{ q.text }}</span></p>
+      {% if q.value is not none %}
+      <p style="margin:2px 0 0 0;font-size:13px;white-space:pre-wrap" dir="auto" data-clr-answer>{{ q.value }}</p>
+      <p style="margin:0;font-size:12px;color:#555" data-clr-provenance>{{ t('UI_PQRR_PROVENANCE') }}</p>
+      {% else %}
+      <p style="margin:2px 0 0 0;font-size:12px;color:#555" data-clr-not-recorded>{{ t('UI_PQ_NOT_RECORDED') }}</p>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endfor %}
+    {% if clr.stale %}<p style="margin:4px 0 0 0;font-size:12px;color:#555" data-clr-stale>{{ t('UI_PQ_STALE') }}</p>{% endif %}
+    <p style="margin:4px 0 0 0;font-size:12px;color:#555" data-clr-presence-note>{{ t('UI_PQ_PRESENCE_NOTE') }}</p>
+    {% endif %}
+    <p style="margin:6px 0 0 0;font-size:12px;color:#555" data-clr-safety>{{ t('UI_PQ_SAFETY_SCOPE') }}</p>
+  </div>
+  {% endif %}
   {#- Stage 15 Slice 2 — HOW THE PARTS INTERACT: the Owner's own declared
       interactions (verbatim, escaped; part names resolved from the parts),
       each with its ONE verification-preparation action and the explicit

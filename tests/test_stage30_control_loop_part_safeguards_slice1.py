@@ -216,7 +216,12 @@ def test_part_only_hazard_text_never_changes_root_signals(client, part_eligible,
     assert derive_inventor_stated_safety_signals(_live(sid)) == before_signals
     assert _safety_block(_live(sid)) == before_block
     report = _text(client.get("/session/%s/deliverable" % sid))
-    assert HAZARD[root] not in report
+    # Intentionally ADVANCED by CONTROL-LOOP-ENGINEERING-HANDOFF-01: the hazard text, as the inventor's saved
+    # answer, now appears ONLY inside the report's control-loop section; it still never reaches the safety
+    # signals or the safety block (both pinned above), nor anywhere else in the report.
+    from tests.test_control_loop_engineering_handoff import _CLR_RE, _clr
+    assert HAZARD[root] in _clr(report)
+    assert HAZARD[root] not in _CLR_RE.sub("", report)
     assert ui_text.text("UI_SS_OPTIONAL_PART_SCOPE", "en") in report
 
 
