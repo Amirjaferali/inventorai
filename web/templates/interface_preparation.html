@@ -136,6 +136,52 @@ label.dep-opt{display:block;margin:4px 0;font-size:13px}
   <button type="submit">{{ t('UI_S15_PREP_SAVE') }}</button>
 </form>
 
+{#- COMPONENT-INTERFACE-PARTICIPATION-01 — which of the inventor's CURRENT
+    declared components take part in each interaction: their own statement
+    only (OWNER_STATED / UNVALIDATED), never a connection, an assembly step or
+    a compatibility. Its own form per interaction (never nested in the
+    preparation form); the hidden baseline is the set THIS form displayed.
+    Unreadable data reads unavailable, never "not recorded". -#}
+<h2 id="participation-heading">{{ t('UI_ICP_HEADING') }}</h2>
+<div class="intro" data-icp-intro>
+  <p style="margin:0 0 6px 0">{{ t('UI_ICP_INTRO') }}</p>
+  <p style="margin:0" data-icp-boundary>{{ t('UI_ICP_BOUNDARY') }}</p>
+</div>
+{% if participation is none %}
+<div class="notice" role="status" data-icp-unavailable>{{ t('UI_ICP_UNAVAILABLE') }}</div>
+{% else %}
+{% for ifc in items %}
+{% set icp = participation.by_interface[ifc.interface_id] %}
+{% set n = loop.index %}
+<div class="ifc" data-icp-interface>
+  <div class="ifc-title">{{ t('UI_S15_IFC_BETWEEN') }} <bdi dir="auto">{{ ifc.a }}</bdi> {{ t('UI_S15_IFC_AND') }} <bdi dir="auto">{{ ifc.b }}</bdi></div>
+  <p class="ifc-desc">{{ t('UI_S15_IFC_DESCRIPTION') }} <bdi dir="auto">{{ ifc.description }}</bdi></p>
+  {% if icp.current %}
+  <p class="guidance" data-icp-current>{{ t('UI_ICP_LABEL') }} {% for name in icp.current %}<bdi dir="auto" data-icp-name>{{ name }}</bdi>{% if not loop.last %}{{ t('UI_ICP_SEP') }}{% endif %}{% endfor %}</p>
+  {% else %}
+  <p class="guidance" data-icp-not-recorded>{{ t('UI_ICP_NOT_RECORDED') }}</p>
+  {% endif %}
+  {% if participation.has_components %}
+  <form method="POST" action="{{ url_for('interface_participation', sid=sid) }}" data-icp-form>
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <input type="hidden" name="interface_id" value="{{ ifc.interface_id }}">
+    <input type="hidden" name="participant_base" value="{{ icp.base }}">
+    <fieldset class="dep">
+      <legend>{{ t('UI_ICP_LEGEND') }}</legend>
+      {% for opt in icp.options %}
+      <label class="dep-opt" for="icp-{{ n }}-{{ loop.index }}"><input type="checkbox" id="icp-{{ n }}-{{ loop.index }}" name="participant" value="{{ opt.id }}"{% if opt.checked %} checked{% endif %}> <bdi dir="auto">{{ opt.name }}</bdi></label>
+      {% endfor %}
+    </fieldset>
+    <p class="guidance">{{ t('UI_ICP_HINT') }}</p>
+    <button type="submit">{{ t('UI_ICP_SAVE') }}</button>
+  </form>
+  {% else %}
+  <p class="guidance" data-icp-no-components>{{ t('UI_ICP_NO_COMPONENTS') }} <a href="{{ url_for('show_session', sid=sid) }}#component-inventory">{{ t('UI_ICP_LINK_COMPONENTS') }}</a></p>
+  {% endif %}
+</div>
+{% endfor %}
+{% endif %}
+
 {#- Stage 15 Slice 4 — what actually happened when the inventor tested or
     checked each interaction, in their own words. Append-only history; a
     correction keeps every earlier entry; each check keeps the preparation

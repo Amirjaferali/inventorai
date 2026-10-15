@@ -1343,3 +1343,126 @@ def prototype_need_target(inventory, component_id):
     if record.withdrawn:
         raise ComponentAlreadyWithdrawn("the component is withdrawn")
     return record
+
+
+# --- COMPONENT-INTERFACE-PARTICIPATION-01: components taking part in an
+# interaction -----------------------------------------------------------------
+# For ONE existing Owner-declared interaction the inventor may state which of
+# the project's existing declared physical components take part in it. ONE row
+# per (interaction, component) pair, keyed ONLY by the interaction's
+# ``interface_id`` and the component's stable ``component_id`` — never by a
+# name, a position or text. It is the inventor's own statement, OWNER_STATED /
+# UNVALIDATED by construction: never a physical connection, an assembly step,
+# a compatibility, completeness, suitability or safety fact, a BOM line or
+# evidence. Nothing is inferred: participation is never derived from the
+# component's part links, and no overlap with the interaction's two parts is
+# required (a part link is itself only the inventor's association).
+#
+# CURRENT participation of an interaction = its stored rows whose component is
+# ACTIVE in the validated inventory, in the inventory's declaration order.
+# Stored rows of a component that was later withdrawn stay as history: they are
+# never shown as current, never compared, reasserted or deleted by an ordinary
+# replacement, and a withdrawn component can never be newly named. A
+# correction keeps the component's id and so its participation; a later,
+# separate declaration is a new identity and inherits nothing. Absence of any
+# row reads NOT RECORDED; an unreadable collection reads UNAVAILABLE. The
+# analytical-relationship NEXT TRIGGER was evaluated for this attribute: it is
+# a current-value attribute of ONE existing interaction naming existing
+# components (as a component's part links are an attribute of the component),
+# not a new relation owner — no shared generic relationship primitive or graph
+# is justified.
+
+
+class InterfaceParticipationError(ValueError):
+    """A submitted or stored participation violates the bounded contract.
+    Structural message only — never user text."""
+
+
+@dataclass(frozen=True)
+class InterfaceParticipation:
+    """ONE stored statement that the component ``component_id`` takes part in
+    the interaction ``interface_id``. OWNER_STATED and UNVALIDATED by
+    construction; never evidence, a requirement, a connection or a fact."""
+    interface_id: str
+    component_id: str
+    provenance: str = OWNER_STATED
+    validation_state: str = UNVALIDATED
+
+
+def validate_interface_participations(participations, interfaces, inventory):
+    """Validate a project's stored participation rows against its OWN durable
+    ``interfaces`` and validated ``ComponentInventory`` and return them as a
+    tuple in canonical order (interface order, then component declaration
+    order), or raise ``InterfaceParticipationError``. Empty is valid. Every
+    row must name an interaction of this project and a DECLARED component of
+    this project (active or withdrawn — a withdrawn component's row is valid
+    stored history) by exact id, at most once, with the fixed OWNER_STATED /
+    UNVALIDATED values. An orphan is invalid — never remapped or dropped."""
+    items = tuple(participations or ())
+    if not items:
+        return ()
+    if not isinstance(inventory, ComponentInventory):
+        raise InterfaceParticipationError("no validated inventory")
+    interface_order = [item.interface_id for item in interfaces or ()]
+    component_order = [record.component_id for record in inventory.records]
+    seen = set()
+    for item in items:
+        if not isinstance(item, InterfaceParticipation):
+            raise InterfaceParticipationError("entry is not a participation")
+        if item.interface_id not in interface_order:
+            raise InterfaceParticipationError(
+                "participation names no interaction of this project")
+        if item.component_id not in component_order:
+            raise InterfaceParticipationError(
+                "participation names no declared component of this project")
+        pair = (item.interface_id, item.component_id)
+        if pair in seen:
+            raise InterfaceParticipationError("participation is duplicated")
+        seen.add(pair)
+        if item.provenance != OWNER_STATED or item.validation_state != UNVALIDATED:
+            raise InterfaceParticipationError(
+                "participation provenance / validation state is invalid")
+    return tuple(sorted(items, key=lambda p: (interface_order.index(p.interface_id),
+                                              component_order.index(p.component_id))))
+
+
+def current_interface_participants(participations, active_components):
+    """``{interface_id: (component_id, ...)}`` of every interaction with at
+    least one CURRENT participant: stored rows whose component is in
+    ``active_components`` (the inventory's active projection), in that
+    projection's order. A withdrawn component is never part of it.
+    ``participations`` must already be validated."""
+    order = [component.component_id for component in active_components or ()]
+    current = {}
+    for item in participations or ():
+        if item.component_id in order:
+            current.setdefault(item.interface_id, []).append(item.component_id)
+    return {interface_id: tuple(sorted(ids, key=order.index))
+            for interface_id, ids in current.items()}
+
+
+def participation_target(inventory, interfaces, interface_id, component_ids):
+    """The canonical requested participant set for ONE interaction, as a
+    tuple in declaration order, or raise: ``InterfaceParticipationError``
+    (an interaction that is not one of ``interfaces``, a malformed or
+    duplicated id, or a component that is not declared in this project) or
+    ``ComponentAlreadyWithdrawn`` (a withdrawn component takes no new
+    participation). Empty is valid (nothing recorded)."""
+    if not isinstance(inventory, ComponentInventory):
+        raise InterfaceParticipationError("no validated inventory")
+    if interface_id not in {item.interface_id for item in interfaces or ()}:
+        raise InterfaceParticipationError("the id names no interaction of this project")
+    ids = tuple(component_ids or ())
+    if len(set(ids)) != len(ids):
+        raise InterfaceParticipationError("a component is named twice")
+    for component_id in ids:
+        if not is_valid_component_id(component_id):
+            raise InterfaceParticipationError("malformed component identity")
+        record = inventory.record_for(component_id)
+        if record is None:
+            raise InterfaceParticipationError(
+                "the component is not a component of this project")
+        if record.withdrawn:
+            raise ComponentAlreadyWithdrawn("the component is withdrawn")
+    order = [record.component_id for record in inventory.records]
+    return tuple(sorted(ids, key=order.index))

@@ -140,6 +140,11 @@ from engine.record_store import (
     ComponentPrototypeNeedStale as _ComponentPrototypeNeedStale,
     ComponentPrototypeNeedWithdrawn as _ComponentPrototypeNeedWithdrawn,
     ComponentPrototypeNeedsCorrupt as _ComponentPrototypeNeedsCorrupt,
+    InterfaceParticipationRejected as _InterfaceParticipationRejected,
+    InterfaceParticipationStale as _InterfaceParticipationStale,
+    InterfaceParticipationWithdrawn as _InterfaceParticipationWithdrawn,
+    InterfaceParticipationsCorrupt as _InterfaceParticipationsCorrupt,
+    INTERFACE_PARTICIPATION_UNCHANGED as _ICP_UNCHANGED,
     DecisionComparisonCorrupt as _DecisionComparisonCorrupt,
     DecisionComparisonConflict as _DecisionComparisonConflict,
     DECISION_COMPARISON_NO_CHANGE as _CMP_NO_CHANGE,
@@ -1752,6 +1757,20 @@ S15_PREP_UNKNOWN_MESSAGE = (
     "We could not confirm whether your preparation was saved. Reload this "
     "page to see what your project currently holds before entering it again.")
 
+# COMPONENT-INTERFACE-PARTICIPATION-01 (interface_participation): its outcomes
+# render through the preparation page's error / notice slots, so they are
+# registered in `ui_text._MESSAGE_KEYS`. Truthful: the inventor's own
+# statement, never checked.
+ICP_SAVED_MESSAGE = 'The components you said take part in this interaction were saved to your project. InventorAI has not checked them.'
+ICP_CLEARED_MESSAGE = 'No component is now recorded as taking part in this interaction. Your components themselves are unchanged.'
+ICP_UNCHANGED_MESSAGE = 'Your project already holds exactly these components for this interaction, so nothing needed to change.'
+ICP_STALE_MESSAGE = 'The components taking part in this interaction changed after this page was shown, so nothing was saved. Review them below and try again.'
+ICP_WITHDRAWN_MESSAGE = 'A component you selected has been withdrawn, so nothing was saved. Review the list below and try again.'
+ICP_REJECTED_MESSAGE = "That selection does not match this project's interactions and components, so nothing was saved."
+ICP_NOT_SAVED_MESSAGE = 'The components taking part could not be saved just now. Nothing was changed.'
+ICP_UNKNOWN_MESSAGE = 'We could not confirm whether your selection was saved. Reload this page to see what your project holds before choosing again.'
+ICP_SAVED_NOT_SHOWN_MESSAGE = 'Your selection was saved to your project, but this page could not show it. Reload this page to see what your project holds.'
+
 # Stage 28 — Control-Loop Optional Part — Slice 2: the inventor's answers to the
 # governed questions of the optional control-loop part (save_part_answers).
 # Truthful: the inventor's own statements, never checked; saving them changes
@@ -2252,7 +2271,69 @@ def _nonfocused_part_report_view(sid, integrated_scope):
     }
 
 
-def _control_loop_part_report_view(sid, state):
+def _pci_snapshot_reader(sid):
+    """A callable that reads ``load_parts_components_interactions(sid)`` at
+    most ONCE per report / PDF render and returns (or re-raises) that one
+    result to every caller, so the sections built on it never combine two
+    durable moments and the store is read once per render."""
+    cache = {}
+
+    def read():
+        if "result" not in cache:
+            try:
+                cache["result"] = (True, _get_store().load_parts_components_interactions(sid))
+            except Exception as exc:          # replayed to every caller
+                cache["result"] = (False, exc)
+        ok, value = cache["result"]
+        if not ok:
+            raise value
+        return value
+    return read
+
+
+def _participation_report_view(sid, state, read=None):
+    """COMPONENT-INTERFACE-PARTICIPATION-01 — the report / PDF view of the
+    CURRENT components the inventor said take part in each declared
+    interaction. ``None`` when the report's integrated scope shows no
+    interaction (no line). Otherwise read from ONE store snapshot
+    (``load_parts_components_interactions``: composition, interactions,
+    components and every participation row validated whole); it is used only
+    when that snapshot's composition and interactions are EXACTLY the ones the
+    report describes (same immutable identities and material), and component
+    names are resolved by identity from the same snapshot. ``{"available":
+    True, "items": [[names], ...]}`` aligned with the report's interactions;
+    anything unreadable, corrupt or inconsistent -> ``{"available": False}``
+    (UNAVAILABLE — never "not recorded"). Nothing is inferred, judged or
+    written."""
+    scope = _integrated_scope_context(state)
+    if not scope or not scope.get("interfaces"):
+        return None
+    unavailable = {"available": False}
+    try:
+        focus = getattr(state, "domain", None) or getattr(state, "domain_signal", None)
+        composition = _subsystem_model.validate_composition(
+            getattr(state, "subsystems", None) or (), focus)
+        interfaces = _subsystem_model.validate_interfaces(
+            getattr(state, "subsystem_interfaces", None) or (), composition)
+        snapshot = (read or _pci_snapshot_reader(sid))()
+        if (snapshot["focus"] != focus
+                or tuple(_subsystem_model.validate_composition(
+                    snapshot["subsystems"], snapshot["focus"])) != tuple(composition)
+                or tuple(snapshot["interfaces"]) != tuple(interfaces)
+                or len(interfaces) != len(scope["interfaces"])):
+            return unavailable
+        names = {item.component_id: item.display_name
+                 for item in snapshot["components"]}
+        current = _subsystem_model.current_interface_participants(
+            snapshot["participations"], snapshot["components"])
+        return {"available": True,
+                "items": [[names[cid] for cid in current.get(item.interface_id, ())]
+                          for item in interfaces]}
+    except Exception:
+        return unavailable
+
+
+def _control_loop_part_report_view(sid, state, read=None):
     """CONTROL-LOOP-ENGINEERING-HANDOFF-01 — the report / PDF view of the
     inventor's SAVED answers about the optional ``control_loop`` part.
 
@@ -2278,7 +2359,7 @@ def _control_loop_part_report_view(sid, state):
         focus = getattr(state, "domain", None) or getattr(state, "domain_signal", None)
         reported = _durable_question_part(_subsystem_model.validate_composition(
             getattr(state, "subsystems", None) or (), focus))
-        snapshot = _get_store().load_parts_components_interactions(sid)
+        snapshot = (read or _pci_snapshot_reader(sid))()
         composition = _subsystem_model.validate_composition(
             snapshot["subsystems"], snapshot["focus"])
         part = _durable_question_part(composition)
@@ -6953,6 +7034,7 @@ def show_deliverable(sid):
     if context is None:
         return redirect(url_for("index"))
     entry, package, eligible, reconstructed_deliverable, state = context
+    pci_read = _pci_snapshot_reader(sid)      # one snapshot read per render
     return render_template(
         "deliverable.html",
         sid=sid,
@@ -6967,7 +7049,10 @@ def show_deliverable(sid):
             sid, _integrated_scope_context(state)),
         # CONTROL-LOOP-ENGINEERING-HANDOFF-01: the saved answers about the
         # optional control-loop part (one store snapshot; UNAVAILABLE fails closed).
-        control_loop_report=_control_loop_part_report_view(sid, state),
+        control_loop_report=_control_loop_part_report_view(sid, state, pci_read),
+        # COMPONENT-INTERFACE-PARTICIPATION-01: the components the inventor
+        # said take part in each interaction (the SAME one store snapshot).
+        participation_report=_participation_report_view(sid, state, pci_read),
         # COMPONENT-DELIVERABLE-VALUE-01: the inventor's CURRENT declared
         # components (one store snapshot; UNAVAILABLE fails closed).
         component_report=_component_report_view(sid),
@@ -7137,6 +7222,7 @@ def download_deliverable_pdf(sid):
         if context is None:
             return redirect(url_for("index"))
         _entry, package, eligible, reconstructed_deliverable, state = context
+        pci_read = _pci_snapshot_reader(sid)  # one snapshot read per render
         source = render_template(
             "deliverable.html",
             deliverable_base="pdf_base.html",
@@ -7153,7 +7239,10 @@ def download_deliverable_pdf(sid):
                 sid, _integrated_scope_context(state)),
             # CONTROL-LOOP-ENGINEERING-HANDOFF-01: the SAME control-loop
             # part-answer view as the HTML report.
-            control_loop_report=_control_loop_part_report_view(sid, state),
+            control_loop_report=_control_loop_part_report_view(sid, state, pci_read),
+            # COMPONENT-INTERFACE-PARTICIPATION-01: the SAME participation view
+            # as the HTML report.
+            participation_report=_participation_report_view(sid, state, pci_read),
             # COMPONENT-DELIVERABLE-VALUE-01: the SAME current-component view
             # as the HTML report.
             component_report=_component_report_view(sid),
@@ -9627,6 +9716,8 @@ def _render_interface_preparation(sid, context, status=200, error=None,
             sid, context, evidence_drafts),
         integration_topics=list(_INTEGRATION_TOPICS),
         dependency_note_max=_subsystem_model.MAX_INTERFACE_DEPENDENCY_NOTE_LENGTH,
+        participation=None if context is None else _s15_participation_view(
+            sid, context),
         error=ui_text.localize_message(error, lang),
         notice=ui_text.localize_message(notice, lang),
     ), status)
@@ -9664,6 +9755,160 @@ def _resolve_interface_preparation_write(sid, delta, dependency_delta=None):
                                                interface_id) != dependency:
                 return _S15_PREP_WRITE_NOT_SAVED
     return _S15_PREP_WRITE_SAVED
+
+
+# --- COMPONENT-INTERFACE-PARTICIPATION-01: components taking part ----------
+# For ONE existing declared interaction the inventor states which of the
+# project's CURRENT declared physical components take part in it. A
+# current-value attribute of that interaction (``engine.subsystem_model``
+# semantics; the record store's ``subsystem_interface_components``), keyed only
+# by exact identities: never a physical connection, an assembly step, a
+# compatibility, completeness, suitability or safety fact, a BOM line or
+# evidence, and nothing is inferred from names, part links or text. Its own
+# POST (the existing preparation save is untouched): the global
+# request-integrity (CSRF) guard and the central project authorization protect
+# it; the form carries the CURRENT participant set it displayed (the F724-1
+# baseline discipline) and the store, inside ONE serialized write transaction,
+# re-validates the project, the interaction, every component's membership and
+# active status, the whole inventory and every stored participation row, and
+# compares ONLY the current projection (active components): equal to the
+# target -> nothing written; different from the displayed set -> stale,
+# nothing written; otherwise the active rows are replaced atomically while
+# rows of withdrawn components stay untouched. An unknown outcome is decided
+# by reloading committed truth (SAVED / NOT SAVED / UNKNOWN).
+_ICP_WRITE_SAVED = "saved"
+_ICP_WRITE_NOT_SAVED = "not_saved"
+_ICP_WRITE_UNKNOWN = "unknown"
+
+
+def _icp_baseline(ids):
+    """The form value of a displayed participant set: its ids joined by a
+    comma in declaration order ("" = none recorded)."""
+    return ",".join(ids)
+
+
+def _s15_participation_view(sid, context):
+    """The participation part of the preparation page, or ``None`` when it
+    cannot be read (shown as unavailable — never "not recorded"; the rest of
+    the page is unaffected). Read in its own store snapshot
+    (``load_interface_participation``: interactions, current components and
+    every stored row, validated whole); used only when that snapshot's
+    interactions are exactly the ones this page shows (same immutable
+    identities), so a participant set is never paired with another
+    interaction. ``{interface_id: {"current": [names], "options": [...],
+    "base": str}}`` plus ``"has_components"``."""
+    loader = getattr(_get_store(), "load_interface_participation", None)
+    if not callable(loader):
+        return None
+    try:
+        record = loader(sid)
+    except Exception:
+        return None
+    if {item.interface_id: item for item in record["interfaces"]} != \
+            context["interfaces"]:
+        return None
+    components = record["components"]
+    names = {item.component_id: item.display_name for item in components}
+    current = _subsystem_model.current_interface_participants(
+        record["participations"], components)
+    by_interface = {}
+    for interface_id in context["interfaces"]:
+        ids = current.get(interface_id, ())
+        by_interface[interface_id] = {
+            "current": [names[cid] for cid in ids],
+            "options": [{"id": item.component_id, "name": item.display_name,
+                         "checked": item.component_id in ids}
+                        for item in components],
+            "base": _icp_baseline(ids),
+        }
+    return {"by_interface": by_interface, "has_components": bool(components)}
+
+
+def _resolve_interface_participation_write(sid, interface_id, target):
+    """Bounded confirm-by-reload after the write RAISED: SAVED when the
+    committed CURRENT participant set of exactly this interaction equals
+    ``target``, NOT SAVED on a demonstrable mismatch, UNKNOWN when committed
+    truth cannot be read."""
+    try:
+        record = _get_store().load_interface_participation(sid)
+    except Exception:
+        return _ICP_WRITE_UNKNOWN
+    durable = _subsystem_model.current_interface_participants(
+        record["participations"], record["components"]).get(interface_id, ())
+    return (_ICP_WRITE_SAVED if frozenset(durable) == frozenset(target)
+            else _ICP_WRITE_NOT_SAVED)
+
+
+def _icp_render(sid, status=200, error=None, notice=None):
+    """Re-render the preparation page from CURRENT durable truth after a
+    participation POST, with its outcome."""
+    page_status, context = _s15_preparation_context(sid)
+    if page_status != _S15_PREP_OK:
+        message, code = _S15_PREP_STATUS_MESSAGE[page_status]
+        if error is None and notice in (ICP_SAVED_MESSAGE, ICP_CLEARED_MESSAGE):
+            return _render_interface_preparation(
+                sid, None, status=code, notice=ICP_SAVED_NOT_SHOWN_MESSAGE)
+        return _render_interface_preparation(
+            sid, None, status=code if error is None else status,
+            error=error, notice=message if error is None else None)
+    return _render_interface_preparation(sid, context, status=status,
+                                         error=error, notice=notice)
+
+
+@app.route("/session/<sid>/interface-participation", methods=["POST"])
+def interface_participation(sid):
+    """COMPONENT-INTERFACE-PARTICIPATION-01 — the inventor states which of
+    their CURRENT declared components take part in ONE declared interaction
+    (replacing the current set as a whole; an empty set clears it). Their own
+    statement, OWNER_STATED / UNVALIDATED; saving checks, infers, connects or
+    validates nothing. Order: request integrity (global guard) ->
+    authorization -> form shape -> ONE serialized durable write that
+    re-validates every identity -> committed-truth resolution."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    interface_values = request.form.getlist("interface_id")
+    base_values = request.form.getlist("participant_base")
+    selected = request.form.getlist("participant")
+    if (len(interface_values) != 1 or len(base_values) != 1
+            or not _subsystem_model.is_valid_interface_id(interface_values[0])):
+        return _icp_render(sid, status=400, error=ICP_REJECTED_MESSAGE)
+    interface_id = interface_values[0]
+    baseline = tuple(base_values[0].split(",")) if base_values[0] else ()
+    for group in (baseline, selected):
+        if len(set(group)) != len(group) or not all(
+                _subsystem_model.is_valid_component_id(cid) for cid in group):
+            return _icp_render(sid, status=400, error=ICP_REJECTED_MESSAGE)
+    target = tuple(selected)
+    if frozenset(target) == frozenset(baseline):
+        # Nothing differs from what this form displayed: nothing to write.
+        return _icp_render(sid, notice=ICP_UNCHANGED_MESSAGE)
+    saved = ICP_CLEARED_MESSAGE if not target else ICP_SAVED_MESSAGE
+    try:
+        outcome = _get_store().set_interface_participation(
+            sid, interface_id, target, baseline)
+    except _InterfaceParticipationStale:
+        return _icp_render(sid, status=409, error=ICP_STALE_MESSAGE)
+    except _InterfaceParticipationWithdrawn:
+        return _icp_render(sid, status=409, error=ICP_WITHDRAWN_MESSAGE)
+    except _InterfaceParticipationRejected:
+        return _icp_render(sid, status=400, error=ICP_REJECTED_MESSAGE)
+    except (_ProjectNotFound, _ProjectSubsystemsCorrupt, _SubsystemInterfacesCorrupt,
+            _ProjectComponentsCorrupt, _InterfaceParticipationsCorrupt):
+        # Committed durable truth WAS read and fails closed: nothing written.
+        return _icp_render(sid, status=503, error=ICP_NOT_SAVED_MESSAGE)
+    except Exception:
+        # Never turn an unknown durable outcome into a failure (or a
+        # success): decide from committed durable truth only.
+        resolved = _resolve_interface_participation_write(sid, interface_id, target)
+        if resolved == _ICP_WRITE_UNKNOWN:
+            return _icp_render(sid, status=503, error=ICP_UNKNOWN_MESSAGE)
+        if resolved == _ICP_WRITE_NOT_SAVED:
+            return _icp_render(sid, status=503, error=ICP_NOT_SAVED_MESSAGE)
+        outcome = None
+    if outcome == _ICP_UNCHANGED:
+        return _icp_render(sid, notice=ICP_UNCHANGED_MESSAGE)
+    # COMMITTED, or the requested set is confirmed durably present.
+    return _icp_render(sid, notice=saved)
 
 
 @app.route("/session/<sid>/interface-preparation", methods=["GET"])
@@ -10471,6 +10716,10 @@ def _pci_context(sid):
     components = [{"name": item.display_name, "function": item.function_text,
                    "parts": [names[ref] for ref in item.subsystem_ids]}
                   for item in record["components"]]
+    component_names = {item.component_id: item.display_name
+                       for item in record["components"]}
+    participants = _subsystem_model.current_interface_participants(
+        record.get("participations", ()), record["components"])
     interfaces = [{
         "a": names[item.subsystem_a_id],
         "b": names[item.subsystem_b_id],
@@ -10479,6 +10728,11 @@ def _pci_context(sid):
             record["preparations"], item.interface_id)),
         "dependency": _s15_dependency_view(_subsystem_model.dependency_for(
             record["dependencies"], item.interface_id), names),
+        # COMPONENT-INTERFACE-PARTICIPATION-01: the CURRENT components the
+        # inventor said take part (active components only), resolved by
+        # identity from this same snapshot.
+        "participants": [component_names[cid] for cid in participants.get(
+            item.interface_id, ())],
     } for item in record["interfaces"]]
     # COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: ``components`` is the CURRENT
     # projection (latest corrected material, withdrawn excluded); withdrawn

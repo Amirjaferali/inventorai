@@ -113,6 +113,11 @@ from engine.subsystem_model import (
     ComponentPrototypeNeed, ComponentPrototypeNeedError,
     MAX_COMPONENT_PROTOTYPE_NEED_LENGTH, is_stored_prototype_need_text,
     prototype_need_target, validate_component_prototype_needs,
+    # COMPONENT-INTERFACE-PARTICIPATION-01: components taking part in an
+    # interaction (current value).
+    InterfaceParticipation, InterfaceParticipationError,
+    current_interface_participants, participation_target,
+    validate_interface_participations,
 )
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the inventor's own
 # comparison criteria and per-alternative values (semantics owner).
@@ -380,6 +385,31 @@ class ComponentPrototypeNeedStale(ComponentPrototypeNeedRejected):
     """COMPONENT-PROTOTYPE-NEED-NOTE-01: the durable note is no longer the
     one the inventor's form showed (it changed in the meantime). Nothing is
     written; the newer note is never overwritten."""
+
+
+class InterfaceParticipationRejected(StoreError):
+    """COMPONENT-INTERFACE-PARTICIPATION-01: a participation write names no
+    interaction of THIS project, or a component that is not a declared
+    component of THIS project, or names one twice. Decided inside the write
+    transaction before any row is written; nothing is written."""
+
+
+class InterfaceParticipationWithdrawn(InterfaceParticipationRejected):
+    """COMPONENT-INTERFACE-PARTICIPATION-01: a named component is withdrawn; a
+    withdrawn component takes no new participation. Nothing is written."""
+
+
+class InterfaceParticipationStale(InterfaceParticipationRejected):
+    """COMPONENT-INTERFACE-PARTICIPATION-01: the CURRENT participation of the
+    interaction is no longer the one the inventor's form showed (it changed in
+    the meantime). Nothing is written; newer truth is never overwritten."""
+
+
+class InterfaceParticipationsCorrupt(StoreError):
+    """COMPONENT-INTERFACE-PARTICIPATION-01: a project's durable participation
+    rows are malformed, duplicated or orphaned from its interactions or
+    declared components. Fail-closed for the WHOLE collection: nothing
+    partial is returned and nothing is repaired, deleted or remapped."""
 
 
 class ComponentPrototypeNeedsCorrupt(StoreError):
@@ -651,6 +681,11 @@ class RecordStore(Protocol):
     # COMPONENT-PROTOTYPE-NEED-NOTE-01 (current value; see the
     # component_prototype_needs note).
     def load_component_prototype_needs(self, project_id: str) -> tuple: ...
+    # COMPONENT-INTERFACE-PARTICIPATION-01 (current value; see the
+    # subsystem_interface_components note).
+    def load_interface_participation(self, project_id: str) -> dict: ...
+    def set_interface_participation(self, project_id: str, interface_id: str,
+                                    component_ids, expected_ids) -> str: ...
     def set_component_prototype_need(self, project_id: str, component_id: str,
                                      need_text, expected_text) -> str: ...
 
@@ -1887,6 +1922,44 @@ _COMPONENT_PROTOTYPE_NEEDS_SCHEMA = (
     """ % MAX_COMPONENT_PROTOTYPE_NEED_LENGTH,
 )
 
+# COMPONENT-INTERFACE-PARTICIPATION-01 — ``subsystem_interface_components``:
+# the inventor's statement that ONE declared physical component takes part in
+# ONE existing declared interaction. A CURRENT-VALUE sidecar (insert / delete;
+# no revision history is kept or promised), ONE row per pair, keyed ONLY by the
+# existing ``(project_id, interface_id, component_id)`` and anchored by
+# composite foreign keys to that exact interaction row and that exact
+# declaration row, so a row can never name another project's interaction or
+# component, or one that does not exist. No provenance column: a stored row is
+# by construction the inventor's own statement (OWNER_STATED, UNVALIDATED) —
+# never a connection, an assembly step, a compatibility, a BOM line or
+# evidence. CURRENT participation is the rows whose component is active; the
+# rows of a component later withdrawn stay stored as history and an ordinary
+# replacement never compares, reasserts or deletes them. The append-only
+# interaction and component tables are NOT widened or updated. The CHECKs are
+# a database backstop only; the loader re-validates every row against the
+# whole validated interactions and inventory. Additive and idempotent (``IF
+# NOT EXISTS``); an existing table of any other shape is refused, never read as
+# empty; nothing is backfilled. Rollback is disable-and-preserve (stop reading
+# the table; its rows stay intact).
+_INTERFACE_COMPONENT_COLUMNS = ("project_id", "interface_id", "component_id")
+_INTERFACE_COMPONENTS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS subsystem_interface_components (
+        project_id    TEXT NOT NULL,
+        interface_id  TEXT NOT NULL,
+        component_id  TEXT NOT NULL,
+        PRIMARY KEY (project_id, interface_id, component_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, interface_id)
+            REFERENCES subsystem_interfaces(project_id, interface_id),
+        FOREIGN KEY (project_id, component_id)
+            REFERENCES project_components(project_id, component_id),
+        CHECK (typeof(interface_id) = 'text' AND length(interface_id) = 36),
+        CHECK (typeof(component_id) = 'text' AND length(component_id) = 36)
+    )
+    """,
+)
+
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 — the two additive,
 # append-only, project-scoped comparison record families. Never updated or
 # deleted (no such writer exists). ``seq`` is the project's contiguous durable
@@ -2029,6 +2102,11 @@ COMPONENT_PROTOTYPE_NEED_SAVED = "SAVED"
 COMPONENT_PROTOTYPE_NEED_CLEARED = "CLEARED"
 COMPONENT_PROTOTYPE_NEED_UNCHANGED = "UNCHANGED"
 
+# COMPONENT-INTERFACE-PARTICIPATION-01: the outcomes of a participation write.
+INTERFACE_PARTICIPATION_SAVED = "SAVED"
+INTERFACE_PARTICIPATION_CLEARED = "CLEARED"
+INTERFACE_PARTICIPATION_UNCHANGED = "UNCHANGED"
+
 INTERFACE_OBSERVATION_INSERTED = "INSERTED"
 INTERFACE_OBSERVATION_EXACT_REPLAY = "EXACT_REPLAY"
 
@@ -2167,6 +2245,7 @@ class SqliteRecordStore:
             self._migrate_part_answers(self._conn)
             self._migrate_project_components(self._conn)
             self._migrate_component_prototype_needs(self._conn)
+            self._migrate_interface_components(self._conn)
             self._migrate_decision_comparison(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
@@ -2489,6 +2568,26 @@ class SqliteRecordStore:
             raise sqlite3.DatabaseError(
                 "component_prototype_needs has an unrecognised shape")
         for stmt in _COMPONENT_PROTOTYPE_NEEDS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_interface_components(self, conn) -> None:
+        """COMPONENT-INTERFACE-PARTICIPATION-01 forward migration: additively
+        create the ``subsystem_interface_components`` current-value sidecar.
+        Runs inside the store's single migration transaction, AFTER the
+        interface migration and the component inventory migration (with its
+        one-time legacy rebuild) it references; idempotent (``IF NOT EXISTS``)
+        on a fresh and on an existing populated database; touches no existing
+        table, column or row; nothing is backfilled or inferred. A table that
+        already exists in any other shape is refused (``sqlite3.DatabaseError``)
+        rather than read as empty or guessed. Rollback is disable-and-preserve:
+        a build without this capability never reads or writes the table and
+        its rows stay intact."""
+        columns = tuple(row[1] for row in conn.execute(
+            "PRAGMA table_info(subsystem_interface_components)").fetchall())
+        if columns and columns != _INTERFACE_COMPONENT_COLUMNS:
+            raise sqlite3.DatabaseError(
+                "subsystem_interface_components has an unrecognised shape")
+        for stmt in _INTERFACE_COMPONENTS_SCHEMA:
             conn.execute(stmt)
 
     def _migrate_decision_comparison(self, conn) -> None:
@@ -3137,12 +3236,14 @@ class SqliteRecordStore:
         ONE consistent read snapshot so the view never combines collections
         from different durable moments: ``{"subsystems", "focus",
         "interfaces", "preparations", "dependencies", "components",
-        "withdrawn_components", "part_answers"}`` (``components`` is the CURRENT
+        "withdrawn_components", "part_answers", "participations"}``
+        (``components`` is the CURRENT
         component projection; ``withdrawn_components`` the historical rest). Each collection is validated WHOLE against the
         durable composition and focus (``ProjectSubsystemsCorrupt`` /
         ``SubsystemInterfacesCorrupt`` / ``InterfacePreparationsCorrupt`` /
         ``InterfaceDependenciesCorrupt`` / ``ProjectComponentsCorrupt`` /
-        ``PartAnswersCorrupt``; nothing partial). No project ->
+        ``PartAnswersCorrupt`` / ``InterfaceParticipationsCorrupt``; nothing
+        partial). No project ->
         ``ProjectNotFound``. IR-01: a connection left UNSAFE by a failed write
         refuses BEFORE any SELECT. Read-only; project-scoped (it reads only
         rows keyed by THIS project); derives, judges and logs nothing."""
@@ -3160,6 +3261,12 @@ class SqliteRecordStore:
             inventory, _d, _k, _r, _rk = self._component_history(
                 project_id, subsystems)
             answers = self._validated_part_answers(project_id, subsystems, focus)
+            # COMPONENT-INTERFACE-PARTICIPATION-01: every stored participation
+            # row, validated WHOLE against the interactions and the inventory
+            # of this same snapshot (history included; the current projection
+            # is ``current_interface_participants`` over ``components``).
+            participations = self._validated_interface_participations(
+                project_id, interfaces, inventory)
         return {
             "subsystems": tuple(subsystems), "focus": focus,
             "interfaces": tuple(interfaces), "preparations": tuple(preparations),
@@ -3170,6 +3277,7 @@ class SqliteRecordStore:
             "components": tuple(inventory.active),
             "withdrawn_components": tuple(r.current for r in inventory.withdrawn),
             "part_answers": tuple(answers),
+            "participations": tuple(participations),
         }
 
     def load_part_answers(self, project_id: str, subsystem_id: str) -> tuple:
@@ -4079,6 +4187,129 @@ class SqliteRecordStore:
                 "need_text = excluded.need_text",
                 (project_id, component_id, need_text))
         return COMPONENT_PROTOTYPE_NEED_SAVED
+
+    # --- COMPONENT-INTERFACE-PARTICIPATION-01: participation (current value) --
+    def _validated_interface_participations(self, project_id, interfaces,
+                                            inventory):
+        """This project's durable participation rows validated WHOLE against
+        its validated ``interfaces`` and ``inventory`` (exact ids);
+        ``InterfaceParticipationsCorrupt`` on anything malformed, duplicated
+        or orphaned (nothing partial, nothing remapped)."""
+        rows = self._conn.execute(
+            "SELECT interface_id, component_id FROM "
+            "subsystem_interface_components WHERE project_id = ? "
+            "ORDER BY interface_id ASC, component_id ASC",
+            (project_id,)).fetchall()
+        if not rows:
+            return ()
+        items = tuple(InterfaceParticipation(interface_id=row[0],
+                                             component_id=row[1])
+                      for row in rows)
+        try:
+            return validate_interface_participations(items, interfaces, inventory)
+        except InterfaceParticipationError as exc:
+            raise InterfaceParticipationsCorrupt(str(exc)) from None
+
+    def load_interface_participation(self, project_id: str) -> dict:
+        """``{"interfaces", "components", "participations"}``: this project's
+        durable interactions, its CURRENT component projection (active,
+        latest-corrected, declaration-ordered) and every stored participation
+        row, read inside ONE consistent read snapshot and validated WHOLE
+        together (``ProjectSubsystemsCorrupt`` / ``SubsystemInterfacesCorrupt``
+        / ``ProjectComponentsCorrupt`` / ``InterfaceParticipationsCorrupt``;
+        nothing partial). The CURRENT participation is
+        ``engine.subsystem_model.current_interface_participants`` over
+        ``components``. No project -> ``ProjectNotFound``. IR-01: an
+        unresolved connection refuses BEFORE any SELECT
+        (``RecordStoreConnectionUnsafe``). Read-only; project-scoped; logs
+        nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
+            inventory, _d, _k, _r, _rk = self._component_history(
+                project_id, subsystems)
+            participations = self._validated_interface_participations(
+                project_id, interfaces, inventory)
+        return {"interfaces": tuple(interfaces),
+                "components": tuple(inventory.active),
+                "participations": tuple(participations)}
+
+    def set_interface_participation(self, project_id: str, interface_id: str,
+                                    component_ids, expected_ids) -> str:
+        """Replace the CURRENT participant set of ONE interaction with
+        ``component_ids`` and return the outcome:
+        ``INTERFACE_PARTICIPATION_SAVED`` / ``INTERFACE_PARTICIPATION_CLEARED``
+        (empty target) for a committed change, or
+        ``INTERFACE_PARTICIPATION_UNCHANGED`` when the current set already is
+        exactly the target (an exact retry; nothing is written).
+
+        ``expected_ids`` is the current set the inventor's form showed. Sets
+        are compared as sets, on the CURRENT projection only (stored rows
+        whose component is active). The arguments are shape-checked BEFORE the
+        transaction opens (``InterfaceParticipationRejected``; nothing
+        written). Then ONE serialized ``BEGIN IMMEDIATE`` transaction, against
+        DURABLE truth: the project exists (``ProjectNotFound``); its
+        composition, interactions, WHOLE component history and every stored
+        participation row validate (the corrupt errors); the interaction is
+        one of THIS project's and every named component is a distinct
+        declared component of THIS project (``InterfaceParticipationRejected``)
+        and active (``InterfaceParticipationWithdrawn``); the current set
+        equals the target (UNCHANGED, nothing written) or else equals
+        ``expected_ids`` (``InterfaceParticipationStale`` otherwise — newer
+        truth is never overwritten); only then are the active rows no longer
+        named deleted and the newly named rows inserted. Rows of withdrawn
+        components, other interactions, the interaction and the components
+        themselves are never touched. Full rollback on any failure. IR-01:
+        never writes on top of an unresolved connection."""
+        if not isinstance(interface_id, str) or not interface_id:
+            raise InterfaceParticipationRejected("malformed interaction identity")
+        for group in (component_ids, expected_ids):
+            if not isinstance(group, (tuple, list, frozenset, set)) or any(
+                    not isinstance(item, str) or not item for item in group):
+                raise InterfaceParticipationRejected("malformed component identities")
+        if len(set(component_ids)) != len(tuple(component_ids)):
+            raise InterfaceParticipationRejected("a component is named twice")
+        target_set = frozenset(component_ids)
+        expected_set = frozenset(expected_ids)
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
+            inventory, _d, _k, _r, _rk = self._component_history(
+                project_id, subsystems)
+            participations = self._validated_interface_participations(
+                project_id, interfaces, inventory)
+            try:
+                participation_target(inventory, interfaces, interface_id,
+                                     tuple(component_ids))
+            except ComponentAlreadyWithdrawn:
+                raise InterfaceParticipationWithdrawn(
+                    "a named component is withdrawn") from None
+            except (InterfaceParticipationError, ComponentError):
+                raise InterfaceParticipationRejected(
+                    "the participation names nothing of this project") from None
+            current_set = frozenset(current_interface_participants(
+                participations, inventory.active).get(interface_id, ()))
+            if current_set == target_set:
+                return INTERFACE_PARTICIPATION_UNCHANGED
+            if current_set != expected_set:
+                raise InterfaceParticipationStale(
+                    "the participation changed since the form was shown")
+            for component_id in sorted(current_set - target_set):
+                self._conn.execute(
+                    "DELETE FROM subsystem_interface_components WHERE "
+                    "project_id = ? AND interface_id = ? AND component_id = ?",
+                    (project_id, interface_id, component_id))
+            for component_id in sorted(target_set - current_set):
+                self._conn.execute(
+                    "INSERT INTO subsystem_interface_components (project_id, "
+                    "interface_id, component_id) VALUES (?, ?, ?)",
+                    (project_id, interface_id, component_id))
+        return (INTERFACE_PARTICIPATION_CLEARED if not target_set
+                else INTERFACE_PARTICIPATION_SAVED)
 
     # --- INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: criteria + values -
     # Every reader validates the decision ledger and BOTH comparison tables

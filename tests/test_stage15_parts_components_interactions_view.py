@@ -104,9 +104,13 @@ def test_s01_one_reader_returns_every_collection_of_this_project_only(tmp_path, 
     record = store.load_parts_components_interactions(pid)
     # AMENDED at COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: the loader also returns the withdrawn
     # components (historical, apart from the CURRENT ``components`` projection).
+    # AMENDED at COMPONENT-INTERFACE-PARTICIPATION-01: and every stored participation row of
+    # this project's interactions, validated in the same snapshot.
     assert set(record) == {"subsystems", "focus", "interfaces", "preparations", "dependencies",
-                           "components", "withdrawn_components", "part_answers"}
+                           "components", "withdrawn_components", "part_answers",
+                           "participations"}
     assert record["withdrawn_components"] == ()
+    assert record["participations"] == ()
     assert record["subsystems"] == subs and record["focus"] == focus
     assert record["interfaces"] == (ifc,)
     assert [p.interface_id for p in record["preparations"]] == [ifc.interface_id]
