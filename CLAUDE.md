@@ -1275,6 +1275,54 @@ information, not execution authority.
   forbidden-claim scan for an identical live text (cached by exact pattern set and text, never by
   verdict), which locally cut the three dedicated files from about 9.4 / 7.9 / 8.7 to 2.4 / 1.5 / 2.3
   minutes with identical collection and outcomes; splitting them is not authorized.
+- **STANDING — technical-remediation execution strategy (Owner-approved 2026-10-14 / 15; recorded
+  2026-10-15).** Continuity record only. It authorizes no implementation, enters, completes or reopens
+  no Stage, changes no roadmap status and does not replace the 45-stage roadmap, which stays the
+  canonical obligations register; the strategy governs only how the next engineering increment is
+  chosen. Its fuller October 14–15 working detail was not preserved in Git: this entry records the
+  Owner's 2026-10-15 restatement and the repository evidence, nothing more.
+  (a) **Direction.** InventorAI is a deterministic, governed idea-development and cross-domain
+  invention-orchestration platform. Deterministic orchestration (guiding idea progression,
+  coordinating admitted technical capabilities, disclosing missing information, preserving evidence
+  and uncertainty) is a core product responsibility, not a separate AI workstream; technical
+  capability and orchestration develop together, with no second orchestration engine and no
+  unauthorized cross-domain runtime activation.
+  (b) **Flexible priority groups, not sequential stages.** A — prototype and component realization
+  (component identities, interaction participation, preliminary physical realization, eventual
+  quantity / BOM semantics, assembly preparation, Make / Buy, engineering handoff). B — engineering
+  depth (Mechanical, Electrical / Electronics, Sensors and Instrumentation, on existing scientific
+  owners and qualified sources). C — specialist technologies (Embedded / Firmware, Power Electronics /
+  Motion, PLC / Automation, Mechatronics / Robotics). D — wider portfolio (IoT, Drone / UAV,
+  Renewables, Satellite / Space, Wireless / RF, Battery / BMS, Perception / Edge, hydraulics /
+  pneumatics, optics / photonics, materials, acoustics / vibration). E — engineering tools and
+  commercial outcomes (CAD / PCB / EDA / CAE / API interoperability, suppliers, prototype /
+  manufacturing handoff, commercialization where authorized). Operations, security, privacy, legal,
+  release assurance and deployment stay separately controlled parallel obligations. A listed group or
+  technology is neither a first-release requirement nor implementation authority.
+  (c) **Selection rule** before proposing an increment: 1. name one concrete non-engineer inventor
+  problem and the missing engineering outcome; 2. verify what is delivered and avoid duplicate owners
+  or report projections; 3. establish the technical owner, source / IP qualification and real
+  dependencies; 4. check how deterministic orchestration guides the inventor to and from the
+  capability; 5. rank by inventor value, readiness, dependencies and material risk, not roadmap
+  number or implementation convenience; 6. stop promptly on a demonstrated blocker and take the next
+  ready candidate; 7. implement only after scoped Owner authorization, with BMG and proportionate FCR;
+  8. keep deferred obligations visible and never report them as done.
+  (d) **Delivered under it** (each effective on its verified merge): PR #820 prototype-need note,
+  #821 CAP-12 for the integrated Mechanical part, #822 measurement-conditions awareness, #823
+  integrated journey guidance, #824 prototype-need handoff, #825 control-loop engineering handoff,
+  #826 component–interaction participation, #827 experiment-planning Compass step.
+  (e) **Settled dispositions — do not re-run these gates without materially new evidence.** CAP-13 D-7
+  stiffness: source / method qualification unresolved. Further numerical methods (e.g. standalone
+  P = V × I or E = P × t): each needs its own admission and real consumer value. Structured component
+  quantity / BOM: BLOCKED under the one-record-per-physical-component semantics and the T6 §0
+  activation boundary. Calculation-result retention: DEFER — no qualifying consumer and no authorized
+  retention owner (calc / units contract §12). Embedded 28-T2 execution-facing output: DEFER pending a
+  specialist owner, source and authorization; the PR #825 handoff is not re-proposed. Sensors C3:
+  source qualification unresolved; supplementary D13 research paused. Repeated-units wording (the
+  one-entry-per-component guidance vs the prototype-need example): a known inconsistency, not
+  prioritized as a standalone low-value PR.
+  (f) **Nothing omitted.** Every technology in groups A–E stays preserved: none is activated,
+  completed or cancelled by being absent from a delivered increment.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative
