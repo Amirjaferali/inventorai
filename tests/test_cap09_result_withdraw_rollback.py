@@ -150,7 +150,10 @@ def _run(baseline, mode, out_path, *args):
 # AMENDED at STAGE15-OBSERVATION-WITHDRAW-01: that later increment changes the
 # observation table on purpose (its own downgrade test pins the change), so the
 # CAP-09 "no schema change" proof compares every OTHER schema object.
-_LATER_CHANGED_TABLES = ("subsystem_interface_observations",)
+# AMENDED at COMPONENT-PROTOTYPE-NEED-NOTE-01: that later increment adds ONE
+# additive current-value table on purpose (its own tests pin it); it is not a
+# CAP-09 schema change.
+_LATER_CHANGED_TABLES = ("subsystem_interface_observations", "component_prototype_needs")
 
 
 def _schema(path):

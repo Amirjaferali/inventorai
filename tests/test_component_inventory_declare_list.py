@@ -407,9 +407,11 @@ def test_w02_one_component_linked_to_both_parts_survives_restart_with_one_id(cli
     # AMENDED at COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: the correction / withdrawal forms
     # carry the component id as a hidden form value (the interface-form precedent); it is
     # never visible text and appears nowhere else in the block.
+    # AMENDED at COMPONENT-PROTOTYPE-NEED-NOTE-01: a third hidden form value, the
+    # prototype-need note form of the same component.
     assert linked[2] not in _visible(block)                # no identifier shown
     assert block.count(linked[2]) == block.count(
-        'name="component_id" value="%s"' % linked[2]) == 2
+        'name="component_id" value="%s"' % linked[2]) == 3
 
 
 def test_w03_retry_and_changed_material_under_one_submission(client):
@@ -595,6 +597,7 @@ def test_x04_every_component_key_has_english_and_arabic_copy():
     keys = [k for k in ui_text.UI_STRINGS if k.startswith("UI_CI_")]
     # AMENDED at COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: 24 declare/list keys + 29 for
     # correction, withdrawal, history and the two capacity bounds.
-    assert len(keys) == 53
+    # AMENDED at COMPONENT-PROTOTYPE-NEED-NOTE-01: + 22 prototype-need note keys.
+    assert len(keys) == 75
     for key in keys:
         assert ui_text.has_string(key), key

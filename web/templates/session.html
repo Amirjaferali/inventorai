@@ -1725,6 +1725,36 @@ body{overflow-wrap:anywhere}
       {% if c.parts %}{{ t('UI_CI_PARTS_LABEL') }} {% for pname in c.parts %}<bdi dir="auto" data-ci-part>{{ pname }}</bdi>{% if not loop.last %}{{ t('UI_CI_PART_SEP') }}{% endif %}{% endfor %}
       {% else %}<span data-ci-unassigned>{{ t('UI_CI_UNASSIGNED') }}</span>{% endif %}
       {% endif %}
+      {#- COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's optional planning note
+          for THIS component (keyed by its id; never a count, total or BOM line).
+          Unreadable notes read unavailable, never "not stated". -#}
+      <div data-ci-need style="margin:4px 0 0 0">
+      {% if not ci.needs_available %}
+        <span data-ci-need-unavailable style="color:#555">{{ t('UI_CI_NEED_UNAVAILABLE') }}</span>
+      {% elif c.need %}
+        {{ t('UI_CI_NEED_LABEL') }} <bdi dir="auto" data-ci-need-text>{{ c.need }}</bdi> <span style="color:#666" data-ci-need-status>· {{ t('UI_CI_NEED_STATUS') }}</span>
+      {% else %}
+        <span data-ci-need-none style="color:#555">{{ t('UI_CI_NEED_NOT_STATED') }}</span>
+      {% endif %}
+      </div>
+      {% if ci.needs_available %}
+      <details data-ci-need-edit style="margin:4px 0 0 0">
+        <summary style="cursor:pointer;color:#2c3e50">{{ t('UI_CI_NEED_SUMMARY_CHANGE') if c.need else t('UI_CI_NEED_SUMMARY_ADD') }}</summary>
+        <form method="POST" action="/session/{{ sid }}/component-prototype-need" data-ci-need-form style="margin-top:6px">
+          <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+          <input type="hidden" name="component_id" value="{{ c.id }}">
+          <input type="hidden" name="need_base" value="{{ c.need or '' }}">
+          <p style="font-size:12px;color:#555;margin:0 0 6px 0">{{ t('UI_CI_NEED_HINT') }}</p>
+          <label style="display:block;font-size:13px;margin:0 0 4px 0" for="ci-need-{{ cidx }}">{{ t('UI_CI_NEED_FIELD') }}</label>
+          <input type="text" id="ci-need-{{ cidx }}" name="need_text" value="{{ c.need or '' }}" maxlength="{{ ci.max_need }}" dir="auto" required autocomplete="off" style="width:100%;box-sizing:border-box">
+          <button type="submit" name="need_action" value="save" style="margin-top:8px">{{ t('UI_CI_NEED_SAVE_BUTTON') }}</button>
+          {% if c.need %}
+          <button type="submit" name="need_action" value="clear" formnovalidate style="margin-top:8px">{{ t('UI_CI_NEED_CLEAR_BUTTON') }}</button>
+          <p style="font-size:12px;color:#555;margin:4px 0 0 0">{{ t('UI_CI_NEED_CLEAR_HINT') }}</p>
+          {% endif %}
+        </form>
+      </details>
+      {% endif %}
       {% if c.earlier %}
       <details data-ci-history style="margin:4px 0 0 0">
         <summary style="cursor:pointer;color:#2c3e50">{{ t('UI_CI_HISTORY_SUMMARY') }}</summary>

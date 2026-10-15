@@ -498,6 +498,10 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
     # `prototype_test_variables` (current value, no payload, no disposition) is
     # not a ledger either.
     assert tables == [
+                      # COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's
+                      # current-value prototype-need note per declared
+                      # component (no payload, no disposition) — not a ledger.
+                      "component_prototype_needs",
                       # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the
                       # inventor's own decision criteria and per-alternative
                       # values, append-only (typed kinds, no payload, no

@@ -1212,3 +1212,128 @@ def withdrawn_component_revision(inventory, component_id, expected_revision_no):
         kind=COMPONENT_REVISION_WITHDRAWN, display_name=None,
         function_text=None, subsystem_ids=None,
         provenance=OWNER_STATED, validation_state=UNVALIDATED)
+
+
+# --- COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's prototype-need note -----
+# For ONE existing ACTIVE declared component the inventor may record, replace
+# or clear ONE optional, free-text planning statement of what they expect to
+# need of that component for ONE prototype (e.g. "four similar wheel units").
+# A CURRENT-VALUE attribute keyed ONLY by the component's stable
+# ``component_id`` — never by its name, position or text. It is the inventor's
+# own planning statement, OWNER_STATED / UNVALIDATED by construction: never a
+# physical inventory count, a quantity, a component-equivalence assertion, a
+# BOM line, a specification or a verified engineering requirement. Nothing is
+# parsed, counted, converted, totalled, multiplied, grouped or matched; absence
+# means NOT STATED, never a default of one. The component's identity, its
+# revision material, its correction quota and the active / lifetime bounds are
+# untouched: a correction keeps the component's id and so its note; a
+# withdrawn component's note stays stored but is never presented as a current
+# need; a later, separate declaration is a new identity and inherits nothing.
+# The text policy follows the existing quantity-text discipline of
+# ``engine.requirement_quantity`` (text only; outer whitespace stripped only;
+# empty rejected; C0 / C1 control characters rejected; at most 120 Unicode code
+# points; never truncated or reinterpreted) without extending that owner.
+MAX_COMPONENT_PROTOTYPE_NEED_LENGTH = 120
+# C0 controls (U+0000–U+001F: tab and line breaks included) and C1 controls
+# (U+007F–U+009F), exactly the ``engine.requirement_quantity`` policy set.
+_PROTOTYPE_NEED_CONTROL_RE = re.compile("[\\x00-\\x1f\\x7f-\\x9f]")
+
+
+class ComponentPrototypeNeedError(ValueError):
+    """A submitted or stored prototype-need note violates the bounded text
+    policy or names no admissible component. Structural message only — never
+    the inventor's text."""
+
+
+@dataclass(frozen=True)
+class ComponentPrototypeNeed:
+    """The inventor's CURRENT prototype-need note for ONE declared component,
+    identified ONLY by that component's ``component_id``. ``need_text`` is the
+    stored (policy-normalised) text. OWNER_STATED and UNVALIDATED by
+    construction; never evidence, a requirement, a count or a technical fact."""
+    component_id: str
+    need_text: str
+    provenance: str = OWNER_STATED
+    validation_state: str = UNVALIDATED
+
+
+def normalize_prototype_need_text(text):
+    """Apply the bounded text policy and return the stored form, or raise
+    ``ComponentPrototypeNeedError``: text only; outer whitespace stripped only;
+    empty rejected; C0 / C1 control characters rejected; more than
+    ``MAX_COMPONENT_PROTOTYPE_NEED_LENGTH`` code points rejected. Deterministic
+    and idempotent; nothing is parsed, converted or normalised otherwise."""
+    if not isinstance(text, str):
+        raise ComponentPrototypeNeedError("prototype need must be text")
+    stripped = text.strip()
+    if not stripped:
+        raise ComponentPrototypeNeedError("prototype need is empty")
+    if _PROTOTYPE_NEED_CONTROL_RE.search(stripped):
+        raise ComponentPrototypeNeedError("prototype need contains control characters")
+    if len(stripped) > MAX_COMPONENT_PROTOTYPE_NEED_LENGTH:
+        raise ComponentPrototypeNeedError("prototype need is too long")
+    return stripped
+
+
+def is_stored_prototype_need_text(text):
+    """True iff ``text`` is EXACTLY a stored (post-policy) prototype need."""
+    try:
+        return normalize_prototype_need_text(text) == text
+    except ComponentPrototypeNeedError:
+        return False
+
+
+def validate_component_prototype_needs(needs, inventory):
+    """Validate a project's stored prototype-need notes against its OWN
+    validated ``ComponentInventory`` and return them as a tuple in declaration
+    order, or raise ``ComponentPrototypeNeedError``. Empty is valid. Every
+    entry must name a DISTINCT declared component of this project by its exact
+    id (a note on a withdrawn component is valid stored history, never a
+    current need), carry exactly the stored text form and the fixed
+    OWNER_STATED / UNVALIDATED values. A note naming no declared component is
+    an orphan and invalid — never remapped or dropped."""
+    items = tuple(needs or ())
+    if not items:
+        return ()
+    if not isinstance(inventory, ComponentInventory):
+        raise ComponentPrototypeNeedError("no validated inventory")
+    order = [record.component_id for record in inventory.records]
+    seen = set()
+    for item in items:
+        if not isinstance(item, ComponentPrototypeNeed):
+            raise ComponentPrototypeNeedError("entry is not a prototype need")
+        if item.component_id not in order or item.component_id in seen:
+            raise ComponentPrototypeNeedError(
+                "prototype need names no distinct declared component")
+        seen.add(item.component_id)
+        if not is_stored_prototype_need_text(item.need_text):
+            raise ComponentPrototypeNeedError("stored prototype need is invalid")
+        if item.provenance != OWNER_STATED or item.validation_state != UNVALIDATED:
+            raise ComponentPrototypeNeedError(
+                "prototype need provenance / validation state is invalid")
+    return tuple(sorted(items, key=lambda n: order.index(n.component_id)))
+
+
+def current_prototype_needs(needs, inventory):
+    """The prototype-need text of every CURRENT (not withdrawn) component that
+    has one, as ``{component_id: need_text}``. A withdrawn component's note is
+    never part of it. ``needs`` must already be validated against
+    ``inventory``."""
+    active = {component.component_id for component in inventory.active}
+    return {item.component_id: item.need_text for item in needs or ()
+            if item.component_id in active}
+
+
+def prototype_need_target(inventory, component_id):
+    """The ACTIVE ``ComponentRecord`` a prototype-need write may name, or
+    raise: ``ComponentUnknown`` (not a declared component of this project) or
+    ``ComponentAlreadyWithdrawn`` (withdrawn — a withdrawn component takes no
+    new need)."""
+    if not isinstance(inventory, ComponentInventory):
+        raise ComponentError("no validated inventory")
+    record = inventory.record_for(component_id) if isinstance(component_id, str) else None
+    if record is None:
+        raise ComponentUnknown("the component is not a component of this project")
+    if record.withdrawn:
+        raise ComponentAlreadyWithdrawn("the component is withdrawn")
+    return record

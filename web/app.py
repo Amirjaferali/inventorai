@@ -136,6 +136,10 @@ from engine.record_store import (
     ProjectComponentStale as _ProjectComponentStale,
     ProjectComponentAlreadyWithdrawn as _ProjectComponentAlreadyWithdrawn,
     ProjectComponentUnchanged as _ProjectComponentUnchanged,
+    ComponentPrototypeNeedRejected as _ComponentPrototypeNeedRejected,
+    ComponentPrototypeNeedStale as _ComponentPrototypeNeedStale,
+    ComponentPrototypeNeedWithdrawn as _ComponentPrototypeNeedWithdrawn,
+    ComponentPrototypeNeedsCorrupt as _ComponentPrototypeNeedsCorrupt,
     DecisionComparisonCorrupt as _DecisionComparisonCorrupt,
     DecisionComparisonConflict as _DecisionComparisonConflict,
     DECISION_COMPARISON_NO_CHANGE as _CMP_NO_CHANGE,
@@ -8673,6 +8677,20 @@ def _component_inventory_context(sid, entry):
     except Exception:
         return {"status": "unavailable", "ack": None, "error": error}
     names = {sub.subsystem_id: sub.display_name for sub in subsystems}
+    # COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's CURRENT prototype-need
+    # notes, read and validated whole in their own snapshot with the
+    # inventory. A defect there makes the notes alone UNAVAILABLE (shown as
+    # such, with no note form) — never "not stated" and never a partial set;
+    # the component list itself stays as read above.
+    needs = None
+    needs_loader = getattr(_get_store(), "load_component_prototype_needs", None)
+    if callable(needs_loader):
+        try:
+            need_inventory, stored_needs = needs_loader(sid)
+            needs = _subsystem_model.current_prototype_needs(
+                stored_needs, need_inventory)
+        except Exception:
+            needs = None
 
     def _material(version):
         return {"name": version.display_name, "function": version.function_text,
@@ -8695,6 +8713,8 @@ def _component_inventory_context(sid, entry):
                 {"id": sub.subsystem_id, "name": sub.display_name,
                  "checked": sub.subsystem_id in record.current.subsystem_ids}
                 for sub in subsystems],
+            "need": (None if needs is None
+                     else needs.get(record.component_id)),
         })
         current.append(item)
     withdrawn = [_material(record.versions[-1]) for record in inventory.withdrawn]
@@ -8722,6 +8742,8 @@ def _component_inventory_context(sid, entry):
             _COMPONENT_WITHDRAWAL_ENTRY_KEY) if current else ""),
         "max_name": _subsystem_model.MAX_COMPONENT_NAME_LENGTH,
         "max_function": _subsystem_model.MAX_COMPONENT_FUNCTION_LENGTH,
+        "needs_available": needs is not None,
+        "max_need": _subsystem_model.MAX_COMPONENT_PROTOTYPE_NEED_LENGTH,
         "ack": ack, "error": error,
     }
 
@@ -9067,6 +9089,126 @@ def withdraw_component(sid):
     withdrawal stay in the project's records."""
     return _component_revision_route(
         sid, _subsystem_model.COMPONENT_REVISION_WITHDRAWN)
+
+
+# --- COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's prototype-need note ------
+# For ONE current declared component the inventor may record, replace or clear
+# ONE optional free-text planning statement of what they expect to need of it
+# for ONE prototype. A current-value attribute keyed only by the component's
+# stable id (``engine.subsystem_model`` semantics; the record store's
+# ``component_prototype_needs``): it is never a count, a quantity, a
+# BOM line, an equivalence of components, a specification or a requirement, and
+# nothing is parsed, totalled, multiplied, grouped or matched. The current-value
+# save semantics of the Stage 15 preparation page: the global request-integrity
+# (CSRF) guard and the central project authorization protect the write; the
+# form carries the note it displayed (the F724-1 baseline discipline) and the
+# store, inside ONE serialized write transaction, re-validates the project, the
+# component's membership and active status and the whole inventory, and refuses
+# a note that changed since the form was shown (stale — a newer note is never
+# overwritten); an exact retry finds the requested note already stored and
+# writes nothing; an unknown outcome is decided by reloading committed truth
+# (SAVED / NOT SAVED / UNKNOWN). The component itself, its revisions, its
+# correction quota and the active / lifetime bounds are never touched; nothing
+# reaches IdeaState, the report, PDF, export, readiness, evidence, progression,
+# gaps or SafetySignal.
+_NEED_ACTIONS = ("save", "clear")
+_NEED_WRITE_SAVED = "saved"
+_NEED_WRITE_NOT_SAVED = "not_saved"
+_NEED_WRITE_UNKNOWN = "unknown"
+
+
+def _prototype_need_text_error(raw):
+    """``(stored_text, error_key)`` of a submitted note under the bounded text
+    policy; the error key is the specific reason (never the text)."""
+    if not isinstance(raw, str) or not raw.strip():
+        return None, "UI_CI_NEED_MSG_EMPTY"
+    try:
+        return _subsystem_model.normalize_prototype_need_text(raw), None
+    except _subsystem_model.ComponentPrototypeNeedError:
+        stripped = raw.strip()
+        if len(stripped) > _subsystem_model.MAX_COMPONENT_PROTOTYPE_NEED_LENGTH:
+            return None, "UI_CI_NEED_MSG_TOO_LONG"
+        return None, "UI_CI_NEED_MSG_INVALID_CHAR"
+
+
+def _resolve_prototype_need_write(sid, component_id, target):
+    """Bounded confirm-by-reload after the write RAISED: SAVED when the
+    committed note of exactly this component equals ``target`` (``None`` = no
+    note), NOT SAVED on a demonstrable mismatch, UNKNOWN when committed truth
+    cannot be read."""
+    try:
+        _inventory, needs = _get_store().load_component_prototype_needs(sid)
+    except Exception:
+        return _NEED_WRITE_UNKNOWN
+    durable = next((item.need_text for item in needs
+                    if item.component_id == component_id), None)
+    return (_NEED_WRITE_SAVED if durable == target
+            else _NEED_WRITE_NOT_SAVED)
+
+
+@app.route("/session/<sid>/component-prototype-need", methods=["POST"])
+def component_prototype_need(sid):
+    """COMPONENT-PROTOTYPE-NEED-NOTE-01 — the inventor records, replaces or
+    clears the prototype-need note of ONE current declared component: a
+    preliminary planning statement in their own words, OWNER_STATED /
+    UNVALIDATED. Clearing removes only the note, never the component. Saving
+    counts, checks, infers or validates nothing."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return redirect(url_for("index"))
+        SESSION_STORE[sid] = entry
+    component_id = request.form.get("component_id", "")
+    action = request.form.get("need_action", "")
+    baseline_values = request.form.getlist("need_base")
+    if (not _subsystem_model.is_valid_component_id(component_id)
+            or action not in _NEED_ACTIONS or len(baseline_values) != 1):
+        return _component_notice(sid, entry, error="UI_CI_NEED_MSG_REJECTED")
+    # F724-1: the note THIS form displayed ("" = not stated). A baseline that
+    # is not a stored note could never have been displayed: malformed form.
+    baseline = baseline_values[0] or None
+    if baseline is not None and not _subsystem_model.is_stored_prototype_need_text(
+            baseline):
+        return _component_notice(sid, entry, error="UI_CI_NEED_MSG_REJECTED")
+    if action == "clear":
+        target = None
+    else:
+        target, text_error = _prototype_need_text_error(
+            request.form.get("need_text"))
+        if text_error is not None:
+            return _component_notice(sid, entry, error=text_error)
+    if target == baseline:
+        # Nothing differs from what this form displayed: nothing to write.
+        return _component_notice(sid, entry, ack="UI_CI_NEED_MSG_UNCHANGED")
+    saved_key = ("UI_CI_NEED_MSG_CLEARED" if target is None
+                 else "UI_CI_NEED_MSG_SAVED")
+    try:
+        _get_store().set_component_prototype_need(sid, component_id, target,
+                                                  baseline)
+    except _ComponentPrototypeNeedStale:
+        return _component_notice(sid, entry, error="UI_CI_NEED_MSG_STALE")
+    except _ComponentPrototypeNeedWithdrawn:
+        return _component_notice(sid, entry, error="UI_CI_NEED_MSG_WITHDRAWN")
+    except _ComponentPrototypeNeedRejected:
+        return _component_notice(sid, entry, error="UI_CI_NEED_MSG_REJECTED")
+    except (_ProjectNotFound, _ProjectSubsystemsCorrupt, _ProjectComponentsCorrupt,
+            _ComponentPrototypeNeedsCorrupt):
+        # Committed durable truth WAS read and fails closed: nothing written.
+        return _component_notice(sid, entry, error="UI_CI_NEED_MSG_NOT_SAVED")
+    except Exception:
+        # Never turn an unknown durable outcome into a failure (or a
+        # success): decide from committed durable truth only.
+        outcome = _resolve_prototype_need_write(sid, component_id, target)
+        if outcome == _NEED_WRITE_UNKNOWN:
+            return _component_notice(sid, entry, error="UI_CI_NEED_MSG_UNKNOWN")
+        if outcome == _NEED_WRITE_NOT_SAVED:
+            return _component_notice(sid, entry, error="UI_CI_NEED_MSG_NOT_SAVED")
+    # COMMITTED, or the requested note is confirmed durably present (an exact
+    # retry included).
+    return _component_notice(sid, entry, ack=saved_key)
 
 
 # --- Stage 15 Slice 3: Interface Verification Preparation ------------------

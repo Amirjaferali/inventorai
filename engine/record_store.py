@@ -109,6 +109,10 @@ from engine.subsystem_model import (
     ComponentRevisionError, ComponentUnknown, ComponentStale,
     ComponentAlreadyWithdrawn, ComponentCorrectionLimit, ComponentUnchanged,
     project_component_inventory, same_revision_material,
+    # COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's prototype-need note.
+    ComponentPrototypeNeed, ComponentPrototypeNeedError,
+    MAX_COMPONENT_PROTOTYPE_NEED_LENGTH, is_stored_prototype_need_text,
+    prototype_need_target, validate_component_prototype_needs,
 )
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the inventor's own
 # comparison criteria and per-alternative values (semantics owner).
@@ -358,6 +362,31 @@ class ProjectComponentAlreadyWithdrawn(ProjectComponentRejected):
 class ProjectComponentUnchanged(ProjectComponentRejected):
     """COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: a correction that restates
     the current material exactly. Nothing is written."""
+
+
+class ComponentPrototypeNeedRejected(StoreError):
+    """COMPONENT-PROTOTYPE-NEED-NOTE-01: a prototype-need write names no
+    declared component of THIS project, or carries text outside the bounded
+    policy. Decided inside the write transaction before any row is written;
+    nothing is written."""
+
+
+class ComponentPrototypeNeedWithdrawn(ComponentPrototypeNeedRejected):
+    """COMPONENT-PROTOTYPE-NEED-NOTE-01: the named component is withdrawn; a
+    withdrawn component takes no new or changed need. Nothing is written."""
+
+
+class ComponentPrototypeNeedStale(ComponentPrototypeNeedRejected):
+    """COMPONENT-PROTOTYPE-NEED-NOTE-01: the durable note is no longer the
+    one the inventor's form showed (it changed in the meantime). Nothing is
+    written; the newer note is never overwritten."""
+
+
+class ComponentPrototypeNeedsCorrupt(StoreError):
+    """COMPONENT-PROTOTYPE-NEED-NOTE-01: a project's durable prototype-need
+    rows are malformed, duplicated or orphaned from its declared components.
+    Fail-closed for the WHOLE collection: nothing partial is returned and
+    nothing is repaired, deleted, remapped or reinterpreted."""
 
 
 class DecisionComparisonCorrupt(StoreError):
@@ -619,6 +648,11 @@ class RecordStore(Protocol):
                                                    submission_key: str): ...
     def append_project_component(self, project_id: str, component,
                                  submission_key: str) -> tuple: ...
+    # COMPONENT-PROTOTYPE-NEED-NOTE-01 (current value; see the
+    # component_prototype_needs note).
+    def load_component_prototype_needs(self, project_id: str) -> tuple: ...
+    def set_component_prototype_need(self, project_id: str, component_id: str,
+                                     need_text, expected_text) -> str: ...
 
 
 _SCHEMA = (
@@ -1815,6 +1849,44 @@ _PROJECT_COMPONENT_REVISIONS_SCHEMA = (
     "ON project_component_revisions (revision_id)",
 )
 
+# COMPONENT-PROTOTYPE-NEED-NOTE-01 — ``component_prototype_needs``: the
+# inventor's CURRENT prototype-need note for ONE declared component. A
+# CURRENT-VALUE sidecar (upsert / delete; no revision history is kept or
+# promised), keyed ONLY by the existing ``(project_id, component_id)`` and
+# anchored by a composite foreign key to that exact declaration row, so a row
+# can never name another project's component or a component that does not
+# exist. Clearing the note deletes its row (no semantically empty record;
+# absence = NOT STATED). No provenance column: a stored row is by construction
+# the inventor's own planning text (OWNER_STATED, UNVALIDATED) — never a
+# count, a quantity, a BOM line, evidence or a requirement. The append-only
+# ``project_components`` / ``project_component_revisions`` tables are NOT
+# widened or updated, and a note never touches a component's identity,
+# revision material, correction quota or the active / lifetime bounds. A note
+# on a component that is later withdrawn stays stored but is never presented
+# as a current need. The CHECKs are a database backstop only; the loader
+# re-validates every row against the whole validated inventory. Additive and
+# idempotent (``IF NOT EXISTS``); an existing table of any other shape is
+# refused, never read as empty; nothing is backfilled. Rollback is
+# disable-and-preserve (stop reading the table; its rows stay intact).
+_COMPONENT_PROTOTYPE_NEED_COLUMNS = ("project_id", "component_id", "need_text")
+_COMPONENT_PROTOTYPE_NEEDS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS component_prototype_needs (
+        project_id    TEXT NOT NULL,
+        component_id  TEXT NOT NULL,
+        need_text     TEXT NOT NULL,
+        PRIMARY KEY (project_id, component_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, component_id)
+            REFERENCES project_components(project_id, component_id),
+        CHECK (typeof(component_id) = 'text' AND length(component_id) = 36),
+        CHECK (typeof(need_text) = 'text'
+               AND length(need_text) BETWEEN 1 AND %d
+               AND instr(CAST(need_text AS BLOB), X'00') = 0)
+    )
+    """ % MAX_COMPONENT_PROTOTYPE_NEED_LENGTH,
+)
+
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 — the two additive,
 # append-only, project-scoped comparison record families. Never updated or
 # deleted (no such writer exists). ``seq`` is the project's contiguous durable
@@ -1951,6 +2023,11 @@ DECISION_COMPARISON_NO_CHANGE = "NO_CHANGE"
 
 PROJECT_COMPONENT_INSERTED = "INSERTED"
 PROJECT_COMPONENT_EXACT_REPLAY = "EXACT_REPLAY"
+
+# COMPONENT-PROTOTYPE-NEED-NOTE-01: the outcomes of a prototype-need write.
+COMPONENT_PROTOTYPE_NEED_SAVED = "SAVED"
+COMPONENT_PROTOTYPE_NEED_CLEARED = "CLEARED"
+COMPONENT_PROTOTYPE_NEED_UNCHANGED = "UNCHANGED"
 
 INTERFACE_OBSERVATION_INSERTED = "INSERTED"
 INTERFACE_OBSERVATION_EXACT_REPLAY = "EXACT_REPLAY"
@@ -2089,6 +2166,7 @@ class SqliteRecordStore:
             self._migrate_integration_evidence_anchors(self._conn)
             self._migrate_part_answers(self._conn)
             self._migrate_project_components(self._conn)
+            self._migrate_component_prototype_needs(self._conn)
             self._migrate_decision_comparison(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
@@ -2392,6 +2470,25 @@ class SqliteRecordStore:
                 "project_components has an unrecognised shape")
         conn.execute(_PROJECT_COMPONENTS_ID_INDEX)
         for stmt in _PROJECT_COMPONENT_REVISIONS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_component_prototype_needs(self, conn) -> None:
+        """COMPONENT-PROTOTYPE-NEED-NOTE-01 forward migration: additively
+        create the ``component_prototype_needs`` current-value
+        sidecar. Runs inside the store's single migration transaction, after
+        the component inventory migration it references; idempotent (``IF NOT
+        EXISTS``) on a fresh and on an existing populated database; touches no
+        existing table, column or row; nothing is backfilled or inferred. A
+        table that already exists in any other shape is refused
+        (``sqlite3.DatabaseError``) rather than read as empty or guessed.
+        Rollback is disable-and-preserve: a build without this capability
+        never reads or writes the table and its rows stay intact."""
+        columns = tuple(row[1] for row in conn.execute(
+            "PRAGMA table_info(component_prototype_needs)").fetchall())
+        if columns and columns != _COMPONENT_PROTOTYPE_NEED_COLUMNS:
+            raise sqlite3.DatabaseError(
+                "component_prototype_needs has an unrecognised shape")
+        for stmt in _COMPONENT_PROTOTYPE_NEEDS_SCHEMA:
             conn.execute(stmt)
 
     def _migrate_decision_comparison(self, conn) -> None:
@@ -3877,6 +3974,111 @@ class SqliteRecordStore:
                  revision.provenance, revision.validation_state,
                  submission_key))
         return PROJECT_COMPONENT_INSERTED, revision
+
+    # --- COMPONENT-PROTOTYPE-NEED-NOTE-01: prototype-need note (current value)
+    def _validated_prototype_needs(self, project_id, inventory):
+        """This project's durable prototype-need rows validated WHOLE against
+        its validated ``inventory`` (exact component id; stored text form);
+        ``ComponentPrototypeNeedsCorrupt`` on anything malformed, duplicated
+        or orphaned (nothing partial, nothing remapped)."""
+        rows = self._conn.execute(
+            "SELECT component_id, need_text FROM "
+            "component_prototype_needs WHERE project_id = ? "
+            "ORDER BY component_id ASC", (project_id,)).fetchall()
+        if not rows:
+            return ()
+        items = tuple(ComponentPrototypeNeed(component_id=row[0], need_text=row[1])
+                      for row in rows)
+        try:
+            return validate_component_prototype_needs(items, inventory)
+        except ComponentPrototypeNeedError as exc:
+            raise ComponentPrototypeNeedsCorrupt(str(exc)) from None
+
+    def load_component_prototype_needs(self, project_id: str) -> tuple:
+        """``(inventory, needs)``: this project's ONE authoritative
+        ``ComponentInventory`` and its durable prototype-need notes (every
+        stored note, in declaration order; ``()`` when none), read inside ONE
+        consistent read snapshot and validated WHOLE together
+        (``ProjectSubsystemsCorrupt`` / ``ProjectComponentsCorrupt`` /
+        ``ComponentPrototypeNeedsCorrupt``; nothing partial). The CURRENT
+        needs are those of active components only
+        (``engine.subsystem_model.current_prototype_needs``). No project ->
+        ``ProjectNotFound``. IR-01: an unresolved connection refuses BEFORE
+        any SELECT (``RecordStoreConnectionUnsafe``). Read-only;
+        project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            inventory, _d, _k, _r, _rk = self._component_history(
+                project_id, subsystems)
+            needs = self._validated_prototype_needs(project_id, inventory)
+        return inventory, needs
+
+    def set_component_prototype_need(self, project_id: str, component_id: str,
+                                     need_text, expected_text) -> str:
+        """Record, replace (``need_text`` a stored-form text) or clear
+        (``need_text`` ``None``) the prototype-need note of ONE component, and
+        return the outcome: ``COMPONENT_PROTOTYPE_NEED_SAVED`` /
+        ``COMPONENT_PROTOTYPE_NEED_CLEARED`` for a committed change, or
+        ``COMPONENT_PROTOTYPE_NEED_UNCHANGED`` when the durable note already
+        is exactly ``need_text`` (an exact retry; nothing is written).
+
+        ``expected_text`` is the note the inventor's form showed (``None`` =
+        not stated). The arguments are validated BEFORE the transaction opens
+        (``ComponentPrototypeNeedRejected``; nothing written). Then ONE
+        serialized ``BEGIN IMMEDIATE`` transaction, against DURABLE truth: the
+        project exists (``ProjectNotFound``); its composition, declarations,
+        WHOLE revision history and existing notes validate (the corrupt
+        errors); the component is a declared component of THIS project
+        (``ComponentPrototypeNeedRejected``) and is not withdrawn
+        (``ComponentPrototypeNeedWithdrawn``); the durable note equals the
+        target (UNCHANGED, nothing written) or else equals ``expected_text``
+        (``ComponentPrototypeNeedStale`` otherwise — a newer note is never
+        overwritten); only then is the row upserted or deleted. The component
+        itself, its revisions and every other note are never touched. Full
+        rollback on any failure. IR-01: never writes on top of an unresolved
+        connection."""
+        if not isinstance(component_id, str) or not component_id:
+            raise ComponentPrototypeNeedRejected("malformed component identity")
+        for value in (need_text, expected_text):
+            if value is not None and not is_stored_prototype_need_text(value):
+                raise ComponentPrototypeNeedRejected("malformed prototype need text")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            inventory, _d, _k, _r, _rk = self._component_history(
+                project_id, subsystems)
+            needs = self._validated_prototype_needs(project_id, inventory)
+            try:
+                prototype_need_target(inventory, component_id)
+            except ComponentAlreadyWithdrawn:
+                raise ComponentPrototypeNeedWithdrawn(
+                    "the component is withdrawn") from None
+            except ComponentError:
+                raise ComponentPrototypeNeedRejected(
+                    "the note names no component of this project") from None
+            current = next((item.need_text for item in needs
+                            if item.component_id == component_id), None)
+            if current == need_text:
+                return COMPONENT_PROTOTYPE_NEED_UNCHANGED
+            if current != expected_text:
+                raise ComponentPrototypeNeedStale(
+                    "the note changed since the form was shown")
+            if need_text is None:
+                self._conn.execute(
+                    "DELETE FROM component_prototype_needs "
+                    "WHERE project_id = ? AND component_id = ?",
+                    (project_id, component_id))
+                return COMPONENT_PROTOTYPE_NEED_CLEARED
+            self._conn.execute(
+                "INSERT INTO component_prototype_needs (project_id, "
+                "component_id, need_text) VALUES (?, ?, ?) "
+                "ON CONFLICT (project_id, component_id) DO UPDATE SET "
+                "need_text = excluded.need_text",
+                (project_id, component_id, need_text))
+        return COMPONENT_PROTOTYPE_NEED_SAVED
 
     # --- INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: criteria + values -
     # Every reader validates the decision ledger and BOTH comparison tables

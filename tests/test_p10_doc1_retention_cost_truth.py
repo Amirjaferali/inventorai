@@ -124,7 +124,10 @@ _USER_INITIATED_DELETION_TABLES = ("prototype_plan_metadata",
                                    "prototype_test_variables",
                                    "subsystem_interface_preparations",
                                    "subsystem_interface_dependencies",
-                                   "subsystem_part_answers")
+                                   "subsystem_part_answers",
+                                   # COMPONENT-PROTOTYPE-NEED-NOTE-01: clearing
+                                   # a component's prototype-need note.
+                                   "component_prototype_needs")
 
 
 def test_retention_doc_matches_source_truth():
@@ -181,6 +184,12 @@ def test_retention_doc_matches_source_truth():
     # current-value row (user-initiated, the same kind).
     assert "`subsystem_part_answers`" in flat
     assert "clearing an answer removes that single current-value row" in flat
+    # COMPONENT-PROTOTYPE-NEED-NOTE-01: clearing a component's prototype-need
+    # note removes its one current-value row (user-initiated, the same kind);
+    # the component's append-only tables keep no DELETE path.
+    assert "`component_prototype_needs`" in flat
+    assert "clearing it removes that single current-value row" in flat
+    assert not any("project_component" in line for _p, line in deletes)
     # the 7-day client TTL claim must keep matching the real script
     with open(os.path.join("web", "static", "js", "local_draft.js"),
               encoding="utf-8") as fh:
