@@ -8814,7 +8814,18 @@ def _component_report_view(sid):
     Part names are resolved by identity from the same snapshot; no component
     id is part of the view. Anything unreadable, corrupt or inconsistent ->
     ``{"available": False}`` (UNAVAILABLE — never "none declared" and never a
-    partial list). Read-only: nothing is derived, judged or written."""
+    partial list). Read-only: nothing is derived, judged or written.
+
+    COMPONENT-PROTOTYPE-NEED-HANDOFF-01: each current component also carries
+    its CURRENT prototype-need note (``need``: the inventor's verbatim text,
+    or ``None`` when not stated), read through the existing
+    ``load_component_prototype_needs`` snapshot (inventory + notes validated
+    whole). The notes are shown only when that snapshot's current components
+    equal exactly the components read above (same identities, material and
+    order), so every note shown belongs to the component list shown; any
+    read failure, missing reader or mismatch makes the notes alone
+    UNAVAILABLE (``needs_available`` False) — never "not stated" and never a
+    partial set — while the component list stays as read above."""
     loader = getattr(_get_store(), "load_component_inventory", None)
     if not callable(loader):
         return None
@@ -8831,7 +8842,21 @@ def _component_report_view(sid):
                  for c in components]
     except Exception:
         return {"available": False}
-    return {"available": True, "has_parts": bool(subsystems), "components": items}
+    needs = None
+    needs_loader = getattr(_get_store(), "load_component_prototype_needs", None)
+    if callable(needs_loader):
+        try:
+            need_inventory, stored_needs = needs_loader(sid)
+            if tuple(need_inventory.active) == tuple(components):
+                needs = _subsystem_model.current_prototype_needs(
+                    stored_needs, need_inventory)
+        except Exception:
+            needs = None
+    for item, component in zip(items, components):
+        item["need"] = (None if needs is None
+                        else needs.get(component.component_id))
+    return {"available": True, "has_parts": bool(subsystems),
+            "needs_available": needs is not None, "components": items}
 
 
 # Committed durable truth that WAS read and fails closed — distinct from

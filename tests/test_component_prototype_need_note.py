@@ -16,8 +16,11 @@ pinned:
   * web (``web/app.py``): ONE POST route behind the central project authorization and the CSRF guard, the
     F724-1 baseline discipline, SAVED / NOT SAVED / UNKNOWN by committed truth; ONE display / entry surface
     in the session page's Component Inventory, EN / AR;
-  * no IdeaState, report, PDF, Stage 35 export, Parts / Components / Interactions view, readiness,
-    evidence, progression, gap or SafetySignal effect; no count, total, grouping or matching.
+  * no IdeaState, Stage 35 export, Parts / Components / Interactions view, readiness, evidence,
+    progression, gap or SafetySignal effect; no count, total, grouping or matching. The report / PDF
+    exclusion of this slice is intentionally ADVANCED by COMPONENT-PROTOTYPE-NEED-HANDOFF-01: the current
+    note now appears beside its component inside the report / PDF "declared components" section only
+    (pinned in ``tests/test_component_deliverable_value.py``); everywhere else the report is unchanged.
 """
 import html as _html
 import json
@@ -653,10 +656,15 @@ def test_x01_no_state_report_pdf_view_export_or_progression_effect(client, monke
     assert _needs(sid) and _notice(sid) == ("UI_CI_NEED_MSG_SAVED", None)
     assert pickle.dumps(appmod.SESSION_STORE[sid]["state"]) == state_before
     report = owner.get(f"/session/{sid}/deliverable").get_data(as_text=True)
-    assert SECRET not in report
-    assert _stable(report) == _stable(report_before)
+    # Advanced by COMPONENT-PROTOTYPE-NEED-HANDOFF-01: the note reaches the report / PDF ONLY inside the
+    # declared-components section, beside its component; outside that section the report is unchanged.
+    assert SECRET in _components_section(report)
+    assert SECRET not in _outside_components_section(report)
+    assert _stable(_outside_components_section(report)) == _stable(
+        _outside_components_section(report_before))
     pdf = _pdf_source(owner, sid, monkeypatch)
-    assert SECRET not in pdf and "Wheel" in _components_section(pdf)
+    assert SECRET in _components_section(pdf) and "Wheel" in _components_section(pdf)
+    assert SECRET not in _outside_components_section(pdf)
     view = owner.get(f"/session/{sid}/parts-components-interactions").get_data(as_text=True)
     assert SECRET not in view and _stable(view) == _stable(view_before)
     export_after = owner.get(f"/account/projects/{sid}/disclosure-export/json").get_data()
@@ -691,7 +699,12 @@ def test_x02_nothing_counts_totals_multiplies_or_groups_the_notes():
 
 
 def test_x03_the_slice_reaches_no_report_pdf_or_export_template():
-    for name in ("deliverable.html", "pdf_report.html", "parts_components_interactions.html"):
+    # deliverable.html (the report AND the PDF) is intentionally ADVANCED by
+    # COMPONENT-PROTOTYPE-NEED-HANDOFF-01 and pinned in tests/test_component_deliverable_value.py; it
+    # carries the note read-only (no form, no data-ci-need marker). The other templates stay untouched.
+    report_src = open(os.path.join(_ROOT, "web", "templates", "deliverable.html"), encoding="utf-8").read()
+    assert "data-ci-need" not in report_src and "component-prototype-need" not in report_src
+    for name in ("pdf_report.html", "pdf_base.html", "parts_components_interactions.html"):
         path = os.path.join(_ROOT, "web", "templates", name)
         if os.path.exists(path):
             text = open(path, encoding="utf-8").read()
