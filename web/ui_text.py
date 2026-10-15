@@ -1139,6 +1139,17 @@ UI_STRINGS = {
         "en": "Declared by you — OWNER_STATED / UNVALIDATED.",
         "ar": "أعلنتَه أنت — OWNER_STATED / UNVALIDATED (غير متحقَّق منه).",
     },
+    # COMPONENT-PROTOTYPE-NEED-HANDOFF-01 — the inventor's prototype-need note in
+    # the report / PDF component section: their own planning statement, never a
+    # count, quantity, BOM line or requirement InventorAI checks.
+    "UI_DC_NEED_STATUS": {
+        "en": "your planning note — OWNER_STATED / UNVALIDATED; InventorAI does not count, total or check it",
+        "ar": "ملاحظتك التخطيطية — OWNER_STATED / UNVALIDATED (غير متحقَّق منها)؛ لا يعدّها InventorAI ولا يجمعها ولا يتحقّق منها",
+    },
+    "UI_DC_NEED_UNAVAILABLE": {
+        "en": "Your prototype-need notes cannot be shown in this report right now; the components above are listed without them.",
+        "ar": "لا يمكن عرض ملاحظاتك عمّا تحتاجه للنموذج الأولي في هذا التقرير الآن؛ المكوّنات أعلاه معروضة بدونها.",
+    },
     "UI_DC_NONE": {
         "en": "You have no current declared components.",
         "ar": "لا توجد لديك مكوّنات حالية مُعلَنة.",

@@ -295,10 +295,15 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
       <strong><bdi dir="auto" data-dc-name>{{ c.name }}</bdi></strong><br>
       {{ t('UI_CI_FUNCTION_LABEL') }} <bdi dir="auto" data-dc-function>{{ c.function }}</bdi>
       {% if dcr.has_parts %}<br>{% if c.parts %}{{ t('UI_CI_PARTS_LABEL') }} {% for pname in c.parts %}<bdi dir="auto" data-dc-part>{{ pname }}</bdi>{% if not loop.last %}{{ t('UI_CI_PART_SEP') }}{% endif %}{% endfor %}{% else %}<span data-dc-unassigned>{{ t('UI_CI_UNASSIGNED') }}</span>{% endif %}{% endif %}
+      {#- COMPONENT-PROTOTYPE-NEED-HANDOFF-01: the inventor's CURRENT prototype-need note, verbatim and
+          direction-isolated, or "not stated"; never parsed, counted or totalled. When the notes cannot be
+          read consistently with this list, one notice below says so and no item claims "not stated". -#}
+      {% if dcr.needs_available %}<br>{% if c.need %}<span data-dc-need>{{ t('UI_CI_NEED_LABEL') }} <bdi dir="auto" data-dc-need-text>{{ c.need }}</bdi> <span style="font-size:12px;color:#555" data-dc-need-status>· {{ t('UI_DC_NEED_STATUS') }}</span></span>{% else %}<span style="color:#555" data-dc-need-none>{{ t('UI_CI_NEED_NOT_STATED') }}</span>{% endif %}{% endif %}
       <br><span style="font-size:12px;color:#555" data-dc-provenance>{{ t('UI_DC_PROVENANCE') }}</span>
     </li>
     {% endfor %}
   </ul>
+  {% if not dcr.needs_available %}<p style="margin:0 0 6px 0;font-size:13px;color:#555" data-dc-need-unavailable>{{ t('UI_DC_NEED_UNAVAILABLE') }}</p>{% endif %}
   {% else %}
   <p style="margin:0 0 6px 0;font-size:13px" data-dc-none>{{ t('UI_DC_NONE') }}</p>
   {% endif %}

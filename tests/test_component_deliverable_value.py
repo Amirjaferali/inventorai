@@ -14,6 +14,13 @@ What is pinned:
   * the same order and latest wording as Stage 35 export field 7 for an unchanged project;
   * the report / PDF audience is unchanged (the central project authorization), opening either writes nothing,
     inventor text is escaped and direction-isolated, EN / AR copy.
+
+COMPONENT-PROTOTYPE-NEED-HANDOFF-01 (section 4) intentionally advances the earlier session-only boundary of the
+PR #820 prototype-need note: each current component in this section also carries its CURRENT note — verbatim,
+escaped, direction-isolated, OWNER_STATED / UNVALIDATED — or "not stated", read through the existing
+``load_component_prototype_needs`` snapshot and shown only when that snapshot's current components equal the
+listed ones; an unreadable, corrupt or inconsistent note record reads as ONE "notes unavailable" notice (never
+"not stated", never a partial set) while the component list stays.
 """
 import dataclasses
 import html as _html
@@ -272,14 +279,17 @@ def test_s05_view_contract_unit():
     appmod._get_store = lambda: store
     try:
         view = appmod._component_report_view("sid")
-        assert view == {"available": True, "has_parts": False,
-                        "components": [{"name": "A", "function": "does a", "parts": []}]}
+        # Advanced by COMPONENT-PROTOTYPE-NEED-HANDOFF-01: a store without the notes reader reads the notes
+        # as unavailable, never as "not stated".
+        assert view == {"available": True, "has_parts": False, "needs_available": False,
+                        "components": [{"name": "A", "function": "does a", "parts": [],
+                                        "need": None}]}
         assert store.calls == 1
         store.result = ((), (dataclasses.replace(comp, subsystem_ids=("sub-x",)),))
         assert appmod._component_report_view("sid") == {"available": False}   # unresolvable part
         store.result = ((), ())
         assert appmod._component_report_view("sid") == {"available": True, "has_parts": False,
-                                                       "components": []}
+                                                       "needs_available": False, "components": []}
     finally:
         appmod._get_store = real
 
@@ -363,3 +373,185 @@ def test_a06_arabic_copy(client):
     for key in ("UI_DC_PROVENANCE", "UI_DC_NONE", "UI_DC_HISTORY", "UI_DC_UNAVAILABLE"):
         entry = ui_text.UI_STRINGS[key]
         assert entry["en"].strip() and entry["ar"].strip() and entry["en"] != entry["ar"], key
+
+
+# ==========================================================================
+# 4. COMPONENT-PROTOTYPE-NEED-HANDOFF-01 — the current prototype-need note beside its component
+# ==========================================================================
+NOTE_RE = re.compile(r"<bdi dir=\"auto\" data-dc-need-text>(.*?)</bdi>", re.S)
+
+
+def _note(sid, item, text):
+    _store().set_component_prototype_need(sid, item.component_id,
+                                          sm.normalize_prototype_need_text(text), None)
+
+
+def _notes(section):
+    """``[note | None]`` per rendered item, in order (None = "not stated")."""
+    out = []
+    for li in re.findall(r"<li data-dc-item.*?</li>", section, re.S):
+        m = NOTE_RE.search(li)
+        assert (m is None) == ("data-dc-need-none" in li), li
+        out.append(_html.unescape(m.group(1)) if m else None)
+    return out
+
+
+def test_n01_recorded_notes_appear_in_html_and_pdf_beside_their_component(client, monkeypatch):
+    sid = _integrated(client)
+    both = _declare(sid, "Shared harness", "Links both parts",
+                    domains=("mechanical", "electronics_electrical"))
+    _declare(sid, "Bare bracket", "Holds the board")
+    _note(sid, both, "  four similar units, 2 spare  ")
+    for raw in (_report(client, sid), _pdf_source(client, sid, monkeypatch)):
+        section = _section(raw)
+        assert [i[0] for i in _items(section)] == ["Shared harness", "Bare bracket"]   # one item per component
+        assert len(_items(section)[0][2]) == 2                                         # both part links kept
+        assert _notes(section) == ["four similar units, 2 spare", None]
+        assert section.count("data-dc-need-status") == 1 and _has(section, "UI_DC_NEED_STATUS")
+        assert _has(section, "UI_CI_NEED_NOT_STATED") and "data-dc-need-unavailable" not in section
+        assert "four similar units" not in _without_section(raw)
+
+
+def test_n02_corrected_component_keeps_its_note_and_a_withdrawn_one_shows_none(client, monkeypatch):
+    sid = _ordinary(client)
+    kept = _declare(sid, "Wheel v1", "Rolls")
+    gone = _declare(sid, "Old axle", "Was replaced")
+    _note(sid, kept, "four wheels")
+    _note(sid, gone, "Zq-withdrawn-note-881")
+    _correct(sid, kept.component_id, "Wheel v2", "Rolls smoothly")
+    _withdraw(sid, gone.component_id)
+    for raw in (_report(client, sid), _pdf_source(client, sid, monkeypatch)):
+        section = _section(raw)
+        assert [i[:2] for i in _items(section)] == [("Wheel v2", "Rolls smoothly")]
+        assert _notes(section) == ["four wheels"]
+        assert "Zq-withdrawn-note-881" not in raw and "Wheel v1" not in raw and "Old axle" not in raw
+
+
+def _unavailable_notes(section, *hidden):
+    assert "data-dc-need-unavailable" in section and _has(section, "UI_DC_NEED_UNAVAILABLE")
+    for marker in ("data-dc-need-none", "data-dc-need-text", "data-dc-need-status"):
+        assert marker not in section, marker
+    for text in hidden:
+        assert text not in section, text
+    assert "data-dc-item" in section and "data-dc-unavailable" not in section   # the list itself stays
+
+
+def test_n03_a_corrupt_note_record_reads_unavailable_never_not_stated(client, monkeypatch):
+    sid = _ordinary(client)
+    a = _declare(sid, "Listed part", "Still listed")
+    _declare(sid, "Second part", "No note")
+    _note(sid, a, "Zq-good-note-114")
+    section = _section(_report(client, sid))
+    assert _notes(section) == ["Zq-good-note-114", None]                 # absent reads "not stated"
+    _raw("UPDATE component_prototype_needs SET need_text = ? WHERE project_id = ?", ("bad\x01", sid))
+    for raw in (_report(client, sid), _pdf_source(client, sid, monkeypatch)):
+        _unavailable_notes(_section(raw), "Zq-good-note-114", "bad")
+
+
+@pytest.mark.parametrize("error", [RuntimeError("store down"), RecordStoreConnectionUnsafe("unsafe"),
+                                   sqlite3.OperationalError("locked"), ProjectNotFound("gone")])
+def test_n04_any_note_read_failure_is_unavailable(client, monkeypatch, error):
+    sid = _ordinary(client)
+    a = _declare(sid, "Visible part", "Visible function")
+    _note(sid, a, "Zq-hidden-note-302")
+
+    def boom(_sid):
+        raise error
+    monkeypatch.setattr(_store(), "load_component_prototype_needs", boom)
+    _unavailable_notes(_section(_report(client, sid)), "Zq-hidden-note-302")
+    monkeypatch.setattr(_store(), "load_component_prototype_needs", None)
+    _unavailable_notes(_section(_report(client, sid)), "Zq-hidden-note-302")
+
+
+def test_n05_notes_from_a_different_component_snapshot_are_never_shown():
+    subs = ()
+    a = sm.declared_component(subs, "A", "does a", ())
+    b = sm.declared_component(subs, "B", "does b", ())
+
+    class Store:
+        def __init__(self, listed, noted):
+            self.listed, self.noted = listed, noted
+
+        def load_component_inventory(self, sid):
+            return subs, self.listed
+
+        def load_component_prototype_needs(self, sid):
+            inventory = sm.project_component_inventory(self.noted, (), subs)
+            needs = tuple(sm.ComponentPrototypeNeed(component_id=c.component_id, need_text="n-" + c.display_name)
+                          for c in self.noted)
+            return inventory, needs
+
+    real = appmod._get_store
+    try:
+        appmod._get_store = lambda: Store((a, b), (a, b))
+        view = appmod._component_report_view("sid")
+        assert view["needs_available"] and [c["need"] for c in view["components"]] == ["n-A", "n-B"]
+        for noted in ((a,), (b, a), (a, b, sm.declared_component(subs, "C", "does c", ())),
+                      (dataclasses.replace(a, display_name="A2"), b)):
+            appmod._get_store = lambda noted=noted: Store((a, b), noted)
+            view = appmod._component_report_view("sid")
+            assert view["needs_available"] is False, noted
+            assert [c["need"] for c in view["components"]] == [None, None]
+            assert [c["name"] for c in view["components"]] == ["A", "B"]
+    finally:
+        appmod._get_store = real
+
+
+def test_n06_cold_reload_owner_only_one_read_and_nothing_written(client, monkeypatch):
+    from tests.test_stage15_subsystem_interface_declaration import _restart
+    appmod.app.config["TESTING"] = True
+    owner, _aid = _client_for("dcv-need-owner@example.com")
+    sid = _journey(owner)
+    a = _declare(sid, "Private wheel", "Rolls")
+    _note(sid, a, "Zq-private-note-640")
+    _restart()
+    assert _notes(_section(_report(owner, sid))) == ["Zq-private-note-640"]
+    other, _ = _client_for("dcv-need-other@example.com")
+    for c in (other, csrf_client(appmod.app)):
+        for r in (c.get(f"/session/{sid}/deliverable"), c.post(f"/session/{sid}/deliverable.pdf", data={})):
+            assert r.status_code == 302 and b"Zq-private-note-640" not in r.data
+    store = _store()
+    real = store.load_component_prototype_needs
+    calls = []
+
+    def spy(project_id):
+        calls.append(project_id)
+        return real(project_id)
+    monkeypatch.setattr(store, "load_component_prototype_needs", spy)
+    _report(owner, sid)
+    assert calls == [sid]
+    calls.clear()
+    _pdf_source(owner, sid, monkeypatch)
+    assert calls == [sid]
+    before = _dump()
+    _report(owner, sid)
+    _pdf_source(owner, sid, monkeypatch)
+    assert _dump() == before
+
+
+def test_n07_escaped_isolated_arabic_and_the_disclosure_export_unchanged():
+    appmod.app.config["TESTING"] = True
+    c, _aid = _client_for("dcv-need-export@example.com")
+    sid = _journey(c)
+    a = _declare(sid, "Motor", "محرّك صغير")
+    stamp = re.compile(rb"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z")
+    export_before = stamp.sub(b"", c.get("/account/projects/%s/disclosure-export/json" % sid).data)
+    html_before = stamp.sub(b"", c.get("/account/projects/%s/disclosure-export/html" % sid).data)
+    _note(sid, a, "<script>x()</script> أربع وحدات & more")
+    export_after = stamp.sub(b"", c.get("/account/projects/%s/disclosure-export/json" % sid).data)
+    html_after = stamp.sub(b"", c.get("/account/projects/%s/disclosure-export/html" % sid).data)
+    assert export_after == export_before and html_after == html_before
+    raw = _report(c, sid)
+    section = _section(raw)
+    assert "<script>x()</script>" not in raw
+    assert re.search(r'<bdi dir="auto" data-dc-need-text>&lt;script&gt;x\(\)&lt;/script&gt; أربع وحدات &amp; more</bdi>',
+                     section)
+    for key in ("UI_DC_NEED_STATUS", "UI_DC_NEED_UNAVAILABLE"):
+        entry = ui_text.UI_STRINGS[key]
+        assert entry["en"].strip() and entry["ar"].strip() and entry["en"] != entry["ar"], key
+        for claim in ("bill of materials", " bom", "total:", "verified", "validated."):
+            assert claim not in entry["en"].lower(), (key, claim)
+    assert c.post("/ui-language", data={"lang": "ar"}).status_code in (200, 302)
+    ar = _html.unescape(_section(_report(c, sid)))
+    for key in ("UI_CI_NEED_LABEL", "UI_DC_NEED_STATUS"):
+        assert ui_text.text(key, "ar") in ar, key
