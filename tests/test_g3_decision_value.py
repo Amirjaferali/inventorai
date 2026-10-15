@@ -817,6 +817,36 @@ _STAGE35_S1_ASSEMBLER_SUBSTITUTIONS = (
 )
 
 
+# EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01 bounded amendment (Owner implementation
+# authorization: ONE smallest authoritative accessor on the canonical Section-11 owner).
+# The EXHAUSTIVE, ordered table of additional replacements, applied AFTER the Stage 35
+# table; the guard still demands byte-equality, so any other assembler change fails as
+# before. Previous behaviour: the current experiment ids were reachable only through
+# the whole assembled package. New behaviour: a public, read-only
+# `current_experiment_ids` reading the unchanged `_s11`. The report, the PDF and the
+# canonical package are unchanged.
+_EPG_ASSEMBLER_SUBSTITUTIONS = (
+    (  # [1]
+        '    return plan\n'
+        '\n'
+        '\n'
+        'def _now_iso():\n',
+        '    return plan\n'
+        '\n'
+        '\n'
+        'def current_experiment_ids(state):\n'
+        '    """EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: the stable ``experiment_id`` of\n'
+        '    every CURRENT proposed Section-11 experiment of ``state``, in plan order \u2014\n'
+        '    read from the canonical Section-11 owner (``_s11``) itself, so the selection,\n'
+        '    de-duplication and identity rules exist exactly once. Pure / read-only /\n'
+        '    deterministic; ``()`` when no experiment can be proposed."""\n'
+        '    return tuple(item["experiment_id"] for item in _s11(state)["items"])\n'
+        '\n'
+        '\n'
+        'def _now_iso():\n'),
+)
+
+
 def test_a20_a21_dw_lane_and_assembler_untouched():
     import subprocess
     base = "f96c1900a0f5d0831a7654223ae4e008d4df961e"
@@ -875,6 +905,11 @@ def test_a20_a21_dw_lane_and_assembler_untouched():
     for _old, _new in _STAGE35_S1_ASSEMBLER_SUBSTITUTIONS:
         assert expected.count(_old) == 1, (
             "an authorized Stage 35 first-slice anchor is missing or no longer unique")
+        expected = expected.replace(_old, _new)
+    # EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01 bounded amendment: the same rule, applied after.
+    for _old, _new in _EPG_ASSEMBLER_SUBSTITUTIONS:
+        assert expected.count(_old) == 1, (
+            "an authorized EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01 anchor is missing or no longer unique")
         expected = expected.replace(_old, _new)
     with open(os.path.join(root, "engine", "deliverable_assembler.py"),
               encoding="utf-8") as fh:
