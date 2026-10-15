@@ -168,6 +168,10 @@ from tests.cap01_charge_addition import (
 # report context row); excluded here likewise (tests/cap01_measurement_guidance_addition.py).
 from tests.cap01_measurement_guidance_addition import (
     MGUIDE_GROUP, MGUIDE_RECORDS, without_measurement_guidance_addition)
+# MEASUREMENT-CONDITIONS-AWARENESS-01 later appended ONE further CAP-09-page-only guidance group (never a
+# report context row); excluded here likewise (tests/cap01_measurement_conditions_addition.py).
+from tests.cap01_measurement_conditions_addition import (
+    MCOND_GROUP, MCOND_RECORDS, without_measurement_conditions_addition)
 
 
 # 28-T1-SENSING-VALUE-THRESHOLD-01: the ONE separately bound prose-only group of the
@@ -432,8 +436,10 @@ def test_e16_four_new_provenance_records_with_the_exact_authorized_identities():
     # 28-T2-CONTROLLER-INPUT-LOGIC-OUTPUT-REFERENCE-01 two more (PR016–PR017) and
     # ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 four more (PR018–PR021).
     # MEASUREMENT-PLAN-GUIDANCE-01 two more (PR022–PR023).
-    assert ids[7:] == ["electronics_electrical:PR%03d" % n for n in range(8, 24)]
-    assert tuple(ids[-6:-2]) == CHARGE_RECORDS and tuple(ids[-2:]) == MGUIDE_RECORDS
+    assert ids[7:] == ["electronics_electrical:PR%03d" % n for n in range(8, 26)]
+    # MEASUREMENT-CONDITIONS-AWARENESS-01 two more (PR024–PR025).
+    assert tuple(ids[-8:-4]) == CHARGE_RECORDS and tuple(ids[-4:-2]) == MGUIDE_RECORDS
+    assert tuple(ids[-2:]) == MCOND_RECORDS
     doe, nist, doe_pol, nist_pol = (recs[r] for r in NEW_RECORDS)
     assert doe["standard_number"] == "DOE-HDBK-1011/1-92" and doe["source_type"] == "government_reference_publication"
     assert "Electrical Science" in doe["source_name"] and "Volume 1 of 4" in doe["source_name"]
@@ -512,7 +518,7 @@ def test_e19_the_pack_group_declares_the_three_claims_with_exact_source_and_poli
     assert [g["group_id"] for g in groups] == [FUND_GROUP, "electrical_energy_time_reference_v1",
                                                "sensing_value_threshold_reference_v1",
                                                "measurement_accuracy_resolution_reference_v1",
-                                               CTRL_GROUP, CHARGE_GROUP, MGUIDE_GROUP]
+                                               CTRL_GROUP, CHARGE_GROUP, MGUIDE_GROUP, MCOND_GROUP]
     group = groups[0]
     assert sorted(group) == ["applicable_gap_type", "claims", "group_id"]
     assert group["group_id"] == FUND_GROUP and group["applicable_gap_type"] == PHYSICAL_FEASIBILITY
@@ -534,7 +540,7 @@ def test_e19_the_pack_group_declares_the_three_claims_with_exact_source_and_poli
 
 def test_e20_every_pre_existing_pack_field_is_unchanged_and_the_group_is_declared_inert():
     pack = _pack()
-    pre = without_measurement_guidance_addition(without_charge_addition(without_controller_addition(pack)))
+    pre = without_measurement_conditions_addition(without_measurement_guidance_addition(without_charge_addition(without_controller_addition(pack))))
     pre.pop("reference_fundamentals")
     note = pre["_governance_notes"].pop("electrical_td_slice1_reference_fundamentals")
     # ...and the later, separately authorized energy-time group's own note.
