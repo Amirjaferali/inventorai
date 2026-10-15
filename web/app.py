@@ -2252,6 +2252,55 @@ def _nonfocused_part_report_view(sid, integrated_scope):
     }
 
 
+
+# INTEGRATED-JOURNEY-GUIDANCE-01 — the Project Compass "What to do now" for a
+# valid integrated invention once every existing higher-priority primary action
+# is exhausted (no current question, no routed recovery, no criticality step):
+# ONE optional, inventor-owned next step across the recorded parts and
+# interactions, read only from the existing Stage-15 owners, in a fixed order —
+#   1. the required part outside the initial analysis focus, while either of
+#      its governed question families is not fully recorded (recording
+#      presence, the same one the report and the parts view show);
+#   2. otherwise a DECLARED interaction whose optional verification-preparation
+#      inputs are not all recorded.
+# Nothing is inferred: no interaction is assumed to exist, nothing is assessed,
+# validated or made mandatory, and the review handoff stays one click away.
+# Any unreadable, inconsistent or unavailable input shows nothing (the existing
+# handoff fallback stands). Read-only; never writes.
+_IJG_PART = "part_questions"
+_IJG_PREPARATION = "interface_preparation"
+
+
+def _integrated_journey_guidance(sid, integrated_scope):
+    """``{"kind": "part_questions", "part": "mechanical" | "electrical",
+    "part_id"}`` or ``{"kind": "interface_preparation"}`` or ``None``."""
+    if not integrated_scope:
+        return None
+    try:
+        link = integrated_scope.get("nonfocused_questions")
+        if link and link.get("editable"):
+            part, answers = _get_store().load_nonfocused_part_record(sid)
+            if part is None or part.subsystem_id != link["part_id"]:
+                return None
+            for gap_type in _subsystem_model.PART_QUESTION_GAP_TYPES:
+                questions = get_domain_questions(part.domain, gap_type)
+                if not questions:
+                    return None
+                presence = _subsystem_model.part_family_presence(
+                    [qid for qid, _t in questions], answers, part.subsystem_id)
+                if presence != _subsystem_model.PART_FAMILY_ALL_RECORDED:
+                    return {"kind": _IJG_PART, "part": link["part"],
+                            "part_id": link["part_id"]}
+        complete = _S15_PREP_PRESENCE_KEYS[_subsystem_model.PREPARATION_ALL_RECORDED]
+        for interface in integrated_scope.get("interfaces") or ():
+            preparation = interface.get("preparation")
+            # An unattached preparation carrier tells nothing: never guessed.
+            if preparation is not None and preparation["presence_key"] != complete:
+                return {"kind": _IJG_PREPARATION}
+    except Exception:
+        return None
+    return None
+
 # --- Stage 19 / CAP-09 durable SuccessCriterion (planning metadata only) ------
 # The EXISTING user-authored `SuccessCriterion` is durable in the SAME project
 # store (`prototype_plan_metadata`, keyed by the canonical Section-11 stable
@@ -6447,6 +6496,10 @@ def show_session(sid):
         # Slice 1 journey safety: the truthful recovery for a journey that has
         # no served question while a routed need blocks the next stage.
         routed_recovery=_routed_recovery_context(state, question),
+        # INTEGRATED-JOURNEY-GUIDANCE-01: the optional integrated next step,
+        # used by the Compass only after every existing primary action.
+        integrated_guidance=_integrated_journey_guidance(
+            sid, _integrated_scope_context(state)),
         # CAP-10 Slice 1: the dedicated signed binding the conflict form carries.
         conflict_binding=_issue_cap10_binding(
             sid, _answer_token_for(sid, entry), state),
