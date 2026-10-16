@@ -458,7 +458,7 @@ def test_a_stored_incompatible_correction_replays_explicitly_unapplied(client, m
         # withdrawn (existing full-replay behaviour); the substance must not.
         return (gap.status, gap.iterations_open, known.content, known.quality)
     mc_before = _mechanism(_state(sid))
-    monkeypatch.setattr(appmod, "answer_applicable", lambda *a, **k: True)
+    monkeypatch.setattr(appmod, "correction_admissible", lambda *a, **k: True)
     client.post(f"/session/{sid}/correct", data={
         "supersedes_record_id": pf_answer.record_id, "response": CORRECTED_PF,
         "answer_token": _token(_page(client, sid))})
@@ -490,3 +490,84 @@ def test_correction_of_the_selected_gap_still_applies_normally(client):
     recon = reconstruct_readonly_state(appmod._get_store(), sid)
     assert _structural(recon.state) == _structural(_state(sid))
     assert recon.review.unapplied_answer_record_ids == ()
+
+
+# ---------------------------------------------------------------------------
+# 14. Review finding 2 (final) — admission and replay agree for corrections of
+#     a routed-exhausted or CLOSED lower-priority gap
+# ---------------------------------------------------------------------------
+
+def _full(state):
+    return ([(g.gap_type, g.status, g.iterations_open, g.closed_at) for g in state.gaps],
+            repr(state.known_mechanism), repr(state.known_problem),
+            state.maturity_level, state.current_stage,
+            sorted(pl.paused_gap_types(state)))
+
+
+def _assert_refused_everywhere(client, sid, record_id, text):
+    before = _full(_state(sid))
+    durable = len(appmod._get_store().load_contract(sid).assertions)
+    r = client.post(f"/session/{sid}/correct", data={
+        "supersedes_record_id": record_id, "response": text,
+        "answer_token": _token(_page(client, sid))})
+    assert r.status_code == 302
+    assert len(appmod._get_store().load_contract(sid).assertions) == durable
+    assert appmod.CORRECTION_NOT_APPLIED_MESSAGE in _page(client, sid)
+    assert _full(_state(sid)) == before
+    recon = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert _full(recon.state) == before
+    assert recon.review.unapplied_answer_record_ids == ()
+    appmod.SESSION_STORE.clear()
+    assert client.post(f"/session/{sid}/resume").status_code == 302
+    assert _full(_state(sid)) == before
+
+
+def test_mechanical_routed_exhausted_correction_is_refused_while_mechanism_is_active(client):
+    sid = _start(client, MECH)
+    _act(client, sid, "unknown")                        # 1. pause mechanism
+    _act(client, sid, "answered", PF_ANSWER)            # 2. feasibility Q1
+    state = _state(sid)
+    assert appmod._need_routing.owner_questioning_exhausted(state, state.get_gap(PF))
+    assert state.get_gap(BA) is not None                # boundary opened by routing
+    assert _revisit(client, sid, MC, MC_ANSWER).status_code == 302   # 3. revisit
+    assert pl.select_next_gap(_state(sid)) == MC
+    pf = [r for r in _state(sid).assertions
+          if r.gap_context == PF and r.disposition == "answered"][-1]
+    _assert_refused_everywhere(client, sid, pf.record_id, CORRECTED_PF)   # 4. correct
+
+
+def test_closed_lower_priority_correction_is_refused_while_mechanism_is_active(client):
+    sid = _start(client, ELEC)
+    _act(client, sid, "unknown")
+    _act(client, sid, "answered", PF_ANSWER)
+    _act(client, sid, "answered", PF_ANSWER)
+    assert _state(sid).get_gap(PF).status == CLOSED
+    assert _revisit(client, sid, MC, MC_ANSWER).status_code == 302
+    first_pf = [r for r in _state(sid).assertions
+                if r.gap_context == PF and r.disposition == "answered"][0]
+    _assert_refused_everywhere(client, sid, first_pf.record_id, CORRECTED_PF)
+
+
+def test_eligible_routed_exhausted_correction_still_applies(client):
+    sid = _start(client, MECH)
+    _act(client, sid, "unknown")                        # mechanism stays paused
+    _act(client, sid, "answered", "It just works somehow.")
+    state = _state(sid)
+    assert appmod._need_routing.owner_questioning_exhausted(state, state.get_gap(PF))
+    pf = state.assertions[-1]
+    durable = len(appmod._get_store().load_contract(sid).assertions)
+    r = client.post(f"/session/{sid}/correct", data={
+        "supersedes_record_id": pf.record_id, "response": PF_ANSWER,
+        "answer_token": _token(_page(client, sid))})
+    assert r.status_code == 302
+    assert len(appmod._get_store().load_contract(sid).assertions) == durable + 1
+    correction = _state(sid).assertions[-1]
+    assert correction.gap_context == PF and pf.record_id in correction.supersedes
+    assert appmod.CORRECTION_NOT_APPLIED_MESSAGE not in _page(client, sid)
+    recon = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert recon.review.unapplied_answer_record_ids == ()
+    assert _full(recon.state) == _full(_state(sid))
+    assert _state(sid).get_gap(MC).iterations_open == 0          # mechanism untouched
+    appmod.SESSION_STORE.clear()
+    assert client.post(f"/session/{sid}/resume").status_code == 302
+    assert _full(_state(sid)) == _full(recon.state)

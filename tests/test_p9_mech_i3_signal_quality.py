@@ -215,10 +215,11 @@ _FROZEN_ENGINE_SHA256 = {
     # pause — paused gaps excluded from selection, the cascade and stall
     # detection; only the questioned gap's counter moves (identical for every
     # history without a pause); the deferred-open gap and the two
-    # ledger-positioned appliers, and the answer-applicability guard used by
-    # the correction route and replay. No classifier, tie, substance, scoring,
+    # ledger-positioned appliers, and the answer-applicability /
+    # correction-admission guards used by the correction route and replay.
+    # No classifier, tie, substance, scoring,
     # quality, maturity-gate or gap-type change (pre-pause = b8ba596c...4f50).
-    "engine/progression_loop.py": "413e6faa56175dd2014bf2acefccf39665606a16ac8e9893535381ee24aba239",
+    "engine/progression_loop.py": "2294875377484bb6b77c31a1b6718bb0de383e9c3d241bf93140888b9eaf4755",
 }
 # Other-pack byte freeze (unchanged lineage from I1/I2). L2SC-01 reconciliation
 # (disclosed; electronics_electrical re-frozen, see I1's own comment).

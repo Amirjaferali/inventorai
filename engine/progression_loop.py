@@ -177,6 +177,35 @@ def answer_applicable(state, gap_type) -> bool:
     return select_next_gap(state) == gap_type
 
 
+def correction_admissible(state, gap_type) -> bool:
+    """Admission test for a correction of an answer recorded against
+    ``gap_type``, evaluated on the live state after ``prepare_answer``.
+
+    Full replay drops the superseded answer, so the corrected gap's live
+    status is not its status at the correction's replay position: a gap that
+    is routed-exhausted or CLOSED live can be questionable again there. A
+    correction is therefore refused when ``answer_applicable`` fails OR when
+    its Stage-2 gap (whatever its live status) has a higher-priority gap that
+    is OPEN/PARTIAL, not paused and not routed-exhausted: that gap stays the
+    one selected at the correction's replay position (dropping a
+    lower-priority answer never moves it), so the correction would be left
+    unapplied or integrated into that other gap. Without a pause a
+    higher-priority gap is never questionable once a lower-priority gap
+    exists, so every existing correction is admitted exactly as before."""
+    if not answer_applicable(state, gap_type):
+        return False
+    gap = state.get_gap(gap_type) if gap_type is not None else None
+    if gap is None or gap_type not in GAP_PRIORITY:
+        return True
+    for earlier in GAP_PRIORITY[:GAP_PRIORITY.index(gap_type)]:
+        g = state.get_gap(earlier)
+        if g is not None and g.status in (OPEN, PARTIAL) \
+                and not _is_paused(state, g) \
+                and not owner_questioning_exhausted(state, g):
+            return False
+    return True
+
+
 def paused_gap_answerable(state, gap_type) -> bool:
     """True when an answer to the paused ``gap_type`` would be integrated into
     that gap: no OPEN/PARTIAL, non-paused, non-exhausted gap of higher

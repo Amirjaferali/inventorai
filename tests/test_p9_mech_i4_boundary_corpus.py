@@ -197,10 +197,11 @@ _FROZEN_ENGINE_SHA256 = {
     # pause — paused gaps excluded from selection, the cascade and stall
     # detection; only the questioned gap's counter moves (identical for every
     # history without a pause); the deferred-open gap and the two
-    # ledger-positioned appliers, and the answer-applicability guard used by
-    # the correction route and replay. No classifier, tie, substance, scoring,
+    # ledger-positioned appliers, and the answer-applicability /
+    # correction-admission guards used by the correction route and replay.
+    # No classifier, tie, substance, scoring,
     # quality, maturity-gate or gap-type change (pre-pause = b8ba596c...4f50).
-    "engine/progression_loop.py": "413e6faa56175dd2014bf2acefccf39665606a16ac8e9893535381ee24aba239",
+    "engine/progression_loop.py": "2294875377484bb6b77c31a1b6718bb0de383e9c3d241bf93140888b9eaf4755",
 }
 # The mechanical pack hash IS this corpus's inventory validity anchor.
 # P9-MECH-SF reconciliation (contract §4 item 10, disclosed): re-frozen after

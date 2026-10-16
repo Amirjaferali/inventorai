@@ -60,6 +60,7 @@ from engine.progression_loop import (
     # deferred-open next gap, the two ledger-positioned appliers and the
     # paused-question revisit eligibility.
     deferred_open_gap, apply_owner_disposition, prepare_answer, answer_applicable,
+    correction_admissible,
     paused_gap_types, paused_gap_answerable, GAP_PRIORITY,
     TRIGGER_CRITICAL_UNRESOLVED, TRIGGER_LAPSED_ACCEPTANCE,
     TRIGGER_MULTIPLE_ALTERNATIVES, TRIGGER_COMPLETED_INTENT_SKIP,
@@ -11408,13 +11409,15 @@ def correct_answer(sid):
         return redirect(url_for("show_session", sid=sid))
     # UNKNOWN-QUESTION-PAUSE-01: a correction is replayed into its own gap only.
     # Beside a Stage-2 pause its gap can be open while another gap is the one
-    # being questioned; such a correction is refused here (nothing staged or
-    # stored) instead of being integrated into the other gap. Without a pause
-    # this always passes.
+    # being questioned (also when its gap is routed-exhausted live but would be
+    # questionable again once replay drops the superseded answer); such a
+    # correction is refused here (nothing staged or stored) instead of being
+    # stored and then left unapplied by replay. Without a pause this always
+    # passes.
     import copy as _copy_mod
     _probe = _copy_mod.deepcopy(state)
     prepare_answer(_probe, target.gap_context)
-    if not answer_applicable(_probe, target.gap_context):
+    if not correction_admissible(_probe, target.gap_context):
         entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 
