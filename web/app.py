@@ -3934,13 +3934,23 @@ _STRONG_UNSUPPORTED_WORD_FAMILIES = {
     "software": frozenset({
         "software", "api", "backend", "frontend", "database", "sql",
     }),
-    # drone / solar / robotics / agriculture (never-registered families, §6/§15):
-    # not resolvable to any registry domain, so they can never become activated
-    # and always remain strong-unsupported.
+    # drone / solar / robotics / satellite-space (never-registered technology
+    # families, §6/§15; Stage-28 future directions, not activated): not
+    # resolvable to any registry domain, so they can never become activated and
+    # always remain strong-unsupported. ONLY words that name the specialist
+    # technology itself belong here (IDEA-ENTRY-CLASSIFICATION-BOUNDARY-01): an
+    # ordinary subject, setting, application or product category — farming,
+    # irrigation, crops, mountains, the sky, the moon, satellites as something
+    # observed — establishes no engineering requirement on its own, so it is
+    # never refusal evidence; such ideas continue through the canonical
+    # classifier and the explicit-consent paths unchanged. A technology word is
+    # refused even where it may only be product context ("a mount for my drone
+    # camera"): this deterministic token seam cannot tell context from a
+    # genuine dependency, so it fails closed.
     None: frozenset({
-        "drone", "solar", "crop", "crops", "agriculture", "agricultural",
-        "pesticide", "herbicide", "irrigation", "farm", "farms",
+        "drone", "solar",
         "robot", "robots", "robotic", "robotics",
+        "cubesat", "cubesats", "spacecraft",
     }),
 }
 # Strong multi-word markers; matched as substrings of the full text, keyed by
@@ -3949,6 +3959,9 @@ _STRONG_UNSUPPORTED_SUBSTRING_FAMILIES = (
     ("machine learning", "software"),
     ("neural network", "software"),
     ("body temperature", "medical_device"),
+    ("rocket engine", None),
+    ("rocket motor", None),
+    ("launch vehicle", None),
 )
 # Legacy flat views (exact same members as before the CF5-F002 partition) for
 # existing consumers/tests that inspect the vocabulary as a whole.
