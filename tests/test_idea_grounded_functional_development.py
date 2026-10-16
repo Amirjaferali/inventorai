@@ -112,7 +112,8 @@ def _by_id(gap, qid, domain, lang="en"):
     return " ".join((served.text if lang == "en" else served.text_ar).split())
 
 
-def _engine_state(domain, idea, records=(), iterations_open=0, version=None):
+def _engine_state(domain, idea, records=(), iterations_open=0, version=None,
+                  disposition=DISPOSITION_ANSWERED):
     state = IdeaState(idea_id="synthetic")
     state.domain = domain
     state.path = "N"
@@ -124,7 +125,7 @@ def _engine_state(domain, idea, records=(), iterations_open=0, version=None):
     for n, (content, target, superseded) in enumerate(records, 1):
         state.assertions.append(AssertionRecord(
             record_id=f"rec_{n}", iteration=n, gap_context=MC, content=content,
-            disposition=DISPOSITION_ANSWERED, provenance=OWNER_STATED,
+            disposition=disposition, provenance=OWNER_STATED,
             question_target=target, superseded_by="rec_x" if superseded else None))
     return state
 
@@ -142,7 +143,6 @@ def test_mechanical_unknown_serves_the_variant_that_asks_about_it():
     assert (serving.question_id, serving.adjusted, serving.basis) == (
         MQ2, True, isv.BASIS_STATED_UNKNOWN)
     assert serving.text == get_served_question(MC, 1, domain=MECH).text
-    assert isv.stated_unknown_serving(_engine_state(MECH, GATE), MC)
 
 
 def test_electronics_unknown_serves_its_own_variant():
@@ -154,7 +154,6 @@ def test_no_admitted_mapping_or_already_served_abstains():
     assert _serving(_engine_state(ELEC, PLANT)) is None            # no mapping
     assert _serving(_engine_state(ELEC, PLANT_NOTICE)) is None     # it IS the question
     assert _serving(_engine_state(ELEC, FLOAT)) is None            # no unknown
-    assert not isv.stated_unknown_serving(_engine_state(ELEC, PLANT), MC)
 
 
 def test_uncertainty_seeking_variants_are_never_chosen():
@@ -191,6 +190,24 @@ def test_covered_routed_or_already_asked_variants_are_not_chosen(monkeypatch):
     monkeypatch.setattr(need_routing, "outstanding_routed_question_ids",
                         lambda state, gap: frozenset({MQ2}))
     assert _serving(_engine_state(MECH, GATE)) is None
+
+
+def test_non_answers_do_not_spend_the_focus_and_legacy_targets_abstain():
+    # a non-pausing non-answer on the chosen question keeps it chosen (the
+    # existing redisplay behaviour), it does not count as asked
+    from engine.idea_state import DISPOSITION_SPECIALIST_REQUESTED
+    state = _engine_state(MECH, GATE, records=[("needs a specialist", "PATHN:" + MQ2,
+                                                False)],
+                          disposition=DISPOSITION_SPECIALIST_REQUESTED)
+    assert _serving(state).question_id == MQ2
+    # an active answer without a committed target (legacy): what was asked is
+    # unknowable, so the stated-unknown rules abstain
+    legacy = _engine_state(MECH, GATE, records=[("It swings shut.", None, False),
+                                                ("A spring pulls it.", None, False)],
+                           iterations_open=2)
+    serving = _serving(legacy)
+    assert serving is None or serving.basis not in (isv.BASIS_STATED_UNKNOWN,
+                                                    isv.BASIS_RESUMED)
 
 
 def test_answer_time_unknown_chooses_a_later_variant_under_t2g():
@@ -293,6 +310,47 @@ def test_answer_time_unknown_directs_the_next_question(client):
     body = _page(client, sid)
     assert "data-grounded-focus" not in body
     assert _question(body) != _by_id(MC, "N-MC-3", ELEC)
+
+
+def _journey(client, idea, domain, answers):
+    """Answer the served question with each text; return the committed
+    question ids the answers were bound to, checking parity at every step."""
+    sid = _start(client, idea, domain)
+    asked = []
+    for text in answers:
+        live = _serving(_state(sid))
+        recon = reconstruct_readonly_state(appmod._get_store(), sid).state
+        assert _serving(recon) == live
+        _act(client, sid, "answered", text)
+        asked.append(_state(sid).assertions[-1].question_target[len("PATHN:"):])
+    return sid, asked
+
+
+def test_answering_the_chosen_question_in_its_own_words_loses_nothing(client):
+    # reviewer repro 1: the answer covers the chosen variant itself
+    _sid, asked = _journey(client, REMINDER, ELEC, [
+        "The main parts are a cup holder, a small timer and a light that blinks.",
+        "Not sure yet.", "Not sure yet.", "Not sure yet."])
+    assert asked[:2] == ["N-MC-2", "N-MC-1"]
+    assert len(set(asked)) == len(asked)                  # nothing asked twice
+    # reviewer repro 2: Mechanical, the answer carries Q2's own markers
+    _sid, asked = _journey(client, GATE, MECH, [
+        "The gate arm and the spring move; the spring transfers force to the "
+        "hinge line through a lever.", "It swings.", "It swings.", "It swings."])
+    assert asked[:2] == [MQ2, MQ1]
+    assert len(set(asked)) == len(asked)
+
+
+def test_without_a_stated_unknown_the_order_is_unchanged(client):
+    _sid, asked = _journey(client, FLOAT, ELEC, ["Not sure yet."] * 3)
+    assert asked == ["N-MC-1", "N-MC-2", "N-MC-3"]
+
+
+def test_an_unshown_idea_need_does_not_hide_the_same_answer_statement():
+    from tests.test_idea_grounded_functional_need import _engine_state as _need_state
+    records = [(MC, "It waters by gravity. " + PLANT, DISPOSITION_ANSWERED, False)]
+    needs = isv.grounded_functional_needs(_need_state(ELEC, PLANT, records), MC, "N-MC-2")
+    assert [(n.source, n.statement) for n in needs] == [("answer", PLANT)]
 
 
 # ---------------------------------------------------------------------------
