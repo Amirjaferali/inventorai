@@ -254,6 +254,8 @@ Layer 5 concerns the adoption of InventorAI as a platform within organizations, 
 
 *Provenance: Repository Derived — STATE_FREEZE Section 11*
 
+*Governing-effect note (2026-10-16): Principles 1 and 2 are read with `OWNER_PRODUCT_IDENTITY_CORRECTION.md` §15, which clarifies how they apply to clearly attributed, provisional engineering assistance. The text below is preserved unmodified.*
+
 These principles are permanent governance constraints. Any agent, developer, architect, or reviewer working on InventorAI must treat these principles as binding. A proposed change that violates any of these principles must be rejected regardless of its apparent technical merit.
 
 ### Principle 1 — Inventor Ownership
@@ -355,6 +357,8 @@ Three situational knowledge concepts are explicitly excluded from Stage Two gap 
 ## 10. EVIDENCE AND OWNERSHIP AS STRATEGIC DIFFERENTIATOR
 
 *Provenance: Owner Decision (2026-05-31)*
+
+*Governing-effect note (2026-10-16): This section is read with `OWNER_PRODUCT_IDENTITY_CORRECTION.md` §15, which clarifies how it applies to clearly attributed, provisional engineering assistance. The text below is preserved unmodified.*
 
 General-purpose AI systems optimize for response quality and user satisfaction. InventorAI optimizes for verified growth in inventor understanding, ownership, and readiness.
 

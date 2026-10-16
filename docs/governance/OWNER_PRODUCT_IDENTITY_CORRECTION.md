@@ -18,6 +18,8 @@ original document in full and leaving repository history untouched.
     SUBSTANTIVE PRODUCT IDENTITY: OWNER-RATIFIED
     ORIGINAL §11 ACTIVATION MECHANISM: SUPERSEDED
     CURRENT AUTHORITY MODEL: GOVERNED OFFICIAL-BRANCH MODEL
+    ENGINEERING-ASSISTANCE BOUNDARY CLARIFICATION (§15, 2026-10-16):
+        OWNER-RATIFIED — PROSPECTIVE — GOVERNING EFFECT ONLY
 
 The owner-ratified substance governs product intent. This textual remediation
 becomes authoritative only when integrated through an owner-authorized normal
@@ -141,16 +143,21 @@ of:
 
     docs/governance/STRATEGIC_PRODUCT_VISION.md
 
+Since 2026-10-16, §15 of this document also clarifies, prospectively and
+narrowly, the governing effect of §7 Principle 1, §7 Principle 2 and §10
+of that file, as stated in §15 and no further. Their original text stays
+preserved and unmodified.
+
 All other provisions of `STRATEGIC_PRODUCT_VISION.md` remain in full
 effect. This includes but is not limited to:
 
     §4 WHAT INVENTORAI IS NOT
     §5B FDC-001 CLASSIFICATION
     §6 LAYERED EVOLUTION MODEL
-    §7 CORE GOVERNANCE PRINCIPLES
+    §7 CORE GOVERNANCE PRINCIPLES (Principles 1 and 2 read with §15)
     §8 CURRENT SCOPE AND FROZEN DECISIONS
     §9 DEFERRED SCOPE
-    §10 EVIDENCE AND OWNERSHIP AS STRATEGIC DIFFERENTIATOR
+    §10 EVIDENCE AND OWNERSHIP AS STRATEGIC DIFFERENTIATOR (read with §15)
     §11 COMMERCIAL ARCHITECTURE PRESERVATION
     §12 AUTHORITY HIERARCHY
 
@@ -228,6 +235,9 @@ integration vision) — remain fully binding and are not amended by this
 document. The deterministic, replayable engine and the advisory-only
 AI constraint established in §1 of `STRATEGIC_PRODUCT_VISION.md`
 (other than the platform-identity sentence) remain in effect.
+(2026-10-16: the sentence above is preserved as written. Principles 1
+and 2 and §10 stay binding; §15 clarifies only how they apply to
+clearly attributed, provisional engineering assistance.)
 
 ---
 
@@ -456,7 +466,9 @@ governing effect to the owner's decision that:
    `docs/governance/STRATEGIC_PRODUCT_VISION.md` — inventor ownership,
    improvement not generation, and multi-domain integration vision —
    remain fully binding. They are consistent with this amendment and
-   are not changed by it.
+   are not changed by it. (2026-10-16: preserved as written; §15
+   clarifies how Principles 1 and 2 and §10 apply to clearly
+   attributed, provisional engineering assistance.)
 
 7. All prior governance history, including records using
    inventor-development terminology, remains valid historical evidence.
@@ -464,3 +476,85 @@ governing effect to the owner's decision that:
 
 8. No hold, gate, block, or prohibited action listed in §12 of this
    document is affected by this amendment.
+
+---
+
+## 15. Engineering-Assistance Boundary Clarification (2026-10-16)
+
+**Status.** Owner-ratified Level 0 clarification, adopted on the Lead's
+decision after the completed architecture reviews and added to this
+record under the same mechanism. Under §11 it is PROPOSED on its
+pull-request branch and EFFECTIVE only after the owner-authorized normal
+merge and post-merge verification. It is prospective only.
+
+**Scope.** It clarifies the governing effect of three provisions of
+`docs/governance/STRATEGIC_PRODUCT_VISION.md`, whose original wording
+and provenance stay preserved and unmodified:
+
+    §7 Principle 1 — Inventor Ownership
+    §7 Principle 2 — Improvement, Not Generation
+    §10 EVIDENCE AND OWNERSHIP AS STRATEGIC DIFFERENTIATOR
+
+**Clarified governing effect.**
+
+1. **Ownership.** The user owns the original idea, their stated goals,
+   preferences and known facts, and the reasoning they personally
+   express.
+2. **Attributed provisional assistance.** InventorAI may help develop
+   that idea by offering clearly attributed, provisional functional and
+   engineering options. Each option is shown as InventorAI's
+   suggestion, never as the user's words, and stays distinguishable
+   from user statements, assumptions, unknowns and verified facts.
+3. **What a suggestion is not.** A system-generated suggestion is not a
+   user-authored answer, evidence, demonstrated understanding, earned
+   progression or verified feasibility. What the user later states in
+   their own words is recorded under the existing rules for user
+   statements; a suggestion that preceded it gains no evidence or
+   validation status from that.
+4. **No automatic state effect.** No generated option closes a gap or
+   changes readiness, maturity, progression, evidence or validation
+   state.
+5. **Qualified engineering claims** still require separately admitted
+   methods, sources, provenance and stated limitations, under the
+   existing admission paths and the technical knowledge and
+   intellectual-property source boundary.
+6. **Independent confirmation.** Physical validation and specialist
+   confirmation remain independent requirements that no suggestion
+   replaces.
+7. **Authority.** Deterministic orchestration and the existing
+   engineering owners stay authoritative and deterministic gates stay
+   final. No new analysis engine is created and no AI or provider gains
+   authority.
+
+**How the three provisions read.** Principle 1 keeps forbidding the
+platform from completing a gap on the user's behalf, from awarding
+progression credit not earned by the user's own expressed words, and
+from presenting system content as user-demonstrated understanding; its
+bar on suggesting or supplying mechanism steps now means steps that are
+not clearly attributed as provisional suggestions, or that are presented
+or credited as the user's. Principle 2 keeps forbidding idea, product
+and business-plan generation, platform-generated technical content
+presented as session progress, and completion experiences that do not
+reflect demonstrated quality; InventorAI develops the user's idea and
+remains no substitute for qualified engineering judgement. §10 keeps its
+boundary between system-generated content and user-demonstrated
+understanding; clear attribution is how that boundary is kept, and
+blurring it remains a violation.
+
+**Unchanged.** §4 WHAT INVENTORAI IS NOT, Principle 3, the
+scientific and intellectual-property source boundary, privacy and
+external-transmission limits (real invention data stays not authorized
+for external transmission), source-of-truth ownership and every safety
+boundary stay in force.
+
+**Explicit non-effects.** This clarification authorizes no
+implementation. It changes no runtime code, UI, question, routing,
+NeedRouting or acknowledged-unknown handling; no database schema,
+proposal carrier or provenance value (a term such as `SYSTEM_PROPOSED`
+may be discussed as future terminology but is not added); no
+calculation method, engineering owner or domain activation; no OD-2,
+OD-3 or OD-4 decision; and no roadmap stage or active execution
+contract. Any capability that offers such options needs its own Owner
+authorization and design, including how suggestions are attributed,
+displayed and kept distinct. No hold, gate, block or prohibited action
+listed in §12 is affected.
