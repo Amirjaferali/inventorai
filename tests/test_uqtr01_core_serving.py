@@ -44,6 +44,13 @@ ANSWER = ("The temperature sensor output is compared with a set threshold; when 
 
 NON_ANSWERS = ("unknown", "deferred", "provisional_assumption",
                "specialist_requested", "evidence_requested")
+# UNKNOWN-QUESTION-PAUSE-01: on a Stage-2 question, `unknown` / `deferred` now
+# PAUSE the gap and the journey continues with the next independent gap (the
+# paused question is still never re-asked automatically and stays revisitable;
+# tests/test_unknown_question_pause.py). These three keep UQTR-01's in-gap
+# suppression exactly, so the suppression surface is exercised with them.
+STILL_SUPPRESSING = ("provisional_assumption", "specialist_requested",
+                     "evidence_requested")
 SIX = ("answered", "unknown", "deferred", "provisional_assumption",
        "specialist_requested", "evidence_requested")
 
@@ -147,7 +154,7 @@ def _engine_state():
 # the automatic re-ask is suppressed, and structure/verification are untouched
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("action", NON_ANSWERS)
+@pytest.mark.parametrize("action", STILL_SUPPRESSING)
 def test_non_answer_suppresses_automatic_reask_without_structural_change(client, action):
     sid = _start(client)
     before_body = _page(client, sid)
@@ -172,6 +179,27 @@ def test_non_answer_suppresses_automatic_reask_without_structural_change(client,
     # no structural or verification movement, no completion
     assert _structural(_state(sid)) == before
     assert 'class="complete"' not in body
+    assert not any(g.status == ACCEPTED_RISK for g in _state(sid).gaps)
+
+
+@pytest.mark.parametrize("action", ("unknown", "deferred"))
+def test_unknown_and_deferred_pause_the_gap_and_never_re_ask_it(client, action):
+    """UNKNOWN-QUESTION-PAUSE-01 (Owner-approved amendment): the gap stays
+    open and unprogressed, the paused question is never the automatic primary
+    ask again, and it remains available for a voluntary revisit."""
+    sid = _start(client)
+    asked = _question(_page(client, sid))
+    before = _structural(_state(sid))
+    _non_answer(client, sid, action)
+    body = _page(client, sid)
+    assert _durable_dispositions(sid)[-1] == action
+    assert pl.paused_gap_types(_state(sid)) == {MECHANISM_COMPLETENESS}
+    assert _structural(_state(sid))[0] == before[0]       # gaps untouched
+    assert _structural(_state(sid))[1:4] == before[1:4]   # maturity / stage / iteration
+    assert _question(body) != asked                       # never re-asked automatically
+    block = body[body.find('data-paused-gap="MECHANISM_COMPLETENESS"'):]
+    assert ui_text.text("UI_UQTR_MEANING_" + action.upper(), "en") in block
+    assert ui_text.text("UI_UQTR_REVISIT", "en") in block and asked in _html.unescape(block)
     assert not any(g.status == ACCEPTED_RISK for g in _state(sid).gaps)
 
 
@@ -277,7 +305,7 @@ def test_no_fifth_w2b_trigger_and_serving_decision_shape_unchanged():
 def test_revisit_exposes_the_existing_question_and_answer_path(client):
     sid = _start(client)
     asked = _question(_page(client, sid))
-    _non_answer(client, sid, "unknown")
+    _non_answer(client, sid, "specialist_requested")
     body = _page(client, sid)
     block = _revisit_block(body)
     assert ui_text.text("UI_UQTR_REVISIT", "en") in block
@@ -299,7 +327,7 @@ def test_revisit_exposes_the_existing_question_and_answer_path(client):
 
 def test_revisit_opens_itself_when_an_answer_error_must_be_seen(client):
     sid = _start(client)
-    _non_answer(client, sid, "deferred")
+    _non_answer(client, sid, "evidence_requested")
     appmod.SESSION_STORE[sid]["_answer_error"] = appmod.INTERACTION_NOT_SAVED_MESSAGE
     block = _revisit_block(_page(client, sid))
     assert " open" in block[:block.find(">") + 1]
@@ -329,7 +357,7 @@ def test_cold_reconstruction_and_resume_derive_the_same_suppression(client):
 
 def test_repeated_get_changes_nothing(client):
     sid = _start(client)
-    _non_answer(client, sid, "unknown")
+    _non_answer(client, sid, "specialist_requested")
     state = _state(sid)
     before = (_structural(state), repr(state.assertions),
               _durable_dispositions(sid))
@@ -436,10 +464,10 @@ def test_answer_text_required_and_non_answer_note_optional_unchanged(client):
 
 def test_arabic_page_carries_the_same_semantics_rtl(client):
     sid = _start(client, lang="ar")
-    _non_answer(client, sid, "unknown")
+    _non_answer(client, sid, "specialist_requested")
     body = _page(client, sid)
     assert '<html lang="ar" dir="rtl">' in body
-    for key in ("UI_UQTR_SUPPRESSED_HEADING", "UI_UQTR_MEANING_UNKNOWN",
+    for key in ("UI_UQTR_SUPPRESSED_HEADING", "UI_UQTR_MEANING_SPECIALIST_REQUESTED",
                 "UI_UQTR_SUPPRESSED_NEXT", "UI_UQTR_REVISIT",
                 "UI_UQTR_MORE_CHOICES", "UI_UQTR_TEXT_HINT"):
         assert ui_text.text(key, "ar") in body, key
@@ -482,13 +510,13 @@ def test_suppression_is_never_read_as_completion_or_readiness(client):
 
 def test_duplicate_non_answer_submission_stays_one_record(client):
     sid = _start(client)
-    _non_answer(client, sid, "unknown")
+    _non_answer(client, sid, "specialist_requested")
     n = len(_state(sid).assertions)
     d = _durable_dispositions(sid)
-    _non_answer(client, sid, "unknown")                  # identical resubmission
+    _non_answer(client, sid, "specialist_requested")                  # identical resubmission
     assert len(_state(sid).assertions) == n
     assert _durable_dispositions(sid) == d
-    assert pl.compute_non_answer_suppression(_state(sid)).disposition == "unknown"
+    assert pl.compute_non_answer_suppression(_state(sid)).disposition == "specialist_requested"
 
 
 # ---------------------------------------------------------------------------
@@ -532,7 +560,7 @@ def test_help_panel_is_never_automatic_pressure_while_suppressed(client, monkeyp
     unsuppressed = _page(client, sid)
     assert marker in unsuppressed                  # normal behaviour: rendered
     assert _revisit_block(unsuppressed) is None
-    _non_answer(client, sid, "deferred")
+    _non_answer(client, sid, "evidence_requested")
     body = _page(client, sid)
     assert 'id="uqtr-suppressed"' in body
     assert marker not in _outside_revisit(body)    # no pressure outside revisit
@@ -614,7 +642,7 @@ def test_a_suppressing_non_answer_leaves_w2b_trigger_membership_unchanged():
 
 def test_legitimate_w2b_primary_action_keeps_precedence_with_one_cta(client):
     sid = _start(client)
-    _non_answer(client, sid, "unknown")
+    _non_answer(client, sid, "specialist_requested")
     r = client.post(f"/session/{sid}/decision/declare-context", data={
         "content": "Which switching part should cut the heater power?",
         "answer_token": _token(client, sid)})
@@ -681,7 +709,7 @@ def test_existing_correction_route_reactivates_ordinary_serving(client):
     assert target.disposition == "answered"
     gap = pl.select_next_gap(_state(sid))
     assert target.gap_context == gap
-    _non_answer(client, sid, "unknown")
+    _non_answer(client, sid, "specialist_requested")
     assert 'id="uqtr-suppressed"' in _page(client, sid)
     r = client.post(f"/session/{sid}/correct", data={
         "supersedes_record_id": target.record_id,
@@ -734,7 +762,7 @@ def test_browser_suppression_and_voluntary_revisit(server, _browser):
         sid = _browser_start(page, server)
         question = page.locator("p.question").inner_text()
         assert page.locator("p.question").is_visible()
-        page.locator('input[name="action"][value="unknown"]').check()
+        page.locator('input[name="action"][value="specialist_requested"]').check()
         page.locator('#answer-form button[type="submit"]').click()
         page.wait_for_load_state()
         assert page.locator("#uqtr-suppressed").is_visible()
@@ -776,7 +804,7 @@ def test_browser_help_absent_outside_revisit_and_keyboard_disclosure(server, _br
     try:
         _browser_start(page, server)
         page.locator("#response").fill("I don't know how this part works yet.")
-        page.locator('input[name="action"][value="unknown"]').check()
+        page.locator('input[name="action"][value="specialist_requested"]').check()
         page.locator('#answer-form button[type="submit"]').click()
         page.wait_for_load_state()
         assert page.locator("#uqtr-suppressed").is_visible()

@@ -66,6 +66,163 @@ STAGE3_GAP_PRIORITY = [
 
 STALL_THRESHOLD = 3  # iterations before reframe
 
+
+# ─────────────────────────────────────────────
+# Stage-2 unknown / deferred pause (UNKNOWN-QUESTION-PAUSE-01)
+# ─────────────────────────────────────────────
+# Owner-approved bounded amendment to Stage-2 cascade eligibility. When the
+# owner answers a Stage-2 question with `unknown` or `deferred`, that gap stays
+# OPEN/PARTIAL and visibly unresolved, its questioning PAUSES (UQTR-01: it is
+# never re-asked automatically) and the next independent Stage-2 gap may be
+# questioned. An explicit answer to the paused question resumes the gap. A
+# pause never closes a gap, advances maturity or the stage, awards validation
+# or moves `iterations_open`; every maturity / transition gate is unchanged
+# (a paused gap still blocks Level 2 because it is not CLOSED).
+#
+# The paused set is a runtime-only attribute (like the runtime `domain`):
+# never persisted, applied by the SAME two functions at the SAME durable ledger
+# positions live (after the committed record) and in reconstruction replay, so
+# live and replayed states agree. The next Stage-2 gap is opened only when the
+# owner acts on its question (`deferred_open_gap`), never at the pause itself:
+# a history recorded before this amendment therefore replays exactly as before.
+# `specialist_requested`, `evidence_requested`, `provisional_assumption` and
+# `risk_accepted` keep their existing semantics.
+STAGE2_PAUSING_DISPOSITIONS = frozenset({"unknown", "deferred"})
+_PAUSED_ATTR = "stage2_paused_gaps"
+
+
+def paused_gap_types(state) -> frozenset:
+    """The Stage-2 gap types whose owner questioning is paused (runtime)."""
+    return frozenset(getattr(state, _PAUSED_ATTR, None) or ())
+
+
+def _is_paused(state, gap) -> bool:
+    return gap.gap_type in paused_gap_types(state)
+
+
+def deferred_open_gap(state):
+    """The Stage-2 gap the cascade would open next because every remaining
+    OPEN/PARTIAL gap is paused (or routed-exhausted) and at least one is
+    paused; None otherwise. Read only; opens nothing. Its first question is
+    served, and the gap opens when the owner acts on it."""
+    if getattr(state, "current_stage", 2) == 3:
+        return None
+    paused = paused_gap_types(state)
+    if not paused:
+        return None
+    open_gaps = [g for g in state.gaps if g.status in (OPEN, PARTIAL)]
+    if not any(g.gap_type in paused for g in open_gaps):
+        return None
+    if any(g.gap_type not in paused and not owner_questioning_exhausted(state, g)
+           for g in open_gaps):
+        return None
+    for gap_type in GAP_PRIORITY:
+        if state.get_gap(gap_type) is None:
+            return gap_type
+    return None
+
+
+def _open_deferred_gap(state, gap_type) -> None:
+    if gap_type is not None and state.get_gap(gap_type) is None \
+            and deferred_open_gap(state) == gap_type:
+        state.gaps.append(Gap(gap_type=gap_type, status=OPEN,
+                              opened_at=state.iteration))
+
+
+def apply_owner_disposition(state, disposition, gap_type) -> None:
+    """Applied once per committed owner non-answer on ``gap_type`` — live after
+    the durable append, and at the record's own position in replay. A
+    non-answer on the deferred-open gap opens it; `unknown` / `deferred` on an
+    OPEN/PARTIAL Stage-2 gap pauses it. Nothing else moves."""
+    if gap_type is None:
+        return
+    _open_deferred_gap(state, gap_type)
+    if disposition not in STAGE2_PAUSING_DISPOSITIONS \
+            or gap_type not in GAP_PRIORITY \
+            or getattr(state, "current_stage", 2) == 3:
+        return
+    gap = state.get_gap(gap_type)
+    if gap is not None and gap.status in (OPEN, PARTIAL):
+        setattr(state, _PAUSED_ATTR, paused_gap_types(state) | {gap_type})
+
+
+def prepare_answer(state, gap_type) -> None:
+    """Applied before an owner answer to ``gap_type`` is integrated — live on
+    the staged state, and at the record's own position in replay: the answer
+    resumes a paused gap, and an answer to the deferred-open gap opens it.
+    The canonical selector then chooses the gap as usual."""
+    if gap_type is None:
+        return
+    paused = paused_gap_types(state)
+    if gap_type in paused:
+        setattr(state, _PAUSED_ATTR, paused - {gap_type})
+    _open_deferred_gap(state, gap_type)
+
+
+def answer_applicable(state, gap_type) -> bool:
+    """True when an owner answer recorded against ``gap_type`` would be
+    integrated into exactly that gap at this point (``run_iteration``
+    integrates into ``select_next_gap``). False only when ``gap_type`` names
+    an OPEN/PARTIAL gap that is neither routed-exhausted nor paused and is not
+    the selected gap — a state reachable only beside a Stage-2 pause, because
+    otherwise at most one such gap is ever open and it is the selected one.
+    Such an answer is never integrated into another gap: the live correction
+    route refuses it and reconstruction leaves it explicitly unapplied."""
+    if gap_type is None:
+        return True
+    gap = state.get_gap(gap_type)
+    if gap is None or gap.status not in (OPEN, PARTIAL) \
+            or owner_questioning_exhausted(state, gap) or _is_paused(state, gap):
+        return True
+    return select_next_gap(state) == gap_type
+
+
+def correction_admissible(state, gap_type) -> bool:
+    """Admission test for a correction of an answer recorded against
+    ``gap_type``, evaluated on the live state after ``prepare_answer``.
+
+    Full replay drops the superseded answer, so the corrected gap's live
+    status is not its status at the correction's replay position: a gap that
+    is routed-exhausted or CLOSED live can be questionable again there. A
+    correction is therefore refused when ``answer_applicable`` fails OR when
+    its Stage-2 gap (whatever its live status) has a higher-priority gap that
+    is OPEN/PARTIAL, not paused and not routed-exhausted: that gap stays the
+    one selected at the correction's replay position (dropping a
+    lower-priority answer never moves it), so the correction would be left
+    unapplied or integrated into that other gap. Without a pause a
+    higher-priority gap is never questionable once a lower-priority gap
+    exists, so every existing correction is admitted exactly as before."""
+    if not answer_applicable(state, gap_type):
+        return False
+    gap = state.get_gap(gap_type) if gap_type is not None else None
+    if gap is None or gap_type not in GAP_PRIORITY:
+        return True
+    for earlier in GAP_PRIORITY[:GAP_PRIORITY.index(gap_type)]:
+        g = state.get_gap(earlier)
+        if g is not None and g.status in (OPEN, PARTIAL) \
+                and not _is_paused(state, g) \
+                and not owner_questioning_exhausted(state, g):
+            return False
+    return True
+
+
+def paused_gap_answerable(state, gap_type) -> bool:
+    """True when an answer to the paused ``gap_type`` would be integrated into
+    that gap: no OPEN/PARTIAL, non-paused, non-exhausted gap of higher
+    priority exists. Read only."""
+    if gap_type not in paused_gap_types(state) or gap_type not in GAP_PRIORITY:
+        return False
+    gap = state.get_gap(gap_type)
+    if gap is None or gap.status not in (OPEN, PARTIAL):
+        return False
+    for earlier in GAP_PRIORITY[:GAP_PRIORITY.index(gap_type)]:
+        g = state.get_gap(earlier)
+        if g is not None and g.status in (OPEN, PARTIAL) \
+                and not _is_paused(state, g) \
+                and not owner_questioning_exhausted(state, g):
+            return False
+    return True
+
 _IDEA_SUMMARY_MAX = 500
 
 def _trim_idea_summary(text: str) -> str:
@@ -120,7 +277,8 @@ def select_next_gap(state: IdeaState) -> str | None:
     visible and unresolved. With no routing this is byte-identical.
     """
     open_gaps = {g.gap_type: g for g in state.gaps if g.status in (OPEN, PARTIAL)
-                 and not owner_questioning_exhausted(state, g)}
+                 and not owner_questioning_exhausted(state, g)
+                 and not _is_paused(state, g)}
     for gap_type in _active_gap_priority(state):
         if gap_type in open_gaps:
             return gap_type
@@ -145,6 +303,7 @@ def _open_next_gap_if_needed(state):
     exhausted no longer blocks the cascade, so later Owner work continues
     while that gap stays unresolved."""
     if any(g.status in (OPEN, PARTIAL) and not owner_questioning_exhausted(state, g)
+           and not _is_paused(state, g)
            for g in state.gaps):
         return None
     for next_gap_type in _active_gap_priority(state):
@@ -1236,6 +1395,8 @@ def update_direction(state: IdeaState, prev_level: int) -> None:
             # Slice 1: a routed gap awaiting specialist/evidence input is not
             # stalled by the owner (no-op without routing).
             and not owner_questioning_exhausted(state, g)
+            # UNKNOWN-QUESTION-PAUSE-01: nor is a paused gap.
+            and not _is_paused(state, g)
         ]
         if stalled_gaps:
             state.direction = STALLED
@@ -1263,10 +1424,15 @@ def run_iteration(state: IdeaState, response: str) -> dict:
 
     # Update gap iteration counters. A gap whose mandatory Owner questioning is
     # exhausted by routing is not being questioned, so its counter stays put
-    # (no-op without routing).
+    # (no-op without routing). UNKNOWN-QUESTION-PAUSE-01: only the gap this
+    # iteration questions counts, so a paused gap (and a gap merely open beside
+    # it) never moves. Without a pause at most one non-exhausted gap is ever
+    # OPEN/PARTIAL and it is exactly `gap_type`, so every existing journey,
+    # fixture and replay counts identically.
     exhausted = {id(g) for g in state.gaps if owner_questioning_exhausted(state, g)}
     for g in state.gaps:
-        if g.status in (OPEN, PARTIAL) and id(g) not in exhausted:
+        if g.status in (OPEN, PARTIAL) and id(g) not in exhausted \
+                and g.gap_type == gap_type:
             g.iterations_open += 1
 
     # Level-0 problem establishment path
@@ -1314,7 +1480,8 @@ def run_iteration(state: IdeaState, response: str) -> dict:
         # GAP_PRIORITY cascade: open next gap when no OPEN/PARTIAL gap exists
         next_gap_opened = None
         if len([g for g in state.gaps if g.status in (OPEN, PARTIAL)
-                and not owner_questioning_exhausted(state, g)]) == 0:
+                and not owner_questioning_exhausted(state, g)
+                and not _is_paused(state, g)]) == 0:
             # Select gap priority based on current stage
             active_priority = (
                 STAGE3_GAP_PRIORITY

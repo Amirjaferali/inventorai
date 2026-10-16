@@ -142,6 +142,26 @@ def gap_appropriate(text, served_gap):
     return text + GAP_APPROPRIATE_CLAUSE.get(served_gap, "")
 
 
+def revisit_gap(state):
+    """The highest-priority paused Stage-2 gap an answer would reach, or None
+    (UNKNOWN-QUESTION-PAUSE-01)."""
+    from engine.progression_loop import GAP_PRIORITY, paused_gap_answerable
+    return next((g for g in GAP_PRIORITY if paused_gap_answerable(state, g)), None)
+
+
+def revisit_post(client, sid, gap, text):
+    """Answer the paused ``gap`` through its rendered voluntary-revisit form."""
+    import html as _h
+    import re as _re
+    page = client.get(f"/session/{sid}").get_data(as_text=True)
+    block = page[page.find(f'data-paused-gap="{gap}"'):]
+    target = _re.search(r'name="answer_target" value="([^"]+)"', block).group(1)
+    token = _re.search(r'name="answer_token" value="([^"]+)"', page).group(1)
+    return client.post(f"/session/{sid}", data={
+        "response": text, "answer_token": _h.unescape(token),
+        "answer_target": _h.unescape(target)})
+
+
 UNKNOWN_ITERATION = 5
 UNKNOWN_TEXT = "I don't know yet."
 MAX_ITERATIONS = 30
@@ -218,9 +238,18 @@ def _drive_ws1_journey_to_completion(client, sid):
         if i == UNKNOWN_ITERATION:
             action, text = "unknown", UNKNOWN_TEXT
         else:
-            action, text = "answered", gap_appropriate(
+            # UNKNOWN-QUESTION-PAUSE-01: the WS1 inventor returns to the question
+            # they had marked not known yet — now its voluntary revisit — so the
+            # recorded WS1 journey is unchanged (unknown, then an answer to the
+            # same question, replays exactly like the answer alone).
+            paused = revisit_gap(SESSION_STORE[sid]["state"])
+            text = gap_appropriate(
                 BASE + DANGER_BY_ITERATION.get(i, ""),
-                select_next_gap(SESSION_STORE[sid]["state"]))
+                paused or select_next_gap(SESSION_STORE[sid]["state"]))
+            if paused:
+                revisit_post(client, sid, paused, text)
+                continue
+            action = "answered"
         answered_post(client, sid, {"response": text, "action": action})
     pytest.fail("fixture defect: WS1 journey did not reach the completion "
                 "branch within %d iterations" % MAX_ITERATIONS)

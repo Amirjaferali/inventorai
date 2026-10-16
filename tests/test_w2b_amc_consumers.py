@@ -132,10 +132,14 @@ def test_gates_stay_aligned_with_canonical_served_gap(client):
         "response": "", "action": "deferred", "answer_token": token()})
     assert r.status_code == 302
     assert state.assertions[-1].gap_context == served
+    # UNKNOWN-QUESTION-PAUSE-01: the deferral pauses that gap; the displayed
+    # question is now the next independent gap's, and the answer binds to it.
+    displayed = pl.select_next_gap(state) or pl.deferred_open_gap(state)
+    assert displayed != served and served in pl.paused_gap_types(state)
     r = c.post(f"/session/{sid}", data={
         "response": MC_STRONG, "action": "answered", "answer_token": token()})
     assert r.status_code == 302
-    assert state.assertions[-1].gap_context == served
+    assert state.assertions[-1].gap_context == displayed
 
 
 _P9_PIN_FILES = (

@@ -656,6 +656,34 @@ body{overflow-wrap:anywhere}
 {% endif %}
 {% endset %}{% if not uqtr_suppression %}{{ uqtr_help_scaffolding }}{% endif %}
 
+{#- UNKNOWN-QUESTION-PAUSE-01: each Stage-2 gap whose question the owner
+    marked unknown or deferred is PAUSED — still unresolved and visible here,
+    never re-asked automatically (UQTR-01), while the journey continues with the
+    next independent gap. The EXISTING UQTR copy states the owner's choice; the
+    voluntary revisit carries an explicit answer only, bound to that gap. -#}
+{% for paused in paused_questions or [] %}
+<div class="paused-question-item" data-paused-gap="{{ paused.gap_type }}" role="status" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #d9dfe7;background:#f7f9fb;font-size:13px;color:#34495e">
+  <p class="paused-question-heading" style="margin:0 0 6px 0"><strong>{{ t('UI_UQTR_SUPPRESSED_HEADING') }}</strong> <span dir="auto">{{ paused.heading }}</span></p>
+  <p class="paused-question-meaning" style="margin:0 0 6px 0">{{ t('UI_UQTR_MEANING_' ~ paused.disposition|upper) }}</p>
+  <p class="paused-question-next" style="margin:0">{{ t('UI_UQTR_SUPPRESSED_NEXT') }}</p>
+  {% if paused.answer_target and paused.question %}
+  <details class="paused-question-revisit" style="margin-top:8px">
+    <summary style="cursor:pointer;padding:4px 0;font-size:14px;color:#2c3e50">{{ t('UI_UQTR_REVISIT') }}</summary>
+    <p class="paused-question-text" lang="{{ paused.question_lang }}" dir="{{ paused.question_dir }}" style="margin:6px 0">{{ paused.question }}</p>
+    <form method="POST" action="/session/{{ sid }}" class="paused-question-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+      <input type="hidden" name="answer_token" value="{{ answer_token }}">
+      <input type="hidden" name="answer_target" value="{{ paused.answer_target }}">
+      {#- No action field: a submission without one is an explicit answer
+          (the Increment-1A legacy rule), so no seventh action control exists. -#}
+      <label style="display:block;margin-bottom:6px;font-size:13px;color:#555">{{ t('UI_B_SESSION_031') }}</label>
+      <textarea name="response" rows="4" style="width:100%;box-sizing:border-box"></textarea>
+      <button type="submit" style="margin-top:6px">{{ t('UI_B_SESSION_034') }}</button>
+    </form>
+  </details>
+  {% endif %}
+</div>
+{% endfor %}
 {#- UQTR-01-BEGIN — gap-scoped non-answer serving suppression. When the
     owner's latest ACTIVE action on the canonically selected gap is one of the
     five non-answer actions, the technical question stops being the automatic

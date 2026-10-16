@@ -315,17 +315,25 @@ def _one(out, disposition):
 
 def test_durable_non_answer_records_do_not_change_reconstructed_progression(
         live, db_path, tmp_path):
-    """Two identical journeys, one with five extra non-answer actions: the
-    reconstructed gaps / maturity / stage must be identical."""
+    """Two identical journeys, one with extra non-answer actions: the
+    reconstructed gaps / maturity / stage must be identical.
+
+    UNKNOWN-QUESTION-PAUSE-01: `unknown` / `deferred` on a Stage-2 question now
+    pause that gap and let the next independent gap be questioned (an
+    Owner-approved cascade amendment that still moves no gap status, maturity
+    or stage — tests/test_unknown_question_pause.py), so this invariant is
+    asserted for the three non-pausing non-answer actions."""
+    non_pausing = [d for d in NON_ANSWER_DISPOSITIONS
+                   if d not in ("unknown", "deferred")]
     sid_plain = live.start()
     live.act(sid_plain, "answered", _ANSWER)
     plain = _reconstruct_in_new_process(db_path, sid_plain)
 
     sid_rich = live.start()
-    for disposition in NON_ANSWER_DISPOSITIONS:
+    for disposition in non_pausing:
         live.act(sid_rich, disposition, "")
     live.act(sid_rich, "answered", _ANSWER)
-    for disposition in NON_ANSWER_DISPOSITIONS:
+    for disposition in non_pausing:
         live.act(sid_rich, disposition, "")
     rich = _reconstruct_in_new_process(db_path, sid_rich)
 
@@ -334,7 +342,7 @@ def test_durable_non_answer_records_do_not_change_reconstructed_progression(
     assert rich["open_gaps"] == plain["open_gaps"]
     assert rich["gaps"] == plain["gaps"]
     assert rich["accepted_answer_count"] == plain["accepted_answer_count"] == 1
-    assert len(rich["ledger"]) == 11
+    assert len(rich["ledger"]) == 2 * len(non_pausing) + 1
 
 
 # --------------------------------------------------------------------------
@@ -344,8 +352,15 @@ def test_durable_non_answer_records_do_not_change_reconstructed_progression(
 def test_repeated_identical_non_answer_submission_writes_one_durable_record(
         live, db_path):
     sid = live.start()
+    # The same retained form resubmitted: an accepted "unknown" pauses the gap
+    # and the page moves on to the next question (UNKNOWN-QUESTION-PAUSE-01),
+    # so a re-rendered page is a different question, not a duplicate.
+    token = live.token(sid)
     for _ in range(4):
-        live.act(sid, "unknown", "")
+        live.client.post("/session/%s" % sid,
+                         data={"action": "unknown", "response": "",
+                               "answer_token": token},
+                         follow_redirects=True)
     rows = [r for r in _durable_rows(db_path, sid)
             if r[2]["disposition"] == "unknown"]
     assert len(rows) == 1, rows

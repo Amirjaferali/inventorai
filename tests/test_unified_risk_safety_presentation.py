@@ -149,9 +149,17 @@ def ws1_journey():
         if i == UNKNOWN_ITERATION:
             action, text = "unknown", UNKNOWN_TEXT
         else:
-            action, text = "answered", gap_appropriate(
+            # UNKNOWN-QUESTION-PAUSE-01: the inventor returns to the paused
+            # question through its voluntary revisit (same recorded journey).
+            from test_structured_criticality import revisit_gap, revisit_post
+            paused = revisit_gap(SESSION_STORE[sid]["state"])
+            text = gap_appropriate(
                 BASE + DANGER_BY_ITERATION.get(i, ""),
-                select_next_gap(SESSION_STORE[sid]["state"]))
+                paused or select_next_gap(SESSION_STORE[sid]["state"]))
+            if paused:
+                revisit_post(client, sid, paused, text)
+                continue
+            action = "answered"
         answered_post(client, sid, {"response": text, "action": action})
     else:
         pytest.fail("fixture defect: WS1 journey did not complete")

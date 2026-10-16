@@ -193,7 +193,16 @@ _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "9135181d38bca429f0f84a1f0978752af040a4a5dcb8c5d6d75c4dc2ab3103f8",
     # CAP-08 Slice 1 re-freeze: the relationship-metadata serving containment
     # in _alternatives_crossing_context (pre-CAP-08 = 70ce71fb...8874).
-    "engine/progression_loop.py": "b8ba596c9315df592f358cd2230e6102c13ea1ed292527e19da6c18b64014f50",
+    # UNKNOWN-QUESTION-PAUSE-01 re-freeze (disclosed; Owner-approved bounded
+    # amendment to Stage-2 cascade eligibility): the Stage-2 unknown/deferred
+    # pause — paused gaps excluded from selection, the cascade and stall
+    # detection; only the questioned gap's counter moves (identical for every
+    # history without a pause); the deferred-open gap and the two
+    # ledger-positioned appliers, and the answer-applicability /
+    # correction-admission guards used by the correction route and replay.
+    # No classifier, tie, substance, scoring,
+    # quality, maturity-gate or gap-type change (pre-pause = b8ba596c...4f50).
+    "engine/progression_loop.py": "2294875377484bb6b77c31a1b6718bb0de383e9c3d241bf93140888b9eaf4755",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.

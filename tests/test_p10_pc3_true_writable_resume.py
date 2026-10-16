@@ -367,8 +367,11 @@ def test_no_fabricated_history_in_resumed_context(client):
 # the durable max after reconstruction), never the ledger length.
 # ==========================================================================
 def _nonanswer(client, sid, text="I do not know this yet because I lack data."):
+    # A non-answer that keeps the SAME question current (UQTR-01 suppression),
+    # so the interleaved answers below still address that question;
+    # `unknown` / `deferred` now pause the gap (UNKNOWN-QUESTION-PAUSE-01).
     r = client.post("/session/" + sid, data={
-        "response": text, "action": "unknown",
+        "response": text, "action": "specialist_requested",
         "answer_token": _token(client, sid) or "unused"})
     assert r.status_code == 302
 

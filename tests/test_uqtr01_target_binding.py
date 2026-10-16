@@ -416,7 +416,7 @@ def test_missing_malformed_or_tampered_target_fails_closed(client, monkeypatch, 
 def test_target_cannot_be_paired_with_another_answer_token(client, monkeypatch):
     sid = _start(client)
     first = _answer_form(client, sid)
-    _post(client, sid, first, response=NOTE, action="unknown")     # rotates token
+    _post(client, sid, first, response=NOTE, action="specialist_requested")  # rotates token
     second = _answer_form(client, sid)
     assert second["answer_token"] != first["answer_token"]
     # Same question context in both renders — only the token pairing differs.
@@ -435,11 +435,12 @@ def test_target_cannot_be_paired_with_another_answer_token(client, monkeypatch):
 
 def test_consumed_token_never_authorizes_a_new_write(client, monkeypatch):
     """The non-answer leaves the SAME question current (serving-only
-    suppression), so the old form's identity, gap and ECV all still match —
+    suppression; `unknown` / `deferred` now pause the gap instead —
+    UNKNOWN-QUESTION-PAUSE-01 — so a still-suppressing action is used), so the old form's identity, gap and ECV all still match —
     only the current-token rule refuses it."""
     sid = _start(client)
     old = _answer_form(client, sid)
-    _post(client, sid, old, response=NOTE, action="deferred")
+    _post(client, sid, old, response=NOTE, action="evidence_requested")
     assert appmod._valid_answer_token(sid, old["answer_token"])   # still verifies
     assert _decode(_answer_form(client, sid)["answer_target"]) \
         == _decode(old["answer_target"])
@@ -911,10 +912,10 @@ def test_l3_same_text_non_answers_on_two_questions_are_distinct_events(client):
     q1_identity, gap, _ = _context(sid)
     assert (q1_identity, gap) == ("PATHN:N-PF-1", "PHYSICAL_FEASIBILITY")
     q1_form = _answer_form(client, sid)
-    _post(client, sid, q1_form, response=NOTE, action="unknown")
+    _post(client, sid, q1_form, response=NOTE, action="specialist_requested")
     first = _durable(sid)[-1]
     iteration = _state(sid).iteration
-    assert (first.disposition, first.question_target) == ("unknown", q1_identity)
+    assert (first.disposition, first.question_target) == ("specialist_requested", q1_identity)
     # The existing correction path moves the SAME gap to its next question at
     # the SAME iteration.
     _body(client, sid)
@@ -925,21 +926,21 @@ def test_l3_same_text_non_answers_on_two_questions_are_distinct_events(client):
     assert q2_identity == "PATHN:N-PF-2" and _context(sid)[1] == gap
     assert _state(sid).iteration == iteration
     # The pre-repair key cannot tell these two events apart ...
-    assert appmod._interaction_idempotency_key(sid, "unknown", gap, iteration, NOTE) \
-        == appmod._interaction_idempotency_key(sid, "unknown", gap, iteration, NOTE)
+    assert appmod._interaction_idempotency_key(sid, "specialist_requested", gap, iteration, NOTE) \
+        == appmod._interaction_idempotency_key(sid, "specialist_requested", gap, iteration, NOTE)
     # ... the target-aware key does.
     k1 = appmod._target_interaction_idempotency_key(
-        sid, "unknown", gap, iteration, NOTE, q1_identity)
+        sid, "specialist_requested", gap, iteration, NOTE, q1_identity)
     k2 = appmod._target_interaction_idempotency_key(
-        sid, "unknown", gap, iteration, NOTE, q2_identity)
+        sid, "specialist_requested", gap, iteration, NOTE, q2_identity)
     assert k1 != k2
     q2_form = _answer_form(client, sid)
     n = len(_durable(sid))
-    _post(client, sid, q2_form, response=NOTE, action="unknown")
+    _post(client, sid, q2_form, response=NOTE, action="specialist_requested")
     assert len(_durable(sid)) == n + 1
     second = _durable(sid)[-1]
     assert (second.disposition, second.content, second.question_target) == (
-        "unknown", NOTE, q2_identity)
+        "specialist_requested", NOTE, q2_identity)
     keys = _idempotency_keys(sid)
     assert (keys[first.record_id], keys[second.record_id]) == (k1, k2)
     assert first.question_target == q1_identity           # unchanged
@@ -947,13 +948,13 @@ def test_l3_same_text_non_answers_on_two_questions_are_distinct_events(client):
     # only — it is never taken for (or written as) the Q2 event.
     after = _structural(sid)
     for form in (q1_form, q2_form, q1_form):
-        _post(client, sid, form, response=NOTE, action="unknown")
+        _post(client, sid, form, response=NOTE, action="specialist_requested")
         assert _structural(sid) == after and len(_durable(sid)) == n + 1
     assert STALE_EN not in _html.unescape(_body(client, sid))
     assert [r.question_target for r in _durable(sid)
-            if r.disposition == "unknown"] == [q1_identity, q2_identity]
+            if r.disposition == "specialist_requested"] == [q1_identity, q2_identity]
     # A different text on the old Q1 form is a stale form, not a new event.
-    _post(client, sid, q1_form, response=NOTE + " more", action="unknown")
+    _post(client, sid, q1_form, response=NOTE + " more", action="specialist_requested")
     assert len(_durable(sid)) == n + 1
     assert STALE_EN in _html.unescape(_body(client, sid))
 

@@ -56,6 +56,12 @@ from engine.progression_loop import (
     # UQTR-01: the derived gap-scoped non-answer suppression rule, composed
     # beside the W2-B decision at the same render surface only.
     compute_non_answer_suppression,
+    # UNKNOWN-QUESTION-PAUSE-01: the Stage-2 unknown/deferred pause — the
+    # deferred-open next gap, the two ledger-positioned appliers and the
+    # paused-question revisit eligibility.
+    deferred_open_gap, apply_owner_disposition, prepare_answer, answer_applicable,
+    correction_admissible,
+    paused_gap_types, paused_gap_answerable, GAP_PRIORITY,
     TRIGGER_CRITICAL_UNRESOLVED, TRIGGER_LAPSED_ACCEPTANCE,
     TRIGGER_MULTIPLE_ALTERNATIVES, TRIGGER_COMPLETED_INTENT_SKIP,
     # RVR-7 (authoritative path manifest freeze, PR #588): read-only inputs to the
@@ -3309,9 +3315,12 @@ UQTR_TARGET_CRITICALITY_CORRECTION = "CRITICALITY_CORRECTION"
 # routed need. Its own closed kind, bound to that need's exact canonical
 # question identity and gap — never to whatever gap is primary at submission.
 UQTR_TARGET_ROUTED_NEED = "ROUTED_NEED"
+# UNKNOWN-QUESTION-PAUSE-01: the voluntary revisit of ONE paused Stage-2
+# question (an explicit answer only), bound to that gap and question identity.
+UQTR_TARGET_PAUSED_QUESTION = "PAUSED_QUESTION"
 _UQTR_TARGET_KINDS = frozenset(
     {UQTR_TARGET_QUESTION, UQTR_TARGET_CRITICALITY_CORRECTION,
-     UQTR_TARGET_ROUTED_NEED})
+     UQTR_TARGET_ROUTED_NEED, UQTR_TARGET_PAUSED_QUESTION})
 # The ONE Owner action a routed-need note records: an OWNER_STATED provisional
 # statement that establishes nothing and discharges nothing.
 _ROUTED_NEED_ACTION = "provisional_assumption"
@@ -3390,6 +3399,109 @@ def _routed_need_target(state, gap_type, identity):
         return None
     return _AnswerTarget(UQTR_TARGET_ROUTED_NEED, identity, gap_type,
                          getattr(state, "engine_contract_version", None))
+
+
+def _paused_question(state, gap_type):
+    """``(identity, english, served)`` of the question the owner paused on
+    ``gap_type``: the exact committed question named by the PAUSING record —
+    the latest ACTIVE `unknown` / `deferred` record of that gap (only those
+    pause it; an `answered` record resumes it, and no other record, such as a
+    routed-need note, can rebind it) — else the gap's canonical question at its
+    unchanged ``iterations_open``. A question that is an outstanding routed
+    need is never offered for an answer (NeedRouting eligibility), so it
+    resolves to None. Pure; None on failure."""
+    try:
+        from engine.path_n_questions import get_served_question_by_id
+        domain = getattr(state, "domain", None)
+        routed = _need_routing.outstanding_routed_question_ids(state, gap_type)
+        pausing = None
+        for record in state.assertions:
+            if record.superseded_by is None and record.gap_context == gap_type \
+                    and record.disposition in ("unknown", "deferred"):
+                pausing = record
+        target = getattr(pausing, "question_target", None)
+        if isinstance(target, str) and target.startswith(_PATHN_IDENTITY_PREFIX):
+            question_id = target[len(_PATHN_IDENTITY_PREFIX):]
+            if question_id in routed:
+                return None
+            served = get_served_question_by_id(gap_type, question_id,
+                                               domain=domain)
+            if served is not None:
+                return target, served.text, served
+        gap = state.get_gap(gap_type)
+        iterations_open = gap.iterations_open if gap else 0
+        english = get_display_question(domain, gap_type, iterations_open,
+                                       path=state.path)
+        identity, served = _rvr7_identity(domain, gap_type, iterations_open,
+                                          state.path)
+        if identity is None or not isinstance(english, str) or (
+                identity.startswith(_PATHN_IDENTITY_PREFIX)
+                and identity[len(_PATHN_IDENTITY_PREFIX):] in routed):
+            return None
+        return identity, english, served
+    except Exception:
+        return None
+
+
+def _paused_question_target(state, gap_type, identity):
+    """The PAUSED_QUESTION form context for one paused gap, or None when that
+    gap is not paused, an answer to it would not be integrated into it, or
+    ``identity`` is not its paused question. Pure; the SAME check renders the
+    revisit form and re-verifies the post."""
+    if not gap_type or not paused_gap_answerable(state, gap_type):
+        return None
+    paused = _paused_question(state, gap_type)
+    if paused is None or paused[0] != identity:
+        return None
+    return _AnswerTarget(UQTR_TARGET_PAUSED_QUESTION, identity, gap_type,
+                         getattr(state, "engine_contract_version", None))
+
+
+def _paused_questions_context(sid, entry, state, lang):
+    """UNKNOWN-QUESTION-PAUSE-01 render context: every paused Stage-2 gap,
+    still OPEN/PARTIAL and unresolved, in priority order, with the owner's
+    recorded choice and — when an answer would reach that gap — the voluntary
+    revisit form bound to its own signed target. Empty without a pause."""
+    items = []
+    try:
+        paused = paused_gap_types(state)
+        if not paused:
+            return items
+        token = _answer_token_for(sid, entry)
+        for gap_type in GAP_PRIORITY:
+            gap = state.get_gap(gap_type)
+            if gap_type not in paused or gap is None \
+                    or gap.status not in ("OPEN", "PARTIAL"):
+                continue
+            disposition = None
+            for record in state.assertions:
+                if record.superseded_by is None \
+                        and record.gap_context == gap_type \
+                        and record.disposition in ("unknown", "deferred"):
+                    disposition = record.disposition
+            question = _paused_question(state, gap_type)
+            target = (None if question is None else
+                      _paused_question_target(state, gap_type, question[0]))
+            text = None
+            q_lang, q_dir = "en", "ltr"
+            if question is not None:
+                text = _rvr7_display(question[0], question[2], question[1], lang)
+                q_lang, q_dir = _rvr7_question_direction(text, lang)
+            items.append({
+                "gap_type": gap_type,
+                "heading": ui_text.localize_deep(
+                    GAP_LABELS.get(gap_type, GAP_LABELS["__default__"]),
+                    lang).get("heading", gap_type),
+                "disposition": disposition or "unknown",
+                "question": text,
+                "question_lang": q_lang,
+                "question_dir": q_dir,
+                "answer_target": (_issue_answer_target(sid, token, target)
+                                  if target is not None else None),
+            })
+    except Exception:
+        return []
+    return items
 
 
 def _routed_risk_targets(state):
@@ -3514,7 +3626,8 @@ def _question_target_of(target):
     RVR-7 identity of a QUESTION context, and None for the criticality
     correction (it is not a canonical question — nothing is fabricated)."""
     return (target.identity
-            if target.kind in (UQTR_TARGET_QUESTION, UQTR_TARGET_ROUTED_NEED)
+            if target.kind in (UQTR_TARGET_QUESTION, UQTR_TARGET_ROUTED_NEED,
+                               UQTR_TARGET_PAUSED_QUESTION)
             else None)
 
 
@@ -5864,7 +5977,8 @@ def _rvr7_reconstructed_display(recon_state, english, maturity_level, lang):
     try:
         if not isinstance(english, str) or recon_state is None:
             return english, "en", "ltr"
-        gap_type = select_next_gap(recon_state)
+        gap_type = (select_next_gap(recon_state)
+                    or deferred_open_gap(recon_state))
         if gap_type:
             gap = recon_state.get_gap(gap_type)
             identity, served = _rvr7_identity(
@@ -5903,7 +6017,8 @@ def _rvr7_reconstructed_explanation(recon_state, english, maturity_level):
     try:
         if not isinstance(english, str) or recon_state is None:
             return None
-        gap_type = select_next_gap(recon_state)
+        gap_type = (select_next_gap(recon_state)
+                    or deferred_open_gap(recon_state))
         if gap_type:
             gap = recon_state.get_gap(gap_type)
             identity, served = _rvr7_identity(
@@ -6358,7 +6473,9 @@ def _resolve_question_context(state, last_result):
     route bind to the question that was actually displayed WITHOUT
     reverse-matching translated text."""
     iterations_open = 0
-    gap_type = select_next_gap(state)
+    # UNKNOWN-QUESTION-PAUSE-01: while every remaining gap is paused, the next
+    # independent Stage-2 gap's question is served (it opens when answered).
+    gap_type = select_next_gap(state) or deferred_open_gap(state)
     question = None
     # RVR-7: identity of a substantive ask served OUTSIDE the gap slot (the
     # intake ask). Bound in the branch that serves it; never inferred from text.
@@ -6775,6 +6892,8 @@ def show_session(sid):
         # Safe Question Reduction Slice 1: outstanding routed needs (not
         # mandatory inventor questions; still unresolved). Empty without routing.
         routed_needs=_routed_needs_context(sid, entry, state, _current_ui_lang()),
+        paused_questions=_paused_questions_context(sid, entry, state,
+                                                   _current_ui_lang()),
         # T2-D: optional feedback control for the question actually displayed.
         # Presentation-only; never persisted into canonical state, an export,
         # the API, the deliverable or reconstruction.
@@ -11286,6 +11405,19 @@ def correct_answer(sid):
     if (target is None
             or target.disposition != ACTION_ANSWERED
             or getattr(target, "superseded_by", None) is not None):
+        entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # UNKNOWN-QUESTION-PAUSE-01: a correction is replayed into its own gap only.
+    # Beside a Stage-2 pause its gap can be open while another gap is the one
+    # being questioned (also when its gap is routed-exhausted live but would be
+    # questionable again once replay drops the superseded answer); such a
+    # correction is refused here (nothing staged or stored) instead of being
+    # stored and then left unapplied by replay. Without a pause this always
+    # passes.
+    import copy as _copy_mod
+    _probe = _copy_mod.deepcopy(state)
+    prepare_answer(_probe, target.gap_context)
+    if not correction_admissible(_probe, target.gap_context):
         entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 
@@ -15911,7 +16043,11 @@ def submit_answer(sid):
             signed_target.kind == UQTR_TARGET_CRITICALITY_CORRECTION
             and action != ACTION_ANSWERED) or (
             signed_target.kind == UQTR_TARGET_ROUTED_NEED
-            and action != _ROUTED_NEED_ACTION):
+            and action != _ROUTED_NEED_ACTION) or (
+            # UNKNOWN-QUESTION-PAUSE-01: a paused-question revisit carries an
+            # explicit answer only.
+            signed_target.kind == UQTR_TARGET_PAUSED_QUESTION
+            and action != ACTION_ANSWERED):
         entry["_answer_error"] = ANSWER_FORM_STALE_MESSAGE
         return redirect(url_for("show_session", sid=sid))
     # Slice 1: a routed-need note must carry the note itself (the token is
@@ -15944,6 +16080,9 @@ def submit_answer(sid):
             # still outstanding — independent of which gap is primary now.
             current_target = _routed_need_target(
                 state, signed_target.gap, signed_target.identity)
+        elif signed_target.kind == UQTR_TARGET_PAUSED_QUESTION:
+            current_target = _paused_question_target(
+                state, signed_target.gap, signed_target.identity)
         else:
             current_target = _answer_target_from(
                 _resolve_question_context(state, entry.get("last_result")), state,
@@ -15970,7 +16109,7 @@ def submit_answer(sid):
         # whatever gap is primary now; every other action is unchanged.
         gap_ctx = (signed_target.gap
                    if signed_target.kind == UQTR_TARGET_ROUTED_NEED
-                   else select_next_gap(state))
+                   else (select_next_gap(state) or deferred_open_gap(state)))
         # Increment 2 + PVCG-R1: the disposition record on the IdeaState ledger,
         # now written through the CANONICAL durable seam. It adds NO epistemic
         # movement (no assess/score/gap/maturity/transcript change) — it records,
@@ -16021,6 +16160,11 @@ def submit_answer(sid):
             return redirect(url_for("show_session", sid=sid))
         # Durable success — publish the single ledger delta into LIVE memory.
         state.assertions.append(new_record)
+        # UNKNOWN-QUESTION-PAUSE-01: apply the committed disposition with the
+        # SAME engine function reconstruction replays at this record's position
+        # (opens the deferred-open gap it was recorded against; pauses a
+        # Stage-2 gap on `unknown` / `deferred`). Nothing else moves.
+        apply_owner_disposition(state, action, gap_ctx)
         # UQTR-01 Step 2B: an accepted non-answer is a question-bearing write
         # too, so it consumes the token; every older form is no longer current.
         entry.pop("answer_token", None)
@@ -16057,7 +16201,17 @@ def submit_answer(sid):
         # succeeds. On any durable failure the clone is discarded and live memory
         # is left unchanged (no partial publication).
         staged = copy.deepcopy(state)
+        # UNKNOWN-QUESTION-PAUSE-01: the answer resumes a paused gap / opens the
+        # deferred-open gap first — the SAME function replay applies at this
+        # record's position — and the canonical selector must then choose
+        # exactly the gap the form was bound to, or nothing is written.
+        prepare_answer(staged, signed_target.gap)
         targeted_gap = select_next_gap(staged)   # gap this answer addresses (pre-iteration)
+        if signed_target.gap is not None and signed_target.kind in (
+                UQTR_TARGET_QUESTION, UQTR_TARGET_PAUSED_QUESTION) \
+                and targeted_gap != signed_target.gap:
+            entry["_answer_error"] = ANSWER_FORM_STALE_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
         result = run_iteration(staged, response)
         # Increment 2 provenance preserved (OWNER_STATED, UNVALIDATED, current
         # leading evidence quality) — now created on the staged copy.

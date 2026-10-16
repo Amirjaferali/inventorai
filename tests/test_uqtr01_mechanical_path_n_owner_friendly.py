@@ -333,28 +333,32 @@ def test_mechanical_unknown_is_durable_suppressed_unresolved_and_revisitable(cli
     state = _state(sid)
     assert state.assertions[-1].disposition == "unknown"
     assert state.assertions[-1].gap_context == MECHANISM_COMPLETENESS
-    sup = pl.compute_non_answer_suppression(state)
-    assert sup is not None and sup.gap_type == MECHANISM_COMPLETENESS
+    # UNKNOWN-QUESTION-PAUSE-01: the gap is paused — unresolved, unmoved and
+    # never re-asked automatically — and the next independent gap is served.
+    assert pl.paused_gap_types(state) == {MECHANISM_COMPLETENESS}
     assert _snapshot(state) == before                 # no structural movement
     assert state.get_gap(MECHANISM_COMPLETENESS).status != CLOSED
     body = _page(client, sid)
-    assert 'id="uqtr-suppressed"' in body
-    revisit = _revisit_block(body)
-    assert revisit is not None and MC_Q1[1] in _html.unescape(revisit)
-    # a later answered interaction resumes ordinary serving
+    assert _question(body) != MC_Q1[1]
+    paused = body[body.find('data-paused-gap="MECHANISM_COMPLETENESS"'):]
+    assert MC_Q1[1] in _html.unescape(paused)        # revisitable
+    # an explicit answer through the voluntary revisit resumes ordinary serving
+    target = re.search(r'name="answer_target" value="([^"]+)"', paused).group(1)
     r = client.post(f"/session/{sid}", data={
-        "response": PLAIN_ANSWER, "action": "answered",
-        "answer_token": _token(client, sid)})
+        "response": PLAIN_ANSWER, "answer_token": _token(client, sid),
+        "answer_target": _html.unescape(target)})
     assert r.status_code == 302
-    assert pl.compute_non_answer_suppression(_state(sid)) is None
-    assert 'id="uqtr-suppressed"' not in _page(client, sid)
+    assert _state(sid).assertions[-1].gap_context == MECHANISM_COMPLETENESS
+    assert pl.paused_gap_types(_state(sid)) == frozenset()
+    assert 'data-paused-gap=' not in _page(client, sid)
 
 
 def test_deferred_is_equally_truthful_on_mechanical(client):
     sid = _start(client)
     before = _snapshot(_state(sid))
     client.post(f"/session/{sid}", data={"response": NOTE, "action": "deferred"})
-    assert pl.compute_non_answer_suppression(_state(sid)).disposition == "deferred"
+    assert _state(sid).assertions[-1].disposition == "deferred"
+    assert pl.paused_gap_types(_state(sid)) == {MECHANISM_COMPLETENESS}
     assert _snapshot(_state(sid)) == before
 
 
@@ -377,7 +381,7 @@ def test_no_model_network_or_translation_call(client, monkeypatch):
     sid = _start(client, lang="ar")
     assert _question(_page(client, sid)) == MC_Q1[2]
     client.post(f"/session/{sid}", data={"response": NOTE, "action": "unknown"})
-    assert 'id="uqtr-suppressed"' in _page(client, sid)
+    assert 'data-paused-gap="MECHANISM_COMPLETENESS"' in _page(client, sid)
 
 
 # ---------------------------------------------------------------------------
@@ -464,8 +468,14 @@ def test_browser_mechanical_owner_friendly_journey(server, _browser, arabic):
         page.locator('input[name="action"][value="unknown"]').check()
         page.locator('#answer-form button[type="submit"]').click()
         page.wait_for_load_state()
-        assert page.locator("#uqtr-suppressed").is_visible()
-        page.locator("#uqtr-revisit > summary").click()
-        assert page.locator("p.question").inner_text().strip() == expected
+        # UNKNOWN-QUESTION-PAUSE-01: paused, visible, revisitable on demand.
+        paused = page.locator('[data-paused-gap="MECHANISM_COMPLETENESS"]')
+        assert paused.is_visible()
+        assert page.locator("p.question").inner_text().strip() != expected
+        paused.locator("summary").click()
+        revisit = paused.locator("p.paused-question-text")
+        assert revisit.inner_text().strip() == expected
+        assert revisit.evaluate("e => getComputedStyle(e).direction") == (
+            "rtl" if arabic else "ltr")
     finally:
         ctx.close()
