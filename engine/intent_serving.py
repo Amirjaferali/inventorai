@@ -370,8 +370,10 @@ def _effective(state, gap_type):
         itself, c is served unadjusted. Once such a variant has been
         answered, serving follows committed order over the variants not
         covered, routed or answered, so nothing is asked twice and the
-        displaced variant returns. Abstains when what was answered is
-        unknowable (a legacy answer without a committed target).
+        displaced variant returns — decided from the durable history (a
+        superseded answer's unknown still counts), so a correction that
+        removes the unknown cannot desynchronise it. Abstains when what was
+        answered is unknowable (a legacy answer without a committed target).
     """
     domain = getattr(state, "domain", None)
     registry = _load_registry(domain)
@@ -414,13 +416,19 @@ def _effective(state, gap_type):
     # closed to the unchanged law below.
     try:
         matched = _stated_unknown_matches(state, gap_type, variants)
-        asked = _asked_question_ids(state, gap_type) if matched else None
+        # Every variant ANY stated unknown of this gap has ever pointed at,
+        # superseded answers included: a correction can remove the unknown,
+        # never the out-of-order answer it caused.
+        ever_matched = _stated_unknown_matches(state, gap_type, variants,
+                                               history=True)
+        asked = (_asked_question_ids(state, gap_type)
+                 if ever_matched else None)
     except Exception:
-        matched, asked = frozenset(), None
+        matched, ever_matched, asked = frozenset(), frozenset(), None
     # ``asked`` is None when it cannot be known (a legacy answer of this gap
     # carries no committed target): the stated-unknown rules then abstain.
-    if matched and asked is not None:
-        if matched & asked:
+    if ever_matched and asked is not None:
+        if ever_matched & asked:
             # A stated-unknown variant was already answered out of committed
             # order, so the index law no longer tracks what was asked. Serve
             # in committed order instead: the earliest variant not covered,
@@ -439,7 +447,7 @@ def _effective(state, gap_type):
             focus = None
         else:
             focus = _stated_unknown_focus(variants, matched, covered, routed,
-                                          asked)
+                                          asked) if matched else None
     else:
         focus = None
     if focus is not None:
@@ -690,14 +698,27 @@ def grounded_functional_needs(state, gap_type, question_id=None):
         return ()
 
 
-def _stated_unknowns(state, gap_type, dedupe_against_idea=True):
+def _gap_answer_records_ever(state, gap_type):
+    """Every answered ledger record of this gap, superseded ones included,
+    in canonical rec_N order (the durable history a correction keeps)."""
+    from engine.adaptive_register import _record_seq
+    from engine.idea_state import DISPOSITION_ANSWERED
+    return sorted(
+        (r for r in getattr(state, "assertions", [])
+         if getattr(r, "disposition", None) == DISPOSITION_ANSWERED
+         and getattr(r, "gap_context", None) == gap_type),
+        key=lambda r: _record_seq(r.record_id))
+
+
+def _stated_unknowns(state, gap_type, dedupe_against_idea=True, history=False):
     """``(source, statement, basis)`` for every inventor-stated explicit
     unknown relevant to ``gap_type``: the idea statement's (if any) first,
     then those inside ACTIVE answered records of this gap in canonical
     ledger order; an identical answer statement once (and, by default, not
     again when the idea statement already says it). Recognition is the
-    existing detector's alone. Raises on an unreadable ledger (callers fail
-    closed)."""
+    existing detector's alone. ``history=True`` reads superseded answers
+    too (serving bookkeeping only; never shown). Raises on an unreadable
+    ledger (callers fail closed)."""
     from engine.progression_loop import _detect_acknowledged_unknown
     found = []
     seen = set()
@@ -706,7 +727,9 @@ def _stated_unknowns(state, gap_type, dedupe_against_idea=True):
         found.append((GROUNDED_SOURCE_IDEA, idea[0], idea[1]))
         if dedupe_against_idea:
             seen.add(idea[0])
-    for record in _gap_answer_records(state, gap_type):
+    records = (_gap_answer_records_ever(state, gap_type) if history
+               else _gap_answer_records(state, gap_type))
+    for record in records:
         content = getattr(record, "content", None)
         if not isinstance(content, str):
             continue
@@ -744,7 +767,7 @@ def _asked_question_ids(state, gap_type):
     return asked
 
 
-def _stated_unknown_matches(state, gap_type, variants):
+def _stated_unknown_matches(state, gap_type, variants, history=False):
     """The knowledge-seeking committed variants of this gap whose EN/AR-paired
     intent markers an inventor-stated explicit unknown carries
     (``_matches_intent`` — the same admitted mapping the T2-G owner uses to
@@ -752,7 +775,7 @@ def _stated_unknown_matches(state, gap_type, variants):
     ``answer_stance.UNCERTAINTY_QUESTION_IDS`` are excluded: they ask the
     inventor to name an uncertainty, which the statement already does."""
     statements = [statement for _source, statement, _basis
-                  in _stated_unknowns(state, gap_type)]
+                  in _stated_unknowns(state, gap_type, history=history)]
     if not statements:
         return frozenset()
     from engine.answer_stance import UNCERTAINTY_QUESTION_IDS

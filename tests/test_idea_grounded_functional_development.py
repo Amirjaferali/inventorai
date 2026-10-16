@@ -341,6 +341,27 @@ def test_answering_the_chosen_question_in_its_own_words_loses_nothing(client):
     assert len(set(asked)) == len(asked)
 
 
+def test_a_correction_that_removes_the_unknown_keeps_committed_order(client):
+    # reviewer repro 3: the out-of-order answer stays in the durable record
+    sid = _start(client, FLOAT, ELEC)
+    _act(client, sid, "answered", STEP_UNKNOWN_ANSWER)            # N-MC-1
+    first = _state(sid).assertions[-1].record_id
+    assert _serving(_state(sid)).question_id == "N-MC-3"
+    _act(client, sid, "answered", "Not sure yet.")                # N-MC-3
+    assert _serving(_state(sid)).question_id == "N-MC-2"
+    r = client.post(f"/session/{sid}/correct", data={
+        "supersedes_record_id": first, "response": COVERING_ANSWER,
+        "answer_token": _token(_page(client, sid))})
+    assert r.status_code == 302
+    body = _page(client, sid)
+    assert _question(body) == _by_id(MC, "N-MC-2", ELEC)          # not N-MC-3 again
+    assert "data-grounded-focus" not in body
+    recon = reconstruct_readonly_state(appmod._get_store(), sid).state
+    assert _serving(recon) == _serving(_state(sid))
+    _act(client, sid, "answered", "Not sure yet.")
+    assert _state(sid).assertions[-1].question_target == "PATHN:N-MC-2"
+
+
 def test_without_a_stated_unknown_the_order_is_unchanged(client):
     _sid, asked = _journey(client, FLOAT, ELEC, ["Not sure yet."] * 3)
     assert asked == ["N-MC-1", "N-MC-2", "N-MC-3"]
