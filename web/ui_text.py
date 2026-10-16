@@ -8799,6 +8799,56 @@ UI_STRINGS = {
         "en": "This section references unresolved technical issues listed in this export. InventorAI has not performed a risk assessment here.",
         "ar": "يشير هذا القسم إلى المسائل التقنية غير المحسومة الواردة في هذا التصدير. لم يُجرِ InventorAI تقييمًا للمخاطر هنا.",
     },
+    # IDEA-GROUNDED-FUNCTIONAL-NEED-01 — the inventor's own explicit unknown
+    # shown with the question that develops it. Attributed, provisional
+    # presentation: the statement is the inventor's; the binding names only an
+    # existing admitted connection; nothing is inferred or assumed.
+    "UI_GFN_HEADING": {
+        "en": "A part of your idea you said is not yet known",
+        "ar": "جزء من فكرتك قلت إنه غير معروف بعد",
+    },
+    "UI_GFN_SOURCE_IDEA": {
+        "en": "In your idea statement you said:",
+        "ar": "في وصف فكرتك قلت:",
+    },
+    "UI_GFN_SOURCE_ANSWER": {
+        "en": "While answering in this question area you said:",
+        "ar": "أثناء إجابتك في هذا المجال من الأسئلة قلت:",
+    },
+    "UI_GFN_BINDING_QUESTION": {
+        "en": "This question asks about that part of your idea.",
+        "ar": "هذا السؤال يسأل عن ذلك الجزء من فكرتك.",
+    },
+    "UI_GFN_BINDING_GAP": {
+        "en": "This question area is where that part of your idea is developed.",
+        "ar": "هذا المجال من الأسئلة هو حيث يُطوَّر ذلك الجزء من فكرتك.",
+    },
+    "UI_GFN_BINDING_NONE": {
+        "en": ("InventorAI has not matched this to the current question. It stays "
+               "recorded as an unresolved part of your idea."),
+        "ar": ("لم يربط InventorAI هذا بالسؤال الحالي. يبقى مسجَّلًا كجزء غير "
+               "محسوم من فكرتك."),
+    },
+    "UI_GFN_NEXT": {
+        "en": ("You can describe what you imagine in your own words, or choose "
+               "\u201cnot known yet\u201d: it then stays visible as unresolved and the "
+               "journey continues."),
+        "ar": ("يمكنك وصف ما تتصوره بكلماتك الخاصة، أو اختيار \"غير معروف بعد\": "
+               "يبقى عندها ظاهرًا كأمر غير محسوم وتستمر الرحلة."),
+    },
+    "UI_GFN_BOUNDARY": {
+        "en": ("InventorAI has not assumed how this part would work, and has not "
+               "assumed any component, control method or design. This is your "
+               "own statement, not a checked requirement or an engineering "
+               "conclusion."),
+        "ar": ("لم يفترض InventorAI كيف سيعمل هذا الجزء، ولم يفترض أي مكوّن أو "
+               "طريقة تحكم أو تصميم. هذا قولك أنت، وليس متطلبًا متحققًا منه ولا "
+               "استنتاجًا هندسيًا."),
+    },
+    "UI_GFN_PANEL_IDEA": {
+        "en": "Stated with your idea:",
+        "ar": "ورد في وصف فكرتك:",
+    },
 }
 
 

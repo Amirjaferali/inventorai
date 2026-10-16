@@ -471,11 +471,18 @@ body{overflow-wrap:anywhere}
 </p>
 
 
-{% if state.acknowledged_unknowns %}
+{#- IDEA-GROUNDED-FUNCTIONAL-NEED-01: an explicit unknown the inventor wrote
+    INSIDE THE IDEA STATEMENT itself is listed here too (verbatim, labelled by
+    its source) — the existing owner of inventor-stated unknowns. It is
+    derived read-only from the captured idea statement, never a ledger record. -#}
+{% if state.acknowledged_unknowns or idea_stated_unknown %}
 <div class="gap-guidance" style="background:#f8f9fa;border-color:#ccc">
   <div class="gap-guidance-heading">{{ t('UI_B_SESSION_006') }}</div>
   <div class="gap-guidance-text" style="margin-bottom:10px">{{ t('UI_B_SESSION_007') }}</div>
   <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px;color:#444">
+    {% if idea_stated_unknown %}
+    <li data-idea-stated-unknown><strong>{{ t('UI_GFN_PANEL_IDEA') }}</strong> <bdi dir="auto">{{ idea_stated_unknown }}</bdi></li>
+    {% endif %}
     {% for u in state.acknowledged_unknowns %}
     <li><strong>{{ u.gap_context | gap_display }}:</strong> {{ u.verbatim }}</li>
     {% endfor %}
@@ -727,6 +734,27 @@ body{overflow-wrap:anywhere}
    no identifier or internal vocabulary, and claims nothing about the answer. #}
 {% if question and question_explanation %}
 <p class="question-explanation" style="font-size:12px;color:#5a6b7a;margin:-6px 0 10px 0"><strong style="font-weight:600">{{ t('UI_T1D_WHY_HEADING') }}</strong> {{ question_explanation }}</p>
+{% endif %}
+{#- IDEA-GROUNDED-FUNCTIONAL-NEED-01: the inventor's OWN explicit unknown — from
+    their idea statement or from an answer in this question area — shown with
+    the question that develops it. The statement is verbatim (escaped,
+    direction-isolated); the binding line names only an existing admitted
+    connection (committed intent markers / canonical gap relevance /
+    provenance) or says that none was matched. No component, method or
+    design is inferred; the question, the answer form and the ONE primary
+    action are unchanged. Absent whenever nothing is derived. -#}
+{% if question and grounded_needs %}
+<div class="grounded-need" id="grounded-need" role="note" style="margin:0 0 14px 0;padding:10px 14px;border-radius:4px;border:1px solid #d9dfe7;background:#f7f9fb;font-size:13px;color:#34495e">
+  <p class="grounded-need-heading" style="margin:0 0 6px 0"><strong>{{ t('UI_GFN_HEADING') }}</strong></p>
+  {% for need in grounded_needs %}
+  <div class="grounded-need-item" data-grounded-source="{{ need.source }}" data-grounded-binding="{{ need.binding }}" style="margin:0 0 8px 0">
+    <p class="grounded-need-statement" style="margin:0 0 4px 0">{{ t('UI_GFN_SOURCE_' ~ need.source|upper) }} <q><bdi dir="auto">{{ need.statement }}</bdi></q></p>
+    <p class="grounded-need-binding" style="margin:0">{{ t('UI_GFN_BINDING_' ~ need.binding|upper) }}</p>
+  </div>
+  {% endfor %}
+  <p class="grounded-need-next" style="margin:0 0 4px 0">{{ t('UI_GFN_NEXT') }}</p>
+  <p class="grounded-need-boundary" style="margin:0;color:#555">{{ t('UI_GFN_BOUNDARY') }}</p>
+</div>
 {% endif %}
 {% if question %}
 <p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">{{ t('UI_B_SESSION_025') }}</p>
