@@ -7549,6 +7549,66 @@ def test_technical_remediation_strategy_is_preserved_as_continuity_only():
         assert re.search(pat, entry) is None, pat
 
 
+def test_level0_engineering_assistance_clarification_preserves_safeguards():
+    """The Level 0 engineering-assistance clarification lives in the existing
+    Owner amendment record (OWNER_PRODUCT_IDENTITY_CORRECTION.md §15): it permits
+    clearly attributed, provisional engineering assistance, keeps every ownership,
+    progression, evidence and qualification safeguard, leaves the original vision
+    wording unmodified, and adds no implementation value or authority."""
+    record = re.sub(r"\s+", " ", _read("docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md"))
+    vision = _read("docs/governance/STRATEGIC_PRODUCT_VISION.md")
+    head = "## 15. Engineering-Assistance Boundary Clarification (2026-10-16)"
+    assert record.count(head) == 1
+    sec = record[record.index(head):]
+    for needle in (
+            "PROPOSED on its pull-request branch and EFFECTIVE only after the owner-authorized normal merge",
+            "§7 Principle 1 — Inventor Ownership", "§7 Principle 2 — Improvement, Not Generation",
+            "§10 EVIDENCE AND OWNERSHIP AS STRATEGIC DIFFERENTIATOR",
+            "The user owns the original idea, their stated goals, preferences and known facts, and the "
+            "reasoning they personally express",
+            "clearly attributed, provisional functional and engineering options",
+            "never as the user's words",
+            "A system-generated suggestion is not a user-authored answer, evidence, demonstrated "
+            "understanding, earned progression or verified feasibility",
+            "No generated option closes a gap or changes readiness, maturity, progression, evidence or "
+            "validation state",
+            "still require separately admitted methods, sources, provenance and stated limitations",
+            "Physical validation and specialist confirmation remain independent requirements",
+            "Deterministic orchestration and the existing engineering owners stay authoritative",
+            "no AI or provider gains authority",
+            "keeps forbidding the platform from completing a gap on the user's behalf",
+            "blurring it remains a violation",
+            "This clarification authorizes no implementation",
+            "may be discussed as future terminology but is not added",
+            "no OD-2, OD-3 or OD-4 decision", "no roadmap stage or active execution contract"):
+        assert needle in sec, needle
+    # the record's own scope and continuity statements point to §15 and keep their original wording
+    for needle in ("§7 CORE GOVERNANCE PRINCIPLES (Principles 1 and 2 read with §15)",
+                   "§10 EVIDENCE AND OWNERSHIP AS STRATEGIC DIFFERENTIATOR (read with §15)",
+                   "remain fully binding and are not amended by this document",
+                   "(2026-10-16: the sentence above is preserved as written."):
+        assert needle in record, needle
+    # the original vision wording is preserved; only governing-effect pointers are added
+    for original in (
+            "**The inventor owns the idea and the reasoning. The platform owns the structure and the "
+            "questions. These two ownership domains must never be merged.**",
+            "- The AI suggesting mechanism steps the inventor has not articulated",
+            "**InventorAI improves inventors. It does not generate inventions, mechanisms, products, or "
+            "technical answers for inventors who cannot provide them.**",
+            "This distinction is a governance contract. Any implementation that blurs the boundary between "
+            "AI-generated content and inventor-demonstrated understanding violates Principle 1 and must be "
+            "rejected regardless of its apparent benefit."):
+        assert original in vision, original
+    assert vision.count("`OWNER_PRODUCT_IDENTITY_CORRECTION.md` §15") == 2
+    # no implementation value is introduced
+    for root in ("engine", "web"):
+        for folder, _dirs, files in os.walk(root):
+            for name in files:
+                if name.endswith(".py"):
+                    path = os.path.join(folder, name)
+                    assert "SYSTEM_PROPOSED" not in _read(path), path
+
+
 # ==========================================================================
 # LIVE MATERIAL INVARIANTS — merge-invariant current-authority truth
 #
