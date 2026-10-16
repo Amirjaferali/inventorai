@@ -210,7 +210,14 @@ _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "9135181d38bca429f0f84a1f0978752af040a4a5dcb8c5d6d75c4dc2ab3103f8",
     # CAP-08 Slice 1 re-freeze: the relationship-metadata serving containment
     # in _alternatives_crossing_context (pre-CAP-08 = 70ce71fb...8874).
-    "engine/progression_loop.py": "b8ba596c9315df592f358cd2230e6102c13ea1ed292527e19da6c18b64014f50",
+    # UNKNOWN-QUESTION-PAUSE-01 re-freeze (disclosed; Owner-approved bounded
+    # amendment to Stage-2 cascade eligibility): the Stage-2 unknown/deferred
+    # pause — paused gaps excluded from selection, the cascade and stall
+    # detection; only the questioned gap's counter moves (identical for every
+    # history without a pause); the deferred-open gap and the two
+    # ledger-positioned appliers. No classifier, tie, substance, scoring,
+    # quality, maturity-gate or gap-type change (pre-pause = b8ba596c...4f50).
+    "engine/progression_loop.py": "63217104ac0a63892131b198a65ec977e1d411ecb1204d8d4063a33efe728001",
 }
 # Other-pack byte freeze (unchanged lineage from I1/I2). L2SC-01 reconciliation
 # (disclosed; electronics_electrical re-frozen, see I1's own comment).

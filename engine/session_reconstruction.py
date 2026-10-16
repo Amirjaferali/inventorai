@@ -606,6 +606,17 @@ def _reconstruct(store, project_id: str):
             _assumption_origin.add(record.record_id)
     _assumption_outcomes = []
     for _position, record in enumerate(_ledger):
+        # UNKNOWN-QUESTION-PAUSE-01: the Stage-2 pause / resume is applied at
+        # each record's OWN durable position by the same engine functions the
+        # live routes call, so live and replayed states agree. An answer
+        # (replayed or not) resumes its gap before anything else reads it; a
+        # non-answer applies its disposition. Only records recorded after the
+        # amendment can open a gap here, so earlier histories replay unchanged.
+        if record.disposition == DISPOSITION_ANSWERED:
+            progression_loop.prepare_answer(state, record.gap_context)
+        elif record.disposition in progression_loop.UQTR_SUPPRESSING_DISPOSITIONS:
+            progression_loop.apply_owner_disposition(
+                state, record.disposition, record.gap_context)
         if (record.disposition == DISPOSITION_ANSWERED
                 and record.record_id in _assumption_origin):
             # A valid assumption-origin answer stays at its own durable
@@ -675,6 +686,19 @@ def _reconstruct(store, project_id: str):
 
     open_gaps = tuple(sorted(g.gap_type for g in state.get_open_gaps()))
     next_question = (last_result or {}).get("question")
+    # UNKNOWN-QUESTION-PAUSE-01: while a Stage-2 gap is paused, the next ask is
+    # the one the live page serves — the selected gap, else the deferred-open
+    # gap's first question, else none (every remaining gap paused). Without a
+    # pause this is unchanged.
+    if progression_loop.paused_gap_types(state):
+        _gap_type = (progression_loop.select_next_gap(state)
+                     or progression_loop.deferred_open_gap(state))
+        next_question = None
+        if _gap_type is not None:
+            _gap = state.get_gap(_gap_type)
+            next_question = progression_loop.get_question(
+                domain, _gap_type, _gap.iterations_open if _gap else 0,
+                path=state.path)
 
     return ReconstructedReviewState(
         idea_id=idea_id,
