@@ -659,7 +659,15 @@ genuinely missing product delta. A separate Claude / executor read-only round is
 prerequisite; use executor read-only inquiry only when the Lead cannot establish a material fact
 directly or executor-local / environment evidence is genuinely required. Outcomes: ALREADY EXISTS →
 DO NOT BUILD A DUPLICATE; PARTIAL → reuse / extend the existing owner and implement only the missing
-delta; ABSENT → implementation may be proposed within Owner-authorized scope. It is an operating
+delta; ABSENT → implementation may be proposed within Owner-authorized scope. For a substantial new
+engineering capability the same check also covers, where it applies: existing qualified InventorAI
+capabilities and engineering owners; reusable scientific models and their exact applicability;
+authoritative source evidence, its reuse rights and prior qualification decisions; independent
+reference results and reusable tests; existing integration adapters and unit / calculation
+boundaries; and whether reuse is genuinely safer, faster and more maintainable than a bounded new
+implementation. Previously qualified evidence or tests never qualify a new use case by themselves; a
+model whose provenance, licensing, applicability or accuracy is unresolved is not admitted — the
+blocker is preserved and eligible alternatives are evaluated. It is an operating
 method bounded to the proposed change — not a governance gate, approval stage, mandatory extra agent
 round or historical reconstruction requirement (roadmap §8C-A / §8C-J and Owner ruling D-FPC-MAP-06
 carry the underlying no-duplicate-owner rule).
