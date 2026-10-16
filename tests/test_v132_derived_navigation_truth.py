@@ -7457,6 +7457,47 @@ def test_continuity_addendum_lenses_cap06_and_fraud_routing_authorize_nothing():
     assert "no new gate, no provider selected, nothing authorized" in rows[0]
 
 
+def test_technical_remediation_strategy_is_preserved_as_continuity_only():
+    """The Owner-approved technical-remediation execution strategy lives in the
+    CLAUDE.md Lead Watchlist as successor continuity: its direction, flexible
+    groups, selection rule, delivered credit and settled dispositions are present,
+    it states that it authorizes nothing, and no listed technology is read as
+    activated, completed or cancelled."""
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    watch = claude[claude.index("**Current Lead Watchlist (2026-09-26).**"):
+                   claude.index("**Successor Lead (mandatory).**")]
+    head = "**STANDING — technical-remediation execution strategy (Owner-approved 2026-10-14 / 15; recorded 2026-10-15).**"
+    assert watch.count(head) == 1
+    entry = watch[watch.index(head):]
+    for needle in (
+            "Continuity record only. It authorizes no implementation, enters, completes or reopens no Stage, "
+            "changes no roadmap status and does not replace the 45-stage roadmap",
+            "Its fuller October 14–15 working detail was not preserved in Git",
+            "Deterministic orchestration", "is a core product responsibility, not a separate AI workstream",
+            "no second orchestration engine and no unauthorized cross-domain runtime activation",
+            "**Flexible priority groups, not sequential stages.**",
+            "A — prototype and component realization", "B — engineering depth",
+            "C — specialist technologies", "D — wider portfolio",
+            "E — engineering tools and commercial outcomes",
+            "A listed group or technology is neither a first-release requirement nor implementation authority",
+            "**Selection rule**", "7. implement only after scoped Owner authorization, with BMG and proportionate FCR",
+            "8. keep deferred obligations visible and never report them as done",
+            "PR #820", "#827 experiment-planning Compass step",
+            "**Settled dispositions — do not re-run these gates without materially new evidence.**",
+            "CAP-13 D-7 stiffness: source / method qualification unresolved",
+            "Structured component quantity / BOM: BLOCKED",
+            "Calculation-result retention: DEFER", "Embedded 28-T2 execution-facing output: DEFER",
+            "Sensors C3: source qualification unresolved",
+            "none is activated, completed or cancelled by being absent from a delivered increment"):
+        assert needle in entry, needle
+    for technology in ("Embedded / Firmware", "Power Electronics / Motion", "PLC / Automation",
+                       "Mechatronics / Robotics", "IoT", "Drone / UAV", "Renewables", "Satellite / Space",
+                       "Wireless / RF", "Battery / BMS", "Perception / Edge", "hydraulics / pneumatics",
+                       "optics / photonics", "acoustics / vibration", "Make / Buy",
+                       "CAD / PCB / EDA / CAE / API interoperability"):
+        assert technology in entry, technology
+
+
 # ==========================================================================
 # LIVE MATERIAL INVARIANTS — merge-invariant current-authority truth
 #
