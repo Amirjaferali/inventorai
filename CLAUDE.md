@@ -1286,7 +1286,23 @@ information, not execution authority.
   coordinating admitted technical capabilities, disclosing missing information, preserving evidence
   and uncertainty) is a core product responsibility, not a separate AI workstream; technical
   capability and orchestration develop together, with no second orchestration engine and no
-  unauthorized cross-domain runtime activation.
+  unauthorized cross-domain runtime activation. **Product identity applied at selection** (Level 0
+  owner `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md` §§3, 7, with `STRATEGIC_PRODUCT_VISION.md`
+  §7 still binding; restated here, never amended): the user is anyone — inventor, student,
+  entrepreneur, professional — with no assumed education, occupation or engineering knowledge, and
+  may arrive with only a vague idea in ordinary language and no design. InventorAI helps them
+  progressively develop it: idea → desired function → initial functional / engineering concept →
+  progressive engineering development → qualified analysis and verification needs → informed
+  development decisions. Never assume the user knows the applicable discipline, has chosen
+  components, materials, mechanisms, sensors, motors, controllers or processes, or knows which
+  calculation, simulation or analysis is needed; InventorAI is not merely a tool for documenting,
+  reviewing or validating an externally designed device. User statements, system proposals,
+  assumptions, unknowns and verified facts stay distinguishable; nothing is called feasible,
+  compatible, safe, validated or manufacturing-ready without qualified evidence, and no complete
+  verified design is generated autonomously — only authorized, qualified capabilities produce
+  engineering conclusions. Disciplines, reusable analysis capabilities, subsystems / specialist
+  technologies, manufacturing processes and product / application categories are distinct and
+  integrate through existing owners; a technology name in a register is not engineering capability.
   (b) **Flexible priority groups, not sequential stages.** A — prototype and component realization
   (component identities, interaction participation, preliminary physical realization, eventual
   quantity / BOM semantics, assembly preparation, Make / Buy, engineering handoff). B — engineering
@@ -1299,8 +1315,11 @@ information, not execution authority.
   manufacturing handoff, commercialization where authorized). Operations, security, privacy, legal,
   release assurance and deployment stay separately controlled parallel obligations. A listed group or
   technology is neither a first-release requirement nor implementation authority.
-  (c) **Selection rule** before proposing an increment: 1. name one concrete non-engineer inventor
-  problem and the missing engineering outcome; 2. verify what is delivered and avoid duplicate owners
+  (c) **Selection rule** before proposing an increment: 1. name the meaningful engineering-development
+  outcome that becomes possible for a nontechnical user after the increment and was not possible
+  before, judged against delivered behaviour and without assuming a pre-existing design (a standalone
+  formula, explanation, form field or report projection needs demonstrated value on that journey,
+  never mere ease of implementation); 2. verify what is delivered and avoid duplicate owners
   or report projections; 3. establish the technical owner, source / IP qualification and real
   dependencies; 4. check how deterministic orchestration guides the inventor to and from the
   capability; 5. rank by inventor value, readiness, dependencies and material risk, not roadmap
@@ -1363,7 +1382,7 @@ be reopened; (5) current Lead Watchlist; (6) NOW items; (7) NEXT TRIGGER items; 
 (9) PREMATURE / forbidden work; (10) execution-agent role; (11) architecture-review escalation
 rule; (12) Owner-reserved decisions and authorization boundaries; (13) human-study
 authorization state; (14) exactly ONE next action. For engineering work, items (3), (7)–(9) and
-(14) also read the execution-continuity and reopening-trigger blocks (g)–(h) of the Lead Watchlist's
+(14) also apply the product identity of block (a) and read the execution-continuity and reopening-trigger blocks (g)–(h) of the Lead Watchlist's
 STANDING technical-remediation entry, which record candidates as recommendations, never as authority.
 A material inconsistency exposed by the
 reconstruction is resolved before mutation. No ceremonial confirmation is required when the
