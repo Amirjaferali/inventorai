@@ -544,11 +544,14 @@ def idea_stated_unknown(state):
     ``(statement, basis)`` pair the existing detector recognises, or ``None``.
 
     Reads ``state.idea_summary`` — the statement the Level-0 seam captured
-    verbatim (display-trimmed at a word boundary with a visible marker when
-    very long, so a cut sentence is cut visibly, never silently). The
-    detector's own bounds apply unchanged: an unregistered way of saying "I
-    don't know", a statement shorter than its minimum length and the bare
-    technical word "unknown" are not recognised. Fail-closed ``None``."""
+    verbatim, display-trimmed at a word boundary with a visible marker when
+    very long: a sentence the trim cuts is shown cut, with that marker, and
+    a sentence lying entirely past the cut is not read at all (the same
+    trimmed statement on every replay, so live and reconstructed states
+    agree; under-recognition is the direction of error). The detector's own
+    bounds apply unchanged: an unregistered way of saying "I don't know", a
+    statement shorter than its minimum length and the bare technical word
+    "unknown" are not recognised. Fail-closed ``None``."""
     try:
         summary = getattr(state, "idea_summary", None)
         if not isinstance(summary, str) or not summary.strip():
@@ -596,6 +599,8 @@ def grounded_functional_needs(state, gap_type, question_id=None):
         variant_ids = declared_variant_ids(state, gap_type)
         from engine.progression_loop import _detect_acknowledged_unknown
         from engine.idea_state import DISPOSITION_ANSWERED
+        # ANY gap (not `_gap_answer_records`, which is gap-scoped): the first
+        # active answered record anywhere ends the idea's greeting phase.
         answered_any = any(
             getattr(r, "superseded_by", None) is None
             and getattr(r, "disposition", None) == DISPOSITION_ANSWERED

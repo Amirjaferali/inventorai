@@ -171,14 +171,23 @@ def test_idea_stated_unknown_is_recognised_by_the_existing_detector_only():
                  "Whether the market wants this is unknown, but the valve opens when the float drops.",
                  "I don't know.",
                  "I know exactly how it detects the moisture and opens the valve by gravity.",
-                 "", None, 42):
-        assert isv.idea_stated_unknown(_engine_state(ELEC, idea if isinstance(idea, str) else "")) \
-            is None or not isinstance(idea, str)
+                 ""):
+        assert isv.idea_stated_unknown(_engine_state(ELEC, idea)) is None, idea
     state = _engine_state(ELEC, PLANT)
-    state.idea_summary = None
-    assert isv.idea_stated_unknown(state) is None
-    state.idea_summary = 42
-    assert isv.idea_stated_unknown(state) is None
+    for corrupt in (None, 42, "   "):
+        state.idea_summary = corrupt
+        assert isv.idea_stated_unknown(state) is None
+    # the Level-0 display trim (word boundary + visible marker) is what is
+    # read: a cut sentence shows cut, a sentence wholly past the cut is not
+    # recognised — identical on every replay, under-recognition by design
+    filler = "The pots sit on a balcony shelf and the tank hangs above them. " * 7
+    assert len(filler) < 500 < len(filler) + 60               # the sentence straddles the cut
+    cut = _engine_state(ELEC, filler + "But I don't know how it should determine when watering is needed.")
+    statement, _basis = isv.idea_stated_unknown(cut)
+    assert statement.startswith("But I don't know") and statement.endswith("…")
+    beyond = _engine_state(ELEC, filler + "It also feeds the herbs on the shelf. " * 2
+                           + "I don't know how it should determine when watering is needed.")
+    assert isv.idea_stated_unknown(beyond) is None
 
 
 # ---------------------------------------------------------------------------
@@ -472,6 +481,16 @@ def test_answer_time_unknown_is_shown_by_provenance_and_a_correction_withdraws_i
     # rebuilt the track); the correction history itself stays visible as before
     assert ui_text.text("UI_B_SESSION_006", "en") not in _visible(body)
     assert _state(sid).acknowledged_unknowns == []
+
+
+def test_cold_read_only_page_renders_without_the_block_and_without_error(client):
+    sid = _start(client, PLANT_NOTICE, ELEC)
+    appmod.SESSION_STORE.clear()
+    r = client.get(f"/session/{sid}")
+    assert r.status_code == 200
+    body = r.get_data(as_text=True)
+    assert getattr(_state(sid), "domain", None) is None   # the non-resumable cold entry
+    assert 'id="grounded-need"' not in body and 'data-idea-stated-unknown' not in body
 
 
 def test_live_reconstructed_and_resumed_sessions_agree(client):
