@@ -262,15 +262,28 @@ def _t2g_covered(state, text, question_id, gap_type):
 # Derived intent-coverage + the bounded serving law.
 # ---------------------------------------------------------------------------
 
+#: Why an adjusted variant is served. ``coverage`` is the original W2-C law
+#: (the canonical variant's intent is already covered); ``stated_unknown`` is
+#: IDEA-GROUNDED-FUNCTIONAL-DEVELOPMENT-02 (the inventor said, in their own
+#: words, that the part THIS variant asks about is not yet known).
+BASIS_COVERAGE = "coverage"
+BASIS_STATED_UNKNOWN = "stated_unknown"
+#: After the stated-unknown variant was asked out of committed order, the
+#: index law can point back at it; the journey then resumes at the earliest
+#: committed variant not yet asked (never shown as chosen-for-the-unknown).
+BASIS_RESUMED = "stated_unknown_resumed"
+
+
 @dataclass(frozen=True)
 class IntentServing:
     """Immutable W2-C serving result: the committed variant to display
-    (identity + text read atomically from the committed artifact) and
-    whether it differs from the canonical index-law variant."""
+    (identity + text read atomically from the committed artifact), whether it
+    differs from the canonical index-law variant, and why (``basis``)."""
     question_id: str
     text: str
     design_gap_id: str
     adjusted: bool
+    basis: str = BASIS_COVERAGE
 
 
 def _gap_variants(domain, gap_type):
@@ -348,6 +361,13 @@ def _effective(state, gap_type):
         missed intent); if every variant is covered, stay canonical — the
         governed clamp/reframe/exit machinery is the truthful path and is
         never overridden here.
+      * IDEA-GROUNDED-FUNCTIONAL-DEVELOPMENT-02, evaluated before the two
+        rules above: when the inventor's own explicit unknown (idea
+        statement or an active answer of this gap) carries the committed
+        intent markers of a knowledge-seeking variant that is uncovered,
+        not routed and not yet asked, that variant is served (the first in
+        committed order) — see ``_stated_unknown_focus``. When it is c
+        itself, c is served unadjusted.
     """
     domain = getattr(state, "domain", None)
     registry = _load_registry(domain)
@@ -379,14 +399,42 @@ def _effective(state, gap_type):
         if any(_t2g_covered(state, record.content, variant.question_id,
                             gap_type)
                for record in records)}
-    if canonical.question_id not in covered:
-        return IntentServing(canonical.question_id, canonical.text,
-                             canonical.design_gap_id, adjusted=False)
     # Safe Question Reduction Slice 1: a question whose need is routed to a
     # specialist / evidence is not eligible for Owner questioning, so W2-C
     # never adjusts the display to it (empty set without routing).
     from engine.need_routing import outstanding_routed_question_ids
     routed = outstanding_routed_question_ids(state, gap_type)
+    # IDEA-GROUNDED-FUNCTIONAL-DEVELOPMENT-02: the inventor's own explicit
+    # unknown points at ONE committed variant of this gap — serve it (once)
+    # so the journey develops the part they said is not yet known. Fails
+    # closed to the unchanged law below.
+    try:
+        matched = _stated_unknown_matches(state, gap_type, variants)
+        asked = _asked_question_ids(state, gap_type) if matched else set()
+        focus = _stated_unknown_focus(variants, matched, covered, routed, asked)
+    except Exception:
+        matched, asked, focus = frozenset(), set(), None
+    # The stated-unknown variant was already asked out of committed order
+    # and the index law now points back at it: do not ask it twice — resume
+    # at the earliest committed variant not covered, routed or asked.
+    if focus is None and canonical.question_id in matched \
+            and canonical.question_id in asked \
+            and canonical.question_id not in covered:
+        for variant in variants:
+            vid = variant.question_id
+            if vid not in covered and vid not in routed and vid not in asked:
+                return IntentServing(vid, variant.text, variant.design_gap_id,
+                                     adjusted=True, basis=BASIS_RESUMED)
+    if focus is not None:
+        if focus.question_id == canonical.question_id:
+            return IntentServing(canonical.question_id, canonical.text,
+                                 canonical.design_gap_id, adjusted=False)
+        return IntentServing(focus.question_id, focus.text,
+                             focus.design_gap_id, adjusted=True,
+                             basis=BASIS_STATED_UNKNOWN)
+    if canonical.question_id not in covered:
+        return IntentServing(canonical.question_id, canonical.text,
+                             canonical.design_gap_id, adjusted=False)
     for variant in variants[canonical_index + 1:]:
         if variant.question_id not in covered \
                 and variant.question_id not in routed:
@@ -597,7 +645,6 @@ def grounded_functional_needs(state, gap_type, question_id=None):
         if getattr(state, "domain", None) is None:
             return ()
         variant_ids = declared_variant_ids(state, gap_type)
-        from engine.progression_loop import _detect_acknowledged_unknown
         from engine.idea_state import DISPOSITION_ANSWERED
         # ANY gap (not `_gap_answer_records`, which is gap-scoped): the first
         # active answered record anywhere ends the idea's greeting phase.
@@ -606,35 +653,105 @@ def grounded_functional_needs(state, gap_type, question_id=None):
             and getattr(r, "disposition", None) == DISPOSITION_ANSWERED
             for r in getattr(state, "assertions", []))
         needs = []
-        seen = set()
-        idea = idea_stated_unknown(state)
-        if idea is not None:
-            statement, basis = idea
+        for source, statement, basis in _stated_unknowns(state, gap_type):
             binding = _binding_for(statement, gap_type, question_id,
-                                   variant_ids, provenance=False)
-            if binding != GROUNDED_BINDING_NONE or not answered_any:
-                needs.append(GroundedFunctionalNeed(
-                    GROUNDED_SOURCE_IDEA, statement, basis, gap_type, binding,
-                    question_id if binding == GROUNDED_BINDING_QUESTION
-                    else None))
-                seen.add(statement)
-        for record in _gap_answer_records(state, gap_type):
-            content = getattr(record, "content", None)
-            if not isinstance(content, str):
+                                   variant_ids,
+                                   provenance=source == GROUNDED_SOURCE_ANSWER)
+            if source == GROUNDED_SOURCE_IDEA \
+                    and binding == GROUNDED_BINDING_NONE and answered_any:
                 continue
-            unknown = _detect_acknowledged_unknown(content, gap_type, 0)
-            if unknown is None:
-                continue
-            statement = unknown.verbatim.strip()
-            if not statement or statement in seen:
-                continue
-            binding = _binding_for(statement, gap_type, question_id,
-                                   variant_ids, provenance=True)
             needs.append(GroundedFunctionalNeed(
-                GROUNDED_SOURCE_ANSWER, statement, unknown.category_basis,
-                gap_type, binding,
+                source, statement, basis, gap_type, binding,
                 question_id if binding == GROUNDED_BINDING_QUESTION else None))
-            seen.add(statement)
         return tuple(needs)
     except Exception:
         return ()
+
+
+def _stated_unknowns(state, gap_type):
+    """``(source, statement, basis)`` for every inventor-stated explicit
+    unknown relevant to ``gap_type``: the idea statement's (if any) first,
+    then those inside ACTIVE answered records of this gap in canonical
+    ledger order; an identical statement once. Recognition is the existing
+    detector's alone. Raises on an unreadable ledger (callers fail closed)."""
+    from engine.progression_loop import _detect_acknowledged_unknown
+    found = []
+    seen = set()
+    idea = idea_stated_unknown(state)
+    if idea is not None:
+        found.append((GROUNDED_SOURCE_IDEA, idea[0], idea[1]))
+        seen.add(idea[0])
+    for record in _gap_answer_records(state, gap_type):
+        content = getattr(record, "content", None)
+        if not isinstance(content, str):
+            continue
+        unknown = _detect_acknowledged_unknown(content, gap_type, 0)
+        if unknown is None:
+            continue
+        statement = unknown.verbatim.strip()
+        if not statement or statement in seen:
+            continue
+        found.append((GROUNDED_SOURCE_ANSWER, statement, unknown.category_basis))
+        seen.add(statement)
+    return found
+
+
+def _asked_question_ids(state, gap_type):
+    """Committed question ids of this gap the inventor has already responded
+    to — any ACTIVE record of the gap whose durable ``question_target`` names
+    it (an answer, a non-answer, or a correction, which inherits its
+    target). Replay-faithful: ``question_target`` is durable record truth."""
+    asked = set()
+    for record in getattr(state, "assertions", []):
+        if getattr(record, "superseded_by", None) is not None \
+                or getattr(record, "gap_context", None) != gap_type:
+            continue
+        target = getattr(record, "question_target", None)
+        if isinstance(target, str) and target.startswith("PATHN:"):
+            asked.add(target[len("PATHN:"):])
+    return asked
+
+
+def _stated_unknown_matches(state, gap_type, variants):
+    """The knowledge-seeking committed variants of this gap whose EN/AR-paired
+    intent markers an inventor-stated explicit unknown carries
+    (``_matches_intent`` — the same admitted mapping the T2-G owner uses to
+    decide that an unknown concerns THIS question's requested information).
+    ``answer_stance.UNCERTAINTY_QUESTION_IDS`` are excluded: they ask the
+    inventor to name an uncertainty, which the statement already does."""
+    statements = [statement for _source, statement, _basis
+                  in _stated_unknowns(state, gap_type)]
+    if not statements:
+        return frozenset()
+    from engine.answer_stance import UNCERTAINTY_QUESTION_IDS
+    return frozenset(
+        variant.question_id for variant in variants
+        if variant.question_id not in UNCERTAINTY_QUESTION_IDS
+        and any(_matches_intent(statement, variant.question_id)
+                for statement in statements))
+
+
+def _stated_unknown_focus(variants, matched, covered, routed, asked):
+    """IDEA-GROUNDED-FUNCTIONAL-DEVELOPMENT-02 — the committed variant of
+    this gap that develops what the inventor said is not yet known, or None:
+    the FIRST variant, in committed order, that a stated unknown matches
+    (``_stated_unknown_matches``) and that is not covered by an answer of
+    this gap, not an outstanding routed need and not yet asked
+    (``_asked_question_ids``) — so it is served once, never repeated.
+    Positive evidence only: no match, no focus. The statement is never an
+    answer: it marks nothing covered and moves no state."""
+    for variant in variants:
+        vid = variant.question_id
+        if vid in matched and vid not in covered and vid not in routed \
+                and vid not in asked:
+            return variant
+    return None
+
+
+def stated_unknown_serving(state, gap_type):
+    """True when the variant the page serves for ``gap_type`` was chosen
+    because of the inventor's stated unknown (read-only; False on any
+    failure). The web layer uses the returned IntentServing's ``basis``
+    directly; this is the same answer for callers without it."""
+    serving = w2c_served_question(state, gap_type)
+    return serving is not None and serving.basis == BASIS_STATED_UNKNOWN

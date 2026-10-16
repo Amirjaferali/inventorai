@@ -6446,10 +6446,12 @@ class _QuestionContext:
     feedback is about."""
 
     __slots__ = ("gap_type", "iterations_open", "question", "identity",
-                 "served", "w2b_cues", "w2b_risk_note", "w2b_primary_action")
+                 "served", "w2b_cues", "w2b_risk_note", "w2b_primary_action",
+                 "serving_basis")
 
     def __init__(self, gap_type, iterations_open, question, identity, served,
-                 w2b_cues, w2b_risk_note, w2b_primary_action):
+                 w2b_cues, w2b_risk_note, w2b_primary_action,
+                 serving_basis=None):
         self.gap_type = gap_type
         self.iterations_open = iterations_open
         self.question = question            # the FINAL canonical ENGLISH ask
@@ -6458,6 +6460,10 @@ class _QuestionContext:
         self.w2b_cues = w2b_cues
         self.w2b_risk_note = w2b_risk_note
         self.w2b_primary_action = w2b_primary_action
+        # IDEA-GROUNDED-FUNCTIONAL-DEVELOPMENT-02: why W2-C adjusted the
+        # displayed variant (its IntentServing.basis), or None when W2-C did
+        # not adjust it. Presentation only.
+        self.serving_basis = serving_basis
 
 
 def _resolve_question_context(state, last_result):
@@ -6599,7 +6605,10 @@ def _resolve_question_context(state, last_result):
     return _QuestionContext(
         gap_type=gap_type, iterations_open=iterations_open, question=question,
         identity=identity, served=served, w2b_cues=tuple(w2b_cues),
-        w2b_risk_note=w2b_risk_note, w2b_primary_action=w2b_primary_action)
+        w2b_risk_note=w2b_risk_note, w2b_primary_action=w2b_primary_action,
+        serving_basis=(getattr(_rvr7_w2c, "basis", None)
+                       if _rvr7_w2c is not None and served is not None
+                       else None))
 
 
 # IDEA-GROUNDED-FUNCTIONAL-NEED-01 — render-edge adapter for the inventor's own
@@ -6623,6 +6632,17 @@ def _grounded_need_context(state, qctx):
                     state, qctx.gap_type, served_id)]
     except Exception:
         return []
+
+
+def _grounded_focus(qctx):
+    """True when W2-C served this question because of the inventor's stated
+    unknown (IDEA-GROUNDED-FUNCTIONAL-DEVELOPMENT-02). Presentation only."""
+    try:
+        from engine.intent_serving import BASIS_STATED_UNKNOWN
+        return (qctx is not None and qctx.question is not None
+                and qctx.serving_basis == BASIS_STATED_UNKNOWN)
+    except Exception:
+        return False
 
 
 def _idea_stated_unknown_context(state):
@@ -6865,6 +6885,9 @@ def show_session(sid):
         # IDEA-GROUNDED-FUNCTIONAL-NEED-01: the inventor's own explicit unknown,
         # shown with the served question it is connected to (read-only).
         grounded_needs=_grounded_need_context(state, _qctx),
+        # IDEA-GROUNDED-FUNCTIONAL-DEVELOPMENT-02: the served question was
+        # chosen because it asks about what the inventor said is not known.
+        grounded_focus=_grounded_focus(_qctx),
         idea_stated_unknown=_idea_stated_unknown_context(state),
         # EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: evaluated lazily by the Compass
         # only when every earlier primary action (integrated steps included) is

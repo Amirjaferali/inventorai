@@ -752,6 +752,12 @@ body{overflow-wrap:anywhere}
     <p class="grounded-need-binding" style="margin:0">{{ t('UI_GFN_BINDING_' ~ need.binding|upper) }}</p>
   </div>
   {% endfor %}
+  {#- IDEA-GROUNDED-FUNCTIONAL-DEVELOPMENT-02: the served question was chosen
+      from the fixed set because it asks about what the inventor said is not
+      yet known; the statement itself is not treated as an answer. -#}
+  {% if grounded_focus %}
+  <p class="grounded-need-chosen" data-grounded-focus style="margin:0 0 4px 0">{{ t('UI_GFN_CHOSEN') }}</p>
+  {% endif %}
   <p class="grounded-need-next" style="margin:0 0 4px 0">{{ t('UI_GFN_NEXT') }}</p>
   <p class="grounded-need-boundary" style="margin:0;color:#555">{{ t('UI_GFN_BOUNDARY') }}</p>
 </div>
