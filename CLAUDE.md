@@ -1331,19 +1331,19 @@ information, not execution authority.
   the next ready candidate under (c) and waits for the Owner. Replan only on material new evidence, a
   demonstrated blocker or explicit Owner direction, and run PCRA / SFR before any research or
   implementation. Deterministic orchestration stays a responsibility of the existing owners: no duplicate
-  analysis engine per domain, technology or product category. Next-step queue (continuity, not authority):
-  approved next increment NONE, and the candidates awaiting the Owner, in the Lead's recommended order,
-  are PF-CALCULATION-AT-POINT-OF-NEED-01 (offer the existing CAP-13 / THERM-01 calculations inside the
-  matching physical-feasibility gap pack, which needs narrow CAP-13 and THERM-01 journey-section amendments)
-  and 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 (one prose-only Electronics reference claim from the
-  Lead-inspected Kuphaldt source, which needs its exact edition and passage location).
-  A candidate is a recommendation, never an authorization, and a blocked candidate passes to the next
-  ready one under step 6 of (c).
+  analysis engine per domain, technology or product category. Next increment (continuity, not authority):
+  approved next increment NONE, and no Owner-agreed fixed next-increment sequence is established. The
+  next eligible increment is recovered from an Owner-approved execution sequence recorded after this
+  entry, if one exists; otherwise the Lead proposes one value-driven candidate under (c) and waits for
+  the Owner. Earlier candidate proposals carry no standing priority or default order, and a proposal is a
+  recommendation, never an authorization; a blocked candidate passes to the next ready one under step 6
+  of (c).
   (h) **Gate results since PR #828 and reopening triggers.** Each item reopens only on its named
   trigger. 28-T3 Power Electronics / Motion: BLOCKED (no qualified owner or claim-level source); the
   Lead-inspected Tony R. Kuphaldt, *Lessons in Electric Circuits*, Volume III, Chapter 4 (CC BY 4.0)
-  supports only the class-level transistor load-switching principle, which is the candidate above;
-  anything further reopens on a directly inspected authoritative source with a recorded reuse basis
+  supports only the class-level transistor load-switching principle (an unapproved proposal,
+  28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01, with no priority, that still needs that source's exact
+  edition and passage location); anything further reopens on a directly inspected authoritative source with a recorded reuse basis
   (Lead-supplied when executor egress is blocked). Interface verification beyond the Stage 15
   preparation fields: STOP — reopens only with an authorized interface-characterisation scope (the D4
   gate) and its claim-level sources. Preliminary motion requirements: BLOCKED — reopens on a qualified
