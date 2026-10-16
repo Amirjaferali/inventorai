@@ -7516,7 +7516,30 @@ def test_technical_remediation_strategy_is_preserved_as_continuity_only():
             "Preliminary motion requirements: BLOCKED",
             "structured quantity / BOM on T6 §0 activation"):
         assert needle in entry, needle
+    # Product identity applied at selection: idea-first, no assumed engineering knowledge or design;
+    # it restates the Level 0 identity owner and adds no authority or capability
+    for needle in (
+            "**Product identity applied at selection** (Level 0 owner "
+            "`docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md` §§3, 7",
+            "restated here, never amended",
+            "with no assumed education, occupation or engineering knowledge",
+            "may arrive with only a vague idea in ordinary language and no design",
+            "idea → desired function → initial functional / engineering concept → progressive engineering "
+            "development → qualified analysis and verification needs → informed development decisions",
+            "Never assume the user knows the applicable discipline, has chosen components",
+            "InventorAI is not merely a tool for documenting, reviewing or validating an externally designed device",
+            "User statements, system proposals, assumptions, unknowns and verified facts stay distinguishable",
+            "no complete verified design is generated autonomously — only authorized, qualified capabilities "
+            "produce engineering conclusions",
+            "a technology name in a register is not engineering capability",
+            "1. name the meaningful engineering-development outcome that becomes possible for a nontechnical "
+            "user after the increment and was not possible before, judged against delivered behaviour and "
+            "without assuming a pre-existing design",
+            "never mere ease of implementation"):
+        assert needle in entry, needle
+    assert "non-engineer inventor problem" not in entry
     successor = claude[claude.index("**Successor Lead (mandatory).**"):claude.index("**Successor handover.**")]
+    assert "also apply the product identity of block (a)" in successor
     assert ("read the execution-continuity and reopening-trigger blocks (g)–(h) of the Lead Watchlist's "
             "STANDING technical-remediation entry, which record candidates as recommendations, never as "
             "authority") in successor
