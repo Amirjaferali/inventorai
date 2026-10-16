@@ -7549,6 +7549,31 @@ def test_technical_remediation_strategy_is_preserved_as_continuity_only():
         assert re.search(pat, entry) is None, pat
 
 
+def test_reuse_before_build_covers_engineering_capability_reuse():
+    """The existing READ BEFORE BUILD / REUSE BEFORE CREATE rule also covers a
+    substantial new engineering capability: owners, scientific models and their
+    applicability, source evidence and reuse rights, reference results and tests,
+    adapters and unit / calculation boundaries, and the reuse-versus-new judgement.
+    Prior qualification never qualifies a new use case, unresolved models are not
+    admitted, and the rule stays an operating method, not a gate."""
+    claude = re.sub(r"\s+", " ", _read("CLAUDE.md"))
+    start = claude.index("**READ BEFORE BUILD / REUSE BEFORE CREATE** is the Lead's standing method")
+    rule = claude[start:claude.index("**Review routing.**", start)]
+    for needle in (
+            "For a substantial new engineering capability the same check also covers, where it applies",
+            "existing qualified InventorAI capabilities and engineering owners",
+            "reusable scientific models and their exact applicability",
+            "authoritative source evidence, its reuse rights and prior qualification decisions",
+            "independent reference results and reusable tests",
+            "existing integration adapters and unit / calculation boundaries",
+            "whether reuse is genuinely safer, faster and more maintainable than a bounded new implementation",
+            "Previously qualified evidence or tests never qualify a new use case by themselves",
+            "a model whose provenance, licensing, applicability or accuracy is unresolved is not admitted",
+            "the blocker is preserved and eligible alternatives are evaluated",
+            "not a governance gate, approval stage, mandatory extra agent round"):
+        assert needle in rule, needle
+
+
 def test_level0_engineering_assistance_clarification_preserves_safeguards():
     """The Level 0 engineering-assistance clarification lives in the existing
     Owner amendment record (OWNER_PRODUCT_IDENTITY_CORRECTION.md §15): it permits
