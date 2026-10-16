@@ -159,6 +159,24 @@ def prepare_answer(state, gap_type) -> None:
     _open_deferred_gap(state, gap_type)
 
 
+def answer_applicable(state, gap_type) -> bool:
+    """True when an owner answer recorded against ``gap_type`` would be
+    integrated into exactly that gap at this point (``run_iteration``
+    integrates into ``select_next_gap``). False only when ``gap_type`` names
+    an OPEN/PARTIAL gap that is neither routed-exhausted nor paused and is not
+    the selected gap — a state reachable only beside a Stage-2 pause, because
+    otherwise at most one such gap is ever open and it is the selected one.
+    Such an answer is never integrated into another gap: the live correction
+    route refuses it and reconstruction leaves it explicitly unapplied."""
+    if gap_type is None:
+        return True
+    gap = state.get_gap(gap_type)
+    if gap is None or gap.status not in (OPEN, PARTIAL) \
+            or owner_questioning_exhausted(state, gap) or _is_paused(state, gap):
+        return True
+    return select_next_gap(state) == gap_type
+
+
 def paused_gap_answerable(state, gap_type) -> bool:
     """True when an answer to the paused ``gap_type`` would be integrated into
     that gap: no OPEN/PARTIAL, non-paused, non-exhausted gap of higher

@@ -288,6 +288,11 @@ class ReconstructedReviewState:
     # record with a valid assumption-origin ancestry, in seq order (applied or
     # skipped). Additive and defaulted; derived, never persisted.
     assumption_origin_outcomes: tuple = field(default_factory=tuple)
+    # UNKNOWN-QUESTION-PAUSE-01: the record ids of ACTIVE answered records left
+    # explicitly UNAPPLIED because, at their durable position, their gap was an
+    # open, non-selected gap beside a Stage-2 pause (never integrated into
+    # another gap). Additive and defaulted; derived, never persisted.
+    unapplied_answer_record_ids: tuple = field(default_factory=tuple)
 
 
 @dataclass(frozen=True)
@@ -605,6 +610,7 @@ def _reconstruct(store, project_id: str):
         if _kind == ANCESTRY_ASSUMPTION_ORIGIN:
             _assumption_origin.add(record.record_id)
     _assumption_outcomes = []
+    _unapplied_answers = []
     for _position, record in enumerate(_ledger):
         # UNKNOWN-QUESTION-PAUSE-01: the Stage-2 pause / resume is applied at
         # each record's OWN durable position by the same engine functions the
@@ -633,7 +639,15 @@ def _reconstruct(store, project_id: str):
                 applied=_skip is None, reason=_skip))
         elif (record.disposition == DISPOSITION_ANSWERED
                 and record.record_id in _amended_ids):
-            last_result = progression_loop.run_iteration(state, record.content)
+            # UNKNOWN-QUESTION-PAUSE-01: an answer is integrated only into its
+            # own gap. Beside a Stage-2 pause a correction can name an open gap
+            # that is not the selected one; it is then left explicitly
+            # unapplied, never integrated into another gap. Without a pause
+            # this always holds, so earlier histories replay unchanged.
+            if progression_loop.answer_applicable(state, record.gap_context):
+                last_result = progression_loop.run_iteration(state, record.content)
+            else:
+                _unapplied_answers.append(record.record_id)
         elif record.disposition == DISPOSITION_RISK_ACCEPTED:
             try:
                 progression_loop.accept_gap_risk(state, record.gap_context)
@@ -718,6 +732,7 @@ def _reconstruct(store, project_id: str):
         effective_engine_contract_version=version,
         adoption_count=adoption_count,
         assumption_origin_outcomes=tuple(_assumption_outcomes),
+        unapplied_answer_record_ids=tuple(_unapplied_answers),
     ), state
 
 

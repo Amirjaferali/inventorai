@@ -59,7 +59,7 @@ from engine.progression_loop import (
     # UNKNOWN-QUESTION-PAUSE-01: the Stage-2 unknown/deferred pause — the
     # deferred-open next gap, the two ledger-positioned appliers and the
     # paused-question revisit eligibility.
-    deferred_open_gap, apply_owner_disposition, prepare_answer,
+    deferred_open_gap, apply_owner_disposition, prepare_answer, answer_applicable,
     paused_gap_types, paused_gap_answerable, GAP_PRIORITY,
     TRIGGER_CRITICAL_UNRESOLVED, TRIGGER_LAPSED_ACCEPTANCE,
     TRIGGER_MULTIPLE_ALTERNATIVES, TRIGGER_COMPLETED_INTENT_SKIP,
@@ -3402,24 +3402,29 @@ def _routed_need_target(state, gap_type, identity):
 
 def _paused_question(state, gap_type):
     """``(identity, english, served)`` of the question the owner paused on
-    ``gap_type``: the exact committed question named by the latest ACTIVE
-    `unknown` / `deferred` record of that gap, else the gap's canonical
-    question at its unchanged ``iterations_open``. Pure; None on failure."""
+    ``gap_type``: the exact committed question named by the PAUSING record —
+    the latest ACTIVE `unknown` / `deferred` record of that gap (only those
+    pause it; an `answered` record resumes it, and no other record, such as a
+    routed-need note, can rebind it) — else the gap's canonical question at its
+    unchanged ``iterations_open``. A question that is an outstanding routed
+    need is never offered for an answer (NeedRouting eligibility), so it
+    resolves to None. Pure; None on failure."""
     try:
         from engine.path_n_questions import get_served_question_by_id
         domain = getattr(state, "domain", None)
-        latest = None
+        routed = _need_routing.outstanding_routed_question_ids(state, gap_type)
+        pausing = None
         for record in state.assertions:
             if record.superseded_by is None and record.gap_context == gap_type \
-                    and record.disposition in ("answered", "unknown", "deferred",
-                                               "provisional_assumption",
-                                               "specialist_requested",
-                                               "evidence_requested"):
-                latest = record
-        target = getattr(latest, "question_target", None)
+                    and record.disposition in ("unknown", "deferred"):
+                pausing = record
+        target = getattr(pausing, "question_target", None)
         if isinstance(target, str) and target.startswith(_PATHN_IDENTITY_PREFIX):
-            served = get_served_question_by_id(
-                gap_type, target[len(_PATHN_IDENTITY_PREFIX):], domain=domain)
+            question_id = target[len(_PATHN_IDENTITY_PREFIX):]
+            if question_id in routed:
+                return None
+            served = get_served_question_by_id(gap_type, question_id,
+                                               domain=domain)
             if served is not None:
                 return target, served.text, served
         gap = state.get_gap(gap_type)
@@ -3428,7 +3433,9 @@ def _paused_question(state, gap_type):
                                        path=state.path)
         identity, served = _rvr7_identity(domain, gap_type, iterations_open,
                                           state.path)
-        if identity is None or not isinstance(english, str):
+        if identity is None or not isinstance(english, str) or (
+                identity.startswith(_PATHN_IDENTITY_PREFIX)
+                and identity[len(_PATHN_IDENTITY_PREFIX):] in routed):
             return None
         return identity, english, served
     except Exception:
@@ -11397,6 +11404,17 @@ def correct_answer(sid):
     if (target is None
             or target.disposition != ACTION_ANSWERED
             or getattr(target, "superseded_by", None) is not None):
+        entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # UNKNOWN-QUESTION-PAUSE-01: a correction is replayed into its own gap only.
+    # Beside a Stage-2 pause its gap can be open while another gap is the one
+    # being questioned; such a correction is refused here (nothing staged or
+    # stored) instead of being integrated into the other gap. Without a pause
+    # this always passes.
+    import copy as _copy_mod
+    _probe = _copy_mod.deepcopy(state)
+    prepare_answer(_probe, target.gap_context)
+    if not answer_applicable(_probe, target.gap_context):
         entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 

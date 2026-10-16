@@ -345,3 +345,148 @@ def test_arabic_page_serves_the_next_question_and_paused_notice_in_arabic(client
     assert ui_text.text("UI_UQTR_REVISIT", "ar") in block
     assert 'class="paused-question-text" lang="ar" dir="rtl"' in block
     assert ui_text.text("UI_UQTR_MEANING_DEFERRED", "en") not in body
+
+
+# ---------------------------------------------------------------------------
+# 12. Review finding 1 — a routed-need note never rebinds a paused revisit
+# ---------------------------------------------------------------------------
+
+def _routed_note(c, sid, text="A specialist will check this."):
+    body = _page(c, sid)
+    form = body[body.find('class="routed-need-form"'):]
+    target = _html.unescape(re.search(r'name="answer_target" value="([^"]+)"', form).group(1))
+    return c.post(f"/session/{sid}", data={
+        "response": text, "action": "provisional_assumption",
+        "answer_token": _token(body), "answer_target": target})
+
+
+def _paused_text(body, gap):
+    block = _paused_block(body, gap)
+    m = re.search(r'class="paused-question-text"[^>]*>(.*?)</p>', block, re.S)
+    return " ".join(_html.unescape(m.group(1)).split()) if m else None
+
+
+def test_routed_note_cannot_rebind_the_paused_question(client):
+    # Astra's sequence: pause mechanism, then pause the Mechanical feasibility
+    # question, then record a note on its specialist-routed question.
+    sid = _start(client, MECH)
+    _act(client, sid, "unknown")
+    paused_ask = _question(_page(client, sid))
+    _act(client, sid, "unknown")
+    assert pl.paused_gap_types(_state(sid)) == {MC, PF}
+    assert _paused_text(_page(client, sid), PF) == paused_ask
+    assert _routed_note(client, sid).status_code == 302
+    note = _state(sid).assertions[-1]
+    routed = appmod._need_routing.outstanding_routed_question_ids(_state(sid), PF)
+    assert note.disposition == "provisional_assumption"
+    assert note.question_target[len("PATHN:"):] in routed
+    body = _page(client, sid)
+    # the revisit stays bound to the question the owner actually paused
+    assert _paused_text(body, PF) == paused_ask
+    target = _html.unescape(re.search(
+        r'name="answer_target" value="([^"]+)"', _paused_block(body, PF)).group(1))
+    assert appmod._verified_answer_target(sid, _token(body), target).identity \
+        == "PATHN:" + get_served_question(PF, 0, domain=MECH).question_id
+    # and a forged revisit for the routed question is refused at POST
+    forged = appmod._issue_answer_target(sid, _token(body), appmod._AnswerTarget(
+        appmod.UQTR_TARGET_PAUSED_QUESTION, note.question_target, PF,
+        getattr(_state(sid), "engine_contract_version", None)))
+    before = len(_state(sid).assertions)
+    client.post(f"/session/{sid}", data={"response": PF_ANSWER,
+                                         "answer_token": _token(body),
+                                         "answer_target": forged})
+    assert len(_state(sid).assertions) == before
+    assert pl.paused_gap_types(_state(sid)) == {MC, PF}
+
+
+def test_a_paused_question_that_is_a_routed_need_offers_no_answer_form(client):
+    sid = _start(client, MECH)
+    _act(client, sid, "unknown")
+    _act(client, sid, "unknown")                      # PF Q1 paused
+    state = _state(sid)
+    record = [r for r in state.assertions if r.gap_context == PF][-1]
+    routed = sorted(appmod._need_routing.outstanding_routed_question_ids(state, PF))
+    record.question_target = "PATHN:" + routed[0]     # a routed identity
+    assert appmod._paused_question(state, PF) is None
+    assert appmod._paused_question_target(state, PF, record.question_target) is None
+    block = _paused_block(_page(client, sid), PF)
+    assert block is not None and 'name="answer_target"' not in block
+
+
+# ---------------------------------------------------------------------------
+# 13. Review finding 2 — a correction is never integrated into another gap
+# ---------------------------------------------------------------------------
+
+def _astra_finding_2(c, domain=ELEC):
+    sid = _start(c, domain)
+    _act(c, sid, "unknown")                           # pause mechanism
+    _act(c, sid, "answered", PF_ANSWER)               # answer feasibility
+    assert _revisit(c, sid, MC, MC_ANSWER).status_code == 302   # revisit mechanism
+    pf_answer = [r for r in _state(sid).assertions
+                 if r.gap_context == PF and r.disposition == "answered"][-1]
+    return sid, pf_answer
+
+
+CORRECTED_PF = "It works because gravity moves the water; no electric pump at all."
+
+
+def test_feasibility_correction_while_mechanism_is_active_fails_closed(client):
+    sid, pf_answer = _astra_finding_2(client)
+    before = _structural(_state(sid))
+    durable_before = len(appmod._get_store().load_contract(sid).assertions)
+    r = client.post(f"/session/{sid}/correct", data={
+        "supersedes_record_id": pf_answer.record_id, "response": CORRECTED_PF,
+        "answer_token": _token(_page(client, sid))})
+    assert r.status_code == 302
+    assert _structural(_state(sid)) == before          # mechanism untouched
+    assert len(appmod._get_store().load_contract(sid).assertions) == durable_before
+    assert appmod.CORRECTION_NOT_APPLIED_MESSAGE in _page(client, sid)
+    recon = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert _structural(recon.state) == before
+    appmod.SESSION_STORE.clear()
+    assert client.post(f"/session/{sid}/resume").status_code == 302
+    assert _structural(_state(sid)) == before
+
+
+def test_a_stored_incompatible_correction_replays_explicitly_unapplied(client, monkeypatch):
+    # Defence in depth: even if such a correction is durably recorded, replay
+    # never integrates it into the mechanism gap.
+    sid, pf_answer = _astra_finding_2(client)
+    def _mechanism(state):
+        gap, known = state.get_gap(MC), state.known_mechanism
+        # the replay iteration stamp shifts because the superseded answer is
+        # withdrawn (existing full-replay behaviour); the substance must not.
+        return (gap.status, gap.iterations_open, known.content, known.quality)
+    mc_before = _mechanism(_state(sid))
+    monkeypatch.setattr(appmod, "answer_applicable", lambda *a, **k: True)
+    client.post(f"/session/{sid}/correct", data={
+        "supersedes_record_id": pf_answer.record_id, "response": CORRECTED_PF,
+        "answer_token": _token(_page(client, sid))})
+    monkeypatch.undo()
+    correction = appmod._get_store().load_contract(sid).assertions[-1]
+    assert (correction.disposition, correction.gap_context) == ("answered", PF)
+    assert pf_answer.record_id in correction.supersedes
+    for state in (_state(sid),
+                  reconstruct_readonly_state(appmod._get_store(), sid).state):
+        assert _mechanism(state) == mc_before
+    review = reconstruct_readonly_state(appmod._get_store(), sid).review
+    assert review.unapplied_answer_record_ids == (correction.record_id,)
+
+
+def test_correction_of_the_selected_gap_still_applies_normally(client):
+    sid = _start(client, ELEC)
+    _act(client, sid, "unknown")
+    _act(client, sid, "answered", "It just works somehow.")
+    target = _state(sid).assertions[-1]
+    assert target.gap_context == PF and pl.select_next_gap(_state(sid)) == PF
+    r = client.post(f"/session/{sid}/correct", data={
+        "supersedes_record_id": target.record_id, "response": PF_ANSWER,
+        "answer_token": _token(_page(client, sid))})
+    assert r.status_code == 302
+    latest = _state(sid).assertions[-1]
+    assert latest.gap_context == PF and target.record_id in latest.supersedes
+    assert pl.paused_gap_types(_state(sid)) == {MC}
+    assert _state(sid).get_gap(MC).iterations_open == 0
+    recon = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert _structural(recon.state) == _structural(_state(sid))
+    assert recon.review.unapplied_answer_record_ids == ()
