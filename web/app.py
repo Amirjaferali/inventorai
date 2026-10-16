@@ -6602,6 +6602,40 @@ def _resolve_question_context(state, last_result):
         w2b_risk_note=w2b_risk_note, w2b_primary_action=w2b_primary_action)
 
 
+# IDEA-GROUNDED-FUNCTIONAL-NEED-01 — render-edge adapter for the inventor's own
+# explicit unknown (idea statement or answers of the served gap), derived
+# read-only by `engine.intent_serving.grounded_functional_needs` from the
+# canonical state and the SAME served identity the page resolved. Presentation
+# only: the statement is the inventor's verbatim sentence (escaped by the
+# template, direction-isolated), the binding names only an EXISTING admitted
+# mapping (committed intent markers / canonical gap relevance / provenance),
+# and nothing here changes the question, the gap, the primary action or any
+# state. Fails closed to an empty list.
+def _grounded_need_context(state, qctx):
+    try:
+        if qctx is None or not qctx.gap_type or qctx.question is None:
+            return []
+        from engine.intent_serving import grounded_functional_needs
+        served_id = getattr(qctx.served, "question_id", None)
+        return [{"source": need.source, "statement": need.statement,
+                 "binding": need.binding}
+                for need in grounded_functional_needs(
+                    state, qctx.gap_type, served_id)]
+    except Exception:
+        return []
+
+
+def _idea_stated_unknown_context(state):
+    """The inventor's explicit unknown inside their idea statement (verbatim),
+    for the existing recorded-unknowns panel, or None."""
+    try:
+        from engine.intent_serving import idea_stated_unknown
+        found = idea_stated_unknown(state)
+        return found[0] if found else None
+    except Exception:
+        return None
+
+
 @app.route("/session/<sid>", methods=["GET"])
 def show_session(sid):
     if not _project_authorized(sid):
@@ -6828,6 +6862,10 @@ def show_session(sid):
         # used by the Compass only after every existing primary action.
         integrated_guidance=_integrated_journey_guidance(
             sid, _integrated_scope_context(state)),
+        # IDEA-GROUNDED-FUNCTIONAL-NEED-01: the inventor's own explicit unknown,
+        # shown with the served question it is connected to (read-only).
+        grounded_needs=_grounded_need_context(state, _qctx),
+        idea_stated_unknown=_idea_stated_unknown_context(state),
         # EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01: evaluated lazily by the Compass
         # only when every earlier primary action (integrated steps included) is
         # exhausted, so ordinary renders pay nothing for it.

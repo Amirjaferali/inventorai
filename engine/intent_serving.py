@@ -474,3 +474,162 @@ def supplemental_relevance(state, gap_type, response):
         return _matches_intent(response, canonical.question_id)
     except Exception:
         return False
+
+
+# ---------------------------------------------------------------------------
+# IDEA-GROUNDED-FUNCTIONAL-NEED-01 — the inventor's own explicit unknown,
+# grounded in their idea statement or their answers, shown with the question
+# that develops it (read-only, derived, never persisted).
+#
+# What this is: for the CURRENT canonical gap and the committed question the
+# page serves, the inventor's own sentences that positively declare that a
+# part of the idea is not yet known — recognised ONLY by the existing
+# acknowledged-unknown detector (its registered English markers, its
+# registered Arabic surfaces and its minimum length, unchanged) — read from
+#   * the idea statement captured by the existing Level-0 seam
+#     (``state.idea_summary``; the seed is never a ledger record), and
+#   * the ACTIVE answered ledger records of the SAME gap (a superseded or
+#     withdrawn answer is never read; a non-answer disposition is not an
+#     answer);
+# each tied to the gap it is shown with and to how far an EXISTING admitted
+# mapping connects it to the served question:
+#   QUESTION — the statement carries the served committed variant's own
+#              EN/AR-paired intent markers (``_matches_intent``), the same
+#              test the T2-G owner applies to decide that an explicit unknown
+#              concerns THIS question's requested information;
+#   GAP      — the inventor said it while this gap was being questioned
+#              (provenance), or the statement carries the committed markers
+#              of another variant of this gap, or the canonical relevance
+#              owner (``gap_relevance.addresses_gap``) finds the gap's
+#              governed intent vocabulary in it;
+#   NONE     — no admitted mapping connects it: nothing is claimed.
+# A NONE-bound idea-statement need is returned only before the inventor's
+# first active answered record, so the idea's own unknown greets the first
+# question(s) and then lives on only in the recorded-unknowns panel.
+#
+# What this is NOT: no component, sensor, control method, architecture or
+# discipline is inferred; no new vocabulary, heuristic, normalisation or
+# proposal carrier; no gap, maturity, progression, routing, evidence,
+# readiness or serving decision changes; ``select_next_gap`` and the W2-C
+# serving law above are untouched. Every result is a pure function of the
+# canonical state plus committed content, so a reconstructed or resumed
+# session recomputes it identically. Fail-closed: any failure yields the
+# inert result (``None`` / ``()``) and the page renders exactly as before.
+# ---------------------------------------------------------------------------
+
+GROUNDED_SOURCE_IDEA = "idea"
+GROUNDED_SOURCE_ANSWER = "answer"
+GROUNDED_BINDING_QUESTION = "question"
+GROUNDED_BINDING_GAP = "gap"
+GROUNDED_BINDING_NONE = "none"
+
+
+@dataclass(frozen=True)
+class GroundedFunctionalNeed:
+    """ONE inventor-stated unresolved part of the idea, as shown with the
+    current question. ``statement`` is the inventor's own sentence verbatim
+    (the existing detector's bounded fragment); ``basis`` is the registered
+    marker or surface that recognised it (provenance, never shown as a
+    claim); ``question_id`` is set only under a QUESTION binding."""
+    source: str
+    statement: str
+    basis: str
+    gap_type: str
+    binding: str
+    question_id: "str | None"
+
+
+def idea_stated_unknown(state):
+    """The inventor's explicit unknown inside their idea statement, as the
+    ``(statement, basis)`` pair the existing detector recognises, or ``None``.
+
+    Reads ``state.idea_summary`` — the statement the Level-0 seam captured
+    verbatim (display-trimmed at a word boundary with a visible marker when
+    very long, so a cut sentence is cut visibly, never silently). The
+    detector's own bounds apply unchanged: an unregistered way of saying "I
+    don't know", a statement shorter than its minimum length and the bare
+    technical word "unknown" are not recognised. Fail-closed ``None``."""
+    try:
+        summary = getattr(state, "idea_summary", None)
+        if not isinstance(summary, str) or not summary.strip():
+            return None
+        from engine.progression_loop import _detect_acknowledged_unknown
+        unknown = _detect_acknowledged_unknown(summary, None, 0)
+        if unknown is None:
+            return None
+        statement = unknown.verbatim.strip()
+        if not statement or not isinstance(unknown.category_basis, str):
+            return None
+        return statement, unknown.category_basis
+    except Exception:
+        return None
+
+
+def _binding_for(statement, gap_type, question_id, variant_ids, provenance):
+    """The strongest EXISTING admitted connection between ``statement`` and
+    the served question / gap. Positive evidence only."""
+    if question_id is not None and _matches_intent(statement, question_id):
+        return GROUNDED_BINDING_QUESTION
+    if provenance:
+        return GROUNDED_BINDING_GAP
+    if any(_matches_intent(statement, vid) for vid in variant_ids
+           if vid != question_id):
+        return GROUNDED_BINDING_GAP
+    from engine.gap_relevance import addresses_gap
+    if addresses_gap(statement, gap_type):
+        return GROUNDED_BINDING_GAP
+    return GROUNDED_BINDING_NONE
+
+
+def grounded_functional_needs(state, gap_type, question_id=None):
+    """The inventor-stated unresolved parts of the idea to show with the
+    question of ``gap_type`` that the page serves (``question_id`` is that
+    served committed variant's id, or ``None`` when the ask is not a
+    committed record). Idea-statement need first, then answer-time needs in
+    canonical ledger order; identical statements appear once. ``()`` when
+    there is nothing to show or on ANY failure (never an exception)."""
+    try:
+        if not isinstance(gap_type, str) or not gap_type:
+            return ()
+        if getattr(state, "domain", None) is None:
+            return ()
+        variant_ids = declared_variant_ids(state, gap_type)
+        from engine.progression_loop import _detect_acknowledged_unknown
+        from engine.idea_state import DISPOSITION_ANSWERED
+        answered_any = any(
+            getattr(r, "superseded_by", None) is None
+            and getattr(r, "disposition", None) == DISPOSITION_ANSWERED
+            for r in getattr(state, "assertions", []))
+        needs = []
+        seen = set()
+        idea = idea_stated_unknown(state)
+        if idea is not None:
+            statement, basis = idea
+            binding = _binding_for(statement, gap_type, question_id,
+                                   variant_ids, provenance=False)
+            if binding != GROUNDED_BINDING_NONE or not answered_any:
+                needs.append(GroundedFunctionalNeed(
+                    GROUNDED_SOURCE_IDEA, statement, basis, gap_type, binding,
+                    question_id if binding == GROUNDED_BINDING_QUESTION
+                    else None))
+                seen.add(statement)
+        for record in _gap_answer_records(state, gap_type):
+            content = getattr(record, "content", None)
+            if not isinstance(content, str):
+                continue
+            unknown = _detect_acknowledged_unknown(content, gap_type, 0)
+            if unknown is None:
+                continue
+            statement = unknown.verbatim.strip()
+            if not statement or statement in seen:
+                continue
+            binding = _binding_for(statement, gap_type, question_id,
+                                   variant_ids, provenance=True)
+            needs.append(GroundedFunctionalNeed(
+                GROUNDED_SOURCE_ANSWER, statement, unknown.category_basis,
+                gap_type, binding,
+                question_id if binding == GROUNDED_BINDING_QUESTION else None))
+            seen.add(statement)
+        return tuple(needs)
+    except Exception:
+        return ()
