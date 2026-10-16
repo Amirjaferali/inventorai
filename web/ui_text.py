@@ -8838,12 +8838,12 @@ UI_STRINGS = {
     },
     "UI_GFN_BOUNDARY": {
         "en": ("InventorAI has not assumed how this part would work, and has not "
-               "assumed any component, sensor, control method or design. This is "
-               "your own statement, not a checked requirement or an engineering "
+               "assumed any component, control method or design. This is your "
+               "own statement, not a checked requirement or an engineering "
                "conclusion."),
         "ar": ("لم يفترض InventorAI كيف سيعمل هذا الجزء، ولم يفترض أي مكوّن أو "
-               "حساس أو طريقة تحكم أو تصميم. هذا قولك أنت، وليس متطلبًا متحققًا "
-               "منه ولا استنتاجًا هندسيًا."),
+               "طريقة تحكم أو تصميم. هذا قولك أنت، وليس متطلبًا متحققًا منه ولا "
+               "استنتاجًا هندسيًا."),
     },
     "UI_GFN_PANEL_IDEA": {
         "en": "Stated with your idea:",
