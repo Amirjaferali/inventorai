@@ -2709,6 +2709,33 @@ UI_STRINGS = {
             "يرجى تأكيد هذا المسار للبدء، أو تعديل وصفك."
         ),
     },
+    # IDEA-ENTRY-STARTING-FOCUS-GUIDANCE-01: the D2 no-match chooser's
+    # meaning note and the label of each option's example question (the
+    # example itself is the committed Path-N question, never new copy).
+    "UI_B_START_033": {
+        "en": (
+            "You do not need to know which engineering field your idea belongs "
+            "to. Choose the starting point whose example question sounds closest "
+            "to what you want to describe; if both seem to fit, choose the one "
+            "that is easier for you to answer. This choice only decides which "
+            "set of questions guides the analysis of your idea. It is not a "
+            "technical classification of your idea, and it says nothing about "
+            "whether your idea is feasible or correct. The starting point stays "
+            "fixed for this project."
+        ),
+        "ar": (
+            "لا تحتاج إلى معرفة المجال الهندسي الذي تنتمي إليه فكرتك. اختر نقطة "
+            "البداية التي يبدو مثال أسئلتها أقرب إلى ما تريد وصفه، وإذا بدا لك "
+            "الخياران مناسبين فاختر الأسهل عليك في الإجابة. هذا الاختيار يحدد فقط "
+            "مجموعة الأسئلة التي توجّه تحليل فكرتك، وليس تصنيفًا تقنيًا لفكرتك، ولا "
+            "يحكم على ما إذا كانت فكرتك قابلة للتنفيذ أو صحيحة. تبقى نقطة البداية "
+            "ثابتة لهذا المشروع."
+        ),
+    },
+    "UI_B_START_034": {
+        "en": "An example of the questions this starting point asks:",
+        "ar": "مثال على الأسئلة التي تطرحها نقطة البداية هذه:",
+    },
 
     # --- index.html + data_session.html + success_criteria.html: sensitive -----
     # (truth-corrected, owner-approved product-truth copy)
