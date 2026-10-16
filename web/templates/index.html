@@ -97,11 +97,15 @@
    offered). The chosen domain still requires explicit confirmation. #}
 <fieldset style="margin-top:12px;border:1px solid #ccc;border-radius:4px;padding:8px 12px">
 <legend style="font-size:14px">{{ start_choice_prompt }}</legend>
+<p class="starting-focus-note" style="font-size:13px;color:#555;margin:4px 0 8px 0">{{ t('UI_B_START_033') }}</p>
 {% for d in start_choice_domains %}
 <label style="display:block;margin-top:6px;font-size:14px">
 <input type="radio" name="domain_choice" value="{{ d }}" required>
 {{ start_domain_labels[d] }}
 </label>
+{% if start_choice_examples %}
+<p class="starting-focus-example" style="font-size:13px;color:#555;margin:2px 0 8px 24px">{{ t('UI_B_START_034') }} <bdi dir="auto">{{ start_choice_examples[d] }}</bdi></p>
+{% endif %}
 {% endfor %}
 </fieldset>
 {% elif start_present_domain %}

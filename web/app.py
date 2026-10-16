@@ -4037,6 +4037,31 @@ def _lay_electrical_evidence_count(lowered_text: str) -> int:
     tokens = set(_TOKEN_RE.findall(lowered_text))
     return len(tokens & _LAY_ELECTRICAL_WORDS)
 
+def _starting_focus_examples(choice_domains, lang):
+    """IDEA-ENTRY-STARTING-FOCUS-GUIDANCE-01: for the D2 no-match chooser,
+    each offered starting focus's FIRST committed Path-N mechanism question,
+    in the display language, as a plain-language example of the questions
+    that focus starts with. Read only through the existing Path-N owner
+    (``get_served_question``) and the existing render-edge language rule
+    (``_rvr7_display``); no new question, classifier or domain text.
+
+    All or nothing: when any offered focus has no committed example, or
+    anything fails, it returns {} and the chooser renders exactly as before.
+    Presentation only: it chooses no domain and admits nothing."""
+    try:
+        from engine.path_n_questions import get_served_question
+        examples = {}
+        for domain in choice_domains or ():
+            served = get_served_question(_MECH_GAP, 0, domain=domain)
+            if served is None:
+                return {}
+            examples[domain] = _rvr7_display(
+                _PATHN_IDENTITY_PREFIX + served.question_id, served, served.text, lang)
+        return examples
+    except Exception:
+        return {}
+
+
 def _render_start_page(error=None, status=None, present_domain=None,
                        choice_domains=None, carry_idea=None, carried_choice=None,
                        composition=None):
@@ -4158,6 +4183,8 @@ def _render_start_page(error=None, status=None, present_domain=None,
         start_present_confirm_label=present_confirm_label,
         start_choice_domains=choice_domains,
         start_choice_prompt=choice_prompt,
+        start_choice_examples=(_starting_focus_examples(choice_domains, lang)
+                               if choice_domains else {}),
         start_carry_idea=carry_idea,
         start_carried_choice=carried_choice,
         # Stage 15 Slice 1 (presentation only).
