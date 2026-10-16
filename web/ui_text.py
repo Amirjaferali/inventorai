@@ -8845,6 +8845,13 @@ UI_STRINGS = {
                "طريقة تحكم أو تصميم. هذا قولك أنت، وليس متطلبًا متحققًا منه ولا "
                "استنتاجًا هندسيًا."),
     },
+    "UI_GFN_CHOSEN": {
+        "en": ("InventorAI chose this question from its fixed set because it asks "
+               "about the part you said is not yet known. What you said is not "
+               "treated as an answer."),
+        "ar": ("اختار InventorAI هذا السؤال من مجموعته الثابتة لأنه يسأل عن الجزء "
+               "الذي قلت إنه غير معروف بعد. ما قلته لا يُعامَل كإجابة."),
+    },
     "UI_GFN_PANEL_IDEA": {
         "en": "Stated with your idea:",
         "ar": "ورد في وصف فكرتك:",
