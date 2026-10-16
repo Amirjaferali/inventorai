@@ -1323,6 +1323,38 @@ information, not execution authority.
   prioritized as a standalone low-value PR.
   (f) **Nothing omitted.** Every technology in groups A–E stays preserved: none is activated,
   completed or cancelled by being absent from a delivered increment.
+  (g) **Execution continuity (recorded 2026-10-16; continuity, never authority).** Every Execution Lead
+  and executor recovers the next step from this entry and the live sources, never from chat memory. The
+  current authorized action is only the ACTIVE CONTRACT declaration above. No fixed increment order has
+  been Owner-agreed beyond the selection rule (c). After a successful merge the Lead continues this
+  strategy with the increment the Owner has authorized next; when none is authorized, the Lead proposes
+  the next ready candidate under (c) and waits for the Owner. Replan only on material new evidence, a
+  demonstrated blocker or explicit Owner direction, and run PCRA / SFR before any research or
+  implementation. Deterministic orchestration stays a responsibility of the existing owners: no duplicate
+  analysis engine per domain, technology or product category. Next increment (continuity, not authority):
+  approved next increment NONE, and no Owner-agreed fixed next-increment sequence is established. The
+  next eligible increment is recovered from an Owner-approved execution sequence recorded after this
+  entry, if one exists; otherwise the Lead proposes one value-driven candidate under (c) and waits for
+  the Owner. Earlier candidate proposals carry no standing priority or default order, and a proposal is a
+  recommendation, never an authorization; a blocked candidate passes to the next ready one under step 6
+  of (c).
+  (h) **Gate results since PR #828 and reopening triggers.** Each item reopens only on its named
+  trigger. 28-T3 Power Electronics / Motion: BLOCKED (no qualified owner or claim-level source); the
+  Lead-inspected Tony R. Kuphaldt, *Lessons in Electric Circuits*, Volume III, Chapter 4 (CC BY 4.0)
+  supports only the class-level transistor load-switching principle (an unapproved proposal,
+  28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01, with no priority, that still needs that source's exact
+  edition and passage location); anything further reopens on a directly inspected authoritative source with a recorded reuse basis
+  (Lead-supplied when executor egress is blocked). Interface verification beyond the Stage 15
+  preparation fields: STOP — reopens only with an authorized interface-characterisation scope (the D4
+  gate) and its claim-level sources. Preliminary motion requirements: BLOCKED — reopens on a qualified
+  class-level statement of the load characteristics that govern whether a motor can drive a mechanism
+  (first uninspected candidate: DOE-HDBK-1011/2-92, Volume 2, DC-motor module) plus a Mechanical vs
+  Electrical / Electronics host decision. Settled items in (e): CAP-13 D-7 reopens on a qualified
+  source and method; further numerical methods on a real consumer and their own admission; structured
+  quantity / BOM on T6 §0 activation; calculation-result retention on a consumer that must cite a result
+  as evidence or detect staleness plus an authorized retention owner; Embedded 28-T2 output on a
+  specialist owner, source and authorization; Sensors C3 on source qualification with the D13 research
+  resumed by the Owner; repeated-units wording on an Owner convention decision.
 
 **Successor Lead (mandatory).** Before any repository mutation a successor Lead reconstructs,
 from repository evidence and the handover/current sources, and returns: (1) authoritative
@@ -1330,7 +1362,10 @@ branch; (2) authoritative HEAD; (3) current executable action; (4) completed wor
 be reopened; (5) current Lead Watchlist; (6) NOW items; (7) NEXT TRIGGER items; (8) WATCH items;
 (9) PREMATURE / forbidden work; (10) execution-agent role; (11) architecture-review escalation
 rule; (12) Owner-reserved decisions and authorization boundaries; (13) human-study
-authorization state; (14) exactly ONE next action. A material inconsistency exposed by the
+authorization state; (14) exactly ONE next action. For engineering work, items (3), (7)–(9) and
+(14) also read the execution-continuity and reopening-trigger blocks (g)–(h) of the Lead Watchlist's
+STANDING technical-remediation entry, which record candidates as recommendations, never as authority.
+A material inconsistency exposed by the
 reconstruction is resolved before mutation. No ceremonial confirmation is required when the
 reconstruction is materially correct. This applies Lean §9 (successor reconstruction and the
 single checkpoint); it does not replace it.

@@ -7496,6 +7496,34 @@ def test_technical_remediation_strategy_is_preserved_as_continuity_only():
                        "optics / photonics", "acoustics / vibration", "Make / Buy",
                        "CAD / PCB / EDA / CAE / API interoperability"):
         assert technology in entry, technology
+    # Execution continuity (g) and reopening triggers (h): candidates are recommendations, never authority
+    for needle in (
+            "**Execution continuity (recorded 2026-10-16; continuity, never authority).**",
+            "The current authorized action is only the ACTIVE CONTRACT declaration above",
+            "No fixed increment order has been Owner-agreed beyond the selection rule (c)",
+            "Replan only on material new evidence, a demonstrated blocker or explicit Owner direction",
+            "no duplicate analysis engine per domain, technology or product category",
+            "Next increment (continuity, not authority): approved next increment NONE, and no Owner-agreed "
+            "fixed next-increment sequence is established",
+            "recovered from an Owner-approved execution sequence recorded after this entry, if one exists; "
+            "otherwise the Lead proposes one value-driven candidate under (c) and waits for the Owner",
+            "Earlier candidate proposals carry no standing priority or default order",
+            "a proposal is a recommendation, never an authorization",
+            "an unapproved proposal, 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01, with no priority",
+            "**Gate results since PR #828 and reopening triggers.**",
+            "28-T3 Power Electronics / Motion: BLOCKED",
+            "Interface verification beyond the Stage 15 preparation fields: STOP",
+            "Preliminary motion requirements: BLOCKED",
+            "structured quantity / BOM on T6 §0 activation"):
+        assert needle in entry, needle
+    successor = claude[claude.index("**Successor Lead (mandatory).**"):claude.index("**Successor handover.**")]
+    assert ("read the execution-continuity and reopening-trigger blocks (g)–(h) of the Lead Watchlist's "
+            "STANDING technical-remediation entry, which record candidates as recommendations, never as "
+            "authority") in successor
+    # no candidate ranking becomes a standing default queue
+    assert "recommended order" not in entry and "Next-step queue" not in entry
+    for pat in (r"approved next increment (?!NONE)", r"candidate[^.]{0,40}\bis authorized\b"):
+        assert re.search(pat, entry) is None, pat
 
 
 # ==========================================================================
