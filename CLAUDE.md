@@ -1365,6 +1365,72 @@ information, not execution authority.
   the Owner. Earlier candidate proposals carry no standing priority or default order, and a proposal is a
   recommendation, never an authorization; a blocked candidate passes to the next ready one under step 6
   of (c).
+  (g1) **Owner-approved execution priority sequence (2026-10-17; sequencing only).** This
+  elaborates (b)–(g) rather than replacing the 45-stage obligations register. It is a
+  *priority/dependency order*, not blanket authorization for implementation, new capability
+  admission, merge, external transfer, release, or Stage closure. ACTIVE CONTRACT remains NONE.
+  Lead checks the current real user outcome and source-level REUSE / PCRA / SFR once at the
+  relevant owner before creating each bounded increment. Continue after successful authorized
+  merges without choosing random candidates or restarting the roadmap. If a step is BLOCKED,
+  preserve its trigger and move to the next independent eligible step within the sequence;
+  reopen only on new material evidence, a real dependency change or explicit Owner direction.
+  Sequence:
+  1. **Idea-first functional intent journey:** qualify inventor-stated desired functions,
+     environment and constraints through existing Level-0 / W2-C / NeedRouting owners;
+     reuse PRs #831–#837. Separate user assertions from optional system proposals;
+     first resolve the saved-proposal/OD-2 and content-admission decisions before any
+     new write path. Then assess intent-to-existing-question continuity, nontechnical
+     answer progression and specialist-discipline choice, one product delta at a time.
+     No duplicate interpretation or routing engine and no new live LLM activation.
+  2. **From intent to initial engineering concept:** within existing Project Compass,
+     requirement, Stage-15 composition and canonical engineering owners, develop an
+     intelligible provisional concept and missing-information path; ensure explicit
+     uncertainty, consent/retention boundaries and no unsupported design conclusion.
+     Reuse delivered component inventory, interactions, CAP-12, CAP-13, THERM-01 and
+     experiment planning; don't imply any is a complete domain.
+  3. **Qualified engineering depth and realization:** source/IP-qualified Mechanical,
+     Electronics/Electrical and Sensors/Measurement extensions first where demanded
+     by end-to-end inventor outcomes; then Embedded/Firmware, Power Electronics/Motion,
+     PLC/Automation and Mechatronics/Robotics via existing owners and Stage 15;
+     subsequently test need for Wireless/RF, Battery/BMS, Perception/Edge, IoT,
+     Drone/UAV, Renewables, Space/Satellite, hydraulics/pneumatics and the rest
+     of the preserved portfolio. Scientific qualification may proceed in parallel
+     with step 1, but a blocked method remains blocked and a technology label
+     never becomes a duplicate domain/analysis engine. General Preliminary Motion
+     Requirements stays BLOCKED until its exact mechanical claims and reuse/IP
+     basis are qualified; the DOE motor material alone is not general authority.
+  4. **Engineering deliverables and interoperability:** extend existing component /
+     interaction / assembly and prototype realization owners, method-qualified
+     design and manufacturing handoff, and eventually CAD/PCB/EDA/CAE/API and
+     supplier/commercial integrations only on explicit readiness and separate
+     activation decisions. T6 quantity/BOM and other deferred triggers remain intact.
+  5. **End-to-end verification and release preparation:** representative journeys
+     spanning single-domain Mechanical, Electronics and integrated inventions,
+     including nontechnical input and blocked/unknown handling; verify truthful
+     development outcomes, without inferring safety, verified design or suitability.
+     Complete the release-specific stage gates only when their actual prerequisites
+     are satisfied.
+  **Outstanding-stage integration (not new statuses).** The 18 unticked stages are
+  mapped once here without changing the roadmap/checklist: 25 (CAP-13) and 34 (output
+  language) belong to product-depth / deliverable qualification; 13, 14 and 17 are
+  evidence/readiness obligations for the qualified-concept and validation journeys;
+  11 (human study), 26 (visual interpretation), 31 (IoT), 32 (visualization) and
+  37 (AI coach) remain trigger-dependent rather than compulsory early builds;
+  33 (email delivery) and 39 (legal/privacy/adviser) require their external
+  decisions; 38 (operations/security), 41 (PSRR), 42–43 (reassess at final head),
+  and 44–45 (final release gates) form the parallel operations/release stream.
+  The stage count remains **27/45 complete, 18/45 remaining**. Some completed stages
+  cover only bounded current scope: do not treat them as full technology delivery,
+  and do not erase future obligations by making cosmetic closures.
+  **Parallel long-lead work:** legal/adviser and hosting/security dependencies
+  can be pursued while engineering progresses; no production deployment, paid
+  activation, human study or external provider use follows from this sequencing.
+  **Lead's next action under this sequence:** check the existing functional-intent
+  representation and its outstanding Owner-reserved content/proposal decision;
+  identify exactly one reuse-qualified, user-visible delta, and seek only the
+  scope-specific authority actually needed. This named next candidate is not an
+  authorized product increment.
+
   (h) **Gate results since PR #828 and reopening triggers.** Each item reopens only on its named
   trigger. 28-T3 Power Electronics / Motion: BLOCKED (no qualified owner or claim-level source); the
   Lead-inspected Tony R. Kuphaldt, *Lessons in Electric Circuits*, Volume III, Chapter 4 (CC BY 4.0)
