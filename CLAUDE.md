@@ -1410,6 +1410,24 @@ information, not execution authority.
      development outcomes, without inferring safety, verified design or suitability.
      Complete the release-specific stage gates only when their actual prerequisites
      are satisfied.
+  **Reuse Before Build — early heavy-capability preparation (Owner clarification,
+  2026-10-17).** PR #833 already extended the single READ BEFORE BUILD owner
+  check; do not create a new registry, research gate or repeated executor round.
+  While waves 1–2 advance, the Lead may perform *bounded, priority-led*
+  preparation for substantial wave-3/4 engineering capabilities: inspect existing
+  admitted owners/methods, precisely applicable reusable scientific models,
+  source provenance and reuse/IP terms, independent reference results/tests,
+  adapters and calculation/unit seams; compare reuse against the smallest new
+  implementation for safety, speed and maintainability. Record only actionable
+  findings and exact unresolved triggers in the existing owners/watchlist.
+  Do not survey every future technology in parallel or mistake a source/model
+  qualified for one claim as admission for another. Preparation is not code,
+  model adoption, provider integration, runtime activation or Owner authorization.
+  At the eligible increment, reuse the earlier qualified evidence as applicable,
+  check only the missing use-case-specific delta and proceed through the normal
+  bounded authorization/FCR path. If evidence is unresolved, keep BLOCKED and
+  advance to the next independent eligible action rather than rebuilding the
+  investigation. This is an application of PR #833, not a second mechanism.
   **Outstanding-stage integration (not new statuses).** The 18 unticked stages are
   mapped once here without changing the roadmap/checklist: 25 (CAP-13) and 34 (output
   language) belong to product-depth / deliverable qualification; 13, 14 and 17 are
