@@ -1382,6 +1382,26 @@ information, not execution authority.
      new write path. Then assess intent-to-existing-question continuity, nontechnical
      answer progression and specialist-discipline choice, one product delta at a time.
      No duplicate interpretation or routing engine and no new live LLM activation.
+     **Bilingual and dialect semantic coverage:** the observed failure to recognize
+     an everyday plant-related idea is a representative scalability defect, not
+     justification for endlessly expanding per-word Arabic/English/dialect keyword
+     lists. Review the already delivered vocabulary correction (#834), the
+     governed bilingual concepts (`engine/semantic_registry.py`), the local-only
+     MSNL shadow (`engine/msnl_shadow.py`) and the existing AI advisor seam
+     (`engine/ai_advisor.py`) before any new implementation. Qualify one
+     bounded LLM-assisted *semantic proposal* path where justified by actual
+     phrase-level intent errors, ambiguity, negation and dialect variation;
+     distinguish inventor statements, missing information and model-suggested
+     interpretations, with abstention/clarification on uncertainty. Reuse current
+     admission and deterministic orchestration: an LLM never grants scientific
+     authority, validates engineering conclusions, activates a domain, chooses
+     unqualified components or writes durable inventor facts on its own.
+     Evaluation may use synthetic, non-sensitive Arabic, English and dialect
+     cases without live inventor content; external transmission, provider
+     selection, production activation and any new proposal persistence require
+     their own recorded Owner authorization and privacy/security assessment.
+     This is an EARLY wave-1 evaluation and potential bounded extension, not
+     live LLM authorization and not an additional semantic normalization engine.
   2. **From intent to initial engineering concept:** within existing Project Compass,
      requirement, Stage-15 composition and canonical engineering owners, develop an
      intelligible provisional concept and missing-information path; ensure explicit
