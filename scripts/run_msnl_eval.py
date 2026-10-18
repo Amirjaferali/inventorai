@@ -22,11 +22,13 @@ File-creation contract:
     `--allow-network` and `--managed-credential` (as in
       `scripts/run_technical_orchestration_eval.py`: the egress proxy injects
       the credential, so this process reads and sends no key);
-    `--show-cases` (print per-case predictions for human review).
-    There is NO option for a file, project, session, account, database or
-    free-form input: both pack paths are fixed and their SHA-256 values are
-    pinned, so this harness cannot transmit anything but committed synthetic
-    material.
+    `--show-cases` (print per-case predictions for human review);
+    `--rescore PATH` (MSNL-EVAL-02: re-score a report this harness saved with
+      `--show-cases`, offline — no adapter is built and nothing is sent).
+    There is NO option for a project, session, account, database or free-form
+    input: both pack paths are fixed and their SHA-256 values are pinned, and a
+    re-scored file is only read and checked against the pinned pack's labels,
+    so this harness cannot transmit anything but committed synthetic material.
   Output contract: a JSON report on stdout. Exit 0 on a completed run; 2 on a
     refused invocation (no network permission, pack integrity failure).
   Prohibited behaviors: no real inventor / project / invention / personal
@@ -255,6 +257,105 @@ def unknown_report(classifier, pack):
             "cases": rows}
 
 
+# ─── MSNL-EVAL-02: one result at three grains ───────────────────────────────
+GRAINS = ("concept", "governed_question", "gap")
+GRAIN_MEASURE = (
+    "AFFIRMED concept attribution against the pack's fixed labels, at three grains "
+    "of the same governed concepts: the registry concept, its governed question "
+    "(provenance) and its owning gap. A negated, vague or merely relevant answer "
+    "is labelled with no concept, so no grain here measures gap relevance as "
+    "engine.gap_relevance.addresses_gap decides it, and none qualifies a "
+    "relevance, progression or product use. A coarser grain never hides a "
+    "concept-level error: concept_errors_beneath counts its cases.")
+_CONCEPTS_BY_ID = {c.concept_id: c for c in semantic_registry.CONCEPTS}
+
+
+def _unit(concept_id, grain):
+    concept = _CONCEPTS_BY_ID.get(concept_id)
+    if concept is None:
+        raise PackError("unregistered concept id: " + str(concept_id))
+    if grain == "concept":
+        return concept_id
+    if grain == "gap":
+        return concept.owner
+    return concept.provenance.split(" ", 1)[0]       # e.g. MECHANISM_COMPLETENESS/Q2
+
+
+def grain_report(rows):
+    """Score rows ({variety, expected, predicted, disposition}) at every grain.
+
+    Per grain and variety: `hits` = expected units all proposed (MATCH cases);
+    `false_attributions` = cases proposing a unit not expected; abstentions,
+    no-mapping, discarded-unsupported and adapter errors stay separate counts
+    (an error is never an abstention). At the coarser grains,
+    `concept_errors_beneath` counts cases that are not false at that grain but
+    carry a concept-level false attribution."""
+    def agg(sub, grain):
+        out = {"cases": len(sub), "match_cases": 0, "hits": 0, "exact": 0,
+               "false_attributions": 0, "abstained": 0, "no_mapping": 0,
+               "discarded_unsupported": 0, "errors": 0}
+        if grain != "concept":
+            out["concept_errors_beneath"] = 0
+        for row in sub:
+            expected = {_unit(i, grain) for i in row["expected"]}
+            predicted = {_unit(i, grain) for i in row["predicted"]}
+            if expected:
+                out["match_cases"] += 1
+                out["hits"] += expected <= predicted
+            out["exact"] += predicted == expected
+            false = bool(predicted - expected)
+            out["false_attributions"] += false
+            if (grain != "concept" and not false
+                    and set(row["predicted"]) - set(row["expected"])):
+                out["concept_errors_beneath"] += 1
+            disposition = row["disposition"]
+            out["abstained"] += disposition == ms.DISPOSITION_ABSTAINED
+            out["no_mapping"] += disposition == ms.DISPOSITION_NO_MAPPING
+            out["discarded_unsupported"] += (
+                disposition == ms.DISPOSITION_DISCARDED_UNSUPPORTED)
+            out["errors"] += disposition == ms.DISPOSITION_ADAPTER_ERROR
+        return out
+    report_ = {"measures": GRAIN_MEASURE}
+    for grain in GRAINS:
+        by = {"overall": agg(rows, grain)}
+        by.update({v: agg([r for r in rows if r["variety"] == v], grain)
+                   for v in VARIETIES})
+        report_[grain] = by
+    return report_
+
+
+def rescore(path):
+    """Re-score a saved `--show-cases` report offline. Every saved case must
+    exist in the pinned concept pack with the identical fixed label; no adapter
+    is constructed and nothing is sent."""
+    pack = _load(CONCEPT_PACK_PATH, CONCEPT_PACK_SHA256)
+    by_id = {c["case_id"]: c for c in pack["cases"]}
+    with open(path, "rb") as fh:
+        raw = fh.read()
+    saved = json.loads(raw.decode("utf-8"))
+    if saved.get("concept_pack") != pack["pack_id"]:
+        raise PackError("saved report is not for " + pack["pack_id"])
+    out = {"rescored_sha256": hashlib.sha256(raw).hexdigest(),
+           "concept_pack": pack["pack_id"], "concepts": {}}
+    for name, by in saved.get("concepts", {}).items():
+        cases = by.get("cases")
+        if not cases:
+            raise PackError("saved report has no per-case rows (use --show-cases)")
+        rows = []
+        for case in cases:
+            fixed = by_id.get(case.get("case_id"))
+            if fixed is None or sorted(case["expected"]) != sorted(fixed["expected_concepts"]):
+                raise PackError("saved case does not match the pinned pack: "
+                                + str(case.get("case_id")))
+            rows.append({"variety": fixed["variety"], "expected": case["expected"],
+                         "predicted": case["predicted"],
+                         "disposition": case["disposition"]})
+        if len(rows) != len(by_id) or len({c["case_id"] for c in cases}) != len(by_id):
+            raise PackError("saved report does not cover every pack case exactly once")
+        out["concepts"][name] = {"grains": grain_report(rows)}
+    return out
+
+
 def run(provider, allow_network, managed_credential, show_cases=False):
     concept_pack = _load(CONCEPT_PACK_PATH, CONCEPT_PACK_SHA256)
     unknown_pack = _load(UNKNOWN_PACK_PATH, UNKNOWN_PACK_SHA256)
@@ -276,6 +377,10 @@ def run(provider, allow_network, managed_credential, show_cases=False):
                              for c in concept_pack["categories"]}
         by["adapter_errors"] = sum(r.disposition == ms.DISPOSITION_ADAPTER_ERROR
                                    for r in results)
+        by["grains"] = grain_report([
+            {"variety": r.variety, "expected": sorted(r.expected),
+             "predicted": sorted(r.predicted), "disposition": r.disposition}
+            for r in results])
         if show_cases:
             by["cases"] = [{"case_id": r.case_id, "expected": sorted(r.expected),
                             "outcome": r.outcome, "disposition": r.disposition,
@@ -301,7 +406,20 @@ def main(argv=None):
     p.add_argument("--allow-network", action="store_true")
     p.add_argument("--managed-credential", action="store_true")
     p.add_argument("--show-cases", action="store_true")
+    p.add_argument("--rescore", metavar="PATH")
     args = p.parse_args(argv)
+    if args.rescore:
+        if args.provider != "lexical" or args.allow_network or args.managed_credential:
+            print(json.dumps({"refused": "--rescore is offline and takes no provider "
+                                         "or network option"}))
+            return 2
+        try:
+            out = rescore(args.rescore)
+        except (OSError, ValueError, KeyError, TypeError) as exc:  # PackError, bad JSON
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0
     if args.provider == "openai" and not (args.allow_network and args.managed_credential):
         print(json.dumps({"refused": "--provider openai needs --allow-network "
                                      "--managed-credential"}))

@@ -212,3 +212,128 @@ def test_no_product_module_reaches_the_harness():
                       "sqlite3", "logging", "requests", "openai"):
         assert forbidden not in imported, forbidden
     assert "OPENAI_API_KEY" not in SCRIPT.read_text(encoding="utf-8")
+
+
+# ─── MSNL-EVAL-02: three grains, nothing hidden ─────────────────────────────
+
+def _row(expected, predicted, disposition=ms.DISPOSITION_PROPOSAL, variety="en"):
+    return {"variety": variety, "expected": list(expected), "predicted": list(predicted),
+            "disposition": disposition}
+
+
+def _overall(rows, grain):
+    return h.grain_report(rows)[grain]["overall"]
+
+
+def test_sibling_extra_is_false_at_concept_grain_and_counted_beneath_coarser_ones():
+    rows = [_row(["MC-DETECT"], ["MC-COMPONENT", "MC-DETECT"])]   # both MC/Q2
+    concept = _overall(rows, "concept")
+    assert (concept["false_attributions"], concept["hits"], concept["exact"]) == (1, 1, 0)
+    for grain in ("governed_question", "gap"):
+        out = _overall(rows, grain)
+        assert (out["false_attributions"], out["concept_errors_beneath"], out["exact"]) == \
+            (0, 1, 1), grain
+
+
+def test_cross_question_extra_stays_false_at_the_governed_question_grain():
+    rows = [_row(["MC-OPEN"], ["MC-HOW-IT-WORKS", "MC-OPEN"])]    # Q2 + Q1
+    assert _overall(rows, "governed_question")["false_attributions"] == 1
+    gap = _overall(rows, "gap")
+    assert (gap["false_attributions"], gap["concept_errors_beneath"]) == (0, 1)
+
+
+def test_a_proposal_on_a_safe_case_is_false_at_every_grain():
+    rows = [_row([], ["MC-COMPONENT"])]
+    for grain in h.GRAINS:
+        out = _overall(rows, grain)
+        assert (out["false_attributions"], out["match_cases"]) == (1, 0), grain
+
+
+def test_errors_abstentions_and_no_mapping_stay_separate():
+    rows = [_row(["MC-DETECT"], [], ms.DISPOSITION_ADAPTER_ERROR),
+            _row(["MC-DETECT"], [], ms.DISPOSITION_ABSTAINED),
+            _row([], [], ms.DISPOSITION_NO_MAPPING),
+            _row([], [], ms.DISPOSITION_DISCARDED_UNSUPPORTED)]
+    for grain in h.GRAINS:
+        out = _overall(rows, grain)
+        assert (out["errors"], out["abstained"], out["no_mapping"],
+                out["discarded_unsupported"], out["hits"], out["false_attributions"]) == \
+            (1, 1, 1, 1, 0, 0), grain
+
+
+def test_grains_are_reported_per_variety_and_disclaim_relevance():
+    rows = [_row(["PF-BATTERY"], ["PF-BATTERY"], variety=v) for v in h.VARIETIES]
+    rep = h.grain_report(rows)
+    assert set(rep) == {"measures", *h.GRAINS}
+    for phrase in ("AFFIRMED", "no grain here measures gap relevance",
+                   "engine.gap_relevance.addresses_gap", "concept_errors_beneath"):
+        assert phrase in rep["measures"], phrase
+    for grain in h.GRAINS:
+        assert set(rep[grain]) == {"overall", *h.VARIETIES}
+        assert all(rep[grain][v]["hits"] == 1 for v in h.VARIETIES)
+
+
+def test_unregistered_concept_ids_are_refused():
+    with pytest.raises(h.PackError):
+        h.grain_report([_row([], ["NOT-A-CONCEPT"])])
+
+
+def test_concept_grain_reproduces_the_existing_pack_scorer():
+    from tests.test_msnl_evaluation_pack import aggregate, run_pack
+    pack = h._load(h.CONCEPT_PACK_PATH, h.CONCEPT_PACK_SHA256)
+    results = run_pack(ms.LexicalBaselineAdapter(), pack)
+    base = aggregate(results)
+    concept = h.grain_report([
+        {"variety": r.variety, "expected": sorted(r.expected),
+         "predicted": sorted(r.predicted), "disposition": r.disposition}
+        for r in results])["concept"]["overall"]
+    assert concept["false_attributions"] == base["false_attributions"]
+    assert concept["exact"] == round(base["exact_agreement"] * base["cases"])
+
+
+# ─── MSNL-EVAL-02: offline re-scoring of a saved report ─────────────────────
+
+def _saved_lexical_report(capsys, tmp_path):
+    assert h.main(["--show-cases"]) == 0
+    out = json.loads(capsys.readouterr().out)
+    path = tmp_path / "saved.json"
+    path.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
+    return out, path
+
+
+def test_rescore_reproduces_the_live_grains_without_any_network(capsys, tmp_path, monkeypatch):
+    live, path = _saved_lexical_report(capsys, tmp_path)
+
+    def no_network(*_a, **_k):
+        raise AssertionError("re-scoring must never reach the network")
+    monkeypatch.setattr(toa, "_urllib_transport", no_network)
+    assert h.main(["--rescore", str(path)]) == 0
+    rescored = json.loads(capsys.readouterr().out)
+    name = "lexical-baseline-uncalibrated"
+    assert rescored["concepts"][name]["grains"] == live["concepts"][name]["grains"]
+    assert len(rescored["rescored_sha256"]) == 64
+
+
+def test_rescore_refuses_a_tampered_label_a_missing_case_or_no_cases(capsys, tmp_path):
+    live, path = _saved_lexical_report(capsys, tmp_path)
+    name = "lexical-baseline-uncalibrated"
+    def relabel(o):
+        case = o["concepts"][name]["cases"][0]
+        case["expected"] = sorted(set(case["expected"]) ^ {"BA-SCOPE"})
+    for mutate in (relabel,
+                   lambda o: o["concepts"][name]["cases"].pop(),
+                   lambda o: o["concepts"][name].pop("cases"),
+                   lambda o: o.update(concept_pack="other-pack")):
+        broken = json.loads(json.dumps(live))
+        mutate(broken)
+        path.write_text(json.dumps(broken), encoding="utf-8")
+        assert h.main(["--rescore", str(path)]) == 2
+        assert "refused" in json.loads(capsys.readouterr().out)
+
+
+@pytest.mark.parametrize("extra", [["--provider", "openai"], ["--allow-network"],
+                                   ["--managed-credential"]])
+def test_rescore_takes_no_provider_or_network_option(extra, capsys, tmp_path):
+    _live, path = _saved_lexical_report(capsys, tmp_path)
+    assert h.main(["--rescore", str(path), *extra]) == 2
+    assert "refused" in json.loads(capsys.readouterr().out)
