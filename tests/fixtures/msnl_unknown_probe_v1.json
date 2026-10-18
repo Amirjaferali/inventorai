@@ -1,0 +1,137 @@
+{
+  "pack_id": "msnl-unknown-probe-v1",
+  "status": "SYNTHETIC",
+  "notice": "Every case is SYNTHETIC evaluation material for the developer-run MSNL evaluation harness only. It is NOT real-user evidence, human-study evidence or tuning data, it claims no universal Arabic-dialect support, and its fixed labels never change to fit an adapter. It authorizes no vocabulary or registry expansion. EXPLICIT_UNKNOWN: the writer says they themselves do not know or are not sure about part of the idea. NOT_UNKNOWN: confident knowledge, a description, or a technical quantity merely called unknown.",
+  "varieties": [
+    "en",
+    "ar-msa",
+    "ar-gulf-kw",
+    "ar-egy"
+  ],
+  "expectation_types": [
+    "EXPLICIT_UNKNOWN",
+    "NOT_UNKNOWN"
+  ],
+  "cases": [
+    {
+      "case_id": "U-en-U1",
+      "variety": "en",
+      "expectation": "EXPLICIT_UNKNOWN",
+      "text": "I don't know how the device would tell that the soil has become dry."
+    },
+    {
+      "case_id": "U-en-U2",
+      "variety": "en",
+      "expectation": "EXPLICIT_UNKNOWN",
+      "text": "The tank sits above the pots, but I am not sure how the water would be released."
+    },
+    {
+      "case_id": "U-en-N1",
+      "variety": "en",
+      "expectation": "NOT_UNKNOWN",
+      "text": "I know exactly how it works: the float drops and pushes the valve open."
+    },
+    {
+      "case_id": "U-en-N2",
+      "variety": "en",
+      "expectation": "NOT_UNKNOWN",
+      "text": "The scale measures an unknown weight and the arm lifts until it balances."
+    },
+    {
+      "case_id": "U-en-N3",
+      "variety": "en",
+      "expectation": "NOT_UNKNOWN",
+      "text": "Water flows by gravity from the tank into each pot through thin tubes."
+    },
+    {
+      "case_id": "U-ar-msa-U1",
+      "variety": "ar-msa",
+      "expectation": "EXPLICIT_UNKNOWN",
+      "text": "لا أعرف كيف سيعرف الجهاز أن التربة أصبحت جافة في الأصيص."
+    },
+    {
+      "case_id": "U-ar-msa-U2",
+      "variety": "ar-msa",
+      "expectation": "EXPLICIT_UNKNOWN",
+      "text": "الخزان فوق الأصص، لكنني لست متأكداً كيف سيُطلق الماء منه."
+    },
+    {
+      "case_id": "U-ar-msa-N1",
+      "variety": "ar-msa",
+      "expectation": "NOT_UNKNOWN",
+      "text": "أعرف تماماً كيف يعمل: تهبط العوامة فتدفع الصمام ليفتح."
+    },
+    {
+      "case_id": "U-ar-msa-N2",
+      "variety": "ar-msa",
+      "expectation": "NOT_UNKNOWN",
+      "text": "يقيس الميزان وزناً مجهولاً ويرتفع الذراع حتى يتوازن تماماً."
+    },
+    {
+      "case_id": "U-ar-msa-N3",
+      "variety": "ar-msa",
+      "expectation": "NOT_UNKNOWN",
+      "text": "يتدفق الماء بالجاذبية من الخزان إلى كل أصيص عبر أنابيب رفيعة."
+    },
+    {
+      "case_id": "U-ar-gulf-kw-U1",
+      "variety": "ar-gulf-kw",
+      "expectation": "EXPLICIT_UNKNOWN",
+      "text": "ما أدري شلون الجهاز بيعرف إن التربة نشفت في القوري."
+    },
+    {
+      "case_id": "U-ar-gulf-kw-U2",
+      "variety": "ar-gulf-kw",
+      "expectation": "EXPLICIT_UNKNOWN",
+      "text": "التانكي فوق القواري، بس مو متأكد شلون بينزل الماي منه."
+    },
+    {
+      "case_id": "U-ar-gulf-kw-N1",
+      "variety": "ar-gulf-kw",
+      "expectation": "NOT_UNKNOWN",
+      "text": "أدري زين شلون يشتغل: العوامة تنزل وتدف المحبس ويفتح."
+    },
+    {
+      "case_id": "U-ar-gulf-kw-N2",
+      "variety": "ar-gulf-kw",
+      "expectation": "NOT_UNKNOWN",
+      "text": "الميزان يقيس وزن مو معروف والذراع يرتفع لين يتوازن."
+    },
+    {
+      "case_id": "U-ar-gulf-kw-N3",
+      "variety": "ar-gulf-kw",
+      "expectation": "NOT_UNKNOWN",
+      "text": "الماي ينزل بالجاذبية من التانكي لكل قوري بليّات رفيعة."
+    },
+    {
+      "case_id": "U-ar-egy-U1",
+      "variety": "ar-egy",
+      "expectation": "EXPLICIT_UNKNOWN",
+      "text": "مش عارف إزاي الجهاز هيعرف إن الطينة نشفت في القصرية."
+    },
+    {
+      "case_id": "U-ar-egy-U2",
+      "variety": "ar-egy",
+      "expectation": "EXPLICIT_UNKNOWN",
+      "text": "الخزان فوق القصاري، بس مش متأكد إزاي المية هتنزل منه."
+    },
+    {
+      "case_id": "U-ar-egy-N1",
+      "variety": "ar-egy",
+      "expectation": "NOT_UNKNOWN",
+      "text": "أنا عارف كويس هو بيشتغل إزاي: العوامة بتنزل وتزق المحبس فيفتح."
+    },
+    {
+      "case_id": "U-ar-egy-N2",
+      "variety": "ar-egy",
+      "expectation": "NOT_UNKNOWN",
+      "text": "الميزان بيقيس وزن مش معروف والدراع بيطلع لحد ما يتوازن."
+    },
+    {
+      "case_id": "U-ar-egy-N3",
+      "variety": "ar-egy",
+      "expectation": "NOT_UNKNOWN",
+      "text": "المية بتنزل بالجاذبية من الخزان لكل قصرية في خراطيم رفيعة."
+    }
+  ]
+}
