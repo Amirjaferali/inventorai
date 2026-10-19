@@ -1,0 +1,701 @@
+{
+  "pack_id": "msnl-holdout-v1",
+  "status": "SYNTHETIC",
+  "notice": "Every case in this held-out fixture is SYNTHETIC evaluation material for the MSNL shadow harness. It is NOT real-user evidence, market validation, human-study evidence or tuning data, and it proves nothing about whether any external model understands a dialect; it is feasibility evidence only, never production validation. It covers four representative language varieties and claims no universal Arabic-dialect support. It was written and labelled independently of msnl-evaluation-pack-v1 and of every recorded model output: no case, wording or label is derived from them. Labels and the acceptance criteria are frozen with this file; they never change to fit an adapter, and no case authorizes registry expansion.",
+  "varieties": [
+    "en",
+    "ar-msa",
+    "ar-gulf-kw",
+    "ar-egy"
+  ],
+  "expectation_types": [
+    "MATCH",
+    "ABSTAIN",
+    "NO_MAPPING"
+  ],
+  "categories": {
+    "SINGLE_STATED": "one registered concept of the served gap is explicitly stated",
+    "MULTI_CROSS_QUESTION": "two concepts of the served gap from different governed questions are both explicitly stated",
+    "MULTI_SAME_QUESTION": "two sibling concepts of the same governed question are both explicitly stated",
+    "NEGATION": "a concept is explicitly denied and nothing is affirmed; the answer is still about the served area",
+    "NEGATION_AS_MEANING": "the concept's own meaning is a boundary, so the stated negation affirms it",
+    "HEDGE": "the boundary of NEGATION_AS_MEANING stated only as a possibility; nothing is affirmed",
+    "SPEC_ONLY": "only part numbers and specifications; bare technical vocabulary expresses no concept"
+  },
+  "labelling_rules": [
+    "R1 expected_concepts = the served gap's registered concepts whose meaning the text itself affirmatively states about the inventor's idea.",
+    "R2 A concept is stated only when the text expresses that concept itself (its English examples or a direct equivalent in the text's language). Naming a specific instance (a particular part, a sensor, a battery) does not state a broader or neighbouring concept that could be inferred.",
+    "R3 Implied or inferable concepts are not stated.",
+    "R4 A concept the text denies is not affirmed, except when the concept's own meaning is a boundary or negation (BA-NOT-COVER): stating that boundary affirms it.",
+    "R5 A concept stated only as a possibility or with explicit uncertainty is not affirmed.",
+    "R6 expectation = MATCH iff at least one concept; NO_MAPPING when the text expresses nothing about the served area (bare technical vocabulary is insufficient, PVCG R2-C section 4); ABSTAIN otherwise.",
+    "R7 gap_relevant = true when the text addresses the subject the served gap asks about, including denied, uncertain or boundary statements; false when it is about something else or consists only of technical identifiers or specifications. It is a label of relevance, not of affirmed meaning, and is not what engine.gap_relevance computes."
+  ],
+  "annotation": {
+    "method": "Cases were written from a slot specification, the registry candidates and R1-R7 by one agent that saw no existing pack, fixture or model output. A second, separate agent labelled the 44 texts blind (shuffled, without ids, categories or labels) under the same rules and judged each text's variety and naturalness.",
+    "label_agreement": "44/44 cases agree on expected_concepts, expectation and gap_relevant",
+    "revisions": "H01-ar-gulf-kw and H01-ar-egy were reworded after the blind pass flagged a word-order calque; a third agent re-labelled both blind: 2/2 agree, both judged natural.",
+    "naturalness_notes": "H05-ar-gulf-kw and the H11 Arabic specification lists are only weakly dialect-marked; H11-ar-egy reads as MSA.",
+    "human_native_speaker_review": "NOT PERFORMED: both annotators are models. A native Gulf/Kuwaiti and Egyptian speaker should confirm the dialect texts before any result is used beyond feasibility."
+  },
+  "acceptance_criteria": {
+    "scope": "Predeclared before any mitigation experiment, for a grounded stated-only proposal arm compared with the lexical baseline and the unmitigated LLM, all run on this fixture. Concept grain decides; governed-question and gap grains are reported for information with concept_errors_beneath. Feasibility evidence only.",
+    "C1": "Concept-level false attributions of the mitigated arm are no higher than the lexical baseline's in EVERY variety and overall; no increase in any variety is accepted.",
+    "C2": "Recall of MATCH cases (every expected concept proposed) in ar-gulf-kw and in ar-egy is at least 0.75 and higher than the lexical baseline's.",
+    "C3": "At least 8 of the 12 MULTI_CROSS_QUESTION and MULTI_SAME_QUESTION cases are fully recovered (all expected concepts, none extra).",
+    "C4": "Negation follows each case's label: NEGATION cases propose no concept; NEGATION_AS_MEANING cases propose exactly BA-NOT-COVER in at least 3 of 4 varieties.",
+    "C5": "Explicit-unknown recognition on msnl-unknown-probe-v1 does not regress: 8/8 recognised and 0 false unknowns.",
+    "C6": "Abstention, no-mapping, recall, false attribution, withheld (implied or ungrounded) proposals and provider errors are reported separately; abstention on MATCH cases is no more than 0.10 above the unmitigated LLM's on this fixture.",
+    "C7": "No concept outside the served gap's registry candidates; any provider error invalidates that run; C1-C6 hold in each of 3 independent runs."
+  },
+  "cases": [
+    {
+      "case_id": "H01-en",
+      "group_id": "H01",
+      "variety": "en",
+      "category": "SINGLE_STATED",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-CLOSE"
+      ],
+      "gap_relevant": true,
+      "text": "The lid of my lunchbox closes by itself ten seconds after I let go."
+    },
+    {
+      "case_id": "H01-ar-msa",
+      "group_id": "H01",
+      "variety": "ar-msa",
+      "category": "SINGLE_STATED",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-CLOSE"
+      ],
+      "gap_relevant": true,
+      "text": "يُغلق غطاء علبة الطعام نفسه تلقائياً بعد عشر ثوانٍ من تركه."
+    },
+    {
+      "case_id": "H01-ar-gulf-kw",
+      "group_id": "H01",
+      "variety": "ar-gulf-kw",
+      "category": "SINGLE_STATED",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-CLOSE"
+      ],
+      "gap_relevant": true,
+      "text": "غطا علبة الأكل يتسكّر بروحه بعد ما أخليه بعشر ثواني."
+    },
+    {
+      "case_id": "H01-ar-egy",
+      "group_id": "H01",
+      "variety": "ar-egy",
+      "category": "SINGLE_STATED",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-CLOSE"
+      ],
+      "gap_relevant": true,
+      "text": "غطا علبة الأكل بيتقفل لوحده بعد ما أسيبه بعشر ثواني."
+    },
+    {
+      "case_id": "H02-en",
+      "group_id": "H02",
+      "variety": "en",
+      "category": "SINGLE_STATED",
+      "gap_type": "PHYSICAL_FEASIBILITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "PF-WEAR"
+      ],
+      "gap_relevant": true,
+      "text": "The rollers of my folding cart wear out after a year of daily use."
+    },
+    {
+      "case_id": "H02-ar-msa",
+      "group_id": "H02",
+      "variety": "ar-msa",
+      "category": "SINGLE_STATED",
+      "gap_type": "PHYSICAL_FEASIBILITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "PF-WEAR"
+      ],
+      "gap_relevant": true,
+      "text": "تتآكل بكرات عربتي القابلة للطي بعد سنة من الاستخدام اليومي."
+    },
+    {
+      "case_id": "H02-ar-gulf-kw",
+      "group_id": "H02",
+      "variety": "ar-gulf-kw",
+      "category": "SINGLE_STATED",
+      "gap_type": "PHYSICAL_FEASIBILITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "PF-WEAR"
+      ],
+      "gap_relevant": true,
+      "text": "عجلات العربانة اللي تنطوي تتآكل بعد سنة من الاستعمال كل يوم."
+    },
+    {
+      "case_id": "H02-ar-egy",
+      "group_id": "H02",
+      "variety": "ar-egy",
+      "category": "SINGLE_STATED",
+      "gap_type": "PHYSICAL_FEASIBILITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "PF-WEAR"
+      ],
+      "gap_relevant": true,
+      "text": "عجل التروللي اللي بيتطبق بيتآكل بعد سنة من الاستعمال كل يوم."
+    },
+    {
+      "case_id": "H03-en",
+      "group_id": "H03",
+      "variety": "en",
+      "category": "SINGLE_STATED",
+      "gap_type": "EXPERTISE_GAP_AWARENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "EG-SPECIALIST"
+      ],
+      "gap_relevant": true,
+      "text": "I will consult a specialist to review my LED desk lamp's circuit."
+    },
+    {
+      "case_id": "H03-ar-msa",
+      "group_id": "H03",
+      "variety": "ar-msa",
+      "category": "SINGLE_STATED",
+      "gap_type": "EXPERTISE_GAP_AWARENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "EG-SPECIALIST"
+      ],
+      "gap_relevant": true,
+      "text": "سأستشير متخصصاً لمراجعة دائرة مصباح المكتب LED الذي أعمل عليه."
+    },
+    {
+      "case_id": "H03-ar-gulf-kw",
+      "group_id": "H03",
+      "variety": "ar-gulf-kw",
+      "category": "SINGLE_STATED",
+      "gap_type": "EXPERTISE_GAP_AWARENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "EG-SPECIALIST"
+      ],
+      "gap_relevant": true,
+      "text": "بستشير متخصص يراجع دايرة ليت المكتب LED مالي."
+    },
+    {
+      "case_id": "H03-ar-egy",
+      "group_id": "H03",
+      "variety": "ar-egy",
+      "category": "SINGLE_STATED",
+      "gap_type": "EXPERTISE_GAP_AWARENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "EG-SPECIALIST"
+      ],
+      "gap_relevant": true,
+      "text": "هستشير متخصص يراجع دايرة لمبة المكتب الـLED بتاعتي."
+    },
+    {
+      "case_id": "H04-en",
+      "group_id": "H04",
+      "variety": "en",
+      "category": "SINGLE_STATED",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "BA-CORE-IRREPLACEABLE"
+      ],
+      "gap_relevant": true,
+      "text": "The spring-loaded clamp is the heart of my bike stand; it cannot be replaced by anything else."
+    },
+    {
+      "case_id": "H04-ar-msa",
+      "group_id": "H04",
+      "variety": "ar-msa",
+      "category": "SINGLE_STATED",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "BA-CORE-IRREPLACEABLE"
+      ],
+      "gap_relevant": true,
+      "text": "المشبك النابضي هو جوهر حامل الدراجة الذي صممته، ولا يمكن استبداله بأي شيء آخر."
+    },
+    {
+      "case_id": "H04-ar-gulf-kw",
+      "group_id": "H04",
+      "variety": "ar-gulf-kw",
+      "category": "SINGLE_STATED",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "BA-CORE-IRREPLACEABLE"
+      ],
+      "gap_relevant": true,
+      "text": "الملقط اللي فيه سبرنق هو أساس ستاند السيكل مالي، وما ينفع نبدّله بشي ثاني."
+    },
+    {
+      "case_id": "H04-ar-egy",
+      "group_id": "H04",
+      "variety": "ar-egy",
+      "category": "SINGLE_STATED",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "BA-CORE-IRREPLACEABLE"
+      ],
+      "gap_relevant": true,
+      "text": "المشبك اللي بالسوستة ده أساس حامل العجلة بتاعي، ومينفعش يتغيّر بحاجة تانية."
+    },
+    {
+      "case_id": "H05-en",
+      "group_id": "H05",
+      "variety": "en",
+      "category": "MULTI_CROSS_QUESTION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-STEP",
+        "MC-MEASURE"
+      ],
+      "gap_relevant": true,
+      "text": "In the first step, the device measures the room's humidity every minute."
+    },
+    {
+      "case_id": "H05-ar-msa",
+      "group_id": "H05",
+      "variety": "ar-msa",
+      "category": "MULTI_CROSS_QUESTION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-STEP",
+        "MC-MEASURE"
+      ],
+      "gap_relevant": true,
+      "text": "في الخطوة الأولى، يقيس الجهاز رطوبة الغرفة كل دقيقة."
+    },
+    {
+      "case_id": "H05-ar-gulf-kw",
+      "group_id": "H05",
+      "variety": "ar-gulf-kw",
+      "category": "MULTI_CROSS_QUESTION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-STEP",
+        "MC-MEASURE"
+      ],
+      "gap_relevant": true,
+      "text": "أول خطوة، الجهاز يقيس رطوبة الغرفة كل دقيقة."
+    },
+    {
+      "case_id": "H05-ar-egy",
+      "group_id": "H05",
+      "variety": "ar-egy",
+      "category": "MULTI_CROSS_QUESTION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-STEP",
+        "MC-MEASURE"
+      ],
+      "gap_relevant": true,
+      "text": "أول خطوة، الجهاز بيقيس رطوبة الأوضة كل دقيقة."
+    },
+    {
+      "case_id": "H06-en",
+      "group_id": "H06",
+      "variety": "en",
+      "category": "MULTI_CROSS_QUESTION",
+      "gap_type": "PHYSICAL_FEASIBILITY",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "PF-BATTERY",
+        "PF-TEMPERATURE"
+      ],
+      "gap_relevant": true,
+      "text": "My bike light runs on a small rechargeable battery, and its temperature reaches 40 °C during long rides."
+    },
+    {
+      "case_id": "H06-ar-msa",
+      "group_id": "H06",
+      "variety": "ar-msa",
+      "category": "MULTI_CROSS_QUESTION",
+      "gap_type": "PHYSICAL_FEASIBILITY",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "PF-BATTERY",
+        "PF-TEMPERATURE"
+      ],
+      "gap_relevant": true,
+      "text": "يعمل ضوء دراجتي ببطارية صغيرة قابلة للشحن، وتصل حرارته إلى 40 درجة مئوية أثناء الرحلات الطويلة."
+    },
+    {
+      "case_id": "H06-ar-gulf-kw",
+      "group_id": "H06",
+      "variety": "ar-gulf-kw",
+      "category": "MULTI_CROSS_QUESTION",
+      "gap_type": "PHYSICAL_FEASIBILITY",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "PF-BATTERY",
+        "PF-TEMPERATURE"
+      ],
+      "gap_relevant": true,
+      "text": "ليت السيكل مالي يشتغل على بطارية صغيرة تنشحن، وحرارته توصل ٤٠ درجة إذا طوّلت بالمشوار."
+    },
+    {
+      "case_id": "H06-ar-egy",
+      "group_id": "H06",
+      "variety": "ar-egy",
+      "category": "MULTI_CROSS_QUESTION",
+      "gap_type": "PHYSICAL_FEASIBILITY",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "PF-BATTERY",
+        "PF-TEMPERATURE"
+      ],
+      "gap_relevant": true,
+      "text": "كشاف العجلة بتاعي شغال ببطارية صغيرة بتتشحن، وحرارته بتوصل ٤٠ درجة في المشاوير الطويلة."
+    },
+    {
+      "case_id": "H07-en",
+      "group_id": "H07",
+      "variety": "en",
+      "category": "MULTI_SAME_QUESTION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-DETECT",
+        "MC-SEND"
+      ],
+      "gap_relevant": true,
+      "text": "The little box detects a knock on the door and sends a notification to my phone."
+    },
+    {
+      "case_id": "H07-ar-msa",
+      "group_id": "H07",
+      "variety": "ar-msa",
+      "category": "MULTI_SAME_QUESTION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-DETECT",
+        "MC-SEND"
+      ],
+      "gap_relevant": true,
+      "text": "يكتشف الجهاز الصغير طرق الباب ويرسل إشعاراً إلى هاتفي."
+    },
+    {
+      "case_id": "H07-ar-gulf-kw",
+      "group_id": "H07",
+      "variety": "ar-gulf-kw",
+      "category": "MULTI_SAME_QUESTION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-DETECT",
+        "MC-SEND"
+      ],
+      "gap_relevant": true,
+      "text": "الجهاز الصغير يحس بدق الباب ويرسل لي إشعار على تلفوني."
+    },
+    {
+      "case_id": "H07-ar-egy",
+      "group_id": "H07",
+      "variety": "ar-egy",
+      "category": "MULTI_SAME_QUESTION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "MC-DETECT",
+        "MC-SEND"
+      ],
+      "gap_relevant": true,
+      "text": "الجهاز الصغير بيحس بخبط الباب وبيبعت إشعار على موبايلي."
+    },
+    {
+      "case_id": "H08-en",
+      "group_id": "H08",
+      "variety": "en",
+      "category": "NEGATION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "ABSTAIN",
+      "expected_concepts": [],
+      "gap_relevant": true,
+      "text": "Nothing in my shelf bracket rotates or moves; it just stays fixed to the wall."
+    },
+    {
+      "case_id": "H08-ar-msa",
+      "group_id": "H08",
+      "variety": "ar-msa",
+      "category": "NEGATION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "ABSTAIN",
+      "expected_concepts": [],
+      "gap_relevant": true,
+      "text": "لا شيء في حامل الرف الذي صممته يدور أو يتحرك؛ إنه يبقى ثابتاً على الجدار."
+    },
+    {
+      "case_id": "H08-ar-gulf-kw",
+      "group_id": "H08",
+      "variety": "ar-gulf-kw",
+      "category": "NEGATION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "ABSTAIN",
+      "expected_concepts": [],
+      "gap_relevant": true,
+      "text": "ما فيه شي بحامل الرف يدور ولا يتحرك، يظل ثابت على الطوفة."
+    },
+    {
+      "case_id": "H08-ar-egy",
+      "group_id": "H08",
+      "variety": "ar-egy",
+      "category": "NEGATION",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "ABSTAIN",
+      "expected_concepts": [],
+      "gap_relevant": true,
+      "text": "مفيش حاجة في حامل الرف بتلف أو بتتحرك، هو ثابت في الحيطة على طول."
+    },
+    {
+      "case_id": "H09-en",
+      "group_id": "H09",
+      "variety": "en",
+      "category": "NEGATION_AS_MEANING",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "BA-NOT-COVER"
+      ],
+      "gap_relevant": true,
+      "text": "My stackable shoe rack is not intended for outdoor use."
+    },
+    {
+      "case_id": "H09-ar-msa",
+      "group_id": "H09",
+      "variety": "ar-msa",
+      "category": "NEGATION_AS_MEANING",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "BA-NOT-COVER"
+      ],
+      "gap_relevant": true,
+      "text": "رفّ الأحذية القابل للتكديس الذي صممته غير مخصص للاستخدام في الهواء الطلق."
+    },
+    {
+      "case_id": "H09-ar-gulf-kw",
+      "group_id": "H09",
+      "variety": "ar-gulf-kw",
+      "category": "NEGATION_AS_MEANING",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "BA-NOT-COVER"
+      ],
+      "gap_relevant": true,
+      "text": "رف الجواتي اللي يتركب فوق بعض مو مسوّى للاستعمال برّا البيت."
+    },
+    {
+      "case_id": "H09-ar-egy",
+      "group_id": "H09",
+      "variety": "ar-egy",
+      "category": "NEGATION_AS_MEANING",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "MATCH",
+      "expected_concepts": [
+        "BA-NOT-COVER"
+      ],
+      "gap_relevant": true,
+      "text": "جزامة الأدوار اللي بتترص فوق بعض دي مش معمولة عشان تتستخدم برّه البيت."
+    },
+    {
+      "case_id": "H10-en",
+      "group_id": "H10",
+      "variety": "en",
+      "category": "HEDGE",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "ABSTAIN",
+      "expected_concepts": [],
+      "gap_relevant": true,
+      "text": "My plant stand probably isn't meant for outdoor use, but I'm not sure yet."
+    },
+    {
+      "case_id": "H10-ar-msa",
+      "group_id": "H10",
+      "variety": "ar-msa",
+      "category": "HEDGE",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "ABSTAIN",
+      "expected_concepts": [],
+      "gap_relevant": true,
+      "text": "على الأرجح أن حامل النباتات الذي صممته ليس مخصصاً للاستخدام الخارجي، لكنني لست متأكداً بعد."
+    },
+    {
+      "case_id": "H10-ar-gulf-kw",
+      "group_id": "H10",
+      "variety": "ar-gulf-kw",
+      "category": "HEDGE",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "ABSTAIN",
+      "expected_concepts": [],
+      "gap_relevant": true,
+      "text": "يمكن ستاند الزرع مالي مو مسوّى للاستعمال برّا، بس مو متأكد للحين."
+    },
+    {
+      "case_id": "H10-ar-egy",
+      "group_id": "H10",
+      "variety": "ar-egy",
+      "category": "HEDGE",
+      "gap_type": "BOUNDARY_AMBIGUITY",
+      "domain": "mechanical",
+      "question_target": null,
+      "expectation": "ABSTAIN",
+      "expected_concepts": [],
+      "gap_relevant": true,
+      "text": "غالباً حامل الزرع بتاعي مش معمول للاستعمال برّه، بس لسه مش متأكد."
+    },
+    {
+      "case_id": "H11-en",
+      "group_id": "H11",
+      "variety": "en",
+      "category": "SPEC_ONLY",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "NO_MAPPING",
+      "expected_concepts": [],
+      "gap_relevant": false,
+      "text": "NE555, 10 kΩ resistor, 100 µF capacitor, LM7805 regulator, 9 V."
+    },
+    {
+      "case_id": "H11-ar-msa",
+      "group_id": "H11",
+      "variety": "ar-msa",
+      "category": "SPEC_ONLY",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "NO_MAPPING",
+      "expected_concepts": [],
+      "gap_relevant": false,
+      "text": "NE555، مقاومة 10 كيلو أوم، مكثف 100 ميكروفاراد، منظم LM7805، 9 فولت."
+    },
+    {
+      "case_id": "H11-ar-gulf-kw",
+      "group_id": "H11",
+      "variety": "ar-gulf-kw",
+      "category": "SPEC_ONLY",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "NO_MAPPING",
+      "expected_concepts": [],
+      "gap_relevant": false,
+      "text": "NE555، ريزستر 10k، كباستر 100µF، ريجوليتر LM7805، 9V."
+    },
+    {
+      "case_id": "H11-ar-egy",
+      "group_id": "H11",
+      "variety": "ar-egy",
+      "category": "SPEC_ONLY",
+      "gap_type": "MECHANISM_COMPLETENESS",
+      "domain": "electronics_electrical",
+      "question_target": null,
+      "expectation": "NO_MAPPING",
+      "expected_concepts": [],
+      "gap_relevant": false,
+      "text": "NE555 ومقاومة 10k ومكثف 100µF وLM7805 و9 فولت."
+    }
+  ]
+}
