@@ -17,6 +17,8 @@ File-creation contract:
     (2026-10-17): ONE bounded synthetic-only evaluation, extending the
     existing D3 synthetic-evaluation permission (OpenAI API, the D3 model) to
     MSNL for this assessment only. Not a production-provider decision.
+    MSNL-EVAL-03 (2026-10-19): ONE bounded synthetic evaluation of grounded,
+    stated-only proposals on the frozen held-out pack.
   Input contract: ONLY these options —
     `--provider {lexical,openai}` (default `lexical`: no network, ever);
     `--allow-network` and `--managed-credential` (as in
@@ -24,7 +26,11 @@ File-creation contract:
       the credential, so this process reads and sends no key);
     `--show-cases` (print per-case predictions for human review);
     `--rescore PATH` (MSNL-EVAL-02: re-score a report this harness saved with
-      `--show-cases`, offline — no adapter is built and nothing is sent).
+      `--show-cases`, offline — no adapter is built and nothing is sent);
+    `--holdout` (MSNL-EVAL-03: run the frozen held-out pack
+      `tests/fixtures/msnl_holdout_v1.json` instead — lexical, the unmitigated
+      LLM and the grounded stated-only LLM arm — and score the grounded arm
+      against the pack's own frozen acceptance criteria).
     There is NO option for a project, session, account, database or free-form
     input: both pack paths are fixed and their SHA-256 values are pinned, and a
     re-scored file is only read and checked against the pinned pack's labels,
@@ -57,6 +63,11 @@ CONCEPT_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures", "msnl_evaluation_pa
 CONCEPT_PACK_SHA256 = "e9bf685038f6818dac4289479dc6aa03810d83b09b9ae747da9c04f10b5f657b"
 UNKNOWN_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures", "msnl_unknown_probe_v1.json")
 UNKNOWN_PACK_SHA256 = "88624b67848d4e3189ff6c6334431336d63dc0df6272dd7a0f1dcebbea5ad19d"
+HOLDOUT_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures", "msnl_holdout_v1.json")
+HOLDOUT_PACK_SHA256 = "54397e3d053a0b2ffa0da23344b7804bf27f3951929c9e475139a6a223ec8e97"
+STATED = "STATED"
+IMPLIED = "IMPLIED"
+ERR_CIRCUIT_OPEN = "circuit_open"       # stopped after repeated provider failures
 VARIETIES = ("en", "ar-msa", "ar-gulf-kw", "ar-egy")
 EXPLICIT_UNKNOWN = "EXPLICIT_UNKNOWN"
 NOT_UNKNOWN = "NOT_UNKNOWN"
@@ -75,6 +86,20 @@ CONCEPT_INSTRUCTIONS = (
     "being clearly stated. Return NO_MAPPING when the answer expresses none of the "
     "listed concepts (for example a part number or a topic of another question area). "
     "Return PROPOSED with the ids otherwise. Output only the JSON object.")
+
+# MSNL-EVAL-03 grounded arm: the SAME rules as CONCEPT_INSTRUCTIONS, with the
+# final "Return PROPOSED with the ids" replaced by evidence per concept. The only
+# new semantics is the STATED / IMPLIED distinction itself; no concept is defined.
+GROUNDED_CONCEPT_INSTRUCTIONS = CONCEPT_INSTRUCTIONS.replace(
+    "Return PROPOSED with the ids otherwise. Output only the JSON object.",
+    "Otherwise return PROPOSED with one proposal for every listed concept the answer "
+    "might express: its id; quote, the exact words of the answer that express it, "
+    "copied character for character; and basis, STATED when those quoted words "
+    "themselves express that concept, IMPLIED when the concept is only suggested or "
+    "inferred, or is a broader category of something the answer names (naming a "
+    "particular part, sensor or battery does not state a general category such as "
+    "components or power requirement). Output only the JSON object.")
+assert GROUNDED_CONCEPT_INSTRUCTIONS != CONCEPT_INSTRUCTIONS
 
 UNKNOWN_INSTRUCTIONS = (
     "You support a deterministic engineering-interview product. You receive ONE short "
@@ -128,6 +153,27 @@ def concept_payload(request, model=toa.MODEL):
                                 "strict": True, "schema": schema}}}
 
 
+def grounded_payload(request, model=toa.MODEL):
+    """The grounded arm's provider body: the same plain-data input as
+    `concept_payload`, with one {concept_id, quote, basis} item per proposal."""
+    payload = concept_payload(request, model)
+    ids = [c.concept_id for c in request.candidates]
+    item = {"type": "object",
+            "properties": {"concept_id": {"type": "string", "enum": ids},
+                           "quote": {"type": "string"},
+                           "basis": {"type": "string", "enum": [STATED, IMPLIED]}},
+            "required": ["concept_id", "quote", "basis"], "additionalProperties": False}
+    payload["instructions"] = GROUNDED_CONCEPT_INSTRUCTIONS
+    payload["text"] = {"format": {"type": "json_schema", "name": "msnl_grounded_concepts",
+                                  "strict": True, "schema": {
+        "type": "object",
+        "properties": {
+            "outcome": {"type": "string", "enum": [ms.PROPOSED, ms.ABSTAIN, ms.NO_MAPPING]},
+            "proposals": {"type": "array", "items": item}},
+        "required": ["outcome", "proposals"], "additionalProperties": False}}}
+    return payload
+
+
 def unknown_payload(text, model=toa.MODEL):
     schema = {"type": "object",
               "properties": {"outcome": {"type": "string",
@@ -157,26 +203,39 @@ class OpenAIMsnlAdapter:
         self.name = "openai:" + model
         self.last_error_kind = None
         self.errors = {}
+        self._auth_failures = 0
+        self._consecutive_failures = 0
 
     def _fail(self, kind):
         self.last_error_kind = kind
         self.errors[kind] = self.errors.get(kind, 0) + 1
         return None
 
+    def _transport_failed(self, status=None):
+        """Circuit breaker: after 2 authentication failures (401 / 403) or 3
+        consecutive provider failures, no further request is sent."""
+        self._consecutive_failures += 1
+        self._auth_failures += status in (401, 403)
+
     def _call(self, payload):
         """The parsed JSON reply, ``ms.ABSTAIN`` for a refusal, or None."""
         self.last_error_kind = None
         if not self._allow_network:
             return self._fail(toa.ERR_NETWORK_NOT_ALLOWED)
+        if self._auth_failures >= 2 or self._consecutive_failures >= 3:
+            return self._fail(ERR_CIRCUIT_OPEN)
         try:
             body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
             status, raw = self._transport(toa.ENDPOINT,
                                           {"Content-Type": "application/json"},
                                           body, self._timeout)
         except Exception:
+            self._transport_failed()
             return self._fail(toa.ERR_TRANSPORT)
         if status != 200:
+            self._transport_failed(status)
             return self._fail(toa.ERR_HTTP_STATUS)
+        self._consecutive_failures = 0
         try:
             text = toa._output_text(json.loads(raw.decode("utf-8")))
         except LookupError:
@@ -217,6 +276,60 @@ class OpenAIMsnlAdapter:
             self._fail(toa.ERR_MALFORMED)
             return ms.ERROR
         return outcome
+
+
+class GroundedOpenAIMsnlAdapter(OpenAIMsnlAdapter):
+    """MSNL-EVAL-03 grounded, stated-only arm (evaluation only).
+
+    Each proposal carries a quote and a STATED / IMPLIED basis. A concept is
+    admitted only when it is STATED and its quote occurs verbatim in the
+    answer; every other proposal is WITHHELD and recorded in `withheld` (keyed
+    by the answer text) — never dropped silently. A matching quote is not proof
+    that the concept is right: the unchanged local policy and the frozen labels
+    still decide. If every proposal is withheld the reply is ABSTAIN."""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.name = "openai-grounded:" + self._model
+        self.withheld = {}
+
+    def propose(self, request):
+        reply = self._call(grounded_payload(request, self._model))
+        if reply is None:
+            return ms.ShadowResponse(ms.ERROR)
+        if reply == ms.ABSTAIN:
+            return ms.ShadowResponse(ms.ABSTAIN)
+        try:
+            if not isinstance(reply, dict) or set(reply) != {"outcome", "proposals"}:
+                raise ValueError("shape")
+            outcome, items = reply["outcome"], reply["proposals"]
+            if outcome not in (ms.PROPOSED, ms.ABSTAIN, ms.NO_MAPPING) or \
+                    not isinstance(items, list):
+                raise ValueError("outcome")
+            if outcome != ms.PROPOSED:
+                return ms.ShadowResponse(outcome)
+            admitted, withheld = [], []
+            for item in items:
+                if (not isinstance(item, dict)
+                        or set(item) != {"concept_id", "quote", "basis"}
+                        or not isinstance(item["concept_id"], str)
+                        or not isinstance(item["quote"], str)
+                        or item["basis"] not in (STATED, IMPLIED)):
+                    raise ValueError("proposal")
+                quote = item["quote"].strip()
+                if item["basis"] != STATED:
+                    withheld.append({"concept_id": item["concept_id"], "reason": "implied"})
+                elif not quote or quote not in request.accepted_text:
+                    withheld.append({"concept_id": item["concept_id"], "reason": "ungrounded"})
+                elif item["concept_id"] not in admitted:
+                    admitted.append(item["concept_id"])
+            self.withheld[request.accepted_text] = withheld
+            if not admitted:
+                return ms.ShadowResponse(ms.ABSTAIN)
+            return ms.ShadowResponse(ms.PROPOSED, tuple(admitted))
+        except Exception:
+            self._fail(toa.ERR_MALFORMED)
+            return ms.ShadowResponse(ms.ERROR)
 
 
 class LexicalUnknownBaseline:
@@ -400,6 +513,157 @@ def run(provider, allow_network, managed_credential, show_cases=False):
     return out
 
 
+# ─── MSNL-EVAL-03: held-out run against the frozen criteria ─────────────────
+MULTI_CATEGORIES = ("MULTI_CROSS_QUESTION", "MULTI_SAME_QUESTION")
+PASS, FAIL, NOT_VERIFIED = "PASS", "FAIL", "NOT VERIFIED"
+
+
+def holdout_metrics(results):
+    """Concept-level counts per variety and overall for one arm."""
+    def agg(sub):
+        match = [r for r in sub if r.expectation == "MATCH"]
+        return {"cases": len(sub),
+                "false_attributions": sum(r.false_attribution for r in sub),
+                "match_cases": len(match),
+                "hits": sum(r.expected <= r.predicted for r in match),
+                "abstained_on_match": sum(r.disposition == ms.DISPOSITION_ABSTAINED
+                                          for r in match),
+                "no_mapping_on_match": sum(r.disposition == ms.DISPOSITION_NO_MAPPING
+                                           for r in match),
+                "errors": sum(r.disposition == ms.DISPOSITION_ADAPTER_ERROR for r in sub),
+                "discarded_unsupported": sum(
+                    r.disposition == ms.DISPOSITION_DISCARDED_UNSUPPORTED for r in sub)}
+    out = {"overall": agg(results)}
+    out.update({v: agg([r for r in results if r.variety == v]) for v in VARIETIES})
+    multi = [r for r in results if r.category in MULTI_CATEGORIES]
+    out["multi_concept_exact"] = "%d/%d" % (sum(r.exact for r in multi), len(multi))
+    negation = [r for r in results if r.category == "NEGATION"]
+    out["negation_clean"] = "%d/%d" % (sum(not r.predicted for r in negation), len(negation))
+    as_meaning = [r for r in results if r.category == "NEGATION_AS_MEANING"]
+    out["negation_as_meaning_exact"] = "%d/%d" % (sum(r.exact for r in as_meaning),
+                                                  len(as_meaning))
+    return out
+
+
+def _num(fraction):
+    return int(fraction.split("/")[0])
+
+
+def holdout_criteria(lexical, plain, grounded, unknown_llm):
+    """The frozen msnl-holdout-v1 criteria C1-C7 for the grounded arm (one run).
+
+    Thresholds mirror the fixture's acceptance_criteria text verbatim. Any
+    provider error invalidates the run: every criterion then reads NOT VERIFIED."""
+    if grounded is None or plain is None or unknown_llm is None:
+        return {"verdict": NOT_VERIFIED, "reason": "no LLM arm was run"}
+    errors = (plain["overall"]["errors"] + grounded["overall"]["errors"]
+              + unknown_llm["overall"]["errors"])
+    if errors:
+        return {"verdict": NOT_VERIFIED,
+                "reason": "RUN INVALID: %d provider error(s) (C7)" % errors}
+    c = {}
+    scopes = VARIETIES + ("overall",)
+    worse = [s for s in scopes
+             if grounded[s]["false_attributions"] > lexical[s]["false_attributions"]]
+    c["C1"] = {"status": FAIL if worse else PASS,
+               "evidence": {s: "%d vs lexical %d" % (grounded[s]["false_attributions"],
+                                                     lexical[s]["false_attributions"])
+                            for s in scopes}}
+
+    def recall(m, v):
+        return m[v]["hits"] / m[v]["match_cases"]
+    ok = all(recall(grounded, v) >= 0.75 and recall(grounded, v) > recall(lexical, v)
+             for v in ("ar-gulf-kw", "ar-egy"))
+    c["C2"] = {"status": PASS if ok else FAIL,
+               "evidence": {v: "%d/%d vs lexical %d/%d" % (
+                   grounded[v]["hits"], grounded[v]["match_cases"],
+                   lexical[v]["hits"], lexical[v]["match_cases"])
+                   for v in ("ar-gulf-kw", "ar-egy")}}
+    c["C3"] = {"status": PASS if _num(grounded["multi_concept_exact"]) >= 8 else FAIL,
+               "evidence": grounded["multi_concept_exact"] + " fully recovered (need 8/12)"}
+    ok = (_num(grounded["negation_clean"]) == 4
+          and _num(grounded["negation_as_meaning_exact"]) >= 3)
+    c["C4"] = {"status": PASS if ok else FAIL,
+               "evidence": "negation clean %s; negation-as-meaning exact %s (need 4/4; 3/4)" % (
+                   grounded["negation_clean"], grounded["negation_as_meaning_exact"])}
+    ov = unknown_llm["overall"]
+    ok = ov["explicit_unknown_recognized"] == "8/8" and ov["false_unknown"] == 0
+    c["C5"] = {"status": PASS if ok else FAIL,
+               "evidence": "%s recognised, %d false" % (ov["explicit_unknown_recognized"],
+                                                        ov["false_unknown"])}
+
+    def abst(m):
+        return m["overall"]["abstained_on_match"] / m["overall"]["match_cases"]
+    c["C6"] = {"status": PASS if abst(grounded) <= abst(plain) + 0.10 + 1e-9 else FAIL,
+               "evidence": "abstention on MATCH %.4f vs unmitigated %.4f (limit +0.10)" % (
+                   abst(grounded), abst(plain))}
+    unsupported = grounded["overall"]["discarded_unsupported"]
+    c["C7"] = {"status": FAIL if unsupported else NOT_VERIFIED,
+               "evidence": "%d out-of-list proposal(s), 0 provider errors; one run of "
+                           "the three required" % unsupported}
+    statuses = [v["status"] for v in c.values()]
+    c["verdict"] = FAIL if FAIL in statuses else (
+        PASS if all(s == PASS for s in statuses) else NOT_VERIFIED)
+    return c
+
+
+def run_holdout(provider, allow_network, managed_credential, show_cases=False):
+    """Lexical, unmitigated LLM and grounded LLM on the frozen held-out pack,
+    plus the unknown probe, scored against the pack's own frozen criteria."""
+    pack = _load(HOLDOUT_PACK_PATH, HOLDOUT_PACK_SHA256)
+    unknown_pack = _load(UNKNOWN_PACK_PATH, UNKNOWN_PACK_SHA256)
+    from tests.test_msnl_evaluation_pack import run_pack
+    arms = [ms.LexicalBaselineAdapter()]
+    classifiers = [LexicalUnknownBaseline()]
+    if provider == "openai":
+        if not (allow_network and managed_credential):
+            raise SystemExit(2)
+        plain = OpenAIMsnlAdapter(allow_network=True)
+        arms += [plain, GroundedOpenAIMsnlAdapter(allow_network=True)]
+        classifiers.append(plain)      # the grounded arm leaves the unknown prompt unchanged
+    texts = {c["case_id"]: c["text"] for c in pack["cases"]}
+    out_arms, metrics = {}, []
+    for adapter in arms:
+        results = run_pack(adapter, pack)
+        m = holdout_metrics(results)
+        metrics.append(m)
+        withheld = getattr(adapter, "withheld", None)
+        arm = {"metrics": m,
+               "grains": grain_report([
+                   {"variety": r.variety, "expected": sorted(r.expected),
+                    "predicted": sorted(r.predicted), "disposition": r.disposition}
+                   for r in results])}
+        if withheld is not None:
+            arm["withheld"] = {"implied": sum(w["reason"] == "implied"
+                                              for ws in withheld.values() for w in ws),
+                               "ungrounded": sum(w["reason"] == "ungrounded"
+                                                 for ws in withheld.values() for w in ws)}
+        if show_cases:
+            arm["cases"] = [{"case_id": r.case_id, "category": r.category,
+                             "expected": sorted(r.expected), "outcome": r.outcome,
+                             "disposition": r.disposition, "predicted": sorted(r.predicted),
+                             "exact": r.exact,
+                             **({"withheld": withheld.get(texts[r.case_id], [])}
+                                if withheld is not None else {})}
+                            for r in results]
+        out_arms[adapter.name] = arm
+    unknown = {}
+    for classifier in classifiers:
+        rep = unknown_report(classifier, unknown_pack)
+        if not show_cases:
+            rep.pop("cases")
+        unknown[rep["classifier"]] = rep
+    llm = len(arms) == 3
+    criteria = holdout_criteria(metrics[0], metrics[1] if llm else None,
+                                metrics[2] if llm else None,
+                                unknown[classifiers[1].name] if llm else None)
+    out = {"holdout_pack": pack["pack_id"], "unknown_pack": unknown_pack["pack_id"],
+           "arms": out_arms, "unknowns": unknown, "criteria": criteria}
+    if llm:
+        out["llm_error_kinds"] = {a.name: a.errors for a in arms[1:]}
+    return out
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="MSNL synthetic LLM feasibility harness")
     p.add_argument("--provider", choices=("lexical", "openai"), default="lexical")
@@ -407,9 +671,11 @@ def main(argv=None):
     p.add_argument("--managed-credential", action="store_true")
     p.add_argument("--show-cases", action="store_true")
     p.add_argument("--rescore", metavar="PATH")
+    p.add_argument("--holdout", action="store_true")
     args = p.parse_args(argv)
     if args.rescore:
-        if args.provider != "lexical" or args.allow_network or args.managed_credential:
+        if (args.provider != "lexical" or args.allow_network or args.managed_credential
+                or args.holdout):
             print(json.dumps({"refused": "--rescore is offline and takes no provider "
                                          "or network option"}))
             return 2
@@ -425,8 +691,8 @@ def main(argv=None):
                                      "--managed-credential"}))
         return 2
     try:
-        out = run(args.provider, args.allow_network, args.managed_credential,
-                  args.show_cases)
+        out = (run_holdout if args.holdout else run)(
+            args.provider, args.allow_network, args.managed_credential, args.show_cases)
     except PackError as exc:
         print(json.dumps({"refused": str(exc)}))
         return 2

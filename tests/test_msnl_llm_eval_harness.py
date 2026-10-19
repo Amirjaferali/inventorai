@@ -337,3 +337,152 @@ def test_rescore_takes_no_provider_or_network_option(extra, capsys, tmp_path):
     _live, path = _saved_lexical_report(capsys, tmp_path)
     assert h.main(["--rescore", str(path), *extra]) == 2
     assert "refused" in json.loads(capsys.readouterr().out)
+
+
+# ─── MSNL-EVAL-03: grounded stated-only arm, breaker, held-out criteria ─────
+
+def _grounded(*items, outcome="PROPOSED"):
+    return _reply({"outcome": outcome, "proposals": [
+        {"concept_id": c, "quote": q, "basis": b} for c, q, b in items]})
+
+
+def test_grounded_payload_keeps_the_input_boundary_and_adds_only_evidence_fields():
+    req = _request()
+    payload = h.grounded_payload(req)
+    plain = h.concept_payload(req)
+    assert set(payload) == set(plain) and payload["input"] == plain["input"]
+    assert payload["store"] is False
+    schema = payload["text"]["format"]["schema"]
+    item = schema["properties"]["proposals"]["items"]
+    assert item["properties"]["concept_id"]["enum"] == \
+        [c.concept_id for c in ms.candidate_concepts(req.gap_type)]
+    assert item["properties"]["basis"]["enum"] == [h.STATED, h.IMPLIED]
+    assert payload["text"]["format"]["strict"] is True
+    # the grounded prompt keeps every original rule and only replaces the reply clause
+    assert payload["instructions"].startswith(h.CONCEPT_INSTRUCTIONS.split(
+        "Return PROPOSED with the ids otherwise.")[0])
+
+
+def test_grounded_admission_keeps_only_stated_verbatim_quotes_and_records_the_rest():
+    text = "The drum rotates whenever the handle is turned."
+    adapter = h.GroundedOpenAIMsnlAdapter(allow_network=True, transport=FakeTransport(
+        _grounded(("MC-ROTATE", " drum rotates ", "STATED"),
+                  ("MC-COMPONENT", "handle", "IMPLIED"),
+                  ("MC-DRIVE", "it moves", "STATED"))))
+    response = adapter.propose(_request(text))
+    assert (response.outcome, response.concept_ids) == (ms.PROPOSED, ("MC-ROTATE",))
+    assert adapter.withheld[text] == [{"concept_id": "MC-COMPONENT", "reason": "implied"},
+                                      {"concept_id": "MC-DRIVE", "reason": "ungrounded"}]
+
+
+def test_grounded_outcomes_errors_and_all_withheld_map_through_the_local_policy():
+    text = "The drum rotates whenever the handle is turned."
+    event = ms.AcceptedEvent(ref=ms.LocalRef("t", "c"), accepted_text=text,
+                             gap_type="MECHANISM_COMPLETENESS", question_target=None,
+                             domain="mechanical", kind=ms.EVENT_ANSWERED)
+    cases = [
+        (_grounded(("MC-COMPONENT", "handle", "IMPLIED")), ms.DISPOSITION_ABSTAINED),
+        (_grounded(outcome="NO_MAPPING"), ms.DISPOSITION_NO_MAPPING),
+        (_grounded(outcome="ABSTAIN"), ms.DISPOSITION_ABSTAINED),
+        (_reply({}, refusal=True), ms.DISPOSITION_ABSTAINED),
+        (_reply({"outcome": "PROPOSED", "concept_ids": ["MC-ROTATE"]}),
+         ms.DISPOSITION_ADAPTER_ERROR),
+        (_reply({"outcome": "PROPOSED", "proposals": [{"concept_id": "MC-ROTATE"}]}),
+         ms.DISPOSITION_ADAPTER_ERROR),
+        ((500, b""), ms.DISPOSITION_ADAPTER_ERROR),
+        (_grounded(("PF-ENERGY", "drum rotates", "STATED")),
+         ms.DISPOSITION_DISCARDED_UNSUPPORTED),
+    ]
+    for reply, disposition in cases:
+        adapter = h.GroundedOpenAIMsnlAdapter(allow_network=True,
+                                              transport=FakeTransport(reply))
+        assert ms.evaluate(event, adapter).disposition == disposition, reply
+
+
+def test_circuit_breaker_stops_after_two_auth_failures_or_three_consecutive_failures():
+    for replies, sent in (([(401, b"")] * 5, 2), ([(500, b"")] * 5, 3),
+                          ([(500, b""), (500, b""), _reply({"outcome": "NOT_UNKNOWN"}),
+                            (500, b""), (500, b""), (500, b"")], 6)):
+        transport = FakeTransport(*replies)
+        adapter = h.OpenAIMsnlAdapter(allow_network=True, transport=transport)
+        for _ in range(len(replies)):
+            adapter.classify_unknown("I don't know how it works yet, honestly.")
+        assert len(transport.calls) == sent, replies
+        assert adapter.errors.get(h.ERR_CIRCUIT_OPEN, 0) == len(replies) - sent
+
+
+def _m(false=(0, 0, 0, 0), hits=(8, 8, 8, 8), abst=0, multi="12/12", neg="4/4",
+       neg_meaning="4/4", errors=0, unsupported=0):
+    out = {v: {"false_attributions": f, "hits": hh, "match_cases": 8,
+               "abstained_on_match": 0, "errors": 0, "discarded_unsupported": 0}
+           for v, f, hh in zip(h.VARIETIES, false, hits)}
+    out["overall"] = {"false_attributions": sum(false), "hits": sum(hits), "match_cases": 32,
+                      "abstained_on_match": abst, "errors": errors,
+                      "discarded_unsupported": unsupported}
+    out.update(multi_concept_exact=multi, negation_clean=neg, negation_as_meaning_exact=neg_meaning)
+    return out
+
+
+LEXICAL = _m(false=(1, 1, 1, 0), hits=(8, 4, 2, 2), multi="6/12", neg="1/4", neg_meaning="2/4")
+UNKNOWN_OK = {"overall": {"explicit_unknown_recognized": "8/8", "false_unknown": 0, "errors": 0}}
+
+
+def test_frozen_criteria_need_three_runs_for_a_pass_and_fail_on_any_breach():
+    good = h.holdout_criteria(LEXICAL, _m(), _m(), UNKNOWN_OK)
+    assert [good[k]["status"] for k in ("C1", "C2", "C3", "C4", "C5", "C6")] == [h.PASS] * 6
+    assert good["C7"]["status"] == h.NOT_VERIFIED and good["verdict"] == h.NOT_VERIFIED
+    breaches = {"C1": _m(false=(0, 0, 0, 1)),            # any variety above lexical fails
+                "C2": _m(hits=(8, 8, 5, 8)),
+                "C3": _m(multi="7/12"),
+                "C4": _m(neg="3/4"),
+                "C6": _m(abst=4),
+                "C7": _m(unsupported=1)}
+    for key, grounded in breaches.items():
+        out = h.holdout_criteria(LEXICAL, _m(), grounded, UNKNOWN_OK)
+        assert out[key]["status"] == h.FAIL and out["verdict"] == h.FAIL, key
+    bad_unknown = {"overall": {"explicit_unknown_recognized": "7/8", "false_unknown": 0,
+                               "errors": 0}}
+    assert h.holdout_criteria(LEXICAL, _m(), _m(), bad_unknown)["C5"]["status"] == h.FAIL
+
+
+def test_any_provider_error_invalidates_the_run():
+    out = h.holdout_criteria(LEXICAL, _m(), _m(errors=1), UNKNOWN_OK)
+    assert out["verdict"] == h.NOT_VERIFIED and "RUN INVALID" in out["reason"]
+
+
+def test_criteria_thresholds_mirror_the_frozen_fixture_text():
+    pack = h._load(h.HOLDOUT_PACK_PATH, h.HOLDOUT_PACK_SHA256)
+    criteria = pack["acceptance_criteria"]
+    for key, phrase in (("C1", "EVERY variety and overall"), ("C2", "at least 0.75"),
+                        ("C2", "ar-gulf-kw and in ar-egy"), ("C3", "At least 8 of the 12"),
+                        ("C4", "NEGATION cases propose no concept"),
+                        ("C4", "at least 3 of 4 varieties"), ("C5", "8/8"),
+                        ("C5", "0 false unknowns"), ("C6", "no more than 0.10"),
+                        ("C7", "any provider error invalidates"), ("C7", "3 independent runs")):
+        assert phrase in criteria[key], (key, phrase)
+
+
+def test_holdout_lexical_run_is_offline_and_reproduces_the_frozen_baseline(capsys, monkeypatch):
+    def no_network(*_a, **_k):
+        raise AssertionError("no network in a lexical held-out run")
+    monkeypatch.setattr(toa, "_urllib_transport", no_network)
+    assert h.main(["--holdout"]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert set(out["arms"]) == {"lexical-baseline-uncalibrated"}
+    m = out["arms"]["lexical-baseline-uncalibrated"]["metrics"]
+    assert [m[v]["false_attributions"] for v in h.VARIETIES] == [1, 1, 1, 0]
+    assert [m[v]["hits"] for v in h.VARIETIES] == [8, 4, 2, 2]
+    assert out["criteria"]["verdict"] == h.NOT_VERIFIED
+
+
+@pytest.mark.parametrize("argv", [["--holdout", "--provider", "openai"],
+                                  ["--holdout", "--provider", "openai", "--allow-network"]])
+def test_holdout_llm_arms_need_both_permissions(argv, capsys):
+    assert h.main(argv) == 2
+    assert "refused" in json.loads(capsys.readouterr().out)
+
+
+def test_rescore_refuses_the_holdout_flag(capsys, tmp_path):
+    path = tmp_path / "x.json"
+    path.write_text("{}", encoding="utf-8")
+    assert h.main(["--rescore", str(path), "--holdout"]) == 2

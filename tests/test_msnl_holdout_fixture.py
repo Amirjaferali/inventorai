@@ -160,6 +160,6 @@ def test_existing_infrastructure_scores_it_without_any_network(pack, monkeypatch
     assert grains["concept"]["overall"]["cases"] == 44
 
 
-def test_the_harness_does_not_consume_the_fixture_yet():
+def test_the_harness_pins_exactly_these_frozen_bytes():
     script = (ROOT / "scripts" / "run_msnl_eval.py").read_text(encoding="utf-8")
-    assert "msnl_holdout_v1" not in script
+    assert 'HOLDOUT_PACK_SHA256 = "%s"' % HOLDOUT_SHA256 in script
