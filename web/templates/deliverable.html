@@ -423,6 +423,36 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if package.section_2_invention_summary.known_problem or package.section_2_invention_summary.known_mechanism %}
   <p class="ev-details-note" data-ev-details-note>{{ t('UI_ED_FORM_NOTE') }}</p>
   {% endif %}
+  {# FUNCTIONAL-CONCEPT-PRESENTATION-01: the inventor's own current answers,
+     grouped by the topic of the question each answered (read-only). #}
+  {% set fcv = functional_concept if functional_concept is defined else none %}
+  {% if fcv %}
+  <div class="functional-concept" data-functional-concept style="border:1px solid #c9d6e3;background:#f5f9fc;border-radius:4px;padding:10px 14px;margin:12px 0">
+    <h3 style="margin:0 0 6px 0">{{ t('UI_FC_HEADING') }}</h3>
+    {% if not fcv.available %}
+    <p style="margin:0;font-size:13px;color:#555" data-fc-unavailable>{{ t('UI_FC_UNAVAILABLE') }}</p>
+    {% else %}
+    <p style="margin:0 0 8px 0;font-size:13px;color:#555" data-fc-boundary>{{ t('UI_FC_BOUNDARY') }}</p>
+    {% for topic in fcv.topics %}
+    <div data-fc-topic="{{ topic.key }}" style="margin:0 0 8px 0">
+      <div class="field-label">{{ t('UI_FC_TOPIC_' ~ topic.key|upper) }}</div>
+      {% if topic.answers %}
+      <ul style="margin:2px 0 0 0;padding-inline-start:20px">
+        {% for a in topic.answers %}
+        <li style="margin:0 0 3px 0" data-fc-answer><span style="white-space:pre-wrap" dir="auto">{{ a.text }}</span>{% if a.provisional %} <span style="color:#555" data-fc-provisional>{{ t('UI_FC_PROVISIONAL') }}</span>{% endif %}{% if a.legacy_source %} <span style="color:#555" data-fc-legacy>{{ t('UI_FC_LEGACY') }}</span>{% endif %}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p style="margin:2px 0 0 0;font-size:13px;color:#555" data-fc-not-recorded>{{ t('UI_FC_NOT_RECORDED') }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+    {% if fcv.unplaced %}
+    <p style="margin:0;font-size:13px;color:#555" data-fc-unplaced>{{ t('UI_FC_UNPLACED') }} {{ fcv.unplaced }}</p>
+    {% endif %}
+    {% endif %}
+  </div>
+  {% endif %}
   <p class="report-return"><a href="#report-contents">{{ t('UI_REPORT_BACK_CONTENTS') }}</a></p>
 </section>
 

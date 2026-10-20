@@ -7312,6 +7312,9 @@ def show_deliverable(sid):
         # COMPONENT-DELIVERABLE-VALUE-01: the inventor's CURRENT declared
         # components (one store snapshot; UNAVAILABLE fails closed).
         component_report=_component_report_view(sid),
+        # FUNCTIONAL-CONCEPT-PRESENTATION-01: the inventor's own current
+        # answers grouped by question topic (read-only over the ledger).
+        functional_concept=_functional_concept_view(state),
         # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: criteria and
         # values, complete within 200 cells or explicitly omitted.
         decision_comparison=_comparison_report_view(sid),
@@ -7502,6 +7505,9 @@ def download_deliverable_pdf(sid):
             # COMPONENT-DELIVERABLE-VALUE-01: the SAME current-component view
             # as the HTML report.
             component_report=_component_report_view(sid),
+            # FUNCTIONAL-CONCEPT-PRESENTATION-01: the SAME by-topic view as
+            # the HTML report.
+            functional_concept=_functional_concept_view(state),
             # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the SAME
             # comparison projection as the HTML report.
             decision_comparison=_comparison_report_view(sid),
@@ -9208,6 +9214,84 @@ def _component_inventory_context(sid, entry):
         "max_need": _subsystem_model.MAX_COMPONENT_PROTOTYPE_NEED_LENGTH,
         "ack": ack, "error": error,
     }
+
+
+# FUNCTIONAL-CONCEPT-PRESENTATION-01: the report / PDF's "your idea, by
+# topic" view. Each topic is ONE governed gap; an answer belongs to it only by
+# the gap its question was served from (the record's gap_context), and the
+# assumptions topic also takes every provisional assumption the inventor
+# declared (by its explicit disposition). Text is never read to place an answer.
+_FUNCTIONAL_CONCEPT_TOPICS = (
+    ("goal", "PROBLEM_MECHANISM_FIT"),
+    ("operation", "MECHANISM_COMPLETENESS"),
+    ("conditions", "PHYSICAL_FEASIBILITY"),
+    ("scope", "BOUNDARY_AMBIGUITY"),
+    ("assumptions", "ASSUMPTION_INVENTORY"),
+)
+_FUNCTIONAL_CONCEPT_PROVENANCE = ("OWNER_STATED", "LEGACY_UNSPECIFIED")
+_FUNCTIONAL_CONCEPT_GAPS = frozenset(
+    ("PROBLEM_MECHANISM_FIT", "MECHANISM_COMPLETENESS", "PHYSICAL_FEASIBILITY",
+     "BOUNDARY_AMBIGUITY", "ASSUMPTION_INVENTORY", "EXPERTISE_GAP_AWARENESS"))
+
+
+def _functional_concept_view(state):
+    """FUNCTIONAL-CONCEPT-PRESENTATION-01 — the inventor's own CURRENT answers,
+    grouped by the topic of the question each one answered.
+
+    Read-only over ``state.assertions``: only ACTIVE records (never superseded),
+    of the inventor's own provenance (OWNER_STATED, or LEGACY_UNSPECIFIED from
+    before provenance was recorded, which is labelled as such); answered
+    records go to the topic of their ``gap_context``; provisional assumptions
+    (by disposition) go to the assumptions topic. Text is verbatim, in
+    recording order; a repeat in the same topic is shown once only when its
+    wording, source and disposition labels are all the same. A topic
+    with nothing reads as not recorded; answers whose question had no known
+    topic are counted, never guessed. ``None`` without state; any failure ->
+    ``{"available": False}``. Nothing is derived, judged, validated or written."""
+    if state is None:
+        return None
+    try:
+        topics = {key: [] for key, _gap in _FUNCTIONAL_CONCEPT_TOPICS}
+        gap_to_topic = {gap: key for key, gap in _FUNCTIONAL_CONCEPT_TOPICS}
+        seen = {key: set() for key in topics}
+        unplaced = 0
+        for record in getattr(state, "assertions", None) or ():
+            if getattr(record, "superseded_by", None) is not None:
+                continue
+            provenance = getattr(record, "provenance", None)
+            if provenance not in _FUNCTIONAL_CONCEPT_PROVENANCE:
+                continue
+            disposition = getattr(record, "disposition", None)
+            gap = getattr(record, "gap_context", None)
+            if disposition == _DISP_PROVISIONAL:
+                topic = "assumptions"
+            elif disposition == _DISP_ANSWERED:
+                if gap not in _FUNCTIONAL_CONCEPT_GAPS:
+                    unplaced += 1
+                    continue
+                topic = gap_to_topic.get(gap)
+                if topic is None:          # a known topic this view does not show
+                    continue
+            else:
+                continue
+            text = (getattr(record, "content", None) or "").strip()
+            provisional = disposition == _DISP_PROVISIONAL
+            legacy_source = provenance == "LEGACY_UNSPECIFIED"
+            # A repeat is merged only when its wording AND its labelled meaning
+            # (declared assumption, recorded source) are the same; equal words
+            # with a different source or disposition stay separate rows.
+            identity = (text, provisional, legacy_source)
+            if not text or identity in seen[topic]:
+                continue
+            seen[topic].add(identity)
+            topics[topic].append({
+                "text": text, "provisional": provisional,
+                "legacy_source": legacy_source})
+        return {"available": True, "unplaced": unplaced,
+                "topics": [{"key": key, "answers": topics[key]}
+                           for key, _gap in _FUNCTIONAL_CONCEPT_TOPICS]}
+    except Exception:
+        return {"available": False}
 
 
 def _component_report_view(sid):
