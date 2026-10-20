@@ -1021,6 +1021,63 @@ UI_STRINGS = {
     # texts and part names are never in this catalogue (rendered verbatim,
     # escaped). The copy keeps three things apart: the inventor declared the
     # component; InventorAI does not support it technically; nothing validated it.
+    # FUNCTIONAL-CONCEPT-PRESENTATION-01: the report / PDF "your idea, by
+    # topic" view (the inventor's own current answers; nothing is generated).
+    "UI_FC_HEADING": {
+        "en": "Your idea, by topic, in your own words",
+        "ar": "فكرتك حسب الموضوع، بكلماتك أنت",
+    },
+    "UI_FC_BOUNDARY": {
+        "en": ("This brings together what you have told InventorAI so far. Each "
+               "answer is placed under the topic of the question it answered. "
+               "InventorAI has not checked, completed or validated it, and it is "
+               "not a design or an engineering conclusion."),
+        "ar": ("يجمع هذا ما أخبرت به InventorAI حتى الآن. توضع كل إجابة تحت موضوع "
+               "السؤال الذي أجابت عنه. لم يتحقق InventorAI منها ولم يُكملها ولم "
+               "يُثبت صحتها، وهي ليست تصميمًا ولا استنتاجًا هندسيًا."),
+    },
+    "UI_FC_TOPIC_GOAL": {
+        "en": "What you want it to achieve — your answers about the problem it should solve",
+        "ar": "ما تريد أن يحققه — إجاباتك عن المشكلة التي يجب أن يحلها",
+    },
+    "UI_FC_TOPIC_OPERATION": {
+        "en": "How you expect it to work — your answers about how it works",
+        "ar": "كيف تتوقع أن يعمل — إجاباتك عن طريقة عمله",
+    },
+    "UI_FC_TOPIC_CONDITIONS": {
+        "en": "Conditions and limits it should handle — your answers about real-world conditions",
+        "ar": "الظروف والحدود التي يجب أن يتحملها — إجاباتك عن ظروف الاستخدام الفعلية",
+    },
+    "UI_FC_TOPIC_SCOPE": {
+        "en": "What it covers and what it does not — your answers about its boundaries",
+        "ar": "ما يشمله وما لا يشمله — إجاباتك عن حدوده",
+    },
+    "UI_FC_TOPIC_ASSUMPTIONS": {
+        "en": "What you are assuming — your answers about assumptions, and assumptions you declared",
+        "ar": "ما تفترضه — إجاباتك عن الافتراضات، والافتراضات التي أعلنتها",
+    },
+    "UI_FC_NOT_RECORDED": {
+        "en": "Not recorded yet.",
+        "ar": "لم يُسجَّل بعد.",
+    },
+    "UI_FC_PROVISIONAL": {
+        "en": "(an assumption you declared)",
+        "ar": "(افتراض أعلنته)",
+    },
+    "UI_FC_LEGACY": {
+        "en": "(source not recorded)",
+        "ar": "(المصدر غير مسجَّل)",
+    },
+    "UI_FC_UNPLACED": {
+        "en": ("Answers that could not be placed under a topic, still listed in the "
+               "Requirement Landscape:"),
+        "ar": "إجابات لم يمكن وضعها تحت موضوع، ولا تزال مدرجة في مشهد المتطلبات:",
+    },
+    "UI_FC_UNAVAILABLE": {
+        "en": ("This view is unavailable right now. Your answers are still listed in "
+               "the Requirement Landscape."),
+        "ar": "هذا العرض غير متاح حاليًا. لا تزال إجاباتك مدرجة في مشهد المتطلبات.",
+    },
     "UI_CI_HEADING": {
         "en": "Components you have declared",
         "ar": "المكوّنات التي أعلنتها",
