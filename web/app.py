@@ -9243,7 +9243,8 @@ def _functional_concept_view(state):
     before provenance was recorded, which is labelled as such); answered
     records go to the topic of their ``gap_context``; provisional assumptions
     (by disposition) go to the assumptions topic. Text is verbatim, in
-    recording order, with an exact repeat in the same topic shown once. A topic
+    recording order; a repeat in the same topic is shown once only when its
+    wording, source and disposition labels are all the same. A topic
     with nothing reads as not recorded; answers whose question had no known
     topic are counted, never guessed. ``None`` without state; any failure ->
     ``{"available": False}``. Nothing is derived, judged, validated or written."""
@@ -9274,13 +9275,18 @@ def _functional_concept_view(state):
             else:
                 continue
             text = (getattr(record, "content", None) or "").strip()
-            if not text or text in seen[topic]:
+            provisional = disposition == _DISP_PROVISIONAL
+            legacy_source = provenance == "LEGACY_UNSPECIFIED"
+            # A repeat is merged only when its wording AND its labelled meaning
+            # (declared assumption, recorded source) are the same; equal words
+            # with a different source or disposition stay separate rows.
+            identity = (text, provisional, legacy_source)
+            if not text or identity in seen[topic]:
                 continue
-            seen[topic].add(text)
+            seen[topic].add(identity)
             topics[topic].append({
-                "text": text,
-                "provisional": disposition == _DISP_PROVISIONAL,
-                "legacy_source": provenance == "LEGACY_UNSPECIFIED"})
+                "text": text, "provisional": provisional,
+                "legacy_source": legacy_source})
         return {"available": True, "unplaced": unplaced,
                 "topics": [{"key": key, "answers": topics[key]}
                            for key, _gap in _FUNCTIONAL_CONCEPT_TOPICS]}

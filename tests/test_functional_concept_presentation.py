@@ -109,6 +109,69 @@ def test_verbatim_text_exact_repeats_once_legacy_source_labelled():
     assert [a["legacy_source"] for a in answers] == [False, True]
 
 
+def _rows(view, key):
+    topic = next(t for t in view["topics"] if t["key"] == key)
+    return [(a["text"], a["provisional"], a["legacy_source"]) for a in topic["answers"]]
+
+
+@pytest.mark.parametrize("first,second", [(OWNER_STATED, LEGACY_UNSPECIFIED),
+                                          (LEGACY_UNSPECIFIED, OWNER_STATED)])
+def test_equal_wording_with_different_sources_keeps_both_rows(first, second):
+    view = appmod._functional_concept_view(_state(
+        _rec(1, "MECHANISM_COMPLETENESS", "It opens a valve.", provenance=first),
+        _rec(2, "MECHANISM_COMPLETENESS", "It opens a valve.", provenance=second)))
+    assert _rows(view, "operation") == [
+        ("It opens a valve.", False, first == LEGACY_UNSPECIFIED),
+        ("It opens a valve.", False, second == LEGACY_UNSPECIFIED)]
+
+
+@pytest.mark.parametrize("first,second", [
+    (DISPOSITION_ANSWERED, DISPOSITION_PROVISIONAL_ASSUMPTION),
+    (DISPOSITION_PROVISIONAL_ASSUMPTION, DISPOSITION_ANSWERED)])
+def test_equal_wording_with_different_dispositions_keeps_both_rows(first, second):
+    view = appmod._functional_concept_view(_state(
+        _rec(1, "ASSUMPTION_INVENTORY", "One bottle is enough.", disposition=first),
+        _rec(2, "ASSUMPTION_INVENTORY", "One bottle is enough.", disposition=second)))
+    assert _rows(view, "assumptions") == [
+        ("One bottle is enough.", first == DISPOSITION_PROVISIONAL_ASSUMPTION, False),
+        ("One bottle is enough.", second == DISPOSITION_PROVISIONAL_ASSUMPTION, False)]
+
+
+@pytest.mark.parametrize("disposition,provenance", [
+    (DISPOSITION_ANSWERED, OWNER_STATED), (DISPOSITION_ANSWERED, LEGACY_UNSPECIFIED),
+    (DISPOSITION_PROVISIONAL_ASSUMPTION, OWNER_STATED)])
+def test_identical_wording_and_labels_are_shown_once(disposition, provenance):
+    records = [_rec(n, "ASSUMPTION_INVENTORY", "One bottle is enough.",
+                    disposition=disposition, provenance=provenance) for n in (1, 2)]
+    rows = _rows(appmod._functional_concept_view(_state(*records)), "assumptions")
+    assert rows == [("One bottle is enough.",
+                     disposition == DISPOSITION_PROVISIONAL_ASSUMPTION,
+                     provenance == LEGACY_UNSPECIFIED)]
+
+
+def test_colliding_rows_render_each_with_its_own_label():
+    state = _state(
+        _rec(1, "ASSUMPTION_INVENTORY", "One bottle is enough."),
+        _rec(2, "ASSUMPTION_INVENTORY", "One bottle is enough.",
+             disposition=DISPOSITION_PROVISIONAL_ASSUMPTION),
+        _rec(3, "MECHANISM_COMPLETENESS", "It opens a valve."),
+        _rec(4, "MECHANISM_COMPLETENESS", "It opens a valve.",
+             provenance=LEGACY_UNSPECIFIED))
+    view = appmod._functional_concept_view(state)
+    with appmod.app.test_request_context():
+        section = appmod.render_template("deliverable.html", sid="s", package=assemble_deliverable(state),
+                                         eligible=False, reconstructed_deliverable=False,
+                                         functional_concept=view)
+    section = _section(section)
+    assumptions = section[section.index('data-fc-topic="assumptions"'):]
+    operation = section[section.index('data-fc-topic="operation"'):
+                        section.index('data-fc-topic="conditions"')]
+    assert assumptions.count("data-fc-answer") == 2
+    assert assumptions.count("data-fc-provisional") == 1
+    assert operation.count("data-fc-answer") == 2
+    assert operation.count("data-fc-legacy") == 1
+
+
 def test_unplaceable_answers_are_counted_never_guessed():
     view = appmod._functional_concept_view(_state(
         _rec(1, None, "No topic recorded."),
