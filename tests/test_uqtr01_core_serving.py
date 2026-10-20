@@ -709,7 +709,10 @@ def test_existing_correction_route_reactivates_ordinary_serving(client):
     assert target.disposition == "answered"
     gap = pl.select_next_gap(_state(sid))
     assert target.gap_context == gap
-    _non_answer(client, sid, "specialist_requested")
+    # SPECIALIST-REQUEST-PAUSE-01: after one answer the ask is N-MC-2, where a
+    # specialist request now PAUSES the gap; a still-suppressing non-answer
+    # keeps this test on the UQTR-01 suppression it covers.
+    _non_answer(client, sid, "evidence_requested")
     assert 'id="uqtr-suppressed"' in _page(client, sid)
     r = client.post(f"/session/{sid}/correct", data={
         "supersedes_record_id": target.record_id,

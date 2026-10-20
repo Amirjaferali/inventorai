@@ -618,11 +618,15 @@ def _reconstruct(store, project_id: str):
         # (replayed or not) resumes its gap before anything else reads it; a
         # non-answer applies its disposition. Only records recorded after the
         # amendment can open a gap here, so earlier histories replay unchanged.
+        # SPECIALIST-REQUEST-PAUSE-01: the applier reads the record's OWN
+        # durable question_target (None on legacy records, which never pause
+        # on a specialist request).
         if record.disposition == DISPOSITION_ANSWERED:
             progression_loop.prepare_answer(state, record.gap_context)
         elif record.disposition in progression_loop.UQTR_SUPPRESSING_DISPOSITIONS:
             progression_loop.apply_owner_disposition(
-                state, record.disposition, record.gap_context)
+                state, record.disposition, record.gap_context,
+                getattr(record, "question_target", None))
         if (record.disposition == DISPOSITION_ANSWERED
                 and record.record_id in _assumption_origin):
             # A valid assumption-origin answer stays at its own durable
