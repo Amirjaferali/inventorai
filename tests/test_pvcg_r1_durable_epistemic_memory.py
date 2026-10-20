@@ -322,9 +322,13 @@ def test_durable_non_answer_records_do_not_change_reconstructed_progression(
     pause that gap and let the next independent gap be questioned (an
     Owner-approved cascade amendment that still moves no gap status, maturity
     or stage — tests/test_unknown_question_pause.py), so this invariant is
-    asserted for the three non-pausing non-answer actions."""
+    asserted for the three non-pausing non-answer actions.
+    SPECIALIST-REQUEST-PAUSE-01: after the answer the ask is N-MC-2, where
+    `specialist_requested` now pauses the gap too, so the post-answer actions
+    are the two that never pause."""
     non_pausing = [d for d in NON_ANSWER_DISPOSITIONS
                    if d not in ("unknown", "deferred")]
+    after_answer = [d for d in non_pausing if d != "specialist_requested"]
     sid_plain = live.start()
     live.act(sid_plain, "answered", _ANSWER)
     plain = _reconstruct_in_new_process(db_path, sid_plain)
@@ -333,7 +337,7 @@ def test_durable_non_answer_records_do_not_change_reconstructed_progression(
     for disposition in non_pausing:
         live.act(sid_rich, disposition, "")
     live.act(sid_rich, "answered", _ANSWER)
-    for disposition in non_pausing:
+    for disposition in after_answer:
         live.act(sid_rich, disposition, "")
     rich = _reconstruct_in_new_process(db_path, sid_rich)
 
@@ -342,7 +346,7 @@ def test_durable_non_answer_records_do_not_change_reconstructed_progression(
     assert rich["open_gaps"] == plain["open_gaps"]
     assert rich["gaps"] == plain["gaps"]
     assert rich["accepted_answer_count"] == plain["accepted_answer_count"] == 1
-    assert len(rich["ledger"]) == 2 * len(non_pausing) + 1
+    assert len(rich["ledger"]) == len(non_pausing) + len(after_answer) + 1
 
 
 # --------------------------------------------------------------------------

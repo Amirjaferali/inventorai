@@ -219,7 +219,14 @@ _FROZEN_ENGINE_SHA256 = {
     # correction-admission guards used by the correction route and replay.
     # No classifier, tie, substance, scoring,
     # quality, maturity-gate or gap-type change (pre-pause = b8ba596c...4f50).
-    "engine/progression_loop.py": "2294875377484bb6b77c31a1b6718bb0de383e9c3d241bf93140888b9eaf4755",
+    # SPECIALIST-REQUEST-PAUSE-01 re-freeze (disclosed; Owner-authorized
+    # continuation amendment): `specialist_requested` on exactly the two
+    # question targets PATHN:N-MC-2 and PATHN:mechanical:MECHANISM_COMPLETENESS:Q3
+    # pauses MECHANISM_COMPLETENESS through the same applier (one shared
+    # `is_pausing_disposition` predicate; the applier takes the record's own
+    # question_target). No classifier, tie, substance, scoring, quality,
+    # maturity-gate or gap-type change (pre-amendment = 22948753...4755).
+    "engine/progression_loop.py": "becf751419b7889274f5db26c823487eee4e37a1642e55d4f229fcf9ab9035d2",
 }
 # Other-pack byte freeze (unchanged lineage from I1/I2). L2SC-01 reconciliation
 # (disclosed; electronics_electrical re-frozen, see I1's own comment).

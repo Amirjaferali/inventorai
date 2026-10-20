@@ -62,6 +62,7 @@ from engine.progression_loop import (
     deferred_open_gap, apply_owner_disposition, prepare_answer, answer_applicable,
     correction_admissible,
     paused_gap_types, paused_gap_answerable, GAP_PRIORITY,
+    is_pausing_disposition,
     TRIGGER_CRITICAL_UNRESOLVED, TRIGGER_LAPSED_ACCEPTANCE,
     TRIGGER_MULTIPLE_ALTERNATIVES, TRIGGER_COMPLETED_INTENT_SKIP,
     # RVR-7 (authoritative path manifest freeze, PR #588): read-only inputs to the
@@ -3404,9 +3405,11 @@ def _routed_need_target(state, gap_type, identity):
 def _paused_question(state, gap_type):
     """``(identity, english, served)`` of the question the owner paused on
     ``gap_type``: the exact committed question named by the PAUSING record —
-    the latest ACTIVE `unknown` / `deferred` record of that gap (only those
-    pause it; an `answered` record resumes it, and no other record, such as a
-    routed-need note, can rebind it) — else the gap's canonical question at its
+    the latest ACTIVE pausing record of that gap (`unknown` / `deferred`, or a
+    `specialist_requested` on one of the two exact question targets of
+    SPECIALIST-REQUEST-PAUSE-01; only those pause it; an `answered` record
+    resumes it, and no other record, such as a routed-need note, can rebind
+    it) — else the gap's canonical question at its
     unchanged ``iterations_open``. A question that is an outstanding routed
     need is never offered for an answer (NeedRouting eligibility), so it
     resolves to None. Pure; None on failure."""
@@ -3417,7 +3420,9 @@ def _paused_question(state, gap_type):
         pausing = None
         for record in state.assertions:
             if record.superseded_by is None and record.gap_context == gap_type \
-                    and record.disposition in ("unknown", "deferred"):
+                    and is_pausing_disposition(
+                        record.disposition, gap_type,
+                        getattr(record, "question_target", None)):
                 pausing = record
         target = getattr(pausing, "question_target", None)
         if isinstance(target, str) and target.startswith(_PATHN_IDENTITY_PREFIX):
@@ -3477,7 +3482,9 @@ def _paused_questions_context(sid, entry, state, lang):
             for record in state.assertions:
                 if record.superseded_by is None \
                         and record.gap_context == gap_type \
-                        and record.disposition in ("unknown", "deferred"):
+                        and is_pausing_disposition(
+                            record.disposition, gap_type,
+                            getattr(record, "question_target", None)):
                     disposition = record.disposition
             question = _paused_question(state, gap_type)
             target = (None if question is None else
@@ -16308,8 +16315,10 @@ def submit_answer(sid):
         # UNKNOWN-QUESTION-PAUSE-01: apply the committed disposition with the
         # SAME engine function reconstruction replays at this record's position
         # (opens the deferred-open gap it was recorded against; pauses a
-        # Stage-2 gap on `unknown` / `deferred`). Nothing else moves.
-        apply_owner_disposition(state, action, gap_ctx)
+        # Stage-2 gap on `unknown` / `deferred`, and MECHANISM_COMPLETENESS on a
+        # `specialist_requested` bound to one of the two exact question targets
+        # of SPECIALIST-REQUEST-PAUSE-01). Nothing else moves.
+        apply_owner_disposition(state, action, gap_ctx, question_target)
         # UQTR-01 Step 2B: an accepted non-answer is a question-bearing write
         # too, so it consumes the token; every older form is no longer current.
         entry.pop("answer_token", None)

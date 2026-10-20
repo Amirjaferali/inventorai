@@ -86,9 +86,40 @@ STALL_THRESHOLD = 3  # iterations before reframe
 # owner acts on its question (`deferred_open_gap`), never at the pause itself:
 # a history recorded before this amendment therefore replays exactly as before.
 # `specialist_requested`, `evidence_requested`, `provisional_assumption` and
-# `risk_accepted` keep their existing semantics.
+# `risk_accepted` keep their existing semantics, with ONE bounded exception
+# below.
+#
+# SPECIALIST-REQUEST-PAUSE-01 (Owner-authorized continuation amendment): an
+# explicit `specialist_requested` on exactly the two committed parts-and-roles
+# questions of MECHANISM_COMPLETENESS — `PATHN:N-MC-2` and
+# `PATHN:mechanical:MECHANISM_COMPLETENESS:Q3`, identified ONLY by the record's
+# server-verified `question_target` — pauses that gap exactly as `unknown` /
+# `deferred` do. The pending specialist request stays its own ledger record
+# (the Requirement Landscape and Validation Plan read it unchanged); nothing
+# says a specialist was assigned or any engineering work was done; grading,
+# closure, maturity and the Level-2 block are unchanged. A record without a
+# question target (every legacy record), any other question or any other gap
+# keeps the existing semantics. No unknown is ever converted into a request.
 STAGE2_PAUSING_DISPOSITIONS = frozenset({"unknown", "deferred"})
+SPECIALIST_PAUSE_DISPOSITION = "specialist_requested"
+SPECIALIST_PAUSE_QUESTION_TARGETS = frozenset({
+    "PATHN:N-MC-2",
+    "PATHN:mechanical:MECHANISM_COMPLETENESS:Q3",
+})
 _PAUSED_ATTR = "stage2_paused_gaps"
+
+
+def is_pausing_disposition(disposition, gap_type, question_target=None) -> bool:
+    """True when a committed owner non-answer of ``disposition`` recorded
+    against ``gap_type`` with ``question_target`` pauses that gap: `unknown` /
+    `deferred` on any gap, or `specialist_requested` on one of the two exact
+    MECHANISM_COMPLETENESS question targets above. Pure; the ONE predicate the
+    pause, its revisit and replay share."""
+    if disposition in STAGE2_PAUSING_DISPOSITIONS:
+        return True
+    return (disposition == SPECIALIST_PAUSE_DISPOSITION
+            and gap_type == MECHANISM_COMPLETENESS
+            and question_target in SPECIALIST_PAUSE_QUESTION_TARGETS)
 
 
 def paused_gap_types(state) -> frozenset:
@@ -129,15 +160,17 @@ def _open_deferred_gap(state, gap_type) -> None:
                               opened_at=state.iteration))
 
 
-def apply_owner_disposition(state, disposition, gap_type) -> None:
+def apply_owner_disposition(state, disposition, gap_type,
+                            question_target=None) -> None:
     """Applied once per committed owner non-answer on ``gap_type`` — live after
     the durable append, and at the record's own position in replay. A
-    non-answer on the deferred-open gap opens it; `unknown` / `deferred` on an
-    OPEN/PARTIAL Stage-2 gap pauses it. Nothing else moves."""
+    non-answer on the deferred-open gap opens it; a pausing disposition
+    (``is_pausing_disposition``, with the record's own ``question_target``) on
+    an OPEN/PARTIAL Stage-2 gap pauses it. Nothing else moves."""
     if gap_type is None:
         return
     _open_deferred_gap(state, gap_type)
-    if disposition not in STAGE2_PAUSING_DISPOSITIONS \
+    if not is_pausing_disposition(disposition, gap_type, question_target) \
             or gap_type not in GAP_PRIORITY \
             or getattr(state, "current_stage", 2) == 3:
         return
