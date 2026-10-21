@@ -665,6 +665,13 @@ def _t2g1_start(c, appmod, **kwargs):
     return _stamped_start(c, appmod, _sr.ENGINE_CONTRACT_VERSION_T2G1, **kwargs)
 
 
+def _nr1_start(c, appmod, **kwargs):
+    """T2-G-3: a project created under the routing-aware T2-G-2 contract, which
+    a fresh /start no longer records."""
+    from engine import session_reconstruction as _sr
+    return _stamped_start(c, appmod, _sr.ENGINE_CONTRACT_VERSION_NR1, **kwargs)
+
+
 def test_the_questioning_disclosure_is_truthful_and_bilingual(client):
     """(10) It states the governed fixed set AND the deterministic state-aware
     selection this version really performs; it never claims there is no
@@ -715,8 +722,8 @@ def test_the_t2g2_questioning_disclosure_is_truthful_and_bilingual(client):
     wording accurate for IT: the fixed reviewed set, the fixed rules, the
     bounded recognition of some concise and mixed explanations and its limits,
     no new questions, no general understanding, no engineering verification."""
-    c, _appmod = client
-    sid = _start(c)                       # the REAL current /start
+    c, appmod = client
+    sid = _nr1_start(c, appmod)           # T2-G-3: no longer the current stamp
     en = _copy("UI_T2G2_QUESTION_SET")
     assert en in _page(c, sid)
     assert _copy("UI_T2G2_QUESTION_SET", "ar") in _page(c, sid, lang="ar")
@@ -832,8 +839,8 @@ def test_rtl_lang_escaping_and_hostile_content_are_handled(client):
     # T2-G: this project is recorded under the new version, so the disclosure
     # shown is the one accurate for it; the legacy assertion is preserved below
     # against a project recorded under the earlier version.
-    assert _copy("UI_T2G2_QUESTION_SET", "ar") in _html.unescape(raw_ar)
-    assert _copy("UI_T2G2_QUESTION_SET") not in _html.unescape(raw_ar)
+    assert _copy("UI_T2G3_QUESTION_SET", "ar") in _html.unescape(raw_ar)
+    assert _copy("UI_T2G3_QUESTION_SET") not in _html.unescape(raw_ar)
     t2g1_sid = _t2g1_start(c, appmod, domain="electronics_electrical",
                            seed=ELEC_SEED)
     t2g1_ar = _raw(c, t2g1_sid, lang="ar")

@@ -110,7 +110,18 @@ ENGINE_CONTRACT_VERSION_T2G2 = "p4-2-level1-recon-v1-t2g2"
 # exactly as before: nothing is backfilled, no routing is synthesized, and a
 # routing history on any other version fails closed.
 ENGINE_CONTRACT_VERSION_NR1 = "p4-2-level1-recon-v1-t2g2-nr1"
-ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS = (ENGINE_CONTRACT_VERSION_NR1,)
+
+# T2-G-3 (false-progression correction): the FIFTH supported engine-contract
+# version. It carries every T2-G-2 rule and the NR1 routing materialization
+# unchanged, and is the ONLY version under which a Mechanism Completeness
+# answer written only as a question or as an explicit supposition (the three
+# qualified opener cues owned by `engine/answer_stance.py`) supplies no
+# mechanism credit. Stamped on NEW projects only: every existing project keeps
+# its recorded version and replays exactly as before; nothing is adopted or
+# migrated automatically.
+ENGINE_CONTRACT_VERSION_T2G3 = "p4-2-level1-recon-v1-t2g2-nr1-t2g3"
+ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS = (ENGINE_CONTRACT_VERSION_NR1,
+                                          ENGINE_CONTRACT_VERSION_T2G3)
 
 # Both exact versions are supported through the ONE existing progression and
 # reconstruction path — the earlier stamp is NOT replaced, so no valid legacy
@@ -120,11 +131,12 @@ SUPPORTED_ENGINE_CONTRACT_VERSIONS = (
     ENGINE_CONTRACT_VERSION_T2G1,
     ENGINE_CONTRACT_VERSION_T2G2,
     ENGINE_CONTRACT_VERSION_NR1,
+    ENGINE_CONTRACT_VERSION_T2G3,
 )
 
 # The version a newly created supported project records. Separate name so the
 # "what do we stamp now" decision is never confused with "what do we support".
-CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_NR1
+CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_T2G3
 
 # Deterministic Path-N support only.
 SUPPORTED_PATH = "N"

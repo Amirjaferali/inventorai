@@ -4744,6 +4744,34 @@ UI_STRINGS = {
                "صيغ أخرى. ولا تُنشأ أسئلة جديدة، وهو لا يفهم كتابتك بشكل عام، "
                "ولا يُتحقَّق من صحة فكرتك هندسيًا."),
     },
+    # T2-G-3: shown ONLY on projects recorded under the T2-G-3 engine-contract
+    # version. Every earlier disclosure above is RETAINED byte-unchanged for the
+    # projects it already describes. This wording adds that an explanation
+    # written only as a question or a supposition is not counted, and its
+    # limits; it claims no general understanding and no engineering check.
+    "UI_T2G3_QUESTION_SET": {
+        "en": ("These questions come from a fixed, reviewed set. This version "
+               "chooses which one to show from what your project already "
+               "records, using fixed rules — including recognising some ways "
+               "of saying you do not know something yet, and some short "
+               "explanations or ones written in the same sentence as an "
+               "uncertainty. A description of how your idea works that is "
+               "written only as a question, or that starts with \"suppose\" or "
+               "\"imagine\", is saved but not counted as an explanation. That "
+               "recognition covers only certain phrasings, so it will miss "
+               "others. No new questions are generated, it does not understand "
+               "your writing in general, and whether your idea is "
+               "engineering-correct is not checked."),
+        "ar": ("تأتي هذه الأسئلة من مجموعة ثابتة ومراجَعة. ويختار هذا الإصدار "
+               "أيها يعرض بناءً على ما سجّله مشروعك فعلًا، وفق قواعد ثابتة — "
+               "بما في ذلك تمييز بعض صيغ قولك إنك لا تعرف شيئًا بعد، وبعض "
+               "الشروح القصيرة أو المكتوبة في الجملة نفسها مع عبارة عدم "
+               "المعرفة. وإذا وصفت كيف تعمل فكرتك بصيغة سؤال فقط، أو بدأت "
+               "الوصف بكلمة «لنفترض»، فإنه يُحفظ لكنه لا يُحتسب شرحًا. ولا يشمل "
+               "هذا التمييز إلا صيغًا معيّنة، لذلك ستفوته صيغ أخرى. ولا تُنشأ "
+               "أسئلة جديدة، وهو لا يفهم كتابتك بشكل عام، ولا يُتحقَّق من صحة "
+               "فكرتك هندسيًا."),
+    },
     # --- T2-D: optional contextual feedback on the displayed question -------
     # Copy describes SAVING TO THIS PROJECT and nothing more. It never promises
     # that a team receives or reviews it, never claims anonymity, never implies
@@ -9102,6 +9130,7 @@ _DEEP_AR = {
     # supported UI languages, through the existing localize_deep seam.
     "This answer was not recognized as responding to the question that was asked, so it did not move this point forward. Answering the question directly, in the words the question uses, is what the current demo can recognize.": "لم يتم التعرف على هذه الإجابة كردٍّ على السؤال المطروح، لذلك لم تُحرِّك هذه النقطة إلى الأمام. الإجابة عن السؤال مباشرةً، وبالكلمات التي يستخدمها السؤال، هي ما يستطيع العرض الحالي التعرف عليه.",
     "Your statement that this is not known yet has been saved with your project. It does not describe how the mechanism works, so this point has not moved forward. You can answer it later, or describe the part you do know.": "تم حفظ قولك إن هذا غير معروف بعد مع مشروعك. وهو لا يصف كيف تعمل الآلية، لذلك لم تتقدّم هذه النقطة. يمكنك الإجابة عنها لاحقًا، أو وصف الجزء الذي تعرفه.",
+    "Your answer has been saved with your project. It asks about or supposes how the mechanism might work but does not state how it works, so this point has not moved forward. If you know how it works, describe it as a statement; if you do not know yet, you can say so.": "تم حفظ إجابتك مع مشروعك. وهي تسأل عن كيفية عمل الآلية أو تفترضها، لكنها لا تذكر كيف تعمل، لذلك لم تتقدّم هذه النقطة. إذا كنت تعرف كيف تعمل، فصِفها كعبارة تقريرية؛ وإن كنت لا تعرف بعد، يمكنك قول ذلك.",
     "This point cannot move forward yet. Review the result details for the specific reason.": "لا يمكن لهذه النقطة المضي قدمًا بعد. راجِع تفاصيل النتيجة لمعرفة السبب المحدّد.",
 
     # --- 4.9 gap_labels.py GAP_LABELS (heading / guidance / stage_note) ---

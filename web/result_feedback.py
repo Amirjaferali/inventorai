@@ -103,6 +103,17 @@ _WARN_EXPLICIT_UNKNOWN = (
     "you do know."
 )
 
+# T2-G-3: an answer that only ASKED about or SUPPOSED the mechanism gets its own
+# message, shown only when that rule withheld credit. It is not "not addressed"
+# (the answer was about the question) and not an explicit unknown; it confirms
+# the answer was saved and claims nothing about whether the idea is correct.
+_WARN_QUESTION_OR_SUPPOSITION = (
+    "Your answer has been saved with your project. It asks about or supposes "
+    "how the mechanism might work but does not state how it works, so this "
+    "point has not moved forward. If you know how it works, describe it as a "
+    "statement; if you do not know yet, you can say so."
+)
+
 _GENERIC_WARN = (
     "This point cannot move forward yet. Review the result details for the specific reason."
 )
@@ -151,6 +162,8 @@ def get_result_feedback(last_result):
         # respond to the question, so it must never fall into that category.
         if "recorded as an explicit unknown" in reason:
             return _WARN_EXPLICIT_UNKNOWN
+        if "recorded as a question or supposition" in reason:
+            return _WARN_QUESTION_OR_SUPPOSITION
         if "not addressed" in reason:
             return _WARN_NOT_ADDRESSED
         if "asserted only" in reason:

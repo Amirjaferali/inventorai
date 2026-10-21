@@ -31,6 +31,7 @@ import tarfile
 import pytest
 
 import web.app as webapp
+from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_NR1
 from web.app import app
 from engine import experiment_result as er
 from engine.record_store import SqliteRecordStore
@@ -183,9 +184,16 @@ def test_rb1_the_record_store_schema_is_identical_to_the_baseline(baseline, tmp_
     assert cand_fks == base_fks
 
 
-def test_rb2_the_baseline_fails_closed_on_withdrawals_and_keeps_legacy_history(baseline, tmp_path):
+def test_rb2_the_baseline_fails_closed_on_withdrawals_and_keeps_legacy_history(
+        baseline, tmp_path, monkeypatch):
     app.config["TESTING"] = True
     email = "withdraw-rollback@example.com"
+    # T2-G-3: the baseline predates the T2-G-3 engine contract and, by design,
+    # fails closed on any project stamped with a version it does not support.
+    # This test is about the withdrawal rollback, so its projects are created
+    # under the newest stamp the baseline supports.
+    monkeypatch.setattr(webapp, "CURRENT_ENGINE_CONTRACT_VERSION",
+                        ENGINE_CONTRACT_VERSION_NR1)
     c, _aid = _client_for(email)
     sid_w = _journey(c)
     ids = _live_ids(sid_w)
