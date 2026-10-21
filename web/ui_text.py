@@ -3678,6 +3678,30 @@ UI_STRINGS = {
     # Platform UI chrome under the existing governed EN/AR catalog mechanism
     # (current localization infrastructure, NOT RVR-7 / Arabic substantive
     # parity, which remains Wave-3 and unauthorized).
+    # Cross-gap replay repair: saved answers the last rebuild did not count.
+    # States only what is true: the answer is saved and unchanged, it is not
+    # counted toward progress right now, it was credited to no other part,
+    # and removing earlier credit may also have changed other progress.
+    "UI_XG1_UNAPPLIED_HEADING": {
+        "en": "Saved, but not counted toward progress",
+        "ar": "محفوظة، لكنها لا تُحتسب في التقدّم"},
+    "UI_XG1_UNAPPLIED_EXPLAIN": {
+        "en": ("These answers are saved in your project exactly as you wrote "
+               "them. After a correction, the project was rebuilt from your "
+               "answers in the order you gave them, and at that point each of "
+               "these answers was no longer about the part being worked on. "
+               "So it is not counted toward progress right now, and it was not "
+               "counted toward any other part either. Because earlier credit "
+               "was removed, other progress shown on this page may also have "
+               "changed. You can answer the current question, or correct one "
+               "of these answers."),
+        "ar": ("هذه الإجابات محفوظة في مشروعك كما كتبتها تمامًا. بعد التصحيح، "
+               "أُعيد بناء المشروع من إجاباتك بالترتيب الذي قدّمتها به، وفي "
+               "تلك المرحلة لم تعد كل إجابة منها تخصّ الجزء الذي يجري العمل "
+               "عليه. لذلك لا تُحتسب الآن في التقدّم، ولم تُحتسب لأي جزء آخر "
+               "أيضًا. ولأن رصيدًا سابقًا أُزيل، فقد يكون تقدّم آخر معروض في "
+               "هذه الصفحة قد تغيّر كذلك. يمكنك الإجابة عن السؤال الحالي، أو "
+               "تصحيح إحدى هذه الإجابات.")},
     "UI_W2D_LAPSE_HEADING": {
         "en": "A previous risk acceptance no longer applies",
         "ar": "قبول سابق للمخاطرة لم يعد ساريًا"},

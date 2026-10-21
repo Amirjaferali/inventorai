@@ -75,10 +75,13 @@ def test_the_supported_versions_are_exactly_these():
     # T2-G-3 adds the FIFTH version; every earlier one is retained exactly.
     from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G3
     assert ENGINE_CONTRACT_VERSION_T2G3 == "p4-2-level1-recon-v1-t2g2-nr1-t2g3"
+    # The cross-gap replay repair adds the SIXTH; every earlier one is kept.
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_XG1
+    assert ENGINE_CONTRACT_VERSION_XG1 == "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1"
     assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == (
         RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1,
         ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_NR1,
-        ENGINE_CONTRACT_VERSION_T2G3)
+        ENGINE_CONTRACT_VERSION_T2G3, ENGINE_CONTRACT_VERSION_XG1)
 
 
 @pytest.mark.parametrize("version", [None, RECONSTRUCTION_VERSION, "", "anything",

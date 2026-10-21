@@ -968,11 +968,14 @@ def t2g_rule_level(state, gap_type=None, domain=None):
     version."""
     from engine.session_reconstruction import (
         ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2,
-        ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3)
+        ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3,
+        ENGINE_CONTRACT_VERSION_XG1)
     # Safe Question Reduction Slice 1: the routing-aware version carries every
     # T2-G-2 rule unchanged (routing is additive to it, not a rule change).
     levels = {ENGINE_CONTRACT_VERSION_T2G1: 1, ENGINE_CONTRACT_VERSION_T2G2: 2,
-              ENGINE_CONTRACT_VERSION_NR1: 2, ENGINE_CONTRACT_VERSION_T2G3: 3}
+              ENGINE_CONTRACT_VERSION_NR1: 2, ENGINE_CONTRACT_VERSION_T2G3: 3,
+              # The cross-gap replay repair carries every T2-G-3 rule unchanged.
+              ENGINE_CONTRACT_VERSION_XG1: 3}
     level = levels.get(getattr(state, "engine_contract_version", None), 0)
     if not level:
         return 0

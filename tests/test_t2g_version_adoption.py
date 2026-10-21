@@ -340,14 +340,14 @@ def test_k_cold_review_banner_and_deliverable_reflect_durable_adoption_without_m
 def test_f_a_current_version_project_refuses(client):
     c, appmod, db = client
     _login(c, appmod)
-    sid = _start(c)            # the current T2-G-3 stamp (routing-aware)
+    sid = _start(c)            # the current XG1 stamp (routing-aware)
     _answer(c, sid, F2_UNKNOWN)
     assert "engine-version" not in _raw(c, sid)
     assert _adopt(c, sid).status_code == 302
     assert _adoption_rows(db, sid) == []
     assert "could not be applied just now" in _page(c, sid)
-    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G3
-    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G3
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_XG1
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_XG1
 
 
 def test_f_a_project_without_an_active_answer_refuses(client):
@@ -903,10 +903,12 @@ def test_the_effective_version_is_resolved_once_from_durable_state_only(client):
     _answer(c, sid, F2_UNKNOWN)
     assert _adopt(c, sid).status_code == 302
     from engine.session_reconstruction import (ENGINE_CONTRACT_VERSION_NR1,
-                                               ENGINE_CONTRACT_VERSION_T2G3)
+                                               ENGINE_CONTRACT_VERSION_T2G3,
+                                               ENGINE_CONTRACT_VERSION_XG1)
     assert set(SUPPORTED_ENGINE_CONTRACT_VERSIONS) == {
         RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2,
-        ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3}
+        ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3,
+        ENGINE_CONTRACT_VERSION_XG1}
     source = inspect.getsource(reconstruct_readonly_state.__globals__["_reconstruct"])
     assert source.count("effective_engine_contract_version(") == 1
     module_source = inspect.getsource(

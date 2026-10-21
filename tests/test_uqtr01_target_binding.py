@@ -905,7 +905,16 @@ def _idempotency_keys(sid):
         con.close()
 
 
-def test_l3_same_text_non_answers_on_two_questions_are_distinct_events(client):
+def test_l3_same_text_non_answers_on_two_questions_are_distinct_events(
+        client, monkeypatch):
+    # Cross-gap replay repair: this journey moves Physical Feasibility to its
+    # next question by correcting a Mechanism answer after Mechanism closed,
+    # which only the T2-G-3 (and earlier) replay credits to the selected gap.
+    # The subject here is target-aware idempotency, so the project is created
+    # under that version, whose replay is unchanged.
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G3
+    monkeypatch.setattr(appmod, "CURRENT_ENGINE_CONTRACT_VERSION",
+                        ENGINE_CONTRACT_VERSION_T2G3)
     sid = _start(client)
     for text in (WEAK, ANSWER, ANSWER_CLOSING):
         _answer_fresh(client, sid, text)
