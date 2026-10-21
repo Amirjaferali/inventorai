@@ -549,6 +549,21 @@ body{overflow-wrap:anywhere}
 {# The in-progress answer form is deliberately NOT rendered here: answering a  #}
 {# reconstructed view is not available (the committed P4-1b-2a non-resume      #}
 {# guard also holds server-side).                                              #}
+{# Cross-gap replay repair: saved answers the project's last deterministic
+   rebuild did not count. Derived on every render from the rebuilt state (never
+   persisted), so it stays accurate after a reload or a resume. Lists only this
+   project's own affected answers, in the inventor's own words. #}
+{% set unapplied_answers_notice %}{% if unapplied_answers %}
+<div class="badge-warn unapplied-answers" style="display:block;padding:9px 14px;margin-bottom:14px">
+  <strong>{{ t('UI_XG1_UNAPPLIED_HEADING') }}</strong>
+  <p style="margin:6px 0 0 0;font-size:13px">{{ t('UI_XG1_UNAPPLIED_EXPLAIN') }}</p>
+  <ul style="margin:6px 0 0 0;font-size:13px">
+  {% for item in unapplied_answers %}
+    <li><strong>{{ item.area }}</strong>: <span dir="auto">{{ item.preview }}</span></li>
+  {% endfor %}
+  </ul>
+</div>
+{% endif %}{% endset %}
 {% if reconstructed_review %}
 <div id="reconstructed-review" class="gap-guidance" style="background:#f4f8fb;border-color:#b3d1ff">
   <div class="gap-guidance-heading">{{ t('UI_B_SESSION_041') }}</div>
@@ -590,6 +605,7 @@ body{overflow-wrap:anywhere}
   {% endif %}
   {#- T2D-COLD-END -#}
   <div style="font-size:13px;margin-top:8px">{{ t('UI_B_SESSION_045') }} <span id="recon-answer-count">{{ reconstructed_review.answers_count }}</span></div>
+  {{ unapplied_answers_notice }}
   <div style="font-size:12px;color:#666;margin-top:8px">{{ t('UI_B_SESSION_046') }}</div>
   {# P10-PC3: explicit writable-resume establishment (POST; never automatic  #}
   {# on GET). Offered only to eligible projects; the route re-validates      #}
@@ -1018,6 +1034,8 @@ body{overflow-wrap:anywhere}
   {% endif %}
 </div>
 {% endif %}
+
+{{ unapplied_answers_notice }}
 
 {# Guided Uncertainty Support (PR #134 Increment Contract): supportive, OPTIONAL, #}
 {# display-only prompts shown when the user's own text expresses uncertainty      #}

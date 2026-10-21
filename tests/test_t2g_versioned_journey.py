@@ -212,12 +212,12 @@ def test_a_real_current_start_records_the_newest_version(client):
     c, appmod, db = client
     _login(c, appmod)
     sid = _start(c)
-    # T2-G-3: the newest version is the T2-G-3 one, which carries the T2-G-2
-    # rules and the NR1 routing unchanged.
-    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G3
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G3
-    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G3
-    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_T2G3
+    # Cross-gap replay repair: the newest version is XG1, which carries the
+    # T2-G-3 rules and the NR1 routing unchanged.
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_XG1
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_XG1
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_XG1
+    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_XG1
 
 
 def test_the_version_is_selected_before_the_seed_is_interpreted(client):

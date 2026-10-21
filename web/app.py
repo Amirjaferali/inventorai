@@ -340,6 +340,8 @@ from engine.session_reconstruction import (
     ENGINE_CONTRACT_VERSION_T2G2,
     ENGINE_CONTRACT_VERSION_NR1,
     ENGINE_CONTRACT_VERSION_T2G3,
+    ENGINE_CONTRACT_VERSION_XG1,
+    UNAPPLIED_ANSWERS_ATTR as _UNAPPLIED_ANSWERS_ATTR,
     SUPPORTED_ENGINE_CONTRACT_VERSIONS,
     SUPPORTED_PATH as _RECON_SUPPORTED_PATH,
     MAX_ACCEPTED_ANSWER_REPLAY as _RECON_MAX_ANSWER_REPLAY,
@@ -5786,6 +5788,44 @@ def resume_project(sid):
     return redirect(url_for("show_session", sid=sid))
 
 
+_UNAPPLIED_PREVIEW_CHARS = 140
+
+
+def _unapplied_answers_display(state):
+    """Cross-gap replay repair: the saved answers that the project's last
+    deterministic rebuild did not count, for the page — or None.
+
+    Read ONLY from the rebuilt state's own derived carrier (set by
+    `engine.session_reconstruction` under the repairing version, recomputed on
+    every rebuild, never persisted), so the same list shows after a
+    correction, a reload and a resume. Each item is one of THIS project's own
+    ledger records: its question area and a bounded preview of the inventor's
+    own words. Display-only; None on anything unexpected."""
+    try:
+        ids = getattr(state, _UNAPPLIED_ANSWERS_ATTR, None)
+        if not ids:
+            return None
+        by_id = {getattr(r, "record_id", None): r
+                 for r in getattr(state, "assertions", None) or ()}
+        lang = _current_ui_lang()
+        items = []
+        for record_id in ids:
+            record = by_id.get(record_id)
+            if record is None or getattr(record, "superseded_by", None) is not None:
+                continue
+            label = ui_text.localize_deep(
+                GAP_LABELS.get(record.gap_context, GAP_LABELS["__default__"]),
+                lang)
+            text = (getattr(record, "content", "") or "").strip()
+            preview = (text if len(text) <= _UNAPPLIED_PREVIEW_CHARS
+                       else text[:_UNAPPLIED_PREVIEW_CHARS].rstrip() + "…")
+            items.append({"area": label.get("heading", record.gap_context),
+                          "preview": preview})
+        return items or None
+    except Exception:
+        return None
+
+
 def _risk_lapse_display(notice):
     """W2-D (W1-N4): map the route-stored lapse notice ({'action': [gap_type],
     'resolved': [gap_type]}) to localized gap display headings for the
@@ -6373,7 +6413,8 @@ def _questioning_disclosure_key(state):
     version = getattr(state, "engine_contract_version", None)
     # Safe Question Reduction Slice 1: the routing-aware version asks under the
     # T2-G-2 rules unchanged.
-    if version == ENGINE_CONTRACT_VERSION_T2G3:
+    # The cross-gap replay repair asks under the T2-G-3 rules unchanged.
+    if version in (ENGINE_CONTRACT_VERSION_T2G3, ENGINE_CONTRACT_VERSION_XG1):
         return "UI_T2G3_QUESTION_SET"
     if version in (ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_NR1):
         return "UI_T2G2_QUESTION_SET"
@@ -7105,6 +7146,12 @@ def show_session(sid):
         # Gap types are mapped to their existing localized display headings.
         risk_lapse_notice=_risk_lapse_display(
             _render_notice(entry, "_risk_lapse_notice", None)),
+        # Cross-gap replay repair: saved answers the last rebuild did not
+        # count, derived on every render (live, resumed or cold).
+        unapplied_answers=_unapplied_answers_display(
+            reconstructed_review["_t2d_state"]
+            if reconstructed_review and reconstructed_review.get("_t2d_state")
+            is not None else state),
         # G-UX-ANSWER-VALIDATION: single-use empty-answer validation error, popped
         # here so it renders exactly once after the Post/Redirect/Get and never
         # repeats on a later plain GET. None on every normal load.

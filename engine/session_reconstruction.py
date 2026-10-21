@@ -120,8 +120,21 @@ ENGINE_CONTRACT_VERSION_NR1 = "p4-2-level1-recon-v1-t2g2-nr1"
 # its recorded version and replays exactly as before; nothing is adopted or
 # migrated automatically.
 ENGINE_CONTRACT_VERSION_T2G3 = "p4-2-level1-recon-v1-t2g2-nr1-t2g3"
+
+# Cross-gap replay attribution repair: the SIXTH supported engine-contract
+# version. It carries every T2-G-3 rule and the NR1 routing materialization
+# unchanged, and is the ONLY version under which a replayed gap-bound answer
+# runs the progression loop only when its own durable gap is the gap the
+# canonical selector chooses at that answer's replay position (see
+# `GAP_BOUND_REPLAY_VERSIONS`). Stamped on NEW projects only: every existing
+# project keeps its recorded version and replays exactly as before.
+ENGINE_CONTRACT_VERSION_XG1 = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1"
 ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS = (ENGINE_CONTRACT_VERSION_NR1,
-                                          ENGINE_CONTRACT_VERSION_T2G3)
+                                          ENGINE_CONTRACT_VERSION_T2G3,
+                                          ENGINE_CONTRACT_VERSION_XG1)
+
+# The versions whose replay credits a gap-bound answer only to its own gap.
+GAP_BOUND_REPLAY_VERSIONS = (ENGINE_CONTRACT_VERSION_XG1,)
 
 # Both exact versions are supported through the ONE existing progression and
 # reconstruction path — the earlier stamp is NOT replaced, so no valid legacy
@@ -132,11 +145,12 @@ SUPPORTED_ENGINE_CONTRACT_VERSIONS = (
     ENGINE_CONTRACT_VERSION_T2G2,
     ENGINE_CONTRACT_VERSION_NR1,
     ENGINE_CONTRACT_VERSION_T2G3,
+    ENGINE_CONTRACT_VERSION_XG1,
 )
 
 # The version a newly created supported project records. Separate name so the
 # "what do we stamp now" decision is never confused with "what do we support".
-CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_T2G3
+CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_XG1
 
 # Deterministic Path-N support only.
 SUPPORTED_PATH = "N"
@@ -303,7 +317,9 @@ class ReconstructedReviewState:
     # UNKNOWN-QUESTION-PAUSE-01: the record ids of ACTIVE answered records left
     # explicitly UNAPPLIED because, at their durable position, their gap was an
     # open, non-selected gap beside a Stage-2 pause (never integrated into
-    # another gap). Additive and defaulted; derived, never persisted.
+    # another gap). Under `GAP_BOUND_REPLAY_VERSIONS` also every ACTIVE
+    # gap-bound answer whose own gap was not the selected gap at its replay
+    # position. Additive and defaulted; derived, never persisted.
     unapplied_answer_record_ids: tuple = field(default_factory=tuple)
 
 
@@ -320,6 +336,20 @@ class RiskAcceptanceReplayOutcome:
     gap_context: Optional[str]
     applied: bool
     reason: Optional[str] = None
+
+
+# The runtime attribute naming the ACTIVE answered records a cross-gap-repair
+# replay left unapplied (see `_reconstruct`). Derived and render-only.
+UNAPPLIED_ANSWERS_ATTR = "unapplied_answer_record_ids"
+
+
+def _replays_into_own_gap(state, gap_type):
+    """True when ``run_iteration`` would integrate an answer recorded against
+    ``gap_type`` into exactly that gap here: the canonical selector chooses
+    it. A record with no recorded gap (legacy) keeps its existing reading."""
+    if gap_type is None:
+        return True
+    return progression_loop.select_next_gap(state) == gap_type
 
 
 def contract_assertions_seq(contract):
@@ -660,7 +690,18 @@ def _reconstruct(store, project_id: str):
             # that is not the selected one; it is then left explicitly
             # unapplied, never integrated into another gap. Without a pause
             # this always holds, so earlier histories replay unchanged.
-            if progression_loop.answer_applicable(state, record.gap_context):
+            #
+            # Cross-gap replay repair (`GAP_BOUND_REPLAY_VERSIONS` only): an
+            # answer is credited only to its OWN recorded gap. A correction
+            # replays at its own durable position, so its gap can already be
+            # closed there (by the answers that remain) and a later unchanged
+            # answer can find an earlier gap selected instead; either way the
+            # canonical selector would integrate it into a different gap. Such
+            # an answer stays saved, verbatim and in the ledger, and is left
+            # explicitly unapplied. Every earlier version replays as before.
+            if progression_loop.answer_applicable(state, record.gap_context) \
+                    and (version not in GAP_BOUND_REPLAY_VERSIONS
+                         or _replays_into_own_gap(state, record.gap_context)):
                 last_result = progression_loop.run_iteration(state, record.content)
             else:
                 _unapplied_answers.append(record.record_id)
@@ -713,6 +754,13 @@ def _reconstruct(store, project_id: str):
     # snapshot and the render-only state. Values are unchanged; only identity is
     # separated, and no additional store read or validation is performed.
     state.assertions = copy.deepcopy(list(contract.assertions))
+    # Cross-gap replay repair: under the repairing version only, the answers
+    # this replay left unapplied are carried on the rebuilt state (derived,
+    # never persisted, recomputed by every reconstruction) so the page can say
+    # which saved answers are not counted. Absent when there are none, so an
+    # ordinary history's state is unchanged.
+    if version in GAP_BOUND_REPLAY_VERSIONS and _unapplied_answers:
+        setattr(state, UNAPPLIED_ANSWERS_ATTR, tuple(_unapplied_answers))
 
     open_gaps = tuple(sorted(g.gap_type for g in state.get_open_gaps()))
     next_question = (last_result or {}).get("question")
