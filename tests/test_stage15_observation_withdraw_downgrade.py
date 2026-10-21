@@ -31,6 +31,7 @@ import tarfile
 import pytest
 
 import web.app as appmod
+from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_NR1
 from engine import interface_observation as io
 from engine import record_store as rs
 from tests.test_stage15_interface_observations import TABLE, _events
@@ -181,9 +182,15 @@ def test_d1_the_baseline_creates_exactly_the_recognised_legacy_shape(baseline, t
 
 
 def test_d2_upgrade_then_baseline_fails_closed_for_every_project_and_forward_reopen(
-        baseline, tmp_path):
+        baseline, tmp_path, monkeypatch):
     appmod.app.config["TESTING"] = True
     email = "obs-downgrade@example.com"
+    # T2-G-3: the baseline predates the T2-G-3 engine contract and, by design,
+    # fails closed on any project stamped with a version it does not support.
+    # This test is about the withdrawal rollback, so its projects are created
+    # under the newest stamp the baseline supports.
+    monkeypatch.setattr(appmod, "CURRENT_ENGINE_CONTRACT_VERSION",
+                        ENGINE_CONTRACT_VERSION_NR1)
     c, _aid = _client_for(email)
     sid_a, ifc_a = _integrated_with_interface(c)
     sid_b, ifc_b = _integrated_with_interface(c)
