@@ -72,9 +72,13 @@ def test_the_supported_versions_are_exactly_these():
     assert ENGINE_CONTRACT_VERSION_T2G1 == "p4-2-level1-recon-v1-t2g1"
     assert ENGINE_CONTRACT_VERSION_T2G2 == "p4-2-level1-recon-v1-t2g2"
     assert ENGINE_CONTRACT_VERSION_NR1 == "p4-2-level1-recon-v1-t2g2-nr1"
+    # T2-G-3 adds the FIFTH version; every earlier one is retained exactly.
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G3
+    assert ENGINE_CONTRACT_VERSION_T2G3 == "p4-2-level1-recon-v1-t2g2-nr1-t2g3"
     assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == (
         RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1,
-        ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_NR1)
+        ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_NR1,
+        ENGINE_CONTRACT_VERSION_T2G3)
 
 
 @pytest.mark.parametrize("version", [None, RECONSTRUCTION_VERSION, "", "anything",

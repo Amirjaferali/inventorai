@@ -233,9 +233,11 @@ def test_start_persists_reconstruction_inputs(client):
     # Safe Question Reduction Slice 1: a fresh /start now records the
     # routing-aware version (T2-G-2 rules + NeedRouting); all four stay
     # supported through the one reconstruction path.
-    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_NR1
+    # T2-G-3: a fresh /start now records the T2-G-3 version (T2-G-2 rules +
+    # NeedRouting + the question / supposition rule); all five stay supported.
+    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_T2G3
     assert inputs["engine_contract_version"] in SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS
-    assert len(SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS) == 4
+    assert len(SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS) == 5
 
 
 def test_a_project_created_under_t2g1_keeps_that_stamp(client):

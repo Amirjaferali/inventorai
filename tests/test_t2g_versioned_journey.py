@@ -212,12 +212,12 @@ def test_a_real_current_start_records_the_newest_version(client):
     c, appmod, db = client
     _login(c, appmod)
     sid = _start(c)
-    # Safe Question Reduction Slice 1: the newest version is the routing-aware
-    # one, which carries the T2-G-2 rules unchanged.
-    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_NR1
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_NR1
-    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_NR1
-    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_NR1
+    # T2-G-3: the newest version is the T2-G-3 one, which carries the T2-G-2
+    # rules and the NR1 routing unchanged.
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G3
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G3
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G3
+    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_T2G3
 
 
 def test_the_version_is_selected_before_the_seed_is_interpreted(client):

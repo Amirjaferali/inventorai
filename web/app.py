@@ -339,6 +339,7 @@ from engine.session_reconstruction import (
     ENGINE_CONTRACT_VERSION_T2G1,
     ENGINE_CONTRACT_VERSION_T2G2,
     ENGINE_CONTRACT_VERSION_NR1,
+    ENGINE_CONTRACT_VERSION_T2G3,
     SUPPORTED_ENGINE_CONTRACT_VERSIONS,
     SUPPORTED_PATH as _RECON_SUPPORTED_PATH,
     MAX_ACCEPTED_ANSWER_REPLAY as _RECON_MAX_ANSWER_REPLAY,
@@ -6372,6 +6373,8 @@ def _questioning_disclosure_key(state):
     version = getattr(state, "engine_contract_version", None)
     # Safe Question Reduction Slice 1: the routing-aware version asks under the
     # T2-G-2 rules unchanged.
+    if version == ENGINE_CONTRACT_VERSION_T2G3:
+        return "UI_T2G3_QUESTION_SET"
     if version in (ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_NR1):
         return "UI_T2G2_QUESTION_SET"
     if version == ENGINE_CONTRACT_VERSION_T2G1:

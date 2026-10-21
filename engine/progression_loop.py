@@ -1135,7 +1135,35 @@ def integrate_response(
             matches_intent=matches_committed_intent)
     except Exception:
         unknown_only = False
-    eligible = relevant and not unknown_only
+    # T2-G-3 — the same satisfaction-eligibility seam, under the T2-G-3 engine
+    # contract only: an answer whose every mechanism-relevant sentence is a
+    # question or an explicit supposition supplies no mechanism, with or
+    # without an explicit unknown. Sentence relevance is the canonical
+    # relevance composition used above, widened by the committed variant
+    # markers so a stated sentence is never overlooked (the safe direction is
+    # to keep crediting). Fail-closed: any failure leaves the answer read as
+    # before this rule.
+    non_assertive_only = False
+    if relevant and not unknown_only:
+        try:
+            from engine import answer_stance
+            from engine.intent_serving import (declared_variant_ids,
+                matches_committed_intent, supplemental_relevance)
+            variant_ids = declared_variant_ids(state, gap_type)
+
+            def _relevant_sentence(sentence):
+                if addresses_gap(sentence, gap_type):
+                    return True
+                if supplemental_relevance(state, gap_type, sentence):
+                    return True
+                return any(matches_committed_intent(sentence, question_id)
+                           for question_id in variant_ids)
+
+            non_assertive_only = answer_stance.non_assertive_without_mechanism(
+                state, gap_type, response, _relevant_sentence)
+        except Exception:
+            non_assertive_only = False
+    eligible = relevant and not unknown_only and not non_assertive_only
     evidence = Evidence(
         content=response,
         quality=quality,
@@ -1201,6 +1229,15 @@ def integrate_response(
         return "WARN", (f"{gap_type} recorded as an explicit unknown — this "
                         f"answer states the information is not known yet and "
                         f"supplies no mechanism explanation")
+
+    # T2-G-3: the answer DID respond, but only by asking about or supposing
+    # the mechanism. It is saved verbatim and any acknowledged unknown above is
+    # kept; it simply states no mechanism, so the gap is left exactly as it
+    # was, before every status transition below.
+    if non_assertive_only:
+        return "WARN", (f"{gap_type} recorded as a question or supposition — "
+                        f"this answer asks about or supposes the mechanism and "
+                        f"does not state how it works")
 
     # PVCG-R4-C §10.4 G-1/G-2/G-4 — CLOSED-gap safety guard.
     #

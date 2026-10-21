@@ -209,7 +209,13 @@ _FROZEN_ENGINE_SHA256 = {
     # `is_pausing_disposition` predicate; the applier takes the record's own
     # question_target). No classifier, tie, substance, scoring, quality,
     # maturity-gate or gap-type change (pre-amendment = 22948753...4755).
-    "engine/progression_loop.py": "becf751419b7889274f5db26c823487eee4e37a1642e55d4f229fcf9ab9035d2",
+    # T2-G-3 re-freeze (disclosed; Owner-authorized versioned semantic
+    # correction): under the T2-G-3 engine-contract version ONLY, an
+    # answer whose every mechanism-relevant sentence is a question or a
+    # qualified supposition gets its own WARN and moves no gap. No
+    # classifier, tie, substance, scoring, quality, maturity-gate or
+    # gap-type change (pre-T2-G-3 = becf7514...35d2).
+    "engine/progression_loop.py": "10397390e71a61a9dfa201badd0a3804e96bf288eb7dd7521120b8e3e8ded9f0",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.

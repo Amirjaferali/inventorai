@@ -43,6 +43,12 @@ Bounds, stated rather than hidden
     to the mechanism material, so a bare pronoun, reporting word or quotation
     mark is never on its own a veto. These refusals reach the T2-G-2 path only
     and can never withdraw a level-1 or pre-T2-G result.
+  * Under T2-G-3 only, a whole sentence that ends in "?" / "؟" or opens with
+    "suppose", "imagine" or "لنفترض" is never a carrier, and an answer whose
+    every mechanism-relevant sentence is such a sentence supplies no
+    mechanism even without an explicit unknown. An unpunctuated question, a
+    general hedge, reported speech and every other cue are NOT recognised by
+    this rule; "if" / "إذا" / "اذا" / "لو" are deliberately not cues.
 
 Version gating
 --------------
@@ -269,6 +275,22 @@ _T2G2_SUBORDINATING_HYPOTHETICAL = ("if", "suppose", "imagine",
 # read from the ORIGINAL text (see `_sentence_records`) rather than guessed
 # from a fragment whose delimiter was already discarded.
 _T2G2_INTERROGATIVE = ("?", "؟")
+
+# ==========================================================================
+# T2-G-3 (false-progression correction) — consulted ONLY at rule level 3, the
+# `ENGINE_CONTRACT_VERSION_T2G3` engine contract. Under every earlier version
+# none of this is read and every result is byte-unchanged.
+#
+# The QUALIFIED supposition openers: exactly these three, a strict subset of
+# `_T2G2_SUBORDINATING_HYPOTHETICAL`. A sentence that OPENS with one of them
+# supposes a mechanism rather than stating one. "if", "إذا", "اذا" and "لو"
+# are deliberately NOT included: they open real operating conditions ("If the
+# ramp is loaded, the latch holds") far more often than suppositions, so they
+# keep their accepted level-2 clause-local reading and nothing more. A cue
+# counts only as a whole word at the very start of its sentence, so
+# "supposedly" or a cue in the middle of a sentence is never one.
+# ==========================================================================
+_T2G3_SUPPOSITION_OPENERS = ("suppose", "imagine", "لنفترض")
 
 
 def _english_unknown_markers():
@@ -750,6 +772,31 @@ def _t2g2_is_questioned(terminator):
     return any(mark in terminator for mark in _T2G2_INTERROGATIVE)
 
 
+def _t2g3_opens_supposition(segment):
+    """True when the segment OPENS with one of the three qualified supposition
+    cues as a whole word. Read from the inventor's own text, which is never
+    rewritten; a combining mark after the cue is not a letter, so a vowelled
+    `لنفترضْ` still opens one."""
+    stripped = segment.strip(_T2G2_CLAUSE_EDGE)
+    lowered = stripped.lower()
+    for cue in _T2G3_SUPPOSITION_OPENERS:
+        for candidate in (lowered, stripped):
+            if not candidate.startswith(cue):
+                continue
+            following = candidate[len(cue):len(cue) + 1]
+            if not following or not (following.isalnum() or following == "_"):
+                return True
+    return False
+
+
+def _t2g3_is_non_assertive(segment, terminator):
+    """True when a whole segment asks or supposes instead of stating: it ended
+    in a question mark in either script (its own original terminator), or it
+    opens with a qualified supposition cue. Nothing else — an unpunctuated
+    question, a hedge or reported speech — is recognised here."""
+    return _t2g2_is_questioned(terminator) or _t2g3_opens_supposition(segment)
+
+
 def _t2g2_role_items(clause, spans):
     """The role material of a clause as ``(start, end, kind)`` triples: each
     committed-marker occurrence, and each non-stopword word lying wholly
@@ -870,21 +917,32 @@ def qualifying_carrier(text, question_id, matches_intent, rule_level=1):
     top — it can only admit explanations level 1 already misses, never withdraw
     one it already accepts. Any failure inside the new path falls back to the
     level-1 answer, so a failed T2-G-2 interpretation never grants support of
-    its own."""
+    its own.
+
+    Level 3 (the T2-G-3 engine contract) keeps every level-2 path and refuses
+    BOTH paths for a whole segment that is a question or opens with a
+    qualified supposition cue (`_t2g3_is_non_assertive`): asking whether, or
+    supposing that, a mechanism works is not a statement of how it works. It
+    only ever withholds; it never admits anything level 2 refuses."""
     quote_spans = ()
-    if rule_level >= 2:
+    clause_path = rule_level >= 2
+    non_assertive_refusal = rule_level >= 3
+    if clause_path:
         try:
             quote_spans = _t2g2_quote_spans(text)
         except Exception:
             # The governing scope of this answer cannot be read. Fall back to
             # the level-1 rule for the whole text rather than grant new support
-            # on evidence we could not size.
-            rule_level = 1
+            # on evidence we could not size. The level-3 refusal below reads no
+            # quotation, so it still applies.
+            clause_path = False
     for sentence, terminator, offset in _sentence_records(text):
+        if non_assertive_refusal and _t2g3_is_non_assertive(sentence, terminator):
+            continue
         if not declares_ignorance(sentence) and matches_intent(sentence, question_id) \
                 and _carries_context(sentence, question_id, matches_intent):
             return True
-        if rule_level >= 2:
+        if clause_path:
             try:
                 if _t2g2_clause_carrier(
                         sentence, question_id, matches_intent,
@@ -898,21 +956,23 @@ def qualifying_carrier(text, question_id, matches_intent, rule_level=1):
 
 
 def t2g_rule_level(state, gap_type=None, domain=None):
-    """The T-2-G rule level this project runs under: 0, 1 or 2.
+    """The T-2-G rule level this project runs under: 0, 1, 2 or 3.
 
     Read from the project's OWN persisted engine-contract version — never from
     a request field, the UI language, a timestamp or a default. An absent,
     unknown or pre-T2-G stamp gives 0, so an unversioned runtime or test state
     can never silently enable any of this. Level 1 is the accepted T2-G-1 rule
     exactly; level 2 adds the bounded concise/mixed paths for T2-G-2 projects
-    only. Outside the named gap and domains the level is 0 at every version."""
+    only; level 3 adds the T2-G-3 question / supposition refusal for T2-G-3
+    projects only. Outside the named gap and domains the level is 0 at every
+    version."""
     from engine.session_reconstruction import (
         ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2,
-        ENGINE_CONTRACT_VERSION_NR1)
+        ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3)
     # Safe Question Reduction Slice 1: the routing-aware version carries every
     # T2-G-2 rule unchanged (routing is additive to it, not a rule change).
     levels = {ENGINE_CONTRACT_VERSION_T2G1: 1, ENGINE_CONTRACT_VERSION_T2G2: 2,
-              ENGINE_CONTRACT_VERSION_NR1: 2}
+              ENGINE_CONTRACT_VERSION_NR1: 2, ENGINE_CONTRACT_VERSION_T2G3: 3}
     level = levels.get(getattr(state, "engine_contract_version", None), 0)
     if not level:
         return 0
@@ -978,3 +1038,33 @@ def explicit_unknown_without_mechanism(state, gap_type, response,
                               rule_level=level):
             return False
     return True
+
+
+def non_assertive_without_mechanism(state, gap_type, response,
+                                    is_relevant_sentence):
+    """The T2-G-3 SATISFACTION-ELIGIBILITY veto — never a relevance or quality
+    result, and independent of any explicit "I do not know".
+
+    True only when ALL of these hold, each on positive evidence:
+      1. rule level 3 applies (the project's own T2-G-3 version, and the named
+         gap / domain scope);
+      2. at least one sentence of the answer is mechanism-relevant by the
+         caller's own canonical relevance (``is_relevant_sentence``, never
+         reimplemented here);
+      3. EVERY mechanism-relevant sentence is a question (its own ``?`` /
+         ``؟`` terminator) or opens with a qualified supposition cue.
+
+    One relevant sentence that states something keeps today's reading, so a
+    supported mixed answer, a real operating condition ("if" / "إذا" / "لو"
+    are not cues) and a physical negation are untouched. The answer itself is
+    never edited; the caller still saves it verbatim."""
+    if t2g_rule_level(state, gap_type=gap_type) < 3:
+        return False
+    relevant_seen = False
+    for sentence, terminator, _offset in _sentence_records(response):
+        if not is_relevant_sentence(sentence):
+            continue
+        if not _t2g3_is_non_assertive(sentence, terminator):
+            return False
+        relevant_seen = True
+    return relevant_seen
