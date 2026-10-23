@@ -9438,7 +9438,7 @@ def _functional_handoff_view(sid, state):
         projection = _handoff.project_functional_roles(statements)
         roles = [{"role": r.role, "object": r.object_key, "status": r.status,
                   "groundings": r.groundings,
-                  "negations": r.negations + r.related_negations,
+                  "negations": r.negations + r.related_statements,
                   "uncertain": r.method_uncertainties,
                   "capabilities": _handoff_capabilities(sid, state, r.role)}
                  for r in projection.roles]

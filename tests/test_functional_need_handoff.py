@@ -209,6 +209,29 @@ REVIEW_NOT_PROPOSED = (
     # monitoring is not watering
     "I want a device that tells me how much water my plants need",
     "I want a device to measure the water my plants got",
+    # targeted re-verification: verbs that govern something other than the role
+    "I want to quit watering my plants",
+    "I want to cease watering the garden",
+    "I want to skip watering my plants",
+    "I want to give up watering my plants",
+    "I want to forget about watering my plants",
+    "أبي أوقف سقي الزرع",
+    "أبي أبطل أسقي الزرع",
+    "أريد أن أتوقف عن ري الحديقة",
+    "أبي أترك سقي الزرع",
+    "I want to get rid of the stand for my monitor",
+    "I want to take down the stand for my monitor",
+    "أبي أشيل حامل الشاشة",
+    "I want to sell my monitor stand",
+    "I want to paint the stand for my TV",
+    "أبي أصلح حامل التلفزيون",
+    "I want to support my TV channel",
+    "I want to raise my TV budget",
+    "I want a phone holder for my TV room",
+    "ماني أبي جهاز يسقي الزرع",
+    "I want to hold my laptop fan",
+    "I want to fan the flames in my room",
+    "I want a device that waters my plants. No, I mean the garden.",
 )
 
 
@@ -227,8 +250,17 @@ def test_a_rejection_of_the_whole_role_is_disclosed(idea, answer):
         [("IDEA", "idea", idea), ("ANSWER", "rec_1", answer)])
     (role,) = projection.roles
     assert role.status == fh.PROPOSED and role.negations == ()
-    assert [q.quote for q in role.related_negations] == [answer.rstrip(".")] \
-        or [q.source_ref for q in role.related_negations] == ["rec_1"]
+    assert [(q.source_ref, q.quote) for q in role.related_statements] == [
+        ("rec_1", answer)]
+
+
+def test_an_unclear_rejection_is_shown_beside_the_proposal():
+    projection = fh.project_functional_roles([
+        ("IDEA", "idea", "I want a device that waters my plants."),
+        ("ANSWER", "rec_1", "Forget the watering, I just want a lamp.")])
+    (role,) = projection.roles
+    assert role.status == fh.PROPOSED
+    assert [q.source_ref for q in role.related_statements] == ["rec_1"]
 
 
 def test_a_long_statement_stays_fast():

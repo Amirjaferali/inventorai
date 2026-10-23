@@ -17,9 +17,11 @@ here and read by nothing else.
 
 Semantic rule (Lead correction): a role is PROPOSED only on positive evidence.
 In one clause, a first-person want ("I want", "we need", "أريد", "أبي",
-"ودي"...) must come before the role word, and the role word must govern its
-object: only connector words ("for my", "the", "حق", "على") may stand between
-them. Generic nouns ("device", "جهاز") are never intent, so a description of
+"ودي"...) must come before the role word with only a closed set of words
+between them (function words, device nouns, a few adjectives, the role's own
+words), and the role word must govern its object: only connector words ("for
+my", "the", "حق", "على") may stand between them, and an English object may
+not merely modify a following noun ("TV room"). Generic nouns ("device", "جهاز") are never intent, so a description of
 someone else's device is not the inventor's request. A negation that directly
 governs the want or the role word reads NEGATED. Any other negation in the
 sentence, a reversing word ("stop", "avoid", "instead", "يمنع", "بدل"), a
@@ -174,7 +176,8 @@ _AR_FUSED_NEGATED_INTENT = frozenset({
 
 _NEGATION_WORDS = frozenset({
     "not", "no", "never", "cannot",
-    "لا", "لن", "لم", "ليس", "ليست", "لست", "ما", "مش", "مو", "مب", "موب", "ابدا"})
+    "لا", "لن", "لم", "ليس", "ليست", "لست", "ما", "مش", "مو", "مب", "موب", "ابدا",
+    "ماني", "مانيب"})
 #: Words that reverse or deny the request without being a negation particle.
 _REVERSING_WORDS = frozenset({
     "stop", "stops", "stopping", "prevent", "prevents", "preventing", "avoid",
@@ -183,6 +186,37 @@ _REVERSING_WORDS = frozenset({
     "rather", "replace",
     "يوقف", "توقف", "يمنع", "تمنع", "امنع", "ارفض", "نرفض", "بدل", "بدلا",
     "عوضا", "يزيل", "تزيل", "ازيل", "اكره", "يبطل"})
+#: The only words that may stand between the want and the role word
+#: ("I want [to build] [a small] [device] [that] waters", "أبي [جهاز] [عشان]
+#: يسقي"). Any other word there ("quit", "sell", "get rid of", "أشيل",
+#: "أوقف") means the want governs something else, so the clause abstains.
+_EN_PATH = frozenset({
+    "to", "a", "an", "the", "my", "our", "some", "that", "which", "it", "will",
+    "can", "should", "would", "could", "automatically", "automatic", "device",
+    "system", "gadget", "machine", "thing", "something", "tool", "small",
+    "simple", "smart", "new", "little", "wooden", "cooling", "electric",
+    "portable", "adjustable", "desk", "desktop", "tabletop", "self", "is", "be",
+    "and", "also", "really", "just", "build", "make", "design", "create",
+    "building", "making", "designing", "creating", "me", "one", "sturdy",
+    "solar", "for"})
+_AR_PATH = frozenset({
+    "ان", "جهاز", "جهازا", "نظام", "نظاما", "الة", "شي", "شيء", "شيئا", "حاجة",
+    "حاجه", "تلقائي", "تلقائيا", "ذكي", "ذكيا", "ذكيه", "صغير", "صغيرا",
+    "صغيره", "خشبي", "خشبيا", "بسيط", "بسيطا", "اسوي", "نسوي", "اصنع", "نصنع",
+    "اصمم", "نصمم", "ابني", "نبني", "لي", "هو", "يكون", "عشان", "حتى", "كي",
+    "لكي", "يقدر", "تقدر", "يستطيع", "اوتوماتيكي", "اوتوماتيك", "كهربائي"})
+_PATH_BASE = (_EN_PATH | _AR_PATH | _EN_INTENT_VERBS | _AR_INTENT | _EN_SUBJECTS
+              | _EN_FILLERS)
+#: English words that may follow an object word; any other word means the
+#: object only modifies it ("TV channel", "monitor team", "TV room").
+_EN_OBJECT_FOLLOW = frozenset({
+    "and", "or", "to", "that", "which", "when", "while", "so", "on", "in", "at",
+    "with", "from", "up", "every", "each", "during", "by", "above", "under",
+    "without", "whenever", "because", "if", "as", "using", "for", "of",
+    "automatically", "daily", "regularly", "too", "also", "but", "is", "are",
+    "will", "should", "can", "it", "safely", "level", "higher", "high", "off",
+    "here", "there", "all", "properly", "steady", "stable", "nicely"})
+
 #: A want marked as past or as someone else's.
 _PAST_WORDS = frozenset({"used", "was", "were", "كنت", "كان", "كانت", "كنا"})
 _HYPOTHETICAL_WORDS = frozenset({
@@ -231,7 +265,7 @@ class ProposedRole:
     interpretation_status: str
     groundings: tuple
     negations: tuple
-    related_negations: tuple
+    related_statements: tuple
     method_uncertainties: tuple
 
 
@@ -334,8 +368,10 @@ def _object_for(role, words, t):
     if j + 1 < len(words) and words[j] in _EN_MODIFIERS and key_of(words[j + 1]):
         j += 1                                    # "my computer screen"
     if j < len(words) and key_of(words[j]):
-        # "my monitor cable": the object word only modifies another noun
-        if j + 1 < len(words) and words[j + 1] in _EN_OBJECT_MODIFIED:
+        # "my monitor cable", "my TV room": the object only modifies a noun
+        if j + 1 < len(words) and (words[j + 1] in _EN_OBJECT_MODIFIED or (
+                words[j].isascii() and words[j + 1].isascii()
+                and words[j + 1] not in _EN_OBJECT_FOLLOW)):
             return None
         return key_of(words[j]), j
     # compound: "monitor stand", "plant waterer"
@@ -410,7 +446,15 @@ def _polarity(ctx, t, obj):
     for i, w in enumerate(words):
         if _is(w, _WITHOUT_WORDS) and any(i < k <= i + _WITHOUT_REACH for k in anchors):
             return NEGATED
-    return AFFIRMED if intent else ABSTAINED
+    if not intent:
+        return ABSTAINED
+    # A closed positive path from the nearest want to the role word: only
+    # listed function words, device nouns, adjectives, other wants and the
+    # role's own object words (compounds) may stand between them.
+    path_ok = ctx["path_words"]
+    if all(_match(w, path_ok) for w in words[intent[-1] + 1:t]):
+        return AFFIRMED
+    return ABSTAINED
 
 
 def _statement_mentions(kind, ref, text):
@@ -464,8 +508,8 @@ def _statement_mentions(kind, ref, text):
             "words": words,
             "free": {i for i, tok in enumerate(clause_tokens) if not in_unknown(tok[0])},
             "sentence_negated": sentence_negations > clause_negations,
-            "next_sentence_negated": bool(nxt and nxt["starts_negated"]
-                                          and nxt["range"][1] - nxt["range"][0] <= 3),
+            # "... my plants. Not really." / "No, I mean the garden."
+            "next_sentence_negated": bool(nxt and nxt["starts_negated"]),
             "question": info["question"],
             "reversing": info["reversing"],
             # "I am not sure about a device that...": doubt about the want
@@ -495,11 +539,20 @@ def _statement_mentions(kind, ref, text):
                         any(x in _EN_FAN_CONTEXT for x in words)
                         or any(_is_negation(words, i) for i in range(max(0, t - 3), t))):
                     continue
+                if role == ROLE_FAN and w in ("fan", "fans") and t > 0 \
+                        and words[t - 1] == "to":
+                    continue                      # "to fan the flames"
                 found = _object_for(role, words, t)
                 key, obj = found if found else (OBJECT_NONE, None)
+                # the role's own words may stand on the path too: "a stand
+                # that holds", "حاملًا يرفع" (with the accusative ـًا)
+                own = _ROLE_TRIGGERS[role] | frozenset(
+                    x + "ا" for x in _ROLE_TRIGGERS[role] if not x.isascii())
+                ctx["path_words"] = _PATH_BASE | own | frozenset().union(
+                    *_ROLE_OBJECTS[role].values())
                 polarity = _polarity(ctx, t, obj)
                 if key == OBJECT_NONE and role not in _OBJECT_OPTIONAL \
-                        and polarity != NEGATED:
+                        and polarity == AFFIRMED:
                     continue
                 tok = clause_tokens[t]
                 span = uncertainty_for(t) if polarity == AFFIRMED else None
@@ -520,9 +573,10 @@ def project_functional_roles(statements):
     original idea text and the inventor's active answers, verbatim. Returns a
     ``Handoff``: one ``ProposedRole`` per (role, object) with at least one
     AFFIRMED mention. It is ``CONFLICTING`` when the SAME role and object are
-    also NEGATED somewhere; a negation of the role with no object is disclosed
-    on every proposal of that role (``related_negations``) without being called
-    a conflict. Statements about different objects never conflict. Never
+    also NEGATED somewhere. Other wording about the same role that was not read
+    as a request (a rejection of the whole role, an unclear statement about the
+    same object) is disclosed beside the proposal (``related_statements``)
+    without being called a conflict. Statements about different objects never conflict. Never
     raises on bad input."""
     mentions = []
     try:
@@ -541,18 +595,28 @@ def project_functional_roles(statements):
         for m in mentions:
             if m.role == role and m.polarity == AFFIRMED and m.object_key not in keys:
                 keys.append(m.object_key)
-        role_level = tuple(m.clause for m in mentions if m.role == role
-                           and m.polarity == NEGATED and m.object_key == OBJECT_NONE)
         for key in keys:
             same = [m for m in mentions if m.role == role and m.object_key == key]
             negated = tuple(m.clause for m in same if m.polarity == NEGATED)
+            affirmed = {m.clause for m in same if m.polarity == AFFIRMED}
+            # Other wording about this role that was not read as a request — a
+            # rejection of the whole role, or an unclear statement about the
+            # same object — is shown beside the proposal, never as a conflict.
+            related = []
+            for m in mentions:
+                if m.role != role or m.polarity == AFFIRMED or m.clause in affirmed:
+                    continue
+                if m.polarity == NEGATED and m.object_key == key:
+                    continue                      # already a conflict
+                if m.object_key in (OBJECT_NONE, key) and m.clause not in related:
+                    related.append(m.clause)
             roles.append(ProposedRole(
                 role=role, object_key=key,
                 status=CONFLICTING if negated else PROPOSED,
                 interpretation_status=INTERPRETATION_STATUS,
                 groundings=tuple(m.clause for m in same if m.polarity == AFFIRMED),
                 negations=negated,
-                related_negations=() if key == OBJECT_NONE else role_level,
+                related_statements=tuple(related),
                 method_uncertainties=tuple(m.method_uncertainty for m in same
                                            if m.polarity == AFFIRMED
                                            and m.method_uncertainty)))
