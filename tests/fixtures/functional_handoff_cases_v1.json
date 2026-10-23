@@ -1,0 +1,1959 @@
+{
+  "fixture_id": "functional_handoff_cases_v1",
+  "frozen": true,
+  "author_note": "Independent, synthetic, human-labelled fixture written without reading the recognizer code. Labels reflect a careful human reading of English, Modern Standard Arabic and Gulf (Kuwaiti/Saudi/Emirati) Arabic. method_uncertain is meaningful only for AFFIRMED entries and is false on NEGATED/ABSTAINED entries. 'expected' lists only roles genuinely mentioned; an empty list means no functional role. A role+object both AFFIRMED and NEGATED across statements is listed twice and recorded in 'conflicts'; different objects of the same role are never a conflict. 'without X' excludes the component X, unless X is the role itself (e.g. 'without watering' -> WATERING NEGATED). Gulf terms: الزرع = plants, الثيل = lawn grass (GARDEN), يرش = sprays/waters. must_recognize=true only for plain prototypical phrasings (plus Arabic harakat/tatweel normalisation of otherwise plain MSA text and the plainest core idea per language); all dialect-only, idiomatic, mixed-script or subtle cases are false. No real personal data.",
+  "cases": [
+    {
+      "id": "en-water-01",
+      "lang": "EN",
+      "category": "core",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want a device that waters my plants automatically."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "en-fan-01",
+      "lang": "EN",
+      "category": "core",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want an automatic fan for my room."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "en-screen-01",
+      "lang": "EN",
+      "category": "core",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want a stand that holds my computer screen."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "en-water-02",
+      "lang": "EN",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "My idea is a gadget that irrigates the garden on its own."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "GARDEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-water-03",
+      "lang": "EN",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I'd like to build something that keeps my pot plants watered while I'm away on holiday."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-fan-02",
+      "lang": "EN",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "My idea is a fan that turns itself on when the bedroom gets hot."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "en-fan-03",
+      "lang": "EN",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want to make a small fan that cools my laptop."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "DEVICE",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "en-screen-02",
+      "lang": "EN",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want to build a riser that lifts my monitor up to eye level."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-screen-03",
+      "lang": "EN",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "My invention is a wall bracket that mounts a television above the fireplace."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "TV",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-unk-01",
+      "lang": "EN",
+      "category": "unknown_method",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want a device that waters my plants but I don't know how it should work."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": true
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "en-unk-02",
+      "lang": "EN",
+      "category": "unknown_method",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want an automatic fan for my room, but I'm not sure how to make it switch on by itself."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": true
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "en-unk-03",
+      "lang": "EN",
+      "category": "unknown_method",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I have not decided how it will attach, but I want a stand that holds my TV."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "TV",
+          "polarity": "AFFIRMED",
+          "method_uncertain": true
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-neg-01",
+      "lang": "EN",
+      "category": "negation",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I don't want a fan."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "NONE",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "en-neg-02",
+      "lang": "EN",
+      "category": "negation",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I won't use this device to water the lawn."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "GARDEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-neg-03",
+      "lang": "EN",
+      "category": "negation",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I do not want a stand that holds my monitor."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "en-without-01",
+      "lang": "EN",
+      "category": "without_scope",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want a plant waterer without a pump."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-without-02",
+      "lang": "EN",
+      "category": "without_scope",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want a pot that keeps my plants alive without watering."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-without-03",
+      "lang": "EN",
+      "category": "without_scope",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want an automatic fan for my room without a remote control."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-without-04",
+      "lang": "EN",
+      "category": "without_scope",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want a monitor riser without screws."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-diffobj-01",
+      "lang": "EN",
+      "category": "different_object",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want a device that waters my plants."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "I don't want it to water the lawn."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "WATERING",
+          "object": "GARDEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "en-diffobj-02",
+      "lang": "EN",
+      "category": "different_object",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want a stand that holds my monitor."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "I don't want it to hold the TV."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "TV",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-diffobj-03",
+      "lang": "EN",
+      "category": "different_object",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want a fan that cools my laptop."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "I don't want a fan for the room."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "DEVICE",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-contra-01",
+      "lang": "EN",
+      "category": "contradiction",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want a device that waters my plants automatically."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "Actually, I don't want it to water the plants."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS"
+        }
+      ],
+      "must_recognize": true
+    },
+    {
+      "id": "en-contra-02",
+      "lang": "EN",
+      "category": "contradiction",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I want a stand that holds my computer screen."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "I do not want it to hold the screen."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN"
+        }
+      ],
+      "must_recognize": false
+    },
+    {
+      "id": "en-hyp-01",
+      "lang": "EN",
+      "category": "hypothetical",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "What if a fan could turn itself on?"
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "NONE",
+          "polarity": "ABSTAINED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-hyp-02",
+      "lang": "EN",
+      "category": "hypothetical",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "I'm a big fan of gardening and I want to share tips with my neighbours."
+        }
+      ],
+      "expected": [],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-hyp-03",
+      "lang": "EN",
+      "category": "hypothetical",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "Maybe a stand for the TV?"
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "TV",
+          "polarity": "ABSTAINED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-hyp-04",
+      "lang": "EN",
+      "category": "hypothetical",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "Would a gadget that waters the garden be useful to anyone?"
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "GARDEN",
+          "polarity": "ABSTAINED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "en-long-01",
+      "lang": "EN",
+      "category": "long_text",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "Let me tell you a little about myself before I describe what I have in mind. I work long shifts at a hospital and I often travel for several days at a time to visit my family in another city. My apartment is on the fourth floor and gets a lot of afternoon sun through the big windows on the west side. I have always enjoyed building small things with my hands, and last year I took an evening course on basic electronics where we soldered simple circuits, blinked a few lights and programmed a tiny board. I am not an engineer and I never studied physics after school, but I like solving everyday problems, and my friends say I am patient and careful. Over the past months I kept noticing the same annoying problem every time I came home after a trip, so my idea is simple: I want a device that waters my plants automatically while I am away."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-water-01",
+      "lang": "MSA",
+      "category": "core",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد جهازًا يسقي النباتات تلقائيًا."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-fan-01",
+      "lang": "MSA",
+      "category": "core",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد مروحة تعمل تلقائيًا في الغرفة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-screen-01",
+      "lang": "MSA",
+      "category": "core",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد حاملًا يرفع شاشة الحاسوب."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-water-02",
+      "lang": "MSA",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "فكرتي جهاز يروي الحديقة بشكل آلي."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "GARDEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-water-03",
+      "lang": "MSA",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أود أن أصنع أصيصًا يسقي الزهور بنفسه."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-fan-02",
+      "lang": "MSA",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "فكرتي مروحة صغيرة تبرد الحاسوب المحمول."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "DEVICE",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-fan-03",
+      "lang": "MSA",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أود أن أبني مروحة تشتغل وحدها عندما ترتفع حرارة غرفة النوم."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-screen-02",
+      "lang": "MSA",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "فكرتي قاعدة تثبت التلفاز على الجدار."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "TV",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-screen-03",
+      "lang": "MSA",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد حاملًا يرفع الشاشة إلى مستوى العين."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-mixed-01",
+      "lang": "MSA",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد sensor يقيس رطوبة التربة ثم جهازًا يسقي النباتات تلقائيًا عبر pump صغيرة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-unk-01",
+      "lang": "MSA",
+      "category": "unknown_method",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد جهازًا يسقي النباتات لكن لا أعرف كيف يعمل."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": true
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-unk-02",
+      "lang": "MSA",
+      "category": "unknown_method",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد حاملًا يرفع الشاشة، لكنني لم أقرر كيف سيثبت على المكتب."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": true
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-unk-03",
+      "lang": "MSA",
+      "category": "unknown_method",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد مروحة تعمل تلقائيًا في الغرفة، ولست متأكدًا كيف ستعمل."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": true
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-neg-01",
+      "lang": "MSA",
+      "category": "negation",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "لا أريد أن ترفع الشاشة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-neg-02",
+      "lang": "MSA",
+      "category": "negation",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "لن أصنع مروحة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "NONE",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-neg-03",
+      "lang": "MSA",
+      "category": "negation",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "لا أريد جهازًا يسقي الحديقة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "GARDEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-without-01",
+      "lang": "MSA",
+      "category": "without_scope",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد جهازًا يسقي النباتات بدون مضخة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-without-02",
+      "lang": "MSA",
+      "category": "without_scope",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد أصيصًا يحافظ على النباتات حية دون سقي."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-diffobj-01",
+      "lang": "MSA",
+      "category": "different_object",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد جهازًا يسقي النباتات."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "لا أريد أن يسقي الحديقة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "WATERING",
+          "object": "GARDEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-diffobj-02",
+      "lang": "MSA",
+      "category": "different_object",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد حاملًا يرفع شاشة الحاسوب."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "لا أريد أن يحمل التلفاز."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "TV",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-contra-01",
+      "lang": "MSA",
+      "category": "contradiction",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد حاملًا يرفع شاشة الحاسوب."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "لا أريد أن يرفع الشاشة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN"
+        }
+      ],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-contra-02",
+      "lang": "MSA",
+      "category": "contradiction",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد مروحة تعمل تلقائيًا."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "لا أريد مروحة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "NONE",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "FAN",
+          "object": "NONE",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [
+        {
+          "role": "FAN",
+          "object": "NONE"
+        }
+      ],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-hyp-01",
+      "lang": "MSA",
+      "category": "hypothetical",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "ماذا لو كان هناك جهاز يسقي النباتات؟"
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "ABSTAINED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-hyp-02",
+      "lang": "MSA",
+      "category": "hypothetical",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "هل يمكن أن تعمل مروحة دون كهرباء؟"
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "NONE",
+          "polarity": "ABSTAINED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-hyp-03",
+      "lang": "MSA",
+      "category": "hypothetical",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "ربما حامل للشاشة، لا أدري بعد إن كانت فكرة جيدة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "ABSTAINED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-diac-01",
+      "lang": "MSA",
+      "category": "diacritics",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أُرِيدُ جِهَازًا يَسْقِي النَّبَاتَاتِ"
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-diac-02",
+      "lang": "MSA",
+      "category": "diacritics",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أريد مـــروحة تعمل تلقائيًا."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "NONE",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "msa-diac-03",
+      "lang": "MSA",
+      "category": "diacritics",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "لَا أُرِيدُ أَنْ يَرْفَعَ الشَّاشَـــةَ."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "msa-long-01",
+      "lang": "MSA",
+      "category": "long_text",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "اسمحوا لي أن أعرّفكم بنفسي قبل أن أشرح ما يدور في ذهني. أعمل معلمًا في مدرسة ثانوية منذ أكثر من خمسة عشر عامًا، وأسافر كثيرًا في العطلات لزيارة أهلي في مدينة أخرى تبعد عنا مسافة طويلة. أسكن في شقة صغيرة في الطابق الخامس، وتدخلها أشعة الشمس القوية من النوافذ الكبيرة في فترة العصر. أحب منذ صغري صنع الأشياء البسيطة بيدي، وقد حضرت العام الماضي دورة مسائية قصيرة في الإلكترونيات الأساسية تعلمت فيها اللحام وتوصيل الدوائر البسيطة وبرمجة لوحة صغيرة. لست مهندسًا ولم أدرس الفيزياء بعد المرحلة الثانوية، لكنني أحب حل المشكلات اليومية بطريقة عملية، ويقول أصدقائي إنني صبور ودقيق في عملي. وخلال الأشهر الماضية لاحظت المشكلة نفسها تتكرر كلما عدت إلى البيت بعد السفر، وفكرت فيها طويلًا قبل أن أكتب هذه السطور، وناقشتها مع زملائي في العمل أكثر من مرة دون أن نصل إلى حل واضح، لذلك فكرتي بسيطة: أريد جهازًا يسقي النباتات تلقائيًا أثناء غيابي."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "gulf-water-01",
+      "lang": "GULF",
+      "category": "core",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي جهاز يسقي النباتات تلقائي."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "gulf-fan-01",
+      "lang": "GULF",
+      "category": "core",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي مروحة تشتغل لحالها في الغرفة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "gulf-screen-01",
+      "lang": "GULF",
+      "category": "core",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي حامل يرفع الشاشة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": true
+    },
+    {
+      "id": "gulf-water-02",
+      "lang": "GULF",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "ودي أسوي شي يسقي الزرع وأنا مسافر."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-water-03",
+      "lang": "GULF",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبغى جهاز يرش الحديقة بروحه كل يوم الصبح."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "GARDEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-water-04",
+      "lang": "GULF",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي شي يسقي الثيل اللي قدام البيت."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "GARDEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-fan-02",
+      "lang": "GULF",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "ودي أسوي مروحة صغيرة تبرد اللابتوب."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "DEVICE",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-fan-03",
+      "lang": "GULF",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبغى مروحة تشتغل بروحها إذا الغرفة صارت حر."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-fan-04",
+      "lang": "GULF",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي fan يشتغل automatic في الغرفة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-screen-02",
+      "lang": "GULF",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي أسوي ستاند للشاشة يرفعها لين مستوى العين."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-screen-03",
+      "lang": "GULF",
+      "category": "paraphrase",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "ودي أسوي قاعدة تعلق التلفزيون على الجدار."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "TV",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-unk-01",
+      "lang": "GULF",
+      "category": "unknown_method",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي جهاز يسقي النباتات بس ما أدري كيف يشتغل."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": true
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-unk-02",
+      "lang": "GULF",
+      "category": "unknown_method",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي مروحة للغرفة تشتغل لحالها لكن لا أعرف كيف."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": true
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-neg-01",
+      "lang": "GULF",
+      "category": "negation",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "ما أبي مروحة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "NONE",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-neg-02",
+      "lang": "GULF",
+      "category": "negation",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "مو أبي الجهاز يسقي الحديقة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "GARDEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-neg-03",
+      "lang": "GULF",
+      "category": "negation",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "ما أبيه يرفع الشاشة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-without-01",
+      "lang": "GULF",
+      "category": "without_scope",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي ستاند للشاشة بدون براغي."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-without-02",
+      "lang": "GULF",
+      "category": "without_scope",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي حوض يخلي الزرع عايش بدون سقي."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-diffobj-01",
+      "lang": "GULF",
+      "category": "different_object",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي حامل يرفع شاشة الكمبيوتر."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "ما أبيه يشيل التلفزيون."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "TV",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-diffobj-02",
+      "lang": "GULF",
+      "category": "different_object",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي جهاز يسقي النباتات اللي في الصالة."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "ما أبيه يسقي الحديقة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "WATERING",
+          "object": "GARDEN",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-contra-01",
+      "lang": "GULF",
+      "category": "contradiction",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي مروحة تشتغل لحالها في الغرفة."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "لا، ما أبي مروحة في الغرفة."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "FAN",
+          "object": "ROOM",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [
+        {
+          "role": "FAN",
+          "object": "ROOM"
+        }
+      ],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-contra-02",
+      "lang": "GULF",
+      "category": "contradiction",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبي جهاز يسقي النباتات."
+        },
+        {
+          "kind": "ANSWER",
+          "text": "لا خلاص، ما أبيه يسقي النباتات."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        },
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "NEGATED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS"
+        }
+      ],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-hyp-01",
+      "lang": "GULF",
+      "category": "hypothetical",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "لو كان فيه جهاز يسقي النباتات، شلون بيكون؟"
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "ABSTAINED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-hyp-02",
+      "lang": "GULF",
+      "category": "hypothetical",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "يمكن ستاند للشاشة؟ مدري."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "ABSTAINED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-hyp-03",
+      "lang": "GULF",
+      "category": "hypothetical",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "عيوني تعبت من الشاشة طول اليوم."
+        }
+      ],
+      "expected": [],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-diac-01",
+      "lang": "GULF",
+      "category": "diacritics",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أبـــي جهاز يسقـي النباتات."
+        }
+      ],
+      "expected": [
+        {
+          "role": "WATERING",
+          "object": "PLANTS",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-diac-02",
+      "lang": "GULF",
+      "category": "diacritics",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "أَبِي مِرْوَحَة تِشْتَغِل لِحَالْهَا."
+        }
+      ],
+      "expected": [
+        {
+          "role": "FAN",
+          "object": "NONE",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    },
+    {
+      "id": "gulf-long-01",
+      "lang": "GULF",
+      "category": "long_text",
+      "statements": [
+        {
+          "kind": "IDEA",
+          "text": "خلني أقولكم شوي عن نفسي قبل لا أشرح الفكرة. أنا أشتغل في شركة بالديرة من عشر سنين تقريبًا، وكل يوم أقعد قدام الكمبيوتر من الصبح لين المغرب، وأحيانًا أكمل شغلي في البيت بالليل بعد العشا. بيتنا صغير وما فيه مكان واجد، وأنا أحب أسوي أغراض بسيطة بإيدي من أيام المدرسة، وأخوي الصغير دايمًا يساعدني ويجيب لي العدة من السيارة. السنة اللي طافت خذيت كورس قصير في الإلكترونيات وتعلمت شلون ألحم الأسلاك وأبرمج بورد صغير، وكان الكورس حلو واستانست فيه واجد. أنا مو مهندس ولا درست فيزياء بعد الثانوية، بس أحب أحل المشاكل اللي تصير لي كل يوم بطريقة عملية وسهلة. وآخر كم شهر صرت أحس بألم في رقبتي وظهري من كثر القعدة، والدكتور قال لي لازم أعدل جلستي وأغير طريقة شغلي، وأنا من زمان أفكر في الموضوع وأدور حل يناسبني ويناسب بيتنا، عشان كذا فكرتي إني أبي حامل يرفع شاشة الكمبيوتر لين مستوى العين."
+        }
+      ],
+      "expected": [
+        {
+          "role": "SCREEN_SUPPORT",
+          "object": "SCREEN",
+          "polarity": "AFFIRMED",
+          "method_uncertain": false
+        }
+      ],
+      "conflicts": [],
+      "must_recognize": false
+    }
+  ]
+}

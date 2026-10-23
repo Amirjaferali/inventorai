@@ -2098,6 +2098,45 @@ body{overflow-wrap:anywhere}
 </details>
 {% endif %}
 {#- MEV-BLOCK-END -#}
+{#- FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: InventorAI's provisional
+    reading of the needs the inventor stated, quoted verbatim, beside the
+    existing engineering owners' own readiness. Read-only: no link to any
+    method, no component, value or design, nothing saved. -#}
+{% if functional_handoff %}
+<details id="functional-handoff" class="functional-handoff" data-functional-handoff style="margin-top:14px;border:1px solid #d6dde8;border-radius:4px;background:#f7f9fc;padding:10px 14px">
+<summary style="cursor:pointer;font-weight:bold">{{ t('UI_FH_TITLE') }}</summary>
+{% if not functional_handoff.available %}
+<p data-fh-unavailable>{{ t('UI_FH_UNAVAILABLE') }}</p>
+{% else %}
+<p style="font-size:13px">{{ t('UI_FH_INTRO') }}</p>
+{% if not functional_handoff.idea_available %}<p data-fh-idea-unavailable style="font-size:13px;color:#7a5b00">{{ t('UI_FH_IDEA_UNAVAILABLE') }}</p>{% endif %}
+{% if not functional_handoff.roles %}<p data-fh-none>{{ t('UI_FH_NONE') }}</p>{% endif %}
+{% for r in functional_handoff.roles %}
+<div data-fh-role="{{ r.role }}" data-fh-object="{{ r.object }}" data-fh-status="{{ r.status }}" style="margin:8px 0;padding:6px 10px;border:1px solid #e2e6ea;border-radius:4px;background:#ffffff">
+<p style="margin:2px 0"><strong>{{ t('UI_FH_ROLE_' ~ r.role) }}</strong>{% if r.object != 'NONE' %}: {{ t('UI_FH_OBJ_' ~ r.object) }}{% endif %}
+<span style="color:#777"> ({{ t('UI_FH_STATUS_' ~ r.status) }})</span></p>
+{% for g in r.groundings %}
+<p style="margin:2px 0;font-size:13px">{{ t('UI_FH_QUOTE_IDEA') if g.source_kind == 'IDEA' else t('UI_FH_QUOTE_ANSWER') }} <q data-fh-quote dir="auto">{{ g.quote }}</q></p>
+{% endfor %}
+{% for g in r.negations %}
+<p style="margin:2px 0;font-size:13px" data-fh-negation>{{ t('UI_FH_NEGATED') }} <q dir="auto">{{ g.quote }}</q></p>
+{% endfor %}
+{% for g in r.uncertain %}
+<p style="margin:2px 0;font-size:13px" data-fh-uncertain>{{ t('UI_FH_UNCERTAIN') }} <q dir="auto">{{ g.quote }}</q></p>
+{% endfor %}
+<ul style="margin:4px 0;font-size:13px">
+{% for c in r.capabilities %}
+<li data-fh-capability="{{ c.ref }}" data-fh-capability-state="{{ c.state }}">{% if c.state == 'UNAVAILABLE' %}{{ t('UI_FH_CAP_UNAVAILABLE') }}{% elif c.ref == 'CAP13_CONDITIONAL_REACTIONS' %}{{ t('UI_FH_CAP13_CONDITIONAL') if c.state == 'CONDITIONAL' else t('UI_FH_CAP13_NOT_FOR_PROJECT') }}{% else %}{{ t('UI_FH_CAP09_AVAILABLE') if c.state == 'AVAILABLE' else t('UI_FH_CAP09_NO_EXPERIMENTS') }}{% endif %}</li>
+{% endfor %}
+<li data-fh-uncovered>{{ t('UI_FH_UNCOVERED_' ~ r.role) }}</li>
+</ul>
+</div>
+{% endfor %}
+{% if functional_handoff.abstained %}<p data-fh-abstained style="font-size:12px;color:#777">{{ t('UI_FH_ABSTAINED') }}</p>{% endif %}
+<p style="font-size:12px;color:#777">{{ t('UI_FH_COMPONENT_NOTE') }}</p>
+{% endif %}
+</details>
+{% endif %}
 {#- CAP12-LINK-BEGIN — Stage 24 / CAP-12 Form Mock-up Advisory Slice 1. ONE
     optional link to the request-local advisory page, offered only when the CAP-12
     owner supports the trusted root domain. It is not a journey action, gates
