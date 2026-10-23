@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ 'ملاءمة الأبعاد الأولية' if lang == 'ar' else 'Provisional dimensional fit' }}{% endblock %}
+{% block content %}
+<section dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}" data-engineering-fit-page style="max-width:700px;margin:auto;padding:20px">
+  <h1>{{ 'متطلبات الأبعاد المستخرجة من فكرتك' if lang == 'ar' else 'Dimensional requirements from your idea' }}</h1>
+  <p>{{ 'التعرف محدود بالعبارات والأبعاد المكتوبة صراحةً. هذه ليست مواصفة تصميم ولا إثباتًا للملاءمة أو الأمان.' if lang == 'ar' else 'Recognition is limited to explicitly stated phrases and dimensions. This is not a design specification, suitability finding, or safety conclusion.' }}</p>
+  <h2>{{ 'نصك الأصلي' if lang == 'ar' else 'Your original statement' }}</h2>
+  <p dir="auto" data-fit-original>{{ fit.source_excerpt }}</p>
+  <h2>{{ 'متطلبات هندسية أولية من النص' if lang == 'ar' else 'Initial dimensional constraints from the statement' }}</h2>
+  <dl>
+    <dt>{{ 'أبعاد الجسم المذكورة' if lang == 'ar' else 'Stated object dimensions' }}</dt>
+    <dd data-fit-dimensions><bdi dir="ltr">{{ fit.top_length }} × {{ fit.top_depth }} {{ fit.size_unit }}</bdi></dd>
+    <dt>{{ 'ارتفاع السطح المطلوب' if lang == 'ar' else 'Stated lift above the surface' }}</dt>
+    <dd data-fit-lift><bdi dir="ltr">{{ fit.surface_lift }} {{ fit.lift_unit }}</bdi></dd>
+    <dt>{{ 'قيد الملاءمة البعدية المرشح' if lang == 'ar' else 'Provisional dimensional fit condition' }}</dt>
+    <dd>{{ 'يجب أن تتسع مساحة سطح أي تكوين مستقبلي لأبعاد الجسم المذكورة، إذا كان ممنوعًا بروز الجسم خارج السطح. هذا افتراض يحتاج تأكيدًا، وليس حجم تصميم معتمدًا.' if lang == 'ar' else 'A future candidate top must accommodate the stated object dimensions if overhang is disallowed. This premise needs confirmation and does not establish approved design dimensions.' }}</dd>
+  </dl>
+  <p data-fit-not-assessed><strong>{{ 'لم يُفحص هندسيًا' if lang == 'ar' else 'Not engineering-assessed' }}:</strong>
+  {{ 'لم تُختر المادة أو السماكة أو المساند، ولم تُحسب المقاومة أو الصلابة أو الاستقرار أو قابلية التصنيع. لا يجوز البناء اعتمادًا على هذه الصفحة.' if lang == 'ar' else 'Material, thickness and supports have not been selected. Strength, stiffness, stability and manufacturability have not been checked. Do not build based on this page.' }}</p>
+  <p><a href="{{ url_for('show_session', sid=sid) }}">{{ 'العودة إلى المشروع' if lang == 'ar' else 'Back to project' }}</a></p>
+</section>
+{% endblock %}
