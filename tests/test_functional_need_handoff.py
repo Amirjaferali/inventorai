@@ -252,6 +252,19 @@ REVIEW_NOT_PROPOSED = (
     "أبي مروحة للغرفة. انسَ الموضوع.",
     "أبي مروحة للغرفة. أمزح.",
     "I want a pot and water for my plants",
+    # "to be" after an existing item; the Arabic construct form
+    "I want the TV stand to be gone",
+    "I want the monitor stand to be away from the wall",
+    "I want the monitor stand to be in the bin",
+    "I want my TV stand to be someone else's",
+    "I want the fan to be gone from my room",
+    "أبي حامل الشاشة يروح",
+    "أبي حامل الشاشة يختفي",
+    "أبي حامل الشاشة أرميه",
+    "أبي حامل الشاشة برا",
+    "أبي حامل الشاشة في المخزن",
+    "أبي مروحة الغرفة تختفي",
+    "أبي مروحة الغرفة تطفي للأبد",
 )
 
 #: Plain requests that must stay recognized under the stricter rules.
@@ -270,6 +283,8 @@ STILL_PROPOSED = (
     ("أريد أن أسقي النباتات", "WATERING", "PLANTS"),
     ("أريد حاملًا خشبيًا يرفع شاشة الحاسوب", "SCREEN_SUPPORT", "SCREEN"),
     ("أبي مروحة تشتغل لحالها وتطفي نفسها", "FAN", "NONE"),
+    ("أبي حامل الشاشة اللي يرفعها", "SCREEN_SUPPORT", "SCREEN"),
+    ("أبي حامل للشاشة", "SCREEN_SUPPORT", "SCREEN"),
 )
 
 

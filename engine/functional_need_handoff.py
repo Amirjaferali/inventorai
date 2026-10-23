@@ -228,7 +228,7 @@ _DISPOSAL_WORDS = frozenset({
     "removed", "taken", "replaced", "cancelled", "canceled",
     "thrown", "deleted", "discarded", "dismantled", "sold",
     "يتشال", "ينشال", "تنشال", "تتشال", "ينقل", "تنقل", "يتنقل", "ينرمى",
-    "ينباع", "يتباع", "ينلغى", "يلغى", "تلغى"})
+    "ينباع", "يتباع", "ينلغى", "يلغى", "تلغى", "يختفي", "تختفي", "ارميه"})
 #: English role nouns. After "the" / "my" / "our" / "your" (or an Arabic role
 #: noun with ال-) they name an EXISTING item, which a want then changes; they
 #: count only when "that" / "which" / "to" / "for" and a role or object word
@@ -237,6 +237,10 @@ _EN_ROLE_NOUNS = frozenset({
     "stand", "stands", "holder", "holders", "riser", "bracket", "fan", "fans",
     "waterer", "support", "mount"})
 _EN_DEFINITE = frozenset({"the", "my", "our", "your"})
+#: Arabic role NOUNS (never verbs: «يسقي النباتات» is a request).
+_AR_ROLE_NOUNS = frozenset({
+    "حامل", "حاملة", "مروحة", "مروحه", "مراوح", "بنكة", "بنكه", "پنكة", "پنكه",
+    "قاعدة", "ستاند", "مسند"})
 _RELATIVE_WORDS = frozenset({"that", "which", "to", "for", "اللي", "الذي", "التي"})
 _AR_ARTICLE = ("وال", "بال", "فال", "كال", "ال")
 #: A following sentence that only retracts the request.
@@ -261,8 +265,10 @@ _NEGATION_REACH = 2
 
 _ALL_OBJECT_WORDS = tuple(surfaces for objects in _ROLE_OBJECTS.values()
                           for surfaces in objects.values())
+#: "be" is deliberately absent: "the stand to be gone" names an existing item.
 _ALL_ROLE_WORDS = tuple(_ROLE_TRIGGERS.values()) + _ALL_OBJECT_WORDS + (
-    frozenset({"be", "hold", "keep"}),)
+    frozenset({"hold", "keep"}),)
+_ALL_TRIGGER_WORDS = tuple(_ROLE_TRIGGERS.values())
 _TOKEN_RE = re.compile(r"[^\W\d_]+", re.UNICODE)
 _COMBINING_HAMZA = frozenset({"ٓ", "ٔ", "ٕ"})
 _CONTRACTION_RE = re.compile(r"\b[^\W\d_]+n['’]t\b")
@@ -424,6 +430,14 @@ def _existing_item(words, t):
         definite = j >= 0 and words[j] in _EN_DEFINITE
     elif not w.isascii():
         definite = any(w.startswith(a) and len(w) - len(a) >= 3 for a in _AR_ARTICLE)
+        nxt = words[t + 1] if t + 1 < len(words) else ""
+        if not definite and _match(w, _AR_ROLE_NOUNS) and nxt.startswith("ال") and any(
+                _match(nxt, s) for s in _ALL_OBJECT_WORDS):
+            # construct form «حامل الشاشة», «مروحة الغرفة»: the item exists
+            # unless a relative word or a role verb follows the object
+            after = words[t + 2:t + 3]
+            return not (after and (after[0] in _RELATIVE_WORDS or any(
+                _match(after[0], s) for s in _ALL_TRIGGER_WORDS)))
     if not definite:
         return False
     after = words[t + 1:t + 3]
