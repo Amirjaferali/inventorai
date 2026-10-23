@@ -1479,21 +1479,29 @@ information, not execution authority.
   - #850: report Section 4 no longer calls a CLOSED gap resolved.
 
   A read-only Path N reality assessment of 2026-10-24 was reported to the Owner; it is not a
-  repository document. It found the journey still stops right after the idea is recorded:
-  - the classifier returns NONE for ordinary ideas, so the inventor picks the discipline;
-  - the functional reading feeds no question, gap or next step.
+  repository document. It found that the existing questioning, recording and progression
+  features operate, but the provisional functional reading does not yet drive a coherent,
+  governed engineering continuation:
+  - the classifier returns NONE for ordinary ideas, so the inventor chooses the discipline;
+  - the #849 functional reading informs no question, gap or next step.
 
-  Two Owner-reserved decisions are open, and neither is granted:
-  1. **Function-first continuation.** May candidate disciplines be offered as attributed
-     provisional suggestions under §15? May an inventor-confirmed functional reading select the
-     next existing governed question? This needs OD-2 for that confirmation record.
-  2. **PHYSICAL_FEASIBILITY closure policy.** May lexical restatements, or an answer given while
+  These Owner-reserved decisions are open, separate, and none is granted:
+  1. **Provisional discipline suggestions.** May candidate disciplines be shown as attributed,
+     provisional suggestions under §15? A suggestion would not be a domain decision or a stored
+     record, and it is not authorized.
+  2. **Inventor confirmation and its persistence.** If the inventor confirms a functional
+     reading, may that confirmation be stored? Storing it is the OD-2 question. OD-2 does not
+     govern read-only suggestions that are never stored.
+  3. **Functional-reading-driven question selection.** May a confirmed functional reading
+     choose which existing governed question is served next? This is separate from decisions 1
+     and 2 and changes serving.
+  4. **PHYSICAL_FEASIBILITY closure policy.** May lexical restatements, or an answer given while
      a specialist request is pending, still close the gap? This amends WS12 OD-4 and needs a
      compatibility and engine-version decision.
 
-  Next eligible action: put decision 1 to the Owner. While it stays open, the only eligible
-  step-1 items are those that need neither decision, and each still needs its own Owner
-  authorization. These are recommendations, never authorizations.
+  Next eligible action: put decisions 1–3 to the Owner. While they stay open, the only
+  eligible step-1 items are those that need none of decisions 1–4, and each still needs its own
+  Owner authorization. These are recommendations, never authorizations.
 
   (h) **Gate results since PR #828 and reopening triggers.** Each item reopens only on its named
   trigger. 28-T3 Power Electronics / Motion: BLOCKED (no qualified owner or claim-level source); the
