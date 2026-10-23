@@ -28,6 +28,7 @@ from engine import deterministic_calculation as _dcalc  # Stage 25: shared calcu
 from engine import cap13_static_reactions_method as _cap13_method  # Stage 25 / CAP-13 Slice 1 method
 from engine import cap13_static_reactions as _cap13  # Stage 25 / CAP-13 Slice 1 consumer
 from engine.cap13_functional_configuration import derive_provisional_fit as _engineering_fit  # bounded idea-to-engineering candidate
+from engine import functional_need_handoff as _handoff  # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01 (read-only proposal)
 from engine import therm01_conduction_method as _therm01_method  # Stage 27 / THERM-01 Slice 1 method
 from engine import therm01_temperature_difference as _therm01  # Stage 27 / THERM-01 Slice 1 consumer
 from engine import domain_activation
@@ -7060,9 +7061,15 @@ def show_session(sid):
         # project (Mechanical root, or a declared Mechanical part of a valid
         # integrated composition). It never gates the journey.
         cap13_support_reactions_link=_cap13_link_offered(sid),
-        engineering_fit_link=(_engineering_fit(state.idea_summary) is not None
+        # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: the dimensional fit reads
+        # the verbatim original statement, never the display-trimmed summary.
+        engineering_fit_link=(_engineering_fit(_original_idea_text(sid)) is not None
                               and _cap13_eligible(sid)),
         engineering_fit_lang=_current_ui_lang(),
+        # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: InventorAI's proposed
+        # reading of the needs the inventor stated, with the existing engineering
+        # owners' own readiness. Read-only; never an engineering input.
+        functional_handoff=_functional_handoff_view(sid, state),
         # Stage 27 / THERM-01 Slice 1: an OPTIONAL link to the request-local
         # single-path temperature-difference calculation, offered only on an
         # eligible project (Electrical / Electronics root, or a declared
@@ -9351,6 +9358,87 @@ def _functional_concept_view(state):
         return {"available": True, "unplaced": unplaced,
                 "topics": [{"key": key, "answers": topics[key]}
                            for key, _gap in _FUNCTIONAL_CONCEPT_TOPICS]}
+    except Exception:
+        return {"available": False}
+
+
+def _original_idea_text(sid):
+    """The project's verbatim original statement (``seed_idea_text``) from the
+    durable project envelope, or None when it cannot be read or is empty.
+    Never the display-trimmed ``idea_summary`` and never ``known_problem``.
+    Presentation input only; the caller MUST first establish project
+    authorization."""
+    try:
+        inputs = _get_store().load_reconstruction_inputs(sid)
+    except Exception:
+        return None
+    seed = (inputs or {}).get("seed_idea_text")
+    return seed if isinstance(seed, str) and seed.strip() else None
+
+
+def _handoff_statements(sid, state):
+    """``(statements, idea_available)``: the original statement (when it can be
+    read) and the inventor's ACTIVE answered records, verbatim, as the
+    projection's sources. Answers use the same filter as the by-topic view."""
+    statements = []
+    idea = _original_idea_text(sid)
+    if idea is not None:
+        statements.append((_handoff.SOURCE_IDEA, "idea", idea))
+    for record in getattr(state, "assertions", None) or ():
+        if getattr(record, "superseded_by", None) is not None \
+                or getattr(record, "provenance", None) not in _FUNCTIONAL_CONCEPT_PROVENANCE \
+                or getattr(record, "disposition", None) != _DISP_ANSWERED:
+            continue
+        text = getattr(record, "content", None)
+        if isinstance(text, str) and text.strip():
+            statements.append((_handoff.SOURCE_ANSWER,
+                               getattr(record, "record_id", ""), text))
+    return statements, idea is not None
+
+
+def _handoff_capabilities(sid, state, role):
+    """The existing engineering owners related to ``role``, each with its OWN
+    readiness for this project, read from that owner's gate. No owner is
+    offered as prepared or executable from the inventor's words."""
+    items = []
+    for ref in _handoff.ROLE_CAPABILITY_REFERENCES[role]:
+        try:
+            if ref == _handoff.CAP13_CONDITIONAL_REACTIONS:
+                state_key = "CONDITIONAL" if _cap13_eligible(sid) else "NOT_FOR_PROJECT"
+                count = None
+            elif ref == _handoff.CAP09_EXPERIMENT_PLANNING:
+                count = len(_current_experiment_ids(state))
+                state_key = "AVAILABLE" if count else "NO_EXPERIMENTS"
+            else:
+                raise ValueError(ref)
+        except Exception:
+            state_key, count = "UNAVAILABLE", None
+        items.append({"ref": ref, "state": state_key, "count": count})
+    return items
+
+
+def _functional_handoff_view(sid, state):
+    """FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01 — the session page's read-only
+    view of InventorAI's proposed reading of the needs the inventor stated.
+
+    ``None`` when there is no state or nothing was proposed and the original
+    statement was read; ``{"available": False}`` on any failure. Every role is
+    SYSTEM_PROPOSED with its verbatim quotes; nothing is written, inferred into
+    a technical value, or offered as an executable method."""
+    if state is None:
+        return None
+    try:
+        statements, idea_available = _handoff_statements(sid, state)
+        projection = _handoff.project_functional_roles(statements)
+        roles = [{"role": r.role, "object": r.object_key, "status": r.status,
+                  "groundings": r.groundings, "negations": r.negations,
+                  "uncertain": r.method_uncertainties,
+                  "capabilities": _handoff_capabilities(sid, state, r.role)}
+                 for r in projection.roles]
+        if not roles and idea_available:
+            return None
+        return {"available": True, "idea_available": idea_available,
+                "roles": roles, "abstained": projection.abstained}
     except Exception:
         return {"available": False}
 
@@ -13527,15 +13615,9 @@ def cap13_functional_configuration(sid):
         return _deny_project()
     if not _cap13_eligible(sid):
         return _deny_project()
-    entry = SESSION_STORE.get(sid)
-    if entry is None:
-        entry = _cold_load_entry(sid)
-        if entry is None:
-            return _deny_project()
-    state = entry.get("state")
-    if state is None:
-        return _deny_project()
-    result = _engineering_fit(getattr(state, "idea_summary", None))
+    # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: the verbatim original
+    # statement from the project envelope, never the trimmed idea_summary.
+    result = _engineering_fit(_original_idea_text(sid))
     if result is None:
         return _deny_project()
     lang = _current_ui_lang()

@@ -5433,6 +5433,102 @@ UI_STRINGS = {
     "UI_CAP12_ERR_REQUEST": {
         "en": "That request could not be read. Nothing was produced.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُنتَج شيء."},
+    # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: the session page's read-only,
+    # SYSTEM_PROPOSED reading of the needs the inventor stated.
+    "UI_FH_TITLE": {
+        "en": "What your idea asks for: InventorAI's proposed reading",
+        "ar": "ما تطلبه فكرتك: قراءة مقترحة من InventorAI"},
+    "UI_FH_INTRO": {
+        "en": ("InventorAI read your own words and proposes the functions below. "
+               "This is a proposal for you to check, not a confirmed requirement. "
+               "Nothing here is a design, a choice of parts or an engineering "
+               "result."),
+        "ar": ("قرأ InventorAI كلماتك واقترح الوظائف التالية. هذا اقتراح "
+               "لتراجعه، وليس متطلبًا مؤكدًا. لا شيء هنا تصميم أو اختيار "
+               "لأجزاء أو نتيجة هندسية.")},
+    "UI_FH_ROLE_WATERING": {"en": "Watering", "ar": "السقي"},
+    "UI_FH_ROLE_FAN": {"en": "A fan (moving air)", "ar": "مروحة (تحريك الهواء)"},
+    "UI_FH_ROLE_SCREEN_SUPPORT": {"en": "Holding or raising a screen",
+                                  "ar": "حمل الشاشة أو رفعها"},
+    "UI_FH_OBJ_PLANTS": {"en": "plants", "ar": "النباتات"},
+    "UI_FH_OBJ_GARDEN": {"en": "a garden or lawn", "ar": "الحديقة أو العشب"},
+    "UI_FH_OBJ_ROOM": {"en": "a room", "ar": "غرفة"},
+    "UI_FH_OBJ_DEVICE": {"en": "a computer", "ar": "حاسوب"},
+    "UI_FH_OBJ_SCREEN": {"en": "a screen or monitor", "ar": "شاشة"},
+    "UI_FH_OBJ_TV": {"en": "a television", "ar": "تلفاز"},
+    "UI_FH_STATUS_PROPOSED": {"en": "Proposed reading, not confirmed",
+                              "ar": "قراءة مقترحة، غير مؤكدة"},
+    "UI_FH_STATUS_CONFLICTING": {
+        "en": ("Your statements disagree here. InventorAI does not choose "
+               "between them."),
+        "ar": "عباراتك تختلف هنا، ولا يختار InventorAI بينها."},
+    "UI_FH_QUOTE_IDEA": {"en": "From your original statement:",
+                         "ar": "من وصفك الأصلي:"},
+    "UI_FH_QUOTE_ANSWER": {"en": "From your answer:", "ar": "من إجابتك:"},
+    "UI_FH_NEGATED": {"en": "You also wrote:", "ar": "وكتبت أيضًا:"},
+    "UI_FH_UNCERTAIN": {"en": "You said you are not sure how yet:",
+                        "ar": "ذكرت أنك لم تحدد الطريقة بعد:"},
+    "UI_FH_CAP13_CONDITIONAL": {
+        "en": ("Two-support static reactions (CAP-13) is a conditional "
+               "calculation offered separately on this project. It needs a "
+               "configuration you declare yourself and is not prepared from "
+               "your description. It does not check strength, stiffness, "
+               "stability or safety."),
+        "ar": ("حساب ردود الأفعال الساكنة على مسندين (CAP-13) حساب مشروط "
+               "يُعرض منفصلًا في هذا المشروع. يحتاج تكوينًا تصرّح به أنت، ولا "
+               "يُجهَّز من وصفك. ولا يفحص المتانة أو الصلابة أو الاستقرار أو "
+               "السلامة.")},
+    "UI_FH_CAP13_NOT_FOR_PROJECT": {
+        "en": ("Two-support static reactions (CAP-13) is not offered for this "
+               "project's analysis focus."),
+        "ar": ("حساب ردود الأفعال الساكنة على مسندين (CAP-13) غير متاح لمحور "
+               "التحليل في هذا المشروع.")},
+    "UI_FH_CAP09_AVAILABLE": {
+        "en": ("Experiment planning (CAP-09) can help you plan how to check the "
+               "experiments already proposed for your project. It does not "
+               "design this function."),
+        "ar": ("يساعدك تخطيط التجارب (CAP-09) في التخطيط لفحص التجارب "
+               "المقترحة لمشروعك. ولا يصمم هذه الوظيفة.")},
+    "UI_FH_CAP09_NO_EXPERIMENTS": {
+        "en": ("Experiment planning (CAP-09) applies once your project has "
+               "proposed experiments. It has none yet."),
+        "ar": ("ينطبق تخطيط التجارب (CAP-09) عندما تكون لمشروعك تجارب "
+               "مقترحة، ولا توجد تجارب بعد.")},
+    "UI_FH_CAP_UNAVAILABLE": {
+        "en": "This method's readiness could not be read right now.",
+        "ar": "تعذّرت قراءة جاهزية هذه الطريقة الآن."},
+    "UI_FH_UNCOVERED_WATERING": {
+        "en": ("No InventorAI engineering method covers water delivery, pumps, "
+               "flow or how much water plants need."),
+        "ar": ("لا تغطي أي طريقة هندسية في InventorAI إيصال الماء أو المضخات "
+               "أو التدفق أو كمية الماء التي تحتاجها النباتات.")},
+    "UI_FH_UNCOVERED_FAN": {
+        "en": ("No InventorAI engineering method covers airflow, room cooling "
+               "or choosing a fan."),
+        "ar": ("لا تغطي أي طريقة هندسية في InventorAI تدفق الهواء أو تبريد "
+               "الغرفة أو اختيار المروحة.")},
+    "UI_FH_UNCOVERED_SCREEN_SUPPORT": {
+        "en": ("No InventorAI method designs a support or checks its strength, "
+               "stiffness or stability."),
+        "ar": ("لا توجد طريقة في InventorAI تصمم الحامل أو تفحص متانته أو "
+               "صلابته أو استقراره.")},
+    "UI_FH_COMPONENT_NOTE": {
+        "en": ("Any part named in a quote is your own wording. InventorAI has "
+               "not selected it."),
+        "ar": "أي جزء مذكور في الاقتباس هو من كلامك، ولم يختره InventorAI."},
+    "UI_FH_IDEA_UNAVAILABLE": {
+        "en": "Your original statement could not be read, so it was not used here.",
+        "ar": "تعذّرت قراءة وصفك الأصلي، لذلك لم يُستخدم هنا."},
+    "UI_FH_ABSTAINED": {
+        "en": ("Some of your sentences were not read as clear requests, for "
+               "example negated, hypothetical or unclear wording."),
+        "ar": ("لم تُقرأ بعض جملك على أنها طلبات واضحة، مثل الصياغة المنفية "
+               "أو الافتراضية أو غير الواضحة.")},
+    "UI_FH_NONE": {
+        "en": "No function was proposed from your statements.",
+        "ar": "لم تُقترح أي وظيفة من عباراتك."},
+    "UI_FH_UNAVAILABLE": {"en": "This reading is unavailable right now.",
+                          "ar": "هذه القراءة غير متاحة الآن."},
     "UI_CAP12_LINK_TEXT": {
         "en": "Optional: material and building-method families for a form mock-up",
         "ar": "اختياري: عائلات المواد وطرق البناء لمجسَّم شكلي"},
