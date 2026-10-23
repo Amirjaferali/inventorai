@@ -10,6 +10,9 @@ Input contract
   * ``resolve_advisory(root_domain, role_category, artifact=None)``.
     ``root_domain`` is the TRUSTED, server-resolved project root domain (the
     durable, immutable ``confirmed_domain``), never request input.
+    CAP12-ELECTRONICS-ROOT-01: the admitted domains are exactly the closed pair
+    ``mechanical`` and ``electronics_electrical``; the web layer passes
+    ``electronics_electrical`` only for a confirmed single-domain project.
     CAP12-INTEGRATED-MECHANICAL-PART-01: the web layer may instead pass the
     canonical domain of ONE inventor-declared part of the project's validated
     durable integrated composition (still server-resolved, never request
@@ -48,8 +51,12 @@ from pathlib import Path
 ROLE_FORM_MOCKUP = "form_mockup"
 ROLE_CATEGORIES = (ROLE_FORM_MOCKUP,)
 
-# The ONLY applicable (trusted root domain, role category) pair in Slice 1.
-SUPPORTED_APPLICABILITY = (("mechanical", ROLE_FORM_MOCKUP),)
+# The ONLY applicable (trusted domain, role category) pairs: the closed pair of
+# domains admitted for ``form_mockup`` (Slice 1 Mechanical;
+# CAP12-ELECTRONICS-ROOT-01 Electrical / Electronics). The claims are the same
+# family-level claims for both domains: nothing is tailored per domain.
+SUPPORTED_APPLICABILITY = (("mechanical", ROLE_FORM_MOCKUP),
+                           ("electronics_electrical", ROLE_FORM_MOCKUP))
 
 STATE_AVAILABLE = "AVAILABLE"
 STATE_UNABLE = "UNABLE_TO_RECOMMEND"
@@ -82,7 +89,9 @@ PROCESS_FAMILY_TOKENS = ("manual_cut_and_join", "additive_fff_fdm")
 MIN_MATERIAL_ALTERNATIVES = 2
 
 ARTIFACT_ID = "cap12_form_mockup_advisory"
-ARTIFACT_SCHEMA_VERSION = "1.0"
+# Schema 2.0 (CAP12-ELECTRONICS-ROOT-01): the scope and every claim carry the
+# closed, ordered list ``applicable_domains`` instead of one ``applicable_domain``.
+ARTIFACT_SCHEMA_VERSION = "2.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
                  / "cap12_content_config" / "form_mockup_advisory_v1.json")
 
@@ -96,7 +105,7 @@ _LONG_FIELDS = frozenset({"governance_note", "inspected_content"})
 _TOP_KEYS = frozenset({
     "artifact_id", "schema_version", "artifact_version", "owner", "slice",
     "governance_note", "scope", "sources", "claims"})
-_SCOPE_KEYS = frozenset({"role_category", "applicable_domain"})
+_SCOPE_KEYS = frozenset({"role_category", "applicable_domains"})
 _SOURCE_KEYS = frozenset({
     "record_id", "record_type", "source_type", "publisher", "report_number",
     "ntrs_document_id", "source_title", "url", "inspected_location",
@@ -106,7 +115,7 @@ _SOURCE_KEYS = frozenset({
     "third_party_material_exclusion", "no_endorsement_limitation"})
 _POLICY_EXTRA_KEYS = frozenset({"acknowledgement"})
 _CLAIM_KEYS = frozenset({
-    "claim_id", "advisory_type", "role_category", "applicable_domain",
+    "claim_id", "advisory_type", "role_category", "applicable_domains",
     "family_token", "fact", "process_family_refs", "source_ref",
     "source_use_policy_ref", "limitation"})
 _SOURCE_TEXT_FIELDS = (
@@ -196,8 +205,10 @@ def validate_artifact(data):
         _text(data[field], field)
     scope = data["scope"]
     if not isinstance(scope, dict) or set(scope) != _SCOPE_KEYS \
-            or (scope["applicable_domain"], scope["role_category"]) \
-            not in SUPPORTED_APPLICABILITY:
+            or scope["role_category"] not in ROLE_CATEGORIES \
+            or scope["applicable_domains"] != [
+                d for d, r in SUPPORTED_APPLICABILITY
+                if r == scope["role_category"]]:
         raise Cap12KnowledgeError("scope: not the supported applicability")
     sources = _validate_sources(data["sources"])
     claims = data["claims"]
@@ -215,7 +226,7 @@ def validate_artifact(data):
         if claim["advisory_type"] not in ADVISORY_TYPES:
             raise Cap12KnowledgeError("claims: unknown advisory type")
         if claim["role_category"] != scope["role_category"] \
-                or claim["applicable_domain"] != scope["applicable_domain"]:
+                or claim["applicable_domains"] != scope["applicable_domains"]:
             raise Cap12KnowledgeError("claims: outside the artifact scope")
         kind, token = claim["advisory_type"], claim["family_token"]
         allowed_tokens = {ADVISORY_MATERIAL: MATERIAL_FAMILY_TOKENS,
@@ -296,7 +307,7 @@ def resolve_advisory(root_domain, role_category, artifact=None):
         return _unable(REASON_KNOWLEDGE_UNAVAILABLE)
     claims = [c for c in data["claims"]
               if c["role_category"] == role_category
-              and c["applicable_domain"] == root_domain]
+              and root_domain in c["applicable_domains"]]
     sources = {s["record_id"]: s for s in data["sources"]}
     boundary = [c for c in claims if c["advisory_type"] == ADVISORY_LIMITATION]
     process = {c["family_token"]: c for c in claims
