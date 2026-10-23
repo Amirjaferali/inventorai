@@ -27,6 +27,7 @@ from engine import cap12_form_mockup as _cap12  # Stage 24 / CAP-12 Form Mock-up
 from engine import deterministic_calculation as _dcalc  # Stage 25: shared calculation / units owner
 from engine import cap13_static_reactions_method as _cap13_method  # Stage 25 / CAP-13 Slice 1 method
 from engine import cap13_static_reactions as _cap13  # Stage 25 / CAP-13 Slice 1 consumer
+from engine.cap13_functional_configuration import derive_provisional_fit as _engineering_fit  # bounded idea-to-engineering candidate
 from engine import therm01_conduction_method as _therm01_method  # Stage 27 / THERM-01 Slice 1 method
 from engine import therm01_temperature_difference as _therm01  # Stage 27 / THERM-01 Slice 1 consumer
 from engine import domain_activation
@@ -7059,6 +7060,9 @@ def show_session(sid):
         # project (Mechanical root, or a declared Mechanical part of a valid
         # integrated composition). It never gates the journey.
         cap13_support_reactions_link=_cap13_link_offered(sid),
+        engineering_fit_link=(_engineering_fit(state.idea_summary) is not None
+                              and _cap13_eligible(sid)),
+        engineering_fit_lang=_current_ui_lang(),
         # Stage 27 / THERM-01 Slice 1: an OPTIONAL link to the request-local
         # single-path temperature-difference calculation, offered only on an
         # eligible project (Electrical / Electronics root, or a declared
@@ -13512,6 +13516,31 @@ def _render_cap13(sid, status=200, eligible=True, declared_part=None, captured=N
         screen_yes=_cap13.SCREEN_YES,
         screen_no=_cap13.SCREEN_NO,
     ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/functional-configuration", methods=["GET"])
+def cap13_functional_configuration(sid):
+    """Read-only original-idea projection. No model, design, calculation or save."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _cap13_eligible(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if entry is None:
+        entry = _cold_load_entry(sid)
+        if entry is None:
+            return _deny_project()
+    state = entry.get("state")
+    if state is None:
+        return _deny_project()
+    result = _engineering_fit(getattr(state, "idea_summary", None))
+    if result is None:
+        return _deny_project()
+    lang = _current_ui_lang()
+    response = make_response(render_template(
+        "cap13_functional_configuration.html", sid=sid, fit=result, lang=lang))
     response.headers["Cache-Control"] = "no-store"
     return response
 
