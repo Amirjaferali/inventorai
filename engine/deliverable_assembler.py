@@ -97,6 +97,16 @@ _PROVENANCE_PUBLIC = {
 }
 _RESOLUTION_STATUS_PUBLIC = {
     "stated": "Stated by the inventor (not yet verified)",
+    # E-3: a CLOSED gap means the inventor's answers met InventorAI's question
+    # checks — never that the area is resolved or that feasibility is shown.
+    "answered": ("not independently verified; engineering feasibility "
+                 "has not been established"),
+}
+# E-3: an active pending request for a CLOSED gap's area, as the Requirement
+# Landscape reports it (its pending-request row kinds).
+_PENDING_REQUEST_PUBLIC = {
+    "pending_specialist": "Your request for specialist input on this area is still pending.",
+    "pending_evidence": "Your request for evidence on this area is still pending.",
 }
 _SOURCE_STATUS_PUBLIC = {
     "recorded": "Recorded from your answers (not yet verified)",
@@ -864,6 +874,27 @@ def _s3(state, open_gaps):
         "note": "Single-capability assessment. Cross-capability deferred to Phase 6.",
     }
 
+def _pending_request_gaps(state):
+    """E-3: ``{gap_type: {row kind}}`` for every active pending specialist /
+    evidence request, read from the Requirement Landscape's own pending rows
+    (active ledger records, and outstanding routed needs) — no second reading
+    of the ledger. A superseded request has no row and so no entry."""
+    by_id = {r.record_id: r for r in getattr(state, "assertions", [])}
+    pending = {}
+    for req in derive_requirement_landscape(state).requirements:
+        anchor = req.primary_anchor
+        if anchor.anchor_kind not in _PENDING_REQUEST_PUBLIC:
+            continue
+        reference = anchor.anchor_reference or ""
+        if reference.startswith("routing:"):
+            gap = reference.split(":")[1]          # "routing:<gap>:<question>"
+        else:
+            gap = getattr(by_id.get(reference), "gap_context", None)
+        if gap:
+            pending.setdefault(gap, set()).add(anchor.anchor_kind)
+    return pending
+
+
 def _s4(state):
     reqs, n = [], 1
     problem = _resolved_problem(state)
@@ -889,12 +920,19 @@ def _s4(state):
             "resolution_status": _RESOLUTION_STATUS_PUBLIC["stated"],
             "note": "Component-level specification required before implementation."})
         n += 1
+    pending = None
     for g in state.gaps:
         if g.status == CLOSED:
+            if pending is None:
+                pending = _pending_request_gaps(state)
+            notes = [_PENDING_REQUEST_PUBLIC[k] for k in _PENDING_REQUEST_PUBLIC
+                     if k in pending.get(g.gap_type, ())]
             reqs.append({"id": f"REQ-{n:03d}", "type": "constraint",
-                "statement": f"{_GAP_LABELS.get(g.gap_type, g.gap_type)} addressed",
+                "statement": (f"{_GAP_LABELS.get(g.gap_type, g.gap_type)} answered "
+                              "under InventorAI's question checks"),
                 "source": "gap_resolution", "evidence_quality": _plain_quality(REASONED),
-                "resolution_status": "resolved", "note": None})
+                "resolution_status": _RESOLUTION_STATUS_PUBLIC["answered"], "note": None,
+                "pending_note": " ".join(notes) or None})
             n += 1
     return {"requirements": reqs, "total": len(reqs),
             "count_basis": SECTION_4_COUNT_BASIS,

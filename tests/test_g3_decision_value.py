@@ -847,6 +847,83 @@ _EPG_ASSEMBLER_SUBSTITUTIONS = (
 )
 
 
+# E-3 REPORT TRUTHFULNESS bounded amendment (Owner implementation authorization: ONE
+# correction of the confirmed report-truthfulness defect, report Section 4 only). The
+# EXHAUSTIVE, ordered table of additional replacements, applied AFTER the
+# EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01 table; the guard still demands byte-equality,
+# so any other assembler change fails as before. Previous behaviour: a CLOSED gap's row
+# read "<label> addressed (resolved)". New behaviour: "<label> answered under
+# InventorAI's question checks (not independently verified; engineering feasibility
+# has not been established)", plus a note when the Requirement Landscape still carries
+# an active pending specialist / evidence request for that gap. Gap status, quality,
+# routing, maturity and the Section 4 ids, types and counts are unchanged.
+_E3_ASSEMBLER_SUBSTITUTIONS = (
+    (  # [1]
+        '    "stated": "Stated by the inventor (not yet verified)",\n'
+        '}\n',
+        '    "stated": "Stated by the inventor (not yet verified)",\n'
+        '    # E-3: a CLOSED gap means the inventor\'s answers met InventorAI\'s question\n'
+        '    # checks \u2014 never that the area is resolved or that feasibility is shown.\n'
+        '    "answered": ("not independently verified; engineering feasibility "\n'
+        '                 "has not been established"),\n'
+        '}\n'
+        '# E-3: an active pending request for a CLOSED gap\'s area, as the Requirement\n'
+        '# Landscape reports it (its pending-request row kinds).\n'
+        '_PENDING_REQUEST_PUBLIC = {\n'
+        '    "pending_specialist": "Your request for specialist input on this area is still pending.",\n'
+        '    "pending_evidence": "Your request for evidence on this area is still pending.",\n'
+        '}\n'),
+    (  # [2]
+        '\n'
+        '\n'
+        'def _s4(state):\n',
+        '\n'
+        '\n'
+        'def _pending_request_gaps(state):\n'
+        '    """E-3: ``{gap_type: {row kind}}`` for every active pending specialist /\n'
+        '    evidence request, read from the Requirement Landscape\'s own pending rows\n'
+        '    (active ledger records, and outstanding routed needs) \u2014 no second reading\n'
+        '    of the ledger. A superseded request has no row and so no entry."""\n'
+        '    by_id = {r.record_id: r for r in getattr(state, "assertions", [])}\n'
+        '    pending = {}\n'
+        '    for req in derive_requirement_landscape(state).requirements:\n'
+        '        anchor = req.primary_anchor\n'
+        '        if anchor.anchor_kind not in _PENDING_REQUEST_PUBLIC:\n'
+        '            continue\n'
+        '        reference = anchor.anchor_reference or ""\n'
+        '        if reference.startswith("routing:"):\n'
+        '            gap = reference.split(":")[1]          # "routing:<gap>:<question>"\n'
+        '        else:\n'
+        '            gap = getattr(by_id.get(reference), "gap_context", None)\n'
+        '        if gap:\n'
+        '            pending.setdefault(gap, set()).add(anchor.anchor_kind)\n'
+        '    return pending\n'
+        '\n'
+        '\n'
+        'def _s4(state):\n'),
+    (  # [3]
+        '    for g in state.gaps:\n'
+        '        if g.status == CLOSED:\n'
+        '            reqs.append({"id": f"REQ-{n:03d}", "type": "constraint",\n'
+        '                "statement": f"{_GAP_LABELS.get(g.gap_type, g.gap_type)} addressed",\n'
+        '                "source": "gap_resolution", "evidence_quality": _plain_quality(REASONED),\n'
+        '                "resolution_status": "resolved", "note": None})\n',
+        '    pending = None\n'
+        '    for g in state.gaps:\n'
+        '        if g.status == CLOSED:\n'
+        '            if pending is None:\n'
+        '                pending = _pending_request_gaps(state)\n'
+        '            notes = [_PENDING_REQUEST_PUBLIC[k] for k in _PENDING_REQUEST_PUBLIC\n'
+        '                     if k in pending.get(g.gap_type, ())]\n'
+        '            reqs.append({"id": f"REQ-{n:03d}", "type": "constraint",\n'
+        '                "statement": (f"{_GAP_LABELS.get(g.gap_type, g.gap_type)} answered "\n'
+        '                              "under InventorAI\'s question checks"),\n'
+        '                "source": "gap_resolution", "evidence_quality": _plain_quality(REASONED),\n'
+        '                "resolution_status": _RESOLUTION_STATUS_PUBLIC["answered"], "note": None,\n'
+        '                "pending_note": " ".join(notes) or None})\n'),
+)
+
+
 def test_a20_a21_dw_lane_and_assembler_untouched():
     import subprocess
     base = "f96c1900a0f5d0831a7654223ae4e008d4df961e"
@@ -910,6 +987,11 @@ def test_a20_a21_dw_lane_and_assembler_untouched():
     for _old, _new in _EPG_ASSEMBLER_SUBSTITUTIONS:
         assert expected.count(_old) == 1, (
             "an authorized EXPERIMENT-PLANNING-JOURNEY-GUIDANCE-01 anchor is missing or no longer unique")
+        expected = expected.replace(_old, _new)
+    # E-3 report-truthfulness bounded amendment: the same rule, applied after.
+    for _old, _new in _E3_ASSEMBLER_SUBSTITUTIONS:
+        assert expected.count(_old) == 1, (
+            "an authorized E-3 anchor is missing or no longer unique")
         expected = expected.replace(_old, _new)
     with open(os.path.join(root, "engine", "deliverable_assembler.py"),
               encoding="utf-8") as fh:

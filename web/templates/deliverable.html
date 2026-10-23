@@ -487,7 +487,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if package.section_4_requirements.requirements %}
   <ul>
     {% for r in package.section_4_requirements.requirements %}
-    <li>{{ r.id }} — {{ r.statement }} ({{ r.resolution_status }})</li>
+    <li>{{ r.id }} — {{ r.statement }} ({{ r.resolution_status }}){% if r.pending_note %} {{ r.pending_note }}{% endif %}</li>
     {% endfor %}
   </ul>
   {% else %}
