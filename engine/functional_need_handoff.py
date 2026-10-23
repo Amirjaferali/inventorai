@@ -228,7 +228,7 @@ _DISPOSAL_WORDS = frozenset({
     "removed", "taken", "replaced", "cancelled", "canceled",
     "thrown", "deleted", "discarded", "dismantled", "sold",
     "يتشال", "ينشال", "تنشال", "تتشال", "ينقل", "تنقل", "يتنقل", "ينرمى",
-    "ينباع", "يتباع", "ينلغى", "يلغى", "تلغى", "يختفي", "تختفي", "ارميه"})
+    "ينباع", "يتباع", "ينلغى", "يلغى", "تلغى", "يختفي", "تختفي", "ارميه", "ارميها", "ارميهم"})
 #: English role nouns. After "the" / "my" / "our" / "your" (or an Arabic role
 #: noun with ال-) they name an EXISTING item, which a want then changes; they
 #: count only when "that" / "which" / "to" / "for" and a role or object word
@@ -243,6 +243,7 @@ _AR_ROLE_NOUNS = frozenset({
     "قاعدة", "ستاند", "مسند"})
 _RELATIVE_WORDS = frozenset({"that", "which", "to", "for", "اللي", "الذي", "التي"})
 _AR_ARTICLE = ("وال", "بال", "فال", "كال", "ال")
+_AR_OBJECT_PRONOUNS = ("ها", "هم", "ه")
 #: A following sentence that only retracts the request.
 _RETRACTION_WORDS = frozenset({
     "nope", "scratch", "kidding", "joking", "forget", "nevermind",
@@ -417,6 +418,13 @@ def _object_for(role, words, t):
     return None
 
 
+def _is_trigger_verb(word):
+    """A role trigger, optionally with one object pronoun («يرفعها»)."""
+    forms = [word] + [word[:-len(p)] for p in _AR_OBJECT_PRONOUNS
+                      if word.endswith(p) and len(word) - len(p) >= 3]
+    return any(_match(f, s) for f in forms for s in _ALL_TRIGGER_WORDS)
+
+
 def _existing_item(words, t):
     """The role word at ``t`` names an item the inventor already has ("the
     monitor stand", "my TV stand", "المروحة") rather than one to make —
@@ -434,10 +442,12 @@ def _existing_item(words, t):
         if not definite and _match(w, _AR_ROLE_NOUNS) and nxt.startswith("ال") and any(
                 _match(nxt, s) for s in _ALL_OBJECT_WORDS):
             # construct form «حامل الشاشة», «مروحة الغرفة»: the item exists
-            # unless a relative word or a role verb follows the object
-            after = words[t + 2:t + 3]
-            return not (after and (after[0] in _RELATIVE_WORDS or any(
-                _match(after[0], s) for s in _ALL_TRIGGER_WORDS)))
+            # unless a role verb follows the object, directly or right after
+            # اللي / الذي / التي («اللي في الصالة يروح» only locates it)
+            after = words[t + 2:t + 4]
+            if after and after[0] in _RELATIVE_WORDS:
+                after = after[1:]
+            return not (after and _is_trigger_verb(after[0]))
     if not definite:
         return False
     after = words[t + 1:t + 3]
