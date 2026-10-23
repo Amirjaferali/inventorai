@@ -3,9 +3,11 @@
 What it is: a pure, deterministic reading of the inventor's own statements
 (their original idea text and their active answers) that PROPOSES which of
 three closed functional roles the inventor asked their invention to perform:
-WATERING, FAN and SCREEN_SUPPORT. Every proposal is ``SYSTEM_PROPOSED``: it is
-InventorAI's reading of the inventor's words, never a confirmed requirement,
-an engineering input, a selected component or a design result.
+WATERING, FAN and SCREEN_SUPPORT. Every proposal carries the request-local
+display label ``PROVISIONAL_READING``: it is InventorAI's reading of the
+inventor's words, never a confirmed requirement, an engineering input, a
+selected component or a design result. The label is never stored and is not
+a provenance value; OWNER_PRODUCT_IDENTITY_CORRECTION.md §15 adds none.
 
 What it is not: open-ended language understanding, a semantic model or a new
 concept registry. The R3-C registry (``engine.semantic_registry``) is reused,
@@ -43,7 +45,7 @@ from engine.semantic_registry import (
     ACKNOWLEDGED_UNKNOWN_SURFACES, _AR_PROCLITICS, normalize_ar)
 
 GRAMMAR_VERSION = "functional_roles_v1"
-INTERPRETATION_STATUS = "SYSTEM_PROPOSED"
+INTERPRETATION_STATUS = "PROVISIONAL_READING"
 
 ROLE_WATERING = "WATERING"
 ROLE_FAN = "FAN"

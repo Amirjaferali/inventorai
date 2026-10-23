@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01 — the read-only, SYSTEM_PROPOSED
+"""FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01 — the read-only, provisional
 functional-role projection and the original-statement source seam.
 
 The fixture ``tests/fixtures/functional_handoff_cases_v1.json`` was written by a
@@ -85,7 +85,7 @@ def test_no_role_is_proposed_that_the_inventor_did_not_affirm(case):
                 if e["polarity"] == "AFFIRMED"}
     for role in projection.roles:
         assert (role.role, role.object_key) in affirmed, (role.role, role.object_key)
-        assert role.interpretation_status == "SYSTEM_PROPOSED"
+        assert role.interpretation_status == "PROVISIONAL_READING"
     listed = {(c["role"], c["object"]) for c in case["conflicts"]}
     for role in projection.roles:
         if role.status == fh.CONFLICTING:

@@ -9429,7 +9429,7 @@ def _functional_handoff_view(sid, state):
 
     ``None`` when there is no state, or when the original statement was read
     and no role was mentioned at all; ``{"available": False}`` on any failure. Every role is
-    SYSTEM_PROPOSED with its verbatim quotes; nothing is written, inferred into
+    a provisional reading with its verbatim quotes; nothing is written, inferred into
     a technical value, or offered as an executable method."""
     if state is None:
         return None

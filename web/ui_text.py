@@ -5434,7 +5434,7 @@ UI_STRINGS = {
         "en": "That request could not be read. Nothing was produced.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُنتَج شيء."},
     # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: the session page's read-only,
-    # SYSTEM_PROPOSED reading of the needs the inventor stated.
+    # provisional reading of the needs the inventor stated.
     "UI_FH_TITLE": {
         "en": "What your idea asks for: InventorAI's proposed reading",
         "ar": "ما تطلبه فكرتك: قراءة مقترحة من InventorAI"},
