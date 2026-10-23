@@ -9368,12 +9368,18 @@ def _original_idea_text(sid):
     Never the display-trimmed ``idea_summary`` and never ``known_problem``.
     Presentation input only; the caller MUST first establish project
     authorization."""
+    cache = getattr(g, "_original_idea_text", None) if has_request_context() else None
+    if cache is not None and sid in cache:
+        return cache[sid]
     try:
         inputs = _get_store().load_reconstruction_inputs(sid)
     except Exception:
         return None
     seed = (inputs or {}).get("seed_idea_text")
-    return seed if isinstance(seed, str) and seed.strip() else None
+    seed = seed if isinstance(seed, str) and seed.strip() else None
+    if has_request_context():
+        g._original_idea_text = dict(cache or {}, **{sid: seed})
+    return seed
 
 
 def _handoff_statements(sid, state):
@@ -9421,8 +9427,8 @@ def _functional_handoff_view(sid, state):
     """FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01 — the session page's read-only
     view of InventorAI's proposed reading of the needs the inventor stated.
 
-    ``None`` when there is no state or nothing was proposed and the original
-    statement was read; ``{"available": False}`` on any failure. Every role is
+    ``None`` when there is no state, or when the original statement was read
+    and no role was mentioned at all; ``{"available": False}`` on any failure. Every role is
     SYSTEM_PROPOSED with its verbatim quotes; nothing is written, inferred into
     a technical value, or offered as an executable method."""
     if state is None:
@@ -9431,11 +9437,12 @@ def _functional_handoff_view(sid, state):
         statements, idea_available = _handoff_statements(sid, state)
         projection = _handoff.project_functional_roles(statements)
         roles = [{"role": r.role, "object": r.object_key, "status": r.status,
-                  "groundings": r.groundings, "negations": r.negations,
+                  "groundings": r.groundings,
+                  "negations": r.negations + r.related_negations,
                   "uncertain": r.method_uncertainties,
                   "capabilities": _handoff_capabilities(sid, state, r.role)}
                  for r in projection.roles]
-        if not roles and idea_available:
+        if not roles and idea_available and not projection.abstained:
             return None
         return {"available": True, "idea_available": idea_available,
                 "roles": roles, "abstained": projection.abstained}

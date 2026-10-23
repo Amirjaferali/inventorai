@@ -138,7 +138,7 @@ def test_offsets_survive_harakat_tatweel_and_decomposed_hamza():
     ("I want a pot that keeps my plants alive without watering.", set()),
     ("أريد جهازًا يسقي النباتات بدون مضخة", {("WATERING", "PLANTS")}),
     ("أريد أصيصًا يحافظ على النبات بدون سقي", set()),
-    ("I want a fan that never stops.", set()),          # unsupported negation
+    ("I want a cooling fan for my room that never stops.", set()),  # unsupported negation
     ("Would a gadget that waters the garden be useful?", set()),
     ("لو كان فيه جهاز يسقي الزرع", set()),
     ("I want a glass of water next to my plants.", set()),
@@ -148,6 +148,96 @@ def test_positive_evidence_is_required(text, expected):
     got = {(r.role, r.object_key)
            for r in fh.project_functional_roles([("IDEA", "idea", text)]).roles}
     assert got == expected
+
+
+# Reproducers from the independent technical review (all must not propose).
+REVIEW_NOT_PROPOSED = (
+    # unlisted "n't" forms and lexical negation
+    "I didn't want a device that waters my plants",
+    "I wouldn't want a device that waters my plants",
+    "I shouldn't need a device that waters my plants",
+    "It isn't a device that waters plants",
+    "I refuse to build a device that waters my plants",
+    "I want to avoid a device that waters my plants",
+    "I want nothing that waters my plants",
+    "Nobody wants a device that waters plants",
+    "I want a system to stop watering my plants",
+    "I need a device that prevents watering the plants when it rains",
+    "أبي جهاز يوقف سقي الزرع",
+    "أبي جهاز يمنع ري الحديقة لما تمطر",
+    "أرفض جهازا يسقي النباتات",
+    # Arabic negation joined to و or written fused with the want
+    "عندي فكرة للحديقة ولا أريد جهازا يسقي النباتات",
+    "فكرتي حلوة وما أبي جهاز يسقي الزرع",
+    "أنا وما أبي مروحة للغرفة",
+    "مابي جهاز يسقي الزرع",
+    "ماابغى جهاز يسقي الزرع",
+    # role word and object not related
+    "I want a device that holds my phone near the screen",
+    "I want a TV remote holder",
+    "I want a device that raises the alarm when the screen is on",
+    "I want to build a holder for my monitor cable",
+    "I need a device to hold my coffee while I look at the screen",
+    "I want to remove the stand from my monitor",
+    "أريد جهازا يحمل هاتفي بجانب الشاشة",
+    "أبي حامل للريموت حق التلفزيون",
+    "أبي أسوي حامل للجوال جنب التلفزيون",
+    "أبي جهاز يشيل الغبار عن الشاشة",
+    "I need to stop my dog from drinking the water in the plant pot",
+    # someone else's, past or replaced wants; descriptions of existing devices
+    "Existing products include a system that waters plants, and mine is a lamp.",
+    "My neighbour has a device that waters his garden",
+    "يوجد في السوق جهاز يسقي النباتات",
+    "My friend wants a device that waters my plants but I think it is silly",
+    "صديقي يريد جهازا يسقي النباتات",
+    "I used to want a device that waters my plants",
+    "كنت أريد جهازا يسقي النباتات",
+    "Instead of a device that waters my plants, I want a lamp",
+    "بدل جهاز يسقي الزرع أبي مصباح",
+    "I don't know why anyone would want a device that waters plants",
+    # doubt about the want itself
+    "I am not sure about a device that waters my plants",
+    "I'm not sure about wanting a device that waters my plants",
+    "لست متأكد من جهاز يسقي النباتات",
+    "I have not decided on a device that waters my plants",
+    # negation elsewhere in the sentence or right after it
+    "I do not, ever, want a device that waters my plants",
+    "I don't want this, a device that waters my plants",
+    "لا أريد هذا، جهاز يسقي النباتات",
+    "I want a device that waters my plants, NOT",
+    "I want a device that waters my plants. Not really.",
+    # monitoring is not watering
+    "I want a device that tells me how much water my plants need",
+    "I want a device to measure the water my plants got",
+)
+
+
+@pytest.mark.parametrize("text", REVIEW_NOT_PROPOSED)
+def test_review_reproducers_propose_nothing(text):
+    assert fh.project_functional_roles([("IDEA", "idea", text)]).roles == ()
+
+
+@pytest.mark.parametrize("idea,answer", [
+    ("I want a fan for my room.", "Actually I don't want a fan at all."),
+    ("أبي مروحة للغرفة", "ما أبي مروحة"),
+    ("I want a device that waters my plants.", "I don't want it to water anything."),
+])
+def test_a_rejection_of_the_whole_role_is_disclosed(idea, answer):
+    projection = fh.project_functional_roles(
+        [("IDEA", "idea", idea), ("ANSWER", "rec_1", answer)])
+    (role,) = projection.roles
+    assert role.status == fh.PROPOSED and role.negations == ()
+    assert [q.quote for q in role.related_negations] == [answer.rstrip(".")] \
+        or [q.source_ref for q in role.related_negations] == ["rec_1"]
+
+
+def test_a_long_statement_stays_fast():
+    import time
+    text = ("I want a device that waters my plants, and it is green. " * 2300)[:125000]
+    started = time.perf_counter()
+    projection = fh.project_functional_roles([("IDEA", "idea", text)])
+    assert time.perf_counter() - started < 5
+    assert projection.roles and projection.roles[0].role == "WATERING"
 
 
 def test_unknown_method_attaches_to_an_affirmed_goal():
@@ -180,7 +270,7 @@ def test_capability_references_exclude_cap12_and_therm01():
         fh.CAP13_CONDITIONAL_REACTIONS,)
     source = open(fh.__file__, encoding="utf-8").read()
     imports = sorted(set(re.findall(r"^(?:from|import) ([\w.]+)", source, re.M)))
-    assert imports == ["dataclasses", "engine.progression_loop",
+    assert imports == ["bisect", "dataclasses", "engine.progression_loop",
                        "engine.semantic_registry", "re", "unicodedata"]
 
 
@@ -283,6 +373,18 @@ def test_the_dimensional_fit_now_reads_the_original_statement():
     assert r.status_code == 200 and "18 × 12 سم" in r.get_data(as_text=True)
 
 
+def test_an_original_statement_over_the_fit_bound_offers_no_fit():
+    # The dimensional recognizer's own 2,000-character capture bound now
+    # applies to the whole original statement, not to its trimmed summary.
+    idea = ("أريد رفع جسم صغير 3 سم فوق مكتبي وأبعاده 18 × 12 سم. "
+            + "قصة طويلة عن المكتب والضوء والكتب. " * 70)
+    assert len(idea) > 2000
+    c, _aid = _client_for("fh-fit-bound@example.com")
+    sid = _start(c, idea, "mechanical")
+    assert "18 × 12" in (SESSION_STORE[sid]["state"].idea_summary or "")
+    assert "data-engineering-fit-link" not in _page(c, sid)
+
+
 def test_a_missing_original_statement_is_never_replaced(monkeypatch):
     c, _aid = _client_for("fh-no-seed@example.com")
     sid = _start(c, "أريد رفع جسم صغير 3 سم فوق مكتبي وأبعاده 18 × 12 سم",
@@ -298,8 +400,10 @@ def test_a_missing_original_statement_is_never_replaced(monkeypatch):
     assert webapp._original_idea_text(sid) is None
     # the trimmed summary still holds the request, and is not used instead
     assert "18 × 12" in (SESSION_STORE[sid]["state"].idea_summary or "")
+    # the reading says the original statement was not read, and no role is
+    # taken from any other copy of it
     section = _section(body)
-    assert section is None or "data-fh-idea-unavailable" in section
+    assert "data-fh-idea-unavailable" in section and "data-fh-role" not in section
 
 
 def test_answers_are_a_source_and_the_idea_notice_shows_when_unreadable(monkeypatch):

@@ -15,16 +15,23 @@ every quote keeps its original offsets, and its registered unknown surfaces
 explicit "I don't know how". The role words below are a closed table owned
 here and read by nothing else.
 
-Semantic rule (Lead correction): a role is PROPOSED only on positive evidence —
-a role word, its object and an intent word in the same clause, with no
-negation, hypothetical, question or "without" governing it. A recognised negation of the
-intent or the role reads NEGATED; any other negation, a hypothetical or a
-missing intent word ABSTAINS. An unlisted negation is therefore not "caught":
-it fails only because the clause then lacks support, and wording this table
-does not register is not read at all.
+Semantic rule (Lead correction): a role is PROPOSED only on positive evidence.
+In one clause, a first-person want ("I want", "we need", "أريد", "أبي",
+"ودي"...) must come before the role word, and the role word must govern its
+object: only connector words ("for my", "the", "حق", "على") may stand between
+them. Generic nouns ("device", "جهاز") are never intent, so a description of
+someone else's device is not the inventor's request. A negation that directly
+governs the want or the role word reads NEGATED. Any other negation in the
+sentence, a reversing word ("stop", "avoid", "instead", "يمنع", "بدل"), a
+hypothetical before the want, a past or third-person want, a question, or an
+"I am not sure" before the role word ABSTAINS. "Without" excludes only what it
+governs: "without a pump" keeps the role, "without watering" negates it. Words
+these tables do not list are not read at all, so unlisted phrasing produces no
+proposal rather than a guessed one.
 
 Pure: no I/O, no clock, no state, no persistence, no model or provider call.
 """
+from bisect import bisect_left, bisect_right
 from dataclasses import dataclass
 import re
 import unicodedata
@@ -77,14 +84,16 @@ _ROLE_TRIGGERS = {
         "water", "waters", "watering", "waterer", "irrigate", "irrigates",
         "irrigating", "irrigation",
         "يسقي", "تسقي", "اسقي", "نسقي", "سقي", "سقاية", "ري", "يروي", "تروي",
-        "يسجي", "تسجي", "اسجي"}),
+        "يسجي", "تسجي", "اسجي", "يرش", "ترش"}),
     ROLE_FAN: frozenset({
         "fan", "fans", "مروحة", "مروحه", "مراوح", "بنكة", "بنكه", "پنكة", "پنكه"}),
     ROLE_SCREEN_SUPPORT: frozenset({
         "stand", "stands", "holder", "holders", "support", "supports", "hold",
         "holds", "raise", "raises", "riser", "mount", "mounts", "bracket",
+        "lift", "lifts",
         "حامل", "حاملة", "يحمل", "تحمل", "يرفع", "ترفع", "رفع", "قاعدة",
-        "ستاند", "يثبت", "تثبيت", "يسند", "مسند", "يشيل", "تشيل"}),
+        "ستاند", "يثبت", "تثبت", "تثبيت", "يسند", "مسند", "يشيل", "تشيل",
+        "يعلق", "تعلق"}),
 }
 _ROLE_OBJECTS = {
     ROLE_WATERING: {
@@ -111,36 +120,78 @@ _ROLE_OBJECTS = {
     },
 }
 #: Roles whose trigger alone, without an object word, may still be proposed.
+#: For them any object word later in the clause only keys the proposal.
 _OBJECT_OPTIONAL = frozenset({ROLE_FAN})
 #: English "fan" also means admirer; it is read only with an air / switching
-#: word in the same clause (Arabic "مروحة" is unambiguous).
+#: word in the same clause, or when a negation governs it (Arabic "مروحة" is
+#: unambiguous).
 _EN_FAN_CONTEXT = frozenset({
     "air", "cool", "cools", "cooling", "blow", "blows", "blowing", "spin",
     "spins", "temperature", "hot", "heat", "automatic", "automatically",
     "switch", "switches", "turns", "ceiling", "room", "bedroom", "laptop",
     "computer"})
+#: English "water(s)" is also a noun ("how much water", "the water in the
+#: pot"): read as the role only right after one of these words.
+_EN_WATER_VERB_BEFORE = frozenset({
+    "to", "that", "which", "it", "will", "can", "should", "automatically",
+    "and", "also", "i", "we", "would", "could"})
+_EN_WATER_NOUN_VERBS = frozenset({"water", "waters"})
 
-#: English words that are also ordinary nouns ("a glass of water"): read as
-#: the role only when an object word of that role follows within three words
-#: ("water my plants").
-_EN_NOUN_VERBS = {ROLE_WATERING: frozenset({"water", "waters"})}
-_NOUN_VERB_REACH = 3
+#: Words that may stand between a role word and its object.
+_CONNECTORS = frozenset({
+    "for", "of", "my", "the", "a", "an", "our", "your", "all", "up", "both",
+    "حق", "على", "فوق", "الى", "كل", "مال"})
 
-_INTENT_WORDS = frozenset({
-    "want", "wants", "need", "needs", "idea", "invention", "device", "system",
-    "machine", "gadget", "build", "building", "make", "making", "design",
-    "designing", "create", "creating", "plan",
-    "اريد", "نريد", "يريد", "ارغب", "نرغب", "احتاج", "نحتاج", "فكرتي", "فكرة",
-    "اختراع", "اختراعي", "جهاز", "جهازا", "نظام", "نظاما", "الة", "اصمم",
-    "اصنع", "نصنع", "ابي", "ابغى", "ابغي", "ودي", "بدي", "ابا"})
+#: English words that may sit between a connector and the object ("my
+#: computer screen", "the indoor plants").
+_EN_MODIFIERS = frozenset({
+    "computer", "laptop", "pc", "desktop", "desk", "indoor", "house", "home",
+    "small", "big", "new", "old", "office", "kitchen", "balcony", "potted",
+    "little", "wide", "heavy", "main", "second", "tv", "garden"})
+#: Nouns after which an object word is only a modifier ("monitor cable").
+_EN_OBJECT_MODIFIED = frozenset({
+    "cable", "cables", "cord", "cords", "wire", "wires", "remote", "remotes",
+    "light", "lights", "lamp", "brightness", "cover", "case", "protector",
+    "cleaner", "port", "ports", "settings", "speaker", "speakers", "glasses"})
+
+# First-person intent. English: a want / build verb right after "i" / "we"
+# (fillers allowed between), or "my / our idea / invention". Arabic: the
+# first-person forms themselves.
+_EN_INTENT_VERBS = frozenset({
+    "want", "need", "like", "plan", "build", "building", "make", "making",
+    "design", "designing", "create", "creating"})
+_EN_SUBJECTS = frozenset({"i", "we"})
+_EN_FILLERS = frozenset({"really", "also", "just", "would", "d", "am", "m", "re",
+                         "are", "still", "only", "do"})
+_EN_OWN_IDEA = (frozenset({"my", "our"}), frozenset({"idea", "invention", "project"}))
+_AR_INTENT = frozenset({
+    "اريد", "نريد", "ارغب", "نرغب", "احتاج", "نحتاج", "اصمم", "نصمم", "اصنع",
+    "نصنع", "ابي", "نبي", "ابغى", "ابغي", "نبغى", "ودي", "بدي", "ابا", "اسوي",
+    "نسوي", "فكرتي", "اختراعي", "اود", "نود"})
+#: ما joined to a first-person want, as commonly written in Gulf Arabic.
+_AR_FUSED_NEGATED_INTENT = frozenset({
+    "مابي", "ماابي", "مابغى", "ماابغى", "مابغي", "ماودي", "مااريد", "مانبي"})
+
 _NEGATION_WORDS = frozenset({
-    "not", "no", "never", "dont", "doesnt", "wont", "cannot", "cant",
-    "لا", "لن", "لم", "ليس", "ليست", "لست", "ما", "مش", "مو", "مب", "موب"})
+    "not", "no", "never", "cannot",
+    "لا", "لن", "لم", "ليس", "ليست", "لست", "ما", "مش", "مو", "مب", "موب", "ابدا"})
+#: Words that reverse or deny the request without being a negation particle.
+_REVERSING_WORDS = frozenset({
+    "stop", "stops", "stopping", "prevent", "prevents", "preventing", "avoid",
+    "avoids", "avoiding", "refuse", "refuses", "nothing", "nobody", "neither",
+    "nor", "instead", "remove", "removes", "removing", "hate", "against",
+    "rather", "replace",
+    "يوقف", "توقف", "يمنع", "تمنع", "امنع", "ارفض", "نرفض", "بدل", "بدلا",
+    "عوضا", "يزيل", "تزيل", "ازيل", "اكره", "يبطل"})
+#: A want marked as past or as someone else's.
+_PAST_WORDS = frozenset({"used", "was", "were", "كنت", "كان", "كانت", "كنا"})
 _HYPOTHETICAL_WORDS = frozenset({
     "if", "whether", "maybe", "perhaps", "might", "wonder", "imagine", "suppose",
     "لو", "اذا", "ربما", "يمكن", "هل", "قد", "لعل", "عسى", "جان"})
-_WITHOUT_WORDS = frozenset({"without", "بدون", "بلا", "دون"})
+_WITHOUT_WORDS = frozenset({"without", "بدون", "بلا", "دون", "غير"})
 #: A clause ends at punctuation or at one of these contrastive words.
+#: Words that mark an "I don't know" as being about how the function works.
+_HOW_WORDS = frozenset({"how", "كيف", "شلون", "الطريقة", "طريقة"})
 _CLAUSE_WORDS = frozenset({"but", "however", "لكن", "ولكن", "لكني", "لكنني", "بس"})
 _SENTENCE_END = frozenset(".!?؟؛;\n")
 _CLAUSE_END = _SENTENCE_END | frozenset(",،")
@@ -149,6 +200,7 @@ _NEGATION_REACH = 2
 
 _TOKEN_RE = re.compile(r"[^\W\d_]+", re.UNICODE)
 _COMBINING_HAMZA = frozenset({"ٓ", "ٔ", "ٕ"})
+_CONTRACTION_RE = re.compile(r"\b[^\W\d_]+n['’]t\b")
 
 
 @dataclass(frozen=True)
@@ -179,6 +231,7 @@ class ProposedRole:
     interpretation_status: str
     groundings: tuple
     negations: tuple
+    related_negations: tuple
     method_uncertainties: tuple
 
 
@@ -213,10 +266,10 @@ def _normalize_with_offsets(text):
     return "".join(chars), index
 
 
-def _object_follows(words, i, role):
-    return any(_match(w, surfaces)
-               for surfaces in _ROLE_OBJECTS[role].values()
-               for w in words[i + 1:i + 1 + _NOUN_VERB_REACH])
+def _fold_contractions(normalized):
+    """Every "...n't" ("don't", "didn't", "wouldn't", "isn't") becomes the word
+    "not", padded to the same length so every offset stays valid."""
+    return _CONTRACTION_RE.sub(lambda m: "not".ljust(len(m.group(0))), normalized)
 
 
 def _match(token, surfaces):
@@ -229,19 +282,73 @@ def _match(token, surfaces):
     return False
 
 
-def _boundaries(normalized, ends):
-    cuts = [0]
+def _is(token, words):
+    """``token`` is in ``words`` itself or after one و / ف (short particles)."""
+    return token in words or (len(token) > 1 and token[0] in "وف"
+                              and token[1:] in words)
+
+
+def _is_negation(words, i):
+    if not _is(words[i], _NEGATION_WORDS):
+        return False
+    # "بدون ما ألمسها" ("without me touching it"): ما after a "without" word
+    # belongs to that construction.
+    return not (words[i] in ("ما",) and i > 0 and _is(words[i - 1], _WITHOUT_WORDS))
+
+
+def _intent_positions(words):
+    found = []
+    for i, w in enumerate(words):
+        if _is(w, _AR_INTENT) or _is(w, _AR_FUSED_NEGATED_INTENT):
+            found.append(i)
+        elif w in _EN_INTENT_VERBS:
+            # "I want", "I'd like", "I really need"; also "I do not want",
+            # whose negation is judged separately.
+            j = i - 1
+            while j >= 0 and (words[j] in _EN_FILLERS or words[j] in _NEGATION_WORDS):
+                j -= 1
+            if j >= 0 and words[j] in _EN_SUBJECTS and (
+                    w != "like" or "would" in words[j:i] or "d" in words[j:i]):
+                found.append(i)
+        elif w in _EN_OWN_IDEA[1] and i > 0 and words[i - 1] in _EN_OWN_IDEA[0]:
+            found.append(i)
+    return found
+
+
+def _object_for(role, words, t):
+    """``(key, index)`` of the object the role word at ``t`` governs, or None."""
+    objects = _ROLE_OBJECTS[role]
+
+    def key_of(word):
+        return next((k for k, surfaces in objects.items() if _match(word, surfaces)),
+                    None)
+    if role in _OBJECT_OPTIONAL:
+        for j in range(t + 1, len(words)):
+            k = key_of(words[j])
+            if k:
+                return k, j
+        return None
+    j = t + 1
+    while j < len(words) and words[j] in _CONNECTORS:
+        j += 1
+    if j + 1 < len(words) and words[j] in _EN_MODIFIERS and key_of(words[j + 1]):
+        j += 1                                    # "my computer screen"
+    if j < len(words) and key_of(words[j]):
+        # "my monitor cable": the object word only modifies another noun
+        if j + 1 < len(words) and words[j + 1] in _EN_OBJECT_MODIFIED:
+            return None
+        return key_of(words[j]), j
+    # compound: "monitor stand", "plant waterer"
+    if t > 0 and key_of(words[t - 1]):
+        return key_of(words[t - 1]), t - 1
+    return None
+
+
+def _cut_spans(normalized, tokens, ends, words):
+    cuts = {0, len(normalized)}
     for i, ch in enumerate(normalized):
         if ch in ends:
-            cuts.append(i + 1)
-    cuts.append(len(normalized))
-    return cuts
-
-
-def _spans(normalized, tokens, ends, words):
-    """``(start, end)`` normalized spans cut at ``ends`` characters and before
-    any token in ``words``."""
-    cuts = set(_boundaries(normalized, ends))
+            cuts.add(i + 1)
     for start, _end, token in tokens:
         if token in words:
             cuts.add(start)
@@ -279,47 +386,31 @@ def _quote(text, index, kind, ref, n_start, n_end):
     return Quote(kind, ref, start, end, text[start:end])
 
 
-def _polarity(tokens, t_index, o_index, negation_free_tokens, question):
-    """The polarity of one role mention inside its clause (token lists).
-    ``question``: the clause's sentence ends with a question mark."""
-    words = [t for _s, _e, t in tokens]
-    anchors = {t_index} | ({o_index} if o_index is not None else set())
-    intent = [i for i, w in enumerate(words) if w in _INTENT_WORDS]
-    # "بدون ما ألمسها" ("without me touching it"): a negation particle right
-    # after a "without" word belongs to that construction, not to the want.
-    negations = [i for i, w in enumerate(words)
-                 if w in _NEGATION_WORDS and i in negation_free_tokens
-                 and not (i > 0 and words[i - 1] in _WITHOUT_WORDS)]
+def _polarity(ctx, t, obj):
+    """The polarity of the role word at clause position ``t`` (object at
+    clause position ``obj`` or None). ``ctx`` holds the clause and sentence
+    words and flags (see ``_statement_mentions``)."""
+    words, free = ctx["words"], ctx["free"]
+    anchors = {t} | ({obj} if obj is not None else set())
+    intent = [i for i in _intent_positions(words) if i < t]
+    fused = [i for i in intent if _is(words[i], _AR_FUSED_NEGATED_INTENT)]
+    if fused:
+        return NEGATED
+    negations = [i for i in range(len(words)) if i in free and _is_negation(words, i)]
     targets = set(intent) | anchors
-    for n in negations:
-        if any(n < k <= n + _NEGATION_REACH for k in targets):
-            return NEGATED
-    if negations or question:
+    if any(n < k <= n + _NEGATION_REACH for n in negations for k in targets):
+        return NEGATED
+    if negations or ctx["sentence_negated"] or ctx["next_sentence_negated"]:
         return ABSTAINED
-    # A hypothetical before the want governs it ("لو كان فيه جهاز يسقي...");
-    # after the want it states when the function acts ("a fan that turns on if
-    # the room gets hot", "...إذا صار الجو حار").
-    first_intent = intent[0] if intent else len(words)
-    if any(w in _HYPOTHETICAL_WORDS for w in words[:first_intent]):
+    if ctx["question"] or ctx["unknown_before"](t) or ctx["reversing"]:
+        return ABSTAINED
+    first = intent[0] if intent else t
+    if any(_is(w, _HYPOTHETICAL_WORDS) or w in _PAST_WORDS for w in words[:first]):
         return ABSTAINED
     for i, w in enumerate(words):
-        if w in _WITHOUT_WORDS and any(i < k <= i + _WITHOUT_REACH for k in anchors):
+        if _is(w, _WITHOUT_WORDS) and any(i < k <= i + _WITHOUT_REACH for k in anchors):
             return NEGATED
     return AFFIRMED if intent else ABSTAINED
-
-
-_CONTRACTION_RE = re.compile(r"\b(does|do|won|can)n?['\u2019]t\b")
-_CONTRACTIONS = {"do": "dont", "does": "doesnt", "won": "wont", "can": "cant"}
-
-
-def _english_contractions(normalized):
-    """Fold "don't" / "doesn't" / "won't" / "can't" into one negation token so
-    the negation reach is measured in words. Same length, so every offset in
-    the normalized text stays valid."""
-    def fold(m):
-        word = _CONTRACTIONS[m.group(1)]
-        return word + " " * (len(m.group(0)) - len(word))
-    return _CONTRACTION_RE.sub(fold, normalized)
 
 
 def _statement_mentions(kind, ref, text):
@@ -327,55 +418,98 @@ def _statement_mentions(kind, ref, text):
         return []
     normalized, index = _normalize_with_offsets(text)
     unknown = _unknown_spans(normalized)
-    folded = _english_contractions(normalized)
-    assert len(folded) == len(normalized)
+    folded = _fold_contractions(normalized)
     tokens = [(m.start(), m.end(), m.group()) for m in _TOKEN_RE.finditer(folded)]
+    starts = [t[0] for t in tokens]
+    all_words = [t[2] for t in tokens]
+
+    def in_unknown(pos):
+        # a token overlapping an unknown marker ("ولست متأكدا") belongs to it
+        tok = tokens[bisect_right(starts, pos) - 1] if tokens else (pos, pos + 1)
+        return any(tok[0] < u1 and u0 < tok[1] for u0, u1 in unknown)
+
+    def token_range(a, b):
+        return bisect_left(starts, a), bisect_left(starts, b)
+
+    sentences = _cut_spans(folded, tokens, _SENTENCE_END, frozenset())
+    sentence_info = []
+    for s_start, s_end in sentences:
+        lo, hi = token_range(s_start, s_end)
+        negated = any(_is_negation(all_words, i) and not in_unknown(starts[i])
+                      for i in range(lo, hi))
+        first_negated = hi > lo and _is_negation(all_words, lo) \
+            and not in_unknown(starts[lo])
+        sentence_info.append({
+            "range": (lo, hi), "negated": negated, "starts_negated": first_negated,
+            "reversing": any(_is(all_words[i], _REVERSING_WORDS) for i in range(lo, hi)),
+            "question": folded[s_start:s_end].rstrip()[-1:] in ("?", "؟")})
+    sentence_starts = [a for a, _b in sentences]
     mentions = []
-    sentences = _spans(folded, tokens, _SENTENCE_END, frozenset())
-    for c_start, c_end in _spans(folded, tokens, _CLAUSE_END, _CLAUSE_WORDS):
-        clause_tokens = [t for t in tokens if c_start <= t[0] and t[1] <= c_end]
-        words = [t[2] for t in clause_tokens]
-        free = {i for i, t in enumerate(clause_tokens)
-                if not any(u0 <= t[0] < u1 for u0, u1 in unknown)}
-        sentence = next(((a, b) for a, b in sentences if a <= c_start < b),
-                        (c_start, c_end))
-        uncertainty = next(((u0, u1) for u0, u1 in unknown
-                            if sentence[0] <= u0 < sentence[1]), None)
-        question = folded[sentence[0]:sentence[1]].rstrip()[-1:] in ("?", "؟")
+    for c_start, c_end in _cut_spans(folded, tokens, _CLAUSE_END, _CLAUSE_WORDS):
+        lo, hi = token_range(c_start, c_end)
+        if lo >= hi:
+            continue
+        clause_tokens = tokens[lo:hi]
+        words = all_words[lo:hi]
+        s_index = bisect_right(sentence_starts, c_start) - 1
+        info = sentence_info[s_index]
+        nxt = sentence_info[s_index + 1] if s_index + 1 < len(sentence_info) else None
+        s_lo, s_hi = info["range"]
+        clause_negations = sum(1 for i in range(lo, hi) if _is_negation(all_words, i)
+                               and not in_unknown(starts[i]))
+        sentence_negations = sum(1 for i in range(s_lo, s_hi)
+                                 if _is_negation(all_words, i) and not in_unknown(starts[i]))
+        s_end_pos = sentences[s_index][1]
+        ctx = {
+            "words": words,
+            "free": {i for i, tok in enumerate(clause_tokens) if not in_unknown(tok[0])},
+            "sentence_negated": sentence_negations > clause_negations,
+            "next_sentence_negated": bool(nxt and nxt["starts_negated"]
+                                          and nxt["range"][1] - nxt["range"][0] <= 3),
+            "question": info["question"],
+            "reversing": info["reversing"],
+            # "I am not sure about a device that...": doubt about the want
+            "unknown_before": lambda t, c=clause_tokens: any(
+                c_start <= u0 < c[t][0] for u0, _u1 in unknown),
+        }
+        s_start_pos = sentences[s_index][0]
+
+        def uncertainty_for(t, c=clause_tokens, a=s_start_pos, e=s_end_pos,
+                            cs=c_start):
+            """The inventor's "I don't know" about HOW: after the want in the
+            same sentence, or in an earlier clause when it is about how."""
+            for u0, u1 in unknown:
+                if c[t][1] <= u0 < e:
+                    return u0, u1
+                if a <= u0 < cs and _HOW_WORDS & set(folded[u1:u1 + 12].split()):
+                    return u0, u1
+            return None
         for role in ROLES:
-            triggers = [i for i, w in enumerate(words)
-                        if _match(w, _ROLE_TRIGGERS[role])
-                        and not (w in _EN_NOUN_VERBS.get(role, ())
-                                 and not _object_follows(words, i, role))]
-            if not triggers:
-                continue
-            if role == ROLE_FAN and any(w in ("fan", "fans") for w in words) \
-                    and not any(w in _EN_FAN_CONTEXT for w in words) \
-                    and not any(_match(w, _ROLE_TRIGGERS[role] - {"fan", "fans"})
-                                for w in words):
-                continue
-            objects = [(key, i) for key, surfaces in _ROLE_OBJECTS[role].items()
-                       for i, w in enumerate(words) if _match(w, surfaces)]
-            if not objects:
-                if role not in _OBJECT_OPTIONAL:
+            for t, w in enumerate(words):
+                if not _match(w, _ROLE_TRIGGERS[role]):
                     continue
-                objects = [(OBJECT_NONE, None)]
-            seen = set()
-            for key, o_index in objects:
-                if key in seen:
+                if w in _EN_WATER_NOUN_VERBS and role == ROLE_WATERING and not (
+                        t > 0 and words[t - 1] in _EN_WATER_VERB_BEFORE):
                     continue
-                seen.add(key)
-                t_index = triggers[0]
-                tok = clause_tokens[t_index]
+                if role == ROLE_FAN and w in ("fan", "fans") and not (
+                        any(x in _EN_FAN_CONTEXT for x in words)
+                        or any(_is_negation(words, i) for i in range(max(0, t - 3), t))):
+                    continue
+                found = _object_for(role, words, t)
+                key, obj = found if found else (OBJECT_NONE, None)
+                polarity = _polarity(ctx, t, obj)
+                if key == OBJECT_NONE and role not in _OBJECT_OPTIONAL \
+                        and polarity != NEGATED:
+                    continue
+                tok = clause_tokens[t]
+                span = uncertainty_for(t) if polarity == AFFIRMED else None
                 mentions.append(RoleMention(
-                    role=role, object_key=key,
-                    polarity=_polarity(clause_tokens, t_index, o_index, free,
-                                       question),
+                    role=role, object_key=key, polarity=polarity,
                     clause=_quote(text, index, kind, ref, c_start, c_end),
                     trigger=_quote(text, index, kind, ref, tok[0], tok[1]),
-                    method_uncertainty=(
-                        _quote(text, index, kind, ref, *uncertainty)
-                        if uncertainty else None)))
+                    method_uncertainty=(_quote(text, index, kind, ref, *span)
+                                        if span else None)))
+                break
     return mentions
 
 
@@ -385,9 +519,11 @@ def project_functional_roles(statements):
     ``statements``: iterable of ``(source_kind, source_ref, text)`` — the
     original idea text and the inventor's active answers, verbatim. Returns a
     ``Handoff``: one ``ProposedRole`` per (role, object) with at least one
-    AFFIRMED mention — ``CONFLICTING`` when the SAME role and object are also
-    NEGATED somewhere — and the count of mentions it abstained on. Statements
-    about different objects never conflict. Never raises on bad input."""
+    AFFIRMED mention. It is ``CONFLICTING`` when the SAME role and object are
+    also NEGATED somewhere; a negation of the role with no object is disclosed
+    on every proposal of that role (``related_negations``) without being called
+    a conflict. Statements about different objects never conflict. Never
+    raises on bad input."""
     mentions = []
     try:
         items = list(statements or ())
@@ -405,18 +541,21 @@ def project_functional_roles(statements):
         for m in mentions:
             if m.role == role and m.polarity == AFFIRMED and m.object_key not in keys:
                 keys.append(m.object_key)
+        role_level = tuple(m.clause for m in mentions if m.role == role
+                           and m.polarity == NEGATED and m.object_key == OBJECT_NONE)
         for key in keys:
             same = [m for m in mentions if m.role == role and m.object_key == key]
-            affirmed = tuple(m.clause for m in same if m.polarity == AFFIRMED)
             negated = tuple(m.clause for m in same if m.polarity == NEGATED)
-            unknown = tuple(m.method_uncertainty for m in same
-                            if m.polarity == AFFIRMED and m.method_uncertainty)
             roles.append(ProposedRole(
                 role=role, object_key=key,
                 status=CONFLICTING if negated else PROPOSED,
                 interpretation_status=INTERPRETATION_STATUS,
-                groundings=affirmed, negations=negated,
-                method_uncertainties=unknown))
+                groundings=tuple(m.clause for m in same if m.polarity == AFFIRMED),
+                negations=negated,
+                related_negations=() if key == OBJECT_NONE else role_level,
+                method_uncertainties=tuple(m.method_uncertainty for m in same
+                                           if m.polarity == AFFIRMED
+                                           and m.method_uncertainty)))
     return Handoff(
         grammar_version=GRAMMAR_VERSION, roles=tuple(roles),
         abstained=sum(1 for m in mentions if m.polarity == ABSTAINED),
