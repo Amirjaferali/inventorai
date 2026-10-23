@@ -48,6 +48,45 @@ def test_out_of_family_and_negated_intents_never_generate_candidate():
         assert derive_provisional_fit(idea) is None
 
 
+_AR_TAIL = ' فوق مكتبي وأبعاده 18 × 12 سم'
+
+
+def test_negated_arabic_lift_requests_never_generate_candidate():
+    # PR #848 review defect: «أن» between «لا أريد» and the verb escaped the
+    # earlier negation pattern and produced a positive candidate.
+    assert derive_provisional_fit('لا أريد أن أرفع جسما 3 سم فوق مكتبي وأبعاده 18 × 12 سم') is None
+    for head in (
+        'لا اريد ان ارفع جسما 3 سم',
+        'لا أرغب في رفع جسم 3 سم',
+        'لن أرفع جسما 3 سم',
+        'لم أعد أريد أن أرفع جسما 3 سم',
+        'ولا أريد أن أرفع جسما 3 سم',
+        'أنا لا أريد أن أرفع جسما 3 سم',
+        'ما أريد أن أرفع جسما 3 سم',
+        'مش عايز أرفع جسم 3 سم',
+        'لا يجب أن يرفع جسما 3 سم',
+        'ليس المطلوب أن أرفع جسما 3 سم',
+        'أريد أن أرفع جسما لا يزيد عن 3 سم',
+        'لا أريد أن أرفع جسما ٣ سم',
+    ):
+        assert derive_provisional_fit(head + _AR_TAIL) is None, head
+
+
+def test_negated_english_lift_requests_never_generate_candidate():
+    for head in ("I don't need to raise a box 3 cm", "I won't raise a box 3 cm",
+                 'I do not want to lift a box 3 cm', 'I cannot lift a box 3 cm'):
+        assert derive_provisional_fit(
+            head + ' above my desk; dimensions 18 x 12 cm') is None, head
+
+
+def test_positive_arabic_forms_and_negation_in_another_sentence_still_match():
+    for head in ('أريد أن أرفع جسما 3 سم', 'اريد ان ارفع جسما 3 سم',
+                 'لا أريد أدوات. أريد أن أرفع جسما 3 سم'):
+        result = derive_provisional_fit(head + _AR_TAIL)
+        assert result is not None and result.surface_lift == '3', head
+        assert (result.top_length, result.top_depth) == ('18', '12')
+
+
 def test_missing_multiple_or_non_numeric_fields_fail_closed():
     cases = (
         'Raise an object above desk, dimensions 18 x 12 cm',

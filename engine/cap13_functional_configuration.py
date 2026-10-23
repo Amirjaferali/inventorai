@@ -35,6 +35,17 @@ _NEGATED = re.compile(
     r"\b(?:do\s+not|don't|not|never)\s+(?:want\s+to\s+)?(?:raise|lift|elevate)\b|"
     r"لا\s+(?:أريد|اريد)?\s*(?:رفع|ارفع|أرفع)", re.IGNORECASE,
 )
+# Any negation word in the rise statement's sentence, before or inside the rise
+# span, refuses the candidate (fail closed). This is a stop list, not a parser:
+# it never decides what a negated sentence means. A listed word used without
+# negating (e.g. a relative "ما") also refuses, which is the safe direction; a
+# negation form it does not list is not caught.
+_NEGATION_WORD = re.compile(
+    r"(?<!\w)(?:not|never|no|cannot)(?!\w)|n't(?!\w)|"
+    r"(?<!\w)[وف]?(?:لا|لن|لم|ليس|ليست|لست|ما|مش|مو)(?!\w)",
+    re.IGNORECASE,
+)
+_SENTENCE_BREAK = re.compile(r"[\n.;؛!?؟]")
 _ARABIC_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789")
 
 
@@ -106,6 +117,12 @@ def derive_provisional_fit(original_idea):
     if len(rises) != 1:
         return None
     rise = rises[0]
+    # A negated or limiting rise ("لا أريد أن أرفع ...", "I won't raise ...",
+    # "... لا يزيد عن 3 سم") is never read as the inventor's requirement.
+    breaks = [m.end() for m in _SENTENCE_BREAK.finditer(unmasked, 0, rise.start())]
+    sentence_start = breaks[-1] if breaks else 0
+    if _NEGATION_WORD.search(unmasked, sentence_start, rise.end()):
+        return None
     # Only a single explicit rise and dimension pair can become a candidate.
     # This rule cannot silently choose between conflicting requirements.
     length, depth, lift = (_positive_number(size.group("a")),
