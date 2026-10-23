@@ -136,7 +136,7 @@ _EN_FAN_CONTEXT = frozenset({
 #: pot"): read as the role only right after one of these words.
 _EN_WATER_VERB_BEFORE = frozenset({
     "to", "that", "which", "it", "will", "can", "should", "automatically",
-    "and", "also", "i", "we", "would", "could"})
+    "also", "i", "we", "would", "could"})
 _EN_WATER_NOUN_VERBS = frozenset({"water", "waters"})
 
 #: Words that may stand between a role word and its object.
@@ -217,6 +217,33 @@ _EN_OBJECT_FOLLOW = frozenset({
     "will", "should", "can", "it", "safely", "level", "higher", "high", "off",
     "here", "there", "all", "properly", "steady", "stable", "nicely"})
 
+#: Words that dispose of or replace something ("the stand ... removed",
+#: "... to be cancelled", "حامل الشاشة يتشال"): the clause abstains. "off"
+#: and «تطفي» are not here, because an automatic fan that "turns off" or
+#: «تطفي نفسها» is a real function; a definite "the fan ... turned off" is
+#: caught by the existing-item rule below. "away" and "gone" are not here
+#: either ("while I am away"); "taken away" and "the stand gone" are caught by
+#: "taken" and by the existing-item rule.
+_DISPOSAL_WORDS = frozenset({
+    "removed", "taken", "replaced", "cancelled", "canceled",
+    "thrown", "deleted", "discarded", "dismantled", "sold",
+    "يتشال", "ينشال", "تنشال", "تتشال", "ينقل", "تنقل", "يتنقل", "ينرمى",
+    "ينباع", "يتباع", "ينلغى", "يلغى", "تلغى"})
+#: English role nouns. After "the" / "my" / "our" / "your" (or an Arabic role
+#: noun with ال-) they name an EXISTING item, which a want then changes; they
+#: count only when "that" / "which" / "to" / "for" and a role or object word
+#: follow ("I want the stand to hold my monitor").
+_EN_ROLE_NOUNS = frozenset({
+    "stand", "stands", "holder", "holders", "riser", "bracket", "fan", "fans",
+    "waterer", "support", "mount"})
+_EN_DEFINITE = frozenset({"the", "my", "our", "your"})
+_RELATIVE_WORDS = frozenset({"that", "which", "to", "for", "اللي", "الذي", "التي"})
+_AR_ARTICLE = ("وال", "بال", "فال", "كال", "ال")
+#: A following sentence that only retracts the request.
+_RETRACTION_WORDS = frozenset({
+    "nope", "scratch", "kidding", "joking", "forget", "nevermind",
+    "انس", "انسى", "انسي", "امزح", "اتغشمر"})
+
 #: A want marked as past or as someone else's.
 _PAST_WORDS = frozenset({"used", "was", "were", "كنت", "كان", "كانت", "كنا"})
 _HYPOTHETICAL_WORDS = frozenset({
@@ -232,6 +259,10 @@ _CLAUSE_END = _SENTENCE_END | frozenset(",،")
 _WITHOUT_REACH = 3
 _NEGATION_REACH = 2
 
+_ALL_OBJECT_WORDS = tuple(surfaces for objects in _ROLE_OBJECTS.values()
+                          for surfaces in objects.values())
+_ALL_ROLE_WORDS = tuple(_ROLE_TRIGGERS.values()) + _ALL_OBJECT_WORDS + (
+    frozenset({"be", "hold", "keep"}),)
 _TOKEN_RE = re.compile(r"[^\W\d_]+", re.UNICODE)
 _COMBINING_HAMZA = frozenset({"ٓ", "ٔ", "ٕ"})
 _CONTRACTION_RE = re.compile(r"\b[^\W\d_]+n['’]t\b")
@@ -380,6 +411,26 @@ def _object_for(role, words, t):
     return None
 
 
+def _existing_item(words, t):
+    """The role word at ``t`` names an item the inventor already has ("the
+    monitor stand", "my TV stand", "المروحة") rather than one to make —
+    unless a relative clause gives it the role ("the stand that holds")."""
+    w = words[t]
+    definite = False
+    if w in _EN_ROLE_NOUNS:
+        j = t - 1
+        while j >= 0 and any(_match(words[j], s) for s in _ALL_OBJECT_WORDS):
+            j -= 1                                # "the monitor stand"
+        definite = j >= 0 and words[j] in _EN_DEFINITE
+    elif not w.isascii():
+        definite = any(w.startswith(a) and len(w) - len(a) >= 3 for a in _AR_ARTICLE)
+    if not definite:
+        return False
+    after = words[t + 1:t + 3]
+    return not (after and after[0] in _RELATIVE_WORDS and len(after) > 1 and any(
+        _match(after[1], s) for s in _ALL_ROLE_WORDS))
+
+
 def _cut_spans(normalized, tokens, ends, words):
     cuts = {0, len(normalized)}
     for i, ch in enumerate(normalized):
@@ -448,6 +499,10 @@ def _polarity(ctx, t, obj):
             return NEGATED
     if not intent:
         return ABSTAINED
+    if any(_match(w, _DISPOSAL_WORDS) for w in words):
+        return ABSTAINED
+    if ctx["existing_item"](t):
+        return ABSTAINED
     # A closed positive path from the nearest want to the role word: only
     # listed function words, device nouns, adjectives, other wants and the
     # role's own object words (compounds) may stand between them.
@@ -485,6 +540,9 @@ def _statement_mentions(kind, ref, text):
             and not in_unknown(starts[lo])
         sentence_info.append({
             "range": (lo, hi), "negated": negated, "starts_negated": first_negated,
+            # "Nope." / "Just kidding." / "انسَ الموضوع."
+            "starts_retraction": any(_match(all_words[i], _RETRACTION_WORDS)
+                                     for i in range(lo, min(hi, lo + 2))),
             "reversing": any(_is(all_words[i], _REVERSING_WORDS) for i in range(lo, hi)),
             "question": folded[s_start:s_end].rstrip()[-1:] in ("?", "؟")})
     sentence_starts = [a for a, _b in sentences]
@@ -509,9 +567,11 @@ def _statement_mentions(kind, ref, text):
             "free": {i for i, tok in enumerate(clause_tokens) if not in_unknown(tok[0])},
             "sentence_negated": sentence_negations > clause_negations,
             # "... my plants. Not really." / "No, I mean the garden."
-            "next_sentence_negated": bool(nxt and nxt["starts_negated"]),
+            "next_sentence_negated": bool(nxt and (
+                nxt["starts_negated"] or nxt["starts_retraction"])),
             "question": info["question"],
             "reversing": info["reversing"],
+            "existing_item": lambda t, w=words: _existing_item(w, t),
             # "I am not sure about a device that...": doubt about the want
             "unknown_before": lambda t, c=clause_tokens: any(
                 c_start <= u0 < c[t][0] for u0, _u1 in unknown),

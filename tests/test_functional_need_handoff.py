@@ -232,7 +232,51 @@ REVIEW_NOT_PROPOSED = (
     "I want to hold my laptop fan",
     "I want to fan the flames in my room",
     "I want a device that waters my plants. No, I mean the garden.",
+    # second targeted re-verification: an EXISTING item changed or removed
+    "I want the TV support to be removed",
+    "I want the monitor stand gone",
+    "I want the monitor stand taken away",
+    "I want my TV stand replaced by a wall",
+    "I want the fan in my room switched off forever",
+    "I want the fan for my room turned off",
+    "I want a device that waters my plants to be cancelled",
+    "أبي حامل الشاشة يتشال",
+    "أبي حامل التلفزيون ينشال من الغرفة",
+    "أبي المروحة اللي في الغرفة تنطفي للأبد",
+    "I want my TV stand painted",
+    "I want the stand of my TV to be lower",
+    # retraction in the next sentence; "water" as a noun after "and"
+    "I want a fan for my room. Nope.",
+    "I want a fan for my room. Scratch that.",
+    "I want a fan for my room. Just kidding.",
+    "أبي مروحة للغرفة. انسَ الموضوع.",
+    "أبي مروحة للغرفة. أمزح.",
+    "I want a pot and water for my plants",
 )
+
+#: Plain requests that must stay recognized under the stricter rules.
+STILL_PROPOSED = (
+    ("I want a device that waters my plants", "WATERING", "PLANTS"),
+    ("I want to water my plants automatically", "WATERING", "PLANTS"),
+    ("I want a device that waters my plants while I am away", "WATERING", "PLANTS"),
+    ("I need a stand for my monitor", "SCREEN_SUPPORT", "SCREEN"),
+    ("I want a monitor stand", "SCREEN_SUPPORT", "SCREEN"),
+    ("I want a stand that holds my monitor", "SCREEN_SUPPORT", "SCREEN"),
+    ("I want the stand to hold my monitor", "SCREEN_SUPPORT", "SCREEN"),
+    ("I want an automatic fan that turns on when my room gets hot", "FAN", "ROOM"),
+    ("I want a fan that turns on and off automatically in my room", "FAN", "ROOM"),
+    ("أريد جهازا يسقي النباتات", "WATERING", "PLANTS"),
+    ("أبي جهاز ذكي يسقي الزرع", "WATERING", "PLANTS"),
+    ("أريد أن أسقي النباتات", "WATERING", "PLANTS"),
+    ("أريد حاملًا خشبيًا يرفع شاشة الحاسوب", "SCREEN_SUPPORT", "SCREEN"),
+    ("أبي مروحة تشتغل لحالها وتطفي نفسها", "FAN", "NONE"),
+)
+
+
+@pytest.mark.parametrize("text,role,obj", STILL_PROPOSED)
+def test_plain_requests_stay_recognized(text, role, obj):
+    roles = fh.project_functional_roles([("IDEA", "idea", text)]).roles
+    assert [(r.role, r.object_key, r.status) for r in roles] == [(role, obj, fh.PROPOSED)]
 
 
 @pytest.mark.parametrize("text", REVIEW_NOT_PROPOSED)
