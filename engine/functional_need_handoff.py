@@ -243,7 +243,7 @@ _AR_ROLE_NOUNS = frozenset({
     "قاعدة", "ستاند", "مسند"})
 _RELATIVE_WORDS = frozenset({"that", "which", "to", "for", "اللي", "الذي", "التي"})
 _AR_ARTICLE = ("وال", "بال", "فال", "كال", "ال")
-_AR_OBJECT_PRONOUNS = ("ها", "هم", "ه")
+_AR_CARRY_VERBS = frozenset({"يشيل", "تشيل", "يحمل", "تحمل"})
 #: A following sentence that only retracts the request.
 _RETRACTION_WORDS = frozenset({
     "nope", "scratch", "kidding", "joking", "forget", "nevermind",
@@ -269,7 +269,6 @@ _ALL_OBJECT_WORDS = tuple(surfaces for objects in _ROLE_OBJECTS.values()
 #: "be" is deliberately absent: "the stand to be gone" names an existing item.
 _ALL_ROLE_WORDS = tuple(_ROLE_TRIGGERS.values()) + _ALL_OBJECT_WORDS + (
     frozenset({"hold", "keep"}),)
-_ALL_TRIGGER_WORDS = tuple(_ROLE_TRIGGERS.values())
 _TOKEN_RE = re.compile(r"[^\W\d_]+", re.UNICODE)
 _COMBINING_HAMZA = frozenset({"ٓ", "ٔ", "ٕ"})
 _CONTRACTION_RE = re.compile(r"\b[^\W\d_]+n['’]t\b")
@@ -418,14 +417,14 @@ def _object_for(role, words, t):
     return None
 
 
-def _is_trigger_verb(word):
-    """A role trigger, optionally with one object pronoun («يرفعها»)."""
-    forms = [word] + [word[:-len(p)] for p in _AR_OBJECT_PRONOUNS
-                      if word.endswith(p) and len(word) - len(p) >= 3]
-    return any(_match(f, s) for f in forms for s in _ALL_TRIGGER_WORDS)
+def _is_trigger_verb(role, word):
+    """``word`` is one of ``role``'s own triggers, never a carry / remove verb
+    («يشيل» also means "take away") and never with an object pronoun
+    («يرفعه أحد للمخزن» moves an existing item)."""
+    return not _match(word, _AR_CARRY_VERBS) and _match(word, _ROLE_TRIGGERS[role])
 
 
-def _existing_item(words, t):
+def _existing_item(words, t, role):
     """The role word at ``t`` names an item the inventor already has ("the
     monitor stand", "my TV stand", "المروحة") rather than one to make —
     unless a relative clause gives it the role ("the stand that holds")."""
@@ -442,12 +441,12 @@ def _existing_item(words, t):
         if not definite and _match(w, _AR_ROLE_NOUNS) and nxt.startswith("ال") and any(
                 _match(nxt, s) for s in _ALL_OBJECT_WORDS):
             # construct form «حامل الشاشة», «مروحة الغرفة»: the item exists
-            # unless a role verb follows the object, directly or right after
-            # اللي / الذي / التي («اللي في الصالة يروح» only locates it)
+            # unless the role's own verb follows the object, directly or right
+            # after اللي / الذي / التي («اللي في الصالة يروح» only locates it)
             after = words[t + 2:t + 4]
             if after and after[0] in _RELATIVE_WORDS:
                 after = after[1:]
-            return not (after and _is_trigger_verb(after[0]))
+            return not (after and _is_trigger_verb(role, after[0]))
     if not definite:
         return False
     after = words[t + 1:t + 3]
@@ -595,7 +594,7 @@ def _statement_mentions(kind, ref, text):
                 nxt["starts_negated"] or nxt["starts_retraction"])),
             "question": info["question"],
             "reversing": info["reversing"],
-            "existing_item": lambda t, w=words: _existing_item(w, t),
+            "existing_item": lambda t, w=words: _existing_item(w, t, ctx["role"]),
             # "I am not sure about a device that...": doubt about the want
             "unknown_before": lambda t, c=clause_tokens: any(
                 c_start <= u0 < c[t][0] for u0, _u1 in unknown),
@@ -634,6 +633,7 @@ def _statement_mentions(kind, ref, text):
                     x + "ا" for x in _ROLE_TRIGGERS[role] if not x.isascii())
                 ctx["path_words"] = _PATH_BASE | own | frozenset().union(
                     *_ROLE_OBJECTS[role].values())
+                ctx["role"] = role
                 polarity = _polarity(ctx, t, obj)
                 if key == OBJECT_NONE and role not in _OBJECT_OPTIONAL \
                         and polarity == AFFIRMED:
