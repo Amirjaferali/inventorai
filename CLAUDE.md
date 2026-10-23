@@ -1463,11 +1463,37 @@ information, not execution authority.
   **Parallel long-lead work:** legal/adviser and hosting/security dependencies
   can be pursued while engineering progresses; no production deployment, paid
   activation, human study or external provider use follows from this sequencing.
-  **Lead's next action under this sequence:** check the existing functional-intent
-  representation and its outstanding Owner-reserved content/proposal decision;
-  identify exactly one reuse-qualified, user-visible delta, and seek only the
-  scope-specific authority actually needed. This named next candidate is not an
-  authorized product increment.
+  **Step-1 status and next eligible action (recorded 2026-10-24; continuity, never
+  authority).** Merged since this sequence was approved:
+  - #831: the Level-0 §15 attributed-assistance boundary;
+  - #832: the starting-focus explanation on the /start no-match chooser;
+  - #834: the entry gate on technology names;
+  - #835 and #837: correction and serving integrity;
+  - #839–#841: MSNL evaluation tooling only (#842 open, evaluation only);
+  - #843: the functional-concept view;
+  - #844: a specialist request pauses the parts-and-roles gap;
+  - #846: XG1 gap-bound replay credit;
+  - #848: an explicit-dimension configuration candidate, with CAP-13 never prepared from text;
+  - #849: read-only proposed functional roles (three closed roles) with quoted sources and
+    capability limits;
+  - #850: report Section 4 no longer calls a CLOSED gap resolved.
+
+  A read-only Path N reality assessment of 2026-10-24 was reported to the Owner; it is not a
+  repository document. It found the journey still stops right after the idea is recorded:
+  - the classifier returns NONE for ordinary ideas, so the inventor picks the discipline;
+  - the functional reading feeds no question, gap or next step.
+
+  Two Owner-reserved decisions are open, and neither is granted:
+  1. **Function-first continuation.** May candidate disciplines be offered as attributed
+     provisional suggestions under §15? May an inventor-confirmed functional reading select the
+     next existing governed question? This needs OD-2 for that confirmation record.
+  2. **PHYSICAL_FEASIBILITY closure policy.** May lexical restatements, or an answer given while
+     a specialist request is pending, still close the gap? This amends WS12 OD-4 and needs a
+     compatibility and engine-version decision.
+
+  Next eligible action: put decision 1 to the Owner. While it stays open, the only eligible
+  step-1 items are those that need neither decision, and each still needs its own Owner
+  authorization. These are recommendations, never authorizations.
 
   (h) **Gate results since PR #828 and reopening triggers.** Each item reopens only on its named
   trigger. 28-T3 Power Electronics / Motion: BLOCKED (no qualified owner or claim-level source); the
