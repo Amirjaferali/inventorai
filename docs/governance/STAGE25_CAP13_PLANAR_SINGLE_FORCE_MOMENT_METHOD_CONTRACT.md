@@ -13,6 +13,14 @@ AUTHORITY LEVEL: subordinate to the CAP-13 entry of the
 the accepted [CAP-13 two-support static reactions method contract](STAGE25_CAP13_TWO_SUPPORT_STATIC_REACTIONS_METHOD_CONTRACT.md),
 whose method, artifact and behaviour stay unchanged. Where this document and the calc/units contract differ, the calc/units
 contract wins and the difference is a defect of this document.
+INTEGRATED-PART ELIGIBILITY AMENDMENT: `CAP13-PLANAR-MOMENT-INTEGRATED-PART-01 — OWNER-AUTHORIZED AMENDMENT`. The Owner
+authorized ONE bounded increment extending this method's eligibility to the declared Mechanical part of a valid durable
+Stage-15 integrated composition, whatever the initial analysis focus, and the matching narrow extension of the Stage 15
+exception recorded in `engine/subsystem_model.py`. Applicability: it takes effect only on the verified merge of that
+increment's pull request into `feature/atomic-json-session-persistence`. It amends §0 (fourth bullet), §1 (eligibility),
+§10 (last exclusion), §12 and §13 only; the superseded wording is preserved beside each change. The method, its version,
+equation, roles, units, declarations, screen, numeric domain and numerical acceptance, §7 order, disclosure, sources, the
+method-authority artifact and the shared owner are unchanged.
 
 ---
 
@@ -25,8 +33,9 @@ contract wins and the difference is a defect of this document.
 - The two-support static reactions method `cap13:static_reactions_two_support` 1.0 and the THERM-01 method
   `therm01:conduction_temperature_difference_single_path` 1.0 keep their identities, artifacts, semantic pins, units and
   behaviour.
-- The Stage 15 integrated-part exception (`engine/subsystem_model.py`) names its calculations and is NOT extended by this
-  contract (§1).
+- The Stage 15 integrated-part exception (`engine/subsystem_model.py`) names its calculations; it is extended to this
+  method by name only, for the declared Mechanical part (§1, as amended). *(Superseded by the integrated-part eligibility
+  amendment, preserved — was: "names its calculations and is NOT extended by this contract (§1).")*
 
 ## 1. Purpose and scope
 
@@ -35,10 +44,17 @@ ONE force about ONE point the inventor chooses, in ONE plane. It helps a nontech
 stated perpendicular distance into one moment figure for a pivot, joint or fixing they already have in mind — for example
 to describe to an engineer how hard a handle, lever or bracket is being turned — without inferring anything else.
 
-Eligibility: a project whose trusted durable root domain (`confirmed_domain`, read as the CAP-12 gate reads it) is exactly
-`mechanical`. Root only: a declared Mechanical part outside an integrated project's initial analysis focus is NOT offered
-this method, because extending the Stage 15 exception needs its own Owner authorization. An unreadable root domain offers
-nothing (fail closed).
+Eligibility (as amended): a project whose trusted durable root domain (`confirmed_domain`, read as the CAP-12 gate reads
+it) is exactly `mechanical`; or, whatever the initial analysis focus, the ONE inventor-declared Mechanical part of a valid
+durable Stage-15 integrated composition, read only through the store-validated composition (`_calc_gate` /
+`_calc_declared_part`, the rule the two-support reactions use) and never from the request. On an integrated project the
+page names that part with the existing CAP-13 attribution wording. A declared part makes the calculation OFFERED only: it
+establishes no applicability, suitability, validation or safety, and supplies no force, distance, declaration or screen
+answer — the inventor still enters all of them. A missing, malformed, corrupt or unreadable composition grants nothing
+beyond the root rule, and an unreadable root domain offers nothing (fail closed). The session link, the page and the
+submission read the same one decision. *(Superseded by the integrated-part eligibility amendment, preserved — was: "Root
+only: a declared Mechanical part outside an integrated project's initial analysis focus is NOT offered this method,
+because extending the Stage 15 exception needs its own Owner authorization.")*
 
 ## 2. Method identity and version
 
@@ -167,7 +183,9 @@ motor or actuator sizing; no thickness, material or specification; no design sui
 no three-dimensional moment, several forces, couples, spread-out loads, friction, motion, impact, vibration or repeated
 loading; no inference of any force, distance, point or declaration; no unit conversion; no persistence, report, PDF,
 Structured Export, API, evidence, readiness, progression, gap or SafetySignal effect; no AI or provider call; no
-integrated-part eligibility (§1).
+eligibility for any part other than the one declared Mechanical part (§1), and no inference from a part's name or
+function. *(Superseded by the integrated-part eligibility amendment, preserved — was: "no integrated-part eligibility
+(§1).")*
 
 ## 11. Source and source-use status
 
@@ -195,18 +213,20 @@ The one existing shared owner executes the method through ONE additional immutab
 (`_CAP13_MOMENT_BINDING` in `web/app.py`), beside the two existing bindings; there is no registry, discovery, dynamic
 module path or request-selected method (calc/units contract §13B). Routes: `GET` / `POST /session/<sid>/planar-moment`,
 behind the central project authorization and the global CSRF guard; the session page shows one optional link on an eligible
-project. Nothing is persisted; the POST renders its result directly.
+project. Eligibility reuses `_calc_gate(sid, consumer)` (§1). Nothing is persisted; the POST renders its result
+directly.
 
 ## 13. Verification
 
 Focused tests (`tests/test_cap13_planar_moment.py`, `tests/test_cap13_planar_moment_browser.py`): exact-rational reference
 products for normal and boundary values; overflow; underflow to zero; exact and inexact subnormal results; zero-input
 refusal versus underflow; non-finite, invalid and out-of-scope input; unit / method / version / adapter integrity failing
-closed; owner artifact v3 and moment artifact tamper; the §7 order and owner correspondence; the Mechanical-root gate; the
-two-support and THERM-01 methods unchanged; EN / AR fidelity; and real-browser EN / AR journeys. Hosted required CI is the
+closed; owner artifact v3 and moment artifact tamper; the §7 order and owner correspondence; the Mechanical-root and
+integrated Mechanical-part gate (`tests/test_cap13_planar_moment_integrated_part.py`); the two-support and THERM-01
+methods unchanged; EN / AR fidelity; and real-browser EN / AR journeys. Hosted required CI is the
 merge gate.
 
 ## 14. STOP conditions
 
 Stop and return to the Owner on a source or IP deficiency, a contract incompatibility, unprovable numerical integrity or any
-scope expansion (another method, consumer, unit, conversion, integrated-part eligibility, persistence or report surface).
+scope expansion (another method, consumer, unit, conversion, eligibility beyond §1, persistence or report surface).

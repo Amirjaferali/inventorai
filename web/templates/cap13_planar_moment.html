@@ -42,6 +42,14 @@ ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:any
   <p style="margin:0">{{ iso('UI_CAP13M_INTRO') }}</p>
 </div>
 <p class="notice" data-cap13m-scope-note>{{ iso('UI_CAP13M_SCOPE_NOTE') }}</p>
+{#- CAP13-PLANAR-MOMENT-INTEGRATED-PART-01: on an integrated project, the ONE
+    inventor-declared Mechanical part this calculation is offered for, by its
+    durable Owner-declared name (escaped, direction-auto), with the existing
+    CAP-13 attribution copy. Offering the calculation for a recorded part does
+    not establish that its model applies. -#}
+{% if eligible and part_name %}
+<p class="notice" data-cap13m-part><strong>{{ iso('UI_CAP13_PART_LABEL') }}</strong> <bdi dir="auto" data-cap13m-part-name>{{ part_name }}</bdi><br>{{ iso('UI_CAP13_PART_NOTE') }}</p>
+{% endif %}
 
 {% if error_key %}<div class="error" role="alert" data-cap13m-error>{{ t(error_key) }}</div>{% endif %}
 

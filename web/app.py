@@ -7085,8 +7085,9 @@ def show_session(sid):
         # never gates the journey.
         therm01_temperature_difference_link=_therm01_link_offered(sid),
         # Stage 25 / CAP-13 Planar Moment Slice 1: an OPTIONAL link to the
-        # request-local planar single-force moment calculation, offered only on
-        # a Mechanical-root project. It never gates the journey.
+        # request-local planar single-force moment calculation, offered on an
+        # eligible project (Mechanical root, or a declared Mechanical part of a
+        # valid integrated composition). It never gates the journey.
         cap13_planar_moment_link=_cap13m_link_offered(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
@@ -14011,13 +14012,14 @@ def cap13_support_reactions_post(sid):
 # The consumer (`engine/cap13_planar_moment.py`) owns capture and the pre-owner
 # order; the shared calculation / units owner (`engine/deterministic_calculation.py`)
 # owns execution; the method adapter (`engine/cap13_planar_moment_method.py`)
-# owns the equation and its numerical acceptance. Eligibility is the trusted
-# durable root domain ONLY (exactly ``mechanical``, read as the CAP-12 gate reads
-# it): the Stage 15 integrated-part exception (``engine/subsystem_model.py``)
-# names its calculations and is NOT extended to this method, so a declared
-# Mechanical part outside the initial analysis focus is not offered it. Nothing
-# is persisted and nothing is read from the project beyond the root domain; no
-# answer, composition, requirement quantity, evidence or SafetySignal. The POST
+# owns the equation and its numerical acceptance. Eligibility is the SAME
+# ``_calc_gate`` rule as the two-support reactions (CAP13-PLANAR-MOMENT-
+# INTEGRATED-PART-01): a Mechanical durable root domain, or the ONE declared
+# Mechanical part of a valid durable integrated composition whatever the initial
+# analysis focus (the Stage 15 exception in ``engine/subsystem_model.py`` names
+# this method). Nothing is persisted and nothing is read from the project beyond
+# the root domain and that validated composition; no answer, requirement
+# quantity, evidence or SafetySignal. The POST
 # renders its answer directly and never redirects. The two-support reactions and
 # THERM-01 semantics are untouched.
 #
@@ -14036,13 +14038,11 @@ _CAP13M_LTR_RUN = re.compile(
 
 
 def _cap13m_eligible(sid):
-    """True iff the trusted durable root domain is exactly ``mechanical``. Root
-    only: no integrated-part eligibility. Never read from the request; fails
-    closed."""
-    try:
-        return _cap13m.is_eligible(_cap12_root_domain(sid))
-    except Exception:
-        return False
+    """True iff the project is eligible for the planar moment under
+    ``_calc_gate``: a Mechanical durable root domain, or a declared Mechanical
+    part of a valid durable integrated composition. Never read from the
+    request; fails closed."""
+    return _calc_gate(sid, _cap13m)[0]
 
 
 def _cap13m_link_offered(sid):
@@ -14073,8 +14073,8 @@ def _cap13m_result_view(result):
     }
 
 
-def _render_cap13m(sid, status=200, eligible=True, captured=None, evaluation=None,
-                   error=None):
+def _render_cap13m(sid, status=200, eligible=True, declared_part=None, captured=None,
+                   evaluation=None, error=None):
     lang = _current_ui_lang()
     view = None
     outcome_key = None
@@ -14086,6 +14086,11 @@ def _render_cap13m(sid, status=200, eligible=True, captured=None, evaluation=Non
     response = make_response(render_template(
         "cap13_planar_moment.html",
         sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
         iso=lambda key: _cap13m_isolate(ui_text.text(key, lang), lang),
         disclosure_items=[
             _cap13m_isolate(part, lang) for part in
@@ -14116,25 +14121,29 @@ def _render_cap13m(sid, status=200, eligible=True, captured=None, evaluation=Non
 def cap13_planar_moment(sid):
     if not _project_authorized(sid):
         return _deny_project()
-    return _render_cap13m(sid, eligible=_cap13m_eligible(sid))
+    eligible, part = _calc_gate(sid, _cap13m)
+    return _render_cap13m(sid, eligible=eligible, declared_part=part)
 
 
 @app.route("/session/<sid>/planar-moment", methods=["POST"])
 def cap13_planar_moment_post(sid):
     # Order: request integrity (global CSRF guard) -> project authorization ->
-    # eligibility (the Mechanical durable root domain only) -> strict capture
-    # (malformed: 400, no reason token) -> the consumer's §7 pre-owner order ->
-    # the shared owner.
+    # eligibility (durable root domain, or a declared Mechanical part of a valid
+    # durable integrated composition) -> strict capture (malformed: 400, no
+    # reason token) -> the consumer's §7 pre-owner order -> the shared owner.
     if not _project_authorized(sid):
         return _deny_project()
-    if not _cap13m_eligible(sid):
+    eligible, part = _calc_gate(sid, _cap13m)
+    if not eligible:
         return _render_cap13m(sid, eligible=False)
     form = request.form
     captured = _cap13m.capture_form({k: form.getlist(k) for k in form.keys()})
     if captured is None:
-        return _render_cap13m(sid, status=400, error="UI_CAP13M_ERR_REQUEST")
+        return _render_cap13m(sid, status=400, declared_part=part,
+                              error="UI_CAP13M_ERR_REQUEST")
     evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
-    return _render_cap13m(sid, captured=captured, evaluation=evaluation)
+    return _render_cap13m(sid, declared_part=part, captured=captured,
+                          evaluation=evaluation)
 
 
 # =============================================================================
