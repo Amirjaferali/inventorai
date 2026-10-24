@@ -1213,8 +1213,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% set ns = namespace(seen=[]) %}
   {% for st in grp[1] %}
   {# Stage 15 Slice 3: an interface step's recorded preparation inputs are part
-     of its visible row, so they are part of the collapse key too. #}
-  {% set key = [st.statement, st.responsibility_label, st.evidence_category, st.closure_condition, st.provenance, st.confidence_label, st.interface_preparation] %}
+     of its visible row, so they are part of the collapse key too.
+     MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01: each declared constraint
+     carries its own ordinal, so two constraints with the same wording never
+     collapse into one row counted as recorded answers. #}
+  {% set key = [st.statement, st.responsibility_label, st.evidence_category, st.closure_condition, st.provenance, st.confidence_label, st.interface_preparation, st.constraint_item] %}
   {% if key not in ns.seen %}
   {% set _ = ns.seen.append(key) %}
   {% set cnt = grp[1]
@@ -1224,7 +1227,8 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         | selectattr('closure_condition', 'equalto', st.closure_condition)
         | selectattr('provenance', 'equalto', st.provenance)
         | selectattr('confidence_label', 'equalto', st.confidence_label)
-        | selectattr('interface_preparation', 'equalto', st.interface_preparation) | list | length %}
+        | selectattr('interface_preparation', 'equalto', st.interface_preparation)
+        | selectattr('constraint_item', 'equalto', st.constraint_item) | list | length %}
   <div class="field-label">{{ st.statement }}{% if cnt > 1 %} <span class="vp-count" style="font-weight:normal;color:#667">{{ t('UI_B_DELIV_091A') }}{{ cnt }}{{ t('UI_B_DELIV_091B') }}</span>{% endif %}</div>
   {# Workstream 7 (contract §3.2 D5/C3): for the UNDETERMINED responsibility
      token the public presentation is the exact owner wording rendered as two

@@ -242,3 +242,23 @@ def test_the_stage35_export_stays_v3_with_no_requirement_row_for_it():
     text = repr(doc)
     assert "vstep:" not in text and "Prepare how your mandatory constraint" not in text
     assert text.count(TEXT) == 1                     # field 30 only
+
+
+def test_two_constraints_with_the_same_wording_stay_two_report_rows(client):
+    sid = _start(client)
+    _answer(client, sid, MECH)
+    for _ in range(2):
+        _post(client, sid, constraint_action="declare", constraint_text=TEXT,
+              constraint_strength="mandatory_constraint")
+    first, second = _heads(sid)
+    assert first.record_id != second.record_id          # two distinct identities
+    steps = _constraint_steps(derive_validation_plan(_live(sid)))
+    assert [s.step_id for s in steps] == ["vstep:constraint:" + first.record_id,
+                                          "vstep:constraint:" + second.record_id]
+    report = client.get(f"/session/{sid}/deliverable").get_data(as_text=True)
+    plan_block = report[report.index('class="vp-intro"'):]
+    plan_block = plan_block[:plan_block.index("</section>")]
+    statement = _html.escape(steps[0].statement, quote=False)
+    assert plan_block.count(statement) == 2                # never collapsed into one
+    assert plan_block.count("Mandatory constraint you declared") == 2
+    assert ui_text.text("UI_B_DELIV_091B", "en") not in plan_block   # not "recorded answers"
