@@ -7353,18 +7353,31 @@ def _attach_section_14_interface_preparation(package, state):
     canonical Validation Plan's own order, so step N of the package IS step N
     of the plan; a step with nothing recorded (and every non-interface step)
     gets no key, so its payload is unchanged. If the two ever disagree in
-    length nothing is attached (never a misaligned value)."""
-    from engine.validation_plan import derive_validation_plan
+    length nothing is attached (never a misaligned value).
+
+    MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01: the same alignment also
+    gives each mandatory-constraint step its own ordinal (``constraint_item``,
+    1-based in plan order; never rendered). Two constraints declared with the
+    same wording therefore stay two rows, each labelled as a constraint you
+    declared, and are never collapsed into one row counted as recorded
+    answers."""
+    from engine.validation_plan import CONSTRAINT_ANCHOR_KIND, derive_validation_plan
     section = package.get("section_14_validation_plan") or {}
     rendered = section.get("steps") or []
     steps = derive_validation_plan(state).steps
     if len(steps) != len(rendered):
         return
+    constraint_item = 0
     for step, row in zip(steps, rendered):
-        if step.interface_preparation and row.get("statement") == step.statement:
+        if row.get("statement") != step.statement:
+            continue
+        if step.interface_preparation:
             row["interface_preparation"] = [
                 {"field": field_name, "text": text}
                 for field_name, text in step.interface_preparation]
+        if step.provenance.anchor_kind == CONSTRAINT_ANCHOR_KIND:
+            constraint_item += 1
+            row["constraint_item"] = constraint_item
 
 
 def _quantity_statements(package, state):

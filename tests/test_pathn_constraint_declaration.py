@@ -12,7 +12,8 @@ Proves, over the real engine, the real durable store and the real web routes:
   Owner capacity decision (300 characters; 50 active; 500 lifetime; 20
   corrections plus ONE reserved withdrawal) fail closed with nothing written;
 * consumers are unchanged by a constraint: Requirement Landscape, Validation
-  Plan, next development step, readiness, SafetySignal, controlled unknowns,
+  Plan (apart from the one preparation step of a CURRENT mandatory constraint,
+  MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01), next development step, readiness, SafetySignal, controlled unknowns,
   the W2-B serving trigger, gap / maturity / progression and the withdrawn-answer
   count; replay / reconstruction restores the constraints verbatim;
 * the session section, the report / PDF section with its safety-scope note, the
@@ -475,8 +476,13 @@ def test_report_section_current_only_with_safety_scope_note(client, lang):
     assert _html.escape(ui_text.text("UI_PCN_STRENGTH_MANDATORY", lang), quote=False) in section
     assert _html.escape(ui_text.text("UI_SS_CONSTRAINT_SCOPE", lang), quote=False) in report
     assert "data-ss-constraint-scope" in report
-    # never a requirement row or a Validation Plan step
-    assert "شرط: يعمل بالبطاريات" not in report.replace(section, "")
+    # never a requirement row; MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01:
+    # a current mandatory constraint appears once more, only as its own
+    # Validation Plan preparation step
+    rest = report.replace(section, "")
+    assert rest.count("شرط: يعمل بالبطاريات") == 1
+    assert _html.escape("Prepare how your mandatory constraint “شرط: يعمل بالبطاريات”",
+                        quote=False) in rest
 
 
 def test_foreign_and_anonymous_posts_are_denied_and_write_nothing():
