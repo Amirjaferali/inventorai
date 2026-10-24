@@ -5160,7 +5160,11 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # ADVANCED at PATHN-CONSTRAINT-DECLARATION-01 (post-merge delivery record): it follows the
            # experiment-planning journey guidance increment in the chain
            r"the only product increment authorized after it was PATHN-CONSTRAINT-DECLARATION-01 \(below\), "
-           r"delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
+           r"delivered \(PR #\d+\); "
+           # ADVANCED at MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01 (post-merge delivery record): it
+           # follows the project constraint declaration increment in the chain
+           r"the only product increment authorized after it was MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01 "
+           r"\(below\), delivered \(PR #\d+\); no subsequent product increment has been authorized\.",
            _tok(_NONE718), _tok(_NEXT_INC_NO), _tok(_NEXT_STAGE_STEP), *(_tok(t) for t in _S35C_FACTS),
            # ADVANCED at the Stage 30 closure: the Stage 30 closure is the last one, Stage 22's the preceding one
            # ADVANCED at the Stage 28 closure: the Stage 28 closure is now the last one, Stage 30's precedes it
@@ -5470,7 +5474,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
                # increment is authorized after it; the component interface participation increment precedes it
                # ADVANCED at PATHN-CONSTRAINT-DECLARATION-01 (post-merge delivery record): no product increment is
                # authorized after it; the experiment-planning journey guidance increment precedes it
-               r"No product increment is authorized after PATHN-CONSTRAINT-DECLARATION-01 \(delivered: PR #\d+; "
+               # ADVANCED at MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01 (post-merge delivery record): no
+               # product increment is authorized after it; the project constraint declaration increment precedes it
+               r"No product increment is authorized after MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01 "
+               r"\(delivered: PR #\d+; "
+               r"[^)]*one verification-preparation step to the existing Validation Plan, never a Requirement "
+               r"Landscape row[^)]*no Stage entered, completed or reopened; effective only on the verified merge of "
+               r"PR #\d+\) or after the preceding "
+               r"PATHN-CONSTRAINT-DECLARATION-01 \(delivered: PR #\d+; "
                r"[^)]*declare, correct and withdraw their own project constraints"
                r"[^)]*never a requirement row, specification, selection or safety input; no Stage entered, completed or "
                r"reopened; effective only on the verified merge of PR #\d+\) or after the preceding "
@@ -6166,6 +6177,10 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
             # experiment-planning journey guidance increment in the chain
             "the only product increment authorized after it — PATHN-CONSTRAINT-DECLARATION-01 (above) — "
             "is DELIVERED (PR #N); "
+            # ADVANCED at MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01 (post-merge delivery record): it
+            # follows the project constraint declaration increment in the chain
+            "the only product increment authorized after it — MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01 "
+            "(above) — is DELIVERED (PR #N); "
             "no subsequent increment has been authorized."), head)
     # ADVANCED at the delivered Stage 25 / CAP-13 Two-Support Static Reactions Slice 1: Stage 25 ENTERED / PARTIAL
     # ADVANCED at the delivered Stage 27 / THERM-01 slice: Stage 27 ENTERED / PARTIAL leads
@@ -6527,7 +6542,14 @@ def test_stage22_closure_is_delivered_and_stage22_is_complete_on_every_live_surf
            # component interface participation increment precedes it
            # ADVANCED at PATHN-CONSTRAINT-DECLARATION-01 (post-merge delivery record): ... after it; the
            # experiment-planning journey guidance increment precedes it
-           r"No product increment is authorized after PATHN-CONSTRAINT-DECLARATION-01 \(delivered; PR #\d+; "
+           # ADVANCED at MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01 (post-merge delivery record): ... after
+           # it; the project constraint declaration increment precedes it
+           r"No product increment is authorized after MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01 "
+           r"\(delivered; PR #\d+; "
+           r"[^)]*one verification-preparation step to the existing Validation Plan, never a Requirement "
+           r"Landscape row[^)]*no Stage change; effective only on merge\) "
+           r"or after the preceding "
+           r"PATHN-CONSTRAINT-DECLARATION-01 \(delivered; PR #\d+; "
            r"[^)]*declare, correct and withdraw their own project constraints"
            r"[^)]*never a requirement row, specification, selection or safety input; no Stage change; effective only on merge\) "
            r"or after the preceding "
