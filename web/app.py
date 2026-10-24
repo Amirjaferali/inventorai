@@ -13634,34 +13634,65 @@ def _cap12_root_domain(sid):
     return value if isinstance(value, str) and value else None
 
 
+# CAP12-ELECTRONICS-ROOT-01: the ONE root domain admitted for a confirmed
+# single-domain project only. An integrated project rooted here keeps the
+# Mechanical-part path, and the Mechanical part is the only part path.
+_CAP12_SINGLE_DOMAIN_ROOT = "electronics_electrical"
+_CAP12_PART_DOMAIN = "mechanical"
+
+
 def _cap12_gate(sid):
     """``(domain, part)``: the ONE CAP-12 eligibility decision the session-page
     link, the advisory page and the advisory POST all read, so they cannot
     disagree. Never taken from the request; fails closed.
 
-    Root eligibility is exactly the existing rule: when the CAP-12 owner
-    supports the project's durable root domain (``_cap12_root_domain``), that
-    domain is used and ``part`` is None — the existing behaviour, unchanged.
+    A Mechanical durable root domain (``_cap12_root_domain``) is used as is and
+    ``part`` is None — the existing behaviour, unchanged.
+    CAP12-ELECTRONICS-ROOT-01 (Owner-authorized): an Electrical / Electronics
+    root domain is used, with ``part`` None, only when the project is a
+    CONFIRMED single-domain project — its durable composition reads
+    successfully as empty. When that composition holds parts, the integrated
+    project keeps the Mechanical-part path below; when it cannot be read or is
+    corrupt, ``(None, None)`` is returned and nothing is offered (no
+    permissive fallback to the root).
     CAP12-INTEGRATED-MECHANICAL-PART-01 (Owner-authorized): otherwise, when the
     validated durable integrated composition holds the ONE inventor-declared
-    part whose canonical domain the CAP-12 owner supports (Mechanical — the
-    existing applicability key), that part's canonical domain is used and
-    ``part`` is that declared part, for attribution. The composition is read
-    only through the PR #785 reader (``_calc_declared_part``). Otherwise the
-    root domain is returned unchanged and the owner declines it exactly as
-    before. A declared part makes the advisory OFFERED for that part only; it
-    establishes no suitability, compatibility, validation or safety."""
+    Mechanical part, that part's canonical domain is used and ``part`` is that
+    declared part, for attribution. The part is read only through the PR #785
+    reader (``_calc_declared_part``). Otherwise the root domain is returned
+    unchanged and the owner declines it exactly as before. Being offered the
+    advisory establishes no suitability, compatibility, validation or
+    safety."""
     root = _cap12_root_domain(sid)
+    if root == _CAP12_SINGLE_DOMAIN_ROOT:
+        return _cap12_electronics_root_gate(sid, root)
     try:
         if _cap12.supports(root):
             return root, None
-        for domain, _role in _cap12.SUPPORTED_APPLICABILITY:
-            part = _calc_declared_part(sid, domain)
-            if part is not None and _cap12.supports(part.domain):
-                return part.domain, part
+        part = _calc_declared_part(sid, _CAP12_PART_DOMAIN)
+        if part is not None and _cap12.supports(part.domain):
+            return part.domain, part
     except Exception:
         pass
     return root, None
+
+
+def _cap12_electronics_root_gate(sid, root):
+    """``_cap12_gate`` for an Electrical / Electronics root domain. A successful
+    read of an empty durable composition is the confirmed single-domain state
+    (an ordinary project has no subsystem rows); parts mean an integrated
+    project, which gets only its declared Mechanical part; anything unreadable,
+    corrupt or unexpected gives ``(None, None)``."""
+    try:
+        subsystems = tuple(_get_store().load_project_subsystems(sid))
+        if not subsystems:
+            return (root, None) if _cap12.supports(root) else (None, None)
+        part = _calc_declared_part(sid, _CAP12_PART_DOMAIN)
+        if part is not None and _cap12.supports(part.domain):
+            return part.domain, part
+    except Exception:
+        pass
+    return None, None
 
 
 def _cap12_link_offered(sid):
