@@ -41,11 +41,13 @@ from engine.idea_state import (
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED,
     DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN,
     DISPOSITION_ANSWERED, DISPOSITION_CONTRADICTION_DECLARED, OWNER_STATED,
+    DISPOSITION_CONSTRAINT_DECLARED,
     UNVALIDATED, canonical_contradiction_pair, projected_contradicts,
     project_declared_contradictions,
     DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED,
     DISPOSITION_PROVISIONAL_ASSUMPTION, DEPENDENCY_EDGE_KEYS,
     RELATIONSHIP_METADATA_DISPOSITIONS, dependency_edge_of,
+    ConstraintError, constraint_history,
 )
 
 # One minimal supported contract version. Unknown versions fail explicitly.
@@ -112,6 +114,10 @@ _ASSERTION_FIELDS = (
     # record. Written ONLY on that record (omitted everywhere else, so every
     # other payload stays byte-identical) and refused on any other disposition.
     "dependency_edge",
+    # PATHN-CONSTRAINT-DECLARATION-01: the strength of a `constraint_declared`
+    # record. Written ONLY on that record (omitted everywhere else, so every
+    # other payload stays byte-identical) and refused on any other disposition.
+    "constraint_strength",
 )
 
 _ENVELOPE_FIELDS = ("contract_version", "idea_id", "assertions")
@@ -149,6 +155,8 @@ def assertion_to_dict(record):
         data["contradiction_endpoints"] = list(record.contradiction_endpoints)
     if getattr(record, "dependency_edge", None) is not None:
         data["dependency_edge"] = dict(record.dependency_edge)
+    if getattr(record, "constraint_strength", None) is not None:
+        data["constraint_strength"] = record.constraint_strength
     return data
 
 
@@ -248,6 +256,12 @@ def assertion_from_dict(data):
     if "dependency_edge" in missing:
         data = dict(data, dependency_edge=None)
         missing = missing - {"dependency_edge"}
+    # PATHN-CONSTRAINT-DECLARATION-01: the same rule for the constraint
+    # strength. A declaration without it fails in `constraint_history`.
+    strength_present = "constraint_strength" in data
+    if "constraint_strength" in missing:
+        data = dict(data, constraint_strength=None)
+        missing = missing - {"constraint_strength"}
     if missing == {"decision_context_root"} \
             and data.get("disposition") in LEGACY_INTERACTION_DISPOSITIONS:
         # W2-A contract §4 — the ONE bounded compatibility relaxation: a
@@ -312,6 +326,12 @@ def assertion_from_dict(data):
     elif edge_present:
         raise InvalidReferenceError(
             "dependency_edge is reserved for assumption_dependency_declared")
+    if strength_present and disposition != DISPOSITION_CONSTRAINT_DECLARED:
+        raise InvalidReferenceError(
+            "constraint_strength is reserved for constraint_declared")
+    strength = data["constraint_strength"]
+    if strength is not None and not isinstance(strength, str):
+        raise InvalidReferenceError("constraint_strength must be a string")
     return AssertionRecord(
         record_id=data["record_id"],
         disposition=data["disposition"],
@@ -333,6 +353,7 @@ def assertion_from_dict(data):
                                  else list(data["contradiction_endpoints"])),
         dependency_edge=(None if data["dependency_edge"] is None
                          else dict(data["dependency_edge"])),
+        constraint_strength=strength,
     )
 
 
@@ -590,6 +611,13 @@ class ProjectRecordContract:
                         "cross-context decision supersession at record %r"
                         % r.record_id)
         self._validate_relationship_declarations(by_id)
+        # PATHN-CONSTRAINT-DECLARATION-01: the ONE constraint history rule
+        # (shared with the carrier and the store), in durable order.
+        try:
+            constraint_history(self.assertions)
+        except ConstraintError as exc:
+            raise InvalidReferenceError(
+                "invalid constraint history: %s" % exc) from None
         return self
 
     def _validate_relationship_declarations(self, by_id):

@@ -40,6 +40,7 @@ from engine.idea_state import (
     DISPOSITION_PROVISIONAL_ASSUMPTION,
     CRITICALITY_ACTION_CONFIRMED,
     RELATIONSHIP_METADATA_DISPOSITIONS,
+    PROJECT_CONSTRAINT_DISPOSITIONS,
     active_declared_contradiction_pairs,
 )
 
@@ -478,12 +479,17 @@ def derive_requirement_landscape(state):
     # so never validation-plan or deliverable work through this landscape); the
     # contradiction row is derived from its endpoints below, and a dependency
     # has no landscape row at all.
+    # PATHN-CONSTRAINT-DECLARATION-01: an inventor-declared project constraint
+    # is shown in its own section, never as a requirement row, so it never
+    # becomes validation-plan, Compass or deliverable work through here.
     active = [r for r in getattr(state, "assertions", [])
               if getattr(r, "superseded_by", None) is None
               and getattr(r, "disposition", None)
               not in DECISION_ACTION_DISPOSITIONS
               and getattr(r, "disposition", None)
-              not in RELATIONSHIP_METADATA_DISPOSITIONS]
+              not in RELATIONSHIP_METADATA_DISPOSITIONS
+              and getattr(r, "disposition", None)
+              not in PROJECT_CONSTRAINT_DISPOSITIONS]
     active_ids = {r.record_id for r in active}
     by_id = {r.record_id: r for r in active}
     declared_pairs = active_declared_contradiction_pairs(

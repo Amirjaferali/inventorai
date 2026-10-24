@@ -85,6 +85,22 @@ headers, JSON download, disclaimers, scope label and every substantive value are
 §10 chrome only (headings, labels, marker / reason wording and the Arabic supplements), and the existing English-output
 rule (§10, Stage 34 rule) is unchanged. Only §10 (locale line), §12.5 (HTML control rows and one page note), §13 (page
 order and HTML route) and §14 (#33) change, as noted inline; nothing else changes.
+AMENDMENT — PATHN-CONSTRAINT-DECLARATION-01 (export v3; Owner-approved Option C, 2026-10-24; applicability: this
+amendment takes effect only on the verified merge of its PR into `feature/atomic-json-session-persistence`; on that PR's
+proposal branch it describes a proposed change, not merged behaviour): the inventor may now declare, correct and
+withdraw their own project constraints, each with the strength they chose (`preference`, `soft_constraint`,
+`mandatory_constraint`), as append-only `constraint_declared` / `constraint_withdrawn` ledger records. The export
+carries them as ONE added field, `project_constraints` (field 30, appended after field 29), and ONE added item kind,
+`constraint`: every CURRENT constraint (not withdrawn) exactly once, in declaration order, with its latest verbatim
+statement and its strength, OWNER_STATED / UNVALIDATED, source owner `LEDGER`; `RECORDED` when at least one current
+constraint exists, otherwise `NOTHING_RECORDED`. Earlier versions, withdrawn constraints and record ids are never
+exported, and a constraint history the ledger owner cannot validate refuses the whole export (§3.4). The schema / format
+versions become `/3` and the file names `-v3`. Constraints are never a field-29 Requirement Landscape row, a
+correction-chain member (field 26) or any other field's item. Version 2 is neither reinterpreted nor made extensible: a
+v2 reader rejects a v3 document by its version strings, its added field and its added kind. Every other key, token,
+marker, reason, source owner, field disposition, item kind, disclaimer and the closed-vocabulary / strict-reader
+principle are unchanged. Only §2.2 (S26), §8.2 (field 30), §8.3 (`constraint`), §9.1, §9.3, §10 and §12.7 change, as
+noted inline; nothing else changes. The pre-amendment text is preserved in Git history.
 BASE: `feature/atomic-json-session-persistence` at `0ab87dca9ab5abebc03da791d288d661727d7858` (tree
 `8cfd87c026298df7f31fd13cf082c6efe470ee7e`); `ACTIVE CONTRACT: NONE`; Stage 35 NOT ENTERED / NOT AUTHORIZED; the Master
 Roadmap at 23 / 45 incomplete.
@@ -167,6 +183,7 @@ behaviour-preserving extraction (workstream contract §4 rule 2), performed only
 | S23 | Requirement-quantity rows | `engine.requirement_quantity.requirement_quantities_meta(state)` (pure; the owner's canonical rows with its `active` / `anchor_active` booleans; fails closed on an unresolvable anchor) | PUBLIC |
 | S24 | Requirement-quantity labels | `UI_T2A_KIND_<TOKEN>`, `UI_T2A_CURRENT`, `UI_T2A_REPLACED`, `UI_T2A_WITHDRAWN_ANCHOR`, `UI_T2A_WITHDRAWN_NOTE` | PUBLIC (render only) |
 | S25 | Declared components (v2) | `store.load_component_inventory(project_id)` → `(composition, components)`, both validated WHOLE (AMENDED at COMPONENT-INVENTORY-CORRECT-WITHDRAW-01: `components` is the CURRENT projection over the declarations and their whole revision history, validated together); the composition must equal `state.subsystems` (S2) or the export refuses | R1 (the seventh reader; §3.2) |
+| S26 | Declared project constraints (v3) | `engine.idea_state.constraint_history(state.assertions).current` over the `constraint_declared` / `constraint_withdrawn` records in `state.assertions` (from S2); validated whole, any defect refuses the export | PUBLIC (AMENDED at PATHN-CONSTRAINT-DECLARATION-01) |
 | P1 | `state.known_problem` | — | PROHIBITED (RISK-002; workstream contract §6) |
 | P2 | `web/app.py` `_declared_conflict_view`, `_evidence_details`, `_experiment_execution_states` called as-is | — | PROHIBITED (web-layer helpers are not canonical seams) |
 | P3 | Any rendered report / PDF / HTML string as source truth | — | PROHIBITED |
@@ -465,7 +482,7 @@ Owner-specific metadata travels in an item's `tokens` map under closed keys (§9
 
 No other kind is reference-only, and a truth-bearing kind is never labelled reference-only to avoid an envelope.
 
-### 8.2 Field map (29 fields, fixed order)
+### 8.2 Field map (29 fields, fixed order; v3: 30 — AMENDED at PATHN-CONSTRAINT-DECLARATION-01)
 
 Each Owner-decision §2 row with more than one first-slice disposition is split into fields that each carry exactly one
 marker. "Integrated" means the reconstructed state holds a durable Owner-declared composition (`state.subsystems`
@@ -502,6 +519,7 @@ non-empty).
 | 27 | `approvals` | `NOT_CAPTURED`, reason `NO_APPROVAL_RECORD` | — | — |
 | 28 | `source_and_provenance_references` | `NOT_APPLICABLE`, reason `CARRIED_ON_EVERY_ITEM` | — | — |
 | 29 | `requirement_landscape` | `RECORDED` / `NOTHING_RECORDED` | S16 | kind `requirement`, owner order |
+| 30 | `project_constraints` | v3: `RECORDED` when the ledger holds at least one CURRENT (not withdrawn) project constraint, otherwise `NOTHING_RECORDED` — every project alike (AMENDED at PATHN-CONSTRAINT-DECLARATION-01) | S26 | kind `constraint`, declaration order |
 
 `NOT_APPLICABLE` is used at field level only for fields 25 and 28 (the cases this contract names, workstream contract
 §5). No v1 composition produces `UNAVAILABLE`, at field or slot level: the first-slice positively-local set is empty
@@ -521,6 +539,7 @@ currency (limitation is always `NOT_APPLICABLE`; §8.1).
 | `known_mechanism` | `text` (Q) = `state.known_mechanism.content` | `Evidence.provenance` / `.validation_status` / NA | — | field `NOTHING_RECORDED` when `known_mechanism` is `None` |
 | `part` | `name` (Q) `display_name`; `function` (Q) `function_text` | `Subsystem.provenance` / `.validation_state` / NA | `part_domain` (`mechanical`, `electronics_electrical`, `control_loop`) | — |
 | `component` (v2) | `name` (Q) `display_name`; `function` (Q) `function_text` (both the CURRENT, latest corrected material — AMENDED at COMPONENT-INVENTORY-CORRECT-WITHDRAW-01; no revision history, withdrawn component or revision id is exported); source owner `SUBSYSTEM_COMPOSITION` (the inventory's semantic owner) | `ProjectComponent.provenance` / `.validation_state` / NA (always `OWNER_STATED` / `UNVALIDATED`) | no token; refs = one field-6 `part` item per declared part, in the component's own part order, no duplicate; no ref = project level; `component_id` never exported | a part reference that does not resolve to a field-6 item refuses (§3.4); the component inventory is inclusion only — never technical support, a specification or a validation |
+| `constraint` (v3) | `text` (Q) = the CURRENT (latest) verbatim statement; `strength` (S, value `null`); source owner `LEDGER` for both (AMENDED at PATHN-CONSTRAINT-DECLARATION-01; no earlier version, withdrawn constraint or record id is exported) | `text`: the chain head record's provenance / validation_state / NA (always `OWNER_STATED` / `UNVALIDATED`); `strength`: NA / NA / NA | `strength` token `strength` (`preference` / `soft_constraint` / `mandatory_constraint`); no item token; refs `[]` | an invalid constraint history refuses (§3.4); a constraint is the inventor's statement only — never a verified requirement, a specification or a selection rule |
 | `interface` | `description` (Q); `dependency` (S, value `null`); `dependency_note` (Q) | `SubsystemInterface.provenance` / `.validation_state` / NA on `description`; NA on the dependency slots | refs `[part_a, part_b]`; `dependency` tokens `dependency_kind` (`one_way` / `mutual`), `dependent_part`, `depends_on_part` (item keys; one-way only) | no declaration → `dependency` and `dependency_note` `NOTHING_RECORDED`; declaration without note → `dependency_note` `NOTHING_RECORDED`; any read failure refuses (§3.4) |
 | `unresolved_gap` | `gap_state` (S, value `null`), source owner `GAP_LIFECYCLE` (the reconstructed state's gap lifecycle, `state.gaps`) | NA / NA / NA (`Gap` holds no provenance, validation-state or currency field; an unresolved gap holds no `resolution_source`) | `gap_state` tokens `gap_type`, `gap_status` (`OPEN` / `PARTIAL`) | — |
 | `declared_contradiction` | `declaration` (S, value `null`), source owner `LEDGER`; `answer_a`, `answer_b` (Q) = endpoint `content` | `declaration`: the `contradiction_declared` record's own provenance / validation / currency; each answer: its endpoint record's provenance / validation / currency | `declaration` token `active: true`; ref to the matching field-29 row | — |
@@ -581,6 +600,13 @@ Selection rules, all by owner tokens:
   other key, token, marker, reason, source owner, field disposition and disclaimer is unchanged; v2 stays a closed
   vocabulary whose reader rejects unknown keys (§9.6). Version 1 is not reinterpreted or made extensible: a v1 reader
   rejects a v2 document by its version strings and its added kind.
+- **AMENDED at PATHN-CONSTRAINT-DECLARATION-01 (Owner-approved export v3; Option C).** Disclosure schema version
+  `inventorai-disclosure/3`; export format versions JSON `inventorai-disclosure-json/3` and HTML
+  `inventorai-disclosure-html/3`; file names `inventorai-disclosure-export-v3.json` and
+  `inventorai-disclosure-export-v3.html`. Version 3 = version 2 plus exactly ONE field, `project_constraints` (field 30),
+  and ONE item kind, `constraint` (§8.2 / §8.3), with ONE added slot token (`strength`) and ONE added token key
+  (`strength`). Every other key, token, marker, reason, source owner, field disposition and disclaimer is unchanged; v3
+  stays a closed vocabulary whose reader rejects unknown keys (§9.6). Version 2 is not reinterpreted or made extensible.
 
 ### 9.2 JSON top level (exactly five keys)
 
@@ -596,7 +622,7 @@ digest).
   (the conditional disclaimer `D12` is not emitted while field 14 is `NOT_CAPTURED`);
 - `scope_label`: `{"en": ..., "ar": ...}`;
 - `unavailable_notice`: `true` when any slot is `UNAVAILABLE`, else `false`;
-- `fields`: the 29 field objects in §8.2 order.
+- `fields`: the 29 field objects in §8.2 order (v3: 30 — AMENDED at PATHN-CONSTRAINT-DECLARATION-01).
 
 Field object keys: `field`, `marker`, `reason` (token or `null`), `pointer` (field token or `null`), `items` (list;
 empty unless `RECORDED`).
@@ -618,14 +644,16 @@ Closed token sets:
   `PROTOTYPE_TEST_PLAN`,
   `PLANNING_METADATA`, `EXPERIMENT_RESULTS`, `DISCLOSURE_EXPORT` (the export's own fixed text; used only for the
   `capture_limitation` slot);
-- item kinds: the eighteen kinds of §8.3 (v2 adds `component`; v1: seventeen);
+- item kinds: the eighteen kinds of §8.3 (v2 adds `component`; v1: seventeen; v3: nineteen, adding `constraint` —
+  AMENDED at PATHN-CONSTRAINT-DECLARATION-01);
 - slot tokens: `text`, `name`, `function`, `description`, `dependency`, `dependency_note`, `answer_a`, `answer_b`,
   `part_a`, `part_b`, `label`, `status`, `resolving_action`, `statement`, `cap11_form`, `title`, `objective`,
   `what_to_observe`, `success_criterion`, `measurement_method`, `test_hypothesis`, `test_variable`, `execution_state`,
-  `value_text`, `capture_limitation`, `gap_state`, `routed_need`, `unknown_disposition`, `declaration`;
+  `value_text`, `capture_limitation`, `gap_state`, `routed_need`, `unknown_disposition`, `declaration`, `strength`
+  (v3);
 - token keys: `part_domain`, `gap_type`, `gap_status`, `active`, `anchor_active`, `quantity_kind`, `dependency_kind`,
   `dependent_part`, `depends_on_part`, `required_input`, `disposition`, `anchor_kind`, `chain`, `position`, `state`,
-  `count`;
+  `count`, `strength` (v3; values exactly `preference`, `soft_constraint`, `mandatory_constraint`);
 - `quantity_kind` values: exactly the owner's `QUANTITY_KINDS` (`target_value`, `minimum_value`, `maximum_value`,
   `range`, `count`, `other_quantity`);
 - the field tokens of §8.2.
@@ -734,6 +762,11 @@ key. A v1 reader rejects unknown keys.
   Source / Validation rows, and either "Linked by the inventor to:" followed by one `#<item_key>` link per referenced part
   (labelled with that part's existing §2.2 S19 part label) or "Not linked to a part (project level)." Field 7, when
   `RECORDED`, carries one fixed clarification directly under its heading (§12.7).
+- **AMENDED at PATHN-CONSTRAINT-DECLARATION-01 (Owner-approved export v3).** Field 30 is headed "Project constraints
+  declared by the inventor". A `constraint` item shows the fixed heading "Project constraint declared by the inventor",
+  its quoted `text` with its Source / Validation rows, and its `strength` slot labelled "Strength chosen by the inventor"
+  with the strength's label (the existing session labels `UI_PCN_STRENGTH_*`). Field 30, when `RECORDED`, carries one
+  fixed clarification directly under its heading (§12.7).
 - Canonical English system statements stay English in both locales (Stage 34 rule) and are direction-isolated.
 - **Neutral export labels (Correction 04, C1; workstream contract §4 rule 4 exception).** Where §12.7 defines a
   Stage-35 label, it replaces, in this HTML only, the reused label named in §2.2 (S17, S20, S24) for the same token or
@@ -899,6 +932,10 @@ second-person wording.
 | Component part links (v2) | `UI_CI_PARTS_LABEL` ("Linked by you to:") | Linked by the inventor to: | ربطه المخترع بـ: |
 | Project-level component (v2) | `UI_CI_UNASSIGNED` | Not linked to a part (project level). | غير مرتبط بجزء (على مستوى المشروع). |
 | Field-7 clarification (v2; field 7 `RECORDED` only) | — (no existing label) | Each entry records only that the inventor said the invention includes this component. InventorAI has not checked or validated it, and a link to a part is the inventor's own association: it does not establish that the component sits in that part, works with it or suits it. | يسجّل كل إدخال فقط أن المخترع ذكر أن الاختراع يتضمّن هذا المكوّن. لم يفحصه InventorAI ولم يتحقق منه، وربطه بجزء هو ربط من المخترع نفسه: لا يثبت أن المكوّن موجود في ذلك الجزء أو يعمل معه أو يناسبه. |
+| Field-30 heading (v3) | — (no existing label) | Project constraints declared by the inventor | قيود المشروع التي أعلنها المخترع |
+| Constraint heading (v3) | — (no existing label) | Project constraint declared by the inventor | قيد مشروع أعلنه المخترع |
+| Constraint strength label (v3) | `UI_PCN_STRENGTH_LABEL` ("Strength you chose:") | Strength chosen by the inventor | القوة التي اختارها المخترع |
+| Field-30 clarification (v3; field 30 `RECORDED` only) | — (no existing label) | Each entry is a limit or wish the inventor stated for the invention, in their own words, with the strength they chose. InventorAI has not checked it: it is not a confirmed requirement or a specification, and it was not used to choose components or rule out options. | كل إدخال هو حدّ أو رغبة ذكرها المخترع للاختراع، بكلماته هو، مع القوة التي اختارها. لم يفحصه InventorAI: فهو ليس متطلبًا مؤكَّدًا ولا مواصفة، ولم يُستخدم لاختيار المكوّنات أو استبعاد الخيارات. |
 | Execution state `recorded` | `web/app.py` `S11_EXECUTION_TEXT` (recorded) | The inventor has {n} current recorded execution(s). These are the inventor's own recorded observations. InventorAI has not checked them and they are not a pass/fail judgement. (**AMENDED at CAP09-RESULT-WITHDRAW-01**; was "The inventor recorded {n} execution(s). …") | عدد التنفيذات الحالية التي سجّلها المخترع: {n}. هذه ملاحظات سجّلها المخترع بنفسه، ولم يتحقق منها InventorAI، وليست حكمًا بالنجاح أو الإخفاق. |
 
 Every other source and validation token keeps its existing `UI_ED_*` label, which is already neutral.

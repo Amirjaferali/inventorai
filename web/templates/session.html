@@ -1961,6 +1961,125 @@ body{overflow-wrap:anywhere}
   {% endif %}
 </details>
 {% endif %}
+{#- PCN-BLOCK-BEGIN — PATHN-CONSTRAINT-DECLARATION-01. The inventor's own
+    project constraints, in ordinary language, each with the strength they
+    chose. Declare, correct and withdraw (explicit confirmation; no delete).
+    Read from the ledger on every render; an unreadable history shows NO list
+    and NO form, never an empty or partial one. Inventor text is escaped and
+    direction-isolated. A constraint is the inventor's statement only — not a
+    verified requirement or specification — and the copy says so. Withdrawn
+    constraints are listed apart, as history only. -#}
+{% if project_constraints %}
+{% set pcn = project_constraints %}
+<details id="project-constraints" class="project-constraints" data-pcn-status="{{ pcn.status }}"{% if pcn.ack or pcn.error %} open{% endif %} style="margin-top:14px;border:1px solid #d6dde8;border-radius:4px;background:#f7f9fc;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#2c3e50;font-weight:bold">{{ t('UI_PCN_HEADING') }}</summary>
+  {% if pcn.ack %}<p data-pcn-ack role="status" style="font-size:13px;color:#1e5631;margin:8px 0">{{ t(pcn.ack) }}</p>{% endif %}
+  {% if pcn.error %}<p data-pcn-error role="alert" style="font-size:13px;color:#8a1f11;margin:8px 0">{{ t(pcn.error) }}</p>{% endif %}
+  {% if pcn.status == 'available' %}
+  <p style="font-size:13px;color:#555;margin:8px 0">{{ t('UI_PCN_EXPLAIN') }}</p>
+  <p data-pcn-boundary style="font-size:13px;color:#555;margin:8px 0">{{ t('UI_PCN_BOUNDARY') }}</p>
+  <p data-pcn-safety style="font-size:12px;color:#555;margin:8px 0">{{ t('UI_PCN_SAFETY') }}</p>
+  {% if pcn.constraints %}
+  <ul data-pcn-list style="margin:6px 0;padding-inline-start:18px;font-size:13px;color:#333">
+    {% for c in pcn.constraints %}
+    {% set pidx = loop.index %}
+    <li data-pcn-item style="margin:0 0 10px 0">
+      <bdi dir="auto" data-pcn-text>{{ c.text }}</bdi><br>
+      <span data-pcn-strength>{{ t('UI_PCN_STRENGTH_LABEL') }} {{ t(c.strength_key) }}</span>
+      <span style="color:#666" data-pcn-item-status>· {{ t('UI_PCN_ITEM_STATUS') }}</span>{% if c.corrected %} <span style="color:#666" data-pcn-corrected>· {{ t('UI_PCN_CORRECTED_MARK') }}</span>{% endif %}
+      {% if c.earlier %}
+      <details data-pcn-history style="margin:4px 0 0 0">
+        <summary style="cursor:pointer;color:#2c3e50">{{ t('UI_PCN_HISTORY_SUMMARY') }}</summary>
+        <ul style="margin:4px 0;padding-inline-start:18px;color:#555">
+          {% for v in c.earlier %}
+          <li data-pcn-version style="margin:0 0 4px 0">{{ t('UI_PCN_VERSION_ORIGINAL') if v.original else t('UI_PCN_VERSION_CORRECTION') }} <bdi dir="auto">{{ v.text }}</bdi> — {{ t(v.strength_key) }}</li>
+          {% endfor %}
+        </ul>
+      </details>
+      {% endif %}
+      {% if pcn.writable %}
+      {% if c.can_correct %}
+      <details data-pcn-correct style="margin:4px 0 0 0">
+        <summary style="cursor:pointer;color:#2c3e50">{{ t('UI_PCN_CORRECT_SUMMARY') }}</summary>
+        <form method="POST" action="/session/{{ sid }}/constraint" data-pcn-correct-form style="margin-top:6px">
+          <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+          <input type="hidden" name="constraint_submission" value="{{ pcn.submission }}">
+          <input type="hidden" name="constraint_action" value="correct">
+          <input type="hidden" name="constraint_target" value="{{ c.record_id }}">
+          <p style="font-size:12px;color:#555;margin:0 0 6px 0">{{ t('UI_PCN_CORRECT_HINT') }}</p>
+          <label style="display:block;font-size:13px;margin:0 0 4px 0" for="pcn-correct-text-{{ pidx }}">{{ t('UI_PCN_FIELD_TEXT') }}</label>
+          <textarea id="pcn-correct-text-{{ pidx }}" name="constraint_text" rows="2" maxlength="{{ pcn.max_text }}" dir="auto" required style="width:100%;box-sizing:border-box">{{ c.text }}</textarea>
+          <fieldset style="margin:8px 0;border:1px solid #ccc;border-radius:4px;padding:6px 10px">
+            <legend style="font-size:13px">{{ t('UI_PCN_FIELD_STRENGTH') }}</legend>
+            {% for s in pcn.strengths %}
+            <label style="display:block;font-size:13px;margin-top:4px"><input type="radio" name="constraint_strength" value="{{ s.value }}"{% if s.value == c.strength %} checked{% endif %} required> {{ t(s.key) }}</label>
+            {% endfor %}
+          </fieldset>
+          <label style="display:block;font-size:13px;margin:0 0 6px 0"><input type="checkbox" name="constraint_confirm" value="yes" required> {{ t('UI_PCN_CONFIRM') }}</label>
+          <button type="submit">{{ t('UI_PCN_CORRECT_BUTTON') }}</button>
+        </form>
+      </details>
+      {% else %}
+      <p data-pcn-correct-limit style="font-size:12px;color:#555;margin:4px 0 0 0">{{ t('UI_PCN_CORRECT_LIMIT') }}</p>
+      {% endif %}
+      <details data-pcn-withdraw style="margin:4px 0 0 0">
+        <summary style="cursor:pointer;color:#2c3e50">{{ t('UI_PCN_WITHDRAW_SUMMARY') }}</summary>
+        <form method="POST" action="/session/{{ sid }}/constraint" data-pcn-withdraw-form style="margin-top:6px">
+          <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+          <input type="hidden" name="constraint_submission" value="{{ pcn.submission }}">
+          <input type="hidden" name="constraint_action" value="withdraw">
+          <input type="hidden" name="constraint_target" value="{{ c.record_id }}">
+          <p style="font-size:12px;color:#555;margin:0 0 6px 0">{{ t('UI_PCN_WITHDRAW_HINT') }}</p>
+          <label style="display:block;font-size:13px;margin:0 0 6px 0"><input type="checkbox" name="constraint_confirm" value="yes" required> {{ t('UI_PCN_WITHDRAW_CONFIRM') }}</label>
+          <button type="submit">{{ t('UI_PCN_WITHDRAW_BUTTON') }}</button>
+        </form>
+      </details>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p data-pcn-none style="font-size:13px;color:#555;margin:6px 0">{{ t('UI_PCN_NONE_CURRENT') if pcn.withdrawn else t('UI_PCN_NONE') }}</p>
+  {% endif %}
+  {% if pcn.writable %}
+  {% if pcn.can_add %}
+  <form method="POST" action="/session/{{ sid }}/constraint" data-pcn-form style="margin-top:10px;border-top:1px solid #dbe4ec;padding-top:8px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <input type="hidden" name="constraint_submission" value="{{ pcn.submission }}">
+    <input type="hidden" name="constraint_action" value="declare">
+    <p style="font-size:13px;font-weight:bold;margin:0 0 6px 0">{{ t('UI_PCN_FORM_TITLE') }}</p>
+    <label style="display:block;font-size:13px;margin:0 0 4px 0" for="constraint_text">{{ t('UI_PCN_FIELD_TEXT') }}</label>
+    <textarea id="constraint_text" name="constraint_text" rows="2" maxlength="{{ pcn.max_text }}" dir="auto" required style="width:100%;box-sizing:border-box"></textarea>
+    <fieldset data-pcn-strengths style="margin:8px 0;border:1px solid #ccc;border-radius:4px;padding:6px 10px">
+      <legend style="font-size:13px">{{ t('UI_PCN_FIELD_STRENGTH') }}</legend>
+      {% for s in pcn.strengths %}
+      <label style="display:block;font-size:13px;margin-top:4px"><input type="radio" name="constraint_strength" value="{{ s.value }}" required> {{ t(s.key) }}</label>
+      {% endfor %}
+    </fieldset>
+    <label style="display:block;font-size:13px;margin:0 0 6px 0"><input type="checkbox" name="constraint_confirm" value="yes" required> {{ t('UI_PCN_CONFIRM') }}</label>
+    <button type="submit">{{ t('UI_PCN_BUTTON') }}</button>
+  </form>
+  {% else %}
+  <p data-pcn-cap style="font-size:13px;color:#555;margin:8px 0">{{ t(pcn.cap_key) }}</p>
+  {% endif %}
+  {% endif %}
+  {% if pcn.withdrawn %}
+  <div data-pcn-withdrawn style="margin-top:10px;border-top:1px solid #dbe4ec;padding-top:8px">
+    <p style="font-size:13px;font-weight:bold;margin:0 0 4px 0">{{ t('UI_PCN_WITHDRAWN_TITLE') }}</p>
+    <p style="font-size:12px;color:#555;margin:0 0 6px 0" data-pcn-withdrawn-note>{{ t('UI_PCN_WITHDRAWN_NOTE') }}</p>
+    <ul style="margin:4px 0;padding-inline-start:18px;font-size:13px;color:#555">
+      {% for w in pcn.withdrawn %}
+      <li data-pcn-withdrawn-item style="margin:0 0 6px 0"><bdi dir="auto">{{ w.text }}</bdi> — {{ t(w.strength_key) }} <span>· {{ t('UI_PCN_WITHDRAWN_STATUS') }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% else %}
+  <p data-pcn-unavailable style="font-size:13px;color:#555;margin:8px 0">{{ t('UI_PCN_UNAVAILABLE') }}</p>
+  {% endif %}
+</details>
+{% endif %}
+{#- PCN-BLOCK-END -#}
 {#- T3A-BLOCK-BEGIN — T3-A "Project record" (T3A-PROJECT-RECORD-IMPLEMENT-01;
     OD-PDVG-02(b) narrowed to input-history rendering). ONE collapsed, read-only
     view of the EXISTING durable history: the ledger in restored order with its

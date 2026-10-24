@@ -70,7 +70,7 @@ def test_output_language_controls_download_each_language(server, page):  # noqa:
                 with page.expect_download() as info:
                     control.click()
                 download = info.value
-                assert download.suggested_filename == "inventorai-disclosure-export-v2.html"
+                assert download.suggested_filename == "inventorai-disclosure-export-v3.html"   # v3 (PATHN-CONSTRAINT-DECLARATION-01)
                 body = open(download.path(), encoding="utf-8").read()
                 direction = "rtl" if lang == "ar" else "ltr"
                 assert '<html lang="%s" dir="%s">' % (lang, direction) in body

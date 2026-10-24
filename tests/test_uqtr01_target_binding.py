@@ -220,10 +220,13 @@ def test_contract_has_sixteen_fields_and_version_is_unchanged():
     # CAP-10 Slice 1 deliberately adds a 17th field after question_target
     # (`contradiction_endpoints`, declaration-only); the version is unchanged.
     # CAP-08 Slice 1 adds an 18th (`dependency_edge`, declaration-only).
-    assert len(_ASSERTION_FIELDS) == 18
-    assert _ASSERTION_FIELDS[-3] == "question_target"
-    assert _ASSERTION_FIELDS[-2] == "contradiction_endpoints"
-    assert _ASSERTION_FIELDS[-1] == "dependency_edge"
+    # PATHN-CONSTRAINT-DECLARATION-01 adds a 19th (`constraint_strength`,
+    # declaration-only).
+    assert len(_ASSERTION_FIELDS) == 19
+    assert _ASSERTION_FIELDS[-4] == "question_target"
+    assert _ASSERTION_FIELDS[-3] == "contradiction_endpoints"
+    assert _ASSERTION_FIELDS[-2] == "dependency_edge"
+    assert _ASSERTION_FIELDS[-1] == "constraint_strength"
     assert CONTRACT_VERSION == "p4-0-record-contract-v1"
     assert AssertionRecord(record_id="rec_1", disposition="answered", content="x",
                            gap_context=None, iteration=0).question_target is None

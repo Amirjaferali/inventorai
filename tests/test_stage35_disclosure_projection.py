@@ -79,6 +79,8 @@ FIELDS = (
     "diagrams_and_files", "experiments", "experiment_result_text",
     "validation_results", "risks", "uncertainty_and_abstentions", "corrections",
     "approvals", "source_and_provenance_references", "requirement_landscape",
+    # AMENDED at PATHN-CONSTRAINT-DECLARATION-01 (Owner-approved v3): field 30.
+    "project_constraints",
 )
 TRUTH_BEARING = {"resolved_problem", "known_mechanism", "part", "interface",
                  "unresolved_gap", "declared_contradiction",
@@ -254,11 +256,12 @@ def test_12_versions_top_level_and_determinism():
     assert doc1["content_digest"] == doc2["content_digest"]          # outside the digest
     assert re.fullmatch(r"sha256:[0-9a-f]{64}", doc1["content_digest"])
     # AMENDED at STAGE35-COMPONENT-DISCLOSURE-EXPORT-01 (Owner-approved v2): version 2 = v1 + the field-7 kind
-    assert doc1["disclosure_schema_version"] == "inventorai-disclosure/2"
-    assert dx.JSON_FORMAT_VERSION == "inventorai-disclosure-json/2"
-    assert dx.HTML_FORMAT_VERSION == "inventorai-disclosure-html/2"
+    # AMENDED at PATHN-CONSTRAINT-DECLARATION-01 (Owner-approved v3): version 3 = v2 + field 30
+    assert doc1["disclosure_schema_version"] == "inventorai-disclosure/3"
+    assert dx.JSON_FORMAT_VERSION == "inventorai-disclosure-json/3"
+    assert dx.HTML_FORMAT_VERSION == "inventorai-disclosure-html/3"
     assert (dx.JSON_FILE_NAME, dx.HTML_FILE_NAME) == (
-        "inventorai-disclosure-export-v2.json", "inventorai-disclosure-export-v2.html")
+        "inventorai-disclosure-export-v3.json", "inventorai-disclosure-export-v3.html")
     import hashlib
     canonical = json.dumps(a, sort_keys=True, ensure_ascii=False, separators=(",", ":"),
                            allow_nan=False).encode("utf-8")

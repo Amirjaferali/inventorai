@@ -112,6 +112,9 @@ h3{font-size:15px;margin:0 0 6px}
 {%- if f.field == 'component_descriptions_beyond_parts' and f.marker == 'RECORDED' %}
 <p class="clarification" data-components-clarification>{{ L('UI_S35_COMPONENTS_CLARIFICATION') }}</p>
 {%- endif %}
+{%- if f.field == 'project_constraints' and f.marker == 'RECORDED' %}
+<p class="clarification" data-constraints-clarification>{{ L('UI_S35_CONSTRAINTS_CLARIFICATION') }}</p>
+{%- endif %}
 {%- if f.marker == 'RECORDED' %}
 {%- for item in f['items'] %}
 <article class="item" id="{{ item.item_key }}" data-kind="{{ item.kind }}">
@@ -137,6 +140,10 @@ h3{font-size:15px;margin:0 0 6px}
 {%- else %}
 <p class="note" data-component-project-level>{{ L('UI_S35_COMPONENT_PROJECT_LEVEL') }}</p>
 {%- endif %}
+{%- elif kind == 'constraint' %}
+<h3>{{ L('UI_S35_CONSTRAINT_LABEL') }}</h3>
+{{ slot(item, 'text') }}
+{%- call slot(item, 'strength', L('UI_S35_CONSTRAINT_STRENGTH')) %}<p class="note" data-constraint-strength="{{ item.slots.strength.tokens.strength }}">{{ L({'preference': 'UI_PCN_STRENGTH_PREFERENCE', 'soft_constraint': 'UI_PCN_STRENGTH_SOFT', 'mandatory_constraint': 'UI_PCN_STRENGTH_MANDATORY'}[item.slots.strength.tokens.strength]) }}</p>{% endcall %}
 {%- elif kind == 'interface' %}
 {{ slot(item, 'description') }}
 {%- set dep = item.slots.dependency %}

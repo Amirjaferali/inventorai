@@ -897,8 +897,9 @@ def test_c02_export_field_7_carries_current_components_only_in_original_order():
     for item in (a, b, g):
         assert item.component_id not in dumped
     assert "crv-" not in dumped and "Alpha" not in dumped and '"Beta"' not in dumped
-    assert doc["disclosure_schema_version"] == "inventorai-disclosure/2"
-    assert doc["export_format_version"] == "inventorai-disclosure-json/2"
+    # AMENDED at PATHN-CONSTRAINT-DECLARATION-01 (Owner-approved v3); field 7 unchanged.
+    assert doc["disclosure_schema_version"] == "inventorai-disclosure/3"
+    assert doc["export_format_version"] == "inventorai-disclosure-json/3"
     _withdraw(store, sid, b.component_id, 1)
     _withdraw(store, sid, g.component_id, 0)
     f = _field(_doc(c, sid)["content"], F7)

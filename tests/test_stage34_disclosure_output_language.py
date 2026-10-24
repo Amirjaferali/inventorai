@@ -80,14 +80,14 @@ def test_explicit_language_wins_over_ui_language(owned, fixed_time, ui, lang):
     assert r.status_code == 200
     assert r.headers["Content-Type"] == "text/html; charset=utf-8"
     assert r.headers["Content-Disposition"] == \
-        'attachment; filename="inventorai-disclosure-export-v2.html"'
+        'attachment; filename="inventorai-disclosure-export-v3.html"'
     assert r.headers["Cache-Control"] == "no-store"
     assert r.headers["X-Content-Type-Options"] == "nosniff"
     assert r.headers["Content-Security-Policy"] == HTML_CSP
     body = r.data.decode("utf-8")
     direction = "rtl" if lang == "ar" else "ltr"
     assert '<html lang="%s" dir="%s">' % (lang, direction) in body
-    assert "inventorai-disclosure-html/2" in body
+    assert "inventorai-disclosure-html/3" in body          # v3 (PATHN-CONSTRAINT-DECLARATION-01)
     assert (SCOPE_AR in body) == (lang == "ar")
     assert SCOPE_EN in body and all(en in body for en in DISCLAIMERS_EN)
     assert sid not in body and aid not in body

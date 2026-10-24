@@ -34,6 +34,7 @@ from engine.idea_state import (
     DISPOSITION_UNKNOWN, INTERACTION_DISPOSITIONS, OPEN, PARTIAL, PROVENANCE_VALUES,
     VALIDATION_STATUSES, active_declared_contradiction_pairs,
     classify_assumption_ancestry,
+    CONSTRAINT_STRENGTHS, ConstraintError, constraint_history,
 )
 from engine.need_routing import REQUIRED_INPUT_SPECIALIST, active_routes
 from engine.read_export_service import ProjectAccessDenied, get_authorized_project_read
@@ -48,11 +49,13 @@ from engine.subsystem_model import DEPENDENCY_MUTUAL, DEPENDENCY_ONE_WAY
 # STAGE35-COMPONENT-DISCLOSURE-EXPORT-01: version 2 = version 1 plus exactly ONE
 # item kind, ``component`` (field 7). The vocabulary stays closed and a reader
 # keeps rejecting unknown keys; v1 is not reinterpreted or made extensible.
-DISCLOSURE_SCHEMA_VERSION = "inventorai-disclosure/2"
-JSON_FORMAT_VERSION = "inventorai-disclosure-json/2"
-HTML_FORMAT_VERSION = "inventorai-disclosure-html/2"
-JSON_FILE_NAME = "inventorai-disclosure-export-v2.json"
-HTML_FILE_NAME = "inventorai-disclosure-export-v2.html"
+# PATHN-CONSTRAINT-DECLARATION-01 (Owner-approved export v3): v3 = v2 plus ONE
+# field (`project_constraints`, field 30) and ONE item kind (`constraint`).
+DISCLOSURE_SCHEMA_VERSION = "inventorai-disclosure/3"
+JSON_FORMAT_VERSION = "inventorai-disclosure-json/3"
+HTML_FORMAT_VERSION = "inventorai-disclosure-html/3"
+JSON_FILE_NAME = "inventorai-disclosure-export-v3.json"
+HTML_FILE_NAME = "inventorai-disclosure-export-v3.html"
 
 # --- the export's own fixed text (§10, §12.1, §12.2, §12.6) -------------------
 DISCLAIMERS = (
@@ -106,7 +109,7 @@ CAPTURE_LIMITATION = (
     "therefore have been shortened; an ellipsis (…) at its end may indicate that "
     "shortening.")
 
-# --- closed v2 token sets (§9.3) ----------------------------------------------
+# --- closed v3 token sets (§9.3) ----------------------------------------------
 RECORDED = "RECORDED"
 NOTHING_RECORDED = "NOTHING_RECORDED"
 NOT_CAPTURED = "NOT_CAPTURED"
@@ -149,6 +152,8 @@ FIELD_TOKENS = (
     "diagrams_and_files", "experiments", "experiment_result_text", "validation_results",
     "risks", "uncertainty_and_abstentions", "corrections", "approvals",
     "source_and_provenance_references", "requirement_landscape",
+    # v3: the inventor's CURRENT declared project constraints.
+    "project_constraints",
 )
 
 # Allowed (marker, reason, pointer) per field (§8.2); UNAVAILABLE is admitted only
@@ -189,6 +194,7 @@ _FIELD_DISPOSITIONS = {
     "approvals": {(NOT_CAPTURED, "NO_APPROVAL_RECORD", None)},
     "source_and_provenance_references": {(NOT_APPLICABLE, "CARRIED_ON_EVERY_ITEM", None)},
     "requirement_landscape": {_REC, _NOTHING},
+    "project_constraints": {_REC, _NOTHING},
 }
 
 # Item kinds per field (§8.2, §8.3).
@@ -209,6 +215,7 @@ _FIELD_KINDS = {
     "risks": {"gap_reference"},
     "corrections": {"correction_version"},
     "requirement_landscape": {"requirement"},
+    "project_constraints": {"constraint"},
 }
 ITEM_KINDS = frozenset(k for kinds in _FIELD_KINDS.values() for k in kinds)
 REFERENCE_ONLY_KINDS = frozenset({"gap_reference", "evidence_reference"})
@@ -239,6 +246,8 @@ _KIND_SLOTS = {
                     "statement": None, "answer_a": QUOTED, "answer_b": QUOTED,
                     "part_a": QUOTED, "part_b": QUOTED, "description": QUOTED},
     "requirement_quantity": {"value_text": QUOTED},
+    # v3: the constraint's verbatim statement and the strength the inventor chose.
+    "constraint": {"text": QUOTED, "strength": SYSTEM},
 }
 SLOT_TOKENS = frozenset(s for slots in _KIND_SLOTS.values() for s in slots)
 
@@ -289,6 +298,7 @@ _ENVELOPE_FIELDS = {
     ("requirement", "part_a"): _PV, ("requirement", "part_b"): _PV,
     ("requirement", "description"): _PV,
     ("requirement_quantity", "value_text"): _PV,
+    ("constraint", "text"): _PV, ("constraint", "strength"): _NONE,
 }
 
 # Item-level token keys per kind and slot-level token keys per (kind, slot) (§8.1).
@@ -309,6 +319,7 @@ _SLOT_TOKENS = {
     ("recorded_unknown", "unknown_disposition"): frozenset({"disposition", "gap_type"}),
     ("routed_specialist_need", "routed_need"): frozenset({"gap_type", "required_input"}),
     ("experiment", "execution_state"): frozenset({"state", "count"}),
+    ("constraint", "strength"): frozenset({"strength"}),
 }
 TOKEN_KEYS = frozenset(k for keys in list(_ITEM_TOKENS.values())
                        + list(_SLOT_TOKENS.values()) for k in keys)
@@ -632,6 +643,7 @@ class _Composer:
             "source_and_provenance_references": _field(
                 "source_and_provenance_references", NOT_APPLICABLE,
                 reason="CARRIED_ON_EVERY_ITEM"),
+            "project_constraints": self._constraints(),
         }
         landscape = self._landscape()
         fields["requirement_landscape"] = landscape
@@ -710,6 +722,28 @@ class _Composer:
                                                  component.validation_state))},
                 refs=refs))
         return _listed("component_descriptions_beyond_parts", items)
+
+    def _constraints(self):
+        """Field 30 (v3): every CURRENT inventor-declared project constraint
+        exactly once, in declaration order — its latest verbatim statement under
+        its own ledger record's provenance / validation state, and the strength
+        the inventor chose as a closed token. Earlier versions, withdrawn
+        constraints and record ids are never exported; a defective constraint
+        history refuses the whole export."""
+        try:
+            current = constraint_history(self.records).current
+        except ConstraintError:
+            _refuse("invalid constraint history")
+        items = []
+        for n, constraint in enumerate(current, 1):
+            head = self.by_id[constraint.record_id]
+            items.append(_item(
+                _key("project_constraints", n), "constraint",
+                {"text": _recorded(QUOTED, constraint.text, "LEDGER",
+                                   _envelope(head.provenance, head.validation_status)),
+                 "strength": _recorded(SYSTEM, None, "LEDGER", _envelope(),
+                                       {"strength": constraint.strength})}))
+        return _listed("project_constraints", items)
 
     def _relationships(self):
         if not self.integrated:
@@ -1234,6 +1268,13 @@ def _check_kind(kind, tokens, refs, slots, index):
                and len(refs) <= (1 if tokens["position"] == 1 else 0), "correction item")
     elif kind == "part":
         _check(set(tokens) == {"part_domain"}, "part tokens")
+    elif kind == "constraint":
+        _check(set(slots) == {"text", "strength"}
+               and all(slots[s]["marker"] == RECORDED for s in slots)
+               and slots["strength"]["value"] is None
+               and set(slots["strength"]["tokens"]) == {"strength"}
+               and slots["strength"]["tokens"]["strength"] in CONSTRAINT_STRENGTHS
+               and tokens == {} and refs == [], "constraint item")
     elif kind == "component":
         _check(set(slots) == {"name", "function"}
                and all(slots[s]["marker"] == RECORDED for s in slots)
