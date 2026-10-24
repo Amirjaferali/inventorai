@@ -37,6 +37,9 @@ MUTATIONS = (
     # terminal withdrawal of one current declared component.
     "/session/<sid>/correct-component",
     "/session/<sid>/withdraw-component",
+    # PATHN-CONSTRAINT-DECLARATION-01: declare / correct / withdraw one of the
+    # inventor's own project constraints.
+    "/session/<sid>/constraint",
     # COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's current-value prototype-need
     # note for one current declared component (record / replace / clear).
     "/session/<sid>/component-prototype-need",

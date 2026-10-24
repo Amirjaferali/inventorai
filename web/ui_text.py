@@ -6833,8 +6833,8 @@ UI_STRINGS = {
         "ar": "القيد هو حدّ أو رغبة لديك تجاه اختراعك، بكلماتك أنت — مثل «يجب أن يعمل بالبطاريات» أو «أودّ أن تقلّ تكلفته عن 50 دولارًا». اختر مدى قوته بالنسبة إليك.",
     },
     "UI_PCN_BOUNDARY": {
-        "en": "These are your own statements. InventorAI has not checked or validated them and has not turned them into specifications or verified requirements. It does not use them to choose components, rule out options or judge your answers, and they do not change your progress, gaps or readiness.",
-        "ar": "هذه أقوالك أنت. لم يفحصها InventorAI ولم يتحقق منها، ولم يحوّلها إلى مواصفات أو متطلبات متحقَّق منها. لا يستخدمها لاختيار المكوّنات أو استبعاد الخيارات أو الحكم على إجاباتك، ولا تغيّر تقدّمك أو الفجوات أو الجاهزية.",
+        "en": "These are your own statements. InventorAI has not checked them and has not turned them into specifications or confirmed requirements. It does not use them to choose components, rule out options or judge your answers, and they do not change your progress, gaps or readiness.",
+        "ar": "هذه أقوالك أنت. لم يفحصها InventorAI، ولم يحوّلها إلى مواصفات أو متطلبات مؤكَّدة. لا يستخدمها لاختيار المكوّنات أو استبعاد الخيارات أو الحكم على إجاباتك، ولا تغيّر تقدّمك أو الفجوات أو الجاهزية.",
     },
     "UI_PCN_SAFETY": {
         "en": "Your constraints are not read for safety signals. The absence of a safety warning is not evidence of safety.",
@@ -6857,8 +6857,8 @@ UI_STRINGS = {
         "ar": "قيد إلزامي (يجب أن يتحقق)",
     },
     "UI_PCN_ITEM_STATUS": {
-        "en": "your statement, not validated",
-        "ar": "قولك أنت، غير متحقَّق منه",
+        "en": "your statement, not checked by InventorAI",
+        "ar": "قولك أنت، لم يفحصه InventorAI",
     },
     "UI_PCN_CORRECTED_MARK": {
         "en": "corrected",
@@ -6961,12 +6961,12 @@ UI_STRINGS = {
         "ar": "لا يمكن عرض قيود مشروعك الآن.",
     },
     "UI_PCN_PROVENANCE": {
-        "en": "Stated by you · not validated by InventorAI",
-        "ar": "ذكرته أنت · لم يتحقق منه InventorAI",
+        "en": "Stated by you · not checked by InventorAI",
+        "ar": "ذكرته أنت · لم يفحصه InventorAI",
     },
     "UI_PCN_MSG_SAVED": {
-        "en": "Saved. Your constraint is recorded as your own statement; it has not been validated.",
-        "ar": "حُفظ. سُجّل قيدك على أنه قولك أنت، ولم يُتحقَّق منه.",
+        "en": "Saved. Your constraint is recorded as your own statement; InventorAI has not checked it.",
+        "ar": "حُفظ. سُجّل قيدك على أنه قولك أنت، ولم يفحصه InventorAI.",
     },
     "UI_PCN_MSG_CORRECTED": {
         "en": "Saved. Your constraint was corrected, and the earlier version is kept in your project history.",
@@ -8975,8 +8975,8 @@ UI_STRINGS = {
         "ar": "القوة التي اختارها المخترع",
     },
     "UI_S35_CONSTRAINTS_CLARIFICATION": {
-        "en": "Each entry is a limit or wish the inventor stated for the invention, in their own words, with the strength they chose. InventorAI has not checked or validated it: it is not a verified requirement or a specification, and it was not used to choose components or rule out options.",
-        "ar": "كل إدخال هو حدّ أو رغبة ذكرها المخترع للاختراع، بكلماته هو، مع القوة التي اختارها. لم يفحصه InventorAI ولم يتحقق منه: فهو ليس متطلبًا متحقَّقًا منه ولا مواصفة، ولم يُستخدم لاختيار المكوّنات أو استبعاد الخيارات.",
+        "en": "Each entry is a limit or wish the inventor stated for the invention, in their own words, with the strength they chose. InventorAI has not checked it: it is not a confirmed requirement or a specification, and it was not used to choose components or rule out options.",
+        "ar": "كل إدخال هو حدّ أو رغبة ذكرها المخترع للاختراع، بكلماته هو، مع القوة التي اختارها. لم يفحصه InventorAI: فهو ليس متطلبًا مؤكَّدًا ولا مواصفة، ولم يُستخدم لاختيار المكوّنات أو استبعاد الخيارات.",
     },
     "UI_S35_FIELD_COMPONENT_DESCRIPTIONS_BEYOND_PARTS": {
         "en": "Other system, component, process and method descriptions",

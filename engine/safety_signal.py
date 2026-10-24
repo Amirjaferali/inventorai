@@ -43,9 +43,11 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
-from engine.idea_state import (
-    PROJECT_CONSTRAINT_DISPOSITIONS as _CONSTRAINT_DISPOSITIONS,
-)
+# PATHN-CONSTRAINT-DECLARATION-01: the two project-constraint dispositions,
+# restated here (the owner imports nothing from the engine); pinned equal to
+# engine.idea_state.PROJECT_CONSTRAINT_DISPOSITIONS by
+# tests/test_pathn_constraint_declaration.py.
+_CONSTRAINT_DISPOSITIONS = frozenset({"constraint_declared", "constraint_withdrawn"})
 
 # --- Frozen advisory vocabulary (contract §5 / §7) --------------------------------
 PROVENANCE_INVENTOR_STATED = "inventor_stated"

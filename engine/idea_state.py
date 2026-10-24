@@ -664,10 +664,17 @@ def constraint_history(assertions):
     the record's own position (``ConstraintCapacityError``). Pure; never
     mutates a record."""
     chain_of, chains, order, active = {}, {}, [], 0
+    constraint_ids = {r.record_id for r in assertions
+                      if r.disposition in PROJECT_CONSTRAINT_DISPOSITIONS}
     for record in assertions:
         disposition = record.disposition
         strength = getattr(record, "constraint_strength", None)
         supersedes = list(record.supersedes or ())
+        # A record may only supersede an EARLIER constraint (never a forward
+        # reference to one later in the ledger).
+        if any(ref in constraint_ids and ref not in chain_of for ref in supersedes) \
+                and disposition not in PROJECT_CONSTRAINT_DISPOSITIONS:
+            raise ConstraintError("a record supersedes a later constraint")
         if disposition not in PROJECT_CONSTRAINT_DISPOSITIONS:
             if strength is not None:
                 raise ConstraintError("a non-constraint record carries a strength")

@@ -7320,8 +7320,30 @@ def _deliverable_context(sid):
     # Stage 15 Slice 3: the same seam (the assembler stays pinned) carries each
     # declared-interface Validation Plan step's recorded preparation inputs.
     _attach_section_14_interface_preparation(package, state)
+    # PATHN-CONSTRAINT-DECLARATION-01: the same seam (the assembler stays
+    # pinned) keeps the withdrawn-answer count truthful: a corrected or
+    # withdrawn project constraint is not a withdrawn answer.
+    _exclude_constraints_from_withdrawn_count(package, state)
     eligible = package["_session_meta"]["deliverable_eligible"]
     return entry, package, eligible, reconstructed_deliverable, state
+
+
+def _exclude_constraints_from_withdrawn_count(package, state):
+    """Subtract the superseded project-constraint records from the package's
+    withdrawn-source count (the assembler counts every superseded non-decision
+    record); the note is dropped when no withdrawn answer remains."""
+    meta = package["_session_meta"].get("withdrawn_source_records")
+    if not isinstance(meta, dict) or not meta.get("total"):
+        return
+    superseded = sum(
+        1 for r in getattr(state, "assertions", None) or ()
+        if getattr(r, "superseded_by", None) is not None
+        and getattr(r, "disposition", None) in _constraints.PROJECT_CONSTRAINT_DISPOSITIONS)
+    if not superseded:
+        return
+    total = max(meta["total"] - superseded, 0)
+    package["_session_meta"]["withdrawn_source_records"] = {
+        "total": total, "note": meta.get("note") if total else None}
 
 
 def _attach_section_14_interface_preparation(package, state):
@@ -8033,6 +8055,14 @@ def _submission_identity_for(sid, entry, domain, entry_key):
         value = nonce + "." + _submission_sig(domain, sid, nonce)
         entry[entry_key] = value
     return value
+
+
+def _fresh_submission_identity(sid, domain):
+    """A NEW signed submission identity under ``domain`` for this project,
+    not stored anywhere (verified statelessly by
+    ``_verified_submission_identity``)."""
+    nonce = secrets.token_hex(16)
+    return nonce + "." + _submission_sig(domain, sid, nonce)
 
 
 def _verified_submission_identity(sid, raw, domain):
@@ -9534,7 +9564,6 @@ def _component_report_view(sid):
 # UNVALIDATED: nothing is checked, inferred, specified, selected or ruled out,
 # and no gap, progression, readiness, routing, SafetySignal or score changes.
 _CONSTRAINT_SUBMISSION_DOMAIN = "constraint-submission-v1"
-_CONSTRAINT_SUBMISSION_ENTRY_KEY = "constraint_submission"
 _CONSTRAINT_ACTION_KEY_DOMAIN = "constraint-action-v1"
 CONSTRAINT_ACK_SLOT = "_constraint_ack"
 CONSTRAINT_ERROR_SLOT = "_constraint_error"
@@ -9657,9 +9686,11 @@ def _project_constraints_context(sid, entry, state):
                       for s in _constraints.CONSTRAINT_STRENGTHS],
         "can_add": active_room and lifetime_room,
         "cap_key": "UI_PCN_CAP" if not active_room else "UI_PCN_CAP_LIFETIME",
-        "submission": (_submission_identity_for(
-            sid, entry, _CONSTRAINT_SUBMISSION_DOMAIN,
-            _CONSTRAINT_SUBMISSION_ENTRY_KEY) if writable else ""),
+        # A fresh signed identity per render, never stored in the session
+        # entry: an exact re-submission of the SAME form carries the same
+        # identity and is recognised from committed state.
+        "submission": (_fresh_submission_identity(
+            sid, _CONSTRAINT_SUBMISSION_DOMAIN) if writable else ""),
         "max_text": _constraints.MAX_CONSTRAINT_TEXT_LENGTH,
         "ack": ack, "error": error,
     }
@@ -9722,17 +9753,11 @@ def constraint_action(sid):
     store = _get_store()
     idem_key = _constraint_action_key(sid, nonce, action)
 
-    def _consume_submission():
-        # The identity is spent: the next render issues a fresh one.
-        if entry.get(_CONSTRAINT_SUBMISSION_ENTRY_KEY) == submission:
-            entry.pop(_CONSTRAINT_SUBMISSION_ENTRY_KEY, None)
-
     def _committed_prior():
         # IR-01: confirmation is read ONLY from committed durable state.
         return store.committed_record_payload_for_idempotency_key(sid, idem_key)
 
     def _settle(prior):
-        _consume_submission()
         if not _constraint_payload_matches(prior, action, text, strength, target):
             return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
         if not any(r.record_id == prior.get("record_id") for r in state.assertions):
@@ -9781,9 +9806,7 @@ def constraint_action(sid):
         if prior.get("record_id") != new_record.record_id:
             return _settle(prior)
         if not _constraint_payload_matches(prior, action, text, strength, target):
-            _consume_submission()
-            return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
-    _consume_submission()
+                return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
     # Publish the COMPLETE staged ledger (new record + inverse edge) only when
     # live state is still exactly the ledger it was staged from.
     if [r.record_id for r in state.assertions] != staged_ids:
@@ -12381,6 +12404,8 @@ T3A_EVENT_KINDS = frozenset(_T3A_EVENT_BY_DISPOSITION.values()) | frozenset({
     "rules_adopted", "rules_returned", "rules_changed", "other",
 })
 _T3A_TEXT_PREVIEW_CHARS = 280
+# The event kinds whose supersession edge is a withdrawal, never a replacement.
+_T3A_WITHDRAWAL_KINDS = frozenset({"alternative_withdrawn", "constraint_withdrawn"})
 
 
 def _t3a_event_kind(record):
@@ -12521,16 +12546,18 @@ def _project_record_context(state, sid):
                                edge.get("assumption_record_id")))
             links.append(_link("declares_dependent",
                                edge.get("dependent_answer_record_id")))
+        # PATHN-CONSTRAINT-DECLARATION-01: a constraint withdrawal withdraws,
+        # exactly like an alternative withdrawal; it replaces nothing.
         for target in (getattr(record, "supersedes", None) or ()):
             links.append(_link(
-                "withdraws" if kind == "alternative_withdrawn" else "replaces",
+                "withdraws" if kind in _T3A_WITHDRAWAL_KINDS else "replaces",
                 target))
         successor_id = getattr(record, "superseded_by", None)
         if successor_id:
             successor = by_id.get(successor_id)
             links.append(_link(
                 "withdrawn_in" if (successor is not None and
-                                   _t3a_event_kind(successor) == "alternative_withdrawn")
+                                   _t3a_event_kind(successor) in _T3A_WITHDRAWAL_KINDS)
                 else "replaced_by", successor_id))
         entries.append({
             "ordinal": ordinal_of[record.record_id],

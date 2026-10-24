@@ -203,6 +203,13 @@ def test_load_refuses_strength_elsewhere_and_cross_class_supersession():
                _decl("rec_4", "c", supersedes=["rec_2"])])
 
 
+def test_load_refuses_a_forward_reference_to_a_later_constraint():
+    answer = _payloads(_ledger())[0]
+    tampered = dict(answer, record_id="rec_2", supersedes=["rec_3"])
+    with pytest.raises(InvalidReferenceError):
+        _load([answer, tampered, _decl("rec_3")])
+
+
 # ===========================================================================
 # 2. capacity (Owner decision D4)
 # ===========================================================================
@@ -248,6 +255,30 @@ def test_correction_quota_with_one_reserved_withdrawal():
 # 3. consumers are unchanged by a constraint
 # ===========================================================================
 
+def _withdrawn_meta(state):
+    # The assembler is pinned (G-3 A-20/A-21); the report seam corrects its count.
+    package = assemble_deliverable(state)
+    appmod._exclude_constraints_from_withdrawn_count(package, state)
+    return package["_session_meta"]["withdrawn_source_records"]
+
+
+def test_the_safety_owner_restates_exactly_the_constraint_dispositions():
+    import engine.safety_signal as ss
+    from engine.idea_state import PROJECT_CONSTRAINT_DISPOSITIONS
+    assert ss._CONSTRAINT_DISPOSITIONS == PROJECT_CONSTRAINT_DISPOSITIONS
+
+
+def test_withdrawn_answer_count_excludes_constraints_but_keeps_real_withdrawals():
+    s = _ledger()
+    d = s.record_constraint_action("declare", TEXT, "preference")
+    s.record_constraint_action("withdraw", target_record_id=d.record_id)
+    assert _withdrawn_meta(s) == {"total": 0, "note": None}
+    s.record_interaction("answered", "A pin latch locks the deck.",
+                         gap_context=MECHANISM_COMPLETENESS, supersedes=["rec_1"])
+    meta = _withdrawn_meta(s)
+    assert meta["total"] == 1 and meta["note"]
+
+
 def _consumer_view(state):
     return (
         [(r.requirement_id, r.primary_anchor.anchor_kind, r.primary_anchor.anchor_reference)
@@ -257,7 +288,7 @@ def _consumer_view(state):
         derive_readiness(state).overall_verified(),
         repr(derive_safety_signals(state)),
         pl._alternatives_crossing_context(state),
-        assemble_deliverable(state)["_session_meta"]["withdrawn_source_records"],
+        _withdrawn_meta(state),
         repr(report_controlled_unknowns(state)),
     )
 
@@ -491,6 +522,12 @@ def test_project_record_shows_constraint_events(client):
     _post(client, sid, constraint_action="withdraw", constraint_target=head.record_id)
     kinds = [appmod._t3a_event_kind(r) for r in _live(sid).assertions]
     assert kinds[-3:] == ["constraint_declared", "constraint_corrected", "constraint_withdrawn"]
+    record = appmod._project_record_context(_live(sid), sid)
+    by_id = {e["record_id"]: e for e in record["entries"]}
+    wd, corrected = _live(sid).assertions[-1], _live(sid).assertions[-2]
+    assert [link["relation"] for link in by_id[wd.record_id]["links"]] == ["withdraws"]
+    assert "withdrawn_in" in [link["relation"] for link in by_id[corrected.record_id]["links"]]
+    assert "replaced_by" not in [link["relation"] for link in by_id[corrected.record_id]["links"]]
     assert set(kinds[-3:]) <= appmod.T3A_EVENT_KINDS
     for kind in kinds[-3:]:
         assert ui_text.has_string("UI_T3A_EVENT_" + kind.upper())
