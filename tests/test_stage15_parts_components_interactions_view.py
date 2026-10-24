@@ -32,7 +32,8 @@ from tests.test_component_inventory_declare_list import _ordinary, _raw
 from web import ui_text
 
 URL = "/session/%s/parts-components-interactions"
-CALC_ROUTES = ("support-reactions", "temperature-difference", "form-mockup-advisory")
+CALC_ROUTES = ("support-reactions", "temperature-difference", "form-mockup-advisory",
+               "planar-moment")
 
 
 def _get(c, sid, lang="en"):

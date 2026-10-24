@@ -1,15 +1,16 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "2",
+  "artifact_version": "3",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its accepted Correction 01 and Correction 02 / section 13A), the accepted CAP-13 two-support static reactions contract and the accepted THERM-01 single-path conduction temperature-difference contract. Content version 2 admits exactly two methods and exactly the five unit tokens those methods require (N and mm for CAP-13; W, K/W and K for THERM-01); it holds no conversion, no alias, no dimensional equivalence, no absolute temperature kind and no unit vocabulary beyond these records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The CAP-13 records dcu:U001, dcu:U002, dcu:SU001 and dcu:SU002 and the CAP-13 method record are unchanged from content version 1.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its accepted Correction 01, Correction 02 / section 13A and Correction 03 / section 13B), the accepted CAP-13 two-support static reactions contract, the accepted THERM-01 single-path conduction temperature-difference contract and the CAP-13 planar single-force moment contract. Content version 3 admits exactly three methods and exactly the six unit tokens those methods require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment); it holds no conversion, no alias, no dimensional equivalence, no absolute temperature kind and no unit vocabulary beyond these records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The records dcu:U001 to dcu:U005 and dcu:SU001 to dcu:SU004 and the CAP-13 reactions and THERM-01 method records are unchanged from content version 2.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
     {"quantity_kind": "length", "dimension": "L"},
     {"quantity_kind": "power", "dimension": "M L^2 T^-3"},
     {"quantity_kind": "thermal_resistance", "dimension": "Theta M^-1 L^-2 T^3"},
-    {"quantity_kind": "temperature_difference", "dimension": "Theta"}
+    {"quantity_kind": "temperature_difference", "dimension": "Theta"},
+    {"quantity_kind": "moment", "dimension": "M L^2 T^-2"}
   ],
   "unit_records": [
     {
@@ -96,6 +97,23 @@
       "inspection_basis": "LEAD_SUPPLIED",
       "inspection_date": "2026-10-08",
       "inspection_reference": "STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md section 11, THERM-U1 and THERM-U4 (Lead inspection A, supplied 2026-10-08; not independently re-inspected by the executor)"
+    },
+    {
+      "record_id": "dcu:U006",
+      "unit_token": "N·mm",
+      "unit_name": "newton millimetre",
+      "quantity_kind": "moment",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI) - Appendix B.9, Factors for units listed by kind of quantity or field of science",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 web edition, Appendix B.9 (as inspected 2026-09-28)",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9, moment of force / torque entry; the prefix milli as recorded on dcu:U002",
+      "inspected_content": "Appendix B.9 identifies the newton metre, N·m, as the SI unit of moment of force (torque). With the prefix milli (factor 10^-3; see dcu:U002) the length factor of that product unit is the millimetre, giving the newton millimetre, written N·mm, used here for a moment magnitude formed directly from a force in N and a distance in mm. N·mm is not a named SI unit and its formation is InventorAI's own. Unit identification only; no conversion is admitted (N·mm is never converted to N·m) and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU006",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Lead-level Section-8 inspection of NIST SP 811 Appendix B.9 recorded as mechanical:PR009 (2026-09-28), whose disposition stays scoped to its own records; this record is the owner's own bounded unit identification for N·mm under STAGE25_CAP13_PLANAR_SINGLE_FORCE_MOMENT_METHOD_CONTRACT.md section 8. Not independently re-inspected by the executor."
     }
   ],
   "source_use_policies": [
@@ -150,6 +168,32 @@
       "acknowledgement": "Reference source material: U.S. DOE Fundamentals Handbook DOE-HDBK-1012/2-92 (archived; historical fundamentals reference only); the total-resistance form is InventorAI's own derivation.",
       "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
       "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU005",
+      "source_title": "NASA STI Program - Disclaimers, Copyright Notice, and Terms and Conditions of Use",
+      "publisher": "National Aeronautics and Space Administration (NASA), STI Program",
+      "url": "https://sti.nasa.gov/disclaimers/",
+      "inspected_content": "Owner-local qualification snapshot for the planar-moment method sources NASA-S1 and NASA-T1 only (not a legal opinion): U.S. Government works are generally not protected by copyright in the U.S. (17 U.S.C. 105); NASA-hosted pages may contain privately created copyrighted content; NASA material may not be used to imply endorsement. Use is the one factual relation (moment magnitude is force times perpendicular distance) in InventorAI's own paraphrase only. No NASA prose, image or branding is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspection_reference": "Version-bound snapshot of cap13m:SU001 in the CAP-13 method-authority artifact cap13_planar_single_force_moment version 1, which rests on the Lead-supplied NASA STI inspections recorded as cap13:SU001 (2026-10-07) and mechanical:PR010 (2026-09-28); a separate record: dcu:SU002 keeps its own scope (NASA-S1 and NASA-S2 for the two-support method) and is not extended.",
+      "acknowledgement": "Reference source material: NASA Glenn Research Center (equilibrium and torque / moment principles); the moment form is InventorAI's own restatement.",
+      "third_party_material_exclusion": "No third-party or unidentified page content.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU006",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local source-use basis for dcu:U006 only (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. Use is limited to identifying the unit N·mm for the CAP-13 planar moment; no NIST text, table or conversion factor is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Policy page inspected 2026-09-28 (Lead-level inspection recorded as mechanical:PR011, whose disposition stays scoped to its own records). A separate record: dcu:SU001 keeps its own scope (dcu:U001 and dcu:U002 only) and dcu:SU003 its own (W, K/W and K); neither is extended.",
+      "acknowledgement": "Unit identification for N·mm follows NIST Special Publication 811, Appendix B.9, National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
     }
   ],
   "methods": [
@@ -228,6 +272,47 @@
       ],
       "result_range": [
         {"role": "delta_T", "condition": "greater_than_zero", "bound_role": null}
+      ]
+    },
+    {
+      "method_id": "cap13:planar_single_force_moment",
+      "method_version": "1.0",
+      "adapter_identity": "engine.cap13_planar_moment_method.evaluate",
+      "technical_authority": "CAP-13 - STAGE25_CAP13_PLANAR_SINGLE_FORCE_MOMENT_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "cap13_planar_single_force_moment", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "NASA-S1",
+          "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Equilibrium",
+          "publisher": "National Aeronautics and Space Administration (NASA)",
+          "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/equilibrium/",
+          "source_use_policy_ref": "dcu:SU005",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-07"
+        },
+        {
+          "source_ref": "NASA-T1",
+          "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Torque (Moment)",
+          "publisher": "National Aeronautics and Space Administration (NASA)",
+          "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/torque-moment/",
+          "source_use_policy_ref": "dcu:SU005",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-09-28"
+        }
+      ],
+      "input_roles": [
+        {"role": "F", "quantity_kind": "force", "unit_token": "N"},
+        {"role": "d_perp", "quantity_kind": "length", "unit_token": "mm"}
+      ],
+      "output_roles": [
+        {"role": "M", "quantity_kind": "moment", "unit_token": "N·mm"}
+      ],
+      "applicability": [
+        {"role": "F", "condition": "greater_than_zero", "bound_role": null},
+        {"role": "d_perp", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": [
+        {"role": "M", "condition": "greater_than_zero", "bound_role": null}
       ]
     }
   ]
