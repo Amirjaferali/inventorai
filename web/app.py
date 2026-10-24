@@ -35,6 +35,8 @@ from engine import cap13_planar_moment_method as _cap13m_method  # CAP-13 Planar
 from engine import cap13_planar_moment as _cap13m  # CAP-13 Planar Moment Slice 1 consumer
 from engine import cap13_rotational_load_method as _cap13r_method  # CAP-13 Rotational Load Slice 1 method
 from engine import cap13_rotational_load as _cap13r  # CAP-13 Rotational Load Slice 1 consumer
+from engine import tmp36_nominal_temperature_method as _tmp36_method  # TMP36 Nominal Temperature Slice 1 method
+from engine import tmp36_nominal_temperature as _tmp36  # TMP36 Nominal Temperature Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7096,6 +7098,11 @@ def show_session(sid):
         # same eligibility as the other CAP-13 calculations. It never gates the
         # journey.
         cap13_rotational_load_link=_cap13r_link_offered(sid),
+        # Sensors C3 / TMP36 Nominal Temperature Slice 1: an OPTIONAL link to
+        # the request-local nominal voltage-to-temperature reading, on the same
+        # eligibility as THERM-01 (Electrical / Electronics root, or a declared
+        # Electrical / Electronics part). It never gates the journey.
+        tmp36_temperature_link=_tmp36_link_offered(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -14429,6 +14436,151 @@ def therm01_temperature_difference_post(sid):
     evaluation = _therm01.evaluate(captured, _THERM01_TEMPERATURE_BINDING)
     return _render_therm01(sid, declared_part=part, captured=captured,
                            evaluation=evaluation)
+
+
+# =============================================================================
+# Sensors C3 — TMP36 Nominal Voltage-to-Temperature, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory reading of ONE output voltage the inventor declares for
+# ONE explicitly declared Analog Devices TMP36 as the NOMINAL temperature of the
+# device's nominal relation (TMP36 contract §1, §7). The consumer
+# (`engine/tmp36_nominal_temperature.py`) owns capture, the exact-decimal
+# interval check, the pre-owner order and the decimal-reference acceptance; the
+# shared calculation / units owner (`engine/deterministic_calculation.py`) owns
+# execution; the method adapter (`engine/tmp36_nominal_temperature_method.py`)
+# owns the relation and its binary acceptance. Eligibility is the SAME
+# ``_calc_gate`` rule as THERM-01: an Electrical / Electronics durable root
+# domain, or the ONE declared Electrical / Electronics part of a valid durable
+# integrated composition (the Stage 15 exception in ``engine/subsystem_model.py``
+# names this method). InventorAI never reads or samples the sensor; nothing is
+# persisted and nothing is read from the project beyond the root domain and that
+# validated composition. The POST renders its answer directly and never
+# redirects. The other four calculations are untouched.
+#
+# The FIFTH immutable trusted binding (calc/units Correction 05 §13D), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_TMP36_TEMPERATURE_BINDING = _dcalc.bind_method(
+    _tmp36_method.METHOD_ID, _tmp36_method.METHOD_VERSION,
+    _tmp36_method.evaluate)
+
+# Latin letters, digits, the degree sign and the minus sign (as in ``−40 °C``),
+# and unit tokens and expressions such as ``mV/°C`` or ``(V_OUT − 500 mV)``: each
+# run is direction-isolated on an Arabic page (contract §9A A-4).
+_TMP36_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u00b0\u2212+(](?:[A-Za-z0-9_\u00b0\u2212+()/.:= -]*[A-Za-z0-9_\u00b0)])?")
+
+
+def _tmp36_eligible(sid):
+    """True iff the project is eligible for the TMP36 nominal reading under
+    ``_calc_gate``: an Electrical / Electronics durable root domain, or a
+    declared Electrical / Electronics part of a valid durable integrated
+    composition. Never read from the request; fails closed."""
+    return _calc_gate(sid, _tmp36)[0]
+
+
+def _tmp36_link_offered(sid):
+    """The session-page link reads the SAME single rule the submission reads,
+    so the link and the calculation cannot disagree. Presentation only."""
+    return _tmp36_eligible(sid)
+
+
+def _tmp36_isolate(text, lang):
+    return _ltr_isolate(text, lang, _TMP36_LTR_RUN)
+
+
+def _tmp36_result_view(evaluation):
+    """Template view of an accepted SUCCESS: the nominal temperature as the
+    consumer's exact decimal display (already checked against the owner's
+    binary64 result), the owner's unit, the method identity and the source and
+    unit references the owner carried. No other field and no rounding."""
+    result = evaluation["result"]
+    output = result["outputs"]["t_celsius"]
+    return {
+        "value": evaluation["display_value"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_tmp36(sid, status=200, eligible=True, declared_part=None, captured=None,
+                  evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _tmp36.OUTCOME_SUCCESS:
+            view = _tmp36_result_view(evaluation)
+        else:
+            outcome_key = "UI_TMP36_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "tmp36_temperature.html",
+        sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
+        iso=lambda key: _tmp36_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _tmp36_isolate(part, lang) for part in
+            ui_text.text("UI_TMP36_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_tmp36.DECLARATION_IDS,
+        screen_items=_tmp36.SCREEN_ITEMS,
+        value_roles=_tmp36.VALUE_ROLES,
+        decl_field=_tmp36.DECLARATION_FIELD,
+        screen_field=_tmp36.SCREEN_FIELD,
+        value_field=_tmp36.VALUE_FIELD,
+        answer_applies=_tmp36.ANSWER_APPLIES,
+        answer_does_not_apply=_tmp36.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_tmp36.SCREEN_YES,
+        screen_no=_tmp36.SCREEN_NO,
+        max_value_chars=_tmp36.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/tmp36-temperature", methods=["GET"])
+def tmp36_temperature(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _tmp36)
+    return _render_tmp36(sid, eligible=eligible, declared_part=part)
+
+
+@app.route("/session/<sid>/tmp36-temperature", methods=["POST"])
+def tmp36_temperature_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain, or a declared Electrical / Electronics
+    # part of a valid durable integrated composition) -> strict capture
+    # (malformed: 400, no reason token) -> the consumer's §7 order -> the shared
+    # owner -> the decimal-reference acceptance.
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _tmp36)
+    if not eligible:
+        return _render_tmp36(sid, eligible=False)
+    form = request.form
+    captured = _tmp36.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_tmp36(sid, status=400, declared_part=part,
+                             error="UI_TMP36_ERR_REQUEST")
+    evaluation = _tmp36.evaluate(captured, _TMP36_TEMPERATURE_BINDING)
+    return _render_tmp36(sid, declared_part=part, captured=captured,
+                         evaluation=evaluation)
 
 
 # =============================================================================

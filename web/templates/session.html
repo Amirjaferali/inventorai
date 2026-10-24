@@ -2300,6 +2300,14 @@ body{overflow-wrap:anywhere}
 <p class="journey-note" data-cap13r-link style="margin-top:14px"><a href="{{ url_for('cap13_rotational_load', sid=sid) }}">{{ t('UI_CAP13R_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_CAP13R_LINK_NOTE') }}</span></p>
 {% endif %}
 {#- CAP13R-LINK-END -#}
+{#- TMP36-LINK-BEGIN — Sensors C3 TMP36 Nominal Voltage-to-Temperature Slice 1.
+    ONE optional link to the request-local nominal reading page, offered on the
+    same eligibility as THERM-01. It is not a journey action, gates nothing and
+    carries no calculation content: nothing is calculated or saved on this page. -#}
+{% if tmp36_temperature_link %}
+<p class="journey-note" data-tmp36-link style="margin-top:14px"><a href="{{ url_for('tmp36_temperature', sid=sid) }}">{{ t('UI_TMP36_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_TMP36_LINK_NOTE') }}</span></p>
+{% endif %}
+{#- TMP36-LINK-END -#}
 {#- THERM01-LINK-BEGIN — Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1.
     ONE optional link to the request-local calculation page, offered only on an
     eligible (Electrical / Electronics-root) project. It is not a journey action,

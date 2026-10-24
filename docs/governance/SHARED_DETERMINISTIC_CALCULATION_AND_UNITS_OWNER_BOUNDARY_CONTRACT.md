@@ -58,6 +58,15 @@ implements it in the same pull request under the
 Applicability: it takes effect only on the verified merge of that pull request into `feature/atomic-json-session-persistence`;
 on its proposal branch it is an Owner-authorized proposed amendment. It ADDS §13C and one bullet to §16; §13B, §13A, §13 and
 every other clause — including §§7–10, §12 and §14 — are unchanged. It admits exactly one further method and nothing more.
+CORRECTION 05: `CORRECTION 05 — BOUNDED FIFTH ADMISSION (SENSORS C3 TMP36 NOMINAL VOLTAGE-TO-TEMPERATURE) — OWNER-AUTHORIZED
+WITH ITS IMPLEMENTATION`. Folded, narrowly, into the one Owner-authorized increment `TMP36-NOMINAL-VOLTAGE-TEMPERATURE-01`,
+which implements it in the same pull request under the
+[TMP36 nominal voltage-to-temperature method contract](SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.md).
+Applicability: it takes effect only on the verified merge of that pull request into `feature/atomic-json-session-persistence`;
+on its proposal branch it is an Owner-authorized proposed amendment. It ADDS §13D and one bullet to §16 and narrowly amends,
+for this one method only, the §13A statements that no absolute `temperature` kind and no °C token are admitted; §13C, §13B,
+§13A for THERM-01, §13 and every other clause — including §§7–10, §12 and §14 — are unchanged. It admits exactly one
+further method and nothing more.
 BASIS: the Lead's read-only Stage 25 / CAP-13 feasibility gate (finding B — CAP-13 is feasible only after calculation and
 units ownership is decided); the Lead's read-only calculation and units ownership gate (finding B — a new shared calculation
 and units owner is required before CAP-13); an Astra architecture review and an independent Claude architecture / semantic
@@ -450,6 +459,51 @@ EXACTLY the following and nothing more.
   unit registry or conversion graph; persistence (§12); provider, AI, external-tool or external-library execution
   (including Modelica runtimes); and every other §13 / §13A / §13B exclusion.
 
+## 13D. Bounded fifth admission — Sensors C3 TMP36 nominal voltage-to-temperature (Correction 05)
+
+The delivered fourth admission (§13C) is expanded, by the Owner-authorized increment named in the CORRECTION 05 header, to
+EXACTLY the following and nothing more.
+
+- **Owner.** The one existing shared owner. No second owner, solver, conversion graph, unit registry, range policy or
+  calculation path is created, and the owner acquires no persistence and no scientific authority.
+- **Methods — exactly five:** the four of §13C plus `tmp36:nominal_voltage_to_temperature` 1.0, whose technical authority
+  stays outside this owner (§3), in its own Sensors / Instrumentation C3 method-authority artifact
+  `tmp36_nominal_voltage_to_temperature` version 1.
+- **Consumers — exactly five:** the existing four and one TMP36 consumer. No consumer imports another, and no
+  method-authority artifact loads another at execution.
+- **Quantity kinds:** the existing eight, plus exactly `voltage` and `celsius_temperature`. **Exact unit tokens:** the
+  existing eight, plus exactly `mV` and `°C`. One unit per kind; no alias (`mV` is never `millivolt`, `mv` or `V`; `°C` is
+  never `C`, `degC` or `℃`), no case folding, no dimensional equivalence and no conversion of any kind.
+- **Celsius temperature (narrow amendment of §13A for this one method).** `celsius_temperature` / `°C` is admitted ONLY as
+  the output of the TMP36 method: a temperature on the Celsius scale given by that method's own nominal relation. The owner
+  never converts it to or from `K`, never relates it to THERM-01's `temperature_difference` and performs no offset
+  arithmetic; the affine relation `T = (V_OUT − 500) / 10` is method-authority content held in the adapter. §13's exclusion
+  of owner offset conversions between temperature scales stands, and THERM-01 keeps its own "no absolute temperature, no °C"
+  boundary unchanged.
+- **Condition vocabulary.** Unchanged. The new method declares only the existing `greater_than_zero` on `v_out`; its
+  nominal-model interval (100 mV to 1750 mV inclusive) is method-authority content, checked by its consumer from the exact
+  decimal input before any binary rounding and defended again in its adapter, never an owner range policy.
+- **Method-local binding and wiring.** One additional immutable, application-wired binding; each consumer holds exactly its
+  own binding. No registry, discovery, dynamic module path or request-selected method.
+- **Versions.** The shared-owner artifact moves to content version `5` and the implementation to `1.4.0`. The new unit
+  records (`dcu:U009` `mV`, from NIST SP 811 Appendix B.9 and Chapter 4 Table 5; `dcu:U010` `°C`, from `Modelica.Units`
+  v4.1.0) and source-use records (`dcu:SU008` NIST, `dcu:SU009` the Modelica Standard Library BSD 3-Clause License,
+  `dcu:SU010` the Analog Devices data-sheet notice) keep the §9 source and inspection requirements; every content-version-4
+  record is unchanged.
+- **Numerical policy.** §10 applies unchanged: the owner still receives typed binary64 numbers and parses no string. The new
+  method's decimal bridge (strict decimal grammar, exact-decimal interval check, one correctly rounded conversion), its
+  binary acceptance (exact rational value rounded once; exact zero at 500 mV; a nonzero result within `2^-52` of the exact
+  result and inside −40 to 125) and its decimal-reference acceptance (within `2^-45` °C of the exact decimal relation, then
+  shown as that exact decimal) are method-authority content held in its consumer, adapter and contract; they are NOT a
+  generic owner policy and change nothing for the other four methods. A failure is `FAILURE / EXECUTION_INTEGRITY_FAILURE`
+  with no numerical payload.
+- **Existing methods preserved.** The two-support, THERM-01, planar-moment and rotational-load methods, their authority
+  artifacts, semantics, pins and user-facing behaviour stay unchanged; bounded updates to assertions on the owner content
+  version, the implementation version and the closed inventory, caused only by this admission, are expected and allowed.
+- **Still excluded:** a sixth method or consumer; owner ranges; string parsing in the owner; any conversion, including
+  between temperature scales; a generic solver, unit registry or conversion graph; persistence (§12); provider, AI,
+  external-tool or external-library execution; and every other §13 / §13A / §13B / §13C exclusion.
+
 ## 14. Required guard strategy for a future implementation
 
 - independent expected numerical results;
@@ -491,6 +545,8 @@ EXACTLY the following and nothing more.
 - Correction 03 (§13B) is Owner-authorized together with its bounded implementation; it carries the same proportionate,
   risk-appropriate verification as that implementation (focused tests and hosted required CI).
 - Correction 04 (§13C) is Owner-authorized together with its bounded implementation, under the same proportionate,
+  risk-appropriate verification.
+- Correction 05 (§13D) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 
 ## 17. Non-authorization (restated)

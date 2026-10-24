@@ -1,9 +1,9 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "4",
+  "artifact_version": "5",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its accepted Correction 01, Correction 02 / section 13A, Correction 03 / section 13B and Correction 04 / section 13C), the accepted CAP-13 two-support static reactions contract, the accepted THERM-01 single-path conduction temperature-difference contract, the CAP-13 planar single-force moment contract and the CAP-13 linear speed-dependent rotational load contract. Content version 4 admits exactly four methods and exactly the eight unit tokens those methods require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load); it holds no conversion, no alias, no dimensional equivalence, no absolute temperature kind and no unit vocabulary beyond these records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The records dcu:U001 to dcu:U006 and dcu:SU001 to dcu:SU006 and the three earlier method records are unchanged from content version 3.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its accepted Correction 01, Correction 02 / section 13A, Correction 03 / section 13B, Correction 04 / section 13C and Correction 05 / section 13D), the accepted CAP-13 two-support static reactions contract, the accepted THERM-01 single-path conduction temperature-difference contract, the CAP-13 planar single-force moment contract, the CAP-13 linear speed-dependent rotational load contract and the Sensors C3 TMP36 nominal voltage-to-temperature contract. Content version 5 admits exactly five methods and exactly the ten unit tokens those methods require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. Its one Celsius-temperature kind is the output of the TMP36 method only: it is never converted to or from K and never related to the THERM-01 temperature difference. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The records dcu:U001 to dcu:U008 and dcu:SU001 to dcu:SU007 and the four earlier method records are unchanged from content version 4.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
     {"quantity_kind": "length", "dimension": "L"},
@@ -12,7 +12,9 @@
     {"quantity_kind": "temperature_difference", "dimension": "Theta"},
     {"quantity_kind": "moment", "dimension": "M L^2 T^-2"},
     {"quantity_kind": "torque", "dimension": "M L^2 T^-2"},
-    {"quantity_kind": "angular_velocity", "dimension": "T^-1"}
+    {"quantity_kind": "angular_velocity", "dimension": "T^-1"},
+    {"quantity_kind": "voltage", "dimension": "M L^2 T^-3 I^-1"},
+    {"quantity_kind": "celsius_temperature", "dimension": "Theta (a temperature on the Celsius scale; not a temperature difference)"}
   ],
   "unit_records": [
     {
@@ -150,6 +152,40 @@
       "inspection_basis": "LEAD_SUPPLIED",
       "inspection_date": "2026-10-24",
       "inspection_reference": "Lead-supplied source identification and unit tokens in the Owner-authorized ROTATIONAL-LOAD-SLICE-01 brief (2026-10-24); confirmed directly by the executor against git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a) on 2026-10-24."
+    },
+    {
+      "record_id": "dcu:U009",
+      "unit_token": "mV",
+      "unit_name": "millivolt",
+      "quantity_kind": "voltage",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Appendix B.9 and Chapter 4, Table 5",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9 (volt, V) and Chapter 4, Table 5 (the prefix milli, m, 10^-3)",
+      "inspected_content": "Appendix B.9 identifies the volt, symbol V, as the SI unit of electric potential difference (voltage); Chapter 4, Table 5 lists the SI prefix milli, symbol m, factor 10^-3; hence the millivolt, symbol mV, used here for the TMP36 output voltage. Unit identification only; no conversion is admitted (mV is never converted to V or any other unit) and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU008",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspection_reference": "Lead-level inspections recorded as electronics_electrical:PR005 (Appendix B.9, volt - V; 2026-09-28) and electronics_electrical:PR020 (Chapter 4, Table 5, milli - m - 10^-3; 2026-10-12), whose dispositions stay scoped to their own records; this record is the owner's own bounded unit identification for mV under SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.md section 4. Not independently re-inspected by the executor (the NIST host was not reachable)."
+    },
+    {
+      "record_id": "dcu:U010",
+      "unit_token": "°C",
+      "unit_name": "degree Celsius",
+      "quantity_kind": "celsius_temperature",
+      "source_title": "Modelica Standard Library - Modelica.Units",
+      "publisher": "Modelica Association",
+      "edition": "Modelica Standard Library v4.1.0 (git tag v4.1.0, commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a)",
+      "doi": "not recorded - the library is identified by its version tag and commit; no DOI was used",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/Modelica/Units.mo",
+      "inspected_location": "Modelica/Units.mo, package NonSI, type Temperature_degC; package SI, type ThermodynamicTemperature (displayUnit)",
+      "inspected_content": "Modelica.Units.NonSI declares Temperature_degC with quantity \"ThermodynamicTemperature\" and unit \"degC\", an absolute temperature in degree Celsius, distinct from a temperature difference; Modelica.Units.SI.ThermodynamicTemperature (unit K) names degC as its display unit. Hence the degree Celsius, written here °C, for a temperature on the Celsius scale. The TMP36 data sheet (ADI-S1) states its temperatures in the same unit. Unit identification only; no conversion is admitted (°C is never converted to or from K or any other unit), no offset arithmetic is performed by the owner and no Modelica code is reproduced.",
+      "source_use_policy_ref": "dcu:SU009",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Unit token °C supplied in the Owner-authorized TMP36-NOMINAL-VOLTAGE-TEMPERATURE-01 brief (2026-10-24); its identification as the degree Celsius was confirmed directly by the executor against git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a) on 2026-10-24."
     }
   ],
   "source_use_policies": [
@@ -243,6 +279,45 @@
       "acknowledgement": "Reference source material: Modelica Standard Library v4.1.0, Modelica.Mechanics.Rotational.Sources.LinearSpeedDependentTorque and Modelica.Units.SI, Copyright (c) 1998-2025 Modelica Association and contributors, BSD 3-Clause License. Modelica is a registered trademark of the Modelica Association.",
       "third_party_material_exclusion": "No Modelica code, annotation, graphic, documentation text or other contributor material is reproduced; only facts are used.",
       "no_endorsement_limitation": "No statement or implication that the Modelica Association or any contributor endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU008",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local source-use basis for dcu:U009 only (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. Use is limited to identifying the unit mV for the TMP36 nominal temperature; no NIST text, table or conversion factor is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspection_reference": "Policy page inspections recorded as electronics_electrical:PR007 (2026-09-28) and electronics_electrical:PR021 (2026-10-12), whose dispositions stay scoped to their own records. A separate record: dcu:SU001 to dcu:SU007 keep their own scopes and are not extended.",
+      "acknowledgement": "Unit identification for mV follows NIST Special Publication 811 (Appendix B.9 and Chapter 4, Table 5), National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
+    },
+    {
+      "record_id": "dcu:SU009",
+      "source_title": "Modelica Standard Library - LICENSE (BSD 3-Clause License)",
+      "publisher": "Modelica Association",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/LICENSE",
+      "inspected_content": "Owner-local source-use basis for dcu:U010 only (not a legal opinion): the Modelica Standard Library v4.1.0 is licensed under the BSD 3-Clause License, Copyright (c) 1998-2025, Modelica Association and contributors; redistribution of source or binary must retain the copyright notice and conditions, and the names of the copyright holder and contributors may not be used to endorse or promote derived products without permission. InventorAI uses only the unit fact, restated independently in its own words; no Modelica source code, annotation, icon, diagram, documentation text or runtime is copied, redistributed or executed.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Unit token supplied in the TMP36-NOMINAL-VOLTAGE-TEMPERATURE-01 brief (2026-10-24); license file confirmed directly by the executor at git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a). A separate record: dcu:SU007 keeps its own scope (dcu:U007, dcu:U008 and MODELICA-S1) and is not extended.",
+      "acknowledgement": "Unit identification for °C follows Modelica.Units of the Modelica Standard Library v4.1.0, Copyright (c) 1998-2025 Modelica Association and contributors, BSD 3-Clause License. Modelica is a registered trademark of the Modelica Association.",
+      "third_party_material_exclusion": "No Modelica code, annotation, graphic, documentation text or other contributor material is reproduced; only the unit fact is used.",
+      "no_endorsement_limitation": "No statement or implication that the Modelica Association or any contributor endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU010",
+      "source_title": "Analog Devices - TMP35/TMP36/TMP37 Data Sheet, Rev. H - copyright and legal notice printed on page 1",
+      "publisher": "Analog Devices, Inc.",
+      "url": "https://www.analog.com/media/en/technical-documentation/data-sheets/TMP35_36_37.pdf",
+      "inspected_content": "Owner-local snapshot of tmp36:SU001 for the TMP36 method source ADI-S1 only (not a legal opinion): (c)1996-2015 Analog Devices, Inc. All rights reserved; no licence is granted by implication or otherwise under any patent or patent rights of Analog Devices; no reproduction right is granted or assumed. Use is limited to facts - the nominal TMP36 output characteristic and the stated specified temperature range - restated independently in InventorAI's own words; no data-sheet text, table, figure, diagram, model or code is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Version-bound snapshot of tmp36:SU001 in docs/governance/tmp36_content_config/nominal_voltage_to_temperature_v1.json (Lead-supplied publication identification in the TMP36-NOMINAL-VOLTAGE-TEMPERATURE-01 brief; notice confirmed directly by the executor on 2026-10-24 against a copy of Rev. H identified by its embedded title, footers and revision history). A separate record: dcu:SU001 to dcu:SU009 keep their own scopes.",
+      "acknowledgement": "Reference source material: Analog Devices, Inc., TMP35/TMP36/TMP37 data sheet, Rev. H, (c)1996-2015 Analog Devices, Inc.",
+      "third_party_material_exclusion": "No third-party material inside the data sheet is used.",
+      "no_endorsement_limitation": "No statement or implication that Analog Devices endorses, reviewed or approved InventorAI, this owner or any result."
     }
   ],
   "methods": [
@@ -392,6 +467,34 @@
       "applicability": [
         {"role": "tau_nominal", "condition": "less_than_zero", "bound_role": null},
         {"role": "w_nominal", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
+    },
+    {
+      "method_id": "tmp36:nominal_voltage_to_temperature",
+      "method_version": "1.0",
+      "adapter_identity": "engine.tmp36_nominal_temperature_method.evaluate",
+      "technical_authority": "Sensors / Instrumentation C3 - SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "tmp36_nominal_voltage_to_temperature", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "ADI-S1",
+          "source_title": "Analog Devices - TMP35/TMP36/TMP37 Low Voltage Temperature Sensors, Data Sheet, Rev. H (Table 4, printed page 8; Table 1, printed page 3)",
+          "publisher": "Analog Devices, Inc.",
+          "url": "https://www.analog.com/media/en/technical-documentation/data-sheets/TMP35_36_37.pdf",
+          "source_use_policy_ref": "dcu:SU010",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-24"
+        }
+      ],
+      "input_roles": [
+        {"role": "v_out", "quantity_kind": "voltage", "unit_token": "mV"}
+      ],
+      "output_roles": [
+        {"role": "t_celsius", "quantity_kind": "celsius_temperature", "unit_token": "°C"}
+      ],
+      "applicability": [
+        {"role": "v_out", "condition": "greater_than_zero", "bound_role": null}
       ],
       "result_range": []
     }
