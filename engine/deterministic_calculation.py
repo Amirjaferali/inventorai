@@ -1,4 +1,4 @@
-"""Shared deterministic calculation and units owner - A2 method-first, bounded third admission.
+"""Shared deterministic calculation and units owner - A2 method-first, bounded fourth admission.
 
 Gates: Stage 25 / CAP-13 A-5 first bounded implementation, under the accepted
 docs/governance/SHARED_DETERMINISTIC_CALCULATION_AND_UNITS_OWNER_BOUNDARY_CONTRACT.md
@@ -9,7 +9,10 @@ accepted Correction 02 (§13A) under the accepted
 docs/governance/STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md;
 then CAP-13 Planar Single-Force Moment Slice 1, the bounded third admission of the
 same contract's Correction 03 (§13B) under
-docs/governance/STAGE25_CAP13_PLANAR_SINGLE_FORCE_MOMENT_METHOD_CONTRACT.md.
+docs/governance/STAGE25_CAP13_PLANAR_SINGLE_FORCE_MOMENT_METHOD_CONTRACT.md;
+then CAP-13 Linear Speed-Dependent Rotational Load Slice 1, the bounded fourth
+admission of Correction 04 (§13C) under
+docs/governance/STAGE25_CAP13_LINEAR_SPEED_DEPENDENT_ROTATIONAL_LOAD_METHOD_CONTRACT.md.
 The owner is descriptive and unnumbered: it carries no CAP identifier.
 
 What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
@@ -84,7 +87,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.2.0"
+IMPLEMENTATION_VERSION = "1.3.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -95,24 +98,29 @@ ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
 # check mechanically. The conditions themselves are declared by the method
 # authority in the governed method record; the owner only evaluates them.
 CONDITION_GREATER_THAN_ZERO = "greater_than_zero"
+CONDITION_LESS_THAN_ZERO = "less_than_zero"
 CONDITION_WITHIN_ZERO_AND_ROLE = "within_zero_and_role"
-_CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_WITHIN_ZERO_AND_ROLE)
+_CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
+               CONDITION_WITHIN_ZERO_AND_ROLE)
 
 # The closed inventory: the delivered first increment (CAP-13 reactions), the
-# bounded second admission of Correction 02 (§13A, THERM-01) and exactly the
-# bounded third admission of Correction 03 (§13B, CAP-13 planar moment) - THREE
-# methods, each with its own consumer. A structurally valid extra method, quantity kind or unit
+# bounded second admission of Correction 02 (§13A, THERM-01), the bounded third
+# admission of Correction 03 (§13B, CAP-13 planar moment) and exactly the bounded
+# fourth admission of Correction 04 (§13C, CAP-13 linear speed-dependent
+# rotational load) - FOUR methods, each with its own consumer. A structurally
+# valid extra method, quantity kind or unit
 # fails closed: widening the inventory is a separately authorized change, never an
 # artifact edit alone. No absolute temperature kind and no conversion exist.
 ADMITTED_METHODS = frozenset({
     ("cap13:static_reactions_two_support", "1.0"),
     ("therm01:conduction_temperature_difference_single_path", "1.0"),
     ("cap13:planar_single_force_moment", "1.0"),
+    ("cap13:linear_speed_dependent_rotational_load", "1.0"),
 })
 ADMITTED_QUANTITY_KINDS = frozenset({
     "force", "length", "power", "thermal_resistance", "temperature_difference",
-    "moment"})
-ADMITTED_UNIT_TOKENS = frozenset({"N", "mm", "W", "K/W", "K", "N·mm"})
+    "moment", "torque", "angular_velocity"})
+ADMITTED_UNIT_TOKENS = frozenset({"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s"})
 
 _ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _MAX_TEXT = 700
@@ -422,6 +430,8 @@ def _is_number(value):
 def _check(condition, value, bound):
     if condition == CONDITION_GREATER_THAN_ZERO:
         return value > 0.0
+    if condition == CONDITION_LESS_THAN_ZERO:
+        return value < 0.0
     return 0.0 <= value <= bound
 
 

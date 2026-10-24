@@ -6121,6 +6121,114 @@ UI_STRINGS = {
     "UI_CAP13M_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # Stage 25 / CAP-13 — Linear Speed-Dependent Rotational Load, Slice 1
+    # (rotational-load contract §9). The English declaration and disclosure
+    # entries are pinned equal to the artifact by test and the Arabic ones to
+    # contract §9A. The screen reuses UI_CAP13_SCREEN_* and the integrated-part
+    # attribution UI_CAP13_PART_*. Nothing here states dynamics, a motor
+    # requirement, suitability or safety.
+    "UI_CAP13R_LINK_TEXT": {
+        "en": "Optional: torque of a load that resists in proportion to speed",
+        "ar": "اختياري: عزم حمل يقاوم الدوران بالتناسب مع السرعة"},
+    "UI_CAP13R_LINK_NOTE": {
+        "en": "An advisory calculation for a load you declare. It is not saved and is never required.",
+        "ar": "حساب إرشادي لحمل تصرّح به أنت. لا يُحفَظ، ولا يكون مطلوبًا أبدًا."},
+    "UI_CAP13R_TITLE": {
+        "en": "Speed-dependent rotational load (optional, non-binding)",
+        "ar": "حمل دوراني معتمد على السرعة (اختياري، غير مُلزِم)"},
+    "UI_CAP13R_INTRO": {
+        "en": "This page is optional. For a shaft loaded by something that resists rotation in proportion to its speed, such as a linear viscous damper, it calculates the torque that load applies at the shaft at one operating speed ω, from the torque τ_nominal you know at one speed ω_nominal. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. لعمود يقاوم دورانَه حِملٌ يتناسب مع سرعته، مثل مخمِّد لزج خطي، تحسب العزم الذي يؤثر به هذا الحمل على العمود عند سرعة تشغيل واحدة ω، من العزم τ_nominal الذي تعرفه عند سرعة واحدة ω_nominal. لا يُحفَظ شيء."},
+    "UI_CAP13R_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a Mechanical-focus project or for its declared Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that the linear speed-dependent load model applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED signed torque, not a motor requirement, rating, suitability or safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء انطباق نموذج الحمل الخطي المعتمد على السرعة. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة عزم ذو إشارة غير مُتحقَّق منه، وليست متطلبًا لمحرك أو تصنيفًا أو حكمًا بشأن الملاءمة أو السلامة."},
+    "UI_CAP13R_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_CAP13R_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_CAP13R_DECL_LINEAR_THROUGH_ZERO": {
+        "en": "The load's torque is proportional to the shaft speed and zero at zero speed, over every speed considered, including the operating speed entered.",
+        "ar": "عزم الحمل يتناسب مع سرعة العمود ويساوي صفرًا عند السرعة صفر، وذلك لكل سرعة معنيّة، بما فيها سرعة التشغيل المُدخلة."},
+    "UI_CAP13R_DECL_NOMINAL_POINT": {
+        "en": "The value τ_nominal at ω_nominal is one known point of exactly this load, taken from the inventor's own measurement or documentation; InventorAI does not estimate or check it.",
+        "ar": "قيمة τ_nominal عند ω_nominal نقطة واحدة معروفة لهذا الحمل تحديدًا، مأخوذة من قياسك أنت أو من وثائقك؛ ولا يقدّرها InventorAI ولا يتحقق منها."},
+    "UI_CAP13R_DECL_SINGLE_AXIS": {
+        "en": "One shaft rotating about one fixed axis, with every speed measured relative to the stationary support and the same positive direction of rotation used for all of them.",
+        "ar": "عمود واحد يدور حول محور ثابت واحد، وكل سرعة تُقاس بالنسبة إلى المسند الثابت، مع اعتماد الاتجاه الموجب نفسه للدوران في جميعها."},
+    "UI_CAP13R_DECL_LOAD_ONLY": {
+        "en": "Only this one speed-dependent load is considered: no acceleration, inertia, friction, backlash, other load or motor behaviour is included.",
+        "ar": "لا يُؤخذ في الحسبان إلا هذا الحمل الواحد المعتمد على السرعة: لا تسارع، ولا قصور ذاتي، ولا احتكاك، ولا خلوص، ولا حمل آخر، ولا سلوك للمحرك."},
+    "UI_CAP13R_DECL_SIGN_CONVENTION": {
+        "en": "The result is the torque the load applies at the shaft, positive in the positive direction of rotation, so a resisting load is negative for positive rotation and positive for negative rotation.",
+        "ar": "الناتج هو العزم الذي يؤثر به الحمل على العمود، موجبًا في الاتجاه الموجب للدوران؛ لذلك يكون الحمل المقاوم سالبًا للدوران الموجب وموجبًا للدوران السالب."},
+    "UI_CAP13R_FIELD_TAU_NOMINAL": {
+        "en": "Nominal torque of the load at the nominal speed, negative for a resisting load (τ_nominal) — newton metre (N·m)",
+        "ar": "العزم الاسمي للحمل عند السرعة الاسمية، سالب للحمل المقاوم (τ_nominal) — نيوتن متر (N·m)"},
+    "UI_CAP13R_FIELD_W_NOMINAL": {
+        "en": "Nominal speed at which τ_nominal is known (ω_nominal) — radian per second (rad/s)",
+        "ar": "السرعة الاسمية التي تُعرف عندها τ_nominal (ω_nominal) — راديان في الثانية (rad/s)"},
+    "UI_CAP13R_FIELD_W": {
+        "en": "Operating speed of the shaft, negative for the opposite direction (ω) — radian per second (rad/s)",
+        "ar": "سرعة تشغيل العمود، سالبة للاتجاه المعاكس (ω) — راديان في الثانية (rad/s)"},
+    "UI_CAP13R_SUBMIT": {
+        "en": "Calculate the load torque",
+        "ar": "احسب عزم الحمل"},
+    "UI_CAP13R_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_CAP13R_RESULT_TAU": {
+        "en": "Torque the load applies at the shaft (τ) — newton metre (N·m)",
+        "ar": "العزم الذي يؤثر به الحمل على العمود (τ) — نيوتن متر (N·m)"},
+    "UI_CAP13R_SIGN_NOTE": {
+        "en": "Sign convention: τ is positive in the positive direction of rotation (the Modelica accelerating torque, −flange.tau); a resisting load is negative for positive ω, positive for negative ω and zero at ω = 0.",
+        "ar": "اصطلاح الإشارة: τ موجبة في الاتجاه الموجب للدوران (عزم التسريع في Modelica، أي −flange.tau)؛ والحمل المقاوم سالب عندما تكون ω موجبة، وموجب عندما تكون ω سالبة، وصفر عند ω = 0."},
+    "UI_CAP13R_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_CAP13R_ECHO_HEADING": {
+        "en": "The values and declarations you entered",
+        "ar": "القيم والتصريحات التي أدخلتها"},
+    "UI_CAP13R_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_CAP13R_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_CAP13R_SOURCES_NOTE": {
+        "en": "The linear speed-dependent torque relation and the SI units from the Modelica Standard Library v4.1.0 (Modelica Association and contributors, BSD 3-Clause License). InventorAI restates the relation in its own words; no Modelica code is copied or run. Neither the Modelica Association nor any contributor endorses InventorAI or this calculation.",
+        "ar": "علاقة العزم الخطي المعتمد على السرعة ووحدات SI من مكتبة Modelica Standard Library الإصدار v4.1.0 (Modelica Association والمساهمون، رخصة BSD 3-Clause). يعيد InventorAI صياغة العلاقة بكلماته؛ ولا يُنسخ أي كود من Modelica ولا يُشغَّل. لا تؤيّد Modelica Association ولا أي مساهم InventorAI ولا هذا الحساب."},
+    "UI_CAP13R_DISCLOSURE": {
+        "en": "This is the torque that the one speed-dependent load you declared applies at the shaft at the speed ω you entered, using your own nominal torque τ_nominal at your own nominal speed ω_nominal.\n\nSign convention: τ is positive in the positive direction of rotation, so this resisting load gives a negative τ for positive ω, a positive τ for negative ω and exactly zero at ω = 0.\n\nIt assumes the load torque stays proportional to speed and is zero at zero speed; InventorAI does not check that your load behaves this way at any speed.\n\nIt includes no acceleration, inertia, friction, starting torque or other load, and it does not tell whether any motor, gearbox, shaft or part can drive or carry this load.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement or a qualified engineer before any reliance; it says nothing about suitability or safety.\n\nInventorAI does not check your values or that your declarations match the real mechanism.\n\nReference source material: Modelica Standard Library v4.1.0 (Modelica Association and contributors, BSD 3-Clause License); the relation is restated by InventorAI, and no Modelica code is used.",
+        "ar": "هذا هو العزم الذي يؤثر به الحمل الواحد المعتمد على السرعة الذي صرّحت به على العمود، عند السرعة ω التي أدخلتها، باستخدام عزمك الاسمي τ_nominal عند سرعتك الاسمية ω_nominal.\n\nاصطلاح الإشارة: تكون τ موجبة في الاتجاه الموجب للدوران، لذلك يعطي هذا الحمل المقاوم قيمة τ سالبة عندما تكون ω موجبة، وقيمة موجبة عندما تكون ω سالبة، وصفرًا تمامًا عند ω = 0.\n\nيفترض هذا الحساب أن عزم الحمل يبقى متناسبًا مع السرعة ويساوي صفرًا عند السرعة صفر؛ ولا يتحقق InventorAI من أن حملك يسلك هذا السلوك عند أي سرعة.\n\nلا يتضمن الحساب أي تسارع أو قصور ذاتي أو احتكاك أو عزم بدء أو حمل آخر، ولا يبيّن ما إذا كان أي محرك أو صندوق تروس أو عمود أو جزء قادرًا على إدارة هذا الحمل أو تحمّله.\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا، ويجب تأكيدها بالقياس أو بمراجعة مهندس مؤهل قبل الاعتماد عليها؛ ولا تقول شيئًا عن الملاءمة أو السلامة.\n\nلا يتحقق InventorAI من قيمك، ولا من مطابقة تصريحاتك للآلية الفعلية.\n\nالمراجع: مكتبة Modelica Standard Library الإصدار v4.1.0 (Modelica Association والمساهمون، رخصة BSD 3-Clause)؛ والعلاقة معاد صياغتها من InventorAI، ولا يُستخدم أي كود من Modelica."},
+    "UI_CAP13R_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_CAP13R_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. هذه الحالة تتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "τ_nominal must be a negative number (a resisting load), ω_nominal a positive number and ω any number, each written as a plain decimal with at most one leading minus sign. Nothing was calculated.",
+        "ar": "يجب أن تكون τ_nominal رقمًا سالبًا (حملًا مقاومًا)، وω_nominal رقمًا موجبًا، وω أي رقم، وكل منها مكتوب بصيغة عشرية بسيطة مع إشارة سالبة واحدة على الأكثر في البداية. لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the newton metre (N·m) and the radian per second (rad/s). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة النيوتن متر (N·m) والراديان في الثانية (rad/s) فقط. لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_CAP13R_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

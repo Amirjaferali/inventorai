@@ -59,7 +59,13 @@ and changes nothing here. A further narrow, Owner-authorized exception
 ``cap13:planar_single_force_moment`` v1.0 may likewise be OFFERED for the declared
 Mechanical part whatever the initial analysis focus, decided in the web layer
 from the same validated durable composition; it establishes no applicability,
-suitability, validation or safety and changes nothing here. No other specialist
+suitability, validation or safety and changes nothing here. A further narrow,
+Owner-authorized exception (ROTATIONAL-LOAD-SLICE-01): the admitted request-local
+calculation ``cap13:linear_speed_dependent_rotational_load`` v1.0 may likewise be
+OFFERED for the declared Mechanical part whatever the initial analysis focus,
+decided in the web layer from the same validated durable composition; it
+establishes no applicability, suitability, validation or safety and changes nothing
+here. No other specialist
 behaviour is granted by these exceptions. Subsystem identity is
 system-generated (``new_subsystem_id``), opaque, immutable and never derived
 from a name, a function text, a domain id or a list position; a client never
