@@ -4,8 +4,8 @@ and predeclared acceptance criteria.
 Network-free. The fixture is the pre-registered package for ONE possible future
 synthetic evaluation of served-question RESPONSIVENESS as a source of relevance
 eligibility (T2-G / OD-PDVG-10 residual R2, paraphrase under-coverage). Nothing
-here runs a provider or an adapter, the harness does not read the fixture, and
-no runtime owner changes. These tests freeze its bytes, its labels, its arm
+here runs a provider or an adapter, the harness reads the fixture only through
+its pinned SHA-256, and no runtime owner changes. These tests freeze its bytes, its labels, its arm
 definition and its acceptance criteria, check every served question against the
 committed Path-N artifacts, and pin that every case is rejected by BOTH existing
 lexical relevance checks at this base, so that the arm could only ever ADD
@@ -262,6 +262,6 @@ def test_no_text_is_taken_from_the_existing_packs(pack):
                        if len(other) > 12), case["case_id"]
 
 
-def test_the_harness_does_not_consume_the_fixture_yet():
+def test_the_harness_pins_exactly_these_frozen_bytes():
     script = (ROOT / "scripts" / "run_msnl_eval.py").read_text(encoding="utf-8")
-    assert "msnl_responsiveness_v1" not in script
+    assert 'RESPONSIVENESS_PACK_SHA256 = "%s"' % PACK_SHA256 in script

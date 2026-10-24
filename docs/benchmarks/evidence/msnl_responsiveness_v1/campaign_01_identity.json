@@ -1,0 +1,13 @@
+{
+ "campaign": "msnl-responsiveness-v1 campaign 01 (the one Owner-authorized campaign)",
+ "harness_commit": "0c4e58bf2f77d022fe9c72586d1bd1533fb8ff95",
+ "harness_sha256": "b384aec4cf6c213b3677e273a2ff25a39ddbf62c88128fae79224059c5039cfa",
+ "pack_sha256": "5e98cabdeddfd81b0f60d5d828a01fb8c347173be065554f19962e674a73c90a",
+ "command": "python3 -W ignore scripts/run_msnl_eval.py --responsiveness --provider openai --allow-network --managed-credential",
+ "started_at": "2026-10-24T01:50:37Z",
+ "finished_at": "2026-10-24T01:50:38Z",
+ "exit": "exit=0",
+ "stderr_bytes": 0,
+ "hosted_ci_on_harness_commit": "CI required success; Sharded FULL 1/5-5/5 success (run 40050189244)",
+ "outcome": "campaign INVALID at request 1 (A non-200 HTTP status was returned to the request sent to the provider endpoint URL; its status code and origin were not recorded. The proxy recorded no relay failure.); under the frozen AB2 / outcome rules the invalid run counts as failed: verdict FAIL. No model verdict was received for any case; nothing was retried."
+}

@@ -1,0 +1,166 @@
+{
+  "pack_id": "msnl-responsiveness-v1",
+  "pack_sha256": "5e98cabdeddfd81b0f60d5d828a01fb8c347173be065554f19962e674a73c90a",
+  "cases": 152,
+  "precondition_violations": [],
+  "thresholds": {
+    "FA1_max_false_acceptances": 0,
+    "FR1_overall_min": 0.8,
+    "FR1_variety_min": 0.75,
+    "FR2_max_parity_gap": 0.15,
+    "AB1_max_target_abstention": 0.15,
+    "ST1_runs": 3,
+    "ST1_min_outcome_agreement": 0.95,
+    "max_provider_requests": 456
+  },
+  "model": "gpt-6-sol",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "provider_requests": 1,
+  "error_kinds": {
+    "http_status": 1
+  },
+  "result": {
+    "verdict": "FAIL",
+    "campaign_status": "INVALID",
+    "criteria_held_in_every_run": {
+      "FA1": false,
+      "FA2": false,
+      "FR1": false,
+      "FR2": false,
+      "AB1": false,
+      "AB2": false,
+      "FR3": true,
+      "ST1": false
+    },
+    "agreement": null,
+    "runs": [
+      {
+        "valid": false,
+        "cases_answered": 1,
+        "errors": [
+          {
+            "case_id": "P01-en",
+            "kind": "http_status"
+          }
+        ],
+        "by_variety": {
+          "overall": {
+            "target_cases": 48,
+            "target_accepted": 0,
+            "target_abstained": 0,
+            "target_not_responsive": 0,
+            "target_responsive_ungrounded": 0,
+            "negatives_answered": 0,
+            "false_acceptances": 0,
+            "injection_responsive": 0,
+            "responsive_ungrounded": 0,
+            "controls": {
+              "accepted": 0,
+              "abstained": 0,
+              "rejected": 0,
+              "responsive_ungrounded": 0
+            },
+            "recovery": 0.0
+          },
+          "en": {
+            "target_cases": 12,
+            "target_accepted": 0,
+            "target_abstained": 0,
+            "target_not_responsive": 0,
+            "target_responsive_ungrounded": 0,
+            "negatives_answered": 0,
+            "false_acceptances": 0,
+            "injection_responsive": 0,
+            "responsive_ungrounded": 0,
+            "controls": {
+              "accepted": 0,
+              "abstained": 0,
+              "rejected": 0,
+              "responsive_ungrounded": 0
+            },
+            "recovery": 0.0
+          },
+          "ar-msa": {
+            "target_cases": 12,
+            "target_accepted": 0,
+            "target_abstained": 0,
+            "target_not_responsive": 0,
+            "target_responsive_ungrounded": 0,
+            "negatives_answered": 0,
+            "false_acceptances": 0,
+            "injection_responsive": 0,
+            "responsive_ungrounded": 0,
+            "controls": {
+              "accepted": 0,
+              "abstained": 0,
+              "rejected": 0,
+              "responsive_ungrounded": 0
+            },
+            "recovery": 0.0
+          },
+          "ar-gulf-kw": {
+            "target_cases": 12,
+            "target_accepted": 0,
+            "target_abstained": 0,
+            "target_not_responsive": 0,
+            "target_responsive_ungrounded": 0,
+            "negatives_answered": 0,
+            "false_acceptances": 0,
+            "injection_responsive": 0,
+            "responsive_ungrounded": 0,
+            "controls": {
+              "accepted": 0,
+              "abstained": 0,
+              "rejected": 0,
+              "responsive_ungrounded": 0
+            },
+            "recovery": 0.0
+          },
+          "ar-egy": {
+            "target_cases": 12,
+            "target_accepted": 0,
+            "target_abstained": 0,
+            "target_not_responsive": 0,
+            "target_responsive_ungrounded": 0,
+            "negatives_answered": 0,
+            "false_acceptances": 0,
+            "injection_responsive": 0,
+            "responsive_ungrounded": 0,
+            "controls": {
+              "accepted": 0,
+              "abstained": 0,
+              "rejected": 0,
+              "responsive_ungrounded": 0
+            },
+            "recovery": 0.0
+          }
+        },
+        "parity_gap_vs_en": {
+          "ar-msa": 0.0,
+          "ar-gulf-kw": 0.0,
+          "ar-egy": 0.0
+        },
+        "criteria": {
+          "FA1": false,
+          "FA2": false,
+          "FR1": false,
+          "FR2": false,
+          "AB1": false,
+          "AB2": false
+        }
+      }
+    ]
+  },
+  "case_level": [
+    [
+      {
+        "case_id": "P01-en",
+        "verdict": null,
+        "quote": null,
+        "grounded": false,
+        "accepted": false,
+        "error": "http_status"
+      }
+    ]
+  ]
+}
