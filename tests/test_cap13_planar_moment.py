@@ -757,20 +757,18 @@ def test_electronics_root_project_is_never_offered_or_evaluated(elec, monkeypatc
     assert not called
 
 
-def test_integrated_part_is_not_offered_the_moment():
-    # an Electrical / Electronics-focus integrated project with a declared
-    # Mechanical part: the two-support reactions ARE offered (the recorded Stage 15
-    # exception) but the planar moment is NOT - the exception is not extended.
+def test_integrated_part_is_offered_the_moment_with_attribution():
+    # CAP13-PLANAR-MOMENT-INTEGRATED-PART-01: an Electrical / Electronics-focus
+    # integrated project is offered the moment for its declared Mechanical part,
+    # as it is the two-support reactions (the full gate matrix is in
+    # tests/test_cap13_planar_moment_integrated_part.py)
     client, _aid = _client_for("cap13m-integrated@example.com")
     sid = _integrated(client, "electronics_electrical")
     page = _page(client, sid)
-    assert "data-cap13-link" in page and "data-cap13m-link" not in page
+    assert "data-cap13-link" in page and "data-cap13m-link" in page
     body = client.post(URL % sid, data=_form()).get_data(as_text=True)
-    assert "data-cap13m-form" not in body and "data-cap13m-result" not in body
-    # a Mechanical-focus integrated project is a Mechanical-root project: offered
-    client2, _ = _client_for("cap13m-integrated-mech@example.com")
-    sid2 = _integrated(client2, "mechanical")
-    assert "data-cap13m-link" in _page(client2, sid2)
+    assert '<bdi dir="ltr">1000.0 N·mm</bdi>' in body
+    assert "data-cap13m-part-name>Hinge arm<" in body
 
 
 def test_csrf_and_authorization_are_enforced(mech):
@@ -800,7 +798,7 @@ def test_no_safety_signal_report_export_or_api_surface():
     section = app_source[start:app_source.index("# Stage 27 / THERM-01", start)]
     for banned in ("safety_signal", "SafetySignal(", "_get_store()", "append_",
                    "SESSION_STORE[", "deliverable", "pdf", "export", "/api/",
-                   "_therm01", "_calc_gate", "load_project_subsystems"):
+                   "_therm01", "load_project_subsystems"):
         assert banned not in section, banned
     routes = [r.rule for r in webapp.app.url_map.iter_rules() if "planar-moment" in r.rule]
     assert routes == ["/session/<sid>/planar-moment"] * 2

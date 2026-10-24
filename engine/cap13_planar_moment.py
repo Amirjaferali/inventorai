@@ -4,8 +4,10 @@ Authority: docs/governance/STAGE25_CAP13_PLANAR_SINGLE_FORCE_MOMENT_METHOD_CONTR
 (§5 declarations, §6 numeric domain and numerical acceptance, §7 refusal layering
 and pre-owner order, §8 screen, §9 disclosure). ONE optional, advisory,
 request-local calculation of the magnitude of the moment of ONE force about ONE
-inventor-chosen point in ONE plane, on a Mechanical-root project ONLY (§1: the
-Stage 15 integrated-part exception is not extended to this method).
+inventor-chosen point in ONE plane, on a Mechanical-root project or for the ONE
+declared Mechanical part of a valid durable integrated project (§1, as amended
+by CAP13-PLANAR-MOMENT-INTEGRATED-PART-01; eligibility is decided in the web
+layer).
 
 What this module owns
   * the moment method's governed artifact (method authority, declarations,

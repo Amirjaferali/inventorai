@@ -6022,7 +6022,8 @@ UI_STRINGS = {
     # Stage 25 / CAP-13 — Planar Single-Force Moment, Slice 1 (moment contract
     # §9). The English declaration and disclosure entries are pinned equal to the
     # moment artifact by test and the Arabic disclosure to contract §9A. The
-    # high-risk screen reuses the UI_CAP13_SCREEN_* keys (the same nine items).
+    # high-risk screen reuses the UI_CAP13_SCREEN_* keys (the same nine items)
+    # and the integrated-part attribution the UI_CAP13_PART_* keys.
     # Nothing here states equilibrium, capacity, strength, suitability or safety.
     "UI_CAP13M_LINK_TEXT": {
         "en": "Optional: turning effect (moment) of one force about a point",
@@ -6037,8 +6038,8 @@ UI_STRINGS = {
         "en": "This page is optional. It calculates the size of the turning effect (moment) of one force about one point you choose, in one plane, from the force F and the perpendicular distance d⊥ that you enter. Nothing is saved.",
         "ar": "هذه الصفحة اختيارية. تحسب مقدار أثر الدوران (العزم) لقوة واحدة حول نقطة واحدة تختارها، في مستوى واحد، من القوة F والمسافة العمودية d⊥ اللتين تدخلهما أنت. لا يُحفَظ شيء."},
     "UI_CAP13M_SCOPE_NOTE": {
-        "en": "This optional calculation is available for a project whose analysis focus is Mechanical. That focus does not establish that the planar single-force model applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED moment magnitude, not an equilibrium, capacity, strength or safety conclusion.",
-        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي. ولا يثبت هذا المحور انطباق نموذج القوة الواحدة في مستوى واحد. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة مقدار عزم غير مُتحقَّق منه، وليست حكمًا بشأن الاتزان أو القدرة على التحمل أو المقاومة أو السلامة."},
+        "en": "This optional calculation is available for a Mechanical-focus project or for its declared Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that the planar single-force model applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED moment magnitude, not an equilibrium, capacity, strength or safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء انطباق نموذج القوة الواحدة في مستوى واحد. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة مقدار عزم غير مُتحقَّق منه، وليست حكمًا بشأن الاتزان أو القدرة على التحمل أو المقاومة أو السلامة."},
     "UI_CAP13M_ANSWER_APPLIES": {
         "en": "Applies to my case",
         "ar": "ينطبق على حالتي"},
