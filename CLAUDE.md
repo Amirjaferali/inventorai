@@ -1560,6 +1560,15 @@ information, not execution authority.
   - CANDIDATES: none is authorized and none carries standing priority. The (g1) sequence
     continues from step 2 with one Owner-authorized increment at a time.
 
+  **Current (g1) execution checkpoint (post-#860; continuity only, not authority).**
+  - **POSITION:** Wave 3 / (g1) step 3, qualified engineering depth. Waves 1–2 retain their unresolved obligations; none is declared complete by this position.
+  - **DELIVERED — do not repeat:** PR #859 (one bounded planar single-force moment method, N·mm, UNVALIDATED) and PR #860 (the same method offered for a validated declared Mechanical part in a Stage-15 integrated project). Confirm their merge identities against live GitHub; previous delivered references and methods remain intact.
+  - **AUTHORIZED NEXT ACTION:** NONE while ACTIVE CONTRACT is NONE. A sequencing priority, accepted candidate or previous approval to merge is not product implementation authority.
+  - **CANDIDATES / decisions:** The most recent recommendation to qualify a sensor-to-controller Embedded / Firmware path is NOT authorized and does not override (g1) ordering. The Owner declined D4 activation. Pressure calculation and automated experiment-result comparison remain BLOCKED within their examined scopes; the planar-moment eligibility extension is DELIVERED (#860), not a next candidate. Do not reinstate any without its named trigger or a new Owner decision.
+  - **BLOCKED / DEFERRED:** apply block (h), the current Deferred Obligations Register and the live active contract for canonical reasons and reopening triggers (including Sensors C3, Embedded 28-T2, Power Electronics 28-T3, preliminary motion, CAP-13 D-7, T2-G/R2, D4 and T6). Technology labels alone confer no permission or method.
+  - **NEXT-LOOP:** for an Owner-approved planned action that is genuinely blocked, record its exact blocker and reopening trigger in the existing owner, then examine the first independent eligible action remaining in (g1)'s dependency order after bounded PCRA/SFR. If none is eligible, return ONE specific material Owner decision rather than selecting a random increment. Every candidate is a recommendation until separately authorized; no automatic product selection, coding, merge or deployment.
+  - This checkpoint is a concise pointer for successors, not another roadmap, register, boot sequence, or requirement for a post-merge governance PR.
+
   (h) **Gate results since PR #828 and reopening triggers.** Each item reopens only on its named
   trigger. 28-T3 Power Electronics / Motion: BLOCKED (no qualified owner or claim-level source); the
   Lead-inspected Tony R. Kuphaldt, *Lessons in Electric Circuits*, Volume III, Chapter 4 (CC BY 4.0)
