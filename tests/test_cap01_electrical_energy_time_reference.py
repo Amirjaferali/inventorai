@@ -380,11 +380,12 @@ def test_t11_the_shared_calculation_and_unit_inventory_is_unchanged():
     tokens = set(re.findall(r'"unit_token":\s*"([^"]+)"', text))
     # the closed owner inventory (calc/units §13B: the CAP-13 planar moment's N·mm
     # and method are the only additions); no energy-time unit or method is admitted
-    assert tokens == {"N", "mm", "W", "K/W", "K", "N·mm"}
+    assert tokens == {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s"}
     methods = set(re.findall(r'"method_id":\s*"([^"]+)"', text))
     assert methods == {"cap13:static_reactions_two_support",
                        "therm01:conduction_temperature_difference_single_path",
-                       "cap13:planar_single_force_moment"}
+                       "cap13:planar_single_force_moment",
+        "cap13:linear_speed_dependent_rotational_load"}
 
 
 def test_t12_no_input_control_numeric_result_or_state_change(client, monkeypatch):

@@ -295,7 +295,7 @@ def test_success_packaging_units_sources_and_identity():
                                      "provenance": "OWNER_STATED"}
     assert (result["method_id"], result["method_version"]) == (
         "cap13:planar_single_force_moment", "1.0")
-    assert (result["artifact_version"], result["implementation_version"]) == ("3", "1.2.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("4", "1.3.0")
     assert [u["record_id"] for u in result["unit_records"]] == [
         "dcu:U001", "dcu:U002", "dcu:U006"]
     assert [q["source_ref"] for q in result["source_qualification"]] == [
@@ -309,12 +309,12 @@ def test_success_packaging_units_sources_and_identity():
 
 def test_closed_inventory_and_versions():
     assert ("cap13:planar_single_force_moment", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 3
+    assert len(dc.ADMITTED_METHODS) == 4
     assert "moment" in dc.ADMITTED_QUANTITY_KINDS
     assert "N·mm" in dc.ADMITTED_UNIT_TOKENS
-    assert dc.IMPLEMENTATION_VERSION == "1.2.0"
+    assert dc.IMPLEMENTATION_VERSION == "1.3.0"
     data = dc.load_artifact()
-    assert data["artifact_version"] == "3"
+    assert data["artifact_version"] == "4"
     record = _record(data)
     assert [(r["role"], r["quantity_kind"], r["unit_token"])
             for r in record["input_roles"]] == [("F", "force", "N"),
@@ -331,7 +331,7 @@ def test_closed_inventory_and_versions():
 
 
 def test_units_are_exact_with_no_alias_or_conversion():
-    for unit in ("N·m", "N*mm", "Nmm", "n·mm", "N mm", "kN"):
+    for unit in ("N*mm", "Nmm", "n·mm", "N mm", "kN", "N.mm"):
         result = dc.execute(BINDING, _request(units=(unit, "mm")))
         assert result["reason"] == dc.UNKNOWN_UNIT, unit
     assert dc.execute(BINDING, _request(units=("N", "N")))["reason"] \
@@ -340,6 +340,11 @@ def test_units_are_exact_with_no_alias_or_conversion():
         == dc.UNIT_NOT_ADMITTED
     assert dc.execute(BINDING, _request(units=("W", "mm")))["reason"] \
         == dc.UNIT_NOT_ADMITTED
+    # N·m is admitted for the rotational load's torque (Correction 04) and is
+    # still never accepted, converted or aliased for this method's roles
+    for units in (("N·m", "mm"), ("N", "rad/s")):
+        assert dc.execute(BINDING, _request(units=units))["reason"] \
+            == dc.UNIT_NOT_ADMITTED
 
 
 def test_method_version_and_adapter_integrity_fail_closed():
@@ -389,7 +394,7 @@ def test_app_wires_one_immutable_moment_binding():
     with pytest.raises(AttributeError):
         webapp._CAP13_MOMENT_BINDING.method_id = "x"
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 3
+    assert app_source.count("_dcalc.bind_method(") == 4
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     assert "cap13_planar_moment" not in owner_source
     assert "cap13_content_config" not in owner_source

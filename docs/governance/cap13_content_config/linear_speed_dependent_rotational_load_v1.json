@@ -1,0 +1,170 @@
+{
+  "artifact_id": "cap13_linear_speed_dependent_rotational_load",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "CAP-13 - Component Thickness, Specification, and Safety Advisory (method authority for this one method only)",
+  "slice": "Stage 25 / CAP-13 - Linear Speed-Dependent Rotational Load - Slice 1",
+  "governance_note": "The CAP-13-owned governed artifact of the linear speed-dependent rotational load method, under STAGE25_CAP13_LINEAR_SPEED_DEPENDENT_ROTATIONAL_LOAD_METHOD_CONTRACT.md. It carries the method authority (identity, version, model, executed form and derivation), the applicability declarations, the numeric domain, the high-risk screen, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json; it is separate from every other CAP-13 and THERM-01 artifact, never loads one and is never loaded by one. Calculation execution belongs to the shared deterministic calculation and units owner; nothing here is evidence, a specification, a motor, actuator or drive selection, a dynamics, suitability, compatibility or safety statement, or a readiness, progression or validation input.",
+  "method": {
+    "method_id": "cap13:linear_speed_dependent_rotational_load",
+    "method_version": "1.0",
+    "contract": "docs/governance/STAGE25_CAP13_LINEAR_SPEED_DEPENDENT_ROTATIONAL_LOAD_METHOD_CONTRACT.md",
+    "model": "ONE rotating shaft on ONE fixed axis loaded by ONE resisting torque that the inventor declares to be proportional to the shaft speed relative to its support and zero at zero speed, characterised by ONE known nominal point: the nominal torque tau_nominal (negative, a resisting load) at the nominal speed w_nominal (positive). The signed torque tau that this load applies at the shaft is evaluated at ONE signed operating speed w.",
+    "executed_form": "tau = tau_nominal * (w / w_nominal), evaluated as the exact rational value of the three binary inputs rounded once to binary64; accepted only when the exact result is zero (then exactly 0.0) or the rounded result is finite, nonzero, of the same sign and within a relative error of 2^-52 of it; no abs(w), no clamping, no rounding policy and no magnitude ceiling.",
+    "derivation": "Modelica Standard Library v4.1.0, Modelica.Mechanics.Rotational.Sources.LinearSpeedDependentTorque with TorqueDirection=false defines tau = tau_nominal*(w/w_nominal), with w the angular velocity of the flange relative to its support and tau = -flange.tau the accelerating torque acting at the flange; a negative tau_nominal acts as a load in the positive direction of rotation (MODELICA-S1). With tau_nominal < 0 and w_nominal > 0 the torque opposes the rotation in both directions and is zero at zero speed. The relation is restated independently; no Modelica code is copied or executed, and the model is not shown to describe the inventor's mechanism."
+  },
+  "numeric_domain": {
+    "roles": [
+      {
+        "role": "tau_nominal",
+        "meaning": "nominal torque of the declared load at the nominal speed; strictly negative (a resisting load) (the role written tau-nominal)",
+        "quantity_kind": "torque",
+        "unit_token": "N·m"
+      },
+      {
+        "role": "w_nominal",
+        "meaning": "nominal speed at which tau_nominal is known; strictly positive (the role written omega-nominal)",
+        "quantity_kind": "angular_velocity",
+        "unit_token": "rad/s"
+      },
+      {
+        "role": "w",
+        "meaning": "signed operating speed of the shaft relative to its support; zero is valid (the role written omega)",
+        "quantity_kind": "angular_velocity",
+        "unit_token": "rad/s"
+      },
+      {
+        "role": "tau",
+        "meaning": "signed accelerating torque the load applies at the shaft, positive in the positive direction of rotation (Modelica -flange.tau); a resisting load is negative for positive rotation, positive for negative rotation and zero at zero speed; never a magnitude, rating, motor requirement or limit",
+        "quantity_kind": "torque",
+        "unit_token": "N·m"
+      }
+    ],
+    "rules": [
+      "tau_nominal, w_nominal and w are finite numbers; tau_nominal is strictly less than zero, w_nominal strictly greater than zero and w any finite signed value including zero. A string, boolean, NaN, infinity, a wrong sign or any other non-finite or non-numeric value is INVALID_NUMERIC_INPUT, resolved before the shared owner is called; the shared owner refuses a wrong-signed nominal value it receives as INPUT_OUTSIDE_ADMITTED_RANGE.",
+      "No physical magnitude limit exists for any input, and none is part of the admitted engineering domain. Whether the linear load model applies at a given speed is the inventor's declaration, never a numeric range.",
+      "Numerical acceptance: the exact rational value tau_nominal * w / w_nominal of the actual binary inputs is rounded once to binary64. A zero operating speed gives exactly 0.0. A nonzero exact result is accepted only when the rounded value is finite, nonzero, of the same sign and within a relative error of 2^-52 of it; a subnormal result is accepted only when it meets that bound.",
+      "Overflow, underflow to zero of a nonzero exact result, a changed sign or a result outside the accepted relative error is FAILURE / EXECUTION_INTEGRITY_FAILURE with no numerical payload; it is never rewritten as a refusal.",
+      "Each typed numeric field is capped at 64 characters for abuse and resource protection only; that bound is NON-PHYSICAL, is NOT the admitted engineering domain and is never described as a range of valid torques or speeds. Over-length text is INVALID_NUMERIC_INPUT.",
+      "Grammar: strict ASCII decimal digits with an optional single fractional part; a single leading minus sign is allowed for tau_nominal and w only; no plus sign, exponent, separator, Unicode digit, unit suffix or normalization. The display is the shortest round-trip binary64 decimal, with no rounding policy."
+    ]
+  },
+  "declarations": [
+    {
+      "declaration_id": "linear_through_zero",
+      "contract_ref": "D-1",
+      "accepted_value": "the load's torque is proportional to the shaft speed and zero at zero speed, over every speed considered, including the operating speed entered",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "nominal_point",
+      "contract_ref": "D-2",
+      "accepted_value": "tau_nominal at w_nominal is one known point of exactly this load, taken from the inventor's own measurement or documentation; InventorAI does not estimate or check it",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "single_axis",
+      "contract_ref": "D-3",
+      "accepted_value": "one shaft rotating about one fixed axis, with every speed measured relative to the stationary support and the same positive direction of rotation used for all of them",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "load_only",
+      "contract_ref": "D-4",
+      "accepted_value": "only this one speed-dependent load is considered: no acceleration, inertia, friction, backlash, other load or motor behaviour is included",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "sign_convention",
+      "contract_ref": "D-5",
+      "accepted_value": "the result is the torque the load applies at the shaft, positive in the positive direction of rotation, so a resisting load is negative for positive rotation and positive for negative rotation",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    }
+  ],
+  "screen_items": [
+    {
+      "item_id": "supports_people",
+      "item": "supports people"
+    },
+    {
+      "item_id": "overhead_or_falling_hazard",
+      "item": "overhead or falling hazard"
+    },
+    {
+      "item_id": "children",
+      "item": "use by or for children"
+    },
+    {
+      "item_id": "safety_critical_load_path",
+      "item": "safety-critical load path"
+    },
+    {
+      "item_id": "pressure",
+      "item": "pressure"
+    },
+    {
+      "item_id": "high_temperature",
+      "item": "high temperature"
+    },
+    {
+      "item_id": "battery_containment",
+      "item": "battery containment"
+    },
+    {
+      "item_id": "medical_use",
+      "item": "medical use"
+    },
+    {
+      "item_id": "food_contact",
+      "item": "food contact"
+    }
+  ],
+  "limitations": [
+    "No dynamics, acceleration, inertia, simulation, friction model, starting or breakaway torque, power or energy; no motor, actuator, gearbox or drive selection, sizing or rating; no torque capacity, strength, compatibility, suitability, stability or safety conclusion; no inference of any declaration, value or load type.",
+    "The linear model is the inventor's declaration: InventorAI does not show that it describes the real mechanism at any speed, and no conversion of N·m or rad/s to any other unit is performed.",
+    "All NO answers on the high-risk screen only allow this bounded calculation to proceed; they never mean safe. The screen neither reads nor feeds SafetySignal.",
+    "The result is UNVALIDATED and is not evidence; it is request-local and is not stored, reported, exported or used for readiness, progression or validation."
+  ],
+  "disclosure": [
+    "This is the torque that the one speed-dependent load you declared applies at the shaft at the speed ω you entered, using your own nominal torque τ_nominal at your own nominal speed ω_nominal.",
+    "Sign convention: τ is positive in the positive direction of rotation, so this resisting load gives a negative τ for positive ω, a positive τ for negative ω and exactly zero at ω = 0.",
+    "It assumes the load torque stays proportional to speed and is zero at zero speed; InventorAI does not check that your load behaves this way at any speed.",
+    "It includes no acceleration, inertia, friction, starting torque or other load, and it does not tell whether any motor, gearbox, shaft or part can drive or carry this load.",
+    "It is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement or a qualified engineer before any reliance; it says nothing about suitability or safety.",
+    "InventorAI does not check your values or that your declarations match the real mechanism.",
+    "Reference source material: Modelica Standard Library v4.1.0 (Modelica Association and contributors, BSD 3-Clause License); the relation is restated by InventorAI, and no Modelica code is used."
+  ],
+  "sources": [
+    {
+      "record_id": "MODELICA-S1",
+      "record_type": "source",
+      "source_type": "open_source_model_library",
+      "publisher": "Modelica Association",
+      "source_title": "Modelica Standard Library v4.1.0 - Modelica.Mechanics.Rotational.Sources.LinearSpeedDependentTorque",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/Modelica/Mechanics/Rotational/Sources/LinearSpeedDependentTorque.mo",
+      "source_use_policy_ref": "cap13r:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspected_content": "Supports only, at git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a): with TorqueDirection=false, tau = tau_nominal*(w/w_nominal); w is the angular velocity of the flange with respect to the support (= der(phi)); tau is the accelerating torque acting at the flange (= -flange.tau); a negative tau_nominal acts as a load in the positive direction of rotation; w_nominal carries min = Modelica.Constants.eps; units from Modelica.Units.SI (Torque in N.m, AngularVelocity in rad/s). Lead-supplied identification of the file, version and relation in the ROTATIONAL-LOAD-SLICE-01 brief; confirmed directly by the executor on 2026-10-24.",
+      "paraphrase_only_limitation": "The mathematical relation and the sign meaning are restated in InventorAI's own words; no Modelica source code, annotation, icon, diagram or documentation text is copied, and no Modelica runtime is used.",
+      "third_party_material_exclusion": "No contributor-specific material beyond the stated facts is used.",
+      "no_endorsement_limitation": "No statement or implication that the Modelica Association or any contributor endorses, reviewed or approved InventorAI or any project."
+    },
+    {
+      "record_id": "cap13r:SU001",
+      "record_type": "source_use_policy",
+      "source_type": "open_source_license",
+      "publisher": "Modelica Association",
+      "source_title": "Modelica Standard Library v4.1.0 - LICENSE (BSD 3-Clause License)",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/LICENSE",
+      "source_use_policy_ref": "cap13r:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspected_content": "Source-use basis (not a legal opinion): BSD 3-Clause License, Copyright (c) 1998-2025, Modelica Association and contributors. Redistribution of source or binary must retain the notice and conditions; the copyright holder's and contributors' names may not be used to endorse or promote derived products without prior written permission; provided as is, without warranty. This method uses only facts (one relation, its sign meaning and two SI unit identifications), restated independently; no code is copied, redistributed or executed, so no code redistribution obligation arises, and attribution is given as acknowledgement. Modelica is a registered trademark of the Modelica Association; the name is used only to identify the source.",
+      "paraphrase_only_limitation": "Facts only; no copied code, text, icon or diagram.",
+      "third_party_material_exclusion": "No third-party or contributor-specific material is reproduced.",
+      "no_endorsement_limitation": "No endorsement by the Modelica Association or any contributor is stated or implied.",
+      "acknowledgement": "Reference source material: Modelica Standard Library v4.1.0, Copyright (c) 1998-2025 Modelica Association and contributors, BSD 3-Clause License."
+    }
+  ]
+}

@@ -109,6 +109,9 @@ MUTATIONS = (
     # Stage 25 / CAP-13 Planar Moment Slice 1: the request-local planar
     # single-force moment calculation. It persists nothing, but it accepts a POST.
     "/session/<sid>/planar-moment",
+    # Stage 25 / CAP-13 Rotational Load Slice 1: the request-local linear
+    # speed-dependent rotational load. It persists nothing, but it accepts a POST.
+    "/session/<sid>/rotational-load",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

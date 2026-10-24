@@ -33,6 +33,8 @@ from engine import therm01_conduction_method as _therm01_method  # Stage 27 / TH
 from engine import therm01_temperature_difference as _therm01  # Stage 27 / THERM-01 Slice 1 consumer
 from engine import cap13_planar_moment_method as _cap13m_method  # CAP-13 Planar Moment Slice 1 method
 from engine import cap13_planar_moment as _cap13m  # CAP-13 Planar Moment Slice 1 consumer
+from engine import cap13_rotational_load_method as _cap13r_method  # CAP-13 Rotational Load Slice 1 method
+from engine import cap13_rotational_load as _cap13r  # CAP-13 Rotational Load Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7089,6 +7091,11 @@ def show_session(sid):
         # eligible project (Mechanical root, or a declared Mechanical part of a
         # valid integrated composition). It never gates the journey.
         cap13_planar_moment_link=_cap13m_link_offered(sid),
+        # Stage 25 / CAP-13 Rotational Load Slice 1: an OPTIONAL link to the
+        # request-local linear speed-dependent rotational load evaluation, on the
+        # same eligibility as the other CAP-13 calculations. It never gates the
+        # journey.
+        cap13_rotational_load_link=_cap13r_link_offered(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -14143,6 +14150,146 @@ def cap13_planar_moment_post(sid):
                               error="UI_CAP13M_ERR_REQUEST")
     evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
     return _render_cap13m(sid, declared_part=part, captured=captured,
+                          evaluation=evaluation)
+
+
+# =============================================================================
+# Stage 25 / CAP-13 — Linear Speed-Dependent Rotational Load, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory evaluation of the signed torque that ONE inventor-
+# declared resisting load, proportional to shaft speed, applies at ONE shaft at
+# ONE operating speed (rotational-load contract §1, §7). The consumer
+# (`engine/cap13_rotational_load.py`) owns capture and the pre-owner order; the
+# shared calculation / units owner (`engine/deterministic_calculation.py`) owns
+# execution; the method adapter (`engine/cap13_rotational_load_method.py`) owns
+# the relation and its numerical acceptance. Eligibility is the SAME
+# ``_calc_gate`` rule as the other CAP-13 calculations: a Mechanical durable root
+# domain, or the ONE declared Mechanical part of a valid durable integrated
+# composition (the Stage 15 exception in ``engine/subsystem_model.py`` names this
+# method). Nothing is persisted and nothing is read from the project beyond the
+# root domain and that validated composition. The POST renders its answer
+# directly and never redirects. The other three calculations are untouched.
+#
+# The FOURTH immutable trusted binding (calc/units Correction 04 §13C), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_CAP13_ROTATIONAL_LOAD_BINDING = _dcalc.bind_method(
+    _cap13r_method.METHOD_ID, _cap13r_method.METHOD_VERSION,
+    _cap13r_method.evaluate)
+
+# Latin letters, digits, the Greek role letters τ / ω, the middle dot of ``N·m``
+# and unit tokens such as ``rad/s``: each run is direction-isolated on an Arabic
+# page.
+_CAP13R_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u03c4\u03c9](?:[A-Za-z0-9_\u03c4\u03c9\u00b7.:/= -]*[A-Za-z0-9_\u03c4\u03c9])?")
+
+
+def _cap13r_eligible(sid):
+    """True iff the project is eligible for the rotational load under
+    ``_calc_gate``: a Mechanical durable root domain, or a declared Mechanical
+    part of a valid durable integrated composition. Never read from the
+    request; fails closed."""
+    return _calc_gate(sid, _cap13r)[0]
+
+
+def _cap13r_link_offered(sid):
+    """The session-page link reads the SAME single rule the submission reads,
+    so the link and the calculation cannot disagree. Presentation only."""
+    return _cap13r_eligible(sid)
+
+
+def _cap13r_isolate(text, lang):
+    return _ltr_isolate(text, lang, _CAP13R_LTR_RUN)
+
+
+def _cap13r_result_view(result):
+    """Template view of a SUCCESS owner result: the signed torque shown exactly
+    as produced (``format_value``), the method identity and the source and unit
+    references the owner carried. No rounding, no abs(), no other field."""
+    output = result["outputs"]["tau"]
+    return {
+        "value": _cap13r.format_value(output["value"]),
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_cap13r(sid, status=200, eligible=True, declared_part=None, captured=None,
+                   evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _cap13r.OUTCOME_SUCCESS:
+            view = _cap13r_result_view(evaluation["result"])
+        else:
+            outcome_key = "UI_CAP13R_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "cap13_rotational_load.html",
+        sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
+        iso=lambda key: _cap13r_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _cap13r_isolate(part, lang) for part in
+            ui_text.text("UI_CAP13R_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_cap13r.DECLARATION_IDS,
+        screen_items=_cap13r.SCREEN_ITEMS,
+        value_roles=_cap13r.VALUE_ROLES,
+        decl_field=_cap13r.DECLARATION_FIELD,
+        screen_field=_cap13r.SCREEN_FIELD,
+        value_field=_cap13r.VALUE_FIELD,
+        answer_applies=_cap13r.ANSWER_APPLIES,
+        answer_does_not_apply=_cap13r.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_cap13r.SCREEN_YES,
+        screen_no=_cap13r.SCREEN_NO,
+        max_value_chars=_cap13r.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/rotational-load", methods=["GET"])
+def cap13_rotational_load(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _cap13r)
+    return _render_cap13r(sid, eligible=eligible, declared_part=part)
+
+
+@app.route("/session/<sid>/rotational-load", methods=["POST"])
+def cap13_rotational_load_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain, or a declared Mechanical part of a valid
+    # durable integrated composition) -> strict capture (malformed: 400, no
+    # reason token) -> the consumer's §7 pre-owner order -> the shared owner.
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _cap13r)
+    if not eligible:
+        return _render_cap13r(sid, eligible=False)
+    form = request.form
+    captured = _cap13r.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_cap13r(sid, status=400, declared_part=part,
+                              error="UI_CAP13R_ERR_REQUEST")
+    evaluation = _cap13r.evaluate(captured, _CAP13_ROTATIONAL_LOAD_BINDING)
+    return _render_cap13r(sid, declared_part=part, captured=captured,
                           evaluation=evaluation)
 
 

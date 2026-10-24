@@ -1,16 +1,18 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "3",
+  "artifact_version": "4",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its accepted Correction 01, Correction 02 / section 13A and Correction 03 / section 13B), the accepted CAP-13 two-support static reactions contract, the accepted THERM-01 single-path conduction temperature-difference contract and the CAP-13 planar single-force moment contract. Content version 3 admits exactly three methods and exactly the six unit tokens those methods require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment); it holds no conversion, no alias, no dimensional equivalence, no absolute temperature kind and no unit vocabulary beyond these records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The records dcu:U001 to dcu:U005 and dcu:SU001 to dcu:SU004 and the CAP-13 reactions and THERM-01 method records are unchanged from content version 2.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its accepted Correction 01, Correction 02 / section 13A, Correction 03 / section 13B and Correction 04 / section 13C), the accepted CAP-13 two-support static reactions contract, the accepted THERM-01 single-path conduction temperature-difference contract, the CAP-13 planar single-force moment contract and the CAP-13 linear speed-dependent rotational load contract. Content version 4 admits exactly four methods and exactly the eight unit tokens those methods require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load); it holds no conversion, no alias, no dimensional equivalence, no absolute temperature kind and no unit vocabulary beyond these records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The records dcu:U001 to dcu:U006 and dcu:SU001 to dcu:SU006 and the three earlier method records are unchanged from content version 3.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
     {"quantity_kind": "length", "dimension": "L"},
     {"quantity_kind": "power", "dimension": "M L^2 T^-3"},
     {"quantity_kind": "thermal_resistance", "dimension": "Theta M^-1 L^-2 T^3"},
     {"quantity_kind": "temperature_difference", "dimension": "Theta"},
-    {"quantity_kind": "moment", "dimension": "M L^2 T^-2"}
+    {"quantity_kind": "moment", "dimension": "M L^2 T^-2"},
+    {"quantity_kind": "torque", "dimension": "M L^2 T^-2"},
+    {"quantity_kind": "angular_velocity", "dimension": "T^-1"}
   ],
   "unit_records": [
     {
@@ -114,6 +116,40 @@
       "inspection_basis": "LEAD_SUPPLIED",
       "inspection_date": "2026-09-28",
       "inspection_reference": "Lead-level Section-8 inspection of NIST SP 811 Appendix B.9 recorded as mechanical:PR009 (2026-09-28), whose disposition stays scoped to its own records; this record is the owner's own bounded unit identification for N·mm under STAGE25_CAP13_PLANAR_SINGLE_FORCE_MOMENT_METHOD_CONTRACT.md section 8. Not independently re-inspected by the executor."
+    },
+    {
+      "record_id": "dcu:U007",
+      "unit_token": "N·m",
+      "unit_name": "newton metre",
+      "quantity_kind": "torque",
+      "source_title": "Modelica Standard Library - Modelica.Units.SI",
+      "publisher": "Modelica Association",
+      "edition": "Modelica Standard Library v4.1.0 (git tag v4.1.0, commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a)",
+      "doi": "not recorded - the library is identified by its version tag and commit; no DOI was used",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/Modelica/Units.mo",
+      "inspected_location": "Modelica/Units.mo, package SI, type Torque (and MomentOfForce = Torque)",
+      "inspected_content": "Modelica.Units.SI declares Torque with quantity \"Torque\" and unit \"N.m\", the newton metre, written here N·m. It is the unit of the torque parameter and variable of the referenced rotational load model. Consistent with the NIST SP 811 Appendix B.9 identification of the newton metre for moment of force / torque recorded as mechanical:PR009. Unit identification only; no conversion is admitted (N·m is never converted to N·mm or any other unit) and no Modelica code is reproduced.",
+      "source_use_policy_ref": "dcu:SU007",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Lead-supplied source identification and unit tokens in the Owner-authorized ROTATIONAL-LOAD-SLICE-01 brief (2026-10-24); confirmed directly by the executor against git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a) on 2026-10-24."
+    },
+    {
+      "record_id": "dcu:U008",
+      "unit_token": "rad/s",
+      "unit_name": "radian per second",
+      "quantity_kind": "angular_velocity",
+      "source_title": "Modelica Standard Library - Modelica.Units.SI",
+      "publisher": "Modelica Association",
+      "edition": "Modelica Standard Library v4.1.0 (git tag v4.1.0, commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a)",
+      "doi": "not recorded - the library is identified by its version tag and commit; no DOI was used",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/Modelica/Units.mo",
+      "inspected_location": "Modelica/Units.mo, package SI, type AngularVelocity",
+      "inspected_content": "Modelica.Units.SI declares AngularVelocity with quantity \"AngularVelocity\" and unit \"rad/s\", the radian per second. It is the unit of the speed parameter and variable of the referenced rotational load model. Unit identification only; no conversion is admitted (rad/s is never converted to rpm, rev/s or deg/s) and no Modelica code is reproduced.",
+      "source_use_policy_ref": "dcu:SU007",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Lead-supplied source identification and unit tokens in the Owner-authorized ROTATIONAL-LOAD-SLICE-01 brief (2026-10-24); confirmed directly by the executor against git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a) on 2026-10-24."
     }
   ],
   "source_use_policies": [
@@ -194,6 +230,19 @@
       "acknowledgement": "Unit identification for N·mm follows NIST Special Publication 811, Appendix B.9, National Institute of Standards and Technology.",
       "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
       "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
+    },
+    {
+      "record_id": "dcu:SU007",
+      "source_title": "Modelica Standard Library - LICENSE (BSD 3-Clause License)",
+      "publisher": "Modelica Association",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/LICENSE",
+      "inspected_content": "Owner-local source-use basis for dcu:U007, dcu:U008 and the rotational-load method source MODELICA-S1 only (not a legal opinion): the Modelica Standard Library v4.1.0 is licensed under the BSD 3-Clause License, Copyright (c) 1998-2025, Modelica Association and contributors; redistribution of source or binary must retain the copyright notice and conditions, and the names of the copyright holder and contributors may not be used to endorse or promote derived products without permission. InventorAI uses only mathematical and unit facts, restated independently in its own words; no Modelica source code, annotation, icon, diagram, documentation text or runtime is copied, redistributed or executed.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Lead-supplied library identification in the ROTATIONAL-LOAD-SLICE-01 brief (2026-10-24); license file confirmed directly by the executor at git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a). A separate record: dcu:SU001 to dcu:SU006 keep their own scopes and are not extended.",
+      "acknowledgement": "Reference source material: Modelica Standard Library v4.1.0, Modelica.Mechanics.Rotational.Sources.LinearSpeedDependentTorque and Modelica.Units.SI, Copyright (c) 1998-2025 Modelica Association and contributors, BSD 3-Clause License. Modelica is a registered trademark of the Modelica Association.",
+      "third_party_material_exclusion": "No Modelica code, annotation, graphic, documentation text or other contributor material is reproduced; only facts are used.",
+      "no_endorsement_limitation": "No statement or implication that the Modelica Association or any contributor endorses, reviewed or approved InventorAI, this owner or any result."
     }
   ],
   "methods": [
@@ -314,6 +363,37 @@
       "result_range": [
         {"role": "M", "condition": "greater_than_zero", "bound_role": null}
       ]
+    },
+    {
+      "method_id": "cap13:linear_speed_dependent_rotational_load",
+      "method_version": "1.0",
+      "adapter_identity": "engine.cap13_rotational_load_method.evaluate",
+      "technical_authority": "CAP-13 - STAGE25_CAP13_LINEAR_SPEED_DEPENDENT_ROTATIONAL_LOAD_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "cap13_linear_speed_dependent_rotational_load", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "MODELICA-S1",
+          "source_title": "Modelica Standard Library v4.1.0 - Modelica.Mechanics.Rotational.Sources.LinearSpeedDependentTorque (TorqueDirection=false)",
+          "publisher": "Modelica Association",
+          "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/Modelica/Mechanics/Rotational/Sources/LinearSpeedDependentTorque.mo",
+          "source_use_policy_ref": "dcu:SU007",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-24"
+        }
+      ],
+      "input_roles": [
+        {"role": "tau_nominal", "quantity_kind": "torque", "unit_token": "N·m"},
+        {"role": "w_nominal", "quantity_kind": "angular_velocity", "unit_token": "rad/s"},
+        {"role": "w", "quantity_kind": "angular_velocity", "unit_token": "rad/s"}
+      ],
+      "output_roles": [
+        {"role": "tau", "quantity_kind": "torque", "unit_token": "N·m"}
+      ],
+      "applicability": [
+        {"role": "tau_nominal", "condition": "less_than_zero", "bound_role": null},
+        {"role": "w_nominal", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
     }
   ]
 }

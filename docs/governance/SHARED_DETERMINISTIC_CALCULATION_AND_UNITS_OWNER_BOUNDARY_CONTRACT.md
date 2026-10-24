@@ -51,6 +51,13 @@ SLICE 1`, which implements it in the same pull request under the
 it takes effect only on the verified merge of that pull request into `feature/atomic-json-session-persistence`; on its
 proposal branch it is an Owner-authorized proposed amendment. It ADDS §13B and one bullet to §16; §13A, §13 and every other
 clause — including §§7–10, §12 and §14 — are unchanged. It admits exactly one further method and nothing more (§13B).
+CORRECTION 04: `CORRECTION 04 — BOUNDED FOURTH ADMISSION (CAP-13 LINEAR SPEED-DEPENDENT ROTATIONAL LOAD) — OWNER-AUTHORIZED
+WITH ITS IMPLEMENTATION`. Folded, narrowly, into the one Owner-authorized increment `ROTATIONAL-LOAD-SLICE-01`, which
+implements it in the same pull request under the
+[linear speed-dependent rotational load method contract](STAGE25_CAP13_LINEAR_SPEED_DEPENDENT_ROTATIONAL_LOAD_METHOD_CONTRACT.md).
+Applicability: it takes effect only on the verified merge of that pull request into `feature/atomic-json-session-persistence`;
+on its proposal branch it is an Owner-authorized proposed amendment. It ADDS §13C and one bullet to §16; §13B, §13A, §13 and
+every other clause — including §§7–10, §12 and §14 — are unchanged. It admits exactly one further method and nothing more.
 BASIS: the Lead's read-only Stage 25 / CAP-13 feasibility gate (finding B — CAP-13 is feasible only after calculation and
 units ownership is decided); the Lead's read-only calculation and units ownership gate (finding B — a new shared calculation
 and units owner is required before CAP-13); an Astra architecture review and an independent Claude architecture / semantic
@@ -408,6 +415,41 @@ to EXACTLY the following and nothing more.
   unit registry or conversion graph; persistence (§12); provider, AI or external-tool execution; and every other §13 / §13A
   exclusion.
 
+## 13C. Bounded fourth admission — CAP-13 linear speed-dependent rotational load (Correction 04)
+
+The delivered third admission (§13B) is expanded, by the Owner-authorized increment named in the CORRECTION 04 header, to
+EXACTLY the following and nothing more.
+
+- **Owner.** The one existing shared owner. No second owner, solver, simulation, model selection, range policy or
+  calculation path is created, and the owner acquires no persistence and no scientific authority.
+- **Methods — exactly four:** the three of §13B plus `cap13:linear_speed_dependent_rotational_load` 1.0, whose technical
+  authority stays outside this owner (§3), in its own CAP-13 method-authority artifact
+  `cap13_linear_speed_dependent_rotational_load` version 1.
+- **Consumers — exactly four:** the existing three and one rotational-load consumer. No consumer imports another, and no
+  method-authority artifact loads another at execution.
+- **Quantity kinds:** the existing six, plus exactly `torque` and `angular_velocity`. **Exact unit tokens:** the existing
+  six, plus exactly `N·m` and `rad/s`. One unit per kind; no alias, no case folding, no dimensional equivalence (`torque`
+  and `moment` stay distinct kinds and `N·m` is never derived from or converted to `N·mm`) and no conversion of any kind.
+- **Condition vocabulary.** The closed applicability / result-range vocabulary the owner checks mechanically gains exactly
+  `less_than_zero`, used for the new method's negative nominal torque. The owner only evaluates a condition a method record
+  declares; it chooses none.
+- **Method-local binding and wiring.** One additional immutable, application-wired binding; each consumer holds exactly its
+  own binding. No registry, discovery, dynamic module path or request-selected method.
+- **Versions.** The shared-owner artifact moves to content version `4` and the implementation to `1.3.0`. The new unit
+  records (`dcu:U007` `N·m`, `dcu:U008` `rad/s`, from `Modelica.Units.SI` v4.1.0) and source-use record (`dcu:SU007`, the
+  Modelica Standard Library BSD 3-Clause License) keep the §9 source and inspection requirements; every content-version-3
+  record is unchanged.
+- **Numerical policy.** §10 applies unchanged. The new method's acceptance (exact rational value rounded once; exact zero at
+  zero speed; a nonzero result within `2^-52` of the exact result, subnormal results only when they meet that bound) is
+  method-authority content held in its adapter and contract; it is NOT a generic owner policy and changes nothing for the
+  other three methods. A failure is `FAILURE / EXECUTION_INTEGRITY_FAILURE` with no numerical payload.
+- **Existing methods preserved.** The two-support, THERM-01 and planar-moment methods, their authority artifacts,
+  semantics, pins and user-facing behaviour stay unchanged; bounded updates to assertions on the owner content version, the
+  implementation version and the closed inventory, caused only by this admission, are expected and allowed.
+- **Still excluded:** a fifth method or consumer; ranges; string parsing in the owner; any conversion; a generic solver,
+  unit registry or conversion graph; persistence (§12); provider, AI, external-tool or external-library execution
+  (including Modelica runtimes); and every other §13 / §13A / §13B exclusion.
+
 ## 14. Required guard strategy for a future implementation
 
 - independent expected numerical results;
@@ -448,6 +490,8 @@ to EXACTLY the following and nothing more.
   implementation of it still needs its own Owner authorization and risk-appropriate independent verification.
 - Correction 03 (§13B) is Owner-authorized together with its bounded implementation; it carries the same proportionate,
   risk-appropriate verification as that implementation (focused tests and hosted required CI).
+- Correction 04 (§13C) is Owner-authorized together with its bounded implementation, under the same proportionate,
+  risk-appropriate verification.
 
 ## 17. Non-authorization (restated)
 
