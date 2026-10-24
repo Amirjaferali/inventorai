@@ -579,6 +579,8 @@ def test_every_key_has_both_languages_and_the_sign_convention_is_explicit():
     for key in keys:
         for lang in ("en", "ar"):
             assert ui_text.text(key, lang).strip(), (key, lang)
+    assert ui_text.text("UI_CAP13R_DECL_NOMINAL_POINT", "en").startswith("The value τ_nominal")
+    assert "Τ" not in ui_text.text("UI_CAP13R_DECL_NOMINAL_POINT", "en")    # never capital Tau
     note = ui_text.text("UI_CAP13R_SIGN_NOTE", "en")
     for phrase in ("positive direction of rotation", "−flange.tau", "negative for positive ω",
                    "positive for negative ω", "zero at ω = 0"):
@@ -746,6 +748,7 @@ def test_attribution_escaping_and_arabic_isolation(lang):
         assert 'dir="rtl"' in body
         for token in ("τ_nominal", "ω_nominal", "N·m", "rad/s", "UNVALIDATED", "NOT EVIDENCE"):
             assert '<bdi dir="ltr">%s</bdi>' % html.escape(token) in body, token
+        assert '<bdi dir="ltr">−flange.tau</bdi>' in body      # minus kept with its token
         stripped = html.unescape(re.sub(r"<[^>]+>", "", body))
         for item in ui_text.text("UI_CAP13R_DISCLOSURE", "ar").split("\n\n"):
             assert _norm(item) in _norm(stripped), item[:30]

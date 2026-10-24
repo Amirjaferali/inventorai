@@ -14177,11 +14177,11 @@ _CAP13_ROTATIONAL_LOAD_BINDING = _dcalc.bind_method(
     _cap13r_method.METHOD_ID, _cap13r_method.METHOD_VERSION,
     _cap13r_method.evaluate)
 
-# Latin letters, digits, the Greek role letters τ / ω, the middle dot of ``N·m``
-# and unit tokens such as ``rad/s``: each run is direction-isolated on an Arabic
-# page.
+# Latin letters, digits, the Greek role letters τ / ω, a leading minus sign (as
+# in ``−flange.tau``), the middle dot of ``N·m`` and unit tokens such as
+# ``rad/s``: each run is direction-isolated on an Arabic page.
 _CAP13R_LTR_RUN = re.compile(
-    r"[A-Za-z0-9_\u03c4\u03c9](?:[A-Za-z0-9_\u03c4\u03c9\u00b7.:/= -]*[A-Za-z0-9_\u03c4\u03c9])?")
+    r"[A-Za-z0-9_\u03c4\u03c9\u2212](?:[A-Za-z0-9_\u03c4\u03c9\u00b7.:/= -]*[A-Za-z0-9_\u03c4\u03c9])?")
 
 
 def _cap13r_eligible(sid):

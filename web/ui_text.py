@@ -6152,7 +6152,7 @@ UI_STRINGS = {
         "en": "The load's torque is proportional to the shaft speed and zero at zero speed, over every speed considered, including the operating speed entered.",
         "ar": "عزم الحمل يتناسب مع سرعة العمود ويساوي صفرًا عند السرعة صفر، وذلك لكل سرعة معنيّة، بما فيها سرعة التشغيل المُدخلة."},
     "UI_CAP13R_DECL_NOMINAL_POINT": {
-        "en": "Τ_nominal at ω_nominal is one known point of exactly this load, taken from the inventor's own measurement or documentation; InventorAI does not estimate or check it.",
+        "en": "The value τ_nominal at ω_nominal is one known point of exactly this load, taken from the inventor's own measurement or documentation; InventorAI does not estimate or check it.",
         "ar": "قيمة τ_nominal عند ω_nominal نقطة واحدة معروفة لهذا الحمل تحديدًا، مأخوذة من قياسك أنت أو من وثائقك؛ ولا يقدّرها InventorAI ولا يتحقق منها."},
     "UI_CAP13R_DECL_SINGLE_AXIS": {
         "en": "One shaft rotating about one fixed axis, with every speed measured relative to the stationary support and the same positive direction of rotation used for all of them.",

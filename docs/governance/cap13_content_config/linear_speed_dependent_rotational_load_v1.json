@@ -41,7 +41,7 @@
       }
     ],
     "rules": [
-      "tau_nominal, w_nominal and w are finite numbers; tau_nominal is strictly less than zero, w_nominal strictly greater than zero and w any finite signed value including zero. A string, boolean, NaN, infinity, a wrong sign or any other non-finite or non-numeric value is INVALID_NUMERIC_INPUT, resolved before the shared owner is called; the shared owner refuses a wrong-signed nominal value it receives as INPUT_OUTSIDE_ADMITTED_RANGE.",
+      "tau_nominal, w_nominal and w are finite numbers; tau_nominal is strictly less than zero, w_nominal strictly greater than zero and w any finite signed value including zero. A string, boolean, NaN, infinity, a wrong sign or any other non-finite or non-numeric value is INVALID_NUMERIC_INPUT, resolved before the shared owner is called; a wrong-signed nominal value that reaches the shared owner is declined there by its governed applicability as UNABLE_TO_DETERMINE / INPUT_OUTSIDE_ADMITTED_RANGE, which the consumer shows as the neutral UNMAPPED_OWNER_OUTCOME (unreachable from the page).",
       "No physical magnitude limit exists for any input, and none is part of the admitted engineering domain. Whether the linear load model applies at a given speed is the inventor's declaration, never a numeric range.",
       "Numerical acceptance: the exact rational value tau_nominal * w / w_nominal of the actual binary inputs is rounded once to binary64. A zero operating speed gives exactly 0.0. A nonzero exact result is accepted only when the rounded value is finite, nonzero, of the same sign and within a relative error of 2^-52 of it; a subnormal result is accepted only when it meets that bound.",
       "Overflow, underflow to zero of a nonzero exact result, a changed sign or a result outside the accepted relative error is FAILURE / EXECUTION_INTEGRITY_FAILURE with no numerical payload; it is never rewritten as a refusal.",
@@ -59,7 +59,7 @@
     {
       "declaration_id": "nominal_point",
       "contract_ref": "D-2",
-      "accepted_value": "tau_nominal at w_nominal is one known point of exactly this load, taken from the inventor's own measurement or documentation; InventorAI does not estimate or check it",
+      "accepted_value": "the value tau_nominal at w_nominal is one known point of exactly this load, taken from the inventor's own measurement or documentation; InventorAI does not estimate or check it",
       "refusal": "MODEL_NOT_SUPPORTED"
     },
     {

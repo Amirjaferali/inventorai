@@ -83,7 +83,7 @@ Each is shown as its own statement and answered «applies» or «does not apply�
 | Ref | Id | Accepted statement |
 |---|---|---|
 | D-1 | `linear_through_zero` | the load's torque is proportional to the shaft speed and zero at zero speed, over every speed considered, including the operating speed entered |
-| D-2 | `nominal_point` | tau_nominal at w_nominal is one known point of exactly this load, taken from the inventor's own measurement or documentation; InventorAI does not estimate or check it |
+| D-2 | `nominal_point` | the value tau_nominal at w_nominal is one known point of exactly this load, taken from the inventor's own measurement or documentation; InventorAI does not estimate or check it |
 | D-3 | `single_axis` | one shaft rotating about one fixed axis, with every speed measured relative to the stationary support and the same positive direction of rotation used for all of them |
 | D-4 | `load_only` | only this one speed-dependent load is considered: no acceleration, inertia, friction, backlash, other load or motor behaviour is included |
 | D-5 | `sign_convention` | the result is the torque the load applies at the shaft, positive in the positive direction of rotation, so a resisting load is negative for positive rotation and positive for negative rotation |
@@ -95,8 +95,9 @@ Each is shown as its own statement and answered «applies» or «does not apply�
   at 64 characters for abuse protection only — a NON-PHYSICAL bound, never a range of valid torques or speeds.
 - **Signs.** `τ_nominal < 0`, `ω_nominal > 0`, `ω` any finite value including zero (a typed `-0` is zero). A wrong sign, a
   zero `τ_nominal` or `ω_nominal`, or a malformed or non-finite value is `INVALID_NUMERIC_INPUT`, resolved before the owner;
-  the owner's own applicability (`less_than_zero` / `greater_than_zero`) refuses a wrong-signed nominal value it receives
-  as `INPUT_OUTSIDE_ADMITTED_RANGE`.
+  a wrong-signed nominal value that reaches the owner is declined by its governed applicability (`less_than_zero` /
+  `greater_than_zero`) as `UNABLE_TO_DETERMINE / INPUT_OUTSIDE_ADMITTED_RANGE`, shown as the neutral
+  `UNMAPPED_OWNER_OUTCOME` (unreachable from the page).
 - **No physical limits.** No magnitude limit exists for any input. Whether the linear model applies at a speed is the
   inventor's declaration (D-1), never a numeric range.
 - **Arrangement.** The exact rational value `τ_nominal × ω / ω_nominal` of the three actual binary inputs is formed and

@@ -165,8 +165,8 @@ _SOURCE_POLICY = {"MODELICA-S1": "cap13r:SU001"}
 # a new artifact version under its own authorization, not an edit here alone.
 _SEMANTIC_DIGESTS = {
     "method": "68a4475d9a818875607d1bc01dd1825539c7a80eec74d7842d0ca7b6a2849eb0",
-    "numeric_domain": "2ce4eb5af0c433d6ee683f8aa7cade28403911eb0feda97f4239fb2e28c9880c",
-    "declarations": "0d44ecfb2f734c3e11aa80434674a486e367dbd8f15b5b82cfb32e875400ddb3",
+    "numeric_domain": "c85ad0494bbbc2cff3123cdcf946bbfe56e727eef4154d74148f1b6b2976be3f",
+    "declarations": "ec83f44564298dd58f861b058f62d16ee11f50ddcc5d7f5829248e05e6ba38fb",
     "screen_items": "9afd531ae5d2b462bf82545c32394d22dc3c584abbfb8a7da0626cf2b1a00504",
     "limitations": "691a1230ec3a813d00debd54b064a64078cc4c651a232e8334213da6855ab6c4",
     "disclosure": "ed666528cd28737fe9d8d337bc1cab2f1c901a197431d57800f4ff034a4be4f8",
