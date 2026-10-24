@@ -71,7 +71,7 @@ def test_one_current_mandatory_constraint_yields_one_preparation_step():
     assert "“" + TEXT + "”" in step.statement
     assert (step.responsibility, step.confidence) == (UNDETERMINED, CONFIDENCE_UNDETERMINED)
     assert step.interface_preparation == ()
-    assert "evidence or specialist review" in step.evidence_category
+    assert "evidence or specialist input" in step.evidence_category
     assert "does not verify the constraint or show that it can be met" in step.closure_condition
     assert "has not been checked" in step.statement
     assert plan.outcome == OUTCOME_PLAN and plan.blocked_items == ()
@@ -221,6 +221,12 @@ def test_report_session_note_and_export_through_the_routes(client):
     session_ar = client.get(f"/session/{sid}").get_data(as_text=True)
     assert _html.escape(ui_text.text("UI_PCN_PLAN_NOTE", "ar"), quote=False) in session_ar
     assert 'dir="rtl"' in session_ar
+    # P6-1 RED-05: no tier-overclaim label on either surface, now that a
+    # mandatory constraint adds wording to both
+    for body in (report, session, session_ar):
+        for phrase in ("Electronics Specialist", "Specialist Review", "Expert Review",
+                       "Professional Review", "Certified Review", "Licensed Review"):
+            assert phrase.lower() not in body.lower(), phrase
     # the canonical plan of the live state carries exactly this one constraint step
     [step] = _constraint_steps(derive_validation_plan(_live(sid)))
     assert step.step_id == "vstep:constraint:" + mandatory.record_id

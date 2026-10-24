@@ -189,14 +189,14 @@ _CONSTRAINT_STEP_PREFIX = "vstep:constraint:"
 _CONSTRAINT_LABEL = "Mandatory constraint you declared"
 _CONSTRAINT_STEP_STATEMENT = (
     "Prepare how your mandatory constraint “{text}” will be checked: decide "
-    "what evidence or specialist review would show whether it is met. It has "
+    "what evidence or specialist input would show whether it is met. It has "
     "not been checked, and nothing here shows that it can be met.")
 _CONSTRAINT_EVIDENCE_CATEGORY = (
-    "verification preparation (the evidence or specialist review that would "
+    "verification preparation (the evidence or specialist input that would "
     "show whether the constraint is met)")
 _CONSTRAINT_CLOSURE = (
     "This preparation is complete when you have decided what evidence or "
-    "specialist review would show whether this constraint is met. Completing "
+    "specialist input would show whether this constraint is met. Completing "
     "this preparation does not verify the constraint or show that it can be "
     "met.")
 _CONSTRAINT_UNAVAILABLE_ID = "vblock:constraint:unavailable"

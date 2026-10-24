@@ -907,7 +907,7 @@ and the clauses below are amended only as stated.
   kind.
 - **Content (§7, §13).** The statement quotes the CURRENT wording verbatim
   (after a correction, the latest form only). It asks the inventor to decide
-  what evidence or specialist review would show whether the constraint is met,
+  what evidence or specialist input would show whether the constraint is met,
   and states that the constraint has not been checked and that nothing shows it
   can be met. Responsibility and confidence are `UNDETERMINED`. The evidence
   category is a verification-preparation category, as for the declared-interface
