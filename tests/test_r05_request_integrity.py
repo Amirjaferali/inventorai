@@ -106,6 +106,9 @@ MUTATIONS = (
     # Stage 27 / THERM-01 Slice 1: the request-local single-path temperature-
     # difference calculation. It persists nothing, but it accepts a POST.
     "/session/<sid>/temperature-difference",
+    # Stage 25 / CAP-13 Planar Moment Slice 1: the request-local planar
+    # single-force moment calculation. It persists nothing, but it accepts a POST.
+    "/session/<sid>/planar-moment",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

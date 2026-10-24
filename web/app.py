@@ -31,6 +31,8 @@ from engine.cap13_functional_configuration import derive_provisional_fit as _eng
 from engine import functional_need_handoff as _handoff  # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01 (read-only proposal)
 from engine import therm01_conduction_method as _therm01_method  # Stage 27 / THERM-01 Slice 1 method
 from engine import therm01_temperature_difference as _therm01  # Stage 27 / THERM-01 Slice 1 consumer
+from engine import cap13_planar_moment_method as _cap13m_method  # CAP-13 Planar Moment Slice 1 method
+from engine import cap13_planar_moment as _cap13m  # CAP-13 Planar Moment Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7082,6 +7084,10 @@ def show_session(sid):
         # Electrical / Electronics part of a valid integrated composition). It
         # never gates the journey.
         therm01_temperature_difference_link=_therm01_link_offered(sid),
+        # Stage 25 / CAP-13 Planar Moment Slice 1: an OPTIONAL link to the
+        # request-local planar single-force moment calculation, offered only on
+        # a Mechanical-root project. It never gates the journey.
+        cap13_planar_moment_link=_cap13m_link_offered(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -13995,6 +14001,140 @@ def cap13_support_reactions_post(sid):
     evaluation = _cap13.evaluate(captured, _CAP13_REACTIONS_BINDING)
     return _render_cap13(sid, declared_part=part, captured=captured,
                          evaluation=evaluation)
+
+
+# =============================================================================
+# Stage 25 / CAP-13 — Planar Single-Force Moment, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory calculation of the magnitude of the moment of ONE force
+# about ONE point the inventor chooses, in ONE plane (moment contract §1, §7).
+# The consumer (`engine/cap13_planar_moment.py`) owns capture and the pre-owner
+# order; the shared calculation / units owner (`engine/deterministic_calculation.py`)
+# owns execution; the method adapter (`engine/cap13_planar_moment_method.py`)
+# owns the equation and its numerical acceptance. Eligibility is the trusted
+# durable root domain ONLY (exactly ``mechanical``, read as the CAP-12 gate reads
+# it): the Stage 15 integrated-part exception (``engine/subsystem_model.py``)
+# names its calculations and is NOT extended to this method, so a declared
+# Mechanical part outside the initial analysis focus is not offered it. Nothing
+# is persisted and nothing is read from the project beyond the root domain; no
+# answer, composition, requirement quantity, evidence or SafetySignal. The POST
+# renders its answer directly and never redirects. The two-support reactions and
+# THERM-01 semantics are untouched.
+#
+# The THIRD immutable trusted binding (calc/units Correction 03 §13B), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_CAP13_MOMENT_BINDING = _dcalc.bind_method(
+    _cap13m_method.METHOD_ID, _cap13m_method.METHOD_VERSION,
+    _cap13m_method.evaluate)
+
+# Latin letters, digits, the perpendicular sign of the role ``d⊥`` and the
+# middle dot of the unit ``N·mm``, plus identifiers: each run is
+# direction-isolated on an Arabic page.
+_CAP13M_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u22a5](?:[A-Za-z0-9_\u22a5\u00b7.:/ -]*[A-Za-z0-9_\u22a5])?")
+
+
+def _cap13m_eligible(sid):
+    """True iff the trusted durable root domain is exactly ``mechanical``. Root
+    only: no integrated-part eligibility. Never read from the request; fails
+    closed."""
+    try:
+        return _cap13m.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+def _cap13m_link_offered(sid):
+    """The session-page link reads the SAME single rule the submission reads,
+    so the link and the calculation cannot disagree. Presentation only."""
+    return _cap13m_eligible(sid)
+
+
+def _cap13m_isolate(text, lang):
+    return _ltr_isolate(text, lang, _CAP13M_LTR_RUN)
+
+
+def _cap13m_result_view(result):
+    """Template view of a SUCCESS owner result: the moment magnitude shown
+    exactly as produced (``format_value``), the method identity and the source
+    and unit references the owner carried. No rounding, no other field."""
+    output = result["outputs"]["M"]
+    return {
+        "value": _cap13m.format_value(output["value"]),
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_cap13m(sid, status=200, eligible=True, captured=None, evaluation=None,
+                   error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _cap13m.OUTCOME_SUCCESS:
+            view = _cap13m_result_view(evaluation["result"])
+        else:
+            outcome_key = "UI_CAP13M_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "cap13_planar_moment.html",
+        sid=sid,
+        iso=lambda key: _cap13m_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _cap13m_isolate(part, lang) for part in
+            ui_text.text("UI_CAP13M_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_cap13m.DECLARATION_IDS,
+        screen_items=_cap13m.SCREEN_ITEMS,
+        value_roles=_cap13m.VALUE_ROLES,
+        decl_field=_cap13m.DECLARATION_FIELD,
+        screen_field=_cap13m.SCREEN_FIELD,
+        value_field=_cap13m.VALUE_FIELD,
+        answer_applies=_cap13m.ANSWER_APPLIES,
+        answer_does_not_apply=_cap13m.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_cap13m.SCREEN_YES,
+        screen_no=_cap13m.SCREEN_NO,
+        max_value_chars=_cap13m.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/planar-moment", methods=["GET"])
+def cap13_planar_moment(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_cap13m(sid, eligible=_cap13m_eligible(sid))
+
+
+@app.route("/session/<sid>/planar-moment", methods=["POST"])
+def cap13_planar_moment_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (the Mechanical durable root domain only) -> strict capture
+    # (malformed: 400, no reason token) -> the consumer's §7 pre-owner order ->
+    # the shared owner.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _cap13m_eligible(sid):
+        return _render_cap13m(sid, eligible=False)
+    form = request.form
+    captured = _cap13m.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_cap13m(sid, status=400, error="UI_CAP13M_ERR_REQUEST")
+    evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
+    return _render_cap13m(sid, captured=captured, evaluation=evaluation)
 
 
 # =============================================================================

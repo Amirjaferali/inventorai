@@ -44,6 +44,13 @@ of record. Correction 02 authorizes the contract boundary only: it implements no
 runtime, artifact or test, enters no Stage and activates nothing. The shared-owner second admission stays NOT IMPLEMENTED
 and NOT AUTHORIZED for implementation until a separate Owner implementation authorization.
 CORRECTION 02 IMPLEMENTED (2026-10-09): the separately Owner-authorized, delivered Stage 27 — THERM-01 Single-Path Temperature-Difference — Slice 1 implements §13A exactly — `engine/deterministic_calculation.py` implementation version 1.1.0 admits exactly the two methods `cap13:static_reactions_two_support` 1.0 and `therm01:conduction_temperature_difference_single_path` 1.0, the kinds force / length / power / thermal_resistance / temperature_difference and the tokens N / mm / W / K/W / K (one unit per kind, no alias, no conversion); the owner artifact is content version 2; application wiring creates one immutable method-local binding per method; there is no registry, discovery or request-selected method; CAP-13 semantics, artifact and behaviour are unchanged. The sentences above that the second admission stays NOT IMPLEMENTED are preserved as the text of record at acceptance. §0 preserved truth describes the one-method state at this contract's acceptance and is history for the method count.
+CORRECTION 03: `CORRECTION 03 — BOUNDED THIRD ADMISSION (CAP-13 PLANAR SINGLE-FORCE MOMENT) — OWNER-AUTHORIZED WITH ITS
+IMPLEMENTATION`. Folded, narrowly, into the one Owner-authorized bounded increment `CAP-13 PLANAR SINGLE-FORCE MOMENT —
+SLICE 1`, which implements it in the same pull request under the
+[planar single-force moment method contract](STAGE25_CAP13_PLANAR_SINGLE_FORCE_MOMENT_METHOD_CONTRACT.md). Applicability:
+it takes effect only on the verified merge of that pull request into `feature/atomic-json-session-persistence`; on its
+proposal branch it is an Owner-authorized proposed amendment. It ADDS §13B and one bullet to §16; §13A, §13 and every other
+clause — including §§7–10, §12 and §14 — are unchanged. It admits exactly one further method and nothing more (§13B).
 BASIS: the Lead's read-only Stage 25 / CAP-13 feasibility gate (finding B — CAP-13 is feasible only after calculation and
 units ownership is decided); the Lead's read-only calculation and units ownership gate (finding B — a new shared calculation
 and units owner is required before CAP-13); an Astra architecture review and an independent Claude architecture / semantic
@@ -368,6 +375,39 @@ admits no method.
 - **Still excluded:** a third method or consumer; ranges; string parsing; any conversion; a generic solver; a generic unit
   registry or conversion graph; persistence; provider, AI or external-tool execution; and every other §13 exclusion.
 
+## 13B. Bounded third admission — CAP-13 planar single-force moment (Correction 03)
+
+The delivered second admission (§13A) is expanded, by the Owner-authorized increment named in the CORRECTION 03 header,
+to EXACTLY the following and nothing more.
+
+- **Owner.** The one existing shared owner. No second owner, solver, framework, numerical policy engine or calculation
+  path is created.
+- **Methods — exactly three:** `cap13:static_reactions_two_support` 1.0, `therm01:conduction_temperature_difference_single_path`
+  1.0 and `cap13:planar_single_force_moment` 1.0. The third keeps its technical authority outside this owner (§3), in its own
+  CAP-13 method-authority artifact `cap13_planar_single_force_moment` version 1, separate from the two-support artifact.
+- **Consumers — exactly three:** the existing two and one planar-moment consumer. No consumer imports another, and no
+  method-authority artifact loads another at execution.
+- **Quantity kinds:** the existing five, plus exactly `moment`. **Exact unit tokens:** the existing five, plus exactly
+  `N·mm`. One unit per kind; no alias, no case folding, no dimensional equivalence (a moment is never a "force × length"
+  pair the owner composes) and no conversion of any kind (`N·mm` is never converted to `N·m`).
+- **Method-local bindings and wiring.** One additional immutable, application-wired binding for the planar-moment consumer;
+  each consumer holds exactly its own binding. No registry, discovery, dynamic module path, generic unit vocabulary or
+  request-selected method.
+- **Versions.** The shared-owner artifact moves to content version `3` and the implementation to `1.2.0`. The new unit
+  record (`dcu:U006`, NIST SP 811) and source-use records (`dcu:SU005` NASA STI, `dcu:SU006` NIST) keep the §9 source and
+  inspection requirements; every content-version-2 record is unchanged.
+- **Numerical policy.** §10 applies unchanged. The method-specific acceptance of the planar moment — a result accepted only
+  when finite, strictly positive and within a relative error of `2^-52` of the exact product of its two binary inputs,
+  subnormal results accepted when they meet that bound — is method-authority content held in its adapter and contract
+  (§6 there); it is NOT a generic owner numerical policy and changes nothing for the other two methods. A result that fails
+  it is `FAILURE / EXECUTION_INTEGRITY_FAILURE` with no numerical payload.
+- **Existing methods preserved.** The two-support and THERM-01 methods, their authority artifacts, semantics, pins and
+  user-facing behaviour stay unchanged. Bounded updates to assertions on the owner artifact content version, the
+  implementation version and the closed inventory, caused only by this admission, are expected and allowed.
+- **Still excluded:** a fourth method or consumer; ranges; string parsing in the owner; any conversion; a generic solver,
+  unit registry or conversion graph; persistence (§12); provider, AI or external-tool execution; and every other §13 / §13A
+  exclusion.
+
 ## 14. Required guard strategy for a future implementation
 
 - independent expected numerical results;
@@ -406,6 +446,8 @@ admits no method.
   and each method admission. Acceptance of the candidate is recorded in the header (ACCEPTANCE).
 - Correction 02 (§13A) is recorded as accepted on the reconciled architecture reviews of the THERM-01 decision record; an
   implementation of it still needs its own Owner authorization and risk-appropriate independent verification.
+- Correction 03 (§13B) is Owner-authorized together with its bounded implementation; it carries the same proportionate,
+  risk-appropriate verification as that implementation (focused tests and hosted required CI).
 
 ## 17. Non-authorization (restated)
 

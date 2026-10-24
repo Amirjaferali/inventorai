@@ -6019,6 +6019,107 @@ UI_STRINGS = {
     "UI_THERM01_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # Stage 25 / CAP-13 — Planar Single-Force Moment, Slice 1 (moment contract
+    # §9). The English declaration and disclosure entries are pinned equal to the
+    # moment artifact by test and the Arabic disclosure to contract §9A. The
+    # high-risk screen reuses the UI_CAP13_SCREEN_* keys (the same nine items).
+    # Nothing here states equilibrium, capacity, strength, suitability or safety.
+    "UI_CAP13M_LINK_TEXT": {
+        "en": "Optional: turning effect (moment) of one force about a point",
+        "ar": "اختياري: أثر الدوران (العزم) لقوة واحدة حول نقطة"},
+    "UI_CAP13M_LINK_NOTE": {
+        "en": "An advisory calculation for a force and point you declare. It is not saved and is never required.",
+        "ar": "حساب إرشادي لقوة ونقطة تصرّح بهما أنت. لا يُحفَظ، ولا يكون مطلوبًا أبدًا."},
+    "UI_CAP13M_TITLE": {
+        "en": "Moment of one force about a point (optional, non-binding)",
+        "ar": "عزم قوة واحدة حول نقطة (اختياري، غير مُلزِم)"},
+    "UI_CAP13M_INTRO": {
+        "en": "This page is optional. It calculates the size of the turning effect (moment) of one force about one point you choose, in one plane, from the force F and the perpendicular distance d⊥ that you enter. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. تحسب مقدار أثر الدوران (العزم) لقوة واحدة حول نقطة واحدة تختارها، في مستوى واحد، من القوة F والمسافة العمودية d⊥ اللتين تدخلهما أنت. لا يُحفَظ شيء."},
+    "UI_CAP13M_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a project whose analysis focus is Mechanical. That focus does not establish that the planar single-force model applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED moment magnitude, not an equilibrium, capacity, strength or safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي. ولا يثبت هذا المحور انطباق نموذج القوة الواحدة في مستوى واحد. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة مقدار عزم غير مُتحقَّق منه، وليست حكمًا بشأن الاتزان أو القدرة على التحمل أو المقاومة أو السلامة."},
+    "UI_CAP13M_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_CAP13M_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_CAP13M_DECL_PLANAR": {
+        "en": "Planar: the force and the chosen point lie in one plane, and only the turning effect about the axis through the point at right angles to that plane is wanted.",
+        "ar": "مستوى واحد: القوة والنقطة التي اخترتها تقعان في مستوى واحد، والمطلوب فقط أثر الدوران حول المحور المارّ بالنقطة عموديًا على ذلك المستوى."},
+    "UI_CAP13M_DECL_SINGLE_FORCE": {
+        "en": "ONE force only: no other force, couple, spread-out load or weight is included in this calculation.",
+        "ar": "قوة واحدة فقط: لا تدخل في هذا الحساب أي قوة أخرى، ولا ازدواج (couple)، ولا حمل موزَّع، ولا وزن."},
+    "UI_CAP13M_DECL_PERPENDICULAR_DISTANCE": {
+        "en": "The distance d⊥ is the shortest (perpendicular) distance from the chosen point to the line along which the force acts, not a length along a lever, arm or part unless that length is itself at right angles to the force; InventorAI does not check it.",
+        "ar": "d⊥ هي أقصر مسافة (المسافة العمودية) من النقطة المختارة إلى الخط الذي تؤثر على امتداده القوة، وليست طولًا على امتداد ذراع أو رافعة أو جزء ما لم يكن ذلك الطول نفسه عموديًا على القوة؛ ولا يتحقق InventorAI منها."},
+    "UI_CAP13M_DECL_CHOSEN_POINT": {
+        "en": "The point is the inventor's own choice (for example a pivot, joint or fixing); InventorAI does not choose it, check it or decide that it is the right point.",
+        "ar": "النقطة من اختيارك أنت (مثل محور دوران أو مفصل أو نقطة تثبيت)؛ لا يختارها InventorAI ولا يتحقق منها ولا يقرر أنها النقطة الصحيحة."},
+    "UI_CAP13M_DECL_STATIC_MAGNITUDE": {
+        "en": "The force is treated as steady (static), and only the size of the moment is wanted, not its turning direction; no motion, impact, vibration or repeated loading is considered.",
+        "ar": "القوة تُعامَل على أنها ثابتة (ساكنة)، والمطلوب مقدار العزم فقط لا اتجاه دورانه؛ ولا تؤخذ في الحسبان أي حركة أو صدمة أو اهتزاز أو تحميل متكرر."},
+    "UI_CAP13M_FIELD_F": {
+        "en": "Magnitude of the one force (F) — newton (N)",
+        "ar": "مقدار القوة الواحدة (F) — نيوتن (N)"},
+    "UI_CAP13M_FIELD_D_PERP": {
+        "en": "Perpendicular distance from your point to the force's line of action (d⊥) — millimetre (mm)",
+        "ar": "المسافة العمودية من نقطتك إلى خط تأثير القوة (d⊥) — مليمتر (mm)"},
+    "UI_CAP13M_SUBMIT": {
+        "en": "Calculate the moment",
+        "ar": "احسب العزم"},
+    "UI_CAP13M_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_CAP13M_RESULT_M": {
+        "en": "Moment magnitude about your point (M) — newton millimetre (N·mm)",
+        "ar": "مقدار العزم حول نقطتك (M) — نيوتن مليمتر (N·mm)"},
+    "UI_CAP13M_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_CAP13M_ECHO_HEADING": {
+        "en": "The values and declarations you entered",
+        "ar": "القيم والتصريحات التي أدخلتها"},
+    "UI_CAP13M_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_CAP13M_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_CAP13M_SOURCES_NOTE": {
+        "en": "The moment principle (force times perpendicular distance) from NASA Glenn Research Center, and the unit references from the National Institute of Standards and Technology (NIST). The moment form and the newton millimetre (N·mm) are InventorAI's own restatement. Neither NASA nor NIST endorses InventorAI or this calculation.",
+        "ar": "مبدأ العزم (القوة مضروبة في المسافة العمودية) من مركز غلين للأبحاث التابع لوكالة ناسا (NASA Glenn Research Center)، ومراجع الوحدات من المعهد الوطني للمعايير والتقنية (NIST). صيغة العزم ووحدة النيوتن مليمتر (N·mm) إعادة صياغة خاصة بـInventorAI. لا تؤيّد ناسا ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_CAP13M_DISCLOSURE": {
+        "en": "This is the size of the turning effect (moment) of the one force you declared about the one point you chose, in one plane, using your own force F and your own perpendicular distance d⊥.\n\nIt does not show that anything is balanced or held in place, and it gives no support reaction, turning direction or combined effect of several forces.\n\nIt does not tell whether a joint, fixing, shaft, part, motor or material can carry this moment, and it is not compared with any rating, strength or limit.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement or a qualified engineer before any reliance; it says nothing about whether the design is suitable or safe.\n\nInventorAI does not check your force, your distance, your chosen point or that your declarations match the real configuration.\n\nThree-dimensional effects, several forces, motion, impact, vibration and repeated loading are outside this calculation.\n\nReference source material: NASA Glenn Research Center (equilibrium and torque / moment principles); the moment form is InventorAI's own restatement.",
+        "ar": "هذا هو مقدار أثر الدوران (العزم) للقوة الواحدة التي صرّحت بها حول النقطة الواحدة التي اخترتها، في مستوى واحد، باستخدام قيمتي القوة F والمسافة العمودية d⊥ اللتين أدخلتهما أنت.\n\nلا يبيّن هذا الناتج أن أي شيء متوازن أو مثبّت في مكانه، ولا يعطي أي رد فعل لمسند، ولا اتجاه دوران، ولا الأثر المجمَّع لعدة قوى.\n\nلا يبيّن هذا الناتج ما إذا كان أي مفصل أو تثبيت أو عمود أو جزء أو محرك أو مادة قادرًا على تحمّل هذا العزم، ولا يُقارَن بأي تصنيف أو مقاومة أو حدّ.\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا، ويجب تأكيدها بالقياس أو بمراجعة مهندس مؤهل قبل الاعتماد عليها؛ ولا تقول شيئًا عن ملاءمة التصميم أو سلامته.\n\nلا يتحقق InventorAI من قيمة القوة ولا من المسافة ولا من النقطة التي اخترتها، ولا من مطابقة تصريحاتك للتكوين الفعلي.\n\nالتأثيرات ثلاثية الأبعاد، وتعدد القوى، والحركة، والصدمات، والاهتزاز، والتحميل المتكرر كلها خارج نطاق هذا الحساب.\n\nالمراجع: مركز غلين للأبحاث التابع لوكالة ناسا (NASA Glenn Research Center) — مبادئ الاتزان والعزم. أما صيغة العزم هنا فهي إعادة صياغة خاصة بـInventorAI."},
+    "UI_CAP13M_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_CAP13M_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. هذه الحالة تتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "F and d⊥ must be finite numbers greater than zero, written as plain decimals. Nothing was calculated.",
+        "ar": "يجب أن تكون قيمتا F و d⊥ رقمين محدودين أكبر من الصفر، مكتوبين بصيغة عشرية صحيحة. لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the newton (N) and the millimetre (mm), and shows the result in newton millimetre (N·mm). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة النيوتن (N) والمليمتر (mm) فقط، وتعرض النتيجة بالنيوتن مليمتر (N·mm). لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_CAP13M_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is
