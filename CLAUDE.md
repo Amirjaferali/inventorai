@@ -1485,6 +1485,42 @@ information, not execution authority.
   - the classifier returns NONE for ordinary ideas, so the inventor chooses the discipline;
   - the #849 functional reading informs no question, gap or next step.
 
+  **Path N execution reconciliation (2026-10-24; continuity, not authority).** A
+  bounded executor real-app trace of one ordinary plant-watering idea (eight
+  answers, both starting focuses; scratch database, no repository changes)
+  reported that answer 1 made MECHANISM_COMPLETENESS PARTIAL, while ordinary
+  on-topic paraphrases in answers 2–8 were rejected as not addressing the
+  question. The first observed unserved transition for THIS journey was
+  answer → gap relevance: `engine/gap_relevance.py` and W2-C's supplemental
+  relevance boundary did not credit paraphrases outside committed vocabulary.
+  This is the existing T2-G / OD-PDVG-10 residual R2 (paraphrase under-coverage),
+  preserved OPEN in `docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md`, not a
+  newly discovered orchestration owner. Historical S2-PATHN-RUN-002/003 and
+  T1-C' evidence show limited journey/engineering value, but do NOT prove the
+  same lexical cause for every historical case; the reported present-day trace
+  was not an end-to-end Technical Realization qualification. PR #688's truthful
+  non-answer continuation does not grant relevance to ordinary answers.
+  The FDC-001 → Technical Realization contract and T6 direction already exist
+  in their governing architecture; neither contract implies an activated lane.
+  The #849 reading remains presentation-only, so clearing this first blockage
+  would NOT establish question-selection linkage or end-to-end engineering
+  orchestration. The separate R-2 Next Development Step priority concern and
+  the four decisions below remain unresolved, not implicitly settled here.
+
+  **Next eligible decision, not execution authority:** before any R2 coding,
+  the Owner must choose the narrowly bounded relevance method and trust
+  boundary. Reuse the existing T2-G / gap-relevance / W2-C owners, not a new
+  engine, sidecar or roadmap. The MSNL evaluation-only PR #842 is OPEN / BLOCKED:
+  its frozen concept-level C1 failed (grounded wrong concepts 5 versus lexical
+  baseline 3); its exploratory per-gap results do not qualify a runtime method.
+  Any future semantic-proposal evaluation requires separate authorization,
+  pre-registered acceptance criteria and a fresh holdout; no real inventor data
+  may be sent to an external provider under current authority. If this R2
+  method is blocked, preserve its trigger and proceed only to the next
+  independent eligible item in (g1), with scope-specific Owner authorization.
+  No product or validation claim, stage status, active contract, or Owner
+  decision is changed by this continuity note.
+
   These Owner-reserved decisions are open, separate, and none is granted:
   1. **Provisional discipline suggestions.** May candidate disciplines be shown as attributed,
      provisional suggestions under §15? A suggestion would not be a domain decision or a stored
