@@ -6840,6 +6840,12 @@ UI_STRINGS = {
         "en": "Your constraints are not read for safety signals. The absence of a safety warning is not evidence of safety.",
         "ar": "لا تُقرأ قيودك بحثًا عن إشارات السلامة. وغياب تحذير السلامة ليس دليلًا على السلامة.",
     },
+    # MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01: where a mandatory
+    # constraint now appears, and what that step does not mean.
+    "UI_PCN_PLAN_NOTE": {
+        "en": "For each current mandatory constraint, the Validation Plan in your report lists one step: decide what evidence or specialist review would show whether it is met. InventorAI has not checked it, and that step does not show that it can be met. Soft constraints and preferences are not added.",
+        "ar": "لكل قيد إلزامي حالي، تتضمّن خطة التحقق (Validation Plan) في تقريرك خطوة واحدة: أن تحدّد الدليل أو المراجعة المتخصصة التي تبيّن هل يتحقق. لم يفحصه InventorAI، ولا تبيّن تلك الخطوة أنه ممكن التحقيق. لا تُضاف القيود المرنة ولا التفضيلات.",
+    },
     "UI_PCN_STRENGTH_LABEL": {
         "en": "Strength you chose:",
         "ar": "القوة التي اخترتها:",

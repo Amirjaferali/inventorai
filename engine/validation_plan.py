@@ -36,6 +36,22 @@ All three recorded means only that the inputs are recorded — never verified,
 sufficient, correct, compatible or ready; responsibility and confidence stay
 ``UNDETERMINED`` and nothing here reads, grades or parses the inventor's text.
 
+MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01 (narrow Owner-authorized
+amendment of the PATHN-CONSTRAINT-DECLARATION-01 D3 exclusion; contract §25):
+each CURRENT inventor-declared ``mandatory_constraint`` yields ONE
+verification-PREPARATION step, read from the canonical constraint history
+(``engine.idea_state.constraint_history``; the import boundary is unchanged).
+It is the plan's ONE source outside the Requirement Landscape: constraints stay
+excluded from every landscape row, the step carries its own closed provenance
+kind ``mandatory_constraint`` referencing the constraint's founding ledger
+record, and its identity is ``vstep:constraint:<constraint_id>``. These steps
+follow every landscape-derived step, in declaration order. The inventor's
+current wording is quoted verbatim; responsibility and confidence stay
+``UNDETERMINED``; nothing is parsed, checked, satisfied or made feasible.
+``soft_constraint`` and ``preference`` yield nothing, a withdrawn constraint
+yields nothing, and an unreadable constraint history yields ONE blocked item
+(never a silent absence).
+
 The module-level name ``derive_requirement_landscape`` is the authorized §19 test
 seam: tests may monkeypatch it at this import site to construct BLOCKED / mixed /
 malformed cases. Production behavior is driven by the real Increment 4 derivation.
@@ -45,6 +61,7 @@ from typing import Optional, Tuple
 
 from engine.idea_state import (
     OWNER_STATED,
+    CONSTRAINT_STRENGTH_MANDATORY, PROJECT_CONSTRAINT_DISPOSITIONS, constraint_history,
     OWNER_INPUT, SYSTEM_ANALYSIS, SPECIALIST_INPUT, EMPIRICAL_EVIDENCE, UNDETERMINED,
     DISPOSITION_ANSWERED, DISPOSITION_PROVISIONAL_ASSUMPTION,
     active_declared_contradiction_pairs,
@@ -163,6 +180,30 @@ def _interface_preparation(state, interface_id):
         recorded="; ".join(_PREPARATION_NAMES[f] for f in recorded),
         missing="; ".join(_PREPARATION_NAMES[f] for f in missing)), pairs
 
+# MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01: the ONE preparation step of
+# a current mandatory constraint. Like the interface step it names only what
+# must be DECIDED before any check and never supplies a value, a threshold, a
+# procedure, an acceptance criterion or a result.
+CONSTRAINT_ANCHOR_KIND = "mandatory_constraint"
+_CONSTRAINT_STEP_PREFIX = "vstep:constraint:"
+_CONSTRAINT_LABEL = "Mandatory constraint you declared"
+_CONSTRAINT_STEP_STATEMENT = (
+    "Prepare how your mandatory constraint “{text}” will be checked: decide "
+    "what evidence or specialist review would show whether it is met. It has "
+    "not been checked, and nothing here shows that it can be met.")
+_CONSTRAINT_EVIDENCE_CATEGORY = (
+    "verification preparation (the evidence or specialist review that would "
+    "show whether the constraint is met)")
+_CONSTRAINT_CLOSURE = (
+    "This preparation is complete when you have decided what evidence or "
+    "specialist review would show whether this constraint is met. Completing "
+    "this preparation does not verify the constraint or show that it can be "
+    "met.")
+_CONSTRAINT_UNAVAILABLE_ID = "vblock:constraint:unavailable"
+_CONSTRAINT_UNAVAILABLE_LABEL = "Mandatory constraints you declared"
+_CONSTRAINT_UNAVAILABLE_MISSING = "a readable record of your declared constraints"
+
+
 # Fixed, generic wording for a blocked item (contract §8 / §12; no fabrication).
 _BLOCKED_REASON = (
     "This recorded signal cannot yet support a concrete validation step."
@@ -207,6 +248,47 @@ class ValidationPlan:
     outcome: str
     steps: Tuple[ValidationStep, ...]
     blocked_items: Tuple[BlockedValidationItem, ...]
+
+
+def _constraint_items(state):
+    """``(steps, blocked)`` contributed by the inventor's CURRENT mandatory
+    constraints, in declaration order. An unreadable or malformed constraint
+    history yields no step and ONE blocked item, so a defect is never shown as
+    "no mandatory constraint". Read-only; the text is quoted, never read."""
+    try:
+        records = list(getattr(state, "assertions", None) or ())
+        # A ledger with no constraint material contributes nothing and is not
+        # re-read here, so every plan without constraints is unchanged.
+        if not any(getattr(r, "disposition", None) in PROJECT_CONSTRAINT_DISPOSITIONS
+                   or getattr(r, "constraint_strength", None) is not None
+                   for r in records):
+            return (), ()
+        history = constraint_history(records)
+    except Exception:
+        return (), (BlockedValidationItem(
+            item_id=_CONSTRAINT_UNAVAILABLE_ID,
+            reason=_BLOCKED_REASON,
+            missing=_CONSTRAINT_UNAVAILABLE_MISSING,
+            responsibility=UNDETERMINED,
+            provenance=ProvenanceRef(anchor_kind=CONSTRAINT_ANCHOR_KIND,
+                                     reference="unavailable",
+                                     display_label=_CONSTRAINT_UNAVAILABLE_LABEL)),)
+    steps = []
+    for constraint in history.current:
+        if constraint.strength != CONSTRAINT_STRENGTH_MANDATORY:
+            continue
+        steps.append(ValidationStep(
+            step_id=_CONSTRAINT_STEP_PREFIX + constraint.constraint_id,
+            statement=_CONSTRAINT_STEP_STATEMENT.format(text=constraint.text),
+            responsibility=UNDETERMINED,
+            evidence_category=_CONSTRAINT_EVIDENCE_CATEGORY,
+            closure_condition=_CONSTRAINT_CLOSURE,
+            provenance=ProvenanceRef(anchor_kind=CONSTRAINT_ANCHOR_KIND,
+                                     reference=constraint.constraint_id,
+                                     display_label=_CONSTRAINT_LABEL),
+            confidence=CONFIDENCE_UNDETERMINED,
+        ))
+    return tuple(steps), ()
 
 
 # --- Classification helpers (pure) ------------------------------------------------
@@ -383,6 +465,12 @@ def derive_validation_plan(state):
                 responsibility=responsibility,
                 provenance=_provenance(req),
             ))
+
+    # MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01: after every
+    # landscape-derived item, the current mandatory constraints' preparation.
+    constraint_steps, constraint_blocked = _constraint_items(state)
+    steps.extend(constraint_steps)
+    blocked.extend(constraint_blocked)
 
     if steps:
         outcome = OUTCOME_PLAN
