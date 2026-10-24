@@ -72,6 +72,11 @@ _EXPECTED_ASSERTION_FIELDS = frozenset({
     # record and absent from every other payload; see
     # tests/test_cap08_assumption_dependency.py.
     "dependency_edge",
+    # PATHN-CONSTRAINT-DECLARATION-01: deliberate 19th authoritative field — the
+    # strength of a `constraint_declared` record. Written only on that record
+    # and absent from every other payload; see
+    # tests/test_pathn_constraint_declaration.py.
+    "constraint_strength",
 })
 
 
@@ -304,16 +309,25 @@ def test_rc1_field_completeness_guard_matches_authoritative_dataclass():
     # other field and a declaration serializes all of them.
     sample = sample_state().assertions[0]
     # CAP-08 Slice 1: likewise `dependency_edge` only on a dependency record.
-    declaration_only = {"contradiction_endpoints", "dependency_edge"}
+    # PATHN-CONSTRAINT-DECLARATION-01: likewise `constraint_strength` only on
+    # a `constraint_declared` record.
+    declaration_only = {"contradiction_endpoints", "dependency_edge",
+                        "constraint_strength"}
     assert set(assertion_to_dict(sample)) == actual - declaration_only, (
         "contract serialization keys do not match AssertionRecord fields")
     declaring = sample_state()
     answers = [r.record_id for r in declaring.assertions
                if r.disposition == "answered" and r.superseded_by is None][:2]
     declaration = declaring.record_contradiction_declaration(*answers)
-    assert set(assertion_to_dict(declaration)) == actual - {"dependency_edge"}
+    assert set(assertion_to_dict(declaration)) == actual - {"dependency_edge",
+                                                            "constraint_strength"}
     assumption = declaring.record_interaction(
         "provisional_assumption", "assumed", gap_context=declaration.gap_context)
     [dependency] = declaring.record_assumption_dependency_declarations(
         assumption.record_id, answers[:1])
-    assert set(assertion_to_dict(dependency)) == actual - {"contradiction_endpoints"}
+    assert set(assertion_to_dict(dependency)) == actual - {"contradiction_endpoints",
+                                                           "constraint_strength"}
+    constraint = declaring.record_constraint_action("declare", "Runs on batteries",
+                                                    "preference")
+    assert set(assertion_to_dict(constraint)) == actual - {"contradiction_endpoints",
+                                                           "dependency_edge"}

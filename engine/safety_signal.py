@@ -43,6 +43,10 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
+from engine.idea_state import (
+    PROJECT_CONSTRAINT_DISPOSITIONS as _CONSTRAINT_DISPOSITIONS,
+)
+
 # --- Frozen advisory vocabulary (contract §5 / §7) --------------------------------
 PROVENANCE_INVENTOR_STATED = "inventor_stated"
 VALIDATION_REQUIRES_INDEPENDENT = "requires_independent_validation"
@@ -428,6 +432,11 @@ def _inventor_texts(state):
         pairs.append(("idea_summary", summary))
     for record in getattr(state, "assertions", []) or []:
         if getattr(record, "superseded_by", None) is not None:
+            continue
+        # PATHN-CONSTRAINT-DECLARATION-01: an inventor-declared project
+        # constraint is excluded from automated derivation (Owner decision D2);
+        # the report safety block discloses that exclusion.
+        if getattr(record, "disposition", None) in _CONSTRAINT_DISPOSITIONS:
             continue
         content = getattr(record, "content", None)
         if content:

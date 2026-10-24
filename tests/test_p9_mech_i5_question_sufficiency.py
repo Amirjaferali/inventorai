@@ -215,7 +215,12 @@ _FROZEN_ENGINE_SHA256 = {
     # qualified supposition gets its own WARN and moves no gap. No
     # classifier, tie, substance, scoring, quality, maturity-gate or
     # gap-type change (pre-T2-G-3 = becf7514...35d2).
-    "engine/progression_loop.py": "10397390e71a61a9dfa201badd0a3804e96bf288eb7dd7521120b8e3e8ded9f0",
+    # PATHN-CONSTRAINT-DECLARATION-01 re-freeze (disclosed): the same
+    # serving containment in _alternatives_crossing_context now also skips an
+    # inventor-declared project constraint, so it never ends (or starts) the
+    # multiple-alternatives transition. No classifier, tie, substance, scoring,
+    # quality, maturity-gate or gap-type change (pre-amendment = 10397390...f0).
+    "engine/progression_loop.py": "0d88f08307177ac1c35484155510669b65a5784964a882ad14ec14214691d2f0",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.

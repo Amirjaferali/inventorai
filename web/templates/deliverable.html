@@ -154,6 +154,12 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if integrated_scope is defined and integrated_scope %}
   <p class="ss-note" data-ss-part-page-scope>{{ t('UI_SS_PART_PAGE_SCOPE') }}</p>
   {% endif %}
+  {#- PATHN-CONSTRAINT-DECLARATION-01 (Owner decision D2): the inventor's
+      project constraints are not read for safety signals; disclosed whenever
+      the project holds a current constraint (or the view is unavailable). -#}
+  {% if constraint_report is defined and constraint_report and (not constraint_report.available or constraint_report.constraints) %}
+  <p class="ss-note" data-ss-constraint-scope>{{ t('UI_SS_CONSTRAINT_SCOPE') }}</p>
+  {% endif %}
   {% if ss.signals %}
   <p class="ss-note">{{ ss.advisory_note }}</p>
   {% for sig in ss.signals %}
@@ -363,6 +369,37 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <p style="margin:0 0 6px 0;font-size:13px" data-dc-none>{{ t('UI_DC_NONE') }}</p>
   {% endif %}
   <p style="margin:0;font-size:12px;color:#555" data-dc-history>{{ t('UI_DC_HISTORY') }}</p>
+  {% endif %}
+</section>
+{% endif %}
+{#- PATHN-CONSTRAINT-DECLARATION-01 — PROJECT CONSTRAINTS YOU DECLARED: the
+    inventor's CURRENT constraints only (latest wording and strength,
+    declaration order; verbatim, escaped and direction-isolated), each
+    OWNER_STATED / UNVALIDATED. Never a requirement row, a Validation Plan step,
+    a specification or a selection rule. An unreadable history reads
+    UNAVAILABLE, never "none". No earlier version or withdrawn constraint. -#}
+{% set pcr = constraint_report if constraint_report is defined else none %}
+{% if pcr %}
+<section class="project-constraints-report" id="project-constraints-report" data-pcn-report aria-labelledby="project-constraints-report-title" style="border:1px solid #c9d6e3;background:#f5f9fc;border-radius:4px;padding:10px 14px;margin:12px 0">
+  <h2 id="project-constraints-report-title" style="font-size:16px;margin:0 0 8px 0">{{ t('UI_PCN_REPORT_HEADING') }}</h2>
+  {% if not pcr.available %}
+  <p style="margin:0;font-size:13px;color:#555" data-pcn-report-unavailable>{{ t('UI_PCN_REPORT_UNAVAILABLE') }}</p>
+  {% else %}
+  <p style="margin:0 0 6px 0;font-size:13px;color:#555" data-pcn-report-boundary>{{ t('UI_PCN_BOUNDARY') }}</p>
+  {% if pcr.constraints %}
+  <ul style="margin:0 0 6px 0;padding-inline-start:20px">
+    {% for c in pcr.constraints %}
+    <li data-pcn-report-item style="margin:0 0 6px 0;overflow-wrap:anywhere">
+      <bdi dir="auto" data-pcn-report-text>{{ c.text }}</bdi><br>
+      <span data-pcn-report-strength>{{ t('UI_PCN_STRENGTH_LABEL') }} {{ t(c.strength_key) }}</span>
+      <br><span style="font-size:12px;color:#555" data-pcn-report-provenance>{{ t('UI_PCN_PROVENANCE') }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p style="margin:0 0 6px 0;font-size:13px" data-pcn-report-none>{{ t('UI_PCN_REPORT_NONE') }}</p>
+  {% endif %}
+  <p style="margin:0;font-size:12px;color:#555" data-pcn-report-history>{{ t('UI_PCN_REPORT_HISTORY') }}</p>
   {% endif %}
 </section>
 {% endif %}

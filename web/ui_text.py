@@ -6810,6 +6810,224 @@ UI_STRINGS = {
     # CAP-08 Slice 1 — the inventor's explicit assumption -> answer dependency
     # declaration. Truthful: declared by the inventor, not validated, never a
     # confirmation or rejection of the assumption, no progress effect.
+    # PATHN-CONSTRAINT-DECLARATION-01 — the inventor's project constraints
+    # (session section, report / PDF section, project-record events).
+    "UI_T3A_EVENT_CONSTRAINT_DECLARED": {
+        "en": "Project constraint you declared",
+        "ar": "قيد مشروع أعلنته",
+    },
+    "UI_T3A_EVENT_CONSTRAINT_CORRECTED": {
+        "en": "Project constraint you restated",
+        "ar": "قيد مشروع أعدت صياغته",
+    },
+    "UI_T3A_EVENT_CONSTRAINT_WITHDRAWN": {
+        "en": "Project constraint you withdrew",
+        "ar": "قيد مشروع سحبته",
+    },
+    "UI_PCN_HEADING": {
+        "en": "Your project constraints",
+        "ar": "قيود مشروعك",
+    },
+    "UI_PCN_EXPLAIN": {
+        "en": "A constraint is a limit or a wish you have for your invention, in your own words — for example “it must run on batteries” or “I would like it to cost less than 50 dollars”. Choose how strong it is for you.",
+        "ar": "القيد هو حدّ أو رغبة لديك تجاه اختراعك، بكلماتك أنت — مثل «يجب أن يعمل بالبطاريات» أو «أودّ أن تقلّ تكلفته عن 50 دولارًا». اختر مدى قوته بالنسبة إليك.",
+    },
+    "UI_PCN_BOUNDARY": {
+        "en": "These are your own statements. InventorAI has not checked or validated them and has not turned them into specifications or verified requirements. It does not use them to choose components, rule out options or judge your answers, and they do not change your progress, gaps or readiness.",
+        "ar": "هذه أقوالك أنت. لم يفحصها InventorAI ولم يتحقق منها، ولم يحوّلها إلى مواصفات أو متطلبات متحقَّق منها. لا يستخدمها لاختيار المكوّنات أو استبعاد الخيارات أو الحكم على إجاباتك، ولا تغيّر تقدّمك أو الفجوات أو الجاهزية.",
+    },
+    "UI_PCN_SAFETY": {
+        "en": "Your constraints are not read for safety signals. The absence of a safety warning is not evidence of safety.",
+        "ar": "لا تُقرأ قيودك بحثًا عن إشارات السلامة. وغياب تحذير السلامة ليس دليلًا على السلامة.",
+    },
+    "UI_PCN_STRENGTH_LABEL": {
+        "en": "Strength you chose:",
+        "ar": "القوة التي اخترتها:",
+    },
+    "UI_PCN_STRENGTH_PREFERENCE": {
+        "en": "Preference (nice to have)",
+        "ar": "تفضيل (من الجيد توفّره)",
+    },
+    "UI_PCN_STRENGTH_SOFT": {
+        "en": "Soft constraint (important, but could give way)",
+        "ar": "قيد مرن (مهم، لكن يمكن التنازل عنه)",
+    },
+    "UI_PCN_STRENGTH_MANDATORY": {
+        "en": "Mandatory constraint (must hold)",
+        "ar": "قيد إلزامي (يجب أن يتحقق)",
+    },
+    "UI_PCN_ITEM_STATUS": {
+        "en": "your statement, not validated",
+        "ar": "قولك أنت، غير متحقَّق منه",
+    },
+    "UI_PCN_CORRECTED_MARK": {
+        "en": "corrected",
+        "ar": "مُصحَّح",
+    },
+    "UI_PCN_NONE": {
+        "en": "You have not declared any project constraint.",
+        "ar": "لم تعلن أي قيد للمشروع.",
+    },
+    "UI_PCN_NONE_CURRENT": {
+        "en": "You have no current project constraint.",
+        "ar": "ليس لديك أي قيد حالي للمشروع.",
+    },
+    "UI_PCN_FORM_TITLE": {
+        "en": "Declare a constraint",
+        "ar": "أعلن قيدًا",
+    },
+    "UI_PCN_FIELD_TEXT": {
+        "en": "The constraint, in your own words (up to 300 characters)",
+        "ar": "القيد بكلماتك أنت (حتى 300 حرف)",
+    },
+    "UI_PCN_FIELD_STRENGTH": {
+        "en": "How strong is it for you?",
+        "ar": "ما مدى قوته بالنسبة إليك؟",
+    },
+    "UI_PCN_CONFIRM": {
+        "en": "I confirm this is my own constraint, and I understand InventorAI has not checked it.",
+        "ar": "أؤكد أن هذا قيدي أنا، وأفهم أن InventorAI لم يفحصه.",
+    },
+    "UI_PCN_BUTTON": {
+        "en": "Save constraint",
+        "ar": "احفظ القيد",
+    },
+    "UI_PCN_HISTORY_SUMMARY": {
+        "en": "Earlier versions",
+        "ar": "الصيغ السابقة",
+    },
+    "UI_PCN_VERSION_ORIGINAL": {
+        "en": "Original:",
+        "ar": "الأصل:",
+    },
+    "UI_PCN_VERSION_CORRECTION": {
+        "en": "Earlier correction:",
+        "ar": "تصحيح سابق:",
+    },
+    "UI_PCN_CORRECT_SUMMARY": {
+        "en": "Correct this constraint",
+        "ar": "صحّح هذا القيد",
+    },
+    "UI_PCN_CORRECT_HINT": {
+        "en": "Change the wording, the strength or both. Your earlier version is kept in your project history.",
+        "ar": "غيّر الصياغة أو القوة أو كليهما. تُحفظ صيغتك السابقة في سجل مشروعك.",
+    },
+    "UI_PCN_CORRECT_BUTTON": {
+        "en": "Save correction",
+        "ar": "احفظ التصحيح",
+    },
+    "UI_PCN_CORRECT_LIMIT": {
+        "en": "This constraint has reached its limit of 20 corrections. You can still withdraw it.",
+        "ar": "بلغ هذا القيد حدّه البالغ 20 تصحيحًا. لا يزال بإمكانك سحبه.",
+    },
+    "UI_PCN_WITHDRAW_SUMMARY": {
+        "en": "Withdraw this constraint",
+        "ar": "اسحب هذا القيد",
+    },
+    "UI_PCN_WITHDRAW_HINT": {
+        "en": "Withdrawing removes it from your current constraints. It stays in your project history: withdrawal is not erasure.",
+        "ar": "السحب يزيله من قيودك الحالية. ويبقى في سجل مشروعك: السحب ليس محوًا.",
+    },
+    "UI_PCN_WITHDRAW_CONFIRM": {
+        "en": "I confirm I want to withdraw this constraint.",
+        "ar": "أؤكد أنني أريد سحب هذا القيد.",
+    },
+    "UI_PCN_WITHDRAW_BUTTON": {
+        "en": "Withdraw",
+        "ar": "اسحب",
+    },
+    "UI_PCN_WITHDRAWN_TITLE": {
+        "en": "Withdrawn constraints (history only)",
+        "ar": "القيود المسحوبة (سجل فقط)",
+    },
+    "UI_PCN_WITHDRAWN_NOTE": {
+        "en": "These are no longer current. They stay in your project history: withdrawal is not erasure.",
+        "ar": "لم تعد هذه حالية. وتبقى في سجل مشروعك: السحب ليس محوًا.",
+    },
+    "UI_PCN_WITHDRAWN_STATUS": {
+        "en": "withdrawn",
+        "ar": "مسحوب",
+    },
+    "UI_PCN_CAP": {
+        "en": "You have 50 current constraints, the most allowed at once. Withdraw one to add another.",
+        "ar": "لديك 50 قيدًا حاليًا، وهو الحد الأقصى المسموح به في وقت واحد. اسحب قيدًا لإضافة آخر.",
+    },
+    "UI_PCN_CAP_LIFETIME": {
+        "en": "This project has reached its limit of 500 declared constraints.",
+        "ar": "بلغ هذا المشروع حدّه البالغ 500 قيد معلَن.",
+    },
+    "UI_PCN_UNAVAILABLE": {
+        "en": "Your project constraints cannot be shown right now.",
+        "ar": "لا يمكن عرض قيود مشروعك الآن.",
+    },
+    "UI_PCN_PROVENANCE": {
+        "en": "Stated by you · not validated by InventorAI",
+        "ar": "ذكرته أنت · لم يتحقق منه InventorAI",
+    },
+    "UI_PCN_MSG_SAVED": {
+        "en": "Saved. Your constraint is recorded as your own statement; it has not been validated.",
+        "ar": "حُفظ. سُجّل قيدك على أنه قولك أنت، ولم يُتحقَّق منه.",
+    },
+    "UI_PCN_MSG_CORRECTED": {
+        "en": "Saved. Your constraint was corrected, and the earlier version is kept in your project history.",
+        "ar": "حُفظ. صُحّح قيدك، وتُحفظ الصيغة السابقة في سجل مشروعك.",
+    },
+    "UI_PCN_MSG_WITHDRAWN": {
+        "en": "Withdrawn. The constraint is no longer current and stays in your project history.",
+        "ar": "سُحب. لم يعد القيد حاليًا، ويبقى في سجل مشروعك.",
+    },
+    "UI_PCN_MSG_NOT_SAVED": {
+        "en": "That could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر الحفظ الآن. لم يتغير شيء.",
+    },
+    "UI_PCN_MSG_UNKNOWN": {
+        "en": "We could not confirm whether that was saved. Reload the page to check before trying again.",
+        "ar": "تعذّر التأكد مما إذا كان ذلك قد حُفظ. أعد تحميل الصفحة للتحقق قبل المحاولة مجددًا.",
+    },
+    "UI_PCN_MSG_SAVED_NOT_SHOWN": {
+        "en": "Saved. Reload the page to see it.",
+        "ar": "حُفظ. أعد تحميل الصفحة لرؤيته.",
+    },
+    "UI_PCN_MSG_INVALID": {
+        "en": "Write the constraint in your own words (up to 300 characters, without control characters) and choose how strong it is.",
+        "ar": "اكتب القيد بكلماتك أنت (حتى 300 حرف، دون أحرف تحكّم) واختر مدى قوته.",
+    },
+    "UI_PCN_MSG_CONFIRM": {
+        "en": "Please tick the confirmation box to continue. Nothing was saved.",
+        "ar": "يرجى تحديد مربع التأكيد للمتابعة. لم يُحفظ شيء.",
+    },
+    "UI_PCN_MSG_STALE": {
+        "en": "That constraint was corrected or withdrawn since this page was shown, so nothing was saved. Review your current constraints and try again.",
+        "ar": "صُحّح ذلك القيد أو سُحب منذ عرض هذه الصفحة، لذا لم يُحفظ شيء. راجع قيودك الحالية وحاول مجددًا.",
+    },
+    "UI_PCN_MSG_UNCHANGED": {
+        "en": "That correction is the same as the current constraint, so nothing was saved.",
+        "ar": "هذا التصحيح مطابق للقيد الحالي، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCN_MSG_LIMIT": {
+        "en": "A limit has been reached (50 current constraints, 500 declared constraints, or 20 corrections of one constraint), so nothing was saved.",
+        "ar": "بُلغ أحد الحدود (50 قيدًا حاليًا، أو 500 قيد معلَن، أو 20 تصحيحًا لقيد واحد)، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCN_REPORT_HEADING": {
+        "en": "Project constraints you declared",
+        "ar": "قيود المشروع التي أعلنتها",
+    },
+    "UI_PCN_REPORT_NONE": {
+        "en": "No current project constraint.",
+        "ar": "لا يوجد قيد حالي للمشروع.",
+    },
+    "UI_PCN_REPORT_UNAVAILABLE": {
+        "en": "Your project constraints cannot be shown in this report.",
+        "ar": "لا يمكن عرض قيود مشروعك في هذا التقرير.",
+    },
+    "UI_PCN_REPORT_HISTORY": {
+        "en": "Earlier versions and withdrawn constraints stay in the project history on the session page; withdrawal is not erasure.",
+        "ar": "تبقى الصيغ السابقة والقيود المسحوبة في سجل المشروع في صفحة الجلسة؛ السحب ليس محوًا.",
+    },
+    "UI_SS_CONSTRAINT_SCOPE": {
+        "en": "The project constraints you declared are not read for safety signals. The absence of a warning is not evidence of safety.",
+        "ar": "لا تُقرأ قيود المشروع التي أعلنتها بحثًا عن إشارات السلامة. وغياب التحذير ليس دليلًا على السلامة.",
+    },
     "UI_T3A_EVENT_ASSUMPTION_DEPENDENCY_DECLARED": {
         "en": "Dependency you declared on an assumption",
         "ar": "اعتماد أعلنته على افتراض",
@@ -8741,6 +8959,24 @@ UI_STRINGS = {
     "UI_S35_FIELD_PARTS": {
         "en": "Parts of the invention",
         "ar": "أجزاء الاختراع",
+    },
+    # PATHN-CONSTRAINT-DECLARATION-01 — field 30 (v3): the inventor's current
+    # project constraints; neutral export wording.
+    "UI_S35_FIELD_PROJECT_CONSTRAINTS": {
+        "en": "Project constraints declared by the inventor",
+        "ar": "قيود المشروع التي أعلنها المخترع",
+    },
+    "UI_S35_CONSTRAINT_LABEL": {
+        "en": "Project constraint declared by the inventor",
+        "ar": "قيد مشروع أعلنه المخترع",
+    },
+    "UI_S35_CONSTRAINT_STRENGTH": {
+        "en": "Strength chosen by the inventor",
+        "ar": "القوة التي اختارها المخترع",
+    },
+    "UI_S35_CONSTRAINTS_CLARIFICATION": {
+        "en": "Each entry is a limit or wish the inventor stated for the invention, in their own words, with the strength they chose. InventorAI has not checked or validated it: it is not a verified requirement or a specification, and it was not used to choose components or rule out options.",
+        "ar": "كل إدخال هو حدّ أو رغبة ذكرها المخترع للاختراع، بكلماته هو، مع القوة التي اختارها. لم يفحصه InventorAI ولم يتحقق منه: فهو ليس متطلبًا متحقَّقًا منه ولا مواصفة، ولم يُستخدم لاختيار المكوّنات أو استبعاد الخيارات.",
     },
     "UI_S35_FIELD_COMPONENT_DESCRIPTIONS_BEYOND_PARTS": {
         "en": "Other system, component, process and method descriptions",

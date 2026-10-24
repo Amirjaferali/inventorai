@@ -16,6 +16,7 @@ from engine.idea_state import (
     ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
     LEGACY_UNSPECIFIED, UNVALIDATED,
     DECISION_ACTION_DISPOSITIONS,
+    PROJECT_CONSTRAINT_DISPOSITIONS,
 )
 from engine.derived_readiness import derive_readiness
 # Increment 3: the SAME shared public derivation that feeds the session callout.
@@ -484,10 +485,14 @@ def _withdrawn_source_meta(state):
     Class-bounded exclusion only, using the one governed vocabulary constant:
     every legacy superseded record keeps its behavior byte-identically."""
     records = getattr(state, "assertions", None) or []
+    # PATHN-CONSTRAINT-DECLARATION-01: a corrected or withdrawn project
+    # constraint is not a withdrawn answer either.
     total = sum(1 for r in records
                 if getattr(r, "superseded_by", None) is not None
                 and getattr(r, "disposition", None)
-                not in DECISION_ACTION_DISPOSITIONS)
+                not in DECISION_ACTION_DISPOSITIONS
+                and getattr(r, "disposition", None)
+                not in PROJECT_CONSTRAINT_DISPOSITIONS)
     return {"total": total,
             "note": _WITHDRAWN_SOURCE_NOTE if total else None}
 

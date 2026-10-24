@@ -99,6 +99,8 @@ from engine.idea_state import (
     normalize_dependent_answers as _normalize_dependent_answers,
     project_assumption_dependencies as _project_assumption_dependencies,
 )
+# PATHN-CONSTRAINT-DECLARATION-01: the inventor's project constraints.
+from engine import idea_state as _constraints
 from web.gap_labels import (
     GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE,
     get_session_disclosure, friendly_gap_name, GAP_DISPLAY_NAMES, GAP_DISPLAY_NAMES_AR,
@@ -135,6 +137,7 @@ from engine.record_store import (
     QuantityCapExceeded as _QuantityCapExceeded,
     QuantityAnchorIneligible as _QuantityAnchorIneligible,
     ContradictionDeclarationRejected as _ContradictionDeclarationRejected,
+    ConstraintActionRejected as _ConstraintActionRejected,
     AssumptionDependencyDeclarationRejected as _DependencyDeclarationRejected,
     SubsystemInterfaceRejected as _SubsystemInterfaceRejected,
     SubsystemInterfaceConflict as _SubsystemInterfaceConflict,
@@ -7039,6 +7042,9 @@ def show_session(sid):
         # components, read from durable storage on every render (never from
         # IdeaState); None for a project without a durable record.
         component_inventory=_component_inventory_context(sid, entry),
+        # PATHN-CONSTRAINT-DECLARATION-01: the inventor's project constraints,
+        # read from the ledger on every render; forms only on a writable page.
+        project_constraints=_project_constraints_context(sid, entry, state),
         # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the inventor's
         # criteria and values, ONE store snapshot, paged at 200 cells; forms
         # only on the writable (live) surface.
@@ -7380,6 +7386,9 @@ def show_deliverable(sid):
         # COMPONENT-DELIVERABLE-VALUE-01: the inventor's CURRENT declared
         # components (one store snapshot; UNAVAILABLE fails closed).
         component_report=_component_report_view(sid),
+        # PATHN-CONSTRAINT-DECLARATION-01: the SAME current-constraint view
+        # in the HTML report and the PDF.
+        constraint_report=_constraint_report_view(state),
         # FUNCTIONAL-CONCEPT-PRESENTATION-01: the inventor's own current
         # answers grouped by question topic (read-only over the ledger).
         functional_concept=_functional_concept_view(state),
@@ -7573,6 +7582,9 @@ def download_deliverable_pdf(sid):
             # COMPONENT-DELIVERABLE-VALUE-01: the SAME current-component view
             # as the HTML report.
             component_report=_component_report_view(sid),
+            # PATHN-CONSTRAINT-DECLARATION-01: the SAME current-constraint view
+            # in the HTML report and the PDF.
+            constraint_report=_constraint_report_view(state),
             # FUNCTIONAL-CONCEPT-PRESENTATION-01: the SAME by-topic view as
             # the HTML report.
             functional_concept=_functional_concept_view(state),
@@ -9506,6 +9518,281 @@ def _component_report_view(sid):
                         else needs.get(component.component_id))
     return {"available": True, "has_parts": bool(subsystems),
             "needs_available": needs is not None, "components": items}
+
+
+# --- PATHN-CONSTRAINT-DECLARATION-01: the inventor's project constraints -----
+# The inventor may declare, correct and withdraw their own project constraints
+# in ordinary language, each with the strength they choose. Every action is ONE
+# append-only ledger record through the ONE carrier
+# (``IdeaState.record_constraint_action``) and the store's
+# ``append_constraint_action``, re-validated against the durable ledger inside
+# the write transaction. Authorization is the central project check plus the
+# global request-integrity (CSRF) guard; the signed submission identity says
+# WHICH durable action attempt a post is (an exact retry is recognised from
+# committed state; the same identity with other material fails closed). SAVED
+# is reported only from committed truth. A constraint is OWNER_STATED /
+# UNVALIDATED: nothing is checked, inferred, specified, selected or ruled out,
+# and no gap, progression, readiness, routing, SafetySignal or score changes.
+_CONSTRAINT_SUBMISSION_DOMAIN = "constraint-submission-v1"
+_CONSTRAINT_SUBMISSION_ENTRY_KEY = "constraint_submission"
+_CONSTRAINT_ACTION_KEY_DOMAIN = "constraint-action-v1"
+CONSTRAINT_ACK_SLOT = "_constraint_ack"
+CONSTRAINT_ERROR_SLOT = "_constraint_error"
+_CONSTRAINT_STRENGTH_KEYS = {
+    _constraints.CONSTRAINT_STRENGTH_PREFERENCE: "UI_PCN_STRENGTH_PREFERENCE",
+    _constraints.CONSTRAINT_STRENGTH_SOFT: "UI_PCN_STRENGTH_SOFT",
+    _constraints.CONSTRAINT_STRENGTH_MANDATORY: "UI_PCN_STRENGTH_MANDATORY",
+}
+_CONSTRAINT_REFUSAL_KEYS = {
+    "stale": "UI_PCN_MSG_STALE",
+    "unchanged": "UI_PCN_MSG_UNCHANGED",
+    "capacity": "UI_PCN_MSG_LIMIT",
+    "invalid": "UI_PCN_MSG_INVALID",
+}
+_CONSTRAINT_ACK_KEYS = {
+    _constraints.CONSTRAINT_ACTION_DECLARE: "UI_PCN_MSG_SAVED",
+    _constraints.CONSTRAINT_ACTION_CORRECT: "UI_PCN_MSG_CORRECTED",
+    _constraints.CONSTRAINT_ACTION_WITHDRAW: "UI_PCN_MSG_WITHDRAWN",
+}
+
+
+def _constraint_action_key(sid, nonce, action):
+    """The durable identity of ONE constraint action attempt: HMAC over
+    (action, project, submission nonce) ONLY — never over the material, so the
+    same identity with ANY different material is detectable."""
+    msg = _canonical_message(_CONSTRAINT_ACTION_KEY_DOMAIN, sid, action, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _constraint_payload_matches(payload, action, text, strength, target):
+    """Confirm-by-reload: the STORED record is exactly this action — its
+    disposition, verbatim text, strength and single target."""
+    if not isinstance(payload, dict):
+        return False
+    supersedes = [] if action == _constraints.CONSTRAINT_ACTION_DECLARE else [target]
+    if action == _constraints.CONSTRAINT_ACTION_WITHDRAW:
+        return (payload.get("disposition")
+                == _constraints.DISPOSITION_CONSTRAINT_WITHDRAWN
+                and payload.get("content") == ""
+                and "constraint_strength" not in payload
+                and payload.get("supersedes") == supersedes)
+    return (payload.get("disposition") == _constraints.DISPOSITION_CONSTRAINT_DECLARED
+            and payload.get("content") == text
+            and payload.get("constraint_strength") == strength
+            and payload.get("supersedes") == supersedes)
+
+
+def _constraint_notice(sid, entry, ack=None, error=None):
+    """Publish exactly ONE current constraint notice and return to the list."""
+    entry.pop(CONSTRAINT_ACK_SLOT, None)
+    entry.pop(CONSTRAINT_ERROR_SLOT, None)
+    if ack is not None:
+        entry[CONSTRAINT_ACK_SLOT] = ack
+    if error is not None:
+        entry[CONSTRAINT_ERROR_SLOT] = error
+    return redirect(url_for("show_session", sid=sid) + "#project-constraints")
+
+
+def _constraint_items(history):
+    """Display items for every constraint identity of ``history``: verbatim
+    text, the strength's catalogue key and each earlier declared form. The
+    ledger record ids travel only as form values, never as visible text."""
+    items = []
+    for c in history.constraints:
+        items.append({
+            "record_id": c.record_id, "text": c.text,
+            "strength": c.strength,
+            "strength_key": _CONSTRAINT_STRENGTH_KEYS[c.strength],
+            "corrected": c.corrections > 0, "withdrawn": c.withdrawn,
+            "can_correct": c.corrections < _constraints.MAX_CORRECTIONS_PER_CONSTRAINT,
+            "history": c.history,
+        })
+    return items
+
+
+def _project_constraints_context(sid, entry, state):
+    """The session-page view of the inventor's project constraints, read from
+    the ledger on every render: CURRENT constraints (latest form, declaration
+    order) with their earlier versions, withdrawn constraints apart as history
+    only, and the forms on a writable page. ``unavailable`` — never "none" —
+    when the history cannot be read; ``None`` without a state."""
+    if state is None:
+        return None
+    ack = entry.pop(CONSTRAINT_ACK_SLOT, None) if entry is not None else None
+    error = entry.pop(CONSTRAINT_ERROR_SLOT, None) if entry is not None else None
+    try:
+        assertions = list(getattr(state, "assertions", None) or ())
+        history = _constraints.constraint_history(assertions)
+        by_id = {r.record_id: r for r in assertions}
+        items = _constraint_items(history)
+        for item in items:
+            earlier = []
+            for rid in item["history"][:-1]:
+                record = by_id[rid]
+                if record.disposition != _constraints.DISPOSITION_CONSTRAINT_DECLARED:
+                    continue
+                earlier.append({
+                    "text": record.content,
+                    "strength_key": _CONSTRAINT_STRENGTH_KEYS[record.constraint_strength],
+                    "original": not record.supersedes})
+            if item["withdrawn"]:
+                # The last declared form is the one shown; earlier ones exclude it.
+                earlier = earlier[:-1]
+            item["earlier"] = earlier
+    except Exception:
+        return {"status": "unavailable", "ack": None, "error": error}
+    writable = bool(getattr(state, "domain", None)) and entry is not None \
+        and SESSION_STORE.get(sid) is entry
+    current = [i for i in items if not i["withdrawn"]]
+    active_room = len(current) < _constraints.MAX_ACTIVE_CONSTRAINTS_PER_PROJECT
+    lifetime_room = (len(items)
+                     < _constraints.MAX_CONSTRAINT_IDENTITIES_PER_PROJECT)
+    return {
+        "status": "available",
+        "writable": writable,
+        "constraints": current,
+        "withdrawn": [i for i in items if i["withdrawn"]],
+        "strengths": [{"value": s, "key": _CONSTRAINT_STRENGTH_KEYS[s]}
+                      for s in _constraints.CONSTRAINT_STRENGTHS],
+        "can_add": active_room and lifetime_room,
+        "cap_key": "UI_PCN_CAP" if not active_room else "UI_PCN_CAP_LIFETIME",
+        "submission": (_submission_identity_for(
+            sid, entry, _CONSTRAINT_SUBMISSION_DOMAIN,
+            _CONSTRAINT_SUBMISSION_ENTRY_KEY) if writable else ""),
+        "max_text": _constraints.MAX_CONSTRAINT_TEXT_LENGTH,
+        "ack": ack, "error": error,
+    }
+
+
+def _constraint_report_view(state):
+    """The report / PDF view of the inventor's CURRENT project constraints —
+    verbatim text and strength, declaration order, latest form only. Earlier
+    versions and withdrawn constraints never appear. ``{"available": False}``
+    — never "none" — when the history cannot be read. Read-only."""
+    try:
+        history = _constraints.constraint_history(
+            list(getattr(state, "assertions", None) or ()))
+        items = [{"text": i["text"], "strength_key": i["strength_key"]}
+                 for i in _constraint_items(history) if not i["withdrawn"]]
+    except Exception:
+        return {"available": False, "constraints": []}
+    return {"available": True, "constraints": items}
+
+
+@app.route("/session/<sid>/constraint", methods=["POST"])
+def constraint_action(sid):
+    """PATHN-CONSTRAINT-DECLARATION-01 — the inventor declares, corrects or
+    withdraws ONE of their own project constraints, after an explicit
+    confirmation. Order: project authorization -> a live writable entry ->
+    the signed submission identity and a closed action -> input -> the EXACT
+    committed retry (recognised before freshness; changes nothing) -> a
+    staged mint on a deep copy (refuses a target that is no longer current,
+    an exact restatement and every bound) -> ONE durable append re-validated
+    inside its transaction -> publication to live state."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    if getattr(state, "domain", None) is None:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+    submission = request.form.get("constraint_submission", "")
+    nonce = _verified_submission_identity(sid, submission,
+                                          _CONSTRAINT_SUBMISSION_DOMAIN)
+    action = request.form.get("constraint_action", "")
+    if nonce is None or action not in _constraints.CONSTRAINT_ACTIONS:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+    if request.form.get("constraint_confirm") != "yes":
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_CONFIRM")
+    target = None
+    if action != _constraints.CONSTRAINT_ACTION_DECLARE:
+        target = request.form.get("constraint_target", "")
+        if not _REC_ID_FIELD_RE.match(target or ""):
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+    text = strength = None
+    if action != _constraints.CONSTRAINT_ACTION_WITHDRAW:
+        raw = request.form.get("constraint_text")
+        text = raw.strip() if isinstance(raw, str) else ""
+        strength = request.form.get("constraint_strength", "")
+        if (strength not in _constraints.CONSTRAINT_STRENGTHS
+                or not _constraints.valid_constraint_text(text)):
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_INVALID")
+    store = _get_store()
+    idem_key = _constraint_action_key(sid, nonce, action)
+
+    def _consume_submission():
+        # The identity is spent: the next render issues a fresh one.
+        if entry.get(_CONSTRAINT_SUBMISSION_ENTRY_KEY) == submission:
+            entry.pop(_CONSTRAINT_SUBMISSION_ENTRY_KEY, None)
+
+    def _committed_prior():
+        # IR-01: confirmation is read ONLY from committed durable state.
+        return store.committed_record_payload_for_idempotency_key(sid, idem_key)
+
+    def _settle(prior):
+        _consume_submission()
+        if not _constraint_payload_matches(prior, action, text, strength, target):
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+        if not any(r.record_id == prior.get("record_id") for r in state.assertions):
+            # Committed, but not (yet) on this live page: never claim it shown.
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_SAVED_NOT_SHOWN")
+        return _constraint_notice(sid, entry, ack=_CONSTRAINT_ACK_KEYS[action])
+
+    try:
+        prior = _committed_prior()
+    except Exception:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_UNKNOWN")
+    if prior is not None:
+        return _settle(prior)
+
+    import copy
+    _minter = IdeaState(idea_id=state.idea_id)
+    _minter.assertions = [copy.deepcopy(r) for r in state.assertions]
+    staged_ids = [r.record_id for r in state.assertions]
+    try:
+        new_record = _minter.record_constraint_action(
+            action, text=text, strength=strength, target_record_id=target,
+            iteration=state.iteration)
+    except _constraints.ConstraintStale:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_STALE")
+    except _constraints.ConstraintUnchanged:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_UNCHANGED")
+    except _constraints.ConstraintCapacityError:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_LIMIT")
+    except ValueError:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_INVALID")
+    try:
+        store.append_constraint_action(sid, new_record, idempotency_key=idem_key)
+    except _ConstraintActionRejected as exc:
+        return _constraint_notice(
+            sid, entry, error=_CONSTRAINT_REFUSAL_KEYS.get(exc.kind,
+                                                           "UI_PCN_MSG_INVALID"))
+    except (sqlite3.IntegrityError, StoreError, sqlite3.Error):
+        # Never assume an outcome: continue only when committed state shows
+        # EXACTLY this action under this identity.
+        try:
+            prior = _committed_prior()
+        except Exception:
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_UNKNOWN")
+        if prior is None:
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+        if prior.get("record_id") != new_record.record_id:
+            return _settle(prior)
+        if not _constraint_payload_matches(prior, action, text, strength, target):
+            _consume_submission()
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+    _consume_submission()
+    # Publish the COMPLETE staged ledger (new record + inverse edge) only when
+    # live state is still exactly the ledger it was staged from.
+    if [r.record_id for r in state.assertions] != staged_ids:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_SAVED_NOT_SHOWN")
+    state.assertions = _minter.assertions
+    return _constraint_notice(sid, entry, ack=_CONSTRAINT_ACK_KEYS[action])
+
+
+_REC_ID_FIELD_RE = re.compile(r"^rec_[1-9][0-9]{0,9}$")
 
 
 # Committed durable truth that WAS read and fails closed — distinct from
@@ -12083,9 +12370,11 @@ _T3A_EVENT_BY_DISPOSITION = {
     _DISP_ALT_WITHDRAWN: "alternative_withdrawn",
     _DISP_CONTRADICTION_DECLARED: "contradiction_declared",
     _DISP_DEPENDENCY_DECLARED: "assumption_dependency_declared",
+    _constraints.DISPOSITION_CONSTRAINT_WITHDRAWN: "constraint_withdrawn",
 }
 # The closed event vocabulary the template may name (UI_T3A_EVENT_<KIND>).
 T3A_EVENT_KINDS = frozenset(_T3A_EVENT_BY_DISPOSITION.values()) | frozenset({
+    "constraint_declared", "constraint_corrected",
     "answer_recorded", "answer_withdrawn_replaced", "alternative_declared",
     "alternative_refined", "value_recorded", "value_replaced",
     "reference_recorded", "reference_replaced", "reference_withdrawn",
@@ -12108,6 +12397,11 @@ def _t3a_event_kind(record):
     if disposition == _DISP_ALT_DECLARED:
         return ("alternative_refined"
                 if getattr(record, "supersedes", None) else "alternative_declared")
+    # PATHN-CONSTRAINT-DECLARATION-01: a constraint record that supersedes an
+    # earlier one is the inventor's correction of it.
+    if disposition == _constraints.DISPOSITION_CONSTRAINT_DECLARED:
+        return ("constraint_corrected"
+                if getattr(record, "supersedes", None) else "constraint_declared")
     return _T3A_EVENT_BY_DISPOSITION.get(disposition, "other")
 
 

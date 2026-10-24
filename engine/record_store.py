@@ -147,6 +147,18 @@ class ProjectNotFound(StoreError):
     """Raised when a project id is not present in the store."""
 
 
+class ConstraintActionRejected(StoreError):
+    """PATHN-CONSTRAINT-DECLARATION-01: a constraint append is not valid
+    against the DURABLE ledger inside the write transaction (its target is no
+    longer current, it restates the current form, a bound is reached, or its
+    shape is invalid). Decided before any row is written; nothing is written.
+    ``kind`` is ``stale`` / ``unchanged`` / ``capacity`` / ``invalid``."""
+
+    def __init__(self, message, kind="invalid"):
+        super().__init__(message)
+        self.kind = kind
+
+
 class ContradictionDeclarationRejected(StoreError):
     """CAP-10 Slice 1: a `contradiction_declared` append is not valid against
     the DURABLE ledger inside the write transaction (an endpoint unknown,
@@ -4837,6 +4849,78 @@ class SqliteRecordStore:
                 raise ContradictionDeclarationRejected(
                     "the declaration is not valid against the durable ledger"
                 ) from None
+            seq = self._conn.execute(
+                "SELECT COALESCE(MAX(seq), -1) + 1 FROM records WHERE project_id = ?",
+                (project_id,)).fetchone()[0]
+            self._conn.execute(
+                "INSERT INTO records (project_id, seq, record_id, payload, idempotency_key) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (project_id, seq, record.record_id,
+                 json.dumps(payload, sort_keys=True), idempotency_key))
+
+    def append_constraint_action(self, project_id: str, record,
+                                 idempotency_key: str) -> None:
+        """PATHN-CONSTRAINT-DECLARATION-01 — append ONE constraint record (a
+        declaration, a correction or a withdrawal). The whole durable ledger
+        plus this record at the next position is re-validated INSIDE the same
+        serialized write transaction (``BEGIN IMMEDIATE``) by the record
+        contract and the ONE constraint history rule: a correction or
+        withdrawal whose target another commit already superseded, an exact
+        restatement and every capacity bound fail closed
+        (``ConstraintActionRejected``) with nothing written. The durable
+        idempotency key is required and rides the existing partial UNIQUE
+        index, so a duplicate raises ``sqlite3.IntegrityError`` and rolls
+        back like every other append."""
+        from engine.idea_state import (
+            PROJECT_CONSTRAINT_DISPOSITIONS, ConstraintCapacityError,
+            ConstraintError, ConstraintStale, ConstraintUnchanged,
+            constraint_history)
+        from engine.record_contract import (
+            ContractError, assertion_from_dict, reconcile_supersession_edges)
+        if getattr(record, "disposition", None) not in PROJECT_CONSTRAINT_DISPOSITIONS:
+            raise ConstraintActionRejected("not a constraint action")
+        if not idempotency_key:
+            raise ConstraintActionRejected("an idempotency key is required")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            proj = self._conn.execute(
+                "SELECT idea_id, contract_version FROM projects WHERE project_id = ?",
+                (project_id,)).fetchone()
+            if proj is None:
+                raise ProjectNotFound(project_id)
+            rows = self._conn.execute(
+                "SELECT payload FROM records WHERE project_id = ? ORDER BY seq ASC",
+                (project_id,)).fetchall()
+            payload = assertion_to_dict(record)
+            try:
+                history = [assertion_from_dict(json.loads(p)) for (p,) in rows]
+                reconcile_supersession_edges(history)
+                ProjectRecordContract(idea_id=proj[0], assertions=history,
+                                      contract_version=proj[1]).validate()
+            except ContractError:
+                raise ConstraintActionRejected(
+                    "the durable ledger is not valid") from None
+            candidate = assertion_from_dict(payload)
+            # The specific refusal first (stale / unchanged / capacity), from
+            # the shared rule over the stored history plus this record.
+            try:
+                constraint_history(history + [candidate])
+            except ConstraintStale:
+                raise ConstraintActionRejected("not current", "stale") from None
+            except ConstraintUnchanged:
+                raise ConstraintActionRejected("unchanged", "unchanged") from None
+            except ConstraintCapacityError:
+                raise ConstraintActionRejected("bound reached", "capacity") from None
+            except ConstraintError:
+                raise ConstraintActionRejected("invalid constraint") from None
+            try:
+                history.append(candidate)
+                reconcile_supersession_edges(history)
+                ProjectRecordContract(idea_id=proj[0], assertions=history,
+                                      contract_version=proj[1]).validate()
+            except ContractError:
+                raise ConstraintActionRejected(
+                    "the action is not valid against the durable ledger") from None
             seq = self._conn.execute(
                 "SELECT COALESCE(MAX(seq), -1) + 1 FROM records WHERE project_id = ?",
                 (project_id,)).fetchone()[0]
