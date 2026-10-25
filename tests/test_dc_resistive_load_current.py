@@ -440,13 +440,13 @@ def test_success_packaging_units_sources_and_identity():
     assert [q["source_ref"] for q in result["source_qualification"]] == ["DOE-OHM-S1"]
     assert result["source_qualification"][0]["source_use_policy_ref"] == "dcu:SU012"
     assert result["validation_status"] == "UNVALIDATED"
-    assert (result["artifact_version"], result["implementation_version"]) == ("6", "1.5.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("7", "1.6.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_units_and_condition():
     assert ("electrical:dc_resistive_load_current", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 6
+    assert len(dc.ADMITTED_METHODS) == 7
     assert {"electric_resistance", "electric_current"} <= dc.ADMITTED_QUANTITY_KINDS
     assert {"V", "Ω", "A"} <= dc.ADMITTED_UNIT_TOKENS
     assert dc.KIND_TOKEN_EXCEPTIONS == {"voltage": frozenset({"mV", "V"})}
@@ -509,7 +509,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.dc_resistive_load_current_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._DC_LOAD_CURRENT_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 6
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 7
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("dc_resistive_load_current_method", "engine.dc_resistive",
                    "electrical_content_config",
@@ -574,7 +574,7 @@ def test_a_v_role_rebound_to_mv_refuses_the_v_request(tmp_path):
 
 def test_owner_v5_records_are_unchanged_by_the_sixth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "6"
+    assert data["artifact_version"] == "7"
     v5 = {"quantity_kinds": data["quantity_kinds"][:10],
           "unit_records": data["unit_records"][:10],
           "source_use_policies": data["source_use_policies"][:10],
@@ -583,7 +583,7 @@ def test_owner_v5_records_are_unchanged_by_the_sixth_admission():
     assert hashlib.sha256(canonical.encode()).hexdigest() == V5_RECORDS_DIGEST
     assert [u["record_id"] for u in data["unit_records"][10:]] == [
         "dcu:U011", "dcu:U012", "dcu:U013"]
-    assert [p["record_id"] for p in data["source_use_policies"][10:]] == [
+    assert [p["record_id"] for p in data["source_use_policies"][10:12]] == [
         "dcu:SU011", "dcu:SU012"]
     policies = {p["record_id"]: p for p in data["source_use_policies"]}
     assert "dcu:U011, dcu:U012 and dcu:U013 only" in policies["dcu:SU011"]["inspected_content"]
@@ -977,14 +977,14 @@ def test_nothing_is_persisted_and_no_request_leaks_into_the_next(elec, over):
 def test_no_report_export_api_or_safety_surface():
     src = Path(webapp.__file__).read_text(encoding="utf-8")
     start = src.index("# DC-RESISTIVE-LOAD-CURRENT-01 — DC Resistive Load Current")
-    section = src[start:src.index("# Manufacturing Evidence Capture", start)]
+    section = src[start:src.index("# DC-RESISTIVE-LOAD-POWER-01 —", start)]
     for banned in ("safety_signal", "SafetySignal(", "_get_store()", "append_",
                    "SESSION_STORE[", "deliverable", "pdf", "export", "/api/",
                    "_therm01", "_cap13", "_tmp36", "_calc_gate", "load_project_subsystems",
                    "request.args", "cap09", "success_criteria", "redirect("):
         assert banned not in section, banned
     assert section.count("_dcalc.bind_method(") == 1
-    assert [r.rule for r in webapp.app.url_map.iter_rules() if "dc-load" in r.rule] \
+    assert [r.rule for r in webapp.app.url_map.iter_rules() if "dc-load-current" in r.rule] \
         == ["/session/<sid>/dc-load-current"] * 2
     for template in ("deliverable.html", "report.html", "success_criteria.html"):
         path = ROOT / "web" / "templates" / template

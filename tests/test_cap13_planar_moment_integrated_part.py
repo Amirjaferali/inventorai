@@ -244,15 +244,15 @@ def test_numbers_and_owner_requests_are_identical_irrespective_of_path(monkeypat
         "subject_ref": None}
     assert res_root["result_identity"] == res_part["result_identity"]
     assert (res_part["artifact_version"], res_part["implementation_version"]) \
-        == ("6", "1.5.0")
+        == ("7", "1.6.0")
     assert res_part["outputs"]["M"]["unit"] == "N·mm"
 
 
 def test_method_owner_and_artifacts_are_untouched_by_this_increment():
     assert (method.METHOD_ID, method.METHOD_VERSION) == (
         "cap13:planar_single_force_moment", "1.0")
-    assert dc.IMPLEMENTATION_VERSION == "1.5.0"
-    assert dc.load_artifact()["artifact_version"] == "6"
+    assert dc.IMPLEMENTATION_VERSION == "1.6.0"
+    assert dc.load_artifact()["artifact_version"] == "7"
     assert moment.load_artifact()["artifact_version"] == "1"
     assert moment.ELIGIBLE_ROOT_DOMAIN == MECH
 

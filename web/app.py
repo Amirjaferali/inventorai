@@ -41,6 +41,8 @@ from engine import control_cycle as _cc  # 28-T4 Control-Cycle Slice 1 evaluatio
 from engine import temperature_control_condition as _tcc  # TEMPERATURE-TO-CONTROL-CONDITION-01 composition
 from engine import dc_resistive_load_current_method as _dcl_method  # DC Resistive Load Current Slice 1 method
 from engine import dc_resistive_load_current as _dcl  # DC Resistive Load Current Slice 1 consumer
+from engine import dc_resistive_load_power_method as _dcp_method  # DC Resistive Load Power Slice 1 method
+from engine import dc_resistive_load_power as _dcp  # DC Resistive Load Power Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7116,6 +7118,7 @@ def show_session(sid):
         # admit the project. It never gates the journey.
         temperature_control_condition_link=_tcc_eligible(sid),
         dc_load_current_link=_dcl_eligible(sid),
+        dc_load_power_link=_dcp_eligible(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -14931,6 +14934,136 @@ def dc_load_current_post(sid):
         return _render_dcl(sid, status=400, error="UI_DCL_ERR_REQUEST")
     return _render_dcl(sid, captured=captured,
                        evaluation=_dcl.evaluate(captured, _DC_LOAD_CURRENT_BINDING))
+
+
+# =============================================================================
+# DC-RESISTIVE-LOAD-POWER-01 — DC Resistive Load Power, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory, non-binding calculation of the theoretical electrical
+# power P = V**2 / R that ONE inventor-declared DC resistive load absorbs (method
+# contract §1, §7). The consumer (`engine/dc_resistive_load_power.py`) owns
+# capture, the exact-decimal positive-resistance check, the pre-owner order, the
+# decimal-reference acceptance and the exact / rounded display; the shared
+# calculation / units owner owns execution; the method adapter
+# (`engine/dc_resistive_load_power_method.py`) owns the relation and its binary
+# acceptance. Eligibility is the trusted durable ROOT domain only, exactly
+# Electrical / Electronics (the same root read as the DC load current page): a
+# declared Stage 15 part grants nothing. Nothing is inferred about the project,
+# nothing is persisted and nothing is read beyond the root domain. The POST
+# renders its answer directly and never redirects. The other six calculations are
+# untouched.
+#
+# The SEVENTH immutable trusted binding (calc/units Correction 07 §13F), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_DC_LOAD_POWER_BINDING = _dcalc.bind_method(
+    _dcp_method.METHOD_ID, _dcp_method.METHOD_VERSION, _dcp_method.evaluate)
+
+
+def _dcp_eligible(sid):
+    """True iff the project's trusted durable ROOT domain is Electrical /
+    Electronics. Never read from the request and never from the composition:
+    a declared part grants nothing. Fails closed."""
+    try:
+        return _dcp.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+# As the DC load current run, plus the superscript two and the multiplication
+# sign, so ``P = V² / R = V × I`` stays one direction-isolated run (§9A A-4).
+_DCP_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u03a9\u2212+(\-](?:[A-Za-z0-9_\u03a9\u2212+()/.:'= \u00b2\u00d7\-]*"
+    r"[A-Za-z0-9_\u03a9\u00b2)])?")
+
+
+def _dcp_isolate(text, lang):
+    return _ltr_isolate(text, lang, _DCP_LTR_RUN)
+
+
+def _dcp_result_view(evaluation):
+    """Template view of an accepted SUCCESS: the consumer's display of the exact
+    V**2 / R (already checked against the owner's binary64 result) with its
+    exact / rounded label, the owner's unit, the method identity and the source
+    and unit references the owner carried."""
+    result = evaluation["result"]
+    output = result["outputs"]["p_load"]
+    return {
+        "value": evaluation["display_value"],
+        "exact": evaluation["display_exact"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_dcp(sid, status=200, eligible=True, captured=None, evaluation=None,
+                error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _dcp.OUTCOME_SUCCESS:
+            view = _dcp_result_view(evaluation)
+        else:
+            outcome_key = "UI_DCP_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "dc_load_power.html",
+        sid=sid,
+        iso=lambda key: _dcp_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _dcp_isolate(part, lang) for part in
+            ui_text.text("UI_DCP_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_dcp.DECLARATION_IDS,
+        screen_items=_dcp.SCREEN_ITEMS,
+        value_roles=_dcp.VALUE_ROLES,
+        decl_field=_dcp.DECLARATION_FIELD,
+        screen_field=_dcp.SCREEN_FIELD,
+        value_field=_dcp.VALUE_FIELD,
+        answer_applies=_dcp.ANSWER_APPLIES,
+        answer_does_not_apply=_dcp.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_dcp.SCREEN_YES,
+        screen_no=_dcp.SCREEN_NO,
+        max_value_chars=_dcp.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/dc-load-power", methods=["GET"])
+def dc_load_power(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_dcp(sid, eligible=_dcp_eligible(sid))
+
+
+@app.route("/session/<sid>/dc-load-power", methods=["POST"])
+def dc_load_power_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain only) -> strict capture (malformed: 400,
+    # no reason token) -> the consumer's §7 order -> the shared owner -> the
+    # decimal-reference acceptance.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _dcp_eligible(sid):
+        return _render_dcp(sid, eligible=False)
+    form = request.form
+    captured = _dcp.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_dcp(sid, status=400, error="UI_DCP_ERR_REQUEST")
+    return _render_dcp(sid, captured=captured,
+                       evaluation=_dcp.evaluate(captured, _DC_LOAD_POWER_BINDING))
 
 
 # =============================================================================

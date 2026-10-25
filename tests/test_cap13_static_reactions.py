@@ -329,7 +329,7 @@ def test_binding_is_immutable_and_not_a_registry():
     # moment's (Correction 03): one immutable binding per method
     assert webapp._CAP13_REACTIONS_BINDING.adapter_identity == BINDING.adapter_identity
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 6
+    assert app_source.count("_dcalc.bind_method(") == 7
 
 
 def test_deterministic_identity_and_no_input_mutation():
@@ -412,7 +412,7 @@ def test_source_use_records_are_present_and_bound():
     assert policies == {"dcu:SU001", "dcu:SU002", "dcu:SU003", "dcu:SU004",
                         "dcu:SU005", "dcu:SU006", "dcu:SU007",
                         "dcu:SU008", "dcu:SU009", "dcu:SU010",
-                        "dcu:SU011", "dcu:SU012"}
+                        "dcu:SU011", "dcu:SU012", "dcu:SU013"}
     cap13_units = [u for u in owner["unit_records"] if u["unit_token"] in ("N", "mm")]
     assert len(cap13_units) == 2
     for unit in cap13_units:
@@ -534,7 +534,8 @@ def test_owner_closed_inventory_constants():
         ("cap13:planar_single_force_moment", "1.0"),
         ("cap13:linear_speed_dependent_rotational_load", "1.0"),
         ("tmp36:nominal_voltage_to_temperature", "1.0"),
-        ("electrical:dc_resistive_load_current", "1.0")})
+        ("electrical:dc_resistive_load_current", "1.0"),
+        ("electrical:dc_resistive_load_power", "1.0")})
     assert dc.ADMITTED_QUANTITY_KINDS == frozenset({
         "force", "length", "power", "thermal_resistance", "temperature_difference",
         "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",

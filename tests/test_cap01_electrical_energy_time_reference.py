@@ -388,7 +388,8 @@ def test_t11_the_shared_calculation_and_unit_inventory_is_unchanged():
                        "cap13:planar_single_force_moment",
         "cap13:linear_speed_dependent_rotational_load",
         "tmp36:nominal_voltage_to_temperature",
-        "electrical:dc_resistive_load_current"}
+        "electrical:dc_resistive_load_current",
+        "electrical:dc_resistive_load_power"}
 
 
 def test_t12_no_input_control_numeric_result_or_state_change(client, monkeypatch):

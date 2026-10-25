@@ -337,13 +337,13 @@ def test_success_packaging_units_sources_and_identity():
     assert [u["record_id"] for u in result["unit_records"]] == ["dcu:U007", "dcu:U008"]
     assert [q["source_ref"] for q in result["source_qualification"]] == ["MODELICA-S1"]
     assert result["source_qualification"][0]["url"] == UPSTREAM
-    assert (result["artifact_version"], result["implementation_version"]) == ("6", "1.5.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("7", "1.6.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_units_and_condition():
     assert ("cap13:linear_speed_dependent_rotational_load", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 6
+    assert len(dc.ADMITTED_METHODS) == 7
     assert {"torque", "angular_velocity"} <= dc.ADMITTED_QUANTITY_KINDS
     assert {"N·m", "rad/s"} <= dc.ADMITTED_UNIT_TOKENS
     assert "less_than_zero" in dc._CONDITIONS
@@ -382,7 +382,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.cap13_rotational_load_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._CAP13_ROTATIONAL_LOAD_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 6
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 7
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("cap13_rotational_load", "cap13_content_config", "modelica",
                    "import fractions", "sqlite", "open(target, \"w"):
@@ -427,7 +427,7 @@ def test_owner_artifact_tamper_fails_closed(tmp_path, name):
 
 def test_owner_v3_records_are_unchanged_by_the_fourth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "6"
+    assert data["artifact_version"] == "7"
     units = {u["record_id"]: u["unit_token"] for u in data["unit_records"]}
     assert units == {"dcu:U001": "N", "dcu:U002": "mm", "dcu:U003": "W",
                      "dcu:U004": "K/W", "dcu:U005": "K", "dcu:U006": "N·mm",

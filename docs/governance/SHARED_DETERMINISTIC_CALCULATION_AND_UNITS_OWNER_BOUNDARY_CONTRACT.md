@@ -76,6 +76,14 @@ branch it is an Owner-authorized proposed amendment. It ADDS §13E and one bulle
 `voltage` kind only, the "one unit per kind" rule of §13D (`mV` and `V` become two distinct exact tokens of that kind, with
 no mapping between them); §13D for the TMP36 method, §13C, §13B, §13A, §13 and every other clause — including §§7–10, §12
 and §14 — are unchanged. It admits exactly one further method and nothing more.
+CORRECTION 07: `CORRECTION 07 — BOUNDED SEVENTH ADMISSION (ELECTRICAL / ELECTRONICS DC RESISTIVE LOAD POWER) —
+OWNER-AUTHORIZED WITH ITS IMPLEMENTATION`. Folded, narrowly, into the one Owner-authorized increment
+`DC-RESISTIVE-LOAD-POWER-01`, which implements it in the same pull request under the
+[DC resistive load power method contract](ELECTRICAL_DC_RESISTIVE_LOAD_POWER_METHOD_CONTRACT.md). Applicability: it takes
+effect only on the verified merge of that pull request into `feature/atomic-json-session-persistence`; on its proposal
+branch it is an Owner-authorized proposed amendment. It ADDS §13F and one bullet to §16. It admits exactly one further
+method on the EXISTING quantity kinds and exact unit tokens and nothing more; §13E and every earlier section and clause —
+including §§7–10, §12 and §14 — are unchanged.
 BASIS: the Lead's read-only Stage 25 / CAP-13 feasibility gate (finding B — CAP-13 is feasible only after calculation and
 units ownership is decided); the Lead's read-only calculation and units ownership gate (finding B — a new shared calculation
 and units owner is required before CAP-13); an Astra architecture review and an independent Claude architecture / semantic
@@ -560,6 +568,53 @@ EXACTLY the following and nothing more.
   `mV` ↔ `V`; a generic solver, circuit solver, unit registry or conversion graph; persistence (§12); provider, AI,
   external-tool or external-library execution; and every other §13 / §13A / §13B / §13C / §13D exclusion.
 
+## 13F. Bounded seventh admission — Electrical / Electronics DC resistive load power (Correction 07)
+
+The delivered sixth admission (§13E) is expanded, by the Owner-authorized increment named in the CORRECTION 07 header,
+to EXACTLY the following and nothing more.
+
+- **Owner.** The one existing shared owner. No second owner, solver, conversion graph, unit registry, range policy or
+  calculation path is created, and the owner acquires no persistence and no scientific authority.
+- **Methods — exactly seven:** the six of §13E plus `electrical:dc_resistive_load_power` 1.0, whose technical authority
+  stays outside this owner (§3), in its own Electrical / Electronics method-authority artifact
+  `electrical_dc_resistive_load_power` version 1.
+- **Consumers — exactly seven:** the existing six and one DC load power consumer. No consumer imports another (the power
+  consumer keeps its own display rule rather than importing the DC load current consumer), and no method-authority
+  artifact loads another at execution.
+- **Quantity kinds and exact unit tokens: unchanged.** The method uses the existing `voltage` / `V`,
+  `electric_resistance` / `Ω` and `power` / `W`. No kind, token, alias, case folding, dimensional equivalence or
+  conversion is added; `V` stays bound to `v_load` and `mV` is refused for it (`UNIT_NOT_ADMITTED`); `mW` and `kW` are
+  unknown tokens. The existing `W` unit record (`dcu:U003`) is reused unchanged; its THERM-01-scoped source-use snapshot
+  (`dcu:SU003`) is not extended — the method's own artifact carries its source-use basis for the watt (NIST SP 811
+  Appendix B.9, as recorded in `electronics_electrical:PR005` / `PR007`).
+- **Condition vocabulary.** Unchanged. The new method declares only the existing `greater_than_zero` on `r_load`; its
+  input representation limits and positive-resistance refusal are method-authority content, checked by its consumer from
+  the exact decimal input before any binary rounding. No result range is declared; non-negativity of the result is
+  defended by the method adapter and the consumer, never an owner range policy.
+- **Method-local binding and wiring.** One additional immutable, application-wired binding; each consumer holds exactly
+  its own binding. No registry, discovery, dynamic module path or request-selected method.
+- **Versions.** The shared-owner artifact moves to content version `7` and the implementation to `1.6.0`. One new
+  source-use record (`dcu:SU013`, the DOE Web Policies snapshot of the method's own `dcpower:SU001`, itself the
+  `electronics_electrical:PR006` disposition applied to this method) keeps the §9 source and inspection requirements;
+  every content-version-6 record is unchanged.
+- **Numerical policy.** §10 applies unchanged: the owner still receives typed binary64 numbers and parses no string. The
+  new method's decimal bridge (the §13E strict signed decimal grammar and representation limits, exact-decimal
+  positive-resistance check, one correctly rounded conversion per input), its binary acceptance (exact rational
+  `v_load² / r_load` rounded once; exact zero for a zero voltage, never a negative zero; a nonzero result finite,
+  positive and within `2^-52` of the exact result), its decimal-reference acceptance (within a relative `2^-50` of the
+  exact decimal value) and its display (the exact value rounded once to 12 significant digits, half to even, labelled
+  exact or rounded) are method-authority content held in its consumer, adapter and contract; they are NOT a generic owner
+  policy and change nothing for the other six methods. A failure is `FAILURE / EXECUTION_INTEGRITY_FAILURE` with no
+  numerical payload.
+- **Existing methods preserved.** The two-support, THERM-01, planar-moment, rotational-load, TMP36 and DC load current
+  methods, their authority artifacts, semantics, pins and user-facing behaviour stay unchanged; bounded updates to
+  assertions on the owner content version, the implementation version, the closed inventory and the binding count,
+  caused only by this admission, are expected and allowed.
+- **Still excluded:** an eighth method or consumer; owner ranges; string parsing in the owner; any conversion; any
+  temperature, thermal, rating, energy or protection result; a generic solver, circuit solver, unit registry or
+  conversion graph; persistence (§12); provider, AI, external-tool or external-library execution; and every other §13 /
+  §13A–§13E exclusion.
+
 ## 14. Required guard strategy for a future implementation
 
 - independent expected numerical results;
@@ -605,6 +660,8 @@ EXACTLY the following and nothing more.
 - Correction 05 (§13D) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 - Correction 06 (§13E) is Owner-authorized together with its bounded implementation, under the same proportionate,
+  risk-appropriate verification.
+- Correction 07 (§13F) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 
 ## 17. Non-authorization (restated)

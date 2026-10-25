@@ -6777,6 +6777,149 @@ UI_STRINGS = {
     "UI_DCL_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # DC-RESISTIVE-LOAD-POWER-01 — DC Resistive Load Power, Slice 1 (method
+    # contract §9). The English declaration, screen and disclosure entries are
+    # pinned equal to the artifact by test and the Arabic ones to contract §9A.
+    # Nothing here states a temperature, a rating, a component choice,
+    # protection, suitability or safety.
+    "UI_DCP_LINK_TEXT": {
+        "en": "Optional: theoretical power absorbed by one DC resistive load (P = V² / R)",
+        "ar": "اختياري: القدرة النظرية التي يمتصها حِمل مقاوم واحد على جهد مستمر (P = V² / R)"},
+    "UI_DCP_LINK_NOTE": {
+        "en": "An advisory calculation from a voltage and a resistance you declare. It is not saved, it is not a temperature and it is never required.",
+        "ar": "حساب إرشادي من جهد ومقاومة تصرّح بهما أنت. لا يُحفَظ، وليس درجة حرارة، ولا يكون مطلوبًا أبدًا."},
+    "UI_DCP_TITLE": {
+        "en": "DC resistive load power (optional, non-binding)",
+        "ar": "قدرة حِمل مقاوم على جهد مستمر (اختياري، غير مُلزِم)"},
+    "UI_DCP_INTRO": {
+        "en": "This page is optional. If your design has one load that behaves as a constant resistance, such as a resistor or a heating element, and you know the steady DC voltage across it and its resistance, it shows the electrical power the ideal relation says the load absorbs: P = V² / R = V × I. It does not tell you how hot anything gets. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. إذا كان في تصميمك حِمل واحد يتصرف كمقاومة ثابتة، مثل المقاوم أو عنصر التسخين، وتعرف الجهد المستمر الثابت عليه ومقاومته، فهي تعرض القدرة الكهربائية التي تقول العلاقة المثالية إن الحِمل يمتصها: P = V² / R = V × I. ولا تخبرك بمدى سخونة أي شيء. لا يُحفَظ شيء."},
+    "UI_DCP_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a project whose analysis focus is Electrical / Electronics. The focus does not establish that your load is resistive or that the relation applies to it; you must confirm the method's conditions and screening items. The result is an UNVALIDATED theoretical power, not a measurement, a temperature, a rating, a component choice or a safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله كهربائي/إلكتروني. ولا يثبت المحور أن حِملك مقاوم أو أن العلاقة تنطبق عليه؛ يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة قدرة نظرية غير مُتحقَّق منها (UNVALIDATED)، وليست قياسًا ولا درجة حرارة ولا قيمة اسمية (rating) ولا اختيارًا لمكوّن ولا حكمًا بشأن السلامة."},
+    "UI_DCP_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_DCP_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_DCP_DECL_STEADY_STATE_DC": {
+        "en": "The voltage across the load is a steady DC voltage that stays constant during the period of interest; no AC, pulsed, switching, start-up or inrush condition is being calculated.",
+        "ar": "الجهد على الحِمل جهد مستمر (DC) ثابت يبقى كما هو خلال الفترة المعنية؛ ولا يُحسب أي تيار متردد (AC) أو نبضي أو تبديل أو بدء تشغيل أو تيار اندفاعي."},
+    "UI_DCP_DECL_RESISTIVE_LOAD": {
+        "en": "The load behaves as one resistance that stays constant at this voltage (a resistive, ohmic load), not a motor, lamp, LED, battery, electronic circuit or other load whose current does not follow V / R; InventorAI does not determine that the load is resistive.",
+        "ar": "يتصرف الحِمل كمقاومة واحدة تبقى ثابتة عند هذا الجهد (حِمل مقاوم أومي)، وليس محركًا أو مصباحًا أو ثنائيًا باعثًا للضوء (LED) أو بطارية أو دائرة إلكترونية أو أي حِمل آخر لا يتبع تياره V / R؛ ولا يحدد InventorAI أن الحِمل مقاوم."},
+    "UI_DCP_DECL_DECLARED_VALUES": {
+        "en": "The voltage and resistance entered are the inventor's own values for this one load, taken from their own reading or documentation; InventorAI did not measure or check them.",
+        "ar": "الجهد والمقاومة المُدخلان قيمتاك أنت لهذا الحِمل الواحد، مأخوذتان من قراءتك أو من وثائقك؛ ولم يقسهما InventorAI ولم يتحقق منهما."},
+    "UI_DCP_DECL_ABSORBED_POWER_CONVENTION": {
+        "en": "The power wanted is the power this load absorbs, with the voltage taken from the load terminal the inventor calls + to the terminal they call − and the current through the load in the same direction (the passive sign convention); for a positive resistance it is never negative and is the same for a positive and a negative voltage.",
+        "ar": "القدرة المطلوبة هي القدرة التي يمتصها هذا الحِمل، مع أخذ الجهد من طرف الحِمل الذي تسمّيه + إلى الطرف الذي تسمّيه − والتيار عبر الحِمل في الاتجاه نفسه (اصطلاح الإشارة السلبي، passive sign convention)؛ وهي مع مقاومة موجبة لا تكون سالبة أبدًا، وتبقى نفسها للجهد الموجب والسالب."},
+    "UI_DCP_SCREEN_STEM": {
+        "en": "Is the load, its power source or the circuit it is part of any of the following? Answer each item yes or no.",
+        "ar": "هل الحِمل، أو مصدر تغذيته، أو الدائرة التي هو جزء منها، أيٌّ مما يلي؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_DCP_SCREEN_MAINS_OR_HIGH_VOLTAGE": {
+        "en": "Mains or high voltage",
+        "ar": "جهد الشبكة الكهربائية (mains) أو جهد عالٍ"},
+    "UI_DCP_SCREEN_BATTERY_OR_STORAGE_CELL": {
+        "en": "A battery or energy-storage cell",
+        "ar": "بطارية أو خلية لتخزين الطاقة"},
+    "UI_DCP_SCREEN_FIRE_OR_OVERHEATING": {
+        "en": "Fire, ignition or overheating risk",
+        "ar": "خطر حريق أو اشتعال أو سخونة زائدة"},
+    "UI_DCP_SCREEN_MEDICAL_OR_LIFE_SUPPORTING": {
+        "en": "Medical or life-supporting use",
+        "ar": "استخدام طبي أو داعم للحياة"},
+    "UI_DCP_SCREEN_VEHICLE_OR_AEROSPACE": {
+        "en": "Vehicle or aerospace use",
+        "ar": "استخدام في المركبات أو في الطيران والفضاء (aerospace)"},
+    "UI_DCP_SCREEN_SAFETY_FUNCTION": {
+        "en": "A safety function, alarm, protection or shut-off",
+        "ar": "وظيفة سلامة أو إنذار أو حماية أو إيقاف"},
+    "UI_DCP_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_DCP_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_DCP_SCREEN_NOTE": {
+        "en": "Answering no to all six items only means this bounded calculation may proceed; it never means that anything is safe.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود الستة تعني فقط أنه يمكن متابعة هذا الحساب المحدود؛ ولا تعني أبدًا أن أي شيء آمن."},
+    "UI_DCP_VALUE_NOTE": {
+        "en": "Enter plain decimal numbers: the voltage V in volts, with a leading minus sign if it is negative in the stated direction, and the resistance R in ohms, greater than zero; at most nine digits after the point. These digit limits only bound what can be typed; they are not physical limits. InventorAI does not measure your load.",
+        "ar": "أدخل أرقامًا عشرية بسيطة: الجهد V بالفولت، مع إشارة سالبة في البداية إن كان سالبًا في الاتجاه المذكور، والمقاومة R بالأوم، أكبر من الصفر؛ مع تسعة أرقام على الأكثر بعد الفاصلة. حدود الأرقام هذه تقيّد ما يمكن كتابته فقط؛ وليست حدودًا فيزيائية. لا يقيس InventorAI حِملك."},
+    "UI_DCP_FIELD_V_LOAD": {
+        "en": "Your declared steady DC voltage across the load, from its + terminal to its − terminal (V) — volt (V)",
+        "ar": "الجهد المستمر الثابت الذي تصرّح به على الحِمل، من طرفه + إلى طرفه − (V) — فولت (V)"},
+    "UI_DCP_FIELD_R_LOAD": {
+        "en": "Your declared constant resistance of the load (R) — ohm (Ω)",
+        "ar": "المقاومة الثابتة للحِمل التي تصرّح بها (R) — أوم (Ω)"},
+    "UI_DCP_SUBMIT": {
+        "en": "Show the theoretical power",
+        "ar": "اعرض القدرة النظرية"},
+    "UI_DCP_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_DCP_RESULT_P": {
+        "en": "Theoretical power absorbed by the load (P) — watt (W); never negative",
+        "ar": "القدرة النظرية التي يمتصها الحِمل (P) — واط (W)؛ لا تكون سالبة أبدًا"},
+    "UI_DCP_EXACT": {
+        "en": "Exact value of V² / R for the values you entered.",
+        "ar": "قيمة V² / R الدقيقة للقيم التي أدخلتها."},
+    "UI_DCP_ROUNDED": {
+        "en": "Rounded to 12 significant digits; the exact value of V² / R has more digits.",
+        "ar": "مقرَّبة إلى 12 رقمًا معنويًا؛ للقيمة الدقيقة لـ V² / R أرقام أكثر."},
+    "UI_DCP_NOT_TEMPERATURE": {
+        "en": "This is electrical power, not a temperature: it does not say how hot the load or anything near it becomes.",
+        "ar": "هذه قدرة كهربائية وليست درجة حرارة: فهي لا تقول مدى سخونة الحِمل أو أي شيء قريب منه."},
+    "UI_DCP_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_DCP_ECHO_HEADING": {
+        "en": "The values and stated assumptions you entered",
+        "ar": "القيم والافتراضات المصرّح بها التي أدخلتها"},
+    "UI_DCP_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_DCP_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_DCP_SOURCES_NOTE": {
+        "en": "Ohm's law and electric power from the U.S. Department of Energy Electrical Science handbook, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the volt, ohm and watt from NIST Special Publications 811 and 330. InventorAI restates the relations in its own words; no handbook text, example or figure is reproduced. The U.S. Department of Energy and NIST do not endorse InventorAI or this calculation.",
+        "ar": "قانون أوم والقدرة الكهربائية من دليل Electrical Science لوزارة الطاقة الأمريكية، DOE-HDBK-1011/1-92 (مؤرشف؛ مرجع تاريخي للأساسيات فقط)؛ والفولت والأوم والواط من NIST Special Publications 811 و330. يعيد InventorAI صياغة العلاقات بكلماته؛ ولا يُستنسخ أي نص أو مثال أو شكل من الدليل. لا تؤيّد وزارة الطاقة الأمريكية ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_DCP_DISCLOSURE": {
+        "en": "This is the theoretical electrical power that one resistive load absorbs at the steady DC voltage V you declared, with the resistance R you declared: P = V² / R = V × I, where I = V / R.\n\nSign: V is the voltage across the load from the terminal you called + to the terminal you called −, and the current is taken through the load in the same direction. The load then absorbs P, which is never negative and is the same for a positive or a negative V.\n\nThe voltage and resistance are your own declared values. InventorAI did not measure them and does not check that the load is resistive, that its resistance stays constant or that the voltage is steady.\n\nIt is the ideal steady-state relation only: wiring and contact resistance, the source's internal resistance and voltage drop, temperature change of the resistance, start-up or inrush current, switching, AC behaviour and non-resistive loads such as motors, lamps, LEDs or electronics are not included.\n\nThe value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement.\n\nNext engineering need: this power is not a temperature. How hot the load or its surroundings become, whether the load, its resistor, wiring, source and any driver or switch are rated for this power, and what protection the circuit needs all remain unverified, and must be checked by measurement or a qualified person before any reliance. The result is preliminary, advisory, UNVALIDATED and not evidence.\n\nReference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the watt as identified in NIST Special Publication 811. The relations are restated by InventorAI, and no handbook text, example or figure is reproduced.",
+        "ar": "هذه هي القدرة الكهربائية النظرية التي يمتصها حِمل مقاوم واحد عند الجهد المستمر الثابت V الذي صرّحت به، مع المقاومة R التي صرّحت بها: P = V² / R = V × I، حيث I = V / R.\n\nالإشارة: V هو الجهد على الحِمل من الطرف الذي سمّيته + إلى الطرف الذي سمّيته −، ويُؤخذ التيار عبر الحِمل في الاتجاه نفسه. عندها يمتص الحِمل القدرة P، وهي لا تكون سالبة أبدًا، وتبقى نفسها للجهد V الموجب والسالب.\n\nالجهد والمقاومة قيمتان صرّحت بهما أنت. لم يقسهما InventorAI، ولا يتحقق من أن الحِمل مقاوم، ولا من أن مقاومته تبقى ثابتة، ولا من أن الجهد ثابت.\n\nهذه هي العلاقة المثالية في الحالة المستقرة فقط: لا تُدرج مقاومة الأسلاك والتلامس، ولا المقاومة الداخلية للمصدر وهبوط جهده، ولا تغيّر المقاومة مع الحرارة، ولا تيار بدء التشغيل أو التيار الاندفاعي (inrush)، ولا التبديل، ولا سلوك التيار المتردد (AC)، ولا الأحمال غير المقاومة مثل المحركات والمصابيح والثنائيات الباعثة للضوء (LED) والدوائر الإلكترونية.\n\nتُعرض القيمة بدقة حين يمكن ذلك؛ وإلا تُقرَّب إلى 12 رقمًا معنويًا ويُشار إلى أنها مقرَّبة. الأرقام ناتجة عن إدخالك؛ وليست دقة أي قياس.\n\nالحاجة الهندسية التالية: هذه القدرة ليست درجة حرارة. مدى سخونة الحِمل أو ما حوله، وما إذا كان الحِمل ومقاومه وأسلاكه ومصدره وأي مُشغِّل (driver) أو مفتاح مُصنَّفًا لهذه القدرة، والحماية التي تحتاجها الدائرة — كلها تبقى غير مُتحقَّق منها، ويجب فحصها بالقياس أو بواسطة شخص مؤهل قبل أي اعتماد. هذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا.\n\nالمراجع: وزارة الطاقة الأمريكية — Electrical Science، ‏DOE-HDBK-1011/1-92 (مؤرشف؛ مرجع تاريخي للأساسيات فقط)؛ والواط كما يحدده NIST Special Publication 811. والعلاقات معاد صياغتها من InventorAI، ولا يُستنسخ أي نص أو مثال أو شكل من الدليل."},
+    "UI_DCP_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_DCP_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. تتطلب هذه الحالة مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "V and R must be written as plain decimal numbers in volts and ohms, with at most one leading minus sign, at most nine digits before the point for V or twelve for R, and at most nine after it. Nothing was calculated.",
+        "ar": "يجب كتابة V وR رقمين عشريين بسيطين بالفولت والأوم، مع إشارة سالبة واحدة على الأكثر في البداية، وتسعة أرقام على الأكثر قبل الفاصلة لـ V أو اثني عشر لـ R، وتسعة على الأكثر بعدها. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_RESISTANCE_NOT_POSITIVE": {
+        "en": "The resistance R must be greater than zero ohms. Nothing was calculated.",
+        "ar": "يجب أن تكون المقاومة R أكبر من صفر أوم. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the volt (V) and the ohm (Ω) and gives only the watt (W). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة الفولت (V) والأوم (Ω) فقط، ولا تعطي إلا الواط (W). لم يُحسب شيء."},
+    "UI_DCP_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

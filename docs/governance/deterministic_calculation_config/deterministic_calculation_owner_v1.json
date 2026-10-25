@@ -1,9 +1,9 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "6",
+  "artifact_version": "7",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 06, sections 13A to 13E) and the method contracts of the six admitted methods. Content version 6 admits exactly six methods and exactly the thirteen unit tokens they require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature; V, Ω and A for the DC resistive load current); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. The voltage kind alone holds two exact tokens, mV and V, by the one named exception of section 13E: each role binds one of them and nothing maps one to the other. The Celsius-temperature kind is the TMP36 output only and is never related to K. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The records dcu:U001 to dcu:U010 and dcu:SU001 to dcu:SU010 and the five earlier method records are unchanged from content version 5.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 07, sections 13A to 13F) and the method contracts of the seven admitted methods. Content version 7 admits exactly seven methods and exactly the thirteen unit tokens they require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature; V, Ω and A for the DC resistive load current; V, Ω and W for the DC resistive load power); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. The voltage kind alone holds two exact tokens, mV and V, by the one named exception of section 13E: each role binds one of them and nothing maps one to the other. The Celsius-temperature kind is the TMP36 output only and is never related to K. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The records dcu:U001 to dcu:U013 and dcu:SU001 to dcu:SU012 and the six earlier method records are unchanged from content version 6.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
     {"quantity_kind": "length", "dimension": "L"},
@@ -397,6 +397,19 @@
       "acknowledgement": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only).",
       "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
       "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU013",
+      "source_title": "U.S. Department of Energy - Web Policies - Copyright, Restrictions and Permissions Notice",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "url": "not recorded - identified by title, as in electronics_electrical:PR006, which records no URL",
+      "inspected_content": "Owner-local snapshot of dcpower:SU001 for the DC resistive load power method source DOE-PWR-S1 only (not a legal opinion): government information on DOE websites is in the public domain with DOE acknowledgement requested; contractor- or privately contributed material may remain protected, so no blanket public-domain claim is made for the handbook's expressive content. Use is the two factual relationships (Ohm's law and electric power) only, in InventorAI's own paraphrase; no handbook prose, worked example, figure or table is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Version-bound snapshot of dcpower:SU001 in docs/governance/electrical_content_config/dc_resistive_load_power_v1.json, itself the disposition recorded as electronics_electrical:PR006 (Lead-level inspection, 2026-09-28) applied to this one method; held here so the owner method record validates from this artifact alone. A separate record: dcu:SU001 to dcu:SU012 keep their own scopes; dcu:SU012 (DC resistive load current) is not extended.",
+      "acknowledgement": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only).",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
+      "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this owner or any result."
     }
   ],
   "methods": [
@@ -600,6 +613,35 @@
       ],
       "output_roles": [
         {"role": "i_load", "quantity_kind": "electric_current", "unit_token": "A"}
+      ],
+      "applicability": [
+        {"role": "r_load", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
+    },
+    {
+      "method_id": "electrical:dc_resistive_load_power",
+      "method_version": "1.0",
+      "adapter_identity": "engine.dc_resistive_load_power_method.evaluate",
+      "technical_authority": "Electrical / Electronics - ELECTRICAL_DC_RESISTIVE_LOAD_POWER_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "electrical_dc_resistive_load_power", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "DOE-PWR-S1",
+          "source_title": "DOE-HDBK-1011/1-92, DOE Fundamentals Handbook: Electrical Science, Volume 1 of 4, Module 1 (Basic Electrical Theory), Ohm's Law (handbook page 14) and Electric Power (handbook page 16) (archived; historical fundamentals reference only)",
+          "publisher": "U.S. Department of Energy (DOE)",
+          "url": "not recorded - identified by handbook number, as in electronics_electrical:PR004, which records no URL",
+          "source_use_policy_ref": "dcu:SU013",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-09-28"
+        }
+      ],
+      "input_roles": [
+        {"role": "v_load", "quantity_kind": "voltage", "unit_token": "V"},
+        {"role": "r_load", "quantity_kind": "electric_resistance", "unit_token": "Ω"}
+      ],
+      "output_roles": [
+        {"role": "p_load", "quantity_kind": "power", "unit_token": "W"}
       ],
       "applicability": [
         {"role": "r_load", "condition": "greater_than_zero", "bound_role": null}

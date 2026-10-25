@@ -2332,6 +2332,14 @@ body{overflow-wrap:anywhere}
 <p class="journey-note" data-dcl-link style="margin-top:14px"><a href="{{ url_for('dc_load_current', sid=sid) }}">{{ t('UI_DCL_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_DCL_LINK_NOTE') }}</span></p>
 {% endif %}
 {#- DCL-LINK-END -#}
+{#- DCP-LINK-BEGIN — DC Resistive Load Power Slice 1. ONE optional link to the
+    request-local calculation page, offered on an Electrical / Electronics root
+    project only. It is not a journey action, gates nothing, asks nothing and
+    carries no calculation content: nothing is calculated or saved on this page. -#}
+{% if dc_load_power_link %}
+<p class="journey-note" data-dcp-link style="margin-top:14px"><a href="{{ url_for('dc_load_power', sid=sid) }}">{{ t('UI_DCP_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_DCP_LINK_NOTE') }}</span></p>
+{% endif %}
+{#- DCP-LINK-END -#}
 {#- THERM01-LINK-BEGIN — Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1.
     ONE optional link to the request-local calculation page, offered only on an
     eligible (Electrical / Electronics-root) project. It is not a journey action,
