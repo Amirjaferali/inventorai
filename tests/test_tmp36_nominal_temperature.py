@@ -861,7 +861,7 @@ def test_nothing_is_persisted(elec, over):
 def test_no_report_export_api_or_safety_surface():
     src = Path(webapp.__file__).read_text(encoding="utf-8")
     start = src.index("# Sensors C3 — TMP36 Nominal Voltage-to-Temperature")
-    section = src[start:src.index("# Manufacturing Evidence Capture", start)]
+    section = src[start:src.index("# 28-T4 — Single Vendor-Neutral Control-Cycle", start)]
     for banned in ("safety_signal", "SafetySignal(", "_get_store()", "append_",
                    "SESSION_STORE[", "deliverable", "pdf", "export", "/api/",
                    "_therm01", "_cap13", "load_project_subsystems", "request.args",

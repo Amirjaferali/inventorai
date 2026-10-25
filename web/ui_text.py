@@ -6533,6 +6533,107 @@ UI_STRINGS = {
     "UI_CC_ERR_REQUEST": {
         "en": "This request could not be read, or it tried to change the fixed logic. Nothing was evaluated.",
         "ar": "تعذّرت قراءة هذا الطلب، أو حاول تغيير المنطق الثابت. لم يُقيَّم شيء."},
+    # TEMPERATURE-TO-CONTROL-CONDITION-01 (composition contract §9). The
+    # English confirmation and disclosure are pinned equal to the contract by
+    # test, and the Arabic ones to contract §9A. The two parts keep their own
+    # UI_TMP36_* / UI_CC_* copy. Nothing here states a measurement, a
+    # thermostat, a device command, suitability or safety.
+    "UI_TCC_LINK_TEXT": {
+        "en": "Optional: TMP36 temperature against a threshold, as start_input of one READY / RUNNING cycle",
+        "ar": "اختياري: درجة حرارة TMP36 مقارنةً بعتبة، بوصفها start_input لدورة READY / RUNNING واحدة"},
+    "UI_TCC_LINK_NOTE": {
+        "en": "An advisory evaluation of values you declare. It is not saved, controls nothing and is never required.",
+        "ar": "تقييم إرشادي لقيم تصرّح بها أنت. لا يُحفَظ، ولا يتحكم في أي شيء، ولا يكون مطلوبًا أبدًا."},
+    "UI_TCC_TITLE": {
+        "en": "TMP36 temperature → threshold → one control cycle (optional, non-binding)",
+        "ar": "درجة حرارة TMP36 ← عتبة ← دورة تحكم واحدة (اختياري، غير مُلزِم)"},
+    "UI_TCC_INTRO": {
+        "en": "This page is optional. In one step it takes the TMP36 output voltage you read yourself, works out the sensor's nominal temperature, checks whether it is at or above a threshold you choose, and uses that yes / no answer as start_input for one cycle of the fixed READY / RUNNING logic. Nothing is saved and no device is controlled.",
+        "ar": "هذه الصفحة اختيارية. في خطوة واحدة تأخذ جهد خرج TMP36 الذي قرأته بنفسك، وتحسب درجة الحرارة الاسمية للحسّاس، وتتحقق مما إذا كانت مساوية لعتبة تختارها أو أعلى منها، وتستخدم هذه الإجابة (نعم / لا) بوصفها start_input لدورة واحدة من منطق READY / RUNNING الثابت. لا يُحفَظ شيء، ولا يُتحكَّم في أي جهاز."},
+    "UI_TCC_SCOPE_NOTE": {
+        "en": "This optional evaluation is available only where both the TMP36 temperature and the READY / RUNNING cycle are available: a project whose analysis focus is Electrical / Electronics. It does not establish that your sensor is a TMP36, that the logic describes your design or that the threshold suits it. The result is UNVALIDATED: not a measurement, a thermostat, a device command or a safety function.",
+        "ar": "يتاح هذا التقييم الاختياري فقط حيث تتاح درجة حرارة TMP36 ودورة READY / RUNNING كلتاهما: مشروع محور تحليله كهربائي/إلكتروني. ولا يثبت أن حسّاسك من طراز TMP36، ولا أن المنطق يصف تصميمك، ولا أن العتبة تلائمه. النتيجة غير مُتحقَّق منها (UNVALIDATED): ليست قياسًا ولا منظِّم حرارة (thermostat) ولا أمرًا لجهاز ولا وظيفة سلامة."},
+    "UI_TCC_PART1_HEADING": {
+        "en": "1. The TMP36 nominal temperature",
+        "ar": "1. درجة الحرارة الاسمية لحسّاس TMP36"},
+    "UI_TCC_THRESHOLD_HEADING": {
+        "en": "2. Your threshold",
+        "ar": "2. العتبة التي تختارها"},
+    "UI_TCC_FIELD_THRESHOLD": {
+        "en": "Your threshold temperature, between −40 and +125 — degree Celsius (°C)",
+        "ar": "درجة حرارة العتبة التي تختارها، بين −40 و+125 — درجة سيليزية (°C)"},
+    "UI_TCC_THRESHOLD_NOTE": {
+        "en": "Write it as a plain decimal, with a minus sign if it is below zero and at most four digits after the point. It is your own value; InventorAI does not check that it suits your design.",
+        "ar": "اكتبها بصيغة عشرية بسيطة، مع إشارة سالبة إذا كانت أقل من الصفر وأربعة أرقام على الأكثر بعد الفاصلة. هي قيمتك أنت؛ ولا يتحقق InventorAI من ملاءمتها لتصميمك."},
+    "UI_TCC_DECL_CONDITION_MEANING": {
+        "en": "start_input is taken to be true exactly when the nominal temperature is at or above the threshold entered, and false otherwise; nothing else sets it, and the threshold is the inventor's own value.",
+        "ar": "تُعدّ start_input صحيحة (true) فقط عندما تكون درجة الحرارة الاسمية مساوية للعتبة المُدخلة أو أعلى منها، وخاطئة (false) في غير ذلك؛ ولا يحددها شيء آخر، والعتبة قيمتك أنت."},
+    "UI_TCC_PART2_HEADING": {
+        "en": "3. One READY / RUNNING cycle",
+        "ar": "3. دورة READY / RUNNING واحدة"},
+    "UI_TCC_START_INPUT_NOTE": {
+        "en": "Here you do not choose start_input: it is the answer to the threshold check above — true when the nominal temperature is at or above your threshold, false otherwise.",
+        "ar": "هنا لا تختار start_input: إنها إجابة فحص العتبة أعلاه — true عندما تكون درجة الحرارة الاسمية مساوية لعتبتك أو أعلى منها، وfalse في غير ذلك."},
+    "UI_TCC_SUBMIT": {
+        "en": "Evaluate",
+        "ar": "قيّم"},
+    "UI_TCC_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_TCC_RESULT_VOLTAGE": {
+        "en": "Your declared TMP36 output voltage (V_OUT)",
+        "ar": "جهد خرج TMP36 الذي صرّحت به (V_OUT)"},
+    "UI_TCC_RESULT_TEMPERATURE": {
+        "en": "Nominal temperature from the TMP36 relation (T)",
+        "ar": "درجة الحرارة الاسمية من علاقة TMP36 (T)"},
+    "UI_TCC_RESULT_THRESHOLD": {
+        "en": "Your threshold",
+        "ar": "العتبة التي اخترتها"},
+    "UI_TCC_RESULT_CONDITION": {
+        "en": "Is the nominal temperature at or above your threshold?",
+        "ar": "هل درجة الحرارة الاسمية مساوية لعتبتك أو أعلى منها؟"},
+    "UI_TCC_CONDITION_TRUE": {
+        "en": "Yes (true): the nominal temperature is at or above your threshold.",
+        "ar": "نعم (true): درجة الحرارة الاسمية مساوية لعتبتك أو أعلى منها."},
+    "UI_TCC_CONDITION_FALSE": {
+        "en": "No (false): the nominal temperature is below your threshold.",
+        "ar": "لا (false): درجة الحرارة الاسمية أقل من عتبتك."},
+    "UI_TCC_RESULT_START_INPUT": {
+        "en": "start_input passed to the cycle",
+        "ar": "start_input المُمرَّرة إلى الدورة"},
+    "UI_TCC_PROVENANCE_NOTE": {
+        "en": "The voltage and the threshold are your own declared values, shown as you entered them; the temperature is the TMP36 nominal relation, not a measurement; start_input comes only from the threshold check.",
+        "ar": "الجهد والعتبة قيمتان صرّحت بهما أنت، وتُعرضان كما أدخلتهما؛ ودرجة الحرارة هي العلاقة الاسمية لحسّاس TMP36، وليست قياسًا؛ وتأتي start_input فقط من فحص العتبة."},
+    "UI_TCC_DISCLOSURE": {
+        "en": "This joins two existing advisory evaluations in one request: the TMP36 nominal temperature for the voltage you declared, and one READY / RUNNING control cycle.\n\nstart_input is true exactly when the nominal temperature is at or above the threshold you entered, and false otherwise; the comparison uses the exact decimal values, and nothing else sets start_input.\n\nThe temperature is the TMP36 nominal relation applied to your declared voltage, not a measured or accurate temperature; a real sensor can differ by several degrees, so the condition can differ from what a real system would see.\n\nIf either evaluation refuses, nothing is shown from the other: there is no temperature-only, condition-only or cycle-only partial result.\n\nNothing is stored or carried to the next request, and the output is a logical value only: nothing is switched, started or energized, and this is not a thermostat, controller, safety function or interlock.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence; the threshold is your own value, and InventorAI does not check that it suits your design.\n\nReference sources stay as for the two evaluations: the Analog Devices TMP35/TMP36/TMP37 data sheet, Rev. H, and OpenPLC Runtime (reference only); no manufacturer or runtime code is used.",
+        "ar": "يجمع هذا الحساب تقييمين إرشاديين قائمين في طلب واحد: درجة الحرارة الاسمية لحسّاس TMP36 للجهد الذي صرّحت به، ودورة تحكم واحدة READY / RUNNING.\n\nتكون start_input صحيحة (true) فقط عندما تكون درجة الحرارة الاسمية مساوية للعتبة التي أدخلتها أو أعلى منها، وخاطئة (false) في غير ذلك؛ وتُجرى المقارنة على القيم العشرية الدقيقة، ولا يحدد start_input أي شيء آخر.\n\nدرجة الحرارة هي العلاقة الاسمية لحسّاس TMP36 مطبّقة على الجهد الذي صرّحت به، وليست درجة حرارة مَقيسة أو دقيقة؛ وقد يختلف حسّاس حقيقي بعدة درجات، لذلك قد يختلف الشرط عمّا قد يراه نظام حقيقي.\n\nإذا رفض أيٌّ من التقييمين، فلا يُعرض شيء من الآخر: لا توجد نتيجة جزئية لدرجة الحرارة وحدها أو للشرط وحده أو للدورة وحدها.\n\nلا يُحفَظ شيء ولا يُنقل إلى الطلب التالي، والخرج قيمة منطقية فقط: لا يُشغَّل أي شيء ولا يُبدأ ولا يُمَدّ بالطاقة، وهذا ليس منظِّم حرارة (thermostat) ولا جهاز تحكم ولا وظيفة سلامة ولا تعشيقًا (interlock).\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا؛ والعتبة قيمتك أنت، ولا يتحقق InventorAI من ملاءمتها لتصميمك.\n\nتبقى المراجع كما هي للتقييمين: ورقة بيانات Analog Devices لـ TMP35/TMP36/TMP37، المراجعة Rev. H، وOpenPLC Runtime (مرجعًا فقط)؛ ولا يُستخدم أي كود من الشركة المصنّعة أو من بيئة التشغيل."},
+    "UI_TCC_TMP36_DISCLOSURE_SUMMARY": {
+        "en": "Limits of the TMP36 nominal temperature",
+        "ar": "حدود درجة الحرارة الاسمية لحسّاس TMP36"},
+    "UI_TCC_CC_DISCLOSURE_SUMMARY": {
+        "en": "Limits of the READY / RUNNING cycle",
+        "ar": "حدود دورة READY / RUNNING"},
+    "UI_TCC_UNABLE_HEADING": {
+        "en": "Not evaluated (UNABLE TO DETERMINE)",
+        "ar": "لم يُقيَّم (UNABLE TO DETERMINE)"},
+    "UI_TCC_PART_REFUSAL_NOTE": {
+        "en": "Nothing is shown from any part: there is no partial result.",
+        "ar": "لا يُعرض شيء من أي جزء: لا توجد نتيجة جزئية."},
+    "UI_TCC_OUTCOME_NOT_DECLARED": {
+        "en": "You have not entered the threshold or answered the threshold confirmation. Nothing was evaluated.",
+        "ar": "لم تُدخل العتبة أو لم تُجب عن تأكيد العتبة. لم يُقيَّم شيء."},
+    "UI_TCC_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "The threshold confirmation does not match the one fixed condition this evaluation covers. Nothing was evaluated.",
+        "ar": "تأكيد العتبة لا يطابق الشرط الثابت الوحيد الذي يغطيه هذا التقييم. لم يُقيَّم شيء."},
+    "UI_TCC_OUTCOME_INVALID_THRESHOLD": {
+        "en": "The threshold must be a plain decimal number of degrees Celsius, with at most one leading minus sign and at most four digits after the point. Nothing was evaluated.",
+        "ar": "يجب أن تكون العتبة رقمًا عشريًا بسيطًا بالدرجات السيليزية، مع إشارة سالبة واحدة على الأكثر في البداية وأربعة أرقام على الأكثر بعد الفاصلة. لم يُقيَّم شيء."},
+    "UI_TCC_OUTCOME_THRESHOLD_OUTSIDE_RANGE": {
+        "en": "The threshold is outside −40 °C to +125 °C, the temperature range of the TMP36 nominal relation. Nothing was evaluated.",
+        "ar": "العتبة خارج المجال من −40 °C إلى +125 °C، وهو مجال درجات الحرارة للعلاقة الاسمية لحسّاس TMP36. لم يُقيَّم شيء."},
+    "UI_TCC_ERR_REQUEST": {
+        "en": "This request could not be read, or it tried to supply start_input or change a fixed rule. Nothing was evaluated.",
+        "ar": "تعذّرت قراءة هذا الطلب، أو حاول تقديم start_input أو تغيير قاعدة ثابتة. لم يُقيَّم شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

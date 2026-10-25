@@ -2316,6 +2316,14 @@ body{overflow-wrap:anywhere}
 <p class="journey-note" data-cc-link style="margin-top:14px"><a href="{{ url_for('control_cycle', sid=sid) }}">{{ t('UI_CC_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_CC_LINK_NOTE') }}</span></p>
 {% endif %}
 {#- CC-LINK-END -#}
+{#- TCC-LINK-BEGIN — TEMPERATURE-TO-CONTROL-CONDITION-01. ONE optional link to the
+    request-local composition page, offered only where both the TMP36 and the
+    28-T4 gates admit the project. It is not a journey action, gates nothing and
+    carries no evaluation content. -#}
+{% if temperature_control_condition_link %}
+<p class="journey-note" data-tcc-link style="margin-top:14px"><a href="{{ url_for('temperature_control_condition', sid=sid) }}">{{ t('UI_TCC_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_TCC_LINK_NOTE') }}</span></p>
+{% endif %}
+{#- TCC-LINK-END -#}
 {#- THERM01-LINK-BEGIN — Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1.
     ONE optional link to the request-local calculation page, offered only on an
     eligible (Electrical / Electronics-root) project. It is not a journey action,

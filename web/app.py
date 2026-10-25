@@ -38,6 +38,7 @@ from engine import cap13_rotational_load as _cap13r  # CAP-13 Rotational Load Sl
 from engine import tmp36_nominal_temperature_method as _tmp36_method  # TMP36 Nominal Temperature Slice 1 method
 from engine import tmp36_nominal_temperature as _tmp36  # TMP36 Nominal Temperature Slice 1 consumer
 from engine import control_cycle as _cc  # 28-T4 Control-Cycle Slice 1 evaluation
+from engine import temperature_control_condition as _tcc  # TEMPERATURE-TO-CONTROL-CONDITION-01 composition
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7108,6 +7109,10 @@ def show_session(sid):
         # READY / RUNNING control-cycle evaluation, on an Electrical / Electronics
         # root project only (no declared-part path). It never gates the journey.
         control_cycle_link=_control_cycle_eligible(sid),
+        # TEMPERATURE-TO-CONTROL-CONDITION-01: an OPTIONAL link to the
+        # request-local composition, offered only where BOTH existing gates
+        # admit the project. It never gates the journey.
+        temperature_control_condition_link=_tcc_eligible(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -14684,6 +14689,115 @@ def control_cycle_post(sid):
         return _render_control_cycle(sid, status=400, error="UI_CC_ERR_REQUEST")
     return _render_control_cycle(sid, captured=captured,
                                  evaluation=_cc.evaluate(captured))
+
+
+# =============================================================================
+# TEMPERATURE-TO-CONTROL-CONDITION-01 — TMP36 nominal temperature -> threshold -> one cycle (request-local, optional)
+# =============================================================================
+# ONE optional, advisory composition (composition contract §1, §7): the thin
+# wrapper (`engine/temperature_control_condition.py`) runs the EXISTING TMP36
+# consumer with its EXISTING binding, compares the accepted exact nominal
+# temperature with the inventor's threshold, and passes only that Boolean as
+# start_input to the EXISTING 28-T4 evaluator. Eligibility is the INTERSECTION
+# of the two existing gates (so Electrical / Electronics root only; a declared
+# part grants nothing). Nothing is persisted and nothing is carried between
+# requests; the POST renders its answer directly and never redirects. The
+# standalone TMP36 and 28-T4 pages are untouched.
+
+
+def _tcc_eligible(sid):
+    """True iff BOTH existing gates admit the project: the TMP36 gate
+    (``_calc_gate``) AND the 28-T4 root-domain gate. Never read from the
+    request; fails closed."""
+    try:
+        return bool(_calc_gate(sid, _tmp36)[0]) and _control_cycle_eligible(sid)
+    except Exception:
+        return False
+
+
+def _tcc_isolate(text, lang):
+    return _ltr_isolate(text, lang, _TMP36_LTR_RUN)
+
+
+def _render_tcc(sid, status=200, eligible=True, captured=None, evaluation=None,
+                error=None):
+    lang = _current_ui_lang()
+    result = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _tcc.OUTCOME_SUCCESS:
+            result = evaluation
+        elif evaluation["outcome"] == _tcc.TMP36_REFUSED:
+            outcome_key = "UI_TMP36_OUTCOME_%s" % evaluation["part_outcome"]
+        elif evaluation["outcome"] == _tcc.CONTROL_CYCLE_REFUSED:
+            outcome_key = "UI_CC_OUTCOME_%s" % evaluation["part_outcome"]
+        else:
+            outcome_key = "UI_TCC_OUTCOME_%s" % evaluation["outcome"]
+    iso = lambda key: _tcc_isolate(ui_text.text(key, lang), lang)  # noqa: E731
+    response = make_response(render_template(
+        "temperature_control_condition.html",
+        sid=sid,
+        iso=iso,
+        disclosure_items=[_tcc_isolate(part, lang) for part in
+                          ui_text.text("UI_TCC_DISCLOSURE", lang).split("\n\n")],
+        tmp36_disclosure_items=[_tcc_isolate(part, lang) for part in
+                                ui_text.text("UI_TMP36_DISCLOSURE", lang).split("\n\n")],
+        cc_disclosure_items=[_cc_isolate(part, lang) for part in
+                             ui_text.text("UI_CC_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=result,
+        outcome_key=outcome_key,
+        part_refusal=(evaluation is not None
+                      and evaluation["outcome"] in (_tcc.TMP36_REFUSED,
+                                                    _tcc.CONTROL_CYCLE_REFUSED)),
+        captured=captured,
+        tmp36_prefix=_tcc.TMP36_PREFIX,
+        cycle_prefix=_tcc.CYCLE_PREFIX,
+        tmp36_declarations=_tmp36.DECLARATION_IDS,
+        tmp36_screen_items=_tmp36.SCREEN_ITEMS,
+        cc_declarations=_cc.DECLARATION_IDS,
+        cc_screen_items=_cc.SCREEN_ITEMS,
+        states=_cc.STATES,
+        decl_field=_cc.DECLARATION_FIELD,
+        screen_field=_cc.SCREEN_FIELD,
+        tmp36_value_field=_tmp36.VALUE_FIELD % "v_out",
+        previous_state_field=_cc.PREVIOUS_STATE_FIELD,
+        condition_field=_tcc.DECLARATION_FIELD,
+        threshold_field=_tcc.THRESHOLD_FIELD,
+        answer_applies=_tcc.ANSWER_APPLIES,
+        answer_does_not_apply=_tcc.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_cc.SCREEN_YES,
+        screen_no=_cc.SCREEN_NO,
+        max_value_chars=_tmp36.MAX_VALUE_CHARS,
+        max_threshold_chars=_tcc.MAX_THRESHOLD_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/temperature-control-condition", methods=["GET"])
+def temperature_control_condition(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_tcc(sid, eligible=_tcc_eligible(sid))
+
+
+@app.route("/session/<sid>/temperature-control-condition", methods=["POST"])
+def temperature_control_condition_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (both existing gates) -> strict capture (malformed, a submitted
+    # start_input or an override: 400, no evaluation) -> the composition order.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _tcc_eligible(sid):
+        return _render_tcc(sid, eligible=False)
+    form = request.form
+    captured = _tcc.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_tcc(sid, status=400, error="UI_TCC_ERR_REQUEST")
+    return _render_tcc(sid, captured=captured,
+                       evaluation=_tcc.evaluate(captured, _TMP36_TEMPERATURE_BINDING))
 
 
 # =============================================================================

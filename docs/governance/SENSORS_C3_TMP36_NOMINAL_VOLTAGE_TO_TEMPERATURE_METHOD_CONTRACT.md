@@ -41,6 +41,19 @@ OFFERED only: it establishes no sensor choice, applicability, suitability, valid
 declaration or screen answer. A missing, malformed, corrupt or unreadable composition grants nothing beyond the root rule
 (fail closed). The session link, the page and the submission read the same one decision.
 
+## 1A. Named downstream consumer (TEMPERATURE-TO-CONTROL-CONDITION-01) — narrow exception
+
+Owner-authorized with that increment, and effective only on the verified merge of its pull request: ONE named
+request-local consumer, the
+[temperature-to-control-condition composition](TEMPERATURE_TO_CONTROL_CONDITION_COMPOSITION_CONTRACT.md)
+(`engine/temperature_control_condition.py`), may invoke this method's consumer within one request and use the result of a
+SUCCESS — the exact decimal nominal temperature this consumer accepted, returned with the success as `nominal_temperature`
+— as the left-hand value of its one fixed comparison with an inventor-declared threshold. A refusal gives that consumer
+nothing. This exception names that consumer only; it changes no equation, declaration, screen, interval, numerical or
+decimal-reference acceptance, refusal, display, eligibility or source record of this method, adds no consumer or binding
+to the shared deterministic calculation owner (the composition reaches the owner only through this consumer and its
+existing binding), and authorizes no other consumer, persistence, report, export or transfer between requests.
+
 ## 2. Method identity and version
 
 Identity `tmp36:nominal_voltage_to_temperature`, version `1.0`. Method-authority artifact
