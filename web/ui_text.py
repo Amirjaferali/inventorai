@@ -297,6 +297,26 @@ _MESSAGE_KEYS = {
         "UI_ICP_MSG_UNKNOWN",
     "Your selection was saved to your project, but this page could not show it. Reload this page to see what your project holds.":
         "UI_ICP_MSG_SAVED_NOT_SHOWN",
+    # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 (web/app.py
+    # participation_preparation).
+    "Your notes for this component in this interaction were saved to your project. InventorAI has not checked them.":
+        "UI_PPV_MSG_SAVED",
+    "Your notes for this component in this interaction were cleared. The component and its participation are unchanged.":
+        "UI_PPV_MSG_CLEARED",
+    "Your project already holds exactly these notes for this component in this interaction, so nothing needed to change.":
+        "UI_PPV_MSG_UNCHANGED",
+    "These notes changed after this page was shown, so nothing was saved. Review them below and try again.":
+        "UI_PPV_MSG_STALE",
+    "This component has been withdrawn, so its notes cannot be changed. Nothing was saved.":
+        "UI_PPV_MSG_WITHDRAWN",
+    "These notes do not match a component taking part in one of this project's interactions, so nothing was saved.":
+        "UI_PPV_MSG_REJECTED",
+    "A note is longer than 1,000 characters, so nothing was saved. Shorten it and try again.":
+        "UI_PPV_MSG_TOO_LONG",
+    "Your notes could not be saved just now. Nothing was changed.":
+        "UI_PPV_MSG_NOT_SAVED",
+    "We could not confirm whether your notes were saved. Reload this page to see what your project holds before saving again.":
+        "UI_PPV_MSG_UNKNOWN",
     # CAP-09 Result Event Slice 1 (web/app.py record_experiment_result).
     ("Your result could not be saved just now. Nothing was changed."):
         "UI_R_MSG_NOT_SAVED",
@@ -2158,6 +2178,97 @@ UI_STRINGS = {
     "UI_ICP_MSG_SAVED_NOT_SHOWN": {
         "en": "Your selection was saved to your project, but this page could not show it. Reload this page to see what your project holds.",
         "ar": "حُفظ اختيارك في مشروعك، لكن هذه الصفحة لم تتمكّن من عرضه. أعد تحميل الصفحة لترى ما يحتويه مشروعك.",
+    },
+    # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the inventor's own
+    # notes for ONE current participation (preparation page only). Their own
+    # planning statements; nothing is checked, inferred or verified.
+    "UI_PPV_HEADING": {
+        "en": "What each taking-part component should contribute",
+        "ar": "ما ينبغي أن يُسهم به كل مكوّن مشارك",
+    },
+    "UI_PPV_INTRO": {
+        "en": "For each component you said takes part in an interaction, you can note in your own words what you expect it to contribute that could be seen or measured, and what evidence or review would be needed to check it. Both are optional.",
+        "ar": "لكل مكوّن قلت إنه يشارك في تفاعل، يمكنك أن تدوّن بكلماتك ما تتوقّع أن يُسهم به مما يمكن رؤيته أو قياسه، وما الدليل أو المراجعة اللازمان للتحقّق منه. كلاهما اختياري.",
+    },
+    "UI_PPV_BOUNDARY": {
+        "en": "These are only your own planning notes, not checked by InventorAI: they do not show that the component works, fits, is compatible, is enough or is safe, and recording them verifies nothing.",
+        "ar": "هذه ملاحظات تخطيط خاصة بك فقط، ولم يتحقّق منها InventorAI: لا تُظهر أن المكوّن يعمل أو يتلاءم أو متوافق أو كافٍ أو آمن، وتدوينها لا يتحقّق من أي شيء.",
+    },
+    "UI_PPV_UNAVAILABLE": {
+        "en": "Notes for taking-part components: cannot be shown right now. Reload the page later.",
+        "ar": "ملاحظات المكوّنات المشاركة: لا يمكن عرضها الآن. أعد تحميل الصفحة لاحقًا.",
+    },
+    "UI_PPV_NO_PARTICIPANTS": {
+        "en": "No component is recorded as taking part in this interaction yet, so there is nothing to note here.",
+        "ar": "لم يُسجَّل بعد أي مكوّن على أنه يشارك في هذا التفاعل، فلا يوجد ما يُدوَّن هنا.",
+    },
+    "UI_PPV_CARRIED": {
+        "en": "These notes were recorded earlier, before this component was removed from this interaction and added back. They are your earlier, unvalidated statements, not reconfirmed ones. Save them to keep them as your current notes, or change or clear them.",
+        "ar": "دُوّنت هذه الملاحظات سابقًا، قبل أن يُزال هذا المكوّن من هذا التفاعل ثم يُضاف مرة أخرى. إنها تصريحاتك السابقة غير المُتحقَّق منها، وليست مؤكَّدة من جديد. احفظها لتبقيها ملاحظاتك الحالية، أو غيّرها أو امسحها.",
+    },
+    "UI_PPV_DRAFT_UNSAVED": {
+        "en": "The text below is what you submitted; it was NOT saved.",
+        "ar": "النص أدناه هو ما أرسلته؛ ولم يُحفظ.",
+    },
+    "UI_PPV_EXPECTED_LABEL": {
+        "en": "Expected observable contribution (optional)",
+        "ar": "الإسهام المتوقَّع القابل للملاحظة (اختياري)",
+    },
+    "UI_PPV_EXPECTED_HINT": {
+        "en": "What do you expect this component to do in this interaction that you could see, hear or measure?",
+        "ar": "ما الذي تتوقّع أن يفعله هذا المكوّن في هذا التفاعل ويمكنك أن تراه أو تسمعه أو تقيسه؟",
+    },
+    "UI_PPV_EVIDENCE_LABEL": {
+        "en": "Evidence or review needed to check it (optional)",
+        "ar": "الدليل أو المراجعة اللازمان للتحقّق منه (اختياري)",
+    },
+    "UI_PPV_EVIDENCE_HINT": {
+        "en": "What test, measurement, document or expert review would show whether it does that?",
+        "ar": "ما الاختبار أو القياس أو المستند أو مراجعة الخبير الذي يُظهر ما إذا كان يفعل ذلك؟",
+    },
+    "UI_PPV_SAVE_HINT": {
+        "en": "Leave a box empty if you do not know yet. Clearing both boxes removes your notes; the component and its participation stay unchanged.",
+        "ar": "اترك المربّع فارغًا إن كنت لا تعرف بعد. مسح المربّعين معًا يزيل ملاحظاتك؛ ويبقى المكوّن ومشاركته دون تغيير.",
+    },
+    "UI_PPV_SAVE": {
+        "en": "Save notes for this component",
+        "ar": "احفظ ملاحظات هذا المكوّن",
+    },
+    "UI_PPV_MSG_SAVED": {
+        "en": "Your notes for this component in this interaction were saved to your project. InventorAI has not checked them.",
+        "ar": "حُفظت في مشروعك ملاحظاتك عن هذا المكوّن في هذا التفاعل. لم يتحقّق منها InventorAI.",
+    },
+    "UI_PPV_MSG_CLEARED": {
+        "en": "Your notes for this component in this interaction were cleared. The component and its participation are unchanged.",
+        "ar": "مُسحت ملاحظاتك عن هذا المكوّن في هذا التفاعل. أما المكوّن ومشاركته فلم يتغيّرا.",
+    },
+    "UI_PPV_MSG_UNCHANGED": {
+        "en": "Your project already holds exactly these notes for this component in this interaction, so nothing needed to change.",
+        "ar": "يحتوي مشروعك بالفعل على هذه الملاحظات نفسها لهذا المكوّن في هذا التفاعل، فلم يلزم أي تغيير.",
+    },
+    "UI_PPV_MSG_STALE": {
+        "en": "These notes changed after this page was shown, so nothing was saved. Review them below and try again.",
+        "ar": "تغيّرت هذه الملاحظات بعد عرض هذه الصفحة، فلم يُحفظ شيء. راجعها أدناه ثم حاول مرة أخرى.",
+    },
+    "UI_PPV_MSG_WITHDRAWN": {
+        "en": "This component has been withdrawn, so its notes cannot be changed. Nothing was saved.",
+        "ar": "سُحب هذا المكوّن، فلا يمكن تغيير ملاحظاته. لم يُحفظ شيء.",
+    },
+    "UI_PPV_MSG_REJECTED": {
+        "en": "These notes do not match a component taking part in one of this project's interactions, so nothing was saved.",
+        "ar": "هذه الملاحظات لا تطابق مكوّنًا يشارك في أحد تفاعلات هذا المشروع، فلم يُحفظ شيء.",
+    },
+    "UI_PPV_MSG_TOO_LONG": {
+        "en": "A note is longer than 1,000 characters, so nothing was saved. Shorten it and try again.",
+        "ar": "إحدى الملاحظات أطول من 1,000 حرف، فلم يُحفظ شيء. اختصرها ثم حاول مرة أخرى.",
+    },
+    "UI_PPV_MSG_NOT_SAVED": {
+        "en": "Your notes could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ ملاحظاتك الآن. لم يتغيّر شيء.",
+    },
+    "UI_PPV_MSG_UNKNOWN": {
+        "en": "We could not confirm whether your notes were saved. Reload this page to see what your project holds before saving again.",
+        "ar": "لم نتمكّن من التأكّد من حفظ ملاحظاتك. أعد تحميل هذه الصفحة لترى ما يحتويه مشروعك قبل أن تحفظ مرة أخرى.",
     },
     "UI_S15_PREP_NOT_RECORDED": {"en": "Not recorded yet", "ar": "لم يُسجَّل بعد"},
     "UI_S15_PREP_NONE": {

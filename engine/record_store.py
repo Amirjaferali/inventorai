@@ -118,6 +118,11 @@ from engine.subsystem_model import (
     InterfaceParticipation, InterfaceParticipationError,
     current_interface_participants, participation_target,
     validate_interface_participations,
+    # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the inventor's notes
+    # for ONE participation (current value; kept, hidden while absent).
+    ParticipationPreparation, ParticipationPreparationError,
+    MAX_PARTICIPATION_PREPARATION_LENGTH, PARTICIPATION_PREPARATION_FIELDS,
+    participation_preparation_target, validate_participation_preparations,
 )
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the inventor's own
 # comparison criteria and per-alternative values (semantics owner).
@@ -424,6 +429,34 @@ class InterfaceParticipationsCorrupt(StoreError):
     partial is returned and nothing is repaired, deleted or remapped."""
 
 
+class ParticipationPreparationRejected(StoreError):
+    """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: a participation
+    preparation write names no interaction or declared component of THIS
+    project, a pair that is not a CURRENT participation, or carries text
+    outside the bounded policy. Decided inside the write transaction before any
+    row is written; nothing is written."""
+
+
+class ParticipationPreparationWithdrawn(ParticipationPreparationRejected):
+    """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the named component
+    is withdrawn; it takes no new or changed note. Nothing is written."""
+
+
+class ParticipationPreparationStale(ParticipationPreparationRejected):
+    """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the durable notes
+    of the pair are no longer the ones the inventor's form showed (their text
+    or their carried-over state changed in the meantime). Nothing is written;
+    newer notes are never overwritten."""
+
+
+class ParticipationPreparationsCorrupt(StoreError):
+    """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: a project's durable
+    participation preparation rows are malformed, duplicated or orphaned from
+    its interactions or declared components. Fail-closed for the WHOLE
+    collection: nothing partial is returned and nothing is repaired, deleted
+    or remapped."""
+
+
 class ComponentPrototypeNeedsCorrupt(StoreError):
     """COMPONENT-PROTOTYPE-NEED-NOTE-01: a project's durable prototype-need
     rows are malformed, duplicated or orphaned from its declared components.
@@ -700,6 +733,12 @@ class RecordStore(Protocol):
                                     component_ids, expected_ids) -> str: ...
     def set_component_prototype_need(self, project_id: str, component_id: str,
                                      need_text, expected_text) -> str: ...
+    # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 (current value; see
+    # the subsystem_participation_preparations note).
+    def load_participation_preparations(self, project_id: str) -> dict: ...
+    def set_participation_preparation(self, project_id: str, interface_id: str,
+                                      component_id: str, values,
+                                      expected) -> str: ...
 
 
 _SCHEMA = (
@@ -1972,6 +2011,59 @@ _INTERFACE_COMPONENTS_SCHEMA = (
     """,
 )
 
+# COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 —
+# ``subsystem_participation_preparations``: the inventor's own notes for ONE
+# participation (ONE component taking part in ONE declared interaction): the
+# observable contribution they expect and the evidence or review they would
+# need to check it. A CURRENT-VALUE sidecar (upsert / delete; no revision
+# history is kept or promised), ONE row per pair, keyed ONLY by the existing
+# ``(project_id, interface_id, component_id)`` and anchored by composite foreign
+# keys to that exact interaction row and that exact declaration row. It is
+# deliberately NOT keyed to the participation row (Owner decision "keep, hide
+# while absent"): removing the participation keeps the notes, marked
+# ``carried_over`` by the participation writer in the same transaction, and
+# they are shown again — as earlier statements — only when the same
+# participation is added again. No provenance column: a stored row is by
+# construction the inventor's own statement (OWNER_STATED, UNVALIDATED) —
+# never a mechanism, a compatibility, a requirement, evidence or a check. The
+# participation, interaction and component tables are NOT widened. The CHECKs
+# are a database backstop only; the loader re-validates every row against the
+# whole validated interactions and inventory. Additive and idempotent (``IF
+# NOT EXISTS``); an existing table of any other shape is refused, never read as
+# empty; nothing is backfilled. Rollback is disable-and-preserve (stop reading
+# the table; its rows stay intact).
+_PARTICIPATION_PREPARATION_COLUMNS = ("project_id", "interface_id", "component_id",
+                                      "expected_contribution", "evidence_needed",
+                                      "carried_over")
+_PARTICIPATION_PREPARATIONS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS subsystem_participation_preparations (
+        project_id             TEXT NOT NULL,
+        interface_id           TEXT NOT NULL,
+        component_id           TEXT NOT NULL,
+        expected_contribution  TEXT,
+        evidence_needed        TEXT,
+        carried_over           INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (project_id, interface_id, component_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, interface_id)
+            REFERENCES subsystem_interfaces(project_id, interface_id),
+        FOREIGN KEY (project_id, component_id)
+            REFERENCES project_components(project_id, component_id),
+        CHECK (typeof(interface_id) = 'text' AND length(interface_id) = 36),
+        CHECK (typeof(component_id) = 'text' AND length(component_id) = 36),
+        CHECK (expected_contribution IS NULL OR (typeof(expected_contribution) = 'text'
+               AND length(expected_contribution) BETWEEN 1 AND %(max)d
+               AND instr(CAST(expected_contribution AS BLOB), X'00') = 0)),
+        CHECK (evidence_needed IS NULL OR (typeof(evidence_needed) = 'text'
+               AND length(evidence_needed) BETWEEN 1 AND %(max)d
+               AND instr(CAST(evidence_needed AS BLOB), X'00') = 0)),
+        CHECK (expected_contribution IS NOT NULL OR evidence_needed IS NOT NULL),
+        CHECK (carried_over IN (0, 1))
+    )
+    """ % {"max": MAX_PARTICIPATION_PREPARATION_LENGTH},
+)
+
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 — the two additive,
 # append-only, project-scoped comparison record families. Never updated or
 # deleted (no such writer exists). ``seq`` is the project's contiguous durable
@@ -2119,6 +2211,12 @@ INTERFACE_PARTICIPATION_SAVED = "SAVED"
 INTERFACE_PARTICIPATION_CLEARED = "CLEARED"
 INTERFACE_PARTICIPATION_UNCHANGED = "UNCHANGED"
 
+# COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the outcomes of a
+# participation preparation write.
+PARTICIPATION_PREPARATION_SAVED = "SAVED"
+PARTICIPATION_PREPARATION_CLEARED = "CLEARED"
+PARTICIPATION_PREPARATION_UNCHANGED = "UNCHANGED"
+
 INTERFACE_OBSERVATION_INSERTED = "INSERTED"
 INTERFACE_OBSERVATION_EXACT_REPLAY = "EXACT_REPLAY"
 
@@ -2258,6 +2356,7 @@ class SqliteRecordStore:
             self._migrate_project_components(self._conn)
             self._migrate_component_prototype_needs(self._conn)
             self._migrate_interface_components(self._conn)
+            self._migrate_participation_preparations(self._conn)
             self._migrate_decision_comparison(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
@@ -2600,6 +2699,26 @@ class SqliteRecordStore:
             raise sqlite3.DatabaseError(
                 "subsystem_interface_components has an unrecognised shape")
         for stmt in _INTERFACE_COMPONENTS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_participation_preparations(self, conn) -> None:
+        """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 forward
+        migration: additively create the ``subsystem_participation_preparations``
+        current-value sidecar. Runs inside the store's single migration
+        transaction, AFTER the interface, component and participation
+        migrations it sits beside; idempotent (``IF NOT EXISTS``) on a fresh and
+        on an existing populated database; touches no existing table, column or
+        row; nothing is backfilled or inferred. A table that already exists in
+        any other shape is refused (``sqlite3.DatabaseError``) rather than read
+        as empty or guessed. Rollback is disable-and-preserve: a build without
+        this capability never reads or writes the table and its rows stay
+        intact."""
+        columns = tuple(row[1] for row in conn.execute(
+            "PRAGMA table_info(subsystem_participation_preparations)").fetchall())
+        if columns and columns != _PARTICIPATION_PREPARATION_COLUMNS:
+            raise sqlite3.DatabaseError(
+                "subsystem_participation_preparations has an unrecognised shape")
+        for stmt in _PARTICIPATION_PREPARATIONS_SCHEMA:
             conn.execute(stmt)
 
     def _migrate_decision_comparison(self, conn) -> None:
@@ -4315,6 +4434,22 @@ class SqliteRecordStore:
                     "DELETE FROM subsystem_interface_components WHERE "
                     "project_id = ? AND interface_id = ? AND component_id = ?",
                     (project_id, interface_id, component_id))
+                # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 ("keep,
+                # hide while absent"): the removed pair's notes stay stored,
+                # marked as earlier statements, in this same transaction. The
+                # current-value upsert form the other sidecars use (it inserts
+                # nothing when the pair has no notes).
+                self._conn.execute(
+                    "INSERT INTO subsystem_participation_preparations "
+                    "(project_id, interface_id, component_id, "
+                    "expected_contribution, evidence_needed, carried_over) "
+                    "SELECT project_id, interface_id, component_id, "
+                    "expected_contribution, evidence_needed, 1 FROM "
+                    "subsystem_participation_preparations WHERE project_id = ? "
+                    "AND interface_id = ? AND component_id = ? "
+                    "ON CONFLICT (project_id, interface_id, component_id) "
+                    "DO UPDATE SET carried_over = 1",
+                    (project_id, interface_id, component_id))
             for component_id in sorted(target_set - current_set):
                 self._conn.execute(
                     "INSERT INTO subsystem_interface_components (project_id, "
@@ -4322,6 +4457,179 @@ class SqliteRecordStore:
                     (project_id, interface_id, component_id))
         return (INTERFACE_PARTICIPATION_CLEARED if not target_set
                 else INTERFACE_PARTICIPATION_SAVED)
+
+    # --- COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 (current value) -
+    def _validated_participation_preparations(self, project_id, interfaces,
+                                              inventory):
+        """This project's durable participation preparation rows validated
+        WHOLE against its validated ``interfaces`` and ``inventory`` (exact
+        ids; stored text form); ``ParticipationPreparationsCorrupt`` on anything
+        malformed, duplicated or orphaned (nothing partial, nothing
+        remapped)."""
+        rows = self._conn.execute(
+            "SELECT interface_id, component_id, expected_contribution, "
+            "evidence_needed, carried_over FROM "
+            "subsystem_participation_preparations WHERE project_id = ? "
+            "ORDER BY interface_id ASC, component_id ASC",
+            (project_id,)).fetchall()
+        if not rows:
+            return ()
+        items = []
+        for row in rows:
+            if row[4] not in (0, 1) or isinstance(row[4], bool):
+                raise ParticipationPreparationsCorrupt("carried-over marker is invalid")
+            items.append(ParticipationPreparation(
+                interface_id=row[0], component_id=row[1],
+                expected_contribution=row[2], evidence_needed=row[3],
+                carried_over=bool(row[4])))
+        try:
+            return validate_participation_preparations(items, interfaces, inventory)
+        except ParticipationPreparationError as exc:
+            raise ParticipationPreparationsCorrupt(str(exc)) from None
+
+    def load_participation_preparations(self, project_id: str) -> dict:
+        """``{"interfaces", "components", "participations", "preparations"}``:
+        this project's durable interactions, its CURRENT component projection,
+        every stored participation row and every stored participation
+        preparation (current, removed-and-kept, and withdrawn-component
+        history alike), read inside ONE consistent read snapshot and validated
+        WHOLE together (the corrupt errors, including
+        ``ParticipationPreparationsCorrupt``; nothing partial). The CURRENT
+        notes are ``engine.subsystem_model.current_participation_preparations``
+        over ``participations`` and ``components``. No project ->
+        ``ProjectNotFound``. IR-01: an unresolved connection refuses BEFORE any
+        SELECT. Read-only; project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
+            inventory, _d, _k, _r, _rk = self._component_history(
+                project_id, subsystems)
+            participations = self._validated_interface_participations(
+                project_id, interfaces, inventory)
+            preparations = self._validated_participation_preparations(
+                project_id, interfaces, inventory)
+        return {"interfaces": tuple(interfaces),
+                "components": tuple(inventory.active),
+                "participations": tuple(participations),
+                "preparations": tuple(preparations)}
+
+    @staticmethod
+    def _same_note(left, right):
+        """Two stored-form notes are the same statement when they are equal
+        ignoring ONLY how line breaks are represented (a browser submits CRLF;
+        a hidden form baseline comes back as LF). ``None`` equals only
+        ``None``."""
+        if left is None or right is None:
+            return left is right
+        def lines(value):
+            return value.replace("\r\n", "\n").replace("\r", "\n")
+        return lines(left) == lines(right)
+
+    def set_participation_preparation(self, project_id: str, interface_id: str,
+                                      component_id: str, values,
+                                      expected) -> str:
+        """Record, replace or clear (both values ``None``) the notes of ONE
+        CURRENT participation, and return the outcome:
+        ``PARTICIPATION_PREPARATION_SAVED`` / ``PARTICIPATION_PREPARATION_CLEARED``
+        for a committed change, or ``PARTICIPATION_PREPARATION_UNCHANGED`` when
+        the durable notes already are exactly the target and current (an exact
+        retry; nothing is written). Saving carried-over notes, even unchanged,
+        makes them current again (the inventor's explicit reconfirmation).
+
+        ``values`` maps both ``PARTICIPATION_PREPARATION_FIELDS`` to stored-form
+        text or ``None``; ``expected`` is the state the inventor's form showed:
+        the same two fields plus ``"carried_over"`` (bool). The arguments are
+        shape-checked BEFORE the transaction opens
+        (``ParticipationPreparationRejected``; nothing written). Then ONE
+        serialized ``BEGIN IMMEDIATE`` transaction, against DURABLE truth: the
+        project exists (``ProjectNotFound``); its composition, interactions,
+        WHOLE component history, every participation row and every
+        preparation row validate (the corrupt errors); the pair is an
+        interaction and a declared component of THIS project
+        (``ParticipationPreparationRejected``), the component is active
+        (``ParticipationPreparationWithdrawn``) and the pair is a CURRENT
+        participation (``ParticipationPreparationRejected``); the durable
+        notes equal the current target (UNCHANGED, nothing written) or else
+        equal ``expected`` (``ParticipationPreparationStale`` otherwise — newer
+        notes are never overwritten); only then is the row upserted (current)
+        or deleted. Line-break representation alone is never a difference, and
+        an unchanged note keeps its stored text exactly. The participation,
+        the interaction, the component and every other row are never touched.
+        Full rollback on any failure. IR-01: never writes on top of an
+        unresolved connection."""
+        for identity in (interface_id, component_id):
+            if not isinstance(identity, str) or not identity:
+                raise ParticipationPreparationRejected("malformed identity")
+        fields = PARTICIPATION_PREPARATION_FIELDS
+        if not isinstance(values, dict) or set(values) != set(fields):
+            raise ParticipationPreparationRejected("malformed participation notes")
+        if not isinstance(expected, dict) \
+                or set(expected) != set(fields) | {"carried_over"} \
+                or not isinstance(expected["carried_over"], bool):
+            raise ParticipationPreparationRejected("malformed displayed notes")
+        for source in (values, expected):
+            for field_name in fields:
+                text = source[field_name]
+                if text is not None and not (
+                        isinstance(text, str) and text == text.strip()
+                        and 0 < len(text) <= MAX_PARTICIPATION_PREPARATION_LENGTH
+                        and "\x00" not in text):
+                    raise ParticipationPreparationRejected(
+                        "malformed participation note text")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
+            inventory, _d, _k, _r, _rk = self._component_history(
+                project_id, subsystems)
+            participations = self._validated_interface_participations(
+                project_id, interfaces, inventory)
+            preparations = self._validated_participation_preparations(
+                project_id, interfaces, inventory)
+            try:
+                participation_preparation_target(
+                    inventory, interfaces, participations, interface_id,
+                    component_id, dict(values))
+            except ComponentAlreadyWithdrawn:
+                raise ParticipationPreparationWithdrawn(
+                    "the component is withdrawn") from None
+            except (ParticipationPreparationError, ComponentError):
+                raise ParticipationPreparationRejected(
+                    "the notes name no current participation of this project") from None
+            stored = next((item for item in preparations
+                           if (item.interface_id, item.component_id)
+                           == (interface_id, component_id)), None)
+            current = {f: (None if stored is None else stored.value(f)) for f in fields}
+            carried = stored is not None and stored.carried_over
+            same_as_target = all(self._same_note(current[f], values[f]) for f in fields)
+            if same_as_target and not carried:
+                return PARTICIPATION_PREPARATION_UNCHANGED
+            if carried != expected["carried_over"] or not all(
+                    self._same_note(current[f], expected[f]) for f in fields):
+                raise ParticipationPreparationStale(
+                    "the notes changed since the form was shown")
+            target = {f: (current[f] if self._same_note(current[f], values[f])
+                          else values[f]) for f in fields}
+            if all(target[f] is None for f in fields):
+                self._conn.execute(
+                    "DELETE FROM subsystem_participation_preparations WHERE "
+                    "project_id = ? AND interface_id = ? AND component_id = ?",
+                    (project_id, interface_id, component_id))
+                return PARTICIPATION_PREPARATION_CLEARED
+            self._conn.execute(
+                "INSERT INTO subsystem_participation_preparations (project_id, "
+                "interface_id, component_id, expected_contribution, "
+                "evidence_needed, carried_over) VALUES (?, ?, ?, ?, ?, 0) "
+                "ON CONFLICT (project_id, interface_id, component_id) DO UPDATE "
+                "SET expected_contribution = excluded.expected_contribution, "
+                "evidence_needed = excluded.evidence_needed, carried_over = 0",
+                (project_id, interface_id, component_id,
+                 target[PARTICIPATION_PREPARATION_FIELDS[0]],
+                 target[PARTICIPATION_PREPARATION_FIELDS[1]]))
+        return PARTICIPATION_PREPARATION_SAVED
 
     # --- INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: criteria + values -
     # Every reader validates the decision ledger and BOTH comparison tables

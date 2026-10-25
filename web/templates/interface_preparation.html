@@ -182,6 +182,64 @@ label.dep-opt{display:block;margin:4px 0;font-size:13px}
 {% endfor %}
 {% endif %}
 
+{#- COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 — for each CURRENT
+    participant of each interaction, the inventor's own notes: the observable
+    contribution they expect and the evidence or review needed to check it.
+    Verification preparation only (OWNER_STATED / UNVALIDATED): nothing is
+    checked, inferred or verified. Its own form per participant (never nested
+    in another form); the hidden baselines are what THIS form displayed.
+    Notes kept from before the component was removed and added back are
+    labelled as earlier statements, not reconfirmed ones. Unreadable data
+    reads unavailable, never "not recorded". -#}
+<h2 id="participation-notes-heading">{{ t('UI_PPV_HEADING') }}</h2>
+<div class="intro" data-ppv-intro>
+  <p style="margin:0 0 6px 0">{{ t('UI_PPV_INTRO') }}</p>
+  <p style="margin:0" data-ppv-boundary>{{ t('UI_PPV_BOUNDARY') }}</p>
+</div>
+{% if participation_notes is none %}
+<div class="notice" role="status" data-ppv-unavailable>{{ t('UI_PPV_UNAVAILABLE') }}</div>
+{% else %}
+{% for ifc in items %}
+{% set entries = participation_notes[ifc.interface_id] %}
+{% set n = loop.index %}
+<div class="ifc" data-ppv-interface>
+  <div class="ifc-title" id="ppv-title-{{ n }}">{{ t('UI_S15_IFC_BETWEEN') }} <bdi dir="auto">{{ ifc.a }}</bdi> {{ t('UI_S15_IFC_AND') }} <bdi dir="auto">{{ ifc.b }}</bdi></div>
+  {% if not entries %}
+  <p class="guidance" data-ppv-no-participants>{{ t('UI_PPV_NO_PARTICIPANTS') }}</p>
+  {% else %}
+  {% for e in entries %}
+  {% set m = loop.index %}
+  <div data-ppv-entry>
+    <p class="ifc-desc"><strong><bdi dir="auto" data-ppv-name>{{ e.name }}</bdi></strong></p>
+    {% if e.carried_over %}<p class="notice" role="status" data-ppv-carried>{{ t('UI_PPV_CARRIED') }}</p>{% endif %}
+    {% if e.draft %}<p class="notice" role="status" data-ppv-draft>{{ t('UI_PPV_DRAFT_UNSAVED') }}</p>{% endif %}
+    <form method="POST" action="{{ url_for('participation_preparation', sid=sid) }}" data-ppv-form>
+      <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+      <input type="hidden" name="interface_id" value="{{ ifc.interface_id }}">
+      <input type="hidden" name="component_id" value="{{ e.component_id }}">
+      <input type="hidden" name="pp_base_carried" value="{{ e.base_carried }}">
+      <label for="ppv-{{ n }}-{{ m }}-1">{{ t('UI_PPV_EXPECTED_LABEL') }}</label>
+      <textarea id="ppv-{{ n }}-{{ m }}-1" name="pp_expected_contribution" rows="2"
+                maxlength="{{ participation_note_max }}" dir="auto"
+                aria-describedby="ppv-title-{{ n }} ppv-guidance-{{ n }}-{{ m }}-1">{{ e.shown.expected_contribution }}</textarea>
+      <input type="hidden" name="pp_base_expected_contribution" value="{{ e.base.expected_contribution }}">
+      <p class="guidance" id="ppv-guidance-{{ n }}-{{ m }}-1">{{ t('UI_PPV_EXPECTED_HINT') }}</p>
+      <label for="ppv-{{ n }}-{{ m }}-2">{{ t('UI_PPV_EVIDENCE_LABEL') }}</label>
+      <textarea id="ppv-{{ n }}-{{ m }}-2" name="pp_evidence_needed" rows="2"
+                maxlength="{{ participation_note_max }}" dir="auto"
+                aria-describedby="ppv-title-{{ n }} ppv-guidance-{{ n }}-{{ m }}-2">{{ e.shown.evidence_needed }}</textarea>
+      <input type="hidden" name="pp_base_evidence_needed" value="{{ e.base.evidence_needed }}">
+      <p class="guidance" id="ppv-guidance-{{ n }}-{{ m }}-2">{{ t('UI_PPV_EVIDENCE_HINT') }}</p>
+      <p class="guidance">{{ t('UI_PPV_SAVE_HINT') }}</p>
+      <button type="submit">{{ t('UI_PPV_SAVE') }}</button>
+    </form>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+{% endfor %}
+{% endif %}
+
 {#- Stage 15 Slice 4 — what actually happened when the inventor tested or
     checked each interaction, in their own words. Append-only history; a
     correction keeps every earlier entry; each check keeps the preparation
