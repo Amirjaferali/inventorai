@@ -8312,6 +8312,96 @@ UI_STRINGS = {
         "en": "Earlier versions and withdrawn constraints stay in the project history on the session page; withdrawal is not erasure.",
         "ar": "تبقى الصيغ السابقة والقيود المسحوبة في سجل المشروع في صفحة الجلسة؛ السحب ليس محوًا.",
     },
+    # MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: the inventor's own
+    # acceptance notes for ONE current mandatory constraint (session page only).
+    "UI_PCA_HEADING": {
+        "en": "How you would check it (optional)",
+        "ar": "كيف ستتحقق منه (اختياري)",
+    },
+    "UI_PCA_INTRO": {
+        "en": "Your own notes for checking this mandatory constraint later: what you would observe to accept it as met, and the measurement, evidence or review by a specialist you would need. They are your statements only; InventorAI has not checked them, and recording them does not verify the constraint or show that it can be met.",
+        "ar": "ملاحظاتك الخاصة للتحقق من هذا القيد الإلزامي لاحقًا: ما الذي ستلاحظه لتقبل أنه تحقق، وما القياس أو الدليل أو مراجعة المختص التي ستحتاجها. إنها أقوالك فقط؛ لم يفحصها InventorAI، وتسجيلها لا يتحقق من القيد ولا يبيّن أنه ممكن التحقيق.",
+    },
+    "UI_PCA_FIELD_CRITERION": {
+        "en": "Observable acceptance criterion (what you would observe to accept it as met):",
+        "ar": "معيار القبول القابل للملاحظة (ما الذي ستلاحظه لتقبل أنه تحقق):",
+    },
+    "UI_PCA_FIELD_EVIDENCE": {
+        "en": "Measurement, evidence or review by a specialist needed:",
+        "ar": "القياس أو الدليل أو مراجعة المختص المطلوبة:",
+    },
+    "UI_PCA_NOT_RECORDED": {
+        "en": "Not recorded.",
+        "ar": "غير مسجّل.",
+    },
+    "UI_PCA_STATUS": {
+        "en": "Your statement — OWNER_STATED / UNVALIDATED; not checked by InventorAI.",
+        "ar": "قولك أنت — OWNER_STATED / UNVALIDATED؛ لم يفحصه InventorAI.",
+    },
+    "UI_PCA_EARLIER": {
+        "en": "These notes were recorded for an earlier version of this constraint. They are shown as your earlier statements and have not been reconfirmed for the current version; save them again to confirm them for it.",
+        "ar": "سُجّلت هذه الملاحظات لصيغة سابقة من هذا القيد. تُعرض بوصفها أقوالك السابقة ولم يُعَد تأكيدها للصيغة الحالية؛ احفظها مجددًا لتأكيدها لها.",
+    },
+    "UI_PCA_UNAVAILABLE": {
+        "en": "Your notes for checking this constraint cannot be shown right now.",
+        "ar": "لا يمكن عرض ملاحظاتك للتحقق من هذا القيد الآن.",
+    },
+    "UI_PCA_EDIT_SUMMARY": {
+        "en": "Record or edit how you would check it",
+        "ar": "سجّل أو عدّل كيف ستتحقق منه",
+    },
+    "UI_PCA_HINT": {
+        "en": "Both notes are optional. Empty both fields and save to clear them; the constraint itself is not changed.",
+        "ar": "كلتا الملاحظتين اختيارية. أفرغ الحقلين واحفظ لمسحهما؛ ولا يتغير القيد نفسه.",
+    },
+    "UI_PCA_SAVE_BUTTON": {
+        "en": "Save these notes",
+        "ar": "احفظ هذه الملاحظات",
+    },
+    "UI_PCA_MSG_SAVED": {
+        "en": "Your notes were saved. They are your own statements and have not been checked.",
+        "ar": "حُفظت ملاحظاتك. إنها أقوالك الخاصة ولم تُفحص.",
+    },
+    "UI_PCA_MSG_CLEARED": {
+        "en": "Your notes for that constraint were cleared. The constraint itself is unchanged.",
+        "ar": "مُسحت ملاحظاتك لذلك القيد. ولم يتغير القيد نفسه.",
+    },
+    "UI_PCA_MSG_UNCHANGED": {
+        "en": "Nothing changed: these notes are already saved for the current version.",
+        "ar": "لم يتغير شيء: هذه الملاحظات محفوظة بالفعل للصيغة الحالية.",
+    },
+    "UI_PCA_MSG_STALE": {
+        "en": "That constraint or its notes changed since this page was shown, so nothing was saved. Review the current version and try again.",
+        "ar": "تغيّر ذلك القيد أو ملاحظاته منذ عرض هذه الصفحة، لذا لم يُحفظ شيء. راجع الصيغة الحالية وحاول مجددًا.",
+    },
+    "UI_PCA_MSG_WITHDRAWN": {
+        "en": "That constraint is withdrawn, so nothing was saved.",
+        "ar": "ذلك القيد مسحوب، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCA_MSG_NOT_MANDATORY": {
+        "en": "That constraint is no longer a mandatory constraint, so nothing was saved.",
+        "ar": "لم يعد ذلك القيد قيدًا إلزاميًا، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCA_MSG_TOO_LONG": {
+        "en": "Each note can be at most 1,000 characters, so nothing was saved.",
+        "ar": "يمكن أن تكون كل ملاحظة 1,000 حرف على الأكثر، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCA_MSG_INVALID": {
+        "en": "A note contains an invalid character, so nothing was saved.",
+        "ar": "تحتوي ملاحظة على رمز غير صالح، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCA_MSG_REJECTED": {
+        "en": "That form could not be read, so nothing was saved. Reload the page and try again.",
+        "ar": "تعذّرت قراءة ذلك النموذج، لذا لم يُحفظ شيء. أعد تحميل الصفحة وحاول مجددًا.",
+    },
+    "UI_PCA_MSG_NOT_SAVED": {
+        "en": "Your notes were not saved. Nothing was changed.",
+        "ar": "لم تُحفظ ملاحظاتك. ولم يتغير شيء.",
+    },
+    "UI_PCA_MSG_UNKNOWN": {
+        "en": "We could not confirm whether your notes were saved. Reload the page to see what is stored.",
+        "ar": "تعذّر التأكد مما إذا كانت ملاحظاتك قد حُفظت. أعد تحميل الصفحة لترى ما هو محفوظ.",
+    },
     "UI_SS_CONSTRAINT_SCOPE": {
         "en": "The project constraints you declared are not read for safety signals. The absence of a warning is not evidence of safety.",
         "ar": "لا تُقرأ قيود المشروع التي أعلنتها بحثًا عن إشارات السلامة. وغياب التحذير ليس دليلًا على السلامة.",

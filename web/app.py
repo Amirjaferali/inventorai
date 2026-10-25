@@ -154,6 +154,10 @@ from engine.record_store import (
     QuantityAnchorIneligible as _QuantityAnchorIneligible,
     ContradictionDeclarationRejected as _ContradictionDeclarationRejected,
     ConstraintActionRejected as _ConstraintActionRejected,
+    ConstraintAcceptanceRejected as _ConstraintAcceptanceRejected,
+    ConstraintAcceptanceCorrupt as _ConstraintAcceptanceCorrupt,
+    CONSTRAINT_ACCEPTANCE_UNCHANGED as _PCA_UNCHANGED,
+    CONSTRAINT_ACCEPTANCE_CLEARED as _PCA_CLEARED,
     AssumptionDependencyDeclarationRejected as _DependencyDeclarationRejected,
     SubsystemInterfaceRejected as _SubsystemInterfaceRejected,
     SubsystemInterfaceConflict as _SubsystemInterfaceConflict,
@@ -9767,7 +9771,8 @@ def _constraint_items(history):
     items = []
     for c in history.constraints:
         items.append({
-            "record_id": c.record_id, "text": c.text,
+            "record_id": c.record_id, "constraint_id": c.constraint_id,
+            "text": c.text,
             "strength": c.strength,
             "strength_key": _CONSTRAINT_STRENGTH_KEYS[c.strength],
             "corrected": c.corrections > 0, "withdrawn": c.withdrawn,
@@ -9811,6 +9816,7 @@ def _project_constraints_context(sid, entry, state):
     writable = bool(getattr(state, "domain", None)) and entry is not None \
         and SESSION_STORE.get(sid) is entry
     current = [i for i in items if not i["withdrawn"]]
+    _attach_constraint_acceptance(sid, current)
     active_room = len(current) < _constraints.MAX_ACTIVE_CONSTRAINTS_PER_PROJECT
     lifetime_room = (len(items)
                      < _constraints.MAX_CONSTRAINT_IDENTITIES_PER_PROJECT)
@@ -9831,6 +9837,187 @@ def _project_constraints_context(sid, entry, state):
         "max_text": _constraints.MAX_CONSTRAINT_TEXT_LENGTH,
         "ack": ack, "error": error,
     }
+
+
+# --- MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 ------------------------
+# For ONE current mandatory constraint the inventor records an observable
+# acceptance criterion and the measurement, evidence or specialist review they
+# would need to check it: verification PREPARATION only, OWNER_STATED /
+# UNVALIDATED (``engine.idea_state``; the record store's
+# ``constraint_acceptance_preparations``), keyed by the constraint's FOUNDING
+# identity. Notes saved for an earlier version are shown as EARLIER statements,
+# not reconfirmed, until saved again; a withdrawn or no-longer-mandatory
+# constraint keeps them stored and hidden. Its own POST, behind the global
+# request-integrity (CSRF) guard and the central project authorization; the
+# form carries the constraint version and the notes it displayed (the F724-1
+# baseline discipline) and the store re-validates the whole ledger, the
+# constraint and the notes inside ONE serialized write. An unknown outcome is
+# decided by reloading committed truth (SAVED / NOT SAVED / UNKNOWN). Nothing
+# here reads the notes, derives a threshold or checks the constraint; the
+# Validation Plan step, the report, the PDF and the Stage 35 export do not
+# read them.
+_PCA_FIELDS = _constraints.CONSTRAINT_ACCEPTANCE_FIELDS
+_PCA_WRITE_SAVED = "saved"
+_PCA_WRITE_NOT_SAVED = "not_saved"
+_PCA_WRITE_UNKNOWN = "unknown"
+_PCA_REFUSAL_KEYS = {
+    "stale": "UI_PCA_MSG_STALE",
+    "withdrawn": "UI_PCA_MSG_WITHDRAWN",
+    "not_mandatory": "UI_PCA_MSG_NOT_MANDATORY",
+    "invalid": "UI_PCA_MSG_REJECTED",
+}
+
+
+def _attach_constraint_acceptance(sid, current):
+    """Attach ``acceptance`` to every CURRENT MANDATORY item of ``current``
+    (the live constraint list): the notes to show (``None`` = not recorded),
+    whether they were saved for an earlier version, and the form baselines.
+    Read in the store's own snapshot (``load_constraint_acceptance``) and used
+    for an item only when that snapshot's version of the constraint is exactly
+    the one this page shows; otherwise, or when the notes cannot be read, the
+    item's notes read UNAVAILABLE — never "not recorded". A project absent
+    from the store shows no notes block."""
+    mandatory = [i for i in current
+                 if i["strength"] == _constraints.CONSTRAINT_STRENGTH_MANDATORY]
+    if not mandatory:
+        return
+    loader = getattr(_get_store(), "load_constraint_acceptance", None)
+    if not callable(loader):
+        return
+    try:
+        record = loader(sid)
+        durable = {c.constraint_id: c for c in record["history"].current}
+        notes = _constraints.current_constraint_acceptance(
+            record["preparations"], record["history"])
+    except _ProjectNotFound:
+        return
+    except Exception:
+        durable = notes = None
+    for item in mandatory:
+        chain = None if durable is None else durable.get(item["constraint_id"])
+        if (chain is None or chain.record_id != item["record_id"]
+                or chain.strength != _constraints.CONSTRAINT_STRENGTH_MANDATORY):
+            item["acceptance"] = {"status": "unavailable"}
+            continue
+        stored, earlier = notes.get(item["constraint_id"], (None, False))
+        values = {f: (None if stored is None else stored.value(f)) for f in _PCA_FIELDS}
+        item["acceptance"] = {
+            "status": "available", "notes": values, "earlier": earlier,
+            "recorded": stored is not None,
+            "base": {f: values[f] or "" for f in _PCA_FIELDS},
+            "base_earlier": "1" if earlier else "0",
+            "max": _constraints.MAX_CONSTRAINT_ACCEPTANCE_LENGTH,
+        }
+
+
+def _pca_text(raw):
+    """``(text_or_None, error_key)``: the route's outer trim, empty -> not
+    recorded, the 1,000-character bound and the NUL guard."""
+    text = (raw or "").strip()
+    if not text:
+        return None, None
+    if len(text) > _constraints.MAX_CONSTRAINT_ACCEPTANCE_LENGTH:
+        return None, "UI_PCA_MSG_TOO_LONG"
+    if not _constraints.valid_constraint_acceptance_text(text):
+        return None, "UI_PCA_MSG_INVALID"
+    return text, None
+
+
+def _resolve_constraint_acceptance_write(sid, constraint_id, target):
+    """Bounded confirm-by-reload after the write RAISED: SAVED when the
+    committed notes of exactly this constraint equal ``target`` (line-break
+    representation aside) for its current version, NOT SAVED on a
+    demonstrable mismatch, UNKNOWN when committed truth cannot be read."""
+    try:
+        record = _get_store().load_constraint_acceptance(sid)
+    except Exception:
+        return _PCA_WRITE_UNKNOWN
+    stored = next((p for p in record["preparations"]
+                   if p.constraint_id == constraint_id), None)
+    if all(value is None for value in target.values()):
+        return _PCA_WRITE_SAVED if stored is None else _PCA_WRITE_NOT_SAVED
+    current = _constraints.current_constraint_acceptance(
+        record["preparations"], record["history"]).get(constraint_id)
+    if current is None or current[1]:
+        return _PCA_WRITE_NOT_SAVED
+    for field_name, text in target.items():
+        if not _same_planning_text(text or "", stored.value(field_name)):
+            return _PCA_WRITE_NOT_SAVED
+    return _PCA_WRITE_SAVED
+
+
+@app.route("/session/<sid>/constraint-acceptance", methods=["POST"])
+def constraint_acceptance(sid):
+    """MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 — the inventor records,
+    replaces or clears their notes for checking ONE current mandatory
+    constraint: an observable acceptance criterion and the measurement,
+    evidence or specialist review they would need. Their own statements,
+    OWNER_STATED / UNVALIDATED; saving checks, infers or verifies nothing and
+    changes no constraint. Order: request integrity (global guard) ->
+    authorization -> form shape -> ONE serialized durable write that
+    re-validates the ledger, the constraint and the notes -> committed-truth
+    resolution."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return redirect(url_for("index"))
+        SESSION_STORE[sid] = entry
+    single = {}
+    for name in ("constraint_id", "constraint_record", "pca_base_earlier") + tuple(
+            "pca_" + f for f in _PCA_FIELDS) + tuple("pca_base_" + f for f in _PCA_FIELDS):
+        values = request.form.getlist(name)
+        if len(values) != 1:
+            return _constraint_notice(sid, entry, error="UI_PCA_MSG_REJECTED")
+        single[name] = values[0]
+    constraint_id, displayed = single["constraint_id"], single["constraint_record"]
+    if (not _REC_ID_FIELD_RE.match(constraint_id)
+            or not _REC_ID_FIELD_RE.match(displayed)
+            or single["pca_base_earlier"] not in ("0", "1")):
+        return _constraint_notice(sid, entry, error="UI_PCA_MSG_REJECTED")
+    # F724-1: the notes THIS form displayed. A baseline that is not a stored
+    # note could never have been displayed: malformed form.
+    expected = {"earlier": single["pca_base_earlier"] == "1"}
+    for field_name in _PCA_FIELDS:
+        base = single["pca_base_" + field_name].strip() or None
+        if base is not None and not _constraints.valid_constraint_acceptance_text(base):
+            return _constraint_notice(sid, entry, error="UI_PCA_MSG_REJECTED")
+        expected[field_name] = base
+    values = {}
+    for field_name in _PCA_FIELDS:
+        raw = single["pca_" + field_name]
+        if _same_planning_text(raw, expected[field_name]):
+            # untouched: keep exactly the displayed value (line breaks aside)
+            values[field_name] = expected[field_name]
+            continue
+        text, text_error = _pca_text(raw)
+        if text_error is not None:
+            return _constraint_notice(sid, entry, error=text_error)
+        values[field_name] = text
+    try:
+        outcome = _get_store().set_constraint_acceptance(
+            sid, constraint_id, displayed, values, expected)
+    except _ConstraintAcceptanceRejected as exc:
+        return _constraint_notice(
+            sid, entry, error=_PCA_REFUSAL_KEYS.get(exc.kind, "UI_PCA_MSG_REJECTED"))
+    except (_ProjectNotFound, _ConstraintAcceptanceCorrupt):
+        # Committed durable truth WAS read and fails closed: nothing written.
+        return _constraint_notice(sid, entry, error="UI_PCA_MSG_NOT_SAVED")
+    except Exception:
+        resolved = _resolve_constraint_acceptance_write(sid, constraint_id, values)
+        if resolved == _PCA_WRITE_UNKNOWN:
+            return _constraint_notice(sid, entry, error="UI_PCA_MSG_UNKNOWN")
+        if resolved == _PCA_WRITE_NOT_SAVED:
+            return _constraint_notice(sid, entry, error="UI_PCA_MSG_NOT_SAVED")
+        outcome = None
+    if outcome == _PCA_UNCHANGED:
+        return _constraint_notice(sid, entry, ack="UI_PCA_MSG_UNCHANGED")
+    if outcome == _PCA_CLEARED or (outcome is None
+                                   and all(v is None for v in values.values())):
+        return _constraint_notice(sid, entry, ack="UI_PCA_MSG_CLEARED")
+    return _constraint_notice(sid, entry, ack="UI_PCA_MSG_SAVED")
 
 
 def _constraint_report_view(state):

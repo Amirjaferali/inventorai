@@ -40,6 +40,9 @@ MUTATIONS = (
     # PATHN-CONSTRAINT-DECLARATION-01: declare / correct / withdraw one of the
     # inventor's own project constraints.
     "/session/<sid>/constraint",
+    # MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: the inventor's current-value
+    # acceptance notes for one current mandatory constraint (record / replace / clear).
+    "/session/<sid>/constraint-acceptance",
     # COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's current-value prototype-need
     # note for one current declared component (record / replace / clear).
     "/session/<sid>/component-prototype-need",

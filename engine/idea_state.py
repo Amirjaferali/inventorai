@@ -742,6 +742,131 @@ def constraint_history(assertions):
     return ConstraintHistory(constraints=tuple(constraints))
 
 
+# MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01. For ONE current mandatory
+# constraint the inventor may record, in their own words, an observable
+# acceptance criterion and the measurement, evidence or specialist review they
+# would need to check it: verification PREPARATION only, OWNER_STATED /
+# UNVALIDATED. The notes are keyed by the constraint's FOUNDING identity (so
+# they survive a correction) and remember the version they were saved against.
+# Only a CURRENT mandatory constraint shows them; a later version shows them as
+# EARLIER statements, not reconfirmed, until they are saved again; a withdrawn
+# or no-longer-mandatory constraint keeps them stored and hidden. Nothing here
+# reads the notes, derives a threshold, checks the constraint or credits a gap,
+# progression, readiness or the Validation Plan step.
+CONSTRAINT_ACCEPTANCE_CRITERION = "acceptance_criterion"
+CONSTRAINT_ACCEPTANCE_EVIDENCE = "evidence_needed"
+CONSTRAINT_ACCEPTANCE_FIELDS = (CONSTRAINT_ACCEPTANCE_CRITERION,
+                                CONSTRAINT_ACCEPTANCE_EVIDENCE)
+MAX_CONSTRAINT_ACCEPTANCE_LENGTH = 1000
+
+
+class ConstraintAcceptanceError(ValueError):
+    """Constraint acceptance notes violate the bounded contract. Structural
+    message only — never the inventor's text."""
+
+
+class ConstraintAcceptanceWithdrawn(ConstraintAcceptanceError):
+    """The constraint the notes name is withdrawn."""
+
+
+class ConstraintAcceptanceNotMandatory(ConstraintAcceptanceError):
+    """The constraint the notes name is no longer a mandatory constraint."""
+
+
+def valid_constraint_acceptance_text(value):
+    """A stored note is exactly what the route stores: a non-empty,
+    already-trimmed string (internal line breaks kept) within the bound and
+    free of NUL. Never truncated, normalised or reinterpreted."""
+    return (isinstance(value, str) and value == value.strip()
+            and 0 < len(value) <= MAX_CONSTRAINT_ACCEPTANCE_LENGTH
+            and "\x00" not in value)
+
+
+@dataclass(frozen=True)
+class ConstraintAcceptancePreparation:
+    """The stored notes of ONE constraint identity: its founding id, the
+    record id of the declared version they were saved against, and the two
+    notes (``None`` = not recorded; never both)."""
+    constraint_id: str
+    saved_against: str
+    acceptance_criterion: Optional[str]
+    evidence_needed: Optional[str]
+
+    def value(self, field_name):
+        return getattr(self, field_name)
+
+
+def validate_constraint_acceptance_preparations(preparations, assertions):
+    """``preparations`` validated WHOLE against ``assertions`` (durable order):
+    each names a constraint identity of the ledger's ONE constraint history,
+    was saved against a declared MANDATORY version of that same identity, and
+    carries at least one valid note; no identity appears twice. Returns the
+    tuple in constraint declaration order, or ``ConstraintAcceptanceError``
+    (nothing partial, nothing remapped). Pure."""
+    history = constraint_history(list(assertions))
+    by_id = {r.record_id: r for r in assertions}
+    chains = {c.constraint_id: c for c in history.constraints}
+    seen = set()
+    for item in preparations:
+        if not isinstance(item, ConstraintAcceptancePreparation):
+            raise ConstraintAcceptanceError("not a constraint acceptance record")
+        chain = chains.get(item.constraint_id)
+        if chain is None:
+            raise ConstraintAcceptanceError("the notes name no constraint")
+        if item.constraint_id in seen:
+            raise ConstraintAcceptanceError("a constraint has two sets of notes")
+        seen.add(item.constraint_id)
+        version = by_id.get(item.saved_against)
+        if (item.saved_against not in chain.history or version is None
+                or version.disposition != DISPOSITION_CONSTRAINT_DECLARED
+                or getattr(version, "constraint_strength", None)
+                != CONSTRAINT_STRENGTH_MANDATORY):
+            raise ConstraintAcceptanceError(
+                "the notes were not saved against a mandatory version")
+        values = [item.value(f) for f in CONSTRAINT_ACCEPTANCE_FIELDS]
+        if all(v is None for v in values) or not all(
+                v is None or valid_constraint_acceptance_text(v) for v in values):
+            raise ConstraintAcceptanceError("the notes are empty or invalid")
+    order = {c.constraint_id: c.position for c in history.constraints}
+    return tuple(sorted(preparations, key=lambda p: order[p.constraint_id]))
+
+
+def current_constraint_acceptance(preparations, history):
+    """``{constraint_id: (preparation, earlier)}`` for the CURRENT MANDATORY
+    constraints of ``history`` that have notes: ``earlier`` is True when the
+    notes were saved against an earlier version than the current one (shown as
+    earlier statements, not reconfirmed). Withdrawn and non-mandatory
+    constraints are absent (their notes stay stored and hidden)."""
+    stored = {p.constraint_id: p for p in preparations}
+    view = {}
+    for c in history.current:
+        if c.strength != CONSTRAINT_STRENGTH_MANDATORY or c.constraint_id not in stored:
+            continue
+        item = stored[c.constraint_id]
+        view[c.constraint_id] = (item, item.saved_against != c.record_id)
+    return view
+
+
+def constraint_acceptance_target(history, constraint_id, displayed_record_id):
+    """The CURRENT constraint ``constraint_id`` of ``history`` whose notes may
+    be written, checked against the version the form displayed:
+    ``ConstraintAcceptanceError`` when it names no constraint,
+    ``ConstraintAcceptanceWithdrawn`` / ``ConstraintAcceptanceNotMandatory``
+    when it is withdrawn or no longer mandatory, and ``ConstraintStale`` when
+    it was corrected since the form was shown."""
+    chain = next((c for c in history.constraints
+                  if c.constraint_id == constraint_id), None)
+    if chain is None:
+        raise ConstraintAcceptanceError("the notes name no constraint")
+    if chain.withdrawn:
+        raise ConstraintAcceptanceWithdrawn("the constraint is withdrawn")
+    if chain.record_id != displayed_record_id:
+        raise ConstraintStale("the constraint changed since the form was shown")
+    if chain.strength != CONSTRAINT_STRENGTH_MANDATORY:
+        raise ConstraintAcceptanceNotMandatory("the constraint is not mandatory")
+    return chain
+
+
 # Stage 20 — Assumption Revision & Replacement — Closure. An inventor may
 # supersede ONE of their own active provisional assumptions with a revised
 # provisional assumption or with their own answer, through the canonical

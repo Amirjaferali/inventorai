@@ -1998,6 +1998,44 @@ body{overflow-wrap:anywhere}
         </ul>
       </details>
       {% endif %}
+      {% if c.acceptance %}
+      {% set pca = c.acceptance %}
+      <div data-pca data-pca-status="{{ pca.status }}" style="margin:6px 0 0 0;border-inline-start:3px solid #dbe4ec;padding-inline-start:8px">
+        <p style="font-size:13px;font-weight:600;margin:0 0 4px 0" data-pca-heading>{{ t('UI_PCA_HEADING') }}</p>
+        {% if pca.status == 'available' %}
+        <p style="font-size:12px;color:#555;margin:0 0 6px 0" data-pca-intro>{{ t('UI_PCA_INTRO') }}</p>
+        {% if pca.earlier %}<p style="font-size:12px;color:#7a4b00;margin:0 0 6px 0" data-pca-earlier>{{ t('UI_PCA_EARLIER') }}</p>{% endif %}
+        <dl style="font-size:13px;margin:0 0 4px 0" data-pca-notes>
+          <dt style="color:#444">{{ t('UI_PCA_FIELD_CRITERION') }}</dt>
+          <dd style="margin:0 0 4px 0" data-pca-criterion>{% if pca.notes.acceptance_criterion %}<bdi dir="auto" style="white-space:pre-wrap">{{ pca.notes.acceptance_criterion }}</bdi>{% else %}<span style="color:#666">{{ t('UI_PCA_NOT_RECORDED') }}</span>{% endif %}</dd>
+          <dt style="color:#444">{{ t('UI_PCA_FIELD_EVIDENCE') }}</dt>
+          <dd style="margin:0 0 4px 0" data-pca-evidence>{% if pca.notes.evidence_needed %}<bdi dir="auto" style="white-space:pre-wrap">{{ pca.notes.evidence_needed }}</bdi>{% else %}<span style="color:#666">{{ t('UI_PCA_NOT_RECORDED') }}</span>{% endif %}</dd>
+        </dl>
+        {% if pca.recorded %}<p style="font-size:12px;color:#666;margin:0 0 4px 0" data-pca-provenance>{{ t('UI_PCA_STATUS') }}</p>{% endif %}
+        {% if pcn.writable %}
+        <details data-pca-edit style="margin:4px 0 0 0">
+          <summary style="cursor:pointer;color:#2c3e50">{{ t('UI_PCA_EDIT_SUMMARY') }}</summary>
+          <form method="POST" action="/session/{{ sid }}/constraint-acceptance" data-pca-form style="margin-top:6px">
+            <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+            <input type="hidden" name="constraint_id" value="{{ c.constraint_id }}">
+            <input type="hidden" name="constraint_record" value="{{ c.record_id }}">
+            <input type="hidden" name="pca_base_earlier" value="{{ pca.base_earlier }}">
+            <input type="hidden" name="pca_base_acceptance_criterion" value="{{ pca.base.acceptance_criterion }}">
+            <input type="hidden" name="pca_base_evidence_needed" value="{{ pca.base.evidence_needed }}">
+            <p style="font-size:12px;color:#555;margin:0 0 6px 0">{{ t('UI_PCA_HINT') }}</p>
+            <label style="display:block;font-size:13px;margin:0 0 4px 0" for="pca-criterion-{{ pidx }}">{{ t('UI_PCA_FIELD_CRITERION') }}</label>
+            <textarea id="pca-criterion-{{ pidx }}" name="pca_acceptance_criterion" rows="2" maxlength="{{ pca.max }}" dir="auto" style="width:100%;box-sizing:border-box">{{ pca.base.acceptance_criterion }}</textarea>
+            <label style="display:block;font-size:13px;margin:6px 0 4px 0" for="pca-evidence-{{ pidx }}">{{ t('UI_PCA_FIELD_EVIDENCE') }}</label>
+            <textarea id="pca-evidence-{{ pidx }}" name="pca_evidence_needed" rows="2" maxlength="{{ pca.max }}" dir="auto" style="width:100%;box-sizing:border-box">{{ pca.base.evidence_needed }}</textarea>
+            <button type="submit" style="margin-top:6px">{{ t('UI_PCA_SAVE_BUTTON') }}</button>
+          </form>
+        </details>
+        {% endif %}
+        {% else %}
+        <p style="font-size:12px;color:#555;margin:0" data-pca-unavailable>{{ t('UI_PCA_UNAVAILABLE') }}</p>
+        {% endif %}
+      </div>
+      {% endif %}
       {% if pcn.writable %}
       {% if c.can_correct %}
       <details data-pcn-correct style="margin:4px 0 0 0">
