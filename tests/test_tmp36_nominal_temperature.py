@@ -384,13 +384,13 @@ def test_success_packaging_units_sources_and_identity():
     assert [u["record_id"] for u in result["unit_records"]] == ["dcu:U009", "dcu:U010"]
     assert [q["source_ref"] for q in result["source_qualification"]] == ["ADI-S1"]
     assert result["source_qualification"][0]["url"] == DATASHEET
-    assert (result["artifact_version"], result["implementation_version"]) == ("5", "1.4.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("6", "1.5.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_units_and_condition():
     assert ("tmp36:nominal_voltage_to_temperature", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 5
+    assert len(dc.ADMITTED_METHODS) == 6
     assert {"voltage", "celsius_temperature"} <= dc.ADMITTED_QUANTITY_KINDS
     assert {"mV", "°C"} <= dc.ADMITTED_UNIT_TOKENS
     assert dc._CONDITIONS == ("greater_than_zero", "less_than_zero",
@@ -405,7 +405,7 @@ def test_closed_inventory_units_and_condition():
 
 
 @pytest.mark.parametrize("unit,reason", [
-    ("mv", dc.UNKNOWN_UNIT), ("MV", dc.UNKNOWN_UNIT), ("V", dc.UNKNOWN_UNIT),
+    ("mv", dc.UNKNOWN_UNIT), ("MV", dc.UNKNOWN_UNIT), ("V", dc.UNIT_NOT_ADMITTED),
     ("millivolt", dc.UNKNOWN_UNIT), ("m V", dc.UNKNOWN_UNIT), ("µV", dc.UNKNOWN_UNIT),
     ("°C", dc.UNIT_NOT_ADMITTED), ("K", dc.UNIT_NOT_ADMITTED), ("W", dc.UNIT_NOT_ADMITTED),
 ])
@@ -422,7 +422,10 @@ def test_celsius_tokens_have_no_alias_and_belong_to_tmp36_only():
         assert alias == "K" or alias not in tokens
     for record in data["methods"]:
         kinds = {r["quantity_kind"] for r in record["input_roles"] + record["output_roles"]}
-        if record["method_id"] != method.METHOD_ID:
+        if record["method_id"] == "electrical:dc_resistive_load_current":
+            # Correction 06 (§13E): the DC load voltage, in its own exact V token
+            assert "celsius_temperature" not in kinds
+        elif record["method_id"] != method.METHOD_ID:
             assert not kinds & {"voltage", "celsius_temperature"}, record["method_id"]
 
 
@@ -440,7 +443,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.tmp36_nominal_temperature_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._TMP36_TEMPERATURE_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 5
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 6
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("tmp36_nominal_temperature", "tmp36_content_config", "import fractions",
                    "decimal", "sqlite", "273.15", "open(target, \"w"):
@@ -451,7 +454,7 @@ def _owner_tamper(data, name):
     record = _record(data)
     if name == "second_voltage_unit":
         extra = copy.deepcopy([u for u in data["unit_records"] if u["unit_token"] == "mV"][0])
-        extra["record_id"], extra["unit_token"] = "dcu:U099", "V"
+        extra["record_id"], extra["unit_token"] = "dcu:U099", "kV"
         data["unit_records"].append(extra)
     elif name == "celsius_alias":
         extra = copy.deepcopy([u for u in data["unit_records"] if u["unit_token"] == "°C"][0])
@@ -489,12 +492,13 @@ def test_owner_artifact_tamper_fails_closed(tmp_path, name):
 
 def test_owner_v4_records_are_unchanged_by_the_fifth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "5"
+    assert data["artifact_version"] == "6"
     units = {u["record_id"]: u["unit_token"] for u in data["unit_records"]}
     assert units == {"dcu:U001": "N", "dcu:U002": "mm", "dcu:U003": "W",
                      "dcu:U004": "K/W", "dcu:U005": "K", "dcu:U006": "N·mm",
                      "dcu:U007": "N·m", "dcu:U008": "rad/s",
-                     "dcu:U009": "mV", "dcu:U010": "°C"}
+                     "dcu:U009": "mV", "dcu:U010": "°C",
+                     "dcu:U011": "V", "dcu:U012": "Ω", "dcu:U013": "A"}
     policies = {p["record_id"]: p for p in data["source_use_policies"]}
     assert "dcu:U006 only" in policies["dcu:SU006"]["inspected_content"]
     assert "dcu:U007, dcu:U008" in policies["dcu:SU007"]["inspected_content"]
@@ -506,7 +510,8 @@ def test_owner_v4_records_are_unchanged_by_the_fifth_admission():
         "therm01:conduction_temperature_difference_single_path",
         "cap13:planar_single_force_moment",
         "cap13:linear_speed_dependent_rotational_load",
-        "tmp36:nominal_voltage_to_temperature"]
+        "tmp36:nominal_voltage_to_temperature",
+        "electrical:dc_resistive_load_current"]
     k_record = [u for u in data["unit_records"] if u["unit_token"] == "K"][0]
     assert "no Celsius scale" in k_record["inspected_content"]       # THERM-01 unchanged
 

@@ -283,7 +283,8 @@ def test_role_kind_unit_bindings_are_exactly_the_governed_set():
                         "K/W": "thermal_resistance", "K": "temperature_difference",
                         "N·mm": "moment", "N·m": "torque",
                         "rad/s": "angular_velocity", "mV": "voltage",
-                        "°C": "celsius_temperature"}
+                        "°C": "celsius_temperature", "V": "voltage",
+                        "Ω": "electric_resistance", "A": "electric_current"}
     kinds = {k["quantity_kind"] for k in data["quantity_kinds"]}
     # no absolute temperature for THERM-01: the one Celsius-temperature kind
     # (Correction 05, §13D) belongs to the TMP36 output alone
@@ -296,29 +297,32 @@ def test_role_kind_unit_bindings_are_exactly_the_governed_set():
 
 
 def test_closed_inventory_is_exactly_the_admitted_methods():
-    # Corrections 03, 04 and 05 (§§13B-13D) add exactly the CAP-13 planar moment,
-    # the CAP-13 rotational load and the TMP36 nominal temperature as the third,
-    # fourth and fifth methods
+    # Corrections 03 to 06 (§§13B-13E) add exactly the CAP-13 planar moment,
+    # the CAP-13 rotational load, the TMP36 nominal temperature and the DC
+    # resistive load current as the third to sixth methods
     assert dc.ADMITTED_METHODS == frozenset({
         ("cap13:static_reactions_two_support", "1.0"),
         ("therm01:conduction_temperature_difference_single_path", "1.0"),
         ("cap13:planar_single_force_moment", "1.0"),
         ("cap13:linear_speed_dependent_rotational_load", "1.0"),
-        ("tmp36:nominal_voltage_to_temperature", "1.0")})
+        ("tmp36:nominal_voltage_to_temperature", "1.0"),
+        ("electrical:dc_resistive_load_current", "1.0")})
     assert dc.ADMITTED_QUANTITY_KINDS == frozenset({
         "force", "length", "power", "thermal_resistance", "temperature_difference",
-        "moment", "torque", "angular_velocity", "voltage", "celsius_temperature"})
+        "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",
+        "electric_resistance", "electric_current"})
     assert dc.ADMITTED_UNIT_TOKENS == frozenset(
-        {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C"})
-    assert dc.IMPLEMENTATION_VERSION == "1.4.0"
+        {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C", "V", "Ω", "A"})
+    assert dc.IMPLEMENTATION_VERSION == "1.5.0"
     data = dc.load_artifact()
-    assert data["artifact_version"] == "5"
+    assert data["artifact_version"] == "6"
     assert [m["method_id"] for m in data["methods"]] == [
         "cap13:static_reactions_two_support",
         "therm01:conduction_temperature_difference_single_path",
         "cap13:planar_single_force_moment",
         "cap13:linear_speed_dependent_rotational_load",
-        "tmp36:nominal_voltage_to_temperature"]
+        "tmp36:nominal_voltage_to_temperature",
+        "electrical:dc_resistive_load_current"]
 
 
 def test_both_bindings_are_isolated_from_each_other():
@@ -347,7 +351,7 @@ def test_both_bindings_are_isolated_from_each_other():
 
 def test_app_wires_exactly_one_immutable_binding_per_method_and_no_registry():
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 5
+    assert app_source.count("_dcalc.bind_method(") == 6
     assert webapp._THERM01_TEMPERATURE_BINDING.adapter_identity \
         == "engine.therm01_conduction_method.evaluate"
     assert webapp._CAP13_REACTIONS_BINDING.adapter_identity \
@@ -365,7 +369,7 @@ def test_app_wires_exactly_one_immutable_binding_per_method_and_no_registry():
     assert [line.strip() for line in source.splitlines()
             if "celsius" in line.lower()] == [
         "# No conversion exists. The one Celsius-temperature kind is the output of the",
-        '"moment", "torque", "angular_velocity", "voltage", "celsius_temperature"})']
+        '"moment", "torque", "angular_velocity", "voltage", "celsius_temperature",']
     # the docstring may say "not a registry"; no registry object is defined
     assert not re.search(r"^\s*_?\w*registry\w*\s*=", source, re.I | re.M)
 
@@ -389,7 +393,7 @@ def test_deterministic_identity_and_no_input_mutation():
     first = dc.execute(BINDING, req)
     assert req == before and first == dc.execute(BINDING, req)
     assert re.fullmatch(r"[0-9a-f]{64}", first["result_identity"])
-    assert (first["artifact_version"], first["implementation_version"]) == ("5", "1.4.0")
+    assert (first["artifact_version"], first["implementation_version"]) == ("6", "1.5.0")
     assert first["subject_ref"] == "opaque"
     assert [q["source_ref"] for q in first["source_qualification"]] == ["THERM-S1"]
     assert sorted(u["unit_token"] for u in first["unit_records"]) == ["K", "K/W", "W"]
@@ -474,7 +478,8 @@ def test_owner_v2_keeps_the_cap13_records_unchanged():
     policies = {p["record_id"]: p for p in data["source_use_policies"]}
     assert set(policies) == {"dcu:SU001", "dcu:SU002", "dcu:SU003", "dcu:SU004",
                              "dcu:SU005", "dcu:SU006", "dcu:SU007",
-                             "dcu:SU008", "dcu:SU009", "dcu:SU010"}
+                             "dcu:SU008", "dcu:SU009", "dcu:SU010",
+                             "dcu:SU011", "dcu:SU012"}
     assert "dcu:U001 and dcu:U002 only" in policies["dcu:SU001"]["inspection_reference"]
     assert policies["dcu:SU004"]["url"] == "https://www.energy.gov/web-policies"
     record = _record(data)

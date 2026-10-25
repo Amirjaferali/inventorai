@@ -39,6 +39,8 @@ from engine import tmp36_nominal_temperature_method as _tmp36_method  # TMP36 No
 from engine import tmp36_nominal_temperature as _tmp36  # TMP36 Nominal Temperature Slice 1 consumer
 from engine import control_cycle as _cc  # 28-T4 Control-Cycle Slice 1 evaluation
 from engine import temperature_control_condition as _tcc  # TEMPERATURE-TO-CONTROL-CONDITION-01 composition
+from engine import dc_resistive_load_current_method as _dcl_method  # DC Resistive Load Current Slice 1 method
+from engine import dc_resistive_load_current as _dcl  # DC Resistive Load Current Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7113,6 +7115,7 @@ def show_session(sid):
         # request-local composition, offered only where BOTH existing gates
         # admit the project. It never gates the journey.
         temperature_control_condition_link=_tcc_eligible(sid),
+        dc_load_current_link=_dcl_eligible(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -14798,6 +14801,136 @@ def temperature_control_condition_post(sid):
         return _render_tcc(sid, status=400, error="UI_TCC_ERR_REQUEST")
     return _render_tcc(sid, captured=captured,
                        evaluation=_tcc.evaluate(captured, _TMP36_TEMPERATURE_BINDING))
+
+
+# =============================================================================
+# DC-RESISTIVE-LOAD-CURRENT-01 — DC Resistive Load Current, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory, non-binding calculation of the theoretical steady
+# current I = V / R of ONE inventor-declared DC resistive load (method contract
+# §1, §7). The consumer (`engine/dc_resistive_load_current.py`) owns capture,
+# the exact-decimal positive-resistance check, the pre-owner order, the
+# decimal-reference acceptance and the exact / rounded display; the shared
+# calculation / units owner (`engine/deterministic_calculation.py`) owns
+# execution; the method adapter (`engine/dc_resistive_load_current_method.py`)
+# owns the relation and its binary acceptance. Eligibility is the trusted durable
+# ROOT domain only, exactly Electrical / Electronics: a declared Stage 15 part
+# grants nothing. Nothing is inferred about the project, nothing is persisted and
+# nothing is read beyond the root domain. The POST renders its answer directly and
+# never redirects. The other five calculations are untouched.
+#
+# The SIXTH immutable trusted binding (calc/units Correction 06 §13E), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_DC_LOAD_CURRENT_BINDING = _dcalc.bind_method(
+    _dcl_method.METHOD_ID, _dcl_method.METHOD_VERSION, _dcl_method.evaluate)
+
+# Latin letters, digits, signs, unit tokens (V, Ω, A) and expressions such as
+# ``I = V / R``: each run is direction-isolated on an Arabic page (contract §9A
+# A-4), so a leading minus stays attached to its number.
+_DCL_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u03a9\u2212+(\-](?:[A-Za-z0-9_\u03a9\u2212+()/.:'= \-]*[A-Za-z0-9_\u03a9)])?")
+
+
+def _dcl_eligible(sid):
+    """True iff the project's trusted durable ROOT domain is Electrical /
+    Electronics. Never read from the request and never from the composition:
+    a declared part grants nothing. Fails closed."""
+    try:
+        return _dcl.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+def _dcl_isolate(text, lang):
+    return _ltr_isolate(text, lang, _DCL_LTR_RUN)
+
+
+def _dcl_result_view(evaluation):
+    """Template view of an accepted SUCCESS: the consumer's display of the exact
+    quotient (already checked against the owner's binary64 result) with its
+    exact / rounded label, the separately labelled magnitude of a negative
+    current, the owner's unit, the method identity and the source and unit
+    references the owner carried."""
+    result = evaluation["result"]
+    output = result["outputs"]["i_load"]
+    return {
+        "value": evaluation["display_value"],
+        "exact": evaluation["display_exact"],
+        "magnitude": evaluation["magnitude_value"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_dcl(sid, status=200, eligible=True, captured=None, evaluation=None,
+                error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _dcl.OUTCOME_SUCCESS:
+            view = _dcl_result_view(evaluation)
+        else:
+            outcome_key = "UI_DCL_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "dc_load_current.html",
+        sid=sid,
+        iso=lambda key: _dcl_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _dcl_isolate(part, lang) for part in
+            ui_text.text("UI_DCL_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_dcl.DECLARATION_IDS,
+        screen_items=_dcl.SCREEN_ITEMS,
+        value_roles=_dcl.VALUE_ROLES,
+        decl_field=_dcl.DECLARATION_FIELD,
+        screen_field=_dcl.SCREEN_FIELD,
+        value_field=_dcl.VALUE_FIELD,
+        answer_applies=_dcl.ANSWER_APPLIES,
+        answer_does_not_apply=_dcl.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_dcl.SCREEN_YES,
+        screen_no=_dcl.SCREEN_NO,
+        max_value_chars=_dcl.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/dc-load-current", methods=["GET"])
+def dc_load_current(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_dcl(sid, eligible=_dcl_eligible(sid))
+
+
+@app.route("/session/<sid>/dc-load-current", methods=["POST"])
+def dc_load_current_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain only) -> strict capture (malformed: 400,
+    # no reason token) -> the consumer's §7 order -> the shared owner -> the
+    # decimal-reference acceptance.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _dcl_eligible(sid):
+        return _render_dcl(sid, eligible=False)
+    form = request.form
+    captured = _dcl.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_dcl(sid, status=400, error="UI_DCL_ERR_REQUEST")
+    return _render_dcl(sid, captured=captured,
+                       evaluation=_dcl.evaluate(captured, _DC_LOAD_CURRENT_BINDING))
 
 
 # =============================================================================

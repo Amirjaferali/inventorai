@@ -381,12 +381,14 @@ def test_c12_the_shared_calculation_and_unit_inventory_is_unchanged():
     # the closed owner inventory (calc/units §13B: the CAP-13 planar moment's N·mm
     # and method are the only additions); no charge unit or method is admitted
     assert set(re.findall(r'"unit_token":\s*"([^"]+)"', text)) == {
-        "N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C"}
+        "N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C",
+        "V", "Ω", "A"}
     assert set(re.findall(r'"method_id":\s*"([^"]+)"', text)) == {
         "cap13:static_reactions_two_support", "therm01:conduction_temperature_difference_single_path",
         "cap13:planar_single_force_moment",
         "cap13:linear_speed_dependent_rotational_load",
-        "tmp36:nominal_voltage_to_temperature"}
+        "tmp36:nominal_voltage_to_temperature",
+        "electrical:dc_resistive_load_current"}
     assert get_active_rules(DOMAIN) == [
         "PHYSICAL_PRINCIPLE_REQUIRED", "POWER_ACKNOWLEDGMENT_IF_ENERGY", "NO_PLATFORM_SPECIFIC_NAMING"]
 
