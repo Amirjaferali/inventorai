@@ -121,6 +121,7 @@ MUTATIONS = (
     # TEMPERATURE-TO-CONTROL-CONDITION-01: the request-local composition. It
     # persists nothing, but it accepts a POST.
     "/session/<sid>/temperature-control-condition",
+    "/session/<sid>/dc-load-current",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

@@ -1,9 +1,9 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "5",
+  "artifact_version": "6",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its accepted Correction 01, Correction 02 / section 13A, Correction 03 / section 13B, Correction 04 / section 13C and Correction 05 / section 13D), the accepted CAP-13 two-support static reactions contract, the accepted THERM-01 single-path conduction temperature-difference contract, the CAP-13 planar single-force moment contract, the CAP-13 linear speed-dependent rotational load contract and the Sensors C3 TMP36 nominal voltage-to-temperature contract. Content version 5 admits exactly five methods and exactly the ten unit tokens those methods require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. Its one Celsius-temperature kind is the output of the TMP36 method only: it is never converted to or from K and never related to the THERM-01 temperature difference. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The records dcu:U001 to dcu:U008 and dcu:SU001 to dcu:SU007 and the four earlier method records are unchanged from content version 4.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 06, sections 13A to 13E) and the method contracts of the six admitted methods. Content version 6 admits exactly six methods and exactly the thirteen unit tokens they require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature; V, Ω and A for the DC resistive load current); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. The voltage kind alone holds two exact tokens, mV and V, by the one named exception of section 13E: each role binds one of them and nothing maps one to the other. The Celsius-temperature kind is the TMP36 output only and is never related to K. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The records dcu:U001 to dcu:U010 and dcu:SU001 to dcu:SU010 and the five earlier method records are unchanged from content version 5.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
     {"quantity_kind": "length", "dimension": "L"},
@@ -14,7 +14,9 @@
     {"quantity_kind": "torque", "dimension": "M L^2 T^-2"},
     {"quantity_kind": "angular_velocity", "dimension": "T^-1"},
     {"quantity_kind": "voltage", "dimension": "M L^2 T^-3 I^-1"},
-    {"quantity_kind": "celsius_temperature", "dimension": "Theta (a temperature on the Celsius scale; not a temperature difference)"}
+    {"quantity_kind": "celsius_temperature", "dimension": "Theta (a temperature on the Celsius scale; not a temperature difference)"},
+    {"quantity_kind": "electric_resistance", "dimension": "M L^2 T^-3 I^-2"},
+    {"quantity_kind": "electric_current", "dimension": "I"}
   ],
   "unit_records": [
     {
@@ -186,6 +188,57 @@
       "inspection_basis": "LEAD_SUPPLIED",
       "inspection_date": "2026-10-24",
       "inspection_reference": "Unit token °C supplied in the Owner-authorized TMP36-NOMINAL-VOLTAGE-TEMPERATURE-01 brief (2026-10-24); its identification as the degree Celsius was confirmed directly by the executor against git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a) on 2026-10-24."
+    },
+    {
+      "record_id": "dcu:U011",
+      "unit_token": "V",
+      "unit_name": "volt",
+      "quantity_kind": "voltage",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Appendix B.9",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9 (volt, V)",
+      "inspected_content": "Appendix B.9 identifies the volt, symbol V, as the SI unit of electric potential difference (voltage); V is a distinct exact token of the voltage kind beside mV (section 13E) and is never mapped to or from mV; used here for the DC resistive load current method only. Unit identification only; no conversion is admitted and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU011",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Lead-level inspection recorded as electronics_electrical:PR005 (Appendix B.9: ampere - A, volt - V, ohm - Ω, watt - W; 2026-09-28), whose disposition stays scoped to its own record; this record is the owner's own bounded unit identification for V under ELECTRICAL_DC_RESISTIVE_LOAD_CURRENT_METHOD_CONTRACT.md section 4. Not independently re-inspected by the executor (the NIST host was not reachable)."
+    },
+    {
+      "record_id": "dcu:U012",
+      "unit_token": "Ω",
+      "unit_name": "ohm",
+      "quantity_kind": "electric_resistance",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Appendix B.9",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9 (ohm, Ω)",
+      "inspected_content": "Appendix B.9 identifies the ohm, symbol Ω, as the SI unit of electric resistance; used here for the DC resistive load current method only. Unit identification only; no conversion is admitted and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU011",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Lead-level inspection recorded as electronics_electrical:PR005 (Appendix B.9: ampere - A, volt - V, ohm - Ω, watt - W; 2026-09-28), whose disposition stays scoped to its own record; this record is the owner's own bounded unit identification for Ω under ELECTRICAL_DC_RESISTIVE_LOAD_CURRENT_METHOD_CONTRACT.md section 4. Not independently re-inspected by the executor (the NIST host was not reachable)."
+    },
+    {
+      "record_id": "dcu:U013",
+      "unit_token": "A",
+      "unit_name": "ampere",
+      "quantity_kind": "electric_current",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Appendix B.9",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9 (ampere, A)",
+      "inspected_content": "Appendix B.9 identifies the ampere, symbol A, as the SI unit of electric current; used here for the DC resistive load current method only. Unit identification only; no conversion is admitted and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU011",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Lead-level inspection recorded as electronics_electrical:PR005 (Appendix B.9: ampere - A, volt - V, ohm - Ω, watt - W; 2026-09-28), whose disposition stays scoped to its own record; this record is the owner's own bounded unit identification for A under ELECTRICAL_DC_RESISTIVE_LOAD_CURRENT_METHOD_CONTRACT.md section 4. Not independently re-inspected by the executor (the NIST host was not reachable)."
     }
   ],
   "source_use_policies": [
@@ -318,6 +371,32 @@
       "acknowledgement": "Reference source material: Analog Devices, Inc., TMP35/TMP36/TMP37 data sheet, Rev. H, (c)1996-2015 Analog Devices, Inc.",
       "third_party_material_exclusion": "No third-party material inside the data sheet is used.",
       "no_endorsement_limitation": "No statement or implication that Analog Devices endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU011",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local source-use basis for dcu:U011, dcu:U012 and dcu:U013 only (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. Use is limited to identifying the units V, Ω and A for the DC resistive load current method; no NIST text, table or conversion factor is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Policy page inspection recorded as electronics_electrical:PR007 (2026-09-28), whose disposition stays scoped to its own record. A separate record: dcu:SU001 to dcu:SU010 keep their own scopes and are not extended.",
+      "acknowledgement": "Unit identification for V, Ω and A follows NIST Special Publication 811 (Appendix B.9), National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
+    },
+    {
+      "record_id": "dcu:SU012",
+      "source_title": "U.S. Department of Energy - Web Policies - Copyright, Restrictions and Permissions Notice",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "url": "not recorded - identified by title, as in electronics_electrical:PR006, which records no URL",
+      "inspected_content": "Owner-local snapshot of dcload:SU001 for the DC resistive load current method source DOE-OHM-S1 only (not a legal opinion): government information on DOE websites is in the public domain with DOE acknowledgement requested; contractor- or privately contributed material may remain protected, so no blanket public-domain claim is made for the handbook's expressive content. Use is the one factual Ohm's-law relationship only, in InventorAI's own paraphrase; no handbook prose, worked example, figure or table is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Version-bound snapshot of dcload:SU001 in docs/governance/electrical_content_config/dc_resistive_load_current_v1.json, itself the disposition recorded as electronics_electrical:PR006 (Lead-level inspection, 2026-09-28) applied to this one method; held here so the owner method record validates from this artifact alone. A separate record: dcu:SU001 to dcu:SU011 keep their own scopes; dcu:SU004 (THERM-01) is not extended.",
+      "acknowledgement": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only).",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
+      "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this owner or any result."
     }
   ],
   "methods": [
@@ -495,6 +574,35 @@
       ],
       "applicability": [
         {"role": "v_out", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
+    },
+    {
+      "method_id": "electrical:dc_resistive_load_current",
+      "method_version": "1.0",
+      "adapter_identity": "engine.dc_resistive_load_current_method.evaluate",
+      "technical_authority": "Electrical / Electronics - ELECTRICAL_DC_RESISTIVE_LOAD_CURRENT_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "electrical_dc_resistive_load_current", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "DOE-OHM-S1",
+          "source_title": "DOE-HDBK-1011/1-92, DOE Fundamentals Handbook: Electrical Science, Volume 1 of 4, Module 1 (Basic Electrical Theory), Ohm's Law, handbook page 14 (archived; historical fundamentals reference only)",
+          "publisher": "U.S. Department of Energy (DOE)",
+          "url": "not recorded - identified by handbook number, as in electronics_electrical:PR004, which records no URL",
+          "source_use_policy_ref": "dcu:SU012",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-09-28"
+        }
+      ],
+      "input_roles": [
+        {"role": "v_load", "quantity_kind": "voltage", "unit_token": "V"},
+        {"role": "r_load", "quantity_kind": "electric_resistance", "unit_token": "Ω"}
+      ],
+      "output_roles": [
+        {"role": "i_load", "quantity_kind": "electric_current", "unit_token": "A"}
+      ],
+      "applicability": [
+        {"role": "r_load", "condition": "greater_than_zero", "bound_role": null}
       ],
       "result_range": []
     }
