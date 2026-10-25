@@ -430,14 +430,14 @@ def test_success_packaging_units_sources_and_identity():
     assert [q["source_ref"] for q in result["source_qualification"]] == ["DOE-PWR-S1"]
     assert result["source_qualification"][0]["source_use_policy_ref"] == "dcu:SU013"
     assert result["validation_status"] == "UNVALIDATED"
-    assert (result["artifact_version"], result["implementation_version"]) == ("7", "1.6.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("8", "1.7.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_units_and_condition_are_unchanged_but_one_method():
     assert ("electrical:dc_resistive_load_power", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 7
-    assert len(dc.ADMITTED_QUANTITY_KINDS) == 12 and len(dc.ADMITTED_UNIT_TOKENS) == 13
+    assert len(dc.ADMITTED_METHODS) == 8
+    assert len(dc.ADMITTED_QUANTITY_KINDS) == 14 and len(dc.ADMITTED_UNIT_TOKENS) == 15
     assert dc.KIND_TOKEN_EXCEPTIONS == {"voltage": frozenset({"mV", "V"})}
     assert dc._CONDITIONS == ("greater_than_zero", "less_than_zero",
                               "within_zero_and_role")
@@ -478,7 +478,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.dc_resistive_load_power_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._DC_LOAD_POWER_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 7
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 8
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("dc_resistive_load_power_method", "engine.dc_resistive",
                    "electrical_content_config", "import fractions", "decimal",
@@ -521,15 +521,14 @@ def test_owner_artifact_tamper_fails_closed(tmp_path, name):
 
 def test_owner_v6_records_are_unchanged_by_the_seventh_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "7"
+    assert data["artifact_version"] == "8"
     v6 = {"quantity_kinds": data["quantity_kinds"][:12],
           "unit_records": data["unit_records"][:13],
           "source_use_policies": data["source_use_policies"][:12],
           "methods": data["methods"][:6]}
     canonical = json.dumps(v6, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     assert hashlib.sha256(canonical.encode()).hexdigest() == V6_RECORDS_DIGEST
-    assert len(data["quantity_kinds"]) == 12 and len(data["unit_records"]) == 13
-    assert [p["record_id"] for p in data["source_use_policies"][12:]] == ["dcu:SU013"]
+    assert [p["record_id"] for p in data["source_use_policies"][12:13]] == ["dcu:SU013"]
     policies = {p["record_id"]: p for p in data["source_use_policies"]}
     assert "DOE-PWR-S1 only" in policies["dcu:SU013"]["inspected_content"]
     assert "dcu:SU012 (DC resistive load current) is not extended" \
@@ -910,7 +909,7 @@ def test_nothing_is_persisted_and_no_request_leaks_into_the_next(elec, over):
 def test_no_report_export_api_or_safety_surface():
     src = Path(webapp.__file__).read_text(encoding="utf-8")
     start = src.index("# DC-RESISTIVE-LOAD-POWER-01 — DC Resistive Load Power")
-    section = src[start:src.index("# Manufacturing Evidence Capture", start)]
+    section = src[start:src.index("# DC-RESISTIVE-LOAD-ENERGY-01 —", start)]
     for banned in ("safety_signal", "SafetySignal(", "_get_store()", "append_",
                    "SESSION_STORE[", "deliverable", "pdf", "export", "/api/",
                    "_therm01", "_cap13", "_tmp36", "_dcl.", "_calc_gate",
