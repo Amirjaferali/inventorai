@@ -101,6 +101,18 @@ state, electrical signal or process condition.
 The previous state is chosen from `READY` / `RUNNING` and the input from `true` / `false`, none pre-selected. They are the
 inventor's own statements of one hypothetical cycle, not readings of any system.
 
+## 6A. Named consumer with a derived input (TEMPERATURE-TO-CONTROL-CONDITION-01) — narrow exception
+
+Owner-authorized with that increment, and effective only on the verified merge of its pull request: within ONE named
+request-local consumer, the
+[temperature-to-control-condition composition](TEMPERATURE_TO_CONTROL_CONDITION_COMPOSITION_CONTRACT.md)
+(`engine/temperature_control_condition.py`), `start_input` is not chosen directly by the inventor but derived in the same
+request from one fixed comparison of two inventor-declared values (the TMP36 nominal temperature of a declared voltage and
+a declared threshold); the client can never submit it there. The previous state stays the inventor's own choice. The
+derived Boolean is not a reading or inference of any real signal, component or process condition. This exception names
+that consumer only; the fixed definition, the confirmations, the screen, the five-step cycle, the output map, the refusals
+and the root-only eligibility are unchanged, and a refusal here gives that consumer no state or output.
+
 ## 7. Outcomes and refusal semantics
 
 Order after request integrity (CSRF), project authorization, eligibility and strict capture: (0) governed definition —

@@ -118,6 +118,9 @@ MUTATIONS = (
     # 28-T4 Control-Cycle Slice 1: the request-local READY / RUNNING evaluation.
     # It persists nothing, but it accepts a POST.
     "/session/<sid>/control-cycle",
+    # TEMPERATURE-TO-CONTROL-CONDITION-01: the request-local composition. It
+    # persists nothing, but it accepts a POST.
+    "/session/<sid>/temperature-control-condition",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

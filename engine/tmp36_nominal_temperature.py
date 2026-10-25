@@ -431,13 +431,19 @@ def format_reference(reference):
     return "%s%d.%s" % ("-" if scaled.numerator < 0 else "", whole, digits)
 
 
-def _outcome(outcome, owner=None, result=None, display_value=None):
+def _outcome(outcome, owner=None, result=None, display_value=None,
+             nominal_temperature=None):
     return {
         "outcome": outcome,
         "owner_state": None if owner is None else owner.get("state"),
         "owner_reason": None if owner is None else owner.get("reason"),
         "result": result,
         "display_value": display_value,
+        # TEMPERATURE-TO-CONTROL-CONDITION-01: the EXACT decimal nominal
+        # temperature (a ``Fraction``) this evaluation accepted, set on SUCCESS
+        # only, so its one named composition consumer compares the accepted
+        # value itself and never re-derives it or parses the display text.
+        "nominal_temperature": nominal_temperature,
     }
 
 
@@ -505,4 +511,5 @@ def evaluate(captured, binding, artifact=None, owner_artifact_path=None):
         accepted, display_value = False, None
     if not accepted:
         return _outcome(KNOWLEDGE_UNAVAILABLE, owner)
-    return _outcome(OUTCOME_SUCCESS, owner, copy.deepcopy(owner), display_value)
+    return _outcome(OUTCOME_SUCCESS, owner, copy.deepcopy(owner), display_value,
+                    reference)
