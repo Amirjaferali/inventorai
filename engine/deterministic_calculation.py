@@ -90,7 +90,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.5.0"
+IMPLEMENTATION_VERSION = "1.6.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -111,9 +111,11 @@ _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
 # admission of Correction 03 (§13B, CAP-13 planar moment), the bounded fourth
 # admission of Correction 04 (§13C, CAP-13 linear speed-dependent rotational load)
 # the bounded fifth admission of Correction 05 (§13D, TMP36 nominal
-# voltage-to-temperature) and exactly the bounded sixth admission of Correction
-# 06 (§13E, Electrical / Electronics DC resistive load current) - SIX methods,
-# each with its own consumer. A
+# voltage-to-temperature), the bounded sixth admission of Correction 06 (§13E,
+# Electrical / Electronics DC resistive load current) and exactly the bounded
+# seventh admission of Correction 07 (§13F, Electrical / Electronics DC
+# resistive load power, on the existing kinds and tokens) - SEVEN methods, each
+# with its own consumer. A
 # structurally valid extra method, quantity kind or unit fails closed: widening
 # the inventory is a separately authorized change, never an artifact edit alone.
 # No conversion exists. The one Celsius-temperature kind is the output of the
@@ -129,6 +131,7 @@ ADMITTED_METHODS = frozenset({
     ("cap13:linear_speed_dependent_rotational_load", "1.0"),
     ("tmp36:nominal_voltage_to_temperature", "1.0"),
     ("electrical:dc_resistive_load_current", "1.0"),
+    ("electrical:dc_resistive_load_power", "1.0"),
 })
 ADMITTED_QUANTITY_KINDS = frozenset({
     "force", "length", "power", "thermal_resistance", "temperature_difference",

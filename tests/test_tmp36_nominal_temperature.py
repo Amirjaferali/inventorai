@@ -384,13 +384,13 @@ def test_success_packaging_units_sources_and_identity():
     assert [u["record_id"] for u in result["unit_records"]] == ["dcu:U009", "dcu:U010"]
     assert [q["source_ref"] for q in result["source_qualification"]] == ["ADI-S1"]
     assert result["source_qualification"][0]["url"] == DATASHEET
-    assert (result["artifact_version"], result["implementation_version"]) == ("6", "1.5.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("7", "1.6.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_units_and_condition():
     assert ("tmp36:nominal_voltage_to_temperature", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 6
+    assert len(dc.ADMITTED_METHODS) == 7
     assert {"voltage", "celsius_temperature"} <= dc.ADMITTED_QUANTITY_KINDS
     assert {"mV", "°C"} <= dc.ADMITTED_UNIT_TOKENS
     assert dc._CONDITIONS == ("greater_than_zero", "less_than_zero",
@@ -422,7 +422,8 @@ def test_celsius_tokens_have_no_alias_and_belong_to_tmp36_only():
         assert alias == "K" or alias not in tokens
     for record in data["methods"]:
         kinds = {r["quantity_kind"] for r in record["input_roles"] + record["output_roles"]}
-        if record["method_id"] == "electrical:dc_resistive_load_current":
+        if record["method_id"] in ("electrical:dc_resistive_load_current",
+                                   "electrical:dc_resistive_load_power"):
             # Correction 06 (§13E): the DC load voltage, in its own exact V token
             assert "celsius_temperature" not in kinds
         elif record["method_id"] != method.METHOD_ID:
@@ -443,7 +444,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.tmp36_nominal_temperature_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._TMP36_TEMPERATURE_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 6
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 7
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("tmp36_nominal_temperature", "tmp36_content_config", "import fractions",
                    "decimal", "sqlite", "273.15", "open(target, \"w"):
@@ -492,7 +493,7 @@ def test_owner_artifact_tamper_fails_closed(tmp_path, name):
 
 def test_owner_v4_records_are_unchanged_by_the_fifth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "6"
+    assert data["artifact_version"] == "7"
     units = {u["record_id"]: u["unit_token"] for u in data["unit_records"]}
     assert units == {"dcu:U001": "N", "dcu:U002": "mm", "dcu:U003": "W",
                      "dcu:U004": "K/W", "dcu:U005": "K", "dcu:U006": "N·mm",
@@ -511,7 +512,8 @@ def test_owner_v4_records_are_unchanged_by_the_fifth_admission():
         "cap13:planar_single_force_moment",
         "cap13:linear_speed_dependent_rotational_load",
         "tmp36:nominal_voltage_to_temperature",
-        "electrical:dc_resistive_load_current"]
+        "electrical:dc_resistive_load_current",
+        "electrical:dc_resistive_load_power"]
     k_record = [u for u in data["unit_records"] if u["unit_token"] == "K"][0]
     assert "no Celsius scale" in k_record["inspected_content"]       # THERM-01 unchanged
 

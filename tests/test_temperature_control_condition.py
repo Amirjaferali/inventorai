@@ -578,7 +578,7 @@ def test_no_report_export_api_or_safety_surface():
                    "_dcalc.bind_method", "request.args", "session[", "control_loop"):
         assert banned not in section, banned
     assert section.count("_TMP36_TEMPERATURE_BINDING") == 1
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 6
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 7
     assert [r.rule for r in webapp.app.url_map.iter_rules()
             if "temperature-control-condition" in r.rule] \
         == ["/session/<sid>/temperature-control-condition"] * 2
