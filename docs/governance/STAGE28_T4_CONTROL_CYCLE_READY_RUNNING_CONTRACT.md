@@ -193,8 +193,8 @@ effect; no AI or provider call; no external dependency.
 
 ## 11. Source and IP status
 
-- **OPENPLC-S1** — OpenPLC Runtime, examined source commit `8d69d935a7915bef9b67bbea46cf87c68d112246` (Lead-supplied; no
-  repository URL was supplied and none is recorded). Used ONLY as a factual reference for the documented runtime separation
+- **OPENPLC-S1** — OpenPLC Runtime, examined source commit `8d69d935a7915bef9b67bbea46cf87c68d112246`, repository
+  <https://github.com/Autonomy-Logic/openplc-runtime/tree/8d69d935a7915bef9b67bbea46cf87c68d112246> (Lead-supplied and Lead-verified). Used ONLY as a factual reference for the documented runtime separation
   of a repeated control cycle into reading the inputs, executing the program logic and updating the outputs (cycle
   boundaries). It is NOT cited for, and does not support, the READY / RUNNING definition, the single transition, the
   frozen-input rule or reading the output from the next state, which are InventorAI's own design semantics.
@@ -205,7 +205,8 @@ effect; no AI or provider call; no external dependency.
   stated or implied. No conformity with IEC 61131-3, PLC scan equivalence, timing, electrical compatibility or industrial
   safety is claimed.
 - **Inspection basis.** Lead-supplied identification of the project, the examined commit and the licence in the authorizing
-  brief; not re-inspected by the executor, because the Owner instructed that PLC source research not be restarted.
+  brief, and the repository URL independently verified by the Lead in the PR #864 source-provenance correction; not
+  re-inspected by the executor, because the Owner instructed that PLC source research not be restarted.
 
 ## 12. Implementation boundary
 

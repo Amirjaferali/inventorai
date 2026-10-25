@@ -160,7 +160,7 @@ _SEMANTIC_DIGESTS = {
     "screen_items": "0a279eb393307c02b33ed654b6134728b1378889a356f71bc15a3ae9f2d39e5e",
     "limitations": "0f3791e7e1e5e8226199e90a6ce21b0472745f7e23e1b87f83a2ff40f0d46e89",
     "disclosure": "a4b8ae2bcc423e83ef69a0fbdc773fefa25538064d4df491daee5e12f37e1db6",
-    "sources": "169e96c7c4e53eea0cd779b6f218e9fc695d50bb181752c10b99ed1e27233d8c",
+    "sources": "1554f57a78239826e7a9eb0f1cea5aa2a325838d29181b6df85ba900321c8d69",
 }
 _PINNED_ARTIFACT_VERSION = "1"
 

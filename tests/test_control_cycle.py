@@ -338,6 +338,11 @@ def test_source_record_states_reference_only_and_licence():
     by_id = {r["record_id"]: r for r in data["sources"]}
     source = by_id["OPENPLC-S1"]
     assert "8d69d935a7915bef9b67bbea46cf87c68d112246" in source["source_title"]
+    upstream = ("https://github.com/Autonomy-Logic/openplc-runtime/tree/"
+                "8d69d935a7915bef9b67bbea46cf87c68d112246")
+    assert source["url"] == by_id["oplc:SU001"]["url"] == upstream
+    assert upstream in CONTRACT.read_text(encoding="utf-8")
+    assert "not recorded" not in json.dumps(data["sources"])
     for phrase in ("factual reference", "does NOT support",
                    "InventorAI's own design", "not re-inspected by the executor"):
         assert phrase in source["inspected_content"], phrase
