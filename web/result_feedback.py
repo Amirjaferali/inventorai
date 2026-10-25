@@ -103,6 +103,21 @@ _WARN_EXPLICIT_UNKNOWN = (
     "you do know."
 )
 
+# MIXED-FUNCTIONAL-ANSWER-FEEDBACK-01: the same withheld-credit outcome, for an
+# answer that ALSO states something about the question beside its explicit
+# unknown (decided by the caller from canonical relevance). It must not call the
+# whole answer an unknown, and it must not say the mechanism was explained: it
+# confirms both parts were saved, says only that the demo did not recognize how
+# the mechanism would work, and names what is still needed. Content-free.
+_WARN_EXPLICIT_UNKNOWN_WITH_STATEMENT = (
+    "Your answer has been saved with your project. Besides what you "
+    "described, it says part of this is not known yet, and that part is "
+    "recorded as not known yet. The current demo did not recognize in your "
+    "answer an explanation of how the mechanism would work, so this point "
+    "has not moved forward. When you can, add how you expect it to work, in "
+    "your own words, or leave the unknown part as recorded."
+)
+
 # T2-G-3: an answer that only ASKED about or SUPPOSED the mechanism gets its own
 # message, shown only when that rule withheld credit. It is not "not addressed"
 # (the answer was about the question) and not an explicit unknown; it confirms
@@ -119,8 +134,13 @@ _GENERIC_WARN = (
 )
 
 
-def get_result_feedback(last_result):
+def get_result_feedback(last_result, statement_beside_unknown=False):
     """Return a plain-language feedback string for the current result, or None.
+
+    ``statement_beside_unknown`` is the caller's display-only reading that the
+    answer behind an explicit-unknown result also stated something about the
+    question; it only selects between the two explicit-unknown messages and is
+    ignored for every other result.
 
     Pure and deterministic. ``last_result`` is the already-computed result dict
     (or None). Reads only its ``transition`` and raw ``reason``; never mutates
@@ -161,6 +181,8 @@ def get_result_feedback(last_result):
         # Checked BEFORE "not addressed": an explicitly recognized unknown DID
         # respond to the question, so it must never fall into that category.
         if "recorded as an explicit unknown" in reason:
+            if statement_beside_unknown is True:
+                return _WARN_EXPLICIT_UNKNOWN_WITH_STATEMENT
             return _WARN_EXPLICIT_UNKNOWN
         if "recorded as a question or supposition" in reason:
             return _WARN_QUESTION_OR_SUPPOSITION
