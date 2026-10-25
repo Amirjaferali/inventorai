@@ -37,6 +37,7 @@ from engine import cap13_rotational_load_method as _cap13r_method  # CAP-13 Rota
 from engine import cap13_rotational_load as _cap13r  # CAP-13 Rotational Load Slice 1 consumer
 from engine import tmp36_nominal_temperature_method as _tmp36_method  # TMP36 Nominal Temperature Slice 1 method
 from engine import tmp36_nominal_temperature as _tmp36  # TMP36 Nominal Temperature Slice 1 consumer
+from engine import control_cycle as _cc  # 28-T4 Control-Cycle Slice 1 evaluation
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7103,6 +7104,10 @@ def show_session(sid):
         # eligibility as THERM-01 (Electrical / Electronics root, or a declared
         # Electrical / Electronics part). It never gates the journey.
         tmp36_temperature_link=_tmp36_link_offered(sid),
+        # 28-T4 Control-Cycle Slice 1: an OPTIONAL link to the request-local
+        # READY / RUNNING control-cycle evaluation, on an Electrical / Electronics
+        # root project only (no declared-part path). It never gates the journey.
+        control_cycle_link=_control_cycle_eligible(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -14581,6 +14586,104 @@ def tmp36_temperature_post(sid):
     evaluation = _tmp36.evaluate(captured, _TMP36_TEMPERATURE_BINDING)
     return _render_tmp36(sid, declared_part=part, captured=captured,
                          evaluation=evaluation)
+
+
+# =============================================================================
+# 28-T4 — Single Vendor-Neutral Control-Cycle Evaluation, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory evaluation of ONE fixed READY / RUNNING control-state
+# transition (control-cycle contract §1, §7). The bounded module
+# (`engine/control_cycle.py`) owns the governed definition, capture, the
+# pre-evaluation order and the five-step cycle; it is NOT a method of the shared
+# deterministic calculation owner and keeps no state. Eligibility is the
+# project's trusted durable ROOT domain only, exactly Electrical / Electronics:
+# no declared Stage 15 part grants anything here, and `control_loop` is neither
+# read nor touched. Nothing is persisted and no state is carried between
+# requests; the POST renders its answer directly and never redirects.
+
+# Latin identifiers and tokens (READY, RUNNING, start_input, true / false,
+# IEC 61131-3, OpenPLC, a commit prefix): each run is direction-isolated on an
+# Arabic page (contract §9A A-4).
+_CC_LTR_RUN = re.compile(r"[A-Za-z0-9_](?:[A-Za-z0-9_./:\- ]*[A-Za-z0-9_])?")
+
+
+def _control_cycle_eligible(sid):
+    """True iff the project's trusted durable ROOT domain is Electrical /
+    Electronics. Never read from the request and never from the composition:
+    a declared part grants nothing. Fails closed."""
+    try:
+        return _cc.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+def _cc_isolate(text, lang):
+    return _ltr_isolate(text, lang, _CC_LTR_RUN)
+
+
+def _render_control_cycle(sid, status=200, eligible=True, captured=None,
+                          evaluation=None, error=None):
+    lang = _current_ui_lang()
+    result = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _cc.OUTCOME_SUCCESS:
+            result = evaluation
+        else:
+            outcome_key = "UI_CC_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "control_cycle.html",
+        sid=sid,
+        iso=lambda key: _cc_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _cc_isolate(part, lang) for part in
+            ui_text.text("UI_CC_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=result,
+        outcome_key=outcome_key,
+        captured=captured,
+        declarations=_cc.DECLARATION_IDS,
+        screen_items=_cc.SCREEN_ITEMS,
+        states=_cc.STATES,
+        decl_field=_cc.DECLARATION_FIELD,
+        screen_field=_cc.SCREEN_FIELD,
+        previous_state_field=_cc.PREVIOUS_STATE_FIELD,
+        input_field=_cc.INPUT_FIELD,
+        answer_applies=_cc.ANSWER_APPLIES,
+        answer_does_not_apply=_cc.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_cc.SCREEN_YES,
+        screen_no=_cc.SCREEN_NO,
+        input_true=_cc.INPUT_TRUE,
+        input_false=_cc.INPUT_FALSE,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/control-cycle", methods=["GET"])
+def control_cycle(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_control_cycle(sid, eligible=_control_cycle_eligible(sid))
+
+
+@app.route("/session/<sid>/control-cycle", methods=["POST"])
+def control_cycle_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain only) -> strict capture (malformed or an
+    # attempted override of the fixed definition: 400, no evaluation) -> the
+    # module's §7 order -> the cycle.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _control_cycle_eligible(sid):
+        return _render_control_cycle(sid, eligible=False)
+    form = request.form
+    captured = _cc.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_control_cycle(sid, status=400, error="UI_CC_ERR_REQUEST")
+    return _render_control_cycle(sid, captured=captured,
+                                 evaluation=_cc.evaluate(captured))
 
 
 # =============================================================================

@@ -115,6 +115,9 @@ MUTATIONS = (
     # Sensors C3 / TMP36 Nominal Temperature Slice 1: the request-local nominal
     # voltage-to-temperature reading. It persists nothing, but it accepts a POST.
     "/session/<sid>/tmp36-temperature",
+    # 28-T4 Control-Cycle Slice 1: the request-local READY / RUNNING evaluation.
+    # It persists nothing, but it accepts a POST.
+    "/session/<sid>/control-cycle",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

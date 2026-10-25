@@ -33,7 +33,8 @@ from web import ui_text
 
 URL = "/session/%s/parts-components-interactions"
 CALC_ROUTES = ("support-reactions", "temperature-difference", "form-mockup-advisory",
-               "planar-moment", "rotational-load", "tmp36-temperature")
+               "planar-moment", "rotational-load", "tmp36-temperature",
+               "control-cycle")
 
 
 def _get(c, sid, lang="en"):

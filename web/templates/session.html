@@ -2308,6 +2308,14 @@ body{overflow-wrap:anywhere}
 <p class="journey-note" data-tmp36-link style="margin-top:14px"><a href="{{ url_for('tmp36_temperature', sid=sid) }}">{{ t('UI_TMP36_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_TMP36_LINK_NOTE') }}</span></p>
 {% endif %}
 {#- TMP36-LINK-END -#}
+{#- CC-LINK-BEGIN — 28-T4 Control-Cycle Slice 1. ONE optional link to the
+    request-local READY / RUNNING evaluation page, offered on an Electrical /
+    Electronics root project only. It is not a journey action, gates nothing and
+    carries no evaluation content: nothing is evaluated or saved on this page. -#}
+{% if control_cycle_link %}
+<p class="journey-note" data-cc-link style="margin-top:14px"><a href="{{ url_for('control_cycle', sid=sid) }}">{{ t('UI_CC_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_CC_LINK_NOTE') }}</span></p>
+{% endif %}
+{#- CC-LINK-END -#}
 {#- THERM01-LINK-BEGIN — Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1.
     ONE optional link to the request-local calculation page, offered only on an
     eligible (Electrical / Electronics-root) project. It is not a journey action,
