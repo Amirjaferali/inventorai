@@ -173,6 +173,12 @@ from engine.record_store import (
     InterfaceParticipationWithdrawn as _InterfaceParticipationWithdrawn,
     InterfaceParticipationsCorrupt as _InterfaceParticipationsCorrupt,
     INTERFACE_PARTICIPATION_UNCHANGED as _ICP_UNCHANGED,
+    ParticipationPreparationRejected as _ParticipationPreparationRejected,
+    ParticipationPreparationStale as _ParticipationPreparationStale,
+    ParticipationPreparationWithdrawn as _ParticipationPreparationWithdrawn,
+    ParticipationPreparationsCorrupt as _ParticipationPreparationsCorrupt,
+    PARTICIPATION_PREPARATION_UNCHANGED as _PPV_UNCHANGED,
+    PARTICIPATION_PREPARATION_CLEARED as _PPV_CLEARED,
     DecisionComparisonCorrupt as _DecisionComparisonCorrupt,
     DecisionComparisonConflict as _DecisionComparisonConflict,
     DECISION_COMPARISON_NO_CHANGE as _CMP_NO_CHANGE,
@@ -1804,6 +1810,17 @@ ICP_REJECTED_MESSAGE = "That selection does not match this project's interaction
 ICP_NOT_SAVED_MESSAGE = 'The components taking part could not be saved just now. Nothing was changed.'
 ICP_UNKNOWN_MESSAGE = 'We could not confirm whether your selection was saved. Reload this page to see what your project holds before choosing again.'
 ICP_SAVED_NOT_SHOWN_MESSAGE = 'Your selection was saved to your project, but this page could not show it. Reload this page to see what your project holds.'
+# COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the outcomes of the
+# per-participation notes form (localised through ui_text._MESSAGE_KEYS).
+PPV_SAVED_MESSAGE = 'Your notes for this component in this interaction were saved to your project. InventorAI has not checked them.'
+PPV_CLEARED_MESSAGE = 'Your notes for this component in this interaction were cleared. The component and its participation are unchanged.'
+PPV_UNCHANGED_MESSAGE = 'Your project already holds exactly these notes for this component in this interaction, so nothing needed to change.'
+PPV_STALE_MESSAGE = 'These notes changed after this page was shown, so nothing was saved. Review them below and try again.'
+PPV_WITHDRAWN_MESSAGE = 'This component has been withdrawn, so its notes cannot be changed. Nothing was saved.'
+PPV_REJECTED_MESSAGE = 'These notes do not match a component taking part in one of this project\'s interactions, so nothing was saved.'
+PPV_TOO_LONG_MESSAGE = 'A note is longer than 1,000 characters, so nothing was saved. Shorten it and try again.'
+PPV_NOT_SAVED_MESSAGE = 'Your notes could not be saved just now. Nothing was changed.'
+PPV_UNKNOWN_MESSAGE = 'We could not confirm whether your notes were saved. Reload this page to see what your project holds before saving again.'
 
 # Stage 28 — Control-Loop Optional Part — Slice 2: the inventor's answers to the
 # governed questions of the optional control-loop part (save_part_answers).
@@ -10609,7 +10626,8 @@ def _s15_preparation_context(sid):
 
 def _render_interface_preparation(sid, context, status=200, error=None,
                                   notice=None, drafts=None, baselines=None,
-                                  observation_drafts=None, evidence_drafts=None):
+                                  observation_drafts=None, evidence_drafts=None,
+                                  pp_drafts=None):
     """Render the preparation page. ``context`` None renders no interaction
     at all (the notice says why) — never "no interactions". ``drafts`` (a
     REJECTED submission, request-local only) maps form field name -> the text
@@ -10621,7 +10639,10 @@ def _render_interface_preparation(sid, context, status=200, error=None,
     ``observation_drafts`` (Stage 15 Slice 4) is the refused observation text,
     request-local only, keyed like the observation forms.
     ``evidence_drafts`` (Stage 15 closure) is a refused Integration evidence
-    submission, request-local only, keyed like the evidence forms."""
+    submission, request-local only, keyed like the evidence forms.
+    ``pp_drafts`` (COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01) is a
+    refused participation-notes submission, request-local only, keyed by its
+    ``(interface_id, component_id)``."""
     lang = _current_ui_lang()
     shown = None if drafts is None else {
         name: raw.replace("\x00", "") for name, raw in drafts.items()}
@@ -10644,6 +10665,9 @@ def _render_interface_preparation(sid, context, status=200, error=None,
         dependency_note_max=_subsystem_model.MAX_INTERFACE_DEPENDENCY_NOTE_LENGTH,
         participation=None if context is None else _s15_participation_view(
             sid, context),
+        participation_notes=None if context is None else _s15_participation_notes_view(
+            sid, context, pp_drafts),
+        participation_note_max=_subsystem_model.MAX_PARTICIPATION_PREPARATION_LENGTH,
         error=ui_text.localize_message(error, lang),
         notice=ui_text.localize_message(notice, lang),
     ), status)
@@ -10836,6 +10860,210 @@ def interface_participation(sid):
         return _icp_render(sid, notice=ICP_UNCHANGED_MESSAGE)
     # COMMITTED, or the requested set is confirmed durably present.
     return _icp_render(sid, notice=saved)
+
+
+# --- COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 ----------------------
+# For ONE CURRENT participation (ONE component taking part in ONE declared
+# interaction) the inventor records the observable contribution they expect and
+# the evidence or review they would need to check it: verification PREPARATION
+# only, OWNER_STATED / UNVALIDATED (``engine.subsystem_model``; the record
+# store's ``subsystem_participation_preparations``), keyed only by the existing
+# ``(interface_id, component_id)``. Notes of a removed participation are kept
+# and hidden; when the same participation is added again they are shown as
+# EARLIER statements (``carried_over``), never as reconfirmed, until the
+# inventor saves them again. Its own POST, behind the global request-integrity
+# (CSRF) guard and the central project authorization; the form carries the
+# notes and the carried-over state it displayed (the F724-1 baseline
+# discipline), and the store re-validates every identity and the current
+# participation inside ONE serialized write. An unknown outcome is decided by
+# reloading committed truth (SAVED / NOT SAVED / UNKNOWN). Nothing here infers
+# a mechanism, a compatibility or a feasibility, and the report, the PDF, the
+# Parts / Components / Interactions view and the Stage 35 export do not read it.
+_PPV_WRITE_SAVED = "saved"
+_PPV_WRITE_NOT_SAVED = "not_saved"
+_PPV_WRITE_UNKNOWN = "unknown"
+_PPV_FIELDS = _subsystem_model.PARTICIPATION_PREPARATION_FIELDS
+
+
+def _s15_participation_notes_view(sid, context, drafts=None):
+    """The per-participation notes part of the preparation page, or ``None``
+    when it cannot be read (shown as unavailable — never "not recorded"; the
+    rest of the page, the participation block included, is unaffected). Read
+    in its own store snapshot (``load_participation_preparations``), used only
+    when that snapshot's interactions are exactly the ones this page shows.
+    ``{interface_id: [entry, ...]}`` with one entry per CURRENT participant in
+    declaration order: its name, its notes (``None`` = not recorded), the
+    carried-over state and the form baselines; a refused submission's text is
+    shown instead under an explicit unsaved notice."""
+    loader = getattr(_get_store(), "load_participation_preparations", None)
+    if not callable(loader):
+        return None
+    try:
+        record = loader(sid)
+    except Exception:
+        return None
+    if {item.interface_id: item for item in record["interfaces"]} != \
+            context["interfaces"]:
+        return None
+    components = record["components"]
+    names = {item.component_id: item.display_name for item in components}
+    participants = _subsystem_model.current_interface_participants(
+        record["participations"], components)
+    notes = _subsystem_model.current_participation_preparations(
+        record["preparations"], record["participations"], components)
+    view = {}
+    for interface_id in context["interfaces"]:
+        entries = []
+        for component_id in participants.get(interface_id, ()):
+            stored = notes.get((interface_id, component_id))
+            values = {f: (None if stored is None else stored.value(f)) for f in _PPV_FIELDS}
+            carried = stored is not None and stored.carried_over
+            draft = (drafts or {}).get((interface_id, component_id))
+            entries.append({
+                "component_id": component_id,
+                "name": names[component_id],
+                "values": values,
+                "shown": ({f: draft["text"][f] for f in _PPV_FIELDS} if draft
+                          else {f: values[f] or "" for f in _PPV_FIELDS}),
+                # F724-1: a refused retry keeps the baseline it was submitted
+                # with, never a newer durable value.
+                "base": ({f: draft["base"][f] or "" for f in _PPV_FIELDS} if draft
+                         else {f: values[f] or "" for f in _PPV_FIELDS}),
+                "base_carried": ((draft["base"]["carried_over"] if draft else carried)
+                                 and "1" or "0"),
+                "draft": draft is not None,
+                "carried_over": carried,
+                "recorded": stored is not None,
+            })
+        view[interface_id] = entries
+    return view
+
+
+def _ppv_text(raw):
+    """``(text_or_None, error)``: the route's outer trim, empty -> not
+    recorded, the 1,000-character bound and the shared free-text guard."""
+    text = (raw or "").strip()
+    if not text:
+        return None, None
+    if len(text) > _subsystem_model.MAX_PARTICIPATION_PREPARATION_LENGTH:
+        return None, PPV_TOO_LONG_MESSAGE
+    invalid = _free_text_error(text, _current_ui_lang())
+    if invalid is not None:
+        return None, invalid
+    return text, None
+
+
+def _resolve_participation_notes_write(sid, interface_id, component_id, target):
+    """Bounded confirm-by-reload after the write RAISED: SAVED when the
+    committed CURRENT notes of exactly this pair equal ``target`` (line-break
+    representation aside) and are current, NOT SAVED on a demonstrable
+    mismatch, UNKNOWN when committed truth cannot be read."""
+    try:
+        record = _get_store().load_participation_preparations(sid)
+    except Exception:
+        return _PPV_WRITE_UNKNOWN
+    durable = _subsystem_model.current_participation_preparations(
+        record["preparations"], record["participations"],
+        record["components"]).get((interface_id, component_id))
+    if all(value is None for value in target.values()):
+        return _PPV_WRITE_SAVED if durable is None else _PPV_WRITE_NOT_SAVED
+    if durable is None or durable.carried_over:
+        return _PPV_WRITE_NOT_SAVED
+    for field_name, text in target.items():
+        if not _same_planning_text(text or "", durable.value(field_name)):
+            return _PPV_WRITE_NOT_SAVED
+    return _PPV_WRITE_SAVED
+
+
+def _ppv_render(sid, status=200, error=None, notice=None, drafts=None):
+    """Re-render the preparation page from CURRENT durable truth after a
+    participation-notes POST, with its outcome."""
+    page_status, context = _s15_preparation_context(sid)
+    if page_status != _S15_PREP_OK:
+        message, code = _S15_PREP_STATUS_MESSAGE[page_status]
+        return _render_interface_preparation(
+            sid, None, status=code if error is None else status,
+            error=error, notice=message if error is None else None)
+    return _render_interface_preparation(sid, context, status=status, error=error,
+                                         notice=notice, pp_drafts=drafts)
+
+
+@app.route("/session/<sid>/participation-preparation", methods=["POST"])
+def participation_preparation(sid):
+    """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 — the inventor
+    records, replaces or clears their notes for ONE current participation: the
+    observable contribution they expect from that component in that
+    interaction, and the evidence or review they would need to check it. Their
+    own statements, OWNER_STATED / UNVALIDATED; saving checks, infers or
+    verifies nothing. Order: request integrity (global guard) -> authorization
+    -> form shape -> ONE serialized durable write that re-validates every
+    identity and the current participation -> committed-truth resolution."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    single = {}
+    for name in ("interface_id", "component_id", "pp_base_carried") + tuple(
+            "pp_" + f for f in _PPV_FIELDS) + tuple("pp_base_" + f for f in _PPV_FIELDS):
+        values = request.form.getlist(name)
+        if len(values) != 1:
+            return _ppv_render(sid, status=400, error=PPV_REJECTED_MESSAGE)
+        single[name] = values[0]
+    interface_id, component_id = single["interface_id"], single["component_id"]
+    if (not _subsystem_model.is_valid_interface_id(interface_id)
+            or not _subsystem_model.is_valid_component_id(component_id)
+            or single["pp_base_carried"] not in ("0", "1")):
+        return _ppv_render(sid, status=400, error=PPV_REJECTED_MESSAGE)
+    # F724-1: the notes THIS form displayed. A baseline that is not a stored
+    # note could never have been displayed: malformed form.
+    expected = {"carried_over": single["pp_base_carried"] == "1"}
+    for field_name in _PPV_FIELDS:
+        base = single["pp_base_" + field_name].strip() or None
+        if base is not None and not _subsystem_model.valid_preparation_text(base):
+            return _ppv_render(sid, status=400, error=PPV_REJECTED_MESSAGE)
+        expected[field_name] = base
+    drafts = {(interface_id, component_id): {
+        "text": {f: single["pp_" + f].replace("\x00", "") for f in _PPV_FIELDS},
+        "base": dict(expected)}}
+    values = {}
+    for field_name in _PPV_FIELDS:
+        raw = single["pp_" + field_name]
+        if _same_planning_text(raw, expected[field_name]):
+            # untouched: keep exactly the displayed value (line breaks aside)
+            values[field_name] = expected[field_name]
+            continue
+        text, text_error = _ppv_text(raw)
+        if text_error is not None:
+            return _ppv_render(sid, status=400, error=text_error, drafts=drafts)
+        values[field_name] = text
+    try:
+        outcome = _get_store().set_participation_preparation(
+            sid, interface_id, component_id, values, expected)
+    except _ParticipationPreparationStale:
+        # Newer notes are shown as they now stand; the refused text is not
+        # re-offered against them.
+        return _ppv_render(sid, status=409, error=PPV_STALE_MESSAGE)
+    except _ParticipationPreparationWithdrawn:
+        return _ppv_render(sid, status=409, error=PPV_WITHDRAWN_MESSAGE)
+    except _ParticipationPreparationRejected:
+        return _ppv_render(sid, status=400, error=PPV_REJECTED_MESSAGE)
+    except (_ProjectNotFound, _ProjectSubsystemsCorrupt, _SubsystemInterfacesCorrupt,
+            _ProjectComponentsCorrupt, _InterfaceParticipationsCorrupt,
+            _ParticipationPreparationsCorrupt):
+        # Committed durable truth WAS read and fails closed: nothing written.
+        return _ppv_render(sid, status=503, error=PPV_NOT_SAVED_MESSAGE, drafts=drafts)
+    except Exception:
+        resolved = _resolve_participation_notes_write(
+            sid, interface_id, component_id, values)
+        if resolved == _PPV_WRITE_UNKNOWN:
+            return _ppv_render(sid, status=503, error=PPV_UNKNOWN_MESSAGE, drafts=drafts)
+        if resolved == _PPV_WRITE_NOT_SAVED:
+            return _ppv_render(sid, status=503, error=PPV_NOT_SAVED_MESSAGE, drafts=drafts)
+        outcome = None
+    if outcome == _PPV_UNCHANGED:
+        return _ppv_render(sid, notice=PPV_UNCHANGED_MESSAGE)
+    if outcome == _PPV_CLEARED or (outcome is None
+                                   and all(v is None for v in values.values())):
+        return _ppv_render(sid, notice=PPV_CLEARED_MESSAGE)
+    return _ppv_render(sid, notice=PPV_SAVED_MESSAGE)
 
 
 @app.route("/session/<sid>/interface-preparation", methods=["GET"])

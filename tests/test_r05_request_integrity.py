@@ -46,6 +46,7 @@ MUTATIONS = (
     # COMPONENT-INTERFACE-PARTICIPATION-01: the components the inventor says
     # take part in one declared interaction (current value; replace / clear).
     "/session/<sid>/interface-participation",
+    "/session/<sid>/participation-preparation",
     # Stage 15 Slice 3: the inventor's current verification-preparation inputs
     # per declared interaction (current-value planning save).
     "/session/<sid>/interface-preparation",

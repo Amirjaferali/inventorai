@@ -130,7 +130,11 @@ _USER_INITIATED_DELETION_TABLES = ("prototype_plan_metadata",
                                    "component_prototype_needs",
                                    # COMPONENT-INTERFACE-PARTICIPATION-01:
                                    # unselecting a component taking part.
-                                   "subsystem_interface_components")
+                                   "subsystem_interface_components",
+                                   # COMPONENT-PARTICIPATION-VERIFICATION-
+                                   # PREPARATION-01: clearing both notes of a
+                                   # component taking part.
+                                   "subsystem_participation_preparations")
 
 
 def test_retention_doc_matches_source_truth():
@@ -198,6 +202,11 @@ def test_retention_doc_matches_source_truth():
     # the same kind); a withdrawn component's row is never removed.
     assert "`subsystem_interface_components`" in flat
     assert "unselecting a component removes that single current-value row" in flat
+    # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: clearing both notes
+    # of a component taking part removes that one current-value row
+    # (user-initiated, the same kind); unselecting the component keeps it.
+    assert "`subsystem_participation_preparations`" in flat
+    assert "clearing both notes removes that single current-value row" in flat
     # the 7-day client TTL claim must keep matching the real script
     with open(os.path.join("web", "static", "js", "local_draft.js"),
               encoding="utf-8") as fh:

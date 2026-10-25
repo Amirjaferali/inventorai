@@ -566,7 +566,11 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       "subsystem_interfaces",
                       # Stage 28 Optional Part Slice 2 current-value part
                       # answers (no payload, no disposition) — not a ledger.
-                      "subsystem_part_answers"], tables
+                      "subsystem_part_answers",
+                      # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01:
+                      # current-value notes per component taking part (no
+                      # payload, no disposition) — not a ledger.
+                      "subsystem_participation_preparations"], tables
     assert ledger_like == ["records"], ledger_like
     assert "payload" not in quantity_cols and "disposition" not in quantity_cols
     assert "payload" not in reference_cols and "disposition" not in reference_cols
