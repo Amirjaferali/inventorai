@@ -6536,6 +6536,61 @@ class _QuestionContext:
         self.serving_basis = serving_basis
 
 
+_EXPLICIT_UNKNOWN_REASON = " recorded as an explicit unknown"
+
+
+def _statement_beside_unknown(entry, state, last_result):
+    """MIXED-FUNCTIONAL-ANSWER-FEEDBACK-01 — display-only. True when the answer
+    behind an explicit-unknown result also states something about the question,
+    so the feedback line does not call the whole answer an unknown.
+
+    Read at render time from the live entry only: ``last_result`` is set by the
+    answer route immediately before it appends that answer to the transcript,
+    so the last transcript response is the answer that produced it. A sentence
+    counts only when the existing rules accept it on its own: the relevance
+    composition the T2-G-3 rule uses (canonical gap relevance, the W2-C
+    supplement, the committed variant markers) AND the existing assessor's
+    REASONED floor, so marker padding and decoys never count. The veto, the
+    reason, the gap and the ledger are never read for writing or changed.
+    Fails closed to False, which keeps the existing message."""
+    try:
+        if not isinstance(last_result, dict) or last_result.get("transition") != "WARN":
+            return False
+        reason = last_result.get("reason") or ""
+        if _EXPLICIT_UNKNOWN_REASON not in reason:
+            return False
+        from engine.gap_relevance import GOVERNED_GAP_TYPES, addresses_gap
+        gap_type = reason.split(_EXPLICIT_UNKNOWN_REASON, 1)[0]
+        if gap_type not in GOVERNED_GAP_TYPES:
+            return False
+        transcript = entry.get("transcript") or []
+        if not transcript:
+            return False
+        response = transcript[-1].get("response")
+        if not isinstance(response, str):
+            return False
+        from engine import answer_stance
+        from engine.evidence_order import quality_at_least
+        from engine.idea_state import REASONED
+        from engine.intent_serving import (declared_variant_ids,
+            matches_committed_intent, supplemental_relevance)
+        from engine.progression_loop import assess_response
+        variant_ids = declared_variant_ids(state, gap_type)
+        domain = getattr(state, "domain", None)
+
+        def _accepted_sentence(sentence):
+            relevant = (addresses_gap(sentence, gap_type)
+                        or supplemental_relevance(state, gap_type, sentence)
+                        or any(matches_committed_intent(sentence, question_id)
+                               for question_id in variant_ids))
+            return relevant and quality_at_least(
+                assess_response(sentence, domain), REASONED)
+
+        return answer_stance.states_beyond_unknown(response, _accepted_sentence)
+    except Exception:
+        return False
+
+
 def _resolve_question_context(state, last_result):
     """Resolve the displayed question EXACTLY as the session page does.
 
@@ -7249,9 +7304,15 @@ def show_session(sid):
         # `last_result`, never rewrites `last_result.reason`, never re-scores, and never
         # alters the PASS/WARN/BLOCK outcome; the truthful badge and the raw reason (as
         # non-primary provenance) are rendered by the template independently. None when
-        # there is no result / no recognized transition.
+        # there is no result / no recognized transition. MIXED-FUNCTIONAL-ANSWER-
+        # FEEDBACK-01: an explicit-unknown answer that also states something about
+        # the question selects its own message (display-only; outcome unchanged).
         current_result_feedback=ui_text.localize_deep(
-            get_result_feedback(last_result), _current_ui_lang()),
+            get_result_feedback(
+                last_result,
+                statement_beside_unknown=_statement_beside_unknown(
+                    entry, state, last_result)),
+            _current_ui_lang()),
         # Guided Answer Co-Authoring Increment 1 — Advisory Prompt Support
         # (Increment Contract PR #127): deterministic, display-only, content-free
         # OPTIONAL prompts naming the KIND of information the inventor could add to
