@@ -15,8 +15,12 @@ admission of Correction 04 (§13C) under
 docs/governance/STAGE25_CAP13_LINEAR_SPEED_DEPENDENT_ROTATIONAL_LOAD_METHOD_CONTRACT.md;
 then TMP36 Nominal Voltage-to-Temperature Slice 1, the bounded fifth admission of
 Correction 05 (§13D) under
-docs/governance/SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.md.
-The owner is descriptive and unnumbered: it carries no CAP identifier.
+docs/governance/SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.md;
+then the Electrical / Electronics DC resistive load current, power and energy
+methods, the bounded sixth, seventh and eighth admissions of Corrections 06, 07
+and 08 (§13E, §13F, §13G) under their own ELECTRICAL_DC_RESISTIVE_LOAD_*
+method contracts. The owner is descriptive and unnumbered: it carries no CAP
+identifier.
 
 What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
   * admission of a request against its own governed artifact (§9);
@@ -90,7 +94,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.6.0"
+IMPLEMENTATION_VERSION = "1.7.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -112,10 +116,12 @@ _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
 # admission of Correction 04 (§13C, CAP-13 linear speed-dependent rotational load)
 # the bounded fifth admission of Correction 05 (§13D, TMP36 nominal
 # voltage-to-temperature), the bounded sixth admission of Correction 06 (§13E,
-# Electrical / Electronics DC resistive load current) and exactly the bounded
-# seventh admission of Correction 07 (§13F, Electrical / Electronics DC
-# resistive load power, on the existing kinds and tokens) - SEVEN methods, each
-# with its own consumer. A
+# Electrical / Electronics DC resistive load current), the bounded seventh
+# admission of Correction 07 (§13F, Electrical / Electronics DC resistive load
+# power, on the existing kinds and tokens) and exactly the bounded eighth
+# admission of Correction 08 (§13G, Electrical / Electronics DC resistive load
+# energy, adding only the energy / J and time / s kinds and tokens) - EIGHT
+# methods, each with its own consumer. A
 # structurally valid extra method, quantity kind or unit fails closed: widening
 # the inventory is a separately authorized change, never an artifact edit alone.
 # No conversion exists. The one Celsius-temperature kind is the output of the
@@ -132,13 +138,14 @@ ADMITTED_METHODS = frozenset({
     ("tmp36:nominal_voltage_to_temperature", "1.0"),
     ("electrical:dc_resistive_load_current", "1.0"),
     ("electrical:dc_resistive_load_power", "1.0"),
+    ("electrical:dc_resistive_load_energy", "1.0"),
 })
 ADMITTED_QUANTITY_KINDS = frozenset({
     "force", "length", "power", "thermal_resistance", "temperature_difference",
     "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",
-    "electric_resistance", "electric_current"})
+    "electric_resistance", "electric_current", "energy", "time"})
 ADMITTED_UNIT_TOKENS = frozenset({"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
-                                  "mV", "°C", "V", "Ω", "A"})
+                                  "mV", "°C", "V", "Ω", "A", "J", "s"})
 # The one named exception to "one unit token per quantity kind" (§13E): the
 # exact token set a kind may hold. Not an alias table and not a scale relation.
 KIND_TOKEN_EXCEPTIONS = {"voltage": frozenset({"mV", "V"})}

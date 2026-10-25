@@ -440,13 +440,13 @@ def test_success_packaging_units_sources_and_identity():
     assert [q["source_ref"] for q in result["source_qualification"]] == ["DOE-OHM-S1"]
     assert result["source_qualification"][0]["source_use_policy_ref"] == "dcu:SU012"
     assert result["validation_status"] == "UNVALIDATED"
-    assert (result["artifact_version"], result["implementation_version"]) == ("7", "1.6.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("8", "1.7.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_units_and_condition():
     assert ("electrical:dc_resistive_load_current", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 7
+    assert len(dc.ADMITTED_METHODS) == 8
     assert {"electric_resistance", "electric_current"} <= dc.ADMITTED_QUANTITY_KINDS
     assert {"V", "Ω", "A"} <= dc.ADMITTED_UNIT_TOKENS
     assert dc.KIND_TOKEN_EXCEPTIONS == {"voltage": frozenset({"mV", "V"})}
@@ -509,7 +509,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.dc_resistive_load_current_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._DC_LOAD_CURRENT_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 7
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 8
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("dc_resistive_load_current_method", "engine.dc_resistive",
                    "electrical_content_config",
@@ -574,14 +574,14 @@ def test_a_v_role_rebound_to_mv_refuses_the_v_request(tmp_path):
 
 def test_owner_v5_records_are_unchanged_by_the_sixth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "7"
+    assert data["artifact_version"] == "8"
     v5 = {"quantity_kinds": data["quantity_kinds"][:10],
           "unit_records": data["unit_records"][:10],
           "source_use_policies": data["source_use_policies"][:10],
           "methods": data["methods"][:5]}
     canonical = json.dumps(v5, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     assert hashlib.sha256(canonical.encode()).hexdigest() == V5_RECORDS_DIGEST
-    assert [u["record_id"] for u in data["unit_records"][10:]] == [
+    assert [u["record_id"] for u in data["unit_records"][10:13]] == [
         "dcu:U011", "dcu:U012", "dcu:U013"]
     assert [p["record_id"] for p in data["source_use_policies"][10:12]] == [
         "dcu:SU011", "dcu:SU012"]

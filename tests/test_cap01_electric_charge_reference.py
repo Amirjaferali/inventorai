@@ -379,17 +379,19 @@ def test_c12_the_shared_calculation_and_unit_inventory_is_unchanged():
     text = json.dumps(artifact, ensure_ascii=False)
     assert GROUP not in text and "ampere hour" not in text.lower() and "coulomb" not in text.lower()
     # the closed owner inventory (calc/units §13B: the CAP-13 planar moment's N·mm
-    # and method are the only additions); no charge unit or method is admitted
+    # and method are the only additions, J and s are the DC resistive load energy
+    # method's, calc/units §13G); no charge unit or method is admitted
     assert set(re.findall(r'"unit_token":\s*"([^"]+)"', text)) == {
         "N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C",
-        "V", "Ω", "A"}
+        "V", "Ω", "A", "J", "s"}
     assert set(re.findall(r'"method_id":\s*"([^"]+)"', text)) == {
         "cap13:static_reactions_two_support", "therm01:conduction_temperature_difference_single_path",
         "cap13:planar_single_force_moment",
         "cap13:linear_speed_dependent_rotational_load",
         "tmp36:nominal_voltage_to_temperature",
         "electrical:dc_resistive_load_current",
-        "electrical:dc_resistive_load_power"}
+        "electrical:dc_resistive_load_power",
+        "electrical:dc_resistive_load_energy"}
     assert get_active_rules(DOMAIN) == [
         "PHYSICAL_PRINCIPLE_REQUIRED", "POWER_ACKNOWLEDGMENT_IF_ENERGY", "NO_PLATFORM_SPECIFIC_NAMING"]
 

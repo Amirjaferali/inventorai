@@ -43,6 +43,8 @@ from engine import dc_resistive_load_current_method as _dcl_method  # DC Resisti
 from engine import dc_resistive_load_current as _dcl  # DC Resistive Load Current Slice 1 consumer
 from engine import dc_resistive_load_power_method as _dcp_method  # DC Resistive Load Power Slice 1 method
 from engine import dc_resistive_load_power as _dcp  # DC Resistive Load Power Slice 1 consumer
+from engine import dc_resistive_load_energy_method as _dce_method  # DC Resistive Load Energy Slice 1 method
+from engine import dc_resistive_load_energy as _dce  # DC Resistive Load Energy Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7119,6 +7121,7 @@ def show_session(sid):
         temperature_control_condition_link=_tcc_eligible(sid),
         dc_load_current_link=_dcl_eligible(sid),
         dc_load_power_link=_dcp_eligible(sid),
+        dc_load_energy_link=_dce_eligible(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -15064,6 +15067,137 @@ def dc_load_power_post(sid):
         return _render_dcp(sid, status=400, error="UI_DCP_ERR_REQUEST")
     return _render_dcp(sid, captured=captured,
                        evaluation=_dcp.evaluate(captured, _DC_LOAD_POWER_BINDING))
+
+
+# =============================================================================
+# DC-RESISTIVE-LOAD-ENERGY-01 — DC Resistive Load Energy, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory, non-binding calculation of the theoretical electrical
+# energy E = V**2 x t / R that ONE inventor-declared DC resistive load absorbs
+# over ONE declared duration at a constant power (method contract §1, §7). The
+# consumer (`engine/dc_resistive_load_energy.py`) owns capture, the exact-decimal
+# positive-resistance and not-negative-duration checks, the pre-owner order, the
+# decimal-reference acceptance and the exact / rounded display; the shared
+# calculation / units owner owns execution; the method adapter
+# (`engine/dc_resistive_load_energy_method.py`) owns the relation and its binary
+# acceptance. Eligibility is the trusted durable ROOT domain only, exactly
+# Electrical / Electronics (the same root read as the DC load current and power
+# pages): a declared Stage 15 part grants nothing. Nothing is inferred about the
+# project, nothing is persisted and nothing is read beyond the root domain. The
+# POST renders its answer directly and never redirects. The other seven
+# calculations are untouched.
+#
+# The EIGHTH immutable trusted binding (calc/units Correction 08 §13G), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_DC_LOAD_ENERGY_BINDING = _dcalc.bind_method(
+    _dce_method.METHOD_ID, _dce_method.METHOD_VERSION, _dce_method.evaluate)
+
+
+def _dce_eligible(sid):
+    """True iff the project's trusted durable ROOT domain is Electrical /
+    Electronics. Never read from the request and never from the composition:
+    a declared part grants nothing. Fails closed."""
+    try:
+        return _dce.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+# As the DC load power run, so ``E = V² × t / R = P × t`` stays one
+# direction-isolated run (§9A A-4).
+_DCE_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u03a9\u2212+(\-](?:[A-Za-z0-9_\u03a9\u2212+()/.:'= \u00b2\u00d7\-]*"
+    r"[A-Za-z0-9_\u03a9\u00b2)])?")
+
+
+def _dce_isolate(text, lang):
+    return _ltr_isolate(text, lang, _DCE_LTR_RUN)
+
+
+def _dce_result_view(evaluation):
+    """Template view of an accepted SUCCESS: the consumer's display of the exact
+    V**2 x t / R (already checked against the owner's binary64 result) with its
+    exact / rounded label, the owner's unit, the method identity and the source
+    and unit references the owner carried."""
+    result = evaluation["result"]
+    output = result["outputs"]["e_load"]
+    return {
+        "value": evaluation["display_value"],
+        "exact": evaluation["display_exact"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_dce(sid, status=200, eligible=True, captured=None, evaluation=None,
+                error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _dce.OUTCOME_SUCCESS:
+            view = _dce_result_view(evaluation)
+        else:
+            outcome_key = "UI_DCE_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "dc_load_energy.html",
+        sid=sid,
+        iso=lambda key: _dce_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _dce_isolate(part, lang) for part in
+            ui_text.text("UI_DCE_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_dce.DECLARATION_IDS,
+        screen_items=_dce.SCREEN_ITEMS,
+        value_roles=_dce.VALUE_ROLES,
+        decl_field=_dce.DECLARATION_FIELD,
+        screen_field=_dce.SCREEN_FIELD,
+        value_field=_dce.VALUE_FIELD,
+        answer_applies=_dce.ANSWER_APPLIES,
+        answer_does_not_apply=_dce.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_dce.SCREEN_YES,
+        screen_no=_dce.SCREEN_NO,
+        max_value_chars=_dce.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/dc-load-energy", methods=["GET"])
+def dc_load_energy(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_dce(sid, eligible=_dce_eligible(sid))
+
+
+@app.route("/session/<sid>/dc-load-energy", methods=["POST"])
+def dc_load_energy_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain only) -> strict capture (malformed: 400,
+    # no reason token) -> the consumer's §7 order -> the shared owner -> the
+    # decimal-reference acceptance.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _dce_eligible(sid):
+        return _render_dce(sid, eligible=False)
+    form = request.form
+    captured = _dce.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_dce(sid, status=400, error="UI_DCE_ERR_REQUEST")
+    return _render_dce(sid, captured=captured,
+                       evaluation=_dce.evaluate(captured, _DC_LOAD_ENERGY_BINDING))
 
 
 # =============================================================================

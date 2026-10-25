@@ -378,10 +378,11 @@ def test_t11_the_shared_calculation_and_unit_inventory_is_unchanged():
     text = json.dumps(artifact, ensure_ascii=False)
     assert ET_GROUP not in text and "constant_power_energy" not in text
     tokens = set(re.findall(r'"unit_token":\s*"([^"]+)"', text))
-    # the closed owner inventory (calc/units §13B: the CAP-13 planar moment's N·mm
-    # and method are the only additions); no energy-time unit or method is admitted
+    # the closed owner inventory; J and s are admitted only as the owner's own unit
+    # records for the DC resistive load energy method (calc/units §13G), never by
+    # this reference group, whose text stays outside the owner
     assert tokens == {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C",
-        "V", "Ω", "A"}
+        "V", "Ω", "A", "J", "s"}
     methods = set(re.findall(r'"method_id":\s*"([^"]+)"', text))
     assert methods == {"cap13:static_reactions_two_support",
                        "therm01:conduction_temperature_difference_single_path",
@@ -389,7 +390,8 @@ def test_t11_the_shared_calculation_and_unit_inventory_is_unchanged():
         "cap13:linear_speed_dependent_rotational_load",
         "tmp36:nominal_voltage_to_temperature",
         "electrical:dc_resistive_load_current",
-        "electrical:dc_resistive_load_power"}
+        "electrical:dc_resistive_load_power",
+        "electrical:dc_resistive_load_energy"}
 
 
 def test_t12_no_input_control_numeric_result_or_state_change(client, monkeypatch):
