@@ -65,7 +65,13 @@ calculation ``cap13:linear_speed_dependent_rotational_load`` v1.0 may likewise b
 OFFERED for the declared Mechanical part whatever the initial analysis focus,
 decided in the web layer from the same validated durable composition; it
 establishes no applicability, suitability, validation or safety and changes nothing
-here. No other specialist
+here. A further narrow, Owner-authorized exception
+(TMP36-NOMINAL-VOLTAGE-TEMPERATURE-01): the admitted request-local calculation
+``tmp36:nominal_voltage_to_temperature`` v1.0 may likewise be OFFERED for the
+declared Electrical / Electronics part whatever the initial analysis focus,
+decided in the web layer from the same validated durable composition; it
+establishes no sensor choice, applicability, suitability, validation or safety
+and changes nothing here. No other specialist
 behaviour is granted by these exceptions. Subsystem identity is
 system-generated (``new_subsystem_id``), opaque, immutable and never derived
 from a name, a function text, a domain id or a list position; a client never

@@ -1,4 +1,4 @@
-"""Shared deterministic calculation and units owner - A2 method-first, bounded fourth admission.
+"""Shared deterministic calculation and units owner - A2 method-first, bounded fifth admission.
 
 Gates: Stage 25 / CAP-13 A-5 first bounded implementation, under the accepted
 docs/governance/SHARED_DETERMINISTIC_CALCULATION_AND_UNITS_OWNER_BOUNDARY_CONTRACT.md
@@ -12,7 +12,10 @@ same contract's Correction 03 (§13B) under
 docs/governance/STAGE25_CAP13_PLANAR_SINGLE_FORCE_MOMENT_METHOD_CONTRACT.md;
 then CAP-13 Linear Speed-Dependent Rotational Load Slice 1, the bounded fourth
 admission of Correction 04 (§13C) under
-docs/governance/STAGE25_CAP13_LINEAR_SPEED_DEPENDENT_ROTATIONAL_LOAD_METHOD_CONTRACT.md.
+docs/governance/STAGE25_CAP13_LINEAR_SPEED_DEPENDENT_ROTATIONAL_LOAD_METHOD_CONTRACT.md;
+then TMP36 Nominal Voltage-to-Temperature Slice 1, the bounded fifth admission of
+Correction 05 (§13D) under
+docs/governance/SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.md.
 The owner is descriptive and unnumbered: it carries no CAP identifier.
 
 What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
@@ -27,7 +30,7 @@ What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
 
 What it does NOT own: the method's equations, applicability, numeric domain,
 declarations, screen, limitations or source authority. Those belong to the
-method authority (CAP-13 or THERM-01) and reach this module only as one immutable binding per
+method authority (CAP-13, THERM-01 or Sensors C3 for TMP36) and reach this module only as one immutable binding per
 method, created by application wiring (``bind_method``). This module imports no consumer
 or method-authority module, reads no project, session, ledger, store, answer or
 requirement quantity, writes nothing and has no clock, randomness, network,
@@ -87,7 +90,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.3.0"
+IMPLEMENTATION_VERSION = "1.4.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -105,22 +108,27 @@ _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
 
 # The closed inventory: the delivered first increment (CAP-13 reactions), the
 # bounded second admission of Correction 02 (§13A, THERM-01), the bounded third
-# admission of Correction 03 (§13B, CAP-13 planar moment) and exactly the bounded
-# fourth admission of Correction 04 (§13C, CAP-13 linear speed-dependent
-# rotational load) - FOUR methods, each with its own consumer. A structurally
-# valid extra method, quantity kind or unit
-# fails closed: widening the inventory is a separately authorized change, never an
-# artifact edit alone. No absolute temperature kind and no conversion exist.
+# admission of Correction 03 (§13B, CAP-13 planar moment), the bounded fourth
+# admission of Correction 04 (§13C, CAP-13 linear speed-dependent rotational load)
+# and exactly the bounded fifth admission of Correction 05 (§13D, TMP36 nominal
+# voltage-to-temperature) - FIVE methods, each with its own consumer. A
+# structurally valid extra method, quantity kind or unit fails closed: widening
+# the inventory is a separately authorized change, never an artifact edit alone.
+# No conversion exists. The one Celsius-temperature kind is the output of the
+# TMP36 method only: it is never mapped to or from K, never compared with the
+# THERM-01 temperature difference and carries no offset arithmetic here.
 ADMITTED_METHODS = frozenset({
     ("cap13:static_reactions_two_support", "1.0"),
     ("therm01:conduction_temperature_difference_single_path", "1.0"),
     ("cap13:planar_single_force_moment", "1.0"),
     ("cap13:linear_speed_dependent_rotational_load", "1.0"),
+    ("tmp36:nominal_voltage_to_temperature", "1.0"),
 })
 ADMITTED_QUANTITY_KINDS = frozenset({
     "force", "length", "power", "thermal_resistance", "temperature_difference",
-    "moment", "torque", "angular_velocity"})
-ADMITTED_UNIT_TOKENS = frozenset({"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s"})
+    "moment", "torque", "angular_velocity", "voltage", "celsius_temperature"})
+ADMITTED_UNIT_TOKENS = frozenset({"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
+                                  "mV", "°C"})
 
 _ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _MAX_TEXT = 700

@@ -6229,6 +6229,143 @@ UI_STRINGS = {
     "UI_CAP13R_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # Sensors C3 — TMP36 Nominal Voltage-to-Temperature, Slice 1 (TMP36
+    # contract §9). The English declaration, screen and disclosure entries are
+    # pinned equal to the artifact by test and the Arabic ones to contract §9A.
+    # The integrated-part attribution reuses UI_THERM01_PART_*. Nothing here
+    # states a measurement, an accuracy, a sensor choice, suitability or safety.
+    "UI_TMP36_LINK_TEXT": {
+        "en": "Optional: nominal temperature from a TMP36 output voltage",
+        "ar": "اختياري: درجة الحرارة الاسمية من جهد خرج حسّاس TMP36"},
+    "UI_TMP36_LINK_NOTE": {
+        "en": "An advisory reading of a voltage you declare. It is not saved and is never required.",
+        "ar": "قراءة إرشادية لجهد تصرّح به أنت. لا تُحفَظ، ولا تكون مطلوبة أبدًا."},
+    "UI_TMP36_TITLE": {
+        "en": "TMP36 nominal temperature (optional, non-binding)",
+        "ar": "درجة الحرارة الاسمية لحسّاس TMP36 (اختياري، غير مُلزِم)"},
+    "UI_TMP36_INTRO": {
+        "en": "This page is optional. If your design uses an Analog Devices TMP36 temperature sensor and you have read its output voltage V_OUT yourself, it shows the temperature that the sensor's nominal relation gives for that voltage: 500 mV at 0 °C and 10 mV for each degree. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. إذا كان تصميمك يستخدم حسّاس الحرارة Analog Devices TMP36 وقرأت جهد خرجه V_OUT بنفسك، فهي تعرض درجة الحرارة التي تعطيها العلاقة الاسمية للحسّاس لهذا الجهد: 500 mV عند 0 °C و10 mV لكل درجة. لا يُحفَظ شيء."},
+    "UI_TMP36_SCOPE_NOTE": {
+        "en": "This optional calculation is available for an Electrical / Electronics-focus project or for its declared Electrical / Electronics part in a valid integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that your sensor is a TMP36 or that its nominal relation applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED nominal temperature, not a measurement, an accuracy statement, a sensor choice or a safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله كهربائي/إلكتروني، أو لجزئه الكهربائي/الإلكتروني المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء أن حسّاسك من طراز TMP36 أو أن علاقته الاسمية تنطبق. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة درجة حرارة اسمية غير مُتحقَّق منها، وليست قياسًا ولا بيانًا للدقة ولا اختيارًا للحسّاس ولا حكمًا بشأن السلامة."},
+    "UI_TMP36_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_TMP36_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_TMP36_DECL_DEVICE_TMP36": {
+        "en": "The sensor is an Analog Devices TMP36, not a TMP35, a TMP37 or any other sensor, as the inventor declares; InventorAI does not identify or check the device.",
+        "ar": "الحسّاس من طراز Analog Devices TMP36، وليس TMP35 ولا TMP37 ولا أي حسّاس آخر، بحسب تصريحك؛ ولا يتعرّف InventorAI على الجهاز ولا يتحقق منه."},
+    "UI_TMP36_DECL_DECLARED_VOLTAGE": {
+        "en": "The voltage entered is the inventor's own value for this TMP36's output pin relative to its ground pin, taken from their own reading or documentation; InventorAI did not sample, measure or check it.",
+        "ar": "الجهد المُدخل قيمتك أنت لطرف الخرج في هذا الحسّاس بالنسبة إلى طرف الأرضي فيه، مأخوذة من قراءتك أو من وثائقك؛ ولم يأخذ InventorAI منها عينة ولم يقسها ولم يتحقق منها."},
+    "UI_TMP36_DECL_DATASHEET_CONDITIONS": {
+        "en": "The sensor is powered and loaded as its data sheet specifies, and the voltage was read with the sensor in steady conditions within its specified temperature range.",
+        "ar": "الحسّاس مغذّى ومحمَّل كما تحدد ورقة بياناته، وقُرئ الجهد والحسّاس في ظروف مستقرة ضمن مداه الحراري المحدد."},
+    "UI_TMP36_DECL_NOMINAL_ONLY": {
+        "en": "Only the nominal relation is wanted: the device's accuracy and linearity errors, self-heating, calibration, the measuring instrument or ADC and every other error are not included.",
+        "ar": "المطلوب العلاقة الاسمية فقط: لا تُدرج أخطاء الدقة والخطية في الجهاز، ولا التسخين الذاتي، ولا المعايرة، ولا أداة القياس أو المحوّل التناظري الرقمي (ADC)، ولا أي خطأ آخر."},
+    "UI_TMP36_SCREEN_STEM": {
+        "en": "Will this temperature be relied on for, or does the sensor sit in or on, any of the following? Answer each item yes or no.",
+        "ar": "هل ستُعتمد درجة الحرارة هذه في أي مما يلي، أو هل يقع الحسّاس فيه أو عليه؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_TMP36_SCREEN_BATTERY_OR_STORAGE_CELL": {
+        "en": "A battery or energy-storage cell",
+        "ar": "بطارية أو خلية لتخزين الطاقة"},
+    "UI_TMP36_SCREEN_MAINS_OR_HIGH_VOLTAGE": {
+        "en": "Mains or high voltage",
+        "ar": "جهد الشبكة الكهربائية (mains) أو جهد عالٍ"},
+    "UI_TMP36_SCREEN_FIRE_OR_IGNITION": {
+        "en": "Fire or ignition risk",
+        "ar": "خطر حريق أو اشتعال"},
+    "UI_TMP36_SCREEN_TOUCH_SKIN_OR_MEDICAL": {
+        "en": "Body temperature, skin contact or medical use",
+        "ar": "حرارة الجسم، أو تلامس مع الجلد، أو استخدام طبي"},
+    "UI_TMP36_SCREEN_SAFETY_CRITICAL_OR_LIFE_SUPPORTING": {
+        "en": "A safety-critical or life-supporting function, alarm or shut-off",
+        "ar": "وظيفة حرجة للسلامة أو داعمة للحياة، أو إنذار أو إيقاف"},
+    "UI_TMP36_SCREEN_AEROSPACE_OR_VEHICLE": {
+        "en": "Aerospace or vehicle use",
+        "ar": "استخدام في الطيران والفضاء (aerospace) أو في المركبات"},
+    "UI_TMP36_SCREEN_FOOD_SAFETY": {
+        "en": "Food safety or storage-temperature decisions",
+        "ar": "قرارات سلامة الغذاء أو درجات حرارة التخزين"},
+    "UI_TMP36_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_TMP36_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_TMP36_SCREEN_NOTE": {
+        "en": "Answering no to all seven items only means this bounded calculation may proceed; it never means that anything is safe.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود السبعة تعني فقط أنه يمكن متابعة هذا الحساب المحدود؛ ولا تعني أبدًا أن أي شيء آمن."},
+    "UI_TMP36_VOLTAGE_NOTE": {
+        "en": "Enter the voltage you read yourself, between 100 and 1750 mV, as a plain decimal with at most three digits after the point. InventorAI does not read, sample or measure your sensor.",
+        "ar": "أدخل الجهد الذي قرأته بنفسك، بين 100 و1750 mV، بصيغة عشرية بسيطة مع ثلاثة أرقام على الأكثر بعد الفاصلة. لا يقرأ InventorAI حسّاسك ولا يأخذ منه عينات ولا يقيسه."},
+    "UI_TMP36_FIELD_V_OUT": {
+        "en": "Your declared TMP36 output voltage, relative to its ground pin (V_OUT) — millivolt (mV)",
+        "ar": "جهد خرج TMP36 الذي تصرّح به، بالنسبة إلى طرف الأرضي (V_OUT) — ميلي فولت (mV)"},
+    "UI_TMP36_SUBMIT": {
+        "en": "Show the nominal temperature",
+        "ar": "اعرض درجة الحرارة الاسمية"},
+    "UI_TMP36_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_TMP36_RESULT_T": {
+        "en": "Nominal temperature from the TMP36 relation (T) — degree Celsius (°C)",
+        "ar": "درجة الحرارة الاسمية من علاقة TMP36 (T) — درجة سيليزية (°C)"},
+    "UI_TMP36_NOMINAL_NOTE": {
+        "en": "This is the nominal relation applied to the voltage you declared, not a measured or accurate temperature of your sensor.",
+        "ar": "هذه هي العلاقة الاسمية مطبّقة على الجهد الذي صرّحت به، وليست درجة حرارة مَقيسة أو دقيقة لحسّاسك."},
+    "UI_TMP36_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_TMP36_ECHO_HEADING": {
+        "en": "The value and declarations you entered",
+        "ar": "القيمة والتصريحات التي أدخلتها"},
+    "UI_TMP36_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_TMP36_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_TMP36_SOURCES_NOTE": {
+        "en": "The nominal TMP36 output characteristic and its specified temperature range from the Analog Devices TMP35/TMP36/TMP37 data sheet, Rev. H (© Analog Devices, Inc.); the millivolt from NIST SP 811 and the degree Celsius from the Modelica Standard Library v4.1.0. InventorAI restates the relation in its own words; no data-sheet text, table or figure is reproduced. Analog Devices does not endorse InventorAI or this calculation.",
+        "ar": "الخاصية الاسمية لخرج TMP36 ومداه الحراري المحدد من ورقة بيانات Analog Devices لـ TMP35/TMP36/TMP37، المراجعة Rev. H (© Analog Devices, Inc.)؛ والميلي فولت من NIST SP 811 والدرجة السيليزية من مكتبة Modelica Standard Library الإصدار v4.1.0. يعيد InventorAI صياغة العلاقة بكلماته؛ ولا يُستنسخ أي نص أو جدول أو شكل من ورقة البيانات. لا تؤيّد Analog Devices InventorAI ولا هذا الحساب."},
+    "UI_TMP36_DISCLOSURE": {
+        "en": "This is the nominal temperature that the TMP36 relation gives for the output voltage V_OUT you entered: T = (V_OUT − 500 mV) / (10 mV/°C).\n\nThe voltage is your own declared value. InventorAI did not read, sample or measure your sensor and does not check the value or that the sensor is a TMP36.\n\nIt is the nominal relation only. A real TMP36 can differ from it by several degrees, as its data sheet specifies, and no accuracy, linearity, self-heating, calibration, instrument or ADC error is included.\n\nThe accepted voltage interval, 100 mV to 1750 mV, is the nominal relation applied to the sensor's specified range of −40 °C to +125 °C. It is not the data sheet's output-voltage specification and does not mean the device is accurate inside it.\n\nThe number of digits shown follows from your entry; it is not the precision of the sensor or of any measurement.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement before any reliance; it says nothing about sensor choice, suitability or safety.\n\nReference source material: Analog Devices TMP35/TMP36/TMP37 data sheet, Rev. H (© Analog Devices, Inc.); the relation is restated by InventorAI, and no data-sheet text, table or figure is reproduced.",
+        "ar": "هذه هي درجة الحرارة الاسمية التي تعطيها علاقة TMP36 لجهد الخرج V_OUT الذي أدخلته: T = (V_OUT − 500 mV) / (10 mV/°C).\n\nالجهد قيمة صرّحت بها أنت. لم يقرأ InventorAI حسّاسك ولم يأخذ منه عينات ولم يقسه، ولا يتحقق من القيمة ولا من أن الحسّاس من طراز TMP36.\n\nهذه هي العلاقة الاسمية فقط. قد تختلف قراءة حسّاس TMP36 حقيقي عنها بعدة درجات، كما تنص ورقة بياناته، ولا يتضمن الحساب أي خطأ في الدقة أو الخطية أو التسخين الذاتي أو المعايرة أو أداة القياس أو المحوّل التناظري الرقمي (ADC).\n\nمجال الجهد المقبول، من 100 mV إلى 1750 mV، هو ناتج تطبيق العلاقة الاسمية على المدى المحدد للحسّاس من −40 °C إلى +125 °C. وهو ليس مواصفة جهد الخرج في ورقة البيانات، ولا يعني أن الجهاز دقيق داخله.\n\nعدد الأرقام المعروضة ناتج عن إدخالك؛ وليس دقة الحسّاس أو دقة أي قياس.\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا، ويجب تأكيدها بالقياس قبل الاعتماد عليها؛ ولا تقول شيئًا عن اختيار الحسّاس أو الملاءمة أو السلامة.\n\nالمراجع: ورقة بيانات Analog Devices لـ TMP35/TMP36/TMP37، المراجعة Rev. H (© Analog Devices, Inc.)؛ والعلاقة معاد صياغتها من InventorAI، ولا يُستنسخ أي نص أو جدول أو شكل من ورقة البيانات."},
+    "UI_TMP36_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_TMP36_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. Relying on a nominal temperature in this case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. الاعتماد على درجة حرارة اسمية في هذه الحالة يتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "V_OUT must be written as a plain decimal number of millivolts, with no sign and at most three digits after the point. Nothing was calculated.",
+        "ar": "يجب كتابة V_OUT رقمًا عشريًا بسيطًا بالميلي فولت، بلا إشارة ومع ثلاثة أرقام على الأكثر بعد الفاصلة. لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_OUTSIDE_NOMINAL_MODEL_RANGE": {
+        "en": "V_OUT is outside 100 mV to 1750 mV, the interval that the nominal relation gives for the sensor's specified range of −40 °C to +125 °C. Nothing was calculated.",
+        "ar": "قيمة V_OUT خارج المجال من 100 mV إلى 1750 mV، وهو المجال الذي تعطيه العلاقة الاسمية للمدى المحدد للحسّاس من −40 °C إلى +125 °C. لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the millivolt (mV) and gives only the degree Celsius (°C). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة الميلي فولت (mV) فقط، ولا تعطي إلا الدرجة السيليزية (°C). لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_TMP36_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

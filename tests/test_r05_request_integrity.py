@@ -112,6 +112,9 @@ MUTATIONS = (
     # Stage 25 / CAP-13 Rotational Load Slice 1: the request-local linear
     # speed-dependent rotational load. It persists nothing, but it accepts a POST.
     "/session/<sid>/rotational-load",
+    # Sensors C3 / TMP36 Nominal Temperature Slice 1: the request-local nominal
+    # voltage-to-temperature reading. It persists nothing, but it accepts a POST.
+    "/session/<sid>/tmp36-temperature",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",
