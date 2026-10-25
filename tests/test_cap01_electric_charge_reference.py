@@ -391,7 +391,8 @@ def test_c12_the_shared_calculation_and_unit_inventory_is_unchanged():
         "tmp36:nominal_voltage_to_temperature",
         "electrical:dc_resistive_load_current",
         "electrical:dc_resistive_load_power",
-        "electrical:dc_resistive_load_energy"}
+        "electrical:dc_resistive_load_energy",
+        "cap13:planar_required_force"}
     assert get_active_rules(DOMAIN) == [
         "PHYSICAL_PRINCIPLE_REQUIRED", "POWER_ACKNOWLEDGMENT_IF_ENERGY", "NO_PLATFORM_SPECIFIC_NAMING"]
 

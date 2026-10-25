@@ -71,7 +71,12 @@ here. A further narrow, Owner-authorized exception
 declared Electrical / Electronics part whatever the initial analysis focus,
 decided in the web layer from the same validated durable composition; it
 establishes no sensor choice, applicability, suitability, validation or safety
-and changes nothing here. No other specialist
+and changes nothing here. A further narrow, Owner-authorized exception
+(CAP13-PLANAR-REQUIRED-FORCE-01): the admitted request-local calculation
+``cap13:planar_required_force`` v1.0 may likewise be OFFERED for the declared
+Mechanical part whatever the initial analysis focus, decided in the web layer
+from the same validated durable composition; it establishes no actuation,
+applicability, suitability, validation or safety and changes nothing here. No other specialist
 behaviour is granted by these exceptions. Subsystem identity is
 system-generated (``new_subsystem_id``), opaque, immutable and never derived
 from a name, a function text, a domain id or a list position; a client never

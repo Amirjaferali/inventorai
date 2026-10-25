@@ -1,0 +1,216 @@
+{
+  "artifact_id": "cap13_planar_required_force",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "CAP-13 - Component Thickness, Specification, and Safety Advisory (method authority for this one method only)",
+  "slice": "Stage 25 / CAP-13 - Planar Required Force - Slice 1",
+  "governance_note": "The CAP-13-owned governed artifact of the planar required force method, under STAGE25_CAP13_PLANAR_REQUIRED_FORCE_METHOD_CONTRACT.md. It carries the method authority (identity, version, model, executed form and derivation), the applicability declarations, the numeric domain, the high-risk screen, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json; it is separate from the two-support static reactions and planar-moment artifacts, never loads them and is never loaded by them. Calculation execution belongs to the shared deterministic calculation and units owner; nothing here is evidence, a specification, an actuation, capacity, strength, equilibrium, adequacy or safety statement, or a readiness, progression or validation input.",
+  "method": {
+    "method_id": "cap13:planar_required_force",
+    "method_version": "1.0",
+    "contract": "docs/governance/STAGE25_CAP13_PLANAR_REQUIRED_FORCE_METHOD_CONTRACT.md",
+    "model": "ONE force to act in ONE plane, and ONE point in that same plane chosen by the inventor; the magnitude of the one force that, acting at the inventor's own perpendicular distance d_perp from that point, would produce the inventor's own target moment magnitude M_target about that point.",
+    "executed_form": "F = M_target / d_perp. The exact rational quotient of the two typed inputs is rounded once to binary64 (round half to even); a zero target moment gives exactly 0; a nonzero result is accepted only when finite, strictly positive and within a relative error of 2^-52 of the exact quotient; no tolerance widening, no clamping and no magnitude ceiling.",
+    "derivation": "The moment of a force about a point is the force multiplied by the perpendicular distance from the point to the force's line of action (NASA-S1, NASA-T1): M = F * d_perp. For a strictly positive d_perp this is solved exactly for the force: F = M / d_perp. With M in N·mm and d_perp in mm the quotient is directly in N; no conversion factor is applied. The rearranged form, the magnitude form, the planar restriction and the declarations are InventorAI's own bounded restatement; NASA does not publish this method."
+  },
+  "numeric_domain": {
+    "roles": [
+      {
+        "role": "M_target",
+        "meaning": "magnitude of the target moment the inventor wants the one force to produce about the chosen point; the inventor's own figure, never worked out, checked or justified here",
+        "quantity_kind": "moment",
+        "unit_token": "N·mm"
+      },
+      {
+        "role": "d_perp",
+        "meaning": "perpendicular distance from the inventor's chosen point to the line of action of the one force (the role written d-perp)",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      },
+      {
+        "role": "F",
+        "meaning": "magnitude of the one force that would produce that moment at that distance; never a direction, an actuation, a capacity, a rating or a limit",
+        "quantity_kind": "force",
+        "unit_token": "N"
+      }
+    ],
+    "rules": [
+      "Grammar: strict unsigned ASCII decimal: one to twelve integer digits for M_target or one to nine for d_perp, and an optional single fractional part of one to nine digits; no sign, exponent, separator, space, Unicode digit, unit suffix, inf, nan or normalization. An omitted, malformed or over-length value is INVALID_NUMERIC_INPUT, resolved before the shared owner is called.",
+      "Representation limits are not physical limits: M_target from 0 to below 10^12 N·mm and d_perp below 10^9 mm, in steps of 10^-9. They bound what can be typed and are never a range of valid moments, distances or forces. Each typed field is also capped at 64 characters for abuse and resource protection only; that bound is NON-PHYSICAL.",
+      "Positive distance: the EXACT decimal value of d_perp must be greater than zero, decided before any binary rounding; a zero distance is DISTANCE_NOT_POSITIVE with no number (a force whose line of action passes through the point produces no moment about it). A zero target moment is admitted and gives exactly 0 N.",
+      "Binary acceptance: the exact rational quotient of the binary inputs is rounded once; a zero target moment gives exactly 0.0; a nonzero result is accepted only when finite, strictly positive and within a relative error of 2^-52 of the exact quotient. An overflow, an underflow to zero of a nonzero result or a result outside the accepted relative error is FAILURE / EXECUTION_INTEGRITY_FAILURE with no numerical payload; it is never rewritten as a refusal.",
+      "Decimal-reference acceptance: a successful owner result is shown only when it is exactly zero when, and only when, M_target is exactly zero, and otherwise within a relative error of 2^-51 of the exact quotient of the entered decimals; a failed check is KNOWLEDGE_UNAVAILABLE with no number.",
+      "Display: the exact decimal quotient rounded once to 12 significant digits, round half to even, labelled exact or rounded; plain decimal notation for 10^-6 <= F < 10^12 N and m x 10^e otherwise, so a nonzero force is never shown as 0. The digits shown imply no measurement resolution, precision or accuracy."
+    ]
+  },
+  "declarations": [
+    {
+      "declaration_id": "planar",
+      "contract_ref": "D-1",
+      "accepted_value": "planar: the force and the chosen point lie in one plane, and only the turning effect about the axis through the point at right angles to that plane is wanted",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "single_force",
+      "contract_ref": "D-2",
+      "accepted_value": "ONE force only is to produce the target moment: no other force, couple, spread-out load or weight is included in this calculation",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "perpendicular_distance",
+      "contract_ref": "D-3",
+      "accepted_value": "the distance d_perp is the shortest (perpendicular) distance from the chosen point to the line along which the force will act, not a length along a lever, arm or part unless that length is itself at right angles to the force; InventorAI does not check it",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "chosen_point",
+      "contract_ref": "D-4",
+      "accepted_value": "the point is the inventor's own choice (for example a pivot, joint or fixing); InventorAI does not choose it, check it or decide that it is the right point",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "target_moment",
+      "contract_ref": "D-5",
+      "accepted_value": "the target moment M_target is your own figure for the turning effect you want this one force to produce; InventorAI does not work it out, check it or decide that it is enough, and it adds nothing for friction, losses, starting or holding, or any margin",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "static_magnitude",
+      "contract_ref": "D-6",
+      "accepted_value": "the force is treated as steady (static), and only its size is wanted, not its direction or the turning direction; no motion, acceleration, impact, vibration or repeated loading is considered",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    }
+  ],
+  "screen_items": [
+    {
+      "item_id": "supports_people",
+      "item": "supports people"
+    },
+    {
+      "item_id": "overhead_or_falling_hazard",
+      "item": "overhead or falling hazard"
+    },
+    {
+      "item_id": "children",
+      "item": "use by or for children"
+    },
+    {
+      "item_id": "safety_critical_load_path",
+      "item": "safety-critical load path"
+    },
+    {
+      "item_id": "pressure",
+      "item": "pressure"
+    },
+    {
+      "item_id": "high_temperature",
+      "item": "high temperature"
+    },
+    {
+      "item_id": "battery_containment",
+      "item": "battery containment"
+    },
+    {
+      "item_id": "medical_use",
+      "item": "medical use"
+    },
+    {
+      "item_id": "food_contact",
+      "item": "food contact"
+    }
+  ],
+  "limitations": [
+    "No working out, check or justification of the target moment; no allowance for friction, losses, efficiency, starting or holding, or any margin; no static equilibrium, moment balance, resultant, support reaction or sign convention; no actuator, motor, spring, mechanism or human-effort capability; no joint, fastener, shaft, bearing, weld or member capacity, strength, stress, deflection, fatigue or failure check; no torque or force rating and no motor or actuator sizing; no thickness, material or specification; no design suitability, stability or safety conclusion; no inference of any declaration, moment, distance or point.",
+    "Three-dimensional moments, several forces, couples, spread-out loads, motion, acceleration, impact, vibration and repeated loading are outside this calculation, and no conversion of N·mm, mm or N to any other unit is performed.",
+    "All NO answers on the high-risk screen only allow this bounded calculation to proceed; they never mean safe. The screen neither reads nor feeds SafetySignal.",
+    "The result is UNVALIDATED and is not evidence; it is request-local and is not stored, reported, exported, transferred to another calculation or used for readiness, progression or validation."
+  ],
+  "disclosure": [
+    "This is the size of the one steady force that, acting at your perpendicular distance d⊥ from the one point you chose, in one plane, would produce your own target moment M_target about that point: F = M_target / d⊥.",
+    "It does not work out, check or justify your target moment, and it adds nothing for friction, losses, starting or holding, efficiency or any margin.",
+    "It does not tell whether a person, motor, actuator, spring or mechanism can apply this force, or whether a joint, fixing, shaft, part or material can carry it, and it is not compared with any rating, strength or limit.",
+    "It is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement or a qualified engineer before any reliance; it says nothing about whether the design is suitable or safe.",
+    "InventorAI does not check your target moment, your distance, your chosen point or that your declarations match the real configuration.",
+    "Three-dimensional effects, several forces, motion, impact, vibration and repeated loading are outside this calculation.",
+    "Reference source material: NASA Glenn Research Center (equilibrium and torque / moment principles); the rearranged form F = M / d⊥ is InventorAI's own restatement."
+  ],
+  "sources": [
+    {
+      "record_id": "NASA-S1",
+      "record_type": "source",
+      "source_type": "government_reference_web_page",
+      "publisher": "National Aeronautics and Space Administration (NASA), Glenn Research Center",
+      "source_title": "Beginners Guide to Aeronautics - Equilibrium",
+      "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/equilibrium/",
+      "source_use_policy_ref": "cap13f:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspected_content": "Supports only, for this method: torque / moment is force multiplied by perpendicular distance. The method rearranges that one relation for the force (dividing by a strictly positive distance); the rearrangement is exact algebra and InventorAI's own restatement, not a NASA statement. Reuses the Lead-supplied inspection of 2026-10-07 recorded for the two-support method (cap13_static_reactions_two_support, NASA-S1) and reused by the planar-moment method (cap13_planar_single_force_moment, NASA-S1), whose scopes are not extended; no third-party attribution was observed attached to the textual mathematical relationship relied upon.",
+      "paraphrase_only_limitation": "Factual paraphrase only; no NASA explanatory prose is copied.",
+      "third_party_material_exclusion": "Images, graphics, multimedia, branding and any unidentified or third-party page content are excluded.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI or any project."
+    },
+    {
+      "record_id": "NASA-T1",
+      "record_type": "source",
+      "source_type": "government_reference_web_page",
+      "publisher": "National Aeronautics and Space Administration (NASA), Glenn Research Center",
+      "source_title": "Beginners Guide to Aeronautics - Torque (Moment)",
+      "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/torque-moment/",
+      "source_use_policy_ref": "cap13f:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspected_content": "Supports only: torque / moment is the product of a force and the perpendicular distance from the pivot point to the force (textual statement). The method rearranges that one relation for the force; the rearrangement is InventorAI's own restatement. Reuses the Lead-level Section-8 inspection of 2026-09-28 recorded as mechanical:PR006 and reused by the planar-moment method (NASA-T1), whose dispositions stay scoped to their own records; no image, chart or diagram is reproduced or relied upon.",
+      "paraphrase_only_limitation": "Factual paraphrase only; no NASA explanatory prose is copied.",
+      "third_party_material_exclusion": "Images, graphics, multimedia, branding and any unidentified or third-party page content are excluded.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI or any project."
+    },
+    {
+      "record_id": "NIST-U",
+      "record_type": "source",
+      "source_type": "government_reference_publication",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI): 2008 Edition (Chapter 4, Tables 1, 3 and 5) and web edition Appendix B.9",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "source_use_policy_ref": "cap13f:SU002",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspected_content": "Supports only the unit facts: the newton, N, is the SI derived unit of force; the millimetre, mm, is the metre with the prefix milli (10^-3); the newton metre, N·m, is the SI unit of moment of force (Appendix B.9). The newton millimetre, N·mm, is InventorAI's own formation from these facts, as already recorded for the planar-moment method; dividing a value in N·mm by a value in mm gives a value directly in N, with no conversion factor. Reuses the Lead-supplied inspections recorded as dcu:U001 / dcu:U002 (2026-10-07), dcu:U006 and mechanical:PR009 (2026-09-28).",
+      "paraphrase_only_limitation": "Unit facts only, in InventorAI's own words; no NIST prose, table or conversion factor is reproduced.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No statement or implication that NIST endorses InventorAI or this calculation."
+    },
+    {
+      "record_id": "cap13f:SU001",
+      "record_type": "source_use_policy",
+      "source_type": "source_use_policy",
+      "publisher": "National Aeronautics and Space Administration (NASA), STI Program",
+      "source_title": "NASA STI Program - Disclaimers, Copyright Notice, and Terms and Conditions of Use",
+      "url": "https://sti.nasa.gov/disclaimers/",
+      "source_use_policy_ref": "cap13f:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspected_content": "This method's own bounded source-use assessment for NASA-S1 and NASA-T1 only (not a legal opinion): U.S. Government works are generally not protected by copyright in the U.S. (17 U.S.C. 105); NASA-hosted pages may contain privately created copyrighted content; public availability does not transfer third-party rights; NASA material may not be used to imply endorsement. Use is the one factual relation, rearranged for the force, in InventorAI's own paraphrase. Rests on the Lead-supplied inspections recorded as cap13:SU001 (2026-10-07), cap13m:SU001 (2026-10-07) and mechanical:PR010 (2026-09-28), whose scopes are not extended. PUBLICLY VIEWABLE IS NOT OPENLY REUSABLE.",
+      "paraphrase_only_limitation": "No copied NASA explanatory prose; no NASA image, graphic, multimedia, logo, insignia or branding.",
+      "third_party_material_exclusion": "No third-party or unidentified page content.",
+      "no_endorsement_limitation": "Neutral source acknowledgement only; no statement or implication that NASA endorses, reviewed or approved InventorAI or any project.",
+      "acknowledgement": "Reference source material: NASA Glenn Research Center (equilibrium and torque / moment principles); the rearranged form F = M / d⊥ is InventorAI's own restatement."
+    },
+    {
+      "record_id": "cap13f:SU002",
+      "record_type": "source_use_policy",
+      "source_type": "government_web_policy",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "source_use_policy_ref": "cap13f:SU002",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspected_content": "Source-use basis (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. Use is limited to the unit facts of NIST-U with NIST acknowledgement. Rests on the Lead-level inspection recorded as mechanical:PR011 (2026-09-28); dcu:SU001, cap13m:SU002 and mechanical:PR011 keep their own scopes and are not extended.",
+      "paraphrase_only_limitation": "Unit facts only, in InventorAI's own words.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement is stated or implied.",
+      "acknowledgement": "Unit identification follows NIST Special Publication 811, National Institute of Standards and Technology."
+    }
+  ]
+}

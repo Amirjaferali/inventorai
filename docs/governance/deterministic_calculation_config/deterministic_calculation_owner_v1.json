@@ -1,9 +1,9 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "8",
+  "artifact_version": "9",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 08, sections 13A to 13G) and the method contracts of the eight admitted methods. Content version 8 admits exactly eight methods and exactly the fifteen unit tokens they require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature; V, Ω and A for the DC resistive load current; V, Ω and W for the DC resistive load power; V, Ω, s and J for the DC resistive load energy); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. The voltage kind alone holds two exact tokens, mV and V, by the one named exception of section 13E: each role binds one of them and nothing maps one to the other. The Celsius-temperature kind is the TMP36 output only and is never related to K. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The records dcu:U001 to dcu:U013 and dcu:SU001 to dcu:SU013 and the seven earlier method records are unchanged from content version 7.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 09, sections 13A to 13H) and the method contracts of the nine admitted methods. Content version 9 admits exactly nine methods and exactly the fifteen unit tokens they require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature; V, Ω and A for the DC resistive load current; V, Ω and W for the DC resistive load power; V, Ω, s and J for the DC resistive load energy; N·mm, mm and N for the CAP-13 planar required force); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. The voltage kind alone holds two exact tokens, mV and V, by the one named exception of section 13E: each role binds one of them and nothing maps one to the other. The Celsius-temperature kind is the TMP36 output only and is never related to K. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The fifteen unit records, the records dcu:SU001 to dcu:SU015 and the eight earlier method records are unchanged from content version 8.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
     {"quantity_kind": "length", "dimension": "L"},
@@ -472,6 +472,19 @@
       "acknowledgement": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92, and Classical Physics, DOE-HDBK-1010-92 (archived; historical fundamentals references only).",
       "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
       "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU016",
+      "source_title": "NASA STI Program - Disclaimers, Copyright Notice, and Terms and Conditions of Use",
+      "publisher": "National Aeronautics and Space Administration (NASA), STI Program",
+      "url": "https://sti.nasa.gov/disclaimers/",
+      "inspected_content": "Owner-local qualification snapshot for the planar required force method sources NASA-S1 and NASA-T1 only (not a legal opinion): U.S. Government works are generally not protected by copyright in the U.S. (17 U.S.C. 105); NASA-hosted pages may contain privately created copyrighted content; NASA material may not be used to imply endorsement. Use is the one factual relation (moment magnitude is force times perpendicular distance), rearranged for the force by exact algebra, in InventorAI's own paraphrase only. No NASA prose, image or branding is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspection_reference": "Version-bound snapshot of cap13f:SU001 in the CAP-13 method-authority artifact cap13_planar_required_force version 1, which rests on the Lead-supplied NASA STI inspections recorded as cap13:SU001 (2026-10-07), cap13m:SU001 (2026-10-07) and mechanical:PR010 (2026-09-28); held here so the owner method record validates from this artifact alone. A separate record: dcu:SU002 and dcu:SU005 keep their own scopes (the two-support and planar-moment methods) and are not extended.",
+      "acknowledgement": "Reference source material: NASA Glenn Research Center (equilibrium and torque / moment principles); the rearranged form F = M / d⊥ is InventorAI's own restatement.",
+      "third_party_material_exclusion": "No third-party or unidentified page content.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI, this owner or any result."
     }
   ],
   "methods": [
@@ -746,6 +759,44 @@
       ],
       "applicability": [
         {"role": "r_load", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
+    },
+    {
+      "method_id": "cap13:planar_required_force",
+      "method_version": "1.0",
+      "adapter_identity": "engine.cap13_planar_required_force_method.evaluate",
+      "technical_authority": "CAP-13 - STAGE25_CAP13_PLANAR_REQUIRED_FORCE_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "cap13_planar_required_force", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "NASA-S1",
+          "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Equilibrium",
+          "publisher": "National Aeronautics and Space Administration (NASA)",
+          "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/equilibrium/",
+          "source_use_policy_ref": "dcu:SU016",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-07"
+        },
+        {
+          "source_ref": "NASA-T1",
+          "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Torque (Moment)",
+          "publisher": "National Aeronautics and Space Administration (NASA)",
+          "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/torque-moment/",
+          "source_use_policy_ref": "dcu:SU016",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-09-28"
+        }
+      ],
+      "input_roles": [
+        {"role": "M_target", "quantity_kind": "moment", "unit_token": "N·mm"},
+        {"role": "d_perp", "quantity_kind": "length", "unit_token": "mm"}
+      ],
+      "output_roles": [
+        {"role": "F", "quantity_kind": "force", "unit_token": "N"}
+      ],
+      "applicability": [
+        {"role": "d_perp", "condition": "greater_than_zero", "bound_role": null}
       ],
       "result_range": []
     }

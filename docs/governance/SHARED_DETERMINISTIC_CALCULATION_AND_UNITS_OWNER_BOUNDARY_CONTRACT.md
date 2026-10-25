@@ -92,6 +92,13 @@ takes effect only on the verified merge of that pull request into `feature/atomi
 proposal branch it is an Owner-authorized proposed amendment. It ADDS §13G and one bullet to §16. It admits exactly one
 further method and exactly two further quantity kinds with one exact unit token each (`energy` / `J`, `time` / `s`) and
 nothing more; §13F and every earlier section and clause — including §§7–10, §12 and §14 — are unchanged.
+CORRECTION 09: `CORRECTION 09 — BOUNDED NINTH ADMISSION (CAP-13 PLANAR REQUIRED FORCE) — OWNER-AUTHORIZED WITH ITS
+IMPLEMENTATION`. Folded, narrowly, into the one Owner-authorized increment `CAP13-PLANAR-REQUIRED-FORCE-01`, which implements
+it in the same pull request under the [planar required force method contract](STAGE25_CAP13_PLANAR_REQUIRED_FORCE_METHOD_CONTRACT.md).
+Applicability: it takes effect only on the verified merge of that pull request into `feature/atomic-json-session-persistence`;
+on its proposal branch it is an Owner-authorized proposed amendment. It ADDS §13H and one bullet to §16. It admits exactly one
+further method on the EXISTING quantity kinds and exact unit tokens (`moment` / `N·mm`, `length` / `mm`, `force` / `N`) and
+nothing more; §13G and every earlier section and clause — including §§7–10, §12 and §14 — are unchanged.
 BASIS: the Lead's read-only Stage 25 / CAP-13 feasibility gate (finding B — CAP-13 is feasible only after calculation and
 units ownership is decided); the Lead's read-only calculation and units ownership gate (finding B — a new shared calculation
 and units owner is required before CAP-13); an Astra architecture review and an independent Claude architecture / semantic
@@ -678,6 +685,52 @@ to EXACTLY the following and nothing more.
   solver, unit registry or conversion graph; persistence (§12); provider, AI, external-tool or external-library
   execution; and every other §13 / §13A–§13F exclusion.
 
+## 13H. Bounded ninth admission — CAP-13 planar required force (Correction 09)
+
+The delivered eighth admission (§13G) is expanded, by the Owner-authorized increment named in the CORRECTION 09 header, to
+EXACTLY the following and nothing more.
+
+- **Owner.** The one existing shared owner. No second owner, solver, conversion graph, unit registry, range policy or
+  inverse-calculation path is created, and the owner acquires no persistence and no scientific authority.
+- **Methods — exactly nine:** the eight of §13G plus `cap13:planar_required_force` 1.0, whose technical authority stays
+  outside this owner (§3), in its own CAP-13 method-authority artifact `cap13_planar_required_force` version 1. It is a
+  separate method, not a mode of `cap13:planar_single_force_moment`, which is unchanged.
+- **Consumers — exactly nine:** the existing eight and one planar required force consumer. No consumer imports another (it
+  keeps its own display rule rather than importing a DC load consumer, and restates the planar-moment evidence in its own
+  records rather than loading that artifact), and no method-authority artifact loads another at execution. No result is
+  transferred between methods.
+- **Quantity kinds and exact unit tokens: none added.** The method uses the existing `moment` / `N·mm` (input),
+  `length` / `mm` (input) and `force` / `N` (output) and their unit records `dcu:U006`, `dcu:U002` and `dcu:U001`,
+  unchanged. No alias, case folding, dimensional equivalence or conversion is added: nothing relates `N·mm` to `N·m`.
+- **Condition vocabulary.** Unchanged. The new method declares only the existing `greater_than_zero` on `d_perp`; its input
+  representation limits and positive-distance refusal are method-authority content, checked by its consumer from the exact
+  decimal input before any binary rounding (the adapter refuses a non-positive distance or a negative target moment again
+  as an integrity failure). No condition is declared on `M_target` and no result range is declared: a zero target moment
+  and a zero force are admitted.
+- **Method-local binding and wiring.** One additional immutable, application-wired binding; each consumer holds exactly its
+  own binding. No registry, discovery, dynamic module path or request-selected method.
+- **Versions.** The shared-owner artifact moves to content version `9` and the implementation to `1.8.0`. One new
+  source-use record (`dcu:SU016`, the NASA STI snapshot of the method's own `cap13f:SU001`) keeps the §9 source and
+  inspection requirements; no new source is introduced and every content-version-8 record is unchanged.
+- **Numerical policy.** §10 applies unchanged: the owner still receives typed binary64 numbers and parses no string. The
+  new method's decimal bridge (a strict unsigned grammar of up to twelve integer digits for `M_target`, nine for `d_perp`
+  and nine fractional digits, an exact-decimal check of `d_perp > 0`, one correctly rounded conversion per input), its
+  binary acceptance (exact rational `M_target / d_perp` rounded once; exact zero for a zero target moment, distinct from a
+  nonzero underflow, which is a failure; a nonzero result finite, strictly positive and within `2^-52` of the exact
+  result), its decimal-reference acceptance (within a relative `2^-51` of the exact decimal quotient) and its display (the
+  exact quotient rounded once to 12 significant digits, half to even, labelled exact or rounded) are method-authority
+  content held in its consumer, adapter and contract; they are NOT a generic owner policy and change nothing for the other
+  eight methods. A failure is `FAILURE / EXECUTION_INTEGRITY_FAILURE` with no numerical payload.
+- **Existing methods preserved.** The two-support, THERM-01, planar-moment, rotational-load, TMP36, DC load current, DC load
+  power and DC load energy methods, their authority artifacts, semantics, pins and user-facing behaviour stay unchanged;
+  bounded updates to assertions on the owner content version, the implementation version, the closed inventory and the
+  binding count, caused only by this admission, are expected and allowed.
+- **Still excluded:** a tenth method or consumer; owner ranges; string parsing in the owner; any conversion; any target
+  moment estimate, friction, efficiency, starting, holding or safety allowance or margin; any actuator, motor, spring or
+  human-effort capability, selection or sizing and any motion requirement; any result transfer between calculations; a
+  generic solver, inverse solver, unit registry or conversion graph; persistence (§12); provider, AI, external-tool or
+  external-library execution; and every other §13 / §13A–§13G exclusion.
+
 ## 14. Required guard strategy for a future implementation
 
 - independent expected numerical results;
@@ -727,6 +780,8 @@ to EXACTLY the following and nothing more.
 - Correction 07 (§13F) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 - Correction 08 (§13G) is Owner-authorized together with its bounded implementation, under the same proportionate,
+  risk-appropriate verification.
+- Correction 09 (§13H) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 
 ## 17. Non-authorization (restated)
