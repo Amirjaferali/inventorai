@@ -2291,6 +2291,14 @@ body{overflow-wrap:anywhere}
 <p class="journey-note" data-cap13m-link style="margin-top:14px"><a href="{{ url_for('cap13_planar_moment', sid=sid) }}">{{ t('UI_CAP13M_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_CAP13M_LINK_NOTE') }}</span></p>
 {% endif %}
 {#- CAP13M-LINK-END -#}
+{#- CAP13F-LINK-BEGIN — CAP13-PLANAR-REQUIRED-FORCE-01. ONE optional link to the
+    request-local planar required force page, offered on the same eligibility as
+    the planar moment link. It is not a journey action, gates nothing and carries
+    no calculation content: nothing is calculated or saved on this page. -#}
+{% if cap13_planar_required_force_link %}
+<p class="journey-note" data-cap13f-link style="margin-top:14px"><a href="{{ url_for('cap13_planar_required_force', sid=sid) }}">{{ t('UI_CAP13F_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_CAP13F_LINK_NOTE') }}</span></p>
+{% endif %}
+{#- CAP13F-LINK-END -#}
 {#- CAP13R-LINK-BEGIN — Stage 25 / CAP-13 Linear Speed-Dependent Rotational Load
     Slice 1. ONE optional link to the request-local evaluation page, offered on the
     same eligibility as the other CAP-13 calculation links. It is not a journey

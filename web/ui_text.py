@@ -6121,6 +6121,124 @@ UI_STRINGS = {
     "UI_CAP13M_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # CAP13-PLANAR-REQUIRED-FORCE-01 (required-force contract §9). The English
+    # declaration and disclosure entries are pinned equal to the method artifact
+    # by test and the Arabic disclosure and declarations to contract §9A. The
+    # high-risk screen reuses the UI_CAP13_SCREEN_* keys (the same nine items)
+    # and the integrated-part attribution the UI_CAP13_PART_* keys. Nothing here
+    # infers a target moment or states an actuation, capacity, strength,
+    # suitability or safety.
+    "UI_CAP13F_LINK_TEXT": {
+        "en": "Optional: force needed for a turning effect (moment) you choose",
+        "ar": "اختياري: القوة اللازمة لإحداث أثر دوران (عزم) تختاره أنت"},
+    "UI_CAP13F_LINK_NOTE": {
+        "en": "An advisory calculation from a target moment and a distance you declare. It is not saved and is never required.",
+        "ar": "حساب إرشادي من عزم مستهدف ومسافة تصرّح بهما أنت. لا يُحفَظ، ولا يكون مطلوبًا أبدًا."},
+    "UI_CAP13F_TITLE": {
+        "en": "Force needed for a target moment about a point (optional, non-binding)",
+        "ar": "القوة اللازمة لعزم مستهدف حول نقطة (اختياري، غير مُلزِم)"},
+    "UI_CAP13F_INTRO": {
+        "en": "This page is optional. It calculates the size of the one force that, acting at the perpendicular distance d⊥ you enter from one point you choose, in one plane, would produce the target moment M_target you enter: F = M_target / d⊥. You supply the target moment yourself; InventorAI does not work it out. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. تحسب مقدار القوة الواحدة التي، إذا أثّرت على المسافة العمودية d⊥ التي تدخلها من نقطة واحدة تختارها، في مستوى واحد، أحدثت العزم المستهدف M_target الذي تدخله: F = M_target / d⊥. أنت من يحدد العزم المستهدف؛ ولا يحسبه InventorAI. لا يُحفَظ شيء."},
+    "UI_CAP13F_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a Mechanical-focus project or for its declared Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that the planar single-force model applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED force magnitude, not an actuation, capacity, strength or safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء انطباق نموذج القوة الواحدة في مستوى واحد. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة مقدار قوة غير مُتحقَّق منه، وليست حكمًا بشأن التشغيل أو القدرة على التحمل أو المقاومة أو السلامة."},
+    "UI_CAP13F_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_CAP13F_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_CAP13F_DECL_PLANAR": {
+        "en": "Planar: the force and the chosen point lie in one plane, and only the turning effect about the axis through the point at right angles to that plane is wanted.",
+        "ar": "مستوى واحد: القوة والنقطة التي اخترتها تقعان في مستوى واحد، والمطلوب فقط أثر الدوران حول المحور المارّ بالنقطة عموديًا على ذلك المستوى."},
+    "UI_CAP13F_DECL_SINGLE_FORCE": {
+        "en": "ONE force only is to produce the target moment: no other force, couple, spread-out load or weight is included in this calculation.",
+        "ar": "قوة واحدة فقط هي التي ستُحدث العزم المستهدف: لا تدخل في هذا الحساب أي قوة أخرى، ولا ازدواج (couple)، ولا حمل موزَّع، ولا وزن."},
+    "UI_CAP13F_DECL_PERPENDICULAR_DISTANCE": {
+        "en": "The distance d⊥ is the shortest (perpendicular) distance from the chosen point to the line along which the force will act, not a length along a lever, arm or part unless that length is itself at right angles to the force; InventorAI does not check it.",
+        "ar": "d⊥ هي أقصر مسافة (المسافة العمودية) من النقطة المختارة إلى الخط الذي ستؤثر على امتداده القوة، وليست طولًا على امتداد ذراع أو رافعة أو جزء ما لم يكن ذلك الطول نفسه عموديًا على القوة؛ ولا يتحقق InventorAI منها."},
+    "UI_CAP13F_DECL_CHOSEN_POINT": {
+        "en": "The point is the inventor's own choice (for example a pivot, joint or fixing); InventorAI does not choose it, check it or decide that it is the right point.",
+        "ar": "النقطة من اختيارك أنت (مثل محور دوران أو مفصل أو نقطة تثبيت)؛ لا يختارها InventorAI ولا يتحقق منها ولا يقرر أنها النقطة الصحيحة."},
+    "UI_CAP13F_DECL_TARGET_MOMENT": {
+        "en": "The target moment M_target is your own figure for the turning effect you want this one force to produce; InventorAI does not work it out, check it or decide that it is enough, and it adds nothing for friction, losses, starting or holding, or any margin.",
+        "ar": "العزم المستهدف M_target قيمتك أنت لأثر الدوران الذي تريد أن تُحدثه هذه القوة الواحدة؛ لا يحسبه InventorAI ولا يتحقق منه ولا يقرر أنه كافٍ، ولا يضيف إليه شيئًا للاحتكاك أو الفقد أو بدء الحركة أو التثبيت أو أي هامش."},
+    "UI_CAP13F_DECL_STATIC_MAGNITUDE": {
+        "en": "The force is treated as steady (static), and only its size is wanted, not its direction or the turning direction; no motion, acceleration, impact, vibration or repeated loading is considered.",
+        "ar": "القوة تُعامَل على أنها ثابتة (ساكنة)، والمطلوب مقدارها فقط لا اتجاهها ولا اتجاه الدوران؛ ولا تؤخذ في الحسبان أي حركة أو تسارع أو صدمة أو اهتزاز أو تحميل متكرر."},
+    "UI_CAP13F_FIELD_M_TARGET": {
+        "en": "Target moment about your point (M_target) — newton millimetre (N·mm)",
+        "ar": "العزم المستهدف حول نقطتك (M_target) — نيوتن مليمتر (N·mm)"},
+    "UI_CAP13F_FIELD_D_PERP": {
+        "en": "Perpendicular distance from your point to the line along which the force will act (d⊥) — millimetre (mm)",
+        "ar": "المسافة العمودية من نقطتك إلى الخط الذي ستؤثر على امتداده القوة (d⊥) — مليمتر (mm)"},
+    "UI_CAP13F_SUBMIT": {
+        "en": "Calculate the force",
+        "ar": "احسب القوة"},
+    "UI_CAP13F_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_CAP13F_RESULT_F": {
+        "en": "Force magnitude needed for your target moment (F) — newton (N)",
+        "ar": "مقدار القوة اللازمة لعزمك المستهدف (F) — نيوتن (N)"},
+    "UI_CAP13F_EXACT": {
+        "en": "Exact value of M_target / d⊥ for the values you entered.",
+        "ar": "قيمة M_target / d⊥ الدقيقة للقيم التي أدخلتها."},
+    "UI_CAP13F_ROUNDED": {
+        "en": "Rounded to 12 significant digits; the exact value of M_target / d⊥ has more digits.",
+        "ar": "مقرَّبة إلى 12 رقمًا معنويًا؛ للقيمة الدقيقة لـ M_target / d⊥ أرقام أكثر."},
+    "UI_CAP13F_ZERO_NOTE": {
+        "en": "Your target moment is zero, so the force is zero: no force is needed for no turning effect. This says nothing about holding anything in place.",
+        "ar": "العزم المستهدف الذي أدخلته صفر، لذلك القوة صفر: لا حاجة إلى أي قوة حين لا يُطلب أثر دوران. ولا يقول هذا شيئًا عن تثبيت أي شيء في مكانه."},
+    "UI_CAP13F_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_CAP13F_ECHO_HEADING": {
+        "en": "The values and declarations you entered",
+        "ar": "القيم والتصريحات التي أدخلتها"},
+    "UI_CAP13F_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_CAP13F_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_CAP13F_SOURCES_NOTE": {
+        "en": "The moment principle (force times perpendicular distance) from NASA Glenn Research Center, and the unit references from the National Institute of Standards and Technology (NIST). The rearranged form F = M / d⊥ and the newton millimetre (N·mm) are InventorAI's own restatement. Neither NASA nor NIST endorses InventorAI or this calculation.",
+        "ar": "مبدأ العزم (القوة مضروبة في المسافة العمودية) من مركز غلين للأبحاث التابع لوكالة ناسا (NASA Glenn Research Center)، ومراجع الوحدات من المعهد الوطني للمعايير والتقنية (NIST). الصيغة المُعاد ترتيبها F = M / d⊥ ووحدة النيوتن مليمتر (N·mm) إعادة صياغة خاصة بـInventorAI. لا تؤيّد ناسا ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_CAP13F_DISCLOSURE": {
+        "en": "This is the size of the one steady force that, acting at your perpendicular distance d⊥ from the one point you chose, in one plane, would produce your own target moment M_target about that point: F = M_target / d⊥.\n\nIt does not work out, check or justify your target moment, and it adds nothing for friction, losses, starting or holding, efficiency or any margin.\n\nIt does not tell whether a person, motor, actuator, spring or mechanism can apply this force, or whether a joint, fixing, shaft, part or material can carry it, and it is not compared with any rating, strength or limit.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement or a qualified engineer before any reliance; it says nothing about whether the design is suitable or safe.\n\nInventorAI does not check your target moment, your distance, your chosen point or that your declarations match the real configuration.\n\nThree-dimensional effects, several forces, motion, impact, vibration and repeated loading are outside this calculation.\n\nReference source material: NASA Glenn Research Center (equilibrium and torque / moment principles); the rearranged form F = M / d⊥ is InventorAI's own restatement.",
+        "ar": "هذا هو مقدار القوة الثابتة الواحدة التي، إذا أثّرت على المسافة العمودية d⊥ التي أدخلتها من النقطة الواحدة التي اخترتها، في مستوى واحد، أحدثت العزم المستهدف M_target الذي أدخلته أنت حول تلك النقطة: F = M_target / d⊥.\n\nلا يحسب هذا الناتج العزم المستهدف الذي أدخلته ولا يتحقق منه ولا يبرّره، ولا يضيف شيئًا للاحتكاك أو الفقد أو بدء الحركة أو التثبيت أو الكفاءة أو أي هامش.\n\nلا يبيّن هذا الناتج ما إذا كان شخص أو محرك أو مُشغِّل (actuator) أو نابض أو آلية قادرًا على تطبيق هذه القوة، ولا ما إذا كان أي مفصل أو تثبيت أو عمود أو جزء أو مادة قادرًا على تحمّلها، ولا يُقارَن بأي تصنيف أو مقاومة أو حدّ.\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا، ويجب تأكيدها بالقياس أو بمراجعة مهندس مؤهل قبل الاعتماد عليها؛ ولا تقول شيئًا عن ملاءمة التصميم أو سلامته.\n\nلا يتحقق InventorAI من العزم المستهدف ولا من المسافة ولا من النقطة التي اخترتها، ولا من مطابقة تصريحاتك للتكوين الفعلي.\n\nالتأثيرات ثلاثية الأبعاد، وتعدد القوى، والحركة، والصدمات، والاهتزاز، والتحميل المتكرر كلها خارج نطاق هذا الحساب.\n\nالمراجع: مركز غلين للأبحاث التابع لوكالة ناسا (NASA Glenn Research Center) — مبادئ الاتزان والعزم. أما الصيغة المُعاد ترتيبها F = M / d⊥ فهي إعادة صياغة خاصة بـInventorAI."},
+    "UI_CAP13F_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_CAP13F_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. هذه الحالة تتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "M_target and d⊥ must each be a plain decimal with no sign or exponent: up to 12 whole digits for M_target and 9 for d⊥, and up to 9 decimal places. M_target may be zero. Nothing was calculated.",
+        "ar": "يجب أن يُكتب كلٌّ من M_target و d⊥ بصيغة عشرية بسيطة بلا إشارة ولا أُس: حتى 12 رقمًا صحيحًا لـ M_target و9 لـ d⊥، وحتى 9 منازل عشرية. يمكن أن يكون M_target صفرًا. لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_DISTANCE_NOT_POSITIVE": {
+        "en": "The distance d⊥ must be greater than zero: a force whose line of action passes through your point produces no turning effect about it. Nothing was calculated.",
+        "ar": "يجب أن تكون المسافة d⊥ أكبر من الصفر: القوة التي يمر خط تأثيرها بنقطتك لا تُحدث أي أثر دوران حولها. لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the newton millimetre (N·mm) and the millimetre (mm), and shows the result in newton (N). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة النيوتن مليمتر (N·mm) والمليمتر (mm) فقط، وتعرض النتيجة بالنيوتن (N). لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_CAP13F_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Stage 25 / CAP-13 — Linear Speed-Dependent Rotational Load, Slice 1
     # (rotational-load contract §9). The English declaration and disclosure
     # entries are pinned equal to the artifact by test and the Arabic ones to

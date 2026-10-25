@@ -331,7 +331,7 @@ def test_binding_is_immutable_and_not_a_registry():
     # moment's (Correction 03): one immutable binding per method
     assert webapp._CAP13_REACTIONS_BINDING.adapter_identity == BINDING.adapter_identity
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 8
+    assert app_source.count("_dcalc.bind_method(") == 9
 
 
 def test_deterministic_identity_and_no_input_mutation():
@@ -415,7 +415,7 @@ def test_source_use_records_are_present_and_bound():
                         "dcu:SU005", "dcu:SU006", "dcu:SU007",
                         "dcu:SU008", "dcu:SU009", "dcu:SU010",
                         "dcu:SU011", "dcu:SU012", "dcu:SU013",
-                        "dcu:SU014", "dcu:SU015"}
+                        "dcu:SU014", "dcu:SU015", "dcu:SU016"}
     cap13_units = [u for u in owner["unit_records"] if u["unit_token"] in ("N", "mm")]
     assert len(cap13_units) == 2
     for unit in cap13_units:
@@ -530,7 +530,7 @@ def test_owner_closed_inventory_rejects_structurally_valid_extras(tmp_path, monk
 
 
 def test_owner_closed_inventory_constants():
-    # Corrections 02 to 08 (§§13A-13G): exactly eight methods, closed
+    # Corrections 02 to 09 (§§13A-13H): exactly nine methods, closed
     assert dc.ADMITTED_METHODS == frozenset({
         ("cap13:static_reactions_two_support", "1.0"),
         ("therm01:conduction_temperature_difference_single_path", "1.0"),
@@ -539,7 +539,8 @@ def test_owner_closed_inventory_constants():
         ("tmp36:nominal_voltage_to_temperature", "1.0"),
         ("electrical:dc_resistive_load_current", "1.0"),
         ("electrical:dc_resistive_load_power", "1.0"),
-        ("electrical:dc_resistive_load_energy", "1.0")})
+        ("electrical:dc_resistive_load_energy", "1.0"),
+        ("cap13:planar_required_force", "1.0")})
     assert dc.ADMITTED_QUANTITY_KINDS == frozenset({
         "force", "length", "power", "thermal_resistance", "temperature_difference",
         "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",

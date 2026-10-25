@@ -541,13 +541,13 @@ def test_success_packaging_units_sources_and_identity():
         "DOE-ENG-S1", "DOE-ENG-S2"]
     assert {q["source_use_policy_ref"] for q in result["source_qualification"]} == {"dcu:SU015"}
     assert result["validation_status"] == "UNVALIDATED"
-    assert (result["artifact_version"], result["implementation_version"]) == ("8", "1.7.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("9", "1.8.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_adds_exactly_energy_and_time():
     assert ("electrical:dc_resistive_load_energy", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 8
+    assert len(dc.ADMITTED_METHODS) == 9
     assert dc.ADMITTED_QUANTITY_KINDS >= {"energy", "time"}
     assert len(dc.ADMITTED_QUANTITY_KINDS) == 14 and len(dc.ADMITTED_UNIT_TOKENS) == 15
     assert dc.ADMITTED_UNIT_TOKENS == {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
@@ -607,7 +607,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.dc_resistive_load_energy_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._DC_LOAD_ENERGY_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 8
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 9
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("dc_resistive_load_energy_method", "engine.dc_resistive",
                    "electrical_content_config", "import fractions", "decimal",
@@ -663,7 +663,7 @@ def test_owner_artifact_tamper_fails_closed(tmp_path, name):
 
 def test_owner_v7_records_are_unchanged_by_the_eighth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "8"
+    assert data["artifact_version"] == "9"
     v7 = {"quantity_kinds": data["quantity_kinds"][:12],
           "unit_records": data["unit_records"][:13],
           "source_use_policies": data["source_use_policies"][:13],
@@ -672,7 +672,7 @@ def test_owner_v7_records_are_unchanged_by_the_eighth_admission():
     assert hashlib.sha256(canonical.encode()).hexdigest() == V7_RECORDS_DIGEST
     assert [k["quantity_kind"] for k in data["quantity_kinds"][12:]] == ["energy", "time"]
     assert [u["record_id"] for u in data["unit_records"][13:]] == ["dcu:U014", "dcu:U015"]
-    assert [p["record_id"] for p in data["source_use_policies"][13:]] == [
+    assert [p["record_id"] for p in data["source_use_policies"][13:15]] == [
         "dcu:SU014", "dcu:SU015"]
     policies = {p["record_id"]: p for p in data["source_use_policies"]}
     assert "dcenergy:SU002" in policies["dcu:SU014"]["inspected_content"]

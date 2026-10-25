@@ -19,7 +19,9 @@ docs/governance/SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.
 then the Electrical / Electronics DC resistive load current, power and energy
 methods, the bounded sixth, seventh and eighth admissions of Corrections 06, 07
 and 08 (§13E, §13F, §13G) under their own ELECTRICAL_DC_RESISTIVE_LOAD_*
-method contracts. The owner is descriptive and unnumbered: it carries no CAP
+method contracts; then CAP-13 Planar Required Force Slice 1, the bounded ninth
+admission of Correction 09 (§13H) under
+docs/governance/STAGE25_CAP13_PLANAR_REQUIRED_FORCE_METHOD_CONTRACT.md. The owner is descriptive and unnumbered: it carries no CAP
 identifier.
 
 What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
@@ -94,7 +96,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.7.0"
+IMPLEMENTATION_VERSION = "1.8.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -118,10 +120,12 @@ _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
 # voltage-to-temperature), the bounded sixth admission of Correction 06 (§13E,
 # Electrical / Electronics DC resistive load current), the bounded seventh
 # admission of Correction 07 (§13F, Electrical / Electronics DC resistive load
-# power, on the existing kinds and tokens) and exactly the bounded eighth
-# admission of Correction 08 (§13G, Electrical / Electronics DC resistive load
-# energy, adding only the energy / J and time / s kinds and tokens) - EIGHT
-# methods, each with its own consumer. A
+# power, on the existing kinds and tokens), the bounded eighth admission of
+# Correction 08 (§13G, Electrical / Electronics DC resistive load energy, adding
+# only the energy / J and time / s kinds and tokens) and exactly the bounded
+# ninth admission of Correction 09 (§13H, CAP-13 planar required force, on the
+# existing moment / length / force kinds and tokens) - NINE methods, each with
+# its own consumer. A
 # structurally valid extra method, quantity kind or unit fails closed: widening
 # the inventory is a separately authorized change, never an artifact edit alone.
 # No conversion exists. The one Celsius-temperature kind is the output of the
@@ -139,6 +143,7 @@ ADMITTED_METHODS = frozenset({
     ("electrical:dc_resistive_load_current", "1.0"),
     ("electrical:dc_resistive_load_power", "1.0"),
     ("electrical:dc_resistive_load_energy", "1.0"),
+    ("cap13:planar_required_force", "1.0"),
 })
 ADMITTED_QUANTITY_KINDS = frozenset({
     "force", "length", "power", "thermal_resistance", "temperature_difference",
