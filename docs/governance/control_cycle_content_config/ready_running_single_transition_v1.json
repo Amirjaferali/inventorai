@@ -1,0 +1,114 @@
+{
+  "artifact_id": "control_cycle_ready_running_single_transition",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "Stage 28 / 28-T4 PLC / Industrial Automation & Control - bounded vendor-neutral control-cycle evaluation for this one fixed definition only",
+  "slice": "28-T4 - Single Vendor-Neutral Control-Cycle Evaluation - Slice 1",
+  "governance_note": "The governed artifact of the one fixed READY / RUNNING control-cycle definition, under STAGE28_T4_CONTROL_CYCLE_READY_RUNNING_CONTRACT.md. It carries the method identity and semantic version, the fixed definition (two states, one Boolean input, one transition, one Boolean output map), the inventor's confirmations, the high-risk screen, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack, NOT an entry in domains/domain_provenance.json and NOT a method of the shared deterministic calculation and units owner; it activates no domain, part or 28-T4 owner beyond this one evaluation. Nothing here is PLC, IEC 61131-3 or scan-cycle execution, a timing, electrical, I/O, compatibility or safety statement, a safety function or interlock, or a readiness, progression or validation input.",
+  "method": {
+    "method_id": "control_cycle:ready_running_single_transition",
+    "method_version": "1.0",
+    "contract": "docs/governance/STAGE28_T4_CONTROL_CYCLE_READY_RUNNING_CONTRACT.md",
+    "cycle_order": "1. freeze the one Boolean input start_input; 2. read the one previous state; 3. evaluate the one transition against the previous state and the frozen input; 4. select the next state (the transition's target when it applies and its condition holds, otherwise the previous state); 5. calculate the one Boolean output as output_map[next_state].",
+    "output_rule": "The output is read from the NEXT state, never from the previous state. This is InventorAI's own design decision for this evaluation; it is not claimed to be how OpenPLC, any PLC or any IEC 61131-3 runtime executes a program.",
+    "no_transition_rule": "When the previous state is not the transition's source, the transition is not applicable and the previous state is kept; when the previous state is the source and the condition is false, the transition does not fire and the previous state is kept. Both are routine results, never refusals."
+  },
+  "definition": {
+    "states": ["READY", "RUNNING"],
+    "input": {"name": "start_input", "type": "boolean"},
+    "transitions": [
+      {"source": "READY", "condition": {"input": "start_input", "equals": true}, "target": "RUNNING"}
+    ],
+    "output": {"name": "output", "type": "boolean"},
+    "output_map": {"READY": false, "RUNNING": true}
+  },
+  "declarations": [
+    {
+      "declaration_id": "two_states",
+      "contract_ref": "D-1",
+      "accepted_value": "the logic considered has exactly two states, READY and RUNNING, and the previous state entered is the one it was in before this cycle",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "one_transition",
+      "contract_ref": "D-2",
+      "accepted_value": "its only transition goes from READY to RUNNING when start_input is true; there is no way back to READY and no other transition, timer, counter or fault state",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "output_meaning",
+      "contract_ref": "D-3",
+      "accepted_value": "the one Boolean output is false in READY and true in RUNNING, and it is read from the state after this cycle",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "one_frozen_input",
+      "contract_ref": "D-4",
+      "accepted_value": "start_input is the only input, its value is read once and held unchanged for the whole cycle, and nothing else (power-up, reset, other signals or the passage of time) is considered",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "logical_only",
+      "contract_ref": "D-5",
+      "accepted_value": "the states, the input and the output are logical values only; whether any real device, signal or piece of equipment is switched, started, stopped or energized is not decided here",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    }
+  ],
+  "screen_items": [
+    {"item_id": "safety_function", "item": "a safety function, interlock, emergency stop or protective shut-off"},
+    {"item_id": "machinery_motion", "item": "moving machinery or parts that could injure someone"},
+    {"item_id": "mains_or_high_voltage", "item": "mains or high voltage"},
+    {"item_id": "heating_or_fire", "item": "heating, fire or ignition risk"},
+    {"item_id": "medical_or_life_supporting", "item": "medical or life-supporting use"},
+    {"item_id": "vehicle_or_aerospace", "item": "vehicle or aerospace use"}
+  ],
+  "limitations": [
+    "One evaluation of one fixed definition only: no custom states, transitions, conditions, timers, counters, sequences, interlocks or output maps; no client-supplied expression, callback or transition table is accepted, and an attempt to supply one is refused.",
+    "No PLC, IEC 61131-3, ladder, function-block or scan-cycle execution; no timing, scan time, determinism guarantee, I/O, electrical, wiring, controller or vendor statement; no safety function, SIL / PL or interlock.",
+    "No state is stored or carried between evaluations; InventorAI does not track, infer or read the state of the inventor's system, components, signals or process.",
+    "All NO answers on the high-risk screen only allow this bounded evaluation to proceed; they never mean safe. The screen neither reads nor feeds SafetySignal.",
+    "The result is UNVALIDATED and is not evidence; it is request-local and is not stored, reported, exported or used for readiness, progression or validation."
+  ],
+  "disclosure": [
+    "This is one evaluation of the fixed READY / RUNNING logic you confirmed, for the previous state and the start_input value you entered: start_input is read once and held, the one transition is checked, the next state is chosen and the output is read from the next state.",
+    "If the transition does not apply, the state stays as it was; that is a normal result, not an error.",
+    "The output is a logical value (true or false) only. It does not mean that any real device is switched, started, stopped or energized, and nothing is sent to any device.",
+    "Nothing is stored between evaluations: each one starts from the previous state you enter, and InventorAI does not track the state of your system.",
+    "Reading the output from the next state is InventorAI's own design choice for this evaluation. It is not a claim about how any PLC, OpenPLC or IEC 61131-3 runtime executes a program, and no timing, scan time or electrical behaviour is implied.",
+    "It is not a safety function, interlock or emergency stop. It is preliminary, advisory, UNVALIDATED and not evidence, and any real control logic must be designed and checked by a qualified engineer.",
+    "Reference: OpenPLC Runtime (Autonomy, MIT License), source commit 8d69d935, used only as a factual reference for separating input reading, program logic and output update in a control cycle; no OpenPLC code or text is used, and no endorsement is implied."
+  ],
+  "sources": [
+    {
+      "record_id": "OPENPLC-S1",
+      "record_type": "source",
+      "source_type": "open_source_runtime",
+      "publisher": "Autonomy (OpenPLC project)",
+      "source_title": "OpenPLC Runtime - core runtime source files at commit 8d69d935a7915bef9b67bbea46cf87c68d112246",
+      "url": "https://github.com/Autonomy-Logic/openplc-runtime/tree/8d69d935a7915bef9b67bbea46cf87c68d112246",
+      "source_use_policy_ref": "oplc:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-25",
+      "inspected_content": "Supports only, as a factual reference: a PLC runtime documents a repeated control cycle whose boundaries separate reading the inputs, executing the program logic and updating the outputs. It does NOT support, and is not cited for, the READY / RUNNING definition, the single transition, the frozen-input rule, the choice of reading the output from the next state or any other semantics of this evaluation, which are InventorAI's own design. Lead-supplied identification of the project, the examined source commit and the licence in the 28-T4 CONTROL-CYCLE-SLICE-01 brief (2026-10-25), and the repository URL independently verified by the Lead in the PR #864 source-provenance correction; not re-inspected by the executor, because the Owner instructed that PLC source research not be restarted.",
+      "paraphrase_only_limitation": "The cycle separation is restated in InventorAI's own words; no OpenPLC, Beremiz or IEC source code, text, diagram or table is copied, and no OpenPLC runtime is used.",
+      "third_party_material_exclusion": "No third-party or contributor-specific material beyond the stated fact is used.",
+      "no_endorsement_limitation": "No statement or implication that Autonomy, the OpenPLC project or any contributor endorses, reviewed or approved InventorAI or any project."
+    },
+    {
+      "record_id": "oplc:SU001",
+      "record_type": "source_use_policy",
+      "source_type": "open_source_license",
+      "publisher": "Autonomy (OpenPLC project)",
+      "source_title": "OpenPLC Runtime - MIT License (applicable file-level notices of the examined core files)",
+      "url": "https://github.com/Autonomy-Logic/openplc-runtime/tree/8d69d935a7915bef9b67bbea46cf87c68d112246",
+      "source_use_policy_ref": "oplc:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-25",
+      "inspected_content": "Source-use basis (not a legal opinion): the examined OpenPLC core files are MIT-licensed under the repository's applicable file-level notices, Copyright (c) 2026 Autonomy, as supplied by the Lead. The MIT License permits use with the copyright and permission notice retained in copies of the software; this evaluation copies and redistributes no OpenPLC software, code or text, so no notice-retention obligation is triggered, and attribution is given as acknowledgement. Only one fact is used - the separation of input reading, program logic and output update in a control cycle - restated independently. OpenPLC, Beremiz and IEC 61131-3 are named only to identify the reference and to state what is not claimed.",
+      "paraphrase_only_limitation": "Facts only; no copied code, text, diagram or table.",
+      "third_party_material_exclusion": "No third-party material is reproduced.",
+      "no_endorsement_limitation": "No endorsement by Autonomy, the OpenPLC project or any contributor is stated or implied.",
+      "acknowledgement": "Reference source material: OpenPLC Runtime, source commit 8d69d935a7915bef9b67bbea46cf87c68d112246, Copyright (c) 2026 Autonomy, MIT License."
+    }
+  ]
+}

@@ -6366,6 +6366,173 @@ UI_STRINGS = {
     "UI_TMP36_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # 28-T4 — Single Vendor-Neutral Control-Cycle Evaluation, Slice 1
+    # (control-cycle contract §9). The English confirmation, screen and
+    # disclosure entries are pinned equal to the artifact by test and the Arabic
+    # ones to contract §9A. Nothing here states a device command, a PLC or
+    # IEC 61131-3 execution semantic, a timing, suitability or safety.
+    "UI_CC_LINK_TEXT": {
+        "en": "Optional: step through one cycle of simple READY / RUNNING start logic",
+        "ar": "اختياري: تتبّع دورة واحدة لمنطق بدء بسيط READY / RUNNING"},
+    "UI_CC_LINK_NOTE": {
+        "en": "An advisory evaluation of a fixed logic you confirm. It is not saved, controls nothing and is never required.",
+        "ar": "تقييم إرشادي لمنطق ثابت تؤكّده أنت. لا يُحفَظ، ولا يتحكم في أي شيء، ولا يكون مطلوبًا أبدًا."},
+    "UI_CC_TITLE": {
+        "en": "One control cycle: READY / RUNNING (optional, non-binding)",
+        "ar": "دورة تحكم واحدة: READY / RUNNING (اختياري، غير مُلزِم)"},
+    "UI_CC_INTRO": {
+        "en": "This page is optional. It walks through one cycle of a very simple start logic with two states, READY and RUNNING: you choose the state before the cycle and the value of start_input, and it shows which state follows and what the one logical output is. Nothing is saved and no device is controlled.",
+        "ar": "هذه الصفحة اختيارية. تتتبّع دورة واحدة لمنطق بدء بسيط جدًا له حالتان، READY وRUNNING: تختار أنت الحالة قبل الدورة وقيمة start_input، وتعرض الصفحة الحالة التالية وقيمة الخرج المنطقي الوحيد. لا يُحفَظ شيء، ولا يُتحكَّم في أي جهاز."},
+    "UI_CC_SCOPE_NOTE": {
+        "en": "This optional evaluation is available for a project whose analysis focus is Electrical / Electronics. That focus does not establish that this logic describes your design. You must confirm the fixed definition and the screening items. The result is an UNVALIDATED logical value, not a device command, a PLC program, a timing statement or a safety function.",
+        "ar": "يتاح هذا التقييم الاختياري لمشروع محور تحليله كهربائي/إلكتروني. ولا يثبت هذا المحور أن هذا المنطق يصف تصميمك. يجب أن تؤكّد التعريف الثابت وتجيب عن أسئلة الفحص. النتيجة قيمة منطقية غير مُتحقَّق منها، وليست أمرًا لجهاز ولا برنامج PLC ولا بيانًا للتوقيت ولا وظيفة سلامة."},
+    "UI_CC_DEFINITION_HEADING": {
+        "en": "The fixed logic (it cannot be changed here)",
+        "ar": "المنطق الثابت (لا يمكن تغييره هنا)"},
+    "UI_CC_DEFINITION_STATES": {
+        "en": "Two states: READY and RUNNING.",
+        "ar": "حالتان: READY وRUNNING."},
+    "UI_CC_DEFINITION_TRANSITION": {
+        "en": "One transition: from READY to RUNNING when start_input is true.",
+        "ar": "انتقال واحد: من READY إلى RUNNING عندما تكون start_input صحيحة (true)."},
+    "UI_CC_DEFINITION_OUTPUT": {
+        "en": "One logical output: false in READY, true in RUNNING.",
+        "ar": "خرج منطقي واحد: false في READY، وtrue في RUNNING."},
+    "UI_CC_DEFINITION_ORDER": {
+        "en": "One cycle: start_input is read once and held, the transition is checked, the next state is chosen, then the output is read from the next state.",
+        "ar": "دورة واحدة: تُقرأ start_input مرة واحدة وتُثبَّت، ويُفحص الانتقال، وتُختار الحالة التالية، ثم يُقرأ الخرج من الحالة التالية."},
+    "UI_CC_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_CC_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_CC_DECL_TWO_STATES": {
+        "en": "The logic considered has exactly two states, READY and RUNNING, and the previous state entered is the one it was in before this cycle.",
+        "ar": "المنطق المعني له حالتان فقط، READY وRUNNING، والحالة السابقة المُدخلة هي الحالة التي كان فيها قبل هذه الدورة."},
+    "UI_CC_DECL_ONE_TRANSITION": {
+        "en": "Its only transition goes from READY to RUNNING when start_input is true; there is no way back to READY and no other transition, timer, counter or fault state.",
+        "ar": "انتقاله الوحيد من READY إلى RUNNING عندما تكون start_input صحيحة (true)؛ ولا رجوع إلى READY، ولا انتقال آخر، ولا مؤقّت أو عدّاد أو حالة عطل."},
+    "UI_CC_DECL_OUTPUT_MEANING": {
+        "en": "The one Boolean output is false in READY and true in RUNNING, and it is read from the state after this cycle.",
+        "ar": "الخرج المنطقي الوحيد false في READY وtrue في RUNNING، ويُقرأ من الحالة بعد هذه الدورة."},
+    "UI_CC_DECL_ONE_FROZEN_INPUT": {
+        "en": "Start_input is the only input, its value is read once and held unchanged for the whole cycle, and nothing else (power-up, reset, other signals or the passage of time) is considered.",
+        "ar": "start_input هي المدخل الوحيد، وتُقرأ قيمتها مرة واحدة وتبقى ثابتة طوال الدورة، ولا يُؤخذ في الحسبان أي شيء آخر (بدء التشغيل أو إعادة الضبط أو إشارات أخرى أو مرور الزمن)."},
+    "UI_CC_DECL_LOGICAL_ONLY": {
+        "en": "The states, the input and the output are logical values only; whether any real device, signal or piece of equipment is switched, started, stopped or energized is not decided here.",
+        "ar": "الحالات والمدخل والخرج قيم منطقية فقط؛ ولا يُحسم هنا ما إذا كان أي جهاز أو إشارة أو معدّة حقيقية تُشغَّل أو تبدأ أو تتوقف أو تُمَدّ بالطاقة."},
+    "UI_CC_SCREEN_STEM": {
+        "en": "Is this logic for, or would its output affect, any of the following? Answer each item yes or no.",
+        "ar": "هل هذا المنطق مخصّص لأي مما يلي، أو هل سيؤثّر خرجه فيه؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_CC_SCREEN_SAFETY_FUNCTION": {
+        "en": "A safety function, interlock, emergency stop or protective shut-off",
+        "ar": "وظيفة سلامة، أو تعشيق (interlock)، أو إيقاف طارئ، أو فصل وقائي"},
+    "UI_CC_SCREEN_MACHINERY_MOTION": {
+        "en": "Moving machinery or parts that could injure someone",
+        "ar": "آلات أو أجزاء متحركة قد تؤذي أحدًا"},
+    "UI_CC_SCREEN_MAINS_OR_HIGH_VOLTAGE": {
+        "en": "Mains or high voltage",
+        "ar": "جهد الشبكة الكهربائية (mains) أو جهد عالٍ"},
+    "UI_CC_SCREEN_HEATING_OR_FIRE": {
+        "en": "Heating, fire or ignition risk",
+        "ar": "تسخين أو خطر حريق أو اشتعال"},
+    "UI_CC_SCREEN_MEDICAL_OR_LIFE_SUPPORTING": {
+        "en": "Medical or life-supporting use",
+        "ar": "استخدام طبي أو داعم للحياة"},
+    "UI_CC_SCREEN_VEHICLE_OR_AEROSPACE": {
+        "en": "Vehicle or aerospace use",
+        "ar": "استخدام في المركبات أو في الطيران والفضاء (aerospace)"},
+    "UI_CC_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_CC_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_CC_SCREEN_NOTE": {
+        "en": "Answering no to all six items only means this bounded evaluation may proceed; it never means that anything is safe.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود الستة تعني فقط أنه يمكن متابعة هذا التقييم المحدود؛ ولا تعني أبدًا أن أي شيء آمن."},
+    "UI_CC_FIELD_PREVIOUS": {
+        "en": "The state before this cycle",
+        "ar": "الحالة قبل هذه الدورة"},
+    "UI_CC_FIELD_INPUT": {
+        "en": "The value of start_input in this cycle",
+        "ar": "قيمة start_input في هذه الدورة"},
+    "UI_CC_INPUT_NOTE": {
+        "en": "Both are your own choices for one hypothetical cycle. InventorAI does not read any signal or know the state of your system.",
+        "ar": "كلتاهما اختيارك أنت لدورة افتراضية واحدة. لا يقرأ InventorAI أي إشارة، ولا يعرف حالة نظامك."},
+    "UI_CC_SUBMIT": {
+        "en": "Evaluate one cycle",
+        "ar": "قيّم دورة واحدة"},
+    "UI_CC_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_CC_RESULT_PREVIOUS": {
+        "en": "State before the cycle",
+        "ar": "الحالة قبل الدورة"},
+    "UI_CC_RESULT_INPUT": {
+        "en": "start_input, read once and held",
+        "ar": "start_input، مقروءة مرة واحدة ومثبَّتة"},
+    "UI_CC_RESULT_TRANSITION": {
+        "en": "Transition",
+        "ar": "الانتقال"},
+    "UI_CC_TRANSITION_APPLIED": {
+        "en": "Applied: READY to RUNNING, because start_input was true.",
+        "ar": "طُبِّق: من READY إلى RUNNING، لأن start_input كانت true."},
+    "UI_CC_TRANSITION_NOT_APPLIED_CONDITION_FALSE": {
+        "en": "Not applied: the state was READY but start_input was false, so the state stays READY. This is a normal result.",
+        "ar": "لم يُطبَّق: كانت الحالة READY لكن start_input كانت false، لذلك تبقى الحالة READY. وهذه نتيجة عادية."},
+    "UI_CC_TRANSITION_NOT_APPLICABLE_FROM_STATE": {
+        "en": "Not applicable: the only transition starts from READY, and the state was RUNNING, so the state stays RUNNING whatever start_input is. This is a normal result.",
+        "ar": "غير منطبق: الانتقال الوحيد يبدأ من READY، وكانت الحالة RUNNING، لذلك تبقى الحالة RUNNING أيًّا كانت start_input. وهذه نتيجة عادية."},
+    "UI_CC_RESULT_NEXT": {
+        "en": "State after the cycle",
+        "ar": "الحالة بعد الدورة"},
+    "UI_CC_RESULT_OUTPUT": {
+        "en": "Logical output, read from the state after the cycle",
+        "ar": "الخرج المنطقي، مقروءًا من الحالة بعد الدورة"},
+    "UI_CC_OUTPUT_NOTE": {
+        "en": "The output is a logical value only; it switches, starts, stops or energizes nothing.",
+        "ar": "الخرج قيمة منطقية فقط؛ لا يشغّل أي شيء ولا يبدؤه ولا يوقفه ولا يمدّه بالطاقة."},
+    "UI_CC_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_CC_METHOD_LINE": {
+        "en": "Evaluation and version",
+        "ar": "التقييم وإصداره"},
+    "UI_CC_SOURCES_NOTE": {
+        "en": "Reference: OpenPLC Runtime (Autonomy, MIT License), source commit 8d69d935, for separating input reading, program logic and output update in a control cycle only. The READY / RUNNING logic and reading the output from the next state are InventorAI's own design; no OpenPLC code or text is used, no IEC 61131-3 conformity is claimed and no endorsement is implied.",
+        "ar": "المرجع: OpenPLC Runtime (Autonomy، رخصة MIT)، الإيداع 8d69d935، للفصل بين قراءة المدخلات ومنطق البرنامج وتحديث المخرجات في دورة التحكم فقط. منطق READY / RUNNING وقراءة الخرج من الحالة التالية تصميم خاص بـ InventorAI؛ ولا يُستخدم أي كود أو نص من OpenPLC، ولا يُدّعى أي توافق مع IEC 61131-3، ولا يُقصد أي تأييد."},
+    "UI_CC_ECHO_HEADING": {
+        "en": "The confirmations you gave",
+        "ar": "التأكيدات التي قدّمتها"},
+    "UI_CC_DISCLOSURE": {
+        "en": "This is one evaluation of the fixed READY / RUNNING logic you confirmed, for the previous state and the start_input value you entered: start_input is read once and held, the one transition is checked, the next state is chosen and the output is read from the next state.\n\nIf the transition does not apply, the state stays as it was; that is a normal result, not an error.\n\nThe output is a logical value (true or false) only. It does not mean that any real device is switched, started, stopped or energized, and nothing is sent to any device.\n\nNothing is stored between evaluations: each one starts from the previous state you enter, and InventorAI does not track the state of your system.\n\nReading the output from the next state is InventorAI's own design choice for this evaluation. It is not a claim about how any PLC, OpenPLC or IEC 61131-3 runtime executes a program, and no timing, scan time or electrical behaviour is implied.\n\nIt is not a safety function, interlock or emergency stop. It is preliminary, advisory, UNVALIDATED and not evidence, and any real control logic must be designed and checked by a qualified engineer.\n\nReference: OpenPLC Runtime (Autonomy, MIT License), source commit 8d69d935, used only as a factual reference for separating input reading, program logic and output update in a control cycle; no OpenPLC code or text is used, and no endorsement is implied.",
+        "ar": "هذا تقييم واحد لمنطق READY / RUNNING الثابت الذي أكّدته، للحالة السابقة ولقيمة start_input اللتين أدخلتهما: تُقرأ start_input مرة واحدة وتُثبَّت، ويُفحص الانتقال الوحيد، وتُختار الحالة التالية، ويُقرأ الخرج من الحالة التالية.\n\nإذا لم ينطبق الانتقال، تبقى الحالة كما كانت؛ وهذه نتيجة عادية، وليست خطأ.\n\nالخرج قيمة منطقية فقط (true أو false). ولا يعني أن أي جهاز حقيقي قد شُغِّل أو بدأ أو توقف أو أُمِدَّ بالطاقة، ولا يُرسَل أي شيء إلى أي جهاز.\n\nلا يُحفَظ شيء بين التقييمات: يبدأ كل تقييم من الحالة السابقة التي تدخلها، ولا يتتبّع InventorAI حالة نظامك.\n\nقراءة الخرج من الحالة التالية خيار تصميمي خاص بـ InventorAI في هذا التقييم. وليست ادعاءً بشأن كيفية تنفيذ أي PLC أو OpenPLC أو بيئة تشغيل IEC 61131-3 لبرنامج، ولا يُقصد بها أي توقيت أو زمن مسح (scan time) أو سلوك كهربائي.\n\nهذا ليس وظيفة سلامة ولا تعشيقًا (interlock) ولا إيقافًا طارئًا. وهو أولي وإرشادي، وغير مُتحقَّق منه (UNVALIDATED)، وليس دليلًا، ويجب أن يصمّم مهندس مؤهل أي منطق تحكم حقيقي ويتحقق منه.\n\nالمرجع: OpenPLC Runtime (Autonomy، رخصة MIT)، الإيداع 8d69d935، ويُستخدم مرجعًا واقعيًا فقط للفصل بين قراءة المدخلات ومنطق البرنامج وتحديث المخرجات في دورة التحكم؛ ولا يُستخدم أي كود أو نص من OpenPLC، ولا يُقصد أي تأييد."},
+    "UI_CC_UNABLE_HEADING": {
+        "en": "Not evaluated (UNABLE TO DETERMINE)",
+        "ar": "لم يُقيَّم (UNABLE TO DETERMINE)"},
+    "UI_CC_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every confirmation, screen item, the state before the cycle and the value of start_input. Nothing was evaluated.",
+        "ar": "لم تُجب عن جميع التأكيدات وبنود الفحص والحالة قبل الدورة وقيمة start_input. لم يُقيَّم شيء."},
+    "UI_CC_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. Logic for such a use requires specialist engineering review, so nothing was evaluated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. المنطق المخصّص لمثل هذا الاستخدام يتطلب مراجعة هندسية متخصصة، لذلك لم يُقيَّم شيء."},
+    "UI_CC_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the confirmations does not match the fixed logic this evaluation covers. Nothing was evaluated.",
+        "ar": "أحد التأكيدات لا يطابق المنطق الثابت الذي يغطيه هذا التقييم. لم يُقيَّم شيء."},
+    "UI_CC_OUTCOME_UNKNOWN_STATE": {
+        "en": "The state before the cycle must be READY or RUNNING. Nothing was evaluated.",
+        "ar": "يجب أن تكون الحالة قبل الدورة READY أو RUNNING. لم يُقيَّم شيء."},
+    "UI_CC_OUTCOME_INVALID_INPUT_SNAPSHOT": {
+        "en": "start_input must be true or false. Nothing was evaluated.",
+        "ar": "يجب أن تكون start_input إما true أو false. لم يُقيَّم شيء."},
+    "UI_CC_OUTCOME_DEFINITION_UNAVAILABLE": {
+        "en": "The fixed definition for this evaluation is unavailable or failed its integrity checks. Nothing was evaluated.",
+        "ar": "التعريف الثابت لهذا التقييم غير متاح، أو لم يجتز فحوص سلامته. لم يُقيَّم شيء."},
+    "UI_CC_ERR_REQUEST": {
+        "en": "This request could not be read, or it tried to change the fixed logic. Nothing was evaluated.",
+        "ar": "تعذّرت قراءة هذا الطلب، أو حاول تغيير المنطق الثابت. لم يُقيَّم شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is
