@@ -669,7 +669,17 @@ reference results and reusable tests; existing integration adapters and unit / c
 boundaries; and whether reuse is genuinely safer, faster and more maintainable than a bounded new
 implementation. Previously qualified evidence or tests never qualify a new use case by themselves; a
 model whose provenance, licensing, applicability or accuracy is unresolved is not admitted — the
-blocker is preserved and eligible alternatives are evaluated. It is an operating
+blocker is preserved and eligible alternatives are evaluated.
+Before declaring a NEW engineering candidate BLOCKED for lack of a method or source, apply that
+same bounded check to established engineering models and manufacturer reference implementations,
+not only admitted InventorAI methods. Distinguish: (1) no applicable method exists; (2) a method
+or reference exists but its exact use-case claim, evidence or file-level IP basis (authorship,
+license, commercial use, attribution, redistribution, no endorsement) remains unqualified; and
+(3) the capability is qualified but execution or integration authority is absent. Reuse/adapt
+qualified evidence within its actual scope, build only a demonstrated residual gap under its
+existing owner, and preserve genuine blockers with their exact reopening triggers under NEXT-LOOP.
+Do not repeat a completed search absent material new evidence, infer suitability from a library's
+existence, or turn qualification into execution authority. It is an operating
 method bounded to the proposed change — not a governance gate, approval stage, mandatory extra agent
 round or historical reconstruction requirement (roadmap §8C-A / §8C-J and Owner ruling D-FPC-MAP-06
 carry the underlying no-duplicate-owner rule).
