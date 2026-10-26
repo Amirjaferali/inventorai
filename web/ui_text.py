@@ -1851,6 +1851,26 @@ UI_STRINGS = {
         "en": "Evidence or review needed to check it",
         "ar": "الدليل أو المراجعة اللازمان للتحقّق منه",
     },
+    "UI_T6_PAIR_TITLE": {
+        "en": "For this component in this interaction",
+        "ar": "لهذا المكوّن في هذا التفاعل",
+    },
+    "UI_T6_IFC_TITLE": {
+        "en": "For the interaction itself (the same for every component that takes part in it)",
+        "ar": "للتفاعل نفسه (هو نفسه لكل مكوّن يشارك فيه)",
+    },
+    "UI_T6_IFC_NOTE": {
+        "en": "What you recorded when preparing how this interaction will be checked. It is your own text: InventorAI has not checked it, and it is not a check result.",
+        "ar": "ما سجّلته عند التحضير لكيفية فحص هذا التفاعل. إنه نصّك أنت: لم يفحصه InventorAI، وليس نتيجة فحص.",
+    },
+    "UI_T6_IFC_NOT_RECORDED": {
+        "en": "not recorded",
+        "ar": "غير مسجّل",
+    },
+    "UI_T6_VP_UNRESOLVED": {
+        "en": "Validation Plan step for this interaction: not linked here (unresolved). This page does not read or check your Validation Plan; it is in your analysis report.",
+        "ar": "خطوة خطة التحقق (Validation Plan) لهذا التفاعل: غير مربوطة هنا (غير محسومة). لا تقرأ هذه الصفحة خطة التحقق ولا تفحصها؛ وهي في تقرير التحليل الخاص بك.",
+    },
     "UI_T6_NO_PARTICIPATION": {
         "en": "You have not recorded this component as taking part in any interaction.",
         "ar": "لم تسجّل أن هذا المكوّن يشارك في أي تفاعل.",

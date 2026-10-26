@@ -4,7 +4,8 @@ Under the activated per-lane authorization (docs/governance/T6_FIRST_LANE_AUTHOR
 §§2–4) and MVP_SCOPE_FREEZE.md Amendment 2, ONE request-local, PRELIMINARY / ADVISORY / NON-BINDING composition
 traces each CURRENT declared component through every CURRENT participation the inventor recorded for it to the notes
 stored for that exact ``(interface_id, component_id)`` pair. What is pinned:
-  * read ONLY through ``load_participation_preparations`` (once per request) behind the central project
+  * read ONLY through ``load_preliminary_composition`` — ``load_participation_preparations`` extended inside the
+    same snapshot by T6-INTERFACE-VERIFICATION-REFERENCE-01 — (once per request) behind the central project
     authorization; joins only by validated identity; current participations and notes from the Stage 15 owner's own
     projections;
   * CURRENT / EARLIER_NOT_RECONFIRMED / NOT_RECORDED per pair, and the whole composition UNAVAILABLE on any defect;
@@ -46,7 +47,7 @@ def _shown(e=None, v=None, carried=False):
 
 
 def _compose(store, pid):
-    return appmod._t6_composition(store.load_participation_preparations(pid))
+    return appmod._t6_composition(store.load_preliminary_composition(pid))
 
 
 def _setup(tmp_path):
@@ -144,7 +145,7 @@ def test_c04_deterministic_and_read_only(tmp_path):
 def test_c05_an_inconsistent_snapshot_raises_rather_than_inventing(tmp_path):
     store, pid, _subs, ifc, a, _b = _setup(tmp_path)
     store.set_interface_participation(pid, ifc, (a,), ())
-    record = dict(store.load_participation_preparations(pid))
+    record = dict(store.load_preliminary_composition(pid))
     record["interfaces"] = ()                                           # participation names a missing interaction
     with pytest.raises(ValueError):
         appmod._t6_composition(record)
@@ -223,7 +224,7 @@ def test_w05_a_store_failure_is_unavailable_not_empty(client, monkeypatch):
 
     def boom(_sid):
         raise sqlite3.OperationalError("injected")
-    monkeypatch.setattr(_store(), "load_participation_preparations", boom)
+    monkeypatch.setattr(_store(), "load_preliminary_composition", boom)
     r = client.get(T6 % sid)
     assert r.status_code == 503 and "data-t6-no-components" not in r.get_data(as_text=True)
 
@@ -231,12 +232,12 @@ def test_w05_a_store_failure_is_unavailable_not_empty(client, monkeypatch):
 def test_w06_the_reader_is_called_once_per_request(client, monkeypatch):
     sid, _ids = _traced_project(client)
     store = _store()
-    real, calls = store.load_participation_preparations, []
+    real, calls = store.load_preliminary_composition, []
 
     def counted(pid):
         calls.append(pid)
         return real(pid)
-    monkeypatch.setattr(store, "load_participation_preparations", counted)
+    monkeypatch.setattr(store, "load_preliminary_composition", counted)
     assert client.get(T6 % sid).status_code == 200 and calls == [sid]
 
 

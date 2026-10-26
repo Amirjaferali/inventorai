@@ -759,6 +759,9 @@ class RecordStore(Protocol):
     # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 (current value; see
     # the subsystem_participation_preparations note).
     def load_participation_preparations(self, project_id: str) -> dict: ...
+    # T6-INTERFACE-VERIFICATION-REFERENCE-01: the same snapshot plus the
+    # interface verification-preparation inputs (read-only).
+    def load_preliminary_composition(self, project_id: str) -> dict: ...
     def set_participation_preparation(self, project_id: str, interface_id: str,
                                       component_id: str, values,
                                       expected) -> str: ...
@@ -4605,19 +4608,42 @@ class SqliteRecordStore:
         SELECT. Read-only; project-scoped; logs nothing."""
         self._refuse_uncommitted_reads()
         with self.read_snapshot():
-            self._require_project(project_id)
-            subsystems = self.load_project_subsystems(project_id)
-            interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
-            inventory, _d, _k, _r, _rk = self._component_history(
-                project_id, subsystems)
-            participations = self._validated_interface_participations(
-                project_id, interfaces, inventory)
-            preparations = self._validated_participation_preparations(
-                project_id, interfaces, inventory)
+            return self._participation_snapshot(project_id)
+
+    def _participation_snapshot(self, project_id):
+        """Inside the caller's read snapshot: the four validated collections
+        of ``load_participation_preparations``, validated WHOLE together."""
+        self._require_project(project_id)
+        subsystems = self.load_project_subsystems(project_id)
+        interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
+        inventory, _d, _k, _r, _rk = self._component_history(
+            project_id, subsystems)
+        participations = self._validated_interface_participations(
+            project_id, interfaces, inventory)
+        preparations = self._validated_participation_preparations(
+            project_id, interfaces, inventory)
         return {"interfaces": tuple(interfaces),
                 "components": tuple(inventory.active),
                 "participations": tuple(participations),
                 "preparations": tuple(preparations)}
+
+    def load_preliminary_composition(self, project_id: str) -> dict:
+        """T6-INTERFACE-VERIFICATION-REFERENCE-01: exactly the record of
+        ``load_participation_preparations`` plus ``"interface_preparations"``
+        — the inventor's CURRENT verification-preparation inputs of each
+        declared interaction (Stage 15 Slice 3), validated WHOLE against the
+        SAME interactions inside the SAME read snapshot
+        (``InterfacePreparationsCorrupt`` on anything malformed or orphaned;
+        nothing partial). ``load_participation_preparations`` itself is
+        unchanged: its callers never fail on an interface-preparation row. No
+        project -> ``ProjectNotFound``. IR-01: an unresolved connection refuses
+        BEFORE any SELECT. Read-only; project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            record = self._participation_snapshot(project_id)
+            record["interface_preparations"] = tuple(self._validated_preparations(
+                project_id, record["interfaces"]))
+        return record
 
     @staticmethod
     def _same_note(left, right):
