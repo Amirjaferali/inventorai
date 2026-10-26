@@ -1186,7 +1186,10 @@ def test_seed_and_shards_share_the_exact_key_pip_install_and_bounded_installer()
         assert _step(seed, name) == _step(shard, name), name           # byte for byte, comments included
     key = _code(_step(shard, _KEY_STEP))
     for part in ('"${ImageOS:-}"', '"${ImageVersion:-}"', 'm.version("playwright")',
-                 "python -m playwright install-deps --dry-run chromium | sha256sum",
+                 'out="$(python -m playwright install-deps --dry-run chromium 2>&1)" || rc=$?',
+                 '"0:"*"All system dependencies are installed."* | "1:"*"Missing system dependencies ("*) ;;',
+                 'deps="$(printf \'%s\\n\' "$out" | sha256sum | cut -c1-32)"',
+                 "::warning::Cannot list the Chromium apt prerequisites (exit $rc); no apt prerequisite cache",
                  'echo "key=apt-prereq-chromium-v1-${ImageOS}-${ImageVersion}-pw${pw}-${deps}" >> "$GITHUB_OUTPUT"'):
         assert part in key, part
     assert "        id: aptkey\n" in key

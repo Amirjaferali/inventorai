@@ -77,7 +77,19 @@ jobs:
             exit 0
           fi
           pw="$(python -c 'import importlib.metadata as m; print(m.version("playwright"))')"
-          deps="$(python -m playwright install-deps --dry-run chromium | sha256sum | cut -c1-32)"
+          # The dry run lists what is missing and, by design, exits 1 when anything is;
+          # exit 0 means nothing is missing. Any other outcome means no cache.
+          rc=0
+          out="$(python -m playwright install-deps --dry-run chromium 2>&1)" || rc=$?
+          case "$rc:$out" in
+            "0:"*"All system dependencies are installed."* | "1:"*"Missing system dependencies ("*) ;;
+            *)
+              echo "::warning::Cannot list the Chromium apt prerequisites (exit $rc); no apt prerequisite cache"
+              echo "key=" >> "$GITHUB_OUTPUT"
+              exit 0
+              ;;
+          esac
+          deps="$(printf '%s\n' "$out" | sha256sum | cut -c1-32)"
           echo "key=apt-prereq-chromium-v1-${ImageOS}-${ImageVersion}-pw${pw}-${deps}" >> "$GITHUB_OUTPUT"
 
       - name: Stop when the runner image identity is unavailable
