@@ -12217,8 +12217,13 @@ def _t6_composition(record):
     ``interface_id``) with its Validation Plan reference UNRESOLVED. A
     component with no current participation gets none (never invented); a
     pair or preparation whose interaction is not in this snapshot raises
-    ``ValueError`` (the caller then shows the whole composition unavailable)."""
+    ``ValueError`` (the caller then shows the whole composition unavailable).
+    T6-PART-ASSOCIATION-TRACE-01: each component also carries the names of
+    its own linked parts, resolved by exact id from the snapshot's
+    composition; a part id missing from it raises ``KeyError`` (the same
+    whole-composition unavailable)."""
     components = tuple(record["components"])
+    part_names = {sub.subsystem_id: sub.display_name for sub in record["subsystems"]}
     interfaces = {item.interface_id: item for item in record["interfaces"]}
     order = [item.interface_id for item in record["interfaces"]]
     participants = _subsystem_model.current_interface_participants(
@@ -12263,6 +12268,11 @@ def _t6_composition(record):
             "name": component.display_name,
             "function": component.function_text,
             "part_ids": list(component.subsystem_ids),
+            # T6-PART-ASSOCIATION-TRACE-01: the names of exactly this
+            # component's own validated part links, in their stored canonical
+            # order, resolved by exact id from the same snapshot (an unknown
+            # id raises KeyError -> the whole composition unavailable).
+            "parts": [part_names[ref] for ref in component.subsystem_ids],
             "provenance": component.provenance,
             "validation_state": component.validation_state,
             "links": links,
