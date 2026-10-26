@@ -128,18 +128,17 @@ BROWSER_SHARD = MappingProxyType({
     "tests/test_uqtr01_target_binding_browser.py": 4,
 })
 
-# Performance-only placement of the measured heaviest non-browser shared files. From
-# the hosted timestamped progress lines of run 40401784447 (PR #882; about 72 tests a
-# line), test execution after collection took about 379 s on shard 4 against 684 s
-# on shard 5; these five files, all hashed to shard 5, cost about 144 s there, so
-# placing them on shard 4 brings the two estimates to about 523 s and 540 s. Like
-# BROWSER_SHARD it never decides WHETHER a file runs: an unlisted file keeps the
-# SHA-256 rule and completeness is proven by the audit either way.
+# Performance-only placement of measured heavy non-browser shared files. From the
+# hosted timestamped progress lines (about 72 tests a line), test execution after
+# collection took about 379 s on shard 4 against 684 s on shard 5 in run 40401784447
+# (PR #882). Moving five shard-5 files (about 144 s) overloaded shard 4 on a slower
+# runner in run 40406418328 (PR #883: 703 s against 557 s). These two files (about
+# 72 s on shard 5, 53 s on shard 4) give the lowest worst-case shard of every subset
+# under both observed runner speeds. Like BROWSER_SHARD it never decides WHETHER a
+# file runs: an unlisted file keeps the SHA-256 rule and the audit proves
+# completeness either way.
 BALANCE_SHARD = MappingProxyType({
     "tests/test_r05_request_integrity.py": 4,
-    "tests/test_t2a_requirement_quantity_web.py": 4,
-    "tests/test_t2d_question_feedback.py": 4,
-    "tests/test_t2g3_question_supposition.py": 4,
     "tests/test_v132_derived_navigation_truth.py": 4,
 })
 
