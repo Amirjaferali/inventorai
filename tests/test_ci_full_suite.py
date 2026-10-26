@@ -3,7 +3,8 @@
 Pins the adopted contract (Pilot-02 partition, evidence and audit, now authoritative):
   * the deterministic whole-file partition over exactly five shards: the static
     performance-only DEDICATED_SHARD placement (shards 1-3, one file each), the
-    static BROWSER_SHARD placement, else the SHA-256 rule over the shared shards 4-5;
+    static BROWSER_SHARD placement, the static BALANCE_SHARD placement of measured
+    heavy shared files, else the SHA-256 rule over the shared shards 4-5;
   * the shard plugin: normal full collection, deselection of other shards'
     files only, per-node outcomes, collection errors, exit status;
   * the fail-closed central audit, including every adversarial case the pilot
@@ -84,8 +85,10 @@ def test_shard_range_is_one_to_five():
     for i in range(2000):
         assert cfs.shard_of(f"tests/test_{i}.py") in cfs.SHARED_SHARDS
     assert set(cfs.BROWSER_SHARD.values()) == {4, 5}
+    assert set(cfs.BALANCE_SHARD.values()) <= set(cfs.SHARED_SHARDS)
     assert sorted(cfs.DEDICATED_SHARD.values()) == [1, 2, 3]
-    assert all(type(v) is int for v in (*cfs.BROWSER_SHARD.values(), *cfs.DEDICATED_SHARD.values()))
+    assert all(type(v) is int for v in (*cfs.BROWSER_SHARD.values(), *cfs.DEDICATED_SHARD.values(),
+                                         *cfs.BALANCE_SHARD.values()))
 
 
 def _static_literal(name):
@@ -95,7 +98,7 @@ def _static_literal(name):
     return node.value
 
 
-@pytest.mark.parametrize("name", ["BROWSER_SHARD", "DEDICATED_SHARD"])
+@pytest.mark.parametrize("name", ["BROWSER_SHARD", "DEDICATED_SHARD", "BALANCE_SHARD"])
 def test_static_placement_is_one_immutable_literal_without_duplicates(name):
     call = _static_literal(name)
     assert isinstance(call, ast.Call) and call.func.id == "MappingProxyType" and len(call.args) == 1
@@ -114,6 +117,7 @@ def test_each_dedicated_file_exists_and_runs_alone_on_its_own_shard():
     paths = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "tests").glob("test_*.py"))
     assert set(cfs.DEDICATED_SHARD) <= set(paths)                  # a rename must move the placement too
     assert not set(cfs.DEDICATED_SHARD) & set(cfs.BROWSER_SHARD)
+    assert not set(cfs.DEDICATED_SHARD) & set(cfs.BALANCE_SHARD)
     for path in cfs.DEDICATED_SHARD:
         assert re.fullmatch(r"tests/test_[a-z0-9_]+\.py", path), path
         assert "def test_" in (ROOT / path).read_text(encoding="utf-8"), path   # never an empty shard
@@ -132,6 +136,16 @@ def test_browser_override_lists_only_current_real_browser_files():
                 or "from tests.test_draft_l2_local_continuity import" in source), path   # or its fixture
 
 
+def test_balance_placement_lists_only_existing_shared_non_browser_files():
+    paths = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "tests").glob("test_*.py"))
+    assert set(cfs.BALANCE_SHARD) <= set(paths)                    # a rename must move the placement too
+    assert not set(cfs.BALANCE_SHARD) & (set(cfs.BROWSER_SHARD) | set(cfs.DEDICATED_SHARD))
+    for path, s in cfs.BALANCE_SHARD.items():
+        assert re.fullmatch(r"tests/test_[a-z0-9_]+\.py", path), path
+        assert "playwright" not in (ROOT / path).read_text(encoding="utf-8"), path
+        assert s in cfs.SHARED_SHARDS and cfs.shard_of(path) == s, path
+
+
 @pytest.mark.parametrize("path", sorted(cfs.BROWSER_SHARD))
 def test_browser_override_files_map_to_their_intended_shard(path):
     assert cfs.shard_of(path) == cfs.BROWSER_SHARD[path]
@@ -140,8 +154,10 @@ def test_browser_override_files_map_to_their_intended_shard(path):
 
 def test_every_other_file_keeps_the_sha256_rule_over_the_shared_shards():
     paths = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "tests").glob("test_*.py"))
-    others = [p for p in paths if p not in cfs.BROWSER_SHARD and p not in cfs.DEDICATED_SHARD]
-    assert len(others) == len(paths) - len(cfs.BROWSER_SHARD) - len(cfs.DEDICATED_SHARD) > 0
+    others = [p for p in paths if p not in cfs.BROWSER_SHARD and p not in cfs.DEDICATED_SHARD
+              and p not in cfs.BALANCE_SHARD]
+    assert len(others) == (len(paths) - len(cfs.BROWSER_SHARD) - len(cfs.DEDICATED_SHARD)
+                           - len(cfs.BALANCE_SHARD)) > 0
     for p in others + [f"tests/test_{i}.py" for i in range(500)]:
         assert cfs.shard_of(p) == cfs.shared_shard(p) == (4, 5)[int(hashlib.sha256(p.encode()).hexdigest()[:8], 16) % 2]
 
@@ -153,11 +169,12 @@ def test_a_new_or_unlisted_file_falls_back_to_hashing_over_the_shared_shards():
                  "tests/../tests/test_v132_derived_navigation_truth_live_truth_reversals.py",
                  "tests/test_v132_derived_navigation_truth_live_truth_reversals_more.py"):
         assert path not in cfs.BROWSER_SHARD and path not in cfs.DEDICATED_SHARD
+        assert path not in cfs.BALANCE_SHARD
         assert cfs.shard_of(path) == cfs.shared_shard(path) in cfs.SHARED_SHARDS
 
 
 def test_static_placement_applies_only_to_the_configured_five_shard_partition():
-    for path in (*cfs.BROWSER_SHARD, *cfs.DEDICATED_SHARD):
+    for path in (*cfs.BROWSER_SHARD, *cfs.DEDICATED_SHARD, *cfs.BALANCE_SHARD):
         for count in (1, 2, 3, 4, 6):
             assert cfs.shard_of(path, count) == cfs.hash_shard(path, count)
 
@@ -172,7 +189,7 @@ def test_override_placement_keeps_whole_files_and_the_assignment_complete_and_di
         assert not set(shards[a]) & set(shards[b])                           # disjoint
     for s, assigned in shards.items():
         assert {cfs.shard_of(cfs.file_of(n)) for n in assigned} == {s}       # whole files only
-    for path, s in (*cfs.BROWSER_SHARD.items(), *cfs.DEDICATED_SHARD.items()):
+    for path, s in (*cfs.BROWSER_SHARD.items(), *cfs.DEDICATED_SHARD.items(), *cfs.BALANCE_SHARD.items()):
         assert {n for n in nodes if cfs.file_of(n) == path} <= set(shards[s])
     for path, s in cfs.DEDICATED_SHARD.items():
         assert {cfs.file_of(n) for n in shards[s]} == {path}                 # alone on its shard

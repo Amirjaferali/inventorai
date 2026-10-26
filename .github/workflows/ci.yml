@@ -400,7 +400,7 @@ jobs:
     # AUTHORITATIVE for FULL (with the audit in `required`). Each shard runs the NORMAL full
     # pytest collection and executes only the whole test files deterministically
     # assigned to it by scripts/ci_full_suite.py (static DEDICATED_SHARD placement of the
-    # slowest files on shards 1-3 and BROWSER_SHARD placement, else SHA-256 of the file
+    # slowest files on shards 1-3, BROWSER_SHARD and BALANCE_SHARD placement, else SHA-256 of the file
     # path over the shared shards 4-5; no RIG, changed-file, -k or marker input).
     # Failures stay visible: no continue-on-error, no fail-fast.
     needs: [scope]
