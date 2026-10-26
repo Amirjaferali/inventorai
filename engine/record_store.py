@@ -4608,11 +4608,13 @@ class SqliteRecordStore:
         SELECT. Read-only; project-scoped; logs nothing."""
         self._refuse_uncommitted_reads()
         with self.read_snapshot():
-            return self._participation_snapshot(project_id)
+            return self._participation_snapshot(project_id)[0]
 
     def _participation_snapshot(self, project_id):
-        """Inside the caller's read snapshot: the four validated collections
-        of ``load_participation_preparations``, validated WHOLE together."""
+        """Inside the caller's read snapshot: ``(record, subsystems)`` — the
+        four validated collections of ``load_participation_preparations``,
+        validated WHOLE together, and the durable composition they were
+        validated against (``record`` never carries it)."""
         self._require_project(project_id)
         subsystems = self.load_project_subsystems(project_id)
         interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
@@ -4625,7 +4627,7 @@ class SqliteRecordStore:
         return {"interfaces": tuple(interfaces),
                 "components": tuple(inventory.active),
                 "participations": tuple(participations),
-                "preparations": tuple(preparations)}
+                "preparations": tuple(preparations)}, tuple(subsystems)
 
     def load_preliminary_composition(self, project_id: str) -> dict:
         """T6-INTERFACE-VERIFICATION-REFERENCE-01: exactly the record of
@@ -4635,12 +4637,17 @@ class SqliteRecordStore:
         SAME interactions inside the SAME read snapshot
         (``InterfacePreparationsCorrupt`` on anything malformed or orphaned;
         nothing partial). ``load_participation_preparations`` itself is
-        unchanged: its callers never fail on an interface-preparation row. No
-        project -> ``ProjectNotFound``. IR-01: an unresolved connection refuses
-        BEFORE any SELECT. Read-only; project-scoped; logs nothing."""
+        unchanged: its callers never fail on an interface-preparation row.
+        T6-PART-ASSOCIATION-TRACE-01: also ``"subsystems"`` — the project's
+        durable composition (part identities and inventor-declared names)
+        that the components' part links were validated against in the SAME
+        snapshot; no further query. No project -> ``ProjectNotFound``. IR-01:
+        an unresolved connection refuses BEFORE any SELECT. Read-only;
+        project-scoped; logs nothing."""
         self._refuse_uncommitted_reads()
         with self.read_snapshot():
-            record = self._participation_snapshot(project_id)
+            record, subsystems = self._participation_snapshot(project_id)
+            record["subsystems"] = subsystems
             record["interface_preparations"] = tuple(self._validated_preparations(
                 project_id, record["interfaces"]))
         return record

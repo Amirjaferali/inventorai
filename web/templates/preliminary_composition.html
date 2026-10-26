@@ -51,7 +51,7 @@ dd{margin:0 12px;white-space:pre-wrap}
   <div class="block" data-t6-component data-t6-component-id="{{ c.component_id }}" data-t6-part-ids="{{ c.part_ids|join(' ') }}">
     <h3><bdi dir="auto" data-t6-component-name>{{ c.name }}</bdi></h3>
     <p class="meta">{{ t('UI_T6_FUNCTION') }} <bdi dir="auto" data-t6-component-function>{{ c.function }}</bdi></p>
-    <p class="meta" data-t6-component-parts="{{ c.part_ids|length }}">{% if c.part_ids %}{{ t('UI_T6_PARTS_COUNT') }} {{ c.part_ids|length }}{% else %}{{ t('UI_T6_PARTS_NONE') }}{% endif %}</p>
+    <p class="meta" data-t6-component-parts="{{ c.part_ids|length }}">{% if c.part_ids %}{{ t('UI_T6_PARTS_COUNT') }} {% for name in c.parts %}<bdi dir="auto" data-t6-part-name data-t6-part-id="{{ c.part_ids[loop.index0] }}">{{ name }}</bdi>{% if not loop.last %}{{ t('UI_T6_PARTS_SEPARATOR') }}{% endif %}{% endfor %}{% else %}{{ t('UI_T6_PARTS_NONE') }}{% endif %}</p>
     <p class="meta" data-t6-provenance>{{ t('UI_T6_PROVENANCE') }}</p>
     {% if c.links %}
     {% for link in c.links %}

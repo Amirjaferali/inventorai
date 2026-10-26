@@ -1819,6 +1819,10 @@ UI_STRINGS = {
         "en": "Parts of the invention you linked it to:",
         "ar": "أجزاء الاختراع التي ربطته بها:",
     },
+    "UI_T6_PARTS_SEPARATOR": {
+        "en": ", ",
+        "ar": "، ",
+    },
     "UI_T6_PARTS_NONE": {
         "en": "Not linked to a part of the invention (project level).",
         "ar": "غير مرتبط بجزء من الاختراع (على مستوى المشروع).",
