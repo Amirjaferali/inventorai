@@ -168,3 +168,95 @@ ACV design or implementation authority. `ACV IMPLEMENTATION: NOT AUTHORIZED`. Ab
 separate explicit owner authorization at each applicable gate, no ACV work is permitted, and
 the original freeze remains fully effective for everything outside this narrow illustration
 boundary.
+
+---
+
+## APPEND-ONLY AMENDMENT 2 — T6 PRELIMINARY COMPOSITION CARVE-OUT (`T6-PRELIMINARY-COMPOSITION-PROJECTION-01`)
+STATUS: APPROVED AND FINAL — NON-ACTIVATING APPEND-ONLY AMENDMENT (Owner-authorized 2026-10-26; effective on the verified merge of its documentation-only PR). The bounded carve-out remains unavailable until the complete lane-activation sequence is satisfied. Authorizes no implementation and activates no lane: the lane remains PROPOSED and INACTIVE.
+
+AUTHORITY (this amendment is subordinate to the following and creates no
+independent product identity, path, lane or technical authority):
+- governing product identity: `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`;
+- governing dual-mode / path authority: `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`;
+- operational Technical Realization and lane-gating constraint:
+  `docs/governance/TECHNICAL_REALIZATION_ANCHOR_COMPANION.md` §§0 and 9;
+- the lane's per-lane authorization:
+  `docs/governance/T6_FIRST_LANE_AUTHORIZATION_PRELIMINARY_COMPOSITION.md`
+  (APPROVED AND FINAL — NON-ACTIVATING, PR #876), which names this carve-out as
+  its §0 activation prerequisite (its §1 and §5, row 4).
+
+The historical freeze above, Amendment 1 and the ACV allowance are PRESERVED in
+full. This is an append-only narrowing, not a rewrite. Amendment 1 still covers
+only its own single-domain decision-readiness work and is not widened; this
+amendment does not rely on it.
+
+Bounded allowance (describes the exact work permitted, nothing broader):
+- The freeze's "External document generation" out-of-scope item is NARROWED
+  SOLELY to permit, once `T6-PRELIMINARY-COMPOSITION-PROJECTION-01` is fully
+  activated under the complete Companion §0 sequence below, ONE single-project,
+  read-only, ephemeral, preliminary and non-binding composition of EXISTING,
+  explicitly attributed engineering-owner references, exactly as bounded by that
+  per-lane authorization (§§2–4): for ONE existing saved project, entered through
+  the existing central project authorization and read through the Stage 15
+  owner's existing validated reader.
+- The composition may carry ONLY: qualified, identity-bound relationships already
+  held by their owner (a current declared component by its `component_id`, a
+  declared interaction by its `interface_id`, a validated current participation
+  of that component in that interaction, and the inventor's preparation notes for
+  that same pair); each reference's origin / provenance; its current versus
+  earlier / not-reconfirmed versus unavailable status; and unresolved or missing
+  information, shown as UNRESOLVED and never filled in.
+- References from IdeaState, the Requirement Landscape or the Validation Plan may
+  appear only where their own owning contract supplies an exact qualified
+  identity and relationship, separately attributed.
+- Ownership is unchanged: Stage 15 alone owns components, subsystems, interfaces,
+  participation and preparation; IdeaState owns inventor assertions and
+  constraints; the Requirement Landscape owns its derived requirement
+  projection; the Validation Plan owns its preparation steps. The composition
+  persists nothing, modifies no owner and creates no independent technical-truth
+  artifact, store, registry or schema.
+
+This amendment explicitly does NOT authorize, by implication or otherwise:
+- inferred components, mechanisms, relationships, relationship directions or
+  requirements, or any join by matching text, domain, proximity or chronology;
+- quantities, counts, BOM or preliminary BOM lines, Make / Buy, supplier or
+  procurement output;
+- component or material selection, sizing, rating, dimensioning, calculation
+  inputs or results;
+- compatibility, suitability, safety, validation, verification,
+  manufacturability, assembly, prototype or production-readiness claims;
+- general or external document generation beyond the single composition above,
+  or any complete invention / implementation / engineering package generation;
+- CAD, PCB / EDA, CAE, simulation, firmware or software generation, or any
+  external engineering-tool handoff;
+- Path T / Direct Technical Work Mode, D4 compatibility evaluation, or any
+  specialist-work transfer;
+- narrowing of the freeze's "Multi-domain orchestration" item: the composition
+  may display the recorded Stage 15 references of a project whose declared parts
+  span more than one domain, but it invokes, routes, executes or coordinates no
+  domain's technical analysis, activates no domain and changes no domain
+  inference;
+- persistence, accounts, collaboration or artifact-store implementation;
+- any change to a hold, a closed state, the roadmap or any other document.
+
+Lane activation requires ALL of the Companion §0 conditions: (1) the separate
+per-lane authorization document; (2) explicit owner approval to activate this
+exact lane; (3) transition of each applicable document — this carve-out
+amendment, the per-lane authorization and every prerequisite authority and
+architecture document — to its required non-DRAFT final status, and the specific
+final-status commit of each to the authoritative repository; (4) all
+prerequisite authority and architecture documents approved and committed in
+their required final status; (5) all declared activation prerequisites
+satisfied; (6) no unresolved governance or authority blocker; (7) the final
+roadmap state update (`docs/governance/ACTIVE_EXECUTION_ROADMAP.md` §§4–7)
+committed to record the lane as active. The final status of this amendment
+satisfies only the freeze carve-out it supplies; it is NOT owner activation
+approval, NOT a roadmap activation update and NOT evidence that any
+activation prerequisite is met. A working-tree draft, conversation, or
+uncommitted owner instruction never activates this carve-out or the lane.
+
+Non-activation: this amendment changes no runtime, UI, schema, prompt, test or
+code, and does not present the future composition as a delivered product
+capability. `T6 ACTIVATION: NOT AUTHORIZED`. Absent every activation condition
+above, the original freeze remains fully effective for everything outside this
+narrow composition boundary, and the carve-out itself stays unavailable.
