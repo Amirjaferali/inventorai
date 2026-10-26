@@ -13,7 +13,7 @@ name: Seed the Chromium prerequisite package cache
 # itself or the protected pull-request route. It reuses the shards' pip install, cache
 # key and bounded Chromium installer byte for byte (pinned in tests/test_ci_full_suite.py)
 # and saves only the package archives that installer left in /var/cache/apt/archives,
-# never an installed system. The cached files are download candidates: the installer in
+# never an installed system. The cached files only spare downloads: the installer in
 # every shard still runs `apt-get update` against the signed Ubuntu index and apt uses a
 # file only when it matches that index.
 

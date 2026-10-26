@@ -474,7 +474,7 @@ jobs:
 
       - name: Restore cached Chromium prerequisite packages (base-branch seed only)
         # Restore only, exact key only (no restore-keys); a pull request never saves.
-        # The files are download candidates for apt, never an installation.
+        # The files only spare apt a download; they are never an installation.
         id: aptcache
         if: steps.aptkey.outputs.key != ''
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
