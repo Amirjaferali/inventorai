@@ -7,7 +7,8 @@ five independent runners, proven complete by a fail-closed central audit.
     pytest collection, keep only the whole test files deterministically assigned
     to this shard (the static ``DEDICATED_SHARD`` placement of the measured
     slowest files on shards 1-3, the static ``BROWSER_SHARD`` placement for the
-    current real-browser files, else the SHA-256 rule over the shared shards
+    current real-browser files, the static ``BALANCE_SHARD`` placement of the
+    measured heaviest shared files, else the SHA-256 rule over the shared shards
     4-5: ``SHARED_SHARDS[int(SHA256(repo-relative POSIX path)[:8], 16) % 2]``),
     execute them serially and write JUnit plus a structured evidence JSON.
   * ``--mode audit``: accept the five shard evidence packages only when they
@@ -127,6 +128,21 @@ BROWSER_SHARD = MappingProxyType({
     "tests/test_uqtr01_target_binding_browser.py": 4,
 })
 
+# Performance-only placement of the measured heaviest non-browser shared files. From
+# the hosted timestamped progress lines of run 40401784447 (PR #882; about 72 tests a
+# line), test execution after collection took about 379 s on shard 4 against 684 s
+# on shard 5; these five files, all hashed to shard 5, cost about 144 s there, so
+# placing them on shard 4 brings the two estimates to about 523 s and 540 s. Like
+# BROWSER_SHARD it never decides WHETHER a file runs: an unlisted file keeps the
+# SHA-256 rule and completeness is proven by the audit either way.
+BALANCE_SHARD = MappingProxyType({
+    "tests/test_r05_request_integrity.py": 4,
+    "tests/test_t2a_requirement_quantity_web.py": 4,
+    "tests/test_t2d_question_feedback.py": 4,
+    "tests/test_t2g3_question_supposition.py": 4,
+    "tests/test_v132_derived_navigation_truth.py": 4,
+})
+
 
 def _path_hash(path):
     return int(hashlib.sha256(path.encode("utf-8")).hexdigest()[:8], 16)
@@ -143,13 +159,16 @@ def shared_shard(path):
 
 
 def shard_of(path, count=SHARD_COUNT):
-    """The canonical whole-file shard (1..count): DEDICATED_SHARD, BROWSER_SHARD, else shared_shard."""
+    """The canonical whole-file shard (1..count): DEDICATED_SHARD, BROWSER_SHARD,
+    BALANCE_SHARD, else shared_shard."""
     if count != SHARD_COUNT:
         return hash_shard(path, count)
     if path in DEDICATED_SHARD:
         return DEDICATED_SHARD[path]
     if path in BROWSER_SHARD:
         return BROWSER_SHARD[path]
+    if path in BALANCE_SHARD:
+        return BALANCE_SHARD[path]
     return shared_shard(path)
 
 
