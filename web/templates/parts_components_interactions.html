@@ -149,5 +149,6 @@ dd{margin:0 12px}
 </section>
 {% endif %}
 
+{% if view %}<p class="links" data-t6-entry><a href="{{ url_for('preliminary_composition', sid=sid) }}" data-t6-link-entry>{{ t('UI_T6_LINK') }}</a></p>{% endif %}
 <p class="links"><a href="{{ url_for('show_session', sid=sid) }}#integrated-scope">{{ t('UI_S15_PREP_BACK') }}</a></p>
 {% endblock %}

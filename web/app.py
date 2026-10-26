@@ -12160,6 +12160,127 @@ def parts_components_interactions(sid):
     return response
 
 
+# --- T6-PRELIMINARY-COMPOSITION-PROJECTION-01 — Slice 1 --------------------
+# ONE request-local, read-only, PRELIMINARY / ADVISORY / NON-BINDING
+# composition of existing Stage 15 owner references for ONE saved project, as
+# bounded by the activated per-lane authorization
+# (docs/governance/T6_FIRST_LANE_AUTHORIZATION_PRELIMINARY_COMPOSITION.md,
+# §§2–4) and MVP_SCOPE_FREEZE.md Amendment 2: each CURRENT declared component
+# (stable ``component_id``, current details) is traced through every CURRENT
+# participation the inventor recorded for it to the notes stored for that exact
+# ``(interface_id, component_id)`` pair. Entered through the central project
+# authorization and read ONLY through the Stage 15 owner's validated
+# single-snapshot reader (``load_participation_preparations``), once per
+# request; the current participations and notes are selected by the owner's
+# own projections. Nothing is joined by text, inferred, repaired, persisted,
+# exported or judged: no BOM, quantity, selection, sizing, compatibility,
+# suitability, safety or validation statement. Anything unreadable shows the
+# WHOLE composition as unavailable — never a partial or apparently empty one.
+T6_STATUS_CURRENT = "CURRENT"
+T6_STATUS_EARLIER = "EARLIER_NOT_RECONFIRMED"
+T6_STATUS_NOT_RECORDED = "NOT_RECORDED"
+_T6_OK = "ok"
+_T6_NO_PROJECT = "no_project"
+_T6_UNAVAILABLE = "unavailable"
+_T6_STATUS_NOTICE = {
+    _T6_NO_PROJECT: ("UI_T6_NO_PROJECT", 409),
+    _T6_UNAVAILABLE: ("UI_T6_UNAVAILABLE", 503),
+}
+_T6_STATUS_KEYS = {
+    T6_STATUS_CURRENT: "UI_T6_STATUS_CURRENT",
+    T6_STATUS_EARLIER: "UI_T6_STATUS_EARLIER",
+    T6_STATUS_NOT_RECORDED: "UI_T6_STATUS_NOT_RECORDED",
+}
+
+
+def _t6_composition(record):
+    """The composition of ONE validated ``load_participation_preparations``
+    record. Pure and deterministic. For each CURRENT component, in declaration
+    order: its identity and current details and, in interaction order, every
+    CURRENT participation with the status and verbatim notes of that exact
+    pair. A component with no current participation gets none (never
+    invented); a pair whose interaction is not in this snapshot raises
+    ``ValueError`` (the caller then shows the whole composition unavailable)."""
+    components = tuple(record["components"])
+    interfaces = {item.interface_id: item for item in record["interfaces"]}
+    order = [item.interface_id for item in record["interfaces"]]
+    participants = _subsystem_model.current_interface_participants(
+        record["participations"], components)
+    notes = _subsystem_model.current_participation_preparations(
+        record["preparations"], record["participations"], components)
+    for interface_id in participants:
+        if interface_id not in interfaces:
+            raise ValueError("participation names no interaction of this snapshot")
+    result = []
+    for component in components:
+        links = []
+        for interface_id in order:
+            if component.component_id not in participants.get(interface_id, ()):
+                continue
+            stored = notes.get((interface_id, component.component_id))
+            if stored is None:
+                status = T6_STATUS_NOT_RECORDED
+            elif stored.carried_over:
+                status = T6_STATUS_EARLIER
+            else:
+                status = T6_STATUS_CURRENT
+            links.append({
+                "interface_id": interface_id,
+                "interaction": interfaces[interface_id].description,
+                "status": status,
+                "status_key": _T6_STATUS_KEYS[status],
+                "notes": [] if stored is None else [
+                    {"field": field_name, "text": stored.value(field_name)}
+                    for field_name in stored.recorded_fields()],
+            })
+        result.append({
+            "component_id": component.component_id,
+            "name": component.display_name,
+            "function": component.function_text,
+            "part_ids": list(component.subsystem_ids),
+            "provenance": component.provenance,
+            "validation_state": component.validation_state,
+            "links": links,
+        })
+    return {"components": result, "interface_count": len(order)}
+
+
+def _t6_composition_context(sid):
+    """``(status, context)`` of the preliminary composition from ONE durable
+    snapshot (``load_participation_preparations``, called once). A missing
+    project is ``_T6_NO_PROJECT``; anything unreadable, corrupt or
+    inconsistent is ``_T6_UNAVAILABLE``. Nothing is written."""
+    loader = getattr(_get_store(), "load_participation_preparations", None)
+    if not callable(loader):
+        return _T6_UNAVAILABLE, None
+    try:
+        record = loader(sid)
+    except _ProjectNotFound:
+        return _T6_NO_PROJECT, None
+    except Exception:
+        return _T6_UNAVAILABLE, None
+    try:
+        return _T6_OK, _t6_composition(record)
+    except Exception:
+        return _T6_UNAVAILABLE, None
+
+
+@app.route("/session/<sid>/preliminary-composition", methods=["GET"])
+def preliminary_composition(sid):
+    """T6-PRELIMINARY-COMPOSITION-PROJECTION-01 — Slice 1: the read-only
+    preliminary composition. Project-authorized; reads one durable snapshot;
+    writes nothing; not part of any report or export."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    status, context = _t6_composition_context(sid)
+    notice_key, code = _T6_STATUS_NOTICE.get(status, (None, 200))
+    response = make_response(render_template(
+        "preliminary_composition.html", sid=sid, view=context,
+        notice_key=notice_key), code)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @app.route("/session/<sid>/interface-observation", methods=["POST"])
 def record_interface_observation(sid):
     """Stage 15 Slice 4 — record (new root) or correct (successor of one

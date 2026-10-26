@@ -1785,6 +1785,104 @@ UI_STRINGS = {
         "en": "Parts, Components & Interactions",
         "ar": "الأجزاء والمكوّنات والتفاعلات",
     },
+    # T6-PRELIMINARY-COMPOSITION-PROJECTION-01 — Slice 1: the read-only
+    # preliminary composition (component -> participation -> notes).
+    "UI_T6_TITLE": {
+        "en": "Preliminary composition: components, their interactions and your notes",
+        "ar": "تركيب أولي: المكوّنات وتفاعلاتها وملاحظاتك",
+    },
+    "UI_T6_LINK": {
+        "en": "Trace each component through its interactions to your notes (preliminary)",
+        "ar": "تتبّع كل مكوّن عبر تفاعلاته حتى ملاحظاتك (أولي)",
+    },
+    "UI_T6_PRELIMINARY": {
+        "en": "PRELIMINARY · ADVISORY · NON-BINDING — your own unvalidated statements only.",
+        "ar": "أولي · استشاري · غير مُلزِم — أقوالك الخاصة غير المُتحقَّق منها فقط.",
+    },
+    "UI_T6_INTRO": {
+        "en": "For each component you declared, this shows every interaction you recorded it as taking part in, and the notes you saved for that exact component in that exact interaction. It only brings your existing records together; it is not a report section.",
+        "ar": "لكل مكوّن أعلنته، تعرض هذه الصفحة كل تفاعل سجّلت أنه يشارك فيه، والملاحظات التي حفظتها لذلك المكوّن في ذلك التفاعل تحديدًا. إنها تجمع سجلاتك الموجودة فقط؛ وليست قسمًا من التقرير.",
+    },
+    "UI_T6_BOUNDARY": {
+        "en": "InventorAI has not checked any of this. Nothing here is a parts list or bill of materials, a quantity, a selection or sizing, or a statement that anything works, fits, is compatible, suitable, safe or ready to build. A link you have not recorded is not added.",
+        "ar": "لم يفحص InventorAI أيًّا من هذا. لا شيء هنا قائمة أجزاء أو قائمة مواد، ولا كمية، ولا اختيار أو تحديد أبعاد، ولا قول بأن شيئًا يعمل أو يتلاءم أو متوافق أو مناسب أو آمن أو جاهز للبناء. والارتباط الذي لم تسجّله لا يُضاف.",
+    },
+    "UI_T6_COMPONENTS_TITLE": {
+        "en": "Your current components",
+        "ar": "مكوّناتك الحالية",
+    },
+    "UI_T6_FUNCTION": {
+        "en": "What it does:",
+        "ar": "ما الذي يفعله:",
+    },
+    "UI_T6_PARTS_COUNT": {
+        "en": "Parts of the invention you linked it to:",
+        "ar": "أجزاء الاختراع التي ربطته بها:",
+    },
+    "UI_T6_PARTS_NONE": {
+        "en": "Not linked to a part of the invention (project level).",
+        "ar": "غير مرتبط بجزء من الاختراع (على مستوى المشروع).",
+    },
+    "UI_T6_PROVENANCE": {
+        "en": "Your statement — OWNER_STATED / UNVALIDATED.",
+        "ar": "قولك أنت — OWNER_STATED / UNVALIDATED.",
+    },
+    "UI_T6_TAKES_PART": {
+        "en": "You recorded that it takes part in:",
+        "ar": "سجّلت أنه يشارك في:",
+    },
+    "UI_T6_STATUS_CURRENT": {
+        "en": "Notes: current — your latest saved notes for this component in this interaction",
+        "ar": "الملاحظات: حالية — آخر ملاحظات حفظتها لهذا المكوّن في هذا التفاعل",
+    },
+    "UI_T6_STATUS_EARLIER": {
+        "en": "Notes: earlier, not reconfirmed — recorded before this component was removed from this interaction and added back",
+        "ar": "الملاحظات: سابقة، لم يُعَد تأكيدها — سُجّلت قبل أن يُزال هذا المكوّن من هذا التفاعل ثم يُضاف مرة أخرى",
+    },
+    "UI_T6_STATUS_NOT_RECORDED": {
+        "en": "Notes: not recorded",
+        "ar": "الملاحظات: غير مسجّلة",
+    },
+    "UI_T6_EXPECTED": {
+        "en": "Expected observable contribution",
+        "ar": "الإسهام المتوقَّع القابل للملاحظة",
+    },
+    "UI_T6_EVIDENCE": {
+        "en": "Evidence or review needed to check it",
+        "ar": "الدليل أو المراجعة اللازمان للتحقّق منه",
+    },
+    "UI_T6_NO_PARTICIPATION": {
+        "en": "You have not recorded this component as taking part in any interaction.",
+        "ar": "لم تسجّل أن هذا المكوّن يشارك في أي تفاعل.",
+    },
+    "UI_T6_NO_INTERACTIONS": {
+        "en": "No interaction between the parts of your invention is declared yet.",
+        "ar": "لم يُعلَن بعد أي تفاعل بين أجزاء اختراعك.",
+    },
+    "UI_T6_NO_COMPONENTS": {
+        "en": "You have not declared any current component yet.",
+        "ar": "لم تُعلن أي مكوّن حالي بعد.",
+    },
+    "UI_T6_WITHDRAWN_NOTE": {
+        "en": "Withdrawn components and their notes are not shown here; they stay in the project history on the session page.",
+        "ar": "لا تُعرض هنا المكوّنات المسحوبة وملاحظاتها؛ وتبقى في سجل المشروع في صفحة الجلسة.",
+    },
+    "UI_T6_UNAVAILABLE": {
+        "en": "This preliminary composition cannot be shown right now: some of your records could not be read. Nothing is shown rather than an incomplete picture. Reload the page later.",
+        "ar": "لا يمكن عرض هذا التركيب الأولي الآن: تعذّرت قراءة بعض سجلاتك. لا يُعرض شيء بدلًا من صورة ناقصة. أعد تحميل الصفحة لاحقًا.",
+    },
+    "UI_T6_NO_PROJECT": {
+        "en": "This project could not be found.",
+        "ar": "تعذّر العثور على هذا المشروع.",
+    },
+    "UI_T6_BACK_PCI": {
+        "en": "Back to your parts, components and interactions",
+        "ar": "العودة إلى أجزائك ومكوّناتك وتفاعلاتها",
+    },
+    "UI_T6_EDIT_LINK": {
+        "en": "Record or edit participation and notes",
+        "ar": "سجّل أو عدّل المشاركة والملاحظات",
+    },
     "UI_PCI_LINK": {
         "en": "See your parts, components and interactions together",
         "ar": "اعرض أجزاءك ومكوّناتك وتفاعلاتها معًا",
