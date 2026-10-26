@@ -41,7 +41,8 @@ from engine.record_contract import (
     assertion_from_dict as _assertion_from_dict,
     reconcile_supersession_edges as _reconcile_supersession_edges,
 )
-from engine.idea_state import DISPOSITION_ANSWERED, DECISION_ACTION_DISPOSITIONS
+from engine.idea_state import (DISPOSITION_ANSWERED, DECISION_ACTION_DISPOSITIONS,
+                               MAX_CONSTRAINT_ACCEPTANCE_LENGTH)
 from engine.commercial_evidence import (
     EVIDENCE_EXACT_REPLAY, EVIDENCE_INSERTED, EvidenceCapExceeded,
     MAX_READINESS_EVIDENCE_PER_PROJECT, ReadinessEvidence,
@@ -457,6 +458,28 @@ class ParticipationPreparationsCorrupt(StoreError):
     or remapped."""
 
 
+class ConstraintAcceptanceRejected(StoreError):
+    """MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: a constraint acceptance
+    notes write names no constraint of THIS project, a constraint that is not a
+    CURRENT mandatory constraint (``kind`` ``withdrawn`` / ``not_mandatory``), a
+    version that is no longer the constraint's current one or notes that
+    changed since the form was shown (``stale``), or carries text outside the
+    bounded policy (``invalid``). Decided inside the write transaction before
+    any row is written; nothing is written."""
+
+    def __init__(self, message, kind="invalid"):
+        super().__init__(message)
+        self.kind = kind
+
+
+class ConstraintAcceptanceCorrupt(StoreError):
+    """MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: a project's durable
+    ledger is not valid, or its constraint acceptance rows are malformed,
+    duplicated or orphaned from its constraint history. Fail-closed for the
+    WHOLE collection: nothing partial is returned and nothing is repaired,
+    deleted or remapped."""
+
+
 class ComponentPrototypeNeedsCorrupt(StoreError):
     """COMPONENT-PROTOTYPE-NEED-NOTE-01: a project's durable prototype-need
     rows are malformed, duplicated or orphaned from its declared components.
@@ -739,6 +762,12 @@ class RecordStore(Protocol):
     def set_participation_preparation(self, project_id: str, interface_id: str,
                                       component_id: str, values,
                                       expected) -> str: ...
+    # MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 (current value; see the
+    # constraint_acceptance_preparations note).
+    def load_constraint_acceptance(self, project_id: str) -> dict: ...
+    def set_constraint_acceptance(self, project_id: str, constraint_id: str,
+                                  displayed_record_id: str, values,
+                                  expected) -> str: ...
 
 
 _SCHEMA = (
@@ -2064,6 +2093,55 @@ _PARTICIPATION_PREPARATIONS_SCHEMA = (
     """ % {"max": MAX_PARTICIPATION_PREPARATION_LENGTH},
 )
 
+# MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 —
+# ``constraint_acceptance_preparations``: the inventor's own notes for ONE
+# mandatory constraint they declared: an observable acceptance criterion and
+# the measurement, evidence or specialist review they would need to check it.
+# A CURRENT-VALUE sidecar (upsert / delete; no revision history is kept or
+# promised), ONE row per constraint identity, keyed by the constraint's
+# FOUNDING ledger record id (stable across corrections) and remembering the
+# declared version it was saved against (``saved_against``); both are composite
+# foreign keys to exact ledger rows, which are never deleted. Notes saved
+# against an earlier version are shown as earlier statements, not
+# reconfirmed; a withdrawn or no-longer-mandatory constraint keeps its row,
+# hidden (``engine.idea_state.current_constraint_acceptance``). No provenance
+# column: a stored row is by construction the inventor's own statement
+# (OWNER_STATED, UNVALIDATED) — never a threshold, a verification, evidence or
+# a check. No ledger record, the Validation Plan step, the report, the PDF and
+# the Stage 35 export are touched. The CHECKs are a database backstop only;
+# the loader re-validates every row against the whole validated ledger.
+# Additive and idempotent (``IF NOT EXISTS``); an existing table of any other
+# shape is refused, never read as empty; nothing is backfilled. Rollback is
+# disable-and-preserve (stop reading the table; its rows stay intact).
+_CONSTRAINT_ACCEPTANCE_COLUMNS = ("project_id", "constraint_id", "saved_against",
+                                  "acceptance_criterion", "evidence_needed")
+_CONSTRAINT_ACCEPTANCE_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS constraint_acceptance_preparations (
+        project_id            TEXT NOT NULL,
+        constraint_id         TEXT NOT NULL,
+        saved_against         TEXT NOT NULL,
+        acceptance_criterion  TEXT,
+        evidence_needed       TEXT,
+        PRIMARY KEY (project_id, constraint_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, constraint_id)
+            REFERENCES records(project_id, record_id),
+        FOREIGN KEY (project_id, saved_against)
+            REFERENCES records(project_id, record_id),
+        CHECK (typeof(constraint_id) = 'text' AND length(constraint_id) BETWEEN 1 AND 64),
+        CHECK (typeof(saved_against) = 'text' AND length(saved_against) BETWEEN 1 AND 64),
+        CHECK (acceptance_criterion IS NULL OR (typeof(acceptance_criterion) = 'text'
+               AND length(acceptance_criterion) BETWEEN 1 AND %(max)d
+               AND instr(CAST(acceptance_criterion AS BLOB), X'00') = 0)),
+        CHECK (evidence_needed IS NULL OR (typeof(evidence_needed) = 'text'
+               AND length(evidence_needed) BETWEEN 1 AND %(max)d
+               AND instr(CAST(evidence_needed AS BLOB), X'00') = 0)),
+        CHECK (acceptance_criterion IS NOT NULL OR evidence_needed IS NOT NULL)
+    )
+    """ % {"max": MAX_CONSTRAINT_ACCEPTANCE_LENGTH},
+)
+
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 — the two additive,
 # append-only, project-scoped comparison record families. Never updated or
 # deleted (no such writer exists). ``seq`` is the project's contiguous durable
@@ -2217,6 +2295,12 @@ PARTICIPATION_PREPARATION_SAVED = "SAVED"
 PARTICIPATION_PREPARATION_CLEARED = "CLEARED"
 PARTICIPATION_PREPARATION_UNCHANGED = "UNCHANGED"
 
+# MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: the outcomes of a constraint
+# acceptance notes write.
+CONSTRAINT_ACCEPTANCE_SAVED = "SAVED"
+CONSTRAINT_ACCEPTANCE_CLEARED = "CLEARED"
+CONSTRAINT_ACCEPTANCE_UNCHANGED = "UNCHANGED"
+
 INTERFACE_OBSERVATION_INSERTED = "INSERTED"
 INTERFACE_OBSERVATION_EXACT_REPLAY = "EXACT_REPLAY"
 
@@ -2357,6 +2441,7 @@ class SqliteRecordStore:
             self._migrate_component_prototype_needs(self._conn)
             self._migrate_interface_components(self._conn)
             self._migrate_participation_preparations(self._conn)
+            self._migrate_constraint_acceptance(self._conn)
             self._migrate_decision_comparison(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
@@ -2719,6 +2804,25 @@ class SqliteRecordStore:
             raise sqlite3.DatabaseError(
                 "subsystem_participation_preparations has an unrecognised shape")
         for stmt in _PARTICIPATION_PREPARATIONS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_constraint_acceptance(self, conn) -> None:
+        """MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 forward migration:
+        additively create the ``constraint_acceptance_preparations``
+        current-value sidecar. Runs inside the store's single migration
+        transaction; idempotent (``IF NOT EXISTS``) on a fresh and on an
+        existing populated database; touches no existing table, column or row;
+        nothing is backfilled or inferred. A table that already exists in any
+        other shape is refused (``sqlite3.DatabaseError``) rather than read as
+        empty or guessed. Rollback is disable-and-preserve: a build without
+        this capability never reads or writes the table and its rows stay
+        intact."""
+        columns = tuple(row[1] for row in conn.execute(
+            "PRAGMA table_info(constraint_acceptance_preparations)").fetchall())
+        if columns and columns != _CONSTRAINT_ACCEPTANCE_COLUMNS:
+            raise sqlite3.DatabaseError(
+                "constraint_acceptance_preparations has an unrecognised shape")
+        for stmt in _CONSTRAINT_ACCEPTANCE_SCHEMA:
             conn.execute(stmt)
 
     def _migrate_decision_comparison(self, conn) -> None:
@@ -4630,6 +4734,161 @@ class SqliteRecordStore:
                  target[PARTICIPATION_PREPARATION_FIELDS[0]],
                  target[PARTICIPATION_PREPARATION_FIELDS[1]]))
         return PARTICIPATION_PREPARATION_SAVED
+
+    # --- MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 (current value) ----
+    def _constraint_acceptance_state(self, project_id):
+        """``(assertions, history, preparations)``: this project's durable
+        ledger validated whole by the record contract, its ONE constraint
+        history and every stored acceptance row validated whole against it.
+        ``ProjectNotFound`` without a project; ``ConstraintAcceptanceCorrupt``
+        on any defect (nothing partial, nothing remapped). Read-only."""
+        from engine.idea_state import (
+            ConstraintAcceptanceError, ConstraintAcceptancePreparation,
+            ConstraintError, constraint_history,
+            validate_constraint_acceptance_preparations)
+        from engine.record_contract import (
+            ContractError, assertion_from_dict, reconcile_supersession_edges)
+        proj = self._conn.execute(
+            "SELECT idea_id, contract_version FROM projects WHERE project_id = ?",
+            (project_id,)).fetchone()
+        if proj is None:
+            raise ProjectNotFound(project_id)
+        rows = self._conn.execute(
+            "SELECT constraint_id, saved_against, acceptance_criterion, "
+            "evidence_needed FROM constraint_acceptance_preparations WHERE "
+            "project_id = ? ORDER BY constraint_id ASC", (project_id,)).fetchall()
+        try:
+            assertions = [assertion_from_dict(json.loads(p)) for (p,) in
+                          self._conn.execute(
+                              "SELECT payload FROM records WHERE project_id = ? "
+                              "ORDER BY seq ASC", (project_id,)).fetchall()]
+            reconcile_supersession_edges(assertions)
+            ProjectRecordContract(idea_id=proj[0], assertions=assertions,
+                                  contract_version=proj[1]).validate()
+            history = constraint_history(assertions)
+            preparations = validate_constraint_acceptance_preparations(
+                [ConstraintAcceptancePreparation(
+                    constraint_id=r[0], saved_against=r[1],
+                    acceptance_criterion=r[2], evidence_needed=r[3])
+                 for r in rows], assertions)
+        except (ContractError, ConstraintError, ConstraintAcceptanceError,
+                ValueError, TypeError, KeyError):
+            raise ConstraintAcceptanceCorrupt(
+                "the constraint acceptance notes are not valid") from None
+        return assertions, history, preparations
+
+    def load_constraint_acceptance(self, project_id: str) -> dict:
+        """``{"history", "preparations"}``: this project's durable constraint
+        history and every stored acceptance row (current, earlier-version and
+        hidden alike), read inside ONE consistent read snapshot and validated
+        WHOLE together (``ConstraintAcceptanceCorrupt``; nothing partial). The
+        notes to SHOW are ``engine.idea_state.current_constraint_acceptance``.
+        No project -> ``ProjectNotFound``. IR-01: an unresolved connection
+        refuses BEFORE any SELECT. Read-only; project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            _assertions, history, preparations = \
+                self._constraint_acceptance_state(project_id)
+        return {"history": history, "preparations": tuple(preparations)}
+
+    def set_constraint_acceptance(self, project_id: str, constraint_id: str,
+                                  displayed_record_id: str, values,
+                                  expected) -> str:
+        """Record, replace or clear (both values ``None``) the acceptance notes
+        of ONE CURRENT mandatory constraint, and return the outcome:
+        ``CONSTRAINT_ACCEPTANCE_SAVED`` / ``CONSTRAINT_ACCEPTANCE_CLEARED`` for
+        a committed change, or ``CONSTRAINT_ACCEPTANCE_UNCHANGED`` when the
+        durable notes already are exactly the target and were saved against
+        the current version (an exact retry; nothing is written). Saving notes
+        of an earlier version, even unchanged, binds them to the current
+        version (the inventor's explicit reconfirmation).
+
+        ``values`` maps both ``CONSTRAINT_ACCEPTANCE_FIELDS`` to stored-form
+        text or ``None``; ``expected`` is the state the inventor's form showed:
+        the same two fields plus ``"earlier"`` (bool); ``displayed_record_id``
+        is the constraint version the form showed. The arguments are
+        shape-checked BEFORE the transaction opens
+        (``ConstraintAcceptanceRejected``; nothing written). Then ONE
+        serialized ``BEGIN IMMEDIATE`` transaction, against DURABLE truth: the
+        project exists (``ProjectNotFound``); the whole ledger and every
+        acceptance row validate (``ConstraintAcceptanceCorrupt``); the
+        constraint is an identity of THIS project, not withdrawn, still at the
+        displayed version and mandatory (``ConstraintAcceptanceRejected``,
+        ``kind`` ``invalid`` / ``withdrawn`` / ``stale`` / ``not_mandatory``);
+        the durable notes equal the target (UNCHANGED, nothing written) or
+        else equal ``expected`` (``stale`` otherwise — newer notes are never
+        overwritten); only then is the row upserted or deleted. Line-break
+        representation alone is never a difference, and an unchanged note
+        keeps its stored text exactly. No ledger record and no other row is
+        touched. Full rollback on any failure. IR-01: never writes on top of
+        an unresolved connection."""
+        from engine.idea_state import (
+            CONSTRAINT_ACCEPTANCE_FIELDS, ConstraintAcceptanceError,
+            ConstraintAcceptanceNotMandatory, ConstraintAcceptanceWithdrawn,
+            ConstraintStale, constraint_acceptance_target,
+            valid_constraint_acceptance_text)
+        for identity in (constraint_id, displayed_record_id):
+            if not isinstance(identity, str) or not identity or len(identity) > 64:
+                raise ConstraintAcceptanceRejected("malformed identity")
+        fields = CONSTRAINT_ACCEPTANCE_FIELDS
+        if not isinstance(values, dict) or set(values) != set(fields):
+            raise ConstraintAcceptanceRejected("malformed acceptance notes")
+        if not isinstance(expected, dict) \
+                or set(expected) != set(fields) | {"earlier"} \
+                or not isinstance(expected["earlier"], bool):
+            raise ConstraintAcceptanceRejected("malformed displayed notes")
+        for source in (values, expected):
+            for field_name in fields:
+                text = source[field_name]
+                if text is not None and not valid_constraint_acceptance_text(text):
+                    raise ConstraintAcceptanceRejected("malformed note text")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            _assertions, history, preparations = \
+                self._constraint_acceptance_state(project_id)
+            try:
+                chain = constraint_acceptance_target(
+                    history, constraint_id, displayed_record_id)
+            except ConstraintAcceptanceWithdrawn:
+                raise ConstraintAcceptanceRejected("withdrawn", "withdrawn") from None
+            except ConstraintAcceptanceNotMandatory:
+                raise ConstraintAcceptanceRejected(
+                    "not mandatory", "not_mandatory") from None
+            except ConstraintStale:
+                raise ConstraintAcceptanceRejected("not current", "stale") from None
+            except ConstraintAcceptanceError:
+                raise ConstraintAcceptanceRejected(
+                    "the notes name no constraint of this project") from None
+            stored = next((item for item in preparations
+                           if item.constraint_id == constraint_id), None)
+            current = {f: (None if stored is None else stored.value(f)) for f in fields}
+            earlier = stored is not None and stored.saved_against != chain.record_id
+            same_as_target = all(self._same_note(current[f], values[f]) for f in fields)
+            if same_as_target and not earlier:
+                return CONSTRAINT_ACCEPTANCE_UNCHANGED
+            if earlier != expected["earlier"] or not all(
+                    self._same_note(current[f], expected[f]) for f in fields):
+                raise ConstraintAcceptanceRejected(
+                    "the notes changed since the form was shown", "stale")
+            target = {f: (current[f] if self._same_note(current[f], values[f])
+                          else values[f]) for f in fields}
+            if all(target[f] is None for f in fields):
+                self._conn.execute(
+                    "DELETE FROM constraint_acceptance_preparations WHERE "
+                    "project_id = ? AND constraint_id = ?",
+                    (project_id, constraint_id))
+                return CONSTRAINT_ACCEPTANCE_CLEARED
+            self._conn.execute(
+                "INSERT INTO constraint_acceptance_preparations (project_id, "
+                "constraint_id, saved_against, acceptance_criterion, "
+                "evidence_needed) VALUES (?, ?, ?, ?, ?) "
+                "ON CONFLICT (project_id, constraint_id) DO UPDATE SET "
+                "saved_against = excluded.saved_against, "
+                "acceptance_criterion = excluded.acceptance_criterion, "
+                "evidence_needed = excluded.evidence_needed",
+                (project_id, constraint_id, chain.record_id,
+                 target[fields[0]], target[fields[1]]))
+        return CONSTRAINT_ACCEPTANCE_SAVED
 
     # --- INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: criteria + values -
     # Every reader validates the decision ledger and BOTH comparison tables

@@ -521,6 +521,10 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       # current-value prototype-need note per declared
                       # component (no payload, no disposition) — not a ledger.
                       "component_prototype_needs",
+                      # MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: the
+                      # inventor's current-value acceptance notes per mandatory
+                      # constraint (no payload, no disposition) — not a ledger.
+                      "constraint_acceptance_preparations",
                       # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the
                       # inventor's own decision criteria and per-alternative
                       # values, append-only (typed kinds, no payload, no

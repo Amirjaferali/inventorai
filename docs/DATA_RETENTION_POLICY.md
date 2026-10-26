@@ -32,6 +32,7 @@ notably LQ-09/LQ-10/TQ-07) and separate Owner acceptance.
 | Component prototype-need notes (the inventor's own optional planning note of what they expect to need of one declared component for one prototype; COMPONENT-PROTOTYPE-NEED-NOTE-01) | Durable SQLite (`component_prototype_needs`) — ONE current value per project and declared component: a save replaces the text and clearing the note removes that row; no history is kept; clearing never removes the component itself, and a withdrawn component's note stays stored but is no longer shown | YES |
 | Components taking part in a declared interaction (the inventor's own statement of which declared components take part in one interaction; COMPONENT-INTERFACE-PARTICIPATION-01) | Durable SQLite (`subsystem_interface_components`) — ONE current-value row per project, interaction and component: selecting adds that row and unselecting removes it; no history is kept; a withdrawn component's row stays stored but is no longer shown and is never removed by a later selection | YES |
 | Notes for a component taking part in an interaction (the inventor's own expected observable contribution and evidence or review needed; COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01) | Durable SQLite (`subsystem_participation_preparations`) — ONE current-value row per project, interaction and component: saving replaces it and clearing both notes removes it; no history is kept; when the component is unselected the row stays stored, hidden and marked as earlier statements, and a withdrawn component's row stays stored but is no longer shown | YES |
+| Acceptance notes for a mandatory constraint (the inventor's own observable acceptance criterion and the measurement, evidence or specialist review needed to check one mandatory constraint they declared; MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01) | Durable SQLite (`constraint_acceptance_preparations`) — ONE current-value row per project and constraint identity: saving replaces it and clearing both notes removes it; no history is kept; a correction, a strength change or a withdrawal of the constraint keeps the row (shown as earlier statements after a correction, hidden while the constraint is withdrawn or not mandatory) | YES |
 | Integration evidence anchors (which declared interaction each Integration evidence item belongs to; Stage 15 closure — the evidence itself is in `readiness_evidence`) | Durable SQLite (`integration_evidence_anchors`) — INSERT-only: one immutable anchor per Integration evidence row, written with that row; no update, clear or delete path exists | YES |
 | Audit / commercial scaffolding (`access_audit`, `commercial_audit`, lifecycle, dedupe, usage) | Durable SQLite, append-only; NO live billing data | Partly |
 | Auth rate-limit counters | Durable SQLite (`auth_rate_limits`) — privacy-digest keys, no raw email | NO |
@@ -127,6 +128,13 @@ state: In-memory session store"; "Audit logs: Log files") predates durable SQLit
   interaction, the components and their append-only histories are untouched. It is NOT an
   automatic deletion, NOT physical erasure, NOT an erasure capability and NOT account or project
   erasure; it decides no retention period, and earlier values may persist in backups.
+* MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 extends the same user-initiated current-value
+  behaviour, unchanged in kind, to the owner's own acceptance notes for one mandatory constraint
+  (`constraint_acceptance_preparations`): clearing both acceptance notes removes that single
+  current-value row; correcting, re-grading or withdrawing the constraint keeps the row; the
+  constraint ledger records are untouched. It is NOT an automatic deletion, NOT physical erasure,
+  NOT an erasure capability and NOT account or project erasure; it decides no retention period,
+  and earlier values may persist in backups.
 * Stage 15 closure extends the same user-initiated current-value behaviour, unchanged in kind, to
   the owner's own interface dependency declarations (`subsystem_interface_dependencies`): editing a
   declaration replaces it in place, and clearing a dependency declaration removes that single
