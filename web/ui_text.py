@@ -8358,6 +8358,32 @@ UI_STRINGS = {
         "en": "Save these notes",
         "ar": "احفظ هذه الملاحظات",
     },
+    # CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the same notes beside the
+    # constraint's Validation Plan step (report / PDF Section 14).
+    "UI_PCA_VP_CRITERION": {
+        "en": "Observable acceptance criterion you recorded",
+        "ar": "معيار القبول القابل للملاحظة الذي سجّلته",
+    },
+    "UI_PCA_VP_EVIDENCE": {
+        "en": "Measurement, evidence or review by a specialist you recorded as needed",
+        "ar": "القياس أو الدليل أو مراجعة المختص التي سجّلت أنها مطلوبة",
+    },
+    "UI_PCA_VP_MISSING": {
+        "en": "Not recorded yet for the current version of this constraint:",
+        "ar": "غير مسجّل بعد للصيغة الحالية:",
+    },
+    "UI_PCA_VP_EARLIER": {
+        "en": "The notes below were recorded for an earlier version of this constraint. They are your earlier statements, have not been reconfirmed for its current version and are not counted as recorded for it.",
+        "ar": "سُجّلت الملاحظات أدناه لصيغة سابقة من هذا القيد. إنها أقوالك السابقة، ولم يُعَد تأكيدها للصيغة الحالية، ولا تُحتسب مسجّلة لها.",
+    },
+    "UI_PCA_VP_UNAVAILABLE": {
+        "en": "Your notes for checking this constraint cannot be shown right now.",
+        "ar": "لا يمكن عرض ملاحظاتك للتحقق من هذا القيد الآن.",
+    },
+    "UI_PCA_VP_BOUNDARY": {
+        "en": "These are your own statements (OWNER_STATED / UNVALIDATED). InventorAI has not checked them; recording them does not verify the constraint or show that it can be met.",
+        "ar": "هذه أقوالك الخاصة (OWNER_STATED / UNVALIDATED). لم يفحصها InventorAI؛ وتسجيلها لا يتحقق من القيد ولا يبيّن أنه ممكن التحقيق.",
+    },
     "UI_PCA_MSG_SAVED": {
         "en": "Your notes were saved. They are your own statements and have not been checked.",
         "ar": "حُفظت ملاحظاتك. إنها أقوالك الخاصة ولم تُفحص.",

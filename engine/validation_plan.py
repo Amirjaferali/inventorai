@@ -52,6 +52,19 @@ current wording is quoted verbatim; responsibility and confidence stay
 yields nothing, and an unreadable constraint history yields ONE blocked item
 (never a silent absence).
 
+CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: when the web layer has attached
+the inventor's stored acceptance notes (MANDATORY-CONSTRAINT-ACCEPTANCE-
+PREPARATION-01; ``state.constraint_acceptance_preparations``), each
+mandatory-constraint step also carries ``constraint_acceptance``: the notes
+recorded for the constraint's CURRENT version verbatim and which of the two
+inputs is not recorded yet; notes saved for an earlier version are carried as
+EARLIER statements and count as recorded for nothing; unreadable or
+inconsistent notes read UNAVAILABLE, never "not recorded"; a carrier that is
+not attached leaves the field ``None`` (nothing claimed). The notes are
+validated whole through the constraint owner's own rules and are never read
+for meaning. The step's identity, statement, closure, responsibility,
+confidence and order are unchanged, so nothing is verified, met or credited.
+
 The module-level name ``derive_requirement_landscape`` is the authorized §19 test
 seam: tests may monkeypatch it at this import site to construct BLOCKED / mixed /
 malformed cases. Production behavior is driven by the real Increment 4 derivation.
@@ -62,6 +75,8 @@ from typing import Optional, Tuple
 from engine.idea_state import (
     OWNER_STATED,
     CONSTRAINT_STRENGTH_MANDATORY, PROJECT_CONSTRAINT_DISPOSITIONS, constraint_history,
+    CONSTRAINT_ACCEPTANCE_FIELDS, CONSTRAINT_ACCEPTANCE_UNREADABLE,
+    current_constraint_acceptance, validate_constraint_acceptance_preparations,
     OWNER_INPUT, SYSTEM_ANALYSIS, SPECIALIST_INPUT, EMPIRICAL_EVIDENCE, UNDETERMINED,
     DISPOSITION_ANSWERED, DISPOSITION_PROVISIONAL_ASSUMPTION,
     active_declared_contradiction_pairs,
@@ -199,6 +214,12 @@ _CONSTRAINT_CLOSURE = (
     "specialist input would show whether this constraint is met. Completing "
     "this preparation does not verify the constraint or show that it can be "
     "met.")
+# CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the closed states of a
+# constraint step's attached acceptance notes.
+CONSTRAINT_ACCEPTANCE_RECORDED = "RECORDED"            # current-version notes
+CONSTRAINT_ACCEPTANCE_NONE = "NONE_RECORDED"           # nothing stored
+CONSTRAINT_ACCEPTANCE_EARLIER = "EARLIER_VERSION"      # saved for an earlier version
+CONSTRAINT_ACCEPTANCE_UNAVAILABLE = "UNAVAILABLE"      # unreadable / inconsistent
 _CONSTRAINT_UNAVAILABLE_ID = "vblock:constraint:unavailable"
 _CONSTRAINT_UNAVAILABLE_LABEL = "Mandatory constraints you declared"
 _CONSTRAINT_UNAVAILABLE_MISSING = "a readable record of your declared constraints"
@@ -219,6 +240,19 @@ class ProvenanceRef:
 
 
 @dataclass(frozen=True)
+class ConstraintAcceptanceView:
+    """CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the inventor's acceptance
+    notes for ONE mandatory-constraint step. ``status`` is one of the closed
+    CONSTRAINT_ACCEPTANCE_* states; ``recorded`` the stored notes as
+    ``(field_name, text)`` pairs in canonical field order (verbatim; for
+    EARLIER_VERSION they are earlier statements, not reconfirmed); ``missing``
+    the field names not recorded for the CURRENT version."""
+    status: str
+    recorded: Tuple[Tuple[str, str], ...] = ()
+    missing: Tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
 class ValidationStep:
     step_id: str
     statement: str
@@ -232,6 +266,10 @@ class ValidationStep:
     # canonical field order (verbatim; empty when none is recorded or the
     # step is not an interface step).
     interface_preparation: Tuple[Tuple[str, str], ...] = ()
+    # CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: for a mandatory-constraint
+    # step only, the attached acceptance notes (``None`` when not attached or
+    # the step is not a constraint step).
+    constraint_acceptance: Optional[ConstraintAcceptanceView] = None
 
 
 @dataclass(frozen=True)
@@ -273,6 +311,7 @@ def _constraint_items(state):
             provenance=ProvenanceRef(anchor_kind=CONSTRAINT_ANCHOR_KIND,
                                      reference="unavailable",
                                      display_label=_CONSTRAINT_UNAVAILABLE_LABEL)),)
+    acceptance = _constraint_acceptance_views(state, history)
     steps = []
     for constraint in history.current:
         if constraint.strength != CONSTRAINT_STRENGTH_MANDATORY:
@@ -287,8 +326,50 @@ def _constraint_items(state):
                                      reference=constraint.constraint_id,
                                      display_label=_CONSTRAINT_LABEL),
             confidence=CONFIDENCE_UNDETERMINED,
+            constraint_acceptance=(None if acceptance is None
+                                   else acceptance(constraint.constraint_id)),
         ))
     return tuple(steps), ()
+
+
+def _constraint_acceptance_views(state, history):
+    """``None`` when no acceptance carrier is attached (nothing is claimed),
+    else a function ``constraint_id -> ConstraintAcceptanceView``. The
+    attached notes are validated WHOLE against this state's own ledger by the
+    constraint owner; an unreadable carrier or ANY defect makes every
+    constraint step UNAVAILABLE (never partial, never "not recorded"). Read
+    only; the text is carried verbatim, never read for meaning."""
+    carrier = getattr(state, "constraint_acceptance_preparations", None)
+    if carrier is None:
+        return None
+    unavailable = ConstraintAcceptanceView(status=CONSTRAINT_ACCEPTANCE_UNAVAILABLE)
+    try:
+        if carrier is CONSTRAINT_ACCEPTANCE_UNREADABLE or isinstance(carrier, str):
+            raise ValueError("unreadable acceptance notes")
+        preparations = validate_constraint_acceptance_preparations(
+            tuple(carrier), list(getattr(state, "assertions", None) or ()))
+        current = current_constraint_acceptance(preparations, history)
+    except Exception:
+        return lambda _constraint_id: unavailable
+    fields = CONSTRAINT_ACCEPTANCE_FIELDS
+
+    def view(constraint_id):
+        stored = current.get(constraint_id)
+        if stored is None:
+            return ConstraintAcceptanceView(status=CONSTRAINT_ACCEPTANCE_NONE,
+                                            missing=fields)
+        preparation, earlier = stored
+        recorded = tuple((f, preparation.value(f)) for f in fields
+                         if preparation.value(f) is not None)
+        if earlier:
+            # Earlier statements are shown, but nothing counts as recorded for
+            # the current version until the inventor saves them again.
+            return ConstraintAcceptanceView(status=CONSTRAINT_ACCEPTANCE_EARLIER,
+                                            recorded=recorded, missing=fields)
+        return ConstraintAcceptanceView(
+            status=CONSTRAINT_ACCEPTANCE_RECORDED, recorded=recorded,
+            missing=tuple(f for f in fields if preparation.value(f) is None))
+    return view
 
 
 # --- Classification helpers (pure) ------------------------------------------------

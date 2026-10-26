@@ -1253,6 +1253,26 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     <div style="color:#667">{{ t('UI_S15_PREP_OWNER_STATED') }}</div>
   </div>
   {% endif %}
+  {# CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the inventor's own acceptance
+     notes for a mandatory-constraint step, verbatim under fixed bilingual
+     labels: what is recorded for the current version, what is not recorded
+     yet, earlier-version notes labelled as not reconfirmed, or unavailable. #}
+  {% if st.constraint_acceptance %}
+  {% set ca = st.constraint_acceptance %}
+  {% set ca_labels = {'acceptance_criterion': 'UI_PCA_VP_CRITERION', 'evidence_needed': 'UI_PCA_VP_EVIDENCE'} %}
+  <div class="vp-constraint-acceptance" data-vp-constraint-acceptance="{{ ca.status }}" style="font-size:12px;color:#445;line-height:1.5;margin:0 0 4px 0">
+    {% if ca.status == 'UNAVAILABLE' %}
+    <div>{{ t('UI_PCA_VP_UNAVAILABLE') }}</div>
+    {% else %}
+    {% if ca.status == 'EARLIER_VERSION' %}<div data-vp-ca-earlier>{{ t('UI_PCA_VP_EARLIER') }}</div>{% endif %}
+    {% for item in ca.recorded %}
+    <div><strong>{{ t(ca_labels[item.field]) }}:</strong> <bdi dir="auto" style="white-space:pre-wrap">{{ item.text }}</bdi></div>
+    {% endfor %}
+    {% if ca.missing %}<div data-vp-ca-missing><strong>{{ t('UI_PCA_VP_MISSING') }}</strong> {% for f in ca.missing %}{{ t(ca_labels[f]) }}{% if not loop.last %}; {% endif %}{% endfor %}</div>{% endif %}
+    <div style="color:#667">{{ t('UI_PCA_VP_BOUNDARY') }}</div>
+    {% endif %}
+  </div>
+  {% endif %}
   {% if st.advisory %}
   {% for advisory_line in st.advisory.split('\n') %}
   <div class="vp-advisory" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">{{ advisory_line }}</div>

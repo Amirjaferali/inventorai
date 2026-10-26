@@ -551,33 +551,33 @@ def test_w10_arabic_page_and_copy_parity(client):
         assert claim not in lowered, claim
 
 
-def test_w11_validation_plan_report_and_export_are_unchanged_by_the_notes(client):
+def test_w11_validation_plan_semantics_and_export_are_unchanged_by_the_notes(client):
+    # AMENDED at CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01 (Owner Option B): the notes are now shown beside
+    # their constraint step in report / PDF Section 14 (pinned by tests/test_constraint_acceptance_validation_plan.py);
+    # every other field of the plan, the step's authority and the Stage 35 export stay unchanged.
+    def semantics(plan):
+        return (plan.outcome, plan.blocked_items, [
+            (st.step_id, st.statement, st.responsibility, st.evidence_category, st.closure_condition,
+             st.provenance, st.confidence, st.interface_preparation) for st in plan.steps])
     sid, cid = _project(client)
     plan_before = derive_validation_plan(_live(sid))
-    report_before = client.get("/session/%s/deliverable" % sid).get_data(as_text=True)
     _post(client, sid, _form_for(client, sid, cid), "Zq-accept-9912", "Zq-evidence-9912")
     assert _rows(sid)
-    assert derive_validation_plan(_live(sid)) == plan_before
+    client.get("/session/%s/deliverable" % sid)                                 # attaches the carrier
+    assert semantics(derive_validation_plan(_live(sid))) == semantics(plan_before)
     [step] = [s for s in plan_before.steps if s.step_id == "vstep:constraint:" + cid]
     assert step.responsibility == "UNDETERMINED" and step.confidence == "UNDETERMINED"
-    report = client.get("/session/%s/deliverable" % sid).get_data(as_text=True)
-    stamp = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")              # generation time only
-    assert stamp.sub("", report) == stamp.sub("", report_before) and "Zq-accept-9912" not in report
     import engine.disclosure_export as export
     assert "constraint_acceptance" not in open(export.__file__, encoding="utf-8").read()
-    for template in ("deliverable.html", "report.html"):
-        try:
-            source = open(appmod.app.root_path + "/templates/" + template, encoding="utf-8").read()
-        except FileNotFoundError:
-            continue
-        assert "pca" not in source and "constraint_acceptance" not in source, template
 
 
 def test_w12_the_constraint_writer_and_validation_plan_owner_are_otherwise_unchanged(client):
     sid, cid = _project(client)
     _post(client, sid, _form_for(client, sid, cid), "x")
     _correct(client, sid, cid, "It must weigh under 1.5 kg")                   # ledger actions unaffected
-    for path in ("engine/validation_plan.py", "engine/progression_loop.py", "engine/deliverable_assembler.py"):
+    # AMENDED at CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the Validation Plan owner now reads the attached
+    # notes for display beside the constraint step; the progression loop and the canonical assembler still do not.
+    for path in ("engine/progression_loop.py", "engine/deliverable_assembler.py"):
         source = open(path, encoding="utf-8").read()
         assert "constraint_acceptance" not in source and "CONSTRAINT_ACCEPTANCE" not in source, path
     src = open(appmod.__file__, encoding="utf-8").read()

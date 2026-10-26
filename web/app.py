@@ -7429,6 +7429,10 @@ def _deliverable_context(sid):
     # HTML report and the PDF closed.
     if not _attach_project_subsystems(sid, state):
         return None
+    # CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the inventor's acceptance
+    # notes beside their mandatory-constraint step in Section 14 (HTML and
+    # PDF). Unreadable notes read UNAVAILABLE there; the report still renders.
+    _attach_constraint_acceptance_carrier(sid, state)
     if (getattr(state, "domain", None) is None and not reconstructed_deliverable
             and (getattr(state, "success_criteria", None)
                  or getattr(state, "measurement_methods", None)
@@ -7474,6 +7478,46 @@ def _exclude_constraints_from_withdrawn_count(package, state):
         "total": total, "note": meta.get("note") if total else None}
 
 
+def _attach_constraint_acceptance_carrier(sid, state):
+    """CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: refresh
+    ``state.constraint_acceptance_preparations`` from the DURABLE notes of
+    ``sid`` through the existing reader (``load_constraint_acceptance``, which
+    validates the ledger and the notes whole). A project absent from the store,
+    or a store without the reader, leaves the carrier NOT ATTACHED (``None``:
+    nothing is claimed); any other read failure attaches the UNREADABLE marker
+    (the step reads unavailable, never "not recorded"). The Validation Plan
+    re-validates the attached notes against THIS state's own ledger, so notes
+    from a durable moment the state does not show are never paired with it.
+    Like the Stage 15 preparation carrier, a state with no current mandatory
+    constraint and no carrier yet keeps its carrier untouched, so rendering
+    changes nothing for every other project."""
+    if getattr(state, "constraint_acceptance_preparations", None) is None:
+        try:
+            history = _constraints.constraint_history(
+                list(getattr(state, "assertions", None) or ()))
+            needed = any(c.strength == _constraints.CONSTRAINT_STRENGTH_MANDATORY
+                         for c in history.current)
+        except Exception:
+            # The plan reports an unreadable constraint history itself.
+            needed = False
+        if not needed:
+            return
+    loader = getattr(_get_store(), "load_constraint_acceptance", None)
+    if not callable(loader):
+        state.constraint_acceptance_preparations = None
+        return
+    try:
+        record = loader(sid)
+    except _ProjectNotFound:
+        state.constraint_acceptance_preparations = None
+        return
+    except Exception:
+        state.constraint_acceptance_preparations = \
+            _constraints.CONSTRAINT_ACCEPTANCE_UNREADABLE
+        return
+    state.constraint_acceptance_preparations = list(record["preparations"])
+
+
 def _attach_section_14_interface_preparation(package, state):
     """Stage 15 Slice 3: add ``interface_preparation`` (the inventor's recorded
     preparation inputs, verbatim, as ``{"field", "text"}`` items) to each
@@ -7506,6 +7550,15 @@ def _attach_section_14_interface_preparation(package, state):
         if step.provenance.anchor_kind == CONSTRAINT_ANCHOR_KIND:
             constraint_item += 1
             row["constraint_item"] = constraint_item
+            # CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the attached notes,
+            # verbatim, with what is not recorded for the current version.
+            acceptance = step.constraint_acceptance
+            if acceptance is not None:
+                row["constraint_acceptance"] = {
+                    "status": acceptance.status,
+                    "recorded": [{"field": f, "text": text}
+                                 for f, text in acceptance.recorded],
+                    "missing": list(acceptance.missing)}
 
 
 def _quantity_statements(package, state):
