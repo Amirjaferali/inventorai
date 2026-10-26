@@ -12170,7 +12170,8 @@ def parts_components_interactions(sid):
 # participation the inventor recorded for it to the notes stored for that exact
 # ``(interface_id, component_id)`` pair. Entered through the central project
 # authorization and read ONLY through the Stage 15 owner's validated
-# single-snapshot reader (``load_participation_preparations``), once per
+# single-snapshot reader (``load_preliminary_composition``, which extends
+# ``load_participation_preparations`` inside the same snapshot), once per
 # request; the current participations and notes are selected by the owner's
 # own projections. Nothing is joined by text, inferred, repaired, persisted,
 # exported or judged: no BOM, quantity, selection, sizing, compatibility,
@@ -12191,15 +12192,31 @@ _T6_STATUS_KEYS = {
     T6_STATUS_EARLIER: "UI_T6_STATUS_EARLIER",
     T6_STATUS_NOT_RECORDED: "UI_T6_STATUS_NOT_RECORDED",
 }
+# T6-INTERFACE-VERIFICATION-REFERENCE-01: the interaction's OWN preparation
+# inputs (Stage 15 Slice 3; current value only, so no earlier state) shown per
+# field beside each participation, kept apart from the pair's notes. The
+# Validation Plan step of the interaction is a separate owner's derivation that
+# this page neither reads nor reconstructs: its reference stays UNRESOLVED.
+T6_FIELD_RECORDED = "RECORDED"
+T6_FIELD_NOT_RECORDED = "NOT_RECORDED"
+T6_VP_REFERENCE_UNRESOLVED = "UNRESOLVED"
+_T6_INTERFACE_FIELD_KEYS = {
+    _subsystem_model.PREPARATION_OPERATING_CONDITIONS: "UI_S15_PREP_CONDITIONS",
+    _subsystem_model.PREPARATION_ACCEPTANCE_CRITERION: "UI_S15_PREP_ACCEPTANCE",
+    _subsystem_model.PREPARATION_EVIDENCE_NEEDED: "UI_S15_PREP_EVIDENCE",
+}
 
 
 def _t6_composition(record):
-    """The composition of ONE validated ``load_participation_preparations``
+    """The composition of ONE validated ``load_preliminary_composition``
     record. Pure and deterministic. For each CURRENT component, in declaration
     order: its identity and current details and, in interaction order, every
     CURRENT participation with the status and verbatim notes of that exact
-    pair. A component with no current participation gets none (never
-    invented); a pair whose interaction is not in this snapshot raises
+    pair and, apart from them, the interaction's own preparation inputs (each
+    field recorded verbatim or not recorded, keyed by the exact
+    ``interface_id``) with its Validation Plan reference UNRESOLVED. A
+    component with no current participation gets none (never invented); a
+    pair or preparation whose interaction is not in this snapshot raises
     ``ValueError`` (the caller then shows the whole composition unavailable)."""
     components = tuple(record["components"])
     interfaces = {item.interface_id: item for item in record["interfaces"]}
@@ -12211,6 +12228,11 @@ def _t6_composition(record):
     for interface_id in participants:
         if interface_id not in interfaces:
             raise ValueError("participation names no interaction of this snapshot")
+    interface_notes = {}
+    for item in record["interface_preparations"]:
+        if item.interface_id not in interfaces or item.interface_id in interface_notes:
+            raise ValueError("preparation names no single interaction of this snapshot")
+        interface_notes[item.interface_id] = item
     result = []
     for component in components:
         links = []
@@ -12232,6 +12254,9 @@ def _t6_composition(record):
                 "notes": [] if stored is None else [
                     {"field": field_name, "text": stored.value(field_name)}
                     for field_name in stored.recorded_fields()],
+                "interface_fields": _t6_interface_fields(
+                    interface_notes.get(interface_id)),
+                "vp_reference": T6_VP_REFERENCE_UNRESOLVED,
             })
         result.append({
             "component_id": component.component_id,
@@ -12245,12 +12270,29 @@ def _t6_composition(record):
     return {"components": result, "interface_count": len(order)}
 
 
+def _t6_interface_fields(preparation):
+    """The three preparation inputs of ONE interaction in canonical order,
+    each ``RECORDED`` with its verbatim text or ``NOT_RECORDED`` (``preparation``
+    is ``None`` when nothing is recorded). Presence only: never sufficiency,
+    correctness, a check or a result."""
+    fields = []
+    for field_name in _subsystem_model.PREPARATION_FIELDS:
+        text = None if preparation is None else preparation.value(field_name)
+        fields.append({
+            "field": field_name,
+            "label_key": _T6_INTERFACE_FIELD_KEYS[field_name],
+            "status": T6_FIELD_NOT_RECORDED if text is None else T6_FIELD_RECORDED,
+            "text": text,
+        })
+    return fields
+
+
 def _t6_composition_context(sid):
     """``(status, context)`` of the preliminary composition from ONE durable
-    snapshot (``load_participation_preparations``, called once). A missing
+    snapshot (``load_preliminary_composition``, called once). A missing
     project is ``_T6_NO_PROJECT``; anything unreadable, corrupt or
     inconsistent is ``_T6_UNAVAILABLE``. Nothing is written."""
-    loader = getattr(_get_store(), "load_participation_preparations", None)
+    loader = getattr(_get_store(), "load_preliminary_composition", None)
     if not callable(loader):
         return _T6_UNAVAILABLE, None
     try:
