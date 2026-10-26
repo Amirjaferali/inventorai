@@ -773,6 +773,12 @@ class ConstraintAcceptanceNotMandatory(ConstraintAcceptanceError):
     """The constraint the notes name is no longer a mandatory constraint."""
 
 
+# CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the attached-carrier marker for
+# notes that exist durably but could not be read (see
+# ``IdeaState.constraint_acceptance_preparations``).
+CONSTRAINT_ACCEPTANCE_UNREADABLE = "unreadable"
+
+
 def valid_constraint_acceptance_text(value):
     """A stored note is exactly what the route stores: a non-empty,
     already-trimmed string (internal line breaks kept) within the bound and
@@ -1167,6 +1173,19 @@ class IdeaState:
     # only: outside the answer replay, never evidence, a result, a gap, a
     # readiness, progression or compatibility input.
     subsystem_interface_preparations : Optional[list] = None
+    # CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the inventor's stored
+    # acceptance notes per constraint identity (frozen
+    # ``ConstraintAcceptancePreparation`` values, MANDATORY-CONSTRAINT-
+    # ACCEPTANCE-PREPARATION-01), attached from the durable
+    # `constraint_acceptance_preparations` sidecar by the web layer's
+    # deliverable seam so the Validation Plan can show them beside their
+    # constraint step. ``None`` means NOT ATTACHED (nothing may then be
+    # claimed about what is recorded); ``CONSTRAINT_ACCEPTANCE_UNREADABLE``
+    # means the durable notes could not be read (shown as unavailable, never
+    # as "not recorded"); a list — possibly empty — is the attached durable
+    # truth. Planning inputs only: outside the answer replay, never evidence,
+    # a result, a gap, a readiness or progression input.
+    constraint_acceptance_preparations : Optional[object] = None
 
     # T2-A Quantified Requirements Slice 1: the in-memory CARRIER of the
     # project's validated durable requirement-quantity history (a list of
