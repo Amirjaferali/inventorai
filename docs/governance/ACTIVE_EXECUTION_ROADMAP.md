@@ -187,6 +187,7 @@ hides them.
 | Production-readiness claim | NONE |
 | Downstream authorization | None. Phase 4 closure authorizes no AA progression, no Phase 5/6, no S-6 classification, and no production-readiness, feasibility, patent-validity, manufacturing-readiness, commercialization-readiness, inventor-development, or idea-growth claim beyond the specifically authorized runtime-integration fact. |
 | Adaptive Idea Orchestration first lane | ACTIVE — activated by Commit B (committed §§4–7 activation update), integrated into the authoritative execution branch. The lane name and scope are exactly those defined by `FIRST_LANE_AUTHORIZATION_ADAPTIVE_IDEA_ORCHESTRATION.md`; its bounded first increment is the accepted `docs/product/FDC-001_FIRST_INCREMENT_IMPLEMENTATION_SPECIFICATION.md`. The lane grants no `technically_selected` or `frozen`, runs no benchmark, makes no persistence change, and alters no hold or closure. |
+| T6 preliminary-composition lane (`T6-PRELIMINARY-COMPOSITION-PROJECTION-01`) | ACTIVE — activated by this committed §§4–7 activation update, effective on the verified merge of its documentation-only PR into the authoritative execution branch, on the Owner's explicit bounded activation decision of 2026-10-26 (Companion §0(2)). The lane name and scope are exactly those defined by `docs/governance/T6_FIRST_LANE_AUTHORIZATION_PRELIMINARY_COMPOSITION.md` (APPROVED AND FINAL, PR #876, corrected by PR #878), within `MVP_SCOPE_FREEZE.md` APPEND-ONLY AMENDMENT 2 (PR #877): ONE single-project, read-only, ephemeral composition of existing, explicitly attributed Stage 15 owner references, entered through the central project authorization and read only through `load_participation_preparations`. Companion §0(5)–(6) evidence: the verified Stage 15 identity, provenance, current-state and project-authorization boundaries, and 193 passing focused tests at `51362456db8eedeeb46eb7f6560896cc837f79c4`. Activation authorizes no implementation: no T6 product code exists and none is authorized; Path T, D4, quantities, BOM, selection, sizing, compatibility, manufacturing claims and multi-domain runtime technical orchestration stay NOT AUTHORIZED; no hold or closure is altered. |
 | FDC-001 first increment | IMPLEMENTED, MERGED, AND ACTIVE — implementation merged via PR #17 (`fbd2992977a23b34b2ceca0f68e5d56302ddb426` → true-merge `ed302a48eb97e559a172581ff52c3468c5cfa112`). At the authoritative tip, `engine/decision_workspace.py`, `web/templates/decision_workspace.html`, and the 32-test acceptance set `tests/test_fdc001_first_increment.py` are present. The acceptance set is historically preserved; it is NOT entirely byte-frozen going forward — exactly one obsolete route-test expectation is superseded under the governed reconciliation below (see "FDC-002 route/test contract reconciliation"). Grants no `technically_selected`/`frozen`; no benchmark; no persistence change. |
 | FDC-001 practical-use exercise | COMPLETE — `VISIBLE VALUE CONFIRMED`; readiness ended truthfully at `blocked_by_evidence_gap`, remaining blocker `missing_physical_or_calibration_information`. Observation/closure record merged via PR #18 (`dd17fcdbbd98aed036cdcf0308fc30a7d46c97cc` → true-merge `38b5d81e319d585c74182dca245886b4bd8520b3`). No benchmark; no final selection. |
 | FDC-002 specification | MERGED — external-evidence re-entry & gap-assessment specification merged via PR #19 (`73e58db4c0aa18b8877569c46c65248149148d0e` → true-merge `820b8f6a8b56b8245b6ddfef71930e219105aa78`). A compatibility conflict with the frozen FDC-001 contract was discovered BEFORE any implementation mutation; the owner-approved compatibility boundary was preserved; the compatibility amendment was true-merged via PR #20 (`a8538d10411df0985afdf727343d07aaabe17df1` → true-merge `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`). Specification status is now `IMPLEMENTED AND INTEGRATED — PR #23 CLOSED`; `IMPLEMENTATION_AUTHORITY: CONSUMED AND CLOSED`. The pre-implementation headers `REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED` / `EXECUTION_AUTHORITY: NONE` are retained in the specification as historical provenance only. The specification remains the governing contract for the integrated FDC-002 behavior and grants no further implementation authority. |
@@ -321,6 +322,7 @@ hides them.
 | `dd17fcd` / true-merge `38b5d81` (PR #18) | FDC-001 first practical-use observation & closure record — `VISIBLE VALUE CONFIRMED`; readiness truthfully `blocked_by_evidence_gap` (blocker `missing_physical_or_calibration_information`); documentation-only, non-authorizing. |
 | `73e58db` / true-merge `820b8f6` (PR #19) | FDC-002 external-evidence re-entry & gap-assessment specification — at that commit `REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED`; `EXECUTION_AUTHORITY: NONE` (historical commit-chain provenance; the specification status is now `IMPLEMENTED AND INTEGRATED — PR #23 CLOSED` per §4). |
 | `a8538d1` / true-merge `0b0517b` (PR #20) | FDC-002 compatibility-boundary amendment — the `missing_physical_or_calibration_information` clearing prohibition relocated to the user-facing route surface; legacy `resolve_gap()`/`reclassify_gap()` domain methods preserved unchanged for the frozen FDC-001 contract; documentation-only. **Pre-synchronization predecessor tip — base of the PR #21 roadmap synchronization; superseded as the authoritative tip once PR #21 is integrated.** |
+| T6 activation update — this update | Committed §§4–7 lane-activation update recording `T6-PRELIMINARY-COMPOSITION-PROJECTION-01` as ACTIVE upon integration into the authoritative execution branch (per Companion §0(7) and §12.A). Activation-only: authorizes no implementation, Path T, D4, BOM or multi-domain runtime technical orchestration; all holds and closed states preserved. |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -372,8 +374,19 @@ not issue `technically_selected` or `frozen`. Each further increment still requi
 a separate, explicit, exact-scope owner authorization and a named test plan (see
 §7).
 
-No further phase may be inferred from numerical sequence. Beyond this activated
-first lane, a separate repository-grounded owner authorization is required before
+The T6 preliminary-composition lane (`T6-PRELIMINARY-COMPOSITION-PROJECTION-01`; existing Orchestrated Idea
+Mode, internal "Path N"; ONE single-project, read-only, ephemeral composition of existing,
+explicitly attributed Stage 15 owner references) is ACTIVE as of its committed §§4–7
+activation update, scoped by `T6_FIRST_LANE_AUTHORIZATION_PRELIMINARY_COMPOSITION.md`
+and `MVP_SCOPE_FREEZE.md` Amendment 2. Activation itself authorizes no code; no T6
+implementation exists or has started; it persists nothing and creates no owner, store,
+registry or engine; and Path T, D4, quantities, BOM, selection, sizing, compatibility,
+manufacturing claims and multi-domain runtime technical orchestration stay NOT
+AUTHORIZED. Implementation still requires a separate, explicit, exact-scope owner
+authorization and a named test plan (see §7).
+
+No further phase may be inferred from numerical sequence. Beyond these activated
+lanes, a separate repository-grounded owner authorization is required before
 any new product implementation may begin.
 
 Synchronized lane status (prepared on the predecessor merge
@@ -487,7 +500,7 @@ AUTHORIZED NOW:
 - Reviewing committed governance documents.
 - No product implementation or repository write is authorized without explicit owner authorization for that exact scope.
 
-NOT AUTHORIZED (the first lane is active; these remain out of scope and are not authorized by activation):
+NOT AUTHORIZED (the first lane and the T6 preliminary-composition lane are active; these remain out of scope and are not authorized by activation):
 
 - Any working-tree write without explicit owner authorization for that exact scope.
 - Updating `PATH_N_CURRENT_EXECUTION_ANCHOR.md`.
@@ -501,6 +514,10 @@ NOT AUTHORIZED (the first lane is active; these remain out of scope and are not 
 - Production-readiness, feasibility, patent-validity, manufacturing-
   readiness, commercialization-readiness, inventor-development, or
   idea-growth claims.
+- Any T6 product implementation, or any T6 operation beyond its per-lane
+  authorization: Path T, D4, quantities, BOM, selection, sizing,
+  compatibility, manufacturing claims or multi-domain runtime technical
+  orchestration.
 
 Preserved state:
 
@@ -518,6 +535,14 @@ Preserved state:
     AA-4 final S-6 classification has NOT been performed.
 
 NEXT GOVERNED ACTION:
+
+    T6 preliminary-composition lane (`T6-PRELIMINARY-COMPOSITION-PROJECTION-01`): ACTIVE as of its
+    committed §§4–7 activation update. Activation grants no implementation
+    authority. Its next governed action is a separate, explicit,
+    repository-grounded owner implementation authorization that names the exact
+    files and paths, a named acceptance-test set derived from the per-lane
+    authorization §6, and explicit preservation of every exclusion, hold and
+    closed state. No T6 implementation is granted by this activation update.
 
     The Adaptive Idea Orchestration first lane is ACTIVE. The FDC-001 first
     increment has been authorized, implemented, merged, and exercised; its
