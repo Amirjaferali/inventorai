@@ -454,6 +454,60 @@ jobs:
           "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip check
           "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip freeze
 
+      - name: Compute the Chromium prerequisite cache key
+        # APT-PREREQ-CACHE-01. ONE exact key, computed BEFORE anything is installed,
+        # byte-identical in .github/workflows/apt-prereq-cache.yml (which seeds it on the
+        # base branch): runner image, pinned Playwright version and the SHA-256 of the
+        # apt prerequisites Playwright reports missing. No key (an unknown image) means
+        # no cache: the installer below then runs exactly as on a miss.
+        id: aptkey
+        run: |
+          set -euo pipefail
+          if [ -z "${ImageOS:-}" ] || [ -z "${ImageVersion:-}" ]; then
+            echo "::warning::Runner image identity unavailable; no apt prerequisite cache"
+            echo "key=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          pw="$(python -c 'import importlib.metadata as m; print(m.version("playwright"))')"
+          # The dry run lists what is missing and, by design, exits 1 when anything is;
+          # exit 0 means nothing is missing. Any other outcome means no cache.
+          rc=0
+          out="$(python -m playwright install-deps --dry-run chromium 2>&1)" || rc=$?
+          case "$rc:$out" in
+            "0:"*"All system dependencies are installed."* | "1:"*"Missing system dependencies ("*) ;;
+            *)
+              echo "::warning::Cannot list the Chromium apt prerequisites (exit $rc); no apt prerequisite cache"
+              echo "key=" >> "$GITHUB_OUTPUT"
+              exit 0
+              ;;
+          esac
+          deps="$(printf '%s\n' "$out" | sha256sum | cut -c1-32)"
+          echo "key=apt-prereq-chromium-v1-${ImageOS}-${ImageVersion}-pw${pw}-${deps}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore cached Chromium prerequisite packages (base-branch seed only)
+        # Restore only, exact key only (no restore-keys); a pull request never saves.
+        # The files only spare apt a download; they are never an installation.
+        id: aptcache
+        if: steps.aptkey.outputs.key != ''
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/apt-prereq-debs
+          key: ${{ steps.aptkey.outputs.key }}
+
+      - name: Stage restored packages in the apt archive directory
+        # apt still runs `apt-get update` against the signed index in the unchanged
+        # installer below and uses a staged file only when it matches that index;
+        # anything else is downloaded as on a miss.
+        if: steps.aptcache.outputs.cache-hit == 'true'
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          debs=("$RUNNER_TEMP"/apt-prereq-debs/*.deb)
+          echo "Restored ${#debs[@]} package archive(s)"
+          if [ "${#debs[@]}" -gt 0 ]; then
+            sudo install -m 0644 -o root -g root "${debs[@]}" /var/cache/apt/archives/
+          fi
+
       - name: Install the matching Chromium and Linux prerequisites
         # Bounded, fail-closed install (CI Correction 01). An unbounded apt-get
         # update inside `playwright install --with-deps` once hung a runner for the

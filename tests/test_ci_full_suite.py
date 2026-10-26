@@ -1117,9 +1117,132 @@ def test_evidence_transfer_is_scoped_to_the_current_run_and_attempt():
 
 
 def test_every_external_action_is_pinned_to_a_full_commit_sha():
-    uses = re.findall(r"^\s+uses: (\S+)", _workflow(), re.M)
+    uses = re.findall(r"^\s+uses: (\S+)", _workflow() + "\n" + _seed_workflow(), re.M)
     assert uses
     for ref in uses:
-        assert re.fullmatch(r"[\w.-]+/[\w.-]+@[0-9a-f]{40}", ref), ref
+        assert re.fullmatch(r"[\w.-]+/[\w.-]+(?:/[\w.-]+)*@[0-9a-f]{40}", ref), ref
     assert "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a" in uses
     assert "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c" in uses
+
+
+# ==========================================================================
+# APT-PREREQ-CACHE-01: the base-branch seeded Chromium prerequisite package cache
+# ==========================================================================
+SEED_WORKFLOW = ROOT / ".github" / "workflows" / "apt-prereq-cache.yml"
+_CACHE_ACTION = "@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0"
+_KEY_STEP = "Compute the Chromium prerequisite cache key"
+_RESTORE_STEP = "Restore cached Chromium prerequisite packages (base-branch seed only)"
+_STAGE_STEP = "Stage restored packages in the apt archive directory"
+_INSTALL_STEP = "Install the matching Chromium and Linux prerequisites"
+_PIP_STEP = "Install existing pinned inputs into an isolated environment"
+
+
+def _seed_workflow():
+    return SEED_WORKFLOW.read_text(encoding="utf-8")
+
+
+def _seed_job():
+    jobs = _jobs(_seed_workflow())
+    assert list(jobs) == ["seed"]
+    return jobs["seed"]
+
+
+def _steps(job):
+    return re.findall(r"^      - name: (.+)$", job, re.M)
+
+
+def test_seed_runs_only_on_a_base_branch_push_or_by_hand_with_a_read_only_token():
+    text = _seed_workflow()
+    head = text[:text.index("\njobs:\n")]
+    assert "\non:\n  push:\n    branches: [feature/atomic-json-session-persistence]\n  workflow_dispatch:\n" in head
+    for word in ("pull_request", "workflow_run", "workflow_call", "schedule", "repository_dispatch", "tags:"):
+        assert word not in head, word
+    assert "\npermissions:\n  contents: read\n" in head
+    assert text.count("permissions:") == 1 and "write" not in text.split("\njobs:\n", 1)[1].split("steps:")[0]
+    assert "\nconcurrency:\n  group: apt-prereq-cache\n" in head
+
+
+def test_seed_runs_no_test_calls_no_workflow_and_changes_no_repository_state():
+    job = _seed_job()
+    assert _steps(job) == ["Check out the pushed base commit", "Set up the repository-required Python", _PIP_STEP,
+                           _KEY_STEP, "Stop when the runner image identity is unavailable", _INSTALL_STEP,
+                           "Collect the package archives the installer downloaded",
+                           "Save the package archives under the exact key"]
+    code = _code(job)
+    for word in ("pytest", "ci_full_suite", "run_universal_smoke", "git push", "git tag", "gh ", "curl ",
+                 "workflow_dispatch", "actions/github-script", "secrets.", "GITHUB_TOKEN", "upload-artifact"):
+        assert word not in code, word
+    assert "persist-credentials: false" in job and "ref: ${{ github.sha }}" in job
+    assert "runs-on: ubuntu-24.04" in _header(job)
+    assert sorted(re.findall(r"^\s+uses: (\S+)", job, re.M)) == sorted([
+        "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+        "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+        "actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9"])
+
+
+def test_seed_and_shards_share_the_exact_key_pip_install_and_bounded_installer():
+    seed, shard = _seed_job(), _jobs()["full_shard"]
+    for name in (_KEY_STEP, _PIP_STEP, _INSTALL_STEP, "Set up the repository-required Python"):
+        assert _step(seed, name) == _step(shard, name), name           # byte for byte, comments included
+    key = _code(_step(shard, _KEY_STEP))
+    for part in ('"${ImageOS:-}"', '"${ImageVersion:-}"', 'm.version("playwright")',
+                 'out="$(python -m playwright install-deps --dry-run chromium 2>&1)" || rc=$?',
+                 '"0:"*"All system dependencies are installed."* | "1:"*"Missing system dependencies ("*) ;;',
+                 'deps="$(printf \'%s\\n\' "$out" | sha256sum | cut -c1-32)"',
+                 "::warning::Cannot list the Chromium apt prerequisites (exit $rc); no apt prerequisite cache",
+                 'echo "key=apt-prereq-chromium-v1-${ImageOS}-${ImageVersion}-pw${pw}-${deps}" >> "$GITHUB_OUTPUT"'):
+        assert part in key, part
+    assert "        id: aptkey\n" in key
+    for job in (seed, shard):                      # computed before anything is installed, in both workflows
+        steps = _steps(job)
+        assert steps.index(_PIP_STEP) < steps.index(_KEY_STEP) < steps.index(_INSTALL_STEP)
+
+
+def test_shards_restore_by_exact_key_only_and_never_save():
+    jobs = _jobs()
+    shard = jobs["full_shard"]
+    steps = _steps(shard)
+    assert steps[steps.index(_KEY_STEP):steps.index(_INSTALL_STEP) + 1] == [
+        _KEY_STEP, _RESTORE_STEP, _STAGE_STEP, _INSTALL_STEP]
+    restore = _step(shard, _RESTORE_STEP)
+    assert "uses: actions/cache/restore" + _CACHE_ACTION in restore
+    assert "        if: steps.aptkey.outputs.key != ''\n" in restore and "        id: aptcache\n" in restore
+    assert "          path: ${{ runner.temp }}/apt-prereq-debs\n" in restore
+    assert "          key: ${{ steps.aptkey.outputs.key }}\n" in restore
+    for word in ("restore-keys", "fail-on-cache-miss", "lookup-only"):
+        assert word not in _code(restore), word
+    assert "actions/cache/save" not in _workflow() and "actions/cache@" not in _workflow()
+    for name in ("scope", "verify", "fast", "required"):                # only the FULL shards use the cache
+        assert "apt-prereq" not in jobs[name] and "actions/cache" not in jobs[name], name
+
+
+def test_restored_archives_are_only_staged_for_apt_after_an_exact_hit():
+    shard = _jobs()["full_shard"]
+    stage = _code(_step(shard, _STAGE_STEP))
+    assert "        if: steps.aptcache.outputs.cache-hit == 'true'\n" in stage
+    assert 'debs=("$RUNNER_TEMP"/apt-prereq-debs/*.deb)' in stage
+    assert 'sudo install -m 0644 -o root -g root "${debs[@]}" /var/cache/apt/archives/' in stage
+    for word in ("dpkg -i", "apt-get install", "--allow-unauthenticated", "AllowUnauthenticated",
+                 "trusted=yes", "apt-key", "sources.list", "continue-on-error"):
+        assert word not in stage, word
+    seed = _code(_seed_job())
+    assert "debs=(/var/cache/apt/archives/*.deb)" in seed and 'dpkg-deb --info "$f"' in seed
+    assert "::error::The installer left no package archive in /var/cache/apt/archives; nothing to seed" in seed
+    save = _step(_seed_job(), "Save the package archives under the exact key")
+    assert "uses: actions/cache/save" + _CACHE_ACTION in save
+    assert "          path: ${{ runner.temp }}/apt-prereq-debs\n" in save
+    assert "          key: ${{ steps.aptkey.outputs.key }}\n" in save
+
+
+def test_the_cache_leaves_the_bounded_installer_and_the_protected_route_unchanged():
+    jobs = _jobs()
+    shard, verify = jobs["full_shard"], jobs["verify"]
+    assert _code(_step(shard, _INSTALL_STEP)) == _code(_step(verify, _INSTALL_STEP))
+    assert _steps(shard) == ["Check out the exact proposed merge", "Verify the tested-merge identity",
+                             "Set up the repository-required Python", _PIP_STEP, _KEY_STEP, _RESTORE_STEP,
+                             _STAGE_STEP, _INSTALL_STEP, "Require a working interpreter, server and real browser",
+                             "Universal guardrail smoke", "Run this shard of the FULL suite",
+                             "Confirm repository data was not changed",
+                             "Upload this shard's evidence (current run and attempt only)"]
+    head = _workflow()[:_workflow().index("\njobs:\n")]
+    assert "\non:\n  pull_request:\n" in head and "push:" not in head and "workflow_dispatch" not in head
