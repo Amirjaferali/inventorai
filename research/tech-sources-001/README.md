@@ -5,7 +5,7 @@
 ## Identity and authority
 - Base: `feature/atomic-json-session-persistence` at `7eeb08577f59ecb88f4694dd1b16cae3049b5749` (Merge PR #888), live tip verified 2026-10-27.
 - Branch: `research/tech-sources-001`. Writes ONLY under `research/tech-sources-001/`. No PR, no merge, no deployment.
-- Authority: Owner-accepted research setup (2026-10-27). Research starts ONLY when `state/campaign-status.md` reads `ACTIVE`;
+- Authority: Owner-accepted research setup (2026-10-27); Owner campaign activation 2026-10-27 (same-session `send_later` preflight PASS, `state/preflight.md`). Research starts ONLY when `state/campaign-status.md` reads `ACTIVE`;
   the Lead sets that after the preflight passes and the Owner's bounded campaign authorization is effective. A run never sets `ACTIVE` itself.
 - This package is evidence only (D13 conventions: provenance register, abstention log, unresolved issues, per-question findings,
   owner-readable summary). It closes no gate, admits no method, activates no capability (D4 and every deferred capability stay inactive),
@@ -35,7 +35,7 @@ Choose lenses adaptively per question; record the lens used for every query in t
 
 ## Run protocol (each scheduled wake-up)
 1. `git fetch origin research/tech-sources-001` and work on that branch at its remote tip. Confirm this README's base line is unchanged.
-2. Read `state/campaign-status.md`. If it is not `ACTIVE`: do no search and no push; if it is `STOPPED`, try step 7 (disable); end the run.
+2. Read `state/campaign-status.md`. If it is not `ACTIVE`: do no search, no push and arm no wake-up; end the run.
 3. Re-read the live authority text on `feature/atomic-json-session-persistence` (`CLAUDE.md` Current authority, `docs/governance/ACTIVE_INCREMENT_CONTRACT.md`
    first Current-authority section). If it materially changes this research (pause, revocation, a register question delivered or settled), stop (step 7).
 4. If `research/tech-sources-001/STOP` exists, stop (step 7).
@@ -43,9 +43,13 @@ Choose lenses adaptively per question; record the lens used for every query in t
 6. Record: sources, IP basis, abstentions, blocked hosts (never retry a host that returned 403 in the same run), findings, contradictions;
    append one run-ledger row (date, run number, questions, queries per lens, fetches, cumulative totals, outcome). Commit and push. A push that fails twice → stop.
 7. Stop conditions: every question terminal; any limit reached; 3 runs in a row without progress; STOP file; authority change; branch / base mismatch;
-   push failed twice; Perplexity connector missing (never substitute another method). To stop: write `STOPPED: <reason>` to `state/campaign-status.md`,
-   commit and push, then call `list_triggers`, find the task named `InventorAI research TECH-SOURCES-001` and `update_trigger` it with `enabled=false`.
-   If that call is unavailable or fails, record it in `state/campaign-status.md`; every later wake-up then ends at step 2 without searching.
+   push failed twice; Perplexity connector missing (never substitute another method); an Owner decision required to continue; a privacy or authority conflict.
+   To stop: write `STOPPED: <reason>` to `state/campaign-status.md`, commit and push, and schedule NO next wake-up.
+8. Scheduling (Owner-authorized 2026-10-27, replaces the cron mechanism): only after step 6 pushed and the remote tip was verified, and only if no
+   stop condition holds, arm exactly ONE `send_later` one-shot into THIS session (`session_01UZzqphd9HQzNoRidheKeZN`) about 24 hours later,
+   named `TECH-SOURCES-001 run N+1`, and record its trigger id and fire time in the run-ledger row. Before arming, `list_triggers enabled=true`
+   must show no other pending TECH-SOURCES-001 wake-up (never overlap). The cron task `trig_01QRwqYuFRU8jBNG9oH2DiTz` stays disabled and is never re-enabled.
+   If arming fails, record it in `state/campaign-status.md`; the chain then ends (no retry with another mechanism). Delivery is not guaranteed.
 
 ## Preflight protocol (run only when the wake-up text says PREFLIGHT ONLY)
 No Perplexity call, no source fetch, no research. Record each check as PASS / FAIL with evidence in `state/preflight.md`:
