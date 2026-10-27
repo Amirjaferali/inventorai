@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}{{ t('UI_T6_TITLE') }}{% endblock %}
+{% block head %}
+<style>
+body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+h2{color:#2c3e50;font-size:16px;margin:0 0 6px 0}
+h3{color:#2c3e50;font-size:14px;margin:0 0 4px 0}
+h4{color:#2c3e50;font-size:13px;margin:0 0 2px 0}
+.level{margin:8px 0 0 0;padding:6px 8px;border:1px dashed #d5dbe1;border-radius:3px;background:#fff}
+.level-interface{background:#f6f8fa}
+.intro{background:#fdf6e3;border:1px solid #e8d9a8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444;line-height:1.5}
+.notice{background:#eef3f8;color:#1f3b57;border:1px solid #c9d6e3;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px}
+.block{border:1px solid #e2e6ea;border-radius:4px;padding:12px 14px;margin-bottom:16px;min-width:0;overflow-wrap:anywhere}
+.link{margin:8px 0 0 0;padding:8px 10px;border-inline-start:3px solid #c9d6e3;background:#fafbfc}
+.meta{font-size:13px;color:#555;margin:2px 0 0 0}
+.text{font-size:13px;margin:2px 0 0 0;white-space:pre-wrap}
+.status{display:inline-block;font-size:12px;font-weight:bold;padding:1px 6px;border-radius:3px;background:#eef1f4;color:#33404d}
+.status-earlier{background:#fff3d6;color:#6b4c00}
+dl{margin:4px 0 0 0;font-size:13px}
+dt{font-weight:bold;margin-top:4px}
+dd{margin:0 12px;white-space:pre-wrap}
+.links{margin-top:24px;font-size:13px}
+@media(max-width:520px){body{margin:18px auto;padding:0 14px}.block{padding:12px}}
+</style>
+{% endblock %}
+{% block content %}
+{#- T6-PRELIMINARY-COMPOSITION-PROJECTION-01 — Slice 1. A read-only,
+    PRELIMINARY / ADVISORY / NON-BINDING composition of the inventor's own
+    recorded Stage 15 statements, read from ONE durable snapshot. Canonical
+    identities travel only in data attributes, never as visible text. Nothing
+    here is inferred, calculated, selected, sized, validated or judged for
+    compatibility, suitability or safety; it is not a BOM, a report section or
+    an export. T6-INTERFACE-VERIFICATION-REFERENCE-01: each participation
+    shows the pair's own notes and, apart from them, the interaction's own
+    preparation inputs; its Validation Plan reference stays UNRESOLVED. -#}
+<h1>{{ t('UI_T6_TITLE') }}</h1>
+<div class="intro" data-t6-intro>
+  <p style="margin:0 0 6px 0"><strong data-t6-preliminary>{{ t('UI_T6_PRELIMINARY') }}</strong></p>
+  <p style="margin:0 0 6px 0">{{ t('UI_T6_INTRO') }}</p>
+  <p style="margin:0" data-t6-boundary>{{ t('UI_T6_BOUNDARY') }}</p>
+</div>
+
+{% if notice_key %}<div class="notice" role="status" data-t6-notice="{{ notice_key }}">{{ t(notice_key) }}</div>{% endif %}
+
+{% if view %}
+<section class="block" data-t6-composition aria-labelledby="t6-components-title">
+  <h2 id="t6-components-title">{{ t('UI_T6_COMPONENTS_TITLE') }}</h2>
+  {% if view.interface_count == 0 %}<p class="meta" data-t6-no-interactions>{{ t('UI_T6_NO_INTERACTIONS') }}</p>{% endif %}
+  {% for c in view.components %}
+  <div class="block" data-t6-component data-t6-component-id="{{ c.component_id }}" data-t6-part-ids="{{ c.part_ids|join(' ') }}">
+    <h3><bdi dir="auto" data-t6-component-name>{{ c.name }}</bdi></h3>
+    <p class="meta">{{ t('UI_T6_FUNCTION') }} <bdi dir="auto" data-t6-component-function>{{ c.function }}</bdi></p>
+    <p class="meta" data-t6-component-parts="{{ c.part_ids|length }}">{% if c.part_ids %}{{ t('UI_T6_PARTS_COUNT') }} {% for name in c.parts %}<bdi dir="auto" data-t6-part-name data-t6-part-id="{{ c.part_ids[loop.index0] }}">{{ name }}</bdi>{% if not loop.last %}{{ t('UI_T6_PARTS_SEPARATOR') }}{% endif %}{% endfor %}{% else %}{{ t('UI_T6_PARTS_NONE') }}{% endif %}</p>
+    <p class="meta" data-t6-provenance>{{ t('UI_T6_PROVENANCE') }}</p>
+    {% if c.links %}
+    {% for link in c.links %}
+    <div class="link" data-t6-link data-t6-interface-id="{{ link.interface_id }}" data-t6-pair="{{ link.interface_id }} {{ c.component_id }}" data-t6-status="{{ link.status }}">
+      <p class="meta">{{ t('UI_T6_TAKES_PART') }} <bdi dir="auto" data-t6-interaction>{{ link.interaction }}</bdi></p>
+      <div class="level" data-t6-pair-prep>
+      <h4>{{ t('UI_T6_PAIR_TITLE') }}</h4>
+      <p class="meta"><span class="status{% if link.status == 'EARLIER_NOT_RECONFIRMED' %} status-earlier{% endif %}" data-t6-status-label>{{ t(link.status_key) }}</span></p>
+      {% if link.notes %}
+      <dl data-t6-notes>
+        {% for note in link.notes %}
+        <dt>{% if note.field == 'expected_contribution' %}{{ t('UI_T6_EXPECTED') }}{% else %}{{ t('UI_T6_EVIDENCE') }}{% endif %}</dt>
+        <dd><bdi dir="auto" data-t6-note="{{ note.field }}">{{ note.text }}</bdi></dd>
+        {% endfor %}
+      </dl>
+      {% endif %}
+      </div>
+      <div class="level level-interface" data-t6-interface-prep data-t6-interface-prep-id="{{ link.interface_id }}">
+      <h4>{{ t('UI_T6_IFC_TITLE') }}</h4>
+      <p class="meta">{{ t('UI_T6_IFC_NOTE') }}</p>
+      <dl>
+        {% for f in link.interface_fields %}
+        <dt>{{ t(f.label_key) }}</dt>
+        <dd data-t6-interface-field="{{ f.field }}" data-t6-interface-field-status="{{ f.status }}">{% if f.status == 'RECORDED' %}<bdi dir="auto">{{ f.text }}</bdi>{% else %}<em>{{ t('UI_T6_IFC_NOT_RECORDED') }}</em>{% endif %}</dd>
+        {% endfor %}
+      </dl>
+      <p class="meta" data-t6-vp-ref="{{ link.vp_reference }}">{{ t('UI_T6_VP_UNRESOLVED') }}</p>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="meta" data-t6-no-participation>{{ t('UI_T6_NO_PARTICIPATION') }}</p>
+    {% endif %}
+  </div>
+  {% else %}
+  <p class="meta" data-t6-no-components>{{ t('UI_T6_NO_COMPONENTS') }}</p>
+  {% endfor %}
+  <p class="meta" style="margin:10px 0 0 0" data-t6-withdrawn-note>{{ t('UI_T6_WITHDRAWN_NOTE') }}</p>
+</section>
+{% endif %}
+
+<p class="links"><a href="{{ url_for('parts_components_interactions', sid=sid) }}" data-t6-back-pci>{{ t('UI_T6_BACK_PCI') }}</a> &middot; <a href="{{ url_for('interface_preparation', sid=sid) }}" data-t6-edit-link>{{ t('UI_T6_EDIT_LINK') }}</a></p>
+{% endblock %}

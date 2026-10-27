@@ -63,7 +63,9 @@ def test_field_set_is_exactly_sixteen_with_new_fields():
     assert "contradiction_endpoints" in _ASSERTION_FIELDS
     # CAP-08 Slice 1: the 18th, declaration-only `dependency_edge`.
     assert "dependency_edge" in _ASSERTION_FIELDS
-    assert len(_ASSERTION_FIELDS) == 18
+    # PATHN-CONSTRAINT-DECLARATION-01: the 19th, declaration-only `constraint_strength`.
+    assert "constraint_strength" in _ASSERTION_FIELDS
+    assert len(_ASSERTION_FIELDS) == 19
 
 
 def test_compat1_legacy_payload_missing_only_new_field_loads_none():

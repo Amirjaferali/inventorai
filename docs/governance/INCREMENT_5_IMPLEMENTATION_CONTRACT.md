@@ -880,3 +880,54 @@ This contract is implementation-ready but is NOT an implementation. It fixes exa
 names only where required for public schema, package compatibility, deterministic
 identifiers, imports, or testable lifecycle boundaries; it deliberately leaves
 private helper names and internal decomposition to source.
+
+## 25. Amendment — MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01 (2026-10-24)
+
+Owner-authorized narrow amendment. It lifts the PATHN-CONSTRAINT-DECLARATION-01
+D3 exclusion **for the Validation Plan only, and for current
+`mandatory_constraint` declarations only**. Constraints stay excluded from every
+Requirement Landscape row (Increment 4 is unchanged). §§1–24 otherwise stand,
+and the clauses below are amended only as stated.
+
+- **One added source (§8, §9 single-source mapping).** Besides the Requirement
+  Landscape, the plan has exactly ONE further source: the CURRENT constraints of
+  the canonical constraint history (`engine.idea_state.constraint_history`, the
+  same rule the carrier, the record contract and the store use). Each current
+  constraint whose current strength is `mandatory_constraint` yields exactly ONE
+  verification-PREPARATION step. `soft_constraint`, `preference` and withdrawn
+  constraints yield nothing. No landscape requirement backs this step, and the
+  §9 rule "one step ↔ one DerivedRequirement" does not apply to it. The §4 import
+  boundary is unchanged: only `engine.idea_state` and
+  `engine.requirement_landscape`.
+- **Identity and provenance (§9).** `step_id = "vstep:constraint:" +
+  constraint_id`, where `constraint_id` is the founding ledger record of that
+  constraint, so a correction keeps the same identity. `ProvenanceRef` carries
+  the closed plan-local kind `mandatory_constraint`, that `constraint_id` and
+  the label "Mandatory constraint you declared". It is not an Increment 4 anchor
+  kind.
+- **Content (§7, §13).** The statement quotes the CURRENT wording verbatim
+  (after a correction, the latest form only). It asks the inventor to decide
+  what evidence or specialist input would show whether the constraint is met,
+  and states that the constraint has not been checked and that nothing shows it
+  can be met. Responsibility and confidence are `UNDETERMINED`. The evidence
+  category is a verification-preparation category, as for the declared-interface
+  step. The closure wording states that completing the preparation does not
+  verify the constraint or show that it can be met. Nothing is parsed,
+  interpreted, measured, thresholded, satisfied, made feasible or turned into an
+  acceptance criterion, test procedure, requirement status or validation outcome.
+- **Ordering (§11).** These steps follow every landscape-derived step and
+  blocked item, in constraint declaration order. The order is organizational
+  only.
+- **Degraded input (§12).** An unreadable or malformed constraint history yields
+  no constraint step and exactly ONE blocked item (`vblock:constraint:unavailable`,
+  provenance kind `mandatory_constraint`, label "Mandatory constraints you
+  declared"). A defect is therefore never shown as an absence of mandatory
+  constraints, nor as any verification. A ledger with no constraint material
+  contributes nothing, so every plan without constraints is unchanged.
+- **Consumers.** These steps reach the existing plan consumers only: the report
+  and PDF Section 14, and the Decision Room action summary, which labels an
+  `UNDETERMINED` step with its provenance label. The Gap Action Packs join gap
+  steps only and are unchanged. The Stage 35 disclosure export does not carry
+  the plan, so its v3 vocabulary, version and digest are unchanged. No answer
+  serving, gap, Compass progress, readiness, maturity, SafetySignal, CAP-13,
+  THERM-01, FDC-001 or persistence effect exists.

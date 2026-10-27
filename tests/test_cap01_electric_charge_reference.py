@@ -56,6 +56,10 @@ from tests.cap01_measurement_guidance_addition import (
 # report context row); excluded here likewise (tests/cap01_measurement_conditions_addition.py).
 from tests.cap01_measurement_conditions_addition import (
     MCOND_GROUP, MCOND_RECORDS, without_measurement_conditions_addition)
+# 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 added one further prose-only group on the Electronics
+# MECHANISM_COMPLETENESS context; excluded here likewise (tests/cap01_load_switching_addition.py).
+from tests.cap01_load_switching_addition import (  # noqa: F401
+    LSW_GROUP, LSW_RECORDS, LSW_ROW, LSW_SLUG, without_load_switching_addition)
 
 _ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 _PACK_PATH = os.path.join(_ROOT, "domains", "electronics_electrical", "domain.json")
@@ -247,7 +251,7 @@ def test_c06_missing_earlier_copy_never_removes_this_group(monkeypatch):
 def test_c07_the_pack_change_is_exactly_one_group_and_one_note():
     pack = _pack()
     assert _digest(without_charge_addition(without_measurement_guidance_addition(
-        without_measurement_conditions_addition(pack)))) == _PRE_PACK_DIGEST
+        without_measurement_conditions_addition(without_load_switching_addition(pack))))) == _PRE_PACK_DIGEST
     # This group is the last REPORT group; the later CAP-09-only guidance groups follow it in the pack.
     assert [g["group_id"] for g in pack["reference_fundamentals"]][-3:] == [GROUP, MGUIDE_GROUP, MCOND_GROUP]
     note = pack["_governance_notes"][NOTE]
@@ -305,8 +309,8 @@ def test_c09_four_records_appended_after_pr017_and_every_other_record_unchanged(
     i = ids.index("electronics_electrical:PR017")
     assert tuple(ids[i + 1:i + 5]) == RECORDS
     assert tuple(ids[i + 5:i + 7]) == MGUIDE_RECORDS and tuple(ids[i + 7:i + 9]) == MCOND_RECORDS
-    assert ids[i + 9] == "mechanical:PR001"
-    assert _digest([r for r in records if r["record_id"] not in RECORDS + MGUIDE_RECORDS + MCOND_RECORDS]) == _PRE_PROVENANCE_DIGEST
+    assert tuple(ids[i + 9:i + 11]) == LSW_RECORDS and ids[i + 11] == "mechanical:PR001"
+    assert _digest([r for r in records if r["record_id"] not in RECORDS + MGUIDE_RECORDS + MCOND_RECORDS + LSW_RECORDS]) == _PRE_PROVENANCE_DIGEST
     recs = {r["record_id"]: r for r in records}
     shape = sorted(recs["electronics_electrical:PR004"])
     assert all(sorted(recs[r]) == shape for r in RECORDS)
@@ -378,9 +382,21 @@ def test_c12_the_shared_calculation_and_unit_inventory_is_unchanged():
     artifact = json.loads(io.open(dc.ARTIFACT_PATH, encoding="utf-8").read())
     text = json.dumps(artifact, ensure_ascii=False)
     assert GROUP not in text and "ampere hour" not in text.lower() and "coulomb" not in text.lower()
-    assert set(re.findall(r'"unit_token":\s*"([^"]+)"', text)) == {"N", "mm", "W", "K/W", "K"}
+    # the closed owner inventory (calc/units §13B: the CAP-13 planar moment's N·mm
+    # and method are the only additions, J and s are the DC resistive load energy
+    # method's, calc/units §13G); no charge unit or method is admitted
+    assert set(re.findall(r'"unit_token":\s*"([^"]+)"', text)) == {
+        "N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C",
+        "V", "Ω", "A", "J", "s"}
     assert set(re.findall(r'"method_id":\s*"([^"]+)"', text)) == {
-        "cap13:static_reactions_two_support", "therm01:conduction_temperature_difference_single_path"}
+        "cap13:static_reactions_two_support", "therm01:conduction_temperature_difference_single_path",
+        "cap13:planar_single_force_moment",
+        "cap13:linear_speed_dependent_rotational_load",
+        "tmp36:nominal_voltage_to_temperature",
+        "electrical:dc_resistive_load_current",
+        "electrical:dc_resistive_load_power",
+        "electrical:dc_resistive_load_energy",
+        "cap13:planar_required_force"}
     assert get_active_rules(DOMAIN) == [
         "PHYSICAL_PRINCIPLE_REQUIRED", "POWER_ACKNOWLEDGMENT_IF_ENERGY", "NO_PLATFORM_SPECIFIC_NAMING"]
 

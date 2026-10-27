@@ -297,6 +297,26 @@ _MESSAGE_KEYS = {
         "UI_ICP_MSG_UNKNOWN",
     "Your selection was saved to your project, but this page could not show it. Reload this page to see what your project holds.":
         "UI_ICP_MSG_SAVED_NOT_SHOWN",
+    # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 (web/app.py
+    # participation_preparation).
+    "Your notes for this component in this interaction were saved to your project. InventorAI has not checked them.":
+        "UI_PPV_MSG_SAVED",
+    "Your notes for this component in this interaction were cleared. The component and its participation are unchanged.":
+        "UI_PPV_MSG_CLEARED",
+    "Your project already holds exactly these notes for this component in this interaction, so nothing needed to change.":
+        "UI_PPV_MSG_UNCHANGED",
+    "These notes changed after this page was shown, so nothing was saved. Review them below and try again.":
+        "UI_PPV_MSG_STALE",
+    "This component has been withdrawn, so its notes cannot be changed. Nothing was saved.":
+        "UI_PPV_MSG_WITHDRAWN",
+    "These notes do not match a component taking part in one of this project's interactions, so nothing was saved.":
+        "UI_PPV_MSG_REJECTED",
+    "A note is longer than 1,000 characters, so nothing was saved. Shorten it and try again.":
+        "UI_PPV_MSG_TOO_LONG",
+    "Your notes could not be saved just now. Nothing was changed.":
+        "UI_PPV_MSG_NOT_SAVED",
+    "We could not confirm whether your notes were saved. Reload this page to see what your project holds before saving again.":
+        "UI_PPV_MSG_UNKNOWN",
     # CAP-09 Result Event Slice 1 (web/app.py record_experiment_result).
     ("Your result could not be saved just now. Nothing was changed."):
         "UI_R_MSG_NOT_SAVED",
@@ -1765,6 +1785,128 @@ UI_STRINGS = {
         "en": "Parts, Components & Interactions",
         "ar": "الأجزاء والمكوّنات والتفاعلات",
     },
+    # T6-PRELIMINARY-COMPOSITION-PROJECTION-01 — Slice 1: the read-only
+    # preliminary composition (component -> participation -> notes).
+    "UI_T6_TITLE": {
+        "en": "Preliminary composition: components, their interactions and your notes",
+        "ar": "تركيب أولي: المكوّنات وتفاعلاتها وملاحظاتك",
+    },
+    "UI_T6_LINK": {
+        "en": "Trace each component through its interactions to your notes (preliminary)",
+        "ar": "تتبّع كل مكوّن عبر تفاعلاته حتى ملاحظاتك (أولي)",
+    },
+    "UI_T6_PRELIMINARY": {
+        "en": "PRELIMINARY · ADVISORY · NON-BINDING — your own unvalidated statements only.",
+        "ar": "أولي · استشاري · غير مُلزِم — أقوالك الخاصة غير المُتحقَّق منها فقط.",
+    },
+    "UI_T6_INTRO": {
+        "en": "For each component you declared, this shows every interaction you recorded it as taking part in, and the notes you saved for that exact component in that exact interaction. It only brings your existing records together; it is not a report section.",
+        "ar": "لكل مكوّن أعلنته، تعرض هذه الصفحة كل تفاعل سجّلت أنه يشارك فيه، والملاحظات التي حفظتها لذلك المكوّن في ذلك التفاعل تحديدًا. إنها تجمع سجلاتك الموجودة فقط؛ وليست قسمًا من التقرير.",
+    },
+    "UI_T6_BOUNDARY": {
+        "en": "InventorAI has not checked any of this. Nothing here is a parts list or bill of materials, a quantity, a selection or sizing, or a statement that anything works, fits, is compatible, suitable, safe or ready to build. A link you have not recorded is not added.",
+        "ar": "لم يفحص InventorAI أيًّا من هذا. لا شيء هنا قائمة أجزاء أو قائمة مواد، ولا كمية، ولا اختيار أو تحديد أبعاد، ولا قول بأن شيئًا يعمل أو يتلاءم أو متوافق أو مناسب أو آمن أو جاهز للبناء. والارتباط الذي لم تسجّله لا يُضاف.",
+    },
+    "UI_T6_COMPONENTS_TITLE": {
+        "en": "Your current components",
+        "ar": "مكوّناتك الحالية",
+    },
+    "UI_T6_FUNCTION": {
+        "en": "What it does:",
+        "ar": "ما الذي يفعله:",
+    },
+    "UI_T6_PARTS_COUNT": {
+        "en": "Parts of the invention you linked it to:",
+        "ar": "أجزاء الاختراع التي ربطته بها:",
+    },
+    "UI_T6_PARTS_SEPARATOR": {
+        "en": ", ",
+        "ar": "، ",
+    },
+    "UI_T6_PARTS_NONE": {
+        "en": "Not linked to a part of the invention (project level).",
+        "ar": "غير مرتبط بجزء من الاختراع (على مستوى المشروع).",
+    },
+    "UI_T6_PROVENANCE": {
+        "en": "Your statement — OWNER_STATED / UNVALIDATED.",
+        "ar": "قولك أنت — OWNER_STATED / UNVALIDATED.",
+    },
+    "UI_T6_TAKES_PART": {
+        "en": "You recorded that it takes part in:",
+        "ar": "سجّلت أنه يشارك في:",
+    },
+    "UI_T6_STATUS_CURRENT": {
+        "en": "Notes: current — your latest saved notes for this component in this interaction",
+        "ar": "الملاحظات: حالية — آخر ملاحظات حفظتها لهذا المكوّن في هذا التفاعل",
+    },
+    "UI_T6_STATUS_EARLIER": {
+        "en": "Notes: earlier, not reconfirmed — recorded before this component was removed from this interaction and added back",
+        "ar": "الملاحظات: سابقة، لم يُعَد تأكيدها — سُجّلت قبل أن يُزال هذا المكوّن من هذا التفاعل ثم يُضاف مرة أخرى",
+    },
+    "UI_T6_STATUS_NOT_RECORDED": {
+        "en": "Notes: not recorded",
+        "ar": "الملاحظات: غير مسجّلة",
+    },
+    "UI_T6_EXPECTED": {
+        "en": "Expected observable contribution",
+        "ar": "الإسهام المتوقَّع القابل للملاحظة",
+    },
+    "UI_T6_EVIDENCE": {
+        "en": "Evidence or review needed to check it",
+        "ar": "الدليل أو المراجعة اللازمان للتحقّق منه",
+    },
+    "UI_T6_PAIR_TITLE": {
+        "en": "For this component in this interaction",
+        "ar": "لهذا المكوّن في هذا التفاعل",
+    },
+    "UI_T6_IFC_TITLE": {
+        "en": "For the interaction itself (the same for every component that takes part in it)",
+        "ar": "للتفاعل نفسه (هو نفسه لكل مكوّن يشارك فيه)",
+    },
+    "UI_T6_IFC_NOTE": {
+        "en": "What you recorded when preparing how this interaction will be checked. It is your own text: InventorAI has not checked it, and it is not a check result.",
+        "ar": "ما سجّلته عند التحضير لكيفية فحص هذا التفاعل. إنه نصّك أنت: لم يفحصه InventorAI، وليس نتيجة فحص.",
+    },
+    "UI_T6_IFC_NOT_RECORDED": {
+        "en": "not recorded",
+        "ar": "غير مسجّل",
+    },
+    "UI_T6_VP_UNRESOLVED": {
+        "en": "Validation Plan step for this interaction: not linked here (unresolved). This page does not read or check your Validation Plan; it is in your analysis report.",
+        "ar": "خطوة خطة التحقق (Validation Plan) لهذا التفاعل: غير مربوطة هنا (غير محسومة). لا تقرأ هذه الصفحة خطة التحقق ولا تفحصها؛ وهي في تقرير التحليل الخاص بك.",
+    },
+    "UI_T6_NO_PARTICIPATION": {
+        "en": "You have not recorded this component as taking part in any interaction.",
+        "ar": "لم تسجّل أن هذا المكوّن يشارك في أي تفاعل.",
+    },
+    "UI_T6_NO_INTERACTIONS": {
+        "en": "No interaction between the parts of your invention is declared yet.",
+        "ar": "لم يُعلَن بعد أي تفاعل بين أجزاء اختراعك.",
+    },
+    "UI_T6_NO_COMPONENTS": {
+        "en": "You have not declared any current component yet.",
+        "ar": "لم تُعلن أي مكوّن حالي بعد.",
+    },
+    "UI_T6_WITHDRAWN_NOTE": {
+        "en": "Withdrawn components and their notes are not shown here; they stay in the project history on the session page.",
+        "ar": "لا تُعرض هنا المكوّنات المسحوبة وملاحظاتها؛ وتبقى في سجل المشروع في صفحة الجلسة.",
+    },
+    "UI_T6_UNAVAILABLE": {
+        "en": "This preliminary composition cannot be shown right now: some of your records could not be read. Nothing is shown rather than an incomplete picture. Reload the page later.",
+        "ar": "لا يمكن عرض هذا التركيب الأولي الآن: تعذّرت قراءة بعض سجلاتك. لا يُعرض شيء بدلًا من صورة ناقصة. أعد تحميل الصفحة لاحقًا.",
+    },
+    "UI_T6_NO_PROJECT": {
+        "en": "This project could not be found.",
+        "ar": "تعذّر العثور على هذا المشروع.",
+    },
+    "UI_T6_BACK_PCI": {
+        "en": "Back to your parts, components and interactions",
+        "ar": "العودة إلى أجزائك ومكوّناتك وتفاعلاتها",
+    },
+    "UI_T6_EDIT_LINK": {
+        "en": "Record or edit participation and notes",
+        "ar": "سجّل أو عدّل المشاركة والملاحظات",
+    },
     "UI_PCI_LINK": {
         "en": "See your parts, components and interactions together",
         "ar": "اعرض أجزاءك ومكوّناتك وتفاعلاتها معًا",
@@ -2158,6 +2300,97 @@ UI_STRINGS = {
     "UI_ICP_MSG_SAVED_NOT_SHOWN": {
         "en": "Your selection was saved to your project, but this page could not show it. Reload this page to see what your project holds.",
         "ar": "حُفظ اختيارك في مشروعك، لكن هذه الصفحة لم تتمكّن من عرضه. أعد تحميل الصفحة لترى ما يحتويه مشروعك.",
+    },
+    # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the inventor's own
+    # notes for ONE current participation (preparation page only). Their own
+    # planning statements; nothing is checked, inferred or verified.
+    "UI_PPV_HEADING": {
+        "en": "What each taking-part component should contribute",
+        "ar": "ما ينبغي أن يُسهم به كل مكوّن مشارك",
+    },
+    "UI_PPV_INTRO": {
+        "en": "For each component you said takes part in an interaction, you can note in your own words what you expect it to contribute that could be seen or measured, and what evidence or review would be needed to check it. Both are optional.",
+        "ar": "لكل مكوّن قلت إنه يشارك في تفاعل، يمكنك أن تدوّن بكلماتك ما تتوقّع أن يُسهم به مما يمكن رؤيته أو قياسه، وما الدليل أو المراجعة اللازمان للتحقّق منه. كلاهما اختياري.",
+    },
+    "UI_PPV_BOUNDARY": {
+        "en": "These are only your own planning notes, not checked by InventorAI: they do not show that the component works, fits, is compatible, is enough or is safe, and recording them verifies nothing.",
+        "ar": "هذه ملاحظات تخطيط خاصة بك فقط، ولم يتحقّق منها InventorAI: لا تُظهر أن المكوّن يعمل أو يتلاءم أو متوافق أو كافٍ أو آمن، وتدوينها لا يتحقّق من أي شيء.",
+    },
+    "UI_PPV_UNAVAILABLE": {
+        "en": "Notes for taking-part components: cannot be shown right now. Reload the page later.",
+        "ar": "ملاحظات المكوّنات المشاركة: لا يمكن عرضها الآن. أعد تحميل الصفحة لاحقًا.",
+    },
+    "UI_PPV_NO_PARTICIPANTS": {
+        "en": "No component is recorded as taking part in this interaction yet, so there is nothing to note here.",
+        "ar": "لم يُسجَّل بعد أي مكوّن على أنه يشارك في هذا التفاعل، فلا يوجد ما يُدوَّن هنا.",
+    },
+    "UI_PPV_CARRIED": {
+        "en": "These notes were recorded earlier, before this component was removed from this interaction and added back. They are your earlier, unvalidated statements, not reconfirmed ones. Save them to keep them as your current notes, or change or clear them.",
+        "ar": "دُوّنت هذه الملاحظات سابقًا، قبل أن يُزال هذا المكوّن من هذا التفاعل ثم يُضاف مرة أخرى. إنها تصريحاتك السابقة غير المُتحقَّق منها، وليست مؤكَّدة من جديد. احفظها لتبقيها ملاحظاتك الحالية، أو غيّرها أو امسحها.",
+    },
+    "UI_PPV_DRAFT_UNSAVED": {
+        "en": "The text below is what you submitted; it was NOT saved.",
+        "ar": "النص أدناه هو ما أرسلته؛ ولم يُحفظ.",
+    },
+    "UI_PPV_EXPECTED_LABEL": {
+        "en": "Expected observable contribution (optional)",
+        "ar": "الإسهام المتوقَّع القابل للملاحظة (اختياري)",
+    },
+    "UI_PPV_EXPECTED_HINT": {
+        "en": "What do you expect this component to do in this interaction that you could see, hear or measure?",
+        "ar": "ما الذي تتوقّع أن يفعله هذا المكوّن في هذا التفاعل ويمكنك أن تراه أو تسمعه أو تقيسه؟",
+    },
+    "UI_PPV_EVIDENCE_LABEL": {
+        "en": "Evidence or review needed to check it (optional)",
+        "ar": "الدليل أو المراجعة اللازمان للتحقّق منه (اختياري)",
+    },
+    "UI_PPV_EVIDENCE_HINT": {
+        "en": "What test, measurement, document or expert review would show whether it does that?",
+        "ar": "ما الاختبار أو القياس أو المستند أو مراجعة الخبير الذي يُظهر ما إذا كان يفعل ذلك؟",
+    },
+    "UI_PPV_SAVE_HINT": {
+        "en": "Leave a box empty if you do not know yet. Clearing both boxes removes your notes; the component and its participation stay unchanged.",
+        "ar": "اترك المربّع فارغًا إن كنت لا تعرف بعد. مسح المربّعين معًا يزيل ملاحظاتك؛ ويبقى المكوّن ومشاركته دون تغيير.",
+    },
+    "UI_PPV_SAVE": {
+        "en": "Save notes for this component",
+        "ar": "احفظ ملاحظات هذا المكوّن",
+    },
+    "UI_PPV_MSG_SAVED": {
+        "en": "Your notes for this component in this interaction were saved to your project. InventorAI has not checked them.",
+        "ar": "حُفظت في مشروعك ملاحظاتك عن هذا المكوّن في هذا التفاعل. لم يتحقّق منها InventorAI.",
+    },
+    "UI_PPV_MSG_CLEARED": {
+        "en": "Your notes for this component in this interaction were cleared. The component and its participation are unchanged.",
+        "ar": "مُسحت ملاحظاتك عن هذا المكوّن في هذا التفاعل. أما المكوّن ومشاركته فلم يتغيّرا.",
+    },
+    "UI_PPV_MSG_UNCHANGED": {
+        "en": "Your project already holds exactly these notes for this component in this interaction, so nothing needed to change.",
+        "ar": "يحتوي مشروعك بالفعل على هذه الملاحظات نفسها لهذا المكوّن في هذا التفاعل، فلم يلزم أي تغيير.",
+    },
+    "UI_PPV_MSG_STALE": {
+        "en": "These notes changed after this page was shown, so nothing was saved. Review them below and try again.",
+        "ar": "تغيّرت هذه الملاحظات بعد عرض هذه الصفحة، فلم يُحفظ شيء. راجعها أدناه ثم حاول مرة أخرى.",
+    },
+    "UI_PPV_MSG_WITHDRAWN": {
+        "en": "This component has been withdrawn, so its notes cannot be changed. Nothing was saved.",
+        "ar": "سُحب هذا المكوّن، فلا يمكن تغيير ملاحظاته. لم يُحفظ شيء.",
+    },
+    "UI_PPV_MSG_REJECTED": {
+        "en": "These notes do not match a component taking part in one of this project's interactions, so nothing was saved.",
+        "ar": "هذه الملاحظات لا تطابق مكوّنًا يشارك في أحد تفاعلات هذا المشروع، فلم يُحفظ شيء.",
+    },
+    "UI_PPV_MSG_TOO_LONG": {
+        "en": "A note is longer than 1,000 characters, so nothing was saved. Shorten it and try again.",
+        "ar": "إحدى الملاحظات أطول من 1,000 حرف، فلم يُحفظ شيء. اختصرها ثم حاول مرة أخرى.",
+    },
+    "UI_PPV_MSG_NOT_SAVED": {
+        "en": "Your notes could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ ملاحظاتك الآن. لم يتغيّر شيء.",
+    },
+    "UI_PPV_MSG_UNKNOWN": {
+        "en": "We could not confirm whether your notes were saved. Reload this page to see what your project holds before saving again.",
+        "ar": "لم نتمكّن من التأكّد من حفظ ملاحظاتك. أعد تحميل هذه الصفحة لترى ما يحتويه مشروعك قبل أن تحفظ مرة أخرى.",
     },
     "UI_S15_PREP_NOT_RECORDED": {"en": "Not recorded yet", "ar": "لم يُسجَّل بعد"},
     "UI_S15_PREP_NONE": {
@@ -5430,6 +5663,102 @@ UI_STRINGS = {
     "UI_CAP12_ERR_REQUEST": {
         "en": "That request could not be read. Nothing was produced.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُنتَج شيء."},
+    # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: the session page's read-only,
+    # provisional reading of the needs the inventor stated.
+    "UI_FH_TITLE": {
+        "en": "What your idea asks for: InventorAI's proposed reading",
+        "ar": "ما تطلبه فكرتك: قراءة مقترحة من InventorAI"},
+    "UI_FH_INTRO": {
+        "en": ("InventorAI read your own words and proposes the functions below. "
+               "This is a proposal for you to check, not a confirmed requirement. "
+               "Nothing here is a design, a choice of parts or an engineering "
+               "result."),
+        "ar": ("قرأ InventorAI كلماتك واقترح الوظائف التالية. هذا اقتراح "
+               "لتراجعه، وليس متطلبًا مؤكدًا. لا شيء هنا تصميم أو اختيار "
+               "لأجزاء أو نتيجة هندسية.")},
+    "UI_FH_ROLE_WATERING": {"en": "Watering", "ar": "السقي"},
+    "UI_FH_ROLE_FAN": {"en": "A fan (moving air)", "ar": "مروحة (تحريك الهواء)"},
+    "UI_FH_ROLE_SCREEN_SUPPORT": {"en": "Holding or raising a screen",
+                                  "ar": "حمل الشاشة أو رفعها"},
+    "UI_FH_OBJ_PLANTS": {"en": "plants", "ar": "النباتات"},
+    "UI_FH_OBJ_GARDEN": {"en": "a garden or lawn", "ar": "الحديقة أو العشب"},
+    "UI_FH_OBJ_ROOM": {"en": "a room", "ar": "غرفة"},
+    "UI_FH_OBJ_DEVICE": {"en": "a computer", "ar": "حاسوب"},
+    "UI_FH_OBJ_SCREEN": {"en": "a screen or monitor", "ar": "شاشة"},
+    "UI_FH_OBJ_TV": {"en": "a television", "ar": "تلفاز"},
+    "UI_FH_STATUS_PROPOSED": {"en": "Proposed reading, not confirmed",
+                              "ar": "قراءة مقترحة، غير مؤكدة"},
+    "UI_FH_STATUS_CONFLICTING": {
+        "en": ("Your statements disagree here. InventorAI does not choose "
+               "between them."),
+        "ar": "عباراتك تختلف هنا، ولا يختار InventorAI بينها."},
+    "UI_FH_QUOTE_IDEA": {"en": "From your original statement:",
+                         "ar": "من وصفك الأصلي:"},
+    "UI_FH_QUOTE_ANSWER": {"en": "From your answer:", "ar": "من إجابتك:"},
+    "UI_FH_NEGATED": {"en": "You also wrote:", "ar": "وكتبت أيضًا:"},
+    "UI_FH_UNCERTAIN": {"en": "You said you are not sure how yet:",
+                        "ar": "ذكرت أنك لم تحدد الطريقة بعد:"},
+    "UI_FH_CAP13_CONDITIONAL": {
+        "en": ("Two-support static reactions (CAP-13) is a conditional "
+               "calculation offered separately on this project. It needs a "
+               "configuration you declare yourself and is not prepared from "
+               "your description. It does not check strength, stiffness, "
+               "stability or safety."),
+        "ar": ("حساب ردود الأفعال الساكنة على مسندين (CAP-13) حساب مشروط "
+               "يُعرض منفصلًا في هذا المشروع. يحتاج تكوينًا تصرّح به أنت، ولا "
+               "يُجهَّز من وصفك. ولا يفحص المتانة أو الصلابة أو الاستقرار أو "
+               "السلامة.")},
+    "UI_FH_CAP13_NOT_FOR_PROJECT": {
+        "en": ("Two-support static reactions (CAP-13) is not offered for this "
+               "project's analysis focus."),
+        "ar": ("حساب ردود الأفعال الساكنة على مسندين (CAP-13) غير متاح لمحور "
+               "التحليل في هذا المشروع.")},
+    "UI_FH_CAP09_AVAILABLE": {
+        "en": ("Experiment planning (CAP-09) can help you plan how to check the "
+               "experiments already proposed for your project. It does not "
+               "design this function."),
+        "ar": ("يساعدك تخطيط التجارب (CAP-09) في التخطيط لفحص التجارب "
+               "المقترحة لمشروعك. ولا يصمم هذه الوظيفة.")},
+    "UI_FH_CAP09_NO_EXPERIMENTS": {
+        "en": ("Experiment planning (CAP-09) applies once your project has "
+               "proposed experiments. It has none yet."),
+        "ar": ("ينطبق تخطيط التجارب (CAP-09) عندما تكون لمشروعك تجارب "
+               "مقترحة، ولا توجد تجارب بعد.")},
+    "UI_FH_CAP_UNAVAILABLE": {
+        "en": "This method's readiness could not be read right now.",
+        "ar": "تعذّرت قراءة جاهزية هذه الطريقة الآن."},
+    "UI_FH_UNCOVERED_WATERING": {
+        "en": ("No InventorAI engineering method covers water delivery, pumps, "
+               "flow or how much water plants need."),
+        "ar": ("لا تغطي أي طريقة هندسية في InventorAI إيصال الماء أو المضخات "
+               "أو التدفق أو كمية الماء التي تحتاجها النباتات.")},
+    "UI_FH_UNCOVERED_FAN": {
+        "en": ("No InventorAI engineering method covers airflow, room cooling "
+               "or choosing a fan."),
+        "ar": ("لا تغطي أي طريقة هندسية في InventorAI تدفق الهواء أو تبريد "
+               "الغرفة أو اختيار المروحة.")},
+    "UI_FH_UNCOVERED_SCREEN_SUPPORT": {
+        "en": ("No InventorAI method designs a support or checks its strength, "
+               "stiffness or stability."),
+        "ar": ("لا توجد طريقة في InventorAI تصمم الحامل أو تفحص متانته أو "
+               "صلابته أو استقراره.")},
+    "UI_FH_COMPONENT_NOTE": {
+        "en": ("Any part named in a quote is your own wording. InventorAI has "
+               "not selected it."),
+        "ar": "أي جزء مذكور في الاقتباس هو من كلامك، ولم يختره InventorAI."},
+    "UI_FH_IDEA_UNAVAILABLE": {
+        "en": "Your original statement could not be read, so it was not used here.",
+        "ar": "تعذّرت قراءة وصفك الأصلي، لذلك لم يُستخدم هنا."},
+    "UI_FH_ABSTAINED": {
+        "en": ("Some of your sentences were not read as clear requests, for "
+               "example negated, hypothetical or unclear wording."),
+        "ar": ("لم تُقرأ بعض جملك على أنها طلبات واضحة، مثل الصياغة المنفية "
+               "أو الافتراضية أو غير الواضحة.")},
+    "UI_FH_NONE": {
+        "en": "No function was proposed from your statements.",
+        "ar": "لم تُقترح أي وظيفة من عباراتك."},
+    "UI_FH_UNAVAILABLE": {"en": "This reading is unavailable right now.",
+                          "ar": "هذه القراءة غير متاحة الآن."},
     "UI_CAP12_LINK_TEXT": {
         "en": "Optional: material and building-method families for a form mock-up",
         "ar": "اختياري: عائلات المواد وطرق البناء لمجسَّم شكلي"},
@@ -5918,6 +6247,1177 @@ UI_STRINGS = {
         "en": "The calculation could not be completed. Nothing was calculated.",
         "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
     "UI_THERM01_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # Stage 25 / CAP-13 — Planar Single-Force Moment, Slice 1 (moment contract
+    # §9). The English declaration and disclosure entries are pinned equal to the
+    # moment artifact by test and the Arabic disclosure to contract §9A. The
+    # high-risk screen reuses the UI_CAP13_SCREEN_* keys (the same nine items)
+    # and the integrated-part attribution the UI_CAP13_PART_* keys.
+    # Nothing here states equilibrium, capacity, strength, suitability or safety.
+    "UI_CAP13M_LINK_TEXT": {
+        "en": "Optional: turning effect (moment) of one force about a point",
+        "ar": "اختياري: أثر الدوران (العزم) لقوة واحدة حول نقطة"},
+    "UI_CAP13M_LINK_NOTE": {
+        "en": "An advisory calculation for a force and point you declare. It is not saved and is never required.",
+        "ar": "حساب إرشادي لقوة ونقطة تصرّح بهما أنت. لا يُحفَظ، ولا يكون مطلوبًا أبدًا."},
+    "UI_CAP13M_TITLE": {
+        "en": "Moment of one force about a point (optional, non-binding)",
+        "ar": "عزم قوة واحدة حول نقطة (اختياري، غير مُلزِم)"},
+    "UI_CAP13M_INTRO": {
+        "en": "This page is optional. It calculates the size of the turning effect (moment) of one force about one point you choose, in one plane, from the force F and the perpendicular distance d⊥ that you enter. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. تحسب مقدار أثر الدوران (العزم) لقوة واحدة حول نقطة واحدة تختارها، في مستوى واحد، من القوة F والمسافة العمودية d⊥ اللتين تدخلهما أنت. لا يُحفَظ شيء."},
+    "UI_CAP13M_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a Mechanical-focus project or for its declared Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that the planar single-force model applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED moment magnitude, not an equilibrium, capacity, strength or safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء انطباق نموذج القوة الواحدة في مستوى واحد. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة مقدار عزم غير مُتحقَّق منه، وليست حكمًا بشأن الاتزان أو القدرة على التحمل أو المقاومة أو السلامة."},
+    "UI_CAP13M_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_CAP13M_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_CAP13M_DECL_PLANAR": {
+        "en": "Planar: the force and the chosen point lie in one plane, and only the turning effect about the axis through the point at right angles to that plane is wanted.",
+        "ar": "مستوى واحد: القوة والنقطة التي اخترتها تقعان في مستوى واحد، والمطلوب فقط أثر الدوران حول المحور المارّ بالنقطة عموديًا على ذلك المستوى."},
+    "UI_CAP13M_DECL_SINGLE_FORCE": {
+        "en": "ONE force only: no other force, couple, spread-out load or weight is included in this calculation.",
+        "ar": "قوة واحدة فقط: لا تدخل في هذا الحساب أي قوة أخرى، ولا ازدواج (couple)، ولا حمل موزَّع، ولا وزن."},
+    "UI_CAP13M_DECL_PERPENDICULAR_DISTANCE": {
+        "en": "The distance d⊥ is the shortest (perpendicular) distance from the chosen point to the line along which the force acts, not a length along a lever, arm or part unless that length is itself at right angles to the force; InventorAI does not check it.",
+        "ar": "d⊥ هي أقصر مسافة (المسافة العمودية) من النقطة المختارة إلى الخط الذي تؤثر على امتداده القوة، وليست طولًا على امتداد ذراع أو رافعة أو جزء ما لم يكن ذلك الطول نفسه عموديًا على القوة؛ ولا يتحقق InventorAI منها."},
+    "UI_CAP13M_DECL_CHOSEN_POINT": {
+        "en": "The point is the inventor's own choice (for example a pivot, joint or fixing); InventorAI does not choose it, check it or decide that it is the right point.",
+        "ar": "النقطة من اختيارك أنت (مثل محور دوران أو مفصل أو نقطة تثبيت)؛ لا يختارها InventorAI ولا يتحقق منها ولا يقرر أنها النقطة الصحيحة."},
+    "UI_CAP13M_DECL_STATIC_MAGNITUDE": {
+        "en": "The force is treated as steady (static), and only the size of the moment is wanted, not its turning direction; no motion, impact, vibration or repeated loading is considered.",
+        "ar": "القوة تُعامَل على أنها ثابتة (ساكنة)، والمطلوب مقدار العزم فقط لا اتجاه دورانه؛ ولا تؤخذ في الحسبان أي حركة أو صدمة أو اهتزاز أو تحميل متكرر."},
+    "UI_CAP13M_FIELD_F": {
+        "en": "Magnitude of the one force (F) — newton (N)",
+        "ar": "مقدار القوة الواحدة (F) — نيوتن (N)"},
+    "UI_CAP13M_FIELD_D_PERP": {
+        "en": "Perpendicular distance from your point to the force's line of action (d⊥) — millimetre (mm)",
+        "ar": "المسافة العمودية من نقطتك إلى خط تأثير القوة (d⊥) — مليمتر (mm)"},
+    "UI_CAP13M_SUBMIT": {
+        "en": "Calculate the moment",
+        "ar": "احسب العزم"},
+    "UI_CAP13M_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_CAP13M_RESULT_M": {
+        "en": "Moment magnitude about your point (M) — newton millimetre (N·mm)",
+        "ar": "مقدار العزم حول نقطتك (M) — نيوتن مليمتر (N·mm)"},
+    "UI_CAP13M_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_CAP13M_ECHO_HEADING": {
+        "en": "The values and declarations you entered",
+        "ar": "القيم والتصريحات التي أدخلتها"},
+    "UI_CAP13M_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_CAP13M_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_CAP13M_SOURCES_NOTE": {
+        "en": "The moment principle (force times perpendicular distance) from NASA Glenn Research Center, and the unit references from the National Institute of Standards and Technology (NIST). The moment form and the newton millimetre (N·mm) are InventorAI's own restatement. Neither NASA nor NIST endorses InventorAI or this calculation.",
+        "ar": "مبدأ العزم (القوة مضروبة في المسافة العمودية) من مركز غلين للأبحاث التابع لوكالة ناسا (NASA Glenn Research Center)، ومراجع الوحدات من المعهد الوطني للمعايير والتقنية (NIST). صيغة العزم ووحدة النيوتن مليمتر (N·mm) إعادة صياغة خاصة بـInventorAI. لا تؤيّد ناسا ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_CAP13M_DISCLOSURE": {
+        "en": "This is the size of the turning effect (moment) of the one force you declared about the one point you chose, in one plane, using your own force F and your own perpendicular distance d⊥.\n\nIt does not show that anything is balanced or held in place, and it gives no support reaction, turning direction or combined effect of several forces.\n\nIt does not tell whether a joint, fixing, shaft, part, motor or material can carry this moment, and it is not compared with any rating, strength or limit.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement or a qualified engineer before any reliance; it says nothing about whether the design is suitable or safe.\n\nInventorAI does not check your force, your distance, your chosen point or that your declarations match the real configuration.\n\nThree-dimensional effects, several forces, motion, impact, vibration and repeated loading are outside this calculation.\n\nReference source material: NASA Glenn Research Center (equilibrium and torque / moment principles); the moment form is InventorAI's own restatement.",
+        "ar": "هذا هو مقدار أثر الدوران (العزم) للقوة الواحدة التي صرّحت بها حول النقطة الواحدة التي اخترتها، في مستوى واحد، باستخدام قيمتي القوة F والمسافة العمودية d⊥ اللتين أدخلتهما أنت.\n\nلا يبيّن هذا الناتج أن أي شيء متوازن أو مثبّت في مكانه، ولا يعطي أي رد فعل لمسند، ولا اتجاه دوران، ولا الأثر المجمَّع لعدة قوى.\n\nلا يبيّن هذا الناتج ما إذا كان أي مفصل أو تثبيت أو عمود أو جزء أو محرك أو مادة قادرًا على تحمّل هذا العزم، ولا يُقارَن بأي تصنيف أو مقاومة أو حدّ.\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا، ويجب تأكيدها بالقياس أو بمراجعة مهندس مؤهل قبل الاعتماد عليها؛ ولا تقول شيئًا عن ملاءمة التصميم أو سلامته.\n\nلا يتحقق InventorAI من قيمة القوة ولا من المسافة ولا من النقطة التي اخترتها، ولا من مطابقة تصريحاتك للتكوين الفعلي.\n\nالتأثيرات ثلاثية الأبعاد، وتعدد القوى، والحركة، والصدمات، والاهتزاز، والتحميل المتكرر كلها خارج نطاق هذا الحساب.\n\nالمراجع: مركز غلين للأبحاث التابع لوكالة ناسا (NASA Glenn Research Center) — مبادئ الاتزان والعزم. أما صيغة العزم هنا فهي إعادة صياغة خاصة بـInventorAI."},
+    "UI_CAP13M_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_CAP13M_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. هذه الحالة تتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "F and d⊥ must be finite numbers greater than zero, written as plain decimals. Nothing was calculated.",
+        "ar": "يجب أن تكون قيمتا F و d⊥ رقمين محدودين أكبر من الصفر، مكتوبين بصيغة عشرية صحيحة. لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the newton (N) and the millimetre (mm), and shows the result in newton millimetre (N·mm). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة النيوتن (N) والمليمتر (mm) فقط، وتعرض النتيجة بالنيوتن مليمتر (N·mm). لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_CAP13M_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_CAP13M_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # CAP13-PLANAR-REQUIRED-FORCE-01 (required-force contract §9). The English
+    # declaration and disclosure entries are pinned equal to the method artifact
+    # by test and the Arabic disclosure and declarations to contract §9A. The
+    # high-risk screen reuses the UI_CAP13_SCREEN_* keys (the same nine items)
+    # and the integrated-part attribution the UI_CAP13_PART_* keys. Nothing here
+    # infers a target moment or states an actuation, capacity, strength,
+    # suitability or safety.
+    "UI_CAP13F_LINK_TEXT": {
+        "en": "Optional: force needed for a turning effect (moment) you choose",
+        "ar": "اختياري: القوة اللازمة لإحداث أثر دوران (عزم) تختاره أنت"},
+    "UI_CAP13F_LINK_NOTE": {
+        "en": "An advisory calculation from a target moment and a distance you declare. It is not saved and is never required.",
+        "ar": "حساب إرشادي من عزم مستهدف ومسافة تصرّح بهما أنت. لا يُحفَظ، ولا يكون مطلوبًا أبدًا."},
+    "UI_CAP13F_TITLE": {
+        "en": "Force needed for a target moment about a point (optional, non-binding)",
+        "ar": "القوة اللازمة لعزم مستهدف حول نقطة (اختياري، غير مُلزِم)"},
+    "UI_CAP13F_INTRO": {
+        "en": "This page is optional. It calculates the size of the one force that, acting at the perpendicular distance d⊥ you enter from one point you choose, in one plane, would produce the target moment M_target you enter: F = M_target / d⊥. You supply the target moment yourself; InventorAI does not work it out. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. تحسب مقدار القوة الواحدة التي، إذا أثّرت على المسافة العمودية d⊥ التي تدخلها من نقطة واحدة تختارها، في مستوى واحد، أحدثت العزم المستهدف M_target الذي تدخله: F = M_target / d⊥. أنت من يحدد العزم المستهدف؛ ولا يحسبه InventorAI. لا يُحفَظ شيء."},
+    "UI_CAP13F_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a Mechanical-focus project or for its declared Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that the planar single-force model applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED force magnitude, not an actuation, capacity, strength or safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء انطباق نموذج القوة الواحدة في مستوى واحد. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة مقدار قوة غير مُتحقَّق منه، وليست حكمًا بشأن التشغيل أو القدرة على التحمل أو المقاومة أو السلامة."},
+    "UI_CAP13F_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_CAP13F_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_CAP13F_DECL_PLANAR": {
+        "en": "Planar: the force and the chosen point lie in one plane, and only the turning effect about the axis through the point at right angles to that plane is wanted.",
+        "ar": "مستوى واحد: القوة والنقطة التي اخترتها تقعان في مستوى واحد، والمطلوب فقط أثر الدوران حول المحور المارّ بالنقطة عموديًا على ذلك المستوى."},
+    "UI_CAP13F_DECL_SINGLE_FORCE": {
+        "en": "ONE force only is to produce the target moment: no other force, couple, spread-out load or weight is included in this calculation.",
+        "ar": "قوة واحدة فقط هي التي ستُحدث العزم المستهدف: لا تدخل في هذا الحساب أي قوة أخرى، ولا ازدواج (couple)، ولا حمل موزَّع، ولا وزن."},
+    "UI_CAP13F_DECL_PERPENDICULAR_DISTANCE": {
+        "en": "The distance d⊥ is the shortest (perpendicular) distance from the chosen point to the line along which the force will act, not a length along a lever, arm or part unless that length is itself at right angles to the force; InventorAI does not check it.",
+        "ar": "d⊥ هي أقصر مسافة (المسافة العمودية) من النقطة المختارة إلى الخط الذي ستؤثر على امتداده القوة، وليست طولًا على امتداد ذراع أو رافعة أو جزء ما لم يكن ذلك الطول نفسه عموديًا على القوة؛ ولا يتحقق InventorAI منها."},
+    "UI_CAP13F_DECL_CHOSEN_POINT": {
+        "en": "The point is the inventor's own choice (for example a pivot, joint or fixing); InventorAI does not choose it, check it or decide that it is the right point.",
+        "ar": "النقطة من اختيارك أنت (مثل محور دوران أو مفصل أو نقطة تثبيت)؛ لا يختارها InventorAI ولا يتحقق منها ولا يقرر أنها النقطة الصحيحة."},
+    "UI_CAP13F_DECL_TARGET_MOMENT": {
+        "en": "The target moment M_target is your own figure for the turning effect you want this one force to produce; InventorAI does not work it out, check it or decide that it is enough, and it adds nothing for friction, losses, starting or holding, or any margin.",
+        "ar": "العزم المستهدف M_target قيمتك أنت لأثر الدوران الذي تريد أن تُحدثه هذه القوة الواحدة؛ لا يحسبه InventorAI ولا يتحقق منه ولا يقرر أنه كافٍ، ولا يضيف إليه شيئًا للاحتكاك أو الفقد أو بدء الحركة أو التثبيت أو أي هامش."},
+    "UI_CAP13F_DECL_STATIC_MAGNITUDE": {
+        "en": "The force is treated as steady (static), and only its size is wanted, not its direction or the turning direction; no motion, acceleration, impact, vibration or repeated loading is considered.",
+        "ar": "القوة تُعامَل على أنها ثابتة (ساكنة)، والمطلوب مقدارها فقط لا اتجاهها ولا اتجاه الدوران؛ ولا تؤخذ في الحسبان أي حركة أو تسارع أو صدمة أو اهتزاز أو تحميل متكرر."},
+    "UI_CAP13F_FIELD_M_TARGET": {
+        "en": "Target moment about your point (M_target) — newton millimetre (N·mm)",
+        "ar": "العزم المستهدف حول نقطتك (M_target) — نيوتن مليمتر (N·mm)"},
+    "UI_CAP13F_FIELD_D_PERP": {
+        "en": "Perpendicular distance from your point to the line along which the force will act (d⊥) — millimetre (mm)",
+        "ar": "المسافة العمودية من نقطتك إلى الخط الذي ستؤثر على امتداده القوة (d⊥) — مليمتر (mm)"},
+    "UI_CAP13F_SUBMIT": {
+        "en": "Calculate the force",
+        "ar": "احسب القوة"},
+    "UI_CAP13F_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_CAP13F_RESULT_F": {
+        "en": "Force magnitude needed for your target moment (F) — newton (N)",
+        "ar": "مقدار القوة اللازمة لعزمك المستهدف (F) — نيوتن (N)"},
+    "UI_CAP13F_EXACT": {
+        "en": "Exact value of M_target / d⊥ for the values you entered.",
+        "ar": "قيمة M_target / d⊥ الدقيقة للقيم التي أدخلتها."},
+    "UI_CAP13F_ROUNDED": {
+        "en": "Rounded to 12 significant digits; the exact value of M_target / d⊥ has more digits.",
+        "ar": "مقرَّبة إلى 12 رقمًا معنويًا؛ للقيمة الدقيقة لـ M_target / d⊥ أرقام أكثر."},
+    "UI_CAP13F_ZERO_NOTE": {
+        "en": "Your target moment is zero, so the force is zero: no force is needed for no turning effect. This says nothing about holding anything in place.",
+        "ar": "العزم المستهدف الذي أدخلته صفر، لذلك القوة صفر: لا حاجة إلى أي قوة حين لا يُطلب أثر دوران. ولا يقول هذا شيئًا عن تثبيت أي شيء في مكانه."},
+    "UI_CAP13F_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_CAP13F_ECHO_HEADING": {
+        "en": "The values and declarations you entered",
+        "ar": "القيم والتصريحات التي أدخلتها"},
+    "UI_CAP13F_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_CAP13F_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_CAP13F_SOURCES_NOTE": {
+        "en": "The moment principle (force times perpendicular distance) from NASA Glenn Research Center, and the unit references from the National Institute of Standards and Technology (NIST). The rearranged form F = M / d⊥ and the newton millimetre (N·mm) are InventorAI's own restatement. Neither NASA nor NIST endorses InventorAI or this calculation.",
+        "ar": "مبدأ العزم (القوة مضروبة في المسافة العمودية) من مركز غلين للأبحاث التابع لوكالة ناسا (NASA Glenn Research Center)، ومراجع الوحدات من المعهد الوطني للمعايير والتقنية (NIST). الصيغة المُعاد ترتيبها F = M / d⊥ ووحدة النيوتن مليمتر (N·mm) إعادة صياغة خاصة بـInventorAI. لا تؤيّد ناسا ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_CAP13F_DISCLOSURE": {
+        "en": "This is the size of the one steady force that, acting at your perpendicular distance d⊥ from the one point you chose, in one plane, would produce your own target moment M_target about that point: F = M_target / d⊥.\n\nIt does not work out, check or justify your target moment, and it adds nothing for friction, losses, starting or holding, efficiency or any margin.\n\nIt does not tell whether a person, motor, actuator, spring or mechanism can apply this force, or whether a joint, fixing, shaft, part or material can carry it, and it is not compared with any rating, strength or limit.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement or a qualified engineer before any reliance; it says nothing about whether the design is suitable or safe.\n\nInventorAI does not check your target moment, your distance, your chosen point or that your declarations match the real configuration.\n\nThree-dimensional effects, several forces, motion, impact, vibration and repeated loading are outside this calculation.\n\nReference source material: NASA Glenn Research Center (equilibrium and torque / moment principles); the rearranged form F = M / d⊥ is InventorAI's own restatement.",
+        "ar": "هذا هو مقدار القوة الثابتة الواحدة التي، إذا أثّرت على المسافة العمودية d⊥ التي أدخلتها من النقطة الواحدة التي اخترتها، في مستوى واحد، أحدثت العزم المستهدف M_target الذي أدخلته أنت حول تلك النقطة: F = M_target / d⊥.\n\nلا يحسب هذا الناتج العزم المستهدف الذي أدخلته ولا يتحقق منه ولا يبرّره، ولا يضيف شيئًا للاحتكاك أو الفقد أو بدء الحركة أو التثبيت أو الكفاءة أو أي هامش.\n\nلا يبيّن هذا الناتج ما إذا كان شخص أو محرك أو مُشغِّل (actuator) أو نابض أو آلية قادرًا على تطبيق هذه القوة، ولا ما إذا كان أي مفصل أو تثبيت أو عمود أو جزء أو مادة قادرًا على تحمّلها، ولا يُقارَن بأي تصنيف أو مقاومة أو حدّ.\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا، ويجب تأكيدها بالقياس أو بمراجعة مهندس مؤهل قبل الاعتماد عليها؛ ولا تقول شيئًا عن ملاءمة التصميم أو سلامته.\n\nلا يتحقق InventorAI من العزم المستهدف ولا من المسافة ولا من النقطة التي اخترتها، ولا من مطابقة تصريحاتك للتكوين الفعلي.\n\nالتأثيرات ثلاثية الأبعاد، وتعدد القوى، والحركة، والصدمات، والاهتزاز، والتحميل المتكرر كلها خارج نطاق هذا الحساب.\n\nالمراجع: مركز غلين للأبحاث التابع لوكالة ناسا (NASA Glenn Research Center) — مبادئ الاتزان والعزم. أما الصيغة المُعاد ترتيبها F = M / d⊥ فهي إعادة صياغة خاصة بـInventorAI."},
+    "UI_CAP13F_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_CAP13F_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. هذه الحالة تتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "M_target and d⊥ must each be a plain decimal with no sign or exponent: up to 12 whole digits for M_target and 9 for d⊥, and up to 9 decimal places. M_target may be zero. Nothing was calculated.",
+        "ar": "يجب أن يُكتب كلٌّ من M_target و d⊥ بصيغة عشرية بسيطة بلا إشارة ولا أُس: حتى 12 رقمًا صحيحًا لـ M_target و9 لـ d⊥، وحتى 9 منازل عشرية. يمكن أن يكون M_target صفرًا. لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_DISTANCE_NOT_POSITIVE": {
+        "en": "The distance d⊥ must be greater than zero: a force whose line of action passes through your point produces no turning effect about it. Nothing was calculated.",
+        "ar": "يجب أن تكون المسافة d⊥ أكبر من الصفر: القوة التي يمر خط تأثيرها بنقطتك لا تُحدث أي أثر دوران حولها. لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the newton millimetre (N·mm) and the millimetre (mm), and shows the result in newton (N). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة النيوتن مليمتر (N·mm) والمليمتر (mm) فقط، وتعرض النتيجة بالنيوتن (N). لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_CAP13F_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_CAP13F_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # Stage 25 / CAP-13 — Linear Speed-Dependent Rotational Load, Slice 1
+    # (rotational-load contract §9). The English declaration and disclosure
+    # entries are pinned equal to the artifact by test and the Arabic ones to
+    # contract §9A. The screen reuses UI_CAP13_SCREEN_* and the integrated-part
+    # attribution UI_CAP13_PART_*. Nothing here states dynamics, a motor
+    # requirement, suitability or safety.
+    "UI_CAP13R_LINK_TEXT": {
+        "en": "Optional: torque of a load that resists in proportion to speed",
+        "ar": "اختياري: عزم حمل يقاوم الدوران بالتناسب مع السرعة"},
+    "UI_CAP13R_LINK_NOTE": {
+        "en": "An advisory calculation for a load you declare. It is not saved and is never required.",
+        "ar": "حساب إرشادي لحمل تصرّح به أنت. لا يُحفَظ، ولا يكون مطلوبًا أبدًا."},
+    "UI_CAP13R_TITLE": {
+        "en": "Speed-dependent rotational load (optional, non-binding)",
+        "ar": "حمل دوراني معتمد على السرعة (اختياري، غير مُلزِم)"},
+    "UI_CAP13R_INTRO": {
+        "en": "This page is optional. For a shaft loaded by something that resists rotation in proportion to its speed, such as a linear viscous damper, it calculates the torque that load applies at the shaft at one operating speed ω, from the torque τ_nominal you know at one speed ω_nominal. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. لعمود يقاوم دورانَه حِملٌ يتناسب مع سرعته، مثل مخمِّد لزج خطي، تحسب العزم الذي يؤثر به هذا الحمل على العمود عند سرعة تشغيل واحدة ω، من العزم τ_nominal الذي تعرفه عند سرعة واحدة ω_nominal. لا يُحفَظ شيء."},
+    "UI_CAP13R_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a Mechanical-focus project or for its declared Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that the linear speed-dependent load model applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED signed torque, not a motor requirement, rating, suitability or safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء انطباق نموذج الحمل الخطي المعتمد على السرعة. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة عزم ذو إشارة غير مُتحقَّق منه، وليست متطلبًا لمحرك أو تصنيفًا أو حكمًا بشأن الملاءمة أو السلامة."},
+    "UI_CAP13R_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_CAP13R_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_CAP13R_DECL_LINEAR_THROUGH_ZERO": {
+        "en": "The load's torque is proportional to the shaft speed and zero at zero speed, over every speed considered, including the operating speed entered.",
+        "ar": "عزم الحمل يتناسب مع سرعة العمود ويساوي صفرًا عند السرعة صفر، وذلك لكل سرعة معنيّة، بما فيها سرعة التشغيل المُدخلة."},
+    "UI_CAP13R_DECL_NOMINAL_POINT": {
+        "en": "The value τ_nominal at ω_nominal is one known point of exactly this load, taken from the inventor's own measurement or documentation; InventorAI does not estimate or check it.",
+        "ar": "قيمة τ_nominal عند ω_nominal نقطة واحدة معروفة لهذا الحمل تحديدًا، مأخوذة من قياسك أنت أو من وثائقك؛ ولا يقدّرها InventorAI ولا يتحقق منها."},
+    "UI_CAP13R_DECL_SINGLE_AXIS": {
+        "en": "One shaft rotating about one fixed axis, with every speed measured relative to the stationary support and the same positive direction of rotation used for all of them.",
+        "ar": "عمود واحد يدور حول محور ثابت واحد، وكل سرعة تُقاس بالنسبة إلى المسند الثابت، مع اعتماد الاتجاه الموجب نفسه للدوران في جميعها."},
+    "UI_CAP13R_DECL_LOAD_ONLY": {
+        "en": "Only this one speed-dependent load is considered: no acceleration, inertia, friction, backlash, other load or motor behaviour is included.",
+        "ar": "لا يُؤخذ في الحسبان إلا هذا الحمل الواحد المعتمد على السرعة: لا تسارع، ولا قصور ذاتي، ولا احتكاك، ولا خلوص، ولا حمل آخر، ولا سلوك للمحرك."},
+    "UI_CAP13R_DECL_SIGN_CONVENTION": {
+        "en": "The result is the torque the load applies at the shaft, positive in the positive direction of rotation, so a resisting load is negative for positive rotation and positive for negative rotation.",
+        "ar": "الناتج هو العزم الذي يؤثر به الحمل على العمود، موجبًا في الاتجاه الموجب للدوران؛ لذلك يكون الحمل المقاوم سالبًا للدوران الموجب وموجبًا للدوران السالب."},
+    "UI_CAP13R_FIELD_TAU_NOMINAL": {
+        "en": "Nominal torque of the load at the nominal speed, negative for a resisting load (τ_nominal) — newton metre (N·m)",
+        "ar": "العزم الاسمي للحمل عند السرعة الاسمية، سالب للحمل المقاوم (τ_nominal) — نيوتن متر (N·m)"},
+    "UI_CAP13R_FIELD_W_NOMINAL": {
+        "en": "Nominal speed at which τ_nominal is known (ω_nominal) — radian per second (rad/s)",
+        "ar": "السرعة الاسمية التي تُعرف عندها τ_nominal (ω_nominal) — راديان في الثانية (rad/s)"},
+    "UI_CAP13R_FIELD_W": {
+        "en": "Operating speed of the shaft, negative for the opposite direction (ω) — radian per second (rad/s)",
+        "ar": "سرعة تشغيل العمود، سالبة للاتجاه المعاكس (ω) — راديان في الثانية (rad/s)"},
+    "UI_CAP13R_SUBMIT": {
+        "en": "Calculate the load torque",
+        "ar": "احسب عزم الحمل"},
+    "UI_CAP13R_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_CAP13R_RESULT_TAU": {
+        "en": "Torque the load applies at the shaft (τ) — newton metre (N·m)",
+        "ar": "العزم الذي يؤثر به الحمل على العمود (τ) — نيوتن متر (N·m)"},
+    "UI_CAP13R_SIGN_NOTE": {
+        "en": "Sign convention: τ is positive in the positive direction of rotation (the Modelica accelerating torque, −flange.tau); a resisting load is negative for positive ω, positive for negative ω and zero at ω = 0.",
+        "ar": "اصطلاح الإشارة: τ موجبة في الاتجاه الموجب للدوران (عزم التسريع في Modelica، أي −flange.tau)؛ والحمل المقاوم سالب عندما تكون ω موجبة، وموجب عندما تكون ω سالبة، وصفر عند ω = 0."},
+    "UI_CAP13R_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_CAP13R_ECHO_HEADING": {
+        "en": "The values and declarations you entered",
+        "ar": "القيم والتصريحات التي أدخلتها"},
+    "UI_CAP13R_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_CAP13R_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_CAP13R_SOURCES_NOTE": {
+        "en": "The linear speed-dependent torque relation and the SI units from the Modelica Standard Library v4.1.0 (Modelica Association and contributors, BSD 3-Clause License). InventorAI restates the relation in its own words; no Modelica code is copied or run. Neither the Modelica Association nor any contributor endorses InventorAI or this calculation.",
+        "ar": "علاقة العزم الخطي المعتمد على السرعة ووحدات SI من مكتبة Modelica Standard Library الإصدار v4.1.0 (Modelica Association والمساهمون، رخصة BSD 3-Clause). يعيد InventorAI صياغة العلاقة بكلماته؛ ولا يُنسخ أي كود من Modelica ولا يُشغَّل. لا تؤيّد Modelica Association ولا أي مساهم InventorAI ولا هذا الحساب."},
+    "UI_CAP13R_DISCLOSURE": {
+        "en": "This is the torque that the one speed-dependent load you declared applies at the shaft at the speed ω you entered, using your own nominal torque τ_nominal at your own nominal speed ω_nominal.\n\nSign convention: τ is positive in the positive direction of rotation, so this resisting load gives a negative τ for positive ω, a positive τ for negative ω and exactly zero at ω = 0.\n\nIt assumes the load torque stays proportional to speed and is zero at zero speed; InventorAI does not check that your load behaves this way at any speed.\n\nIt includes no acceleration, inertia, friction, starting torque or other load, and it does not tell whether any motor, gearbox, shaft or part can drive or carry this load.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement or a qualified engineer before any reliance; it says nothing about suitability or safety.\n\nInventorAI does not check your values or that your declarations match the real mechanism.\n\nReference source material: Modelica Standard Library v4.1.0 (Modelica Association and contributors, BSD 3-Clause License); the relation is restated by InventorAI, and no Modelica code is used.",
+        "ar": "هذا هو العزم الذي يؤثر به الحمل الواحد المعتمد على السرعة الذي صرّحت به على العمود، عند السرعة ω التي أدخلتها، باستخدام عزمك الاسمي τ_nominal عند سرعتك الاسمية ω_nominal.\n\nاصطلاح الإشارة: تكون τ موجبة في الاتجاه الموجب للدوران، لذلك يعطي هذا الحمل المقاوم قيمة τ سالبة عندما تكون ω موجبة، وقيمة موجبة عندما تكون ω سالبة، وصفرًا تمامًا عند ω = 0.\n\nيفترض هذا الحساب أن عزم الحمل يبقى متناسبًا مع السرعة ويساوي صفرًا عند السرعة صفر؛ ولا يتحقق InventorAI من أن حملك يسلك هذا السلوك عند أي سرعة.\n\nلا يتضمن الحساب أي تسارع أو قصور ذاتي أو احتكاك أو عزم بدء أو حمل آخر، ولا يبيّن ما إذا كان أي محرك أو صندوق تروس أو عمود أو جزء قادرًا على إدارة هذا الحمل أو تحمّله.\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا، ويجب تأكيدها بالقياس أو بمراجعة مهندس مؤهل قبل الاعتماد عليها؛ ولا تقول شيئًا عن الملاءمة أو السلامة.\n\nلا يتحقق InventorAI من قيمك، ولا من مطابقة تصريحاتك للآلية الفعلية.\n\nالمراجع: مكتبة Modelica Standard Library الإصدار v4.1.0 (Modelica Association والمساهمون، رخصة BSD 3-Clause)؛ والعلاقة معاد صياغتها من InventorAI، ولا يُستخدم أي كود من Modelica."},
+    "UI_CAP13R_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_CAP13R_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. هذه الحالة تتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "τ_nominal must be a negative number (a resisting load), ω_nominal a positive number and ω any number, each written as a plain decimal with at most one leading minus sign. Nothing was calculated.",
+        "ar": "يجب أن تكون τ_nominal رقمًا سالبًا (حملًا مقاومًا)، وω_nominal رقمًا موجبًا، وω أي رقم، وكل منها مكتوب بصيغة عشرية بسيطة مع إشارة سالبة واحدة على الأكثر في البداية. لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the newton metre (N·m) and the radian per second (rad/s). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة النيوتن متر (N·m) والراديان في الثانية (rad/s) فقط. لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_CAP13R_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_CAP13R_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # Sensors C3 — TMP36 Nominal Voltage-to-Temperature, Slice 1 (TMP36
+    # contract §9). The English declaration, screen and disclosure entries are
+    # pinned equal to the artifact by test and the Arabic ones to contract §9A.
+    # The integrated-part attribution reuses UI_THERM01_PART_*. Nothing here
+    # states a measurement, an accuracy, a sensor choice, suitability or safety.
+    "UI_TMP36_LINK_TEXT": {
+        "en": "Optional: nominal temperature from a TMP36 output voltage",
+        "ar": "اختياري: درجة الحرارة الاسمية من جهد خرج حسّاس TMP36"},
+    "UI_TMP36_LINK_NOTE": {
+        "en": "An advisory reading of a voltage you declare. It is not saved and is never required.",
+        "ar": "قراءة إرشادية لجهد تصرّح به أنت. لا تُحفَظ، ولا تكون مطلوبة أبدًا."},
+    "UI_TMP36_TITLE": {
+        "en": "TMP36 nominal temperature (optional, non-binding)",
+        "ar": "درجة الحرارة الاسمية لحسّاس TMP36 (اختياري، غير مُلزِم)"},
+    "UI_TMP36_INTRO": {
+        "en": "This page is optional. If your design uses an Analog Devices TMP36 temperature sensor and you have read its output voltage V_OUT yourself, it shows the temperature that the sensor's nominal relation gives for that voltage: 500 mV at 0 °C and 10 mV for each degree. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. إذا كان تصميمك يستخدم حسّاس الحرارة Analog Devices TMP36 وقرأت جهد خرجه V_OUT بنفسك، فهي تعرض درجة الحرارة التي تعطيها العلاقة الاسمية للحسّاس لهذا الجهد: 500 mV عند 0 °C و10 mV لكل درجة. لا يُحفَظ شيء."},
+    "UI_TMP36_SCOPE_NOTE": {
+        "en": "This optional calculation is available for an Electrical / Electronics-focus project or for its declared Electrical / Electronics part in a valid integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that your sensor is a TMP36 or that its nominal relation applies. You must confirm the method's conditions and screening items. The result is an UNVALIDATED nominal temperature, not a measurement, an accuracy statement, a sensor choice or a safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله كهربائي/إلكتروني، أو لجزئه الكهربائي/الإلكتروني المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء أن حسّاسك من طراز TMP36 أو أن علاقته الاسمية تنطبق. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة درجة حرارة اسمية غير مُتحقَّق منها، وليست قياسًا ولا بيانًا للدقة ولا اختيارًا للحسّاس ولا حكمًا بشأن السلامة."},
+    "UI_TMP36_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_TMP36_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_TMP36_DECL_DEVICE_TMP36": {
+        "en": "The sensor is an Analog Devices TMP36, not a TMP35, a TMP37 or any other sensor, as the inventor declares; InventorAI does not identify or check the device.",
+        "ar": "الحسّاس من طراز Analog Devices TMP36، وليس TMP35 ولا TMP37 ولا أي حسّاس آخر، بحسب تصريحك؛ ولا يتعرّف InventorAI على الجهاز ولا يتحقق منه."},
+    "UI_TMP36_DECL_DECLARED_VOLTAGE": {
+        "en": "The voltage entered is the inventor's own value for this TMP36's output pin relative to its ground pin, taken from their own reading or documentation; InventorAI did not sample, measure or check it.",
+        "ar": "الجهد المُدخل قيمتك أنت لطرف الخرج في هذا الحسّاس بالنسبة إلى طرف الأرضي فيه، مأخوذة من قراءتك أو من وثائقك؛ ولم يأخذ InventorAI منها عينة ولم يقسها ولم يتحقق منها."},
+    "UI_TMP36_DECL_DATASHEET_CONDITIONS": {
+        "en": "The sensor is powered and loaded as its data sheet specifies, and the voltage was read with the sensor in steady conditions within its specified temperature range.",
+        "ar": "الحسّاس مغذّى ومحمَّل كما تحدد ورقة بياناته، وقُرئ الجهد والحسّاس في ظروف مستقرة ضمن مداه الحراري المحدد."},
+    "UI_TMP36_DECL_NOMINAL_ONLY": {
+        "en": "Only the nominal relation is wanted: the device's accuracy and linearity errors, self-heating, calibration, the measuring instrument or ADC and every other error are not included.",
+        "ar": "المطلوب العلاقة الاسمية فقط: لا تُدرج أخطاء الدقة والخطية في الجهاز، ولا التسخين الذاتي، ولا المعايرة، ولا أداة القياس أو المحوّل التناظري الرقمي (ADC)، ولا أي خطأ آخر."},
+    "UI_TMP36_SCREEN_STEM": {
+        "en": "Will this temperature be relied on for, or does the sensor sit in or on, any of the following? Answer each item yes or no.",
+        "ar": "هل ستُعتمد درجة الحرارة هذه في أي مما يلي، أو هل يقع الحسّاس فيه أو عليه؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_TMP36_SCREEN_BATTERY_OR_STORAGE_CELL": {
+        "en": "A battery or energy-storage cell",
+        "ar": "بطارية أو خلية لتخزين الطاقة"},
+    "UI_TMP36_SCREEN_MAINS_OR_HIGH_VOLTAGE": {
+        "en": "Mains or high voltage",
+        "ar": "جهد الشبكة الكهربائية (mains) أو جهد عالٍ"},
+    "UI_TMP36_SCREEN_FIRE_OR_IGNITION": {
+        "en": "Fire or ignition risk",
+        "ar": "خطر حريق أو اشتعال"},
+    "UI_TMP36_SCREEN_TOUCH_SKIN_OR_MEDICAL": {
+        "en": "Body temperature, skin contact or medical use",
+        "ar": "حرارة الجسم، أو تلامس مع الجلد، أو استخدام طبي"},
+    "UI_TMP36_SCREEN_SAFETY_CRITICAL_OR_LIFE_SUPPORTING": {
+        "en": "A safety-critical or life-supporting function, alarm or shut-off",
+        "ar": "وظيفة حرجة للسلامة أو داعمة للحياة، أو إنذار أو إيقاف"},
+    "UI_TMP36_SCREEN_AEROSPACE_OR_VEHICLE": {
+        "en": "Aerospace or vehicle use",
+        "ar": "استخدام في الطيران والفضاء (aerospace) أو في المركبات"},
+    "UI_TMP36_SCREEN_FOOD_SAFETY": {
+        "en": "Food safety or storage-temperature decisions",
+        "ar": "قرارات سلامة الغذاء أو درجات حرارة التخزين"},
+    "UI_TMP36_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_TMP36_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_TMP36_SCREEN_NOTE": {
+        "en": "Answering no to all seven items only means this bounded calculation may proceed; it never means that anything is safe.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود السبعة تعني فقط أنه يمكن متابعة هذا الحساب المحدود؛ ولا تعني أبدًا أن أي شيء آمن."},
+    "UI_TMP36_VOLTAGE_NOTE": {
+        "en": "Enter the voltage you read yourself, between 100 and 1750 mV, as a plain decimal with at most three digits after the point. InventorAI does not read, sample or measure your sensor.",
+        "ar": "أدخل الجهد الذي قرأته بنفسك، بين 100 و1750 mV، بصيغة عشرية بسيطة مع ثلاثة أرقام على الأكثر بعد الفاصلة. لا يقرأ InventorAI حسّاسك ولا يأخذ منه عينات ولا يقيسه."},
+    "UI_TMP36_FIELD_V_OUT": {
+        "en": "Your declared TMP36 output voltage, relative to its ground pin (V_OUT) — millivolt (mV)",
+        "ar": "جهد خرج TMP36 الذي تصرّح به، بالنسبة إلى طرف الأرضي (V_OUT) — ميلي فولت (mV)"},
+    "UI_TMP36_SUBMIT": {
+        "en": "Show the nominal temperature",
+        "ar": "اعرض درجة الحرارة الاسمية"},
+    "UI_TMP36_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_TMP36_RESULT_T": {
+        "en": "Nominal temperature from the TMP36 relation (T) — degree Celsius (°C)",
+        "ar": "درجة الحرارة الاسمية من علاقة TMP36 (T) — درجة سيليزية (°C)"},
+    "UI_TMP36_NOMINAL_NOTE": {
+        "en": "This is the nominal relation applied to the voltage you declared, not a measured or accurate temperature of your sensor.",
+        "ar": "هذه هي العلاقة الاسمية مطبّقة على الجهد الذي صرّحت به، وليست درجة حرارة مَقيسة أو دقيقة لحسّاسك."},
+    "UI_TMP36_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_TMP36_ECHO_HEADING": {
+        "en": "The value and declarations you entered",
+        "ar": "القيمة والتصريحات التي أدخلتها"},
+    "UI_TMP36_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_TMP36_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_TMP36_SOURCES_NOTE": {
+        "en": "The nominal TMP36 output characteristic and its specified temperature range from the Analog Devices TMP35/TMP36/TMP37 data sheet, Rev. H (© Analog Devices, Inc.); the millivolt from NIST SP 811 and the degree Celsius from the Modelica Standard Library v4.1.0. InventorAI restates the relation in its own words; no data-sheet text, table or figure is reproduced. Analog Devices does not endorse InventorAI or this calculation.",
+        "ar": "الخاصية الاسمية لخرج TMP36 ومداه الحراري المحدد من ورقة بيانات Analog Devices لـ TMP35/TMP36/TMP37، المراجعة Rev. H (© Analog Devices, Inc.)؛ والميلي فولت من NIST SP 811 والدرجة السيليزية من مكتبة Modelica Standard Library الإصدار v4.1.0. يعيد InventorAI صياغة العلاقة بكلماته؛ ولا يُستنسخ أي نص أو جدول أو شكل من ورقة البيانات. لا تؤيّد Analog Devices InventorAI ولا هذا الحساب."},
+    "UI_TMP36_DISCLOSURE": {
+        "en": "This is the nominal temperature that the TMP36 relation gives for the output voltage V_OUT you entered: T = (V_OUT − 500 mV) / (10 mV/°C).\n\nThe voltage is your own declared value. InventorAI did not read, sample or measure your sensor and does not check the value or that the sensor is a TMP36.\n\nIt is the nominal relation only. A real TMP36 can differ from it by several degrees, as its data sheet specifies, and no accuracy, linearity, self-heating, calibration, instrument or ADC error is included.\n\nThe accepted voltage interval, 100 mV to 1750 mV, is the nominal relation applied to the sensor's specified range of −40 °C to +125 °C. It is not the data sheet's output-voltage specification and does not mean the device is accurate inside it.\n\nThe number of digits shown follows from your entry; it is not the precision of the sensor or of any measurement.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement before any reliance; it says nothing about sensor choice, suitability or safety.\n\nReference source material: Analog Devices TMP35/TMP36/TMP37 data sheet, Rev. H (© Analog Devices, Inc.); the relation is restated by InventorAI, and no data-sheet text, table or figure is reproduced.",
+        "ar": "هذه هي درجة الحرارة الاسمية التي تعطيها علاقة TMP36 لجهد الخرج V_OUT الذي أدخلته: T = (V_OUT − 500 mV) / (10 mV/°C).\n\nالجهد قيمة صرّحت بها أنت. لم يقرأ InventorAI حسّاسك ولم يأخذ منه عينات ولم يقسه، ولا يتحقق من القيمة ولا من أن الحسّاس من طراز TMP36.\n\nهذه هي العلاقة الاسمية فقط. قد تختلف قراءة حسّاس TMP36 حقيقي عنها بعدة درجات، كما تنص ورقة بياناته، ولا يتضمن الحساب أي خطأ في الدقة أو الخطية أو التسخين الذاتي أو المعايرة أو أداة القياس أو المحوّل التناظري الرقمي (ADC).\n\nمجال الجهد المقبول، من 100 mV إلى 1750 mV، هو ناتج تطبيق العلاقة الاسمية على المدى المحدد للحسّاس من −40 °C إلى +125 °C. وهو ليس مواصفة جهد الخرج في ورقة البيانات، ولا يعني أن الجهاز دقيق داخله.\n\nعدد الأرقام المعروضة ناتج عن إدخالك؛ وليس دقة الحسّاس أو دقة أي قياس.\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا، ويجب تأكيدها بالقياس قبل الاعتماد عليها؛ ولا تقول شيئًا عن اختيار الحسّاس أو الملاءمة أو السلامة.\n\nالمراجع: ورقة بيانات Analog Devices لـ TMP35/TMP36/TMP37، المراجعة Rev. H (© Analog Devices, Inc.)؛ والعلاقة معاد صياغتها من InventorAI، ولا يُستنسخ أي نص أو جدول أو شكل من ورقة البيانات."},
+    "UI_TMP36_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_TMP36_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. Relying on a nominal temperature in this case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. الاعتماد على درجة حرارة اسمية في هذه الحالة يتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "V_OUT must be written as a plain decimal number of millivolts, with no sign and at most three digits after the point. Nothing was calculated.",
+        "ar": "يجب كتابة V_OUT رقمًا عشريًا بسيطًا بالميلي فولت، بلا إشارة ومع ثلاثة أرقام على الأكثر بعد الفاصلة. لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_OUTSIDE_NOMINAL_MODEL_RANGE": {
+        "en": "V_OUT is outside 100 mV to 1750 mV, the interval that the nominal relation gives for the sensor's specified range of −40 °C to +125 °C. Nothing was calculated.",
+        "ar": "قيمة V_OUT خارج المجال من 100 mV إلى 1750 mV، وهو المجال الذي تعطيه العلاقة الاسمية للمدى المحدد للحسّاس من −40 °C إلى +125 °C. لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the millivolt (mV) and gives only the degree Celsius (°C). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة الميلي فولت (mV) فقط، ولا تعطي إلا الدرجة السيليزية (°C). لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_TMP36_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_TMP36_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # 28-T4 — Single Vendor-Neutral Control-Cycle Evaluation, Slice 1
+    # (control-cycle contract §9). The English confirmation, screen and
+    # disclosure entries are pinned equal to the artifact by test and the Arabic
+    # ones to contract §9A. Nothing here states a device command, a PLC or
+    # IEC 61131-3 execution semantic, a timing, suitability or safety.
+    "UI_CC_LINK_TEXT": {
+        "en": "Optional: step through one cycle of simple READY / RUNNING start logic",
+        "ar": "اختياري: تتبّع دورة واحدة لمنطق بدء بسيط READY / RUNNING"},
+    "UI_CC_LINK_NOTE": {
+        "en": "An advisory evaluation of a fixed logic you confirm. It is not saved, controls nothing and is never required.",
+        "ar": "تقييم إرشادي لمنطق ثابت تؤكّده أنت. لا يُحفَظ، ولا يتحكم في أي شيء، ولا يكون مطلوبًا أبدًا."},
+    "UI_CC_TITLE": {
+        "en": "One control cycle: READY / RUNNING (optional, non-binding)",
+        "ar": "دورة تحكم واحدة: READY / RUNNING (اختياري، غير مُلزِم)"},
+    "UI_CC_INTRO": {
+        "en": "This page is optional. It walks through one cycle of a very simple start logic with two states, READY and RUNNING: you choose the state before the cycle and the value of start_input, and it shows which state follows and what the one logical output is. Nothing is saved and no device is controlled.",
+        "ar": "هذه الصفحة اختيارية. تتتبّع دورة واحدة لمنطق بدء بسيط جدًا له حالتان، READY وRUNNING: تختار أنت الحالة قبل الدورة وقيمة start_input، وتعرض الصفحة الحالة التالية وقيمة الخرج المنطقي الوحيد. لا يُحفَظ شيء، ولا يُتحكَّم في أي جهاز."},
+    "UI_CC_SCOPE_NOTE": {
+        "en": "This optional evaluation is available for a project whose analysis focus is Electrical / Electronics. That focus does not establish that this logic describes your design. You must confirm the fixed definition and the screening items. The result is an UNVALIDATED logical value, not a device command, a PLC program, a timing statement or a safety function.",
+        "ar": "يتاح هذا التقييم الاختياري لمشروع محور تحليله كهربائي/إلكتروني. ولا يثبت هذا المحور أن هذا المنطق يصف تصميمك. يجب أن تؤكّد التعريف الثابت وتجيب عن أسئلة الفحص. النتيجة قيمة منطقية غير مُتحقَّق منها، وليست أمرًا لجهاز ولا برنامج PLC ولا بيانًا للتوقيت ولا وظيفة سلامة."},
+    "UI_CC_DEFINITION_HEADING": {
+        "en": "The fixed logic (it cannot be changed here)",
+        "ar": "المنطق الثابت (لا يمكن تغييره هنا)"},
+    "UI_CC_DEFINITION_STATES": {
+        "en": "Two states: READY and RUNNING.",
+        "ar": "حالتان: READY وRUNNING."},
+    "UI_CC_DEFINITION_TRANSITION": {
+        "en": "One transition: from READY to RUNNING when start_input is true.",
+        "ar": "انتقال واحد: من READY إلى RUNNING عندما تكون start_input صحيحة (true)."},
+    "UI_CC_DEFINITION_OUTPUT": {
+        "en": "One logical output: false in READY, true in RUNNING.",
+        "ar": "خرج منطقي واحد: false في READY، وtrue في RUNNING."},
+    "UI_CC_DEFINITION_ORDER": {
+        "en": "One cycle: start_input is read once and held, the transition is checked, the next state is chosen, then the output is read from the next state.",
+        "ar": "دورة واحدة: تُقرأ start_input مرة واحدة وتُثبَّت، ويُفحص الانتقال، وتُختار الحالة التالية، ثم يُقرأ الخرج من الحالة التالية."},
+    "UI_CC_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_CC_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_CC_DECL_TWO_STATES": {
+        "en": "The logic considered has exactly two states, READY and RUNNING, and the previous state entered is the one it was in before this cycle.",
+        "ar": "المنطق المعني له حالتان فقط، READY وRUNNING، والحالة السابقة المُدخلة هي الحالة التي كان فيها قبل هذه الدورة."},
+    "UI_CC_DECL_ONE_TRANSITION": {
+        "en": "Its only transition goes from READY to RUNNING when start_input is true; there is no way back to READY and no other transition, timer, counter or fault state.",
+        "ar": "انتقاله الوحيد من READY إلى RUNNING عندما تكون start_input صحيحة (true)؛ ولا رجوع إلى READY، ولا انتقال آخر، ولا مؤقّت أو عدّاد أو حالة عطل."},
+    "UI_CC_DECL_OUTPUT_MEANING": {
+        "en": "The one Boolean output is false in READY and true in RUNNING, and it is read from the state after this cycle.",
+        "ar": "الخرج المنطقي الوحيد false في READY وtrue في RUNNING، ويُقرأ من الحالة بعد هذه الدورة."},
+    "UI_CC_DECL_ONE_FROZEN_INPUT": {
+        "en": "Start_input is the only input, its value is read once and held unchanged for the whole cycle, and nothing else (power-up, reset, other signals or the passage of time) is considered.",
+        "ar": "start_input هي المدخل الوحيد، وتُقرأ قيمتها مرة واحدة وتبقى ثابتة طوال الدورة، ولا يُؤخذ في الحسبان أي شيء آخر (بدء التشغيل أو إعادة الضبط أو إشارات أخرى أو مرور الزمن)."},
+    "UI_CC_DECL_LOGICAL_ONLY": {
+        "en": "The states, the input and the output are logical values only; whether any real device, signal or piece of equipment is switched, started, stopped or energized is not decided here.",
+        "ar": "الحالات والمدخل والخرج قيم منطقية فقط؛ ولا يُحسم هنا ما إذا كان أي جهاز أو إشارة أو معدّة حقيقية تُشغَّل أو تبدأ أو تتوقف أو تُمَدّ بالطاقة."},
+    "UI_CC_SCREEN_STEM": {
+        "en": "Is this logic for, or would its output affect, any of the following? Answer each item yes or no.",
+        "ar": "هل هذا المنطق مخصّص لأي مما يلي، أو هل سيؤثّر خرجه فيه؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_CC_SCREEN_SAFETY_FUNCTION": {
+        "en": "A safety function, interlock, emergency stop or protective shut-off",
+        "ar": "وظيفة سلامة، أو تعشيق (interlock)، أو إيقاف طارئ، أو فصل وقائي"},
+    "UI_CC_SCREEN_MACHINERY_MOTION": {
+        "en": "Moving machinery or parts that could injure someone",
+        "ar": "آلات أو أجزاء متحركة قد تؤذي أحدًا"},
+    "UI_CC_SCREEN_MAINS_OR_HIGH_VOLTAGE": {
+        "en": "Mains or high voltage",
+        "ar": "جهد الشبكة الكهربائية (mains) أو جهد عالٍ"},
+    "UI_CC_SCREEN_HEATING_OR_FIRE": {
+        "en": "Heating, fire or ignition risk",
+        "ar": "تسخين أو خطر حريق أو اشتعال"},
+    "UI_CC_SCREEN_MEDICAL_OR_LIFE_SUPPORTING": {
+        "en": "Medical or life-supporting use",
+        "ar": "استخدام طبي أو داعم للحياة"},
+    "UI_CC_SCREEN_VEHICLE_OR_AEROSPACE": {
+        "en": "Vehicle or aerospace use",
+        "ar": "استخدام في المركبات أو في الطيران والفضاء (aerospace)"},
+    "UI_CC_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_CC_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_CC_SCREEN_NOTE": {
+        "en": "Answering no to all six items only means this bounded evaluation may proceed; it never means that anything is safe.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود الستة تعني فقط أنه يمكن متابعة هذا التقييم المحدود؛ ولا تعني أبدًا أن أي شيء آمن."},
+    "UI_CC_FIELD_PREVIOUS": {
+        "en": "The state before this cycle",
+        "ar": "الحالة قبل هذه الدورة"},
+    "UI_CC_FIELD_INPUT": {
+        "en": "The value of start_input in this cycle",
+        "ar": "قيمة start_input في هذه الدورة"},
+    "UI_CC_INPUT_NOTE": {
+        "en": "Both are your own choices for one hypothetical cycle. InventorAI does not read any signal or know the state of your system.",
+        "ar": "كلتاهما اختيارك أنت لدورة افتراضية واحدة. لا يقرأ InventorAI أي إشارة، ولا يعرف حالة نظامك."},
+    "UI_CC_SUBMIT": {
+        "en": "Evaluate one cycle",
+        "ar": "قيّم دورة واحدة"},
+    "UI_CC_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_CC_RESULT_PREVIOUS": {
+        "en": "State before the cycle",
+        "ar": "الحالة قبل الدورة"},
+    "UI_CC_RESULT_INPUT": {
+        "en": "start_input, read once and held",
+        "ar": "start_input، مقروءة مرة واحدة ومثبَّتة"},
+    "UI_CC_RESULT_TRANSITION": {
+        "en": "Transition",
+        "ar": "الانتقال"},
+    "UI_CC_TRANSITION_APPLIED": {
+        "en": "Applied: READY to RUNNING, because start_input was true.",
+        "ar": "طُبِّق: من READY إلى RUNNING، لأن start_input كانت true."},
+    "UI_CC_TRANSITION_NOT_APPLIED_CONDITION_FALSE": {
+        "en": "Not applied: the state was READY but start_input was false, so the state stays READY. This is a normal result.",
+        "ar": "لم يُطبَّق: كانت الحالة READY لكن start_input كانت false، لذلك تبقى الحالة READY. وهذه نتيجة عادية."},
+    "UI_CC_TRANSITION_NOT_APPLICABLE_FROM_STATE": {
+        "en": "Not applicable: the only transition starts from READY, and the state was RUNNING, so the state stays RUNNING whatever start_input is. This is a normal result.",
+        "ar": "غير منطبق: الانتقال الوحيد يبدأ من READY، وكانت الحالة RUNNING، لذلك تبقى الحالة RUNNING أيًّا كانت start_input. وهذه نتيجة عادية."},
+    "UI_CC_RESULT_NEXT": {
+        "en": "State after the cycle",
+        "ar": "الحالة بعد الدورة"},
+    "UI_CC_RESULT_OUTPUT": {
+        "en": "Logical output, read from the state after the cycle",
+        "ar": "الخرج المنطقي، مقروءًا من الحالة بعد الدورة"},
+    "UI_CC_OUTPUT_NOTE": {
+        "en": "The output is a logical value only; it switches, starts, stops or energizes nothing.",
+        "ar": "الخرج قيمة منطقية فقط؛ لا يشغّل أي شيء ولا يبدؤه ولا يوقفه ولا يمدّه بالطاقة."},
+    "UI_CC_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_CC_METHOD_LINE": {
+        "en": "Evaluation and version",
+        "ar": "التقييم وإصداره"},
+    "UI_CC_SOURCES_NOTE": {
+        "en": "Reference: OpenPLC Runtime (Autonomy, MIT License), source commit 8d69d935, for separating input reading, program logic and output update in a control cycle only. The READY / RUNNING logic and reading the output from the next state are InventorAI's own design; no OpenPLC code or text is used, no IEC 61131-3 conformity is claimed and no endorsement is implied.",
+        "ar": "المرجع: OpenPLC Runtime (Autonomy، رخصة MIT)، الإيداع 8d69d935، للفصل بين قراءة المدخلات ومنطق البرنامج وتحديث المخرجات في دورة التحكم فقط. منطق READY / RUNNING وقراءة الخرج من الحالة التالية تصميم خاص بـ InventorAI؛ ولا يُستخدم أي كود أو نص من OpenPLC، ولا يُدّعى أي توافق مع IEC 61131-3، ولا يُقصد أي تأييد."},
+    "UI_CC_ECHO_HEADING": {
+        "en": "The confirmations you gave",
+        "ar": "التأكيدات التي قدّمتها"},
+    "UI_CC_DISCLOSURE": {
+        "en": "This is one evaluation of the fixed READY / RUNNING logic you confirmed, for the previous state and the start_input value you entered: start_input is read once and held, the one transition is checked, the next state is chosen and the output is read from the next state.\n\nIf the transition does not apply, the state stays as it was; that is a normal result, not an error.\n\nThe output is a logical value (true or false) only. It does not mean that any real device is switched, started, stopped or energized, and nothing is sent to any device.\n\nNothing is stored between evaluations: each one starts from the previous state you enter, and InventorAI does not track the state of your system.\n\nReading the output from the next state is InventorAI's own design choice for this evaluation. It is not a claim about how any PLC, OpenPLC or IEC 61131-3 runtime executes a program, and no timing, scan time or electrical behaviour is implied.\n\nIt is not a safety function, interlock or emergency stop. It is preliminary, advisory, UNVALIDATED and not evidence, and any real control logic must be designed and checked by a qualified engineer.\n\nReference: OpenPLC Runtime (Autonomy, MIT License), source commit 8d69d935, used only as a factual reference for separating input reading, program logic and output update in a control cycle; no OpenPLC code or text is used, and no endorsement is implied.",
+        "ar": "هذا تقييم واحد لمنطق READY / RUNNING الثابت الذي أكّدته، للحالة السابقة ولقيمة start_input اللتين أدخلتهما: تُقرأ start_input مرة واحدة وتُثبَّت، ويُفحص الانتقال الوحيد، وتُختار الحالة التالية، ويُقرأ الخرج من الحالة التالية.\n\nإذا لم ينطبق الانتقال، تبقى الحالة كما كانت؛ وهذه نتيجة عادية، وليست خطأ.\n\nالخرج قيمة منطقية فقط (true أو false). ولا يعني أن أي جهاز حقيقي قد شُغِّل أو بدأ أو توقف أو أُمِدَّ بالطاقة، ولا يُرسَل أي شيء إلى أي جهاز.\n\nلا يُحفَظ شيء بين التقييمات: يبدأ كل تقييم من الحالة السابقة التي تدخلها، ولا يتتبّع InventorAI حالة نظامك.\n\nقراءة الخرج من الحالة التالية خيار تصميمي خاص بـ InventorAI في هذا التقييم. وليست ادعاءً بشأن كيفية تنفيذ أي PLC أو OpenPLC أو بيئة تشغيل IEC 61131-3 لبرنامج، ولا يُقصد بها أي توقيت أو زمن مسح (scan time) أو سلوك كهربائي.\n\nهذا ليس وظيفة سلامة ولا تعشيقًا (interlock) ولا إيقافًا طارئًا. وهو أولي وإرشادي، وغير مُتحقَّق منه (UNVALIDATED)، وليس دليلًا، ويجب أن يصمّم مهندس مؤهل أي منطق تحكم حقيقي ويتحقق منه.\n\nالمرجع: OpenPLC Runtime (Autonomy، رخصة MIT)، الإيداع 8d69d935، ويُستخدم مرجعًا واقعيًا فقط للفصل بين قراءة المدخلات ومنطق البرنامج وتحديث المخرجات في دورة التحكم؛ ولا يُستخدم أي كود أو نص من OpenPLC، ولا يُقصد أي تأييد."},
+    "UI_CC_UNABLE_HEADING": {
+        "en": "Not evaluated (UNABLE TO DETERMINE)",
+        "ar": "لم يُقيَّم (UNABLE TO DETERMINE)"},
+    "UI_CC_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every confirmation, screen item, the state before the cycle and the value of start_input. Nothing was evaluated.",
+        "ar": "لم تُجب عن جميع التأكيدات وبنود الفحص والحالة قبل الدورة وقيمة start_input. لم يُقيَّم شيء."},
+    "UI_CC_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. Logic for such a use requires specialist engineering review, so nothing was evaluated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. المنطق المخصّص لمثل هذا الاستخدام يتطلب مراجعة هندسية متخصصة، لذلك لم يُقيَّم شيء."},
+    "UI_CC_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the confirmations does not match the fixed logic this evaluation covers. Nothing was evaluated.",
+        "ar": "أحد التأكيدات لا يطابق المنطق الثابت الذي يغطيه هذا التقييم. لم يُقيَّم شيء."},
+    "UI_CC_OUTCOME_UNKNOWN_STATE": {
+        "en": "The state before the cycle must be READY or RUNNING. Nothing was evaluated.",
+        "ar": "يجب أن تكون الحالة قبل الدورة READY أو RUNNING. لم يُقيَّم شيء."},
+    "UI_CC_OUTCOME_INVALID_INPUT_SNAPSHOT": {
+        "en": "start_input must be true or false. Nothing was evaluated.",
+        "ar": "يجب أن تكون start_input إما true أو false. لم يُقيَّم شيء."},
+    "UI_CC_OUTCOME_DEFINITION_UNAVAILABLE": {
+        "en": "The fixed definition for this evaluation is unavailable or failed its integrity checks. Nothing was evaluated.",
+        "ar": "التعريف الثابت لهذا التقييم غير متاح، أو لم يجتز فحوص سلامته. لم يُقيَّم شيء."},
+    "UI_CC_ERR_REQUEST": {
+        "en": "This request could not be read, or it tried to change the fixed logic. Nothing was evaluated.",
+        "ar": "تعذّرت قراءة هذا الطلب، أو حاول تغيير المنطق الثابت. لم يُقيَّم شيء."},
+    # TEMPERATURE-TO-CONTROL-CONDITION-01 (composition contract §9). The
+    # English confirmation and disclosure are pinned equal to the contract by
+    # test, and the Arabic ones to contract §9A. The two parts keep their own
+    # UI_TMP36_* / UI_CC_* copy. Nothing here states a measurement, a
+    # thermostat, a device command, suitability or safety.
+    "UI_TCC_LINK_TEXT": {
+        "en": "Optional: TMP36 temperature against a threshold, as start_input of one READY / RUNNING cycle",
+        "ar": "اختياري: درجة حرارة TMP36 مقارنةً بعتبة، بوصفها start_input لدورة READY / RUNNING واحدة"},
+    "UI_TCC_LINK_NOTE": {
+        "en": "An advisory evaluation of values you declare. It is not saved, controls nothing and is never required.",
+        "ar": "تقييم إرشادي لقيم تصرّح بها أنت. لا يُحفَظ، ولا يتحكم في أي شيء، ولا يكون مطلوبًا أبدًا."},
+    "UI_TCC_TITLE": {
+        "en": "TMP36 temperature → threshold → one control cycle (optional, non-binding)",
+        "ar": "درجة حرارة TMP36 ← عتبة ← دورة تحكم واحدة (اختياري، غير مُلزِم)"},
+    "UI_TCC_INTRO": {
+        "en": "This page is optional. In one step it takes the TMP36 output voltage you read yourself, works out the sensor's nominal temperature, checks whether it is at or above a threshold you choose, and uses that yes / no answer as start_input for one cycle of the fixed READY / RUNNING logic. Nothing is saved and no device is controlled.",
+        "ar": "هذه الصفحة اختيارية. في خطوة واحدة تأخذ جهد خرج TMP36 الذي قرأته بنفسك، وتحسب درجة الحرارة الاسمية للحسّاس، وتتحقق مما إذا كانت مساوية لعتبة تختارها أو أعلى منها، وتستخدم هذه الإجابة (نعم / لا) بوصفها start_input لدورة واحدة من منطق READY / RUNNING الثابت. لا يُحفَظ شيء، ولا يُتحكَّم في أي جهاز."},
+    "UI_TCC_SCOPE_NOTE": {
+        "en": "This optional evaluation is available only where both the TMP36 temperature and the READY / RUNNING cycle are available: a project whose analysis focus is Electrical / Electronics. It does not establish that your sensor is a TMP36, that the logic describes your design or that the threshold suits it. The result is UNVALIDATED: not a measurement, a thermostat, a device command or a safety function.",
+        "ar": "يتاح هذا التقييم الاختياري فقط حيث تتاح درجة حرارة TMP36 ودورة READY / RUNNING كلتاهما: مشروع محور تحليله كهربائي/إلكتروني. ولا يثبت أن حسّاسك من طراز TMP36، ولا أن المنطق يصف تصميمك، ولا أن العتبة تلائمه. النتيجة غير مُتحقَّق منها (UNVALIDATED): ليست قياسًا ولا منظِّم حرارة (thermostat) ولا أمرًا لجهاز ولا وظيفة سلامة."},
+    "UI_TCC_PART1_HEADING": {
+        "en": "1. The TMP36 nominal temperature",
+        "ar": "1. درجة الحرارة الاسمية لحسّاس TMP36"},
+    "UI_TCC_THRESHOLD_HEADING": {
+        "en": "2. Your threshold",
+        "ar": "2. العتبة التي تختارها"},
+    "UI_TCC_FIELD_THRESHOLD": {
+        "en": "Your threshold temperature, between −40 and +125 — degree Celsius (°C)",
+        "ar": "درجة حرارة العتبة التي تختارها، بين −40 و+125 — درجة سيليزية (°C)"},
+    "UI_TCC_THRESHOLD_NOTE": {
+        "en": "Write it as a plain decimal, with a minus sign if it is below zero and at most four digits after the point. It is your own value; InventorAI does not check that it suits your design.",
+        "ar": "اكتبها بصيغة عشرية بسيطة، مع إشارة سالبة إذا كانت أقل من الصفر وأربعة أرقام على الأكثر بعد الفاصلة. هي قيمتك أنت؛ ولا يتحقق InventorAI من ملاءمتها لتصميمك."},
+    "UI_TCC_DECL_CONDITION_MEANING": {
+        "en": "start_input is taken to be true exactly when the nominal temperature is at or above the threshold entered, and false otherwise; nothing else sets it, and the threshold is the inventor's own value.",
+        "ar": "تُعدّ start_input صحيحة (true) فقط عندما تكون درجة الحرارة الاسمية مساوية للعتبة المُدخلة أو أعلى منها، وخاطئة (false) في غير ذلك؛ ولا يحددها شيء آخر، والعتبة قيمتك أنت."},
+    "UI_TCC_PART2_HEADING": {
+        "en": "3. One READY / RUNNING cycle",
+        "ar": "3. دورة READY / RUNNING واحدة"},
+    "UI_TCC_START_INPUT_NOTE": {
+        "en": "Here you do not choose start_input: it is the answer to the threshold check above — true when the nominal temperature is at or above your threshold, false otherwise.",
+        "ar": "هنا لا تختار start_input: إنها إجابة فحص العتبة أعلاه — true عندما تكون درجة الحرارة الاسمية مساوية لعتبتك أو أعلى منها، وfalse في غير ذلك."},
+    "UI_TCC_SUBMIT": {
+        "en": "Evaluate",
+        "ar": "قيّم"},
+    "UI_TCC_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_TCC_RESULT_VOLTAGE": {
+        "en": "Your declared TMP36 output voltage (V_OUT)",
+        "ar": "جهد خرج TMP36 الذي صرّحت به (V_OUT)"},
+    "UI_TCC_RESULT_TEMPERATURE": {
+        "en": "Nominal temperature from the TMP36 relation (T)",
+        "ar": "درجة الحرارة الاسمية من علاقة TMP36 (T)"},
+    "UI_TCC_RESULT_THRESHOLD": {
+        "en": "Your threshold",
+        "ar": "العتبة التي اخترتها"},
+    "UI_TCC_RESULT_CONDITION": {
+        "en": "Is the nominal temperature at or above your threshold?",
+        "ar": "هل درجة الحرارة الاسمية مساوية لعتبتك أو أعلى منها؟"},
+    "UI_TCC_CONDITION_TRUE": {
+        "en": "Yes (true): the nominal temperature is at or above your threshold.",
+        "ar": "نعم (true): درجة الحرارة الاسمية مساوية لعتبتك أو أعلى منها."},
+    "UI_TCC_CONDITION_FALSE": {
+        "en": "No (false): the nominal temperature is below your threshold.",
+        "ar": "لا (false): درجة الحرارة الاسمية أقل من عتبتك."},
+    "UI_TCC_RESULT_START_INPUT": {
+        "en": "start_input passed to the cycle",
+        "ar": "start_input المُمرَّرة إلى الدورة"},
+    "UI_TCC_PROVENANCE_NOTE": {
+        "en": "The voltage and the threshold are your own declared values, shown as you entered them; the temperature is the TMP36 nominal relation, not a measurement; start_input comes only from the threshold check.",
+        "ar": "الجهد والعتبة قيمتان صرّحت بهما أنت، وتُعرضان كما أدخلتهما؛ ودرجة الحرارة هي العلاقة الاسمية لحسّاس TMP36، وليست قياسًا؛ وتأتي start_input فقط من فحص العتبة."},
+    "UI_TCC_DISCLOSURE": {
+        "en": "This joins two existing advisory evaluations in one request: the TMP36 nominal temperature for the voltage you declared, and one READY / RUNNING control cycle.\n\nstart_input is true exactly when the nominal temperature is at or above the threshold you entered, and false otherwise; the comparison uses the exact decimal values, and nothing else sets start_input.\n\nThe temperature is the TMP36 nominal relation applied to your declared voltage, not a measured or accurate temperature; a real sensor can differ by several degrees, so the condition can differ from what a real system would see.\n\nIf either evaluation refuses, nothing is shown from the other: there is no temperature-only, condition-only or cycle-only partial result.\n\nNothing is stored or carried to the next request, and the output is a logical value only: nothing is switched, started or energized, and this is not a thermostat, controller, safety function or interlock.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence; the threshold is your own value, and InventorAI does not check that it suits your design.\n\nReference sources stay as for the two evaluations: the Analog Devices TMP35/TMP36/TMP37 data sheet, Rev. H, and OpenPLC Runtime (reference only); no manufacturer or runtime code is used.",
+        "ar": "يجمع هذا الحساب تقييمين إرشاديين قائمين في طلب واحد: درجة الحرارة الاسمية لحسّاس TMP36 للجهد الذي صرّحت به، ودورة تحكم واحدة READY / RUNNING.\n\nتكون start_input صحيحة (true) فقط عندما تكون درجة الحرارة الاسمية مساوية للعتبة التي أدخلتها أو أعلى منها، وخاطئة (false) في غير ذلك؛ وتُجرى المقارنة على القيم العشرية الدقيقة، ولا يحدد start_input أي شيء آخر.\n\nدرجة الحرارة هي العلاقة الاسمية لحسّاس TMP36 مطبّقة على الجهد الذي صرّحت به، وليست درجة حرارة مَقيسة أو دقيقة؛ وقد يختلف حسّاس حقيقي بعدة درجات، لذلك قد يختلف الشرط عمّا قد يراه نظام حقيقي.\n\nإذا رفض أيٌّ من التقييمين، فلا يُعرض شيء من الآخر: لا توجد نتيجة جزئية لدرجة الحرارة وحدها أو للشرط وحده أو للدورة وحدها.\n\nلا يُحفَظ شيء ولا يُنقل إلى الطلب التالي، والخرج قيمة منطقية فقط: لا يُشغَّل أي شيء ولا يُبدأ ولا يُمَدّ بالطاقة، وهذا ليس منظِّم حرارة (thermostat) ولا جهاز تحكم ولا وظيفة سلامة ولا تعشيقًا (interlock).\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا؛ والعتبة قيمتك أنت، ولا يتحقق InventorAI من ملاءمتها لتصميمك.\n\nتبقى المراجع كما هي للتقييمين: ورقة بيانات Analog Devices لـ TMP35/TMP36/TMP37، المراجعة Rev. H، وOpenPLC Runtime (مرجعًا فقط)؛ ولا يُستخدم أي كود من الشركة المصنّعة أو من بيئة التشغيل."},
+    "UI_TCC_TMP36_DISCLOSURE_SUMMARY": {
+        "en": "Limits of the TMP36 nominal temperature",
+        "ar": "حدود درجة الحرارة الاسمية لحسّاس TMP36"},
+    "UI_TCC_CC_DISCLOSURE_SUMMARY": {
+        "en": "Limits of the READY / RUNNING cycle",
+        "ar": "حدود دورة READY / RUNNING"},
+    "UI_TCC_UNABLE_HEADING": {
+        "en": "Not evaluated (UNABLE TO DETERMINE)",
+        "ar": "لم يُقيَّم (UNABLE TO DETERMINE)"},
+    "UI_TCC_PART_REFUSAL_NOTE": {
+        "en": "Nothing is shown from any part: there is no partial result.",
+        "ar": "لا يُعرض شيء من أي جزء: لا توجد نتيجة جزئية."},
+    "UI_TCC_OUTCOME_NOT_DECLARED": {
+        "en": "You have not entered the threshold or answered the threshold confirmation. Nothing was evaluated.",
+        "ar": "لم تُدخل العتبة أو لم تُجب عن تأكيد العتبة. لم يُقيَّم شيء."},
+    "UI_TCC_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "The threshold confirmation does not match the one fixed condition this evaluation covers. Nothing was evaluated.",
+        "ar": "تأكيد العتبة لا يطابق الشرط الثابت الوحيد الذي يغطيه هذا التقييم. لم يُقيَّم شيء."},
+    "UI_TCC_OUTCOME_INVALID_THRESHOLD": {
+        "en": "The threshold must be a plain decimal number of degrees Celsius, with at most one leading minus sign and at most four digits after the point. Nothing was evaluated.",
+        "ar": "يجب أن تكون العتبة رقمًا عشريًا بسيطًا بالدرجات السيليزية، مع إشارة سالبة واحدة على الأكثر في البداية وأربعة أرقام على الأكثر بعد الفاصلة. لم يُقيَّم شيء."},
+    "UI_TCC_OUTCOME_THRESHOLD_OUTSIDE_RANGE": {
+        "en": "The threshold is outside −40 °C to +125 °C, the temperature range of the TMP36 nominal relation. Nothing was evaluated.",
+        "ar": "العتبة خارج المجال من −40 °C إلى +125 °C، وهو مجال درجات الحرارة للعلاقة الاسمية لحسّاس TMP36. لم يُقيَّم شيء."},
+    "UI_TCC_ERR_REQUEST": {
+        "en": "This request could not be read, or it tried to supply start_input or change a fixed rule. Nothing was evaluated.",
+        "ar": "تعذّرت قراءة هذا الطلب، أو حاول تقديم start_input أو تغيير قاعدة ثابتة. لم يُقيَّم شيء."},
+    # DC-RESISTIVE-LOAD-CURRENT-01 — DC Resistive Load Current, Slice 1 (method
+    # contract §9). The English declaration, screen and disclosure entries are
+    # pinned equal to the artifact by test and the Arabic ones to contract §9A.
+    # Nothing here states a measurement, a rating, a component choice,
+    # protection, suitability or safety.
+    "UI_DCL_LINK_TEXT": {
+        "en": "Optional: theoretical current of one DC resistive load (I = V / R)",
+        "ar": "اختياري: التيار النظري لحِمل مقاوم واحد على جهد مستمر (I = V / R)"},
+    "UI_DCL_LINK_NOTE": {
+        "en": "An advisory calculation from a voltage and a resistance you declare. It is not saved and is never required.",
+        "ar": "حساب إرشادي من جهد ومقاومة تصرّح بهما أنت. لا يُحفَظ، ولا يكون مطلوبًا أبدًا."},
+    "UI_DCL_TITLE": {
+        "en": "DC resistive load current (optional, non-binding)",
+        "ar": "تيار حِمل مقاوم على جهد مستمر (اختياري، غير مُلزِم)"},
+    "UI_DCL_INTRO": {
+        "en": "This page is optional. If your design has one load that behaves as a constant resistance, such as a resistor, and you know the steady DC voltage across it and its resistance, it shows the current that Ohm's law gives: I = V / R. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. إذا كان في تصميمك حِمل واحد يتصرف كمقاومة ثابتة، مثل المقاوم، وتعرف الجهد المستمر الثابت عليه ومقاومته، فهي تعرض التيار الذي يعطيه قانون أوم (Ohm's law): I = V / R. لا يُحفَظ شيء."},
+    "UI_DCL_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a project whose analysis focus is Electrical / Electronics. The focus does not establish that your load is resistive or that Ohm's law applies to it; you must confirm the method's conditions and screening items. The result is an UNVALIDATED theoretical current, not a measurement, a rating, a component choice or a safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله كهربائي/إلكتروني. ولا يثبت المحور أن حِملك مقاوم أو أن قانون أوم ينطبق عليه؛ يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة تيار نظري غير مُتحقَّق منه (UNVALIDATED)، وليست قياسًا ولا قيمة اسمية (rating) ولا اختيارًا لمكوّن ولا حكمًا بشأن السلامة."},
+    "UI_DCL_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_DCL_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_DCL_DECL_STEADY_STATE_DC": {
+        "en": "The voltage across the load is a steady DC voltage that stays constant during the period of interest; no AC, pulsed, switching, start-up or inrush condition is being calculated.",
+        "ar": "الجهد على الحِمل جهد مستمر (DC) ثابت يبقى كما هو خلال الفترة المعنية؛ ولا يُحسب أي تيار متردد (AC) أو نبضي أو تبديل أو بدء تشغيل أو تيار اندفاعي."},
+    "UI_DCL_DECL_RESISTIVE_LOAD": {
+        "en": "The load behaves as one resistance that stays constant at this voltage (a resistive, ohmic load), not a motor, lamp, LED, battery, electronic circuit or other load whose current does not follow V / R; InventorAI does not determine that the load is resistive.",
+        "ar": "يتصرف الحِمل كمقاومة واحدة تبقى ثابتة عند هذا الجهد (حِمل مقاوم أومي)، وليس محركًا أو مصباحًا أو ثنائيًا باعثًا للضوء (LED) أو بطارية أو دائرة إلكترونية أو أي حِمل آخر لا يتبع تياره V / R؛ ولا يحدد InventorAI أن الحِمل مقاوم."},
+    "UI_DCL_DECL_DECLARED_VALUES": {
+        "en": "The voltage and resistance entered are the inventor's own values for this one load, taken from their own reading or documentation; InventorAI did not measure or check them.",
+        "ar": "الجهد والمقاومة المُدخلان قيمتاك أنت لهذا الحِمل الواحد، مأخوذتان من قراءتك أو من وثائقك؛ ولم يقسهما InventorAI ولم يتحقق منهما."},
+    "UI_DCL_DECL_SIGN_CONVENTION": {
+        "en": "The voltage is entered with the stated reference direction, from the load terminal the inventor calls + to the terminal they call −; a positive current then flows through the load from + to −, and a negative voltage gives a current in the opposite direction.",
+        "ar": "أُدخل الجهد باتجاه المرجع المذكور — من طرف الحِمل الذي تسمّيه + إلى الطرف الذي تسمّيه − — فيسري التيار الموجب عبر الحِمل من + إلى −، ويعطي الجهد السالب تيارًا في الاتجاه المعاكس."},
+    "UI_DCL_SCREEN_STEM": {
+        "en": "Is the load, its power source or the circuit it is part of any of the following? Answer each item yes or no.",
+        "ar": "هل الحِمل، أو مصدر تغذيته، أو الدائرة التي هو جزء منها، أيٌّ مما يلي؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_DCL_SCREEN_MAINS_OR_HIGH_VOLTAGE": {
+        "en": "Mains or high voltage",
+        "ar": "جهد الشبكة الكهربائية (mains) أو جهد عالٍ"},
+    "UI_DCL_SCREEN_BATTERY_OR_STORAGE_CELL": {
+        "en": "A battery or energy-storage cell",
+        "ar": "بطارية أو خلية لتخزين الطاقة"},
+    "UI_DCL_SCREEN_FIRE_OR_OVERHEATING": {
+        "en": "Fire, ignition or overheating risk",
+        "ar": "خطر حريق أو اشتعال أو سخونة زائدة"},
+    "UI_DCL_SCREEN_MEDICAL_OR_LIFE_SUPPORTING": {
+        "en": "Medical or life-supporting use",
+        "ar": "استخدام طبي أو داعم للحياة"},
+    "UI_DCL_SCREEN_VEHICLE_OR_AEROSPACE": {
+        "en": "Vehicle or aerospace use",
+        "ar": "استخدام في المركبات أو في الطيران والفضاء (aerospace)"},
+    "UI_DCL_SCREEN_SAFETY_FUNCTION": {
+        "en": "A safety function, alarm, protection or shut-off",
+        "ar": "وظيفة سلامة أو إنذار أو حماية أو إيقاف"},
+    "UI_DCL_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_DCL_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_DCL_SCREEN_NOTE": {
+        "en": "Answering no to all six items only means this bounded calculation may proceed; it never means that anything is safe.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود الستة تعني فقط أنه يمكن متابعة هذا الحساب المحدود؛ ولا تعني أبدًا أن أي شيء آمن."},
+    "UI_DCL_VALUE_NOTE": {
+        "en": "Enter plain decimal numbers: the voltage V in volts, with a leading minus sign if it is negative in the stated direction, and the resistance R in ohms, greater than zero; at most nine digits after the point. These digit limits only bound what can be typed; they are not physical limits. InventorAI does not measure your load.",
+        "ar": "أدخل أرقامًا عشرية بسيطة: الجهد V بالفولت، مع إشارة سالبة في البداية إن كان سالبًا في الاتجاه المذكور، والمقاومة R بالأوم، أكبر من الصفر؛ مع تسعة أرقام على الأكثر بعد الفاصلة. حدود الأرقام هذه تقيّد ما يمكن كتابته فقط؛ وليست حدودًا فيزيائية. لا يقيس InventorAI حِملك."},
+    "UI_DCL_FIELD_V_LOAD": {
+        "en": "Your declared steady DC voltage across the load, from its + terminal to its − terminal (V) — volt (V)",
+        "ar": "الجهد المستمر الثابت الذي تصرّح به على الحِمل، من طرفه + إلى طرفه − (V) — فولت (V)"},
+    "UI_DCL_FIELD_R_LOAD": {
+        "en": "Your declared constant resistance of the load (R) — ohm (Ω)",
+        "ar": "المقاومة الثابتة للحِمل التي تصرّح بها (R) — أوم (Ω)"},
+    "UI_DCL_SUBMIT": {
+        "en": "Show the theoretical current",
+        "ar": "اعرض التيار النظري"},
+    "UI_DCL_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_DCL_RESULT_I": {
+        "en": "Theoretical current through the load (I) — ampere (A); positive from + to − through the load",
+        "ar": "التيار النظري عبر الحِمل (I) — أمبير (A)؛ موجب من + إلى − عبر الحِمل"},
+    "UI_DCL_EXACT": {
+        "en": "Exact value of V / R for the values you entered.",
+        "ar": "قيمة V / R الدقيقة للقيم التي أدخلتها."},
+    "UI_DCL_ROUNDED": {
+        "en": "Rounded to 12 significant digits; the exact value of V / R has more digits.",
+        "ar": "مقرَّبة إلى 12 رقمًا معنويًا؛ للقيمة الدقيقة لـ V / R أرقام أكثر."},
+    "UI_DCL_MAGNITUDE": {
+        "en": "Magnitude of the current (shown separately; the current itself is negative, flowing from − to + through the load)",
+        "ar": "مقدار التيار (يُعرض منفصلًا؛ التيار نفسه سالب، ويسري من − إلى + عبر الحِمل)"},
+    "UI_DCL_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_DCL_ECHO_HEADING": {
+        "en": "The values and stated assumptions you entered",
+        "ar": "القيم والافتراضات المصرّح بها التي أدخلتها"},
+    "UI_DCL_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_DCL_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_DCL_SOURCES_NOTE": {
+        "en": "Ohm's law from the U.S. Department of Energy Electrical Science handbook, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the volt, ohm and ampere from NIST SP 811. InventorAI restates the relation in its own words; no handbook text, example or figure is reproduced. The U.S. Department of Energy and NIST do not endorse InventorAI or this calculation.",
+        "ar": "قانون أوم من دليل Electrical Science لوزارة الطاقة الأمريكية، DOE-HDBK-1011/1-92 (مؤرشف؛ مرجع تاريخي للأساسيات فقط)؛ والفولت والأوم والأمبير من NIST SP 811. يعيد InventorAI صياغة العلاقة بكلماته؛ ولا يُستنسخ أي نص أو مثال أو شكل من الدليل. لا تؤيّد وزارة الطاقة الأمريكية ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_DCL_DISCLOSURE": {
+        "en": "This is the theoretical current that Ohm's law gives for the steady DC voltage V across one resistive load and its resistance R that you declared: I = V / R.\n\nSign: V is the voltage across the load from the terminal you called + to the terminal you called −. A positive I flows through the load from + to −; a negative V gives a negative I, flowing the opposite way.\n\nThe voltage and resistance are your own declared values. InventorAI did not measure them and does not check that the load is resistive, that its resistance stays constant or that the voltage is steady.\n\nIt is the ideal steady-state relation only: wiring and contact resistance, the source's internal resistance and voltage drop, temperature change of the resistance, start-up or inrush current, switching, AC behaviour and non-resistive loads such as motors, lamps, LEDs or electronics are not included.\n\nThe value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement.\n\nNext engineering need: whether your source and any driver or switch can supply this current, what protection the circuit needs and whether the load and its wiring are suitable all remain unverified, and must be checked by measurement or a qualified person before any reliance. The result is preliminary, advisory, UNVALIDATED and not evidence.\n\nReference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the relation is restated by InventorAI, and no handbook text, example or figure is reproduced.",
+        "ar": "هذا هو التيار النظري الذي يعطيه قانون أوم (Ohm's law) لجهد مستمر ثابت V على حِمل مقاوم واحد ولمقاومته R اللذين صرّحت بهما: I = V / R.\n\nالإشارة: V هو الجهد على الحِمل من الطرف الذي سمّيته + إلى الطرف الذي سمّيته −. التيار I الموجب يسري عبر الحِمل من + إلى −؛ والجهد V السالب يعطي تيارًا I سالبًا يسري في الاتجاه المعاكس.\n\nالجهد والمقاومة قيمتان صرّحت بهما أنت. لم يقسهما InventorAI، ولا يتحقق من أن الحِمل مقاوم، ولا من أن مقاومته تبقى ثابتة، ولا من أن الجهد ثابت.\n\nهذه هي العلاقة المثالية في الحالة المستقرة فقط: لا تُدرج مقاومة الأسلاك والتلامس، ولا المقاومة الداخلية للمصدر وهبوط جهده، ولا تغيّر المقاومة مع الحرارة، ولا تيار بدء التشغيل أو التيار الاندفاعي (inrush)، ولا التبديل، ولا سلوك التيار المتردد (AC)، ولا الأحمال غير المقاومة مثل المحركات والمصابيح والثنائيات الباعثة للضوء (LED) والدوائر الإلكترونية.\n\nتُعرض القيمة بدقة حين يمكن ذلك؛ وإلا تُقرَّب إلى 12 رقمًا معنويًا ويُشار إلى أنها مقرَّبة. الأرقام ناتجة عن إدخالك؛ وليست دقة أي قياس.\n\nالحاجة الهندسية التالية: قدرة مصدرك وأي مُشغِّل (driver) أو مفتاح على توفير هذا التيار، والحماية التي تحتاجها الدائرة، وملاءمة الحِمل وأسلاكه — كلها تبقى غير مُتحقَّق منها، ويجب فحصها بالقياس أو بواسطة شخص مؤهل قبل أي اعتماد. هذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا.\n\nالمراجع: وزارة الطاقة الأمريكية — Electrical Science، ‏DOE-HDBK-1011/1-92 (مؤرشف؛ مرجع تاريخي للأساسيات فقط)؛ والعلاقة معاد صياغتها من InventorAI، ولا يُستنسخ أي نص أو مثال أو شكل من الدليل."},
+    "UI_DCL_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_DCL_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_DCL_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. تتطلب هذه الحالة مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_DCL_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_DCL_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "V and R must be written as plain decimal numbers in volts and ohms, with at most one leading minus sign, at most nine digits before the point for V or twelve for R, and at most nine after it. Nothing was calculated.",
+        "ar": "يجب كتابة V وR رقمين عشريين بسيطين بالفولت والأوم، مع إشارة سالبة واحدة على الأكثر في البداية، وتسعة أرقام على الأكثر قبل الفاصلة لـ V أو اثني عشر لـ R، وتسعة على الأكثر بعدها. لم يُحسب شيء."},
+    "UI_DCL_OUTCOME_RESISTANCE_NOT_POSITIVE": {
+        "en": "The resistance R must be greater than zero ohms. Nothing was calculated.",
+        "ar": "يجب أن تكون المقاومة R أكبر من صفر أوم. لم يُحسب شيء."},
+    "UI_DCL_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the volt (V) and the ohm (Ω) and gives only the ampere (A). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة الفولت (V) والأوم (Ω) فقط، ولا تعطي إلا الأمبير (A). لم يُحسب شيء."},
+    "UI_DCL_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_DCL_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_DCL_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # DC-RESISTIVE-LOAD-POWER-01 — DC Resistive Load Power, Slice 1 (method
+    # contract §9). The English declaration, screen and disclosure entries are
+    # pinned equal to the artifact by test and the Arabic ones to contract §9A.
+    # Nothing here states a temperature, a rating, a component choice,
+    # protection, suitability or safety.
+    "UI_DCP_LINK_TEXT": {
+        "en": "Optional: theoretical power absorbed by one DC resistive load (P = V² / R)",
+        "ar": "اختياري: القدرة النظرية التي يمتصها حِمل مقاوم واحد على جهد مستمر (P = V² / R)"},
+    "UI_DCP_LINK_NOTE": {
+        "en": "An advisory calculation from a voltage and a resistance you declare. It is not saved, it is not a temperature and it is never required.",
+        "ar": "حساب إرشادي من جهد ومقاومة تصرّح بهما أنت. لا يُحفَظ، وليس درجة حرارة، ولا يكون مطلوبًا أبدًا."},
+    "UI_DCP_TITLE": {
+        "en": "DC resistive load power (optional, non-binding)",
+        "ar": "قدرة حِمل مقاوم على جهد مستمر (اختياري، غير مُلزِم)"},
+    "UI_DCP_INTRO": {
+        "en": "This page is optional. If your design has one load that behaves as a constant resistance, such as a resistor or a heating element, and you know the steady DC voltage across it and its resistance, it shows the electrical power the ideal relation says the load absorbs: P = V² / R = V × I. It does not tell you how hot anything gets. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. إذا كان في تصميمك حِمل واحد يتصرف كمقاومة ثابتة، مثل المقاوم أو عنصر التسخين، وتعرف الجهد المستمر الثابت عليه ومقاومته، فهي تعرض القدرة الكهربائية التي تقول العلاقة المثالية إن الحِمل يمتصها: P = V² / R = V × I. ولا تخبرك بمدى سخونة أي شيء. لا يُحفَظ شيء."},
+    "UI_DCP_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a project whose analysis focus is Electrical / Electronics. The focus does not establish that your load is resistive or that the relation applies to it; you must confirm the method's conditions and screening items. The result is an UNVALIDATED theoretical power, not a measurement, a temperature, a rating, a component choice or a safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله كهربائي/إلكتروني. ولا يثبت المحور أن حِملك مقاوم أو أن العلاقة تنطبق عليه؛ يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة قدرة نظرية غير مُتحقَّق منها (UNVALIDATED)، وليست قياسًا ولا درجة حرارة ولا قيمة اسمية (rating) ولا اختيارًا لمكوّن ولا حكمًا بشأن السلامة."},
+    "UI_DCP_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_DCP_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_DCP_DECL_STEADY_STATE_DC": {
+        "en": "The voltage across the load is a steady DC voltage that stays constant during the period of interest; no AC, pulsed, switching, start-up or inrush condition is being calculated.",
+        "ar": "الجهد على الحِمل جهد مستمر (DC) ثابت يبقى كما هو خلال الفترة المعنية؛ ولا يُحسب أي تيار متردد (AC) أو نبضي أو تبديل أو بدء تشغيل أو تيار اندفاعي."},
+    "UI_DCP_DECL_RESISTIVE_LOAD": {
+        "en": "The load behaves as one resistance that stays constant at this voltage (a resistive, ohmic load), not a motor, lamp, LED, battery, electronic circuit or other load whose current does not follow V / R; InventorAI does not determine that the load is resistive.",
+        "ar": "يتصرف الحِمل كمقاومة واحدة تبقى ثابتة عند هذا الجهد (حِمل مقاوم أومي)، وليس محركًا أو مصباحًا أو ثنائيًا باعثًا للضوء (LED) أو بطارية أو دائرة إلكترونية أو أي حِمل آخر لا يتبع تياره V / R؛ ولا يحدد InventorAI أن الحِمل مقاوم."},
+    "UI_DCP_DECL_DECLARED_VALUES": {
+        "en": "The voltage and resistance entered are the inventor's own values for this one load, taken from their own reading or documentation; InventorAI did not measure or check them.",
+        "ar": "الجهد والمقاومة المُدخلان قيمتاك أنت لهذا الحِمل الواحد، مأخوذتان من قراءتك أو من وثائقك؛ ولم يقسهما InventorAI ولم يتحقق منهما."},
+    "UI_DCP_DECL_ABSORBED_POWER_CONVENTION": {
+        "en": "The power wanted is the power this load absorbs, with the voltage taken from the load terminal the inventor calls + to the terminal they call − and the current through the load in the same direction (the passive sign convention); for a positive resistance it is never negative and is the same for a positive and a negative voltage.",
+        "ar": "القدرة المطلوبة هي القدرة التي يمتصها هذا الحِمل، مع أخذ الجهد من طرف الحِمل الذي تسمّيه + إلى الطرف الذي تسمّيه − والتيار عبر الحِمل في الاتجاه نفسه (اصطلاح الإشارة السلبي، passive sign convention)؛ وهي مع مقاومة موجبة لا تكون سالبة أبدًا، وتبقى نفسها للجهد الموجب والسالب."},
+    "UI_DCP_SCREEN_STEM": {
+        "en": "Is the load, its power source or the circuit it is part of any of the following? Answer each item yes or no.",
+        "ar": "هل الحِمل، أو مصدر تغذيته، أو الدائرة التي هو جزء منها، أيٌّ مما يلي؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_DCP_SCREEN_MAINS_OR_HIGH_VOLTAGE": {
+        "en": "Mains or high voltage",
+        "ar": "جهد الشبكة الكهربائية (mains) أو جهد عالٍ"},
+    "UI_DCP_SCREEN_BATTERY_OR_STORAGE_CELL": {
+        "en": "A battery or energy-storage cell",
+        "ar": "بطارية أو خلية لتخزين الطاقة"},
+    "UI_DCP_SCREEN_FIRE_OR_OVERHEATING": {
+        "en": "Fire, ignition or overheating risk",
+        "ar": "خطر حريق أو اشتعال أو سخونة زائدة"},
+    "UI_DCP_SCREEN_MEDICAL_OR_LIFE_SUPPORTING": {
+        "en": "Medical or life-supporting use",
+        "ar": "استخدام طبي أو داعم للحياة"},
+    "UI_DCP_SCREEN_VEHICLE_OR_AEROSPACE": {
+        "en": "Vehicle or aerospace use",
+        "ar": "استخدام في المركبات أو في الطيران والفضاء (aerospace)"},
+    "UI_DCP_SCREEN_SAFETY_FUNCTION": {
+        "en": "A safety function, alarm, protection or shut-off",
+        "ar": "وظيفة سلامة أو إنذار أو حماية أو إيقاف"},
+    "UI_DCP_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_DCP_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_DCP_SCREEN_NOTE": {
+        "en": "Answering no to all six items only means this bounded calculation may proceed; it never means that anything is safe.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود الستة تعني فقط أنه يمكن متابعة هذا الحساب المحدود؛ ولا تعني أبدًا أن أي شيء آمن."},
+    "UI_DCP_VALUE_NOTE": {
+        "en": "Enter plain decimal numbers: the voltage V in volts, with a leading minus sign if it is negative in the stated direction, and the resistance R in ohms, greater than zero; at most nine digits after the point. These digit limits only bound what can be typed; they are not physical limits. InventorAI does not measure your load.",
+        "ar": "أدخل أرقامًا عشرية بسيطة: الجهد V بالفولت، مع إشارة سالبة في البداية إن كان سالبًا في الاتجاه المذكور، والمقاومة R بالأوم، أكبر من الصفر؛ مع تسعة أرقام على الأكثر بعد الفاصلة. حدود الأرقام هذه تقيّد ما يمكن كتابته فقط؛ وليست حدودًا فيزيائية. لا يقيس InventorAI حِملك."},
+    "UI_DCP_FIELD_V_LOAD": {
+        "en": "Your declared steady DC voltage across the load, from its + terminal to its − terminal (V) — volt (V)",
+        "ar": "الجهد المستمر الثابت الذي تصرّح به على الحِمل، من طرفه + إلى طرفه − (V) — فولت (V)"},
+    "UI_DCP_FIELD_R_LOAD": {
+        "en": "Your declared constant resistance of the load (R) — ohm (Ω)",
+        "ar": "المقاومة الثابتة للحِمل التي تصرّح بها (R) — أوم (Ω)"},
+    "UI_DCP_SUBMIT": {
+        "en": "Show the theoretical power",
+        "ar": "اعرض القدرة النظرية"},
+    "UI_DCP_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_DCP_RESULT_P": {
+        "en": "Theoretical power absorbed by the load (P) — watt (W); never negative",
+        "ar": "القدرة النظرية التي يمتصها الحِمل (P) — واط (W)؛ لا تكون سالبة أبدًا"},
+    "UI_DCP_EXACT": {
+        "en": "Exact value of V² / R for the values you entered.",
+        "ar": "قيمة V² / R الدقيقة للقيم التي أدخلتها."},
+    "UI_DCP_ROUNDED": {
+        "en": "Rounded to 12 significant digits; the exact value of V² / R has more digits.",
+        "ar": "مقرَّبة إلى 12 رقمًا معنويًا؛ للقيمة الدقيقة لـ V² / R أرقام أكثر."},
+    "UI_DCP_NOT_TEMPERATURE": {
+        "en": "This is electrical power, not a temperature: it does not say how hot the load or anything near it becomes.",
+        "ar": "هذه قدرة كهربائية وليست درجة حرارة: فهي لا تقول مدى سخونة الحِمل أو أي شيء قريب منه."},
+    "UI_DCP_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_DCP_ECHO_HEADING": {
+        "en": "The values and stated assumptions you entered",
+        "ar": "القيم والافتراضات المصرّح بها التي أدخلتها"},
+    "UI_DCP_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_DCP_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_DCP_SOURCES_NOTE": {
+        "en": "Ohm's law and electric power from the U.S. Department of Energy Electrical Science handbook, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the volt, ohm and watt from NIST Special Publications 811 and 330. InventorAI restates the relations in its own words; no handbook text, example or figure is reproduced. The U.S. Department of Energy and NIST do not endorse InventorAI or this calculation.",
+        "ar": "قانون أوم والقدرة الكهربائية من دليل Electrical Science لوزارة الطاقة الأمريكية، DOE-HDBK-1011/1-92 (مؤرشف؛ مرجع تاريخي للأساسيات فقط)؛ والفولت والأوم والواط من NIST Special Publications 811 و330. يعيد InventorAI صياغة العلاقات بكلماته؛ ولا يُستنسخ أي نص أو مثال أو شكل من الدليل. لا تؤيّد وزارة الطاقة الأمريكية ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_DCP_DISCLOSURE": {
+        "en": "This is the theoretical electrical power that one resistive load absorbs at the steady DC voltage V you declared, with the resistance R you declared: P = V² / R = V × I, where I = V / R.\n\nSign: V is the voltage across the load from the terminal you called + to the terminal you called −, and the current is taken through the load in the same direction. The load then absorbs P, which is never negative and is the same for a positive or a negative V.\n\nThe voltage and resistance are your own declared values. InventorAI did not measure them and does not check that the load is resistive, that its resistance stays constant or that the voltage is steady.\n\nIt is the ideal steady-state relation only: wiring and contact resistance, the source's internal resistance and voltage drop, temperature change of the resistance, start-up or inrush current, switching, AC behaviour and non-resistive loads such as motors, lamps, LEDs or electronics are not included.\n\nThe value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement.\n\nNext engineering need: this power is not a temperature. How hot the load or its surroundings become, whether the load, its resistor, wiring, source and any driver or switch are rated for this power, and what protection the circuit needs all remain unverified, and must be checked by measurement or a qualified person before any reliance. The result is preliminary, advisory, UNVALIDATED and not evidence.\n\nReference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the watt as identified in NIST Special Publication 811. The relations are restated by InventorAI, and no handbook text, example or figure is reproduced.",
+        "ar": "هذه هي القدرة الكهربائية النظرية التي يمتصها حِمل مقاوم واحد عند الجهد المستمر الثابت V الذي صرّحت به، مع المقاومة R التي صرّحت بها: P = V² / R = V × I، حيث I = V / R.\n\nالإشارة: V هو الجهد على الحِمل من الطرف الذي سمّيته + إلى الطرف الذي سمّيته −، ويُؤخذ التيار عبر الحِمل في الاتجاه نفسه. عندها يمتص الحِمل القدرة P، وهي لا تكون سالبة أبدًا، وتبقى نفسها للجهد V الموجب والسالب.\n\nالجهد والمقاومة قيمتان صرّحت بهما أنت. لم يقسهما InventorAI، ولا يتحقق من أن الحِمل مقاوم، ولا من أن مقاومته تبقى ثابتة، ولا من أن الجهد ثابت.\n\nهذه هي العلاقة المثالية في الحالة المستقرة فقط: لا تُدرج مقاومة الأسلاك والتلامس، ولا المقاومة الداخلية للمصدر وهبوط جهده، ولا تغيّر المقاومة مع الحرارة، ولا تيار بدء التشغيل أو التيار الاندفاعي (inrush)، ولا التبديل، ولا سلوك التيار المتردد (AC)، ولا الأحمال غير المقاومة مثل المحركات والمصابيح والثنائيات الباعثة للضوء (LED) والدوائر الإلكترونية.\n\nتُعرض القيمة بدقة حين يمكن ذلك؛ وإلا تُقرَّب إلى 12 رقمًا معنويًا ويُشار إلى أنها مقرَّبة. الأرقام ناتجة عن إدخالك؛ وليست دقة أي قياس.\n\nالحاجة الهندسية التالية: هذه القدرة ليست درجة حرارة. مدى سخونة الحِمل أو ما حوله، وما إذا كان الحِمل ومقاومه وأسلاكه ومصدره وأي مُشغِّل (driver) أو مفتاح مُصنَّفًا لهذه القدرة، والحماية التي تحتاجها الدائرة — كلها تبقى غير مُتحقَّق منها، ويجب فحصها بالقياس أو بواسطة شخص مؤهل قبل أي اعتماد. هذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا.\n\nالمراجع: وزارة الطاقة الأمريكية — Electrical Science، ‏DOE-HDBK-1011/1-92 (مؤرشف؛ مرجع تاريخي للأساسيات فقط)؛ والواط كما يحدده NIST Special Publication 811. والعلاقات معاد صياغتها من InventorAI، ولا يُستنسخ أي نص أو مثال أو شكل من الدليل."},
+    "UI_DCP_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_DCP_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. تتطلب هذه الحالة مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "V and R must be written as plain decimal numbers in volts and ohms, with at most one leading minus sign, at most nine digits before the point for V or twelve for R, and at most nine after it. Nothing was calculated.",
+        "ar": "يجب كتابة V وR رقمين عشريين بسيطين بالفولت والأوم، مع إشارة سالبة واحدة على الأكثر في البداية، وتسعة أرقام على الأكثر قبل الفاصلة لـ V أو اثني عشر لـ R، وتسعة على الأكثر بعدها. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_RESISTANCE_NOT_POSITIVE": {
+        "en": "The resistance R must be greater than zero ohms. Nothing was calculated.",
+        "ar": "يجب أن تكون المقاومة R أكبر من صفر أوم. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_DCP_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the volt (V) and the ohm (Ω) and gives only the watt (W). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة الفولت (V) والأوم (Ω) فقط، ولا تعطي إلا الواط (W). لم يُحسب شيء."},
+    "UI_DCP_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # DC-RESISTIVE-LOAD-ENERGY-01 — DC Resistive Load Energy, Slice 1 (method
+    # contract §9). The English declaration, screen and disclosure entries are
+    # pinned equal to the artifact by test and the Arabic ones to contract §9A.
+    # Nothing here states a battery capacity, runtime, temperature, rating,
+    # component choice, protection, suitability or safety.
+    "UI_DCE_LINK_TEXT": {
+        "en": "Optional: theoretical energy absorbed by one DC resistive load over a duration (E = V² × t / R)",
+        "ar": "اختياري: الطاقة النظرية التي يمتصها حِمل مقاوم واحد على جهد مستمر خلال مدة (E = V² × t / R)"},
+    "UI_DCE_LINK_NOTE": {
+        "en": "An advisory calculation from a voltage, a resistance and a duration you declare. It is not saved, it is not a battery capacity, runtime or temperature, and it is never required.",
+        "ar": "حساب إرشادي من جهد ومقاومة ومدة تصرّح بها أنت. لا يُحفَظ، وليس سعة بطارية ولا زمن تشغيل (runtime) ولا درجة حرارة، ولا يكون مطلوبًا أبدًا."},
+    "UI_DCE_TITLE": {
+        "en": "DC resistive load energy (optional, non-binding)",
+        "ar": "طاقة حِمل مقاوم على جهد مستمر (اختياري، غير مُلزِم)"},
+    "UI_DCE_INTRO": {
+        "en": "This page is optional. If your design has one load that behaves as a constant resistance, such as a resistor or a heating element, and you know the steady DC voltage across it, its resistance and how long it stays on at that constant power, it shows the electrical energy the ideal relation says the load absorbs over that time: E = V² × t / R = P × t. It does not tell you how big a battery you need, how long a battery lasts or how hot anything gets. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. إذا كان في تصميمك حِمل واحد يتصرف كمقاومة ثابتة، مثل المقاوم أو عنصر التسخين، وتعرف الجهد المستمر الثابت عليه ومقاومته والمدة التي يبقى فيها يعمل بهذه القدرة الثابتة، فهي تعرض الطاقة الكهربائية التي تقول العلاقة المثالية إن الحِمل يمتصها خلال تلك المدة: E = V² × t / R = P × t. ولا تخبرك بحجم البطارية التي تحتاجها، ولا بكم تدوم البطارية، ولا بمدى سخونة أي شيء. لا يُحفَظ شيء."},
+    "UI_DCE_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a project whose analysis focus is Electrical / Electronics. The focus does not establish that your load is resistive or that the relation applies to it; you must confirm the method's conditions and screening items. The result is an UNVALIDATED theoretical energy, not a measurement, a battery capacity, a runtime, a temperature, a rating, a component choice or a safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله كهربائي/إلكتروني. ولا يثبت المحور أن حِملك مقاوم أو أن العلاقة تنطبق عليه؛ يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة طاقة نظرية غير مُتحقَّق منها (UNVALIDATED)، وليست قياسًا ولا سعة بطارية ولا زمن تشغيل (runtime) ولا درجة حرارة ولا قيمة اسمية (rating) ولا اختيارًا لمكوّن ولا حكمًا بشأن السلامة."},
+    "UI_DCE_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_DCE_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_DCE_DECL_STEADY_STATE_DC": {
+        "en": "The voltage across the load is a steady DC voltage that stays constant throughout the declared duration; no AC, pulsed, switching, start-up or inrush condition is being calculated.",
+        "ar": "الجهد على الحِمل جهد مستمر (DC) ثابت يبقى كما هو طوال المدة المصرّح بها؛ ولا يُحسب أي تيار متردد (AC) أو نبضي أو تبديل أو بدء تشغيل أو تيار اندفاعي."},
+    "UI_DCE_DECL_RESISTIVE_LOAD": {
+        "en": "The load behaves as one resistance that stays constant at this voltage throughout the declared duration (a resistive, ohmic load), not a motor, lamp, LED, battery, electronic circuit or other load whose current does not follow V / R; InventorAI does not determine that the load is resistive.",
+        "ar": "يتصرف الحِمل كمقاومة واحدة تبقى ثابتة عند هذا الجهد طوال المدة المصرّح بها (حِمل مقاوم أومي)، وليس محركًا أو مصباحًا أو ثنائيًا باعثًا للضوء (LED) أو بطارية أو دائرة إلكترونية أو أي حِمل آخر لا يتبع تياره V / R؛ ولا يحدد InventorAI أن الحِمل مقاوم."},
+    "UI_DCE_DECL_DECLARED_VALUES": {
+        "en": "The voltage, resistance and duration entered are the inventor's own values for this one load, taken from their own reading, documentation or plan; InventorAI did not measure or check them.",
+        "ar": "الجهد والمقاومة والمدة المُدخلة قيمك أنت لهذا الحِمل الواحد، مأخوذة من قراءتك أو من وثائقك أو من خطتك؛ ولم يقسها InventorAI ولم يتحقق منها."},
+    "UI_DCE_DECL_ABSORBED_ENERGY_CONVENTION": {
+        "en": "The energy wanted is the electrical energy this load absorbs, with the voltage taken from the load terminal the inventor calls + to the terminal they call − and the current through the load in the same direction (the passive sign convention); for a positive resistance it is never negative and is the same for a positive and a negative voltage.",
+        "ar": "الطاقة المطلوبة هي الطاقة الكهربائية التي يمتصها هذا الحِمل، مع أخذ الجهد من طرف الحِمل الذي تسمّيه + إلى الطرف الذي تسمّيه − والتيار عبر الحِمل في الاتجاه نفسه (اصطلاح الإشارة السلبي، passive sign convention)؛ وهي مع مقاومة موجبة لا تكون سالبة أبدًا، وتبقى نفسها للجهد الموجب والسالب."},
+    "UI_DCE_DECL_CONSTANT_POWER_DURATION": {
+        "en": "The power the load absorbs stays constant for the whole declared duration, so the energy is that power multiplied by the duration; no varying, average, intermittent or duty-cycled power is being calculated, and the duration is not a battery runtime or an expected operating time worked out by InventorAI.",
+        "ar": "تبقى القدرة التي يمتصها الحِمل ثابتة طوال المدة المصرّح بها كلها، فتكون الطاقة هي تلك القدرة مضروبة في المدة؛ ولا تُحسب أي قدرة متغيرة أو متوسطة أو متقطعة أو بدورة تشغيل (duty cycle)، وليست المدة زمن تشغيل بطارية (runtime) ولا زمن تشغيل متوقعًا يحسبه InventorAI."},
+    "UI_DCE_SCREEN_STEM": {
+        "en": "Is the load, its power source or the circuit it is part of any of the following? Answer each item yes or no.",
+        "ar": "هل الحِمل، أو مصدر تغذيته، أو الدائرة التي هو جزء منها، أيٌّ مما يلي؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_DCE_SCREEN_MAINS_OR_HIGH_VOLTAGE": {
+        "en": "Mains or high voltage",
+        "ar": "جهد الشبكة الكهربائية (mains) أو جهد عالٍ"},
+    "UI_DCE_SCREEN_BATTERY_OR_STORAGE_CELL": {
+        "en": "A battery or energy-storage cell",
+        "ar": "بطارية أو خلية لتخزين الطاقة"},
+    "UI_DCE_SCREEN_FIRE_OR_OVERHEATING": {
+        "en": "Fire, ignition or overheating risk",
+        "ar": "خطر حريق أو اشتعال أو سخونة زائدة"},
+    "UI_DCE_SCREEN_MEDICAL_OR_LIFE_SUPPORTING": {
+        "en": "Medical or life-supporting use",
+        "ar": "استخدام طبي أو داعم للحياة"},
+    "UI_DCE_SCREEN_VEHICLE_OR_AEROSPACE": {
+        "en": "Vehicle or aerospace use",
+        "ar": "استخدام في المركبات أو في الطيران والفضاء (aerospace)"},
+    "UI_DCE_SCREEN_SAFETY_FUNCTION": {
+        "en": "A safety function, alarm, protection or shut-off",
+        "ar": "وظيفة سلامة أو إنذار أو حماية أو إيقاف"},
+    "UI_DCE_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_DCE_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_DCE_SCREEN_NOTE": {
+        "en": "Answering no to all six items only means this bounded calculation may proceed; it never means that anything is safe.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود الستة تعني فقط أنه يمكن متابعة هذا الحساب المحدود؛ ولا تعني أبدًا أن أي شيء آمن."},
+    "UI_DCE_VALUE_NOTE": {
+        "en": "Enter plain decimal numbers: the voltage V in volts, with a leading minus sign if it is negative in the stated direction; the resistance R in ohms, greater than zero; and the duration t in seconds, zero or more (for example 3600 for one hour); at most nine digits after the point. These digit limits only bound what can be typed; they are not physical limits. InventorAI does not measure your load and converts no minutes or hours.",
+        "ar": "أدخل أرقامًا عشرية بسيطة: الجهد V بالفولت، مع إشارة سالبة في البداية إن كان سالبًا في الاتجاه المذكور؛ والمقاومة R بالأوم، أكبر من الصفر؛ والمدة t بالثواني، صفرًا أو أكثر (مثلًا 3600 لساعة واحدة)؛ مع تسعة أرقام على الأكثر بعد الفاصلة. حدود الأرقام هذه تقيّد ما يمكن كتابته فقط؛ وليست حدودًا فيزيائية. لا يقيس InventorAI حِملك، ولا يحوّل الدقائق أو الساعات."},
+    "UI_DCE_FIELD_V_LOAD": {
+        "en": "Your declared steady DC voltage across the load, from its + terminal to its − terminal (V) — volt (V)",
+        "ar": "الجهد المستمر الثابت الذي تصرّح به على الحِمل، من طرفه + إلى طرفه − (V) — فولت (V)"},
+    "UI_DCE_FIELD_R_LOAD": {
+        "en": "Your declared constant resistance of the load (R) — ohm (Ω)",
+        "ar": "المقاومة الثابتة للحِمل التي تصرّح بها (R) — أوم (Ω)"},
+    "UI_DCE_FIELD_T_DURATION": {
+        "en": "Your declared duration at that constant power (t) — second (s)",
+        "ar": "المدة التي تصرّح بها عند تلك القدرة الثابتة (t) — ثانية (s)"},
+    "UI_DCE_SUBMIT": {
+        "en": "Show the theoretical energy",
+        "ar": "اعرض الطاقة النظرية"},
+    "UI_DCE_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_DCE_RESULT_E": {
+        "en": "Theoretical energy absorbed by the load over the duration (E) — joule (J); never negative",
+        "ar": "الطاقة النظرية التي يمتصها الحِمل خلال المدة (E) — جول (J)؛ لا تكون سالبة أبدًا"},
+    "UI_DCE_EXACT": {
+        "en": "Exact value of V² × t / R for the values you entered.",
+        "ar": "قيمة V² × t / R الدقيقة للقيم التي أدخلتها."},
+    "UI_DCE_ROUNDED": {
+        "en": "Rounded to 12 significant digits; the exact value of V² × t / R has more digits.",
+        "ar": "مقرَّبة إلى 12 رقمًا معنويًا؛ للقيمة الدقيقة لـ V² × t / R أرقام أكثر."},
+    "UI_DCE_NOT_BATTERY": {
+        "en": "This is the energy the load absorbs, not a battery capacity, a runtime or a temperature: it does not say whether any source can supply it, how long a real battery lasts or how hot anything becomes.",
+        "ar": "هذه هي الطاقة التي يمتصها الحِمل، وليست سعة بطارية ولا زمن تشغيل (runtime) ولا درجة حرارة: فهي لا تقول ما إذا كان أي مصدر يستطيع تزويدها، ولا كم تدوم بطارية حقيقية، ولا مدى سخونة أي شيء."},
+    "UI_DCE_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_DCE_ECHO_HEADING": {
+        "en": "The values and stated assumptions you entered",
+        "ar": "القيم والافتراضات المصرّح بها التي أدخلتها"},
+    "UI_DCE_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_DCE_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_DCE_SOURCES_NOTE": {
+        "en": "Ohm's law and electric power from the U.S. Department of Energy Electrical Science handbook, DOE-HDBK-1011/1-92, and power as the rate at which energy is transferred from its Classical Physics handbook, DOE-HDBK-1010-92 (archived; historical fundamentals references only); the volt, ohm, second and joule from NIST Special Publication 811. InventorAI restates the relations in its own words; no handbook text, example or figure is reproduced. The U.S. Department of Energy and NIST do not endorse InventorAI or this calculation.",
+        "ar": "قانون أوم والقدرة الكهربائية من دليل Electrical Science لوزارة الطاقة الأمريكية، ‏DOE-HDBK-1011/1-92، والقدرة بوصفها معدل انتقال الطاقة من دليلها Classical Physics، ‏DOE-HDBK-1010-92 (مؤرشفان؛ مرجعان تاريخيان للأساسيات فقط)؛ والفولت والأوم والثانية والجول من NIST Special Publication 811. يعيد InventorAI صياغة العلاقات بكلماته؛ ولا يُستنسخ أي نص أو مثال أو شكل من الدليلين. لا تؤيّد وزارة الطاقة الأمريكية ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_DCE_DISCLOSURE": {
+        "en": "This is the theoretical electrical energy that one resistive load absorbs over the duration t you declared, at the steady DC voltage V and with the resistance R you declared, while its power stays constant: E = V² × t / R = P × t, where P = V² / R.\n\nSign: V is the voltage across the load from the terminal you called + to the terminal you called −, and the current is taken through the load in the same direction. The load then absorbs E, which is never negative, is the same for a positive or a negative V, and is zero when V or t is zero.\n\nThe voltage, resistance and duration are your own declared values. InventorAI did not measure them and does not check that the load is resistive, that its resistance and voltage stay constant or that the power stays constant for the whole duration.\n\nIt is the ideal steady-state, constant-power relation only: a power that changes during the duration, on-off or duty-cycled use, wiring and contact resistance, the source's internal resistance and voltage drop, a battery voltage that falls as it discharges, temperature change of the resistance, start-up or inrush current, switching, AC behaviour, conversion losses and non-resistive loads such as motors, lamps, LEDs or electronics are not included.\n\nThe value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement.\n\nNext engineering need: this energy is not a battery capacity, a runtime or a temperature. Whether any battery or source can supply this energy and this power, how long a real source would last, how hot the load or its surroundings become, whether the load, its resistor, wiring, source and any driver or switch are rated for it, and what protection the circuit needs all remain unverified, and must be checked by measurement or a qualified person before any reliance. The result is preliminary, advisory, UNVALIDATED and not evidence.\n\nReference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92, and Classical Physics, DOE-HDBK-1010-92 (archived; historical fundamentals references only); the joule and the second as identified in NIST Special Publication 811. The relations are restated by InventorAI, and no handbook text, example or figure is reproduced.",
+        "ar": "هذه هي الطاقة الكهربائية النظرية التي يمتصها حِمل مقاوم واحد خلال المدة t التي صرّحت بها، عند الجهد المستمر الثابت V ومع المقاومة R اللذين صرّحت بهما، ما دامت قدرته ثابتة: E = V² × t / R = P × t، حيث P = V² / R.\n\nالإشارة: V هو الجهد على الحِمل من الطرف الذي سمّيته + إلى الطرف الذي سمّيته −، ويُؤخذ التيار عبر الحِمل في الاتجاه نفسه. عندها يمتص الحِمل الطاقة E، وهي لا تكون سالبة أبدًا، وتبقى نفسها للجهد V الموجب والسالب، وتساوي صفرًا حين يكون V أو t صفرًا.\n\nالجهد والمقاومة والمدة قيم صرّحت بها أنت. لم يقسها InventorAI، ولا يتحقق من أن الحِمل مقاوم، ولا من أن مقاومته وجهده يبقيان ثابتين، ولا من أن القدرة تبقى ثابتة طوال المدة كلها.\n\nهذه هي العلاقة المثالية في الحالة المستقرة وبقدرة ثابتة فقط: لا تُدرج القدرة التي تتغير خلال المدة، ولا الاستخدام المتقطع أو بدورة تشغيل (duty cycle)، ولا مقاومة الأسلاك والتلامس، ولا المقاومة الداخلية للمصدر وهبوط جهده، ولا جهد البطارية الذي ينخفض مع تفريغها، ولا تغيّر المقاومة مع الحرارة، ولا تيار بدء التشغيل أو التيار الاندفاعي (inrush)، ولا التبديل، ولا سلوك التيار المتردد (AC)، ولا فواقد التحويل، ولا الأحمال غير المقاومة مثل المحركات والمصابيح والثنائيات الباعثة للضوء (LED) والدوائر الإلكترونية.\n\nتُعرض القيمة بدقة حين يمكن ذلك؛ وإلا تُقرَّب إلى 12 رقمًا معنويًا ويُشار إلى أنها مقرَّبة. الأرقام ناتجة عن إدخالك؛ وليست دقة أي قياس.\n\nالحاجة الهندسية التالية: هذه الطاقة ليست سعة بطارية ولا زمن تشغيل (runtime) ولا درجة حرارة. ما إذا كانت أي بطارية أو مصدر يستطيع تزويد هذه الطاقة وهذه القدرة، وكم سيدوم مصدر حقيقي، ومدى سخونة الحِمل أو ما حوله، وما إذا كان الحِمل ومقاومه وأسلاكه ومصدره وأي مُشغِّل (driver) أو مفتاح مُصنَّفًا لها، والحماية التي تحتاجها الدائرة — كلها تبقى غير مُتحقَّق منها، ويجب فحصها بالقياس أو بواسطة شخص مؤهل قبل أي اعتماد. هذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا.\n\nالمراجع: وزارة الطاقة الأمريكية — Electrical Science، ‏DOE-HDBK-1011/1-92، وClassical Physics، ‏DOE-HDBK-1010-92 (مؤرشفان؛ مرجعان تاريخيان للأساسيات فقط)؛ والجول والثانية كما يحددهما NIST Special Publication 811. والعلاقات معاد صياغتها من InventorAI، ولا يُستنسخ أي نص أو مثال أو شكل من الدليلين."},
+    "UI_DCE_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_DCE_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_DCE_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. تتطلب هذه الحالة مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_DCE_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_DCE_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "V, R and t must be written as plain decimal numbers in volts, ohms and seconds, with at most one leading minus sign, at most nine digits before the point for V and t or twelve for R, and at most nine after it. Nothing was calculated.",
+        "ar": "يجب كتابة V وR وt أرقامًا عشرية بسيطة بالفولت والأوم والثواني، مع إشارة سالبة واحدة على الأكثر في البداية، وتسعة أرقام على الأكثر قبل الفاصلة لـ V وt أو اثني عشر لـ R، وتسعة على الأكثر بعدها. لم يُحسب شيء."},
+    "UI_DCE_OUTCOME_RESISTANCE_NOT_POSITIVE": {
+        "en": "The resistance R must be greater than zero ohms. Nothing was calculated.",
+        "ar": "يجب أن تكون المقاومة R أكبر من صفر أوم. لم يُحسب شيء."},
+    "UI_DCE_OUTCOME_DURATION_NEGATIVE": {
+        "en": "The duration t must be zero seconds or more. Nothing was calculated.",
+        "ar": "يجب أن تكون المدة t صفر ثانية أو أكثر. لم يُحسب شيء."},
+    "UI_DCE_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_DCE_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_DCE_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the volt (V), the ohm (Ω) and the second (s) and gives only the joule (J). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة الفولت (V) والأوم (Ω) والثانية (s) فقط، ولا تعطي إلا الجول (J). لم يُحسب شيء."},
+    "UI_DCE_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
@@ -6711,6 +8211,346 @@ UI_STRINGS = {
     # CAP-08 Slice 1 — the inventor's explicit assumption -> answer dependency
     # declaration. Truthful: declared by the inventor, not validated, never a
     # confirmation or rejection of the assumption, no progress effect.
+    # PATHN-CONSTRAINT-DECLARATION-01 — the inventor's project constraints
+    # (session section, report / PDF section, project-record events).
+    "UI_T3A_EVENT_CONSTRAINT_DECLARED": {
+        "en": "Project constraint you declared",
+        "ar": "قيد مشروع أعلنته",
+    },
+    "UI_T3A_EVENT_CONSTRAINT_CORRECTED": {
+        "en": "Project constraint you restated",
+        "ar": "قيد مشروع أعدت صياغته",
+    },
+    "UI_T3A_EVENT_CONSTRAINT_WITHDRAWN": {
+        "en": "Project constraint you withdrew",
+        "ar": "قيد مشروع سحبته",
+    },
+    "UI_PCN_HEADING": {
+        "en": "Your project constraints",
+        "ar": "قيود مشروعك",
+    },
+    "UI_PCN_EXPLAIN": {
+        "en": "A constraint is a limit or a wish you have for your invention, in your own words — for example “it must run on batteries” or “I would like it to cost less than 50 dollars”. Choose how strong it is for you.",
+        "ar": "القيد هو حدّ أو رغبة لديك تجاه اختراعك، بكلماتك أنت — مثل «يجب أن يعمل بالبطاريات» أو «أودّ أن تقلّ تكلفته عن 50 دولارًا». اختر مدى قوته بالنسبة إليك.",
+    },
+    "UI_PCN_BOUNDARY": {
+        "en": "These are your own statements. InventorAI has not checked them and has not turned them into specifications or confirmed requirements. It does not use them to choose components, rule out options or judge your answers, and they do not change your progress, gaps or readiness.",
+        "ar": "هذه أقوالك أنت. لم يفحصها InventorAI، ولم يحوّلها إلى مواصفات أو متطلبات مؤكَّدة. لا يستخدمها لاختيار المكوّنات أو استبعاد الخيارات أو الحكم على إجاباتك، ولا تغيّر تقدّمك أو الفجوات أو الجاهزية.",
+    },
+    "UI_PCN_SAFETY": {
+        "en": "Your constraints are not read for safety signals. The absence of a safety warning is not evidence of safety.",
+        "ar": "لا تُقرأ قيودك بحثًا عن إشارات السلامة. وغياب تحذير السلامة ليس دليلًا على السلامة.",
+    },
+    # MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01: where a mandatory
+    # constraint now appears, and what that step does not mean.
+    "UI_PCN_PLAN_NOTE": {
+        "en": "For each current mandatory constraint, the Validation Plan in your report lists one step: decide what evidence or specialist input would show whether it is met. InventorAI has not checked it, and that step does not show that it can be met. Soft constraints and preferences are not added.",
+        "ar": "لكل قيد إلزامي حالي، تتضمّن خطة التحقق (Validation Plan) في تقريرك خطوة واحدة: أن تحدّد الدليل أو مدخلات المختص التي تبيّن هل يتحقق. لم يفحصه InventorAI، ولا تبيّن تلك الخطوة أنه ممكن التحقيق. لا تُضاف القيود المرنة ولا التفضيلات.",
+    },
+    "UI_PCN_STRENGTH_LABEL": {
+        "en": "Strength you chose:",
+        "ar": "القوة التي اخترتها:",
+    },
+    "UI_PCN_STRENGTH_PREFERENCE": {
+        "en": "Preference (nice to have)",
+        "ar": "تفضيل (من الجيد توفّره)",
+    },
+    "UI_PCN_STRENGTH_SOFT": {
+        "en": "Soft constraint (important, but could give way)",
+        "ar": "قيد مرن (مهم، لكن يمكن التنازل عنه)",
+    },
+    "UI_PCN_STRENGTH_MANDATORY": {
+        "en": "Mandatory constraint (must hold)",
+        "ar": "قيد إلزامي (يجب أن يتحقق)",
+    },
+    "UI_PCN_ITEM_STATUS": {
+        "en": "your statement, not checked by InventorAI",
+        "ar": "قولك أنت، لم يفحصه InventorAI",
+    },
+    "UI_PCN_CORRECTED_MARK": {
+        "en": "corrected",
+        "ar": "مُصحَّح",
+    },
+    "UI_PCN_NONE": {
+        "en": "You have not declared any project constraint.",
+        "ar": "لم تعلن أي قيد للمشروع.",
+    },
+    "UI_PCN_NONE_CURRENT": {
+        "en": "You have no current project constraint.",
+        "ar": "ليس لديك أي قيد حالي للمشروع.",
+    },
+    "UI_PCN_FORM_TITLE": {
+        "en": "Declare a constraint",
+        "ar": "أعلن قيدًا",
+    },
+    "UI_PCN_FIELD_TEXT": {
+        "en": "The constraint, in your own words (up to 300 characters)",
+        "ar": "القيد بكلماتك أنت (حتى 300 حرف)",
+    },
+    "UI_PCN_FIELD_STRENGTH": {
+        "en": "How strong is it for you?",
+        "ar": "ما مدى قوته بالنسبة إليك؟",
+    },
+    "UI_PCN_CONFIRM": {
+        "en": "I confirm this is my own constraint, and I understand InventorAI has not checked it.",
+        "ar": "أؤكد أن هذا قيدي أنا، وأفهم أن InventorAI لم يفحصه.",
+    },
+    "UI_PCN_BUTTON": {
+        "en": "Save constraint",
+        "ar": "احفظ القيد",
+    },
+    "UI_PCN_HISTORY_SUMMARY": {
+        "en": "Earlier versions",
+        "ar": "الصيغ السابقة",
+    },
+    "UI_PCN_VERSION_ORIGINAL": {
+        "en": "Original:",
+        "ar": "الأصل:",
+    },
+    "UI_PCN_VERSION_CORRECTION": {
+        "en": "Earlier correction:",
+        "ar": "تصحيح سابق:",
+    },
+    "UI_PCN_CORRECT_SUMMARY": {
+        "en": "Correct this constraint",
+        "ar": "صحّح هذا القيد",
+    },
+    "UI_PCN_CORRECT_HINT": {
+        "en": "Change the wording, the strength or both. Your earlier version is kept in your project history.",
+        "ar": "غيّر الصياغة أو القوة أو كليهما. تُحفظ صيغتك السابقة في سجل مشروعك.",
+    },
+    "UI_PCN_CORRECT_BUTTON": {
+        "en": "Save correction",
+        "ar": "احفظ التصحيح",
+    },
+    "UI_PCN_CORRECT_LIMIT": {
+        "en": "This constraint has reached its limit of 20 corrections. You can still withdraw it.",
+        "ar": "بلغ هذا القيد حدّه البالغ 20 تصحيحًا. لا يزال بإمكانك سحبه.",
+    },
+    "UI_PCN_WITHDRAW_SUMMARY": {
+        "en": "Withdraw this constraint",
+        "ar": "اسحب هذا القيد",
+    },
+    "UI_PCN_WITHDRAW_HINT": {
+        "en": "Withdrawing removes it from your current constraints. It stays in your project history: withdrawal is not erasure.",
+        "ar": "السحب يزيله من قيودك الحالية. ويبقى في سجل مشروعك: السحب ليس محوًا.",
+    },
+    "UI_PCN_WITHDRAW_CONFIRM": {
+        "en": "I confirm I want to withdraw this constraint.",
+        "ar": "أؤكد أنني أريد سحب هذا القيد.",
+    },
+    "UI_PCN_WITHDRAW_BUTTON": {
+        "en": "Withdraw",
+        "ar": "اسحب",
+    },
+    "UI_PCN_WITHDRAWN_TITLE": {
+        "en": "Withdrawn constraints (history only)",
+        "ar": "القيود المسحوبة (سجل فقط)",
+    },
+    "UI_PCN_WITHDRAWN_NOTE": {
+        "en": "These are no longer current. They stay in your project history: withdrawal is not erasure.",
+        "ar": "لم تعد هذه حالية. وتبقى في سجل مشروعك: السحب ليس محوًا.",
+    },
+    "UI_PCN_WITHDRAWN_STATUS": {
+        "en": "withdrawn",
+        "ar": "مسحوب",
+    },
+    "UI_PCN_CAP": {
+        "en": "You have 50 current constraints, the most allowed at once. Withdraw one to add another.",
+        "ar": "لديك 50 قيدًا حاليًا، وهو الحد الأقصى المسموح به في وقت واحد. اسحب قيدًا لإضافة آخر.",
+    },
+    "UI_PCN_CAP_LIFETIME": {
+        "en": "This project has reached its limit of 500 declared constraints.",
+        "ar": "بلغ هذا المشروع حدّه البالغ 500 قيد معلَن.",
+    },
+    "UI_PCN_UNAVAILABLE": {
+        "en": "Your project constraints cannot be shown right now.",
+        "ar": "لا يمكن عرض قيود مشروعك الآن.",
+    },
+    "UI_PCN_PROVENANCE": {
+        "en": "Stated by you · not checked by InventorAI",
+        "ar": "ذكرته أنت · لم يفحصه InventorAI",
+    },
+    "UI_PCN_MSG_SAVED": {
+        "en": "Saved. Your constraint is recorded as your own statement; InventorAI has not checked it.",
+        "ar": "حُفظ. سُجّل قيدك على أنه قولك أنت، ولم يفحصه InventorAI.",
+    },
+    "UI_PCN_MSG_CORRECTED": {
+        "en": "Saved. Your constraint was corrected, and the earlier version is kept in your project history.",
+        "ar": "حُفظ. صُحّح قيدك، وتُحفظ الصيغة السابقة في سجل مشروعك.",
+    },
+    "UI_PCN_MSG_WITHDRAWN": {
+        "en": "Withdrawn. The constraint is no longer current and stays in your project history.",
+        "ar": "سُحب. لم يعد القيد حاليًا، ويبقى في سجل مشروعك.",
+    },
+    "UI_PCN_MSG_NOT_SAVED": {
+        "en": "That could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر الحفظ الآن. لم يتغير شيء.",
+    },
+    "UI_PCN_MSG_UNKNOWN": {
+        "en": "We could not confirm whether that was saved. Reload the page to check before trying again.",
+        "ar": "تعذّر التأكد مما إذا كان ذلك قد حُفظ. أعد تحميل الصفحة للتحقق قبل المحاولة مجددًا.",
+    },
+    "UI_PCN_MSG_SAVED_NOT_SHOWN": {
+        "en": "Saved. Reload the page to see it.",
+        "ar": "حُفظ. أعد تحميل الصفحة لرؤيته.",
+    },
+    "UI_PCN_MSG_INVALID": {
+        "en": "Write the constraint in your own words (up to 300 characters, without control characters) and choose how strong it is.",
+        "ar": "اكتب القيد بكلماتك أنت (حتى 300 حرف، دون أحرف تحكّم) واختر مدى قوته.",
+    },
+    "UI_PCN_MSG_CONFIRM": {
+        "en": "Please tick the confirmation box to continue. Nothing was saved.",
+        "ar": "يرجى تحديد مربع التأكيد للمتابعة. لم يُحفظ شيء.",
+    },
+    "UI_PCN_MSG_STALE": {
+        "en": "That constraint was corrected or withdrawn since this page was shown, so nothing was saved. Review your current constraints and try again.",
+        "ar": "صُحّح ذلك القيد أو سُحب منذ عرض هذه الصفحة، لذا لم يُحفظ شيء. راجع قيودك الحالية وحاول مجددًا.",
+    },
+    "UI_PCN_MSG_UNCHANGED": {
+        "en": "That correction is the same as the current constraint, so nothing was saved.",
+        "ar": "هذا التصحيح مطابق للقيد الحالي، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCN_MSG_LIMIT": {
+        "en": "A limit has been reached (50 current constraints, 500 declared constraints, or 20 corrections of one constraint), so nothing was saved.",
+        "ar": "بُلغ أحد الحدود (50 قيدًا حاليًا، أو 500 قيد معلَن، أو 20 تصحيحًا لقيد واحد)، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCN_REPORT_HEADING": {
+        "en": "Project constraints you declared",
+        "ar": "قيود المشروع التي أعلنتها",
+    },
+    "UI_PCN_REPORT_NONE": {
+        "en": "No current project constraint.",
+        "ar": "لا يوجد قيد حالي للمشروع.",
+    },
+    "UI_PCN_REPORT_UNAVAILABLE": {
+        "en": "Your project constraints cannot be shown in this report.",
+        "ar": "لا يمكن عرض قيود مشروعك في هذا التقرير.",
+    },
+    "UI_PCN_REPORT_HISTORY": {
+        "en": "Earlier versions and withdrawn constraints stay in the project history on the session page; withdrawal is not erasure.",
+        "ar": "تبقى الصيغ السابقة والقيود المسحوبة في سجل المشروع في صفحة الجلسة؛ السحب ليس محوًا.",
+    },
+    # MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: the inventor's own
+    # acceptance notes for ONE current mandatory constraint (session page only).
+    "UI_PCA_HEADING": {
+        "en": "How you would check it (optional)",
+        "ar": "كيف ستتحقق منه (اختياري)",
+    },
+    "UI_PCA_INTRO": {
+        "en": "Your own notes for checking this mandatory constraint later: what you would observe to accept it as met, and the measurement, evidence or review by a specialist you would need. They are your statements only; InventorAI has not checked them, and recording them does not verify the constraint or show that it can be met.",
+        "ar": "ملاحظاتك الخاصة للتحقق من هذا القيد الإلزامي لاحقًا: ما الذي ستلاحظه لتقبل أنه تحقق، وما القياس أو الدليل أو مراجعة المختص التي ستحتاجها. إنها أقوالك فقط؛ لم يفحصها InventorAI، وتسجيلها لا يتحقق من القيد ولا يبيّن أنه ممكن التحقيق.",
+    },
+    "UI_PCA_FIELD_CRITERION": {
+        "en": "Observable acceptance criterion (what you would observe to accept it as met):",
+        "ar": "معيار القبول القابل للملاحظة (ما الذي ستلاحظه لتقبل أنه تحقق):",
+    },
+    "UI_PCA_FIELD_EVIDENCE": {
+        "en": "Measurement, evidence or review by a specialist needed:",
+        "ar": "القياس أو الدليل أو مراجعة المختص المطلوبة:",
+    },
+    "UI_PCA_NOT_RECORDED": {
+        "en": "Not recorded.",
+        "ar": "غير مسجّل.",
+    },
+    "UI_PCA_STATUS": {
+        "en": "Your statement — OWNER_STATED / UNVALIDATED; not checked by InventorAI.",
+        "ar": "قولك أنت — OWNER_STATED / UNVALIDATED؛ لم يفحصه InventorAI.",
+    },
+    "UI_PCA_EARLIER": {
+        "en": "These notes were recorded for an earlier version of this constraint. They are shown as your earlier statements and have not been reconfirmed for the current version; save them again to confirm them for it.",
+        "ar": "سُجّلت هذه الملاحظات لصيغة سابقة من هذا القيد. تُعرض بوصفها أقوالك السابقة ولم يُعَد تأكيدها للصيغة الحالية؛ احفظها مجددًا لتأكيدها لها.",
+    },
+    "UI_PCA_UNAVAILABLE": {
+        "en": "Your notes for checking this constraint cannot be shown right now.",
+        "ar": "لا يمكن عرض ملاحظاتك للتحقق من هذا القيد الآن.",
+    },
+    "UI_PCA_EDIT_SUMMARY": {
+        "en": "Record or edit how you would check it",
+        "ar": "سجّل أو عدّل كيف ستتحقق منه",
+    },
+    "UI_PCA_HINT": {
+        "en": "Both notes are optional. Empty both fields and save to clear them; the constraint itself is not changed.",
+        "ar": "كلتا الملاحظتين اختيارية. أفرغ الحقلين واحفظ لمسحهما؛ ولا يتغير القيد نفسه.",
+    },
+    "UI_PCA_SAVE_BUTTON": {
+        "en": "Save these notes",
+        "ar": "احفظ هذه الملاحظات",
+    },
+    # CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the same notes beside the
+    # constraint's Validation Plan step (report / PDF Section 14).
+    "UI_PCA_VP_CRITERION": {
+        "en": "Observable acceptance criterion you recorded",
+        "ar": "معيار القبول القابل للملاحظة الذي سجّلته",
+    },
+    "UI_PCA_VP_EVIDENCE": {
+        "en": "Measurement, evidence or review by a specialist you recorded as needed",
+        "ar": "القياس أو الدليل أو مراجعة المختص التي سجّلت أنها مطلوبة",
+    },
+    "UI_PCA_VP_MISSING": {
+        "en": "Not recorded yet for the current version of this constraint:",
+        "ar": "غير مسجّل بعد للصيغة الحالية:",
+    },
+    "UI_PCA_VP_EARLIER": {
+        "en": "The notes below were recorded for an earlier version of this constraint. They are your earlier statements, have not been reconfirmed for its current version and are not counted as recorded for it.",
+        "ar": "سُجّلت الملاحظات أدناه لصيغة سابقة من هذا القيد. إنها أقوالك السابقة، ولم يُعَد تأكيدها للصيغة الحالية، ولا تُحتسب مسجّلة لها.",
+    },
+    "UI_PCA_VP_UNAVAILABLE": {
+        "en": "Your notes for checking this constraint cannot be shown right now.",
+        "ar": "لا يمكن عرض ملاحظاتك للتحقق من هذا القيد الآن.",
+    },
+    "UI_PCA_VP_BOUNDARY": {
+        "en": "These are your own statements (OWNER_STATED / UNVALIDATED). InventorAI has not checked them; recording them does not verify the constraint or show that it can be met.",
+        "ar": "هذه أقوالك الخاصة (OWNER_STATED / UNVALIDATED). لم يفحصها InventorAI؛ وتسجيلها لا يتحقق من القيد ولا يبيّن أنه ممكن التحقيق.",
+    },
+    "UI_PCA_MSG_SAVED": {
+        "en": "Your notes were saved. They are your own statements and have not been checked.",
+        "ar": "حُفظت ملاحظاتك. إنها أقوالك الخاصة ولم تُفحص.",
+    },
+    "UI_PCA_MSG_CLEARED": {
+        "en": "Your notes for that constraint were cleared. The constraint itself is unchanged.",
+        "ar": "مُسحت ملاحظاتك لذلك القيد. ولم يتغير القيد نفسه.",
+    },
+    "UI_PCA_MSG_UNCHANGED": {
+        "en": "Nothing changed: these notes are already saved for the current version.",
+        "ar": "لم يتغير شيء: هذه الملاحظات محفوظة بالفعل للصيغة الحالية.",
+    },
+    "UI_PCA_MSG_STALE": {
+        "en": "That constraint or its notes changed since this page was shown, so nothing was saved. Review the current version and try again.",
+        "ar": "تغيّر ذلك القيد أو ملاحظاته منذ عرض هذه الصفحة، لذا لم يُحفظ شيء. راجع الصيغة الحالية وحاول مجددًا.",
+    },
+    "UI_PCA_MSG_WITHDRAWN": {
+        "en": "That constraint is withdrawn, so nothing was saved.",
+        "ar": "ذلك القيد مسحوب، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCA_MSG_NOT_MANDATORY": {
+        "en": "That constraint is no longer a mandatory constraint, so nothing was saved.",
+        "ar": "لم يعد ذلك القيد قيدًا إلزاميًا، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCA_MSG_TOO_LONG": {
+        "en": "Each note can be at most 1,000 characters, so nothing was saved.",
+        "ar": "يمكن أن تكون كل ملاحظة 1,000 حرف على الأكثر، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCA_MSG_INVALID": {
+        "en": "A note contains an invalid character, so nothing was saved.",
+        "ar": "تحتوي ملاحظة على رمز غير صالح، لذا لم يُحفظ شيء.",
+    },
+    "UI_PCA_MSG_REJECTED": {
+        "en": "That form could not be read, so nothing was saved. Reload the page and try again.",
+        "ar": "تعذّرت قراءة ذلك النموذج، لذا لم يُحفظ شيء. أعد تحميل الصفحة وحاول مجددًا.",
+    },
+    "UI_PCA_MSG_NOT_SAVED": {
+        "en": "Your notes were not saved. Nothing was changed.",
+        "ar": "لم تُحفظ ملاحظاتك. ولم يتغير شيء.",
+    },
+    "UI_PCA_MSG_UNKNOWN": {
+        "en": "We could not confirm whether your notes were saved. Reload the page to see what is stored.",
+        "ar": "تعذّر التأكد مما إذا كانت ملاحظاتك قد حُفظت. أعد تحميل الصفحة لترى ما هو محفوظ.",
+    },
+    "UI_SS_CONSTRAINT_SCOPE": {
+        "en": "The project constraints you declared are not read for safety signals. The absence of a warning is not evidence of safety.",
+        "ar": "لا تُقرأ قيود المشروع التي أعلنتها بحثًا عن إشارات السلامة. وغياب التحذير ليس دليلًا على السلامة.",
+    },
     "UI_T3A_EVENT_ASSUMPTION_DEPENDENCY_DECLARED": {
         "en": "Dependency you declared on an assumption",
         "ar": "اعتماد أعلنته على افتراض",
@@ -8173,6 +10013,33 @@ UI_STRINGS = {
         "en": "This explanation does not describe your design's program, choose a microcontroller, check hardware compatibility, set timing or behaviour, or establish that anything works or is safe.",
         "ar": "لا يصف هذا الشرح برنامج تصميمك، ولا يختار متحكمًا دقيقًا، ولا يتحقق من توافق المكونات، ولا يحدد توقيتًا أو سلوكًا، ولا يثبت أن أي شيء يعمل أو أنه آمن.",
     },
+    # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 — one general, prose-only principle on the same exact
+    # Electronics MECHANISM_COMPLETENESS (OPEN / PARTIAL) binding. It is NOT Power Electronics / Motion capability.
+    # As for the earlier groups, the Arabic attribution wraps each URL and English title in a left-to-right isolate.
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_TITLE": {
+        "en": "Transistor as a current-controlled switch (general principle)",
+        "ar": "الترانزستور (transistor) بوصفه مفتاحًا يُتحكَّم فيه بالتيار (مبدأ عام)",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_INTRO": {
+        "en": "Reference information only. This general principle may not apply to your invention: InventorAI has not determined that your design uses or needs a transistor or switches a load.",
+        "ar": "معلومات مرجعية فقط. قد لا ينطبق هذا المبدأ العام على اختراعك: لم يحدّد InventorAI أن تصميمك يستخدم ترانزستورًا أو يحتاج إليه، ولا أنه يشغّل حِملًا ويطفئه.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_ITEM_1_TITLE": {
+        "en": "A small base current switches a larger load current",
+        "ar": "تيار قاعدة صغير يتحكم في تيار حِمل أكبر",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_ITEM_1_TEXT": {
+        "en": "In general, a bipolar junction transistor (BJT) can be used as an electrically controlled switch for a load: a small current into its base controls whether a much larger current flows through the load along its collector-emitter path. With no base current it does not conduct and the load is off; with enough base current it conducts fully and the load is on. This describes a general principle only; it does not show that your design uses it, which transistor or values would be needed, or that any control signal can drive it.",
+        "ar": "بوجه عام، يمكن استخدام ترانزستور ثنائي القطب (BJT) مفتاحًا يُتحكَّم فيه كهربائيًا لتشغيل حِمل: إذ يتحكم تيار صغير يدخل قاعدته في مرور تيار أكبر بكثير عبر الحِمل في مسار المجمّع والباعث. فإذا لم يمرّ تيار في القاعدة لا يوصل الترانزستور ويكون الحِمل مطفأً، وإذا مرّ فيها تيار كافٍ يوصل كليًا ويكون الحِمل مشغّلًا. هذا وصف لمبدأ عام فقط، ولا يبيّن أن تصميمك يستخدمه، ولا أي ترانزستور أو قيم قد تلزم، ولا أن أي إشارة تحكم تستطيع تشغيله.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_SOURCE": {
+        "en": "Source: Tony R. Kuphaldt, Lessons In Electric Circuits, Volume III — Semiconductors, online edition (index revised November 6, 2021), Chapter 4 \"Bipolar Junction Transistors\", section \"The transistor as a switch\", https://www.ibiblio.org/kuphaldt/electricCircuits/Semi/SEMI_4.html. © Tony R. Kuphaldt. Licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/). Adapted: InventorAI explains this point in its own words; the Arabic version is InventorAI's translation of that explanation. No figure, circuit diagram, datasheet or other third-party material is used. This does not imply that the author has reviewed, approved or endorsed InventorAI or this explanation.",
+        "ar": "المصدر: توني آر. كوبالدت (Tony R. Kuphaldt)، \u2066Lessons In Electric Circuits, Volume III — Semiconductors\u2069، النسخة الإلكترونية (فهرسها منقّح في 6 نوفمبر 2021)، الفصل 4 \u2066\"Bipolar Junction Transistors\"\u2069، القسم \u2066\"The transistor as a switch\"\u2069، على الرابط: \u2066https://www.ibiblio.org/kuphaldt/electricCircuits/Semi/SEMI_4.html\u2069. حقوق النشر © لتوني آر. كوبالدت، وهو مرخّص بموجب رخصة المشاع الإبداعي \u2066Creative Commons Attribution 4.0 International (CC BY 4.0)\u2069 المنشورة على الرابط: \u2066https://creativecommons.org/licenses/by/4.0/\u2069. مُقتبَس: شرح InventorAI هذه النقطة بكلماته، والنص العربي ترجمة InventorAI لهذا الشرح. ولا يُستخدم أي شكل أو مخطط دائرة أو ورقة بيانات أو مواد أخرى لطرف ثالث. ولا يعني ذلك أن المؤلف قد راجع InventorAI أو هذا الشرح أو وافق عليه أو أيّده.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_BOUNDARY": {
+        "en": "This explanation does not design a circuit, recommend or choose a transistor or any other component, give a rating, current, voltage or resistor value, state that a microcontroller or other control output can drive a transistor or a load directly or safely, or establish that anything is suitable, works or is safe.",
+        "ar": "لا يصمّم هذا الشرح دائرة، ولا يوصي بترانزستور أو بأي مكوّن آخر ولا يختاره، ولا يعطي قيمة اسمية أو تيارًا أو جهدًا أو قيمة مقاومة، ولا يقرّر أن متحكمًا دقيقًا أو أي مخرج تحكم آخر يستطيع تشغيل ترانزستور أو حِمل مباشرةً أو بأمان، ولا يثبت أن أي شيء مناسب أو يعمل أو آمن.",
+    },
     # Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure. The Electronics
     # MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY contexts (grounded only in the
     # governed Electronics pack questions) and, per authorized (domain, gap), ONE
@@ -8642,6 +10509,24 @@ UI_STRINGS = {
     "UI_S35_FIELD_PARTS": {
         "en": "Parts of the invention",
         "ar": "أجزاء الاختراع",
+    },
+    # PATHN-CONSTRAINT-DECLARATION-01 — field 30 (v3): the inventor's current
+    # project constraints; neutral export wording.
+    "UI_S35_FIELD_PROJECT_CONSTRAINTS": {
+        "en": "Project constraints declared by the inventor",
+        "ar": "قيود المشروع التي أعلنها المخترع",
+    },
+    "UI_S35_CONSTRAINT_LABEL": {
+        "en": "Project constraint declared by the inventor",
+        "ar": "قيد مشروع أعلنه المخترع",
+    },
+    "UI_S35_CONSTRAINT_STRENGTH": {
+        "en": "Strength chosen by the inventor",
+        "ar": "القوة التي اختارها المخترع",
+    },
+    "UI_S35_CONSTRAINTS_CLARIFICATION": {
+        "en": "Each entry is a limit or wish the inventor stated for the invention, in their own words, with the strength they chose. InventorAI has not checked it: it is not a confirmed requirement or a specification, and it was not used to choose components or rule out options.",
+        "ar": "كل إدخال هو حدّ أو رغبة ذكرها المخترع للاختراع، بكلماته هو، مع القوة التي اختارها. لم يفحصه InventorAI: فهو ليس متطلبًا مؤكَّدًا ولا مواصفة، ولم يُستخدم لاختيار المكوّنات أو استبعاد الخيارات.",
     },
     "UI_S35_FIELD_COMPONENT_DESCRIPTIONS_BEYOND_PARTS": {
         "en": "Other system, component, process and method descriptions",
@@ -9151,6 +11036,7 @@ _DEEP_AR = {
     # supported UI languages, through the existing localize_deep seam.
     "This answer was not recognized as responding to the question that was asked, so it did not move this point forward. Answering the question directly, in the words the question uses, is what the current demo can recognize.": "لم يتم التعرف على هذه الإجابة كردٍّ على السؤال المطروح، لذلك لم تُحرِّك هذه النقطة إلى الأمام. الإجابة عن السؤال مباشرةً، وبالكلمات التي يستخدمها السؤال، هي ما يستطيع العرض الحالي التعرف عليه.",
     "Your statement that this is not known yet has been saved with your project. It does not describe how the mechanism works, so this point has not moved forward. You can answer it later, or describe the part you do know.": "تم حفظ قولك إن هذا غير معروف بعد مع مشروعك. وهو لا يصف كيف تعمل الآلية، لذلك لم تتقدّم هذه النقطة. يمكنك الإجابة عنها لاحقًا، أو وصف الجزء الذي تعرفه.",
+    "Your answer has been saved with your project. Besides what you described, it says part of this is not known yet, and that part is recorded as not known yet. The current demo did not recognize in your answer an explanation of how the mechanism would work, so this point has not moved forward. When you can, add how you expect it to work, in your own words, or leave the unknown part as recorded.": "تم حفظ إجابتك مع مشروعك. إلى جانب ما وصفته، تذكر إجابتك أن جزءًا من هذا غير معروف بعد، وقد سُجّل هذا الجزء على أنه غير معروف بعد. لم يتعرّف العرض التوضيحي الحالي في إجابتك على شرح لكيفية عمل الآلية، لذلك لم تتقدّم هذه النقطة. عندما تستطيع، أضف كيف تتوقّع أن تعمل، بكلماتك الخاصة، أو اترك الجزء غير المعروف كما سُجّل.",
     "Your answer has been saved with your project. It asks about or supposes how the mechanism might work but does not state how it works, so this point has not moved forward. If you know how it works, describe it as a statement; if you do not know yet, you can say so.": "تم حفظ إجابتك مع مشروعك. وهي تسأل عن كيفية عمل الآلية أو تفترضها، لكنها لا تذكر كيف تعمل، لذلك لم تتقدّم هذه النقطة. إذا كنت تعرف كيف تعمل، فصِفها كعبارة تقريرية؛ وإن كنت لا تعرف بعد، يمكنك قول ذلك.",
     "This point cannot move forward yet. Review the result details for the specific reason.": "لا يمكن لهذه النقطة المضي قدمًا بعد. راجِع تفاصيل النتيجة لمعرفة السبب المحدّد.",
 

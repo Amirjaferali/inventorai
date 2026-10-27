@@ -241,7 +241,9 @@ ELEC_MC_GUIDANCE = ([("mechanism-completeness", "open")],
                     ["cap01-electronics-next-steps-v1"],
                     ["sensing-value-threshold-reference-v1",
                      "measurement-accuracy-resolution-reference-v1",
-                     "controller-input-logic-output-reference-v1"])
+                     "controller-input-logic-output-reference-v1",
+                     # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01: the same exact gap binding.
+                     "transistor-load-switching-reference-v1"])
 ELEC_PF_GUIDANCE = ([("physical-feasibility", "partial")],
                     ["cap01-electronics-next-steps-v1"],
                     ["basic-electrical-reference-v1",

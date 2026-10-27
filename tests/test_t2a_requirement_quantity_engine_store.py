@@ -608,6 +608,7 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
     # and CAP-09 SLICE 3 the current-value `prototype_test_hypotheses` sibling,
     # and CAP-09 SLICE 4 the current-value `prototype_test_variables` sibling.
     assert tables == ["component_prototype_needs",   # COMPONENT-PROTOTYPE-NEED-NOTE-01
+                      "constraint_acceptance_preparations",   # MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01
                       "decision_cell_value_events",   # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01
                       "decision_criterion_revisions",   # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01
                       "engine_version_adoptions", "evidence_references",
@@ -628,7 +629,8 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
                       "subsystem_interface_observations",   # Stage 15 Slice 4
                       "subsystem_interface_preparations",   # Stage 15 Slice 3
                       "subsystem_interfaces",   # Stage 15 Slice 2 sidecar
-                      "subsystem_part_answers"]   # Stage 28 Optional Part Slice 2
+                      "subsystem_part_answers",   # Stage 28 Optional Part Slice 2
+                      "subsystem_participation_preparations"]   # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01
     cols = [r[1] for r in conn.execute("PRAGMA table_info(requirement_quantities)")]
     assert cols == ["project_id", "quantity_seq", "quantity_id", "anchor_record_id",
                     "requirement_id", "quantity_kind", "value_text",

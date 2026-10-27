@@ -54,8 +54,30 @@ nothing here. A further narrow, Owner-authorized exception
 may likewise be OFFERED for the declared Mechanical part whatever the initial
 analysis focus, decided in the web layer from the same validated durable
 composition; it establishes no suitability, compatibility, validation or safety
-and changes nothing here. No other specialist behaviour is granted by these
-exceptions. Subsystem identity is
+and changes nothing here. A further narrow, Owner-authorized exception
+(CAP13-PLANAR-MOMENT-INTEGRATED-PART-01): the admitted request-local calculation
+``cap13:planar_single_force_moment`` v1.0 may likewise be OFFERED for the declared
+Mechanical part whatever the initial analysis focus, decided in the web layer
+from the same validated durable composition; it establishes no applicability,
+suitability, validation or safety and changes nothing here. A further narrow,
+Owner-authorized exception (ROTATIONAL-LOAD-SLICE-01): the admitted request-local
+calculation ``cap13:linear_speed_dependent_rotational_load`` v1.0 may likewise be
+OFFERED for the declared Mechanical part whatever the initial analysis focus,
+decided in the web layer from the same validated durable composition; it
+establishes no applicability, suitability, validation or safety and changes nothing
+here. A further narrow, Owner-authorized exception
+(TMP36-NOMINAL-VOLTAGE-TEMPERATURE-01): the admitted request-local calculation
+``tmp36:nominal_voltage_to_temperature`` v1.0 may likewise be OFFERED for the
+declared Electrical / Electronics part whatever the initial analysis focus,
+decided in the web layer from the same validated durable composition; it
+establishes no sensor choice, applicability, suitability, validation or safety
+and changes nothing here. A further narrow, Owner-authorized exception
+(CAP13-PLANAR-REQUIRED-FORCE-01): the admitted request-local calculation
+``cap13:planar_required_force`` v1.0 may likewise be OFFERED for the declared
+Mechanical part whatever the initial analysis focus, decided in the web layer
+from the same validated durable composition; it establishes no actuation,
+applicability, suitability, validation or safety and changes nothing here. No other specialist
+behaviour is granted by these exceptions. Subsystem identity is
 system-generated (``new_subsystem_id``), opaque, immutable and never derived
 from a name, a function text, a domain id or a list position; a client never
 supplies one. Declared part text is PRIVATE inventor / project information —
@@ -1466,3 +1488,157 @@ def participation_target(inventory, interfaces, interface_id, component_ids):
             raise ComponentAlreadyWithdrawn("the component is withdrawn")
     order = [record.component_id for record in inventory.records]
     return tuple(sorted(ids, key=order.index))
+
+
+# --- COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 ---------------------
+# For ONE existing participation (ONE component taking part in ONE declared
+# interaction) the inventor may record, in their own words, what they expect
+# that component to contribute that could be observed, and the evidence or
+# review they would need to check it. Verification PREPARATION only: both are
+# OWNER_STATED / UNVALIDATED, never a mechanism, a compatibility, a
+# feasibility, a requirement, evidence or a check that anything was verified.
+# The pair is identified ONLY by the existing ``(interface_id, component_id)``;
+# the interaction as a whole keeps its own ``InterfacePreparation``.
+#
+# Owner decision "keep, hide while absent": the notes are NOT part of the
+# participation row. When the inventor removes the component from the
+# interaction's participants the notes stay stored, are not shown, and are
+# marked ``carried_over``; when the same participation is added again they are
+# shown again, explicitly as earlier, unvalidated statements recorded before
+# the removal - never as freshly reconfirmed - until the inventor saves them
+# again. A withdrawn component's notes stay as history, are never current and
+# take no new write; a later, separate declaration is a new identity and
+# inherits nothing. Text follows the interface-preparation rule
+# (``valid_preparation_text``, 1,000 characters each).
+PARTICIPATION_EXPECTED_CONTRIBUTION = "expected_contribution"
+PARTICIPATION_EVIDENCE_NEEDED = "evidence_needed"
+PARTICIPATION_PREPARATION_FIELDS = (PARTICIPATION_EXPECTED_CONTRIBUTION,
+                                    PARTICIPATION_EVIDENCE_NEEDED)
+MAX_PARTICIPATION_PREPARATION_LENGTH = MAX_INTERFACE_PREPARATION_LENGTH
+
+
+class ParticipationPreparationError(ValueError):
+    """A submitted or stored participation preparation violates the bounded
+    contract. Structural message only — never user text."""
+
+
+@dataclass(frozen=True)
+class ParticipationPreparation:
+    """The inventor's notes for ONE participation, identified ONLY by
+    ``(interface_id, component_id)``. Each field is the inventor's own trimmed
+    text or ``None`` (not recorded); a value with both fields ``None`` is never
+    stored. ``carried_over`` is True when the participation was removed after
+    these notes were last saved: they are earlier statements, not current
+    reconfirmed ones. OWNER_STATED / UNVALIDATED by construction."""
+    interface_id: str
+    component_id: str
+    expected_contribution: Optional[str] = None
+    evidence_needed: Optional[str] = None
+    carried_over: bool = False
+    provenance: str = OWNER_STATED
+    validation_state: str = UNVALIDATED
+
+    def value(self, field_name):
+        if field_name not in PARTICIPATION_PREPARATION_FIELDS:
+            raise ParticipationPreparationError("unknown participation preparation field")
+        return getattr(self, field_name)
+
+    def recorded_fields(self):
+        return tuple(f for f in PARTICIPATION_PREPARATION_FIELDS
+                     if getattr(self, f) is not None)
+
+
+def validate_participation_preparations(preparations, interfaces, inventory):
+    """Validate a project's stored participation preparations against its OWN
+    durable ``interfaces`` and validated ``ComponentInventory`` and return them
+    in canonical order (interface order, then component declaration order), or
+    raise ``ParticipationPreparationError``. Empty is valid. Every entry must
+    name an interaction of this project and a DECLARED component of this
+    project (active or withdrawn — a withdrawn component's notes are valid
+    stored history) by exact id, at most once, hold at least one note of valid
+    stored text, a boolean ``carried_over`` and the fixed OWNER_STATED /
+    UNVALIDATED values. An orphan is invalid — never remapped or dropped. A
+    stored note need not have a stored participation: removal keeps it."""
+    items = tuple(preparations or ())
+    if not items:
+        return ()
+    if not isinstance(inventory, ComponentInventory):
+        raise ParticipationPreparationError("no validated inventory")
+    interface_order = [item.interface_id for item in interfaces or ()]
+    component_order = [record.component_id for record in inventory.records]
+    seen = set()
+    for item in items:
+        if not isinstance(item, ParticipationPreparation):
+            raise ParticipationPreparationError("entry is not a participation preparation")
+        if item.interface_id not in interface_order:
+            raise ParticipationPreparationError(
+                "preparation names no interaction of this project")
+        if item.component_id not in component_order:
+            raise ParticipationPreparationError(
+                "preparation names no declared component of this project")
+        pair = (item.interface_id, item.component_id)
+        if pair in seen:
+            raise ParticipationPreparationError("preparation is duplicated")
+        seen.add(pair)
+        if not item.recorded_fields():
+            raise ParticipationPreparationError("a stored preparation records nothing")
+        for field_name in item.recorded_fields():
+            if not valid_preparation_text(getattr(item, field_name)):
+                raise ParticipationPreparationError("preparation text is invalid")
+        if not isinstance(item.carried_over, bool):
+            raise ParticipationPreparationError("carried-over marker is invalid")
+        if item.provenance != OWNER_STATED or item.validation_state != UNVALIDATED:
+            raise ParticipationPreparationError(
+                "preparation provenance / validation state is invalid")
+    return tuple(sorted(items, key=lambda p: (interface_order.index(p.interface_id),
+                                              component_order.index(p.component_id))))
+
+
+def current_participation_preparations(preparations, participations, active_components):
+    """``{(interface_id, component_id): ParticipationPreparation}`` for the
+    CURRENT participations only (stored participation rows whose component is
+    in ``active_components``). Notes of a removed participation or of a
+    withdrawn component are never part of it. Inputs must already be
+    validated."""
+    current = {(interface_id, component_id)
+               for interface_id, ids in current_interface_participants(
+                   participations, active_components).items()
+               for component_id in ids}
+    return {(item.interface_id, item.component_id): item
+            for item in preparations or ()
+            if (item.interface_id, item.component_id) in current}
+
+
+def participation_preparation_target(inventory, interfaces, participations,
+                                     interface_id, component_id, values):
+    """The canonical requested notes for ONE CURRENT participation, as a
+    ``ParticipationPreparation`` (``carried_over`` False — saving makes them
+    current) or ``None`` when both are cleared, or raise:
+    ``ParticipationPreparationError`` (an interaction or component that is not
+    this project's, a malformed id, a pair that is not a current participation,
+    an unknown field or invalid text) or ``ComponentAlreadyWithdrawn`` (a
+    withdrawn component takes no new note). ``values`` maps each of
+    ``PARTICIPATION_PREPARATION_FIELDS`` to trimmed text or ``None``."""
+    if not isinstance(inventory, ComponentInventory):
+        raise ParticipationPreparationError("no validated inventory")
+    if not is_valid_interface_id(interface_id) or not is_valid_component_id(component_id):
+        raise ParticipationPreparationError("malformed identity")
+    if interface_id not in {item.interface_id for item in interfaces or ()}:
+        raise ParticipationPreparationError("the id names no interaction of this project")
+    record = inventory.record_for(component_id)
+    if record is None:
+        raise ParticipationPreparationError("the component is not a component of this project")
+    if record.withdrawn:
+        raise ComponentAlreadyWithdrawn("the component is withdrawn")
+    current = current_interface_participants(participations, inventory.active)
+    if component_id not in current.get(interface_id, ()):
+        raise ParticipationPreparationError("the component does not take part in this interaction")
+    if not isinstance(values, dict) or set(values) != set(PARTICIPATION_PREPARATION_FIELDS):
+        raise ParticipationPreparationError("unknown or missing participation preparation field")
+    for text in values.values():
+        if text is not None and not valid_preparation_text(text):
+            raise ParticipationPreparationError("preparation text is empty, invalid or too long")
+    if all(text is None for text in values.values()):
+        return None
+    return ParticipationPreparation(interface_id=interface_id, component_id=component_id,
+                                    **values)

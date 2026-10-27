@@ -24,7 +24,11 @@ File-creation contract:
       the credential, so this process reads and sends no key);
     `--show-cases` (print per-case predictions for human review);
     `--rescore PATH` (MSNL-EVAL-02: re-score a report this harness saved with
-      `--show-cases`, offline — no adapter is built and nothing is sent).
+      `--show-cases`, offline — no adapter is built and nothing is sent);
+    `--responsiveness` (T2-G / R2: the ONE Owner-authorized campaign over the
+      frozen, pinned `tests/fixtures/msnl_responsiveness_v1.json`; with the
+      default `lexical` provider it only checks the pack and its lexical
+      precondition and sends nothing).
     There is NO option for a project, session, account, database or free-form
     input: both pack paths are fixed and their SHA-256 values are pinned, and a
     re-scored file is only read and checked against the pinned pack's labels,
@@ -35,7 +39,11 @@ File-creation contract:
     data; no product import of this module (it lives under scripts/, outside
     every engine / web / API path); no persistence or logging of prompts or
     responses; the credential is never read or printed; no acceptance
-    threshold and no production-pass score — evidence collection only. An LLM
+    threshold and no production-pass score — evidence collection only. The one
+    exception is `--responsiveness`, which applies the acceptance criteria
+    FROZEN in that pack (read from the pinned bytes, never from this file) and,
+    as the pack's own EV criterion requires, prints each case's parsed verdict
+    and quote (synthetic material only; never the prompt or the raw reply). An LLM
     proposal here changes no engineering state, progression, evidence, domain
     activation, persistence or product behaviour.
 """
@@ -43,7 +51,9 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
+from fractions import Fraction
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _ROOT not in sys.path:
@@ -400,6 +410,252 @@ def run(provider, allow_network, managed_credential, show_cases=False):
     return out
 
 
+# ─── T2-G / R2: served-question responsiveness (msnl-responsiveness-v1) ─────
+#
+# The ONE Owner-authorized campaign over the frozen PR #853 package. Everything
+# that decides the outcome is read from the pinned pack bytes: the arm's
+# instructions, its output enum, its input fields, the acceptance thresholds
+# and the request budget. Nothing here is tuned, retried or re-run.
+
+RESPONSIVENESS_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                        "msnl_responsiveness_v1.json")
+RESPONSIVENESS_PACK_SHA256 = "5e98cabdeddfd81b0f60d5d828a01fb8c347173be065554f19962e674a73c90a"
+RESPONSIVE = "RESPONSIVE"
+NOT_RESPONSIVE = "NOT_RESPONSIVE"
+TARGET_CATEGORIES = ("PARAPHRASE", "HEDGED", "NEGATIVE_FORM")
+CONTROL_CATEGORIES = ("CONTROL_UNKNOWN",)
+ERR_REFUSAL = "refusal"
+ERR_BUDGET = "budget_exhausted"
+_WORD_RUN = re.compile(r"\w+")
+
+
+def responsiveness_payload(pack, case, model=toa.MODEL):
+    """The exact provider body for one case: the frozen instructions verbatim,
+    the frozen closed verdict enum, and as input ONLY the case's served
+    question and its text (arm.input: nothing else)."""
+    schema = {"type": "object",
+              "properties": {
+                  "verdict": {"type": "string",
+                              "enum": list(pack["arm"]["output_schema"]["verdict"])},
+                  "quote": {"type": "string"}},
+              "required": ["verdict", "quote"], "additionalProperties": False}
+    body = {"question": case["served_question"], "answer": case["text"]}
+    return {"model": model, "instructions": pack["arm"]["instructions"],
+            "input": json.dumps(body, ensure_ascii=False, sort_keys=True),
+            "store": False, "max_output_tokens": MAX_OUTPUT_TOKENS,
+            "text": {"format": {"type": "json_schema", "name": "msnl_responsiveness",
+                                "strict": True, "schema": schema}}}
+
+
+def _normalised(text):
+    return " ".join(semantic_registry.normalize_ar(text).split())
+
+
+def quote_grounded(quote, text):
+    """arm.acceptance_rule, grounding half: after the registry's normalize_ar
+    and whitespace collapsing, the quote is a substring of the equally
+    normalised text and holds at least two word-character runs."""
+    if not isinstance(quote, str) or not isinstance(text, str):
+        return False
+    q = _normalised(quote)
+    return len(_WORD_RUN.findall(q)) >= 2 and q in _normalised(text)
+
+
+def responsiveness_accepted(verdict, quote, text):
+    """arm.acceptance_rule: ACCEPTED only for a RESPONSIVE verdict whose quote
+    is grounded; every other outcome is NOT ACCEPTED."""
+    return verdict == RESPONSIVE and quote_grounded(quote, text)
+
+
+def responsiveness_precondition(pack):
+    """FR3: every case must be rejected by BOTH existing lexical relevance
+    checks, so the arm is consulted for every case. Returns the case ids that
+    either check now accepts (empty list = the precondition holds)."""
+    from engine.gap_relevance import addresses_gap
+    from engine.intent_serving import matches_committed_intent
+    return [c["case_id"] for c in pack["cases"]
+            if addresses_gap(c["text"], c["gap_type"])
+            or matches_committed_intent(c["text"], c["question_id"])]
+
+
+def classify_responsiveness(adapter, pack, case):
+    """ONE provider request for ONE case. Returns (verdict, quote, error_kind):
+    a valid reply gives error_kind None; a refusal, a transport / HTTP /
+    incomplete / malformed reply or a schema violation gives (None, None, kind)
+    — AB2 makes every one of them invalidate the run."""
+    reply = adapter._call(responsiveness_payload(pack, case, adapter._model))
+    if reply is None:
+        return None, None, adapter.last_error_kind
+    if reply == ms.ABSTAIN:                     # a provider refusal, not a verdict
+        adapter.errors[ERR_REFUSAL] = adapter.errors.get(ERR_REFUSAL, 0) + 1
+        return None, None, ERR_REFUSAL
+    allowed = set(pack["arm"]["output_schema"]["verdict"])
+    if not isinstance(reply, dict) or set(reply) != {"verdict", "quote"} \
+            or reply["verdict"] not in allowed or not isinstance(reply["quote"], str):
+        adapter._fail(toa.ERR_MALFORMED)
+        return None, None, toa.ERR_MALFORMED
+    return reply["verdict"], reply["quote"], None
+
+
+def responsiveness_campaign(adapter, pack):
+    """Exactly ``ST1_runs`` independent passes in pack order. The campaign stops
+    before the first request that would exceed ``max_provider_requests`` and
+    immediately after the first error (AB2: the run, and so the campaign, is
+    invalid; nothing is retried). Returns (runs, requests)."""
+    t = pack["thresholds"]
+    budget = t["max_provider_requests"]
+    runs, requests, stopped = [], 0, False
+    for _ in range(t["ST1_runs"]):
+        if stopped:
+            break
+        rows = []
+        for case in pack["cases"]:
+            if requests >= budget:
+                rows.append({"case_id": case["case_id"], "verdict": None, "quote": None,
+                             "grounded": False, "accepted": False, "error": ERR_BUDGET})
+                stopped = True
+                break
+            requests += 1
+            verdict, quote, err = classify_responsiveness(adapter, pack, case)
+            rows.append({"case_id": case["case_id"], "verdict": verdict, "quote": quote,
+                         "grounded": quote_grounded(quote, case["text"]),
+                         "accepted": responsiveness_accepted(verdict, quote, case["text"]),
+                         "error": err})
+            if err is not None:
+                stopped = True
+                break
+        runs.append(rows)
+    return runs, requests
+
+
+def _meets(num, den, minimum):
+    return den > 0 and Fraction(num, den) >= Fraction(str(minimum))
+
+
+def responsiveness_run_report(pack, rows):
+    """Every frozen criterion for ONE run, overall and per variety, at case grain."""
+    t = pack["thresholds"]
+    cases = {c["case_id"]: c for c in pack["cases"]}
+    errors = [r for r in rows if r["error"] is not None]
+    complete = len(rows) == len(pack["cases"]) and not errors
+    by = {}
+    for scope in ("overall",) + VARIETIES:
+        sel = [r for r in rows if scope == "overall" or cases[r["case_id"]]["variety"] == scope]
+        tgt = [r for r in sel if cases[r["case_id"]]["category"] in TARGET_CATEGORIES]
+        neg = [r for r in sel if cases[r["case_id"]]["label"] == NOT_RESPONSIVE]
+        ctl = [r for r in sel if cases[r["case_id"]]["category"] in CONTROL_CATEGORIES]
+        n_tgt = sum(cases[c]["category"] in TARGET_CATEGORIES for c in cases
+                    if scope == "overall" or cases[c]["variety"] == scope)
+        by[scope] = {
+            "target_cases": n_tgt,
+            "target_accepted": sum(r["accepted"] for r in tgt),
+            "target_abstained": sum(r["verdict"] == ms.ABSTAIN for r in tgt),
+            "target_not_responsive": sum(r["verdict"] == NOT_RESPONSIVE for r in tgt),
+            "target_responsive_ungrounded": sum(r["verdict"] == RESPONSIVE and not r["grounded"]
+                                                for r in tgt),
+            "negatives_answered": len(neg),
+            "false_acceptances": sum(r["verdict"] == RESPONSIVE for r in neg),
+            "injection_responsive": sum(r["verdict"] == RESPONSIVE for r in neg
+                                        if cases[r["case_id"]]["category"]
+                                        == "INSTRUCTION_INJECTION"),
+            "responsive_ungrounded": sum(r["verdict"] == RESPONSIVE and not r["grounded"]
+                                         for r in sel),
+            "controls": {"accepted": sum(r["accepted"] for r in ctl),
+                         "abstained": sum(r["verdict"] == ms.ABSTAIN for r in ctl),
+                         "rejected": sum(r["verdict"] == NOT_RESPONSIVE for r in ctl),
+                         "responsive_ungrounded": sum(r["verdict"] == RESPONSIVE
+                                                      and not r["grounded"] for r in ctl)},
+        }
+        by[scope]["recovery"] = _ratio(by[scope]["target_accepted"], n_tgt)
+    o = by["overall"]
+    en = Fraction(by["en"]["target_accepted"], by["en"]["target_cases"])
+    parity = {v: float(en - Fraction(by[v]["target_accepted"], by[v]["target_cases"]))
+              for v in VARIETIES if v != "en"}
+    criteria = {
+        "FA1": complete and all(by[s]["false_acceptances"] <= t["FA1_max_false_acceptances"]
+                                for s in by),
+        "FA2": complete and o["injection_responsive"] == 0,
+        "FR1": complete and _meets(o["target_accepted"], o["target_cases"], t["FR1_overall_min"])
+               and all(_meets(by[v]["target_accepted"], by[v]["target_cases"],
+                              t["FR1_variety_min"]) for v in VARIETIES),
+        "FR2": complete and all(
+            en - Fraction(by[v]["target_accepted"], by[v]["target_cases"])
+            <= Fraction(str(t["FR2_max_parity_gap"])) for v in VARIETIES if v != "en"),
+        "AB1": complete and Fraction(o["target_abstained"], o["target_cases"])
+               <= Fraction(str(t["AB1_max_target_abstention"])),
+        "AB2": complete,
+    }
+    return {"valid": complete, "cases_answered": len(rows),
+            "errors": [{"case_id": r["case_id"], "kind": r["error"]} for r in errors],
+            "by_variety": by, "parity_gap_vs_en": parity, "criteria": criteria}
+
+
+def responsiveness_agreement(pack, runs):
+    """ST1 agreement: the share of non-control cases whose ACCEPTED / NOT
+    ACCEPTED outcome is identical in every run (None unless all runs are
+    complete)."""
+    if len(runs) != pack["thresholds"]["ST1_runs"] or \
+            any(len(r) != len(pack["cases"]) for r in runs):
+        return None
+    ids = [c["case_id"] for c in pack["cases"] if c["category"] not in CONTROL_CATEGORIES]
+    per = [{r["case_id"]: r["accepted"] for r in run} for run in runs]
+    same = sum(len({p[i] for p in per}) == 1 for i in ids)
+    return {"identical": same, "cases": len(ids), "rate": _ratio(same, len(ids))}
+
+
+def responsiveness_verdict(pack, runs, precondition_violations):
+    """The frozen outcome: PASS only when every criterion holds in all three
+    runs and ST1 agreement holds; anything else is FAIL. A run invalidated by
+    an error is reported as INVALID and, under AB2, counts as a failed run."""
+    t = pack["thresholds"]
+    reports = [responsiveness_run_report(pack, rows) for rows in runs]
+    agreement = responsiveness_agreement(pack, runs)
+    st1 = (len(reports) == t["ST1_runs"] and all(r["valid"] for r in reports)
+           and agreement is not None
+           and _meets(agreement["identical"], agreement["cases"],
+                      t["ST1_min_outcome_agreement"]))
+    held = {k: len(reports) == t["ST1_runs"] and all(r["criteria"][k] for r in reports)
+            for k in ("FA1", "FA2", "FR1", "FR2", "AB1", "AB2")}
+    held["FR3"] = not precondition_violations
+    held["ST1"] = st1
+    invalid = any(not r["valid"] for r in reports) or len(reports) != t["ST1_runs"]
+    verdict = "PASS" if all(held.values()) else "FAIL"
+    return {"verdict": verdict,
+            "campaign_status": "INVALID" if invalid else "COMPLETE",
+            "criteria_held_in_every_run": held, "agreement": agreement, "runs": reports}
+
+
+def responsiveness(provider, allow_network, managed_credential):
+    """Load the pinned pack, check FR3, and (with the provider) run the ONE
+    campaign. Returns the report dict; raises PackError on integrity failure."""
+    pack = _load(RESPONSIVENESS_PACK_PATH, RESPONSIVENESS_PACK_SHA256)
+    if pack["thresholds"]["max_provider_requests"] != \
+            pack["thresholds"]["ST1_runs"] * len(pack["cases"]):
+        raise PackError("responsiveness budget inconsistent with the pack")
+    violations = responsiveness_precondition(pack)
+    out = {"pack_id": pack["pack_id"], "pack_sha256": RESPONSIVENESS_PACK_SHA256,
+           "cases": len(pack["cases"]), "precondition_violations": violations,
+           "thresholds": pack["thresholds"]}
+    if provider != "openai":
+        out["provider_requests"] = 0
+        return out
+    if not (allow_network and managed_credential):
+        raise SystemExit(2)
+    if violations:
+        out["refused"] = "FR3: the lexical precondition no longer holds; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    adapter = OpenAIMsnlAdapter(allow_network=True)
+    runs, requests = responsiveness_campaign(adapter, pack)
+    out.update({"model": adapter._model, "endpoint": toa.ENDPOINT,
+                "provider_requests": requests, "error_kinds": adapter.errors,
+                "result": responsiveness_verdict(pack, runs, violations),
+                "case_level": [[{k: r[k] for k in ("case_id", "verdict", "quote",
+                                                   "grounded", "accepted", "error")}
+                                for r in rows] for rows in runs]})
+    return out
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="MSNL synthetic LLM feasibility harness")
     p.add_argument("--provider", choices=("lexical", "openai"), default="lexical")
@@ -407,7 +663,24 @@ def main(argv=None):
     p.add_argument("--managed-credential", action="store_true")
     p.add_argument("--show-cases", action="store_true")
     p.add_argument("--rescore", metavar="PATH")
+    p.add_argument("--responsiveness", action="store_true")
     args = p.parse_args(argv)
+    if args.responsiveness:
+        if args.rescore or args.show_cases:
+            print(json.dumps({"refused": "--responsiveness takes no --rescore or "
+                                         "--show-cases"}))
+            return 2
+        if args.provider == "openai" and not (args.allow_network and args.managed_credential):
+            print(json.dumps({"refused": "--provider openai needs --allow-network "
+                                         "--managed-credential"}))
+            return 2
+        try:
+            out = responsiveness(args.provider, args.allow_network, args.managed_credential)
+        except PackError as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 2 if out.get("refused") else 0
     if args.rescore:
         if args.provider != "lexical" or args.allow_network or args.managed_credential:
             print(json.dumps({"refused": "--rescore is offline and takes no provider "

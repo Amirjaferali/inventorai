@@ -1723,6 +1723,7 @@ from engine.idea_state import (
     DISPOSITION_RISK_ACCEPTED as _W2B_RISK_ACCEPTED,
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED as _W2B_ALT_DECLARED,
     RELATIONSHIP_METADATA_DISPOSITIONS as _RELATIONSHIP_METADATA,
+    PROJECT_CONSTRAINT_DISPOSITIONS as _PROJECT_CONSTRAINTS,
 )
 
 # The four authoritative trigger classes (Amendment §5 — closed set).
@@ -1889,8 +1890,10 @@ def _alternatives_crossing_context(state):
     # declaration (`contradiction_declared`, `assumption_dependency_declared`)
     # is metadata over existing records, not a ledger EVENT for this serving
     # trigger, so it never ends (or starts) the transition.
+    # PATHN-CONSTRAINT-DECLARATION-01: neither does a project constraint.
     assertions = [r for r in getattr(state, "assertions", [])
-                  if r.disposition not in _RELATIONSHIP_METADATA]
+                  if r.disposition not in _RELATIONSHIP_METADATA
+                  and r.disposition not in _PROJECT_CONSTRAINTS]
     if not assertions:
         return None
 

@@ -97,12 +97,14 @@ def _raw(sql, params=()):
 # 1. Field 7 on ordinary and integrated projects
 # ==========================================================================
 def test_v2_versions_and_closed_vocabulary():
-    assert dx.DISCLOSURE_SCHEMA_VERSION == "inventorai-disclosure/2"
+    # AMENDED at PATHN-CONSTRAINT-DECLARATION-01 (Owner-approved v3): v3 = v2 plus
+    # field 30 and ONE item kind (`constraint`); the field-7 rules below are unchanged.
+    assert dx.DISCLOSURE_SCHEMA_VERSION == "inventorai-disclosure/3"
     assert (dx.JSON_FORMAT_VERSION, dx.HTML_FORMAT_VERSION) == (
-        "inventorai-disclosure-json/2", "inventorai-disclosure-html/2")
+        "inventorai-disclosure-json/3", "inventorai-disclosure-html/3")
     assert (dx.JSON_FILE_NAME, dx.HTML_FILE_NAME) == (
-        "inventorai-disclosure-export-v2.json", "inventorai-disclosure-export-v2.html")
-    assert len(dx.ITEM_KINDS) == 18 and "component" in dx.ITEM_KINDS     # exactly one added kind
+        "inventorai-disclosure-export-v3.json", "inventorai-disclosure-export-v3.html")
+    assert len(dx.ITEM_KINDS) == 19 and "component" in dx.ITEM_KINDS     # v2 kind kept; v3 adds one
     assert "SUBSYSTEM_COMPOSITION" in dx.SOURCE_OWNERS and len(dx.SOURCE_OWNERS) == 13
     assert dx._FIELD_DISPOSITIONS[F7] == {(dx.RECORDED, None, None), (dx.NOTHING_RECORDED, None, None)}
 
@@ -334,7 +336,7 @@ def test_html_shows_each_component_with_its_parts_or_project_level(integrated, l
     assert t("UI_S35_COMPONENT_PROJECT_LEVEL") in section
     assert ui_text.text("UI_S35_SOURCE_OWNER_STATED", lang) in section     # "Inventor", never "You"
     assert ('<html lang="ar" dir="rtl">' in body) == (lang == "ar")
-    assert "inventorai-disclosure-html/2" in body
+    assert "inventorai-disclosure-html/3" in body          # v3 (PATHN-CONSTRAINT-DECLARATION-01)
 
 
 def test_html_without_components_shows_nothing_recorded(ordinary):

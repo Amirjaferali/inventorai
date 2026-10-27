@@ -40,6 +40,7 @@ from engine.idea_state import (
     ACCEPTED_RISK,
     DISPOSITION_ANSWERED,
     DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED,
+    PROJECT_CONSTRAINT_DISPOSITIONS,
 )
 
 # --- OD-3: the six proposed WS12 controlled-unknown PATH classifications ------
@@ -199,6 +200,10 @@ def report_controlled_unknowns(state) -> tuple:
         # existing records; it is not itself an unknown.
         if getattr(record, "disposition", None) \
                 == DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED:
+            continue
+        # PATHN-CONSTRAINT-DECLARATION-01: an inventor-declared project
+        # constraint is a limit the inventor stated, not an unknown.
+        if getattr(record, "disposition", None) in PROJECT_CONSTRAINT_DISPOSITIONS:
             continue
         views.append(ControlledUnknownView(
             source_kind=_SOURCE_ASSERTION_RECORD,

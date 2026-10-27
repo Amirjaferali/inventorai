@@ -156,8 +156,16 @@ def _run(baseline, mode, out_path, *args):
 # CAP-09 schema change.
 # AMENDED at COMPONENT-INTERFACE-PARTICIPATION-01: one more additive current-value table on
 # purpose (its own tests pin it); it is not a CAP-09 schema change.
+# AMENDED at COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: one more
+# additive current-value table on purpose (its own tests pin it); it is not a
+# CAP-09 schema change.
+# AMENDED at MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: one more additive
+# current-value table on purpose (its own tests pin it); it is not a CAP-09
+# schema change.
 _LATER_CHANGED_TABLES = ("subsystem_interface_observations", "component_prototype_needs",
-                         "subsystem_interface_components")
+                         "subsystem_interface_components",
+                         "subsystem_participation_preparations",
+                         "constraint_acceptance_preparations")
 
 
 def _schema(path):

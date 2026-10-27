@@ -364,6 +364,10 @@ LOAD_MATRIX = {
     # CAP-08 Slice 1: the inventor's dependency declaration — likewise a
     # singleton, never LEGACY_UNSPECIFIED.
     idea_state.DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED: {OWNER_STATED},
+    # PATHN-CONSTRAINT-DECLARATION-01: the inventor's project constraint and
+    # its withdrawal — singletons, never LEGACY_UNSPECIFIED.
+    idea_state.DISPOSITION_CONSTRAINT_DECLARED: {OWNER_STATED},
+    idea_state.DISPOSITION_CONSTRAINT_WITHDRAWN: {OWNER_STATED},
 }
 
 
@@ -397,7 +401,8 @@ def _payload_for(disposition, provenance):
 def test_load_matrix_covers_every_known_disposition_exactly():
     # A future disposition cannot enter without its own explicit load policy.
     assert set(ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION) == set(INTERACTION_DISPOSITIONS) \
-        | idea_state.RELATIONSHIP_METADATA_DISPOSITIONS
+        | idea_state.RELATIONSHIP_METADATA_DISPOSITIONS \
+        | idea_state.PROJECT_CONSTRAINT_DISPOSITIONS
     assert {d: set(v) for d, v in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION.items()} \
         == LOAD_MATRIX
     for allowed in ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION.values():
@@ -441,8 +446,11 @@ def test_owner_only_record_stored_as_legacy_is_refused(disposition):
 # pinned above and its load rules in tests/test_cap10_declared_contradiction.py.
 # CAP-08 Slice 1: the dependency declaration likewise (its load rules are in
 # tests/test_cap08_assumption_dependency.py).
+# PATHN-CONSTRAINT-DECLARATION-01: the constraint records likewise have their
+# own carrier and history rule (tests/test_pathn_constraint_declaration.py).
 INTERACTION_LOAD_MATRIX = {d: v for d, v in LOAD_MATRIX.items()
-                           if d not in idea_state.RELATIONSHIP_METADATA_DISPOSITIONS}
+                           if d not in idea_state.RELATIONSHIP_METADATA_DISPOSITIONS
+                           and d not in idea_state.PROJECT_CONSTRAINT_DISPOSITIONS}
 
 
 @pytest.mark.parametrize("disposition,provenance", sorted(

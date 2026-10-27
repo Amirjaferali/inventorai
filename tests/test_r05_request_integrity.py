@@ -37,12 +37,19 @@ MUTATIONS = (
     # terminal withdrawal of one current declared component.
     "/session/<sid>/correct-component",
     "/session/<sid>/withdraw-component",
+    # PATHN-CONSTRAINT-DECLARATION-01: declare / correct / withdraw one of the
+    # inventor's own project constraints.
+    "/session/<sid>/constraint",
+    # MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: the inventor's current-value
+    # acceptance notes for one current mandatory constraint (record / replace / clear).
+    "/session/<sid>/constraint-acceptance",
     # COMPONENT-PROTOTYPE-NEED-NOTE-01: the inventor's current-value prototype-need
     # note for one current declared component (record / replace / clear).
     "/session/<sid>/component-prototype-need",
     # COMPONENT-INTERFACE-PARTICIPATION-01: the components the inventor says
     # take part in one declared interaction (current value; replace / clear).
     "/session/<sid>/interface-participation",
+    "/session/<sid>/participation-preparation",
     # Stage 15 Slice 3: the inventor's current verification-preparation inputs
     # per declared interaction (current-value planning save).
     "/session/<sid>/interface-preparation",
@@ -103,6 +110,25 @@ MUTATIONS = (
     # Stage 27 / THERM-01 Slice 1: the request-local single-path temperature-
     # difference calculation. It persists nothing, but it accepts a POST.
     "/session/<sid>/temperature-difference",
+    # Stage 25 / CAP-13 Planar Moment Slice 1: the request-local planar
+    # single-force moment calculation. It persists nothing, but it accepts a POST.
+    "/session/<sid>/planar-moment",
+    # Stage 25 / CAP-13 Rotational Load Slice 1: the request-local linear
+    # speed-dependent rotational load. It persists nothing, but it accepts a POST.
+    "/session/<sid>/rotational-load",
+    # Sensors C3 / TMP36 Nominal Temperature Slice 1: the request-local nominal
+    # voltage-to-temperature reading. It persists nothing, but it accepts a POST.
+    "/session/<sid>/tmp36-temperature",
+    # 28-T4 Control-Cycle Slice 1: the request-local READY / RUNNING evaluation.
+    # It persists nothing, but it accepts a POST.
+    "/session/<sid>/control-cycle",
+    # TEMPERATURE-TO-CONTROL-CONDITION-01: the request-local composition. It
+    # persists nothing, but it accepts a POST.
+    "/session/<sid>/temperature-control-condition",
+    "/session/<sid>/dc-load-current",
+    "/session/<sid>/dc-load-power",
+    "/session/<sid>/dc-load-energy",
+    "/session/<sid>/planar-required-force",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

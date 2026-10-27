@@ -1,15 +1,24 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "2",
+  "artifact_version": "9",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its accepted Correction 01 and Correction 02 / section 13A), the accepted CAP-13 two-support static reactions contract and the accepted THERM-01 single-path conduction temperature-difference contract. Content version 2 admits exactly two methods and exactly the five unit tokens those methods require (N and mm for CAP-13; W, K/W and K for THERM-01); it holds no conversion, no alias, no dimensional equivalence, no absolute temperature kind and no unit vocabulary beyond these records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The CAP-13 records dcu:U001, dcu:U002, dcu:SU001 and dcu:SU002 and the CAP-13 method record are unchanged from content version 1.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 09, sections 13A to 13H) and the method contracts of the nine admitted methods. Content version 9 admits exactly nine methods and exactly the fifteen unit tokens they require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature; V, Ω and A for the DC resistive load current; V, Ω and W for the DC resistive load power; V, Ω, s and J for the DC resistive load energy; N·mm, mm and N for the CAP-13 planar required force); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. The voltage kind alone holds two exact tokens, mV and V, by the one named exception of section 13E: each role binds one of them and nothing maps one to the other. The Celsius-temperature kind is the TMP36 output only and is never related to K. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The fifteen unit records, the records dcu:SU001 to dcu:SU015 and the eight earlier method records are unchanged from content version 8.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
     {"quantity_kind": "length", "dimension": "L"},
     {"quantity_kind": "power", "dimension": "M L^2 T^-3"},
     {"quantity_kind": "thermal_resistance", "dimension": "Theta M^-1 L^-2 T^3"},
-    {"quantity_kind": "temperature_difference", "dimension": "Theta"}
+    {"quantity_kind": "temperature_difference", "dimension": "Theta"},
+    {"quantity_kind": "moment", "dimension": "M L^2 T^-2"},
+    {"quantity_kind": "torque", "dimension": "M L^2 T^-2"},
+    {"quantity_kind": "angular_velocity", "dimension": "T^-1"},
+    {"quantity_kind": "voltage", "dimension": "M L^2 T^-3 I^-1"},
+    {"quantity_kind": "celsius_temperature", "dimension": "Theta (a temperature on the Celsius scale; not a temperature difference)"},
+    {"quantity_kind": "electric_resistance", "dimension": "M L^2 T^-3 I^-2"},
+    {"quantity_kind": "electric_current", "dimension": "I"},
+    {"quantity_kind": "energy", "dimension": "M L^2 T^-2"},
+    {"quantity_kind": "time", "dimension": "T"}
   ],
   "unit_records": [
     {
@@ -96,6 +105,176 @@
       "inspection_basis": "LEAD_SUPPLIED",
       "inspection_date": "2026-10-08",
       "inspection_reference": "STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md section 11, THERM-U1 and THERM-U4 (Lead inspection A, supplied 2026-10-08; not independently re-inspected by the executor)"
+    },
+    {
+      "record_id": "dcu:U006",
+      "unit_token": "N·mm",
+      "unit_name": "newton millimetre",
+      "quantity_kind": "moment",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI) - Appendix B.9, Factors for units listed by kind of quantity or field of science",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 web edition, Appendix B.9 (as inspected 2026-09-28)",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9, moment of force / torque entry; the prefix milli as recorded on dcu:U002",
+      "inspected_content": "Appendix B.9 identifies the newton metre, N·m, as the SI unit of moment of force (torque). With the prefix milli (factor 10^-3; see dcu:U002) the length factor of that product unit is the millimetre, giving the newton millimetre, written N·mm, used here for a moment magnitude formed directly from a force in N and a distance in mm. N·mm is not a named SI unit and its formation is InventorAI's own. Unit identification only; no conversion is admitted (N·mm is never converted to N·m) and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU006",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Lead-level Section-8 inspection of NIST SP 811 Appendix B.9 recorded as mechanical:PR009 (2026-09-28), whose disposition stays scoped to its own records; this record is the owner's own bounded unit identification for N·mm under STAGE25_CAP13_PLANAR_SINGLE_FORCE_MOMENT_METHOD_CONTRACT.md section 8. Not independently re-inspected by the executor."
+    },
+    {
+      "record_id": "dcu:U007",
+      "unit_token": "N·m",
+      "unit_name": "newton metre",
+      "quantity_kind": "torque",
+      "source_title": "Modelica Standard Library - Modelica.Units.SI",
+      "publisher": "Modelica Association",
+      "edition": "Modelica Standard Library v4.1.0 (git tag v4.1.0, commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a)",
+      "doi": "not recorded - the library is identified by its version tag and commit; no DOI was used",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/Modelica/Units.mo",
+      "inspected_location": "Modelica/Units.mo, package SI, type Torque (and MomentOfForce = Torque)",
+      "inspected_content": "Modelica.Units.SI declares Torque with quantity \"Torque\" and unit \"N.m\", the newton metre, written here N·m. It is the unit of the torque parameter and variable of the referenced rotational load model. Consistent with the NIST SP 811 Appendix B.9 identification of the newton metre for moment of force / torque recorded as mechanical:PR009. Unit identification only; no conversion is admitted (N·m is never converted to N·mm or any other unit) and no Modelica code is reproduced.",
+      "source_use_policy_ref": "dcu:SU007",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Lead-supplied source identification and unit tokens in the Owner-authorized ROTATIONAL-LOAD-SLICE-01 brief (2026-10-24); confirmed directly by the executor against git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a) on 2026-10-24."
+    },
+    {
+      "record_id": "dcu:U008",
+      "unit_token": "rad/s",
+      "unit_name": "radian per second",
+      "quantity_kind": "angular_velocity",
+      "source_title": "Modelica Standard Library - Modelica.Units.SI",
+      "publisher": "Modelica Association",
+      "edition": "Modelica Standard Library v4.1.0 (git tag v4.1.0, commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a)",
+      "doi": "not recorded - the library is identified by its version tag and commit; no DOI was used",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/Modelica/Units.mo",
+      "inspected_location": "Modelica/Units.mo, package SI, type AngularVelocity",
+      "inspected_content": "Modelica.Units.SI declares AngularVelocity with quantity \"AngularVelocity\" and unit \"rad/s\", the radian per second. It is the unit of the speed parameter and variable of the referenced rotational load model. Unit identification only; no conversion is admitted (rad/s is never converted to rpm, rev/s or deg/s) and no Modelica code is reproduced.",
+      "source_use_policy_ref": "dcu:SU007",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Lead-supplied source identification and unit tokens in the Owner-authorized ROTATIONAL-LOAD-SLICE-01 brief (2026-10-24); confirmed directly by the executor against git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a) on 2026-10-24."
+    },
+    {
+      "record_id": "dcu:U009",
+      "unit_token": "mV",
+      "unit_name": "millivolt",
+      "quantity_kind": "voltage",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Appendix B.9 and Chapter 4, Table 5",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9 (volt, V) and Chapter 4, Table 5 (the prefix milli, m, 10^-3)",
+      "inspected_content": "Appendix B.9 identifies the volt, symbol V, as the SI unit of electric potential difference (voltage); Chapter 4, Table 5 lists the SI prefix milli, symbol m, factor 10^-3; hence the millivolt, symbol mV, used here for the TMP36 output voltage. Unit identification only; no conversion is admitted (mV is never converted to V or any other unit) and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU008",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspection_reference": "Lead-level inspections recorded as electronics_electrical:PR005 (Appendix B.9, volt - V; 2026-09-28) and electronics_electrical:PR020 (Chapter 4, Table 5, milli - m - 10^-3; 2026-10-12), whose dispositions stay scoped to their own records; this record is the owner's own bounded unit identification for mV under SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.md section 4. Not independently re-inspected by the executor (the NIST host was not reachable)."
+    },
+    {
+      "record_id": "dcu:U010",
+      "unit_token": "°C",
+      "unit_name": "degree Celsius",
+      "quantity_kind": "celsius_temperature",
+      "source_title": "Modelica Standard Library - Modelica.Units",
+      "publisher": "Modelica Association",
+      "edition": "Modelica Standard Library v4.1.0 (git tag v4.1.0, commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a)",
+      "doi": "not recorded - the library is identified by its version tag and commit; no DOI was used",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/Modelica/Units.mo",
+      "inspected_location": "Modelica/Units.mo, package NonSI, type Temperature_degC; package SI, type ThermodynamicTemperature (displayUnit)",
+      "inspected_content": "Modelica.Units.NonSI declares Temperature_degC with quantity \"ThermodynamicTemperature\" and unit \"degC\", an absolute temperature in degree Celsius, distinct from a temperature difference; Modelica.Units.SI.ThermodynamicTemperature (unit K) names degC as its display unit. Hence the degree Celsius, written here °C, for a temperature on the Celsius scale. The TMP36 data sheet (ADI-S1) states its temperatures in the same unit. Unit identification only; no conversion is admitted (°C is never converted to or from K or any other unit), no offset arithmetic is performed by the owner and no Modelica code is reproduced.",
+      "source_use_policy_ref": "dcu:SU009",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Unit token °C supplied in the Owner-authorized TMP36-NOMINAL-VOLTAGE-TEMPERATURE-01 brief (2026-10-24); its identification as the degree Celsius was confirmed directly by the executor against git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a) on 2026-10-24."
+    },
+    {
+      "record_id": "dcu:U011",
+      "unit_token": "V",
+      "unit_name": "volt",
+      "quantity_kind": "voltage",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Appendix B.9",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9 (volt, V)",
+      "inspected_content": "Appendix B.9 identifies the volt, symbol V, as the SI unit of electric potential difference (voltage); V is a distinct exact token of the voltage kind beside mV (section 13E) and is never mapped to or from mV; used here for the DC resistive load current method only. Unit identification only; no conversion is admitted and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU011",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Lead-level inspection recorded as electronics_electrical:PR005 (Appendix B.9: ampere - A, volt - V, ohm - Ω, watt - W; 2026-09-28), whose disposition stays scoped to its own record; this record is the owner's own bounded unit identification for V under ELECTRICAL_DC_RESISTIVE_LOAD_CURRENT_METHOD_CONTRACT.md section 4. Not independently re-inspected by the executor (the NIST host was not reachable)."
+    },
+    {
+      "record_id": "dcu:U012",
+      "unit_token": "Ω",
+      "unit_name": "ohm",
+      "quantity_kind": "electric_resistance",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Appendix B.9",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9 (ohm, Ω)",
+      "inspected_content": "Appendix B.9 identifies the ohm, symbol Ω, as the SI unit of electric resistance; used here for the DC resistive load current method only. Unit identification only; no conversion is admitted and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU011",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Lead-level inspection recorded as electronics_electrical:PR005 (Appendix B.9: ampere - A, volt - V, ohm - Ω, watt - W; 2026-09-28), whose disposition stays scoped to its own record; this record is the owner's own bounded unit identification for Ω under ELECTRICAL_DC_RESISTIVE_LOAD_CURRENT_METHOD_CONTRACT.md section 4. Not independently re-inspected by the executor (the NIST host was not reachable)."
+    },
+    {
+      "record_id": "dcu:U013",
+      "unit_token": "A",
+      "unit_name": "ampere",
+      "quantity_kind": "electric_current",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Appendix B.9",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9 (ampere, A)",
+      "inspected_content": "Appendix B.9 identifies the ampere, symbol A, as the SI unit of electric current; used here for the DC resistive load current method only. Unit identification only; no conversion is admitted and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU011",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Lead-level inspection recorded as electronics_electrical:PR005 (Appendix B.9: ampere - A, volt - V, ohm - Ω, watt - W; 2026-09-28), whose disposition stays scoped to its own record; this record is the owner's own bounded unit identification for A under ELECTRICAL_DC_RESISTIVE_LOAD_CURRENT_METHOD_CONTRACT.md section 4. Not independently re-inspected by the executor (the NIST host was not reachable)."
+    },
+    {
+      "record_id": "dcu:U014",
+      "unit_token": "J",
+      "unit_name": "joule",
+      "quantity_kind": "energy",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Chapter 4",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-chapter-4-two-classes-si-units-and-si-prefixes",
+      "inspected_location": "Chapter 4, Table 3 (joule, J; watt, W, expressed as J/s)",
+      "inspected_content": "Chapter 4, Table 3 identifies the joule, symbol J, as the SI coherent derived unit of energy (and the watt, W, as J/s, so J = W x s); used here for the output role of the DC resistive load energy method only. Unit identification only; no conversion is admitted (no Wh, kWh, kJ or any other energy unit) and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU014",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-10",
+      "inspection_reference": "Lead-level textual source check recorded as electronics_electrical:PR009 (NIST SP 811 Chapter 4, Table 1: second - s; Table 3: joule - J, watt - W as J/s; corroborated by the watt-second row of Appendix B.9; 2026-10-10), whose pack-record scope (a reference text of its own reference group, which admits no owner unit) is unchanged; this record is the owner's own bounded unit identification for J under ELECTRICAL_DC_RESISTIVE_LOAD_ENERGY_METHOD_CONTRACT.md section 4 and calc/units Correction 08 (section 13G). Not independently re-inspected by the executor."
+    },
+    {
+      "record_id": "dcu:U015",
+      "unit_token": "s",
+      "unit_name": "second",
+      "quantity_kind": "time",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Chapter 4",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-chapter-4-two-classes-si-units-and-si-prefixes",
+      "inspected_location": "Chapter 4, Table 1 (second, s)",
+      "inspected_content": "Chapter 4, Table 1 identifies the second, symbol s, as the SI base unit of time; used here for the duration input role of the DC resistive load energy method only. Unit identification only; no conversion is admitted (no minute, hour or any other time unit) and no NIST text, table, prefix list or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU014",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-10",
+      "inspection_reference": "Lead-level textual source check recorded as electronics_electrical:PR009 (NIST SP 811 Chapter 4, Table 1: second - s; Table 3: joule - J, watt - W as J/s; corroborated by the watt-second row of Appendix B.9; 2026-10-10), whose pack-record scope (a reference text of its own reference group, which admits no owner unit) is unchanged; this record is the owner's own bounded unit identification for s under ELECTRICAL_DC_RESISTIVE_LOAD_ENERGY_METHOD_CONTRACT.md section 4 and calc/units Correction 08 (section 13G). Not independently re-inspected by the executor."
     }
   ],
   "source_use_policies": [
@@ -150,6 +329,162 @@
       "acknowledgement": "Reference source material: U.S. DOE Fundamentals Handbook DOE-HDBK-1012/2-92 (archived; historical fundamentals reference only); the total-resistance form is InventorAI's own derivation.",
       "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
       "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU005",
+      "source_title": "NASA STI Program - Disclaimers, Copyright Notice, and Terms and Conditions of Use",
+      "publisher": "National Aeronautics and Space Administration (NASA), STI Program",
+      "url": "https://sti.nasa.gov/disclaimers/",
+      "inspected_content": "Owner-local qualification snapshot for the planar-moment method sources NASA-S1 and NASA-T1 only (not a legal opinion): U.S. Government works are generally not protected by copyright in the U.S. (17 U.S.C. 105); NASA-hosted pages may contain privately created copyrighted content; NASA material may not be used to imply endorsement. Use is the one factual relation (moment magnitude is force times perpendicular distance) in InventorAI's own paraphrase only. No NASA prose, image or branding is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspection_reference": "Version-bound snapshot of cap13m:SU001 in the CAP-13 method-authority artifact cap13_planar_single_force_moment version 1, which rests on the Lead-supplied NASA STI inspections recorded as cap13:SU001 (2026-10-07) and mechanical:PR010 (2026-09-28); a separate record: dcu:SU002 keeps its own scope (NASA-S1 and NASA-S2 for the two-support method) and is not extended.",
+      "acknowledgement": "Reference source material: NASA Glenn Research Center (equilibrium and torque / moment principles); the moment form is InventorAI's own restatement.",
+      "third_party_material_exclusion": "No third-party or unidentified page content.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU006",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local source-use basis for dcu:U006 only (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. Use is limited to identifying the unit N·mm for the CAP-13 planar moment; no NIST text, table or conversion factor is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Policy page inspected 2026-09-28 (Lead-level inspection recorded as mechanical:PR011, whose disposition stays scoped to its own records). A separate record: dcu:SU001 keeps its own scope (dcu:U001 and dcu:U002 only) and dcu:SU003 its own (W, K/W and K); neither is extended.",
+      "acknowledgement": "Unit identification for N·mm follows NIST Special Publication 811, Appendix B.9, National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
+    },
+    {
+      "record_id": "dcu:SU007",
+      "source_title": "Modelica Standard Library - LICENSE (BSD 3-Clause License)",
+      "publisher": "Modelica Association",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/LICENSE",
+      "inspected_content": "Owner-local source-use basis for dcu:U007, dcu:U008 and the rotational-load method source MODELICA-S1 only (not a legal opinion): the Modelica Standard Library v4.1.0 is licensed under the BSD 3-Clause License, Copyright (c) 1998-2025, Modelica Association and contributors; redistribution of source or binary must retain the copyright notice and conditions, and the names of the copyright holder and contributors may not be used to endorse or promote derived products without permission. InventorAI uses only mathematical and unit facts, restated independently in its own words; no Modelica source code, annotation, icon, diagram, documentation text or runtime is copied, redistributed or executed.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Lead-supplied library identification in the ROTATIONAL-LOAD-SLICE-01 brief (2026-10-24); license file confirmed directly by the executor at git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a). A separate record: dcu:SU001 to dcu:SU006 keep their own scopes and are not extended.",
+      "acknowledgement": "Reference source material: Modelica Standard Library v4.1.0, Modelica.Mechanics.Rotational.Sources.LinearSpeedDependentTorque and Modelica.Units.SI, Copyright (c) 1998-2025 Modelica Association and contributors, BSD 3-Clause License. Modelica is a registered trademark of the Modelica Association.",
+      "third_party_material_exclusion": "No Modelica code, annotation, graphic, documentation text or other contributor material is reproduced; only facts are used.",
+      "no_endorsement_limitation": "No statement or implication that the Modelica Association or any contributor endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU008",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local source-use basis for dcu:U009 only (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. Use is limited to identifying the unit mV for the TMP36 nominal temperature; no NIST text, table or conversion factor is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspection_reference": "Policy page inspections recorded as electronics_electrical:PR007 (2026-09-28) and electronics_electrical:PR021 (2026-10-12), whose dispositions stay scoped to their own records. A separate record: dcu:SU001 to dcu:SU007 keep their own scopes and are not extended.",
+      "acknowledgement": "Unit identification for mV follows NIST Special Publication 811 (Appendix B.9 and Chapter 4, Table 5), National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
+    },
+    {
+      "record_id": "dcu:SU009",
+      "source_title": "Modelica Standard Library - LICENSE (BSD 3-Clause License)",
+      "publisher": "Modelica Association",
+      "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/LICENSE",
+      "inspected_content": "Owner-local source-use basis for dcu:U010 only (not a legal opinion): the Modelica Standard Library v4.1.0 is licensed under the BSD 3-Clause License, Copyright (c) 1998-2025, Modelica Association and contributors; redistribution of source or binary must retain the copyright notice and conditions, and the names of the copyright holder and contributors may not be used to endorse or promote derived products without permission. InventorAI uses only the unit fact, restated independently in its own words; no Modelica source code, annotation, icon, diagram, documentation text or runtime is copied, redistributed or executed.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Unit token supplied in the TMP36-NOMINAL-VOLTAGE-TEMPERATURE-01 brief (2026-10-24); license file confirmed directly by the executor at git tag v4.1.0 (commit 8ae3d35c24e519cb2996cab20f3b13daf2b0c50a). A separate record: dcu:SU007 keeps its own scope (dcu:U007, dcu:U008 and MODELICA-S1) and is not extended.",
+      "acknowledgement": "Unit identification for °C follows Modelica.Units of the Modelica Standard Library v4.1.0, Copyright (c) 1998-2025 Modelica Association and contributors, BSD 3-Clause License. Modelica is a registered trademark of the Modelica Association.",
+      "third_party_material_exclusion": "No Modelica code, annotation, graphic, documentation text or other contributor material is reproduced; only the unit fact is used.",
+      "no_endorsement_limitation": "No statement or implication that the Modelica Association or any contributor endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU010",
+      "source_title": "Analog Devices - TMP35/TMP36/TMP37 Data Sheet, Rev. H - copyright and legal notice printed on page 1",
+      "publisher": "Analog Devices, Inc.",
+      "url": "https://www.analog.com/media/en/technical-documentation/data-sheets/TMP35_36_37.pdf",
+      "inspected_content": "Owner-local snapshot of tmp36:SU001 for the TMP36 method source ADI-S1 only (not a legal opinion): (c)1996-2015 Analog Devices, Inc. All rights reserved; no licence is granted by implication or otherwise under any patent or patent rights of Analog Devices; no reproduction right is granted or assumed. Use is limited to facts - the nominal TMP36 output characteristic and the stated specified temperature range - restated independently in InventorAI's own words; no data-sheet text, table, figure, diagram, model or code is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspection_reference": "Version-bound snapshot of tmp36:SU001 in docs/governance/tmp36_content_config/nominal_voltage_to_temperature_v1.json (Lead-supplied publication identification in the TMP36-NOMINAL-VOLTAGE-TEMPERATURE-01 brief; notice confirmed directly by the executor on 2026-10-24 against a copy of Rev. H identified by its embedded title, footers and revision history). A separate record: dcu:SU001 to dcu:SU009 keep their own scopes.",
+      "acknowledgement": "Reference source material: Analog Devices, Inc., TMP35/TMP36/TMP37 data sheet, Rev. H, (c)1996-2015 Analog Devices, Inc.",
+      "third_party_material_exclusion": "No third-party material inside the data sheet is used.",
+      "no_endorsement_limitation": "No statement or implication that Analog Devices endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU011",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local source-use basis for dcu:U011, dcu:U012 and dcu:U013 only (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. Use is limited to identifying the units V, Ω and A for the DC resistive load current method; no NIST text, table or conversion factor is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Policy page inspection recorded as electronics_electrical:PR007 (2026-09-28), whose disposition stays scoped to its own record. A separate record: dcu:SU001 to dcu:SU010 keep their own scopes and are not extended.",
+      "acknowledgement": "Unit identification for V, Ω and A follows NIST Special Publication 811 (Appendix B.9), National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
+    },
+    {
+      "record_id": "dcu:SU012",
+      "source_title": "U.S. Department of Energy - Web Policies - Copyright, Restrictions and Permissions Notice",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "url": "not recorded - identified by title, as in electronics_electrical:PR006, which records no URL",
+      "inspected_content": "Owner-local snapshot of dcload:SU001 for the DC resistive load current method source DOE-OHM-S1 only (not a legal opinion): government information on DOE websites is in the public domain with DOE acknowledgement requested; contractor- or privately contributed material may remain protected, so no blanket public-domain claim is made for the handbook's expressive content. Use is the one factual Ohm's-law relationship only, in InventorAI's own paraphrase; no handbook prose, worked example, figure or table is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Version-bound snapshot of dcload:SU001 in docs/governance/electrical_content_config/dc_resistive_load_current_v1.json, itself the disposition recorded as electronics_electrical:PR006 (Lead-level inspection, 2026-09-28) applied to this one method; held here so the owner method record validates from this artifact alone. A separate record: dcu:SU001 to dcu:SU011 keep their own scopes; dcu:SU004 (THERM-01) is not extended.",
+      "acknowledgement": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only).",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
+      "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU013",
+      "source_title": "U.S. Department of Energy - Web Policies - Copyright, Restrictions and Permissions Notice",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "url": "not recorded - identified by title, as in electronics_electrical:PR006, which records no URL",
+      "inspected_content": "Owner-local snapshot of dcpower:SU001 for the DC resistive load power method source DOE-PWR-S1 only (not a legal opinion): government information on DOE websites is in the public domain with DOE acknowledgement requested; contractor- or privately contributed material may remain protected, so no blanket public-domain claim is made for the handbook's expressive content. Use is the two factual relationships (Ohm's law and electric power) only, in InventorAI's own paraphrase; no handbook prose, worked example, figure or table is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspection_reference": "Version-bound snapshot of dcpower:SU001 in docs/governance/electrical_content_config/dc_resistive_load_power_v1.json, itself the disposition recorded as electronics_electrical:PR006 (Lead-level inspection, 2026-09-28) applied to this one method; held here so the owner method record validates from this artifact alone. A separate record: dcu:SU001 to dcu:SU012 keep their own scopes; dcu:SU012 (DC resistive load current) is not extended.",
+      "acknowledgement": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only).",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
+      "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU014",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local snapshot of dcenergy:SU002 for the unit records dcu:U014 (J) and dcu:U015 (s) only (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; appropriate NIST acknowledgement is required; third-party material inside a NIST publication is excluded, and the guidance is not a blanket license for every NIST-hosted resource. Use is the identification of the joule and the second only; no NIST text, table, prefix list or conversion factor is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-10",
+      "inspection_reference": "Version-bound snapshot of dcenergy:SU002 in docs/governance/electrical_content_config/dc_resistive_load_energy_v1.json, itself the disposition recorded as electronics_electrical:PR011 (Lead-level textual source check, 2026-10-10) applied to this one method's unit roles; held here so the owner unit records validate from this artifact alone. A separate record: dcu:SU001 to dcu:SU013 keep their own scopes and are not extended.",
+      "acknowledgement": "Unit identification for J and s follows NIST Special Publication 811 (Chapter 4), National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No statement or implication that NIST endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU015",
+      "source_title": "U.S. Department of Energy - Web Policies - Copyright, Restrictions and Permissions Notice",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "url": "https://www.energy.gov/web-policies",
+      "inspected_content": "Owner-local snapshot of dcenergy:SU001 for the DC resistive load energy method sources DOE-ENG-S1 and DOE-ENG-S2 only (not a legal opinion): government information on DOE websites is in the public domain with DOE acknowledgement requested; contractor- or privately contributed material may remain protected, so no blanket public-domain claim is made for either handbook's expressive content. Use is the three factual relationships (Ohm's law, electric power and power as the rate of energy transfer) only, in InventorAI's own paraphrase; no handbook prose, worked example, figure or table is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-10",
+      "inspection_reference": "Version-bound snapshot of dcenergy:SU001 in docs/governance/electrical_content_config/dc_resistive_load_energy_v1.json, itself the dispositions recorded as electronics_electrical:PR006 (2026-09-28) and electronics_electrical:PR010 (2026-10-10) applied to this one method; held here so the owner method record validates from this artifact alone. A separate record: dcu:SU001 to dcu:SU013 keep their own scopes; dcu:SU012 and dcu:SU013 (DC resistive load current and power) are not extended.",
+      "acknowledgement": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92, and Classical Physics, DOE-HDBK-1010-92 (archived; historical fundamentals references only).",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
+      "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU016",
+      "source_title": "NASA STI Program - Disclaimers, Copyright Notice, and Terms and Conditions of Use",
+      "publisher": "National Aeronautics and Space Administration (NASA), STI Program",
+      "url": "https://sti.nasa.gov/disclaimers/",
+      "inspected_content": "Owner-local qualification snapshot for the planar required force method sources NASA-S1 and NASA-T1 only (not a legal opinion): U.S. Government works are generally not protected by copyright in the U.S. (17 U.S.C. 105); NASA-hosted pages may contain privately created copyrighted content; NASA material may not be used to imply endorsement. Use is the one factual relation (moment magnitude is force times perpendicular distance), rearranged for the force by exact algebra, in InventorAI's own paraphrase only. No NASA prose, image or branding is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspection_reference": "Version-bound snapshot of cap13f:SU001 in the CAP-13 method-authority artifact cap13_planar_required_force version 1, which rests on the Lead-supplied NASA STI inspections recorded as cap13:SU001 (2026-10-07), cap13m:SU001 (2026-10-07) and mechanical:PR010 (2026-09-28); held here so the owner method record validates from this artifact alone. A separate record: dcu:SU002 and dcu:SU005 keep their own scopes (the two-support and planar-moment methods) and are not extended.",
+      "acknowledgement": "Reference source material: NASA Glenn Research Center (equilibrium and torque / moment principles); the rearranged form F = M / d⊥ is InventorAI's own restatement.",
+      "third_party_material_exclusion": "No third-party or unidentified page content.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI, this owner or any result."
     }
   ],
   "methods": [
@@ -229,6 +564,241 @@
       "result_range": [
         {"role": "delta_T", "condition": "greater_than_zero", "bound_role": null}
       ]
+    },
+    {
+      "method_id": "cap13:planar_single_force_moment",
+      "method_version": "1.0",
+      "adapter_identity": "engine.cap13_planar_moment_method.evaluate",
+      "technical_authority": "CAP-13 - STAGE25_CAP13_PLANAR_SINGLE_FORCE_MOMENT_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "cap13_planar_single_force_moment", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "NASA-S1",
+          "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Equilibrium",
+          "publisher": "National Aeronautics and Space Administration (NASA)",
+          "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/equilibrium/",
+          "source_use_policy_ref": "dcu:SU005",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-07"
+        },
+        {
+          "source_ref": "NASA-T1",
+          "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Torque (Moment)",
+          "publisher": "National Aeronautics and Space Administration (NASA)",
+          "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/torque-moment/",
+          "source_use_policy_ref": "dcu:SU005",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-09-28"
+        }
+      ],
+      "input_roles": [
+        {"role": "F", "quantity_kind": "force", "unit_token": "N"},
+        {"role": "d_perp", "quantity_kind": "length", "unit_token": "mm"}
+      ],
+      "output_roles": [
+        {"role": "M", "quantity_kind": "moment", "unit_token": "N·mm"}
+      ],
+      "applicability": [
+        {"role": "F", "condition": "greater_than_zero", "bound_role": null},
+        {"role": "d_perp", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": [
+        {"role": "M", "condition": "greater_than_zero", "bound_role": null}
+      ]
+    },
+    {
+      "method_id": "cap13:linear_speed_dependent_rotational_load",
+      "method_version": "1.0",
+      "adapter_identity": "engine.cap13_rotational_load_method.evaluate",
+      "technical_authority": "CAP-13 - STAGE25_CAP13_LINEAR_SPEED_DEPENDENT_ROTATIONAL_LOAD_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "cap13_linear_speed_dependent_rotational_load", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "MODELICA-S1",
+          "source_title": "Modelica Standard Library v4.1.0 - Modelica.Mechanics.Rotational.Sources.LinearSpeedDependentTorque (TorqueDirection=false)",
+          "publisher": "Modelica Association",
+          "url": "https://github.com/modelica/ModelicaStandardLibrary/blob/v4.1.0/Modelica/Mechanics/Rotational/Sources/LinearSpeedDependentTorque.mo",
+          "source_use_policy_ref": "dcu:SU007",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-24"
+        }
+      ],
+      "input_roles": [
+        {"role": "tau_nominal", "quantity_kind": "torque", "unit_token": "N·m"},
+        {"role": "w_nominal", "quantity_kind": "angular_velocity", "unit_token": "rad/s"},
+        {"role": "w", "quantity_kind": "angular_velocity", "unit_token": "rad/s"}
+      ],
+      "output_roles": [
+        {"role": "tau", "quantity_kind": "torque", "unit_token": "N·m"}
+      ],
+      "applicability": [
+        {"role": "tau_nominal", "condition": "less_than_zero", "bound_role": null},
+        {"role": "w_nominal", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
+    },
+    {
+      "method_id": "tmp36:nominal_voltage_to_temperature",
+      "method_version": "1.0",
+      "adapter_identity": "engine.tmp36_nominal_temperature_method.evaluate",
+      "technical_authority": "Sensors / Instrumentation C3 - SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "tmp36_nominal_voltage_to_temperature", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "ADI-S1",
+          "source_title": "Analog Devices - TMP35/TMP36/TMP37 Low Voltage Temperature Sensors, Data Sheet, Rev. H (Table 4, printed page 8; Table 1, printed page 3)",
+          "publisher": "Analog Devices, Inc.",
+          "url": "https://www.analog.com/media/en/technical-documentation/data-sheets/TMP35_36_37.pdf",
+          "source_use_policy_ref": "dcu:SU010",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-24"
+        }
+      ],
+      "input_roles": [
+        {"role": "v_out", "quantity_kind": "voltage", "unit_token": "mV"}
+      ],
+      "output_roles": [
+        {"role": "t_celsius", "quantity_kind": "celsius_temperature", "unit_token": "°C"}
+      ],
+      "applicability": [
+        {"role": "v_out", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
+    },
+    {
+      "method_id": "electrical:dc_resistive_load_current",
+      "method_version": "1.0",
+      "adapter_identity": "engine.dc_resistive_load_current_method.evaluate",
+      "technical_authority": "Electrical / Electronics - ELECTRICAL_DC_RESISTIVE_LOAD_CURRENT_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "electrical_dc_resistive_load_current", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "DOE-OHM-S1",
+          "source_title": "DOE-HDBK-1011/1-92, DOE Fundamentals Handbook: Electrical Science, Volume 1 of 4, Module 1 (Basic Electrical Theory), Ohm's Law, handbook page 14 (archived; historical fundamentals reference only)",
+          "publisher": "U.S. Department of Energy (DOE)",
+          "url": "not recorded - identified by handbook number, as in electronics_electrical:PR004, which records no URL",
+          "source_use_policy_ref": "dcu:SU012",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-09-28"
+        }
+      ],
+      "input_roles": [
+        {"role": "v_load", "quantity_kind": "voltage", "unit_token": "V"},
+        {"role": "r_load", "quantity_kind": "electric_resistance", "unit_token": "Ω"}
+      ],
+      "output_roles": [
+        {"role": "i_load", "quantity_kind": "electric_current", "unit_token": "A"}
+      ],
+      "applicability": [
+        {"role": "r_load", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
+    },
+    {
+      "method_id": "electrical:dc_resistive_load_power",
+      "method_version": "1.0",
+      "adapter_identity": "engine.dc_resistive_load_power_method.evaluate",
+      "technical_authority": "Electrical / Electronics - ELECTRICAL_DC_RESISTIVE_LOAD_POWER_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "electrical_dc_resistive_load_power", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "DOE-PWR-S1",
+          "source_title": "DOE-HDBK-1011/1-92, DOE Fundamentals Handbook: Electrical Science, Volume 1 of 4, Module 1 (Basic Electrical Theory), Ohm's Law (handbook page 14) and Electric Power (handbook page 16) (archived; historical fundamentals reference only)",
+          "publisher": "U.S. Department of Energy (DOE)",
+          "url": "not recorded - identified by handbook number, as in electronics_electrical:PR004, which records no URL",
+          "source_use_policy_ref": "dcu:SU013",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-09-28"
+        }
+      ],
+      "input_roles": [
+        {"role": "v_load", "quantity_kind": "voltage", "unit_token": "V"},
+        {"role": "r_load", "quantity_kind": "electric_resistance", "unit_token": "Ω"}
+      ],
+      "output_roles": [
+        {"role": "p_load", "quantity_kind": "power", "unit_token": "W"}
+      ],
+      "applicability": [
+        {"role": "r_load", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
+    },
+    {
+      "method_id": "electrical:dc_resistive_load_energy",
+      "method_version": "1.0",
+      "adapter_identity": "engine.dc_resistive_load_energy_method.evaluate",
+      "technical_authority": "Electrical / Electronics - ELECTRICAL_DC_RESISTIVE_LOAD_ENERGY_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "electrical_dc_resistive_load_energy", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "DOE-ENG-S1",
+          "source_title": "DOE-HDBK-1011/1-92, DOE Fundamentals Handbook: Electrical Science, Volume 1 of 4, Module 1 (Basic Electrical Theory), Ohm's Law (handbook page 14) and Electric Power (handbook page 16) (archived; historical fundamentals reference only)",
+          "publisher": "U.S. Department of Energy (DOE)",
+          "url": "not recorded - identified by handbook number, as in electronics_electrical:PR004, which records no URL",
+          "source_use_policy_ref": "dcu:SU015",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-09-28"
+        },
+        {
+          "source_ref": "DOE-ENG-S2",
+          "source_title": "DOE-HDBK-1010-92, DOE Fundamentals Handbook: Classical Physics, Module CP-05, Power (printed page 8, PDF page 138) (archive status; fundamentals reference only)",
+          "publisher": "U.S. Department of Energy (DOE)",
+          "url": "https://www.energy.gov/sites/default/files/2026-04/DOE-HDBK-1010-92.pdf#page=138",
+          "source_use_policy_ref": "dcu:SU015",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-10"
+        }
+      ],
+      "input_roles": [
+        {"role": "v_load", "quantity_kind": "voltage", "unit_token": "V"},
+        {"role": "r_load", "quantity_kind": "electric_resistance", "unit_token": "Ω"},
+        {"role": "t_duration", "quantity_kind": "time", "unit_token": "s"}
+      ],
+      "output_roles": [
+        {"role": "e_load", "quantity_kind": "energy", "unit_token": "J"}
+      ],
+      "applicability": [
+        {"role": "r_load", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
+    },
+    {
+      "method_id": "cap13:planar_required_force",
+      "method_version": "1.0",
+      "adapter_identity": "engine.cap13_planar_required_force_method.evaluate",
+      "technical_authority": "CAP-13 - STAGE25_CAP13_PLANAR_REQUIRED_FORCE_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "cap13_planar_required_force", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "NASA-S1",
+          "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Equilibrium",
+          "publisher": "National Aeronautics and Space Administration (NASA)",
+          "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/equilibrium/",
+          "source_use_policy_ref": "dcu:SU016",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-07"
+        },
+        {
+          "source_ref": "NASA-T1",
+          "source_title": "NASA Glenn Research Center - Beginners Guide to Aeronautics - Torque (Moment)",
+          "publisher": "National Aeronautics and Space Administration (NASA)",
+          "url": "https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/torque-moment/",
+          "source_use_policy_ref": "dcu:SU016",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-09-28"
+        }
+      ],
+      "input_roles": [
+        {"role": "M_target", "quantity_kind": "moment", "unit_token": "N·mm"},
+        {"role": "d_perp", "quantity_kind": "length", "unit_token": "mm"}
+      ],
+      "output_roles": [
+        {"role": "F", "quantity_kind": "force", "unit_token": "N"}
+      ],
+      "applicability": [
+        {"role": "d_perp", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
     }
   ]
 }

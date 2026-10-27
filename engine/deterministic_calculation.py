@@ -1,4 +1,4 @@
-"""Shared deterministic calculation and units owner - A2 method-first, bounded second admission.
+"""Shared deterministic calculation and units owner - A2 method-first, bounded fifth admission.
 
 Gates: Stage 25 / CAP-13 A-5 first bounded implementation, under the accepted
 docs/governance/SHARED_DETERMINISTIC_CALCULATION_AND_UNITS_OWNER_BOUNDARY_CONTRACT.md
@@ -6,8 +6,23 @@ docs/governance/SHARED_DETERMINISTIC_CALCULATION_AND_UNITS_OWNER_BOUNDARY_CONTRA
 docs/governance/STAGE25_CAP13_TWO_SUPPORT_STATIC_REACTIONS_METHOD_CONTRACT.md; then
 Stage 27 / THERM-01 Slice 1, the bounded second admission of the same contract's
 accepted Correction 02 (§13A) under the accepted
-docs/governance/STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md.
-The owner is descriptive and unnumbered: it carries no CAP identifier.
+docs/governance/STAGE27_THERM01_CONDUCTION_TEMPERATURE_DIFFERENCE_METHOD_CONTRACT.md;
+then CAP-13 Planar Single-Force Moment Slice 1, the bounded third admission of the
+same contract's Correction 03 (§13B) under
+docs/governance/STAGE25_CAP13_PLANAR_SINGLE_FORCE_MOMENT_METHOD_CONTRACT.md;
+then CAP-13 Linear Speed-Dependent Rotational Load Slice 1, the bounded fourth
+admission of Correction 04 (§13C) under
+docs/governance/STAGE25_CAP13_LINEAR_SPEED_DEPENDENT_ROTATIONAL_LOAD_METHOD_CONTRACT.md;
+then TMP36 Nominal Voltage-to-Temperature Slice 1, the bounded fifth admission of
+Correction 05 (§13D) under
+docs/governance/SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.md;
+then the Electrical / Electronics DC resistive load current, power and energy
+methods, the bounded sixth, seventh and eighth admissions of Corrections 06, 07
+and 08 (§13E, §13F, §13G) under their own ELECTRICAL_DC_RESISTIVE_LOAD_*
+method contracts; then CAP-13 Planar Required Force Slice 1, the bounded ninth
+admission of Correction 09 (§13H) under
+docs/governance/STAGE25_CAP13_PLANAR_REQUIRED_FORCE_METHOD_CONTRACT.md. The owner is descriptive and unnumbered: it carries no CAP
+identifier.
 
 What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
   * admission of a request against its own governed artifact (§9);
@@ -21,7 +36,7 @@ What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
 
 What it does NOT own: the method's equations, applicability, numeric domain,
 declarations, screen, limitations or source authority. Those belong to the
-method authority (CAP-13 or THERM-01) and reach this module only as one immutable binding per
+method authority (CAP-13, THERM-01 or Sensors C3 for TMP36) and reach this module only as one immutable binding per
 method, created by application wiring (``bind_method``). This module imports no consumer
 or method-authority module, reads no project, session, ledger, store, answer or
 requirement quantity, writes nothing and has no clock, randomness, network,
@@ -81,7 +96,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.1.0"
+IMPLEMENTATION_VERSION = "1.8.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -92,21 +107,53 @@ ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
 # check mechanically. The conditions themselves are declared by the method
 # authority in the governed method record; the owner only evaluates them.
 CONDITION_GREATER_THAN_ZERO = "greater_than_zero"
+CONDITION_LESS_THAN_ZERO = "less_than_zero"
 CONDITION_WITHIN_ZERO_AND_ROLE = "within_zero_and_role"
-_CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_WITHIN_ZERO_AND_ROLE)
+_CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
+               CONDITION_WITHIN_ZERO_AND_ROLE)
 
-# The closed inventory: the delivered first increment (CAP-13) plus exactly the
-# bounded second admission of Correction 02 (§13A, THERM-01) - TWO methods, each
-# with its own consumer. A structurally valid extra method, quantity kind or unit
-# fails closed: widening the inventory is a separately authorized change, never an
-# artifact edit alone. No absolute temperature kind and no conversion exist.
+# The closed inventory: the delivered first increment (CAP-13 reactions), the
+# bounded second admission of Correction 02 (§13A, THERM-01), the bounded third
+# admission of Correction 03 (§13B, CAP-13 planar moment), the bounded fourth
+# admission of Correction 04 (§13C, CAP-13 linear speed-dependent rotational load)
+# the bounded fifth admission of Correction 05 (§13D, TMP36 nominal
+# voltage-to-temperature), the bounded sixth admission of Correction 06 (§13E,
+# Electrical / Electronics DC resistive load current), the bounded seventh
+# admission of Correction 07 (§13F, Electrical / Electronics DC resistive load
+# power, on the existing kinds and tokens), the bounded eighth admission of
+# Correction 08 (§13G, Electrical / Electronics DC resistive load energy, adding
+# only the energy / J and time / s kinds and tokens) and exactly the bounded
+# ninth admission of Correction 09 (§13H, CAP-13 planar required force, on the
+# existing moment / length / force kinds and tokens) - NINE methods, each with
+# its own consumer. A
+# structurally valid extra method, quantity kind or unit fails closed: widening
+# the inventory is a separately authorized change, never an artifact edit alone.
+# No conversion exists. The one Celsius-temperature kind is the output of the
+# TMP36 method only: it is never mapped to or from K, never compared with the
+# THERM-01 temperature difference and carries no offset arithmetic here.
+# Voltage is the ONE kind with two exact tokens (Correction 06): mV for the TMP36
+# input and V for the DC load voltage. Each role binds exactly one of them, a
+# request in the other token is refused, and nothing maps mV to V.
 ADMITTED_METHODS = frozenset({
     ("cap13:static_reactions_two_support", "1.0"),
     ("therm01:conduction_temperature_difference_single_path", "1.0"),
+    ("cap13:planar_single_force_moment", "1.0"),
+    ("cap13:linear_speed_dependent_rotational_load", "1.0"),
+    ("tmp36:nominal_voltage_to_temperature", "1.0"),
+    ("electrical:dc_resistive_load_current", "1.0"),
+    ("electrical:dc_resistive_load_power", "1.0"),
+    ("electrical:dc_resistive_load_energy", "1.0"),
+    ("cap13:planar_required_force", "1.0"),
 })
 ADMITTED_QUANTITY_KINDS = frozenset({
-    "force", "length", "power", "thermal_resistance", "temperature_difference"})
-ADMITTED_UNIT_TOKENS = frozenset({"N", "mm", "W", "K/W", "K"})
+    "force", "length", "power", "thermal_resistance", "temperature_difference",
+    "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",
+    "electric_resistance", "electric_current", "energy", "time"})
+ADMITTED_UNIT_TOKENS = frozenset({"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
+                                  "mV", "°C", "V", "Ω", "A", "J", "s"})
+# The one named exception to "one unit token per quantity kind" (§13E): the
+# exact token set a kind may hold. Not an alias table and not a scale relation.
+KIND_TOKEN_EXCEPTIONS = {"voltage": frozenset({"mV", "V"})}
 
 _ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _MAX_TEXT = 700
@@ -265,9 +312,14 @@ def validate_artifact(data):
             raise CalculationArtifactError("unit_records: source-use unresolved")
         if unit["unit_token"] in units or unit["record_id"] in seen_ids:
             raise CalculationArtifactError("unit_records: duplicate")
-        # No conversion and no alias in this increment: ONE unit token per
-        # quantity kind, so a second spelling of a kind's unit cannot be admitted.
-        if any(u["quantity_kind"] == unit["quantity_kind"] for u in units.values()):
+        # No conversion and no alias: ONE unit token per quantity kind, so a
+        # second spelling of a kind's unit cannot be admitted - except the one
+        # named token set of KIND_TOKEN_EXCEPTIONS, whose tokens stay distinct.
+        allowed = KIND_TOKEN_EXCEPTIONS.get(unit["quantity_kind"])
+        if any(u["quantity_kind"] == unit["quantity_kind"] for u in units.values()) \
+                and (allowed is None or unit["unit_token"] not in allowed):
+            raise CalculationArtifactError("unit_records: alias or second unit for a kind")
+        if allowed is not None and unit["unit_token"] not in allowed:
             raise CalculationArtifactError("unit_records: alias or second unit for a kind")
         seen_ids.add(unit["record_id"])
         units[unit["unit_token"]] = unit
@@ -416,6 +468,8 @@ def _is_number(value):
 def _check(condition, value, bound):
     if condition == CONDITION_GREATER_THAN_ZERO:
         return value > 0.0
+    if condition == CONDITION_LESS_THAN_ZERO:
+        return value < 0.0
     return 0.0 <= value <= bound
 
 

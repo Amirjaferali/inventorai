@@ -1,0 +1,149 @@
+{
+  "artifact_id": "electrical_dc_resistive_load_current",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "Electrical / Electronics - method authority for this one DC resistive load current method only",
+  "slice": "Electrical / Electronics - DC Resistive Load Current - Slice 1",
+  "governance_note": "The governed artifact of the DC resistive load current method, under ELECTRICAL_DC_RESISTIVE_LOAD_CURRENT_METHOD_CONTRACT.md. It carries the method authority (identity, version, model, executed form and derivation), the applicability declarations, the numeric domain, the high-risk screen, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json; it changes no Electrical / Electronics pack claim or provenance record, is separate from every other calculation artifact, never loads one and is never loaded by one. Calculation execution belongs to the shared deterministic calculation and units owner; nothing here is a measurement, evidence, a source, driver, wire, fuse or component rating, a protection, compatibility, suitability or safety statement, or a readiness, progression or validation input. It activates no Power Electronics / Motion (28-T3), D4 or T6 capability.",
+  "method": {
+    "method_id": "electrical:dc_resistive_load_current",
+    "method_version": "1.0",
+    "contract": "docs/governance/ELECTRICAL_DC_RESISTIVE_LOAD_CURRENT_METHOD_CONTRACT.md",
+    "model": "ONE electrical load, explicitly declared by the inventor, that behaves as a single constant resistance R_load (in ohms) under ONE steady DC voltage V_load (in volts) across it. V_load is signed and is measured from the load terminal the inventor calls + to the terminal they call −. Ohm's law for a resistive element then gives the steady current I_load (in amperes) through the load, positive from the + terminal to the − terminal through the load. The result is the theoretical current of that ideal relation only, not a measured, rated or guaranteed current.",
+    "executed_form": "i_load = v_load / r_load, with v_load in V (signed) and r_load in ohm (strictly positive, decided from the exact decimal value before any binary rounding); evaluated as the exact rational value of the two binary64 inputs rounded once to binary64 and accepted only when it is exactly 0.0 for a zero voltage, or finite, nonzero, of the exact result's sign and within a relative error of 2^-52 of it; then shown only when it agrees with the exact decimal quotient of the entered values within a relative error of 2^-51, as that exact quotient rounded once to 12 significant digits (round half to even) and labelled exact or rounded.",
+    "derivation": "DOE-HDBK-1011/1-92, Electrical Science, Volume 1, Module 1, Ohm's Law (handbook page 14), writes Ohm's law as E = I x R, with E the voltage in volts, I the current in amperes and R the resistance in ohms (DOE-OHM-S1; recorded as electronics_electrical:PR004). InventorAI writes the same relationship with V for voltage and solves it for the current, I = V / R, for a resistance greater than zero; the handbook is not claimed to print this solved form or the sign convention, which are InventorAI's own statement of the reference directions. The relation is restated independently; no handbook text, worked example, figure or table is copied, and the relation is not shown to describe the inventor's load."
+  },
+  "numeric_domain": {
+    "roles": [
+      {
+        "role": "v_load",
+        "meaning": "the steady DC voltage across the load from its declared + terminal to its declared − terminal, as declared by the inventor; signed; not measured or checked by InventorAI (the role written V)",
+        "quantity_kind": "voltage",
+        "unit_token": "V"
+      },
+      {
+        "role": "r_load",
+        "meaning": "the constant resistance of the load, as declared by the inventor; strictly greater than zero; not measured or checked by InventorAI (the role written R)",
+        "quantity_kind": "electric_resistance",
+        "unit_token": "Ω"
+      },
+      {
+        "role": "i_load",
+        "meaning": "the theoretical steady current through the load given by Ohm's law; signed, positive through the load from the + terminal to the − terminal, exactly zero for a zero voltage; never a measured, rated, maximum or guaranteed current (the role written I)",
+        "quantity_kind": "electric_current",
+        "unit_token": "A"
+      }
+    ],
+    "rules": [
+      "Grammar: strict ASCII decimal - an optional single leading minus, one to nine integer digits for V or one to twelve for R, and an optional single fractional part of one to nine digits; no plus sign, exponent, separator, space, Unicode digit, unit suffix, inf, nan or normalization. An omitted, malformed or over-length value is INVALID_NUMERIC_INPUT, resolved before the shared owner is called.",
+      "Representation limits, not physical limits: the digit limits bound what can be typed (|V| below 10^9 V, R from 10^-9 to below 10^12 ohm, steps of 10^-9); they are not physical limits, equipment ratings or a claim that such values are realistic, and the 64-character field cap is NON-PHYSICAL abuse protection only.",
+      "Positive resistance: the exact decimal value of R must be greater than zero, decided before any binary rounding; zero or a negative value is RESISTANCE_NOT_POSITIVE with no number. A zero voltage is admitted and gives exactly zero current.",
+      "Owner applicability: the shared owner declines an r_load that is not greater than zero as UNABLE_TO_DETERMINE / INPUT_OUTSIDE_ADMITTED_RANGE, shown as the neutral UNMAPPED_OWNER_OUTCOME (unreachable from the page).",
+      "Binary bridge: each admitted decimal is converted once to the correctly rounded binary64 value; every admitted nonzero value lies between 10^-9 and 10^12 in magnitude, so it is a normal binary64 number with a relative rounding error of at most 2^-53, a positive R stays positive and a zero V stays exactly zero.",
+      "Numerical acceptance in the adapter: the exact rational value v_load / r_load of the binary inputs is rounded once to binary64. A zero voltage gives exactly 0.0. A nonzero exact result is accepted only when the rounded value is finite, nonzero, of the same sign and within a relative error of 2^-52 of it; overflow, underflow or any failed check is FAILURE / EXECUTION_INTEGRITY_FAILURE with no numerical payload, never rewritten as a refusal. Inside the representation limits every nonzero result lies between 10^-21 and 10^18 A in magnitude, so neither overflow nor underflow can occur from the page.",
+      "Decimal-reference acceptance in the consumer: a successful owner result is shown only when it is exactly zero for an exactly zero voltage, and otherwise has the sign of, and lies within a relative error of 2^-51 of, the exact decimal quotient V / R of the entered decimals; otherwise the outcome is KNOWLEDGE_UNAVAILABLE with no number. The proven worst case for every admitted input is below 3.0000001 x 2^-53.",
+      "Display: the accepted result is shown from the exact decimal quotient, never from the binary value: rounded once to 12 significant digits, round half to even, with trailing zeros removed; it is labelled exact when that rounding changes nothing and rounded otherwise. Plain decimal notation is used from 10^-6 A to below 10^12 A and the form m x 10^e otherwise, so a tiny nonzero current is never shown as 0. For a negative current the magnitude is shown on its own, separately labelled; the signed value is never replaced by its magnitude. The digits shown imply no measurement resolution, precision or accuracy."
+    ]
+  },
+  "declarations": [
+    {
+      "declaration_id": "steady_state_dc",
+      "contract_ref": "D-1",
+      "accepted_value": "the voltage across the load is a steady DC voltage that stays constant during the period of interest; no AC, pulsed, switching, start-up or inrush condition is being calculated",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "resistive_load",
+      "contract_ref": "D-2",
+      "accepted_value": "the load behaves as one resistance that stays constant at this voltage (a resistive, ohmic load), not a motor, lamp, LED, battery, electronic circuit or other load whose current does not follow V / R; InventorAI does not determine that the load is resistive",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "declared_values",
+      "contract_ref": "D-3",
+      "accepted_value": "the voltage and resistance entered are the inventor's own values for this one load, taken from their own reading or documentation; InventorAI did not measure or check them",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "sign_convention",
+      "contract_ref": "D-4",
+      "accepted_value": "the voltage is entered with the stated reference direction, from the load terminal the inventor calls + to the terminal they call −; a positive current then flows through the load from + to −, and a negative voltage gives a current in the opposite direction",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    }
+  ],
+  "screen_items": [
+    {
+      "item_id": "mains_or_high_voltage",
+      "item": "mains or high voltage"
+    },
+    {
+      "item_id": "battery_or_storage_cell",
+      "item": "a battery or energy-storage cell"
+    },
+    {
+      "item_id": "fire_or_overheating",
+      "item": "fire, ignition or overheating risk"
+    },
+    {
+      "item_id": "medical_or_life_supporting",
+      "item": "medical or life-supporting use"
+    },
+    {
+      "item_id": "vehicle_or_aerospace",
+      "item": "vehicle or aerospace use"
+    },
+    {
+      "item_id": "safety_function",
+      "item": "a safety function, alarm, protection or shut-off"
+    }
+  ],
+  "limitations": [
+    "No source, power-supply, driver, switch, transistor, relay, wire, connector, fuse or component capability, rating or selection; no protection design; no power, heating or energy result; no compatibility, suitability or safety conclusion; no inference of the load type, the voltage, the resistance or any declaration.",
+    "The result is the ideal steady-state Ohm's-law relation only: wiring and contact resistance, the source's internal resistance and voltage drop, temperature change of the resistance, start-up or inrush current, switching transients, AC behaviour and non-resistive loads are not included.",
+    "The digit limits of the input grammar are representation limits, not physical limits or equipment ratings; no unit conversion is performed (V, ohm and A only; mV, mA and kilo-ohm are not accepted or converted).",
+    "All NO answers on the high-risk screen only allow this bounded calculation to proceed; they never mean safe. The screen neither reads nor feeds SafetySignal.",
+    "The result is UNVALIDATED and is not evidence; it is request-local and is not stored, reported, exported or used for readiness, progression or validation."
+  ],
+  "disclosure": [
+    "This is the theoretical current that Ohm's law gives for the steady DC voltage V across one resistive load and its resistance R that you declared: I = V / R.",
+    "Sign: V is the voltage across the load from the terminal you called + to the terminal you called −. A positive I flows through the load from + to −; a negative V gives a negative I, flowing the opposite way.",
+    "The voltage and resistance are your own declared values. InventorAI did not measure them and does not check that the load is resistive, that its resistance stays constant or that the voltage is steady.",
+    "It is the ideal steady-state relation only: wiring and contact resistance, the source's internal resistance and voltage drop, temperature change of the resistance, start-up or inrush current, switching, AC behaviour and non-resistive loads such as motors, lamps, LEDs or electronics are not included.",
+    "The value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement.",
+    "Next engineering need: whether your source and any driver or switch can supply this current, what protection the circuit needs and whether the load and its wiring are suitable all remain unverified, and must be checked by measurement or a qualified person before any reliance. The result is preliminary, advisory, UNVALIDATED and not evidence.",
+    "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the relation is restated by InventorAI, and no handbook text, example or figure is reproduced."
+  ],
+  "sources": [
+    {
+      "record_id": "DOE-OHM-S1",
+      "record_type": "source",
+      "source_type": "government_reference_publication",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "source_title": "U.S. Department of Energy - DOE Fundamentals Handbook: Electrical Science, Volume 1 of 4, Module 1 - Basic Electrical Theory (DOE-HDBK-1011/1-92), Ohm's Law, handbook page 14",
+      "url": "not recorded - the source is identified by its handbook number, as in electronics_electrical:PR004, which records no URL",
+      "source_use_policy_ref": "dcload:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspected_content": "Supports only: Ohm's law as written in the handbook, E = I x R (handbook page 14), where the handbook identifies E as voltage in volts (V), I as current in amperes (A) and R as resistance in ohms. Official DOE record status: ARCHIVE - Canceled, effective April 2016; used ONLY as a historical / fundamentals reference for this one factual relationship, never as current regulatory, safety or compliance guidance and never as proof that a design is safe, compliant or valid. This record reuses the Lead-level inspection recorded as electronics_electrical:PR004 (2026-09-28; executor egress was blocked); the pack record and its claim ohms_law_reference are unchanged and keep their own scope. The solved form I = V / R, the strictly positive resistance and the sign convention are InventorAI's own statement; it is not claimed that DOE printed them. Not re-inspected by the executor.",
+      "paraphrase_only_limitation": "The one factual relationship is restated in InventorAI's own words with V for voltage (notation normalization only); no handbook paragraph, explanatory prose, worked example, figure, diagram, photograph or logo is copied.",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content of the handbook is used, and its references to commercial textbooks authorize no copying of those works.",
+      "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this method or any project."
+    },
+    {
+      "record_id": "dcload:SU001",
+      "record_type": "source_use_policy",
+      "source_type": "government_web_policy",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "source_title": "U.S. Department of Energy - Web Policies - Copyright, Restrictions and Permissions Notice",
+      "url": "not recorded - identified by title, as in electronics_electrical:PR006, which records no URL",
+      "source_use_policy_ref": "dcload:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspected_content": "Source-use basis (not a legal opinion), the disposition recorded as electronics_electrical:PR006 applied to this one method: government information on DOE websites is in the public domain and may be freely distributed and copied, with DOE acknowledgement requested; documents, illustrations, photographs and other resources contributed or licensed by private parties may remain copyright-protected, and the handbook foreword records the involvement of the DOE Training Coordination Program managed by EG&G Idaho, Inc., so no blanket claim is made that every expressive element of the handbook is public domain. Conservative use: the one factual relationship only, in InventorAI-authored paraphrase, with neutral DOE acknowledgement; no copied prose, worked example, figure, diagram, photograph, logo or third-party-attributed material. electronics_electrical:PR006 is not broadened beyond this method.",
+      "paraphrase_only_limitation": "Facts only; no copied text, example, figure or table.",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is reproduced.",
+      "no_endorsement_limitation": "No endorsement by DOE is stated or implied; DOE is named only to identify the source.",
+      "acknowledgement": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92"
+    }
+  ]
+}

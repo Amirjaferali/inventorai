@@ -215,7 +215,12 @@ _FROZEN_ENGINE_SHA256 = {
     # qualified supposition gets its own WARN and moves no gap. No
     # classifier, tie, substance, scoring, quality, maturity-gate or
     # gap-type change (pre-T2-G-3 = becf7514...35d2).
-    "engine/progression_loop.py": "10397390e71a61a9dfa201badd0a3804e96bf288eb7dd7521120b8e3e8ded9f0",
+    # PATHN-CONSTRAINT-DECLARATION-01 re-freeze (disclosed): the same
+    # serving containment in _alternatives_crossing_context now also skips an
+    # inventor-declared project constraint, so it never ends (or starts) the
+    # multiple-alternatives transition. No classifier, tie, substance, scoring,
+    # quality, maturity-gate or gap-type change (pre-amendment = 10397390...f0).
+    "engine/progression_loop.py": "0d88f08307177ac1c35484155510669b65a5784964a882ad14ec14214691d2f0",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.
@@ -311,7 +316,12 @@ _FROZEN_PACK_SHA256 = {
     # governance-note entry (provenance electronics_electrical:PR024–PR025). The pack minus exactly
     # those two additions is canonically identical to the previous pack (proven in
     # tests/test_measurement_conditions_awareness.py).
-    "electronics_electrical": "65a858b0c358f1dc4fcddcaa3991101e1c28a51b843532447b84fb8976371c92",
+    # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01: re-frozen again after adding ONE further bounded, inert,
+    # additive prose-only `reference_fundamentals` group (transistor_load_switching_reference_v1; Electronics
+    # MECHANISM_COMPLETENESS OPEN / PARTIAL report / PDF context) plus its governance-note entry (provenance
+    # electronics_electrical:PR026–PR027). The pack minus exactly those two additions is canonically
+    # identical to the previous pack (proven in tests/test_cap01_load_switching_reference.py).
+    "electronics_electrical": "2605bd0dfa9366bb8134f045586f83cb10ed14fed79bd2fbb2e8b66143084621",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",

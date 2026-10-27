@@ -43,6 +43,12 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
+# PATHN-CONSTRAINT-DECLARATION-01: the two project-constraint dispositions,
+# restated here (the owner imports nothing from the engine); pinned equal to
+# engine.idea_state.PROJECT_CONSTRAINT_DISPOSITIONS by
+# tests/test_pathn_constraint_declaration.py.
+_CONSTRAINT_DISPOSITIONS = frozenset({"constraint_declared", "constraint_withdrawn"})
+
 # --- Frozen advisory vocabulary (contract §5 / §7) --------------------------------
 PROVENANCE_INVENTOR_STATED = "inventor_stated"
 VALIDATION_REQUIRES_INDEPENDENT = "requires_independent_validation"
@@ -428,6 +434,11 @@ def _inventor_texts(state):
         pairs.append(("idea_summary", summary))
     for record in getattr(state, "assertions", []) or []:
         if getattr(record, "superseded_by", None) is not None:
+            continue
+        # PATHN-CONSTRAINT-DECLARATION-01: an inventor-declared project
+        # constraint is excluded from automated derivation (Owner decision D2);
+        # the report safety block discloses that exclusion.
+        if getattr(record, "disposition", None) in _CONSTRAINT_DISPOSITIONS:
             continue
         content = getattr(record, "content", None)
         if content:

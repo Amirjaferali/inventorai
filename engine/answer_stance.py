@@ -1043,6 +1043,35 @@ def explicit_unknown_without_mechanism(state, gap_type, response,
     return True
 
 
+def states_beyond_unknown(response, accepts_sentence):
+    """DISPLAY-ONLY companion of the veto above — never an eligibility,
+    relevance or quality result, and never consulted by progression.
+
+    MIXED-FUNCTIONAL-ANSWER-FEEDBACK-01: when the veto has already withheld
+    credit, tell apart an answer that is ONLY an explicit unknown from one that
+    also states something about the question. True only when at least one
+    sentence of the answer:
+      1. declares no registered explicit unknown (`declares_ignorance`);
+      2. states rather than asks or supposes (the T2-G-3 reading);
+      3. is accepted by the caller's own existing rules
+         (``accepts_sentence`` — canonical relevance and the existing quality
+         floor, never reimplemented here), so marker padding and decoys that
+         those rules do not accept never count.
+
+    It says nothing about whether that statement explains a mechanism; the
+    veto's own reading of that stands. Sentence grain only: a single sentence
+    that mixes a statement with an unknown reads as an unknown, which keeps the
+    existing message."""
+    for sentence, terminator, _offset in _sentence_records(response):
+        if declares_ignorance(sentence):
+            continue
+        if _t2g3_is_non_assertive(sentence, terminator):
+            continue
+        if accepts_sentence(sentence):
+            return True
+    return False
+
+
 def non_assertive_without_mechanism(state, gap_type, response,
                                     is_relevant_sentence):
     """The T2-G-3 SATISFACTION-ELIGIBILITY veto — never a relevance or quality

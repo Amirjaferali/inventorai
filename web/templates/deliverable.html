@@ -154,6 +154,12 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if integrated_scope is defined and integrated_scope %}
   <p class="ss-note" data-ss-part-page-scope>{{ t('UI_SS_PART_PAGE_SCOPE') }}</p>
   {% endif %}
+  {#- PATHN-CONSTRAINT-DECLARATION-01 (Owner decision D2): the inventor's
+      project constraints are not read for safety signals; disclosed whenever
+      the project holds a current constraint (or the view is unavailable). -#}
+  {% if constraint_report is defined and constraint_report and (not constraint_report.available or constraint_report.constraints) %}
+  <p class="ss-note" data-ss-constraint-scope>{{ t('UI_SS_CONSTRAINT_SCOPE') }}</p>
+  {% endif %}
   {% if ss.signals %}
   <p class="ss-note">{{ ss.advisory_note }}</p>
   {% for sig in ss.signals %}
@@ -366,6 +372,37 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
 </section>
 {% endif %}
+{#- PATHN-CONSTRAINT-DECLARATION-01 — PROJECT CONSTRAINTS YOU DECLARED: the
+    inventor's CURRENT constraints only (latest wording and strength,
+    declaration order; verbatim, escaped and direction-isolated), each
+    OWNER_STATED / UNVALIDATED. Never a requirement row, a Validation Plan step,
+    a specification or a selection rule. An unreadable history reads
+    UNAVAILABLE, never "none". No earlier version or withdrawn constraint. -#}
+{% set pcr = constraint_report if constraint_report is defined else none %}
+{% if pcr %}
+<section class="project-constraints-report" id="project-constraints-report" data-pcn-report aria-labelledby="project-constraints-report-title" style="border:1px solid #c9d6e3;background:#f5f9fc;border-radius:4px;padding:10px 14px;margin:12px 0">
+  <h2 id="project-constraints-report-title" style="font-size:16px;margin:0 0 8px 0">{{ t('UI_PCN_REPORT_HEADING') }}</h2>
+  {% if not pcr.available %}
+  <p style="margin:0;font-size:13px;color:#555" data-pcn-report-unavailable>{{ t('UI_PCN_REPORT_UNAVAILABLE') }}</p>
+  {% else %}
+  <p style="margin:0 0 6px 0;font-size:13px;color:#555" data-pcn-report-boundary>{{ t('UI_PCN_BOUNDARY') }}</p>
+  {% if pcr.constraints %}
+  <ul style="margin:0 0 6px 0;padding-inline-start:20px">
+    {% for c in pcr.constraints %}
+    <li data-pcn-report-item style="margin:0 0 6px 0;overflow-wrap:anywhere">
+      <bdi dir="auto" data-pcn-report-text>{{ c.text }}</bdi><br>
+      <span data-pcn-report-strength>{{ t('UI_PCN_STRENGTH_LABEL') }} {{ t(c.strength_key) }}</span>
+      <br><span style="font-size:12px;color:#555" data-pcn-report-provenance>{{ t('UI_PCN_PROVENANCE') }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p style="margin:0 0 6px 0;font-size:13px" data-pcn-report-none>{{ t('UI_PCN_REPORT_NONE') }}</p>
+  {% endif %}
+  <p style="margin:0;font-size:12px;color:#555" data-pcn-report-history>{{ t('UI_PCN_REPORT_HISTORY') }}</p>
+  {% endif %}
+</section>
+{% endif %}
 <nav id="report-contents" class="report-contents" aria-label="{{ t('UI_REPORT_CONTENTS') }}" tabindex="-1">
   <p><strong>{{ t('UI_REPORT_CONTENTS') }}</strong></p>
   <ol>
@@ -487,7 +524,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if package.section_4_requirements.requirements %}
   <ul>
     {% for r in package.section_4_requirements.requirements %}
-    <li>{{ r.id }} — {{ r.statement }} ({{ r.resolution_status }})</li>
+    <li>{{ r.id }} — {{ r.statement }} ({{ r.resolution_status }}){% if r.pending_note %} {{ r.pending_note }}{% endif %}</li>
     {% endfor %}
   </ul>
   {% else %}
@@ -1176,8 +1213,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% set ns = namespace(seen=[]) %}
   {% for st in grp[1] %}
   {# Stage 15 Slice 3: an interface step's recorded preparation inputs are part
-     of its visible row, so they are part of the collapse key too. #}
-  {% set key = [st.statement, st.responsibility_label, st.evidence_category, st.closure_condition, st.provenance, st.confidence_label, st.interface_preparation] %}
+     of its visible row, so they are part of the collapse key too.
+     MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01: each declared constraint
+     carries its own ordinal, so two constraints with the same wording never
+     collapse into one row counted as recorded answers. #}
+  {% set key = [st.statement, st.responsibility_label, st.evidence_category, st.closure_condition, st.provenance, st.confidence_label, st.interface_preparation, st.constraint_item] %}
   {% if key not in ns.seen %}
   {% set _ = ns.seen.append(key) %}
   {% set cnt = grp[1]
@@ -1187,7 +1227,8 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         | selectattr('closure_condition', 'equalto', st.closure_condition)
         | selectattr('provenance', 'equalto', st.provenance)
         | selectattr('confidence_label', 'equalto', st.confidence_label)
-        | selectattr('interface_preparation', 'equalto', st.interface_preparation) | list | length %}
+        | selectattr('interface_preparation', 'equalto', st.interface_preparation)
+        | selectattr('constraint_item', 'equalto', st.constraint_item) | list | length %}
   <div class="field-label">{{ st.statement }}{% if cnt > 1 %} <span class="vp-count" style="font-weight:normal;color:#667">{{ t('UI_B_DELIV_091A') }}{{ cnt }}{{ t('UI_B_DELIV_091B') }}</span>{% endif %}</div>
   {# Workstream 7 (contract §3.2 D5/C3): for the UNDETERMINED responsibility
      token the public presentation is the exact owner wording rendered as two
@@ -1210,6 +1251,26 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     <div><strong>{{ t(prep_labels[item.field]) }}:</strong> <bdi dir="auto" style="white-space:pre-wrap">{{ item.text }}</bdi></div>
     {% endfor %}
     <div style="color:#667">{{ t('UI_S15_PREP_OWNER_STATED') }}</div>
+  </div>
+  {% endif %}
+  {# CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the inventor's own acceptance
+     notes for a mandatory-constraint step, verbatim under fixed bilingual
+     labels: what is recorded for the current version, what is not recorded
+     yet, earlier-version notes labelled as not reconfirmed, or unavailable. #}
+  {% if st.constraint_acceptance %}
+  {% set ca = st.constraint_acceptance %}
+  {% set ca_labels = {'acceptance_criterion': 'UI_PCA_VP_CRITERION', 'evidence_needed': 'UI_PCA_VP_EVIDENCE'} %}
+  <div class="vp-constraint-acceptance" data-vp-constraint-acceptance="{{ ca.status }}" style="font-size:12px;color:#445;line-height:1.5;margin:0 0 4px 0">
+    {% if ca.status == 'UNAVAILABLE' %}
+    <div>{{ t('UI_PCA_VP_UNAVAILABLE') }}</div>
+    {% else %}
+    {% if ca.status == 'EARLIER_VERSION' %}<div data-vp-ca-earlier>{{ t('UI_PCA_VP_EARLIER') }}</div>{% endif %}
+    {% for item in ca.recorded %}
+    <div><strong>{{ t(ca_labels[item.field]) }}:</strong> <bdi dir="auto" style="white-space:pre-wrap">{{ item.text }}</bdi></div>
+    {% endfor %}
+    {% if ca.missing %}<div data-vp-ca-missing><strong>{{ t('UI_PCA_VP_MISSING') }}</strong> {% for f in ca.missing %}{{ t(ca_labels[f]) }}{% if not loop.last %}; {% endif %}{% endfor %}</div>{% endif %}
+    <div style="color:#667">{{ t('UI_PCA_VP_BOUNDARY') }}</div>
+    {% endif %}
   </div>
   {% endif %}
   {% if st.advisory %}

@@ -41,7 +41,8 @@ from engine.record_contract import (
     assertion_from_dict as _assertion_from_dict,
     reconcile_supersession_edges as _reconcile_supersession_edges,
 )
-from engine.idea_state import DISPOSITION_ANSWERED, DECISION_ACTION_DISPOSITIONS
+from engine.idea_state import (DISPOSITION_ANSWERED, DECISION_ACTION_DISPOSITIONS,
+                               MAX_CONSTRAINT_ACCEPTANCE_LENGTH)
 from engine.commercial_evidence import (
     EVIDENCE_EXACT_REPLAY, EVIDENCE_INSERTED, EvidenceCapExceeded,
     MAX_READINESS_EVIDENCE_PER_PROJECT, ReadinessEvidence,
@@ -118,6 +119,11 @@ from engine.subsystem_model import (
     InterfaceParticipation, InterfaceParticipationError,
     current_interface_participants, participation_target,
     validate_interface_participations,
+    # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the inventor's notes
+    # for ONE participation (current value; kept, hidden while absent).
+    ParticipationPreparation, ParticipationPreparationError,
+    MAX_PARTICIPATION_PREPARATION_LENGTH, PARTICIPATION_PREPARATION_FIELDS,
+    participation_preparation_target, validate_participation_preparations,
 )
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the inventor's own
 # comparison criteria and per-alternative values (semantics owner).
@@ -145,6 +151,18 @@ class StoreError(Exception):
 
 class ProjectNotFound(StoreError):
     """Raised when a project id is not present in the store."""
+
+
+class ConstraintActionRejected(StoreError):
+    """PATHN-CONSTRAINT-DECLARATION-01: a constraint append is not valid
+    against the DURABLE ledger inside the write transaction (its target is no
+    longer current, it restates the current form, a bound is reached, or its
+    shape is invalid). Decided before any row is written; nothing is written.
+    ``kind`` is ``stale`` / ``unchanged`` / ``capacity`` / ``invalid``."""
+
+    def __init__(self, message, kind="invalid"):
+        super().__init__(message)
+        self.kind = kind
 
 
 class ContradictionDeclarationRejected(StoreError):
@@ -410,6 +428,56 @@ class InterfaceParticipationsCorrupt(StoreError):
     rows are malformed, duplicated or orphaned from its interactions or
     declared components. Fail-closed for the WHOLE collection: nothing
     partial is returned and nothing is repaired, deleted or remapped."""
+
+
+class ParticipationPreparationRejected(StoreError):
+    """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: a participation
+    preparation write names no interaction or declared component of THIS
+    project, a pair that is not a CURRENT participation, or carries text
+    outside the bounded policy. Decided inside the write transaction before any
+    row is written; nothing is written."""
+
+
+class ParticipationPreparationWithdrawn(ParticipationPreparationRejected):
+    """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the named component
+    is withdrawn; it takes no new or changed note. Nothing is written."""
+
+
+class ParticipationPreparationStale(ParticipationPreparationRejected):
+    """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the durable notes
+    of the pair are no longer the ones the inventor's form showed (their text
+    or their carried-over state changed in the meantime). Nothing is written;
+    newer notes are never overwritten."""
+
+
+class ParticipationPreparationsCorrupt(StoreError):
+    """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: a project's durable
+    participation preparation rows are malformed, duplicated or orphaned from
+    its interactions or declared components. Fail-closed for the WHOLE
+    collection: nothing partial is returned and nothing is repaired, deleted
+    or remapped."""
+
+
+class ConstraintAcceptanceRejected(StoreError):
+    """MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: a constraint acceptance
+    notes write names no constraint of THIS project, a constraint that is not a
+    CURRENT mandatory constraint (``kind`` ``withdrawn`` / ``not_mandatory``), a
+    version that is no longer the constraint's current one or notes that
+    changed since the form was shown (``stale``), or carries text outside the
+    bounded policy (``invalid``). Decided inside the write transaction before
+    any row is written; nothing is written."""
+
+    def __init__(self, message, kind="invalid"):
+        super().__init__(message)
+        self.kind = kind
+
+
+class ConstraintAcceptanceCorrupt(StoreError):
+    """MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: a project's durable
+    ledger is not valid, or its constraint acceptance rows are malformed,
+    duplicated or orphaned from its constraint history. Fail-closed for the
+    WHOLE collection: nothing partial is returned and nothing is repaired,
+    deleted or remapped."""
 
 
 class ComponentPrototypeNeedsCorrupt(StoreError):
@@ -688,6 +756,21 @@ class RecordStore(Protocol):
                                     component_ids, expected_ids) -> str: ...
     def set_component_prototype_need(self, project_id: str, component_id: str,
                                      need_text, expected_text) -> str: ...
+    # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 (current value; see
+    # the subsystem_participation_preparations note).
+    def load_participation_preparations(self, project_id: str) -> dict: ...
+    # T6-INTERFACE-VERIFICATION-REFERENCE-01: the same snapshot plus the
+    # interface verification-preparation inputs (read-only).
+    def load_preliminary_composition(self, project_id: str) -> dict: ...
+    def set_participation_preparation(self, project_id: str, interface_id: str,
+                                      component_id: str, values,
+                                      expected) -> str: ...
+    # MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 (current value; see the
+    # constraint_acceptance_preparations note).
+    def load_constraint_acceptance(self, project_id: str) -> dict: ...
+    def set_constraint_acceptance(self, project_id: str, constraint_id: str,
+                                  displayed_record_id: str, values,
+                                  expected) -> str: ...
 
 
 _SCHEMA = (
@@ -1960,6 +2043,108 @@ _INTERFACE_COMPONENTS_SCHEMA = (
     """,
 )
 
+# COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 —
+# ``subsystem_participation_preparations``: the inventor's own notes for ONE
+# participation (ONE component taking part in ONE declared interaction): the
+# observable contribution they expect and the evidence or review they would
+# need to check it. A CURRENT-VALUE sidecar (upsert / delete; no revision
+# history is kept or promised), ONE row per pair, keyed ONLY by the existing
+# ``(project_id, interface_id, component_id)`` and anchored by composite foreign
+# keys to that exact interaction row and that exact declaration row. It is
+# deliberately NOT keyed to the participation row (Owner decision "keep, hide
+# while absent"): removing the participation keeps the notes, marked
+# ``carried_over`` by the participation writer in the same transaction, and
+# they are shown again — as earlier statements — only when the same
+# participation is added again. No provenance column: a stored row is by
+# construction the inventor's own statement (OWNER_STATED, UNVALIDATED) —
+# never a mechanism, a compatibility, a requirement, evidence or a check. The
+# participation, interaction and component tables are NOT widened. The CHECKs
+# are a database backstop only; the loader re-validates every row against the
+# whole validated interactions and inventory. Additive and idempotent (``IF
+# NOT EXISTS``); an existing table of any other shape is refused, never read as
+# empty; nothing is backfilled. Rollback is disable-and-preserve (stop reading
+# the table; its rows stay intact).
+_PARTICIPATION_PREPARATION_COLUMNS = ("project_id", "interface_id", "component_id",
+                                      "expected_contribution", "evidence_needed",
+                                      "carried_over")
+_PARTICIPATION_PREPARATIONS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS subsystem_participation_preparations (
+        project_id             TEXT NOT NULL,
+        interface_id           TEXT NOT NULL,
+        component_id           TEXT NOT NULL,
+        expected_contribution  TEXT,
+        evidence_needed        TEXT,
+        carried_over           INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (project_id, interface_id, component_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, interface_id)
+            REFERENCES subsystem_interfaces(project_id, interface_id),
+        FOREIGN KEY (project_id, component_id)
+            REFERENCES project_components(project_id, component_id),
+        CHECK (typeof(interface_id) = 'text' AND length(interface_id) = 36),
+        CHECK (typeof(component_id) = 'text' AND length(component_id) = 36),
+        CHECK (expected_contribution IS NULL OR (typeof(expected_contribution) = 'text'
+               AND length(expected_contribution) BETWEEN 1 AND %(max)d
+               AND instr(CAST(expected_contribution AS BLOB), X'00') = 0)),
+        CHECK (evidence_needed IS NULL OR (typeof(evidence_needed) = 'text'
+               AND length(evidence_needed) BETWEEN 1 AND %(max)d
+               AND instr(CAST(evidence_needed AS BLOB), X'00') = 0)),
+        CHECK (expected_contribution IS NOT NULL OR evidence_needed IS NOT NULL),
+        CHECK (carried_over IN (0, 1))
+    )
+    """ % {"max": MAX_PARTICIPATION_PREPARATION_LENGTH},
+)
+
+# MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 —
+# ``constraint_acceptance_preparations``: the inventor's own notes for ONE
+# mandatory constraint they declared: an observable acceptance criterion and
+# the measurement, evidence or specialist review they would need to check it.
+# A CURRENT-VALUE sidecar (upsert / delete; no revision history is kept or
+# promised), ONE row per constraint identity, keyed by the constraint's
+# FOUNDING ledger record id (stable across corrections) and remembering the
+# declared version it was saved against (``saved_against``); both are composite
+# foreign keys to exact ledger rows, which are never deleted. Notes saved
+# against an earlier version are shown as earlier statements, not
+# reconfirmed; a withdrawn or no-longer-mandatory constraint keeps its row,
+# hidden (``engine.idea_state.current_constraint_acceptance``). No provenance
+# column: a stored row is by construction the inventor's own statement
+# (OWNER_STATED, UNVALIDATED) — never a threshold, a verification, evidence or
+# a check. No ledger record, the Validation Plan step, the report, the PDF and
+# the Stage 35 export are touched. The CHECKs are a database backstop only;
+# the loader re-validates every row against the whole validated ledger.
+# Additive and idempotent (``IF NOT EXISTS``); an existing table of any other
+# shape is refused, never read as empty; nothing is backfilled. Rollback is
+# disable-and-preserve (stop reading the table; its rows stay intact).
+_CONSTRAINT_ACCEPTANCE_COLUMNS = ("project_id", "constraint_id", "saved_against",
+                                  "acceptance_criterion", "evidence_needed")
+_CONSTRAINT_ACCEPTANCE_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS constraint_acceptance_preparations (
+        project_id            TEXT NOT NULL,
+        constraint_id         TEXT NOT NULL,
+        saved_against         TEXT NOT NULL,
+        acceptance_criterion  TEXT,
+        evidence_needed       TEXT,
+        PRIMARY KEY (project_id, constraint_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, constraint_id)
+            REFERENCES records(project_id, record_id),
+        FOREIGN KEY (project_id, saved_against)
+            REFERENCES records(project_id, record_id),
+        CHECK (typeof(constraint_id) = 'text' AND length(constraint_id) BETWEEN 1 AND 64),
+        CHECK (typeof(saved_against) = 'text' AND length(saved_against) BETWEEN 1 AND 64),
+        CHECK (acceptance_criterion IS NULL OR (typeof(acceptance_criterion) = 'text'
+               AND length(acceptance_criterion) BETWEEN 1 AND %(max)d
+               AND instr(CAST(acceptance_criterion AS BLOB), X'00') = 0)),
+        CHECK (evidence_needed IS NULL OR (typeof(evidence_needed) = 'text'
+               AND length(evidence_needed) BETWEEN 1 AND %(max)d
+               AND instr(CAST(evidence_needed AS BLOB), X'00') = 0)),
+        CHECK (acceptance_criterion IS NOT NULL OR evidence_needed IS NOT NULL)
+    )
+    """ % {"max": MAX_CONSTRAINT_ACCEPTANCE_LENGTH},
+)
+
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01 — the two additive,
 # append-only, project-scoped comparison record families. Never updated or
 # deleted (no such writer exists). ``seq`` is the project's contiguous durable
@@ -2107,6 +2292,18 @@ INTERFACE_PARTICIPATION_SAVED = "SAVED"
 INTERFACE_PARTICIPATION_CLEARED = "CLEARED"
 INTERFACE_PARTICIPATION_UNCHANGED = "UNCHANGED"
 
+# COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the outcomes of a
+# participation preparation write.
+PARTICIPATION_PREPARATION_SAVED = "SAVED"
+PARTICIPATION_PREPARATION_CLEARED = "CLEARED"
+PARTICIPATION_PREPARATION_UNCHANGED = "UNCHANGED"
+
+# MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: the outcomes of a constraint
+# acceptance notes write.
+CONSTRAINT_ACCEPTANCE_SAVED = "SAVED"
+CONSTRAINT_ACCEPTANCE_CLEARED = "CLEARED"
+CONSTRAINT_ACCEPTANCE_UNCHANGED = "UNCHANGED"
+
 INTERFACE_OBSERVATION_INSERTED = "INSERTED"
 INTERFACE_OBSERVATION_EXACT_REPLAY = "EXACT_REPLAY"
 
@@ -2246,6 +2443,8 @@ class SqliteRecordStore:
             self._migrate_project_components(self._conn)
             self._migrate_component_prototype_needs(self._conn)
             self._migrate_interface_components(self._conn)
+            self._migrate_participation_preparations(self._conn)
+            self._migrate_constraint_acceptance(self._conn)
             self._migrate_decision_comparison(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
@@ -2588,6 +2787,45 @@ class SqliteRecordStore:
             raise sqlite3.DatabaseError(
                 "subsystem_interface_components has an unrecognised shape")
         for stmt in _INTERFACE_COMPONENTS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_participation_preparations(self, conn) -> None:
+        """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 forward
+        migration: additively create the ``subsystem_participation_preparations``
+        current-value sidecar. Runs inside the store's single migration
+        transaction, AFTER the interface, component and participation
+        migrations it sits beside; idempotent (``IF NOT EXISTS``) on a fresh and
+        on an existing populated database; touches no existing table, column or
+        row; nothing is backfilled or inferred. A table that already exists in
+        any other shape is refused (``sqlite3.DatabaseError``) rather than read
+        as empty or guessed. Rollback is disable-and-preserve: a build without
+        this capability never reads or writes the table and its rows stay
+        intact."""
+        columns = tuple(row[1] for row in conn.execute(
+            "PRAGMA table_info(subsystem_participation_preparations)").fetchall())
+        if columns and columns != _PARTICIPATION_PREPARATION_COLUMNS:
+            raise sqlite3.DatabaseError(
+                "subsystem_participation_preparations has an unrecognised shape")
+        for stmt in _PARTICIPATION_PREPARATIONS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_constraint_acceptance(self, conn) -> None:
+        """MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 forward migration:
+        additively create the ``constraint_acceptance_preparations``
+        current-value sidecar. Runs inside the store's single migration
+        transaction; idempotent (``IF NOT EXISTS``) on a fresh and on an
+        existing populated database; touches no existing table, column or row;
+        nothing is backfilled or inferred. A table that already exists in any
+        other shape is refused (``sqlite3.DatabaseError``) rather than read as
+        empty or guessed. Rollback is disable-and-preserve: a build without
+        this capability never reads or writes the table and its rows stay
+        intact."""
+        columns = tuple(row[1] for row in conn.execute(
+            "PRAGMA table_info(constraint_acceptance_preparations)").fetchall())
+        if columns and columns != _CONSTRAINT_ACCEPTANCE_COLUMNS:
+            raise sqlite3.DatabaseError(
+                "constraint_acceptance_preparations has an unrecognised shape")
+        for stmt in _CONSTRAINT_ACCEPTANCE_SCHEMA:
             conn.execute(stmt)
 
     def _migrate_decision_comparison(self, conn) -> None:
@@ -4303,6 +4541,22 @@ class SqliteRecordStore:
                     "DELETE FROM subsystem_interface_components WHERE "
                     "project_id = ? AND interface_id = ? AND component_id = ?",
                     (project_id, interface_id, component_id))
+                # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 ("keep,
+                # hide while absent"): the removed pair's notes stay stored,
+                # marked as earlier statements, in this same transaction. The
+                # current-value upsert form the other sidecars use (it inserts
+                # nothing when the pair has no notes).
+                self._conn.execute(
+                    "INSERT INTO subsystem_participation_preparations "
+                    "(project_id, interface_id, component_id, "
+                    "expected_contribution, evidence_needed, carried_over) "
+                    "SELECT project_id, interface_id, component_id, "
+                    "expected_contribution, evidence_needed, 1 FROM "
+                    "subsystem_participation_preparations WHERE project_id = ? "
+                    "AND interface_id = ? AND component_id = ? "
+                    "ON CONFLICT (project_id, interface_id, component_id) "
+                    "DO UPDATE SET carried_over = 1",
+                    (project_id, interface_id, component_id))
             for component_id in sorted(target_set - current_set):
                 self._conn.execute(
                     "INSERT INTO subsystem_interface_components (project_id, "
@@ -4310,6 +4564,364 @@ class SqliteRecordStore:
                     (project_id, interface_id, component_id))
         return (INTERFACE_PARTICIPATION_CLEARED if not target_set
                 else INTERFACE_PARTICIPATION_SAVED)
+
+    # --- COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 (current value) -
+    def _validated_participation_preparations(self, project_id, interfaces,
+                                              inventory):
+        """This project's durable participation preparation rows validated
+        WHOLE against its validated ``interfaces`` and ``inventory`` (exact
+        ids; stored text form); ``ParticipationPreparationsCorrupt`` on anything
+        malformed, duplicated or orphaned (nothing partial, nothing
+        remapped)."""
+        rows = self._conn.execute(
+            "SELECT interface_id, component_id, expected_contribution, "
+            "evidence_needed, carried_over FROM "
+            "subsystem_participation_preparations WHERE project_id = ? "
+            "ORDER BY interface_id ASC, component_id ASC",
+            (project_id,)).fetchall()
+        if not rows:
+            return ()
+        items = []
+        for row in rows:
+            if row[4] not in (0, 1) or isinstance(row[4], bool):
+                raise ParticipationPreparationsCorrupt("carried-over marker is invalid")
+            items.append(ParticipationPreparation(
+                interface_id=row[0], component_id=row[1],
+                expected_contribution=row[2], evidence_needed=row[3],
+                carried_over=bool(row[4])))
+        try:
+            return validate_participation_preparations(items, interfaces, inventory)
+        except ParticipationPreparationError as exc:
+            raise ParticipationPreparationsCorrupt(str(exc)) from None
+
+    def load_participation_preparations(self, project_id: str) -> dict:
+        """``{"interfaces", "components", "participations", "preparations"}``:
+        this project's durable interactions, its CURRENT component projection,
+        every stored participation row and every stored participation
+        preparation (current, removed-and-kept, and withdrawn-component
+        history alike), read inside ONE consistent read snapshot and validated
+        WHOLE together (the corrupt errors, including
+        ``ParticipationPreparationsCorrupt``; nothing partial). The CURRENT
+        notes are ``engine.subsystem_model.current_participation_preparations``
+        over ``participations`` and ``components``. No project ->
+        ``ProjectNotFound``. IR-01: an unresolved connection refuses BEFORE any
+        SELECT. Read-only; project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            return self._participation_snapshot(project_id)[0]
+
+    def _participation_snapshot(self, project_id):
+        """Inside the caller's read snapshot: ``(record, subsystems)`` — the
+        four validated collections of ``load_participation_preparations``,
+        validated WHOLE together, and the durable composition they were
+        validated against (``record`` never carries it)."""
+        self._require_project(project_id)
+        subsystems = self.load_project_subsystems(project_id)
+        interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
+        inventory, _d, _k, _r, _rk = self._component_history(
+            project_id, subsystems)
+        participations = self._validated_interface_participations(
+            project_id, interfaces, inventory)
+        preparations = self._validated_participation_preparations(
+            project_id, interfaces, inventory)
+        return {"interfaces": tuple(interfaces),
+                "components": tuple(inventory.active),
+                "participations": tuple(participations),
+                "preparations": tuple(preparations)}, tuple(subsystems)
+
+    def load_preliminary_composition(self, project_id: str) -> dict:
+        """T6-INTERFACE-VERIFICATION-REFERENCE-01: exactly the record of
+        ``load_participation_preparations`` plus ``"interface_preparations"``
+        — the inventor's CURRENT verification-preparation inputs of each
+        declared interaction (Stage 15 Slice 3), validated WHOLE against the
+        SAME interactions inside the SAME read snapshot
+        (``InterfacePreparationsCorrupt`` on anything malformed or orphaned;
+        nothing partial). ``load_participation_preparations`` itself is
+        unchanged: its callers never fail on an interface-preparation row.
+        T6-PART-ASSOCIATION-TRACE-01: also ``"subsystems"`` — the project's
+        durable composition (part identities and inventor-declared names)
+        that the components' part links were validated against in the SAME
+        snapshot; no further query. No project -> ``ProjectNotFound``. IR-01:
+        an unresolved connection refuses BEFORE any SELECT. Read-only;
+        project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            record, subsystems = self._participation_snapshot(project_id)
+            record["subsystems"] = subsystems
+            record["interface_preparations"] = tuple(self._validated_preparations(
+                project_id, record["interfaces"]))
+        return record
+
+    @staticmethod
+    def _same_note(left, right):
+        """Two stored-form notes are the same statement when they are equal
+        ignoring ONLY how line breaks are represented (a browser submits CRLF;
+        a hidden form baseline comes back as LF). ``None`` equals only
+        ``None``."""
+        if left is None or right is None:
+            return left is right
+        def lines(value):
+            return value.replace("\r\n", "\n").replace("\r", "\n")
+        return lines(left) == lines(right)
+
+    def set_participation_preparation(self, project_id: str, interface_id: str,
+                                      component_id: str, values,
+                                      expected) -> str:
+        """Record, replace or clear (both values ``None``) the notes of ONE
+        CURRENT participation, and return the outcome:
+        ``PARTICIPATION_PREPARATION_SAVED`` / ``PARTICIPATION_PREPARATION_CLEARED``
+        for a committed change, or ``PARTICIPATION_PREPARATION_UNCHANGED`` when
+        the durable notes already are exactly the target and current (an exact
+        retry; nothing is written). Saving carried-over notes, even unchanged,
+        makes them current again (the inventor's explicit reconfirmation).
+
+        ``values`` maps both ``PARTICIPATION_PREPARATION_FIELDS`` to stored-form
+        text or ``None``; ``expected`` is the state the inventor's form showed:
+        the same two fields plus ``"carried_over"`` (bool). The arguments are
+        shape-checked BEFORE the transaction opens
+        (``ParticipationPreparationRejected``; nothing written). Then ONE
+        serialized ``BEGIN IMMEDIATE`` transaction, against DURABLE truth: the
+        project exists (``ProjectNotFound``); its composition, interactions,
+        WHOLE component history, every participation row and every
+        preparation row validate (the corrupt errors); the pair is an
+        interaction and a declared component of THIS project
+        (``ParticipationPreparationRejected``), the component is active
+        (``ParticipationPreparationWithdrawn``) and the pair is a CURRENT
+        participation (``ParticipationPreparationRejected``); the durable
+        notes equal the current target (UNCHANGED, nothing written) or else
+        equal ``expected`` (``ParticipationPreparationStale`` otherwise — newer
+        notes are never overwritten); only then is the row upserted (current)
+        or deleted. Line-break representation alone is never a difference, and
+        an unchanged note keeps its stored text exactly. The participation,
+        the interaction, the component and every other row are never touched.
+        Full rollback on any failure. IR-01: never writes on top of an
+        unresolved connection."""
+        for identity in (interface_id, component_id):
+            if not isinstance(identity, str) or not identity:
+                raise ParticipationPreparationRejected("malformed identity")
+        fields = PARTICIPATION_PREPARATION_FIELDS
+        if not isinstance(values, dict) or set(values) != set(fields):
+            raise ParticipationPreparationRejected("malformed participation notes")
+        if not isinstance(expected, dict) \
+                or set(expected) != set(fields) | {"carried_over"} \
+                or not isinstance(expected["carried_over"], bool):
+            raise ParticipationPreparationRejected("malformed displayed notes")
+        for source in (values, expected):
+            for field_name in fields:
+                text = source[field_name]
+                if text is not None and not (
+                        isinstance(text, str) and text == text.strip()
+                        and 0 < len(text) <= MAX_PARTICIPATION_PREPARATION_LENGTH
+                        and "\x00" not in text):
+                    raise ParticipationPreparationRejected(
+                        "malformed participation note text")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
+            inventory, _d, _k, _r, _rk = self._component_history(
+                project_id, subsystems)
+            participations = self._validated_interface_participations(
+                project_id, interfaces, inventory)
+            preparations = self._validated_participation_preparations(
+                project_id, interfaces, inventory)
+            try:
+                participation_preparation_target(
+                    inventory, interfaces, participations, interface_id,
+                    component_id, dict(values))
+            except ComponentAlreadyWithdrawn:
+                raise ParticipationPreparationWithdrawn(
+                    "the component is withdrawn") from None
+            except (ParticipationPreparationError, ComponentError):
+                raise ParticipationPreparationRejected(
+                    "the notes name no current participation of this project") from None
+            stored = next((item for item in preparations
+                           if (item.interface_id, item.component_id)
+                           == (interface_id, component_id)), None)
+            current = {f: (None if stored is None else stored.value(f)) for f in fields}
+            carried = stored is not None and stored.carried_over
+            same_as_target = all(self._same_note(current[f], values[f]) for f in fields)
+            if same_as_target and not carried:
+                return PARTICIPATION_PREPARATION_UNCHANGED
+            if carried != expected["carried_over"] or not all(
+                    self._same_note(current[f], expected[f]) for f in fields):
+                raise ParticipationPreparationStale(
+                    "the notes changed since the form was shown")
+            target = {f: (current[f] if self._same_note(current[f], values[f])
+                          else values[f]) for f in fields}
+            if all(target[f] is None for f in fields):
+                self._conn.execute(
+                    "DELETE FROM subsystem_participation_preparations WHERE "
+                    "project_id = ? AND interface_id = ? AND component_id = ?",
+                    (project_id, interface_id, component_id))
+                return PARTICIPATION_PREPARATION_CLEARED
+            self._conn.execute(
+                "INSERT INTO subsystem_participation_preparations (project_id, "
+                "interface_id, component_id, expected_contribution, "
+                "evidence_needed, carried_over) VALUES (?, ?, ?, ?, ?, 0) "
+                "ON CONFLICT (project_id, interface_id, component_id) DO UPDATE "
+                "SET expected_contribution = excluded.expected_contribution, "
+                "evidence_needed = excluded.evidence_needed, carried_over = 0",
+                (project_id, interface_id, component_id,
+                 target[PARTICIPATION_PREPARATION_FIELDS[0]],
+                 target[PARTICIPATION_PREPARATION_FIELDS[1]]))
+        return PARTICIPATION_PREPARATION_SAVED
+
+    # --- MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 (current value) ----
+    def _constraint_acceptance_state(self, project_id):
+        """``(assertions, history, preparations)``: this project's durable
+        ledger validated whole by the record contract, its ONE constraint
+        history and every stored acceptance row validated whole against it.
+        ``ProjectNotFound`` without a project; ``ConstraintAcceptanceCorrupt``
+        on any defect (nothing partial, nothing remapped). Read-only."""
+        from engine.idea_state import (
+            ConstraintAcceptanceError, ConstraintAcceptancePreparation,
+            ConstraintError, constraint_history,
+            validate_constraint_acceptance_preparations)
+        from engine.record_contract import (
+            ContractError, assertion_from_dict, reconcile_supersession_edges)
+        proj = self._conn.execute(
+            "SELECT idea_id, contract_version FROM projects WHERE project_id = ?",
+            (project_id,)).fetchone()
+        if proj is None:
+            raise ProjectNotFound(project_id)
+        rows = self._conn.execute(
+            "SELECT constraint_id, saved_against, acceptance_criterion, "
+            "evidence_needed FROM constraint_acceptance_preparations WHERE "
+            "project_id = ? ORDER BY constraint_id ASC", (project_id,)).fetchall()
+        try:
+            assertions = [assertion_from_dict(json.loads(p)) for (p,) in
+                          self._conn.execute(
+                              "SELECT payload FROM records WHERE project_id = ? "
+                              "ORDER BY seq ASC", (project_id,)).fetchall()]
+            reconcile_supersession_edges(assertions)
+            ProjectRecordContract(idea_id=proj[0], assertions=assertions,
+                                  contract_version=proj[1]).validate()
+            history = constraint_history(assertions)
+            preparations = validate_constraint_acceptance_preparations(
+                [ConstraintAcceptancePreparation(
+                    constraint_id=r[0], saved_against=r[1],
+                    acceptance_criterion=r[2], evidence_needed=r[3])
+                 for r in rows], assertions)
+        except (ContractError, ConstraintError, ConstraintAcceptanceError,
+                ValueError, TypeError, KeyError):
+            raise ConstraintAcceptanceCorrupt(
+                "the constraint acceptance notes are not valid") from None
+        return assertions, history, preparations
+
+    def load_constraint_acceptance(self, project_id: str) -> dict:
+        """``{"history", "preparations"}``: this project's durable constraint
+        history and every stored acceptance row (current, earlier-version and
+        hidden alike), read inside ONE consistent read snapshot and validated
+        WHOLE together (``ConstraintAcceptanceCorrupt``; nothing partial). The
+        notes to SHOW are ``engine.idea_state.current_constraint_acceptance``.
+        No project -> ``ProjectNotFound``. IR-01: an unresolved connection
+        refuses BEFORE any SELECT. Read-only; project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            _assertions, history, preparations = \
+                self._constraint_acceptance_state(project_id)
+        return {"history": history, "preparations": tuple(preparations)}
+
+    def set_constraint_acceptance(self, project_id: str, constraint_id: str,
+                                  displayed_record_id: str, values,
+                                  expected) -> str:
+        """Record, replace or clear (both values ``None``) the acceptance notes
+        of ONE CURRENT mandatory constraint, and return the outcome:
+        ``CONSTRAINT_ACCEPTANCE_SAVED`` / ``CONSTRAINT_ACCEPTANCE_CLEARED`` for
+        a committed change, or ``CONSTRAINT_ACCEPTANCE_UNCHANGED`` when the
+        durable notes already are exactly the target and were saved against
+        the current version (an exact retry; nothing is written). Saving notes
+        of an earlier version, even unchanged, binds them to the current
+        version (the inventor's explicit reconfirmation).
+
+        ``values`` maps both ``CONSTRAINT_ACCEPTANCE_FIELDS`` to stored-form
+        text or ``None``; ``expected`` is the state the inventor's form showed:
+        the same two fields plus ``"earlier"`` (bool); ``displayed_record_id``
+        is the constraint version the form showed. The arguments are
+        shape-checked BEFORE the transaction opens
+        (``ConstraintAcceptanceRejected``; nothing written). Then ONE
+        serialized ``BEGIN IMMEDIATE`` transaction, against DURABLE truth: the
+        project exists (``ProjectNotFound``); the whole ledger and every
+        acceptance row validate (``ConstraintAcceptanceCorrupt``); the
+        constraint is an identity of THIS project, not withdrawn, still at the
+        displayed version and mandatory (``ConstraintAcceptanceRejected``,
+        ``kind`` ``invalid`` / ``withdrawn`` / ``stale`` / ``not_mandatory``);
+        the durable notes equal the target (UNCHANGED, nothing written) or
+        else equal ``expected`` (``stale`` otherwise — newer notes are never
+        overwritten); only then is the row upserted or deleted. Line-break
+        representation alone is never a difference, and an unchanged note
+        keeps its stored text exactly. No ledger record and no other row is
+        touched. Full rollback on any failure. IR-01: never writes on top of
+        an unresolved connection."""
+        from engine.idea_state import (
+            CONSTRAINT_ACCEPTANCE_FIELDS, ConstraintAcceptanceError,
+            ConstraintAcceptanceNotMandatory, ConstraintAcceptanceWithdrawn,
+            ConstraintStale, constraint_acceptance_target,
+            valid_constraint_acceptance_text)
+        for identity in (constraint_id, displayed_record_id):
+            if not isinstance(identity, str) or not identity or len(identity) > 64:
+                raise ConstraintAcceptanceRejected("malformed identity")
+        fields = CONSTRAINT_ACCEPTANCE_FIELDS
+        if not isinstance(values, dict) or set(values) != set(fields):
+            raise ConstraintAcceptanceRejected("malformed acceptance notes")
+        if not isinstance(expected, dict) \
+                or set(expected) != set(fields) | {"earlier"} \
+                or not isinstance(expected["earlier"], bool):
+            raise ConstraintAcceptanceRejected("malformed displayed notes")
+        for source in (values, expected):
+            for field_name in fields:
+                text = source[field_name]
+                if text is not None and not valid_constraint_acceptance_text(text):
+                    raise ConstraintAcceptanceRejected("malformed note text")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            _assertions, history, preparations = \
+                self._constraint_acceptance_state(project_id)
+            try:
+                chain = constraint_acceptance_target(
+                    history, constraint_id, displayed_record_id)
+            except ConstraintAcceptanceWithdrawn:
+                raise ConstraintAcceptanceRejected("withdrawn", "withdrawn") from None
+            except ConstraintAcceptanceNotMandatory:
+                raise ConstraintAcceptanceRejected(
+                    "not mandatory", "not_mandatory") from None
+            except ConstraintStale:
+                raise ConstraintAcceptanceRejected("not current", "stale") from None
+            except ConstraintAcceptanceError:
+                raise ConstraintAcceptanceRejected(
+                    "the notes name no constraint of this project") from None
+            stored = next((item for item in preparations
+                           if item.constraint_id == constraint_id), None)
+            current = {f: (None if stored is None else stored.value(f)) for f in fields}
+            earlier = stored is not None and stored.saved_against != chain.record_id
+            same_as_target = all(self._same_note(current[f], values[f]) for f in fields)
+            if same_as_target and not earlier:
+                return CONSTRAINT_ACCEPTANCE_UNCHANGED
+            if earlier != expected["earlier"] or not all(
+                    self._same_note(current[f], expected[f]) for f in fields):
+                raise ConstraintAcceptanceRejected(
+                    "the notes changed since the form was shown", "stale")
+            target = {f: (current[f] if self._same_note(current[f], values[f])
+                          else values[f]) for f in fields}
+            if all(target[f] is None for f in fields):
+                self._conn.execute(
+                    "DELETE FROM constraint_acceptance_preparations WHERE "
+                    "project_id = ? AND constraint_id = ?",
+                    (project_id, constraint_id))
+                return CONSTRAINT_ACCEPTANCE_CLEARED
+            self._conn.execute(
+                "INSERT INTO constraint_acceptance_preparations (project_id, "
+                "constraint_id, saved_against, acceptance_criterion, "
+                "evidence_needed) VALUES (?, ?, ?, ?, ?) "
+                "ON CONFLICT (project_id, constraint_id) DO UPDATE SET "
+                "saved_against = excluded.saved_against, "
+                "acceptance_criterion = excluded.acceptance_criterion, "
+                "evidence_needed = excluded.evidence_needed",
+                (project_id, constraint_id, chain.record_id,
+                 target[fields[0]], target[fields[1]]))
+        return CONSTRAINT_ACCEPTANCE_SAVED
 
     # --- INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: criteria + values -
     # Every reader validates the decision ledger and BOTH comparison tables
@@ -4837,6 +5449,78 @@ class SqliteRecordStore:
                 raise ContradictionDeclarationRejected(
                     "the declaration is not valid against the durable ledger"
                 ) from None
+            seq = self._conn.execute(
+                "SELECT COALESCE(MAX(seq), -1) + 1 FROM records WHERE project_id = ?",
+                (project_id,)).fetchone()[0]
+            self._conn.execute(
+                "INSERT INTO records (project_id, seq, record_id, payload, idempotency_key) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (project_id, seq, record.record_id,
+                 json.dumps(payload, sort_keys=True), idempotency_key))
+
+    def append_constraint_action(self, project_id: str, record,
+                                 idempotency_key: str) -> None:
+        """PATHN-CONSTRAINT-DECLARATION-01 — append ONE constraint record (a
+        declaration, a correction or a withdrawal). The whole durable ledger
+        plus this record at the next position is re-validated INSIDE the same
+        serialized write transaction (``BEGIN IMMEDIATE``) by the record
+        contract and the ONE constraint history rule: a correction or
+        withdrawal whose target another commit already superseded, an exact
+        restatement and every capacity bound fail closed
+        (``ConstraintActionRejected``) with nothing written. The durable
+        idempotency key is required and rides the existing partial UNIQUE
+        index, so a duplicate raises ``sqlite3.IntegrityError`` and rolls
+        back like every other append."""
+        from engine.idea_state import (
+            PROJECT_CONSTRAINT_DISPOSITIONS, ConstraintCapacityError,
+            ConstraintError, ConstraintStale, ConstraintUnchanged,
+            constraint_history)
+        from engine.record_contract import (
+            ContractError, assertion_from_dict, reconcile_supersession_edges)
+        if getattr(record, "disposition", None) not in PROJECT_CONSTRAINT_DISPOSITIONS:
+            raise ConstraintActionRejected("not a constraint action")
+        if not idempotency_key:
+            raise ConstraintActionRejected("an idempotency key is required")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            proj = self._conn.execute(
+                "SELECT idea_id, contract_version FROM projects WHERE project_id = ?",
+                (project_id,)).fetchone()
+            if proj is None:
+                raise ProjectNotFound(project_id)
+            rows = self._conn.execute(
+                "SELECT payload FROM records WHERE project_id = ? ORDER BY seq ASC",
+                (project_id,)).fetchall()
+            payload = assertion_to_dict(record)
+            try:
+                history = [assertion_from_dict(json.loads(p)) for (p,) in rows]
+                reconcile_supersession_edges(history)
+                ProjectRecordContract(idea_id=proj[0], assertions=history,
+                                      contract_version=proj[1]).validate()
+            except ContractError:
+                raise ConstraintActionRejected(
+                    "the durable ledger is not valid") from None
+            candidate = assertion_from_dict(payload)
+            # The specific refusal first (stale / unchanged / capacity), from
+            # the shared rule over the stored history plus this record.
+            try:
+                constraint_history(history + [candidate])
+            except ConstraintStale:
+                raise ConstraintActionRejected("not current", "stale") from None
+            except ConstraintUnchanged:
+                raise ConstraintActionRejected("unchanged", "unchanged") from None
+            except ConstraintCapacityError:
+                raise ConstraintActionRejected("bound reached", "capacity") from None
+            except ConstraintError:
+                raise ConstraintActionRejected("invalid constraint") from None
+            try:
+                history.append(candidate)
+                reconcile_supersession_edges(history)
+                ProjectRecordContract(idea_id=proj[0], assertions=history,
+                                      contract_version=proj[1]).validate()
+            except ContractError:
+                raise ConstraintActionRejected(
+                    "the action is not valid against the durable ledger") from None
             seq = self._conn.execute(
                 "SELECT COALESCE(MAX(seq), -1) + 1 FROM records WHERE project_id = ?",
                 (project_id,)).fetchone()[0]

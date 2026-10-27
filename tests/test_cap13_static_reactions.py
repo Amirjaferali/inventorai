@@ -258,10 +258,20 @@ def test_role_kind_unit_bindings_are_exactly_the_governed_set():
     assert [(r["role"], r["quantity_kind"], r["unit_token"])
             for r in record["output_roles"]] == [
         ("R_L", "force", "N"), ("R_R", "force", "N")]
+    # Correction 03 (§13B) adds exactly the moment kind and its N·mm token, and
+    # Correction 04 (§13C) exactly the torque / angular_velocity kinds and tokens,
+    # and Correction 05 (§13D) exactly the voltage / celsius_temperature kinds
+    # and the mV / °C tokens, and Correction 06 (§13E) exactly the
+    # electric_resistance / electric_current kinds and the V / Ω / A tokens,
+    # and Correction 08 (§13G) exactly the energy / time kinds and the J / s tokens
     assert sorted(u["unit_token"] for u in data["unit_records"]) == [
-        "K", "K/W", "N", "W", "mm"]
+        "A", "J", "K", "K/W", "N", "N·m", "N·mm", "V", "W", "mV", "mm", "rad/s", "s", "°C",
+        "Ω"]
     assert sorted(k["quantity_kind"] for k in data["quantity_kinds"]) == [
-        "force", "length", "power", "temperature_difference", "thermal_resistance"]
+        "angular_velocity", "celsius_temperature", "electric_current",
+        "electric_resistance", "energy", "force", "length", "moment",
+        "power", "temperature_difference", "thermal_resistance", "time", "torque",
+        "voltage"]
 
 
 def test_missing_and_extra_roles():
@@ -316,11 +326,12 @@ def test_binding_is_immutable_and_not_a_registry():
     for banned in ("importlib", "__import__", "getattr(", "eval(", "exec(",
                    "entry_points", "pkgutil", "globals()", "REGISTRY"):
         assert banned not in source, banned
-    # the app wires exactly ONE CAP-13 binding, to the method's own function; the
-    # only other binding is THERM-01's (Correction 02: one immutable binding per method)
+    # the app wires exactly ONE two-support binding, to the method's own function;
+    # the only other bindings are THERM-01's (Correction 02) and the planar
+    # moment's (Correction 03): one immutable binding per method
     assert webapp._CAP13_REACTIONS_BINDING.adapter_identity == BINDING.adapter_identity
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 2
+    assert app_source.count("_dcalc.bind_method(") == 9
 
 
 def test_deterministic_identity_and_no_input_mutation():
@@ -398,8 +409,13 @@ def test_source_use_records_are_present_and_bound():
     policies = {p["record_id"] for p in owner["source_use_policies"]}
     # dcu:SU001 binds the NIST unit records N / mm; dcu:SU002 is the owner-local,
     # version-bound snapshot that the CAP-13 source qualification resolves to;
-    # dcu:SU003 / dcu:SU004 are THERM-01's own (Correction 02) and bind nothing of CAP-13
-    assert policies == {"dcu:SU001", "dcu:SU002", "dcu:SU003", "dcu:SU004"}
+    # dcu:SU003 / dcu:SU004 are THERM-01's own (Correction 02) and dcu:SU005 /
+    # dcu:SU006 the planar moment's (Correction 03); none binds the two-support method
+    assert policies == {"dcu:SU001", "dcu:SU002", "dcu:SU003", "dcu:SU004",
+                        "dcu:SU005", "dcu:SU006", "dcu:SU007",
+                        "dcu:SU008", "dcu:SU009", "dcu:SU010",
+                        "dcu:SU011", "dcu:SU012", "dcu:SU013",
+                        "dcu:SU014", "dcu:SU015", "dcu:SU016"}
     cap13_units = [u for u in owner["unit_records"] if u["unit_token"] in ("N", "mm")]
     assert len(cap13_units) == 2
     for unit in cap13_units:
@@ -514,13 +530,24 @@ def test_owner_closed_inventory_rejects_structurally_valid_extras(tmp_path, monk
 
 
 def test_owner_closed_inventory_constants():
-    # Correction 02 (calc / units contract §13A): exactly two methods, closed
+    # Corrections 02 to 09 (§§13A-13H): exactly nine methods, closed
     assert dc.ADMITTED_METHODS == frozenset({
         ("cap13:static_reactions_two_support", "1.0"),
-        ("therm01:conduction_temperature_difference_single_path", "1.0")})
+        ("therm01:conduction_temperature_difference_single_path", "1.0"),
+        ("cap13:planar_single_force_moment", "1.0"),
+        ("cap13:linear_speed_dependent_rotational_load", "1.0"),
+        ("tmp36:nominal_voltage_to_temperature", "1.0"),
+        ("electrical:dc_resistive_load_current", "1.0"),
+        ("electrical:dc_resistive_load_power", "1.0"),
+        ("electrical:dc_resistive_load_energy", "1.0"),
+        ("cap13:planar_required_force", "1.0")})
     assert dc.ADMITTED_QUANTITY_KINDS == frozenset({
-        "force", "length", "power", "thermal_resistance", "temperature_difference"})
-    assert dc.ADMITTED_UNIT_TOKENS == frozenset({"N", "mm", "W", "K/W", "K"})
+        "force", "length", "power", "thermal_resistance", "temperature_difference",
+        "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",
+        "electric_resistance", "electric_current", "energy", "time"})
+    assert dc.ADMITTED_UNIT_TOKENS == frozenset(
+        {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C", "V", "Ω", "A",
+         "J", "s"})
 
 
 def test_owner_method_source_qualification_is_self_contained():

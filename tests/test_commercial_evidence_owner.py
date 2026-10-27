@@ -1424,7 +1424,17 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       # the inventor says take part in one interaction,
                       # current value (not a commercial owner; no supplier,
                       # cost, quantity or evidence content).
-                      "subsystem_interface_components"}
+                      "subsystem_interface_components",
+                      # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01:
+                      # the inventor's notes for one component taking part,
+                      # current value (not a commercial owner; no supplier,
+                      # cost, quantity or evidence content).
+                      "subsystem_participation_preparations",
+                      # MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: the
+                      # inventor's notes for checking one mandatory constraint,
+                      # current value (not a commercial owner; no supplier,
+                      # cost, quantity or evidence content).
+                      "constraint_acceptance_preparations"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()

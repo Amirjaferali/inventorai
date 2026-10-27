@@ -1,0 +1,147 @@
+{
+  "artifact_id": "tmp36_nominal_voltage_to_temperature",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "Sensors / Instrumentation C3 - device-specific method authority for this one TMP36 method only",
+  "slice": "Sensors / Instrumentation C3 - TMP36 Nominal Voltage-to-Temperature - Slice 1",
+  "governance_note": "The governed artifact of the TMP36 nominal voltage-to-temperature method, under SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.md. It carries the method authority (identity, version, model, executed form and derivation), the applicability declarations, the numeric domain, the high-risk screen, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json; it is separate from every CAP-13 and THERM-01 artifact, never loads one and is never loaded by one. Calculation execution belongs to the shared deterministic calculation and units owner; nothing here is a measurement, evidence, a sensor selection, an ADC, calibration, accuracy, compatibility or safety statement, or a readiness, progression or validation input. It does not resume the paused D13 research and activates no broader Sensors / Instrumentation capability.",
+  "method": {
+    "method_id": "tmp36:nominal_voltage_to_temperature",
+    "method_version": "1.0",
+    "contract": "docs/governance/SENSORS_C3_TMP36_NOMINAL_VOLTAGE_TO_TEMPERATURE_METHOD_CONTRACT.md",
+    "model": "ONE Analog Devices TMP36 temperature sensor, explicitly declared by the inventor, whose output voltage V_OUT (in mV, relative to the sensor's ground pin) is the inventor's own declared value. The NOMINAL output characteristic of the TMP36 relates that voltage to a temperature on the Celsius scale: 500 mV at 0 degrees Celsius and 10 mV per degree Celsius. The result is the nominal temperature of that relation only, not a measured, calibrated, accurate or guaranteed device temperature.",
+    "executed_form": "t_celsius = (v_out - 500) / 10, with v_out in mV inside the nominal-model interval 100 to 1750 mV inclusive, decided from the exact decimal value before any binary rounding; evaluated as the exact rational value of the binary64 input rounded once to binary64 and accepted only when it is exactly 0.0 for exactly 500 mV, or finite, nonzero, of the exact result's sign, within a relative error of 2^-52 of it and inside -40 to 125; then shown only when it agrees with the exact decimal relation of the entered value within 2^-45 degrees Celsius, as that exact decimal value.",
+    "derivation": "Analog Devices TMP35/TMP36/TMP37 data sheet, Rev. H: Table 4 (printed page 8) gives the TMP36 output characteristics as an offset voltage of 0.5 V, an output voltage scaling of 10 mV per degree Celsius and an output voltage of 750 mV at 25 degrees Celsius; Table 1 (printed page 3) gives the TMP36 scale factor of 10 mV per degree Celsius over -40 to +125 degrees Celsius and the typical TMP36 output voltage of 750 mV at 25 degrees Celsius; page 1 states the TMP36 is specified from -40 to +125 degrees Celsius (ADI-S1). From these InventorAI writes V_OUT = 500 mV + (10 mV per degree Celsius) x T and solves it for T; the data sheet is not claimed to print this solved form. Applying the relation to -40 and +125 degrees Celsius gives the nominal-model interval 100 mV to 1750 mV. The relation is restated independently; no data-sheet text, table, figure, model or code is copied, and the nominal relation is not shown to describe the inventor's device."
+  },
+  "numeric_domain": {
+    "roles": [
+      {
+        "role": "v_out",
+        "meaning": "the TMP36 output voltage relative to its ground pin, as declared by the inventor; not sampled, measured or checked by InventorAI (the role written V_OUT)",
+        "quantity_kind": "voltage",
+        "unit_token": "mV"
+      },
+      {
+        "role": "t_celsius",
+        "meaning": "the NOMINAL temperature on the Celsius scale given by the nominal TMP36 relation for the declared voltage; signed, exactly zero at 500 mV; never a measured, calibrated, accurate or guaranteed device temperature, rating or limit (the role written T)",
+        "quantity_kind": "celsius_temperature",
+        "unit_token": "°C"
+      }
+    ],
+    "rules": [
+      "Grammar: strict unsigned ASCII decimal digits with an optional single fractional part of one to three digits; no sign, plus sign, exponent, separator, Unicode digit, unit suffix, inf, nan or normalization. An omitted, malformed or over-length value is INVALID_NUMERIC_INPUT, resolved before the shared owner is called.",
+      "Nominal-model interval: the exact decimal value of v_out must lie between 100 mV and 1750 mV inclusive, decided before any binary rounding; outside it the outcome is OUTSIDE_NOMINAL_MODEL_RANGE with no number. The interval is the nominal relation applied to the stated TMP36 specified temperature range of -40 to +125 degrees Celsius. It is NOT the data sheet's electrical output-voltage range specification and NOT a claim of guaranteed device accuracy.",
+      "Owner applicability: the shared owner declines a v_out that is not greater than zero as UNABLE_TO_DETERMINE / INPUT_OUTSIDE_ADMITTED_RANGE, shown as the neutral UNMAPPED_OWNER_OUTCOME (unreachable from the page); a value outside the nominal-model interval that reaches the method adapter is FAILURE / EXECUTION_INTEGRITY_FAILURE.",
+      "Binary bridge: the admitted decimal is converted once to the correctly rounded binary64 value; the interval ends 100 and 1750 are exact in binary64 and rounding is monotonic, so an admitted value stays inside the interval and exactly 500 mV stays exactly 500.",
+      "Numerical acceptance in the adapter: the exact rational value (v_out - 500) / 10 of the binary input is rounded once to binary64. Exactly 500 mV gives exactly 0.0. A nonzero exact result is accepted only when the rounded value is finite, nonzero, of the same sign, within a relative error of 2^-52 of it and inside -40 to 125; otherwise FAILURE / EXECUTION_INTEGRITY_FAILURE with no numerical payload, never rewritten as a refusal.",
+      "Decimal-reference acceptance in the consumer: a successful owner result is shown only when it is exactly zero for exactly 500 mV, and otherwise has the sign of, and lies within 2^-45 degrees Celsius of, the exact decimal value (V_OUT - 500) / 10 of the entered decimal; otherwise the outcome is KNOWLEDGE_UNAVAILABLE with no number. The proven worst case for every admitted input is 1.3 x 2^-46 degrees Celsius.",
+      "Display: the accepted result is shown as the exact decimal value of the nominal relation for the entered decimal, with at least one and at most four digits after the decimal point; no rounding is needed or applied. The number of digits shown implies no measurement resolution, precision or accuracy.",
+      "The 64-character field cap is for abuse and resource protection only; it is NON-PHYSICAL and is not the admitted engineering domain."
+    ]
+  },
+  "declarations": [
+    {
+      "declaration_id": "device_tmp36",
+      "contract_ref": "D-1",
+      "accepted_value": "the sensor is an Analog Devices TMP36, not a TMP35, a TMP37 or any other sensor, as the inventor declares; InventorAI does not identify or check the device",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "declared_voltage",
+      "contract_ref": "D-2",
+      "accepted_value": "the voltage entered is the inventor's own value for this TMP36's output pin relative to its ground pin, taken from their own reading or documentation; InventorAI did not sample, measure or check it",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "datasheet_conditions",
+      "contract_ref": "D-3",
+      "accepted_value": "the sensor is powered and loaded as its data sheet specifies, and the voltage was read with the sensor in steady conditions within its specified temperature range",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "nominal_only",
+      "contract_ref": "D-4",
+      "accepted_value": "only the nominal relation is wanted: the device's accuracy and linearity errors, self-heating, calibration, the measuring instrument or ADC and every other error are not included",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    }
+  ],
+  "screen_items": [
+    {
+      "item_id": "battery_or_storage_cell",
+      "item": "a battery or energy-storage cell"
+    },
+    {
+      "item_id": "mains_or_high_voltage",
+      "item": "mains or high voltage"
+    },
+    {
+      "item_id": "fire_or_ignition",
+      "item": "fire or ignition risk"
+    },
+    {
+      "item_id": "touch_skin_or_medical",
+      "item": "body temperature, skin contact or medical use"
+    },
+    {
+      "item_id": "safety_critical_or_life_supporting",
+      "item": "a safety-critical or life-supporting function, alarm or shut-off"
+    },
+    {
+      "item_id": "aerospace_or_vehicle",
+      "item": "aerospace or vehicle use"
+    },
+    {
+      "item_id": "food_safety",
+      "item": "food safety or storage-temperature decisions"
+    }
+  ],
+  "limitations": [
+    "No sensor selection or recommendation, ADC, sampling, signal conditioning, calibration, accuracy, linearity, uncertainty, self-heating, response-time, compatibility, suitability or safety conclusion; no inference of the device, the voltage or any declaration.",
+    "The result is the nominal relation only: a real TMP36 can read differently by several degrees, as its data sheet specifies, and InventorAI applies none of that specification.",
+    "The 100 to 1750 mV interval is derived from the nominal relation and the stated specified temperature range; it is not the data sheet's electrical output-voltage specification, and no conversion of mV or degrees Celsius to any other unit is performed.",
+    "All NO answers on the high-risk screen only allow this bounded calculation to proceed; they never mean safe. The screen neither reads nor feeds SafetySignal.",
+    "The result is UNVALIDATED and is not evidence; it is request-local and is not stored, reported, exported or used for readiness, progression or validation."
+  ],
+  "disclosure": [
+    "This is the nominal temperature that the TMP36 relation gives for the output voltage V_OUT you entered: T = (V_OUT − 500 mV) / (10 mV/°C).",
+    "The voltage is your own declared value. InventorAI did not read, sample or measure your sensor and does not check the value or that the sensor is a TMP36.",
+    "It is the nominal relation only. A real TMP36 can differ from it by several degrees, as its data sheet specifies, and no accuracy, linearity, self-heating, calibration, instrument or ADC error is included.",
+    "The accepted voltage interval, 100 mV to 1750 mV, is the nominal relation applied to the sensor's specified range of −40 °C to +125 °C. It is not the data sheet's output-voltage specification and does not mean the device is accurate inside it.",
+    "The number of digits shown follows from your entry; it is not the precision of the sensor or of any measurement.",
+    "It is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement before any reliance; it says nothing about sensor choice, suitability or safety.",
+    "Reference source material: Analog Devices TMP35/TMP36/TMP37 data sheet, Rev. H (© Analog Devices, Inc.); the relation is restated by InventorAI, and no data-sheet text, table or figure is reproduced."
+  ],
+  "sources": [
+    {
+      "record_id": "ADI-S1",
+      "record_type": "source",
+      "source_type": "manufacturer_data_sheet",
+      "publisher": "Analog Devices, Inc.",
+      "source_title": "Analog Devices - TMP35/TMP36/TMP37 Low Voltage Temperature Sensors, Data Sheet, Rev. H",
+      "url": "https://www.analog.com/media/en/technical-documentation/data-sheets/TMP35_36_37.pdf",
+      "source_use_policy_ref": "tmp36:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspected_content": "Supports only, for the TMP36: Table 4, TMP35/TMP36/TMP37 Output Characteristics (Theory of Operation, printed page 8 of 19): offset voltage 0.5 V, output voltage scaling 10 mV per degree Celsius, output voltage at 25 degrees Celsius 750 mV - the nominal output characteristic; Table 1, Specifications (printed page 3 of 19, conditions VS = 2.7 V to 5.5 V and -40 to +125 degrees Celsius unless noted): Scale Factor, TMP36, 10 mV per degree Celsius (typical) over -40 to +125 degrees Celsius, and TMP36 Output Voltage 750 mV (typical) at 25 degrees Celsius; page 1 (Features and General Description): the TMP36 is specified from -40 to +125 degrees Celsius. Recorded as limits of the nominal model, NOT applied: Table 1 also gives accuracy specifications of +/-1 to +/-4 degrees Celsius (typical and maximum, by grade and temperature), typical linearity of 0.5 degrees Celsius, a supply range of 2.7 to 5.5 V and a separate Output Voltage Range specification of 100 to 2000 mV; Table 1 note 1 states that the specifications do not consider errors caused by self-heating. The nominal-model interval of this method is derived from the nominal relation at -40 and +125 degrees Celsius and is distinct from that Output Voltage Range specification. Document identity: printed footer Rev. H, revision history entry 5/15 - Rev. G to Rev. H, copyright line (c)1996-2015 Analog Devices, Inc. Lead-supplied identification of the publication, revision and relation in the TMP36-NOMINAL-VOLTAGE-TEMPERATURE-01 brief (2026-10-24); confirmed directly by the executor on 2026-10-24 against a copy of the Rev. H document obtained from a public GitHub repository (the Analog Devices host was not reachable from the executor environment), identified as Rev. H by its embedded document title, printed page footers and revision history; SHA-256 of the inspected file 6ce062fb73f0bebb61f82775aca0be56903c2b8484a7fc89a0cf71961189f8ee. No copy of the document enters the repository.",
+      "paraphrase_only_limitation": "The nominal output characteristic and the stated specified range are restated in InventorAI's own words; no data-sheet text, table, figure, diagram, model or code is copied.",
+      "third_party_material_exclusion": "No third-party material inside the data sheet is used.",
+      "no_endorsement_limitation": "No statement or implication that Analog Devices endorses, reviewed or approved InventorAI, this method or any project."
+    },
+    {
+      "record_id": "tmp36:SU001",
+      "record_type": "source_use_policy",
+      "source_type": "manufacturer_copyright_notice",
+      "publisher": "Analog Devices, Inc.",
+      "source_title": "Analog Devices - TMP35/TMP36/TMP37 Data Sheet, Rev. H - copyright and legal notice printed on page 1",
+      "url": "https://www.analog.com/media/en/technical-documentation/data-sheets/TMP35_36_37.pdf",
+      "source_use_policy_ref": "tmp36:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-24",
+      "inspected_content": "Source-use basis (not a legal opinion): the data sheet carries the notice (c)1996-2015 Analog Devices, Inc. All rights reserved; trademarks and registered trademarks are the property of their respective owners; information furnished is believed accurate, no responsibility is assumed for its use, specifications are subject to change without notice, and no licence is granted by implication or otherwise under any patent or patent rights of Analog Devices. No reproduction right is granted or assumed. This method uses only facts - the nominal TMP36 output characteristic (an offset and a scale factor) and the stated specified temperature range - restated independently in InventorAI's own words, with the publication identified and Analog Devices acknowledged; no data-sheet prose, table, figure, diagram, model or code is reproduced or redistributed. The Analog Devices website terms of use were not inspected (the host was not reachable from the executor environment) and no right beyond this factual reference is assumed.",
+      "paraphrase_only_limitation": "Facts only; no copied text, table, figure, diagram, model or code.",
+      "third_party_material_exclusion": "No third-party material inside the data sheet is reproduced.",
+      "no_endorsement_limitation": "No endorsement by Analog Devices is stated or implied; TMP36 and Analog Devices are named only to identify the device and the source.",
+      "acknowledgement": "Reference source material: Analog Devices, Inc., TMP35/TMP36/TMP37 Low Voltage Temperature Sensors data sheet, Rev. H, (c)1996-2015 Analog Devices, Inc. All rights reserved."
+    }
+  ]
+}

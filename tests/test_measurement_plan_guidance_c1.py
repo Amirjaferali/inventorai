@@ -42,6 +42,10 @@ from tests.cap01_measurement_guidance_addition import (
 # records; excluded here likewise (tests/cap01_measurement_conditions_addition.py).
 from tests.cap01_measurement_conditions_addition import (
     MCOND_GROUP, MCOND_RECORDS, without_measurement_conditions_addition)
+# 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 added one further prose-only group on the Electronics
+# MECHANISM_COMPLETENESS context; excluded here likewise (tests/cap01_load_switching_addition.py).
+from tests.cap01_load_switching_addition import (  # noqa: F401
+    LSW_GROUP, LSW_RECORDS, LSW_ROW, LSW_SLUG, without_load_switching_addition)
 from tests.test_28t1_measurement_planning_reference import (
     GROUPS as REFERENCE_GROUPS, _elec, _group_blocks, _page, _panel, _start, _visible)
 from tests.test_cap12_form_mockup_advisory import _client_for
@@ -182,13 +186,14 @@ def test_g04_not_a_report_group_the_extension_table_and_report_contexts_are_unch
     assert GROUP not in [row[0] for row in cap01_guidance.CAP01_GAP_FUNDAMENTALS.values()]
     assert [r[0] for r in table[(DOMAIN, MECHANISM_COMPLETENESS)]] == [
         "sensing_value_threshold_reference_v1", "measurement_accuracy_resolution_reference_v1",
-        "controller_input_logic_output_reference_v1"]
+        "controller_input_logic_output_reference_v1", LSW_GROUP]
     assert [r[0] for r in table[(DOMAIN, PHYSICAL_FEASIBILITY)]] == [
         "electrical_energy_time_reference_v1", "electric_charge_reference_v1"]
     for gap in (MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, "BOUNDARY_AMBIGUITY"):
         view = cap01_guidance.gap_context_copy(DOMAIN, gap)
         assert GROUP not in [g["group_id"] for g in view["fundamentals_groups"]]
-    assert len(cap01_guidance.gap_context_copy(DOMAIN, MECHANISM_COMPLETENESS)["fundamentals_groups"]) == 3
+    # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 later added a fourth report group to this context.
+    assert len(cap01_guidance.gap_context_copy(DOMAIN, MECHANISM_COMPLETENESS)["fundamentals_groups"]) == 4
     assert len(cap01_guidance.gap_context_copy(DOMAIN, PHYSICAL_FEASIBILITY)["fundamentals_groups"]) == 3
     # The owner's binding is a fixed constant: no discovery, no inference, no inventor text.
     source = open(cap01_guidance.__file__, encoding="utf-8").read()
@@ -334,8 +339,8 @@ def test_g15_viewing_the_page_writes_nothing():
 # ==========================================================================
 def test_p01_the_pack_change_is_exactly_one_group_and_one_note():
     pack = _pack()
-    assert _digest(without_measurement_guidance_addition(without_measurement_conditions_addition(pack))) \
-        == _PRE_PACK_DIGEST
+    assert _digest(without_measurement_guidance_addition(without_measurement_conditions_addition(
+        without_load_switching_addition(pack)))) == _PRE_PACK_DIGEST
     assert [g["group_id"] for g in pack["reference_fundamentals"]][-2:] == [GROUP, MCOND_GROUP]
     note = pack["_governance_notes"][NOTE]
     for phrase in ("MEASUREMENT-PLAN-GUIDANCE-01", "C1 only", "exactly ONE prose-only conceptual claim",
@@ -402,8 +407,9 @@ def test_p03_two_records_appended_after_pr021_and_every_other_record_unchanged()
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR021")
     assert tuple(ids[i + 1:i + 3]) == RECORDS
-    assert tuple(ids[i + 3:i + 5]) == MCOND_RECORDS and ids[i + 5] == "mechanical:PR001"
-    assert _digest([r for r in records if r["record_id"] not in RECORDS + MCOND_RECORDS]) == _PRE_PROVENANCE_DIGEST
+    assert tuple(ids[i + 3:i + 5]) == MCOND_RECORDS and tuple(ids[i + 5:i + 7]) == LSW_RECORDS
+    assert ids[i + 7] == "mechanical:PR001"
+    assert _digest([r for r in records if r["record_id"] not in RECORDS + MCOND_RECORDS + LSW_RECORDS]) == _PRE_PROVENANCE_DIGEST
     recs = {r["record_id"]: r for r in records}
     shape = sorted(recs["electronics_electrical:PR014"])
     assert all(sorted(recs[r]) == shape for r in RECORDS)

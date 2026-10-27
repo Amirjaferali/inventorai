@@ -5,6 +5,7 @@ Governed by: MVP_SCOPE_FREEZE.md
 """
 
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from typing import Optional
 from datetime import datetime
@@ -196,6 +197,47 @@ RELATIONSHIP_METADATA_DISPOSITIONS = frozenset({
     DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED,
 })
 
+# PATHN-CONSTRAINT-DECLARATION-01: the inventor's own project constraints — a
+# limit or wish stated in ordinary language ("it must run on batteries", "I
+# would like it to cost under 50 dollars") with the strength the inventor chose.
+# One `constraint_declared` record is one declaration or one correction (a
+# correction supersedes the chain head it corrects, single-target, like a
+# decision-alternative refinement); one `constraint_withdrawn` record is the
+# terminal withdrawal of a chain (it supersedes the head and nothing follows).
+# A constraint is NOT an answer, NOT a requirement row, NOT a gap input and NOT
+# in INTERACTION_DISPOSITIONS (`record_interaction` refuses it; its one carrier
+# is `IdeaState.record_constraint_action`). It is OWNER_STATED / UNVALIDATED,
+# never a verified requirement or specification, and it changes no gap,
+# maturity, progression, readiness, routing, SafetySignal or score.
+DISPOSITION_CONSTRAINT_DECLARED  = "constraint_declared"
+DISPOSITION_CONSTRAINT_WITHDRAWN = "constraint_withdrawn"
+PROJECT_CONSTRAINT_DISPOSITIONS = frozenset({
+    DISPOSITION_CONSTRAINT_DECLARED, DISPOSITION_CONSTRAINT_WITHDRAWN,
+})
+# The closed strength vocabulary, in display order (weakest first). The values
+# are the FDC-001 constraint-strength tokens restated here, not imported: the
+# Decision Workspace stays unmodified and inactive.
+CONSTRAINT_STRENGTH_PREFERENCE = "preference"
+CONSTRAINT_STRENGTH_SOFT       = "soft_constraint"
+CONSTRAINT_STRENGTH_MANDATORY  = "mandatory_constraint"
+CONSTRAINT_STRENGTHS = (
+    CONSTRAINT_STRENGTH_PREFERENCE, CONSTRAINT_STRENGTH_SOFT,
+    CONSTRAINT_STRENGTH_MANDATORY,
+)
+# Owner capacity decision (D4): the statement bound, the ACTIVE cap (a
+# withdrawal frees a slot), the LIFETIME identity cap (identities are never
+# recycled), and the per-constraint correction quota plus ONE separately
+# reserved terminal withdrawal (available even when every correction is used).
+MAX_CONSTRAINT_TEXT_LENGTH = 300
+MAX_ACTIVE_CONSTRAINTS_PER_PROJECT = 50
+MAX_CONSTRAINT_IDENTITIES_PER_PROJECT = 500
+MAX_CORRECTIONS_PER_CONSTRAINT = 20
+CONSTRAINT_ACTION_DECLARE = "declare"
+CONSTRAINT_ACTION_CORRECT = "correct"
+CONSTRAINT_ACTION_WITHDRAW = "withdraw"
+CONSTRAINT_ACTIONS = (CONSTRAINT_ACTION_DECLARE, CONSTRAINT_ACTION_CORRECT,
+                      CONSTRAINT_ACTION_WITHDRAW)
+
 # The seven pre-W2-A dispositions, needed by the bounded legacy-payload load
 # rule in engine.record_contract (contract §4: only a LEGACY payload may omit
 # `decision_context_root`).
@@ -233,6 +275,10 @@ _DEFAULT_PROVENANCE_BY_DISPOSITION = {
     # CAP-08 Slice 1: an inventor's own dependency declaration. Its carrier is
     # `record_assumption_dependency_declarations` (record_interaction refuses it).
     DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED: OWNER_STATED,
+    # PATHN-CONSTRAINT-DECLARATION-01: the inventor's own constraint and its
+    # withdrawal. Their carrier is `record_constraint_action`.
+    DISPOSITION_CONSTRAINT_DECLARED:            OWNER_STATED,
+    DISPOSITION_CONSTRAINT_WITHDRAWN:           OWNER_STATED,
 }
 
 # Provenance Hardening Step 1 — the provenance a STORED record of each known
@@ -260,6 +306,9 @@ ASSERTION_LOAD_PROVENANCE_BY_DISPOSITION = {
     DISPOSITION_CONTRADICTION_DECLARED:         frozenset({OWNER_STATED}),
     # CAP-08 Slice 1: singleton — introduced OWNER_STATED, never LEGACY.
     DISPOSITION_ASSUMPTION_DEPENDENCY_DECLARED: frozenset({OWNER_STATED}),
+    # PATHN-CONSTRAINT-DECLARATION-01: singletons — introduced OWNER_STATED.
+    DISPOSITION_CONSTRAINT_DECLARED:            frozenset({OWNER_STATED}),
+    DISPOSITION_CONSTRAINT_WITHDRAWN:           frozenset({OWNER_STATED}),
 }
 
 # Validation levels treated as "validated" (i.e. not owner-unvalidated) by the
@@ -352,6 +401,10 @@ class AssertionRecord:
     # ...}; None on every other record. Questions, gaps, requirements and text
     # stay owned by the two endpoints and are resolved from them, never copied.
     dependency_edge : Optional[dict] = None
+    # PATHN-CONSTRAINT-DECLARATION-01: the strength the inventor chose, on a
+    # `constraint_declared` record ONLY (one of CONSTRAINT_STRENGTHS); None on
+    # every other record, a withdrawal included.
+    constraint_strength : Optional[str] = None
 
 
 # CAP-10 Slice 1 — the ONE shared projection path. The durable authority for an
@@ -524,6 +577,300 @@ def project_assumption_dependencies(assertions):
     return AssumptionDependencyProjection(
         declarations=tuple(declarations), active_edges=tuple(active),
         by_assumption=by_assumption)
+
+
+# --- PATHN-CONSTRAINT-DECLARATION-01: the inventor's project constraints -------
+# ONE history rule, used identically by the carrier before a mint, by the record
+# contract on every load and by the store inside its write transaction: the
+# ledger is walked in durable order and every constraint record is checked
+# against the ledger AS IT STOOD AT ITS OWN POSITION. A constraint's identity is
+# its founding record id; its CURRENT form is the latest record of its chain.
+class ConstraintError(ValueError):
+    """A proposed or stored constraint action violates the bounded constraint
+    contract. Structural message only — never the inventor's text."""
+
+
+class ConstraintStale(ConstraintError):
+    """The constraint the action names is no longer its chain's current form
+    (corrected or withdrawn since the form was shown)."""
+
+
+class ConstraintUnchanged(ConstraintError):
+    """A correction that restates the current text and strength exactly."""
+
+
+class ConstraintCapacityError(ConstraintError):
+    """The active, lifetime or per-constraint correction bound is reached."""
+
+
+def valid_constraint_text(value):
+    """A stored constraint statement: a non-empty, already-trimmed string of at
+    most MAX_CONSTRAINT_TEXT_LENGTH characters with no control character. It is
+    never truncated, normalised or reinterpreted."""
+    return (isinstance(value, str) and value == value.strip()
+            and 0 < len(value) <= MAX_CONSTRAINT_TEXT_LENGTH
+            and not any(unicodedata.category(ch) == "Cc" for ch in value))
+
+
+@dataclass(frozen=True)
+class ProjectConstraint:
+    """ONE constraint identity: its founding record id, its current head, the
+    current verbatim text and strength, its declaration position (1-based, in
+    ledger order, never recycled), how many corrections it has, whether it is
+    withdrawn, and every record id of its chain, oldest first. A withdrawn
+    constraint keeps the text and strength of its last declared form."""
+    constraint_id: str
+    record_id: str
+    text: str
+    strength: str
+    position: int
+    corrections: int
+    withdrawn: bool
+    history: tuple
+
+
+@dataclass(frozen=True)
+class ConstraintHistory:
+    """Every constraint identity of a ledger, in declaration order."""
+    constraints: tuple
+
+    @property
+    def current(self):
+        """The CURRENT constraints: every identity not withdrawn, in
+        declaration order."""
+        return tuple(c for c in self.constraints if not c.withdrawn)
+
+
+def _constraint_neutral(record):
+    return (record.gap_context is None
+            and getattr(record, "question_target", None) is None
+            and getattr(record, "decision_context_root", None) is None
+            and record.quality is None and record.pending is None
+            and record.resolves_gap is False and not record.contradicts
+            and getattr(record, "contradiction_endpoints", None) is None
+            and getattr(record, "dependency_edge", None) is None
+            and record.provenance == OWNER_STATED
+            and record.validation_status == UNVALIDATED)
+
+
+def constraint_history(assertions):
+    """The validated ConstraintHistory of ``assertions`` (durable / append
+    order), or ``ConstraintError`` on any defect: a non-constraint record that
+    carries a strength or supersedes a constraint record; a constraint record
+    with a non-neutral field, a missing or foreign strength, invalid text, more
+    than one target, or a target that is not the CURRENT declared form of an
+    earlier constraint (``ConstraintStale``); a correction that restates the
+    current form exactly (``ConstraintUnchanged``); and any bound exceeded at
+    the record's own position (``ConstraintCapacityError``). Pure; never
+    mutates a record."""
+    chain_of, chains, order, active = {}, {}, [], 0
+    constraint_ids = {r.record_id for r in assertions
+                      if r.disposition in PROJECT_CONSTRAINT_DISPOSITIONS}
+    for record in assertions:
+        disposition = record.disposition
+        strength = getattr(record, "constraint_strength", None)
+        supersedes = list(record.supersedes or ())
+        # A record may only supersede an EARLIER constraint (never a forward
+        # reference to one later in the ledger).
+        if any(ref in constraint_ids and ref not in chain_of for ref in supersedes) \
+                and disposition not in PROJECT_CONSTRAINT_DISPOSITIONS:
+            raise ConstraintError("a record supersedes a later constraint")
+        if disposition not in PROJECT_CONSTRAINT_DISPOSITIONS:
+            if strength is not None:
+                raise ConstraintError("a non-constraint record carries a strength")
+            if any(ref in chain_of for ref in supersedes):
+                raise ConstraintError(
+                    "a non-constraint record supersedes a constraint")
+            continue
+        if not _constraint_neutral(record):
+            raise ConstraintError("a constraint record carries a non-neutral field")
+        if len(supersedes) > 1:
+            raise ConstraintError("a constraint record supersedes more than one record")
+        chain = None
+        if supersedes:
+            identity = chain_of.get(supersedes[0])
+            if identity is None:
+                raise ConstraintError(
+                    "a constraint action names no earlier constraint")
+            chain = chains[identity]
+            head = chain["records"][-1]
+            if chain["withdrawn"] or head.record_id != supersedes[0]:
+                raise ConstraintStale("the constraint is no longer current")
+        if disposition == DISPOSITION_CONSTRAINT_DECLARED:
+            if strength not in CONSTRAINT_STRENGTHS:
+                raise ConstraintError("a constraint strength is missing or unknown")
+            if not valid_constraint_text(record.content):
+                raise ConstraintError("a constraint statement is empty, invalid or too long")
+            if chain is None:
+                if len(chains) >= MAX_CONSTRAINT_IDENTITIES_PER_PROJECT:
+                    raise ConstraintCapacityError("too many constraints declared")
+                if active >= MAX_ACTIVE_CONSTRAINTS_PER_PROJECT:
+                    raise ConstraintCapacityError("too many current constraints")
+                chain = {"records": [], "corrections": 0, "withdrawn": False}
+                chains[record.record_id] = chain
+                order.append(record.record_id)
+                active += 1
+                identity = record.record_id
+            else:
+                if chain["corrections"] >= MAX_CORRECTIONS_PER_CONSTRAINT:
+                    raise ConstraintCapacityError("too many corrections")
+                head = chain["records"][-1]
+                if (record.content == head.content
+                        and strength == head.constraint_strength):
+                    raise ConstraintUnchanged("the correction changes nothing")
+                chain["corrections"] += 1
+        else:
+            if chain is None:
+                raise ConstraintError("a withdrawal names no constraint")
+            if strength is not None or record.content != "":
+                raise ConstraintError("a withdrawal carries text or a strength")
+            chain["withdrawn"] = True
+            active -= 1
+        chain["records"].append(record)
+        chain_of[record.record_id] = identity
+    constraints = []
+    for position, identity in enumerate(order, 1):
+        chain = chains[identity]
+        declared = [r for r in chain["records"]
+                    if r.disposition == DISPOSITION_CONSTRAINT_DECLARED]
+        constraints.append(ProjectConstraint(
+            constraint_id=identity, record_id=chain["records"][-1].record_id,
+            text=declared[-1].content, strength=declared[-1].constraint_strength,
+            position=position, corrections=chain["corrections"],
+            withdrawn=chain["withdrawn"],
+            history=tuple(r.record_id for r in chain["records"])))
+    return ConstraintHistory(constraints=tuple(constraints))
+
+
+# MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01. For ONE current mandatory
+# constraint the inventor may record, in their own words, an observable
+# acceptance criterion and the measurement, evidence or specialist review they
+# would need to check it: verification PREPARATION only, OWNER_STATED /
+# UNVALIDATED. The notes are keyed by the constraint's FOUNDING identity (so
+# they survive a correction) and remember the version they were saved against.
+# Only a CURRENT mandatory constraint shows them; a later version shows them as
+# EARLIER statements, not reconfirmed, until they are saved again; a withdrawn
+# or no-longer-mandatory constraint keeps them stored and hidden. Nothing here
+# reads the notes, derives a threshold, checks the constraint or credits a gap,
+# progression, readiness or the Validation Plan step.
+CONSTRAINT_ACCEPTANCE_CRITERION = "acceptance_criterion"
+CONSTRAINT_ACCEPTANCE_EVIDENCE = "evidence_needed"
+CONSTRAINT_ACCEPTANCE_FIELDS = (CONSTRAINT_ACCEPTANCE_CRITERION,
+                                CONSTRAINT_ACCEPTANCE_EVIDENCE)
+MAX_CONSTRAINT_ACCEPTANCE_LENGTH = 1000
+
+
+class ConstraintAcceptanceError(ValueError):
+    """Constraint acceptance notes violate the bounded contract. Structural
+    message only — never the inventor's text."""
+
+
+class ConstraintAcceptanceWithdrawn(ConstraintAcceptanceError):
+    """The constraint the notes name is withdrawn."""
+
+
+class ConstraintAcceptanceNotMandatory(ConstraintAcceptanceError):
+    """The constraint the notes name is no longer a mandatory constraint."""
+
+
+# CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the attached-carrier marker for
+# notes that exist durably but could not be read (see
+# ``IdeaState.constraint_acceptance_preparations``).
+CONSTRAINT_ACCEPTANCE_UNREADABLE = "unreadable"
+
+
+def valid_constraint_acceptance_text(value):
+    """A stored note is exactly what the route stores: a non-empty,
+    already-trimmed string (internal line breaks kept) within the bound and
+    free of NUL. Never truncated, normalised or reinterpreted."""
+    return (isinstance(value, str) and value == value.strip()
+            and 0 < len(value) <= MAX_CONSTRAINT_ACCEPTANCE_LENGTH
+            and "\x00" not in value)
+
+
+@dataclass(frozen=True)
+class ConstraintAcceptancePreparation:
+    """The stored notes of ONE constraint identity: its founding id, the
+    record id of the declared version they were saved against, and the two
+    notes (``None`` = not recorded; never both)."""
+    constraint_id: str
+    saved_against: str
+    acceptance_criterion: Optional[str]
+    evidence_needed: Optional[str]
+
+    def value(self, field_name):
+        return getattr(self, field_name)
+
+
+def validate_constraint_acceptance_preparations(preparations, assertions):
+    """``preparations`` validated WHOLE against ``assertions`` (durable order):
+    each names a constraint identity of the ledger's ONE constraint history,
+    was saved against a declared MANDATORY version of that same identity, and
+    carries at least one valid note; no identity appears twice. Returns the
+    tuple in constraint declaration order, or ``ConstraintAcceptanceError``
+    (nothing partial, nothing remapped). Pure."""
+    history = constraint_history(list(assertions))
+    by_id = {r.record_id: r for r in assertions}
+    chains = {c.constraint_id: c for c in history.constraints}
+    seen = set()
+    for item in preparations:
+        if not isinstance(item, ConstraintAcceptancePreparation):
+            raise ConstraintAcceptanceError("not a constraint acceptance record")
+        chain = chains.get(item.constraint_id)
+        if chain is None:
+            raise ConstraintAcceptanceError("the notes name no constraint")
+        if item.constraint_id in seen:
+            raise ConstraintAcceptanceError("a constraint has two sets of notes")
+        seen.add(item.constraint_id)
+        version = by_id.get(item.saved_against)
+        if (item.saved_against not in chain.history or version is None
+                or version.disposition != DISPOSITION_CONSTRAINT_DECLARED
+                or getattr(version, "constraint_strength", None)
+                != CONSTRAINT_STRENGTH_MANDATORY):
+            raise ConstraintAcceptanceError(
+                "the notes were not saved against a mandatory version")
+        values = [item.value(f) for f in CONSTRAINT_ACCEPTANCE_FIELDS]
+        if all(v is None for v in values) or not all(
+                v is None or valid_constraint_acceptance_text(v) for v in values):
+            raise ConstraintAcceptanceError("the notes are empty or invalid")
+    order = {c.constraint_id: c.position for c in history.constraints}
+    return tuple(sorted(preparations, key=lambda p: order[p.constraint_id]))
+
+
+def current_constraint_acceptance(preparations, history):
+    """``{constraint_id: (preparation, earlier)}`` for the CURRENT MANDATORY
+    constraints of ``history`` that have notes: ``earlier`` is True when the
+    notes were saved against an earlier version than the current one (shown as
+    earlier statements, not reconfirmed). Withdrawn and non-mandatory
+    constraints are absent (their notes stay stored and hidden)."""
+    stored = {p.constraint_id: p for p in preparations}
+    view = {}
+    for c in history.current:
+        if c.strength != CONSTRAINT_STRENGTH_MANDATORY or c.constraint_id not in stored:
+            continue
+        item = stored[c.constraint_id]
+        view[c.constraint_id] = (item, item.saved_against != c.record_id)
+    return view
+
+
+def constraint_acceptance_target(history, constraint_id, displayed_record_id):
+    """The CURRENT constraint ``constraint_id`` of ``history`` whose notes may
+    be written, checked against the version the form displayed:
+    ``ConstraintAcceptanceError`` when it names no constraint,
+    ``ConstraintAcceptanceWithdrawn`` / ``ConstraintAcceptanceNotMandatory``
+    when it is withdrawn or no longer mandatory, and ``ConstraintStale`` when
+    it was corrected since the form was shown."""
+    chain = next((c for c in history.constraints
+                  if c.constraint_id == constraint_id), None)
+    if chain is None:
+        raise ConstraintAcceptanceError("the notes name no constraint")
+    if chain.withdrawn:
+        raise ConstraintAcceptanceWithdrawn("the constraint is withdrawn")
+    if chain.record_id != displayed_record_id:
+        raise ConstraintStale("the constraint changed since the form was shown")
+    if chain.strength != CONSTRAINT_STRENGTH_MANDATORY:
+        raise ConstraintAcceptanceNotMandatory("the constraint is not mandatory")
+    return chain
 
 
 # Stage 20 — Assumption Revision & Replacement — Closure. An inventor may
@@ -826,6 +1173,19 @@ class IdeaState:
     # only: outside the answer replay, never evidence, a result, a gap, a
     # readiness, progression or compatibility input.
     subsystem_interface_preparations : Optional[list] = None
+    # CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the inventor's stored
+    # acceptance notes per constraint identity (frozen
+    # ``ConstraintAcceptancePreparation`` values, MANDATORY-CONSTRAINT-
+    # ACCEPTANCE-PREPARATION-01), attached from the durable
+    # `constraint_acceptance_preparations` sidecar by the web layer's
+    # deliverable seam so the Validation Plan can show them beside their
+    # constraint step. ``None`` means NOT ATTACHED (nothing may then be
+    # claimed about what is recorded); ``CONSTRAINT_ACCEPTANCE_UNREADABLE``
+    # means the durable notes could not be read (shown as unavailable, never
+    # as "not recorded"); a list — possibly empty — is the attached durable
+    # truth. Planning inputs only: outside the answer replay, never evidence,
+    # a result, a gap, a readiness or progression input.
+    constraint_acceptance_preparations : Optional[object] = None
 
     # T2-A Quantified Requirements Slice 1: the in-memory CARRIER of the
     # project's validated durable requirement-quantity history (a list of
@@ -1035,6 +1395,12 @@ class IdeaState:
                     raise ValueError(
                         "a legacy action may not supersede a decision-action "
                         f"record: {prior_id!r}")
+                # PATHN-CONSTRAINT-DECLARATION-01: a constraint chain is only
+                # ever continued by its own carrier.
+                if prior.disposition in PROJECT_CONSTRAINT_DISPOSITIONS:
+                    raise ValueError(
+                        "a legacy action may not supersede a constraint "
+                        f"record: {prior_id!r}")
             return
         # ID-11: a decision action supersedes at most ONE prior record.
         if len(superseded_ids) > 1:
@@ -1184,6 +1550,65 @@ class IdeaState:
             ))
         self.assertions.extend(minted)
         return minted
+
+    def record_constraint_action(self, action, text=None, strength=None,
+                                 target_record_id=None, iteration=0):
+        """PATHN-CONSTRAINT-DECLARATION-01 — the ONE carrier of constraint
+        records. ``declare`` mints a new `constraint_declared` identity;
+        ``correct`` mints a `constraint_declared` record superseding the
+        CURRENT form ``target_record_id`` with a new text and / or strength;
+        ``withdraw`` mints the terminal `constraint_withdrawn` record
+        superseding it. Fails closed with NOTHING appended: an unknown action,
+        invalid text or strength, a target that is not a current constraint
+        (``ConstraintStale``), an exact restatement (``ConstraintUnchanged``)
+        or an exceeded bound (``ConstraintCapacityError``). The record is
+        OWNER_STATED / OWNER_INPUT / UNVALIDATED with every other field
+        neutral; it changes no gap, maturity, progression, readiness, routing,
+        SafetySignal or score. Returns the new record."""
+        if action not in CONSTRAINT_ACTIONS:
+            raise ConstraintError("unknown constraint action")
+        history = constraint_history(self.assertions)
+        if action == CONSTRAINT_ACTION_DECLARE:
+            if target_record_id is not None:
+                raise ConstraintError("a declaration names no target")
+            supersedes = []
+        else:
+            current = {c.record_id for c in history.current}
+            if target_record_id not in current:
+                if any(target_record_id in c.history for c in history.constraints):
+                    raise ConstraintStale("the constraint is no longer current")
+                raise ConstraintError("the target is not a constraint")
+            supersedes = [target_record_id]
+        if action == CONSTRAINT_ACTION_WITHDRAW:
+            if text not in (None, "") or strength is not None:
+                raise ConstraintError("a withdrawal carries no text or strength")
+            disposition, content = DISPOSITION_CONSTRAINT_WITHDRAWN, ""
+        else:
+            if strength not in CONSTRAINT_STRENGTHS:
+                raise ConstraintError("unknown constraint strength")
+            if not valid_constraint_text(text):
+                raise ConstraintError("the statement is empty, invalid or too long")
+            disposition, content = DISPOSITION_CONSTRAINT_DECLARED, text
+        _max_n = max((int(r.record_id[4:]) for r in self.assertions
+                      if isinstance(r.record_id, str)
+                      and r.record_id.startswith("rec_")
+                      and r.record_id[4:].isdigit()), default=0)
+        record = AssertionRecord(
+            record_id=f"rec_{_max_n + 1}", disposition=disposition,
+            content=content, gap_context=None, iteration=iteration,
+            provenance=_DEFAULT_PROVENANCE_BY_DISPOSITION[disposition],
+            validation_status=UNVALIDATED, quality=None, pending=None,
+            responsibility=ASSERTION_RESPONSIBILITY_BY_PROVENANCE[OWNER_STATED],
+            resolves_gap=False, supersedes=list(supersedes),
+            decision_context_root=None, question_target=None,
+            constraint_strength=(None if action == CONSTRAINT_ACTION_WITHDRAW
+                                 else strength),
+        )
+        constraint_history(list(self.assertions) + [record])
+        self.assertions.append(record)
+        for prior_id in supersedes:
+            self.mark_supersession(prior_id, record.record_id)
+        return record
 
     def mark_supersession(self, superseded_id, by_id):
         """Mark superseded_id as superseded by by_id. Non-destructive: the

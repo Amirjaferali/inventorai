@@ -27,8 +27,26 @@ from engine import cap12_form_mockup as _cap12  # Stage 24 / CAP-12 Form Mock-up
 from engine import deterministic_calculation as _dcalc  # Stage 25: shared calculation / units owner
 from engine import cap13_static_reactions_method as _cap13_method  # Stage 25 / CAP-13 Slice 1 method
 from engine import cap13_static_reactions as _cap13  # Stage 25 / CAP-13 Slice 1 consumer
+from engine.cap13_functional_configuration import derive_provisional_fit as _engineering_fit  # bounded idea-to-engineering candidate
+from engine import functional_need_handoff as _handoff  # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01 (read-only proposal)
 from engine import therm01_conduction_method as _therm01_method  # Stage 27 / THERM-01 Slice 1 method
 from engine import therm01_temperature_difference as _therm01  # Stage 27 / THERM-01 Slice 1 consumer
+from engine import cap13_planar_moment_method as _cap13m_method  # CAP-13 Planar Moment Slice 1 method
+from engine import cap13_planar_moment as _cap13m  # CAP-13 Planar Moment Slice 1 consumer
+from engine import cap13_planar_required_force_method as _cap13f_method  # CAP-13 Planar Required Force Slice 1 method
+from engine import cap13_planar_required_force as _cap13f  # CAP-13 Planar Required Force Slice 1 consumer
+from engine import cap13_rotational_load_method as _cap13r_method  # CAP-13 Rotational Load Slice 1 method
+from engine import cap13_rotational_load as _cap13r  # CAP-13 Rotational Load Slice 1 consumer
+from engine import tmp36_nominal_temperature_method as _tmp36_method  # TMP36 Nominal Temperature Slice 1 method
+from engine import tmp36_nominal_temperature as _tmp36  # TMP36 Nominal Temperature Slice 1 consumer
+from engine import control_cycle as _cc  # 28-T4 Control-Cycle Slice 1 evaluation
+from engine import temperature_control_condition as _tcc  # TEMPERATURE-TO-CONTROL-CONDITION-01 composition
+from engine import dc_resistive_load_current_method as _dcl_method  # DC Resistive Load Current Slice 1 method
+from engine import dc_resistive_load_current as _dcl  # DC Resistive Load Current Slice 1 consumer
+from engine import dc_resistive_load_power_method as _dcp_method  # DC Resistive Load Power Slice 1 method
+from engine import dc_resistive_load_power as _dcp  # DC Resistive Load Power Slice 1 consumer
+from engine import dc_resistive_load_energy_method as _dce_method  # DC Resistive Load Energy Slice 1 method
+from engine import dc_resistive_load_energy as _dce  # DC Resistive Load Energy Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -97,6 +115,8 @@ from engine.idea_state import (
     normalize_dependent_answers as _normalize_dependent_answers,
     project_assumption_dependencies as _project_assumption_dependencies,
 )
+# PATHN-CONSTRAINT-DECLARATION-01: the inventor's project constraints.
+from engine import idea_state as _constraints
 from web.gap_labels import (
     GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE,
     get_session_disclosure, friendly_gap_name, GAP_DISPLAY_NAMES, GAP_DISPLAY_NAMES_AR,
@@ -133,6 +153,11 @@ from engine.record_store import (
     QuantityCapExceeded as _QuantityCapExceeded,
     QuantityAnchorIneligible as _QuantityAnchorIneligible,
     ContradictionDeclarationRejected as _ContradictionDeclarationRejected,
+    ConstraintActionRejected as _ConstraintActionRejected,
+    ConstraintAcceptanceRejected as _ConstraintAcceptanceRejected,
+    ConstraintAcceptanceCorrupt as _ConstraintAcceptanceCorrupt,
+    CONSTRAINT_ACCEPTANCE_UNCHANGED as _PCA_UNCHANGED,
+    CONSTRAINT_ACCEPTANCE_CLEARED as _PCA_CLEARED,
     AssumptionDependencyDeclarationRejected as _DependencyDeclarationRejected,
     SubsystemInterfaceRejected as _SubsystemInterfaceRejected,
     SubsystemInterfaceConflict as _SubsystemInterfaceConflict,
@@ -152,6 +177,12 @@ from engine.record_store import (
     InterfaceParticipationWithdrawn as _InterfaceParticipationWithdrawn,
     InterfaceParticipationsCorrupt as _InterfaceParticipationsCorrupt,
     INTERFACE_PARTICIPATION_UNCHANGED as _ICP_UNCHANGED,
+    ParticipationPreparationRejected as _ParticipationPreparationRejected,
+    ParticipationPreparationStale as _ParticipationPreparationStale,
+    ParticipationPreparationWithdrawn as _ParticipationPreparationWithdrawn,
+    ParticipationPreparationsCorrupt as _ParticipationPreparationsCorrupt,
+    PARTICIPATION_PREPARATION_UNCHANGED as _PPV_UNCHANGED,
+    PARTICIPATION_PREPARATION_CLEARED as _PPV_CLEARED,
     DecisionComparisonCorrupt as _DecisionComparisonCorrupt,
     DecisionComparisonConflict as _DecisionComparisonConflict,
     DECISION_COMPARISON_NO_CHANGE as _CMP_NO_CHANGE,
@@ -1783,6 +1814,17 @@ ICP_REJECTED_MESSAGE = "That selection does not match this project's interaction
 ICP_NOT_SAVED_MESSAGE = 'The components taking part could not be saved just now. Nothing was changed.'
 ICP_UNKNOWN_MESSAGE = 'We could not confirm whether your selection was saved. Reload this page to see what your project holds before choosing again.'
 ICP_SAVED_NOT_SHOWN_MESSAGE = 'Your selection was saved to your project, but this page could not show it. Reload this page to see what your project holds.'
+# COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01: the outcomes of the
+# per-participation notes form (localised through ui_text._MESSAGE_KEYS).
+PPV_SAVED_MESSAGE = 'Your notes for this component in this interaction were saved to your project. InventorAI has not checked them.'
+PPV_CLEARED_MESSAGE = 'Your notes for this component in this interaction were cleared. The component and its participation are unchanged.'
+PPV_UNCHANGED_MESSAGE = 'Your project already holds exactly these notes for this component in this interaction, so nothing needed to change.'
+PPV_STALE_MESSAGE = 'These notes changed after this page was shown, so nothing was saved. Review them below and try again.'
+PPV_WITHDRAWN_MESSAGE = 'This component has been withdrawn, so its notes cannot be changed. Nothing was saved.'
+PPV_REJECTED_MESSAGE = 'These notes do not match a component taking part in one of this project\'s interactions, so nothing was saved.'
+PPV_TOO_LONG_MESSAGE = 'A note is longer than 1,000 characters, so nothing was saved. Shorten it and try again.'
+PPV_NOT_SAVED_MESSAGE = 'Your notes could not be saved just now. Nothing was changed.'
+PPV_UNKNOWN_MESSAGE = 'We could not confirm whether your notes were saved. Reload this page to see what your project holds before saving again.'
 
 # Stage 28 — Control-Loop Optional Part — Slice 2: the inventor's answers to the
 # governed questions of the optional control-loop part (save_part_answers).
@@ -6517,6 +6559,61 @@ class _QuestionContext:
         self.serving_basis = serving_basis
 
 
+_EXPLICIT_UNKNOWN_REASON = " recorded as an explicit unknown"
+
+
+def _statement_beside_unknown(entry, state, last_result):
+    """MIXED-FUNCTIONAL-ANSWER-FEEDBACK-01 — display-only. True when the answer
+    behind an explicit-unknown result also states something about the question,
+    so the feedback line does not call the whole answer an unknown.
+
+    Read at render time from the live entry only: ``last_result`` is set by the
+    answer route immediately before it appends that answer to the transcript,
+    so the last transcript response is the answer that produced it. A sentence
+    counts only when the existing rules accept it on its own: the relevance
+    composition the T2-G-3 rule uses (canonical gap relevance, the W2-C
+    supplement, the committed variant markers) AND the existing assessor's
+    REASONED floor, so marker padding and decoys never count. The veto, the
+    reason, the gap and the ledger are never read for writing or changed.
+    Fails closed to False, which keeps the existing message."""
+    try:
+        if not isinstance(last_result, dict) or last_result.get("transition") != "WARN":
+            return False
+        reason = last_result.get("reason") or ""
+        if _EXPLICIT_UNKNOWN_REASON not in reason:
+            return False
+        from engine.gap_relevance import GOVERNED_GAP_TYPES, addresses_gap
+        gap_type = reason.split(_EXPLICIT_UNKNOWN_REASON, 1)[0]
+        if gap_type not in GOVERNED_GAP_TYPES:
+            return False
+        transcript = entry.get("transcript") or []
+        if not transcript:
+            return False
+        response = transcript[-1].get("response")
+        if not isinstance(response, str):
+            return False
+        from engine import answer_stance
+        from engine.evidence_order import quality_at_least
+        from engine.idea_state import REASONED
+        from engine.intent_serving import (declared_variant_ids,
+            matches_committed_intent, supplemental_relevance)
+        from engine.progression_loop import assess_response
+        variant_ids = declared_variant_ids(state, gap_type)
+        domain = getattr(state, "domain", None)
+
+        def _accepted_sentence(sentence):
+            relevant = (addresses_gap(sentence, gap_type)
+                        or supplemental_relevance(state, gap_type, sentence)
+                        or any(matches_committed_intent(sentence, question_id)
+                               for question_id in variant_ids))
+            return relevant and quality_at_least(
+                assess_response(sentence, domain), REASONED)
+
+        return answer_stance.states_beyond_unknown(response, _accepted_sentence)
+    except Exception:
+        return False
+
+
 def _resolve_question_context(state, last_result):
     """Resolve the displayed question EXACTLY as the session page does.
 
@@ -7037,6 +7134,9 @@ def show_session(sid):
         # components, read from durable storage on every render (never from
         # IdeaState); None for a project without a durable record.
         component_inventory=_component_inventory_context(sid, entry),
+        # PATHN-CONSTRAINT-DECLARATION-01: the inventor's project constraints,
+        # read from the ledger on every render; forms only on a writable page.
+        project_constraints=_project_constraints_context(sid, entry, state),
         # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the inventor's
         # criteria and values, ONE store snapshot, paged at 200 cells; forms
         # only on the writable (live) surface.
@@ -7059,12 +7159,51 @@ def show_session(sid):
         # project (Mechanical root, or a declared Mechanical part of a valid
         # integrated composition). It never gates the journey.
         cap13_support_reactions_link=_cap13_link_offered(sid),
+        # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: the dimensional fit reads
+        # the verbatim original statement, never the display-trimmed summary.
+        engineering_fit_link=(_engineering_fit(_original_idea_text(sid)) is not None
+                              and _cap13_eligible(sid)),
+        engineering_fit_lang=_current_ui_lang(),
+        # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: InventorAI's proposed
+        # reading of the needs the inventor stated, with the existing engineering
+        # owners' own readiness. Read-only; never an engineering input.
+        functional_handoff=_functional_handoff_view(sid, state),
         # Stage 27 / THERM-01 Slice 1: an OPTIONAL link to the request-local
         # single-path temperature-difference calculation, offered only on an
         # eligible project (Electrical / Electronics root, or a declared
         # Electrical / Electronics part of a valid integrated composition). It
         # never gates the journey.
         therm01_temperature_difference_link=_therm01_link_offered(sid),
+        # Stage 25 / CAP-13 Planar Moment Slice 1: an OPTIONAL link to the
+        # request-local planar single-force moment calculation, offered on an
+        # eligible project (Mechanical root, or a declared Mechanical part of a
+        # valid integrated composition). It never gates the journey.
+        cap13_planar_moment_link=_cap13m_link_offered(sid),
+        # CAP13-PLANAR-REQUIRED-FORCE-01: an OPTIONAL link to the request-local
+        # planar required force calculation, on the same eligibility as the
+        # planar moment. It never gates the journey.
+        cap13_planar_required_force_link=_cap13f_link_offered(sid),
+        # Stage 25 / CAP-13 Rotational Load Slice 1: an OPTIONAL link to the
+        # request-local linear speed-dependent rotational load evaluation, on the
+        # same eligibility as the other CAP-13 calculations. It never gates the
+        # journey.
+        cap13_rotational_load_link=_cap13r_link_offered(sid),
+        # Sensors C3 / TMP36 Nominal Temperature Slice 1: an OPTIONAL link to
+        # the request-local nominal voltage-to-temperature reading, on the same
+        # eligibility as THERM-01 (Electrical / Electronics root, or a declared
+        # Electrical / Electronics part). It never gates the journey.
+        tmp36_temperature_link=_tmp36_link_offered(sid),
+        # 28-T4 Control-Cycle Slice 1: an OPTIONAL link to the request-local
+        # READY / RUNNING control-cycle evaluation, on an Electrical / Electronics
+        # root project only (no declared-part path). It never gates the journey.
+        control_cycle_link=_control_cycle_eligible(sid),
+        # TEMPERATURE-TO-CONTROL-CONDITION-01: an OPTIONAL link to the
+        # request-local composition, offered only where BOTH existing gates
+        # admit the project. It never gates the journey.
+        temperature_control_condition_link=_tcc_eligible(sid),
+        dc_load_current_link=_dcl_eligible(sid),
+        dc_load_power_link=_dcp_eligible(sid),
+        dc_load_energy_link=_dce_eligible(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -7192,9 +7331,15 @@ def show_session(sid):
         # `last_result`, never rewrites `last_result.reason`, never re-scores, and never
         # alters the PASS/WARN/BLOCK outcome; the truthful badge and the raw reason (as
         # non-primary provenance) are rendered by the template independently. None when
-        # there is no result / no recognized transition.
+        # there is no result / no recognized transition. MIXED-FUNCTIONAL-ANSWER-
+        # FEEDBACK-01: an explicit-unknown answer that also states something about
+        # the question selects its own message (display-only; outcome unchanged).
         current_result_feedback=ui_text.localize_deep(
-            get_result_feedback(last_result), _current_ui_lang()),
+            get_result_feedback(
+                last_result,
+                statement_beside_unknown=_statement_beside_unknown(
+                    entry, state, last_result)),
+            _current_ui_lang()),
         # Guided Answer Co-Authoring Increment 1 — Advisory Prompt Support
         # (Increment Contract PR #127): deterministic, display-only, content-free
         # OPTIONAL prompts naming the KIND of information the inventor could add to
@@ -7284,6 +7429,10 @@ def _deliverable_context(sid):
     # HTML report and the PDF closed.
     if not _attach_project_subsystems(sid, state):
         return None
+    # CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the inventor's acceptance
+    # notes beside their mandatory-constraint step in Section 14 (HTML and
+    # PDF). Unreadable notes read UNAVAILABLE there; the report still renders.
+    _attach_constraint_acceptance_carrier(sid, state)
     if (getattr(state, "domain", None) is None and not reconstructed_deliverable
             and (getattr(state, "success_criteria", None)
                  or getattr(state, "measurement_methods", None)
@@ -7303,8 +7452,70 @@ def _deliverable_context(sid):
     # Stage 15 Slice 3: the same seam (the assembler stays pinned) carries each
     # declared-interface Validation Plan step's recorded preparation inputs.
     _attach_section_14_interface_preparation(package, state)
+    # PATHN-CONSTRAINT-DECLARATION-01: the same seam (the assembler stays
+    # pinned) keeps the withdrawn-answer count truthful: a corrected or
+    # withdrawn project constraint is not a withdrawn answer.
+    _exclude_constraints_from_withdrawn_count(package, state)
     eligible = package["_session_meta"]["deliverable_eligible"]
     return entry, package, eligible, reconstructed_deliverable, state
+
+
+def _exclude_constraints_from_withdrawn_count(package, state):
+    """Subtract the superseded project-constraint records from the package's
+    withdrawn-source count (the assembler counts every superseded non-decision
+    record); the note is dropped when no withdrawn answer remains."""
+    meta = package["_session_meta"].get("withdrawn_source_records")
+    if not isinstance(meta, dict) or not meta.get("total"):
+        return
+    superseded = sum(
+        1 for r in getattr(state, "assertions", None) or ()
+        if getattr(r, "superseded_by", None) is not None
+        and getattr(r, "disposition", None) in _constraints.PROJECT_CONSTRAINT_DISPOSITIONS)
+    if not superseded:
+        return
+    total = max(meta["total"] - superseded, 0)
+    package["_session_meta"]["withdrawn_source_records"] = {
+        "total": total, "note": meta.get("note") if total else None}
+
+
+def _attach_constraint_acceptance_carrier(sid, state):
+    """CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: refresh
+    ``state.constraint_acceptance_preparations`` from the DURABLE notes of
+    ``sid`` through the existing reader (``load_constraint_acceptance``, which
+    validates the ledger and the notes whole). A project absent from the store,
+    or a store without the reader, leaves the carrier NOT ATTACHED (``None``:
+    nothing is claimed); any other read failure attaches the UNREADABLE marker
+    (the step reads unavailable, never "not recorded"). The Validation Plan
+    re-validates the attached notes against THIS state's own ledger, so notes
+    from a durable moment the state does not show are never paired with it.
+    Like the Stage 15 preparation carrier, a state with no current mandatory
+    constraint and no carrier yet keeps its carrier untouched, so rendering
+    changes nothing for every other project."""
+    if getattr(state, "constraint_acceptance_preparations", None) is None:
+        try:
+            history = _constraints.constraint_history(
+                list(getattr(state, "assertions", None) or ()))
+            needed = any(c.strength == _constraints.CONSTRAINT_STRENGTH_MANDATORY
+                         for c in history.current)
+        except Exception:
+            # The plan reports an unreadable constraint history itself.
+            needed = False
+        if not needed:
+            return
+    loader = getattr(_get_store(), "load_constraint_acceptance", None)
+    if not callable(loader):
+        state.constraint_acceptance_preparations = None
+        return
+    try:
+        record = loader(sid)
+    except _ProjectNotFound:
+        state.constraint_acceptance_preparations = None
+        return
+    except Exception:
+        state.constraint_acceptance_preparations = \
+            _constraints.CONSTRAINT_ACCEPTANCE_UNREADABLE
+        return
+    state.constraint_acceptance_preparations = list(record["preparations"])
 
 
 def _attach_section_14_interface_preparation(package, state):
@@ -7314,18 +7525,40 @@ def _attach_section_14_interface_preparation(package, state):
     canonical Validation Plan's own order, so step N of the package IS step N
     of the plan; a step with nothing recorded (and every non-interface step)
     gets no key, so its payload is unchanged. If the two ever disagree in
-    length nothing is attached (never a misaligned value)."""
-    from engine.validation_plan import derive_validation_plan
+    length nothing is attached (never a misaligned value).
+
+    MANDATORY-CONSTRAINT-VERIFICATION-PREPARATION-01: the same alignment also
+    gives each mandatory-constraint step its own ordinal (``constraint_item``,
+    1-based in plan order; never rendered). Two constraints declared with the
+    same wording therefore stay two rows, each labelled as a constraint you
+    declared, and are never collapsed into one row counted as recorded
+    answers."""
+    from engine.validation_plan import CONSTRAINT_ANCHOR_KIND, derive_validation_plan
     section = package.get("section_14_validation_plan") or {}
     rendered = section.get("steps") or []
     steps = derive_validation_plan(state).steps
     if len(steps) != len(rendered):
         return
+    constraint_item = 0
     for step, row in zip(steps, rendered):
-        if step.interface_preparation and row.get("statement") == step.statement:
+        if row.get("statement") != step.statement:
+            continue
+        if step.interface_preparation:
             row["interface_preparation"] = [
                 {"field": field_name, "text": text}
                 for field_name, text in step.interface_preparation]
+        if step.provenance.anchor_kind == CONSTRAINT_ANCHOR_KIND:
+            constraint_item += 1
+            row["constraint_item"] = constraint_item
+            # CONSTRAINT-ACCEPTANCE-TO-VALIDATION-PLAN-01: the attached notes,
+            # verbatim, with what is not recorded for the current version.
+            acceptance = step.constraint_acceptance
+            if acceptance is not None:
+                row["constraint_acceptance"] = {
+                    "status": acceptance.status,
+                    "recorded": [{"field": f, "text": text}
+                                 for f, text in acceptance.recorded],
+                    "missing": list(acceptance.missing)}
 
 
 def _quantity_statements(package, state):
@@ -7369,6 +7602,9 @@ def show_deliverable(sid):
         # COMPONENT-DELIVERABLE-VALUE-01: the inventor's CURRENT declared
         # components (one store snapshot; UNAVAILABLE fails closed).
         component_report=_component_report_view(sid),
+        # PATHN-CONSTRAINT-DECLARATION-01: the SAME current-constraint view
+        # in the HTML report and the PDF.
+        constraint_report=_constraint_report_view(state),
         # FUNCTIONAL-CONCEPT-PRESENTATION-01: the inventor's own current
         # answers grouped by question topic (read-only over the ledger).
         functional_concept=_functional_concept_view(state),
@@ -7562,6 +7798,9 @@ def download_deliverable_pdf(sid):
             # COMPONENT-DELIVERABLE-VALUE-01: the SAME current-component view
             # as the HTML report.
             component_report=_component_report_view(sid),
+            # PATHN-CONSTRAINT-DECLARATION-01: the SAME current-constraint view
+            # in the HTML report and the PDF.
+            constraint_report=_constraint_report_view(state),
             # FUNCTIONAL-CONCEPT-PRESENTATION-01: the SAME by-topic view as
             # the HTML report.
             functional_concept=_functional_concept_view(state),
@@ -8010,6 +8249,14 @@ def _submission_identity_for(sid, entry, domain, entry_key):
         value = nonce + "." + _submission_sig(domain, sid, nonce)
         entry[entry_key] = value
     return value
+
+
+def _fresh_submission_identity(sid, domain):
+    """A NEW signed submission identity under ``domain`` for this project,
+    not stored anywhere (verified statelessly by
+    ``_verified_submission_identity``)."""
+    nonce = secrets.token_hex(16)
+    return nonce + "." + _submission_sig(domain, sid, nonce)
 
 
 def _verified_submission_identity(sid, raw, domain):
@@ -9351,6 +9598,94 @@ def _functional_concept_view(state):
         return {"available": False}
 
 
+def _original_idea_text(sid):
+    """The project's verbatim original statement (``seed_idea_text``) from the
+    durable project envelope, or None when it cannot be read or is empty.
+    Never the display-trimmed ``idea_summary`` and never ``known_problem``.
+    Presentation input only; the caller MUST first establish project
+    authorization."""
+    cache = getattr(g, "_original_idea_text", None) if has_request_context() else None
+    if cache is not None and sid in cache:
+        return cache[sid]
+    try:
+        inputs = _get_store().load_reconstruction_inputs(sid)
+    except Exception:
+        return None
+    seed = (inputs or {}).get("seed_idea_text")
+    seed = seed if isinstance(seed, str) and seed.strip() else None
+    if has_request_context():
+        g._original_idea_text = dict(cache or {}, **{sid: seed})
+    return seed
+
+
+def _handoff_statements(sid, state):
+    """``(statements, idea_available)``: the original statement (when it can be
+    read) and the inventor's ACTIVE answered records, verbatim, as the
+    projection's sources. Answers use the same filter as the by-topic view."""
+    statements = []
+    idea = _original_idea_text(sid)
+    if idea is not None:
+        statements.append((_handoff.SOURCE_IDEA, "idea", idea))
+    for record in getattr(state, "assertions", None) or ():
+        if getattr(record, "superseded_by", None) is not None \
+                or getattr(record, "provenance", None) not in _FUNCTIONAL_CONCEPT_PROVENANCE \
+                or getattr(record, "disposition", None) != _DISP_ANSWERED:
+            continue
+        text = getattr(record, "content", None)
+        if isinstance(text, str) and text.strip():
+            statements.append((_handoff.SOURCE_ANSWER,
+                               getattr(record, "record_id", ""), text))
+    return statements, idea is not None
+
+
+def _handoff_capabilities(sid, state, role):
+    """The existing engineering owners related to ``role``, each with its OWN
+    readiness for this project, read from that owner's gate. No owner is
+    offered as prepared or executable from the inventor's words."""
+    items = []
+    for ref in _handoff.ROLE_CAPABILITY_REFERENCES[role]:
+        try:
+            if ref == _handoff.CAP13_CONDITIONAL_REACTIONS:
+                state_key = "CONDITIONAL" if _cap13_eligible(sid) else "NOT_FOR_PROJECT"
+                count = None
+            elif ref == _handoff.CAP09_EXPERIMENT_PLANNING:
+                count = len(_current_experiment_ids(state))
+                state_key = "AVAILABLE" if count else "NO_EXPERIMENTS"
+            else:
+                raise ValueError(ref)
+        except Exception:
+            state_key, count = "UNAVAILABLE", None
+        items.append({"ref": ref, "state": state_key, "count": count})
+    return items
+
+
+def _functional_handoff_view(sid, state):
+    """FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01 — the session page's read-only
+    view of InventorAI's proposed reading of the needs the inventor stated.
+
+    ``None`` when there is no state, or when the original statement was read
+    and no role was mentioned at all; ``{"available": False}`` on any failure. Every role is
+    a provisional reading with its verbatim quotes; nothing is written, inferred into
+    a technical value, or offered as an executable method."""
+    if state is None:
+        return None
+    try:
+        statements, idea_available = _handoff_statements(sid, state)
+        projection = _handoff.project_functional_roles(statements)
+        roles = [{"role": r.role, "object": r.object_key, "status": r.status,
+                  "groundings": r.groundings,
+                  "negations": r.negations + r.related_statements,
+                  "uncertain": r.method_uncertainties,
+                  "capabilities": _handoff_capabilities(sid, state, r.role)}
+                 for r in projection.roles]
+        if not roles and idea_available and not projection.abstained:
+            return None
+        return {"available": True, "idea_available": idea_available,
+                "roles": roles, "abstained": projection.abstained}
+    except Exception:
+        return {"available": False}
+
+
 def _component_report_view(sid):
     """COMPONENT-DELIVERABLE-VALUE-01 — the report / PDF view of the inventor's
     CURRENT declared components.
@@ -9407,6 +9742,457 @@ def _component_report_view(sid):
                         else needs.get(component.component_id))
     return {"available": True, "has_parts": bool(subsystems),
             "needs_available": needs is not None, "components": items}
+
+
+# --- PATHN-CONSTRAINT-DECLARATION-01: the inventor's project constraints -----
+# The inventor may declare, correct and withdraw their own project constraints
+# in ordinary language, each with the strength they choose. Every action is ONE
+# append-only ledger record through the ONE carrier
+# (``IdeaState.record_constraint_action``) and the store's
+# ``append_constraint_action``, re-validated against the durable ledger inside
+# the write transaction. Authorization is the central project check plus the
+# global request-integrity (CSRF) guard; the signed submission identity says
+# WHICH durable action attempt a post is (an exact retry is recognised from
+# committed state; the same identity with other material fails closed). SAVED
+# is reported only from committed truth. A constraint is OWNER_STATED /
+# UNVALIDATED: nothing is checked, inferred, specified, selected or ruled out,
+# and no gap, progression, readiness, routing, SafetySignal or score changes.
+_CONSTRAINT_SUBMISSION_DOMAIN = "constraint-submission-v1"
+_CONSTRAINT_ACTION_KEY_DOMAIN = "constraint-action-v1"
+CONSTRAINT_ACK_SLOT = "_constraint_ack"
+CONSTRAINT_ERROR_SLOT = "_constraint_error"
+_CONSTRAINT_STRENGTH_KEYS = {
+    _constraints.CONSTRAINT_STRENGTH_PREFERENCE: "UI_PCN_STRENGTH_PREFERENCE",
+    _constraints.CONSTRAINT_STRENGTH_SOFT: "UI_PCN_STRENGTH_SOFT",
+    _constraints.CONSTRAINT_STRENGTH_MANDATORY: "UI_PCN_STRENGTH_MANDATORY",
+}
+_CONSTRAINT_REFUSAL_KEYS = {
+    "stale": "UI_PCN_MSG_STALE",
+    "unchanged": "UI_PCN_MSG_UNCHANGED",
+    "capacity": "UI_PCN_MSG_LIMIT",
+    "invalid": "UI_PCN_MSG_INVALID",
+}
+_CONSTRAINT_ACK_KEYS = {
+    _constraints.CONSTRAINT_ACTION_DECLARE: "UI_PCN_MSG_SAVED",
+    _constraints.CONSTRAINT_ACTION_CORRECT: "UI_PCN_MSG_CORRECTED",
+    _constraints.CONSTRAINT_ACTION_WITHDRAW: "UI_PCN_MSG_WITHDRAWN",
+}
+
+
+def _constraint_action_key(sid, nonce, action):
+    """The durable identity of ONE constraint action attempt: HMAC over
+    (action, project, submission nonce) ONLY — never over the material, so the
+    same identity with ANY different material is detectable."""
+    msg = _canonical_message(_CONSTRAINT_ACTION_KEY_DOMAIN, sid, action, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _constraint_payload_matches(payload, action, text, strength, target):
+    """Confirm-by-reload: the STORED record is exactly this action — its
+    disposition, verbatim text, strength and single target."""
+    if not isinstance(payload, dict):
+        return False
+    supersedes = [] if action == _constraints.CONSTRAINT_ACTION_DECLARE else [target]
+    if action == _constraints.CONSTRAINT_ACTION_WITHDRAW:
+        return (payload.get("disposition")
+                == _constraints.DISPOSITION_CONSTRAINT_WITHDRAWN
+                and payload.get("content") == ""
+                and "constraint_strength" not in payload
+                and payload.get("supersedes") == supersedes)
+    return (payload.get("disposition") == _constraints.DISPOSITION_CONSTRAINT_DECLARED
+            and payload.get("content") == text
+            and payload.get("constraint_strength") == strength
+            and payload.get("supersedes") == supersedes)
+
+
+def _constraint_notice(sid, entry, ack=None, error=None):
+    """Publish exactly ONE current constraint notice and return to the list."""
+    entry.pop(CONSTRAINT_ACK_SLOT, None)
+    entry.pop(CONSTRAINT_ERROR_SLOT, None)
+    if ack is not None:
+        entry[CONSTRAINT_ACK_SLOT] = ack
+    if error is not None:
+        entry[CONSTRAINT_ERROR_SLOT] = error
+    return redirect(url_for("show_session", sid=sid) + "#project-constraints")
+
+
+def _constraint_items(history):
+    """Display items for every constraint identity of ``history``: verbatim
+    text, the strength's catalogue key and each earlier declared form. The
+    ledger record ids travel only as form values, never as visible text."""
+    items = []
+    for c in history.constraints:
+        items.append({
+            "record_id": c.record_id, "constraint_id": c.constraint_id,
+            "text": c.text,
+            "strength": c.strength,
+            "strength_key": _CONSTRAINT_STRENGTH_KEYS[c.strength],
+            "corrected": c.corrections > 0, "withdrawn": c.withdrawn,
+            "can_correct": c.corrections < _constraints.MAX_CORRECTIONS_PER_CONSTRAINT,
+            "history": c.history,
+        })
+    return items
+
+
+def _project_constraints_context(sid, entry, state):
+    """The session-page view of the inventor's project constraints, read from
+    the ledger on every render: CURRENT constraints (latest form, declaration
+    order) with their earlier versions, withdrawn constraints apart as history
+    only, and the forms on a writable page. ``unavailable`` — never "none" —
+    when the history cannot be read; ``None`` without a state."""
+    if state is None:
+        return None
+    ack = entry.pop(CONSTRAINT_ACK_SLOT, None) if entry is not None else None
+    error = entry.pop(CONSTRAINT_ERROR_SLOT, None) if entry is not None else None
+    try:
+        assertions = list(getattr(state, "assertions", None) or ())
+        history = _constraints.constraint_history(assertions)
+        by_id = {r.record_id: r for r in assertions}
+        items = _constraint_items(history)
+        for item in items:
+            earlier = []
+            for rid in item["history"][:-1]:
+                record = by_id[rid]
+                if record.disposition != _constraints.DISPOSITION_CONSTRAINT_DECLARED:
+                    continue
+                earlier.append({
+                    "text": record.content,
+                    "strength_key": _CONSTRAINT_STRENGTH_KEYS[record.constraint_strength],
+                    "original": not record.supersedes})
+            if item["withdrawn"]:
+                # The last declared form is the one shown; earlier ones exclude it.
+                earlier = earlier[:-1]
+            item["earlier"] = earlier
+    except Exception:
+        return {"status": "unavailable", "ack": None, "error": error}
+    writable = bool(getattr(state, "domain", None)) and entry is not None \
+        and SESSION_STORE.get(sid) is entry
+    current = [i for i in items if not i["withdrawn"]]
+    _attach_constraint_acceptance(sid, current)
+    active_room = len(current) < _constraints.MAX_ACTIVE_CONSTRAINTS_PER_PROJECT
+    lifetime_room = (len(items)
+                     < _constraints.MAX_CONSTRAINT_IDENTITIES_PER_PROJECT)
+    return {
+        "status": "available",
+        "writable": writable,
+        "constraints": current,
+        "withdrawn": [i for i in items if i["withdrawn"]],
+        "strengths": [{"value": s, "key": _CONSTRAINT_STRENGTH_KEYS[s]}
+                      for s in _constraints.CONSTRAINT_STRENGTHS],
+        "can_add": active_room and lifetime_room,
+        "cap_key": "UI_PCN_CAP" if not active_room else "UI_PCN_CAP_LIFETIME",
+        # A fresh signed identity per render, never stored in the session
+        # entry: an exact re-submission of the SAME form carries the same
+        # identity and is recognised from committed state.
+        "submission": (_fresh_submission_identity(
+            sid, _CONSTRAINT_SUBMISSION_DOMAIN) if writable else ""),
+        "max_text": _constraints.MAX_CONSTRAINT_TEXT_LENGTH,
+        "ack": ack, "error": error,
+    }
+
+
+# --- MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 ------------------------
+# For ONE current mandatory constraint the inventor records an observable
+# acceptance criterion and the measurement, evidence or specialist review they
+# would need to check it: verification PREPARATION only, OWNER_STATED /
+# UNVALIDATED (``engine.idea_state``; the record store's
+# ``constraint_acceptance_preparations``), keyed by the constraint's FOUNDING
+# identity. Notes saved for an earlier version are shown as EARLIER statements,
+# not reconfirmed, until saved again; a withdrawn or no-longer-mandatory
+# constraint keeps them stored and hidden. Its own POST, behind the global
+# request-integrity (CSRF) guard and the central project authorization; the
+# form carries the constraint version and the notes it displayed (the F724-1
+# baseline discipline) and the store re-validates the whole ledger, the
+# constraint and the notes inside ONE serialized write. An unknown outcome is
+# decided by reloading committed truth (SAVED / NOT SAVED / UNKNOWN). Nothing
+# here reads the notes, derives a threshold or checks the constraint; the
+# Validation Plan step, the report, the PDF and the Stage 35 export do not
+# read them.
+_PCA_FIELDS = _constraints.CONSTRAINT_ACCEPTANCE_FIELDS
+_PCA_WRITE_SAVED = "saved"
+_PCA_WRITE_NOT_SAVED = "not_saved"
+_PCA_WRITE_UNKNOWN = "unknown"
+_PCA_REFUSAL_KEYS = {
+    "stale": "UI_PCA_MSG_STALE",
+    "withdrawn": "UI_PCA_MSG_WITHDRAWN",
+    "not_mandatory": "UI_PCA_MSG_NOT_MANDATORY",
+    "invalid": "UI_PCA_MSG_REJECTED",
+}
+
+
+def _attach_constraint_acceptance(sid, current):
+    """Attach ``acceptance`` to every CURRENT MANDATORY item of ``current``
+    (the live constraint list): the notes to show (``None`` = not recorded),
+    whether they were saved for an earlier version, and the form baselines.
+    Read in the store's own snapshot (``load_constraint_acceptance``) and used
+    for an item only when that snapshot's version of the constraint is exactly
+    the one this page shows; otherwise, or when the notes cannot be read, the
+    item's notes read UNAVAILABLE — never "not recorded". A project absent
+    from the store shows no notes block."""
+    mandatory = [i for i in current
+                 if i["strength"] == _constraints.CONSTRAINT_STRENGTH_MANDATORY]
+    if not mandatory:
+        return
+    loader = getattr(_get_store(), "load_constraint_acceptance", None)
+    if not callable(loader):
+        return
+    try:
+        record = loader(sid)
+        durable = {c.constraint_id: c for c in record["history"].current}
+        notes = _constraints.current_constraint_acceptance(
+            record["preparations"], record["history"])
+    except _ProjectNotFound:
+        return
+    except Exception:
+        durable = notes = None
+    for item in mandatory:
+        chain = None if durable is None else durable.get(item["constraint_id"])
+        if (chain is None or chain.record_id != item["record_id"]
+                or chain.strength != _constraints.CONSTRAINT_STRENGTH_MANDATORY):
+            item["acceptance"] = {"status": "unavailable"}
+            continue
+        stored, earlier = notes.get(item["constraint_id"], (None, False))
+        values = {f: (None if stored is None else stored.value(f)) for f in _PCA_FIELDS}
+        item["acceptance"] = {
+            "status": "available", "notes": values, "earlier": earlier,
+            "recorded": stored is not None,
+            "base": {f: values[f] or "" for f in _PCA_FIELDS},
+            "base_earlier": "1" if earlier else "0",
+            "max": _constraints.MAX_CONSTRAINT_ACCEPTANCE_LENGTH,
+        }
+
+
+def _pca_text(raw):
+    """``(text_or_None, error_key)``: the route's outer trim, empty -> not
+    recorded, the 1,000-character bound and the NUL guard."""
+    text = (raw or "").strip()
+    if not text:
+        return None, None
+    if len(text) > _constraints.MAX_CONSTRAINT_ACCEPTANCE_LENGTH:
+        return None, "UI_PCA_MSG_TOO_LONG"
+    if not _constraints.valid_constraint_acceptance_text(text):
+        return None, "UI_PCA_MSG_INVALID"
+    return text, None
+
+
+def _resolve_constraint_acceptance_write(sid, constraint_id, target):
+    """Bounded confirm-by-reload after the write RAISED: SAVED when the
+    committed notes of exactly this constraint equal ``target`` (line-break
+    representation aside) for its current version, NOT SAVED on a
+    demonstrable mismatch, UNKNOWN when committed truth cannot be read."""
+    try:
+        record = _get_store().load_constraint_acceptance(sid)
+    except Exception:
+        return _PCA_WRITE_UNKNOWN
+    stored = next((p for p in record["preparations"]
+                   if p.constraint_id == constraint_id), None)
+    if all(value is None for value in target.values()):
+        return _PCA_WRITE_SAVED if stored is None else _PCA_WRITE_NOT_SAVED
+    current = _constraints.current_constraint_acceptance(
+        record["preparations"], record["history"]).get(constraint_id)
+    if current is None or current[1]:
+        return _PCA_WRITE_NOT_SAVED
+    for field_name, text in target.items():
+        if not _same_planning_text(text or "", stored.value(field_name)):
+            return _PCA_WRITE_NOT_SAVED
+    return _PCA_WRITE_SAVED
+
+
+@app.route("/session/<sid>/constraint-acceptance", methods=["POST"])
+def constraint_acceptance(sid):
+    """MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01 — the inventor records,
+    replaces or clears their notes for checking ONE current mandatory
+    constraint: an observable acceptance criterion and the measurement,
+    evidence or specialist review they would need. Their own statements,
+    OWNER_STATED / UNVALIDATED; saving checks, infers or verifies nothing and
+    changes no constraint. Order: request integrity (global guard) ->
+    authorization -> form shape -> ONE serialized durable write that
+    re-validates the ledger, the constraint and the notes -> committed-truth
+    resolution."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return redirect(url_for("index"))
+        SESSION_STORE[sid] = entry
+    single = {}
+    for name in ("constraint_id", "constraint_record", "pca_base_earlier") + tuple(
+            "pca_" + f for f in _PCA_FIELDS) + tuple("pca_base_" + f for f in _PCA_FIELDS):
+        values = request.form.getlist(name)
+        if len(values) != 1:
+            return _constraint_notice(sid, entry, error="UI_PCA_MSG_REJECTED")
+        single[name] = values[0]
+    constraint_id, displayed = single["constraint_id"], single["constraint_record"]
+    if (not _REC_ID_FIELD_RE.match(constraint_id)
+            or not _REC_ID_FIELD_RE.match(displayed)
+            or single["pca_base_earlier"] not in ("0", "1")):
+        return _constraint_notice(sid, entry, error="UI_PCA_MSG_REJECTED")
+    # F724-1: the notes THIS form displayed. A baseline that is not a stored
+    # note could never have been displayed: malformed form.
+    expected = {"earlier": single["pca_base_earlier"] == "1"}
+    for field_name in _PCA_FIELDS:
+        base = single["pca_base_" + field_name].strip() or None
+        if base is not None and not _constraints.valid_constraint_acceptance_text(base):
+            return _constraint_notice(sid, entry, error="UI_PCA_MSG_REJECTED")
+        expected[field_name] = base
+    values = {}
+    for field_name in _PCA_FIELDS:
+        raw = single["pca_" + field_name]
+        if _same_planning_text(raw, expected[field_name]):
+            # untouched: keep exactly the displayed value (line breaks aside)
+            values[field_name] = expected[field_name]
+            continue
+        text, text_error = _pca_text(raw)
+        if text_error is not None:
+            return _constraint_notice(sid, entry, error=text_error)
+        values[field_name] = text
+    try:
+        outcome = _get_store().set_constraint_acceptance(
+            sid, constraint_id, displayed, values, expected)
+    except _ConstraintAcceptanceRejected as exc:
+        return _constraint_notice(
+            sid, entry, error=_PCA_REFUSAL_KEYS.get(exc.kind, "UI_PCA_MSG_REJECTED"))
+    except (_ProjectNotFound, _ConstraintAcceptanceCorrupt):
+        # Committed durable truth WAS read and fails closed: nothing written.
+        return _constraint_notice(sid, entry, error="UI_PCA_MSG_NOT_SAVED")
+    except Exception:
+        resolved = _resolve_constraint_acceptance_write(sid, constraint_id, values)
+        if resolved == _PCA_WRITE_UNKNOWN:
+            return _constraint_notice(sid, entry, error="UI_PCA_MSG_UNKNOWN")
+        if resolved == _PCA_WRITE_NOT_SAVED:
+            return _constraint_notice(sid, entry, error="UI_PCA_MSG_NOT_SAVED")
+        outcome = None
+    if outcome == _PCA_UNCHANGED:
+        return _constraint_notice(sid, entry, ack="UI_PCA_MSG_UNCHANGED")
+    if outcome == _PCA_CLEARED or (outcome is None
+                                   and all(v is None for v in values.values())):
+        return _constraint_notice(sid, entry, ack="UI_PCA_MSG_CLEARED")
+    return _constraint_notice(sid, entry, ack="UI_PCA_MSG_SAVED")
+
+
+def _constraint_report_view(state):
+    """The report / PDF view of the inventor's CURRENT project constraints —
+    verbatim text and strength, declaration order, latest form only. Earlier
+    versions and withdrawn constraints never appear. ``{"available": False}``
+    — never "none" — when the history cannot be read. Read-only."""
+    try:
+        history = _constraints.constraint_history(
+            list(getattr(state, "assertions", None) or ()))
+        items = [{"text": i["text"], "strength_key": i["strength_key"]}
+                 for i in _constraint_items(history) if not i["withdrawn"]]
+    except Exception:
+        return {"available": False, "constraints": []}
+    return {"available": True, "constraints": items}
+
+
+@app.route("/session/<sid>/constraint", methods=["POST"])
+def constraint_action(sid):
+    """PATHN-CONSTRAINT-DECLARATION-01 — the inventor declares, corrects or
+    withdraws ONE of their own project constraints, after an explicit
+    confirmation. Order: project authorization -> a live writable entry ->
+    the signed submission identity and a closed action -> input -> the EXACT
+    committed retry (recognised before freshness; changes nothing) -> a
+    staged mint on a deep copy (refuses a target that is no longer current,
+    an exact restatement and every bound) -> ONE durable append re-validated
+    inside its transaction -> publication to live state."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    if getattr(state, "domain", None) is None:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+    submission = request.form.get("constraint_submission", "")
+    nonce = _verified_submission_identity(sid, submission,
+                                          _CONSTRAINT_SUBMISSION_DOMAIN)
+    action = request.form.get("constraint_action", "")
+    if nonce is None or action not in _constraints.CONSTRAINT_ACTIONS:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+    if request.form.get("constraint_confirm") != "yes":
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_CONFIRM")
+    target = None
+    if action != _constraints.CONSTRAINT_ACTION_DECLARE:
+        target = request.form.get("constraint_target", "")
+        if not _REC_ID_FIELD_RE.match(target or ""):
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+    text = strength = None
+    if action != _constraints.CONSTRAINT_ACTION_WITHDRAW:
+        raw = request.form.get("constraint_text")
+        text = raw.strip() if isinstance(raw, str) else ""
+        strength = request.form.get("constraint_strength", "")
+        if (strength not in _constraints.CONSTRAINT_STRENGTHS
+                or not _constraints.valid_constraint_text(text)):
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_INVALID")
+    store = _get_store()
+    idem_key = _constraint_action_key(sid, nonce, action)
+
+    def _committed_prior():
+        # IR-01: confirmation is read ONLY from committed durable state.
+        return store.committed_record_payload_for_idempotency_key(sid, idem_key)
+
+    def _settle(prior):
+        if not _constraint_payload_matches(prior, action, text, strength, target):
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+        if not any(r.record_id == prior.get("record_id") for r in state.assertions):
+            # Committed, but not (yet) on this live page: never claim it shown.
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_SAVED_NOT_SHOWN")
+        return _constraint_notice(sid, entry, ack=_CONSTRAINT_ACK_KEYS[action])
+
+    try:
+        prior = _committed_prior()
+    except Exception:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_UNKNOWN")
+    if prior is not None:
+        return _settle(prior)
+
+    import copy
+    _minter = IdeaState(idea_id=state.idea_id)
+    _minter.assertions = [copy.deepcopy(r) for r in state.assertions]
+    staged_ids = [r.record_id for r in state.assertions]
+    try:
+        new_record = _minter.record_constraint_action(
+            action, text=text, strength=strength, target_record_id=target,
+            iteration=state.iteration)
+    except _constraints.ConstraintStale:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_STALE")
+    except _constraints.ConstraintUnchanged:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_UNCHANGED")
+    except _constraints.ConstraintCapacityError:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_LIMIT")
+    except ValueError:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_INVALID")
+    try:
+        store.append_constraint_action(sid, new_record, idempotency_key=idem_key)
+    except _ConstraintActionRejected as exc:
+        return _constraint_notice(
+            sid, entry, error=_CONSTRAINT_REFUSAL_KEYS.get(exc.kind,
+                                                           "UI_PCN_MSG_INVALID"))
+    except (sqlite3.IntegrityError, StoreError, sqlite3.Error):
+        # Never assume an outcome: continue only when committed state shows
+        # EXACTLY this action under this identity.
+        try:
+            prior = _committed_prior()
+        except Exception:
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_UNKNOWN")
+        if prior is None:
+            return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+        if prior.get("record_id") != new_record.record_id:
+            return _settle(prior)
+        if not _constraint_payload_matches(prior, action, text, strength, target):
+                return _constraint_notice(sid, entry, error="UI_PCN_MSG_NOT_SAVED")
+    # Publish the COMPLETE staged ledger (new record + inverse edge) only when
+    # live state is still exactly the ledger it was staged from.
+    if [r.record_id for r in state.assertions] != staged_ids:
+        return _constraint_notice(sid, entry, error="UI_PCN_MSG_SAVED_NOT_SHOWN")
+    state.assertions = _minter.assertions
+    return _constraint_notice(sid, entry, ack=_CONSTRAINT_ACK_KEYS[action])
+
+
+_REC_ID_FIELD_RE = re.compile(r"^rec_[1-9][0-9]{0,9}$")
 
 
 # Committed durable truth that WAS read and fails closed — distinct from
@@ -10080,7 +10866,8 @@ def _s15_preparation_context(sid):
 
 def _render_interface_preparation(sid, context, status=200, error=None,
                                   notice=None, drafts=None, baselines=None,
-                                  observation_drafts=None, evidence_drafts=None):
+                                  observation_drafts=None, evidence_drafts=None,
+                                  pp_drafts=None):
     """Render the preparation page. ``context`` None renders no interaction
     at all (the notice says why) — never "no interactions". ``drafts`` (a
     REJECTED submission, request-local only) maps form field name -> the text
@@ -10092,7 +10879,10 @@ def _render_interface_preparation(sid, context, status=200, error=None,
     ``observation_drafts`` (Stage 15 Slice 4) is the refused observation text,
     request-local only, keyed like the observation forms.
     ``evidence_drafts`` (Stage 15 closure) is a refused Integration evidence
-    submission, request-local only, keyed like the evidence forms."""
+    submission, request-local only, keyed like the evidence forms.
+    ``pp_drafts`` (COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01) is a
+    refused participation-notes submission, request-local only, keyed by its
+    ``(interface_id, component_id)``."""
     lang = _current_ui_lang()
     shown = None if drafts is None else {
         name: raw.replace("\x00", "") for name, raw in drafts.items()}
@@ -10115,6 +10905,9 @@ def _render_interface_preparation(sid, context, status=200, error=None,
         dependency_note_max=_subsystem_model.MAX_INTERFACE_DEPENDENCY_NOTE_LENGTH,
         participation=None if context is None else _s15_participation_view(
             sid, context),
+        participation_notes=None if context is None else _s15_participation_notes_view(
+            sid, context, pp_drafts),
+        participation_note_max=_subsystem_model.MAX_PARTICIPATION_PREPARATION_LENGTH,
         error=ui_text.localize_message(error, lang),
         notice=ui_text.localize_message(notice, lang),
     ), status)
@@ -10307,6 +11100,210 @@ def interface_participation(sid):
         return _icp_render(sid, notice=ICP_UNCHANGED_MESSAGE)
     # COMMITTED, or the requested set is confirmed durably present.
     return _icp_render(sid, notice=saved)
+
+
+# --- COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 ----------------------
+# For ONE CURRENT participation (ONE component taking part in ONE declared
+# interaction) the inventor records the observable contribution they expect and
+# the evidence or review they would need to check it: verification PREPARATION
+# only, OWNER_STATED / UNVALIDATED (``engine.subsystem_model``; the record
+# store's ``subsystem_participation_preparations``), keyed only by the existing
+# ``(interface_id, component_id)``. Notes of a removed participation are kept
+# and hidden; when the same participation is added again they are shown as
+# EARLIER statements (``carried_over``), never as reconfirmed, until the
+# inventor saves them again. Its own POST, behind the global request-integrity
+# (CSRF) guard and the central project authorization; the form carries the
+# notes and the carried-over state it displayed (the F724-1 baseline
+# discipline), and the store re-validates every identity and the current
+# participation inside ONE serialized write. An unknown outcome is decided by
+# reloading committed truth (SAVED / NOT SAVED / UNKNOWN). Nothing here infers
+# a mechanism, a compatibility or a feasibility, and the report, the PDF, the
+# Parts / Components / Interactions view and the Stage 35 export do not read it.
+_PPV_WRITE_SAVED = "saved"
+_PPV_WRITE_NOT_SAVED = "not_saved"
+_PPV_WRITE_UNKNOWN = "unknown"
+_PPV_FIELDS = _subsystem_model.PARTICIPATION_PREPARATION_FIELDS
+
+
+def _s15_participation_notes_view(sid, context, drafts=None):
+    """The per-participation notes part of the preparation page, or ``None``
+    when it cannot be read (shown as unavailable — never "not recorded"; the
+    rest of the page, the participation block included, is unaffected). Read
+    in its own store snapshot (``load_participation_preparations``), used only
+    when that snapshot's interactions are exactly the ones this page shows.
+    ``{interface_id: [entry, ...]}`` with one entry per CURRENT participant in
+    declaration order: its name, its notes (``None`` = not recorded), the
+    carried-over state and the form baselines; a refused submission's text is
+    shown instead under an explicit unsaved notice."""
+    loader = getattr(_get_store(), "load_participation_preparations", None)
+    if not callable(loader):
+        return None
+    try:
+        record = loader(sid)
+    except Exception:
+        return None
+    if {item.interface_id: item for item in record["interfaces"]} != \
+            context["interfaces"]:
+        return None
+    components = record["components"]
+    names = {item.component_id: item.display_name for item in components}
+    participants = _subsystem_model.current_interface_participants(
+        record["participations"], components)
+    notes = _subsystem_model.current_participation_preparations(
+        record["preparations"], record["participations"], components)
+    view = {}
+    for interface_id in context["interfaces"]:
+        entries = []
+        for component_id in participants.get(interface_id, ()):
+            stored = notes.get((interface_id, component_id))
+            values = {f: (None if stored is None else stored.value(f)) for f in _PPV_FIELDS}
+            carried = stored is not None and stored.carried_over
+            draft = (drafts or {}).get((interface_id, component_id))
+            entries.append({
+                "component_id": component_id,
+                "name": names[component_id],
+                "values": values,
+                "shown": ({f: draft["text"][f] for f in _PPV_FIELDS} if draft
+                          else {f: values[f] or "" for f in _PPV_FIELDS}),
+                # F724-1: a refused retry keeps the baseline it was submitted
+                # with, never a newer durable value.
+                "base": ({f: draft["base"][f] or "" for f in _PPV_FIELDS} if draft
+                         else {f: values[f] or "" for f in _PPV_FIELDS}),
+                "base_carried": ((draft["base"]["carried_over"] if draft else carried)
+                                 and "1" or "0"),
+                "draft": draft is not None,
+                "carried_over": carried,
+                "recorded": stored is not None,
+            })
+        view[interface_id] = entries
+    return view
+
+
+def _ppv_text(raw):
+    """``(text_or_None, error)``: the route's outer trim, empty -> not
+    recorded, the 1,000-character bound and the shared free-text guard."""
+    text = (raw or "").strip()
+    if not text:
+        return None, None
+    if len(text) > _subsystem_model.MAX_PARTICIPATION_PREPARATION_LENGTH:
+        return None, PPV_TOO_LONG_MESSAGE
+    invalid = _free_text_error(text, _current_ui_lang())
+    if invalid is not None:
+        return None, invalid
+    return text, None
+
+
+def _resolve_participation_notes_write(sid, interface_id, component_id, target):
+    """Bounded confirm-by-reload after the write RAISED: SAVED when the
+    committed CURRENT notes of exactly this pair equal ``target`` (line-break
+    representation aside) and are current, NOT SAVED on a demonstrable
+    mismatch, UNKNOWN when committed truth cannot be read."""
+    try:
+        record = _get_store().load_participation_preparations(sid)
+    except Exception:
+        return _PPV_WRITE_UNKNOWN
+    durable = _subsystem_model.current_participation_preparations(
+        record["preparations"], record["participations"],
+        record["components"]).get((interface_id, component_id))
+    if all(value is None for value in target.values()):
+        return _PPV_WRITE_SAVED if durable is None else _PPV_WRITE_NOT_SAVED
+    if durable is None or durable.carried_over:
+        return _PPV_WRITE_NOT_SAVED
+    for field_name, text in target.items():
+        if not _same_planning_text(text or "", durable.value(field_name)):
+            return _PPV_WRITE_NOT_SAVED
+    return _PPV_WRITE_SAVED
+
+
+def _ppv_render(sid, status=200, error=None, notice=None, drafts=None):
+    """Re-render the preparation page from CURRENT durable truth after a
+    participation-notes POST, with its outcome."""
+    page_status, context = _s15_preparation_context(sid)
+    if page_status != _S15_PREP_OK:
+        message, code = _S15_PREP_STATUS_MESSAGE[page_status]
+        return _render_interface_preparation(
+            sid, None, status=code if error is None else status,
+            error=error, notice=message if error is None else None)
+    return _render_interface_preparation(sid, context, status=status, error=error,
+                                         notice=notice, pp_drafts=drafts)
+
+
+@app.route("/session/<sid>/participation-preparation", methods=["POST"])
+def participation_preparation(sid):
+    """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 — the inventor
+    records, replaces or clears their notes for ONE current participation: the
+    observable contribution they expect from that component in that
+    interaction, and the evidence or review they would need to check it. Their
+    own statements, OWNER_STATED / UNVALIDATED; saving checks, infers or
+    verifies nothing. Order: request integrity (global guard) -> authorization
+    -> form shape -> ONE serialized durable write that re-validates every
+    identity and the current participation -> committed-truth resolution."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    single = {}
+    for name in ("interface_id", "component_id", "pp_base_carried") + tuple(
+            "pp_" + f for f in _PPV_FIELDS) + tuple("pp_base_" + f for f in _PPV_FIELDS):
+        values = request.form.getlist(name)
+        if len(values) != 1:
+            return _ppv_render(sid, status=400, error=PPV_REJECTED_MESSAGE)
+        single[name] = values[0]
+    interface_id, component_id = single["interface_id"], single["component_id"]
+    if (not _subsystem_model.is_valid_interface_id(interface_id)
+            or not _subsystem_model.is_valid_component_id(component_id)
+            or single["pp_base_carried"] not in ("0", "1")):
+        return _ppv_render(sid, status=400, error=PPV_REJECTED_MESSAGE)
+    # F724-1: the notes THIS form displayed. A baseline that is not a stored
+    # note could never have been displayed: malformed form.
+    expected = {"carried_over": single["pp_base_carried"] == "1"}
+    for field_name in _PPV_FIELDS:
+        base = single["pp_base_" + field_name].strip() or None
+        if base is not None and not _subsystem_model.valid_preparation_text(base):
+            return _ppv_render(sid, status=400, error=PPV_REJECTED_MESSAGE)
+        expected[field_name] = base
+    drafts = {(interface_id, component_id): {
+        "text": {f: single["pp_" + f].replace("\x00", "") for f in _PPV_FIELDS},
+        "base": dict(expected)}}
+    values = {}
+    for field_name in _PPV_FIELDS:
+        raw = single["pp_" + field_name]
+        if _same_planning_text(raw, expected[field_name]):
+            # untouched: keep exactly the displayed value (line breaks aside)
+            values[field_name] = expected[field_name]
+            continue
+        text, text_error = _ppv_text(raw)
+        if text_error is not None:
+            return _ppv_render(sid, status=400, error=text_error, drafts=drafts)
+        values[field_name] = text
+    try:
+        outcome = _get_store().set_participation_preparation(
+            sid, interface_id, component_id, values, expected)
+    except _ParticipationPreparationStale:
+        # Newer notes are shown as they now stand; the refused text is not
+        # re-offered against them.
+        return _ppv_render(sid, status=409, error=PPV_STALE_MESSAGE)
+    except _ParticipationPreparationWithdrawn:
+        return _ppv_render(sid, status=409, error=PPV_WITHDRAWN_MESSAGE)
+    except _ParticipationPreparationRejected:
+        return _ppv_render(sid, status=400, error=PPV_REJECTED_MESSAGE)
+    except (_ProjectNotFound, _ProjectSubsystemsCorrupt, _SubsystemInterfacesCorrupt,
+            _ProjectComponentsCorrupt, _InterfaceParticipationsCorrupt,
+            _ParticipationPreparationsCorrupt):
+        # Committed durable truth WAS read and fails closed: nothing written.
+        return _ppv_render(sid, status=503, error=PPV_NOT_SAVED_MESSAGE, drafts=drafts)
+    except Exception:
+        resolved = _resolve_participation_notes_write(
+            sid, interface_id, component_id, values)
+        if resolved == _PPV_WRITE_UNKNOWN:
+            return _ppv_render(sid, status=503, error=PPV_UNKNOWN_MESSAGE, drafts=drafts)
+        if resolved == _PPV_WRITE_NOT_SAVED:
+            return _ppv_render(sid, status=503, error=PPV_NOT_SAVED_MESSAGE, drafts=drafts)
+        outcome = None
+    if outcome == _PPV_UNCHANGED:
+        return _ppv_render(sid, notice=PPV_UNCHANGED_MESSAGE)
+    if outcome == _PPV_CLEARED or (outcome is None
+                                   and all(v is None for v in values.values())):
+        return _ppv_render(sid, notice=PPV_CLEARED_MESSAGE)
+    return _ppv_render(sid, notice=PPV_SAVED_MESSAGE)
 
 
 @app.route("/session/<sid>/interface-preparation", methods=["GET"])
@@ -11163,6 +12160,179 @@ def parts_components_interactions(sid):
     return response
 
 
+# --- T6-PRELIMINARY-COMPOSITION-PROJECTION-01 — Slice 1 --------------------
+# ONE request-local, read-only, PRELIMINARY / ADVISORY / NON-BINDING
+# composition of existing Stage 15 owner references for ONE saved project, as
+# bounded by the activated per-lane authorization
+# (docs/governance/T6_FIRST_LANE_AUTHORIZATION_PRELIMINARY_COMPOSITION.md,
+# §§2–4) and MVP_SCOPE_FREEZE.md Amendment 2: each CURRENT declared component
+# (stable ``component_id``, current details) is traced through every CURRENT
+# participation the inventor recorded for it to the notes stored for that exact
+# ``(interface_id, component_id)`` pair. Entered through the central project
+# authorization and read ONLY through the Stage 15 owner's validated
+# single-snapshot reader (``load_preliminary_composition``, which extends
+# ``load_participation_preparations`` inside the same snapshot), once per
+# request; the current participations and notes are selected by the owner's
+# own projections. Nothing is joined by text, inferred, repaired, persisted,
+# exported or judged: no BOM, quantity, selection, sizing, compatibility,
+# suitability, safety or validation statement. Anything unreadable shows the
+# WHOLE composition as unavailable — never a partial or apparently empty one.
+T6_STATUS_CURRENT = "CURRENT"
+T6_STATUS_EARLIER = "EARLIER_NOT_RECONFIRMED"
+T6_STATUS_NOT_RECORDED = "NOT_RECORDED"
+_T6_OK = "ok"
+_T6_NO_PROJECT = "no_project"
+_T6_UNAVAILABLE = "unavailable"
+_T6_STATUS_NOTICE = {
+    _T6_NO_PROJECT: ("UI_T6_NO_PROJECT", 409),
+    _T6_UNAVAILABLE: ("UI_T6_UNAVAILABLE", 503),
+}
+_T6_STATUS_KEYS = {
+    T6_STATUS_CURRENT: "UI_T6_STATUS_CURRENT",
+    T6_STATUS_EARLIER: "UI_T6_STATUS_EARLIER",
+    T6_STATUS_NOT_RECORDED: "UI_T6_STATUS_NOT_RECORDED",
+}
+# T6-INTERFACE-VERIFICATION-REFERENCE-01: the interaction's OWN preparation
+# inputs (Stage 15 Slice 3; current value only, so no earlier state) shown per
+# field beside each participation, kept apart from the pair's notes. The
+# Validation Plan step of the interaction is a separate owner's derivation that
+# this page neither reads nor reconstructs: its reference stays UNRESOLVED.
+T6_FIELD_RECORDED = "RECORDED"
+T6_FIELD_NOT_RECORDED = "NOT_RECORDED"
+T6_VP_REFERENCE_UNRESOLVED = "UNRESOLVED"
+_T6_INTERFACE_FIELD_KEYS = {
+    _subsystem_model.PREPARATION_OPERATING_CONDITIONS: "UI_S15_PREP_CONDITIONS",
+    _subsystem_model.PREPARATION_ACCEPTANCE_CRITERION: "UI_S15_PREP_ACCEPTANCE",
+    _subsystem_model.PREPARATION_EVIDENCE_NEEDED: "UI_S15_PREP_EVIDENCE",
+}
+
+
+def _t6_composition(record):
+    """The composition of ONE validated ``load_preliminary_composition``
+    record. Pure and deterministic. For each CURRENT component, in declaration
+    order: its identity and current details and, in interaction order, every
+    CURRENT participation with the status and verbatim notes of that exact
+    pair and, apart from them, the interaction's own preparation inputs (each
+    field recorded verbatim or not recorded, keyed by the exact
+    ``interface_id``) with its Validation Plan reference UNRESOLVED. A
+    component with no current participation gets none (never invented); a
+    pair or preparation whose interaction is not in this snapshot raises
+    ``ValueError`` (the caller then shows the whole composition unavailable).
+    T6-PART-ASSOCIATION-TRACE-01: each component also carries the names of
+    its own linked parts, resolved by exact id from the snapshot's
+    composition; a part id missing from it raises ``KeyError`` (the same
+    whole-composition unavailable)."""
+    components = tuple(record["components"])
+    part_names = {sub.subsystem_id: sub.display_name for sub in record["subsystems"]}
+    interfaces = {item.interface_id: item for item in record["interfaces"]}
+    order = [item.interface_id for item in record["interfaces"]]
+    participants = _subsystem_model.current_interface_participants(
+        record["participations"], components)
+    notes = _subsystem_model.current_participation_preparations(
+        record["preparations"], record["participations"], components)
+    for interface_id in participants:
+        if interface_id not in interfaces:
+            raise ValueError("participation names no interaction of this snapshot")
+    interface_notes = {}
+    for item in record["interface_preparations"]:
+        if item.interface_id not in interfaces or item.interface_id in interface_notes:
+            raise ValueError("preparation names no single interaction of this snapshot")
+        interface_notes[item.interface_id] = item
+    result = []
+    for component in components:
+        links = []
+        for interface_id in order:
+            if component.component_id not in participants.get(interface_id, ()):
+                continue
+            stored = notes.get((interface_id, component.component_id))
+            if stored is None:
+                status = T6_STATUS_NOT_RECORDED
+            elif stored.carried_over:
+                status = T6_STATUS_EARLIER
+            else:
+                status = T6_STATUS_CURRENT
+            links.append({
+                "interface_id": interface_id,
+                "interaction": interfaces[interface_id].description,
+                "status": status,
+                "status_key": _T6_STATUS_KEYS[status],
+                "notes": [] if stored is None else [
+                    {"field": field_name, "text": stored.value(field_name)}
+                    for field_name in stored.recorded_fields()],
+                "interface_fields": _t6_interface_fields(
+                    interface_notes.get(interface_id)),
+                "vp_reference": T6_VP_REFERENCE_UNRESOLVED,
+            })
+        result.append({
+            "component_id": component.component_id,
+            "name": component.display_name,
+            "function": component.function_text,
+            "part_ids": list(component.subsystem_ids),
+            # T6-PART-ASSOCIATION-TRACE-01: the names of exactly this
+            # component's own validated part links, in their stored canonical
+            # order, resolved by exact id from the same snapshot (an unknown
+            # id raises KeyError -> the whole composition unavailable).
+            "parts": [part_names[ref] for ref in component.subsystem_ids],
+            "provenance": component.provenance,
+            "validation_state": component.validation_state,
+            "links": links,
+        })
+    return {"components": result, "interface_count": len(order)}
+
+
+def _t6_interface_fields(preparation):
+    """The three preparation inputs of ONE interaction in canonical order,
+    each ``RECORDED`` with its verbatim text or ``NOT_RECORDED`` (``preparation``
+    is ``None`` when nothing is recorded). Presence only: never sufficiency,
+    correctness, a check or a result."""
+    fields = []
+    for field_name in _subsystem_model.PREPARATION_FIELDS:
+        text = None if preparation is None else preparation.value(field_name)
+        fields.append({
+            "field": field_name,
+            "label_key": _T6_INTERFACE_FIELD_KEYS[field_name],
+            "status": T6_FIELD_NOT_RECORDED if text is None else T6_FIELD_RECORDED,
+            "text": text,
+        })
+    return fields
+
+
+def _t6_composition_context(sid):
+    """``(status, context)`` of the preliminary composition from ONE durable
+    snapshot (``load_preliminary_composition``, called once). A missing
+    project is ``_T6_NO_PROJECT``; anything unreadable, corrupt or
+    inconsistent is ``_T6_UNAVAILABLE``. Nothing is written."""
+    loader = getattr(_get_store(), "load_preliminary_composition", None)
+    if not callable(loader):
+        return _T6_UNAVAILABLE, None
+    try:
+        record = loader(sid)
+    except _ProjectNotFound:
+        return _T6_NO_PROJECT, None
+    except Exception:
+        return _T6_UNAVAILABLE, None
+    try:
+        return _T6_OK, _t6_composition(record)
+    except Exception:
+        return _T6_UNAVAILABLE, None
+
+
+@app.route("/session/<sid>/preliminary-composition", methods=["GET"])
+def preliminary_composition(sid):
+    """T6-PRELIMINARY-COMPOSITION-PROJECTION-01 — Slice 1: the read-only
+    preliminary composition. Project-authorized; reads one durable snapshot;
+    writes nothing; not part of any report or export."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    status, context = _t6_composition_context(sid)
+    notice_key, code = _T6_STATUS_NOTICE.get(status, (None, 200))
+    response = make_response(render_template(
+        "preliminary_composition.html", sid=sid, view=context,
+        notice_key=notice_key), code)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @app.route("/session/<sid>/interface-observation", methods=["POST"])
 def record_interface_observation(sid):
     """Stage 15 Slice 4 — record (new root) or correct (successor of one
@@ -11984,15 +13154,19 @@ _T3A_EVENT_BY_DISPOSITION = {
     _DISP_ALT_WITHDRAWN: "alternative_withdrawn",
     _DISP_CONTRADICTION_DECLARED: "contradiction_declared",
     _DISP_DEPENDENCY_DECLARED: "assumption_dependency_declared",
+    _constraints.DISPOSITION_CONSTRAINT_WITHDRAWN: "constraint_withdrawn",
 }
 # The closed event vocabulary the template may name (UI_T3A_EVENT_<KIND>).
 T3A_EVENT_KINDS = frozenset(_T3A_EVENT_BY_DISPOSITION.values()) | frozenset({
+    "constraint_declared", "constraint_corrected",
     "answer_recorded", "answer_withdrawn_replaced", "alternative_declared",
     "alternative_refined", "value_recorded", "value_replaced",
     "reference_recorded", "reference_replaced", "reference_withdrawn",
     "rules_adopted", "rules_returned", "rules_changed", "other",
 })
 _T3A_TEXT_PREVIEW_CHARS = 280
+# The event kinds whose supersession edge is a withdrawal, never a replacement.
+_T3A_WITHDRAWAL_KINDS = frozenset({"alternative_withdrawn", "constraint_withdrawn"})
 
 
 def _t3a_event_kind(record):
@@ -12009,6 +13183,11 @@ def _t3a_event_kind(record):
     if disposition == _DISP_ALT_DECLARED:
         return ("alternative_refined"
                 if getattr(record, "supersedes", None) else "alternative_declared")
+    # PATHN-CONSTRAINT-DECLARATION-01: a constraint record that supersedes an
+    # earlier one is the inventor's correction of it.
+    if disposition == _constraints.DISPOSITION_CONSTRAINT_DECLARED:
+        return ("constraint_corrected"
+                if getattr(record, "supersedes", None) else "constraint_declared")
     return _T3A_EVENT_BY_DISPOSITION.get(disposition, "other")
 
 
@@ -12128,16 +13307,18 @@ def _project_record_context(state, sid):
                                edge.get("assumption_record_id")))
             links.append(_link("declares_dependent",
                                edge.get("dependent_answer_record_id")))
+        # PATHN-CONSTRAINT-DECLARATION-01: a constraint withdrawal withdraws,
+        # exactly like an alternative withdrawal; it replaces nothing.
         for target in (getattr(record, "supersedes", None) or ()):
             links.append(_link(
-                "withdraws" if kind == "alternative_withdrawn" else "replaces",
+                "withdraws" if kind in _T3A_WITHDRAWAL_KINDS else "replaces",
                 target))
         successor_id = getattr(record, "superseded_by", None)
         if successor_id:
             successor = by_id.get(successor_id)
             links.append(_link(
                 "withdrawn_in" if (successor is not None and
-                                   _t3a_event_kind(successor) == "alternative_withdrawn")
+                                   _t3a_event_kind(successor) in _T3A_WITHDRAWAL_KINDS)
                 else "replaced_by", successor_id))
         entries.append({
             "ordinal": ordinal_of[record.record_id],
@@ -13547,6 +14728,25 @@ def _render_cap13(sid, status=200, eligible=True, declared_part=None, captured=N
     return response
 
 
+@app.route("/session/<sid>/functional-configuration", methods=["GET"])
+def cap13_functional_configuration(sid):
+    """Read-only original-idea projection. No model, design, calculation or save."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _cap13_eligible(sid):
+        return _deny_project()
+    # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: the verbatim original
+    # statement from the project envelope, never the trimmed idea_summary.
+    result = _engineering_fit(_original_idea_text(sid))
+    if result is None:
+        return _deny_project()
+    lang = _current_ui_lang()
+    response = make_response(render_template(
+        "cap13_functional_configuration.html", sid=sid, fit=result, lang=lang))
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @app.route("/session/<sid>/support-reactions", methods=["GET"])
 def cap13_support_reactions(sid):
     if not _project_authorized(sid):
@@ -13574,6 +14774,438 @@ def cap13_support_reactions_post(sid):
     evaluation = _cap13.evaluate(captured, _CAP13_REACTIONS_BINDING)
     return _render_cap13(sid, declared_part=part, captured=captured,
                          evaluation=evaluation)
+
+
+# =============================================================================
+# Stage 25 / CAP-13 — Planar Single-Force Moment, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory calculation of the magnitude of the moment of ONE force
+# about ONE point the inventor chooses, in ONE plane (moment contract §1, §7).
+# The consumer (`engine/cap13_planar_moment.py`) owns capture and the pre-owner
+# order; the shared calculation / units owner (`engine/deterministic_calculation.py`)
+# owns execution; the method adapter (`engine/cap13_planar_moment_method.py`)
+# owns the equation and its numerical acceptance. Eligibility is the SAME
+# ``_calc_gate`` rule as the two-support reactions (CAP13-PLANAR-MOMENT-
+# INTEGRATED-PART-01): a Mechanical durable root domain, or the ONE declared
+# Mechanical part of a valid durable integrated composition whatever the initial
+# analysis focus (the Stage 15 exception in ``engine/subsystem_model.py`` names
+# this method). Nothing is persisted and nothing is read from the project beyond
+# the root domain and that validated composition; no answer, requirement
+# quantity, evidence or SafetySignal. The POST
+# renders its answer directly and never redirects. The two-support reactions and
+# THERM-01 semantics are untouched.
+#
+# The THIRD immutable trusted binding (calc/units Correction 03 §13B), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_CAP13_MOMENT_BINDING = _dcalc.bind_method(
+    _cap13m_method.METHOD_ID, _cap13m_method.METHOD_VERSION,
+    _cap13m_method.evaluate)
+
+# Latin letters, digits, the perpendicular sign of the role ``d⊥`` and the
+# middle dot of the unit ``N·mm``, plus identifiers: each run is
+# direction-isolated on an Arabic page.
+_CAP13M_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u22a5](?:[A-Za-z0-9_\u22a5\u00b7.:/ -]*[A-Za-z0-9_\u22a5])?")
+
+
+def _cap13m_eligible(sid):
+    """True iff the project is eligible for the planar moment under
+    ``_calc_gate``: a Mechanical durable root domain, or a declared Mechanical
+    part of a valid durable integrated composition. Never read from the
+    request; fails closed."""
+    return _calc_gate(sid, _cap13m)[0]
+
+
+def _cap13m_link_offered(sid):
+    """The session-page link reads the SAME single rule the submission reads,
+    so the link and the calculation cannot disagree. Presentation only."""
+    return _cap13m_eligible(sid)
+
+
+def _cap13m_isolate(text, lang):
+    return _ltr_isolate(text, lang, _CAP13M_LTR_RUN)
+
+
+def _cap13m_result_view(result):
+    """Template view of a SUCCESS owner result: the moment magnitude shown
+    exactly as produced (``format_value``), the method identity and the source
+    and unit references the owner carried. No rounding, no other field."""
+    output = result["outputs"]["M"]
+    return {
+        "value": _cap13m.format_value(output["value"]),
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_cap13m(sid, status=200, eligible=True, declared_part=None, captured=None,
+                   evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _cap13m.OUTCOME_SUCCESS:
+            view = _cap13m_result_view(evaluation["result"])
+        else:
+            outcome_key = "UI_CAP13M_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "cap13_planar_moment.html",
+        sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
+        iso=lambda key: _cap13m_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _cap13m_isolate(part, lang) for part in
+            ui_text.text("UI_CAP13M_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_cap13m.DECLARATION_IDS,
+        screen_items=_cap13m.SCREEN_ITEMS,
+        value_roles=_cap13m.VALUE_ROLES,
+        decl_field=_cap13m.DECLARATION_FIELD,
+        screen_field=_cap13m.SCREEN_FIELD,
+        value_field=_cap13m.VALUE_FIELD,
+        answer_applies=_cap13m.ANSWER_APPLIES,
+        answer_does_not_apply=_cap13m.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_cap13m.SCREEN_YES,
+        screen_no=_cap13m.SCREEN_NO,
+        max_value_chars=_cap13m.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/planar-moment", methods=["GET"])
+def cap13_planar_moment(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _cap13m)
+    return _render_cap13m(sid, eligible=eligible, declared_part=part)
+
+
+@app.route("/session/<sid>/planar-moment", methods=["POST"])
+def cap13_planar_moment_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain, or a declared Mechanical part of a valid
+    # durable integrated composition) -> strict capture (malformed: 400, no
+    # reason token) -> the consumer's §7 pre-owner order -> the shared owner.
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _cap13m)
+    if not eligible:
+        return _render_cap13m(sid, eligible=False)
+    form = request.form
+    captured = _cap13m.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_cap13m(sid, status=400, declared_part=part,
+                              error="UI_CAP13M_ERR_REQUEST")
+    evaluation = _cap13m.evaluate(captured, _CAP13_MOMENT_BINDING)
+    return _render_cap13m(sid, declared_part=part, captured=captured,
+                          evaluation=evaluation)
+
+
+# =============================================================================
+# CAP13-PLANAR-REQUIRED-FORCE-01 — Planar Required Force, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory calculation of the magnitude of the ONE force that,
+# acting at the inventor's own perpendicular distance from ONE chosen point in
+# ONE plane, would produce the inventor's own target moment about that point:
+# F = M_target / d_perp (required-force contract §1, §7). The consumer
+# (`engine/cap13_planar_required_force.py`) owns capture, the exact-decimal
+# positive-distance check, the pre-owner order, the decimal-reference acceptance
+# and the exact / rounded display; the shared calculation / units owner
+# (`engine/deterministic_calculation.py`) owns execution; the method adapter
+# (`engine/cap13_planar_required_force_method.py`) owns the relation and its
+# binary acceptance. Eligibility is the SAME ``_calc_gate`` rule as the other
+# CAP-13 calculations: a Mechanical durable root domain, or the ONE declared
+# Mechanical part of a valid durable integrated composition (the Stage 15
+# exception in ``engine/subsystem_model.py`` names this method). No target
+# moment, geometry or friction is inferred, nothing is persisted, no result is
+# taken from or given to the planar-moment page or any other calculation, and
+# nothing is read from the project beyond the root domain and that validated
+# composition. The POST renders its answer directly and never redirects. The
+# other eight calculations are untouched.
+#
+# The NINTH immutable trusted binding (calc/units Correction 09 §13H), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_CAP13_REQUIRED_FORCE_BINDING = _dcalc.bind_method(
+    _cap13f_method.METHOD_ID, _cap13f_method.METHOD_VERSION,
+    _cap13f_method.evaluate)
+
+# Latin letters, digits, the perpendicular sign of the role ``d⊥``, the middle
+# dot of the unit ``N·mm`` and expressions such as ``F = M_target / d⊥``: each
+# run is direction-isolated on an Arabic page (contract §9A A-4).
+_CAP13F_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u22a5](?:[A-Za-z0-9_\u22a5\u00b7.:/= -]*[A-Za-z0-9_\u22a5])?")
+
+
+def _cap13f_eligible(sid):
+    """True iff the project is eligible for the planar required force under
+    ``_calc_gate``: a Mechanical durable root domain, or a declared Mechanical
+    part of a valid durable integrated composition. Never read from the
+    request; fails closed."""
+    return _calc_gate(sid, _cap13f)[0]
+
+
+def _cap13f_link_offered(sid):
+    """The session-page link reads the SAME single rule the submission reads,
+    so the link and the calculation cannot disagree. Presentation only."""
+    return _cap13f_eligible(sid)
+
+
+def _cap13f_isolate(text, lang):
+    return _ltr_isolate(text, lang, _CAP13F_LTR_RUN)
+
+
+def _cap13f_result_view(evaluation):
+    """Template view of an accepted SUCCESS: the consumer's display of the exact
+    quotient (already checked against the owner's binary64 result) with its
+    exact / rounded label and zero-moment note, the owner's unit, the method
+    identity and the source and unit references the owner carried."""
+    result = evaluation["result"]
+    output = result["outputs"]["F"]
+    return {
+        "value": evaluation["display_value"],
+        "exact": evaluation["display_exact"],
+        "zero_moment": evaluation["zero_moment"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_cap13f(sid, status=200, eligible=True, declared_part=None, captured=None,
+                   evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _cap13f.OUTCOME_SUCCESS:
+            view = _cap13f_result_view(evaluation)
+        else:
+            outcome_key = "UI_CAP13F_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "cap13_planar_required_force.html",
+        sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
+        iso=lambda key: _cap13f_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _cap13f_isolate(part, lang) for part in
+            ui_text.text("UI_CAP13F_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_cap13f.DECLARATION_IDS,
+        screen_items=_cap13f.SCREEN_ITEMS,
+        value_roles=_cap13f.VALUE_ROLES,
+        decl_field=_cap13f.DECLARATION_FIELD,
+        screen_field=_cap13f.SCREEN_FIELD,
+        value_field=_cap13f.VALUE_FIELD,
+        answer_applies=_cap13f.ANSWER_APPLIES,
+        answer_does_not_apply=_cap13f.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_cap13f.SCREEN_YES,
+        screen_no=_cap13f.SCREEN_NO,
+        max_value_chars=_cap13f.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/planar-required-force", methods=["GET"])
+def cap13_planar_required_force(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _cap13f)
+    return _render_cap13f(sid, eligible=eligible, declared_part=part)
+
+
+@app.route("/session/<sid>/planar-required-force", methods=["POST"])
+def cap13_planar_required_force_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain, or a declared Mechanical part of a valid
+    # durable integrated composition) -> strict capture (malformed: 400, no
+    # reason token) -> the consumer's §7 order -> the shared owner -> the
+    # decimal-reference acceptance.
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _cap13f)
+    if not eligible:
+        return _render_cap13f(sid, eligible=False)
+    form = request.form
+    captured = _cap13f.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_cap13f(sid, status=400, declared_part=part,
+                              error="UI_CAP13F_ERR_REQUEST")
+    evaluation = _cap13f.evaluate(captured, _CAP13_REQUIRED_FORCE_BINDING)
+    return _render_cap13f(sid, declared_part=part, captured=captured,
+                          evaluation=evaluation)
+
+
+# =============================================================================
+# Stage 25 / CAP-13 — Linear Speed-Dependent Rotational Load, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory evaluation of the signed torque that ONE inventor-
+# declared resisting load, proportional to shaft speed, applies at ONE shaft at
+# ONE operating speed (rotational-load contract §1, §7). The consumer
+# (`engine/cap13_rotational_load.py`) owns capture and the pre-owner order; the
+# shared calculation / units owner (`engine/deterministic_calculation.py`) owns
+# execution; the method adapter (`engine/cap13_rotational_load_method.py`) owns
+# the relation and its numerical acceptance. Eligibility is the SAME
+# ``_calc_gate`` rule as the other CAP-13 calculations: a Mechanical durable root
+# domain, or the ONE declared Mechanical part of a valid durable integrated
+# composition (the Stage 15 exception in ``engine/subsystem_model.py`` names this
+# method). Nothing is persisted and nothing is read from the project beyond the
+# root domain and that validated composition. The POST renders its answer
+# directly and never redirects. The other three calculations are untouched.
+#
+# The FOURTH immutable trusted binding (calc/units Correction 04 §13C), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_CAP13_ROTATIONAL_LOAD_BINDING = _dcalc.bind_method(
+    _cap13r_method.METHOD_ID, _cap13r_method.METHOD_VERSION,
+    _cap13r_method.evaluate)
+
+# Latin letters, digits, the Greek role letters τ / ω, a leading minus sign (as
+# in ``−flange.tau``), the middle dot of ``N·m`` and unit tokens such as
+# ``rad/s``: each run is direction-isolated on an Arabic page.
+_CAP13R_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u03c4\u03c9\u2212](?:[A-Za-z0-9_\u03c4\u03c9\u00b7.:/= -]*[A-Za-z0-9_\u03c4\u03c9])?")
+
+
+def _cap13r_eligible(sid):
+    """True iff the project is eligible for the rotational load under
+    ``_calc_gate``: a Mechanical durable root domain, or a declared Mechanical
+    part of a valid durable integrated composition. Never read from the
+    request; fails closed."""
+    return _calc_gate(sid, _cap13r)[0]
+
+
+def _cap13r_link_offered(sid):
+    """The session-page link reads the SAME single rule the submission reads,
+    so the link and the calculation cannot disagree. Presentation only."""
+    return _cap13r_eligible(sid)
+
+
+def _cap13r_isolate(text, lang):
+    return _ltr_isolate(text, lang, _CAP13R_LTR_RUN)
+
+
+def _cap13r_result_view(result):
+    """Template view of a SUCCESS owner result: the signed torque shown exactly
+    as produced (``format_value``), the method identity and the source and unit
+    references the owner carried. No rounding, no abs(), no other field."""
+    output = result["outputs"]["tau"]
+    return {
+        "value": _cap13r.format_value(output["value"]),
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_cap13r(sid, status=200, eligible=True, declared_part=None, captured=None,
+                   evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _cap13r.OUTCOME_SUCCESS:
+            view = _cap13r_result_view(evaluation["result"])
+        else:
+            outcome_key = "UI_CAP13R_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "cap13_rotational_load.html",
+        sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
+        iso=lambda key: _cap13r_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _cap13r_isolate(part, lang) for part in
+            ui_text.text("UI_CAP13R_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_cap13r.DECLARATION_IDS,
+        screen_items=_cap13r.SCREEN_ITEMS,
+        value_roles=_cap13r.VALUE_ROLES,
+        decl_field=_cap13r.DECLARATION_FIELD,
+        screen_field=_cap13r.SCREEN_FIELD,
+        value_field=_cap13r.VALUE_FIELD,
+        answer_applies=_cap13r.ANSWER_APPLIES,
+        answer_does_not_apply=_cap13r.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_cap13r.SCREEN_YES,
+        screen_no=_cap13r.SCREEN_NO,
+        max_value_chars=_cap13r.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/rotational-load", methods=["GET"])
+def cap13_rotational_load(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _cap13r)
+    return _render_cap13r(sid, eligible=eligible, declared_part=part)
+
+
+@app.route("/session/<sid>/rotational-load", methods=["POST"])
+def cap13_rotational_load_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain, or a declared Mechanical part of a valid
+    # durable integrated composition) -> strict capture (malformed: 400, no
+    # reason token) -> the consumer's §7 pre-owner order -> the shared owner.
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _cap13r)
+    if not eligible:
+        return _render_cap13r(sid, eligible=False)
+    form = request.form
+    captured = _cap13r.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_cap13r(sid, status=400, declared_part=part,
+                              error="UI_CAP13R_ERR_REQUEST")
+    evaluation = _cap13r.evaluate(captured, _CAP13_ROTATIONAL_LOAD_BINDING)
+    return _render_cap13r(sid, declared_part=part, captured=captured,
+                          evaluation=evaluation)
 
 
 # =============================================================================
@@ -13712,6 +15344,749 @@ def therm01_temperature_difference_post(sid):
     evaluation = _therm01.evaluate(captured, _THERM01_TEMPERATURE_BINDING)
     return _render_therm01(sid, declared_part=part, captured=captured,
                            evaluation=evaluation)
+
+
+# =============================================================================
+# Sensors C3 — TMP36 Nominal Voltage-to-Temperature, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory reading of ONE output voltage the inventor declares for
+# ONE explicitly declared Analog Devices TMP36 as the NOMINAL temperature of the
+# device's nominal relation (TMP36 contract §1, §7). The consumer
+# (`engine/tmp36_nominal_temperature.py`) owns capture, the exact-decimal
+# interval check, the pre-owner order and the decimal-reference acceptance; the
+# shared calculation / units owner (`engine/deterministic_calculation.py`) owns
+# execution; the method adapter (`engine/tmp36_nominal_temperature_method.py`)
+# owns the relation and its binary acceptance. Eligibility is the SAME
+# ``_calc_gate`` rule as THERM-01: an Electrical / Electronics durable root
+# domain, or the ONE declared Electrical / Electronics part of a valid durable
+# integrated composition (the Stage 15 exception in ``engine/subsystem_model.py``
+# names this method). InventorAI never reads or samples the sensor; nothing is
+# persisted and nothing is read from the project beyond the root domain and that
+# validated composition. The POST renders its answer directly and never
+# redirects. The other four calculations are untouched.
+#
+# The FIFTH immutable trusted binding (calc/units Correction 05 §13D), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_TMP36_TEMPERATURE_BINDING = _dcalc.bind_method(
+    _tmp36_method.METHOD_ID, _tmp36_method.METHOD_VERSION,
+    _tmp36_method.evaluate)
+
+# Latin letters, digits, the degree sign and the minus sign (as in ``−40 °C``),
+# and unit tokens and expressions such as ``mV/°C`` or ``(V_OUT − 500 mV)``: each
+# run is direction-isolated on an Arabic page (contract §9A A-4).
+_TMP36_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u00b0\u2212+(](?:[A-Za-z0-9_\u00b0\u2212+()/.:= -]*[A-Za-z0-9_\u00b0)])?")
+
+
+def _tmp36_eligible(sid):
+    """True iff the project is eligible for the TMP36 nominal reading under
+    ``_calc_gate``: an Electrical / Electronics durable root domain, or a
+    declared Electrical / Electronics part of a valid durable integrated
+    composition. Never read from the request; fails closed."""
+    return _calc_gate(sid, _tmp36)[0]
+
+
+def _tmp36_link_offered(sid):
+    """The session-page link reads the SAME single rule the submission reads,
+    so the link and the calculation cannot disagree. Presentation only."""
+    return _tmp36_eligible(sid)
+
+
+def _tmp36_isolate(text, lang):
+    return _ltr_isolate(text, lang, _TMP36_LTR_RUN)
+
+
+def _tmp36_result_view(evaluation):
+    """Template view of an accepted SUCCESS: the nominal temperature as the
+    consumer's exact decimal display (already checked against the owner's
+    binary64 result), the owner's unit, the method identity and the source and
+    unit references the owner carried. No other field and no rounding."""
+    result = evaluation["result"]
+    output = result["outputs"]["t_celsius"]
+    return {
+        "value": evaluation["display_value"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_tmp36(sid, status=200, eligible=True, declared_part=None, captured=None,
+                  evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _tmp36.OUTCOME_SUCCESS:
+            view = _tmp36_result_view(evaluation)
+        else:
+            outcome_key = "UI_TMP36_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "tmp36_temperature.html",
+        sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
+        iso=lambda key: _tmp36_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _tmp36_isolate(part, lang) for part in
+            ui_text.text("UI_TMP36_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_tmp36.DECLARATION_IDS,
+        screen_items=_tmp36.SCREEN_ITEMS,
+        value_roles=_tmp36.VALUE_ROLES,
+        decl_field=_tmp36.DECLARATION_FIELD,
+        screen_field=_tmp36.SCREEN_FIELD,
+        value_field=_tmp36.VALUE_FIELD,
+        answer_applies=_tmp36.ANSWER_APPLIES,
+        answer_does_not_apply=_tmp36.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_tmp36.SCREEN_YES,
+        screen_no=_tmp36.SCREEN_NO,
+        max_value_chars=_tmp36.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/tmp36-temperature", methods=["GET"])
+def tmp36_temperature(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _tmp36)
+    return _render_tmp36(sid, eligible=eligible, declared_part=part)
+
+
+@app.route("/session/<sid>/tmp36-temperature", methods=["POST"])
+def tmp36_temperature_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain, or a declared Electrical / Electronics
+    # part of a valid durable integrated composition) -> strict capture
+    # (malformed: 400, no reason token) -> the consumer's §7 order -> the shared
+    # owner -> the decimal-reference acceptance.
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _tmp36)
+    if not eligible:
+        return _render_tmp36(sid, eligible=False)
+    form = request.form
+    captured = _tmp36.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_tmp36(sid, status=400, declared_part=part,
+                             error="UI_TMP36_ERR_REQUEST")
+    evaluation = _tmp36.evaluate(captured, _TMP36_TEMPERATURE_BINDING)
+    return _render_tmp36(sid, declared_part=part, captured=captured,
+                         evaluation=evaluation)
+
+
+# =============================================================================
+# 28-T4 — Single Vendor-Neutral Control-Cycle Evaluation, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory evaluation of ONE fixed READY / RUNNING control-state
+# transition (control-cycle contract §1, §7). The bounded module
+# (`engine/control_cycle.py`) owns the governed definition, capture, the
+# pre-evaluation order and the five-step cycle; it is NOT a method of the shared
+# deterministic calculation owner and keeps no state. Eligibility is the
+# project's trusted durable ROOT domain only, exactly Electrical / Electronics:
+# no declared Stage 15 part grants anything here, and `control_loop` is neither
+# read nor touched. Nothing is persisted and no state is carried between
+# requests; the POST renders its answer directly and never redirects.
+
+# Latin identifiers and tokens (READY, RUNNING, start_input, true / false,
+# IEC 61131-3, OpenPLC, a commit prefix): each run is direction-isolated on an
+# Arabic page (contract §9A A-4).
+_CC_LTR_RUN = re.compile(r"[A-Za-z0-9_](?:[A-Za-z0-9_./:\- ]*[A-Za-z0-9_])?")
+
+
+def _control_cycle_eligible(sid):
+    """True iff the project's trusted durable ROOT domain is Electrical /
+    Electronics. Never read from the request and never from the composition:
+    a declared part grants nothing. Fails closed."""
+    try:
+        return _cc.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+def _cc_isolate(text, lang):
+    return _ltr_isolate(text, lang, _CC_LTR_RUN)
+
+
+def _render_control_cycle(sid, status=200, eligible=True, captured=None,
+                          evaluation=None, error=None):
+    lang = _current_ui_lang()
+    result = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _cc.OUTCOME_SUCCESS:
+            result = evaluation
+        else:
+            outcome_key = "UI_CC_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "control_cycle.html",
+        sid=sid,
+        iso=lambda key: _cc_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _cc_isolate(part, lang) for part in
+            ui_text.text("UI_CC_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=result,
+        outcome_key=outcome_key,
+        captured=captured,
+        declarations=_cc.DECLARATION_IDS,
+        screen_items=_cc.SCREEN_ITEMS,
+        states=_cc.STATES,
+        decl_field=_cc.DECLARATION_FIELD,
+        screen_field=_cc.SCREEN_FIELD,
+        previous_state_field=_cc.PREVIOUS_STATE_FIELD,
+        input_field=_cc.INPUT_FIELD,
+        answer_applies=_cc.ANSWER_APPLIES,
+        answer_does_not_apply=_cc.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_cc.SCREEN_YES,
+        screen_no=_cc.SCREEN_NO,
+        input_true=_cc.INPUT_TRUE,
+        input_false=_cc.INPUT_FALSE,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/control-cycle", methods=["GET"])
+def control_cycle(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_control_cycle(sid, eligible=_control_cycle_eligible(sid))
+
+
+@app.route("/session/<sid>/control-cycle", methods=["POST"])
+def control_cycle_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain only) -> strict capture (malformed or an
+    # attempted override of the fixed definition: 400, no evaluation) -> the
+    # module's §7 order -> the cycle.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _control_cycle_eligible(sid):
+        return _render_control_cycle(sid, eligible=False)
+    form = request.form
+    captured = _cc.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_control_cycle(sid, status=400, error="UI_CC_ERR_REQUEST")
+    return _render_control_cycle(sid, captured=captured,
+                                 evaluation=_cc.evaluate(captured))
+
+
+# =============================================================================
+# TEMPERATURE-TO-CONTROL-CONDITION-01 — TMP36 nominal temperature -> threshold -> one cycle (request-local, optional)
+# =============================================================================
+# ONE optional, advisory composition (composition contract §1, §7): the thin
+# wrapper (`engine/temperature_control_condition.py`) runs the EXISTING TMP36
+# consumer with its EXISTING binding, compares the accepted exact nominal
+# temperature with the inventor's threshold, and passes only that Boolean as
+# start_input to the EXISTING 28-T4 evaluator. Eligibility is the INTERSECTION
+# of the two existing gates (so Electrical / Electronics root only; a declared
+# part grants nothing). Nothing is persisted and nothing is carried between
+# requests; the POST renders its answer directly and never redirects. The
+# standalone TMP36 and 28-T4 pages are untouched.
+
+
+def _tcc_eligible(sid):
+    """True iff BOTH existing gates admit the project: the TMP36 gate
+    (``_calc_gate``) AND the 28-T4 root-domain gate. Never read from the
+    request; fails closed."""
+    try:
+        return bool(_calc_gate(sid, _tmp36)[0]) and _control_cycle_eligible(sid)
+    except Exception:
+        return False
+
+
+def _tcc_isolate(text, lang):
+    return _ltr_isolate(text, lang, _TMP36_LTR_RUN)
+
+
+def _render_tcc(sid, status=200, eligible=True, captured=None, evaluation=None,
+                error=None):
+    lang = _current_ui_lang()
+    result = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _tcc.OUTCOME_SUCCESS:
+            result = evaluation
+        elif evaluation["outcome"] == _tcc.TMP36_REFUSED:
+            outcome_key = "UI_TMP36_OUTCOME_%s" % evaluation["part_outcome"]
+        elif evaluation["outcome"] == _tcc.CONTROL_CYCLE_REFUSED:
+            outcome_key = "UI_CC_OUTCOME_%s" % evaluation["part_outcome"]
+        else:
+            outcome_key = "UI_TCC_OUTCOME_%s" % evaluation["outcome"]
+    iso = lambda key: _tcc_isolate(ui_text.text(key, lang), lang)  # noqa: E731
+    response = make_response(render_template(
+        "temperature_control_condition.html",
+        sid=sid,
+        iso=iso,
+        disclosure_items=[_tcc_isolate(part, lang) for part in
+                          ui_text.text("UI_TCC_DISCLOSURE", lang).split("\n\n")],
+        tmp36_disclosure_items=[_tcc_isolate(part, lang) for part in
+                                ui_text.text("UI_TMP36_DISCLOSURE", lang).split("\n\n")],
+        cc_disclosure_items=[_cc_isolate(part, lang) for part in
+                             ui_text.text("UI_CC_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=result,
+        outcome_key=outcome_key,
+        part_refusal=(evaluation is not None
+                      and evaluation["outcome"] in (_tcc.TMP36_REFUSED,
+                                                    _tcc.CONTROL_CYCLE_REFUSED)),
+        captured=captured,
+        tmp36_prefix=_tcc.TMP36_PREFIX,
+        cycle_prefix=_tcc.CYCLE_PREFIX,
+        tmp36_declarations=_tmp36.DECLARATION_IDS,
+        tmp36_screen_items=_tmp36.SCREEN_ITEMS,
+        cc_declarations=_cc.DECLARATION_IDS,
+        cc_screen_items=_cc.SCREEN_ITEMS,
+        states=_cc.STATES,
+        decl_field=_cc.DECLARATION_FIELD,
+        screen_field=_cc.SCREEN_FIELD,
+        tmp36_value_field=_tmp36.VALUE_FIELD % "v_out",
+        previous_state_field=_cc.PREVIOUS_STATE_FIELD,
+        condition_field=_tcc.DECLARATION_FIELD,
+        threshold_field=_tcc.THRESHOLD_FIELD,
+        answer_applies=_tcc.ANSWER_APPLIES,
+        answer_does_not_apply=_tcc.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_cc.SCREEN_YES,
+        screen_no=_cc.SCREEN_NO,
+        max_value_chars=_tmp36.MAX_VALUE_CHARS,
+        max_threshold_chars=_tcc.MAX_THRESHOLD_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/temperature-control-condition", methods=["GET"])
+def temperature_control_condition(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_tcc(sid, eligible=_tcc_eligible(sid))
+
+
+@app.route("/session/<sid>/temperature-control-condition", methods=["POST"])
+def temperature_control_condition_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (both existing gates) -> strict capture (malformed, a submitted
+    # start_input or an override: 400, no evaluation) -> the composition order.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _tcc_eligible(sid):
+        return _render_tcc(sid, eligible=False)
+    form = request.form
+    captured = _tcc.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_tcc(sid, status=400, error="UI_TCC_ERR_REQUEST")
+    return _render_tcc(sid, captured=captured,
+                       evaluation=_tcc.evaluate(captured, _TMP36_TEMPERATURE_BINDING))
+
+
+# =============================================================================
+# DC-RESISTIVE-LOAD-CURRENT-01 — DC Resistive Load Current, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory, non-binding calculation of the theoretical steady
+# current I = V / R of ONE inventor-declared DC resistive load (method contract
+# §1, §7). The consumer (`engine/dc_resistive_load_current.py`) owns capture,
+# the exact-decimal positive-resistance check, the pre-owner order, the
+# decimal-reference acceptance and the exact / rounded display; the shared
+# calculation / units owner (`engine/deterministic_calculation.py`) owns
+# execution; the method adapter (`engine/dc_resistive_load_current_method.py`)
+# owns the relation and its binary acceptance. Eligibility is the trusted durable
+# ROOT domain only, exactly Electrical / Electronics: a declared Stage 15 part
+# grants nothing. Nothing is inferred about the project, nothing is persisted and
+# nothing is read beyond the root domain. The POST renders its answer directly and
+# never redirects. The other five calculations are untouched.
+#
+# The SIXTH immutable trusted binding (calc/units Correction 06 §13E), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_DC_LOAD_CURRENT_BINDING = _dcalc.bind_method(
+    _dcl_method.METHOD_ID, _dcl_method.METHOD_VERSION, _dcl_method.evaluate)
+
+# Latin letters, digits, signs, unit tokens (V, Ω, A) and expressions such as
+# ``I = V / R``: each run is direction-isolated on an Arabic page (contract §9A
+# A-4), so a leading minus stays attached to its number.
+_DCL_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u03a9\u2212+(\-](?:[A-Za-z0-9_\u03a9\u2212+()/.:'= \-]*[A-Za-z0-9_\u03a9)])?")
+
+
+def _dcl_eligible(sid):
+    """True iff the project's trusted durable ROOT domain is Electrical /
+    Electronics. Never read from the request and never from the composition:
+    a declared part grants nothing. Fails closed."""
+    try:
+        return _dcl.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+def _dcl_isolate(text, lang):
+    return _ltr_isolate(text, lang, _DCL_LTR_RUN)
+
+
+def _dcl_result_view(evaluation):
+    """Template view of an accepted SUCCESS: the consumer's display of the exact
+    quotient (already checked against the owner's binary64 result) with its
+    exact / rounded label, the separately labelled magnitude of a negative
+    current, the owner's unit, the method identity and the source and unit
+    references the owner carried."""
+    result = evaluation["result"]
+    output = result["outputs"]["i_load"]
+    return {
+        "value": evaluation["display_value"],
+        "exact": evaluation["display_exact"],
+        "magnitude": evaluation["magnitude_value"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_dcl(sid, status=200, eligible=True, captured=None, evaluation=None,
+                error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _dcl.OUTCOME_SUCCESS:
+            view = _dcl_result_view(evaluation)
+        else:
+            outcome_key = "UI_DCL_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "dc_load_current.html",
+        sid=sid,
+        iso=lambda key: _dcl_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _dcl_isolate(part, lang) for part in
+            ui_text.text("UI_DCL_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_dcl.DECLARATION_IDS,
+        screen_items=_dcl.SCREEN_ITEMS,
+        value_roles=_dcl.VALUE_ROLES,
+        decl_field=_dcl.DECLARATION_FIELD,
+        screen_field=_dcl.SCREEN_FIELD,
+        value_field=_dcl.VALUE_FIELD,
+        answer_applies=_dcl.ANSWER_APPLIES,
+        answer_does_not_apply=_dcl.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_dcl.SCREEN_YES,
+        screen_no=_dcl.SCREEN_NO,
+        max_value_chars=_dcl.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/dc-load-current", methods=["GET"])
+def dc_load_current(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_dcl(sid, eligible=_dcl_eligible(sid))
+
+
+@app.route("/session/<sid>/dc-load-current", methods=["POST"])
+def dc_load_current_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain only) -> strict capture (malformed: 400,
+    # no reason token) -> the consumer's §7 order -> the shared owner -> the
+    # decimal-reference acceptance.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _dcl_eligible(sid):
+        return _render_dcl(sid, eligible=False)
+    form = request.form
+    captured = _dcl.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_dcl(sid, status=400, error="UI_DCL_ERR_REQUEST")
+    return _render_dcl(sid, captured=captured,
+                       evaluation=_dcl.evaluate(captured, _DC_LOAD_CURRENT_BINDING))
+
+
+# =============================================================================
+# DC-RESISTIVE-LOAD-POWER-01 — DC Resistive Load Power, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory, non-binding calculation of the theoretical electrical
+# power P = V**2 / R that ONE inventor-declared DC resistive load absorbs (method
+# contract §1, §7). The consumer (`engine/dc_resistive_load_power.py`) owns
+# capture, the exact-decimal positive-resistance check, the pre-owner order, the
+# decimal-reference acceptance and the exact / rounded display; the shared
+# calculation / units owner owns execution; the method adapter
+# (`engine/dc_resistive_load_power_method.py`) owns the relation and its binary
+# acceptance. Eligibility is the trusted durable ROOT domain only, exactly
+# Electrical / Electronics (the same root read as the DC load current page): a
+# declared Stage 15 part grants nothing. Nothing is inferred about the project,
+# nothing is persisted and nothing is read beyond the root domain. The POST
+# renders its answer directly and never redirects. The other six calculations are
+# untouched.
+#
+# The SEVENTH immutable trusted binding (calc/units Correction 07 §13F), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_DC_LOAD_POWER_BINDING = _dcalc.bind_method(
+    _dcp_method.METHOD_ID, _dcp_method.METHOD_VERSION, _dcp_method.evaluate)
+
+
+def _dcp_eligible(sid):
+    """True iff the project's trusted durable ROOT domain is Electrical /
+    Electronics. Never read from the request and never from the composition:
+    a declared part grants nothing. Fails closed."""
+    try:
+        return _dcp.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+# As the DC load current run, plus the superscript two and the multiplication
+# sign, so ``P = V² / R = V × I`` stays one direction-isolated run (§9A A-4).
+_DCP_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u03a9\u2212+(\-](?:[A-Za-z0-9_\u03a9\u2212+()/.:'= \u00b2\u00d7\-]*"
+    r"[A-Za-z0-9_\u03a9\u00b2)])?")
+
+
+def _dcp_isolate(text, lang):
+    return _ltr_isolate(text, lang, _DCP_LTR_RUN)
+
+
+def _dcp_result_view(evaluation):
+    """Template view of an accepted SUCCESS: the consumer's display of the exact
+    V**2 / R (already checked against the owner's binary64 result) with its
+    exact / rounded label, the owner's unit, the method identity and the source
+    and unit references the owner carried."""
+    result = evaluation["result"]
+    output = result["outputs"]["p_load"]
+    return {
+        "value": evaluation["display_value"],
+        "exact": evaluation["display_exact"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_dcp(sid, status=200, eligible=True, captured=None, evaluation=None,
+                error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _dcp.OUTCOME_SUCCESS:
+            view = _dcp_result_view(evaluation)
+        else:
+            outcome_key = "UI_DCP_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "dc_load_power.html",
+        sid=sid,
+        iso=lambda key: _dcp_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _dcp_isolate(part, lang) for part in
+            ui_text.text("UI_DCP_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_dcp.DECLARATION_IDS,
+        screen_items=_dcp.SCREEN_ITEMS,
+        value_roles=_dcp.VALUE_ROLES,
+        decl_field=_dcp.DECLARATION_FIELD,
+        screen_field=_dcp.SCREEN_FIELD,
+        value_field=_dcp.VALUE_FIELD,
+        answer_applies=_dcp.ANSWER_APPLIES,
+        answer_does_not_apply=_dcp.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_dcp.SCREEN_YES,
+        screen_no=_dcp.SCREEN_NO,
+        max_value_chars=_dcp.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/dc-load-power", methods=["GET"])
+def dc_load_power(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_dcp(sid, eligible=_dcp_eligible(sid))
+
+
+@app.route("/session/<sid>/dc-load-power", methods=["POST"])
+def dc_load_power_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain only) -> strict capture (malformed: 400,
+    # no reason token) -> the consumer's §7 order -> the shared owner -> the
+    # decimal-reference acceptance.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _dcp_eligible(sid):
+        return _render_dcp(sid, eligible=False)
+    form = request.form
+    captured = _dcp.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_dcp(sid, status=400, error="UI_DCP_ERR_REQUEST")
+    return _render_dcp(sid, captured=captured,
+                       evaluation=_dcp.evaluate(captured, _DC_LOAD_POWER_BINDING))
+
+
+# =============================================================================
+# DC-RESISTIVE-LOAD-ENERGY-01 — DC Resistive Load Energy, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory, non-binding calculation of the theoretical electrical
+# energy E = V**2 x t / R that ONE inventor-declared DC resistive load absorbs
+# over ONE declared duration at a constant power (method contract §1, §7). The
+# consumer (`engine/dc_resistive_load_energy.py`) owns capture, the exact-decimal
+# positive-resistance and not-negative-duration checks, the pre-owner order, the
+# decimal-reference acceptance and the exact / rounded display; the shared
+# calculation / units owner owns execution; the method adapter
+# (`engine/dc_resistive_load_energy_method.py`) owns the relation and its binary
+# acceptance. Eligibility is the trusted durable ROOT domain only, exactly
+# Electrical / Electronics (the same root read as the DC load current and power
+# pages): a declared Stage 15 part grants nothing. Nothing is inferred about the
+# project, nothing is persisted and nothing is read beyond the root domain. The
+# POST renders its answer directly and never redirects. The other seven
+# calculations are untouched.
+#
+# The EIGHTH immutable trusted binding (calc/units Correction 08 §13G), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_DC_LOAD_ENERGY_BINDING = _dcalc.bind_method(
+    _dce_method.METHOD_ID, _dce_method.METHOD_VERSION, _dce_method.evaluate)
+
+
+def _dce_eligible(sid):
+    """True iff the project's trusted durable ROOT domain is Electrical /
+    Electronics. Never read from the request and never from the composition:
+    a declared part grants nothing. Fails closed."""
+    try:
+        return _dce.is_eligible(_cap12_root_domain(sid))
+    except Exception:
+        return False
+
+
+# As the DC load power run, so ``E = V² × t / R = P × t`` stays one
+# direction-isolated run (§9A A-4).
+_DCE_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u03a9\u2212+(\-](?:[A-Za-z0-9_\u03a9\u2212+()/.:'= \u00b2\u00d7\-]*"
+    r"[A-Za-z0-9_\u03a9\u00b2)])?")
+
+
+def _dce_isolate(text, lang):
+    return _ltr_isolate(text, lang, _DCE_LTR_RUN)
+
+
+def _dce_result_view(evaluation):
+    """Template view of an accepted SUCCESS: the consumer's display of the exact
+    V**2 x t / R (already checked against the owner's binary64 result) with its
+    exact / rounded label, the owner's unit, the method identity and the source
+    and unit references the owner carried."""
+    result = evaluation["result"]
+    output = result["outputs"]["e_load"]
+    return {
+        "value": evaluation["display_value"],
+        "exact": evaluation["display_exact"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_dce(sid, status=200, eligible=True, captured=None, evaluation=None,
+                error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _dce.OUTCOME_SUCCESS:
+            view = _dce_result_view(evaluation)
+        else:
+            outcome_key = "UI_DCE_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "dc_load_energy.html",
+        sid=sid,
+        iso=lambda key: _dce_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _dce_isolate(part, lang) for part in
+            ui_text.text("UI_DCE_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_dce.DECLARATION_IDS,
+        screen_items=_dce.SCREEN_ITEMS,
+        value_roles=_dce.VALUE_ROLES,
+        decl_field=_dce.DECLARATION_FIELD,
+        screen_field=_dce.SCREEN_FIELD,
+        value_field=_dce.VALUE_FIELD,
+        answer_applies=_dce.ANSWER_APPLIES,
+        answer_does_not_apply=_dce.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_dce.SCREEN_YES,
+        screen_no=_dce.SCREEN_NO,
+        max_value_chars=_dce.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/dc-load-energy", methods=["GET"])
+def dc_load_energy(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    return _render_dce(sid, eligible=_dce_eligible(sid))
+
+
+@app.route("/session/<sid>/dc-load-energy", methods=["POST"])
+def dc_load_energy_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain only) -> strict capture (malformed: 400,
+    # no reason token) -> the consumer's §7 order -> the shared owner -> the
+    # decimal-reference acceptance.
+    if not _project_authorized(sid):
+        return _deny_project()
+    if not _dce_eligible(sid):
+        return _render_dce(sid, eligible=False)
+    form = request.form
+    captured = _dce.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_dce(sid, status=400, error="UI_DCE_ERR_REQUEST")
+    return _render_dce(sid, captured=captured,
+                       evaluation=_dce.evaluate(captured, _DC_LOAD_ENERGY_BINDING))
 
 
 # =============================================================================
