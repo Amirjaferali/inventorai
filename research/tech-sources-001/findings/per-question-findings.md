@@ -77,3 +77,27 @@ validates the stiffness estimate; it lists what a comparison would need to recor
 - Not inspected: www.nxp.com and www.ibiblio.org refused by the egress proxy. Federal hosts returned only 1960s circuit-specific material.
 - Reopening triggers: host access, or a Lead-supplied inspection of one of the candidates with its rights basis (manufacturer terms of use are
   IP UNRESOLVED; the Kuphaldt Vol. IV appendix must be read for its own licence).
+
+## Q-06 — Battery delivered capacity vs discharge rate and temperature (run 3) — QUALIFIED-CANDIDATE (class-level, two chemistries)
+- Directly inspected: NASA/TM-2009-215751 (Li-ion) and DOE-HDBK-1084-95 (lead-acid); supporting DOE-HDBK-1011/2-92 ES-04.
+- Claim supported: a battery's rated capacity is defined at stated conditions — discharge rate (C-rate), temperature and cutoff voltage; at a
+  higher rate or lower temperature the delivered capacity is lower (falling off fastest with both together); internal resistance lowers the
+  terminal voltage under load. Therefore runtime = rated A·h ÷ load current holds only approximately and only near the rating conditions.
+- Integration framing (battery → interface → load → verification): battery rating conditions → load current profile, ambient temperature and the
+  load's minimum operating voltage (which sets the effective cutoff) → load requirement for duration → verification needs the discharge data at
+  the actual current and temperature to the load's cutoff. Not established: any specific runtime, chemistry choice or BMS behaviour.
+- Overlap respected: PR #802 (Q = I·t; A·h is charge) is not re-sourced; one DOE sentence conflicts with it (logged).
+
+## Q-07 — PLC discrete I/O ↔ field device (run 3) — SOURCE ACCESS BLOCKED (terminal until trigger)
+- The claim (a sourcing input / output must pair with a sinking device and vice versa; levels must match) is stated in Kuphaldt's PLC course
+  material (ibiblio, refused) and an NRC document (nrc.gov, refused); OSTI / NTRS searches found no federal statement.
+- Reopening triggers: host access, or a Lead-supplied inspection with the licence of the exact file.
+
+## Q-08 — Sampled-data control: sample rate vs controlled-process dynamics (run 3) — QUALIFIED-CANDIDATE (class-level)
+- Directly inspected: NASA TM-88346 (Tischler, 1987). Supported: the sample rate of a digital control loop is chosen relative to the desired
+  closed-loop bandwidth; sampling plus hold adds an effective delay of about half a sample period, plus computational delay, which appears as
+  phase lag; content above half the sample rate aliases into lower frequencies unless an analog anti-aliasing filter precedes the sampler;
+  too-low rates cause roughness, actuator limiting and intersample ripple.
+- Not adopted: any numeric ratio — the NASA documents found give different rules of thumb (logged).
+- Overlap: fills only the gap the admitted `control_loop` pack explicitly excludes ("no claim about the controller's action or update rate");
+  nothing is admitted or added to that pack.

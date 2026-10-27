@@ -14,3 +14,6 @@ Append-only.
 | 2026-10-27 | Q-01 (run 2) | Generic Timoshenko / Euler-Bernoulli span-depth thresholds from journal papers in search results (e.g. 20, 3, 5) | Non-federal journal / thesis sources with unverified reuse rights, not wood-specific, and a threshold would be arbitrary for D-7 |
 | 2026-10-27 | Q-04 (run 2) | NISTIR 6288 contributed paper | Authorship / rights unverified (third-party contribution) |
 | 2026-10-27 | Q-05 (run 2) | Non-authoritative tutorial pages (electronics-tutorials.ws, personal sites, Rohm TechWeb) found by search | Not primary / authoritative sources; rights unverified |
+| 2026-10-27 | Q-06 (run 3) | Numeric rate / temperature effects (e.g. "8 °C halves life", optimum 20–40 °C, C/20 ratios) | Chemistry- and product-specific; not part of the class-level claim; one source (OSTI 975252) not inspected |
+| 2026-10-27 | Q-07 (run 3) | Kuphaldt SINST / ModEL PLC worksheets seen in search snippets | Host refused (not inspected); ModEL licence is recorded for another module only (PR012/PR013) and the SINST worksheets' licence is unverified |
+| 2026-10-27 | Q-08 (run 3) | Any sample-rate-to-bandwidth ratio (30, 10, 5–20, 6–10 seen across NASA documents) | Application-specific rules of thumb that disagree; adopting one would invent a threshold |

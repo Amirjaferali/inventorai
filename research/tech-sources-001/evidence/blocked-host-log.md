@@ -10,3 +10,5 @@ Append-only. Never bypassed.
 | 2026-10-27 | www.fs.usda.gov, www.fs.fed.us, www.govinfo.gov, www.nal.usda.gov, handle.nal.usda.gov, digital.library.unt.edu, archive.org | no response (connection failed) | Alternative hosts for the Wood Handbook / FPL notes | None reachable |
 | 2026-10-27 | www.ibiblio.org | egress proxy CONNECT 403 | Kuphaldt, *Lessons in Electric Circuits* Vol. IV (Digital) and its licence appendix | None |
 | 2026-10-27 | www.nxp.com | egress proxy CONNECT 403 | NXP / Freescale AN2434, AN2433 | None |
+| 2026-10-27 | www.nrc.gov | egress proxy CONNECT 403 | NRC ML063530382 "The Programmable Logic Controller and Its…" (Q-07) | None |
+| 2026-10-27 | ntrs.nasa.gov (single download) | 120 s client timeout on a 1.9 MB file; succeeded on retry with a longer timeout | NASA/TM-2009-215751 | Same host, retried once |
