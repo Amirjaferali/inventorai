@@ -1124,7 +1124,8 @@ def preflight_response_meta(raw):
     incomplete reason, error type / code and the usage counts. Every value is
     an identifier-like token or an integer; anything missing or of another
     shape is UNAVAILABLE. No text, message or reasoning content is ever read."""
-    meta = {"response_id": _PF_UNAVAILABLE, "response_status": _PF_UNAVAILABLE,
+    meta = {"response_id": _PF_UNAVAILABLE, "model": _PF_UNAVAILABLE,
+            "response_status": _PF_UNAVAILABLE,
             "incomplete_reason": _PF_UNAVAILABLE, "error_type": _PF_UNAVAILABLE,
             "error_code": _PF_UNAVAILABLE,
             "usage": {name: _PF_UNAVAILABLE for name, _path in _PF_USAGE}}
@@ -1135,6 +1136,7 @@ def preflight_response_meta(raw):
     if not isinstance(data, dict):
         return meta
     meta["response_id"] = _pf_safe(data.get("id"))
+    meta["model"] = _pf_safe(data.get("model"))
     meta["response_status"] = _pf_safe(data.get("status"))
     details = data.get("incomplete_details")
     if isinstance(details, dict):
@@ -1189,15 +1191,24 @@ def _measured_call(adapter, payload):
     finally:
         adapter._transport = transport
     meta.setdefault("usage", preflight_response_meta(b"")["usage"])
-    for key in ("response_id", "response_status", "incomplete_reason",
+    for key in ("response_id", "model", "response_status", "incomplete_reason",
                 "error_type", "error_code"):
         meta.setdefault(key, _PF_UNAVAILABLE)
     return reply, meta
 
 
-def _pf_outcome(arm_pack, reply, kind, meta, cap):
+def _pf_model_confirmed(returned, configured):
+    """True when the reply names the configured model itself or one of its
+    dated snapshots (``<model>-YYYY-MM-DD``); anything else, or no model, is
+    not a confirmation."""
+    return returned == configured or bool(
+        re.fullmatch(re.escape(configured) + r"-\d{4}-\d{2}-\d{2}", returned))
+
+
+def _pf_outcome(arm_pack, reply, kind, meta, cap, model=toa.MODEL):
     """(outcome, stop): the measured category of one attempt and whether it
-    ends the preflight."""
+    ends the preflight. A 200 reply must confirm the configured model before
+    it is measured; otherwise the run stops (MODEL_UNCONFIRMED)."""
     usage = meta["usage"]
     if not meta["sent"]:
         return "NOT_SENT", True
@@ -1207,6 +1218,8 @@ def _pf_outcome(arm_pack, reply, kind, meta, cap):
         return "TRANSPORT", True
     if meta["http_status"] != 200:
         return "HTTP_STATUS", True
+    if not _pf_model_confirmed(meta["model"], model):
+        return "MODEL_UNCONFIRMED", True
     if reply == ms.ABSTAIN:
         return "REFUSAL", True
     if reply is None:
@@ -1239,7 +1252,8 @@ def mechanism_preflight(adapter, arm_pack, pre):
             stopped = "BUDGET_RESERVATION"
             break
         reply, meta = _measured_call(adapter, payload)
-        outcome, stop = _pf_outcome(arm_pack, reply, adapter.last_error_kind, meta, cap)
+        outcome, stop = _pf_outcome(arm_pack, reply, adapter.last_error_kind, meta, cap,
+                                    adapter._model)
         usage = meta["usage"]
         known = isinstance(usage["input_tokens"], int) and isinstance(usage["output_tokens"], int)
         measured = (_pf_usd(usage["input_tokens"], usage["output_tokens"],
@@ -1255,7 +1269,7 @@ def mechanism_preflight(adapter, arm_pack, pre):
         rows.append({"index": index, "input_id": input_id, "variety": item["variety"],
                      "sent": meta["sent"],
                      "max_output_tokens": cap, "http_status": meta["http_status"],
-                     "response_id": meta["response_id"],
+                     "response_id": meta["response_id"], "model": meta["model"],
                      "response_status": meta["response_status"],
                      "incomplete_reason": meta["incomplete_reason"],
                      "error_type": meta["error_type"], "error_code": meta["error_code"],

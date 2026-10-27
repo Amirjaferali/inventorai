@@ -22,10 +22,10 @@ SECRET = "sk-THIS-MUST-NEVER-APPEAR"
 
 
 def _body(status="completed", reply=GOOD, usage=None, reason=None, rid="resp_test1",
-          refusal=False, extra_text="hidden reasoning words"):
+          refusal=False, extra_text="hidden reasoning words", model="gpt-6-sol"):
     content = ([{"type": "refusal", "refusal": "no"}] if refusal
                else [{"type": "output_text", "text": json.dumps(reply)}])
-    body = {"id": rid, "status": status,
+    body = {"id": rid, "model": model, "status": status,
             "output": [{"type": "reasoning", "summary": [{"text": extra_text}]},
                        {"type": "message", "content": content}],
             "usage": usage if usage is not None else {
@@ -274,7 +274,7 @@ def test_the_preflight_has_no_product_or_store_side_effect(tmp_path):
         "sqlite3.connect = boom\n"
         "spec = importlib.util.spec_from_file_location('h', %r)\n"
         "h = importlib.util.module_from_spec(spec); spec.loader.exec_module(h)\n"
-        "body = json.dumps({'id': 'resp_x', 'status': 'completed', 'output': [{'type': "
+        "body = json.dumps({'id': 'resp_x', 'model': 'gpt-6-sol', 'status': 'completed', 'output': [{'type': "
         "'message', 'content': [{'type': 'output_text', 'text': json.dumps({'responsive': "
         "'RESPONSIVE', 'stance': 'ASSERTS', 'mechanism_content': 'ABSENT', 'quote': ''})}]}],"
         " 'usage': {'input_tokens': 10, 'output_tokens': 5}}).encode()\n"
@@ -290,3 +290,31 @@ def test_the_preflight_has_no_product_or_store_side_effect(tmp_path):
     assert out.returncode == 0, out.stderr
     assert out.stdout.strip() == "[]"
     assert not db.exists()
+
+
+# ─── the configured model must be confirmed by the reply ────────────────────
+
+@pytest.mark.parametrize("model,confirmed", [
+    ("gpt-6-sol", True), ("gpt-6-sol-2026-10-20", True),
+    ("gpt-6.1-sol", False), ("gpt-6-sol-mini", False), ("gpt-6-luna", False),
+    ("UNAVAILABLE", False), ("gpt-6-sol-2026-1-2", False),
+])
+def test_only_the_configured_model_or_its_dated_snapshot_is_confirmed(model, confirmed):
+    assert h._pf_model_confirmed(model, "gpt-6-sol") is confirmed
+
+
+@pytest.mark.parametrize("model", ["gpt-6.1-sol", None])
+def test_a_reply_that_does_not_confirm_the_model_stops_after_one_request(arm, pre, model):
+    first = _body(model=model)
+    rows, summary, fake = _run(arm, pre, first, *[_body() for _ in range(7)])
+    assert len(fake.bodies) == 1 and summary["stopped"] == "MODEL_UNCONFIRMED"
+    assert rows[0]["model"] == (model or "UNAVAILABLE")
+
+
+def test_a_dated_snapshot_and_an_output_cap_incomplete_both_continue(arm, pre):
+    capped = _body(status="incomplete", reason="max_output_tokens",
+                   model="gpt-6-sol-2026-10-20",
+                   usage={"input_tokens": 900, "output_tokens": 300})
+    rows, summary, fake = _run(arm, pre, capped, *[_body() for _ in range(7)])
+    assert len(fake.bodies) == 8 and summary["stopped"] is None
+    assert rows[0]["outcome"] == h.PF_CAPPED and rows[0]["model"] == "gpt-6-sol-2026-10-20"
