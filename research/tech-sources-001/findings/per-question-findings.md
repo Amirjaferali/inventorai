@@ -120,3 +120,18 @@ validates the stiffness estimate; it lists what a comparison would need to recor
 ## Tier 2 portfolio check (run 4) — no further questions derivable under current obligations
 Per the README, every remaining Tier-2 label was checked against the roadmap, the Capability Enrichment Register and the Deferred Obligations
 Register: none carries a claim-level open obligation (they are routing directions to existing owners). No question was invented.
+
+## Run 5 (2026-10-27) — Owner-directed search for legal official alternatives (Q-01, Q-05, Q-07)
+Reachable authoritative hosts this session: ntrs.nasa.gov, osti.gov, nvlpubs.nist.gov / nist.gov, energy.gov (and github.com, used only to
+look for an author-published original). Every other candidate host was refused by the environment's network policy (blocked-host log).
+
+- **Q-01 — still BLOCKED.** Searched NTRS, OSTI and NIST for (a) any edition of the USDA *Wood Handbook* or a federal report stating the
+  small-clear bending test geometry (span-to-depth 14) behind its moduli, and (b) a source stating a numeric small-deflection limit for a simply
+  supported beam. Found only reports that cite ASTM D143 without stating the geometry, and large-deflection studies of other configurations.
+  **UNVERIFIED:** "the tabulated bending moduli rest on centre-loaded tests at span-to-depth 14" and any numeric small-deflection limit.
+- **Q-05 — still SOURCE ACCESS BLOCKED.** The author publishes *Lessons in Electric Circuits* / ModEL only on ibiblio (CC BY 4.0 per the
+  author's index page); the Open Book Project and archive.org copies are refused and the archive.org copies are third-party older-licence mirrors.
+  Federal hosts give no class-level statement. **UNVERIFIED:** the logic-output-drive claim.
+- **Q-07 — partially supported, otherwise UNVERIFIED.** NISTIR 5331 (SRC-013) supports only that 0–24 V points are the typical discrete I/O
+  interface. **UNVERIFIED:** that a sourcing I/O point must be paired with a sinking device and vice versa, and the level-matching rule.
+- **Q-03 — not executable:** needs an exact claim definition (Owner / Lead), not a source.
