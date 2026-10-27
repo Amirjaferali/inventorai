@@ -353,7 +353,7 @@ def _outcomes(version):
     return got
 
 
-def test_controls_gain_no_partial_or_closed_overall_and_never_new_closure():
+def test_controls_keyed_changes_are_pinned_exactly():
     xg1, dv1 = _outcomes(XG1), _outcomes(DV1)
     for start in (OPEN, PARTIAL):
         for status in (PARTIAL, CLOSED):
@@ -365,17 +365,50 @@ def test_controls_gain_no_partial_or_closed_overall_and_never_new_closure():
         for key, status in outcome.items():
             if key[1] in (UNRELATED, "I don't know.", "لا أعرف"):
                 assert status == key[2], key
-    # every text that moves a gap under DV1 already moved one under XG1,
-    # except ONE: the Arabic padding of N-MC-1's own committed markers. XG1
-    # never consulted the first variant's markers at all; DV1 consults them
-    # while N-MC-1 is displayed. It reaches PARTIAL only (asserted only) —
-    # the existing marker-padding weakness, not a closure.
-    def movers(outcome, closed_only=False):
-        return {(k[0], k[1]) for k, v in outcome.items()
-                if v != k[2] and (v == CLOSED or not closed_only)}
-    assert movers(dv1, closed_only=True) <= movers(xg1, closed_only=True)
-    new = movers(dv1) - movers(xg1)
+    # KEYED comparison — same domain, served index, prior state and answer
+    # sequence. Every outcome DV1 advances beyond XG1 is pinned exactly here.
+    # Each is the existing marker-supplement weakness (a weak answer carrying
+    # a committed marker), now read against the question it belongs to: the
+    # same text earned the same credit from XG1 one question EARLIER (except
+    # N-MC-1, whose markers XG1 never consulted). At these keys it is still
+    # new false credit, one of them a CLOSED — recorded as evidence for the
+    # Owner decision, not approved as harmless.
+    rank = {OPEN: 0, PARTIAL: 1, CLOSED: 2}
+    gains = {k: (xg1[k], dv1[k]) for k in dv1 if rank[dv1[k]] > rank[xg1[k]]}
+    en2, ar2 = _INTENT_MARKERS["mechanical:MECHANISM_COMPLETENESS:Q2"]
+    m = en2[0]
+    restate = ("I already explained the " + m + " in my earlier answer, it is the "
+               "same as before because nothing changed.")
+    weak_q2 = (" ".join(ar2), "I don't know the " + m + ".",
+               "Maybe the " + m + " could be something, I suppose.",
+               "There is no " + m + " in my idea.",
+               "My cat likes the sofa; " + m + ".", restate)
     ar_first = " ".join(_INTENT_MARKERS["N-MC-1"][1])
-    assert new == {(EE, ar_first)}
-    assert {v for k, v in dv1.items() if (k[0], k[1]) == (EE, ar_first)} \
-        <= {OPEN, PARTIAL}
+    expected = {(MECH, t, OPEN, 1, r): (OPEN, PARTIAL) for t in weak_q2 for r in (1, 2)}
+    expected.update({(MECH, restate, PARTIAL, 1, r): (PARTIAL, CLOSED) for r in (1, 2)})
+    expected.update({(EE, ar_first, OPEN, 0, r): (OPEN, PARTIAL) for r in (1, 2)})
+    assert gains == expected
+    # the mechanical gains are XG1's own credit for the same text one
+    # question earlier (same prior state, one answer)
+    for (domain, text, start, served, repeats), (_x, d) in gains.items():
+        if domain == MECH and repeats == 1:
+            assert rank[xg1[(domain, text, start, served - 1, 1)]] >= rank[d]
+
+
+def test_a_q2_answer_at_q1_is_not_a_dead_end(client):
+    """Coverage versus credit: under DV1 a Q2-vocabulary answer at Q1 earns no
+    credit, W2-C still marks Q2 covered and serves Q3, and the journey goes on:
+    an ordinary explanation progresses and a second one closes the gap."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start_project(c, appmod, DV1)
+    _submit(c, sid, F4_MIXED)
+    got = _snapshot(appmod, sid)
+    assert got["status"] == OPEN and got["identity"] == Q3
+    assert got["coverage"] == ["mechanical:MECHANISM_COMPLETENESS:Q2"]
+    _submit(c, sid, F1_AFFIRM)
+    assert _mc(appmod, sid) == PARTIAL
+    _submit(c, sid, "Each component contributes to the overall motion: the deck "
+                    "panel pivots on the hinge and the spring latch locks it flat "
+                    "because it hooks the frame rail.")
+    assert _mc(appmod, sid) == CLOSED
