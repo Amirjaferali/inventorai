@@ -10,7 +10,9 @@ five independent runners, proven complete by a fail-closed central audit.
     current real-browser files, the static ``BALANCE_SHARD`` placement of the
     measured heaviest shared files, else the SHA-256 rule over the shared shards
     4-5: ``SHARED_SHARDS[int(SHA256(repo-relative POSIX path)[:8], 16) % 2]``),
-    execute them serially and write JUnit plus a structured evidence JSON.
+    execute them (serially, or over pytest-xdist workers with whole-file scheduling when
+    ``INVENTORAI_CI_PYTEST_WORKERS`` asks for more than one) and write JUnit plus a
+    structured evidence JSON.
   * ``--mode audit``: accept the five shard evidence packages only when they
     prove, for the current run / attempt / tested merge / tree, that the five
     assignments exactly partition ONE identical full collection, that every
@@ -28,9 +30,19 @@ The pytest plugin half of this module is loaded into the shard's pytest process
 with ``-p scripts.ci_full_suite`` and is inert unless ``INVENTORAI_CI_SHARD`` is
 set. The module imports only the standard library at import time, so the audit
 runs on a bare interpreter.
+
+Parallel execution (CI-XDIST-PARALLEL-EXECUTION-01) changes only HOW a shard's own
+files run, never WHICH: every xdist worker makes the same normal full collection and
+keeps the same assigned files, ``--dist loadfile`` keeps each file on one worker, and a
+crashed worker is never restarted. Only the controller writes the shard record. It
+requires every expected worker to report an identical collection and assignment and
+every executed node to come from exactly one worker; any gap or mismatch is written as
+a collection error, which the unchanged audit rejects. One worker is the plain serial
+run, unchanged, and is the rollback.
 """
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 import pathlib
@@ -47,6 +59,12 @@ EVIDENCE_FILE = "shard-evidence.json"
 JUNIT_FILE = "shard-junit.xml"
 _RAW_FILE = "shard-raw.json"
 _SHA_RE = re.compile(r"[0-9a-f]{40}")
+WORKERS_ENV = "INVENTORAI_CI_PYTEST_WORKERS"
+MAX_WORKERS = 4
+DIST_MODE = "loadfile"
+_WORKERS_RE = re.compile(r"[1-9][0-9]*")
+_WORKER_OUTPUT_KEY = "inventorai_ci_shard_worker"
+_AGGREGATION_NODEID = "<xdist-aggregation>"
 _RUN_RE = re.compile(r"[1-9][0-9]*")
 
 # ---------------------------------------------------------------------------
@@ -190,7 +208,55 @@ def _skip_reason(report):
     return str(longrepr) if longrepr is not None else ""
 
 
-def _make_plugin(shard, count, raw_path):
+def merge_worker_records(records, expected_workers, controller_outcome_ids):
+    """The controller's fail-closed view of the xdist workers' records.
+
+    ``records`` maps each reported worker id to its record (None when the worker sent
+    none). Returns (collected, assigned, collection_errors, collection_seconds,
+    problems): every expected worker ``gw0`` .. ``gw{n-1}`` must report, all with the
+    identical full collection and assignment, and the nodes the workers executed must be
+    exactly the controller's outcome nodes, each executed by exactly one worker."""
+    problems = []
+    expected = ["gw%d" % i for i in range(expected_workers)]
+    if sorted(records) != expected:
+        problems.append(f"worker set {sorted(records)}; exactly {expected} required")
+    present = [(wid, rec) for wid, rec in sorted(records.items()) if rec is not None]
+    for wid, rec in sorted(records.items()):
+        if rec is None:
+            problems.append(f"worker {wid} sent no shard record")
+    if not present:
+        return [], [], [], None, problems or ["no worker sent a shard record"]
+    first_id, first = present[0]
+    for wid, rec in present[1:]:
+        if rec["collected"] != first["collected"]:
+            problems.append(f"worker {wid} full collection differs from worker {first_id}")
+        if rec["assigned"] != first["assigned"]:
+            problems.append(f"worker {wid} assignment differs from worker {first_id}")
+    executed = {}
+    for wid, rec in present:
+        for nodeid in rec["executed"]:
+            executed.setdefault(nodeid, []).append(wid)
+    for nodeid, wids in sorted(executed.items()):
+        if len(wids) != 1:
+            problems.append(f"{nodeid} executed by {len(wids)} workers {wids}")
+    if set(executed) != set(controller_outcome_ids):
+        problems.append(f"worker execution ({len(executed)} nodes) differs from the controller outcomes "
+                        f"({len(set(controller_outcome_ids))} nodes)")
+    errors, seen = [], set()
+    for _wid, rec in present:
+        for err in rec["collection_errors"]:
+            if err["nodeid"] not in seen:
+                seen.add(err["nodeid"])
+                errors.append(err)
+    seconds = [rec["collection_seconds"] for _wid, rec in present if rec["collection_seconds"] is not None]
+    return first["collected"], first["assigned"], errors, (max(seconds) if seconds else None), problems
+
+
+def _make_plugin(shard, count, raw_path, workers=1, role="serial", role_problem=None):
+    """``role`` is "serial" (one pytest process), "worker" (an xdist worker: sends its
+    record to the controller, writes nothing) or "controller" (the xdist controller:
+    aggregates the workers' records fail-closed and writes the one shard record).
+    ``role_problem`` records a declared worker count that the actual run contradicts."""
     import pytest
 
     class _ShardPlugin:
@@ -201,6 +267,8 @@ def _make_plugin(shard, count, raw_path):
             self.assigned = []
             self.outcomes = {}
             self.collection_errors = []
+            self.executed = []
+            self.worker_records = {}
 
         def pytest_collectreport(self, report):
             if report.failed:
@@ -219,6 +287,8 @@ def _make_plugin(shard, count, raw_path):
             self.collection_seconds = round(time.monotonic() - self.t0, 3)
 
         def pytest_runtest_logreport(self, report):
+            if report.nodeid not in self.outcomes:
+                self.executed.append(report.nodeid)
             rec = self.outcomes.setdefault(report.nodeid, {"nodeid": report.nodeid, "reports": 0})
             if report.when == "call" or (report.when == "setup" and not report.passed):
                 rec["reports"] += 1
@@ -234,7 +304,30 @@ def _make_plugin(shard, count, raw_path):
             elif report.when == "teardown" and report.failed:
                 rec["outcome"] = "error"
 
+        @pytest.hookimpl(optionalhook=True)
+        def pytest_testnodedown(self, node, error):
+            wid = node.workerinput.get("workerid")
+            out = getattr(node, "workeroutput", None) or {}
+            self.worker_records[wid] = json.loads(out[_WORKER_OUTPUT_KEY]) if _WORKER_OUTPUT_KEY in out else None
+
         def pytest_sessionfinish(self, session, exitstatus):
+            if role == "worker":
+                session.config.workeroutput[_WORKER_OUTPUT_KEY] = json.dumps({
+                    "collected": self.collected, "assigned": self.assigned, "executed": sorted(self.executed),
+                    "collection_errors": self.collection_errors,
+                    "collection_seconds": self.collection_seconds}, sort_keys=True)
+                return
+            if role == "controller":
+                (self.collected, self.assigned, worker_errors, self.collection_seconds,
+                 problems) = merge_worker_records(self.worker_records, workers, list(self.outcomes))
+                merged, seen = [], set()
+                for err in self.collection_errors + worker_errors:
+                    if err["nodeid"] not in seen:
+                        seen.add(err["nodeid"])
+                        merged.append(err)
+                self.collection_errors = merged + [{"nodeid": _AGGREGATION_NODEID, "detail": p} for p in problems]
+            if role_problem:
+                self.collection_errors.append({"nodeid": _AGGREGATION_NODEID, "detail": role_problem})
             pathlib.Path(raw_path).write_text(json.dumps({
                 "collected": self.collected, "assigned": self.assigned,
                 "outcomes": [self.outcomes[k] for k in sorted(self.outcomes)],
@@ -252,8 +345,42 @@ def pytest_configure(config):
     if not shard:
         return
     count = int(os.environ["INVENTORAI_CI_SHARD_COUNT"])
+    workers = int(os.environ.get("INVENTORAI_CI_SHARD_WORKERS", "1"))
+    # The role comes from the run itself, never from the declaration alone: a worker has
+    # ``workerinput``; the controller is a process whose xdist distribution is active.
+    distributed = getattr(config.option, "dist", "no") != "no"
+    if hasattr(config, "workerinput"):
+        role, problem = "worker", None
+    elif distributed:
+        actual = getattr(config.option, "numprocesses", None)
+        role = "controller"
+        problem = None if actual == workers else f"declared {workers} workers but xdist runs {actual!r}"
+    else:
+        role = "serial"
+        problem = None if workers == 1 else f"declared {workers} workers but the run is not distributed"
     config.pluginmanager.register(
-        _make_plugin(int(shard), count, os.environ["INVENTORAI_CI_SHARD_RAW"]), "inventorai-ci-shard")
+        _make_plugin(int(shard), count, os.environ["INVENTORAI_CI_SHARD_RAW"], workers, role, problem),
+        "inventorai-ci-shard")
+
+
+def shard_workers(env=os.environ, cpu_count=None):
+    """The worker count for a shard run: ``INVENTORAI_CI_PYTEST_WORKERS`` (default 1),
+    capped at MAX_WORKERS and at the runner's CPU count; ValueError when malformed."""
+    raw = env.get(WORKERS_ENV, "1")
+    if not _WORKERS_RE.fullmatch(raw):
+        raise ValueError(f"malformed {WORKERS_ENV}: {raw!r}")
+    cpus = cpu_count if cpu_count is not None else (os.cpu_count() or 1)
+    return max(1, min(int(raw), MAX_WORKERS, cpus))
+
+
+def shard_pytest_command(junit, workers):
+    """The shard's pytest command: the unchanged serial command, plus whole-file xdist
+    scheduling over ``workers`` processes (no worker restart) when workers > 1."""
+    cmd = [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
+           "-p", "scripts.ci_full_suite", "--junitxml=" + str(junit)]
+    if workers > 1:
+        cmd += ["-n", str(workers), "--dist", DIST_MODE, "--max-worker-restart=0"]
+    return cmd
 
 
 # ---------------------------------------------------------------------------
@@ -310,19 +437,21 @@ def run_shard(repo, out_dir, shard, count, ident):
     for stale in (raw, junit, out_dir / EVIDENCE_FILE):
         if stale.exists():
             stale.unlink()
+    workers = shard_workers()
+    if workers > 1 and importlib.util.find_spec("xdist") is None:
+        raise RuntimeError(f"{WORKERS_ENV} asks for {workers} workers but pytest-xdist is not installed")
     env = dict(os.environ, INVENTORAI_CI_SHARD=str(shard), INVENTORAI_CI_SHARD_COUNT=str(count),
-               INVENTORAI_CI_SHARD_RAW=str(raw))
+               INVENTORAI_CI_SHARD_RAW=str(raw), INVENTORAI_CI_SHARD_WORKERS=str(workers))
     started = time.monotonic()
-    code = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
-                           "-p", "scripts.ci_full_suite", "--junitxml=" + str(junit)],
-                          cwd=repo, env=env).returncode
+    code = subprocess.run(shard_pytest_command(junit, workers), cwd=repo, env=env).returncode
     pytest_seconds = round(time.monotonic() - started, 3)
     record = json.loads(raw.read_text(encoding="utf-8")) if raw.is_file() else None
     evidence = dict(ident, schema=SCHEMA, shard=shard, shard_count=count, tested_tree=tree,
                     pytest_exit_status=code, repository_clean=repository_clean(repo),
                     junit=JUNIT_FILE, plugin_record_present=record is not None,
                     timing={"pytest_seconds": pytest_seconds,
-                            "collection_seconds": (record or {}).get("collection_seconds")})
+                            "collection_seconds": (record or {}).get("collection_seconds"),
+                            "workers": workers})
     record = record or {"collected": [], "assigned": [], "outcomes": [], "collection_errors": []}
     evidence.update(collected=record["collected"], collection_sha256=collection_digest(record["collected"]),
                     assigned=record["assigned"], outcomes=record["outcomes"],
@@ -330,7 +459,7 @@ def run_shard(repo, out_dir, shard, count, ident):
     (out_dir / EVIDENCE_FILE).write_text(json.dumps(evidence, indent=1, sort_keys=True), encoding="utf-8")
     ok = code == 0 and evidence["repository_clean"] and evidence["plugin_record_present"]
     print(f"shard {shard}/{count}: collected {len(evidence['collected'])}, assigned {len(evidence['assigned'])}, "
-          f"pytest exit {code}, clean {evidence['repository_clean']}, pytest {pytest_seconds}s")
+          f"pytest exit {code}, clean {evidence['repository_clean']}, workers {workers}, pytest {pytest_seconds}s")
     return 0 if ok else 1
 
 
@@ -463,11 +592,13 @@ def audit(packages, expected):
 
 def _summary(packages, problems):
     lines = ["### Sharded FULL pilot audit (non-authoritative)", "",
-             "| shard | collected | assigned | pytest exit | pytest s | collection s |", "|---|---|---|---|---|---|"]
+             "| shard | collected | assigned | pytest exit | workers | pytest s | collection s |",
+             "|---|---|---|---|---|---|---|"]
     for _p, ev, _c in sorted(packages, key=lambda p: str(p[1].get("shard"))):
         t = ev.get("timing") or {}
         lines.append(f"| {ev.get('shard')} | {len(ev.get('collected') or [])} | {len(ev.get('assigned') or [])} | "
-                     f"{ev.get('pytest_exit_status')} | {t.get('pytest_seconds')} | {t.get('collection_seconds')} |")
+                     f"{ev.get('pytest_exit_status')} | {t.get('workers', 1)} | {t.get('pytest_seconds')} | "
+                     f"{t.get('collection_seconds')} |")
     lines += ["", "**PASS**" if not problems else "**FAIL**"] + [f"- {p}" for p in problems[:50]]
     return "\n".join(lines) + "\n"
 

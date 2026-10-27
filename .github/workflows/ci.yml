@@ -418,6 +418,10 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONUNBUFFERED: '1'
       INVENTORAI_DRAFT_L2_REQUIRE_BROWSER: '1'
+      # CI-XDIST-PARALLEL-EXECUTION-01: pytest-xdist workers per shard (capped at 4 and at the
+      # runner's CPU count by scripts/ci_full_suite.py; whole-file scheduling; no worker restart).
+      # '1' is the unchanged serial run and the rollback.
+      INVENTORAI_CI_PYTEST_WORKERS: '4'
       EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
       EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
       EXPECTED_MERGE: ${{ github.sha }}

@@ -22,3 +22,9 @@
 # Pinned to the versions proven green in this environment.
 playwright==1.62.0
 pytest-playwright==0.8.0
+
+# CI-XDIST-PARALLEL-EXECUTION-01: this is also the one test-only requirements file every
+# CI job installs, so it pins the parallel runner of the hosted FULL shards. pytest-xdist
+# is used ONLY by scripts/ci_full_suite.py when INVENTORAI_CI_PYTEST_WORKERS asks for more
+# than one worker (whole-file scheduling); it is never a runtime / production dependency.
+pytest-xdist==3.8.0

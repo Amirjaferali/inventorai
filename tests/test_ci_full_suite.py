@@ -263,11 +263,11 @@ def _project(root, files=_PROJECT):
     return root
 
 
-def _shard_run(project, shard, raw):
+def _shard_run(project, shard, raw, workers=1):
     env = dict(os.environ, INVENTORAI_CI_SHARD=str(shard), INVENTORAI_CI_SHARD_COUNT=str(cfs.SHARD_COUNT),
-               INVENTORAI_CI_SHARD_RAW=str(raw), PYTHONPATH=str(ROOT), PYTHONDONTWRITEBYTECODE="1")
-    proc = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
-                           "-p", "scripts.ci_full_suite", "--junitxml=" + str(raw.with_suffix(".xml"))],
+               INVENTORAI_CI_SHARD_RAW=str(raw), INVENTORAI_CI_SHARD_WORKERS=str(workers),
+               PYTHONPATH=str(ROOT), PYTHONDONTWRITEBYTECODE="1")
+    proc = subprocess.run(cfs.shard_pytest_command(raw.with_suffix(".xml"), workers),
                           cwd=project, env=env, capture_output=True, text=True)
     return proc.returncode, json.loads(raw.read_text(encoding="utf-8"))
 
@@ -322,6 +322,162 @@ def test_collection_failure_is_surfaced(tmp_path):
     assert [e["nodeid"] for e in rec["collection_errors"]] == ["tests/test_delta.py"]
 
 
+# ==========================================================================
+# CI-XDIST-PARALLEL-EXECUTION-01: parallel shard execution (fail-closed aggregation)
+# ==========================================================================
+def _record_view(rec):
+    """A shard record without its timing (the only field allowed to differ)."""
+    return {k: v for k, v in rec.items() if k != "collection_seconds"}
+
+
+def test_worker_selection_is_bounded_and_fail_closed():
+    assert cfs.shard_workers({}, cpu_count=8) == 1                            # default: the serial run
+    assert cfs.shard_workers({cfs.WORKERS_ENV: "1"}, cpu_count=8) == 1
+    assert cfs.shard_workers({cfs.WORKERS_ENV: "4"}, cpu_count=8) == 4
+    assert cfs.shard_workers({cfs.WORKERS_ENV: "16"}, cpu_count=64) == cfs.MAX_WORKERS == 4
+    assert cfs.shard_workers({cfs.WORKERS_ENV: "4"}, cpu_count=2) == 2        # never above the runner's CPUs
+    assert cfs.shard_workers({cfs.WORKERS_ENV: "4"}, cpu_count=1) == 1
+    for bad in ("0", "-1", "two", "", "4 ", "auto"):
+        with pytest.raises(ValueError):
+            cfs.shard_workers({cfs.WORKERS_ENV: bad}, cpu_count=8)
+
+
+def test_serial_command_is_unchanged_and_parallel_adds_only_whole_file_scheduling():
+    serial = cfs.shard_pytest_command("j.xml", 1)
+    assert serial == [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-p", "scripts.ci_full_suite",
+                      "--junitxml=j.xml"]
+    assert cfs.shard_pytest_command("j.xml", 4) == serial + ["-n", "4", "--dist", "loadfile",
+                                                              "--max-worker-restart=0"]
+    options = cfs.shard_pytest_command("j.xml", 4)[3:]                      # after "<python> -m pytest"
+    for word in ("-k", "-m", "--deselect", "--lf", "--ff", "--sw"):
+        assert word not in options, word
+
+
+def test_run_shard_refuses_parallel_workers_without_xdist(tmp_path, monkeypatch):
+    repo, ident = _merge_repo(tmp_path / "repo")
+    monkeypatch.setenv(cfs.WORKERS_ENV, "2")
+    monkeypatch.setattr(cfs.os, "cpu_count", lambda: 4)
+    monkeypatch.setattr(cfs.importlib.util, "find_spec", lambda name: None)
+    with pytest.raises(RuntimeError, match="pytest-xdist is not installed"):
+        cfs.run_shard(repo, tmp_path / "ev", 4, cfs.SHARD_COUNT, ident)
+    assert not (tmp_path / "ev" / cfs.EVIDENCE_FILE).exists()
+
+
+@pytest.mark.parametrize("workers", [2, 4])
+def test_parallel_shard_records_equal_the_serial_records(tmp_path, workers):
+    project = _project(tmp_path / "p", _PROJECT_FULL)
+    for s in range(1, cfs.SHARD_COUNT + 1):
+        serial = _shard_run(project, s, tmp_path / f"s{s}.json")
+        parallel = _shard_run(project, s, tmp_path / f"p{s}.json", workers=workers)
+        assert serial[0] == parallel[0] == 0
+        assert _record_view(parallel[1]) == _record_view(serial[1]), s
+        assert parallel[1]["collection_errors"] == []
+        assert all(o["reports"] == 1 for o in parallel[1]["outcomes"])
+        cases = lambda name: sorted((c.get("classname"), c.get("name"), [e.tag for e in c])  # noqa: E731
+                                    for c in cfs.junit_cases(tmp_path / name))
+        assert cases(f"p{s}.xml") == cases(f"s{s}.xml") and len(cases(f"p{s}.xml")) == len(serial[1]["assigned"])
+
+
+def test_parallel_failure_and_collection_error_keep_their_serial_evidence(tmp_path):
+    files = dict(_PROJECT, **{"tests/test_gamma.py": "def test_bad():\n    assert False\n"})
+    project = _project(tmp_path / "f", files)
+    code, rec = _shard_run(project, cfs.shard_of("tests/test_gamma.py"), tmp_path / "f.json", workers=2)
+    assert code == 1 and rec["session_exitstatus"] == 1 and rec["collection_errors"] == []
+    assert [(o["outcome"], o["reports"]) for o in rec["outcomes"] if o["nodeid"].startswith("tests/test_gamma.py")] \
+        == [("failed", 1)]
+    project = _project(tmp_path / "c", dict(_PROJECT, **{"tests/test_delta.py": "def broken(:\n"}))
+    code, rec = _shard_run(project, 2, tmp_path / "c.json", workers=2)
+    assert code != 0
+    assert [e["nodeid"] for e in rec["collection_errors"]] == ["tests/test_delta.py"]   # once, not once per worker
+
+
+def test_a_crashed_worker_is_never_restarted_and_fails_closed(tmp_path):
+    files = dict(_PROJECT, **{"tests/test_gamma.py": "import os\n\ndef test_crash():\n    os._exit(3)\n"})
+    project = _project(tmp_path / "p", files)
+    code, rec = _shard_run(project, cfs.shard_of("tests/test_gamma.py"), tmp_path / "raw.json", workers=2)
+    assert code != 0
+    details = [e["detail"] for e in rec["collection_errors"] if e["nodeid"] == "<xdist-aggregation>"]
+    assert any("sent no shard record" in d for d in details), details
+    crashed = [o for o in rec["outcomes"] if o["nodeid"] == "tests/test_gamma.py::test_crash"]
+    assert crashed and crashed[0].get("outcome") in (None, "failed", "error")
+
+
+@pytest.mark.parametrize("declared, actual, expected", [
+    (4, 1, "declared 4 workers but the run is not distributed"),
+    (1, 2, "declared 1 workers but xdist runs 2"),
+    (4, 2, "declared 4 workers but xdist runs 2"),
+])
+def test_a_declared_worker_count_the_run_contradicts_fails_closed(tmp_path, declared, actual, expected):
+    project = _project(tmp_path / "p", _PROJECT_FULL)
+    raw = tmp_path / "raw.json"
+    env = dict(os.environ, INVENTORAI_CI_SHARD="5", INVENTORAI_CI_SHARD_COUNT=str(cfs.SHARD_COUNT),
+               INVENTORAI_CI_SHARD_RAW=str(raw), INVENTORAI_CI_SHARD_WORKERS=str(declared),
+               PYTHONPATH=str(ROOT), PYTHONDONTWRITEBYTECODE="1")
+    subprocess.run(cfs.shard_pytest_command(raw.with_suffix(".xml"), actual), cwd=project, env=env,
+                   capture_output=True, text=True)
+    rec = json.loads(raw.read_text(encoding="utf-8"))
+    assert expected in [e["detail"] for e in rec["collection_errors"]]
+
+
+def _worker_records(n=2):
+    collected = ["tests/test_a.py::test_1", "tests/test_b.py::test_1", "tests/test_c.py::test_1"]
+    assigned = collected[:2]
+    recs = {"gw%d" % i: {"collected": list(collected), "assigned": list(assigned), "executed": [],
+                         "collection_errors": [], "collection_seconds": 1.0 + i} for i in range(n)}
+    recs["gw0"]["executed"] = [assigned[0]]
+    recs["gw1"]["executed"] = [assigned[1]]
+    return recs, assigned
+
+
+def test_complete_consistent_worker_records_merge_cleanly():
+    recs, assigned = _worker_records()
+    collected, merged_assigned, errors, seconds, problems = cfs.merge_worker_records(recs, 2, assigned)
+    assert problems == [] and errors == [] and merged_assigned == assigned and len(collected) == 3
+    assert seconds == 2.0                                                    # the slowest worker's collection
+
+
+def _mutate(kind, recs):
+    if kind == "missing worker":
+        recs.pop("gw1")
+    elif kind == "extra worker":
+        recs["gw2"] = copy.deepcopy(recs["gw1"])
+        recs["gw2"]["executed"] = []
+    elif kind == "no record":
+        recs["gw1"] = None
+    elif kind == "collection differs":
+        recs["gw1"]["collected"] = recs["gw1"]["collected"][:-1]
+    elif kind == "assignment differs":
+        recs["gw1"]["assigned"] = recs["gw1"]["assigned"][:1]
+    elif kind == "executed twice":
+        recs["gw1"]["executed"] = recs["gw1"]["executed"] + recs["gw0"]["executed"]
+    elif kind == "executed nowhere":
+        recs["gw1"]["executed"] = []
+    elif kind == "executed but not reported":
+        recs["gw1"]["executed"] = recs["gw1"]["executed"] + ["tests/test_c.py::test_1"]
+
+
+@pytest.mark.parametrize("kind, expected", [
+    ("missing worker", "exactly ['gw0', 'gw1'] required"),
+    ("extra worker", "exactly ['gw0', 'gw1'] required"),
+    ("no record", "worker gw1 sent no shard record"),
+    ("collection differs", "worker gw1 full collection differs from worker gw0"),
+    ("assignment differs", "worker gw1 assignment differs from worker gw0"),
+    ("executed twice", "executed by 2 workers"),
+    ("executed nowhere", "differs from the controller outcomes"),
+    ("executed but not reported", "differs from the controller outcomes"),
+])
+def test_missing_duplicate_or_mismatched_worker_evidence_is_a_problem(kind, expected):
+    recs, assigned = _worker_records()
+    _mutate(kind, recs)
+    problems = cfs.merge_worker_records(recs, 2, assigned)[4]
+    assert any(expected in p for p in problems), problems
+
+
+def test_no_worker_record_at_all_is_a_problem():
+    assert cfs.merge_worker_records({}, 2, [])[4]
+    assert cfs.merge_worker_records({"gw0": None, "gw1": None}, 2, [])[4]
+
+
 def _git(repo, *args):
     subprocess.run(["git", "-c", "commit.gpgsign=false", *args], cwd=repo, check=True, capture_output=True,
                    env=dict(os.environ, GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@e", GIT_COMMITTER_NAME="t",
@@ -347,6 +503,7 @@ def _merge_repo(root):
 
 def test_run_shard_writes_complete_evidence_and_the_audit_accepts_it(tmp_path, monkeypatch):
     repo, ident = _merge_repo(tmp_path / "repo")
+    monkeypatch.setenv(cfs.WORKERS_ENV, "1")
     monkeypatch.setenv("PYTHONPATH", str(ROOT))
     monkeypatch.setenv("PYTHONDONTWRITEBYTECODE", "1")
     for s in range(1, cfs.SHARD_COUNT + 1):
@@ -603,6 +760,14 @@ def test_stale_mixed_or_foreign_identity_is_rejected(key):
     packages = _packages()
     _shard(packages, 3)[1][key] = "9" if key.startswith("run") else "f" * 40
     assert f"shard 3: {key}" in _audit(packages) and "does not match the audit run" in _audit(packages)
+
+
+def test_a_worker_aggregation_problem_is_rejected_by_the_unchanged_audit():
+    packages = _packages()
+    _shard(packages, 4)[1]["collection_errors"] = [{"nodeid": "<xdist-aggregation>",
+                                                    "detail": "worker gw1 sent no shard record"}]
+    assert "shard 4: collection errors ['<xdist-aggregation>']" in _audit(packages)
+    assert cfs.SCHEMA == "inventorai-ci-full-suite-shard-v1"                  # the evidence schema is unchanged
 
 
 def test_missing_junit_evidence_is_rejected():
@@ -1032,8 +1197,14 @@ def test_full_route_is_the_unmasked_five_shard_matrix_after_scope():
         assert "continue-on-error" not in _code(_jobs()[name]), name
     run = _step(shard, "Run this shard of the FULL suite")
     assert "python scripts/ci_full_suite.py --mode shard --shard ${{ matrix.shard }} --count 5" in run
-    for word in ("-k", "-m ", "--deselect", "--lf", "xdist", "pytest-split", "rig"):
+    # CI-XDIST-PARALLEL-EXECUTION-01 amends the former ban on "xdist" here: parallelism is now
+    # decided ONLY inside scripts/ci_full_suite.py (bounded worker count, whole-file
+    # scheduling, no worker restart, fail-closed controller aggregation), so the run step
+    # itself still names no xdist option and no selection mechanism.
+    for word in ("-k", "-m ", "--deselect", "--lf", "xdist", "-n ", "--dist", "pytest-split", "rig"):
         assert word not in run, word
+    assert "      INVENTORAI_CI_PYTEST_WORKERS: '4'\n" in head
+    assert sum(_code(job).count("INVENTORAI_CI_PYTEST_WORKERS") for job in _jobs().values()) == 1
 
 
 def test_every_shard_keeps_the_verify_environment_and_mandatory_proofs():
