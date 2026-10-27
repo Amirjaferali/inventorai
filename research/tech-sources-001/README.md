@@ -46,7 +46,7 @@ Choose lenses adaptively per question; record the lens used for every query in t
    push failed twice; Perplexity connector missing (never substitute another method); an Owner decision required to continue; a privacy or authority conflict.
    To stop: write `STOPPED: <reason>` to `state/campaign-status.md`, commit and push, and schedule NO next wake-up.
 8. Scheduling (Owner-authorized 2026-10-27, replaces the cron mechanism): only after step 6 pushed and the remote tip was verified, and only if no
-   stop condition holds, arm exactly ONE `send_later` one-shot into THIS session (`session_01UZzqphd9HQzNoRidheKeZN`) about 24 hours later,
+   stop condition holds, arm exactly ONE `send_later` one-shot into THIS session (`session_01UZzqphd9HQzNoRidheKeZN`) 6 hours later (Owner-authorized cadence change 2026-10-27; was about 24 hours),
    named `TECH-SOURCES-001 run N+1`, and record its trigger id and fire time in the run-ledger row. Before arming, `list_triggers enabled=true`
    must show no other pending TECH-SOURCES-001 wake-up (never overlap). The cron task `trig_01QRwqYuFRU8jBNG9oH2DiTz` stays disabled and is never re-enabled.
    If arming fails, record it in `state/campaign-status.md`; the chain then ends (no retry with another mechanism). Delivery is not guaranteed.
