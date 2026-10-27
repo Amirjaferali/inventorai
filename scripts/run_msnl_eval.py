@@ -676,7 +676,7 @@ def responsiveness(provider, allow_network, managed_credential):
 
 MECHANISM_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                    "msnl_mechanism_content_v1.json")
-MECHANISM_PACK_SHA256 = "PENDING-CASES"
+MECHANISM_PACK_SHA256 = "1c6c312cb4c53c19e53e003d391d6af79a9dd76678c1973dc8e287ae90f3160c"
 MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED = False
 MC_FIELDS = ("responsive", "stance", "mechanism_content", "quote")
 MC_PRESENT, MC_ABSENT = "PRESENT", "ABSENT"
