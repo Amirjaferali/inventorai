@@ -1,0 +1,144 @@
+{
+ "pack_id": "msnl-mechanism-preflight-v1",
+ "status": "SYNTHETIC",
+ "notice": "Four fresh, non-sensitive SYNTHETIC answers for ONE Owner-authorized operational provider preflight (\"R2 / EXECUTE BOUNDED PROVIDER PREFLIGHT\", 2026-10-27). They were written for this preflight only, separately from and not derived from the 160 cases of msnl-mechanism-content-v1, and are never scored: the preflight measures only whether the configured provider / model returns a complete, schema-valid reply, and its usage, latency and cost. It is not a semantic, accuracy or engineering result, not the evaluation campaign, and it consumes none of the campaign's 480 requests or its 40 unallocated ones. A result authorizes nothing.",
+ "arm_source": {
+  "pack_id": "msnl-mechanism-content-v1",
+  "pack_sha256": "c4c1d7e484de5abac1022d59d12b47816f2093f5191809e47bd75b89fb8d82ea",
+  "used": "the amended arm instructions and output schema only; no case of that pack is read into any request"
+ },
+ "inputs": [
+  {
+   "input_id": "PF1-en",
+   "variety": "en",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+   "served_index": 0,
+   "served_question": "In your own words, what happens from the moment someone uses your idea until it produces the result you want? Describe the main physical steps you expect, even if you do not know their technical names.",
+   "text": "Stepping on the plate pushes a lever down, and the lever lifts the rubber stopper so the water drains out of the tub."
+  },
+  {
+   "input_id": "PF2-en",
+   "variety": "en",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-1",
+   "served_index": 0,
+   "served_question": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+   "text": "A vibration sensor on the washing machine notices when the drum stops shaking; the board then waits a minute and plays a chime on the speaker in the hall."
+  },
+  {
+   "input_id": "PF3-ar-msa",
+   "variety": "ar-msa",
+   "domain": "mechanical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء التي تتوقع أن تتحرك أو تتصل ببعضها، وما الذي يفعله كل جزء بالجزء الذي يليه؟ وإذا لم تكن تعرف كيف تنتقل القوة بينها، فصف الحركة أو التأثير الذي تتوقعه.",
+   "text": "عندما يدفع المستخدم الذراع إلى الأمام يدور الترس الصغير فيحرّك الترس الكبير، فينزلق الباب الجرار ببطء على السكة."
+  },
+  {
+   "input_id": "PF4-ar-gulf-kw",
+   "variety": "ar-gulf-kw",
+   "domain": "electronics_electrical",
+   "gap_type": "MECHANISM_COMPLETENESS",
+   "question_id": "N-MC-2",
+   "served_index": 1,
+   "served_question": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟",
+   "text": "حساس الرطوبة اللي في الحمام يقيس البخار، وإذا زاد عن الحد اللي حطيته اللوحة تشغّل الشفاط، وتطفيه بعد ما يخف البخار."
+  }
+ ],
+ "configurations": [
+  300,
+  4096
+ ],
+ "order": [
+  [
+   "PF1-en",
+   300
+  ],
+  [
+   "PF2-en",
+   300
+  ],
+  [
+   "PF3-ar-msa",
+   300
+  ],
+  [
+   "PF4-ar-gulf-kw",
+   300
+  ],
+  [
+   "PF1-en",
+   4096
+  ],
+  [
+   "PF2-en",
+   4096
+  ],
+  [
+   "PF3-ar-msa",
+   4096
+  ],
+  [
+   "PF4-ar-gulf-kw",
+   4096
+  ]
+ ],
+ "fixed_settings": {
+  "model": "gpt-6-sol",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "credential": "managed_proxy (the egress proxy injects it; this process reads and sends none)",
+  "store": false,
+  "text_format": "json_schema strict (the arm's schema)",
+  "reasoning": "not set (provider default)",
+  "temperature": "not set (provider default)",
+  "tools": "none",
+  "timeout_seconds": 90,
+  "retries": 0,
+  "varied": "max_output_tokens only (300, 4096)"
+ },
+ "limits": {
+  "max_generation_requests": 8,
+  "budget_usd": 5.0
+ },
+ "pricing": {
+  "model": "gpt-6-sol",
+  "tier": "Standard",
+  "input_usd_per_1m": 2.0,
+  "cached_input_usd_per_1m": 0.2,
+  "output_usd_per_1m": 10.0,
+  "basis": "OpenAI's published Standard text-token rate for gpt-6-sol (developers.openai.com/api/docs/models/gpt-6-sol; openai.com/index/introducing-gpt-6-sol-and-luna, 2026-10-26), obtained through a search of those pages: a direct fetch of the OpenAI pages is blocked in this environment, so the rate is not independently inspected. Reasoning tokens are counted inside output tokens and are never added a second time. The measured cost is reported at this rate; budget enforcement uses the reservation below.",
+  "reservation_multiplier": 6,
+  "reservation_input_usd_per_1m": 12.0,
+  "reservation_output_usd_per_1m": 60.0,
+  "reservation_rule": "Before each request, reserve (UTF-8 bytes of the whole request body + 1000) input tokens and max_output_tokens output tokens at the reservation rates; a token covers at least one byte, and the 6x rate is above every higher-tier multiplier reported for the model (Fast 2x, long-context 2x / 1.5x, regional +10%). A request is sent only if the committed bound plus its reservation stays within budget_usd. After it, the committed bound grows by its usage at the reservation rates, or by its whole reservation when usage is unavailable or the attempt failed."
+ },
+ "stop_conditions": [
+  "an incomplete reply whose reason is max_output_tokens is a measured outcome: the remaining predeclared requests continue",
+  "STOP: transport failure, any non-200 status (authentication included), a refusal, any other incomplete reason, a completed reply that is malformed or violates the schema, output tokens above the request's cap (cost not bounded), or a reservation or committed bound over budget_usd",
+  "no retry, no other configuration, no prompt change"
+ ],
+ "recorded_per_request": [
+  "index",
+  "input_id",
+  "variety",
+  "max_output_tokens",
+  "http_status",
+  "response_id",
+  "response_status",
+  "incomplete_reason",
+  "error_type",
+  "error_code",
+  "usage (input, cached input, output, reasoning, total tokens)",
+  "latency_ms",
+  "schema_valid",
+  "outcome",
+  "reserved_usd",
+  "measured_cost_usd",
+  "bound_usd"
+ ],
+ "never_recorded": "the request body, the instructions, the reply text, any reasoning content, any provider error message, any header or credential"
+}

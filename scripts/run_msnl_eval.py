@@ -34,7 +34,13 @@ File-creation contract:
       `lexical` provider it only checks the pack and its engine baseline, and
       the provider path is refused until a separate campaign authorization);
     `--mechanism-content-rescore PATH` (offline downstream replay of a saved
-      mechanism-content report against the pinned pack and unchanged engine).
+      mechanism-content report against the pinned pack and unchanged engine);
+    `--mechanism-preflight` (T2-G / R2: the ONE Owner-authorized operational
+      provider preflight over the pinned
+      `tests/fixtures/msnl_mechanism_preflight_v1.json` — four separate
+      synthetic inputs, two output caps, at most 8 requests within a reserved
+      US$5 budget; with the default `lexical` provider it prints the plan and
+      its reservations and sends nothing).
     There is NO option for a project, session, account, database or free-form
     input: both pack paths are fixed and their SHA-256 values are pinned, and a
     re-scored file is only read and checked against the pinned pack's labels,
@@ -1081,6 +1087,255 @@ def mechanism_rescore(path):
             "result": mechanism_verdict(pack, runs, violations), "case_level": runs}
 
 
+# ─── T2-G / R2: ONE bounded synthetic PROVIDER PREFLIGHT (not the campaign) ─
+#
+# Owner authorization "R2 / EXECUTE BOUNDED PROVIDER PREFLIGHT" (2026-10-27):
+# operational readiness only — whether the configured provider / model returns
+# a complete, schema-valid reply, with its usage, latency and cost. It sends
+# the AMENDED arm instructions and schema of the pinned holdout pack, but never
+# one of its cases: the four inputs, their order, the two output caps, the
+# budget and the price basis are the separate pinned preflight fixture. Nothing
+# is scored, no reply text, request body, reasoning content, provider message
+# or header is kept, the campaign stays refused and none of its requests is
+# used. MECHANISM_PREFLIGHT_AUTHORIZED is closed again once the run is recorded.
+
+MECHANISM_PREFLIGHT_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                        "msnl_mechanism_preflight_v1.json")
+MECHANISM_PREFLIGHT_SHA256 = "d6e4deda42a6d4a73ac9e2654d51bc69c05af53e9d15f49b4dc453964e67c63d"
+MECHANISM_PREFLIGHT_AUTHORIZED = True
+PF_COMPLETED = "COMPLETED_VALID"
+PF_CAPPED = "INCOMPLETE_OUTPUT_CAP"
+_PF_SAFE = re.compile(r"^[A-Za-z0-9_.:-]{1,100}$")
+_PF_UNAVAILABLE = "UNAVAILABLE"
+_PF_USAGE = (("input_tokens", ("input_tokens",)),
+             ("cached_input_tokens", ("input_tokens_details", "cached_tokens")),
+             ("output_tokens", ("output_tokens",)),
+             ("reasoning_tokens", ("output_tokens_details", "reasoning_tokens")),
+             ("total_tokens", ("total_tokens",)))
+
+
+def _pf_safe(value):
+    """A short identifier-like provider value, or UNAVAILABLE (never free text)."""
+    return value if isinstance(value, str) and _PF_SAFE.match(value) else _PF_UNAVAILABLE
+
+
+def preflight_response_meta(raw):
+    """The sanitized metadata of ONE provider reply body: response id, status,
+    incomplete reason, error type / code and the usage counts. Every value is
+    an identifier-like token or an integer; anything missing or of another
+    shape is UNAVAILABLE. No text, message or reasoning content is ever read."""
+    meta = {"response_id": _PF_UNAVAILABLE, "response_status": _PF_UNAVAILABLE,
+            "incomplete_reason": _PF_UNAVAILABLE, "error_type": _PF_UNAVAILABLE,
+            "error_code": _PF_UNAVAILABLE,
+            "usage": {name: _PF_UNAVAILABLE for name, _path in _PF_USAGE}}
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except Exception:
+        return meta
+    if not isinstance(data, dict):
+        return meta
+    meta["response_id"] = _pf_safe(data.get("id"))
+    meta["response_status"] = _pf_safe(data.get("status"))
+    details = data.get("incomplete_details")
+    if isinstance(details, dict):
+        meta["incomplete_reason"] = _pf_safe(details.get("reason"))
+    error = data.get("error")
+    if isinstance(error, dict):
+        meta["error_type"] = _pf_safe(error.get("type"))
+        meta["error_code"] = _pf_safe(error.get("code"))
+    usage = data.get("usage")
+    if isinstance(usage, dict):
+        for name, path in _PF_USAGE:
+            node = usage
+            for key in path:
+                node = node.get(key) if isinstance(node, dict) else None
+            if isinstance(node, int) and not isinstance(node, bool) and node >= 0:
+                meta["usage"][name] = node
+    return meta
+
+
+def _pf_usd(tokens_in, tokens_out, rate_in, rate_out):
+    return (tokens_in * rate_in + tokens_out * rate_out) / 1_000_000
+
+
+def preflight_payload(arm_pack, item, cap, model=toa.MODEL):
+    """The exact body for one preflight request: the holdout arm's payload
+    shape for ONE preflight input, with only max_output_tokens varied."""
+    payload = mechanism_payload(arm_pack, item, model)
+    payload["max_output_tokens"] = cap
+    return payload
+
+
+def _measured_call(adapter, payload):
+    """ONE request through the adapter's own ``_call`` and transport, with the
+    HTTP status, latency and sanitized reply metadata captured on the way."""
+    import time
+    meta = {"sent": False, "http_status": _PF_UNAVAILABLE, "latency_ms": _PF_UNAVAILABLE}
+    transport = adapter._transport
+
+    def measuring(url, headers, body, timeout):
+        meta["sent"] = True
+        start = time.monotonic()
+        try:
+            status, raw = transport(url, headers, body, timeout)
+        finally:
+            meta["latency_ms"] = round((time.monotonic() - start) * 1000)
+        meta["http_status"] = status if isinstance(status, int) else _PF_UNAVAILABLE
+        meta.update(preflight_response_meta(raw if isinstance(raw, bytes) else b""))
+        return status, raw
+    adapter._transport = measuring
+    try:
+        reply = adapter._call(payload)
+    finally:
+        adapter._transport = transport
+    meta.setdefault("usage", preflight_response_meta(b"")["usage"])
+    for key in ("response_id", "response_status", "incomplete_reason",
+                "error_type", "error_code"):
+        meta.setdefault(key, _PF_UNAVAILABLE)
+    return reply, meta
+
+
+def _pf_outcome(arm_pack, reply, kind, meta, cap):
+    """(outcome, stop): the measured category of one attempt and whether it
+    ends the preflight."""
+    usage = meta["usage"]
+    if not meta["sent"]:
+        return "NOT_SENT", True
+    if isinstance(usage["output_tokens"], int) and usage["output_tokens"] > cap:
+        return "COST_UNBOUNDED", True
+    if meta["http_status"] == _PF_UNAVAILABLE:
+        return "TRANSPORT", True
+    if meta["http_status"] != 200:
+        return "HTTP_STATUS", True
+    if reply == ms.ABSTAIN:
+        return "REFUSAL", True
+    if reply is None:
+        if kind == toa.ERR_INCOMPLETE and meta["response_status"] == "incomplete" \
+                and meta["incomplete_reason"] == "max_output_tokens":
+            return PF_CAPPED, False
+        return ("INCOMPLETE_OTHER" if kind == toa.ERR_INCOMPLETE else "MALFORMED"), True
+    if mechanism_reply_error(arm_pack, reply) is not None:
+        return "SCHEMA_INVALID", True
+    return PF_COMPLETED, False
+
+
+def mechanism_preflight(adapter, arm_pack, pre):
+    """Run the predeclared order once, within the request and budget limits:
+    (rows, summary). Each request reserves its conservative maximum cost
+    first; no retry; the first stopping outcome ends the run."""
+    inputs = {i["input_id"]: i for i in pre["inputs"]}
+    limits, price = pre["limits"], pre["pricing"]
+    res_in, res_out = price["reservation_input_usd_per_1m"], price["reservation_output_usd_per_1m"]
+    rows, committed, stopped = [], 0.0, None
+    for index, (input_id, cap) in enumerate(pre["order"], start=1):
+        if index > limits["max_generation_requests"]:
+            stopped = "REQUEST_LIMIT"
+            break
+        item = inputs[input_id]
+        payload = preflight_payload(arm_pack, item, cap, adapter._model)
+        body_bytes = len(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
+        reserved = _pf_usd(body_bytes + 1000, cap, res_in, res_out)
+        if committed + reserved > limits["budget_usd"]:
+            stopped = "BUDGET_RESERVATION"
+            break
+        reply, meta = _measured_call(adapter, payload)
+        outcome, stop = _pf_outcome(arm_pack, reply, adapter.last_error_kind, meta, cap)
+        usage = meta["usage"]
+        known = isinstance(usage["input_tokens"], int) and isinstance(usage["output_tokens"], int)
+        measured = (_pf_usd(usage["input_tokens"], usage["output_tokens"],
+                            price["input_usd_per_1m"], price["output_usd_per_1m"])
+                    if known else _PF_UNAVAILABLE)
+        if not meta["sent"]:
+            bound = 0.0                              # refused locally: nothing sent
+        elif known and meta["http_status"] == 200:
+            bound = _pf_usd(usage["input_tokens"], usage["output_tokens"], res_in, res_out)
+        else:
+            bound = reserved                         # uncertain: charge it all
+        committed += bound
+        rows.append({"index": index, "input_id": input_id, "variety": item["variety"],
+                     "sent": meta["sent"],
+                     "max_output_tokens": cap, "http_status": meta["http_status"],
+                     "response_id": meta["response_id"],
+                     "response_status": meta["response_status"],
+                     "incomplete_reason": meta["incomplete_reason"],
+                     "error_type": meta["error_type"], "error_code": meta["error_code"],
+                     "usage": usage, "latency_ms": meta["latency_ms"],
+                     "schema_valid": outcome == PF_COMPLETED, "outcome": outcome,
+                     "reserved_usd": round(reserved, 6),
+                     "measured_cost_usd": (round(measured, 6) if known else measured),
+                     "bound_usd": round(bound, 6)})
+        if stop:
+            stopped = outcome
+            break
+        if committed > limits["budget_usd"]:
+            stopped = "BUDGET_EXCEEDED"
+            break
+    measured_total = sum(r["measured_cost_usd"] for r in rows
+                         if isinstance(r["measured_cost_usd"], float))
+    by_cap = {}
+    for cap in pre["configurations"]:
+        sub = [r for r in rows if r["max_output_tokens"] == cap]
+        by_cap[str(cap)] = {"attempted": len(sub),
+                            "completed_valid": sum(r["outcome"] == PF_COMPLETED for r in sub),
+                            "incomplete_output_cap": sum(r["outcome"] == PF_CAPPED for r in sub)}
+    summary = {"requests_attempted": len(rows),
+               "requests_sent": sum(r["sent"] for r in rows),
+               "requests_completed_valid": sum(r["outcome"] == PF_COMPLETED for r in rows),
+               "stopped": stopped, "by_max_output_tokens": by_cap,
+               "measured_cost_usd": round(measured_total, 6),
+               "measured_cost_complete": all(isinstance(r["measured_cost_usd"], float)
+                                             for r in rows),
+               "conservative_bound_usd": round(committed, 6),
+               "budget_usd": limits["budget_usd"]}
+    return rows, summary
+
+
+def _preflight_pack():
+    pre = _load(MECHANISM_PREFLIGHT_PATH, MECHANISM_PREFLIGHT_SHA256)
+    if pre["arm_source"]["pack_sha256"] != MECHANISM_PACK_SHA256:
+        raise PackError("preflight arm source is not the pinned holdout pack")
+    holdout = {c["text"] for c in _mechanism_pack()["cases"]}
+    if any(i["text"] in holdout for i in pre["inputs"]):
+        raise PackError("a preflight input is a holdout case")
+    return pre
+
+
+def mechanism_preflight_run(provider, allow_network, managed_credential):
+    """The plan and its reservations (always), and the ONE authorized run only
+    with the openai provider and both network flags."""
+    arm_pack, pre = _mechanism_pack(), _preflight_pack()
+    plan = []
+    for index, (input_id, cap) in enumerate(pre["order"], start=1):
+        item = {i["input_id"]: i for i in pre["inputs"]}[input_id]
+        body = json.dumps(preflight_payload(arm_pack, item, cap), ensure_ascii=False)
+        plan.append({"index": index, "input_id": input_id, "max_output_tokens": cap,
+                     "reserved_usd": round(_pf_usd(len(body.encode("utf-8")) + 1000, cap,
+                                                   pre["pricing"]["reservation_input_usd_per_1m"],
+                                                   pre["pricing"]["reservation_output_usd_per_1m"]), 6)})
+    out = {"pack_id": pre["pack_id"], "preflight_sha256": MECHANISM_PREFLIGHT_SHA256,
+           "arm_pack_sha256": MECHANISM_PACK_SHA256,
+           "instructions_sha256": hashlib.sha256(
+               arm_pack["arm"]["instructions"].encode("utf-8")).hexdigest(),
+           "fixed_settings": pre["fixed_settings"], "limits": pre["limits"],
+           "pricing": pre["pricing"], "plan": plan,
+           "campaign_authorized": MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED}
+    if provider != "openai":
+        out["provider_requests"] = 0
+        return out
+    if not MECHANISM_PREFLIGHT_AUTHORIZED:
+        out["refused"] = "the provider preflight is not authorized; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if not (allow_network and managed_credential):
+        raise SystemExit(2)
+    adapter = OpenAIMsnlAdapter(allow_network=True)
+    rows, summary = mechanism_preflight(adapter, arm_pack, pre)
+    out.update({"model": adapter._model, "endpoint": toa.ENDPOINT,
+                "provider_requests": summary["requests_sent"], "requests": rows,
+                "summary": summary})
+    return out
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="MSNL synthetic LLM feasibility harness")
     p.add_argument("--provider", choices=("lexical", "openai"), default="lexical")
@@ -1091,7 +1346,25 @@ def main(argv=None):
     p.add_argument("--responsiveness", action="store_true")
     p.add_argument("--mechanism-content", action="store_true")
     p.add_argument("--mechanism-content-rescore", metavar="PATH")
+    p.add_argument("--mechanism-preflight", action="store_true")
     args = p.parse_args(argv)
+    if args.mechanism_preflight:
+        if args.rescore or args.show_cases or args.responsiveness or \
+                args.mechanism_content or args.mechanism_content_rescore:
+            print(json.dumps({"refused": "--mechanism-preflight takes no other mode"}))
+            return 2
+        if args.provider == "openai" and not (args.allow_network and args.managed_credential):
+            print(json.dumps({"refused": "--provider openai needs --allow-network "
+                                         "--managed-credential"}))
+            return 2
+        try:
+            out = mechanism_preflight_run(args.provider, args.allow_network,
+                                          args.managed_credential)
+        except PackError as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 2 if out.get("refused") else 0
     if args.mechanism_content_rescore:
         if args.provider != "lexical" or args.allow_network or args.managed_credential \
                 or args.mechanism_content or args.responsiveness or args.rescore:
