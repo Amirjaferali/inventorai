@@ -204,16 +204,28 @@
   "VS1_runs": 3,
   "VS1_min_outcome_agreement": 0.95,
   "max_provider_requests": 480,
-  "max_output_tokens": 300,
+  "max_output_tokens": 4096,
   "max_input_characters": 6000
  },
  "budget": {
   "allocation": "480 scored requests = 3 runs x 160 cases; 0 retries; 0 preflight (a preflight is a separate authorization with separate synthetic material and its own budget, never this pack). The proposed 520 cap leaves 40 requests UNALLOCATED and unusable by this campaign.",
-  "token_ceiling_estimate": "UNVERIFIED ESTIMATE, not an enforced ceiling: about 900 input tokens and at most 300 output tokens per request (instructions plus one question and one answer), so roughly 576,000 tokens for the campaign. The harness enforces only the request count, the per-request input-character cap and max_output_tokens; it cannot enforce a token total or a currency limit, and reasoning tokens, if the model emits any, are not estimated here. Real usage must be measured by a separately authorized preflight on separate synthetic material.",
-  "cost_ceiling": "to be set by the Owner in the campaign authorization; not assumed here."
+  "token_ceiling_estimate": "MEASURED ON SEPARATE MATERIAL, not on this pack: the Owner-authorized preflight (2026-10-27; docs/benchmarks/evidence/msnl_mechanism_content_v1/preflight_01_report.json) sent 8 requests with these instructions and schema on 4 separate synthetic inputs and measured 638-678 input and 60-124 output tokens per request (0-74 reasoning tokens, inside output), with no incomplete reply at 300 or 4,096. Campaign usage is not known in advance; the harness enforces the request count, the per-request input-character cap, max_output_tokens and the currency ceiling below.",
+  "cost_ceiling_usd": 25.0,
+  "cost_ceiling": "US$25 TOTAL for this ONE campaign, including failed or incomplete attempts; a hard ceiling set by the Owner's campaign authorization, not a spending target.",
+  "pricing": {
+   "model": "gpt-6-sol",
+   "tier": "Standard",
+   "input_usd_per_1m": 2.0,
+   "cached_input_usd_per_1m": 0.2,
+   "output_usd_per_1m": 10.0,
+   "basis": "OpenAI's published Standard text-token rate for gpt-6-sol, directly inspected by the Lead at developers.openai.com/api/docs/models/gpt-6-sol (this environment cannot fetch the page). The calculated cost uses this rate and is not an invoice; reasoning tokens are counted inside output tokens once."
+  },
+  "reservation_input_usd_per_1m": 12.0,
+  "reservation_output_usd_per_1m": 60.0,
+  "reservation_rule": "The preflight's reviewed rule: before each request, reserve (UTF-8 bytes of the whole request body + 1000) input tokens and max_output_tokens output tokens at the reservation rates (6x the published rate). A request is sent only if the committed bound plus its reservation is at most cost_ceiling_usd. After it, the committed bound grows by its validated usage at the reservation rates, or by its whole reservation when usage is unavailable or the attempt failed; a request refused locally adds nothing."
  },
  "annotation": {
-  "preregistration_order": "The target, scope, replay, categories, design, labelling rules, arm, decision table, grounding contract, acceptance criteria, thresholds and budget were committed (c4f71ca) before any case was written, and the harness that applies them (c55791c) before any case existed. After the cases were authored (a3cbb57) and before any provider execution, the arm's quote instruction and the grounding contract were amended once by Owner authorization (pre_execution_amendment_01); the amended specification is therefore NOT unchanged since c4f71ca. No arm output has ever existed for this pack.",
+  "preregistration_order": "The target, scope, replay, categories, design, labelling rules, arm, decision table, grounding contract, acceptance criteria, thresholds and budget were committed (c4f71ca) before any case was written, and the harness that applies them (c55791c) before any case existed. After the cases were authored (a3cbb57) and before any provider execution, the arm's quote instruction and the grounding contract were amended once by Owner authorization (pre_execution_amendment_01); the amended specification is therefore NOT unchanged since c4f71ca. A second, resource-limit-only amendment (pre_execution_amendment_02) followed the separate preflight, also before any request on this pack. No arm output has ever existed for this pack.",
   "method": "Cases were written from a fixed 40-group slot plan (category, domain, served question, pair) and the category definitions and M1-M7 by one agent that was instructed to read nothing but this specification and an eligibility-checking script (no other pack, fixture, test, document, git history, web or model output). A second, separate agent then labelled all 160 texts blind: shuffled, without ids, categories, groups, pairs or labels, seeing only M1-M7 and each question/answer pair; it could answer UNCLEAR and judged each text's variety and naturalness.",
   "label_agreement": "160/160 cases agree on the label (PRESENT / ABSENT); 0 UNCLEAR.",
   "disagreement_resolution": "None required: no label disagreement. Protocol had there been one: the case is rewritten by the author (never relabelled by the Lead) and re-labelled blind before any model execution.",
@@ -300,6 +312,12 @@
    "change": "The quote unit is ONE complete original sentence (shared sentence split); the instruction, grounding contract and harness were aligned to it together. G2 NOT_ONE_SENTENCE was added; the carrier rule (G4) now reads the contrast clauses of the whole sentence so an independent unknown clause does not reject it; the clause-prefix cue check (former G5 STRIPPED_SCOPE) and its harness-local negation cue list were removed, because the whole-sentence unit includes every word that check protected; G3-G7 wording now states the structural guarantees and limits only.",
    "unchanged": "All 160 case texts, labels, categories, groups, pairs, question identities, served questions and indices, frozen engine baselines, the decision table, acceptance criteria, thresholds and budget allocation are byte-identical (verified by the fixture tests and recorded hashes).",
    "pack_sha256_before": "1c6c312cb4c53c19e53e003d391d6af79a9dd76678c1973dc8e287ae90f3160c"
+  },
+  "pre_execution_amendment_02": {
+   "authority": "Owner authorization \"R2 / ONE SYNTHETIC CAMPAIGN AUTHORIZED\" (2026-10-27), which delegated the bounded technical and budget decisions to the Execution Lead; recorded before the first request on this pack. No model output for any case of this pack existed then.",
+   "change": "Resource limits only: thresholds.max_output_tokens 300 -> 4096 (Owner-set); budget gains the US$25 total cost ceiling, the Lead-inspected price basis and the preflight's reviewed reservation rule; the token estimate is replaced by the preflight measurements, labelled as measured on separate material.",
+   "unchanged": "Case texts, labels, categories, groups, pairs, order, question identities, served questions and indices, frozen engine baselines, the arm instructions and output schema, the grounding contract, the decision table, every acceptance criterion and threshold other than max_output_tokens, the request allocation (480), the 6,000-character input cap and the notice are byte-identical (verified by tests and recorded hashes).",
+   "pack_sha256_before": "c4c1d7e484de5abac1022d59d12b47816f2093f5191809e47bd75b89fb8d82ea"
   }
  },
  "cases": [

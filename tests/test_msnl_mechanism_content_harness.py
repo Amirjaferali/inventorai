@@ -445,7 +445,18 @@ class Oracle:
         if self.fail_at is not None and self.calls == self.fail_at:
             return self.failure
         answer = json.loads(json.loads(body.decode("utf-8"))["input"])["answer"]
-        return _reply(self.decide(self.by_text[answer]))
+        return _mc_reply(self.decide(self.by_text[answer]))
+
+
+def _mc_reply(obj, model="gpt-6-sol"):
+    """The shared fake reply plus the reply model and usage the campaign path
+    checks and records."""
+    status, raw = _reply(obj)
+    body = json.loads(raw.decode("utf-8"))
+    body.update(model=model, usage={"input_tokens": 700, "output_tokens": 90,
+                                    "output_tokens_details": {"reasoning_tokens": 20},
+                                    "total_tokens": 790})
+    return status, json.dumps(body).encode("utf-8")
 
 
 def _perfect(case):
@@ -457,7 +468,7 @@ def _perfect(case):
 def _run(pack, decide, **kw):
     oracle = Oracle(pack, decide, **kw)
     adapter = h.OpenAIMsnlAdapter(allow_network=True, transport=oracle)
-    runs, requests = h.mechanism_campaign(adapter, pack)
+    runs, requests, _spend = h.mechanism_campaign(adapter, pack)
     return runs, requests, oracle
 
 
@@ -559,7 +570,7 @@ def test_raw_decisions_grounding_and_composed_outcomes_are_reported_separately(s
 # ─── refusal and offline replay ──────────────────────────────────────────────
 
 def test_the_provider_path_is_refused_while_the_campaign_is_unauthorized(monkeypatch):
-    assert h.MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED is False
+    monkeypatch.setattr(h, "MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED", False)
     monkeypatch.setattr(h, "_mechanism_pack", lambda: {"pack_id": "p", "cases": [],
                                                       "thresholds": {}})
     monkeypatch.setattr(h, "mc_precondition", lambda pack: [])

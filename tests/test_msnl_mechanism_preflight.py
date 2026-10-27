@@ -81,7 +81,9 @@ def _shingles(text, n=8):
 
 def test_the_fixture_is_pinned_separate_from_the_holdout_and_predeclared(arm, pre):
     assert pre["pack_id"] == "msnl-mechanism-preflight-v1" and pre["status"] == "SYNTHETIC"
-    assert pre["arm_source"]["pack_sha256"] == h.MECHANISM_PACK_SHA256
+    # the arm as it stood at the preflight; amendment 02 changed no instruction
+    assert pre["arm_source"]["pack_sha256"] == \
+        h._mechanism_pack()["annotation"]["pre_execution_amendment_02"]["pack_sha256_before"]
     assert [i["variety"] for i in pre["inputs"]] == ["en", "en", "ar-msa", "ar-gulf-kw"]
     assert pre["configurations"] == [300, 4096]
     ids = [i["input_id"] for i in pre["inputs"]]
@@ -230,7 +232,6 @@ def test_the_whole_plan_fits_the_budget_at_its_conservative_reservation():
     out = h.mechanism_preflight_run("lexical", False, False)
     assert out["provider_requests"] == 0 and len(out["plan"]) == 8
     assert sum(p["reserved_usd"] for p in out["plan"]) < out["limits"]["budget_usd"]
-    assert out["campaign_authorized"] is False
 
 
 # ─── refusal and isolation ───────────────────────────────────────────────────
@@ -244,10 +245,13 @@ def test_the_preflight_never_sends_without_authorization_or_flags(monkeypatch):
     assert h.main(["--mechanism-preflight", "--mechanism-content"]) == 2
 
 
-def test_the_campaign_stays_refused():
-    assert h.MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED is False
+def test_the_campaign_is_never_reached_from_the_preflight(monkeypatch):
+    monkeypatch.setattr(h, "OpenAIMsnlAdapter", None)    # building one would fail
+    monkeypatch.setattr(h, "MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED", False)
     out = h.mechanism_content("openai", True, True)
     assert out["provider_requests"] == 0 and "refused" in out
+    out = h.mechanism_preflight_run("lexical", False, False)
+    assert out["provider_requests"] == 0
 
 
 def test_the_default_adapter_reaches_no_network(arm, pre):
@@ -330,7 +334,8 @@ def test_the_one_authorized_run_is_recorded_and_the_path_is_closed_again():
                          "msnl_mechanism_content_v1" /
                          "preflight_01_report.json").read_text(encoding="utf-8"))
     assert report["preflight_sha256"] == h.MECHANISM_PREFLIGHT_SHA256
-    assert report["arm_pack_sha256"] == h.MECHANISM_PACK_SHA256
+    assert report["arm_pack_sha256"] == h._mechanism_pack()["annotation"]["pre_execution_amendment_02"]["pack_sha256_before"]
+    assert report["instructions_sha256"] == h.MECHANISM_PREFLIGHT_INSTRUCTIONS_SHA256
     assert report["provider_requests"] == len(report["requests"]) <= 8
     assert report["summary"]["conservative_bound_usd"] <= report["limits"]["budget_usd"]
     assert report["campaign_authorized"] is False

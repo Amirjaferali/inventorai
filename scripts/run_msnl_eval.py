@@ -29,10 +29,13 @@ File-creation contract:
       frozen, pinned `tests/fixtures/msnl_responsiveness_v1.json`; with the
       default `lexical` provider it only checks the pack and its lexical
       precondition and sends nothing);
-    `--mechanism-content` (T2-G / R2 evaluation PREPARATION: the frozen, pinned
+    `--mechanism-content` (T2-G / R2: the frozen, pinned
       `tests/fixtures/msnl_mechanism_content_v1.json`; with the default
-      `lexical` provider it only checks the pack and its engine baseline, and
-      the provider path is refused until a separate campaign authorization);
+      `lexical` provider it only checks the pack and its engine baseline; the
+      provider path runs the ONE Owner-authorized campaign only while
+      MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED is open, and needs
+      `--mechanism-content-journal PATH`, a NEW file that receives every
+      reservation and attempt as it happens);
     `--mechanism-content-rescore PATH` (offline downstream replay of a saved
       mechanism-content report against the pinned pack and unchanged engine);
     `--mechanism-preflight` (T2-G / R2: the ONE Owner-authorized operational
@@ -683,8 +686,17 @@ def responsiveness(provider, allow_network, managed_credential):
 
 MECHANISM_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                    "msnl_mechanism_content_v1.json")
-MECHANISM_PACK_SHA256 = "c4c1d7e484de5abac1022d59d12b47816f2093f5191809e47bd75b89fb8d82ea"
-MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED = False
+MECHANISM_PACK_SHA256 = "a6ed890b93ec9b0364bc5c74832fd1c26aa00f24803a6de7fe308404b1399efb"
+# Owner authorization "R2 / ONE SYNTHETIC CAMPAIGN AUTHORIZED" (2026-10-27):
+# open for exactly ONE campaign (at most 480 attempts, US$25 total) and closed
+# again in the commit that records its evidence.
+MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED = True
+MECHANISM_CAMPAIGN_EVIDENCE_PATH = os.path.join(
+    _ROOT, "docs", "benchmarks", "evidence", "msnl_mechanism_content_v1",
+    "campaign_01_report.json")
+ERR_MODEL_UNCONFIRMED = "model_unconfirmed"
+ERR_COST_UNBOUNDED = "cost_unbounded"
+ERR_COST_CEILING = "cost_ceiling"
 MC_FIELDS = ("responsive", "stance", "mechanism_content", "quote")
 MC_PRESENT, MC_ABSENT = "PRESENT", "ABSENT"
 ALLOWED, WITHHELD_ABSENT, ABSTAINED = "ALLOWED", "WITHHELD_ABSENT", "ABSTAINED"
@@ -907,30 +919,121 @@ def mc_row(pack, case, reply, error_kind, baseline):
             "composed": None if decision == MC_ERROR else mc_composed(baseline, decision)}
 
 
-def mechanism_campaign(adapter, pack):
+def classify_mechanism_measured(adapter, pack, case):
+    """ONE campaign request through the preflight's reviewed measured call:
+    (reply, error_kind, meta). Beyond classify_mechanism, a 200 reply must
+    confirm the configured model and may not report output over its cap."""
+    cap = pack["thresholds"]["max_output_tokens"]
+    reply, meta = _measured_call(adapter, mechanism_payload(pack, case, adapter._model))
+    kind = adapter.last_error_kind
+    out = meta["usage"]["output_tokens"]
+    if meta["sent"] and isinstance(out, int) and out > cap:
+        adapter._fail(ERR_COST_UNBOUNDED)
+        return None, ERR_COST_UNBOUNDED, meta
+    if reply is None:
+        return None, kind, meta
+    if not _pf_model_confirmed(meta["model"], adapter._model):
+        adapter._fail(ERR_MODEL_UNCONFIRMED)
+        return None, ERR_MODEL_UNCONFIRMED, meta
+    if reply == ms.ABSTAIN:                     # a provider refusal, not a verdict
+        adapter.errors[ERR_REFUSAL] = adapter.errors.get(ERR_REFUSAL, 0) + 1
+        return None, ERR_REFUSAL, meta
+    kind = mechanism_reply_error(pack, reply)
+    if kind is not None:
+        adapter._fail(kind)
+        return None, kind, meta
+    return {f: reply[f] for f in MC_FIELDS}, None, meta
+
+
+def _mc_journal(journal, record):
+    """Append ONE sanitized attempt record and force it to disk, so a crash
+    leaves the evidence of every reservation and attempt."""
+    if journal is None:
+        return
+    journal.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
+    journal.flush()
+    os.fsync(journal.fileno())
+
+
+def mechanism_campaign(adapter, pack, journal=None):
     """Exactly VS1_runs passes in pack order; stops before a request over the
-    frozen budget and immediately after the first error (VE1: nothing is
-    retried). Returns (runs, requests)."""
-    t = pack["thresholds"]
+    frozen request allocation or the currency ceiling and immediately after the
+    first error (VE1: nothing is retried). Each request reserves its
+    conservative maximum cost first (the preflight's reviewed rule). Returns
+    (runs, requests, spend)."""
+    t, b = pack["thresholds"], pack["budget"]
+    cap, ceiling = t["max_output_tokens"], b["cost_ceiling_usd"]
+    res_in, res_out = b["reservation_input_usd_per_1m"], b["reservation_output_usd_per_1m"]
+    price = b["pricing"]
     baselines = {c["case_id"]: mc_baseline(pack, c) for c in pack["cases"]}
-    runs, requests, stopped = [], 0, False
-    for _ in range(t["VS1_runs"]):
+    runs, requests, stopped, committed, measured = [], 0, False, 0.0, 0.0
+    measured_complete = True
+    for run_index in range(t["VS1_runs"]):
         if stopped:
             break
         rows = []
         for case in pack["cases"]:
+            base = baselines[case["case_id"]]
             if requests >= t["max_provider_requests"]:
-                rows.append(mc_row(pack, case, None, ERR_BUDGET, baselines[case["case_id"]]))
+                rows.append(mc_row(pack, case, None, ERR_BUDGET, base))
+                stopped = True
+                break
+            body = json.dumps(mechanism_payload(pack, case, adapter._model),
+                              ensure_ascii=False).encode("utf-8")
+            reserved = _pf_usd(len(body) + 1000, cap, res_in, res_out)
+            if committed + reserved > ceiling:
+                rows.append(mc_row(pack, case, None, ERR_COST_CEILING, base))
+                _mc_journal(journal, {"event": "refused_before_send", "run": run_index + 1,
+                                      "case_id": case["case_id"], "reason": ERR_COST_CEILING,
+                                      "committed_usd": round(committed, 6),
+                                      "reserved_usd": round(reserved, 6)})
                 stopped = True
                 break
             requests += 1
-            reply, err = classify_mechanism(adapter, pack, case)
-            rows.append(mc_row(pack, case, reply, err, baselines[case["case_id"]]))
+            _mc_journal(journal, {"event": "reserved", "attempt": requests,
+                                  "run": run_index + 1, "case_id": case["case_id"],
+                                  "reserved_usd": round(reserved, 6),
+                                  "committed_usd": round(committed, 6)})
+            reply, err, meta = classify_mechanism_measured(adapter, pack, case)
+            usage = meta["usage"]
+            known = isinstance(usage["input_tokens"], int) and \
+                isinstance(usage["output_tokens"], int)
+            if not meta["sent"]:
+                bound = 0.0
+            elif known and meta["http_status"] == 200:
+                bound = _pf_usd(usage["input_tokens"], usage["output_tokens"], res_in, res_out)
+            else:
+                bound = reserved
+            cost = (_pf_usd(usage["input_tokens"], usage["output_tokens"],
+                            price["input_usd_per_1m"], price["output_usd_per_1m"])
+                    if known else None)
+            if meta["sent"] and cost is None:
+                measured_complete = False
+            measured += cost or 0.0
+            committed += bound
+            row = mc_row(pack, case, reply, err, base)
+            row["attempt"] = {
+                "attempt": requests, "sent": meta["sent"], "http_status": meta["http_status"],
+                "response_id": meta["response_id"], "model": meta["model"],
+                "response_status": meta["response_status"],
+                "incomplete_reason": meta["incomplete_reason"], "usage": usage,
+                "latency_ms": meta["latency_ms"], "reserved_usd": round(reserved, 6),
+                "measured_cost_usd": None if cost is None else round(cost, 6),
+                "bound_usd": round(bound, 6)}
+            rows.append(row)
+            _mc_journal(journal, {"event": "attempt", "run": run_index + 1,
+                                  "case_id": case["case_id"], "reply": reply, "error": err,
+                                  "decision": row["decision"], **row["attempt"]})
             if err is not None:
                 stopped = True
                 break
         runs.append(rows)
-    return runs, requests
+    spend = {"requests_sent": sum(1 for rows in runs for r in rows
+                                  if (r.get("attempt") or {}).get("sent")),
+             "measured_cost_usd": round(measured, 6),
+             "measured_cost_complete": measured_complete,
+             "conservative_bound_usd": round(committed, 6), "ceiling_usd": ceiling}
+    return runs, requests, spend
 
 
 def mechanism_run_report(pack, rows):
@@ -1024,9 +1127,11 @@ def _mechanism_pack():
     return pack
 
 
-def mechanism_content(provider, allow_network, managed_credential):
+def mechanism_content(provider, allow_network, managed_credential, journal_path=None):
     """Load the pinned pack, check VB1 and, only when the campaign is
-    authorized and the provider flags are given, run the ONE campaign."""
+    authorized and the provider flags are given, run the ONE campaign. The run
+    needs a NEW journal file (an existing one, or recorded campaign evidence,
+    means a campaign already started: nothing is sent, never a restart)."""
     pack = _mechanism_pack()
     violations = mc_precondition(pack)
     out = {"pack_id": pack["pack_id"], "pack_sha256": MECHANISM_PACK_SHA256,
@@ -1045,11 +1150,32 @@ def mechanism_content(provider, allow_network, managed_credential):
         out["refused"] = "VB1: the engine baseline no longer holds; nothing was sent"
         out["provider_requests"] = 0
         return out
+    if os.path.exists(MECHANISM_CAMPAIGN_EVIDENCE_PATH):
+        out["refused"] = "campaign evidence already exists; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if not journal_path:
+        out["refused"] = "a new journal path is required; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    try:
+        journal = open(journal_path, "x", encoding="utf-8")   # never an existing file
+    except FileExistsError:
+        out["refused"] = "the journal already exists: a campaign already started; " \
+                         "nothing was sent"
+        out["provider_requests"] = 0
+        return out
     adapter = OpenAIMsnlAdapter(allow_network=True)
-    runs, requests = mechanism_campaign(adapter, pack)
+    with journal:
+        _mc_journal(journal, {"event": "start", "pack_sha256": MECHANISM_PACK_SHA256,
+                              "model": adapter._model,
+                              "max_output_tokens": pack["thresholds"]["max_output_tokens"],
+                              "ceiling_usd": pack["budget"]["cost_ceiling_usd"]})
+        runs, requests, spend = mechanism_campaign(adapter, pack, journal)
+        _mc_journal(journal, {"event": "end", "provider_requests": requests, **spend})
     out.update({"model": adapter._model, "endpoint": toa.ENDPOINT,
                 "provider_requests": requests, "error_kinds": adapter.errors,
-                "result": mechanism_verdict(pack, runs, violations),
+                "spend": spend, "result": mechanism_verdict(pack, runs, violations),
                 "case_level": runs})
     return out
 
@@ -1307,9 +1433,22 @@ def mechanism_preflight(adapter, arm_pack, pre):
     return rows, summary
 
 
+MECHANISM_PREFLIGHT_INSTRUCTIONS_SHA256 = \
+    "7ea95c74ac03f0d45b2fa04a960948d500216ebc101173fc66941f073363aee3"
+
+
 def _preflight_pack():
+    """The pinned preflight fixture. Its arm source is the holdout pack as it
+    stood at the preflight (c4c1d7e4...); the later resource-limit amendment 02
+    changed no instruction, so the current instructions must still hash to the
+    exact text the preflight sent."""
     pre = _load(MECHANISM_PREFLIGHT_PATH, MECHANISM_PREFLIGHT_SHA256)
-    if pre["arm_source"]["pack_sha256"] != MECHANISM_PACK_SHA256:
+    arm_pack = _mechanism_pack()
+    amendment = arm_pack["annotation"].get("pre_execution_amendment_02", {})
+    if pre["arm_source"]["pack_sha256"] not in (
+            MECHANISM_PACK_SHA256, amendment.get("pack_sha256_before")) or \
+            hashlib.sha256(arm_pack["arm"]["instructions"].encode("utf-8")).hexdigest() \
+            != MECHANISM_PREFLIGHT_INSTRUCTIONS_SHA256:
         raise PackError("preflight arm source is not the pinned holdout pack")
     holdout = {c["text"] for c in _mechanism_pack()["cases"]}
     if any(i["text"] in holdout for i in pre["inputs"]):
@@ -1364,6 +1503,7 @@ def main(argv=None):
     p.add_argument("--mechanism-content", action="store_true")
     p.add_argument("--mechanism-content-rescore", metavar="PATH")
     p.add_argument("--mechanism-preflight", action="store_true")
+    p.add_argument("--mechanism-content-journal", metavar="PATH")
     args = p.parse_args(argv)
     if args.mechanism_preflight:
         if args.rescore or args.show_cases or args.responsiveness or \
@@ -1405,7 +1545,7 @@ def main(argv=None):
             return 2
         try:
             out = mechanism_content(args.provider, args.allow_network,
-                                    args.managed_credential)
+                                    args.managed_credential, args.mechanism_content_journal)
         except PackError as exc:
             print(json.dumps({"refused": str(exc)}))
             return 2
