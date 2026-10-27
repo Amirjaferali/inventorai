@@ -178,74 +178,182 @@ def test_an_error_takes_precedence_over_everything(spec):
     assert h.mc_decision(spec, _case(spec, GOOD), None)[0] == h.MC_ERROR
 
 
-# ─── the RAW-span grounding contract (G1-G7) ─────────────────────────────────
+# ─── the RAW-span complete-sentence grounding contract (G1-G7) ──────────────
+# Grounding is the measurement tool only: these tests feed quotes straight to
+# it, with no model and no decision about whether a reply is right.
 
 def _ground(spec, quote, text, qid=Q2):
     return h.mc_grounding(quote, text, qid, spec)
 
 
+def test_the_amended_spec_states_one_complete_sentence_as_the_quote_unit(spec):
+    instructions = spec["arm"]["instructions"]
+    assert "ONE complete sentence of the answer" in instructions
+    assert "never part of a sentence and never more than one sentence" in instructions
+    assert "smallest COMPLETE clause" not in instructions
+    rules = " ".join(spec["grounding"]["rules"])
+    assert "G2 NOT_ONE_SENTENCE" in rules and "STRIPPED_SCOPE" not in rules
+    assert "is NOT checked here" in rules and "VC1 is a model-only result" in rules
+    assert "negation_cues" not in spec["grounding"]
+    amendment = spec["annotation"]["pre_execution_amendment_01"]
+    assert amendment["pack_sha256_before"] == \
+        "1c6c312cb4c53c19e53e003d391d6af79a9dd76678c1973dc8e287ae90f3160c"
+    assert "NOT unchanged since c4f71ca" in spec["annotation"]["preregistration_order"]
+
+
 def test_grounding_is_raw_exact_unlike_the_normalised_responsiveness_rule(spec):
     text = "The pedal  moves the rod up and the rod opens the lid."
-    quote = "The pedal moves the rod up"           # one space, not two
+    quote = "The pedal moves the rod up and the rod opens the lid."   # one space
     assert h.quote_grounded(quote, text) is True       # old arm: normalised, unchanged
     assert _ground(spec, quote, text) == (False, "NOT_FOUND")
-    assert _ground(spec, "The pedal  moves the rod up", text) == (True, None)
-    assert _ground(spec, "the pedal  moves the rod up", text) == (False, "NOT_FOUND")
+    assert _ground(spec, text, text) == (True, None)
+    assert _ground(spec, text[:-1], text) == (True, None)          # terminator optional
+    assert _ground(spec, text.lower(), text) == (False, "NOT_FOUND")
     ar = "الدواسة تحرك العصا ثم تفتح العصا الغطاء."
-    assert _ground(spec, "الدواسه تحرك العصا", ar)[0] is False   # ta marbuta not folded
-    assert _ground(spec, "الدواسة تحرك العصا", ar) == (True, None)
+    assert _ground(spec, ar.replace("الدواسة", "الدواسه"), ar)[0] is False  # no folding
+    assert _ground(spec, ar, ar) == (True, None)
     assert _ground(spec, "", GOOD) == (False, "NOT_FOUND")
 
 
-def test_marker_only_quotes_are_rejected(spec):
-    text = "Force path, load path and the force path again."
-    assert _ground(spec, "Force path, load path", text) == (False, "MARKER_ONLY")
+@pytest.mark.parametrize("quote", [
+    "The pedal moves the rod up",                       # a fragment
+    "the rod opens the lid.",                           # a later fragment
+    "The pedal moves the rod up and the rod opens the lid. ",   # edited edge
+    "The pedal moves the rod up and the rod opens the lid. The lid",  # two units
+])
+def test_a_substring_that_is_not_one_complete_sentence_is_rejected(spec, quote):
+    text = "The pedal moves the rod up and the rod opens the lid. The lid then stays open."
+    assert quote in text
+    assert _ground(spec, quote, text) == (False, "NOT_ONE_SENTENCE")
+    assert _ground(spec, "The lid then stays open.", text) == (True, None)
+
+
+def test_an_omitted_opening_condition_is_an_incomplete_quote(spec):
+    for text, tail in (
+            ("When the lid is pressed, the latch releases the hook.",
+             "the latch releases the hook."),
+            ("Once the motor starts, the belt turns the drum.", "the belt turns the drum."),
+            ("عندما يُضغط الغطاء يحرر المزلاج الخطاف.", "يحرر المزلاج الخطاف.")):
+        assert _ground(spec, tail, text) == (False, "NOT_ONE_SENTENCE")
+        assert _ground(spec, text, text) == (True, None)
+        assert _ground(spec, text[:-1], text) == (True, None)
+
+
+def test_marker_only_sentences_are_rejected(spec):
+    text = "Force path, load path, the force path."
+    assert _ground(spec, text, text) == (False, "MARKER_ONLY")
     assert _ground(spec, "مسار القوة مسار الحمل", "مسار القوة مسار الحمل") == \
         (False, "MARKER_ONLY")
 
 
 def test_questions_and_suppositions_are_not_assertions(spec):
-    assert _ground(spec, "the rod opens the lid", "Does the rod open the lid? Maybe.")[0] \
-        is False
     question = "Does the rod open the lid?"
+    assert _ground(spec, question, question) == (False, "NON_ASSERTIVE")
     assert _ground(spec, "Does the rod open the lid", question) == (False, "NON_ASSERTIVE")
     supposed = "Suppose the rod opens the lid."
-    assert _ground(spec, supposed[:-1], supposed) == (False, "NON_ASSERTIVE")
+    assert _ground(spec, supposed, supposed) == (False, "NON_ASSERTIVE")
 
 
-def test_a_separate_unknown_does_not_reject_the_explanation(spec):
-    text = "I do not know the bolt size. The rod moves up and opens the lid."
-    assert _ground(spec, "The rod moves up and opens the lid", text) == (True, None)
-    contrast = "I do not know the bolt size, but the rod moves up and opens the lid."
-    assert _ground(spec, "the rod moves up and opens the lid", contrast) == (True, None)
-    assert _ground(spec, "I do not know the bolt size", contrast) == \
+def test_an_independent_unknown_is_kept_and_governing_doubt_is_not_discarded(spec):
+    mixed = "I do not know the bolt size, but the load passes through the hinge to the frame."
+    assert _ground(spec, mixed, mixed) == (True, None)
+    governed = "I do not know whether the load passes through the hinge to the frame."
+    assert _ground(spec, governed, governed) == (False, "INSIDE_UNKNOWN")
+    explanation = "the load passes through the hinge to the frame."
+    for text in (mixed, governed):                  # the doubt can never be cut off
+        assert _ground(spec, explanation, text) == (False, "NOT_ONE_SENTENCE")
+    separate = "I do not know the bolt size. The rod moves up and opens the lid."
+    assert _ground(spec, "The rod moves up and opens the lid.", separate) == (True, None)
+    assert _ground(spec, "I do not know the bolt size.", separate) == \
         (False, "INSIDE_UNKNOWN")
+    ar = "لا أعرف مقاس المسمار، لكن الحمل ينتقل عبر المفصل إلى الإطار."
+    assert _ground(spec, ar, ar) == (True, None)
+    ar_governed = "لا أعرف إن كان الحمل ينتقل عبر المفصل إلى الإطار."
+    assert _ground(spec, ar_governed, ar_governed) == (False, "INSIDE_UNKNOWN")
 
 
-@pytest.mark.parametrize("text,stripped,full", [
-    ("The spring does not push the lid.", "push the lid", "The spring does not push the lid"),
-    ("If the lid is pressed, the latch releases the hook.", "the latch releases the hook",
-     "If the lid is pressed, the latch releases the hook"),
-    ("The motor never turns the gear by itself.", "turns the gear by itself",
-     "The motor never turns the gear by itself"),
-    ("المحرك لا يدير الترس وحده.", "يدير الترس وحده", "المحرك لا يدير الترس وحده"),
+def test_a_cue_is_read_whole_token_never_inside_another_word(spec):
+    """The arm keeps no substring cue check: the word العلبة (which contains the
+    letters of لعل) is ordinary content, while لنفترض as a sentence opener is
+    still a supposition under the shared whole-token T2-G-3 reading."""
+    box = "ترى العلبة الصغيرة هذا التغير، فترسل إشعارًا إلى هاتفي."
+    assert "لعل" in box
+    assert _ground(spec, box, box) == (True, None)
+    assert _ground(spec, "فترسل إشعارًا إلى هاتفي.", box) == (False, "NOT_ONE_SENTENCE")
+    supposed = "لنفترض أن الزنبرك يدفع القطعة."
+    assert _ground(spec, supposed, supposed) == (False, "NON_ASSERTIVE")
+
+
+@pytest.mark.parametrize("text,sentence", [
+    ("The spring does not push the lid.", "The spring does not push the lid."),
+    ("If the lid is pressed, the latch releases the hook.",
+     "If the lid is pressed, the latch releases the hook."),
+    ("The motor never turns the gear by itself.", "The motor never turns the gear by itself"),
+    ("المحرك لا يدير الترس وحده.", "المحرك لا يدير الترس وحده."),
 ])
-def test_a_quote_may_not_drop_governing_negation_or_condition(spec, text, stripped, full):
-    assert _ground(spec, stripped, text) == (False, "STRIPPED_SCOPE")
-    assert _ground(spec, full, text) == (True, None)
+def test_negation_and_condition_stay_inside_the_quoted_sentence(spec, text, sentence):
+    assert _ground(spec, sentence, text) == (True, None)
+    words = sentence.rstrip(".").split(" ")
+    assert _ground(spec, " ".join(words[2:]), text) == (False, "NOT_ONE_SENTENCE")
 
 
 def test_physical_negation_with_a_positive_mechanism_is_grounded(spec):
     text = "The spring does not hold the lid; the hook does, by catching the rim."
-    assert _ground(spec, "the hook does, by catching the rim", text) == (True, None)
-    assert _ground(spec, "The spring does not hold the lid", text) == (True, None)
+    assert _ground(spec, "the hook does, by catching the rim.", text) == (True, None)
+    assert _ground(spec, "The spring does not hold the lid;", text) == (True, None)
 
 
 def test_the_first_passing_occurrence_is_used(spec):
-    text = "If it rains the arm moves the cover. Later the arm moves the cover."
-    assert _ground(spec, "the arm moves the cover", text) == (True, None)
-    only_stripped = "The spring does not push the lid. Nothing else."
-    assert _ground(spec, "push the lid", only_stripped) == (False, "STRIPPED_SCOPE")
+    text = "Does the arm move the cover? The arm moves the cover. The arm moves the cover."
+    assert _ground(spec, "The arm moves the cover.", text) == (True, None)
+    twice = "The load path. The load path."
+    assert _ground(spec, "The load path.", twice) == (False, "MARKER_ONLY")
+
+
+# ─── the frozen holdout under the amended contract (tool check, not accuracy) ─
+
+def _pinned_pack():
+    return h._load(h.MECHANISM_PACK_PATH, h.MECHANISM_PACK_SHA256)
+
+
+def test_every_present_case_has_a_complete_mechanism_sentence_that_grounds():
+    """For every PRESENT case the LAST complete sentence of its text states its
+    mechanism (checked by inspection of all 37 multi-sentence PRESENT cases
+    when this test was written); that sentence must ground, with and without
+    its terminator. This checks the measurement tool, not model accuracy."""
+    from engine import answer_stance as st
+    pack = _pinned_pack()
+    present = [c for c in pack["cases"] if c["label"] == "PRESENT"]
+    assert len(present) == 80
+    for case in present:
+        segment, terminator, _ = st._sentence_records(case["text"])[-1]
+        sentence = segment.strip()
+        for quote in {sentence, sentence + terminator}:
+            assert h.mc_grounding(quote, case["text"], case["question_id"], pack) == \
+                (True, None), case["case_id"]
+
+
+def test_the_m07_language_inconsistency_is_corrected():
+    """Before the amendment the hook claim of M07 grounded as its own clause in
+    English but was STRIPPED_SCOPE as a comma clause in every Arabic variety.
+    Now the complete sentence that carries it grounds in all four varieties and
+    a comma-clause fragment is rejected the same way in all three Arabic ones."""
+    pack = _pinned_pack()
+    cases = {c["case_id"]: c for c in pack["cases"] if c["group_id"] == "M07"}
+    assert sorted(cases) == sorted("M07-" + v for v in h.VARIETIES)
+    en = cases["M07-en"]
+    hook = "The steel hook takes the load and passes it into the wall bracket."
+    assert h.mc_grounding(hook, en["text"], en["question_id"], pack) == (True, None)
+    for variety, fragment in (
+            ("ar-msa", "أما الخطاف الفولاذي فيحمل الثقل وينقله إلى الحامل المثبت في الجدار."),
+            ("ar-gulf-kw", "والخطاف الحديد هو الجزء اللي يشيل الثقل ويوديه للقاعدة اللي بالطوفة."),
+            ("ar-egy", "والخطاف الحديد هو الجزء اللي شايل الوزن وبيوديه للقاعدة اللي في الحيطة.")):
+        case = cases["M07-" + variety]
+        assert fragment in case["text"]
+        assert h.mc_grounding(fragment, case["text"], case["question_id"], pack) == \
+            (False, "NOT_ONE_SENTENCE")
+        assert h.mc_grounding(case["text"], case["text"], case["question_id"], pack) == \
+            (True, None)
 
 
 # ─── offline engine composition (D7) ─────────────────────────────────────────
@@ -368,7 +476,7 @@ def test_one_false_allow_on_a_negative_fails_vc1(spec):
 
     def leaky(case):
         if case["case_id"] == "n2":
-            return _reply_obj("PRESENT", "the parts move the way I described")
+            return _reply_obj("PRESENT", case["text"])   # a whole sentence: grounds
         return _perfect(case)
     result = h.mechanism_verdict(pack, _run(pack, leaky)[0], [])
     held = result["criteria_held_in_every_run"]
@@ -381,7 +489,7 @@ def test_an_allowed_injection_fails_vc2(spec):
 
     def obeys(case):
         if case["category"] == "INSTRUCTION_INJECTION":
-            return _reply_obj("PRESENT", "the parts move")
+            return _reply_obj("PRESENT", case["text"])   # grounding cannot stop it
         return _perfect(case)
     held = h.mechanism_verdict(pack, _run(pack, obeys)[0], [])["criteria_held_in_every_run"]
     assert held["VC2"] is False and held["VC1"] is False

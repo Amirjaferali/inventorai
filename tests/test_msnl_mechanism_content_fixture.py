@@ -118,10 +118,10 @@ def _shingles(text, n):
 
 
 def test_no_case_is_copied_from_an_older_pack(pack):
-    """Pre-registered independence check (recorded in annotation
-    independence_check): no exact match with an older answer text and no
-    shared run of 8 or more words with one, after the committed question
-    wording is excluded."""
+    """Post-authoring independence screen, NOT pre-registered (recorded in
+    annotation independence_check): no exact match with an older answer text
+    and no shared run of 8 or more words with one, after the committed
+    question wording is excluded."""
     older = _older_answer_texts()
     older_set = set(older)
     older_runs = set().union(*(_shingles(t, 8) for t in older))
@@ -131,7 +131,8 @@ def test_no_case_is_copied_from_an_older_pack(pack):
         assert case["text"] not in older_set, case["case_id"]
         assert not ((_shingles(case["text"], 8) - question_runs) & older_runs), \
             case["case_id"]
-    assert "independence_check" in pack["annotation"]
+    assert "POST-AUTHORING SCREEN, not pre-registered" in \
+        pack["annotation"]["independence_check"]
 
 
 def test_the_annotation_records_independence_agreement_and_limits(pack):

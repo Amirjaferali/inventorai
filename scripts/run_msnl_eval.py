@@ -665,18 +665,19 @@ def responsiveness(provider, allow_network, managed_credential):
 # ─── T2-G / R2: experimental veto-only mechanism content (msnl-mechanism-content-v1)
 #
 # Evaluation preparation ONLY (Owner authorization "R2 / VETO-ONLY EVALUATION
-# PREPARATION"): the arm, the decision table, the RAW-span grounding contract,
-# the thresholds and the budget are read from the pinned pack bytes. The
-# provider path stays refused by MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED until a
-# separate campaign authorization changes it in a reviewed commit. The
-# responsiveness arm above, including its normalised `quote_grounded`, is
-# unchanged and is not used here. Composition is offline and harness-only: no
+# PREPARATION", amended once by the Owner-authorized F1 correction before any
+# provider execution): the arm, the decision table, the RAW-span complete-
+# sentence grounding contract, the thresholds and the budget are read from the
+# pinned pack bytes. The provider path stays refused by
+# MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED until a separate campaign authorization
+# changes it in a reviewed commit. The responsiveness arm above, including its
+# normalised `quote_grounded`, is unchanged and is not used here. Composition is offline and harness-only: no
 # product code is modified, nothing is persisted, and the veto can only
 # withhold credit the deterministic engine would grant.
 
 MECHANISM_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                    "msnl_mechanism_content_v1.json")
-MECHANISM_PACK_SHA256 = "1c6c312cb4c53c19e53e003d391d6af79a9dd76678c1973dc8e287ae90f3160c"
+MECHANISM_PACK_SHA256 = "c4c1d7e484de5abac1022d59d12b47816f2093f5191809e47bd75b89fb8d82ea"
 MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED = False
 MC_FIELDS = ("responsive", "stance", "mechanism_content", "quote")
 MC_PRESENT, MC_ABSENT = "PRESENT", "ABSENT"
@@ -740,7 +741,8 @@ def classify_mechanism(adapter, pack, case):
 
 
 def _mc_word_present(quote, question_id):
-    """G2: one non-function word outside every committed-marker occurrence."""
+    """G4 content test: one non-function word outside every committed-marker
+    occurrence."""
     from engine import answer_stance as st
     spans = st._marker_spans(quote, question_id)
     for word in st._WORD_RE.finditer(quote):
@@ -754,71 +756,57 @@ def _mc_word_present(quote, question_id):
     return False
 
 
-def _mc_governing_cue(prefix, pack):
-    """G5: a registered unknown, a T2-G-2 hypothetical cue or a harness negation
-    cue in the clause text before the quote."""
-    from engine import answer_stance as st
-    if not prefix.strip():
-        return False
-    if st.declares_ignorance(prefix) or st._t2g2_is_hypothetical(prefix + " "):
-        return True
-    cues = pack["grounding"]["negation_cues"]
-    lowered = prefix.lower()
-    if "n't" in lowered:
-        return True
-    english = {w.lower() for w in re.findall(r"[A-Za-z]+", prefix)}
-    if english & {c for c in cues["en"] if c != "n't"}:
-        return True
-    return bool({m.group(0) for m in st._WORD_RE.finditer(prefix)} & set(cues["ar"]))
+def _mc_sentence_reason(sentence, terminator, question_id):
+    """G3-G4 for ONE complete sentence: None when it grounds, else the reason.
 
-
-def _mc_occurrence_reason(quote, text, start, question_id, pack):
+    G3: the sentence asks or opens with a qualified supposition cue (the
+    shared T2-G-3 reading). G4: at least one of its contrast clauses (the
+    shared T2-G-2 split) is a CARRIER - it carries a G2 content word and does
+    not itself declare a registered explicit unknown. A separate unknown clause
+    in the same sentence therefore does not reject the sentence (mixed answers
+    are preserved), while a sentence whose only content sits inside a
+    registered unknown is rejected. G5: the whole sentence is the quote, so no
+    word of it can be stripped; the arm keeps no cue list or substring match."""
     from engine import answer_stance as st
-    end = start + len(quote)
-    if not _mc_word_present(quote, question_id):
-        return "MARKER_ONLY"
-    for sentence, terminator, offset in st._sentence_records(text):
-        s_end = offset + len(sentence)
-        if end <= offset or start >= s_end:
+    if st._t2g3_is_non_assertive(sentence, terminator):
+        return "NON_ASSERTIVE"
+    reason = "MARKER_ONLY"
+    for clause in st._t2g2_clauses(sentence):
+        if not _mc_word_present(clause, question_id):
             continue
-        if st._t2g3_is_non_assertive(sentence, terminator):
-            return "NON_ASSERTIVE"
-        position, first = 0, True
-        for clause in st._t2g2_clauses(sentence):
-            index = sentence.find(clause, position)
-            if index < 0:
-                continue
-            position = index + len(clause)
-            c_start, c_end = offset + index, offset + index + len(clause)
-            if end <= c_start or start >= c_end:
-                continue
-            if st.declares_ignorance(clause):
-                return "INSIDE_UNKNOWN"
-            if first:
-                first = False
-                if _mc_governing_cue(text[c_start:max(c_start, start)], pack):
-                    return "STRIPPED_SCOPE"
-    return None
+        if st.declares_ignorance(clause):
+            reason = "INSIDE_UNKNOWN"
+            continue
+        return None
+    return reason
 
 
 def mc_grounding(quote, text, question_id, pack):
-    """The RAW-span grounding contract (pack["grounding"], G1-G7): (grounded,
-    reason). Exact verbatim occurrence only — no normalisation of any kind."""
-    if not isinstance(quote, str) or not quote or not isinstance(text, str):
-        return False, "NOT_FOUND"
-    starts, at = [], text.find(quote)
-    while at != -1:
-        starts.append(at)
-        at = text.find(quote, at + 1)
-    if not starts:
+    """The RAW-span, complete-sentence grounding contract (pack["grounding"],
+    G1-G7): (grounded, reason). Exact verbatim occurrence only - no
+    normalisation of any kind - and the quote must be EXACTLY one complete
+    sentence of the answer as the shared sentence split cuts it (without its
+    edge whitespace, optionally with its own original punctuation terminator),
+    at that sentence's own position. A fragment, several sentences or an
+    edited edge is NOT_ONE_SENTENCE even when it is a substring."""
+    from engine import answer_stance as st
+    if not isinstance(quote, str) or not quote or not isinstance(text, str) \
+            or quote not in text:
         return False, "NOT_FOUND"
     first_reason = None
-    for start in starts:
-        reason = _mc_occurrence_reason(quote, text, start, question_id, pack)
+    for segment, terminator, offset in st._sentence_records(text):
+        sentence = segment.strip()
+        start = offset + len(segment) - len(segment.lstrip())
+        forms = [sentence]
+        if terminator.strip():                   # a punctuation terminator
+            forms.append(sentence + terminator)
+        if quote not in forms or text[start:start + len(quote)] != quote:
+            continue
+        reason = _mc_sentence_reason(sentence, terminator, question_id)
         if reason is None:
             return True, None
         first_reason = first_reason or reason
-    return False, first_reason
+    return False, first_reason or "NOT_ONE_SENTENCE"
 
 
 def mc_decision(pack, case, reply, error_kind=None):
