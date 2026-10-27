@@ -2,8 +2,9 @@
 """Stage 24 / CAP-12 - Form Mock-up Advisory, Slice 1 (directly owning tests).
 
 ONE optional, advisory, non-binding, request-local capability: for ONE explicitly
-declared NON-FUNCTIONAL form mock-up component on a Mechanical-root project, the
-CAP-12 owner lists the prototype material families and building-method families
+declared NON-FUNCTIONAL form mock-up component on a Mechanical-root project (and,
+since CAP12-ELECTRONICS-ROOT-01, a confirmed single-domain Electronics-root
+project; see tests/test_cap12_electronics_root.py), the CAP-12 owner lists the prototype material families and building-method families
 that NASA material describes, or it declines.
 
 The tests press on the boundaries rather than on the happy path alone:
@@ -186,8 +187,8 @@ def test_the_route_serves_the_advisory_for_a_mechanical_project(mech):
 # ==========================================================================
 # 3-4. Abstention: unsupported root domain; missing / invalid category
 # ==========================================================================
-@pytest.mark.parametrize("domain", ["electronics_electrical", "control_loop",
-                                    "software", "medical_device", "unknown"])
+@pytest.mark.parametrize("domain", ["control_loop", "software", "medical_device",
+                                    "unknown", "Electronics_Electrical"])
 def test_an_unsupported_root_domain_abstains(domain):
     result = resolve_advisory(domain, "form_mockup")
     assert result == {"state": STATE_UNABLE, "reason": "UNSUPPORTED_DOMAIN"}
@@ -209,12 +210,12 @@ def test_a_missing_or_invalid_category_abstains(role, reason):
         "state": STATE_UNABLE, "reason": reason}
 
 
-def test_an_electronics_project_gets_the_unable_page_not_advice(elec):
+def test_a_single_domain_electronics_project_gets_the_advice(elec):
+    # CAP12-ELECTRONICS-ROOT-01 supersedes the earlier Electronics refusal.
     c, _aid, sid = elec
     body = _post(c, sid).get_data(as_text=True)
-    assert 'data-cap12-result="unable"' in body
-    assert "data-cap12-alternative" not in body
-    assert ui_text.text("UI_CAP12_REASON_UNSUPPORTED_DOMAIN", "en") in _text_of(body)
+    assert 'data-cap12-result="available"' in body
+    assert body.count("data-cap12-alternative") >= 2
 
 
 def test_the_route_abstains_when_no_category_is_selected(mech):
@@ -541,12 +542,13 @@ def _mut_blank_ntrs(d): d["sources"][2]["ntrs_document_id"] = " "
 def _mut_basis(d): d["sources"][0]["inspection_basis"] = "MODEL_GENERATED"
 def _mut_blank_exclusion(d): d["sources"][0]["third_party_material_exclusion"] = ""
 def _mut_family_token(d): d["claims"][1]["family_token"] = "wood_mdf"
-def _mut_domain(d): d["claims"][2]["applicable_domain"] = "electronics_electrical"
+def _mut_domain(d): d["claims"][2]["applicable_domains"] = ["mechanical"]
 def _mut_role(d): d["claims"][2]["role_category"] = "enclosure"
 def _mut_dup_claim(d): d["claims"][2]["claim_id"] = d["claims"][1]["claim_id"]
 def _mut_advisory_type(d): d["claims"][1]["advisory_type"] = "recommendation"
 def _mut_limitation_family(d): d["claims"][0]["family_token"] = "foam_core"
-def _mut_scope(d): d["scope"]["applicable_domain"] = "electronics_electrical"
+def _mut_scope(d): d["scope"]["applicable_domains"] = [
+    "mechanical", "electronics_electrical", "software"]
 def _mut_artifact_id(d): d["artifact_id"] = "something_else"
 def _mut_version(d): d["schema_version"] = "9.9"
 def _mut_extra_top(d): d["recommendation_rank"] = ["foam_core"]
@@ -658,12 +660,13 @@ def test_the_route_shows_the_unable_page_when_knowledge_is_broken(mech, tmp_path
 # ==========================================================================
 # 14. The core journey stays usable when CAP-12 is ignored (or broken)
 # ==========================================================================
-def test_the_link_is_optional_and_only_offered_for_a_mechanical_root(mech, elec):
+def test_the_link_is_optional_and_offered_for_an_admitted_root(mech, elec):
     mc, _a, msid = mech
     ec, _b, esid = elec
     mbody = _page(mc, msid)
     assert "data-cap12-link" in mbody and (ADV % msid) in mbody
-    assert "data-cap12-link" not in _page(ec, esid)
+    ebody = _page(ec, esid)                     # CAP12-ELECTRONICS-ROOT-01
+    assert "data-cap12-link" in ebody and (ADV % esid) in ebody
     # the link is plain navigation: no CAP-12 advice on the session page itself
     assert "data-cap12-result" not in mbody and "data-cap12-alternative" not in mbody
 
@@ -672,11 +675,21 @@ def test_link_and_advisory_share_the_durable_root_domain_owner(mech, elec, monke
     """The link and the resolver both read the durable `confirmed_domain`; a
     differing transient `state.domain` never makes a project eligible."""
     ec, _b, esid = elec
-    monkeypatch.setattr(SESSION_STORE[esid]["state"], "domain", "mechanical")
+    monkeypatch.setattr(SESSION_STORE[esid]["state"], "domain", "software")
     assert webapp._cap12_root_domain(esid) == "electronics_electrical"
+    assert webapp._cap12_link_offered(esid) is True
+    assert 'data-cap12-result="available"' in _post(ec, esid).get_data(as_text=True)
+    # an unadmitted durable root is never made eligible by a transient domain
+    store = webapp._get_store()
+    real = store.load_reconstruction_inputs
+    monkeypatch.setattr(store, "load_reconstruction_inputs", lambda s: dict(
+        real(s), confirmed_domain="software"))
+    monkeypatch.setattr(SESSION_STORE[esid]["state"], "domain", "mechanical")
+    assert webapp._cap12_root_domain(esid) == "software"
     assert webapp._cap12_link_offered(esid) is False
     assert "data-cap12-link" not in _page(ec, esid)
     assert 'data-cap12-result="unable"' in _post(ec, esid).get_data(as_text=True)
+    monkeypatch.setattr(store, "load_reconstruction_inputs", real)
     mc, _a, msid = mech
     monkeypatch.setattr(SESSION_STORE[msid]["state"], "domain", None)
     assert webapp._cap12_link_offered(msid) is True
@@ -814,8 +827,14 @@ def test_unknown_and_repeated_fields_are_refused_whole(mech):
     assert r.status_code == 400
 
 
-def test_a_request_supplied_root_domain_is_ignored(elec):
+def test_a_request_supplied_root_domain_is_ignored(elec, monkeypatch):
     c, _aid, sid = elec
+    # CAP12-ELECTRONICS-ROOT-01 admits the Electronics root, so an unadmitted
+    # durable root stands in for the refused project here.
+    store = webapp._get_store()
+    real = store.load_reconstruction_inputs
+    monkeypatch.setattr(store, "load_reconstruction_inputs", lambda s: dict(
+        real(s), confirmed_domain="software"))
     r = _post(c, sid, root_domain="mechanical")
     assert r.status_code == 400
     r = _post(c, sid)

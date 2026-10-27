@@ -111,15 +111,17 @@ def test_mechanical_root_projects_keep_exactly_the_root_rule(mech_focus):
         assert 'data-cap12-result="available"' in _post(client, sid).get_data(as_text=True)
 
 
-def test_a_single_domain_electronics_project_still_gets_no_advice():
+def test_a_single_domain_electronics_project_gets_the_root_advice_without_attribution():
+    # CAP12-ELECTRONICS-ROOT-01 supersedes the earlier Electronics refusal: a
+    # confirmed single-domain Electronics project is offered the same advice on
+    # its root, with no part attribution.
     c = _client("cap12-single-elec")
     sid = _start(c, ELEC_FORM)
     assert webapp._cap12_gate(sid) == (ELEC, None)
-    assert webapp._cap12_link_offered(sid) is False
-    assert "data-cap12-link" not in _page(c, sid)
+    assert webapp._cap12_link_offered(sid) is True
+    assert "data-cap12-link" in _page(c, sid)
     body = _post(c, sid).get_data(as_text=True)
-    assert 'data-cap12-result="unable"' in body and "data-cap12-part" not in body
-    assert ui_text.text("UI_CAP12_REASON_UNSUPPORTED_DOMAIN", "en") in _text_of(body)
+    assert 'data-cap12-result="available"' in body and "data-cap12-part" not in body
 
 
 def test_a_three_part_composition_offers_it_for_the_mechanical_part_only():
@@ -142,27 +144,47 @@ def test_a_corrupt_composition_grants_no_advice(elec_focus, monkeypatch, sql):
     c, sid = elec_focus
     _corrupt(sql)
     calls = _resolver_spy(monkeypatch)
-    assert webapp._cap12_gate(sid) == (ELEC, None)
+    # CAP12-ELECTRONICS-ROOT-01: a corrupt composition is NOT the confirmed
+    # single-domain state, so the now-admitted Electronics root is not used.
+    assert webapp._cap12_gate(sid) == (None, None)
     assert webapp._cap12_link_offered(sid) is False
     get = c.get(ADV % sid).get_data(as_text=True)
     assert "data-cap12-part" not in get
     body = _post(c, sid).get_data(as_text=True)
     assert 'data-cap12-result="unable"' in body and "data-cap12-alternative" not in body
     assert "data-cap12-part" not in body
-    assert calls == [(ELEC, cap12.ROLE_FORM_MOCKUP)]      # the owner declines the root
+    assert calls == [(None, cap12.ROLE_FORM_MOCKUP)]      # applicability not established
 
 
-def test_an_unreadable_or_partless_composition_grants_no_advice(elec_focus, monkeypatch):
+def test_an_unreadable_composition_grants_no_advice(elec_focus, monkeypatch):
     c, sid = elec_focus
 
     def broken(_sid):
         raise OSError("disk I/O error")
     monkeypatch.setattr(webapp._get_store(), "load_project_subsystems", broken)
-    assert webapp._cap12_gate(sid) == (ELEC, None)
+    assert webapp._cap12_gate(sid) == (None, None)
+    assert webapp._cap12_link_offered(sid) is False
+    body = _post(c, sid).get_data(as_text=True)
+    assert 'data-cap12-result="unable"' in body and "data-cap12-part" not in body
+
+
+def test_parts_without_a_readable_mechanical_part_grant_no_advice(elec_focus, monkeypatch):
+    c, sid = elec_focus
+    # the composition holds parts, so the project is not single-domain; with no
+    # Mechanical part to name, the Electronics root is not a fallback
+    monkeypatch.setattr(webapp, "_calc_declared_part", lambda *_a: None)
+    assert webapp._cap12_gate(sid) == (None, None)
+    assert webapp._cap12_link_offered(sid) is False
     assert 'data-cap12-result="unable"' in _post(c, sid).get_data(as_text=True)
+
+
+def test_an_empty_composition_read_is_the_single_domain_state(elec_focus, monkeypatch):
+    _c, sid = elec_focus
+    # the store reads zero rows as an ordinary project; the gate trusts that
+    # validated read and nothing else
     monkeypatch.setattr(webapp._get_store(), "load_project_subsystems", lambda _sid: ())
     assert webapp._cap12_gate(sid) == (ELEC, None)
-    assert webapp._cap12_link_offered(sid) is False
+    assert webapp._cap12_link_offered(sid) is True
 
 
 def test_an_unreadable_root_domain_grants_nothing(elec_focus, monkeypatch):
@@ -285,10 +307,14 @@ def test_attribution_wording_carries_no_suitability_claim():
 
 
 def test_the_governed_knowledge_is_unchanged_except_the_governance_note():
+    # CAP12-ELECTRONICS-ROOT-01 (schema 2.0) adds the single-domain Electronics
+    # root to the closed applicability; the Mechanical key is kept first and
+    # the claims are pinned in tests/test_cap12_electronics_root.py.
     data = cap12.load_artifact()
-    assert data["scope"] == {"role_category": "form_mockup", "applicable_domain": "mechanical"}
-    assert cap12.SUPPORTED_APPLICABILITY == (("mechanical", cap12.ROLE_FORM_MOCKUP),)
+    assert data["scope"] == {"role_category": "form_mockup",
+                             "applicable_domains": ["mechanical", "electronics_electrical"]}
+    assert cap12.SUPPORTED_APPLICABILITY[0] == ("mechanical", cap12.ROLE_FORM_MOCKUP)
     assert [c["claim_id"] for c in data["claims"]] == [
         "cap12:FM:C001", "cap12:FM:C002", "cap12:FM:C003", "cap12:FM:C004", "cap12:FM:C005"]
     assert "CAP12-INTEGRATED-MECHANICAL-PART-01" in data["governance_note"]
-    assert "applicability key, sources and claims are unchanged" in data["governance_note"]
+    assert "CAP12-ELECTRONICS-ROOT-01" in data["governance_note"]

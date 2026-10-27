@@ -5636,11 +5636,8 @@ UI_STRINGS = {
         "en": "The choice you sent is not one this page offers.",
         "ar": "الاختيار الذي أُرسل ليس من الخيارات التي تعرضها هذه الصفحة."},
     "UI_CAP12_REASON_UNSUPPORTED_DOMAIN": {
-        "en": ("This advisory currently covers only projects whose main "
-               "analysis focus is Mechanical. It is not available for this "
-               "project."),
-        "ar": ("يغطي هذا الإرشاد حاليًا المشاريع التي محور تحليلها الرئيسي "
-               "ميكانيكي فقط. وهو غير متاح لهذا المشروع.")},
+        "en": "This advisory is not available for this project's domain.",
+        "ar": "هذه الإرشادات غير متاحة لمجال هذا المشروع."},
     "UI_CAP12_REASON_APPLICABILITY_NOT_ESTABLISHED": {
         "en": ("We could not establish the main analysis focus of this "
                "project, so no advisory was produced."),

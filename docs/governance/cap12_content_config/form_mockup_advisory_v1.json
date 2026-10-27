@@ -1,13 +1,13 @@
 {
   "artifact_id": "cap12_form_mockup_advisory",
-  "schema_version": "1.0",
-  "artifact_version": "1.0.0",
+  "schema_version": "2.0",
+  "artifact_version": "2.0.0",
   "owner": "CAP-12",
   "slice": "Stage 24 / CAP-12 - Form Mock-up Advisory - Slice 1",
-  "governance_note": "CAP-12-owned governed knowledge for ONE role category (form_mockup) on the mechanical domain ONLY: the project's mechanical root domain or, since CAP12-INTEGRATED-MECHANICAL-PART-01, ONE inventor-declared Mechanical part of a validated durable integrated composition; the applicability key, sources and claims are unchanged. It is not a Domain Pack, is not read by the Domain Registry and owns no Manufacturing Evidence, Requirement Quantity or CAP-01 truth. Every claim is a bounded paraphrase bound to one inspected NASA source record and to the NASA STI source-use record. Inspection of the three NASA reports and of the STI terms was performed by the Lead and supplied to the implementation as an inspection package (inspection_basis LEAD_SUPPLIED); the implementation did not itself fetch or inspect these sources. Family level only: no grade, subtype, brand, dimension, rating or suitability statement exists here by design.",
+  "governance_note": "CAP-12-owned governed knowledge for ONE role category (form_mockup) on exactly two domains: the mechanical domain (the project's mechanical root domain or, since CAP12-INTEGRATED-MECHANICAL-PART-01, ONE inventor-declared Mechanical part of a validated durable integrated composition) and, since CAP12-ELECTRONICS-ROOT-01, the electronics_electrical root domain of a confirmed single-domain project only. Schema 2.0 replaces the single applicable_domain with the closed, ordered applicable_domains list; the claim identities, factual wording, limitations, source records, source bindings and family order are unchanged, and the same family-level claims apply to both domains with no domain-specific tailoring. It is not a Domain Pack, is not read by the Domain Registry and owns no Manufacturing Evidence, Requirement Quantity or CAP-01 truth. Every claim is a bounded paraphrase bound to one inspected NASA source record and to the NASA STI source-use record. Inspection of the three NASA reports and of the STI terms was performed by the Lead and supplied to the implementation as an inspection package (inspection_basis LEAD_SUPPLIED); the implementation did not itself fetch or inspect these sources. Family level only: no grade, subtype, brand, dimension, rating or suitability statement exists here by design.",
   "scope": {
     "role_category": "form_mockup",
-    "applicable_domain": "mechanical"
+    "applicable_domains": ["mechanical", "electronics_electrical"]
   },
   "sources": [
     {
@@ -101,7 +101,7 @@
       "claim_id": "cap12:FM:C001",
       "advisory_type": "limitation",
       "role_category": "form_mockup",
-      "applicable_domain": "mechanical",
+      "applicable_domains": ["mechanical", "electronics_electrical"],
       "family_token": null,
       "fact": "A form mock-up is a non-functional model used to review overall form and general physical design. NASA material separates show-and-tell, form-and-fit and functional prototypes, and describes only the functional level as suitable for field testing, so a form mock-up is never evidence that a design works.",
       "process_family_refs": [],
@@ -113,7 +113,7 @@
       "claim_id": "cap12:FM:C002",
       "advisory_type": "material_family",
       "role_category": "form_mockup",
-      "applicable_domain": "mechanical",
+      "applicable_domains": ["mechanical", "electronics_electrical"],
       "family_token": "foam_core",
       "fact": "Foam core is described by NASA as readily available for prototyping, easy to cut and able to be joined with tape or adhesive, which makes it useful for low-fidelity, non-functional mock-up construction.",
       "process_family_refs": ["manual_cut_and_join"],
@@ -125,7 +125,7 @@
       "claim_id": "cap12:FM:C003",
       "advisory_type": "process_family",
       "role_category": "form_mockup",
-      "applicable_domain": "mechanical",
+      "applicable_domains": ["mechanical", "electronics_electrical"],
       "family_token": "manual_cut_and_join",
       "fact": "Manual cut-and-join construction means cutting foam-core pieces to shape and joining them with tape or adhesive to build a low-fidelity mock-up.",
       "process_family_refs": [],
@@ -137,7 +137,7 @@
       "claim_id": "cap12:FM:C004",
       "advisory_type": "material_family",
       "role_category": "form_mockup",
-      "applicable_domain": "mechanical",
+      "applicable_domains": ["mechanical", "electronics_electrical"],
       "family_token": "thermoplastic",
       "fact": "Thermoplastic filament is the feed material for Fused Filament Fabrication (FFF, also called FDM) 3D printing, which NASA describes as building parts layer by layer and which is commonly used for prototype parts.",
       "process_family_refs": ["additive_fff_fdm"],
@@ -149,7 +149,7 @@
       "claim_id": "cap12:FM:C005",
       "advisory_type": "process_family",
       "role_category": "form_mockup",
-      "applicable_domain": "mechanical",
+      "applicable_domains": ["mechanical", "electronics_electrical"],
       "family_token": "additive_fff_fdm",
       "fact": "FFF / FDM additive manufacturing extrudes thermoplastic filament to build a part layer by layer, and desktop printers of this kind are commonly used to make prototype parts.",
       "process_family_refs": [],
