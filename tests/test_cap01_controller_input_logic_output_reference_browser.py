@@ -33,10 +33,11 @@ def test_controller_group_renders_third_prose_only_and_fits_desktop_and_phone_wi
 
     page.goto(f"{server}/session/{sid}/deliverable")
     groups = page.locator("[data-cap01-fundamentals]")
-    expect(groups).to_have_count(3)
-    assert [groups.nth(i).get_attribute("data-cap01-fundamentals") for i in range(3)] == [
+    # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 appends a fourth group after this one.
+    expect(groups).to_have_count(4)
+    assert [groups.nth(i).get_attribute("data-cap01-fundamentals") for i in range(4)] == [
         "sensing-value-threshold-reference-v1", "measurement-accuracy-resolution-reference-v1",
-        "controller-input-logic-output-reference-v1"]
+        "controller-input-logic-output-reference-v1", "transistor-load-switching-reference-v1"]
     group = groups.nth(2)
     expect(group).to_be_visible()
     expect(group.locator("[data-cap01-fund-title]")).to_have_text(text(CT + "TITLE", lang))

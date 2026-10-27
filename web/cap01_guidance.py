@@ -349,6 +349,11 @@ CAP01_GAP_FUNDAMENTALS_EXTENSIONS = {
         ("controller_input_logic_output_reference_v1",
          ("controller_input_logic_output",),
          "CONTROLLER_FUNDAMENTALS_"),
+        # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01: one general principle, shown on
+        # the same exact gap binding; it is NOT Power Electronics / Motion capability.
+        ("transistor_load_switching_reference_v1",
+         ("bjt_current_controlled_load_switching",),
+         "LOAD_SWITCHING_FUNDAMENTALS_"),
     ),
 }
 
@@ -376,6 +381,7 @@ _FUNDAMENTALS_ITEM_PARTS = {
 _FUNDAMENTALS_PROSE_ONLY_GROUPS = frozenset({"sensing_value_threshold_reference_v1",
                                              "measurement_accuracy_resolution_reference_v1",
                                              "controller_input_logic_output_reference_v1",
+                                             "transistor_load_switching_reference_v1",
                                              # MEASUREMENT-PLAN-GUIDANCE-01 (C1): the CAP-09-only
                                              # guidance group below; never a report context group.
                                              "measurement_quantity_versus_condition_reference_v1",

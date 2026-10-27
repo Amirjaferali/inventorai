@@ -164,7 +164,12 @@ _FROZEN_PACK_SHA256 = {
     # governance-note entry (provenance electronics_electrical:PR024–PR025). The pack minus exactly
     # those two additions is canonically identical to the previous pack (proven in
     # tests/test_measurement_conditions_awareness.py).
-    "electronics_electrical": "65a858b0c358f1dc4fcddcaa3991101e1c28a51b843532447b84fb8976371c92",
+    # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01: re-frozen again after adding ONE further bounded, inert,
+    # additive prose-only `reference_fundamentals` group (transistor_load_switching_reference_v1; Electronics
+    # MECHANISM_COMPLETENESS OPEN / PARTIAL report / PDF context) plus its governance-note entry (provenance
+    # electronics_electrical:PR026–PR027). The pack minus exactly those two additions is canonically
+    # identical to the previous pack (proven in tests/test_cap01_load_switching_reference.py).
+    "electronics_electrical": "2605bd0dfa9366bb8134f045586f83cb10ed14fed79bd2fbb2e8b66143084621",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",

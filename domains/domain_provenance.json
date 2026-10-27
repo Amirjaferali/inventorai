@@ -328,6 +328,32 @@
       "cross_domain_usage": []
     },
     {
+      "record_id": "electronics_electrical:PR026",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "Tony R. Kuphaldt — Lessons In Electric Circuits, Volume III — Semiconductors (online edition)",
+      "source_type": "openly_licensed_educational_text",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": "Online HTML edition whose Volume III index page states it was revised November 6, 2021 (https://www.ibiblio.org/kuphaldt/electricCircuits/Semi/index.html) — Chapter 4 \"Bipolar Junction Transistors\", section \"The transistor as a switch\" (https://www.ibiblio.org/kuphaldt/electricCircuits/Semi/SEMI_4.html; opening paragraph and section review) — as recorded from the Execution Lead's direct inspection of the original pages (Lead-supplied primary-source inspection; not independently re-inspected by the executor: executor egress to www.ibiblio.org was blocked by environment policy on 2026-10-26). The Lead's inspection date was not supplied and is not stated. The page has no section numbers, so the passage is cited by chapter and section title. The 2007 PDF edition, which carries a different license, is NOT the admitted source.",
+      "url": "https://www.ibiblio.org/kuphaldt/electricCircuits/Semi/SEMI_4.html",
+      "notes": "Source for the transistor load-switching reference claim bjt_current_controlled_load_switching (reference_fundamentals group transistor_load_switching_reference_v1). CLAIM MAPPING: the section \"The transistor as a switch\" (opening paragraph and section review) supports the elementary class-level principle that a bipolar junction transistor can switch a load current on and off under the control of a much smaller base current — no base current, cutoff (off); sufficient base current, saturation (fully on). InventorAI uses ONLY that bounded principle, in its own paraphrased wording (an adaptation), with an InventorAI Arabic translation of that adaptation; it presents a general principle, never a statement about the inventor's design. EXCLUDED and not used, quoted or paraphrased: every figure, schematic and circuit diagram; every worked example circuit and its component choices; every third-party datasheet and bibliography entry; every other chapter, section and passage; no source sentence, figure or table is reproduced. The exact copyright-year range was not part of the Lead-supplied inspection record and is not stated; attribution names the author. Attribution (author, title, volume, chapter and section, link, license name and link), the adaptation / Arabic-translation notice and the no-endorsement notice are shown with the explanation in the report and PDF. No endorsement by the author is stated or implied. Source-use disposition: electronics_electrical:PR027. Conceptual reference only — no transistor or component selection, rating, drive or resistor value, circuit design, controller-drive, motor-control, compatibility, suitability, performance, calculation or safety statement and no applicability inference; it is NOT Power Electronics / Motion (28-T3) capability.",
+      "cross_domain_usage": []
+    },
+    {
+      "record_id": "electronics_electrical:PR027",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "Creative Commons Attribution 4.0 International (CC BY 4.0) — legal code",
+      "source_type": "source_use_policy",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": "CC BY 4.0, as identified in Appendix 3 \"Creative Commons Attribution 4.0 International\" of the online Volume III edition (https://www.ibiblio.org/kuphaldt/electricCircuits/Semi/SEMI_A3.html) — as recorded from the Execution Lead's direct inspection of the original page (Lead-supplied primary-source inspection; not independently re-inspected by the executor: executor egress to www.ibiblio.org was blocked by environment policy on 2026-10-26; the Lead's inspection date was not supplied and is not stated)",
+      "url": "https://creativecommons.org/licenses/by/4.0/legalcode.en",
+      "notes": "SOURCE-USE COMPATIBILITY DISPOSITION (not a legal opinion or legal determination) for electronics_electrical:PR026 (claim bjt_current_controlled_load_switching) ONLY. RIGHTS BASIS: Appendix 3 of the online edition identifies the CC BY 4.0 license, which permits commercial reuse and adaptation with attribution; the Lead accepted this evidence for the approved paraphrase only. The differently licensed 2007 PDF edition and every older edition are NOT relied upon. Conditions applied: attribution to the author, the source title, volume, chapter and section and its link, the license name and link, and a notice that the explanation is adapted (paraphrased) and that the Arabic text is InventorAI's translation of that adaptation — all shown with the explanation in the report and PDF; no endorsement is stated or implied; no additional terms or technological measures restrict the adapted explanation. The admission does not extend to any other claim, chapter or passage, to the source's figures, diagrams, worked circuits, third-party datasheets or bibliography, or to InventorAI as a whole. InventorAI remains responsible for its own presented output.",
+      "cross_domain_usage": []
+    },
+    {
       "record_id": "mechanical:PR001",
       "pack_id": "mechanical",
       "tier": 1,
