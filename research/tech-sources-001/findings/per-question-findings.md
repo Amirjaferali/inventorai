@@ -135,3 +135,27 @@ look for an author-published original). Every other candidate host was refused b
 - **Q-07 — partially supported, otherwise UNVERIFIED.** NISTIR 5331 (SRC-013) supports only that 0–24 V points are the typical discrete I/O
   interface. **UNVERIFIED:** that a sourcing I/O point must be paired with a sinking device and vice versa, and the level-matching rule.
 - **Q-03 — not executable:** needs an exact claim definition (Owner / Lead), not a source.
+
+## Run 6 (2026-10-27) — resumed after source access verification
+
+### Q-01 — D-7 applicability: what the original USDA sources establish (SRC-014, SRC-015, SRC-016; NACA 180 and TM-86442 reused)
+| Candidate condition | What the inspected sources establish | Machine-checkable criterion? |
+|---|---|---|
+| Small-deflection assumption | Not stated in Ch. 5, Ch. 9 or FPL-0210. Only NASA TM-86442 (run 1): linear beam theory holds when deflections are small relative to length. | **No** — UNVERIFIED as a numeric limit |
+| Elastic-material condition | Ch. 9: Eq. 9–2 is for *elastically stressed* beams; stress equations assume Hooke's law. Ch. 5: elastic = low-stress, fully recoverable; higher stress → plastic deformation or failure; the MOR formula is valid only to the elastic limit. FPL-0210 also rests on Hooke's law. | **No** numeric bending elastic or proportional limit in these chapters (Table 5–3 gives MOR, not a bending proportional-limit stress) |
+| Span-to-depth / shear | Eq. 9–2 already includes the shear term (k_s; A′ = 5bh/6, consistent with FPL-0210's k = 6/5 for a rectangle — Lead algebra). NACA 180 (run 1): shear may be neglected in the bending-only formula above about 20–25× depth; the shear-inclusive formula matched tests on spans of 2–14 ft. FPL-0210: no numeric threshold. | **No** validity limit for the shear-inclusive formula |
+| Material-property test geometry | **VERIFIED:** Table 5–3a/b footnote c — E measured on a simply supported, centre-loaded beam at span-to-depth **14/1**; +10 % approximately removes the shear effect (p. 5–8). Static tests reach maximum load in about 5 min (p. 5–38); clear, straight-grained specimens, green or 12 % moisture. | Yes as a *property basis fact*; it is not stated as a limit on where Eq. 9–2 may be used |
+| Other source-stated validity conditions of the method | Straight beam; constant cross-section (holes / notches change it); initial bow / twist amplified; lateral / torsional restraint may be needed; creep adds time-dependent deflection; properties change with moisture and temperature. | Qualitative conditions only |
+Result: QUALIFIED-CANDIDATE for the facts above (direct inspection, federal-work basis). **The sources do not supply a machine-checkable validity criterion for any candidate condition.** The four conditions are distinct and are not interchangeable. Choosing which governs D-7 — or whether qualitative declarations can satisfy it — is the Owner's decision (see decision record D-7).
+
+### Q-04 — supplement (gap from run 2 filled)
+Ch. 5 (SRC-014) supplies what run 2 could not source: moisture content (properties rise as moisture falls below fibre saturation, 5–34), temperature (properties fall when heated and rise when cooled, reversibly below about 150 °C at constant moisture, 5–35), rate of loading (tabulated values are static, about 5 min to maximum load, 5–38) and creep (deflection grows with time under load, 5–38/39; Ch. 9 p. 9–2). A comparison of a measured deflection with the estimate must therefore also record moisture content, temperature, load duration / rate and specimen condition. Q-04 stays QUALIFIED-CANDIDATE, now complete for these conditions.
+
+### Q-05 — Logic output ↔ driver input — SOURCE ACCESS BLOCKED (new cause: TLS trust), claim UNVERIFIED
+The Vol. IV contents page (index) was read at the morning access check (it lists Chapter 3 "Logic Gates" and Appendix 3 "CC BY License"); the chapter and licence pages now fail certificate verification (blocked-host log). No passage inspected, so nothing is qualified. NXP AN2434 stays blocked by NXP's own server (404 page).
+
+### Q-07 — PLC I/O ↔ field devices — PARTIAL (improved)
+Supported now (SRC-017, CC BY 4.0, directly inspected): an output may sink current rather than source it; DC I/O uses optocoupled inputs and transistor outputs, AC I/O uses rectified optocoupled inputs and TRIAC outputs; the I/O datasheet's channel count, voltage and current limits and sourcing / sinking capability must be checked before connection (with NISTIR 5331: 0–24 V typical discrete levels). **Still UNVERIFIED:** the explicit pairing rule (sourcing ↔ sinking) as stated text — this module presents it only as exercises; the instructor worksheet that states it is on the same ibiblio host (TLS-blocked). Verification needed before connecting devices (source-supported): the module's datasheet limits and its sourcing / sinking designation versus the field device's.
+
+### Q-03 — exact claim still undefined
+The only record naming "execution-facing output" is CLAUDE.md (e) ("Embedded 28-T2 execution-facing output: DEFER pending a specialist owner, source and authorization"). Roadmap 28-T2 lists candidate concerns (execution states, timing, interrupts, ADC / PWM, UART / SPI / I²C / CAN, watchdogs, start-up / shutdown, fault handling, memory / power modes, bare-metal vs RTOS) — concerns, not a claim. Missing definition: which concern, and what exact statement, the "output" is.
