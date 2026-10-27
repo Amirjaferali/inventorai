@@ -101,3 +101,22 @@ validates the stiffness estimate; it lists what a comparison would need to recor
 - Not adopted: any numeric ratio — the NASA documents found give different rules of thumb (logged).
 - Overlap: fills only the gap the admitted `control_loop` pack explicitly excludes ("no claim about the controller's action or update rate");
   nothing is admitted or added to that pack.
+
+## Q-09 — Verifying a single-path conduction temperature-difference estimate (run 4) — QUALIFIED-CANDIDATE (class-level)
+- Directly inspected: NIST SP 400-86 (1990). What a measurement of a thermal resistance needs: the dissipated power measured where the heat is
+  generated (lead / contact voltage drop can overstate it); the reference temperature held constant at a stated, fixed location (surfaces are not
+  isothermal); the temperature indicator calibrated over the range used; and awareness that the single-number definition assumes a uniform
+  heated region and operating-condition independence, which real devices do not strictly meet.
+- Fit with THERM-01: consistent with its declarations D-1 to D-6 and its UNVALIDATED result; it adds what physical validation (WS-PFV-001) would
+  have to record. Nothing is admitted; no number adopted.
+
+## Q-10 — Fits and tolerances ↔ manufacturing process (run 4) — QUALIFIED-CANDIDATE (class-level, one indirect point)
+- Directly inspected: NISTIR 4509 (1991). Supported: every process yields dimensional variation, so a tolerance zone must be specified; tolerancing
+  should permit the most efficient production method; variation arises from process errors (machining, set-up, alignment); the resulting fit
+  (clearance / transition / interference) depends on the actual mating features.
+- Indirect: "the achievable tolerance depends on the chosen process" is implied rather than stated outright. Protected limits-and-fits tables
+  (ASME / ISO) not used. CAP-12 claims not re-sourced.
+
+## Tier 2 portfolio check (run 4) — no further questions derivable under current obligations
+Per the README, every remaining Tier-2 label was checked against the roadmap, the Capability Enrichment Register and the Deferred Obligations
+Register: none carries a claim-level open obligation (they are routing directions to existing owners). No question was invented.

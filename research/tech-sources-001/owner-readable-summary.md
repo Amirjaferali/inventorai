@@ -1,32 +1,41 @@
 # TECH-SOURCES-001 — owner readable summary
 
-*Updated after run 1 (2026-10-27). Research evidence only: nothing here is admitted, implemented, activated or qualified as a product method.*
+*Updated after run 4 (2026-10-27). Research evidence only: nothing here is admitted, implemented, activated or qualified as a product method.*
 
-**Status:** ACTIVE · runs used 1 / 20 · Perplexity queries 4 / 240 · campaign ends 2026-11-26 at the latest.
+**Status:** STOPPED — all registered questions reached a final state. Runs 4 / 20 · Perplexity queries 15 / 240 · deep-research calls 0.
 
-**Questions registered:** 10 open-type questions (Q-01…Q-10: 3 Tier 1, 7 extracted at activation — 2 individual / verification, 5 cross-technology),
-plus 4 held and 5 excluded items recorded so they are not re-derived (D13 sensor ↔ controller work, Sensors C3, D4 interface characterisation
-and IoT stay held; delivered work stays excluded).
+**Questions registered:** 10 (Q-01…Q-10) plus 4 held and 5 excluded items recorded so they are not re-derived.
+**Researched:** all 10.
 
-**Researched in run 1:** Q-01, Q-02, Q-03.
+| Q | Topic | Result | Key source(s) |
+|---|---|---|---|
+| Q-01 | Wood-beam stiffness method — where the formula stops being valid (D-7) | BLOCKED — narrowed; the next lead (property test basis) is on a refused host | NACA Report 180; NASA TM-86442; NASA TN D-7572 (not transferable) |
+| Q-02 | Can a motor drive a mechanism — load characteristics | QUALIFIED-CANDIDATE | NASA TM X-68244; DOE-HDBK-1011/2-92 (DC only) |
+| Q-03 | Embedded controller "execution-facing output" | QUESTION UNCLEAR / AUTHORITY BLOCKED | — |
+| Q-04 | What a deflection test must measure before comparing with the estimate | QUALIFIED-CANDIDATE | NBS Report 10568; NACA Report 180 |
+| Q-05 | Logic output ↔ driver / load | SOURCE ACCESS BLOCKED | (NXP AN2434 / AN2433, Kuphaldt Vol. IV — hosts refused) |
+| Q-06 | Battery capacity vs discharge rate and temperature | QUALIFIED-CANDIDATE | NASA/TM-2009-215751; DOE-HDBK-1084-95 |
+| Q-07 | PLC sinking / sourcing I/O ↔ field device | SOURCE ACCESS BLOCKED | (Kuphaldt PLC material, NRC document — hosts refused) |
+| Q-08 | Digital control sample rate vs loop bandwidth | QUALIFIED-CANDIDATE | NASA TM-88346 |
+| Q-09 | Measuring a thermal resistance | QUALIFIED-CANDIDATE | NIST SP 400-86 |
+| Q-10 | Fits and tolerances vs manufacturing process | QUALIFIED-CANDIDATE (one point indirect) | NISTIR 4509 |
 
-**Sources inspected directly (5):** NACA Report 180 (1924); NASA TN D-7572 (1974); NASA TM-86442 (1985); NASA TM X-68244 (1973); DOE-HDBK-1011/2-92 Vol. 2 (1992). Hash and page of each are in `evidence/source-provenance-register.md`.
+**Sources inspected directly (12):** each with its file hash, exact page and rights record in `evidence/`.
 
-**What we learned**
-- *Motor ↔ mechanism (Q-02):* a qualified-candidate federal source (NASA TM X-68244) states, for any motor type, that a motor can drive a
-  mechanism only if its torque covers the load's breakaway, accelerating and running torque across the whole speed range; steady speed means
-  the torques balance. The DOE handbook supports the same for DC motors only. This is evidence for the blocked "preliminary motion" item; who
-  would own it (Mechanical or Electrical / Electronics) is still your decision.
-- *Wooden-beam stiffness regime (Q-01):* the strongest lead (NACA Report 180) is the historical test basis of the stiffness method's own
-  formula and shows good agreement on spans of 2–14 ft, but it gives no stated limit of where the formula stops being valid. The other span /
-  depth figures found only say when shear can be ignored, which this method does not do. So D-7 is narrowed but not closed.
-- *Embedded output (Q-03):* not researchable yet — the exact claim is undefined and the item waits on a specialist owner.
+**Unresolved scientific / IP points:** D-7 governing condition; the Wood Handbook test basis (span-to-depth 14) seen only in snippets of a
+protected ASTM standard; DOE fundamentals handbooks have no blanket public-domain conclusion (contractor-prepared); manufacturer application-note
+rights not read; one DOE sentence calls ampere-hours "energy", conflicting with the admitted PR #802 boundary (the admitted boundary stands).
 
-**Unresolved scientific / IP points:** D-7 governing condition not sourced; DOE handbook authorship (contractor-prepared) has no blanket
-public-domain conclusion; the USDA Forest Service hosts (FPL-RN-0210) are blocked from this environment.
+**Blocked hosts:** USDA Forest Service (research.fs.usda.gov, fpl.fs.usda.gov), standards.doe.gov, govinfo.gov, nal.usda.gov, archive.org,
+UNT digital library, ibiblio.org, nxp.com, nrc.gov.
 
-**Excluded from further searching (delivered or settled):** transistor load switching (PR #885), DC resistive load calculations, TMP36
-conversion, CAP-13 planar moment / required force / rotational load, THERM-01 single path, T2-G / R2, T6 quantity / BOM.
+**Excluded from searching (delivered or settled):** transistor load switching (PR #885), DC resistive load calculations, TMP36 conversion,
+CAP-13 planar moment / required force / rotational load, THERM-01 single path, T2-G / R2, T6 quantity / BOM; held: D13 sensor ↔ controller,
+Sensors C3, D4 interface characterisation, IoT.
 
-**Next independent questions:** Q-01 (one more targeted search), then Q-04 (stiffness verification measurements) and Q-05 (logic output ↔
-driver input).
+**What would restart research (no wake-up is armed):** a Lead-supplied inspection of FPL-GTR-190 Ch. 5 / FPL-RN-0210 (Q-01), of NXP AN2434 /
+AN2433 or Kuphaldt Vol. IV with its licence (Q-05), or of a PLC I/O source (Q-07); egress to those hosts; an exact claim for Q-03; or a new
+claim-level obligation for a portfolio technology.
+
+**Decisions that are yours:** (1) owner of the motor ↔ mechanism evidence (Mechanical or Electrical / Electronics); (2) the condition D-7 must
+govern. Neither was decided by this research.
