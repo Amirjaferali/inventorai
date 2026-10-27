@@ -11,5 +11,15 @@ Kind: ONE bounded preflight repair. No research, no Perplexity call, no source f
 - P6 privacy: PASS so far — no external query sent.
 - Mechanism under test: ONE `send_later` one-shot into this same session (no cron, no new session).
 
-## Phase 2 — after the wake-up
-(pending)
+## Phase 2 — after the wake-up (2026-10-27T04:03Z)
+- P2 same-session resumption: PASS — `send_later` task `trig_01FGUf9BUjrfgmC6tNzTr1sE` (fire_at 04:02Z) fired 04:03:06Z, last_run SUCCEEDED, run session `cse_01UZzqphd9HQzNoRidheKeZN`; the wake text (marker RR-PF-1) arrived as a queued notification in THIS conversation with prior context intact; `get_session` returned `session_01UZzqphd9HQzNoRidheKeZN`, same environment and source; no user interaction needed. The one-shot is now `enabled=false`, ended_reason `run_once_fired`.
+  Observation: the session title now reads "بحث الجديد كلاود" (renamed outside this session); identity, tags and repository context are unchanged.
+- P1 repository after wake: PASS — branch `research/tech-sources-001`, local = origin `b1fc1e41e7de3253af2053cdc2ebe0b6abdfc706`; README base line present; campaign status unchanged (HELD).
+- P3 connector after wake: PASS — `mcp__Perplexity_Research__perplexity_search` schema loaded via ToolSearch; not called.
+- P5 stop control: PASS — armed test one-shot `trig_01QxD2jPSWACgu6Kei8ovVg1` (fire 05:04Z), deleted it before firing; `get_trigger` now returns not found. `list_triggers enabled=true` returns no task at all, so no TECH-SOURCES-001 schedule is live (cron task `trig_01QRwqYuFRU8jBNG9oH2DiTz` stays disabled).
+- P4 persistence / push: phase 1 pushed as `b1fc1e4`; this phase-2 record is pushed by the commit that adds it (SHA in the run report). No permission prompt observed.
+- P6 privacy: PASS — no Perplexity call, no web fetch, no external query during the whole preflight.
+
+## Verdict
+send_later self-wake into this dedicated session: READY (PASS on all checks). The cron routine path (`create_trigger` with persistent_session_id) remains the failed, disabled mechanism and was not retried.
+No schedule is armed. Research stays HELD; ACTIVE is not set.
