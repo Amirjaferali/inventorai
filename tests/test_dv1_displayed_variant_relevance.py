@@ -33,7 +33,8 @@ from engine.session_reconstruction import (
     SUPPORTED_ENGINE_CONTRACT_VERSIONS, reconstruct_readonly_state)
 from tests.test_t2g_versioned_journey import (  # noqa: F401 — fixture reuse
     client, _login, _snapshot, _page, _raw, F4_MIXED,
-    G4_MIXED, F1_AFFIRM, Q2, Q3, NOT_ADDRESSED_NOTICE)
+    G4_MIXED, F1_AFFIRM, Q2, Q3, NOT_ADDRESSED_NOTICE, G2_UNKNOWN,
+    MARKER_ONLY_AR, UNICODE_MARKER_ONLY_AR, REAL_AFTER_MARKERS_AR, EE_SEED)
 
 DV1 = ENGINE_CONTRACT_VERSION_DV1
 XG1 = ENGINE_CONTRACT_VERSION_XG1
@@ -412,3 +413,135 @@ def test_a_q2_answer_at_q1_is_not_a_dead_end(client):
                     "panel pivots on the hinge and the spring latch locks it flat "
                     "because it hooks the frame rail.")
     assert _mc(appmod, sid) == CLOSED
+
+
+# ==========================================================================
+# 6. Independent-review conditions (PR #890) — real render -> submit path
+# ==========================================================================
+UNKNOWN_SAVED_AR = "تم حفظ قولك إن هذا غير معروف بعد مع مشروعك"
+
+
+def _at_q2(c, appmod, version):
+    """A real project with Q2 displayed: an unrelated first answer moves the
+    counter, earns nothing and covers no variant, so the gap stays OPEN."""
+    sid = _start_project(c, appmod, version)
+    _submit(c, sid, UNRELATED)
+    got = _snapshot(appmod, sid)
+    assert got["identity"] == Q2 and got["status"] == OPEN
+    assert _target(_form(c, sid))["q"] == Q2
+    return sid
+
+
+@pytest.mark.parametrize("tail", ["", MARKER_ONLY_AR, UNICODE_MARKER_ONLY_AR])
+def test_the_arabic_unknown_guards_hold_under_dv1_where_q2_is_displayed(
+        client, tail):
+    """Condition 1 — the DV1 counterpart of the Arabic guards that the
+    T2-G journey keeps on XG1 projects (COUNTER_SCOPED / _xg1_start): the
+    unknown, alone or padded with Q2's markers (plain or Unicode-expanded),
+    supplies no mechanism and moves nothing."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _at_q2(c, appmod, DV1)
+    _submit(c, sid, (G2_UNKNOWN + " " + tail).strip())
+    got = _snapshot(appmod, sid)
+    assert got["status"] == OPEN
+    assert got["known_mechanism"] is None and got["known_problem"] is None
+    assert got["coverage"] == []
+    assert got["unknowns"] == 1
+    assert "recorded as an explicit unknown" in _reason(appmod, sid)
+    assert UNKNOWN_SAVED_AR in _page(c, sid, "ar")
+
+
+def test_the_arabic_unknown_with_a_real_explanation_progresses_under_dv1(client):
+    """Condition 1 — the positive control at the same DV1 context."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _at_q2(c, appmod, DV1)
+    _submit(c, sid, G2_UNKNOWN + " " + REAL_AFTER_MARKERS_AR)
+    got = _snapshot(appmod, sid)
+    assert got["status"] == PARTIAL and got["known_mechanism"] == "REASONED"
+    assert UNKNOWN_SAVED_AR not in _page(c, sid, "ar")
+
+
+RESTATEMENT = ("I already explained the force path in my earlier answer, it is "
+               "the same as before because nothing changed.")
+
+
+def test_characterization_content_free_restatement_closes_the_gap_at_q2_under_dv1(
+        client):
+    """Condition 2 — CHARACTERIZATION OF UNRESOLVED BEHAVIOUR, NOT APPROVED
+    PROGRESSION. Through a legitimate history (the S2 expert's first answer
+    leaves the gap PARTIAL without covering Q2, so Q2 is displayed), a
+    content-free restatement carrying Q2's marker and "because" CLOSES the
+    mechanism gap under DV1 and is recorded as the known mechanism. XG1 read
+    Q3's markers there and did not credit it. The same class of closure
+    exists under every version through the family test (the independent
+    review closed it with "each component" / "how it works" under XG1 too);
+    DV1 only changes which marker words reach it at Q2. The residual-risk
+    decision is the Owner's; this pin records it, it does not accept it. The
+    closure carries no validation meaning: the record stays OWNER_STATED /
+    UNVALIDATED and maturity does not reach 2."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    outcome = {}
+    for version in (XG1, DV1):
+        sid = _start_project(c, appmod, version)
+        _submit(c, sid, S2_EXPERT["en"][0])
+        assert _mc(appmod, sid) == PARTIAL
+        form = _form(c, sid)
+        assert _snapshot(appmod, sid)["identity"] == Q2
+        assert _target(form)["q"] == Q2 and _target(form)["v"] == version
+        _submit(c, sid, RESTATEMENT, form)
+        state = appmod.SESSION_STORE[sid]["state"]
+        outcome[version] = (sid, state)
+    xg1_sid, xg1 = outcome[XG1]
+    assert xg1.get_gap(MC).status == PARTIAL
+    assert NOT_ADDRESSED in _reason(appmod, xg1_sid)
+    assert xg1.known_mechanism.content != RESTATEMENT
+    dv1_sid, dv1 = outcome[DV1]
+    assert dv1.get_gap(MC).status == CLOSED
+    assert "closed after REASONED follow-up" in _reason(appmod, dv1_sid)
+    # the content-free text becomes the recorded known mechanism (REASONED)
+    assert dv1.known_mechanism.content == RESTATEMENT
+    assert dv1.known_mechanism.quality == "REASONED"
+    # the cascade opens the next gap; maturity stays below the Level-2 gate
+    assert dv1.get_gap("PHYSICAL_FEASIBILITY").status == OPEN
+    assert dv1.maturity_level == 1
+    # unchanged validation meaning: the durable record is the inventor's own,
+    # unvalidated statement
+    record = [r for r in appmod._get_store().load_contract(dv1_sid).assertions
+              if r.content == RESTATEMENT][0]
+    assert record.provenance == "OWNER_STATED"
+    assert record.validation_status == "UNVALIDATED"
+    assert record.question_target == Q2
+
+
+ARABIC_N_MC_1_PADDING = " ".join(_INTENT_MARKERS["N-MC-1"][1])
+
+
+def test_characterization_arabic_n_mc_1_padding_gains_credit_under_dv1(client):
+    """Condition 3 — CHARACTERIZATION OF UNRESOLVED BEHAVIOUR, NOT APPROVED
+    PROGRESSION. On every Electronics project's first question (N-MC-1),
+    Arabic padding made only of N-MC-1's own committed markers moves the gap
+    OPEN -> PARTIAL "asserted only" under DV1 and is recorded as an ASSERTED
+    known mechanism. XG1 never consulted N-MC-1's markers (it read N-MC-2's)
+    and left it OPEN. The English padding was already credited under XG1
+    through the family test. New false credit at this context, recorded for
+    the Owner's decision, not accepted."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    outcome = {}
+    for version in (XG1, DV1):
+        sid = _start_project(c, appmod, version, seed=EE_SEED, domain=EE)
+        form = _form(c, sid)
+        assert _target(form)["q"] == "PATHN:N-MC-1"
+        _submit(c, sid, ARABIC_N_MC_1_PADDING, form)
+        outcome[version] = (sid, appmod.SESSION_STORE[sid]["state"])
+    xg1_sid, xg1 = outcome[XG1]
+    assert xg1.get_gap(MC).status == OPEN and xg1.known_mechanism is None
+    assert NOT_ADDRESSED in _reason(appmod, xg1_sid)
+    dv1_sid, dv1 = outcome[DV1]
+    assert dv1.get_gap(MC).status == PARTIAL
+    assert "asserted only" in _reason(appmod, dv1_sid)
+    assert dv1.known_mechanism.content == ARABIC_N_MC_1_PADDING
+    assert dv1.known_mechanism.quality == "ASSERTED"
