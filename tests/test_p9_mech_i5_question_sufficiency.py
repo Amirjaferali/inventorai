@@ -321,7 +321,12 @@ _FROZEN_PACK_SHA256 = {
     # MECHANISM_COMPLETENESS OPEN / PARTIAL report / PDF context) plus its governance-note entry (provenance
     # electronics_electrical:PR026–PR027). The pack minus exactly those two additions is canonically
     # identical to the previous pack (proven in tests/test_cap01_load_switching_reference.py).
-    "electronics_electrical": "2605bd0dfa9366bb8134f045586f83cb10ed14fed79bd2fbb2e8b66143084621",
+    # MEASUREMENT-PLANNING-INTEGRATED-PART-01: re-frozen again after ONE scope amendment — a parenthesis
+    # added to the CAP-09 eligibility sentence of exactly two existing governance notes (the C1 guidance
+    # and the conditions awareness); no group, claim or source record changes. The pack with exactly that
+    # amendment undone is canonically identical to the previous pack (proven in
+    # tests/test_cap01_load_switching_reference.py via tests/measurement_planning_integrated_part_amendment.py).
+    "electronics_electrical": "628446b1ff252d6b770ffbf73025587b13b02c1965056538038314038fc36cee",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",

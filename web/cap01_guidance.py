@@ -732,8 +732,11 @@ def gap_contexts_for_package(package, gaps):
 # inventor writes a measurement method. A second DISPLAY CONTEXT only: the
 # groups, claims, copy keys, source notices and order come from the existing
 # ``CAP01_GAP_FUNDAMENTALS_EXTENSIONS`` row and ``_fundamentals_group`` — no
-# second catalogue, claim or interpretation. Eligibility is the trusted durable
-# root domain alone (never gap state, inventor text or the request); the report
+# second catalogue, claim or interpretation. Eligibility is the
+# trusted durable domain alone — the root domain, or, since
+# MEASUREMENT-PLANNING-INTEGRATED-PART-01, the declared Electrical / Electronics
+# part of a valid durable integrated composition, decided by the web layer —
+# (never gap state, inventor text or the request); the report
 # / PDF binding above is unchanged.
 CAP09_MEASUREMENT_REFERENCE_DOMAIN = "electronics_electrical"
 CAP09_MEASUREMENT_REFERENCE_GROUPS = ("sensing_value_threshold_reference_v1",
@@ -743,7 +746,8 @@ CAP09_MEASUREMENT_REFERENCE_GROUPS = ("sensing_value_threshold_reference_v1",
 def measurement_planning_references(domain_id):
     """The two measurement reference groups for the CAP-09 planning page, as the
     same copy-key views the report renders, in their established order — or
-    ``None`` unless ``domain_id`` is exactly the Electronics root domain.
+    ``None`` unless ``domain_id`` is exactly the Electronics domain (the trusted root
+    domain or a declared integrated part, decided by the web layer).
 
     All-or-nothing: if either group (or its copy) is unavailable, nothing is
     shown, so the page never presents half of the pair. Pure; never raises."""
@@ -778,9 +782,12 @@ def measurement_planning_references(domain_id):
 # built by the SAME ``_fundamentals_group`` builder under its OWN copy
 # namespace. It is deliberately NOT a row of ``CAP01_GAP_FUNDAMENTALS_EXTENSIONS``:
 # the report / PDF gap contexts, their eligibility and their group count are
-# unchanged. Eligibility is the trusted durable root domain alone (never gap
-# state, inventor text or the request); nothing here reads, interprets or
-# grades what the inventor writes.
+# unchanged. Eligibility is the
+# trusted durable domain alone — the root domain, or, since
+# MEASUREMENT-PLANNING-INTEGRATED-PART-01, the declared Electrical / Electronics
+# part of a valid durable integrated composition, decided by the web layer —
+# (never gap state, inventor text or the request); nothing here reads,
+# interprets or grades what the inventor writes.
 CAP09_MEASUREMENT_GUIDANCE_GROUP = "measurement_quantity_versus_condition_reference_v1"
 CAP09_MEASUREMENT_GUIDANCE_CLAIMS = ("measured_quantity_versus_observed_condition",)
 CAP09_MEASUREMENT_GUIDANCE_STEM = "UI_CAP09_MEASUREMENT_PLANNING_GUIDANCE_V1_"
@@ -789,7 +796,8 @@ CAP09_MEASUREMENT_GUIDANCE_STEM = "UI_CAP09_MEASUREMENT_PLANNING_GUIDANCE_V1_"
 def measurement_planning_guidance(domain_id):
     """The ONE measurement-planning guidance group for the CAP-09 planning page,
     as copy KEYS plus its group / claim identifiers — or ``None`` unless
-    ``domain_id`` is exactly the Electronics root domain.
+    ``domain_id`` is exactly the Electronics domain (the trusted root
+    domain or a declared integrated part, decided by the web layer).
 
     All-or-nothing on its own copy (title, intro, item, source, boundary), so the
     page never shows the guidance without its source and limits. Pure; never
@@ -810,7 +818,7 @@ def measurement_planning_guidance(domain_id):
 # (measurement_conditions_awareness_reference_v1; provenance
 # electronics_electrical:PR024–PR025, Journal of Research of NIST 106, Sections
 # 2.1 and 2.2), built by the SAME ``_fundamentals_group`` builder under its OWN
-# copy namespace and the SAME exact root-domain rule as the C1 guidance. Not a
+# copy namespace and the SAME exact domain rule as the C1 guidance. Not a
 # row of ``CAP01_GAP_FUNDAMENTALS_EXTENSIONS``; names no condition, value or
 # requirement; reads, interprets and grades nothing the inventor writes.
 CAP09_MEASUREMENT_CONDITIONS_GROUP = "measurement_conditions_awareness_reference_v1"
@@ -821,7 +829,8 @@ CAP09_MEASUREMENT_CONDITIONS_STEM = "UI_CAP09_MEASUREMENT_CONDITIONS_V1_"
 def measurement_planning_conditions(domain_id):
     """The ONE measurement-conditions awareness group for the CAP-09 planning
     page, as copy KEYS plus its group / claim identifiers — or ``None`` unless
-    ``domain_id`` is exactly the Electronics root domain.
+    ``domain_id`` is exactly the Electronics domain (the trusted root
+    domain or a declared integrated part, decided by the web layer).
 
     All-or-nothing on its own copy (title, intro, item, source, boundary), so the
     page never shows the note without its source and limits. Pure; never raises;

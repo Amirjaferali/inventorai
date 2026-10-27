@@ -163,12 +163,16 @@ def test_a_mechanical_root_shows_no_panel():
     assert _panel(body) is None and "data-measurement-reference" not in body
 
 
-@pytest.mark.parametrize("focus,shown", [("electronics_electrical", True), ("mechanical", False)])
-def test_an_integrated_project_follows_its_root_domain_only(focus, shown):
+@pytest.mark.parametrize("focus,root_rule", [("electronics_electrical", True), ("mechanical", False)])
+def test_an_integrated_project_shows_the_panel_for_its_declared_electronics_part(focus, root_rule):
+    # The accessor's own root rule is unchanged; MEASUREMENT-PLANNING-INTEGRATED-PART-01
+    # (Owner-authorized) shows the panel on the page for the declared Electrical /
+    # Electronics part of a valid integrated composition, whatever the focus.
     client, _aid = _client_for("s28t1-mref-int-%s@example.com" % focus[:4])
     sid = _integrated(client, focus)
     assert (cap01_guidance.measurement_planning_references(
-        webapp._cap12_root_domain(sid)) is not None) is shown
+        webapp._cap12_root_domain(sid)) is not None) is root_rule
+    assert _panel(_page(client, sid)[1]) is not None
 
 
 @pytest.mark.parametrize("reader", [lambda _sid: None,

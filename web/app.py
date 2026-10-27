@@ -18175,42 +18175,76 @@ def _experiment_execution_states(sid, package):
         return {eid: {"state": _EXECUTION_UNAVAILABLE, "count": None} for eid in ids}
 
 
-def _measurement_planning_references(sid):
-    """28-T1-MEASUREMENT-PLANNING-REFERENCE-01: the two existing Sensors /
-    Instrumentation reference groups for the CAP-09 planning page, or None.
-    Eligibility is ONLY the trusted durable root domain, read exactly as the
-    CAP-12 / calculation gates read it (``_cap12_root_domain``: durable
-    ``confirmed_domain``, never the request or live gap state). An unreadable
-    domain or any error shows nothing. Presentation only; writes nothing."""
+_MEASUREMENT_PLANNING_DOMAIN = "electronics_electrical"
+
+
+def _measurement_planning_domain(sid):
+    """``(domain, part)``: the ONE eligibility decision the three CAP-09
+    measurement-planning elements read. The trusted durable root domain
+    (``_cap12_root_domain``) is used as is, with ``part`` None — the existing
+    root behaviour. MEASUREMENT-PLANNING-INTEGRATED-PART-01 (Owner-authorized):
+    otherwise, when the validated durable integrated composition holds the ONE
+    inventor-declared Electrical / Electronics part (``_calc_declared_part``),
+    that part's domain is used and ``part`` is that part, for attribution. The
+    composition is re-read on every render, never taken from the request; a
+    missing, corrupt or unreadable composition grants nothing beyond the root
+    rule. Showing the guidance for a declared part says nothing about any
+    experiment, sensing or technical assessment."""
+    root = _cap12_root_domain(sid)
+    if root == _MEASUREMENT_PLANNING_DOMAIN:
+        return root, None
+    part = _calc_declared_part(sid, _MEASUREMENT_PLANNING_DOMAIN)
+    if part is not None:
+        return part.domain, part
+    return root, None
+
+
+def _measurement_planning_view(sid):
+    """The CAP-09 planning page's three existing, read-only measurement-
+    planning elements and the declared part's name, from ONE eligibility read
+    (``_measurement_planning_domain``) per render, so the elements and their
+    attribution cannot disagree:
+
+    - ``references``: 28-T1-MEASUREMENT-PLANNING-REFERENCE-01, the two existing
+      Sensors / Instrumentation reference groups;
+    - ``guidance``: MEASUREMENT-PLAN-GUIDANCE-01 (C1), the quantity-versus-
+      condition guidance;
+    - ``conditions``: MEASUREMENT-CONDITIONS-AWARENESS-01, the conditions-of-use
+      awareness;
+    - ``part_name``: the declared Electrical / Electronics part's durable name
+      when they are shown for that part rather than for the root domain
+      (MEASUREMENT-PLANNING-INTEGRATED-PART-01), else None — rendered escaped,
+      never persisted, logged or sent anywhere.
+
+    Never taken from the request, the gap state or inventor text. An unreadable
+    domain or any error shows nothing (every value None). Presentation only;
+    writes nothing."""
+    view = dict.fromkeys(("references", "guidance", "conditions", "part_name"))
     try:
-        return cap01_guidance.measurement_planning_references(_cap12_root_domain(sid))
+        domain, part = _measurement_planning_domain(sid)
+        references = cap01_guidance.measurement_planning_references(domain)
+        guidance = cap01_guidance.measurement_planning_guidance(domain)
+        conditions = cap01_guidance.measurement_planning_conditions(domain)
     except Exception:
-        return None
+        return view
+    view.update(references=references, guidance=guidance, conditions=conditions,
+                part_name=part.display_name if part is not None else None)
+    return view
+
+
+def _measurement_planning_references(sid):
+    """The ``references`` element of ``_measurement_planning_view``, or None."""
+    return _measurement_planning_view(sid)["references"]
 
 
 def _measurement_planning_guidance(sid):
-    """MEASUREMENT-PLAN-GUIDANCE-01 (C1): the ONE measurement-planning guidance
-    group for the CAP-09 planning page, or None. Same eligibility owner as the
-    reference panel above (``_cap12_root_domain``: the trusted durable root
-    domain, never the request, the gap state or inventor text). An unreadable
-    domain or any error shows nothing. Presentation only; writes nothing."""
-    try:
-        return cap01_guidance.measurement_planning_guidance(_cap12_root_domain(sid))
-    except Exception:
-        return None
+    """The ``guidance`` element of ``_measurement_planning_view``, or None."""
+    return _measurement_planning_view(sid)["guidance"]
 
 
 def _measurement_planning_conditions(sid):
-    """MEASUREMENT-CONDITIONS-AWARENESS-01: the ONE measurement-conditions
-    awareness group for the CAP-09 planning page, or None. The same eligibility
-    owner as the C1 guidance above (``_cap12_root_domain``: the trusted durable
-    root domain, never the request, the gap state or inventor text). An
-    unreadable domain or any error shows nothing. Presentation only; writes
-    nothing."""
-    try:
-        return cap01_guidance.measurement_planning_conditions(_cap12_root_domain(sid))
-    except Exception:
-        return None
+    """The ``conditions`` element of ``_measurement_planning_view``, or None."""
+    return _measurement_planning_view(sid)["conditions"]
 
 
 def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None,
@@ -18228,6 +18262,10 @@ def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None
         criterion_drafts, method_drafts, hypothesis_drafts, variable_drafts = (
             {eid: raw.replace("\x00", "") for eid, raw in part.items()}
             for part in drafts)
+    # Shown only on an AVAILABLE planning page (every render path of this
+    # page passes through here, after the route's authorization check).
+    measurement = (dict.fromkeys(("references", "guidance", "conditions", "part_name"))
+                   if plan is None else _measurement_planning_view(sid))
     return render_template(
         "success_criteria.html",
         sid=sid,
@@ -18242,14 +18280,10 @@ def _render_criteria(sid, plan, status=200, error=None, notice=None, drafts=None
         stale_hypotheses=bool(plan and plan.get("stale_test_hypotheses")),
         stale_variables=bool(plan and plan.get("stale_test_variables")),
         results=None if plan is None else _results_view(sid, plan, result_drafts),
-        # Shown only on an AVAILABLE planning page (every render path of this
-        # page passes through here, after the route's authorization check).
-        measurement_references=(None if plan is None
-                                else _measurement_planning_references(sid)),
-        measurement_guidance=(None if plan is None
-                              else _measurement_planning_guidance(sid)),
-        measurement_conditions=(None if plan is None
-                                else _measurement_planning_conditions(sid)),
+        measurement_references=measurement["references"],
+        measurement_guidance=measurement["guidance"],
+        measurement_conditions=measurement["conditions"],
+        measurement_part_name=measurement["part_name"],
         result_max_length=_experiment_result.MAX_RESULT_TEXT_LENGTH,
         field_prefix=_CRITERION_FIELD_PREFIX,
         method_prefix=_METHOD_FIELD_PREFIX,

@@ -83,7 +83,14 @@ request-local calculations ``electrical:dc_resistive_load_current``,
 v1.0, may likewise be OFFERED for the declared Electrical / Electronics part whatever the
 initial analysis focus, decided in the web layer from the same validated durable
 composition; it establishes no load type, applicability, suitability, validation or
-safety and changes nothing here. No other specialist
+safety and changes nothing here. A further narrow, Owner-authorized exception
+(MEASUREMENT-PLANNING-INTEGRATED-PART-01): the three existing, read-only Electronics
+measurement-planning guidance elements of the CAP-09 planning page (the measured-quantity
+versus observed-condition guidance, the measurement-conditions awareness note and the
+sensing / accuracy-resolution reference panel) may likewise be SHOWN for the declared
+Electrical / Electronics part whatever the initial analysis focus, decided in the web layer
+from the same validated durable composition; they say nothing about any experiment,
+sensing need or technical assessment and change nothing here. No other specialist
 behaviour is granted by these exceptions. Subsystem identity is
 system-generated (``new_subsystem_id``), opaque, immutable and never derived
 from a name, a function text, a domain id or a list position; a client never

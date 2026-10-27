@@ -50,11 +50,20 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   <p>{{ t('UI_SC_HYPOTHESIS_INTRO') }}</p>
   <p>{{ t('UI_SC_VARIABLE_INTRO') }}</p>
 </div>
+{#- MEASUREMENT-PLANNING-INTEGRATED-PART-01: when the measurement-planning
+    elements below are shown because the project's valid integrated composition
+    declares an Electrical / Electronics part (not because of the root focus),
+    ONE line names that part (escaped, direction-auto) and states that this says
+    nothing about any experiment. Shown only with at least one element. -#}
+{% if measurement_part_name and (measurement_guidance or measurement_conditions or measurement_references) %}
+<p class="notice" data-mguide-part><strong>{{ t('UI_SC_MGUIDE_PART_LABEL') }}</strong> <bdi dir="auto" data-mguide-part-name>{{ measurement_part_name }}</bdi><br>{{ t('UI_SC_MGUIDE_PART_NOTE') }}</p>
+{% endif %}
 {#- MEASUREMENT-PLAN-GUIDANCE-01 (C1): ONE visible, optional planning-guidance
     element beside the measurement-method introduction — WHAT the inventor
     intends to observe (a quantity expressed with an appropriate unit, or an
     observed condition or state) before HOW it is measured or checked. The route
-    decides on the trusted durable root domain; nothing here reads, interprets
+    decides on the trusted durable root domain, or the declared Electrical /
+    Electronics part (MEASUREMENT-PLANNING-INTEGRATED-PART-01); nothing here reads, interprets
     or grades inventor text, and no input is added. The guidance and its
     boundary are visible; the source / adaptation / no-endorsement notice is
     one click away inside the same block. CAP-09 page only; never a report /
@@ -76,7 +85,8 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 {#- MEASUREMENT-CONDITIONS-AWARENESS-01: ONE further visible, optional
     planning element after the C1 guidance — the conditions of use and influence
     quantities can affect a measurement and whether calibration results apply
-    under them. The route decides on the same trusted durable root domain;
+    under them. The route decides on the same trusted durable root domain or
+    declared part;
     nothing here reads, interprets or grades inventor text, no condition, value
     or requirement is named and no input is added. The note and its boundary are
     visible; the source / adaptation / no-endorsement notice is one click away
@@ -98,7 +108,8 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 {#- 28-T1-MEASUREMENT-PLANNING-REFERENCE-01: the SAME two Sensors /
     Instrumentation reference groups the Electronics report carries, shown
     beside the measurement-method introduction for an Electronics-root project
-    only (the route decides; nothing here selects or interprets anything).
+    or a declared Electrical / Electronics part (MEASUREMENT-PLANNING-INTEGRATED-
+    PART-01; the route decides; nothing here selects or interprets anything).
     Same copy keys, sources and boundaries as the report; collapsed by default. -#}
 {% if measurement_references %}
 <details class="measurement-reference" data-measurement-reference>

@@ -3371,6 +3371,16 @@ UI_STRINGS = {
                "وملاحظة حالةٍ على هذا النحو ملاحظة عملية، وليست بذاتها نتيجة قياس مثبتة رسميًا. "
                "ويبقى تخطيط القياس بيدك."),
     },
+    # MEASUREMENT-PLANNING-INTEGRATED-PART-01: the ONE attribution line shown
+    # when the measurement-planning elements appear because the valid integrated
+    # composition declares an Electrical / Electronics part. It names the part
+    # and claims nothing about any experiment, sensing or assessment.
+    "UI_SC_MGUIDE_PART_LABEL": {
+        "en": "Shown because your project declares this Electrical / Electronics part:",
+        "ar": "يظهر لأن مشروعك يصرّح بهذا الجزء الكهربائي/الإلكتروني:"},
+    "UI_SC_MGUIDE_PART_NOTE": {
+        "en": "This measurement-planning guidance is general. It does not mean that any experiment below is electronic, needs sensing or has been technically assessed.",
+        "ar": "إرشادات تخطيط القياس هذه عامة. ولا تعني أن أي تجربة أدناه إلكترونية، أو تحتاج إلى استشعار، أو أنها قُيِّمت تقنيًا."},
     "UI_SC_MGUIDE_SOURCE_SUMMARY": {
         "en": "Source, adaptation and limits",
         "ar": "المصدر والاقتباس والحدود",
