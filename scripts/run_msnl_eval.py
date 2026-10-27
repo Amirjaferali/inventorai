@@ -28,7 +28,13 @@ File-creation contract:
     `--responsiveness` (T2-G / R2: the ONE Owner-authorized campaign over the
       frozen, pinned `tests/fixtures/msnl_responsiveness_v1.json`; with the
       default `lexical` provider it only checks the pack and its lexical
-      precondition and sends nothing).
+      precondition and sends nothing);
+    `--mechanism-content` (T2-G / R2 evaluation PREPARATION: the frozen, pinned
+      `tests/fixtures/msnl_mechanism_content_v1.json`; with the default
+      `lexical` provider it only checks the pack and its engine baseline, and
+      the provider path is refused until a separate campaign authorization);
+    `--mechanism-content-rescore PATH` (offline downstream replay of a saved
+      mechanism-content report against the pinned pack and unchanged engine).
     There is NO option for a project, session, account, database or free-form
     input: both pack paths are fixed and their SHA-256 values are pinned, and a
     re-scored file is only read and checked against the pinned pack's labels,
@@ -656,6 +662,437 @@ def responsiveness(provider, allow_network, managed_credential):
     return out
 
 
+# ─── T2-G / R2: experimental veto-only mechanism content (msnl-mechanism-content-v1)
+#
+# Evaluation preparation ONLY (Owner authorization "R2 / VETO-ONLY EVALUATION
+# PREPARATION"): the arm, the decision table, the RAW-span grounding contract,
+# the thresholds and the budget are read from the pinned pack bytes. The
+# provider path stays refused by MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED until a
+# separate campaign authorization changes it in a reviewed commit. The
+# responsiveness arm above, including its normalised `quote_grounded`, is
+# unchanged and is not used here. Composition is offline and harness-only: no
+# product code is modified, nothing is persisted, and the veto can only
+# withhold credit the deterministic engine would grant.
+
+MECHANISM_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                   "msnl_mechanism_content_v1.json")
+MECHANISM_PACK_SHA256 = "PENDING-CASES"
+MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED = False
+MC_FIELDS = ("responsive", "stance", "mechanism_content", "quote")
+MC_PRESENT, MC_ABSENT = "PRESENT", "ABSENT"
+ALLOWED, WITHHELD_ABSENT, ABSTAINED = "ALLOWED", "WITHHELD_ABSENT", "ABSTAINED"
+CONTRADICTORY, UNGROUNDED, MC_ERROR = "CONTRADICTORY", "UNGROUNDED", "ERROR"
+_ONLY_STANCES = ("UNKNOWN_ONLY", "SUPPOSES_ONLY", "ASKS_ONLY", "REFERS_ONLY")
+PRIORS = ("OPEN", "PARTIAL")
+
+
+def mechanism_payload(pack, case, model=toa.MODEL):
+    """The exact provider body for one case: the frozen instructions, the
+    frozen enums, and as input ONLY the served question and the text. Refuses
+    (PackError) a body over the frozen per-request input-size cap."""
+    enums = pack["arm"]["output_schema"]
+    schema = {"type": "object",
+              "properties": {f: {"type": "string", "enum": list(enums[f])}
+                             for f in MC_FIELDS if f != "quote"},
+              "required": list(MC_FIELDS), "additionalProperties": False}
+    schema["properties"]["quote"] = {"type": "string"}
+    body = json.dumps({"question": case["served_question"], "answer": case["text"]},
+                      ensure_ascii=False, sort_keys=True)
+    if len(pack["arm"]["instructions"]) + len(body) > \
+            pack["thresholds"]["max_input_characters"]:
+        raise PackError("request over the frozen input-size cap: " + case["case_id"])
+    return {"model": model, "instructions": pack["arm"]["instructions"],
+            "input": body, "store": False,
+            "max_output_tokens": pack["thresholds"]["max_output_tokens"],
+            "text": {"format": {"type": "json_schema", "name": "msnl_mechanism_content",
+                                "strict": True, "schema": schema}}}
+
+
+def mechanism_reply_error(pack, reply):
+    """None when ``reply`` satisfies the frozen schema exactly, else the error
+    kind (D1). Every field must be present, no other field may appear, every
+    enum value must be one of the frozen values and the quote a string."""
+    enums = pack["arm"]["output_schema"]
+    if not isinstance(reply, dict) or set(reply) != set(MC_FIELDS):
+        return toa.ERR_MALFORMED
+    if not isinstance(reply["quote"], str):
+        return toa.ERR_MALFORMED
+    for field in MC_FIELDS[:3]:
+        if reply[field] not in enums[field]:
+            return toa.ERR_MALFORMED
+    return None
+
+
+def classify_mechanism(adapter, pack, case):
+    """ONE provider request for ONE case: (reply, error_kind). A refusal or any
+    transport / HTTP / incomplete / malformed / schema failure is an error."""
+    reply = adapter._call(mechanism_payload(pack, case, adapter._model))
+    if reply is None:
+        return None, adapter.last_error_kind
+    if reply == ms.ABSTAIN:                     # a provider refusal, not a verdict
+        adapter.errors[ERR_REFUSAL] = adapter.errors.get(ERR_REFUSAL, 0) + 1
+        return None, ERR_REFUSAL
+    kind = mechanism_reply_error(pack, reply)
+    if kind is not None:
+        adapter._fail(kind)
+        return None, kind
+    return {f: reply[f] for f in MC_FIELDS}, None
+
+
+def _mc_word_present(quote, question_id):
+    """G2: one non-function word outside every committed-marker occurrence."""
+    from engine import answer_stance as st
+    spans = st._marker_spans(quote, question_id)
+    for word in st._WORD_RE.finditer(quote):
+        start, end = word.span()
+        if any(a <= start and end <= b for a, b in spans):
+            continue
+        token = word.group(0)
+        if token.lower() in st._T2G2_STOPWORDS_EN or token in st._T2G2_STOPWORDS_AR:
+            continue
+        return True
+    return False
+
+
+def _mc_governing_cue(prefix, pack):
+    """G5: a registered unknown, a T2-G-2 hypothetical cue or a harness negation
+    cue in the clause text before the quote."""
+    from engine import answer_stance as st
+    if not prefix.strip():
+        return False
+    if st.declares_ignorance(prefix) or st._t2g2_is_hypothetical(prefix + " "):
+        return True
+    cues = pack["grounding"]["negation_cues"]
+    lowered = prefix.lower()
+    if "n't" in lowered:
+        return True
+    english = {w.lower() for w in re.findall(r"[A-Za-z]+", prefix)}
+    if english & {c for c in cues["en"] if c != "n't"}:
+        return True
+    return bool({m.group(0) for m in st._WORD_RE.finditer(prefix)} & set(cues["ar"]))
+
+
+def _mc_occurrence_reason(quote, text, start, question_id, pack):
+    from engine import answer_stance as st
+    end = start + len(quote)
+    if not _mc_word_present(quote, question_id):
+        return "MARKER_ONLY"
+    for sentence, terminator, offset in st._sentence_records(text):
+        s_end = offset + len(sentence)
+        if end <= offset or start >= s_end:
+            continue
+        if st._t2g3_is_non_assertive(sentence, terminator):
+            return "NON_ASSERTIVE"
+        position, first = 0, True
+        for clause in st._t2g2_clauses(sentence):
+            index = sentence.find(clause, position)
+            if index < 0:
+                continue
+            position = index + len(clause)
+            c_start, c_end = offset + index, offset + index + len(clause)
+            if end <= c_start or start >= c_end:
+                continue
+            if st.declares_ignorance(clause):
+                return "INSIDE_UNKNOWN"
+            if first:
+                first = False
+                if _mc_governing_cue(text[c_start:max(c_start, start)], pack):
+                    return "STRIPPED_SCOPE"
+    return None
+
+
+def mc_grounding(quote, text, question_id, pack):
+    """The RAW-span grounding contract (pack["grounding"], G1-G7): (grounded,
+    reason). Exact verbatim occurrence only — no normalisation of any kind."""
+    if not isinstance(quote, str) or not quote or not isinstance(text, str):
+        return False, "NOT_FOUND"
+    starts, at = [], text.find(quote)
+    while at != -1:
+        starts.append(at)
+        at = text.find(quote, at + 1)
+    if not starts:
+        return False, "NOT_FOUND"
+    first_reason = None
+    for start in starts:
+        reason = _mc_occurrence_reason(quote, text, start, question_id, pack)
+        if reason is None:
+            return True, None
+        first_reason = first_reason or reason
+    return False, first_reason
+
+
+def mc_decision(pack, case, reply, error_kind=None):
+    """The frozen decision table (pack["decision"], D1-D6): (decision, reason)."""
+    if error_kind is not None or reply is None:
+        return MC_ERROR, error_kind or toa.ERR_MALFORMED
+    content, stance = reply["mechanism_content"], reply["stance"]
+    responsive, quote = reply["responsive"], reply["quote"]
+    if (content == MC_PRESENT and (responsive != RESPONSIVE or stance in _ONLY_STANCES)) \
+            or (content != MC_PRESENT and quote != ""):
+        return CONTRADICTORY, None
+    if content == ms.ABSTAIN or responsive == ms.ABSTAIN:
+        return ABSTAINED, None
+    if content == MC_ABSENT:
+        return WITHHELD_ABSENT, None
+    grounded, reason = mc_grounding(quote, case["text"], case["question_id"], pack)
+    return (ALLOWED, None) if grounded else (UNGROUNDED, reason)
+
+
+def mc_engine_outcome(pack, case, prior):
+    """The deterministic engine outcome for one case from one prior state, at
+    the served index (offline; a fresh state; nothing persisted)."""
+    from engine.idea_state import (Evidence, Gap, IdeaState, ASSERTED,
+                                   MECHANISM_COMPLETENESS, OWNER_STATED)
+    from engine.intent_serving import w2c_served_question
+    from engine.path_n_questions import get_served_question
+    from engine.progression_loop import integrate_response
+    replay = pack["replay"]
+    state = IdeaState(idea_id="mc-eval")
+    state.domain, state.path = case["domain"], "N"
+    state.engine_contract_version = replay["engine_contract_version"]
+    state.maturity_level = 1
+    state.gaps.append(Gap(gap_type=MECHANISM_COMPLETENESS, status=prior, opened_at=0,
+                          iterations_open=case["served_index"]))
+    if prior == "PARTIAL":
+        state.known_mechanism = Evidence(content=replay["prior_partial_text"],
+                                         quality=ASSERTED, iteration=0,
+                                         provenance=OWNER_STATED)
+    served = get_served_question(MECHANISM_COMPLETENESS, case["served_index"],
+                                 domain=case["domain"])
+    unadjusted = (served is not None and served.question_id == case["question_id"]
+                  and w2c_served_question(state, MECHANISM_COMPLETENESS) is None)
+    before = state.get_gap(MECHANISM_COMPLETENESS).status
+    integrate_response(state, MECHANISM_COMPLETENESS, case["served_question"], case["text"])
+    after = state.get_gap(MECHANISM_COMPLETENESS).status
+    mechanism = state.known_mechanism
+    set_by_answer = mechanism is not None and mechanism.content == case["text"]
+    order = {"OPEN": 0, "PARTIAL": 1, "CLOSED": 2}
+    return {"unadjusted": unadjusted, "status_before": before, "status_after": after,
+            "mechanism_set_by_answer": set_by_answer,
+            "granted": order.get(after, -1) > order.get(before, -1) or set_by_answer}
+
+
+def mc_baseline(pack, case):
+    return {prior: mc_engine_outcome(pack, case, prior) for prior in PRIORS}
+
+
+def mc_precondition(pack):
+    """VB1: case ids whose recomputed engine baseline differs from the frozen
+    one, is not GRANTED from both priors, or is not an unadjusted context."""
+    bad = []
+    for case in pack["cases"]:
+        got = mc_baseline(pack, case)
+        frozen = case.get("engine_baseline")
+        ok = all(got[p]["unadjusted"] and got[p]["granted"] for p in PRIORS) and \
+            frozen == {p: got[p]["status_after"] for p in PRIORS}
+        if not ok:
+            bad.append(case["case_id"])
+    return bad
+
+
+def mc_composed(baseline, decision):
+    """D7: the engine outcome when ALLOWED, the prior state otherwise."""
+    out = {}
+    for prior in PRIORS:
+        engine = baseline[prior]
+        if decision == ALLOWED:
+            out[prior] = {"status_after": engine["status_after"],
+                          "granted": engine["granted"]}
+        else:
+            out[prior] = {"status_after": engine["status_before"], "granted": False}
+    return out
+
+
+def mc_row(pack, case, reply, error_kind, baseline):
+    decision, reason = mc_decision(pack, case, reply, error_kind)
+    return {"case_id": case["case_id"], "reply": reply, "error": error_kind,
+            "decision": decision, "grounding_reason": reason,
+            "engine": {p: {k: baseline[p][k] for k in ("status_before", "status_after",
+                                                       "mechanism_set_by_answer", "granted")}
+                       for p in PRIORS},
+            "composed": None if decision == MC_ERROR else mc_composed(baseline, decision)}
+
+
+def mechanism_campaign(adapter, pack):
+    """Exactly VS1_runs passes in pack order; stops before a request over the
+    frozen budget and immediately after the first error (VE1: nothing is
+    retried). Returns (runs, requests)."""
+    t = pack["thresholds"]
+    baselines = {c["case_id"]: mc_baseline(pack, c) for c in pack["cases"]}
+    runs, requests, stopped = [], 0, False
+    for _ in range(t["VS1_runs"]):
+        if stopped:
+            break
+        rows = []
+        for case in pack["cases"]:
+            if requests >= t["max_provider_requests"]:
+                rows.append(mc_row(pack, case, None, ERR_BUDGET, baselines[case["case_id"]]))
+                stopped = True
+                break
+            requests += 1
+            reply, err = classify_mechanism(adapter, pack, case)
+            rows.append(mc_row(pack, case, reply, err, baselines[case["case_id"]]))
+            if err is not None:
+                stopped = True
+                break
+        runs.append(rows)
+    return runs, requests
+
+
+def mechanism_run_report(pack, rows):
+    """Every frozen criterion for ONE run, overall and per variety, at case grain."""
+    t = pack["thresholds"]
+    cases = {c["case_id"]: c for c in pack["cases"]}
+    errors = [r for r in rows if r["decision"] == MC_ERROR]
+    complete = len(rows) == len(pack["cases"]) and not errors
+    by = {}
+    for scope in ("overall",) + VARIETIES:
+        sel = [r for r in rows if scope == "overall" or cases[r["case_id"]]["variety"] == scope]
+        pos = [r for r in sel if cases[r["case_id"]]["label"] == MC_PRESENT]
+        neg = [r for r in sel if cases[r["case_id"]]["label"] == MC_ABSENT]
+        n_pos = sum(c["label"] == MC_PRESENT for c in cases.values()
+                    if scope == "overall" or c["variety"] == scope)
+        decisions = {d: {"present": sum(r["decision"] == d for r in pos),
+                         "absent": sum(r["decision"] == d for r in neg)}
+                     for d in (ALLOWED, WITHHELD_ABSENT, ABSTAINED, CONTRADICTORY,
+                               UNGROUNDED, MC_ERROR)}
+        reasons = {}
+        for r in sel:
+            if r["decision"] == UNGROUNDED:
+                reasons[r["grounding_reason"]] = reasons.get(r["grounding_reason"], 0) + 1
+        by[scope] = {
+            "present_cases": n_pos, "decisions": decisions, "ungrounded_reasons": reasons,
+            "raw_present_on_absent": sum((r["reply"] or {}).get("mechanism_content")
+                                         == MC_PRESENT for r in neg),
+            "false_grants": sum(r["composed"][p]["granted"] for r in neg
+                                if r["composed"] for p in PRIORS),
+            "injection_allowed": sum(r["decision"] == ALLOWED for r in neg
+                                     if cases[r["case_id"]]["category"]
+                                     == "INSTRUCTION_INJECTION"),
+            "preserved": decisions[ALLOWED]["present"],
+            "preservation": _ratio(decisions[ALLOWED]["present"], n_pos),
+        }
+    o = by["overall"]
+    en = Fraction(by["en"]["preserved"], by["en"]["present_cases"])
+    criteria = {
+        "VC1": complete and all(by[s]["false_grants"] <= t["VC1_max_false_grants"]
+                                for s in by),
+        "VC2": complete and o["injection_allowed"] == 0,
+        "VP1": complete and _meets(o["preserved"], o["present_cases"], t["VP1_overall_min"])
+               and all(_meets(by[v]["preserved"], by[v]["present_cases"],
+                              t["VP1_variety_min"]) for v in VARIETIES),
+        "VP2": complete and all(
+            en - Fraction(by[v]["preserved"], by[v]["present_cases"])
+            <= Fraction(str(t["VP2_max_parity_gap"])) for v in VARIETIES if v != "en"),
+        "VA1": complete and Fraction(o["decisions"][ABSTAINED]["present"], o["present_cases"])
+               <= Fraction(str(t["VA1_max_positive_abstention"])),
+        "VE1": complete,
+    }
+    return {"valid": complete, "cases_answered": len(rows),
+            "errors": [{"case_id": r["case_id"], "kind": r["error"]} for r in errors],
+            "by_variety": by, "criteria": criteria}
+
+
+def mechanism_agreement(pack, runs):
+    if len(runs) != pack["thresholds"]["VS1_runs"] or \
+            any(len(r) != len(pack["cases"]) for r in runs):
+        return None
+    per = [{r["case_id"]: r["decision"] == ALLOWED for r in run} for run in runs]
+    ids = [c["case_id"] for c in pack["cases"]]
+    same = sum(len({p[i] for p in per}) == 1 for i in ids)
+    return {"identical": same, "cases": len(ids), "rate": _ratio(same, len(ids))}
+
+
+def mechanism_verdict(pack, runs, precondition_violations):
+    """PASS only when every criterion holds in all three runs, VS1 holds and the
+    baseline precondition held; anything else is FAIL."""
+    t = pack["thresholds"]
+    reports = [mechanism_run_report(pack, rows) for rows in runs]
+    agreement = mechanism_agreement(pack, runs)
+    held = {k: len(reports) == t["VS1_runs"] and all(r["criteria"][k] for r in reports)
+            for k in ("VC1", "VC2", "VP1", "VP2", "VA1", "VE1")}
+    held["VS1"] = (len(reports) == t["VS1_runs"] and all(r["valid"] for r in reports)
+                   and agreement is not None
+                   and _meets(agreement["identical"], agreement["cases"],
+                              t["VS1_min_outcome_agreement"]))
+    held["VB1"] = not precondition_violations
+    invalid = any(not r["valid"] for r in reports) or len(reports) != t["VS1_runs"]
+    return {"verdict": "PASS" if all(held.values()) else "FAIL",
+            "campaign_status": "INVALID" if invalid else "COMPLETE",
+            "criteria_held_in_every_run": held, "agreement": agreement, "runs": reports}
+
+
+def _mechanism_pack():
+    pack = _load(MECHANISM_PACK_PATH, MECHANISM_PACK_SHA256)
+    t = pack["thresholds"]
+    if t["max_provider_requests"] != t["VS1_runs"] * len(pack["cases"]):
+        raise PackError("mechanism-content budget inconsistent with the pack")
+    return pack
+
+
+def mechanism_content(provider, allow_network, managed_credential):
+    """Load the pinned pack, check VB1 and, only when the campaign is
+    authorized and the provider flags are given, run the ONE campaign."""
+    pack = _mechanism_pack()
+    violations = mc_precondition(pack)
+    out = {"pack_id": pack["pack_id"], "pack_sha256": MECHANISM_PACK_SHA256,
+           "cases": len(pack["cases"]), "precondition_violations": violations,
+           "thresholds": pack["thresholds"]}
+    if provider != "openai":
+        out["provider_requests"] = 0
+        return out
+    if not MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED:
+        out["refused"] = "the mechanism-content campaign is not authorized; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if not (allow_network and managed_credential):
+        raise SystemExit(2)
+    if violations:
+        out["refused"] = "VB1: the engine baseline no longer holds; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    adapter = OpenAIMsnlAdapter(allow_network=True)
+    runs, requests = mechanism_campaign(adapter, pack)
+    out.update({"model": adapter._model, "endpoint": toa.ENDPOINT,
+                "provider_requests": requests, "error_kinds": adapter.errors,
+                "result": mechanism_verdict(pack, runs, violations),
+                "case_level": runs})
+    return out
+
+
+def mechanism_rescore(path):
+    """Network-free downstream replay of a SAVED campaign report: only each
+    row's case id, recorded reply and error are read; every decision, grounding
+    reason, engine baseline and composed outcome is recomputed from the pinned
+    pack and the unchanged engine. No adapter is built and nothing is sent."""
+    pack = _mechanism_pack()
+    by_id = {c["case_id"]: c for c in pack["cases"]}
+    with open(path, "rb") as fh:
+        raw = fh.read()
+    saved = json.loads(raw.decode("utf-8"))
+    if saved.get("pack_id") != pack["pack_id"] or \
+            saved.get("pack_sha256") != MECHANISM_PACK_SHA256:
+        raise PackError("saved report is not for the pinned " + pack["pack_id"])
+    baselines = {c["case_id"]: mc_baseline(pack, c) for c in pack["cases"]}
+    runs = []
+    for saved_rows in saved.get("case_level", []):
+        rows = []
+        for row in saved_rows:
+            case = by_id.get(row.get("case_id"))
+            if case is None:
+                raise PackError("saved case is not in the pinned pack: "
+                                + str(row.get("case_id")))
+            reply, err = row.get("reply"), row.get("error")
+            if err is None and mechanism_reply_error(pack, reply) is not None:
+                raise PackError("saved reply violates the frozen schema: " + case["case_id"])
+            rows.append(mc_row(pack, case, reply, err, baselines[case["case_id"]]))
+        runs.append(rows)
+    violations = mc_precondition(pack)
+    return {"rescored_sha256": hashlib.sha256(raw).hexdigest(),
+            "pack_id": pack["pack_id"], "precondition_violations": violations,
+            "result": mechanism_verdict(pack, runs, violations), "case_level": runs}
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="MSNL synthetic LLM feasibility harness")
     p.add_argument("--provider", choices=("lexical", "openai"), default="lexical")
@@ -664,7 +1101,38 @@ def main(argv=None):
     p.add_argument("--show-cases", action="store_true")
     p.add_argument("--rescore", metavar="PATH")
     p.add_argument("--responsiveness", action="store_true")
+    p.add_argument("--mechanism-content", action="store_true")
+    p.add_argument("--mechanism-content-rescore", metavar="PATH")
     args = p.parse_args(argv)
+    if args.mechanism_content_rescore:
+        if args.provider != "lexical" or args.allow_network or args.managed_credential \
+                or args.mechanism_content or args.responsiveness or args.rescore:
+            print(json.dumps({"refused": "--mechanism-content-rescore is offline and "
+                                         "takes no other mode, provider or network option"}))
+            return 2
+        try:
+            out = mechanism_rescore(args.mechanism_content_rescore)
+        except (OSError, ValueError, KeyError, TypeError) as exc:  # PackError, bad JSON
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0
+    if args.mechanism_content:
+        if args.rescore or args.show_cases or args.responsiveness:
+            print(json.dumps({"refused": "--mechanism-content takes no other mode"}))
+            return 2
+        if args.provider == "openai" and not (args.allow_network and args.managed_credential):
+            print(json.dumps({"refused": "--provider openai needs --allow-network "
+                                         "--managed-credential"}))
+            return 2
+        try:
+            out = mechanism_content(args.provider, args.allow_network,
+                                    args.managed_credential)
+        except PackError as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 2 if out.get("refused") else 0
     if args.responsiveness:
         if args.rescore or args.show_cases:
             print(json.dumps({"refused": "--responsiveness takes no --rescore or "
