@@ -42,3 +42,38 @@ No exact scientific claim is defined: "execution-facing output" covers program l
 specialist owner, source and authorization exist; sourcing it now would amount to choosing the owner or path. No query spent. The electrically
 defined part (a logic output's voltage / current capability versus a driver's input) is registered separately as Q-05. Reopening trigger:
 an Owner / Lead definition of the exact claim, or a specialist owner for 28-T2 output.
+
+## Q-01 — run 2 (2026-10-27) — BLOCKED (terminal for this campaign until a trigger below)
+- Searched (principle + source-targeted): no federal / open source states a lower validity limit for a shear-inclusive (Timoshenko-type)
+  deflection formula or a numeric small-deflection limit for a simply supported beam. Journal / thesis thresholds found are not wood-specific,
+  have unverified rights and would be arbitrary for D-7 (abstained).
+- New lead: the method's property basis. Search snippets attribute a minimum span-to-depth ratio of 14 to the ASTM D143 centre-loaded
+  small-clear bending test from which tabulated bending moduli are derived; the Wood Handbook's "+10 %" shear correction (D5-3) would then be
+  tied to that geometry. Not inspected: ASTM is protected (mirrors only) and the Wood Handbook host is refused.
+- Reopening triggers (any one): (1) a Lead-supplied direct inspection of FPL-GTR-190 Chapter 5 (Table 5-3a notes / page 5-2 test basis) and
+  of FPL-RN-0210, following the D-5 precedent; (2) egress to research.fs.usda.gov; (3) the Owner / Lead choosing which governing condition D-7
+  must address (small deflection, short-span limit of the shear-inclusive form, elastic limit, or consistency with the property test geometry).
+- Queries used on Q-01: 5 of 20.
+
+## Q-04 — Verification of a simply supported midspan deflection estimate (run 2) — QUALIFIED-CANDIDATE (class-level)
+Measurements and conditions that federal test reports record before a measured deflection is compared with a model:
+1. Midspan deflection measured relative to the supports, i.e. support / end movement removed (NBS Report 10568, p. 39; NACA 180, pp. 5–6).
+2. The actual span, cross-section and the loading arrangement (centre load) for each test (NACA 180).
+3. The applied load from a calibrated testing machine, read with the deflection (NACA 180).
+4. Moisture content of the tested wood determined (NACA 180) — the method's property basis is stated at about 12 % (stiffness contract §7).
+5. Loads kept well within the elastic limit (NACA 180).
+6. Where the shear term matters, the modulus of rigidity determined separately (torsion tests) rather than assumed (NACA 180).
+7. Lateral restraint where the beam tends to buckle (NACA 180).
+Limits: 1924 / 1970s federal test practice, not a current test standard; current protected standards (ASTM D198 / D143) exist but were not
+inspected (IP). Temperature and loading-rate effects on wood stiffness are not sourced here (Wood Handbook host blocked). None of this
+validates the stiffness estimate; it lists what a comparison would need to record.
+
+## Q-05 — Logic output ↔ driver / load (run 2) — SOURCE ACCESS BLOCKED (terminal until trigger)
+- Discovered candidates that state the claim directly: NXP (Freescale) AN2434 *Input/Output Pin Drivers on HCS12 Family MCUs* (output levels
+  are guaranteed only within a specified pin current; heavier loads cannot hold the logic level; absolute-maximum source / sink limits) and
+  AN2433 (driver input logic-high threshold must sit below the MCU's minimum output high, otherwise a level shifter is needed). Also
+  Kuphaldt, *Lessons in Electric Circuits* Vol. IV (CC BY 4.0 online edition, same series as admitted PR026 / PR027 — licence not
+  transferable to another volume without checking its own appendix).
+- Not inspected: www.nxp.com and www.ibiblio.org refused by the egress proxy. Federal hosts returned only 1960s circuit-specific material.
+- Reopening triggers: host access, or a Lead-supplied inspection of one of the candidates with its rights basis (manufacturer terms of use are
+  IP UNRESOLVED; the Kuphaldt Vol. IV appendix must be read for its own licence).
