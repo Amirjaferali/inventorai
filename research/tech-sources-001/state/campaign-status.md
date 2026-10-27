@@ -1,6 +1,6 @@
 # TECH-SOURCES-001 — Campaign status
 
-STATUS: ACTIVE (resumed for run 6 by Owner authorization after the 2026-10-27 source-access verification)
+STATUS: ACTIVE (resumed for run 6 by Owner authorization after the 2026-10-27 source-access verification; runs 6–7 done; next run by same-session wake-up)
 
 Reopened ACTIVE on the Owner's 2026-10-27 direction to seek legal official alternatives; run 5 searched every reachable authoritative host.
 No question can progress further from reachable sources: 7 QUALIFIED-CANDIDATE (Q-02, Q-04, Q-06, Q-08, Q-09, Q-10; Q-07 partial),

@@ -159,3 +159,23 @@ Supported now (SRC-017, CC BY 4.0, directly inspected): an output may sink curre
 
 ### Q-03 — exact claim still undefined
 The only record naming "execution-facing output" is CLAUDE.md (e) ("Embedded 28-T2 execution-facing output: DEFER pending a specialist owner, source and authorization"). Roadmap 28-T2 lists candidate concerns (execution states, timing, interrupts, ADC / PWM, UART / SPI / I²C / CAN, watchdogs, start-up / shutdown, fault handling, memory / power modes, bare-metal vs RTOS) — concerns, not a claim. Missing definition: which concern, and what exact statement, the "output" is.
+
+## Run 7 (2026-10-27) — portfolio questions Q-11, Q-12, Q-13
+
+### Q-11 — PWM average voltage (28-T3) — PARTIAL QUALIFIED-CANDIDATE
+SRC-018 (NASA MSFC, 1969) supports: the PWM period must be much shorter than the winding's electrical time constant; with a free-wheeling
+path the inductance keeps current continuous and smooth; switches are fully on or off (low dissipation); average supply current is much
+lower than motor current at small duty cycles. **Implied, not stated:** average applied voltage = duty × supply (worked example only).
+Verification a design would need: switching frequency vs electrical time constant, current ripple, free-wheeling path. No numbers adopted.
+
+### Q-12 — Two-link planar forward kinematics (28-T5) — PARTIAL QUALIFIED-CANDIDATE
+SRC-019 (NBS, 1988) supports the general principle: end-effector position / orientation follows from joint angles through successive
+coordinate transformations with constant link lengths. **UNVERIFIED on a clean-rights source:** the explicit planar two-link formula and its
+stated assumptions (found only in contractor / lab documents with unresolved rights). Kinematics stays checked against Mechanical first
+(roadmap 28-T5); no Robotics owner implied.
+
+### Q-13 — Free-space path loss (Wireless / RF) — PARTIAL QUALIFIED-CANDIDATE
+SRC-020 (NASA Ames) supports: free-space loss arises from beam spreading with distance; the link budget combines transmit power, antenna
+gains, free-space loss and other losses; field losses exceed theory, so large margins are needed. **UNVERIFIED:** the explicit
+inverse-square / far-field conditions — the NTIA definitions host is refused and the NIST mmWave paper (path-loss exponent 2 in free space)
+has unresolved rights. No link-budget numbers executed (roadmap exclusion).
