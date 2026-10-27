@@ -17,3 +17,5 @@ Append-only. Never bypassed.
 | 2026-10-27 (run 7) | its.ntia.gov | egress proxy CONNECT 403 (connect_rejected) | NTIA Report 84-165 (Frazier, *Handbook of Radio Wave Propagation Loss*) and NTIA TN 89-2 (*Spectrum Management Technical Handbook*) — free-space / far-field definitions for Q-13 | None reachable |
 | 2026-10-27 (run 8, ~13:55 UTC) | www.ibiblio.org | re-test: same emSign certificate chain, still untrusted here (curl 000) | Q-05 / Q-07 sources | None |
 | 2026-10-27 (run 8) | stac.astrogeology.usgs.gov | egress proxy CONNECT 403 | USGS Astrogeology glossary (IFOV / pixel-scale definitions) for Q-15 | None |
+| 2026-10-27 (run 9) | www.ibiblio.org | re-test: still no connection (curl 000; certificate trust issue as before) | Q-05 / Q-07 sources | None |
+| 2026-10-27 (run 9) | www.faa.gov | no response (curl 000); proxy record not checked | FAA AC 27-1B (tethered-hover thrust statement) for Q-17 | NASA Ames papers (SRC-024, SRC-025) |

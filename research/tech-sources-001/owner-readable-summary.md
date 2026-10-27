@@ -1,9 +1,9 @@
 # TECH-SOURCES-001 — owner readable summary
 
-*Updated after run 8 (2026-10-27). Research evidence only: nothing here is admitted, implemented, activated or qualified as a product method.*
+*Updated after run 9 (2026-10-27). Research evidence only: nothing here is admitted, implemented, activated or qualified as a product method.*
 
-**Status:** ACTIVE — not complete. Runs 8 / 20 · Perplexity queries 26 / 240 · deep-research calls 0 · window ends 2026-11-26.
-**Questions registered:** 23 (Q-01…Q-23) plus held / excluded items. **Sources inspected directly:** 23 (hash, page and rights in `evidence/`).
+**Status:** ACTIVE — not complete. Runs 9 / 20 · Perplexity queries 29 / 240 · deep-research calls 0 · window ends 2026-11-26.
+**Questions registered:** 23 (Q-01…Q-23) plus held / excluded items. **Sources inspected directly:** 27 (hash, page and rights in `evidence/`).
 
 | Q | Topic | Result |
 |---|---|---|
@@ -23,12 +23,15 @@
 | Q-14 | Cells in series / parallel, balancing | Qualified candidate (DOE + NASA, reused). |
 | Q-15 | Imaging spatial resolution | Source candidate only — IP unresolved (mixed NASA / contractor preprint); USGS refused. |
 | Q-16 | Duty-cycled average current | Source candidate only — IP unresolved (NIST-hosted journal / conference papers); core claim UNVERIFIED. |
-| Q-17…Q-23 | Hover thrust, PV ratings, outgassing, cylinder forces, inverse-square optics, thermal expansion, resonance | Queued for the next runs. |
+| Q-17 | Multirotor hover thrust and margin | Qualified candidate (NASA Ames). |
+| Q-18 | PV rating conditions | Partial: standard test conditions sourced (DOE FEMP); temperature effect not yet on a clean-rights source. |
+| Q-19 | Vacuum outgassing screening | Qualified candidate (NASA PT-TE-1410). |
+| Q-20…Q-23 | Cylinder forces, inverse-square optics, thermal expansion, resonance | Queued for the next runs. |
 
 **Decisions:** DR-1 decided by you (Option C, recorded on the base branch). Still open with you and the Execution Lead: DR-2 which condition D-7
 governs; DR-3 definition of the 28-T2 "execution-facing output" claim. Details in `evidence/decision-records.md`.
 
 **Current access blockers:** www.ibiblio.org — certificate chain to emSign Root CA - G1 not trusted in this environment (passed this morning,
 fails since the session restart); www.nxp.com — NXP returns its own 404 page; www.nrc.gov document — NRC's CDN returns 403;
-its.ntia.gov, stac.astrogeology.usgs.gov and openmodelica.org — proxy policy denial. To unblock ibiblio, the environment needs the emSign root trusted or the earlier
+its.ntia.gov, stac.astrogeology.usgs.gov and openmodelica.org — proxy policy denial; www.faa.gov — no response. To unblock ibiblio, the environment needs the emSign root trusted or the earlier
 routing restored; nothing was bypassed.

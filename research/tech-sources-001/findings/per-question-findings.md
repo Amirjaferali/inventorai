@@ -197,3 +197,21 @@ NIST-hosted papers (SRC-022, SRC-023) state that capacity ÷ current lifetime do
 need not give equal lifetimes, and that sleep modes and short transmissions extend life. The explicit time-weighted-average statement was
 not found in an inspected clean-rights source → UNVERIFIED. The caveat itself is consistent with qualified Q-06 sources (SRC-008, SRC-009).
 Stage 31 IoT remains not authorized.
+
+## Run 9 (2026-10-27, scheduled wake-up)
+
+### Q-17 — Multirotor hover thrust and margin — QUALIFIED-CANDIDATE (class-level)
+NASA Ames papers (SRC-024, SRC-025): in hover, thrust depends on (is set by) the aircraft weight; the torque / speed margin left after trim is
+what allows climbing and manoeuvring, and sizing at full installed power would leave no control margin; climb-rate agility depends strongly on
+motor torque margin. Verification a design would need: thrust and torque margins at the actual weight. No numeric margin adopted.
+Overlap noted: the torque-margin point connects to Q-02 (motor ↔ load, DR-1 Option C split).
+
+### Q-18 — PV rating conditions — PARTIAL QUALIFIED-CANDIDATE
+DOE FEMP (SRC-026): module ratings are measured at standard test conditions (1,000 W/m², 25 °C cell temperature); real sunlight is usually lower
+and cells hotter. **Not yet sourced on clean rights:** the explicit statement that output falls as cell temperature rises (temperature
+coefficient) — the documents stating it are NREL / Sandia (contractor-operated laboratories).
+
+### Q-19 — Vacuum outgassing screening — QUALIFIED-CANDIDATE
+NASA PT-TE-1410 (SRC-027): ASTM E-595 screening (10⁻⁶ torr, 125 °C, 24 h); TML < 1.0 % and CVCM < 0.10 % for approval unless the application
+dictates otherwise; product-by-product qualification, lot testing when variation is suspected. These are NASA's screening criteria, recorded
+as source facts, not InventorAI thresholds.
