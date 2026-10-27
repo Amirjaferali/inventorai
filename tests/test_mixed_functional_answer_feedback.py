@@ -18,6 +18,7 @@ import web.app as appmod
 from engine import answer_stance
 from engine.idea_state import IdeaState, MECHANISM_COMPLETENESS as MC, OPEN, PARTIAL
 from engine.progression_loop import run_iteration
+import engine.session_reconstruction as SR
 from tests.csrf_client import csrf_client
 from web import result_feedback, ui_text
 from web.result_feedback import get_result_feedback
@@ -91,12 +92,15 @@ def _answer(c, sid, text):
     return c.get(f"/session/{sid}").get_data(as_text=True)
 
 
-def _engine_outcome(domain, text):
-    """The same two inputs through the engine alone, with no web layer."""
+def _engine_outcome(domain, text, version=None, before=()):
+    """The same two inputs through the engine alone, with no web layer.
+    ``before`` are earlier answers, so ``text`` answers a later question."""
     st = IdeaState(idea_id="x")
     st.domain, st.path = domain, "N"
-    st.engine_contract_version = appmod.CURRENT_ENGINE_CONTRACT_VERSION
+    st.engine_contract_version = version or appmod.CURRENT_ENGINE_CONTRACT_VERSION
     run_iteration(st, IDEA)
+    for earlier in before:
+        run_iteration(st, earlier)
     result = run_iteration(st, text)
     return result, st
 
@@ -211,10 +215,20 @@ def test_reading_ignores_every_other_result():
                          + [(ELEC, "It needs steps.")])
 def test_padding_and_decoys_never_read_as_a_description(domain, decoy):
     # Each pinned shape is one the veto really applies to in that domain.
+    # The mechanical lead ("load path") is relevant only through Q2's
+    # committed markers: answered while Q1 is displayed under XG1 (which read
+    # the moved counter), or while Q2 is displayed under DV1 (the current
+    # stamp, which reads the displayed variant). Both are pinned.
     text = DECOY_LEAD + decoy
-    result, st = _engine_outcome(domain, text)
-    assert result["reason"] == UNKNOWN_REASON
-    assert _relevant_for(st)(text, result) is False
+    if domain == MECH:
+        cases = ((SR.ENGINE_CONTRACT_VERSION_XG1, ()),
+                 (SR.ENGINE_CONTRACT_VERSION_DV1, (UNRELATED,)))
+    else:
+        cases = ((None, ()),)
+    for version, before in cases:
+        result, st = _engine_outcome(domain, text, version, before)
+        assert result["reason"] == UNKNOWN_REASON
+        assert _relevant_for(st)(text, result) is False
 
 
 def test_states_beyond_unknown_uses_only_the_callers_predicate():

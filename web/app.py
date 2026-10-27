@@ -372,6 +372,7 @@ from engine.session_reconstruction import (
     ENGINE_CONTRACT_VERSION_NR1,
     ENGINE_CONTRACT_VERSION_T2G3,
     ENGINE_CONTRACT_VERSION_XG1,
+    ENGINE_CONTRACT_VERSION_DV1,
     UNAPPLIED_ANSWERS_ATTR as _UNAPPLIED_ANSWERS_ATTR,
     SUPPORTED_ENGINE_CONTRACT_VERSIONS,
     SUPPORTED_PATH as _RECON_SUPPORTED_PATH,
@@ -6455,8 +6456,10 @@ def _questioning_disclosure_key(state):
     version = getattr(state, "engine_contract_version", None)
     # Safe Question Reduction Slice 1: the routing-aware version asks under the
     # T2-G-2 rules unchanged.
-    # The cross-gap replay repair asks under the T2-G-3 rules unchanged.
-    if version in (ENGINE_CONTRACT_VERSION_T2G3, ENGINE_CONTRACT_VERSION_XG1):
+    # The cross-gap replay repair and the displayed-variant relevance repair
+    # ask under the T2-G-3 rules unchanged.
+    if version in (ENGINE_CONTRACT_VERSION_T2G3, ENGINE_CONTRACT_VERSION_XG1,
+                   ENGINE_CONTRACT_VERSION_DV1):
         return "UI_T2G3_QUESTION_SET"
     if version in (ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_NR1):
         return "UI_T2G2_QUESTION_SET"

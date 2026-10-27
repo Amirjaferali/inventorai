@@ -237,9 +237,12 @@ def test_start_persists_reconstruction_inputs(client):
     # NeedRouting + the question / supposition rule); all five stay supported.
     # Cross-gap replay repair: a fresh /start now records the XG1 version (the
     # T2-G-3 version + own-gap replay attribution); all six stay supported.
-    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_XG1
+    # Displayed-variant relevance repair: a fresh /start now records the DV1
+    # version (the XG1 version + displayed-variant supplemental relevance);
+    # all seven stay supported.
+    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_DV1
     assert inputs["engine_contract_version"] in SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS
-    assert len(SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS) == 6
+    assert len(SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS) == 7
 
 
 def test_a_project_created_under_t2g1_keeps_that_stamp(client):

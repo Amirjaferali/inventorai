@@ -212,12 +212,12 @@ def test_a_real_current_start_records_the_newest_version(client):
     c, appmod, db = client
     _login(c, appmod)
     sid = _start(c)
-    # Cross-gap replay repair: the newest version is XG1, which carries the
-    # T2-G-3 rules and the NR1 routing unchanged.
-    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_XG1
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_XG1
-    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_XG1
-    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_XG1
+    # Displayed-variant relevance repair: the newest version is DV1, which
+    # carries the XG1 replay, the T2-G-3 rules and the NR1 routing unchanged.
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_DV1
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_DV1
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_DV1
+    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_DV1
 
 
 def test_the_version_is_selected_before_the_seed_is_interpreted(client):
@@ -295,6 +295,21 @@ def test_missing_or_unsupported_metadata_stays_fail_closed(client, value, status
 # ==========================================================================
 # 2. The new rule — canonical state AND served identity
 # ==========================================================================
+def _xg1_start(c, appmod):
+    """A project created under XG1, whose supplemental relevance read the
+    moved counter: answered while Q1 is displayed, it read Q2's committed
+    markers. Answers relevant to Q1 ONLY through those markers keep their
+    accepted XG1 reading here; under DV1 (the current stamp) they are read
+    against the displayed variant instead, and their DV1 behaviour where Q2 is
+    displayed is pinned in tests/test_dv1_displayed_variant_relevance.py."""
+    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_XG1
+    return _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_XG1)
+
+
+# Relevant to the Q1 question only through Q2's committed markers.
+COUNTER_SCOPED = (F4_MIXED, G4_MIXED)
+
+
 @pytest.mark.parametrize("answer,identity", [
     (F1_AFFIRM, Q3), (F3_NEGATIVE, Q3), (F4_MIXED, Q3), (G1_AFFIRM, Q3),
     (G4_MIXED, Q3),
@@ -302,7 +317,7 @@ def test_missing_or_unsupported_metadata_stays_fail_closed(client, value, status
 def test_a_supported_explanation_is_unaffected(client, answer, identity):
     c, appmod, _db = client
     _login(c, appmod)
-    sid = _start(c)
+    sid = _xg1_start(c, appmod) if answer in COUNTER_SCOPED else _start(c)
     _answer(c, sid, answer)
     got = _snapshot(appmod, sid)
     assert got["identity"] == identity
@@ -561,7 +576,8 @@ def test_the_saved_unknown_gets_its_own_bilingual_notice(client):
     for overclaim in ("lost", "irrelevant", "verified", "validated", "incorrect"):
         assert overclaim not in english.lower().split("saved with your project")[0][-400:]
     # the Arabic counterpart, on its own project so the notice is the fresh one
-    sid_ar = _start(c)
+    # (G2 reaches the unknown rule at Q1 only through Q2's markers: XG1)
+    sid_ar = _xg1_start(c, appmod)
     _answer(c, sid_ar, G2_UNKNOWN)
     arabic = _page(c, sid_ar, "ar")
     assert "تم حفظ قولك إن هذا غير معروف بعد مع مشروعك" in arabic
@@ -687,9 +703,10 @@ def test_repeated_markers_do_not_buy_progress_through_the_route(client, tail):
 
 
 def test_repeated_arabic_markers_do_not_buy_progress(client):
+    # reaches the unknown rule at Q1 only through Q2's markers (XG1)
     c, appmod, _db = client
     _login(c, appmod)
-    sid = _start(c)
+    sid = _xg1_start(c, appmod)
     _answer(c, sid, G2_UNKNOWN + " " + MARKER_ONLY_AR)
     got = _snapshot(appmod, sid)
     assert got["identity"] == Q2 and got["status"] == "OPEN"
@@ -715,7 +732,8 @@ def test_a_genuine_explanation_after_markers_still_progresses(client, tail, lang
     must still be recognised, in both languages."""
     c, appmod, _db = client
     _login(c, appmod)
-    sid = _start(c)
+    # the Arabic answer is relevant at Q1 only through Q2's markers (XG1)
+    sid = _start(c) if lang == "en" else _xg1_start(c, appmod)
     unknown = F2_UNKNOWN if lang == "en" else G2_UNKNOWN
     _answer(c, sid, unknown + " " + tail)
     got = _snapshot(appmod, sid)
@@ -842,9 +860,10 @@ def test_a_unicode_expansion_does_not_buy_progress(client, tail):
 
 
 def test_a_unicode_expansion_does_not_buy_progress_in_arabic(client):
+    # reaches the unknown rule at Q1 only through Q2's markers (XG1)
     c, appmod, _db = client
     _login(c, appmod)
-    sid = _start(c)
+    sid = _xg1_start(c, appmod)
     _answer(c, sid, G2_UNKNOWN + " " + UNICODE_MARKER_ONLY_AR)
     got = _snapshot(appmod, sid)
     assert got["identity"] == Q2 and got["status"] == "OPEN"

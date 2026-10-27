@@ -129,12 +129,27 @@ ENGINE_CONTRACT_VERSION_T2G3 = "p4-2-level1-recon-v1-t2g2-nr1-t2g3"
 # `GAP_BOUND_REPLAY_VERSIONS`). Stamped on NEW projects only: every existing
 # project keeps its recorded version and replays exactly as before.
 ENGINE_CONTRACT_VERSION_XG1 = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1"
+
+# Displayed-variant relevance repair: the SEVENTH supported engine-contract
+# version. It carries every XG1 rule unchanged (T2-G-3, NR1 routing, gap-bound
+# replay) and is the ONLY version under which the W2-C supplemental relevance
+# reads the committed variant that was DISPLAYED when the answer was given.
+# Every earlier version reads the gap counter after `run_iteration` has moved
+# it, i.e. the NEXT variant's markers (see
+# `DISPLAYED_VARIANT_RELEVANCE_VERSIONS`). Stamped on NEW projects only: every
+# existing project keeps its recorded version and replays exactly as before.
+ENGINE_CONTRACT_VERSION_DV1 = "p4-2-level1-recon-v1-t2g2-nr1-t2g3-xg1-dv1"
 ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS = (ENGINE_CONTRACT_VERSION_NR1,
                                           ENGINE_CONTRACT_VERSION_T2G3,
-                                          ENGINE_CONTRACT_VERSION_XG1)
+                                          ENGINE_CONTRACT_VERSION_XG1,
+                                          ENGINE_CONTRACT_VERSION_DV1)
 
 # The versions whose replay credits a gap-bound answer only to its own gap.
-GAP_BOUND_REPLAY_VERSIONS = (ENGINE_CONTRACT_VERSION_XG1,)
+GAP_BOUND_REPLAY_VERSIONS = (ENGINE_CONTRACT_VERSION_XG1,
+                             ENGINE_CONTRACT_VERSION_DV1)
+
+# The versions whose supplemental relevance reads the displayed variant.
+DISPLAYED_VARIANT_RELEVANCE_VERSIONS = (ENGINE_CONTRACT_VERSION_DV1,)
 
 # Both exact versions are supported through the ONE existing progression and
 # reconstruction path — the earlier stamp is NOT replaced, so no valid legacy
@@ -146,11 +161,12 @@ SUPPORTED_ENGINE_CONTRACT_VERSIONS = (
     ENGINE_CONTRACT_VERSION_NR1,
     ENGINE_CONTRACT_VERSION_T2G3,
     ENGINE_CONTRACT_VERSION_XG1,
+    ENGINE_CONTRACT_VERSION_DV1,
 )
 
 # The version a newly created supported project records. Separate name so the
 # "what do we stamp now" decision is never confused with "what do we support".
-CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_XG1
+CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_DV1
 
 # Deterministic Path-N support only.
 SUPPORTED_PATH = "N"
