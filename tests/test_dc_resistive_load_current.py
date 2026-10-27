@@ -904,7 +904,7 @@ def test_non_success_shows_one_reason_and_no_number(elec, over, outcome):
     assert body.count("data-dcl-outcome") == 1 and "data-dcl-result" not in body
 
 
-def test_mechanical_root_and_declared_parts_are_not_eligible(mech, monkeypatch):
+def test_mechanical_root_is_not_eligible_but_a_declared_part_is(mech, monkeypatch):
     c, _aid, sid = mech
     assert "data-dcl-link" not in _page(c, sid)
     called = []
@@ -913,14 +913,13 @@ def test_mechanical_root_and_declared_parts_are_not_eligible(mech, monkeypatch):
         body = r.get_data(as_text=True)
         assert r.status_code == 200 and "data-dcl-scope-note" in body
         assert "data-dcl-form" not in body and _value(body) is None
-    # an integrated project with a Mechanical focus: its declared Electrical /
-    # Electronics part grants nothing (root only)
+    # DC-RESISTIVE-LOAD-INTEGRATED-PART-01: on an integrated project with a
+    # Mechanical focus the declared Electrical / Electronics part is offered the
+    # calculation (tests/test_dc_resistive_load_integrated_part.py)
     c2, _ = _client_for("dcl-part-mech@example.com")
     sid2 = _integrated(c2, MECH)
-    assert not webapp._dcl_eligible(sid2)
-    assert "data-dcl-link" not in _page(c2, sid2)
-    body = c2.post(URL % sid2, data=_form()).get_data(as_text=True)
-    assert "data-dcl-form" not in body and _value(body) is None
+    assert webapp._dcl_eligible(sid2)
+    assert "data-dcl-link" in _page(c2, sid2)
     assert not called
     # an Electrical / Electronics focus is eligible by its root domain
     c3, _ = _client_for("dcl-part-elec@example.com")
@@ -980,7 +979,7 @@ def test_no_report_export_api_or_safety_surface():
     section = src[start:src.index("# DC-RESISTIVE-LOAD-POWER-01 —", start)]
     for banned in ("safety_signal", "SafetySignal(", "_get_store()", "append_",
                    "SESSION_STORE[", "deliverable", "pdf", "export", "/api/",
-                   "_therm01", "_cap13", "_tmp36", "_calc_gate", "load_project_subsystems",
+                   "_therm01", "_cap13", "_tmp36", "load_project_subsystems",
                    "request.args", "cap09", "success_criteria", "redirect("):
         assert banned not in section, banned
     assert section.count("_dcalc.bind_method(") == 1

@@ -38,10 +38,23 @@ and the engineering checks that still remain — above all that this energy is n
 temperature. Nothing is inferred: InventorAI never decides that a project has a resistive load or how long it runs, and
 asks no generic question about loads or batteries.
 
-Eligibility (method-specific): a project whose trusted durable root domain is exactly `electronics_electrical`, read as
-the other calculation gates read it (`_cap12_root_domain` in `web/app.py`). Root only: no declared Stage 15 part grants this
-method, and the Stage 15 exception in `engine/subsystem_model.py` does not name it. An unreadable domain grants nothing.
-The session link, the page and the submission read the same one decision.
+Eligibility (method-specific): the SAME `_calc_gate` / `_calc_declared_part` rule as THERM-01 and TMP36 in `web/app.py`: a
+project whose trusted durable root domain is exactly `electronics_electrical`, read as the other calculation gates read it
+(`_cap12_root_domain`), or, whatever the initial analysis focus, the ONE inventor-declared Electrical / Electronics part of a
+valid durable Stage-15 integrated composition (two- or three-part), read only through the store-validated composition and
+never from the request; the page names that part with the existing Electrical / Electronics attribution wording. The Stage
+15 exception in `engine/subsystem_model.py` names this method. A declared part makes the calculation OFFERED only: it
+establishes no load type, applicability, suitability, validation or safety and supplies no value, declaration or screen
+answer. A missing, malformed, corrupt or unreadable composition, or an unreadable root domain, grants nothing beyond the
+root rule. The decision is recomputed from the current durable state on every request; the session link, the page and the
+submission read the same one decision, so an earlier rendered page grants nothing once that state no longer admits the
+project.
+
+*Amendment (DC-RESISTIVE-LOAD-INTEGRATED-PART-01, Owner-authorized; applicable on the verified merge of its pull request
+into `feature/atomic-json-session-persistence`).* The superseded wording read: "Root only: no declared Stage 15 part grants
+this method, and the Stage 15 exception in `engine/subsystem_model.py` does not name it." Only eligibility changes: the
+method identity, version, relation, roles, units, declarations, screen, numeric domain, numerical acceptance, display,
+refusal semantics, disclosure and sources are unchanged.
 
 ## 2. Method identity and version
 
@@ -237,7 +250,7 @@ efficiency or loss result; no varying-power, average-power, duty-cycle or integr
 non-resistive load; no compatibility, suitability or safety conclusion; no inference of the load type, the voltage, the
 resistance, the duration or any declaration, and no generic load or battery question; no unit conversion (no `mV`, `kΩ`,
 `min`, `h`, `Wh`, `kWh`, `kJ` or `mAh`); no persistence, result retention, report, PDF, Structured Export, API, evidence,
-readiness, progression, gap or SafetySignal effect; no AI or provider call; no Stage 15 part eligibility (§1); no 28-T3,
+readiness, progression, gap or SafetySignal effect; no AI or provider call; Stage 15 part eligibility only as stated in §1; no 28-T3,
 D4 or T6 activation.
 
 ## 11. Source and IP status

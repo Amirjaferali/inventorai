@@ -76,7 +76,14 @@ and changes nothing here. A further narrow, Owner-authorized exception
 ``cap13:planar_required_force`` v1.0 may likewise be OFFERED for the declared
 Mechanical part whatever the initial analysis focus, decided in the web layer
 from the same validated durable composition; it establishes no actuation,
-applicability, suitability, validation or safety and changes nothing here. No other specialist
+applicability, suitability, validation or safety and changes nothing here. A further narrow,
+Owner-authorized exception (DC-RESISTIVE-LOAD-INTEGRATED-PART-01): the three admitted
+request-local calculations ``electrical:dc_resistive_load_current``,
+``electrical:dc_resistive_load_power`` and ``electrical:dc_resistive_load_energy``, each
+v1.0, may likewise be OFFERED for the declared Electrical / Electronics part whatever the
+initial analysis focus, decided in the web layer from the same validated durable
+composition; it establishes no load type, applicability, suitability, validation or
+safety and changes nothing here. No other specialist
 behaviour is granted by these exceptions. Subsystem identity is
 system-generated (``new_subsystem_id``), opaque, immutable and never derived
 from a name, a function text, a domain id or a list position; a client never
