@@ -39,6 +39,8 @@ from tests.cap01_measurement_conditions_addition import (
     without_measurement_conditions_addition)
 # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 added one further prose-only group on the Electronics
 # MECHANISM_COMPLETENESS context; excluded here likewise (tests/cap01_load_switching_addition.py).
+from tests.measurement_planning_integrated_part_amendment import (
+    without_measurement_planning_integrated_part_amendment)
 from tests.cap01_load_switching_addition import (  # noqa: F401
     LSW_GROUP, LSW_RECORDS, LSW_ROW, LSW_SLUG, without_load_switching_addition)
 from tests.cap01_measurement_guidance_addition import MGUIDE_GROUP, MGUIDE_SLUG
@@ -273,12 +275,15 @@ def test_m09_a_mechanical_root_shows_no_note():
     assert _block(body) is None and "data-measurement-conditions" not in body and SLUG not in body
 
 
-@pytest.mark.parametrize("focus,shown", [("electronics_electrical", True), ("mechanical", False)])
-def test_m10_an_integrated_project_follows_its_trusted_root_domain_only(focus, shown):
+@pytest.mark.parametrize("focus,root_rule", [("electronics_electrical", True), ("mechanical", False)])
+def test_m10_an_integrated_project_shows_the_note_for_its_declared_electronics_part(focus, root_rule):
+    # The accessor's own root rule is unchanged; MEASUREMENT-PLANNING-INTEGRATED-PART-01
+    # (Owner-authorized) shows the note on the page for the declared Electrical /
+    # Electronics part of a valid integrated composition, whatever the focus.
     client, _aid = _client_for("mcond-int-%s@example.com" % focus[:4])
     sid = _integrated(client, focus)
-    assert (cap01_guidance.measurement_planning_conditions(webapp._cap12_root_domain(sid)) is not None) is shown
-    assert (_block(_page(client, sid)[1]) is not None) is shown
+    assert (cap01_guidance.measurement_planning_conditions(webapp._cap12_root_domain(sid)) is not None) is root_rule
+    assert _block(_page(client, sid)[1]) is not None
 
 
 @pytest.mark.parametrize("reader", [lambda _sid: None,
@@ -331,7 +336,7 @@ def test_m15_viewing_the_page_writes_nothing():
 # ==========================================================================
 def test_p01_the_pack_change_is_exactly_one_group_and_one_note():
     pack = _pack()
-    assert _digest(without_measurement_conditions_addition(without_load_switching_addition(pack))) == _PRE_PACK_DIGEST
+    assert _digest(without_measurement_planning_integrated_part_amendment(without_measurement_conditions_addition(without_load_switching_addition(pack)))) == _PRE_PACK_DIGEST
     assert [g["group_id"] for g in pack["reference_fundamentals"]][-1] == GROUP
     note = pack["_governance_notes"][NOTE]
     for phrase in ("MEASUREMENT-CONDITIONS-AWARENESS-01", "exactly ONE prose-only conceptual claim",

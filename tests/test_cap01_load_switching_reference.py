@@ -43,6 +43,8 @@ from tests.cap01_controller_addition import CTRL_GROUP
 from tests.cap01_charge_addition import CHARGE_GROUP
 from tests.cap01_measurement_guidance_addition import MGUIDE_GROUP
 from tests.cap01_measurement_conditions_addition import MCOND_GROUP
+from tests.measurement_planning_integrated_part_amendment import (
+    without_measurement_planning_integrated_part_amendment)
 from tests.cap01_load_switching_addition import (
     LSW_CLAIM as CLAIM, LSW_GROUP as GROUP, LSW_NOTE as NOTE, LSW_RECORDS as RECORDS, LSW_ROW as ROW,
     LSW_SLUG as SLUG, without_load_switching_addition)
@@ -428,7 +430,7 @@ def test_f02_an_equation_key_never_substitutes_the_prose_text(monkeypatch):
 # ==========================================================================
 def test_p01_pack_minus_exactly_this_addition_equals_the_base_pack():
     pack = _pack()
-    assert _digest(without_load_switching_addition(pack)) == _PRE_PACK_DIGEST
+    assert _digest(without_measurement_planning_integrated_part_amendment(without_load_switching_addition(pack))) == _PRE_PACK_DIGEST
     ids = [g["group_id"] for g in pack["reference_fundamentals"]]
     assert ids.index(GROUP) == ids.index(CTRL_GROUP) + 1
     note = pack["_governance_notes"][NOTE]

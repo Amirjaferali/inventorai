@@ -281,12 +281,15 @@ def test_g09_a_mechanical_root_shows_no_guidance():
     assert _block(body) is None and "data-measurement-guidance" not in body and SLUG not in body
 
 
-@pytest.mark.parametrize("focus,shown", [("electronics_electrical", True), ("mechanical", False)])
-def test_g10_an_integrated_project_follows_its_trusted_root_domain_only(focus, shown):
+@pytest.mark.parametrize("focus,root_rule", [("electronics_electrical", True), ("mechanical", False)])
+def test_g10_an_integrated_project_shows_the_guidance_for_its_declared_electronics_part(focus, root_rule):
+    # The accessor's own root rule is unchanged; MEASUREMENT-PLANNING-INTEGRATED-PART-01
+    # (Owner-authorized) shows the guidance on the page for the declared Electrical /
+    # Electronics part of a valid integrated composition, whatever the focus.
     client, _aid = _client_for("c1-mguide-int-%s@example.com" % focus[:4])
     sid = _integrated(client, focus)
-    assert (cap01_guidance.measurement_planning_guidance(webapp._cap12_root_domain(sid)) is not None) is shown
-    assert (_block(_page(client, sid)[1]) is not None) is shown
+    assert (cap01_guidance.measurement_planning_guidance(webapp._cap12_root_domain(sid)) is not None) is root_rule
+    assert _block(_page(client, sid)[1]) is not None
 
 
 @pytest.mark.parametrize("reader", [lambda _sid: None,

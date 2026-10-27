@@ -251,7 +251,7 @@ def test_strict_capture_keeps_its_semantics_and_its_attribution(elec_focus, monk
 
 
 # ==========================================================================
-# 5. nothing persisted; CAP-09 eligibility stays root-only
+# 5. nothing persisted; CAP-09 measurement planning keeps its own gate
 # ==========================================================================
 def test_nothing_is_persisted_on_the_integrated_part_path(elec_focus):
     c, sid = elec_focus
@@ -261,16 +261,17 @@ def test_nothing_is_persisted_on_the_integrated_part_path(elec_focus):
     assert _snapshot(c) == before
 
 
-def test_cap09_measurement_planning_eligibility_stays_root_only(elec_focus, mech_focus):
+def test_cap09_measurement_planning_keeps_its_own_gate(elec_focus, mech_focus):
     ec, esid = elec_focus
     mc, msid = mech_focus
     # the Electronics-root integrated project keeps the Electronics measurement guidance ...
     assert webapp._measurement_planning_guidance(esid) is not None
-    # ... and the Mechanical-root one gains none from its Electronics part
-    assert webapp._measurement_planning_guidance(msid) is None
-    assert webapp._measurement_planning_references(msid) is None
-    src = inspect.getsource(webapp._measurement_planning_guidance) + inspect.getsource(
-        webapp._measurement_planning_references)
+    # ... and, since MEASUREMENT-PLANNING-INTEGRATED-PART-01 (Owner-authorized), the
+    # Mechanical-root one shows it for its declared Electronics part, through the
+    # measurement-planning gate, never the CAP-12 gate
+    assert webapp._measurement_planning_guidance(msid) is not None
+    assert webapp._measurement_planning_references(msid) is not None
+    src = inspect.getsource(webapp._measurement_planning_domain)
     assert "_cap12_gate" not in src and "_cap12_root_domain" in src
 
 
