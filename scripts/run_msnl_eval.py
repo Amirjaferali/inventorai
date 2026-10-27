@@ -688,9 +688,11 @@ MECHANISM_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                    "msnl_mechanism_content_v1.json")
 MECHANISM_PACK_SHA256 = "a6ed890b93ec9b0364bc5c74832fd1c26aa00f24803a6de7fe308404b1399efb"
 # Owner authorization "R2 / ONE SYNTHETIC CAMPAIGN AUTHORIZED" (2026-10-27):
-# open for exactly ONE campaign (at most 480 attempts, US$25 total) and closed
-# again in the commit that records its evidence.
-MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED = True
+# the ONE campaign ran on 2026-10-27 (480 attempts; evidence in
+# docs/benchmarks/evidence/msnl_mechanism_content_v1/campaign_01_report.json and
+# campaign_01_journal.jsonl), so the path is closed again: no further campaign
+# without a new Owner authorization and a reviewed commit that reopens it.
+MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED = False
 MECHANISM_CAMPAIGN_EVIDENCE_PATH = os.path.join(
     _ROOT, "docs", "benchmarks", "evidence", "msnl_mechanism_content_v1",
     "campaign_01_report.json")

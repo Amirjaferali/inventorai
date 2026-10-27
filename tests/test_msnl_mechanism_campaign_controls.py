@@ -228,3 +228,33 @@ def test_one_authorized_campaign_runs_end_to_end_through_the_cli_path(spec, monk
     again = h.mechanism_content("openai", True, True, str(journal))
     assert again["provider_requests"] == 0 and len(fake.bodies) == 3 * len(pack["cases"])
     assert h.main(["--mechanism-content", "--provider", "openai"]) == 2
+
+
+# ─── the one authorized campaign is recorded and the path is closed ─────────
+
+def test_the_one_campaign_is_recorded_rescores_identically_and_the_path_is_closed(
+        monkeypatch):
+    """The single Owner-authorized campaign (2026-10-27) is the committed
+    evidence: it replays offline to the same decisions and verdict, it stayed
+    inside the 480-request allocation and the US$25 ceiling, every attempt
+    confirmed gpt-6-sol, and the provider path is refused again."""
+    import pathlib
+    root = pathlib.Path(__file__).resolve().parents[1]
+    evidence = root / "docs" / "benchmarks" / "evidence" / "msnl_mechanism_content_v1"
+    report = json.loads((evidence / "campaign_01_report.json").read_text(encoding="utf-8"))
+    journal = (evidence / "campaign_01_journal.jsonl").read_text(encoding="utf-8")
+    assert report["pack_sha256"] == h.MECHANISM_PACK_SHA256
+    assert report["provider_requests"] == 480 == report["spend"]["requests_sent"]
+    assert report["spend"]["conservative_bound_usd"] <= 25.0
+    attempts = [r["attempt"] for rows in report["case_level"] for r in rows]
+    assert {a["model"] for a in attempts} == {"gpt-6-sol"}
+    assert len(journal.splitlines()) == 2 + 2 * 480
+    rescored = h.mechanism_rescore(str(evidence / "campaign_01_report.json"))
+    assert [[r["decision"] for r in rows] for rows in rescored["case_level"]] == \
+        [[r["decision"] for r in rows] for rows in report["case_level"]]
+    assert rescored["result"]["verdict"] == report["result"]["verdict"] == "FAIL"
+    assert rescored["result"]["campaign_status"] == "COMPLETE"
+    assert h.MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED is False
+    monkeypatch.setattr(h, "OpenAIMsnlAdapter", None)    # building one would fail
+    out = h.mechanism_content("openai", True, True, "/nonexistent/journal.jsonl")
+    assert out["provider_requests"] == 0 and "not authorized" in out["refused"]
