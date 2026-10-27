@@ -8,6 +8,7 @@ Recorded per the Owner's 2026-10-27 architecture-boundary instruction. Nothing b
 - **Alternatives:** (A) Mechanical only; (B) Electrical / Electronics only; (C) bounded division — load-side claims with Mechanical, motor-side claims with Electrical / Electronics, the balance condition held only as an interface statement under Stage 15.
 - **Evidence-based recommendation (not a selection):** (C) best matches the recorded 28-T3 split and the existing CAP-13 load method; it creates no new owner. Implication: any statement that a *particular* motor can drive a *particular* mechanism would be a compatibility conclusion, which stays outside current authority (D4 NOT ACTIVATED).
 - **Decision owner:** Owner, with the ChatGPT Execution Lead.
+- **Outcome (recorded from the base branch, not decided here):** CLAUDE.md on `feature/atomic-json-session-persistence` at `692c2d9` (PR #889, 2026-10-27) records that the Owner approved **Option C for ownership only**: Mechanical owns load-side motion, force, speed and torque requirements; Electrical / Electronics owns motor electrical and drive characteristics; Stage 15 composes attributed interface statements without assessing a particular pairing. It notes SRC-004 is not admitted production provenance and its residual authorship / IP qualification stays explicit.
 
 ## DR-2 — Q-01: which condition D-7 must govern
 - **Question:** which applicability condition D-7 requires before the stiffness method could ever be admitted, and whether a qualitative declaration may satisfy it when no numeric criterion exists.

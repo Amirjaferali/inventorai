@@ -179,3 +179,21 @@ SRC-020 (NASA Ames) supports: free-space loss arises from beam spreading with di
 gains, free-space loss and other losses; field losses exceed theory, so large margins are needed. **UNVERIFIED:** the explicit
 inverse-square / far-field conditions — the NTIA definitions host is refused and the NIST mmWave paper (path-loss exponent 2 in free space)
 has unresolved rights. No link-budget numbers executed (roadmap exclusion).
+
+## Run 8 (2026-10-27, Owner-authorized early run)
+
+### Q-14 — Cells in series / parallel and balancing — QUALIFIED-CANDIDATE (reuse only; no new query or fetch)
+DOE ES-04 pp. 10–11 (SRC-007): series → voltages add, same current; parallel → same voltage, greater current-carrying capability.
+NASA/TM-2009-215751 pp. 9, 11, 12 (SRC-009): series strings need voltage control so the weakest cell is not reversed; cycling unbalances
+cells; cell protective devices behave differently in series / parallel designs. IP: NASA part clean; DOE part carries the handbook-series
+contractor caveat (as SRC-005). Verification a design would need: cell matching and per-cell voltage monitoring for series strings.
+
+### Q-15 — Imaging spatial resolution — SOURCE CANDIDATE, IP UNRESOLVED
+The only inspected statement (SRC-021: ground sampling distance is the pixel size and depends on IFOV and altitude; in-track and cross-track
+may differ for wide fields) comes from a mixed NASA / contractor preprint. USGS host refused. Claim stays UNVERIFIED on a clean-rights source.
+
+### Q-16 — Duty-cycled average current — SOURCE CANDIDATE, IP UNRESOLVED
+NIST-hosted papers (SRC-022, SRC-023) state that capacity ÷ current lifetime does not hold for real batteries, that equal average currents
+need not give equal lifetimes, and that sleep modes and short transmissions extend life. The explicit time-weighted-average statement was
+not found in an inspected clean-rights source → UNVERIFIED. The caveat itself is consistent with qualified Q-06 sources (SRC-008, SRC-009).
+Stage 31 IoT remains not authorized.
