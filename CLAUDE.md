@@ -1587,10 +1587,17 @@ information, not execution authority.
   edition and passage location); anything further reopens on a directly inspected authoritative source with a recorded reuse basis
   (Lead-supplied when executor egress is blocked). Interface verification beyond the Stage 15
   preparation fields: STOP — reopens only with an authorized interface-characterisation scope (the D4
-  gate) and its claim-level sources. Preliminary motion requirements: BLOCKED — reopens on a qualified
-  class-level statement of the load characteristics that govern whether a motor can drive a mechanism
-  (first uninspected candidate: DOE-HDBK-1011/2-92, Volume 2, DC-motor module) plus a Mechanical vs
-  Electrical / Electronics host decision. Settled items in (e): CAP-13 D-7 reopens on a qualified
+  gate) and its claim-level sources. Preliminary motion requirements (Q-02): the Owner approved
+  DR-1 Option C (2026-10-27) for ownership only: Mechanical owns load-side motion, force, speed and
+  torque requirements; Electrical / Electronics owns motor electrical and drive characteristics;
+  Stage 15 composes attributed interface statements without assessing a particular motor/mechanism
+  pairing. The former host-decision blocker is discharged. Research SRC-004 (NASA TM X-68244,
+  Loewenthal, 1973) is a qualified class-level load-side candidate on
+  `research/tech-sources-001`, not yet admitted production provenance; its residual authorship/IP
+  qualification and any required production records remain explicit. Q-02 implementation stays
+  BLOCKED pending separately authorized, source-admitted, inventor-valuable scope; no Stage 15
+  motion fields, numerical methods, D4 compatibility, 28-T3 expansion, T6 BOM/sizing, roadmap
+  status or product behaviour are authorized by this decision. Settled items in (e): CAP-13 D-7 reopens on a qualified
   source and method; further numerical methods on a real consumer and their own admission; structured
   quantity / BOM on T6 §0 activation; calculation-result retention on a consumer that must cite a result
   as evidence or detect staleness plus an authorized retention owner; Embedded 28-T2 output on a
