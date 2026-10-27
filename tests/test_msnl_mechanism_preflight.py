@@ -318,3 +318,22 @@ def test_a_dated_snapshot_and_an_output_cap_incomplete_both_continue(arm, pre):
     rows, summary, fake = _run(arm, pre, capped, *[_body() for _ in range(7)])
     assert len(fake.bodies) == 8 and summary["stopped"] is None
     assert rows[0]["outcome"] == h.PF_CAPPED and rows[0]["model"] == "gpt-6-sol-2026-10-20"
+
+
+def test_the_one_authorized_run_is_recorded_and_the_path_is_closed_again():
+    """The single Owner-authorized preflight ran once (2026-10-27); its
+    sanitized report is the committed evidence and the provider path is
+    refused again without sending anything."""
+    import pathlib
+    root = pathlib.Path(__file__).resolve().parents[1]
+    report = json.loads((root / "docs" / "benchmarks" / "evidence" /
+                         "msnl_mechanism_content_v1" /
+                         "preflight_01_report.json").read_text(encoding="utf-8"))
+    assert report["preflight_sha256"] == h.MECHANISM_PREFLIGHT_SHA256
+    assert report["arm_pack_sha256"] == h.MECHANISM_PACK_SHA256
+    assert report["provider_requests"] == len(report["requests"]) <= 8
+    assert report["summary"]["conservative_bound_usd"] <= report["limits"]["budget_usd"]
+    assert report["campaign_authorized"] is False
+    assert h.MECHANISM_PREFLIGHT_AUTHORIZED is False
+    out = h.mechanism_preflight_run("openai", True, True)
+    assert out["provider_requests"] == 0 and "refused" in out

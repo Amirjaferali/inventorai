@@ -1097,12 +1097,15 @@ def mechanism_rescore(path):
 # budget and the price basis are the separate pinned preflight fixture. Nothing
 # is scored, no reply text, request body, reasoning content, provider message
 # or header is kept, the campaign stays refused and none of its requests is
-# used. MECHANISM_PREFLIGHT_AUTHORIZED is closed again once the run is recorded.
+# used. The one authorized run took place on 2026-10-27 (8 requests, recorded in
+# docs/benchmarks/evidence/msnl_mechanism_content_v1/preflight_01_report.json),
+# so MECHANISM_PREFLIGHT_AUTHORIZED is closed again: any further run needs a new
+# Owner authorization and a reviewed commit that reopens it.
 
 MECHANISM_PREFLIGHT_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                         "msnl_mechanism_preflight_v1.json")
 MECHANISM_PREFLIGHT_SHA256 = "d6e4deda42a6d4a73ac9e2654d51bc69c05af53e9d15f49b4dc453964e67c63d"
-MECHANISM_PREFLIGHT_AUTHORIZED = True
+MECHANISM_PREFLIGHT_AUTHORIZED = False
 PF_COMPLETED = "COMPLETED_VALID"
 PF_CAPPED = "INCOMPLETE_OUTPUT_CAP"
 _PF_SAFE = re.compile(r"^[A-Za-z0-9_.:-]{1,100}$")
