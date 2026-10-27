@@ -15708,11 +15708,13 @@ def temperature_control_condition_post(sid):
 # decimal-reference acceptance and the exact / rounded display; the shared
 # calculation / units owner (`engine/deterministic_calculation.py`) owns
 # execution; the method adapter (`engine/dc_resistive_load_current_method.py`)
-# owns the relation and its binary acceptance. Eligibility is the trusted durable
-# ROOT domain only, exactly Electrical / Electronics: a declared Stage 15 part
-# grants nothing. Nothing is inferred about the project, nothing is persisted and
-# nothing is read beyond the root domain. The POST renders its answer directly and
-# never redirects. The other five calculations are untouched.
+# owns the relation and its binary acceptance. Eligibility is ``_calc_gate``: the
+# trusted durable root domain, exactly Electrical / Electronics, or the declared
+# Electrical / Electronics part of a valid durable integrated composition
+# (DC-RESISTIVE-LOAD-INTEGRATED-PART-01), recomputed on every request. Nothing is
+# inferred about the project, nothing is persisted and nothing is read beyond the
+# root domain and that validated composition. The POST renders its answer
+# directly and never redirects. The other five calculations are untouched.
 #
 # The SIXTH immutable trusted binding (calc/units Correction 06 §13E), created
 # here by application wiring for THIS consumer only. There is no registry,
@@ -15728,13 +15730,12 @@ _DCL_LTR_RUN = re.compile(
 
 
 def _dcl_eligible(sid):
-    """True iff the project's trusted durable ROOT domain is Electrical /
-    Electronics. Never read from the request and never from the composition:
-    a declared part grants nothing. Fails closed."""
-    try:
-        return _dcl.is_eligible(_cap12_root_domain(sid))
-    except Exception:
-        return False
+    """True iff the project is eligible under ``_calc_gate``: an Electrical /
+    Electronics durable root domain, or the declared Electrical / Electronics
+    part of a valid durable integrated composition
+    (DC-RESISTIVE-LOAD-INTEGRATED-PART-01). Recomputed from the current durable
+    state on every request; never read from the request; fails closed."""
+    return _calc_gate(sid, _dcl)[0]
 
 
 def _dcl_isolate(text, lang):
@@ -15764,8 +15765,8 @@ def _dcl_result_view(evaluation):
     }
 
 
-def _render_dcl(sid, status=200, eligible=True, captured=None, evaluation=None,
-                error=None):
+def _render_dcl(sid, status=200, eligible=True, declared_part=None, captured=None,
+                evaluation=None, error=None):
     lang = _current_ui_lang()
     view = None
     outcome_key = None
@@ -15777,6 +15778,11 @@ def _render_dcl(sid, status=200, eligible=True, captured=None, evaluation=None,
     response = make_response(render_template(
         "dc_load_current.html",
         sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
         iso=lambda key: _dcl_isolate(ui_text.text(key, lang), lang),
         disclosure_items=[
             _dcl_isolate(part, lang) for part in
@@ -15807,24 +15813,28 @@ def _render_dcl(sid, status=200, eligible=True, captured=None, evaluation=None,
 def dc_load_current(sid):
     if not _project_authorized(sid):
         return _deny_project()
-    return _render_dcl(sid, eligible=_dcl_eligible(sid))
+    eligible, part = _calc_gate(sid, _dcl)
+    return _render_dcl(sid, eligible=eligible, declared_part=part)
 
 
 @app.route("/session/<sid>/dc-load-current", methods=["POST"])
 def dc_load_current_post(sid):
     # Order: request integrity (global CSRF guard) -> project authorization ->
-    # eligibility (durable root domain only) -> strict capture (malformed: 400,
-    # no reason token) -> the consumer's §7 order -> the shared owner -> the
+    # eligibility (``_calc_gate``: the durable root domain, or the declared
+    # Electrical / Electronics part of a valid durable integrated composition,
+    # recomputed now) -> strict capture (malformed: 400, no reason token) -> the
+    # consumer's §7 order -> the shared owner -> the
     # decimal-reference acceptance.
     if not _project_authorized(sid):
         return _deny_project()
-    if not _dcl_eligible(sid):
+    eligible, part = _calc_gate(sid, _dcl)
+    if not eligible:
         return _render_dcl(sid, eligible=False)
     form = request.form
     captured = _dcl.capture_form({k: form.getlist(k) for k in form.keys()})
     if captured is None:
-        return _render_dcl(sid, status=400, error="UI_DCL_ERR_REQUEST")
-    return _render_dcl(sid, captured=captured,
+        return _render_dcl(sid, status=400, declared_part=part, error="UI_DCL_ERR_REQUEST")
+    return _render_dcl(sid, declared_part=part, captured=captured,
                        evaluation=_dcl.evaluate(captured, _DC_LOAD_CURRENT_BINDING))
 
 
@@ -15838,12 +15848,13 @@ def dc_load_current_post(sid):
 # decimal-reference acceptance and the exact / rounded display; the shared
 # calculation / units owner owns execution; the method adapter
 # (`engine/dc_resistive_load_power_method.py`) owns the relation and its binary
-# acceptance. Eligibility is the trusted durable ROOT domain only, exactly
-# Electrical / Electronics (the same root read as the DC load current page): a
-# declared Stage 15 part grants nothing. Nothing is inferred about the project,
-# nothing is persisted and nothing is read beyond the root domain. The POST
-# renders its answer directly and never redirects. The other six calculations are
-# untouched.
+# acceptance. Eligibility is ``_calc_gate``, as for the DC load current page: the
+# trusted durable root domain, exactly Electrical / Electronics, or the declared
+# Electrical / Electronics part of a valid durable integrated composition
+# (DC-RESISTIVE-LOAD-INTEGRATED-PART-01). Nothing is inferred about the project,
+# nothing is persisted and nothing is read beyond the root domain and that
+# validated composition. The POST renders its answer directly and never
+# redirects. The other six calculations are untouched.
 #
 # The SEVENTH immutable trusted binding (calc/units Correction 07 §13F), created
 # here by application wiring for THIS consumer only. There is no registry,
@@ -15853,13 +15864,12 @@ _DC_LOAD_POWER_BINDING = _dcalc.bind_method(
 
 
 def _dcp_eligible(sid):
-    """True iff the project's trusted durable ROOT domain is Electrical /
-    Electronics. Never read from the request and never from the composition:
-    a declared part grants nothing. Fails closed."""
-    try:
-        return _dcp.is_eligible(_cap12_root_domain(sid))
-    except Exception:
-        return False
+    """True iff the project is eligible under ``_calc_gate``: an Electrical /
+    Electronics durable root domain, or the declared Electrical / Electronics
+    part of a valid durable integrated composition
+    (DC-RESISTIVE-LOAD-INTEGRATED-PART-01). Recomputed from the current durable
+    state on every request; never read from the request; fails closed."""
+    return _calc_gate(sid, _dcp)[0]
 
 
 # As the DC load current run, plus the superscript two and the multiplication
@@ -15894,8 +15904,8 @@ def _dcp_result_view(evaluation):
     }
 
 
-def _render_dcp(sid, status=200, eligible=True, captured=None, evaluation=None,
-                error=None):
+def _render_dcp(sid, status=200, eligible=True, declared_part=None, captured=None,
+                evaluation=None, error=None):
     lang = _current_ui_lang()
     view = None
     outcome_key = None
@@ -15907,6 +15917,11 @@ def _render_dcp(sid, status=200, eligible=True, captured=None, evaluation=None,
     response = make_response(render_template(
         "dc_load_power.html",
         sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
         iso=lambda key: _dcp_isolate(ui_text.text(key, lang), lang),
         disclosure_items=[
             _dcp_isolate(part, lang) for part in
@@ -15937,24 +15952,28 @@ def _render_dcp(sid, status=200, eligible=True, captured=None, evaluation=None,
 def dc_load_power(sid):
     if not _project_authorized(sid):
         return _deny_project()
-    return _render_dcp(sid, eligible=_dcp_eligible(sid))
+    eligible, part = _calc_gate(sid, _dcp)
+    return _render_dcp(sid, eligible=eligible, declared_part=part)
 
 
 @app.route("/session/<sid>/dc-load-power", methods=["POST"])
 def dc_load_power_post(sid):
     # Order: request integrity (global CSRF guard) -> project authorization ->
-    # eligibility (durable root domain only) -> strict capture (malformed: 400,
-    # no reason token) -> the consumer's §7 order -> the shared owner -> the
+    # eligibility (``_calc_gate``: the durable root domain, or the declared
+    # Electrical / Electronics part of a valid durable integrated composition,
+    # recomputed now) -> strict capture (malformed: 400, no reason token) -> the
+    # consumer's §7 order -> the shared owner -> the
     # decimal-reference acceptance.
     if not _project_authorized(sid):
         return _deny_project()
-    if not _dcp_eligible(sid):
+    eligible, part = _calc_gate(sid, _dcp)
+    if not eligible:
         return _render_dcp(sid, eligible=False)
     form = request.form
     captured = _dcp.capture_form({k: form.getlist(k) for k in form.keys()})
     if captured is None:
-        return _render_dcp(sid, status=400, error="UI_DCP_ERR_REQUEST")
-    return _render_dcp(sid, captured=captured,
+        return _render_dcp(sid, status=400, declared_part=part, error="UI_DCP_ERR_REQUEST")
+    return _render_dcp(sid, declared_part=part, captured=captured,
                        evaluation=_dcp.evaluate(captured, _DC_LOAD_POWER_BINDING))
 
 
@@ -15969,12 +15988,13 @@ def dc_load_power_post(sid):
 # decimal-reference acceptance and the exact / rounded display; the shared
 # calculation / units owner owns execution; the method adapter
 # (`engine/dc_resistive_load_energy_method.py`) owns the relation and its binary
-# acceptance. Eligibility is the trusted durable ROOT domain only, exactly
-# Electrical / Electronics (the same root read as the DC load current and power
-# pages): a declared Stage 15 part grants nothing. Nothing is inferred about the
-# project, nothing is persisted and nothing is read beyond the root domain. The
-# POST renders its answer directly and never redirects. The other seven
-# calculations are untouched.
+# acceptance. Eligibility is ``_calc_gate``, as for the DC load current and power
+# pages: the trusted durable root domain, exactly Electrical / Electronics, or the
+# declared Electrical / Electronics part of a valid durable integrated
+# composition (DC-RESISTIVE-LOAD-INTEGRATED-PART-01). Nothing is inferred about
+# the project, nothing is persisted and nothing is read beyond the root domain and
+# that validated composition. The POST renders its answer directly and never
+# redirects. The other seven calculations are untouched.
 #
 # The EIGHTH immutable trusted binding (calc/units Correction 08 §13G), created
 # here by application wiring for THIS consumer only. There is no registry,
@@ -15984,13 +16004,12 @@ _DC_LOAD_ENERGY_BINDING = _dcalc.bind_method(
 
 
 def _dce_eligible(sid):
-    """True iff the project's trusted durable ROOT domain is Electrical /
-    Electronics. Never read from the request and never from the composition:
-    a declared part grants nothing. Fails closed."""
-    try:
-        return _dce.is_eligible(_cap12_root_domain(sid))
-    except Exception:
-        return False
+    """True iff the project is eligible under ``_calc_gate``: an Electrical /
+    Electronics durable root domain, or the declared Electrical / Electronics
+    part of a valid durable integrated composition
+    (DC-RESISTIVE-LOAD-INTEGRATED-PART-01). Recomputed from the current durable
+    state on every request; never read from the request; fails closed."""
+    return _calc_gate(sid, _dce)[0]
 
 
 # As the DC load power run, so ``E = V² × t / R = P × t`` stays one
@@ -16025,8 +16044,8 @@ def _dce_result_view(evaluation):
     }
 
 
-def _render_dce(sid, status=200, eligible=True, captured=None, evaluation=None,
-                error=None):
+def _render_dce(sid, status=200, eligible=True, declared_part=None, captured=None,
+                evaluation=None, error=None):
     lang = _current_ui_lang()
     view = None
     outcome_key = None
@@ -16038,6 +16057,11 @@ def _render_dce(sid, status=200, eligible=True, captured=None, evaluation=None,
     response = make_response(render_template(
         "dc_load_energy.html",
         sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
         iso=lambda key: _dce_isolate(ui_text.text(key, lang), lang),
         disclosure_items=[
             _dce_isolate(part, lang) for part in
@@ -16068,24 +16092,28 @@ def _render_dce(sid, status=200, eligible=True, captured=None, evaluation=None,
 def dc_load_energy(sid):
     if not _project_authorized(sid):
         return _deny_project()
-    return _render_dce(sid, eligible=_dce_eligible(sid))
+    eligible, part = _calc_gate(sid, _dce)
+    return _render_dce(sid, eligible=eligible, declared_part=part)
 
 
 @app.route("/session/<sid>/dc-load-energy", methods=["POST"])
 def dc_load_energy_post(sid):
     # Order: request integrity (global CSRF guard) -> project authorization ->
-    # eligibility (durable root domain only) -> strict capture (malformed: 400,
-    # no reason token) -> the consumer's §7 order -> the shared owner -> the
+    # eligibility (``_calc_gate``: the durable root domain, or the declared
+    # Electrical / Electronics part of a valid durable integrated composition,
+    # recomputed now) -> strict capture (malformed: 400, no reason token) -> the
+    # consumer's §7 order -> the shared owner -> the
     # decimal-reference acceptance.
     if not _project_authorized(sid):
         return _deny_project()
-    if not _dce_eligible(sid):
+    eligible, part = _calc_gate(sid, _dce)
+    if not eligible:
         return _render_dce(sid, eligible=False)
     form = request.form
     captured = _dce.capture_form({k: form.getlist(k) for k in form.keys()})
     if captured is None:
-        return _render_dce(sid, status=400, error="UI_DCE_ERR_REQUEST")
-    return _render_dce(sid, captured=captured,
+        return _render_dce(sid, status=400, declared_part=part, error="UI_DCE_ERR_REQUEST")
+    return _render_dce(sid, declared_part=part, captured=captured,
                        evaluation=_dce.evaluate(captured, _DC_LOAD_ENERGY_BINDING))
 
 

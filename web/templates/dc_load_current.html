@@ -43,6 +43,14 @@ ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:any
   <p style="margin:0">{{ iso('UI_DCL_INTRO') }}</p>
 </div>
 <p class="notice" data-dcl-scope-note>{{ iso('UI_DCL_SCOPE_NOTE') }}</p>
+{#- On an integrated project, the ONE inventor-declared Electrical / Electronics
+    part this calculation is offered for, by its durable Owner-declared name
+    (escaped, direction-auto), with the existing Electrical / Electronics
+    attribution copy. Offering the calculation for a recorded part does not
+    establish that its model applies. -#}
+{% if eligible and part_name %}
+<p class="notice" data-dcl-part><strong>{{ iso('UI_THERM01_PART_LABEL') }}</strong> <bdi dir="auto" data-dcl-part-name>{{ part_name }}</bdi><br>{{ iso('UI_THERM01_PART_NOTE') }}</p>
+{% endif %}
 
 {% if error_key %}<div class="error" role="alert" data-dcl-error>{{ t(error_key) }}</div>{% endif %}
 

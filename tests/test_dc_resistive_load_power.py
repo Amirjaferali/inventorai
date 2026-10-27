@@ -845,7 +845,7 @@ def test_non_success_shows_one_reason_and_no_number(elec, over, outcome):
     assert body.count("data-dcp-outcome") == 1 and "data-dcp-result" not in body
 
 
-def test_mechanical_root_and_declared_parts_are_not_eligible(mech, monkeypatch):
+def test_mechanical_root_is_not_eligible_but_a_declared_part_is(mech, monkeypatch):
     c, _aid, sid = mech
     assert "data-dcp-link" not in _page(c, sid)
     called = []
@@ -854,10 +854,13 @@ def test_mechanical_root_and_declared_parts_are_not_eligible(mech, monkeypatch):
         body = r.get_data(as_text=True)
         assert r.status_code == 200 and "data-dcp-scope-note" in body
         assert "data-dcp-form" not in body and _value(body) is None
+    # DC-RESISTIVE-LOAD-INTEGRATED-PART-01: on an integrated project with a
+    # Mechanical focus the declared Electrical / Electronics part is offered the
+    # calculation (tests/test_dc_resistive_load_integrated_part.py)
     c2, _ = _client_for("dcp-part-mech@example.com")
     sid2 = _integrated(c2, MECH)
-    assert not webapp._dcp_eligible(sid2)
-    assert "data-dcp-link" not in _page(c2, sid2)
+    assert webapp._dcp_eligible(sid2)
+    assert "data-dcp-link" in _page(c2, sid2)
     assert not called
     c3, _ = _client_for("dcp-part-elec@example.com")
     assert webapp._dcp_eligible(_integrated(c3, ELEC))
@@ -912,7 +915,7 @@ def test_no_report_export_api_or_safety_surface():
     section = src[start:src.index("# DC-RESISTIVE-LOAD-ENERGY-01 —", start)]
     for banned in ("safety_signal", "SafetySignal(", "_get_store()", "append_",
                    "SESSION_STORE[", "deliverable", "pdf", "export", "/api/",
-                   "_therm01", "_cap13", "_tmp36", "_dcl.", "_calc_gate",
+                   "_therm01", "_cap13", "_tmp36", "_dcl.",
                    "load_project_subsystems", "request.args", "cap09",
                    "success_criteria", "redirect("):
         assert banned not in section, banned
