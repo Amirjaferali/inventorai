@@ -10016,6 +10016,33 @@ UI_STRINGS = {
         "en": "This explanation does not describe your design's program, choose a microcontroller, check hardware compatibility, set timing or behaviour, or establish that anything works or is safe.",
         "ar": "لا يصف هذا الشرح برنامج تصميمك، ولا يختار متحكمًا دقيقًا، ولا يتحقق من توافق المكونات، ولا يحدد توقيتًا أو سلوكًا، ولا يثبت أن أي شيء يعمل أو أنه آمن.",
     },
+    # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 — one general, prose-only principle on the same exact
+    # Electronics MECHANISM_COMPLETENESS (OPEN / PARTIAL) binding. It is NOT Power Electronics / Motion capability.
+    # As for the earlier groups, the Arabic attribution wraps each URL and English title in a left-to-right isolate.
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_TITLE": {
+        "en": "Transistor as a current-controlled switch (general principle)",
+        "ar": "الترانزستور (transistor) بوصفه مفتاحًا يُتحكَّم فيه بالتيار (مبدأ عام)",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_INTRO": {
+        "en": "Reference information only. This general principle may not apply to your invention: InventorAI has not determined that your design uses or needs a transistor or switches a load.",
+        "ar": "معلومات مرجعية فقط. قد لا ينطبق هذا المبدأ العام على اختراعك: لم يحدّد InventorAI أن تصميمك يستخدم ترانزستورًا أو يحتاج إليه، ولا أنه يشغّل حِملًا ويطفئه.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_ITEM_1_TITLE": {
+        "en": "A small base current switches a larger load current",
+        "ar": "تيار قاعدة صغير يتحكم في تيار حِمل أكبر",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_ITEM_1_TEXT": {
+        "en": "In general, a bipolar junction transistor (BJT) can be used as an electrically controlled switch for a load: a small current into its base controls whether a much larger current flows through the load along its collector-emitter path. With no base current it does not conduct and the load is off; with enough base current it conducts fully and the load is on. This describes a general principle only; it does not show that your design uses it, which transistor or values would be needed, or that any control signal can drive it.",
+        "ar": "بوجه عام، يمكن استخدام ترانزستور ثنائي القطب (BJT) مفتاحًا يُتحكَّم فيه كهربائيًا لتشغيل حِمل: إذ يتحكم تيار صغير يدخل قاعدته في مرور تيار أكبر بكثير عبر الحِمل في مسار المجمّع والباعث. فإذا لم يمرّ تيار في القاعدة لا يوصل الترانزستور ويكون الحِمل مطفأً، وإذا مرّ فيها تيار كافٍ يوصل كليًا ويكون الحِمل مشغّلًا. هذا وصف لمبدأ عام فقط، ولا يبيّن أن تصميمك يستخدمه، ولا أي ترانزستور أو قيم قد تلزم، ولا أن أي إشارة تحكم تستطيع تشغيله.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_SOURCE": {
+        "en": "Source: Tony R. Kuphaldt, Lessons In Electric Circuits, Volume III — Semiconductors, online edition (index revised November 6, 2021), Chapter 4 \"Bipolar Junction Transistors\", section \"The transistor as a switch\", https://www.ibiblio.org/kuphaldt/electricCircuits/Semi/SEMI_4.html. © Tony R. Kuphaldt. Licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/). Adapted: InventorAI explains this point in its own words; the Arabic version is InventorAI's translation of that explanation. No figure, circuit diagram, datasheet or other third-party material is used. This does not imply that the author has reviewed, approved or endorsed InventorAI or this explanation.",
+        "ar": "المصدر: توني آر. كوبالدت (Tony R. Kuphaldt)، \u2066Lessons In Electric Circuits, Volume III — Semiconductors\u2069، النسخة الإلكترونية (فهرسها منقّح في 6 نوفمبر 2021)، الفصل 4 \u2066\"Bipolar Junction Transistors\"\u2069، القسم \u2066\"The transistor as a switch\"\u2069، على الرابط: \u2066https://www.ibiblio.org/kuphaldt/electricCircuits/Semi/SEMI_4.html\u2069. حقوق النشر © لتوني آر. كوبالدت، وهو مرخّص بموجب رخصة المشاع الإبداعي \u2066Creative Commons Attribution 4.0 International (CC BY 4.0)\u2069 المنشورة على الرابط: \u2066https://creativecommons.org/licenses/by/4.0/\u2069. مُقتبَس: شرح InventorAI هذه النقطة بكلماته، والنص العربي ترجمة InventorAI لهذا الشرح. ولا يُستخدم أي شكل أو مخطط دائرة أو ورقة بيانات أو مواد أخرى لطرف ثالث. ولا يعني ذلك أن المؤلف قد راجع InventorAI أو هذا الشرح أو وافق عليه أو أيّده.",
+    },
+    "UI_CAP01_ELECTRONICS_GAP_CONTEXT_V1_MECHANISM_COMPLETENESS_LOAD_SWITCHING_FUNDAMENTALS_BOUNDARY": {
+        "en": "This explanation does not design a circuit, recommend or choose a transistor or any other component, give a rating, current, voltage or resistor value, state that a microcontroller or other control output can drive a transistor or a load directly or safely, or establish that anything is suitable, works or is safe.",
+        "ar": "لا يصمّم هذا الشرح دائرة، ولا يوصي بترانزستور أو بأي مكوّن آخر ولا يختاره، ولا يعطي قيمة اسمية أو تيارًا أو جهدًا أو قيمة مقاومة، ولا يقرّر أن متحكمًا دقيقًا أو أي مخرج تحكم آخر يستطيع تشغيل ترانزستور أو حِمل مباشرةً أو بأمان، ولا يثبت أن أي شيء مناسب أو يعمل أو آمن.",
+    },
     # Stage 18 — Gap-Scoped Technical Next-Step Guidance — Closure. The Electronics
     # MECHANISM_COMPLETENESS / BOUNDARY_AMBIGUITY contexts (grounded only in the
     # governed Electronics pack questions) and, per authorized (domain, gap), ONE

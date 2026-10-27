@@ -56,6 +56,10 @@ from tests.cap01_measurement_guidance_addition import (
 # report context row); excluded here likewise (tests/cap01_measurement_conditions_addition.py).
 from tests.cap01_measurement_conditions_addition import (
     MCOND_GROUP, MCOND_RECORDS, without_measurement_conditions_addition)
+# 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 added one further prose-only group on the Electronics
+# MECHANISM_COMPLETENESS context; excluded here likewise (tests/cap01_load_switching_addition.py).
+from tests.cap01_load_switching_addition import (  # noqa: F401
+    LSW_GROUP, LSW_RECORDS, LSW_ROW, LSW_SLUG, without_load_switching_addition)
 
 _ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 _PACK_PATH = os.path.join(_ROOT, "domains", "electronics_electrical", "domain.json")
@@ -162,14 +166,14 @@ def _texts(lang):
 @pytest.mark.parametrize("state", [OPEN, PARTIAL])
 def test_b01_renders_for_the_exact_electronics_mechanism_gap_after_the_accuracy_group(state):
     groups = _groups((MECHANISM_COMPLETENESS, state))
-    assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [SENSING_GROUP, ACCURACY_GROUP, GROUP]
+    assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [SENSING_GROUP, ACCURACY_GROUP, GROUP, LSW_GROUP]
     group = groups[MECHANISM_COMPLETENESS][2]
     assert group["prose_only"] is True
     assert [c["claim_id"] for c in group["claims"]] == [CLAIM]
     html = _html((MECHANISM_COMPLETENESS, state))
     assert _ANY_FUND_RE.findall(html) == ["sensing-value-threshold-reference-v1",
                                           "measurement-accuracy-resolution-reference-v1",
-                                          "controller-input-logic-output-reference-v1"]
+                                          "controller-input-logic-output-reference-v1", LSW_SLUG]
     assert len(_BLOCK_RE.findall(html)) == 1
 
 
@@ -195,13 +199,14 @@ def test_b03_absent_for_other_gaps_and_other_domains():
 
 def test_b04_the_binding_is_one_fixed_row_appended_last_to_the_mechanism_context():
     row = cap01_guidance.CAP01_GAP_FUNDAMENTALS_EXTENSIONS[(DOMAIN, MECHANISM_COMPLETENESS)]
-    assert [r[0] for r in row] == [SENSING_GROUP, ACCURACY_GROUP, GROUP]
-    assert row[-1] == CTRL_ROW == (GROUP, (CLAIM,), "CONTROLLER_FUNDAMENTALS_")
+    # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 later appended ONE further row after this one.
+    assert [r[0] for r in row] == [SENSING_GROUP, ACCURACY_GROUP, GROUP, LSW_GROUP]
+    assert row[2] == CTRL_ROW == (GROUP, (CLAIM,), "CONTROLLER_FUNDAMENTALS_") and row[3] == LSW_ROW
     assert sorted(cap01_guidance.CAP01_GAP_FUNDAMENTALS_EXTENSIONS) == [
         (DOMAIN, MECHANISM_COMPLETENESS), (DOMAIN, PHYSICAL_FEASIBILITY)]
     assert GROUP in cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS
     # MEASUREMENT-PLAN-GUIDANCE-01 later added ONE CAP-09-page-only prose-only group (never a report row).
-    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({SENSING_GROUP, ACCURACY_GROUP, GROUP, MGUIDE_GROUP, MCOND_GROUP})
+    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({SENSING_GROUP, ACCURACY_GROUP, GROUP, MGUIDE_GROUP, MCOND_GROUP, LSW_GROUP})
 
 
 def test_b05_never_reads_inventor_text_or_signals():
@@ -218,7 +223,8 @@ def test_b06_the_report_differs_from_the_base_rendering_by_exactly_this_block(mo
                   ((MECHANISM_COMPLETENESS, CLOSED), (PHYSICAL_FEASIBILITY, OPEN))):
         with_row = _mask_csrf(_html(*pairs))
         table = dict(cap01_guidance.CAP01_GAP_FUNDAMENTALS_EXTENSIONS)
-        table[(DOMAIN, MECHANISM_COMPLETENESS)] = table[(DOMAIN, MECHANISM_COMPLETENESS)][:2]
+        table[(DOMAIN, MECHANISM_COMPLETENESS)] = tuple(
+            r for r in table[(DOMAIN, MECHANISM_COMPLETENESS)] if r[0] != GROUP)
         monkeypatch.setattr(cap01_guidance, "CAP01_GAP_FUNDAMENTALS_EXTENSIONS", table)
         without_row = _mask_csrf(_html(*pairs))
         monkeypatch.undo()
@@ -379,7 +385,7 @@ def test_f01_missing_required_prose_copy_removes_only_this_group(monkeypatch):
         strings.pop(PREFIX + part)
         monkeypatch.setattr(ui_text, "UI_STRINGS", strings)
         groups = _groups((MECHANISM_COMPLETENESS, OPEN), (PHYSICAL_FEASIBILITY, OPEN))
-        assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [SENSING_GROUP, ACCURACY_GROUP], part
+        assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [SENSING_GROUP, ACCURACY_GROUP, LSW_GROUP], part
         assert [g["group_id"] for g in groups[PHYSICAL_FEASIBILITY]] == [BASE_GROUP, ET_GROUP, CHARGE_GROUP]
         monkeypatch.undo()
 
@@ -390,7 +396,7 @@ def test_f02_an_equation_key_never_substitutes_the_prose_text(monkeypatch):
     strings[PREFIX + "ITEM_1_EQUATION"] = {"en": "x", "ar": "x"}
     monkeypatch.setattr(ui_text, "UI_STRINGS", strings)
     groups = _groups((MECHANISM_COMPLETENESS, OPEN))
-    assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [SENSING_GROUP, ACCURACY_GROUP]
+    assert [g["group_id"] for g in groups[MECHANISM_COMPLETENESS]] == [SENSING_GROUP, ACCURACY_GROUP, LSW_GROUP]
 
 
 def test_f03_existing_groups_keep_requiring_their_equation(monkeypatch):
@@ -411,9 +417,9 @@ def test_f03_existing_groups_keep_requiring_their_equation(monkeypatch):
 def test_p01_pack_minus_exactly_this_addition_equals_the_base_pack():
     pack = _pack()
     assert [g["group_id"] for g in pack["reference_fundamentals"]] == [
-        BASE_GROUP, ET_GROUP, SENSING_GROUP, ACCURACY_GROUP, GROUP, CHARGE_GROUP, MGUIDE_GROUP, MCOND_GROUP]
-    assert _digest(without_controller_addition(without_charge_addition(
-        without_measurement_conditions_addition(without_measurement_guidance_addition(pack))))) == _PRE_PACK_DIGEST
+        BASE_GROUP, ET_GROUP, SENSING_GROUP, ACCURACY_GROUP, GROUP, LSW_GROUP, CHARGE_GROUP, MGUIDE_GROUP, MCOND_GROUP]
+    assert _digest(without_controller_addition(without_charge_addition(without_load_switching_addition(
+        without_measurement_conditions_addition(without_measurement_guidance_addition(pack)))))) == _PRE_PACK_DIGEST
     note = pack["_governance_notes"][NOTE]
     for phrase in ("28-T2-CONTROLLER-INPUT-LOGIC-OUTPUT-REFERENCE-01", "Option A", "NOT general firmware ownership",
                    "PR016", "PR017", "inert", "the exclusion itself stands", "PR001–PR015 are unchanged",
@@ -453,7 +459,7 @@ def test_p04_provenance_is_append_only_with_two_claim_specific_records():
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR015")
     assert tuple(ids[i + 1:i + 3]) == RECORDS
-    pre = [r for r in records if r["record_id"] not in RECORDS + CHARGE_RECORDS + MGUIDE_RECORDS + MCOND_RECORDS]
+    pre = [r for r in records if r["record_id"] not in RECORDS + CHARGE_RECORDS + MGUIDE_RECORDS + MCOND_RECORDS + LSW_RECORDS]
     assert _digest(pre) == _PRE_PROVENANCE_DIGEST                     # PR001–PR015 and others unchanged
     src, use = (records[ids.index(r)] for r in RECORDS)
     assert sorted(src) == sorted(use) == sorted(records[i])
