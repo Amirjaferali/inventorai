@@ -253,3 +253,25 @@ NIST SP 800-193 (SRC-036): protect / detect / recover; authenticated updates thr
 an update; preventing updates to an earlier vulnerable version; recovery to an authentic firmware version; critical data to factory defaults or last
 known good; watchdog timers as an additional detection aid (also relevant later to Q-34); stated as broadly applicable to IoT and embedded devices.
 Dimensions: D1, D3, D5 (corruption detection), D7 established. Rollback nuance recorded in the unresolved-issues log.
+
+## Run 12 (2026-10-28, scheduled wake-up)
+
+### Q-26 — IoT power and failure modes — PARTIAL
+Clean-rights restatement found for most of the claim: NIST TN 1604 (SRC-039) — sleep mode, short transmissions and less data extend battery
+life; lifetime depends on acquisition / transmission frequency, transmit power and network design; battery nodes need an estimate of overall energy
+consumption over time to set battery-change intervals; a reliable network tolerates the failure of a node or link. With SRC-022's caveat (equal
+average currents need not give equal lifetimes). **Residual:** the explicit time-weighted average of active and sleep currents, and a source
+statement that device behaviour on power or connectivity loss must be defined — both UNVERIFIED. Dimensions: D1 partial, D2, D3, D7.
+
+### Q-28 — Real radio channels — QUALIFIED-CANDIDATE
+NIST TN 1604 (SRC-039): open-field ranges are optimistic; walls, floors and furnishings attenuate (metal blocks); layout changes alter coverage;
+devices sharing unlicensed ISM bands can interfere. NISTIR 8243 (SRC-040): reflection, absorption and interference limit range, reliability and
+timeliness; free-space path-loss exponent 2, higher when occluded; multipath fading modeled as Rician / Rayleigh. NBS TN 101 (SRC-038) on
+multipath coupling loss. SRC-041 cross-check only. Dimensions: D1, D3, D5 (measure in the real environment) established. No link-budget values.
+
+### Q-30 — Battery limits and BMS functions — QUALIFIED-CANDIDATE
+Re-read of NASA/TM-2009-215751 (SRC-009, no new fetch): abuse conditions (overcharge, overdischarge, shorts, high temperature beyond the
+manufacturer's limit, structural damage); cell-level voltage / mid-string monitoring and control against string imbalance; protection against
+overcharge, overdischarge, over-current and over-temperature with at least two levels of safety; abuse tests. **UNVERIFIED:** state-of-charge
+*estimation* as a BMS function (only the SOC definition is stated). Dimensions: D1, D2, D3, D5, D7. Lead noted for Q-31 (storage / cycling
+effects on capacity), not worked this run.

@@ -2,8 +2,8 @@
 
 *Updated after run 9 (2026-10-27). Research evidence only: nothing here is admitted, implemented, activated or qualified as a product method.*
 
-**Status:** ACTIVE — not complete. Runs 11 / 20 · Perplexity queries 36 / 240 · deep-research calls 0 · window ends 2026-11-26.
-**Questions registered:** 23 (Q-01…Q-23) plus held / excluded items. **Sources inspected directly:** 38 (hash, page and rights in `evidence/`).
+**Status:** ACTIVE — not complete. Runs 12 / 20 · Perplexity queries 38 / 240 · deep-research calls 0 · window ends 2026-11-26.
+**Questions registered:** 23 (Q-01…Q-23) plus held / excluded items. **Sources inspected directly:** 41 (hash, page and rights in `evidence/`).
 
 | Q | Topic | Result |
 |---|---|---|
@@ -31,6 +31,7 @@
 | Q-22 | Thermal expansion and mismatch | Qualified candidate (NBS Circular 486, NASA TP-2226). |
 | Q-23 | Resonance (spring–mass) | Queued for run 11. |
 | Q-13, Q-24, Q-25 (run 11) | Free-space conditions; IoT security baseline; firmware update integrity / recovery | Qualified candidates (NBS TN 12 / TN 101; NIST blog + FAQ; NIST SP 800-193). |
+| Q-26, Q-28, Q-30 (run 12) | IoT power / failure; real radio channels; battery limits and BMS protection | Q-28, Q-30 qualified candidates (NIST TN 1604, NISTIR 8243; NASA battery guideline); Q-26 partial. |
 | Q-24…Q-40 | IoT security / updates / power / privacy, RF channel and capacity, battery limits and ageing, converters, motor classes, watchdogs, interlocks, Earth-observation trade-offs, hover power, MPPT, eclipse power, vibration isolation | Added 2026-10-28 (Owner correction) from the roadmap's recorded concerns; queued by priority. |
 
 **Decisions:** DR-1 decided by you (Option C, recorded on the base branch). Still open with you and the Execution Lead: DR-2 which condition D-7
