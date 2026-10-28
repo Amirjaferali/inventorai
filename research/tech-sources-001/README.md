@@ -48,7 +48,8 @@ Choose lenses adaptively per question; record the lens used for every query in t
 5. Work at most 3 ELIGIBLE questions (definitions in `state/question-register.md` "Selection and depth rules", Owner correction 2026-10-28):
    eligible = `QUEUED`, `IN_PROGRESS` or `PARTIAL` without a `WAITING` note. Order: every eligible Tier 1 question first, in register order; then
    (Owner remaining-run discipline 2026-10-28) every eligible Tier 2 `PARTIAL` residual, P1 → P2 → P3; then `QUEUED` Tier 2 questions by
-   priority P1 → P2 → P3, register order within a priority. Reuse inspected sources before any new search; stop work on a question once it is terminal. On a `PARTIAL` question, search only its recorded residual — never repeat an
+   priority P1 → P2 → P3, register order within a priority, except that a queued question whose result could support a calculation, engineering
+   condition or verification step comes before a reference-only one of the same priority (e.g. Q-29, Q-32 before Q-27). Reuse inspected sources before any new search; stop work on a question once it is terminal. On a `PARTIAL` question, search only its recorded residual — never repeat an
    established point. A question becomes `QUALIFIED-CANDIDATE` only when its applicable depth dimensions are established or recorded as
    unavailable, not because one introductory source was found; it becomes `EXHAUSTED` when its residual has no reachable lawful source after the
    lenses tried (recorded), or its 20-query cap is reached. If no question is eligible, the run may derive at most 3 new Tier 2 rows under the
