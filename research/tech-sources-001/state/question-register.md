@@ -1,7 +1,8 @@
 # TECH-SOURCES-001 — Question register
 
 Reconstructed 2026-10-27 against live merged evidence at `7eeb085` (PR #888). Statuses: `QUEUED`, `IN_PROGRESS`, `QUESTION UNCLEAR`, `EVIDENCE INSUFFICIENT`, `SOURCE CANDIDATE`, `SOURCE ACCESS BLOCKED`, `IP UNRESOLVED`, `METHOD UNQUALIFIED`, `AUTHORITY BLOCKED`,
-`QUALIFIED-CANDIDATE`, `BLOCKED`, `ABSTAINED`, `HELD` (not researchable under current authority), `EXCLUDED`.
+`QUALIFIED-CANDIDATE`, `BLOCKED`, `ABSTAINED`, `HELD` (not researchable under current authority), `EXCLUDED`;
+added 2026-10-28: `PARTIAL` (non-terminal: some points established, a researchable residual remains; `PARTIAL — WAITING: <reason>` is terminal until the reason clears) and `EXHAUSTED` (terminal: residual has no reachable lawful source after the recorded lenses, or the 20-query cap is reached).
 A question is worked only within its exact claim; findings never decide the owner, host, method admission or activation.
 
 ## Tier 1 — existing open engineering questions
@@ -21,7 +22,7 @@ A source on one technology never establishes compatibility between two; a declar
 | Q-04 | C (Mechanical) | Verification of a simply supported midspan-load deflection estimate: which measured quantities and test conditions (span, support / load-point geometry, load rate, moisture / temperature) a primary test-method source requires before a model estimate may be compared with an observation. | Stiffness contract §8 (estimate UNVALIDATED) and WS-PFV-001 validation boundary; companion to Q-01 | Q-01 regime criterion; D-5 property records | QUALIFIED-CANDIDATE (run 2: SRC-006, SRC-001 re-read; run 6: moisture / temperature / rate / creep from SRC-014) | 1 |
 | Q-05 | B (controller output → driver / load) | Class-level: a logic output drives a load or driver only within its specified output voltage levels and source / sink current; when the load exceeds them an interposed driver stage is required, and the driver's input requirements must be met by the logic output. | 28-T2 / 28-T3 (CLAUDE.md (h)); interface home Stage 15 | E-01 transistor load-switching principle (PR #885); Q-03 output path | SOURCE ACCESS BLOCKED (run 2: NXP AN2434/AN2433 and Kuphaldt Vol. IV hosts refused). Reopens on access or a Lead-supplied inspection. Run 5: no legal alternative reachable; run 6: ibiblio now fails TLS trust (emSign root absent) — claim UNVERIFIED | 4 |
 | Q-06 | B (power source → load) | Battery / BMS: delivered capacity of a battery depends on discharge rate and temperature, so runtime is not in general rated capacity divided by load current; the conditions under which a simple capacity / current estimate is stated to apply. | Battery / BMS R2 (RECORDED only); charge reference PR #802 | PR #802 Q = I × t and A·h ↔ C reference | QUALIFIED-CANDIDATE (run 3: SRC-008, SRC-009, SRC-007) | 1 |
-| Q-07 | B (PLC I/O ↔ field device) | Vendor-neutral class-level: digital input / output electrical types (current sinking vs sourcing, nominal DC levels) and the condition that a field device's output type and levels must match the PLC input type. | 28-T4 (RECORDED — NOT AUTHORIZED) | 28-T4 control-cycle evaluation already delivered | PARTIAL (run 5: SRC-013 levels; run 6: SRC-017 sinking/sourcing concept, I/O circuit types, datasheet limits); explicit pairing rule UNVERIFIED — reopens on access to ibiblio / nrc.gov or a Lead-supplied inspection | 2 |
+| Q-07 | B (PLC I/O ↔ field device) | Vendor-neutral class-level: digital input / output electrical types (current sinking vs sourcing, nominal DC levels) and the condition that a field device's output type and levels must match the PLC input type. | 28-T4 (RECORDED — NOT AUTHORIZED) | 28-T4 control-cycle evaluation already delivered | PARTIAL (run 5: SRC-013 levels; run 6: SRC-017 sinking/sourcing concept, I/O circuit types, datasheet limits); explicit pairing rule UNVERIFIED — WAITING: access to ibiblio / nrc.gov or a Lead-supplied inspection | 2 |
 | Q-08 | B (feedback ↔ timing) | Sampled-data control: the class-level relation between sampling rate and the bandwidth / dynamics of the controlled process, and the stated conditions for its use. | `control_loop` bounded concept scope; 28-T5 | `control_loop` pack PR001–PR007 concept claims | QUALIFIED-CANDIDATE (run 3: SRC-010) | 1 |
 | Q-09 | C (thermal) | Verification of a single-path conduction temperature-difference estimate: which measurements (heat input, two temperatures, contact conditions) a primary source requires to determine a thermal resistance experimentally. | THERM-01 contract validation boundary (WS-PFV-001) | THERM-01 method and its DOE / NIST source records | QUALIFIED-CANDIDATE (run 4: SRC-011) | 1 |
 | Q-10 | B (mechanical interface ↔ manufacturing) | Class-level: fits and tolerances between mating parts depend on the chosen manufacturing process capability; source the authoritative, reusable statement of that dependency only. | CAP-12 / CAP-13 Knowledge, Data and Feasibility Boundary | CAP-12 NASA form mock-up claims | QUALIFIED-CANDIDATE (run 4: SRC-012; process-dependence point indirect) | 1 |
@@ -72,3 +73,55 @@ Space / Satellite → hydraulics / pneumatics → optics / photonics → materia
 Before working one, add its row here with its exact claim and the existing obligation it comes from; skip any technology with no evidenced open claim.
 Source findings for 28-T3 Power Electronics / Motion beyond E-01 enter only if a distinct unresolved claim is evidenced.
 Run 4 (2026-10-27): every remaining label checked — no claim-level open obligation found; no row added (abstention log).
+
+
+## Selection and depth rules (Owner correction 2026-10-28 — extends Tier 2; supersedes the run-4 "evidenced open claim only" reading)
+
+**Corrected interpretation.** The original mandate authorized preparation for future technologies, integration and verification. Tier 2 rows may
+therefore be derived from the concerns already recorded for each future technology in the Master Execution Roadmap — 28-T1…28-T5 entries, the named
+assessments (Wireless / RF, Battery / BMS, Perception / Edge), Stage 31 IoT (row 31 and its numbered note), secondary notes C4–C7, and the Satellite
+Technology subitem — not only from claims already open in an implementation obligation. A row quotes the roadmap concern it comes from. The roadmap,
+its owners and its "must NOT absorb" boundaries are unchanged; a derived row creates no owner, method, activation or authorization.
+
+**Derivation limits.** Each row is ONE class-level engineering claim. Excluded: anything the roadmap entry says the responsibility must not absorb;
+legal, certification, regulatory-compliance or safety-approval conclusions; numerical execution (e.g. link budgets, sizing); vendor-specific
+material; anything under H-01, H-02, H-03, H-04 or another explicit hold. At most 3 rows derived per run, P1 before P2 before P3.
+
+**Priority.** P1 = material missing evidence for a technology whose recorded concerns are otherwise uncovered or whose existing evidence is only one
+introductory point; P2 = deepens a technology with some qualified evidence; P3 = useful but lower product value or near a deferred / premature note.
+A wake-up text that names questions is a hint only; this order governs (run 11's text predates the correction).
+Existing Tier 2b priorities: Q-13 P1; Q-11, Q-20, Q-23 P2; Q-12, Q-18 P3. Q-15 and Q-16 stay `IP UNRESOLVED` (terminal); their claims are
+re-approached only through the new rows below that need a clean-rights source anyway.
+
+**Depth dimensions** (assessment checklist, not separate questions; findings state which apply and which are established):
+D1 governing model / equation / relationship · D2 inputs, outputs, units, operating conditions · D3 applicability limits, uncertainty, failure
+conditions · D4 integration with other owners / systems · D5 measurement, experiment, validation needs · D6 reusable models, reference
+implementations, libraries (with licence) · D7 safety and reliability considerations. Not every dimension applies to every claim; a dimension that
+applies but has no lawful source is recorded `UNVERIFIED`, never invented.
+
+**Premature (not derived now; reassess on the named trigger):** Robotics localization / path planning (roadmap 28-T5 reassessment); Perception
+dataset / model provenance and edge-inference trade-offs (a concrete perception case); PLC vendor reference layers (separate source / IP review);
+Optics, Materials beyond Q-21 / Q-22 (C5 / C6 DEFER); Software and Medical packs (future-domain reassessment pool); thermal beyond THERM-01
+(separate authorization). Sensors (28-T1) and sensor ↔ controller research stay HELD (H-01 / H-02); IoT ↔ embedded data exchange stays HELD (H-04).
+
+## Tier 2c — derived 2026-10-28 from recorded future-technology concerns (Owner correction)
+
+| ID | Technology / recorded concern (roadmap) | Exact claim to source (class-level) | Dims | Must not duplicate | P | Status | Queries used |
+|---|---|---|---|---|---|---|---|
+| Q-24 | IoT — Stage 31 "identity, security, updates" | Baseline device cybersecurity capabilities expected of a connected device (device identification, configuration, data protection, logical access to interfaces, secure software / firmware update, cybersecurity state awareness) and the stated conditions under which a baseline applies | D1 D3 D4 D7 | H-04 data exchange; no compliance conclusion | P1 | QUEUED | 0 |
+| Q-25 | IoT — Stage 31 "updates, failure modes" | Firmware / software update integrity and recovery: an update should be authenticated and verified before use, and a device should be able to recover to a known-good state after a failed or corrupted update | D1 D3 D5 D7 | Q-24; 28-T2 output (DR-3) | P1 | QUEUED | 0 |
+| Q-26 | IoT — Stage 31 "power, failure modes" | Connected battery-powered devices: sleep / active duty cycling sets average current and so battery life (clean-rights restatement of Q-16), and loss of power or connectivity are failure modes whose device behaviour must be defined | D1 D2 D3 D7 | Q-06, Q-14, Q-16 | P1 | QUEUED | 0 |
+| Q-27 | IoT — Stage 31 "privacy" | Class-level privacy considerations for devices that collect data: data minimisation and protection of data at rest / in transit, stated as considerations, not requirements | D3 D4 D7 | Q-24 | P2 | QUEUED | 0 |
+| Q-28 | Wireless / RF — "propagation / channel assumptions; range / interference / coexistence" | Real links depart from free space: obstruction, reflection and multipath fading increase path loss and vary the received signal; devices sharing a band can interfere; the stated conditions under which free-space (Q-13) understates loss | D1 D3 D5 | Q-13 Friis; no link-budget execution | P1 | QUEUED | 0 |
+| Q-29 | Wireless / RF — "bandwidth / latency concepts" | The channel-capacity relation (Shannon–Hartley, C = B log₂(1 + S/N)) as an upper bound on error-free data rate for a band-limited noisy channel, and its stated assumptions | D1 D2 D3 | Q-28 | P2 | QUEUED | 0 |
+| Q-30 | Battery / BMS — "charge / discharge envelopes; BMS functions; battery-specific protection" | Cells must be kept within stated voltage, current and temperature limits during charge and discharge; a BMS monitors these, protects (disconnects) on violation, balances series cells and estimates state of charge | D1 D2 D3 D7 | Q-06, Q-14; 28-T3 charger design; 28-T2 BMS firmware | P1 | QUEUED | 0 |
+| Q-31 | Battery / BMS — "cycle-life / degradation concepts" | Capacity fades with cycling and age; depth of discharge, temperature and charge / discharge rate affect cycle life; stated conditions | D1 D3 D5 D7 | Q-06 | P1 | QUEUED | 0 |
+| Q-32 | Power electronics (28-T3) — "power conversion, PWM" | Ideal switching converters in continuous conduction: buck V_out = D·V_in, boost V_out = V_in / (1 − D); the conditions (ideal components, continuous conduction, steady state) and the stated loss / efficiency departures | D1 D2 D3 | Q-11; E-01 | P2 | QUEUED | 0 |
+| Q-33 | Power electronics (28-T3) — "motor / actuator class concepts; BLDC / stepper / servo contexts" | Class-level distinctions: a stepper run open-loop can lose steps when load torque exceeds its available torque; a servo uses position feedback; a brushless DC motor needs electronic commutation | D1 D3 D4 D5 | Q-02 (DR-1 Option C split) | P2 | QUEUED | 0 |
+| Q-34 | Embedded (28-T2) — "watchdogs, startup / shutdown, fault handling" | A watchdog timer resets or safes a processor when software fails to service it within its timeout; defined startup and fault states | D1 D3 D7 | Q-03 / DR-3 output path; H-01 sensor ↔ controller | P2 | QUEUED | 0 |
+| Q-35 | PLC (28-T4) — "interlocks; states / sequences" | An interlock prevents an actuator / output from operating unless defined conditions are met; sequences advance on defined transition conditions | D1 D3 D7 | Delivered 28-T4 control-cycle evaluation; Q-07 | P2 | QUEUED | 0 |
+| Q-36 | Satellite — preferred first slice "mission / use-case need, Earth-observation data" | Earth-observation mission parameters trade against each other: spatial resolution, swath / coverage and revisit time depend on orbit altitude and sensor design | D1 D2 D3 | Q-15 (re-approached on clean rights) | P2 | QUEUED | 0 |
+| Q-37 | Drone / UAV (Stage 28) | Ideal hover power from momentum theory, P = T^(3/2) / √(2ρA), so endurance depends on weight, rotor disk area and stored energy; stated ideal-rotor assumptions | D1 D2 D3 | Q-17 | P3 | QUEUED | 0 |
+| Q-38 | Renewables (Stage 28) | A PV array's current–voltage curve has a maximum power point that shifts with irradiance and temperature; maximum-power-point tracking keeps operation near it | D1 D2 D3 | Q-18 | P3 | QUEUED | 0 |
+| Q-39 | Satellite — "power and eclipse / margins" | During eclipse a spacecraft runs on stored energy, so array and battery are sized for the sunlit load plus recharge; stated assumptions | D1 D2 D3 D7 | Q-19, Q-30 | P3 | QUEUED | 0 |
+| Q-40 | Acoustics / vibration (C7, Mechanical first) | Vibration isolation / transmissibility: transmitted force is reduced only above √2 times the natural frequency; damping trades resonance amplification against high-frequency isolation | D1 D3 D5 | Q-23 | P3 | QUEUED | 0 |

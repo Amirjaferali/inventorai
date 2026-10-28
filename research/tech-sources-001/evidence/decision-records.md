@@ -22,3 +22,10 @@ Recorded per the Owner's 2026-10-27 architecture-boundary instruction. Nothing b
 - **Evidence:** only CLAUDE.md (e) names it; roadmap 28-T2 lists candidate concerns, not a claim.
 - **Missing:** an exact claim (which concern, what statement). Without it no source can be qualified. D13 stays PAUSED; no Embedded / Firmware execution is implied.
 - **Decision owner:** Owner, with the ChatGPT Execution Lead.
+
+## DR-4 — H-04: basis of the IoT ↔ embedded data-exchange hold (recorded 2026-10-28; not lifted)
+- **Question:** whether H-04 (embedded ↔ IoT communication / data exchange) should stay held now that research preparation for recorded future-technology concerns is authorized (Owner correction 2026-10-28).
+- **Exact restriction found:** H-04 was recorded by this research package at activation (2026-10-27), citing roadmap row 31 "IoT architecture … NOT AUTHORIZED" and CLAUDE.md "FUTURE IOT … WORK: SEPARATELY REASSESSED AND AUTHORIZED". Those texts withhold IoT architecture and implementation authority; neither names source research. No separate explicit Owner instruction holding IoT research was found in this package's records. The Owner's 2026-10-28 correction says not to lift H-04 silently.
+- **Current effect:** IoT rows Q-24…Q-27 are derived from the other Stage 31 concerns (identity, security, updates, power, failure modes, privacy) and stay outside H-04; telemetry and device ↔ cloud / embedded data exchange stay held.
+- **Alternatives:** (1) keep H-04 as is; (2) narrow H-04 to activation / architecture only and allow class-level data-exchange research (e.g. telemetry concepts) as preparation; (3) lift it with the other Stage 31 concerns.
+- **Decision owner:** Owner, with the ChatGPT Execution Lead. Nothing lifted here.

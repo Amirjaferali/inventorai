@@ -18,6 +18,12 @@
 - Record the reuse basis per source in `evidence/ip-and-reuse-register.md`. Unknown or incompatible rights → abstain and record the open IP question.
   Publicly viewable ≠ lawfully reusable. Third-party material inside a usable source is assessed separately. Never copy protected expression.
 - Never invent a value, threshold, criterion or source claim. A finding is at most `QUALIFIED-CANDIDATE` — never admitted, never adopted.
+- File-level rights evidence (Owner correction 2026-10-28). For every source or reusable technical asset newly recorded, the IP register row states:
+  copyright / authorship / publication basis; commercial use, modification, translation and redistribution basis; software or model licence (for code,
+  libraries, models); dataset / database rights; protected standards, figures, tables or documentation excluded; third-party material and attribution
+  duties; and, separately, material risk notes on patents / freedom-to-operate, trade secrets / confidential information, and trademarks, endorsement
+  and contractual / provider terms ("none identified" is allowed; "cleared" is never written). A technically valid source is not thereby reusable,
+  and a reusable source never establishes patent clearance. Unknown or incompatible rights stay blocked from product ingestion; this is not legal review.
 
 ## Query privacy rule (checked before EVERY external call)
 Queries are built ONLY from the exact-claim text of `state/question-register.md` plus generic technical terms.
@@ -39,10 +45,18 @@ Choose lenses adaptively per question; record the lens used for every query in t
 3. Re-read the live authority text on `feature/atomic-json-session-persistence` (`CLAUDE.md` Current authority, `docs/governance/ACTIVE_INCREMENT_CONTRACT.md`
    first Current-authority section). If it materially changes this research (pause, revocation, a register question delivered or settled), stop (step 7).
 4. If `research/tech-sources-001/STOP` exists, stop (step 7).
-5. Work at most 3 `QUEUED` / `IN_PROGRESS` questions in register order, within the limits; Tier 2 questions only after every Tier 1 question is terminal.
+5. Work at most 3 ELIGIBLE questions (definitions in `state/question-register.md` "Selection and depth rules", Owner correction 2026-10-28):
+   eligible = `QUEUED`, `IN_PROGRESS` or `PARTIAL` without a `WAITING` note. Order: every eligible Tier 1 question first, in register order; then
+   Tier 2 by priority P1 → P2 → P3, register order within a priority. On a `PARTIAL` question, search only its recorded residual — never repeat an
+   established point. A question becomes `QUALIFIED-CANDIDATE` only when its applicable depth dimensions are established or recorded as
+   unavailable, not because one introductory source was found; it becomes `EXHAUSTED` when its residual has no reachable lawful source after the
+   lenses tried (recorded), or its 20-query cap is reached. If no question is eligible, the run may derive at most 3 new Tier 2 rows under the
+   derivation rule (from the recorded future-technology concerns listed there only, P1 first), record them, and work them; if none can be derived,
+   that counts as "every question terminal".
 6. Record: sources, IP basis, abstentions, blocked hosts (never retry a host that returned 403 in the same run), findings, contradictions;
    append one run-ledger row (date, run number, questions, queries per lens, fetches, cumulative totals, outcome). Commit and push. A push that fails twice → stop.
-7. Stop conditions: every question terminal; any limit reached; 3 runs in a row without progress; STOP file; authority change; branch / base mismatch;
+7. Stop conditions: every question terminal (terminal = `QUALIFIED-CANDIDATE`, `EXHAUSTED`, `BLOCKED`, `AUTHORITY BLOCKED`, `QUESTION UNCLEAR`,
+   `IP UNRESOLVED`, `SOURCE ACCESS BLOCKED`, `HELD`, `EXCLUDED`, `ABSTAINED`, or `PARTIAL` with a `WAITING` note) and no row derivable under step 5; any limit reached; 3 runs in a row without progress; STOP file; authority change; branch / base mismatch;
    push failed twice; Perplexity connector missing (never substitute another method); an Owner decision required to continue; a privacy or authority conflict.
    To stop: write `STOPPED: <reason>` to `state/campaign-status.md`, commit and push, and schedule NO next wake-up.
 8. Scheduling (Owner-authorized 2026-10-27, replaces the cron mechanism): only after step 6 pushed and the remote tip was verified, and only if no

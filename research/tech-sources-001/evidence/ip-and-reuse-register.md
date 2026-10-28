@@ -40,3 +40,11 @@ Append-only. Not a legal opinion. Repository metadata is recorded as found; it i
 | SRC-030 | NIST SP authored by NIST staff (U.S. Government work in the U.S.). | Factual paraphrase only. | Cite NIST SP 250-95; no NIST endorsement. | Figures / third-party material not used. |
 | SRC-031 | NBS Circular authored by NBS staff (U.S. Government work in the U.S.). | Factual paraphrase only. | Cite NBS Circular 486; no NIST endorsement. | Data compiled from other authors' publications (tables) not used. |
 | SRC-032 | NTRS copyright determination GOV_PUBLIC_USE_PERMITTED; NASA Langley authors; not contractor. | Factual paraphrase only. | Cite NASA TP-2226; no NASA endorsement. | — |
+
+
+## Extended field rule (Owner correction 2026-10-28; rows above unchanged)
+From SRC-033 on, each row uses the table below (README "File-level rights evidence"). Patent / FTO, trade-secret and trademark / contract notes are
+risk observations, not clearance; "none identified" means none was seen in the inspected material, not that none exists.
+
+| SRC | Copyright / authorship / publication | Commercial use, modification, translation, redistribution | Software / model licence | Dataset / database rights | Protected standards, figures, tables excluded | Third-party material / attribution | Patent / FTO risk note | Trade secret / confidential note | Trademark, endorsement, contract / provider note |
+|---|---|---|---|---|---|---|---|---|---|

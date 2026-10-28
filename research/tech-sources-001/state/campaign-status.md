@@ -2,7 +2,11 @@
 
 STATUS: ACTIVE (resumed for run 6 by Owner authorization after the 2026-10-27 source-access verification; runs 6–10 done; next run by same-session wake-up)
 
-Reopened ACTIVE on the Owner's 2026-10-27 direction to seek legal official alternatives; run 5 searched every reachable authoritative host.
+Current (2026-10-28): runs 10 / 20, Perplexity queries 32 / 240, perplexity_research 0; window ends 2026-11-26. Next wake-up: send_later
+trig_019jVAiEBWpZ6h4Jspt3n8Ru "TECH-SOURCES-001 run 11", 2026-10-28T08:03Z. Selection mechanism corrected by Owner authorization 2026-10-28
+(README steps 5 / 7; register "Selection and depth rules"; Tier 2c Q-24…Q-40). D13 PAUSED; D4 NOT ACTIVATED; H-01…H-04 held (DR-4 open).
+
+History (earlier text kept): Reopened ACTIVE on the Owner's 2026-10-27 direction to seek legal official alternatives; run 5 searched every reachable authoritative host.
 No question can progress further from reachable sources: 7 QUALIFIED-CANDIDATE (Q-02, Q-04, Q-06, Q-08, Q-09, Q-10; Q-07 partial),
 Q-01 / Q-05 blocked with claims recorded UNVERIFIED, Q-03 awaiting an exact claim definition. No wake-up is armed, because a scheduled run
 could only repeat exhausted searches. Resumes (Lead sets ACTIVE) when any item in `owner-readable-summary.md` "What you must supply" arrives.

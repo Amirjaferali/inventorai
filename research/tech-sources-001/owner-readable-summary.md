@@ -30,6 +30,7 @@
 | Q-21 | Inverse-square irradiance conditions | Qualified candidate (NIST SP 250-95). |
 | Q-22 | Thermal expansion and mismatch | Qualified candidate (NBS Circular 486, NASA TP-2226). |
 | Q-23 | Resonance (spring–mass) | Queued for run 11. |
+| Q-24…Q-40 | IoT security / updates / power / privacy, RF channel and capacity, battery limits and ageing, converters, motor classes, watchdogs, interlocks, Earth-observation trade-offs, hover power, MPPT, eclipse power, vibration isolation | Added 2026-10-28 (Owner correction) from the roadmap's recorded concerns; queued by priority. |
 
 **Decisions:** DR-1 decided by you (Option C, recorded on the base branch). Still open with you and the Execution Lead: DR-2 which condition D-7
 governs; DR-3 definition of the 28-T2 "execution-facing output" claim. Details in `evidence/decision-records.md`.
