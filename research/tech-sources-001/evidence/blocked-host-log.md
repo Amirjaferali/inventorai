@@ -22,3 +22,4 @@ Append-only. Never bypassed.
 | 2026-10-28 (run 11) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
 | 2026-10-28 (run 11) | transition.fcc.gov, www.fcc.gov | CONNECT 403 (proxy policy), not retried | FCC OET Bulletin 65 (far-field inverse-square statement) for Q-13 | NBS TN 12 and TN 101 Vol. 2 (SRC-037, SRC-038) |
 | 2026-10-28 (run 12) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
+| 2026-10-28 (run 13) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |

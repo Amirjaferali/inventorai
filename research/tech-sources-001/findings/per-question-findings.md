@@ -275,3 +275,22 @@ manufacturer's limit, structural damage); cell-level voltage / mid-string monito
 overcharge, overdischarge, over-current and over-temperature with at least two levels of safety; abuse tests. **UNVERIFIED:** state-of-charge
 *estimation* as a BMS function (only the SOC definition is stated). Dimensions: D1, D2, D3, D5, D7. Lead noted for Q-31 (storage / cycling
 effects on capacity), not worked this run.
+
+## Run 13 (2026-10-28, scheduled wake-up)
+
+### Q-26 — IoT power and failure modes — PARTIAL (residual narrowed)
+NASA MSFC EPS slides (SRC-043): average power from the equipment list and peak power from the profile; power with margin for average and peak loads;
+energy drained = load × time; health / status monitoring and protection against bus and load faults. **Still UNVERIFIED on a clean source:** the
+explicit time-weighted average of active and sleep current (SRC-022 implies it but is IP UNRESOLVED), and a statement that device behaviour on
+power or connectivity loss must be defined. Two residual searches spent; next attempt, if none succeeds, marks it EXHAUSTED.
+
+### Q-31 — Battery ageing — QUALIFIED-CANDIDATE (no new search)
+Re-read SRC-009 / SRC-008: storage state of charge and temperature drive irreversible capacity loss; cycling temperature and depth of discharge
+affect deliverable capacity over life; voltage falls faster with longer cycle life; manufacturers add capacity margin for expected life losses;
+real-time and accelerated life tests evaluate degradation; discharge rate and temperature strongly affect capacity and life (lead-acid source).
+Dimensions: D1, D3, D5, D7. Not adopted: the storage-loss example figures.
+
+### Q-11 — PWM average voltage — QUALIFIED-CANDIDATE (residual closed)
+NASA TN D-5643 (SRC-042): a periodic voltage equal to E for Δt and zero otherwise has an average proportional to the duty cycle Δt/T; filtered
+output is proportional to input voltage × duty cycle; filtering removes ripple; output impedance limits load independence. With SRC-018 (switching
+period much shorter than the winding's electrical time constant; free-wheeling path keeps current continuous). Dimensions: D1, D2, D3.
