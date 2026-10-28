@@ -5861,11 +5861,10 @@ UI_STRINGS = {
     "UI_DU_ADJACENCY": {
         "en": ("Items appear together only because they belong to the same "
                "project. No connection between them is claimed unless it is shown "
-               "as a link, and nothing shown here has been checked, validated or "
-               "approved."),
+               "as a link, and nothing shown here has been checked or verified."),
         "ar": ("تظهر البنود معًا لأنها تنتمي إلى المشروع نفسه فقط. لا يُدّعى أي "
                "ارتباط بينها ما لم يُعرض كرابط، ولم يُفحص أي شيء معروض هنا أو يُتحقق "
-               "منه أو يُعتمد.")},
+               "منه.")},
     "UI_DU_ROUTED_NEED": {
         "en": "Information to come from a specialist or from evidence about:",
         "ar": "معلومات تأتي من متخصص أو من دليل حول:"},
@@ -5899,7 +5898,7 @@ UI_STRINGS = {
                                      "ar": "المصدر غير مسجّل"},
     "UI_DU_VAL_SYSTEM_INFERRED": {"en": "InventorAI (inferred)",
                                   "ar": "InventorAI (استنتاج)"},
-    "UI_DU_VAL_UNVALIDATED": {"en": "not validated", "ar": "لم يُتحقق منه"},
+    "UI_DU_VAL_UNVALIDATED": {"en": "not verified", "ar": "لم يُتحقق منه"},
     "UI_DU_VAL_ANSWERED": {"en": "an answer", "ar": "إجابة"},
     "UI_DU_VAL_PROVISIONAL_ASSUMPTION": {"en": "a provisional assumption",
                                          "ar": "افتراض مؤقت"},
