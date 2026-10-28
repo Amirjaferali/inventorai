@@ -418,7 +418,9 @@ def test_named_consumer_exceptions_are_recorded_and_bounded():
     cyc = _norm(_section(CC_CONTRACT, "## 6A.", "## 7."))
     for phrase in ("ONE named request-local consumer", "the client can never submit it there",
                    "not a reading or inference of any real signal",
-                   "root-only eligibility are unchanged"):
+                   "the §1 eligibility rule (root-only at delivery; as amended by "
+                   "CONTROL-CYCLE-INTEGRATED-PART-01",
+                   "for the SAME current part on both of its sides) are unchanged"):
         assert phrase in cyc, phrase
 
 
@@ -532,11 +534,12 @@ def test_eligibility_is_the_intersection_of_both_gates(mech, monkeypatch):
     body = c.post(URL % sid, data=_form()).get_data(as_text=True)
     assert "data-tcc-form" not in body and _field(body, "next") is None
     c2, _ = _client_for("tcc-part@example.com")
-    part_sid = _integrated(c2, MECH)            # TMP36 admits the declared part, 28-T4 does not
+    part_sid = _integrated(c2, MECH)            # both gates resolve to the SAME declared part
     assert webapp._calc_gate(part_sid, tmp36)[0] is True
-    assert webapp._control_cycle_eligible(part_sid) is False
-    assert webapp._tcc_eligible(part_sid) is False
-    assert "data-tcc-link" not in _page(c2, part_sid)
+    assert webapp._control_cycle_eligible(part_sid) is True   # CONTROL-CYCLE-INTEGRATED-PART-01
+    assert webapp._tcc_eligible(part_sid) is True
+    assert webapp._tcc_gate(part_sid)[1].domain == ELEC
+    assert "data-tcc-link" in _page(c2, part_sid)
     root_sid = _integrated(c2, ELEC)            # Electronics focus: both gates admit
     assert webapp._tcc_eligible(root_sid) is True
     monkeypatch.setattr(webapp, "_calc_gate", lambda *a: (False, None))

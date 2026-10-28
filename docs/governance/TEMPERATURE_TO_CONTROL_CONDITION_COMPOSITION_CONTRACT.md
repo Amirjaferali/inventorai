@@ -37,6 +37,21 @@ Eligibility is the INTERSECTION of the two existing gates: the TMP36 gate (`_cal
 the composition is offered on an Electrical / Electronics-root project only; no Mechanical-root and no declared-part
 eligibility is added, and a declared Stage 15 part grants nothing here. Anything unreadable grants nothing (fail closed).
 
+**Amended by CONTROL-CYCLE-INTEGRATED-PART-01 (Owner-authorized; effective only on the verified merge of its pull
+request; the preceding paragraph is preserved as the superseded wording).** The rule is still the INTERSECTION of the two
+existing gates, each now the shared root-or-declared-part rule (`_calc_gate` with the TMP36 consumer, and with the 28-T4
+module). On an Electrical / Electronics ROOT project the root alone admits the composition, independent of any
+composition, exactly as before. Where the root does not admit it, both gates must have resolved — on the request being
+served, from the store-validated durable composition, never from the request — to the SAME current validated Electrical /
+Electronics part: the same durable `subsystem_id` and domain. Two separate `True` results never establish that: TMP36
+eligibility alone, 28-T4 eligibility alone, a part on one side only, two different parts, or a withdrawn, replaced, stale,
+malformed, corrupt or unreadable composition grants nothing. No second composition-selection engine exists: the one web
+gate (`_tcc_gate`) compares the two results and is read by the session link, the GET and the POST alike. The page names
+that part (escaped, direction-isolated) with a fixed attribution note; a declared part establishes no sensor choice,
+control requirement, actuation, timing, compatibility, suitability, validation or safety. The TMP36 evaluation, the
+threshold grammar and range, the exact comparison, the derived Boolean, the control-cycle evaluation, the refusal layering
+and the no-partial-success rule are unchanged.
+
 ## 2. Identity
 
 Identity `temperature_control_condition:tmp36_threshold_ready_running`, version `1.0`. Module
@@ -164,7 +179,10 @@ temperatures −40, 0 and +125; decimal-adjacent comparisons at equality where b
 RUNNING with true and false (`RUNNING` with false stays `RUNNING`); missing, malformed, out-of-range and contradictory
 inputs and declarations; every TMP36 refusal path and every 28-T4 refusal path with no partial result; authorization,
 eligibility, CSRF, request isolation and no persistence; EN / AR; and regression of the standalone TMP36 and 28-T4
-evaluations. Hosted required CI is the merge gate.
+evaluations. Since CONTROL-CYCLE-INTEGRATED-PART-01, `tests/test_control_cycle_integrated_part.py` and its browser
+companion prove the same-part identity rule (two separate `True` results insufficient; a part on one side only or two
+different parts refused), the unchanged root behaviour, GET / POST re-validation and the fail-closed replaced / corrupt /
+unreadable composition. Hosted required CI is the merge gate.
 
 ## 14. STOP conditions
 

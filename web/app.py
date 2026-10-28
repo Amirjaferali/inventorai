@@ -15684,9 +15684,16 @@ def tmp36_temperature_post(sid):
 # transition (control-cycle contract §1, §7). The bounded module
 # (`engine/control_cycle.py`) owns the governed definition, capture, the
 # pre-evaluation order and the five-step cycle; it is NOT a method of the shared
-# deterministic calculation owner and keeps no state. Eligibility is the
-# project's trusted durable ROOT domain only, exactly Electrical / Electronics:
-# no declared Stage 15 part grants anything here, and `control_loop` is neither
+# deterministic calculation owner and keeps no state. Eligibility is the SAME
+# shared rule the admitted calculations use (`_calc_gate`): the project's
+# trusted durable ROOT domain, exactly Electrical / Electronics, or
+# (CONTROL-CYCLE-INTEGRATED-PART-01) the ONE inventor-declared Electrical /
+# Electronics part of a valid durable integrated composition, whatever the
+# initial analysis focus; the part is read only from the store-validated
+# composition, never from the request, and a missing, replaced, malformed,
+# corrupt or unreadable composition grants nothing beyond the root rule. A
+# declared part establishes no control requirement, actuation, timing,
+# compatibility, suitability, validation or safety; `control_loop` is neither
 # read nor touched. Nothing is persisted and no state is carried between
 # requests; the POST renders its answer directly and never redirects.
 
@@ -15696,22 +15703,29 @@ def tmp36_temperature_post(sid):
 _CC_LTR_RUN = re.compile(r"[A-Za-z0-9_](?:[A-Za-z0-9_./:\- ]*[A-Za-z0-9_])?")
 
 
-def _control_cycle_eligible(sid):
-    """True iff the project's trusted durable ROOT domain is Electrical /
-    Electronics. Never read from the request and never from the composition:
-    a declared part grants nothing. Fails closed."""
+def _control_cycle_gate(sid):
+    """``(eligible, part)`` for the 28-T4 evaluation: the ONE shared rule of
+    ``_calc_gate`` applied to the control-cycle module (root domain exactly
+    Electrical / Electronics, or the declared Electrical / Electronics part of
+    the validated durable composition). The session link, the GET and the POST
+    all read this same function. Never read from the request; fails closed."""
     try:
-        return _cc.is_eligible(_cap12_root_domain(sid))
+        return _calc_gate(sid, _cc)
     except Exception:
-        return False
+        return False, None
+
+
+def _control_cycle_eligible(sid):
+    """True iff ``_control_cycle_gate`` admits the project."""
+    return _control_cycle_gate(sid)[0]
 
 
 def _cc_isolate(text, lang):
     return _ltr_isolate(text, lang, _CC_LTR_RUN)
 
 
-def _render_control_cycle(sid, status=200, eligible=True, captured=None,
-                          evaluation=None, error=None):
+def _render_control_cycle(sid, status=200, eligible=True, declared_part=None,
+                          captured=None, evaluation=None, error=None):
     lang = _current_ui_lang()
     result = None
     outcome_key = None
@@ -15723,6 +15737,11 @@ def _render_control_cycle(sid, status=200, eligible=True, captured=None,
     response = make_response(render_template(
         "control_cycle.html",
         sid=sid,
+        # The declared part this integrated-project evaluation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
         iso=lambda key: _cc_isolate(ui_text.text(key, lang), lang),
         disclosure_items=[
             _cc_isolate(part, lang) for part in
@@ -15754,24 +15773,28 @@ def _render_control_cycle(sid, status=200, eligible=True, captured=None,
 def control_cycle(sid):
     if not _project_authorized(sid):
         return _deny_project()
-    return _render_control_cycle(sid, eligible=_control_cycle_eligible(sid))
+    eligible, part = _control_cycle_gate(sid)
+    return _render_control_cycle(sid, eligible=eligible, declared_part=part)
 
 
 @app.route("/session/<sid>/control-cycle", methods=["POST"])
 def control_cycle_post(sid):
     # Order: request integrity (global CSRF guard) -> project authorization ->
-    # eligibility (durable root domain only) -> strict capture (malformed or an
-    # attempted override of the fixed definition: 400, no evaluation) -> the
-    # module's §7 order -> the cycle.
+    # eligibility (re-read from the durable root domain or the validated
+    # durable composition on THIS request, never from the form) -> strict
+    # capture (malformed or an attempted override of the fixed definition:
+    # 400, no evaluation) -> the module's §7 order -> the cycle.
     if not _project_authorized(sid):
         return _deny_project()
-    if not _control_cycle_eligible(sid):
+    eligible, part = _control_cycle_gate(sid)
+    if not eligible:
         return _render_control_cycle(sid, eligible=False)
     form = request.form
     captured = _cc.capture_form({k: form.getlist(k) for k in form.keys()})
     if captured is None:
-        return _render_control_cycle(sid, status=400, error="UI_CC_ERR_REQUEST")
-    return _render_control_cycle(sid, captured=captured,
+        return _render_control_cycle(sid, status=400, declared_part=part,
+                                     error="UI_CC_ERR_REQUEST")
+    return _render_control_cycle(sid, declared_part=part, captured=captured,
                                  evaluation=_cc.evaluate(captured))
 
 
@@ -15783,28 +15806,58 @@ def control_cycle_post(sid):
 # consumer with its EXISTING binding, compares the accepted exact nominal
 # temperature with the inventor's threshold, and passes only that Boolean as
 # start_input to the EXISTING 28-T4 evaluator. Eligibility is the INTERSECTION
-# of the two existing gates (so Electrical / Electronics root only; a declared
-# part grants nothing). Nothing is persisted and nothing is carried between
-# requests; the POST renders its answer directly and never redirects. The
-# standalone TMP36 and 28-T4 pages are untouched.
+# of the two existing gates: on an Electrical / Electronics ROOT project both
+# admit the root; on an integrated project
+# (CONTROL-CYCLE-INTEGRATED-PART-01) both must resolve to the SAME current
+# validated Electrical / Electronics part (the same durable ``subsystem_id``) —
+# two separate True results never establish that. Nothing is persisted and
+# nothing is carried between requests; the POST renders its answer directly
+# and never redirects. The standalone TMP36 and 28-T4 pages are untouched.
+
+
+def _tcc_gate(sid):
+    """``(eligible, part)`` for the composition: BOTH existing gates must admit
+    the project (the TMP36 gate and the 28-T4 gate, each through
+    ``_calc_gate``). On an Electrical / Electronics ROOT project that is the
+    root rule alone, independent of any composition, exactly as before. Where
+    the root does not admit it, the two gates must have resolved to the SAME
+    current validated Electrical / Electronics part — the same durable
+    ``subsystem_id`` and domain — read on THIS request from the store-validated
+    composition; a part on one side only, two different parts, or anything
+    unreadable grants nothing. ``part`` is that part (attribution only) or
+    None. The session link, the GET and the POST read this same function.
+    Never read from the request; fails closed."""
+    try:
+        tmp36_eligible, tmp36_part = _calc_gate(sid, _tmp36)
+        cycle_eligible, cycle_part = _calc_gate(sid, _cc)
+        if not (tmp36_eligible and cycle_eligible):
+            return False, None
+        same_part = (tmp36_part is not None and cycle_part is not None
+                     and tmp36_part.subsystem_id == cycle_part.subsystem_id
+                     and tmp36_part.domain == cycle_part.domain
+                     == _cc.ELIGIBLE_ROOT_DOMAIN == _tmp36.ELIGIBLE_ROOT_DOMAIN)
+        try:
+            root = _cap12_root_domain(sid)
+        except Exception:
+            root = None
+        if _tmp36.is_eligible(root) and _cc.is_eligible(root):
+            return True, (tmp36_part if same_part else None)
+        return (True, tmp36_part) if same_part else (False, None)
+    except Exception:
+        return False, None
 
 
 def _tcc_eligible(sid):
-    """True iff BOTH existing gates admit the project: the TMP36 gate
-    (``_calc_gate``) AND the 28-T4 root-domain gate. Never read from the
-    request; fails closed."""
-    try:
-        return bool(_calc_gate(sid, _tmp36)[0]) and _control_cycle_eligible(sid)
-    except Exception:
-        return False
+    """True iff ``_tcc_gate`` admits the project."""
+    return _tcc_gate(sid)[0]
 
 
 def _tcc_isolate(text, lang):
     return _ltr_isolate(text, lang, _TMP36_LTR_RUN)
 
 
-def _render_tcc(sid, status=200, eligible=True, captured=None, evaluation=None,
-                error=None):
+def _render_tcc(sid, status=200, eligible=True, declared_part=None, captured=None,
+                evaluation=None, error=None):
     lang = _current_ui_lang()
     result = None
     outcome_key = None
@@ -15821,6 +15874,12 @@ def _render_tcc(sid, status=200, eligible=True, captured=None, evaluation=None,
     response = make_response(render_template(
         "temperature_control_condition.html",
         sid=sid,
+        # The declared part this integrated-project composition is offered for
+        # (the SAME current part both gates resolved to): its durable
+        # Owner-declared name only, rendered escaped in the template and never
+        # persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
         iso=iso,
         disclosure_items=[_tcc_isolate(part, lang) for part in
                           ui_text.text("UI_TCC_DISCLOSURE", lang).split("\n\n")],
@@ -15864,23 +15923,27 @@ def _render_tcc(sid, status=200, eligible=True, captured=None, evaluation=None,
 def temperature_control_condition(sid):
     if not _project_authorized(sid):
         return _deny_project()
-    return _render_tcc(sid, eligible=_tcc_eligible(sid))
+    eligible, part = _tcc_gate(sid)
+    return _render_tcc(sid, eligible=eligible, declared_part=part)
 
 
 @app.route("/session/<sid>/temperature-control-condition", methods=["POST"])
 def temperature_control_condition_post(sid):
     # Order: request integrity (global CSRF guard) -> project authorization ->
-    # eligibility (both existing gates) -> strict capture (malformed, a submitted
-    # start_input or an override: 400, no evaluation) -> the composition order.
+    # eligibility (both existing gates, re-read on THIS request and resolved to
+    # the same current part, never from the form) -> strict capture (malformed,
+    # a submitted start_input or an override: 400, no evaluation) -> the
+    # composition order.
     if not _project_authorized(sid):
         return _deny_project()
-    if not _tcc_eligible(sid):
+    eligible, part = _tcc_gate(sid)
+    if not eligible:
         return _render_tcc(sid, eligible=False)
     form = request.form
     captured = _tcc.capture_form({k: form.getlist(k) for k in form.keys()})
     if captured is None:
-        return _render_tcc(sid, status=400, error="UI_TCC_ERR_REQUEST")
-    return _render_tcc(sid, captured=captured,
+        return _render_tcc(sid, status=400, declared_part=part, error="UI_TCC_ERR_REQUEST")
+    return _render_tcc(sid, declared_part=part, captured=captured,
                        evaluation=_tcc.evaluate(captured, _TMP36_TEMPERATURE_BINDING))
 
 

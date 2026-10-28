@@ -38,6 +38,21 @@ part grants NOTHING here: no integrated-part exception is added, so an integrate
 Electrical / Electronics root focus. A missing or unreadable root domain grants nothing (fail closed). The session link,
 the page and the submission read the same one decision.
 
+**Amended by CONTROL-CYCLE-INTEGRATED-PART-01 (Owner-authorized; effective only on the verified merge of its pull
+request; the preceding paragraph is preserved as the superseded wording).** Eligibility is the ONE shared rule the admitted
+calculations use (`_calc_gate` in `web/app.py`, applied to this module's `ELIGIBLE_ROOT_DOMAIN` / `is_eligible`): the
+trusted durable root domain exactly `electronics_electrical` — unchanged, and never dependent on any composition — OR the
+ONE inventor-declared Electrical / Electronics part of a valid durable Stage 15 integrated composition, whatever the
+initial analysis focus. The part is read only from the store-validated durable composition on the request being served
+(session link, GET and POST alike), never from the request; a missing, replaced, stale, malformed, corrupt or unreadable
+composition grants nothing beyond the root rule; no request-supplied part id or domain can establish eligibility. On an
+integrated project the page names the declared part (escaped, direction-isolated) with a fixed attribution note. A
+declared part establishes no control requirement, actuation, PLC runtime semantics, timing, compatibility, suitability,
+validation or safety; the fixed definition, confirmations, screen, cycle, output map, outcomes, refusals, artifact, source
+basis, disclosure and request-local / no-persistence behaviour are unchanged. The narrow Stage 15 exception is recorded in
+`engine/subsystem_model.py`; `control_loop` is still neither read nor touched, and no D4, PLC, Mechatronics or domain
+activation follows.
+
 ## 2. Identity and version
 
 Identity `control_cycle:ready_running_single_transition`, version `1.0` (the semantic version of the fixed definition).
@@ -111,7 +126,9 @@ request from one fixed comparison of two inventor-declared values (the TMP36 nom
 a declared threshold); the client can never submit it there. The previous state stays the inventor's own choice. The
 derived Boolean is not a reading or inference of any real signal, component or process condition. This exception names
 that consumer only; the fixed definition, the confirmations, the screen, the five-step cycle, the output map, the refusals
-and the root-only eligibility are unchanged, and a refusal here gives that consumer no state or output.
+and the §1 eligibility rule (root-only at delivery; as amended by CONTROL-CYCLE-INTEGRATED-PART-01, the same shared
+root-or-declared-part rule, which the consumer must satisfy for the SAME current part on both of its sides) are unchanged
+by this exception, and a refusal here gives that consumer no state or output.
 
 ## 7. Outcomes and refusal semantics
 
@@ -231,7 +248,10 @@ directly; nothing is persisted and no state is kept between requests.
 Focused tests (`tests/test_control_cycle.py`, `tests/test_control_cycle_browser.py`): the four reference cases at module,
 consumer and page level; next-state versus previous-state output; request isolation; malformed, duplicate, unknown and
 override fields; unknown state and non-Boolean input; duplicate-key, conflicting, incomplete and unsupported definitions and
-artifact tampering; eligibility (Electronics root only; Mechanical root and a declared part grant nothing); CSRF,
+artifact tampering; eligibility (Electronics root; a Mechanical root without a declared Electrical / Electronics part
+grants nothing; since CONTROL-CYCLE-INTEGRATED-PART-01, `tests/test_control_cycle_integrated_part.py` and its browser
+companion prove the declared-part path, the unchanged root behaviour, GET / POST re-validation and the fail-closed
+replaced / corrupt / unreadable composition); CSRF,
 authorization and no persistence; the existing calculations, `control_loop` and Stage 15 unchanged; EN / AR fidelity and
 real-browser EN / AR journeys. Hosted required CI is the merge gate.
 
