@@ -551,14 +551,19 @@ def test_rendering_the_handoff_changes_no_state(monkeypatch):
     assert _snapshot(c) == before
 
     def strip(body):
-        start = body.find("<details id=\"functional-handoff\"")
-        if start == -1:
-            return body
-        return body[:start] + body[body.index("</details>", start) + len("</details>"):]
+        # IDEA-DESIGN-UNDERSTANDING-PROJECTION-01: the design-understanding
+        # picture reuses this same view (computed once per render), so it is
+        # the second block that legitimately differs without the view.
+        for marker in ("<details id=\"functional-handoff\"",
+                       "<details id=\"design-understanding\""):
+            start = body.find(marker)
+            if start != -1:
+                body = body[:start] + body[body.index("</details>", start) + len("</details>"):]
+        return body
     token = re.compile(r'value="[A-Za-z0-9_.=-]{40,}"')
     def norm(body):
         return re.sub(r"\s+", " ", token.sub("", body))
-    assert norm(strip(with_handoff)) == norm(without)
+    assert norm(strip(with_handoff)) == norm(strip(without))
 
 
 def test_the_view_fails_closed():

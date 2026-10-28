@@ -5782,6 +5782,158 @@ UI_STRINGS = {
                "من هذه القراءة.")},
     "UI_FH_UNAVAILABLE": {"en": "This reading is unavailable right now.",
                           "ar": "هذه القراءة غير متاحة الآن."},
+    # IDEA-DESIGN-UNDERSTANDING-PROJECTION-01 — the design-understanding picture.
+    # Presentation copy only: headings, absence lines, attribute labels and token
+    # labels. A label never changes an owner's token; a token without a label is
+    # shown as the owner's own value.
+    "UI_DU_TITLE": {
+        "en": "Where your idea stands: one picture of what is recorded",
+        "ar": "أين تقف فكرتك: صورة واحدة لما سُجِّل"},
+    "UI_DU_INTRO": {
+        "en": ("This picture gathers what you entered and what InventorAI has "
+               "organized from it. Each item says where it comes from and whether "
+               "it has been checked. Nothing here is a design, a choice or a result."),
+        "ar": ("تجمع هذه الصورة ما أدخلته وما نظّمه InventorAI منه. يذكر كل بند "
+               "مصدره وما إذا كان قد فُحص. لا شيء هنا تصميم أو اختيار أو نتيجة.")},
+    "UI_DU_UNAVAILABLE": {"en": "This picture is unavailable right now.",
+                          "ar": "هذه الصورة غير متاحة الآن."},
+    "UI_DU_SECTION_UNAVAILABLE": {
+        "en": "This part could not be read right now, so it is not shown.",
+        "ar": "تعذّرت قراءة هذا الجزء الآن، لذلك لا يُعرض."},
+    "UI_DU_PARTLY_UNAVAILABLE": {
+        "en": "Some notes attached to these items could not be read right now.",
+        "ar": "تعذّرت قراءة بعض الملاحظات المرفقة بهذه البنود الآن."},
+    "UI_DU_SEC_ORIGINAL_IDEA": {"en": "What you originally described",
+                                "ar": "ما وصفته في البداية"},
+    "UI_DU_SEC_RECORDED_UNDERSTANDING": {"en": "What you have recorded since then",
+                                         "ar": "ما سجّلته منذ ذلك الحين"},
+    "UI_DU_SEC_FUNCTIONAL_READINGS": {
+        "en": "What InventorAI reads from your words (provisional)",
+        "ar": "ما يقرؤه InventorAI من كلماتك (قراءة مقترحة)"},
+    "UI_DU_SEC_STATED_UNKNOWNS": {"en": "What you said you do not know yet",
+                                  "ar": "ما قلت إنك لا تعرفه بعد"},
+    "UI_DU_SEC_CONSTRAINTS": {"en": "Constraints you declared",
+                              "ar": "القيود التي صرّحت بها"},
+    "UI_DU_SEC_PARTS": {"en": "Parts you declared", "ar": "الأجزاء التي صرّحت بها"},
+    "UI_DU_SEC_COMPONENTS": {"en": "Components you declared",
+                             "ar": "المكوّنات التي صرّحت بها"},
+    "UI_DU_SEC_INTERACTIONS": {"en": "Interactions you declared",
+                               "ar": "التفاعلات التي صرّحت بها"},
+    "UI_DU_SEC_UNRESOLVED_WORK": {"en": "What is still unresolved or missing",
+                                  "ar": "ما لم يُحسم أو ما ينقص بعد"},
+    "UI_DU_SEC_ENGINEERING_CONTINUATIONS": {
+        "en": "Existing tools you can open next",
+        "ar": "أدوات موجودة يمكنك فتحها الآن"},
+    "UI_DU_ABSENT_ORIGINAL_IDEA": {
+        "en": "No original statement is stored for this project.",
+        "ar": "لا يوجد وصف أصلي مخزّن لهذا المشروع."},
+    "UI_DU_ABSENT_RECORDED_UNDERSTANDING": {
+        "en": "No answers or assumptions recorded yet.",
+        "ar": "لم تُسجَّل إجابات أو افتراضات بعد."},
+    "UI_DU_ABSENT_FUNCTIONAL_READINGS": {
+        "en": "No function was proposed from your statements.",
+        "ar": "لم تُقترح أي وظيفة من عباراتك."},
+    "UI_DU_ABSENT_STATED_UNKNOWNS": {
+        "en": "You have not marked anything as not known yet.",
+        "ar": "لم تحدّد أي شيء على أنه غير معروف بعد."},
+    "UI_DU_ABSENT_CONSTRAINTS": {"en": "No constraints declared.",
+                                 "ar": "لم تُصرّح بأي قيود."},
+    "UI_DU_ABSENT_PARTS": {
+        "en": "No parts declared: this project was entered as one invention.",
+        "ar": "لم تُصرّح بأجزاء: أُدخل هذا المشروع كاختراع واحد."},
+    "UI_DU_ABSENT_COMPONENTS": {"en": "No components declared yet.",
+                                "ar": "لم تُصرّح بمكوّنات بعد."},
+    "UI_DU_ABSENT_INTERACTIONS": {"en": "No interactions declared yet.",
+                                  "ar": "لم تُصرّح بتفاعلات بعد."},
+    "UI_DU_ABSENT_UNRESOLVED_WORK": {
+        "en": "Nothing unresolved is recorded right now.",
+        "ar": "لا يوجد شيء غير محسوم مسجّل الآن."},
+    "UI_DU_ABSENT_ENGINEERING_CONTINUATIONS": {
+        "en": "No existing tool is offered for this project right now.",
+        "ar": "لا تُعرض أي أداة موجودة لهذا المشروع الآن."},
+    "UI_DU_BOUNDARY": {
+        "en": ("InventorAI has not added components, mechanisms or design choices "
+               "to this picture. Future system or AI proposals remain a separate "
+               "decision."),
+        "ar": ("لم يُضف InventorAI أي مكوّنات أو آليات أو خيارات تصميم إلى هذه "
+               "الصورة. وتبقى اقتراحات النظام أو الذكاء الاصطناعي المستقبلية قرارًا "
+               "منفصلًا.")},
+    "UI_DU_ADJACENCY": {
+        "en": ("Items appear together only because they belong to the same "
+               "project. No connection between them is claimed unless it is shown "
+               "as a link, and nothing shown here has been checked or verified."),
+        "ar": ("تظهر البنود معًا لأنها تنتمي إلى المشروع نفسه فقط. لا يُدّعى أي "
+               "ارتباط بينها ما لم يُعرض كرابط، ولم يُفحص أي شيء معروض هنا أو يُتحقق "
+               "منه.")},
+    "UI_DU_ROUTED_NEED": {
+        "en": "Information to come from a specialist or from evidence about:",
+        "ar": "معلومات تأتي من متخصص أو من دليل حول:"},
+    "UI_DU_CONTRADICTION": {
+        "en": "Two of your recorded answers disagree (declared by you).",
+        "ar": "إجابتان من إجاباتك المسجّلة تتعارضان (كما صرّحت أنت)."},
+    "UI_DU_ATTR_PROVENANCE": {"en": "Source", "ar": "المصدر"},
+    "UI_DU_ATTR_VALIDATION_STATUS": {"en": "Checked", "ar": "التحقق"},
+    "UI_DU_ATTR_VALIDATION_STATE": {"en": "Checked", "ar": "التحقق"},
+    "UI_DU_ATTR_DISPOSITION": {"en": "Recorded as", "ar": "سُجِّل كـ"},
+    "UI_DU_ATTR_STRENGTH": {"en": "Strength", "ar": "القوة"},
+    "UI_DU_ATTR_STATUS": {"en": "Status", "ar": "الحالة"},
+    "UI_DU_ATTR_INTERPRETATION_STATUS": {"en": "Reading", "ar": "القراءة"},
+    "UI_DU_ATTR_PREPARATION_PRESENCE": {"en": "Verification preparation",
+                                        "ar": "تحضير التحقق"},
+    "UI_DU_ATTR_DEPENDENCY_KIND": {"en": "Dependency", "ar": "الاعتماد"},
+    "UI_DU_ATTR_FUNCTION_TEXT": {"en": "What it does", "ar": "ما يفعله"},
+    "UI_DU_ATTR_PROTOTYPE_NEED": {"en": "Prototype need", "ar": "حاجة النموذج الأولي"},
+    "UI_DU_ATTR_INITIAL_ANALYSIS_FOCUS": {"en": "Initial analysis focus",
+                                          "ar": "محور التحليل الأولي"},
+    "UI_DU_ATTR_CRITICALITY": {"en": "Criticality", "ar": "الأهمية الحرجة"},
+    "UI_DU_ATTR_CRITICALITY_AUTHORITY": {"en": "Criticality set by",
+                                         "ar": "من حدّد الأهمية"},
+    "UI_DU_ATTR_SOURCE_STATUS": {"en": "Source status", "ar": "حالة المصدر"},
+    "UI_DU_ATTR_REQUIRED_INPUT": {"en": "Needed from", "ar": "مطلوب من"},
+    "UI_DU_ATTR_ISSUE_TYPE": {"en": "Kind", "ar": "النوع"},
+    "UI_DU_ATTR_CORRECTIONS": {"en": "Corrections", "ar": "التصحيحات"},
+    "UI_DU_VAL_OWNER_STATED": {"en": "you (your own statement)",
+                               "ar": "أنت (عبارتك الخاصة)"},
+    "UI_DU_VAL_LEGACY_UNSPECIFIED": {"en": "source not recorded",
+                                     "ar": "المصدر غير مسجّل"},
+    "UI_DU_VAL_SYSTEM_INFERRED": {"en": "InventorAI (inferred)",
+                                  "ar": "InventorAI (استنتاج)"},
+    "UI_DU_VAL_UNVALIDATED": {"en": "not verified", "ar": "لم يُتحقق منه"},
+    "UI_DU_VAL_ANSWERED": {"en": "an answer", "ar": "إجابة"},
+    "UI_DU_VAL_PROVISIONAL_ASSUMPTION": {"en": "a provisional assumption",
+                                         "ar": "افتراض مؤقت"},
+    "UI_DU_VAL_UNKNOWN": {"en": "not known yet", "ar": "غير معروف بعد"},
+    "UI_DU_VAL_DEFERRED": {"en": "deferred", "ar": "مؤجّل"},
+    "UI_DU_VAL_OPEN": {"en": "open", "ar": "مفتوح"},
+    "UI_DU_VAL_PARTIAL": {"en": "partly addressed", "ar": "عولج جزئيًا"},
+    "UI_DU_VAL_PROPOSED": {"en": "proposed reading, not confirmed",
+                           "ar": "قراءة مقترحة، غير مؤكدة"},
+    "UI_DU_VAL_CONFLICTING": {"en": "your statements disagree here",
+                              "ar": "عباراتك تتعارض هنا"},
+    "UI_DU_VAL_PROVISIONAL_READING": {"en": "InventorAI's provisional reading",
+                                      "ar": "قراءة مقترحة من InventorAI"},
+    "UI_DU_VAL_NONE_RECORDED": {"en": "nothing recorded", "ar": "لم يُسجَّل شيء"},
+    "UI_DU_VAL_PARTLY_RECORDED": {"en": "partly recorded", "ar": "مسجّل جزئيًا"},
+    "UI_DU_VAL_ALL_RECORDED": {"en": "all three inputs recorded (not verified)",
+                               "ar": "المدخلات الثلاثة مسجّلة (لم يُتحقق منها)"},
+    "UI_DU_VAL_ONE_WAY": {"en": "one part relies on the other",
+                          "ar": "جزء يعتمد على الآخر"},
+    "UI_DU_VAL_MUTUAL": {"en": "each part relies on the other",
+                         "ar": "كل جزء يعتمد على الآخر"},
+    "UI_DU_VAL_UNDETERMINED": {"en": "undetermined", "ar": "غير محدّد"},
+    "UI_DU_VAL_SYSTEM_DERIVED": {"en": "InventorAI (organizing only)",
+                                 "ar": "InventorAI (تنظيم فقط)"},
+    "UI_DU_VAL_SPECIALIST": {"en": "a specialist", "ar": "متخصص"},
+    "UI_DU_VAL_EVIDENCE": {"en": "evidence", "ar": "دليل"},
+    "UI_DU_VAL_YES": {"en": "yes", "ar": "نعم"},
+    "UI_DU_VAL_NO": {"en": "no", "ar": "لا"},
+    "UI_DU_VAL_OPEN_GAP": {"en": "open gap", "ar": "فجوة مفتوحة"},
+    "UI_DU_VAL_RECORDED": {"en": "recorded", "ar": "مسجّل"},
+    "UI_DU_LINK_PART": {"en": "Part", "ar": "الجزء"},
+    "UI_DU_LINK_COMPONENT": {"en": "Component", "ar": "المكوّن"},
+    "UI_DU_LINK_DEPENDENT_PART": {"en": "Relying part", "ar": "الجزء المعتمِد"},
+    "UI_DU_LINK_DEPENDS_ON_PART": {"en": "Relies on", "ar": "يعتمد على"},
+    "UI_DU_LINK_GAP": {"en": "Question area", "ar": "مجال السؤال"},
     "UI_CAP12_LINK_TEXT": {
         "en": "Optional: material and building-method families for a form mock-up",
         "ar": "اختياري: عائلات المواد وطرق البناء لمجسَّم شكلي"},

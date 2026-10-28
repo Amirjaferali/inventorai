@@ -117,6 +117,7 @@ from engine.idea_state import (
 )
 # PATHN-CONSTRAINT-DECLARATION-01: the inventor's project constraints.
 from engine import idea_state as _constraints
+from engine import idea_design_understanding as _du  # IDEA-DESIGN-UNDERSTANDING-PROJECTION-01
 from web.gap_labels import (
     GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE,
     get_session_disclosure, friendly_gap_name, GAP_DISPLAY_NAMES, GAP_DISPLAY_NAMES_AR,
@@ -665,6 +666,51 @@ app.jinja_env.filters["evidence_details"] = _evidence_details
 # direct ``jinja_env.get_template(...).render(...)`` (used by some tests) working —
 # ``t`` stays request-safe and defaults to English outside a request context.
 app.jinja_env.globals["t"] = lambda key: ui_text.text(key, _current_ui_lang())
+
+
+# IDEA-DESIGN-UNDERSTANDING-PROJECTION-01 — presentation helpers for the
+# design-understanding section. They choose WHICH owner-native attributes the
+# page shows and how a token is labelled; they never change, map or add a value.
+# An attribute value without catalogue copy is shown as the owner's own token.
+_DU_SHOWN_ATTRIBUTES = frozenset((
+    "provenance", "validation_status", "validation_state", "disposition",
+    "strength", "status", "interpretation_status", "preparation_presence",
+    "dependency_kind", "function_text", "prototype_need", "initial_analysis_focus",
+    "criticality", "criticality_authority", "required_input", "corrections"))
+# Not shown (still carried on the composer's object): ``issue_type`` (the
+# step's own title already says it; the raw enum would otherwise reach the
+# inventor) and ``source_status`` (the landscape's multi-word English phrases
+# have no catalogue label and would sit untranslated beside Arabic labels).
+_DU_VERBATIM_ATTRIBUTES = frozenset(("function_text", "prototype_need"))
+_DU_NAMED_LINKS = frozenset(("part", "component", "dependent_part", "depends_on_part"))
+# Item kinds whose reference is an owner-minted opaque id (or a fixed name) and
+# may travel as a data attribute. References that embed a governed gap token
+# (gaps, routed needs, requirement rows, the next step) never reach the page
+# source: the page shows gap labels only (the friendly-gap-label rule), and
+# machine consumers read the composer's object, not the HTML.
+_DU_REF_KINDS = frozenset((
+    "idea_statement", "answer", "provisional_assumption", "non_answer",
+    "idea_stated_unknown", "acknowledged_unknown", "functional_role", "constraint",
+    "part", "component", "interaction", "declared_contradiction",
+    "engineering_continuation"))
+
+
+def _du_display_value(name, value):
+    """Catalogue label of an owner token when one exists, else the token."""
+    lang = _current_ui_lang()
+    if isinstance(value, bool):
+        return ui_text.text("UI_DU_VAL_YES" if value else "UI_DU_VAL_NO", lang)
+    if name == "strength" and value in _CONSTRAINT_STRENGTH_KEYS:
+        return ui_text.text(_CONSTRAINT_STRENGTH_KEYS[value], lang)
+    key = "UI_DU_VAL_" + str(value).upper().replace("-", "_")
+    return ui_text.text(key, lang) if ui_text.has_string(key) else value
+
+
+app.jinja_env.globals["du_value"] = _du_display_value
+app.jinja_env.globals["du_shown_attributes"] = _DU_SHOWN_ATTRIBUTES
+app.jinja_env.globals["du_verbatim_attributes"] = _DU_VERBATIM_ATTRIBUTES
+app.jinja_env.globals["du_named_links"] = _DU_NAMED_LINKS
+app.jinja_env.globals["du_ref_kinds"] = _DU_REF_KINDS
 app.jinja_env.globals["ui_lang"] = "en"
 app.jinja_env.globals["ui_dir"] = "ltr"
 # Stage 18 / CAP-01: expose the bounded CAP-01 presentation-profile resolver through
@@ -6987,9 +7033,18 @@ def show_session(sid):
         max(_uncertainty_candidates, key=lambda c: c[0])[1]
         if _uncertainty_candidates else "")
     s15_focus = _s15_interface_focus(sid, state)
+    # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01 view, computed ONCE per render:
+    # the page's own section and (IDEA-DESIGN-UNDERSTANDING-PROJECTION-01) the
+    # design-understanding composition read the same value.
+    _fh_view = _functional_handoff_view(sid, state)
     return render_template("session.html",
         sid=sid,
         project_identification=_project_identification(sid),
+        # IDEA-DESIGN-UNDERSTANDING-PROJECTION-01: ONE read-only composition of
+        # the existing owners' current truth (``engine.idea_design_understanding``).
+        # Presentation only: no owner is consulted twice for a different answer,
+        # nothing is derived, inferred, related or written.
+        design_understanding=_design_understanding_view(sid, state, _fh_view),
         # Stage 15 Slice 1: the bounded integrated-invention scope (None for
         # every ordinary project).
         integrated_scope=_integrated_scope_context(state),
@@ -7167,7 +7222,7 @@ def show_session(sid):
         # FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: InventorAI's proposed
         # reading of the needs the inventor stated, with the existing engineering
         # owners' own readiness. Read-only; never an engineering input.
-        functional_handoff=_functional_handoff_view(sid, state),
+        functional_handoff=_fh_view,
         # Stage 27 / THERM-01 Slice 1: an OPTIONAL link to the request-local
         # single-path temperature-difference calculation, offered only on an
         # eligible project (Electrical / Electronics root, or a declared
@@ -9710,6 +9765,97 @@ def _functional_handoff_view(sid, state):
                 "roles": roles, "abstained": projection.abstained}
     except Exception:
         return {"available": False}
+
+
+# =============================================================================
+# IDEA-DESIGN-UNDERSTANDING-PROJECTION-01 — the session page's read-only
+# design-understanding picture. The composer (`engine.idea_design_understanding`)
+# owns composition and presentation structure only; this adapter reads each
+# input through the EXISTING reader of its owner and hands the values over.
+# No new reader, snapshot, persistence, derivation or relationship; a GET
+# writes nothing. Each optional input that cannot be read is passed as
+# UNREADABLE so its section reads UNAVAILABLE while the rest still renders.
+# =============================================================================
+def _du_seed_statement(sid):
+    """The verbatim seed statement: ``None`` when the durable envelope exists
+    and holds an empty statement (ABSENT); ``UNREADABLE`` when the envelope
+    cannot be read or the reader returns no envelope at all (a legacy project
+    whose reconstruction columns are NULL, or an absent project) — the same
+    cases the #849 view reports as "could not be read", so the two sections of
+    one picture never disagree about the same row."""
+    try:
+        inputs = _get_store().load_reconstruction_inputs(sid)
+    except Exception:
+        return _du.UNREADABLE
+    if not isinstance(inputs, dict):
+        return _du.UNREADABLE
+    seed = inputs.get("seed_idea_text")
+    return seed if isinstance(seed, str) and seed.strip() else None
+
+
+def _du_idea_stated_unknown(state):
+    """The #836 idea-stated unknown through its existing owner (verbatim)."""
+    try:
+        from engine.intent_serving import idea_stated_unknown
+        found = idea_stated_unknown(state)
+        return found[0] if found else None
+    except Exception:
+        return _du.UNREADABLE
+
+
+def _du_composition(sid):
+    """The Stage-15 cluster through the EXISTING composite reader (its own one
+    consistent snapshot, every collection validated whole against the
+    composition). Any refusal or corruption -> UNREADABLE (the cluster's
+    three sections read UNAVAILABLE, never partial)."""
+    loader = getattr(_get_store(), "load_parts_components_interactions", None)
+    if not callable(loader):
+        return _du.UNREADABLE
+    try:
+        return loader(sid)
+    except Exception:
+        return _du.UNREADABLE
+
+
+def _du_prototype_needs(sid, composition):
+    """``{component_id: need_text}`` through the EXISTING prototype-need reader,
+    attached only when that reader's current components are exactly the
+    composite reader's (the COMPONENT-PROTOTYPE-NEED-HANDOFF-01 rule);
+    otherwise UNREADABLE (the notes alone read unavailable)."""
+    if not isinstance(composition, dict):
+        return _du.UNREADABLE
+    loader = getattr(_get_store(), "load_component_prototype_needs", None)
+    if not callable(loader):
+        return _du.UNREADABLE
+    try:
+        need_inventory, stored_needs = loader(sid)
+        listed = tuple(composition.get("components") or ())
+        if tuple(need_inventory.active) != listed:
+            return _du.UNREADABLE
+        return _subsystem_model.current_prototype_needs(stored_needs, need_inventory)
+    except Exception:
+        return _du.UNREADABLE
+
+
+def _design_understanding_view(sid, state, functional_handoff):
+    """``engine.idea_design_understanding.DesignUnderstanding`` for the page,
+    ``None`` without a state. ``functional_handoff`` is the page's own #849 view
+    (already computed once), reused rather than re-read. Any failure of the
+    composition itself is the whole-view refusal, never a partial picture."""
+    if state is None:
+        return None
+    try:
+        composition = _du_composition(sid)
+        return _du.compose(_du.Sources(
+            state=state,
+            derived_available=getattr(state, "domain", None) is not None,
+            original_idea=_du_seed_statement(sid),
+            functional_handoff=functional_handoff,
+            idea_stated_unknown=_du_idea_stated_unknown(state),
+            composition=composition,
+            prototype_needs=_du_prototype_needs(sid, composition)))
+    except Exception:
+        return _du.unavailable()
 
 
 def _component_report_view(sid):

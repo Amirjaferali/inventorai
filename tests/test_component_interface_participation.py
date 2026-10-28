@@ -713,7 +713,16 @@ def test_x01_export_safety_readiness_and_state_are_unchanged(monkeypatch):
     strip = re.compile(r'<div data-interface-participation.*?</div>', re.S)
     assert _strip(strip.sub("", after_report)) == _strip(strip.sub("", before_report))
     hidden = re.compile(r'<input type="hidden"[^>]*>')                         # per-render tokens only
-    assert hidden.sub("", c.get(f"/session/{sid}").get_data(as_text=True)) == hidden.sub("", before_session)
+    # IDEA-DESIGN-UNDERSTANDING-PROJECTION-01: the session page's read-only
+    # design-understanding picture presents the CURRENT participation rows by
+    # component name (an identity-bound link the owner holds), so that one
+    # block legitimately changes after a participation write; everything else
+    # on the page must stay identical.
+    picture = re.compile(r'<details id="design-understanding".*?</details>', re.S)
+
+    def session(raw):
+        return hidden.sub("", picture.sub("", raw))
+    assert session(c.get(f"/session/{sid}").get_data(as_text=True)) == session(before_session)
     assert pickle.dumps(appmod.SESSION_STORE[sid]["state"]) == before_state      # IdeaState untouched
 
 

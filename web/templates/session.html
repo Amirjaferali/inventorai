@@ -2297,6 +2297,65 @@ body{overflow-wrap:anywhere}
 {% endif %}
 </details>
 {% endif %}
+{#- IDEA-DESIGN-UNDERSTANDING-PROJECTION-01: ONE read-only picture that
+    composes the existing owners' current truth (``engine.idea_design_understanding``)
+    under presentation headings. Every item keeps its owner's own attributes;
+    items shown together are not thereby related; only identity-bound links the
+    owner records already hold are shown, by name. Nothing is derived, chosen,
+    generated or saved; internal ids travel only as data attributes. -#}
+{% if design_understanding %}
+<details id="design-understanding" class="design-understanding" data-design-understanding style="margin-top:14px;border:1px solid #d6dde8;border-radius:4px;background:#f7f9fc;padding:10px 14px">
+<summary style="cursor:pointer;font-weight:bold">{{ t('UI_DU_TITLE') }}</summary>
+{% if not design_understanding.available %}
+<p data-du-unavailable>{{ t('UI_DU_UNAVAILABLE') }}</p>
+{% else %}
+<p style="font-size:13px">{{ t('UI_DU_INTRO') }}</p>
+{% for s in design_understanding.sections %}
+<div data-du-section="{{ s.key }}" data-du-status="{{ s.status }}" style="margin:8px 0;padding:6px 10px;border:1px solid #e2e6ea;border-radius:4px;background:#ffffff">
+<p style="margin:2px 0"><strong>{{ t('UI_DU_SEC_' ~ s.key|upper) }}</strong></p>
+{% if s.status == 'UNAVAILABLE' %}
+<p data-du-section-unavailable style="margin:2px 0;font-size:13px;color:#7a5b00">{{ t('UI_DU_SECTION_UNAVAILABLE') }}</p>
+{% elif s.status == 'ABSENT' %}
+<p data-du-section-absent style="margin:2px 0;font-size:13px;color:#777">{{ t('UI_DU_ABSENT_' ~ s.key|upper) }}</p>
+{% else %}
+<ul style="margin:4px 0;font-size:13px">
+{% for i in s.items %}
+<li data-du-item="{{ i.content_kind }}"{% if i.content_kind in du_ref_kinds %} data-du-ref="{{ i.reference }}"{% endif %} style="margin:3px 0">
+{%- if i.content_kind == 'functional_role' -%}
+<strong>{{ t('UI_FH_ROLE_' ~ i.attribute('role')) }}</strong>{% if i.attribute('object_key') != 'NONE' %}: {{ t('UI_FH_OBJ_' ~ i.attribute('object_key')) }}{% endif %}
+{%- for q in i.attribute('groundings') %} <q data-du-quote dir="auto">{{ q }}</q>{% endfor %}
+{%- for q in i.attribute('negations') %} <span data-du-negation>{{ t('UI_FH_NEGATED') }} <q dir="auto">{{ q }}</q></span>{% endfor %}
+{%- for q in i.attribute('method_uncertainties') %} <span data-du-uncertain>{{ t('UI_FH_UNCERTAIN') }} <q dir="auto">{{ q }}</q></span>{% endfor %}
+{%- elif i.content_kind == 'engineering_continuation' -%}
+<a data-du-action="{{ i.attribute('ref') }}" href="{{ url_for(i.attribute('action'), sid=sid) }}">{{ t('UI_FH_ACTION_' ~ i.attribute('ref')) }}</a> <span style="color:#777">{{ t('UI_FH_ACTION_NOTE') }}</span>
+{%- elif i.content_kind == 'gap' -%}
+{{ i.reference|gap_display }}
+{%- elif i.content_kind == 'routed_need' -%}
+{{ t('UI_DU_ROUTED_NEED') }} {{ i.attribute('gap_type')|gap_display }}
+{%- elif i.content_kind == 'declared_contradiction' -%}
+{{ t('UI_DU_CONTRADICTION') }}
+{%- elif i.content_kind == 'idea_stated_unknown' -%}
+{{ t('UI_FH_QUOTE_IDEA') }} <bdi dir="auto" data-du-text>{{ i.text }}</bdi>
+{%- elif i.text -%}
+<bdi dir="auto" data-du-text>{{ i.text }}</bdi>
+{%- endif -%}
+<span data-du-meta style="color:#777;font-size:12px">
+{%- for name, value in i.attributes %}{% if name in du_shown_attributes and value is not none and value != false %} · {{ t('UI_DU_ATTR_' ~ name|upper) }}: {% if name in du_verbatim_attributes %}<bdi dir="auto">{{ value }}</bdi>{% else %}{{ du_value(name, value) }}{% endif %}{% endif %}{% endfor -%}
+</span>
+{%- for l in i.links %}{% if l.kind in du_named_links and design_understanding.name_of(l.reference) %} <span data-du-link="{{ l.kind }}" style="font-size:12px;color:#555">· {{ t('UI_DU_LINK_' ~ l.kind|upper) }}: <bdi dir="auto">{{ design_understanding.name_of(l.reference) }}</bdi></span>{% elif l.kind == 'gap' %} <span data-du-link="gap" style="font-size:12px;color:#555">· {{ t('UI_DU_LINK_GAP') }}: {{ l.reference|gap_display }}</span>{% elif l.kind == 'record' %}<span data-du-link="record" data-du-link-ref="{{ l.reference }}" hidden></span>{% endif %}{% endfor %}
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+{% if s.unavailable %}<p data-du-partly-unavailable style="margin:2px 0;font-size:12px;color:#7a5b00">{{ t('UI_DU_PARTLY_UNAVAILABLE') }}</p>{% endif %}
+{% for name, value in s.details %}{% if name == 'abstained' %}<p data-du-abstained style="margin:2px 0;font-size:12px;color:#777">{{ t('UI_FH_ABSTAINED') }}</p>{% elif name == 'idea_available' and not value %}<p data-du-idea-unavailable style="margin:2px 0;font-size:12px;color:#7a5b00">{{ t('UI_FH_IDEA_UNAVAILABLE') }}</p>{% endif %}{% endfor %}
+</div>
+{% endfor %}
+<p data-du-boundary style="font-size:12px;color:#777">{{ t('UI_DU_BOUNDARY') }}</p>
+<p data-du-adjacency style="font-size:12px;color:#777">{{ t('UI_DU_ADJACENCY') }}</p>
+{% endif %}
+</details>
+{% endif %}
 {#- CAP12-LINK-BEGIN — Stage 24 / CAP-12 Form Mock-up Advisory Slice 1. ONE
     optional link to the request-local advisory page, offered only when the CAP-12
     owner supports the trusted root domain. It is not a journey action, gates
