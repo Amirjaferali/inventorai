@@ -117,3 +117,16 @@ Scientific status is separate and unchanged. Origin was checked on the already-d
 | SRC-044 | government (sole NASA Glenn author; NASA-hosted author copy of an IEEE-presented paper) | own text (one adjacent point cites its ref. [6]) | conditional — U.S. Government work; IEEE version not relied on | `CALCULATION-GRADE` | conditional |
 | SRC-045 | government (NBS staff, Army-sponsored) | relied section declared based on ANSI B88.1-1972 (protected standard); points to a third-party handbook | unknown | `IP-UNRESOLVED` | standard-based; Owner-confirmed 2026-10-29 |
 | SRC-046 | government (sole NASA Glenn author) | a scientific law (Shannon–Hartley) restated in the author's words from cited literature (its Ref. 8); no third-party expression used | conditional — U.S. Government work; credit the original theorem | `CALCULATION-GRADE` | conditional |
+
+**Audit totals (46 sources):** 25 `CALCULATION-GRADE` (20 unconditional + 5 with conditions: SRC-011, 016, 017, 044, 046), 3 `REFERENCE-ONLY`,
+16 `IP-UNRESOLVED`, 2 `EXCLUDED`. (The 2026-10-29 chat report's "26 of 46" was an arithmetic slip; no record carried it.)
+
+**Owner IP decisions (2026-10-29):**
+- SRC-046 stays `CALCULATION-GRADE` with conditions, valid only for the underlying scientific / mathematical relation: rely on the factual
+  relationship only, in InventorAI's own wording; no third-party prose, figures, tables, examples or other protected expression; keep attribution
+  and provenance; a government restatement transfers no rights in cited third-party material. Any use beyond the underlying fact is re-checked
+  separately.
+- SRC-045 stays `IP-UNRESOLVED` (passage declared based on protected ANSI B88.1-1972): not usable for product or method admission unless a clean
+  independent claim-level basis is later recorded.
+- Git history is not rewritten (rewrite not justified and not authorized). Commits 3fc3227, c4f162e and 72c40e6 still hold the superseded
+  wording; the active tree carries the do-not-reuse markers, which govern.
