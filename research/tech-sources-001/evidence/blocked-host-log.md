@@ -19,3 +19,5 @@ Append-only. Never bypassed.
 | 2026-10-27 (run 8) | stac.astrogeology.usgs.gov | egress proxy CONNECT 403 | USGS Astrogeology glossary (IFOV / pixel-scale definitions) for Q-15 | None |
 | 2026-10-27 (run 9) | www.ibiblio.org | re-test: still no connection (curl 000; certificate trust issue as before) | Q-05 / Q-07 sources | None |
 | 2026-10-27 (run 9) | www.faa.gov | no response (curl 000); proxy record not checked | FAA AC 27-1B (tethered-hover thrust statement) for Q-17 | NASA Ames papers (SRC-024, SRC-025) |
+| 2026-10-28 (run 11) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
+| 2026-10-28 (run 11) | transition.fcc.gov, www.fcc.gov | CONNECT 403 (proxy policy), not retried | FCC OET Bulletin 65 (far-field inverse-square statement) for Q-13 | NBS TN 12 and TN 101 Vol. 2 (SRC-037, SRC-038) |

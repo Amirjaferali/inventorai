@@ -234,3 +234,22 @@ NBS Circular 486 (SRC-031): materials change dimensions with temperature; the ch
 and instantaneous linear-expansion coefficients are defined; differential expansion of two materials is used in thermostats. NASA TP-2226
 (SRC-032): differential expansion between dissimilar joined materials produces thermal stress. DOE-HDBK-1017/1-93 (SRC-029) supports.
 Verification a design would need: the actual materials' coefficients over the actual temperature range and the joint's constraint. No data adopted.
+
+## Run 11 (2026-10-28, scheduled wake-up; first run under the 2026-10-28 selection correction)
+
+### Q-13 — Free-space path loss conditions — QUALIFIED-CANDIDATE (residual closed)
+NBS TN 12 (SRC-037): an isotropic source's power density is p / 4πd² provided d ≫ λ, and free-space energy density falls with the square of distance.
+NBS TN 101 Vol. 2 (SRC-038): far-field condition r > 2D²/λ (general rule); loss minimized with oriented beams and matched polarization; free-space
+loss assumes loss-free, matched antennas. With SRC-020 (field losses exceed theory). Dimensions: D1, D2, D3 established; D5 not sought. FCC hosts refused.
+
+### Q-24 — IoT device cybersecurity baseline — QUALIFIED-CANDIDATE
+NIST blog (SRC-034, NIST staff): six capabilities — device identification, device configuration, data protection, logical access to interfaces,
+software update, cybersecurity state awareness. NIST FAQ (SRC-035): a generic starting point tailored to market / product needs (applicability).
+NISTIR 8259A (SRC-033) adds detail but is mixed-authorship → cross-check only. Dimensions: D1, D3, D4 (asset / vulnerability management links),
+D7 established. Not a compliance statement; Stage 31 stays not authorized; H-04 untouched.
+
+### Q-25 — Firmware update integrity and recovery — QUALIFIED-CANDIDATE
+NIST SP 800-193 (SRC-036): protect / detect / recover; authenticated updates through a root of trust; recoverable even after power loss during
+an update; preventing updates to an earlier vulnerable version; recovery to an authentic firmware version; critical data to factory defaults or last
+known good; watchdog timers as an additional detection aid (also relevant later to Q-34); stated as broadly applicable to IoT and embedded devices.
+Dimensions: D1, D3, D5 (corruption detection), D7 established. Rollback nuance recorded in the unresolved-issues log.

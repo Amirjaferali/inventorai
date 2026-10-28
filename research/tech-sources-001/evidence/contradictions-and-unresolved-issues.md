@@ -11,3 +11,4 @@ Append-only.
 | 2026-10-27 | Q-08 (run 3) | Sources disagree on a numeric sample-rate rule (≥ 30×, > 10×, 5–20×, 6–10× closed-loop bandwidth): evidence that no single class-level threshold exists. |
 | 2026-10-27 | Q-01 (run 6) | RESOLVED lead: the span-to-depth-14 property basis (run 2 "UNVERIFIED") is now verified from the Wood Handbook itself (SRC-014 p. 5–8). |
 | 2026-10-27 | Q-01 (run 6) | Unchanged: no inspected source gives a numeric small-deflection, elastic or span-to-depth validity limit for Eq. 9–2. |
+| 2026-10-28 | Q-25 (run 11) | Apparent tension, not a contradiction: NISTIR 8259A lists authorized rollback to a previous version as an update capability, while SP 800-193 says updates to an earlier authentic version with a known weakness should be preventable. Both are recorded as stated; no rule chosen. |
