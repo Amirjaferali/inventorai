@@ -62,6 +62,9 @@ or of unclear item-level rights is not qualified.
 4. If `research/tech-sources-001/STOP` exists, stop (step 7).
 5. Work at most 3 ELIGIBLE questions (definitions in `state/question-register.md` "Selection and depth rules", Owner correction 2026-10-28):
    eligible = `QUEUED`, `IN_PROGRESS` or `PARTIAL` without a `WAITING` note. Order: every eligible Tier 1 question first, in register order; then
+   (Owner 2026-10-29, campaign priority) `QUEUED` items of the register's Restoration backlog, P1 → P3 — at most 3 external queries per item per run;
+   one technically sufficient, independent, commercially usable source restores it and stops the search; if the item's bounded search finds none,
+   mark it `IP-UNRESOLVED` or `EXHAUSTED` with the families searched and move on; never re-research its clean portion; then
    (Owner remaining-run discipline 2026-10-28) every eligible Tier 2 `PARTIAL` residual, P1 → P2 → P3; then `QUEUED` Tier 2 questions by
    priority P1 → P2 → P3, register order within a priority, except that a queued question whose result could support a calculation, engineering
    condition or verification step comes before a reference-only one of the same priority (e.g. Q-29, Q-32 before Q-27). Reuse inspected sources before any new search; stop work on a question once it is terminal. On a `PARTIAL` question, search only its recorded residual — never repeat an
@@ -82,7 +85,10 @@ or of unclear item-level rights is not qualified.
    Run report (Owner 2026-10-28): return only the questions worked; the exact status delta; new qualified source IDs; D1–D7 dimensions now sourced;
    remaining `UNVERIFIED` dimensions; EXPLICIT / IMPLIED caveats; DIRECT / LEAD-SUPPLIED status; IP / reuse caveats; usefulness class; any new
    BLOCKED / WAITING / EXHAUSTED / IP UNRESOLVED state; per question the repository source IDs and D1–D7 dimensions reused, the residual
-   dimensions searched externally and the external query count; budget used; the next eligible question; the next scheduled run's trigger id and fire time —
+   dimensions searched externally and the external query count; for each restoration item: the claim, old source ID and its IP defect, source
+   families searched, new source ID, whether independent, dimensions restored, claim origin, commercial / product-use basis, IP fitness,
+   attribution / no-endorsement conditions and the restoration status (a restored claim goes to the Execution Lead before any product use);
+   budget used; the next eligible question; the next scheduled run's trigger id and fire time —
    never domain-level status, never the whole history. Any material qualification delta goes to the Execution Lead for bounded NEXT-LOOP assessment;
    no run jumps to a later technology because it is easier to source.
    Work the fewest questions needed and do not spend budget because it exists; never repeat a failed search without a changed path.
