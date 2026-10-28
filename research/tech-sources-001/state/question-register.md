@@ -93,11 +93,17 @@ A wake-up text that names questions is a hint only; this order governs (run 11's
 Existing Tier 2b priorities: Q-13 P1; Q-11, Q-20, Q-23 P2; Q-12, Q-18 P3. Q-15 and Q-16 stay `IP UNRESOLVED` (terminal); their claims are
 re-approached only through the new rows below that need a clean-rights source anyway.
 
-**Depth dimensions** (assessment checklist, not separate questions; findings state which apply and which are established):
-D1 governing model / equation / relationship · D2 inputs, outputs, units, operating conditions · D3 applicability limits, uncertainty, failure
-conditions · D4 integration with other owners / systems · D5 measurement, experiment, validation needs · D6 reusable models, reference
-implementations, libraries (with licence) · D7 safety and reliability considerations. Not every dimension applies to every claim; a dimension that
-applies but has no lawful source is recorded `UNVERIFIED`, never invented.
+**Depth dimensions — Owner definition of 2026-10-28 (evening), in force from run 15** (assessment checklist, not separate questions; findings state
+which apply and which are established): D1 governing relation / principle · D2 applicability conditions (assumptions, regime, boundary conditions,
+when it does or does not apply) · D3 inputs, variables, units, limits, sign conventions · D4 engineering consequence / integration (only where the
+source states the connection) · D5 verification / measurement (what, under which conditions, which comparison is meaningful) · D6 failure,
+limitation, uncertainty, non-ideal effects · D7 method authority (machine-checkable rule? explicit decision criterion? owner decision still needed?).
+Not every dimension applies; an applicable dimension without a lawful source is `UNVERIFIED`, never inferred. Each material statement is labelled
+`EXPLICIT` or `IMPLIED` and each source `DIRECTLY INSPECTED`, `LEAD-SUPPLIED` or `UNINSPECTED` (an uninspected or inaccessible source is never
+qualified evidence). Two separately qualified facts never make a qualified composition; a cross-technology connection counts only where a source
+states it. *Earlier numbering (runs 6–14 and the Tier 2c "Dims" column):* D1 model → new D1; D2 inputs / units / conditions → new D2 + D3;
+D3 limits / uncertainty / failure → new D6 (+ D2); D4 → D4; D5 → D5; D6 reusable models / libraries → recorded in the IP register; D7 safety /
+reliability → new D6. Earlier findings are not renumbered.
 
 **Remaining-run depth discipline (Owner 2026-10-28; binding for the rest of the campaign).** REUSE → RESIDUAL ONLY → STOP. Each finding states,
 per applicable D1–D7 dimension, what is sourced: the claim (D1); applicability / assumptions; inputs, outputs, units (D2); limits / failure

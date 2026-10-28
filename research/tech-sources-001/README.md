@@ -57,8 +57,10 @@ Choose lenses adaptively per question; record the lens used for every query in t
    that counts as "every question terminal".
 6. Record: sources, IP basis, abstentions, blocked hosts (never retry a host that returned 403 in the same run), findings, contradictions;
    append one run-ledger row (date, run number, questions, queries per lens, fetches, cumulative totals, outcome). Commit and push. A push that fails twice → stop.
-   Run report (Owner 2026-10-28): return only the questions worked, the exact status delta, new source IDs, residual dimensions still open,
-   any new BLOCKED / EXHAUSTED status, budget used and the next queued question — never domain-level status, never the whole history.
+   Run report (Owner 2026-10-28): return only the questions worked; the exact status delta; new qualified source IDs; D1–D7 dimensions now sourced;
+   remaining `UNVERIFIED` dimensions; EXPLICIT / IMPLIED caveats; DIRECT / LEAD-SUPPLIED status; IP / reuse caveats; usefulness class; any new
+   BLOCKED / WAITING / EXHAUSTED / IP UNRESOLVED state; budget used; the next eligible question — never domain-level status, never the whole history.
+   Work the fewest questions needed and do not spend budget because it exists; never repeat a failed search without a changed path.
 7. Stop conditions: every question terminal (terminal = `QUALIFIED-CANDIDATE`, `EXHAUSTED`, `BLOCKED`, `AUTHORITY BLOCKED`, `QUESTION UNCLEAR`,
    `IP UNRESOLVED`, `SOURCE ACCESS BLOCKED`, `HELD`, `EXCLUDED`, `ABSTAINED`, or `PARTIAL` with a `WAITING` note) and no row derivable under step 5; any limit reached; 3 runs in a row without progress; STOP file; authority change; branch / base mismatch;
    push failed twice; Perplexity connector missing (never substitute another method); an Owner decision required to continue; a privacy or authority conflict.
