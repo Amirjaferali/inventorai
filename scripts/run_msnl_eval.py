@@ -1313,10 +1313,10 @@ def mechanism_candidate_check():
 
 MECHANISM_V2_HOLDOUT_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                          "msnl_mechanism_content_v2_holdout.json")
-MECHANISM_V2_HOLDOUT_SHA256 = "PENDING"
+MECHANISM_V2_HOLDOUT_SHA256 = "4d960db7711320e47eab205caf527fef8e53a5dc5d98c0699d1e456ac7699a5c"
 MECHANISM_V2_INSTRUCTIONS_SHA256 = \
     "8b3027b5daaf1498d3a48fbe23cccda4024cf63abcbfdaea09963eecb7790a4c"
-MECHANISM_V2_EVALUATION_AUTHORIZED = False   # opened only at the final, reviewed evaluation head
+MECHANISM_V2_EVALUATION_AUTHORIZED = True
 MECHANISM_V2_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
                                          "msnl_mechanism_content_v2")
 MECHANISM_V2_REPORT_PATH = os.path.join(MECHANISM_V2_EVIDENCE_DIR, "evaluation_01_report.json")
