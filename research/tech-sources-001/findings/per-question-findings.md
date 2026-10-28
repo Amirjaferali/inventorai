@@ -212,7 +212,7 @@ and cells hotter. **Not yet sourced on clean rights:** the explicit statement th
 coefficient) — the documents stating it are NREL / Sandia (contractor-operated laboratories).
 
 ### Q-19 — Vacuum outgassing screening — QUALIFIED-CANDIDATE
-NASA PT-TE-1410 (SRC-027): ASTM E-595 screening (10⁻⁶ torr, 125 °C, 24 h); TML < 1.0 % and CVCM < 0.10 % for approval unless the application
+NASA PT-TE-1410 (SRC-027): ASTM E-595 screening [standard-defined conditions and pass values redacted 2026-10-29 — IP-UNRESOLVED, do not reuse]; approval against those values unless the application
 dictates otherwise; product-by-product qualification, lot testing when variation is suspected. These are NASA's screening criteria, recorded
 as source facts, not InventorAI thresholds.
 
@@ -332,3 +332,8 @@ Repository reuse: none relevant (SRC-037 / SRC-038 cover propagation, not capaci
 (NASA/TM—2018-219754). D1 EXPLICIT (C = B log₂(1 + P / (N₀B)), verified on the page image); D2 EXPLICIT (AWGN, bandwidth-limited channel,
 average power constraint; R ≤ C achievable with arbitrarily small error); D3 (P, N₀, B; bits / s); D6 EXPLICIT (fading, channel side information
 and interference change or leave open the capacity). D7: a theoretical bound only, no design criterion. Use: calc (upper bound), cond.
+
+## IP-hygiene audit (2026-10-29; no research run)
+Scientific findings above are unchanged. Product-use IP fitness per source is in `evidence/ip-and-reuse-register.md` (claim-level audit) and per
+question in `state/question-register.md` and `owner-readable-summary.md`. Standard-derived values (SRC-027 ASTM E595 conditions and pass values;
+SRC-045 flat-response band figures) were redacted from the active library; the Wood Handbook footnote (SRC-014) is paraphrased, not quoted.

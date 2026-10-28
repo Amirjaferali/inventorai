@@ -62,3 +62,58 @@ risk observations, not clearance; "none identified" means none was seen in the i
 | SRC-044 | NTRS: GOV_PUBLIC_USE_PERMITTED; belongsToContractor false; belongsToPublisher false; sole NASA Glenn author. NASA-hosted author copy; the IEEE-published version is not relied on. | Factual paraphrase of the temperature-coefficient statements. | n/a | n/a | Figures not used | Cite NTRS 20090004578; no NASA endorsement | None identified | None identified | IEEE conference name only |
 | SRC-045 | NBS staff author (U.S. Government work); GPO publication; no copyright notice found; Army sponsorship noted. | Factual paraphrase of the SDOF relations. | n/a | n/a | Figures, tables and the cited "Shock and Vibration Handbook" (third-party, protected) not used | Cite NBS SP 615; no NIST / Army endorsement | None identified | None identified | Manufacturer listings in the handbook not used |
 | SRC-046 | NTRS: GOV_PUBLIC_USE_PERMITTED; belongsToContractor false; sole NASA Glenn author. | Factual paraphrase of the capacity definition and conditions. | n/a | n/a | Figures not used; the cited references (Ref. 3, 7, 8, 9) not used | Cite NASA/TM—2018-219754; no NASA endorsement | None identified | None identified | — |
+
+
+## Claim-level IP audit (Owner-authorized IP-hygiene task, 2026-10-29) — governs product use; rows above are history
+Rule (README "Claim-level IP fitness"): only `CALCULATION-GRADE` evidence may support product or method qualification; `REFERENCE-ONLY` is
+background; `IP-UNRESOLVED` and `EXCLUDED` must not be reused. Hosting (NASA, NIST, DOE, NBS, CERN, arXiv, …) is never a rights basis by itself.
+Scientific status is separate and unchanged. Origin was checked on the already-downloaded copies (no new source, no search).
+
+| SRC | Authorship type | Origin of the relied-on statement | Commercial-use basis | IP fitness | Note |
+|---|---|---|---|---|---|
+| SRC-001 | government (NACA / USDA FPL staff, 1924) | own experimental work | conditional — NTRS GOV_PUBLIC_USE_PERMITTED; employee status not separately verified | `CALCULATION-GRADE` | factual paraphrase only |
+| SRC-002 | government (NASA Lewis) | own | clear (U.S. Government work) | `REFERENCE-ONLY` | recorded for applicability analysis only; no claim relied on |
+| SRC-003 | government (NASA Langley) | own | clear (U.S. Government work) | `CALCULATION-GRADE` |  |
+| SRC-004 | government (U.S. Army at NASA Lewis) — employee status inferred | own review text (not checked passage by passage) | conditional — residual authorship / IP confirmation still open (base-branch DR-1 record) | `IP-UNRESOLVED` | until the residual authorship confirmation is recorded |
+| SRC-005 | agency series, contractor-prepared (DOE Fundamentals Handbook) | unclear (handbook compilation) | unknown at claim level (no blanket public-domain determination) | `IP-UNRESOLVED` | same caveat as production record electronics_electrical:PR004 — admission there was a separate Lead decision, not this audit |
+| SRC-006 | government (NBS for Naval Facilities); individual authorship not verified | relied measurement basis tied to ASTM C393-62 test conformance | unknown | `IP-UNRESOLVED` | standard-based |
+| SRC-007 | as SRC-005 | unclear | unknown | `IP-UNRESOLVED` |  |
+| SRC-008 | agency handbook (DOE); contractor preparation not excluded | unclear (cites ANSI/IEEE Std 450 in the same section) | unknown | `IP-UNRESOLVED` |  |
+| SRC-009 | government (NASA Glenn / NESC authors) | own guidance (MIL-STD references not relied on) | clear (U.S. Government work; NTRS not contractor) | `CALCULATION-GRADE` |  |
+| SRC-010 | government (NASA Ames / U.S. Army) | own text; figure reproduced from its ref. 50 not used | clear | `CALCULATION-GRADE` |  |
+| SRC-011 | government (NIST staff) | own text; also given as an IEEE 1989 tutorial and excerpted from the same NIST authors' IEEE papers | conditional — U.S. Government work; IEEE-published versions not relied on | `CALCULATION-GRADE` | conditional |
+| SRC-012 | government (NIST staff) | relied point is NIST's summary of a cited work and only implied | clear for NIST text | `REFERENCE-ONLY` | not calculation-grade |
+| SRC-013 | government (NIST staff; states "not subject to copyright") | own | clear | `CALCULATION-GRADE` |  |
+| SRC-014 | government (USDA FPL employee) | own (footnote c); tabulated property values partly from ASTM-based / world literature are NOT relied on | clear (U.S. Government work) | `CALCULATION-GRADE` | footnote now paraphrased, not quoted |
+| SRC-015 | government (USDA FPL employee) | own | clear | `CALCULATION-GRADE` |  |
+| SRC-016 | government (FPL engineer, title page) | own | conditional — employee status from title page only | `CALCULATION-GRADE` | conditional |
+| SRC-017 | individual author, CC BY 4.0 | own | conditional — commercial use and adaptation permitted with attribution and change notice | `CALCULATION-GRADE` | conditional (CC BY 4.0 terms) |
+| SRC-018 | government (NASA MSFC) | own | clear | `CALCULATION-GRADE` |  |
+| SRC-019 | government (NBS staff; states "not subject to copyright") | own | clear | `CALCULATION-GRADE` |  |
+| SRC-020 | government authors, but the PDF carries an IEEE copyright line | publisher-marked expression | unknown | `IP-UNRESOLVED` | IEEE copyright notice on the inspected copy |
+| SRC-021 | mixed (NASA / Lockheed Martin) | — | unknown | `IP-UNRESOLVED` |  |
+| SRC-022 | mixed / publisher (journal article) | — | unknown | `IP-UNRESOLVED` |  |
+| SRC-023 | mixed / publisher (conference proceedings) | — | unknown | `IP-UNRESOLVED` |  |
+| SRC-024 | government (NASA Ames / Armstrong) | own | clear | `CALCULATION-GRADE` |  |
+| SRC-025 | government (NASA Ames; states U.S. Government work) | own | clear | `CALCULATION-GRADE` |  |
+| SRC-026 | agency web page; author not stated | unclear | conditional — DOE web policy inherited from production record control_loop:PR002, not re-verified | `REFERENCE-ONLY` | background only |
+| SRC-027 | government (NASA practice) | relied screening basis is defined by ASTM E595 (protected standard) | unknown for the standard-derived values | `IP-UNRESOLVED` | standard-derived values redacted from the active library |
+| SRC-028 | as SRC-005 | unclear | unknown | `IP-UNRESOLVED` |  |
+| SRC-029 | as SRC-005 | unclear | unknown | `IP-UNRESOLVED` |  |
+| SRC-030 | government (NIST staff) | own | clear | `CALCULATION-GRADE` |  |
+| SRC-031 | government (NBS staff) | own (compiled data tables from other authors not used) | clear | `CALCULATION-GRADE` |  |
+| SRC-032 | government (NASA Langley) | own | clear | `CALCULATION-GRADE` |  |
+| SRC-033 | mixed (NIST + contractor authors) | — | unknown | `EXCLUDED` | cross-check only; never reusable |
+| SRC-034 | government (NIST staff blog) | restates the capability definitions of mixed-authorship NISTIR 8259A | unknown for the restated definitions | `IP-UNRESOLVED` |  |
+| SRC-035 | agency web page; author not stated | restates the NISTIR 8259A / 8259B baseline concept | unknown | `IP-UNRESOLVED` |  |
+| SRC-036 | government (sole NIST author; states "not subject to copyright in the United States") | own (cited FIPS 186-4 not used) | clear | `CALCULATION-GRADE` | NIST requests attribution |
+| SRC-037 | government (NBS staff) | own derivation (Appendix I) | clear | `CALCULATION-GRADE` |  |
+| SRC-038 | government (NBS staff) | own text (no citation at the relied passages) | clear | `CALCULATION-GRADE` |  |
+| SRC-039 | government (NIST staff) | own text (adjacent [13] cites a battery table not relied on) | clear | `CALCULATION-GRADE` |  |
+| SRC-040 | government (NIST staff) | relied exponent / fading points sit on an ITU-R P.1238-based model and cite its ref. [2] | unknown for those points | `IP-UNRESOLVED` | standard-based |
+| SRC-041 | mixed (working group) | — | unknown | `EXCLUDED` | cross-check only; never reusable |
+| SRC-042 | government (NASA Lewis) | own derivation | clear | `CALCULATION-GRADE` |  |
+| SRC-043 | government (NASA MSFC) | own (vendor product images not used) | clear | `CALCULATION-GRADE` |  |
+| SRC-044 | government (sole NASA Glenn author; NASA-hosted author copy of an IEEE-presented paper) | own text (one adjacent point cites its ref. [6]) | conditional — U.S. Government work; IEEE version not relied on | `CALCULATION-GRADE` | conditional |
+| SRC-045 | government (NBS staff, Army-sponsored) | relied section declared based on ANSI B88.1-1972 (protected standard); points to a third-party handbook | unknown | `IP-UNRESOLVED` | standard-based; Owner-confirmed 2026-10-29 |
+| SRC-046 | government (sole NASA Glenn author) | a scientific law (Shannon–Hartley) restated in the author's words from cited literature (its Ref. 8); no third-party expression used | conditional — U.S. Government work; credit the original theorem | `CALCULATION-GRADE` | conditional |

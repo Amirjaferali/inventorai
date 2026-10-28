@@ -24,6 +24,12 @@
   duties; and, separately, material risk notes on patents / freedom-to-operate, trade secrets / confidential information, and trademarks, endorsement
   and contractual / provider terms ("none identified" is allowed; "cleared" is never written). A technically valid source is not thereby reusable,
   and a reusable source never establishes patent clearance. Unknown or incompatible rights stay blocked from product ingestion; this is not legal review.
+- Claim-level IP fitness (Owner IP-hygiene task 2026-10-29): each relied-on claim also records the origin of the statement (source's own; restated
+  from a cited work; based on a standard; third-party / mixed / unclear), the commercial-use basis (clear / conditional / unknown) and an IP fitness:
+  `CALCULATION-GRADE` (may support product or method qualification), `REFERENCE-ONLY` (background only), `IP-UNRESOLVED` or `EXCLUDED` (never reused).
+  A passage declared based on a protected standard, or a restatement of a mixed-authorship or publisher-marked work, is `IP-UNRESOLVED` unless a
+  clean original is found; a rights conclusion inherited from another record is marked inherited and not re-verified. Standard-derived values, figures,
+  tables and long quotations are not stored in this package. Scientific status and IP fitness are recorded separately.
 
 ## Query privacy rule (checked before EVERY external call)
 Queries are built ONLY from the exact-claim text of `state/question-register.md` plus generic technical terms.
