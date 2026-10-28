@@ -6403,6 +6403,118 @@ UI_STRINGS = {
     "UI_THERM01_DISCLOSURE": {
         "en": "This is the temperature difference across the one path you declared, under the declared steady-state, single-path, uniform one-dimensional and constant-area conditions, using your own P and Rθ.\n\nIt is not a component, junction, case, surface or ambient temperature, and it does not tell what temperature anything reaches.\n\nIt is not compared with any rating, limit or margin, and it says nothing about whether anything is safe, acceptable, suitable, compliant or reliable.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence, and it must be confirmed by measurement or a thermal specialist before any reliance.\n\nInventorAI does not check Rθ or that your declarations match the real hardware, and a datasheet figure applies only where the real path matches the conditions it was defined under.\n\nConvection, radiation, spreading, transient behaviour and every other path are outside this calculation.\n\nReference source material: U.S. DOE Fundamentals Handbook (archived; historical fundamentals reference only); the total-resistance form is InventorAI's own derivation.",
         "ar": "هذا هو فرق درجة الحرارة عبر المسار الواحد الذي صرّحت به، في ظل الشروط التي صرّحت بها: حالة مستقرة، ومسار واحد، وتدفق حراري منتظم أحادي البعد، ومساحة ثابتة، باستخدام قيمتي P و Rθ اللتين أدخلتهما أنت.\n\nهذه القيمة ليست درجة حرارة أي مكوّن أو وصلة (junction) أو غلاف (case) أو سطح، وليست درجة الحرارة المحيطة، ولا تبيّن درجة الحرارة التي يصل إليها أي شيء.\n\nلا تُقارَن هذه القيمة بأي تصنيف أو حدّ أو هامش، ولا تقول شيئًا عن كون أي شيء آمنًا أو مقبولًا أو ملائمًا أو ممتثلًا أو موثوقًا.\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا، ويجب تأكيدها بالقياس أو بمراجعة متخصص حراري قبل الاعتماد عليها.\n\nلا يتحقق InventorAI من قيمة Rθ، ولا من مطابقة تصريحاتك للعتاد الفعلي. والقيمة المأخوذة من ورقة بيانات (datasheet) لا تنطبق إلا حيث يطابق المسار الفعلي الظروف التي عُرِّفت فيها تلك القيمة.\n\nالحمل الحراري (convection) والإشعاع والانتشار الحراري (spreading) والسلوك العابر (transient) وأي مسار آخر كلها خارج نطاق هذا الحساب.\n\nالمراجع: كتيّب أساسيات وزارة الطاقة الأمريكية (U.S. DOE Fundamentals Handbook) — مؤرشف، ومرجع تاريخي للأساسيات فقط. أما صيغة المقاومة الكلية فهي اشتقاق خاص بـInventorAI."},
+    # THERM01-VERIFICATION-MEASUREMENT-STEP-01: the verification-preparation block
+    # under the THERM-01 fixed disclosure (successful result only). Points 1 to 4 and
+    # the assumption note restate class-level facts of NIST SP 400-86; the same-
+    # boundary condition and the comparison step are InventorAI's own guidance.
+    "UI_HEAT_PATH_VERIFY_V1_TITLE": {
+        "en": "How to check this estimate",
+        "ar": "كيف تتحقق من هذا التقدير",
+    },
+    "UI_HEAT_PATH_VERIFY_V1_INTRO": {
+        "en": ("This is preparation for a physical check, written so that you can plan one; "
+               "InventorAI performs, records and judges no measurement. Comparing a measurement "
+               "with the number above is meaningful only when what you measure corresponds to the "
+               "same path, the same two ends of that path (its thermal boundaries) and the same "
+               "operating conditions you declared for this calculation. Before such a comparison "
+               "you would need to establish:"),
+        "ar": ("هذا تحضير لفحص عملي كُتب لتخطّط له بنفسك؛ ولا يُجري InventorAI أي قياس ولا يسجّله "
+               "ولا يحكم عليه. ولا تكون مقارنة قياس بالرقم أعلاه ذات معنى إلا عندما يكون ما تقيسه "
+               "مطابقًا للمسار نفسه، ولطرفي ذلك المسار نفسيهما (حدوده الحرارية)، ولظروف التشغيل "
+               "نفسها التي صرّحت بها لهذا الحساب. وقبل مقارنة كهذه ستحتاج إلى إثبات ما يلي:"),
+    },
+    "UI_HEAT_PATH_VERIFY_V1_ITEM_1_TITLE": {
+        "en": "What a meaningful check would have to establish",
+        "ar": "ما الذي يجب أن يثبته فحص ذو معنى",
+    },
+    "UI_HEAT_PATH_VERIFY_V1_ITEM_1_TEXT": {
+        "en": ("The power actually dissipated in the region where the heat is produced. Power measured "
+               "at leads or contacts can overstate it, because some of it is dissipated in the leads or "
+               "contacts themselves, not in the heat-producing region."
+               "\n\n"
+               "The temperatures at the two ends of the same path this calculation describes, with the "
+               "reference temperature held and recorded at one clearly stated, fixed location, because "
+               "a part or package is not at one uniform temperature."
+               "\n\n"
+               "Temperature readings taken with an indicator that has been calibrated over the "
+               "temperature range you actually use."
+               "\n\n"
+               "The operating conditions under which those measurements were taken, because a single "
+               "thermal-resistance value is tied to the conditions it was determined under."
+               "\n\n"
+               "Only when those boundaries and conditions correspond to the path and declarations you "
+               "entered: a comparison of the observed temperature difference with the calculated ΔT "
+               "above. This comparison step is InventorAI's own planning guidance. Agreement between "
+               "the two numbers would not by itself validate the model, and it says nothing about "
+               "suitability, safety, reliability or compliance."),
+        "ar": ("القدرة المبدَّدة فعلًا في المنطقة التي تتولّد فيها الحرارة. فالقدرة المقيسة عند الأطراف "
+               "أو نقاط التلامس قد تزيد عنها، لأن جزءًا منها يُبدَّد في الأطراف أو نقاط التلامس نفسها، "
+               "لا في المنطقة المولِّدة للحرارة."
+               "\n\n"
+               "درجتا الحرارة عند طرفي المسار نفسه الذي يصفه هذا الحساب، مع تثبيت درجة الحرارة "
+               "المرجعية وتسجيلها في موضع واحد ثابت مذكور بوضوح، لأن القطعة أو الغلاف ليسا عند درجة "
+               "حرارة واحدة منتظمة."
+               "\n\n"
+               "قراءات درجة الحرارة المأخوذة بمؤشّر مُعايَر على مدى درجات الحرارة الذي تستخدمه فعلًا."
+               "\n\n"
+               "ظروف التشغيل التي أُخذت فيها تلك القياسات، لأن قيمة المقاومة الحرارية المفردة مرتبطة "
+               "بالظروف التي حُدّدت فيها."
+               "\n\n"
+               "وفقط عندما تتطابق تلك الحدود والظروف مع المسار والتصريحات التي أدخلتها: مقارنة فرق "
+               "درجة الحرارة الملاحَظ بقيمة ΔT المحسوبة أعلاه. وخطوة المقارنة هذه إرشاد تخطيطي من "
+               "InventorAI نفسه. ولا يعني توافق الرقمين وحده صحة النموذج، ولا يقول شيئًا عن الملاءمة "
+               "أو السلامة أو الموثوقية أو المطابقة."),
+    },
+    "UI_HEAT_PATH_VERIFY_V1_ASSUMPTION": {
+        "en": ("Keep in mind: a single thermal-resistance number assumes a uniformly heated region and "
+               "a value that does not change with operating conditions. Real hardware does not satisfy "
+               "either exactly, so a measured difference and the calculated ΔT can differ for that "
+               "reason alone."),
+        "ar": ("تذكّر: يفترض رقم المقاومة الحرارية المفرد منطقة مسخَّنة بانتظام وقيمة لا تتغيّر مع ظروف "
+               "التشغيل. ولا تحقّق الأجهزة الحقيقية أيًّا من الافتراضين تمامًا، ولذلك قد يختلف الفرق "
+               "المقيس عن ΔT المحسوبة لهذا السبب وحده."),
+    },
+    "UI_HEAT_PATH_VERIFY_V1_BOUNDARY": {
+        "en": ("This block adds no measurement input, stores no measurement and compares nothing. It "
+               "sets no tolerance, acceptance criterion, pass or fail, uncertainty, test duration, safe "
+               "limit, rating or margin; it does not describe a measurement procedure, choose an "
+               "instrument or sensor, or say how to calibrate one. Seeing it does not make the result "
+               "above validated: the result stays UNVALIDATED and not evidence, and any check and its "
+               "judgement remain yours or a thermal specialist's."),
+        "ar": ("لا يضيف هذا القسم أي خانة لإدخال قياس، ولا يخزّن أي قياس، ولا يقارن شيئًا. ولا يحدّد "
+               "تفاوتًا ولا معيار قبول ولا نجاحًا أو فشلًا ولا عدم يقين ولا مدة اختبار ولا حدًّا آمنًا "
+               "ولا تقديرًا اسميًّا ولا هامشًا؛ ولا يصف إجراء قياس، ولا يختار أداة أو حسّاسًا، ولا يبيّن "
+               "كيفية معايرتهما. وظهوره لا يجعل النتيجة أعلاه مُتحقَّقًا منها: فتبقى النتيجة غير "
+               "مُتحقَّق منها (UNVALIDATED) وليست دليلًا، ويبقى أي فحص والحكم عليه بيدك أو بيد متخصص "
+               "حراري."),
+    },
+    "UI_HEAT_PATH_VERIFY_V1_SOURCE": {
+        "en": ("Source of the measurement facts in points 1 to 4 and of the assumption note: National "
+               "Institute of Standards and Technology (NIST), Oettinger and Blackburn, Semiconductor "
+               "Measurement Technology: Thermal Resistance Measurements, NIST Special Publication 400-86 "
+               "(1990), printed page 2 and pages 65–66, "
+               "https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication400-86.pdf. That "
+               "publication concerns thermal-resistance measurements of semiconductor devices and "
+               "packages; InventorAI restated, in its own words, only these general measurement facts "
+               "for a single heat path and adopted none of its device-specific procedures, numbers, "
+               "figures or tables, nor any material it cites from other authors. The condition that "
+               "the measured boundaries and conditions must correspond to the declared path, and the "
+               "comparison step in point 5, are InventorAI's own guidance, not statements of NIST. The "
+               "Arabic text is InventorAI's translation. This does not imply that NIST or the authors "
+               "have reviewed or endorsed InventorAI or this guidance."),
+        "ar": ("مصدر حقائق القياس في النقاط 1 إلى 4 وملاحظة الافتراض: المعهد الوطني للمعايير والتقنية "
+               "في الولايات المتحدة (NIST)، أوتينغر وبلاكبيرن (Oettinger, Blackburn)، Semiconductor "
+               "Measurement Technology: Thermal Resistance Measurements، منشور NIST الخاص رقم 400-86 "
+               "(1990)، الصفحة المطبوعة 2 والصفحتان 65–66، على الرابط: "
+               "\u2066https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication400-86.pdf\u2069. "
+               "ويتناول ذلك المنشور قياسات المقاومة الحرارية لأجهزة أشباه الموصلات وأغلفتها؛ وقد أعاد "
+               "InventorAI بكلماته صياغة هذه الحقائق العامة للقياس لمسار حراري واحد فقط، ولم يعتمد "
+               "أيًّا من إجراءاته أو أرقامه أو أشكاله أو جداوله الخاصة بالأجهزة، ولا أي مادة يستشهد "
+               "بها من مؤلفين آخرين. أما شرط تطابق الحدود والظروف المقيسة مع المسار المصرَّح به، "
+               "وخطوة المقارنة في النقطة 5، فهما إرشاد من InventorAI نفسه وليسا من أقوال NIST. والنص "
+               "العربي ترجمة InventorAI. ولا يعني ذلك أن NIST أو المؤلفَين راجعوا InventorAI أو هذا "
+               "الإرشاد أو أيّدوه."),
+    },
     "UI_THERM01_UNABLE_HEADING": {
         "en": "Unable to determine (UNABLE TO DETERMINE)",
         "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},

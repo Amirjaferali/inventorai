@@ -60,6 +60,8 @@ from tests.cap01_measurement_conditions_addition import (
 # MECHANISM_COMPLETENESS context; excluded here likewise (tests/cap01_load_switching_addition.py).
 from tests.cap01_load_switching_addition import (  # noqa: F401
     LSW_GROUP, LSW_RECORDS, LSW_ROW, LSW_SLUG, without_load_switching_addition)
+from tests.cap01_heat_path_verification_addition import (  # noqa: F401
+    HPV_GROUP, HPV_RECORDS, without_heat_path_verification_addition)
 
 _ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 _PACK_PATH = os.path.join(_ROOT, "domains", "electronics_electrical", "domain.json")
@@ -206,7 +208,7 @@ def test_b04_the_binding_is_one_fixed_row_appended_last_to_the_mechanism_context
         (DOMAIN, MECHANISM_COMPLETENESS), (DOMAIN, PHYSICAL_FEASIBILITY)]
     assert GROUP in cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS
     # MEASUREMENT-PLAN-GUIDANCE-01 later added ONE CAP-09-page-only prose-only group (never a report row).
-    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({SENSING_GROUP, ACCURACY_GROUP, GROUP, MGUIDE_GROUP, MCOND_GROUP, LSW_GROUP})
+    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({SENSING_GROUP, ACCURACY_GROUP, GROUP, MGUIDE_GROUP, MCOND_GROUP, LSW_GROUP, HPV_GROUP})
 
 
 def test_b05_never_reads_inventor_text_or_signals():
@@ -417,9 +419,9 @@ def test_f03_existing_groups_keep_requiring_their_equation(monkeypatch):
 def test_p01_pack_minus_exactly_this_addition_equals_the_base_pack():
     pack = _pack()
     assert [g["group_id"] for g in pack["reference_fundamentals"]] == [
-        BASE_GROUP, ET_GROUP, SENSING_GROUP, ACCURACY_GROUP, GROUP, LSW_GROUP, CHARGE_GROUP, MGUIDE_GROUP, MCOND_GROUP]
+        BASE_GROUP, ET_GROUP, SENSING_GROUP, ACCURACY_GROUP, GROUP, LSW_GROUP, CHARGE_GROUP, MGUIDE_GROUP, MCOND_GROUP, HPV_GROUP]
     assert _digest(without_controller_addition(without_charge_addition(without_load_switching_addition(
-        without_measurement_conditions_addition(without_measurement_guidance_addition(pack)))))) == _PRE_PACK_DIGEST
+        without_measurement_conditions_addition(without_measurement_guidance_addition(without_heat_path_verification_addition(pack))))))) == _PRE_PACK_DIGEST
     note = pack["_governance_notes"][NOTE]
     for phrase in ("28-T2-CONTROLLER-INPUT-LOGIC-OUTPUT-REFERENCE-01", "Option A", "NOT general firmware ownership",
                    "PR016", "PR017", "inert", "the exclusion itself stands", "PR001–PR015 are unchanged",
@@ -459,7 +461,7 @@ def test_p04_provenance_is_append_only_with_two_claim_specific_records():
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR015")
     assert tuple(ids[i + 1:i + 3]) == RECORDS
-    pre = [r for r in records if r["record_id"] not in RECORDS + CHARGE_RECORDS + MGUIDE_RECORDS + MCOND_RECORDS + LSW_RECORDS]
+    pre = [r for r in records if r["record_id"] not in RECORDS + CHARGE_RECORDS + MGUIDE_RECORDS + MCOND_RECORDS + LSW_RECORDS + HPV_RECORDS]
     assert _digest(pre) == _PRE_PROVENANCE_DIGEST                     # PR001–PR015 and others unchanged
     src, use = (records[ids.index(r)] for r in RECORDS)
     assert sorted(src) == sorted(use) == sorted(records[i])
