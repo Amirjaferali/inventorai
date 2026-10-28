@@ -7892,10 +7892,10 @@ UI_STRINGS = {
         "ar": "لا ينطبق على حالتي"},
     "UI_PWM_DECL_IDEAL_TWO_LEVEL_WAVEFORM": {
         "en": "The waveform being averaged is an ideal two-level voltage: during the on-interval it equals the declared supply level exactly, and for the rest of the period it equals zero exactly; the switch is treated as fully on or fully off, with no rise, fall, dead time, drop, overshoot, ringing or negative excursion; the declared supply level is zero or positive and the waveform never goes below zero.",
-        "ar": "الموجة التي يُحسب متوسطها جهد مثالي ذو مستويين: خلال فترة التشغيل تساوي مستوى التغذية المصرّح به تمامًا، وفي بقية الدورة تساوي الصفر تمامًا؛ ويُعامل المفتاح على أنه مغلق تمامًا أو مفتوح تمامًا، دون زمن صعود أو هبوط أو زمن ميت (dead time) أو هبوط جهد أو تجاوز أو رنين أو انحراف سالب؛ ومستوى التغذية المصرّح به صفر أو موجب، ولا تنزل الموجة أبدًا تحت الصفر."},
+        "ar": "الموجة التي يُحسب متوسطها جهد مثالي ذو مستويين: خلال فترة التشغيل تساوي مستوى التغذية المصرّح به تمامًا، وفي بقية الدورة تساوي الصفر تمامًا؛ ويُعامل المفتاح على أنه في وضع التشغيل التام أو الإيقاف التام، دون زمن صعود أو هبوط أو زمن ميت (dead time) أو هبوط جهد أو تجاوز أو رنين أو انحراف سالب؛ ومستوى التغذية المصرّح به صفر أو موجب، ولا تنزل الموجة أبدًا تحت الصفر."},
     "UI_PWM_DECL_FIXED_PERIOD_AND_ON_TIME": {
         "en": "The waveform repeats with one fixed period and one fixed on-time, both the same in every cycle; no varying, modulated, bursting, drifting or one-off timing is being averaged.",
-        "ar": "تتكرر الموجة بدورة واحدة ثابتة وفترة تشغيل واحدة ثابتة، وكلتاهما نفسها في كل دورة؛ ولا يُحسب متوسط أي توقيت متغير أو مُعدَّل أو متقطع أو منزلق أو غير متكرر."},
+        "ar": "تتكرر الموجة بدورة واحدة ثابتة وفترة تشغيل واحدة ثابتة، وكلتاهما نفسها في كل دورة؛ ولا يُحسب متوسط أي توقيت متغير أو مُعدَّل أو متقطع أو منحرف أو غير متكرر."},
     "UI_PWM_DECL_DECLARED_VALUES": {
         "en": "The supply level, on-time and period entered are the inventor's own values for this one waveform, taken from their own reading, documentation or plan; InventorAI did not measure or check them and infers none of them from any component, circuit or project text.",
         "ar": "مستوى التغذية وفترة التشغيل والدورة المُدخلة قيمك أنت لهذه الموجة الواحدة، مأخوذة من قراءتك أو من وثائقك أو من خطتك؛ ولم يقسها InventorAI ولم يتحقق منها، ولا يستنتج أيًّا منها من أي مكوّن أو دائرة أو نص في المشروع."},
@@ -7964,7 +7964,7 @@ UI_STRINGS = {
         "ar": "هذا هو المتوسط الحسابي للموجة المثالية المصرّح بها فقط: ليس جهدًا مستمرًا مكافئًا ثابتًا، ولا الجهد الذي يتعرض له حِمل بالضرورة، ولا سرعة محرك ولا أثر تسخين ولا متوسط قدرة ولا جهدًا فعّالًا (RMS) ولا تيارًا ولا عزمًا ولا تموّجًا (ripple) ولا خرجًا مرشَّحًا. وما إذا كان حِمل يستجيب تقريبًا لهذا المتوسط يعتمد على ديناميكياته وتنفيذه، وهو ما لم يثبته InventorAI."},
     "UI_PWM_NO_TRANSFER": {
         "en": "Do not enter V_avg into the DC resistive load current, power or energy calculations as though it were a steady DC voltage: for a switched resistive load this method does not establish the average power as V_avg² / R, and no result is carried from one calculation into another.",
-        "ar": "لا تُدخل V_avg في حسابات تيار الحِمل المقاوم على جهد مستمر أو قدرته أو طاقته كما لو كان جهدًا مستمرًا ثابتًا: فللحِمل المقاوم المبدَّل لا تثبت هذه الطريقة أن متوسط القدرة يساوي V_avg² / R، ولا تُنقل أي نتيجة من حساب إلى آخر."},
+        "ar": "لا تُدخل V_avg في حسابات تيار الحِمل المقاوم على جهد مستمر أو قدرته أو طاقته كما لو كان جهدًا مستمرًا ثابتًا: فللحِمل المقاوم المبدَّل بـ PWM لا تثبت هذه الطريقة أن متوسط القدرة يساوي V_avg² / R، ولا تُنقل أي نتيجة من حساب إلى آخر."},
     "UI_PWM_STATUS": {
         "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
         "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
