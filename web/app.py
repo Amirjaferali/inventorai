@@ -9659,14 +9659,39 @@ def _handoff_capabilities(sid, state, role):
     return items
 
 
+# Step 6 (functional-to-qualified-engineering action continuity): the ONE
+# existing route each related owner already serves. The role is navigation
+# context only: an action is shown when the owner's OWN gate, read above,
+# already permits that workflow for the project; the destination re-reads its
+# gate from durable state on arrival and carries nothing from the reading.
+_HANDOFF_ACTION_ENDPOINTS = {
+    (_handoff.CAP13_CONDITIONAL_REACTIONS, "CONDITIONAL"): "cap13_support_reactions",
+    (_handoff.CAP09_EXPERIMENT_PLANNING, "AVAILABLE"): "success_criteria",
+}
+
+
+def _handoff_actions(status, items):
+    """Each capability item with ``action``: the existing endpoint name when
+    the role is a clear PROPOSED reading and the owner's own state permits its
+    workflow, else ``None``. A conflicting reading, an unavailable or
+    not-offered owner never gets an action. No input, value or answer is
+    passed to the destination."""
+    for item in items:
+        item["action"] = (_HANDOFF_ACTION_ENDPOINTS.get((item["ref"], item["state"]))
+                          if status == _handoff.PROPOSED else None)
+    return items
+
+
 def _functional_handoff_view(sid, state):
     """FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01 — the session page's read-only
     view of InventorAI's proposed reading of the needs the inventor stated.
 
     ``None`` when there is no state, or when the original statement was read
     and no role was mentioned at all; ``{"available": False}`` on any failure. Every role is
-    a provisional reading with its verbatim quotes; nothing is written, inferred into
-    a technical value, or offered as an executable method."""
+    a provisional reading with its verbatim quotes; nothing is written or inferred
+    into a technical value. Step 6: a related owner's existing page may be
+    linked (``_handoff_actions``) only where that owner's own gate permits it;
+    nothing is prepared or executed from the reading."""
     if state is None:
         return None
     try:
@@ -9676,7 +9701,8 @@ def _functional_handoff_view(sid, state):
                   "groundings": r.groundings,
                   "negations": r.negations + r.related_statements,
                   "uncertain": r.method_uncertainties,
-                  "capabilities": _handoff_capabilities(sid, state, r.role)}
+                  "capabilities": _handoff_actions(
+                      r.status, _handoff_capabilities(sid, state, r.role))}
                  for r in projection.roles]
         if not roles and idea_available and not projection.abstained:
             return None

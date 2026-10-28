@@ -5767,6 +5767,19 @@ UI_STRINGS = {
     "UI_FH_NONE": {
         "en": "No function was proposed from your statements.",
         "ar": "لم تُقترح أي وظيفة من عباراتك."},
+    "UI_FH_ACTION_CAP13_CONDITIONAL_REACTIONS": {
+        "en": "Open the two-support static reactions calculation",
+        "ar": "افتح حساب ردود الأفعال الساكنة على مسندين"},
+    "UI_FH_ACTION_CAP09_EXPERIMENT_PLANNING": {
+        "en": "Open experiment planning",
+        "ar": "افتح تخطيط التجارب"},
+    "UI_FH_ACTION_NOTE": {
+        "en": ("This existing tool may help with this part of your idea. It is "
+               "not InventorAI's choice of a solution; you enter its inputs "
+               "yourself, and nothing is taken from this reading."),
+        "ar": ("قد تساعدك هذه الأداة الموجودة في هذا الجزء من فكرتك. وهي ليست "
+               "اختيار InventorAI لحل؛ تُدخل مدخلاتها بنفسك، ولا يُؤخذ أي شيء "
+               "من هذه القراءة.")},
     "UI_FH_UNAVAILABLE": {"en": "This reading is unavailable right now.",
                           "ar": "هذه القراءة غير متاحة الآن."},
     "UI_CAP12_LINK_TEXT": {
