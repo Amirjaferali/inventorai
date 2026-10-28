@@ -541,18 +541,21 @@ def test_success_packaging_units_sources_and_identity():
         "DOE-ENG-S1", "DOE-ENG-S2"]
     assert {q["source_use_policy_ref"] for q in result["source_qualification"]} == {"dcu:SU015"}
     assert result["validation_status"] == "UNVALIDATED"
-    assert (result["artifact_version"], result["implementation_version"]) == ("9", "1.8.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("10", "1.9.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_adds_exactly_energy_and_time():
     assert ("electrical:dc_resistive_load_energy", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 9
+    assert len(dc.ADMITTED_METHODS) == 10
     assert dc.ADMITTED_QUANTITY_KINDS >= {"energy", "time"}
-    assert len(dc.ADMITTED_QUANTITY_KINDS) == 14 and len(dc.ADMITTED_UNIT_TOKENS) == 15
+    assert len(dc.ADMITTED_QUANTITY_KINDS) == 15 and len(dc.ADMITTED_UNIT_TOKENS) == 17
     assert dc.ADMITTED_UNIT_TOKENS == {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
-                                       "mV", "°C", "V", "Ω", "A", "J", "s"}
-    assert dc.KIND_TOKEN_EXCEPTIONS == {"voltage": frozenset({"mV", "V"})}
+                                       "mV", "°C", "V", "Ω", "A", "J", "s", "h", "A·h"}
+    # Correction 10 (§13I): the time kind gains h for the DC constant-current charge
+    # duration only; this method's duration stays s and nothing maps one to the other
+    assert dc.KIND_TOKEN_EXCEPTIONS == {"voltage": frozenset({"mV", "V"}),
+                                        "time": frozenset({"s", "h"})}
     assert dc._CONDITIONS == ("greater_than_zero", "less_than_zero",
                               "within_zero_and_role")
     data = dc.load_artifact()
@@ -571,10 +574,11 @@ def test_closed_inventory_adds_exactly_energy_and_time():
         assert units[token]["source_use_policy_ref"] == "dcu:SU014"
         assert "electronics_electrical:PR009" in units[token]["inspection_reference"]
         assert "no conversion is admitted" in units[token]["inspected_content"]
-    # only this method uses the two new kinds
+    # only this method uses the energy kind and the s token; the time kind is
+    # shared with the DC constant-current charge method through its own h token
     users = {m["method_id"] for m in data["methods"]
              for role in m["input_roles"] + m["output_roles"]
-             if role["quantity_kind"] in ("energy", "time")}
+             if role["quantity_kind"] == "energy" or role["unit_token"] == "s"}
     assert users == {method.METHOD_ID}
 
 
@@ -584,7 +588,8 @@ def test_closed_inventory_adds_exactly_energy_and_time():
     (("V", "Ω", "K"), dc.UNIT_NOT_ADMITTED), (("V", "Ω", "rad/s"), dc.UNIT_NOT_ADMITTED),
     (("v", "Ω", "s"), dc.UNKNOWN_UNIT), (("V", "kΩ", "s"), dc.UNKNOWN_UNIT),
     (("V", "Ω", "S"), dc.UNKNOWN_UNIT), (("V", "Ω", "min"), dc.UNKNOWN_UNIT),
-    (("V", "Ω", "h"), dc.UNKNOWN_UNIT), (("V", "Ω", "ms"), dc.UNKNOWN_UNIT),
+    (("V", "Ω", "h"), dc.UNIT_NOT_ADMITTED), (("V", "Ω", "ms"), dc.UNKNOWN_UNIT),
+    (("V", "Ω", "A·h"), dc.UNIT_NOT_ADMITTED),
     (("V", "Ω", "sec"), dc.UNKNOWN_UNIT), (("V", "Ω", "Wh"), dc.UNKNOWN_UNIT),
 ])
 def test_units_are_exact_with_no_alias_or_conversion(units, reason):
@@ -607,7 +612,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.dc_resistive_load_energy_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._DC_LOAD_ENERGY_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 9
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 10
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("dc_resistive_load_energy_method", "engine.dc_resistive",
                    "electrical_content_config", "import fractions", "decimal",
@@ -635,10 +640,11 @@ def _owner_tamper(data, name):
         data["unit_records"].append(extra)
     elif name == "second_time_unit":
         extra = copy.deepcopy([u for u in data["unit_records"] if u["unit_token"] == "s"][0])
-        extra["record_id"], extra["unit_token"] = "dcu:U099", "h"
+        extra["record_id"], extra["unit_token"] = "dcu:U099", "min"
         data["unit_records"].append(extra)
     elif name == "extra_kind":
-        data["quantity_kinds"].append({"quantity_kind": "electric_charge", "dimension": "T I"})
+        data["quantity_kinds"].append({"quantity_kind": "electric_charge_density",
+                                       "dimension": "T I L^-3"})
     elif name == "drop_time_kind":
         data["quantity_kinds"] = [k for k in data["quantity_kinds"]
                                   if k["quantity_kind"] != "time"]
@@ -663,15 +669,15 @@ def test_owner_artifact_tamper_fails_closed(tmp_path, name):
 
 def test_owner_v7_records_are_unchanged_by_the_eighth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "9"
+    assert data["artifact_version"] == "10"
     v7 = {"quantity_kinds": data["quantity_kinds"][:12],
           "unit_records": data["unit_records"][:13],
           "source_use_policies": data["source_use_policies"][:13],
           "methods": data["methods"][:7]}
     canonical = json.dumps(v7, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     assert hashlib.sha256(canonical.encode()).hexdigest() == V7_RECORDS_DIGEST
-    assert [k["quantity_kind"] for k in data["quantity_kinds"][12:]] == ["energy", "time"]
-    assert [u["record_id"] for u in data["unit_records"][13:]] == ["dcu:U014", "dcu:U015"]
+    assert [k["quantity_kind"] for k in data["quantity_kinds"][12:14]] == ["energy", "time"]
+    assert [u["record_id"] for u in data["unit_records"][13:15]] == ["dcu:U014", "dcu:U015"]
     assert [p["record_id"] for p in data["source_use_policies"][13:15]] == [
         "dcu:SU014", "dcu:SU015"]
     policies = {p["record_id"]: p for p in data["source_use_policies"]}
@@ -680,7 +686,7 @@ def test_owner_v7_records_are_unchanged_by_the_eighth_admission():
     assert "dcu:SU012 and dcu:SU013 (DC resistive load current and power) are not extended" \
         in policies["dcu:SU015"]["inspection_reference"]
     for text in ("constant_power_energy", "electrical_energy_time_reference_v1",
-                 "coulomb", "ampere hour"):
+                 "electric_charge_reference_v1"):
         assert text not in json.dumps(data, ensure_ascii=False).lower()
 
 
@@ -1095,7 +1101,7 @@ def test_nothing_is_persisted_and_no_request_leaks_into_the_next(elec, over):
 def test_no_report_export_api_or_safety_surface():
     src = Path(webapp.__file__).read_text(encoding="utf-8")
     start = src.index("# DC-RESISTIVE-LOAD-ENERGY-01 — DC Resistive Load Energy")
-    section = src[start:src.index("# Manufacturing Evidence Capture", start)]
+    section = src[start:src.index("# DC-CONSTANT-CURRENT-CHARGE-01 —", start)]
     for banned in ("safety_signal", "SafetySignal(", "_get_store()", "append_",
                    "SESSION_STORE[", "deliverable", "pdf", "export", "/api/",
                    "_therm01", "_cap13", "_tmp36", "_dcl.", "_dcp.", "_dcp_",

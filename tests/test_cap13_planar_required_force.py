@@ -244,7 +244,7 @@ def test_success_packaging_units_sources_and_identity():
                                       "provenance": "CALCULATED"}
     assert (result["method_id"], result["method_version"]) == (
         "cap13:planar_required_force", "1.0")
-    assert (result["artifact_version"], result["implementation_version"]) == ("9", "1.8.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("10", "1.9.0")
     assert sorted(u["record_id"] for u in result["unit_records"]) == [
         "dcu:U001", "dcu:U002", "dcu:U006"]
     assert [q["source_ref"] for q in result["source_qualification"]] == [
@@ -258,11 +258,11 @@ def test_success_packaging_units_sources_and_identity():
 
 def test_closed_inventory_and_versions():
     assert ("cap13:planar_required_force", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 9
-    assert len(dc.ADMITTED_QUANTITY_KINDS) == 14 and len(dc.ADMITTED_UNIT_TOKENS) == 15
-    assert dc.IMPLEMENTATION_VERSION == "1.8.0"
+    assert len(dc.ADMITTED_METHODS) == 10
+    assert len(dc.ADMITTED_QUANTITY_KINDS) == 15 and len(dc.ADMITTED_UNIT_TOKENS) == 17
+    assert dc.IMPLEMENTATION_VERSION == "1.9.0"
     data = dc.load_artifact()
-    assert data["artifact_version"] == "9"
+    assert data["artifact_version"] == "10"
     record = _record(data)
     assert [(r["role"], r["quantity_kind"], r["unit_token"])
             for r in record["input_roles"]] == [("M_target", "moment", "N·mm"),
@@ -279,14 +279,16 @@ def test_closed_inventory_and_versions():
 
 def test_owner_v8_records_are_unchanged_by_the_ninth_admission():
     data = dc.load_artifact()
-    v8 = {"quantity_kinds": data["quantity_kinds"],
-          "unit_records": data["unit_records"],
+    # Correction 10 (§13I) appends the electric_charge kind, the h / A·h unit
+    # records, dcu:SU017 / dcu:SU018 and the tenth method after these
+    v8 = {"quantity_kinds": data["quantity_kinds"][:14],
+          "unit_records": data["unit_records"][:15],
           "source_use_policies": data["source_use_policies"][:15],
           "methods": data["methods"][:8]}
     canonical = json.dumps(v8, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     assert hashlib.sha256(canonical.encode()).hexdigest() == V8_RECORDS_DIGEST
-    assert [p["record_id"] for p in data["source_use_policies"][15:]] == ["dcu:SU016"]
-    assert [m["method_id"] for m in data["methods"][8:]] == ["cap13:planar_required_force"]
+    assert [p["record_id"] for p in data["source_use_policies"][15:16]] == ["dcu:SU016"]
+    assert [m["method_id"] for m in data["methods"][8:9]] == ["cap13:planar_required_force"]
     su16 = data["source_use_policies"][15]
     assert "planar required force method sources NASA-S1 and NASA-T1 only" \
         in su16["inspected_content"]
@@ -320,7 +322,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.cap13_planar_required_force_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._CAP13_REQUIRED_FORCE_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 9
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 10
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("cap13_planar_required_force", "cap13_content_config",
                    "import fractions", "sqlite"):

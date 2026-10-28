@@ -104,6 +104,16 @@ units ownership is decided); the Lead's read-only calculation and units ownershi
 and units owner is required before CAP-13); an Astra architecture review and an independent Claude architecture / semantic
 review, each PASS WITH CONDITIONS, whose conditions are folded into §§2–16. Those gate findings and reviews are session-level
 review inputs held in Git / GitHub and the Owner's records, not committed repository authority.
+CORRECTION 10: `CORRECTION 10 — BOUNDED TENTH ADMISSION (ELECTRICAL / ELECTRONICS DC CONSTANT-CURRENT CHARGE) —
+OWNER-AUTHORIZED WITH ITS IMPLEMENTATION`. Folded, narrowly, into the one Owner-authorized increment
+`DC-CONSTANT-CURRENT-CHARGE-01`, which implements it in the same pull request under the
+[DC constant-current charge method contract](ELECTRICAL_DC_CONSTANT_CURRENT_CHARGE_METHOD_CONTRACT.md). Applicability: it
+takes effect only on the verified merge of that pull request into `feature/atomic-json-session-persistence`; on its
+proposal branch it is an Owner-authorized proposed amendment. It ADDS §13I and one bullet to §16. It admits exactly one
+further method, exactly one further quantity kind with one exact unit token (`electric_charge` / `A·h`) and exactly one
+further exact token of the EXISTING `time` kind (`h`, beside `s`, as the second named exception to one-token-per-kind) and
+nothing more — no conversion between `h` and `s`, between `A·h` and `C` or `mA·h`, and no relation of `A·h` to `J`; §13H
+and every earlier section and clause — including §§7–10, §12 and §14 — are unchanged.
 
 ---
 
@@ -731,6 +741,70 @@ EXACTLY the following and nothing more.
   generic solver, inverse solver, unit registry or conversion graph; persistence (§12); provider, AI, external-tool or
   external-library execution; and every other §13 / §13A–§13G exclusion.
 
+## 13I. Bounded tenth admission — Electrical / Electronics DC constant-current charge (Correction 10)
+
+The delivered ninth admission (§13H) is expanded, by the Owner-authorized increment named in the CORRECTION 10 header, to
+EXACTLY the following and nothing more.
+
+- **Owner.** The one existing shared owner. No second owner, solver, conversion graph, unit registry, range policy,
+  integration or time-stepping path is created, and the owner acquires no persistence and no scientific authority.
+- **Methods — exactly ten:** the nine of §13H plus `electrical:dc_constant_current_charge` 1.0, whose technical authority
+  stays outside this owner (§3), in its own Electrical / Electronics method-authority artifact
+  `electrical_dc_constant_current_charge` version 1.
+- **Consumers — exactly ten:** the existing nine and one DC constant-current charge consumer. No consumer imports another
+  (the charge consumer keeps its own display rule rather than importing a DC load consumer), and no method-authority
+  artifact loads another at execution. No result is transferred between methods.
+- **Quantity kinds and exact unit tokens: one kind and two tokens added.** `electric_charge` (dimension T I) with the one
+  exact token `A·h` (unit record `dcu:U017`), and the EXISTING `time` kind (dimension T) gains the second exact token `h`
+  (unit record `dcu:U016`) beside `s`, both records resting on NIST SP 811 Appendix B.9 (ampere hour row,
+  `1 A · h = 3.6 × 10³ C`) read with Chapter 4, Table 3 (coulomb, `s · A`), the Lead-level primary-source inspection
+  recorded as `electronics_electrical:PR020`, and one new source-use record (`dcu:SU017`, the NIST snapshot of the
+  method's own `dcq:SU002`, itself the `electronics_electrical:PR021` disposition applied to this method). The pack record
+  `electronics_electrical:PR020` keeps its own scope (reference text of its reference group, which admits no owner unit)
+  and is unchanged; the owner admits `h` and `A·h` only through its own records. The method also uses the existing
+  `electric_current` / `A` (`dcu:U013`). **Second named token exception (narrow amendment of the one-token-per-kind rule,
+  for `time` only).** The `time` kind holds exactly the token set {`s`, `h`}, named once in the owner beside the `voltage`
+  exception of §13E (`KIND_TOKEN_EXCEPTIONS`); every other kind keeps one token. Each role binds exactly ONE of the two: the
+  DC resistive load energy duration stays `s` and the DC constant-current charge duration is `h`; a request in the other
+  token is refused `UNIT_NOT_ADMITTED`; nothing maps `h` to `s` (the factor 3600 is never applied), and `h` is no alias,
+  no scale relation and no conversion. No other kind, token, alias, case folding, dimensional equivalence or conversion is
+  added: `A·h` is not related to `C`, `mA·h`, `Ah`, `J` or `W·h` (the Appendix B.9 factor is recorded for unit
+  identification only and never applied), and `h` to no minute, day or second; `C`, `mA·h`, `mAh`, `Ah`, `min`, `W·h`
+  and `Wh` are unknown tokens. A separate NIST statement that the hour is accepted for use with the SI is not recorded as
+  an inspected location and is not relied upon; identification of `h` rests on the inspected ampere hour row alone.
+- **Condition vocabulary.** Unchanged. The new method declares NO owner condition (the vocabulary has no not-negative
+  condition and none is added); its input representation limits, not-negative-current refusal and not-negative-duration
+  refusal are method-authority content, checked by its consumer from the exact decimal input before any binary rounding
+  (the adapter refuses a negative current or duration again as an integrity failure). No result range is declared; a zero
+  current or a zero duration gives exactly zero, and non-negativity of the result is defended by the method adapter and the
+  consumer, never an owner range policy.
+- **Method-local binding and wiring.** One additional immutable, application-wired binding; each consumer holds exactly
+  its own binding. No registry, discovery, dynamic module path or request-selected method.
+- **Versions.** The shared-owner artifact moves to content version `10` and the implementation to `1.9.0`. Two new
+  source-use records (`dcu:SU017` above, and `dcu:SU018`, the DOE Web Policies snapshot of the method's own `dcq:SU001`,
+  itself the `electronics_electrical:PR019` disposition applied to this method) keep the §9 source and inspection
+  requirements; every content-version-9 record is unchanged.
+- **Numerical policy.** §10 applies unchanged: the owner still receives typed binary64 numbers and parses no string. The
+  new method's decimal bridge (a strict signed decimal grammar of up to nine integer and nine fractional digits for `I` and
+  `t`, exact-decimal checks of `I ≥ 0` and then `t ≥ 0`, one correctly rounded conversion per input), its binary
+  acceptance (exact rational `i_load × t_duration` rounded once; exact zero for a zero current or duration, never a
+  negative zero; a nonzero result finite, positive and within `2^-52` of the exact result), its decimal-reference
+  acceptance (within a relative `2^-51` of the exact decimal product) and its display (the exact value rounded once to 12
+  significant digits, half to even, labelled exact or rounded) are method-authority content held in its consumer, adapter
+  and contract; they are NOT a generic owner policy and change nothing for the other nine methods. A failure is
+  `FAILURE / EXECUTION_INTEGRITY_FAILURE` with no numerical payload.
+- **Existing methods preserved.** The two-support, THERM-01, planar-moment, rotational-load, TMP36, DC load current, DC
+  load power, DC load energy and planar required force methods, their authority artifacts, semantics, pins and
+  user-facing behaviour stay unchanged (the energy method's `s` duration is unchanged); bounded updates to assertions on
+  the owner content version, the implementation version, the closed inventory, the named exception set and the binding
+  count, caused only by this admission, are expected and allowed.
+- **Still excluded:** an eleventh method or consumer; owner ranges; string parsing in the owner; any conversion (no
+  `A·h` ↔ `C`, no `mA·h`, no `h` ↔ `s`, no minute, no `W·h`); any battery capacity, battery need, runtime, state of
+  charge, charging, chemistry, BMS, sizing, selection, suitability or rating-comparison result; varying-current,
+  average-current, duty-cycle or integrated charge; any energy result from this method; a generic solver, circuit solver,
+  unit registry or conversion graph; persistence (§12); provider, AI, external-tool or external-library execution; and
+  every other §13 / §13A–§13H exclusion.
+
 ## 14. Required guard strategy for a future implementation
 
 - independent expected numerical results;
@@ -782,6 +856,8 @@ EXACTLY the following and nothing more.
 - Correction 08 (§13G) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 - Correction 09 (§13H) is Owner-authorized together with its bounded implementation, under the same proportionate,
+  risk-appropriate verification.
+- Correction 10 (§13I) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 
 ## 17. Non-authorization (restated)

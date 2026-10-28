@@ -1,0 +1,180 @@
+{
+  "artifact_id": "electrical_dc_constant_current_charge",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "Electrical / Electronics - method authority for this one DC constant-current charge method only",
+  "slice": "Electrical / Electronics - DC Constant-Current Charge - Slice 1",
+  "governance_note": "The governed artifact of the DC constant-current charge method, under ELECTRICAL_DC_CONSTANT_CURRENT_CHARGE_METHOD_CONTRACT.md. It carries the method authority (identity, version, model, executed form and derivation), the applicability declarations, the numeric domain, the high-risk screen, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json; it changes no Electrical / Electronics pack claim, reference group or provenance record (the electric_charge_reference_v1 group and electronics_electrical:PR018 to PR021 keep their own scope), is separate from every other calculation artifact (the DC resistive load current, power and energy artifacts included), never loads one and is never loaded by one. Calculation execution belongs to the shared deterministic calculation and units owner; nothing here is a measurement, evidence, a battery capacity, a statement of what any battery must hold, a runtime, a state of charge, an energy, a charging, chemistry or BMS result, a rating, sizing, selection or suitability of any battery, source, wire, fuse or component, a comparison with any rating, a protection, compatibility or safety statement, or a readiness, progression or validation input. It activates no Battery / BMS, Power Electronics / Motion (28-T3), D4 or T6 capability.",
+  "method": {
+    "method_id": "electrical:dc_constant_current_charge",
+    "method_version": "1.0",
+    "contract": "docs/governance/ELECTRICAL_DC_CONSTANT_CURRENT_CHARGE_METHOD_CONTRACT.md",
+    "model": "ONE electrical load, explicitly declared by the inventor, through which ONE DC current I_load (in amperes) stays at one constant value for ONE declared duration t (in hours). Electric current is the flow of electric charge, so while the current stays constant the charge that flows through the load is Q_load (in ampere hours) = I_load × t: exactly zero for a zero current or a zero duration and never negative for a current and a duration that are not negative. The result is the charge of that ideal constant-current relation only, expressed in the ampere hour, a unit of electric charge: not an energy, not a measured, rated, stored, available or deliverable charge, not a battery capacity, a statement of what any battery must hold, a runtime or a state of charge, and not compared with any rating.",
+    "executed_form": "q_load = i_load x t_duration, with i_load in A (not negative) and t_duration in h (not negative), the sign of each decided from the exact decimal value before any binary rounding; evaluated as the exact rational product of the two binary64 inputs rounded once to binary64 and accepted only when it is exactly 0.0 for a zero current or a zero duration, or finite, positive and within a relative error of 2^-52 of it; then shown only when it agrees with the exact decimal product I x t of the entered values within a relative error of 2^-51, as that exact value rounded once to 12 significant digits (round half to even) and labelled exact or rounded. No unit is converted: the ampere hour is the product of the declared ampere and hour, and no coulomb, milliampere hour, second or minute is formed.",
+    "derivation": "DOE-HDBK-1011/1-92, Electrical Science, Volume 1, Module ES-01 (Basic Electrical Theory), section Electrical Terminology, subsection Current (printed page ES-01 page 10), identifies electric current with the flow of electric charge and defines one ampere as one coulomb of charge passing a given point per second (DOE-CHG-S1; recorded as electronics_electrical:PR018). InventorAI restates that identification as current being the rate of electric charge flow and, ONLY for a current that stays constant throughout the declared duration t, as the algebraic product Q = I × t; it is not claimed that DOE prints Q = I × t, and no varying-current, average-current, duty-cycle or integration treatment is derived. The coulomb as the SI unit of electric charge (C = s · A) and the ampere hour as a unit of electric charge (1 A · h = 3.6 × 10³ C) follow NIST SP 811 (NIST-AH-S1; recorded as electronics_electrical:PR020); from them the product of an ampere and an hour is the ampere hour, the unit in which this method gives its result, and the conversion factor is recorded for unit identification only and is never applied. The relations are restated independently; no handbook or NIST text, worked example, figure or table is copied, and the relation is not shown to describe the inventor's load."
+  },
+  "numeric_domain": {
+    "roles": [
+      {
+        "role": "i_load",
+        "meaning": "the DC current through the load that stays constant for the whole declared duration, as declared by the inventor; not negative; not measured or checked by InventorAI, which does not establish that it is constant (the role written I)",
+        "quantity_kind": "electric_current",
+        "unit_token": "A"
+      },
+      {
+        "role": "t_duration",
+        "meaning": "the duration during which that constant current flows, as declared by the inventor, in hours; not negative; not a measured, rated or expected operating time, never a battery runtime and never worked out by InventorAI (the role written t)",
+        "quantity_kind": "time",
+        "unit_token": "h"
+      },
+      {
+        "role": "q_load",
+        "meaning": "the electric charge that flows through the load during the declared constant-current duration, I x t, in ampere hours; exactly zero for a zero current or a zero duration and never negative; a charge, not an energy; never a measured, rated, stored, available or deliverable charge, never a battery capacity, a statement of what any battery must hold, a runtime or a state of charge, and never compared with any rating (the role written Q)",
+        "quantity_kind": "electric_charge",
+        "unit_token": "A·h"
+      }
+    ],
+    "rules": [
+      "Grammar: strict ASCII decimal - an optional single leading minus, one to nine integer digits, and an optional single fractional part of one to nine digits, for both I and t; no plus sign, exponent, separator, space, Unicode digit, unit suffix, inf, nan or normalization. An omitted, malformed or over-length value is INVALID_NUMERIC_INPUT, resolved before the shared owner is called.",
+      "Representation limits, not physical limits: the digit limits bound what can be typed (I from 0 to below 10^9 A, t from 0 to below 10^9 h, steps of 10^-9); they are not physical limits, equipment ratings, operating times or a claim that such values are realistic, and the 64-character field cap is NON-PHYSICAL abuse protection only.",
+      "Current not negative, then duration not negative: the exact decimal value of I must not be negative (otherwise CURRENT_NEGATIVE), and then the exact decimal value of t must not be negative (otherwise DURATION_NEGATIVE), each decided before any binary rounding and with no number. A zero current or a zero duration, including -0, is admitted and gives exactly zero charge, never a negative zero.",
+      "Owner applicability: the method record declares no owner condition, because the condition vocabulary holds no not-negative condition and none is added; a negative i_load or t_duration that reaches the method adapter is refused there as FAILURE / EXECUTION_INTEGRITY_FAILURE (unreachable from the page). No result range is declared.",
+      "Binary bridge: each admitted decimal is converted once to the correctly rounded binary64 value; every admitted nonzero value lies between 10^-9 and 10^9 in magnitude, so it is a normal binary64 number with a relative rounding error of at most 2^-53, a value that is not negative stays not negative and a zero I or t stays exactly zero.",
+      "Numerical acceptance in the adapter: the exact rational product i_load x t_duration of the binary inputs is rounded once to binary64. A zero current or a zero duration gives exactly 0.0. A nonzero exact result is accepted only when the rounded value is finite, positive and within a relative error of 2^-52 of it; overflow, underflow or any failed check is FAILURE / EXECUTION_INTEGRITY_FAILURE with no numerical payload, never rewritten as a refusal. Inside the representation limits every nonzero result lies between 10^-18 and 10^18 A·h, so neither overflow nor underflow can occur from the page.",
+      "Decimal-reference acceptance in the consumer: a successful owner result is shown only when it is exactly zero (not a negative zero) for an exactly zero current or duration, and otherwise is positive and lies within a relative error of 2^-51 of the exact decimal product I x t of the entered decimals; otherwise the outcome is KNOWLEDGE_UNAVAILABLE with no number. The proven worst case for every admitted input is below 3.0000001 x 2^-53.",
+      "Display: the accepted result is shown from the exact decimal value, never from the binary value: rounded once to 12 significant digits, round half to even, with trailing zeros removed; it is labelled exact when that rounding changes nothing and rounded otherwise. Plain decimal notation is used from 10^-6 A·h to below 10^12 A·h and the form m x 10^e otherwise, so a tiny nonzero charge is never shown as 0. The digits shown imply no measurement resolution, precision or accuracy."
+    ]
+  },
+  "declarations": [
+    {
+      "declaration_id": "constant_dc_current",
+      "contract_ref": "D-1",
+      "accepted_value": "the current through the load is a DC current that stays at the one value entered for the whole declared duration; no changing, pulsed, duty-cycled, intermittent, start-up, inrush, switching or AC current is being calculated",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "declared_values",
+      "contract_ref": "D-2",
+      "accepted_value": "the current and the duration entered are the inventor's own values for this one load, taken from their own reading, documentation or plan; InventorAI did not measure or check them and does not establish that the current is constant",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "charge_through_load",
+      "contract_ref": "D-3",
+      "accepted_value": "the quantity wanted is the electric charge that flows through this one load during that one duration, not a battery capacity, a runtime, a state of charge, an energy or a choice of battery or source",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "single_load_single_period",
+      "contract_ref": "D-4",
+      "accepted_value": "one load and one continuous period at that one current are being described; several loads, several periods, standby or sleep phases and any other current are not combined into this value",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    }
+  ],
+  "screen_items": [
+    {
+      "item_id": "mains_or_high_voltage",
+      "item": "mains or high voltage"
+    },
+    {
+      "item_id": "battery_or_storage_cell",
+      "item": "a battery or energy-storage cell"
+    },
+    {
+      "item_id": "fire_or_overheating",
+      "item": "fire, ignition or overheating risk"
+    },
+    {
+      "item_id": "medical_or_life_supporting",
+      "item": "medical or life-supporting use"
+    },
+    {
+      "item_id": "vehicle_or_aerospace",
+      "item": "vehicle or aerospace use"
+    },
+    {
+      "item_id": "safety_function",
+      "item": "a safety function, alarm, protection or shut-off"
+    }
+  ],
+  "limitations": [
+    "No battery capacity, statement of what any battery must hold, runtime, state of charge, energy, charging, chemistry or BMS result; no statement that any battery or source can supply this charge or this current; no comparison with any rating; no rating, capability, sizing, selection or suitability of any battery, source, power supply, wire, connector, fuse, switch or component; no protection design; no compatibility, suitability or safety conclusion; no inference of the load, the current, its constancy, the duration or any declaration.",
+    "The result is the ideal constant-current relation only: a current that changes during the duration, on-off, intermittent or duty-cycled operation, standby or sleep phases, start-up or inrush current, switching transients, AC behaviour, several loads or periods, the source's own behaviour as it discharges, temperature effects and conversion losses are not included; no average-current substitution and no integration over a varying current is performed.",
+    "The digit limits of the input grammar are representation limits, not physical limits or equipment ratings; no unit conversion is performed (A, h and A·h only; mA, mA·h, C, s, min, W·h and J are not accepted, formed or converted).",
+    "All NO answers on the high-risk screen only allow this bounded calculation to proceed; they never mean safe. The screen neither reads nor feeds SafetySignal.",
+    "The result is UNVALIDATED and is not evidence; it is request-local and is not stored, reported, exported or used for readiness, progression or validation."
+  ],
+  "disclosure": [
+    "This is the electric charge that flows through one load while the DC current I you declared stays constant for the whole duration t you declared: Q = I × t, given in ampere hours (A·h).",
+    "The current and the duration are your own declared values. InventorAI did not measure them and does not establish that the current is constant: a current that changes, on-off or duty-cycled use, standby or sleep phases, start-up or inrush current, switching, AC behaviour and any load whose current varies are not included, and no average current is substituted.",
+    "Q is a charge, not an energy. The ampere hour is a unit of electric charge that is also used in battery ratings, but this value is not compared with any rating: it is not a battery capacity, a runtime, a state of charge, a battery choice or a sizing, selection or suitability statement for any battery or source.",
+    "No unit is converted: the current is read in amperes, the duration in hours and the charge is given in ampere hours only, with no milliampere hours, coulombs, seconds or minutes.",
+    "The value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement.",
+    "Next engineering need: a charge value alone cannot determine how long a real battery lasts. Whether the current really stays constant, what the load draws over its whole use with every phase included, which source or battery could supply it and how that source behaves as it discharges, and whether the load, its wiring, source and any switch are rated for the current all remain unverified, and must be checked by measurement or a qualified person before any reliance. The result is preliminary, advisory, UNVALIDATED and not evidence.",
+    "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the coulomb and the ampere hour as identified in NIST Special Publication 811. Q = I × t is InventorAI's own restatement for a constant current, and no handbook or NIST text, example, table or figure is reproduced."
+  ],
+  "sources": [
+    {
+      "record_id": "DOE-CHG-S1",
+      "record_type": "source",
+      "source_type": "government_reference_publication",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "source_title": "U.S. Department of Energy - DOE Fundamentals Handbook: Electrical Science, Volume 1 of 4, Module ES-01 - Basic Electrical Theory (DOE-HDBK-1011/1-92), section Electrical Terminology, subsection Current (printed page ES-01 page 10, PDF page index 33)",
+      "url": "https://www.energy.gov/sites/default/files/2026-04/DOE-HDBK-1011-92_VOL1.pdf",
+      "source_use_policy_ref": "dcq:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspected_content": "Supports only: the bounded factual identification of electric current with the flow of electric charge, and the definition of one ampere as one coulomb of charge passing a given point per second (Module ES-01, printed page ES-01 page 10). Current as the rate of electric charge flow is InventorAI's own paraphrase, and Q = I x t is InventorAI's own algebraic restatement under the explicit restriction that the current stays constant throughout the declared duration t; it is NOT claimed that DOE wrote Q = I x t, and no varying-current, average-current, duty-cycle or integration treatment is derived from this source. Official DOE record status: ARCHIVE - Canceled, effective April 2016; used ONLY as a historical / fundamentals reference for this one factual relationship, never as current regulatory, safety or compliance guidance and never as proof that a design is safe, compliant or valid. This record reuses the Lead-level direct primary-source inspection recorded as electronics_electrical:PR018 (2026-10-12; executor egress to the source host was blocked), with its passage-level observations (no passage-specific third-party notice observed; the foreword's contractor involvement; a general bibliography not attributed to the targeted definition), which are not a blanket authorship determination; the pack record and its claim charge_current_time_reference are unchanged and keep their own scope. Not re-inspected by the executor.",
+      "paraphrase_only_limitation": "The one factual relationship is restated in InventorAI's own words; no handbook paragraph, explanatory prose, worked example, figure, diagram, photograph or logo is copied, and no textbook material is reproduced.",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content of the handbook is used, and its general bibliography of commercial publications is not relied upon.",
+      "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this method or any project."
+    },
+    {
+      "record_id": "dcq:SU001",
+      "record_type": "source_use_policy",
+      "source_type": "government_web_policy",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "source_title": "U.S. Department of Energy - Web Policies - Copyright, Restrictions and Permissions Notice",
+      "url": "https://www.energy.gov/web-policies",
+      "source_use_policy_ref": "dcq:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspected_content": "Source-use basis (not a legal opinion), the disposition recorded as electronics_electrical:PR019 (2026-10-12, resting on the policy wording recorded in electronics_electrical:PR006 and PR010) applied to this one method: government information on DOE websites is in the public domain and may be freely distributed and copied, with DOE acknowledgement requested; documents and other resources contributed or licensed by private parties may remain copyright-protected, and DOE Fundamentals Handbooks were prepared with DOE contractor involvement, so no blanket claim is made that every expressive element of the handbook is public domain and no comprehensive authorship verification is claimed. Conservative use: the one factual relationship only, in InventorAI-authored paraphrase, with neutral DOE acknowledgement; no copied prose, worked example, table, figure, diagram, photograph, logo or third-party-attributed material. electronics_electrical:PR019 is not broadened beyond this method.",
+      "paraphrase_only_limitation": "Facts only; no copied text, example, figure or table.",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is reproduced.",
+      "no_endorsement_limitation": "No endorsement by DOE is stated or implied; DOE is named only to identify the source.",
+      "acknowledgement": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only)."
+    },
+    {
+      "record_id": "NIST-AH-S1",
+      "record_type": "source",
+      "source_type": "government_reference_publication",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI), online edition - Chapter 4, Table 3 (electric charge: coulomb, C, expressed in SI base units as s · A) and Appendix B.9, Electricity and Magnetism, ampere hour row (1 A · h = 3.6 × 10³ C) - the charge unit and the ampere hour for this method's output role and the hour for its duration role",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-chapter-4-two-classes-si-units-and-si-prefixes",
+      "source_use_policy_ref": "dcq:SU002",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspected_content": "Unit-role record for the output q_load and the input t_duration: Chapter 4, Table 3 identifies the coulomb, symbol C, as the SI coherent derived unit of electric charge, expressed in SI base units as s · A, from which InventorAI states C = A · s; Appendix B.9 (https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9), Electricity and Magnetism, ampere hour row, records 1 A · h = 3.6 × 10³ C, which identifies the ampere hour (A · h) as a unit of electric charge and, as InventorAI's own arithmetic from C = A · s, the hour (h) as its time factor with 1 h = 3600 s. The owner admits A·h and h for this method only through its own unit records (calc/units Correction 10, section 13I); electronics_electrical:PR020 stays the reference text of its own reference group and is unchanged. Unit identification only: the conversion factor is recorded to identify the unit and is never applied, no conversion is admitted (no coulomb, milliampere hour, second or minute is formed) and no NIST text, table, prefix list or other conversion factor is reproduced. A separate NIST statement that the hour is accepted for use with the SI is NOT recorded here as an inspected location and is not relied upon. This record reuses the Lead-level direct primary-source inspection recorded as electronics_electrical:PR020 (2026-10-12; executor egress to the source host was blocked), cited from the online edition as inspected and not attributed to the 2008 PDF edition. Not independently re-inspected by the executor.",
+      "paraphrase_only_limitation": "Unit identification only; no NIST text, table or other conversion factor is copied, and the one recorded factor is never applied.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this method or any result is stated or implied."
+    },
+    {
+      "record_id": "dcq:SU002",
+      "record_type": "source_use_policy",
+      "source_type": "government_web_policy",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST - NIST Publications (NIST Research Library), read with the NIST Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "url": "https://www.nist.gov/nist-research-library/nist-publications",
+      "source_use_policy_ref": "dcq:SU002",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspected_content": "Source-use basis (not a legal opinion), the disposition recorded as electronics_electrical:PR021 (2026-10-12, read with the statement wording recorded in electronics_electrical:PR011) applied to this one method's unit roles: NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; appropriate NIST acknowledgement is required; third-party material inside a NIST publication is excluded, no blanket public-domain status or comprehensive authorship verification is claimed, and the guidance is not treated as a blanket license for every NIST-hosted resource. Use is limited to identifying the coulomb, the ampere hour and the hour for this method; electronics_electrical:PR021 is not broadened beyond it.",
+      "paraphrase_only_limitation": "Facts only; no copied text or table.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement is stated or implied; NIST is named only to identify the source.",
+      "acknowledgement": "Unit identification for A·h and h follows NIST Special Publication 811 (Chapter 4, Table 3 and Appendix B.9), National Institute of Standards and Technology."
+    }
+  ]
+}
