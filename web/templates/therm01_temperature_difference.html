@@ -74,6 +74,33 @@ ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:any
 <div class="boundary" data-therm01-disclosure>
   <ol>{% for item in disclosure_items %}<li>{{ item }}</li>{% endfor %}</ol>
 </div>
+{#- THERM01-VERIFICATION-MEASUREMENT-STEP-01: ONE read-only verification-
+    PREPARATION block under the fixed disclosure, present ONLY with a successful
+    numerical result. Points 1 to 4 and the assumption note restate class-level
+    measurement facts of NIST SP 400-86; the same-boundary / same-conditions
+    condition and the comparison step (point 5) are InventorAI's own guidance,
+    attributed as such in the source notice. Text only: no input, no stored
+    measurement, no comparison, no pass / fail, no criterion, no instrument. -#}
+{% if verification %}
+<section class="box" data-therm01-verification="{{ verification.group_id|replace('_', '-') }}" aria-labelledby="therm01-verify-title" aria-describedby="therm01-verify-intro">
+  <h2 id="therm01-verify-title" data-therm01-verify-title style="font-size:16px;margin:0 0 6px 0">{{ t(verification.title_key) }}</h2>
+  <p id="therm01-verify-intro" class="copy" data-therm01-verify-intro>{{ iso(verification.intro_key) }}</p>
+  {%- for claim in verification.claims %}
+  <p class="copy" data-therm01-verify-item-title><strong>{{ t(claim.title_key) }}</strong></p>
+  <ol class="copy" data-therm01-verify-steps data-therm01-verify-claim="{{ claim.claim_id|replace('_', '-') }}">
+    {%- for step in t(claim.text_key).split('\n\n') %}
+    <li>{{ iso_text(step) }}</li>
+    {%- endfor %}
+  </ol>
+  {%- endfor %}
+  <p class="copy" data-therm01-verify-assumption>{{ iso(verification.assumption_key) }}</p>
+  <p class="guidance" data-therm01-verify-boundary>{{ iso(verification.boundary_key) }}</p>
+  <details data-therm01-verify-source>
+    <summary>{{ t('UI_SC_MGUIDE_SOURCE_SUMMARY') }}</summary>
+    <p class="guidance" data-therm01-verify-source-text>{{ iso(verification.source_key) }}</p>
+  </details>
+</section>
+{% endif %}
 <section class="box" data-therm01-echo>
   <p class="copy"><strong>{{ t('UI_THERM01_ECHO_HEADING') }}</strong></p>
   <ul class="plain">

@@ -881,7 +881,10 @@ def test_arabic_wording_is_contract_9a_verbatim():
 
 def test_every_therm01_string_is_bilingual_and_carries_no_verdict_wording():
     keys = [k for k in ui_text.UI_STRINGS if k.startswith("UI_THERM01_")]
-    assert len(keys) == 50
+    # THERM01-VERIFICATION-MEASUREMENT-STEP-01 added the seven UI_THERM01_VERIFY_V1_* keys
+    # (title, intro, item title and text, assumption, boundary, source); the verdict-wording
+    # rule below applies to them unchanged.
+    assert len(keys) == 57
     for key in keys:
         entry = ui_text.UI_STRINGS[key]
         assert entry.get("en") and entry.get("ar"), key

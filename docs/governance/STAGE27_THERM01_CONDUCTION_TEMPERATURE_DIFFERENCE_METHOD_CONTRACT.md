@@ -31,6 +31,12 @@ its version, sources, declarations D-1 to D-6, screen, numeric domain, §7 refus
 shared owner are unchanged; a declared part makes the calculation OFFERED for that part only and establishes no physical
 applicability, suitability, validation or safety. It enables no new method, consumer, unit, focus switching or domain
 activation.
+VERIFICATION-PREPARATION AMENDMENT: `THERM01-VERIFICATION-MEASUREMENT-STEP-01 — OWNER-AUTHORIZED AMENDMENT` (2026-10-28).
+The Owner authorized ONE bounded verification-PREPARATION block on the THERM-01 page, under the §9 fixed disclosure and
+only with a successful numerical result (§9B). It changes no clause of §§1–9A, §10 or §11: ΔT = P × Rθ, the method
+identity and version, declarations D-1 to D-6, the screen, units, numeric domain, §7 refusal / abstention order,
+eligibility, disclosure and the shared owner are unchanged, and the result stays `UNVALIDATED` and not evidence.
+
 *(Superseded by this acceptance, preserved — was: "STATUS: DOCUMENTATION-ONLY CONTRACT CANDIDATE — NOT ACCEPTED — …" and
 "ACCEPTANCE PATH (not started): one non-authoring Level-1 semantic / technical review of this candidate, any bounded
 corrections with a targeted delta review, then a separate Owner acceptance. No new governance mechanism is created.")*
@@ -397,6 +403,38 @@ source or term in parentheses (including U.S. DOE, NIST, datasheet, junction and
 inside Arabic text, so that no digit, sign, symbol, token or identifier is reordered; numerical values are never translated
 or reformatted into a different meaning. `K/W` is always rendered as one isolated token.
 
+## 9B. Verification-preparation block (amendment `THERM01-VERIFICATION-MEASUREMENT-STEP-01`, 2026-10-28)
+
+Presentation only; it adds no clause to §§1–9A and §10 and changes no calculation semantics.
+
+- **Where and when.** ONE read-only block, "How to check this estimate", rendered under the §9 fixed disclosure ONLY when the
+  owner returns a SUCCESS result with a numerical `ΔT`. It is absent on every refusal and abstention (§7), on a malformed
+  request, on an ineligible project or part and on a plain GET. Its presence never changes the §9 disclosure or the
+  `UNVALIDATED` status: the result does not become validated because verification guidance is visible.
+- **Content.** In plain language it states what a meaningful physical check would have to establish: (1) the power actually
+  dissipated in the heat-producing region (power measured at leads or contacts can overstate it); (2) the temperatures at the
+  two ends of the same path the calculation describes, with the reference temperature held and recorded at one stated,
+  fixed location; (3) readings taken with an indicator calibrated over the range used; (4) the operating conditions of those
+  measurements; and (5) only when those boundaries and conditions correspond to the declared path and declarations, a
+  comparison of the observed temperature difference with the calculated `ΔT`. It also states that a single thermal-resistance
+  number assumes a uniformly heated region and operating-condition independence, which real hardware does not satisfy exactly.
+- **Attribution (claim level).** Points 1 to 4 and the assumption note restate, in InventorAI's own words, class-level
+  measurement facts of NIST SP 400-86 (Oettinger and Blackburn, 1990, printed page 2 and pages 65–66), a publication about
+  thermal-resistance measurements of semiconductor devices and packages; none of its device- or package-specific procedures,
+  numeric examples, figures, tables or cited third-party material is adopted, and no implementation detail is turned into a
+  universal procedure. The same-boundary / same-conditions condition and the comparison step (point 5) are InventorAI-authored
+  integration guidance and are attributed as such, never as a NIST claim. Provenance: `electronics_electrical:PR028` (source)
+  and `electronics_electrical:PR029` (claim-specific source-use basis), in `domains/domain_provenance.json`; pack group
+  `therm01_verification_measurement_reference_v1` (one claim, `thermal_resistance_measurement_requirements`) in the
+  Electronics pack, consumed by this page only (never the report / PDF gap context, CAP-09 or the Validation Plan).
+- **Boundary.** Verification preparation, not validation: no measured-value input, no persistence, no automatic comparison, no
+  pass / fail, tolerance, uncertainty, acceptance criterion, calibration or measurement procedure, instrument or sensor
+  recommendation, test duration, safe limit, rating or margin comparison. Numerical agreement is never presented as
+  validation of the model or as suitability, safety, reliability or compliance; the check and its judgement stay with the
+  inventor or a thermal specialist. No readiness, progression, evidence or SafetySignal effect.
+- **Arabic wording.** The block's Arabic copy follows §9A's rules (MSA; identifiers, `ΔT`, unit tokens and the URL never
+  translated and direction-isolated); the English copy is the authority for meaning.
+
 ## 10. Exclusions (binding)
 
 - No absolute, ambient, junction, case, surface or component temperature; no °C and no offset handling.
@@ -471,6 +509,13 @@ Every source and source-use row now carries its URL, inspected location, date, i
 qualification is **CLOSED** for exactly the recorded claims (THERM-S1, THERM-U1 to THERM-U4) under their recorded
 limitations. It qualifies nothing else, admits no method and authorizes no runtime: method admission still needs blockers 3
 and 5, and any display needs blocker 4.
+
+- **Inspection C (research stream, 2026-10-27; supplied 2026-10-28; §9B only).** NIST SP 400-86, printed page 2 and
+  pages 65–66, was inspected directly by the TECH-SOURCES-001 research stream (question Q-09, source SRC-011, run 4;
+  branch `research/tech-sources-001`) and supplied to the executor by the Lead for amendment
+  `THERM01-VERIFICATION-MEASUREMENT-STEP-01`; the executor could not re-inspect it (egress to nvlpubs.nist.gov refused
+  by the environment proxy, HTTP 403, 2026-10-28). It qualifies the §9B measurement-facts claim only; the DOE and NIST
+  SP 330 / SP 811 records of Inspections A and B, and the method itself, are unchanged.
 
 ## 12. Architecture decision record (reviewed future implementation boundary; NOT implemented here)
 

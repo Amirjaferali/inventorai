@@ -387,7 +387,11 @@ _FUNDAMENTALS_PROSE_ONLY_GROUPS = frozenset({"sensing_value_threshold_reference_
                                              "measurement_quantity_versus_condition_reference_v1",
                                              # MEASUREMENT-CONDITIONS-AWARENESS-01: the second
                                              # CAP-09-only guidance group; never a report group.
-                                             "measurement_conditions_awareness_reference_v1"})
+                                             "measurement_conditions_awareness_reference_v1",
+                                             # THERM01-VERIFICATION-MEASUREMENT-STEP-01: the
+                                             # THERM-01-page-only verification-preparation group;
+                                             # never a report or CAP-09 group.
+                                             "therm01_verification_measurement_reference_v1"})
 _FUNDAMENTALS_PROSE_ITEM_PARTS = {
     "title_key": "TITLE",
     "text_key":  "TEXT",
@@ -840,3 +844,40 @@ def measurement_planning_conditions(domain_id):
     return _fundamentals_group(CAP09_MEASUREMENT_CONDITIONS_GROUP,
                                CAP09_MEASUREMENT_CONDITIONS_CLAIMS,
                                CAP09_MEASUREMENT_CONDITIONS_STEM)
+
+
+# THERM01-VERIFICATION-MEASUREMENT-STEP-01 — ONE verification-PREPARATION block
+# for the THERM-01 temperature-difference page, shown by the web layer ONLY
+# under the fixed disclosure of a SUCCESSFUL numerical result. Its one claim
+# carries the class-level measurement facts of NIST SP 400-86 (provenance
+# electronics_electrical:PR028 / PR029); the same-boundary / same-conditions
+# condition and the comparison step are InventorAI-authored integration
+# guidance, attributed as such in the copy. NOT a report / PDF gap-context
+# group, NOT a CAP-09 group and NOT a row of the extension table: no
+# calculation, input, persistence, comparison, pass / fail, tolerance,
+# uncertainty, acceptance criterion, calibration or instrument statement.
+THERM01_VERIFICATION_GROUP = "therm01_verification_measurement_reference_v1"
+THERM01_VERIFICATION_CLAIMS = ("thermal_resistance_measurement_requirements",)
+THERM01_VERIFICATION_STEM = "UI_THERM01_VERIFY_V1_"
+
+
+def therm01_verification_preparation():
+    """The ONE verification-preparation group for the THERM-01 result page, as
+    copy KEYS plus its group / claim identifiers and the key of its assumption
+    note, or ``None`` when any of that copy is missing.
+
+    All-or-nothing on its own copy (title, intro, the one item, assumption,
+    boundary, source), so the page never shows the steps without their
+    attribution and limits. Pure; never raises; reads no project, submission,
+    result or state — WHETHER it is shown is the web layer's decision, taken
+    only from a successful THERM-01 result."""
+    group = _fundamentals_group(THERM01_VERIFICATION_GROUP,
+                                THERM01_VERIFICATION_CLAIMS,
+                                THERM01_VERIFICATION_STEM)
+    if group is None:
+        return None
+    assumption_key = THERM01_VERIFICATION_STEM + "ASSUMPTION"
+    if not ui_text.has_string(assumption_key):
+        return None
+    group["assumption_key"] = assumption_key
+    return group

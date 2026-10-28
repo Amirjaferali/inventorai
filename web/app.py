@@ -15463,9 +15463,17 @@ def _render_therm01(sid, status=200, eligible=True, declared_part=None, captured
         part_name=(declared_part.display_name
                    if eligible and declared_part is not None else None),
         iso=lambda key: _therm01_isolate(ui_text.text(key, lang), lang),
+        iso_text=lambda text: _therm01_isolate(text, lang),
         disclosure_items=[
             _therm01_isolate(part, lang) for part in
             ui_text.text("UI_THERM01_DISCLOSURE", lang).split("\n\n")],
+        # THERM01-VERIFICATION-MEASUREMENT-STEP-01: the ONE verification-
+        # preparation block, offered ONLY with a successful numerical result
+        # (never on a refusal, abstention, malformed request, ineligible page
+        # or plain GET). Copy keys from the pure guidance owner; presentation
+        # only — nothing is read from the request, compared, judged or saved.
+        verification=(cap01_guidance.therm01_verification_preparation()
+                      if view is not None else None),
         eligible=eligible,
         error_key=error,
         result=view,

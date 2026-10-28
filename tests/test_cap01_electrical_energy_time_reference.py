@@ -143,6 +143,8 @@ from tests.cap01_measurement_conditions_addition import (
 # MECHANISM_COMPLETENESS context; excluded here likewise (tests/cap01_load_switching_addition.py).
 from tests.cap01_load_switching_addition import (  # noqa: F401
     LSW_GROUP, LSW_RECORDS, LSW_ROW, LSW_SLUG, without_load_switching_addition)
+from tests.cap01_therm01_verification_addition import (  # noqa: F401
+    TVM_GROUP, TVM_RECORDS, without_therm01_verification_addition)
 ACCURACY_GROUP = "measurement_accuracy_resolution_reference_v1"
 ACCURACY_NOTE = "measurement_accuracy_resolution_reference"
 ACCURACY_RECORDS = ("electronics_electrical:PR014", "electronics_electrical:PR015")
@@ -295,7 +297,7 @@ def test_t07_a_missing_group_part_suppresses_the_whole_group_never_partial_claim
 # ==========================================================================
 def test_t08_the_pack_change_is_exactly_one_group_and_one_note():
     pack = _pack()
-    pre = without_measurement_conditions_addition(without_measurement_guidance_addition(without_charge_addition(without_controller_addition(without_load_switching_addition(pack)))))
+    pre = without_measurement_conditions_addition(without_measurement_guidance_addition(without_charge_addition(without_controller_addition(without_load_switching_addition(without_therm01_verification_addition(pack))))))
     pre["reference_fundamentals"] = [g for g in pre["reference_fundamentals"]
                                      if g["group_id"] not in (ET_GROUP, SENSING_GROUP, ACCURACY_GROUP)]
     note = pre["_governance_notes"].pop("electrical_energy_time_reference_fundamentals")
@@ -303,7 +305,7 @@ def test_t08_the_pack_change_is_exactly_one_group_and_one_note():
     pre["_governance_notes"].pop(ACCURACY_NOTE)
     assert _digest(pre) == _PRE_PACK_DIGEST
     assert [g["group_id"] for g in pack["reference_fundamentals"]] == [
-        BASE_GROUP, ET_GROUP, SENSING_GROUP, ACCURACY_GROUP, CTRL_GROUP, LSW_GROUP, CHARGE_GROUP, MGUIDE_GROUP, MCOND_GROUP]
+        BASE_GROUP, ET_GROUP, SENSING_GROUP, ACCURACY_GROUP, CTRL_GROUP, LSW_GROUP, CHARGE_GROUP, MGUIDE_GROUP, MCOND_GROUP, TVM_GROUP]
     for phrase in ("inert", "exactly two bounded reference claims", "ONLY when P remains constant",
                    "PR008–PR009", "PR010–PR011", "PR001–PR007 are unchanged",
                    "nothing is added to the shared deterministic calculation / units owner"):
@@ -342,7 +344,7 @@ def test_t10_four_new_records_appended_after_pr007_with_exact_locations_and_hone
     i = ids.index("electronics_electrical:PR007")
     assert tuple(ids[i + 1:i + 5]) == ET_RECORDS
     pre = [r for r in records if r["record_id"] not in ET_RECORDS + SENSING_RECORDS + ACCURACY_RECORDS
-           + CTRL_RECORDS + CHARGE_RECORDS + MGUIDE_RECORDS + MCOND_RECORDS + LSW_RECORDS]
+           + CTRL_RECORDS + CHARGE_RECORDS + MGUIDE_RECORDS + MCOND_RECORDS + LSW_RECORDS + TVM_RECORDS]
     assert _digest(pre) == _PRE_PROVENANCE_DIGEST                  # PR001–PR007 and others unchanged
     recs = {r["record_id"]: r for r in records}
     doe, nist, doe_pol, nist_pol = (recs[r] for r in ET_RECORDS)

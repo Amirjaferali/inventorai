@@ -48,6 +48,8 @@ from tests.measurement_planning_integrated_part_amendment import (
 from tests.cap01_load_switching_addition import (
     LSW_CLAIM as CLAIM, LSW_GROUP as GROUP, LSW_NOTE as NOTE, LSW_RECORDS as RECORDS, LSW_ROW as ROW,
     LSW_SLUG as SLUG, without_load_switching_addition)
+from tests.cap01_therm01_verification_addition import (  # noqa: F401
+    TVM_GROUP, TVM_RECORDS, without_therm01_verification_addition)
 
 _ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 _PACK_PATH = os.path.join(_ROOT, "domains", "electronics_electrical", "domain.json")
@@ -209,7 +211,7 @@ def test_b04_the_binding_is_one_fixed_row_appended_last_to_the_mechanism_context
                for key, rows in cap01_guidance.CAP01_GAP_FUNDAMENTALS_EXTENSIONS.items()
                if key != (DOMAIN, MECHANISM_COMPLETENESS))
     assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset(
-        {SENSING_GROUP, ACCURACY_GROUP, CTRL_GROUP, GROUP, MGUIDE_GROUP, MCOND_GROUP})
+        {SENSING_GROUP, ACCURACY_GROUP, CTRL_GROUP, GROUP, MGUIDE_GROUP, MCOND_GROUP, TVM_GROUP})
 
 
 def test_b05_never_reads_inventor_text_or_signals():
@@ -430,7 +432,7 @@ def test_f02_an_equation_key_never_substitutes_the_prose_text(monkeypatch):
 # ==========================================================================
 def test_p01_pack_minus_exactly_this_addition_equals_the_base_pack():
     pack = _pack()
-    assert _digest(without_measurement_planning_integrated_part_amendment(without_load_switching_addition(pack))) == _PRE_PACK_DIGEST
+    assert _digest(without_measurement_planning_integrated_part_amendment(without_load_switching_addition(without_therm01_verification_addition(pack)))) == _PRE_PACK_DIGEST
     ids = [g["group_id"] for g in pack["reference_fundamentals"]]
     assert ids.index(GROUP) == ids.index(CTRL_GROUP) + 1
     note = pack["_governance_notes"][NOTE]
@@ -477,8 +479,9 @@ def test_p04_provenance_is_append_only_with_two_claim_specific_records():
     ids = [r["record_id"] for r in records]
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR025")
-    assert tuple(ids[i + 1:i + 3]) == RECORDS and ids[i + 3] == "mechanical:PR001"
-    assert _digest([r for r in records if r["record_id"] not in RECORDS]) == _PRE_PROVENANCE_DIGEST
+    assert tuple(ids[i + 1:i + 3]) == RECORDS and tuple(ids[i + 3:i + 5]) == TVM_RECORDS
+    assert ids[i + 5] == "mechanical:PR001"
+    assert _digest([r for r in records if r["record_id"] not in RECORDS + TVM_RECORDS]) == _PRE_PROVENANCE_DIGEST
     src, use = (records[ids.index(r)] for r in RECORDS)
     assert sorted(src) == sorted(use) == sorted(records[i])
     assert (src["source_type"], src["tier"], src["pack_id"]) == ("openly_licensed_educational_text", 1, DOMAIN)

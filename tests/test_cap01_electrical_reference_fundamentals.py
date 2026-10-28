@@ -177,6 +177,8 @@ from tests.cap01_measurement_conditions_addition import (
 # MECHANISM_COMPLETENESS context; excluded here likewise (tests/cap01_load_switching_addition.py).
 from tests.cap01_load_switching_addition import (  # noqa: F401
     LSW_GROUP, LSW_NAMESPACE, LSW_RECORDS, LSW_ROW, LSW_SLUG, without_load_switching_addition)
+from tests.cap01_therm01_verification_addition import (  # noqa: F401
+    TVM_GROUP, TVM_RECORDS, without_therm01_verification_addition)
 
 
 # 28-T1-SENSING-VALUE-THRESHOLD-01: the ONE separately bound prose-only group of the
@@ -442,10 +444,12 @@ def test_e16_four_new_provenance_records_with_the_exact_authorized_identities():
     # ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01 four more (PR018–PR021).
     # MEASUREMENT-PLAN-GUIDANCE-01 two more (PR022–PR023).
     # MEASUREMENT-CONDITIONS-AWARENESS-01 two more (PR024–PR025) and
-    # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 two more (PR026–PR027).
-    assert ids[7:] == ["electronics_electrical:PR%03d" % n for n in range(8, 28)]
-    assert tuple(ids[-10:-6]) == CHARGE_RECORDS and tuple(ids[-6:-4]) == MGUIDE_RECORDS
-    assert tuple(ids[-4:-2]) == MCOND_RECORDS and tuple(ids[-2:]) == LSW_RECORDS
+    # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01 two more (PR026–PR027) and
+    # THERM01-VERIFICATION-MEASUREMENT-STEP-01 two more (PR028–PR029).
+    assert ids[7:] == ["electronics_electrical:PR%03d" % n for n in range(8, 30)]
+    assert tuple(ids[-12:-8]) == CHARGE_RECORDS and tuple(ids[-8:-6]) == MGUIDE_RECORDS
+    assert tuple(ids[-6:-4]) == MCOND_RECORDS and tuple(ids[-4:-2]) == LSW_RECORDS
+    assert tuple(ids[-2:]) == TVM_RECORDS
     doe, nist, doe_pol, nist_pol = (recs[r] for r in NEW_RECORDS)
     assert doe["standard_number"] == "DOE-HDBK-1011/1-92" and doe["source_type"] == "government_reference_publication"
     assert "Electrical Science" in doe["source_name"] and "Volume 1 of 4" in doe["source_name"]
@@ -524,7 +528,8 @@ def test_e19_the_pack_group_declares_the_three_claims_with_exact_source_and_poli
     assert [g["group_id"] for g in groups] == [FUND_GROUP, "electrical_energy_time_reference_v1",
                                                "sensing_value_threshold_reference_v1",
                                                "measurement_accuracy_resolution_reference_v1",
-                                               CTRL_GROUP, LSW_GROUP, CHARGE_GROUP, MGUIDE_GROUP, MCOND_GROUP]
+                                               CTRL_GROUP, LSW_GROUP, CHARGE_GROUP, MGUIDE_GROUP, MCOND_GROUP,
+                                               TVM_GROUP]
     group = groups[0]
     assert sorted(group) == ["applicable_gap_type", "claims", "group_id"]
     assert group["group_id"] == FUND_GROUP and group["applicable_gap_type"] == PHYSICAL_FEASIBILITY
@@ -546,7 +551,7 @@ def test_e19_the_pack_group_declares_the_three_claims_with_exact_source_and_poli
 
 def test_e20_every_pre_existing_pack_field_is_unchanged_and_the_group_is_declared_inert():
     pack = _pack()
-    pre = without_measurement_conditions_addition(without_measurement_guidance_addition(without_charge_addition(without_controller_addition(without_load_switching_addition(pack)))))
+    pre = without_measurement_conditions_addition(without_measurement_guidance_addition(without_charge_addition(without_controller_addition(without_load_switching_addition(without_therm01_verification_addition(pack))))))
     pre.pop("reference_fundamentals")
     note = pre["_governance_notes"].pop("electrical_td_slice1_reference_fundamentals")
     # ...and the later, separately authorized energy-time group's own note.

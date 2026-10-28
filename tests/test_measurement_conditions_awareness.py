@@ -43,6 +43,8 @@ from tests.measurement_planning_integrated_part_amendment import (
     without_measurement_planning_integrated_part_amendment)
 from tests.cap01_load_switching_addition import (  # noqa: F401
     LSW_GROUP, LSW_RECORDS, LSW_ROW, LSW_SLUG, without_load_switching_addition)
+from tests.cap01_therm01_verification_addition import (  # noqa: F401
+    TVM_GROUP, TVM_RECORDS, without_therm01_verification_addition)
 from tests.cap01_measurement_guidance_addition import MGUIDE_GROUP, MGUIDE_SLUG
 from tests.test_28t1_measurement_planning_reference import (
     GROUPS as REFERENCE_GROUPS, _elec, _group_blocks, _page, _panel, _start, _visible)
@@ -336,8 +338,9 @@ def test_m15_viewing_the_page_writes_nothing():
 # ==========================================================================
 def test_p01_the_pack_change_is_exactly_one_group_and_one_note():
     pack = _pack()
-    assert _digest(without_measurement_planning_integrated_part_amendment(without_measurement_conditions_addition(without_load_switching_addition(pack)))) == _PRE_PACK_DIGEST
-    assert [g["group_id"] for g in pack["reference_fundamentals"]][-1] == GROUP
+    assert _digest(without_measurement_planning_integrated_part_amendment(without_measurement_conditions_addition(without_load_switching_addition(without_therm01_verification_addition(pack))))) == _PRE_PACK_DIGEST
+    # THERM01-VERIFICATION-MEASUREMENT-STEP-01 later appended ONE THERM-01-page-only group after this one.
+    assert [g["group_id"] for g in pack["reference_fundamentals"]][-2:] == [GROUP, TVM_GROUP]
     note = pack["_governance_notes"][NOTE]
     for phrase in ("MEASUREMENT-CONDITIONS-AWARENESS-01", "exactly ONE prose-only conceptual claim",
                    CLAIM, "electronics_electrical:PR024", "Journal of Research of NIST, Vol. 106",
@@ -399,8 +402,8 @@ def test_p03_two_records_appended_after_pr023_and_every_other_record_unchanged()
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR023")
     assert tuple(ids[i + 1:i + 3]) == RECORDS and tuple(ids[i + 3:i + 5]) == LSW_RECORDS
-    assert ids[i + 5] == "mechanical:PR001"
-    assert _digest([r for r in records if r["record_id"] not in RECORDS + LSW_RECORDS]) == _PRE_PROVENANCE_DIGEST
+    assert tuple(ids[i + 5:i + 7]) == TVM_RECORDS and ids[i + 7] == "mechanical:PR001"
+    assert _digest([r for r in records if r["record_id"] not in RECORDS + LSW_RECORDS + TVM_RECORDS]) == _PRE_PROVENANCE_DIGEST
     recs = {r["record_id"]: r for r in records}
     shape = sorted(recs["electronics_electrical:PR022"])
     assert all(sorted(recs[r]) == shape for r in RECORDS)

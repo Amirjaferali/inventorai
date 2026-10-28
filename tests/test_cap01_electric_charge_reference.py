@@ -60,6 +60,8 @@ from tests.cap01_measurement_conditions_addition import (
 # MECHANISM_COMPLETENESS context; excluded here likewise (tests/cap01_load_switching_addition.py).
 from tests.cap01_load_switching_addition import (  # noqa: F401
     LSW_GROUP, LSW_RECORDS, LSW_ROW, LSW_SLUG, without_load_switching_addition)
+from tests.cap01_therm01_verification_addition import (  # noqa: F401
+    TVM_GROUP, TVM_RECORDS, without_therm01_verification_addition)
 
 _ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 _PACK_PATH = os.path.join(_ROOT, "domains", "electronics_electrical", "domain.json")
@@ -251,9 +253,10 @@ def test_c06_missing_earlier_copy_never_removes_this_group(monkeypatch):
 def test_c07_the_pack_change_is_exactly_one_group_and_one_note():
     pack = _pack()
     assert _digest(without_charge_addition(without_measurement_guidance_addition(
-        without_measurement_conditions_addition(without_load_switching_addition(pack))))) == _PRE_PACK_DIGEST
-    # This group is the last REPORT group; the later CAP-09-only guidance groups follow it in the pack.
-    assert [g["group_id"] for g in pack["reference_fundamentals"]][-3:] == [GROUP, MGUIDE_GROUP, MCOND_GROUP]
+        without_measurement_conditions_addition(without_load_switching_addition(without_therm01_verification_addition(pack)))))) == _PRE_PACK_DIGEST
+    # This group is the last REPORT group; the later CAP-09-only guidance groups and the THERM-01-page-only
+    # verification-preparation group follow it in the pack.
+    assert [g["group_id"] for g in pack["reference_fundamentals"]][-4:] == [GROUP, MGUIDE_GROUP, MCOND_GROUP, TVM_GROUP]
     note = pack["_governance_notes"][NOTE]
     for phrase in ("ELECTRICAL-CHARGE-AMPERE-HOUR-REFERENCE-01", "NOT Battery / BMS capability", "inert",
                    "exactly three bounded reference claims", "ONLY when the current I remains constant",
@@ -309,8 +312,9 @@ def test_c09_four_records_appended_after_pr017_and_every_other_record_unchanged(
     i = ids.index("electronics_electrical:PR017")
     assert tuple(ids[i + 1:i + 5]) == RECORDS
     assert tuple(ids[i + 5:i + 7]) == MGUIDE_RECORDS and tuple(ids[i + 7:i + 9]) == MCOND_RECORDS
-    assert tuple(ids[i + 9:i + 11]) == LSW_RECORDS and ids[i + 11] == "mechanical:PR001"
-    assert _digest([r for r in records if r["record_id"] not in RECORDS + MGUIDE_RECORDS + MCOND_RECORDS + LSW_RECORDS]) == _PRE_PROVENANCE_DIGEST
+    assert tuple(ids[i + 9:i + 11]) == LSW_RECORDS and tuple(ids[i + 11:i + 13]) == TVM_RECORDS
+    assert ids[i + 13] == "mechanical:PR001"
+    assert _digest([r for r in records if r["record_id"] not in RECORDS + MGUIDE_RECORDS + MCOND_RECORDS + LSW_RECORDS + TVM_RECORDS]) == _PRE_PROVENANCE_DIGEST
     recs = {r["record_id"]: r for r in records}
     shape = sorted(recs["electronics_electrical:PR004"])
     assert all(sorted(recs[r]) == shape for r in RECORDS)

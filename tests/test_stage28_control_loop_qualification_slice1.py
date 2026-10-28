@@ -96,7 +96,9 @@ _PRIOR_RECORD_IDS = [
     # MEASUREMENT-CONDITIONS-AWARENESS-01: two additive Electronics records after PR023.
     "electronics_electrical:PR024", "electronics_electrical:PR025",
     # 28-T3-LOAD-SWITCHING-PRINCIPLE-REFERENCE-01: two additive Electronics records after PR025.
-    "electronics_electrical:PR026", "electronics_electrical:PR027", "mechanical:PR001", "mechanical:PR002", "mechanical:PR003", "mechanical:PR004",
+    "electronics_electrical:PR026", "electronics_electrical:PR027",
+    # THERM01-VERIFICATION-MEASUREMENT-STEP-01: two additive Electronics records after PR027.
+    "electronics_electrical:PR028", "electronics_electrical:PR029", "mechanical:PR001", "mechanical:PR002", "mechanical:PR003", "mechanical:PR004",
     "mechanical:PR005", "mechanical:PR006", "mechanical:PR007", "mechanical:PR008", "mechanical:PR009",
     "mechanical:PR010", "mechanical:PR011", "medical_device:PR001", "medical_device:PR002", "software:PR001",
 ]

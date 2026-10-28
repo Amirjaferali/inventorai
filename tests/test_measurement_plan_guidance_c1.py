@@ -46,6 +46,8 @@ from tests.cap01_measurement_conditions_addition import (
 # MECHANISM_COMPLETENESS context; excluded here likewise (tests/cap01_load_switching_addition.py).
 from tests.cap01_load_switching_addition import (  # noqa: F401
     LSW_GROUP, LSW_RECORDS, LSW_ROW, LSW_SLUG, without_load_switching_addition)
+from tests.cap01_therm01_verification_addition import (  # noqa: F401
+    TVM_GROUP, TVM_RECORDS, without_therm01_verification_addition)
 from tests.test_28t1_measurement_planning_reference import (
     GROUPS as REFERENCE_GROUPS, _elec, _group_blocks, _page, _panel, _start, _visible)
 from tests.test_cap12_form_mockup_advisory import _client_for
@@ -343,8 +345,8 @@ def test_g15_viewing_the_page_writes_nothing():
 def test_p01_the_pack_change_is_exactly_one_group_and_one_note():
     pack = _pack()
     assert _digest(without_measurement_guidance_addition(without_measurement_conditions_addition(
-        without_load_switching_addition(pack)))) == _PRE_PACK_DIGEST
-    assert [g["group_id"] for g in pack["reference_fundamentals"]][-2:] == [GROUP, MCOND_GROUP]
+        without_load_switching_addition(without_therm01_verification_addition(pack))))) == _PRE_PACK_DIGEST
+    assert [g["group_id"] for g in pack["reference_fundamentals"]][-3:] == [GROUP, MCOND_GROUP, TVM_GROUP]
     note = pack["_governance_notes"][NOTE]
     for phrase in ("MEASUREMENT-PLAN-GUIDANCE-01", "C1 only", "exactly ONE prose-only conceptual claim",
                    "measured_quantity_versus_observed_condition", "electronics_electrical:PR022",
@@ -411,8 +413,8 @@ def test_p03_two_records_appended_after_pr021_and_every_other_record_unchanged()
     i = ids.index("electronics_electrical:PR021")
     assert tuple(ids[i + 1:i + 3]) == RECORDS
     assert tuple(ids[i + 3:i + 5]) == MCOND_RECORDS and tuple(ids[i + 5:i + 7]) == LSW_RECORDS
-    assert ids[i + 7] == "mechanical:PR001"
-    assert _digest([r for r in records if r["record_id"] not in RECORDS + MCOND_RECORDS + LSW_RECORDS]) == _PRE_PROVENANCE_DIGEST
+    assert tuple(ids[i + 7:i + 9]) == TVM_RECORDS and ids[i + 9] == "mechanical:PR001"
+    assert _digest([r for r in records if r["record_id"] not in RECORDS + MCOND_RECORDS + LSW_RECORDS + TVM_RECORDS]) == _PRE_PROVENANCE_DIGEST
     recs = {r["record_id"]: r for r in records}
     shape = sorted(recs["electronics_electrical:PR014"])
     assert all(sorted(recs[r]) == shape for r in RECORDS)
