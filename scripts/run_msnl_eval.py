@@ -1230,7 +1230,7 @@ def mechanism_rescore(path):
 
 MECHANISM_CANDIDATE_PATH = os.path.join(_ROOT, "tests", "fixtures",
                                         "msnl_mechanism_content_v2_candidate.json")
-MECHANISM_CANDIDATE_SHA256 = "60bad066e962b673b8e46bf691670234aed0f1c5f61010be1ff4fc40de87defc"
+MECHANISM_CANDIDATE_SHA256 = "f1a2b04adb71823310b87f1de5ab07481399e0769d2eee91fec81b24825fc181"
 
 
 def _mechanism_candidate():

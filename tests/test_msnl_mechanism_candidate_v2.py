@@ -67,11 +67,15 @@ def test_the_candidate_is_pinned_and_changes_exactly_one_instruction_segment(loa
                    "only names or lists parts",
                    "a part's function stated inside a list of parts counts",
                    "do not infer an explanation the answer does not state",
-                   "is uncertain about the explanation itself",
+                   "only wonders or asks whether something might happen",
+                   "a tentative statement of what happens",
                    "A separate unknown does not remove a mechanism",
                    "movement, technical words and a complete chain are not required",
                    "through physical negation"):
         assert phrase in new, phrase
+    # correction 01: no clause makes a tentative statement of what happens ABSENT (M2)
+    assert "is uncertain about the explanation itself" not in new
+    assert "tentatively" in new and cand["instruction_delta"]["correction_01"]
     assert arm_pack["arm"]["instructions"] == new
 
 
@@ -116,6 +120,10 @@ def test_development_examples_are_contrastive_fresh_and_grounding_compatible(loa
     for contrast in ("A-existence-denial", "B-component-list", "C-unknown-scope"):
         assert by_contrast[contrast]["PRESENT"] == by_contrast[contrast]["ABSENT"] >= 2
     assert by_contrast["P-preserved"]["PRESENT"] >= 3
+    assert by_contrast["T-tentative"]["PRESENT"] >= 2               # M2 kept PRESENT
+    assert {ex["variety"] for ex in examples if ex["contrast"] == "T-tentative"} >= \
+        {"en"} and len({ex["variety"] for ex in examples
+                        if ex["contrast"] == "T-tentative"}) >= 2
     assert {ex["variety"] for ex in examples} == set(h.VARIETIES)
     assert len({ex["example_id"] for ex in examples}) == len(examples)
     holdout = arm_pack["cases"]
@@ -152,6 +160,7 @@ def test_the_label_boundary_review_keeps_v1_labels_and_separates_evidence(loaded
     proposal = cand["follow_on_evaluation_proposal"]
     assert proposal["requests"]["total_max"] == 640 and proposal["requests"]["retries"] == 0
     assert "PROPOSAL ONLY" in proposal["status"]
+    assert "TENTATIVELY" in proposal["sets"]["fresh_holdout"]       # M2 detectable
 
 
 def test_the_candidate_check_is_offline_only(monkeypatch):
