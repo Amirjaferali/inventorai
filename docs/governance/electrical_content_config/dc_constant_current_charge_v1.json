@@ -111,7 +111,7 @@
     "No unit is converted: the current is read in amperes, the duration in hours and the charge is given in ampere hours only, with no milliampere hours, coulombs, seconds or minutes.",
     "The value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement.",
     "Next engineering need: a charge value alone cannot determine how long a real battery lasts. Whether the current really stays constant, what the load draws over its whole use with every phase included, which source or battery could supply it and how that source behaves as it discharges, and whether the load, its wiring, source and any switch are rated for the current all remain unverified, and must be checked by measurement or a qualified person before any reliance. The result is preliminary, advisory, UNVALIDATED and not evidence.",
-    "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the coulomb and the ampere hour as identified in NIST Special Publication 811. Q = I × t is InventorAI's own restatement for a constant current, and no handbook or NIST text, example, table or figure is reproduced."
+    "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the coulomb, the ampere hour and, from them, the hour as identified in NIST Special Publication 811. Q = I × t is InventorAI's own restatement for a constant current, and no handbook or NIST text, example, table or figure is reproduced."
   ],
   "sources": [
     {

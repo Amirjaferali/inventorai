@@ -198,7 +198,7 @@ appear on any surface of this method.
 4. No unit is converted: the current is read in amperes, the duration in hours and the charge is given in ampere hours only, with no milliampere hours, coulombs, seconds or minutes.
 5. The value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement.
 6. Next engineering need: a charge value alone cannot determine how long a real battery lasts. Whether the current really stays constant, what the load draws over its whole use with every phase included, which source or battery could supply it and how that source behaves as it discharges, and whether the load, its wiring, source and any switch are rated for the current all remain unverified, and must be checked by measurement or a qualified person before any reliance. The result is preliminary, advisory, UNVALIDATED and not evidence.
-7. Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the coulomb and the ampere hour as identified in NIST Special Publication 811. Q = I × t is InventorAI's own restatement for a constant current, and no handbook or NIST text, example, table or figure is reproduced.
+7. Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the coulomb, the ampere hour and, from them, the hour as identified in NIST Special Publication 811. Q = I × t is InventorAI's own restatement for a constant current, and no handbook or NIST text, example, table or figure is reproduced.
 
 ## 9A. Arabic disclosure and UX wording
 
@@ -210,7 +210,7 @@ appear on any surface of this method.
 > 4. لا تُحوَّل أي وحدة: يُقرأ التيار بالأمبير، والمدة بالساعات، وتُعطى الشحنة بالأمبير ساعة فقط، دون مللي أمبير ساعة ولا كولوم ولا ثوانٍ ولا دقائق.
 > 5. تُعرض القيمة بدقة حين يمكن ذلك؛ وإلا تُقرَّب إلى 12 رقمًا معنويًا ويُشار إلى أنها مقرَّبة. الأرقام ناتجة عن إدخالك؛ وليست دقة أي قياس.
 > 6. الحاجة الهندسية التالية: قيمة الشحنة وحدها لا تحدد كم تدوم بطارية حقيقية. ما إذا كان التيار يبقى ثابتًا فعلًا، وما يسحبه الحِمل على مدى استخدامه كله بكل أطواره، وأي مصدر أو بطارية يمكنه تزويده وكيف يتصرف ذلك المصدر مع تفريغه، وما إذا كان الحِمل وأسلاكه ومصدره وأي مفتاح مُصنَّفًا لهذا التيار — كلها تبقى غير مُتحقَّق منها، ويجب فحصها بالقياس أو بواسطة شخص مؤهل قبل أي اعتماد. هذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا.
-> 7. المراجع: وزارة الطاقة الأمريكية — Electrical Science، ‏DOE-HDBK-1011/1-92 (مؤرشف؛ مرجع تاريخي للأساسيات فقط)؛ والكولوم والأمبير ساعة كما يحددهما NIST Special Publication 811. وQ = I × t إعادة صياغة من InventorAI لتيار ثابت، ولا يُستنسخ أي نص أو مثال أو جدول أو شكل من الدليل أو من NIST.
+> 7. المراجع: وزارة الطاقة الأمريكية — Electrical Science، ‏DOE-HDBK-1011/1-92 (مؤرشف؛ مرجع تاريخي للأساسيات فقط)؛ والكولوم والأمبير ساعة، ومنهما الساعة، كما يحددها NIST Special Publication 811. وQ = I × t إعادة صياغة من InventorAI لتيار ثابت، ولا يُستنسخ أي نص أو مثال أو جدول أو شكل من الدليل أو من NIST.
 
 **A-2 Applicability declarations (§5).** The inventor answers «ينطبق على حالتي» or «لا ينطبق على حالتي», none pre-selected.
 
@@ -271,7 +271,8 @@ or provider call; Stage 15 part eligibility only as stated in §1; no 28-T3, Bat
   the 2008 PDF edition. **Not relied upon:** a separate NIST statement that the hour is accepted for use with the SI
   (SP 811 Chapter 5) is NOT recorded as an inspected location in any repository provenance record and is therefore not
   asserted by this method; identification of `h` rests on the inspected ampere hour row alone. Supplying that inspection is
-  an open Lead / Owner item, not a defect of the delivered records.
+  an optional later Lead / Owner item; it is not a precondition of this admission and not a defect of the delivered
+  records.
 - **Pack scope note.** `electronics_electrical:PR018` and `PR020`, the pack claims `charge_current_time_reference`,
   `charge_unit_discipline` and `ampere_hour_charge_unit` and their reference-fundamentals group say "no project-specific
   calculation" and that `A · h`, `mA · h` and `C` are reference text only and NOT added as owner units. They are unchanged

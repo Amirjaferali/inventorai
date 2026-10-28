@@ -180,7 +180,7 @@ _SEMANTIC_DIGESTS = {
     "declarations": "1d8d053d51df3343ab75b0f6040086e9afa2770aa681aa920bf961052f1927c1",
     "screen_items": "7c71d7602291468b7c4442a892fdf64dfeff433d57109a68fa1abb72070dcde4",
     "limitations": "467c19c70aa372119b5d0a6e21bf6b80decace90724c0562e6bdbd095caec0a6",
-    "disclosure": "73e1316a8b13c8cb97546037c7d5867fde17349d3d7baff57b335c3ec7aa6d4b",
+    "disclosure": "78b1d9a1132f2adabe4fa8b0a5e0361efbcc96993676aa0ca7e6c1e3e0b1d8d2",
     "sources": "50d53495e8f51dd80223f45ef481c402b2d4c7364cbe8368cde9c619c8fea66d",
 }
 _PINNED_ARTIFACT_VERSION = "1"
