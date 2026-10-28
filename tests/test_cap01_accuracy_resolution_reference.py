@@ -57,8 +57,8 @@ from tests.cap01_measurement_conditions_addition import (
 # MECHANISM_COMPLETENESS context; excluded here likewise (tests/cap01_load_switching_addition.py).
 from tests.cap01_load_switching_addition import (  # noqa: F401
     LSW_GROUP, LSW_RECORDS, LSW_ROW, LSW_SLUG, without_load_switching_addition)
-from tests.cap01_therm01_verification_addition import (  # noqa: F401
-    TVM_GROUP, TVM_RECORDS, without_therm01_verification_addition)
+from tests.cap01_heat_path_verification_addition import (  # noqa: F401
+    HPV_GROUP, HPV_RECORDS, without_heat_path_verification_addition)
 from tests.test_cap01_electrical_energy_time_reference import ET_GROUP, _html, _groups, _equations
 from tests.test_cap01_electrical_reference_fundamentals import FUND_GROUP as BASE_GROUP
 from tests.test_cap01_sensing_value_threshold_reference import (
@@ -211,7 +211,7 @@ def test_b04_the_binding_is_one_fixed_row_appended_to_the_sensing_context():
             (SENSING_GROUP, (SENSING_CLAIM,), "SENSING_FUNDAMENTALS_"),
             (GROUP, (CLAIM,), "ACCURACY_RESOLUTION_FUNDAMENTALS_"), CTRL_ROW, LSW_ROW),
     }
-    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({SENSING_GROUP, GROUP, CTRL_GROUP, MGUIDE_GROUP, MCOND_GROUP, LSW_GROUP, TVM_GROUP})
+    assert cap01_guidance._FUNDAMENTALS_PROSE_ONLY_GROUPS == frozenset({SENSING_GROUP, GROUP, CTRL_GROUP, MGUIDE_GROUP, MCOND_GROUP, LSW_GROUP, HPV_GROUP})
 
 
 def test_b05_never_reads_inventor_text_or_signals():
@@ -425,8 +425,8 @@ def test_p01_pack_minus_exactly_this_addition_equals_the_base_pack():
     pack = _pack()
     assert [g["group_id"] for g in pack["reference_fundamentals"]] == [BASE_GROUP, ET_GROUP, SENSING_GROUP,
                                                                        GROUP, CTRL_GROUP, LSW_GROUP, CHARGE_GROUP,
-                                                                       MGUIDE_GROUP, MCOND_GROUP, TVM_GROUP]
-    pre = without_measurement_conditions_addition(without_measurement_guidance_addition(without_charge_addition(without_controller_addition(without_load_switching_addition(without_therm01_verification_addition(pack))))))
+                                                                       MGUIDE_GROUP, MCOND_GROUP, HPV_GROUP]
+    pre = without_measurement_conditions_addition(without_measurement_guidance_addition(without_charge_addition(without_controller_addition(without_load_switching_addition(without_heat_path_verification_addition(pack))))))
     pre["reference_fundamentals"] = [g for g in pre["reference_fundamentals"] if g["group_id"] != GROUP]
     note = pre["_governance_notes"].pop(NOTE)
     assert _digest(pre) == _PRE_PACK_DIGEST
@@ -457,7 +457,7 @@ def test_p03_provenance_is_append_only_with_two_claim_specific_records():
     assert len(ids) == len(set(ids))
     i = ids.index("electronics_electrical:PR013")
     assert tuple(ids[i + 1:i + 3]) == RECORDS
-    pre = [r for r in records if r["record_id"] not in RECORDS + CTRL_RECORDS + CHARGE_RECORDS + MGUIDE_RECORDS + MCOND_RECORDS + LSW_RECORDS + TVM_RECORDS]
+    pre = [r for r in records if r["record_id"] not in RECORDS + CTRL_RECORDS + CHARGE_RECORDS + MGUIDE_RECORDS + MCOND_RECORDS + LSW_RECORDS + HPV_RECORDS]
     assert _digest(pre) == _PRE_PROVENANCE_DIGEST                     # PR001–PR013 and others unchanged
     src, use = (records[ids.index(r)] for r in RECORDS)
     assert sorted(src) == sorted(use) == sorted(records[i])

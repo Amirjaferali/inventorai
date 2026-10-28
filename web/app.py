@@ -15472,7 +15472,7 @@ def _render_therm01(sid, status=200, eligible=True, declared_part=None, captured
         # (never on a refusal, abstention, malformed request, ineligible page
         # or plain GET). Copy keys from the pure guidance owner; presentation
         # only — nothing is read from the request, compared, judged or saved.
-        verification=(cap01_guidance.therm01_verification_preparation()
+        verification=(cap01_guidance.heat_path_verification_preparation()
                       if view is not None else None),
         eligible=eligible,
         error_key=error,

@@ -300,12 +300,12 @@ _FROZEN_PACK_SHA256 = {
     # amendment undone is canonically identical to the previous pack (proven in
     # tests/test_cap01_load_switching_reference.py via tests/measurement_planning_integrated_part_amendment.py).
     # THERM01-VERIFICATION-MEASUREMENT-STEP-01: re-frozen again after adding ONE further bounded, inert,
-    # additive prose-only `reference_fundamentals` group (therm01_verification_measurement_reference_v1;
+    # additive prose-only `reference_fundamentals` group (heat_path_verification_measurement_reference_v1;
     # THERM-01 result page only, never a report / PDF gap-context group, never a CAP-09 group) plus its
     # governance-note entry (provenance electronics_electrical:PR028–PR029). The pack minus exactly those
     # two additions is canonically identical to the previous pack (proven in
     # tests/test_therm01_verification_measurement_step.py).
-    "electronics_electrical": "904a26b1572f7a4123747f791673a8d97c4b764bbf7760dd3bed7e88d72c6c0a",
+    "electronics_electrical": "1b26a23f9d40f04251d808b71687b24af52069e05397bc9dd7ea129b0dfc2a0a",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",

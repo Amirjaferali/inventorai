@@ -391,7 +391,7 @@ _FUNDAMENTALS_PROSE_ONLY_GROUPS = frozenset({"sensing_value_threshold_reference_
                                              # THERM01-VERIFICATION-MEASUREMENT-STEP-01: the
                                              # THERM-01-page-only verification-preparation group;
                                              # never a report or CAP-09 group.
-                                             "therm01_verification_measurement_reference_v1"})
+                                             "heat_path_verification_measurement_reference_v1"})
 _FUNDAMENTALS_PROSE_ITEM_PARTS = {
     "title_key": "TITLE",
     "text_key":  "TEXT",
@@ -856,12 +856,12 @@ def measurement_planning_conditions(domain_id):
 # group, NOT a CAP-09 group and NOT a row of the extension table: no
 # calculation, input, persistence, comparison, pass / fail, tolerance,
 # uncertainty, acceptance criterion, calibration or instrument statement.
-THERM01_VERIFICATION_GROUP = "therm01_verification_measurement_reference_v1"
-THERM01_VERIFICATION_CLAIMS = ("thermal_resistance_measurement_requirements",)
-THERM01_VERIFICATION_STEM = "UI_THERM01_VERIFY_V1_"
+HEAT_PATH_VERIFICATION_GROUP = "heat_path_verification_measurement_reference_v1"
+HEAT_PATH_VERIFICATION_CLAIMS = ("heat_path_resistance_measurement_requirements",)
+HEAT_PATH_VERIFICATION_STEM = "UI_HEAT_PATH_VERIFY_V1_"
 
 
-def therm01_verification_preparation():
+def heat_path_verification_preparation():
     """The ONE verification-preparation group for the THERM-01 result page, as
     copy KEYS plus its group / claim identifiers and the key of its assumption
     note, or ``None`` when any of that copy is missing.
@@ -871,12 +871,12 @@ def therm01_verification_preparation():
     attribution and limits. Pure; never raises; reads no project, submission,
     result or state — WHETHER it is shown is the web layer's decision, taken
     only from a successful THERM-01 result."""
-    group = _fundamentals_group(THERM01_VERIFICATION_GROUP,
-                                THERM01_VERIFICATION_CLAIMS,
-                                THERM01_VERIFICATION_STEM)
+    group = _fundamentals_group(HEAT_PATH_VERIFICATION_GROUP,
+                                HEAT_PATH_VERIFICATION_CLAIMS,
+                                HEAT_PATH_VERIFICATION_STEM)
     if group is None:
         return None
-    assumption_key = THERM01_VERIFICATION_STEM + "ASSUMPTION"
+    assumption_key = HEAT_PATH_VERIFICATION_STEM + "ASSUMPTION"
     if not ui_text.has_string(assumption_key):
         return None
     group["assumption_key"] = assumption_key

@@ -6407,11 +6407,11 @@ UI_STRINGS = {
     # under the THERM-01 fixed disclosure (successful result only). Points 1 to 4 and
     # the assumption note restate class-level facts of NIST SP 400-86; the same-
     # boundary condition and the comparison step are InventorAI's own guidance.
-    "UI_THERM01_VERIFY_V1_TITLE": {
+    "UI_HEAT_PATH_VERIFY_V1_TITLE": {
         "en": "How to check this estimate",
         "ar": "كيف تتحقق من هذا التقدير",
     },
-    "UI_THERM01_VERIFY_V1_INTRO": {
+    "UI_HEAT_PATH_VERIFY_V1_INTRO": {
         "en": ("This is preparation for a physical check, written so that you can plan one; "
                "InventorAI performs, records and judges no measurement. Comparing a measurement "
                "with the number above is meaningful only when what you measure corresponds to the "
@@ -6423,11 +6423,11 @@ UI_STRINGS = {
                "مطابقًا للمسار نفسه، ولطرفي ذلك المسار نفسيهما (حدوده الحرارية)، ولظروف التشغيل "
                "نفسها التي صرّحت بها لهذا الحساب. وقبل مقارنة كهذه ستحتاج إلى إثبات ما يلي:"),
     },
-    "UI_THERM01_VERIFY_V1_ITEM_1_TITLE": {
+    "UI_HEAT_PATH_VERIFY_V1_ITEM_1_TITLE": {
         "en": "What a meaningful check would have to establish",
         "ar": "ما الذي يجب أن يثبته فحص ذو معنى",
     },
-    "UI_THERM01_VERIFY_V1_ITEM_1_TEXT": {
+    "UI_HEAT_PATH_VERIFY_V1_ITEM_1_TEXT": {
         "en": ("The power actually dissipated in the region where the heat is produced. Power measured "
                "at leads or contacts can overstate it, because some of it is dissipated in the leads or "
                "contacts themselves, not in the heat-producing region."
@@ -6465,7 +6465,7 @@ UI_STRINGS = {
                "InventorAI نفسه. ولا يعني توافق الرقمين وحده صحة النموذج، ولا يقول شيئًا عن الملاءمة "
                "أو السلامة أو الموثوقية أو المطابقة."),
     },
-    "UI_THERM01_VERIFY_V1_ASSUMPTION": {
+    "UI_HEAT_PATH_VERIFY_V1_ASSUMPTION": {
         "en": ("Keep in mind: a single thermal-resistance number assumes a uniformly heated region and "
                "a value that does not change with operating conditions. Real hardware does not satisfy "
                "either exactly, so a measured difference and the calculated ΔT can differ for that "
@@ -6474,7 +6474,7 @@ UI_STRINGS = {
                "التشغيل. ولا تحقّق الأجهزة الحقيقية أيًّا من الافتراضين تمامًا، ولذلك قد يختلف الفرق "
                "المقيس عن ΔT المحسوبة لهذا السبب وحده."),
     },
-    "UI_THERM01_VERIFY_V1_BOUNDARY": {
+    "UI_HEAT_PATH_VERIFY_V1_BOUNDARY": {
         "en": ("This block adds no measurement input, stores no measurement and compares nothing. It "
                "sets no tolerance, acceptance criterion, pass or fail, uncertainty, test duration, safe "
                "limit, rating or margin; it does not describe a measurement procedure, choose an "
@@ -6488,7 +6488,7 @@ UI_STRINGS = {
                "مُتحقَّق منها (UNVALIDATED) وليست دليلًا، ويبقى أي فحص والحكم عليه بيدك أو بيد متخصص "
                "حراري."),
     },
-    "UI_THERM01_VERIFY_V1_SOURCE": {
+    "UI_HEAT_PATH_VERIFY_V1_SOURCE": {
         "en": ("Source of the measurement facts in points 1 to 4 and of the assumption note: National "
                "Institute of Standards and Technology (NIST), Oettinger and Blackburn, Semiconductor "
                "Measurement Technology: Thermal Resistance Measurements, NIST Special Publication 400-86 "

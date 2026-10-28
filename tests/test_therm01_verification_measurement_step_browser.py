@@ -10,7 +10,7 @@ import pytest
 from playwright.sync_api import expect
 
 from web.ui_text import text
-from tests.cap01_therm01_verification_addition import TVM_SLUG, TVM_STEM
+from tests.cap01_heat_path_verification_addition import HPV_SLUG, HPV_STEM
 from tests.test_draft_l2_local_continuity import server, page, _browser  # noqa: F401
 from tests.test_therm01_temperature_difference_browser import _start_electronics
 
@@ -35,9 +35,9 @@ def test_verification_preparation_journey(server, page, lang):
     expect(page.locator("[data-therm01-result-value]")).to_have_text("25.0 K")
     block = page.locator("[data-therm01-verification]")
     expect(block).to_have_count(1)
-    assert block.get_attribute("data-therm01-verification") == TVM_SLUG
+    assert block.get_attribute("data-therm01-verification") == HPV_SLUG
     expect(block).to_be_visible()
-    expect(block.locator("[data-therm01-verify-title]")).to_have_text(text(TVM_STEM + "TITLE", lang))
+    expect(block.locator("[data-therm01-verify-title]")).to_have_text(text(HPV_STEM + "TITLE", lang))
     expect(block.locator("[data-therm01-verify-steps] li")).to_have_count(5)
     expect(block.locator("[data-therm01-verify-assumption]")).to_be_visible()
     expect(block.locator("[data-therm01-verify-boundary]")).to_be_visible()

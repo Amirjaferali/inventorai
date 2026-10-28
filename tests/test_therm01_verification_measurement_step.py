@@ -25,10 +25,10 @@ import pytest
 import web.app as webapp
 from web import cap01_guidance, ui_text
 from engine import therm01_temperature_difference as therm
-from tests.cap01_therm01_verification_addition import (
-    TVM_CLAIM as CLAIM, TVM_CLAIMS as CLAIMS, TVM_GROUP as GROUP, TVM_NOTE as NOTE,
-    TVM_RECORDS as RECORDS, TVM_SLUG as SLUG, TVM_STEM as STEM,
-    without_therm01_verification_addition)
+from tests.cap01_heat_path_verification_addition import (
+    HPV_CLAIM as CLAIM, HPV_CLAIMS as CLAIMS, HPV_GROUP as GROUP, HPV_NOTE as NOTE,
+    HPV_RECORDS as RECORDS, HPV_SLUG as SLUG, HPV_STEM as STEM,
+    without_heat_path_verification_addition)
 from tests.test_cap12_form_mockup_advisory import _client_for, _start, SEED, ELEC_FORM
 from tests.test_cap13_therm01_integrated_part_eligibility import ELEC, MECH, _integrated
 from tests.test_therm01_temperature_difference import _form, _evaluate, URL, elec  # noqa: F401
@@ -96,7 +96,7 @@ def _dump():
 # ---------------------------------------------------------------------------
 
 def test_a01_accessor_builds_the_one_prose_only_group_with_its_assumption_note():
-    view = cap01_guidance.therm01_verification_preparation()
+    view = cap01_guidance.heat_path_verification_preparation()
     assert view is not None and view["group_id"] == GROUP and view["prose_only"] is True
     assert [c["claim_id"] for c in view["claims"]] == list(CLAIMS)
     assert view["title_key"] == STEM + "TITLE" and view["assumption_key"] == STEM + "ASSUMPTION"
@@ -108,12 +108,12 @@ def test_a01_accessor_builds_the_one_prose_only_group_with_its_assumption_note()
 def test_a02_accessor_is_all_or_nothing_on_its_own_copy(monkeypatch, missing):
     real = ui_text.has_string
     monkeypatch.setattr(ui_text, "has_string", lambda key: False if key == STEM + missing else real(key))
-    assert cap01_guidance.therm01_verification_preparation() is None
+    assert cap01_guidance.heat_path_verification_preparation() is None
 
 
 def test_a03_accessor_reads_nothing_and_takes_no_input():
     import inspect
-    assert inspect.signature(cap01_guidance.therm01_verification_preparation).parameters == {}
+    assert inspect.signature(cap01_guidance.heat_path_verification_preparation).parameters == {}
 
 
 # ---------------------------------------------------------------------------
@@ -299,7 +299,7 @@ def test_u03_declarations_screen_and_fields_are_the_governed_set():
 
 def test_p01_pack_minus_exactly_this_addition_equals_the_base_pack():
     pack = _pack()
-    assert _digest(without_therm01_verification_addition(pack)) == _PRE_PACK_DIGEST
+    assert _digest(without_heat_path_verification_addition(pack)) == _PRE_PACK_DIGEST
     groups = [g for g in pack["reference_fundamentals"] if g["group_id"] == GROUP]
     assert len(groups) == 1 and groups[0]["applicable_gap_type"] == "PHYSICAL_FEASIBILITY"
     (claim,) = groups[0]["claims"]

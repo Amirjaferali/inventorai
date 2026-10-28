@@ -425,7 +425,7 @@ Presentation only; it adds no clause to §§1–9A and §10 and changes no calcu
   universal procedure. The same-boundary / same-conditions condition and the comparison step (point 5) are InventorAI-authored
   integration guidance and are attributed as such, never as a NIST claim. Provenance: `electronics_electrical:PR028` (source)
   and `electronics_electrical:PR029` (claim-specific source-use basis), in `domains/domain_provenance.json`; pack group
-  `therm01_verification_measurement_reference_v1` (one claim, `thermal_resistance_measurement_requirements`) in the
+  `heat_path_verification_measurement_reference_v1` (one claim, `heat_path_resistance_measurement_requirements`) in the
   Electronics pack, consumed by this page only (never the report / PDF gap context, CAP-09 or the Validation Plan).
 - **Boundary.** Verification preparation, not validation: no measured-value input, no persistence, no automatic comparison, no
   pass / fail, tolerance, uncertainty, acceptance criterion, calibration or measurement procedure, instrument or sensor
