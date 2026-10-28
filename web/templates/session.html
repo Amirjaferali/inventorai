@@ -346,6 +346,10 @@ body{overflow-wrap:anywhere}
   </div>
   <div class="pc-row pc-do" data-pc-row="do">
   <h3 class="pc-label">{{ t('UI_PC_DO_NOW') }}</h3>
+  {#- CURRENT-QUESTION-GAP-CONTEXT-01: true only inside the existing "answer the
+      current question" branch below, so the question label and the picture
+      marker follow the Compass's own decision (no second predicate). -#}
+  {% set current_question_primary = false %}
   {% if reconstructed_review and reconstructed_review.resume_eligible %}
     <p class="journey-note">{{ t('UI_A1_READ_ONLY') }}</p>
     <form method="POST" action="/session/{{ sid }}/resume">
@@ -362,6 +366,7 @@ body{overflow-wrap:anywhere}
     <p class="journey-note">{{ t('UI_UQTR_JOURNEY_NOTE') }}</p>
     <a class="journey-primary" data-primary-action href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_UQTR_CTA') }}</a>
   {% elif (state.maturity_level < 2 or open_gaps) and question %}
+    {% set current_question_primary = true %}
     <p class="journey-note">{{ t('UI_A1_ANSWER_NOTE') }}</p>
     <a class="journey-primary" data-primary-action href="#response">{{ t('UI_A1_ANSWER_NEXT') }}</a>
   {% elif routed_recovery %}
@@ -742,6 +747,14 @@ body{overflow-wrap:anywhere}
    English fallback. Non-question chrome continues to follow the UI language
    under the unchanged part of D-P6-18. #}
 {% if question %}<p class="question" lang="{{ question_lang }}" dir="{{ question_dir }}">{{ question }}</p>{% endif %}
+{#- CURRENT-QUESTION-GAP-CONTEXT-01: the served question's EXISTING canonical
+    gap identity (``gap_type`` from the same resolved question context that
+    produced the question above), shown as its friendly gap name only while the
+    Compass presents answering this question as the one primary action. Chrome
+    follows the UI language; text only — no button, link, form or raw id. -#}
+{% if question and current_question_primary and gap_type %}
+<p class="question-gap" data-question-gap style="font-size:12px;color:#666;margin:4px 0 8px 0">{{ t('UI_CQG_LABEL') }} <strong style="color:#2c3e50">{{ gap_type|gap_display }}</strong></p>
+{% endif %}
 {# T2-B' (OD-PDVG-12): one short, fixed explanation of why THIS question is
    asked, selected by the exact committed identity the render edge resolved and
    rendered adjacent to the question itself. Absent whenever no eligible
@@ -2330,6 +2343,9 @@ body{overflow-wrap:anywhere}
 <a data-du-action="{{ i.attribute('ref') }}" href="{{ url_for(i.attribute('action'), sid=sid) }}">{{ t('UI_FH_ACTION_' ~ i.attribute('ref')) }}</a> <span style="color:#777">{{ t('UI_FH_ACTION_NOTE') }}</span>
 {%- elif i.content_kind == 'gap' -%}
 {{ i.reference|gap_display }}
+{#- CURRENT-QUESTION-GAP-CONTEXT-01: marks the ONE gap item whose identity is
+    the served question's gap, under the same Compass condition as the label. -#}
+{%- if current_question_primary and question and i.reference == gap_type %} <span data-du-current-question style="color:#2c3e50;font-size:12px">· {{ t('UI_CQG_MARKER') }}</span>{% endif %}
 {%- elif i.content_kind == 'routed_need' -%}
 {{ t('UI_DU_ROUTED_NEED') }} {{ i.attribute('gap_type')|gap_display }}
 {%- elif i.content_kind == 'declared_contradiction' -%}

@@ -5934,6 +5934,12 @@ UI_STRINGS = {
     "UI_DU_LINK_DEPENDENT_PART": {"en": "Relying part", "ar": "الجزء المعتمِد"},
     "UI_DU_LINK_DEPENDS_ON_PART": {"en": "Relies on", "ar": "يعتمد على"},
     "UI_DU_LINK_GAP": {"en": "Question area", "ar": "مجال السؤال"},
+    # CURRENT-QUESTION-GAP-CONTEXT-01: the served question's existing gap
+    # identity shown by its friendly gap name (label beside the question; marker
+    # on the matching picture item). Presentation only; no action or claim.
+    "UI_CQG_LABEL": {"en": "This question is about:", "ar": "موضوع هذا السؤال:"},
+    "UI_CQG_MARKER": {"en": "The current question is about this.",
+                      "ar": "يتعلق السؤال الحالي بهذا البند."},
     "UI_CAP12_LINK_TEXT": {
         "en": "Optional: material and building-method families for a form mock-up",
         "ar": "اختياري: عائلات المواد وطرق البناء لمجسَّم شكلي"},
