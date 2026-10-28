@@ -47,7 +47,7 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 | Q-31 | Capacity fade vs storage SOC, temperature, DOD, rate | QUALIFIED-CANDIDATE | Rate-on-life point from a lead-acid source | cond, verif | mixed — SRC-009 points CALCULATION-GRADE; SRC-008 rate-on-life point IP-UNRESOLVED |
 | Q-32…Q-40 | Converter relations, motor classes, watchdog, interlock, EO trade-offs, hover power, MPPT, eclipse power, vibration isolation | QUEUED | — | — | — |
 
-**Next by the protocol order:** queued Q-32, Q-33, Q-34, Q-35, Q-36 (P2, calculation / condition), before Q-27 (P2, reference only); then P3.
+**Next by the protocol order:** Restoration backlog first — R-01 (Q-02 motor ↔ load), R-02 (Q-23 spring–mass), R-03 (Q-04 support-referenced deflection) at P1; then P2 / P3 restoration items; then queued Q-32…
 
 **Decisions:** DR-1 decided by you (Option C). Still open with you and the Execution Lead: DR-2 (which condition D-7 governs), DR-3 (definition
 of the 28-T2 output claim), DR-4 (whether to keep, narrow or lift H-04). Details in `evidence/decision-records.md`.

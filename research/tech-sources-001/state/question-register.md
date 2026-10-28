@@ -143,3 +143,29 @@ Optics, Materials beyond Q-21 / Q-22 (C5 / C6 DEFER); Software and Medical packs
 | Q-38 | Renewables (Stage 28) | A PV array's current–voltage curve has a maximum power point that shifts with irradiance and temperature; maximum-power-point tracking keeps operation near it | D1 D2 D3 | Q-18 | P3 | QUEUED | 0 |
 | Q-39 | Satellite — "power and eclipse / margins" | During eclipse a spacecraft runs on stored energy, so array and battery are sized for the sunlit load plus recharge; stated assumptions | D1 D2 D3 D7 | Q-19, Q-30 | P3 | QUEUED | 0 |
 | Q-40 | Acoustics / vibration (C7, Mechanical first) | Vibration isolation / transmissibility: transmitted force is reduced only above √2 times the natural frequency; damping trades resonance amplification against high-frequency isolation | D1 D3 D5 | Q-23 | P3 | QUEUED | 0 |
+
+
+## Restoration backlog — IP-clean replacement of lost product-use support (Owner direction 2026-10-29)
+Scope: only the claim portion that lost product-use support in the 2026-10-29 IP audit; the clean portions are not re-researched. A replacement is a
+NEW source record and never rehabilitates the old one (its do-not-reuse marker stays). A replacement restores product use only if source trust,
+claim origin, commercial / product reuse and third-party dependency are all clear and its IP fitness is `CALCULATION-GRADE` (or the clean class for a
+non-calculation claim); a source that derives the claim from the same protected standard or third-party work is not independent. Statuses:
+`QUEUED`, `RESTORED — IP-CLEAN`, `PARTIALLY RESTORED`, `IP-UNRESOLVED`, `EXHAUSTED`. Scientific status of the question is not changed. Priority
+follows (g1) step-3 nearness: P1 Mechanical / Electrical / Sensors, P2 nearer portfolio, P3 later portfolio.
+
+| ID | Q | Established (clean or scientific) | Old unusable source → defect | Exact claim needing a clean replacement | P | Status | Queries |
+|---|---|---|---|---|---|---|---|
+| R-01 | Q-02 | Load-torque requirements over the speed range (scientific, run 1) | SRC-004 → author employee status unconfirmed; SRC-005 → DOE contractor-prepared series | A motor can drive a mechanism only if its torque meets the load's breakaway, accelerating and running torque over the speed range; steady speed = torque balance; reflected inertia divides by the ratio squared | P1 | QUEUED | 0 |
+| R-02 | Q-23 | ω₀ = √(k/m), resonance amplitude governed by damping, SDOF validity limits (scientific, run 15) | SRC-045 → section declared based on ANSI B88.1-1972 | The same SDOF relations, stated independently of ANSI B88.1 and of the Shock and Vibration Handbook | P1 | QUEUED | 0 |
+| R-03 | Q-04 | Moisture, temperature, rate and creep conditions (SRC-014, clean) | SRC-006 → measurement tied to ASTM C393 test conformance | True beam deflection is midspan movement minus the support (end) movements | P1 | QUEUED | 0 |
+| R-04 | Q-06 | Delivered capacity falls with rate and low temperature (SRC-009, clean) | SRC-007 / SRC-008 → DOE handbook rights unknown | Rated capacity is specified at a stated discharge rate, temperature and cutoff voltage; internal resistance lowers terminal voltage under load | P2 | QUEUED | 0 |
+| R-05 | Q-14 | Series-string balancing and protective-device behaviour (SRC-009, clean) | SRC-007 → DOE handbook rights unknown | Cells in series add voltage at the same capacity; cells in parallel add capacity / current capability at the same voltage | P2 | QUEUED | 0 |
+| R-06 | Q-31 | Storage SOC / temperature and cycling DOD / temperature effects on capacity (SRC-009, clean) | SRC-008 → DOE handbook rights unknown | Discharge rate affects battery life | P3 | QUEUED | 0 |
+| R-07 | Q-13 | Inverse-square and far-field conditions (SRC-037 / SRC-038, clean) | SRC-020 → IEEE copyright line on the inspected copy | Field losses exceed the free-space calculation, so practical links need margin | P3 | QUEUED | 0 |
+| R-08 | Q-28 | Obstruction, layout and interference effects (SRC-039, SRC-038, clean) | SRC-040 → points rest on an ITU-R P.1238-based model | Path-loss exponent 2 in free space and larger when obstructed; multipath fading treated as random (Rician / Rayleigh) | P3 | QUEUED | 0 |
+| R-09 | Q-18 | Temperature effect on PV output (SRC-044, clean) | SRC-026 → REFERENCE-ONLY (no stated author; inherited policy) | PV module ratings are given at standard test conditions (stated irradiance and cell temperature) that differ from field conditions | P3 | QUEUED | 0 |
+| R-10 | Q-20 | F = pA already delivered (mechanical:PR006–PR011) | SRC-028 → DOE handbook rights unknown (and the residual never had a clean source) | Pressure on either side of a double-acting piston moves the load either way; the rod reduces the retract-side area; speed = flow ÷ effective area | P3 | QUEUED | 0 |
+| R-11 | Q-24 | — | SRC-034 / SRC-035 → restate mixed-authorship NISTIR 8259A | A baseline set of device cybersecurity capabilities (identification, configuration, data protection, interface access, secure update, state awareness), stated independently of NISTIR 8259A | P3 | QUEUED | 0 |
+| R-12 | Q-19 | — | SRC-027 → screening values defined by ASTM E595 | A vacuum-outgassing screening basis stated independently of ASTM E595 (independence may be impossible: the method is the standard) | P3 | QUEUED | 0 |
+
+Q-22 needs no restoration: its claim stands on SRC-031 / SRC-032 (clean); SRC-029 was supporting only.
