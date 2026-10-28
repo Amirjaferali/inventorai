@@ -2334,6 +2334,8 @@ body{overflow-wrap:anywhere}
 {{ t('UI_DU_ROUTED_NEED') }} {{ i.attribute('gap_type')|gap_display }}
 {%- elif i.content_kind == 'declared_contradiction' -%}
 {{ t('UI_DU_CONTRADICTION') }}
+{%- elif i.content_kind == 'idea_stated_unknown' -%}
+{{ t('UI_FH_QUOTE_IDEA') }} <bdi dir="auto" data-du-text>{{ i.text }}</bdi>
 {%- elif i.text -%}
 <bdi dir="auto" data-du-text>{{ i.text }}</bdi>
 {%- endif -%}

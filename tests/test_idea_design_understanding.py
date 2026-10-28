@@ -413,6 +413,11 @@ def test_screen_journey_renders_the_picture_with_owner_attributes_and_no_interna
         if ref.startswith(("sub-", "cmp-", "ifc-", "rec_")):
             assert ref not in visible
     assert not any(word in visible.lower() for word in INVENTED)
+    # no raw owner enum reaches the inventor: the step's issue_type and the
+    # landscape's source_status phrases stay on the composer's object only
+    for raw in ("owner_unvalidated", "open_gap", "pending_specialist", "pending_evidence",
+                "Source status", "Kind:"):
+        assert raw not in visible, raw
 
 
 def test_the_page_passes_the_handoff_view_once_and_the_compass_is_unchanged(monkeypatch):
@@ -442,6 +447,7 @@ def test_watering_idea_shows_the_stated_unknown_without_inventing_a_design(clien
     statuses = _statuses(section)
     assert statuses["stated_unknowns"] == "PRESENT"
     assert _items(section, "idea_stated_unknown") == ["seed_idea_text"]
+    assert ui_text.text("UI_FH_QUOTE_IDEA", "en") in _visible(section)
     assert statuses["functional_readings"] == "PRESENT"
     assert 'data-du-item="functional_role" data-du-ref="WATERING:' in section
     assert statuses["components"] == "ABSENT" and statuses["interactions"] == "ABSENT"

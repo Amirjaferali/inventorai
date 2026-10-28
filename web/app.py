@@ -676,8 +676,11 @@ _DU_SHOWN_ATTRIBUTES = frozenset((
     "provenance", "validation_status", "validation_state", "disposition",
     "strength", "status", "interpretation_status", "preparation_presence",
     "dependency_kind", "function_text", "prototype_need", "initial_analysis_focus",
-    "criticality", "criticality_authority", "source_status", "required_input",
-    "issue_type", "corrections"))
+    "criticality", "criticality_authority", "required_input", "corrections"))
+# Not shown (still carried on the composer's object): ``issue_type`` (the
+# step's own title already says it; the raw enum would otherwise reach the
+# inventor) and ``source_status`` (the landscape's multi-word English phrases
+# have no catalogue label and would sit untranslated beside Arabic labels).
 _DU_VERBATIM_ATTRIBUTES = frozenset(("function_text", "prototype_need"))
 _DU_NAMED_LINKS = frozenset(("part", "component", "dependent_part", "depends_on_part"))
 # Item kinds whose reference is an owner-minted opaque id (or a fixed name) and
