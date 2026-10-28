@@ -2320,7 +2320,7 @@ body{overflow-wrap:anywhere}
 {% else %}
 <ul style="margin:4px 0;font-size:13px">
 {% for i in s.items %}
-<li data-du-item="{{ i.content_kind }}" data-du-ref="{{ i.reference }}" style="margin:3px 0">
+<li data-du-item="{{ i.content_kind }}"{% if i.content_kind in du_ref_kinds %} data-du-ref="{{ i.reference }}"{% endif %} style="margin:3px 0">
 {%- if i.content_kind == 'functional_role' -%}
 <strong>{{ t('UI_FH_ROLE_' ~ i.attribute('role')) }}</strong>{% if i.attribute('object_key') != 'NONE' %}: {{ t('UI_FH_OBJ_' ~ i.attribute('object_key')) }}{% endif %}
 {%- for q in i.attribute('groundings') %} <q data-du-quote dir="auto">{{ q }}</q>{% endfor %}
@@ -2340,7 +2340,7 @@ body{overflow-wrap:anywhere}
 <span data-du-meta style="color:#777;font-size:12px">
 {%- for name, value in i.attributes %}{% if name in du_shown_attributes and value is not none and value != false %} · {{ t('UI_DU_ATTR_' ~ name|upper) }}: {% if name in du_verbatim_attributes %}<bdi dir="auto">{{ value }}</bdi>{% else %}{{ du_value(name, value) }}{% endif %}{% endif %}{% endfor -%}
 </span>
-{%- for l in i.links %}{% if l.kind in du_named_links and design_understanding.name_of(l.reference) %} <span data-du-link="{{ l.kind }}" style="font-size:12px;color:#555">· {{ t('UI_DU_LINK_' ~ l.kind|upper) }}: <bdi dir="auto">{{ design_understanding.name_of(l.reference) }}</bdi></span>{% elif l.kind == 'gap' %} <span data-du-link="gap" style="font-size:12px;color:#555">· {{ t('UI_DU_LINK_GAP') }}: {{ l.reference|gap_display }}</span>{% else %}<span data-du-link="{{ l.kind }}" data-du-link-ref="{{ l.reference }}" hidden></span>{% endif %}{% endfor %}
+{%- for l in i.links %}{% if l.kind in du_named_links and design_understanding.name_of(l.reference) %} <span data-du-link="{{ l.kind }}" style="font-size:12px;color:#555">· {{ t('UI_DU_LINK_' ~ l.kind|upper) }}: <bdi dir="auto">{{ design_understanding.name_of(l.reference) }}</bdi></span>{% elif l.kind == 'gap' %} <span data-du-link="gap" style="font-size:12px;color:#555">· {{ t('UI_DU_LINK_GAP') }}: {{ l.reference|gap_display }}</span>{% elif l.kind == 'record' %}<span data-du-link="record" data-du-link-ref="{{ l.reference }}" hidden></span>{% endif %}{% endfor %}
 </li>
 {% endfor %}
 </ul>

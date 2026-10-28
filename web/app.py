@@ -680,6 +680,16 @@ _DU_SHOWN_ATTRIBUTES = frozenset((
     "issue_type", "corrections"))
 _DU_VERBATIM_ATTRIBUTES = frozenset(("function_text", "prototype_need"))
 _DU_NAMED_LINKS = frozenset(("part", "component", "dependent_part", "depends_on_part"))
+# Item kinds whose reference is an owner-minted opaque id (or a fixed name) and
+# may travel as a data attribute. References that embed a governed gap token
+# (gaps, routed needs, requirement rows, the next step) never reach the page
+# source: the page shows gap labels only (the friendly-gap-label rule), and
+# machine consumers read the composer's object, not the HTML.
+_DU_REF_KINDS = frozenset((
+    "idea_statement", "answer", "provisional_assumption", "non_answer",
+    "idea_stated_unknown", "acknowledged_unknown", "functional_role", "constraint",
+    "part", "component", "interaction", "declared_contradiction",
+    "engineering_continuation"))
 
 
 def _du_display_value(name, value):
@@ -697,6 +707,7 @@ app.jinja_env.globals["du_value"] = _du_display_value
 app.jinja_env.globals["du_shown_attributes"] = _DU_SHOWN_ATTRIBUTES
 app.jinja_env.globals["du_verbatim_attributes"] = _DU_VERBATIM_ATTRIBUTES
 app.jinja_env.globals["du_named_links"] = _DU_NAMED_LINKS
+app.jinja_env.globals["du_ref_kinds"] = _DU_REF_KINDS
 app.jinja_env.globals["ui_lang"] = "en"
 app.jinja_env.globals["ui_dir"] = "ltr"
 # Stage 18 / CAP-01: expose the bounded CAP-01 presentation-profile resolver through
@@ -9763,13 +9774,19 @@ def _functional_handoff_view(sid, state):
 # UNREADABLE so its section reads UNAVAILABLE while the rest still renders.
 # =============================================================================
 def _du_seed_statement(sid):
-    """The verbatim seed statement: ``None`` when the durable envelope holds
-    none (ABSENT), ``UNREADABLE`` when the envelope cannot be read."""
+    """The verbatim seed statement: ``None`` when the durable envelope exists
+    and holds an empty statement (ABSENT); ``UNREADABLE`` when the envelope
+    cannot be read or the reader returns no envelope at all (a legacy project
+    whose reconstruction columns are NULL, or an absent project) — the same
+    cases the #849 view reports as "could not be read", so the two sections of
+    one picture never disagree about the same row."""
     try:
         inputs = _get_store().load_reconstruction_inputs(sid)
     except Exception:
         return _du.UNREADABLE
-    seed = (inputs or {}).get("seed_idea_text")
+    if not isinstance(inputs, dict):
+        return _du.UNREADABLE
+    seed = inputs.get("seed_idea_text")
     return seed if isinstance(seed, str) and seed.strip() else None
 
 

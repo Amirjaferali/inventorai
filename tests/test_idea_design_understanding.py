@@ -475,10 +475,14 @@ def test_answers_and_non_answers_each_appear_once_with_their_own_axes(client):
                        section.index('data-du-section="constraints"')]
     assert _visible(unknowns).count("I do not know the latch load yet.") == 1
     others = [m.group(1) for m in re.finditer(
-        r'<li data-du-item="([a-z_]+)" data-du-ref="[^"]*"[^>]*>(.*?)</li>', section, re.S)
+        r'<li data-du-item="([a-z_]+)"(?: data-du-ref="[^"]*")?[^>]*>(.*?)</li>', section, re.S)
         if "latch load" in m.group(2)]
     assert sorted(others) == ["non_answer", "requirement"]
-    assert 'data-du-link="requirement_anchor" data-du-link-ref="assertion:rec_' in section
+    # no governed gap token reaches the page source (the friendly-gap-label
+    # rule): gap-derived references stay in the composer's object only
+    for token in ("MECHANISM_COMPLETENESS", "PHYSICAL_FEASIBILITY", "BOUNDARY_AMBIGUITY",
+                  "PROBLEM_MECHANISM_FIT", "ASSUMPTION_INVENTORY", "EXPERTISE_GAP_AWARENESS"):
+        assert token not in section
     assert ui_text.text("UI_DU_VAL_OWNER_STATED", "en") in visible
     assert ui_text.text("UI_DU_VAL_UNVALIDATED", "en") in visible
     assert ui_text.text("UI_DU_VAL_UNKNOWN", "en") in visible
@@ -549,6 +553,18 @@ def test_cold_reload_keeps_the_recorded_sections_and_marks_derived_truth_unavail
     assert statuses["recorded_understanding"] == "PRESENT"
     assert statuses["unresolved_work"] == "UNAVAILABLE"
     assert MECH_ANSWER in _visible(section)
+
+
+def test_a_missing_envelope_reads_unavailable_like_the_handoff_view(monkeypatch):
+    c, _aid = _client_for("du-legacy@example.com")
+    sid = _start(c, SCREEN_EN, MECH)
+    store = webapp._get_store()
+    monkeypatch.setattr(store, "load_reconstruction_inputs", lambda project_id: None)
+    section = _du_section(_page(c, sid))
+    statuses = _statuses(section)
+    assert statuses["original_idea"] == "UNAVAILABLE"
+    # the #849 view reports the same row as unreadable; the two never disagree
+    assert "data-fh-idea-unavailable" in _page(c, sid)
 
 
 def test_a_get_writes_nothing():
