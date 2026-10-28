@@ -114,6 +114,16 @@ further method, exactly one further quantity kind with one exact unit token (`el
 further exact token of the EXISTING `time` kind (`h`, beside `s`, as the second named exception to one-token-per-kind) and
 nothing more — no conversion between `h` and `s`, between `A·h` and `C` or `mA·h`, and no relation of `A·h` to `J`; §13H
 and every earlier section and clause — including §§7–10, §12 and §14 — are unchanged.
+CORRECTION 11: `CORRECTION 11 — BOUNDED ELEVENTH ADMISSION (ELECTRICAL / ELECTRONICS PWM AVERAGE VOLTAGE) —
+OWNER-AUTHORIZED WITH ITS IMPLEMENTATION`. Folded, narrowly, into the one Owner-authorized increment
+`PWM-AVERAGE-VOLTAGE-01`, which implements it in the same pull request under the
+[PWM average-voltage method contract](ELECTRICAL_PWM_AVERAGE_VOLTAGE_METHOD_CONTRACT.md). Applicability: it takes effect
+only on the verified merge of that pull request into `feature/atomic-json-session-persistence`; on its proposal branch it
+is an Owner-authorized proposed amendment. It ADDS §13J and one bullet to §16. It admits exactly one further method on the
+EXISTING quantity kinds and exact unit tokens (`voltage` / `V`, `time` / `s`) and nothing more — no new kind, token,
+dimensionless or duty-cycle quantity, percentage, alias or conversion; §13I and every earlier section and clause —
+including §§7–10, §12 and §14 — are unchanged. General Power Electronics / Motion (28-T3) stays BLOCKED; this admission is
+one claim-level average-waveform relation only.
 
 ---
 
@@ -805,6 +815,67 @@ EXACTLY the following and nothing more.
   unit registry or conversion graph; persistence (§12); provider, AI, external-tool or external-library execution; and
   every other §13 / §13A–§13H exclusion.
 
+## 13J. Bounded eleventh admission — Electrical / Electronics PWM average voltage (Correction 11)
+
+The delivered tenth admission (§13I) is expanded, by the Owner-authorized increment named in the CORRECTION 11 header, to
+EXACTLY the following and nothing more.
+
+- **Owner.** The one existing shared owner. No second owner, solver, conversion graph, unit registry, range policy,
+  waveform model, filter or time-stepping path is created, no 28-T3 owner is created, and the owner acquires no persistence
+  and no scientific authority.
+- **Methods — exactly eleven:** the ten of §13I plus `electrical:pwm_average_voltage` 1.0, whose technical authority stays
+  outside this owner (§3), in its own Electrical / Electronics method-authority artifact `electrical_pwm_average_voltage`
+  version 1. It is the arithmetic time-average over one period of an ideal two-level voltage waveform (the declared supply
+  level during the on-interval, zero otherwise): `v_avg = v_supply × t_on / t_period`. It is not a DC load method, not a
+  converter and not a drive; the DC resistive load current, power and energy methods are unchanged and no result is
+  transferred between them and this method.
+- **Consumers — exactly eleven:** the existing ten and one PWM average-voltage consumer. No consumer imports another (it
+  keeps its own display rule rather than importing a DC load consumer), and no method-authority artifact loads another at
+  execution.
+- **Quantity kinds and exact unit tokens: none added.** The method uses the existing `voltage` / `V` (input `v_supply` and
+  output `v_avg`; record `dcu:U011`) and the existing `time` / `s` (inputs `t_on` and `t_period`; record `dcu:U015`),
+  unchanged. No dimensionless or duty-cycle kind, no percentage token, no alias, case folding, dimensional equivalence or
+  conversion is added: the ratio `t_on / t_period` exists only inside the method's product, `ms`, `µs`, `Hz`, `kHz`, `mV`,
+  `kV` and `%` are unknown tokens, and the `time` kind keeps exactly the two tokens of §13I (this method binds `s` only).
+- **Condition vocabulary.** Unchanged. The new method declares only the existing `greater_than_zero` on `t_period` and the
+  existing `within_zero_and_role` on `t_on` bound to `t_period` (inclusive at both ends, so `t_on = 0` and
+  `t_on = t_period` are admitted); its input representation limits, not-negative-supply refusal and the ordered exact-decimal
+  screening (supply level, period, on-time, on-time against period) are method-authority content, checked by its consumer
+  from the exact decimal input before any binary rounding (the adapter refuses a negative supply level, a non-positive
+  period, a negative on-time or an on-time above the period again as an integrity failure). No result range is declared;
+  the bound `v_avg ≤ v_supply` is defended by the adapter and the consumer, never an owner range policy.
+- **Nonnegative-voltage convention.** `v_supply ≥ 0` only: the admitted waveform switches between zero and the declared
+  supply level. No signed or bipolar waveform, no polarity inference, no reference-direction model and no reuse of the DC
+  load methods' passive sign convention; a signed or bipolar waveform would need its own separate bounded qualification.
+- **Method-local binding and wiring.** One additional immutable, application-wired binding; each consumer holds exactly
+  its own binding. No registry, discovery, dynamic module path or request-selected method.
+- **Versions.** The shared-owner artifact moves to content version `11` and the implementation to `1.10.0`. One new
+  source-use record (`dcu:SU019`, the NASA STI snapshot of the method's own `pwm:SU001`, resting on the TECH-SOURCES-001
+  research-stream inspections SRC-042 and SRC-018, Lead-supplied for this method) keeps the §9 source and inspection
+  requirements; every content-version-10 record is unchanged. The CAP-13 NASA STI snapshots `dcu:SU002`, `dcu:SU005` and
+  `dcu:SU016` are not extended to this method.
+- **Numerical policy.** §10 applies unchanged: the owner still receives typed binary64 numbers and parses no string. The
+  new method's decimal bridge (a strict signed decimal grammar of up to nine integer and nine fractional digits for all
+  three inputs, exact-decimal checks of `v_supply ≥ 0`, then `t_period > 0`, then `t_on ≥ 0`, then `t_on ≤ t_period`, one
+  correctly rounded conversion per input), its binary acceptance (exact rational `v_supply × t_on / t_period` rounded once;
+  exact zero for a zero supply level or on-time, never a negative zero; exactly `v_supply` for an on-time equal to the
+  period; a nonzero result finite, positive and within `2^-52` of the exact result), its decimal-reference acceptance
+  (within a relative `2^-50` of the exact decimal value and not above the binary64 supply level) and its display (the exact
+  value rounded once to 12 significant digits, half to even, labelled exact or rounded) are method-authority content held in
+  its consumer, adapter and contract; they are NOT a generic owner policy and change nothing for the other ten methods. A
+  failure is `FAILURE / EXECUTION_INTEGRITY_FAILURE` with no numerical payload.
+- **Existing methods preserved.** The two-support, THERM-01, planar-moment, rotational-load, TMP36, DC load current, DC
+  load power, DC load energy, planar required force and DC constant-current charge methods, their authority artifacts,
+  semantics, pins and user-facing behaviour stay unchanged; bounded updates to assertions on the owner content version,
+  the implementation version, the closed inventory and the binding count, caused only by this admission, are expected and
+  allowed.
+- **Still excluded:** a twelfth method or consumer; owner ranges; string parsing in the owner; any conversion or
+  duty-cycle / percentage quantity; any equivalent-DC, load-response, motor-speed, torque, heating, average-power, RMS,
+  current, ripple, filter, switching-frequency, time-constant, free-wheeling, driver, switching-device, dead-time or loss
+  result; any converter (buck, boost or other) result; any bipolar waveform; any result transfer between calculations;
+  general 28-T3 activation; a generic solver, waveform model, unit registry or conversion graph; persistence (§12);
+  provider, AI, external-tool or external-library execution; and every other §13 / §13A–§13I exclusion.
+
 ## 14. Required guard strategy for a future implementation
 
 - independent expected numerical results;
@@ -858,6 +929,8 @@ EXACTLY the following and nothing more.
 - Correction 09 (§13H) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 - Correction 10 (§13I) is Owner-authorized together with its bounded implementation, under the same proportionate,
+  risk-appropriate verification.
+- Correction 11 (§13J) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 
 ## 17. Non-authorization (restated)

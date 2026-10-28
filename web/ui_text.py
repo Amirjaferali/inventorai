@@ -7863,6 +7863,165 @@ UI_STRINGS = {
     "UI_DCQ_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # PWM-AVERAGE-VOLTAGE-01 — PWM Average Voltage, Slice 1 (method contract §9).
+    # The English declaration, screen and disclosure entries are pinned equal to
+    # the artifact by test and the Arabic ones to contract §9A. Nothing here
+    # states an equivalent DC voltage, load response, power, RMS value, current,
+    # ripple, motor, filter, component, suitability or safety; the result is the
+    # waveform average in V and no unit is converted.
+    "UI_PWM_LINK_TEXT": {
+        "en": "Optional: average of one ideal repeating two-level (PWM) voltage waveform you declare (V_avg = V_supply × t_on / T)",
+        "ar": "اختياري: متوسط موجة جهد متكررة مثالية ذات مستويين (PWM) تصرّح بها (V_avg = V_supply × t_on / T)"},
+    "UI_PWM_LINK_NOTE": {
+        "en": "An advisory calculation from a supply level, an on-time and a period you declare. It is not saved, it is the waveform average only, not an equivalent DC voltage, a load response, a power or a current, and it is never required.",
+        "ar": "حساب إرشادي من مستوى تغذية وفترة تشغيل ودورة تصرّح بها أنت. لا يُحفَظ، وهو متوسط الموجة فقط، وليس جهدًا مستمرًا مكافئًا ولا استجابة حِمل ولا قدرة ولا تيارًا، ولا يكون مطلوبًا أبدًا."},
+    "UI_PWM_TITLE": {
+        "en": "Average of this PWM voltage waveform (optional, non-binding)",
+        "ar": "متوسط موجة جهد PWM هذه (اختياري، غير مُلزِم)"},
+    "UI_PWM_INTRO": {
+        "en": "This page is optional. If you declare one ideal repeating voltage waveform that equals one supply level for part of each cycle and zero for the rest, and you know that supply level, the on-time and the period, it shows the time-average of that waveform over one cycle: V_avg = V_supply × t_on / T. It does not tell you how any load responds to the waveform, what current or power results, or whether anything is suitable. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. إذا صرّحت بموجة جهد متكررة مثالية واحدة تساوي مستوى تغذية واحدًا في جزء من كل دورة والصفر في بقيتها، وتعرف ذلك المستوى وفترة التشغيل والدورة، فهي تعرض المتوسط الزمني لتلك الموجة على مدى دورة واحدة: V_avg = V_supply × t_on / T. ولا تخبرك بكيفية استجابة أي حِمل للموجة، ولا بالتيار أو القدرة الناتجة، ولا بملاءمة أي شيء. لا يُحفَظ شيء."},
+    "UI_PWM_SCOPE_NOTE": {
+        "en": "This optional calculation is available for an Electrical / Electronics-focus project or for its declared Electrical / Electronics part in a valid durable integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that your waveform is ideal or that the average means anything for your load; you must confirm the method's conditions and screening items. The result is an UNVALIDATED waveform average, not a measurement, an equivalent DC voltage, a load response, a power, a current, a component choice or a safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله كهربائي/إلكتروني، أو لجزئه الكهربائي/الإلكتروني المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء أن موجتك مثالية أو أن المتوسط يعني شيئًا لحِملك؛ يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة متوسط موجة غير مُتحقَّق منه (UNVALIDATED)، وليست قياسًا ولا جهدًا مستمرًا مكافئًا ولا استجابة حِمل ولا قدرة ولا تيارًا ولا اختيارًا لمكوّن ولا حكمًا بشأن السلامة."},
+    "UI_PWM_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_PWM_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_PWM_DECL_IDEAL_TWO_LEVEL_WAVEFORM": {
+        "en": "The waveform being averaged is an ideal two-level voltage: during the on-interval it equals the declared supply level exactly, and for the rest of the period it equals zero exactly; the switch is treated as fully on or fully off, with no rise, fall, dead time, drop, overshoot, ringing or negative excursion; the declared supply level is zero or positive and the waveform never goes below zero.",
+        "ar": "الموجة التي يُحسب متوسطها جهد مثالي ذو مستويين: خلال فترة التشغيل تساوي مستوى التغذية المصرّح به تمامًا، وفي بقية الدورة تساوي الصفر تمامًا؛ ويُعامل المفتاح على أنه في وضع التشغيل التام أو الإيقاف التام، دون زمن صعود أو هبوط أو زمن ميت (dead time) أو هبوط جهد أو تجاوز أو رنين أو انحراف سالب؛ ومستوى التغذية المصرّح به صفر أو موجب، ولا تنزل الموجة أبدًا تحت الصفر."},
+    "UI_PWM_DECL_FIXED_PERIOD_AND_ON_TIME": {
+        "en": "The waveform repeats with one fixed period and one fixed on-time, both the same in every cycle; no varying, modulated, bursting, drifting or one-off timing is being averaged.",
+        "ar": "تتكرر الموجة بدورة واحدة ثابتة وفترة تشغيل واحدة ثابتة، وكلتاهما نفسها في كل دورة؛ ولا يُحسب متوسط أي توقيت متغير أو مُعدَّل أو متقطع أو منحرف أو غير متكرر."},
+    "UI_PWM_DECL_DECLARED_VALUES": {
+        "en": "The supply level, on-time and period entered are the inventor's own values for this one waveform, taken from their own reading, documentation or plan; InventorAI did not measure or check them and infers none of them from any component, circuit or project text.",
+        "ar": "مستوى التغذية وفترة التشغيل والدورة المُدخلة قيمك أنت لهذه الموجة الواحدة، مأخوذة من قراءتك أو من وثائقك أو من خطتك؛ ولم يقسها InventorAI ولم يتحقق منها، ولا يستنتج أيًّا منها من أي مكوّن أو دائرة أو نص في المشروع."},
+    "UI_PWM_DECL_WAVEFORM_AVERAGE_WANTED": {
+        "en": "The quantity wanted is the arithmetic time-average of that declared waveform over one cycle, and nothing more: not an equivalent steady DC voltage, not the voltage a load experiences, not a motor speed, heating effect, average power, RMS voltage, current, torque, ripple or filtered output, and not a statement about how any load responds.",
+        "ar": "الكمية المطلوبة هي المتوسط الزمني الحسابي لتلك الموجة المصرّح بها على مدى دورة واحدة، ولا شيء أكثر: ليست جهدًا مستمرًا مكافئًا ثابتًا، ولا الجهد الذي يتعرض له حِمل، ولا سرعة محرك ولا أثر تسخين ولا متوسط قدرة ولا جهدًا فعّالًا (RMS) ولا تيارًا ولا عزمًا ولا تموّجًا (ripple) ولا خرجًا مرشَّحًا، ولا عبارة عن كيفية استجابة أي حِمل."},
+    "UI_PWM_SCREEN_STEM": {
+        "en": "Is the switched circuit, its power source or the load it drives any of the following? Answer each item yes or no.",
+        "ar": "هل الدائرة المبدَّلة، أو مصدر تغذيتها، أو الحِمل الذي تقوده، أيٌّ مما يلي؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_PWM_SCREEN_MAINS_OR_HIGH_VOLTAGE": {
+        "en": "Mains or high voltage",
+        "ar": "جهد الشبكة الكهربائية (mains) أو جهد عالٍ"},
+    "UI_PWM_SCREEN_BATTERY_OR_STORAGE_CELL": {
+        "en": "A battery or energy-storage cell",
+        "ar": "بطارية أو خلية لتخزين الطاقة"},
+    "UI_PWM_SCREEN_FIRE_OR_OVERHEATING": {
+        "en": "Fire, ignition or overheating risk",
+        "ar": "خطر حريق أو اشتعال أو سخونة زائدة"},
+    "UI_PWM_SCREEN_MEDICAL_OR_LIFE_SUPPORTING": {
+        "en": "Medical or life-supporting use",
+        "ar": "استخدام طبي أو داعم للحياة"},
+    "UI_PWM_SCREEN_VEHICLE_OR_AEROSPACE": {
+        "en": "Vehicle or aerospace use",
+        "ar": "استخدام في المركبات أو في الطيران والفضاء (aerospace)"},
+    "UI_PWM_SCREEN_SAFETY_FUNCTION": {
+        "en": "A safety function, alarm, protection or shut-off",
+        "ar": "وظيفة سلامة أو إنذار أو حماية أو إيقاف"},
+    "UI_PWM_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_PWM_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_PWM_SCREEN_NOTE": {
+        "en": "Answering no to all six items only means this bounded calculation may proceed; it never means that anything is safe.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود الستة تعني فقط أنه يمكن متابعة هذا الحساب المحدود؛ ولا تعني أبدًا أن أي شيء آمن."},
+    "UI_PWM_VALUE_NOTE": {
+        "en": "Enter plain decimal numbers: the supply level V_supply in volts, zero or more; the on-time t_on in seconds and the period T in seconds, with t_on no larger than T and T greater than zero; at most nine digits before the point and nine after it. These digit limits only bound what can be typed; they are not physical limits. InventorAI does not measure your waveform, accepts no percentage or frequency, and converts no millivolts, milliseconds, microseconds or hertz.",
+        "ar": "أدخل أرقامًا عشرية بسيطة: مستوى التغذية V_supply بالفولت، صفرًا أو أكثر؛ وفترة التشغيل t_on بالثواني والدورة T بالثواني، على ألا تزيد t_on على T وأن تكون T أكبر من الصفر؛ مع تسعة أرقام على الأكثر قبل الفاصلة وتسعة بعدها. حدود الأرقام هذه تقيّد ما يمكن كتابته فقط؛ وليست حدودًا فيزيائية. لا يقيس InventorAI موجتك، ولا يقبل نسبة مئوية أو ترددًا، ولا يحوّل المللي فولت أو المللي ثانية أو الميكرو ثانية أو الهرتز."},
+    "UI_PWM_FIELD_V_SUPPLY": {
+        "en": "Your declared supply level during the on-interval (V_supply) — volt (V)",
+        "ar": "مستوى التغذية الذي تصرّح به خلال فترة التشغيل (V_supply) — فولت (V)"},
+    "UI_PWM_FIELD_T_ON": {
+        "en": "Your declared on-time in each cycle (t_on) — second (s)",
+        "ar": "فترة التشغيل التي تصرّح بها في كل دورة (t_on) — ثانية (s)"},
+    "UI_PWM_FIELD_T_PERIOD": {
+        "en": "Your declared period of one cycle (T) — second (s)",
+        "ar": "دورة الموجة الواحدة التي تصرّح بها (T) — ثانية (s)"},
+    "UI_PWM_SUBMIT": {
+        "en": "Show the waveform average",
+        "ar": "اعرض متوسط الموجة"},
+    "UI_PWM_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_PWM_RESULT_V": {
+        "en": "Average of this PWM voltage waveform over one cycle (V_avg) — volt (V); never negative and never above V_supply",
+        "ar": "متوسط موجة جهد PWM هذه على مدى دورة واحدة (V_avg) — فولت (V)؛ لا يكون سالبًا أبدًا ولا يزيد على V_supply"},
+    "UI_PWM_EXACT": {
+        "en": "Exact value of V_supply × t_on / T for the values you entered.",
+        "ar": "قيمة V_supply × t_on / T الدقيقة للقيم التي أدخلتها."},
+    "UI_PWM_ROUNDED": {
+        "en": "Rounded to 12 significant digits; the exact value of V_supply × t_on / T has more digits.",
+        "ar": "مقرَّبة إلى 12 رقمًا معنويًا؛ للقيمة الدقيقة لـ V_supply × t_on / T أرقام أكثر."},
+    "UI_PWM_NOT_DC_EQUIVALENT": {
+        "en": "This is the arithmetic average of the declared ideal waveform only: not an equivalent steady DC voltage, not the voltage a load necessarily experiences, and not a motor speed, heating effect, average power, RMS voltage, current, torque, ripple or filtered output. Whether a load responds approximately to this average depends on its dynamics and implementation, which InventorAI has not established.",
+        "ar": "هذا هو المتوسط الحسابي للموجة المثالية المصرّح بها فقط: ليس جهدًا مستمرًا مكافئًا ثابتًا، ولا الجهد الذي يتعرض له حِمل بالضرورة، ولا سرعة محرك ولا أثر تسخين ولا متوسط قدرة ولا جهدًا فعّالًا (RMS) ولا تيارًا ولا عزمًا ولا تموّجًا (ripple) ولا خرجًا مرشَّحًا. وما إذا كان حِمل يستجيب تقريبًا لهذا المتوسط يعتمد على ديناميكياته وتنفيذه، وهو ما لم يثبته InventorAI."},
+    "UI_PWM_NO_TRANSFER": {
+        "en": "Do not enter V_avg into the DC resistive load current, power or energy calculations as though it were a steady DC voltage: for a switched resistive load this method does not establish the average power as V_avg² / R, and no result is carried from one calculation into another.",
+        "ar": "لا تُدخل V_avg في حسابات تيار الحِمل المقاوم على جهد مستمر أو قدرته أو طاقته كما لو كان جهدًا مستمرًا ثابتًا: فللحِمل المقاوم المبدَّل بـ PWM لا تثبت هذه الطريقة أن متوسط القدرة يساوي V_avg² / R، ولا تُنقل أي نتيجة من حساب إلى آخر."},
+    "UI_PWM_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_PWM_ECHO_HEADING": {
+        "en": "The values and stated assumptions you entered",
+        "ar": "القيم والافتراضات المصرّح بها التي أدخلتها"},
+    "UI_PWM_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_PWM_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_PWM_SOURCES_NOTE": {
+        "en": "The average value of a periodic two-level voltage from NASA TN D-5643, Design and Performance Analysis of a Medium-Power DC-DC Converter (NASA Lewis Research Center, 1970); the inductive-load context only from NASA Marshall Space Flight Center, Traction Drive System Design Considerations for a Lunar Roving Vehicle (1969); the volt and the second from NIST Special Publication 811. V_avg = V_supply × t_on / T is InventorAI's own restatement; no NASA text, figure, circuit or example is reproduced. NASA and NIST do not endorse InventorAI or this calculation.",
+        "ar": "القيمة المتوسطة لجهد دوري ذي مستويين من NASA TN D-5643، ‏Design and Performance Analysis of a Medium-Power DC-DC Converter ‏(NASA Lewis Research Center، 1970)؛ وسياق الحِمل الحثّي فقط من NASA Marshall Space Flight Center، ‏Traction Drive System Design Considerations for a Lunar Roving Vehicle ‏(1969)؛ والفولت والثانية من NIST Special Publication 811. وV_avg = V_supply × t_on / T إعادة صياغة من InventorAI؛ ولا يُستنسخ أي نص أو شكل أو دائرة أو مثال من NASA. لا تؤيّد NASA ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_PWM_DISCLOSURE": {
+        "en": "For the ideal repeating voltage waveform you declared, InventorAI calculated its time-average over one cycle: V_avg = V_supply × t_on / T, in volts. This is the average of this PWM voltage waveform and nothing more.\n\nThe supply level, on-time and period are your own declared values. InventorAI did not measure them. The waveform is taken as an ideal switch: either exactly your declared supply level or exactly zero, with one fixed period and one fixed on-time in every cycle, and it never goes below zero.\n\nNo physical load response is inferred. Whether a load responds approximately to this average depends on that load's dynamics and on how the switching is implemented, which InventorAI has not established. For an inductive load such as a motor winding, the recorded context is that the switching period must be much shorter than the winding's electrical time constant and that a free-wheeling path keeps the current continuous; that is context for inductive loads only, not a condition of this average.\n\nNo current, ripple, average power, RMS voltage, torque, speed, heating or temperature is calculated, and no switching frequency, filter, free-wheeling component, driver or switching device is recommended or checked.\n\nDo not enter V_avg into the DC resistive load current, power or energy calculations as though it were a steady DC voltage: for a switched resistive load this method does not establish the average power as V_avg² / R, and no result is carried from one calculation into another.\n\nThe value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement. Next engineering need: whether this average means anything for your load, what current, power, ripple and heating actually result, and whether the switch, wiring and supply are rated for them all remain unverified, and must be checked by measurement or a qualified person before any reliance. The result is preliminary, advisory, UNVALIDATED and not evidence.\n\nReference source material: NASA TN D-5643, Design and Performance Analysis of a Medium-Power DC-DC Converter (NASA Lewis Research Center, 1970), for the average value of a periodic two-level voltage, and NASA Marshall Space Flight Center, Traction Drive System Design Considerations for a Lunar Roving Vehicle (1969), for the inductive-load context only. V_avg = V_supply × t_on / T is InventorAI's own restatement, and no NASA text, figure, circuit or example is reproduced. NASA does not endorse InventorAI or this calculation.",
+        "ar": "لموجة الجهد المتكررة المثالية التي صرّحت بها، حسب InventorAI متوسطها الزمني على مدى دورة واحدة: V_avg = V_supply × t_on / T، بالفولت. هذا هو متوسط موجة جهد PWM هذه ولا شيء أكثر.\n\nمستوى التغذية وفترة التشغيل والدورة قيم صرّحت بها أنت. لم يقسها InventorAI. وتُؤخذ الموجة على أنها مفتاح مثالي: إما مستوى التغذية الذي صرّحت به تمامًا وإما الصفر تمامًا، بدورة واحدة ثابتة وفترة تشغيل واحدة ثابتة في كل دورة، ولا تنزل أبدًا تحت الصفر.\n\nلا تُستنتج أي استجابة لحِمل فيزيائي. وما إذا كان حِمل يستجيب تقريبًا لهذا المتوسط يعتمد على ديناميكيات ذلك الحِمل وعلى كيفية تنفيذ التبديل، وهو ما لم يثبته InventorAI. وللحِمل الحثّي مثل ملف محرك، السياق المسجَّل هو أن دورة التبديل يجب أن تكون أقصر بكثير من الثابت الزمني الكهربائي للملف، وأن مسار الدوران الحر (free-wheeling) يُبقي التيار متصلًا؛ وهذا سياق للأحمال الحثّية فقط، وليس شرطًا لهذا المتوسط.\n\nلا يُحسب أي تيار ولا تموّج (ripple) ولا متوسط قدرة ولا جهد فعّال (RMS) ولا عزم ولا سرعة ولا تسخين ولا درجة حرارة، ولا يُوصى بأي تردد تبديل أو مرشِّح أو مكوّن دوران حر أو مُشغِّل (driver) أو عنصر تبديل ولا يُفحص.\n\nلا تُدخل V_avg في حسابات تيار الحِمل المقاوم على جهد مستمر أو قدرته أو طاقته كما لو كان جهدًا مستمرًا ثابتًا: فللحِمل المقاوم المبدَّل بـ PWM لا تثبت هذه الطريقة أن متوسط القدرة يساوي V_avg² / R، ولا تُنقل أي نتيجة من حساب إلى آخر.\n\nتُعرض القيمة بدقة حين يمكن ذلك؛ وإلا تُقرَّب إلى 12 رقمًا معنويًا ويُشار إلى أنها مقرَّبة. الأرقام ناتجة عن إدخالك؛ وليست دقة أي قياس. الحاجة الهندسية التالية: ما إذا كان هذا المتوسط يعني شيئًا لحِملك، وما التيار والقدرة والتموّج والتسخين الناتجة فعلًا، وما إذا كان المفتاح والأسلاك والتغذية مُصنَّفة لها — كلها تبقى غير مُتحقَّق منها، ويجب فحصها بالقياس أو بواسطة شخص مؤهل قبل أي اعتماد. هذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا.\n\nالمراجع: NASA TN D-5643، ‏Design and Performance Analysis of a Medium-Power DC-DC Converter ‏(NASA Lewis Research Center، 1970)، للقيمة المتوسطة لجهد دوري ذي مستويين؛ وNASA Marshall Space Flight Center، ‏Traction Drive System Design Considerations for a Lunar Roving Vehicle ‏(1969)، لسياق الحِمل الحثّي فقط. وV_avg = V_supply × t_on / T إعادة صياغة من InventorAI، ولا يُستنسخ أي نص أو شكل أو دائرة أو مثال من NASA. لا تؤيّد NASA InventorAI ولا هذا الحساب."},
+    "UI_PWM_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_PWM_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_PWM_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. تتطلب هذه الحالة مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_PWM_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_PWM_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "V_supply, t_on and T must be written as plain decimal numbers in volts and seconds, with at most one leading minus sign, at most nine digits before the point and at most nine after it; no percentage, frequency or unit suffix. Nothing was calculated.",
+        "ar": "يجب كتابة V_supply وt_on وT أرقامًا عشرية بسيطة بالفولت والثواني، مع إشارة سالبة واحدة على الأكثر في البداية، وتسعة أرقام على الأكثر قبل الفاصلة وتسعة على الأكثر بعدها؛ دون نسبة مئوية أو تردد أو لاحقة وحدة. لم يُحسب شيء."},
+    "UI_PWM_OUTCOME_VOLTAGE_NEGATIVE": {
+        "en": "The supply level V_supply must be zero volts or more: this method covers a waveform that switches between zero and the supply level only. Nothing was calculated.",
+        "ar": "يجب أن يكون مستوى التغذية V_supply صفر فولت أو أكثر: تغطي هذه الطريقة موجة تتبدل بين الصفر ومستوى التغذية فقط. لم يُحسب شيء."},
+    "UI_PWM_OUTCOME_PERIOD_NOT_POSITIVE": {
+        "en": "The period T must be greater than zero seconds. Nothing was calculated.",
+        "ar": "يجب أن تكون الدورة T أكبر من صفر ثانية. لم يُحسب شيء."},
+    "UI_PWM_OUTCOME_ON_TIME_NEGATIVE": {
+        "en": "The on-time t_on must be zero seconds or more. Nothing was calculated.",
+        "ar": "يجب أن تكون فترة التشغيل t_on صفر ثانية أو أكثر. لم يُحسب شيء."},
+    "UI_PWM_OUTCOME_ON_TIME_EXCEEDS_PERIOD": {
+        "en": "The on-time t_on cannot be larger than the period T. Nothing was calculated.",
+        "ar": "لا يمكن أن تزيد فترة التشغيل t_on على الدورة T. لم يُحسب شيء."},
+    "UI_PWM_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_PWM_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_PWM_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the volt (V) and the second (s) and gives only the volt (V). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة الفولت (V) والثانية (s) فقط، ولا تعطي إلا الفولت (V). لم يُحسب شيء."},
+    "UI_PWM_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

@@ -520,13 +520,13 @@ def test_success_packaging_units_sources_and_identity():
     assert [q["source_ref"] for q in result["source_qualification"]] == ["DOE-CHG-S1"]
     assert result["source_qualification"][0]["source_use_policy_ref"] == "dcu:SU018"
     assert result["validation_status"] == "UNVALIDATED"
-    assert (result["artifact_version"], result["implementation_version"]) == ("10", "1.9.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("11", "1.10.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_adds_exactly_the_charge_kind_and_two_tokens():
     assert ("electrical:dc_constant_current_charge", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 10
+    assert len(dc.ADMITTED_METHODS) == 11
     assert dc.ADMITTED_QUANTITY_KINDS >= {"electric_charge", "time", "electric_current"}
     assert len(dc.ADMITTED_QUANTITY_KINDS) == 15 and len(dc.ADMITTED_UNIT_TOKENS) == 17
     assert dc.ADMITTED_UNIT_TOKENS == {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
@@ -619,7 +619,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.dc_constant_current_charge_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._DC_CHARGE_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 10
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 11
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("import dc_constant_current_charge", "engine.dc_", "engine/dc_",
                    "dc_constant_current_charge_method.", "dc_constant_current_charge import",
@@ -686,7 +686,7 @@ def test_owner_artifact_tamper_fails_closed(tmp_path, name):
 
 def test_owner_v9_records_are_unchanged_by_the_tenth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "10"
+    assert data["artifact_version"] == "11"
     v9 = {"quantity_kinds": data["quantity_kinds"][:14],
           "unit_records": data["unit_records"][:15],
           "source_use_policies": data["source_use_policies"][:16],
@@ -695,9 +695,9 @@ def test_owner_v9_records_are_unchanged_by_the_tenth_admission():
     assert hashlib.sha256(canonical.encode()).hexdigest() == V9_RECORDS_DIGEST
     assert [k["quantity_kind"] for k in data["quantity_kinds"][14:]] == ["electric_charge"]
     assert [u["record_id"] for u in data["unit_records"][15:]] == ["dcu:U016", "dcu:U017"]
-    assert [p["record_id"] for p in data["source_use_policies"][16:]] == [
+    assert [p["record_id"] for p in data["source_use_policies"][16:18]] == [
         "dcu:SU017", "dcu:SU018"]
-    assert [m["method_id"] for m in data["methods"][9:]] == [method.METHOD_ID]
+    assert [m["method_id"] for m in data["methods"][9:10]] == [method.METHOD_ID]
     policies = {p["record_id"]: p for p in data["source_use_policies"]}
     assert "dcq:SU002" in policies["dcu:SU017"]["inspected_content"]
     assert "dcu:U016 (h) and dcu:U017 (A·h) only" in policies["dcu:SU017"]["inspected_content"]
@@ -708,7 +708,7 @@ def test_owner_v9_records_are_unchanged_by_the_tenth_admission():
     for banned in ("electric_charge_reference_v1", "charge_current_time_reference",
                    "battery capacity", "battery runtime", "state of charge", "mA·h"):
         assert banned not in text, banned
-    assert "Content version 10 admits exactly ten methods" in data["governance_note"]
+    assert "Content version 11 admits exactly eleven methods" in data["governance_note"]
 
 
 # ==========================================================================
@@ -1222,7 +1222,7 @@ def test_nothing_is_persisted_and_no_request_leaks_into_the_next(elec, over):
 def test_no_report_export_api_or_safety_surface():
     src = Path(webapp.__file__).read_text(encoding="utf-8")
     start = src.index("# DC-CONSTANT-CURRENT-CHARGE-01 — DC Constant-Current Charge")
-    section = src[start:src.index("# Manufacturing Evidence Capture", start)]
+    section = src[start:src.index("# PWM-AVERAGE-VOLTAGE-01 —", start)]
     for banned in ("safety_signal", "SafetySignal(", "_get_store()", "append_",
                    "SESSION_STORE[", "deliverable", "pdf", "export", "/api/",
                    "_therm01", "_cap13", "_tmp36", "_dcl.", "_dcp.", "_dce.", "_dce_",

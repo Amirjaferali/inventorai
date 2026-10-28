@@ -244,7 +244,7 @@ def test_success_packaging_units_sources_and_identity():
                                       "provenance": "CALCULATED"}
     assert (result["method_id"], result["method_version"]) == (
         "cap13:planar_required_force", "1.0")
-    assert (result["artifact_version"], result["implementation_version"]) == ("10", "1.9.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("11", "1.10.0")
     assert sorted(u["record_id"] for u in result["unit_records"]) == [
         "dcu:U001", "dcu:U002", "dcu:U006"]
     assert [q["source_ref"] for q in result["source_qualification"]] == [
@@ -258,11 +258,11 @@ def test_success_packaging_units_sources_and_identity():
 
 def test_closed_inventory_and_versions():
     assert ("cap13:planar_required_force", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 10
+    assert len(dc.ADMITTED_METHODS) == 11
     assert len(dc.ADMITTED_QUANTITY_KINDS) == 15 and len(dc.ADMITTED_UNIT_TOKENS) == 17
-    assert dc.IMPLEMENTATION_VERSION == "1.9.0"
+    assert dc.IMPLEMENTATION_VERSION == "1.10.0"
     data = dc.load_artifact()
-    assert data["artifact_version"] == "10"
+    assert data["artifact_version"] == "11"
     record = _record(data)
     assert [(r["role"], r["quantity_kind"], r["unit_token"])
             for r in record["input_roles"]] == [("M_target", "moment", "N·mm"),
@@ -322,7 +322,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.cap13_planar_required_force_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._CAP13_REQUIRED_FORCE_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 10
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 11
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("cap13_planar_required_force", "cap13_content_config",
                    "import fractions", "sqlite"):

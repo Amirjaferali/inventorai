@@ -49,6 +49,8 @@ from engine import dc_resistive_load_energy_method as _dce_method  # DC Resistiv
 from engine import dc_resistive_load_energy as _dce  # DC Resistive Load Energy Slice 1 consumer
 from engine import dc_constant_current_charge_method as _dcq_method  # DC Constant-Current Charge Slice 1 method
 from engine import dc_constant_current_charge as _dcq  # DC Constant-Current Charge Slice 1 consumer
+from engine import pwm_average_voltage_method as _pwm_method  # PWM Average Voltage Slice 1 method
+from engine import pwm_average_voltage as _pwm  # PWM Average Voltage Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7262,6 +7264,7 @@ def show_session(sid):
         dc_load_power_link=_dcp_eligible(sid),
         dc_load_energy_link=_dce_eligible(sid),
         dc_charge_link=_dcq_eligible(sid),
+        pwm_average_voltage_link=_pwm_eligible(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -16440,6 +16443,150 @@ def dc_constant_current_charge_post(sid):
         return _render_dcq(sid, status=400, declared_part=part, error="UI_DCQ_ERR_REQUEST")
     return _render_dcq(sid, declared_part=part, captured=captured,
                        evaluation=_dcq.evaluate(captured, _DC_CHARGE_BINDING))
+
+
+# =============================================================================
+# PWM-AVERAGE-VOLTAGE-01 — PWM Average Voltage, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory, non-binding calculation of the arithmetic time-average
+# V_avg = V_supply x t_on / T, over one period, of ONE inventor-declared ideal
+# two-level voltage waveform (method contract §1, §7). The consumer
+# (`engine/pwm_average_voltage.py`) owns capture, the ordered exact-decimal
+# screening (supply level, period, on-time, on-time against period), the
+# pre-owner order, the decimal-reference acceptance and the exact / rounded
+# display; the shared calculation / units owner owns execution; the method
+# adapter (`engine/pwm_average_voltage_method.py`) owns the relation and its
+# binary acceptance. Eligibility is ``_calc_gate``, as for the DC load pages:
+# the trusted durable root domain, exactly Electrical / Electronics, or the
+# declared Electrical / Electronics part of a valid durable integrated
+# composition. Nothing is inferred about the project (no load, component,
+# transistor or switching word grants anything), nothing is persisted and
+# nothing is read beyond the root domain and that validated composition. The
+# POST renders its answer directly and never redirects. The result is the
+# waveform average only, never an equivalent DC voltage, a load response, a
+# power, an RMS value or a current, and it is never carried into another
+# calculation. General 28-T3 stays BLOCKED. The other ten calculations are
+# untouched.
+#
+# The ELEVENTH immutable trusted binding (calc/units Correction 11 §13J),
+# created here by application wiring for THIS consumer only. There is no
+# registry, discovery, dynamic module path or request-selectable callable.
+_PWM_AVERAGE_VOLTAGE_BINDING = _dcalc.bind_method(
+    _pwm_method.METHOD_ID, _pwm_method.METHOD_VERSION, _pwm_method.evaluate)
+
+
+def _pwm_eligible(sid):
+    """True iff the project is eligible under ``_calc_gate``: an Electrical /
+    Electronics durable root domain, or the declared Electrical / Electronics
+    part of a valid durable integrated composition. Recomputed from the
+    current durable state on every request; never read from the request;
+    fails closed."""
+    return _calc_gate(sid, _pwm)[0]
+
+
+# As the DC load energy run, so ``V_avg = V_supply × t_on / T`` and
+# ``V_avg² / R`` stay one direction-isolated run each (§9A A-4).
+_PWM_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u03a9\u2212+(\-](?:[A-Za-z0-9_\u03a9\u2212+()/.:'= \u00b2\u00b7\u00d7\-]*"
+    r"[A-Za-z0-9_\u03a9\u00b2)])?")
+
+
+def _pwm_isolate(text, lang):
+    return _ltr_isolate(text, lang, _PWM_LTR_RUN)
+
+
+def _pwm_result_view(evaluation):
+    """Template view of an accepted SUCCESS: the consumer's display of the exact
+    V_supply x t_on / T (already checked against the owner's binary64 result)
+    with its exact / rounded label, the owner's unit, the method identity and
+    the source and unit references the owner carried."""
+    result = evaluation["result"]
+    output = result["outputs"][_pwm.OUTPUT_ROLE]
+    return {
+        "value": evaluation["display_value"],
+        "exact": evaluation["display_exact"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_pwm(sid, status=200, eligible=True, declared_part=None, captured=None,
+                evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _pwm.OUTCOME_SUCCESS:
+            view = _pwm_result_view(evaluation)
+        else:
+            outcome_key = "UI_PWM_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "pwm_average_voltage.html",
+        sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
+        iso=lambda key: _pwm_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _pwm_isolate(part, lang) for part in
+            ui_text.text("UI_PWM_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_pwm.DECLARATION_IDS,
+        screen_items=_pwm.SCREEN_ITEMS,
+        value_roles=_pwm.VALUE_ROLES,
+        decl_field=_pwm.DECLARATION_FIELD,
+        screen_field=_pwm.SCREEN_FIELD,
+        value_field=_pwm.VALUE_FIELD,
+        answer_applies=_pwm.ANSWER_APPLIES,
+        answer_does_not_apply=_pwm.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_pwm.SCREEN_YES,
+        screen_no=_pwm.SCREEN_NO,
+        max_value_chars=_pwm.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/pwm-average-voltage", methods=["GET"])
+def pwm_average_voltage(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _pwm)
+    return _render_pwm(sid, eligible=eligible, declared_part=part)
+
+
+@app.route("/session/<sid>/pwm-average-voltage", methods=["POST"])
+def pwm_average_voltage_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (``_calc_gate``: the durable root domain, or the declared
+    # Electrical / Electronics part of a valid durable integrated composition,
+    # recomputed now) -> strict capture (malformed: 400, no reason token) -> the
+    # consumer's §7 order -> the shared owner -> the decimal-reference
+    # acceptance.
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _pwm)
+    if not eligible:
+        return _render_pwm(sid, eligible=False)
+    form = request.form
+    captured = _pwm.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_pwm(sid, status=400, declared_part=part, error="UI_PWM_ERR_REQUEST")
+    return _render_pwm(sid, declared_part=part, captured=captured,
+                       evaluation=_pwm.evaluate(captured, _PWM_AVERAGE_VOLTAGE_BINDING))
 
 
 # =============================================================================

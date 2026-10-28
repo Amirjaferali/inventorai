@@ -24,8 +24,11 @@ admission of Correction 09 (§13H) under
 docs/governance/STAGE25_CAP13_PLANAR_REQUIRED_FORCE_METHOD_CONTRACT.md; then the
 Electrical / Electronics DC constant-current charge method, the bounded tenth
 admission of Correction 10 (§13I) under
-docs/governance/ELECTRICAL_DC_CONSTANT_CURRENT_CHARGE_METHOD_CONTRACT.md. The owner
-is descriptive and unnumbered: it carries no CAP identifier.
+docs/governance/ELECTRICAL_DC_CONSTANT_CURRENT_CHARGE_METHOD_CONTRACT.md; then the
+Electrical / Electronics PWM average-voltage method, the bounded eleventh
+admission of Correction 11 (§13J) under
+docs/governance/ELECTRICAL_PWM_AVERAGE_VOLTAGE_METHOD_CONTRACT.md. The owner is
+descriptive and unnumbered: it carries no CAP identifier.
 
 What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
   * admission of a request against its own governed artifact (§9);
@@ -99,7 +102,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.9.0"
+IMPLEMENTATION_VERSION = "1.10.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -127,10 +130,13 @@ _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
 # Correction 08 (§13G, Electrical / Electronics DC resistive load energy, adding
 # only the energy / J and time / s kinds and tokens), the bounded ninth
 # admission of Correction 09 (§13H, CAP-13 planar required force, on the
-# existing moment / length / force kinds and tokens) and exactly the bounded
-# tenth admission of Correction 10 (§13I, Electrical / Electronics DC
+# existing moment / length / force kinds and tokens), the bounded tenth
+# admission of Correction 10 (§13I, Electrical / Electronics DC
 # constant-current charge, adding only the electric_charge / A·h kind and token
-# and the second exact time token h) - TEN methods, each with its own consumer. A
+# and the second exact time token h) and exactly the bounded eleventh admission
+# of Correction 11 (§13J, Electrical / Electronics PWM average voltage, on the
+# existing voltage / V and time / s kinds and tokens) - ELEVEN methods, each
+# with its own consumer. A
 # structurally valid extra method, quantity kind or unit fails closed: widening
 # the inventory is a separately authorized change, never an artifact edit alone.
 # No conversion exists. The one Celsius-temperature kind is the output of the
@@ -152,6 +158,7 @@ ADMITTED_METHODS = frozenset({
     ("electrical:dc_resistive_load_energy", "1.0"),
     ("cap13:planar_required_force", "1.0"),
     ("electrical:dc_constant_current_charge", "1.0"),
+    ("electrical:pwm_average_voltage", "1.0"),
 })
 ADMITTED_QUANTITY_KINDS = frozenset({
     "force", "length", "power", "thermal_resistance", "temperature_difference",

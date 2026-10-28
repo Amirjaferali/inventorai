@@ -1,0 +1,171 @@
+{
+  "artifact_id": "electrical_pwm_average_voltage",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "Electrical / Electronics - method authority for this one PWM average-voltage method only",
+  "slice": "Electrical / Electronics - PWM Average Voltage - Slice 1",
+  "governance_note": "The governed artifact of the PWM average-voltage method, under ELECTRICAL_PWM_AVERAGE_VOLTAGE_METHOD_CONTRACT.md. It carries the method authority (identity, version, model, executed form and derivation), the applicability declarations, the numeric domain, the high-risk screen, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json; it changes no Electrical / Electronics pack claim, reference group or provenance record, is separate from every other calculation artifact (the DC resistive load current, power and energy and the DC constant-current charge artifacts included), never loads one and is never loaded by one. Calculation execution belongs to the shared deterministic calculation and units owner; nothing here is a measurement, evidence, an equivalent steady DC voltage, a load response, a motor speed, a torque, a current, an average power, an RMS value, a ripple, a filtered output, a temperature, a switching-frequency, time-constant, filter, driver, free-wheeling or component statement, a compatibility, suitability or safety statement, or a readiness, progression or validation input. It admits one claim-level average-waveform relation only: general Power Electronics / Motion (28-T3) stays BLOCKED, and no converter, motor-drive, current-control, switching-device, ripple, filter, loss or actuator capability is activated.",
+  "method": {
+    "method_id": "electrical:pwm_average_voltage",
+    "method_version": "1.0",
+    "contract": "docs/governance/ELECTRICAL_PWM_AVERAGE_VOLTAGE_METHOD_CONTRACT.md",
+    "model": "ONE ideal periodic two-level voltage waveform, explicitly declared by the inventor: during the on-interval t_on of every period T the voltage equals the declared supply level V_supply (in volts, not negative), and for the remainder of the period it equals zero; the waveform repeats with the fixed period T (in seconds) and the fixed on-time t_on (in seconds), 0 ≤ t_on ≤ T. Its arithmetic time-average over one period is V_avg (in volts) = V_supply × t_on / T: exactly zero for a zero supply level or a zero on-time, exactly V_supply when the on-time equals the period, and never negative or above V_supply. The result is that waveform average only - the average of the declared ideal waveform - not an equivalent steady DC voltage, not the voltage any physical load necessarily experiences, not a motor speed, heating effect, average power, RMS voltage, current, torque, ripple or filtered output, and not proof of any load response. The waveform switches between zero and V_supply only; no signed or bipolar waveform is admitted.",
+    "executed_form": "v_avg = v_supply x t_on / t_period, with v_supply in V (not negative), t_on in s and t_period in s, t_period > 0 and 0 <= t_on <= t_period, each sign and bound decided from the exact decimal values before any binary rounding; evaluated as the exact rational value of the three binary64 inputs rounded once to binary64 and accepted only when it is exactly 0.0 for a zero supply level or a zero on-time, exactly v_supply for an on-time equal to the period, or otherwise finite, positive and within a relative error of 2^-52 of it; then shown only when it agrees with the exact decimal value V_supply x t_on / T of the entered values within a relative error of 2^-50, as that exact value rounded once to 12 significant digits (round half to even) and labelled exact or rounded. The ratio t_on / T exists only inside this product; no duty-cycle quantity, percentage or conversion is formed.",
+    "derivation": "NASA TN D-5643, Design and Performance Analysis of a Medium-Power DC-DC Converter (Birchenough and Gourash, NASA Lewis Research Center, 1970; NTRS 19700009882; printed pages 3, 4 and 6), records that a periodic voltage equal to E for an interval Δt and zero for the rest of the period has an average value proportional to the duty cycle Δt / T (NASA-PWM-S1, from the TECH-SOURCES-001 research record SRC-042). InventorAI restates that proportionality as the arithmetic time-average of the declared ideal waveform, V_avg = V_supply × t_on / T, and claims nothing further from it; it is not claimed that NASA prints InventorAI's method wording, the converter's filtered output, output impedance and circuit design are not used, and no filtering, ripple, load or converter behaviour is derived. The NASA Marshall traction-drive report (NTRS 19700009492, 1969, printed pages 14 to 17; NASA-PWM-S2, research record SRC-018) is recorded ONLY as inductive-load applicability context - in its motor-winding setting the switching period must be much shorter than the winding's electrical time constant and a free-wheeling path keeps the inductive current continuous - and is not a condition of computing the waveform average and is not generalised to other loads. The relation is restated independently; no NASA text, figure, circuit diagram, worked example or table is copied, and the relation is not shown to describe the inventor's load."
+  },
+  "numeric_domain": {
+    "roles": [
+      {
+        "role": "v_supply",
+        "meaning": "the supply level the waveform switches up to during the on-interval, as declared by the inventor; not negative (the waveform switches between zero and this level; no bipolar waveform); held constant; not measured or checked by InventorAI (the role written V_supply)",
+        "quantity_kind": "voltage",
+        "unit_token": "V"
+      },
+      {
+        "role": "t_on",
+        "meaning": "the on-interval of each period during which the waveform equals the supply level, as declared by the inventor; not negative and not above the period; fixed from period to period; not measured or checked by InventorAI (the role written t_on)",
+        "quantity_kind": "time",
+        "unit_token": "s"
+      },
+      {
+        "role": "t_period",
+        "meaning": "the fixed repeating period of the waveform, as declared by the inventor; strictly greater than zero; not measured or checked by InventorAI, and no switching frequency is recommended or compared (the role written T)",
+        "quantity_kind": "time",
+        "unit_token": "s"
+      },
+      {
+        "role": "v_avg",
+        "meaning": "the arithmetic time-average of the declared ideal waveform over one period, V_supply x t_on / T; exactly zero for a zero supply level or a zero on-time, exactly V_supply for an on-time equal to the period, never negative and never above V_supply; the waveform average only - never an equivalent steady DC voltage, a load response, an average power, an RMS voltage, a current, a ripple or a filtered output (the role written V_avg)",
+        "quantity_kind": "voltage",
+        "unit_token": "V"
+      }
+    ],
+    "rules": [
+      "Grammar: strict ASCII decimal - an optional single leading minus, one to nine integer digits, and an optional single fractional part of one to nine digits, for V_supply, t_on and T alike; no plus sign, exponent, separator, space, Unicode digit, unit suffix, percentage, inf, nan or normalization. An omitted, malformed or over-length value is INVALID_NUMERIC_INPUT, resolved before the shared owner is called.",
+      "Representation limits, not physical limits: the digit limits bound what can be typed (V_supply from 0 to below 10^9 V, t_on and T from 0 to below 10^9 s, steps of 10^-9); they are not physical limits, equipment ratings, switching-frequency limits or a claim that such values are realistic, and the 64-character field cap is NON-PHYSICAL abuse protection only.",
+      "Exact-decimal screening, in this order and each with no number: the exact decimal value of V_supply must not be negative (otherwise VOLTAGE_NEGATIVE); the exact decimal value of T must be greater than zero (otherwise PERIOD_NOT_POSITIVE); the exact decimal value of t_on must not be negative (otherwise ON_TIME_NEGATIVE); the exact decimal value of t_on must not exceed T (otherwise ON_TIME_EXCEEDS_PERIOD); each decided before any binary rounding. A zero supply level or a zero on-time, including -0, is admitted and gives exactly zero, never a negative zero; an on-time equal to the period is admitted and gives exactly V_supply.",
+      "Owner applicability: the method record declares the existing greater_than_zero on t_period and the existing within_zero_and_role on t_on bound to t_period (inclusive at both ends); a value that reaches the owner outside them is UNABLE_TO_DETERMINE / INPUT_OUTSIDE_ADMITTED_RANGE, shown as the neutral UNMAPPED_OWNER_OUTCOME (unreachable from the page); a negative v_supply that reaches the method adapter is refused there as FAILURE / EXECUTION_INTEGRITY_FAILURE (unreachable from the page). No result range is declared; the bound v_avg <= v_supply is defended by the adapter and the consumer, never by an owner range policy.",
+      "Binary bridge: each admitted decimal is converted once to the correctly rounded binary64 value; every admitted nonzero value lies between 10^-9 and 10^9 in magnitude, so it is a normal binary64 number with a relative rounding error of at most 2^-53, a value that is not negative stays not negative, a positive period stays positive, an on-time equal to the period converts to the same binary64 value as the period, and a zero V_supply or t_on stays exactly zero.",
+      "Numerical acceptance in the adapter: the exact rational value v_supply x t_on / t_period of the binary inputs is rounded once to binary64. A zero supply level or a zero on-time gives exactly 0.0; an on-time equal to the period gives the exact rational v_supply and therefore exactly the binary64 v_supply. A nonzero exact result is accepted only when the rounded value is finite, positive and within a relative error of 2^-52 of it; overflow, underflow or any failed check is FAILURE / EXECUTION_INTEGRITY_FAILURE with no numerical payload, never rewritten as a refusal. Inside the representation limits every nonzero result lies between 10^-27 and 10^9 V, so neither overflow nor underflow can occur from the page.",
+      "Decimal-reference acceptance in the consumer: a successful owner result is shown only when it is exactly zero (not a negative zero) for an exactly zero supply level or on-time, and otherwise is positive, not above the binary64 V_supply, and lies within a relative error of 2^-50 of the exact decimal value V_supply x t_on / T of the entered decimals; otherwise the outcome is KNOWLEDGE_UNAVAILABLE with no number. The proven worst case for every admitted input is below 4.0000001 x 2^-53.",
+      "Display: the accepted result is shown from the exact decimal value, never from the binary value: rounded once to 12 significant digits, round half to even, with trailing zeros removed; it is labelled exact when that rounding changes nothing and rounded otherwise. Plain decimal notation is used from 10^-6 V to below 10^12 V and the form m x 10^e otherwise, so a tiny nonzero average is never shown as 0. The digits shown imply no measurement resolution, precision or accuracy."
+    ]
+  },
+  "declarations": [
+    {
+      "declaration_id": "ideal_two_level_waveform",
+      "contract_ref": "D-1",
+      "accepted_value": "the waveform being averaged is an ideal two-level voltage: during the on-interval it equals the declared supply level exactly, and for the rest of the period it equals zero exactly; the switch is treated as fully on or fully off, with no rise, fall, dead time, drop, overshoot, ringing or negative excursion; the declared supply level is zero or positive and the waveform never goes below zero",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "fixed_period_and_on_time",
+      "contract_ref": "D-2",
+      "accepted_value": "the waveform repeats with one fixed period and one fixed on-time, both the same in every cycle; no varying, modulated, bursting, drifting or one-off timing is being averaged",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "declared_values",
+      "contract_ref": "D-3",
+      "accepted_value": "the supply level, on-time and period entered are the inventor's own values for this one waveform, taken from their own reading, documentation or plan; InventorAI did not measure or check them and infers none of them from any component, circuit or project text",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "waveform_average_wanted",
+      "contract_ref": "D-4",
+      "accepted_value": "the quantity wanted is the arithmetic time-average of that declared waveform over one cycle, and nothing more: not an equivalent steady DC voltage, not the voltage a load experiences, not a motor speed, heating effect, average power, RMS voltage, current, torque, ripple or filtered output, and not a statement about how any load responds",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    }
+  ],
+  "screen_items": [
+    {
+      "item_id": "mains_or_high_voltage",
+      "item": "mains or high voltage"
+    },
+    {
+      "item_id": "battery_or_storage_cell",
+      "item": "a battery or energy-storage cell"
+    },
+    {
+      "item_id": "fire_or_overheating",
+      "item": "fire, ignition or overheating risk"
+    },
+    {
+      "item_id": "medical_or_life_supporting",
+      "item": "medical or life-supporting use"
+    },
+    {
+      "item_id": "vehicle_or_aerospace",
+      "item": "vehicle or aerospace use"
+    },
+    {
+      "item_id": "safety_function",
+      "item": "a safety function, alarm, protection or shut-off"
+    }
+  ],
+  "limitations": [
+    "No equivalent steady DC voltage, load response, motor speed, torque, heating effect, average power, RMS voltage, current, ripple magnitude, filtered output or proof that any load responds to the average; no switching-frequency recommendation or comparison, no time-constant comparison, no filter, free-wheeling component, driver, switching-device, dead-time or loss statement; no converter (buck, boost or other) result; no compatibility, suitability or safety conclusion; no inference of the waveform, its levels, its timing or any declaration from any component, circuit or project text.",
+    "The result is the arithmetic average of the declared ideal waveform only: a real switch's rise and fall times, voltage drop, dead time, overshoot and ringing, a supply level that sags under load, timing that varies from cycle to cycle and any negative excursion are not included, and whether a physical load responds approximately to the waveform average depends on that load's dynamics and implementation, which this method does not establish. The inductive-load context recorded from NASA-PWM-S2 (switching period much shorter than a winding's electrical time constant; a free-wheeling path) is context for inductive loads only, not a condition of this average and not generalised.",
+    "V_avg must not be entered into the DC resistive load current, power or energy calculations as though it were a steady DC voltage: for a switched resistive load this method does not establish the average power as V_avg^2 / R, and no result is transferred between calculations.",
+    "The digit limits of the input grammar are representation limits, not physical limits or equipment ratings; no unit conversion is performed (V and s only; mV, kV, ms, us, Hz, kHz and percentage are not accepted, formed or converted) and no duty-cycle quantity exists outside the product.",
+    "All NO answers on the high-risk screen only allow this bounded calculation to proceed; they never mean safe. The screen neither reads nor feeds SafetySignal.",
+    "The result is UNVALIDATED and is not evidence; it is request-local and is not stored, reported, exported or used for readiness, progression or validation. General Power Electronics / Motion (28-T3) stays BLOCKED; this method admits one claim-level average-waveform relation only."
+  ],
+  "disclosure": [
+    "For the ideal repeating voltage waveform you declared, InventorAI calculated its time-average over one cycle: V_avg = V_supply × t_on / T, in volts. This is the average of this PWM voltage waveform and nothing more.",
+    "The supply level, on-time and period are your own declared values. InventorAI did not measure them. The waveform is taken as an ideal switch: either exactly your declared supply level or exactly zero, with one fixed period and one fixed on-time in every cycle, and it never goes below zero.",
+    "No physical load response is inferred. Whether a load responds approximately to this average depends on that load's dynamics and on how the switching is implemented, which InventorAI has not established. For an inductive load such as a motor winding, the recorded context is that the switching period must be much shorter than the winding's electrical time constant and that a free-wheeling path keeps the current continuous; that is context for inductive loads only, not a condition of this average.",
+    "No current, ripple, average power, RMS voltage, torque, speed, heating or temperature is calculated, and no switching frequency, filter, free-wheeling component, driver or switching device is recommended or checked.",
+    "Do not enter V_avg into the DC resistive load current, power or energy calculations as though it were a steady DC voltage: for a switched resistive load this method does not establish the average power as V_avg² / R, and no result is carried from one calculation into another.",
+    "The value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement. Next engineering need: whether this average means anything for your load, what current, power, ripple and heating actually result, and whether the switch, wiring and supply are rated for them all remain unverified, and must be checked by measurement or a qualified person before any reliance. The result is preliminary, advisory, UNVALIDATED and not evidence.",
+    "Reference source material: NASA TN D-5643, Design and Performance Analysis of a Medium-Power DC-DC Converter (NASA Lewis Research Center, 1970), for the average value of a periodic two-level voltage, and NASA Marshall Space Flight Center, Traction Drive System Design Considerations for a Lunar Roving Vehicle (1969), for the inductive-load context only. V_avg = V_supply × t_on / T is InventorAI's own restatement, and no NASA text, figure, circuit or example is reproduced. NASA does not endorse InventorAI or this calculation."
+  ],
+  "sources": [
+    {
+      "record_id": "NASA-PWM-S1",
+      "record_type": "source",
+      "source_type": "government_reference_publication",
+      "publisher": "National Aeronautics and Space Administration (NASA), Lewis Research Center",
+      "source_title": "NASA TN D-5643 - Design and Performance Analysis of a Medium-Power DC-DC Converter (A. G. Birchenough and F. Gourash, February 1970; NTRS 19700009882), printed pages 3, 4 and 6 (PDF pages 5, 6 and 8)",
+      "url": "https://ntrs.nasa.gov/citations/19700009882",
+      "source_use_policy_ref": "pwm:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-28",
+      "inspected_content": "Supports only: a periodic voltage equal to E for an interval Δt and zero for the rest of the period has an average value proportional to the duty cycle Δt / T (printed pages 3, 4 and 6). V_avg = V_supply x t_on / T is InventorAI's own algebraic restatement of that proportionality as the arithmetic time-average of an ideal two-level waveform; it is NOT claimed that NASA prints InventorAI's method wording. The report's statements that the converter's filtered output is proportional to input voltage times duty cycle, that filtering removes ripple and that output impedance limits load independence are NOT used, and no filtering, ripple, converter, load or circuit behaviour is derived. This record reuses the direct primary-source inspection of the TECH-SOURCES-001 research stream (run 13, 2026-10-28, record SRC-042: NTRS GOV_PUBLIC_USE_PERMITTED, belongsToContractor false, containsThirdPartyMaterial false, NASA Lewis authors), recorded as Lead-supplied for this method; not re-inspected by the executor (egress to the NTRS host is not available from the execution environment).",
+      "paraphrase_only_limitation": "The one factual relationship is restated in InventorAI's own words; no NASA paragraph, explanatory prose, worked example, figure, circuit diagram, table or equation layout is copied.",
+      "third_party_material_exclusion": "No third-party or contractor material is used (the NTRS record states none); the converter design itself is not used.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI, this method or any project."
+    },
+    {
+      "record_id": "NASA-PWM-S2",
+      "record_type": "source",
+      "source_type": "government_reference_publication",
+      "publisher": "National Aeronautics and Space Administration (NASA), George C. Marshall Space Flight Center, Astrionics Laboratory",
+      "source_title": "NASA Marshall Space Flight Center - Traction Drive System Design Considerations for a Lunar Roving Vehicle (C. S. Jones Jr., B. J. Doran and F. J. Nola, 25 November 1969; NTRS 19700009492), printed pages 14 to 17 (PDF pages 21 to 24), pulse-width-modulation discussion",
+      "url": "https://ntrs.nasa.gov/citations/19700009492",
+      "source_use_policy_ref": "pwm:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-27",
+      "inspected_content": "Inductive-load applicability CONTEXT only, in the report's motor-winding setting: the PWM switching period must be much shorter than the winding's electrical time constant, and a free-wheeling path lets the inductance keep the winding current continuous and smooth; switches are fully on or off. The report's worked example only implies, and does not state, that the average applied voltage equals duty times supply, so it is NOT the numerical basis of this method (NASA-PWM-S1 is). These statements are recorded as context for inductive loads only; they are NOT a condition of computing the waveform average, are NOT generalised to other loads, and no time-constant comparison, free-wheeling component, motor, drive or current statement is derived from them. This record reuses the direct primary-source inspection of the TECH-SOURCES-001 research stream (run 7, 2026-10-27, record SRC-018: NTRS GOV_PUBLIC_USE_PERMITTED, belongsToContractor false, containsThirdPartyMaterial false, NASA MSFC authors), recorded as Lead-supplied for this method; not re-inspected by the executor.",
+      "paraphrase_only_limitation": "The two context statements are restated in InventorAI's own words; no NASA paragraph, figure, worked example, table or circuit is copied.",
+      "third_party_material_exclusion": "No third-party or contractor material is used (the NTRS record states none); the traction-drive design is not used.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI, this method or any project."
+    },
+    {
+      "record_id": "pwm:SU001",
+      "record_type": "source_use_policy",
+      "source_type": "government_web_policy",
+      "publisher": "National Aeronautics and Space Administration (NASA), STI Program",
+      "source_title": "NASA STI Program - Disclaimers, Copyright Notice, and Terms and Conditions of Use, read with the NTRS public-use metadata of each record",
+      "url": "https://sti.nasa.gov/disclaimers/",
+      "source_use_policy_ref": "pwm:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-28",
+      "inspected_content": "Source-use basis (not a legal opinion) for NASA-PWM-S1 and NASA-PWM-S2 only: U.S. Government works are generally not protected by copyright in the United States (17 U.S.C. 105); NASA-hosted material may contain privately created copyrighted content, which is assessed separately; NASA material may not be used to state or imply NASA endorsement. The NTRS records of both reports carry GOV_PUBLIC_USE_PERMITTED with belongsToContractor false and containsThirdPartyMaterial false (TECH-SOURCES-001 IP and reuse register rows SRC-042 and SRC-018, Lead-supplied). Conservative use: one factual relationship and two context statements, in InventorAI-authored paraphrase, with neutral NASA acknowledgement; no copied prose, worked example, figure, circuit diagram, table, photograph or logo. No patent, freedom-to-operate, trademark or contractual clearance is claimed; this is a reuse basis only.",
+      "paraphrase_only_limitation": "Facts only; no copied text, example, figure, circuit or table.",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is reproduced.",
+      "no_endorsement_limitation": "No endorsement by NASA is stated or implied; NASA is named only to identify the sources.",
+      "acknowledgement": "Reference source material: NASA TN D-5643 (NASA Lewis Research Center, 1970) and NASA Marshall Space Flight Center, Traction Drive System Design Considerations for a Lunar Roving Vehicle (1969)."
+    }
+  ]
+}

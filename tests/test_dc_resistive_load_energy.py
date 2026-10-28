@@ -541,13 +541,13 @@ def test_success_packaging_units_sources_and_identity():
         "DOE-ENG-S1", "DOE-ENG-S2"]
     assert {q["source_use_policy_ref"] for q in result["source_qualification"]} == {"dcu:SU015"}
     assert result["validation_status"] == "UNVALIDATED"
-    assert (result["artifact_version"], result["implementation_version"]) == ("10", "1.9.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("11", "1.10.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_adds_exactly_energy_and_time():
     assert ("electrical:dc_resistive_load_energy", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 10
+    assert len(dc.ADMITTED_METHODS) == 11
     assert dc.ADMITTED_QUANTITY_KINDS >= {"energy", "time"}
     assert len(dc.ADMITTED_QUANTITY_KINDS) == 15 and len(dc.ADMITTED_UNIT_TOKENS) == 17
     assert dc.ADMITTED_UNIT_TOKENS == {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
@@ -574,12 +574,17 @@ def test_closed_inventory_adds_exactly_energy_and_time():
         assert units[token]["source_use_policy_ref"] == "dcu:SU014"
         assert "electronics_electrical:PR009" in units[token]["inspection_reference"]
         assert "no conversion is admitted" in units[token]["inspected_content"]
-    # only this method uses the energy kind and the s token; the time kind is
-    # shared with the DC constant-current charge method through its own h token
-    users = {m["method_id"] for m in data["methods"]
-             for role in m["input_roles"] + m["output_roles"]
-             if role["quantity_kind"] == "energy" or role["unit_token"] == "s"}
-    assert users == {method.METHOD_ID}
+    # only this method uses the energy kind; the s token is shared with the
+    # PWM average voltage method (on-time and period), and the time kind with
+    # the DC constant-current charge method through its own h token
+    energy_users = {m["method_id"] for m in data["methods"]
+                    for role in m["input_roles"] + m["output_roles"]
+                    if role["quantity_kind"] == "energy"}
+    assert energy_users == {method.METHOD_ID}
+    second_users = {m["method_id"] for m in data["methods"]
+                    for role in m["input_roles"] + m["output_roles"]
+                    if role["unit_token"] == "s"}
+    assert second_users == {method.METHOD_ID, "electrical:pwm_average_voltage"}
 
 
 @pytest.mark.parametrize("units,reason", [
@@ -612,7 +617,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.dc_resistive_load_energy_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._DC_LOAD_ENERGY_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 10
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 11
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("dc_resistive_load_energy_method", "engine.dc_resistive",
                    "electrical_content_config", "import fractions", "decimal",
@@ -669,7 +674,7 @@ def test_owner_artifact_tamper_fails_closed(tmp_path, name):
 
 def test_owner_v7_records_are_unchanged_by_the_eighth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "10"
+    assert data["artifact_version"] == "11"
     v7 = {"quantity_kinds": data["quantity_kinds"][:12],
           "unit_records": data["unit_records"][:13],
           "source_use_policies": data["source_use_policies"][:13],
