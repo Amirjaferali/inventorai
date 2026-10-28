@@ -289,11 +289,9 @@ def test_negative_zero_at_the_adapter_and_owner_is_positive_zero():
     ("1.5", "0.1", "0.15", True), ("0.7", "0.7", "0.49", True),
     ("999999999", "999999999", "9.99999998 × 10^17", False),
     ("0.000001", "1", "0.000001", True), ("0.0000001", "1", "1 × 10^-7", True),
-    ("100000000", "1000", "100000000000", True), ("1000000000", "1", "1 × 10^9", True),
+    ("100000000", "1000", "100000000000", True), ("100000000", "10", "1000000000", True),
 ])
 def test_exact_and_rounded_results(i, t, display, exact):
-    if i == "1000000000":
-        pytest.skip("ten integer digits are outside the grammar")
     evaluation = _check_against_reference(i, t)
     assert (evaluation["display_value"], evaluation["display_exact"]) == (display, exact)
 
