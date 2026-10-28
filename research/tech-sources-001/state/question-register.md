@@ -99,6 +99,18 @@ conditions · D4 integration with other owners / systems · D5 measurement, expe
 implementations, libraries (with licence) · D7 safety and reliability considerations. Not every dimension applies to every claim; a dimension that
 applies but has no lawful source is recorded `UNVERIFIED`, never invented.
 
+**Remaining-run depth discipline (Owner 2026-10-28; binding for the rest of the campaign).** REUSE → RESIDUAL ONLY → STOP. Each finding states,
+per applicable D1–D7 dimension, what is sourced: the claim (D1); applicability / assumptions; inputs, outputs, units (D2); limits / failure
+conditions (D3); the integration boundary (D4); the measurement / validation need (D5); the IP / reuse basis (IP register). A dimension that
+future product use materially needs but no lawful source supports is recorded `UNVERIFIED`; no dimension is invented for completeness. Each
+qualified claim carries a usefulness note — calculation, engineering condition, verification / measurement step, bounded decision, existing-owner
+handoff, or explanatory / reference only — as research metadata that selects no product work. Every source records whether it was inspected
+directly or Lead-supplied, and every supported statement whether it is explicit or only implied; implied is never upgraded to explicit and rights
+findings never move between works. Status is reported per question, never per technology or domain. A qualified claim is prepared for later Lead
+assessment only — it admits no technology, activates no domain, completes no capability, method or roadmap obligation. Before working a queued
+question, confirm its exact recorded claim and obligation and do not widen it; a question with no clean primary source within its bounded effort is
+recorded with its blocker and the run moves on (NEXT-LOOP). Do not open an adjacent question because a source mentions it.
+
 **Premature (not derived now; reassess on the named trigger):** Robotics localization / path planning (roadmap 28-T5 reassessment); Perception
 dataset / model provenance and edge-inference trade-offs (a concrete perception case); PLC vendor reference layers (separate source / IP review);
 Optics, Materials beyond Q-21 / Q-22 (C5 / C6 DEFER); Software and Medical packs (future-domain reassessment pool); thermal beyond THERM-01

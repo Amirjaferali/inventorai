@@ -1,44 +1,54 @@
 # TECH-SOURCES-001 — owner readable summary
 
-*Updated after run 9 (2026-10-27). Research evidence only: nothing here is admitted, implemented, activated or qualified as a product method.*
+*Rewritten 2026-10-28 after run 13 under the Owner's remaining-run depth discipline. Research evidence only. Status is per question, never per
+technology: a qualified claim is prepared for later Lead assessment and admits no technology, domain, method, capability or roadmap obligation.*
 
 **Status:** ACTIVE — not complete. Runs 13 / 20 · Perplexity queries 40 / 240 · deep-research calls 0 · window ends 2026-11-26.
-**Questions registered:** 23 (Q-01…Q-23) plus held / excluded items. **Sources inspected directly:** 43 (hash, page and rights in `evidence/`).
+**Questions registered:** 40 (Q-01…Q-40) plus held / excluded items. **Sources:** SRC-001…SRC-043, all inspected directly by the executor
+(none Lead-supplied); hash, page and rights for each in `evidence/`.
 
-| Q | Topic | Result |
-|---|---|---|
-| Q-01 | Wood-beam stiffness — D-7 conditions | Inspected facts qualified: property test geometry span/depth 14 VERIFIED (Wood Handbook p. 5–8); elastic, straight-beam, constant-section, creep, moisture and temperature conditions stated qualitatively. **No machine-checkable criterion exists** in the USDA sources. Decision DR-2 is yours. |
-| Q-02 | Motor ↔ mechanism | Qualified candidate. Ownership decided by you: DR-1 Option C (base 692c2d9). SRC-004 residual authorship / IP qualification still open. |
-| Q-03 | Embedded "execution-facing output" | No exact claim in any record (DR-3). |
-| Q-04 | Deflection-test measurements | Qualified candidate, now including moisture, temperature, load rate and creep. |
-| Q-05 | Logic output ↔ driver | UNVERIFIED — ibiblio now fails certificate trust (emSign root missing in this environment); NXP server refuses. |
-| Q-06 | Battery capacity vs rate / temperature | Qualified candidate. |
-| Q-07 | PLC sinking / sourcing | Partial: sinking concept, I/O circuit types and datasheet checks qualified (ModEL PLC, CC BY 4.0); explicit pairing rule UNVERIFIED. |
-| Q-08 | Control sample rate | Qualified candidate. |
-| Q-09 | Thermal-resistance measurement | Qualified candidate. |
-| Q-10 | Fits and tolerances | Qualified candidate (one point indirect). |
-| Q-11 | PWM average voltage | Partial (duty × supply implied by a NASA example, not stated). |
-| Q-12 | Two-link kinematics | Partial (general forward-solution principle; explicit formula UNVERIFIED on clean-rights source). |
-| Q-13 | Free-space path loss | Partial (NASA link-budget statement; far-field / inverse-square conditions UNVERIFIED — NTIA host refused). |
-| Q-14 | Cells in series / parallel, balancing | Qualified candidate (DOE + NASA, reused). |
-| Q-15 | Imaging spatial resolution | Source candidate only — IP unresolved (mixed NASA / contractor preprint); USGS refused. |
-| Q-16 | Duty-cycled average current | Source candidate only — IP unresolved (NIST-hosted journal / conference papers); core claim UNVERIFIED. |
-| Q-17 | Multirotor hover thrust and margin | Qualified candidate (NASA Ames). |
-| Q-18 | PV rating conditions | Partial: standard test conditions sourced (DOE FEMP); temperature effect not yet on a clean-rights source. |
-| Q-19 | Vacuum outgassing screening | Qualified candidate (NASA PT-TE-1410). |
-| Q-20 | Double-acting cylinder forces | Partial: DOE hydraulics basics found; rod-side area and speed–flow unverified. |
-| Q-21 | Inverse-square irradiance conditions | Qualified candidate (NIST SP 250-95). |
-| Q-22 | Thermal expansion and mismatch | Qualified candidate (NBS Circular 486, NASA TP-2226). |
-| Q-23 | Resonance (spring–mass) | Queued for run 11. |
-| Q-13, Q-24, Q-25 (run 11) | Free-space conditions; IoT security baseline; firmware update integrity / recovery | Qualified candidates (NBS TN 12 / TN 101; NIST blog + FAQ; NIST SP 800-193). |
-| Q-26, Q-28, Q-30 (run 12) | IoT power / failure; real radio channels; battery limits and BMS protection | Q-28, Q-30 qualified candidates (NIST TN 1604, NISTIR 8243; NASA battery guideline); Q-26 partial. |
-| Q-26, Q-31, Q-11 (run 13) | IoT power residual; battery ageing; PWM average voltage | Q-31, Q-11 qualified candidates (NASA battery guideline re-read; NASA TN D-5643); Q-26 still partial. |
-| Q-24…Q-40 | IoT security / updates / power / privacy, RF channel and capacity, battery limits and ageing, converters, motor classes, watchdogs, interlocks, Earth-observation trade-offs, hover power, MPPT, eclipse power, vibration isolation | Added 2026-10-28 (Owner correction) from the roadmap's recorded concerns; queued by priority. |
+Usefulness (research metadata only, selects nothing): **calc** calculation · **cond** engineering condition · **verif** verification / measurement
+step · **dec** bounded decision · **handoff** existing-owner handoff · **ref** explanatory / reference only.
 
-**Decisions:** DR-1 decided by you (Option C, recorded on the base branch). Still open with you and the Execution Lead: DR-2 which condition D-7
-governs; DR-3 definition of the 28-T2 "execution-facing output" claim. Details in `evidence/decision-records.md`.
+| Q | Exact claim (short) | Status | Open dimension / caveat | Use |
+|---|---|---|---|---|
+| Q-01 | D-7 regime criterion for the bounded stiffness method | QUALIFIED-CANDIDATE (facts) + AUTHORITY BLOCKED | No machine-checkable criterion in any inspected source; governing condition is DR-2 (yours) | dec |
+| Q-02 | Load characteristics governing motor ↔ mechanism | QUALIFIED-CANDIDATE | SRC-004 residual authorship / IP; DC-only for SRC-005 | handoff |
+| Q-03 | Embedded 28-T2 execution-facing output | QUESTION UNCLEAR / AUTHORITY BLOCKED | No exact claim recorded (DR-3) | — |
+| Q-04 | Measurements before comparing a deflection estimate | QUALIFIED-CANDIDATE | — | verif |
+| Q-05 | Logic output levels vs driver stage | SOURCE ACCESS BLOCKED | Claim UNVERIFIED (ibiblio TLS, NXP) | — |
+| Q-06 | Delivered capacity depends on rate / temperature | QUALIFIED-CANDIDATE | DOE contractor caveat on SRC-007 | cond |
+| Q-07 | PLC sinking / sourcing pairing | PARTIAL — WAITING (access) | Explicit pairing rule UNVERIFIED | cond |
+| Q-08 | Sampling rate vs process dynamics | QUALIFIED-CANDIDATE | — | cond |
+| Q-09 | Measurements to determine a thermal resistance | QUALIFIED-CANDIDATE | — | verif |
+| Q-10 | Fits / tolerances depend on process capability | QUALIFIED-CANDIDATE | Process-dependence point indirect (implied) | cond |
+| Q-11 | PWM average = duty × supply, with conditions | QUALIFIED-CANDIDATE | Explicit (SRC-042); ripple / load-response conditions from SRC-018 | calc, cond |
+| Q-12 | Two-link planar forward kinematics | PARTIAL | Explicit formula UNVERIFIED on a clean source | calc |
+| Q-13 | Free-space inverse-square and far-field conditions | QUALIFIED-CANDIDATE | Explicit (SRC-037, SRC-038); no link-budget values | cond |
+| Q-14 | Series adds voltage, parallel adds capacity; balancing | QUALIFIED-CANDIDATE | DOE contractor caveat | calc, cond |
+| Q-15 | Imaging resolution from FOV / pixel count | IP UNRESOLVED | Claim UNVERIFIED on a clean source | — |
+| Q-16 | Duty-cycled average current | IP UNRESOLVED | Re-approached via Q-26 | — |
+| Q-17 | Hover thrust = weight; margin needed to climb | QUALIFIED-CANDIDATE | Source says thrust "depends on" weight — equality implied, not explicit | cond |
+| Q-18 | PV rating at STC; output falls with irradiance / temperature | PARTIAL | Temperature effect UNVERIFIED on a clean source | cond |
+| Q-19 | Vacuum outgassing screening basis | QUALIFIED-CANDIDATE | Criteria are NASA's, not InventorAI thresholds | verif |
+| Q-20 | Retract force lower (rod area); speed = flow ÷ area | PARTIAL | Rod-side area and speed–flow UNVERIFIED | calc |
+| Q-21 | Inverse-square irradiance conditions (optics) | QUALIFIED-CANDIDATE | Law named, conditions explicit; law statement itself implied in SRC-030 | cond |
+| Q-22 | Thermal expansion and joined-material mismatch | QUALIFIED-CANDIDATE | Expansion coefficient defined explicitly (SRC-031); product form follows from the definition | calc, cond |
+| Q-23 | Spring–mass natural frequency and resonance | QUEUED | — | — |
+| Q-24 | IoT device cybersecurity baseline capabilities | QUALIFIED-CANDIDATE | NISTIR 8259A detail is mixed-authorship (cross-check only) | ref, dec |
+| Q-25 | Firmware update authenticated; recoverable to known-good | QUALIFIED-CANDIDATE | Rollback nuance logged (unresolved-issues) | cond, verif |
+| Q-26 | Duty-cycled average current; defined power / link-loss behaviour | PARTIAL | Time-weighted average and defined loss behaviour UNVERIFIED; one more attempt, then EXHAUSTED | calc, cond |
+| Q-27 | IoT privacy considerations | QUEUED | — | — |
+| Q-28 | Real channels: obstruction, multipath, interference | QUALIFIED-CANDIDATE | — | cond, verif |
+| Q-29 | Shannon–Hartley capacity bound | QUEUED | — | — |
+| Q-30 | Cell limits; BMS monitor / protect / balance | QUALIFIED-CANDIDATE | SOC estimation as a BMS function UNVERIFIED | cond, verif |
+| Q-31 | Capacity fade vs storage SOC, temperature, DOD, rate | QUALIFIED-CANDIDATE | Rate-on-life point from a lead-acid source | cond, verif |
+| Q-32…Q-40 | Converter relations, motor classes, watchdog, interlock, EO trade-offs, hover power, MPPT, eclipse power, vibration isolation | QUEUED | — | — |
 
-**Current access blockers:** www.ibiblio.org — certificate chain to emSign Root CA - G1 not trusted in this environment (passed this morning,
-fails since the session restart); www.nxp.com — NXP returns its own 404 page; www.nrc.gov document — NRC's CDN returns 403;
-its.ntia.gov, stac.astrogeology.usgs.gov and openmodelica.org — proxy policy denial; www.faa.gov — no response. To unblock ibiblio, the environment needs the emSign root trusted or the earlier
-routing restored; nothing was bypassed.
+**Next by the protocol order:** PARTIAL residuals Q-26 (P1), Q-20 (P2), then Q-12 and Q-18 (P3); then queued Q-23 (P2).
+
+**Decisions:** DR-1 decided by you (Option C). Still open with you and the Execution Lead: DR-2 (which condition D-7 governs), DR-3 (definition
+of the 28-T2 output claim), DR-4 (whether to keep, narrow or lift H-04). Details in `evidence/decision-records.md`.
+
+**Access blockers:** www.ibiblio.org (TLS trust), www.nxp.com (404), NRC document (403), transition.fcc.gov / www.fcc.gov, its.ntia.gov,
+stac.astrogeology.usgs.gov and openmodelica.org (proxy policy), www.faa.gov (no response). Nothing was bypassed.
