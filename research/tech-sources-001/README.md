@@ -68,7 +68,9 @@ or of unclear item-level rights is not qualified.
    append one run-ledger row (date, run number, questions, queries per lens, fetches, cumulative totals, outcome). Commit and push. A push that fails twice → stop.
    Run report (Owner 2026-10-28): return only the questions worked; the exact status delta; new qualified source IDs; D1–D7 dimensions now sourced;
    remaining `UNVERIFIED` dimensions; EXPLICIT / IMPLIED caveats; DIRECT / LEAD-SUPPLIED status; IP / reuse caveats; usefulness class; any new
-   BLOCKED / WAITING / EXHAUSTED / IP UNRESOLVED state; budget used; the next eligible question — never domain-level status, never the whole history.
+   BLOCKED / WAITING / EXHAUSTED / IP UNRESOLVED state; budget used; the next eligible question; the next scheduled run's trigger id and fire time —
+   never domain-level status, never the whole history. Any material qualification delta goes to the Execution Lead for bounded NEXT-LOOP assessment;
+   no run jumps to a later technology because it is easier to source.
    Work the fewest questions needed and do not spend budget because it exists; never repeat a failed search without a changed path.
 7. Stop conditions: every question terminal (terminal = `QUALIFIED-CANDIDATE`, `EXHAUSTED`, `BLOCKED`, `AUTHORITY BLOCKED`, `QUESTION UNCLEAR`,
    `IP UNRESOLVED`, `SOURCE ACCESS BLOCKED`, `HELD`, `EXCLUDED`, `ABSTAINED`, or `PARTIAL` with a `WAITING` note) and no row derivable under step 5; any limit reached; 3 runs in a row without progress; STOP file; authority change; branch / base mismatch;
