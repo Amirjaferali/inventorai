@@ -41,6 +41,11 @@ File-creation contract:
     `--mechanism-candidate-check` (T2-G / R2: offline only — loads the pinned
       `tests/fixtures/msnl_mechanism_content_v2_candidate.json` and checks that
       it builds valid requests; it has no provider path);
+    `--mechanism-v2-evaluation` (T2-G / R2: the ONE Owner-authorized v2
+      evaluation — fresh holdout x3, then v1 regression x1, one shared ledger of
+      at most 640 attempts / US$25, fixed version-specific journal and report
+      paths; with the default `lexical` provider it only checks both packs and
+      their baselines) and `--mechanism-v2-rescore PATH` (offline replay);
     `--mechanism-preflight` (T2-G / R2: the ONE Owner-authorized operational
       provider preflight over the pinned
       `tests/fixtures/msnl_mechanism_preflight_v1.json` — four separate
@@ -961,45 +966,55 @@ def _mc_journal(journal, record):
     os.fsync(journal.fileno())
 
 
-def mechanism_campaign(adapter, pack, journal=None):
-    """Exactly VS1_runs passes in pack order; stops before a request over the
-    frozen request allocation or the currency ceiling and immediately after the
-    first error (VE1: nothing is retried). Each request reserves its
-    conservative maximum cost first (the preflight's reviewed rule). Returns
-    (runs, requests, spend)."""
+def mechanism_campaign(adapter, pack, journal=None, ledger=None, runs_count=None,
+                       set_label=None):
+    """Exactly VS1_runs passes (or ``runs_count``) in pack order; stops before a
+    request over the request allocation or the currency ceiling and
+    immediately after the first error (VE1: nothing is retried). Each request
+    reserves its conservative maximum cost first (the preflight's reviewed
+    rule). ``ledger`` carries ONE cumulative request count and budget across
+    several calls (the v2 evaluation shares it between its two sets); without
+    it the pack's own allocation and ceiling apply. Returns (runs, requests,
+    spend); ``ledger["halted"]`` is set when the run stopped early."""
     t, b = pack["thresholds"], pack["budget"]
-    cap, ceiling = t["max_output_tokens"], b["cost_ceiling_usd"]
+    if ledger is None:
+        ledger = {"requests": 0, "committed": 0.0, "measured": 0.0,
+                  "measured_complete": True, "sent": 0, "halted": False,
+                  "max_requests": t["max_provider_requests"],
+                  "ceiling": b["cost_ceiling_usd"]}
+    cap = t["max_output_tokens"]
     res_in, res_out = b["reservation_input_usd_per_1m"], b["reservation_output_usd_per_1m"]
     price = b["pricing"]
+    tag = {} if set_label is None else {"set": set_label}
     baselines = {c["case_id"]: mc_baseline(pack, c) for c in pack["cases"]}
-    runs, requests, stopped, committed, measured = [], 0, False, 0.0, 0.0
-    measured_complete = True
-    for run_index in range(t["VS1_runs"]):
-        if stopped:
+    runs = []
+    for run_index in range(t["VS1_runs"] if runs_count is None else runs_count):
+        if ledger["halted"]:
             break
         rows = []
         for case in pack["cases"]:
             base = baselines[case["case_id"]]
-            if requests >= t["max_provider_requests"]:
+            if ledger["requests"] >= ledger["max_requests"]:
                 rows.append(mc_row(pack, case, None, ERR_BUDGET, base))
-                stopped = True
+                ledger["halted"] = True
                 break
             body = json.dumps(mechanism_payload(pack, case, adapter._model),
                               ensure_ascii=False).encode("utf-8")
             reserved = _pf_usd(len(body) + 1000, cap, res_in, res_out)
-            if committed + reserved > ceiling:
+            if ledger["committed"] + reserved > ledger["ceiling"]:
                 rows.append(mc_row(pack, case, None, ERR_COST_CEILING, base))
-                _mc_journal(journal, {"event": "refused_before_send", "run": run_index + 1,
-                                      "case_id": case["case_id"], "reason": ERR_COST_CEILING,
-                                      "committed_usd": round(committed, 6),
+                _mc_journal(journal, {"event": "refused_before_send", **tag,
+                                      "run": run_index + 1, "case_id": case["case_id"],
+                                      "reason": ERR_COST_CEILING,
+                                      "committed_usd": round(ledger["committed"], 6),
                                       "reserved_usd": round(reserved, 6)})
-                stopped = True
+                ledger["halted"] = True
                 break
-            requests += 1
-            _mc_journal(journal, {"event": "reserved", "attempt": requests,
+            ledger["requests"] += 1
+            _mc_journal(journal, {"event": "reserved", **tag, "attempt": ledger["requests"],
                                   "run": run_index + 1, "case_id": case["case_id"],
                                   "reserved_usd": round(reserved, 6),
-                                  "committed_usd": round(committed, 6)})
+                                  "committed_usd": round(ledger["committed"], 6)})
             reply, err, meta = classify_mechanism_measured(adapter, pack, case)
             usage = meta["usage"]
             known = isinstance(usage["input_tokens"], int) and \
@@ -1013,13 +1028,16 @@ def mechanism_campaign(adapter, pack, journal=None):
             cost = (_pf_usd(usage["input_tokens"], usage["output_tokens"],
                             price["input_usd_per_1m"], price["output_usd_per_1m"])
                     if known else None)
-            if meta["sent"] and cost is None:
-                measured_complete = False
-            measured += cost or 0.0
-            committed += bound
+            if meta["sent"]:
+                ledger["sent"] += 1
+                if cost is None:
+                    ledger["measured_complete"] = False
+            ledger["measured"] += cost or 0.0
+            ledger["committed"] += bound
             row = mc_row(pack, case, reply, err, base)
             row["attempt"] = {
-                "attempt": requests, "sent": meta["sent"], "http_status": meta["http_status"],
+                "attempt": ledger["requests"], "sent": meta["sent"],
+                "http_status": meta["http_status"],
                 "response_id": meta["response_id"], "model": meta["model"],
                 "response_status": meta["response_status"],
                 "incomplete_reason": meta["incomplete_reason"], "usage": usage,
@@ -1027,19 +1045,22 @@ def mechanism_campaign(adapter, pack, journal=None):
                 "measured_cost_usd": None if cost is None else round(cost, 6),
                 "bound_usd": round(bound, 6)}
             rows.append(row)
-            _mc_journal(journal, {"event": "attempt", "run": run_index + 1,
+            _mc_journal(journal, {"event": "attempt", **tag, "run": run_index + 1,
                                   "case_id": case["case_id"], "reply": reply, "error": err,
                                   "decision": row["decision"], **row["attempt"]})
             if err is not None:
-                stopped = True
+                ledger["halted"] = True
                 break
         runs.append(rows)
-    spend = {"requests_sent": sum(1 for rows in runs for r in rows
-                                  if (r.get("attempt") or {}).get("sent")),
-             "measured_cost_usd": round(measured, 6),
-             "measured_cost_complete": measured_complete,
-             "conservative_bound_usd": round(committed, 6), "ceiling_usd": ceiling}
-    return runs, requests, spend
+    return runs, ledger["requests"], _mc_spend(ledger)
+
+
+def _mc_spend(ledger):
+    return {"requests_sent": ledger["sent"],
+            "measured_cost_usd": round(ledger["measured"], 6),
+            "measured_cost_complete": ledger["measured_complete"],
+            "conservative_bound_usd": round(ledger["committed"], 6),
+            "ceiling_usd": ledger["ceiling"]}
 
 
 def mechanism_run_report(pack, rows):
@@ -1276,6 +1297,193 @@ def mechanism_candidate_check():
             "requests_built": len(items), "largest_request_body_chars": max(sizes),
             "max_input_characters": arm_pack["thresholds"]["max_input_characters"],
             "provider_requests": 0}
+
+
+# ─── T2-G / R2: the ONE v2 evaluation (fresh qualification + v1 regression) ──
+#
+# Owner authorization "R2 / V2 SYNTHETIC EVALUATION AUTHORIZATION" (step 5
+# only): ONE evaluation of the frozen v2 candidate instructions (8b3027b5...)
+# on (1) the fresh, independently authored and blind-labelled holdout
+# msnl-mechanism-content-v2-holdout, three passes, the ONLY set that can
+# qualify the method, then (2) the unchanged 160 v1 cases, one pass,
+# regression evidence only. Both sets share ONE ledger: at most 640 attempts
+# and US$25 in total. The evidence and journal paths are fixed and
+# version-specific; an existing journal or report refuses the run, so it can
+# never restart. v1, campaign 01 and the preflight stay closed and untouched.
+
+MECHANISM_V2_HOLDOUT_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                         "msnl_mechanism_content_v2_holdout.json")
+MECHANISM_V2_HOLDOUT_SHA256 = "PENDING"
+MECHANISM_V2_INSTRUCTIONS_SHA256 = \
+    "8b3027b5daaf1498d3a48fbe23cccda4024cf63abcbfdaea09963eecb7790a4c"
+MECHANISM_V2_EVALUATION_AUTHORIZED = False   # opened only at the final, reviewed evaluation head
+MECHANISM_V2_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
+                                         "msnl_mechanism_content_v2")
+MECHANISM_V2_REPORT_PATH = os.path.join(MECHANISM_V2_EVIDENCE_DIR, "evaluation_01_report.json")
+MECHANISM_V2_JOURNAL_PATH = os.path.join(MECHANISM_V2_EVIDENCE_DIR,
+                                         "evaluation_01_journal.jsonl")
+MECHANISM_V1_KNOWN_FAILURES = ("E17-ar-egy", "E17-ar-gulf-kw", "M14-ar-egy", "M18-ar-egy",
+                               "M18-ar-gulf-kw", "M18-ar-msa", "M18-en")
+
+
+def _mechanism_v2_holdout():
+    """The pinned fresh holdout. Its arm must be exactly the frozen candidate
+    instructions with the v1 schema, and every section the candidate inherits
+    must equal v1's; its cases must share no text with v1."""
+    fresh = _load(MECHANISM_V2_HOLDOUT_PATH, MECHANISM_V2_HOLDOUT_SHA256)
+    cand, regression = _mechanism_candidate()
+    if hashlib.sha256(fresh["arm"]["instructions"].encode("utf-8")).hexdigest() != \
+            MECHANISM_V2_INSTRUCTIONS_SHA256 or \
+            fresh["arm"]["instructions"] != regression["arm"]["instructions"] or \
+            cand["instruction_delta"]["new_instructions_sha256"] != \
+            MECHANISM_V2_INSTRUCTIONS_SHA256:
+        raise PackError("v2 holdout arm is not the frozen candidate instructions")
+    for key in cand["base_pack"]["inherited_unchanged"]:
+        section, _, field = key.partition(".")
+        if (fresh[section] if not field else fresh[section][field]) != \
+                (regression[section] if not field else regression[section][field]):
+            raise PackError("v2 holdout section differs from v1: " + key)
+    if {c["text"] for c in fresh["cases"]} & {c["text"] for c in regression["cases"]}:
+        raise PackError("a v2 holdout case repeats a v1 case")
+    return fresh, regression
+
+
+def _known_failure_outcomes(rows):
+    by_id = {r["case_id"]: r for r in rows}
+    return {cid: (by_id[cid]["decision"] if cid in by_id else None)
+            for cid in MECHANISM_V1_KNOWN_FAILURES}
+
+
+def mechanism_regression_report(regression, rows):
+    """Regression evidence only (never a qualification): the frozen v1 run
+    report of ONE pass plus the outcome of every known campaign-01 failure."""
+    report = mechanism_run_report(regression, rows)
+    report["known_failures"] = _known_failure_outcomes(rows)
+    report["qualifies"] = False
+    return report
+
+
+def mechanism_v2_evaluation(adapter, fresh, regression, journal=None):
+    """The fixed order: three qualification passes over the fresh holdout, then
+    ONE regression pass over the v1 cases, on ONE shared ledger. Any error or
+    ceiling stop halts everything after it. Returns (q_runs, r_runs, spend)."""
+    budget = fresh["budget"]
+    ledger = {"requests": 0, "committed": 0.0, "measured": 0.0, "measured_complete": True,
+              "sent": 0, "halted": False, "max_requests": budget["max_attempts_total"],
+              "ceiling": budget["cost_ceiling_usd"]}
+    q_runs, _, _ = mechanism_campaign(adapter, fresh, journal, ledger,
+                                      runs_count=fresh["thresholds"]["VS1_runs"],
+                                      set_label="qualification")
+    r_runs = []
+    if not ledger["halted"]:
+        r_runs, _, _ = mechanism_campaign(adapter, regression, journal, ledger,
+                                          runs_count=1, set_label="regression")
+    return q_runs, r_runs, _mc_spend(ledger)
+
+
+def mechanism_v2_result(fresh, regression, q_runs, r_runs, violations):
+    return {"qualification": mechanism_verdict(fresh, q_runs, violations["qualification"]),
+            "regression": (mechanism_regression_report(regression, r_runs[0])
+                           if r_runs else None)}
+
+
+def mechanism_v2_run(provider, allow_network, managed_credential):
+    """Check both packs and their baselines and, only while authorized with the
+    openai provider and both network flags, run the ONE v2 evaluation, writing
+    its journal to the fixed path as it goes."""
+    fresh, regression = _mechanism_v2_holdout()
+    violations = {"qualification": mc_precondition(fresh),
+                  "regression": mc_precondition(regression)}
+    out = {"holdout_pack_id": fresh["pack_id"], "holdout_sha256": MECHANISM_V2_HOLDOUT_SHA256,
+           "regression_base_sha256": MECHANISM_PACK_SHA256,
+           "candidate_sha256": MECHANISM_CANDIDATE_SHA256,
+           "instructions_sha256": MECHANISM_V2_INSTRUCTIONS_SHA256,
+           "qualification_cases": len(fresh["cases"]), "regression_cases": len(regression["cases"]),
+           "max_attempts_total": fresh["budget"]["max_attempts_total"],
+           "ceiling_usd": fresh["budget"]["cost_ceiling_usd"],
+           "precondition_violations": violations}
+    if provider != "openai":
+        out["provider_requests"] = 0
+        return out
+    if not MECHANISM_V2_EVALUATION_AUTHORIZED:
+        out["refused"] = "the v2 evaluation is not authorized; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if not (allow_network and managed_credential):
+        raise SystemExit(2)
+    if violations["qualification"] or violations["regression"]:
+        out["refused"] = "VB1: an engine baseline no longer holds; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if os.path.exists(MECHANISM_V2_REPORT_PATH):
+        out["refused"] = "v2 evaluation evidence already exists; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    os.makedirs(MECHANISM_V2_EVIDENCE_DIR, exist_ok=True)
+    try:
+        journal = open(MECHANISM_V2_JOURNAL_PATH, "x", encoding="utf-8")
+    except FileExistsError:
+        out["refused"] = "the v2 journal already exists: the evaluation already started; " \
+                         "nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    adapter = OpenAIMsnlAdapter(allow_network=True)
+    with journal:
+        _mc_journal(journal, {"event": "start", "holdout_sha256": MECHANISM_V2_HOLDOUT_SHA256,
+                              "instructions_sha256": MECHANISM_V2_INSTRUCTIONS_SHA256,
+                              "model": adapter._model,
+                              "max_attempts_total": out["max_attempts_total"],
+                              "ceiling_usd": out["ceiling_usd"]})
+        q_runs, r_runs, spend = mechanism_v2_evaluation(adapter, fresh, regression, journal)
+        _mc_journal(journal, {"event": "end", "provider_requests": spend["requests_sent"],
+                              **spend})
+    out.update({"model": adapter._model, "endpoint": toa.ENDPOINT,
+                "provider_requests": spend["requests_sent"], "error_kinds": adapter.errors,
+                "spend": spend,
+                "result": mechanism_v2_result(fresh, regression, q_runs, r_runs, violations),
+                "case_level": {"qualification": q_runs, "regression": r_runs}})
+    return out
+
+
+def _replay_rows(pack, saved_runs):
+    by_id = {c["case_id"]: c for c in pack["cases"]}
+    baselines = {c["case_id"]: mc_baseline(pack, c) for c in pack["cases"]}
+    runs = []
+    for saved_rows in saved_runs:
+        rows = []
+        for row in saved_rows:
+            case = by_id.get(row.get("case_id"))
+            if case is None:
+                raise PackError("saved case is not in the pinned pack: "
+                                + str(row.get("case_id")))
+            reply, err = row.get("reply"), row.get("error")
+            if err is None and mechanism_reply_error(pack, reply) is not None:
+                raise PackError("saved reply violates the frozen schema: " + case["case_id"])
+            rows.append(mc_row(pack, case, reply, err, baselines[case["case_id"]]))
+        runs.append(rows)
+    return runs
+
+
+def mechanism_v2_rescore(path):
+    """Network-free replay of the SAVED v2 report: every decision, grounding
+    reason, baseline and composed outcome is recomputed from the pinned packs
+    and the unchanged engine; no adapter is built and nothing is sent."""
+    fresh, regression = _mechanism_v2_holdout()
+    with open(path, "rb") as fh:
+        raw = fh.read()
+    saved = json.loads(raw.decode("utf-8"))
+    if saved.get("holdout_sha256") != MECHANISM_V2_HOLDOUT_SHA256 or \
+            saved.get("instructions_sha256") != MECHANISM_V2_INSTRUCTIONS_SHA256:
+        raise PackError("saved report is not for the pinned v2 evaluation")
+    levels = saved.get("case_level", {})
+    q_runs = _replay_rows(fresh, levels.get("qualification", []))
+    r_runs = _replay_rows(regression, levels.get("regression", []))
+    violations = {"qualification": mc_precondition(fresh),
+                  "regression": mc_precondition(regression)}
+    return {"rescored_sha256": hashlib.sha256(raw).hexdigest(),
+            "precondition_violations": violations,
+            "result": mechanism_v2_result(fresh, regression, q_runs, r_runs, violations),
+            "case_level": {"qualification": q_runs, "regression": r_runs}}
 
 
 # ─── T2-G / R2: ONE bounded synthetic PROVIDER PREFLIGHT (not the campaign) ─
@@ -1570,7 +1778,40 @@ def main(argv=None):
     p.add_argument("--mechanism-preflight", action="store_true")
     p.add_argument("--mechanism-content-journal", metavar="PATH")
     p.add_argument("--mechanism-candidate-check", action="store_true")
+    p.add_argument("--mechanism-v2-evaluation", action="store_true")
+    p.add_argument("--mechanism-v2-rescore", metavar="PATH")
     args = p.parse_args(argv)
+    if args.mechanism_v2_rescore:
+        if args.provider != "lexical" or args.allow_network or args.managed_credential \
+                or args.mechanism_v2_evaluation or args.mechanism_content \
+                or args.mechanism_preflight or args.mechanism_candidate_check:
+            print(json.dumps({"refused": "--mechanism-v2-rescore is offline and takes no "
+                                         "other mode, provider or network option"}))
+            return 2
+        try:
+            out = mechanism_v2_rescore(args.mechanism_v2_rescore)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0
+    if args.mechanism_v2_evaluation:
+        if args.mechanism_content or args.mechanism_preflight or args.mechanism_candidate_check \
+                or args.responsiveness or args.rescore or args.show_cases \
+                or args.mechanism_content_journal or args.mechanism_content_rescore:
+            print(json.dumps({"refused": "--mechanism-v2-evaluation takes no other mode"}))
+            return 2
+        if args.provider == "openai" and not (args.allow_network and args.managed_credential):
+            print(json.dumps({"refused": "--provider openai needs --allow-network "
+                                         "--managed-credential"}))
+            return 2
+        try:
+            out = mechanism_v2_run(args.provider, args.allow_network, args.managed_credential)
+        except PackError as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 2 if out.get("refused") else 0
     if args.mechanism_candidate_check:
         if args.provider != "lexical" or args.allow_network or args.managed_credential \
                 or args.mechanism_content or args.mechanism_preflight or args.responsiveness \
