@@ -2,8 +2,8 @@
 
 *Updated after run 9 (2026-10-27). Research evidence only: nothing here is admitted, implemented, activated or qualified as a product method.*
 
-**Status:** ACTIVE — not complete. Runs 9 / 20 · Perplexity queries 29 / 240 · deep-research calls 0 · window ends 2026-11-26.
-**Questions registered:** 23 (Q-01…Q-23) plus held / excluded items. **Sources inspected directly:** 27 (hash, page and rights in `evidence/`).
+**Status:** ACTIVE — not complete. Runs 10 / 20 · Perplexity queries 32 / 240 · deep-research calls 0 · window ends 2026-11-26.
+**Questions registered:** 23 (Q-01…Q-23) plus held / excluded items. **Sources inspected directly:** 32 (hash, page and rights in `evidence/`).
 
 | Q | Topic | Result |
 |---|---|---|
@@ -26,7 +26,10 @@
 | Q-17 | Multirotor hover thrust and margin | Qualified candidate (NASA Ames). |
 | Q-18 | PV rating conditions | Partial: standard test conditions sourced (DOE FEMP); temperature effect not yet on a clean-rights source. |
 | Q-19 | Vacuum outgassing screening | Qualified candidate (NASA PT-TE-1410). |
-| Q-20…Q-23 | Cylinder forces, inverse-square optics, thermal expansion, resonance | Queued for the next runs. |
+| Q-20 | Double-acting cylinder forces | Partial: DOE hydraulics basics found; rod-side area and speed–flow unverified. |
+| Q-21 | Inverse-square irradiance conditions | Qualified candidate (NIST SP 250-95). |
+| Q-22 | Thermal expansion and mismatch | Qualified candidate (NBS Circular 486, NASA TP-2226). |
+| Q-23 | Resonance (spring–mass) | Queued for run 11. |
 
 **Decisions:** DR-1 decided by you (Option C, recorded on the base branch). Still open with you and the Execution Lead: DR-2 which condition D-7
 governs; DR-3 definition of the 28-T2 "execution-facing output" claim. Details in `evidence/decision-records.md`.

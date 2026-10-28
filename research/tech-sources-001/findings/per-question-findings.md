@@ -215,3 +215,22 @@ coefficient) — the documents stating it are NREL / Sandia (contractor-operated
 NASA PT-TE-1410 (SRC-027): ASTM E-595 screening (10⁻⁶ torr, 125 °C, 24 h); TML < 1.0 % and CVCM < 0.10 % for approval unless the application
 dictates otherwise; product-by-product qualification, lot testing when variation is suspected. These are NASA's screening criteria, recorded
 as source facts, not InventorAI thresholds.
+
+## Run 10 (2026-10-28, scheduled wake-up)
+
+### Q-20 — Double-acting cylinder forces — PARTIAL
+DOE-HDBK-1018/2-93 ME-05 (SRC-028): Pascal's law; pressure applied on either side of the piston moves the load either way; force goes through
+the piston rod; a relief valve guards against overpressure. F = P × A is already delivered (mechanical:PR006–PR011). **Not found on a clean-rights
+source:** that the rod reduces the effective area on the retract side (so retract force is lower at equal pressure), and that piston speed equals
+flow ÷ effective area → UNVERIFIED. DOE contractor caveat applies.
+
+### Q-21 — Inverse-square irradiance — QUALIFIED-CANDIDATE (conditions)
+NIST SP 250-95 (SRC-030): the measurement distance must exceed a minimum at which deviation from the inverse square law is negligible; for large
+lamps the law does not hold well at close distances. This sources the far-field / small-source condition. The law's statement itself is used in
+that document as the working relation; no minimum distance value is adopted.
+
+### Q-22 — Thermal expansion and mismatch — QUALIFIED-CANDIDATE
+NBS Circular 486 (SRC-031): materials change dimensions with temperature; the change depends on original length and temperature range; average
+and instantaneous linear-expansion coefficients are defined; differential expansion of two materials is used in thermostats. NASA TP-2226
+(SRC-032): differential expansion between dissimilar joined materials produces thermal stress. DOE-HDBK-1017/1-93 (SRC-029) supports.
+Verification a design would need: the actual materials' coefficients over the actual temperature range and the joint's constraint. No data adopted.
