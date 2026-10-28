@@ -6429,8 +6429,8 @@ UI_STRINGS = {
     },
     "UI_THERM01_VERIFY_V1_ITEM_1_TEXT": {
         "en": ("The power actually dissipated in the region where the heat is produced. Power measured "
-               "at leads or contacts can overstate it, because part of that power is lost before it "
-               "reaches the heat-producing region."
+               "at leads or contacts can overstate it, because some of it is dissipated in the leads or "
+               "contacts themselves, not in the heat-producing region."
                "\n\n"
                "The temperatures at the two ends of the same path this calculation describes, with the "
                "reference temperature held and recorded at one clearly stated, fixed location, because "
@@ -6448,8 +6448,8 @@ UI_STRINGS = {
                "the two numbers would not by itself validate the model, and it says nothing about "
                "suitability, safety, reliability or compliance."),
         "ar": ("القدرة المبدَّدة فعلًا في المنطقة التي تتولّد فيها الحرارة. فالقدرة المقيسة عند الأطراف "
-               "أو نقاط التلامس قد تزيد عنها، لأن جزءًا من تلك القدرة يُفقد قبل أن يصل إلى المنطقة "
-               "المولِّدة للحرارة."
+               "أو نقاط التلامس قد تزيد عنها، لأن جزءًا منها يُبدَّد في الأطراف أو نقاط التلامس نفسها، "
+               "لا في المنطقة المولِّدة للحرارة."
                "\n\n"
                "درجتا الحرارة عند طرفي المسار نفسه الذي يصفه هذا الحساب، مع تثبيت درجة الحرارة "
                "المرجعية وتسجيلها في موضع واحد ثابت مذكور بوضوح، لأن القطعة أو الغلاف ليسا عند درجة "
