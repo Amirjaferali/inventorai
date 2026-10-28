@@ -294,3 +294,19 @@ Dimensions: D1, D3, D5, D7. Not adopted: the storage-loss example figures.
 NASA TN D-5643 (SRC-042): a periodic voltage equal to E for Δt and zero otherwise has an average proportional to the duty cycle Δt/T; filtered
 output is proportional to input voltage × duty cycle; filtering removes ripple; output impedance limits load independence. With SRC-018 (switching
 period much shorter than the winding's electrical time constant; free-wheeling path keeps current continuous). Dimensions: D1, D2, D3.
+
+## Run 14 (2026-10-28, early run on the Owner's direction relayed by the Lead session; residual-only)
+
+### Q-26 — residual — EXHAUSTED
+Third residual search: candidates state duty cycles or on/off ratios but not the explicit time-weighted average of active and sleep current, and no
+clean source states that device behaviour on power / connectivity loss must be defined. Both residual points stay **UNVERIFIED**; the points
+established in runs 12–13 (SRC-039, SRC-043) stand. Use: calc (average current) remains unsupported; cond / verif points stand. No further work.
+
+### Q-20 — residual — PARTIAL — WAITING (access)
+A clean federal candidate exists — USACE EM 1110-2-2610 (2025) states the reduced working area on the rod side and the smaller rod-end volume —
+but its host is refused by proxy policy; the DTIC handbook (Flow = Velocity × Area) is refused too. NASA NTRS alternatives are contractor or mixed
+authorship. Rod-side area and speed = flow ÷ area stay **UNVERIFIED**. Reopens on host access or a Lead-supplied inspection of EM 1110-2-2610.
+
+### Q-12 — residual — IP UNRESOLVED (terminal for the residual)
+The explicit two-link formula appears in two NTRS documents, both outside the rights screen (university paper with possible copyright; RIACS
+contractor report). The general principle (SRC-019) stands; the explicit formula stays **UNVERIFIED** on a clean source. No further work.

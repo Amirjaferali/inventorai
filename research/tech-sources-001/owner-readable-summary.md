@@ -3,7 +3,7 @@
 *Rewritten 2026-10-28 after run 13 under the Owner's remaining-run depth discipline. Research evidence only. Status is per question, never per
 technology: a qualified claim is prepared for later Lead assessment and admits no technology, domain, method, capability or roadmap obligation.*
 
-**Status:** ACTIVE — not complete. Runs 13 / 20 · Perplexity queries 40 / 240 · deep-research calls 0 · window ends 2026-11-26.
+**Status:** ACTIVE — not complete. Runs 14 / 20 · Perplexity queries 44 / 240 · deep-research calls 0 · window ends 2026-11-26.
 **Questions registered:** 40 (Q-01…Q-40) plus held / excluded items. **Sources:** SRC-001…SRC-043, all inspected directly by the executor
 (none Lead-supplied); hash, page and rights for each in `evidence/`.
 
@@ -22,8 +22,8 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 | Q-08 | Sampling rate vs process dynamics | QUALIFIED-CANDIDATE | — | cond |
 | Q-09 | Measurements to determine a thermal resistance | QUALIFIED-CANDIDATE | — | verif |
 | Q-10 | Fits / tolerances depend on process capability | QUALIFIED-CANDIDATE | Process-dependence point indirect (implied) | cond |
-| Q-11 | PWM average = duty × supply, with conditions | QUALIFIED-CANDIDATE | Explicit (SRC-042); ripple / load-response conditions from SRC-018 | calc, cond |
-| Q-12 | Two-link planar forward kinematics | PARTIAL | Explicit formula UNVERIFIED on a clean source | calc |
+| Q-11 | PWM average = duty × supply, with conditions | QUALIFIED-CANDIDATE (claim since covered by delivered PR #898) | Explicit (SRC-042); ripple / load-response conditions from SRC-018 | calc, cond |
+| Q-12 | Two-link planar forward kinematics | PARTIAL; residual IP UNRESOLVED (run 14) | Explicit formula only in rights-excluded sources; general principle stands | calc |
 | Q-13 | Free-space inverse-square and far-field conditions | QUALIFIED-CANDIDATE | Explicit (SRC-037, SRC-038); no link-budget values | cond |
 | Q-14 | Series adds voltage, parallel adds capacity; balancing | QUALIFIED-CANDIDATE | DOE contractor caveat | calc, cond |
 | Q-15 | Imaging resolution from FOV / pixel count | IP UNRESOLVED | Claim UNVERIFIED on a clean source | — |
@@ -31,13 +31,13 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 | Q-17 | Hover thrust = weight; margin needed to climb | QUALIFIED-CANDIDATE | Source says thrust "depends on" weight — equality implied, not explicit | cond |
 | Q-18 | PV rating at STC; output falls with irradiance / temperature | PARTIAL | Temperature effect UNVERIFIED on a clean source | cond |
 | Q-19 | Vacuum outgassing screening basis | QUALIFIED-CANDIDATE | Criteria are NASA's, not InventorAI thresholds | verif |
-| Q-20 | Retract force lower (rod area); speed = flow ÷ area | PARTIAL | Rod-side area and speed–flow UNVERIFIED | calc |
+| Q-20 | Retract force lower (rod area); speed = flow ÷ area | PARTIAL — WAITING (access) | Clean USACE source identified but host refused; points UNVERIFIED | calc |
 | Q-21 | Inverse-square irradiance conditions (optics) | QUALIFIED-CANDIDATE | Law named, conditions explicit; law statement itself implied in SRC-030 | cond |
 | Q-22 | Thermal expansion and joined-material mismatch | QUALIFIED-CANDIDATE | Expansion coefficient defined explicitly (SRC-031); product form follows from the definition | calc, cond |
 | Q-23 | Spring–mass natural frequency and resonance | QUEUED | — | — |
 | Q-24 | IoT device cybersecurity baseline capabilities | QUALIFIED-CANDIDATE | NISTIR 8259A detail is mixed-authorship (cross-check only) | ref, dec |
 | Q-25 | Firmware update authenticated; recoverable to known-good | QUALIFIED-CANDIDATE | Rollback nuance logged (unresolved-issues) | cond, verif |
-| Q-26 | Duty-cycled average current; defined power / link-loss behaviour | PARTIAL | Time-weighted average and defined loss behaviour UNVERIFIED; one more attempt, then EXHAUSTED | calc, cond |
+| Q-26 | Duty-cycled average current; defined power / link-loss behaviour | EXHAUSTED (run 14) | Time-weighted average and defined loss behaviour UNVERIFIED; established points stand | cond, verif |
 | Q-27 | IoT privacy considerations | QUEUED | — | — |
 | Q-28 | Real channels: obstruction, multipath, interference | QUALIFIED-CANDIDATE | — | cond, verif |
 | Q-29 | Shannon–Hartley capacity bound | QUEUED | — | — |
@@ -45,10 +45,10 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 | Q-31 | Capacity fade vs storage SOC, temperature, DOD, rate | QUALIFIED-CANDIDATE | Rate-on-life point from a lead-acid source | cond, verif |
 | Q-32…Q-40 | Converter relations, motor classes, watchdog, interlock, EO trade-offs, hover power, MPPT, eclipse power, vibration isolation | QUEUED | — | — |
 
-**Next by the protocol order:** PARTIAL residuals Q-26 (P1), Q-20 (P2), then Q-12 and Q-18 (P3); then queued Q-23 (P2).
+**Next by the protocol order:** PARTIAL residual Q-18 (P3); then queued Q-23 (P2), Q-27, Q-29, Q-32…
 
 **Decisions:** DR-1 decided by you (Option C). Still open with you and the Execution Lead: DR-2 (which condition D-7 governs), DR-3 (definition
 of the 28-T2 output claim), DR-4 (whether to keep, narrow or lift H-04). Details in `evidence/decision-records.md`.
 
 **Access blockers:** www.ibiblio.org (TLS trust), www.nxp.com (404), NRC document (403), transition.fcc.gov / www.fcc.gov, its.ntia.gov,
-stac.astrogeology.usgs.gov and openmodelica.org (proxy policy), www.faa.gov (no response). Nothing was bypassed.
+stac.astrogeology.usgs.gov and openmodelica.org (proxy policy), www.faa.gov (no response), www.publications.usace.army.mil and apps.dtic.mil (proxy policy). Nothing was bypassed.
