@@ -129,6 +129,7 @@ MUTATIONS = (
     "/session/<sid>/dc-load-power",
     "/session/<sid>/dc-load-energy",
     "/session/<sid>/dc-constant-current-charge",
+    "/session/<sid>/pwm-average-voltage",
     "/session/<sid>/planar-required-force",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",

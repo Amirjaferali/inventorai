@@ -403,7 +403,8 @@ def test_c12_the_shared_calculation_and_unit_inventory_is_unchanged():
         "electrical:dc_resistive_load_power",
         "electrical:dc_resistive_load_energy",
         "cap13:planar_required_force",
-        "electrical:dc_constant_current_charge"}
+        "electrical:dc_constant_current_charge",
+        "electrical:pwm_average_voltage"}
     assert get_active_rules(DOMAIN) == [
         "PHYSICAL_PRINCIPLE_REQUIRED", "POWER_ACKNOWLEDGMENT_IF_ENERGY", "NO_PLATFORM_SPECIFIC_NAMING"]
 

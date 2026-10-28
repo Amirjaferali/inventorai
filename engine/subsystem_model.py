@@ -90,6 +90,12 @@ Electrical / Electronics part whatever the initial analysis focus, decided in th
 layer from the same validated durable composition; it establishes no load, current
 constancy, battery, applicability, suitability, validation or safety and changes
 nothing here. A further narrow, Owner-authorized exception
+(PWM-AVERAGE-VOLTAGE-01): the admitted request-local calculation
+``electrical:pwm_average_voltage`` v1.0 may likewise be OFFERED for the declared
+Electrical / Electronics part whatever the initial analysis focus, decided in the web
+layer from the same validated durable composition; it establishes no waveform, load
+response, applicability, suitability, validation or safety and changes nothing here. A
+further narrow, Owner-authorized exception
 (MEASUREMENT-PLANNING-INTEGRATED-PART-01): the three existing, read-only Electronics
 measurement-planning guidance elements of the CAP-09 planning page (the measured-quantity
 versus observed-condition guidance, the measurement-conditions awareness note and the

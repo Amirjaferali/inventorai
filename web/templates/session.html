@@ -2480,6 +2480,15 @@ body{overflow-wrap:anywhere}
 <p class="journey-note" data-dcq-link style="margin-top:14px"><a href="{{ url_for('dc_constant_current_charge', sid=sid) }}">{{ t('UI_DCQ_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_DCQ_LINK_NOTE') }}</span></p>
 {% endif %}
 {#- DCQ-LINK-END -#}
+{#- PWM-LINK-BEGIN — PWM Average Voltage Slice 1. ONE optional link to the
+    request-local calculation page, offered on an eligible (Electrical / Electronics
+    root or declared part) project only. It is not a journey action, gates nothing,
+    asks nothing and carries no calculation content: nothing is calculated or saved
+    on this page. -#}
+{% if pwm_average_voltage_link %}
+<p class="journey-note" data-pwm-link style="margin-top:14px"><a href="{{ url_for('pwm_average_voltage', sid=sid) }}">{{ t('UI_PWM_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_PWM_LINK_NOTE') }}</span></p>
+{% endif %}
+{#- PWM-LINK-END -#}
 {#- THERM01-LINK-BEGIN — Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1.
     ONE optional link to the request-local calculation page, offered only on an
     eligible (Electrical / Electronics-root) project. It is not a journey action,

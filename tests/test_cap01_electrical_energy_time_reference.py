@@ -399,7 +399,8 @@ def test_t11_the_shared_calculation_and_unit_inventory_is_unchanged():
         "electrical:dc_resistive_load_power",
         "electrical:dc_resistive_load_energy",
         "cap13:planar_required_force",
-        "electrical:dc_constant_current_charge"}
+        "electrical:dc_constant_current_charge",
+        "electrical:pwm_average_voltage"}
 
 
 def test_t12_no_input_control_numeric_result_or_state_change(client, monkeypatch):
