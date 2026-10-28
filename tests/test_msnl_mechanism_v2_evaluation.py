@@ -299,3 +299,41 @@ def test_the_v2_lexical_check_has_no_product_or_store_side_effect(tmp_path):
     assert out.returncode == 0, out.stderr
     assert out.stdout.strip() == "[]"
     assert not db.exists()
+
+
+# ─── the one recorded evaluation (evaluation_01) ────────────────────────────
+
+V2_EVIDENCE = ROOT / "docs" / "benchmarks" / "evidence" / "msnl_mechanism_content_v2"
+V2_FROZEN = {
+    V2_EVIDENCE / "evaluation_01_report.json":
+        "dc5688df7fa0f100dafca357fdb69e281fce9b94d805993de03d82404ca820de",
+    V2_EVIDENCE / "evaluation_01_journal.jsonl":
+        "3c470364671914a2dd78b1e5537ef9a7f8dcdd5b58221b73ab324e8d3fe32596",
+}
+
+
+def test_the_v2_evaluation_path_is_closed_after_its_one_run():
+    assert h.MECHANISM_V2_EVALUATION_AUTHORIZED is False
+    assert h.MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED is False
+    assert h.MECHANISM_PREFLIGHT_AUTHORIZED is False
+    # the fixed evidence exists, so even a reopened flag could not restart it
+    assert pathlib.Path(h.MECHANISM_V2_REPORT_PATH).exists()
+    assert pathlib.Path(h.MECHANISM_V2_JOURNAL_PATH).exists()
+
+
+def test_the_recorded_v2_evaluation_is_preserved_and_replays_offline():
+    for path, sha in V2_FROZEN.items():
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == sha, path.name
+    saved = json.loads((V2_EVIDENCE / "evaluation_01_report.json").read_text(encoding="utf-8"))
+    assert saved["provider_requests"] == 281 and saved["error_kinds"] == {"transport": 1}
+    assert saved["spend"]["measured_cost_complete"] is False
+    q = saved["result"]["qualification"]
+    assert q["campaign_status"] == "INVALID" and q["verdict"] == "FAIL"
+    assert saved["result"]["regression"] is None
+    assert [r["cases_answered"] for r in q["runs"]] == [160, 121]
+    assert q["runs"][0]["valid"] is True and q["runs"][0]["criteria"]["VC1"] is False
+    out = h.mechanism_v2_rescore(str(V2_EVIDENCE / "evaluation_01_report.json"))
+    assert out["result"] == saved["result"]
+    strip = lambda row: {k: v for k, v in row.items() if k != "attempt"}
+    assert [[strip(r) for r in run] for run in out["case_level"]["qualification"]] == \
+        [[strip(r) for r in run] for run in saved["case_level"]["qualification"]]
