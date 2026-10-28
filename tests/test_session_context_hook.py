@@ -25,9 +25,17 @@ DOCS = ("CLAUDE.md",
         "docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md")
 
 
+# Test-local Git configuration: a commit otherwise spawns git's detached
+# auto-maintenance (``git maintenance run --auto``; ``gc --auto`` on older
+# Git), which takes and removes ``.git/objects/maintenance.lock`` in the
+# background and can race a test that deletes the throw-away ``.git`` right
+# after the commit. The hook under test is unaffected: it only reads Git.
+_NO_AUTO_MAINTENANCE = ("-c", "maintenance.auto=false", "-c", "gc.auto=0")
+
+
 def _git(cwd, *args):
-    return subprocess.run(["git", "-C", str(cwd), *args], capture_output=True, text=True,
-                          check=True).stdout.strip()
+    return subprocess.run(["git", "-C", str(cwd), *_NO_AUTO_MAINTENANCE, *args],
+                          capture_output=True, text=True, check=True).stdout.strip()
 
 
 @pytest.fixture
