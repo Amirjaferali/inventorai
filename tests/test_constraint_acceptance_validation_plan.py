@@ -225,6 +225,17 @@ def test_w06_project_isolation(client):
     assert "Zq-mine-6613" not in raw and _ca_blocks(raw) == [CONSTRAINT_ACCEPTANCE_NONE]
 
 
+def _stable_package(package):
+    """The canonical package without its intentionally time-varying stamp.
+
+    ``assemble_deliverable`` stamps every assembly with ``generated_at`` (one-
+    second resolution), so two legitimate assemblies may differ in that one
+    field alone. The invariant under test — acceptance preparation changes no
+    canonical package semantics — is judged on every other field verbatim."""
+    assert "generated_at" in package
+    return {key: value for key, value in package.items() if key != "generated_at"}
+
+
 def test_w07_canonical_package_and_export_are_unchanged(client):
     sid, cid = _project(client)
     state = _live(sid)
@@ -234,7 +245,7 @@ def test_w07_canonical_package_and_export_are_unchanged(client):
     client.get(REPORT % sid)                                                      # attaches the carrier
     assert _live(sid).constraint_acceptance_preparations                          # attached on the live state
     after = assemble_deliverable(_live(sid))
-    assert after == before and "Zq-pkg-7714" not in repr(after)
+    assert _stable_package(after) == _stable_package(before) and "Zq-pkg-7714" not in repr(after)
     import engine.disclosure_export as export
     source = open(export.__file__, encoding="utf-8").read()
     assert "constraint_acceptance" not in source and "validation_plan" not in source
