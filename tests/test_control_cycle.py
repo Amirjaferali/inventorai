@@ -512,18 +512,26 @@ def test_mechanical_root_is_unsupported(mech, monkeypatch):
     assert not called
 
 
-def test_a_declared_electronics_part_grants_nothing(monkeypatch):
+def test_a_declared_electronics_part_is_offered_through_the_shared_gate(monkeypatch):
+    # CONTROL-CYCLE-INTEGRATED-PART-01: the declared Electrical / Electronics
+    # part of a valid durable composition is eligible through the SAME
+    # `_calc_gate` rule the admitted calculations use; the root rule itself is
+    # unchanged (tests/test_control_cycle_integrated_part.py holds the guards).
     c, _ = _client_for("cc-part@example.com")
     sid = _integrated(c, MECH)          # Mechanical focus with a declared Electronics part
-    assert any(s.domain == ELEC for s in webapp._get_store().load_project_subsystems(sid))
-    assert webapp._control_cycle_eligible(sid) is False
-    assert "data-cc-link" not in _page(c, sid)
+    part = [s for s in webapp._get_store().load_project_subsystems(sid) if s.domain == ELEC][0]
+    assert webapp._control_cycle_gate(sid) == (True, part)
+    assert webapp._control_cycle_eligible(sid) is True
+    assert "data-cc-link" in _page(c, sid)
     body = c.post(URL % sid, data=_form()).get_data(as_text=True)
-    assert "data-cc-form" not in body and _field(body, "next") is None
-    sid2 = _integrated(c, ELEC)         # Electronics focus: eligible through the root only
+    assert "data-cc-form" in body and _field(body, "next") == "RUNNING"
+    sid2 = _integrated(c, ELEC)         # Electronics focus: eligible through the root
     assert webapp._control_cycle_eligible(sid2) is True
     monkeypatch.setattr(webapp, "_cap12_root_domain", lambda _sid: None)
-    assert webapp._control_cycle_eligible(sid2) is False
+    assert webapp._control_cycle_eligible(sid2) is True   # the declared part still admits it
+    single, _ = _client_for("cc-part-single@example.com")
+    ssid = _start(single, ELEC_FORM)
+    assert webapp._control_cycle_eligible(ssid) is False  # no composition: root only
 
 
 def test_csrf_and_project_authorization(elec):
@@ -552,12 +560,15 @@ def test_no_report_export_api_control_loop_or_safety_surface():
     section = src[start:src.index("# TEMPERATURE-TO-CONTROL-CONDITION-01 —", start)]
     for banned in ("safety_signal", "SafetySignal(", "_get_store()", "append_",
                    "SESSION_STORE[", "deliverable", "pdf", "export", "/api/",
-                   "_calc_gate", "_calc_declared_part", "load_project_subsystems",
+                   "_calc_declared_part", "load_project_subsystems",
                    "_dcalc", "request.args", "session["):
         assert banned not in section, banned
     code = "\n".join(line for line in section.splitlines()
                      if not line.strip().startswith("#"))
     assert "control_loop" not in code and "subsystem" not in code
+    # CONTROL-CYCLE-INTEGRATED-PART-01: eligibility is the ONE shared rule, read
+    # through `_calc_gate` exactly once (the gate); no second composition read
+    assert code.count("_calc_gate(") == 1
     assert [r.rule for r in webapp.app.url_map.iter_rules() if "control-cycle" in r.rule] \
         == ["/session/<sid>/control-cycle"] * 2
     for template in ("deliverable.html", "report.html", "success_criteria.html",
@@ -572,7 +583,12 @@ def test_control_loop_activation_and_stage15_boundaries_are_unchanged():
     assert domain_activation._PART_ONLY_DOMAINS == frozenset({"control_loop"}) \
         or tuple(domain_activation._PART_ONLY_DOMAINS) == ("control_loop",)
     assert "control_loop" not in domain_activation.activated_domains()
-    assert "control_cycle" not in Path(subsystem_model.__file__).read_text(encoding="utf-8")
+    model = Path(subsystem_model.__file__).read_text(encoding="utf-8")
+    # CONTROL-CYCLE-INTEGRATED-PART-01 records its narrow eligibility exception
+    # in the Stage 15 docstring and nothing else: no code names the module
+    code = "\n".join(line for line in model.split('"""')[2::2])
+    assert "control_cycle" not in code
+    assert model.count("CONTROL-CYCLE-INTEGRATED-PART-01") == 1
     assert "control_cycle" not in Path(domain_activation.__file__).read_text(encoding="utf-8")
 
 

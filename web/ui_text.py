@@ -7018,6 +7018,9 @@ UI_STRINGS = {
     "UI_CC_LINK_NOTE": {
         "en": "An advisory evaluation of a fixed logic you confirm. It is not saved, controls nothing and is never required.",
         "ar": "تقييم إرشادي لمنطق ثابت تؤكّده أنت. لا يُحفَظ، ولا يتحكم في أي شيء، ولا يكون مطلوبًا أبدًا."},
+    "UI_CC_PART_NOTE": {
+        "en": "This evaluation is offered for the recorded part; its presence establishes no control requirement, actuation, timing, compatibility, suitability, validation or safety.",
+        "ar": "يتاح هذا التقييم للجزء المسجل؛ ووجوده لا يثبت أي متطلب تحكم ولا تشغيل فعلي ولا توقيت ولا توافق ولا ملاءمة ولا تحقق ولا سلامة."},
     "UI_CC_TITLE": {
         "en": "One control cycle: READY / RUNNING (optional, non-binding)",
         "ar": "دورة تحكم واحدة: READY / RUNNING (اختياري، غير مُلزِم)"},
@@ -7025,8 +7028,8 @@ UI_STRINGS = {
         "en": "This page is optional. It walks through one cycle of a very simple start logic with two states, READY and RUNNING: you choose the state before the cycle and the value of start_input, and it shows which state follows and what the one logical output is. Nothing is saved and no device is controlled.",
         "ar": "هذه الصفحة اختيارية. تتتبّع دورة واحدة لمنطق بدء بسيط جدًا له حالتان، READY وRUNNING: تختار أنت الحالة قبل الدورة وقيمة start_input، وتعرض الصفحة الحالة التالية وقيمة الخرج المنطقي الوحيد. لا يُحفَظ شيء، ولا يُتحكَّم في أي جهاز."},
     "UI_CC_SCOPE_NOTE": {
-        "en": "This optional evaluation is available for a project whose analysis focus is Electrical / Electronics. That focus does not establish that this logic describes your design. You must confirm the fixed definition and the screening items. The result is an UNVALIDATED logical value, not a device command, a PLC program, a timing statement or a safety function.",
-        "ar": "يتاح هذا التقييم الاختياري لمشروع محور تحليله كهربائي/إلكتروني. ولا يثبت هذا المحور أن هذا المنطق يصف تصميمك. يجب أن تؤكّد التعريف الثابت وتجيب عن أسئلة الفحص. النتيجة قيمة منطقية غير مُتحقَّق منها، وليست أمرًا لجهاز ولا برنامج PLC ولا بيانًا للتوقيت ولا وظيفة سلامة."},
+        "en": "This optional evaluation is available for an Electrical / Electronics-focus project or for its declared Electrical / Electronics part in a valid durable integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that this logic describes your design. You must confirm the fixed definition and the screening items. The result is an UNVALIDATED logical value, not a device command, a PLC program, a timing statement or a safety function.",
+        "ar": "يتاح هذا التقييم الاختياري لمشروع محور تحليله كهربائي/إلكتروني، أو لجزئه الكهربائي/الإلكتروني المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء أن هذا المنطق يصف تصميمك. يجب أن تؤكّد التعريف الثابت وتجيب عن أسئلة الفحص. النتيجة قيمة منطقية غير مُتحقَّق منها، وليست أمرًا لجهاز ولا برنامج PLC ولا بيانًا للتوقيت ولا وظيفة سلامة."},
     "UI_CC_DEFINITION_HEADING": {
         "en": "The fixed logic (it cannot be changed here)",
         "ar": "المنطق الثابت (لا يمكن تغييره هنا)"},
@@ -7185,6 +7188,9 @@ UI_STRINGS = {
     "UI_TCC_LINK_NOTE": {
         "en": "An advisory evaluation of values you declare. It is not saved, controls nothing and is never required.",
         "ar": "تقييم إرشادي لقيم تصرّح بها أنت. لا يُحفَظ، ولا يتحكم في أي شيء، ولا يكون مطلوبًا أبدًا."},
+    "UI_TCC_PART_NOTE": {
+        "en": "This evaluation is offered for the recorded part; its presence establishes no sensor choice, control requirement, actuation, timing, compatibility, suitability, validation or safety.",
+        "ar": "يتاح هذا التقييم للجزء المسجل؛ ووجوده لا يثبت اختيارًا للحسّاس ولا أي متطلب تحكم ولا تشغيل فعلي ولا توقيت ولا توافق ولا ملاءمة ولا تحقق ولا سلامة."},
     "UI_TCC_TITLE": {
         "en": "TMP36 temperature → threshold → one control cycle (optional, non-binding)",
         "ar": "درجة حرارة TMP36 ← عتبة ← دورة تحكم واحدة (اختياري، غير مُلزِم)"},
@@ -7192,8 +7198,8 @@ UI_STRINGS = {
         "en": "This page is optional. In one step it takes the TMP36 output voltage you read yourself, works out the sensor's nominal temperature, checks whether it is at or above a threshold you choose, and uses that yes / no answer as start_input for one cycle of the fixed READY / RUNNING logic. Nothing is saved and no device is controlled.",
         "ar": "هذه الصفحة اختيارية. في خطوة واحدة تأخذ جهد خرج TMP36 الذي قرأته بنفسك، وتحسب درجة الحرارة الاسمية للحسّاس، وتتحقق مما إذا كانت مساوية لعتبة تختارها أو أعلى منها، وتستخدم هذه الإجابة (نعم / لا) بوصفها start_input لدورة واحدة من منطق READY / RUNNING الثابت. لا يُحفَظ شيء، ولا يُتحكَّم في أي جهاز."},
     "UI_TCC_SCOPE_NOTE": {
-        "en": "This optional evaluation is available only where both the TMP36 temperature and the READY / RUNNING cycle are available: a project whose analysis focus is Electrical / Electronics. It does not establish that your sensor is a TMP36, that the logic describes your design or that the threshold suits it. The result is UNVALIDATED: not a measurement, a thermostat, a device command or a safety function.",
-        "ar": "يتاح هذا التقييم الاختياري فقط حيث تتاح درجة حرارة TMP36 ودورة READY / RUNNING كلتاهما: مشروع محور تحليله كهربائي/إلكتروني. ولا يثبت أن حسّاسك من طراز TMP36، ولا أن المنطق يصف تصميمك، ولا أن العتبة تلائمه. النتيجة غير مُتحقَّق منها (UNVALIDATED): ليست قياسًا ولا منظِّم حرارة (thermostat) ولا أمرًا لجهاز ولا وظيفة سلامة."},
+        "en": "This optional evaluation is available only where both the TMP36 temperature and the READY / RUNNING cycle are available: an Electrical / Electronics-focus project, or the same declared Electrical / Electronics part in a valid durable integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that your sensor is a TMP36, that the logic describes your design or that the threshold suits it. The result is UNVALIDATED: not a measurement, a thermostat, a device command or a safety function.",
+        "ar": "يتاح هذا التقييم الاختياري فقط حيث تتاح درجة حرارة TMP36 ودورة READY / RUNNING كلتاهما: مشروع محور تحليله كهربائي/إلكتروني، أو الجزء الكهربائي/الإلكتروني المصرّح به نفسه ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء أن حسّاسك من طراز TMP36، ولا أن المنطق يصف تصميمك، ولا أن العتبة تلائمه. النتيجة غير مُتحقَّق منها (UNVALIDATED): ليست قياسًا ولا منظِّم حرارة (thermostat) ولا أمرًا لجهاز ولا وظيفة سلامة."},
     "UI_TCC_PART1_HEADING": {
         "en": "1. The TMP36 nominal temperature",
         "ar": "1. درجة الحرارة الاسمية لحسّاس TMP36"},

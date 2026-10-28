@@ -43,6 +43,15 @@ ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:any
   <p style="margin:0">{{ iso('UI_CC_INTRO') }}</p>
 </div>
 <p class="notice" data-cc-scope-note>{{ iso('UI_CC_SCOPE_NOTE') }}</p>
+{#- CONTROL-CYCLE-INTEGRATED-PART-01: on an integrated project the declared
+    Electrical / Electronics part this evaluation is offered for, by its
+    Owner-declared name (escaped, direction-auto), with the fixed attribution
+    note. Offering the evaluation for a recorded part establishes no control
+    requirement, actuation, timing, compatibility, suitability, validation or
+    safety. -#}
+{% if eligible and part_name %}
+<p class="notice" data-cc-part><strong>{{ iso('UI_THERM01_PART_LABEL') }}</strong> <bdi dir="auto" data-cc-part-name>{{ part_name }}</bdi><br>{{ iso('UI_CC_PART_NOTE') }}</p>
+{% endif %}
 <section class="box" data-cc-definition>
   <p class="copy"><strong>{{ t('UI_CC_DEFINITION_HEADING') }}</strong></p>
   <ul class="plain">

@@ -95,6 +95,15 @@ nothing here. A further narrow, Owner-authorized exception
 Electrical / Electronics part whatever the initial analysis focus, decided in the web
 layer from the same validated durable composition; it establishes no waveform, load
 response, applicability, suitability, validation or safety and changes nothing here. A
+further narrow, Owner-authorized exception (CONTROL-CYCLE-INTEGRATED-PART-01): the
+existing request-local 28-T4 evaluation ``control_cycle:ready_running_single_transition``
+v1.0 and the existing composition
+``temperature_control_condition:tmp36_threshold_ready_running`` v1.0 may likewise be
+OFFERED for the declared Electrical / Electronics part whatever the initial analysis
+focus, decided in the web layer from the same validated durable composition — the
+composition only where both of its existing gates resolve to that SAME current part; it
+establishes no control requirement, actuation, timing, compatibility, suitability,
+validation or safety and changes nothing here. A
 further narrow, Owner-authorized exception
 (MEASUREMENT-PLANNING-INTEGRATED-PART-01): the three existing, read-only Electronics
 measurement-planning guidance elements of the CAP-09 planning page (the measured-quantity

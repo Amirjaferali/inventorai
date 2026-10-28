@@ -45,6 +45,15 @@ details{font-size:13px;margin:0 0 12px 0}
   <p style="margin:0">{{ iso('UI_TCC_INTRO') }}</p>
 </div>
 <p class="notice" data-tcc-scope-note>{{ iso('UI_TCC_SCOPE_NOTE') }}</p>
+{#- CONTROL-CYCLE-INTEGRATED-PART-01: on an integrated project the ONE declared
+    Electrical / Electronics part BOTH existing gates resolved to, by its
+    Owner-declared name (escaped, direction-auto), with the fixed attribution
+    note. Offering the composition for a recorded part establishes no sensor
+    choice, control requirement, actuation, timing, compatibility, suitability,
+    validation or safety. -#}
+{% if eligible and part_name %}
+<p class="notice" data-tcc-part><strong>{{ iso('UI_THERM01_PART_LABEL') }}</strong> <bdi dir="auto" data-tcc-part-name>{{ part_name }}</bdi><br>{{ iso('UI_TCC_PART_NOTE') }}</p>
+{% endif %}
 
 {% if error_key %}<div class="error" role="alert" data-tcc-error>{{ t(error_key) }}</div>{% endif %}
 

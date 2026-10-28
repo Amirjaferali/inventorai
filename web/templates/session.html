@@ -2433,16 +2433,21 @@ body{overflow-wrap:anywhere}
 {#- TMP36-LINK-END -#}
 {#- CC-LINK-BEGIN — 28-T4 Control-Cycle Slice 1. ONE optional link to the
     request-local READY / RUNNING evaluation page, offered on an Electrical /
-    Electronics root project only. It is not a journey action, gates nothing and
-    carries no evaluation content: nothing is evaluated or saved on this page. -#}
+    Electronics root project or (CONTROL-CYCLE-INTEGRATED-PART-01) for the
+    declared Electrical / Electronics part of a valid durable integrated
+    composition, through the same shared gate the page and its POST read. It is
+    not a journey action, gates nothing and carries no evaluation content:
+    nothing is evaluated or saved on this page. -#}
 {% if control_cycle_link %}
 <p class="journey-note" data-cc-link style="margin-top:14px"><a href="{{ url_for('control_cycle', sid=sid) }}">{{ t('UI_CC_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_CC_LINK_NOTE') }}</span></p>
 {% endif %}
 {#- CC-LINK-END -#}
 {#- TCC-LINK-BEGIN — TEMPERATURE-TO-CONTROL-CONDITION-01. ONE optional link to the
     request-local composition page, offered only where both the TMP36 and the
-    28-T4 gates admit the project. It is not a journey action, gates nothing and
-    carries no evaluation content. -#}
+    28-T4 gates admit the project — the root, or (CONTROL-CYCLE-INTEGRATED-
+    PART-01) the SAME current declared Electrical / Electronics part on both
+    sides. It is not a journey action, gates nothing and carries no evaluation
+    content. -#}
 {% if temperature_control_condition_link %}
 <p class="journey-note" data-tcc-link style="margin-top:14px"><a href="{{ url_for('temperature_control_condition', sid=sid) }}">{{ t('UI_TCC_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_TCC_LINK_NOTE') }}</span></p>
 {% endif %}
