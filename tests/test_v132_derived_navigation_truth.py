@@ -7556,6 +7556,7 @@ def test_technical_remediation_strategy_is_preserved_as_continuity_only():
             "28-T3 Power Electronics / Motion: BLOCKED",
             "Interface verification beyond the Stage 15 preparation fields: STOP",
             "Preliminary motion requirements (Q-02): the Owner approved DR-1 Option C",
+            "Q-02 implementation stays BLOCKED pending separately authorized",
             "structured quantity / BOM on T6 §0 activation"):
         assert needle in entry, needle
     # Product identity applied at selection: idea-first, no assumed engineering knowledge or design;

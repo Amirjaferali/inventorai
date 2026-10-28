@@ -1,0 +1,329 @@
+{
+  "pack_id": "msnl-mechanism-preflight-v1",
+  "preflight_sha256": "d6e4deda42a6d4a73ac9e2654d51bc69c05af53e9d15f49b4dc453964e67c63d",
+  "arm_pack_sha256": "c4c1d7e484de5abac1022d59d12b47816f2093f5191809e47bd75b89fb8d82ea",
+  "instructions_sha256": "7ea95c74ac03f0d45b2fa04a960948d500216ebc101173fc66941f073363aee3",
+  "fixed_settings": {
+    "model": "gpt-6-sol",
+    "endpoint": "https://api.openai.com/v1/responses",
+    "credential": "managed_proxy (the egress proxy injects it; this process reads and sends none)",
+    "store": false,
+    "text_format": "json_schema strict (the arm's schema)",
+    "reasoning": "not set (provider default)",
+    "temperature": "not set (provider default)",
+    "tools": "none",
+    "timeout_seconds": 90,
+    "retries": 0,
+    "varied": "max_output_tokens only (300, 4096)"
+  },
+  "limits": {
+    "max_generation_requests": 8,
+    "budget_usd": 5.0
+  },
+  "pricing": {
+    "model": "gpt-6-sol",
+    "tier": "Standard",
+    "input_usd_per_1m": 2.0,
+    "cached_input_usd_per_1m": 0.2,
+    "output_usd_per_1m": 10.0,
+    "basis": "OpenAI's published Standard text-token rate for gpt-6-sol (developers.openai.com/api/docs/models/gpt-6-sol; openai.com/index/introducing-gpt-6-sol-and-luna, 2026-10-26), obtained through a search of those pages: a direct fetch of the OpenAI pages is blocked in this environment, so the rate is not independently inspected. Reasoning tokens are counted inside output tokens and are never added a second time. The measured cost is reported at this rate; budget enforcement uses the reservation below.",
+    "reservation_multiplier": 6,
+    "reservation_input_usd_per_1m": 12.0,
+    "reservation_output_usd_per_1m": 60.0,
+    "reservation_rule": "Before each request, reserve (UTF-8 bytes of the whole request body + 1000) input tokens and max_output_tokens output tokens at the reservation rates; a token covers at least one byte, and the 6x rate is above every higher-tier multiplier reported for the model (Fast 2x, long-context 2x / 1.5x, regional +10%). A request is sent only if the committed bound plus its reservation stays within budget_usd. After it, the committed bound grows by its usage at the reservation rates, or by its whole reservation when usage is unavailable or the attempt failed."
+  },
+  "plan": [
+    {
+      "index": 1,
+      "input_id": "PF1-en",
+      "max_output_tokens": 300,
+      "reserved_usd": 0.06894
+    },
+    {
+      "index": 2,
+      "input_id": "PF2-en",
+      "max_output_tokens": 300,
+      "reserved_usd": 0.068052
+    },
+    {
+      "index": 3,
+      "input_id": "PF3-ar-msa",
+      "max_output_tokens": 300,
+      "reserved_usd": 0.071088
+    },
+    {
+      "index": 4,
+      "input_id": "PF4-ar-gulf-kw",
+      "max_output_tokens": 300,
+      "reserved_usd": 0.069084
+    },
+    {
+      "index": 5,
+      "input_id": "PF1-en",
+      "max_output_tokens": 4096,
+      "reserved_usd": 0.296712
+    },
+    {
+      "index": 6,
+      "input_id": "PF2-en",
+      "max_output_tokens": 4096,
+      "reserved_usd": 0.295824
+    },
+    {
+      "index": 7,
+      "input_id": "PF3-ar-msa",
+      "max_output_tokens": 4096,
+      "reserved_usd": 0.29886
+    },
+    {
+      "index": 8,
+      "input_id": "PF4-ar-gulf-kw",
+      "max_output_tokens": 4096,
+      "reserved_usd": 0.296856
+    }
+  ],
+  "campaign_authorized": false,
+  "model": "gpt-6-sol",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "provider_requests": 8,
+  "requests": [
+    {
+      "index": 1,
+      "input_id": "PF1-en",
+      "variety": "en",
+      "sent": true,
+      "max_output_tokens": 300,
+      "http_status": 200,
+      "response_id": "resp_079f4d87cd3af1e7016ae124983d6887d29308744701a17630",
+      "model": "gpt-6-sol",
+      "response_status": "completed",
+      "incomplete_reason": "UNAVAILABLE",
+      "error_type": "UNAVAILABLE",
+      "error_code": "UNAVAILABLE",
+      "usage": {
+        "input_tokens": 656,
+        "cached_input_tokens": 0,
+        "output_tokens": 60,
+        "reasoning_tokens": 0,
+        "total_tokens": 716
+      },
+      "latency_ms": 3230,
+      "schema_valid": true,
+      "outcome": "COMPLETED_VALID",
+      "reserved_usd": 0.06894,
+      "measured_cost_usd": 0.001912,
+      "bound_usd": 0.011472
+    },
+    {
+      "index": 2,
+      "input_id": "PF2-en",
+      "variety": "en",
+      "sent": true,
+      "max_output_tokens": 300,
+      "http_status": 200,
+      "response_id": "resp_02366f0de10cccb1016ae1249a7f0887d2898353ab966af826",
+      "model": "gpt-6-sol",
+      "response_status": "completed",
+      "incomplete_reason": "UNAVAILABLE",
+      "error_type": "UNAVAILABLE",
+      "error_code": "UNAVAILABLE",
+      "usage": {
+        "input_tokens": 638,
+        "cached_input_tokens": 0,
+        "output_tokens": 118,
+        "reasoning_tokens": 68,
+        "total_tokens": 756
+      },
+      "latency_ms": 3057,
+      "schema_valid": true,
+      "outcome": "COMPLETED_VALID",
+      "reserved_usd": 0.068052,
+      "measured_cost_usd": 0.002456,
+      "bound_usd": 0.014736
+    },
+    {
+      "index": 3,
+      "input_id": "PF3-ar-msa",
+      "variety": "ar-msa",
+      "sent": true,
+      "max_output_tokens": 300,
+      "http_status": 200,
+      "response_id": "resp_0d29103f2f36c662016ae1249d8ab487d2a37d358150b508d5",
+      "model": "gpt-6-sol",
+      "response_status": "completed",
+      "incomplete_reason": "UNAVAILABLE",
+      "error_type": "UNAVAILABLE",
+      "error_code": "UNAVAILABLE",
+      "usage": {
+        "input_tokens": 678,
+        "cached_input_tokens": 0,
+        "output_tokens": 88,
+        "reasoning_tokens": 15,
+        "total_tokens": 766
+      },
+      "latency_ms": 2907,
+      "schema_valid": true,
+      "outcome": "COMPLETED_VALID",
+      "reserved_usd": 0.071088,
+      "measured_cost_usd": 0.002236,
+      "bound_usd": 0.013416
+    },
+    {
+      "index": 4,
+      "input_id": "PF4-ar-gulf-kw",
+      "variety": "ar-gulf-kw",
+      "sent": true,
+      "max_output_tokens": 300,
+      "http_status": 200,
+      "response_id": "resp_0838270b1403ee65016ae124a071d487d2b06b947b477a124c",
+      "model": "gpt-6-sol",
+      "response_status": "completed",
+      "incomplete_reason": "UNAVAILABLE",
+      "error_type": "UNAVAILABLE",
+      "error_code": "UNAVAILABLE",
+      "usage": {
+        "input_tokens": 655,
+        "cached_input_tokens": 0,
+        "output_tokens": 103,
+        "reasoning_tokens": 24,
+        "total_tokens": 758
+      },
+      "latency_ms": 2203,
+      "schema_valid": true,
+      "outcome": "COMPLETED_VALID",
+      "reserved_usd": 0.069084,
+      "measured_cost_usd": 0.00234,
+      "bound_usd": 0.01404
+    },
+    {
+      "index": 5,
+      "input_id": "PF1-en",
+      "variety": "en",
+      "sent": true,
+      "max_output_tokens": 4096,
+      "http_status": 200,
+      "response_id": "resp_08d7fcc581031dc6016ae124a2a83487d2be4354cb53756dde",
+      "model": "gpt-6-sol",
+      "response_status": "completed",
+      "incomplete_reason": "UNAVAILABLE",
+      "error_type": "UNAVAILABLE",
+      "error_code": "UNAVAILABLE",
+      "usage": {
+        "input_tokens": 656,
+        "cached_input_tokens": 0,
+        "output_tokens": 60,
+        "reasoning_tokens": 0,
+        "total_tokens": 716
+      },
+      "latency_ms": 2537,
+      "schema_valid": true,
+      "outcome": "COMPLETED_VALID",
+      "reserved_usd": 0.296712,
+      "measured_cost_usd": 0.001912,
+      "bound_usd": 0.011472
+    },
+    {
+      "index": 6,
+      "input_id": "PF2-en",
+      "variety": "en",
+      "sent": true,
+      "max_output_tokens": 4096,
+      "http_status": 200,
+      "response_id": "resp_0d9cdc4471fc949b016ae124a5316887d287c20eab72ffc895",
+      "model": "gpt-6-sol",
+      "response_status": "completed",
+      "incomplete_reason": "UNAVAILABLE",
+      "error_type": "UNAVAILABLE",
+      "error_code": "UNAVAILABLE",
+      "usage": {
+        "input_tokens": 638,
+        "cached_input_tokens": 0,
+        "output_tokens": 124,
+        "reasoning_tokens": 74,
+        "total_tokens": 762
+      },
+      "latency_ms": 3060,
+      "schema_valid": true,
+      "outcome": "COMPLETED_VALID",
+      "reserved_usd": 0.295824,
+      "measured_cost_usd": 0.002516,
+      "bound_usd": 0.015096
+    },
+    {
+      "index": 7,
+      "input_id": "PF3-ar-msa",
+      "variety": "ar-msa",
+      "sent": true,
+      "max_output_tokens": 4096,
+      "http_status": 200,
+      "response_id": "resp_0863e53dfe145902016ae124a83d5487d2bf38fac9a911f4b4",
+      "model": "gpt-6-sol",
+      "response_status": "completed",
+      "incomplete_reason": "UNAVAILABLE",
+      "error_type": "UNAVAILABLE",
+      "error_code": "UNAVAILABLE",
+      "usage": {
+        "input_tokens": 678,
+        "cached_input_tokens": 0,
+        "output_tokens": 71,
+        "reasoning_tokens": 0,
+        "total_tokens": 749
+      },
+      "latency_ms": 1550,
+      "schema_valid": true,
+      "outcome": "COMPLETED_VALID",
+      "reserved_usd": 0.29886,
+      "measured_cost_usd": 0.002066,
+      "bound_usd": 0.012396
+    },
+    {
+      "index": 8,
+      "input_id": "PF4-ar-gulf-kw",
+      "variety": "ar-gulf-kw",
+      "sent": true,
+      "max_output_tokens": 4096,
+      "http_status": 200,
+      "response_id": "resp_0f03fb3c66055a12016ae124a9cbe087d2b23bf257c3f0145f",
+      "model": "gpt-6-sol",
+      "response_status": "completed",
+      "incomplete_reason": "UNAVAILABLE",
+      "error_type": "UNAVAILABLE",
+      "error_code": "UNAVAILABLE",
+      "usage": {
+        "input_tokens": 655,
+        "cached_input_tokens": 0,
+        "output_tokens": 99,
+        "reasoning_tokens": 20,
+        "total_tokens": 754
+      },
+      "latency_ms": 1904,
+      "schema_valid": true,
+      "outcome": "COMPLETED_VALID",
+      "reserved_usd": 0.296856,
+      "measured_cost_usd": 0.0023,
+      "bound_usd": 0.0138
+    }
+  ],
+  "summary": {
+    "requests_attempted": 8,
+    "requests_sent": 8,
+    "requests_completed_valid": 8,
+    "stopped": null,
+    "by_max_output_tokens": {
+      "300": {
+        "attempted": 4,
+        "completed_valid": 4,
+        "incomplete_output_cap": 0
+      },
+      "4096": {
+        "attempted": 4,
+        "completed_valid": 4,
+        "incomplete_output_cap": 0
+      }
+    },
+    "measured_cost_usd": 0.017738,
+    "measured_cost_complete": true,
+    "conservative_bound_usd": 0.106428,
+    "budget_usd": 5.0
+  }
+}

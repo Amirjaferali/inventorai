@@ -28,7 +28,30 @@ File-creation contract:
     `--responsiveness` (T2-G / R2: the ONE Owner-authorized campaign over the
       frozen, pinned `tests/fixtures/msnl_responsiveness_v1.json`; with the
       default `lexical` provider it only checks the pack and its lexical
-      precondition and sends nothing).
+      precondition and sends nothing);
+    `--mechanism-content` (T2-G / R2: the frozen, pinned
+      `tests/fixtures/msnl_mechanism_content_v1.json`; with the default
+      `lexical` provider it only checks the pack and its engine baseline; the
+      provider path runs the ONE Owner-authorized campaign only while
+      MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED is open, and needs
+      `--mechanism-content-journal PATH`, a NEW file that receives every
+      reservation and attempt as it happens);
+    `--mechanism-content-rescore PATH` (offline downstream replay of a saved
+      mechanism-content report against the pinned pack and unchanged engine);
+    `--mechanism-candidate-check` (T2-G / R2: offline only — loads the pinned
+      `tests/fixtures/msnl_mechanism_content_v2_candidate.json` and checks that
+      it builds valid requests; it has no provider path);
+    `--mechanism-v2-evaluation` (T2-G / R2: the ONE Owner-authorized v2
+      evaluation — fresh holdout x3, then v1 regression x1, one shared ledger of
+      at most 640 attempts / US$25, fixed version-specific journal and report
+      paths; with the default `lexical` provider it only checks both packs and
+      their baselines) and `--mechanism-v2-rescore PATH` (offline replay);
+    `--mechanism-preflight` (T2-G / R2: the ONE Owner-authorized operational
+      provider preflight over the pinned
+      `tests/fixtures/msnl_mechanism_preflight_v1.json` — four separate
+      synthetic inputs, two output caps, at most 8 requests within a reserved
+      US$5 budget; with the default `lexical` provider it prints the plan and
+      its reservations and sends nothing).
     There is NO option for a project, session, account, database or free-form
     input: both pack paths are fixed and their SHA-256 values are pinned, and a
     re-scored file is only read and checked against the pinned pack's labels,
@@ -48,6 +71,7 @@ File-creation contract:
     activation, persistence or product behaviour.
 """
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -656,6 +680,1095 @@ def responsiveness(provider, allow_network, managed_credential):
     return out
 
 
+# ─── T2-G / R2: experimental veto-only mechanism content (msnl-mechanism-content-v1)
+#
+# Evaluation preparation ONLY (Owner authorization "R2 / VETO-ONLY EVALUATION
+# PREPARATION", amended once by the Owner-authorized F1 correction before any
+# provider execution): the arm, the decision table, the RAW-span complete-
+# sentence grounding contract, the thresholds and the budget are read from the
+# pinned pack bytes. The provider path stays refused by
+# MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED until a separate campaign authorization
+# changes it in a reviewed commit. The responsiveness arm above, including its
+# normalised `quote_grounded`, is unchanged and is not used here. Composition is offline and harness-only: no
+# product code is modified, nothing is persisted, and the veto can only
+# withhold credit the deterministic engine would grant.
+
+MECHANISM_PACK_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                   "msnl_mechanism_content_v1.json")
+MECHANISM_PACK_SHA256 = "a6ed890b93ec9b0364bc5c74832fd1c26aa00f24803a6de7fe308404b1399efb"
+# Owner authorization "R2 / ONE SYNTHETIC CAMPAIGN AUTHORIZED" (2026-10-27):
+# the ONE campaign ran on 2026-10-27 (480 attempts; evidence in
+# docs/benchmarks/evidence/msnl_mechanism_content_v1/campaign_01_report.json and
+# campaign_01_journal.jsonl), so the path is closed again: no further campaign
+# without a new Owner authorization and a reviewed commit that reopens it.
+MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED = False
+MECHANISM_CAMPAIGN_EVIDENCE_PATH = os.path.join(
+    _ROOT, "docs", "benchmarks", "evidence", "msnl_mechanism_content_v1",
+    "campaign_01_report.json")
+ERR_MODEL_UNCONFIRMED = "model_unconfirmed"
+ERR_COST_UNBOUNDED = "cost_unbounded"
+ERR_COST_CEILING = "cost_ceiling"
+MC_FIELDS = ("responsive", "stance", "mechanism_content", "quote")
+MC_PRESENT, MC_ABSENT = "PRESENT", "ABSENT"
+ALLOWED, WITHHELD_ABSENT, ABSTAINED = "ALLOWED", "WITHHELD_ABSENT", "ABSTAINED"
+CONTRADICTORY, UNGROUNDED, MC_ERROR = "CONTRADICTORY", "UNGROUNDED", "ERROR"
+_ONLY_STANCES = ("UNKNOWN_ONLY", "SUPPOSES_ONLY", "ASKS_ONLY", "REFERS_ONLY")
+PRIORS = ("OPEN", "PARTIAL")
+
+
+def mechanism_payload(pack, case, model=toa.MODEL):
+    """The exact provider body for one case: the frozen instructions, the
+    frozen enums, and as input ONLY the served question and the text. Refuses
+    (PackError) a body over the frozen per-request input-size cap."""
+    enums = pack["arm"]["output_schema"]
+    schema = {"type": "object",
+              "properties": {f: {"type": "string", "enum": list(enums[f])}
+                             for f in MC_FIELDS if f != "quote"},
+              "required": list(MC_FIELDS), "additionalProperties": False}
+    schema["properties"]["quote"] = {"type": "string"}
+    body = json.dumps({"question": case["served_question"], "answer": case["text"]},
+                      ensure_ascii=False, sort_keys=True)
+    if len(pack["arm"]["instructions"]) + len(body) > \
+            pack["thresholds"]["max_input_characters"]:
+        raise PackError("request over the frozen input-size cap: " + case["case_id"])
+    return {"model": model, "instructions": pack["arm"]["instructions"],
+            "input": body, "store": False,
+            "max_output_tokens": pack["thresholds"]["max_output_tokens"],
+            "text": {"format": {"type": "json_schema", "name": "msnl_mechanism_content",
+                                "strict": True, "schema": schema}}}
+
+
+def mechanism_reply_error(pack, reply):
+    """None when ``reply`` satisfies the frozen schema exactly, else the error
+    kind (D1). Every field must be present, no other field may appear, every
+    enum value must be one of the frozen values and the quote a string."""
+    enums = pack["arm"]["output_schema"]
+    if not isinstance(reply, dict) or set(reply) != set(MC_FIELDS):
+        return toa.ERR_MALFORMED
+    if not isinstance(reply["quote"], str):
+        return toa.ERR_MALFORMED
+    for field in MC_FIELDS[:3]:
+        if reply[field] not in enums[field]:
+            return toa.ERR_MALFORMED
+    return None
+
+
+def classify_mechanism(adapter, pack, case):
+    """ONE provider request for ONE case: (reply, error_kind). A refusal or any
+    transport / HTTP / incomplete / malformed / schema failure is an error."""
+    reply = adapter._call(mechanism_payload(pack, case, adapter._model))
+    if reply is None:
+        return None, adapter.last_error_kind
+    if reply == ms.ABSTAIN:                     # a provider refusal, not a verdict
+        adapter.errors[ERR_REFUSAL] = adapter.errors.get(ERR_REFUSAL, 0) + 1
+        return None, ERR_REFUSAL
+    kind = mechanism_reply_error(pack, reply)
+    if kind is not None:
+        adapter._fail(kind)
+        return None, kind
+    return {f: reply[f] for f in MC_FIELDS}, None
+
+
+def _mc_word_present(quote, question_id):
+    """G4 content test: one non-function word outside every committed-marker
+    occurrence."""
+    from engine import answer_stance as st
+    spans = st._marker_spans(quote, question_id)
+    for word in st._WORD_RE.finditer(quote):
+        start, end = word.span()
+        if any(a <= start and end <= b for a, b in spans):
+            continue
+        token = word.group(0)
+        if token.lower() in st._T2G2_STOPWORDS_EN or token in st._T2G2_STOPWORDS_AR:
+            continue
+        return True
+    return False
+
+
+def _mc_sentence_reason(sentence, terminator, question_id):
+    """G3-G4 for ONE complete sentence: None when it grounds, else the reason.
+
+    G3: the sentence asks or opens with a qualified supposition cue (the
+    shared T2-G-3 reading). G4: at least one of its contrast clauses (the
+    shared T2-G-2 split) is a CARRIER - it carries a G2 content word and does
+    not itself declare a registered explicit unknown. A separate unknown clause
+    in the same sentence therefore does not reject the sentence (mixed answers
+    are preserved), while a sentence whose only content sits inside a
+    registered unknown is rejected. G5: the whole sentence is the quote, so no
+    word of it can be stripped; the arm keeps no cue list or substring match."""
+    from engine import answer_stance as st
+    if st._t2g3_is_non_assertive(sentence, terminator):
+        return "NON_ASSERTIVE"
+    reason = "MARKER_ONLY"
+    for clause in st._t2g2_clauses(sentence):
+        if not _mc_word_present(clause, question_id):
+            continue
+        if st.declares_ignorance(clause):
+            reason = "INSIDE_UNKNOWN"
+            continue
+        return None
+    return reason
+
+
+def mc_grounding(quote, text, question_id, pack):
+    """The RAW-span, complete-sentence grounding contract (pack["grounding"],
+    G1-G7): (grounded, reason). Exact verbatim occurrence only - no
+    normalisation of any kind - and the quote must be EXACTLY one complete
+    sentence of the answer as the shared sentence split cuts it (without its
+    edge whitespace, optionally with its own original punctuation terminator),
+    at that sentence's own position. A fragment, several sentences or an
+    edited edge is NOT_ONE_SENTENCE even when it is a substring."""
+    from engine import answer_stance as st
+    if not isinstance(quote, str) or not quote or not isinstance(text, str) \
+            or quote not in text:
+        return False, "NOT_FOUND"
+    first_reason = None
+    for segment, terminator, offset in st._sentence_records(text):
+        sentence = segment.strip()
+        start = offset + len(segment) - len(segment.lstrip())
+        forms = [sentence]
+        if terminator.strip():                   # a punctuation terminator
+            forms.append(sentence + terminator)
+        if quote not in forms or text[start:start + len(quote)] != quote:
+            continue
+        reason = _mc_sentence_reason(sentence, terminator, question_id)
+        if reason is None:
+            return True, None
+        first_reason = first_reason or reason
+    return False, first_reason or "NOT_ONE_SENTENCE"
+
+
+def mc_decision(pack, case, reply, error_kind=None):
+    """The frozen decision table (pack["decision"], D1-D6): (decision, reason)."""
+    if error_kind is not None or reply is None:
+        return MC_ERROR, error_kind or toa.ERR_MALFORMED
+    content, stance = reply["mechanism_content"], reply["stance"]
+    responsive, quote = reply["responsive"], reply["quote"]
+    if (content == MC_PRESENT and (responsive != RESPONSIVE or stance in _ONLY_STANCES)) \
+            or (content != MC_PRESENT and quote != ""):
+        return CONTRADICTORY, None
+    if content == ms.ABSTAIN or responsive == ms.ABSTAIN:
+        return ABSTAINED, None
+    if content == MC_ABSENT:
+        return WITHHELD_ABSENT, None
+    grounded, reason = mc_grounding(quote, case["text"], case["question_id"], pack)
+    return (ALLOWED, None) if grounded else (UNGROUNDED, reason)
+
+
+def mc_engine_outcome(pack, case, prior):
+    """The deterministic engine outcome for one case from one prior state, at
+    the served index (offline; a fresh state; nothing persisted)."""
+    from engine.idea_state import (Evidence, Gap, IdeaState, ASSERTED,
+                                   MECHANISM_COMPLETENESS, OWNER_STATED)
+    from engine.intent_serving import w2c_served_question
+    from engine.path_n_questions import get_served_question
+    from engine.progression_loop import integrate_response
+    replay = pack["replay"]
+    state = IdeaState(idea_id="mc-eval")
+    state.domain, state.path = case["domain"], "N"
+    state.engine_contract_version = replay["engine_contract_version"]
+    state.maturity_level = 1
+    state.gaps.append(Gap(gap_type=MECHANISM_COMPLETENESS, status=prior, opened_at=0,
+                          iterations_open=case["served_index"]))
+    if prior == "PARTIAL":
+        state.known_mechanism = Evidence(content=replay["prior_partial_text"],
+                                         quality=ASSERTED, iteration=0,
+                                         provenance=OWNER_STATED)
+    served = get_served_question(MECHANISM_COMPLETENESS, case["served_index"],
+                                 domain=case["domain"])
+    unadjusted = (served is not None and served.question_id == case["question_id"]
+                  and w2c_served_question(state, MECHANISM_COMPLETENESS) is None)
+    before = state.get_gap(MECHANISM_COMPLETENESS).status
+    integrate_response(state, MECHANISM_COMPLETENESS, case["served_question"], case["text"])
+    after = state.get_gap(MECHANISM_COMPLETENESS).status
+    mechanism = state.known_mechanism
+    set_by_answer = mechanism is not None and mechanism.content == case["text"]
+    order = {"OPEN": 0, "PARTIAL": 1, "CLOSED": 2}
+    return {"unadjusted": unadjusted, "status_before": before, "status_after": after,
+            "mechanism_set_by_answer": set_by_answer,
+            "granted": order.get(after, -1) > order.get(before, -1) or set_by_answer}
+
+
+def mc_baseline(pack, case):
+    return {prior: mc_engine_outcome(pack, case, prior) for prior in PRIORS}
+
+
+def mc_precondition(pack):
+    """VB1: case ids whose recomputed engine baseline differs from the frozen
+    one, is not GRANTED from both priors, or is not an unadjusted context."""
+    bad = []
+    for case in pack["cases"]:
+        got = mc_baseline(pack, case)
+        frozen = case.get("engine_baseline")
+        ok = all(got[p]["unadjusted"] and got[p]["granted"] for p in PRIORS) and \
+            frozen == {p: got[p]["status_after"] for p in PRIORS}
+        if not ok:
+            bad.append(case["case_id"])
+    return bad
+
+
+def mc_composed(baseline, decision):
+    """D7: the engine outcome when ALLOWED, the prior state otherwise."""
+    out = {}
+    for prior in PRIORS:
+        engine = baseline[prior]
+        if decision == ALLOWED:
+            out[prior] = {"status_after": engine["status_after"],
+                          "granted": engine["granted"]}
+        else:
+            out[prior] = {"status_after": engine["status_before"], "granted": False}
+    return out
+
+
+def mc_row(pack, case, reply, error_kind, baseline):
+    decision, reason = mc_decision(pack, case, reply, error_kind)
+    return {"case_id": case["case_id"], "reply": reply, "error": error_kind,
+            "decision": decision, "grounding_reason": reason,
+            "engine": {p: {k: baseline[p][k] for k in ("status_before", "status_after",
+                                                       "mechanism_set_by_answer", "granted")}
+                       for p in PRIORS},
+            "composed": None if decision == MC_ERROR else mc_composed(baseline, decision)}
+
+
+def classify_mechanism_measured(adapter, pack, case):
+    """ONE campaign request through the preflight's reviewed measured call:
+    (reply, error_kind, meta). Beyond classify_mechanism, a 200 reply must
+    confirm the configured model and may not report output over its cap."""
+    cap = pack["thresholds"]["max_output_tokens"]
+    reply, meta = _measured_call(adapter, mechanism_payload(pack, case, adapter._model))
+    kind = adapter.last_error_kind
+    out = meta["usage"]["output_tokens"]
+    if meta["sent"] and isinstance(out, int) and out > cap:
+        adapter._fail(ERR_COST_UNBOUNDED)
+        return None, ERR_COST_UNBOUNDED, meta
+    if reply is None:
+        return None, kind, meta
+    if not _pf_model_confirmed(meta["model"], adapter._model):
+        adapter._fail(ERR_MODEL_UNCONFIRMED)
+        return None, ERR_MODEL_UNCONFIRMED, meta
+    if reply == ms.ABSTAIN:                     # a provider refusal, not a verdict
+        adapter.errors[ERR_REFUSAL] = adapter.errors.get(ERR_REFUSAL, 0) + 1
+        return None, ERR_REFUSAL, meta
+    kind = mechanism_reply_error(pack, reply)
+    if kind is not None:
+        adapter._fail(kind)
+        return None, kind, meta
+    return {f: reply[f] for f in MC_FIELDS}, None, meta
+
+
+def _mc_journal(journal, record):
+    """Append ONE sanitized attempt record and force it to disk, so a crash
+    leaves the evidence of every reservation and attempt."""
+    if journal is None:
+        return
+    journal.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
+    journal.flush()
+    os.fsync(journal.fileno())
+
+
+def mechanism_campaign(adapter, pack, journal=None, ledger=None, runs_count=None,
+                       set_label=None):
+    """Exactly VS1_runs passes (or ``runs_count``) in pack order; stops before a
+    request over the request allocation or the currency ceiling and
+    immediately after the first error (VE1: nothing is retried). Each request
+    reserves its conservative maximum cost first (the preflight's reviewed
+    rule). ``ledger`` carries ONE cumulative request count and budget across
+    several calls (the v2 evaluation shares it between its two sets); without
+    it the pack's own allocation and ceiling apply. Returns (runs, requests,
+    spend); ``ledger["halted"]`` is set when the run stopped early."""
+    t, b = pack["thresholds"], pack["budget"]
+    if ledger is None:
+        ledger = {"requests": 0, "committed": 0.0, "measured": 0.0,
+                  "measured_complete": True, "sent": 0, "halted": False,
+                  "max_requests": t["max_provider_requests"],
+                  "ceiling": b["cost_ceiling_usd"]}
+    cap = t["max_output_tokens"]
+    res_in, res_out = b["reservation_input_usd_per_1m"], b["reservation_output_usd_per_1m"]
+    price = b["pricing"]
+    tag = {} if set_label is None else {"set": set_label}
+    baselines = {c["case_id"]: mc_baseline(pack, c) for c in pack["cases"]}
+    runs = []
+    for run_index in range(t["VS1_runs"] if runs_count is None else runs_count):
+        if ledger["halted"]:
+            break
+        rows = []
+        for case in pack["cases"]:
+            base = baselines[case["case_id"]]
+            if ledger["requests"] >= ledger["max_requests"]:
+                rows.append(mc_row(pack, case, None, ERR_BUDGET, base))
+                ledger["halted"] = True
+                break
+            body = json.dumps(mechanism_payload(pack, case, adapter._model),
+                              ensure_ascii=False).encode("utf-8")
+            reserved = _pf_usd(len(body) + 1000, cap, res_in, res_out)
+            if ledger["committed"] + reserved > ledger["ceiling"]:
+                rows.append(mc_row(pack, case, None, ERR_COST_CEILING, base))
+                _mc_journal(journal, {"event": "refused_before_send", **tag,
+                                      "run": run_index + 1, "case_id": case["case_id"],
+                                      "reason": ERR_COST_CEILING,
+                                      "committed_usd": round(ledger["committed"], 6),
+                                      "reserved_usd": round(reserved, 6)})
+                ledger["halted"] = True
+                break
+            ledger["requests"] += 1
+            _mc_journal(journal, {"event": "reserved", **tag, "attempt": ledger["requests"],
+                                  "run": run_index + 1, "case_id": case["case_id"],
+                                  "reserved_usd": round(reserved, 6),
+                                  "committed_usd": round(ledger["committed"], 6)})
+            reply, err, meta = classify_mechanism_measured(adapter, pack, case)
+            usage = meta["usage"]
+            known = isinstance(usage["input_tokens"], int) and \
+                isinstance(usage["output_tokens"], int)
+            if not meta["sent"]:
+                bound = 0.0
+            elif known and meta["http_status"] == 200:
+                bound = _pf_usd(usage["input_tokens"], usage["output_tokens"], res_in, res_out)
+            else:
+                bound = reserved
+            cost = (_pf_usd(usage["input_tokens"], usage["output_tokens"],
+                            price["input_usd_per_1m"], price["output_usd_per_1m"])
+                    if known else None)
+            if meta["sent"]:
+                ledger["sent"] += 1
+                if cost is None:
+                    ledger["measured_complete"] = False
+            ledger["measured"] += cost or 0.0
+            ledger["committed"] += bound
+            row = mc_row(pack, case, reply, err, base)
+            row["attempt"] = {
+                "attempt": ledger["requests"], "sent": meta["sent"],
+                "http_status": meta["http_status"],
+                "response_id": meta["response_id"], "model": meta["model"],
+                "response_status": meta["response_status"],
+                "incomplete_reason": meta["incomplete_reason"], "usage": usage,
+                "latency_ms": meta["latency_ms"], "reserved_usd": round(reserved, 6),
+                "measured_cost_usd": None if cost is None else round(cost, 6),
+                "bound_usd": round(bound, 6)}
+            rows.append(row)
+            _mc_journal(journal, {"event": "attempt", **tag, "run": run_index + 1,
+                                  "case_id": case["case_id"], "reply": reply, "error": err,
+                                  "decision": row["decision"], **row["attempt"]})
+            if err is not None:
+                ledger["halted"] = True
+                break
+        runs.append(rows)
+    return runs, ledger["requests"], _mc_spend(ledger)
+
+
+def _mc_spend(ledger):
+    return {"requests_sent": ledger["sent"],
+            "measured_cost_usd": round(ledger["measured"], 6),
+            "measured_cost_complete": ledger["measured_complete"],
+            "conservative_bound_usd": round(ledger["committed"], 6),
+            "ceiling_usd": ledger["ceiling"]}
+
+
+def mechanism_run_report(pack, rows):
+    """Every frozen criterion for ONE run, overall and per variety, at case grain."""
+    t = pack["thresholds"]
+    cases = {c["case_id"]: c for c in pack["cases"]}
+    errors = [r for r in rows if r["decision"] == MC_ERROR]
+    complete = len(rows) == len(pack["cases"]) and not errors
+    by = {}
+    for scope in ("overall",) + VARIETIES:
+        sel = [r for r in rows if scope == "overall" or cases[r["case_id"]]["variety"] == scope]
+        pos = [r for r in sel if cases[r["case_id"]]["label"] == MC_PRESENT]
+        neg = [r for r in sel if cases[r["case_id"]]["label"] == MC_ABSENT]
+        n_pos = sum(c["label"] == MC_PRESENT for c in cases.values()
+                    if scope == "overall" or c["variety"] == scope)
+        decisions = {d: {"present": sum(r["decision"] == d for r in pos),
+                         "absent": sum(r["decision"] == d for r in neg)}
+                     for d in (ALLOWED, WITHHELD_ABSENT, ABSTAINED, CONTRADICTORY,
+                               UNGROUNDED, MC_ERROR)}
+        reasons = {}
+        for r in sel:
+            if r["decision"] == UNGROUNDED:
+                reasons[r["grounding_reason"]] = reasons.get(r["grounding_reason"], 0) + 1
+        by[scope] = {
+            "present_cases": n_pos, "decisions": decisions, "ungrounded_reasons": reasons,
+            "raw_present_on_absent": sum((r["reply"] or {}).get("mechanism_content")
+                                         == MC_PRESENT for r in neg),
+            "false_grants": sum(r["composed"][p]["granted"] for r in neg
+                                if r["composed"] for p in PRIORS),
+            "injection_allowed": sum(r["decision"] == ALLOWED for r in neg
+                                     if cases[r["case_id"]]["category"]
+                                     == "INSTRUCTION_INJECTION"),
+            "preserved": decisions[ALLOWED]["present"],
+            "preservation": _ratio(decisions[ALLOWED]["present"], n_pos),
+        }
+    o = by["overall"]
+    en = Fraction(by["en"]["preserved"], by["en"]["present_cases"])
+    criteria = {
+        "VC1": complete and all(by[s]["false_grants"] <= t["VC1_max_false_grants"]
+                                for s in by),
+        "VC2": complete and o["injection_allowed"] == 0,
+        "VP1": complete and _meets(o["preserved"], o["present_cases"], t["VP1_overall_min"])
+               and all(_meets(by[v]["preserved"], by[v]["present_cases"],
+                              t["VP1_variety_min"]) for v in VARIETIES),
+        "VP2": complete and all(
+            en - Fraction(by[v]["preserved"], by[v]["present_cases"])
+            <= Fraction(str(t["VP2_max_parity_gap"])) for v in VARIETIES if v != "en"),
+        "VA1": complete and Fraction(o["decisions"][ABSTAINED]["present"], o["present_cases"])
+               <= Fraction(str(t["VA1_max_positive_abstention"])),
+        "VE1": complete,
+    }
+    return {"valid": complete, "cases_answered": len(rows),
+            "errors": [{"case_id": r["case_id"], "kind": r["error"]} for r in errors],
+            "by_variety": by, "criteria": criteria}
+
+
+def mechanism_agreement(pack, runs):
+    if len(runs) != pack["thresholds"]["VS1_runs"] or \
+            any(len(r) != len(pack["cases"]) for r in runs):
+        return None
+    per = [{r["case_id"]: r["decision"] == ALLOWED for r in run} for run in runs]
+    ids = [c["case_id"] for c in pack["cases"]]
+    same = sum(len({p[i] for p in per}) == 1 for i in ids)
+    return {"identical": same, "cases": len(ids), "rate": _ratio(same, len(ids))}
+
+
+def mechanism_verdict(pack, runs, precondition_violations):
+    """PASS only when every criterion holds in all three runs, VS1 holds and the
+    baseline precondition held; anything else is FAIL."""
+    t = pack["thresholds"]
+    reports = [mechanism_run_report(pack, rows) for rows in runs]
+    agreement = mechanism_agreement(pack, runs)
+    held = {k: len(reports) == t["VS1_runs"] and all(r["criteria"][k] for r in reports)
+            for k in ("VC1", "VC2", "VP1", "VP2", "VA1", "VE1")}
+    held["VS1"] = (len(reports) == t["VS1_runs"] and all(r["valid"] for r in reports)
+                   and agreement is not None
+                   and _meets(agreement["identical"], agreement["cases"],
+                              t["VS1_min_outcome_agreement"]))
+    held["VB1"] = not precondition_violations
+    invalid = any(not r["valid"] for r in reports) or len(reports) != t["VS1_runs"]
+    return {"verdict": "PASS" if all(held.values()) else "FAIL",
+            "campaign_status": "INVALID" if invalid else "COMPLETE",
+            "criteria_held_in_every_run": held, "agreement": agreement, "runs": reports}
+
+
+def _mechanism_pack():
+    pack = _load(MECHANISM_PACK_PATH, MECHANISM_PACK_SHA256)
+    t = pack["thresholds"]
+    if t["max_provider_requests"] != t["VS1_runs"] * len(pack["cases"]):
+        raise PackError("mechanism-content budget inconsistent with the pack")
+    return pack
+
+
+def mechanism_content(provider, allow_network, managed_credential, journal_path=None):
+    """Load the pinned pack, check VB1 and, only when the campaign is
+    authorized and the provider flags are given, run the ONE campaign. The run
+    needs a NEW journal file (an existing one, or recorded campaign evidence,
+    means a campaign already started: nothing is sent, never a restart)."""
+    pack = _mechanism_pack()
+    violations = mc_precondition(pack)
+    out = {"pack_id": pack["pack_id"], "pack_sha256": MECHANISM_PACK_SHA256,
+           "cases": len(pack["cases"]), "precondition_violations": violations,
+           "thresholds": pack["thresholds"]}
+    if provider != "openai":
+        out["provider_requests"] = 0
+        return out
+    if not MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED:
+        out["refused"] = "the mechanism-content campaign is not authorized; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if not (allow_network and managed_credential):
+        raise SystemExit(2)
+    if violations:
+        out["refused"] = "VB1: the engine baseline no longer holds; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if os.path.exists(MECHANISM_CAMPAIGN_EVIDENCE_PATH):
+        out["refused"] = "campaign evidence already exists; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if not journal_path:
+        out["refused"] = "a new journal path is required; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    try:
+        journal = open(journal_path, "x", encoding="utf-8")   # never an existing file
+    except FileExistsError:
+        out["refused"] = "the journal already exists: a campaign already started; " \
+                         "nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    adapter = OpenAIMsnlAdapter(allow_network=True)
+    with journal:
+        _mc_journal(journal, {"event": "start", "pack_sha256": MECHANISM_PACK_SHA256,
+                              "model": adapter._model,
+                              "max_output_tokens": pack["thresholds"]["max_output_tokens"],
+                              "ceiling_usd": pack["budget"]["cost_ceiling_usd"]})
+        runs, requests, spend = mechanism_campaign(adapter, pack, journal)
+        _mc_journal(journal, {"event": "end", "provider_requests": requests, **spend})
+    out.update({"model": adapter._model, "endpoint": toa.ENDPOINT,
+                "provider_requests": requests, "error_kinds": adapter.errors,
+                "spend": spend, "result": mechanism_verdict(pack, runs, violations),
+                "case_level": runs})
+    return out
+
+
+def mechanism_rescore(path):
+    """Network-free downstream replay of a SAVED campaign report: only each
+    row's case id, recorded reply and error are read; every decision, grounding
+    reason, engine baseline and composed outcome is recomputed from the pinned
+    pack and the unchanged engine. No adapter is built and nothing is sent."""
+    pack = _mechanism_pack()
+    by_id = {c["case_id"]: c for c in pack["cases"]}
+    with open(path, "rb") as fh:
+        raw = fh.read()
+    saved = json.loads(raw.decode("utf-8"))
+    if saved.get("pack_id") != pack["pack_id"] or \
+            saved.get("pack_sha256") != MECHANISM_PACK_SHA256:
+        raise PackError("saved report is not for the pinned " + pack["pack_id"])
+    baselines = {c["case_id"]: mc_baseline(pack, c) for c in pack["cases"]}
+    runs = []
+    for saved_rows in saved.get("case_level", []):
+        rows = []
+        for row in saved_rows:
+            case = by_id.get(row.get("case_id"))
+            if case is None:
+                raise PackError("saved case is not in the pinned pack: "
+                                + str(row.get("case_id")))
+            reply, err = row.get("reply"), row.get("error")
+            if err is None and mechanism_reply_error(pack, reply) is not None:
+                raise PackError("saved reply violates the frozen schema: " + case["case_id"])
+            rows.append(mc_row(pack, case, reply, err, baselines[case["case_id"]]))
+        runs.append(rows)
+    violations = mc_precondition(pack)
+    return {"rescored_sha256": hashlib.sha256(raw).hexdigest(),
+            "pack_id": pack["pack_id"], "precondition_violations": violations,
+            "result": mechanism_verdict(pack, runs, violations), "case_level": runs}
+
+
+# ─── T2-G / R2: the v2 correction CANDIDATE (offline only) ──────────────────
+#
+# Owner authorization "R2 / BOUNDED SEMANTIC CORRECTION CANDIDATE" (step 5
+# only): ONE versioned, evaluation-only candidate that replaces ONE sentence of
+# the v1 arm instructions and inherits everything else from the pinned v1 pack.
+# v1, its evidence and its FAIL verdict are untouched. This section has NO
+# provider path: it only loads the pinned candidate and checks, offline, that
+# it builds valid requests; any evaluation needs a separate authorization.
+
+MECHANISM_CANDIDATE_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                        "msnl_mechanism_content_v2_candidate.json")
+MECHANISM_CANDIDATE_SHA256 = "f1a2b04adb71823310b87f1de5ab07481399e0769d2eee91fec81b24825fc181"
+
+
+def _mechanism_candidate():
+    """(candidate, arm_pack): the pinned candidate and the v1 pack with ONLY
+    its arm instructions replaced. Refuses a candidate whose base is not the
+    pinned v1 pack or whose recorded delta does not reproduce its instructions."""
+    cand = _load(MECHANISM_CANDIDATE_PATH, MECHANISM_CANDIDATE_SHA256)
+    v1 = _mechanism_pack()
+    if cand["base_pack"]["pack_sha256"] != MECHANISM_PACK_SHA256:
+        raise PackError("candidate base is not the pinned v1 pack")
+    delta, old = cand["instruction_delta"], v1["arm"]["instructions"]
+    new = cand["arm"]["instructions"]
+    if hashlib.sha256(old.encode("utf-8")).hexdigest() != delta["old_instructions_sha256"] \
+            or hashlib.sha256(new.encode("utf-8")).hexdigest() != \
+            delta["new_instructions_sha256"] \
+            or old.count(delta["replaced_segment_old"]) != 1 \
+            or old.replace(delta["replaced_segment_old"], delta["replaced_segment_new"]) != new:
+        raise PackError("candidate instruction delta does not reproduce its instructions")
+    arm_pack = copy.deepcopy(v1)
+    arm_pack["pack_id"] = cand["pack_id"]
+    arm_pack["arm"]["instructions"] = new
+    return cand, arm_pack
+
+
+def mechanism_candidate_check():
+    """Offline: every v1 case and every development example builds a request
+    under the candidate within the frozen input cap; nothing is sent."""
+    cand, arm_pack = _mechanism_candidate()
+    items = list(arm_pack["cases"])
+    scope = arm_pack["scope"]["served_questions"]
+    from engine.path_n_questions import get_served_question
+    for ex in cand["development_examples"]["examples"]:
+        served = get_served_question("MECHANISM_COMPLETENESS", scope[ex["question_id"]],
+                                     domain=ex["domain"])
+        items.append({"case_id": ex["example_id"], "text": ex["text"],
+                      "served_question": served.text if ex["variety"] == "en"
+                      else served.text_ar})
+    sizes = [len(json.dumps(mechanism_payload(arm_pack, item), ensure_ascii=False))
+             for item in items]
+    return {"pack_id": cand["pack_id"], "candidate_sha256": MECHANISM_CANDIDATE_SHA256,
+            "base_pack_sha256": MECHANISM_PACK_SHA256,
+            "instructions_sha256": cand["instruction_delta"]["new_instructions_sha256"],
+            "requests_built": len(items), "largest_request_body_chars": max(sizes),
+            "max_input_characters": arm_pack["thresholds"]["max_input_characters"],
+            "provider_requests": 0}
+
+
+# ─── T2-G / R2: the ONE v2 evaluation (fresh qualification + v1 regression) ──
+#
+# Owner authorization "R2 / V2 SYNTHETIC EVALUATION AUTHORIZATION" (step 5
+# only): ONE evaluation of the frozen v2 candidate instructions (8b3027b5...)
+# on (1) the fresh, independently authored and blind-labelled holdout
+# msnl-mechanism-content-v2-holdout, three passes, the ONLY set that can
+# qualify the method, then (2) the unchanged 160 v1 cases, one pass,
+# regression evidence only. Both sets share ONE ledger: at most 640 attempts
+# and US$25 in total. The evidence and journal paths are fixed and
+# version-specific; an existing journal or report refuses the run, so it can
+# never restart. v1, campaign 01 and the preflight stay closed and untouched.
+
+MECHANISM_V2_HOLDOUT_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                         "msnl_mechanism_content_v2_holdout.json")
+MECHANISM_V2_HOLDOUT_SHA256 = "4d960db7711320e47eab205caf527fef8e53a5dc5d98c0699d1e456ac7699a5c"
+MECHANISM_V2_INSTRUCTIONS_SHA256 = \
+    "8b3027b5daaf1498d3a48fbe23cccda4024cf63abcbfdaea09963eecb7790a4c"
+# CLOSED after the one authorized evaluation (evaluation_01, commit c827d7c):
+# INVALID — a transport error stopped qualification run 2 at attempt 281 of 640;
+# the complete run 1 already failed VC1 and VP1. No rerun without a separate
+# Owner authorization.
+MECHANISM_V2_EVALUATION_AUTHORIZED = False
+MECHANISM_V2_EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence",
+                                         "msnl_mechanism_content_v2")
+MECHANISM_V2_REPORT_PATH = os.path.join(MECHANISM_V2_EVIDENCE_DIR, "evaluation_01_report.json")
+MECHANISM_V2_JOURNAL_PATH = os.path.join(MECHANISM_V2_EVIDENCE_DIR,
+                                         "evaluation_01_journal.jsonl")
+MECHANISM_V1_KNOWN_FAILURES = ("E17-ar-egy", "E17-ar-gulf-kw", "M14-ar-egy", "M18-ar-egy",
+                               "M18-ar-gulf-kw", "M18-ar-msa", "M18-en")
+
+
+def _mechanism_v2_holdout():
+    """The pinned fresh holdout. Its arm must be exactly the frozen candidate
+    instructions with the v1 schema, and every section the candidate inherits
+    must equal v1's; its cases must share no text with v1."""
+    fresh = _load(MECHANISM_V2_HOLDOUT_PATH, MECHANISM_V2_HOLDOUT_SHA256)
+    cand, regression = _mechanism_candidate()
+    if hashlib.sha256(fresh["arm"]["instructions"].encode("utf-8")).hexdigest() != \
+            MECHANISM_V2_INSTRUCTIONS_SHA256 or \
+            fresh["arm"]["instructions"] != regression["arm"]["instructions"] or \
+            cand["instruction_delta"]["new_instructions_sha256"] != \
+            MECHANISM_V2_INSTRUCTIONS_SHA256:
+        raise PackError("v2 holdout arm is not the frozen candidate instructions")
+    for key in cand["base_pack"]["inherited_unchanged"]:
+        section, _, field = key.partition(".")
+        if (fresh[section] if not field else fresh[section][field]) != \
+                (regression[section] if not field else regression[section][field]):
+            raise PackError("v2 holdout section differs from v1: " + key)
+    if {c["text"] for c in fresh["cases"]} & {c["text"] for c in regression["cases"]}:
+        raise PackError("a v2 holdout case repeats a v1 case")
+    return fresh, regression
+
+
+def _known_failure_outcomes(rows):
+    by_id = {r["case_id"]: r for r in rows}
+    return {cid: (by_id[cid]["decision"] if cid in by_id else None)
+            for cid in MECHANISM_V1_KNOWN_FAILURES}
+
+
+def mechanism_regression_report(regression, rows):
+    """Regression evidence only (never a qualification): the frozen v1 run
+    report of ONE pass plus the outcome of every known campaign-01 failure."""
+    report = mechanism_run_report(regression, rows)
+    report["known_failures"] = _known_failure_outcomes(rows)
+    report["qualifies"] = False
+    return report
+
+
+def mechanism_v2_evaluation(adapter, fresh, regression, journal=None):
+    """The fixed order: three qualification passes over the fresh holdout, then
+    ONE regression pass over the v1 cases, on ONE shared ledger. Any error or
+    ceiling stop halts everything after it. Returns (q_runs, r_runs, spend)."""
+    budget = fresh["budget"]
+    ledger = {"requests": 0, "committed": 0.0, "measured": 0.0, "measured_complete": True,
+              "sent": 0, "halted": False, "max_requests": budget["max_attempts_total"],
+              "ceiling": budget["cost_ceiling_usd"]}
+    q_runs, _, _ = mechanism_campaign(adapter, fresh, journal, ledger,
+                                      runs_count=fresh["thresholds"]["VS1_runs"],
+                                      set_label="qualification")
+    r_runs = []
+    if not ledger["halted"]:
+        r_runs, _, _ = mechanism_campaign(adapter, regression, journal, ledger,
+                                          runs_count=1, set_label="regression")
+    return q_runs, r_runs, _mc_spend(ledger)
+
+
+def mechanism_v2_result(fresh, regression, q_runs, r_runs, violations):
+    return {"qualification": mechanism_verdict(fresh, q_runs, violations["qualification"]),
+            "regression": (mechanism_regression_report(regression, r_runs[0])
+                           if r_runs else None)}
+
+
+def mechanism_v2_run(provider, allow_network, managed_credential):
+    """Check both packs and their baselines and, only while authorized with the
+    openai provider and both network flags, run the ONE v2 evaluation, writing
+    its journal to the fixed path as it goes."""
+    fresh, regression = _mechanism_v2_holdout()
+    violations = {"qualification": mc_precondition(fresh),
+                  "regression": mc_precondition(regression)}
+    out = {"holdout_pack_id": fresh["pack_id"], "holdout_sha256": MECHANISM_V2_HOLDOUT_SHA256,
+           "regression_base_sha256": MECHANISM_PACK_SHA256,
+           "candidate_sha256": MECHANISM_CANDIDATE_SHA256,
+           "instructions_sha256": MECHANISM_V2_INSTRUCTIONS_SHA256,
+           "qualification_cases": len(fresh["cases"]), "regression_cases": len(regression["cases"]),
+           "max_attempts_total": fresh["budget"]["max_attempts_total"],
+           "ceiling_usd": fresh["budget"]["cost_ceiling_usd"],
+           "precondition_violations": violations}
+    if provider != "openai":
+        out["provider_requests"] = 0
+        return out
+    if not MECHANISM_V2_EVALUATION_AUTHORIZED:
+        out["refused"] = "the v2 evaluation is not authorized; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if not (allow_network and managed_credential):
+        raise SystemExit(2)
+    if violations["qualification"] or violations["regression"]:
+        out["refused"] = "VB1: an engine baseline no longer holds; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if os.path.exists(MECHANISM_V2_REPORT_PATH):
+        out["refused"] = "v2 evaluation evidence already exists; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    os.makedirs(MECHANISM_V2_EVIDENCE_DIR, exist_ok=True)
+    try:
+        journal = open(MECHANISM_V2_JOURNAL_PATH, "x", encoding="utf-8")
+    except FileExistsError:
+        out["refused"] = "the v2 journal already exists: the evaluation already started; " \
+                         "nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    adapter = OpenAIMsnlAdapter(allow_network=True)
+    with journal:
+        _mc_journal(journal, {"event": "start", "holdout_sha256": MECHANISM_V2_HOLDOUT_SHA256,
+                              "instructions_sha256": MECHANISM_V2_INSTRUCTIONS_SHA256,
+                              "model": adapter._model,
+                              "max_attempts_total": out["max_attempts_total"],
+                              "ceiling_usd": out["ceiling_usd"]})
+        q_runs, r_runs, spend = mechanism_v2_evaluation(adapter, fresh, regression, journal)
+        _mc_journal(journal, {"event": "end", "provider_requests": spend["requests_sent"],
+                              **spend})
+    out.update({"model": adapter._model, "endpoint": toa.ENDPOINT,
+                "provider_requests": spend["requests_sent"], "error_kinds": adapter.errors,
+                "spend": spend,
+                "result": mechanism_v2_result(fresh, regression, q_runs, r_runs, violations),
+                "case_level": {"qualification": q_runs, "regression": r_runs}})
+    return out
+
+
+def _replay_rows(pack, saved_runs):
+    by_id = {c["case_id"]: c for c in pack["cases"]}
+    baselines = {c["case_id"]: mc_baseline(pack, c) for c in pack["cases"]}
+    runs = []
+    for saved_rows in saved_runs:
+        rows = []
+        for row in saved_rows:
+            case = by_id.get(row.get("case_id"))
+            if case is None:
+                raise PackError("saved case is not in the pinned pack: "
+                                + str(row.get("case_id")))
+            reply, err = row.get("reply"), row.get("error")
+            if err is None and mechanism_reply_error(pack, reply) is not None:
+                raise PackError("saved reply violates the frozen schema: " + case["case_id"])
+            rows.append(mc_row(pack, case, reply, err, baselines[case["case_id"]]))
+        runs.append(rows)
+    return runs
+
+
+def mechanism_v2_rescore(path):
+    """Network-free replay of the SAVED v2 report: every decision, grounding
+    reason, baseline and composed outcome is recomputed from the pinned packs
+    and the unchanged engine; no adapter is built and nothing is sent."""
+    fresh, regression = _mechanism_v2_holdout()
+    with open(path, "rb") as fh:
+        raw = fh.read()
+    saved = json.loads(raw.decode("utf-8"))
+    if saved.get("holdout_sha256") != MECHANISM_V2_HOLDOUT_SHA256 or \
+            saved.get("instructions_sha256") != MECHANISM_V2_INSTRUCTIONS_SHA256:
+        raise PackError("saved report is not for the pinned v2 evaluation")
+    levels = saved.get("case_level", {})
+    q_runs = _replay_rows(fresh, levels.get("qualification", []))
+    r_runs = _replay_rows(regression, levels.get("regression", []))
+    violations = {"qualification": mc_precondition(fresh),
+                  "regression": mc_precondition(regression)}
+    return {"rescored_sha256": hashlib.sha256(raw).hexdigest(),
+            "precondition_violations": violations,
+            "result": mechanism_v2_result(fresh, regression, q_runs, r_runs, violations),
+            "case_level": {"qualification": q_runs, "regression": r_runs}}
+
+
+# ─── T2-G / R2: ONE bounded synthetic PROVIDER PREFLIGHT (not the campaign) ─
+#
+# Owner authorization "R2 / EXECUTE BOUNDED PROVIDER PREFLIGHT" (2026-10-27):
+# operational readiness only — whether the configured provider / model returns
+# a complete, schema-valid reply, with its usage, latency and cost. It sends
+# the AMENDED arm instructions and schema of the pinned holdout pack, but never
+# one of its cases: the four inputs, their order, the two output caps, the
+# budget and the price basis are the separate pinned preflight fixture. Nothing
+# is scored, no reply text, request body, reasoning content, provider message
+# or header is kept, the campaign stays refused and none of its requests is
+# used. The one authorized run took place on 2026-10-27 (8 requests, recorded in
+# docs/benchmarks/evidence/msnl_mechanism_content_v1/preflight_01_report.json),
+# so MECHANISM_PREFLIGHT_AUTHORIZED is closed again: any further run needs a new
+# Owner authorization and a reviewed commit that reopens it.
+
+MECHANISM_PREFLIGHT_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                        "msnl_mechanism_preflight_v1.json")
+MECHANISM_PREFLIGHT_SHA256 = "d6e4deda42a6d4a73ac9e2654d51bc69c05af53e9d15f49b4dc453964e67c63d"
+MECHANISM_PREFLIGHT_AUTHORIZED = False
+PF_COMPLETED = "COMPLETED_VALID"
+PF_CAPPED = "INCOMPLETE_OUTPUT_CAP"
+_PF_SAFE = re.compile(r"^[A-Za-z0-9_.:-]{1,100}$")
+_PF_UNAVAILABLE = "UNAVAILABLE"
+_PF_USAGE = (("input_tokens", ("input_tokens",)),
+             ("cached_input_tokens", ("input_tokens_details", "cached_tokens")),
+             ("output_tokens", ("output_tokens",)),
+             ("reasoning_tokens", ("output_tokens_details", "reasoning_tokens")),
+             ("total_tokens", ("total_tokens",)))
+
+
+def _pf_safe(value):
+    """A short identifier-like provider value, or UNAVAILABLE (never free text)."""
+    return value if isinstance(value, str) and _PF_SAFE.match(value) else _PF_UNAVAILABLE
+
+
+def preflight_response_meta(raw):
+    """The sanitized metadata of ONE provider reply body: response id, status,
+    incomplete reason, error type / code and the usage counts. Every value is
+    an identifier-like token or an integer; anything missing or of another
+    shape is UNAVAILABLE. No text, message or reasoning content is ever read."""
+    meta = {"response_id": _PF_UNAVAILABLE, "model": _PF_UNAVAILABLE,
+            "response_status": _PF_UNAVAILABLE,
+            "incomplete_reason": _PF_UNAVAILABLE, "error_type": _PF_UNAVAILABLE,
+            "error_code": _PF_UNAVAILABLE,
+            "usage": {name: _PF_UNAVAILABLE for name, _path in _PF_USAGE}}
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except Exception:
+        return meta
+    if not isinstance(data, dict):
+        return meta
+    meta["response_id"] = _pf_safe(data.get("id"))
+    meta["model"] = _pf_safe(data.get("model"))
+    meta["response_status"] = _pf_safe(data.get("status"))
+    details = data.get("incomplete_details")
+    if isinstance(details, dict):
+        meta["incomplete_reason"] = _pf_safe(details.get("reason"))
+    error = data.get("error")
+    if isinstance(error, dict):
+        meta["error_type"] = _pf_safe(error.get("type"))
+        meta["error_code"] = _pf_safe(error.get("code"))
+    usage = data.get("usage")
+    if isinstance(usage, dict):
+        for name, path in _PF_USAGE:
+            node = usage
+            for key in path:
+                node = node.get(key) if isinstance(node, dict) else None
+            if isinstance(node, int) and not isinstance(node, bool) and node >= 0:
+                meta["usage"][name] = node
+    return meta
+
+
+def _pf_usd(tokens_in, tokens_out, rate_in, rate_out):
+    return (tokens_in * rate_in + tokens_out * rate_out) / 1_000_000
+
+
+def preflight_payload(arm_pack, item, cap, model=toa.MODEL):
+    """The exact body for one preflight request: the holdout arm's payload
+    shape for ONE preflight input, with only max_output_tokens varied."""
+    payload = mechanism_payload(arm_pack, item, model)
+    payload["max_output_tokens"] = cap
+    return payload
+
+
+def _measured_call(adapter, payload):
+    """ONE request through the adapter's own ``_call`` and transport, with the
+    HTTP status, latency and sanitized reply metadata captured on the way."""
+    import time
+    meta = {"sent": False, "http_status": _PF_UNAVAILABLE, "latency_ms": _PF_UNAVAILABLE}
+    transport = adapter._transport
+
+    def measuring(url, headers, body, timeout):
+        meta["sent"] = True
+        start = time.monotonic()
+        try:
+            status, raw = transport(url, headers, body, timeout)
+        finally:
+            meta["latency_ms"] = round((time.monotonic() - start) * 1000)
+        meta["http_status"] = status if isinstance(status, int) else _PF_UNAVAILABLE
+        meta.update(preflight_response_meta(raw if isinstance(raw, bytes) else b""))
+        return status, raw
+    adapter._transport = measuring
+    try:
+        reply = adapter._call(payload)
+    finally:
+        adapter._transport = transport
+    meta.setdefault("usage", preflight_response_meta(b"")["usage"])
+    for key in ("response_id", "model", "response_status", "incomplete_reason",
+                "error_type", "error_code"):
+        meta.setdefault(key, _PF_UNAVAILABLE)
+    return reply, meta
+
+
+def _pf_model_confirmed(returned, configured):
+    """True when the reply names the configured model itself or one of its
+    dated snapshots (``<model>-YYYY-MM-DD``); anything else, or no model, is
+    not a confirmation."""
+    return returned == configured or bool(
+        re.fullmatch(re.escape(configured) + r"-\d{4}-\d{2}-\d{2}", returned))
+
+
+def _pf_outcome(arm_pack, reply, kind, meta, cap, model=toa.MODEL):
+    """(outcome, stop): the measured category of one attempt and whether it
+    ends the preflight. A 200 reply must confirm the configured model before
+    it is measured; otherwise the run stops (MODEL_UNCONFIRMED)."""
+    usage = meta["usage"]
+    if not meta["sent"]:
+        return "NOT_SENT", True
+    if isinstance(usage["output_tokens"], int) and usage["output_tokens"] > cap:
+        return "COST_UNBOUNDED", True
+    if meta["http_status"] == _PF_UNAVAILABLE:
+        return "TRANSPORT", True
+    if meta["http_status"] != 200:
+        return "HTTP_STATUS", True
+    if not _pf_model_confirmed(meta["model"], model):
+        return "MODEL_UNCONFIRMED", True
+    if reply == ms.ABSTAIN:
+        return "REFUSAL", True
+    if reply is None:
+        if kind == toa.ERR_INCOMPLETE and meta["response_status"] == "incomplete" \
+                and meta["incomplete_reason"] == "max_output_tokens":
+            return PF_CAPPED, False
+        return ("INCOMPLETE_OTHER" if kind == toa.ERR_INCOMPLETE else "MALFORMED"), True
+    if mechanism_reply_error(arm_pack, reply) is not None:
+        return "SCHEMA_INVALID", True
+    return PF_COMPLETED, False
+
+
+def mechanism_preflight(adapter, arm_pack, pre):
+    """Run the predeclared order once, within the request and budget limits:
+    (rows, summary). Each request reserves its conservative maximum cost
+    first; no retry; the first stopping outcome ends the run."""
+    inputs = {i["input_id"]: i for i in pre["inputs"]}
+    limits, price = pre["limits"], pre["pricing"]
+    res_in, res_out = price["reservation_input_usd_per_1m"], price["reservation_output_usd_per_1m"]
+    rows, committed, stopped = [], 0.0, None
+    for index, (input_id, cap) in enumerate(pre["order"], start=1):
+        if index > limits["max_generation_requests"]:
+            stopped = "REQUEST_LIMIT"
+            break
+        item = inputs[input_id]
+        payload = preflight_payload(arm_pack, item, cap, adapter._model)
+        body_bytes = len(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
+        reserved = _pf_usd(body_bytes + 1000, cap, res_in, res_out)
+        if committed + reserved > limits["budget_usd"]:
+            stopped = "BUDGET_RESERVATION"
+            break
+        reply, meta = _measured_call(adapter, payload)
+        outcome, stop = _pf_outcome(arm_pack, reply, adapter.last_error_kind, meta, cap,
+                                    adapter._model)
+        usage = meta["usage"]
+        known = isinstance(usage["input_tokens"], int) and isinstance(usage["output_tokens"], int)
+        measured = (_pf_usd(usage["input_tokens"], usage["output_tokens"],
+                            price["input_usd_per_1m"], price["output_usd_per_1m"])
+                    if known else _PF_UNAVAILABLE)
+        if not meta["sent"]:
+            bound = 0.0                              # refused locally: nothing sent
+        elif known and meta["http_status"] == 200:
+            bound = _pf_usd(usage["input_tokens"], usage["output_tokens"], res_in, res_out)
+        else:
+            bound = reserved                         # uncertain: charge it all
+        committed += bound
+        rows.append({"index": index, "input_id": input_id, "variety": item["variety"],
+                     "sent": meta["sent"],
+                     "max_output_tokens": cap, "http_status": meta["http_status"],
+                     "response_id": meta["response_id"], "model": meta["model"],
+                     "response_status": meta["response_status"],
+                     "incomplete_reason": meta["incomplete_reason"],
+                     "error_type": meta["error_type"], "error_code": meta["error_code"],
+                     "usage": usage, "latency_ms": meta["latency_ms"],
+                     "schema_valid": outcome == PF_COMPLETED, "outcome": outcome,
+                     "reserved_usd": round(reserved, 6),
+                     "measured_cost_usd": (round(measured, 6) if known else measured),
+                     "bound_usd": round(bound, 6)})
+        if stop:
+            stopped = outcome
+            break
+        if committed > limits["budget_usd"]:
+            stopped = "BUDGET_EXCEEDED"
+            break
+    measured_total = sum(r["measured_cost_usd"] for r in rows
+                         if isinstance(r["measured_cost_usd"], float))
+    by_cap = {}
+    for cap in pre["configurations"]:
+        sub = [r for r in rows if r["max_output_tokens"] == cap]
+        by_cap[str(cap)] = {"attempted": len(sub),
+                            "completed_valid": sum(r["outcome"] == PF_COMPLETED for r in sub),
+                            "incomplete_output_cap": sum(r["outcome"] == PF_CAPPED for r in sub)}
+    summary = {"requests_attempted": len(rows),
+               "requests_sent": sum(r["sent"] for r in rows),
+               "requests_completed_valid": sum(r["outcome"] == PF_COMPLETED for r in rows),
+               "stopped": stopped, "by_max_output_tokens": by_cap,
+               "measured_cost_usd": round(measured_total, 6),
+               "measured_cost_complete": all(isinstance(r["measured_cost_usd"], float)
+                                             for r in rows),
+               "conservative_bound_usd": round(committed, 6),
+               "budget_usd": limits["budget_usd"]}
+    return rows, summary
+
+
+MECHANISM_PREFLIGHT_INSTRUCTIONS_SHA256 = \
+    "7ea95c74ac03f0d45b2fa04a960948d500216ebc101173fc66941f073363aee3"
+
+
+def _preflight_pack():
+    """The pinned preflight fixture. Its arm source is the holdout pack as it
+    stood at the preflight (c4c1d7e4...); the later resource-limit amendment 02
+    changed no instruction, so the current instructions must still hash to the
+    exact text the preflight sent."""
+    pre = _load(MECHANISM_PREFLIGHT_PATH, MECHANISM_PREFLIGHT_SHA256)
+    arm_pack = _mechanism_pack()
+    amendment = arm_pack["annotation"].get("pre_execution_amendment_02", {})
+    if pre["arm_source"]["pack_sha256"] not in (
+            MECHANISM_PACK_SHA256, amendment.get("pack_sha256_before")) or \
+            hashlib.sha256(arm_pack["arm"]["instructions"].encode("utf-8")).hexdigest() \
+            != MECHANISM_PREFLIGHT_INSTRUCTIONS_SHA256:
+        raise PackError("preflight arm source is not the pinned holdout pack")
+    holdout = {c["text"] for c in _mechanism_pack()["cases"]}
+    if any(i["text"] in holdout for i in pre["inputs"]):
+        raise PackError("a preflight input is a holdout case")
+    return pre
+
+
+def mechanism_preflight_run(provider, allow_network, managed_credential):
+    """The plan and its reservations (always), and the ONE authorized run only
+    with the openai provider and both network flags."""
+    arm_pack, pre = _mechanism_pack(), _preflight_pack()
+    plan = []
+    for index, (input_id, cap) in enumerate(pre["order"], start=1):
+        item = {i["input_id"]: i for i in pre["inputs"]}[input_id]
+        body = json.dumps(preflight_payload(arm_pack, item, cap), ensure_ascii=False)
+        plan.append({"index": index, "input_id": input_id, "max_output_tokens": cap,
+                     "reserved_usd": round(_pf_usd(len(body.encode("utf-8")) + 1000, cap,
+                                                   pre["pricing"]["reservation_input_usd_per_1m"],
+                                                   pre["pricing"]["reservation_output_usd_per_1m"]), 6)})
+    out = {"pack_id": pre["pack_id"], "preflight_sha256": MECHANISM_PREFLIGHT_SHA256,
+           "arm_pack_sha256": MECHANISM_PACK_SHA256,
+           "instructions_sha256": hashlib.sha256(
+               arm_pack["arm"]["instructions"].encode("utf-8")).hexdigest(),
+           "fixed_settings": pre["fixed_settings"], "limits": pre["limits"],
+           "pricing": pre["pricing"], "plan": plan,
+           "campaign_authorized": MECHANISM_CONTENT_CAMPAIGN_AUTHORIZED}
+    if provider != "openai":
+        out["provider_requests"] = 0
+        return out
+    if not MECHANISM_PREFLIGHT_AUTHORIZED:
+        out["refused"] = "the provider preflight is not authorized; nothing was sent"
+        out["provider_requests"] = 0
+        return out
+    if not (allow_network and managed_credential):
+        raise SystemExit(2)
+    adapter = OpenAIMsnlAdapter(allow_network=True)
+    rows, summary = mechanism_preflight(adapter, arm_pack, pre)
+    out.update({"model": adapter._model, "endpoint": toa.ENDPOINT,
+                "provider_requests": summary["requests_sent"], "requests": rows,
+                "summary": summary})
+    return out
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="MSNL synthetic LLM feasibility harness")
     p.add_argument("--provider", choices=("lexical", "openai"), default="lexical")
@@ -664,7 +1777,105 @@ def main(argv=None):
     p.add_argument("--show-cases", action="store_true")
     p.add_argument("--rescore", metavar="PATH")
     p.add_argument("--responsiveness", action="store_true")
+    p.add_argument("--mechanism-content", action="store_true")
+    p.add_argument("--mechanism-content-rescore", metavar="PATH")
+    p.add_argument("--mechanism-preflight", action="store_true")
+    p.add_argument("--mechanism-content-journal", metavar="PATH")
+    p.add_argument("--mechanism-candidate-check", action="store_true")
+    p.add_argument("--mechanism-v2-evaluation", action="store_true")
+    p.add_argument("--mechanism-v2-rescore", metavar="PATH")
     args = p.parse_args(argv)
+    if args.mechanism_v2_rescore:
+        if args.provider != "lexical" or args.allow_network or args.managed_credential \
+                or args.mechanism_v2_evaluation or args.mechanism_content \
+                or args.mechanism_preflight or args.mechanism_candidate_check:
+            print(json.dumps({"refused": "--mechanism-v2-rescore is offline and takes no "
+                                         "other mode, provider or network option"}))
+            return 2
+        try:
+            out = mechanism_v2_rescore(args.mechanism_v2_rescore)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0
+    if args.mechanism_v2_evaluation:
+        if args.mechanism_content or args.mechanism_preflight or args.mechanism_candidate_check \
+                or args.responsiveness or args.rescore or args.show_cases \
+                or args.mechanism_content_journal or args.mechanism_content_rescore:
+            print(json.dumps({"refused": "--mechanism-v2-evaluation takes no other mode"}))
+            return 2
+        if args.provider == "openai" and not (args.allow_network and args.managed_credential):
+            print(json.dumps({"refused": "--provider openai needs --allow-network "
+                                         "--managed-credential"}))
+            return 2
+        try:
+            out = mechanism_v2_run(args.provider, args.allow_network, args.managed_credential)
+        except PackError as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 2 if out.get("refused") else 0
+    if args.mechanism_candidate_check:
+        if args.provider != "lexical" or args.allow_network or args.managed_credential \
+                or args.mechanism_content or args.mechanism_preflight or args.responsiveness \
+                or args.rescore or args.mechanism_content_rescore or args.show_cases:
+            print(json.dumps({"refused": "--mechanism-candidate-check is offline and takes "
+                                         "no other mode, provider or network option"}))
+            return 2
+        try:
+            out = mechanism_candidate_check()
+        except PackError as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0
+    if args.mechanism_preflight:
+        if args.rescore or args.show_cases or args.responsiveness or \
+                args.mechanism_content or args.mechanism_content_rescore:
+            print(json.dumps({"refused": "--mechanism-preflight takes no other mode"}))
+            return 2
+        if args.provider == "openai" and not (args.allow_network and args.managed_credential):
+            print(json.dumps({"refused": "--provider openai needs --allow-network "
+                                         "--managed-credential"}))
+            return 2
+        try:
+            out = mechanism_preflight_run(args.provider, args.allow_network,
+                                          args.managed_credential)
+        except PackError as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 2 if out.get("refused") else 0
+    if args.mechanism_content_rescore:
+        if args.provider != "lexical" or args.allow_network or args.managed_credential \
+                or args.mechanism_content or args.responsiveness or args.rescore:
+            print(json.dumps({"refused": "--mechanism-content-rescore is offline and "
+                                         "takes no other mode, provider or network option"}))
+            return 2
+        try:
+            out = mechanism_rescore(args.mechanism_content_rescore)
+        except (OSError, ValueError, KeyError, TypeError) as exc:  # PackError, bad JSON
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0
+    if args.mechanism_content:
+        if args.rescore or args.show_cases or args.responsiveness:
+            print(json.dumps({"refused": "--mechanism-content takes no other mode"}))
+            return 2
+        if args.provider == "openai" and not (args.allow_network and args.managed_credential):
+            print(json.dumps({"refused": "--provider openai needs --allow-network "
+                                         "--managed-credential"}))
+            return 2
+        try:
+            out = mechanism_content(args.provider, args.allow_network,
+                                    args.managed_credential, args.mechanism_content_journal)
+        except PackError as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 2 if out.get("refused") else 0
     if args.responsiveness:
         if args.rescore or args.show_cases:
             print(json.dumps({"refused": "--responsiveness takes no --rescore or "
