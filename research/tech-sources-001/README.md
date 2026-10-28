@@ -33,6 +33,15 @@ If a query would need such content, do not send it; record an abstention.
 ## Six adaptive search lenses (Owner-agreed source-discovery methods)
 1. Principle-based · 2. Technology-based · 3. Function-based · 4. Problem-based · 5. Application-based · 6. Source-targeted.
 Choose lenses adaptively per question; record the lens used for every query in the run ledger. They are discovery methods, not READ BEFORE BUILD checks.
+Source pools for the source-targeted lens (Owner 2026-10-28; persistent; use only where the exact residual needs them, never as a mandatory stage):
+CERN (institutional primary source for physics, instrumentation, sensors / detectors, electronics, radiation, vacuum, experimental conditions);
+HEPData (measured values, tables, measured relationships, verification data); arXiv (papers, equations / models, operating conditions, limitations,
+leads to stronger primary sources — hosting alone is no reuse right); INSPIRE-HEP (discovery / index layer: qualify the underlying inspected
+source, not the index record); Project Euclid (selectively, for mathematical foundations, analytical models, differential equations, probability /
+statistics, mathematical physics — item-level rights inspected). Preferred order where practical: existing qualified evidence → official /
+government / standards primary source → institutional primary source → CERN / HEPData → arXiv / INSPIRE discovery → Project Euclid where
+mathematical depth is required → stop. Every rule of this README still applies: a source hosted by these pools that is inaccessible, uninspected
+or of unclear item-level rights is not qualified.
 
 ## Limits (fixed; never expanded by a run)
 - Per run: at most 3 questions worked; at most 12 Perplexity calls, of which at most 1 `perplexity_research`; at most 15 direct primary-source fetches.
