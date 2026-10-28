@@ -38,6 +38,9 @@ File-creation contract:
       reservation and attempt as it happens);
     `--mechanism-content-rescore PATH` (offline downstream replay of a saved
       mechanism-content report against the pinned pack and unchanged engine);
+    `--mechanism-candidate-check` (T2-G / R2: offline only — loads the pinned
+      `tests/fixtures/msnl_mechanism_content_v2_candidate.json` and checks that
+      it builds valid requests; it has no provider path);
     `--mechanism-preflight` (T2-G / R2: the ONE Owner-authorized operational
       provider preflight over the pinned
       `tests/fixtures/msnl_mechanism_preflight_v1.json` — four separate
@@ -63,6 +66,7 @@ File-creation contract:
     activation, persistence or product behaviour.
 """
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -1215,6 +1219,65 @@ def mechanism_rescore(path):
             "result": mechanism_verdict(pack, runs, violations), "case_level": runs}
 
 
+# ─── T2-G / R2: the v2 correction CANDIDATE (offline only) ──────────────────
+#
+# Owner authorization "R2 / BOUNDED SEMANTIC CORRECTION CANDIDATE" (step 5
+# only): ONE versioned, evaluation-only candidate that replaces ONE sentence of
+# the v1 arm instructions and inherits everything else from the pinned v1 pack.
+# v1, its evidence and its FAIL verdict are untouched. This section has NO
+# provider path: it only loads the pinned candidate and checks, offline, that
+# it builds valid requests; any evaluation needs a separate authorization.
+
+MECHANISM_CANDIDATE_PATH = os.path.join(_ROOT, "tests", "fixtures",
+                                        "msnl_mechanism_content_v2_candidate.json")
+MECHANISM_CANDIDATE_SHA256 = "60bad066e962b673b8e46bf691670234aed0f1c5f61010be1ff4fc40de87defc"
+
+
+def _mechanism_candidate():
+    """(candidate, arm_pack): the pinned candidate and the v1 pack with ONLY
+    its arm instructions replaced. Refuses a candidate whose base is not the
+    pinned v1 pack or whose recorded delta does not reproduce its instructions."""
+    cand = _load(MECHANISM_CANDIDATE_PATH, MECHANISM_CANDIDATE_SHA256)
+    v1 = _mechanism_pack()
+    if cand["base_pack"]["pack_sha256"] != MECHANISM_PACK_SHA256:
+        raise PackError("candidate base is not the pinned v1 pack")
+    delta, old = cand["instruction_delta"], v1["arm"]["instructions"]
+    new = cand["arm"]["instructions"]
+    if hashlib.sha256(old.encode("utf-8")).hexdigest() != delta["old_instructions_sha256"] \
+            or hashlib.sha256(new.encode("utf-8")).hexdigest() != \
+            delta["new_instructions_sha256"] \
+            or old.count(delta["replaced_segment_old"]) != 1 \
+            or old.replace(delta["replaced_segment_old"], delta["replaced_segment_new"]) != new:
+        raise PackError("candidate instruction delta does not reproduce its instructions")
+    arm_pack = copy.deepcopy(v1)
+    arm_pack["pack_id"] = cand["pack_id"]
+    arm_pack["arm"]["instructions"] = new
+    return cand, arm_pack
+
+
+def mechanism_candidate_check():
+    """Offline: every v1 case and every development example builds a request
+    under the candidate within the frozen input cap; nothing is sent."""
+    cand, arm_pack = _mechanism_candidate()
+    items = list(arm_pack["cases"])
+    scope = arm_pack["scope"]["served_questions"]
+    from engine.path_n_questions import get_served_question
+    for ex in cand["development_examples"]["examples"]:
+        served = get_served_question("MECHANISM_COMPLETENESS", scope[ex["question_id"]],
+                                     domain=ex["domain"])
+        items.append({"case_id": ex["example_id"], "text": ex["text"],
+                      "served_question": served.text if ex["variety"] == "en"
+                      else served.text_ar})
+    sizes = [len(json.dumps(mechanism_payload(arm_pack, item), ensure_ascii=False))
+             for item in items]
+    return {"pack_id": cand["pack_id"], "candidate_sha256": MECHANISM_CANDIDATE_SHA256,
+            "base_pack_sha256": MECHANISM_PACK_SHA256,
+            "instructions_sha256": cand["instruction_delta"]["new_instructions_sha256"],
+            "requests_built": len(items), "largest_request_body_chars": max(sizes),
+            "max_input_characters": arm_pack["thresholds"]["max_input_characters"],
+            "provider_requests": 0}
+
+
 # ─── T2-G / R2: ONE bounded synthetic PROVIDER PREFLIGHT (not the campaign) ─
 #
 # Owner authorization "R2 / EXECUTE BOUNDED PROVIDER PREFLIGHT" (2026-10-27):
@@ -1506,7 +1569,22 @@ def main(argv=None):
     p.add_argument("--mechanism-content-rescore", metavar="PATH")
     p.add_argument("--mechanism-preflight", action="store_true")
     p.add_argument("--mechanism-content-journal", metavar="PATH")
+    p.add_argument("--mechanism-candidate-check", action="store_true")
     args = p.parse_args(argv)
+    if args.mechanism_candidate_check:
+        if args.provider != "lexical" or args.allow_network or args.managed_credential \
+                or args.mechanism_content or args.mechanism_preflight or args.responsiveness \
+                or args.rescore or args.mechanism_content_rescore or args.show_cases:
+            print(json.dumps({"refused": "--mechanism-candidate-check is offline and takes "
+                                         "no other mode, provider or network option"}))
+            return 2
+        try:
+            out = mechanism_candidate_check()
+        except PackError as exc:
+            print(json.dumps({"refused": str(exc)}))
+            return 2
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0
     if args.mechanism_preflight:
         if args.rescore or args.show_cases or args.responsiveness or \
                 args.mechanism_content or args.mechanism_content_rescore:
