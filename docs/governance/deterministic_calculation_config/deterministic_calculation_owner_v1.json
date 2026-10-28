@@ -1,9 +1,9 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "9",
+  "artifact_version": "10",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 09, sections 13A to 13H) and the method contracts of the nine admitted methods. Content version 9 admits exactly nine methods and exactly the fifteen unit tokens they require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature; V, Ω and A for the DC resistive load current; V, Ω and W for the DC resistive load power; V, Ω, s and J for the DC resistive load energy; N·mm, mm and N for the CAP-13 planar required force); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. The voltage kind alone holds two exact tokens, mV and V, by the one named exception of section 13E: each role binds one of them and nothing maps one to the other. The Celsius-temperature kind is the TMP36 output only and is never related to K. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The fifteen unit records, the records dcu:SU001 to dcu:SU015 and the eight earlier method records are unchanged from content version 8.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 10, sections 13A to 13I) and the method contracts of the ten admitted methods. Content version 10 admits exactly ten methods and exactly the seventeen unit tokens they require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature; V, Ω and A for the DC resistive load current; V, Ω and W for the DC resistive load power; V, Ω, s and J for the DC resistive load energy; N·mm, mm and N for the CAP-13 planar required force; A, h and A·h for the DC constant-current charge); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. Two kinds hold two exact tokens each by the named exceptions of sections 13E and 13I: voltage holds mV and V, and time holds s and h; each role binds one of them and nothing maps one to the other (no 3600, no minute). The Celsius-temperature kind is the TMP36 output only and is never related to K. The electric-charge kind holds the one token A·h, which is never related to C, mA·h or J. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The fifteen earlier unit records, the records dcu:SU001 to dcu:SU016 and the nine earlier method records are unchanged from content version 9.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
     {"quantity_kind": "length", "dimension": "L"},
@@ -18,7 +18,8 @@
     {"quantity_kind": "electric_resistance", "dimension": "M L^2 T^-3 I^-2"},
     {"quantity_kind": "electric_current", "dimension": "I"},
     {"quantity_kind": "energy", "dimension": "M L^2 T^-2"},
-    {"quantity_kind": "time", "dimension": "T"}
+    {"quantity_kind": "time", "dimension": "T"},
+    {"quantity_kind": "electric_charge", "dimension": "T I"}
   ],
   "unit_records": [
     {
@@ -275,6 +276,40 @@
       "inspection_basis": "LEAD_SUPPLIED",
       "inspection_date": "2026-10-10",
       "inspection_reference": "Lead-level textual source check recorded as electronics_electrical:PR009 (NIST SP 811 Chapter 4, Table 1: second - s; Table 3: joule - J, watt - W as J/s; corroborated by the watt-second row of Appendix B.9; 2026-10-10), whose pack-record scope (a reference text of its own reference group, which admits no owner unit) is unchanged; this record is the owner's own bounded unit identification for s under ELECTRICAL_DC_RESISTIVE_LOAD_ENERGY_METHOD_CONTRACT.md section 4 and calc/units Correction 08 (section 13G). Not independently re-inspected by the executor."
+    },
+    {
+      "record_id": "dcu:U016",
+      "unit_token": "h",
+      "unit_name": "hour",
+      "quantity_kind": "time",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Appendix B.9 with Chapter 4",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9, Electricity and Magnetism, ampere hour row (1 A · h = 3.6 × 10³ C), read with Chapter 4, Table 3 (coulomb, C, as s · A)",
+      "inspected_content": "Appendix B.9 records the ampere hour row 1 A · h = 3.6 × 10³ C, which, with the coulomb expressed as s · A in Chapter 4, Table 3, identifies the hour, symbol h, as the time factor of the ampere hour (1 h = 3600 s being InventorAI's arithmetic from those two facts, recorded for identification only); used here for the duration input role of the DC constant-current charge method only, as the second exact token of the time kind beside s under the named exception of calc/units section 13I. Unit identification only; no conversion is admitted (nothing maps h to s, minute or any other time unit, and the factor 3600 is never applied) and no NIST text, table, prefix list or conversion factor is reproduced. A separate NIST statement that the hour is accepted for use with the SI is not recorded here as an inspected location and is not relied upon.",
+      "source_use_policy_ref": "dcu:SU017",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspection_reference": "Lead-level direct primary-source inspection recorded as electronics_electrical:PR020 (NIST SP 811 online edition: Chapter 4, Table 3: coulomb - C as s · A; Appendix B.9: ampere hour - 1 A · h = 3.6 × 10³ C; 2026-10-12), whose pack-record scope (a reference text of its own reference group, which admits no owner unit) is unchanged; this record is the owner's own bounded unit identification for h under ELECTRICAL_DC_CONSTANT_CURRENT_CHARGE_METHOD_CONTRACT.md section 4 and calc/units Correction 10 (section 13I). Not independently re-inspected by the executor (egress to the NIST host was blocked)."
+    },
+    {
+      "record_id": "dcu:U017",
+      "unit_token": "A·h",
+      "unit_name": "ampere hour",
+      "quantity_kind": "electric_charge",
+      "source_title": "NIST Special Publication 811 - Guide for the Use of the International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "NIST SP 811 online (web) edition, as inspected - Appendix B.9 with Chapter 4",
+      "doi": "not recorded - the inspected web edition is identified by its URL; the 2008 edition DOI is recorded on dcu:U001",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9",
+      "inspected_location": "Appendix B.9, Electricity and Magnetism, ampere hour row (1 A · h = 3.6 × 10³ C), read with Chapter 4, Table 3 (coulomb, C, as s · A)",
+      "inspected_content": "Appendix B.9 records the ampere hour row 1 A · h = 3.6 × 10³ C, which identifies the ampere hour, symbol A·h, as a unit of electric charge (the coulomb, C, being the SI coherent derived unit of electric charge, expressed as s · A, in Chapter 4, Table 3); used here for the output role of the DC constant-current charge method only, as the one exact token of the electric-charge kind. Unit identification only; no conversion is admitted (the factor 3.6 × 10³ is recorded to identify the unit and is never applied; nothing maps A·h to C, mA·h, Ah, J or any other unit) and no NIST text, table, prefix list or other conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU017",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspection_reference": "Lead-level direct primary-source inspection recorded as electronics_electrical:PR020 (NIST SP 811 online edition: Chapter 4, Table 3: coulomb - C as s · A; Appendix B.9: ampere hour - 1 A · h = 3.6 × 10³ C; 2026-10-12), whose pack-record scope (a reference text of its own reference group, which admits no owner unit) is unchanged; this record is the owner's own bounded unit identification for A·h under ELECTRICAL_DC_CONSTANT_CURRENT_CHARGE_METHOD_CONTRACT.md section 4 and calc/units Correction 10 (section 13I). Not independently re-inspected by the executor (egress to the NIST host was blocked)."
     }
   ],
   "source_use_policies": [
@@ -485,6 +520,32 @@
       "acknowledgement": "Reference source material: NASA Glenn Research Center (equilibrium and torque / moment principles); the rearranged form F = M / d⊥ is InventorAI's own restatement.",
       "third_party_material_exclusion": "No third-party or unidentified page content.",
       "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU017",
+      "source_title": "NIST - NIST Publications (NIST Research Library), read with the NIST Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/nist-research-library/nist-publications",
+      "inspected_content": "Owner-local snapshot of dcq:SU002 for the unit records dcu:U016 (h) and dcu:U017 (A·h) only (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; appropriate NIST acknowledgement is required; third-party material inside a NIST publication is excluded, no blanket public-domain status or comprehensive authorship verification is claimed, and the guidance is not a blanket license for every NIST-hosted resource. Use is the identification of the hour and the ampere hour only; no NIST text, table, prefix list or conversion factor is reproduced and the one recorded factor is never applied.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspection_reference": "Version-bound snapshot of dcq:SU002 in docs/governance/electrical_content_config/dc_constant_current_charge_v1.json, itself the disposition recorded as electronics_electrical:PR021 (Lead-supplied, 2026-10-12, read with the statement wording of electronics_electrical:PR011) applied to this one method's unit roles; held here so the owner unit records validate from this artifact alone. A separate record: dcu:SU001 to dcu:SU016 keep their own scopes and are not extended (dcu:SU014, the DC resistive load energy snapshot for J and s, is not extended to h).",
+      "acknowledgement": "Unit identification for h and A·h follows NIST Special Publication 811 (Chapter 4, Table 3 and Appendix B.9), National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No statement or implication that NIST endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU018",
+      "source_title": "U.S. Department of Energy - Web Policies - Copyright, Restrictions and Permissions Notice",
+      "publisher": "U.S. Department of Energy (DOE)",
+      "url": "https://www.energy.gov/web-policies",
+      "inspected_content": "Owner-local snapshot of dcq:SU001 for the DC constant-current charge method source DOE-CHG-S1 only (not a legal opinion): government information on DOE websites is in the public domain with DOE acknowledgement requested; contractor- or privately contributed material may remain protected, so no blanket public-domain claim is made for the handbook's expressive content and no comprehensive authorship verification is claimed. Use is the one factual relationship (electric current as the flow of electric charge, one ampere being one coulomb per second, restated by InventorAI as Q = I x t for a constant current only) in InventorAI's own paraphrase; no handbook prose, worked example, figure or table is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-12",
+      "inspection_reference": "Version-bound snapshot of dcq:SU001 in docs/governance/electrical_content_config/dc_constant_current_charge_v1.json, itself the disposition recorded as electronics_electrical:PR019 (Lead-supplied, 2026-10-12, resting on the policy wording of electronics_electrical:PR006 and PR010) applied to this one method; held here so the owner method record validates from this artifact alone. A separate record: dcu:SU001 to dcu:SU016 keep their own scopes; dcu:SU012, dcu:SU013 and dcu:SU015 (DC resistive load current, power and energy) are not extended.",
+      "acknowledgement": "Reference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only).",
+      "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
+      "no_endorsement_limitation": "No statement or implication that DOE endorses, reviewed or approved InventorAI, this owner or any result."
     }
   ],
   "methods": [
@@ -798,6 +859,33 @@
       "applicability": [
         {"role": "d_perp", "condition": "greater_than_zero", "bound_role": null}
       ],
+      "result_range": []
+    },
+    {
+      "method_id": "electrical:dc_constant_current_charge",
+      "method_version": "1.0",
+      "adapter_identity": "engine.dc_constant_current_charge_method.evaluate",
+      "technical_authority": "Electrical / Electronics - ELECTRICAL_DC_CONSTANT_CURRENT_CHARGE_METHOD_CONTRACT.md (section 3 method definition, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "electrical_dc_constant_current_charge", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "DOE-CHG-S1",
+          "source_title": "DOE-HDBK-1011/1-92, DOE Fundamentals Handbook: Electrical Science, Volume 1 of 4, Module ES-01 (Basic Electrical Theory), Electrical Terminology - Current (printed page ES-01 page 10) (archived; historical fundamentals reference only)",
+          "publisher": "U.S. Department of Energy (DOE)",
+          "url": "https://www.energy.gov/sites/default/files/2026-04/DOE-HDBK-1011-92_VOL1.pdf",
+          "source_use_policy_ref": "dcu:SU018",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-12"
+        }
+      ],
+      "input_roles": [
+        {"role": "i_load", "quantity_kind": "electric_current", "unit_token": "A"},
+        {"role": "t_duration", "quantity_kind": "time", "unit_token": "h"}
+      ],
+      "output_roles": [
+        {"role": "q_load", "quantity_kind": "electric_charge", "unit_token": "A·h"}
+      ],
+      "applicability": [],
       "result_range": []
     }
   ]

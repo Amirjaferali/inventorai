@@ -45,8 +45,10 @@ _PRE_PROVENANCE_DIGEST = "646329cb322a64261b5bcccb855ce6905dfa559d4002794c48b0f3
 _THERM01_FILES = {
     "docs/governance/therm01_content_config/conduction_temperature_difference_single_path_v1.json":
         "c9e94f6999d166b0ce00b11eea4142f8b3a6c6e3c8afe1d77acafdf0828c1a08",
+    # content version 10 after calc/units Correction 10 (DC-CONSTANT-CURRENT-CHARGE-01);
+    # the THERM-01 method record and its unit records inside it are unchanged
     "docs/governance/deterministic_calculation_config/deterministic_calculation_owner_v1.json":
-        "eef16204438a1602e9ae86c62ee0486762d59c33f0f8ef9114bfcc83f522d452",
+        "5b07fc4bf3c0fe9c71496dcb025004e91f2615f3849d0819a7f8a331619baa8a",
     "engine/therm01_conduction_method.py":
         "bff126a49c612b59104311185b19681974e9442f26179f98c6da66ff891acb4c",
     "engine/therm01_temperature_difference.py":

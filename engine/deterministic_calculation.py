@@ -21,8 +21,11 @@ methods, the bounded sixth, seventh and eighth admissions of Corrections 06, 07
 and 08 (§13E, §13F, §13G) under their own ELECTRICAL_DC_RESISTIVE_LOAD_*
 method contracts; then CAP-13 Planar Required Force Slice 1, the bounded ninth
 admission of Correction 09 (§13H) under
-docs/governance/STAGE25_CAP13_PLANAR_REQUIRED_FORCE_METHOD_CONTRACT.md. The owner is descriptive and unnumbered: it carries no CAP
-identifier.
+docs/governance/STAGE25_CAP13_PLANAR_REQUIRED_FORCE_METHOD_CONTRACT.md; then the
+Electrical / Electronics DC constant-current charge method, the bounded tenth
+admission of Correction 10 (§13I) under
+docs/governance/ELECTRICAL_DC_CONSTANT_CURRENT_CHARGE_METHOD_CONTRACT.md. The owner
+is descriptive and unnumbered: it carries no CAP identifier.
 
 What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
   * admission of a request against its own governed artifact (§9);
@@ -96,7 +99,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.8.0"
+IMPLEMENTATION_VERSION = "1.9.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -122,18 +125,22 @@ _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
 # admission of Correction 07 (§13F, Electrical / Electronics DC resistive load
 # power, on the existing kinds and tokens), the bounded eighth admission of
 # Correction 08 (§13G, Electrical / Electronics DC resistive load energy, adding
-# only the energy / J and time / s kinds and tokens) and exactly the bounded
-# ninth admission of Correction 09 (§13H, CAP-13 planar required force, on the
-# existing moment / length / force kinds and tokens) - NINE methods, each with
-# its own consumer. A
+# only the energy / J and time / s kinds and tokens), the bounded ninth
+# admission of Correction 09 (§13H, CAP-13 planar required force, on the
+# existing moment / length / force kinds and tokens) and exactly the bounded
+# tenth admission of Correction 10 (§13I, Electrical / Electronics DC
+# constant-current charge, adding only the electric_charge / A·h kind and token
+# and the second exact time token h) - TEN methods, each with its own consumer. A
 # structurally valid extra method, quantity kind or unit fails closed: widening
 # the inventory is a separately authorized change, never an artifact edit alone.
 # No conversion exists. The one Celsius-temperature kind is the output of the
 # TMP36 method only: it is never mapped to or from K, never compared with the
 # THERM-01 temperature difference and carries no offset arithmetic here.
-# Voltage is the ONE kind with two exact tokens (Correction 06): mV for the TMP36
-# input and V for the DC load voltage. Each role binds exactly one of them, a
-# request in the other token is refused, and nothing maps mV to V.
+# Two kinds hold two exact tokens each, by name: voltage (Correction 06) - mV for
+# the TMP36 input and V for the DC load voltage - and time (Correction 10) - s for
+# the DC load energy duration and h for the DC constant-current charge duration.
+# Each role binds exactly one of them, a request in the other token is refused,
+# and nothing maps mV to V or h to s: no scale factor exists here.
 ADMITTED_METHODS = frozenset({
     ("cap13:static_reactions_two_support", "1.0"),
     ("therm01:conduction_temperature_difference_single_path", "1.0"),
@@ -144,16 +151,20 @@ ADMITTED_METHODS = frozenset({
     ("electrical:dc_resistive_load_power", "1.0"),
     ("electrical:dc_resistive_load_energy", "1.0"),
     ("cap13:planar_required_force", "1.0"),
+    ("electrical:dc_constant_current_charge", "1.0"),
 })
 ADMITTED_QUANTITY_KINDS = frozenset({
     "force", "length", "power", "thermal_resistance", "temperature_difference",
     "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",
-    "electric_resistance", "electric_current", "energy", "time"})
+    "electric_resistance", "electric_current", "energy", "time",
+    "electric_charge"})
 ADMITTED_UNIT_TOKENS = frozenset({"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
-                                  "mV", "°C", "V", "Ω", "A", "J", "s"})
-# The one named exception to "one unit token per quantity kind" (§13E): the
-# exact token set a kind may hold. Not an alias table and not a scale relation.
-KIND_TOKEN_EXCEPTIONS = {"voltage": frozenset({"mV", "V"})}
+                                  "mV", "°C", "V", "Ω", "A", "J", "s", "h", "A·h"})
+# The named exceptions to "one unit token per quantity kind" (§13E voltage,
+# §13I time): the exact token set a kind may hold. Not an alias table and not a
+# scale relation: nothing maps mV to V or h to s.
+KIND_TOKEN_EXCEPTIONS = {"voltage": frozenset({"mV", "V"}),
+                         "time": frozenset({"s", "h"})}
 
 _ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 _MAX_TEXT = 700

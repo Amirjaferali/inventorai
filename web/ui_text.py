@@ -7713,6 +7713,156 @@ UI_STRINGS = {
     "UI_DCE_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # DC-CONSTANT-CURRENT-CHARGE-01 — DC Constant-Current Charge, Slice 1 (method
+    # contract §9). The English declaration, screen and disclosure entries are
+    # pinned equal to the artifact by test and the Arabic ones to contract §9A.
+    # Nothing here states a battery capacity, battery need, runtime, state
+    # of charge, energy, rating comparison, sizing, selection, suitability or
+    # safety; the result is a charge in A·h and no unit is converted.
+    "UI_DCQ_LINK_TEXT": {
+        "en": "Optional: charge that flows through one load at a constant DC current over a duration (Q = I × t, in A·h)",
+        "ar": "اختياري: الشحنة التي تمرّ في حِمل واحد بتيار مستمر ثابت خلال مدة (Q = I × t، بالأمبير ساعة A·h)"},
+    "UI_DCQ_LINK_NOTE": {
+        "en": "An advisory calculation from a current and a duration you declare. It is not saved, it is a charge and not an energy, it is not a battery capacity, a runtime or a battery choice, and it is never required.",
+        "ar": "حساب إرشادي من تيار ومدة تصرّح بهما أنت. لا يُحفَظ، وهو شحنة وليس طاقة، وليس سعة بطارية ولا زمن تشغيل (runtime) ولا اختيارًا لبطارية، ولا يكون مطلوبًا أبدًا."},
+    "UI_DCQ_TITLE": {
+        "en": "DC constant-current charge (optional, non-binding)",
+        "ar": "شحنة تيار مستمر ثابت (اختياري، غير مُلزِم)"},
+    "UI_DCQ_INTRO": {
+        "en": "This page is optional. If your design has one load that draws one DC current that stays constant, and you know that current and how long it flows, it shows the electric charge that passes through the load in that time: Q = I × t, in ampere hours (A·h). A·h is the unit battery ratings use, but this page does not tell you which battery you need, how long a battery lasts or how much energy is used. Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. إذا كان في تصميمك حِمل واحد يسحب تيارًا مستمرًا واحدًا ثابتًا، وتعرف ذلك التيار والمدة التي يمرّ فيها، فهي تعرض الشحنة الكهربائية التي تمرّ في الحِمل خلال تلك المدة: Q = I × t، بالأمبير ساعة (A·h). و A·h هي الوحدة التي تُستخدم في القيم الاسمية (ratings) للبطاريات، لكن هذه الصفحة لا تخبرك بأي بطارية تحتاجها، ولا بكم تدوم البطارية، ولا بمقدار الطاقة المستهلكة. لا يُحفَظ شيء."},
+    "UI_DCQ_SCOPE_NOTE": {
+        "en": "This optional calculation is available for an Electrical / Electronics-focus project or for its declared Electrical / Electronics part in a valid durable integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that your current is constant or that the relation applies to it; you must confirm the method's conditions and screening items. The result is an UNVALIDATED charge, not a measurement, an energy, a battery capacity, a runtime, a state of charge, a rating comparison, a battery choice or a safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله كهربائي/إلكتروني، أو لجزئه الكهربائي/الإلكتروني المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء أن تيارك ثابت أو أن العلاقة تنطبق عليه؛ يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة شحنة غير مُتحقَّق منها (UNVALIDATED)، وليست قياسًا ولا طاقة ولا سعة بطارية ولا زمن تشغيل (runtime) ولا حالة شحن (state of charge) ولا مقارنة بقيمة اسمية (rating) ولا اختيارًا لبطارية ولا حكمًا بشأن السلامة."},
+    "UI_DCQ_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_DCQ_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_DCQ_DECL_CONSTANT_DC_CURRENT": {
+        "en": "The current through the load is a DC current that stays at the one value entered for the whole declared duration; no changing, pulsed, duty-cycled, intermittent, start-up, inrush, switching or AC current is being calculated.",
+        "ar": "التيار المارّ في الحِمل تيار مستمر (DC) يبقى عند القيمة الواحدة المُدخلة طوال المدة المصرّح بها كلها؛ ولا يُحسب أي تيار متغير أو نبضي أو بدورة تشغيل (duty cycle) أو متقطع أو تيار بدء تشغيل أو تيار اندفاعي (inrush) أو تبديل أو تيار متردد (AC)."},
+    "UI_DCQ_DECL_DECLARED_VALUES": {
+        "en": "The current and the duration entered are the inventor's own values for this one load, taken from their own reading, documentation or plan; InventorAI did not measure or check them and does not establish that the current is constant.",
+        "ar": "التيار والمدة المُدخلان قيمك أنت لهذا الحِمل الواحد، مأخوذان من قراءتك أو من وثائقك أو من خطتك؛ ولم يقسهما InventorAI ولم يتحقق منهما، ولا يثبت أن التيار ثابت."},
+    "UI_DCQ_DECL_CHARGE_THROUGH_LOAD": {
+        "en": "The quantity wanted is the electric charge that flows through this one load during that one duration, not a battery capacity, a runtime, a state of charge, an energy or a choice of battery or source.",
+        "ar": "الكمية المطلوبة هي الشحنة الكهربائية التي تمرّ في هذا الحِمل الواحد خلال تلك المدة الواحدة، وليست سعة بطارية ولا زمن تشغيل (runtime) ولا حالة شحن (state of charge) ولا طاقة ولا اختيارًا لبطارية أو مصدر."},
+    "UI_DCQ_DECL_SINGLE_LOAD_SINGLE_PERIOD": {
+        "en": "One load and one continuous period at that one current are being described; several loads, several periods, standby or sleep phases and any other current are not combined into this value.",
+        "ar": "الموصوف حِمل واحد وفترة واحدة متصلة عند ذلك التيار الواحد؛ ولا تُدمج في هذه القيمة عدة أحمال أو عدة فترات أو أطوار الاستعداد أو السكون (standby/sleep) أو أي تيار آخر."},
+    "UI_DCQ_SCREEN_STEM": {
+        "en": "Is the load, its power source or the circuit it is part of any of the following? Answer each item yes or no.",
+        "ar": "هل الحِمل، أو مصدر تغذيته، أو الدائرة التي هو جزء منها، أيٌّ مما يلي؟ أجب عن كل بند بـ«نعم» أو «لا»."},
+    "UI_DCQ_SCREEN_MAINS_OR_HIGH_VOLTAGE": {
+        "en": "Mains or high voltage",
+        "ar": "جهد الشبكة الكهربائية (mains) أو جهد عالٍ"},
+    "UI_DCQ_SCREEN_BATTERY_OR_STORAGE_CELL": {
+        "en": "A battery or energy-storage cell",
+        "ar": "بطارية أو خلية لتخزين الطاقة"},
+    "UI_DCQ_SCREEN_FIRE_OR_OVERHEATING": {
+        "en": "Fire, ignition or overheating risk",
+        "ar": "خطر حريق أو اشتعال أو سخونة زائدة"},
+    "UI_DCQ_SCREEN_MEDICAL_OR_LIFE_SUPPORTING": {
+        "en": "Medical or life-supporting use",
+        "ar": "استخدام طبي أو داعم للحياة"},
+    "UI_DCQ_SCREEN_VEHICLE_OR_AEROSPACE": {
+        "en": "Vehicle or aerospace use",
+        "ar": "استخدام في المركبات أو في الطيران والفضاء (aerospace)"},
+    "UI_DCQ_SCREEN_SAFETY_FUNCTION": {
+        "en": "A safety function, alarm, protection or shut-off",
+        "ar": "وظيفة سلامة أو إنذار أو حماية أو إيقاف"},
+    "UI_DCQ_SCREEN_YES": {
+        "en": "Yes",
+        "ar": "نعم"},
+    "UI_DCQ_SCREEN_NO": {
+        "en": "No",
+        "ar": "لا"},
+    "UI_DCQ_SCREEN_NOTE": {
+        "en": "Answering no to all six items only means this bounded calculation may proceed; it never means that anything is safe.",
+        "ar": "الإجابة بـ«لا» عن جميع البنود الستة تعني فقط أنه يمكن متابعة هذا الحساب المحدود؛ ولا تعني أبدًا أن أي شيء آمن."},
+    "UI_DCQ_VALUE_NOTE": {
+        "en": "Enter plain decimal numbers: the current I in amperes and the duration t in hours (for example 0.5 for thirty minutes), each zero or more, with at most nine digits before the point and nine after it. These digit limits only bound what can be typed; they are not physical limits. InventorAI does not measure your load and converts no milliamperes, minutes, seconds or coulombs.",
+        "ar": "أدخل أرقامًا عشرية بسيطة: التيار I بالأمبير، والمدة t بالساعات (مثلًا 0.5 لثلاثين دقيقة)، كلٌّ منهما صفرًا أو أكثر، مع تسعة أرقام على الأكثر قبل الفاصلة وتسعة بعدها. حدود الأرقام هذه تقيّد ما يمكن كتابته فقط؛ وليست حدودًا فيزيائية. لا يقيس InventorAI حِملك، ولا يحوّل المللي أمبير أو الدقائق أو الثواني أو الكولوم."},
+    "UI_DCQ_FIELD_I_LOAD": {
+        "en": "Your declared constant DC current through the load (I) — ampere (A)",
+        "ar": "التيار المستمر الثابت الذي تصرّح به في الحِمل (I) — أمبير (A)"},
+    "UI_DCQ_FIELD_T_DURATION": {
+        "en": "Your declared duration at that constant current (t) — hour (h)",
+        "ar": "المدة التي تصرّح بها عند ذلك التيار الثابت (t) — ساعة (h)"},
+    "UI_DCQ_SUBMIT": {
+        "en": "Show the charge",
+        "ar": "اعرض الشحنة"},
+    "UI_DCQ_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_DCQ_RESULT_Q": {
+        "en": "Charge that flows through the load during the declared constant-current duration (Q) — ampere hour (A·h); never negative",
+        "ar": "الشحنة التي تمرّ في الحِمل خلال مدة التيار الثابت المصرّح بها (Q) — أمبير ساعة (A·h)؛ لا تكون سالبة أبدًا"},
+    "UI_DCQ_EXACT": {
+        "en": "Exact value of I × t for the values you entered.",
+        "ar": "قيمة I × t الدقيقة للقيم التي أدخلتها."},
+    "UI_DCQ_ROUNDED": {
+        "en": "Rounded to 12 significant digits; the exact value of I × t has more digits.",
+        "ar": "مقرَّبة إلى 12 رقمًا معنويًا؛ للقيمة الدقيقة لـ I × t أرقام أكثر."},
+    "UI_DCQ_CHARGE_NOT_ENERGY": {
+        "en": "This is a charge, not an energy: the ampere hour is a unit of electric charge, and no energy, power or voltage follows from it.",
+        "ar": "هذه شحنة وليست طاقة: الأمبير ساعة وحدة للشحنة الكهربائية، ولا تُستنتج منها أي طاقة أو قدرة أو جهد."},
+    "UI_DCQ_NOT_BATTERY": {
+        "en": "This is the charge that flows through the load during the declared constant-current duration, not a battery capacity, a runtime, a state of charge or a battery choice: it is compared with no rating, and a charge value alone cannot determine how long a real battery lasts.",
+        "ar": "هذه هي الشحنة التي تمرّ في الحِمل خلال مدة التيار الثابت المصرّح بها، وليست سعة بطارية ولا زمن تشغيل (runtime) ولا حالة شحن (state of charge) ولا اختيارًا لبطارية: فهي لا تُقارن بأي قيمة اسمية (rating)، وقيمة الشحنة وحدها لا تحدد كم تدوم بطارية حقيقية."},
+    "UI_DCQ_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_DCQ_ECHO_HEADING": {
+        "en": "The values and stated assumptions you entered",
+        "ar": "القيم والافتراضات المصرّح بها التي أدخلتها"},
+    "UI_DCQ_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_DCQ_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_DCQ_SOURCES_NOTE": {
+        "en": "Electric current as the flow of electric charge, one ampere being one coulomb per second, from the U.S. Department of Energy Electrical Science handbook, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the ampere from NIST Special Publication 811 Appendix B.9, and the coulomb, the ampere hour and, from them, the hour from its Chapter 4 and Appendix B.9. Q = I × t is InventorAI's own restatement for a constant current; no handbook or NIST text, example, table or figure is reproduced, and no conversion factor is applied. The U.S. Department of Energy and NIST do not endorse InventorAI or this calculation.",
+        "ar": "التيار الكهربائي بوصفه تدفق الشحنة الكهربائية، والأمبير الواحد كولومًا واحدًا في الثانية، من دليل Electrical Science لوزارة الطاقة الأمريكية، ‏DOE-HDBK-1011/1-92 (مؤرشف؛ مرجع تاريخي للأساسيات فقط)؛ والأمبير من الملحق B.9 في NIST Special Publication 811، والكولوم والأمبير ساعة، ومنهما الساعة، من فصله الرابع وملحقه B.9. وQ = I × t إعادة صياغة من InventorAI لتيار ثابت؛ ولا يُستنسخ أي نص أو مثال أو جدول أو شكل من الدليل أو من NIST، ولا يُطبَّق أي معامل تحويل. لا تؤيّد وزارة الطاقة الأمريكية ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_DCQ_DISCLOSURE": {
+        "en": "This is the electric charge that flows through one load while the DC current I you declared stays constant for the whole duration t you declared: Q = I × t, given in ampere hours (A·h).\n\nThe current and the duration are your own declared values. InventorAI did not measure them and does not establish that the current is constant: a current that changes, on-off or duty-cycled use, standby or sleep phases, start-up or inrush current, switching, AC behaviour and any load whose current varies are not included, and no average current is substituted.\n\nQ is a charge, not an energy. The ampere hour is a unit of electric charge that is also used in battery ratings, but this value is not compared with any rating: it is not a battery capacity, a runtime, a state of charge, a battery choice or a sizing, selection or suitability statement for any battery or source.\n\nNo unit is converted: the current is read in amperes, the duration in hours and the charge is given in ampere hours only, with no milliampere hours, coulombs, seconds or minutes.\n\nThe value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement.\n\nNext engineering need: a charge value alone cannot determine how long a real battery lasts. Whether the current really stays constant, what the load draws over its whole use with every phase included, which source or battery could supply it and how that source behaves as it discharges, and whether the load, its wiring, source and any switch are rated for the current all remain unverified, and must be checked by measurement or a qualified person before any reliance. The result is preliminary, advisory, UNVALIDATED and not evidence.\n\nReference source material: U.S. Department of Energy — Electrical Science, DOE-HDBK-1011/1-92 (archived; historical fundamentals reference only); the coulomb, the ampere hour and, from them, the hour as identified in NIST Special Publication 811. Q = I × t is InventorAI's own restatement for a constant current, and no handbook or NIST text, example, table or figure is reproduced.",
+        "ar": "هذه هي الشحنة الكهربائية التي تمرّ في حِمل واحد ما دام التيار المستمر I الذي صرّحت به ثابتًا طوال المدة t التي صرّحت بها كلها: Q = I × t، بالأمبير ساعة (A·h).\n\nالتيار والمدة قيم صرّحت بها أنت. لم يقسهما InventorAI ولا يثبت أن التيار ثابت: لا يُدرج التيار الذي يتغير، ولا الاستخدام المتقطع أو بدورة تشغيل (duty cycle)، ولا أطوار الاستعداد أو السكون (standby/sleep)، ولا تيار بدء التشغيل أو التيار الاندفاعي (inrush)، ولا التبديل، ولا سلوك التيار المتردد (AC)، ولا أي حِمل يتغير تياره، ولا يُستبدل أي تيار متوسط.\n\nQ شحنة وليست طاقة. الأمبير ساعة وحدة للشحنة الكهربائية تُستخدم أيضًا في القيم الاسمية (ratings) للبطاريات، لكن هذه القيمة لا تُقارن بأي قيمة اسمية: فهي ليست سعة بطارية ولا زمن تشغيل (runtime) ولا حالة شحن (state of charge) ولا اختيارًا لبطارية ولا تحديدًا لحجم (sizing) أو اختيارًا أو حكمًا بملاءمة أي بطارية أو مصدر.\n\nلا تُحوَّل أي وحدة: يُقرأ التيار بالأمبير، والمدة بالساعات، وتُعطى الشحنة بالأمبير ساعة فقط، دون مللي أمبير ساعة ولا كولوم ولا ثوانٍ ولا دقائق.\n\nتُعرض القيمة بدقة حين يمكن ذلك؛ وإلا تُقرَّب إلى 12 رقمًا معنويًا ويُشار إلى أنها مقرَّبة. الأرقام ناتجة عن إدخالك؛ وليست دقة أي قياس.\n\nالحاجة الهندسية التالية: قيمة الشحنة وحدها لا تحدد كم تدوم بطارية حقيقية. ما إذا كان التيار يبقى ثابتًا فعلًا، وما يسحبه الحِمل على مدى استخدامه كله بكل أطواره، وأي مصدر أو بطارية يمكنه تزويده وكيف يتصرف ذلك المصدر مع تفريغه، وما إذا كان الحِمل وأسلاكه ومصدره وأي مفتاح مُصنَّفًا لهذا التيار — كلها تبقى غير مُتحقَّق منها، ويجب فحصها بالقياس أو بواسطة شخص مؤهل قبل أي اعتماد. هذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا.\n\nالمراجع: وزارة الطاقة الأمريكية — Electrical Science، ‏DOE-HDBK-1011/1-92 (مؤرشف؛ مرجع تاريخي للأساسيات فقط)؛ والكولوم والأمبير ساعة، ومنهما الساعة، كما يحددها NIST Special Publication 811. وQ = I × t إعادة صياغة من InventorAI لتيار ثابت، ولا يُستنسخ أي نص أو مثال أو جدول أو شكل من الدليل أو من NIST."},
+    "UI_DCQ_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_DCQ_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_DCQ_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. تتطلب هذه الحالة مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_DCQ_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_DCQ_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "I and t must be written as plain decimal numbers in amperes and hours, with at most one leading minus sign, at most nine digits before the point and at most nine after it. Nothing was calculated.",
+        "ar": "يجب كتابة I وt رقمين عشريين بسيطين بالأمبير والساعات، مع إشارة سالبة واحدة على الأكثر في البداية، وتسعة أرقام على الأكثر قبل الفاصلة وتسعة على الأكثر بعدها. لم يُحسب شيء."},
+    "UI_DCQ_OUTCOME_CURRENT_NEGATIVE": {
+        "en": "The current I must be zero amperes or more. Nothing was calculated.",
+        "ar": "يجب أن يكون التيار I صفر أمبير أو أكثر. لم يُحسب شيء."},
+    "UI_DCQ_OUTCOME_DURATION_NEGATIVE": {
+        "en": "The duration t must be zero hours or more. Nothing was calculated.",
+        "ar": "يجب أن تكون المدة t صفر ساعة أو أكثر. لم يُحسب شيء."},
+    "UI_DCQ_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_DCQ_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_DCQ_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only the ampere (A) and the hour (h) and gives only the ampere hour (A·h). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة الأمبير (A) والساعة (h) فقط، ولا تعطي إلا الأمبير ساعة (A·h). لم يُحسب شيء."},
+    "UI_DCQ_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

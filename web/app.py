@@ -47,6 +47,8 @@ from engine import dc_resistive_load_power_method as _dcp_method  # DC Resistive
 from engine import dc_resistive_load_power as _dcp  # DC Resistive Load Power Slice 1 consumer
 from engine import dc_resistive_load_energy_method as _dce_method  # DC Resistive Load Energy Slice 1 method
 from engine import dc_resistive_load_energy as _dce  # DC Resistive Load Energy Slice 1 consumer
+from engine import dc_constant_current_charge_method as _dcq_method  # DC Constant-Current Charge Slice 1 method
+from engine import dc_constant_current_charge as _dcq  # DC Constant-Current Charge Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7259,6 +7261,7 @@ def show_session(sid):
         dc_load_current_link=_dcl_eligible(sid),
         dc_load_power_link=_dcp_eligible(sid),
         dc_load_energy_link=_dce_eligible(sid),
+        dc_charge_link=_dcq_eligible(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -16295,6 +16298,148 @@ def dc_load_energy_post(sid):
         return _render_dce(sid, status=400, declared_part=part, error="UI_DCE_ERR_REQUEST")
     return _render_dce(sid, declared_part=part, captured=captured,
                        evaluation=_dce.evaluate(captured, _DC_LOAD_ENERGY_BINDING))
+
+
+# =============================================================================
+# DC-CONSTANT-CURRENT-CHARGE-01 — DC Constant-Current Charge, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory, non-binding calculation of the electric charge
+# Q = I x t that flows through ONE inventor-declared load while ONE declared DC
+# current stays constant for ONE declared duration, in ampere hours (method
+# contract §1, §7). The consumer (`engine/dc_constant_current_charge.py`) owns
+# capture, the exact-decimal not-negative checks, the pre-owner order, the
+# decimal-reference acceptance and the exact / rounded display; the shared
+# calculation / units owner owns execution; the method adapter
+# (`engine/dc_constant_current_charge_method.py`) owns the relation and its
+# binary acceptance. Eligibility is ``_calc_gate``, as for the DC load current,
+# power and energy pages: the trusted durable root domain, exactly Electrical /
+# Electronics, or the declared Electrical / Electronics part of a valid durable
+# integrated composition. Nothing is inferred about the project, nothing is
+# persisted and nothing is read beyond the root domain and that validated
+# composition. The POST renders its answer directly and never redirects. The
+# result is a charge, never a battery capacity, battery need, runtime, state of charge, rating
+# comparison, sizing or selection; no unit is converted. The other nine
+# calculations are untouched.
+#
+# The TENTH immutable trusted binding (calc/units Correction 10 §13I), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_DC_CHARGE_BINDING = _dcalc.bind_method(
+    _dcq_method.METHOD_ID, _dcq_method.METHOD_VERSION, _dcq_method.evaluate)
+
+
+def _dcq_eligible(sid):
+    """True iff the project is eligible under ``_calc_gate``: an Electrical /
+    Electronics durable root domain, or the declared Electrical / Electronics
+    part of a valid durable integrated composition. Recomputed from the
+    current durable state on every request; never read from the request;
+    fails closed."""
+    return _calc_gate(sid, _dcq)[0]
+
+
+# As the DC load energy run, so ``Q = I × t`` and ``A·h`` stay one
+# direction-isolated run each (§9A A-4); the middle dot of A·h is included.
+_DCQ_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u03a9\u2212+(\-](?:[A-Za-z0-9_\u03a9\u2212+()/.:'= \u00b2\u00b7\u00d7\-]*"
+    r"[A-Za-z0-9_\u03a9\u00b2)])?")
+
+
+def _dcq_isolate(text, lang):
+    return _ltr_isolate(text, lang, _DCQ_LTR_RUN)
+
+
+def _dcq_result_view(evaluation):
+    """Template view of an accepted SUCCESS: the consumer's display of the exact
+    I x t (already checked against the owner's binary64 result) with its
+    exact / rounded label, the owner's unit, the method identity and the source
+    and unit references the owner carried."""
+    result = evaluation["result"]
+    output = result["outputs"][_dcq.OUTPUT_ROLE]
+    return {
+        "value": evaluation["display_value"],
+        "exact": evaluation["display_exact"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_dcq(sid, status=200, eligible=True, declared_part=None, captured=None,
+                evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _dcq.OUTCOME_SUCCESS:
+            view = _dcq_result_view(evaluation)
+        else:
+            outcome_key = "UI_DCQ_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "dc_constant_current_charge.html",
+        sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
+        iso=lambda key: _dcq_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _dcq_isolate(part, lang) for part in
+            ui_text.text("UI_DCQ_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_dcq.DECLARATION_IDS,
+        screen_items=_dcq.SCREEN_ITEMS,
+        value_roles=_dcq.VALUE_ROLES,
+        decl_field=_dcq.DECLARATION_FIELD,
+        screen_field=_dcq.SCREEN_FIELD,
+        value_field=_dcq.VALUE_FIELD,
+        answer_applies=_dcq.ANSWER_APPLIES,
+        answer_does_not_apply=_dcq.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_dcq.SCREEN_YES,
+        screen_no=_dcq.SCREEN_NO,
+        max_value_chars=_dcq.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/dc-constant-current-charge", methods=["GET"])
+def dc_constant_current_charge(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _dcq)
+    return _render_dcq(sid, eligible=eligible, declared_part=part)
+
+
+@app.route("/session/<sid>/dc-constant-current-charge", methods=["POST"])
+def dc_constant_current_charge_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (``_calc_gate``: the durable root domain, or the declared
+    # Electrical / Electronics part of a valid durable integrated composition,
+    # recomputed now) -> strict capture (malformed: 400, no reason token) -> the
+    # consumer's §7 order -> the shared owner -> the decimal-reference
+    # acceptance.
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _dcq)
+    if not eligible:
+        return _render_dcq(sid, eligible=False)
+    form = request.form
+    captured = _dcq.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_dcq(sid, status=400, declared_part=part, error="UI_DCQ_ERR_REQUEST")
+    return _render_dcq(sid, declared_part=part, captured=captured,
+                       evaluation=_dcq.evaluate(captured, _DC_CHARGE_BINDING))
 
 
 # =============================================================================

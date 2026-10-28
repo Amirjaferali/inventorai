@@ -385,13 +385,15 @@ def test_c11_the_nist_records_use_the_online_edition_and_never_the_2008_pdf():
 def test_c12_the_shared_calculation_and_unit_inventory_is_unchanged():
     artifact = json.loads(io.open(dc.ARTIFACT_PATH, encoding="utf-8").read())
     text = json.dumps(artifact, ensure_ascii=False)
-    assert GROUP not in text and "ampere hour" not in text.lower() and "coulomb" not in text.lower()
-    # the closed owner inventory (calc/units §13B: the CAP-13 planar moment's N·mm
-    # and method are the only additions, J and s are the DC resistive load energy
-    # method's, calc/units §13G); no charge unit or method is admitted
-    assert set(re.findall(r'"unit_token":\s*"([^"]+)"', text)) == {
+    # this reference group admits nothing into the owner: the owner's A·h and h
+    # (calc/units Correction 10, §13I) are the DC constant-current charge method's own
+    # unit records, bound to its own method record, and C and mA·h stay absent
+    assert GROUP not in text and "electronics_electrical:PR018" not in text
+    tokens = set(re.findall(r'"unit_token":\s*"([^"]+)"', text))
+    assert tokens == {
         "N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C",
-        "V", "Ω", "A", "J", "s"}
+        "V", "Ω", "A", "J", "s", "h", "A·h"}
+    assert "C" not in tokens and "mA·h" not in tokens and "mAh" not in tokens
     assert set(re.findall(r'"method_id":\s*"([^"]+)"', text)) == {
         "cap13:static_reactions_two_support", "therm01:conduction_temperature_difference_single_path",
         "cap13:planar_single_force_moment",
@@ -400,7 +402,8 @@ def test_c12_the_shared_calculation_and_unit_inventory_is_unchanged():
         "electrical:dc_resistive_load_current",
         "electrical:dc_resistive_load_power",
         "electrical:dc_resistive_load_energy",
-        "cap13:planar_required_force"}
+        "cap13:planar_required_force",
+        "electrical:dc_constant_current_charge"}
     assert get_active_rules(DOMAIN) == [
         "PHYSICAL_PRINCIPLE_REQUIRED", "POWER_ACKNOWLEDGMENT_IF_ENERGY", "NO_PLATFORM_SPECIFIC_NAMING"]
 
@@ -533,8 +536,11 @@ def test_c20_session_page_carries_no_group(client):
     sid = _start(client, seed=ELEC_SEED, domain=DOMAIN)
     _live(sid).gaps = _gaps((PHYSICAL_FEASIBILITY, OPEN))
     page = client.get(f"/session/{sid}").get_data(as_text=True)
-    assert SLUG not in page and "Q = I × t" not in page
-    assert _texts("en")["TITLE"] not in page
+    assert SLUG not in page and _texts("en")["TITLE"] not in page
+    # the only "Q = I × t" on the session page is the optional DC constant-current
+    # charge calculation link (DC-CONSTANT-CURRENT-CHARGE-01), never this group
+    assert page.count("Q = I × t") == page.count("data-dcq-link") == 1
+    assert "data-cap01-fundamentals" not in page
 
 
 def test_c21_equation_and_note_separation_extends_to_this_group_only():
