@@ -310,3 +310,25 @@ authorship. Rod-side area and speed = flow ÷ area stay **UNVERIFIED**. Reopens 
 ### Q-12 — residual — IP UNRESOLVED (terminal for the residual)
 The explicit two-link formula appears in two NTRS documents, both outside the rights screen (university paper with possible copyright; RIACS
 contractor report). The general principle (SRC-019) stands; the explicit formula stays **UNVERIFIED** on a clean source. No further work.
+
+## Run 15 (2026-10-28, early run on Owner direction; GitHub-first)
+
+### Q-18 — PV output falls with cell temperature — PARTIAL → QUALIFIED-CANDIDATE
+Repository reuse: SRC-026 (D1 / D2: standard test conditions, field conditions differ) and SRC-043 slides 28 / 41 (array power vs temperature
+plotted; temperature factor in array sizing — IMPLIED only). Base-branch domains / method artifacts hold no PV material. Residual searched: an
+explicit clean-rights statement of the temperature effect (1 query). New: SRC-044 (NASA Glenn, sole author). D1 EXPLICIT (κ = dη/dT generally
+negative; P = (η₃₀₀ₖ + κΔT)·I by linear extrapolation); D2 EXPLICIT (first-level analysis; κ varies slightly with intensity and temperature);
+D3 (η, κ, T in K, intensity I); D6 EXPLICIT (κ nonlinear in general; Voc term dominant). D5 / D4 / D7 not sought. Use: cond, calc (first-level).
+
+### Q-23 — Spring–mass natural frequency and resonance — QUEUED → QUALIFIED-CANDIDATE
+Repository reuse: none (no vibration / resonance material in this package or the base-branch domains, method artifacts or engine). Residual
+searched: the whole claim (1 query). New: SRC-045 (NBS SP 615). D1 EXPLICIT (equation of motion; ω₀ = √(k/m), verified on the page image);
+D2 EXPLICIT (SDOF assumption must be checked — multi-DOF and mounting stiffness); D3 (k, m, c, ω₀ in rad/s, damping ratio); D5 EXPLICIT
+(natural frequency measured as the 90° phase point; resonant frequency as the maximum-amplitude point); D6 EXPLICIT (resonance amplitude governed
+by damping; flat-response limits depend on damping). Context: stated for sensor dynamics. Use: calc, cond, verif.
+
+### Q-29 — Shannon–Hartley capacity bound — QUEUED → QUALIFIED-CANDIDATE
+Repository reuse: none relevant (SRC-037 / SRC-038 cover propagation, not capacity). Residual searched: the whole claim (1 query). New: SRC-046
+(NASA/TM—2018-219754). D1 EXPLICIT (C = B log₂(1 + P / (N₀B)), verified on the page image); D2 EXPLICIT (AWGN, bandwidth-limited channel,
+average power constraint; R ≤ C achievable with arbitrarily small error); D3 (P, N₀, B; bits / s); D6 EXPLICIT (fading, channel side information
+and interference change or leave open the capacity). D7: a theoretical bound only, no design criterion. Use: calc (upper bound), cond.

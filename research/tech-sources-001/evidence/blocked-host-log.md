@@ -26,3 +26,4 @@ Append-only. Never bypassed.
 | 2026-10-28 (run 14) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
 | 2026-10-28 (run 14) | www.publications.usace.army.mil | CONNECT 403 (proxy policy), not retried | USACE EM 1110-2-2610 (2025): rod-side reduced working area; smaller rod-end volume (Q-20 residual) | None reachable on clean rights |
 | 2026-10-28 (run 14) | apps.dtic.mil | CONNECT 403 (proxy policy), not retried | DTIC AD1027548 hydraulic handbook (Flow = Velocity × Area) for Q-20 | None reachable on clean rights |
+| 2026-10-28 (run 15) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
