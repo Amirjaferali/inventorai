@@ -64,11 +64,19 @@ or of unclear item-level rights is not qualified.
    lenses tried (recorded), or its 20-query cap is reached. If no question is eligible, the run may derive at most 3 new Tier 2 rows under the
    derivation rule (from the recorded future-technology concerns listed there only, P1 first), record them, and work them; if none can be derived,
    that counts as "every question terminal".
+   GitHub-first (Owner 2026-10-28, every question, before any external query): read only the repository evidence materially related to the
+   question — this package's `evidence/` and findings; on the base branch (read only) admitted method contracts and method-authority artifacts
+   (`docs/governance/`), domain-pack provenance (`domains/*/domain.json`, `domains/domain_provenance.json`), reference groups and delivered methods
+   whose sources overlap the question. Reuse each source only within its recorded claim, keeping its EXPLICIT / IMPLIED, DIRECT / LEAD-SUPPLIED,
+   IP and reference-versus-calculation boundaries (a new use outside that claim is checked separately). Record what is already established and
+   the exact residual; search externally only for that residual. A question that repository evidence already closes is closed by recorded reuse with
+   zero external queries. Two stored facts never establish their relationship unless a source states it.
 6. Record: sources, IP basis, abstentions, blocked hosts (never retry a host that returned 403 in the same run), findings, contradictions;
    append one run-ledger row (date, run number, questions, queries per lens, fetches, cumulative totals, outcome). Commit and push. A push that fails twice → stop.
    Run report (Owner 2026-10-28): return only the questions worked; the exact status delta; new qualified source IDs; D1–D7 dimensions now sourced;
    remaining `UNVERIFIED` dimensions; EXPLICIT / IMPLIED caveats; DIRECT / LEAD-SUPPLIED status; IP / reuse caveats; usefulness class; any new
-   BLOCKED / WAITING / EXHAUSTED / IP UNRESOLVED state; budget used; the next eligible question; the next scheduled run's trigger id and fire time —
+   BLOCKED / WAITING / EXHAUSTED / IP UNRESOLVED state; per question the repository source IDs and D1–D7 dimensions reused, the residual
+   dimensions searched externally and the external query count; budget used; the next eligible question; the next scheduled run's trigger id and fire time —
    never domain-level status, never the whole history. Any material qualification delta goes to the Execution Lead for bounded NEXT-LOOP assessment;
    no run jumps to a later technology because it is easier to source.
    Work the fewest questions needed and do not spend budget because it exists; never repeat a failed search without a changed path.
