@@ -2258,8 +2258,10 @@ body{overflow-wrap:anywhere}
 {#- MEV-BLOCK-END -#}
 {#- FUNCTIONAL-NEED-TO-CAPABILITY-HANDOFF-01: InventorAI's provisional
     reading of the needs the inventor stated, quoted verbatim, beside the
-    existing engineering owners' own readiness. Read-only: no link to any
-    method, no component, value or design, nothing saved. -#}
+    existing engineering owners' own readiness. Read-only: no component, value
+    or design, nothing saved. Step 6: where the owner's own gate already
+    permits its workflow, ONE plain link to that existing page; nothing is
+    carried to it and it re-checks its own eligibility. -#}
 {% if functional_handoff %}
 <details id="functional-handoff" class="functional-handoff" data-functional-handoff style="margin-top:14px;border:1px solid #d6dde8;border-radius:4px;background:#f7f9fc;padding:10px 14px">
 <summary style="cursor:pointer;font-weight:bold">{{ t('UI_FH_TITLE') }}</summary>
@@ -2284,7 +2286,7 @@ body{overflow-wrap:anywhere}
 {% endfor %}
 <ul style="margin:4px 0;font-size:13px">
 {% for c in r.capabilities %}
-<li data-fh-capability="{{ c.ref }}" data-fh-capability-state="{{ c.state }}">{% if c.state == 'UNAVAILABLE' %}{{ t('UI_FH_CAP_UNAVAILABLE') }}{% elif c.ref == 'CAP13_CONDITIONAL_REACTIONS' %}{{ t('UI_FH_CAP13_CONDITIONAL') if c.state == 'CONDITIONAL' else t('UI_FH_CAP13_NOT_FOR_PROJECT') }}{% else %}{{ t('UI_FH_CAP09_AVAILABLE') if c.state == 'AVAILABLE' else t('UI_FH_CAP09_NO_EXPERIMENTS') }}{% endif %}</li>
+<li data-fh-capability="{{ c.ref }}" data-fh-capability-state="{{ c.state }}">{% if c.state == 'UNAVAILABLE' %}{{ t('UI_FH_CAP_UNAVAILABLE') }}{% elif c.ref == 'CAP13_CONDITIONAL_REACTIONS' %}{{ t('UI_FH_CAP13_CONDITIONAL') if c.state == 'CONDITIONAL' else t('UI_FH_CAP13_NOT_FOR_PROJECT') }}{% else %}{{ t('UI_FH_CAP09_AVAILABLE') if c.state == 'AVAILABLE' else t('UI_FH_CAP09_NO_EXPERIMENTS') }}{% endif %}{% if c.action %}<br><a data-fh-action="{{ c.ref }}" href="{{ url_for(c.action, sid=sid) }}">{{ t('UI_FH_ACTION_' ~ c.ref) }}</a> <span style="color:#777">{{ t('UI_FH_ACTION_NOTE') }}</span>{% endif %}</li>
 {% endfor %}
 <li data-fh-uncovered>{{ t('UI_FH_UNCOVERED_' ~ r.role) }}</li>
 </ul>

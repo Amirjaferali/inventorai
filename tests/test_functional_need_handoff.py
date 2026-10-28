@@ -421,8 +421,11 @@ def test_screen_support_journey_names_cap13_as_conditional_only():
     assert 'data-fh-capability="CAP13_CONDITIONAL_REACTIONS"' in section
     assert 'data-fh-capability-state="CONDITIONAL"' in section
     assert ui_text.text("UI_FH_UNCOVERED_SCREEN_SUPPORT", "en") in section
-    assert "support-reactions" not in section and "form-mockup" not in section
-    assert "CAP12" not in section and "<a " not in section
+    # Step 6: ONE plain link to the existing CAP-13 page, carrying nothing
+    assert section.count("<a ") == 1
+    assert ('href="/session/%s/support-reactions"' % sid) in section
+    assert "form-mockup" not in section and "?" not in section.split("support-reactions", 1)[1][:2]
+    assert "CAP12" not in section
     # the inventor's own "screws" exclusion is a quote, never a selected part
     assert "بدون براغي" in section
     assert ui_text.text("UI_FH_COMPONENT_NOTE", "en") in section
