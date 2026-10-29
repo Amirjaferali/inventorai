@@ -1079,7 +1079,7 @@ def test_verification_preparation_is_bounded_and_artifact_sources_stay_pinned(me
     # Reviewer correction: this increment must not mutate the pinned method
     # artifact or silently extend its source-use records.
     data = _method_artifact()
-    assert data["artifact_version"] == 1
+    assert data["artifact_version"] == "1"
     by_id = {r["record_id"]: r for r in data["sources"]}
     assert set(by_id) == {"NBS-NF-S1", "NIST-NF-U", "mnf:SU001", "mnf:SU002"}
     assert "maximum" not in by_id["NBS-NF-S1"]["inspected_content"].lower()
