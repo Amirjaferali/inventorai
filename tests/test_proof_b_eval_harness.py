@@ -20,7 +20,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts" / "run_proof_b_eval.py"
 # Pinned: changing the instructions, schema, limits, criteria or decision rule
 # changes the pre-registration and must be a deliberate, reviewed edit.
-PREREGISTRATION_SHA256 = "51505e147170f1c884e4df2f767da86eb11d5a4f88d0d5b9d87d37476d5ec9bc"
+PREREGISTRATION_SHA256 = "2fa6a03c880795d5faeb5bbda7a0af6026a3b2d0e778e092bbc9d0b82874b004"
 REVISION = "test-revision"
 
 
@@ -108,16 +108,23 @@ def test_fixture_is_pinned_and_forms_the_4x9_matrix(pb, pilot):
     assert set(refs) == {c["case_id"] for c in cases}
 
 
-def test_fixture_is_not_frozen_and_discloses_its_review_coverage(pb):
+def test_fixture_is_frozen_and_records_exactly_the_review_that_occurred(pb):
     for path in (pb.INPUT_PATH, pb.REFERENCE_PATH):
         data = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
-        assert data["status"] == "PREPARED_PENDING_OWNER_REVIEW" != pb.FROZEN_STATUS
+        assert data["status"] == pb.FROZEN_STATUS == "FROZEN"
         coverage = data["review_coverage"]
+        assert set(coverage) == {"designated_language_reviewer", "owner_approval",
+                                 "earlier_owner_review", "corrections", "ai_review",
+                                 "other_review"}
         assert coverage["designated_language_reviewer"] == "The Owner."
-        # the reviewed baseline is a candidate only, and nothing beyond it is claimed
-        assert "1e298b0d" in coverage["owner_review"]
-        assert "not yet confirmed" in coverage["owner_review"]
-        assert "G09" in coverage["owner_review"] and "task_handoff" in coverage["owner_review"]
+        approval = coverage["owner_approval"]
+        for scoped in ("four G09 input texts", "G03 and G09 task_handoff", "I4", "I6",
+                       "16 input texts changed in pack 02", "G01, G02, G05 and G08"):
+            assert scoped in approval, scoped
+        assert "does not confirm any historical version association" in approval
+        # the earlier review keeps its unverified version association
+        assert "1e298b0d" in coverage["earlier_owner_review"]
+        assert "not verified by repository evidence" in coverage["earlier_owner_review"]
         assert coverage["other_review"].startswith("No independent")
         assert data["supersedes"] == {
             "pack_id": "inventorai-proof-b-pilot-02",
@@ -188,6 +195,8 @@ def test_g03_withholds_the_calculation_until_the_configuration_is_known(pilot):
     handoff = refs["G03-en"]["task_handoff"]
     assert "support configuration" in " ".join(handoff["decision_relevant_unknowns"])
     assert "only once" in handoff["level_a_handoff"] and "may not apply" in handoff["level_a_handoff"]
+    assert "the foldable stand, in its intended use configuration," in handoff["level_a_handoff"]
+    assert "folded" not in json.dumps(handoff)
     assert all(c.startswith("two-support static reactions, only if")
                for c in handoff["qualified_calculations"])
     assert "CAP-13" not in json.dumps(handoff)       # no capability identifier is required
@@ -270,10 +279,26 @@ def test_stated_denominators_are_the_packs_own(pb, pilot):
     assert "4 * num >= 3 * den" in SCRIPT.read_text(encoding="utf-8")   # threshold unchanged
 
 
+def test_task_linked_results_are_reported_apart_and_decide_nothing(pb, pilot):
+    report, sheet = _reviewed(pb, pilot)
+    for e in sheet["cases"]:
+        if e["case_id"].startswith("G09-") and "I4" in e["verdicts"]:
+            e["verdicts"]["I4"] = "FAIL"            # G09 fails I4 in every language
+    result = _agg(pb, pilot, report, sheet)
+    assert result["decision"] == "PILOT_GO_FOR_LARGER_STUDY"     # 24/28 still passes
+    assert set(result["task_linked"]) == {"G03", "G09"}
+    assert {lang: v["I4"] for lang, v in result["task_linked"]["G09"].items()} \
+        == {lang: "FAIL" for lang in pb.LANGUAGES}
+    assert all(v["I4"] == "PASS" for v in result["task_linked"]["G03"].values())
+    assert "does not show that either task-linked journey succeeded" in result["note"]
+
+
 def test_revised_i4_and_i6_wording(pb):
     i4, i6 = pb.PREREGISTRATION["criteria"]["I4"], pb.PREREGISTRATION["criteria"]["I6"]
     for phrase in ("decision-relevant missing information", "decision_relevant_unknowns",
                    "need not cover every listed unknown",
+                   "does not presuppose a component, mechanism or decision that the inventor "
+                   "has not stated",
                    "measurement the inventor could make", "never treated as a value the inventor "
                    "already knows", "not yet applicable is correct", "false rejection",
                    "No particular mechanism, design choice or capability name"):
@@ -712,7 +737,7 @@ def test_manifest_mode_names_the_digest_of_this_checkout(pb, clean_repo, capsys)
     out = json.loads(capsys.readouterr().out)
     assert out["manifest"] == pb.run_manifest(head, "pinned-model")
     assert out["manifest_sha256"] == pb._digest(out["manifest"])
-    assert out["campaign_authorized"] is False and out["fixture_frozen"] is False
+    assert out["campaign_authorized"] is False and out["fixture_frozen"] is True
     (clean_repo / "code.py").write_text("x = 3\n", encoding="utf-8")
     assert pb.main(["--manifest"]) == 2
     assert "uncommitted" in capsys.readouterr().out

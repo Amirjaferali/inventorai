@@ -1,11 +1,12 @@
 {
   "pack_id": "inventorai-proof-b-pilot-03",
-  "status": "PREPARED_PENDING_OWNER_REVIEW",
+  "status": "FROZEN",
   "scoring_rule": "Human semantic review is required; this file does not license automatic engineering verdicts",
   "review_coverage": {
     "designated_language_reviewer": "The Owner.",
-    "owner_review": "Candidate reviewed baseline: the Owner-supplied draft pack inventorai-proof-b-pilot-draft-01 (inputs 1e298b0d90cf4f3d51ddeb000dab9eed255a4ba749902d12f1a3fccf975b42b2, reference 9c8ebee66b5c66db8a5c48542649e3e7d408917a916d812b0994749e4002120a); the Owner has not yet confirmed this association. Not yet Owner-reviewed: the 16 input texts and the G01, G02, G05 and G08 reference labels changed in pack 02, and the four G09 texts, the G09 reference and the G03 and G09 task_handoff annotations added in pack 03.",
-    "corrections": "Pack 02, AI executor (Claude Code) after AI review: G01, G02, G03, G04, G06 and G07 wording; G01, G02, G05 and G08 reference labels. Pack 03, AI executor: the G09 integrated scenario and the G03 and G09 task_handoff annotations.",
+    "owner_approval": "2026-10-29, for evaluation-only use, of exactly these presented cases and fields: the four G09 input texts and the G09 reference; the G03 and G09 task_handoff annotations, with the G03 correction to 'the foldable stand, in its intended use configuration'; the I4 criterion wording as corrected and the I6 criterion wording of the pre-registration; the 16 input texts changed in pack 02 (G01, G02, G03 and G04 in ar-msa, ar-gulf-kw and ar-egy; G06 in en, ar-gulf-kw and ar-egy; G07 in ar-gulf-kw); and the pack-02 changes to the G01, G02, G05 and G08 reference annotations. This approval does not confirm any historical version association.",
+    "earlier_owner_review": "Content unchanged since the Owner-supplied draft pack inventorai-proof-b-pilot-draft-01 (inputs 1e298b0d90cf4f3d51ddeb000dab9eed255a4ba749902d12f1a3fccf975b42b2, reference 9c8ebee66b5c66db8a5c48542649e3e7d408917a916d812b0994749e4002120a), that is the other 16 input texts and the reference fields not listed under owner_approval, keeps the Owner's earlier language review as the Owner stated it; which version that review covered is not verified by repository evidence.",
+    "corrections": "Pack 02, AI executor (Claude Code) after AI review: G01, G02, G03, G04, G06 and G07 wording; G01, G02, G05 and G08 reference labels. Pack 03, AI executor: the G09 integrated scenario and the G03 and G09 task_handoff annotations. Closeout: the G03 'foldable stand' correction and the I4 wording correction, both Owner-approved.",
     "ai_review": "AI reviewers only (Claude). Not native speakers; not independent human review.",
     "other_review": "No independent or separate native-dialect review is claimed."
   },
@@ -145,7 +146,7 @@
       ],
       "unresolved_question": "Desired adjustment, stability and load conditions.",
       "task_handoff": {
-        "level_a_handoff": "A Mechanical support concept the inventor can confirm: how the folded stand rests on its surface and carries the laptop. Whether a simple two-support reaction calculation applies can be judged only once that support configuration is known, and it may not apply; withholding it until then is correct.",
+        "level_a_handoff": "A Mechanical support concept the inventor can confirm: how the foldable stand, in its intended use configuration, rests on its surface and carries the laptop. Whether a simple two-support reaction calculation applies can be judged only once that support configuration is known, and it may not apply; withholding it until then is correct.",
         "inventor_provided": [
           "the laptop is to be held at eye level",
           "the stand folds",
@@ -188,7 +189,7 @@
       ],
       "unresolved_question": "Desired adjustment, stability and load conditions.",
       "task_handoff": {
-        "level_a_handoff": "A Mechanical support concept the inventor can confirm: how the folded stand rests on its surface and carries the laptop. Whether a simple two-support reaction calculation applies can be judged only once that support configuration is known, and it may not apply; withholding it until then is correct.",
+        "level_a_handoff": "A Mechanical support concept the inventor can confirm: how the foldable stand, in its intended use configuration, rests on its surface and carries the laptop. Whether a simple two-support reaction calculation applies can be judged only once that support configuration is known, and it may not apply; withholding it until then is correct.",
         "inventor_provided": [
           "the laptop is to be held at eye level",
           "the stand folds",
@@ -231,7 +232,7 @@
       ],
       "unresolved_question": "Desired adjustment, stability and load conditions.",
       "task_handoff": {
-        "level_a_handoff": "A Mechanical support concept the inventor can confirm: how the folded stand rests on its surface and carries the laptop. Whether a simple two-support reaction calculation applies can be judged only once that support configuration is known, and it may not apply; withholding it until then is correct.",
+        "level_a_handoff": "A Mechanical support concept the inventor can confirm: how the foldable stand, in its intended use configuration, rests on its surface and carries the laptop. Whether a simple two-support reaction calculation applies can be judged only once that support configuration is known, and it may not apply; withholding it until then is correct.",
         "inventor_provided": [
           "the laptop is to be held at eye level",
           "the stand folds",
@@ -274,7 +275,7 @@
       ],
       "unresolved_question": "Desired adjustment, stability and load conditions.",
       "task_handoff": {
-        "level_a_handoff": "A Mechanical support concept the inventor can confirm: how the folded stand rests on its surface and carries the laptop. Whether a simple two-support reaction calculation applies can be judged only once that support configuration is known, and it may not apply; withholding it until then is correct.",
+        "level_a_handoff": "A Mechanical support concept the inventor can confirm: how the foldable stand, in its intended use configuration, rests on its surface and carries the laptop. Whether a simple two-support reaction calculation applies can be judged only once that support configuration is known, and it may not apply; withholding it until then is correct.",
         "inventor_provided": [
           "the laptop is to be held at eye level",
           "the stand folds",

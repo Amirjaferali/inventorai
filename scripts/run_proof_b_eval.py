@@ -41,8 +41,8 @@ File-creation contract:
   Activation (non-circular): the manifest binds the Git revision, so its digest
     cannot be committed into the revision it describes. The authorized digest is
     therefore a RUNTIME value, never a source constant:
-      1. a separately reviewed and merged change sets the fixtures FROZEN (with
-         their re-pinned hashes) and `PROOF_B_CAMPAIGN_AUTHORIZED = True`;
+      1. on the FROZEN, re-pinned fixtures, a separately reviewed and merged
+         change sets `PROOF_B_CAMPAIGN_AUTHORIZED = True`;
          `AUTHORIZED_RUN_MANIFEST_SHA256` stays None;
       2. on a clean checkout of that exact commit, `--manifest --model M`
          prints the digest D of its manifest (revision, fixtures,
@@ -81,11 +81,11 @@ from engine import msnl_shadow as ms  # noqa: E402
 PROOF_B_CAMPAIGN_AUTHORIZED = False
 
 INPUT_PATH = os.path.join(_ROOT, "tests", "fixtures", "proof_b_pilot_inputs_v3.json")
-INPUT_SHA256 = "2ae61a4d8331f76981e09860c11489264b6a15cb88521651a97181ebb38cf2c1"
+INPUT_SHA256 = "9d04528a206f0ce28d6c7c58324767bfbded61f0b9fa856f2ca2493b1c3514c4"
 REFERENCE_PATH = os.path.join(_ROOT, "tests", "fixtures", "proof_b_pilot_reference_v3.json")
-REFERENCE_SHA256 = "36fea91df5ba7a69e068f0aaa4ea7ee8755fbe2369ef5ec56947fc90d37071db"
-# The fixtures may be used for a campaign only once their status is FROZEN,
-# which needs the Owner's language review their review_coverage still lacks.
+REFERENCE_SHA256 = "7387fdcc19bfb23cd4518caaf1db4f9c73ed1ae64028f60f3db132e0cda6e2e8"
+# The fixtures may be used for a campaign only while their status is FROZEN;
+# their review_coverage records exactly what the Owner approved.
 FROZEN_STATUS = "FROZEN"
 # Default for the ONE authorized run digest. It stays None: the manifest binds
 # the Git revision, so the digest an Owner authorizes is passed at run time with
@@ -191,8 +191,10 @@ PREREGISTRATION = {
         "I4": "Clarification: the questions and the unresolved notes together address the "
               "decision-relevant missing information that must be known first (for a case with a "
               "task_handoff, among its decision_relevant_unknowns, such as a support configuration "
-              "before any calculation input); they need not cover every listed unknown. Each question is answerable by a nontechnical inventor and "
-              "presupposes no chosen component. A missing measurement, calculation, reference or "
+              "before any calculation input); they need not cover every listed unknown. Each "
+              "question is answerable by a nontechnical inventor and does not presuppose a "
+              "component, mechanism or decision that the inventor has not stated. A missing "
+              "measurement, calculation, reference or "
               "specialist check is named as unresolved or asked for as a measurement the inventor "
               "could make, never treated as a value the inventor already knows. Withholding a "
               "calculation or conclusion that is not yet applicable is correct; abstaining or "
@@ -640,7 +642,12 @@ def aggregate(sheet, report, cases, refs, authorized_manifest_sha256):
                                  **{c: {"pass": v[c][0], "eligible": v[c][1]} for c in GRADED}}
                              for k, v in langs.items()},
             "unreviewed": [list(x) for x in missing], "unanswered": unanswered,
-            "note": "Preliminary pilot evidence only; never a production PASS."}
+            "task_linked": {s: {c["language"]: entries[c["case_id"]].get("verdicts", {})
+                                for c in cases if c["scenario_id"] == s}
+                            for s in TASK_LINKED},
+            "note": ("Preliminary pilot evidence only; never a production PASS. task_linked "
+                     "reports the G03 and G09 verdicts by language and decides nothing: a "
+                     "pilot GO does not show that either task-linked journey succeeded.")}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
