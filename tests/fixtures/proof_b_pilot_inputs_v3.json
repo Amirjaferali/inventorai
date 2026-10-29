@@ -1,18 +1,20 @@
 {
-  "pack_id": "inventorai-proof-b-pilot-02",
-  "status": "CORRECTED_PENDING_NATIVE_REVIEW",
+  "pack_id": "inventorai-proof-b-pilot-03",
+  "status": "PREPARED_PENDING_OWNER_REVIEW",
   "synthetic_only": true,
   "purpose": "Free-form inventor-intent clarification; no project, account or real inventor data",
   "input_rule": "Only idea_text is sent to a separately authorised provider harness; case_id, scenario_id, language, labels and reference annotations are never sent.",
   "review_coverage": {
-    "corrections": "AI executor (Claude Code), from the AI independent review of 2026-10-29: G01, G02, G03, G04, G06 and G07 wording; G01, G02, G05 and G08 reference labels",
+    "designated_language_reviewer": "The Owner.",
+    "owner_review": "Candidate reviewed baseline: the Owner-supplied draft pack inventorai-proof-b-pilot-draft-01 (inputs 1e298b0d90cf4f3d51ddeb000dab9eed255a4ba749902d12f1a3fccf975b42b2, reference 9c8ebee66b5c66db8a5c48542649e3e7d408917a916d812b0994749e4002120a); the Owner has not yet confirmed this association. Not yet Owner-reviewed: the 16 input texts and the G01, G02, G05 and G08 reference labels changed in pack 02, and the four G09 texts, the G09 reference and the G03 and G09 task_handoff annotations added in pack 03.",
+    "corrections": "Pack 02, AI executor (Claude Code) after AI review: G01, G02, G03, G04, G06 and G07 wording; G01, G02, G05 and G08 reference labels. Pack 03, AI executor: the G09 integrated scenario and the G03 and G09 task_handoff annotations.",
     "ai_review": "AI reviewers only (Claude). Not native speakers; not independent human review.",
-    "native_human_review": "NONE. Required before freeze for every ar-msa, ar-gulf-kw and ar-egy text and its EN parity."
+    "other_review": "No independent or separate native-dialect review is claimed."
   },
   "supersedes": {
-    "pack_id": "inventorai-proof-b-pilot-draft-01",
-    "inputs_sha256": "1e298b0d90cf4f3d51ddeb000dab9eed255a4ba749902d12f1a3fccf975b42b2",
-    "reference_sha256": "9c8ebee66b5c66db8a5c48542649e3e7d408917a916d812b0994749e4002120a"
+    "pack_id": "inventorai-proof-b-pilot-02",
+    "inputs_sha256": "1d78a4872e95fb5799ae9339f71728cd3ffd3e04d97c848724cd77787e49a5a4",
+    "reference_sha256": "27e6150bf2297027684eae62ffa158c286b0aa8c2c64a60edaaf3bca772320e2"
   },
   "cases": [
     {
@@ -238,6 +240,34 @@
       "language": "ar-egy",
       "synthetic": true,
       "idea_text": "مسمي اختراعي الصندوق البرتقالي. متخيل شكله علبة بس بصراحة لسه مش عارف المفروض يعمل إيه."
+    },
+    {
+      "case_id": "G09-en",
+      "scenario_id": "G09",
+      "language": "en",
+      "synthetic": true,
+      "idea_text": "I want a window that opens and closes by itself. A hinge arm swings the window, and a small motor board switches battery power to a geared motor that turns the arm. I haven't worked out how the two parts should work together or how I would check that it works."
+    },
+    {
+      "case_id": "G09-ar-msa",
+      "scenario_id": "G09",
+      "language": "ar-msa",
+      "synthetic": true,
+      "idea_text": "أريد نافذة تُفتح وتُغلق من تلقاء نفسها. ذراع على المفصلة يحرّك النافذة، ولوحة محرك صغيرة توصل طاقة البطارية إلى محرك مزوّد بتروس يدير الذراع. لم أحدد بعد كيف يعمل الجزءان معاً ولا كيف سأختبر أنه يعمل."
+    },
+    {
+      "case_id": "G09-ar-gulf-kw",
+      "scenario_id": "G09",
+      "language": "ar-gulf-kw",
+      "synthetic": true,
+      "idea_text": "أبي دريشة تنفتح وتتسكر بروحها. فيه ذراع على المفصلة يحرّك الدريشة، ولوحة موتور صغيرة توصّل كهربا البطارية لموتور فيه تروس يلف الذراع. للحين ما عرفت شلون الجزئين يشتغلون مع بعض ولا شلون أجرب إنه يشتغل."
+    },
+    {
+      "case_id": "G09-ar-egy",
+      "scenario_id": "G09",
+      "language": "ar-egy",
+      "synthetic": true,
+      "idea_text": "عايز شباك يتفتح ويتقفل لوحده. فيه دراع على المفصلة بيحرك الشباك، ولوحة موتور صغيرة بتوصل كهربا البطارية لموتور بتروس بيلف الدراع. لسه ما عرفتش الجزئين هيشتغلوا مع بعض إزاي ولا هجرب إنه شغال إزاي."
     }
   ]
 }

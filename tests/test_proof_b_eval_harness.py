@@ -20,7 +20,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts" / "run_proof_b_eval.py"
 # Pinned: changing the instructions, schema, limits, criteria or decision rule
 # changes the pre-registration and must be a deliberate, reviewed edit.
-PREREGISTRATION_SHA256 = "56bd894f912c87850b48935d882ae49c15c53fab2bc6d00dfb0c6ff611ba9c9e"
+PREREGISTRATION_SHA256 = "11e11714154f90cc3816d2d004365d2087c7a0ac4f5b9b600113fd460eae6c99"
 REVISION = "test-revision"
 
 
@@ -85,7 +85,7 @@ def _run(pb, cases, responses):
 def _reviewed(pb, pilot, verdict="PASS", responses=None):
     """(report, sheet) for a fake run with every verdict set to ``verdict``."""
     cases, refs = pilot
-    report, _inner = _run(pb, cases, responses or [OK] * 32)
+    report, _inner = _run(pb, cases, responses or [OK] * 36)
     sheet = pb.review_sheet(report, cases, refs)
     for entry in sheet["cases"]:
         entry["verdicts"] = {c: verdict for c in entry["verdicts"]}
@@ -98,22 +98,31 @@ def _agg(pb, pilot, report, sheet):
 
 
 # ── fixture ─────────────────────────────────────────────────────────────────
-def test_fixture_is_pinned_and_forms_the_4x8_matrix(pb, pilot):
+def test_fixture_is_pinned_and_forms_the_4x9_matrix(pb, pilot):
     cases, refs = pilot
     assert hashlib.sha256(pathlib.Path(pb.INPUT_PATH).read_bytes()).hexdigest() == pb.INPUT_SHA256
     assert hashlib.sha256(pathlib.Path(pb.REFERENCE_PATH).read_bytes()).hexdigest() == pb.REFERENCE_SHA256
-    assert len(cases) == 32 and len({c["case_id"] for c in cases}) == 32
+    assert len(cases) == 36 and len({c["case_id"] for c in cases}) == 36
     for lang in pb.LANGUAGES:
-        assert sum(c["language"] == lang for c in cases) == 8
+        assert sum(c["language"] == lang for c in cases) == 9
     assert set(refs) == {c["case_id"] for c in cases}
 
 
 def test_fixture_is_not_frozen_and_discloses_its_review_coverage(pb):
     for path in (pb.INPUT_PATH, pb.REFERENCE_PATH):
         data = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
-        assert data["status"] == "CORRECTED_PENDING_NATIVE_REVIEW" != pb.FROZEN_STATUS
-        assert data["review_coverage"]["native_human_review"].startswith("NONE")
-        assert data["supersedes"]["inputs_sha256"].startswith("1e298b0d")
+        assert data["status"] == "PREPARED_PENDING_OWNER_REVIEW" != pb.FROZEN_STATUS
+        coverage = data["review_coverage"]
+        assert coverage["designated_language_reviewer"] == "The Owner."
+        # the reviewed baseline is a candidate only, and nothing beyond it is claimed
+        assert "1e298b0d" in coverage["owner_review"]
+        assert "not yet confirmed" in coverage["owner_review"]
+        assert "G09" in coverage["owner_review"] and "task_handoff" in coverage["owner_review"]
+        assert coverage["other_review"].startswith("No independent")
+        assert data["supersedes"] == {
+            "pack_id": "inventorai-proof-b-pilot-02",
+            "inputs_sha256": "1d78a4872e95fb5799ae9339f71728cd3ffd3e04d97c848724cd77787e49a5a4",
+            "reference_sha256": "27e6150bf2297027684eae62ffa158c286b0aa8c2c64a60edaaf3bca772320e2"}
     rule = json.loads(pathlib.Path(pb.INPUT_PATH).read_text(encoding="utf-8"))["input_rule"]
     assert rule.startswith("Only idea_text is sent") and "case_id" in rule
 
@@ -144,12 +153,135 @@ def test_a_tampered_fixture_is_refused(pb, tmp_path, monkeypatch):
 
 def test_pilot_texts_are_disjoint_from_every_earlier_fixture(pilot):
     cases, _refs = pilot
-    own = {"proof_b_pilot_inputs_v2.json", "proof_b_pilot_reference_v2.json"}
+    own = {"proof_b_pilot_inputs_v3.json", "proof_b_pilot_reference_v3.json"}
     for path in (ROOT / "tests" / "fixtures").glob("*.json"):
         if path.name in own:
             continue
         text = path.read_text(encoding="utf-8")
         assert not any(c["idea_text"] in text for c in cases), path.name
+
+
+# ── task-linked delta: G03 single-domain, G09 integrated, G01 control ──────
+_HANDOFF_KEYS = {"level_a_handoff", "inventor_provided", "decision_relevant_unknowns",
+                 "missing_measurements", "qualified_calculations", "admitted_references",
+                 "specialist_review"}
+
+
+def test_task_handoff_is_rater_only_and_only_on_the_task_linked_scenarios(pb, pilot):
+    cases, refs = pilot
+    assert pb.TASK_LINKED == ("G03", "G09")
+    for scenario in pb.SCENARIOS:
+        annotations = {json.dumps(refs["%s-%s" % (scenario, lang)].get("task_handoff"),
+                                  sort_keys=True) for lang in pb.LANGUAGES}
+        assert len(annotations) == 1, scenario       # the same in every language
+        handoff = refs["%s-en" % scenario].get("task_handoff")
+        assert (handoff is not None) == (scenario in pb.TASK_LINKED), scenario
+        if handoff:
+            assert set(handoff) == _HANDOFF_KEYS
+            assert all(handoff[k] for k in _HANDOFF_KEYS - {"qualified_calculations"})
+    for case in cases:
+        assert "task_handoff" not in case and "task_handoff" not in pb.payload(case)["input"]
+
+
+def test_g03_withholds_the_calculation_until_the_configuration_is_known(pilot):
+    _cases, refs = pilot
+    handoff = refs["G03-en"]["task_handoff"]
+    assert "support configuration" in " ".join(handoff["decision_relevant_unknowns"])
+    assert "only once" in handoff["level_a_handoff"] and "may not apply" in handoff["level_a_handoff"]
+    assert all(c.startswith("two-support static reactions, only if")
+               for c in handoff["qualified_calculations"])
+    assert "CAP-13" not in json.dumps(handoff)       # no capability identifier is required
+
+
+def test_g09_states_the_two_parts_and_their_one_interaction(pilot):
+    cases, refs = pilot
+    text = {c["case_id"]: c["idea_text"] for c in cases}
+    assert "hinge arm" in text["G09-en"] and "motor board" in text["G09-en"]
+    assert "geared motor" in text["G09-en"]
+    for lang in ("ar-msa", "ar-gulf-kw", "ar-egy"):
+        assert "المفصلة" in text["G09-" + lang] and "تروس" in text["G09-" + lang]
+        assert "البطارية" in text["G09-" + lang]
+    ref = refs["G09-en"]
+    assert (ref["category"], ref["expected_behavior"]) == ("integrated_interface", "CLARIFY")
+    assert "the two parts are compatible" in ref["not_stated_or_not_verified"]
+    assert "no compatibility judgement" in ref["task_handoff"]["level_a_handoff"]
+
+
+def test_g01_stays_the_unresolved_goal_control(pilot):
+    _cases, refs = pilot
+    for lang in ("en", "ar-msa", "ar-gulf-kw", "ar-egy"):
+        ref = refs["G01-" + lang]
+        assert "task_handoff" not in ref and ref["expected_behavior"] == "CLARIFY"
+        assert "watering as the chosen method" in ref["not_stated_or_not_verified"]
+
+
+@pytest.mark.parametrize("mutate", ["missing", "misplaced", "extra_key", "empty_item"])
+def test_a_misplaced_or_malformed_task_handoff_is_refused(pb, tmp_path, monkeypatch, mutate):
+    data = json.loads(pathlib.Path(pb.REFERENCE_PATH).read_text(encoding="utf-8"))
+    g03 = next(r for r in data["cases"] if r["case_id"] == "G03-en")
+    if mutate == "missing":
+        del g03["task_handoff"]
+    elif mutate == "misplaced":
+        next(r for r in data["cases"] if r["case_id"] == "G01-en")["task_handoff"] = g03["task_handoff"]
+    elif mutate == "extra_key":
+        g03["task_handoff"]["preferred_mechanism"] = ["hinge"]
+    else:
+        g03["task_handoff"]["missing_measurements"].append(" ")
+    raw = json.dumps(data, ensure_ascii=False)
+    bad = tmp_path / "reference.json"
+    bad.write_text(raw, encoding="utf-8")
+    monkeypatch.setattr(pb, "REFERENCE_PATH", str(bad))
+    monkeypatch.setattr(pb, "REFERENCE_SHA256", hashlib.sha256(raw.encode("utf-8")).hexdigest())
+    with pytest.raises(pb.PackError):
+        pb.load_pilot()
+
+
+def test_leak_check_covers_the_task_handoff(pb, pilot):
+    cases, refs = pilot
+    phrase = refs["G09-en"]["task_handoff"]["specialist_review"][0]
+    def build(case):
+        body = pb.payload(case)
+        if case["case_id"] == "G09-en":
+            body = dict(body, input=json.dumps({"idea_text": case["idea_text"] + " " + phrase}))
+        return body
+    leaks = pb.label_leaks(cases, refs, build)
+    assert ("G09-en", "input_shape") in leaks or ("G09-en", "task_handoff") in leaks
+    def append_only(case):
+        body = pb.payload(case)
+        if case["case_id"] == "G09-en":
+            body["input"] = body["input"][:-1] + ', "x": "' + phrase + '"}'
+        return body
+    assert ("G09-en", "input_shape") in pb.label_leaks(cases, refs, append_only)
+    assert pb.label_leaks(cases, refs) == []
+
+
+def test_stated_denominators_are_the_packs_own(pb, pilot):
+    cases, refs = pilot
+    row = {"parts": {"ai_suggestions": [{"text": "x"}]}}
+    per_lang = {}
+    for case in cases:
+        crit = pb.eligible_criteria(refs[case["case_id"]], row)
+        counts = per_lang.setdefault(case["language"], {"I3": 0, "I4": 0})
+        for c in ("I3", "I4"):
+            counts[c] += c in crit
+    assert per_lang == {lang: {"I3": 3, "I4": 7} for lang in pb.LANGUAGES}
+    rule = pb.PREREGISTRATION["decision_rule"]
+    assert "3 I3 and 7 I4" in rule and "at least 6/7 for I4" in rule
+    assert "9/12 for I3 and 21/28 for I4" in rule
+    assert "4 * num >= 3 * den" in SCRIPT.read_text(encoding="utf-8")   # threshold unchanged
+
+
+def test_revised_i4_and_i6_wording(pb):
+    i4, i6 = pb.PREREGISTRATION["criteria"]["I4"], pb.PREREGISTRATION["criteria"]["I6"]
+    for phrase in ("decision-relevant missing information", "decision_relevant_unknowns",
+                   "measurement the inventor could make", "never treated as a value the inventor "
+                   "already knows", "not yet applicable is correct", "false rejection",
+                   "No particular mechanism, design choice or capability name"):
+        assert phrase in i4, phrase
+    for phrase in ("established engineering truth", "attributed to them, is legitimate",
+                   "does not count as validating it"):
+        assert phrase in i6, phrase
+    assert pb.CRITICAL == ("I1", "I2", "I5", "I6", "I7") and pb.GRADED == ("I3", "I4")
 
 
 # ── payload and instructions ───────────────────────────────────────────────
@@ -197,7 +329,7 @@ def test_preregistration_is_pinned(pb):
     assert set(prereg["schema"]["required"]) == {
         "outcome", "inventor_stated", "ai_suggestions", "clarification_questions",
         "unresolved_or_abstain"}
-    assert prereg["limits"]["retries"] == 0 and prereg["limits"]["max_provider_requests"] == 32
+    assert prereg["limits"]["retries"] == 0 and prereg["limits"]["max_provider_requests"] == 36
     assert set(prereg["criteria"]) == set(pb.CRITERIA)
     assert "legitimate" in prereg["criteria"]["I2"]
     assert "within each language variety" in prereg["decision_rule"]
@@ -318,7 +450,7 @@ def test_campaign_makes_one_call_per_case_and_stops_on_the_first_error(pb, pilot
     assert report["stopped_on"] == pb.ST_ERROR
     statuses = [r["status"] for r in report["rows"]]
     assert statuses[:3] == ["RESPONDED", "RESPONDED", "ERROR"]
-    assert set(statuses[3:]) == {"NOT_ATTEMPTED"} and len(statuses) == 32
+    assert set(statuses[3:]) == {"NOT_ATTEMPTED"} and len(statuses) == 36
     lines = [json.loads(x) for x in journal.getvalue().splitlines()]
     assert lines[0] == {"reserve": cases[0]["case_id"], "request": 1}
     assert lines[1]["attempt"] == cases[0]["case_id"]
@@ -333,13 +465,13 @@ def test_campaign_stops_on_an_ambiguous_outcome(pb, pilot):
 
 def test_campaign_never_exceeds_the_cap_and_never_retries(pb, pilot):
     cases, _refs = pilot
-    report, inner = _run(pb, cases + cases, [OK] * 64)
-    assert report["requests"] == pb.MAX_PROVIDER_REQUESTS == len(inner.calls) == 32
+    report, inner = _run(pb, cases + cases, [OK] * 72)
+    assert report["requests"] == pb.MAX_PROVIDER_REQUESTS == len(inner.calls) == 36
 
 
 def test_the_report_carries_and_digests_its_manifest(pb, pilot):
     cases, _refs = pilot
-    report, _inner = _run(pb, cases, [OK] * 32)
+    report, _inner = _run(pb, cases, [OK] * 36)
     manifest = report["manifest"]
     assert manifest == pb.run_manifest(REVISION, toa.MODEL)
     assert manifest["input_sha256"] == pb.INPUT_SHA256
@@ -390,7 +522,7 @@ def test_aggregate_follows_the_preregistered_rule(pb, pilot):
     result = _agg(pb, pilot, report, sheet)
     assert result["decision"] == "PILOT_GO_FOR_LARGER_STUDY"
     assert {k: v["cases"] for k, v in result["per_language"].items()} \
-        == {lang: 8 for lang in pb.LANGUAGES}
+        == {lang: 9 for lang in pb.LANGUAGES}
     assert result["graded"]["I4"]["eligible"] == sum(
         v["I4"]["eligible"] for v in result["per_language"].values())
 
@@ -478,7 +610,7 @@ def test_machine_fields_come_from_the_report_not_the_sheet(pb, pilot):
         e["status"] = "RESPONDED"
         e["output"] = None
     result = _agg(pb, pilot, report, sheet)
-    assert result["decision"] == "INCOMPLETE_CAMPAIGN" and len(result["unanswered"]) == 21
+    assert result["decision"] == "INCOMPLETE_CAMPAIGN" and len(result["unanswered"]) == 36 - 11
     # Editing the report itself breaks the sheet's binding to it.
     report, sheet = _reviewed(pb, pilot, responses=responses)
     for row in report["rows"]:
