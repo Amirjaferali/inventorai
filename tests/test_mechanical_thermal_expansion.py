@@ -258,13 +258,15 @@ def test_overflow_and_underflow_are_integrity_failures_with_no_payload():
 
 
 def test_subnormal_results_are_accepted_only_within_the_bound():
+    # an exactly representable subnormal product (2^-530 x 2^-530 x -1 = -2^-1060)
+    # is accepted, exactly and with its sign
+    exact = _run(2.0 ** -530, 2.0 ** -530, -1.0)
+    assert exact["state"] == dc.STATE_SUCCESS
+    assert exact["outputs"]["delta_L"]["value"] == -(2.0 ** -1060)
+    # subnormal products whose one rounding exceeds the bound fail closed
     for alpha, length, delta_t in ((1e-160, 1e-150, 3.0), (3e-160, 7e-150, -1.0)):
         result = _run(alpha, length, delta_t)
-        if result["state"] == dc.STATE_SUCCESS:
-            produced = result["outputs"]["delta_L"]["value"]
-            assert _within(produced, alpha, length, delta_t, Fraction(1, 2 ** 52))
-        else:
-            assert _failure(result)
+        assert _failure(result), (alpha, length, delta_t)
 
 
 @pytest.mark.parametrize("alpha,length", [(0.0, 1.0), (-1e-5, 1.0), (1e-5, 0.0), (1e-5, -1.0)])
@@ -1128,6 +1130,11 @@ def test_arabic_page_is_rtl_and_isolates_tokens(mech):
     for item in ui_text.text("UI_MTE_DISCLOSURE", "ar").split("\n\n"):
         assert _norm(item) in _norm(stripped), item[:40]
     assert _norm(ui_text.text("UI_MTE_NEXT_STEP", "ar")) in _norm(stripped)
+    # the entry help examples stay whole, left-to-right runs on the Arabic page
+    form = c.get(URL % sid).get_data(as_text=True)
+    for run in ("1 × 10⁻⁶ /K", "0.000001", "1 °C", "1 K", "20 °C", "70 °C"):
+        assert '<bdi dir="ltr">%s</bdi>' % html.escape(run) in form, run
+    assert '"التغير الحر في طول الطول' not in form
 
 
 # ==========================================================================

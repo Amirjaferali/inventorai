@@ -16843,13 +16843,14 @@ _MTE_BINDING = _dcalc.bind_method(
     _mte_method.METHOD_ID, _mte_method.METHOD_VERSION, _mte_method.evaluate)
 
 # Latin letters, digits, the Greek α and Δ of the role symbols, the
-# multiplication sign of the relation and the solidus of ``1/K``, plus
-# identifiers: each run is direction-isolated on an Arabic page (parentheses
+# multiplication sign of the relation, the solidus of ``1/K``, the degree sign of
+# ``°C`` and the superscripts of ``× 10⁻⁶`` in the entry help, plus identifiers: each run is direction-isolated on an Arabic page (parentheses
 # stay outside a run, so a bracketed token such as (mm) keeps its brackets in
 # the surrounding text).
 _MTE_LTR_RUN = re.compile(
-    r"[A-Za-z0-9_\u03b1\u0394](?:[A-Za-z0-9_\u03b1\u0394\u00d7\u00b7.:/= -]*"
-    r"[A-Za-z0-9_\u03b1\u0394])?")
+    r"[A-Za-z0-9_\u03b1\u0394](?:[A-Za-z0-9_\u03b1\u0394\u00d7\u00b7\u00b0\u207b"
+    r"\u00b9\u00b2\u00b3\u2070\u2074-\u2079.:/= -]*"
+    r"[A-Za-z0-9_\u03b1\u0394\u00b0\u00b9\u00b2\u00b3\u2070\u2074-\u2079])?")
 
 
 def _mte_eligible(sid):

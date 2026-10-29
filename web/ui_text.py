@@ -8189,8 +8189,8 @@ UI_STRINGS = {
         "en": "α_avg is the AVERAGE coefficient of linear thermal expansion of this material over exactly the temperature interval considered, from the initial to the final temperature; it is not a value at one temperature applied to a wider interval and not a coefficient defined for another interval.",
         "ar": "α_avg هو معامل التمدد الطولي الحراري المتوسط لهذه المادة على مدى درجات الحرارة المعني نفسه تمامًا، من درجة الحرارة الابتدائية إلى النهائية؛ وليس قيمة عند درجة حرارة واحدة تُطبَّق على مدى أوسع، ولا معاملًا معرَّفًا لمدى آخر."},
     "UI_MTE_DECL_REFERENCE_LENGTH": {
-        "en": "L_ref is the length to which α_avg refers under the coefficient's own definition (its reference-temperature convention, for example the length at the initial temperature or at the reference temperature stated with the coefficient); InventorAI does not decide which length that is.",
-        "ar": "L_ref هو الطول الذي يشير إليه α_avg وفق تعريف المعامل نفسه (اصطلاح درجة حرارة المرجع الخاص به، مثل الطول عند درجة الحرارة الابتدائية أو عند درجة حرارة المرجع المذكورة مع المعامل)؛ ولا يقرر InventorAI أي طول هو."},
+        "en": "L_ref is the length to which α_avg refers under the coefficient's own definition (its reference-temperature convention, for example the length at the temperature where the coefficient's interval starts, or at the reference temperature stated with the coefficient); InventorAI does not decide which length that is.",
+        "ar": "L_ref هو الطول الذي يشير إليه α_avg وفق تعريف المعامل نفسه (اصطلاح درجة حرارة المرجع الخاص به، مثل الطول عند درجة الحرارة التي يبدأ عندها مدى المعامل، أو عند درجة حرارة المرجع المذكورة مع المعامل)؛ ولا يقرر InventorAI أي طول هو."},
     "UI_MTE_DECL_SIGNED_CHANGE": {
         "en": "ΔT is the final temperature minus the initial temperature, positive for heating and negative for cooling; the result ΔL is then positive for lengthening and negative for shortening.",
         "ar": "ΔT هو درجة الحرارة النهائية مطروحًا منها درجة الحرارة الابتدائية، موجب عند التسخين وسالب عند التبريد؛ وتكون النتيجة ΔL عندئذ موجبة عند الاستطالة وسالبة عند القِصَر."},
@@ -8223,7 +8223,7 @@ UI_STRINGS = {
         "ar": "العودة إلى مشروعك"},
     "UI_MTE_RESULT_DELTA_L": {
         "en": "Free change in length of the declared length (ΔL) — millimetre (mm)",
-        "ar": "التغير الحر في طول الطول المصرَّح به (ΔL) — مليمتر (mm)"},
+        "ar": "التغير الحر في الطول المصرَّح به (ΔL) — مليمتر (mm)"},
     "UI_MTE_EXACT": {
         "en": "Exact value of α_avg × L_ref × ΔT for the values you entered.",
         "ar": "قيمة α_avg × L_ref × ΔT الدقيقة للقيم التي أدخلتها."},

@@ -199,7 +199,7 @@ _SOURCE_POLICY = {"NBS-TE-S1": "mte:SU001", "NASA-TE-S2": "mte:SU002",
 _SEMANTIC_DIGESTS = {
     "method": "10168f72b6661ba041c621e60642a9713786a2b2bcba73f0a500c925f0edaf34",
     "numeric_domain": "f11ed478062f9e91e68b5d22d8b7dc6fec1c43958c25f4bc322b1a951e5aa26d",
-    "declarations": "b399f9a44275951f7ae13face6f9f452a68905f38547bd7effc8784e262e87c1",
+    "declarations": "11cd3bf7ef52f175e05884d7511bf4490fa4009f7ba916db3518a87d563e1e91",
     "screen_items": "9afd531ae5d2b462bf82545c32394d22dc3c584abbfb8a7da0626cf2b1a00504",
     "limitations": "5e58d3386ac7face44f52ae5c61dff0f59dff05cb1a3847731cebadd1753747c",
     "disclosure": "aa53a01b4008a61783eae60a8084549e1becebb97101918afe6a3d59063805a6",

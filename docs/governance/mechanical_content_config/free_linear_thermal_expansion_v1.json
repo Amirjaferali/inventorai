@@ -84,7 +84,7 @@
     {
       "declaration_id": "reference_length",
       "contract_ref": "D-6",
-      "accepted_value": "L_ref is the length to which α_avg refers under the coefficient's own definition (its reference-temperature convention, for example the length at the initial temperature or at the reference temperature stated with the coefficient); InventorAI does not decide which length that is",
+      "accepted_value": "L_ref is the length to which α_avg refers under the coefficient's own definition (its reference-temperature convention, for example the length at the temperature where the coefficient's interval starts, or at the reference temperature stated with the coefficient); InventorAI does not decide which length that is",
       "refusal": "MODEL_NOT_SUPPORTED"
     },
     {

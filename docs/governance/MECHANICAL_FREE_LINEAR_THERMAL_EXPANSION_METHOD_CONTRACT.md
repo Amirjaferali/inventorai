@@ -118,7 +118,7 @@ is stated or invented: a declaration only makes the bounded model applicable; it
 | D-3 | `own_coefficient` | α_avg is the inventor's own value for this material; InventorAI did not select, look up, infer or check it, and does not decide that it is right |
 | D-4 | `coefficient_direction` | α_avg applies in the direction of the length considered; for a material whose expansion depends on direction (for example wood, fibre composites or single crystals) it is the coefficient in this direction |
 | D-5 | `average_over_interval` | α_avg is the AVERAGE coefficient of linear thermal expansion of this material over exactly the temperature interval considered, from the initial to the final temperature; it is not a value at one temperature applied to a wider interval and not a coefficient defined for another interval |
-| D-6 | `reference_length` | L_ref is the length to which α_avg refers under the coefficient's own definition (its reference-temperature convention, for example the length at the initial temperature or at the reference temperature stated with the coefficient); InventorAI does not decide which length that is |
+| D-6 | `reference_length` | L_ref is the length to which α_avg refers under the coefficient's own definition (its reference-temperature convention, for example the length at the temperature where the coefficient's interval starts, or at the reference temperature stated with the coefficient); InventorAI does not decide which length that is |
 | D-7 | `signed_change` | ΔT is the final temperature minus the initial temperature, positive for heating and negative for cooling; the result ΔL is then positive for lengthening and negative for shortening |
 | D-8 | `reversible_thermal_change_only` | only reversible thermal change of length occurs over the interval: no phase or material transformation, no permanent set, no hysteresis and no change caused by moisture, curing, ageing or load is included |
 
@@ -235,7 +235,7 @@ calculation.
 | D-3 own_coefficient | α_avg قيمة المخترع نفسه لهذه المادة؛ لم يختره InventorAI ولم يبحث عنه ولم يستنتجه ولم يتحقق منه، ولا يقرر أنه صحيح. |
 | D-4 coefficient_direction | ينطبق α_avg في اتجاه الطول المعني؛ وبالنسبة إلى مادة يعتمد تمددها على الاتجاه (مثل الخشب أو المواد المركّبة الليفية أو البلورات المفردة) فهو المعامل في هذا الاتجاه. |
 | D-5 average_over_interval | α_avg هو معامل التمدد الطولي الحراري المتوسط لهذه المادة على مدى درجات الحرارة المعني نفسه تمامًا، من درجة الحرارة الابتدائية إلى النهائية؛ وليس قيمة عند درجة حرارة واحدة تُطبَّق على مدى أوسع، ولا معاملًا معرَّفًا لمدى آخر. |
-| D-6 reference_length | L_ref هو الطول الذي يشير إليه α_avg وفق تعريف المعامل نفسه (اصطلاح درجة حرارة المرجع الخاص به، مثل الطول عند درجة الحرارة الابتدائية أو عند درجة حرارة المرجع المذكورة مع المعامل)؛ ولا يقرر InventorAI أي طول هو. |
+| D-6 reference_length | L_ref هو الطول الذي يشير إليه α_avg وفق تعريف المعامل نفسه (اصطلاح درجة حرارة المرجع الخاص به، مثل الطول عند درجة الحرارة التي يبدأ عندها مدى المعامل، أو عند درجة حرارة المرجع المذكورة مع المعامل)؛ ولا يقرر InventorAI أي طول هو. |
 | D-7 signed_change | ΔT هو درجة الحرارة النهائية مطروحًا منها درجة الحرارة الابتدائية، موجب عند التسخين وسالب عند التبريد؛ وتكون النتيجة ΔL عندئذ موجبة عند الاستطالة وسالبة عند القِصَر. |
 | D-8 reversible_thermal_change_only | لا يحدث على هذا المدى إلا تغير حراري في الطول قابل للانعكاس: لا يُدرَج أي تحول في الطور أو المادة، ولا تشوه دائم، ولا تخلف (hysteresis)، ولا تغير بسبب الرطوبة أو المعالجة أو التقادم أو الحمل. |
 
