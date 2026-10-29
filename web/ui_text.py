@@ -8144,6 +8144,143 @@ UI_STRINGS = {
     "UI_MNF_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # MECHANICAL-FREE-LINEAR-THERMAL-EXPANSION-01 (free linear thermal-expansion
+    # contract §9). The English declaration and disclosure entries are pinned equal
+    # to the method artifact by test and the Arabic disclosure and declarations to
+    # contract §9A. The high-risk screen reuses the UI_CAP13_SCREEN_* keys (the
+    # same nine items) and the integrated-part attribution the UI_CAP13_PART_*
+    # keys. Nothing here suggests a material or coefficient or states a stress,
+    # fit, clearance, gap, failure, suitability or safety conclusion; the result
+    # is the declared length's free change only.
+    "UI_MTE_LINK_TEXT": {
+        "en": "Optional: free change in length of one part when its temperature changes (ΔL = α_avg × L_ref × ΔT)",
+        "ar": "اختياري: التغير الحر في طول جزء واحد عند تغير درجة حرارته (ΔL = α_avg × L_ref × ΔT)"},
+    "UI_MTE_LINK_NOTE": {
+        "en": "An advisory calculation from a coefficient, a length and a temperature change you declare. It is not saved, it is the free change in length only, not a stress, fit, clearance or safety result, and it is never required.",
+        "ar": "حساب إرشادي من معامل وطول وتغير في درجة الحرارة تصرّح بها أنت. لا يُحفَظ، وهو التغير الحر في الطول فقط، وليس نتيجة إجهاد أو توافق أو خلوص أو سلامة، ولا يكون مطلوبًا أبدًا."},
+    "UI_MTE_TITLE": {
+        "en": "Free change in length with temperature (optional, non-binding)",
+        "ar": "التغير الحر في الطول مع درجة الحرارة (اختياري، غير مُلزِم)"},
+    "UI_MTE_INTRO": {
+        "en": "This page is optional. It calculates how much one length of one material would change if it were completely free to move, from your own average coefficient of linear thermal expansion α_avg, the reference length L_ref that coefficient refers to and the temperature change ΔT, as ΔL = α_avg × L_ref × ΔT. It shows how much movement may need to be accommodated and what still has to be checked. Nothing is saved, and InventorAI suggests no material or coefficient.",
+        "ar": "هذه الصفحة اختيارية. تحسب مقدار تغير طول واحد من مادة واحدة لو كان حرًّا تمامًا في الحركة، من معامل التمدد الطولي الحراري المتوسط α_avg الذي تدخله أنت، وطول المرجع L_ref الذي يشير إليه ذلك المعامل، وتغير درجة الحرارة ΔT، بالعلاقة ΔL = α_avg × L_ref × ΔT. وتبيّن مقدار الحركة التي قد يلزم استيعابها وما يبقى التحقق منه. لا يُحفَظ شيء، ولا يقترح InventorAI أي مادة أو معامل."},
+    "UI_MTE_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a Mechanical-focus project or for its declared Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that your part changes length with temperature, that the free-expansion model applies, or that the coefficient, length and temperature change you enter are correct. You must confirm the method's conditions and screening items. The result is an UNVALIDATED free change in length, not a stress, fit, clearance, suitability or safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء أن طول جزئك يتغير مع درجة الحرارة، ولا انطباق نموذج التمدد الحر، ولا صحة المعامل والطول وتغير درجة الحرارة التي تدخلها. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة تغير حر في الطول غير مُتحقَّق منه، وليست حكمًا بشأن الإجهاد أو التوافق أو الخلوص أو الملاءمة أو السلامة."},
+    "UI_MTE_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_MTE_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_MTE_DECL_FREE_UNRESTRAINED": {
+        "en": "The length considered is free to expand and contract: nothing clamps, joins, holds or restrains it along this length during the change, so only its free change in length is calculated.",
+        "ar": "الطول المعني حرّ في التمدد والانكماش: لا يثبّته أو يصله أو يحمله أو يقيّده شيء على امتداد هذا الطول أثناء التغير، لذلك يُحسَب تغير طوله الحر فقط."},
+    "UI_MTE_DECL_ONE_MATERIAL_UNIFORM_TEMPERATURE": {
+        "en": "The length is ONE homogeneous material, at ONE uniform temperature at the start and ONE uniform temperature at the end, with no temperature difference along or across it.",
+        "ar": "الطول مادة واحدة متجانسة، بدرجة حرارة واحدة منتظمة في البداية ودرجة حرارة واحدة منتظمة في النهاية، دون فرق في درجة الحرارة على امتداده أو عبره."},
+    "UI_MTE_DECL_OWN_COEFFICIENT": {
+        "en": "α_avg is the inventor's own value for this material; InventorAI did not select, look up, infer or check it, and does not decide that it is right.",
+        "ar": "α_avg قيمة المخترع نفسه لهذه المادة؛ لم يختره InventorAI ولم يبحث عنه ولم يستنتجه ولم يتحقق منه، ولا يقرر أنه صحيح."},
+    "UI_MTE_DECL_COEFFICIENT_DIRECTION": {
+        "en": "α_avg applies in the direction of the length considered; for a material whose expansion depends on direction (for example wood, fibre composites or single crystals) it is the coefficient in this direction.",
+        "ar": "ينطبق α_avg في اتجاه الطول المعني؛ وبالنسبة إلى مادة يعتمد تمددها على الاتجاه (مثل الخشب أو المواد المركّبة الليفية أو البلورات المفردة) فهو المعامل في هذا الاتجاه."},
+    "UI_MTE_DECL_AVERAGE_OVER_INTERVAL": {
+        "en": "α_avg is the AVERAGE coefficient of linear thermal expansion of this material over exactly the temperature interval considered, from the initial to the final temperature; it is not a value at one temperature applied to a wider interval and not a coefficient defined for another interval.",
+        "ar": "α_avg هو معامل التمدد الطولي الحراري المتوسط لهذه المادة على مدى درجات الحرارة المعني نفسه تمامًا، من درجة الحرارة الابتدائية إلى النهائية؛ وليس قيمة عند درجة حرارة واحدة تُطبَّق على مدى أوسع، ولا معاملًا معرَّفًا لمدى آخر."},
+    "UI_MTE_DECL_REFERENCE_LENGTH": {
+        "en": "L_ref is the length to which α_avg refers under the coefficient's own definition (its reference-temperature convention, for example the length at the initial temperature or at the reference temperature stated with the coefficient); InventorAI does not decide which length that is.",
+        "ar": "L_ref هو الطول الذي يشير إليه α_avg وفق تعريف المعامل نفسه (اصطلاح درجة حرارة المرجع الخاص به، مثل الطول عند درجة الحرارة الابتدائية أو عند درجة حرارة المرجع المذكورة مع المعامل)؛ ولا يقرر InventorAI أي طول هو."},
+    "UI_MTE_DECL_SIGNED_CHANGE": {
+        "en": "ΔT is the final temperature minus the initial temperature, positive for heating and negative for cooling; the result ΔL is then positive for lengthening and negative for shortening.",
+        "ar": "ΔT هو درجة الحرارة النهائية مطروحًا منها درجة الحرارة الابتدائية، موجب عند التسخين وسالب عند التبريد؛ وتكون النتيجة ΔL عندئذ موجبة عند الاستطالة وسالبة عند القِصَر."},
+    "UI_MTE_DECL_REVERSIBLE_THERMAL_CHANGE_ONLY": {
+        "en": "Only reversible thermal change of length occurs over the interval: no phase or material transformation, no permanent set, no hysteresis and no change caused by moisture, curing, ageing or load is included.",
+        "ar": "لا يحدث على هذا المدى إلا تغير حراري في الطول قابل للانعكاس: لا يُدرَج أي تحول في الطور أو المادة، ولا تشوه دائم، ولا تخلف (hysteresis)، ولا تغير بسبب الرطوبة أو المعالجة أو التقادم أو الحمل."},
+    "UI_MTE_FIELD_ALPHA_AVG": {
+        "en": "Your average coefficient of linear thermal expansion (α_avg) — per kelvin (1/K)",
+        "ar": "معامل التمدد الطولي الحراري المتوسط الخاص بك (α_avg) — لكل كلفن (1/K)"},
+    "UI_MTE_FIELD_L_REF": {
+        "en": "The length your coefficient refers to (L_ref) — millimetre (mm)",
+        "ar": "الطول الذي يشير إليه معاملك (L_ref) — مليمتر (mm)"},
+    "UI_MTE_FIELD_DELTA_T": {
+        "en": "Temperature change, final minus initial (ΔT) — kelvin (K)",
+        "ar": "تغير درجة الحرارة، النهائية مطروحًا منها الابتدائية (ΔT) — كلفن (K)"},
+    "UI_MTE_HELP_ALPHA_AVG": {
+        "en": "Type your own value as a plain decimal in 1/K: a value written with × 10⁻⁶ is typed with the decimal point moved six places to the left (1 × 10⁻⁶ /K is typed 0.000001). A coefficient given per °C has the same number per K. InventorAI does not suggest, look up or check a value.",
+        "ar": "اكتب قيمتك أنت بصيغة عشرية عادية بوحدة 1/K: القيمة المكتوبة مع × 10⁻⁶ تُكتب بنقل الفاصلة العشرية ست خانات إلى اليسار (1 × 10⁻⁶ /K تُكتب 0.000001). المعامل المعطى لكل °C له الرقم نفسه لكل K. لا يقترح InventorAI أي قيمة ولا يبحث عنها ولا يتحقق منها."},
+    "UI_MTE_HELP_L_REF": {
+        "en": "Type, in millimetres, the length your coefficient refers to under its own definition (see the reference-length declaration above). InventorAI does not decide which length that is.",
+        "ar": "اكتب بالمليمتر الطول الذي يشير إليه معاملك وفق تعريفه نفسه (انظر تصريح طول المرجع أعلاه). لا يقرر InventorAI أي طول هو."},
+    "UI_MTE_HELP_DELTA_T": {
+        "en": "Type the final minus the initial temperature, in kelvin: positive for heating, negative for cooling (a minus sign is allowed). A change of 1 °C is a change of 1 K, so a change from 20 °C to 70 °C is typed 50.",
+        "ar": "اكتب درجة الحرارة النهائية مطروحًا منها الابتدائية، بالكلفن: موجبة عند التسخين وسالبة عند التبريد (يُسمح بإشارة الطرح). التغير بمقدار 1 °C هو تغير بمقدار 1 K، لذلك يُكتب التغير من 20 °C إلى 70 °C هكذا: 50."},
+    "UI_MTE_SUBMIT": {
+        "en": "Calculate the free change in length",
+        "ar": "احسب التغير الحر في الطول"},
+    "UI_MTE_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_MTE_RESULT_DELTA_L": {
+        "en": "Free change in length of the declared length (ΔL) — millimetre (mm)",
+        "ar": "التغير الحر في طول الطول المصرَّح به (ΔL) — مليمتر (mm)"},
+    "UI_MTE_EXACT": {
+        "en": "Exact value of α_avg × L_ref × ΔT for the values you entered.",
+        "ar": "قيمة α_avg × L_ref × ΔT الدقيقة للقيم التي أدخلتها."},
+    "UI_MTE_ROUNDED": {
+        "en": "Rounded to 12 significant digits; the exact value of α_avg × L_ref × ΔT has more digits.",
+        "ar": "مقرَّبة إلى 12 رقمًا معنويًا؛ للقيمة الدقيقة لـ α_avg × L_ref × ΔT أرقام أكثر."},
+    "UI_MTE_SIGN_NOTE": {
+        "en": "A positive value means the length gets longer; a negative value means it gets shorter.",
+        "ar": "القيمة الموجبة تعني أن الطول يزداد؛ والقيمة السالبة تعني أنه يقصر."},
+    "UI_MTE_NEXT_STEP": {
+        "en": "What to do with this number: it is how much the declared length would change if it were completely free to move, under the model and values you declared. Use it to see how much movement may need to be accommodated where the part is held, joined or fitted, and to plan what to check next: the real material's average coefficient over your real temperature interval, how the part is held or joined, and the real movement, by measurement or qualified engineering review. It does not say that any gap, slot, clearance, fit or flexible mounting is needed or enough.",
+        "ar": "ماذا تفعل بهذا الرقم: هو مقدار تغير الطول المصرَّح به لو كان حرًّا تمامًا في الحركة، وفق النموذج والقيم التي صرّحت بها. استخدمه لترى مقدار الحركة التي قد يلزم استيعابها حيث يُثبَّت الجزء أو يوصَل أو يُركَّب، ولتخطط لما تتحقق منه بعد ذلك: المعامل المتوسط الحقيقي للمادة على مدى درجات الحرارة الحقيقي لديك، وطريقة تثبيت الجزء أو وصله، والحركة الحقيقية، بالقياس أو بمراجعة هندسية مؤهلة. ولا يقول إن أي فجوة أو شق أو خلوص أو توافق أو تثبيت مرن مطلوب أو كافٍ."},
+    "UI_MTE_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_MTE_ECHO_HEADING": {
+        "en": "The values and declarations you entered",
+        "ar": "القيم والتصريحات التي أدخلتها"},
+    "UI_MTE_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_MTE_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_MTE_SOURCES_NOTE": {
+        "en": "The average coefficient of linear thermal expansion and the dependence of the change in length on the original length and the temperature range from National Bureau of Standards Circular 486 (Hidnert and Souder, 1950); the point that restrained differential expansion between dissimilar joined materials produces thermal stress from NASA Technical Paper 2226 (Blosser and McWithey, 1983); and the unit facts from NIST Special Publication 330. The relation as offered, its declarations and its sign convention are InventorAI's own restatement, and no data table is used. Neither NBS, NIST nor NASA endorses InventorAI or this calculation.",
+        "ar": "معامل التمدد الطولي الحراري المتوسط واعتماد تغير الطول على الطول الأصلي ومدى درجات الحرارة من النشرة رقم 486 للمكتب الوطني للمعايير (NBS Circular 486، هيدنرت وسودر، 1950)؛ وكون التمدد المتباين المقيَّد بين مواد مختلفة موصولة يولّد إجهادًا حراريًا من الورقة الفنية رقم 2226 لوكالة ناسا (NASA Technical Paper 2226، بلوسر وماكويذي، 1983)؛ وحقائق الوحدات من المنشور الخاص رقم 330 للمعهد الوطني للمعايير والتقنية (NIST SP 330). العلاقة بالصورة المقدَّمة وتصريحاتها واصطلاح إشارتها إعادة صياغة خاصة بـInventorAI، ولا يُستخدَم أي جدول بيانات. لا يؤيّد NBS ولا NIST ولا NASA InventorAI ولا هذا الحساب."},
+    "UI_MTE_DISCLOSURE": {
+        "en": "This is the free change in length ΔL that the declared model gives: ΔL = α_avg × L_ref × ΔT, using your own average coefficient α_avg, the reference length L_ref that coefficient refers to, and the temperature change ΔT you declared.\n\nIt is the change of a length that nothing holds. If the part is clamped, joined or held, or is joined to a part of a different material, the parts try to change length differently, and where that movement is restrained thermal stress can arise. This calculation does not calculate any stress, joint force or deformation.\n\nIt does not say that any gap, slot, clearance, fit, tolerance or flexible mounting is needed, enough or acceptable, and it says nothing about failure, suitability or safety.\n\nThe coefficient is your own value. InventorAI did not choose it, look it up or check that it belongs to your material, applies in this direction, is the average over your temperature interval or refers to the length you entered.\n\nOnly reversible thermal change is included: phase or material changes, permanent set, hysteresis, swelling or shrinking from moisture, and temperature differences within the part are not. ΔT here is a change of the part's temperature over time; it is not the temperature difference across a heat path from another calculation, and no result is carried between calculations.\n\nThe value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement. The result is preliminary, advisory, UNVALIDATED and not evidence: check the real movement by measurement or qualified engineering review before any reliance.\n\nReference source material: National Bureau of Standards Circular 486, Thermal Expansion of Solids (Hidnert and Souder, 1950), for the average coefficient of linear thermal expansion and the dependence of the change in length on the original length and the temperature range; NASA Technical Paper 2226 (Blosser and McWithey, 1983) for the point that restrained differential thermal expansion between dissimilar joined materials produces thermal stress; NIST Special Publication 330 for the kelvin and the unit 1/K. The relation as offered here is InventorAI's own restatement, and no data table is used.",
+        "ar": "هذا هو التغير الحر في الطول ΔL الذي يعطيه النموذج المصرَّح به: ΔL = α_avg × L_ref × ΔT، باستخدام معامل التمدد المتوسط α_avg الذي أدخلته أنت، وطول المرجع L_ref الذي يشير إليه ذلك المعامل، وتغير درجة الحرارة ΔT الذي صرّحت به.\n\nهذا هو تغير طول لا يقيّده شيء. فإذا كان الجزء مثبّتًا أو موصولًا أو محمولًا، أو موصولًا بجزء من مادة مختلفة، فإن الأجزاء تميل إلى تغيير أطوالها بمقادير مختلفة، وحيث تُقيَّد هذه الحركة قد ينشأ إجهاد حراري (thermal stress). لا يحسب هذا الحساب أي إجهاد أو قوة وصلة أو تشوّه.\n\nلا يقول هذا الناتج إن أي فجوة أو شق أو خلوص أو توافق أو تفاوت أو تثبيت مرن مطلوب أو كافٍ أو مقبول، ولا يقول شيئًا عن الانهيار أو الملاءمة أو السلامة.\n\nالمعامل قيمتك أنت. لم يختره InventorAI ولم يبحث عنه، ولم يتحقق من أنه يخص مادتك، أو ينطبق في هذا الاتجاه، أو أنه المتوسط على مدى درجات الحرارة لديك، أو أنه يشير إلى الطول الذي أدخلته.\n\nيُدرَج التغير الحراري القابل للانعكاس فقط: لا تُدرَج تحولات الطور أو المادة، ولا التشوه الدائم، ولا التخلف (hysteresis)، ولا الانتفاخ أو الانكماش بسبب الرطوبة، ولا فروق درجات الحرارة داخل الجزء. ΔT هنا تغير في درجة حرارة الجزء مع الزمن؛ وليس فرق درجة الحرارة عبر مسار حراري من حساب آخر، ولا تُنقَل أي نتيجة بين الحسابات.\n\nتُعرَض القيمة بدقة عندما يمكن ذلك؛ وإلا تُقرَّب إلى 12 رقمًا معنويًا ويُشار إلى أنها مقرَّبة. تنتج الأرقام من إدخالك؛ وليست دقة أي قياس. النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا: تحقق من الحركة الحقيقية بالقياس أو بمراجعة هندسية مؤهلة قبل أي اعتماد عليها.\n\nالمراجع: النشرة رقم 486 للمكتب الوطني للمعايير، التمدد الحراري للمواد الصلبة (NBS Circular 486، هيدنرت وسودر، 1950) لمعامل التمدد الطولي الحراري المتوسط ولاعتماد تغير الطول على الطول الأصلي ومدى درجات الحرارة؛ والورقة الفنية رقم 2226 لوكالة ناسا (NASA Technical Paper 2226، بلوسر وماكويذي، 1983) لكون التمدد الحراري المتباين المقيَّد بين مواد مختلفة موصولة يولّد إجهادًا حراريًا؛ والمنشور الخاص رقم 330 للمعهد الوطني للمعايير والتقنية (NIST SP 330) للكلفن وللوحدة 1/K. أما العلاقة بالصورة المقدَّمة هنا فهي إعادة صياغة خاصة بـInventorAI، ولا يُستخدَم أي جدول بيانات."},
+    "UI_MTE_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_MTE_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_MTE_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. هذه الحالة تتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_MTE_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_MTE_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "α_avg and L_ref must be numbers greater than zero, and ΔT may be negative. Write plain decimals: α_avg with at most 12 digits before and 12 after the decimal point, L_ref with at most 12 before and 9 after, and ΔT with at most 9 before and 9 after. Nothing was calculated.",
+        "ar": "يجب أن تكون قيمتا α_avg و L_ref رقمين أكبر من الصفر، ويجوز أن تكون ΔT سالبة. اكتب أرقامًا عشرية عادية: α_avg بما لا يزيد على 12 رقمًا قبل الفاصلة العشرية و12 بعدها، وL_ref بما لا يزيد على 12 قبلها و9 بعدها، وΔT بما لا يزيد على 9 قبلها و9 بعدها. لم يُحسب شيء."},
+    "UI_MTE_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only per kelvin (1/K), millimetre (mm) and kelvin (K), and shows the result in millimetres (mm). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة لكل كلفن (1/K) والمليمتر (mm) والكلفن (K) فقط، وتعرض النتيجة بالمليمتر (mm). لم يُحسب شيء."},
+    "UI_MTE_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_MTE_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_MTE_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

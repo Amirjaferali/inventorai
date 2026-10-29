@@ -520,18 +520,18 @@ def test_success_packaging_units_sources_and_identity():
     assert [q["source_ref"] for q in result["source_qualification"]] == ["DOE-CHG-S1"]
     assert result["source_qualification"][0]["source_use_policy_ref"] == "dcu:SU018"
     assert result["validation_status"] == "UNVALIDATED"
-    assert (result["artifact_version"], result["implementation_version"]) == ("12", "1.11.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("13", "1.12.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_adds_exactly_the_charge_kind_and_two_tokens():
     assert ("electrical:dc_constant_current_charge", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 12
+    assert len(dc.ADMITTED_METHODS) == 13
     assert dc.ADMITTED_QUANTITY_KINDS >= {"electric_charge", "time", "electric_current"}
-    assert len(dc.ADMITTED_QUANTITY_KINDS) == 18 and len(dc.ADMITTED_UNIT_TOKENS) == 20
+    assert len(dc.ADMITTED_QUANTITY_KINDS) == 19 and len(dc.ADMITTED_UNIT_TOKENS) == 21
     assert dc.ADMITTED_UNIT_TOKENS == {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
                                        "mV", "°C", "V", "Ω", "A", "J", "s", "h", "A·h",
-                                       "kg", "N/m", "Hz"}
+                                       "kg", "N/m", "Hz", "1/K"}
     # the second named exception (§13I): time holds exactly s and h, nothing else;
     # no other kind gains a token and no alias exists
     assert dc.KIND_TOKEN_EXCEPTIONS == {"voltage": frozenset({"mV", "V"}),
@@ -620,7 +620,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.dc_constant_current_charge_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._DC_CHARGE_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 12
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 13
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("import dc_constant_current_charge", "engine.dc_", "engine/dc_",
                    "dc_constant_current_charge_method.", "dc_constant_current_charge import",
@@ -687,7 +687,7 @@ def test_owner_artifact_tamper_fails_closed(tmp_path, name):
 
 def test_owner_v9_records_are_unchanged_by_the_tenth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "12"
+    assert data["artifact_version"] == "13"
     v9 = {"quantity_kinds": data["quantity_kinds"][:14],
           "unit_records": data["unit_records"][:15],
           "source_use_policies": data["source_use_policies"][:16],
@@ -709,7 +709,7 @@ def test_owner_v9_records_are_unchanged_by_the_tenth_admission():
     for banned in ("electric_charge_reference_v1", "charge_current_time_reference",
                    "battery capacity", "battery runtime", "state of charge", "mA·h"):
         assert banned not in text, banned
-    assert "Content version 12 admits exactly twelve methods" in data["governance_note"]
+    assert "Content version 13 admits exactly thirteen methods" in data["governance_note"]
 
 
 # ==========================================================================

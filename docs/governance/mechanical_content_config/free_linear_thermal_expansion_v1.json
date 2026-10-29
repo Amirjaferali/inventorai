@@ -1,0 +1,251 @@
+{
+  "artifact_id": "mechanical_free_linear_thermal_expansion",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "Mechanical - Technical Deepening (method authority for this one method only)",
+  "slice": "MECHANICAL-FREE-LINEAR-THERMAL-EXPANSION-01 - Free Linear Thermal Expansion - Slice 1",
+  "governance_note": "The Mechanical-owned governed artifact of the free linear thermal-expansion method, under MECHANICAL_FREE_LINEAR_THERMAL_EXPANSION_METHOD_CONTRACT.md. It carries the method authority (identity, version, model, executed form and derivation), the applicability declarations, the numeric domain, the high-risk screen, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack, NOT a Materials domain and NOT an entry in domains/domain_provenance.json; it holds no material-property value and no coefficient; it is separate from every other method artifact, never loads another method artifact and is never loaded by one. Calculation execution belongs to the shared deterministic calculation and units owner; nothing here is evidence, a stress, joint-force, fit, tolerance, clearance, gap, failure, suitability or safety statement, or a readiness, progression or validation input.",
+  "method": {
+    "method_id": "mechanical:free_linear_thermal_expansion",
+    "method_version": "1.0",
+    "contract": "docs/governance/MECHANICAL_FREE_LINEAR_THERMAL_EXPANSION_METHOD_CONTRACT.md",
+    "model": "ONE length of ONE homogeneous material, free to expand and contract with nothing restraining it, at one uniform temperature at the start and one at the end; the free change in that length over the declared temperature change, given the inventor's own average coefficient of linear thermal expansion for that material, direction and temperature interval, the reference length that coefficient refers to under its own definition and the signed temperature change.",
+    "executed_form": "delta_L = alpha_avg * L_ref * delta_T: the exact rational product of the three binary64 inputs rounded ONCE to binary64 (round half to even); a zero temperature change gives exactly +0.0; a nonzero result is accepted only when finite, nonzero, of the same sign as the exact product and within a relative error of 2^-52 of it; no tolerance widening, no clamping and no magnitude ceiling.",
+    "derivation": "NBS Circular 486 (NBS-TE-S1) records that practically all materials change dimensions when heated or cooled, that the change in length depends on the original length and on the temperature range, and that an average and an instantaneous coefficient of linear expansion are defined; the research-stream claim mapping records that the product form follows from that definition. InventorAI's restatement: the average coefficient over a temperature interval is the change in length per unit of the length it refers to, per degree of that interval, so for exactly that interval and that reference length delta_L = alpha_avg * L_ref * delta_T. The recorded inspection does not quote the defining equation or state which length the coefficient refers to, so no convention is stated here: the inventor declares that L_ref is the length their coefficient refers to (D-6). Only the average coefficient over exactly the declared interval is admitted (D-5). Neither NBS nor NIST publishes this method; it is InventorAI's own bounded restatement."
+  },
+  "numeric_domain": {
+    "roles": [
+      {
+        "role": "alpha_avg",
+        "meaning": "the inventor's own average coefficient of linear thermal expansion of the declared material, in the declared direction, over exactly the declared temperature interval; strictly positive",
+        "quantity_kind": "linear_thermal_expansion_coefficient",
+        "unit_token": "1/K"
+      },
+      {
+        "role": "L_ref",
+        "meaning": "the length to which that coefficient refers under its own definition; strictly positive",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      },
+      {
+        "role": "delta_T",
+        "meaning": "the change in the length's uniform temperature over time, final minus initial; signed; never the temperature difference across a heat path",
+        "quantity_kind": "temperature_difference",
+        "unit_token": "K"
+      },
+      {
+        "role": "delta_L",
+        "meaning": "the free change in length; signed, positive for lengthening and negative for shortening; never a stress, fit, clearance or gap statement",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      }
+    ],
+    "rules": [
+      "alpha_avg is typed as a strict unsigned ASCII decimal of one to twelve integer digits and up to twelve fractional digits; L_ref as a strict unsigned ASCII decimal of one to twelve integer digits and up to nine fractional digits; delta_T with an optional single leading minus, one to nine integer digits and up to nine fractional digits. No plus sign, exponent, separator, Unicode digit, unit suffix or normalization; each field is also capped at 64 characters for abuse and resource protection only - a NON-PHYSICAL bound that is NOT the admitted engineering domain and is never described as a range of valid coefficients, lengths or temperature changes. Anything else is INVALID_NUMERIC_INPUT, resolved before the shared owner is called.",
+      "The exact decimal values of alpha_avg and L_ref must be strictly greater than zero, checked before any binary rounding; a zero is INVALID_NUMERIC_INPUT, refused and never computed. A coefficient that is zero or negative is outside this slice, which is a limit of this calculation and not a statement that no material has one. A zero temperature change (including -0) is admitted and gives exactly 0 mm. Each admitted decimal is converted ONCE, correctly rounded, to binary64 for the shared owner, which parses no string.",
+      "No physical magnitude ceiling exists, and none is part of the admitted engineering domain.",
+      "Binary acceptance (adapter): the exact rational product alpha_avg * L_ref * delta_T of the three binary inputs is rounded once to binary64; a nonzero result is accepted only when finite, nonzero, of the same sign as the exact product and within a relative error of 2^-52 of it.",
+      "Decimal-reference acceptance (consumer): the accepted delta_L must agree with the exact rational product of the ENTERED decimals - exactly +0 when, and only when, delta_T is exactly zero; otherwise of the same sign and within a relative error of 2^-50 (the proven worst case of the binary path, the three input conversions included, is below 4.0000001 x 2^-53); otherwise the outcome is KNOWLEDGE_UNAVAILABLE and no number is shown.",
+      "Display: the exact decimal product is rounded ONCE to 12 significant digits, half to even, trailing zeros dropped, with its sign; it is labelled exact when that rounding changes nothing and rounded otherwise. Plain decimal notation is used for 10^-6 <= |delta_L| < 10^12 mm and m × 10^e otherwise; a nonzero value never displays as zero. The digits imply no measurement precision.",
+      "An overflow, an underflow of a nonzero result, a non-finite result, a sign change or a result outside the accepted relative error is FAILURE / EXECUTION_INTEGRITY_FAILURE with no numerical payload, displayed as KNOWLEDGE_UNAVAILABLE and never rewritten as a refusal."
+    ]
+  },
+  "declarations": [
+    {
+      "declaration_id": "free_unrestrained",
+      "contract_ref": "D-1",
+      "accepted_value": "the length considered is free to expand and contract: nothing clamps, joins, holds or restrains it along this length during the change, so only its free change in length is calculated",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "one_material_uniform_temperature",
+      "contract_ref": "D-2",
+      "accepted_value": "the length is ONE homogeneous material, at ONE uniform temperature at the start and ONE uniform temperature at the end, with no temperature difference along or across it",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "own_coefficient",
+      "contract_ref": "D-3",
+      "accepted_value": "α_avg is the inventor's own value for this material; InventorAI did not select, look up, infer or check it, and does not decide that it is right",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "coefficient_direction",
+      "contract_ref": "D-4",
+      "accepted_value": "α_avg applies in the direction of the length considered; for a material whose expansion depends on direction (for example wood, fibre composites or single crystals) it is the coefficient in this direction",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "average_over_interval",
+      "contract_ref": "D-5",
+      "accepted_value": "α_avg is the AVERAGE coefficient of linear thermal expansion of this material over exactly the temperature interval considered, from the initial to the final temperature; it is not a value at one temperature applied to a wider interval and not a coefficient defined for another interval",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "reference_length",
+      "contract_ref": "D-6",
+      "accepted_value": "L_ref is the length to which α_avg refers under the coefficient's own definition (its reference-temperature convention, for example the length at the initial temperature or at the reference temperature stated with the coefficient); InventorAI does not decide which length that is",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "signed_change",
+      "contract_ref": "D-7",
+      "accepted_value": "ΔT is the final temperature minus the initial temperature, positive for heating and negative for cooling; the result ΔL is then positive for lengthening and negative for shortening",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "reversible_thermal_change_only",
+      "contract_ref": "D-8",
+      "accepted_value": "only reversible thermal change of length occurs over the interval: no phase or material transformation, no permanent set, no hysteresis and no change caused by moisture, curing, ageing or load is included",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    }
+  ],
+  "screen_items": [
+    {
+      "item_id": "supports_people",
+      "item": "supports people"
+    },
+    {
+      "item_id": "overhead_or_falling_hazard",
+      "item": "overhead or falling hazard"
+    },
+    {
+      "item_id": "children",
+      "item": "use by or for children"
+    },
+    {
+      "item_id": "safety_critical_load_path",
+      "item": "safety-critical load path"
+    },
+    {
+      "item_id": "pressure",
+      "item": "pressure"
+    },
+    {
+      "item_id": "high_temperature",
+      "item": "high temperature"
+    },
+    {
+      "item_id": "battery_containment",
+      "item": "battery containment"
+    },
+    {
+      "item_id": "medical_use",
+      "item": "medical use"
+    },
+    {
+      "item_id": "food_contact",
+      "item": "food contact"
+    }
+  ],
+  "limitations": [
+    "No thermal stress, joint force, fit or tolerance evaluation, clearance adequacy, required gap or slot, flexible-mounting recommendation, deformation, buckling, failure prediction, suitability or safety conclusion; no difference of two free expansions and no second material.",
+    "No material selection, material-property lookup, database, default, example or prefilled coefficient; no inference of any declaration, coefficient, length or temperature; no instantaneous or temperature-dependent coefficient, area or volume expansion, anisotropic tensor, moisture expansion or phase change; no absolute temperature, no degree-Celsius entry and no unit conversion.",
+    "All NO answers on the high-risk screen only allow this bounded calculation to proceed; they never mean safe. The screen neither reads nor feeds SafetySignal.",
+    "The result is UNVALIDATED and is not evidence; it is request-local and is not stored, reported, exported, transferred into or from another calculation (THERM-01 included) or used for readiness, progression or validation."
+  ],
+  "disclosure": [
+    "This is the free change in length ΔL that the declared model gives: ΔL = α_avg × L_ref × ΔT, using your own average coefficient α_avg, the reference length L_ref that coefficient refers to, and the temperature change ΔT you declared.",
+    "It is the change of a length that nothing holds. If the part is clamped, joined or held, or is joined to a part of a different material, the parts try to change length differently, and where that movement is restrained thermal stress can arise. This calculation does not calculate any stress, joint force or deformation.",
+    "It does not say that any gap, slot, clearance, fit, tolerance or flexible mounting is needed, enough or acceptable, and it says nothing about failure, suitability or safety.",
+    "The coefficient is your own value. InventorAI did not choose it, look it up or check that it belongs to your material, applies in this direction, is the average over your temperature interval or refers to the length you entered.",
+    "Only reversible thermal change is included: phase or material changes, permanent set, hysteresis, swelling or shrinking from moisture, and temperature differences within the part are not. ΔT here is a change of the part's temperature over time; it is not the temperature difference across a heat path from another calculation, and no result is carried between calculations.",
+    "The value is shown exactly when it can be; otherwise it is rounded to 12 significant digits and labelled rounded. The digits follow from your entry; they are not the precision of any measurement. The result is preliminary, advisory, UNVALIDATED and not evidence: check the real movement by measurement or qualified engineering review before any reliance.",
+    "Reference source material: National Bureau of Standards Circular 486, Thermal Expansion of Solids (Hidnert and Souder, 1950), for the average coefficient of linear thermal expansion and the dependence of the change in length on the original length and the temperature range; NASA Technical Paper 2226 (Blosser and McWithey, 1983) for the point that restrained differential thermal expansion between dissimilar joined materials produces thermal stress; NIST Special Publication 330 for the kelvin and the unit 1/K. The relation as offered here is InventorAI's own restatement, and no data table is used."
+  ],
+  "sources": [
+    {
+      "record_id": "NBS-TE-S1",
+      "record_type": "source",
+      "source_type": "government_technical_publication",
+      "publisher": "National Bureau of Standards (NBS) (now the National Institute of Standards and Technology, NIST)",
+      "source_title": "NBS Circular 486 - Thermal Expansion of Solids (P. Hidnert and W. Souder, issued 15 March 1950), PDF pages 7 and 31",
+      "url": "https://nvlpubs.nist.gov/nistpubs/Legacy/circ/nbscircular486.pdf",
+      "source_use_policy_ref": "mte:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-28",
+      "inspected_content": "Supports only, for this method: practically all materials change dimensions when heated or cooled; the change in length depends on the original length and on the temperature range; an average and an instantaneous coefficient of linear expansion are defined (PDF pages 7 and 31). The research-stream claim mapping (TECH-SOURCES-001, Q-22, SRC-031; IP grade CALCULATION-GRADE; recorded content hash 64b4f0b841093e50b8edb88dcf15599b9fee28708af976b672f6d721b76ac883) records that the product form follows from the definition. The defining equation text and the reference-temperature convention of the length are NOT quoted in the recorded inspection, so this method states no convention and takes the reference length from the inventor's declaration D-6. Basis: research-stream direct inspection (TECH-SOURCES-001 run 10, 2026-10-28; research/tech-sources-001 at 730fb7b), supplied for this increment in the Owner-authorized MECHANICAL-FREE-LINEAR-THERMAL-EXPANSION-01 brief (2026-10-29); not independently re-inspected by the executor (egress to the host was refused by the environment proxy, 2026-10-29). The compiled data tables (drawn from other authors' publications), figures, examples and every numeric value are not relied upon.",
+      "paraphrase_only_limitation": "Factual paraphrase of the definition and the qualitative relations only; no NBS prose, data table, figure, example or numeric value is copied, and no coefficient is supplied.",
+      "third_party_material_exclusion": "The data compiled in the Circular from other authors' publications, and any other third-party material, is excluded.",
+      "no_endorsement_limitation": "No statement or implication that NBS or NIST endorses, reviewed or approved InventorAI or any project."
+    },
+    {
+      "record_id": "NASA-TE-S2",
+      "record_type": "source",
+      "source_type": "government_technical_publication",
+      "publisher": "National Aeronautics and Space Administration (NASA), Langley Research Center",
+      "source_title": "NASA Technical Paper 2226 - Theoretical Basis for Design of Thermal-Stress-Free Fasteners (M. L. Blosser and R. R. McWithey, December 1983), NTRS 19840005546, abstract",
+      "url": "https://ntrs.nasa.gov/citations/19840005546",
+      "source_use_policy_ref": "mte:SU002",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-28",
+      "inspected_content": "Supports only the qualitative disclosure of contract section 9 item 2: thermal stress results from differential thermal expansion between dissimilar fastener and sheet materials, and a joint stays stress-free only under special conditions (uniform temperature, no friction and a suitably shaped fastener). The fastener-shape design method is NOT adopted; no stress, joint-force, fit, clearance or deformation relation is taken. Research-stream record TECH-SOURCES-001, Q-22, SRC-032 (IP grade CALCULATION-GRADE). Basis: research-stream direct inspection (TECH-SOURCES-001 run 10, 2026-10-28; research/tech-sources-001 at 730fb7b), supplied for this increment in the Owner-authorized MECHANICAL-FREE-LINEAR-THERMAL-EXPANSION-01 brief (2026-10-29); not independently re-inspected by the executor (egress to the host was refused by the environment proxy, 2026-10-29).",
+      "paraphrase_only_limitation": "One qualitative point in InventorAI's own words; no NASA prose, equation, figure, table or design method is copied.",
+      "third_party_material_exclusion": "Any third-party material cited inside the paper is not relied upon.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI or any project."
+    },
+    {
+      "record_id": "NIST-TE-U",
+      "record_type": "source",
+      "source_type": "government_reference_web_page",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST Special Publication 330 (2019 Edition) - The International System of Units (SI), Section 2",
+      "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "source_use_policy_ref": "mte:SU003",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-08",
+      "inspected_content": "Supports only the unit facts: the kelvin, symbol K, is the SI base unit of thermodynamic temperature; a temperature difference may be expressed in kelvin, a difference of one kelvin equalling a difference of one degree Celsius; coherent derived units are formed as products and quotients of SI units, hence the reciprocal kelvin, written 1/K - its use for the coefficient of linear thermal expansion is InventorAI's own bounded quantity usage of that coherent quotient. Rests on the existing Lead-supplied SP 330 Section 2 inspections recorded for THERM-01 (THERM-U1, THERM-U3, THERM-U4; 2026-10-08) and for the natural-frequency method (NIST-NF-U; 2026-10-29), applied here as this method's own record; location recorded at section level; not independently re-inspected by the executor.",
+      "paraphrase_only_limitation": "Unit facts only, in InventorAI's own words; no SP 330 prose, table, figure or symbol list is reproduced.",
+      "third_party_material_exclusion": "BIPM-originated wording or tables inside SP 330 are treated as third-party material and are not reproduced.",
+      "no_endorsement_limitation": "No statement or implication that NIST endorses InventorAI or this calculation."
+    },
+    {
+      "record_id": "mte:SU001",
+      "record_type": "source_use_policy",
+      "source_type": "government_web_policy",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "source_use_policy_ref": "mte:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-28",
+      "inspected_content": "This method's own bounded source-use assessment for NBS-TE-S1 only (not a legal opinion): NBS Circular 486 is an NBS staff-authored publication, a U.S. Government work in the United States, as recorded by the TECH-SOURCES-001 IP register (SRC-031, CALCULATION-GRADE, rights clear). Used under the NIST Technical Series rights statement already recorded in the repository: NBS / NIST employee-authored works are not subject to U.S. copyright protection; acknowledgement is preserved; third-party material - here the data the Circular compiles from other authors' publications - is excluded; no endorsement may be implied. Use is factual paraphrase of the definition and qualitative relations only, with attribution, for commercial / product use on that recorded basis. Existing NIST Technical Series dispositions (dcu:SU001, dcu:SU003, dcu:SU021, mnf:SU001, mnf:SU002) keep their own scopes and are not extended; SRC-029 is relied upon by nothing.",
+      "paraphrase_only_limitation": "No copied NBS prose, data table, figure, example or numeric value.",
+      "third_party_material_exclusion": "No third-party material from the publication, including its compiled data.",
+      "no_endorsement_limitation": "Neutral source acknowledgement only; no statement or implication that NBS or NIST endorses, reviewed or approved InventorAI or any project.",
+      "acknowledgement": "Reference source material: National Bureau of Standards Circular 486, Thermal Expansion of Solids (Hidnert and Souder, 1950); the relation as offered here is InventorAI's own restatement."
+    },
+    {
+      "record_id": "mte:SU002",
+      "record_type": "source_use_policy",
+      "source_type": "government_repository_record",
+      "publisher": "National Aeronautics and Space Administration (NASA)",
+      "source_title": "NASA Technical Reports Server (NTRS) record 19840005546 - copyright determination",
+      "url": "https://ntrs.nasa.gov/citations/19840005546",
+      "source_use_policy_ref": "mte:SU002",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-28",
+      "inspected_content": "This method's own bounded source-use assessment for NASA-TE-S2 only (not a legal opinion): the NTRS record carries the copyright determination GOV_PUBLIC_USE_PERMITTED; the authors are NASA Langley staff and the paper is not contractor-authored, as recorded by the TECH-SOURCES-001 IP register (SRC-032, CALCULATION-GRADE, rights clear). Use is one qualitative point in InventorAI's own words, with attribution; the design method is not used; no endorsement may be implied.",
+      "paraphrase_only_limitation": "One qualitative point only; no NASA prose, equation, figure or table.",
+      "third_party_material_exclusion": "No third-party material cited in the paper.",
+      "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI or any project.",
+      "acknowledgement": "Reference source material: NASA Technical Paper 2226 (Blosser and McWithey, 1983), NASA Langley Research Center."
+    },
+    {
+      "record_id": "mte:SU003",
+      "record_type": "source_use_policy",
+      "source_type": "government_web_policy",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "source_use_policy_ref": "mte:SU003",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-08",
+      "inspected_content": "Source-use basis (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. SP 330 is a NIST Special Publication; any BIPM-originated wording or tables in it are treated as third-party material and are not reproduced. Use is limited to the unit facts of NIST-TE-U with NIST acknowledgement. Rests on the existing Lead-supplied inspections recorded as THERM-SU-NIST (2026-10-08) and mnf:SU002 (2026-10-29), applied to this method only; dcu:SU003, dcu:SU021, THERM-SU-NIST and mnf:SU002 keep their own scopes and are not extended.",
+      "paraphrase_only_limitation": "Unit facts only, in InventorAI's own words.",
+      "third_party_material_exclusion": "Third-party (including BIPM-originated) material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement is stated or implied.",
+      "acknowledgement": "Unit identification follows NIST Special Publication 330 (2019 Edition), National Institute of Standards and Technology."
+    }
+  ]
+}

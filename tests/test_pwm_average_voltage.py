@@ -592,19 +592,20 @@ def test_success_packaging_units_sources_and_identity():
         "NASA-PWM-S1", "NASA-PWM-S2"]
     assert {q["source_use_policy_ref"] for q in result["source_qualification"]} == {"dcu:SU019"}
     assert result["validation_status"] == "UNVALIDATED"
-    assert (result["artifact_version"], result["implementation_version"]) == ("12", "1.11.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("13", "1.12.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_adds_exactly_one_method_and_no_kind_token_or_conversion():
     assert ("electrical:pwm_average_voltage", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 12
+    assert len(dc.ADMITTED_METHODS) == 13
     # no new kind, token or exception from THIS admission: Correction 12 later added
-    # exactly mass / kg, stiffness / N/m and frequency / Hz for its own method
-    assert len(dc.ADMITTED_QUANTITY_KINDS) == 18 and len(dc.ADMITTED_UNIT_TOKENS) == 20
+    # exactly mass / kg, stiffness / N/m and frequency / Hz, and Correction 13 exactly
+    # linear_thermal_expansion_coefficient / 1/K, for their own methods
+    assert len(dc.ADMITTED_QUANTITY_KINDS) == 19 and len(dc.ADMITTED_UNIT_TOKENS) == 21
     assert dc.ADMITTED_UNIT_TOKENS == {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
                                        "mV", "°C", "V", "Ω", "A", "J", "s", "h", "A·h",
-                                       "kg", "N/m", "Hz"}
+                                       "kg", "N/m", "Hz", "1/K"}
     assert dc.KIND_TOKEN_EXCEPTIONS == {"voltage": frozenset({"mV", "V"}),
                                         "time": frozenset({"s", "h"})}
     assert dc._CONDITIONS == ("greater_than_zero", "less_than_zero",
@@ -613,7 +614,7 @@ def test_closed_inventory_adds_exactly_one_method_and_no_kind_token_or_conversio
                    for k in ("duty_cycle", "ratio", "dimensionless", "switching_frequency"))
     assert not any(t in dc.ADMITTED_UNIT_TOKENS for t in ("%", "1", "kHz", "ms"))
     data = dc.load_artifact()
-    assert len(data["unit_records"]) == 20 and len(data["quantity_kinds"]) == 18
+    assert len(data["unit_records"]) == 21 and len(data["quantity_kinds"]) == 19
     record = _record(data)
     assert record["applicability"] == [
         {"role": "t_period", "condition": "greater_than_zero", "bound_role": None},
@@ -661,7 +662,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.pwm_average_voltage_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._PWM_AVERAGE_VOLTAGE_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 12
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 13
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("import pwm_average_voltage", "engine.pwm", "engine/pwm",
                    "pwm_average_voltage_method.", "pwm_average_voltage import",
@@ -745,7 +746,7 @@ def test_owner_output_rebound_to_millivolts_is_refused_by_the_consumer(tmp_path)
 
 def test_owner_v10_records_are_unchanged_by_the_eleventh_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "12"
+    assert data["artifact_version"] == "13"
     v10 = {"quantity_kinds": data["quantity_kinds"][:15],
            "unit_records": data["unit_records"][:17],
            "source_use_policies": data["source_use_policies"][:18],
@@ -762,7 +763,7 @@ def test_owner_v10_records_are_unchanged_by_the_eleventh_admission():
     for banned in ("duty_cycle", "percent", "equivalent dc", "motor speed", "rms voltage",
                    "root mean square", "root-mean-square"):
         assert banned not in text, banned
-    assert "Content version 12 admits exactly twelve methods" in data["governance_note"]
+    assert "Content version 13 admits exactly thirteen methods" in data["governance_note"]
     assert "28-T3" not in data["governance_note"] or "BLOCKED" in data["governance_note"]
 
 

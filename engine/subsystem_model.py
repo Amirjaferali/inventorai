@@ -117,7 +117,13 @@ request-local calculation ``mechanical:spring_mass_natural_frequency`` v1.0 may
 likewise be OFFERED for the declared Mechanical part whatever the initial analysis
 focus, decided in the web layer from the same validated durable composition; it
 establishes no spring-mass system, model applicability, stiffness or mass value,
-resonance, suitability, validation or safety and changes nothing here. No other specialist
+resonance, suitability, validation or safety and changes nothing here. A further narrow,
+Owner-authorized exception (MECHANICAL-FREE-LINEAR-THERMAL-EXPANSION-01): the admitted
+request-local calculation ``mechanical:free_linear_thermal_expansion`` v1.0 may likewise
+be OFFERED for the declared Mechanical part whatever the initial analysis focus, decided
+in the web layer from the same validated durable composition; it establishes no material,
+coefficient, length, temperature change, model applicability, fit, clearance, stress,
+suitability, validation or safety and changes nothing here. No other specialist
 behaviour is granted by these exceptions. Subsystem identity is
 system-generated (``new_subsystem_id``), opaque, immutable and never derived
 from a name, a function text, a domain id or a list position; a client never

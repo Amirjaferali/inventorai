@@ -266,13 +266,15 @@ def test_role_kind_unit_bindings_are_exactly_the_governed_set():
     # and Correction 08 (§13G) exactly the energy / time kinds and the J / s tokens,
     # and Correction 10 (§13I) exactly the electric_charge kind, its A·h token and
     # the second time token h, and Correction 12 (§13K) exactly the mass / stiffness /
-    # frequency kinds and the kg / N/m / Hz tokens
+    # frequency kinds and the kg / N/m / Hz tokens, and Correction 13 (§13L) exactly the
+    # linear_thermal_expansion_coefficient kind and the 1/K token
     assert sorted(u["unit_token"] for u in data["unit_records"]) == [
-        "A", "A·h", "Hz", "J", "K", "K/W", "N", "N/m", "N·m", "N·mm", "V", "W", "h", "kg",
+        "1/K", "A", "A·h", "Hz", "J", "K", "K/W", "N", "N/m", "N·m", "N·mm", "V", "W", "h", "kg",
         "mV", "mm", "rad/s", "s", "°C", "Ω"]
     assert sorted(k["quantity_kind"] for k in data["quantity_kinds"]) == [
         "angular_velocity", "celsius_temperature", "electric_charge", "electric_current",
-        "electric_resistance", "energy", "force", "frequency", "length", "mass", "moment",
+        "electric_resistance", "energy", "force", "frequency", "length",
+        "linear_thermal_expansion_coefficient", "mass", "moment",
         "power", "stiffness", "temperature_difference", "thermal_resistance", "time",
         "torque", "voltage"]
 
@@ -334,7 +336,7 @@ def test_binding_is_immutable_and_not_a_registry():
     # moment's (Correction 03): one immutable binding per method
     assert webapp._CAP13_REACTIONS_BINDING.adapter_identity == BINDING.adapter_identity
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 12
+    assert app_source.count("_dcalc.bind_method(") == 13
 
 
 def test_deterministic_identity_and_no_input_mutation():
@@ -420,7 +422,7 @@ def test_source_use_records_are_present_and_bound():
                         "dcu:SU011", "dcu:SU012", "dcu:SU013",
                         "dcu:SU014", "dcu:SU015", "dcu:SU016",
                         "dcu:SU017", "dcu:SU018", "dcu:SU019", "dcu:SU020",
-                        "dcu:SU021"}
+                        "dcu:SU021", "dcu:SU022", "dcu:SU023"}
     cap13_units = [u for u in owner["unit_records"] if u["unit_token"] in ("N", "mm")]
     assert len(cap13_units) == 2
     for unit in cap13_units:
@@ -535,7 +537,7 @@ def test_owner_closed_inventory_rejects_structurally_valid_extras(tmp_path, monk
 
 
 def test_owner_closed_inventory_constants():
-    # Corrections 02 to 12 (§§13A-13K): exactly twelve methods, closed
+    # Corrections 02 to 13 (§§13A-13L): exactly thirteen methods, closed
     assert dc.ADMITTED_METHODS == frozenset({
         ("cap13:static_reactions_two_support", "1.0"),
         ("therm01:conduction_temperature_difference_single_path", "1.0"),
@@ -548,15 +550,16 @@ def test_owner_closed_inventory_constants():
         ("cap13:planar_required_force", "1.0"),
         ("electrical:dc_constant_current_charge", "1.0"),
         ("electrical:pwm_average_voltage", "1.0"),
-        ("mechanical:spring_mass_natural_frequency", "1.0")})
+        ("mechanical:spring_mass_natural_frequency", "1.0"),
+        ("mechanical:free_linear_thermal_expansion", "1.0")})
     assert dc.ADMITTED_QUANTITY_KINDS == frozenset({
         "force", "length", "power", "thermal_resistance", "temperature_difference",
         "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",
         "electric_resistance", "electric_current", "energy", "time", "electric_charge",
-        "mass", "stiffness", "frequency"})
+        "mass", "stiffness", "frequency", "linear_thermal_expansion_coefficient"})
     assert dc.ADMITTED_UNIT_TOKENS == frozenset(
         {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C", "V", "Ω", "A",
-         "J", "s", "h", "A·h", "kg", "N/m", "Hz"})
+         "J", "s", "h", "A·h", "kg", "N/m", "Hz", "1/K"})
 
 
 def test_owner_method_source_qualification_is_self_contained():

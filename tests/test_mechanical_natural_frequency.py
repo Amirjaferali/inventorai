@@ -335,7 +335,7 @@ def test_success_packaging_units_sources_and_identity():
                                      "provenance": "OWNER_STATED"}
     assert (result["method_id"], result["method_version"]) == (
         "mechanical:spring_mass_natural_frequency", "1.0")
-    assert (result["artifact_version"], result["implementation_version"]) == ("12", "1.11.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("13", "1.12.0")
     assert [u["record_id"] for u in result["unit_records"]] == [
         "dcu:U018", "dcu:U019", "dcu:U020"]
     assert [q["source_ref"] for q in result["source_qualification"]] == [
@@ -349,19 +349,19 @@ def test_success_packaging_units_sources_and_identity():
 
 def test_closed_inventory_and_versions():
     assert ("mechanical:spring_mass_natural_frequency", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 12
+    assert len(dc.ADMITTED_METHODS) == 13
     assert {"mass", "stiffness", "frequency"} <= dc.ADMITTED_QUANTITY_KINDS
-    assert len(dc.ADMITTED_QUANTITY_KINDS) == 18
-    assert {"kg", "N/m", "Hz"} <= dc.ADMITTED_UNIT_TOKENS
-    assert len(dc.ADMITTED_UNIT_TOKENS) == 20
+    assert len(dc.ADMITTED_QUANTITY_KINDS) == 19   # Correction 13 later added one kind
+    assert {"kg", "N/m", "Hz", "1/K"} <= dc.ADMITTED_UNIT_TOKENS
+    assert len(dc.ADMITTED_UNIT_TOKENS) == 21      # and its one token 1/K
     # no alias, no conversion token and no second rad/s meaning
     assert not any(t in dc.ADMITTED_UNIT_TOKENS
                    for t in ("g", "t", "lb", "N/mm", "kN/m", "lbf/in", "rpm", "kHz", "1/s"))
     assert dc.KIND_TOKEN_EXCEPTIONS == {"voltage": frozenset({"mV", "V"}),
                                         "time": frozenset({"s", "h"})}
-    assert dc.IMPLEMENTATION_VERSION == "1.11.0"
+    assert dc.IMPLEMENTATION_VERSION == "1.12.0"
     data = dc.load_artifact()
-    assert data["artifact_version"] == "12"
+    assert data["artifact_version"] == "13"
     kinds = {k["quantity_kind"]: k["dimension"] for k in data["quantity_kinds"]}
     assert (kinds["mass"], kinds["stiffness"], kinds["frequency"]) == ("M", "M T^-2", "T^-1")
     record = _record(data)
@@ -459,7 +459,7 @@ def test_app_wires_one_immutable_binding():
     with pytest.raises(AttributeError):
         webapp._MNF_BINDING.method_id = "x"
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 12
+    assert app_source.count("_dcalc.bind_method(") == 13
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("mechanical_natural_frequency", "mechanical_content_config",
                    "math.sqrt", "math.pi", "isqrt"):
@@ -525,20 +525,20 @@ def test_owner_artifact_unreadable_is_source_unavailable(tmp_path):
 
 def test_owner_v11_records_are_unchanged_by_the_twelfth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "12"
+    assert data["artifact_version"] == "13"
     v11 = {"quantity_kinds": data["quantity_kinds"][:15],
            "unit_records": data["unit_records"][:17],
            "source_use_policies": data["source_use_policies"][:19],
            "methods": data["methods"][:11]}
     canonical = json.dumps(v11, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     assert hashlib.sha256(canonical.encode()).hexdigest() == V11_RECORDS_DIGEST
-    assert [k["quantity_kind"] for k in data["quantity_kinds"][15:]] == [
+    assert [k["quantity_kind"] for k in data["quantity_kinds"][15:18]] == [
         "mass", "stiffness", "frequency"]
-    assert [u["record_id"] for u in data["unit_records"][17:]] == [
+    assert [u["record_id"] for u in data["unit_records"][17:20]] == [
         "dcu:U018", "dcu:U019", "dcu:U020"]
-    assert [p["record_id"] for p in data["source_use_policies"][19:]] == [
+    assert [p["record_id"] for p in data["source_use_policies"][19:21]] == [
         "dcu:SU020", "dcu:SU021"]
-    assert [m["method_id"] for m in data["methods"][11:]] == [method.METHOD_ID]
+    assert [m["method_id"] for m in data["methods"][11:12]] == [method.METHOD_ID]
     policies = {p["record_id"]: p for p in data["source_use_policies"]}
     assert "mnf:SU001" in policies["dcu:SU020"]["inspected_content"]
     assert "NBS-NF-S1" in policies["dcu:SU020"]["inspected_content"]
@@ -547,7 +547,7 @@ def test_owner_v11_records_are_unchanged_by_the_twelfth_admission():
     assert "dcu:U018 (kg), dcu:U019 (N/m) and dcu:U020 (Hz) only" \
         in policies["dcu:SU021"]["inspected_content"]
     assert all(p["inspection_basis"] == "LEAD_SUPPLIED" for p in data["source_use_policies"])
-    assert "Content version 12 admits exactly twelve methods" in data["governance_note"]
+    assert "Content version 13 admits exactly thirteen methods" in data["governance_note"]
     text = json.dumps(data, ensure_ascii=False)
     for banned in ("damping ratio", "transmissibility", "resonant amplitude"):
         assert banned not in text, banned

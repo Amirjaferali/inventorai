@@ -1,9 +1,9 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "12",
+  "artifact_version": "13",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 12, sections 13A to 13K) and the method contracts of the twelve admitted methods. Content version 12 admits exactly twelve methods and exactly the twenty unit tokens they require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature; V, Ω and A for the DC resistive load current; V, Ω and W for the DC resistive load power; V, Ω, s and J for the DC resistive load energy; N·mm, mm and N for the CAP-13 planar required force; A, h and A·h for the DC constant-current charge; V and s for the PWM average voltage, on existing records; N/m, kg and Hz for the Mechanical natural frequency); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. Two kinds hold two exact tokens each by the named exceptions of sections 13E and 13I: voltage holds mV and V, and time holds s and h; each role binds one of them and nothing maps one to the other (no 3600, no minute). The Celsius-temperature kind is the TMP36 output only and is never related to K. The electric-charge kind holds the one token A·h, never related to C, mA·h or J. The frequency kind (Hz) is distinct from angular_velocity (rad/s); nothing maps Hz to rad/s, and 2π lives in the natural-frequency adapter only. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The earlier unit records, dcu:SU001 to dcu:SU019 and the eleven earlier method records are unchanged from content version 11.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 13, sections 13A to 13L) and the method contracts of the thirteen admitted methods. Content version 13 admits exactly thirteen methods and exactly the twenty-one unit tokens they require (N, mm, W, K/W, K, N·mm, N·m, rad/s, mV, °C, V, Ω, A, J, s, h, A·h, kg, N/m, Hz and 1/K; each method record names the tokens of its own roles); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. Two kinds hold two exact tokens each by the named exceptions of sections 13E and 13I: voltage holds mV and V, and time holds s and h; each role binds one of them and nothing maps one to the other (no 3600, no minute). The Celsius-temperature kind is the TMP36 output only and is never related to K. The electric-charge kind holds the one token A·h, never related to C, mA·h or J. The frequency kind (Hz) is distinct from angular_velocity (rad/s); nothing maps Hz to rad/s, and 2π lives in the natural-frequency adapter only. The coefficient kind holds the one token 1/K, related to no other spelling; nothing moves between the expansion method and THERM-01. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The earlier unit records, dcu:SU001 to dcu:SU021 and the twelve earlier method records are unchanged from content version 12.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
     {"quantity_kind": "length", "dimension": "L"},
@@ -22,7 +22,8 @@
     {"quantity_kind": "electric_charge", "dimension": "T I"},
     {"quantity_kind": "mass", "dimension": "M"},
     {"quantity_kind": "stiffness", "dimension": "M T^-2"},
-    {"quantity_kind": "frequency", "dimension": "T^-1"}
+    {"quantity_kind": "frequency", "dimension": "T^-1"},
+    {"quantity_kind": "linear_thermal_expansion_coefficient", "dimension": "Theta^-1"}
   ],
   "unit_records": [
     {
@@ -364,6 +365,23 @@
       "inspection_basis": "LEAD_SUPPLIED",
       "inspection_date": "2026-10-29",
       "inspection_reference": "Lead-supplied unit basis in the Owner-authorized MECHANICAL-NATURAL-FREQUENCY-01 brief (2026-10-29), restated in MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md section 11; not independently re-inspected by the executor (egress to the NIST host was blocked)."
+    },
+    {
+      "record_id": "dcu:U021",
+      "unit_token": "1/K",
+      "unit_name": "reciprocal kelvin (one per kelvin)",
+      "quantity_kind": "linear_thermal_expansion_coefficient",
+      "source_title": "NIST Special Publication 330 - The International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "2019 Edition",
+      "doi": "not recorded - no DOI was supplied with the Lead inspection; the inspected URL is recorded",
+      "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "inspected_location": "Section 2 (no finer subsection reference was supplied)",
+      "inspected_content": "SP 330 Section 2 identifies the kelvin, symbol K, as the SI base unit of thermodynamic temperature and states that coherent derived units are formed as products and quotients of SI units; the reciprocal kelvin, written here 1/K, is such a coherent quotient, and its use for the coefficient of linear thermal expansion is InventorAI's own bounded quantity usage, for the coefficient input role of the Mechanical free linear thermal-expansion method only. Unit identification only; no conversion is admitted (nothing maps 1/K to 1/°C, °C⁻¹, ppm/K, µm/(m·K), 10⁻⁶/K or any other spelling) and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU023",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-08",
+      "inspection_reference": "Lead-supplied SP 330 Section 2 unit basis already recorded for THERM-01 (THERM-U1 and THERM-U3, 2026-10-08) and for the natural-frequency method (NIST-NF-U, 2026-10-29), restated in MECHANICAL_FREE_LINEAR_THERMAL_EXPANSION_METHOD_CONTRACT.md section 11 as NIST-TE-U; not independently re-inspected by the executor (egress to the NIST host was blocked)."
     }
   ],
   "source_use_policies": [
@@ -637,6 +655,32 @@
       "inspection_date": "2026-10-29",
       "inspection_reference": "Version-bound snapshot of mnf:SU002 in docs/governance/mechanical_content_config/spring_mass_natural_frequency_v1.json (Lead-supplied unit basis in the Owner-authorized MECHANICAL-NATURAL-FREQUENCY-01 brief, 2026-10-29). A separate record: dcu:SU003 (W, K/W and K) and every other earlier record keep their own scopes and are not extended. Not independently re-inspected by the executor (egress to the NIST host was blocked).",
       "acknowledgement": "Unit identification for kg, N/m and Hz follows NIST Special Publication 330 (2019 Edition), National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party (including BIPM-originated) material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
+    },
+    {
+      "record_id": "dcu:SU022",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local snapshot of mte:SU001 for the method source NBS-TE-S1 of the Mechanical free linear thermal-expansion method only (not a legal opinion): NBS Circular 486 (P. Hidnert and W. Souder, National Bureau of Standards, 1950) is an NBS staff-authored publication, a U.S. Government work in the United States as recorded by the TECH-SOURCES-001 IP register; NBS / NIST employee-authored works are not subject to U.S. copyright protection; acknowledgement is preserved; the data the Circular compiles from other authors' publications, and any other third-party material, is excluded; no endorsement may be implied. Use is factual paraphrase of the average-coefficient definition and the qualitative relations only; no NBS prose, data table, figure, example or numeric value is reproduced. SRC-029 is relied upon by nothing.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-28",
+      "inspection_reference": "Version-bound snapshot of mte:SU001 in docs/governance/mechanical_content_config/free_linear_thermal_expansion_v1.json, resting on the TECH-SOURCES-001 research-stream direct inspection (run 10, 2026-10-28) supplied in the Owner-authorized brief (2026-10-29). A separate record: dcu:SU001 to dcu:SU021 keep their own scopes and are not extended. Not independently re-inspected by the executor (egress to the NIST host was refused).",
+      "acknowledgement": "Reference source material: National Bureau of Standards Circular 486, Thermal Expansion of Solids (Hidnert and Souder, 1950); the relation as offered is InventorAI's own restatement.",
+      "third_party_material_exclusion": "The data compiled in the Circular from other authors' publications, and any other third-party material, is not used.",
+      "no_endorsement_limitation": "No statement or implication that NBS or NIST endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU023",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local snapshot of mte:SU003 for the unit record dcu:U021 (1/K) and for this method's use of the existing K record only (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. SP 330 is a NIST Special Publication; any BIPM-originated wording or tables in it are treated as third-party material and are not reproduced. Use is limited to identifying the token 1/K and the kelvin facts that the free linear thermal-expansion method restates; no NIST or SP 330 text, table or symbol list is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-08",
+      "inspection_reference": "Version-bound snapshot of mte:SU003 in docs/governance/mechanical_content_config/free_linear_thermal_expansion_v1.json (Lead-supplied SP 330 Section 2 basis recorded as THERM-SU-NIST, 2026-10-08, and mnf:SU002, 2026-10-29). A separate record: dcu:SU003 (W, K/W and K for THERM-01), dcu:SU021 and every other earlier record keep their own scopes and are not extended. Not independently re-inspected by the executor (egress to the NIST host was blocked).",
+      "acknowledgement": "Unit identification for 1/K follows NIST Special Publication 330 (2019 Edition), National Institute of Standards and Technology.",
       "third_party_material_exclusion": "Third-party (including BIPM-originated) material inside NIST publications is not used.",
       "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
     }
@@ -1061,6 +1105,46 @@
       "result_range": [
         {"role": "f0", "condition": "greater_than_zero", "bound_role": null}
       ]
+    },
+    {
+      "method_id": "mechanical:free_linear_thermal_expansion",
+      "method_version": "1.0",
+      "adapter_identity": "engine.mechanical_thermal_expansion_method.evaluate",
+      "technical_authority": "Mechanical - MECHANICAL_FREE_LINEAR_THERMAL_EXPANSION_METHOD_CONTRACT.md (section 3 method definition and derivation, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "mechanical_free_linear_thermal_expansion", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "NBS-TE-S1",
+          "source_title": "NBS Circular 486, Thermal Expansion of Solids (P. Hidnert and W. Souder, National Bureau of Standards, 15 March 1950), PDF pages 7 and 31 - the average coefficient of linear expansion and the dependence of the change in length on the original length and the temperature range",
+          "publisher": "National Bureau of Standards (NBS) (now NIST)",
+          "url": "https://nvlpubs.nist.gov/nistpubs/Legacy/circ/nbscircular486.pdf",
+          "source_use_policy_ref": "dcu:SU022",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-28"
+        },
+        {
+          "source_ref": "NIST-TE-U",
+          "source_title": "NIST Special Publication 330 (2019 Edition), The International System of Units (SI), Section 2 - the kelvin, temperature difference in K and the coherent quotient 1/K",
+          "publisher": "National Institute of Standards and Technology (NIST)",
+          "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+          "source_use_policy_ref": "dcu:SU023",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-08"
+        }
+      ],
+      "input_roles": [
+        {"role": "alpha_avg", "quantity_kind": "linear_thermal_expansion_coefficient", "unit_token": "1/K"},
+        {"role": "L_ref", "quantity_kind": "length", "unit_token": "mm"},
+        {"role": "delta_T", "quantity_kind": "temperature_difference", "unit_token": "K"}
+      ],
+      "output_roles": [
+        {"role": "delta_L", "quantity_kind": "length", "unit_token": "mm"}
+      ],
+      "applicability": [
+        {"role": "alpha_avg", "condition": "greater_than_zero", "bound_role": null},
+        {"role": "L_ref", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
     }
   ]
 }

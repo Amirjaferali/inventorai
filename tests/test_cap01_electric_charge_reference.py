@@ -392,7 +392,7 @@ def test_c12_the_shared_calculation_and_unit_inventory_is_unchanged():
     tokens = set(re.findall(r'"unit_token":\s*"([^"]+)"', text))
     assert tokens == {
         "N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C",
-        "V", "Ω", "A", "J", "s", "h", "A·h", "kg", "N/m", "Hz"}
+        "V", "Ω", "A", "J", "s", "h", "A·h", "kg", "N/m", "Hz", "1/K"}
     assert "C" not in tokens and "mA·h" not in tokens and "mAh" not in tokens
     assert set(re.findall(r'"method_id":\s*"([^"]+)"', text)) == {
         "cap13:static_reactions_two_support", "therm01:conduction_temperature_difference_single_path",
@@ -405,7 +405,8 @@ def test_c12_the_shared_calculation_and_unit_inventory_is_unchanged():
         "cap13:planar_required_force",
         "electrical:dc_constant_current_charge",
         "electrical:pwm_average_voltage",
-        "mechanical:spring_mass_natural_frequency"}
+        "mechanical:spring_mass_natural_frequency",
+        "mechanical:free_linear_thermal_expansion"}
     assert get_active_rules(DOMAIN) == [
         "PHYSICAL_PRINCIPLE_REQUIRED", "POWER_ACKNOWLEDGMENT_IF_ENERGY", "NO_PLATFORM_SPECIFIC_NAMING"]
 

@@ -294,14 +294,14 @@ def test_the_scope_notes_name_the_declared_part_in_both_languages():
 
 def test_methods_owner_and_artifacts_are_unchanged():
     # the shared owner as it stands on the base this increment starts from
-    assert dc.IMPLEMENTATION_VERSION == "1.11.0"
-    assert dc.load_artifact()["artifact_version"] == "12"
+    assert dc.IMPLEMENTATION_VERSION == "1.12.0"
+    assert dc.load_artifact()["artifact_version"] == "13"
     for consumer in (dcl, dcp, dce):
         assert consumer.METHOD_VERSION == "1.0"
         assert consumer.load_artifact()["artifact_version"] == "1"
         assert consumer.ELIGIBLE_ROOT_DOMAIN == ELEC
     source = open(webapp.__file__, encoding="utf-8").read()
-    assert source.count("_dcalc.bind_method(") == 12
+    assert source.count("_dcalc.bind_method(") == 13
     for gate, consumer in (("_dcl_eligible", "_dcl"), ("_dcp_eligible", "_dcp"),
                            ("_dce_eligible", "_dce")):
         body = source[source.index("def %s(sid):" % gate):]
