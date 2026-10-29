@@ -3,8 +3,8 @@
 *Rewritten 2026-10-28 after run 13 under the Owner's remaining-run depth discipline. Research evidence only. Status is per question, never per
 technology: a qualified claim is prepared for later Lead assessment and admits no technology, domain, method, capability or roadmap obligation.*
 
-**Status:** ACTIVE — not complete. Runs 18 / 20 · Perplexity queries 55 / 240 · deep-research calls 0 · window ends 2026-11-26.
-**Questions registered:** 40 (Q-01…Q-40) plus held / excluded items. **Sources:** SRC-001…SRC-057, all inspected directly by the executor
+**Status:** ACTIVE — not complete. Runs 19 / 20 · Perplexity queries 60 / 240 · deep-research calls 0 · window ends 2026-11-26.
+**Questions registered:** 40 (Q-01…Q-40) plus held / excluded items. **Sources:** SRC-001…SRC-059, all inspected directly by the executor
 (none Lead-supplied); hash, page and rights for each in `evidence/`.
 
 **IP for product use** (claim-level audit 2026-10-29): only `CALCULATION-GRADE` evidence may support product or method qualification; `REFERENCE-ONLY` is background; `IP-UNRESOLVED` / `EXCLUDED` must not be reused. Scientific status is unchanged and separate.
@@ -31,9 +31,9 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 | Q-15 | Imaging resolution from FOV / pixel count | IP UNRESOLVED | Claim UNVERIFIED on a clean source | — | — |
 | Q-16 | Duty-cycled average current | IP UNRESOLVED | Re-approached via Q-26 | — | — |
 | Q-17 | Hover thrust = weight; margin needed to climb | QUALIFIED-CANDIDATE | Source says thrust "depends on" weight — equality implied, not explicit | cond | CALCULATION-GRADE (SRC-024, SRC-025) |
-| Q-18 | PV rating at STC; output falls with irradiance / temperature | QUALIFIED-CANDIDATE (run 15) | Temperature coefficient explicit (SRC-044), linear form a first-level approximation | cond, calc | mixed — SRC-044 temperature point CALCULATION-GRADE (conditional); SRC-026 STC point REFERENCE-ONLY |
+| Q-18 | PV rating at STC; output falls with irradiance / temperature | QUALIFIED-CANDIDATE (run 15) | Temperature coefficient explicit (SRC-044), linear form a first-level approximation | cond, calc | CALCULATION-GRADE — SRC-044 (conditional), SRC-058 rating-at-reference-conditions (run 19); present-day STC values not sourced |
 | Q-19 | Vacuum outgassing screening basis | QUALIFIED-CANDIDATE | Criteria are NASA's, not InventorAI thresholds | verif | IP-UNRESOLVED (SRC-027 standard-derived) — not usable for product admission |
-| Q-20 | Retract force lower (rod area); speed = flow ÷ area | PARTIAL — WAITING (access) | Clean USACE source identified but host refused; points UNVERIFIED | calc | IP-UNRESOLVED (SRC-028) |
+| Q-20 | Retract force lower (rod area); speed = flow ÷ area | PARTIAL — WAITING (access) | Speed = flow ÷ area explicit (SRC-059, incompressible / no leakage); rod-area point UNVERIFIED (USACE, Navy hosts refused) | calc | speed point CALCULATION-GRADE (SRC-059); rod-area point IP-UNRESOLVED |
 | Q-21 | Inverse-square irradiance conditions (optics) | QUALIFIED-CANDIDATE | Law named, conditions explicit; law statement itself implied in SRC-030 | cond | CALCULATION-GRADE (SRC-030) |
 | Q-22 | Thermal expansion and joined-material mismatch | QUALIFIED-CANDIDATE | Expansion coefficient defined explicitly (SRC-031); product form follows from the definition | calc, cond | CALCULATION-GRADE (SRC-031, SRC-032); SRC-029 support IP-UNRESOLVED |
 | Q-23 | Spring–mass natural frequency and resonance | QUALIFIED-CANDIDATE (run 15) | ω₀ = √(k/m) explicit (SRC-045); stated for sensor dynamics | calc, cond, verif | IP-UNRESOLVED (SRC-045 standard-based) — not usable for product admission |
@@ -41,7 +41,7 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 | Q-25 | Firmware update authenticated; recoverable to known-good | QUALIFIED-CANDIDATE | Rollback nuance logged (unresolved-issues) | cond, verif | CALCULATION-GRADE (SRC-036) |
 | Q-26 | Duty-cycled average current; defined power / link-loss behaviour | EXHAUSTED (run 14) | Time-weighted average and defined loss behaviour UNVERIFIED; established points stand | cond, verif | established points CALCULATION-GRADE (SRC-039, SRC-043) |
 | Q-27 | IoT privacy considerations | QUEUED | — | — | — |
-| Q-28 | Real channels: obstruction, multipath, interference | QUALIFIED-CANDIDATE | — | cond, verif | mixed — SRC-039 / SRC-038 points CALCULATION-GRADE; SRC-040 points IP-UNRESOLVED |
+| Q-28 | Real channels: obstruction, multipath, interference | QUALIFIED-CANDIDATE | — | cond, verif | mixed — SRC-039 / SRC-038 points CALCULATION-GRADE incl. Rician / Rayleigh (run 19, conditional); path-loss exponent point IP-UNRESOLVED |
 | Q-29 | Shannon–Hartley capacity bound | QUALIFIED-CANDIDATE (run 15) | Explicit (SRC-046); theoretical bound only | calc, cond | CALCULATION-GRADE, conditional (SRC-046) |
 | Q-30 | Cell limits; BMS monitor / protect / balance | QUALIFIED-CANDIDATE | SOC estimation UNVERIFIED; balancing "in a majority of applications"; limits are the manufacturer's | cond, verif | CALCULATION-GRADE (SRC-050 conditional, SRC-055; restored run 18) |
 | Q-31 | Capacity fade vs storage SOC, temperature, DOD, rate | QUALIFIED-CANDIDATE | Storage point observational (two cell models); DOD / temperature implied; rate-on-life without clean source | cond, verif | partial — storage SOC / temperature CALCULATION-GRADE conditional (SRC-057); rest IP-UNRESOLVED |
@@ -53,7 +53,9 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 
 **Restoration (run 18):** R-13 / Q-30 RESTORED — IP-CLEAN (SRC-050, SRC-055); R-07 / Q-13 RESTORED — IP-CLEAN (SRC-038 Annex V); R-06 / Q-31 PARTIALLY RESTORED (SRC-057).
 
-**Next by the protocol order:** restoration P3 items R-08…R-12; then queued Q-32…
+**Restoration (run 19):** R-09 / Q-18 RESTORED — IP-CLEAN (SRC-058); R-08 / Q-28 and R-10 / Q-20 PARTIALLY RESTORED (SRC-038 Annex V.2; SRC-059).
+
+**Next by the protocol order:** restoration P3 items R-11, R-12; then Tier 2 PARTIAL residuals; then queued Q-32…
 
 **Decisions:** DR-1 decided by you (Option C). Still open with you and the Execution Lead: DR-2 (which condition D-7 governs), DR-3 (definition
 of the 28-T2 output claim), DR-4 (whether to keep, narrow or lift H-04). Details in `evidence/decision-records.md`.

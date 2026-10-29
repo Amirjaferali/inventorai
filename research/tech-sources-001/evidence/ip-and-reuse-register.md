@@ -168,3 +168,17 @@ Not registered (abstention log): DETRAN slides (Aerospace Corporation copyright)
 
 **Audit totals after run 18 (57 sources):** 28 `CALCULATION-GRADE` (21 unconditional, including SRC-055; 7 conditional: SRC-011, 016, 017,
 044, 046, 050, 057), 3 `REFERENCE-ONLY`, 24 `IP-UNRESOLVED`, 2 `EXCLUDED`.
+
+
+### Run 19 additions
+| SRC | Authorship type | Origin of the relied-on statement | Commercial-use basis | IP fitness | Note |
+|---|---|---|---|---|---|
+| SRC-038 (new claim, Annex V.2, pp. V-5–V-6) | government (NBS; inherited) | own text describing the Nakagami-Rice / Rayleigh fading model, citing Nakagami, Rice and others | clear for the mathematical model | `CALCULATION-GRADE` (conditional) | same conditions as SRC-046: the underlying model only, InventorAI's own wording, attribution kept, no third-party expression; equations, tables and figures not stored; CCIR-cited fading-rate material excluded |
+| SRC-058 | government (sole NASA Lewis author; NTRS GOV_PUBLIC_USE_PERMITTED, not contractor) | own text (its reference 1 is a NASA TM by the same author) | clear (U.S. Government work) | `CALCULATION-GRADE` | cite NTRS 19770019681; no NASA endorsement |
+| SRC-059 | government (NACA Lewis authors; NTRS GOV_PUBLIC_USE_PERMITTED) | own analysis | clear (U.S. Government work) | `CALCULATION-GRADE` | cite NACA TN 2767; no NASA endorsement |
+
+Not registered (abstention log): NIST TN 1951 (host returned 404), Navy NAVFAC student guide and USDA RP NC-73 (proxy refused), NTRS
+19890015365 (SERI authors) and 19710022130 (contractor report).
+
+**Audit totals after run 19 (59 sources):** 30 `CALCULATION-GRADE` (23 unconditional, including SRC-058, SRC-059; 7 conditional: SRC-011,
+016, 017, 044, 046, 050, 057 — SRC-038's Annex V.2 claim conditional as noted), 3 `REFERENCE-ONLY`, 24 `IP-UNRESOLVED`, 2 `EXCLUDED`.

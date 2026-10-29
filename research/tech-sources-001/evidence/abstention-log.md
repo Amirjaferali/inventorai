@@ -32,3 +32,8 @@ Append-only.
 | 2026-10-29 | R-06 (run 18) | DETRAN slides (2020 NASA Aerospace Battery Workshop) | © The Aerospace Corporation (FFRDC) — excluded |
 | 2026-10-29 | R-06 (run 18) | NASA/TM 20100033740 (Reid, Bennett) | Chemistry-specific projections only; no general statement for the claim — not relied on |
 | 2026-10-29 | R-06 (run 18) | NTRS 20000058157, 20010083611 (JPL; Aerospace Corporation) | FFRDC authorship — not pursued under the rights screen |
+| 2026-10-29 | R-08 (run 19) | NIST TN 1951 (industrial radio propagation measurements) | nvlpubs.nist.gov returned 404 for the DOI target — not inspected; candidate kept |
+| 2026-10-29 | R-08 (run 19) | NISTIR 7761 Rev. 1 | Smart Grid interoperability report built on ITU-R / external models — not pursued under the rights screen |
+| 2026-10-30 | R-09 (run 19) | NTRS 19890015365 (Emery, Osterwald) | SERI / NREL authors (contractor-operated laboratory) — excluded |
+| 2026-10-30 | R-10 (run 19) | NTRS 19710022130 | Contractor report — excluded |
+| 2026-10-30 | R-10 (run 19) | Navy NAVFAC MCM student guide; USDA Forest Service RP NC-73 | Proxy refused ncc.navfac.navy.mil and www.nrs.fs.usda.gov — not inspected |

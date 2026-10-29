@@ -404,3 +404,27 @@ Re-read SRC-038 (NBS TN 101 Vol. 2, already CALCULATION-GRADE) Annex V, pp. V-1�
 by comparing the median wanted signal power available at the receiver with the median power required for satisfactory reception, and transmitter
 power should make the available median exceed the required one for a large percentage of the time. Annex I treats real paths through the measured
 attenuation relative to free space, so that field loss exceeds the free-space value is IMPLIED. No margin value adopted. Independent of SRC-020.
+
+## Run 19 (2026-10-29 / 30, scheduled wake-up; restoration backlog P3, GitHub-first)
+
+Base advanced to 2355a92 (PR #907, documentation of g1 continuity) — no overlap. ibiblio still fails TLS (curl 000).
+
+### R-08 (Q-28) — PARTIALLY RESTORED (2 queries)
+GitHub-first re-read of SRC-038 (NBS TN 101 Vol. 2, already CALCULATION-GRADE): Annex V.2, pp. V-5–V-6, EXPLICIT — phase-interference
+(multipath) fading is described by a model that adds a constant signal and a Rayleigh-distributed random signal (Nakagami-Rice, i.e. Rician);
+with no constant component the distribution is Rayleigh; paths with less than first-Fresnel-zone clearance tend toward Rayleigh fading for some
+hours. IP: conditional as for SRC-046 (model only, own wording, attribution). Still UNVERIFIED on a clean source: the path-loss exponent (2 in
+free space, larger when obstructed). The candidate NIST TN 1951 (own measurements: industrial sites lose power faster with distance) could not be
+read — its DOI target returned 404.
+
+### R-09 (Q-18) — RESTORED — IP-CLEAN (1 query)
+New SRC-058 (NASA Lewis, Brandhorst, sole civil-servant author, CALCULATION-GRADE). D1 / D5 EXPLICIT: cell performance is translated to
+recommended standard reference conditions of stated intensity and cell temperature; field measurements are generally not at the reference
+intensity and module temperature cannot be controlled, so corrections are needed. The reference values in this 1976 source are historical and are
+not adopted; present-day STC values stay unsourced (SRC-026 remains REFERENCE-ONLY). Independent of SRC-026.
+
+### R-10 (Q-20) — PARTIALLY RESTORED (2 queries)
+New SRC-059 (NACA TN 2767, NACA Lewis authors, CALCULATION-GRADE). D1 / D2 EXPLICIT: piston velocity is set by the flow rate, A·ẋ = q, with
+fluid compressibility, leakage and friction neglected. The rod-side annulus area and the lower retract force stay UNVERIFIED on a clean source:
+two federal candidates (a Navy NAVFAC training guide stating both points, and USDA RP NC-73) were refused by the proxy, as USACE was earlier.
+Candidates failed on rights: a NASA contractor report, SERI-authored PV paper.

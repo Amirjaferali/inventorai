@@ -30,3 +30,8 @@ Append-only. Never bypassed.
 | 2026-10-29 (run 16) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
 | 2026-10-29 (run 16) | www.fpl.fs.usda.gov | CONNECT 403 (proxy policy), not retried | FPL RP-264 (centre-span deflection measured relative to the supports) for R-03 | research.fs.usda.gov reachable, but its candidate (SRC-049) failed the rights test |
 | 2026-10-29 (run 17) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
+| 2026-10-29 (run 18) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
+| 2026-10-30 (run 19) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
+| 2026-10-30 (run 19) | ncc.navfac.navy.mil | CONNECT 403 (proxy policy), not retried | Navy MCM student guide (double-acting cylinder: less retract force, faster retraction) for R-10 | None |
+| 2026-10-30 (run 19) | www.nrs.fs.usda.gov | CONNECT 403 (proxy policy), not retried | USDA RP NC-73 (cylinder sizing and flow) for R-10 | None |
+| 2026-10-30 (run 19) | nvlpubs.nist.gov (NIST.TN.1951.pdf only) | HTTP 404 for the DOI target; host otherwise reachable | NIST TN 1951 (path loss in industrial sites) for R-08 | None |
