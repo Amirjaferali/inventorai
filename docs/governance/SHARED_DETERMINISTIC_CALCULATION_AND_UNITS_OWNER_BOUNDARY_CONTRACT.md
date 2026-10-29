@@ -124,6 +124,17 @@ EXISTING quantity kinds and exact unit tokens (`voltage` / `V`, `time` / `s`) an
 dimensionless or duty-cycle quantity, percentage, alias or conversion; §13I and every earlier section and clause —
 including §§7–10, §12 and §14 — are unchanged. General Power Electronics / Motion (28-T3) stays BLOCKED; this admission is
 one claim-level average-waveform relation only.
+CORRECTION 12: `CORRECTION 12 — BOUNDED TWELFTH ADMISSION (MECHANICAL SPRING-MASS NATURAL FREQUENCY) — OWNER-AUTHORIZED
+WITH ITS IMPLEMENTATION`. Folded, narrowly, into the one Owner-authorized increment `MECHANICAL-NATURAL-FREQUENCY-01`,
+which implements it in the same pull request under the
+[spring-mass natural-frequency method contract](MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md).
+Applicability: it takes effect only on the verified merge of that pull request into
+`feature/atomic-json-session-persistence`; on its proposal branch it is an Owner-authorized proposed amendment. It ADDS
+§13K and one bullet to §16. It admits exactly one further method and exactly three further quantity kinds, each with one
+exact unit token (`mass` / `kg`, `stiffness` / `N/m`, `frequency` / `Hz`) and nothing more — no conversion, no alias, no
+`g`, `N/mm`, `lb`, `lbf/in` or `rpm`, and no second meaning for the existing `angular_velocity` / `rad/s` record; §13J and
+every earlier section and clause — including §§7–10, §12 and §14 — are unchanged. It is the first admitted square-root
+method; its numerical policy and its one mathematical constant stay method-local.
 
 ---
 
@@ -876,6 +887,74 @@ EXACTLY the following and nothing more.
   general 28-T3 activation; a generic solver, waveform model, unit registry or conversion graph; persistence (§12);
   provider, AI, external-tool or external-library execution; and every other §13 / §13A–§13I exclusion.
 
+## 13K. Bounded twelfth admission — Mechanical spring-mass natural frequency (Correction 12)
+
+The delivered eleventh admission (§13J) is expanded, by the Owner-authorized increment named in the CORRECTION 12 header,
+to EXACTLY the following and nothing more.
+
+- **Owner.** The one existing shared owner. No second owner, solver, vibration engine, dynamics framework, generic
+  oscillator solver, conversion graph, unit registry, constants registry or range policy is created, and the owner
+  acquires no persistence and no scientific authority.
+- **Methods — exactly twelve:** the eleven of §13J plus `mechanical:spring_mass_natural_frequency` 1.0, whose technical
+  authority stays outside this owner (§3), in its own Mechanical method-authority artifact
+  `mechanical_spring_mass_natural_frequency` version 1. It is the undamped natural frequency of ONE declared
+  single-degree-of-freedom spring–mass model: `f₀ = √(k / m) / (2π)`, from the NBS Technical Note 487 statement of the
+  undamped natural angular frequency `√(k / m)` for one mass driven by one spring whose other end is attached to a
+  relatively very large mass, and the NIST SP 330 statement that angular frequency in rad/s and frequency in Hz differ by
+  the factor 2π. It is not a damping, resonant-amplitude, transmissibility, isolation, shock, fatigue, multi-degree-of-freedom
+  or modal method; no result is transferred between it and any other method.
+- **Consumers — exactly twelve:** the existing eleven and one spring-mass natural-frequency consumer. No consumer imports
+  another (it keeps its own display rule), and no method-authority artifact loads another at execution.
+- **Quantity kinds and exact unit tokens: three kinds and three tokens added.** `mass` (dimension M) with the one exact
+  token `kg` (unit record `dcu:U018`), `stiffness` (dimension M T^-2) with the one exact token `N/m` (`dcu:U019`,
+  recorded as InventorAI's bounded quantity usage of the coherent newton per metre), and `frequency` (dimension T^-1)
+  with the one exact token `Hz` (`dcu:U020`), each resting on NIST SP 330 (2019 Edition) Section 2 and one new
+  source-use record (`dcu:SU021`, the NIST Technical Series snapshot of the method's own `mnf:SU002`). **Angular
+  velocity, angular frequency and frequency are distinct quantities:** `frequency` / `Hz` is a NEW kind, the existing
+  `angular_velocity` / `rad/s` record (`dcu:U008`, the rotational-load speed) is neither weakened, changed nor given a
+  second meaning, no kind holds `rad/s` for angular frequency, nothing maps `Hz` to `rad/s` and the factor 2π is applied
+  inside the method adapter alone. No other kind, token, alias, case folding, dimensional equivalence or conversion is
+  added: `g`, `t`, `lb`, `N/mm`, `kN/m`, `lbf/in`, `rpm`, `rad/s` (for this method's roles), `kHz` and `1/s` are refused
+  or unknown tokens; every kind keeps one token and the `KIND_TOKEN_EXCEPTIONS` set of §13E / §13I is unchanged.
+- **Condition vocabulary.** Unchanged. The new method declares the existing `greater_than_zero` on `k` and on `m` and the
+  existing `greater_than_zero` result range on `f₀`; its input representation limits and its strictly-positive
+  exact-decimal screening are method-authority content, checked by its consumer from the exact decimal input before any
+  binary rounding (the adapter refuses a non-positive input again as an integrity failure).
+- **Method-local binding and wiring.** One additional immutable, application-wired binding; each consumer holds exactly
+  its own binding. No registry, discovery, dynamic module path or request-selected method.
+- **Versions.** The shared-owner artifact moves to content version `12` and the implementation to `1.11.0`. Two new
+  source-use records (`dcu:SU020`, the NIST Technical Series snapshot of the method's own `mnf:SU001` for NBS Technical
+  Note 487, Lead-inspected on the official NIST / NBS copy; and `dcu:SU021` above) keep the §9 source and inspection
+  requirements; every content-version-11 record is unchanged. The former SRC-045 / NBS SP 615 basis is IP-UNRESOLVED
+  and is relied upon by nothing in this admission.
+- **Numerical policy.** §10 applies unchanged: the owner still receives typed binary64 numbers and parses no string. This
+  is the first admitted square-root method: the square root is executed inside the method adapter, never exposed to any
+  caller as a generic owner operation, and its numerical policy stays method-local. The new method's decimal bridge (a strict unsigned decimal grammar of up to twelve integer and nine fractional digits for
+  `k` and `m`, exact-decimal checks of `k > 0` and `m > 0`, one correctly rounded conversion per input), its binary
+  execution (three correctly rounded binary64 operations `k / m`, `√`, `÷ 2π` with the method-local constant
+  `TWO_PI = 2.0 × math.pi`, the exact doubling of the binary64 value nearest π), its binary acceptance (finite, strictly
+  positive and within `2^-50` of the rational interval that brackets `√(k / m) / (2π)` for the actual binary inputs,
+  formed with integer square-root arithmetic and the 50-decimal truncation bracket of π — a reference independent of the
+  executed path), its decimal-reference acceptance (within a relative `2^-50` of the `decimal`-module reference at 60
+  significant digits from the exact decimal inputs) and its display (that reference rounded once to 12 significant
+  digits, half to even, always labelled rounded — the natural frequency of a rational `k / m` is never a terminating
+  decimal — and accepted only when a relative `10^-55` widening rounds to the same digits) are method-authority content
+  held in its consumer, adapter and contract; they are NOT a generic owner policy and change nothing for the other eleven
+  methods. A failure is `FAILURE / EXECUTION_INTEGRITY_FAILURE` with no numerical payload.
+- **Existing methods preserved.** The two-support, THERM-01, planar-moment, rotational-load, TMP36, DC load current, DC
+  load power, DC load energy, planar required force, DC constant-current charge and PWM average-voltage methods, their
+  authority artifacts, semantics, pins and user-facing behaviour stay unchanged; bounded updates to assertions on the
+  owner content version, the implementation version, the closed inventory and the binding count, caused only by this
+  admission, are expected and allowed.
+- **Still excluded:** a thirteenth method or consumer; owner ranges; string parsing in the owner; a generic square-root,
+  constant or conversion operation exposed to callers; any conversion (no `kg` ↔ `g`, no `N/m` ↔ `N/mm`, no `Hz` ↔
+  `rad/s` or `rpm`); any damping ratio, damped natural frequency, resonant amplitude, transmissibility, vibration
+  isolation, shock response, fatigue, allowable-vibration criterion, separation margin, multi-degree-of-freedom, modal or
+  finite-element result; any stiffness or mass lookup, spring, sensor, motor or component selection, sizing,
+  compatibility, suitability or safety conclusion; any result transfer between calculations; a vibration engine,
+  dynamics framework or generic oscillator solver; persistence (§12); provider, AI, external-tool or external-library
+  execution; and every other §13 / §13A–§13J exclusion.
+
 ## 14. Required guard strategy for a future implementation
 
 - independent expected numerical results;
@@ -931,6 +1010,8 @@ EXACTLY the following and nothing more.
 - Correction 10 (§13I) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 - Correction 11 (§13J) is Owner-authorized together with its bounded implementation, under the same proportionate,
+  risk-appropriate verification.
+- Correction 12 (§13K) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 
 ## 17. Non-authorization (restated)

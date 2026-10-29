@@ -1,0 +1,208 @@
+{
+  "artifact_id": "mechanical_spring_mass_natural_frequency",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "Mechanical - Technical Deepening (method authority for this one method only)",
+  "slice": "MECHANICAL-NATURAL-FREQUENCY-01 - Spring-Mass Natural Frequency - Slice 1",
+  "governance_note": "The Mechanical-owned governed artifact of the spring-mass natural-frequency method, under MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md. It carries the method authority (identity, version, model, executed form and derivation), the applicability declarations, the numeric domain, the high-risk screen, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json; it is separate from every CAP-13 artifact, never loads another method artifact and is never loaded by one. Calculation execution belongs to the shared deterministic calculation and units owner; nothing here is evidence, a resonance, damping, amplitude, transmissibility, isolation, margin, suitability or safety statement, or a readiness, progression or validation input.",
+  "method": {
+    "method_id": "mechanical:spring_mass_natural_frequency",
+    "method_version": "1.0",
+    "contract": "docs/governance/MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md",
+    "model": "ONE lumped mass m on ONE linear spring or mount of stiffness k whose other end is attached to an effectively rigid support, treated as ONE single-degree-of-freedom system without damping; the undamped natural frequency of that declared model, given the inventor's own stiffness k and the inventor's own mass m.",
+    "executed_form": "f0 = sqrt(k / m) / (2π), executed in binary64 as the three correctly rounded operations ratio = k / m, omega = sqrt(ratio), f0 = omega / TWO_PI with TWO_PI = 2.0 * math.pi (the exact doubling of the binary64 value nearest π); accepted only when finite, strictly positive and within a relative error of 2^-50 of the rational reference interval formed from the exact binary input values (integer square-root bracket at scale 10^40, divided by the 50-decimal truncation bracket of π); no tolerance widening, no clamping and no magnitude ceiling.",
+    "derivation": "For one mass driven by one spring whose other end is attached to a relatively very large mass, the accepted undamped natural angular frequency is the square root of stiffness divided by mass, sqrt(k / m) (NBS-NF-S1). Angular frequency in rad/s and frequency in Hz differ by the factor 2π (NIST-NF-U), so the ordinary natural frequency is f0 = sqrt(k / m) / (2π). With k in N/m and m in kg the result is directly in Hz; no conversion factor is applied. The single-degree-of-freedom restriction, the declarations and the ordinary-frequency form are InventorAI's own bounded restatement; neither NBS nor NIST publishes this method."
+  },
+  "numeric_domain": {
+    "roles": [
+      {
+        "role": "k",
+        "meaning": "stiffness of the one linear spring or mount (restoring force per unit deflection)",
+        "quantity_kind": "stiffness",
+        "unit_token": "N/m"
+      },
+      {
+        "role": "m",
+        "meaning": "the one moving mass",
+        "quantity_kind": "mass",
+        "unit_token": "kg"
+      },
+      {
+        "role": "f0",
+        "meaning": "undamped natural frequency of the declared single-degree-of-freedom model; never a resonance verdict, a limit, a margin or a safety statement",
+        "quantity_kind": "frequency",
+        "unit_token": "Hz"
+      }
+    ],
+    "rules": [
+      "k and m are typed as strict unsigned ASCII decimals of up to twelve integer digits and up to nine fractional digits (no sign, exponent, separator, Unicode digit, unit suffix or normalization); each field is also capped at 64 characters for abuse and resource protection only - a NON-PHYSICAL bound that is NOT the admitted engineering domain and is never described as a range of valid stiffnesses or masses. Anything else is INVALID_NUMERIC_INPUT, resolved before the shared owner is called.",
+      "The exact decimal value of each input must be strictly greater than zero, checked on the exact decimal before any binary rounding; a zero stiffness or a zero mass is INVALID_NUMERIC_INPUT, refused and never computed. Each admitted decimal is then converted ONCE, correctly rounded, to binary64 for the shared owner, which parses no string.",
+      "No physical magnitude ceiling exists, and none is part of the admitted engineering domain.",
+      "Numerical acceptance (adapter): the computed binary64 f0 is accepted only when it is finite, strictly positive and within a relative error of 2^-50 of the rational reference interval that brackets sqrt(k / m) / (2π) for the two actual binary input values; the reference uses integer arithmetic (isqrt at scale 10^40) and the 50-decimal truncation bracket of π, never the executed path.",
+      "Decimal-reference acceptance (consumer): the accepted f0 must also lie within a relative error of 2^-50 of the reference value computed from the EXACT decimal inputs with the decimal module at 60 significant digits (correctly rounded division, square root and division by 2π from a 60-decimal π); otherwise the outcome is KNOWLEDGE_UNAVAILABLE and no number is shown.",
+      "Display: that decimal reference is rounded ONCE to 12 significant digits, half to even, and is always labelled rounded - the natural frequency of a rational k / m is never a terminating decimal because π is irrational, so no exact label exists for this method. The display is accepted only when the reference widened by a relative 10^-55 on either side rounds to the same 12 digits; otherwise the outcome is KNOWLEDGE_UNAVAILABLE. Plain decimal notation is used for 10^-6 <= f0 < 10^12 and m × 10^e otherwise; a nonzero value never displays as zero.",
+      "An overflow of k / m to infinity, an underflow to zero, a non-finite or non-positive result or a result outside the accepted relative error is FAILURE / EXECUTION_INTEGRITY_FAILURE with no numerical payload, displayed as KNOWLEDGE_UNAVAILABLE and never rewritten as a refusal."
+    ]
+  },
+  "declarations": [
+    {
+      "declaration_id": "single_mass",
+      "contract_ref": "D-1",
+      "accepted_value": "ONE mass only, represented by m: the moving body is treated as one rigid lump, and m is its whole moving mass",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "single_linear_spring",
+      "contract_ref": "D-2",
+      "accepted_value": "ONE linear spring or mount only, represented by k: one elastic element whose restoring force is proportional to how far it is deflected, and k is that constant stiffness",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "rigid_support",
+      "contract_ref": "D-3",
+      "accepted_value": "the other end of the spring or mount is attached to a support that is treated, for this model, as effectively rigid and of very large mass compared with the moving mass, so that it does not move",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "single_degree_of_freedom",
+      "contract_ref": "D-4",
+      "accepted_value": "ONE degree of freedom only: the mass moves back and forth along one direction only, with no other motion, rotation or coupled movement",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "own_values",
+      "contract_ref": "D-5",
+      "accepted_value": "the stiffness k and the mass m are the inventor's own values; InventorAI does not look them up, derive them, check them or decide that they are right",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "damping_not_modelled",
+      "contract_ref": "D-6",
+      "accepted_value": "damping (friction, air, rubbing, material loss or any other energy loss) is NOT modelled in this calculation: the result is the undamped natural frequency of the declared model",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    },
+    {
+      "declaration_id": "outside_scope_excluded",
+      "contract_ref": "D-7",
+      "accepted_value": "nonlinear stiffness, several masses or several springs, coupling between motions, and stiffness that changes with load, position, temperature or time are outside this model and are not included",
+      "refusal": "MODEL_NOT_SUPPORTED"
+    }
+  ],
+  "screen_items": [
+    {
+      "item_id": "supports_people",
+      "item": "supports people"
+    },
+    {
+      "item_id": "overhead_or_falling_hazard",
+      "item": "overhead or falling hazard"
+    },
+    {
+      "item_id": "children",
+      "item": "use by or for children"
+    },
+    {
+      "item_id": "safety_critical_load_path",
+      "item": "safety-critical load path"
+    },
+    {
+      "item_id": "pressure",
+      "item": "pressure"
+    },
+    {
+      "item_id": "high_temperature",
+      "item": "high temperature"
+    },
+    {
+      "item_id": "battery_containment",
+      "item": "battery containment"
+    },
+    {
+      "item_id": "medical_use",
+      "item": "medical use"
+    },
+    {
+      "item_id": "food_contact",
+      "item": "food contact"
+    }
+  ],
+  "limitations": [
+    "No damping ratio, damped natural frequency, resonant amplitude, transmissibility, vibration isolation, shock response, fatigue, allowable-vibration criterion, separation margin, multi-degree-of-freedom or modal analysis, finite-element analysis, stiffness or mass lookup, spring, sensor, motor or component selection, sizing, compatibility, suitability or safety conclusion; no inference of any declaration, stiffness or mass.",
+    "Nonlinear stiffness, several masses or springs, coupled motions, changing stiffness, a moving support and every form of energy loss are outside this calculation, and no conversion of Hz, N/m or kg to any other unit is performed.",
+    "All NO answers on the high-risk screen only allow this bounded calculation to proceed; they never mean safe. The screen neither reads nor feeds SafetySignal.",
+    "The result is UNVALIDATED and is not evidence; it is request-local and is not stored, reported, exported, transferred into another calculation or used for readiness, progression or validation."
+  ],
+  "disclosure": [
+    "This is the natural frequency f₀ predicted by the single-degree-of-freedom spring–mass model you declared: one mass m on one linear spring or mount of stiffness k, attached to an effectively rigid support, with no damping, using your own k and m.",
+    "It is a prediction of the declared model, not a measured property of your product: the real system may have several masses, several elastic parts, damping, nonlinear or changing stiffness and a support that moves, none of which is included.",
+    "It does not say that resonance will occur exactly at this frequency, that any frequency is safe or must be avoided, that any separation margin is acceptable, that any vibration is acceptable, or that any component is suitable.",
+    "It is preliminary, advisory, UNVALIDATED and not evidence: compare planned or observed excitation with this estimate and verify the real system by measurement or qualified engineering review before any reliance.",
+    "InventorAI does not check your stiffness, your mass or that your declarations match the real configuration; it looks nothing up.",
+    "Damping, resonant amplitude, transmissibility, vibration isolation, shock, fatigue, several degrees of freedom and modal analysis are outside this calculation.",
+    "Reference source material: National Bureau of Standards Technical Note 487 (Newman, 1969) for the undamped single-degree-of-freedom spring–mass relationship, and NIST Special Publication 330 for the SI units and the 2π relation between angular frequency and frequency; the method as offered here is InventorAI's own restatement."
+  ],
+  "sources": [
+    {
+      "record_id": "NBS-NF-S1",
+      "record_type": "source",
+      "source_type": "government_technical_publication",
+      "publisher": "National Bureau of Standards (NBS), Institute for Applied Technology (now the National Institute of Standards and Technology, NIST)",
+      "source_title": "NBS Technical Note 487 - Considerations in Computing the Useful Frequency Range of Piezoelectric Accelerometers (Nathan Newman, issued July 1969)",
+      "url": "https://nvlpubs.nist.gov/nistpubs/Legacy/TN/nbstechnicalnote487.pdf",
+      "source_use_policy_ref": "mnf:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-29",
+      "inspected_content": "Supports only, for this method: in the Mechanical Drive derivation the author defines the square-root stiffness-over-mass quantity and states, in substance, that it is the accepted undamped natural frequency for one mass driven by one spring whose other end is attached to a relatively very large mass. Lead-level inspection of the official NIST / NBS copy, supplied in the Owner-authorized MECHANICAL-NATURAL-FREQUENCY-01 brief (2026-10-29); no page number was supplied and the location is recorded at derivation level. The accelerometer-specific numerical results, percentage criteria, examples, figures and tables of the note are not relied upon.",
+      "paraphrase_only_limitation": "Factual paraphrase of the one relationship only; no NBS prose, figure, table, example, numerical result or percentage criterion is copied.",
+      "third_party_material_exclusion": "Any third-party material inside the publication is excluded.",
+      "no_endorsement_limitation": "No statement or implication that NBS or NIST endorses, reviewed or approved InventorAI or any project."
+    },
+    {
+      "record_id": "NIST-NF-U",
+      "record_type": "source",
+      "source_type": "government_reference_web_page",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST Special Publication 330 (2019 Edition) - The International System of Units (SI), Section 2",
+      "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "source_use_policy_ref": "mnf:SU002",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-29",
+      "inspected_content": "Supports only the unit facts: the kilogram, symbol kg, is the SI base unit of mass; coherent derived units are formed as products and quotients of SI units, and the newton per metre, N m^-1 (written here N/m), is listed among them - its use for stiffness is InventorAI's own bounded quantity usage of that coherent token; the hertz, symbol Hz, is the SI coherent derived unit with a special name for frequency; and angular frequency in rad/s differs from frequency in Hz by the factor 2π (angular velocity, angular frequency and frequency being distinct quantities). Lead-supplied inspection recorded in the MECHANICAL-NATURAL-FREQUENCY-01 brief (2026-10-29); location recorded at section level.",
+      "paraphrase_only_limitation": "Unit facts only, in InventorAI's own words; no SP 330 prose, table, figure or symbol list is reproduced.",
+      "third_party_material_exclusion": "BIPM-originated wording or tables inside SP 330 are treated as third-party material and are not reproduced.",
+      "no_endorsement_limitation": "No statement or implication that NIST endorses InventorAI or this calculation."
+    },
+    {
+      "record_id": "mnf:SU001",
+      "record_type": "source_use_policy",
+      "source_type": "government_web_policy",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "source_use_policy_ref": "mnf:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-29",
+      "inspected_content": "This method's own bounded source-use assessment for NBS-NF-S1 only (not a legal opinion): NBS / NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a publication is excluded; no endorsement may be implied. NBS Technical Note 487 is an employee-authored NBS Technical Series work (Nathan Newman, Institute for Applied Technology). Use is the one factual relationship in InventorAI's own paraphrase, with attribution, for commercial / product use on the recorded NIST basis. Rests on the Lead-supplied inspection of 2026-10-29; the existing NIST Technical Series dispositions (dcu:SU001, dcu:SU003, mechanical:PR011) keep their own scopes and are not extended. The former SRC-045 / NBS SP 615 basis is IP-UNRESOLVED and is NOT relied upon.",
+      "paraphrase_only_limitation": "No copied NBS prose, figure, table, example, numerical result or percentage criterion.",
+      "third_party_material_exclusion": "No third-party material from the publication.",
+      "no_endorsement_limitation": "Neutral source acknowledgement only; no statement or implication that NBS or NIST endorses, reviewed or approved InventorAI or any project.",
+      "acknowledgement": "Reference source material: National Bureau of Standards Technical Note 487 (Newman, 1969), the undamped single-degree-of-freedom spring-mass relationship; the method as offered here is InventorAI's own restatement."
+    },
+    {
+      "record_id": "mnf:SU002",
+      "record_type": "source_use_policy",
+      "source_type": "government_web_policy",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "source_use_policy_ref": "mnf:SU002",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-29",
+      "inspected_content": "Source-use basis (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. SP 330 is a NIST Special Publication; any BIPM-originated wording or tables in it are treated as third-party material and are not reproduced. Use is limited to the unit facts of NIST-NF-U with NIST acknowledgement. Rests on the Lead-supplied inspection of 2026-10-29; dcu:SU003 and THERM-SU-NIST keep their own scopes and are not extended.",
+      "paraphrase_only_limitation": "Unit facts only, in InventorAI's own words.",
+      "third_party_material_exclusion": "Third-party (including BIPM-originated) material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement is stated or implied.",
+      "acknowledgement": "Unit identification follows NIST Special Publication 330 (2019 Edition), National Institute of Standards and Technology."
+    }
+  ]
+}

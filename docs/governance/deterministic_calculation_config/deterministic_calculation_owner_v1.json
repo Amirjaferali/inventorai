@@ -1,9 +1,9 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "11",
+  "artifact_version": "12",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 11, sections 13A to 13J) and the method contracts of the eleven admitted methods. Content version 11 admits exactly eleven methods and exactly the seventeen unit tokens they require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature; V, Ω and A for the DC resistive load current; V, Ω and W for the DC resistive load power; V, Ω, s and J for the DC resistive load energy; N·mm, mm and N for the CAP-13 planar required force; A, h and A·h for the DC constant-current charge; V and s for the PWM average voltage, on existing records); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. Two kinds hold two exact tokens each by the named exceptions of sections 13E and 13I: voltage holds mV and V, and time holds s and h; each role binds one of them and nothing maps one to the other (no 3600, no minute). The Celsius-temperature kind is the TMP36 output only and is never related to K. The electric-charge kind holds the one token A·h, which is never related to C, mA·h or J. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The seventeen unit records, the records dcu:SU001 to dcu:SU018 and the ten earlier method records are unchanged from content version 10.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 12, sections 13A to 13K) and the method contracts of the twelve admitted methods. Content version 12 admits exactly twelve methods and exactly the twenty unit tokens they require (N and mm for CAP-13 reactions; W, K/W and K for THERM-01; N, mm and N·mm for the CAP-13 planar moment; N·m and rad/s for the CAP-13 rotational load; mV and °C for the TMP36 nominal temperature; V, Ω and A for the DC resistive load current; V, Ω and W for the DC resistive load power; V, Ω, s and J for the DC resistive load energy; N·mm, mm and N for the CAP-13 planar required force; A, h and A·h for the DC constant-current charge; V and s for the PWM average voltage, on existing records; N/m, kg and Hz for the Mechanical natural frequency); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. Two kinds hold two exact tokens each by the named exceptions of sections 13E and 13I: voltage holds mV and V, and time holds s and h; each role binds one of them and nothing maps one to the other (no 3600, no minute). The Celsius-temperature kind is the TMP36 output only and is never related to K. The electric-charge kind holds the one token A·h, never related to C, mA·h or J. The frequency kind (Hz) is distinct from angular_velocity (rad/s); nothing maps Hz to rad/s, and 2π lives in the natural-frequency adapter only. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The earlier unit records, dcu:SU001 to dcu:SU019 and the eleven earlier method records are unchanged from content version 11.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
     {"quantity_kind": "length", "dimension": "L"},
@@ -19,7 +19,10 @@
     {"quantity_kind": "electric_current", "dimension": "I"},
     {"quantity_kind": "energy", "dimension": "M L^2 T^-2"},
     {"quantity_kind": "time", "dimension": "T"},
-    {"quantity_kind": "electric_charge", "dimension": "T I"}
+    {"quantity_kind": "electric_charge", "dimension": "T I"},
+    {"quantity_kind": "mass", "dimension": "M"},
+    {"quantity_kind": "stiffness", "dimension": "M T^-2"},
+    {"quantity_kind": "frequency", "dimension": "T^-1"}
   ],
   "unit_records": [
     {
@@ -310,6 +313,57 @@
       "inspection_basis": "LEAD_SUPPLIED",
       "inspection_date": "2026-10-12",
       "inspection_reference": "Lead-level direct primary-source inspection recorded as electronics_electrical:PR020 (NIST SP 811 online edition: Chapter 4, Table 3: coulomb - C as s · A; Appendix B.9: ampere hour - 1 A · h = 3.6 × 10³ C; 2026-10-12), whose pack-record scope (a reference text of its own reference group, which admits no owner unit) is unchanged; this record is the owner's own bounded unit identification for A·h under ELECTRICAL_DC_CONSTANT_CURRENT_CHARGE_METHOD_CONTRACT.md section 4 and calc/units Correction 10 (section 13I). Not independently re-inspected by the executor (egress to the NIST host was blocked)."
+    },
+    {
+      "record_id": "dcu:U018",
+      "unit_token": "kg",
+      "unit_name": "kilogram",
+      "quantity_kind": "mass",
+      "source_title": "NIST Special Publication 330 - The International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "2019 Edition",
+      "doi": "not recorded - no DOI was supplied with the Lead inspection; the inspected URL is recorded",
+      "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "inspected_location": "Section 2 (no finer subsection reference was supplied)",
+      "inspected_content": "SP 330 Section 2 identifies the kilogram, symbol kg, as the SI base unit of mass; used here for the mass input role of the Mechanical spring-mass natural-frequency method only. Unit identification only; no conversion is admitted (nothing maps kg to g, t, lb or any other unit) and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU021",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-29",
+      "inspection_reference": "Lead-supplied unit basis in the Owner-authorized MECHANICAL-NATURAL-FREQUENCY-01 brief (2026-10-29), restated in MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md section 11; not independently re-inspected by the executor (egress to the NIST host was blocked)."
+    },
+    {
+      "record_id": "dcu:U019",
+      "unit_token": "N/m",
+      "unit_name": "newton per metre",
+      "quantity_kind": "stiffness",
+      "source_title": "NIST Special Publication 330 - The International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "2019 Edition",
+      "doi": "not recorded - no DOI was supplied with the Lead inspection; the inspected URL is recorded",
+      "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "inspected_location": "Section 2 (no finer subsection reference was supplied)",
+      "inspected_content": "SP 330 Section 2 states that coherent derived units are formed as products and quotients of SI units and lists the newton per metre, N m^-1, written here N/m; its use for stiffness (restoring force per unit deflection) is InventorAI's own bounded quantity usage of that coherent token, for the stiffness input role of the Mechanical spring-mass natural-frequency method only. Unit identification only; no conversion is admitted (nothing maps N/m to N/mm, kN/m, lbf/in or any other unit) and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU021",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-29",
+      "inspection_reference": "Lead-supplied unit basis in the Owner-authorized MECHANICAL-NATURAL-FREQUENCY-01 brief (2026-10-29), restated in MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md section 11; not independently re-inspected by the executor (egress to the NIST host was blocked)."
+    },
+    {
+      "record_id": "dcu:U020",
+      "unit_token": "Hz",
+      "unit_name": "hertz",
+      "quantity_kind": "frequency",
+      "source_title": "NIST Special Publication 330 - The International System of Units (SI)",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "edition": "2019 Edition",
+      "doi": "not recorded - no DOI was supplied with the Lead inspection; the inspected URL is recorded",
+      "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "inspected_location": "Section 2 (no finer subsection reference was supplied)",
+      "inspected_content": "SP 330 Section 2 identifies the hertz, symbol Hz, as the SI coherent derived unit with a special name for frequency (one per second), and states that angular frequency in rad/s differs from frequency in Hz by the factor 2π, angular velocity, angular frequency and frequency being distinct quantities; used here for the natural-frequency output role of the Mechanical spring-mass natural-frequency method only, as the one token of the frequency kind, which is distinct from the angular_velocity kind (rad/s). Unit identification only; no conversion is admitted (nothing maps Hz to rad/s, rpm or any other unit; the factor 2π is applied inside the method adapter alone, never here) and no NIST text, table or conversion factor is reproduced.",
+      "source_use_policy_ref": "dcu:SU021",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-29",
+      "inspection_reference": "Lead-supplied unit basis in the Owner-authorized MECHANICAL-NATURAL-FREQUENCY-01 brief (2026-10-29), restated in MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md section 11; not independently re-inspected by the executor (egress to the NIST host was blocked)."
     }
   ],
   "source_use_policies": [
@@ -559,6 +613,32 @@
       "acknowledgement": "Reference source material: NASA TN D-5643 (NASA Lewis Research Center, 1970) and NASA Marshall Space Flight Center, Traction Drive System Design Considerations for a Lunar Roving Vehicle (1969); V_avg = V_supply x t_on / T is InventorAI's own restatement.",
       "third_party_material_exclusion": "No third-party or contractor-contributed expressive content is used.",
       "no_endorsement_limitation": "No statement or implication that NASA endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU020",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local snapshot of mnf:SU001 for the method source NBS-NF-S1 of the Mechanical spring-mass natural-frequency method only (not a legal opinion): NBS / NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a publication is excluded; no endorsement may be implied. NBS Technical Note 487 (Nathan Newman, Institute for Applied Technology, National Bureau of Standards, July 1969) is such a work. Use is the one factual relationship (the undamped single-degree-of-freedom spring-mass natural frequency) in InventorAI's own paraphrase with attribution; no NBS prose, figure, table, example, numerical result or frequency-range criterion is reproduced. The former SRC-045 / NBS SP 615 basis is IP-UNRESOLVED and is NOT relied upon.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-29",
+      "inspection_reference": "Version-bound snapshot of mnf:SU001 in docs/governance/mechanical_content_config/spring_mass_natural_frequency_v1.json, resting on the Execution Lead's inspection of the official NIST / NBS copy supplied in the Owner-authorized MECHANICAL-NATURAL-FREQUENCY-01 brief (2026-10-29); held here so the owner method record validates from this artifact alone. A separate record: dcu:SU001 to dcu:SU019 keep their own scopes and are not extended. Not independently re-inspected by the executor (egress to the NIST host was blocked).",
+      "acknowledgement": "Reference source material: National Bureau of Standards Technical Note 487 (Newman, 1969), the undamped single-degree-of-freedom spring-mass relationship; the method as offered is InventorAI's own restatement.",
+      "third_party_material_exclusion": "Third-party material inside NBS / NIST publications is not used.",
+      "no_endorsement_limitation": "No statement or implication that NBS or NIST endorses, reviewed or approved InventorAI, this owner or any result."
+    },
+    {
+      "record_id": "dcu:SU021",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "inspected_content": "Owner-local snapshot of mnf:SU002 for the unit records dcu:U018 (kg), dcu:U019 (N/m) and dcu:U020 (Hz) only (not a legal opinion): NIST employee-authored Technical Series publications are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material inside a NIST publication is excluded. SP 330 is a NIST Special Publication; any BIPM-originated wording or tables in it are treated as third-party material and are not reproduced. Use is limited to identifying the three unit tokens kg, N/m and Hz for the Mechanical spring-mass natural-frequency method and the factual 2π relation between angular frequency and frequency that its adapter restates; no NIST or SP 330 text, table or symbol list is reproduced.",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-29",
+      "inspection_reference": "Version-bound snapshot of mnf:SU002 in docs/governance/mechanical_content_config/spring_mass_natural_frequency_v1.json (Lead-supplied unit basis in the Owner-authorized MECHANICAL-NATURAL-FREQUENCY-01 brief, 2026-10-29). A separate record: dcu:SU003 (W, K/W and K) and every other earlier record keep their own scopes and are not extended. Not independently re-inspected by the executor (egress to the NIST host was blocked).",
+      "acknowledgement": "Unit identification for kg, N/m and Hz follows NIST Special Publication 330 (2019 Edition), National Institute of Standards and Technology.",
+      "third_party_material_exclusion": "Third-party (including BIPM-originated) material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this owner or any result is stated or implied."
     }
   ],
   "methods": [
@@ -940,6 +1020,47 @@
         {"role": "t_on", "condition": "within_zero_and_role", "bound_role": "t_period"}
       ],
       "result_range": []
+    },
+    {
+      "method_id": "mechanical:spring_mass_natural_frequency",
+      "method_version": "1.0",
+      "adapter_identity": "engine.mechanical_natural_frequency_method.evaluate",
+      "technical_authority": "Mechanical - MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md (section 3 method definition and derivation, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "mechanical_spring_mass_natural_frequency", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "NBS-NF-S1",
+          "source_title": "NBS Technical Note 487, Considerations in Computing the Useful Frequency Range of Piezoelectric Accelerometers (Nathan Newman, Institute for Applied Technology, National Bureau of Standards, July 1969), Mechanical Drive derivation - the undamped natural frequency of one mass driven by one spring attached to a relatively very large mass",
+          "publisher": "National Bureau of Standards (NBS), Institute for Applied Technology (now NIST)",
+          "url": "https://nvlpubs.nist.gov/nistpubs/Legacy/TN/nbstechnicalnote487.pdf",
+          "source_use_policy_ref": "dcu:SU020",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-29"
+        },
+        {
+          "source_ref": "NIST-NF-U",
+          "source_title": "NIST Special Publication 330 (2019 Edition), The International System of Units (SI), Section 2 - kg, N/m and Hz, and the 2π relation between angular frequency and frequency",
+          "publisher": "National Institute of Standards and Technology (NIST)",
+          "url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+          "source_use_policy_ref": "dcu:SU021",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-29"
+        }
+      ],
+      "input_roles": [
+        {"role": "k", "quantity_kind": "stiffness", "unit_token": "N/m"},
+        {"role": "m", "quantity_kind": "mass", "unit_token": "kg"}
+      ],
+      "output_roles": [
+        {"role": "f0", "quantity_kind": "frequency", "unit_token": "Hz"}
+      ],
+      "applicability": [
+        {"role": "k", "condition": "greater_than_zero", "bound_role": null},
+        {"role": "m", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": [
+        {"role": "f0", "condition": "greater_than_zero", "bound_role": null}
+      ]
     }
   ]
 }

@@ -8028,6 +8028,122 @@ UI_STRINGS = {
     "UI_PWM_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # MECHANICAL-NATURAL-FREQUENCY-01 (spring-mass natural-frequency contract §9).
+    # The English declaration and disclosure entries are pinned equal to the
+    # method artifact by test and the Arabic disclosure and declarations to
+    # contract §9A. The high-risk screen reuses the UI_CAP13_SCREEN_* keys (the
+    # same nine items) and the integrated-part attribution the UI_CAP13_PART_*
+    # keys. Nothing here states a resonance verdict, a safe or forbidden
+    # frequency, a margin, a component choice, a suitability or a safety
+    # conclusion; the result is the declared model's prediction only.
+    "UI_MNF_LINK_TEXT": {
+        "en": "Optional: natural frequency of one spring–mass model you declare (f₀ = √(k / m) / (2π))",
+        "ar": "اختياري: التردد الطبيعي لنموذج نابض وكتلة واحد تصرّح به (f₀ = √(k / m) / (2π))"},
+    "UI_MNF_LINK_NOTE": {
+        "en": "An advisory calculation from a stiffness and a mass you declare. It is not saved, it is the prediction of the declared model only, not a resonance, damping, amplitude or safety result, and it is never required.",
+        "ar": "حساب إرشادي من صلابة وكتلة تصرّح بهما أنت. لا يُحفَظ، وهو تنبؤ النموذج المصرَّح به فقط، وليس نتيجة رنين أو تخميد أو سعة أو سلامة، ولا يكون مطلوبًا أبدًا."},
+    "UI_MNF_TITLE": {
+        "en": "Natural frequency of one spring–mass model (optional, non-binding)",
+        "ar": "التردد الطبيعي لنموذج نابض وكتلة واحد (اختياري، غير مُلزِم)"},
+    "UI_MNF_INTRO": {
+        "en": "This page is optional. It calculates the natural frequency f₀ predicted by one single-degree-of-freedom spring–mass model you declare, from the stiffness k and the mass m that you enter, as f₀ = √(k / m) / (2π). Nothing is saved.",
+        "ar": "هذه الصفحة اختيارية. تحسب التردد الطبيعي f₀ الذي يتنبأ به نموذج نابض وكتلة ذو درجة حرية واحدة تصرّح به، من الصلابة k والكتلة m اللتين تدخلهما أنت، بالعلاقة f₀ = √(k / m) / (2π). لا يُحفَظ شيء."},
+    "UI_MNF_SCOPE_NOTE": {
+        "en": "This optional calculation is available for a Mechanical-focus project or for its declared Mechanical part in a valid integrated Mechanical and Electrical / Electronics project. Neither the focus nor a recorded part establishes that your project contains a spring–mass system, that the single-degree-of-freedom model applies, or that the stiffness and mass you enter are correct. You must confirm the method's conditions and screening items. The result is an UNVALIDATED prediction of the declared model, not a resonance, suitability or safety conclusion.",
+        "ar": "يتاح هذا الحساب الاختياري لمشروع محور تحليله ميكانيكي، أو لجزئه الميكانيكي المصرّح به ضمن مشروع متكامل ميكانيكي وكهربائي/إلكتروني ذي تركيب محفوظ وصالح. ولا يثبت المحور ولا وجود الجزء أن مشروعك يحتوي على نظام نابض وكتلة، ولا انطباق نموذج درجة الحرية الواحدة، ولا صحة الصلابة والكتلة اللتين تدخلهما. يجب التصريح بشروط الطريقة والإجابة عن أسئلة الفحص. النتيجة تنبؤ غير مُتحقَّق منه للنموذج المصرَّح به، وليست حكمًا بشأن الرنين أو الملاءمة أو السلامة."},
+    "UI_MNF_ANSWER_APPLIES": {
+        "en": "Applies to my case",
+        "ar": "ينطبق على حالتي"},
+    "UI_MNF_ANSWER_DOES_NOT_APPLY": {
+        "en": "Does not apply to my case",
+        "ar": "لا ينطبق على حالتي"},
+    "UI_MNF_DECL_SINGLE_MASS": {
+        "en": "ONE mass only, represented by m: the moving body is treated as one rigid lump, and m is its whole moving mass.",
+        "ar": "كتلة واحدة فقط يمثّلها الرمز m: يُعامَل الجسم المتحرك على أنه كتلة صلبة واحدة مجمَّعة، وm هي كامل كتلته المتحركة."},
+    "UI_MNF_DECL_SINGLE_LINEAR_SPRING": {
+        "en": "ONE linear spring or mount only, represented by k: one elastic element whose restoring force is proportional to how far it is deflected, and k is that constant stiffness.",
+        "ar": "نابض أو حامل مرن خطي واحد فقط يمثّله الرمز k: عنصر مرن واحد تتناسب قوة إرجاعه مع مقدار انحرافه، وk هي صلابته (stiffness) الثابتة."},
+    "UI_MNF_DECL_RIGID_SUPPORT": {
+        "en": "The other end of the spring or mount is attached to a support that is treated, for this model, as effectively rigid and of very large mass compared with the moving mass, so that it does not move.",
+        "ar": "الطرف الآخر من النابض أو الحامل مثبّت إلى سند يُعامَل في هذا النموذج على أنه جاسئ فعليًا وذو كتلة كبيرة جدًا مقارنةً بالكتلة المتحركة، بحيث لا يتحرك."},
+    "UI_MNF_DECL_SINGLE_DEGREE_OF_FREEDOM": {
+        "en": "ONE degree of freedom only: the mass moves back and forth along one direction only, with no other motion, rotation or coupled movement.",
+        "ar": "درجة حرية واحدة فقط: تتحرك الكتلة ذهابًا وإيابًا على امتداد اتجاه واحد فقط، دون أي حركة أخرى أو دوران أو حركة مقترنة."},
+    "UI_MNF_DECL_OWN_VALUES": {
+        "en": "The stiffness k and the mass m are the inventor's own values; InventorAI does not look them up, derive them, check them or decide that they are right.",
+        "ar": "قيمتا الصلابة k والكتلة m هما قيمتا المخترع نفسه؛ لا يبحث عنهما InventorAI ولا يشتقّهما ولا يتحقق منهما ولا يقرر أنهما صحيحتان."},
+    "UI_MNF_DECL_DAMPING_NOT_MODELLED": {
+        "en": "Damping (friction, air, rubbing, material loss or any other energy loss) is NOT modelled in this calculation: the result is the undamped natural frequency of the declared model.",
+        "ar": "التخميد (الاحتكاك أو مقاومة الهواء أو الاحتكاك الداخلي أو فقد الطاقة في المادة أو أي فقد آخر للطاقة) غير مُدرَج في هذا الحساب: النتيجة هي التردد الطبيعي غير المخمَّد للنموذج المصرَّح به."},
+    "UI_MNF_DECL_OUTSIDE_SCOPE_EXCLUDED": {
+        "en": "Nonlinear stiffness, several masses or several springs, coupling between motions, and stiffness that changes with load, position, temperature or time are outside this model and are not included.",
+        "ar": "الصلابة غير الخطية، وتعدد الكتل أو النوابض، والاقتران بين الحركات، والصلابة المتغيرة مع الحمل أو الموضع أو درجة الحرارة أو الزمن كلها خارج هذا النموذج وغير مُدرَجة."},
+    "UI_MNF_FIELD_K": {
+        "en": "Stiffness of the one spring or mount (k) — newton per metre (N/m)",
+        "ar": "صلابة النابض أو الحامل الواحد (k) — نيوتن لكل متر (N/m)"},
+    "UI_MNF_FIELD_M": {
+        "en": "The one moving mass (m) — kilogram (kg)",
+        "ar": "الكتلة المتحركة الواحدة (m) — كيلوغرام (kg)"},
+    "UI_MNF_SUBMIT": {
+        "en": "Calculate the natural frequency",
+        "ar": "احسب التردد الطبيعي"},
+    "UI_MNF_BACK": {
+        "en": "Back to your project",
+        "ar": "العودة إلى مشروعك"},
+    "UI_MNF_RESULT_F0": {
+        "en": "Natural frequency of the declared model (f₀) — hertz (Hz)",
+        "ar": "التردد الطبيعي للنموذج المصرَّح به (f₀) — هرتز (Hz)"},
+    "UI_MNF_ROUNDED": {
+        "en": "Rounded to 12 significant digits; the exact value of √(k / m) / (2π) has infinitely many digits.",
+        "ar": "مقرَّبة إلى 12 رقمًا معنويًا؛ للقيمة الدقيقة لـ √(k / m) / (2π) عدد لا نهائي من الأرقام."},
+    "UI_MNF_NEXT_STEP": {
+        "en": "What to do with this number: it is the natural frequency predicted by the spring–mass model you declared. Compare the excitation you plan or observe (for example a motor speed or a repeated impact) with this estimate, and verify the real system by measurement or qualified engineering review. It is not a safe frequency, not a frequency you must avoid, not an exact resonance and not a margin.",
+        "ar": "ماذا تفعل بهذا الرقم: هو التردد الطبيعي الذي يتنبأ به نموذج النابض والكتلة الذي صرّحت به. قارن الإثارة التي تخطط لها أو تلاحظها (مثل سرعة محرك أو صدمة متكررة) بهذا التقدير، وتحقق من النظام الحقيقي بالقياس أو بمراجعة هندسية مؤهلة. ليس هذا ترددًا آمنًا، ولا ترددًا يجب تجنبه، ولا رنينًا دقيقًا، ولا هامشًا."},
+    "UI_MNF_STATUS": {
+        "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
+        "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    "UI_MNF_ECHO_HEADING": {
+        "en": "The values and declarations you entered",
+        "ar": "القيم والتصريحات التي أدخلتها"},
+    "UI_MNF_METHOD_LINE": {
+        "en": "Method and version",
+        "ar": "الطريقة وإصدارها"},
+    "UI_MNF_SOURCES_HEADING": {
+        "en": "Sources",
+        "ar": "المصادر"},
+    "UI_MNF_SOURCES_NOTE": {
+        "en": "The spring–mass natural-frequency relationship from National Bureau of Standards Technical Note 487 (Newman, 1969), and the unit facts and the 2π relation between angular frequency and frequency from NIST Special Publication 330. The single-degree-of-freedom model, its declarations and the ordinary-frequency form are InventorAI's own restatement. Neither NBS nor NIST endorses InventorAI or this calculation.",
+        "ar": "علاقة التردد الطبيعي للنابض والكتلة من المذكرة الفنية رقم 487 للمكتب الوطني للمعايير (NBS Technical Note 487، نيومان، 1969)، وحقائق الوحدات وعلاقة 2π بين التردد الزاوي والتردد من المنشور الخاص رقم 330 للمعهد الوطني للمعايير والتقنية (NIST SP 330). نموذج درجة الحرية الواحدة وتصريحاته وصيغة التردد العادي إعادة صياغة خاصة بـInventorAI. لا يؤيّد NBS ولا NIST InventorAI ولا هذا الحساب."},
+    "UI_MNF_DISCLOSURE": {
+        "en": "This is the natural frequency f₀ predicted by the single-degree-of-freedom spring–mass model you declared: one mass m on one linear spring or mount of stiffness k, attached to an effectively rigid support, with no damping, using your own k and m.\n\nIt is a prediction of the declared model, not a measured property of your product: the real system may have several masses, several elastic parts, damping, nonlinear or changing stiffness and a support that moves, none of which is included.\n\nIt does not say that resonance will occur exactly at this frequency, that any frequency is safe or must be avoided, that any separation margin is acceptable, that any vibration is acceptable, or that any component is suitable.\n\nIt is preliminary, advisory, UNVALIDATED and not evidence: compare planned or observed excitation with this estimate and verify the real system by measurement or qualified engineering review before any reliance.\n\nInventorAI does not check your stiffness, your mass or that your declarations match the real configuration; it looks nothing up.\n\nDamping, resonant amplitude, transmissibility, vibration isolation, shock, fatigue, several degrees of freedom and modal analysis are outside this calculation.\n\nReference source material: National Bureau of Standards Technical Note 487 (Newman, 1969) for the undamped single-degree-of-freedom spring–mass relationship, and NIST Special Publication 330 for the SI units and the 2π relation between angular frequency and frequency; the method as offered here is InventorAI's own restatement.",
+        "ar": "هذا هو التردد الطبيعي f₀ الذي يتنبأ به نموذج النابض والكتلة ذو درجة الحرية الواحدة الذي صرّحت به: كتلة واحدة m على نابض أو حامل خطي واحد صلابته k، مثبّت إلى سند جاسئ فعليًا، دون تخميد، باستخدام قيمتي k وm اللتين أدخلتهما أنت.\n\nهذه تنبؤ بالنموذج المصرَّح به، وليست خاصية مقيسة لمنتجك: فقد يحتوي النظام الحقيقي على عدة كتل، وعدة أجزاء مرنة، وتخميد، وصلابة غير خطية أو متغيرة، وسند يتحرك، ولا شيء من ذلك مُدرَج.\n\nلا يقول هذا الناتج إن الرنين (resonance) سيحدث عند هذا التردد بالضبط، ولا إن أي تردد آمن أو يجب تجنبه، ولا إن أي هامش فصل مقبول، ولا إن أي اهتزاز مقبول، ولا إن أي مكوّن مناسب.\n\nهذه النتيجة أولية وإرشادية، وغير مُتحقَّق منها (UNVALIDATED)، وليست دليلًا: قارن الإثارة المخطَّطة أو الملاحَظة بهذا التقدير، وتحقق من النظام الحقيقي بالقياس أو بمراجعة هندسية مؤهلة قبل أي اعتماد عليه.\n\nلا يتحقق InventorAI من قيمة الصلابة ولا من الكتلة ولا من مطابقة تصريحاتك للتكوين الفعلي؛ ولا يبحث عن أي شيء.\n\nالتخميد، وسعة الرنين، وقابلية الانتقال (transmissibility)، وعزل الاهتزاز، والصدمات، والكلال (fatigue)، وتعدد درجات الحرية، والتحليل النمطي (modal analysis) كلها خارج نطاق هذا الحساب.\n\nالمراجع: المذكرة الفنية رقم 487 للمكتب الوطني للمعايير (NBS Technical Note 487، نيومان، 1969) لعلاقة النابض والكتلة ذات درجة الحرية الواحدة غير المخمَّدة، والمنشور الخاص رقم 330 للمعهد الوطني للمعايير والتقنية (NIST SP 330) لوحدات النظام الدولي وعلاقة 2π بين التردد الزاوي والتردد؛ أما الطريقة بالصورة المقدَّمة هنا فهي إعادة صياغة خاصة بـInventorAI."},
+    "UI_MNF_UNABLE_HEADING": {
+        "en": "Unable to determine (UNABLE TO DETERMINE)",
+        "ar": "تعذّر التحديد (UNABLE TO DETERMINE)"},
+    "UI_MNF_OUTCOME_NOT_DECLARED": {
+        "en": "You have not answered every declaration and screen item. Nothing was calculated.",
+        "ar": "لم تُجب عن جميع التصريحات وبنود الفحص. لم يُحسب شيء."},
+    "UI_MNF_OUTCOME_ENGINEERING_REVIEW_REQUIRED": {
+        "en": "You answered yes to at least one item of the high-risk screen. This case requires specialist engineering review, so nothing was calculated.",
+        "ar": "أجبت بـ«نعم» عن بند واحد على الأقل في فحص المخاطر العالية. هذه الحالة تتطلب مراجعة هندسية متخصصة، لذلك لم يُحسب شيء."},
+    "UI_MNF_OUTCOME_MODEL_NOT_SUPPORTED": {
+        "en": "One of the declarations does not match the conditions this method covers. Nothing was calculated.",
+        "ar": "أحد التصريحات لا يطابق الشروط التي تغطيها هذه الطريقة. لم يُحسب شيء."},
+    "UI_MNF_OUTCOME_INVALID_NUMERIC_INPUT": {
+        "en": "k and m must be numbers greater than zero, written as plain decimals with at most 12 digits before and 9 digits after the decimal point. Nothing was calculated.",
+        "ar": "يجب أن تكون قيمتا k و m رقمين أكبر من الصفر، مكتوبين بصيغة عشرية صحيحة لا تزيد على 12 رقمًا قبل الفاصلة العشرية و9 أرقام بعدها. لم يُحسب شيء."},
+    "UI_MNF_OUTCOME_UNIT_NOT_SUPPORTED": {
+        "en": "The unit is not supported; this method accepts only newton per metre (N/m) and kilogram (kg), and shows the result in hertz (Hz). Nothing was calculated.",
+        "ar": "الوحدة غير مدعومة؛ تقبل هذه الطريقة النيوتن لكل متر (N/m) والكيلوغرام (kg) فقط، وتعرض النتيجة بالهرتز (Hz). لم يُحسب شيء."},
+    "UI_MNF_OUTCOME_KNOWLEDGE_UNAVAILABLE": {
+        "en": "The reference knowledge for this method is unavailable, or the calculation did not pass its numerical checks. Nothing was calculated.",
+        "ar": "المعرفة المرجعية لهذه الطريقة غير متاحة، أو لم يجتز الحساب فحوصه العددية. لم يُحسب شيء."},
+    "UI_MNF_OUTCOME_UNMAPPED_OWNER_OUTCOME": {
+        "en": "The calculation could not be completed. Nothing was calculated.",
+        "ar": "تعذّر إكمال الحساب. لم يُحسب شيء."},
+    "UI_MNF_ERR_REQUEST": {
+        "en": "This request could not be read. Nothing was calculated.",
+        "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

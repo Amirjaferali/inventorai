@@ -388,7 +388,7 @@ def test_t11_the_shared_calculation_and_unit_inventory_is_unchanged():
     # records for the DC resistive load energy method (calc/units §13G), never by
     # this reference group, whose text stays outside the owner
     assert tokens == {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C",
-        "V", "Ω", "A", "J", "s", "h", "A·h"}
+        "V", "Ω", "A", "J", "s", "h", "A·h", "kg", "N/m", "Hz"}
     methods = set(re.findall(r'"method_id":\s*"([^"]+)"', text))
     assert methods == {"cap13:static_reactions_two_support",
                        "therm01:conduction_temperature_difference_single_path",
@@ -400,7 +400,8 @@ def test_t11_the_shared_calculation_and_unit_inventory_is_unchanged():
         "electrical:dc_resistive_load_energy",
         "cap13:planar_required_force",
         "electrical:dc_constant_current_charge",
-        "electrical:pwm_average_voltage"}
+        "electrical:pwm_average_voltage",
+        "mechanical:spring_mass_natural_frequency"}
 
 
 def test_t12_no_input_control_numeric_result_or_state_change(client, monkeypatch):

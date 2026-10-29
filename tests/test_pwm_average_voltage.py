@@ -592,26 +592,28 @@ def test_success_packaging_units_sources_and_identity():
         "NASA-PWM-S1", "NASA-PWM-S2"]
     assert {q["source_use_policy_ref"] for q in result["source_qualification"]} == {"dcu:SU019"}
     assert result["validation_status"] == "UNVALIDATED"
-    assert (result["artifact_version"], result["implementation_version"]) == ("11", "1.10.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("12", "1.11.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_adds_exactly_one_method_and_no_kind_token_or_conversion():
     assert ("electrical:pwm_average_voltage", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 11
-    # no new kind, token or exception: the inventories of Correction 10 stand
-    assert len(dc.ADMITTED_QUANTITY_KINDS) == 15 and len(dc.ADMITTED_UNIT_TOKENS) == 17
+    assert len(dc.ADMITTED_METHODS) == 12
+    # no new kind, token or exception from THIS admission: Correction 12 later added
+    # exactly mass / kg, stiffness / N/m and frequency / Hz for its own method
+    assert len(dc.ADMITTED_QUANTITY_KINDS) == 18 and len(dc.ADMITTED_UNIT_TOKENS) == 20
     assert dc.ADMITTED_UNIT_TOKENS == {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
-                                       "mV", "°C", "V", "Ω", "A", "J", "s", "h", "A·h"}
+                                       "mV", "°C", "V", "Ω", "A", "J", "s", "h", "A·h",
+                                       "kg", "N/m", "Hz"}
     assert dc.KIND_TOKEN_EXCEPTIONS == {"voltage": frozenset({"mV", "V"}),
                                         "time": frozenset({"s", "h"})}
     assert dc._CONDITIONS == ("greater_than_zero", "less_than_zero",
                               "within_zero_and_role")
     assert not any(k in dc.ADMITTED_QUANTITY_KINDS
-                   for k in ("duty_cycle", "ratio", "dimensionless", "frequency"))
-    assert not any(t in dc.ADMITTED_UNIT_TOKENS for t in ("%", "1", "Hz", "ms"))
+                   for k in ("duty_cycle", "ratio", "dimensionless", "switching_frequency"))
+    assert not any(t in dc.ADMITTED_UNIT_TOKENS for t in ("%", "1", "kHz", "ms"))
     data = dc.load_artifact()
-    assert len(data["unit_records"]) == 17 and len(data["quantity_kinds"]) == 15
+    assert len(data["unit_records"]) == 20 and len(data["quantity_kinds"]) == 18
     record = _record(data)
     assert record["applicability"] == [
         {"role": "t_period", "condition": "greater_than_zero", "bound_role": None},
@@ -634,7 +636,7 @@ def test_closed_inventory_adds_exactly_one_method_and_no_kind_token_or_conversio
     (("V", "J", "s"), dc.UNIT_NOT_ADMITTED), (("W", "s", "s"), dc.UNIT_NOT_ADMITTED),
     (("v", "s", "s"), dc.UNKNOWN_UNIT), (("kV", "s", "s"), dc.UNKNOWN_UNIT),
     (("V", "ms", "s"), dc.UNKNOWN_UNIT), (("V", "s", "ms"), dc.UNKNOWN_UNIT),
-    (("V", "µs", "s"), dc.UNKNOWN_UNIT), (("V", "s", "Hz"), dc.UNKNOWN_UNIT),
+    (("V", "µs", "s"), dc.UNKNOWN_UNIT), (("V", "s", "Hz"), dc.UNIT_NOT_ADMITTED),
     (("V", "s", "kHz"), dc.UNKNOWN_UNIT), (("V", "%", "s"), dc.UNKNOWN_UNIT),
     (("V", "1", "s"), dc.UNKNOWN_UNIT), (("V", "S", "s"), dc.UNKNOWN_UNIT),
     (("V", "sec", "s"), dc.UNKNOWN_UNIT), (("V", "min", "s"), dc.UNKNOWN_UNIT),
@@ -659,7 +661,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.pwm_average_voltage_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._PWM_AVERAGE_VOLTAGE_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 11
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 12
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("import pwm_average_voltage", "engine.pwm", "engine/pwm",
                    "pwm_average_voltage_method.", "pwm_average_voltage import",
@@ -743,15 +745,15 @@ def test_owner_output_rebound_to_millivolts_is_refused_by_the_consumer(tmp_path)
 
 def test_owner_v10_records_are_unchanged_by_the_eleventh_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "11"
-    v10 = {"quantity_kinds": data["quantity_kinds"],
-           "unit_records": data["unit_records"],
+    assert data["artifact_version"] == "12"
+    v10 = {"quantity_kinds": data["quantity_kinds"][:15],
+           "unit_records": data["unit_records"][:17],
            "source_use_policies": data["source_use_policies"][:18],
            "methods": data["methods"][:10]}
     canonical = json.dumps(v10, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     assert hashlib.sha256(canonical.encode()).hexdigest() == V10_RECORDS_DIGEST
-    assert [p["record_id"] for p in data["source_use_policies"][18:]] == ["dcu:SU019"]
-    assert [m["method_id"] for m in data["methods"][10:]] == [method.METHOD_ID]
+    assert [p["record_id"] for p in data["source_use_policies"][18:19]] == ["dcu:SU019"]
+    assert [m["method_id"] for m in data["methods"][10:11]] == [method.METHOD_ID]
     policies = {p["record_id"]: p for p in data["source_use_policies"]}
     assert "pwm:SU001" in policies["dcu:SU019"]["inspected_content"]
     assert "NASA-PWM-S1 and NASA-PWM-S2 only" in policies["dcu:SU019"]["inspected_content"]
@@ -760,7 +762,7 @@ def test_owner_v10_records_are_unchanged_by_the_eleventh_admission():
     for banned in ("duty_cycle", "percent", "equivalent dc", "motor speed", "rms voltage",
                    "root mean square", "root-mean-square"):
         assert banned not in text, banned
-    assert "Content version 11 admits exactly eleven methods" in data["governance_note"]
+    assert "Content version 12 admits exactly twelve methods" in data["governance_note"]
     assert "28-T3" not in data["governance_note"] or "BLOCKED" in data["governance_note"]
 
 
@@ -1044,7 +1046,7 @@ def test_no_result_transfer_into_the_dc_load_calculations():
         assert "pwm" not in (ROOT / "web" / "templates" / other).read_text(encoding="utf-8").lower()
     src = Path(webapp.__file__).read_text(encoding="utf-8")
     start = src.index("# PWM-AVERAGE-VOLTAGE-01 — PWM Average Voltage")
-    section = src[start:src.index("# Manufacturing Evidence Capture", start)]
+    section = src[start:src.index("# MECHANICAL-NATURAL-FREQUENCY-01 —", start)]
     for banned in ("_dcl", "_dcp", "_dce", "_dcq", "v_load", "r_load", "e_load", "p_load"):
         assert banned not in section, banned
     assert "data-pwm-no-transfer" in template and "data-pwm-not-dc-equivalent" in template
@@ -1275,7 +1277,7 @@ def test_nothing_is_persisted_and_no_request_leaks_into_the_next(elec, over):
 def test_no_report_export_api_or_safety_surface():
     src = Path(webapp.__file__).read_text(encoding="utf-8")
     start = src.index("# PWM-AVERAGE-VOLTAGE-01 — PWM Average Voltage")
-    section = src[start:src.index("# Manufacturing Evidence Capture", start)]
+    section = src[start:src.index("# MECHANICAL-NATURAL-FREQUENCY-01 —", start)]
     for banned in ("safety_signal", "SafetySignal(", "_get_store()", "append_",
                    "SESSION_STORE[", "deliverable", "pdf", "export", "/api/",
                    "_therm01", "_cap13", "_tmp36", "load_project_subsystems", "request.args",

@@ -265,15 +265,16 @@ def test_role_kind_unit_bindings_are_exactly_the_governed_set():
     # electric_resistance / electric_current kinds and the V / Ω / A tokens,
     # and Correction 08 (§13G) exactly the energy / time kinds and the J / s tokens,
     # and Correction 10 (§13I) exactly the electric_charge kind, its A·h token and
-    # the second time token h
+    # the second time token h, and Correction 12 (§13K) exactly the mass / stiffness /
+    # frequency kinds and the kg / N/m / Hz tokens
     assert sorted(u["unit_token"] for u in data["unit_records"]) == [
-        "A", "A·h", "J", "K", "K/W", "N", "N·m", "N·mm", "V", "W", "h", "mV", "mm", "rad/s",
-        "s", "°C", "Ω"]
+        "A", "A·h", "Hz", "J", "K", "K/W", "N", "N/m", "N·m", "N·mm", "V", "W", "h", "kg",
+        "mV", "mm", "rad/s", "s", "°C", "Ω"]
     assert sorted(k["quantity_kind"] for k in data["quantity_kinds"]) == [
         "angular_velocity", "celsius_temperature", "electric_charge", "electric_current",
-        "electric_resistance", "energy", "force", "length", "moment",
-        "power", "temperature_difference", "thermal_resistance", "time", "torque",
-        "voltage"]
+        "electric_resistance", "energy", "force", "frequency", "length", "mass", "moment",
+        "power", "stiffness", "temperature_difference", "thermal_resistance", "time",
+        "torque", "voltage"]
 
 
 def test_missing_and_extra_roles():
@@ -333,7 +334,7 @@ def test_binding_is_immutable_and_not_a_registry():
     # moment's (Correction 03): one immutable binding per method
     assert webapp._CAP13_REACTIONS_BINDING.adapter_identity == BINDING.adapter_identity
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 11
+    assert app_source.count("_dcalc.bind_method(") == 12
 
 
 def test_deterministic_identity_and_no_input_mutation():
@@ -418,7 +419,8 @@ def test_source_use_records_are_present_and_bound():
                         "dcu:SU008", "dcu:SU009", "dcu:SU010",
                         "dcu:SU011", "dcu:SU012", "dcu:SU013",
                         "dcu:SU014", "dcu:SU015", "dcu:SU016",
-                        "dcu:SU017", "dcu:SU018", "dcu:SU019"}
+                        "dcu:SU017", "dcu:SU018", "dcu:SU019", "dcu:SU020",
+                        "dcu:SU021"}
     cap13_units = [u for u in owner["unit_records"] if u["unit_token"] in ("N", "mm")]
     assert len(cap13_units) == 2
     for unit in cap13_units:
@@ -494,14 +496,14 @@ def test_owner_artifact_version_edit_fails_closed_and_binding_mismatch_refuses(t
     assert (result["state"], result["reason"]) == (dc.STATE_REFUSAL, dc.VERSION_MISMATCH)
 
 
-def _extra_kind(data, kind="mass"):
-    data["quantity_kinds"].append({"quantity_kind": kind, "dimension": "M"})
+def _extra_kind(data, kind="density"):
+    data["quantity_kinds"].append({"quantity_kind": kind, "dimension": "M L^-3"})
 
 
 def _extra_unit(data):
     data["unit_records"].append(dict(data["unit_records"][0], record_id="dcu:U999",
-                                     unit_token="kg", unit_name="kilogram",
-                                     quantity_kind="mass"))
+                                     unit_token="kg/m³", unit_name="kilogram per cubic metre",
+                                     quantity_kind="density"))
 
 
 @pytest.mark.parametrize("name,message", [
@@ -521,7 +523,7 @@ def test_owner_closed_inventory_rejects_structurally_valid_extras(tmp_path, monk
     else:
         # admit the extra kind for this test only, so the UNIT inventory alone decides
         monkeypatch.setattr(dc, "ADMITTED_QUANTITY_KINDS",
-                            dc.ADMITTED_QUANTITY_KINDS | {"mass"})
+                            dc.ADMITTED_QUANTITY_KINDS | {"density"})
         _extra_kind(data)
         _extra_unit(data)
     path = _write(tmp_path, data)
@@ -533,7 +535,7 @@ def test_owner_closed_inventory_rejects_structurally_valid_extras(tmp_path, monk
 
 
 def test_owner_closed_inventory_constants():
-    # Corrections 02 to 11 (§§13A-13J): exactly eleven methods, closed
+    # Corrections 02 to 12 (§§13A-13K): exactly twelve methods, closed
     assert dc.ADMITTED_METHODS == frozenset({
         ("cap13:static_reactions_two_support", "1.0"),
         ("therm01:conduction_temperature_difference_single_path", "1.0"),
@@ -545,14 +547,16 @@ def test_owner_closed_inventory_constants():
         ("electrical:dc_resistive_load_energy", "1.0"),
         ("cap13:planar_required_force", "1.0"),
         ("electrical:dc_constant_current_charge", "1.0"),
-        ("electrical:pwm_average_voltage", "1.0")})
+        ("electrical:pwm_average_voltage", "1.0"),
+        ("mechanical:spring_mass_natural_frequency", "1.0")})
     assert dc.ADMITTED_QUANTITY_KINDS == frozenset({
         "force", "length", "power", "thermal_resistance", "temperature_difference",
         "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",
-        "electric_resistance", "electric_current", "energy", "time", "electric_charge"})
+        "electric_resistance", "electric_current", "energy", "time", "electric_charge",
+        "mass", "stiffness", "frequency"})
     assert dc.ADMITTED_UNIT_TOKENS == frozenset(
         {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C", "V", "Ω", "A",
-         "J", "s", "h", "A·h"})
+         "J", "s", "h", "A·h", "kg", "N/m", "Hz"})
 
 
 def test_owner_method_source_qualification_is_self_contained():
