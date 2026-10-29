@@ -125,9 +125,9 @@ is stated or invented: a declaration only makes the bounded model applicable; it
   root is bracketed with integer arithmetic (`isqrt` at scale 10^40) and the natural frequency as
   `[s_low / (2 PI_HIGH), s_high / (2 PI_LOW)]`, an interval that contains the true `√(k/m) / (2π)` for those inputs. The
   computed `f₀` is accepted ONLY when it is finite, strictly positive and within a relative error of `2^-50` of that
-  interval. For a normal ratio the three executed operations carry at most about `2.9 × 2^-53` relative error (division
-  `2^-53`, square root `1.5 × 2^-53`, the π constant below `0.4 × 2^-53`, the final division `2^-53`), so a correctly
-  rounded execution always meets the bound; a subnormal ratio is accepted only when its larger rounding error still meets
+  interval. For a normal ratio the three executed operations carry at most about `2.9 × 2^-53` relative error (the
+  ratio's rounding `2^-53`, halved by the square root to `0.5 × 2^-53`; the square root's own rounding `2^-53`; the π
+  constant below `0.4 × 2^-53`; the final division `2^-53`), so a correctly rounded execution always meets the bound; a subnormal ratio is accepted only when its larger rounding error still meets
   it. Overflow of `k / m` to infinity, underflow to zero, a non-finite or non-positive result and a result outside the
   bound are `FAILURE / EXECUTION_INTEGRITY_FAILURE` with no numerical payload, displayed as `KNOWLEDGE_UNAVAILABLE`,
   never rewritten as a refusal; they are unreachable from the page grammar (the ratio of two admitted decimals lies within

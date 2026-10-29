@@ -44,9 +44,10 @@ Numeric arrangement (documented, deterministic; §6):
   is accepted ONLY when it is finite, strictly positive and within a relative
   error of ``2**-50`` of that interval. For a ratio that is a normal binary64
   number the three executed operations carry at most about ``2.9 x 2**-53``
-  relative error (division ``2**-53``, square root ``1.5 x 2**-53``, the π
-  constant below ``0.4 x 2**-53`` and the final division ``2**-53``), so a
-  correctly rounded execution always meets the bound; a subnormal ratio is
+  relative error (the ratio's rounding ``2**-53``, halved by the square root to
+  ``0.5 x 2**-53``; the square root's own rounding ``2**-53``; the π constant
+  below ``0.4 x 2**-53``; the final division ``2**-53``), so a correctly
+  rounded execution always meets the bound; a subnormal ratio is
   accepted only when its larger rounding error still meets the bound, and a
   zero ratio or an overflow of ``k / m`` is reported as an integrity failure,
   never as a number.
