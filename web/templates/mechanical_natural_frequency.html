@@ -62,6 +62,22 @@ ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:any
   </dl>
   <p class="copy" data-mnf-rounded>{{ iso('UI_MNF_ROUNDED') }}</p>
   <p class="copy" data-mnf-next-step>{{ iso('UI_MNF_NEXT_STEP') }}</p>
+  {#- MNF-VERIFICATION-MEASUREMENT-STEP-01: preparation only, after SUCCESS.
+      InventorAI defines no vibration test, selects no measurement, performs no
+      comparison and treats no response peak as the calculated undamped f0. -#}
+  <section class="box" data-mnf-verification>
+    <p class="copy"><strong>{{ iso('UI_MNF_VERIFY_TITLE') }}</strong></p>
+    <p class="copy" data-mnf-verify-intro>{{ iso('UI_MNF_VERIFY_INTRO') }}</p>
+    <ol class="plain" data-mnf-verify-items>
+      <li>{{ iso('UI_MNF_VERIFY_ITEM_1') }}</li>
+      <li>{{ iso('UI_MNF_VERIFY_ITEM_2') }}</li>
+      <li>{{ iso('UI_MNF_VERIFY_ITEM_3') }}</li>
+      <li>{{ iso('UI_MNF_VERIFY_ITEM_4') }}</li>
+      <li>{{ iso('UI_MNF_VERIFY_ITEM_5') }}</li>
+    </ol>
+    <p class="copy" data-mnf-verify-boundary>{{ iso('UI_MNF_VERIFY_BOUNDARY') }}</p>
+    <p class="guidance" data-mnf-verify-authority>{{ iso('UI_MNF_VERIFY_AUTHORITY') }}</p>
+  </section>
   <p class="copy" data-mnf-status>{{ iso('UI_MNF_STATUS') }}</p>
   <p class="copy" data-mnf-method>{{ t('UI_MNF_METHOD_LINE') }}: <bdi dir="ltr">{{ result.method_id }}</bdi> &middot; <bdi dir="ltr">{{ result.method_version }}</bdi></p>
   <p class="copy"><strong>{{ t('UI_MNF_SOURCES_HEADING') }}</strong></p>
