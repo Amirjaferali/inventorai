@@ -23,15 +23,35 @@ File-creation contract:
     (no option)        print the plan: fixture integrity, the 4 x 8 matrix, one
                        input-only payload preview, the pre-registration digest
                        and the request cap; nothing is sent;
-    `--provider openai --allow-network --managed-credential --journal PATH`
+    `--manifest [--model M]`
+                       offline: the run manifest and its digest for the CURRENT
+                       clean checkout (refused on uncommitted changes); nothing
+                       is sent;
+    `--provider openai --allow-network --managed-credential --journal PATH
+     --authorized-manifest SHA256 [--model M]`
                        the campaign path; REFUSED while the gate is closed, the
-                       fixtures are not FROZEN or the run manifest is not the
-                       one authorized run;
+                       fixtures are not FROZEN, the checkout is not clean or
+                       the manifest of this checkout and model is not the one
+                       authorized digest;
     `--review-sheet REPORT` offline: a human review sheet bound to a saved report;
-    `--aggregate REVIEW --report REPORT`
+    `--aggregate REVIEW --report REPORT --authorized-manifest SHA256`
                        offline: the pilot verdict from a completed review of the
                        one authorized run (refused while none is named).
     There is no option for a project, account, database or free-form input.
+  Activation (non-circular): the manifest binds the Git revision, so its digest
+    cannot be committed into the revision it describes. The authorized digest is
+    therefore a RUNTIME value, never a source constant:
+      1. a separately reviewed and merged change sets the fixtures FROZEN (with
+         their re-pinned hashes) and `PROOF_B_CAMPAIGN_AUTHORIZED = True`;
+         `AUTHORIZED_RUN_MANIFEST_SHA256` stays None;
+      2. on a clean checkout of that exact commit, `--manifest --model M`
+         prints the digest D of its manifest (revision, fixtures,
+         pre-registration, model, endpoint, token and request caps, retries);
+      3. the Owner authorizes the run by naming D;
+      4. the campaign runs from that same clean commit with
+         `--authorized-manifest D`; any other commit, model, fixture,
+         pre-registration or parameter gives another digest and is refused;
+      5. aggregation names the same D.
   Output contract: JSON on stdout; exit 0 on success, 2 on a refused
     invocation or an integrity failure.
   Prohibited behaviors: no real inventor / project / personal data; no product
@@ -67,9 +87,9 @@ REFERENCE_SHA256 = "27e6150bf2297027684eae62ffa158c286b0aa8c2c64a60edaaf3bca7723
 # The fixtures may be used for a campaign only once their status is FROZEN,
 # which needs the native-speaker review their review_coverage still lacks.
 FROZEN_STATUS = "FROZEN"
-# The ONE run a separate Owner authorization names, by the digest of its
-# manifest (see run_manifest). None: no run is authorized, so neither a
-# campaign nor an aggregation of a real run can proceed.
+# Default for the ONE authorized run digest. It stays None: the manifest binds
+# the Git revision, so the digest an Owner authorizes is passed at run time with
+# --authorized-manifest (see the activation procedure above), never committed.
 AUTHORIZED_RUN_MANIFEST_SHA256 = None
 LANGUAGES = ("en", "ar-msa", "ar-gulf-kw", "ar-egy")
 SCENARIOS = ("G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08")
@@ -411,14 +431,42 @@ def _offline_fake(adapter):
     return getattr(transport, "OFFLINE_FAKE", False) is True
 
 
-def campaign(adapter, cases, manifest, journal=None):
+_SHA256 = re.compile(r"[0-9a-f]{64}")
+
+
+def campaign_authorized(manifest, authorized_manifest_sha256):
+    """True only while the committed gate is open AND the run's manifest has
+    exactly the digest the Owner authorized."""
+    return (PROOF_B_CAMPAIGN_AUTHORIZED is True
+            and isinstance(authorized_manifest_sha256, str)
+            and _SHA256.fullmatch(authorized_manifest_sha256) is not None
+            and authorized_manifest_sha256 == _digest(manifest))
+
+
+def current_revision():
+    """The HEAD commit of a CLEAN checkout. Uncommitted or untracked changes
+    are refused: the revision would not describe the code that runs."""
+    import subprocess
+    def git(*args):
+        return subprocess.run(["git", "-C", _ROOT, *args], capture_output=True,
+                              text=True, check=True).stdout
+    try:
+        dirty = git("status", "--porcelain").strip()
+        revision = git("rev-parse", "HEAD").strip()
+    except (OSError, subprocess.CalledProcessError):
+        raise PackError("code revision unavailable")
+    if dirty:
+        raise PackError("checkout has uncommitted changes")
+    return revision
+
+
+def campaign(adapter, cases, manifest, journal=None, authorized_manifest_sha256=None):
     """At most MAX_PROVIDER_REQUESTS calls, one per case in fixture order, no
     retry. A reservation is journalled before each call. The run stops at the
     first ERROR, STRUCTURE_VIOLATION or ambiguous outcome; every later case is
     NOT_ATTEMPTED. The report carries its manifest and the manifest digest."""
-    if not _offline_fake(adapter) and not (
-            PROOF_B_CAMPAIGN_AUTHORIZED
-            and AUTHORIZED_RUN_MANIFEST_SHA256 == _digest(manifest)):
+    if not _offline_fake(adapter) and not campaign_authorized(
+            manifest, authorized_manifest_sha256):
         raise PackError("campaign not authorized")
     if manifest != run_manifest(manifest.get("code_revision"), adapter._model):
         raise PackError("manifest does not describe this run")
@@ -620,9 +668,19 @@ def main(argv=None):
     p.add_argument("--review-sheet", metavar="REPORT")
     p.add_argument("--aggregate", metavar="REVIEW")
     p.add_argument("--report", metavar="REPORT")
+    p.add_argument("--manifest", action="store_true")
+    p.add_argument("--model", default=toa.MODEL)
+    p.add_argument("--authorized-manifest", metavar="SHA256",
+                   default=AUTHORIZED_RUN_MANIFEST_SHA256)
     a = p.parse_args(argv)
     try:
-        if a.review_sheet:
+        if a.manifest:
+            manifest = run_manifest(current_revision(), a.model)
+            status = json.loads(open(INPUT_PATH, encoding="utf-8").read())["status"]
+            out = {"manifest": manifest, "manifest_sha256": _digest(manifest),
+                   "campaign_authorized": PROOF_B_CAMPAIGN_AUTHORIZED,
+                   "fixture_frozen": status == FROZEN_STATUS}
+        elif a.review_sheet:
             cases, refs = load_pilot()
             with open(a.review_sheet, encoding="utf-8") as fh:
                 out = review_sheet(json.load(fh), cases, refs)
@@ -634,7 +692,7 @@ def main(argv=None):
                 sheet = json.load(fh)
             with open(a.report, encoding="utf-8") as fh:
                 report = json.load(fh)
-            out = aggregate(sheet, report, cases, refs, AUTHORIZED_RUN_MANIFEST_SHA256)
+            out = aggregate(sheet, report, cases, refs, a.authorized_manifest)
         elif a.provider == "openai":
             if not PROOF_B_CAMPAIGN_AUTHORIZED:
                 print(json.dumps({"refused": "campaign not authorized"}))
@@ -646,15 +704,14 @@ def main(argv=None):
             with open(INPUT_PATH, encoding="utf-8") as fh:  # pragma: no cover
                 if json.load(fh)["status"] != FROZEN_STATUS:
                     raise PackError("fixtures are not frozen")
-            import subprocess  # pragma: no cover
-            revision = subprocess.run(  # pragma: no cover
-                ["git", "-C", _ROOT, "rev-parse", "HEAD"], capture_output=True,
-                text=True, check=True).stdout.strip()
+            manifest = run_manifest(current_revision(), a.model)  # pragma: no cover
+            if not campaign_authorized(manifest, a.authorized_manifest):  # pragma: no cover
+                raise PackError("campaign not authorized for this manifest")
             adapter = OpenAIMsnlAdapter(  # pragma: no cover
-                allow_network=True, transport=RecordingTransport(toa._urllib_transport))
-            manifest = run_manifest(revision, adapter._model)  # pragma: no cover
+                allow_network=True, model=a.model,
+                transport=RecordingTransport(toa._urllib_transport))
             with open(a.journal, "x", encoding="utf-8") as journal:  # pragma: no cover
-                out = campaign(adapter, cases, manifest, journal)
+                out = campaign(adapter, cases, manifest, journal, a.authorized_manifest)
         else:
             out = plan()
     except PackError as exc:

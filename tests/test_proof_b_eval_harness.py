@@ -10,6 +10,7 @@ import importlib.util
 import io
 import json
 import pathlib
+import re
 
 import pytest
 
@@ -513,6 +514,94 @@ def test_only_the_authorized_run_can_be_aggregated(pb, pilot, tmp_path, capsys):
     rep.write_text(json.dumps(report, ensure_ascii=False), encoding="utf-8")
     assert pb.main(["--aggregate", str(review)]) == 2
     assert pb.main(["--aggregate", str(review), "--report", str(rep)]) == 2
+    assert "not the authorized run" in capsys.readouterr().out
+
+
+# ── non-circular activation: the authorized digest is a runtime value ───────
+def _git(path, *args):
+    import subprocess
+    return subprocess.run(["git", "-C", str(path), "-c", "user.name=t", "-c", "user.email=t@t",
+                           *args], capture_output=True, text=True, check=True).stdout.strip()
+
+
+@pytest.fixture
+def clean_repo(pb, tmp_path, monkeypatch):
+    """A throwaway clean Git checkout standing in for the harness root."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-q")
+    (repo / "code.py").write_text("x = 1\n", encoding="utf-8")
+    _git(repo, "add", "code.py")
+    _git(repo, "commit", "-q", "-m", "fixed revision")
+    monkeypatch.setattr(pb, "_ROOT", str(repo))
+    return repo
+
+
+def test_the_authorized_digest_is_never_committed(pb):
+    src = SCRIPT.read_text(encoding="utf-8")
+    assert src.count("\nAUTHORIZED_RUN_MANIFEST_SHA256 = None\n") == 1
+    assert src.count("\nPROOF_B_CAMPAIGN_AUTHORIZED = False\n") == 1
+    assert not re.search(r"AUTHORIZED_RUN_MANIFEST_SHA256 = ['\"]", src)
+
+
+def test_campaign_authorization_needs_the_open_gate_and_the_exact_digest(pb, monkeypatch):
+    manifest = pb.run_manifest(REVISION, toa.MODEL)
+    digest = pb._digest(manifest)
+    assert pb.campaign_authorized(manifest, digest) is False          # gate closed
+    monkeypatch.setattr(pb, "PROOF_B_CAMPAIGN_AUTHORIZED", True)
+    assert pb.campaign_authorized(manifest, digest) is True
+    for other in (None, "", digest.upper(), digest + "0", "0" * 64, 1,
+                  pb._digest(pb.run_manifest("another-revision", toa.MODEL)),
+                  pb._digest(pb.run_manifest(REVISION, "another-model"))):
+        assert pb.campaign_authorized(manifest, other) is False, other
+    monkeypatch.setattr(pb, "PROOF_B_CAMPAIGN_AUTHORIZED", 1)       # never truthy-coerced
+    assert pb.campaign_authorized(manifest, digest) is False
+
+
+def test_the_revision_is_the_head_of_a_clean_checkout_only(pb, clean_repo):
+    head = _git(clean_repo, "rev-parse", "HEAD")
+    assert pb.current_revision() == head
+    (clean_repo / "planted.py").write_text("y = 2\n", encoding="utf-8")
+    with pytest.raises(pb.PackError):
+        pb.current_revision()
+    (clean_repo / "planted.py").unlink()
+    (clean_repo / "code.py").write_text("x = 3\n", encoding="utf-8")
+    with pytest.raises(pb.PackError):
+        pb.current_revision()
+
+
+def test_manifest_mode_names_the_digest_of_this_checkout(pb, clean_repo, capsys):
+    head = _git(clean_repo, "rev-parse", "HEAD")
+    assert pb.main(["--manifest", "--model", "pinned-model"]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out["manifest"] == pb.run_manifest(head, "pinned-model")
+    assert out["manifest_sha256"] == pb._digest(out["manifest"])
+    assert out["campaign_authorized"] is False and out["fixture_frozen"] is False
+    (clean_repo / "code.py").write_text("x = 3\n", encoding="utf-8")
+    assert pb.main(["--manifest"]) == 2
+    assert "uncommitted" in capsys.readouterr().out
+
+
+def test_the_closed_gate_refuses_even_a_named_digest(pb, monkeypatch, capsys):
+    def refuse(*_a, **_k):
+        raise AssertionError("no adapter may be built while the gate is closed")
+    monkeypatch.setattr(pb, "OpenAIMsnlAdapter", refuse)
+    monkeypatch.setattr(toa, "_urllib_transport", refuse)
+    digest = pb._digest(pb.run_manifest(REVISION, toa.MODEL))
+    code = pb.main(["--provider", "openai", "--allow-network", "--managed-credential",
+                    "--journal", "unused.jsonl", "--authorized-manifest", digest])
+    assert code == 2 and "not authorized" in capsys.readouterr().out
+
+
+def test_aggregation_takes_the_authorized_digest_at_run_time(pb, pilot, tmp_path, capsys):
+    report, sheet = _reviewed(pb, pilot)
+    review, rep = tmp_path / "review.json", tmp_path / "report.json"
+    review.write_text(json.dumps(sheet, ensure_ascii=False), encoding="utf-8")
+    rep.write_text(json.dumps(report, ensure_ascii=False), encoding="utf-8")
+    base = ["--aggregate", str(review), "--report", str(rep), "--authorized-manifest"]
+    assert pb.main(base + [report["manifest_sha256"]]) == 0
+    assert json.loads(capsys.readouterr().out)["decision"] == "PILOT_GO_FOR_LARGER_STUDY"
+    assert pb.main(base + ["0" * 64]) == 2
     assert "not the authorized run" in capsys.readouterr().out
 
 
