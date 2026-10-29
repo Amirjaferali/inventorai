@@ -7,6 +7,8 @@ implementation, focused tests and one pull request). Applicability: this contrac
 verified merge of that pull request into `feature/atomic-json-session-persistence`; on its proposal branch it describes an
 Owner-authorized proposed method, not a merged or delivered capability. Merge, deployment, production activation, a (g1)
 step-4 transition, a Materials domain and any broader capability admission are NOT authorized by it.
+AMENDMENT: §1A (relevance authority) was added by `MTE-TEMPERATURE-CHANGE-RELEVANCE-01`, Owner-authorized as Increment B
+only; it takes effect only on the verified merge of its pull request and changes no other clause.
 AUTHORITY LEVEL: subordinate to the accepted
 [shared deterministic calculation and units owner boundary contract](SHARED_DETERMINISTIC_CALCULATION_AND_UNITS_OWNER_BOUNDARY_CONTRACT.md)
 (the "calc/units contract", with its Correction 13, §13L, added by the same increment) and to the Mechanical Domain Pack's
@@ -50,6 +52,35 @@ the entered coefficient, length or temperature change is correct, and it supplie
 A missing, malformed, corrupt or unreadable composition grants nothing beyond the root rule, and an unreadable root domain
 offers nothing (fail closed). The session link, the page and the submission read the same one decision. Applicability
 comes only from the method's explicit declarations (§5).
+
+## 1A. Relevance authority (MTE-TEMPERATURE-CHANGE-RELEVANCE-01)
+
+ONE bounded relationship is admitted, between ONE existing fact class and this ONE method. A CURRENT valid inventor
+statement under `PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01` (`PartTemperatureChangeDeclaration` in
+`engine/subsystem_model.py`; OWNER_STATED / UNVALIDATED; bound to the exact `(project_id, subsystem_id)`) that the same
+declared Mechanical Stage-15 part for which §1 offers this method experiences a temperature change during use allows
+InventorAI to treat this method as potentially relevant to examining possible free dimensional change of that part, if
+the method's own applicability conditions (§5) are satisfied.
+
+Basis: the §3 item 1 claim of SRC-031 (`NBS-TE-S1`, §11) only — practically all materials change dimensions when heated
+or cooled — reused as admitted, with no other source, data table or value. That claim says "practically all", not all,
+and states no magnitude: the inventor's statement makes possible dimensional change a matter worth examining, never a
+change that occurs or that matters.
+
+Boundary (binding). This relevance does not establish that the free-expansion model applies and does not change
+eligibility (§1 is unchanged; it neither grants nor narrows eligibility), supply any input (`α_avg`, `L_ref`, `ΔT` or a
+unit), satisfy or pre-answer any declaration D-1 to D-8 (§5), pre-select any screen answer (§8), validate the inventor's
+statement or authorize presentation or routing. The statement carries no temperature magnitude, material, uniformity,
+restraint or reversibility. NOT DECLARED, a withdrawn statement, an unreadable or corrupt statement, and a statement about
+another part, another project or a non-Mechanical part give no positive relevance basis. Relevance is not a solution
+choice, a suggestion to use the method, an automatic selection, evidence, validation, readiness, progression or a safety
+statement.
+
+Runtime: none. This clause is governance authority only: no code reads it, and no predicate, store read, condition or
+flag implements it; the consumer, the adapter, the shared owner, the fact owner, the store and the web layer are
+unchanged by it. Any presentation, link, Step-6 or Project Compass action, routing or other runtime use of this relevance
+is a separate future increment that needs its own Owner authorization. No registry, mapping, matcher, graph or other
+relationship mechanism is created, and no other fact or method gains a relationship from this clause.
 
 ## 2. Method identity and version
 
@@ -319,4 +350,5 @@ journeys at phone width. Hosted required CI on the final PR head is the merge ga
 
 Stop and return to the Owner on a source or IP deficiency, a contract incompatibility, unprovable numerical integrity, a
 required broad owner redesign, property framework or generic conversion mechanism, or any scope expansion (another method,
-consumer, unit, conversion, material input, eligibility beyond §1, persistence, result transfer or report surface).
+consumer, unit, conversion, material input, eligibility beyond §1, persistence, result transfer or report surface, or
+any runtime use of the §1A relevance).
