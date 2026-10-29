@@ -20,7 +20,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts" / "run_proof_b_eval.py"
 # Pinned: changing the instructions, schema, limits, criteria or decision rule
 # changes the pre-registration and must be a deliberate, reviewed edit.
-PREREGISTRATION_SHA256 = "11e11714154f90cc3816d2d004365d2087c7a0ac4f5b9b600113fd460eae6c99"
+PREREGISTRATION_SHA256 = "51505e147170f1c884e4df2f767da86eb11d5a4f88d0d5b9d87d37476d5ec9bc"
 REVISION = "test-revision"
 
 
@@ -239,19 +239,18 @@ def test_a_misplaced_or_malformed_task_handoff_is_refused(pb, tmp_path, monkeypa
 def test_leak_check_covers_the_task_handoff(pb, pilot):
     cases, refs = pilot
     phrase = refs["G09-en"]["task_handoff"]["specialist_review"][0]
-    def build(case):
+    def in_instructions(case):
         body = pb.payload(case)
         if case["case_id"] == "G09-en":
-            body = dict(body, input=json.dumps({"idea_text": case["idea_text"] + " " + phrase}))
+            body["instructions"] += " " + phrase
         return body
-    leaks = pb.label_leaks(cases, refs, build)
-    assert ("G09-en", "input_shape") in leaks or ("G09-en", "task_handoff") in leaks
-    def append_only(case):
+    assert ("G09-en", "task_handoff") in pb.label_leaks(cases, refs, in_instructions)
+    def appended(case):
         body = pb.payload(case)
         if case["case_id"] == "G09-en":
             body["input"] = body["input"][:-1] + ', "x": "' + phrase + '"}'
         return body
-    assert ("G09-en", "input_shape") in pb.label_leaks(cases, refs, append_only)
+    assert ("G09-en", "input_shape") in pb.label_leaks(cases, refs, appended)
     assert pb.label_leaks(cases, refs) == []
 
 
@@ -274,6 +273,7 @@ def test_stated_denominators_are_the_packs_own(pb, pilot):
 def test_revised_i4_and_i6_wording(pb):
     i4, i6 = pb.PREREGISTRATION["criteria"]["I4"], pb.PREREGISTRATION["criteria"]["I6"]
     for phrase in ("decision-relevant missing information", "decision_relevant_unknowns",
+                   "need not cover every listed unknown",
                    "measurement the inventor could make", "never treated as a value the inventor "
                    "already knows", "not yet applicable is correct", "false rejection",
                    "No particular mechanism, design choice or capability name"):

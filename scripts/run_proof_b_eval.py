@@ -85,7 +85,7 @@ INPUT_SHA256 = "2ae61a4d8331f76981e09860c11489264b6a15cb88521651a97181ebb38cf2c1
 REFERENCE_PATH = os.path.join(_ROOT, "tests", "fixtures", "proof_b_pilot_reference_v3.json")
 REFERENCE_SHA256 = "36fea91df5ba7a69e068f0aaa4ea7ee8755fbe2369ef5ec56947fc90d37071db"
 # The fixtures may be used for a campaign only once their status is FROZEN,
-# which needs the native-speaker review their review_coverage still lacks.
+# which needs the Owner's language review their review_coverage still lacks.
 FROZEN_STATUS = "FROZEN"
 # Default for the ONE authorized run digest. It stays None: the manifest binds
 # the Git revision, so the digest an Owner authorizes is passed at run time with
@@ -189,9 +189,9 @@ PREREGISTRATION = {
         "I3": "Useful alternative: at least one relevant, intelligible, non-circular option to "
               "explore; judged as an idea to explore, never as engineering validity.",
         "I4": "Clarification: the questions and the unresolved notes together address the "
-              "decision-relevant missing information: what must be known first (for a case with a "
-              "task_handoff, its decision_relevant_unknowns, such as a support configuration before "
-              "any calculation input). Each question is answerable by a nontechnical inventor and "
+              "decision-relevant missing information that must be known first (for a case with a "
+              "task_handoff, among its decision_relevant_unknowns, such as a support configuration "
+              "before any calculation input); they need not cover every listed unknown. Each question is answerable by a nontechnical inventor and "
               "presupposes no chosen component. A missing measurement, calculation, reference or "
               "specialist check is named as unresolved or asked for as a measurement the inventor "
               "could make, never treated as a value the inventor already knows. Withholding a "
@@ -648,8 +648,9 @@ def aggregate(sheet, report, cases, refs, authorized_manifest_sha256):
 # ─────────────────────────────────────────────────────────────────────────────
 def label_leaks(cases, refs, build=payload):
     """Reference material found in what is SENT for a case: any input key but
-    ``idea_text``, the case id, or any of THAT case's annotations — unless the
-    phrase is the inventor's own wording in the idea text. Empty means clean."""
+    ``idea_text``, the case id, or any of THAT case's annotations anywhere in the
+    serialized body (instructions included) — unless the phrase is the
+    inventor's own wording in the idea text. Empty means clean."""
     leaks = []
     for case in cases:
         body = build(case)
@@ -671,7 +672,7 @@ def label_leaks(cases, refs, build=payload):
             for v in values:
                 if v and v in sent["idea_text"]:
                     continue                      # the inventor's own words
-                if v and v in body["input"]:
+                if v and v in blob:
                     leaks.append((case["case_id"], key))
     return leaks
 
