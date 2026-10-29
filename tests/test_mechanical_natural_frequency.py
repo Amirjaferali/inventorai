@@ -1084,9 +1084,18 @@ def test_verification_preparation_is_bounded_and_artifact_sources_stay_pinned(me
     assert set(by_id) == {"NBS-NF-S1", "NIST-NF-U", "mnf:SU001", "mnf:SU002"}
     assert "maximum" not in by_id["NBS-NF-S1"]["inspected_content"].lower()
     assert "resonance sought" not in by_id["NBS-NF-S1"]["inspected_content"].lower()
-    artifact_text = nf.ARTIFACT_PATH.read_text(encoding="utf-8")
-    assert "MNF-VERIFICATION-MEASUREMENT-STEP-01" not in artifact_text
-    assert "SRC-045" not in artifact_text
+    # The artifact is byte-for-byte the delivered #900 artifact (SHA-256 of the
+    # file at base 29ac879); its own SRC-045 line records only that the former
+    # basis is IP-UNRESOLVED and NOT relied upon.
+    assert hashlib.sha256(nf.ARTIFACT_PATH.read_bytes()).hexdigest() == \
+        "4456c5bdd2f11b647232f52e429e164b906ab05d4717f559a423f97daa23adc1"
+    # The checklist itself never cites SRC-045 or SRC-047, in either language.
+    for lang in ("en", "ar"):
+        for key in ("UI_MNF_VERIFY_TITLE", "UI_MNF_VERIFY_INTRO", "UI_MNF_VERIFY_ITEM_1",
+                    "UI_MNF_VERIFY_ITEM_2", "UI_MNF_VERIFY_ITEM_3", "UI_MNF_VERIFY_ITEM_4",
+                    "UI_MNF_VERIFY_ITEM_5", "UI_MNF_VERIFY_BOUNDARY", "UI_MNF_VERIFY_AUTHORITY"):
+            assert "SRC-045" not in ui_text.text(key, lang)
+            assert "SRC-047" not in ui_text.text(key, lang)
 
 
 def test_verification_preparation_is_success_only_and_request_local(mech):
