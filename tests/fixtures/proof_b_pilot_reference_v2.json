@@ -1,7 +1,17 @@
 {
-  "pack_id": "inventorai-proof-b-pilot-draft-01",
-  "status": "DRAFT_NOT_INDEPENDENTLY_VALIDATED",
+  "pack_id": "inventorai-proof-b-pilot-02",
+  "status": "CORRECTED_PENDING_NATIVE_REVIEW",
   "scoring_rule": "Human semantic review is required; this file does not license automatic engineering verdicts",
+  "review_coverage": {
+    "corrections": "AI executor (Claude Code), from the AI independent review of 2026-10-29: G01, G02, G03, G04, G06 and G07 wording; G01, G02, G05 and G08 reference labels",
+    "ai_review": "AI reviewers only (Claude). Not native speakers; not independent human review.",
+    "native_human_review": "NONE. Required before freeze for every ar-msa, ar-gulf-kw and ar-egy text and its EN parity."
+  },
+  "supersedes": {
+    "pack_id": "inventorai-proof-b-pilot-draft-01",
+    "inputs_sha256": "1e298b0d90cf4f3d51ddeb000dab9eed255a4ba749902d12f1a3fccf975b42b2",
+    "reference_sha256": "9c8ebee66b5c66db8a5c48542649e3e7d408917a916d812b0994749e4002120a"
+  },
   "cases": [
     {
       "case_id": "G01-en",
@@ -11,7 +21,7 @@
       "expected_behavior": "CLARIFY",
       "stated_intent": "The inventor wants to prevent potted plants drying while away.",
       "not_stated_or_not_verified": [
-        "automatic watering",
+        "watering as the chosen method",
         "pump",
         "timer",
         "remote control"
@@ -26,7 +36,7 @@
       "expected_behavior": "CLARIFY",
       "stated_intent": "The inventor wants to prevent potted plants drying while away.",
       "not_stated_or_not_verified": [
-        "automatic watering",
+        "watering as the chosen method",
         "pump",
         "timer",
         "remote control"
@@ -41,7 +51,7 @@
       "expected_behavior": "CLARIFY",
       "stated_intent": "The inventor wants to prevent potted plants drying while away.",
       "not_stated_or_not_verified": [
-        "automatic watering",
+        "watering as the chosen method",
         "pump",
         "timer",
         "remote control"
@@ -56,7 +66,7 @@
       "expected_behavior": "CLARIFY",
       "stated_intent": "The inventor wants to prevent potted plants drying while away.",
       "not_stated_or_not_verified": [
-        "automatic watering",
+        "watering as the chosen method",
         "pump",
         "timer",
         "remote control"
@@ -75,7 +85,7 @@
         "motor is allowed",
         "specific lifting mechanism"
       ],
-      "unresolved_question": "Load, operating conditions and preferred manual approach."
+      "unresolved_question": "Load, operating conditions and the preferred approach without wheels or a motor."
     },
     {
       "case_id": "G02-ar-msa",
@@ -89,7 +99,7 @@
         "motor is allowed",
         "specific lifting mechanism"
       ],
-      "unresolved_question": "Load, operating conditions and preferred manual approach."
+      "unresolved_question": "Load, operating conditions and the preferred approach without wheels or a motor."
     },
     {
       "case_id": "G02-ar-gulf-kw",
@@ -103,7 +113,7 @@
         "motor is allowed",
         "specific lifting mechanism"
       ],
-      "unresolved_question": "Load, operating conditions and preferred manual approach."
+      "unresolved_question": "Load, operating conditions and the preferred approach without wheels or a motor."
     },
     {
       "case_id": "G02-ar-egy",
@@ -117,7 +127,7 @@
         "motor is allowed",
         "specific lifting mechanism"
       ],
-      "unresolved_question": "Load, operating conditions and preferred manual approach."
+      "unresolved_question": "Load, operating conditions and the preferred approach without wheels or a motor."
     },
     {
       "case_id": "G03-en",
@@ -233,8 +243,9 @@
       "language": "en",
       "category": "explicit_intent_control",
       "expected_behavior": "RESTATE_OR_OPTIONAL_CLARIFY",
-      "stated_intent": "A transparent lid opens manually using a hinge; the inventor seeks to describe, not verify, it.",
+      "stated_intent": "A transparent lid on a storage box opens manually on a hinge; the inventor wants only to describe the idea now, not to choose dimensions.",
       "not_stated_or_not_verified": [
+        "dimensions are chosen",
         "hinge is designed",
         "safety or durability verified"
       ],
@@ -246,8 +257,9 @@
       "language": "ar-msa",
       "category": "explicit_intent_control",
       "expected_behavior": "RESTATE_OR_OPTIONAL_CLARIFY",
-      "stated_intent": "A transparent lid opens manually using a hinge; the inventor seeks to describe, not verify, it.",
+      "stated_intent": "A transparent lid on a storage box opens manually on a hinge; the inventor wants only to describe the idea now, not to choose dimensions.",
       "not_stated_or_not_verified": [
+        "dimensions are chosen",
         "hinge is designed",
         "safety or durability verified"
       ],
@@ -259,8 +271,9 @@
       "language": "ar-gulf-kw",
       "category": "explicit_intent_control",
       "expected_behavior": "RESTATE_OR_OPTIONAL_CLARIFY",
-      "stated_intent": "A transparent lid opens manually using a hinge; the inventor seeks to describe, not verify, it.",
+      "stated_intent": "A transparent lid on a storage box opens manually on a hinge; the inventor wants only to describe the idea now, not to choose dimensions.",
       "not_stated_or_not_verified": [
+        "dimensions are chosen",
         "hinge is designed",
         "safety or durability verified"
       ],
@@ -272,8 +285,9 @@
       "language": "ar-egy",
       "category": "explicit_intent_control",
       "expected_behavior": "RESTATE_OR_OPTIONAL_CLARIFY",
-      "stated_intent": "A transparent lid opens manually using a hinge; the inventor seeks to describe, not verify, it.",
+      "stated_intent": "A transparent lid on a storage box opens manually on a hinge; the inventor wants only to describe the idea now, not to choose dimensions.",
       "not_stated_or_not_verified": [
+        "dimensions are chosen",
         "hinge is designed",
         "safety or durability verified"
       ],
@@ -397,8 +411,9 @@
       "language": "en",
       "category": "missing_function",
       "expected_behavior": "ASK_FUNCTION",
-      "stated_intent": "Only an orange box and a project name have been specified; no function has been stated.",
+      "stated_intent": "The inventor names the invention 'Orange Box' and pictures a box-like shape; no function is stated, and the name does not state a colour.",
       "not_stated_or_not_verified": [
+        "the object is orange",
         "any functional objective",
         "sensors",
         "power supply",
@@ -412,8 +427,9 @@
       "language": "ar-msa",
       "category": "missing_function",
       "expected_behavior": "ASK_FUNCTION",
-      "stated_intent": "Only an orange box and a project name have been specified; no function has been stated.",
+      "stated_intent": "The inventor names the invention 'Orange Box' and pictures a box-like shape; no function is stated, and the name does not state a colour.",
       "not_stated_or_not_verified": [
+        "the object is orange",
         "any functional objective",
         "sensors",
         "power supply",
@@ -427,8 +443,9 @@
       "language": "ar-gulf-kw",
       "category": "missing_function",
       "expected_behavior": "ASK_FUNCTION",
-      "stated_intent": "Only an orange box and a project name have been specified; no function has been stated.",
+      "stated_intent": "The inventor names the invention 'Orange Box' and pictures a box-like shape; no function is stated, and the name does not state a colour.",
       "not_stated_or_not_verified": [
+        "the object is orange",
         "any functional objective",
         "sensors",
         "power supply",
@@ -442,8 +459,9 @@
       "language": "ar-egy",
       "category": "missing_function",
       "expected_behavior": "ASK_FUNCTION",
-      "stated_intent": "Only an orange box and a project name have been specified; no function has been stated.",
+      "stated_intent": "The inventor names the invention 'Orange Box' and pictures a box-like shape; no function is stated, and the name does not state a colour.",
       "not_stated_or_not_verified": [
+        "the object is orange",
         "any functional objective",
         "sensors",
         "power supply",
