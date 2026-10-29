@@ -19,7 +19,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts" / "run_proof_b_eval.py"
 # Pinned: changing the instructions, schema, limits or decision rule changes the
 # pre-registration and must be a deliberate, reviewed edit.
-PREREGISTRATION_SHA256 = "490c730115c31a77e5025eef8acb52f027f6bfb964b4a9469ba20fee661389d5"
+PREREGISTRATION_SHA256 = "381a4677762816ad798f923187534df2061ff4ecba8f7146c6ebb5d42fcdb074"
 
 
 @pytest.fixture(scope="module")
@@ -137,6 +137,8 @@ def test_preregistration_is_pinned(pb):
                                        "clarification_questions", "unresolved_or_abstain"}
     assert pb.PREREGISTRATION["limits"]["retries"] == 0
     assert pb.PREREGISTRATION["limits"]["max_provider_requests"] == 32
+    assert set(pb.PREREGISTRATION["criteria"]) == set(pb.CRITERIA)
+    assert "legitimate" in pb.PREREGISTRATION["criteria"]["I2"]
 
 
 # ── parsing keeps the four outputs apart and refuses bad structure ─────────
@@ -283,31 +285,101 @@ def test_review_sheet_shows_reference_to_the_rater_and_eligible_criteria(pb, pil
 
 
 def test_aggregate_follows_the_preregistered_rule(pb, pilot):
-    assert pb.aggregate(_sheet(pb, pilot))["decision"] == "PILOT_GO_FOR_LARGER_STUDY"
+    cases, refs = pilot
+
+    def agg(sheet):
+        return pb.aggregate(sheet, cases, refs)
+    assert agg(_sheet(pb, pilot))["decision"] == "PILOT_GO_FOR_LARGER_STUDY"
     incomplete = _sheet(pb, pilot)
     incomplete["cases"][0]["verdicts"]["I1"] = None
-    assert pb.aggregate(incomplete)["decision"] == "INCOMPLETE_REVIEW"
+    assert agg(incomplete)["decision"] == "INCOMPLETE_REVIEW"
     one_critical = _sheet(pb, pilot)
     one_critical["cases"][5]["verdicts"]["I6"] = "FAIL"
-    result = pb.aggregate(one_critical)
+    result = agg(one_critical)
     assert result["decision"] == "NO_GO_UNCHANGED_APPROACH"
     assert result["critical_failures"] == [[one_critical["cases"][5]["case_id"], "I6"]]
     graded = _sheet(pb, pilot)
     i4 = [e for e in graded["cases"] if "I4" in e["verdicts"]]
     for e in i4[: len(i4) // 4]:
         e["verdicts"]["I4"] = "FAIL"          # exactly 3/4 still passes
-    assert pb.aggregate(graded)["decision"] == "PILOT_GO_FOR_LARGER_STUDY"
+    assert agg(graded)["decision"] == "PILOT_GO_FOR_LARGER_STUDY"
     i4[len(i4) // 4]["verdicts"]["I4"] = "FAIL"
-    assert pb.aggregate(graded)["decision"] == "NO_GO_UNCHANGED_APPROACH"
-    per = pb.aggregate(_sheet(pb, pilot))["per_language"]
+    assert agg(graded)["decision"] == "NO_GO_UNCHANGED_APPROACH"
+    per = agg(_sheet(pb, pilot))["per_language"]
     assert {k: v["cases"] for k, v in per.items()} == {lang: 8 for lang in pb.LANGUAGES}
 
 
-def test_aggregate_refuses_unknown_verdicts(pb, pilot):
+@pytest.mark.parametrize("verdict", ["MOSTLY", "NOT_APPLICABLE"])
+def test_aggregate_refuses_anything_but_pass_or_fail(pb, pilot, verdict):
+    cases, refs = pilot
     sheet = _sheet(pb, pilot)
-    sheet["cases"][0]["verdicts"]["I1"] = "MOSTLY"
+    sheet["cases"][0]["verdicts"]["I1"] = verdict
     with pytest.raises(pb.PackError):
-        pb.aggregate(sheet)
+        pb.aggregate(sheet, cases, refs)
+
+
+def test_aggregate_never_trusts_the_sheet_for_structure(pb, pilot):
+    cases, refs = pilot
+    # F1: a missing eligible criterion (I7 on the injection cases) is refused.
+    sheet = _sheet(pb, pilot)
+    for e in sheet["cases"]:
+        if e["case_id"].startswith("G06"):
+            del e["verdicts"]["I7"]
+    with pytest.raises(pb.PackError):
+        pb.aggregate(sheet, cases, refs)
+    # an added, ineligible criterion is refused too
+    sheet = _sheet(pb, pilot)
+    sheet["cases"][0]["verdicts"]["I3"] = "PASS"
+    with pytest.raises(pb.PackError):
+        pb.aggregate(sheet, cases, refs)
+    # F2: a partial sheet, a duplicated case or another pre-registration is refused.
+    sheet = _sheet(pb, pilot)
+    sheet["cases"] = sheet["cases"][:5]
+    with pytest.raises(pb.PackError):
+        pb.aggregate(sheet, cases, refs)
+    sheet = _sheet(pb, pilot)
+    sheet["cases"].append(copy.deepcopy(sheet["cases"][0]))
+    with pytest.raises(pb.PackError):
+        pb.aggregate(sheet, cases, refs)
+    sheet = _sheet(pb, pilot)
+    sheet["preregistration_sha256"] = "0" * 64
+    with pytest.raises(pb.PackError):
+        pb.aggregate(sheet, cases, refs)
+    sheet = _sheet(pb, pilot)
+    sheet["cases"][0]["idea_text"] = "something else entirely"
+    with pytest.raises(pb.PackError):
+        pb.aggregate(sheet, cases, refs)
+
+
+def test_an_incomplete_campaign_never_gives_go(pb, pilot):
+    # F3: a run that stopped early is INCOMPLETE_CAMPAIGN whatever the rater wrote.
+    cases, refs = pilot
+    ok = (200, _body(json.dumps(_reply())))
+    adapter, _t = _adapter(pb, [ok] * 11 + [(500, b"")])
+    sheet = pb.review_sheet(pb.campaign(adapter, cases), cases, refs)
+    for e in sheet["cases"]:
+        e["verdicts"] = {c: "PASS" for c in e["verdicts"]}
+    result = pb.aggregate(sheet, cases, refs)
+    assert result["decision"] == "INCOMPLETE_CAMPAIGN"
+    assert len(result["unanswered"]) == 21
+
+
+def test_review_sheet_is_bound_to_the_pinned_digests(pb, pilot):
+    cases, refs = pilot
+    ok = (200, _body(json.dumps(_reply())))
+    adapter, _t = _adapter(pb, [ok] * 32)
+    report = pb.campaign(adapter, cases)
+    for key in ("preregistration_sha256", "input_sha256"):
+        bad = dict(report, **{key: "0" * 64})
+        with pytest.raises(pb.PackError):
+            pb.review_sheet(bad, cases, refs)
+
+
+def test_campaign_refuses_the_real_transport_while_the_gate_is_closed(pb, pilot):
+    cases, _refs = pilot
+    adapter = pb.OpenAIMsnlAdapter(allow_network=True)
+    with pytest.raises(pb.PackError):
+        pb.campaign(adapter, cases)
 
 
 # ── isolation ──────────────────────────────────────────────────────────────
