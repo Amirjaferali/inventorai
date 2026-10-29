@@ -221,6 +221,7 @@ body{overflow-wrap:anywhere}
       {% if mte_tc_relevance is defined and mte_tc_relevance %}
       <span style="display:block;margin-top:4px" data-mte-tc-relevance>{{ t('UI_MTE_TC_RELEVANCE') }}</span>
       <a href="{{ url_for('mechanical_thermal_expansion', sid=sid) }}" style="display:block" data-mte-link-context>{{ t('UI_MTE_LINK_TEXT') }}</a>
+      <span style="display:block;color:#777" data-mte-link-context-note>{{ t('UI_MTE_LINK_NOTE') }}</span>
       {% endif %}
       <form method="POST" action="{{ url_for('part_temperature_change', sid=sid) }}" data-part-tc-form="withdraw" style="margin:4px 0 0 0">
         <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">

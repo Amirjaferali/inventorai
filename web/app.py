@@ -7053,8 +7053,8 @@ def show_session(sid):
     # contextual relevance and the single link agree with what the page shows.
     _scope_view = _integrated_scope_context(state)
     _ptc_view = _part_temperature_change_context(sid, entry)
-    _mte_tc_view = bool(_scope_view) and _mte_tc_relevance(
-        _ptc_view, _calc_gate(sid, _mte))
+    _mte_gate = _calc_gate(sid, _mte)
+    _mte_tc_view = bool(_scope_view) and _mte_tc_relevance(_ptc_view, _mte_gate)
     return render_template("session.html",
         sid=sid,
         project_identification=_project_identification(sid),
@@ -7297,7 +7297,8 @@ def show_session(sid):
         # request-local free linear thermal-expansion calculation, on the same
         # eligibility as the other Mechanical calculations. It never gates the
         # journey.
-        mechanical_thermal_expansion_link=_mte_link_offered(sid),
+        # (Increment C: the same single gate read as the relevance above.)
+        mechanical_thermal_expansion_link=_mte_gate[0],
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(

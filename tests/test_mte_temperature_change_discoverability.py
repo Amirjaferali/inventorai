@@ -190,6 +190,8 @@ def test_relevance_wording_in_both_languages(lang):
     text = html.unescape(CONTEXT.search(body).group(0))
     assert ui_text.text("UI_MTE_TC_RELEVANCE", lang) in text
     assert ui_text.text("UI_MTE_LINK_TEXT", lang) in text
+    # the moved link keeps the method's own advisory note beside it
+    assert ui_text.text("UI_MTE_LINK_NOTE", lang) in text
     if lang == "ar":
         assert 'dir="rtl"' in body
 
@@ -204,7 +206,7 @@ def test_wording_keeps_relevance_apart_from_applicability():
                    "not a recommendation of a design solution"):
         assert phrase in en, phrase
     for phrase in ("لأنك صرّحت", "قد يساعدك", "محتمل", "من تصريحك أنت فقط",
-                   "ولم يتحقق منه InventorAI", "لا يعني ذلك أن نموذج الحساب ينطبق",
+                   "ولم يتحقق InventorAI من هذا التصريح", "لا يعني ذلك أن نموذج الحساب ينطبق",
                    "شروطه الخاصة", "إلا القيم التي تُدخلها أنت", "ليس توصية"):
         assert phrase in ar, phrase
     lowered = en.lower()

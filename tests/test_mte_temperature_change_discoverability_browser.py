@@ -39,6 +39,7 @@ def test_relevance_moves_the_one_link_beside_the_statement(server, page, lang):
         text("UI_MTE_TC_RELEVANCE", lang))
     expect(_links(page, sid)).to_have_count(1)
     expect(block.locator("[data-mte-link-context]")).to_have_text(text("UI_MTE_LINK_TEXT", lang))
+    expect(block.locator("[data-mte-link-context-note]")).to_have_text(text("UI_MTE_LINK_NOTE", lang))
     expect(page.locator("[data-mte-link]")).to_have_count(0)
 
     page.set_viewport_size({"width": 390, "height": 900})
