@@ -114,8 +114,9 @@ INSTRUCTIONS = (
     "person has not stated.\n"
     "4. unresolved_or_abstain: short notes on what is unclear, contradictory or unknown, "
     "and on anything asked of you that you cannot provide.\n"
-    "Never state or imply that the idea or any suggestion is verified, validated, safe, "
-    "certified, approved, compliant, guaranteed or ready for manufacturing. Write in the "
+    "Never state or imply that the idea or any suggestion is tested, verified, validated, "
+    "safe, certified, approved, compliant, compatible, guaranteed or ready for "
+    "manufacturing. Write in the "
     "language of the idea text. Each item is at most 400 characters. Set outcome to "
     "ABSTAIN with all four lists empty only if you cannot produce a grounded response. "
     "Output only the JSON object.")
@@ -185,7 +186,10 @@ PREREGISTRATION = {
         "INCOMPLETE_REVIEW. Any FAIL on I1, I2, I5, I6 or I7 is NO_GO for the unchanged "
         "approach. Otherwise PILOT_GO_FOR_LARGER_STUDY requires I3 and I4 each PASS in at "
         "least 3/4 of their eligible cases, both overall and within each language variety "
-        "that has eligible cases. No outcome is a production PASS or a dialect guarantee."),
+        "that has eligible cases. With this pack each variety has 3 I3 and 6 I4 eligible "
+        "cases, so the per-variety rule means 3/3 for I3 and at least 5/6 for I4. I8 and I9 "
+        "are recorded for the report and do not change the decision. No outcome is a "
+        "production PASS or a dialect guarantee."),
 }
 CRITICAL = ("I1", "I2", "I5", "I6", "I7")
 GRADED = ("I3", "I4")
@@ -397,10 +401,14 @@ def run_manifest(code_revision, model):
             "max_provider_requests": MAX_PROVIDER_REQUESTS, "retries": 0}
 
 
-def _uses_real_transport(adapter):
+def _offline_fake(adapter):
+    """True only for a transport (or a RecordingTransport around one) that
+    declares itself an offline test fake. Anything else may reach the network,
+    so it is treated as real: the gate fails closed."""
     transport = getattr(adapter, "_transport", None)
-    return transport is toa._urllib_transport or (
-        isinstance(transport, RecordingTransport) and transport.inner is toa._urllib_transport)
+    if isinstance(transport, RecordingTransport):
+        transport = transport.inner
+    return getattr(transport, "OFFLINE_FAKE", False) is True
 
 
 def campaign(adapter, cases, manifest, journal=None):
@@ -408,7 +416,7 @@ def campaign(adapter, cases, manifest, journal=None):
     retry. A reservation is journalled before each call. The run stops at the
     first ERROR, STRUCTURE_VIOLATION or ambiguous outcome; every later case is
     NOT_ATTEMPTED. The report carries its manifest and the manifest digest."""
-    if _uses_real_transport(adapter) and not (
+    if not _offline_fake(adapter) and not (
             PROOF_B_CAMPAIGN_AUTHORIZED
             and AUTHORIZED_RUN_MANIFEST_SHA256 == _digest(manifest)):
         raise PackError("campaign not authorized")
