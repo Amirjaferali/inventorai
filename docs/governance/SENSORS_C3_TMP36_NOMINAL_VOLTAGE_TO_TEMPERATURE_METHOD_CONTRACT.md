@@ -205,6 +205,42 @@ carried, the inputs echoed and this fixed disclosure (English; pinned equal to t
 method identity, `TMP36` and `UNVALIDATED` / `NOT EVIDENCE` are each direction-isolated on the Arabic page; the inventor's
 typed value is shown left-to-right.
 
+## 9B. Verification-preparation block (amendment `TMP36-NOMINAL-TEMPERATURE-VERIFICATION-PREPARATION-01`, 2026-10-29)
+
+Presentation only; it changes no method identity, version, calculation, declaration, screen, numerical rule, refusal,
+output, disclosure or source-use record.
+
+- **Where and when.** ONE read-only block, "How to prepare to check this nominal temperature", is rendered only after a
+  successful §9 result on the standalone TMP36 page. It is absent on a plain GET and on every refusal, abstention,
+  malformed request or ineligible project / part, and it is not part of the `TEMPERATURE-TO-CONTROL-CONDITION-01`
+  composition (§1A), whose behaviour is unchanged. Showing it validates nothing: the result stays `UNVALIDATED` and
+  `NOT EVIDENCE`.
+- **Purpose.** It lists what information may need to be available for an independently justified check; it is not a
+  measurement or calibration procedure, a verdict or an instruction to perform a test. Its five items are InventorAI's own
+  restatement of the admitted boundaries: (A) the sensor's identity and whether it is stated to be the TMP36 the
+  calculation assumes (D-1); (B) the `V_OUT` used and whether it came from an independently obtained reading or from
+  documentation or another inventor-supplied source, never presented as a measurement by InventorAI (D-2, §9 item 2);
+  (C) the information showing whether the real supply, loading, steady conditions and temperature range correspond to the
+  declared conditions (D-3); (D) what independent temperature measurement or reference, if any, would be available, with
+  its target, location, conditions and relationship to the sensor clear enough for a qualified reviewer to judge
+  comparability — an arbitrary room-temperature reading or one taken elsewhere is not assumed to represent the sensor's
+  temperature; (E) the effects outside the nominal calculation — accuracy, linearity, self-heating, calibration,
+  instrument error and, where applicable, ADC error (D-4, §9 item 3) — as factors for that check, none calculated here.
+- **Distinction.** The declared `V_OUT`, the nominal temperature, an independently measured or referenced temperature, the
+  device's accuracy and calibration, and engineering verification or validation are kept apart. Agreement with a reference
+  does not by itself establish accuracy, calibration, suitability, safety or a validated design; disagreement does not by
+  itself identify the source of error. Nothing is compared automatically.
+- **Authority / source integrity.** No new scientific claim is admitted. The artifact
+  `tmp36_content_config/nominal_voltage_to_temperature_v1.json` (version `1`), its pinned `ADI-S1` and `tmp36:SU001`
+  records and every other source-use boundary stay byte-for-byte unchanged.
+- **Boundary.** The §10 exclusions apply in full: no calibration procedure, sensor, instrument, ADC or reference
+  recommendation, sampling, signal conditioning, reference-voltage procedure, accuracy, uncertainty, error budget,
+  self-heating or response-time calculation, tolerance, pass / fail, automatic comparison, measured-value input or record,
+  suitability or safety conclusion, and no persistence, report, PDF, export, evidence, readiness, progression, gap, CAP-09
+  or SafetySignal effect.
+- **Arabic.** The EN / AR block has the same meaning; `V_OUT`, `TMP36`, `ADC`, `UNVALIDATED` and `NOT EVIDENCE` are
+  direction-isolated under the existing A-4 rule.
+
 ## 10. Exclusions (binding)
 
 No sensor selection, recommendation or comparison; no ADC, sampling, signal conditioning, reference voltage or code

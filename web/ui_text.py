@@ -6962,6 +6962,36 @@ UI_STRINGS = {
     "UI_TMP36_STATUS": {
         "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
         "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    # TMP36-NOMINAL-TEMPERATURE-VERIFICATION-PREPARATION-01 — InventorAI-authored
+    # verification preparation only (contract §9B). No procedure, recommendation,
+    # comparison, calculation or validation claim.
+    "UI_TMP36_VERIFY_TITLE": {
+        "en": "How to prepare to check this nominal temperature",
+        "ar": "كيف تستعد للتحقق من درجة الحرارة الاسمية هذه"},
+    "UI_TMP36_VERIFY_INTRO": {
+        "en": "If you or a qualified engineer independently decide to check this result against the real sensor, have the information below ready first. This is preparation only: it is not a measurement or calibration procedure, InventorAI does not ask you to run a test, and nothing here is compared, saved or concluded.",
+        "ar": "إذا قررت أنت أو مهندس مؤهل بصورة مستقلة التحقق من هذه النتيجة مقابل الحسّاس الحقيقي، فجهّز المعلومات التالية أولًا. هذا تحضير فقط: ليس إجراء قياس ولا إجراء معايرة، ولا يطلب منك InventorAI إجراء أي اختبار، ولا يُقارَن هنا شيء ولا يُحفظ ولا يُستنتج."},
+    "UI_TMP36_VERIFY_SENSOR": {
+        "en": "The sensor. Identify the actual sensor being considered and whether it is stated to be the Analog Devices TMP36 that this calculation assumes. InventorAI does not identify or check the device.",
+        "ar": "الحسّاس. حدّد الحسّاس الفعلي المعني، وما إذا كان مصرّحًا بأنه Analog Devices TMP36 الذي يفترضه هذا الحساب. لا يتعرّف InventorAI على الجهاز ولا يتحقق منه."},
+    "UI_TMP36_VERIFY_VOLTAGE": {
+        "en": "The output voltage. Note the V_OUT value used here and where it came from: an actual reading obtained independently, or documentation or another source you supplied. InventorAI did not read, sample or measure it.",
+        "ar": "جهد الخرج. دوّن قيمة V_OUT المستخدمة هنا ومصدرها: قراءة فعلية جرى الحصول عليها بصورة مستقلة، أو وثائق أو مصدر آخر قدّمته أنت. لم يقرأ InventorAI هذه القيمة ولم يأخذ منها عينة ولم يقسها."},
+    "UI_TMP36_VERIFY_CONDITIONS": {
+        "en": "The operating conditions. Have the information that shows whether the real conditions match the ones you declared: how the sensor is powered and loaded, whether it was in steady conditions, and whether its temperature is within the sensor's specified range. InventorAI does not check or certify these conditions.",
+        "ar": "ظروف التشغيل. جهّز المعلومات التي تبيّن ما إذا كانت الظروف الحقيقية تطابق الظروف التي صرّحت بها: كيف يُغذّى الحسّاس ويُحمَّل، وهل كان في ظروف مستقرة، وهل درجة حرارته ضمن المدى المحدد للحسّاس. لا يتحقق InventorAI من هذه الظروف ولا يشهد بصحتها."},
+    "UI_TMP36_VERIFY_REFERENCE": {
+        "en": "An independent temperature reference. Identify what independent temperature measurement or reference, if any, would be available for comparison: what it measures, where and under what conditions, and how it relates to the sensor, clearly enough for a qualified reviewer to judge whether the two can be compared. A room-temperature reading, or one taken somewhere else, may not represent the temperature of the TMP36 itself. InventorAI does not select, verify, calibrate or certify any reference or instrument.",
+        "ar": "مرجع مستقل لدرجة الحرارة. حدّد ما قد يتوافر، إن وُجد، من قياس أو مرجع مستقل لدرجة الحرارة للمقارنة: ما الذي يقيسه، وأين، وفي أي ظروف، وما علاقته بالحسّاس، بوضوح يكفي لكي يحكم مراجع مؤهل هل تصح المقارنة بينهما. قد لا تمثّل قراءةُ حرارة الغرفة، أو قراءةٌ أُخذت في موضع آخر، درجةَ حرارة حسّاس TMP36 نفسه. لا يختار InventorAI أي مرجع أو أداة، ولا يتحقق منه، ولا يعايره، ولا يشهد بصحته."},
+    "UI_TMP36_VERIFY_EXCLUDED": {
+        "en": "Effects outside this calculation. Note which of these may matter for an independent check: the device's accuracy and linearity, self-heating, calibration, the error of the measuring instrument and, where one is used, ADC error. They are factors for that check to consider; InventorAI calculates none of them.",
+        "ar": "عوامل خارج هذا الحساب. دوّن أيًّا من العوامل التالية قد يهم في التحقق المستقل: دقة الجهاز وخطيته، والتسخين الذاتي، والمعايرة، وخطأ أداة القياس، وخطأ المحوّل التناظري الرقمي (ADC) عند استخدامه. هذه عوامل ينظر فيها ذلك التحقق؛ ولا يحسب InventorAI أيًّا منها."},
+    "UI_TMP36_VERIFY_BOUNDARY": {
+        "en": "Keep these apart: the V_OUT you declared; the nominal temperature calculated from it; an independently measured or referenced temperature; the device's accuracy and calibration; and engineering verification or validation. A nominal temperature is not a measured temperature. Agreement with an independent reference does not by itself establish accuracy, calibration, suitability, safety or a validated design, and disagreement does not by itself show which source of error caused it.",
+        "ar": "افصل بين ما يلي: قيمة V_OUT التي صرّحت بها، ودرجة الحرارة الاسمية المحسوبة منها، ودرجة حرارة مَقيسة أو مرجعية مستقلة، ودقة الجهاز ومعايرته، والتحقق أو الاعتماد الهندسي. درجة الحرارة الاسمية ليست درجة حرارة مَقيسة. ولا يثبت التطابق مع مرجع مستقل وحده الدقة أو المعايرة أو الملاءمة أو السلامة أو صحة التصميم، ولا يبيّن الاختلاف وحده مصدر الخطأ الذي سبّبه."},
+    "UI_TMP36_VERIFY_AUTHORITY": {
+        "en": "This checklist is written by InventorAI from the conditions you declared and the limits already stated for this calculation. It adds no new scientific claim and no measurement procedure. The result stays UNVALIDATED and NOT EVIDENCE.",
+        "ar": "هذه القائمة من صياغة InventorAI اعتمادًا على الظروف التي صرّحت بها والحدود المذكورة أصلًا لهذا الحساب. ولا تضيف ادعاءً علميًا جديدًا ولا إجراء قياس. وتبقى النتيجة غير مُتحقَّق منها (UNVALIDATED) وليست دليلًا (NOT EVIDENCE)."},
     "UI_TMP36_ECHO_HEADING": {
         "en": "The value and declarations you entered",
         "ar": "القيمة والتصريحات التي أدخلتها"},
