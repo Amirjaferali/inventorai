@@ -137,3 +137,19 @@ Scientific status is separate and unchanged. Origin was checked on the already-d
 | SRC-047 | government (NBS staff, sole author); GPO publication; no copyright notice | own analysis; the √(k/m) statement is stated as generally accepted, not taken from a cited work or standard (no standard is cited in the document) | clear (U.S. Government work) | `CALCULATION-GRADE` | Cite NBS TN 487, Newman, 1969; no NIST endorsement; tables / numerical results not used |
 | SRC-048 | government (NASA technical standard; approved for public release, distribution unlimited) | torque-margin section aligned with AIAA S-114A-2020; motor appendix adapted from Sevilla (2010) | unknown for the aligned / adapted content | `IP-UNRESOLVED` | Trade-name no-endorsement statement; not relied on |
 | SRC-049 | government author (FPL) in conference proceedings | own method statement (implied principle) | unknown (proceedings publisher) | `IP-UNRESOLVED` | not relied on |
+
+### Run 17 additions and one correction
+**Correction — SRC-009 (NASA/TM-2009-215751): `CALCULATION-GRADE` → `IP-UNRESOLVED`.** Its introduction states that information from a variety of
+other sources was collected and included; its reference list includes Aerospace Corporation and JPL reports (contractor / FFRDC) and the relied
+passages carry no attribution, so the origin of each relied statement cannot be established. Scientific findings unchanged.
+
+| SRC | Authorship type | Origin of the relied-on statement | Commercial-use basis | IP fitness | Note |
+|---|---|---|---|---|---|
+| SRC-009 | government (NASA Glenn / NESC), compiled from other sources incl. contractor / FFRDC reports | unclear (compilation, unattributed passages) | unknown at claim level | `IP-UNRESOLVED` | corrected 2026-10-29 |
+| SRC-050 | government (sole NASA JSC author; NTRS GOV_PUBLIC_USE_PERMITTED, not contractor) | own slide text (no citation on slide 8) | clear (U.S. Government work) | `CALCULATION-GRADE` (conditional) | presentation; third-party citations and photos on other slides excluded; cite NTRS 20140003562; no NASA endorsement |
+| SRC-051 | government (NASA Lewis) | unclear (references are manufacturer data manuals) | unknown | `IP-UNRESOLVED` | — |
+| SRC-052 | government (NASA JSC) | glossary may follow Linden's Handbook of Batteries (listed in its bibliography) | unknown for the definitions | `IP-UNRESOLVED` | — |
+| SRC-053 | government (NBS) | based on American Standard Specification C18-1947 | unknown | `IP-UNRESOLVED` | standard-based |
+
+**Audit totals after run 17 (53 sources):** 26 `CALCULATION-GRADE` (20 unconditional, including SRC-047; 6 conditional: SRC-011, 016, 017, 044,
+046, 050), 3 `REFERENCE-ONLY`, 22 `IP-UNRESOLVED` (SRC-009 now among them), 2 `EXCLUDED`.

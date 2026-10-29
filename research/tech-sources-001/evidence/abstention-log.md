@@ -28,3 +28,4 @@ Append-only.
 | 2026-10-29 | R-01 (run 16) | NTRS 19950006382 (stepper motor; reflected inertia ÷ gear ratio²) | Contractor report (Swales and Associates) — excluded |
 | 2026-10-29 | R-01 (run 16) | DOE AMO motor sourcebook; JPL TM 33-601; NTRS 19940008713 (university) | DOE series / JPL (FFRDC) / university authorship — not pursued under the rights screen |
 | 2026-10-29 | R-03 (run 16) | FPL test reports (Treesearch 24760, 30514) | Tests and deflection measurement described as per ASTM D 198 — not independent of the standard |
+| 2026-10-29 | R-04 (run 17) | NASA SP "Batteries for Space Power Systems" (NTRS 19690008710) | Contractor author (TRW Systems Group) — excluded |

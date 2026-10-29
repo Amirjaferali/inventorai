@@ -358,3 +358,20 @@ SRC-004 author was a U.S. Army employee (which would clear SRC-004 itself) — a
 Old source SRC-006 (ASTM C393) unchanged. Families searched: USDA FPL / Treesearch, NIST, NASA (1 query). Every FPL test report found measures
 deflection relative to the supports as part of ASTM D 198 testing, so none is independent of the standard; the one reachable non-standard statement
 (SRC-049) is a proceedings paper with unclear rights and only implies the principle; FPL RP-264 host refused.
+
+## Run 17 (2026-10-29, scheduled wake-up; restoration backlog, GitHub-first)
+
+### IP correction — SRC-009 IP-UNRESOLVED
+GitHub-first on R-04 / R-05 re-read SRC-009: its introduction says it collects information from other sources, and its references include
+Aerospace Corporation and JPL reports; the relied passages are unattributed. Under the claim-level rule SRC-009 is IP-UNRESOLVED. Effect on product
+use (scientific findings unchanged): Q-06, Q-30 and Q-31 lose all product-usable support; Q-14 keeps only what R-05 restores. Q-30 is added to the
+restoration backlog (R-13).
+
+### R-04 (Q-06) — IP-UNRESOLVED (bounded search done)
+Families searched: NASA NTRS, NBS / NIST (2 queries). Candidates failed: SRC-051 (vendor-manual derived), SRC-052 (glossary possibly from a
+third-party handbook), SRC-053 (built on ASA C18-1947), a TRW contractor SP. The claim stays without a clean source.
+
+### R-05 (Q-14) — RESTORED — IP-CLEAN (for the series / parallel point)
+New: SRC-050 (NASA JSC slide, sole NASA author, DIRECTLY INSPECTED, own text, CALCULATION-GRADE conditional). D1 EXPLICIT: series → voltage
+adds, capacity as one cell; parallel → capacity adds, voltage as one cell. Independent of the DOE handbook (SRC-007). Q-14's balancing /
+protective-device points (from SRC-009) are now IP-UNRESOLVED and not restored. Goes to the Execution Lead before any product use.

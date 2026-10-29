@@ -29,3 +29,4 @@ Append-only. Never bypassed.
 | 2026-10-28 (run 15) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
 | 2026-10-29 (run 16) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
 | 2026-10-29 (run 16) | www.fpl.fs.usda.gov | CONNECT 403 (proxy policy), not retried | FPL RP-264 (centre-span deflection measured relative to the supports) for R-03 | research.fs.usda.gov reachable, but its candidate (SRC-049) failed the rights test |
+| 2026-10-29 (run 17) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |
