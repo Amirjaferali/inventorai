@@ -564,6 +564,10 @@ def test_the_revision_is_the_head_of_a_clean_checkout_only(pb, clean_repo):
     (clean_repo / "planted.py").write_text("y = 2\n", encoding="utf-8")
     with pytest.raises(pb.PackError):
         pb.current_revision()
+    # a local setting that hides untracked files does not hide them here
+    _git(clean_repo, "config", "status.showUntrackedFiles", "no")
+    with pytest.raises(pb.PackError):
+        pb.current_revision()
     (clean_repo / "planted.py").unlink()
     (clean_repo / "code.py").write_text("x = 3\n", encoding="utf-8")
     with pytest.raises(pb.PackError):

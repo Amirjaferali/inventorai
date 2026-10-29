@@ -451,7 +451,7 @@ def current_revision():
         return subprocess.run(["git", "-C", _ROOT, *args], capture_output=True,
                               text=True, check=True).stdout
     try:
-        dirty = git("status", "--porcelain").strip()
+        dirty = git("status", "--porcelain", "--untracked-files=all").strip()
         revision = git("rev-parse", "HEAD").strip()
     except (OSError, subprocess.CalledProcessError):
         raise PackError("code revision unavailable")
