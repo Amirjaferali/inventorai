@@ -3,8 +3,8 @@
 *Rewritten 2026-10-28 after run 13 under the Owner's remaining-run depth discipline. Research evidence only. Status is per question, never per
 technology: a qualified claim is prepared for later Lead assessment and admits no technology, domain, method, capability or roadmap obligation.*
 
-**Status:** ACTIVE — not complete. Runs 15 / 20 · Perplexity queries 47 / 240 · deep-research calls 0 · window ends 2026-11-26.
-**Questions registered:** 40 (Q-01…Q-40) plus held / excluded items. **Sources:** SRC-001…SRC-046, all inspected directly by the executor
+**Status:** ACTIVE — not complete. Runs 16 / 20 · Perplexity queries 50 / 240 · deep-research calls 0 · window ends 2026-11-26.
+**Questions registered:** 40 (Q-01…Q-40) plus held / excluded items. **Sources:** SRC-001…SRC-049, all inspected directly by the executor
 (none Lead-supplied); hash, page and rights for each in `evidence/`.
 
 **IP for product use** (claim-level audit 2026-10-29): only `CALCULATION-GRADE` evidence may support product or method qualification; `REFERENCE-ONLY` is background; `IP-UNRESOLVED` / `EXCLUDED` must not be reused. Scientific status is unchanged and separate.
@@ -47,7 +47,9 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 | Q-31 | Capacity fade vs storage SOC, temperature, DOD, rate | QUALIFIED-CANDIDATE | Rate-on-life point from a lead-acid source | cond, verif | mixed — SRC-009 points CALCULATION-GRADE; SRC-008 rate-on-life point IP-UNRESOLVED |
 | Q-32…Q-40 | Converter relations, motor classes, watchdog, interlock, EO trade-offs, hover power, MPPT, eclipse power, vibration isolation | QUEUED | — | — | — |
 
-**Next by the protocol order:** Restoration backlog first — R-01 (Q-02 motor ↔ load), R-02 (Q-23 spring–mass), R-03 (Q-04 support-referenced deflection) at P1; then P2 / P3 restoration items; then queued Q-32…
+**Restoration (run 16):** R-02 / Q-23 PARTIALLY RESTORED (SRC-047, NBS TN 487 — calculation-grade; damping point still unresolved); R-01 / Q-02 and R-03 / Q-04 IP-UNRESOLVED after bounded search.
+
+**Next by the protocol order:** restoration P2 — R-04 (Q-06 rated-capacity conditions), R-05 (Q-14 series / parallel cells); then P3 restoration items; then queued Q-32…
 
 **Decisions:** DR-1 decided by you (Option C). Still open with you and the Execution Lead: DR-2 (which condition D-7 governs), DR-3 (definition
 of the 28-T2 output claim), DR-4 (whether to keep, narrow or lift H-04). Details in `evidence/decision-records.md`.

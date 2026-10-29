@@ -130,3 +130,10 @@ Scientific status is separate and unchanged. Origin was checked on the already-d
   independent claim-level basis is later recorded.
 - Git history is not rewritten (rewrite not justified and not authorized). Commits 3fc3227, c4f162e and 72c40e6 still hold the superseded
   wording; the active tree carries the do-not-reuse markers, which govern.
+
+### Run 16 additions (restoration)
+| SRC | Authorship type | Origin of the relied-on statement | Commercial-use basis | IP fitness | Note |
+|---|---|---|---|---|---|
+| SRC-047 | government (NBS staff, sole author); GPO publication; no copyright notice | own analysis; the √(k/m) statement is stated as generally accepted, not taken from a cited work or standard (no standard is cited in the document) | clear (U.S. Government work) | `CALCULATION-GRADE` | Cite NBS TN 487, Newman, 1969; no NIST endorsement; tables / numerical results not used |
+| SRC-048 | government (NASA technical standard; approved for public release, distribution unlimited) | torque-margin section aligned with AIAA S-114A-2020; motor appendix adapted from Sevilla (2010) | unknown for the aligned / adapted content | `IP-UNRESOLVED` | Trade-name no-endorsement statement; not relied on |
+| SRC-049 | government author (FPL) in conference proceedings | own method statement (implied principle) | unknown (proceedings publisher) | `IP-UNRESOLVED` | not relied on |

@@ -25,3 +25,6 @@ Append-only.
 | 2026-10-28 | Q-12 (run 14) | NTRS 19930002774 and 19910023485 (both state x = L1 cos θ1 + L2 cos(θ1 + θ2), y = L1 sin θ1 + L2 sin(θ1 + θ2)) | University conference paper marked MAY_INCLUDE_COPYRIGHT_MATERIAL; RIACS contractor report — excluded; formula stays without a clean-rights source |
 | 2026-10-28 | Q-26 (run 14) | NTRS 20140002606 (subsystem peak / stand-by power by fraction of orbit) and 19660009172 (heater average power by on/off ratio) | Time weighting only implied, not stated as an average-current relation; not fetched (would not close the explicit residual) |
 | 2026-10-28 | Q-23 (run 15) | NTRS 20000067635 (vibration isolation survey) | Mixed authorship (Bicron Corp. co-author) — excluded |
+| 2026-10-29 | R-01 (run 16) | NTRS 19950006382 (stepper motor; reflected inertia ÷ gear ratio²) | Contractor report (Swales and Associates) — excluded |
+| 2026-10-29 | R-01 (run 16) | DOE AMO motor sourcebook; JPL TM 33-601; NTRS 19940008713 (university) | DOE series / JPL (FFRDC) / university authorship — not pursued under the rights screen |
+| 2026-10-29 | R-03 (run 16) | FPL test reports (Treesearch 24760, 30514) | Tests and deflection measurement described as per ASTM D 198 — not independent of the standard |

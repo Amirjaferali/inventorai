@@ -337,3 +337,24 @@ and interference change or leave open the capacity). D7: a theoretical bound onl
 Scientific findings above are unchanged. Product-use IP fitness per source is in `evidence/ip-and-reuse-register.md` (claim-level audit) and per
 question in `state/question-register.md` and `owner-readable-summary.md`. Standard-derived values (SRC-027 ASTM E595 conditions and pass values;
 SRC-045 flat-response band figures) were redacted from the active library; the Wood Handbook footnote (SRC-014) is paraphrased, not quoted.
+
+## Run 16 (2026-10-29, scheduled wake-up; restoration backlog, GitHub-first)
+
+### R-02 (Q-23) — PARTIALLY RESTORED
+Repository reuse: base-branch PR #900 (MECHANICAL-NATURAL-FREQUENCY-01, merged after the IP audit) relies on NBS TN 487 and NIST SP 330, LEAD-SUPPLIED
+there; zero external queries here. Old source SRC-045 (ANSI B88.1-based) stays IP-UNRESOLVED. New: SRC-047 (NBS TN 487), DIRECTLY INSPECTED,
+own analysis, U.S. Government work, CALCULATION-GRADE, independent (no standard cited). Restored: D1 EXPLICIT (√(k/m) undamped natural frequency of
+a single mass on a spring to a large mass), D5 EXPLICIT (resonance = lowest drive frequency of maximum relative motion), D6 EXPLICIT (coupled-mass
+models depart from the single-mass value by mass-ratio-dependent amounts). **Not restored:** damping governing the resonance amplitude (TN 487 is
+undamped) — stays IP-UNRESOLVED. Material for the Execution Lead: the LEAD-SUPPLIED TN 487 basis of PR #900 is now directly inspected here.
+
+### R-01 (Q-02) — IP-UNRESOLVED (bounded search done)
+Old sources SRC-004 (author employee status unconfirmed) and SRC-005 (DOE series) unchanged. Families searched: NASA NTRS, NASA technical standards,
+DOE, NIST (2 queries). Candidates failed: NASA-STD-5017B (SRC-048; torque-margin section aligned with AIAA S-114A-2020, motor section adapted from a
+third-party book), a contractor stepper-motor report, DOE / JPL / university items. Fastest route to restoration: a recorded confirmation that the
+SRC-004 author was a U.S. Army employee (which would clear SRC-004 itself) — an Owner / Lead item, not a search.
+
+### R-03 (Q-04) — IP-UNRESOLVED (bounded search done)
+Old source SRC-006 (ASTM C393) unchanged. Families searched: USDA FPL / Treesearch, NIST, NASA (1 query). Every FPL test report found measures
+deflection relative to the supports as part of ASTM D 198 testing, so none is independent of the standard; the one reachable non-standard statement
+(SRC-049) is a proceedings paper with unclear rights and only implies the principle; FPL RP-264 host refused.
