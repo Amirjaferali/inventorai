@@ -213,6 +213,15 @@ body{overflow-wrap:anywhere}
       <span style="display:block" data-part-tc-unavailable>{{ t('UI_PTC_UNAVAILABLE') }}</span>
       {% elif part_temperature_change.declared %}
       <span style="display:block" data-part-tc-state="declared">{{ t('UI_PTC_STATUS_DECLARED') }}</span>
+      {#- MTE-TEMPERATURE-CHANGE-DISCOVERABILITY-01 (Increment C): the free
+          linear thermal-expansion contract §1A relevance, only while this
+          CURRENT statement and that method's own gate name the exact same
+          part. The existing link moves here (the general one below is then
+          hidden) and carries no value: the method page re-reads its own gate. -#}
+      {% if mte_tc_relevance is defined and mte_tc_relevance %}
+      <span style="display:block;margin-top:4px" data-mte-tc-relevance>{{ t('UI_MTE_TC_RELEVANCE') }}</span>
+      <a href="{{ url_for('mechanical_thermal_expansion', sid=sid) }}" style="display:block" data-mte-link-context>{{ t('UI_MTE_LINK_TEXT') }}</a>
+      {% endif %}
       <form method="POST" action="{{ url_for('part_temperature_change', sid=sid) }}" data-part-tc-form="withdraw" style="margin:4px 0 0 0">
         <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
         <input type="hidden" name="subsystem_id" value="{{ part_temperature_change.part_id }}">
@@ -2547,7 +2556,7 @@ body{overflow-wrap:anywhere}
     declared Mechanical part). It is not a journey action, gates nothing, asks
     nothing and carries no calculation content: nothing is calculated or saved
     on this page. -#}
-{% if mechanical_thermal_expansion_link %}
+{% if mechanical_thermal_expansion_link and not (mte_tc_relevance is defined and mte_tc_relevance) %}
 <p class="journey-note" data-mte-link style="margin-top:14px"><a href="{{ url_for('mechanical_thermal_expansion', sid=sid) }}">{{ t('UI_MTE_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_MTE_LINK_NOTE') }}</span></p>
 {% endif %}
 {#- MTE-LINK-END -#}

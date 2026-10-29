@@ -8,7 +8,9 @@ verified merge of that pull request into `feature/atomic-json-session-persistenc
 Owner-authorized proposed method, not a merged or delivered capability. Merge, deployment, production activation, a (g1)
 step-4 transition, a Materials domain and any broader capability admission are NOT authorized by it.
 AMENDMENT: §1A (relevance authority) was added by `MTE-TEMPERATURE-CHANGE-RELEVANCE-01`, Owner-authorized as Increment B
-only; it takes effect only on the verified merge of its pull request and changes no other clause.
+only; it takes effect only on the verified merge of its pull request and changes no other clause. Its "Runtime" paragraph
+and the matching §14 item were narrowed by `MTE-TEMPERATURE-CHANGE-DISCOVERABILITY-01` (Increment C, Owner-authorized), to
+record its one session-page presentation, effective only on the verified merge of its pull request.
 AUTHORITY LEVEL: subordinate to the accepted
 [shared deterministic calculation and units owner boundary contract](SHARED_DETERMINISTIC_CALCULATION_AND_UNITS_OWNER_BOUNDARY_CONTRACT.md)
 (the "calc/units contract", with its Correction 13, §13L, added by the same increment) and to the Mechanical Domain Pack's
@@ -76,10 +78,12 @@ another part, another project or a non-Mechanical part give no positive relevanc
 choice, a suggestion to use the method, an automatic selection, evidence, validation, readiness, progression or a safety
 statement.
 
-Runtime: none. This clause is governance authority only: no code reads it, and no predicate, store read, condition or
-flag implements it; the consumer, the adapter, the shared owner, the fact owner, the store and the web layer are
-unchanged by it. Any presentation, link, Step-6 or Project Compass action, routing or other runtime use of this relevance
-is a separate future increment that needs its own Owner authorization. No registry, mapping, matcher, graph or other
+Runtime: ONE presentation only. `MTE-TEMPERATURE-CHANGE-DISCOVERABILITY-01` (Increment C) shows this relevance on the
+session page beside the inventor's statement, with the one existing link to this method moved there, only while the
+statement is CURRENT and the §1 gate offers this method for a declared Mechanical part with the exact same `subsystem_id`;
+the link carries no value and the method page and its submission re-read §1 on their own. The consumer, the adapter, the
+shared owner, the fact owner and the store are unchanged by it. Any other presentation, link, Step-6 or Project Compass
+action, routing or other runtime use of this relevance needs its own Owner authorization. No registry, mapping, matcher, graph or other
 relationship mechanism is created, and no other fact or method gains a relationship from this clause.
 
 ## 2. Method identity and version
@@ -351,4 +355,4 @@ journeys at phone width. Hosted required CI on the final PR head is the merge ga
 Stop and return to the Owner on a source or IP deficiency, a contract incompatibility, unprovable numerical integrity, a
 required broad owner redesign, property framework or generic conversion mechanism, or any scope expansion (another method,
 consumer, unit, conversion, material input, eligibility beyond §1, persistence, result transfer or report surface, or
-any runtime use of the §1A relevance).
+any runtime use of the §1A relevance beyond the Increment C session-page presentation).

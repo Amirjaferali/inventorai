@@ -5,8 +5,10 @@ artifact's ``governance_note`` admit ONE bounded relevance relationship: a
 CURRENT valid part temperature-change statement for the same declared
 Mechanical Stage-15 part makes this method potentially relevant to examining
 possible free dimensional change of that part. It is governance authority
-only. These guards prove the admission is exactly that and that nothing at
-runtime consumes it; the method's own invariants (identity, declarations,
+only, with ONE runtime presentation (Increment C, guarded by
+``tests/test_mte_temperature_change_discoverability.py``). These guards prove
+the admission is exactly that and that the method itself never consumes the
+statement; the method's own invariants (identity, declarations,
 numeric domain, eligibility, no prefill) stay pinned by
 ``tests/test_mechanical_thermal_expansion.py`` and the statement's
 no-consumer guards by ``tests/test_part_temperature_change_declaration.py``.
@@ -57,13 +59,13 @@ def test_contract_admits_exactly_the_one_bounded_relationship():
     for kept in ("supply any input", "D-1 to D-8", "pre-select any screen answer",
                  "validate the inventor's statement",
                  "authorize presentation or routing",
-                 "give no positive relevance basis", "Runtime: none.",
+                 "give no positive relevance basis", "Runtime: ONE presentation only.",
                  "needs its own Owner authorization"):
         assert kept in section, kept
     # The only scientific basis is the admitted SRC-031 claim.
     assert "SRC-031" in section and "SRC-029" not in section
-    # No runtime use is admitted without a new STOP.
-    assert "any runtime use of the §1A relevance" in _flat(
+    # No runtime use beyond the Increment C presentation is admitted.
+    assert "any runtime use of the §1A relevance beyond the Increment C session-page presentation" in _flat(
         CONTRACT.read_text(encoding="utf-8"))
 
 
@@ -73,7 +75,7 @@ def test_governance_note_mirrors_the_relationship_and_artifact_still_validates()
     assert "contract §1A, MTE-TEMPERATURE-CHANGE-RELEVANCE-01" in note
     assert RELATION in note
     assert BOUNDARY in note
-    assert "no runtime code reads it" in note
+    assert "its one runtime use is the Increment C session-page presentation" in note
     # No generic relationship field was added: the existing loader's exact
     # key set, semantic digests and version still accept the artifact.
     assert te.load_artifact() is not None
@@ -106,7 +108,9 @@ def test_no_runtime_surface_of_the_method_reads_the_statement():
             assert token not in src, token
 
 
-def test_the_relationship_has_no_user_visible_wording():
+def test_the_contract_wording_is_not_copied_into_the_ui():
+    # The inventor-facing wording is UI_MTE_TC_RELEVANCE (Increment C); the
+    # contract's own sentences stay governance text.
     texts = [(ROOT / "web" / "ui_text.py").read_text(encoding="utf-8")]
     texts += [p.read_text(encoding="utf-8")
               for p in (ROOT / "web" / "templates").glob("*.html")]
