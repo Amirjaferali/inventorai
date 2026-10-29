@@ -434,7 +434,13 @@ def test_the_statement_changes_no_gate_handoff_compass_state_or_page_elsewhere(i
     assert after[0] == before[0]
     assert after[1] == before[1]
     assert after[2] == before[2]
-    assert after[3] == before[3]
+    # MTE-TEMPERATURE-CHANGE-DISCOVERABILITY-01 (Increment C): the ONE expected
+    # change elsewhere is that the existing free-expansion link moves next to
+    # the statement; everything else on the page is unchanged.
+    general = re.compile(r'<p class="journey-note" data-mte-link.*?</p>', re.S)
+    assert general.search(before[3]) and not general.search(after[3])
+    assert re.sub(r"\s+", " ", general.sub("", after[3])) == \
+        re.sub(r"\s+", " ", general.sub("", before[3]))
     # the thermal-expansion page itself is unchanged by the statement
     page = c.get("/session/%s/thermal-expansion" % sid).get_data(as_text=True)
     assert "data-part-tc" not in page

@@ -901,7 +901,7 @@ def test_arabic_and_english_wording_equal_the_contract():
 def test_every_key_has_both_languages_and_no_overclaim():
     source = Path(ui_text.__file__).read_text(encoding="utf-8")
     keys = re.findall(r'"(UI_MTE_[A-Z0-9_]+)": \{', source)
-    assert len(keys) == 43
+    assert len(keys) == 44      # 43 + UI_MTE_TC_RELEVANCE (Increment C)
     for key in keys:
         for lang in ("en", "ar"):
             assert ui_text.text(key, lang).strip(), (key, lang)

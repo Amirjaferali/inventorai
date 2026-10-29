@@ -8310,6 +8310,9 @@ UI_STRINGS = {
     "UI_PTC_NOTE": {
         "en": "This statement is optional. It records only what you say about this part: it is not a measurement, an analysis or a check, and it does not change your questions, your results or any calculation.",
         "ar": "هذا التصريح اختياري. يسجّل فقط ما تقوله عن هذا الجزء: فهو ليس قياسًا ولا تحليلًا ولا فحصًا، ولا يغيّر أسئلتك ولا نتائجك ولا أي حساب."},
+    "UI_MTE_TC_RELEVANCE": {
+        "en": "Because you stated that this part experiences a temperature change during use, the optional free linear thermal-expansion calculation may help you examine a possible free change in this part's dimensions. This connection comes only from your own statement, which InventorAI has not checked. It does not mean that the calculation's model applies to your part: the calculation has its own conditions, which you answer there, and it uses only values you enter. It is not a recommendation of a design solution.",
+        "ar": "لأنك صرّحت بأن هذا الجزء يتعرض لتغير في درجة الحرارة أثناء الاستخدام، قد يساعدك حساب التمدد الحراري الخطي الحر الاختياري على فحص تغير حر محتمل في أبعاد هذا الجزء. يأتي هذا الربط من تصريحك أنت فقط، ولم يتحقق InventorAI من هذا التصريح. ولا يعني ذلك أن نموذج الحساب ينطبق على جزئك: فللحساب شروطه الخاصة التي تجيب عنها هناك، ولا يستخدم إلا القيم التي تُدخلها أنت. وهذا ليس توصية بحل تصميمي."},
     "UI_PTC_UNAVAILABLE": {
         "en": "Your statement about temperature change could not be read right now, so it is not shown and cannot be changed.",
         "ar": "تعذّرت قراءة تصريحك بشأن تغير درجة الحرارة الآن، لذلك لا يُعرض ولا يمكن تغييره."},

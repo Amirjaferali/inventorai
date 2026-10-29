@@ -7048,6 +7048,13 @@ def show_session(sid):
     # the page's own section and (IDEA-DESIGN-UNDERSTANDING-PROJECTION-01) the
     # design-understanding composition read the same value.
     _fh_view = _functional_handoff_view(sid, state)
+    # MTE-TEMPERATURE-CHANGE-DISCOVERABILITY-01 (Increment C): the scope, the
+    # statement and the free-expansion gate are each read ONCE here so the
+    # contextual relevance and the single link agree with what the page shows.
+    _scope_view = _integrated_scope_context(state)
+    _ptc_view = _part_temperature_change_context(sid, entry)
+    _mte_gate = _calc_gate(sid, _mte)
+    _mte_tc_view = bool(_scope_view) and _mte_tc_relevance(_ptc_view, _mte_gate)
     return render_template("session.html",
         sid=sid,
         project_identification=_project_identification(sid),
@@ -7058,11 +7065,15 @@ def show_session(sid):
         design_understanding=_design_understanding_view(sid, state, _fh_view),
         # Stage 15 Slice 1: the bounded integrated-invention scope (None for
         # every ordinary project).
-        integrated_scope=_integrated_scope_context(state),
+        integrated_scope=_scope_view,
         # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 (Increment A): the
         # inventor's statement about the Mechanical part, read from durable
-        # truth; presentation only — nothing else reads it.
-        part_temperature_change=_part_temperature_change_context(sid, entry),
+        # truth; presentation only.
+        part_temperature_change=_ptc_view,
+        # Increment C: True only while the contract §1A relevance holds for the
+        # exact same part; the existing free-expansion link then moves beside
+        # the statement (still ONE link on the page).
+        mte_tc_relevance=_mte_tc_view,
         # P5-3: a TRUTHFUL owned-state signal — True only when the current
         # authenticated account is the durable owner of this project. Never claims
         # ownership for a NULL-owner (legacy/anonymous) project. Display only.
@@ -7286,7 +7297,8 @@ def show_session(sid):
         # request-local free linear thermal-expansion calculation, on the same
         # eligibility as the other Mechanical calculations. It never gates the
         # journey.
-        mechanical_thermal_expansion_link=_mte_link_offered(sid),
+        # (Increment C: the same single gate read as the relevance above.)
+        mechanical_thermal_expansion_link=_mte_gate[0],
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -10886,6 +10898,31 @@ def _part_temperature_change_context(sid, entry):
             "declared": _subsystem_model.part_temperature_change_declared(
                 declarations, part.subsystem_id),
             "ack": ack, "error": error}
+
+
+def _mte_tc_relevance(part_tc, mte_gate):
+    """MTE-TEMPERATURE-CHANGE-DISCOVERABILITY-01 (Increment C): whether the
+    session page presents the free linear thermal-expansion contract §1A
+    relevance. Pure; it combines two already-validated views and decides
+    nothing about physics or applicability. True only when ``part_tc`` (the
+    ``_part_temperature_change_context`` view) is a readable CURRENT DECLARED
+    statement AND ``mte_gate`` (``_calc_gate(sid, _mte)``) is eligible with a
+    declared Mechanical part whose ``subsystem_id`` EXACTLY equals the
+    statement's part. Not declared, withdrawn, unavailable, a failed gate, no
+    gate part or any other part gives False; nothing is ever rebound."""
+    if not isinstance(part_tc, dict) or part_tc.get("status") != "ok" \
+            or part_tc.get("declared") is not True:
+        return False
+    try:
+        eligible, part = mte_gate
+    except (TypeError, ValueError):
+        return False
+    if eligible is not True or part is None \
+            or getattr(part, "domain", None) != _mte.ELIGIBLE_ROOT_DOMAIN:
+        return False
+    part_id = part_tc.get("part_id")
+    return isinstance(part_id, str) and part_id != "" \
+        and part_id == getattr(part, "subsystem_id", None)
 
 
 def _resolve_part_tc_write(sid, subsystem_id, target):
