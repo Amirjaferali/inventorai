@@ -216,6 +216,43 @@ component suitability.
 relation `√(k / m) / (2π)`, the method identity and `UNVALIDATED` / `NOT EVIDENCE` are each direction-isolated
 (`<bdi dir="ltr">`) on the Arabic page; the inventor's typed values are shown left-to-right.
 
+
+## 9B. Verification-preparation block (amendment `MNF-VERIFICATION-MEASUREMENT-STEP-01`, 2026-10-29)
+
+Presentation only; it changes no method identity, version, calculation, declaration, screen, numerical rule, output or
+source-use record.
+
+- **Where and when.** ONE read-only block, "How to prepare to verify this estimate", is rendered only after a successful
+  §9 numerical result. It is absent on a plain GET and on every refusal, abstention, malformed request or ineligible
+  project/part. Showing it does not validate the result: `f₀` remains `UNVALIDATED` and `NOT EVIDENCE`.
+- **Purpose.** The block prepares information for an independently justified physical or engineering check; it is not a
+  vibration-test procedure. It asks the inventor to have available: (1) the real excitation frequency or frequency content
+  that is planned or observed, kept distinct from the calculated `f₀`; (2) the response quantity that an independent check
+  will observe and the location where it will be observed, chosen outside InventorAI; (3) the physical configuration being
+  checked — moving mass, spring or mount, support/restraint and attachments — and whether it still corresponds to the
+  declared one-mass, one-linear-spring, effectively-rigid-support, one-direction model; (4) the operating conditions and
+  any known excluded behaviour such as damping, extra masses/springs, restraint or coupling, so a reviewer can judge whether
+  the declared model boundary corresponds to the real system; and (5) only then, a comparison of the independently observed
+  excitation/response context with the computed `f₀` as information for engineering interpretation.
+- **Scientific distinction.** Predicted undamped `f₀`, observed excitation frequency/content, measured response and
+  resonance behaviour are four different things. An observed response peak is not automatically the computed undamped
+  `f₀`, and agreement or disagreement does not by itself validate the model.
+- **Authority / source integrity.** The checklist is InventorAI-authored verification-preparation derived only from this
+  contract's already admitted model declarations, exclusions and §9 next-step boundary. It adds **no new scientific claim**
+  from NBS Technical Note 487 / SRC-047. The method artifact
+  `mechanical_content_config/spring_mass_natural_frequency_v1.json`, its artifact version, semantic digests, pinned
+  `NBS-NF-S1` source record and source-use records remain byte-for-byte unchanged. The IP-unresolved SRC-045 remains
+  relied upon by nothing. Any future use of an additional SRC-047 claim requires a separately authorized claim-level
+  source-authority amendment through the existing version/integrity mechanism.
+- **Boundary.** No instruction to excite a system at or near resonance; no frequency sweep; no peak-search or peak-detection
+  method; no prescribed excitation; no measurement procedure, instrument or sensor selection; no damping, resonant-amplitude,
+  transmissibility, isolation or modal calculation; no acceptance margin, pass/fail, suitability or safety conclusion;
+  no measured-value input, persistence, automatic comparison, evidence, readiness, progression, gap or SafetySignal effect.
+  The independently justified check and its interpretation stay with the inventor and/or a qualified engineer.
+- **Arabic.** The EN/AR block has the same meaning; `f₀`, `UNVALIDATED`, `NOT EVIDENCE` and technical Latin tokens are
+  direction-isolated under the existing §9A rendering rule.
+
+
 ## 10. Exclusions (binding)
 
 No damping-ratio calculation, damped natural frequency, resonant-amplitude calculation, transmissibility, vibration
