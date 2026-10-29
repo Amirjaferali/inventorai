@@ -51,6 +51,8 @@ from engine import dc_constant_current_charge_method as _dcq_method  # DC Consta
 from engine import dc_constant_current_charge as _dcq  # DC Constant-Current Charge Slice 1 consumer
 from engine import pwm_average_voltage_method as _pwm_method  # PWM Average Voltage Slice 1 method
 from engine import pwm_average_voltage as _pwm  # PWM Average Voltage Slice 1 consumer
+from engine import mechanical_natural_frequency_method as _mnf_method  # Spring-Mass Natural Frequency Slice 1 method
+from engine import mechanical_natural_frequency as _mnf  # Spring-Mass Natural Frequency Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7265,6 +7267,12 @@ def show_session(sid):
         dc_load_energy_link=_dce_eligible(sid),
         dc_charge_link=_dcq_eligible(sid),
         pwm_average_voltage_link=_pwm_eligible(sid),
+        # MECHANICAL-NATURAL-FREQUENCY-01: an OPTIONAL link to the request-local
+        # spring-mass natural-frequency calculation, on the same eligibility as
+        # the other Mechanical calculations (Mechanical root, or a declared
+        # Mechanical part of a valid integrated composition). It never gates
+        # the journey.
+        mechanical_natural_frequency_link=_mnf_link_offered(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -16650,6 +16658,154 @@ def pwm_average_voltage_post(sid):
         return _render_pwm(sid, status=400, declared_part=part, error="UI_PWM_ERR_REQUEST")
     return _render_pwm(sid, declared_part=part, captured=captured,
                        evaluation=_pwm.evaluate(captured, _PWM_AVERAGE_VOLTAGE_BINDING))
+
+
+# =============================================================================
+# MECHANICAL-NATURAL-FREQUENCY-01 — Spring-Mass Natural Frequency, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory calculation of the undamped natural frequency predicted
+# by ONE inventor-declared single-degree-of-freedom spring-mass model
+# (natural-frequency contract §1, §7). The consumer
+# (`engine/mechanical_natural_frequency.py`) owns capture, the pre-owner order,
+# the decimal reference and the 12-significant-digit display; the shared
+# calculation / units owner (`engine/deterministic_calculation.py`) owns
+# execution; the method adapter (`engine/mechanical_natural_frequency_method.py`)
+# owns the relation, its 2π constant policy and its binary acceptance.
+# Eligibility is the SAME ``_calc_gate`` rule as the other Mechanical
+# calculations: a Mechanical durable root domain, or the ONE declared Mechanical
+# part of a valid durable integrated composition whatever the initial analysis
+# focus (the Stage 15 exception in ``engine/subsystem_model.py`` names this
+# method). Nothing is persisted and nothing is read from the project beyond the
+# root domain and that validated composition; no answer, requirement quantity,
+# component, evidence or SafetySignal. The POST renders its answer directly and
+# never redirects. No result is transferred into any other calculation, and
+# every other method's semantics are untouched.
+#
+# The TWELFTH immutable trusted binding (calc/units Correction 12 §13K), created
+# here by application wiring for THIS consumer only. There is no registry,
+# discovery, dynamic module path or request-selectable callable.
+_MNF_BINDING = _dcalc.bind_method(
+    _mnf_method.METHOD_ID, _mnf_method.METHOD_VERSION, _mnf_method.evaluate)
+
+# Latin letters, digits, the subscript zero of the role ``f₀``, the root sign
+# and π of the relation and the solidus of ``N/m``, plus identifiers: each run
+# is direction-isolated on an Arabic page (parentheses stay outside a run, so a
+# bracketed token such as (Hz) keeps its brackets in the surrounding text).
+_MNF_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u2080\u221a\u03c0](?:[A-Za-z0-9_\u2080\u221a\u03c0\u00b7.:/ -]*"
+    r"[A-Za-z0-9_\u2080\u221a\u03c0])?")
+
+
+def _mnf_eligible(sid):
+    """True iff the project is eligible for the natural-frequency calculation
+    under ``_calc_gate``: a Mechanical durable root domain, or a declared
+    Mechanical part of a valid durable integrated composition. Never read from
+    the request; fails closed."""
+    return _calc_gate(sid, _mnf)[0]
+
+
+def _mnf_link_offered(sid):
+    """The session-page link reads the SAME single rule the submission reads,
+    so the link and the calculation cannot disagree. Presentation only."""
+    return _mnf_eligible(sid)
+
+
+def _mnf_isolate(text, lang):
+    return _ltr_isolate(text, lang, _MNF_LTR_RUN)
+
+
+def _mnf_result_view(evaluation):
+    """Template view of a SUCCESS evaluation: the consumer's 12-significant-digit
+    display of its decimal reference (always a rounding), the exact unit token
+    the owner carried, the method identity and the source and unit references
+    the owner carried. No other field."""
+    result = evaluation["result"]
+    output = result["outputs"][_mnf.OUTPUT_ROLE]
+    return {
+        "value": evaluation["display_value"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_mnf(sid, status=200, eligible=True, declared_part=None, captured=None,
+                evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _mnf.OUTCOME_SUCCESS:
+            view = _mnf_result_view(evaluation)
+        else:
+            outcome_key = "UI_MNF_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "mechanical_natural_frequency.html",
+        sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
+        iso=lambda key: _mnf_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _mnf_isolate(part, lang) for part in
+            ui_text.text("UI_MNF_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_mnf.DECLARATION_IDS,
+        screen_items=_mnf.SCREEN_ITEMS,
+        value_roles=_mnf.VALUE_ROLES,
+        decl_field=_mnf.DECLARATION_FIELD,
+        screen_field=_mnf.SCREEN_FIELD,
+        value_field=_mnf.VALUE_FIELD,
+        answer_applies=_mnf.ANSWER_APPLIES,
+        answer_does_not_apply=_mnf.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_mnf.SCREEN_YES,
+        screen_no=_mnf.SCREEN_NO,
+        max_value_chars=_mnf.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/natural-frequency", methods=["GET"])
+def mechanical_natural_frequency(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _mnf)
+    return _render_mnf(sid, eligible=eligible, declared_part=part)
+
+
+@app.route("/session/<sid>/natural-frequency", methods=["POST"])
+def mechanical_natural_frequency_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain, or a declared Mechanical part of a valid
+    # durable integrated composition) -> strict capture (malformed: 400, no
+    # reason token) -> the consumer's §7 pre-owner order -> the shared owner ->
+    # the consumer's decimal reference and display.
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _mnf)
+    if not eligible:
+        return _render_mnf(sid, eligible=False)
+    form = request.form
+    captured = _mnf.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_mnf(sid, status=400, declared_part=part,
+                           error="UI_MNF_ERR_REQUEST")
+    evaluation = _mnf.evaluate(captured, _MNF_BINDING)
+    return _render_mnf(sid, declared_part=part, captured=captured,
+                       evaluation=evaluation)
 
 
 # =============================================================================

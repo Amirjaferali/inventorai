@@ -27,8 +27,11 @@ admission of Correction 10 (§13I) under
 docs/governance/ELECTRICAL_DC_CONSTANT_CURRENT_CHARGE_METHOD_CONTRACT.md; then the
 Electrical / Electronics PWM average-voltage method, the bounded eleventh
 admission of Correction 11 (§13J) under
-docs/governance/ELECTRICAL_PWM_AVERAGE_VOLTAGE_METHOD_CONTRACT.md. The owner is
-descriptive and unnumbered: it carries no CAP identifier.
+docs/governance/ELECTRICAL_PWM_AVERAGE_VOLTAGE_METHOD_CONTRACT.md; then the
+Mechanical spring-mass natural-frequency method, the bounded twelfth admission
+of Correction 12 (§13K) under
+docs/governance/MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md. The
+owner is descriptive and unnumbered: it carries no CAP identifier.
 
 What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
   * admission of a request against its own governed artifact (§9);
@@ -102,7 +105,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.10.0"
+IMPLEMENTATION_VERSION = "1.11.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -133,10 +136,12 @@ _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
 # existing moment / length / force kinds and tokens), the bounded tenth
 # admission of Correction 10 (§13I, Electrical / Electronics DC
 # constant-current charge, adding only the electric_charge / A·h kind and token
-# and the second exact time token h) and exactly the bounded eleventh admission
-# of Correction 11 (§13J, Electrical / Electronics PWM average voltage, on the
-# existing voltage / V and time / s kinds and tokens) - ELEVEN methods, each
-# with its own consumer. A
+# and the second exact time token h), the bounded eleventh admission of
+# Correction 11 (§13J, Electrical / Electronics PWM average voltage, on the
+# existing voltage / V and time / s kinds and tokens) and exactly the bounded
+# twelfth admission of Correction 12 (§13K, Mechanical spring-mass natural
+# frequency, adding only the mass / kg, stiffness / N/m and frequency / Hz
+# kinds and tokens) - TWELVE methods, each with its own consumer. A
 # structurally valid extra method, quantity kind or unit fails closed: widening
 # the inventory is a separately authorized change, never an artifact edit alone.
 # No conversion exists. The one Celsius-temperature kind is the output of the
@@ -147,6 +152,10 @@ _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
 # the DC load energy duration and h for the DC constant-current charge duration.
 # Each role binds exactly one of them, a request in the other token is refused,
 # and nothing maps mV to V or h to s: no scale factor exists here.
+# The frequency kind (Hz, Correction 12) is distinct from the angular_velocity
+# kind (rad/s): angular velocity, angular frequency and frequency are different
+# quantities, no kind holds rad/s for a second meaning and nothing maps Hz to
+# rad/s - the factor 2π lives in the natural-frequency method's adapter only.
 ADMITTED_METHODS = frozenset({
     ("cap13:static_reactions_two_support", "1.0"),
     ("therm01:conduction_temperature_difference_single_path", "1.0"),
@@ -159,14 +168,16 @@ ADMITTED_METHODS = frozenset({
     ("cap13:planar_required_force", "1.0"),
     ("electrical:dc_constant_current_charge", "1.0"),
     ("electrical:pwm_average_voltage", "1.0"),
+    ("mechanical:spring_mass_natural_frequency", "1.0"),
 })
 ADMITTED_QUANTITY_KINDS = frozenset({
     "force", "length", "power", "thermal_resistance", "temperature_difference",
     "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",
     "electric_resistance", "electric_current", "energy", "time",
-    "electric_charge"})
+    "electric_charge", "mass", "stiffness", "frequency"})
 ADMITTED_UNIT_TOKENS = frozenset({"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
-                                  "mV", "°C", "V", "Ω", "A", "J", "s", "h", "A·h"})
+                                  "mV", "°C", "V", "Ω", "A", "J", "s", "h", "A·h",
+                                  "kg", "N/m", "Hz"})
 # The named exceptions to "one unit token per quantity kind" (§13E voltage,
 # §13I time): the exact token set a kind may hold. Not an alias table and not a
 # scale relation: nothing maps mV to V or h to s.

@@ -111,7 +111,13 @@ versus observed-condition guidance, the measurement-conditions awareness note an
 sensing / accuracy-resolution reference panel) may likewise be SHOWN for the declared
 Electrical / Electronics part whatever the initial analysis focus, decided in the web layer
 from the same validated durable composition; they say nothing about any experiment,
-sensing need or technical assessment and change nothing here. No other specialist
+sensing need or technical assessment and change nothing here. A further narrow,
+Owner-authorized exception (MECHANICAL-NATURAL-FREQUENCY-01): the admitted
+request-local calculation ``mechanical:spring_mass_natural_frequency`` v1.0 may
+likewise be OFFERED for the declared Mechanical part whatever the initial analysis
+focus, decided in the web layer from the same validated durable composition; it
+establishes no spring-mass system, model applicability, stiffness or mass value,
+resonance, suitability, validation or safety and changes nothing here. No other specialist
 behaviour is granted by these exceptions. Subsystem identity is
 system-generated (``new_subsystem_id``), opaque, immutable and never derived
 from a name, a function text, a domain id or a list position; a client never

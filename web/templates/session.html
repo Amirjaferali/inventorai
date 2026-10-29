@@ -2494,6 +2494,16 @@ body{overflow-wrap:anywhere}
 <p class="journey-note" data-pwm-link style="margin-top:14px"><a href="{{ url_for('pwm_average_voltage', sid=sid) }}">{{ t('UI_PWM_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_PWM_LINK_NOTE') }}</span></p>
 {% endif %}
 {#- PWM-LINK-END -#}
+{#- MNF-LINK-BEGIN — MECHANICAL-NATURAL-FREQUENCY-01. ONE optional link to the
+    request-local spring-mass natural-frequency page, offered on the same
+    eligibility as the other Mechanical calculation links (Mechanical root or
+    declared Mechanical part). It is not a journey action, gates nothing, asks
+    nothing and carries no calculation content: nothing is calculated or saved
+    on this page. -#}
+{% if mechanical_natural_frequency_link %}
+<p class="journey-note" data-mnf-link style="margin-top:14px"><a href="{{ url_for('mechanical_natural_frequency', sid=sid) }}">{{ t('UI_MNF_LINK_TEXT') }}</a><br><span style="color:#777">{{ t('UI_MNF_LINK_NOTE') }}</span></p>
+{% endif %}
+{#- MNF-LINK-END -#}
 {#- THERM01-LINK-BEGIN — Stage 27 / THERM-01 Single-Path Temperature-Difference Slice 1.
     ONE optional link to the request-local calculation page, offered only on an
     eligible (Electrical / Electronics-root) project. It is not a journey action,

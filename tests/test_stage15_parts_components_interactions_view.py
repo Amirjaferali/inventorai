@@ -36,7 +36,7 @@ CALC_ROUTES = ("support-reactions", "temperature-difference", "form-mockup-advis
                "planar-moment", "rotational-load", "tmp36-temperature",
                "control-cycle", "temperature-control-condition", "dc-load-current",
                "dc-load-power", "dc-load-energy", "dc-constant-current-charge",
-               "pwm-average-voltage")
+               "pwm-average-voltage", "natural-frequency")
 
 
 def _get(c, sid, lang="en"):

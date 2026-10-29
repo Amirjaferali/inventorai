@@ -541,17 +541,18 @@ def test_success_packaging_units_sources_and_identity():
         "DOE-ENG-S1", "DOE-ENG-S2"]
     assert {q["source_use_policy_ref"] for q in result["source_qualification"]} == {"dcu:SU015"}
     assert result["validation_status"] == "UNVALIDATED"
-    assert (result["artifact_version"], result["implementation_version"]) == ("11", "1.10.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("12", "1.11.0")
     assert result == dc.execute(BINDING, _request(subject_ref="opaque"))
 
 
 def test_closed_inventory_adds_exactly_energy_and_time():
     assert ("electrical:dc_resistive_load_energy", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 11
+    assert len(dc.ADMITTED_METHODS) == 12
     assert dc.ADMITTED_QUANTITY_KINDS >= {"energy", "time"}
-    assert len(dc.ADMITTED_QUANTITY_KINDS) == 15 and len(dc.ADMITTED_UNIT_TOKENS) == 17
+    assert len(dc.ADMITTED_QUANTITY_KINDS) == 18 and len(dc.ADMITTED_UNIT_TOKENS) == 20
     assert dc.ADMITTED_UNIT_TOKENS == {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
-                                       "mV", "°C", "V", "Ω", "A", "J", "s", "h", "A·h"}
+                                       "mV", "°C", "V", "Ω", "A", "J", "s", "h", "A·h",
+                                       "kg", "N/m", "Hz"}
     # Correction 10 (§13I): the time kind gains h for the DC constant-current charge
     # duration only; this method's duration stays s and nothing maps one to the other
     assert dc.KIND_TOKEN_EXCEPTIONS == {"voltage": frozenset({"mV", "V"}),
@@ -617,7 +618,7 @@ def test_app_wires_one_immutable_binding_per_method():
         == "engine.dc_resistive_load_energy_method.evaluate"
     with pytest.raises(AttributeError):
         webapp._DC_LOAD_ENERGY_BINDING.method_id = "x"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 11
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 12
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("dc_resistive_load_energy_method", "engine.dc_resistive",
                    "electrical_content_config", "import fractions", "decimal",
@@ -674,7 +675,7 @@ def test_owner_artifact_tamper_fails_closed(tmp_path, name):
 
 def test_owner_v7_records_are_unchanged_by_the_eighth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "11"
+    assert data["artifact_version"] == "12"
     v7 = {"quantity_kinds": data["quantity_kinds"][:12],
           "unit_records": data["unit_records"][:13],
           "source_use_policies": data["source_use_policies"][:13],
