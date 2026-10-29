@@ -1442,6 +1442,67 @@ information, not execution authority.
      development outcomes, without inferring safety, verified design or suitability.
      Complete the release-specific stage gates only when their actual prerequisites
      are satisfied.
+  **Core inventor-to-prototype priority clarification (Owner direction, 2026-10-29;
+  g1 continuity only).** The destination of steps 1–5 is an understandable,
+  traceable invention that a nontechnical inventor can develop with qualified
+  engineering help and eventually hand off for a prototype. This is NOT a
+  separate execution roadmap or a new authority source. Select bounded work
+  backward from the required inventor-visible outcome, rather than maximizing
+  standalone calculators or advice. The intended output levels are distinct:
+  (A) a preliminary attributed package of inventor-confirmed intent, declared
+  parts/interfaces, qualified technical contributions, open compatibility and
+  verification needs; (B) an engineering-supported prototype package with the
+  necessary admitted component/interface decisions and task-specific CAD,
+  drawings, schematics/PCB, firmware/control, assembly and verification artifacts
+  where qualified; (C) manufacturing-ready files/BOM/tolerances/instructions
+  only when all applicable technical, safety and regulatory evidence exists.
+  An attractive AI proposal, successful calculation or generated file proves
+  none of the higher levels.
+  **Agreed outcome-first dependency focus within the EXISTING g1 steps:**
+  - **g1-1/2, inventor understanding:** first *candidate* is ONE bounded,
+    synthetic-only AI/orchestrator clarification proof using existing shadow,
+    functional-reading, co-authoring and unknown/confirmation owners. Preserve
+    the original inventor wording and attribute AI-proposed components or
+    mechanisms separately; the inventor may choose what to explore but does not
+    certify engineering suitability. Qualify EN/AR meaning, abstention and
+    negative controls; neither provider activation, real-data transmission nor
+    a live AI write path is authorized. The independent R2 answer-assessment
+    problem must address BOTH plain-language false rejection and false credit;
+    PR #890 stays HOLD, and no proposal may bypass its progression boundary.
+  - **g1-2, design context:** reuse Stage 15's exact project/part/component/
+    interface identities and participation, existing canonical assertion and
+    requirement owners, and the #893 understanding projection; a generated
+    concept remains a proposal until explicitly decided by the inventor.
+  - **g1-3, technical contributions:** retain qualified method ownership
+    and request-local calculation semantics. For a reproducible future
+    handoff, the first *candidate* retention slice is ONE method and ONE
+    explicitly saved part-bound result, with inputs, units, method/version,
+    provenance, dependencies and conservative stale/unavailable disclosure.
+    Before any persistence, resolve the authorized consumer and retention
+    owner under calculation contract §12 and TR Evidence Model §11; do not
+    place a store in the calculation engine or call a saved result validation.
+  - **g1-3/4, integration and delivery:** reuse Stage 15, T6 and Technical
+    Realization for attributed cross-domain interfaces and missing evidence.
+    Independently correct Mechanical/Electrical/Sensors/Control outcomes do
+    not establish their physical coupling or compatibility. D4 and blocked
+    motion/power claims reopen only on their existing qualified source,
+    method, architecture and Owner-authorization triggers. Start handoff at
+    truthful level A; level B/C CAD/PCB/CAE/tool, quantity/BOM, assembly and
+    manufacturing outputs remain separate evidence- and activation-gated
+    obligations, not automatically selected increments.
+  - **g1-5, product proof:** verify at least one ordinary-language single-
+    domain journey and one integrated invention, plus relevant EN/AR and
+    negative/withdrawal/staleness cases. Test whether a nontechnical inventor
+    can understand, correct, continue and hand off the outcome; real-user
+    usability and market demand require their own consent and evidence.
+  **Next action / stop:** the synthetic AI/orchestrator clarification proof is
+  a CANDIDATE RECOMMENDATION, NOT an approved implementation or provider run;
+  ACTIVE CONTRACT is still NONE. If it lacks authority or qualification, record
+  the exact blocker/reopening trigger in the existing owner and consider the
+  next independent eligible g1 evidence task (e.g. bounded retention-owner
+  feasibility) under PCRA/SFR and NEXT-LOOP, never automatic coding or a random
+  product increment. Replan only for material new evidence, genuine blockers
+  or explicit Owner direction. Merge and deployment remain separately reserved.
   **Reuse Before Build — early heavy-capability preparation (Owner clarification,
   2026-10-17).** PR #833 already extended the single READ BEFORE BUILD owner
   check; do not create a new registry, research gate or repeated executor round.
