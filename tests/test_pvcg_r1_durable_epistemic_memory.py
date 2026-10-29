@@ -574,7 +574,11 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                       # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01:
                       # current-value notes per component taking part (no
                       # payload, no disposition) — not a ledger.
-                      "subsystem_participation_preparations"], tables
+                      "subsystem_participation_preparations",
+                      # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01: presence-only
+                      # current value per Mechanical part (no payload, no
+                      # disposition) — not a ledger.
+                      "subsystem_temperature_change_declarations"], tables
     assert ledger_like == ["records"], ledger_like
     assert "payload" not in quantity_cols and "disposition" not in quantity_cols
     assert "payload" not in reference_cols and "disposition" not in reference_cols

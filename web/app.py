@@ -181,6 +181,9 @@ from engine.record_store import (
     ComponentPrototypeNeedStale as _ComponentPrototypeNeedStale,
     ComponentPrototypeNeedWithdrawn as _ComponentPrototypeNeedWithdrawn,
     ComponentPrototypeNeedsCorrupt as _ComponentPrototypeNeedsCorrupt,
+    PartTemperatureChangeRejected as _PartTemperatureChangeRejected,
+    PartTemperatureChangeStale as _PartTemperatureChangeStale,
+    PartTemperatureChangesCorrupt as _PartTemperatureChangesCorrupt,
     InterfaceParticipationRejected as _InterfaceParticipationRejected,
     InterfaceParticipationStale as _InterfaceParticipationStale,
     InterfaceParticipationWithdrawn as _InterfaceParticipationWithdrawn,
@@ -7056,6 +7059,10 @@ def show_session(sid):
         # Stage 15 Slice 1: the bounded integrated-invention scope (None for
         # every ordinary project).
         integrated_scope=_integrated_scope_context(state),
+        # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 (Increment A): the
+        # inventor's statement about the Mechanical part, read from durable
+        # truth; presentation only — nothing else reads it.
+        part_temperature_change=_part_temperature_change_context(sid, entry),
         # P5-3: a TRUTHFUL owned-state signal — True only when the current
         # authenticated account is the durable owner of this project. Never claims
         # ownership for a NULL-owner (legacy/anonymous) project. Display only.
@@ -10816,6 +10823,135 @@ def component_prototype_need(sid):
     # COMMITTED, or the requested note is confirmed durably present (an exact
     # retry included).
     return _component_notice(sid, entry, ack=saved_key)
+
+
+# --- PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 (Increment A) --------------
+# The inventor may state, for the ONE Mechanical part of a valid durable
+# Stage-15 composition, that the part experiences a temperature change during
+# use, and may withdraw that statement. A presence-only current value keyed by
+# the part's existing ``subsystem_id`` (``engine.subsystem_model`` semantics;
+# the record store's ``subsystem_temperature_change_declarations``): OWNER_STATED
+# / UNVALIDATED, never inferred, never a checked condition. NOT DECLARED means
+# only that no statement is held; a withdrawal is never a negative statement.
+# The write follows the prototype-need current-value semantics: the global
+# request-integrity (CSRF) guard and the central project authorization protect
+# it; the form carries the state it displayed; the store re-validates the
+# project, the composition and the exact Mechanical part inside ONE serialized
+# write transaction and refuses a stale form; an exact retry writes nothing; an
+# unknown outcome is decided by reloading committed truth (SAVED / NOT SAVED /
+# UNKNOWN). Nothing reads the statement to decide eligibility, a calculation,
+# a handoff, the Compass, questions, readiness, progression, gaps or
+# SafetySignal; the Stage-15 part itself is never edited or rebound.
+PART_TC_ACK_SLOT = "_part_tc_ack"
+PART_TC_ERROR_SLOT = "_part_tc_error"
+_PART_TC_ACTIONS = ("declare", "withdraw")
+_PART_TC_BASES = {"declared": True, "not_declared": False}
+
+
+def _part_tc_notice(sid, entry, ack=None, error=None):
+    """Publish exactly ONE current statement notice and return to the part."""
+    entry.pop(PART_TC_ACK_SLOT, None)
+    entry.pop(PART_TC_ERROR_SLOT, None)
+    if ack is not None:
+        entry[PART_TC_ACK_SLOT] = ack
+    if error is not None:
+        entry[PART_TC_ERROR_SLOT] = error
+    return redirect(url_for("show_session", sid=sid) + "#integrated-scope")
+
+
+def _part_temperature_change_context(sid, entry):
+    """The session-page view of the inventor's statement about the ONE
+    Mechanical part, read from ONE durable snapshot (composition + statements
+    validated whole), or ``None`` when the project has no durable record or no
+    Stage-15 parts (nothing is shown). Unreadable or invalid storage yields
+    ``status="unavailable"`` with NO state and NO form — never NOT DECLARED.
+    The part's id travels only as a form value, never as visible text."""
+    ack = entry.pop(PART_TC_ACK_SLOT, None)
+    error = entry.pop(PART_TC_ERROR_SLOT, None)
+    loader = getattr(_get_store(), "load_part_temperature_changes", None)
+    if not callable(loader):
+        return None
+    try:
+        subsystems, declarations = loader(sid)
+    except _ProjectNotFound:
+        return None
+    except Exception:
+        return {"status": "unavailable", "ack": None, "error": error}
+    part = next((sub for sub in subsystems
+                 if sub.domain in _subsystem_model.PART_TEMPERATURE_CHANGE_DOMAINS),
+                None)
+    if part is None:
+        return None
+    return {"status": "ok", "part_id": part.subsystem_id,
+            "declared": _subsystem_model.part_temperature_change_declared(
+                declarations, part.subsystem_id),
+            "ack": ack, "error": error}
+
+
+def _resolve_part_tc_write(sid, subsystem_id, target):
+    """Bounded confirm-by-reload after the write RAISED: SAVED when the
+    committed state of exactly this part equals ``target``, NOT SAVED on a
+    demonstrable mismatch, UNKNOWN when committed truth cannot be read."""
+    try:
+        _subsystems, declarations = _get_store().load_part_temperature_changes(sid)
+    except Exception:
+        return _NEED_WRITE_UNKNOWN
+    durable = _subsystem_model.part_temperature_change_declared(
+        declarations, subsystem_id)
+    return _NEED_WRITE_SAVED if durable == target else _NEED_WRITE_NOT_SAVED
+
+
+@app.route("/session/<sid>/part-temperature-change", methods=["POST"])
+def part_temperature_change(sid):
+    """PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 — the inventor declares,
+    after an explicit confirmation, or withdraws their statement that the
+    Mechanical part experiences a temperature change during use. OWNER_STATED
+    / UNVALIDATED; recording it checks, infers, offers or validates nothing."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return redirect(url_for("index"))
+        SESSION_STORE[sid] = entry
+    subsystem_ids = request.form.getlist("subsystem_id")
+    actions = request.form.getlist("tc_action")
+    bases = request.form.getlist("tc_base")
+    confirms = request.form.getlist("tc_confirm")
+    if (len(subsystem_ids) != 1 or len(actions) != 1 or len(bases) != 1
+            or len(confirms) > 1
+            or not _subsystem_model.is_valid_subsystem_id(subsystem_ids[0])
+            or actions[0] not in _PART_TC_ACTIONS
+            or bases[0] not in _PART_TC_BASES
+            or (confirms and confirms[0] != "yes")):
+        return _part_tc_notice(sid, entry, error="UI_PTC_MSG_REJECTED")
+    subsystem_id = subsystem_ids[0]
+    target = actions[0] == "declare"
+    baseline = _PART_TC_BASES[bases[0]]
+    if target and not confirms:
+        return _part_tc_notice(sid, entry, error="UI_PTC_MSG_CONFIRM_REQUIRED")
+    if target == baseline:
+        # Nothing differs from what this form displayed: nothing to write.
+        return _part_tc_notice(sid, entry, ack="UI_PTC_MSG_UNCHANGED")
+    saved_key = "UI_PTC_MSG_DECLARED" if target else "UI_PTC_MSG_WITHDRAWN"
+    try:
+        _get_store().set_part_temperature_change(sid, subsystem_id, target, baseline)
+    except _PartTemperatureChangeStale:
+        return _part_tc_notice(sid, entry, error="UI_PTC_MSG_STALE")
+    except _PartTemperatureChangeRejected:
+        return _part_tc_notice(sid, entry, error="UI_PTC_MSG_REJECTED")
+    except (_ProjectNotFound, _ProjectSubsystemsCorrupt,
+            _PartTemperatureChangesCorrupt):
+        # Committed durable truth WAS read and fails closed: nothing written.
+        return _part_tc_notice(sid, entry, error="UI_PTC_MSG_NOT_SAVED")
+    except Exception:
+        outcome = _resolve_part_tc_write(sid, subsystem_id, target)
+        if outcome == _NEED_WRITE_UNKNOWN:
+            return _part_tc_notice(sid, entry, error="UI_PTC_MSG_UNKNOWN")
+        if outcome == _NEED_WRITE_NOT_SAVED:
+            return _part_tc_notice(sid, entry, error="UI_PTC_MSG_NOT_SAVED")
+    return _part_tc_notice(sid, entry, ack=saved_key)
 
 
 # --- Stage 15 Slice 3: Interface Verification Preparation ------------------

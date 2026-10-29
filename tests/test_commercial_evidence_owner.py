@@ -1434,7 +1434,12 @@ def test_the_owner_module_owns_the_link_and_no_second_owner_appears(tmp_path):
                       # inventor's notes for checking one mandatory constraint,
                       # current value (not a commercial owner; no supplier,
                       # cost, quantity or evidence content).
-                      "constraint_acceptance_preparations"}
+                      "constraint_acceptance_preparations",
+                      # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01: the
+                      # inventor's presence-only statement about one Mechanical
+                      # part (not a commercial owner; no supplier, cost,
+                      # quantity or evidence content).
+                      "subsystem_temperature_change_declarations"}
     source = open("engine/commercial_evidence.py", encoding="utf-8").read()
     assert "anchor_record_id" not in source
     store_source = open("engine/record_store.py", encoding="utf-8").read()
