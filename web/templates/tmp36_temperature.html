@@ -78,6 +78,22 @@ ul.plain{font-size:13px;padding-inline-start:20px;margin:6px 0;overflow-wrap:any
 <div class="boundary" data-tmp36-disclosure>
   <ol>{% for item in disclosure_items %}<li>{{ item }}</li>{% endfor %}</ol>
 </div>
+{#- TMP36-NOMINAL-TEMPERATURE-VERIFICATION-PREPARATION-01: preparation only, after
+    SUCCESS. InventorAI defines no measurement or calibration, selects no sensor,
+    instrument or reference, compares nothing and treats no nominal value as measured. -#}
+<section class="box" data-tmp36-verification>
+  <p class="copy"><strong>{{ iso('UI_TMP36_VERIFY_TITLE') }}</strong></p>
+  <p class="copy" data-tmp36-verify-intro>{{ iso('UI_TMP36_VERIFY_INTRO') }}</p>
+  <ol class="plain" data-tmp36-verify-items>
+    <li data-tmp36-verify-item="sensor">{{ iso('UI_TMP36_VERIFY_SENSOR') }}</li>
+    <li data-tmp36-verify-item="voltage">{{ iso('UI_TMP36_VERIFY_VOLTAGE') }}</li>
+    <li data-tmp36-verify-item="conditions">{{ iso('UI_TMP36_VERIFY_CONDITIONS') }}</li>
+    <li data-tmp36-verify-item="reference">{{ iso('UI_TMP36_VERIFY_REFERENCE') }}</li>
+    <li data-tmp36-verify-item="excluded">{{ iso('UI_TMP36_VERIFY_EXCLUDED') }}</li>
+  </ol>
+  <p class="copy" data-tmp36-verify-boundary>{{ iso('UI_TMP36_VERIFY_BOUNDARY') }}</p>
+  <p class="guidance" data-tmp36-verify-authority>{{ iso('UI_TMP36_VERIFY_AUTHORITY') }}</p>
+</section>
 <section class="box" data-tmp36-echo>
   <p class="copy"><strong>{{ t('UI_TMP36_ECHO_HEADING') }}</strong></p>
   <ul class="plain">

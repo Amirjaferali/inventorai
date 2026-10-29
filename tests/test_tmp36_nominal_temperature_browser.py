@@ -60,6 +60,13 @@ def test_tmp36_journey_on_an_electronics_project(server, page, lang):
     expect(page.locator("[data-tmp36-disclosure] li")).to_have_count(7)
     expect(page.locator("[data-tmp36-method] bdi").first).to_have_text(
         "tmp36:nominal_voltage_to_temperature")
+    verify = page.locator("[data-tmp36-verification]")
+    expect(verify).to_be_visible()
+    expect(verify.locator("[data-tmp36-verify-items] li")).to_have_count(5)
+    expect(verify.locator("[data-tmp36-verify-boundary]")).to_have_text(
+        text("UI_TMP36_VERIFY_BOUNDARY", lang))
+    expect(verify.locator("[data-tmp36-verify-authority]")).to_have_text(
+        text("UI_TMP36_VERIFY_AUTHORITY", lang))
 
     # the zero crossing, a negative temperature and a decimal fraction
     for typed, shown in (("500", "0.0 °C"), ("100", "-40.0 °C"), ("499.999", "-0.0001 °C"),
@@ -71,6 +78,7 @@ def test_tmp36_journey_on_an_electronics_project(server, page, lang):
     _resubmit(page, "1750.001")
     expect(page.locator("[data-tmp36-outcome]")).to_have_count(1)
     expect(page.locator("[data-tmp36-result-value]")).to_have_count(0)
+    expect(page.locator("[data-tmp36-verification]")).to_have_count(0)
 
     page.set_viewport_size({"width": 390, "height": 900})
     width = page.evaluate("document.documentElement.clientWidth")

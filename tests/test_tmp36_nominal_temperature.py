@@ -938,3 +938,120 @@ def test_attribution_escaping_and_arabic_isolation(lang):
         stripped = html.unescape(re.sub(r"<[^>]+>", "", body))
         for item in ui_text.text("UI_TMP36_DISCLOSURE", "ar").split("\n\n"):
             assert _norm(item) in _norm(stripped), item[:30]
+
+
+# ==========================================================================
+# 9. TMP36-NOMINAL-TEMPERATURE-VERIFICATION-PREPARATION-01 (contract §9B)
+# ==========================================================================
+VERIFY_KEYS = ("UI_TMP36_VERIFY_TITLE", "UI_TMP36_VERIFY_INTRO", "UI_TMP36_VERIFY_SENSOR",
+               "UI_TMP36_VERIFY_VOLTAGE", "UI_TMP36_VERIFY_CONDITIONS",
+               "UI_TMP36_VERIFY_REFERENCE", "UI_TMP36_VERIFY_EXCLUDED",
+               "UI_TMP36_VERIFY_BOUNDARY", "UI_TMP36_VERIFY_AUTHORITY")
+# SHA-256 of the method artifact at base 2f3456b (byte-for-byte unchanged).
+ARTIFACT_SHA256 = "dcaa7a462881ed6067ebcb543d7eeb48854ce5c08d8d36b5bd8c2aa931b361d8"
+
+
+def test_verification_preparation_renders_on_success_only(elec):
+    c, _aid, sid = elec
+    assert "data-tmp36-verification" not in c.get(URL % sid).get_data(as_text=True)
+    body = c.post(URL % sid, data=_form(v_out="750")).get_data(as_text=True)
+    assert _value(body) == "25.0 °C"                       # the result is unchanged
+    assert body.count("data-tmp36-verification") == 1
+    text = _norm(html.unescape(_content_text(body)))
+    for key in VERIFY_KEYS:
+        assert _norm(ui_text.text(key, "en")) in text, key
+    items = re.findall(r'data-tmp36-verify-item="(\w+)"', body)
+    assert items == ["sensor", "voltage", "conditions", "reference", "excluded"]
+    for over in ({"v_out": "2000"}, {"v_out": "-5"}, {"v_out": ""},
+                 {"screen": {"battery_or_storage_cell": "yes"}},
+                 {"decl": {"device_tmp36": "does_not_apply"}},
+                 {"decl": {"nominal_only": ""}}):
+        body = c.post(URL % sid, data=_form(**over)).get_data(as_text=True)
+        assert "data-tmp36-verification" not in body, over
+
+
+def test_verification_preparation_is_absent_for_an_ineligible_project(mech):
+    c, _aid, sid = mech
+    for r in (c.get(URL % sid), c.post(URL % sid, data=_form())):
+        assert "data-tmp36-verification" not in r.get_data(as_text=True)
+
+
+def test_verification_preparation_keeps_the_five_things_apart_and_claims_nothing():
+    en = {key: ui_text.text(key, "en") for key in VERIFY_KEYS}
+    combined = " ".join(en.values())
+    # the declared voltage is never presented as InventorAI's measurement
+    assert "InventorAI did not read, sample or measure it" in en["UI_TMP36_VERIFY_VOLTAGE"]
+    assert "obtained independently" in en["UI_TMP36_VERIFY_VOLTAGE"]
+    assert "documentation or another source you supplied" in en["UI_TMP36_VERIFY_VOLTAGE"]
+    # nominal, referenced, accuracy / calibration and validation stay distinct
+    boundary = en["UI_TMP36_VERIFY_BOUNDARY"]
+    for part in ("the V_OUT you declared", "the nominal temperature calculated from it",
+                 "an independently measured or referenced temperature",
+                 "the device's accuracy and calibration", "engineering verification or validation",
+                 "A nominal temperature is not a measured temperature",
+                 "does not by itself establish accuracy, calibration, suitability, safety",
+                 "disagreement does not by itself show which source of error"):
+        assert part in boundary, part
+    assert "may not represent the temperature of the TMP36 itself" in en["UI_TMP36_VERIFY_REFERENCE"]
+    for factor in ("accuracy and linearity", "self-heating", "calibration",
+                   "error of the measuring instrument", "ADC error"):
+        assert factor in en["UI_TMP36_VERIFY_EXCLUDED"], factor
+    assert "InventorAI calculates none of them" in en["UI_TMP36_VERIFY_EXCLUDED"]
+    assert "not a measurement or calibration procedure" in en["UI_TMP36_VERIFY_INTRO"]
+    assert "UNVALIDATED" in combined and "NOT EVIDENCE" in combined
+    lowered = combined.lower()
+    for banned in ("you should use", "we recommend", "recommended", "connect the", "sample at",
+                   "within ±", "tolerance of", "passes", "is accurate", "is calibrated",
+                   "is safe", "has been validated", "inventorai measured", "measured by inventorai"):
+        assert banned not in lowered, banned
+    for key in VERIFY_KEYS:
+        for lang in ("en", "ar"):
+            assert "SRC-" not in ui_text.text(key, lang)
+
+
+def test_verification_preparation_leaves_the_method_artifact_and_sources_unchanged(elec):
+    import hashlib
+    assert hashlib.sha256(tmp36.ARTIFACT_PATH.read_bytes()).hexdigest() == ARTIFACT_SHA256
+    data = _method_artifact()
+    assert data["artifact_version"] == "1"
+    assert data["method"]["method_id"] == method.METHOD_ID
+    assert data["method"]["method_version"] == method.METHOD_VERSION
+    assert {r["record_id"] for r in data["sources"]} == {"ADI-S1", "tmp36:SU001"}
+    assert [d["declaration_id"] for d in data["declarations"]] == [
+        "device_tmp36", "declared_voltage", "datasheet_conditions", "nominal_only"]
+    # no input, persistence or comparison: the form and the store are unchanged
+    c, _aid, sid = elec
+    before = _snapshot(c)
+    body = c.post(URL % sid, data=_form()).get_data(as_text=True)
+    assert "data-tmp36-verification" in body
+    assert _snapshot(c) == before
+    names = set(re.findall(r'name="([^"]+)"', body))
+    get_names = set(re.findall(r'name="([^"]+)"', c.get(URL % sid).get_data(as_text=True)))
+    assert names == get_names
+
+
+def test_downstream_temperature_control_composition_shows_no_verification_block(elec):
+    from tests.test_temperature_control_condition import URL as TCC_URL, _form as _tcc_form
+    c, _aid, sid = elec
+    body = c.post(TCC_URL % sid, data=_tcc_form()).get_data(as_text=True)
+    assert "data-tcc-result" in body
+    assert "data-tmp36-verification" not in body
+    assert "UI_TMP36_VERIFY" not in Path(ROOT / "web" / "templates"
+                                         / "temperature_control_condition.html").read_text(
+        encoding="utf-8")
+
+
+def test_verification_preparation_arabic_is_rtl_and_isolated():
+    c, _ = _client_for("tmp36-verify-ar@example.com")
+    sid = _start(c, ELEC_FORM)
+    assert c.post("/ui-language", data={"lang": "ar"}).status_code in (200, 302)
+    body = c.post(URL % sid, data=_form()).get_data(as_text=True)
+    assert 'dir="rtl"' in body
+    block = body[body.index("data-tmp36-verification"):]
+    block = block[:block.index("</section>")]
+    isolated = re.findall(r'<bdi dir="ltr">([^<]*)</bdi>', block)
+    for token in ("V_OUT", "TMP36", "ADC", "UNVALIDATED", "NOT EVIDENCE", "InventorAI"):
+        assert any(token in run for run in isolated), token
+    stripped = _norm(html.unescape(re.sub(r"<[^>]+>", "", block)))
+    for key in VERIFY_KEYS:
+        assert _norm(ui_text.text(key, "ar")) in stripped, key
