@@ -53,6 +53,8 @@ from engine import pwm_average_voltage_method as _pwm_method  # PWM Average Volt
 from engine import pwm_average_voltage as _pwm  # PWM Average Voltage Slice 1 consumer
 from engine import mechanical_natural_frequency_method as _mnf_method  # Spring-Mass Natural Frequency Slice 1 method
 from engine import mechanical_natural_frequency as _mnf  # Spring-Mass Natural Frequency Slice 1 consumer
+from engine import mechanical_thermal_expansion_method as _mte_method  # Free Linear Thermal Expansion Slice 1 method
+from engine import mechanical_thermal_expansion as _mte  # Free Linear Thermal Expansion Slice 1 consumer
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState,
@@ -7273,6 +7275,11 @@ def show_session(sid):
         # Mechanical part of a valid integrated composition). It never gates
         # the journey.
         mechanical_natural_frequency_link=_mnf_link_offered(sid),
+        # MECHANICAL-FREE-LINEAR-THERMAL-EXPANSION-01: an OPTIONAL link to the
+        # request-local free linear thermal-expansion calculation, on the same
+        # eligibility as the other Mechanical calculations. It never gates the
+        # journey.
+        mechanical_thermal_expansion_link=_mte_link_offered(sid),
         mfg_ack=_mfg_notice_text(
             _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
         mfg_error=_mfg_notice_text(
@@ -16805,6 +16812,157 @@ def mechanical_natural_frequency_post(sid):
                            error="UI_MNF_ERR_REQUEST")
     evaluation = _mnf.evaluate(captured, _MNF_BINDING)
     return _render_mnf(sid, declared_part=part, captured=captured,
+                       evaluation=evaluation)
+
+
+# =============================================================================
+# MECHANICAL-FREE-LINEAR-THERMAL-EXPANSION-01 — Free Linear Thermal Expansion, Slice 1 (request-local, optional)
+# =============================================================================
+# ONE optional, advisory calculation of the FREE change in length of ONE
+# inventor-declared unrestrained length of ONE material (free linear
+# thermal-expansion contract §1, §7). The consumer
+# (`engine/mechanical_thermal_expansion.py`) owns capture, the pre-owner order,
+# the exact decimal reference and the 12-significant-digit display; the shared
+# calculation / units owner (`engine/deterministic_calculation.py`) owns
+# execution; the method adapter (`engine/mechanical_thermal_expansion_method.py`)
+# owns the relation and its binary acceptance. Eligibility is the SAME
+# ``_calc_gate`` rule as the other Mechanical calculations: a Mechanical durable
+# root domain, or the ONE declared Mechanical part of a valid durable integrated
+# composition whatever the initial analysis focus (the Stage 15 exception in
+# ``engine/subsystem_model.py`` names this method). Nothing is persisted and
+# nothing is read from the project beyond the root domain and that validated
+# composition; no answer, requirement quantity, component, evidence or
+# SafetySignal. The POST renders its answer directly and never redirects. No
+# result is transferred into or from any other calculation (THERM-01 included),
+# and every other method's semantics are untouched.
+#
+# The THIRTEENTH immutable trusted binding (calc/units Correction 13 §13L),
+# created here by application wiring for THIS consumer only. There is no
+# registry, discovery, dynamic module path or request-selectable callable.
+_MTE_BINDING = _dcalc.bind_method(
+    _mte_method.METHOD_ID, _mte_method.METHOD_VERSION, _mte_method.evaluate)
+
+# Latin letters, digits, the Greek α and Δ of the role symbols, the
+# multiplication sign of the relation, the solidus of ``1/K``, the degree sign of
+# ``°C`` and the superscripts of ``× 10⁻⁶`` in the entry help, plus identifiers: each run is direction-isolated on an Arabic page (parentheses
+# stay outside a run, so a bracketed token such as (mm) keeps its brackets in
+# the surrounding text).
+_MTE_LTR_RUN = re.compile(
+    r"[A-Za-z0-9_\u03b1\u0394](?:[A-Za-z0-9_\u03b1\u0394\u00d7\u00b7\u00b0\u207b"
+    r"\u00b9\u00b2\u00b3\u2070\u2074-\u2079.:/= -]*"
+    r"[A-Za-z0-9_\u03b1\u0394\u00b0\u00b9\u00b2\u00b3\u2070\u2074-\u2079])?")
+
+
+def _mte_eligible(sid):
+    """True iff the project is eligible for the free linear thermal-expansion
+    calculation under ``_calc_gate``: a Mechanical durable root domain, or a
+    declared Mechanical part of a valid durable integrated composition. Never
+    read from the request; fails closed."""
+    return _calc_gate(sid, _mte)[0]
+
+
+def _mte_link_offered(sid):
+    """The session-page link reads the SAME single rule the submission reads,
+    so the link and the calculation cannot disagree. Presentation only."""
+    return _mte_eligible(sid)
+
+
+def _mte_isolate(text, lang):
+    return _ltr_isolate(text, lang, _MTE_LTR_RUN)
+
+
+def _mte_result_view(evaluation):
+    """Template view of a SUCCESS evaluation: the consumer's display of its
+    exact decimal reference with the exact / rounded label, the exact unit
+    token the owner carried, the method identity and the source and unit
+    references the owner carried. No other field."""
+    result = evaluation["result"]
+    output = result["outputs"][_mte.OUTPUT_ROLE]
+    return {
+        "value": evaluation["display_value"],
+        "exact": evaluation["display_exact"],
+        "unit": output["unit"],
+        "method_id": result["method_id"],
+        "method_version": result["method_version"],
+        "sources": [{"ref": q["source_ref"], "title": q["source_title"],
+                     "url": q["url"]} for q in result["source_qualification"]],
+        "units": [{"token": u["unit_token"], "title": u["source_title"],
+                   "edition": u["edition"], "url": u["url"]}
+                  for u in result["unit_records"]],
+    }
+
+
+def _render_mte(sid, status=200, eligible=True, declared_part=None, captured=None,
+                evaluation=None, error=None):
+    lang = _current_ui_lang()
+    view = None
+    outcome_key = None
+    if evaluation is not None:
+        if evaluation["outcome"] == _mte.OUTCOME_SUCCESS:
+            view = _mte_result_view(evaluation)
+        else:
+            outcome_key = "UI_MTE_OUTCOME_%s" % evaluation["outcome"]
+    response = make_response(render_template(
+        "mechanical_thermal_expansion.html",
+        sid=sid,
+        # The declared part this integrated-project calculation is offered for:
+        # its durable Owner-declared name only, rendered escaped in the
+        # template and never persisted, logged or sent anywhere.
+        part_name=(declared_part.display_name
+                   if eligible and declared_part is not None else None),
+        iso=lambda key: _mte_isolate(ui_text.text(key, lang), lang),
+        disclosure_items=[
+            _mte_isolate(part, lang) for part in
+            ui_text.text("UI_MTE_DISCLOSURE", lang).split("\n\n")],
+        eligible=eligible,
+        error_key=error,
+        result=view,
+        outcome_key=outcome_key,
+        echo=captured if view is not None else None,
+        captured=captured,
+        declarations=_mte.DECLARATION_IDS,
+        screen_items=_mte.SCREEN_ITEMS,
+        value_roles=_mte.VALUE_ROLES,
+        decl_field=_mte.DECLARATION_FIELD,
+        screen_field=_mte.SCREEN_FIELD,
+        value_field=_mte.VALUE_FIELD,
+        answer_applies=_mte.ANSWER_APPLIES,
+        answer_does_not_apply=_mte.ANSWER_DOES_NOT_APPLY,
+        screen_yes=_mte.SCREEN_YES,
+        screen_no=_mte.SCREEN_NO,
+        max_value_chars=_mte.MAX_VALUE_CHARS,
+    ), status)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/session/<sid>/thermal-expansion", methods=["GET"])
+def mechanical_thermal_expansion(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _mte)
+    return _render_mte(sid, eligible=eligible, declared_part=part)
+
+
+@app.route("/session/<sid>/thermal-expansion", methods=["POST"])
+def mechanical_thermal_expansion_post(sid):
+    # Order: request integrity (global CSRF guard) -> project authorization ->
+    # eligibility (durable root domain, or a declared Mechanical part of a valid
+    # durable integrated composition) -> strict capture (malformed: 400, no
+    # reason token) -> the consumer's §7 pre-owner order -> the shared owner ->
+    # the consumer's exact decimal reference and display.
+    if not _project_authorized(sid):
+        return _deny_project()
+    eligible, part = _calc_gate(sid, _mte)
+    if not eligible:
+        return _render_mte(sid, eligible=False)
+    form = request.form
+    captured = _mte.capture_form({k: form.getlist(k) for k in form.keys()})
+    if captured is None:
+        return _render_mte(sid, status=400, declared_part=part,
+                           error="UI_MTE_ERR_REQUEST")
+    evaluation = _mte.evaluate(captured, _MTE_BINDING)
+    return _render_mte(sid, declared_part=part, captured=captured,
                        evaluation=evaluation)
 
 

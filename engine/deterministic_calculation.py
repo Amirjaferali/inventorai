@@ -30,7 +30,10 @@ admission of Correction 11 (§13J) under
 docs/governance/ELECTRICAL_PWM_AVERAGE_VOLTAGE_METHOD_CONTRACT.md; then the
 Mechanical spring-mass natural-frequency method, the bounded twelfth admission
 of Correction 12 (§13K) under
-docs/governance/MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md. The
+docs/governance/MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md; then
+the Mechanical free linear thermal-expansion method, the bounded thirteenth
+admission of Correction 13 (§13L) under
+docs/governance/MECHANICAL_FREE_LINEAR_THERMAL_EXPANSION_METHOD_CONTRACT.md. The
 owner is descriptive and unnumbered: it carries no CAP identifier.
 
 What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
@@ -105,7 +108,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.11.0"
+IMPLEMENTATION_VERSION = "1.12.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -138,10 +141,14 @@ _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
 # constant-current charge, adding only the electric_charge / A·h kind and token
 # and the second exact time token h), the bounded eleventh admission of
 # Correction 11 (§13J, Electrical / Electronics PWM average voltage, on the
-# existing voltage / V and time / s kinds and tokens) and exactly the bounded
-# twelfth admission of Correction 12 (§13K, Mechanical spring-mass natural
-# frequency, adding only the mass / kg, stiffness / N/m and frequency / Hz
-# kinds and tokens) - TWELVE methods, each with its own consumer. A
+# existing voltage / V and time / s kinds and tokens), the bounded twelfth
+# admission of Correction 12 (§13K, Mechanical spring-mass natural frequency,
+# adding only the mass / kg, stiffness / N/m and frequency / Hz kinds and
+# tokens) and exactly the bounded thirteenth admission of Correction 13 (§13L,
+# Mechanical free linear thermal expansion, adding only the
+# linear_thermal_expansion_coefficient / 1/K kind and token, on the existing
+# length / mm and temperature_difference / K kinds and tokens) - THIRTEEN
+# methods, each with its own consumer. A
 # structurally valid extra method, quantity kind or unit fails closed: widening
 # the inventory is a separately authorized change, never an artifact edit alone.
 # No conversion exists. The one Celsius-temperature kind is the output of the
@@ -156,6 +163,10 @@ _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
 # kind (rad/s): angular velocity, angular frequency and frequency are different
 # quantities, no kind holds rad/s for a second meaning and nothing maps Hz to
 # rad/s - the factor 2π lives in the natural-frequency method's adapter only.
+# The linear_thermal_expansion_coefficient kind (1/K, Correction 13) holds one
+# token and no relation to 1/°C, ppm/K or any other spelling; the expansion
+# method's K is a change of one part's temperature over time, never a THERM-01
+# path difference, and no result moves between the two methods.
 ADMITTED_METHODS = frozenset({
     ("cap13:static_reactions_two_support", "1.0"),
     ("therm01:conduction_temperature_difference_single_path", "1.0"),
@@ -169,15 +180,17 @@ ADMITTED_METHODS = frozenset({
     ("electrical:dc_constant_current_charge", "1.0"),
     ("electrical:pwm_average_voltage", "1.0"),
     ("mechanical:spring_mass_natural_frequency", "1.0"),
+    ("mechanical:free_linear_thermal_expansion", "1.0"),
 })
 ADMITTED_QUANTITY_KINDS = frozenset({
     "force", "length", "power", "thermal_resistance", "temperature_difference",
     "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",
     "electric_resistance", "electric_current", "energy", "time",
-    "electric_charge", "mass", "stiffness", "frequency"})
+    "electric_charge", "mass", "stiffness", "frequency",
+    "linear_thermal_expansion_coefficient"})
 ADMITTED_UNIT_TOKENS = frozenset({"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s",
                                   "mV", "°C", "V", "Ω", "A", "J", "s", "h", "A·h",
-                                  "kg", "N/m", "Hz"})
+                                  "kg", "N/m", "Hz", "1/K"})
 # The named exceptions to "one unit token per quantity kind" (§13E voltage,
 # §13I time): the exact token set a kind may hold. Not an alias table and not a
 # scale relation: nothing maps mV to V or h to s.

@@ -325,9 +325,9 @@ def test_module_is_bounded_and_imports_no_other_authority():
 
 def test_not_a_method_of_the_shared_calculation_owner():
     assert all(not m.startswith("control_cycle") for m, _ in dc.ADMITTED_METHODS)
-    assert len(dc.ADMITTED_METHODS) == 12 and dc.IMPLEMENTATION_VERSION == "1.11.0"
-    assert dc.load_artifact()["artifact_version"] == "12"
-    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 12
+    assert len(dc.ADMITTED_METHODS) == 13 and dc.IMPLEMENTATION_VERSION == "1.12.0"
+    assert dc.load_artifact()["artifact_version"] == "13"
+    assert Path(webapp.__file__).read_text(encoding="utf-8").count("_dcalc.bind_method(") == 13
 
 
 # ==========================================================================

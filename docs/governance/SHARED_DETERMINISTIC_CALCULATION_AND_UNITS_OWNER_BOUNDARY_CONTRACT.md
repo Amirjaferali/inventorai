@@ -135,6 +135,17 @@ exact unit token (`mass` / `kg`, `stiffness` / `N/m`, `frequency` / `Hz`) and no
 `g`, `N/mm`, `lb`, `lbf/in` or `rpm`, and no second meaning for the existing `angular_velocity` / `rad/s` record; §13J and
 every earlier section and clause — including §§7–10, §12 and §14 — are unchanged. It is the first admitted square-root
 method; its numerical policy and its one mathematical constant stay method-local.
+CORRECTION 13: `CORRECTION 13 — BOUNDED THIRTEENTH ADMISSION (MECHANICAL FREE LINEAR THERMAL EXPANSION) — OWNER-AUTHORIZED
+WITH ITS IMPLEMENTATION`. Folded, narrowly, into the one Owner-authorized increment
+`MECHANICAL-FREE-LINEAR-THERMAL-EXPANSION-01`, which implements it in the same pull request under the
+[free linear thermal-expansion method contract](MECHANICAL_FREE_LINEAR_THERMAL_EXPANSION_METHOD_CONTRACT.md).
+Applicability: it takes effect only on the verified merge of that pull request into
+`feature/atomic-json-session-persistence`; on its proposal branch it is an Owner-authorized proposed amendment. It ADDS
+§13L and one bullet to §16. It admits exactly one further method and exactly one further quantity kind with one exact unit
+token (`linear_thermal_expansion_coefficient` / `1/K`) and nothing more — no conversion, no alias, no `1/°C`, `ppm/K`,
+`µm/(m·K)` or `10⁻⁶/K`, no property framework, and no second meaning for the existing `length` / `mm` or
+`temperature_difference` / `K` records; §13K and every earlier section and clause — including §§7–10, §12 and §14 — are
+unchanged. No result is transferred between this method and any other, THERM-01 included.
 
 ---
 
@@ -955,6 +966,69 @@ to EXACTLY the following and nothing more.
   dynamics framework or generic oscillator solver; persistence (§12); provider, AI, external-tool or external-library
   execution; and every other §13 / §13A–§13J exclusion.
 
+## 13L. Bounded thirteenth admission — Mechanical free linear thermal expansion (Correction 13)
+
+The delivered twelfth admission (§13K) is expanded, by the Owner-authorized increment named in the CORRECTION 13 header,
+to EXACTLY the following and nothing more.
+
+- **Owner.** The one existing shared owner. No second owner, solver, materials framework, property owner or database,
+  dimensional-analysis engine, reciprocal-unit registry, conversion graph, unit registry, constants registry or range
+  policy is created, and the owner acquires no persistence and no scientific authority. No Materials domain exists.
+- **Methods — exactly thirteen:** the twelve of §13K plus `mechanical:free_linear_thermal_expansion` 1.0, whose technical
+  authority stays outside this owner (§3), in its own Mechanical method-authority artifact
+  `mechanical_free_linear_thermal_expansion` version 1. It is the FREE change in length of ONE declared unrestrained length
+  of ONE material: `ΔL = α_avg × L_ref × ΔT`, InventorAI's restatement of the average coefficient of linear expansion
+  recorded from NBS Circular 486 (SRC-031) — the inventor's own average coefficient over exactly the declared interval,
+  the reference length that coefficient refers to under its own definition, and the signed temperature change. It is not a
+  stress, joint-force, fit, tolerance, clearance, deformation or failure method; no result is transferred between it and
+  any other method, THERM-01 included.
+- **Consumers — exactly thirteen:** the existing twelve and one free linear thermal-expansion consumer. No consumer imports
+  another (it keeps its own display rule), and no method-authority artifact loads another at execution.
+- **Quantity kinds and exact unit tokens: one kind and one token added.** `linear_thermal_expansion_coefficient`
+  (dimension Theta^-1) with the one exact token `1/K` (unit record `dcu:U021`, recorded as InventorAI's bounded quantity
+  usage of the coherent SI quotient one over the kelvin), resting on NIST SP 330 (2019 Edition) Section 2 and one new
+  source-use record (`dcu:SU023`, the NIST Technical Series snapshot of the method's own `mte:SU003`). The existing
+  `length` / `mm` record (`dcu:U002`) carries `L_ref` and `ΔL`, and the existing `temperature_difference` / `K` record
+  (`dcu:U005`) carries `ΔT`, both unchanged and given no second meaning at owner level: the expansion method's `ΔT` is a
+  change of one part's temperature over time, stated method-locally, and THERM-01's `ΔT` stays a difference across one heat
+  path; nothing maps one into the other. No other kind, token, alias, case folding, dimensional equivalence or conversion
+  is added: `1/°C`, `°C⁻¹`, `K⁻¹`, `/K`, `ppm/K`, `µm/(m·K)`, `10⁻⁶/K`, `m`, `cm`, `µm`, `in`, `°C` (for this method's roles)
+  and `°F` are refused or unknown tokens; every kind keeps one token and the `KIND_TOKEN_EXCEPTIONS` set of §13E / §13I is
+  unchanged.
+- **Condition vocabulary.** Unchanged. The new method declares the existing `greater_than_zero` on `alpha_avg` and on
+  `L_ref` and no result range (`ΔL` is signed); its input representation limits and its strictly-positive exact-decimal
+  screening are method-authority content, checked by its consumer from the exact decimal input before any binary rounding
+  (the adapter refuses a non-positive coefficient or length again as an integrity failure).
+- **Method-local binding and wiring.** One additional immutable, application-wired binding; each consumer holds exactly
+  its own binding. No registry, discovery, dynamic module path or request-selected method.
+- **Versions.** The shared-owner artifact moves to content version `13` and the implementation to `1.12.0`. Two new
+  source-use records (`dcu:SU022`, the NIST Technical Series snapshot of the method's own `mte:SU001` for NBS Circular 486,
+  resting on the TECH-SOURCES-001 research-stream direct inspection supplied in the Owner-authorized brief; and `dcu:SU023`
+  above) keep the §9 source and inspection requirements; every content-version-12 record is unchanged. `SRC-029` is
+  `IP-UNRESOLVED` and is relied upon by nothing in this admission; the NASA TP-2226 (SRC-032) qualitative disclosure stays
+  in the method artifact only and qualifies no calculation.
+- **Numerical policy.** §10 applies unchanged: the owner still receives typed binary64 numbers and parses no string. The
+  new method's decimal bridge (strict unsigned grammars for `α_avg` and `L_ref`, a signed grammar for `ΔT`, exact-decimal
+  checks of `α_avg > 0` and `L_ref > 0`, one correctly rounded conversion per input), its binary acceptance (the exact
+  rational product of the three binary inputs rounded once; `+0.0` exactly for a zero temperature change; a nonzero result
+  finite, of the same sign and within `2^-52` of the exact product), its decimal-reference acceptance (within a relative
+  `2^-50` of the exact rational product of the entered decimals, of the same sign) and its display (the exact decimal
+  product rounded once to 12 significant digits, half to even, signed, labelled exact or rounded) are method-authority
+  content held in its consumer, adapter and contract; they are NOT a generic owner policy and change nothing for the other
+  twelve methods. A failure is `FAILURE / EXECUTION_INTEGRITY_FAILURE` with no numerical payload.
+- **Existing methods preserved.** The two-support, THERM-01, planar-moment, rotational-load, TMP36, DC load current, DC
+  load power, DC load energy, planar required force, DC constant-current charge, PWM average-voltage and spring-mass
+  natural-frequency methods, their authority artifacts, semantics, pins and user-facing behaviour stay unchanged; bounded
+  updates to assertions on the owner content version, the implementation version, the closed inventory and the binding
+  count, caused only by this admission, are expected and allowed.
+- **Still excluded:** a fourteenth method or consumer; owner ranges; string parsing in the owner; any conversion (no
+  `1/K` ↔ `1/°C` or ppm scaling, no `mm` ↔ `m`, no `K` ↔ `°C`); any thermal stress, joint force, fit or tolerance
+  evaluation, clearance adequacy, required gap or slot, deformation, buckling or failure result; any difference of two free
+  expansions or second material; any instantaneous or temperature-dependent coefficient, area or volume expansion,
+  anisotropic tensor or moisture expansion; any material selection, property lookup, database, default or prefilled
+  coefficient; any result transfer between calculations; a materials framework or generic property owner; persistence
+  (§12); provider, AI, external-tool or external-library execution; and every other §13 / §13A–§13K exclusion.
+
 ## 14. Required guard strategy for a future implementation
 
 - independent expected numerical results;
@@ -1012,6 +1086,8 @@ to EXACTLY the following and nothing more.
 - Correction 11 (§13J) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 - Correction 12 (§13K) is Owner-authorized together with its bounded implementation, under the same proportionate,
+  risk-appropriate verification.
+- Correction 13 (§13L) is Owner-authorized together with its bounded implementation, under the same proportionate,
   risk-appropriate verification.
 
 ## 17. Non-authorization (restated)
