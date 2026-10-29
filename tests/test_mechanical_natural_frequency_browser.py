@@ -62,6 +62,13 @@ def test_natural_frequency_journey(server, page, lang):
     expect(page.locator("[data-mnf-disclosure] li")).to_have_count(7)
     expect(page.locator("[data-mnf-status]")).to_contain_text("UNVALIDATED")
     expect(page.locator("[data-mnf-sources]")).to_contain_text("Technical Note 487")
+    verify = page.locator("[data-mnf-verification]")
+    expect(verify).to_be_visible()
+    expect(verify.locator("[data-mnf-verify-items] li")).to_have_count(5)
+    expect(verify.locator("[data-mnf-verify-boundary]")).to_contain_text(
+        text("UI_MNF_VERIFY_BOUNDARY", lang))
+    expect(verify.locator("[data-mnf-verify-authority]")).to_contain_text(
+        text("UI_MNF_VERIFY_AUTHORITY", lang))
 
     # a declaration that does not apply shows one reason and no number
     form.locator("[data-mnf-declaration=damping_not_modelled] input[value=does_not_apply]").check()
@@ -71,6 +78,7 @@ def test_natural_frequency_journey(server, page, lang):
     expect(page.locator("[data-mnf-outcome]")).to_contain_text(
         text("UI_MNF_UNABLE_HEADING", lang).split(" (")[0])
     expect(page.locator("[data-mnf-result-value]")).to_have_count(0)
+    expect(page.locator("[data-mnf-verification]")).to_have_count(0)
 
     # a zero mass is refused before any calculation
     form.locator("[data-mnf-declaration=damping_not_modelled] input[value=applies]").check()

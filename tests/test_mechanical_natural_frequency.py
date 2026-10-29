@@ -925,6 +925,13 @@ def test_post_success_renders_in_the_same_request(mech):
                       body) == [EXAMPLE + " Hz"]
     assert "mechanical:spring_mass_natural_frequency" in body and "UNVALIDATED" in body
     assert "data-mnf-rounded" in body and "data-mnf-next-step" in body
+    assert "data-mnf-verification" in body
+    for key in ("UI_MNF_VERIFY_TITLE", "UI_MNF_VERIFY_INTRO",
+                "UI_MNF_VERIFY_ITEM_1", "UI_MNF_VERIFY_ITEM_2",
+                "UI_MNF_VERIFY_ITEM_3", "UI_MNF_VERIFY_ITEM_4",
+                "UI_MNF_VERIFY_ITEM_5", "UI_MNF_VERIFY_BOUNDARY",
+                "UI_MNF_VERIFY_AUTHORITY"):
+        assert _norm(ui_text.text(key, "en")) in _norm(html.unescape(_content_text(body)))
     text = _norm(html.unescape(_content_text(body)))
     for item in ui_text.text("UI_MNF_DISCLOSURE", "en").split("\n\n"):
         assert _norm(item) in text
@@ -950,6 +957,7 @@ def test_post_non_success_shows_one_reason_and_no_number(mech, over, outcome):
     assert html.escape(ui_text.text("UI_MNF_OUTCOME_" + outcome, "en"),
                        quote=False) in body
     assert "data-mnf-result" not in body and body.count("data-mnf-outcome") == 1
+    assert "data-mnf-verification" not in body
 
 
 def test_malformed_request_is_400_and_echo_is_escaped(mech):
@@ -1042,6 +1050,65 @@ def test_arabic_page_is_rtl_and_isolates_tokens(mech):
     for item in ui_text.text("UI_MNF_DISCLOSURE", "ar").split("\n\n"):
         assert _norm(item) in _norm(stripped), item[:40]
     assert _norm(ui_text.text("UI_MNF_NEXT_STEP", "ar")) in _norm(stripped)
+    for key in ("UI_MNF_VERIFY_TITLE", "UI_MNF_VERIFY_INTRO",
+                "UI_MNF_VERIFY_ITEM_1", "UI_MNF_VERIFY_ITEM_2",
+                "UI_MNF_VERIFY_ITEM_3", "UI_MNF_VERIFY_ITEM_4",
+                "UI_MNF_VERIFY_ITEM_5", "UI_MNF_VERIFY_BOUNDARY",
+                "UI_MNF_VERIFY_AUTHORITY"):
+        assert _norm(ui_text.text(key, "ar")) in _norm(stripped)
+
+
+def test_verification_preparation_is_bounded_and_artifact_sources_stay_pinned(mech):
+    c, _aid, sid = mech
+    body = c.post(URL % sid, data=_form()).get_data(as_text=True)
+    assert "data-mnf-verification" in body
+    combined = " ".join(ui_text.text(key, "en") for key in (
+        "UI_MNF_VERIFY_INTRO", "UI_MNF_VERIFY_ITEM_1", "UI_MNF_VERIFY_ITEM_2",
+        "UI_MNF_VERIFY_ITEM_3", "UI_MNF_VERIFY_ITEM_4", "UI_MNF_VERIFY_ITEM_5",
+        "UI_MNF_VERIFY_BOUNDARY", "UI_MNF_VERIFY_AUTHORITY"))
+    lowered = combined.lower()
+    for banned in ("perform a frequency sweep to", "excite the system at resonance",
+                   "resonance occurs at", "response peak is the natural frequency",
+                   "safe frequency", "acceptable margin", "damping ratio",
+                   "transmissibility ="):
+        assert banned not in lowered, banned
+    assert "not automatically the calculated f₀" in combined
+    assert "does not instruct you to excite the system at or near resonance" in combined
+    assert "UNVALIDATED" in combined and "NOT EVIDENCE" in combined
+
+    # Reviewer correction: this increment must not mutate the pinned method
+    # artifact or silently extend its source-use records.
+    data = _method_artifact()
+    assert data["artifact_version"] == "1"
+    by_id = {r["record_id"]: r for r in data["sources"]}
+    assert set(by_id) == {"NBS-NF-S1", "NIST-NF-U", "mnf:SU001", "mnf:SU002"}
+    assert "maximum" not in by_id["NBS-NF-S1"]["inspected_content"].lower()
+    assert "resonance sought" not in by_id["NBS-NF-S1"]["inspected_content"].lower()
+    # The artifact is byte-for-byte the delivered #900 artifact (SHA-256 of the
+    # file at base 29ac879); its own SRC-045 line records only that the former
+    # basis is IP-UNRESOLVED and NOT relied upon.
+    assert hashlib.sha256(nf.ARTIFACT_PATH.read_bytes()).hexdigest() == \
+        "4456c5bdd2f11b647232f52e429e164b906ab05d4717f559a423f97daa23adc1"
+    # The checklist itself never cites SRC-045 or SRC-047, in either language.
+    for lang in ("en", "ar"):
+        for key in ("UI_MNF_VERIFY_TITLE", "UI_MNF_VERIFY_INTRO", "UI_MNF_VERIFY_ITEM_1",
+                    "UI_MNF_VERIFY_ITEM_2", "UI_MNF_VERIFY_ITEM_3", "UI_MNF_VERIFY_ITEM_4",
+                    "UI_MNF_VERIFY_ITEM_5", "UI_MNF_VERIFY_BOUNDARY", "UI_MNF_VERIFY_AUTHORITY"):
+            assert "SRC-045" not in ui_text.text(key, lang)
+            assert "SRC-047" not in ui_text.text(key, lang)
+
+
+def test_verification_preparation_is_success_only_and_request_local(mech):
+    c, _aid, sid = mech
+    assert "data-mnf-verification" not in c.get(URL % sid).get_data(as_text=True)
+    for over in ({"m": "0"},
+                 {"screen": {"supports_people": "yes"}},
+                 {"decl": {"single_mass": "does_not_apply"}}):
+        body = c.post(URL % sid, data=_form(**over)).get_data(as_text=True)
+        assert "data-mnf-verification" not in body
+    before = _snapshot(c)
+    c.post(URL % sid, data=_form())
+    assert _snapshot(c) == before
 
 
 # ==========================================================================

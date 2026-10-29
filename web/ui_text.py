@@ -8102,6 +8102,36 @@ UI_STRINGS = {
     "UI_MNF_STATUS": {
         "en": "Not validated (UNVALIDATED) — not evidence (NOT EVIDENCE)",
         "ar": "غير مُتحقَّق منه (UNVALIDATED) — ليس دليلًا (NOT EVIDENCE)"},
+    # MNF-VERIFICATION-MEASUREMENT-STEP-01 — InventorAI-authored
+    # verification preparation only. No test procedure, resonance seeking,
+    # peak identification, measurement selection or validation claim.
+    "UI_MNF_VERIFY_TITLE": {
+        "en": "How to prepare to verify this estimate",
+        "ar": "كيف تجهّز للتحقق من هذا التقدير"},
+    "UI_MNF_VERIFY_INTRO": {
+        "en": "If you or a qualified engineer independently decide to check the real system, prepare the information below before comparing anything with the calculated f₀. This is preparation for verification, not a vibration-test procedure.",
+        "ar": "إذا قررت أنت أو مهندس مؤهل بصورة مستقلة التحقق من النظام الحقيقي، فجهّز المعلومات أدناه قبل مقارنة أي شيء بالتردد المحسوب f₀. هذا تحضير للتحقق، وليس إجراءً لاختبار الاهتزاز."},
+    "UI_MNF_VERIFY_ITEM_1": {
+        "en": "Record the excitation frequency or frequency content that is planned or actually observed. Keep it separate from the calculated f₀; InventorAI does not prescribe an excitation.",
+        "ar": "سجّل تردد الإثارة أو محتواها الترددي المخطط أو المرصود فعليًا. أبقه منفصلًا عن f₀ المحسوب؛ ولا يحدد InventorAI إثارةً يجب تطبيقها."},
+    "UI_MNF_VERIFY_ITEM_2": {
+        "en": "Record what response quantity an independent check will observe and where it will be observed. That response quantity and location must be chosen outside InventorAI.",
+        "ar": "سجّل كمية الاستجابة التي ستتم ملاحظتها في تحقق مستقل، وموضع ملاحظتها. يجب اختيار كمية الاستجابة والموضع خارج InventorAI."},
+    "UI_MNF_VERIFY_ITEM_3": {
+        "en": "Record the real configuration being checked: the moving mass, the spring or mount, the support or restraint, and relevant attachments. Note whether it still corresponds to the one-mass, one-linear-spring, effectively-rigid-support, one-direction model you declared.",
+        "ar": "سجّل التكوين الحقيقي الذي يجري التحقق منه: الكتلة المتحركة، والنابض أو الحامل، والسند أو التقييد، والملحقات ذات الصلة. وبيّن ما إذا كان ما يزال يقابل نموذج الكتلة الواحدة والنابض الخطي الواحد والسند الجاسئ فعليًا والحركة في اتجاه واحد الذي صرّحت به."},
+    "UI_MNF_VERIFY_ITEM_4": {
+        "en": "Record the operating conditions and any known behaviour excluded from the calculation, such as damping, additional masses or springs, restraint or coupling. These can make the real response differ from the declared undamped single-degree-of-freedom model.",
+        "ar": "سجّل ظروف التشغيل وأي سلوك معروف مستبعد من الحساب، مثل التخميد أو الكتل أو النوابض الإضافية أو التقييد أو الاقتران. قد تجعل هذه العوامل الاستجابة الحقيقية تختلف عن نموذج درجة الحرية الواحدة غير المخمّد الذي صرّحت به."},
+    "UI_MNF_VERIFY_ITEM_5": {
+        "en": "Only after those boundaries and conditions are recorded, compare the independently observed excitation and response context with the calculated f₀ as information for engineering interpretation. Agreement or disagreement does not by itself validate the model.",
+        "ar": "بعد تسجيل هذه الحدود والظروف فقط، قارن سياق الإثارة والاستجابة المرصود بصورة مستقلة مع f₀ المحسوب بوصفه معلومات للتفسير الهندسي. لا يثبت التطابق أو الاختلاف وحده صحة النموذج."},
+    "UI_MNF_VERIFY_BOUNDARY": {
+        "en": "Predicted undamped f₀, observed excitation frequency, measured response and resonance behaviour are different things. An observed response peak is not automatically the calculated f₀. InventorAI does not instruct you to excite the system at or near resonance, perform a frequency sweep or search for a peak.",
+        "ar": "التردد الطبيعي غير المخمّد المتوقع f₀، وتردد الإثارة المرصود، والاستجابة المقيسة، وسلوك الرنين أشياء مختلفة. ليست قمة الاستجابة المرصودة هي f₀ المحسوب تلقائيًا. ولا يطلب منك InventorAI إثارة النظام عند الرنين أو قربه، أو إجراء مسح ترددي، أو البحث عن قمة استجابة."},
+    "UI_MNF_VERIFY_AUTHORITY": {
+        "en": "This checklist is InventorAI-authored from the existing declared-model boundaries. It adds no measurement procedure and no new scientific claim to the calculation's pinned source records. The result remains UNVALIDATED and NOT EVIDENCE.",
+        "ar": "هذه القائمة من صياغة InventorAI اعتمادًا على حدود النموذج المصرّح به القائمة. ولا تضيف إجراء قياس ولا ادعاءً علميًا جديدًا إلى سجلات المصادر المثبّتة للحساب. وتبقى النتيجة غير مُتحقَّق منها (UNVALIDATED) وليست دليلًا (NOT EVIDENCE)."},
     "UI_MNF_ECHO_HEADING": {
         "en": "The values and declarations you entered",
         "ar": "القيم والتصريحات التي أدخلتها"},
