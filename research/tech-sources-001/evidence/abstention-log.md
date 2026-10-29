@@ -29,3 +29,6 @@ Append-only.
 | 2026-10-29 | R-01 (run 16) | DOE AMO motor sourcebook; JPL TM 33-601; NTRS 19940008713 (university) | DOE series / JPL (FFRDC) / university authorship — not pursued under the rights screen |
 | 2026-10-29 | R-03 (run 16) | FPL test reports (Treesearch 24760, 30514) | Tests and deflection measurement described as per ASTM D 198 — not independent of the standard |
 | 2026-10-29 | R-04 (run 17) | NASA SP "Batteries for Space Power Systems" (NTRS 19690008710) | Contractor author (TRW Systems Group) — excluded |
+| 2026-10-29 | R-06 (run 18) | DETRAN slides (2020 NASA Aerospace Battery Workshop) | © The Aerospace Corporation (FFRDC) — excluded |
+| 2026-10-29 | R-06 (run 18) | NASA/TM 20100033740 (Reid, Bennett) | Chemistry-specific projections only; no general statement for the claim — not relied on |
+| 2026-10-29 | R-06 (run 18) | NTRS 20000058157, 20010083611 (JPL; Aerospace Corporation) | FFRDC authorship — not pursued under the rights screen |

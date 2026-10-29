@@ -153,3 +153,18 @@ passages carry no attribution, so the origin of each relied statement cannot be 
 
 **Audit totals after run 17 (53 sources):** 26 `CALCULATION-GRADE` (20 unconditional, including SRC-047; 6 conditional: SRC-011, 016, 017, 044,
 046, 050), 3 `REFERENCE-ONLY`, 22 `IP-UNRESOLVED` (SRC-009 now among them), 2 `EXCLUDED`.
+
+
+### Run 18 additions
+| SRC | Authorship type | Origin of the relied-on statement | Commercial-use basis | IP fitness | Note |
+|---|---|---|---|---|---|
+| SRC-050 (new claims, slides 42, 44, 47) | government (sole NASA JSC author; inherited from run 17) | own slide text (no citation on these slides) | clear (U.S. Government work) | `CALCULATION-GRADE` (conditional) | text only; the protective-device diagram on slide 47 is excluded; cite NTRS 20140003562; no NASA endorsement |
+| SRC-054 | contractor-prepared (PDF author Millennium Engineering & Integration Co.) | unclear | unknown | `IP-UNRESOLVED` | — |
+| SRC-055 | government (sole NASA Glenn author; NTRS GOV_PUBLIC_USE_PERMITTED, not contractor) | own text | clear (U.S. Government work) | `CALCULATION-GRADE` | photo excluded; cite NTRS 20050217178; no NASA endorsement |
+| SRC-056 | mixed (NASA Glenn and QSS Group, Inc. co-authors) | mixed authorship | unknown at claim level | `IP-UNRESOLVED` | — |
+| SRC-057 | government (NASA JSC EP5 authors; NTRS PUBLIC_USE_PERMITTED, not contractor) | own slide text; underlying data produced by a test contractor | clear for the authors' statements | `CALCULATION-GRADE` (conditional) | statements only — no charts, tables, values or the NREL slide; federal status of S. Russell rests on the NTRS record |
+
+Not registered (abstention log): DETRAN slides (Aerospace Corporation copyright), NASA/TM 20100033740 (chemistry-specific, no general statement).
+
+**Audit totals after run 18 (57 sources):** 28 `CALCULATION-GRADE` (21 unconditional, including SRC-055; 7 conditional: SRC-011, 016, 017,
+044, 046, 050, 057), 3 `REFERENCE-ONLY`, 24 `IP-UNRESOLVED`, 2 `EXCLUDED`.

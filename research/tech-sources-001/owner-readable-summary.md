@@ -3,8 +3,8 @@
 *Rewritten 2026-10-28 after run 13 under the Owner's remaining-run depth discipline. Research evidence only. Status is per question, never per
 technology: a qualified claim is prepared for later Lead assessment and admits no technology, domain, method, capability or roadmap obligation.*
 
-**Status:** ACTIVE — not complete. Runs 17 / 20 · Perplexity queries 52 / 240 · deep-research calls 0 · window ends 2026-11-26.
-**Questions registered:** 40 (Q-01…Q-40) plus held / excluded items. **Sources:** SRC-001…SRC-053, all inspected directly by the executor
+**Status:** ACTIVE — not complete. Runs 18 / 20 · Perplexity queries 55 / 240 · deep-research calls 0 · window ends 2026-11-26.
+**Questions registered:** 40 (Q-01…Q-40) plus held / excluded items. **Sources:** SRC-001…SRC-057, all inspected directly by the executor
 (none Lead-supplied); hash, page and rights for each in `evidence/`.
 
 **IP for product use** (claim-level audit 2026-10-29): only `CALCULATION-GRADE` evidence may support product or method qualification; `REFERENCE-ONLY` is background; `IP-UNRESOLVED` / `EXCLUDED` must not be reused. Scientific status is unchanged and separate.
@@ -26,8 +26,8 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 | Q-10 | Fits / tolerances depend on process capability | QUALIFIED-CANDIDATE | Process-dependence point indirect (implied) | cond | REFERENCE-ONLY (SRC-012) |
 | Q-11 | PWM average = duty × supply, with conditions | QUALIFIED-CANDIDATE (claim since covered by delivered PR #898) | Explicit (SRC-042); ripple / load-response conditions from SRC-018 | calc, cond | CALCULATION-GRADE (SRC-018, SRC-042) |
 | Q-12 | Two-link planar forward kinematics | PARTIAL; residual IP UNRESOLVED (run 14) | Explicit formula only in rights-excluded sources; general principle stands | calc | CALCULATION-GRADE for the general principle (SRC-019) |
-| Q-13 | Free-space inverse-square and far-field conditions | QUALIFIED-CANDIDATE | Explicit (SRC-037, SRC-038); no link-budget values | cond | mixed — SRC-037 / SRC-038 points CALCULATION-GRADE; SRC-020 point IP-UNRESOLVED |
-| Q-14 | Series adds voltage, parallel adds capacity; balancing | QUALIFIED-CANDIDATE | DOE contractor caveat | calc, cond | series / parallel point CALCULATION-GRADE via SRC-050 (run 17); other points IP-UNRESOLVED |
+| Q-13 | Free-space inverse-square and far-field conditions | QUALIFIED-CANDIDATE | Explicit (SRC-037, SRC-038); fading allowance explicit, excess over free space implied; no link-budget values | cond | CALCULATION-GRADE (SRC-037, SRC-038; restored run 18) |
+| Q-14 | Series adds voltage, parallel adds capacity; balancing | QUALIFIED-CANDIDATE | DOE contractor caveat | calc, cond | series / parallel point CALCULATION-GRADE via SRC-050 (run 17); balancing / protective-device points CALCULATION-GRADE via SRC-050 slides 42 / 47 (run 18) |
 | Q-15 | Imaging resolution from FOV / pixel count | IP UNRESOLVED | Claim UNVERIFIED on a clean source | — | — |
 | Q-16 | Duty-cycled average current | IP UNRESOLVED | Re-approached via Q-26 | — | — |
 | Q-17 | Hover thrust = weight; margin needed to climb | QUALIFIED-CANDIDATE | Source says thrust "depends on" weight — equality implied, not explicit | cond | CALCULATION-GRADE (SRC-024, SRC-025) |
@@ -43,15 +43,17 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 | Q-27 | IoT privacy considerations | QUEUED | — | — | — |
 | Q-28 | Real channels: obstruction, multipath, interference | QUALIFIED-CANDIDATE | — | cond, verif | mixed — SRC-039 / SRC-038 points CALCULATION-GRADE; SRC-040 points IP-UNRESOLVED |
 | Q-29 | Shannon–Hartley capacity bound | QUALIFIED-CANDIDATE (run 15) | Explicit (SRC-046); theoretical bound only | calc, cond | CALCULATION-GRADE, conditional (SRC-046) |
-| Q-30 | Cell limits; BMS monitor / protect / balance | QUALIFIED-CANDIDATE | SOC estimation as a BMS function UNVERIFIED | cond, verif | IP-UNRESOLVED (SRC-009 corrected run 17) |
-| Q-31 | Capacity fade vs storage SOC, temperature, DOD, rate | QUALIFIED-CANDIDATE | Rate-on-life point from a lead-acid source | cond, verif | IP-UNRESOLVED (SRC-009 corrected run 17; SRC-008) |
+| Q-30 | Cell limits; BMS monitor / protect / balance | QUALIFIED-CANDIDATE | SOC estimation UNVERIFIED; balancing "in a majority of applications"; limits are the manufacturer's | cond, verif | CALCULATION-GRADE (SRC-050 conditional, SRC-055; restored run 18) |
+| Q-31 | Capacity fade vs storage SOC, temperature, DOD, rate | QUALIFIED-CANDIDATE | Storage point observational (two cell models); DOD / temperature implied; rate-on-life without clean source | cond, verif | partial — storage SOC / temperature CALCULATION-GRADE conditional (SRC-057); rest IP-UNRESOLVED |
 | Q-32…Q-40 | Converter relations, motor classes, watchdog, interlock, EO trade-offs, hover power, MPPT, eclipse power, vibration isolation | QUEUED | — | — | — |
 
 **Restoration (run 16):** R-02 / Q-23 PARTIALLY RESTORED (SRC-047, NBS TN 487 — calculation-grade; damping point still unresolved); R-01 / Q-02 and R-03 / Q-04 IP-UNRESOLVED after bounded search.
 
 **Restoration (run 17):** R-05 / Q-14 series–parallel RESTORED — IP-CLEAN (SRC-050); R-04 / Q-06 IP-UNRESOLVED; SRC-009 corrected to IP-UNRESOLVED, so Q-06, Q-30, Q-31 lose product use (R-13 added for Q-30).
 
-**Next by the protocol order:** restoration R-13 (Q-30, P2), then P3 items R-06…R-12; then queued Q-32…
+**Restoration (run 18):** R-13 / Q-30 RESTORED — IP-CLEAN (SRC-050, SRC-055); R-07 / Q-13 RESTORED — IP-CLEAN (SRC-038 Annex V); R-06 / Q-31 PARTIALLY RESTORED (SRC-057).
+
+**Next by the protocol order:** restoration P3 items R-08…R-12; then queued Q-32…
 
 **Decisions:** DR-1 decided by you (Option C). Still open with you and the Execution Lead: DR-2 (which condition D-7 governs), DR-3 (definition
 of the 28-T2 output claim), DR-4 (whether to keep, narrow or lift H-04). Details in `evidence/decision-records.md`.

@@ -375,3 +375,32 @@ third-party handbook), SRC-053 (built on ASA C18-1947), a TRW contractor SP. The
 New: SRC-050 (NASA JSC slide, sole NASA author, DIRECTLY INSPECTED, own text, CALCULATION-GRADE conditional). D1 EXPLICIT: series → voltage
 adds, capacity as one cell; parallel → capacity adds, voltage as one cell. Independent of the DOE handbook (SRC-007). Q-14's balancing /
 protective-device points (from SRC-009) are now IP-UNRESOLVED and not restored. Goes to the Execution Lead before any product use.
+
+## Run 18 (2026-10-29, scheduled wake-up; restoration backlog, GitHub-first)
+
+Base advanced to da6944c (PR #905 natural-frequency verification preparation, PR #906 TMP36 nominal-temperature verification preparation) —
+no overlap with R-13, R-06 or R-07. ibiblio still fails TLS (curl 000).
+
+### R-13 (Q-30) — RESTORED — IP-CLEAN (0 external queries; GitHub-first reuse)
+Re-read SRC-050 (already registered, own NASA JSC slide text, CALCULATION-GRADE conditional) beyond slide 8. D1 / D5 EXPLICIT, slide 42: the
+Li-ion failure modes overcharge, over-discharge (including repeated over-discharge followed by charge), external short and high temperature each
+need controls verified by test, with use within the manufacturer's specification, and the controls include stringent monitoring and control of cell
+and battery voltage, battery current and temperature; cell balancing is designed into a majority of applications (not all). Slide 44: battery
+management electronics should be robust and extensively tested. Slide 47 (text only): cells carry internal protective devices and batteries use
+external ones, and cell-level devices do not always protect in high-voltage, high-capacity batteries. SRC-055 (new, NASA Glenn, CALCULATION-GRADE)
+adds, EXPLICIT: in series strings, charge-control units clamp each cell at its end-of-charge voltage limit and bypass that cell's excess current.
+Both are independent of SRC-009. Limits are the manufacturer's (stated); no numeric limit is adopted. Still UNVERIFIED on a clean source: SOC
+estimation as a BMS function. The same slides also restore Q-14's balancing and protective-device points. Goes to the Execution Lead before any product use.
+
+### R-06 (Q-31) — PARTIALLY RESTORED (3 queries)
+SRC-057 (new, NASA JSC, CALCULATION-GRADE conditional): EXPLICIT observation for two commercial 18650 models — in a full-factorial storage test
+over SOC and temperature, several high-temperature and / or high-SOC storage groups failed the capacity criterion; the general rule is IMPLIED
+(two models; test data produced by a contractor and not used). SRC-055: DOD and temperature effects on cycle life are the premise of a NASA test
+(IMPLIED, not a stated finding). Rate-on-life stays without a clean source. Candidates failed: SRC-054 (contractor-prepared NASA chapter that
+states the claim explicitly), SRC-056 (mixed authorship), DETRAN (Aerospace Corporation), JPL items.
+
+### R-07 (Q-13) — RESTORED — IP-CLEAN (0 external queries; GitHub-first reuse)
+Re-read SRC-038 (NBS TN 101 Vol. 2, already CALCULATION-GRADE) Annex V, pp. V-1–V-2: EXPLICIT — fading expected over short periods is allowed for
+by comparing the median wanted signal power available at the receiver with the median power required for satisfactory reception, and transmitter
+power should make the available median exceed the required one for a large percentage of the time. Annex I treats real paths through the measured
+attenuation relative to free space, so that field loss exceeds the free-space value is IMPLIED. No margin value adopted. Independent of SRC-020.

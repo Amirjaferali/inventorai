@@ -1,9 +1,9 @@
 # TECH-SOURCES-001 — Campaign status
 
-STATUS: ACTIVE (resumed for run 6 by Owner authorization after the 2026-10-27 source-access verification; runs 6–17 done; next run by same-session wake-up)
+STATUS: ACTIVE (resumed for run 6 by Owner authorization after the 2026-10-27 source-access verification; runs 6–18 done; next run by same-session wake-up)
 
-Current (2026-10-28): runs 17 / 20, Perplexity queries 52 / 240, perplexity_research 0; window ends 2026-11-26. Next wake-up: send_later
-trig_015xLzsDMg7DjGtbvPHx1FtF "TECH-SOURCES-001 run 18", 2026-10-29T17:43Z. Selection mechanism corrected by Owner authorization 2026-10-28
+Current (2026-10-29): runs 18 / 20, Perplexity queries 55 / 240, perplexity_research 0; window ends 2026-11-26. Next wake-up: send_later
+arming after run 18 push (see run-ledger). Selection mechanism corrected by Owner authorization 2026-10-28
 (README steps 5 / 7; register "Selection and depth rules"; Tier 2c Q-24…Q-40). D13 PAUSED; D4 NOT ACTIVATED; H-01…H-04 held (DR-4 open).
 
 History (earlier text kept): Reopened ACTIVE on the Owner's 2026-10-27 direction to seek legal official alternatives; run 5 searched every reachable authoritative host.
