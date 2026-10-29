@@ -1414,6 +1414,93 @@ def prototype_need_target(inventory, component_id):
     return record
 
 
+# --- PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 (Increment A): the inventor's
+# statement that ONE Mechanical part experiences a temperature change ----------
+# ONE closed, positive, part-bound statement: the inventor states that the ONE
+# identified Mechanical part of a valid durable Stage-15 composition experiences
+# a temperature change during use. It is bound ONLY to that part's existing
+# ``subsystem_id`` (never a ``component_id``, a name, a function text, a domain
+# alone or a list position) and is OWNER_STATED / UNVALIDATED by construction:
+# InventorAI records that the inventor made the statement, never that the
+# physical condition was checked. It has no payload: its identity is the part,
+# its kind is fixed, and its only state is whether it is CURRENTLY declared. So
+# there is no correction operation (nothing could truthfully be corrected) —
+# only DECLARE and WITHDRAW. NOT DECLARED (no current statement) means only that
+# InventorAI holds no such statement, never that the part does not change
+# temperature; a withdrawal removes the statement and is never a negative
+# physical statement. The Stage-15 part itself is never edited, replaced,
+# withdrawn or rebound by it. Nothing here is inferred from text, answers,
+# constraints, interface preparation, components, keywords, a classifier, an
+# LLM or a calculation, and nothing reads it to decide eligibility, routing,
+# questions, readiness, progression, gaps or SafetySignal.
+PART_TEMPERATURE_CHANGE_DOMAINS = ("mechanical",)
+
+
+class PartTemperatureChangeError(ValueError):
+    """A proposed or stored temperature-change statement names no Mechanical
+    part of the project's own valid composition, or is malformed. Structural
+    message only."""
+
+
+@dataclass(frozen=True)
+class PartTemperatureChangeDeclaration:
+    """The inventor's CURRENT statement that the part ``subsystem_id``
+    experiences a temperature change during use. OWNER_STATED / UNVALIDATED by
+    construction; never a measurement, a validated condition or an input to
+    any calculation, eligibility or routing."""
+    subsystem_id: str
+    provenance: str = OWNER_STATED
+    validation_state: str = UNVALIDATED
+
+
+def part_temperature_change_target(composition, subsystem_id):
+    """The ``Subsystem`` a temperature-change statement may name: a part of
+    THIS validated ``composition`` whose domain is in
+    ``PART_TEMPERATURE_CHANGE_DOMAINS``, matched by its exact ``subsystem_id``;
+    else ``PartTemperatureChangeError``. An empty composition (an ordinary
+    project with no Stage-15 parts) admits nothing."""
+    if not isinstance(subsystem_id, str) or not is_valid_subsystem_id(subsystem_id):
+        raise PartTemperatureChangeError("malformed part identity")
+    for sub in tuple(composition or ()):
+        if sub.subsystem_id == subsystem_id:
+            if sub.domain not in PART_TEMPERATURE_CHANGE_DOMAINS:
+                raise PartTemperatureChangeError("the part is not a Mechanical part")
+            return sub
+    raise PartTemperatureChangeError("the part is not a part of this project")
+
+
+def validate_part_temperature_changes(declarations, composition):
+    """Validate a project's stored statements against its OWN validated
+    ``composition`` and return them as a tuple in composition order, or raise
+    ``PartTemperatureChangeError``. Empty is valid. Every entry must name a
+    DISTINCT Mechanical part of this composition by its exact id and carry the
+    fixed OWNER_STATED / UNVALIDATED values; anything else (an orphan, another
+    part's domain, a duplicate) invalidates the WHOLE collection — never
+    remapped, dropped or rebound."""
+    items = tuple(declarations or ())
+    if not items:
+        return ()
+    order = [sub.subsystem_id for sub in tuple(composition or ())]
+    seen = set()
+    for item in items:
+        if not isinstance(item, PartTemperatureChangeDeclaration):
+            raise PartTemperatureChangeError("entry is not a temperature-change statement")
+        part_temperature_change_target(composition, item.subsystem_id)
+        if item.subsystem_id in seen:
+            raise PartTemperatureChangeError("duplicated statement")
+        seen.add(item.subsystem_id)
+        if item.provenance != OWNER_STATED or item.validation_state != UNVALIDATED:
+            raise PartTemperatureChangeError(
+                "statement provenance / validation state is invalid")
+    return tuple(sorted(items, key=lambda d: order.index(d.subsystem_id)))
+
+
+def part_temperature_change_declared(declarations, subsystem_id):
+    """True iff ``subsystem_id`` has a CURRENT statement among ``declarations``
+    (already validated). False means NOT DECLARED only."""
+    return any(item.subsystem_id == subsystem_id for item in declarations or ())
+
+
 # --- COMPONENT-INTERFACE-PARTICIPATION-01: components taking part in an
 # interaction -----------------------------------------------------------------
 # For ONE existing Owner-declared interaction the inventor may state which of

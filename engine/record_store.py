@@ -124,6 +124,10 @@ from engine.subsystem_model import (
     ParticipationPreparation, ParticipationPreparationError,
     MAX_PARTICIPATION_PREPARATION_LENGTH, PARTICIPATION_PREPARATION_FIELDS,
     participation_preparation_target, validate_participation_preparations,
+    # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 (Increment A): the inventor's
+    # statement that ONE Mechanical part experiences a temperature change.
+    PartTemperatureChangeDeclaration, PartTemperatureChangeError,
+    part_temperature_change_target, validate_part_temperature_changes,
 )
 # INVENTOR-DECLARED-ALTERNATIVE-CRITERIA-VALUES-01: the inventor's own
 # comparison criteria and per-alternative values (semantics owner).
@@ -405,6 +409,19 @@ class ComponentPrototypeNeedStale(ComponentPrototypeNeedRejected):
     written; the newer note is never overwritten."""
 
 
+class PartTemperatureChangeRejected(StoreError):
+    """PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01: a temperature-change
+    statement write names no Mechanical part of THIS project's valid durable
+    composition (another project's part, an unknown or malformed id, a
+    non-Mechanical part, or a project without Stage-15 parts). Decided inside
+    the write transaction; nothing is written."""
+
+
+class PartTemperatureChangeStale(PartTemperatureChangeRejected):
+    """PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01: the durable statement is
+    no longer what the inventor's form showed. Nothing is written."""
+
+
 class InterfaceParticipationRejected(StoreError):
     """COMPONENT-INTERFACE-PARTICIPATION-01: a participation write names no
     interaction of THIS project, or a component that is not a declared
@@ -485,6 +502,13 @@ class ComponentPrototypeNeedsCorrupt(StoreError):
     rows are malformed, duplicated or orphaned from its declared components.
     Fail-closed for the WHOLE collection: nothing partial is returned and
     nothing is repaired, deleted, remapped or reinterpreted."""
+
+
+class PartTemperatureChangesCorrupt(StoreError):
+    """PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01: a project's durable
+    temperature-change statements are malformed, duplicated, orphaned or name
+    a non-Mechanical part. Fail-closed for the WHOLE collection: nothing is
+    returned as current and nothing is repaired, deleted or rebound."""
 
 
 class DecisionComparisonCorrupt(StoreError):
@@ -756,6 +780,11 @@ class RecordStore(Protocol):
                                     component_ids, expected_ids) -> str: ...
     def set_component_prototype_need(self, project_id: str, component_id: str,
                                      need_text, expected_text) -> str: ...
+    # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 (current value, presence
+    # only; see the subsystem_temperature_change_declarations note).
+    def load_part_temperature_changes(self, project_id: str) -> tuple: ...
+    def set_part_temperature_change(self, project_id: str, subsystem_id: str,
+                                    declared: bool, expected_declared: bool) -> str: ...
     # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 (current value; see
     # the subsystem_participation_preparations note).
     def load_participation_preparations(self, project_id: str) -> dict: ...
@@ -1550,6 +1579,38 @@ _PART_ANSWERS_SCHEMA = (
     """ % (MAX_PART_QUESTION_ID_LENGTH, MAX_PART_ANSWER_LENGTH),
 )
 
+# PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 (Increment A) — the
+# ``subsystem_temperature_change_declarations`` sidecar: the inventor's CURRENT
+# statement that ONE Mechanical part experiences a temperature change during
+# use. A CURRENT-VALUE, PRESENCE-ONLY sidecar (insert / delete; no history is
+# kept or promised): a row means DECLARED, no row means NOT DECLARED (never
+# "no temperature change"), and a withdrawal deletes the row (never a negative
+# statement). Keyed ONLY by the existing ``(project_id, subsystem_id)`` and
+# anchored by a composite foreign key to that exact durable
+# ``project_subsystems`` row, so a row can never name another project's part or
+# a part that does not exist. No payload column and no provenance column: a
+# stored row is by construction the inventor's own statement (OWNER_STATED,
+# UNVALIDATED). The immutable ``project_subsystems`` rows are never widened,
+# updated or deleted. The CHECK is a database backstop only; the loader
+# re-validates every row against the durable composition (a Mechanical part of
+# THIS project). Additive and idempotent (``IF NOT EXISTS``); an existing table
+# of any other shape is refused, never read as empty; nothing is backfilled or
+# inferred. Rollback is disable-and-preserve (stop reading the table).
+_PART_TEMPERATURE_CHANGE_COLUMNS = ("project_id", "subsystem_id")
+_PART_TEMPERATURE_CHANGE_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS subsystem_temperature_change_declarations (
+        project_id    TEXT NOT NULL,
+        subsystem_id  TEXT NOT NULL,
+        PRIMARY KEY (project_id, subsystem_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, subsystem_id)
+            REFERENCES project_subsystems(project_id, subsystem_id),
+        CHECK (typeof(subsystem_id) = 'text' AND length(subsystem_id) = 36)
+    )
+    """,
+)
+
 # Stage 15 closure — the ``subsystem_interface_dependencies`` sidecar: the
 # inventor's CURRENT Owner-declared dependency for ONE existing durable
 # interface (one-way: the exact dependent part and the exact part it relies
@@ -2287,6 +2348,11 @@ COMPONENT_PROTOTYPE_NEED_SAVED = "SAVED"
 COMPONENT_PROTOTYPE_NEED_CLEARED = "CLEARED"
 COMPONENT_PROTOTYPE_NEED_UNCHANGED = "UNCHANGED"
 
+# PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01: the outcomes of a statement write.
+PART_TEMPERATURE_CHANGE_DECLARED = "DECLARED"
+PART_TEMPERATURE_CHANGE_WITHDRAWN = "WITHDRAWN"
+PART_TEMPERATURE_CHANGE_UNCHANGED = "UNCHANGED"
+
 # COMPONENT-INTERFACE-PARTICIPATION-01: the outcomes of a participation write.
 INTERFACE_PARTICIPATION_SAVED = "SAVED"
 INTERFACE_PARTICIPATION_CLEARED = "CLEARED"
@@ -2440,6 +2506,7 @@ class SqliteRecordStore:
             self._migrate_interface_dependencies(self._conn)
             self._migrate_integration_evidence_anchors(self._conn)
             self._migrate_part_answers(self._conn)
+            self._migrate_part_temperature_changes(self._conn)
             self._migrate_project_components(self._conn)
             self._migrate_component_prototype_needs(self._conn)
             self._migrate_interface_components(self._conn)
@@ -2710,6 +2777,24 @@ class SqliteRecordStore:
         table, column or row; nothing is backfilled or inferred. Rollback is
         disable-and-ignore (stop reading the table)."""
         for stmt in _PART_ANSWERS_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_part_temperature_changes(self, conn) -> None:
+        """PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 forward migration:
+        additively create the ``subsystem_temperature_change_declarations``
+        presence-only sidecar. Runs inside the store's single migration
+        transaction, after the composition migration it references; idempotent
+        (``IF NOT EXISTS``) on a fresh and on an existing populated database;
+        touches no existing table, column or row; nothing is backfilled or
+        inferred (every existing project reads NOT DECLARED). A table that
+        already exists in any other shape is refused (``sqlite3.DatabaseError``)
+        rather than read as empty or guessed. Rollback is disable-and-preserve."""
+        columns = tuple(row[1] for row in conn.execute(
+            "PRAGMA table_info(subsystem_temperature_change_declarations)").fetchall())
+        if columns and columns != _PART_TEMPERATURE_CHANGE_COLUMNS:
+            raise sqlite3.DatabaseError(
+                "subsystem_temperature_change_declarations has an unrecognised shape")
+        for stmt in _PART_TEMPERATURE_CHANGE_SCHEMA:
             conn.execute(stmt)
 
     def _migrate_project_components(self, conn) -> None:
@@ -4425,6 +4510,93 @@ class SqliteRecordStore:
                 "need_text = excluded.need_text",
                 (project_id, component_id, need_text))
         return COMPONENT_PROTOTYPE_NEED_SAVED
+
+    # --- PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01: part statement (presence)
+    def _validated_part_temperature_changes(self, project_id, subsystems):
+        """This project's durable temperature-change rows validated WHOLE
+        against its validated ``subsystems`` (exact Mechanical part ids);
+        ``PartTemperatureChangesCorrupt`` on anything malformed, duplicated,
+        orphaned or naming a non-Mechanical part (nothing partial)."""
+        rows = self._conn.execute(
+            "SELECT subsystem_id FROM subsystem_temperature_change_declarations "
+            "WHERE project_id = ? ORDER BY subsystem_id ASC", (project_id,)).fetchall()
+        if not rows:
+            return ()
+        items = tuple(PartTemperatureChangeDeclaration(subsystem_id=row[0])
+                      for row in rows)
+        try:
+            return validate_part_temperature_changes(items, subsystems)
+        except PartTemperatureChangeError as exc:
+            raise PartTemperatureChangesCorrupt(str(exc)) from None
+
+    def load_part_temperature_changes(self, project_id: str) -> tuple:
+        """``(subsystems, declarations)``: this project's ONE validated durable
+        composition and its CURRENT temperature-change statements (``()`` when
+        none: NOT DECLARED), read inside ONE consistent read snapshot and
+        validated WHOLE together (``ProjectSubsystemsCorrupt`` /
+        ``PartTemperatureChangesCorrupt``; nothing partial). A project without
+        Stage-15 parts returns ``((), ())``. No project -> ``ProjectNotFound``.
+        IR-01: an unresolved connection refuses BEFORE any SELECT. Read-only;
+        project-scoped; logs nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            declarations = self._validated_part_temperature_changes(
+                project_id, subsystems)
+        return subsystems, declarations
+
+    def set_part_temperature_change(self, project_id: str, subsystem_id: str,
+                                    declared: bool, expected_declared: bool) -> str:
+        """Declare (``declared`` True) or withdraw (False) the inventor's
+        statement that the Mechanical part ``subsystem_id`` experiences a
+        temperature change during use, and return the outcome:
+        ``PART_TEMPERATURE_CHANGE_DECLARED`` / ``..._WITHDRAWN`` for a
+        committed change, or ``..._UNCHANGED`` when the durable state already
+        is the target (an exact retry; nothing is written).
+
+        ``expected_declared`` is the state the inventor's form showed. ONE
+        serialized ``BEGIN IMMEDIATE`` transaction, against DURABLE truth: the
+        project exists (``ProjectNotFound``); its composition and existing
+        statements validate (the corrupt errors); the target is a Mechanical
+        part of THIS composition by its exact id (``PartTemperatureChangeRejected``);
+        the durable state equals the target (UNCHANGED) or else equals
+        ``expected_declared`` (``PartTemperatureChangeStale`` otherwise); only
+        then is the ONE row inserted or deleted. The Stage-15 part, every other
+        part and every other table are never touched. Full rollback on any
+        failure. IR-01: never writes on top of an unresolved connection."""
+        if not isinstance(declared, bool) or not isinstance(expected_declared, bool):
+            raise PartTemperatureChangeRejected("malformed statement state")
+        if not isinstance(subsystem_id, str) or not subsystem_id:
+            raise PartTemperatureChangeRejected("malformed part identity")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            self._require_project(project_id)
+            subsystems = self.load_project_subsystems(project_id)
+            declarations = self._validated_part_temperature_changes(
+                project_id, subsystems)
+            try:
+                part_temperature_change_target(subsystems, subsystem_id)
+            except PartTemperatureChangeError:
+                raise PartTemperatureChangeRejected(
+                    "the statement names no Mechanical part of this project") from None
+            current = any(item.subsystem_id == subsystem_id for item in declarations)
+            if current == declared:
+                return PART_TEMPERATURE_CHANGE_UNCHANGED
+            if current != expected_declared:
+                raise PartTemperatureChangeStale(
+                    "the statement changed since the form was shown")
+            if declared:
+                self._conn.execute(
+                    "INSERT INTO subsystem_temperature_change_declarations "
+                    "(project_id, subsystem_id) VALUES (?, ?)",
+                    (project_id, subsystem_id))
+                return PART_TEMPERATURE_CHANGE_DECLARED
+            self._conn.execute(
+                "DELETE FROM subsystem_temperature_change_declarations "
+                "WHERE project_id = ? AND subsystem_id = ?",
+                (project_id, subsystem_id))
+        return PART_TEMPERATURE_CHANGE_WITHDRAWN
 
     # --- COMPONENT-INTERFACE-PARTICIPATION-01: participation (current value) --
     def _validated_interface_participations(self, project_id, interfaces,

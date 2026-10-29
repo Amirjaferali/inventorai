@@ -165,7 +165,8 @@ def _run(baseline, mode, out_path, *args):
 _LATER_CHANGED_TABLES = ("subsystem_interface_observations", "component_prototype_needs",
                          "subsystem_interface_components",
                          "subsystem_participation_preparations",
-                         "constraint_acceptance_preparations")
+                         "constraint_acceptance_preparations",
+                         "subsystem_temperature_change_declarations")
 
 
 def _schema(path):

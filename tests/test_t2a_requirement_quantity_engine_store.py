@@ -630,7 +630,8 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
                       "subsystem_interface_preparations",   # Stage 15 Slice 3
                       "subsystem_interfaces",   # Stage 15 Slice 2 sidecar
                       "subsystem_part_answers",   # Stage 28 Optional Part Slice 2
-                      "subsystem_participation_preparations"]   # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01
+                      "subsystem_participation_preparations",   # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01
+                      "subsystem_temperature_change_declarations"]   # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01
     cols = [r[1] for r in conn.execute("PRAGMA table_info(requirement_quantities)")]
     assert cols == ["project_id", "quantity_seq", "quantity_id", "anchor_record_id",
                     "requirement_id", "quantity_kind", "value_text",

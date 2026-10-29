@@ -138,7 +138,11 @@ _USER_INITIATED_DELETION_TABLES = ("prototype_plan_metadata",
                                    # MANDATORY-CONSTRAINT-ACCEPTANCE-
                                    # PREPARATION-01: clearing both acceptance
                                    # notes of a mandatory constraint.
-                                   "constraint_acceptance_preparations")
+                                   "constraint_acceptance_preparations",
+                                   # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01:
+                                   # withdrawing the part's temperature-change
+                                   # statement.
+                                   "subsystem_temperature_change_declarations")
 
 
 def test_retention_doc_matches_source_truth():
@@ -169,6 +173,7 @@ def test_retention_doc_matches_source_truth():
     assert "`prototype_test_hypotheses`" in flat
     assert "`prototype_test_variables`" in flat
     assert "`subsystem_interface_preparations`" in flat
+    assert "`subsystem_temperature_change_declarations`" in flat
     assert "clearing all three inputs removes that single current-value row" in flat
     # CAP-09 Result Event Slice 1: append-only history with no DELETE path, so it
     # is in neither deletion set above; the document must state exactly that.

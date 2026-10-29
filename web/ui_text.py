@@ -8281,6 +8281,62 @@ UI_STRINGS = {
     "UI_MTE_ERR_REQUEST": {
         "en": "This request could not be read. Nothing was calculated.",
         "ar": "تعذّرت قراءة هذا الطلب. لم يُحسب شيء."},
+    # PART-BOUND-TEMPERATURE-CHANGE-DECLARATION-01 (Increment A): the inventor's
+    # own statement that the Mechanical part experiences a temperature change
+    # during use. OWNER_STATED / UNVALIDATED; "not declared" never means that it
+    # does not; withdrawing is never a negative statement. No wording here
+    # offers, recommends or applies any calculation or tool.
+    "UI_PTC_HEADING": {
+        "en": "Temperature change during use (your statement):",
+        "ar": "تغير درجة الحرارة أثناء الاستخدام (تصريحك):"},
+    "UI_PTC_STATUS_DECLARED": {
+        "en": "You have stated that this part experiences a temperature change during use (it heats up or cools down while in use). This is your own statement (OWNER_STATED); InventorAI has not checked or validated it (UNVALIDATED).",
+        "ar": "لقد صرّحت بأن هذا الجزء يتعرض لتغير في درجة الحرارة أثناء الاستخدام (يسخن أو يبرد أثناء الاستخدام). هذا تصريحك أنت (OWNER_STATED)؛ ولم يتحقق منه InventorAI ولم يثبت صحته (UNVALIDATED)."},
+    "UI_PTC_STATUS_NOT_DECLARED": {
+        "en": "Not declared: you have not stated that this part experiences a temperature change during use. This does not mean that it does not.",
+        "ar": "غير مصرَّح به: لم تصرّح بأن هذا الجزء يتعرض لتغير في درجة الحرارة أثناء الاستخدام. ولا يعني ذلك أنه لا يتعرض له."},
+    "UI_PTC_CONFIRM": {
+        "en": "I state that this part experiences a temperature change during use (it heats up or cools down while in use).",
+        "ar": "أصرّح بأن هذا الجزء يتعرض لتغير في درجة الحرارة أثناء الاستخدام (يسخن أو يبرد أثناء الاستخدام)."},
+    "UI_PTC_DECLARE": {
+        "en": "Record my statement",
+        "ar": "سجّل تصريحي"},
+    "UI_PTC_WITHDRAW": {
+        "en": "Withdraw my statement",
+        "ar": "اسحب تصريحي"},
+    "UI_PTC_WITHDRAW_NOTE": {
+        "en": "Withdrawing removes your statement only. It does not mean that the part does not change temperature.",
+        "ar": "سحب التصريح يزيل تصريحك فقط. ولا يعني أن درجة حرارة الجزء لا تتغير."},
+    "UI_PTC_NOTE": {
+        "en": "This statement is optional. It records only what you say about this part: it is not a measurement, an analysis or a check, and it does not change your questions, your results or any calculation.",
+        "ar": "هذا التصريح اختياري. يسجّل فقط ما تقوله عن هذا الجزء: فهو ليس قياسًا ولا تحليلًا ولا فحصًا، ولا يغيّر أسئلتك ولا نتائجك ولا أي حساب."},
+    "UI_PTC_UNAVAILABLE": {
+        "en": "Your statement about temperature change could not be read right now, so it is not shown and cannot be changed.",
+        "ar": "تعذّرت قراءة تصريحك بشأن تغير درجة الحرارة الآن، لذلك لا يُعرض ولا يمكن تغييره."},
+    "UI_PTC_MSG_DECLARED": {
+        "en": "Your statement was recorded.",
+        "ar": "سُجّل تصريحك."},
+    "UI_PTC_MSG_WITHDRAWN": {
+        "en": "Your statement was withdrawn.",
+        "ar": "سُحب تصريحك."},
+    "UI_PTC_MSG_UNCHANGED": {
+        "en": "Nothing changed: it was already as you asked.",
+        "ar": "لم يتغير شيء: كان الأمر كما طلبت بالفعل."},
+    "UI_PTC_MSG_CONFIRM_REQUIRED": {
+        "en": "Tick the statement to confirm it before recording it. Nothing was saved.",
+        "ar": "ضع علامة على التصريح لتأكيده قبل تسجيله. لم يُحفَظ شيء."},
+    "UI_PTC_MSG_STALE": {
+        "en": "This changed since the page was shown. Nothing was saved; please review it again.",
+        "ar": "تغيّر هذا منذ عرض الصفحة. لم يُحفَظ شيء؛ يُرجى مراجعته مرة أخرى."},
+    "UI_PTC_MSG_REJECTED": {
+        "en": "This request could not be used. Nothing was saved.",
+        "ar": "تعذّر استخدام هذا الطلب. لم يُحفَظ شيء."},
+    "UI_PTC_MSG_NOT_SAVED": {
+        "en": "Nothing was saved.",
+        "ar": "لم يُحفَظ شيء."},
+    "UI_PTC_MSG_UNKNOWN": {
+        "en": "We could not confirm whether this was saved. Reload the page to see the current state.",
+        "ar": "تعذّر التأكد مما إذا كان قد حُفظ. أعد تحميل الصفحة لترى الحالة الحالية."},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is
