@@ -509,7 +509,7 @@ def committed_question_exists(domain, question_id):
         return False
 
 
-def supplemental_relevance(state, gap_type, response):
+def supplemental_relevance(state, gap_type, response, served_index=None):
     """W1-N3 bounded attempt (contract §E/§F.6): question-id-scoped
     supplemental relevance for the CANONICAL index-law variant of the served
     gap. Consulted by ``integrate_response`` only after the canonical family
@@ -529,6 +529,12 @@ def supplemental_relevance(state, gap_type, response):
     under an adjusted display the supplement deliberately stays with the
     canonical scope — a safe false-negative, never a false positive.
 
+    ``served_index`` is the gap counter as it stood when the question was
+    served. ``run_iteration`` moves the counter before integrating the
+    answer, so without it the read below lands on the NEXT variant; it is
+    passed only under `DISPLAYED_VARIANT_RELEVANCE_VERSIONS`, and None keeps
+    the counter read every earlier version replays with.
+
     Fail-closed False on any failure; NEVER weakens the canonical family
     test and never consults any other variant's markers."""
     try:
@@ -541,8 +547,11 @@ def supplemental_relevance(state, gap_type, response):
             return False
         for variant in variants:
             registry.get(variant.question_id)  # unknown id -> fail closed
-        gap = state.get_gap(gap_type) if hasattr(state, "get_gap") else None
-        iterations_open = gap.iterations_open if gap is not None else 0
+        if served_index is None:
+            gap = state.get_gap(gap_type) if hasattr(state, "get_gap") else None
+            iterations_open = gap.iterations_open if gap is not None else 0
+        else:
+            iterations_open = served_index
         canonical = variants[min(iterations_open, len(variants) - 1)]
         return _matches_intent(response, canonical.question_id)
     except Exception:

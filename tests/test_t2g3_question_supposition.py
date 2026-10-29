@@ -19,7 +19,7 @@ from engine.intent_serving import matches_committed_intent as MATCH
 from engine.session_reconstruction import (
     ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G1,
     ENGINE_CONTRACT_VERSION_T2G2, ENGINE_CONTRACT_VERSION_T2G3,
-    ENGINE_CONTRACT_VERSION_XG1,
+    ENGINE_CONTRACT_VERSION_XG1, ENGINE_CONTRACT_VERSION_DV1,
     RECONSTRUCTION_VERSION, ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS,
     SUPPORTED_ENGINE_CONTRACT_VERSIONS, reconstruct_readonly_state)
 from engine import need_routing as nr
@@ -97,14 +97,17 @@ def _reason(appmod, sid):
 # ==========================================================================
 def test_one_new_version_is_added_and_every_earlier_one_is_kept():
     assert ENGINE_CONTRACT_VERSION_T2G3 == "p4-2-level1-recon-v1-t2g2-nr1-t2g3"
-    # the cross-gap replay repair (XG1) follows it and carries its rules
+    # the cross-gap replay repair (XG1) and the displayed-variant relevance
+    # repair (DV1) follow it and carry its rules
     assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == PRIOR_VERSIONS + (
-        ENGINE_CONTRACT_VERSION_T2G3, ENGINE_CONTRACT_VERSION_XG1)
+        ENGINE_CONTRACT_VERSION_T2G3, ENGINE_CONTRACT_VERSION_XG1,
+        ENGINE_CONTRACT_VERSION_DV1)
     assert st.t2g_rule_level(_State(ENGINE_CONTRACT_VERSION_XG1), MC) == 3
+    assert st.t2g_rule_level(_State(ENGINE_CONTRACT_VERSION_DV1), MC) == 3
     # routing materialization is carried, not replaced
     assert ROUTING_AWARE_ENGINE_CONTRACT_VERSIONS == (
         ENGINE_CONTRACT_VERSION_NR1, ENGINE_CONTRACT_VERSION_T2G3,
-        ENGINE_CONTRACT_VERSION_XG1)
+        ENGINE_CONTRACT_VERSION_XG1, ENGINE_CONTRACT_VERSION_DV1)
 
 
 def test_the_rule_level_is_three_only_for_the_new_version():
@@ -207,13 +210,14 @@ def test_a_real_start_records_the_new_version_and_its_routing(client):
     c, appmod, db = client
     _login(c, appmod)
     sid = _start(c)
-    # The current stamp is the cross-gap replay repair, which carries the
-    # T2-G-3 rules and the NR1 routing unchanged.
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_XG1
-    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_XG1
+    # The current stamp is the displayed-variant relevance repair, which
+    # carries the T2-G-3 rules and the NR1 routing unchanged.
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_DV1
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_DV1
     assert st.t2g_rule_level(_snapshot_state(appmod, sid), MC) == 3
     assert nr.is_routing_aware(ENGINE_CONTRACT_VERSION_T2G3)
     assert nr.is_routing_aware(ENGINE_CONTRACT_VERSION_XG1)
+    assert nr.is_routing_aware(ENGINE_CONTRACT_VERSION_DV1)
     rows = appmod._get_store().load_need_routing(sid)
     assert [(r.gap_type, r.operation, r.required_input) for r in rows] == [
         ("PHYSICAL_FEASIBILITY", "ROUTE", "SPECIALIST")]
@@ -256,12 +260,21 @@ def test_c8_c9_with_an_unknown_keep_the_unknown_and_supply_no_mechanism(
     assert UNKNOWN_NOTICE in _page(c, sid)
 
 
+# Relevant to the first question only through the SECOND question's committed
+# markers: an XG1 project read them there because its supplemental relevance
+# read the moved counter. A DV1 project reads the displayed variant, so these
+# two progress where Q2 is displayed instead
+# (tests/test_dv1_displayed_variant_relevance.py).
+COUNTER_SCOPED = (F4_MIXED, G4_MIXED)
+
+
 @pytest.mark.parametrize("answer", PRESERVED)
 def test_stated_explanations_conditions_negation_and_mixed_answers_still_progress(
         client, answer):
     c, appmod, _db = client
     _login(c, appmod)
-    sid = _start(c)
+    sid = (_stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_XG1)
+           if answer in COUNTER_SCOPED else _start(c))
     _answer(c, sid, answer)
     got = _snapshot(appmod, sid)
     assert got["status"] == "PARTIAL"
@@ -397,7 +410,7 @@ def test_live_cold_and_resumed_agree(client, answer):
     appmod.SESSION_STORE.clear()
     session = reconstruct_readonly_state(appmod._get_store(), sid)
     assert session.review.level == 1
-    assert session.state.engine_contract_version == ENGINE_CONTRACT_VERSION_XG1
+    assert session.state.engine_contract_version == ENGINE_CONTRACT_VERSION_DV1
     assert appmod._resolve_question_context(session.state, None).identity == \
         live["identity"]
     assert (session.state.known_mechanism is None) == \

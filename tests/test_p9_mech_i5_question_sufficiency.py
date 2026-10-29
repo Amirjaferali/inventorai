@@ -220,7 +220,13 @@ _FROZEN_ENGINE_SHA256 = {
     # inventor-declared project constraint, so it never ends (or starts) the
     # multiple-alternatives transition. No classifier, tie, substance, scoring,
     # quality, maturity-gate or gap-type change (pre-amendment = 10397390...f0).
-    "engine/progression_loop.py": "0d88f08307177ac1c35484155510669b65a5784964a882ad14ec14214691d2f0",
+    # Displayed-variant relevance re-freeze (disclosed; Owner-authorized
+    # Option A): under the DV1 engine-contract version ONLY, run_iteration
+    # hands integrate_response the served gap's counter as it stood when the
+    # question was served, for the W2-C supplemental relevance. No classifier,
+    # tie, substance, scoring, quality, maturity-gate or gap-type change
+    # (pre-amendment = 0d88f083...d2f0).
+    "engine/progression_loop.py": "239a59ad9cf68e7cbb6b8daa56552d196200702deb176e0521694f9cff727675",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.
