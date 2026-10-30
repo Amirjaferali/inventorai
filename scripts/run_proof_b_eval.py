@@ -552,17 +552,15 @@ def campaign_authorized(manifest, authorized_manifest_sha256):
             and authorized_manifest_sha256 == _digest(manifest))
 
 
-def current_revision(exclude=()):
+def current_revision():
     """The HEAD commit of a CLEAN checkout. Uncommitted or untracked changes
-    are refused: the revision would not describe the code that runs. Only the
-    paths in ``exclude`` (the campaign's own open journal) are ignored."""
+    are refused: the revision would not describe the code that runs."""
     import subprocess
     def git(*args):
         return subprocess.run(["git", "-C", _ROOT, *args], capture_output=True,
                               text=True, check=True).stdout
     try:
-        spec = ["--", "."] + [":(exclude)" + os.path.relpath(x, _ROOT) for x in exclude]
-        dirty = git("status", "--porcelain", "--untracked-files=all", *spec).strip()
+        dirty = git("status", "--porcelain", "--untracked-files=all").strip()
         revision = git("rev-parse", "HEAD").strip()
     except (OSError, subprocess.CalledProcessError):
         raise PackError("code revision unavailable")
@@ -585,12 +583,27 @@ def _journal(journal, record):
     os.fsync(fd)
 
 
+def _evidence_in_history():
+    """True when any commit reachable from any ref touches the evidence
+    directory: a run whose evidence was committed, even on another branch, is
+    never repeated by checking out an earlier commit. Fails closed."""
+    import subprocess
+    try:
+        out = subprocess.run(["git", "-C", _ROOT, "rev-list", "--all", "--",
+                              os.path.relpath(os.path.dirname(JOURNAL_PATH), _ROOT)],
+                             capture_output=True, text=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError):
+        raise PackError("repository history unavailable")
+    return bool(out.strip())
+
+
 def _check_campaign_boundary(adapter, cases, manifest, journal, authorized_manifest_sha256):
     """Every check a real-transport campaign must pass, wherever it is called
     from: the open gate and the exact authorized digest; FROZEN fixtures at
-    their pinned hashes and exactly the pinned cases; a priced model; the ONE
-    fixed, empty journal and no earlier report; and a manifest whose revision is
-    this clean checkout."""
+    their pinned hashes and exactly the pinned cases; a priced model; no journal
+    handle from the caller (the campaign creates the ONE fixed journal itself);
+    no campaign evidence in the working tree or in the repository history; and
+    a manifest whose revision is this clean checkout."""
     if not campaign_authorized(manifest, authorized_manifest_sha256):
         raise PackError("campaign not authorized")
     pinned, _refs = load_pilot()
@@ -601,14 +614,12 @@ def _check_campaign_boundary(adapter, cases, manifest, journal, authorized_manif
         raise PackError("cases are not the pinned pack")
     if manifest.get("model") != PRICING["model"]:
         raise PackError("no recorded price basis for this model")
-    name = getattr(journal, "name", None)
-    if not (isinstance(name, str)
-            and os.path.realpath(name) == os.path.realpath(JOURNAL_PATH)
-            and journal.tell() == 0 and os.path.getsize(JOURNAL_PATH) == 0):
-        raise PackError("the campaign journal must be the ONE fixed, new journal")
-    if os.path.exists(REPORT_PATH):
-        raise PackError("a campaign report already exists")
-    if manifest.get("code_revision") != current_revision(exclude=(JOURNAL_PATH,)):
+    if journal is not None:
+        raise PackError("the campaign journal is created by the campaign itself")
+    if os.path.exists(JOURNAL_PATH) or os.path.exists(REPORT_PATH) or _evidence_in_history():
+        raise PackError("campaign evidence already exists: one run only, and an "
+                        "interrupted run is incomplete, never rerun")
+    if manifest.get("code_revision") != current_revision():
         raise PackError("manifest does not describe this checkout")
 
 
@@ -623,11 +634,27 @@ def campaign(adapter, cases, manifest, journal=None, authorized_manifest_sha256=
     sent only within the ceiling; reservation and attempt are journalled. The
     run stops at the first ERROR, STRUCTURE_VIOLATION or ambiguous outcome and
     at a request or currency limit; every later case is NOT_ATTEMPTED. The
-    report carries its manifest, its digest, its run time and its spend."""
-    if not _offline_fake(adapter):
-        _check_campaign_boundary(adapter, cases, manifest, journal, authorized_manifest_sha256)
+    report carries its manifest, its digest, its run time and its spend. With a
+    real transport the caller passes no journal: after every check, the
+    campaign claims the ONE fixed journal path itself with an exclusive create,
+    so a started or interrupted run can never be replaced or rerun."""
     if manifest != run_manifest(manifest.get("code_revision"), adapter._model):
         raise PackError("manifest does not describe this run")
+    if _offline_fake(adapter):
+        return _run_cases(adapter, cases, manifest, journal)
+    _check_campaign_boundary(adapter, cases, manifest, journal, authorized_manifest_sha256)
+    os.makedirs(os.path.dirname(JOURNAL_PATH), exist_ok=True)
+    try:
+        claimed = open(JOURNAL_PATH, "x", encoding="utf-8")
+    except FileExistsError:
+        raise PackError("campaign evidence already exists: one run only, and an "
+                        "interrupted run is incomplete, never rerun")
+    with claimed:
+        return _run_cases(adapter, cases, manifest, claimed)
+
+
+def _run_cases(adapter, cases, manifest, journal):
+    """The request loop of ``campaign``; only ever called after its checks."""
     price_in, price_out = PRICING["input_usd_per_1m"], PRICING["output_usd_per_1m"]
     res_in, res_out = RESERVATION["input_usd_per_1m"], RESERVATION["output_usd_per_1m"]
     ledger = {"requests": 0, "sent": 0, "committed": 0.0, "measured": 0.0,
@@ -930,9 +957,8 @@ def main(argv=None):
             adapter = OpenAIMsnlAdapter(  # pragma: no cover
                 allow_network=True, model=a.model,
                 transport=RecordingTransport(toa._urllib_transport))
-            os.makedirs(EVIDENCE_DIR, exist_ok=True)  # pragma: no cover
-            with open(JOURNAL_PATH, "x", encoding="utf-8") as journal:  # pragma: no cover
-                out = campaign(adapter, cases, manifest, journal, a.authorized_manifest)
+            out = campaign(adapter, cases, manifest, None,  # pragma: no cover
+                           a.authorized_manifest)
             with open(REPORT_PATH, "x", encoding="utf-8") as fh:  # pragma: no cover
                 fh.write(json.dumps(out, ensure_ascii=False, indent=1, sort_keys=True) + "\n")
         else:

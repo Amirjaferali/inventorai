@@ -826,10 +826,6 @@ def test_every_boundary_check_applies_to_a_direct_call(pb, pilot, run_dir, tmp_p
     adapter, transport = _real(pb, [OK] * 36)
     with pytest.raises(pb.PackError, match="not authorized"):
         pb.campaign(adapter, cases, manifest)                       # no digest
-    with pytest.raises(pb.PackError, match="journal"):
-        pb.campaign(adapter, cases, manifest, None, digest)
-    with pytest.raises(pb.PackError, match="journal"):
-        pb.campaign(adapter, cases, manifest, io.StringIO(), digest)
     with pytest.raises(pb.PackError, match="pinned pack"):
         pb.campaign(adapter, cases[:-1], manifest, None, digest)
     other = pb.run_manifest(run_dir, "another-model")
@@ -837,14 +833,18 @@ def test_every_boundary_check_applies_to_a_direct_call(pb, pilot, run_dir, tmp_p
         pb.campaign(pb.OpenAIMsnlAdapter(allow_network=True, model="another-model",
                                          transport=transport),
                     cases, other, None, pb._digest(other))
-    with open(tmp_path / "elsewhere.jsonl", "x", encoding="utf-8") as journal:
-        with pytest.raises(pb.PackError, match="journal"):
-            pb.campaign(adapter, cases, manifest, journal, digest)
+    # a caller-supplied journal is never accepted, whatever its path or state
+    for journal in (io.StringIO(), open(tmp_path / "elsewhere.jsonl", "w", encoding="utf-8"),
+                    open(pb.JOURNAL_PATH, "w", encoding="utf-8")):
+        with journal:
+            with pytest.raises(pb.PackError, match="created by the campaign"):
+                pb.campaign(adapter, cases, manifest, journal, digest)
+    pathlib.Path(pb.JOURNAL_PATH).unlink()
     stale = pb.run_manifest(REVISION, toa.MODEL)
-    with open(pb.JOURNAL_PATH, "x", encoding="utf-8") as journal:
-        with pytest.raises(pb.PackError, match="checkout"):
-            pb.campaign(adapter, cases, stale, journal, pb._digest(stale))
+    with pytest.raises(pb.PackError, match="checkout"):
+        pb.campaign(adapter, cases, stale, None, pb._digest(stale))
     assert transport.calls == 0
+    assert not pathlib.Path(pb.JOURNAL_PATH).exists()      # a refusal claims nothing
 
 
 def test_an_authorized_direct_run_is_accounted_and_runs_once(pb, pilot, run_dir):
@@ -852,8 +852,7 @@ def test_an_authorized_direct_run_is_accounted_and_runs_once(pb, pilot, run_dir)
     manifest = pb.run_manifest(run_dir, toa.MODEL)
     digest = pb._digest(manifest)
     adapter, transport = _real(pb, [OK] * 36)
-    with open(pb.JOURNAL_PATH, "x", encoding="utf-8") as journal:
-        report = pb.campaign(adapter, cases, manifest, journal, digest)
+    report = pb.campaign(adapter, cases, manifest, None, digest)
     assert transport.calls == report["requests"] == 36 and report["stopped_on"] is None
     assert report["spend"] == {"requests_sent": 36,
                                "measured_cost_usd": round(36 * (900 * 2 + 300 * 10) / 1e6, 6),
@@ -864,12 +863,56 @@ def test_an_authorized_direct_run_is_accounted_and_runs_once(pb, pilot, run_dir)
     assert len(lines) == 72
     assert all(r["attempt"]["returned_model"] == toa.MODEL for r in report["rows"])
     assert report["started_at"].endswith("Z") and report["finished_at"].endswith("Z")
-    # the same journal, now written, can never start a second run
+    # the written journal blocks a second run, and truncating it cannot reopen one
     adapter, transport = _real(pb, [OK] * 36)
-    with open(pb.JOURNAL_PATH, "a", encoding="utf-8") as journal:
-        with pytest.raises(pb.PackError, match="journal"):
-            pb.campaign(adapter, cases, manifest, journal, digest)
+    with pytest.raises(pb.PackError, match="never rerun"):
+        pb.campaign(adapter, cases, manifest, None, digest)
+    with open(pb.JOURNAL_PATH, "w", encoding="utf-8") as truncated:
+        with pytest.raises(pb.PackError):
+            pb.campaign(adapter, cases, manifest, truncated, digest)
     assert transport.calls == 0
+
+
+def test_an_interrupted_run_is_never_restarted(pb, pilot, run_dir):
+    cases, _refs = pilot
+    manifest = pb.run_manifest(run_dir, toa.MODEL)
+    digest = pb._digest(manifest)
+
+    class _Stop(BaseException):           # like KeyboardInterrupt: not caught as an error
+        pass
+    responses = [OK] * 4 + [_Stop()]
+    def interrupting(url, headers, body, timeout):
+        item = responses.pop(0)
+        if isinstance(item, _Stop):
+            raise item
+        return item
+    adapter = pb.OpenAIMsnlAdapter(allow_network=True,
+                                   transport=pb.RecordingTransport(interrupting))
+    with pytest.raises(_Stop):
+        pb.campaign(adapter, cases, manifest, None, digest)
+    events = [json.loads(x)["event"] for x in
+              pathlib.Path(pb.JOURNAL_PATH).read_text(encoding="utf-8").splitlines()]
+    assert events == ["reserved", "attempt"] * 4 + ["reserved"]   # the fifth was reserved
+    adapter, transport = _real(pb, [OK] * 36)
+    with pytest.raises(pb.PackError, match="never rerun"):
+        pb.campaign(adapter, cases, manifest, None, digest)
+    assert transport.calls == 0
+
+
+def test_committed_evidence_blocks_a_run_from_an_earlier_checkout(pb, pilot, run_dir,
+                                                                  clean_repo):
+    cases, _refs = pilot
+    evidence = pathlib.Path(pb.JOURNAL_PATH)
+    evidence.write_text('{"event": "reserved"}\n', encoding="utf-8")
+    _git(clean_repo, "add", "-A")
+    _git(clean_repo, "commit", "-q", "-m", "campaign evidence")
+    _git(clean_repo, "checkout", "-q", run_dir)          # back to the authorized commit
+    assert not evidence.exists()
+    manifest = pb.run_manifest(run_dir, toa.MODEL)
+    adapter, transport = _real(pb, [OK] * 36)
+    with pytest.raises(pb.PackError, match="never rerun"):
+        pb.campaign(adapter, cases, manifest, None, pb._digest(manifest))
+    assert transport.calls == 0 and not evidence.exists()
 
 
 # ── budget enforcement before dispatch ──────────────────────────────────────
