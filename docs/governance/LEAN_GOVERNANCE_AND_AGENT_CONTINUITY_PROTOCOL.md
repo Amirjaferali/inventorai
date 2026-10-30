@@ -258,6 +258,7 @@ resolve reserved policy/architecture decisions; an agent cannot fabricate delega
 verify live identity and inspect existing work before mutation. A handover/checkpoint is an
 input, not independent authority. Direct current Owner instructions apply under §2; successors
 must locate their durable active record rather than assume access to old conversations.
+For the research continuation, reuse §9.5 within this reconstruction; it adds no authority.
 
 **9.2 Material differences.** Compare carried state only where it affects current work.
 Explain supported status advances, supersession, reordered authority, merged/deferred items
@@ -283,6 +284,64 @@ authority. The Owner can return authority using the checkpoint and then-current 
 identity. A paused/revoked/completed/expired mandate does not resume or renew automatically;
 explicit Owner instruction is required. Accepted work remains accepted absent new material
 evidence requiring correction. No repository-recording step delays a received pause.
+
+**9.5 Research-to-execution checkpoint.** Navigation only (2026-10-30): preserve CLAUDE.md G1;
+recover the current mandate from its existing owner and verify PRs #908/#909 live. Reuse
+research on Flux/tool execution, Zoo/editable engineering source and CELUS/typed interfaces;
+CadQuery/tray is a CANDIDATE, not an approved product step. Read the owner mappings and
+reopening triggers below before selecting work. An approved next action is not a candidate
+recommendation. No new product increment, provider call, merge or deployment is authorized here.
+
+**Execution Efficiency Correction — durable retrieval, not chat memory.** This bounded note
+records the Owner-requested research continuity inside the existing §9 reconstruction. It
+adds no boot sequence, mandate, roadmap or approval round. Current authority remains under
+§2 and `ACTIVE_INCREMENT_CONTRACT.md`; current-state routing remains in
+`CURRENT_PROJECT_STATE.md`; the strategy and agreed sequence remain in `CLAUDE.md` G1.
+SessionStart quotes the paragraph above from this file on startup/resume/clear/compaction.
+A successor Lead outside Claude follows the same existing boot/reconstruction path; no hook
+is claimed to run in another platform. Missing/ambiguous source text is UNAVAILABLE, not an
+invitation to reconstruct it from memory.
+
+**Current-work pointers (dated evidence, not a second status source).** At the 2026-10-30
+check, the authoritative branch was `feature/atomic-json-session-persistence` at
+`01fd4e570a7501149ddadf7fba41a7d30b1ac628`: [#908](https://github.com/Amirjaferali/inventorai/pull/908)
+merged frozen Proof B preparation; [#909](https://github.com/Amirjaferali/inventorai/pull/909)
+was the open activation PR for the Owner-delegated, bounded synthetic pilot. Recover the
+exact included action and remaining conditions from that task's recorded authority and live
+evidence; this note does not authorize a run or renew a spent mandate. No product increment
+is selected. A remains PARTIAL and B NOT QUALIFIED at this checkpoint. Tooling/CI success is
+not model qualification or proof that the original failed application journeys are solved.
+
+**Research placement within G1 — candidate recommendations, not adoption decisions.**
+
+| Existing home | Retained lesson and bounded candidate | Evidence needed before use |
+|---|---|---|
+| G1-1/2; existing intent, confirmation, canonical assertion and Stage-15 owners | Zoo-style connection from attributed intent to editable engineering parameters; preserve corrections and unknowns, not just a rewritten description. | Qualify the semantic path and existing OD-2/content-admission boundary; no new write path or second interpretation engine. |
+| G1-3/4; existing method owners and Technical Realization | Flux-style use of an existing engineering tool. CadQuery plus the tray/inert-board proof is one CANDIDATE, not the next authorized increment. Prefer a bounded parameterized source and inspect the exported artifact itself. | Applicable source/IP basis, a real consumer, tool/version and input identity; resolve retention under calculation contract §12 and TR Evidence Model §11 before persistence. |
+| G1-3/4; Stage 15 and existing domain owners | CELUS-style functional units/typed interfaces as a principle; qualify ONE required relation, not a generic compatibility engine or a copy of a vendor library. | Qualified domain/interface method and sources; accept/reject/unknown controls; preserve D4 and existing physical-coupling triggers. |
+| G1-5; existing end-to-end verification obligations | Link inventor correction, a reproducible contribution and its checked artifact; a changed input/part must not inherit an old check as current. | Original failure evidence and negative/staleness cases; report bounded checks honestly, not global safety, manufacturability or a solved original journey. |
+
+Source leads retained from the Owner-supplied technical/commercial study and *Deep Research
+Report: Platforms Translating Free-Form Ideas into Engineering Proposals*: [Flux tools](https://docs.flux.ai/reference/simulator-tool),
+[Zoo editable CAD](https://zoo.dev/docs/zoo-design-studio/zookeeper),
+[CELUS functional units](https://www.celus.io/knowledge/what-is-a-cubo),
+[CadQuery](https://cadquery.readthedocs.io/en/latest/intro.html). These are discovery pointers,
+not engineering validation, vendor selection, permission to copy libraries or commercial-use
+clearance. Reuse the recorded research first; verify only the use-case-specific source/IP
+residual under PCRA/SFR before research or code. KiCad/ngspice and other deferred capabilities
+stay visible under their existing roadmap homes; a tool/category name creates no new owner.
+
+**Continuation and holds.** Continue the agreed G1 sequence after an authorized successful
+merge; do not replace the current Proof B task with a CAD demonstration. No additional product
+step is approved by this record. Replan only for material new evidence, a genuine blocker or
+explicit Owner direction. PR #890 stays HOLD (both false rejection and false credit); D4,
+OD-2, deferred retention and all existing BLOCKED/DEFER decisions keep their original owners
+and reopening triggers. When the current planned increment is blocked, preserve the exact
+blocker and use G1/NEXT-LOOP to identify the next independent eligible action (for example,
+bounded retention-owner feasibility); it remains a recommendation until authorized. Do not
+rerun failed campaigns, restart the competitor survey or activate tools from this note.
+Update this checkpoint at the next relevant authorized touch, not through a new status-only
+workflow. Deterministic orchestration and engineering truth remain with the existing owners.
 
 ## 10. Reserved decisions and scoped holds
 
