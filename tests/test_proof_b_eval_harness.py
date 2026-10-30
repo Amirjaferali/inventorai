@@ -51,7 +51,9 @@ def _reply(**over):
 
 def _body(text, refusal=False, status="completed"):
     part = {"type": "refusal", "refusal": "no"} if refusal else {"type": "output_text", "text": text}
-    return json.dumps({"status": status, "output": [{"type": "message", "content": [part]}]}).encode()
+    return json.dumps({"status": status, "model": toa.MODEL,
+                       "usage": {"input_tokens": 900, "output_tokens": 300},
+                       "output": [{"type": "message", "content": [part]}]}).encode()
 
 
 OK = (200, _body(json.dumps(_reply())))
@@ -447,7 +449,7 @@ def test_each_outcome_is_classified_separately(pb, pilot, response, status, kind
 
 
 def _mixed_body():
-    return json.dumps({"status": "completed", "output": [{"type": "message", "content": [
+    return json.dumps({"status": "completed", "model": toa.MODEL, "output": [{"type": "message", "content": [
         {"type": "refusal", "refusal": "no"},
         {"type": "output_text", "text": json.dumps("ABSTAIN")}]}]}).encode()
 
@@ -477,8 +479,11 @@ def test_campaign_makes_one_call_per_case_and_stops_on_the_first_error(pb, pilot
     assert statuses[:3] == ["RESPONDED", "RESPONDED", "ERROR"]
     assert set(statuses[3:]) == {"NOT_ATTEMPTED"} and len(statuses) == 36
     lines = [json.loads(x) for x in journal.getvalue().splitlines()]
-    assert lines[0] == {"reserve": cases[0]["case_id"], "request": 1}
-    assert lines[1]["attempt"] == cases[0]["case_id"]
+    assert [x["event"] for x in lines] == ["reserved", "attempt"] * 3
+    assert lines[0]["case_id"] == lines[1]["case_id"] == cases[0]["case_id"]
+    assert lines[0]["attempt"] == 1 and lines[0]["reserved_usd"] > 0
+    assert lines[1]["requested_model"] == lines[1]["returned_model"] == toa.MODEL
+    assert lines[1]["usage"]["input_tokens"] == 900 and lines[1]["parts"] is not None
 
 
 def test_campaign_stops_on_an_ambiguous_outcome(pb, pilot):
@@ -508,9 +513,10 @@ def test_the_report_carries_and_digests_its_manifest(pb, pilot):
         pb.campaign(adapter, cases, dict(manifest, max_output_tokens=9999))
 
 
-def test_the_campaign_gate_is_closed(pb, pilot, monkeypatch, capsys):
+def test_a_real_transport_needs_the_exact_authorized_digest(pb, pilot, monkeypatch, capsys):
     cases, _refs = pilot
-    assert pb.PROOF_B_CAMPAIGN_AUTHORIZED is False and pb.AUTHORIZED_RUN_MANIFEST_SHA256 is None
+    # The gate is open, but no digest is committed: nothing can be sent without one.
+    assert pb.PROOF_B_CAMPAIGN_AUTHORIZED is True and pb.AUTHORIZED_RUN_MANIFEST_SHA256 is None
     def wrapped(*args):
         return toa._urllib_transport(*args)
     for transport in (toa._urllib_transport, pb.RecordingTransport(toa._urllib_transport),
@@ -524,9 +530,8 @@ def test_the_campaign_gate_is_closed(pb, pilot, monkeypatch, capsys):
         raise AssertionError("no adapter may be built while the gate is closed")
     monkeypatch.setattr(pb, "OpenAIMsnlAdapter", refuse)
     monkeypatch.setattr(toa, "_urllib_transport", refuse)
-    code = pb.main(["--provider", "openai", "--allow-network", "--managed-credential",
-                    "--journal", "unused.jsonl"])
-    assert code == 2 and "not authorized" in capsys.readouterr().out
+    code = pb.main(["--provider", "openai", "--allow-network", "--managed-credential"])
+    assert code == 2 and "no authorized manifest digest" in capsys.readouterr().out
     assert pb.main([]) == 0
 
 
@@ -697,16 +702,17 @@ def clean_repo(pb, tmp_path, monkeypatch):
 def test_the_authorized_digest_is_never_committed(pb):
     src = SCRIPT.read_text(encoding="utf-8")
     assert src.count("\nAUTHORIZED_RUN_MANIFEST_SHA256 = None\n") == 1
-    assert src.count("\nPROOF_B_CAMPAIGN_AUTHORIZED = False\n") == 1
+    assert src.count("\nPROOF_B_CAMPAIGN_AUTHORIZED = True\n") == 1
     assert not re.search(r"AUTHORIZED_RUN_MANIFEST_SHA256 = ['\"]", src)
 
 
 def test_campaign_authorization_needs_the_open_gate_and_the_exact_digest(pb, monkeypatch):
     manifest = pb.run_manifest(REVISION, toa.MODEL)
     digest = pb._digest(manifest)
+    assert pb.campaign_authorized(manifest, digest) is True
+    monkeypatch.setattr(pb, "PROOF_B_CAMPAIGN_AUTHORIZED", False)
     assert pb.campaign_authorized(manifest, digest) is False          # gate closed
     monkeypatch.setattr(pb, "PROOF_B_CAMPAIGN_AUTHORIZED", True)
-    assert pb.campaign_authorized(manifest, digest) is True
     for other in (None, "", digest.upper(), digest + "0", "0" * 64, 1,
                   pb._digest(pb.run_manifest("another-revision", toa.MODEL)),
                   pb._digest(pb.run_manifest(REVISION, "another-model"))):
@@ -737,21 +743,255 @@ def test_manifest_mode_names_the_digest_of_this_checkout(pb, clean_repo, capsys)
     out = json.loads(capsys.readouterr().out)
     assert out["manifest"] == pb.run_manifest(head, "pinned-model")
     assert out["manifest_sha256"] == pb._digest(out["manifest"])
-    assert out["campaign_authorized"] is False and out["fixture_frozen"] is True
+    assert out["campaign_authorized"] is True and out["fixture_frozen"] is True
     (clean_repo / "code.py").write_text("x = 3\n", encoding="utf-8")
     assert pb.main(["--manifest"]) == 2
     assert "uncommitted" in capsys.readouterr().out
 
 
-def test_the_closed_gate_refuses_even_a_named_digest(pb, monkeypatch, capsys):
+def _no_adapter(pb, monkeypatch):
     def refuse(*_a, **_k):
-        raise AssertionError("no adapter may be built while the gate is closed")
+        raise AssertionError("no adapter may be built and nothing may be sent")
     monkeypatch.setattr(pb, "OpenAIMsnlAdapter", refuse)
     monkeypatch.setattr(toa, "_urllib_transport", refuse)
+
+
+CAMPAIGN_ARGS = ["--provider", "openai", "--allow-network", "--managed-credential"]
+
+
+def test_the_closed_gate_refuses_even_a_named_digest(pb, monkeypatch, capsys):
+    _no_adapter(pb, monkeypatch)
+    monkeypatch.setattr(pb, "PROOF_B_CAMPAIGN_AUTHORIZED", False)
     digest = pb._digest(pb.run_manifest(REVISION, toa.MODEL))
-    code = pb.main(["--provider", "openai", "--allow-network", "--managed-credential",
-                    "--journal", "unused.jsonl", "--authorized-manifest", digest])
+    code = pb.main(CAMPAIGN_ARGS + ["--authorized-manifest", digest])
     assert code == 2 and "not authorized" in capsys.readouterr().out
+
+
+def test_the_cli_refuses_a_digest_that_is_not_this_checkouts(pb, clean_repo, monkeypatch, capsys):
+    _no_adapter(pb, monkeypatch)
+    stale = pb._digest(pb.run_manifest("an-earlier-revision", toa.MODEL))
+    assert pb.main(CAMPAIGN_ARGS + ["--authorized-manifest", stale]) == 2
+    assert "not authorized for this manifest" in capsys.readouterr().out
+    head = _git(clean_repo, "rev-parse", "HEAD")
+    other_model = pb._digest(pb.run_manifest(head, toa.MODEL))
+    assert pb.main(CAMPAIGN_ARGS + ["--authorized-manifest", other_model,
+                                    "--model", "another-model"]) == 2
+    assert "not authorized for this manifest" in capsys.readouterr().out
+
+
+def test_the_cli_never_reruns_a_started_campaign(pb, tmp_path, monkeypatch, capsys):
+    _no_adapter(pb, monkeypatch)
+    started = tmp_path / "campaign_01_journal.jsonl"
+    started.write_text('{"event": "reserved"}\n', encoding="utf-8")
+    monkeypatch.setattr(pb, "JOURNAL_PATH", str(started))
+    digest = pb._digest(pb.run_manifest(REVISION, toa.MODEL))
+    assert pb.main(CAMPAIGN_ARGS + ["--authorized-manifest", digest]) == 2
+    assert "never rerun" in capsys.readouterr().out
+    assert started.read_text(encoding="utf-8") == '{"event": "reserved"}\n'   # untouched
+
+
+# ── the real-transport campaign boundary (direct invocation, offline) ──────
+class _CannedTransport:
+    """An OFFLINE canned transport that does NOT declare itself a fake, so the
+    campaign treats it as real and applies every boundary check."""
+
+    def __init__(self, responses):
+        self.responses, self.calls = list(responses), 0
+
+    def __call__(self, url, headers, body, timeout):
+        self.calls += 1
+        return self.responses.pop(0)
+
+
+def _real(pb, responses):
+    transport = _CannedTransport(responses)
+    return pb.OpenAIMsnlAdapter(allow_network=True,
+                                transport=pb.RecordingTransport(transport)), transport
+
+
+@pytest.fixture
+def run_dir(pb, clean_repo, monkeypatch):
+    """The fixed evidence paths inside the throwaway clean checkout."""
+    evidence = clean_repo / "docs" / "benchmarks" / "evidence" / "proof_b_pilot_v3"
+    evidence.mkdir(parents=True)
+    monkeypatch.setattr(pb, "JOURNAL_PATH", str(evidence / "campaign_01_journal.jsonl"))
+    monkeypatch.setattr(pb, "REPORT_PATH", str(evidence / "campaign_01_report.json"))
+    return _git(clean_repo, "rev-parse", "HEAD")
+
+
+def test_every_boundary_check_applies_to_a_direct_call(pb, pilot, run_dir, tmp_path):
+    cases, _refs = pilot
+    manifest = pb.run_manifest(run_dir, toa.MODEL)
+    digest = pb._digest(manifest)
+    adapter, transport = _real(pb, [OK] * 36)
+    with pytest.raises(pb.PackError, match="not authorized"):
+        pb.campaign(adapter, cases, manifest)                       # no digest
+    with pytest.raises(pb.PackError, match="pinned pack"):
+        pb.campaign(adapter, cases[:-1], manifest, None, digest)
+    other = pb.run_manifest(run_dir, "another-model")
+    with pytest.raises(pb.PackError, match="price basis"):
+        pb.campaign(pb.OpenAIMsnlAdapter(allow_network=True, model="another-model",
+                                         transport=transport),
+                    cases, other, None, pb._digest(other))
+    # a caller-supplied journal is never accepted, whatever its path or state
+    for journal in (io.StringIO(), open(tmp_path / "elsewhere.jsonl", "w", encoding="utf-8"),
+                    open(pb.JOURNAL_PATH, "w", encoding="utf-8")):
+        with journal:
+            with pytest.raises(pb.PackError, match="created by the campaign"):
+                pb.campaign(adapter, cases, manifest, journal, digest)
+    pathlib.Path(pb.JOURNAL_PATH).unlink()
+    stale = pb.run_manifest(REVISION, toa.MODEL)
+    with pytest.raises(pb.PackError, match="checkout"):
+        pb.campaign(adapter, cases, stale, None, pb._digest(stale))
+    assert transport.calls == 0
+    assert not pathlib.Path(pb.JOURNAL_PATH).exists()      # a refusal claims nothing
+
+
+def test_an_authorized_direct_run_is_accounted_and_runs_once(pb, pilot, run_dir):
+    cases, _refs = pilot
+    manifest = pb.run_manifest(run_dir, toa.MODEL)
+    digest = pb._digest(manifest)
+    adapter, transport = _real(pb, [OK] * 36)
+    report = pb.campaign(adapter, cases, manifest, None, digest)
+    assert transport.calls == report["requests"] == 36 and report["stopped_on"] is None
+    assert report["spend"] == {"requests_sent": 36,
+                               "measured_cost_usd": round(36 * (900 * 2 + 300 * 10) / 1e6, 6),
+                               "measured_cost_complete": True,
+                               "conservative_bound_usd": round(36 * (900 * 12 + 300 * 60) / 1e6, 6),
+                               "ceiling_usd": 5.0}
+    lines = pathlib.Path(pb.JOURNAL_PATH).read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 72
+    assert all(r["attempt"]["returned_model"] == toa.MODEL for r in report["rows"])
+    assert report["started_at"].endswith("Z") and report["finished_at"].endswith("Z")
+    # the written journal blocks a second run, and truncating it cannot reopen one
+    adapter, transport = _real(pb, [OK] * 36)
+    with pytest.raises(pb.PackError, match="never rerun"):
+        pb.campaign(adapter, cases, manifest, None, digest)
+    with open(pb.JOURNAL_PATH, "w", encoding="utf-8") as truncated:
+        with pytest.raises(pb.PackError):
+            pb.campaign(adapter, cases, manifest, truncated, digest)
+    assert transport.calls == 0
+
+
+def test_an_interrupted_run_is_never_restarted(pb, pilot, run_dir):
+    cases, _refs = pilot
+    manifest = pb.run_manifest(run_dir, toa.MODEL)
+    digest = pb._digest(manifest)
+
+    class _Stop(BaseException):           # like KeyboardInterrupt: not caught as an error
+        pass
+    responses = [OK] * 4 + [_Stop()]
+    def interrupting(url, headers, body, timeout):
+        item = responses.pop(0)
+        if isinstance(item, _Stop):
+            raise item
+        return item
+    adapter = pb.OpenAIMsnlAdapter(allow_network=True,
+                                   transport=pb.RecordingTransport(interrupting))
+    with pytest.raises(_Stop):
+        pb.campaign(adapter, cases, manifest, None, digest)
+    events = [json.loads(x)["event"] for x in
+              pathlib.Path(pb.JOURNAL_PATH).read_text(encoding="utf-8").splitlines()]
+    assert events == ["reserved", "attempt"] * 4 + ["reserved"]   # the fifth was reserved
+    adapter, transport = _real(pb, [OK] * 36)
+    with pytest.raises(pb.PackError, match="never rerun"):
+        pb.campaign(adapter, cases, manifest, None, digest)
+    assert transport.calls == 0
+
+
+def test_committed_evidence_blocks_a_run_from_an_earlier_checkout(pb, pilot, run_dir,
+                                                                  clean_repo):
+    cases, _refs = pilot
+    evidence = pathlib.Path(pb.JOURNAL_PATH)
+    evidence.write_text('{"event": "reserved"}\n', encoding="utf-8")
+    _git(clean_repo, "add", "-A")
+    _git(clean_repo, "commit", "-q", "-m", "campaign evidence")
+    _git(clean_repo, "checkout", "-q", run_dir)          # back to the authorized commit
+    assert not evidence.exists()
+    manifest = pb.run_manifest(run_dir, toa.MODEL)
+    adapter, transport = _real(pb, [OK] * 36)
+    with pytest.raises(pb.PackError, match="never rerun"):
+        pb.campaign(adapter, cases, manifest, None, pb._digest(manifest))
+    assert transport.calls == 0 and not evidence.exists()
+
+
+# ── budget enforcement before dispatch ──────────────────────────────────────
+def test_every_request_reserves_its_maximum_charge_from_its_exact_payload(pb, pilot):
+    cases, _refs = pilot
+    budget = pb.budget_plan(cases)
+    sizes = [len(json.dumps(pb.payload(c), ensure_ascii=False).encode("utf-8")) for c in cases]
+    expected = [((n + 1000) * 12.0 + 1200 * 60.0) / 1e6 for n in sizes]
+    assert budget["all_reservations_usd"] == round(sum(expected), 6)
+    assert budget["max_reservation_usd"] == round(max(expected), 6)
+    # every request fits even if every one is charged at its full reservation
+    assert budget["all_reservations_usd"] <= pb.CAMPAIGN_CEILING_USD == 5.0
+    assert pb.reservation_usd(sizes[0]) == expected[0]
+    manifest = pb.run_manifest(REVISION, toa.MODEL)
+    assert manifest["budget"] == {"ceiling_usd": 5.0, "pricing": pb.PRICING,
+                                  "reservation": pb.RESERVATION}
+    assert pb.PRICING["model"] == toa.MODEL == "gpt-6-sol"
+    assert pb.RESERVATION["input_usd_per_1m"] == 6 * pb.PRICING["input_usd_per_1m"]
+    assert pb.RESERVATION["output_usd_per_1m"] == 6 * pb.PRICING["output_usd_per_1m"]
+    assert manifest["store"] is False and manifest["retries"] == 0
+    body = pb.payload(cases[0])
+    assert body["store"] is False and "tools" not in body
+
+
+def test_a_request_over_the_ceiling_is_never_sent(pb, pilot, monkeypatch):
+    cases, _refs = pilot
+    monkeypatch.setattr(pb, "CAMPAIGN_CEILING_USD", 0.2)
+    journal = io.StringIO()
+    adapter, inner = _adapter(pb, [OK] * 36)
+    report = pb.campaign(adapter, cases, pb.run_manifest(REVISION, adapter._model), journal)
+    assert report["stopped_on"] == pb.ERR_COST_CEILING
+    assert len(inner.calls) == report["requests"] == report["spend"]["requests_sent"] < 36
+    assert report["spend"]["conservative_bound_usd"] <= 0.2
+    lines = [json.loads(x) for x in journal.getvalue().splitlines()]
+    refused = [x for x in lines if x["event"] == "refused_before_send"]
+    assert len(refused) == 1
+    assert refused[0]["committed_usd"] + refused[0]["reserved_usd"] > 0.2
+    statuses = [r["status"] for r in report["rows"]]
+    assert set(statuses[report["requests"]:]) == {"NOT_ATTEMPTED"}
+
+
+def _usage_body(usage, model=None):
+    return (200, json.dumps({"status": "completed", "model": model or toa.MODEL, "usage": usage,
+                             "output": [{"type": "message", "content": [
+                                 {"type": "output_text", "text": json.dumps(_reply())}]}]}).encode())
+
+
+def test_unknown_usage_commits_the_whole_reservation(pb, pilot):
+    cases, _refs = pilot
+    adapter, _inner = _adapter(pb, [_usage_body({})])
+    report = pb.campaign(adapter, cases[:1], pb.run_manifest(REVISION, adapter._model))
+    attempt = report["rows"][0]["attempt"]
+    assert attempt["measured_cost_usd"] is None and attempt["bound_usd"] == attempt["reserved_usd"]
+    assert report["spend"]["measured_cost_complete"] is False
+
+
+@pytest.mark.parametrize("response, kind", [
+    (_usage_body({"input_tokens": 900, "output_tokens": 1201}), "cost_unbounded"),
+    (_usage_body({"input_tokens": 900, "output_tokens": 300}, model="gpt-6-sol-mini"),
+     "model_unconfirmed"),
+])
+def test_an_unbounded_or_unconfirmed_reply_stops_the_run(pb, pilot, response, kind):
+    cases, _refs = pilot
+    adapter, inner = _adapter(pb, [response] + [OK] * 5)
+    report = pb.campaign(adapter, cases, pb.run_manifest(REVISION, adapter._model))
+    assert report["stopped_on"] == pb.ST_ERROR and len(inner.calls) == 1
+    row = report["rows"][0]
+    assert row["error_kind"] == kind and row["attempt"]["bound_usd"] == row["attempt"]["reserved_usd"]
+
+
+def test_a_dated_snapshot_counts_as_the_requested_model(pb, pilot):
+    cases, _refs = pilot
+    adapter, _inner = _adapter(pb, [_usage_body({"input_tokens": 900, "output_tokens": 300},
+                                                model="gpt-6-sol-2026-10-26")])
+    report = pb.campaign(adapter, cases[:1], pb.run_manifest(REVISION, adapter._model))
+    row = report["rows"][0]
+    assert row["status"] == "RESPONDED"
+    assert row["attempt"]["requested_model"] == "gpt-6-sol"
+    assert row["attempt"]["returned_model"] == "gpt-6-sol-2026-10-26"
 
 
 def test_aggregation_takes_the_authorized_digest_at_run_time(pb, pilot, tmp_path, capsys):

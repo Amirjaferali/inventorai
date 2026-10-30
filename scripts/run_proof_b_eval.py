@@ -9,11 +9,12 @@ File-creation contract:
     go / no-go aggregation over a COMPLETED human review. It is not a pytest
     test and never runs in CI.
   Authority: Owner authorization "FIRST-G1-PROOF-B — BOUNDED OFFLINE EVALUATION
-    PREPARATION" (2026-10-29): evaluation preparation only. NO provider call is
-    authorized: `PROOF_B_CAMPAIGN_AUTHORIZED` is False, so the provider path is
-    refused before any adapter is built, whatever flags are passed. Opening it
-    needs a separate Owner decision naming the provider, model, request cap,
-    monetary / token limits and frozen fixture hashes.
+    PREPARATION" (2026-10-29) for the harness, and the Owner-delegated "ONE
+    CONTROLLED REAL-MODEL PILOT" (2026-10-30) for this activation: ONE campaign
+    of at most 36 requests to `gpt-6-sol` within US$5. Opening the gate
+    (`PROOF_B_CAMPAIGN_AUTHORIZED = True`) authorizes no request by itself: a
+    request is possible only for the ONE run whose manifest digest the Execution
+    Lead confirms under that delegation and names at run time.
   Reuse: the evaluation-only provider adapter, transport, endpoint lock,
     redirect refusal, managed-proxy credential mode, refusal handling and the
     pinned-file loader of `scripts/run_msnl_eval.py` (unchanged), and its
@@ -27,12 +28,15 @@ File-creation contract:
                        offline: the run manifest and its digest for the CURRENT
                        clean checkout (refused on uncommitted changes); nothing
                        is sent;
-    `--provider openai --allow-network --managed-credential --journal PATH
+    `--provider openai --allow-network --managed-credential
      --authorized-manifest SHA256 [--model M]`
                        the campaign path; REFUSED while the gate is closed, the
-                       fixtures are not FROZEN, the checkout is not clean or
-                       the manifest of this checkout and model is not the one
-                       authorized digest;
+                       fixtures are not FROZEN, the checkout is not clean, the
+                       manifest of this checkout and model is not the one
+                       authorized digest, or campaign evidence for this pack
+                       already exists (one run only: an interrupted run is
+                       incomplete and is never rerun). The journal and the
+                       report are written to the fixed evidence paths below;
     `--review-sheet REPORT` offline: a human review sheet bound to a saved report;
     `--aggregate REVIEW --report REPORT --authorized-manifest SHA256`
                        offline: the pilot verdict from a completed review of the
@@ -46,14 +50,24 @@ File-creation contract:
          `AUTHORIZED_RUN_MANIFEST_SHA256` stays None;
       2. on a clean checkout of that exact commit, `--manifest --model M`
          prints the digest D of its manifest (revision, fixtures,
-         pre-registration, model, endpoint, token and request caps, retries);
+         pre-registration, model, endpoint, token and request caps, retries,
+         the currency ceiling, the price basis and the reservation rule);
       3. the Owner authorizes the run by naming D;
       4. the campaign runs from that same clean commit with
          `--authorized-manifest D`; any other commit, model, fixture,
          pre-registration or parameter gives another digest and is refused;
       5. aggregation names the same D.
+  Budget: before each request the harness reserves its maximum charge — the
+    UTF-8 bytes of the whole request body (instructions, schema and input) plus
+    1,000 input tokens, and max_output_tokens output tokens, at 6x the recorded
+    published rate — and sends it only if the committed bound plus that
+    reservation stays within the ceiling. After the request the bound grows by
+    its validated usage at the reservation rates, or by the whole reservation
+    when usage is unavailable or the attempt failed. A reply over its output cap
+    or naming another model stops the run.
   Output contract: JSON on stdout; exit 0 on success, 2 on a refused
-    invocation or an integrity failure.
+    invocation or an integrity failure. The campaign also writes its journal
+    (fsynced per record) and its report to the fixed evidence paths.
   Prohibited behaviors: no real inventor / project / personal data; no product
     import of this module; the reference labels are never part of a provider
     payload; no automatic retry; no engineering, safety or validation verdict —
@@ -74,11 +88,14 @@ if _ROOT not in sys.path:
 from engine import technical_orchestration_openai as toa  # noqa: E402
 from scripts.run_msnl_eval import (  # noqa: E402  (reused, unchanged)
     OpenAIMsnlAdapter, PackError, _load, quote_grounded,
+    ERR_BUDGET, ERR_COST_CEILING, ERR_COST_UNBOUNDED, ERR_MODEL_UNCONFIRMED,
+    _measured_call, _pf_model_confirmed, _pf_usd,
 )
 from engine import msnl_shadow as ms  # noqa: E402
 
-# ── The ONE gate. False: no provider request is possible from this harness. ──
-PROOF_B_CAMPAIGN_AUTHORIZED = False
+# ── The ONE gate. True opens only the path to the ONE run whose manifest
+# digest is confirmed and named at run time; no digest, no request. ──
+PROOF_B_CAMPAIGN_AUTHORIZED = True
 
 INPUT_PATH = os.path.join(_ROOT, "tests", "fixtures", "proof_b_pilot_inputs_v3.json")
 INPUT_SHA256 = "9d04528a206f0ce28d6c7c58324767bfbded61f0b9fa856f2ca2493b1c3514c4"
@@ -91,6 +108,32 @@ FROZEN_STATUS = "FROZEN"
 # the Git revision, so the digest an Owner authorizes is passed at run time with
 # --authorized-manifest (see the activation procedure above), never committed.
 AUTHORIZED_RUN_MANIFEST_SHA256 = None
+# One run only: the journal and the report have fixed paths; either existing
+# refuses a new campaign for this pack.
+EVIDENCE_DIR = os.path.join(_ROOT, "docs", "benchmarks", "evidence", "proof_b_pilot_v3")
+JOURNAL_PATH = os.path.join(EVIDENCE_DIR, "campaign_01_journal.jsonl")
+REPORT_PATH = os.path.join(EVIDENCE_DIR, "campaign_01_report.json")
+# The currency ceiling and its price basis, bound into the manifest.
+CAMPAIGN_CEILING_USD = 5.0
+PRICING = {
+    "model": "gpt-6-sol", "tier": "Standard",
+    "input_usd_per_1m": 2.0, "output_usd_per_1m": 10.0,
+    "basis": ("OpenAI's published Standard text-token rate for gpt-6-sol as recorded for the "
+              "2026-10-27 MSNL campaign (docs/benchmarks/evidence/msnl_mechanism_content_v1/"
+              "preflight_01_report.json) and corroborated on 2026-10-30 by third-party price "
+              "listings; OpenAI's own pages cannot be fetched from this environment, so the rate "
+              "is not independently inspected. No proxy charge is documented. The calculated "
+              "cost is not an invoice; reasoning tokens are counted inside output tokens once.")}
+RESERVATION = {
+    "multiplier": 6, "input_usd_per_1m": 12.0, "output_usd_per_1m": 60.0,
+    "overhead_input_tokens": 1000,
+    "rule": ("Before each request, reserve (UTF-8 bytes of the whole request body + 1000) "
+             "input tokens and max_output_tokens output tokens at the reservation rates; a "
+             "token covers at least one byte, and 6x the published rate is above every "
+             "higher-tier multiplier reported for the model. A request is sent only if the "
+             "committed bound plus its reservation is at most the ceiling. After it, the bound "
+             "grows by its validated usage at the reservation rates, or by its whole "
+             "reservation when usage is unavailable or the attempt failed.")}
 LANGUAGES = ("en", "ar-msa", "ar-gulf-kw", "ar-egy")
 SCENARIOS = ("G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09")
 # Scenarios scored against a Level-A handoff need: their reference carries a
@@ -422,16 +465,28 @@ def classify(adapter, case):
     """ONE provider call for ONE case, never retried. The adapter's ERROR /
     refusal handling is reused unchanged. Its refusal sentinel is resolved from
     the recorded raw response: a confirmed refusal is PROVIDER_REFUSAL, model
-    text is a STRUCTURE_VIOLATION, and anything else fails closed as ambiguous."""
-    reply = adapter._call(payload(case, adapter._model))
+    text is a STRUCTURE_VIOLATION, and anything else fails closed as ambiguous.
+    The call is measured (HTTP status, latency, response id, returned model and
+    usage, never text) through the MSNL harness's reviewed measured call. A
+    reply over the output cap, or one that does not name the requested model or
+    one of its dated snapshots, is an ERROR."""
+    reply, meta = _measured_call(adapter, payload(case, adapter._model))
+
+    def result(status, kind, parts):
+        return {"status": status, "error_kind": kind, "parts": parts, "meta": meta}
+    out = meta["usage"]["output_tokens"]
+    if meta["sent"] and isinstance(out, int) and out > MAX_OUTPUT_TOKENS:
+        return result(ST_ERROR, ERR_COST_UNBOUNDED, None)
     if reply is None:
-        return {"status": ST_ERROR, "error_kind": adapter.last_error_kind, "parts": None}
+        return result(ST_ERROR, adapter.last_error_kind, None)
+    if not _pf_model_confirmed(meta["model"], adapter._model):
+        return result(ST_ERROR, ERR_MODEL_UNCONFIRMED, None)
     if reply == ms.ABSTAIN:
         kind = _sentinel_kind(adapter)
         status = {"refusal": ST_PROVIDER_REFUSAL, "text": ST_STRUCTURE}.get(kind, ST_AMBIGUOUS)
-        return {"status": status, "error_kind": None, "parts": None}
+        return result(status, None, None)
     status, parts = parse_reply(reply)
-    return {"status": status, "error_kind": None, "parts": parts}
+    return result(status, None, parts)
 
 
 def _digest(value):
@@ -449,7 +504,30 @@ def run_manifest(code_revision, model):
             "preregistration_sha256": preregistration_digest(),
             "code_revision": code_revision, "model": model, "endpoint": toa.ENDPOINT,
             "max_output_tokens": MAX_OUTPUT_TOKENS,
-            "max_provider_requests": MAX_PROVIDER_REQUESTS, "retries": 0}
+            "max_provider_requests": MAX_PROVIDER_REQUESTS, "retries": 0,
+            "store": False, "tools": "none",
+            "budget": {"ceiling_usd": CAMPAIGN_CEILING_USD, "pricing": PRICING,
+                       "reservation": RESERVATION},
+            "evidence": {"journal": "docs/benchmarks/evidence/proof_b_pilot_v3/"
+                                    "campaign_01_journal.jsonl",
+                         "report": "docs/benchmarks/evidence/proof_b_pilot_v3/"
+                                   "campaign_01_report.json"}}
+
+
+def reservation_usd(body_bytes):
+    """The maximum charge reserved for ONE request of ``body_bytes`` bytes."""
+    return _pf_usd(body_bytes + RESERVATION["overhead_input_tokens"], MAX_OUTPUT_TOKENS,
+                   RESERVATION["input_usd_per_1m"], RESERVATION["output_usd_per_1m"])
+
+
+def budget_plan(cases, model=toa.MODEL):
+    """The reservation of every exact final payload, before anything is sent."""
+    reserved = [reservation_usd(len(json.dumps(payload(c, model), ensure_ascii=False)
+                                    .encode("utf-8"))) for c in cases]
+    return {"ceiling_usd": CAMPAIGN_CEILING_USD, "pricing_model": PRICING["model"],
+            "max_reservation_usd": round(max(reserved), 6),
+            "all_reservations_usd": round(sum(reserved), 6),
+            "published_rate_maximum_usd": round(sum(reserved) / RESERVATION["multiplier"], 6)}
 
 
 def _offline_fake(adapter):
@@ -491,38 +569,162 @@ def current_revision():
     return revision
 
 
+def _journal(journal, record):
+    """Append ONE sanitized record and force it to disk where the journal is a
+    file, so an interruption leaves every reservation and attempt."""
+    if journal is None:
+        return
+    journal.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
+    journal.flush()
+    try:
+        fd = journal.fileno()
+    except (AttributeError, OSError, ValueError):
+        return
+    os.fsync(fd)
+
+
+def _evidence_in_history():
+    """True when any commit reachable from any ref touches the evidence
+    directory: a run whose evidence was committed, even on another branch, is
+    never repeated by checking out an earlier commit. Fails closed."""
+    import subprocess
+    try:
+        out = subprocess.run(["git", "-C", _ROOT, "rev-list", "--all", "--",
+                              os.path.relpath(os.path.dirname(JOURNAL_PATH), _ROOT)],
+                             capture_output=True, text=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError):
+        raise PackError("repository history unavailable")
+    return bool(out.strip())
+
+
+def _check_campaign_boundary(adapter, cases, manifest, journal, authorized_manifest_sha256):
+    """Every check a real-transport campaign must pass, wherever it is called
+    from: the open gate and the exact authorized digest; FROZEN fixtures at
+    their pinned hashes and exactly the pinned cases; a priced model; no journal
+    handle from the caller (the campaign creates the ONE fixed journal itself);
+    no campaign evidence in the working tree or in the repository history; and
+    a manifest whose revision is this clean checkout."""
+    if not campaign_authorized(manifest, authorized_manifest_sha256):
+        raise PackError("campaign not authorized")
+    pinned, _refs = load_pilot()
+    for path, sha in ((INPUT_PATH, INPUT_SHA256), (REFERENCE_PATH, REFERENCE_SHA256)):
+        if _load(path, sha).get("status") != FROZEN_STATUS:
+            raise PackError("fixtures are not frozen")
+    if list(cases) != pinned:
+        raise PackError("cases are not the pinned pack")
+    if manifest.get("model") != PRICING["model"]:
+        raise PackError("no recorded price basis for this model")
+    if journal is not None:
+        raise PackError("the campaign journal is created by the campaign itself")
+    if os.path.exists(JOURNAL_PATH) or os.path.exists(REPORT_PATH) or _evidence_in_history():
+        raise PackError("campaign evidence already exists: one run only, and an "
+                        "interrupted run is incomplete, never rerun")
+    if manifest.get("code_revision") != current_revision():
+        raise PackError("manifest does not describe this checkout")
+
+
+def _utc_now():
+    import datetime
+    return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def campaign(adapter, cases, manifest, journal=None, authorized_manifest_sha256=None):
     """At most MAX_PROVIDER_REQUESTS calls, one per case in fixture order, no
-    retry. A reservation is journalled before each call. The run stops at the
-    first ERROR, STRUCTURE_VIOLATION or ambiguous outcome; every later case is
-    NOT_ATTEMPTED. The report carries its manifest and the manifest digest."""
-    if not _offline_fake(adapter) and not campaign_authorized(
-            manifest, authorized_manifest_sha256):
-        raise PackError("campaign not authorized")
+    retry. Each request first reserves its maximum charge (see Budget) and is
+    sent only within the ceiling; reservation and attempt are journalled. The
+    run stops at the first ERROR, STRUCTURE_VIOLATION or ambiguous outcome and
+    at a request or currency limit; every later case is NOT_ATTEMPTED. The
+    report carries its manifest, its digest, its run time and its spend. With a
+    real transport the caller passes no journal: after every check, the
+    campaign claims the ONE fixed journal path itself with an exclusive create,
+    so a started or interrupted run can never be replaced or rerun."""
     if manifest != run_manifest(manifest.get("code_revision"), adapter._model):
         raise PackError("manifest does not describe this run")
-    rows, requests, stopped = [], 0, None
+    if _offline_fake(adapter):
+        return _run_cases(adapter, cases, manifest, journal)
+    _check_campaign_boundary(adapter, cases, manifest, journal, authorized_manifest_sha256)
+    os.makedirs(os.path.dirname(JOURNAL_PATH), exist_ok=True)
+    try:
+        claimed = open(JOURNAL_PATH, "x", encoding="utf-8")
+    except FileExistsError:
+        raise PackError("campaign evidence already exists: one run only, and an "
+                        "interrupted run is incomplete, never rerun")
+    with claimed:
+        return _run_cases(adapter, cases, manifest, claimed)
+
+
+def _run_cases(adapter, cases, manifest, journal):
+    """The request loop of ``campaign``; only ever called after its checks."""
+    price_in, price_out = PRICING["input_usd_per_1m"], PRICING["output_usd_per_1m"]
+    res_in, res_out = RESERVATION["input_usd_per_1m"], RESERVATION["output_usd_per_1m"]
+    ledger = {"requests": 0, "sent": 0, "committed": 0.0, "measured": 0.0,
+              "measured_complete": True}
+    started, rows, stopped = _utc_now(), [], None
     for case in cases:
-        if stopped or requests >= MAX_PROVIDER_REQUESTS:
+        if stopped is None and ledger["requests"] >= MAX_PROVIDER_REQUESTS:
+            stopped = ERR_BUDGET
+        if stopped is not None:
             rows.append({"case_id": case["case_id"], "status": ST_NOT_ATTEMPTED,
                          "error_kind": None, "parts": None, "flags": {}})
             continue
-        requests += 1
-        if journal is not None:
-            journal.write(json.dumps({"reserve": case["case_id"], "request": requests}) + "\n")
-            journal.flush()
+        body = json.dumps(payload(case, adapter._model), ensure_ascii=False).encode("utf-8")
+        reserved = reservation_usd(len(body))
+        if ledger["committed"] + reserved > CAMPAIGN_CEILING_USD:
+            _journal(journal, {"event": "refused_before_send", "case_id": case["case_id"],
+                               "reason": ERR_COST_CEILING,
+                               "committed_usd": round(ledger["committed"], 6),
+                               "reserved_usd": round(reserved, 6)})
+            stopped = ERR_COST_CEILING
+            rows.append({"case_id": case["case_id"], "status": ST_NOT_ATTEMPTED,
+                         "error_kind": ERR_COST_CEILING, "parts": None, "flags": {}})
+            continue
+        ledger["requests"] += 1
+        _journal(journal, {"event": "reserved", "attempt": ledger["requests"],
+                           "case_id": case["case_id"], "reserved_usd": round(reserved, 6),
+                           "committed_usd": round(ledger["committed"], 6)})
         result = classify(adapter, case)
+        meta = result.pop("meta")
+        usage = meta["usage"]
+        known = isinstance(usage["input_tokens"], int) and isinstance(usage["output_tokens"], int)
+        if not meta["sent"]:
+            bound = 0.0
+        elif known and meta["http_status"] == 200 and result["error_kind"] is None:
+            bound = _pf_usd(usage["input_tokens"], usage["output_tokens"], res_in, res_out)
+        else:
+            bound = reserved
+        cost = (_pf_usd(usage["input_tokens"], usage["output_tokens"], price_in, price_out)
+                if known else None)
+        if meta["sent"]:
+            ledger["sent"] += 1
+            if cost is None:
+                ledger["measured_complete"] = False
+        ledger["measured"] += cost or 0.0
+        ledger["committed"] += bound
+        attempt = {"attempt": ledger["requests"], "sent": meta["sent"],
+                   "http_status": meta["http_status"], "response_id": meta["response_id"],
+                   "requested_model": adapter._model, "returned_model": meta["model"],
+                   "response_status": meta["response_status"],
+                   "incomplete_reason": meta["incomplete_reason"], "usage": usage,
+                   "latency_ms": meta["latency_ms"], "reserved_usd": round(reserved, 6),
+                   "measured_cost_usd": None if cost is None else round(cost, 6),
+                   "bound_usd": round(bound, 6)}
         row = {"case_id": case["case_id"], **result,
-               "flags": review_flags(case, result["parts"])}
+               "flags": review_flags(case, result["parts"]), "attempt": attempt}
         rows.append(row)
-        if journal is not None:
-            journal.write(json.dumps({"attempt": case["case_id"], "status": row["status"],
-                                      "error_kind": row["error_kind"]}) + "\n")
-            journal.flush()
+        _journal(journal, {"event": "attempt", "case_id": case["case_id"],
+                           "status": row["status"], "error_kind": row["error_kind"],
+                           "parts": row["parts"], **attempt})
         if row["status"] in (ST_ERROR, ST_STRUCTURE, ST_AMBIGUOUS):
             stopped = row["status"]
     return {"manifest": manifest, "manifest_sha256": _digest(manifest),
-            "requests": requests, "stopped_on": stopped, "rows": rows}
+            "started_at": started, "finished_at": _utc_now(),
+            "requests": ledger["requests"], "stopped_on": stopped,
+            "spend": {"requests_sent": ledger["sent"],
+                      "measured_cost_usd": round(ledger["measured"], 6),
+                      "measured_cost_complete": ledger["measured_complete"],
+                      "conservative_bound_usd": round(ledger["committed"], 6),
+                      "ceiling_usd": CAMPAIGN_CEILING_USD},
+            "rows": rows}
 
 
 def report_digest(report):
@@ -696,6 +898,7 @@ def plan():
             "cases": len(cases), "languages": list(LANGUAGES),
             "max_provider_requests": MAX_PROVIDER_REQUESTS, "retries": 0,
             "preregistration_sha256": preregistration_digest(),
+            "budget": budget_plan(cases),
             "payload_keys": sorted(preview), "payload_input_keys": sorted(json.loads(preview["input"])),
             "reference_leaks_in_payloads": [list(x) for x in leaked]}
 
@@ -705,7 +908,6 @@ def main(argv=None):
     p.add_argument("--provider", choices=("none", "openai"), default="none")
     p.add_argument("--allow-network", action="store_true")
     p.add_argument("--managed-credential", action="store_true")
-    p.add_argument("--journal")
     p.add_argument("--review-sheet", metavar="REPORT")
     p.add_argument("--aggregate", metavar="REVIEW")
     p.add_argument("--report", metavar="REPORT")
@@ -738,21 +940,27 @@ def main(argv=None):
             if not PROOF_B_CAMPAIGN_AUTHORIZED:
                 print(json.dumps({"refused": "campaign not authorized"}))
                 return 2
-            if not (a.allow_network and a.managed_credential and a.journal):  # pragma: no cover
-                print(json.dumps({"refused": "network, managed credential and journal required"}))
-                return 2
-            cases, _refs = load_pilot()  # pragma: no cover
-            with open(INPUT_PATH, encoding="utf-8") as fh:  # pragma: no cover
+            if a.authorized_manifest is None:
+                raise PackError("campaign not authorized: no authorized manifest digest")
+            if not (a.allow_network and a.managed_credential):
+                raise PackError("network and managed credential required")
+            cases, _refs = load_pilot()
+            with open(INPUT_PATH, encoding="utf-8") as fh:
                 if json.load(fh)["status"] != FROZEN_STATUS:
                     raise PackError("fixtures are not frozen")
-            manifest = run_manifest(current_revision(), a.model)  # pragma: no cover
-            if not campaign_authorized(manifest, a.authorized_manifest):  # pragma: no cover
+            if os.path.exists(JOURNAL_PATH) or os.path.exists(REPORT_PATH):
+                raise PackError("campaign evidence already exists: one run only, and an "
+                                "interrupted run is incomplete, never rerun")
+            manifest = run_manifest(current_revision(), a.model)
+            if not campaign_authorized(manifest, a.authorized_manifest):
                 raise PackError("campaign not authorized for this manifest")
             adapter = OpenAIMsnlAdapter(  # pragma: no cover
                 allow_network=True, model=a.model,
                 transport=RecordingTransport(toa._urllib_transport))
-            with open(a.journal, "x", encoding="utf-8") as journal:  # pragma: no cover
-                out = campaign(adapter, cases, manifest, journal, a.authorized_manifest)
+            out = campaign(adapter, cases, manifest, None,  # pragma: no cover
+                           a.authorized_manifest)
+            with open(REPORT_PATH, "x", encoding="utf-8") as fh:  # pragma: no cover
+                fh.write(json.dumps(out, ensure_ascii=False, indent=1, sort_keys=True) + "\n")
         else:
             out = plan()
     except PackError as exc:
