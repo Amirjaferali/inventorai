@@ -39,6 +39,7 @@ RULES = (
     (CLAUDE_MD, "**Technical Knowledge & Intellectual Property Source Boundary", None),
     (CLAUDE_MD, "- **D. Quality is preserved.**", None),
     (CLAUDE_MD, "## Continue, hold and return", None),
+    (LEAN, "**9.5 Research-to-execution checkpoint.**", None),
 )
 HEADINGS = ((CLAUDE_MD, "## One boot sequence"), (LEAN, "## 2. Owner authority and milestone delegation"),
             (LEAN, "## 10. Reserved decisions and scoped holds"))
