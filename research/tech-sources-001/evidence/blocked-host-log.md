@@ -35,3 +35,4 @@ Append-only. Never bypassed.
 | 2026-10-30 (run 19) | ncc.navfac.navy.mil | CONNECT 403 (proxy policy), not retried | Navy MCM student guide (double-acting cylinder: less retract force, faster retraction) for R-10 | None |
 | 2026-10-30 (run 19) | www.nrs.fs.usda.gov | CONNECT 403 (proxy policy), not retried | USDA RP NC-73 (cylinder sizing and flow) for R-10 | None |
 | 2026-10-30 (run 19) | nvlpubs.nist.gov (NIST.TN.1951.pdf only) | HTTP 404 for the DOI target; host otherwise reachable | NIST TN 1951 (path loss in industrial sites) for R-08 | None |
+| 2026-10-30 (run 20) | www.ibiblio.org | re-test: still no connection (curl 000) | Q-05 / Q-07 sources | None |

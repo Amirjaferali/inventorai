@@ -3,8 +3,8 @@
 *Rewritten 2026-10-28 after run 13 under the Owner's remaining-run depth discipline. Research evidence only. Status is per question, never per
 technology: a qualified claim is prepared for later Lead assessment and admits no technology, domain, method, capability or roadmap obligation.*
 
-**Status:** ACTIVE — not complete. Runs 19 / 20 · Perplexity queries 60 / 240 · deep-research calls 0 · window ends 2026-11-26.
-**Questions registered:** 40 (Q-01…Q-40) plus held / excluded items. **Sources:** SRC-001…SRC-059, all inspected directly by the executor
+**Status:** STOPPED — budget exhausted (20 / 20 runs). Runs 20 / 20 · Perplexity queries 62 / 240 · deep-research calls 0 · window ends 2026-11-26.
+**Questions registered:** 40 (Q-01…Q-40) plus held / excluded items. **Sources:** SRC-001…SRC-060, all inspected directly by the executor
 (none Lead-supplied); hash, page and rights for each in `evidence/`.
 
 **IP for product use** (claim-level audit 2026-10-29): only `CALCULATION-GRADE` evidence may support product or method qualification; `REFERENCE-ONLY` is background; `IP-UNRESOLVED` / `EXCLUDED` must not be reused. Scientific status is unchanged and separate.
@@ -32,12 +32,12 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 | Q-16 | Duty-cycled average current | IP UNRESOLVED | Re-approached via Q-26 | — | — |
 | Q-17 | Hover thrust = weight; margin needed to climb | QUALIFIED-CANDIDATE | Source says thrust "depends on" weight — equality implied, not explicit | cond | CALCULATION-GRADE (SRC-024, SRC-025) |
 | Q-18 | PV rating at STC; output falls with irradiance / temperature | QUALIFIED-CANDIDATE (run 15) | Temperature coefficient explicit (SRC-044), linear form a first-level approximation | cond, calc | CALCULATION-GRADE — SRC-044 (conditional), SRC-058 rating-at-reference-conditions (run 19); present-day STC values not sourced |
-| Q-19 | Vacuum outgassing screening basis | QUALIFIED-CANDIDATE | Criteria are NASA's, not InventorAI thresholds | verif | IP-UNRESOLVED (SRC-027 standard-derived) — not usable for product admission |
+| Q-19 | Vacuum outgassing screening basis | QUALIFIED-CANDIDATE | Criteria are NASA's, not InventorAI thresholds | verif | partial — hazard principle / TML-CVCM screening concept CALCULATION-GRADE (SRC-060, run 20); pass values IP-UNRESOLVED (standard-derived) |
 | Q-20 | Retract force lower (rod area); speed = flow ÷ area | PARTIAL — WAITING (access) | Speed = flow ÷ area explicit (SRC-059, incompressible / no leakage); rod-area point UNVERIFIED (USACE, Navy hosts refused) | calc | speed point CALCULATION-GRADE (SRC-059); rod-area point IP-UNRESOLVED |
 | Q-21 | Inverse-square irradiance conditions (optics) | QUALIFIED-CANDIDATE | Law named, conditions explicit; law statement itself implied in SRC-030 | cond | CALCULATION-GRADE (SRC-030) |
 | Q-22 | Thermal expansion and joined-material mismatch | QUALIFIED-CANDIDATE | Expansion coefficient defined explicitly (SRC-031); product form follows from the definition | calc, cond | CALCULATION-GRADE (SRC-031, SRC-032); SRC-029 support IP-UNRESOLVED |
 | Q-23 | Spring–mass natural frequency and resonance | QUALIFIED-CANDIDATE (run 15) | ω₀ = √(k/m) explicit (SRC-045); stated for sensor dynamics | calc, cond, verif | IP-UNRESOLVED (SRC-045 standard-based) — not usable for product admission |
-| Q-24 | IoT device cybersecurity baseline capabilities | QUALIFIED-CANDIDATE | NISTIR 8259A detail is mixed-authorship (cross-check only) | ref, dec | IP-UNRESOLVED (SRC-034 / SRC-035 restate mixed-authorship NISTIR 8259A) — not usable for product admission |
+| Q-24 | IoT device cybersecurity baseline capabilities | QUALIFIED-CANDIDATE | NISTIR 8259A detail is mixed-authorship (cross-check only) | ref, dec | IP-UNRESOLVED (no independent source exists, run 20) — not usable for product admission |
 | Q-25 | Firmware update authenticated; recoverable to known-good | QUALIFIED-CANDIDATE | Rollback nuance logged (unresolved-issues) | cond, verif | CALCULATION-GRADE (SRC-036) |
 | Q-26 | Duty-cycled average current; defined power / link-loss behaviour | EXHAUSTED (run 14) | Time-weighted average and defined loss behaviour UNVERIFIED; established points stand | cond, verif | established points CALCULATION-GRADE (SRC-039, SRC-043) |
 | Q-27 | IoT privacy considerations | QUEUED | — | — | — |
@@ -55,7 +55,11 @@ step · **dec** bounded decision · **handoff** existing-owner handoff · **ref*
 
 **Restoration (run 19):** R-09 / Q-18 RESTORED — IP-CLEAN (SRC-058); R-08 / Q-28 and R-10 / Q-20 PARTIALLY RESTORED (SRC-038 Annex V.2; SRC-059).
 
-**Next by the protocol order:** restoration P3 items R-11, R-12; then Tier 2 PARTIAL residuals; then queued Q-32…
+**Restoration (run 20):** R-12 / Q-19 PARTIALLY RESTORED (SRC-060); R-11 / Q-24 IP-UNRESOLVED (every federal statement is the NISTIR 8259 lineage).
+
+**Final state (run 20, 2026-10-30):** the campaign stopped on its fixed 20-run budget; no wake-up is pending. Restoration backlog: RESTORED — IP-CLEAN R-05, R-07, R-09, R-13; PARTIALLY RESTORED R-02, R-06, R-08, R-10, R-12; IP-UNRESOLVED R-01, R-03, R-04, R-11. Not reached: queued Q-27, Q-32…Q-40. Remaining PARTIAL residuals (Q-07, Q-12, Q-20 rod area) have no changed search path. Every restored or qualified claim goes to the Execution Lead before any product use; nothing is admitted.
+
+**What you or the Lead can supply to unblock items:** a recorded confirmation that the SRC-004 author was a U.S. Army employee (R-01); access to, or a Lead-supplied inspection of, the USACE / Navy hydraulics sources (Q-20 rod area), NIST TN 1951 (Q-28 path-loss exponent) and the ibiblio sources (Q-05 / Q-07); decisions DR-2, DR-3, DR-4. A new campaign or more runs need a new Owner authorization.
 
 **Decisions:** DR-1 decided by you (Option C). Still open with you and the Execution Lead: DR-2 (which condition D-7 governs), DR-3 (definition
 of the 28-T2 output claim), DR-4 (whether to keep, narrow or lift H-04). Details in `evidence/decision-records.md`.

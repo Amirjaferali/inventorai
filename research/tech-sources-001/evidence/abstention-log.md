@@ -37,3 +37,5 @@ Append-only.
 | 2026-10-30 | R-09 (run 19) | NTRS 19890015365 (Emery, Osterwald) | SERI / NREL authors (contractor-operated laboratory) — excluded |
 | 2026-10-30 | R-10 (run 19) | NTRS 19710022130 | Contractor report — excluded |
 | 2026-10-30 | R-10 (run 19) | Navy NAVFAC MCM student guide; USDA Forest Service RP NC-73 | Proxy refused ncc.navfac.navy.mil and www.nrs.fs.usda.gov — not inspected |
+| 2026-10-30 | R-11 (run 20) | NIST news release 2019 (draft NISTIR 8259), SP 800-213, NIST consumer IoT labelling criteria, NIST capability catalog | All in the NISTIR 8259 lineage (8259A mixed authorship) — not independent; not registered |
+| 2026-10-30 | R-12 (run 20) | NASA TP-2003-212634, PD-ED-1233, ISS researcher's guide, Goddard outgassing database page | Screening criteria stated by reference to ASTM E 595 (standard-derived) — not relied on for the pass values |

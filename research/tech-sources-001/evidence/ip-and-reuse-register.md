@@ -182,3 +182,15 @@ Not registered (abstention log): NIST TN 1951 (host returned 404), Navy NAVFAC s
 
 **Audit totals after run 19 (59 sources):** 30 `CALCULATION-GRADE` (23 unconditional, including SRC-058, SRC-059; 7 conditional: SRC-011,
 016, 017, 044, 046, 050, 057 — SRC-038's Annex V.2 claim conditional as noted), 3 `REFERENCE-ONLY`, 24 `IP-UNRESOLVED`, 2 `EXCLUDED`.
+
+
+### Run 20 additions
+| SRC | Authorship type | Origin of the relied-on statement | Commercial-use basis | IP fitness | Note |
+|---|---|---|---|---|---|
+| SRC-060 | government (sole NASA Goddard author; NTRS GOV_PUBLIC_USE_PERMITTED, not contractor) | own text; describes Goddard's own test before its ASTM adoption, no standard text quoted | clear (U.S. Government work) | `CALCULATION-GRADE` | principle and screening concept only; no ASTM test parameters or pass values reused; cite NASA TM 80585; no NASA endorsement |
+
+R-11: no candidate registered — every federal statement of the IoT capability baseline found (NISTIR 8259A, its 2019 news release, SP 800-213 /
+NISTIR 8259D lineage, consumer-labelling criteria, the NIST catalog) derives from the NISTIR 8259 series; none is independent.
+
+**Final audit totals after run 20 (60 sources):** 31 `CALCULATION-GRADE` (24 unconditional, including SRC-060; 7 conditional: SRC-011, 016,
+017, 044, 046, 050, 057 — SRC-038's Annex V.2 claim conditional as noted), 3 `REFERENCE-ONLY`, 24 `IP-UNRESOLVED`, 2 `EXCLUDED`.

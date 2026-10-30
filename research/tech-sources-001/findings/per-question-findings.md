@@ -428,3 +428,26 @@ New SRC-059 (NACA TN 2767, NACA Lewis authors, CALCULATION-GRADE). D1 / D2 EXPLI
 fluid compressibility, leakage and friction neglected. The rod-side annulus area and the lower retract force stay UNVERIFIED on a clean source:
 two federal candidates (a Navy NAVFAC training guide stating both points, and USDA RP NC-73) were refused by the proxy, as USACE was earlier.
 Candidates failed on rights: a NASA contractor report, SERI-authored PV paper.
+
+## Run 20 (2026-10-30, scheduled wake-up; final budgeted run; restoration backlog P3, GitHub-first)
+
+Base advanced to ab22003 (PRs #908, #909, Proof B evaluation) — no overlap. ibiblio still fails TLS (curl 000).
+
+### R-11 (Q-24) — IP-UNRESOLVED (1 query)
+Families searched: NIST, CISA / DHS, FDA, NTIA, GAO. Every federal statement of the six device cybersecurity capabilities is NISTIR 8259A or
+derives from it (2019 NIST news release on draft NISTIR 8259, SP 800-213 / NISTIR 8259D, the consumer IoT labelling criteria, the NIST
+capability catalog). No independent statement exists to restore; the claim stays without product-usable support.
+
+### R-12 (Q-19) — PARTIALLY RESTORED (1 query)
+New SRC-060 (NASA TM 80585, Goddard, sole civil-servant author, CALCULATION-GRADE). D1 / D2 EXPLICIT: outgassed organic condensables damage
+optical signals, thermal-control surface properties and detectors; the originating Goddard laboratory screens materials by a standard
+vacuum-heating test measuring total mass loss and collected volatile condensable material and uses the results to recommend flight materials.
+The pass / fail values themselves are found only by reference to ASTM E 595 and stay IP-UNRESOLVED.
+
+### Remaining Tier 2 PARTIAL residuals — not worked
+Q-07 (ibiblio still unreachable), Q-12 (rights-excluded explicit formula), Q-20 rod-area point (USACE and Navy hosts refused): each residual
+has no changed search path, so no budget was spent on them (README step 6: never repeat a failed search without a changed path).
+
+## Campaign end — budget exhausted (20 / 20 runs)
+STOPPED after run 20 by the fixed run budget. No wake-up is pending. Restored claims (R-02 partial, R-05, R-06 partial, R-07, R-08 partial,
+R-09, R-10 partial, R-12 partial, R-13) go to the Execution Lead before any product use; nothing is admitted.
