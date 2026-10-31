@@ -340,6 +340,18 @@ integration constrains design decisions throughout instead of inspecting finishe
 end; optimization applies only where a qualified mathematical objective, method and constraints
 exist.
 
+How the direction is carried through the existing G1 sequence (navigation only; it changes no
+owner, stage status, scientific authority or reserved decision, and each row needs its own
+authorization before work):
+
+| G1 step | Intended contribution | Existing owners | Evidence of progress |
+|---|---|---|---|
+| G1-1/2 | Faithful inventor understanding through one coherent question/clarification journey; no product AI is activated. | Existing question-selection, intent, NeedRouting and confirmation owners (question-selection authority unchanged). | Ordinary-language ideas reach confirmed intent in EN/AR with false-rejection and false-credit controls; Proof B is the current evaluation (PR #890 stays HOLD). |
+| G1-2 | Confirmed requirements linked to canonical parts and interfaces; proposals, inventor decisions and engineering validity kept distinct. | Canonical assertion/requirement owners; Stage 15 parts, components, interfaces and participation. | Each requirement traceable to part/interface identities; a proposal is never recorded as an inventor statement or a verified fact. |
+| G1-3 | Reproducible, part-bound contributions from qualified methods and suitable existing tools, with explicit inputs, provenance and revisions. | Admitted method owners on the shared calculation/units owner; retention via calculation contract §12 / TR Evidence Model §11. | One method and one explicitly saved part-bound result with inputs, units, method version, provenance and stale/unavailable disclosure. |
+| G1-3/4 | One part's qualified information informs another's design; the relationship and resulting artifact are checked within an admitted scope, iterating the loop above. | Stage 15 interfaces, the specialist owners, Technical Realization and T6; D4 for physical compatibility. | One qualified relationship checked, its artifact independently inspected, and a relevant change shown to invalidate the earlier check (candidate below). |
+| G1-4/5 | Revision-consistent artifacts and evidence, then a connected inventor journey; a relevant change never inherits an earlier check as current. | TR Evidence Model; the existing full deterministic reconstruction after accepted material changes; the g1-5 product-proof obligations. | One ordinary-language single-domain and one integrated journey, EN/AR, with negative, withdrawal and staleness cases. |
+
 Candidate demonstration, not the definition of the product: PCB-to-enclosure geometric
 integration — read the PCB outline, mounting positions and connector geometry; generate a
 parameterized enclosure with an eligible existing CAD tool (the CadQuery row above is one
