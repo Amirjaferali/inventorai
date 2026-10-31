@@ -351,3 +351,81 @@ def test_research_continuity_keeps_owner_routes_and_candidate_boundaries():
         assert phrase in checkpoint, phrase
     assert "No additional product" in checkpoint
     assert "No new product increment, provider call, merge or deployment is authorized here." in checkpoint
+
+
+def test_g1_engineering_integration_target_stays_a_bounded_candidate():
+    raw = (REPO / DOCS[3]).read_text(encoding="utf-8")
+    checkpoint = raw.split(CHECKPOINT_LABEL, 1)[1].split("## 10.", 1)[0]
+    label = "**G1-3/4 engineering-integration target"
+    assert checkpoint.count(label) == 1
+    target = " ".join(checkpoint.split(label, 1)[1].split("\nSource leads retained", 1)[0].split())
+    for phrase in (
+            # the approved direction: the core vision, not the demonstration
+            "Approved direction", "coherent, revisable, evidence-grounded engineering design of "
+            "the inventor's whole invention", "inform the design of another",
+            "within the scope of admitted methods", "must not silently remain represented as current",
+            "not merely AI-generated designs, independent calculators, attractive CAD models",
+            "ONE qualified relationship", "reproducible engineering check",
+            "inspectable engineering artifact",
+            "Decompose -> Evaluate -> Assemble & Verify -> Revise",
+            "only where a qualified mathematical objective, method and constraints exist",
+            # the candidate demonstration and its limits
+            "Candidate demonstration, not the definition of the product",
+            "PCB-to-enclosure geometric integration", "covers geometric fit",
+            "no engineering authority or D4 physical-compatibility qualification transfers",
+            # what stays unauthorized
+            "Not authorized by this note", "CAD integration, cross-domain verification capability "
+            "or AI proposal writer", "its own Owner authorization", "IP/license review",
+            "TR Evidence Model §11", "Apply OD-2 where AI-origin proposals would be retained",
+            "existing provenance/admission decisions where their adoption would be saved",
+            "Ordinary inventor-provided content remains governed by its existing owners",
+            "no general compatibility engine",
+            "never presented to the inventor as verified", "Proof B work completes first",
+            "PR #890 HOLD and D4 BLOCKED"):
+        assert phrase in target, phrase
+    # OD-2 is not a blanket prerequisite for ordinary inventor content
+    assert "OD-2 wherever inventor content" not in target
+    # the quoted opening paragraph is unchanged, so SessionStart output is unchanged
+    opening = checkpoint.split("\n\n", 1)[0]
+    assert "PCB" not in opening and "No new product increment" in opening
+
+
+def test_lead_architecture_disposition_stays_a_recommendation():
+    raw = (REPO / DOCS[3]).read_text(encoding="utf-8")
+    checkpoint = raw.split(CHECKPOINT_LABEL, 1)[1].split("## 10.", 1)[0]
+    label = "**Lead disposition of the two architecture consultations"
+    assert checkpoint.count(label) == 1
+    note = " ".join(checkpoint.split(label, 1)[1].split("\nSource leads retained", 1)[0].split())
+    for phrase in ("review conclusions and recommendations, not authority",
+                   "not retained in this repository", "supersedes no canonical owner",
+                   "closed-list selector or form-prefill assistant", "stay internal",
+                   "where separately authorized", "keep their provenance and actual verification status",
+                   "lexical identity is not semantic correctness",
+                   "neither erases an AI proposal's origin nor establishes engineering validity",
+                   "must not erase the unresolved engineering need",
+                   "OD-2 and adoption provenance apply only at their boundaries",
+                   "full deterministic reconstruction",
+                   "automatic dependency invalidation is a future capability, not a delivered one",
+                   "execution evidence only", "the campaign is not repeated",
+                   "not generalized to all Arabic understanding tasks",
+                   "Still open with their existing owners", "real-data transmission",
+                   "proposal and adoption persistence", "engineering qualification"):
+        assert phrase in note, phrase
+
+
+def test_g1_integration_direction_is_linked_through_each_g1_step():
+    raw = (REPO / DOCS[3]).read_text(encoding="utf-8")
+    checkpoint = raw.split(CHECKPOINT_LABEL, 1)[1].split("## 10.", 1)[0]
+    lead = "How the direction is carried through the existing G1 sequence"
+    assert checkpoint.count(lead) == 1
+    block = checkpoint.split(lead, 1)[1].split("Candidate demonstration", 1)[0]
+    rows = [line for line in block.splitlines() if line.startswith("| G1-")]
+    assert [r.split("|")[1].strip() for r in rows] == ["G1-1/2", "G1-2", "G1-3", "G1-3/4", "G1-4/5"]
+    flat = " ".join(block.split())
+    for phrase in ("navigation only", "changes no owner, stage status, scientific authority or "
+                   "reserved decision", "needs its own authorization",
+                   "no product AI is activated", "question-selection authority unchanged",
+                   "PR #890 stays HOLD", "Stage 15", "calculation contract §12 / TR Evidence Model §11",
+                   "D4 for physical compatibility", "full deterministic reconstruction",
+                   "never inherits an earlier check as current"):
+        assert phrase in flat, phrase

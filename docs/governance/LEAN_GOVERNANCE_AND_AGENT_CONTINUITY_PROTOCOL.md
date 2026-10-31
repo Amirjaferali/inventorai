@@ -321,6 +321,88 @@ not model qualification or proof that the original failed application journeys a
 | G1-3/4; Stage 15 and existing domain owners | CELUS-style functional units/typed interfaces as a principle; qualify ONE required relation, not a generic compatibility engine or a copy of a vendor library. | Qualified domain/interface method and sources; accept/reject/unknown controls; preserve D4 and existing physical-coupling triggers. |
 | G1-5; existing end-to-end verification obligations | Link inventor correction, a reproducible contribution and its checked artifact; a changed input/part must not inherit an old check as current. | Original failure evidence and negative/staleness cases; report bounded checks honestly, not global safety, manufacturability or a solved original journey. |
 
+**G1-3/4 engineering-integration target (Owner-approved continuity, 2026-10-31).** Approved
+direction, within the existing `CLAUDE.md` g1-3/4 obligations: InventorAI progresses from
+isolated calculations and disconnected artifacts toward a coherent, revisable, evidence-grounded
+engineering design of the inventor's whole invention. Qualified relationships between parts let
+the verified results of one part or discipline inform the design of another, detect
+incompatibilities within the scope of admitted methods, and keep confirmed requirements,
+components and interfaces, analyses and checks, design decisions and revisions, inspectable
+artifacts, and evidence, provenance and validity status consistent. When an upstream
+requirement, component, interface or design parameter changes, dependent checks and artifacts
+must not silently remain represented as current. This is cross-disciplinary engineering
+integration, not merely AI-generated designs, independent calculators, attractive CAD models or a
+collection of unrelated files. The connected workflow is: confirmed requirements and identified
+parts (g1-1/2, Stage 15) -> ONE qualified relationship between two parts -> a reproducible
+engineering check of it -> an inspectable engineering artifact -> results bound to their input
+and design revisions. Work iterates Decompose -> Evaluate -> Assemble & Verify -> Revise, so
+integration constrains design decisions throughout instead of inspecting finished parts at the
+end; optimization applies only where a qualified mathematical objective, method and constraints
+exist.
+
+How the direction is carried through the existing G1 sequence (navigation only; it changes no
+owner, stage status, scientific authority or reserved decision, and each row needs its own
+authorization before work):
+
+| G1 step | Intended contribution | Existing owners | Evidence of progress |
+|---|---|---|---|
+| G1-1/2 | Faithful inventor understanding through one coherent question/clarification journey; no product AI is activated. | Existing question-selection, intent, NeedRouting and confirmation owners (question-selection authority unchanged). | Ordinary-language ideas reach confirmed intent in EN/AR with false-rejection and false-credit controls; Proof B is the current evaluation (PR #890 stays HOLD). |
+| G1-2 | Confirmed requirements linked to canonical parts and interfaces; proposals, inventor decisions and engineering validity kept distinct. | Canonical assertion/requirement owners; Stage 15 parts, components, interfaces and participation. | Each requirement traceable to part/interface identities; a proposal is never recorded as an inventor statement or a verified fact. |
+| G1-3 | Reproducible, part-bound contributions from qualified methods and suitable existing tools, with explicit inputs, provenance and revisions. | Admitted method owners on the shared calculation/units owner; retention via calculation contract §12 / TR Evidence Model §11. | One method and one explicitly saved part-bound result with inputs, units, method version, provenance and stale/unavailable disclosure. |
+| G1-3/4 | One part's qualified information informs another's design; the relationship and resulting artifact are checked within an admitted scope, iterating the loop above. | Stage 15 interfaces, the specialist owners, Technical Realization and T6; D4 for physical compatibility. | One qualified relationship checked, its artifact independently inspected, and a relevant change shown to invalidate the earlier check (candidate below). |
+| G1-4/5 | Revision-consistent artifacts and evidence, then a connected inventor journey; a relevant change never inherits an earlier check as current. | TR Evidence Model; the existing full deterministic reconstruction after accepted material changes; the g1-5 product-proof obligations. | One ordinary-language single-domain and one integrated journey, EN/AR, with negative, withdrawal and staleness cases. |
+
+Candidate demonstration, not the definition of the product: PCB-to-enclosure geometric
+integration — read the PCB outline, mounting positions and connector geometry; generate a
+parameterized enclosure with an eligible existing CAD tool (the CadQuery row above is one
+candidate); check fit, mounting alignment and connector clearance with an admitted method;
+export and independently inspect the artifact; change a PCB dimension or connector position and
+show that the earlier check is no longer current until re-evaluated. Success would show only
+that a PCB parameter drives enclosure geometry, that the relation is checkable and that a change
+invalidates the earlier result; it covers geometric fit, never electrical, thermal,
+mechanical-strength or manufacturing compatibility. Later relations (for example motor-to-load
+or power-source-to-controller) need their own qualified methods and evidence; no engineering
+authority or D4 physical-compatibility qualification transfers between relationships.
+
+Not authorized by this note: any product increment, CAD integration, cross-domain verification
+capability or AI proposal writer, and any change to question selection. The candidate needs its
+own Owner authorization, scientific and tool qualification, IP/license review, ACE escalation
+where required and the retention decision (calculation contract §12, TR Evidence Model §11).
+Apply OD-2 where AI-origin proposals would be retained, and the existing provenance/admission
+decisions where their adoption would be saved. Ordinary inventor-provided content remains
+governed by its existing owners. Deterministic orchestration coordinates
+admissible verification; Stage 15 keeps part/interface ownership, the specialist owners and T6
+keep their methods and outputs, and no general compatibility engine is built. Optional internal
+AI alternatives stay provisional and non-authoritative and are never presented to the inventor
+as verified. The authorized Proof B work completes first; PR #890 HOLD and D4 BLOCKED keep their
+triggers.
+
+**Lead disposition of the two architecture consultations (Execution Lead, 2026-10-31; review
+conclusions and recommendations, not authority).** The consultations themselves are not retained
+in this repository; this records only the Lead's consolidated disposition, which supersedes no
+canonical owner. Recommendations: the first consultation is the stronger responsibility-boundary
+baseline; the second contributes controls for a narrow mapping/presentation slice but must not
+redefine the product as a closed-list selector or form-prefill assistant. Raw proposals and
+internal exchanges stay internal; where separately authorized, provisional engineering
+alternatives may support development, while executable actions, identifiers and admission paths
+stay controlled without requiring every design idea to exist in a predefined list, and
+inventor-facing suggestions, decisions and findings keep their provenance and actual verification
+status within one InventorAI experience. Exact source quotations stay separate from faithful
+paraphrases (lexical identity is not semantic correctness), and an inventor's acceptance or
+rewording neither erases an AI proposal's origin nor establishes engineering validity. Ephemeral
+proposals differ from retained engineering contributions; reusing an existing owner does not show
+that every admission or retention path exists; rejecting an internal proposal must not erase the
+unresolved engineering need. The G1-3/4 destination stays the qualified relationship, inspectable
+artifact and revision-bound verification above, not suggestions or prefilled forms. Existing
+binding rules restated, not changed: OD-2 and adoption provenance apply only at their boundaries
+(see the G1-3/4 note); the existing full deterministic reconstruction after an accepted material
+change stays the rule, and automatic dependency invalidation is a future capability, not a
+delivered one. Evaluation: Proof B campaign 01 has execution evidence only; completed human
+qualification is not established, the campaign is not repeated and no further evaluation is
+mandated; the MSNL #842 failure is not generalized to all Arabic understanding tasks. Still open
+with their existing owners: provider selection, real-data transmission, proposal and adoption
+persistence, any influence on question selection and engineering qualification.
+
 Source leads retained from the Owner-supplied technical/commercial study and *Deep Research
 Report: Platforms Translating Free-Form Ideas into Engineering Proposals*: [Flux tools](https://docs.flux.ai/reference/simulator-tool),
 [Zoo editable CAD](https://zoo.dev/docs/zoo-design-studio/zookeeper),
