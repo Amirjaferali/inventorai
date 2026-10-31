@@ -351,3 +351,26 @@ def test_research_continuity_keeps_owner_routes_and_candidate_boundaries():
         assert phrase in checkpoint, phrase
     assert "No additional product" in checkpoint
     assert "No new product increment, provider call, merge or deployment is authorized here." in checkpoint
+
+
+def test_g1_engineering_integration_target_stays_a_bounded_candidate():
+    raw = (REPO / DOCS[3]).read_text(encoding="utf-8")
+    checkpoint = raw.split(CHECKPOINT_LABEL, 1)[1].split("## 10.", 1)[0]
+    label = "**G1-3/4 engineering-integration target"
+    assert checkpoint.count(label) == 1
+    target = " ".join(checkpoint.split(label, 1)[1].split("\n\n", 1)[0].split())
+    for phrase in ("a CANDIDATE", "not an increment", "ONE qualified relationship",
+                   "reproducible engineering check", "inspectable engineering artifact",
+                   "never leaves an earlier check presented as current",
+                   "Decompose -> Evaluate -> Assemble & Verify -> Revise",
+                   "only where a qualified mathematical objective, method and constraints exist",
+                   "PCB-to-enclosure geometric integration", "geometric fit only",
+                   "it is not selected", "its own Owner authorization", "IP/license review",
+                   "TR Evidence Model §11", "OD-2", "no general compatibility engine",
+                   "never presented to the inventor as verified",
+                   "activates no proposal writer and changes no question selection",
+                   "Proof B work completes first", "PR #890 HOLD and D4 BLOCKED"):
+        assert phrase in target, phrase
+    # the quoted opening paragraph is unchanged, so SessionStart output is unchanged
+    opening = checkpoint.split("\n\n", 1)[0]
+    assert "PCB" not in opening and "No new product increment" in opening
