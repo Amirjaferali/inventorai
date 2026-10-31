@@ -388,3 +388,26 @@ def test_g1_engineering_integration_target_stays_a_bounded_candidate():
     # the quoted opening paragraph is unchanged, so SessionStart output is unchanged
     opening = checkpoint.split("\n\n", 1)[0]
     assert "PCB" not in opening and "No new product increment" in opening
+
+
+def test_lead_architecture_disposition_stays_a_recommendation():
+    raw = (REPO / DOCS[3]).read_text(encoding="utf-8")
+    checkpoint = raw.split(CHECKPOINT_LABEL, 1)[1].split("## 10.", 1)[0]
+    label = "**Lead disposition of the two architecture consultations"
+    assert checkpoint.count(label) == 1
+    note = " ".join(checkpoint.split(label, 1)[1].split("\nSource leads retained", 1)[0].split())
+    for phrase in ("review conclusions and recommendations, not authority",
+                   "not retained in this repository", "supersedes no canonical owner",
+                   "closed-list selector or form-prefill assistant", "stay internal",
+                   "where separately authorized", "keep their provenance and actual verification status",
+                   "lexical identity is not semantic correctness",
+                   "neither erases an AI proposal's origin nor establishes engineering validity",
+                   "must not erase the unresolved engineering need",
+                   "OD-2 and adoption provenance apply only at their boundaries",
+                   "full deterministic reconstruction",
+                   "automatic dependency invalidation is a future capability, not a delivered one",
+                   "execution evidence only", "the campaign is not repeated",
+                   "not generalized to all Arabic understanding tasks",
+                   "Still open with their existing owners", "real-data transmission",
+                   "proposal and adoption persistence", "engineering qualification"):
+        assert phrase in note, phrase

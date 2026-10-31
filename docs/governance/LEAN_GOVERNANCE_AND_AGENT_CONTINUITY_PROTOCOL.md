@@ -365,6 +365,32 @@ AI alternatives stay provisional and non-authoritative and are never presented t
 as verified. The authorized Proof B work completes first; PR #890 HOLD and D4 BLOCKED keep their
 triggers.
 
+**Lead disposition of the two architecture consultations (Execution Lead, 2026-10-31; review
+conclusions and recommendations, not authority).** The consultations themselves are not retained
+in this repository; this records only the Lead's consolidated disposition, which supersedes no
+canonical owner. Recommendations: the first consultation is the stronger responsibility-boundary
+baseline; the second contributes controls for a narrow mapping/presentation slice but must not
+redefine the product as a closed-list selector or form-prefill assistant. Raw proposals and
+internal exchanges stay internal; where separately authorized, provisional engineering
+alternatives may support development, while executable actions, identifiers and admission paths
+stay controlled without requiring every design idea to exist in a predefined list, and
+inventor-facing suggestions, decisions and findings keep their provenance and actual verification
+status within one InventorAI experience. Exact source quotations stay separate from faithful
+paraphrases (lexical identity is not semantic correctness), and an inventor's acceptance or
+rewording neither erases an AI proposal's origin nor establishes engineering validity. Ephemeral
+proposals differ from retained engineering contributions; reusing an existing owner does not show
+that every admission or retention path exists; rejecting an internal proposal must not erase the
+unresolved engineering need. The G1-3/4 destination stays the qualified relationship, inspectable
+artifact and revision-bound verification above, not suggestions or prefilled forms. Existing
+binding rules restated, not changed: OD-2 and adoption provenance apply only at their boundaries
+(see the G1-3/4 note); the existing full deterministic reconstruction after an accepted material
+change stays the rule, and automatic dependency invalidation is a future capability, not a
+delivered one. Evaluation: Proof B campaign 01 has execution evidence only; completed human
+qualification is not established, the campaign is not repeated and no further evaluation is
+mandated; the MSNL #842 failure is not generalized to all Arabic understanding tasks. Still open
+with their existing owners: provider selection, real-data transmission, proposal and adoption
+persistence, any influence on question selection and engineering qualification.
+
 Source leads retained from the Owner-supplied technical/commercial study and *Deep Research
 Report: Platforms Translating Free-Form Ideas into Engineering Proposals*: [Flux tools](https://docs.flux.ai/reference/simulator-tool),
 [Zoo editable CAD](https://zoo.dev/docs/zoo-design-studio/zookeeper),
