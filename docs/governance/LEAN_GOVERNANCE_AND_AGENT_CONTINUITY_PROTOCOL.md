@@ -331,7 +331,7 @@ components and interfaces, analyses and checks, design decisions and revisions, 
 artifacts, and evidence, provenance and validity status consistent. When an upstream
 requirement, component, interface or design parameter changes, dependent checks and artifacts
 must not silently remain represented as current. This is cross-disciplinary engineering
-integration, not AI-generated designs, independent calculators, attractive CAD models or a
+integration, not merely AI-generated designs, independent calculators, attractive CAD models or a
 collection of unrelated files. The connected workflow is: confirmed requirements and identified
 parts (g1-1/2, Stage 15) -> ONE qualified relationship between two parts -> a reproducible
 engineering check of it -> an inspectable engineering artifact -> results bound to their input
@@ -355,8 +355,10 @@ authority or D4 physical-compatibility qualification transfers between relations
 Not authorized by this note: any product increment, CAD integration, cross-domain verification
 capability or AI proposal writer, and any change to question selection. The candidate needs its
 own Owner authorization, scientific and tool qualification, IP/license review, ACE escalation
-where required, the retention decision (calculation contract §12, TR Evidence Model §11) and
-OD-2 wherever inventor content would be written. Deterministic orchestration coordinates
+where required and the retention decision (calculation contract §12, TR Evidence Model §11).
+Apply OD-2 where AI-origin proposals would be retained, and the existing provenance/admission
+decisions where their adoption would be saved. Ordinary inventor-provided content remains
+governed by its existing owners. Deterministic orchestration coordinates
 admissible verification; Stage 15 keeps part/interface ownership, the specialist owners and T6
 keep their methods and outputs, and no general compatibility engine is built. Optional internal
 AI alternatives stay provisional and non-authoritative and are never presented to the inventor

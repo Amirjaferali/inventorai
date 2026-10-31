@@ -364,7 +364,7 @@ def test_g1_engineering_integration_target_stays_a_bounded_candidate():
             "Approved direction", "coherent, revisable, evidence-grounded engineering design of "
             "the inventor's whole invention", "inform the design of another",
             "within the scope of admitted methods", "must not silently remain represented as current",
-            "not AI-generated designs, independent calculators, attractive CAD models",
+            "not merely AI-generated designs, independent calculators, attractive CAD models",
             "ONE qualified relationship", "reproducible engineering check",
             "inspectable engineering artifact",
             "Decompose -> Evaluate -> Assemble & Verify -> Revise",
@@ -376,10 +376,15 @@ def test_g1_engineering_integration_target_stays_a_bounded_candidate():
             # what stays unauthorized
             "Not authorized by this note", "CAD integration, cross-domain verification capability "
             "or AI proposal writer", "its own Owner authorization", "IP/license review",
-            "TR Evidence Model §11", "OD-2", "no general compatibility engine",
+            "TR Evidence Model §11", "Apply OD-2 where AI-origin proposals would be retained",
+            "existing provenance/admission decisions where their adoption would be saved",
+            "Ordinary inventor-provided content remains governed by its existing owners",
+            "no general compatibility engine",
             "never presented to the inventor as verified", "Proof B work completes first",
             "PR #890 HOLD and D4 BLOCKED"):
         assert phrase in target, phrase
+    # OD-2 is not a blanket prerequisite for ordinary inventor content
+    assert "OD-2 wherever inventor content" not in target
     # the quoted opening paragraph is unchanged, so SessionStart output is unchanged
     opening = checkpoint.split("\n\n", 1)[0]
     assert "PCB" not in opening and "No new product increment" in opening
