@@ -358,18 +358,27 @@ def test_g1_engineering_integration_target_stays_a_bounded_candidate():
     checkpoint = raw.split(CHECKPOINT_LABEL, 1)[1].split("## 10.", 1)[0]
     label = "**G1-3/4 engineering-integration target"
     assert checkpoint.count(label) == 1
-    target = " ".join(checkpoint.split(label, 1)[1].split("\n\n", 1)[0].split())
-    for phrase in ("a CANDIDATE", "not an increment", "ONE qualified relationship",
-                   "reproducible engineering check", "inspectable engineering artifact",
-                   "never leaves an earlier check presented as current",
-                   "Decompose -> Evaluate -> Assemble & Verify -> Revise",
-                   "only where a qualified mathematical objective, method and constraints exist",
-                   "PCB-to-enclosure geometric integration", "geometric fit only",
-                   "it is not selected", "its own Owner authorization", "IP/license review",
-                   "TR Evidence Model §11", "OD-2", "no general compatibility engine",
-                   "never presented to the inventor as verified",
-                   "activates no proposal writer and changes no question selection",
-                   "Proof B work completes first", "PR #890 HOLD and D4 BLOCKED"):
+    target = " ".join(checkpoint.split(label, 1)[1].split("\nSource leads retained", 1)[0].split())
+    for phrase in (
+            # the approved direction: the core vision, not the demonstration
+            "Approved direction", "coherent, revisable, evidence-grounded engineering design of "
+            "the inventor's whole invention", "inform the design of another",
+            "within the scope of admitted methods", "must not silently remain represented as current",
+            "not AI-generated designs, independent calculators, attractive CAD models",
+            "ONE qualified relationship", "reproducible engineering check",
+            "inspectable engineering artifact",
+            "Decompose -> Evaluate -> Assemble & Verify -> Revise",
+            "only where a qualified mathematical objective, method and constraints exist",
+            # the candidate demonstration and its limits
+            "Candidate demonstration, not the definition of the product",
+            "PCB-to-enclosure geometric integration", "covers geometric fit",
+            "no engineering authority or D4 physical-compatibility qualification transfers",
+            # what stays unauthorized
+            "Not authorized by this note", "CAD integration, cross-domain verification capability "
+            "or AI proposal writer", "its own Owner authorization", "IP/license review",
+            "TR Evidence Model §11", "OD-2", "no general compatibility engine",
+            "never presented to the inventor as verified", "Proof B work completes first",
+            "PR #890 HOLD and D4 BLOCKED"):
         assert phrase in target, phrase
     # the quoted opening paragraph is unchanged, so SessionStart output is unchanged
     opening = checkpoint.split("\n\n", 1)[0]

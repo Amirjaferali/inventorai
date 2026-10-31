@@ -321,30 +321,47 @@ not model qualification or proof that the original failed application journeys a
 | G1-3/4; Stage 15 and existing domain owners | CELUS-style functional units/typed interfaces as a principle; qualify ONE required relation, not a generic compatibility engine or a copy of a vendor library. | Qualified domain/interface method and sources; accept/reject/unknown controls; preserve D4 and existing physical-coupling triggers. |
 | G1-5; existing end-to-end verification obligations | Link inventor correction, a reproducible contribution and its checked artifact; a changed input/part must not inherit an old check as current. | Original failure evidence and negative/staleness cases; report bounded checks honestly, not global safety, manufacturability or a solved original journey. |
 
-**G1-3/4 engineering-integration target (Owner-approved continuity, 2026-10-31; a CANDIDATE,
-not an increment).** Within the existing `CLAUDE.md` g1-3/4 obligations, the target is ONE
-connected engineering workflow: confirmed requirements and identified parts (g1-1/2, Stage 15)
--> ONE qualified relationship between two parts -> a reproducible engineering check of that
-relationship -> an inspectable engineering artifact -> results bound to their input and design
-revisions, so a changed dependency never leaves an earlier check presented as current. Work
-iterates Decompose -> Evaluate -> Assemble & Verify -> Revise: integration constrains design
-decisions early instead of inspecting independently finished parts at the end; optimization
-applies only where a qualified mathematical objective, method and constraints exist. The first
-recorded candidate proof is PCB-to-enclosure geometric integration: read the PCB outline,
-mounting positions and connector geometry; generate a parameterized enclosure with an eligible
-existing CAD tool (the CadQuery row above is one candidate); check fit, mounting alignment and
-connector clearance; export and independently inspect the artifact; then change a PCB
-dimension or connector position and show that the earlier result is no longer current until
-rechecked. It covers geometric fit only, never electrical, thermal, mechanical-strength or
-manufacturing compatibility, and it is not selected: it needs its own Owner authorization,
-scientific and tool qualification, IP/license review, ACE escalation where required, the
-retention decision (calculation contract §12, TR Evidence Model §11) and OD-2 wherever inventor
-content would be written. Deterministic orchestration coordinates admissible verification;
-Stage 15 keeps part/interface ownership, the specialist owners and T6 keep their methods and
-outputs, and no general compatibility engine is built. Optional AI-generated engineering
-alternatives stay internal, provisional and non-authoritative and are never presented to the
-inventor as verified; this note activates no proposal writer and changes no question selection.
-The authorized Proof B work completes first; PR #890 HOLD and D4 BLOCKED keep their triggers.
+**G1-3/4 engineering-integration target (Owner-approved continuity, 2026-10-31).** Approved
+direction, within the existing `CLAUDE.md` g1-3/4 obligations: InventorAI progresses from
+isolated calculations and disconnected artifacts toward a coherent, revisable, evidence-grounded
+engineering design of the inventor's whole invention. Qualified relationships between parts let
+the verified results of one part or discipline inform the design of another, detect
+incompatibilities within the scope of admitted methods, and keep confirmed requirements,
+components and interfaces, analyses and checks, design decisions and revisions, inspectable
+artifacts, and evidence, provenance and validity status consistent. When an upstream
+requirement, component, interface or design parameter changes, dependent checks and artifacts
+must not silently remain represented as current. This is cross-disciplinary engineering
+integration, not AI-generated designs, independent calculators, attractive CAD models or a
+collection of unrelated files. The connected workflow is: confirmed requirements and identified
+parts (g1-1/2, Stage 15) -> ONE qualified relationship between two parts -> a reproducible
+engineering check of it -> an inspectable engineering artifact -> results bound to their input
+and design revisions. Work iterates Decompose -> Evaluate -> Assemble & Verify -> Revise, so
+integration constrains design decisions throughout instead of inspecting finished parts at the
+end; optimization applies only where a qualified mathematical objective, method and constraints
+exist.
+
+Candidate demonstration, not the definition of the product: PCB-to-enclosure geometric
+integration — read the PCB outline, mounting positions and connector geometry; generate a
+parameterized enclosure with an eligible existing CAD tool (the CadQuery row above is one
+candidate); check fit, mounting alignment and connector clearance with an admitted method;
+export and independently inspect the artifact; change a PCB dimension or connector position and
+show that the earlier check is no longer current until re-evaluated. Success would show only
+that a PCB parameter drives enclosure geometry, that the relation is checkable and that a change
+invalidates the earlier result; it covers geometric fit, never electrical, thermal,
+mechanical-strength or manufacturing compatibility. Later relations (for example motor-to-load
+or power-source-to-controller) need their own qualified methods and evidence; no engineering
+authority or D4 physical-compatibility qualification transfers between relationships.
+
+Not authorized by this note: any product increment, CAD integration, cross-domain verification
+capability or AI proposal writer, and any change to question selection. The candidate needs its
+own Owner authorization, scientific and tool qualification, IP/license review, ACE escalation
+where required, the retention decision (calculation contract §12, TR Evidence Model §11) and
+OD-2 wherever inventor content would be written. Deterministic orchestration coordinates
+admissible verification; Stage 15 keeps part/interface ownership, the specialist owners and T6
+keep their methods and outputs, and no general compatibility engine is built. Optional internal
+AI alternatives stay provisional and non-authoritative and are never presented to the inventor
+as verified. The authorized Proof B work completes first; PR #890 HOLD and D4 BLOCKED keep their
+triggers.
 
 Source leads retained from the Owner-supplied technical/commercial study and *Deep Research
 Report: Platforms Translating Free-Form Ideas into Engineering Proposals*: [Flux tools](https://docs.flux.ai/reference/simulator-tool),
