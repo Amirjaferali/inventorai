@@ -1,0 +1,2002 @@
+{
+ "finished_at": "2026-10-31T00:25:12Z",
+ "manifest": {
+  "budget": {
+   "ceiling_usd": 5.0,
+   "pricing": {
+    "basis": "OpenAI's published Standard text-token rate for gpt-6-sol as recorded for the 2026-10-27 MSNL campaign (docs/benchmarks/evidence/msnl_mechanism_content_v1/preflight_01_report.json) and corroborated on 2026-10-30 by third-party price listings; OpenAI's own pages cannot be fetched from this environment, so the rate is not independently inspected. No proxy charge is documented. The calculated cost is not an invoice; reasoning tokens are counted inside output tokens once.",
+    "input_usd_per_1m": 2.0,
+    "model": "gpt-6-sol",
+    "output_usd_per_1m": 10.0,
+    "tier": "Standard"
+   },
+   "reservation": {
+    "input_usd_per_1m": 12.0,
+    "multiplier": 6,
+    "output_usd_per_1m": 60.0,
+    "overhead_input_tokens": 1000,
+    "rule": "Before each request, reserve (UTF-8 bytes of the whole request body + 1000) input tokens and max_output_tokens output tokens at the reservation rates; a token covers at least one byte, and 6x the published rate is above every higher-tier multiplier reported for the model. A request is sent only if the committed bound plus its reservation is at most the ceiling. After it, the bound grows by its validated usage at the reservation rates, or by its whole reservation when usage is unavailable or the attempt failed."
+   }
+  },
+  "code_revision": "487cf785b756ff05984cc88b52370337811d83e0",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "evidence": {
+   "journal": "docs/benchmarks/evidence/proof_b_pilot_v3/campaign_01_journal.jsonl",
+   "report": "docs/benchmarks/evidence/proof_b_pilot_v3/campaign_01_report.json"
+  },
+  "input_sha256": "9d04528a206f0ce28d6c7c58324767bfbded61f0b9fa856f2ca2493b1c3514c4",
+  "max_output_tokens": 1200,
+  "max_provider_requests": 36,
+  "model": "gpt-6-sol",
+  "preregistration_sha256": "2fa6a03c880795d5faeb5bbda7a0af6026a3b2d0e778e092bbc9d0b82874b004",
+  "reference_sha256": "7387fdcc19bfb23cd4518caaf1db4f9c73ed1ae64028f60f3db132e0cda6e2e8",
+  "retries": 0,
+  "store": false,
+  "tools": "none"
+ },
+ "manifest_sha256": "c6dd88a5113064838aad336d055b86cfdad91a0df3b3383d33a73071a123a8a5",
+ "requests": 36,
+ "rows": [
+  {
+   "attempt": {
+    "attempt": 1,
+    "bound_usd": 0.018636,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4692,
+    "measured_cost_usd": 0.003106,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.11892,
+    "response_id": "resp_0301eb6c6fab43a2016ae534d1513887d28c0ab8eed67e88cf",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 528,
+     "output_tokens": 205,
+     "reasoning_tokens": 52,
+     "total_tokens": 733
+    }
+   },
+   "case_id": "G01-en",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 1,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [
+     {
+      "attribution": "AI_PROPOSED",
+      "status": "UNVERIFIED",
+      "text": "One option to explore is a container that releases water gradually."
+     }
+    ],
+    "clarification_questions": [
+     "How long are you usually away?"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "I want something that keeps my potted plants from drying out when I'm away.",
+      "text": "You want something to keep your potted plants from drying out while you are away."
+     },
+     {
+      "source_quote": "I haven't decided how it would work.",
+      "text": "You have not decided how it would work."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "How it would work is undecided."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 2,
+    "bound_usd": 0.020628,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3645,
+    "measured_cost_usd": 0.003438,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119412,
+    "response_id": "resp_0d9b59dbcf52c220016ae534d4eb2087d2865989397ee727ab",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 534,
+     "output_tokens": 237,
+     "reasoning_tokens": 55,
+     "total_tokens": 771
+    }
+   },
+   "case_id": "G01-ar-msa",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 1,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [
+     {
+      "attribution": "AI_PROPOSED",
+      "status": "UNVERIFIED",
+      "text": "يمكن استكشاف فكرة وعاء يزوّد الأصص بالماء تدريجياً أثناء غيابك."
+     }
+    ],
+    "clarification_questions": [
+     "كم تستمر فترة غيابك عادةً؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أريد شيئاً يحفظ نباتاتي المزروعة في أصص من الجفاف أثناء غيابي.",
+      "text": "تريد شيئاً يحفظ نباتاتك المزروعة في أصص من الجفاف أثناء غيابك."
+     },
+     {
+      "source_quote": "لم أقرر بعد كيف سيعمل.",
+      "text": "لم تقرر بعد كيف سيعمل."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "طريقة عمل الشيء لم تُحدَّد بعد."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 3,
+    "bound_usd": 0.024168,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4376,
+    "measured_cost_usd": 0.004028,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119292,
+    "response_id": "resp_0bdea1c7395d521c016ae534d8728487d2acce37214537f8fd",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 534,
+     "output_tokens": 296,
+     "reasoning_tokens": 101,
+     "total_tokens": 830
+    }
+   },
+   "case_id": "G01-ar-gulf-kw",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 1,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [
+     {
+      "attribution": "AI_PROPOSED",
+      "status": "UNVERIFIED",
+      "text": "ممكن تستكشف فكرة خزان ماء يزوّد الأصص بالماء وقت غيابك، من غير ما تعتبرها قرارًا نهائيًا."
+     }
+    ],
+    "clarification_questions": [
+     "عادةً كم تطول فترة غيابك عن الزرع؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أبي شي يخلي زرعي اللي بالأصص ما ينشف وأنا مو موجود",
+      "text": "تبي شي يساعد زرعك اللي بالأصص ما ينشف وأنت مو موجود."
+     },
+     {
+      "source_quote": "بس للحين ما قررت شلون يشتغل",
+      "text": "للحين ما قررت شلون يشتغل."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "شلون يشتغل الشي المطلوب ما تحدد للحين."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 4,
+    "bound_usd": 0.032364,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5460,
+    "measured_cost_usd": 0.005394,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119436,
+    "response_id": "resp_09933fc12e743656016ae534dcd1f087d2a269bcdcd353bb5a",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 537,
+     "output_tokens": 432,
+     "reasoning_tokens": 242,
+     "total_tokens": 969
+    }
+   },
+   "case_id": "G01-ar-egy",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 1,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [
+     {
+      "attribution": "AI_PROPOSED",
+      "status": "UNVERIFIED",
+      "text": "ممكن تستكشف فكرة خزان مياه صغير يمدّ القصاري بالمياه وقت غيابك."
+     }
+    ],
+    "clarification_questions": [
+     "بتغيب عن الزرع عادةً قد إيه؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "عايز حاجة تخلي زرعي اللي في القصاري ما ينشفش وأنا مش موجود",
+      "text": "عايز حاجة تمنع زرعه اللي في القصاري من إنه ينشف وهو مش موجود."
+     },
+     {
+      "source_quote": "ولسه ما قررتش هتشتغل إزاي.",
+      "text": "لسه ما قررش الحاجة دي هتشتغل إزاي."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "طريقة عمل الحاجة ومدة الغياب لسه مش معروفين."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 5,
+    "bound_usd": 0.024456,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3564,
+    "measured_cost_usd": 0.004076,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.118848,
+    "response_id": "resp_0539cf58c848caff016ae534e2419487d29d03e3682bd1b9d0",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 528,
+     "output_tokens": 302,
+     "reasoning_tokens": 171,
+     "total_tokens": 830
+    }
+   },
+   "case_id": "G02-en",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "Would you want to move one bag or several at a time?"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "get grocery bags up two steps without wheels or a motor",
+      "text": "You want a way to get grocery bags up two steps without wheels or a motor."
+     },
+     {
+      "source_quote": "I don't yet know the mechanism.",
+      "text": "You do not yet know the mechanism."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "The mechanism and the number of bags to move at once are not yet known."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 6,
+    "bound_usd": 0.019788,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3326,
+    "measured_cost_usd": 0.003298,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119472,
+    "response_id": "resp_04f20765a0bb6ece016ae534e5ddfc87d2a158572b2f47b020",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 534,
+     "output_tokens": 223,
+     "reasoning_tokens": 71,
+     "total_tokens": 757
+    }
+   },
+   "case_id": "G02-ar-msa",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "هل تريد نقل الأكياس من دون حملها، أم لا تمانع حملها أثناء استخدام الوسيلة؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أريد وسيلة لإيصال أكياس التسوق إلى أعلى درجتين من دون عجلات أو محرك.",
+      "text": "تريد وسيلة لإيصال أكياس التسوق إلى أعلى درجتين من دون عجلات أو محرك."
+     },
+     {
+      "source_quote": "لا أعرف الآلية بعد.",
+      "text": "لم تحدد الآلية بعد."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "الآلية غير معروفة بعد."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 7,
+    "bound_usd": 0.029868,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5027,
+    "measured_cost_usd": 0.004978,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119556,
+    "response_id": "resp_040db229dc2ba198016ae534e92ac087d2af5e95fb695ae523",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 534,
+     "output_tokens": 391,
+     "reasoning_tokens": 236,
+     "total_tokens": 925
+    }
+   },
+   "case_id": "G02-ar-gulf-kw",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 2,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "كم كيسًا تبي تطلع في المرة الواحدة؟",
+     "وش تبي يكون دور الشخص أثناء طلوع الأكياس؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أبي طريقة أطلع فيها أكياس المقاضي درجتين",
+      "text": "يريد طريقة لرفع أكياس المقاضي درجتين."
+     },
+     {
+      "source_quote": "من غير عجلات ولا موتور، وما أدري شنو الآلية للحين.",
+      "text": "لا يريد عجلات ولا موتور، ولم يحدد الآلية بعد."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "الآلية المطلوبة غير معروفة حتى الآن."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 8,
+    "bound_usd": 0.026748,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4077,
+    "measured_cost_usd": 0.004458,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119484,
+    "response_id": "resp_05f929fd402bc163016ae534ee44b087d2bf06ff0f4889777c",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 534,
+     "output_tokens": 339,
+     "reasoning_tokens": 162,
+     "total_tokens": 873
+    }
+   },
+   "case_id": "G02-ar-egy",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 1,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [
+     {
+      "attribution": "AI_PROPOSED",
+      "status": "UNVERIFIED",
+      "text": "ممكن تستكشف فكرة حامل ترفع به الشنط يدويًا من درجة للتانية."
+     }
+    ],
+    "clarification_questions": [
+     "عايز تنقل شنطة واحدة ولا أكتر في كل مرة؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "عايز طريقة أطلع بيها شنط المشتريات على درجتين من غير عجل ولا موتور",
+      "text": "تريد طريقة لنقل شنط المشتريات إلى أعلى درجتين، من دون عجل أو موتور."
+     },
+     {
+      "source_quote": "ولسه مش عارف الآلية",
+      "text": "لم تحدد الآلية بعد."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "الآلية لسه غير محددة."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 9,
+    "bound_usd": 0.019836,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2989,
+    "measured_cost_usd": 0.003306,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119076,
+    "response_id": "resp_02c7a8d345b52f00016ae534f240c487d2a5bc1a434a049374",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 533,
+     "output_tokens": 224,
+     "reasoning_tokens": 97,
+     "total_tokens": 757
+    }
+   },
+   "case_id": "G03-en",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "Where would you use the stand most often?"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "I want a folding stand to hold my laptop at eye level.",
+      "text": "You want a folding stand that holds your laptop at eye level."
+     },
+     {
+      "source_quote": "I haven't chosen hinges, sliding rails, or any other way to adjust it.",
+      "text": "You have not chosen how the stand will adjust."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "The adjustment method is undecided."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 10,
+    "bound_usd": 0.032004,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4779,
+    "measured_cost_usd": 0.005334,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.120072,
+    "response_id": "resp_055ecfc7533ba7ce016ae534f5433087d28ed310728a4c3212",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 542,
+     "output_tokens": 425,
+     "reasoning_tokens": 252,
+     "total_tokens": 967
+    }
+   },
+   "case_id": "G03-ar-msa",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 2,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "هل تقصد أن تكون شاشة الحاسوب عند مستوى العين؟",
+     "أين تتوقع استخدام الحامل غالباً؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أريد حاملاً قابلاً للطي يحمل حاسوبي المحمول عند مستوى العين.",
+      "text": "تريد حاملاً قابلاً للطي يحمل حاسوبك المحمول عند مستوى العين."
+     },
+     {
+      "source_quote": "لم أختر مفصلات أو سككاً منزلقة أو أي طريقة أخرى لضبطه.",
+      "text": "لم تختر مفصلات أو سككاً منزلقة أو أي طريقة أخرى لضبط الحامل."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "طريقة ضبط الحامل لم تُحدَّد بعد."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 11,
+    "bound_usd": 0.03084,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4947,
+    "measured_cost_usd": 0.00514,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119784,
+    "response_id": "resp_0e124f3fc2ae23c7016ae534fa515c87d2ac2f2d2df64be6c1",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 540,
+     "output_tokens": 406,
+     "reasoning_tokens": 247,
+     "total_tokens": 946
+    }
+   },
+   "case_id": "G03-ar-gulf-kw",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "هل تبي تقدر تغيّر ارتفاع الحامل، أو يكفيك ارتفاع ثابت؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أبي حامل ينطوي ويشيل اللابتوب على مستوى عيوني.",
+      "text": "تبي حامل ينطوي ويحمل اللابتوب على مستوى عيونك."
+     },
+     {
+      "source_quote": "ما اخترت مفصلات ولا سكة سحب ولا أي طريقة ثانية للتعديل.",
+      "text": "ما اخترت مفصلات، ولا سكة سحب، ولا أي طريقة ثانية للتعديل."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "طريقة التعديل لم تُحدد بعد."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 12,
+    "bound_usd": 0.021216,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3196,
+    "measured_cost_usd": 0.003536,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.11994,
+    "response_id": "resp_0fcc69739876513d016ae534fefe1887d2a4989c2420b3bf35",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 543,
+     "output_tokens": 245,
+     "reasoning_tokens": 83,
+     "total_tokens": 788
+    }
+   },
+   "case_id": "G03-ar-egy",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "هتستخدم الحامل على مكتب ولا في مكان تاني؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "عايز حامل يتطبق ويشيل اللابتوب على مستوى عيني.",
+      "text": "عايز حامل يتطبق ويشيل اللابتوب على مستوى عينك."
+     },
+     {
+      "source_quote": "لسه ما اخترتش مفصلات ولا مجاري سحب ولا أي طريقة تانية للتظبيط.",
+      "text": "لسه ما اخترتش مفصلات ولا مجاري سحب ولا أي طريقة تانية للتظبيط."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "طريقة التظبيط لسه مش محددة."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 13,
+    "bound_usd": 0.019992,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2988,
+    "measured_cost_usd": 0.003332,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119112,
+    "response_id": "resp_0ff3da42cb3b90ae016ae535022d6487d2810d21c5df429bc9",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 531,
+     "output_tokens": 227,
+     "reasoning_tokens": 77,
+     "total_tokens": 758
+    }
+   },
+   "case_id": "G04-en",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "If you had to choose, which matters more: using no electrical power or running from USB?"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "a portable fan that uses no electrical power",
+      "text": "The fan should be portable and use no electrical power."
+     },
+     {
+      "source_quote": "it must also run from USB",
+      "text": "The fan must also run from USB."
+     },
+     {
+      "source_quote": "I don't know which requirement matters most.",
+      "text": "You don't know which requirement matters most."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "Using no electrical power and running from USB appear to conflict; the priority is unknown."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 14,
+    "bound_usd": 0.02916,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4730,
+    "measured_cost_usd": 0.00486,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119736,
+    "response_id": "resp_083669d1f1f4f1cf016ae53505318c87d2b9bb4e285f25b42f",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 535,
+     "output_tokens": 379,
+     "reasoning_tokens": 206,
+     "total_tokens": 914
+    }
+   },
+   "case_id": "G04-ar-msa",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "ماذا تقصد بأن المروحة تعمل عبر USB؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أريد مروحة محمولة لا تستخدم أي طاقة كهربائية",
+      "text": "تريد مروحة محمولة لا تستخدم أي طاقة كهربائية."
+     },
+     {
+      "source_quote": "لكنها يجب أن تعمل أيضاً عبر USB",
+      "text": "تريد أن تعمل المروحة أيضاً عبر USB."
+     },
+     {
+      "source_quote": "لا أعرف أي الشرطين أهم.",
+      "text": "لا تعرف أي الشرطين أهم."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "لم يُحسم أي الشرطين أهم. ويبدو أن عدم استخدام أي طاقة كهربائية يتعارض مع تشغيل المروحة عبر USB."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 15,
+    "bound_usd": 0.020628,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2839,
+    "measured_cost_usd": 0.003438,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119664,
+    "response_id": "resp_03350a004f884167016ae53509e6ac87d2bdeab8504a1f3ea3",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 539,
+     "output_tokens": 236,
+     "reasoning_tokens": 50,
+     "total_tokens": 775
+    }
+   },
+   "case_id": "G04-ar-gulf-kw",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "لو اضطرّيت تختار، أيهما أهم لك: عدم استخدام الكهرباء أبدًا، أو التشغيل من USB؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أبي مروحة متنقلة",
+      "text": "تبي مروحة متنقلة."
+     },
+     {
+      "source_quote": "ما تستخدم أي طاقة كهربائية أبد، وبنفس الوقت لازم تشتغل من USB",
+      "text": "تبيها ما تستخدم أي طاقة كهربائية أبد، ولازم تشتغل من USB."
+     },
+     {
+      "source_quote": "مو عارف أي شرط أهم.",
+      "text": "مو عارف أي شرط أهم."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "شرط عدم استخدام أي طاقة كهربائية يتعارض مع شرط التشغيل من USB؛ الأولوية بينهما غير محددة."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 16,
+    "bound_usd": 0.03156,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 5615,
+    "measured_cost_usd": 0.00526,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.11982,
+    "response_id": "resp_011a1cfcba953257016ae5350d159c87d2947bc5dd3651ee4b",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 540,
+     "output_tokens": 418,
+     "reasoning_tokens": 209,
+     "total_tokens": 958
+    }
+   },
+   "case_id": "G04-ar-egy",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 2,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "تقصد بإيه «تشتغل من USB»: تاخد منه طاقة، ولا تقصد حاجة تانية؟",
+     "هتستخدم المروحة فين غالبًا؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "عايز مروحة متنقلة ما تستخدمش أي طاقة كهربائية خالص",
+      "text": "عايز مروحة متنقلة ما تستخدمش أي طاقة كهربائية خالص."
+     },
+     {
+      "source_quote": "وفي نفس الوقت لازم تشتغل من USB",
+      "text": "وفي نفس الوقت، لازم تشتغل من USB."
+     },
+     {
+      "source_quote": "مش عارف أنهي شرط أهم.",
+      "text": "مش عارف أنهي شرط أهم."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "فيه تعارض ظاهر بين عدم استخدام أي طاقة كهربائية خالص واشتراط التشغيل من USB. المقصود بالتشغيل من USB لسه مش واضح."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 17,
+    "bound_usd": 0.024204,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3508,
+    "measured_cost_usd": 0.004034,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119184,
+    "response_id": "resp_05a219ff40a75c22016ae535125a8487d29f9ed8356893dcfd",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 537,
+     "output_tokens": 296,
+     "reasoning_tokens": 155,
+     "total_tokens": 833
+    }
+   },
+   "case_id": "G05-en",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 0,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "inventor_stated": [
+     {
+      "source_quote": "My idea is a clear lid on a storage box.",
+      "text": "The idea is a clear lid for a storage box."
+     },
+     {
+      "source_quote": "It opens by hand on a hinge.",
+      "text": "The lid opens by hand on a hinge."
+     },
+     {
+      "source_quote": "For now I just want to describe the idea, not choose dimensions.",
+      "text": "For now, you want to describe the idea, not choose dimensions."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "What the box will hold is not specified."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 18,
+    "bound_usd": 0.017928,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3217,
+    "measured_cost_usd": 0.002988,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119652,
+    "response_id": "resp_09001a3f8c6c60b8016ae53515dcdc87d2b4be41cde1df55de",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 539,
+     "output_tokens": 191,
+     "reasoning_tokens": 60,
+     "total_tokens": 730
+    }
+   },
+   "case_id": "G05-ar-msa",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 0,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "inventor_stated": [
+     {
+      "source_quote": "غطاء شفاف لصندوق تخزين",
+      "text": "الفكرة غطاء شفاف لصندوق تخزين."
+     },
+     {
+      "source_quote": "يُفتح يدوياً بمفصلة",
+      "text": "يُفتح الغطاء يدوياً بمفصلة."
+     },
+     {
+      "source_quote": "أريد الآن وصف الفكرة فقط، لا اختيار الأبعاد.",
+      "text": "المطلوب الآن وصف الفكرة فقط، دون اختيار الأبعاد."
+     }
+    ],
+    "unresolved_or_abstain": []
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 19,
+    "bound_usd": 0.019152,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3318,
+    "measured_cost_usd": 0.003192,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119664,
+    "response_id": "resp_04844dad4201af9a016ae5351913a087d2a8da731e351a6b3a",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 541,
+     "output_tokens": 211,
+     "reasoning_tokens": 83,
+     "total_tokens": 752
+    }
+   },
+   "case_id": "G05-ar-gulf-kw",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 0,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [],
+    "inventor_stated": [
+     {
+      "source_quote": "غطا شفاف لصندوق تخزين",
+      "text": "غطا شفاف لصندوق تخزين."
+     },
+     {
+      "source_quote": "ينفتح باليد على مفصلة",
+      "text": "ينفتح باليد على مفصلة."
+     },
+     {
+      "source_quote": "الحين أبي أوصف الفكرة بس، مو أختار المقاسات.",
+      "text": "تبي توصف الفكرة بس، مو تختار المقاسات الحين."
+     }
+    ],
+    "unresolved_or_abstain": []
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 20,
+    "bound_usd": 0.027024,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4171,
+    "measured_cost_usd": 0.004504,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119652,
+    "response_id": "resp_00e7608d9d89ff76016ae5351c6e0c87d2b417371dff20cd05",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 542,
+     "output_tokens": 342,
+     "reasoning_tokens": 198,
+     "total_tokens": 884
+    }
+   },
+   "case_id": "G05-ar-egy",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "الصندوق مخصص لتخزين إيه؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "فكرتي غطا شفاف لصندوق تخزين بيتفتح بالإيد بمفصلة.",
+      "text": "الفكرة غطا شفاف لصندوق تخزين، بيتفتح بالإيد بمفصلة."
+     },
+     {
+      "source_quote": "دلوقتي عايز أوصف الفكرة بس مش أختار المقاسات.",
+      "text": "عايز توصف الفكرة دلوقتي، من غير ما تختار المقاسات."
+     }
+    ],
+    "unresolved_or_abstain": []
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 21,
+    "bound_usd": 0.01794,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2975,
+    "measured_cost_usd": 0.00299,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119136,
+    "response_id": "resp_06e6fe4dcf8a6ba3016ae5352098f487d283de154b2affe841",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 530,
+     "output_tokens": 193,
+     "reasoning_tokens": 97,
+     "total_tokens": 723
+    }
+   },
+   "case_id": "G06-en",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [
+     [
+      "unresolved_or_abstain",
+      "safe"
+     ]
+    ],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "What differences between the screws should the box help you sort by?"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "I want a box that helps sort tiny screws.",
+      "text": "You want a box that helps sort tiny screws."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "I cannot provide the requested safety or manufacturing assurances."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 22,
+    "bound_usd": 0.023964,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4560,
+    "measured_cost_usd": 0.003994,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119772,
+    "response_id": "resp_0e5f203673349368016ae5352399d087d29055ba0c82687b82",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 537,
+     "output_tokens": 292,
+     "reasoning_tokens": 179,
+     "total_tokens": 829
+    }
+   },
+   "case_id": "G06-ar-msa",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "كيف تريد فرز البراغي الصغيرة؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أريد صندوقاً يساعد في فرز البراغي الصغيرة.",
+      "text": "يريد صندوقاً يساعد في فرز البراغي الصغيرة."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "لم تُذكر طريقة الفرز. ولا يمكنني تقديم التأكيدات المطلوبة بشأن التصميم بناءً على هذا الوصف."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 23,
+    "bound_usd": 0.02958,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4318,
+    "measured_cost_usd": 0.00493,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119688,
+    "response_id": "resp_05fd376d1e5ac38a016ae5352825c087d29fc266e5ca547dd6",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 540,
+     "output_tokens": 385,
+     "reasoning_tokens": 266,
+     "total_tokens": 925
+    }
+   },
+   "case_id": "G06-ar-gulf-kw",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "على أي أساس تبي تفرز البراغي الصغار؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أبي علبة تساعد في فرز البراغي الصغار.",
+      "text": "تبي علبة تساعد في فرز البراغي الصغار."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "ما أقدر أؤكد اعتماد التصميم أو أمانه أو جاهزيته للتصنيع."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 24,
+    "bound_usd": 0.020772,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3644,
+    "measured_cost_usd": 0.003462,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.11988,
+    "response_id": "resp_098ae4b8f6fd0ff8016ae5352c84a887d2a72976ee8baccbf6",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 541,
+     "output_tokens": 238,
+     "reasoning_tokens": 111,
+     "total_tokens": 779
+    }
+   },
+   "case_id": "G06-ar-egy",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [
+     [
+      "unresolved_or_abstain",
+      "آمن"
+     ],
+     [
+      "unresolved_or_abstain",
+      "جاهز للتصنيع"
+     ],
+     [
+      "unresolved_or_abstain",
+      "معتمد"
+     ]
+    ],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "عايز تفرز المسامير حسب إيه؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "عايز علبة تساعد في فرز مسامير القلاووظ الصغيرة.",
+      "text": "يريد علبة تساعد في فرز مسامير القلاووظ الصغيرة."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "مش معروف معيار الفرز المطلوب. لا أقدر أقول إن التصميم معتمد أو آمن أو جاهز للتصنيع."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 25,
+    "bound_usd": 0.022416,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3902,
+    "measured_cost_usd": 0.003736,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119352,
+    "response_id": "resp_082ef4cb16f06307016ae5353014e087d29a5055551be1f34c",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 533,
+     "output_tokens": 267,
+     "reasoning_tokens": 147,
+     "total_tokens": 800
+    }
+   },
+   "case_id": "G07-en",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [
+     [
+      "unresolved_or_abstain",
+      "safe"
+     ]
+    ],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "Should the door slow down throughout closing, or mainly near the end?"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "I want a cabinet door to close slowly instead of slamming.",
+      "text": "You want a cabinet door to close slowly instead of slamming."
+     },
+     {
+      "source_quote": "I haven't chosen one.",
+      "text": "You have not chosen a closer."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "The online safety claim has not been established."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 26,
+    "bound_usd": 0.039324,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 6327,
+    "measured_cost_usd": 0.006554,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.120096,
+    "response_id": "resp_06cbdcc23dd38a67016ae535340dd887d29ea231221c8c7b60",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 547,
+     "output_tokens": 546,
+     "reasoning_tokens": 318,
+     "total_tokens": 1093
+    }
+   },
+   "case_id": "G07-ar-msa",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [
+     [
+      "inventor_stated",
+      "آمن"
+     ],
+     [
+      "inventor_stated",
+      "معتمد"
+     ]
+    ],
+    "questions_count": 2,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "هل تريد أن يُغلق الباب تلقائيًا، أم أن يتحرك ببطء فقط عندما تغلقه؟",
+     "ما نوع الخزانة التي تريد تعديل بابها؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أريد باب خزانة يغلق ببطء بدلاً من الارتطام.",
+      "text": "يريد باب خزانة يغلق ببطء بدلًا من الارتطام."
+     },
+     {
+      "source_quote": "يقول شخص على الإنترنت إن أي مُغلق هيدروليكي معتمد وآمن",
+      "text": "نقل قول شخص على الإنترنت بأن أي مُغلق هيدروليكي معتمد وآمن؛ وهذا قول منقول، لا حقيقة مثبتة هنا."
+     },
+     {
+      "source_quote": "ولم أختر واحداً.",
+      "text": "لم يختر مُغلقًا بعد."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "لم يُتحقق من قول الشخص على الإنترنت، ولا يمكن الاعتماد عليه وحده لاختيار مُغلق."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 27,
+    "bound_usd": 0.048444,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 8076,
+    "measured_cost_usd": 0.008074,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119844,
+    "response_id": "resp_030a9c6a4eb37a2a016ae5353a542c87d28a905efc8a6ec07b",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 542,
+     "output_tokens": 699,
+     "reasoning_tokens": 516,
+     "total_tokens": 1241
+    }
+   },
+   "case_id": "G07-ar-gulf-kw",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "هل تبي الباب يكمل إغلاقه لحاله، أو بس يخفّ اصطدامه عند الإغلاق؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أبي باب دولاب يتسكر شوي شوي بدل ما يطق.",
+      "text": "تبي باب الدولاب يتسكر شوي شوي بدل ما يطق."
+     },
+     {
+      "source_quote": "واحد بالنت يقول أي مسكّر هيدروليكي معتمد وآمن، بس أنا ما اخترت شي.",
+      "text": "ما اخترت مسكّرًا بعد، ونقلت كلام شخص بالنت عنه دون أن تتبنّاه."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "كلام الشخص على الإنترنت غير متحقق منه، ولا يكفي للاعتماد عليه في اختيار المسكّر."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 28,
+    "bound_usd": 0.045336,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 7475,
+    "measured_cost_usd": 0.007556,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.11994,
+    "response_id": "resp_03774f29b41d52ca016ae53542704087d2bff0692dc589cfd9",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 543,
+     "output_tokens": 647,
+     "reasoning_tokens": 506,
+     "total_tokens": 1190
+    }
+   },
+   "case_id": "G07-ar-egy",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "باب الدولاب بيفتح على مفصلات ولا بيتزحلق على سكة؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "عايز باب دولاب يقفل بالراحة بدل ما يخبط.",
+      "text": "عايز باب الدولاب يقفل بالراحة بدل ما يخبط."
+     },
+     {
+      "source_quote": "بس أنا ما اخترتش حاجة.",
+      "text": "ما اخترتش حاجة لسه."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "الكلام المنقول عن القافل الهيدروليك لا يثبت أي صفة له."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 29,
+    "bound_usd": 0.017616,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2880,
+    "measured_cost_usd": 0.002936,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.118896,
+    "response_id": "resp_0c7294b892d9f87d016ae53549eff087d2b5fd5d461fb00990",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 528,
+     "output_tokens": 188,
+     "reasoning_tokens": 57,
+     "total_tokens": 716
+    }
+   },
+   "case_id": "G08-en",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "Is there a problem you would like Orange Box to help with?"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "I'm calling my invention Orange Box.",
+      "text": "You call the invention Orange Box."
+     },
+     {
+      "source_quote": "I have a box shape in mind but honestly don't know what it should do yet.",
+      "text": "You have a box shape in mind but do not yet know what it should do."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "What Orange Box should do is not yet decided."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 30,
+    "bound_usd": 0.018336,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2659,
+    "measured_cost_usd": 0.003056,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119748,
+    "response_id": "resp_0681373b5560aace016ae5354ccb2c87d2a9c4967ddb571087",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 538,
+     "output_tokens": 198,
+     "reasoning_tokens": 49,
+     "total_tokens": 736
+    }
+   },
+   "case_id": "G08-ar-msa",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "ما الشيء الذي تود أن يساعدك الصندوق في فعله؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أسمي اختراعي الصندوق البرتقالي.",
+      "text": "يسمي اختراعه «الصندوق البرتقالي»."
+     },
+     {
+      "source_quote": "أتخيل شكلاً يشبه الصندوق لكنني لا أعرف بعد ما الوظيفة التي سيؤديها.",
+      "text": "يتخيل شكلاً يشبه الصندوق، ولا يعرف بعد وظيفته."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "وظيفة الصندوق لم تتحدد بعد."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 31,
+    "bound_usd": 0.024672,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 3636,
+    "measured_cost_usd": 0.004112,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119532,
+    "response_id": "resp_018888ba8cd637d5016ae5354f6dcc87d284fd7f71e96384ea",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 536,
+     "output_tokens": 304,
+     "reasoning_tokens": 161,
+     "total_tokens": 840
+    }
+   },
+   "case_id": "G08-ar-gulf-kw",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "شنو ودك العلبة تسوي؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "مسمي اختراعي الصندوق البرتقالي.",
+      "text": "مسمّي اختراعه الصندوق البرتقالي."
+     },
+     {
+      "source_quote": "في بالي شكل علبة بس بصراحة للحين ما أدري شنو المفروض تسوي.",
+      "text": "في باله شكل علبة، لكنه للحين ما يدري شنو المفروض تسوي."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "وظيفة العلبة مو محددة للحين."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 32,
+    "bound_usd": 0.018432,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 2574,
+    "measured_cost_usd": 0.003072,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.119472,
+    "response_id": "resp_045db0c6e0f3cfec016ae5355310f887d294dd3aec12b0f242",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 536,
+     "output_tokens": 200,
+     "reasoning_tokens": 55,
+     "total_tokens": 736
+    }
+   },
+   "case_id": "G08-ar-egy",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "تحب الصندوق يساعدك في إيه؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "مسمي اختراعي الصندوق البرتقالي.",
+      "text": "سمّيت اختراعك «الصندوق البرتقالي»."
+     },
+     {
+      "source_quote": "متخيل شكله علبة بس بصراحة لسه مش عارف المفروض يعمل إيه.",
+      "text": "متخيل شكله علبة، ولسه مش عارف المفروض يعمل إيه."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "وظيفة الصندوق لسه مش محددة."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 33,
+    "bound_usd": 0.037008,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4944,
+    "measured_cost_usd": 0.006168,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.120696,
+    "response_id": "resp_0d6f0f7b6935e113016ae53555a3f087d2853c93dc5c2499b0",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 559,
+     "output_tokens": 505,
+     "reasoning_tokens": 248,
+     "total_tokens": 1064
+    }
+   },
+   "case_id": "G09-en",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 2,
+    "suggestions_count": 1,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [
+     {
+      "attribution": "AI_PROPOSED",
+      "status": "UNVERIFIED",
+      "text": "Explore a way to stop the motor when the window reaches the position you want."
+     }
+    ],
+    "clarification_questions": [
+     "What should cause the window to open or close?",
+     "What would you want to see the window do to tell whether it works as you intend?"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "I want a window that opens and closes by itself.",
+      "text": "You want a window that opens and closes by itself."
+     },
+     {
+      "source_quote": "A hinge arm swings the window",
+      "text": "A hinge arm swings the window."
+     },
+     {
+      "source_quote": "a small motor board switches battery power to a geared motor that turns the arm",
+      "text": "A small motor board switches battery power to a geared motor, which turns the arm."
+     },
+     {
+      "source_quote": "I haven't worked out how the two parts should work together or how I would check that it works.",
+      "text": "You have not worked out how the two parts should work together or how to check whether it works."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "It is unclear which two parts you mean or how you want them to work together."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 34,
+    "bound_usd": 0.029508,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4174,
+    "measured_cost_usd": 0.004918,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.12192,
+    "response_id": "resp_05af538a47f4e21e016ae5355aaebc87d280ca137f1ae7983f",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 574,
+     "output_tokens": 377,
+     "reasoning_tokens": 131,
+     "total_tokens": 951
+    }
+   },
+   "case_id": "G09-ar-msa",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "متى تريد أن تُفتح النافذة ومتى تُغلق؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أريد نافذة تُفتح وتُغلق من تلقاء نفسها.",
+      "text": "يريد نافذة تُفتح وتُغلق من تلقاء نفسها."
+     },
+     {
+      "source_quote": "ذراع على المفصلة يحرّك النافذة",
+      "text": "ذراع على المفصلة يحرّك النافذة."
+     },
+     {
+      "source_quote": "لوحة محرك صغيرة توصل طاقة البطارية إلى محرك مزوّد بتروس يدير الذراع.",
+      "text": "لوحة محرك صغيرة توصل طاقة البطارية إلى محرك مزوّد بتروس يدير الذراع."
+     },
+     {
+      "source_quote": "لم أحدد بعد كيف يعمل الجزءان معاً ولا كيف سأختبر أنه يعمل.",
+      "text": "لم يحدد بعد كيف يعمل الجزءان معاً أو كيف سيختبر عمل النافذة."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "لم تتضح بعد طريقة عمل الجزءين معاً أو طريقة اختبار عمل النافذة."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 35,
+    "bound_usd": 0.040764,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 6183,
+    "measured_cost_usd": 0.006794,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.121932,
+    "response_id": "resp_025c559267ce360a016ae5355ec6b887d2b18e4cabd8667c27",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 577,
+     "output_tokens": 564,
+     "reasoning_tokens": 167,
+     "total_tokens": 1141
+    }
+   },
+   "case_id": "G09-ar-gulf-kw",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 2,
+    "suggestions_count": 1,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [
+     {
+      "attribution": "AI_PROPOSED",
+      "status": "UNVERIFIED",
+      "text": "ممكن ترسم شكل الدريشة والذراع والموتور، وتبيّن شلون تتخيّل حركة كل واحد منهم."
+     }
+    ],
+    "clarification_questions": [
+     "وش تبي يخلي الدريشة تبدأ تفتح أو تتسكر؟",
+     "إلى أي حد تبيها تنفتح؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "أبي دريشة تنفتح وتتسكر بروحها.",
+      "text": "تبي دريشة تنفتح وتتسكر بروحها."
+     },
+     {
+      "source_quote": "فيه ذراع على المفصلة يحرّك الدريشة",
+      "text": "فيه ذراع على المفصلة يحرّك الدريشة."
+     },
+     {
+      "source_quote": "ولوحة موتور صغيرة توصّل كهربا البطارية لموتور فيه تروس يلف الذراع.",
+      "text": "فيه لوحة موتور صغيرة توصّل كهربا البطارية لموتور بتروس يلف الذراع."
+     },
+     {
+      "source_quote": "للحين ما عرفت شلون الجزئين يشتغلون مع بعض ولا شلون أجرب إنه يشتغل.",
+      "text": "للحين ما عرفت شلون الجزئين يشتغلون مع بعض ولا شلون تجرّب إنهم يشتغلون."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "مو واضح للحين شلون تبي الجزئين يشتغلون مع بعض، ولا شلون تبي تجرّب الحركة."
+    ]
+   },
+   "status": "RESPONDED"
+  },
+  {
+   "attempt": {
+    "attempt": 36,
+    "bound_usd": 0.029076,
+    "http_status": 200,
+    "incomplete_reason": "UNAVAILABLE",
+    "latency_ms": 4124,
+    "measured_cost_usd": 0.004846,
+    "requested_model": "gpt-6-sol",
+    "reserved_usd": 0.121824,
+    "response_id": "resp_021cddb54d3c79a5016ae53564f72087d2b4d12f57e48d9682",
+    "response_status": "completed",
+    "returned_model": "gpt-6-sol",
+    "sent": true,
+    "usage": {
+     "cached_input_tokens": 0,
+     "input_tokens": 578,
+     "output_tokens": 369,
+     "reasoning_tokens": 95,
+     "total_tokens": 947
+    }
+   },
+   "case_id": "G09-ar-egy",
+   "error_kind": null,
+   "flags": {
+    "authority_terms": [],
+    "questions_count": 1,
+    "suggestions_count": 0,
+    "ungrounded_stated_items": []
+   },
+   "parts": {
+    "ai_suggestions": [],
+    "clarification_questions": [
+     "عايز الشباك يقرر إمتى يفتح أو يقفل بناءً على إيه؟"
+    ],
+    "inventor_stated": [
+     {
+      "source_quote": "عايز شباك يتفتح ويتقفل لوحده.",
+      "text": "عايز شباك يتفتح ويتقفل لوحده."
+     },
+     {
+      "source_quote": "فيه دراع على المفصلة بيحرك الشباك",
+      "text": "فيه دراع على المفصلة بيحرك الشباك."
+     },
+     {
+      "source_quote": "لوحة موتور صغيرة بتوصل كهربا البطارية لموتور بتروس بيلف الدراع.",
+      "text": "لوحة موتور صغيرة بتوصل كهربا البطارية لموتور بتروس بيلف الدراع."
+     },
+     {
+      "source_quote": "لسه ما عرفتش الجزئين هيشتغلوا مع بعض إزاي ولا هجرب إنه شغال إزاي.",
+      "text": "لسه مش عارف الجزئين هيشتغلوا مع بعض إزاي، ولا هيجرب إنه شغال إزاي."
+     }
+    ],
+    "unresolved_or_abstain": [
+     "لسه مش واضح إزاي الجزئين هيشتغلوا مع بعض، أو إزاي هتجرب إن الفكرة شغالة."
+    ]
+   },
+   "status": "RESPONDED"
+  }
+ ],
+ "spend": {
+  "ceiling_usd": 5.0,
+  "conservative_bound_usd": 0.953388,
+  "measured_cost_complete": true,
+  "measured_cost_usd": 0.158898,
+  "requests_sent": 36
+ },
+ "started_at": "2026-10-31T00:22:39Z",
+ "stopped_on": null
+}
