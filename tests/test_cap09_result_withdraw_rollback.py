@@ -162,11 +162,16 @@ def _run(baseline, mode, out_path, *args):
 # AMENDED at MANDATORY-CONSTRAINT-ACCEPTANCE-PREPARATION-01: one more additive
 # current-value table on purpose (its own tests pin it); it is not a CAP-09
 # schema change.
+# AMENDED at BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: two more additive tables on
+# purpose (the planar clearance inputs and the participation removal
+# generation; their own tests pin them); not a CAP-09 schema change.
 _LATER_CHANGED_TABLES = ("subsystem_interface_observations", "component_prototype_needs",
                          "subsystem_interface_components",
                          "subsystem_participation_preparations",
                          "constraint_acceptance_preparations",
-                         "subsystem_temperature_change_declarations")
+                         "subsystem_temperature_change_declarations",
+                         "planar_clearance_revisions",
+                         "subsystem_interface_participation_epochs")
 
 
 def _schema(path):
