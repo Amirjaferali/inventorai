@@ -11917,6 +11917,7 @@ UI_STRINGS = {
     "UI_PCC_KIND_WITHDRAWN": {"en": "withdrawn"},
     "UI_PCC_MSG_SAVED": {"en": "Saved."},
     "UI_PCC_MSG_WITHDRAWN": {"en": "Withdrawn. It stays in the history."},
+    "UI_PCC_MSG_RECORDED_EARLIER": {"en": "This submission was already recorded earlier and is no longer the latest state; nothing new was saved. The current state is shown below."},
     "UI_PCC_MSG_UNCHANGED": {"en": "Nothing changed: the declaration already holds exactly these values."},
     "UI_PCC_MSG_STALE": {"en": "Not saved: the declaration, a component or a participation changed since this page was shown. Review the current state below."},
     "UI_PCC_MSG_NOT_ELIGIBLE": {"en": "Not saved: the board and the enclosure must be two different components that currently take part in this interaction."},

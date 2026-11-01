@@ -11732,9 +11732,18 @@ def _pcc_write(sid, interface_id, action, build, same):
     ack = "UI_PCC_MSG_SAVED" if action == "save" else "UI_PCC_MSG_WITHDRAWN"
 
     def settle(stored):
-        if same(stored):
-            return _pcc_render(sid, interface_id, notice=ack)
-        return _pcc_render(sid, interface_id, status=409, error="UI_PCC_MSG_NOT_SAVED")
+        if not same(stored):
+            return _pcc_render(sid, interface_id, status=409, error="UI_PCC_MSG_NOT_SAVED")
+        try:
+            record = store.load_planar_clearance(sid)["ledger"].record_for(
+                stored.declaration_id)
+            current = record is not None and record.head.revision_id == stored.revision_id
+        except Exception:
+            current = True          # the page itself reports what can be read
+        # a retry of an action committed earlier that is no longer the latest
+        # state: acknowledged as recorded earlier, never as a fresh save
+        return _pcc_render(sid, interface_id,
+                           notice=ack if current else "UI_PCC_MSG_RECORDED_EARLIER")
 
     try:
         prior = store.committed_planar_clearance_for_submission(sid, key)
@@ -11849,11 +11858,17 @@ def planar_clearance_withdraw(sid, interface_id):
                            error="UI_PCC_MSG_CONFIRM_WITHDRAW")
 
     def build(snapshot):
+        # the withdrawal is bound to THIS page's interaction: a declaration of
+        # another interaction is refused like an unknown one
+        record = snapshot["ledger"].record_for(declaration_id)
+        if record is None or record.interface_id != interface_id:
+            raise _subsystem_model.PlanarClearanceUnknown("not this interaction's declaration")
         return _subsystem_model.withdrawn_planar_clearance(
             snapshot["ledger"], declaration_id, int(raw_head))
 
     def same(stored):
         return (stored.kind == _subsystem_model.PLANAR_CLEARANCE_WITHDRAWN
+                and stored.interface_id == interface_id
                 and stored.declaration_id == declaration_id
                 and stored.revision_no == int(raw_head) + 1)
 

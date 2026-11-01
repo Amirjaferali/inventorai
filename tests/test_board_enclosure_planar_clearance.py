@@ -626,9 +626,26 @@ def test_w04_retry_stale_and_withdraw(client):
     assert "Withdrawn." in r.get_data(as_text=True)
     r = client.post("/session/%s/interface-clearance/%s/withdraw" % (sid, ifc), data=data)
     assert "Withdrawn." in r.get_data(as_text=True)               # exact retry: no revival
+    r = _save(client, sid, ifc, ids, page=page)                   # the first save, retried again
+    assert "already recorded earlier" in r.get_data(as_text=True)
     ledger = store.load_planar_clearance(sid)["ledger"]
     assert ledger.active_for(ifc) is None and len(ledger.records[0].revisions) == 3
     assert "data-pcc-withdrawn-only" in _page(client, sid, ifc).get_data(as_text=True)
+
+
+def test_w05b_withdrawal_is_bound_to_the_pages_interaction(client):
+    sid, ifc, ids = _web(client)
+    _save(client, sid, ifc, ids)
+    store = appmod._get_store()
+    subs = store.load_planar_clearance(sid)["subsystems"]
+    other = sm.declared_interface(subs, subs[0].subsystem_id, subs[1].subsystem_id, "Second link")
+    store.append_subsystem_interface(sid, other, "k-second")
+    data = _fields(_page(client, sid, ifc).get_data(as_text=True), form="data-pcc-withdraw-form")
+    data["withdraw_confirm"] = "yes"
+    r = client.post("/session/%s/interface-clearance/%s/withdraw" % (sid, other.interface_id),
+                    data=data)
+    assert r.status_code == 409
+    assert store.load_planar_clearance(sid)["ledger"].active_for(ifc) is not None
 
 
 def test_w05_authorization_csrf_and_foreign_identities(client):
