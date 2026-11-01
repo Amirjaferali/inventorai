@@ -338,14 +338,14 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 {#- BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 — the declared board-enclosure planar
     clearance of each interaction that has one, rendered from the SAME shared
     presentation model and partial as the interaction page (one store snapshot
-    per render). English-first; a downloaded copy is a fixed snapshot naming
+    per render), in the report document's language (BOARD-ENCLOSURE-ARABIC-
+    QUALIFICATION-01: English or Arabic); a downloaded copy is a fixed snapshot naming
     its declaration revision and generation time. Unreadable -> unavailable. -#}
 {% set pccr = planar_clearance_report if planar_clearance_report is defined else none %}
 {% if pccr %}
 {% from "_planar_clearance_result.html" import pcc_result with context %}
-<section class="group" data-pcc-report lang="en" dir="ltr">
+<section class="group" data-pcc-report lang="{{ pcc_lang }}" dir="{{ 'rtl' if pcc_lang == 'ar' else 'ltr' }}">
   <h2>{{ pcc_t('UI_PCC_REPORT_HEADING') }}</h2>
-  {% if ui_lang == 'ar' %}<p data-pcc-english-only dir="rtl" lang="ar">{{ t('UI_PCC_ENGLISH_ONLY') }}</p>{% endif %}
   {% if not pccr.available %}
   <p style="color:#555" data-pcc-report-unavailable>{{ pcc_t('UI_PCC_REPORT_UNAVAILABLE') }}</p>
   {% else %}
@@ -355,7 +355,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     {% if v.state == 'WITHDRAWN' %}<p data-pcc-withdrawn-only>{{ pcc_t('UI_PCC_STATE_WITHDRAWN') }}</p>{% else %}{{ pcc_result(v) }}{% endif %}
   </div>
   {% endfor %}
-  <p style="font-size:12px;color:#555" data-pcc-report-generated>{{ pcc_t('UI_PCC_GENERATED') }}: {{ package.generated_at }}. {{ pcc_t('UI_PCC_HISTORICAL_NOTE') }}</p>
+  <p style="font-size:12px;color:#555" data-pcc-report-generated>{{ pcc_t('UI_PCC_GENERATED') }}: <bdi dir="ltr">{{ package.generated_at }}</bdi>. {{ pcc_t('UI_PCC_HISTORICAL_NOTE') }}</p>
   {% endif %}
 </section>
 {% endif %}

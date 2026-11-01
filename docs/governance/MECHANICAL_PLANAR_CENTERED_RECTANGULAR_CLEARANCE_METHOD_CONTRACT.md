@@ -183,6 +183,17 @@ libraries; component suggestions or a "safe" clearance; result persistence; exte
 
 ## 14. Language availability
 
-The journey is English-first. On the Arabic interface the page shows one localized notice that this tool is
-currently available in English only, and the tool itself is shown in English; it is not presented as
-Arabic-qualified. Arabic and dialect qualification of this same journey is the next priority.
+AMENDED by BOARD-ENCLOSURE-ARABIC-QUALIFICATION-01 (the former English-only clause is superseded for the scope
+below). The journey is available in English and Modern Standard Arabic through the existing UI-copy catalogue:
+the interaction page renders in the interface language (right to left in Arabic) and the report / PDF section in
+the report document's language. The English variant of every applicability statement and disclosure line is this
+artifact's text word for word, so each Arabic line translates one governed meaning; method, declaration and
+artifact versions are unchanged, and a language change is presentation only — never a new declaration, revision,
+outcome or result. Numbers, `mm`, X / Y, identifiers and digests are LTR-isolated; the sketch is never mirrored.
+Inventor text is stored and shown verbatim, never translated. Numeric entry keeps the §6 ASCII grammar: Arabic-Indic
+or Persian digits, Arabic decimal or group separators, units and words are refused with an Arabic explanation and
+never read as a number (native-digit entry is NOT delivered; it would be a separately scoped numeric-input change).
+Qualified by synthetic fixtures in Modern Standard Arabic, Kuwaiti / Gulf and Egyptian Arabic alongside English:
+free text (names, region descriptions, basis notes, including uncertainty and negation) is preserved and never
+converted into a dimension, an unknown or an applicability answer — this is NOT understanding of unrestricted
+dialect text, and no other dialect is claimed.
