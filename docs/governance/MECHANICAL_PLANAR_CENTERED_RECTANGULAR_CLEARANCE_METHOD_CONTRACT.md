@@ -131,9 +131,10 @@ bridge failure reads **COULD NOT BE COMPUTED**. The shared owner's state and rea
   expected declaration head, the interface, both component revisions, both current participations and both
   generations are re-validated; stale, forged or cross-project submissions write nothing; an exact retry of a
   committed submission writes nothing and never revives a stale or withdrawn declaration.
-- **Removal generation (ABA guard).** The participation writer increments a per-(interface, component) removal
-  counter (`subsystem_interface_participation_epochs`) in the same transaction in which it removes that
-  participation. A declaration records the counter value it was made against, so a participant removed and later
+- **Removal generation (ABA guard).** A database trigger on `subsystem_interface_components` increments a
+  per-(interface, component) removal counter (`subsystem_interface_participation_epochs`) in the same transaction as
+  every deletion of that participation row, whichever build issues it — so the guard also holds across a rollback to
+  the pre-increment build and back. Reads fail closed (UNAVAILABLE) if the trigger is absent. A declaration records the counter value it was made against, so a participant removed and later
   re-added no longer matches: the old binding never revives. A component correction (new revision position) or
   withdrawal, or loss of participation, likewise suspends evaluation (NEEDS RECONFIRMATION) until the inventor
   explicitly rebinds through a new correction. Rendering never writes.

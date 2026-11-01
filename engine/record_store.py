@@ -2132,11 +2132,13 @@ _INTERFACE_COMPONENTS_SCHEMA = (
 )
 
 # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 — ``subsystem_interface_participation_epochs``:
-# the removal generation of ONE (interaction, component) participation. The
-# participation writer increments it, in the same transaction, every time it
-# removes that participation (``set_interface_participation``); it is never
-# decremented or deleted, so a participation removed and later re-added carries
-# a different generation than before the removal. A planar clearance
+# the removal generation of ONE (interaction, component) participation. A
+# DATABASE TRIGGER on ``subsystem_interface_components`` increments it, in the
+# same transaction, on EVERY deletion of that participation row - whichever
+# build issues the DELETE, so a pre-increment build run during a rollback
+# interval moves it on too (independent review F1). It is never decremented or
+# deleted, so a participation removed and later re-added carries a different
+# generation than before the removal. A planar clearance
 # declaration records the generation it was made against; a mismatch means the
 # participation changed and the old binding never revives (ABA guard). No row
 # means generation 0. Additive and idempotent; an existing table of any other
@@ -2163,6 +2165,15 @@ _PARTICIPATION_EPOCHS_SCHEMA = (
     )
     """,
 )
+_PARTICIPATION_EPOCH_TRIGGER_NAME = "subsystem_interface_components_removal_generation"
+_PARTICIPATION_EPOCH_TRIGGER = (
+    "CREATE TRIGGER %s AFTER DELETE ON subsystem_interface_components "
+    "BEGIN INSERT INTO subsystem_interface_participation_epochs "
+    "(project_id, interface_id, component_id, removals) "
+    "VALUES (OLD.project_id, OLD.interface_id, OLD.component_id, 1) "
+    "ON CONFLICT (project_id, interface_id, component_id) "
+    "DO UPDATE SET removals = removals + 1; END"
+    % _PARTICIPATION_EPOCH_TRIGGER_NAME)
 
 # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 — ``planar_clearance_revisions``: the
 # inventor's append-only, revisioned board-enclosure planar clearance INPUTS
@@ -3037,9 +3048,9 @@ class SqliteRecordStore:
 
     def _migrate_planar_clearance(self, conn) -> None:
         """BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 forward migration: additively
-        create the participation removal-generation table and the planar
-        clearance revision history (``IF NOT EXISTS``), inside the store's one
-        migration transaction. Nothing is backfilled; an existing table of any
+        create the participation removal-generation table, its maintaining
+        trigger on ``subsystem_interface_components`` and the planar clearance
+        revision history, inside the store's one migration transaction. Nothing is backfilled; an existing table of any
         other shape is refused (``sqlite3.DatabaseError``) rather than read as
         empty."""
         for table, columns, schema in (
@@ -3053,6 +3064,13 @@ class SqliteRecordStore:
                 "PRAGMA table_info(%s)" % table).fetchall())
             if found != columns:
                 raise sqlite3.DatabaseError("%s has an unrecognised shape" % table)
+        existing = conn.execute(
+            "SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?",
+            (_PARTICIPATION_EPOCH_TRIGGER_NAME,)).fetchone()
+        if existing is None:
+            conn.execute(_PARTICIPATION_EPOCH_TRIGGER)
+        elif existing[0] != _PARTICIPATION_EPOCH_TRIGGER:
+            raise sqlite3.DatabaseError("the removal-generation trigger has an unrecognised shape")
 
     def _migrate_participation_preparations(self, conn) -> None:
         """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 forward
@@ -4893,16 +4911,10 @@ class SqliteRecordStore:
                     "DELETE FROM subsystem_interface_components WHERE "
                     "project_id = ? AND interface_id = ? AND component_id = ?",
                     (project_id, interface_id, component_id))
-                # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the removal generation of
-                # this pair moves on in the SAME transaction, so a planar
-                # clearance binding made before the removal can never match a
-                # later re-addition (ABA guard). Never decremented or deleted.
-                self._conn.execute(
-                    "INSERT INTO subsystem_interface_participation_epochs "
-                    "(project_id, interface_id, component_id, removals) "
-                    "VALUES (?, ?, ?, 1) ON CONFLICT (project_id, interface_id, "
-                    "component_id) DO UPDATE SET removals = removals + 1",
-                    (project_id, interface_id, component_id))
+                # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: this DELETE moves the
+                # pair's removal generation on through the database trigger
+                # ``subsystem_interface_components_removal_generation`` (same
+                # transaction; ABA guard). Nothing to do here.
                 # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 ("keep,
                 # hide while absent"): the removed pair's notes stay stored,
                 # marked as earlier statements, in this same transaction. The
@@ -5025,6 +5037,12 @@ class SqliteRecordStore:
 
     def _planar_clearance_snapshot(self, project_id):
         self._require_project(project_id)
+        # the ABA guard rests on the trigger: without it, no binding is trusted
+        trigger = self._conn.execute(
+            "SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?",
+            (_PARTICIPATION_EPOCH_TRIGGER_NAME,)).fetchone()
+        if trigger is None or trigger[0] != _PARTICIPATION_EPOCH_TRIGGER:
+            raise PlanarClearanceCorrupt("the removal-generation trigger is missing")
         subsystems = self.load_project_subsystems(project_id)
         interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
         inventory, _d, _k, _r, _rk = self._component_history(project_id, subsystems)

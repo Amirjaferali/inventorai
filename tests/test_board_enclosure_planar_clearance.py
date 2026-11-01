@@ -433,6 +433,36 @@ def test_s08_removal_then_readdition_does_not_revive_the_old_binding(store):
     assert rec.current.enclosure_participation_epoch == 2
 
 
+def test_s08b_the_generation_moves_on_for_any_delete_and_the_guard_fails_closed(tmp_path):
+    """Review F1: the removal generation is maintained by a database trigger, so a
+    deletion issued by ANY code (here a raw statement, as a pre-increment build
+    would issue it) moves it on; without the trigger nothing is trusted."""
+    path = str(tmp_path / "trigger.db")
+    store = SqliteRecordStore(path)
+    pid, subs, ifc, b, e, x = _setup(store)
+    _declare(store, pid, ifc, b, e)
+    conn = sqlite3.connect(path)
+    conn.execute("PRAGMA foreign_keys = ON")
+    conn.execute("DELETE FROM subsystem_interface_components WHERE project_id = ? AND "
+                 "interface_id = ? AND component_id = ?", (pid, ifc, e))
+    conn.execute("INSERT INTO subsystem_interface_components (project_id, interface_id, "
+                 "component_id) VALUES (?, ?, ?)", (pid, ifc, e))
+    conn.commit()
+    assert _issues(store, pid, ifc) == (("PARTICIPATION_CHANGED", "enclosure"),)
+    store.set_interface_participation(pid, ifc, [b, x], [b, e, x])   # the new writer: once, not twice
+    assert store.load_planar_clearance(pid)["epochs"][(ifc, e)] == 2
+    conn.execute("DROP TRIGGER subsystem_interface_components_removal_generation")
+    conn.commit()
+    with pytest.raises(PlanarClearanceCorrupt):
+        store.load_planar_clearance(pid)
+    conn.execute("CREATE TRIGGER subsystem_interface_components_removal_generation AFTER "
+                  "DELETE ON subsystem_interface_components BEGIN SELECT 1; END")
+    conn.commit()
+    conn.close()
+    with pytest.raises(sqlite3.DatabaseError):
+        SqliteRecordStore(path)                                       # an unknown trigger shape
+
+
 def test_s09_method_version_mismatch_is_never_substituted(store):
     pid, subs, ifc, b, e, _x = _setup(store)
     _declare(store, pid, ifc, b, e)
