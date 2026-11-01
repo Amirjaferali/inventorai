@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% from "_planar_clearance_result.html" import pcc_result with context %}
+{% block title %}{{ pcc_t('UI_PCC_TITLE') }}{% endblock %}
+{% block head %}
+<style>
+body{font-family:sans-serif;max-width:780px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+h2{color:#2c3e50;font-size:18px;margin:26px 0 8px 0}
+h3{color:#2c3e50;font-size:15px;margin:18px 0 6px 0}
+.intro{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444;line-height:1.5}
+.error{background:#fdecea;color:#b71c1c;border:1px solid #f5c6cb;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px}
+.notice{background:#eef3f8;color:#1f3b57;border:1px solid #c9d6e3;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px}
+.pcc-box{border:1px solid #e2e6ea;border-radius:4px;padding:12px 14px;margin-bottom:16px;overflow-wrap:anywhere}
+.pcc-small{font-size:12px;color:#555;line-height:1.5}
+.pcc-table{border-collapse:collapse;font-size:13px;margin:6px 0}
+.pcc-table th,.pcc-table td{border:1px solid #e2e6ea;padding:4px 8px;text-align:start}
+.pcc-dl dt{font-weight:bold;font-size:13px;color:#2c3e50;margin-top:6px}
+.pcc-dl dd{margin:0 12px 2px 12px;font-size:13px;white-space:pre-wrap}
+.pcc-outcome-met{color:#1e8449}.pcc-outcome-not_met{color:#b03a2e}
+.pcc-reconfirm{background:#fff8e6;border:1px solid #f0d58c;padding:8px 12px;border-radius:4px}
+.pcc-applicability,.pcc-disclosure ul,.pcc-reconfirm ul,fieldset legend{font-size:13px}
+label{display:block;font-size:13px;color:#2c3e50;margin:10px 0 4px 0}
+input[type=text],select,textarea{padding:6px;font-size:13px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;max-width:100%}
+textarea{width:100%}
+label.inline{display:inline;margin:0 10px 0 0;font-weight:normal}
+fieldset{border:1px solid #e2e6ea;border-radius:4px;margin:10px 0;padding:6px 10px;min-width:0}
+button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
+@media(max-width:520px){body{margin:18px auto;padding:0 14px}}
+</style>
+{% endblock %}
+{% block content %}
+{% if ui_lang == 'ar' %}<div class="notice" role="note" data-pcc-english-only>{{ t('UI_PCC_ENGLISH_ONLY') }}</div>{% endif %}
+<div lang="en" dir="ltr" data-pcc-page>
+<h1>{{ pcc_t('UI_PCC_TITLE') }}</h1>
+<p><a href="{{ url_for('interface_preparation', sid=sid) }}">{{ pcc_t('UI_PCC_BACK') }}</a></p>
+<p class="intro">{{ pcc_t('UI_PCC_INTRO') }}</p>
+{% if error %}<div class="error" role="alert" data-pcc-error>{{ pcc_t(error) }}</div>{% endif %}
+{% if notice %}<div class="notice" role="status" data-pcc-notice>{{ pcc_t(notice) }}</div>{% endif %}
+{% if v is none %}
+<div class="notice" role="status" data-pcc-unavailable>{{ pcc_t('UI_PCC_UNAVAILABLE') }}</div>
+{% else %}
+<div class="pcc-box">
+  <p><strong>{{ pcc_t('UI_PCC_BETWEEN') }} <bdi dir="auto">{{ v.part_a }}</bdi> {{ pcc_t('UI_PCC_AND') }} <bdi dir="auto">{{ v.part_b }}</bdi></strong></p>
+  <p class="pcc-small"><bdi dir="auto">{{ v.interface_description }}</bdi></p>
+  {% if v.state == 'NONE' %}<p data-pcc-none>{{ pcc_t('UI_PCC_STATE_NONE') }}</p>{% endif %}
+  {% if v.state == 'WITHDRAWN' %}<p data-pcc-withdrawn-only>{{ pcc_t('UI_PCC_STATE_WITHDRAWN') }}</p>{% endif %}
+  {% if v.record %}{{ pcc_result(v) }}{% endif %}
+</div>
+
+{% if v.eligible %}
+{% set m = form %}
+<h2>{% if v.record %}{{ pcc_t('UI_PCC_FORM_HEADING_CORRECT') }}{% else %}{{ pcc_t('UI_PCC_FORM_HEADING_NEW') }}{% endif %}</h2>
+<form method="POST" action="{{ url_for('planar_clearance_save', sid=sid, interface_id=v.interface_id) }}" data-pcc-form>
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+  <input type="hidden" name="pcc_submission" value="{{ submission }}">
+  <input type="hidden" name="declaration_id" value="{{ v.record.declaration_id if v.record else '' }}">
+  <input type="hidden" name="expected_head" value="{{ v.record.head_revision_no if v.record else 'none' }}">
+  {% for opt in v.options %}
+  <input type="hidden" name="rev_{{ opt.id }}" value="{{ opt.revision }}">
+  <input type="hidden" name="epoch_{{ opt.id }}" value="{{ opt.epoch }}">
+  {% endfor %}
+  <label for="pcc-board">{{ pcc_t('UI_PCC_PICK_BOARD') }}</label>
+  <select id="pcc-board" name="board_component_id" data-pcc-board-select>
+    <option value="">{{ pcc_t('UI_PCC_PICK_NONE') }}</option>
+    {% for opt in v.options %}<option value="{{ opt.id }}"{% if m.board == opt.id %} selected{% endif %}>{{ opt.name }}</option>{% endfor %}
+  </select>
+  <label for="pcc-enclosure">{{ pcc_t('UI_PCC_PICK_ENCLOSURE') }}</label>
+  <select id="pcc-enclosure" name="enclosure_component_id" data-pcc-enclosure-select>
+    <option value="">{{ pcc_t('UI_PCC_PICK_NONE') }}</option>
+    {% for opt in v.options %}<option value="{{ opt.id }}"{% if m.enclosure == opt.id %} selected{% endif %}>{{ opt.name }}</option>{% endfor %}
+  </select>
+  <label for="pcc-region">{{ pcc_t('UI_PCC_REGION_DESCRIPTION') }}</label>
+  <textarea id="pcc-region" name="region_description" rows="2" maxlength="{{ text_max }}">{{ m.region_description or '' }}</textarea>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_REGION_HELP') }}</p>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_VALUE_HELP') }}</p>
+  {% for role in value_roles %}
+  <label for="pcc-v-{{ role }}">{{ pcc_t('UI_PCC_VALUE_' ~ role) }}</label>
+  <input type="text" id="pcc-v-{{ role }}" name="value_{{ role }}" inputmode="decimal" autocomplete="off" maxlength="{{ value_max }}" value="{{ m['values'][role] or '' }}">
+  <label class="inline"><input type="checkbox" name="unknown_{{ role }}" value="1"{% if m.unknown[role] %} checked{% endif %}> {{ pcc_t('UI_PCC_UNKNOWN_BOX') }}</label>
+  {% if role == 'c' %}<p class="pcc-small">{{ pcc_t('UI_PCC_CLEARANCE_HELP') }}</p>{% endif %}
+  {% endfor %}
+  <p class="pcc-small">{{ pcc_t('UI_PCC_AXIS_PAIRING') }}</p>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_BASIS_NOTE') }}</p>
+  {% for field in basis_fields %}
+  <label for="pcc-{{ field }}">{{ pcc_t('UI_PCC_BASIS_' ~ field) }}</label>
+  <input type="text" id="pcc-{{ field }}" name="{{ field }}" maxlength="{{ text_max }}" style="width:100%" value="{{ m.basis[field] or '' }}">
+  {% endfor %}
+  <h3>{{ pcc_t('UI_PCC_APPLICABILITY_HEADING') }}</h3>
+  {% for d, ref in declarations %}
+  <fieldset data-pcc-decl="{{ d }}"><legend>{{ ref }} — {{ pcc_statement(d) }}</legend>
+    {% for answer in answers %}<label class="inline"><input type="radio" name="decl_{{ d }}" value="{{ answer }}"{% if m.applicability[d] == answer %} checked{% endif %}> {{ pcc_t('UI_PCC_ANSWER_' ~ answer) }}</label>{% endfor %}
+  </fieldset>
+  {% endfor %}
+  <button type="submit">{{ pcc_t('UI_PCC_SAVE') }}</button>
+</form>
+{% else %}
+<p class="notice" data-pcc-not-eligible>{{ pcc_t('UI_PCC_NOT_ELIGIBLE') }}</p>
+{% endif %}
+
+{% if v.record %}
+<h2>{{ pcc_t('UI_PCC_WITHDRAW_HEADING') }}</h2>
+<form method="POST" action="{{ url_for('planar_clearance_withdraw', sid=sid, interface_id=v.interface_id) }}" data-pcc-withdraw-form>
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+  <input type="hidden" name="pcc_submission" value="{{ withdraw_submission }}">
+  <input type="hidden" name="declaration_id" value="{{ v.record.declaration_id }}">
+  <input type="hidden" name="expected_head" value="{{ v.record.head_revision_no }}">
+  <label class="inline"><input type="checkbox" name="withdraw_confirm" value="yes"> {{ pcc_t('UI_PCC_WITHDRAW_CONFIRM') }}</label>
+  <br><button type="submit">{{ pcc_t('UI_PCC_WITHDRAW') }}</button>
+</form>
+<h2>{{ pcc_t('UI_PCC_HISTORY_HEADING') }}</h2>
+<ul class="pcc-small" data-pcc-history>
+  {% for h in v.history %}<li data-pcc-history-item="{{ h.revision_no }}">{{ pcc_t('UI_PCC_REVISION_LINE') }} {{ h.revision_no }} — {{ pcc_t('UI_PCC_KIND_' ~ h.kind) }}{% if h["values"] %}: {% for item in h["values"] %}{{ item.role }} = {{ item.text if item.text is not none else pcc_t('UI_PCC_VALUE_NOT_ENTERED') }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}</li>{% endfor %}
+</ul>
+{% endif %}
+<p class="pcc-small">{{ pcc_t('UI_PCC_HISTORICAL_NOTE') }}</p>
+{% endif %}
+</div>
+{% endblock %}

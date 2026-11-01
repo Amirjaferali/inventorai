@@ -142,6 +142,10 @@ from engine.experiment_result import (
 # Stage 15 Slice 4: the inventor's append-only report of what actually
 # happened when they tested or checked one Owner-declared interface.
 from engine import interface_observation as _observation
+# BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the board-enclosure planar clearance
+# declaration (semantics owner) and its method consumer's value vocabulary.
+from engine import subsystem_model as _sm
+from engine import mechanical_planar_clearance as _pcc
 from engine.evidence_reference import (
     EvidenceReference, validate_reference_history, validate_new_reference,
     active_reference_for_anchor, REFERENCE_INSERTED, REFERENCE_EXACT_REPLAY,
@@ -445,6 +449,29 @@ class InterfaceParticipationsCorrupt(StoreError):
     rows are malformed, duplicated or orphaned from its interactions or
     declared components. Fail-closed for the WHOLE collection: nothing
     partial is returned and nothing is repaired, deleted or remapped."""
+
+
+class PlanarClearanceRejected(StoreError):
+    """BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: a planar clearance revision is not
+    admissible against DURABLE truth (decided inside the write transaction;
+    nothing written). ``cause`` is the semantic owner's refusal
+    (``engine.subsystem_model.PlanarClearanceError`` subclass) or ``None``."""
+
+    def __init__(self, message, cause=None):
+        super().__init__(message)
+        self.cause = cause
+
+
+class PlanarClearanceConflict(StoreError):
+    """BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the submission identity already
+    names a DIFFERENT committed action. Nothing written."""
+
+
+class PlanarClearanceCorrupt(StoreError):
+    """BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the project's declaration history or
+    participation removal generations are malformed, orphaned or of an unknown
+    table shape. Fail-closed for the WHOLE collection (UNAVAILABLE, never NOT
+    RECORDED): nothing partial is returned, repaired or deleted."""
 
 
 class ParticipationPreparationRejected(StoreError):
@@ -2104,6 +2131,135 @@ _INTERFACE_COMPONENTS_SCHEMA = (
     """,
 )
 
+# BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 — ``subsystem_interface_participation_epochs``:
+# the removal generation of ONE (interaction, component) participation. The
+# participation writer increments it, in the same transaction, every time it
+# removes that participation (``set_interface_participation``); it is never
+# decremented or deleted, so a participation removed and later re-added carries
+# a different generation than before the removal. A planar clearance
+# declaration records the generation it was made against; a mismatch means the
+# participation changed and the old binding never revives (ABA guard). No row
+# means generation 0. Additive and idempotent; an existing table of any other
+# shape is refused, never read as empty; nothing is backfilled. Rollback is
+# disable-and-preserve.
+_PARTICIPATION_EPOCH_COLUMNS = ("project_id", "interface_id", "component_id",
+                                "removals")
+_PARTICIPATION_EPOCHS_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS subsystem_interface_participation_epochs (
+        project_id    TEXT    NOT NULL,
+        interface_id  TEXT    NOT NULL,
+        component_id  TEXT    NOT NULL,
+        removals      INTEGER NOT NULL,
+        PRIMARY KEY (project_id, interface_id, component_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, interface_id)
+            REFERENCES subsystem_interfaces(project_id, interface_id),
+        FOREIGN KEY (project_id, component_id)
+            REFERENCES project_components(project_id, component_id),
+        CHECK (typeof(interface_id) = 'text' AND length(interface_id) = 36),
+        CHECK (typeof(component_id) = 'text' AND length(component_id) = 36),
+        CHECK (typeof(removals) = 'integer' AND removals >= 1)
+    )
+    """,
+)
+
+# BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 — ``planar_clearance_revisions``: the
+# inventor's append-only, revisioned board-enclosure planar clearance INPUTS
+# (never a result: calc/units §12). ONE row per (declaration, position):
+# position 0 DECLARED, then CORRECTED (each with the COMPLETE material), then at
+# most one terminal WITHDRAWN (no material). Every material row binds the exact
+# interaction, the board and enclosure component identities with their revision
+# positions and participation removal generations, the axis pairing, the region
+# description, the exact entered values (decimal text, ``'unknown'`` or NULL =
+# not entered), the basis notes, the eight applicability answers and the method /
+# declaration-contract versions. Composite foreign keys anchor the interaction
+# and both components to THIS project. No provenance column variation: every
+# row is OWNER_STATED / UNVALIDATED. The CHECKs are a database backstop only; the
+# loader re-validates the WHOLE history. Additive and idempotent; an existing
+# table of any other shape is refused; nothing is backfilled. Rollback is
+# disable-and-preserve (stop reading the table; its rows stay intact).
+_PLANAR_CLEARANCE_VALUE_COLUMNS = tuple("value_" + r for r in _pcc.VALUE_ROLES)
+_PLANAR_CLEARANCE_BASIS_COLUMNS = _sm.PLANAR_CLEARANCE_BASIS_FIELDS
+_PLANAR_CLEARANCE_ANSWER_COLUMNS = tuple("decl_" + d for d in _pcc.DECLARATION_IDS)
+_PLANAR_CLEARANCE_COLUMNS = (
+    ("project_id", "declaration_id", "revision_no", "revision_id", "kind",
+     "interface_id", "board_component_id", "enclosure_component_id",
+     "board_component_revision", "enclosure_component_revision",
+     "board_participation_epoch", "enclosure_participation_epoch",
+     "axis_pairing", "region_description")
+    + _PLANAR_CLEARANCE_VALUE_COLUMNS + _PLANAR_CLEARANCE_BASIS_COLUMNS
+    + _PLANAR_CLEARANCE_ANSWER_COLUMNS
+    + ("method_id", "method_version", "declaration_version", "provenance",
+       "validation_state", "submission_key", "event_seq"))
+
+
+def _planar_clearance_ddl():
+    text_check = ("(%(c)s IS NULL OR (typeof(%(c)s) = 'text' AND length(%(c)s) "
+                  "BETWEEN 1 AND %(n)d AND instr(CAST(%(c)s AS BLOB), X'00') = 0))")
+    value_check = ("(%(c)s IS NULL OR (typeof(%(c)s) = 'text' AND length(%(c)s) "
+                   "BETWEEN 1 AND %(n)d))")
+    answer_check = "(%(c)s IS NULL OR %(c)s IN ('applies', 'does_not_apply'))"
+    material = ("board_component_id", "enclosure_component_id",
+                "board_component_revision", "enclosure_component_revision",
+                "board_participation_epoch", "enclosure_participation_epoch",
+                "axis_pairing", "method_id", "method_version", "declaration_version")
+    checks = [
+        "CHECK (typeof(revision_no) = 'integer' AND revision_no BETWEEN 0 AND %d)"
+        % _sm.MAX_PLANAR_CLEARANCE_REVISION_NO,
+        "CHECK (kind IN ('DECLARED', 'CORRECTED', 'WITHDRAWN'))",
+        "CHECK ((kind = 'DECLARED') = (revision_no = 0))",
+        "CHECK (kind <> 'CORRECTED' OR revision_no <= %d)"
+        % _sm.MAX_PLANAR_CLEARANCE_CORRECTIONS,
+        "CHECK (typeof(declaration_id) = 'text' AND length(declaration_id) = 36)",
+        "CHECK (typeof(revision_id) = 'text' AND length(revision_id) = 36)",
+        "CHECK (typeof(interface_id) = 'text' AND length(interface_id) = 36)",
+        "CHECK (provenance = 'OWNER_STATED')",
+        "CHECK (validation_state = 'UNVALIDATED')",
+        "CHECK (typeof(submission_key) = 'text' AND length(submission_key) > 0)",
+        "CHECK (typeof(event_seq) = 'integer' AND event_seq >= 0)",
+        "CHECK ((kind = 'WITHDRAWN' AND " + " AND ".join(
+            "%s IS NULL" % c for c in material + ("region_description",)
+            + _PLANAR_CLEARANCE_VALUE_COLUMNS + _PLANAR_CLEARANCE_BASIS_COLUMNS
+            + _PLANAR_CLEARANCE_ANSWER_COLUMNS) + ") OR (kind <> 'WITHDRAWN' AND "
+        + " AND ".join("%s IS NOT NULL" % c for c in material) + "))",
+        "CHECK " + text_check % {"c": "region_description",
+                                 "n": _sm.MAX_PLANAR_CLEARANCE_TEXT_LENGTH},
+    ]
+    checks += ["CHECK " + text_check % {"c": c, "n": _sm.MAX_PLANAR_CLEARANCE_TEXT_LENGTH}
+               for c in _PLANAR_CLEARANCE_BASIS_COLUMNS]
+    checks += ["CHECK " + value_check % {"c": c, "n": _pcc.MAX_VALUE_CHARS}
+               for c in _PLANAR_CLEARANCE_VALUE_COLUMNS]
+    checks += ["CHECK " + answer_check % {"c": c} for c in _PLANAR_CLEARANCE_ANSWER_COLUMNS]
+    cols = ["project_id TEXT NOT NULL", "declaration_id TEXT NOT NULL",
+            "revision_no INTEGER NOT NULL", "revision_id TEXT NOT NULL",
+            "kind TEXT NOT NULL", "interface_id TEXT NOT NULL",
+            "board_component_id TEXT", "enclosure_component_id TEXT",
+            "board_component_revision INTEGER", "enclosure_component_revision INTEGER",
+            "board_participation_epoch INTEGER", "enclosure_participation_epoch INTEGER",
+            "axis_pairing TEXT", "region_description TEXT"]
+    cols += ["%s TEXT" % c for c in _PLANAR_CLEARANCE_VALUE_COLUMNS
+             + _PLANAR_CLEARANCE_BASIS_COLUMNS + _PLANAR_CLEARANCE_ANSWER_COLUMNS]
+    cols += ["method_id TEXT", "method_version TEXT", "declaration_version TEXT",
+             "provenance TEXT NOT NULL", "validation_state TEXT NOT NULL",
+             "submission_key TEXT NOT NULL", "event_seq INTEGER NOT NULL"]
+    keys = ["PRIMARY KEY (project_id, declaration_id, revision_no)",
+            "UNIQUE (project_id, revision_id)",
+            "UNIQUE (project_id, submission_key)",
+            "UNIQUE (project_id, event_seq)",
+            "FOREIGN KEY (project_id) REFERENCES projects(project_id)",
+            "FOREIGN KEY (project_id, interface_id) "
+            "REFERENCES subsystem_interfaces(project_id, interface_id)",
+            "FOREIGN KEY (project_id, board_component_id) "
+            "REFERENCES project_components(project_id, component_id)",
+            "FOREIGN KEY (project_id, enclosure_component_id) "
+            "REFERENCES project_components(project_id, component_id)"]
+    return ("CREATE TABLE IF NOT EXISTS planar_clearance_revisions (\n    "
+            + ",\n    ".join(cols + keys + checks) + "\n)")
+
+
+_PLANAR_CLEARANCE_SCHEMA = (_planar_clearance_ddl(),)
+
 # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 —
 # ``subsystem_participation_preparations``: the inventor's own notes for ONE
 # participation (ONE component taking part in ONE declared interaction): the
@@ -2353,6 +2509,10 @@ PART_TEMPERATURE_CHANGE_DECLARED = "DECLARED"
 PART_TEMPERATURE_CHANGE_WITHDRAWN = "WITHDRAWN"
 PART_TEMPERATURE_CHANGE_UNCHANGED = "UNCHANGED"
 
+# BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the outcomes of a declaration write.
+PLANAR_CLEARANCE_INSERTED = "INSERTED"
+PLANAR_CLEARANCE_EXACT_REPLAY = "EXACT_REPLAY"
+
 # COMPONENT-INTERFACE-PARTICIPATION-01: the outcomes of a participation write.
 INTERFACE_PARTICIPATION_SAVED = "SAVED"
 INTERFACE_PARTICIPATION_CLEARED = "CLEARED"
@@ -2511,6 +2671,7 @@ class SqliteRecordStore:
             self._migrate_component_prototype_needs(self._conn)
             self._migrate_interface_components(self._conn)
             self._migrate_participation_preparations(self._conn)
+            self._migrate_planar_clearance(self._conn)
             self._migrate_constraint_acceptance(self._conn)
             self._migrate_decision_comparison(self._conn)
 
@@ -2873,6 +3034,25 @@ class SqliteRecordStore:
                 "subsystem_interface_components has an unrecognised shape")
         for stmt in _INTERFACE_COMPONENTS_SCHEMA:
             conn.execute(stmt)
+
+    def _migrate_planar_clearance(self, conn) -> None:
+        """BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 forward migration: additively
+        create the participation removal-generation table and the planar
+        clearance revision history (``IF NOT EXISTS``), inside the store's one
+        migration transaction. Nothing is backfilled; an existing table of any
+        other shape is refused (``sqlite3.DatabaseError``) rather than read as
+        empty."""
+        for table, columns, schema in (
+                ("subsystem_interface_participation_epochs",
+                 _PARTICIPATION_EPOCH_COLUMNS, _PARTICIPATION_EPOCHS_SCHEMA),
+                ("planar_clearance_revisions", _PLANAR_CLEARANCE_COLUMNS,
+                 _PLANAR_CLEARANCE_SCHEMA)):
+            for stmt in schema:
+                conn.execute(stmt)
+            found = tuple(row[1] for row in conn.execute(
+                "PRAGMA table_info(%s)" % table).fetchall())
+            if found != columns:
+                raise sqlite3.DatabaseError("%s has an unrecognised shape" % table)
 
     def _migrate_participation_preparations(self, conn) -> None:
         """COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 forward
@@ -4713,6 +4893,16 @@ class SqliteRecordStore:
                     "DELETE FROM subsystem_interface_components WHERE "
                     "project_id = ? AND interface_id = ? AND component_id = ?",
                     (project_id, interface_id, component_id))
+                # BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: the removal generation of
+                # this pair moves on in the SAME transaction, so a planar
+                # clearance binding made before the removal can never match a
+                # later re-addition (ABA guard). Never decremented or deleted.
+                self._conn.execute(
+                    "INSERT INTO subsystem_interface_participation_epochs "
+                    "(project_id, interface_id, component_id, removals) "
+                    "VALUES (?, ?, ?, 1) ON CONFLICT (project_id, interface_id, "
+                    "component_id) DO UPDATE SET removals = removals + 1",
+                    (project_id, interface_id, component_id))
                 # COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 ("keep,
                 # hide while absent"): the removed pair's notes stay stored,
                 # marked as earlier statements, in this same transaction. The
@@ -4736,6 +4926,229 @@ class SqliteRecordStore:
                     (project_id, interface_id, component_id))
         return (INTERFACE_PARTICIPATION_CLEARED if not target_set
                 else INTERFACE_PARTICIPATION_SAVED)
+
+    # --- BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: planar clearance declaration ----
+    def _participation_epochs(self, project_id, interfaces, inventory):
+        """``{(interface_id, component_id): removals}`` of this project,
+        validated WHOLE (an interaction of this project, a declared component,
+        a positive integer, no duplicate); ``PlanarClearanceCorrupt``
+        otherwise. Absent pairs read 0."""
+        rows = self._conn.execute(
+            "SELECT interface_id, component_id, removals FROM "
+            "subsystem_interface_participation_epochs WHERE project_id = ? "
+            "ORDER BY interface_id ASC, component_id ASC", (project_id,)).fetchall()
+        known = {item.interface_id for item in interfaces}
+        epochs = {}
+        for interface_id, component_id, removals in rows:
+            if (interface_id not in known
+                    or not isinstance(component_id, str)
+                    or inventory.record_for(component_id) is None
+                    or not isinstance(removals, int) or isinstance(removals, bool)
+                    or removals < 1 or (interface_id, component_id) in epochs):
+                raise PlanarClearanceCorrupt("participation generations are malformed")
+            epochs[(interface_id, component_id)] = removals
+        return epochs
+
+    _PLANAR_CLEARANCE_SELECT = ", ".join(_PLANAR_CLEARANCE_COLUMNS[1:])
+
+    @staticmethod
+    def _decode_planar_clearance(row):
+        named = dict(zip(_PLANAR_CLEARANCE_COLUMNS[1:], row))
+        material = None
+        if named["kind"] != _sm.PLANAR_CLEARANCE_WITHDRAWN:
+            material = _sm.PlanarClearanceMaterial(
+                interface_id=named["interface_id"],
+                board_component_id=named["board_component_id"],
+                enclosure_component_id=named["enclosure_component_id"],
+                board_component_revision=named["board_component_revision"],
+                enclosure_component_revision=named["enclosure_component_revision"],
+                board_participation_epoch=named["board_participation_epoch"],
+                enclosure_participation_epoch=named["enclosure_participation_epoch"],
+                axis_pairing=named["axis_pairing"],
+                region_description=named["region_description"],
+                values=tuple(named[c] for c in _PLANAR_CLEARANCE_VALUE_COLUMNS),
+                basis=tuple(named[c] for c in _PLANAR_CLEARANCE_BASIS_COLUMNS),
+                applicability=tuple(named[c] for c in _PLANAR_CLEARANCE_ANSWER_COLUMNS),
+                method_id=named["method_id"], method_version=named["method_version"],
+                declaration_version=named["declaration_version"])
+        revision = _sm.PlanarClearanceRevision(
+            revision_id=named["revision_id"], declaration_id=named["declaration_id"],
+            revision_no=named["revision_no"], kind=named["kind"],
+            interface_id=named["interface_id"], material=material,
+            provenance=named["provenance"], validation_state=named["validation_state"])
+        return revision, named["submission_key"], named["event_seq"]
+
+    @staticmethod
+    def _encode_planar_clearance(project_id, revision, submission_key, event_seq):
+        """The row of ``_PLANAR_CLEARANCE_COLUMNS`` for one revision (a
+        withdrawal stores NULL for every material column)."""
+        m = revision.material
+        if m is None:
+            material = (None,) * (len(_PLANAR_CLEARANCE_COLUMNS) - 10)
+        else:
+            material = ((m.board_component_id, m.enclosure_component_id,
+                         m.board_component_revision, m.enclosure_component_revision,
+                         m.board_participation_epoch, m.enclosure_participation_epoch,
+                         m.axis_pairing, m.region_description)
+                        + tuple(m.values) + tuple(m.basis) + tuple(m.applicability)
+                        + (m.method_id, m.method_version, m.declaration_version))
+        row = ((project_id, revision.declaration_id, revision.revision_no,
+                revision.revision_id, revision.kind, revision.interface_id)
+               + material
+               + (revision.provenance, revision.validation_state, submission_key,
+                  event_seq))
+        if len(row) != len(_PLANAR_CLEARANCE_COLUMNS):
+            raise PlanarClearanceRejected("revision does not encode")
+        return row
+
+    def _planar_clearance_history(self, project_id, interfaces, inventory):
+        """``(ledger, revisions, submission_keys)`` of this project, read in
+        event order and validated WHOLE by the semantic owner;
+        ``PlanarClearanceCorrupt`` on anything malformed (event order not
+        exactly 0..n-1 included). Nothing partial."""
+        rows = self._conn.execute(
+            "SELECT " + self._PLANAR_CLEARANCE_SELECT + " FROM "
+            "planar_clearance_revisions WHERE project_id = ? ORDER BY event_seq ASC",
+            (project_id,)).fetchall()
+        revisions, keys = [], []
+        try:
+            for index, row in enumerate(rows):
+                revision, key, seq = self._decode_planar_clearance(row)
+                if seq != index or not isinstance(key, str) or not key:
+                    raise _sm.PlanarClearanceError("event order malformed")
+                revisions.append(revision)
+                keys.append(key)
+            ledger = _sm.project_planar_clearance(revisions, interfaces, inventory)
+        except (_sm.PlanarClearanceError, TypeError, ValueError):
+            raise PlanarClearanceCorrupt("planar clearance history is malformed") from None
+        return ledger, tuple(revisions), tuple(keys)
+
+    def _planar_clearance_snapshot(self, project_id):
+        self._require_project(project_id)
+        subsystems = self.load_project_subsystems(project_id)
+        interfaces, _ikeys = self._validated_interfaces(project_id, subsystems)
+        inventory, _d, _k, _r, _rk = self._component_history(project_id, subsystems)
+        participations = self._validated_interface_participations(
+            project_id, interfaces, inventory)
+        epochs = self._participation_epochs(project_id, interfaces, inventory)
+        ledger, revisions, keys = self._planar_clearance_history(
+            project_id, interfaces, inventory)
+        return {"subsystems": tuple(subsystems), "interfaces": tuple(interfaces),
+                "inventory": inventory, "participations": tuple(participations),
+                "epochs": dict(epochs), "ledger": ledger,
+                "_revisions": revisions, "_keys": keys}
+
+    def load_planar_clearance(self, project_id: str) -> dict:
+        """BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: ONE coherent read snapshot of
+        everything a planar clearance view needs - the durable composition
+        (``subsystems``), its ``interfaces``, the validated component
+        ``inventory`` (with revision positions), every stored
+        ``participations`` row, the participation removal ``epochs`` and the
+        validated declaration ``ledger`` - each validated WHOLE together (the
+        existing corrupt errors and ``PlanarClearanceCorrupt``; nothing
+        partial). No project -> ``ProjectNotFound``. IR-01 refuses an
+        unresolved connection before any SELECT. Read-only; writes nothing."""
+        self._refuse_uncommitted_reads()
+        with self.read_snapshot():
+            snapshot = self._planar_clearance_snapshot(project_id)
+        snapshot.pop("_revisions")
+        snapshot.pop("_keys")
+        return snapshot
+
+    def committed_planar_clearance_for_submission(self, project_id: str,
+                                                  submission_key: str):
+        """The COMMITTED revision written under ``submission_key`` or ``None``
+        (confirm-by-reload). The whole history is validated first."""
+        self._refuse_uncommitted_reads()
+        if not isinstance(submission_key, str) or not submission_key:
+            return None
+        with self.read_snapshot():
+            snapshot = self._planar_clearance_snapshot(project_id)
+        keys = snapshot["_keys"]
+        if submission_key not in keys:
+            return None
+        return snapshot["_revisions"][keys.index(submission_key)]
+
+    def append_planar_clearance_revision(self, project_id: str, revision,
+                                         submission_key: str) -> tuple:
+        """Atomically append ONE declaration, correction or terminal withdrawal
+        and return ``(outcome, stored_revision)``:
+        ``PLANAR_CLEARANCE_EXACT_REPLAY`` with the already-committed revision
+        when ``submission_key`` already names this exact action (recognised
+        first; nothing written), else ``PLANAR_CLEARANCE_INSERTED``.
+
+        ONE serialized ``BEGIN IMMEDIATE`` transaction against DURABLE truth:
+        the project exists; its composition, interactions, WHOLE component
+        history, participation rows, removal generations and declaration
+        history validate (the corrupt errors); the submission identity is
+        unused or names exactly this action (``PlanarClearanceConflict``); for
+        a declaration or correction the material is rebuilt from durable truth
+        - the board and enclosure are two distinct active current participants
+        of the interaction and their revision positions and removal
+        generations are unchanged - and must equal the submitted material; the
+        lifecycle rules hold (one active per interaction, the identity and
+        correction limits, the expected head, no exact restatement, nothing
+        after a withdrawal). Any refusal raises ``PlanarClearanceRejected``
+        carrying the semantic owner's cause; nothing is written. Full rollback
+        on any failure. IR-01: never writes on top of an unresolved
+        connection."""
+        if not isinstance(revision, _sm.PlanarClearanceRevision):
+            raise PlanarClearanceRejected("not a planar clearance revision")
+        if not isinstance(submission_key, str) or not submission_key:
+            raise PlanarClearanceRejected("a submission identity is required")
+        self._refuse_uncommitted_reads()      # IR-01: never write on top of it
+        with self._write():
+            snap = self._planar_clearance_snapshot(project_id)
+            keys, revisions, ledger = snap["_keys"], snap["_revisions"], snap["ledger"]
+            if submission_key in keys:
+                stored = revisions[keys.index(submission_key)]
+                if _sm.same_planar_clearance_action(stored, revision):
+                    return PLANAR_CLEARANCE_EXACT_REPLAY, stored
+                raise PlanarClearanceConflict(
+                    "the submission identity already names a different action")
+            try:
+                if revision.kind == _sm.PLANAR_CLEARANCE_WITHDRAWN:
+                    if revision.material is not None:
+                        raise _sm.PlanarClearanceError("a withdrawal carries material")
+                    _sm.withdrawn_planar_clearance(
+                        ledger, revision.declaration_id, revision.revision_no - 1)
+                else:
+                    m = revision.material
+                    if not isinstance(m, _sm.PlanarClearanceMaterial):
+                        raise _sm.PlanarClearanceError("material missing")
+                    rebuilt = _sm.planar_clearance_material(
+                        snap["inventory"], snap["interfaces"], snap["participations"],
+                        snap["epochs"], m.interface_id, m.board_component_id,
+                        m.enclosure_component_id, m.board_component_revision,
+                        m.enclosure_component_revision, m.board_participation_epoch,
+                        m.enclosure_participation_epoch, m.region_description,
+                        m.values, m.basis, m.applicability)
+                    if rebuilt != m or revision.interface_id != m.interface_id:
+                        raise _sm.PlanarClearanceStale("the material is not current")
+                    if revision.kind == _sm.PLANAR_CLEARANCE_DECLARED:
+                        if revision.revision_no != 0 or ledger.record_for(
+                                revision.declaration_id) is not None:
+                            raise _sm.PlanarClearanceError("not a new identity")
+                        _sm.declared_planar_clearance(ledger, m)
+                    elif revision.kind == _sm.PLANAR_CLEARANCE_CORRECTED:
+                        _sm.corrected_planar_clearance(
+                            ledger, revision.declaration_id, revision.revision_no - 1, m)
+                    else:
+                        raise _sm.PlanarClearanceError("unknown kind")
+                if revision.revision_id in {r.revision_id for r in revisions}:
+                    raise _sm.PlanarClearanceError("revision identity reused")
+                _sm.project_planar_clearance(revisions + (revision,),
+                                             snap["interfaces"], snap["inventory"])
+            except _sm.PlanarClearanceError as exc:
+                raise PlanarClearanceRejected("the revision is not admissible",
+                                              cause=exc) from None
+            self._conn.execute(
+                "INSERT INTO planar_clearance_revisions ("
+                + ", ".join(_PLANAR_CLEARANCE_COLUMNS) + ") VALUES ("
+                + ", ".join("?" * len(_PLANAR_CLEARANCE_COLUMNS)) + ")",
+                self._encode_planar_clearance(project_id, revision, submission_key,
+                                              len(revisions)))
+        return PLANAR_CLEARANCE_INSERTED, revision
 
     # --- COMPONENT-PARTICIPATION-VERIFICATION-PREPARATION-01 (current value) -
     def _validated_participation_preparations(self, project_id, interfaces,

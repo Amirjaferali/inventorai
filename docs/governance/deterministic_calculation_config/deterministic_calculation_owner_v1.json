@@ -1,9 +1,9 @@
 {
   "artifact_id": "deterministic_calculation_owner",
   "schema_version": "1.0",
-  "artifact_version": "13",
+  "artifact_version": "14",
   "owner": "Shared deterministic calculation and units owner (descriptive, unnumbered)",
-  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 13, sections 13A to 13L) and the method contracts of the thirteen admitted methods. Content version 13 admits exactly thirteen methods and exactly the twenty-one unit tokens they require (N, mm, W, K/W, K, N·mm, N·m, rad/s, mV, °C, V, Ω, A, J, s, h, A·h, kg, N/m, Hz and 1/K; each method record names the tokens of its own roles); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. Two kinds hold two exact tokens each by the named exceptions of sections 13E and 13I: voltage holds mV and V, and time holds s and h; each role binds one of them and nothing maps one to the other (no 3600, no minute). The Celsius-temperature kind is the TMP36 output only and is never related to K. The electric-charge kind holds the one token A·h, never related to C, mA·h or J. The frequency kind (Hz) is distinct from angular_velocity (rad/s); nothing maps Hz to rad/s, and 2π lives in the natural-frequency adapter only. The coefficient kind holds the one token 1/K, related to no other spelling; nothing moves between the expansion method and THERM-01. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The earlier unit records, dcu:SU001 to dcu:SU021 and the twelve earlier method records are unchanged from content version 12.",
+  "governance_note": "The ONE governed artifact of the shared deterministic calculation and units owner, shape A2 (method-first), under the accepted calc/units boundary contract (with its Corrections 01 to 14, sections 13A to 13M) and the method contracts of the fourteen admitted methods. Content version 14 admits exactly fourteen methods and exactly the twenty-one unit tokens they require (N, mm, W, K/W, K, N·mm, N·m, rad/s, mV, °C, V, Ω, A, J, s, h, A·h, kg, N/m, Hz and 1/K; each method record names the tokens of its own roles); it holds no conversion, no alias, no dimensional equivalence and no unit vocabulary beyond these records. Two kinds hold two exact tokens each by the named exceptions of sections 13E and 13I: voltage holds mV and V, and time holds s and h; each role binds one of them and nothing maps one to the other (no 3600, no minute). The Celsius-temperature kind is the TMP36 output only and is never related to K. The electric-charge kind holds the one token A·h, never related to C, mA·h or J. The frequency kind (Hz) is distinct from angular_velocity (rad/s); nothing maps Hz to rad/s, and 2π lives in the natural-frequency adapter only. The coefficient kind holds the one token 1/K, related to no other spelling; nothing moves between the expansion method and THERM-01. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json. Each method's equations, applicability, numeric domain, declarations, screen and limitations stay with its own method authority; this artifact carries only the structural method records and small version-bound source-qualification snapshots. The unit records, dcu:SU001 to dcu:SU023 and the thirteen earlier method records are unchanged from content version 13; the planar centered rectangular clearance method (section 13M) adds no kind, token, unit record or source-use record and uses the existing length / mm record dcu:U002 for every role.",
   "quantity_kinds": [
     {"quantity_kind": "force", "dimension": "M L T^-2"},
     {"quantity_kind": "length", "dimension": "L"},
@@ -1143,6 +1143,42 @@
       "applicability": [
         {"role": "alpha_avg", "condition": "greater_than_zero", "bound_role": null},
         {"role": "L_ref", "condition": "greater_than_zero", "bound_role": null}
+      ],
+      "result_range": []
+    },
+    {
+      "method_id": "mechanical:planar_centered_rectangular_clearance",
+      "method_version": "1.0",
+      "adapter_identity": "engine.mechanical_planar_clearance_method.evaluate",
+      "technical_authority": "Mechanical - MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md (section 3 method definition and original derivation, section 6 numeric domain and numerical acceptance)",
+      "method_authority_artifact": {"artifact_id": "mechanical_planar_centered_rectangular_clearance", "artifact_version": "1"},
+      "source_qualification": [
+        {
+          "source_ref": "NIST-PCC-U",
+          "source_title": "NIST Special Publication 811 (2008 Edition), Guide for the Use of the International System of Units (SI), Chapter 4, Tables 1 and 5 - the metre and the prefix milli, hence the millimetre used for every role of this method; the geometric relation itself is InventorAI's original derivation (method contract section 3) and rests on no external text, table or code",
+          "publisher": "National Institute of Standards and Technology (NIST)",
+          "url": "https://doi.org/10.6028/NIST.SP.811e2008",
+          "source_use_policy_ref": "dcu:SU001",
+          "inspection_basis": "LEAD_SUPPLIED",
+          "inspection_date": "2026-10-07"
+        }
+      ],
+      "input_roles": [
+        {"role": "board_x", "quantity_kind": "length", "unit_token": "mm"},
+        {"role": "board_y", "quantity_kind": "length", "unit_token": "mm"},
+        {"role": "region_x", "quantity_kind": "length", "unit_token": "mm"},
+        {"role": "region_y", "quantity_kind": "length", "unit_token": "mm"},
+        {"role": "c", "quantity_kind": "length", "unit_token": "mm"}
+      ],
+      "output_roles": [
+        {"role": "margin_x", "quantity_kind": "length", "unit_token": "mm"},
+        {"role": "margin_y", "quantity_kind": "length", "unit_token": "mm"}
+      ],
+      "applicability": [
+        {"role": "board_x", "condition": "greater_than_zero", "bound_role": null},
+        {"role": "board_y", "condition": "greater_than_zero", "bound_role": null},
+        {"role": "region_x", "condition": "greater_than_zero", "bound_role": null},
+        {"role": "region_y", "condition": "greater_than_zero", "bound_role": null}
       ],
       "result_range": []
     }

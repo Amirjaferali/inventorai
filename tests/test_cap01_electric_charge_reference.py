@@ -406,7 +406,8 @@ def test_c12_the_shared_calculation_and_unit_inventory_is_unchanged():
         "electrical:dc_constant_current_charge",
         "electrical:pwm_average_voltage",
         "mechanical:spring_mass_natural_frequency",
-        "mechanical:free_linear_thermal_expansion"}
+        "mechanical:free_linear_thermal_expansion",
+        "mechanical:planar_centered_rectangular_clearance"}
     assert get_active_rules(DOMAIN) == [
         "PHYSICAL_PRINCIPLE_REQUIRED", "POWER_ACKNOWLEDGMENT_IF_ENERGY", "NO_PLATFORM_SPECIFIC_NAMING"]
 

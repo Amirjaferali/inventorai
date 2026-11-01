@@ -484,6 +484,22 @@ navigation from engineering-data consumption? The ledger/constraint pattern is o
 answer, and a yes to it approves no UI, retention, provider or consumer change. The pending Owner
 decision blocks dependent implementation only; NEXT-LOOP applies to independent eligible work.
 
+**BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 (Owner-authorized bounded implementation, 2026-11-01; continuity
+record, not a second contract).** Current authorized action: ONE implementation PR delivering the first connected
+English engineering journey — an inventor's integrated project and declared interaction → explicit board /
+enclosure choice and usable-region description → revisioned nominal dimensions, clearance and applicability
+answers → the admitted `mechanical:planar_centered_rectangular_clearance` 1.0 comparison (calc/units Correction
+14, §13M; method contract `MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md`) → page, report
+and PDF from ONE presentation model → correction or withdrawal changing or suppressing the current result. It
+is a direct-inventor-input slice: no SCREEN_SUPPORT adoption, OD-2 ruling or question-serving change was a
+prerequisite, and the pending Owner decision above (retention ruling and scoped authorization for the
+SCREEN_SUPPORT candidate) is unchanged by it. Bounded D4 exception for this one declared nominal planar
+comparison only; broader D4, T6 / Technical Realization and Stage 35 stay unactivated; PR #890 stays HOLD and
+Proof B paused. Applicability: delivery takes effect only on the verified merge of that PR; merge, deployment,
+release and paid activation stay NOT AUTHORIZED. Next qualification step after acceptance: Arabic and dialect
+qualification of this SAME journey (it is shown in English with a localized English-only notice until then);
+no second English engineering relationship is selected automatically.
+
 Source leads retained from the Owner-supplied technical/commercial study and *Deep Research
 Report: Platforms Translating Free-Form Ideas into Engineering Proposals*: [Flux tools](https://docs.flux.ai/reference/simulator-tool),
 [Zoo editable CAD](https://zoo.dev/docs/zoo-design-studio/zookeeper),

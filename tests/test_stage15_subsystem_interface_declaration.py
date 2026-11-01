@@ -1144,8 +1144,13 @@ def test_focus_is_immutable_and_no_focus_route_exists(client):
     # STAGE15-OBSERVATION-WITHDRAW-01 exactly one withdrawal POST; still no
     # focus route. AMENDED at COMPONENT-INTERFACE-PARTICIPATION-01: exactly one
     # participation POST (the components taking part in one interaction).
+    # AMENDED at BOARD-ENCLOSURE-PLANAR-CLEARANCE-01: exactly one planar
+    # clearance page (GET + declare / correct POST) and one withdrawal POST.
     assert sorted({r for r in rules if "interface" in r}) == [
-        "/session/<sid>/declare-interface", "/session/<sid>/interface-observation",
+        "/session/<sid>/declare-interface",
+        "/session/<sid>/interface-clearance/<interface_id>",
+        "/session/<sid>/interface-clearance/<interface_id>/withdraw",
+        "/session/<sid>/interface-observation",
         "/session/<sid>/interface-observation/withdraw",
         "/session/<sid>/interface-participation",
         "/session/<sid>/interface-preparation"]

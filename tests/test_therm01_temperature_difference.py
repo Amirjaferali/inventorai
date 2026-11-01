@@ -317,7 +317,8 @@ def test_closed_inventory_is_exactly_the_admitted_methods():
         ("electrical:dc_constant_current_charge", "1.0"),
         ("electrical:pwm_average_voltage", "1.0"),
         ("mechanical:spring_mass_natural_frequency", "1.0"),
-        ("mechanical:free_linear_thermal_expansion", "1.0")})
+        ("mechanical:free_linear_thermal_expansion", "1.0"),
+        ("mechanical:planar_centered_rectangular_clearance", "1.0")})
     assert dc.ADMITTED_QUANTITY_KINDS == frozenset({
         "force", "length", "power", "thermal_resistance", "temperature_difference",
         "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",
@@ -326,9 +327,9 @@ def test_closed_inventory_is_exactly_the_admitted_methods():
     assert dc.ADMITTED_UNIT_TOKENS == frozenset(
         {"N", "mm", "W", "K/W", "K", "N·mm", "N·m", "rad/s", "mV", "°C", "V", "Ω", "A",
          "J", "s", "h", "A·h", "kg", "N/m", "Hz", "1/K"})
-    assert dc.IMPLEMENTATION_VERSION == "1.12.0"
+    assert dc.IMPLEMENTATION_VERSION == "1.13.0"
     data = dc.load_artifact()
-    assert data["artifact_version"] == "13"
+    assert data["artifact_version"] == "14"
     assert [m["method_id"] for m in data["methods"]] == [
         "cap13:static_reactions_two_support",
         "therm01:conduction_temperature_difference_single_path",
@@ -342,7 +343,8 @@ def test_closed_inventory_is_exactly_the_admitted_methods():
         "electrical:dc_constant_current_charge",
         "electrical:pwm_average_voltage",
         "mechanical:spring_mass_natural_frequency",
-        "mechanical:free_linear_thermal_expansion"]
+        "mechanical:free_linear_thermal_expansion",
+        "mechanical:planar_centered_rectangular_clearance"]
 
 
 def test_both_bindings_are_isolated_from_each_other():
@@ -371,7 +373,7 @@ def test_both_bindings_are_isolated_from_each_other():
 
 def test_app_wires_exactly_one_immutable_binding_per_method_and_no_registry():
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 13
+    assert app_source.count("_dcalc.bind_method(") == 14
     assert webapp._THERM01_TEMPERATURE_BINDING.adapter_identity \
         == "engine.therm01_conduction_method.evaluate"
     assert webapp._CAP13_REACTIONS_BINDING.adapter_identity \
@@ -413,7 +415,7 @@ def test_deterministic_identity_and_no_input_mutation():
     first = dc.execute(BINDING, req)
     assert req == before and first == dc.execute(BINDING, req)
     assert re.fullmatch(r"[0-9a-f]{64}", first["result_identity"])
-    assert (first["artifact_version"], first["implementation_version"]) == ("13", "1.12.0")
+    assert (first["artifact_version"], first["implementation_version"]) == ("14", "1.13.0")
     assert first["subject_ref"] == "opaque"
     assert [q["source_ref"] for q in first["source_qualification"]] == ["THERM-S1"]
     assert sorted(u["unit_token"] for u in first["unit_records"]) == ["K", "K/W", "W"]

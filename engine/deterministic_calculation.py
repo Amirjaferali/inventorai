@@ -33,8 +33,11 @@ of Correction 12 (§13K) under
 docs/governance/MECHANICAL_SPRING_MASS_NATURAL_FREQUENCY_METHOD_CONTRACT.md; then
 the Mechanical free linear thermal-expansion method, the bounded thirteenth
 admission of Correction 13 (§13L) under
-docs/governance/MECHANICAL_FREE_LINEAR_THERMAL_EXPANSION_METHOD_CONTRACT.md. The
-owner is descriptive and unnumbered: it carries no CAP identifier.
+docs/governance/MECHANICAL_FREE_LINEAR_THERMAL_EXPANSION_METHOD_CONTRACT.md; then
+the Mechanical planar centered rectangular clearance method, the bounded
+fourteenth admission of Correction 14 (§13M) under
+docs/governance/MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md.
+The owner is descriptive and unnumbered: it carries no CAP identifier.
 
 What this owner owns (calc/units contract §3) - the execution ENVELOPE only:
   * admission of a request against its own governed artifact (§9);
@@ -108,7 +111,7 @@ VALIDATION_STATUS = "UNVALIDATED"
 PROVENANCE_OWNER_STATED = "OWNER_STATED"
 PROVENANCE_CALCULATED = "CALCULATED"
 
-IMPLEMENTATION_VERSION = "1.12.0"
+IMPLEMENTATION_VERSION = "1.13.0"
 ARTIFACT_ID = "deterministic_calculation_owner"
 ARTIFACT_SCHEMA_VERSION = "1.0"
 ARTIFACT_PATH = (Path(__file__).resolve().parent.parent / "docs" / "governance"
@@ -147,8 +150,10 @@ _CONDITIONS = (CONDITION_GREATER_THAN_ZERO, CONDITION_LESS_THAN_ZERO,
 # tokens) and exactly the bounded thirteenth admission of Correction 13 (§13L,
 # Mechanical free linear thermal expansion, adding only the
 # linear_thermal_expansion_coefficient / 1/K kind and token, on the existing
-# length / mm and temperature_difference / K kinds and tokens) - THIRTEEN
-# methods, each with its own consumer. A
+# length / mm and temperature_difference / K kinds and tokens) and exactly the
+# bounded fourteenth admission of Correction 14 (§13M, Mechanical planar
+# centered rectangular clearance, on the existing length / mm kind and token
+# only) - FOURTEEN methods, each with its own consumer. A
 # structurally valid extra method, quantity kind or unit fails closed: widening
 # the inventory is a separately authorized change, never an artifact edit alone.
 # No conversion exists. The one Celsius-temperature kind is the output of the
@@ -181,6 +186,7 @@ ADMITTED_METHODS = frozenset({
     ("electrical:pwm_average_voltage", "1.0"),
     ("mechanical:spring_mass_natural_frequency", "1.0"),
     ("mechanical:free_linear_thermal_expansion", "1.0"),
+    ("mechanical:planar_centered_rectangular_clearance", "1.0"),
 })
 ADMITTED_QUANTITY_KINDS = frozenset({
     "force", "length", "power", "thermal_resistance", "temperature_difference",

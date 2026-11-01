@@ -1,0 +1,189 @@
+{
+  "artifact_id": "mechanical_planar_centered_rectangular_clearance",
+  "schema_version": "1.0",
+  "artifact_version": "1",
+  "owner": "Mechanical - Technical Deepening (method authority for this one method only)",
+  "slice": "BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 - Board-Enclosure Planar Clearance - Slice 1",
+  "governance_note": "The Mechanical-owned governed artifact of the planar centered rectangular clearance method, under MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md. It carries the method authority (identity, version, declaration-contract version, model, executed form and original derivation), the applicability declarations, the numeric domain, the limitations, the fixed disclosure meaning and the source and source-use records. It is NOT a Domain Pack and NOT an entry in domains/domain_provenance.json; it is separate from every other method artifact and never loads one. Calculation execution belongs to the shared deterministic calculation and units owner; the inventor's inputs belong to the Stage-15 declaration owner. Nothing here is evidence, a fit, compatibility, verification, safety, manufacturing or readiness statement, or a progression or validation input.",
+  "method": {
+    "method_id": "mechanical:planar_centered_rectangular_clearance",
+    "method_version": "1.0",
+    "declaration_version": "planar-clearance-declaration/1",
+    "contract": "docs/governance/MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md",
+    "model": "ONE rectangular board outline placed centered and axis-aligned (board X along region X, board Y along region Y, no rotation) in ONE rectangular usable region at the board plane that nothing intrudes into, with ONE required clear distance c on each of the four sides; nominal declared values only.",
+    "executed_form": "margin_x = (region_x - board_x)/2 - c and margin_y = (region_y - board_y)/2 - c: the exact rational value over the binary64 inputs rounded once to binary64 (round half to even); an exact zero gives +0.0; a nonzero margin is accepted only when finite, nonzero, of the same sign as its exact value and within a relative error of 2^-53 of it. The geometric decision is made on the exact entered decimals, never on this binary result.",
+    "derivation": "InventorAI's original derivation (elementary Euclidean geometry; no external text, table or code). On one axis the region is the interval [0, R] and the centered board occupies [(R - B)/2, (R + B)/2], so the free distance from each board edge to the nearer region edge is (R - B)/2 on both sides; requiring a clear distance c on each side leaves margin = (R - B)/2 - c, and the declared condition is met on that axis exactly when margin >= 0, equivalently R >= B + 2c. Applied to both axes, the declared condition is met exactly when both margins are nonnegative; equality meets it. A board larger than the region gives a negative margin, a valid not-met case. A not-met result for the declared placement does not show that every placement, orientation or a redesigned enclosure is impossible."
+  },
+  "numeric_domain": {
+    "roles": [
+      {
+        "role": "board_x",
+        "meaning": "board outline dimension along the paired X axis; strictly positive",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      },
+      {
+        "role": "board_y",
+        "meaning": "board outline dimension along the paired Y axis; strictly positive",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      },
+      {
+        "role": "region_x",
+        "meaning": "selected usable region dimension along X at the board plane; strictly positive",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      },
+      {
+        "role": "region_y",
+        "meaning": "selected usable region dimension along Y at the board plane; strictly positive",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      },
+      {
+        "role": "c",
+        "meaning": "required clear distance on each side; zero or positive",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      },
+      {
+        "role": "margin_x",
+        "meaning": "signed margin on X: (region_x - board_x)/2 - c; negative means the declared clearance is not available on X",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      },
+      {
+        "role": "margin_y",
+        "meaning": "signed margin on Y: (region_y - board_y)/2 - c; negative means the declared clearance is not available on Y",
+        "quantity_kind": "length",
+        "unit_token": "mm"
+      }
+    ],
+    "rules": [
+      "Each value is a strict unsigned ASCII decimal of one to six integer digits and up to four fractional digits; no sign, exponent, separator, Unicode digit, unit suffix or normalization; nothing is truncated or coerced. This is a representation policy for abuse and resource protection, NOT a physical rating, range or tolerance.",
+      "Dimensions must be strictly positive and c zero or positive, decided on the exact decimal before any binary rounding. A value may instead be marked unknown or left not entered; neither is ever read as zero, and either gives MISSING INFORMATION with no comparison.",
+      "The geometric decision is taken on the exact rational margins of the ENTERED decimals: met exactly when both are nonnegative. The independent form region >= board + 2c per axis gives the same decision.",
+      "Binary path: each admitted decimal is converted once, correctly rounded, to binary64; the adapter rounds the exact margin of the binary inputs once (relative error at most 2^-53); an exact zero gives +0.0.",
+      "Bridge acceptance: with u = 2^-53 and e = ((R + B)/2 + c) u, the binary margin v and the exact decimal margin m must satisfy |v - m| <= e + (|m| + e) u. No relative test against zero, no sign agreement near zero and no epsilon in the decision; a violation is an execution-integrity failure with no verdict.",
+      "Display: the exact decimal margins (at most five fractional digits) are shown exactly, without rounding, so display cannot change met into not met or the reverse. The digits imply no measurement precision.",
+      "An owner non-success or a bridge violation yields COULD NOT BE COMPUTED with the owner state and reason preserved; an execution failure is never a geometric failure."
+    ]
+  },
+  "declarations": [
+    {
+      "declaration_id": "rectangular_board",
+      "contract_ref": "D-1",
+      "statement": "The board outline is treated as one rectangle, board_x by board_y."
+    },
+    {
+      "declaration_id": "rectangular_region",
+      "contract_ref": "D-2",
+      "statement": "The selected usable region is one rectangle, region_x by region_y, at the board plane, inside the enclosure."
+    },
+    {
+      "declaration_id": "region_unobstructed",
+      "contract_ref": "D-3",
+      "statement": "Nothing intrudes into the selected region at the board plane; features outside the selected region are allowed."
+    },
+    {
+      "declaration_id": "centered_axis_aligned",
+      "contract_ref": "D-4",
+      "statement": "The board sits centered in the selected region, board X along region X and board Y along region Y, with no rotation."
+    },
+    {
+      "declaration_id": "same_plane",
+      "contract_ref": "D-5",
+      "statement": "The board and region dimensions are taken in the same plane, the board plane."
+    },
+    {
+      "declaration_id": "not_guide_mounted",
+      "contract_ref": "D-6",
+      "statement": "The board is not held by card guides, rails or slots."
+    },
+    {
+      "declaration_id": "uniform_clearance",
+      "contract_ref": "D-7",
+      "statement": "c is the clear distance required on each of the four sides of the board."
+    },
+    {
+      "declaration_id": "nominal_values",
+      "contract_ref": "D-8",
+      "statement": "The values are nominal; tolerances are not part of this comparison."
+    }
+  ],
+  "limitations": [
+    "Nominal declared values only; no tolerance, stack-up or manufacturing variation is assessed.",
+    "Planar geometry at the board plane only; height, insertion path, connectors, cables and mounting hardware are not assessed.",
+    "Centered, axis-aligned placement only; no rotation, other placement or optimization is tried.",
+    "Rectangular outline and rectangular unobstructed region only; card-guide, rail or slot mounting is outside the method.",
+    "No electrical clearance or creepage, thermal, strength, vibration, safety or manufacturing assessment.",
+    "The inputs are the inventor's own statements; InventorAI did not measure, look up or verify them."
+  ],
+  "disclosure": [
+    "These are nominal values you declared.",
+    "InventorAI has not verified any input.",
+    "No tolerance assessment is made.",
+    "Only planar geometry at the board plane is compared.",
+    "Height, connectors, insertion path, mounting, electrical clearance, thermal behaviour, strength, safety and manufacturing are not assessed.",
+    "This does not show that the parts fit, that the system is compatible, or that anything is verified, ready or certified.",
+    "A not-met result for this placement does not show that no placement or design could work."
+  ],
+  "sources": [
+    {
+      "record_id": "PCC-DERIVATION",
+      "record_type": "source",
+      "source_type": "original_derivation",
+      "publisher": "InventorAI",
+      "source_title": "InventorAI original derivation - planar centered rectangular clearance (method contract section 3)",
+      "url": "docs/governance/MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md",
+      "source_use_policy_ref": "pcc:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-11-01",
+      "inspected_content": "The interval argument of section 3: a centered board of width B in a region of width R leaves (R - B)/2 on each side; the margin after a required clear distance c is (R - B)/2 - c. Deductive and independently checkable.",
+      "third_party_material_exclusion": "No third-party text, figure, table, dataset or code is used; CGAL and Hammond enclosure documentation were discovery leads only and nothing from them is imported or relied upon.",
+      "no_endorsement_limitation": "No external party endorses this method or any result."
+    },
+    {
+      "record_id": "pcc:SU001",
+      "record_type": "source_use_policy",
+      "source_type": "source_use_policy",
+      "publisher": "InventorAI",
+      "source_title": "Source-use basis - original InventorAI text",
+      "url": "docs/governance/MECHANICAL_PLANAR_CENTERED_RECTANGULAR_CLEARANCE_METHOD_CONTRACT.md",
+      "source_use_policy_ref": "pcc:SU001",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-11-01",
+      "inspected_content": "Source-use basis (not a legal opinion): the derivation and every wording in this artifact are original InventorAI text; no external source is copied or adapted.",
+      "third_party_material_exclusion": "Not applicable: no third-party material is present.",
+      "no_endorsement_limitation": "No external party endorses this method or any result."
+    },
+    {
+      "record_id": "NIST-PCC-U",
+      "record_type": "source",
+      "source_type": "unit_identification",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST Special Publication 811 (2008 Edition), Guide for the Use of the International System of Units (SI), Chapter 4, Tables 1 and 5",
+      "url": "https://doi.org/10.6028/NIST.SP.811e2008",
+      "source_use_policy_ref": "pcc:SU002",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-10-07",
+      "inspected_content": "Unit identification only: the metre (Table 1) and the prefix milli (Table 5), hence the millimetre; reused from the shared owner's existing record dcu:U002, unchanged. No conversion is admitted.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this method or any result is stated or implied."
+    },
+    {
+      "record_id": "pcc:SU002",
+      "record_type": "source_use_policy",
+      "source_type": "source_use_policy",
+      "publisher": "National Institute of Standards and Technology (NIST)",
+      "source_title": "NIST - Copyright, Fair Use, and Licensing Statements for SRD, Data, Software, and Technical Series Publications (the shared owner's dcu:SU001 disposition, reused)",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications",
+      "source_use_policy_ref": "pcc:SU002",
+      "inspection_basis": "LEAD_SUPPLIED",
+      "inspection_date": "2026-09-28",
+      "inspected_content": "Source-use basis (not a legal opinion): NIST employee-authored Technical Series works are not subject to U.S. copyright protection; NIST acknowledgement is required; third-party material is excluded. Used here for identifying the millimetre only.",
+      "third_party_material_exclusion": "Third-party material inside NIST publications is not used.",
+      "no_endorsement_limitation": "No NIST endorsement of InventorAI, this method or any result is stated or implied."
+    }
+  ]
+}

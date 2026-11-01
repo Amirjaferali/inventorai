@@ -346,7 +346,7 @@ def test_success_packaging_units_sources_and_identity():
                                            "provenance": "OWNER_STATED"}
     assert (result["method_id"], result["method_version"]) == (
         "mechanical:free_linear_thermal_expansion", "1.0")
-    assert (result["artifact_version"], result["implementation_version"]) == ("13", "1.12.0")
+    assert (result["artifact_version"], result["implementation_version"]) == ("14", "1.13.0")
     assert [u["record_id"] for u in result["unit_records"]] == [
         "dcu:U002", "dcu:U005", "dcu:U021"]
     assert [q["source_ref"] for q in result["source_qualification"]] == [
@@ -360,7 +360,7 @@ def test_success_packaging_units_sources_and_identity():
 
 def test_closed_inventory_and_versions():
     assert ("mechanical:free_linear_thermal_expansion", "1.0") in dc.ADMITTED_METHODS
-    assert len(dc.ADMITTED_METHODS) == 13
+    assert len(dc.ADMITTED_METHODS) == 14
     assert "linear_thermal_expansion_coefficient" in dc.ADMITTED_QUANTITY_KINDS
     assert len(dc.ADMITTED_QUANTITY_KINDS) == 19
     assert "1/K" in dc.ADMITTED_UNIT_TOKENS and len(dc.ADMITTED_UNIT_TOKENS) == 21
@@ -370,9 +370,9 @@ def test_closed_inventory_and_versions():
                              "m", "cm", "µm", "in", "°F", "1/s"))
     assert dc.KIND_TOKEN_EXCEPTIONS == {"voltage": frozenset({"mV", "V"}),
                                         "time": frozenset({"s", "h"})}
-    assert dc.IMPLEMENTATION_VERSION == "1.12.0"
+    assert dc.IMPLEMENTATION_VERSION == "1.13.0"
     data = dc.load_artifact()
-    assert data["artifact_version"] == "13"
+    assert data["artifact_version"] == "14"
     kinds = {k["quantity_kind"]: k["dimension"] for k in data["quantity_kinds"]}
     assert kinds["linear_thermal_expansion_coefficient"] == "Theta^-1"
     assert (kinds["length"], kinds["temperature_difference"]) == ("L", "Theta")
@@ -471,7 +471,7 @@ def test_app_wires_one_immutable_binding():
     with pytest.raises(AttributeError):
         webapp._MTE_BINDING.method_id = "x"
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 13
+    assert app_source.count("_dcalc.bind_method(") == 14
     owner_source = Path(dc.__file__).read_text(encoding="utf-8")
     for banned in ("mechanical_thermal_expansion", "mechanical_content_config",
                    "alpha_avg", "L_ref"):
@@ -539,7 +539,7 @@ def test_owner_artifact_unreadable_is_source_unavailable(tmp_path):
 
 def test_owner_v12_records_are_unchanged_by_the_thirteenth_admission():
     data = dc.load_artifact()
-    assert data["artifact_version"] == "13"
+    assert data["artifact_version"] == "14"
     v12 = {"quantity_kinds": data["quantity_kinds"][:18],
            "unit_records": data["unit_records"][:20],
            "source_use_policies": data["source_use_policies"][:21],
@@ -551,7 +551,7 @@ def test_owner_v12_records_are_unchanged_by_the_thirteenth_admission():
     assert [u["record_id"] for u in data["unit_records"][20:]] == ["dcu:U021"]
     assert [p["record_id"] for p in data["source_use_policies"][21:]] == [
         "dcu:SU022", "dcu:SU023"]
-    assert [m["method_id"] for m in data["methods"][12:]] == [method.METHOD_ID]
+    assert [m["method_id"] for m in data["methods"][12:13]] == [method.METHOD_ID]
     policies = {p["record_id"]: p for p in data["source_use_policies"]}
     assert "mte:SU001" in policies["dcu:SU022"]["inspected_content"]
     assert "NBS-TE-S1" in policies["dcu:SU022"]["inspected_content"]
@@ -559,7 +559,7 @@ def test_owner_v12_records_are_unchanged_by_the_thirteenth_admission():
     assert "SRC-029 is relied upon by nothing" in policies["dcu:SU022"]["inspected_content"]
     assert "dcu:U021 (1/K)" in policies["dcu:SU023"]["inspected_content"]
     assert all(p["inspection_basis"] == "LEAD_SUPPLIED" for p in data["source_use_policies"])
-    assert "Content version 13 admits exactly thirteen methods" in data["governance_note"]
+    assert "Content version 14 admits exactly fourteen methods" in data["governance_note"]
     text = json.dumps(data, ensure_ascii=False)
     for banned in ("thermal stress calculation", "clearance adequacy is", "DOE-HDBK-1017"):
         assert banned not in text, banned

@@ -336,7 +336,7 @@ def test_binding_is_immutable_and_not_a_registry():
     # moment's (Correction 03): one immutable binding per method
     assert webapp._CAP13_REACTIONS_BINDING.adapter_identity == BINDING.adapter_identity
     app_source = Path(webapp.__file__).read_text(encoding="utf-8")
-    assert app_source.count("_dcalc.bind_method(") == 13
+    assert app_source.count("_dcalc.bind_method(") == 14
 
 
 def test_deterministic_identity_and_no_input_mutation():
@@ -551,7 +551,8 @@ def test_owner_closed_inventory_constants():
         ("electrical:dc_constant_current_charge", "1.0"),
         ("electrical:pwm_average_voltage", "1.0"),
         ("mechanical:spring_mass_natural_frequency", "1.0"),
-        ("mechanical:free_linear_thermal_expansion", "1.0")})
+        ("mechanical:free_linear_thermal_expansion", "1.0"),
+        ("mechanical:planar_centered_rectangular_clearance", "1.0")})
     assert dc.ADMITTED_QUANTITY_KINDS == frozenset({
         "force", "length", "power", "thermal_resistance", "temperature_difference",
         "moment", "torque", "angular_velocity", "voltage", "celsius_temperature",

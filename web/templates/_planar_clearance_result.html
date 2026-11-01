@@ -1,0 +1,97 @@
+{#- BOARD-ENCLOSURE-PLANAR-CLEARANCE-01 — the ONE rendering of the shared
+    presentation model (web/planar_clearance.py) used by the interaction page,
+    the report and the PDF. English-first: ``pcc_t`` resolves English copy only.
+    Every inventor text is escaped and direction-isolated; nothing here
+    computes. -#}
+{% macro pcc_declared(v) %}
+{% set m = v.material %}
+<div class="pcc-declared" data-pcc-declared>
+  <h3>{{ pcc_t('UI_PCC_DECLARED_HEADING') }}</h3>
+  <p class="pcc-owner">{{ pcc_t('UI_PCC_OWNER_STATED') }}</p>
+  <dl class="pcc-dl">
+    <dt>{{ pcc_t('UI_PCC_BOARD') }}</dt>
+    <dd data-pcc-board><bdi dir="auto">{{ m.board.name }}</bdi>{% if m.board.withdrawn %} {{ pcc_t('UI_PCC_WITHDRAWN_MARK') }}{% endif %} — {{ pcc_t('UI_PCC_REVISION_OF') }} {{ m.board_revision }}</dd>
+    <dt>{{ pcc_t('UI_PCC_ENCLOSURE') }}</dt>
+    <dd data-pcc-enclosure><bdi dir="auto">{{ m.enclosure.name }}</bdi>{% if m.enclosure.withdrawn %} {{ pcc_t('UI_PCC_WITHDRAWN_MARK') }}{% endif %} — {{ pcc_t('UI_PCC_REVISION_OF') }} {{ m.enclosure_revision }}</dd>
+    <dt>{{ pcc_t('UI_PCC_REGION_DESCRIPTION') }}</dt>
+    <dd data-pcc-region-description>{% if m.region_description %}<bdi dir="auto">{{ m.region_description }}</bdi>{% else %}{{ pcc_t('UI_PCC_VALUE_NOT_ENTERED') }}{% endif %}</dd>
+  </dl>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_AXIS_PAIRING') }}</p>
+  <table class="pcc-table" data-pcc-values>
+    {% for item in m["values"] %}
+    <tr data-pcc-value="{{ item.role }}"><th scope="row">{{ pcc_t('UI_PCC_VALUE_' ~ item.role) }}</th>
+      <td>{% if item.entered %}<span data-pcc-entered>{{ item.text }}</span> mm{% elif item.unknown %}{{ pcc_t('UI_PCC_VALUE_UNKNOWN') }}{% else %}{{ pcc_t('UI_PCC_VALUE_NOT_ENTERED') }}{% endif %}</td></tr>
+    {% endfor %}
+  </table>
+  <dl class="pcc-dl" data-pcc-basis>
+    {% for b in m.basis %}
+    <dt>{{ pcc_t('UI_PCC_BASIS_' ~ b.field) }}</dt>
+    <dd data-pcc-basis-item="{{ b.field }}">{% if b.text %}<bdi dir="auto">{{ b.text }}</bdi>{% else %}{{ pcc_t('UI_PCC_BASIS_NOT_RECORDED') }}{% endif %}</dd>
+    {% endfor %}
+  </dl>
+  <ul class="pcc-applicability" data-pcc-applicability>
+    {% for a in m.applicability %}
+    <li data-pcc-answer="{{ a.id }}">{{ a.ref }} — {{ pcc_statement(a.id) }} → <strong>{% if a.answer %}{{ pcc_t('UI_PCC_ANSWER_' ~ a.answer) }}{% else %}{{ pcc_t('UI_PCC_ANSWER_NONE') }}{% endif %}</strong></li>
+    {% endfor %}
+  </ul>
+  <p class="pcc-small" data-pcc-identity>{{ pcc_t('UI_PCC_METHOD_LINE') }}: {{ m.method_id }} {{ m.method_version }} · {{ m.declaration_version }} · {{ pcc_t('UI_PCC_DECLARATION_LINE') }} {{ v.record.declaration_id }}, {{ pcc_t('UI_PCC_REVISION_LINE') }} {{ v.record.head_revision_no }} ({{ v.record.revision_id }}) · {{ pcc_t('UI_PCC_SNAPSHOT_LINE') }} {{ v.record.digest }}</p>
+</div>
+{% endmacro %}
+
+{% macro pcc_diagram(d) %}
+<figure class="pcc-figure" data-pcc-diagram>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{ d.width }} {{ d.height }}" width="{{ d.width }}" height="{{ d.height }}" role="img" aria-labelledby="pcc-dg-title pcc-dg-desc" style="max-width:100%;height:auto">
+    <title id="pcc-dg-title">{{ pcc_t('UI_PCC_DIAGRAM_TITLE') }}</title>
+    <desc id="pcc-dg-desc">{{ pcc_t('UI_PCC_DIAGRAM_DESC') }}</desc>
+    <rect x="{{ d.region.x }}" y="{{ d.region.y }}" width="{{ d.region.w }}" height="{{ d.region.h }}" fill="#eef3f8" stroke="#2c3e50" stroke-width="1.5" data-pcc-dg-region/>
+    {% if d.zone %}<rect x="{{ d.zone.x }}" y="{{ d.zone.y }}" width="{{ d.zone.w }}" height="{{ d.zone.h }}" fill="none" stroke="#5d6d7e" stroke-width="1" stroke-dasharray="4 3" data-pcc-dg-zone/>{% endif %}
+    <rect x="{{ d.board.x }}" y="{{ d.board.y }}" width="{{ d.board.w }}" height="{{ d.board.h }}" fill="{% if d.met_x and d.met_y %}#d4efdf{% else %}#fadbd8{% endif %}" fill-opacity="0.85" stroke="{% if d.met_x and d.met_y %}#1e8449{% else %}#b03a2e{% endif %}" stroke-width="1.5" data-pcc-dg-board/>
+    <text x="{{ d.width / 2 }}" y="14" text-anchor="middle" font-size="11" fill="#2c3e50">region_x = {{ d.labels.region_x }} mm</text>
+    <text x="10" y="{{ d.height / 2 }}" font-size="11" fill="#2c3e50" transform="rotate(-90 10 {{ d.height / 2 }})" text-anchor="middle">region_y = {{ d.labels.region_y }} mm</text>
+    <text x="{{ d.width / 2 }}" y="{{ d.height / 2 - 4 }}" text-anchor="middle" font-size="11" fill="#1b2631">board {{ d.labels.board_x }} × {{ d.labels.board_y }} mm</text>
+    <text x="{{ d.width / 2 }}" y="{{ d.height / 2 + 12 }}" text-anchor="middle" font-size="10" fill="#1b2631">c = {{ d.labels.c }} mm per side</text>
+    {% if not (d.met_x and d.met_y) %}<text x="{{ d.width / 2 }}" y="{{ d.height - 6 }}" text-anchor="middle" font-size="11" fill="#b03a2e" data-pcc-dg-overlap>{{ pcc_t('UI_PCC_DIAGRAM_OVERLAP') }}{% if not d.met_x %} (X){% endif %}{% if not d.met_y %} (Y){% endif %}</text>{% endif %}
+  </svg>
+  <figcaption class="pcc-small">{{ pcc_t('UI_PCC_DIAGRAM_NOTE') }}</figcaption>
+</figure>
+{% endmacro %}
+
+{% macro pcc_result(v) %}
+<div class="pcc-result" data-pcc-state="{{ v.state }}">
+  {% if v.state == 'NEEDS_RECONFIRMATION' %}
+  <div class="pcc-reconfirm" data-pcc-reconfirm>
+    <p>{{ pcc_t('UI_PCC_STATE_RECONFIRM') }}</p>
+    <ul>{% for i in v.issues %}<li data-pcc-issue="{{ i.issue }}">{% if i.role %}{{ pcc_t('UI_PCC_ISSUE_' ~ i.issue) | format(pcc_t('UI_PCC_ROLE_' ~ i.role)) }}{% else %}{{ pcc_t('UI_PCC_ISSUE_' ~ i.issue) }}{% endif %}</li>{% endfor %}</ul>
+    <p class="pcc-small">{{ pcc_t('UI_PCC_RECONFIRM_HOW') }}</p>
+  </div>
+  {% elif v.state == 'CURRENT' and v.evaluation %}
+  {% set e = v.evaluation %}
+  <h3>{{ pcc_t('UI_PCC_RESULT_HEADING') }}</h3>
+  <p class="pcc-outcome pcc-outcome-{{ e.outcome|lower }}" data-pcc-outcome="{{ e.outcome }}"><strong>{{ pcc_t('UI_PCC_OUTCOME_' ~ e.outcome) }}</strong></p>
+  {% if e.outcome == 'INAPPLICABLE' %}
+  <ul data-pcc-inapplicable>{% for d in e.inapplicable %}<li>{{ pcc_statement(d) }}</li>{% endfor %}</ul>
+  {% endif %}
+  {% if e.outcome == 'MISSING_INFORMATION' %}
+  <p>{{ pcc_t('UI_PCC_MISSING_LABEL') }}</p>
+  <ul data-pcc-missing>{% for item in e.missing %}<li data-pcc-missing-item="{{ item }}">{{ pcc_missing(item) }}</li>{% endfor %}</ul>
+  {% endif %}
+  {% if e.outcome in ('MET', 'NOT_MET') %}
+  <table class="pcc-table" data-pcc-margins>
+    <tr><th scope="col">{{ pcc_t('UI_PCC_AXIS') }}</th><th scope="col">{{ pcc_t('UI_PCC_MARGIN') }}</th><th scope="col"></th></tr>
+    {% for a in e.axes %}
+    <tr data-pcc-axis="{{ a.axis }}"><td>{{ a.axis|upper }}</td><td data-pcc-margin>{{ a.margin_text }} mm</td><td>{% if a.met %}{{ pcc_t('UI_PCC_AXIS_MET') }}{% else %}<span data-pcc-shortfall>{{ pcc_t('UI_PCC_AXIS_NOT_MET') | format(a.shortfall_text) }}</span>{% endif %}</td></tr>
+    {% endfor %}
+  </table>
+  <p class="pcc-small">{{ pcc_t('UI_PCC_MARGIN_EXPLAINED') }}</p>
+  {% if e.outcome == 'NOT_MET' %}<p class="pcc-small" data-pcc-not-met-note>{{ pcc_t('UI_PCC_NOT_MET_NOTE') }}</p>{% endif %}
+  {% if v.diagram %}{{ pcc_diagram(v.diagram) }}{% endif %}
+  {% endif %}
+  {% if e.outcome == 'COULD_NOT_BE_COMPUTED' and e.owner_state %}<p class="pcc-small" data-pcc-owner-state>{{ e.owner_state }} / {{ e.owner_reason }}</p>{% endif %}
+  {% endif %}
+  {% if v.material %}{{ pcc_declared(v) }}{% endif %}
+  <div class="pcc-disclosure" data-pcc-disclosure>
+    <h3>{{ pcc_t('UI_PCC_DISCLOSURE_HEADING') }}</h3>
+    <ul>{% for line in pcc_disclosure() %}<li>{{ line }}</li>{% endfor %}</ul>
+  </div>
+</div>
+{% endmacro %}
