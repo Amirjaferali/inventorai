@@ -285,12 +285,13 @@ identity. A paused/revoked/completed/expired mandate does not resume or renew au
 explicit Owner instruction is required. Accepted work remains accepted absent new material
 evidence requiring correction. No repository-recording step delays a received pause.
 
-**9.5 Research-to-execution checkpoint.** Navigation only (2026-10-30): preserve CLAUDE.md G1;
-recover the current mandate from its existing owner and verify PRs #908/#909 live. Reuse
-research on Flux/tool execution, Zoo/editable engineering source and CELUS/typed interfaces;
-CadQuery/tray is a CANDIDATE, not an approved product step. Read the owner mappings and
-reopening triggers below before selecting work. An approved next action is not a candidate
-recommendation. No new product increment, provider call, merge or deployment is authorized here.
+**9.5 Research-to-execution checkpoint.** Navigation only (2026-10-30; updated 2026-11-01): preserve
+CLAUDE.md G1; recover the current mandate from its existing owner. Reuse research on Flux/tool
+execution, Zoo/editable engineering source and CELUS/typed interfaces; CadQuery/tray is a CANDIDATE,
+not an approved product step. Below: English-first sequencing (Arabic/dialects next, mandatory), G1
+research insights and the G1-1/2 admission checkpoint with its pending ACE question. An approved
+next action is not a candidate recommendation.
+No new product increment, provider call, merge or deployment is authorized here.
 
 **Execution Efficiency Correction — durable retrieval, not chat memory.** This bounded note
 records the Owner-requested research continuity inside the existing §9 reconstruction. It
@@ -402,6 +403,69 @@ qualification is not established, the campaign is not repeated and no further ev
 mandated; the MSNL #842 failure is not generalized to all Arabic understanding tasks. Still open
 with their existing owners: provider selection, real-data transmission, proposal and adoption
 persistence, any influence on question selection and engineering qualification.
+
+**Owner qualification sequencing (Owner decision, 2026-11-01; sequencing only, no product
+authorization).** Qualification first demonstrates ONE connected English-language journey:
+ordinary-language idea -> faithful understanding and confirmation -> qualified engineering
+continuation -> an inspectable, checked artifact -> a material correction that stops the earlier
+check being represented as current without appropriate re-evaluation. Immediately after that
+journey is demonstrated, Arabic and dialect qualification is the next priority, ahead of further
+English-only expansion. Arabic and its dialects are essential product requirements; only further
+detailed multilingual qualification is deferred. Existing Arabic support and its regression
+protection stay, and no English wording may be hard-coded as engineering semantics. The Proof B
+multilingual human review is PAUSED and incomplete: its frozen pack, campaign 01 evidence
+(unmerged branch `claude/proof-b-campaign-01-evidence`, `8ee5c51`), one-run restriction, the
+Owner's prior ratings and the unresolved scoring disagreements (held outside this repository and
+not copied here) are preserved. English diagnostic analysis is not a campaign verdict, independent
+human qualification or a production PASS. Earlier handovers that name G04-ar-msa as the next
+scoring step are historical; resuming that scoring is not the current instruction.
+
+**G1 research insights (candidates, not a roadmap; none is a prerequisite of the first journey
+unless an authorized slice needs it).**
+
+| Insight | Practical benefit | Existing home | Evidence status | Use trigger | Blocker / reopening |
+|---|---|---|---|---|---|
+| Source-bound understanding (working name "Engineering Intent Compiler", not an engine, ontology, store or owner) | Keep function, behavior, proposed structure, constraints, quantities, unknowns and provenance distinct | Intent, confirmation, canonical assertion and Stage-15 owners (G1-1/2) | Lead synthesis; nothing built | A G1-1/2 slice that must separate these classes | The G1-1/2 admission checkpoint below |
+| Bidirectional clarification | Forward: inventor information -> possible continuation; backward: a method's own applicability conditions and inputs -> the information still missing, so clarification removes a real blocker | Method owners (conditions); question selection stays with its owner | Lead synthesis; no planner exists | A slice that names one method's missing inputs | No new planner or question engine; decision 3 in `CLAUDE.md` stays open |
+| Obtaining missing information | Route each unknown: goals and decisions -> inventor; selected-component properties -> component-specific evidence; derivable quantities -> admitted methods; general properties -> qualified sources with permitted use; assembly and real behavior -> measurement, test or specialist; open design choices -> keep the unknown | NeedRouting, method gates, source/IP boundary | Operating principle only | When an unknown blocks a dependent operation | No automatic sourcing, component selection or assumed values |
+| Traceable semantic binding | Trace source statement -> attribution/confirmation -> part and revision -> method role, quantity kind, unit, applicability | Existing owners and references; no new truth store | Lead synthesis | A slice binding confirmed input to one method | A matching quote, schema, name or unit never proves the physical interpretation |
+| Research-code reuse: <https://github.com/alessandrostefanone-polimi/ontology-req-pipeline> | Ideas for structured extraction, lineage, quantity representation, review handling, error classes | Discovery pointer only | README and license notices inspected by the Lead; not run, not qualified; third-party material not uniformly under the top-level license | A slice needing one of these lessons | Exact revision, code, dependencies, rights, applicability and performance must be inspected first; formal-requirement results do not transfer to free-form ideas; no clone, install, run or import |
+| Model reuse and interoperability (Modelica, SSP) | Reuse qualified connected models instead of rebuilding physics and interfaces | Specialist and external-tool owners (G1-3/4) | Candidate lesson | A qualified relation that needs a simulated model | Parameters, applicability, runtime, licensing, numerical credibility, integration; no simulator, provider or stack selected |
+| Evidence that a connection is useful | Show that an inventor correction changes what a real downstream consumer uses, or why an operation cannot proceed and what it needs | G1-5 product proof | Acceptance principle | Any authorized G1-1/2 or G1-3 slice | Controls: negation, missing inputs, withdrawal, unsupported relations, changed revisions; tuning on old cases is not independent qualification |
+
+**G1-1/2 admission and provenance checkpoint (completed read-only assessment, 2026-11-01; a
+review record, not a decision).** EXISTS / REUSE: inventor answers with correction and withdrawal
+(`/correct`, full deterministic replay); unknown and deferred handling; declared constraints and
+their consumers (#855, #857); Stage-15 parts, components, interactions and preparation records;
+method-owned applicability checks, declarations and input forms. PARTIAL: provisional functional
+readings and their navigation exist (`engine/functional_need_handoff.py`,
+`engine/cap13_functional_configuration.py`), but no confirmation or adoption carrier and no consumer
+of a confirmed interpretation is established. PENDING (architecture / Owner): the carrier and
+provenance semantics for confirmed system-origin interpretations and adopted proposals, and the
+exact retention/adoption boundary. SEPARATE method-contract question: whether a given method may
+consume or prefill confirmed project information. SEPARATE retention obligation: persisted results
+with truthful revision-bound validity under the calculation and TR evidence owners. The proposed
+append-only adoption record on the constraint pattern is a CANDIDATE, not an accepted schema,
+record kind, writer or provenance amendment; the proposed functional-confirmation slice reaches
+only a capability-handoff/navigation consumer, not calculation-input binding, result retention or
+the completed journey. Review corrections (open boundaries, not rules): (A) do not make existing
+navigation depend on confirmation without a justified product effect; (B) temporary dismissal is
+not durable rejection, and a dismissed reading may regenerate, but the unresolved need must not
+disappear either way; (C) recording the inventor's act as OWNER_STATED does not make system-derived
+content inventor-originated, an unwritable SYSTEM_INFERRED does not prove provenance is kept,
+ordinary inventor wording is not assumed AI-origin, known system origin is not erased on adoption,
+and a deterministic reading may still carry an inferred claim; (D) OD-2 applies as currently
+written; narrowing it to adopted AI-proposal text is only a recommendation; (E) any accepted design
+must identify the selected content, its source context and revision, with correction, withdrawal
+and stale behavior for that path; a digest or quote alone is neither semantic proof nor the scope
+of acceptance. Pending ACE question (narrowed): for ONE existing provisional functional
+interpretation, what is the minimum permissible carrier and provenance model for the inventor's
+confirmation, correction, rejection or dismissal and withdrawal, and what may the existing consumer
+use without changing progression or bypassing a method contract, distinguishing the deterministic
+reading from future AI-origin adoption, the retention/admission conditions that actually apply, and
+navigation from engineering-data consumption? The ledger/constraint pattern is one option, not the
+answer, and a yes to it approves no UI, retention, provider or consumer change. This decision blocks
+dependent implementation only; NEXT-LOOP applies to independent eligible work.
 
 Source leads retained from the Owner-supplied technical/commercial study and *Deep Research
 Report: Platforms Translating Free-Form Ideas into Engineering Proposals*: [Flux tools](https://docs.flux.ai/reference/simulator-tool),

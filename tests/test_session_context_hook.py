@@ -429,3 +429,40 @@ def test_g1_integration_direction_is_linked_through_each_g1_step():
                    "D4 for physical compatibility", "full deterministic reconstruction",
                    "never inherits an earlier check as current"):
         assert phrase in flat, phrase
+
+
+def test_g1_sequencing_insights_and_admission_checkpoint_are_recoverable():
+    raw = (REPO / DOCS[3]).read_text(encoding="utf-8")
+    checkpoint = raw.split(CHECKPOINT_LABEL, 1)[1].split("## 10.", 1)[0]
+    flat = " ".join(checkpoint.split())
+    # the quoted opening paragraph points a successor to all three blocks
+    opening = " ".join(checkpoint.split("\n\n", 1)[0].split())
+    for phrase in ("English-first sequencing (Arabic/dialects next, mandatory)",
+                   "G1 research insights", "G1-1/2 admission checkpoint with its pending ACE question"):
+        assert phrase in opening, phrase
+    assert len(CHECKPOINT_LABEL + opening) <= 700           # survives the hook's per-item cap
+    for label in ("**Owner qualification sequencing", "**G1 research insights",
+                  "**G1-1/2 admission and provenance checkpoint"):
+        assert checkpoint.count(label) == 1, label
+    for phrase in (
+            # sequencing: Owner decision, not authorization; Arabic stays mandatory
+            "sequencing only, no product authorization", "ONE connected English-language journey",
+            "Arabic and dialect qualification is the next priority",
+            "Arabic and its dialects are essential product requirements",
+            "no English wording may be hard-coded as engineering semantics",
+            "multilingual human review is PAUSED and incomplete", "one-run restriction",
+            "not copied here", "not a campaign verdict", "resuming that scoring is not the current instruction",
+            # insights: candidates with owners, evidence limits and blockers
+            "candidates, not a roadmap", "not an engine, ontology, store or owner",
+            "No new planner or question engine", "No automatic sourcing, component selection or assumed values",
+            "never proves the physical interpretation", "no clone, install, run or import",
+            "no simulator, provider or stack selected", "tuning on old cases is not independent qualification",
+            # completed assessment: findings, candidates and the narrowed ACE question
+            "a review record, not a decision", "PARTIAL: provisional functional readings",
+            "is a CANDIDATE, not an accepted schema", "not calculation-input binding",
+            "OD-2 applies as currently written", "only a recommendation",
+            "temporary dismissal is not durable rejection",
+            "does not make system-derived content inventor-originated",
+            "Pending ACE question (narrowed)", "one option, not the answer",
+            "blocks dependent implementation only"):
+        assert phrase in flat, phrase
